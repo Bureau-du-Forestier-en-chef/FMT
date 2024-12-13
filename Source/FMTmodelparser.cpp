@@ -192,12 +192,13 @@ namespace Parser {
 	}
 
 
-	OGRLayer* FMTmodelparser::createresultslayer(const Models::FMTmodel& model,
-		GDALDataset* dataset, std::vector<std::string> creationoptions)const
+	OGRLayer* FMTmodelparser::createResultsLayer(const std::string& p_modelName,
+		GDALDataset* p_dataset,
+		std::vector<std::string> p_creationOptions)const
 	{
 		OGRLayer* newlayer = nullptr;
 		try {
-			newlayer = createlayer(dataset, model.getname(), creationoptions);
+			newlayer = createlayer(p_dataset, p_modelName, p_creationOptions);
 			OGRFieldDefn IterationField("Iteration", OFTInteger);
 			IterationField.SetWidth(32);
 			OGRFieldDefn PeriodField("Period", OFTInteger);
@@ -309,7 +310,7 @@ namespace Parser {
 	{
 		try {
 			GDALDataset* newdataset = createOGRdataset(location, gdaldrivername);
-			OGRLayer* newlayer = createresultslayer(model, newdataset);
+			OGRLayer* newlayer = createResultsLayer(model.getname(), newdataset);
 			writefeatures(newlayer, firstperiod, 0, theoutputs, model.getoutputsfromperiods(theoutputs, firstperiod, lastperiod, level));
 			GDALClose(newdataset);
 		}

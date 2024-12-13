@@ -59,7 +59,7 @@ namespace Core
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
-			ar& BOOST_SERIALIZATION_NVP(elements);
+			ar& BOOST_SERIALIZATION_NVP(m_elements);
 		}
 		std::map<std::string, FMTdata, cmpYieldString>m_elements;
 		std::map<std::string, double> getsources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
@@ -76,6 +76,20 @@ namespace Core
 			const FMTyieldrequest& request, bool& age_only) const;
 		std::unique_ptr<FMTyieldhandler>toageyld(const FMTyieldrequest& request,
 			const std::vector<std::string>& yieldnames, const int& minage, const int& maxage) const;
+		double _getRange(const FMTdata* p_data,const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getMultiply(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getSum(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getSubstract(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getDivide(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getYTP(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getMAI(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getCAI(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getEquation(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getEndPoint(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getDelta(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getDistance(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getMax(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
+		double _getMin(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;
 		std::unordered_set<size_t>overridetabou;
 		size_t overrideindex;
 		mutable FMTYieldsCache _cache;

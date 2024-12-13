@@ -66,7 +66,7 @@ std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
 	std::vector<FMTmask>NewMasks(ATTRIBUTES.size(), *this);
 	for (size_t Id = 0; Id < NewMasks.size();++Id)
 		{
-		NewMasks[Id].set(theme, ATTRIBUTES[Id]);
+		NewMasks[Id].set(theme, ATTRIBUTES.at(Id));
 		}
     return NewMasks;
     }
@@ -76,7 +76,7 @@ std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
     int locit = 0;
     for(size_t id = theme.m_start; id < (theme.m_start + theme.size()); ++id)
         {
-		sub[locit] = data[id];
+		sub.at(locit) = data.at(id);
         ++locit;
         }
     return sub;
@@ -89,7 +89,7 @@ std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
 	 while (!gotIntersect &&
 		 bIt < (p_THEME.m_start + p_THEME.size()))
 		 {
-		 gotIntersect = data[bIt] && p_MASK.data[bIt];
+		 gotIntersect = data.at(bIt) && p_MASK.data.at(bIt);
 		 ++bIt;
 		 }
 	 return gotIntersect;
@@ -119,7 +119,7 @@ void FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<uint8_
     int locit = 0;
     for(size_t id = theme.m_start; id < (theme.m_start+theme.size()); ++id)
         {
-        data[id] = subset[locit];
+		data.at(id) = subset.at(locit);
         ++locit;
         }
     }
@@ -152,7 +152,7 @@ std::vector<size_t>FMTmask::getNonFullBlocks() const
 	std::vector<size_t>Blocks;
 	for (size_t Id = 0; Id < data.m_bits.size();++Id)
 		{
-		if (data.m_bits[Id] != 0xff)
+		if (data.m_bits.at(Id) != 0xff)
 			{
 			Blocks.push_back(Id);
 			}
@@ -166,7 +166,7 @@ bool FMTmask::isSubsetOf(const FMTmask& p_mask, const std::vector<size_t>& p_sub
 	size_t i = 0;
 	while (allFalse && i < p_subset.size())
 		{
-		if (data.m_bits[p_subset[i]] & ~p_mask.data.m_bits[p_subset[i]])
+		if (data.m_bits.at(p_subset.at(i)) & ~p_mask.data.m_bits.at(p_subset.at(i)))
 			{
 			allFalse = false;
 			}
@@ -199,7 +199,7 @@ void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     data.resize(fullsize,false);
     for(const FMTtheme& theme : themes)
         {
-        const boost::dynamic_bitset<uint8_t>bits = theme.strToBits(bases[theme.m_id]);
+		const boost::dynamic_bitset<uint8_t>bits = theme.strToBits(bases.at(theme.m_id));
 		this->setsubset(theme, bits);
         }
 	//name.shrink_to_fit();
@@ -218,7 +218,7 @@ const std::string& FMTmask::getAttribute(const FMTtheme& p_theme) const
 	while (!gotBit &&
 		bIt < FULL_SIZE)
 		{
-		gotBit = data[bIt];
+		gotBit = data.at(bIt);
 		++bIt;
 		}
 	return p_theme._getAttribute(bIt - p_theme.m_start - 1);
@@ -262,7 +262,7 @@ void FMTmask::set(const FMTtheme& theme,const std::string& value)
     const boost::dynamic_bitset<uint8_t>sub=theme.strToBits(value);
     std::vector<std::string>bases;
     boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-    bases[theme.m_id] = value;
+	bases.at(theme.m_id) = value;
     name = boost::algorithm::join(bases," ");
 	
     this->setsubset(theme,sub);
@@ -277,7 +277,7 @@ void FMTmask::append(const boost::dynamic_bitset<uint8_t> &bits)
             size_t bid = 0;
             for (size_t i=thissize; i<data.size(); ++i)
                 {
-                data[i] = bits[bid];
+				data.at(i) = bits.at(bid);
                 ++bid;
                 }
             }
@@ -362,7 +362,7 @@ FMTmask FMTmask::resume(const boost::dynamic_bitset<uint8_t>& rhs) const
 			size_t newlocation = 0;
 			while (location!=rhs.npos)
 				{
-				newmask.data[newlocation] = data[location];
+				newmask.data.at(newlocation) = data.at(location);
 				location = rhs.find_next(location);
 				++newlocation;
 				}
@@ -375,7 +375,7 @@ FMTmask FMTmask::resume(const std::vector<size_t>& indexes) const
 		size_t baseid = 0;
 		for (const size_t& id : indexes)
 			{
-			newmask.data[baseid] = data[id];
+			newmask.data.at(baseid) = data.at(id);
 			++baseid;
 			}
 		return newmask;
@@ -538,9 +538,9 @@ void FMTmask::presolveRef(const FMTmaskfilter& p_filter,
 	size_t selectedloc = 0;
 	for (size_t bitid = 0; bitid < p_filter.flippedselection.size(); ++bitid)
 	{
-		if (p_filter.flippedselection[bitid])
+		if (p_filter.flippedselection.at(bitid))
 		{
-			newData[selectedloc] = data[bitid];
+			newData.at(selectedloc) = data.at(bitid);
 			++selectedloc;
 		}
 	}
@@ -567,9 +567,9 @@ FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
 	size_t presolvedid = 0;
 	for (size_t mid = 0; mid < filter.selection.size();++mid)
 		{
-		if (filter.selection[mid])
+		if (filter.selection.at(mid))
 			{
-			newmask.data[mid] = data[presolvedid];
+			newmask.data[mid] = data.at(presolvedid);
 			++presolvedid;
 			}
 		}

@@ -205,13 +205,22 @@ namespace Core
 		}
 		// DocString: FMTlist::findsets
 		/**
-		Here is the main function used on FMTlist. Giving a global (mask) it will returns elements that are a subset of the global (mask), in the same order
+		@brief Here is the main function used on FMTlist. Giving a global (mask) it will returns elements that are a subset of the global (mask), in the same order
 		present in the FMTlist. It will also use caching to try to get elements faster next time it's asked by the user.
+		@param[in] p_mask the input mask
+		@return a vector of subset of list
 		*/
-		std::vector<FMTlist::const_iterator> findsets(const FMTmask& mask) const
+		std::vector<FMTlist::const_iterator> findsets(const FMTmask& p_mask) const
 		{
-			const FMTmask newkey = filter.filter(mask);
-			return findsetswithfiltered(newkey);
+			std::vector<FMTlist::const_iterator>subset;
+			try {
+				const FMTmask NEW_KEY = filter.filter(p_mask);
+				subset = findsetswithfiltered(NEW_KEY);
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("for mask "+std::string(p_mask), "FMTlist:: findsets", __LINE__, __FILE__);
+				}
+			return subset;
 		}
 		// DocString: FMTlist::findsetswithfiltered
 		/**
@@ -223,30 +232,41 @@ namespace Core
 		std::vector<FMTlist::const_iterator>findsetswithfiltered(const FMTmask& p_newKey) const
 		{
 			std::vector<const_iterator>allhits;
-			const_iterator BEGINNING = begin();
-			boost::unordered_map<FMTmask, std::vector<int>>::const_iterator fast_it = fastpass.find(p_newKey);
-			if (fast_it != fastpass.end())
-			{
-				allhits.reserve(fast_it->second.size());
-				for (const int& location : fast_it->second)
+			try {
+				const_iterator BEGINNING = begin();
+				boost::unordered_map<FMTmask, std::vector<int>>::const_iterator fast_it = fastpass.find(p_newKey);
+				//const int SIZE_OF_DATE = static_cast<int>(size());
+				if (fast_it != fastpass.end())
 				{
-					allhits.push_back(BEGINNING + location);
-				}
-			}
-			else {
-				fastpass[p_newKey] = std::vector<int>();
-				int location = 0;
-				for (const std::pair<FMTmask, T>& object : data)
-				{
-					if (p_newKey.isSubsetOf(object.first))
+					allhits.reserve(fast_it->second.size());
+					for (const int& location : fast_it->second)
 					{
-						fastpass[p_newKey].push_back(location);
 						allhits.push_back(BEGINNING + location);
+						/*if (location >= SIZE_OF_DATE)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+								"INVALID FMTlist cache", "FMTlist::findsetswithfiltered", __LINE__, __FILE__);
+						}*/
 					}
-					++location;
 				}
-				fastpass[p_newKey].shrink_to_fit();
-			}
+				else {
+					fastpass[p_newKey] = std::vector<int>();
+					int location = 0;
+					for (const std::pair<FMTmask, T>& object : data)
+					{
+						if (p_newKey.isSubsetOf(object.first))
+						{
+							fastpass[p_newKey].push_back(location);
+							allhits.push_back(BEGINNING + location);
+						}
+						++location;
+					}
+					fastpass[p_newKey].shrink_to_fit();
+				}
+			}catch (...) 
+				{
+				_exhandler->raisefromcatch("", "FMTlist::findsetswithfiltered", __LINE__, __FILE__);
+				}
 			return allhits;
 		}
 		// DocString: FMTlist::filtermask

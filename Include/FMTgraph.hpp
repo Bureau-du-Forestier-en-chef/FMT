@@ -2937,7 +2937,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							const FMTvertex_descriptor& DESCRIPTOR = actives.front();
 							//const FMTvertex_descriptor DESCRIPTOR = actives.back();
 							//actives.pop_back();
-							std::pair<std::unordered_set<FMTvertex_descriptor>::iterator,bool>inserted = right_period.insert(DESCRIPTOR);
+							auto inserted = right_period.insert(DESCRIPTOR);
 							if (inserted.second)
 							{
 								p_descriptors.push_back(DESCRIPTOR);

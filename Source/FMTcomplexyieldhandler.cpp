@@ -247,21 +247,21 @@ namespace Core {
 			const std::vector<FMTyieldrequest::const_iterator>& FULL_DATA = p_request.getdatas();
 			for (size_t YldId = 0; YldId < p_names.size(); ++YldId)
 				{
-				const bool BASE_CASE = (inlookat(*p_names[YldId]) || (p_original == *p_names[YldId]));
+				const bool BASE_CASE = (inlookat(*p_names.at(YldId)) || (p_original == *p_names.at(YldId)));
 				size_t dataId = 0;
 				bool foundValue = false;
-				FMTyieldrequest::const_iterator FIRST_SEEN = p_request.getFirstSeen(*p_names[YldId]);
+				FMTyieldrequest::const_iterator FIRST_SEEN = p_request.getFirstSeen(*p_names.at(YldId));
 				while (!foundValue && dataId < FULL_DATA.size())
 						{
-						const std::unique_ptr<FMTyieldhandler>* YIELD = &FULL_DATA[dataId]->second;
+					const std::unique_ptr<FMTyieldhandler>* YIELD = &FULL_DATA.at(dataId)->second;
 						if (!NEED_TO_TEST_OVERRIDE ||
 							overridetabou.find((*YIELD)->getoverrideindex()) == overridetabou.end())
 							{
-							if (FULL_DATA[dataId] >= FIRST_SEEN &&
-								(*YIELD)->containsyield(*p_names[YldId]) &&
+							if (FULL_DATA.at(dataId) >= FIRST_SEEN &&
+								(*YIELD)->containsyield(*p_names.at(YldId)) &&
 								!(this == &(**YIELD) && BASE_CASE))
 								{
-									data[YldId] = YIELD;
+									data.at(YldId) = YIELD;
 									foundValue = true;
 								}
 							}
@@ -282,8 +282,8 @@ namespace Core {
 		std::map<std::string, double>result;
 		for (size_t Id = 0; Id < p_names.size(); ++Id)
 		{
-			const std::unique_ptr<FMTyieldhandler>* DATA = p_data[Id];
-			const std::string* YIELD_NAME = p_names[Id];
+			const std::unique_ptr<FMTyieldhandler>* DATA = p_data.at(Id);
+			const std::string* YIELD_NAME = p_names.at(Id);
 			std::pair<std::map<std::string, double>::iterator,bool> newValue = result.insert(std::pair<std::string, double>(*YIELD_NAME, 0.0));
 			if (DATA != nullptr)
 			{
@@ -292,6 +292,443 @@ namespace Core {
 			}
 		}
 		return result;
+	}
+
+
+	double FMTcomplexyieldhandler::_getRange(const FMTdata* p_data,const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 1;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			size_t SourceId = 0;
+			for (size_t Id = 0; Id < SOURCES.size(); ++Id)
+			{
+				const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA.at(Id);
+				double yieldValue = 0.0;
+				if (DATA != nullptr)
+				{
+					const std::string* YIELD_RANGE = SOURCES.at(Id);
+					yieldValue = (*DATA)->get(*YIELD_RANGE, p_request);
+				}
+				if (yieldValue < p_data->data.at(SourceId) ||
+					yieldValue > p_data->data.at(SourceId + 1))
+				{
+					value = 0;
+					break;
+				}
+				SourceId += 2;
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("On yield " + p_yld , "FMTcomplexyieldhandler::_getRange", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getMultiply(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 1;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			for (size_t Id = 0; Id < SOURCES.size(); ++Id)
+			{
+				const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA.at(Id);
+				double yieldValue = 0.0;
+				if (DATA != nullptr)
+				{
+					const std::string* YIELD_NAME = SOURCES.at(Id);
+					yieldValue = (*DATA)->get(*YIELD_NAME, p_request);
+				}
+				value *= yieldValue;
+			}
+			for (const double& vecValue : p_data->data)
+			{
+				value *= vecValue;
+			}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getMultiply", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getSum(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			for (size_t Id = 0; Id < SOURCES.size(); ++Id)
+			{
+				const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA.at(Id);
+				double yieldValue = 0.0;
+				if (DATA != nullptr)
+				{
+					const std::string* YIELD_NAME = SOURCES.at(Id);
+					yieldValue = (*DATA)->get(*YIELD_NAME, p_request);
+				}
+				value += yieldValue;
+			}
+			for (const double& vecValue : p_data->data)
+			{
+				value += vecValue;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getSum", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+	return value;
+	}
+
+	double FMTcomplexyieldhandler::_getSubstract(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0.0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			std::vector<const double*>VALUES = p_data->getValues();
+			size_t Id = 0;
+			for (size_t valueId = 0; valueId < VALUES.size(); ++valueId)
+			{
+				double theValue = 0;
+				if (VALUES.at(valueId) != nullptr)
+				{
+					theValue = *VALUES.at(valueId);
+				}
+				else {
+					const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA.at(Id);
+					if (DATA != nullptr)
+					{
+						const std::string* YIELD_NAME = SOURCES.at(Id);
+						theValue = (*DATA)->get(*YIELD_NAME, p_request);
+					}
+					++Id;
+				}
+				if (valueId == 0)
+				{
+					value = theValue;
+				}
+				else {
+					value -= theValue;
+				}
+			}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getSubstract", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+	return value;
+	}
+
+	double FMTcomplexyieldhandler::_getDivide(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0.0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			std::vector<const double*>VALUES = p_data->getValues();
+			size_t Id = 0;
+			for (size_t valueId = 0; valueId < VALUES.size(); ++valueId)
+			{
+				double theValue = 0;
+				if (VALUES.at(valueId) != nullptr)
+				{
+					theValue = *VALUES.at(valueId);
+				}
+				else {
+					const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA.at(Id);
+					if (DATA != nullptr)
+					{
+						const std::string* YIELD_NAME = SOURCES.at(Id);
+						theValue = (*DATA)->get(*YIELD_NAME, p_request);
+					}
+					++Id;
+				}
+				if (valueId == 0)
+				{
+					value = theValue;
+				}
+				else {
+					if (theValue == 0.0)
+					{
+						value = 0.0;
+					}
+					else {
+						value /= theValue;
+					}
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getDivide", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getYTP(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			const int AGE = p_request.getdevelopment().getage();
+			const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA.at(0);
+			value = (*ddata)->getpeak(p_request, *SOURCES.at(0), AGE);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getYTP", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getMAI(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			double year = 1;
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			if (p_data->data.begin() != p_data->data.end())
+			{
+				year = *p_data->data.begin();
+			}
+			const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA.at(0);
+			const int AGE = p_request.getdevelopment().getage();
+			value = ((*ddata)->getyieldlinearvalue(*SOURCES.at(0), p_request, false) / (year * AGE));
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getMAI", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getCAI(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			double year = 1;
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			if (p_data->data.begin() != p_data->data.end())
+			{
+				year = *p_data->data.begin();
+			}
+			const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA.at(0);
+			//const double upval = (*ddata)->getyieldlinearvalue(sources.at(0), age);
+			const double upval = (*ddata)->getyieldlinearvalue(*SOURCES.at(0), p_request);
+			const int AGE = p_request.getdevelopment().getage();
+			const int newage = AGE - 1;
+			Core::FMTdevelopment newdevelopement(p_request.getdevelopment());
+			newdevelopement.setage(newage);
+			const FMTyieldrequest newrequest(newdevelopement, p_request);
+			//const double dwval = (*ddata)->getyieldlinearvalue(sources.at(0), newage);
+			const double dwval = (*ddata)->getyieldlinearvalue(*SOURCES.at(0), newrequest);
+			value = ((upval - dwval) / (year));
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getCAI", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getEquation(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			const FMTexpression EXPRESSION = p_data->toexpression();
+			const std::map<std::string, double>source_values = _toMap(p_request, SOURCES, SOURCES_DATA);
+			value = EXPRESSION.shuntingyard(source_values);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getEquation", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getEndPoint(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			const std::map<std::string, double>source_values = _toMap(p_request, SOURCES, SOURCES_DATA);
+			const double lowerbound = p_data->data.at(0);
+			const double upperbound = p_data->data.at(1);
+			const std::vector<std::string const*> ylds = p_data->getSources();
+			int peak = -1;
+			int lowerpeak = -1;
+			const std::unique_ptr<FMTyieldhandler>* ddata;
+			const int AGE = p_request.getdevelopment().getage();
+			if (source_values.at(*ylds.at(0)) < lowerbound)
+			{
+				//ddata = srcsdata.at(*ylds.at(0));
+				ddata = SOURCES_DATA.at(0);
+				peak = (*ddata)->getendpoint(*ylds.at(0), lowerpeak, lowerbound, source_values.at(*ylds.at(0)));
+				value = (-getchangesfrom(AGE, peak));
+			}
+			if (source_values.at(*ylds.at(1)) > upperbound)
+			{
+				//ddata = srcsdata.at(*ylds.at(0));
+				ddata = SOURCES_DATA.at(0);
+				lowerpeak = (*ddata)->getendpoint(*ylds.at(0), lowerpeak, lowerbound, std::numeric_limits<double>::lowest());
+				//ddata = srcsdata.at(*ylds.at(1));
+				ddata = SOURCES_DATA.at(1);
+				peak = (*ddata)->getendpoint(*ylds.at(1), lowerpeak, upperbound, source_values.at(*ylds.at(1)));
+				value = (-getchangesfrom(AGE, peak));
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getDelta(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+		{
+		double value = 0;
+		try {
+			const FMTdata* C_DATA = &m_elements.at(p_yld);
+			const std::vector<const std::string*> SOURCES = C_DATA->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			const std::map<std::string, double>source_values = _toMap(p_request, SOURCES, SOURCES_DATA);
+			const int PERIOD = p_request.getdevelopment().getperiod();
+			const int periodtolookat = std::max(0, PERIOD + static_cast<int>(C_DATA->data.back()));
+			Core::FMTdevelopment newdevelopement(p_request.getdevelopment());
+			newdevelopement.setperiod(periodtolookat);
+			const FMTyieldrequest newrequest(newdevelopement, p_request);
+			const std::map<std::string, double>periodic_source_values = _toMap(newrequest, SOURCES, SOURCES_DATA);
+			value = std::abs(source_values.begin()->second - periodic_source_values.begin()->second);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getDelta", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return value;
+		}
+
+	double FMTcomplexyieldhandler::_getDistance(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			/*The distance function calculate the distance in age between a minimal yield value and a maximal yield value when you start from age 0,
+						if the peak of the curve is reached before finding the maximal yield it will return infinity,so it only works with the yield value
+						before the yield peak*/
+			const double lower_bound = p_data->data.at(0);
+			const double upper_bound = p_data->data.at(1);
+			double localvalue = 0;
+			int localage = 0;
+			double minage = 0.0;
+			double maxage = 0.0;
+			double dblage = 0.0;
+			Core::FMTdevelopment newdevelopement(p_request.getdevelopment());
+			newdevelopement.setage(1);
+			FMTyieldrequest newrequest(newdevelopement, p_request);
+			const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA.at(0);
+			const double peakage = (*ddata)->getpeak(newrequest, *SOURCES.at(0), 0);
+			bool gotminage = false;
+			bool gotmaxage = false;
+			while (localvalue < upper_bound && dblage <= peakage)
+			{
+				newdevelopement.setage(localage);
+				dblage = static_cast<double>(localage);
+				const FMTyieldrequest localrequest(newdevelopement, p_request);
+				//const std::vector<double>values = getsourcesarray(srcsdata, localrequest, age_only);
+				//localvalue = values.at(0);
+				localvalue = (*SOURCES_DATA.at(0))->get(*SOURCES.at(0), localrequest);
+				if ((minage < dblage) && (localvalue >= lower_bound) && !gotminage)
+				{
+					minage = dblage;
+					gotminage = true;
+				}
+				else if ((localvalue >= upper_bound) && !gotmaxage)
+				{
+					maxage = dblage;
+					gotmaxage = true;
+				}
+				++localage;
+			}
+			value = maxage - minage;
+			if (value < 0 || !(gotmaxage && gotminage))
+			{
+				value = 0;
+				_exhandler->raise(Exception::FMTexc::FMTignore,
+					"Cannot reach distance bounds for " + p_yld + " on development " + std::string(p_request.getdevelopment()), "FMTcomplexyieldhandler::_getDistance", __LINE__, __FILE__);
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getDistance", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getMax(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			double maxValue = 0;
+			for (size_t Id = 0; Id < SOURCES.size(); ++Id)
+			{
+				const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA.at(Id);
+				const std::string* YIELD_NAME = SOURCES.at(Id);
+				if (DATA != nullptr)
+				{
+					const double VALUE = (*DATA)->get(*YIELD_NAME, p_request);
+					if (VALUE > maxValue)
+					{
+						maxValue = VALUE;
+					}
+				}
+			}
+			value = maxValue;
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getMax", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return value;
+	}
+
+	double FMTcomplexyieldhandler::_getMin(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const
+	{
+		double value = 0;
+		try {
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
+			double minValue = std::numeric_limits<double>::max();
+			for (size_t Id = 0; Id < SOURCES.size(); ++Id)
+			{
+				const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA.at(Id);
+				const std::string* YIELD_NAME = SOURCES.at(Id);
+				if (DATA != nullptr)
+				{
+					const double VALUE = (*DATA)->get(*YIELD_NAME, p_request);
+					if (VALUE < minValue)
+					{
+						minValue = VALUE;
+					}
+				}
+			}
+			if (minValue != std::numeric_limits<double>::max())
+			{
+				value = minValue;
+			}
+			else {
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+					"Cannot find minimum for " + p_yld + " on development " + std::string(p_request.getdevelopment()), "FMTcomplexyieldhandler::_getMin", __LINE__, __FILE__);
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("On yield " + p_yld, "FMTcomplexyieldhandler::_getMin", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return value;
 	}
 
 	
@@ -304,17 +741,12 @@ namespace Core {
 				{
 				return _cache.get(request, yld);
 				}
-			const FMTdata* cdata = &m_elements.at(yld);
+			const FMTdata* C_DATA = &m_elements.at(yld);
 			std::chrono::time_point<std::chrono::high_resolution_clock>calculationStart;
 			if (lookat.empty())
 				{
 				calculationStart = getclock();
 				}
-				//bool age_only = true;
-				const std::vector<const std::string*> SOURCES = cdata->getSources();
-				const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(request, SOURCES, yld);
-				//const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> srcsdata = this->getdata(request, sources, yld);
-				
 				if (lookat.find(yld) == lookat.end())
 					{
 						lookat.insert(yld);
@@ -323,327 +755,76 @@ namespace Core {
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
 							"FMTcomplexyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 					}
-					switch (cdata->getop())
+					switch (C_DATA->getop())
 					{
 					case FMTyieldparserop::FMTrange:
 					{
-						value = 1;
-						size_t SourceId = 0;
-						for (size_t Id = 0; Id < SOURCES.size(); ++Id)
-						{
-							const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA[Id];
-							double yieldValue = 0.0;
-							if (DATA!=nullptr)
-								{
-								const std::string* YIELD_RANGE = SOURCES[Id];
-								yieldValue = (*DATA)->get(*YIELD_RANGE, request);
-								}
-							if (yieldValue < cdata->data.at(SourceId) ||
-								yieldValue > cdata->data.at(SourceId + 1))
-							{
-								value = 0;
-								break;
-							}
-							SourceId += 2;
-						}
-
-
+						value = _getRange(C_DATA,yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTmultiply:
 					{
-						value = 1.0;
-						for (size_t Id = 0; Id < SOURCES.size(); ++Id)
-						{
-							const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA[Id];
-							double yieldValue = 0.0;
-							if (DATA != nullptr)
-							{
-								const std::string* YIELD_NAME = SOURCES[Id];
-								yieldValue = (*DATA)->get(*YIELD_NAME, request);
-							}
-							value *= yieldValue;
-						}
-						for (const double& vecValue : cdata->data)
-						{
-							value *= vecValue;
-						}
+						value = _getMultiply(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTsum:
 					{
-						for (size_t Id = 0; Id < SOURCES.size(); ++Id)
-						{
-							const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA[Id];
-							double yieldValue = 0.0;
-							if (DATA != nullptr)
-							{
-								const std::string* YIELD_NAME = SOURCES[Id];
-								yieldValue = (*DATA)->get(*YIELD_NAME, request);
-							}
-							value += yieldValue;
-						}
-						for (const double& vecvalue : cdata->data)
-							{
-							value += vecvalue;
-							}
+						value = _getSum(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTsubstract:
 					{
-						std::vector<const double*>VALUES = cdata->getValues();
-						size_t Id = 0;
-						for (size_t valueId = 0; valueId < VALUES.size(); ++valueId)
-							{
-								double theValue = 0;
-								if (VALUES[valueId] != nullptr)
-								{
-									theValue = *VALUES[valueId];
-								}
-								else {
-									const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA[Id];
-									if (DATA != nullptr)
-									{
-										const std::string* YIELD_NAME = SOURCES[Id];
-										theValue = (*DATA)->get(*YIELD_NAME, request);
-									}
-									++Id;
-								}
-								if (valueId == 0)
-								{
-									value = theValue;
-								}
-								else {
-									value -= theValue;
-								}
-							}
+						value = _getSubstract(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTdivide:
 					{
-						std::vector<const double*>VALUES = cdata->getValues();
-						size_t Id = 0;
-						for (size_t valueId = 0; valueId < VALUES.size(); ++valueId)
-						{
-							double theValue = 0;
-							if (VALUES[valueId] != nullptr)
-							{
-								theValue = *VALUES[valueId];
-							}
-							else {
-								const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA[Id];
-								if (DATA != nullptr)
-								{
-									const std::string* YIELD_NAME = SOURCES[Id];
-									theValue = (*DATA)->get(*YIELD_NAME, request);
-								}
-								++Id;
-							}
-							if (valueId == 0)
-							{
-								value = theValue;
-							}
-							else {
-								if (theValue == 0.0)
-								{
-									value = 0.0;
-								}
-								else {
-									value /= theValue;
-								}
-							}
-						}
+						value = _getDivide(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTytp:
 					{
-						const int AGE = request.getdevelopment().getage();
-						const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA[0];
-						value = (*ddata)->getpeak(request, *SOURCES[0], AGE);
+						value = _getYTP(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTmai:
 					{
-						double year = 1;
-						if (cdata->data.begin() != cdata->data.end())
-						{
-							year = *cdata->data.begin();
-						}
-						const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA[0];
-						const int AGE = request.getdevelopment().getage();
-						value = ((*ddata)->getyieldlinearvalue(*SOURCES.at(0), request,false) / (year * AGE));
+						value = _getMAI(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTcai:
 					{
-						double year = 1;
-						if (cdata->data.begin() != cdata->data.end())
-						{
-							year = *cdata->data.begin();
-						}
-						const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA[0];
-						//const double upval = (*ddata)->getyieldlinearvalue(sources.at(0), age);
-						const double upval = (*ddata)->getyieldlinearvalue(*SOURCES.at(0), request);
-						const int AGE = request.getdevelopment().getage();
-						const int newage = AGE - 1;
-						Core::FMTdevelopment newdevelopement(request.getdevelopment());
-						newdevelopement.setage(newage);
-						const FMTyieldrequest newrequest(newdevelopement, request);
-						//const double dwval = (*ddata)->getyieldlinearvalue(sources.at(0), newage);
-						const double dwval = (*ddata)->getyieldlinearvalue(*SOURCES.at(0), newrequest);
-						value = ((upval - dwval) / (year));
+						value = _getCAI(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTequation:
 					{
-						const FMTexpression expression = cdata->toexpression();
-						try {
-							const std::map<std::string, double>source_values = _toMap(request,SOURCES, SOURCES_DATA);
-							value = expression.shuntingyard(source_values);
-						}
-						catch (...)
-						{
-							std::string baseeq;
-							for (const std::string& opstr : expression.getinfix())
-							{
-								baseeq += opstr + " ";
-							}
-							_exhandler->raisefromcatch("For complex equation " + baseeq, "FMTcomplexyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
-						}
+						value = _getEquation(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTendpoint:
 					{
-						value = 0;
-						const std::map<std::string, double>source_values = _toMap(request, SOURCES, SOURCES_DATA);
-						const double lowerbound = cdata->data.at(0);
-						const double upperbound = cdata->data.at(1);
-						const std::vector<std::string const*> ylds = cdata->getSources();
-						int peak = -1;
-						int lowerpeak = -1;
-						const std::unique_ptr<FMTyieldhandler>* ddata;
-						const int AGE = request.getdevelopment().getage();
-						if (source_values.at(*ylds.at(0)) < lowerbound)
-						{
-							//ddata = srcsdata.at(*ylds.at(0));
-							ddata = SOURCES_DATA.at(0);
-							peak = (*ddata)->getendpoint(*ylds.at(0), lowerpeak, lowerbound, source_values.at(*ylds.at(0)));
-							value = (-getchangesfrom(AGE, peak));
-						}
-						if (source_values.at(*ylds.at(1)) > upperbound)
-						{
-							//ddata = srcsdata.at(*ylds.at(0));
-							ddata = SOURCES_DATA.at(0);
-							lowerpeak = (*ddata)->getendpoint(*ylds.at(0), lowerpeak, lowerbound, std::numeric_limits<double>::lowest());
-							//ddata = srcsdata.at(*ylds.at(1));
-							ddata = SOURCES_DATA.at(1);
-							peak = (*ddata)->getendpoint(*ylds.at(1), lowerpeak, upperbound, source_values.at(*ylds.at(1)));
-							value = (-getchangesfrom(AGE, peak));
-						}
+						value = _getEndPoint(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTdelta:
 					{
-						const std::map<std::string, double>source_values = _toMap(request, SOURCES, SOURCES_DATA);
-						const int PERIOD = request.getdevelopment().getperiod();
-						const int periodtolookat = std::max(0, PERIOD + static_cast<int>(cdata->data.back()));
-						Core::FMTdevelopment newdevelopement(request.getdevelopment());
-						newdevelopement.setperiod(periodtolookat);
-						const FMTyieldrequest newrequest(newdevelopement,request);
-						const std::map<std::string, double>periodic_source_values = _toMap(newrequest, SOURCES, SOURCES_DATA);
-						value = std::abs(source_values.begin()->second - periodic_source_values.begin()->second);
+						value = _getDelta(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTdistance:
 					{
-						/*The distance function calculate the distance in age between a minimal yield value and a maximal yield value when you start from age 0,
-						if the peak of the curve is reached before finding the maximal yield it will return infinity,so it only works with the yield value
-						before the yield peak*/
-						const double lower_bound = cdata->data.at(0);
-						const double upper_bound = cdata->data.at(1);
-						double localvalue = 0;
-						int localage = 0;
-						double minage = 0.0;
-						double maxage = 0.0;
-						double dblage = 0.0;
-						Core::FMTdevelopment newdevelopement(request.getdevelopment());
-						newdevelopement.setage(1);
-						FMTyieldrequest newrequest(newdevelopement, request);
-						const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA[0];
-						const double peakage = (*ddata)->getpeak(newrequest, *SOURCES[0], 0);
-						bool gotminage = false;
-						bool gotmaxage = false;
-						while (localvalue < upper_bound && dblage <= peakage)
-							{
-							newdevelopement.setage(localage);
-							dblage = static_cast<double>(localage);
-							const FMTyieldrequest localrequest(newdevelopement, request);
-							//const std::vector<double>values = getsourcesarray(srcsdata, localrequest, age_only);
-							//localvalue = values.at(0);
-							localvalue = (*SOURCES_DATA[0])->get(*SOURCES[0], localrequest);
-							if ((minage< dblage) && (localvalue >= lower_bound) && !gotminage)
-								{
-								minage = dblage;
-								gotminage = true;
-								}else if ((localvalue >= upper_bound) && !gotmaxage)
-									{
-									maxage = dblage;
-									gotmaxage = true;
-									}
-							++localage;
-							}
-						value = maxage - minage;
-						if (value < 0 ||!(gotmaxage && gotminage))
-							{
-							value = 0;
-							_exhandler->raise(Exception::FMTexc::FMTignore,
-								"Cannot reach distance bounds for " +yld +" on development "+std::string(request.getdevelopment()), "FMTyieldhandler::get", __LINE__, __FILE__);
-							}
+						value = _getDistance(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTmax:
 					{
-						double maxValue = 0;
-						for (size_t Id = 0; Id < SOURCES.size(); ++Id)
-							{
-								const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA[Id];
-								const std::string* YIELD_NAME = SOURCES[Id];
-								if (DATA != nullptr)
-								{
-									const double VALUE = (*DATA)->get(*YIELD_NAME, request);
-									if (VALUE > maxValue)
-										{
-										maxValue = VALUE;
-										}
-								}
-							}
-						value = maxValue;
+						value = _getMax(C_DATA, yld, request);
 						break;
 					}
 					case FMTyieldparserop::FMTmin:
 					{
-						double minValue = std::numeric_limits<double>::max();
-						for (size_t Id = 0; Id < SOURCES.size(); ++Id)
-						{
-							const std::unique_ptr<FMTyieldhandler>* DATA = SOURCES_DATA[Id];
-							const std::string* YIELD_NAME = SOURCES[Id];
-							if (DATA != nullptr)
-							{
-								const double VALUE = (*DATA)->get(*YIELD_NAME, request);
-								if (VALUE < minValue)
-								{
-									minValue = VALUE;
-								}
-							}
-						}
-						if (minValue != std::numeric_limits<double>::max())
-						{
-							value = minValue;
-						}
-						else {
-							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-								"Cannot find minimum for " + yld + " on development " + std::string(request.getdevelopment()), "FMTyieldhandler::get", __LINE__, __FILE__);
-						}
+						value = _getMin(C_DATA, yld, request);
 						break;
 					}
 

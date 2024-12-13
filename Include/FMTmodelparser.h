@@ -128,12 +128,17 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		*/
         void write(const Models::FMTmodel& model,const std::string& folder) const;
 		#ifdef FMTWITHGDAL
-		// DocString: FMTmodelparser::createresultslayer
+		// DocString: FMTmodelparser::createResultsLayer
 		/**
-		Create a results layer on a dataset for a given model.
+		@brief Create a results layer on a dataset for a given model name.
+		@param[in] p_modelName the name of the model
+		@param[in] p_dataset the dataset of the layer
+		@return the newly created layer
 		*/
-		OGRLayer* createresultslayer(const Models::FMTmodel& model,
-			GDALDataset* dataset, std::vector<std::string> creationoptions=std::vector<std::string>())const;
+		OGRLayer* createResultsLayer(
+			const std::string& p_modelName,
+			GDALDataset* p_dataset,
+			std::vector<std::string> p_creationOptions = std::vector<std::string>()) const;
 		// DocString: FMTmodelparser::fillupinfeasibles
 		/**
 		Fill up the OGRlayer of infeasible values.

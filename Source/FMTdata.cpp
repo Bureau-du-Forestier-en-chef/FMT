@@ -185,7 +185,7 @@ std::vector<std::string> FMTdata::getSourcesCopy() const
 	size_t Id = 0;
 	for (std::string& data : result)
 		{
-		data = *SOURCES[Id];
+		data = *SOURCES.at(Id);
 		++Id;
 		}
 	return result;
@@ -312,7 +312,7 @@ std::vector<const double*>FMTdata::getValues() const
 	{
 		if (!isvar)
 		{
-			values[id] = &data.at(numid);
+			values.at(id) = &data.at(numid);
 			++numid;
 		}
 		++id;
@@ -353,9 +353,9 @@ FMTexpression FMTdata::toexpression() const
 		{
 		if (val.empty())
 			{
-			vals[loc] = boost::lexical_cast<std::string>(data[loc]);
+			vals.at(loc) = boost::lexical_cast<std::string>(data.at(loc));
 		}else {
-			vals[loc]=val;
+			vals.at(loc) = val;
 			}
 		++loc;
 		}

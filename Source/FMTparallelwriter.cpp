@@ -73,7 +73,7 @@ namespace Parallel
 			}
 			for (const Models::FMTmodel* modelptr : allmodels)
 				{
-				setlayer(modelptr);
+				setLayer(modelptr->getname());
 				}
 			#ifdef FMTWITHGDAL
 			driftlayer = createdriftlayer(resultsdataset);
@@ -127,11 +127,11 @@ namespace Parallel
 		
 	}
 
-	void FMTparallelwriter::setlayer(const Models::FMTmodel* model)
+	void FMTparallelwriter::setLayer(const std::string& p_name)
 	{
 		try {
 			#ifdef FMTWITHGDAL
-			resultslayer[model->getname()] = createresultslayer(*model, resultsdataset,alllayeroptions);
+			resultslayer[p_name] = createResultsLayer(p_name, resultsdataset,alllayeroptions);
 			#endif
 		}
 		catch (...)
@@ -311,11 +311,11 @@ namespace Parallel
 			outputstowrite = loutputs;
 			if (!outputstowrite.empty())
 			{
-				write(modelptr->getname(),
+				write(projectname,
 					getresults(modelptr, firstperiod, lastperiod),
 					firstperiod,
 					lastperiod,
-					0);
+					std::stoi(modelptr->getname()));
 			}
 			if (!(projectdirectory.empty()) && !(modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
 				{

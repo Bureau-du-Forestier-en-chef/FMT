@@ -26,7 +26,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "CoinError.hpp"
 #endif
 
-#if defined _WIN32
+#if defined _MSC_VER
 	#include "FMTseException.h"
 #endif
 
@@ -43,7 +43,7 @@ boost::thread::id FMTexceptionhandler::mainthreadid = boost::this_thread::get_id
 
 boost::thread::id FMTexceptionhandler::crashedthreadid = boost::this_thread::get_id();
 
-#if defined _WIN32
+#if defined _MSC_VER
 FMTScopedSeTranslator FMTexceptionhandler::m_SeTranslator = FMTScopedSeTranslator(FMTexceptionhandler::translateStructuralWIN32Exceptions);
 
 void FMTexceptionhandler::translateStructuralWIN32Exceptions(unsigned int p_u, EXCEPTION_POINTERS*)
@@ -1061,7 +1061,7 @@ FMTexception FMTexceptionhandler::raisefromcatch(std::string text,
 				return this->raise(lexception,text, method, line, file, lsection);
 			}
 		}
-		#if defined _WIN32
+		#if defined _MSC_VER
 			catch (const FMTseException& seError)
 			{
 				const std::string CAUGHTWIN32 = "Win32 Error number " + std::to_string(seError.getSeNumber());
@@ -1165,7 +1165,7 @@ void FMTexceptionhandler::gutsofprintexceptions(std::string text,
 			}
 			this->throw_nested(Exception::FMTerror(grapherror), levelreference);
 		}
-		#if defined _WIN32
+		#if defined _MSC_VER
 		catch (const FMTseException& seError)
 		{
 			if (usenestedexceptions)

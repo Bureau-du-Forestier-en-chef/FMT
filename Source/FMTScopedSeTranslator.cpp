@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Exception
     {
-    #if defined _WIN32
+    #if defined _MSC_VER
         FMTScopedSeTranslator::FMTScopedSeTranslator(_se_translator_function p_newSETranslator) noexcept
             : m_oldSeTranslator(
             
@@ -23,7 +23,7 @@ namespace Exception
 
     FMTScopedSeTranslator::~FMTScopedSeTranslator() noexcept
         { 
-        #if defined _WIN32
+        #if defined _MSC_VER
                 _set_se_translator(m_oldSeTranslator); 
         #endif	
         }

@@ -55,7 +55,7 @@ namespace Parallel
 		try {
 				setTerminateStack();
 				setAbortStack();
-				#if defined _WIN32
+				#if defined _MSC_VER
 					m_SeTranslator = Exception::FMTScopedSeTranslator(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions);
 				#endif
 		}catch (...)
@@ -68,9 +68,9 @@ namespace Parallel
 	FMTtask::FMTtask() :
 		Core::FMTobject(),
 		done(false),
-		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger())),
-		#if defined _WIN32
-			m_SeTranslator(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions)
+		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()))
+		#if defined _MSC_VER
+			,m_SeTranslator(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions)
 		#endif
 	{
 		
@@ -79,9 +79,9 @@ namespace Parallel
 	FMTtask::FMTtask(const FMTtask& rhs) :
 		Core::FMTobject(rhs),
 		done(false),
-		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger())),
-		#if defined _WIN32
-			m_SeTranslator(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions)
+		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()))
+		#if defined _MSC_VER
+			,m_SeTranslator(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions)
 		#endif
 	{
 		
@@ -94,8 +94,6 @@ namespace Parallel
 			Core::FMTobject::operator=(rhs);
 			done = rhs.done;
 			tasklogger = std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger());
-			#if defined _WIN32
-			#endif
 
 		}
 		return *this;

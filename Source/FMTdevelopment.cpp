@@ -167,7 +167,6 @@ namespace Core{
 		 try{
 			if (worthtestingoperability(action))
 				{
-				
 				for (const FMTaction::const_iterator spec: action.findsets(mask))
 					{
 					if (is(spec->second, ylds,graphyieldrequest))
@@ -344,6 +343,24 @@ namespace Core{
 		return nolock;
 		}
 
+	bool FMTdevelopment::_isOutOfBound(const FMTyieldrequest& p_request,
+									const FMTyields& p_yields,
+									const Core::FMTyldbounds& p_bound,
+									const std::string& p_yield) const
+		{
+		bool value = false;
+		try {
+			const double YIELD_VALUE = p_yields.get(p_request, p_yield);
+			value = (p_bound.out(YIELD_VALUE));
+		}catch (...)
+			{
+			_exhandler->raisefromcatch(
+				"for " + std::string(*this) + " on yield "+p_yield+" on bound "+ std::string(p_bound),
+				"FMTdevelopment::_isOutOfBound", __LINE__, __FILE__);
+			}
+		return value;
+		}
+
 	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds,
 		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
@@ -352,23 +369,25 @@ namespace Core{
 			allow = specification.allowwithoutyield(getperiod(), getage(), getlock());
 			if (allow && !specification.emptyylds())
 				{
-				const FMTyieldrequest request = getyieldrequest(graphyieldrequest);
-				const std::vector<Core::FMTyldbounds>& bounds= specification.getyldbounds();
-				size_t boundid = 0;
-				for (const std::string& yldname : specification.getylds())
+				const FMTyieldrequest REQUEST = getyieldrequest(graphyieldrequest);
+				const std::vector<Core::FMTyldbounds>& BOUNDS= specification.getyldbounds();
+				const std::vector<std::string>& YLD_NAMES = specification.getylds();
+				size_t boundId = 0;
+				while (allow && boundId < BOUNDS.size())
 					{
-					if (bounds.at(boundid).out(ylds.get(request,yldname)))
-						{
-						return false;
-						}
-					++boundid;
+					allow = !_isOutOfBound(REQUEST, ylds, BOUNDS.at(boundId), YLD_NAMES.at(boundId));
+					++boundId;
 					}
-				return true;
 				}
 		}catch (...)
 			{
+			std::string specStr;
+			if (!specification.empty())
+				{
+				specStr = std::string(specification);
+				}
 			_exhandler->raisefromcatch(
-				"for " + std::string(*this),
+				"for " + std::string(*this)+" with spec "+ specStr,
 				"FMTdevelopment::is",__LINE__, __FILE__);
 			}
 		return allow;

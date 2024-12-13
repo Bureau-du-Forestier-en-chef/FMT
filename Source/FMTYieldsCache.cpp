@@ -14,7 +14,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldhandler.h"
 #include <boost/dynamic_bitset.hpp>
 #include <boost/flyweight.hpp>
-#include <boost/thread.hpp>
 #include <FMTobject.h>
 #include <iostream>
 
@@ -95,8 +94,6 @@ namespace Core
 	std::unique_ptr<boost::concurrent_flat_map<FMTYieldDevelopment, double>> FMTYieldsCache::m_cache =
 		static_cast<std::unique_ptr<boost::concurrent_flat_map<FMTYieldDevelopment, double>>>(new boost::concurrent_flat_map<FMTYieldDevelopment, double>());
 
-	boost::mutex FMTYieldsCache::m_memoryMutex;
-
 	bool FMTYieldsCache::inCache(const FMTyieldrequest& p_request,
 		const std::string& p_yield) const
 		{
@@ -144,7 +141,7 @@ namespace Core
 		if (TABLE_SIZE > 0 && //works on 128 go
 			(TABLE_SIZE % 10000) == 0) //Check each 10k yields set... maybe too much check
 			{
-			boost::lock_guard<boost::mutex> memoryGuard(m_memoryMutex);
+			//boost::lock_guard<boost::mutex> memoryGuard(m_memoryMutex);
 			//I realy dont trust GlobalMemoryStatusEx to be thread-safe even if ()
 			needToClear = (Core::FMTobject::getavailablememory() / 1073741824) < 10;
 			}

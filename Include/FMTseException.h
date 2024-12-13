@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTSEEXCEPTION_H_INCLUDED
 #define FMTSEEXCEPTION_H_INCLUDED
 
-#include <exception>
+#include <stdexcept>
 
 
 
@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 /// Namespace for exceptions and exceptions handling (warnings and errors) thrown by FMT and all exceptions handlers available.
 namespace Exception
     {
-    class FMTseException : public std::exception
+    class FMTseException : public std::logic_error
         {
         public:
             FMTseException() noexcept;

@@ -10,7 +10,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include <boost/unordered/concurrent_flat_map.hpp>
-#include <boost/thread/mutex.hpp>
 #include <memory>
 #include <string>
 #include "FMTutility.h"
@@ -37,7 +36,6 @@ namespace Core
 			void reserve(const FMTyieldrequest& p_request);
 		private:
 			static std::unique_ptr<boost::concurrent_flat_map<FMTYieldDevelopment,double>> m_cache;
-			static boost::mutex m_memoryMutex;
 			FMTYieldDevelopment _getKey(const FMTyieldrequest& p_request,
 										const std::string& p_yield) const;
 			void _ClearIfTooBig();

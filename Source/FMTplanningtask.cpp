@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.h"
 #include "FMTschedule.h"
 #include "FMTexceptionhandler.h"
+#include <boost/filesystem.hpp>
 
 
 namespace Parallel
@@ -73,6 +74,7 @@ namespace Parallel
 	{
 		try {
 			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod, primaryfilelocatiron));
+			resultswriter->setLayer(boost::filesystem::path(primaryfilelocatiron).stem().string());
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTplanningtask::FMTplanningtask", __LINE__, __FILE__);
@@ -83,11 +85,14 @@ namespace Parallel
 		std::vector<Core::FMTschedule>schedules, std::vector<Core::FMToutput>loutputs)
 	{
 		try {
+			const size_t MODEL_ID = models.size();
 			models.push_back(std::move(model.clone()));
 			models.back()->setparallellogger(*tasklogger.get());
+			models.back()->setname(std::to_string(MODEL_ID));
+			*_logger << "Model named " + model.getname() + " index set of " + models.back()->getname()<<"\n";
 			allschedules.push_back(schedules);
 			outputs.push_back(loutputs);
-			resultswriter->setlayer(&model);
+			//resultswriter->setLayer(model.getname());
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTplanningtask::push_back", __LINE__, __FILE__);

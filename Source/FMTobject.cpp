@@ -25,7 +25,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <csignal>
 
 #if defined __MINGW64__||__CYGWIN__
-	#define NOMINMAX
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
 	#include "windows.h"
 	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #else
@@ -48,7 +50,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 
 #if defined (_MSC_VER)
-#define NOMINMAX
+#ifndef NOMINMAX
+	#define NOMINMAX
+#endif
 #include <comdef.h>
 #include <windows.h>
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

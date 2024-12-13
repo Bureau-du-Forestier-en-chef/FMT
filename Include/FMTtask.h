@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTobject.h"
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
-#if defined _WIN32
+#if defined _MSC_VER
 	#include "FMTScopedSeTranslator.h"
 #endif
 
@@ -143,7 +143,7 @@ namespace Parallel
 		// DocString: FMTtask::m_checkpointMutex
 		///Mutex checkpoint
 		static boost::mutex m_checkpointMutex;
-		#if defined _WIN32
+		#if defined _MSC_VER
 		// DocString: FMTtask::m_SeTranslator
 		///Translator for windows error
 		Exception::FMTScopedSeTranslator m_SeTranslator;

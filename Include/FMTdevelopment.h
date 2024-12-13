@@ -34,6 +34,7 @@ class FMTyieldrequest;
 class FMTyields;
 class FMTdevelopmentpath;
 class FMTspec;
+class FMTyldbounds;
 // DocString: FMTdevelopment
 /**
 FMTdevelopment is the base class of FMTactualdevelopement and FMTfuturdevelopement. This class is the thing that look like
@@ -266,6 +267,19 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			return seed;
 			}
 		private:
+			// DocString: FMTdevelopment::_isOutOfBound
+			/**
+			@brief check if the p_yield is out of bound for the given request.
+			@param[in] p_request the yield request
+			@param[in] p_yields all the yields
+			@param[in] p_bound the bound to test.
+			@param[in] p_yield the yield to test the value against the bound.
+			@return true if out of bound else false.
+			*/
+			bool _isOutOfBound(const FMTyieldrequest& p_request,
+				const FMTyields& p_yields,
+				const Core::FMTyldbounds& p_bound,
+				const std::string& p_yield) const;
 			// DocString: FMTdevelopment::serialize
 			/**
 			Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)

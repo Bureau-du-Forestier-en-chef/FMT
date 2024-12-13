@@ -3,10 +3,6 @@ call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Bu
 git clone https://github.com/Microsoft/vcpkg.git
 cd vcpkg
 call bootstrap-vcpkg.bat
-
-D:\FMT\FMT\vcpkg\vcpkg install 
-
-vcpkg install
 .\vcpkg install boost
 .\vcpkg install coin-or-cbc
 .\vcpkg install gdal

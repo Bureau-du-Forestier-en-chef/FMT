@@ -363,7 +363,6 @@ namespace Parallel
 	void FMTreplanningtask::work()
 	{
 		try {
-			Exception::FMTScopedSeTranslator test(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions);
 			const std::vector<Core::FMTconstraint>baselocalconstraints(dynamicconstraints);
 			while (!replicateids.empty())
 			{
