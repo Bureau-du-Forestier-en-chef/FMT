@@ -6,7 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTparser.h"
-#include <boost/filesystem/convenience.hpp>
+#if (BOOST_VERSION / 100 % 1000) < 85
+	#include <boost/filesystem/convenience.hpp>
+#endif
 #include <boost/icl/interval.hpp>
 #include <boost/icl/interval_set.hpp>
 #include <boost/algorithm/string/erase.hpp>
