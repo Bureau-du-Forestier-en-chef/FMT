@@ -88,11 +88,16 @@ namespace Parallel
 			const size_t MODEL_ID = models.size();
 			models.push_back(std::move(model.clone()));
 			models.back()->setparallellogger(*tasklogger.get());
-			models.back()->setname(std::to_string(MODEL_ID));
-			*_logger << "Model named " + model.getname() + " index set of " + models.back()->getname()<<"\n";
+			if (model.getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD))
+				{
+				models.back()->setname(std::to_string(MODEL_ID));
+				*_logger << "Model named " + model.getname() + " index set of " + models.back()->getname() << "\n";
+			}else {
+				resultswriter->setLayer(model.getname());
+				}
 			allschedules.push_back(schedules);
 			outputs.push_back(loutputs);
-			//resultswriter->setLayer(model.getname());
+			//;
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTplanningtask::push_back", __LINE__, __FILE__);

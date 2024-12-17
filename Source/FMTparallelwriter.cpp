@@ -311,11 +311,18 @@ namespace Parallel
 			outputstowrite = loutputs;
 			if (!outputstowrite.empty())
 			{
-				write(projectname,
+				int replicateId = 0;
+				std::string writeName = modelptr->getname();
+				if (modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD))
+					{
+					replicateId = std::stoi(modelptr->getname());
+					writeName = projectname;
+					}
+				write(writeName,
 					getresults(modelptr, firstperiod, lastperiod),
 					firstperiod,
 					lastperiod,
-					std::stoi(modelptr->getname()));
+					replicateId);
 			}
 			if (!(projectdirectory.empty()) && !(modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
 				{
