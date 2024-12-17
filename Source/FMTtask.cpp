@@ -4,6 +4,9 @@
 #include "FMTexceptionhandler.h"
 #include <boost/lexical_cast.hpp>
 
+#if defined (_MSC_VER)
+	#include <processthreadsapi.h>
+#endif
 
 
 namespace Parallel
@@ -223,7 +226,13 @@ namespace Parallel
 
 	std::string FMTtask::getThreadId()
 	{
+	#if defined (_MSC_VER)
+		DWORD threadWIN32 = GetThreadId(GetCurrentThread());
+		return boost::lexical_cast<std::string>(threadWIN32);
+	#else
 		return boost::lexical_cast<std::string>(boost::this_thread::get_id());
+	#endif
+		
 	}
 
 }
