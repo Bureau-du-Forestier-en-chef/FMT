@@ -270,21 +270,26 @@ namespace Models
 				}
 			}
 			harvestedArea =  std::min(maxArea, p_devArea);
+			std::vector<size_t>IdsToRemove;
+			IdsToRemove.reserve(p_targets.size());
 			for (const size_t& OUTPUT_ID : p_actionsoutputs.at(p_action))
 			{
 				p_targets.at(OUTPUT_ID) = std::max(p_targets.at(OUTPUT_ID) - harvestedArea * COEFFICIENTS.at(OUTPUT_ID), 0.0);
 				if (p_targets.at(OUTPUT_ID) <= FMT_DBL_TOLERANCE)
 				{
-					for (std::set<size_t>& Ids : p_actionsoutputs)
+					IdsToRemove.push_back(OUTPUT_ID);
+				}
+			}
+			for (std::set<size_t>& Ids : p_actionsoutputs)
+				{
+				for (const size_t& TO_REMOVE : IdsToRemove)
 					{
-						Ids.erase(OUTPUT_ID);
+					Ids.erase(TO_REMOVE);
 					}
 				}
-
-			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::UpdateArea", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTnssmodel::UpdateOutputs", __LINE__, __FILE__);
 		}
 		return harvestedArea;
 	}
@@ -411,7 +416,6 @@ namespace Models
 				newSolution.push_back(DEV_AREA);
 				toGrowWithSolution.pop();
 			}
-			
 			const int location = static_cast<int>(m_graph->size() - 2);
 			const Graph::FMTgraphstats newStats = this->updatematrix(m_graph->getperiodverticies(location), GraphStats);
 			if (solver.getNumCols() != static_cast<int>(newSolution.size()))
