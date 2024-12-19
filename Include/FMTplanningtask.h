@@ -120,7 +120,7 @@ namespace Parallel
 		const std::vector<const ptrtype*> getmodelsfromdynamiccast() const
 		{
 			std::vector<const ptrtype*>castedptr;
-			for (const std::unique_ptr<Models::FMTmodel>& model : models)
+			for (const std::unique_ptr<Models::FMTmodel>& model : m_Models)
 			{
 				castedptr.push_back(dynamic_cast<const ptrtype*>(model.get()));
 			}

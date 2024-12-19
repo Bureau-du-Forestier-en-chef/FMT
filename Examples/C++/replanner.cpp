@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
 	else
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 5;
+		length = 10;
 		replicate = 100;
-		n_threads = 5;
+		n_threads = 3;
 		allscenarios.push_back("strategique_AllEnrqc_CC_FR30"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC");
