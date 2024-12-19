@@ -95,14 +95,17 @@ void Wrapper::FMTForm::RapportdeCarboneSpatial(const Models::FMTsemodel& semodel
 
 }
 
-void Wrapper::FMTForm::EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties,const int& nombredeperiodes, const int growththemeid, const bool& incarbon)
+void Wrapper::FMTForm::EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties,const int& nombredeperiodes, System::Collections::Generic::List<int>^ growththemes, const bool& incarbon)
 {
 	try {
 		const std::string rastpath = msclr::interop::marshal_as<std::string>(cheminsorties);
 		std::vector<Core::FMTtheme>growththeme;
-		if (growththemeid != 0)
+		if (growththemes->Count != 0)
 		{
-			growththeme = std::vector<Core::FMTtheme>(1, semodel.getthemes().at(growththemeid - 1));
+			for each (int themeID in growththemes)
+			{
+				growththeme.push_back(semodel.getthemes().at(themeID - 1));
+			}
 		}
 		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
 		FMTFormLogger* logger = Cache->getformlogger();
@@ -275,7 +278,7 @@ bool Wrapper::FMTForm::SimulationSpatialeExplicite(
 	System::String^ providerGdal, 
 	bool indCarbon, 
 	System::Collections::Generic::List<System::String^>^ predictoryields, 
-	int growththeme)
+	System::Collections::Generic::List<int>^ growththemes)
 {
 	try
 	{
@@ -343,7 +346,7 @@ bool Wrapper::FMTForm::SimulationSpatialeExplicite(
 			{
 			RapportdeCarboneSpatial(simulationmodel, periodes, schedules);
 			}
-		EcrituredesPerturbations(simulationmodel, directoryFullName, periodes,growththeme, indCarbon);
+		EcrituredesPerturbations(simulationmodel, directoryFullName, periodes, growththemes, indCarbon);
 		if (indGenererEvents || indCarbon)
 			{
 			EcritureDesEvenements(simulationmodel, directoryFullName, periodes, indCarbon);

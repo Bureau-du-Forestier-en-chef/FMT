@@ -117,7 +117,7 @@ namespace Models{
 									}
 								Core::FMTdevelopment tohash(dev.first);
 								tohash.setperiod(PERIOD);
-								tohash.setlock(0);
+								//tohash.setlock(0);
 								if (ActToRemove.find(tohash)==ActToRemove.end())
 									{
 									ActToRemove[tohash] = 0;
@@ -140,11 +140,11 @@ namespace Models{
 				{
 				Core::FMTfuturdevelopment futurDev(dev);
 				futurDev.setperiod(1);
-				futurDev.setlock(0);
+				//futurDev.setlock(0);
 				for (int period = 1; period <= MAX_PERIOD;++period)
 					{
 					newSchedules[period - 1].setperiod(period);
-					newSchedules[period - 1].setuselock(false);
+					//newSchedules[period - 1].setuselock(false);
 					if (futurDev.operable(p_action,yields))
 						{
 						double value = dev.getarea();
@@ -330,11 +330,19 @@ namespace Models{
 					}
 				transition.update();
 				}
+			yields.unshrink(Oldthemes);
 			for (auto& yield : yields)
-				{
+			{
 				yield.first = Core::FMTmask(std::string(yield.first) + " " + DEFAULT_ATTRIBUTE, themes);
 				yield.second->setMask(Core::FMTmask(std::string(yield.second->getmask()) + " " + DEFAULT_ATTRIBUTE, themes));
-				}
+			}
+			yields.update();
+			lifespan.unshrink(Oldthemes);
+			for (auto& lifespanItem : lifespan)
+			{
+				lifespanItem.first = Core::FMTmask(std::string(lifespanItem.first) + " " + DEFAULT_ATTRIBUTE, themes);
+			}
+			lifespan.update();
 			for (auto& output : outputs)
 				{
 				std::vector<Core::FMToutputsource> sources = output.getsources();
