@@ -241,9 +241,19 @@ namespace Parallel
 					appendExistingSchedule = false;
 				}
 			}
-			std::vector<Core::FMTschedule> scheduleList(1);
-			scheduleList[0] = p_model->getsolution(p_ModelPeriod, true);
-			scheduleList[0].setperiod(p_ReportingPeriod);
+			std::vector<Core::FMTschedule> scheduleList;
+			if (p_model->getname() == stochastic->getname()||
+				p_model->getname() == local->getname())
+			{
+				scheduleList.push_back(p_model->getsolution(p_ModelPeriod, true));
+				scheduleList.back().setperiod(p_ReportingPeriod);
+			}else {//Got the strategic here got get the replicate 0 here...
+				appendExistingSchedule = false;
+				for (int period = 1; period <= p_model->getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+					{
+					scheduleList.push_back(p_model->getsolution(period, true));
+					}
+				}
 			resultswriter->writeSchedules(SCHEDULE_PATH, scheduleList, appendExistingSchedule);
 
 		}catch (...)
@@ -288,7 +298,8 @@ namespace Parallel
 					reportingLastPeriod = replanningperiods;
 				}
 
-				if (m_writeSchedule && modelptr && (modelname == stochastic->getname() || modelname == local->getname()))
+				if (m_writeSchedule && modelptr && 
+					(modelname == stochastic->getname() || modelname == local->getname() || (modelname == global->getname() && getiteration() == 0)))
 					{
 					_writeSchedule(modelptr, reportingFirstPeriod, firstperiod);
 					}

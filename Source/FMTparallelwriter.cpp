@@ -313,7 +313,8 @@ namespace Parallel
 			{
 				int replicateId = 0;
 				std::string writeName = modelptr->getname();
-				if (modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD))
+				if (modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)&&
+					(!writeName.empty() && writeName.find_first_not_of("0123456789") == std::string::npos))
 					{
 					replicateId = std::stoi(modelptr->getname());
 					writeName = projectname;

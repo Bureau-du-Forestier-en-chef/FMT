@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	std::vector<std::string>allscenarios;
 	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
 	unsigned int n_threads = 5;
-	/*if (argc > 1) {
+	if (argc > 1) {
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
 		boost::split(results, vals, boost::is_any_of("|"));
@@ -40,17 +40,17 @@ int main(int argc, char *argv[])
 		replicate = std::stoi(argv[3]);
 	}
 	else
-	{*/
+	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 1;
+		length = 5;
 		replicate = 100;
-		n_threads = 1;
+		n_threads = 5;
 		allscenarios.push_back("strategique_AllEnrqc_CC_FR30"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC");
 		//allscenarios.push_back("tactique");
 		allscenarios.push_back("tactique_AllEnrqc_CC");
-//	}
+	}
 
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();

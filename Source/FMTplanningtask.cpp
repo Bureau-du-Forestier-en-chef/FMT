@@ -34,11 +34,11 @@ namespace Parallel
 
 
 	FMTplanningtask::FMTplanningtask(const FMTplanningtask& rhs):
-		resultswriter(rhs.resultswriter),
-		models(copymodels(rhs.models)),
-		allschedules(rhs.allschedules),
-		outputs(rhs.outputs),
-		keepmodels(rhs.keepmodels)
+		m_ResultsWriter(rhs.m_ResultsWriter),
+		m_Models(copymodels(rhs.m_Models)),
+		m_allSchedules(rhs.m_allSchedules),
+		m_Outputs(rhs.m_Outputs),
+		m_keepModels(rhs.m_keepModels)
 	{
 
 		
@@ -48,11 +48,11 @@ namespace Parallel
 	{
 		if (this!=&rhs)
 		{
-			resultswriter = rhs.resultswriter;
-			models = copymodels(rhs.models);
-			allschedules = rhs.allschedules;
-			outputs = rhs.outputs;
-			keepmodels = rhs.keepmodels;
+			m_ResultsWriter = rhs.m_ResultsWriter;
+			m_Models = copymodels(rhs.m_Models);
+			m_allSchedules = rhs.m_allSchedules;
+			m_Outputs = rhs.m_Outputs;
+			m_keepModels = rhs.m_keepModels;
 		}
 		return *this;
 	}
@@ -66,15 +66,15 @@ namespace Parallel
 		std::vector<std::string>creationoptions,
 		Core::FMToutputlevel outputlevel,
 		std::string primaryfilelocatiron):
-		resultswriter(),
-		models(),
-		allschedules(),
-		outputs(),
-		keepmodels(false)
+		m_ResultsWriter(),
+		m_Models(),
+		m_allSchedules(),
+		m_Outputs(),
+		m_keepModels(false)
 	{
 		try {
-			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod, primaryfilelocatiron));
-			resultswriter->setLayer(boost::filesystem::path(primaryfilelocatiron).stem().string());
+			m_ResultsWriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod, primaryfilelocatiron));
+			m_ResultsWriter->setLayer(boost::filesystem::path(primaryfilelocatiron).stem().string());
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTplanningtask::FMTplanningtask", __LINE__, __FILE__);
@@ -85,18 +85,16 @@ namespace Parallel
 		std::vector<Core::FMTschedule>schedules, std::vector<Core::FMToutput>loutputs)
 	{
 		try {
-			const size_t MODEL_ID = models.size();
-			models.push_back(std::move(model.clone()));
-			models.back()->setparallellogger(*tasklogger.get());
-			if (model.getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD))
+			m_Models.push_back(std::move(model.clone()));
+			m_Models.back()->setparallellogger(*tasklogger.get());
+			const std::string SCENARIO_NAME = m_Models.back()->getname();
+			if (!model.getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)||
+				!(!SCENARIO_NAME.empty() && SCENARIO_NAME.find_first_not_of("0123456789") == std::string::npos))
 				{
-				models.back()->setname(std::to_string(MODEL_ID));
-				*_logger << "Model named " + model.getname() + " index set of " + models.back()->getname() << "\n";
-			}else {
-				resultswriter->setLayer(model.getname());
+				m_ResultsWriter->setLayer(model.getname());
 				}
-			allschedules.push_back(schedules);
-			outputs.push_back(loutputs);
+			m_allSchedules.push_back(schedules);
+			m_Outputs.push_back(loutputs);
 			//;
 		}catch (...)
 			{
@@ -114,10 +112,10 @@ namespace Parallel
 	{
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
-			std::list<std::unique_ptr<Models::FMTmodel>>allmodels=copymodels(models);
-			std::list<std::vector<Core::FMTschedule>>modelschedules(allschedules);
-			std::list<std::vector<Core::FMToutput>>modeloutputs(outputs);
-			for (const size_t tasksize : splitwork(numberoftasks, static_cast<int>(models.size())))
+			std::list<std::unique_ptr<Models::FMTmodel>>allmodels=copymodels(m_Models);
+			std::list<std::vector<Core::FMTschedule>>modelschedules(m_allSchedules);
+			std::list<std::vector<Core::FMToutput>>modeloutputs(m_Outputs);
+			for (const size_t tasksize : splitwork(numberoftasks, static_cast<int>(m_Models.size())))
 				{
 				FMTplanningtask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTmodel>>modelsoftask;
@@ -132,9 +130,9 @@ namespace Parallel
 					modelschedules.pop_front();
 					modeloutputs.pop_front();
 					}
-				newtask.models = copymodels(modelsoftask);
-				newtask.allschedules = schedulesoftask;
-				newtask.outputs = outputsoftask;
+				newtask.m_Models = copymodels(modelsoftask);
+				newtask.m_allSchedules = schedulesoftask;
+				newtask.m_Outputs = outputsoftask;
 				tasks.push_back(std::move(newtask.clone()));
 				}
 		}catch (...)
@@ -147,21 +145,21 @@ namespace Parallel
 	std::unique_ptr<FMTtask>FMTplanningtask::spawn()
 	{
 		try {
-			if (!models.empty())
+			if (!m_Models.empty())
 				{
 				FMTplanningtask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTmodel>>singlemodel;
 				std::list<std::vector<Core::FMTschedule>>singleschedule;
 				std::list<std::vector<Core::FMToutput>>singleoutputs;
-				singlemodel.push_back(std::move(models.front()->clone()));
-				singleschedule.push_back(allschedules.front());
-				singleoutputs.push_back(outputs.front());
-				models.pop_front();
-				allschedules.pop_front();
-				outputs.pop_front();
-				newtask.models.swap(singlemodel);
-				newtask.allschedules.swap(singleschedule);
-				newtask.outputs.swap(singleoutputs);
+				singlemodel.push_back(std::move(m_Models.front()->clone()));
+				singleschedule.push_back(m_allSchedules.front());
+				singleoutputs.push_back(m_Outputs.front());
+				m_Models.pop_front();
+				m_allSchedules.pop_front();
+				m_Outputs.pop_front();
+				newtask.m_Models.swap(singlemodel);
+				newtask.m_allSchedules.swap(singleschedule);
+				newtask.m_Outputs.swap(singleoutputs);
 				return std::move(newtask.clone());
 				}
 		}catch (...)
@@ -174,7 +172,7 @@ namespace Parallel
 	void FMTplanningtask::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		try {
-			for (std::unique_ptr<Models::FMTmodel>& model : models)
+			for (std::unique_ptr<Models::FMTmodel>& model : m_Models)
 				{
 				model->passinlogger(logger);
 				}
@@ -186,7 +184,7 @@ namespace Parallel
 
 	void FMTplanningtask::setkeepmodels()
 		{
-		keepmodels = true;
+		m_keepModels = true;
 		}
 
 
@@ -194,31 +192,31 @@ namespace Parallel
 	{
 		try {
 			std::list<std::unique_ptr<Models::FMTmodel>>modelskept;
-			while (!models.empty())
+			while (!m_Models.empty())
 			{
-				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + models.front()->getname() + " started\n",0);
-				const bool SOLVE = !models.front()->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD);
-				const bool FEASIBLE = models.front()->doplanning(SOLVE, allschedules.front());
+				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + m_Models.front()->getname() + " started\n",0);
+				const bool SOLVE = !m_Models.front()->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD);
+				const bool FEASIBLE = m_Models.front()->doplanning(SOLVE, m_allSchedules.front());
 				if (FEASIBLE||!SOLVE)
 					{
-					resultswriter->getandwrite(models.front(),outputs.front());
+					m_ResultsWriter->getandwrite(m_Models.front(), m_Outputs.front());
 				}else {
-					_logger->logwithlevel("Thread:" + getThreadId() + " infeasible scenario " + models.front()->getname() + "\n", 0);
+					_logger->logwithlevel("Thread:" + getThreadId() + " infeasible scenario " + m_Models.front()->getname() + "\n", 0);
 					}
-				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + models.front()->getname() + " done\n", 0);
-				if (keepmodels)
+				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + m_Models.front()->getname() + " done\n", 0);
+				if (m_keepModels)
 					{
-					modelskept.push_back(std::move(models.front()));
+					modelskept.push_back(std::move(m_Models.front()));
 					}
-				models.pop_front();
-				allschedules.pop_front();
-				outputs.pop_front();
+				m_Models.pop_front();
+				m_allSchedules.pop_front();
+				m_Outputs.pop_front();
 			}
 			if (!modelskept.empty())
 			{
 				for (std::unique_ptr<Models::FMTmodel>& model : modelskept)
 				{
-					models.push_back(std::move(model));
+					m_Models.push_back(std::move(model));
 				}
 			}
 			setstatus(true);

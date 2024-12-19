@@ -37,26 +37,6 @@ namespace Parallel
 	*/
 	class FMTEXPORT FMTplanningtask : public FMTtask
 	{
-		// DocString: FMTplanningtask::resultswriter
-		///Concurrent results writer who writes the results of each abstract model after each call to doplanning
-		std::shared_ptr<FMTparallelwriter>resultswriter;
-		// DocString: FMTplanningtask::models
-		///Abstracts models that need to be build and solve by the task.
-		std::list<std::unique_ptr<Models::FMTmodel>>models;
-		// DocString: FMTplanningtask::schedules
-		///All schedules of FMTmodel if we only want to do playback
-		std::list<std::vector<Core::FMTschedule>>allschedules;
-		// DocString: FMTplanningtask::outputs
-		///Abstracts outputs that the results need to be write by the task.
-		std::list<std::vector<Core::FMToutput>>outputs;
-		// DocString: FMTplanningtask::keepmodels
-		///If keep models is true the models will be kept after work
-		bool keepmodels;
-		// DocString: FMTplanningtask::copymodels
-		/**
-		Copy models for unique model...
-		*/
-		std::list<std::unique_ptr<Models::FMTmodel>>copymodels(const std::list<std::unique_ptr<Models::FMTmodel>>& tocopy) const;
 	public:
 		// DocString: FMTplanningtask::FMTreplanningtask()
 		/**
@@ -146,6 +126,27 @@ namespace Parallel
 			}
 			return castedptr;
 		}
+	private:
+		// DocString: FMTplanningtask::m_ResultsWriter
+		///Concurrent results writer who writes the results of each abstract model after each call to doplanning
+		std::shared_ptr<FMTparallelwriter>m_ResultsWriter;
+		// DocString: FMTplanningtask::m_Models
+		///Abstracts models that need to be build and solve by the task.
+		std::list<std::unique_ptr<Models::FMTmodel>>m_Models;
+		// DocString: FMTplanningtask::m_allSchedules
+		///All schedules of FMTmodel if we only want to do playback
+		std::list<std::vector<Core::FMTschedule>>m_allSchedules;
+		// DocString: FMTplanningtask::m_Outputs
+		///Abstracts outputs that the results need to be write by the task.
+		std::list<std::vector<Core::FMToutput>>m_Outputs;
+		// DocString: FMTplanningtask::m_keepModels
+		///If keep models is true the models will be kept after work
+		bool m_keepModels;
+		// DocString: FMTplanningtask::copymodels
+		/**
+		Copy models for unique model...
+		*/
+		std::list<std::unique_ptr<Models::FMTmodel>>copymodels(const std::list<std::unique_ptr<Models::FMTmodel>>& tocopy) const;
 
 	};
 
