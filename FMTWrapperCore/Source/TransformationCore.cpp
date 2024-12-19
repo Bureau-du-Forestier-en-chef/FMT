@@ -80,7 +80,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 	return SPLITTED_MODEL;
 }
 
-Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmodel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name)
+Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmodel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name, const std::string& p_pri_name)
 {
 	Models::FMTmodel BUILDED_MODEL;
 	try
@@ -96,12 +96,12 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		#else
 		outputPath = p_outputDirPath + "/";
 		#endif
-		ModelParser.write(BUILDED_MODEL, outputPath);
+		ModelParser.writetoproject(p_schedulePri, BUILDED_MODEL);
 		if (!SCHEDULES.empty())
 		{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
 			const std::vector<Core::FMTschedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), SCHEDULES);
-			SCHEDULE_PARSER.write(NEW_SCHEDULE, outputPath + p_scenario_name + "._seq");
+			SCHEDULE_PARSER.write(NEW_SCHEDULE, outputPath + p_pri_name + "._seq");
 		}
 	}
 	catch (...) {

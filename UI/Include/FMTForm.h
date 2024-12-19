@@ -37,7 +37,7 @@ namespace Wrapper
 		std::vector<Core::FMTschedule> ObtenirSEQ(System::String^ nomFichierPri, int indexScenario);
 		void RapportdeBris(const Models::FMTsemodel& semodel);
 		void RapportdeCarboneSpatial(const Models::FMTsemodel& semodel, const int& nombredeperiodes, const std::vector<Core::FMTschedule>& schedules);
-		void EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, const int growththemeid, const bool& incarbon);
+		void EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, System::Collections::Generic::List<int>^ growththemes, const bool& incarbon);
 		void EcritureDesEvenements(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, const bool& incarbon);
 		std::vector<Core::FMToutput>  EcritureDesOutputs(const Models::FMTsemodel& semodel, System::Collections::Generic::List<System::String^>^ outputs, const int& nombredeperiodes, const bool& incarbon);
 		void EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semodel, const std::vector<Core::FMToutput>& outputs, const int& sortiemin, const int& sortiemax, System::String^ localisation);
@@ -60,7 +60,7 @@ namespace Wrapper
 		int ObtenirNombrePeriodes(System::String^ nomFichierPri, int indexScenario);
 		bool Plannification(System::String^ fichierPri, System::Collections::Generic::List<int>^ scenarios, int solver, int period, int nbreProcessus, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, System::String^ providerGdal, System::Collections::Generic::List<bool>^ playback);
 		bool Replanification(int indexScenStrategique, int indexScenStochastique, int indexScenTactique, int solver, int period, int periodReplannif, double variabilite, int nbreProcessus, int nombreReplicas, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, System::String^ cheminSorties, System::String^ providerGdal, int taskLogLevel, bool indProduireSolution, bool p_writeSchedule);
-		bool SimulationSpatialeExplicite(System::String^ fichierPri, System::String^ cheminRasters, int scenario, System::Collections::Generic::List<System::String^>^ contraintes, int periodes, int greedySearch, System::Collections::Generic::List<System::String^>^ outputs, bool indicateurStanlock, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, bool indGenererEvents, bool indSortiesSpatiales, System::String^ providerGdal, bool indCarbon, System::Collections::Generic::List<System::String^>^ predictoryields, int growththeme);
+		bool SimulationSpatialeExplicite(System::String^ fichierPri, System::String^ cheminRasters, int scenario, System::Collections::Generic::List<System::String^>^ contraintes, int periodes, int greedySearch, System::Collections::Generic::List<System::String^>^ outputs, bool indicateurStanlock, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, bool indGenererEvents, bool indSortiesSpatiales, System::String^ providerGdal, bool indCarbon, System::Collections::Generic::List<System::String^>^ predictoryields, System::Collections::Generic::List<int>^ growththemes);
 		bool InitialAreaVariability(System::String^ fichierPri, int scenario, int solver, System::Collections::Generic::List<System::String^>^ contraintes, int period, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, System::String^ providerGdal, System::Collections::Generic::List<System::Collections::Generic::List<System::String^>^>^ ListeInformations);
 		bool Raterisation(System::String^ fichierPri, int scenario, System::String^ fichierShp, System::String^ repertoireSortie, int resolution, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock);
 		bool OperatingAreaScheduling(System::String^ fichierPri, int scenario, System::String^ fichierShp, int solver, int nombrePeriodes, int nombreThread, int numeroTheme, int tempsMaximum, int nombreIteration, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock, System::String^ cheminParametres, System::String^ nomFichierResultat, int periodeMiseAjour, System::String^ returnTimeOutput);
@@ -147,7 +147,7 @@ namespace Wrapper
 		*@param p_scenario_name Le nom du scénario
 		*@return vrai ou faux
 		*/
-		bool buildAction(const int p_modelIndex, System::String^ p_actionName, System::String^ p_targetYield, System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name);
+		bool buildAction(const int p_modelIndex, System::String^ p_actionName, System::String^ p_targetYield, System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 		
 		/**
 		* @brief Get attributes of a specific theme inside a model
