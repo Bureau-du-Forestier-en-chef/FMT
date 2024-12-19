@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-			scenario = "PlayBack_CC";
+			primarylocation = "T:/Donnees/Usagers/ROYMAL/Pour_Guillaume/08651_PC_4310_projet_ws/PC_4310_U08651_3FF_VF01.pri";
+			scenario = "scenario_7_FMT";
 			length = 1;
 			objectivevalue = 16849; 
 		}

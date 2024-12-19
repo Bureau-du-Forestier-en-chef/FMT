@@ -384,15 +384,15 @@ FMTactionparser::FMTactionparser() : FMTparser()
 							root.get_child(action.getname()).find("id") == root.get_child(action.getname()).not_found()||
 							root.get_child(action.getname()).find("name") == root.get_child(action.getname()).not_found())
 							{
-							_exhandler->raise(Exception::FMTexc::FMTignore, action.getname() + " at line " + std::to_string(_line),
-								"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, _section);
+							_exhandler->raise(Exception::FMTexc::FMTignore, "GCBM mapping for "+action.getname() + " at line " + std::to_string(_line),
+								"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, Core::FMTsection::Action);
 						}else {
 							//test to int!
 							const int idofaction = getnum<int>(root.get<std::string>(action.getname() + ".id"));
 							if (idofaction== FMTGCBMGROWTHID || idofaction == FMTGCBMUNKNOWNID) //|| idofaction == FMTGCBMDEATHID)
 								{
 								_exhandler->raise(Exception::FMTinvalid_number,"cannot use GCBM actions id "+std::to_string(FMTGCBMGROWTHID)+" or "+ std::to_string(FMTGCBMUNKNOWNID) + " or " + std::to_string(FMTGCBMDEATHID) + " at line " + std::to_string(_line),
-									"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, _section);
+									"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, Core::FMTsection::Action);
 								}
 							const std::string GCBMaggregate = "~GCBM:" + root.get<std::string>(action.getname() + ".id") + ":" + root.get<std::string>(action.getname() + ".name");
 							action.push_aggregate(GCBMaggregate);

@@ -7,11 +7,11 @@ cmake CMakeLists.txt ^
 	-G "Visual Studio 17 2022" ^
 	-DBUILD_TYPE=Debug ^
 	-DPARALLEL_TESTS=8 ^
-	-DVCPKG_ROOT=D:/dependencies/vcpkg ^
 	-DCMAKE_TOOLCHAIN_FILE=D:/dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake ^
 	-DVCPKG_TARGET_TRIPLET=x64-windows ^
 	-DONNXR_DIR=D:/dependencies/onnxruntime/ ^
 	-DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" ^
+	-DVCPKG_MANIFEST_MODE=OFF ^
 	-DPYTHON_DIR=D:/dependencies/vcpkg/installed/x64-windows/manual-tools/vcpkg-tool-python2/
 
 
@@ -24,11 +24,11 @@ cmake CMakeLists.txt ^
 	-G "Visual Studio 17 2022" ^
 	-DBUILD_TYPE=Release ^
 	-DPARALLEL_TESTS=8 ^
-	-DVCPKG_ROOT=D:/dependencies/vcpkg ^
 	-DCMAKE_TOOLCHAIN_FILE=D:/dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake ^
 	-DVCPKG_TARGET_TRIPLET=x64-windows ^
 	-DONNXR_DIR=D:/dependencies/onnxruntime/ ^
 	-DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" ^
+	-DVCPKG_MANIFEST_MODE=OFF ^
 	-DPYTHON_DIR=D:/dependencies/vcpkg/installed/x64-windows/manual-tools/vcpkg-tool-python2/
 	
 cmake --build build/release --config Release
