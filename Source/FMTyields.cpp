@@ -223,6 +223,14 @@ void FMTyields::clearcache()
 		}
 	}
 
+void FMTyields::clearRandomYieldsCache()
+	{
+	for (FMTyieldhandler*  handler : gethandlers(FMTyldtype::FMTmodelyld))
+		{
+		dynamic_cast<FMTmodelyieldhandler*>(handler)->clearRandomYieldsCache();
+		}
+	}
+
 bool FMTyields::isyld(const std::string& value, bool fromsource) const
     {
 	bool returnvalue = false;

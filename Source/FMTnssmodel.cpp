@@ -388,6 +388,10 @@ namespace Models
 					}
 					actives = revisitedActives;
 					++visit;
+				if (!actionsOutputs.at(actionId).empty())
+					{
+					yields.clearRandomYieldsCache();
+					}
 				}
 				if (visit == MAX_SPIN)
 				{

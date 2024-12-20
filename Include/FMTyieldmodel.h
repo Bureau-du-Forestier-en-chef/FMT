@@ -114,6 +114,11 @@ namespace Core
 		each first dimension is the yield id and each second dimension are the periodic value calculated by the yield.
 		*/
 		virtual std::vector<std::vector<double>>getperiodicvalues() const;
+		// DocString: FMTyieldmodel::clearRandomYieldsCache
+		/**
+		@brief clear the cache of all random yield model.
+		*/
+		virtual void clearRandomYieldsCache();
 	protected:
 		std::string modelName;
 		std::vector<std::string> modelYields = {};

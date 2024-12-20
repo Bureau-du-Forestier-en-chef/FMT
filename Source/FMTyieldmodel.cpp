@@ -58,6 +58,11 @@ namespace Core {
 		return  std::vector<std::vector<double>>();
 	}
 
+	void FMTyieldmodel::clearRandomYieldsCache()
+	{
+
+	}
+
 	void FMTyieldmodel::setModel(Models::FMTmodel* p_modelPtr)
 	{
 		m_modelPtr = p_modelPtr;

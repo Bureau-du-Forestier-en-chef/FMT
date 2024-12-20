@@ -268,6 +268,15 @@ namespace Core {
 		}
 		return std::unique_ptr<FMTyieldhandler>(nullptr);
 	}
+	void FMTmodelyieldhandler::clearRandomYieldsCache()
+	{
+		for (std::unique_ptr<FMTyieldmodel>& yieldModelPtr : models)
+			{
+			yieldModelPtr->clearRandomYieldsCache();
+			}
+	}
+
+
 	std::unique_ptr<FMTyieldhandler> FMTmodelyieldhandler::postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const
 	{
 		try {

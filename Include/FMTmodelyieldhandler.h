@@ -48,6 +48,11 @@ namespace Core
 		virtual void clearcache();
 		virtual std::unique_ptr<FMTyieldhandler> presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const;
 		virtual std::unique_ptr<FMTyieldhandler> postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const;
+		// DocString: FMTmodelyieldhandler::clearRandomYieldsCache
+		/**
+		@brief clear the cache of all random yield model.
+		*/
+		void clearRandomYieldsCache();
 		// DocString: FMTmodelyieldhandler::totimehandler
 		/**
 		If you can turn all your yieldmodel to time then you can return a timeyieldhandler.

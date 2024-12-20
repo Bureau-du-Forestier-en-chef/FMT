@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
 	else
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 10;
-		replicate = 100;
-		n_threads = 3;
+		length = 5;
+		replicate = 5;
+		n_threads = 5;
 		allscenarios.push_back("strategique_AllEnrqc_CC_FR30"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC");
@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
 
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
+	modelparser.settasklogger();
 	//modelparser.setdebuglogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack();

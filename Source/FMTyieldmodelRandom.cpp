@@ -27,6 +27,14 @@ namespace Core
 		modelYields = p_distribution;
 		}
 
+	void FMTyieldmodelRandom::clearRandomYieldsCache()
+		{
+		if (m_useCache)
+			{
+			m_cache.clear();
+			}
+		}
+
 	std::vector<size_t> FMTyieldmodelRandom::getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTyieldrequest& p_request) const
 	{
 		std::vector<size_t> values(p_yields.size());

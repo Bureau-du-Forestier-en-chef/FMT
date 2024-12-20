@@ -97,6 +97,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		Clear caching from all FMTdata.
 		*/
 		void clearcache() final;
+		// DocString: FMTyields::clearRandomYieldsCache
+		/**
+		@brief clear the cache of all random yield model.
+		*/
+		void clearRandomYieldsCache();
 		// DocString: FMTyields::isyld
 		/**
 		This function returns true if the FMTyields section contains a given (value) non null yield.
@@ -267,7 +272,6 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		(Can returns all handler related to time/age/complex ...)
 		*/
 		std::vector<FMTyieldhandler*> gethandlers(FMTyldtype type);
-
 		// DocString: FMTyields::_updateYieldLocations
 		/**
 		@brief Update the yields presence true or false.

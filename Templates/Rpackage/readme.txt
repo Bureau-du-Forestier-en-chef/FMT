@@ -2,4 +2,4 @@
 ::Then For building the R package
 R CMD build FMT
 ::and then For installing the R package
-R CMD INSTALL --no-multiarch FMT_0.9.tar.gz
+R CMD INSTALL --no-multiarch FMT_1.0.0.tar.gz

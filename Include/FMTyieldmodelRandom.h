@@ -34,6 +34,11 @@ namespace Core
 		@param[in]p_distribution the probability distribution of the yield.
 		*/
 		FMTyieldmodelRandom(const boost::property_tree::ptree& p_jsonProps, const std::vector<std::string>& p_distribution);
+		// DocString: FMTyieldmodelRandom::clearRandomYieldsCache
+		/**
+		@brief Flush the random number cache to redraw new random sequence.
+		*/
+		void clearRandomYieldsCache() override;
 		// DocString: FMTyieldmodelRandom::Predict
 		/**
 		@brief Predict the yields values using this class.
