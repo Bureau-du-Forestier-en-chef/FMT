@@ -5,7 +5,7 @@
 #include "FMTscheduleparser.h"
 #include "FMTerror.h"
 
-Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Models::FMTmodel& p_model, const std::vector<std::string>& p_aggregates, const std::vector<std::string>& p_order, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name)
+Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Models::FMTmodel& p_model, const std::vector<std::string>& p_aggregates, const std::vector<std::string>& p_order, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name, const std::string& p_pri_name)
 {
 	Models::FMTmodel aggregatedModel;
 	try
@@ -23,12 +23,12 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 		#else
 		outputPath = p_outputDirPath + "/";
 		#endif
-		ModelParser.write(aggregatedModel, outputPath);
+		ModelParser.writetoproject(p_schedulePri, aggregatedModel);
 		if (!SCHEDULES.empty())
 		{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
 			const std::vector<Core::FMTschedule>NEWSCHEDULE = aggregatedModel.aggregateSchedules(SCHEDULES);
-			SCHEDULE_PARSER.write(NEWSCHEDULE, outputPath + p_scenario_name + ".seq");
+			SCHEDULE_PARSER.write(NEWSCHEDULE, outputPath + p_pri_name + "._seq");
 		}
 
 	}
@@ -41,7 +41,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 
 }
 
-Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTmodel& p_model, const std::string& p_schedulePri, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_outputDirPath, const std::string& p_scenario_name)
+Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTmodel& p_model, const std::string& p_schedulePri, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_outputDirPath, const std::string& p_scenario_name, const std::string& p_pri_name)
 {
 	Models::FMTmodel SPLITTED_MODEL;
 	try
@@ -63,12 +63,12 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 		#else
 		outputPath = p_outputDirPath + "/";
 		#endif
-		ModelParser.write(SPLITTED_MODEL, outputPath);
+		ModelParser.writetoproject(p_schedulePri, SPLITTED_MODEL);
 		if (!SCHEDULES.empty())
 		{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
 			const std::vector<Core::FMTschedule>NEWSCHEDULE = SPLITTED_MODEL.splitSchedules(SCHEDULES);
-			SCHEDULE_PARSER.write(NEWSCHEDULE, outputPath + p_scenario_name + ".seq");
+			SCHEDULE_PARSER.write(NEWSCHEDULE, outputPath + p_pri_name + "._seq");
 		}
 
 	}

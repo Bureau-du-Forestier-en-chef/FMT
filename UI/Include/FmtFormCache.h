@@ -22,9 +22,11 @@ namespace Wrapper
 	class FMTexceptionhandlerwarning;
 	public class FMTformCache
 	{
-		Exception::FMTexceptionhandler* ExceptHandler;
+		/*Exception::FMTexceptionhandler* ExceptHandler;*/
+		Parser::FMTmodelparser* ModelParser;
 		std::vector<std::unique_ptr<Models::FMTmodel>> Models;
-		Logging::FMTlogger* Logger;
+		Logging::FMTlogger* Logger; 
+		Exception::FMTexceptionhandler* getExceptionHandler() const;
 		public:
 			FMTformCache();
 			~FMTformCache();

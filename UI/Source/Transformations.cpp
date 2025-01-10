@@ -6,7 +6,7 @@
 #include "FMTmodel.h"
 #include "TransformationCore.h"
 
-bool Wrapper::FMTForm::aggregateAllActions(const int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_aggregates, System::Collections::Generic::List<System::String^>^ p_order, System::String^ p_shedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name)
+bool Wrapper::FMTForm::aggregateAllActions(const int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_aggregates, System::Collections::Generic::List<System::String^>^ p_order, System::String^ p_shedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name)
 {
 	try
 	{
@@ -30,9 +30,10 @@ bool Wrapper::FMTForm::aggregateAllActions(const int p_modelIndex, System::Colle
 		const std::string PRIMARYLOCATION = msclr::interop::marshal_as<std::string>(p_shedulePri);
 		const std::string SCENARIO = msclr::interop::marshal_as<std::string>(p_scenario_name);
 		const std::string OUTPOURPATH = msclr::interop::marshal_as<std::string>(p_outputDirPath);
+		const std::string PRINAME = msclr::interop::marshal_as<std::string>(p_pri_name);
 		const std::vector<std::string> SCENARIOS(1, SCENARIO);
 		const Models::FMTmodel MODEL = { Cache->getmodel(p_modelIndex) };
-		const Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODEL, aggregates, order, PRIMARYLOCATION, OUTPOURPATH, SCENARIO);
+		const Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODEL, aggregates, order, PRIMARYLOCATION, OUTPOURPATH, SCENARIO, PRINAME);
 
 		Cache->push_back(aggregatedModel);
 		return true;
@@ -44,7 +45,7 @@ bool Wrapper::FMTForm::aggregateAllActions(const int p_modelIndex, System::Colle
 	}
 
 }
-bool Wrapper::FMTForm::splitActions(const int p_modelIndex, System::String^ p_schedulePri, System::Collections::Generic::List<System::String^>^ p_splitted, System::Collections::Generic::List<System::String^>^ p_splitted_mask, System::String^ p_outputDirPath, System::String^ p_scenario_name)
+bool Wrapper::FMTForm::splitActions(const int p_modelIndex, System::String^ p_schedulePri, System::Collections::Generic::List<System::String^>^ p_splitted, System::Collections::Generic::List<System::String^>^ p_splitted_mask, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name)
 {
 	try
 	{
@@ -54,6 +55,7 @@ bool Wrapper::FMTForm::splitActions(const int p_modelIndex, System::String^ p_sc
 		const std::string PRIMARYLOCATION = msclr::interop::marshal_as<std::string>(p_schedulePri);
 		const std::string OUTPUT_DIRECTORY = msclr::interop::marshal_as<std::string>(p_outputDirPath);
 		const std::string SCENARIO = msclr::interop::marshal_as<std::string>(p_scenario_name);
+		const std::string PRINAME = msclr::interop::marshal_as<std::string>(p_pri_name);
 
 		// on convertie en c++
 		for (int i = 0; i < p_splitted->Count; ++i)
@@ -73,7 +75,7 @@ bool Wrapper::FMTForm::splitActions(const int p_modelIndex, System::String^ p_sc
 		}
 		const Models::FMTmodel MODEL = Cache->getmodel(p_modelIndex);
 
-		Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODEL, PRIMARYLOCATION, splitted, splitted_mask, OUTPUT_DIRECTORY, SCENARIO);
+		Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODEL, PRIMARYLOCATION, splitted, splitted_mask, OUTPUT_DIRECTORY, SCENARIO, PRINAME);
 
 		Cache->push_back(SPLITTED_MODEL);
 		return true;

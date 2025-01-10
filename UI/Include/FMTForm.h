@@ -77,7 +77,7 @@ namespace Wrapper
 		* @param p_scenario_name Nom du scénario.
 		* @return `true` si l'agrégation a réussi, `false` sinon.
 		*/
-		bool aggregateAllActions(const int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_aggregates, System::Collections::Generic::List<System::String^>^ p_order,  System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name);
+		bool aggregateAllActions(const int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_aggregates, System::Collections::Generic::List<System::String^>^ p_order,  System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 
 		/**
 		* @brief Sépare les actions en utilisant le modèle spécifié.
@@ -92,7 +92,7 @@ namespace Wrapper
 		* @param p_scenario_name Nom du scénario.
 		* @return `true` si la séparation a réussi, `false` sinon.
 		*/
-		bool splitActions(const int p_modelIndex, System::String^ p_schedulePri, System::Collections::Generic::List<System::String^>^ p_splitted, System::Collections::Generic::List<System::String^>^ p_splitted_mask, System::String^ p_outputDirPath, System::String^ p_scenario_name);
+		bool splitActions(const int p_modelIndex, System::String^ p_schedulePri, System::Collections::Generic::List<System::String^>^ p_splitted, System::Collections::Generic::List<System::String^>^ p_splitted_mask, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 
 		/**
 		* @brief retourne une listes des noms d'actions du modèle.
