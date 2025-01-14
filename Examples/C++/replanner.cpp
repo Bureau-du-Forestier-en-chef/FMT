@@ -41,21 +41,22 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+		primlocation = "C:/Logiciels/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 		length = 5;
-		replicate = 5;
+		replicate = 100;
 		n_threads = 5;
-		allscenarios.push_back("strategique_AllEnrqc_CC_FR30"); //Pour test le lancé d'erreur
+		allscenarios.push_back("strategique_AllEnrqc_CC"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC");
 		//allscenarios.push_back("tactique");
 		allscenarios.push_back("tactique_AllEnrqc_CC");
 	}
-
+	int repSize = length;
+	//int repSize = 20;
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
-	modelparser.settasklogger();
-	//modelparser.setdebuglogger();
+	//modelparser.settasklogger();
+	modelparser.setdebuglogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack();
 	std::vector<Exception::FMTexc> errors;
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
-		replicate, length, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
+		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
 	Parallel::FMTtaskhandler handler(maintaskptr, n_threads); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();

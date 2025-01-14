@@ -30,13 +30,13 @@ namespace Models
 	FMTlpmodel::ConstraintIndex::ConstraintIndex(int p_constraintId, int p_period, FMTmatrixelement p_type):
 		m_constraintId(p_constraintId),
 		m_period(p_period),
-		m_type(p_type),
-		m_rows()
+		m_type(p_type)/*,
+		m_rows()*/
 	{
 
 	}
 
-	FMTlpmodel::ConstraintIndex::ConstraintIndex(int p_constraintId, int p_period,
+	/*FMTlpmodel::ConstraintIndex::ConstraintIndex(int p_constraintId, int p_period,
 		FMTmatrixelement p_type, std::allocator<int>& p_allocator, size_t p_allocation):
 			m_constraintId(p_constraintId),
 			m_period(p_period),
@@ -44,7 +44,7 @@ namespace Models
 			m_rows(p_allocator)
 			{
 			m_rows.reserve(p_allocation);
-			}
+			}*/
 	bool FMTlpmodel::ConstraintIndex::operator < (const ConstraintIndex& p_rhs) const
 		{
 		return std::tie(m_constraintId, m_period, m_type) <
@@ -56,20 +56,20 @@ namespace Models
 			m_period == p_rhs.m_period &&
 			m_type == p_rhs.m_type);
 		}
-	const std::vector<int>& FMTlpmodel::ConstraintIndex::getRows() const
+	/*const std::vector<int>& FMTlpmodel::ConstraintIndex::getRows() const
 		{
 		return m_rows;
 		}
 	std::vector<int>& FMTlpmodel::ConstraintIndex::getRowsRef()
 		{
 		return m_rows;
-		}
+		}*/
 
-	void FMTlpmodel::ConstraintIndex::push_back(const int& p_row)
+	/*void FMTlpmodel::ConstraintIndex::push_back(const int& p_row)
 		{
 		m_rows.push_back(p_row);
-		}
-
+		}*/
+	
 	size_t FMTlpmodel::ConstraintIndex::getHash() const
 		{
 		return std::hash<int>()(m_constraintId) ^
@@ -141,7 +141,9 @@ namespace Models
 					{
 						targetSize = 100;
 					}
-					m_indexes.insert(ConstraintIndex(id, period, type, m_rowsAllocator, TO_RESERVE));
+					//m_indexes.insert(ConstraintIndex(id, period, type, m_rowsAllocator, TO_RESERVE));
+					auto inserted = m_indexes.insert(std::pair<ConstraintIndex,std::vector<int>>(ConstraintIndex(id, period, type),std::vector<int>(m_rowsAllocator)));
+					inserted.first->second.reserve(targetSize);
 				}
 			}
 			++id;
@@ -1367,8 +1369,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			p_period = m_graph->getfirstactiveperiod()+1;
 			}
 		ConstraintIndex index(_getIndex(p_constraintId), p_period, p_element_type);
-		std::set<ConstraintIndex>::const_iterator indexIt = m_indexes.find(index);
-		return (indexIt != m_indexes.end() && !indexIt->getRows().empty());
+		std::map<ConstraintIndex,std::vector<int>>::const_iterator indexIt = m_indexes.find(index);
+		return (indexIt != m_indexes.end() && !indexIt->second.empty());
 
 		/*return((period < static_cast<int>(elements.size()) &&
 			(elements.at(period).find(std::string(constraint)) != elements.at(period).end()) &&
@@ -1625,15 +1627,18 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
         {
 		int element_id = 0;
 		try {
+			//*_logger << "getsetStage " + std::to_string(1) + " " + std::to_string(element_type) +  "\n";
 			//*_logger<<"Enter " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
 			if (isMatrixElement(p_constraintId, element_type, period))
 			{
+				//*_logger << "getsetStage " + std::to_string(2) + "\n";
 				//*_logger<<"Issamematrix " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
 				int foundperiod = period;
 				if (period == -1)
 				{
 					foundperiod = m_graph->getfirstactiveperiod() + 1;
 				}
+				//*_logger << "getsetStage " + std::to_string(3) + "\n";
 				//const std::vector<int>& alllocalelements = elements.at(foundperiod).at(std::string(p_BaseConstraint)).at(element_type);
 				const std::vector<int> alllocalelements = getMatrixElement(p_constraintId, foundperiod, element_type);
 				for (const int& elid : alllocalelements)
@@ -1646,7 +1651,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 			else if (element_type == FMTmatrixelement::constraint  && indexes.empty())
 			{
-				
+				//*_logger << "getsetStage " + std::to_string(4) + "\n";
 				if (period>(m_graph->getfirstactiveperiod()) &&period<static_cast<int>(m_graph->size()) &&
 					p_constraintId->getconstrainttype() == Core::FMTconstrainttype::FMTstandard &&
 					(upperbound< 0 || lowerbound > 0))
@@ -1665,14 +1670,16 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				return -1;
 			}
-			
+			//*_logger << "getsetStage " + std::to_string(5) + "\n";
 			Graph::FMTgraphstats* stats = m_graph->getstatsptr();
 			if (element_type == FMTmatrixelement::constraint || element_type == FMTmatrixelement::strictlypositive)
 			{
+				//*_logger << "getsetStage " + std::to_string(6) + "\n";
 				std::vector<int>sumvariables;
 				std::vector<double>sumcoefficiants;
 				summarize(indexes, sumvariables, sumcoefficiants);
 				//*_logger<<"Add " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
+				//*_logger << "getsetStage " + std::to_string(7) + "\n";
 				if (sumvariables.empty() && element_type == FMTmatrixelement::strictlypositive)
 				{
 					return -1;
@@ -1688,6 +1695,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				}
 			}
 			else {
+				//*_logger << "getsetStage " + std::to_string(8) + "\n";
 				element_id = stats->cols;
 				//solver.addCol(0, &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound, 0);
 				solver.addCol(0,nullptr,nullptr, lowerbound, upperbound, 0);
@@ -1714,25 +1722,29 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				}
 
 			}*/
+			//*_logger << "getsetStage " + std::to_string(9) + "\n";
 			int starting = period;
 			int stoping = period + 1;
 			if (period < 0)
 			{
+				//*_logger << "getsetStage " + std::to_string(10) + "\n";
 				starting = 0;
 				stoping = getparameter(Models::FMTintmodelparameters::LENGTH) +1;
 			}
+			//*_logger << "getsetStage " + std::to_string(11) + "\n";
 			for (int locid = starting; locid < stoping; ++locid)
 				{
 				ConstraintIndex index(_getIndex(p_constraintId),locid, element_type);
-				std::set<ConstraintIndex>::iterator target = m_indexes.find(index);
+				std::map<ConstraintIndex,std::vector<int>>::iterator target = m_indexes.find(index);
 				if (target == m_indexes.end())
 					{
-					ConstraintIndex CompleteIndex(_getIndex(p_constraintId), locid,
-								element_type, m_rowsAllocator,100);
-					target = m_indexes.insert(CompleteIndex).first;
+					ConstraintIndex CompleteIndex(_getIndex(p_constraintId), locid,element_type);
+					target = m_indexes.insert(std::pair<ConstraintIndex,std::vector<int>>(CompleteIndex,std::vector<int>(m_rowsAllocator))).first;
+					target->second.reserve(100);
 					}
-				ConstraintIndex& toPush = const_cast<ConstraintIndex&>(*target);//wont change sorting
-				toPush.push_back(element_id);
+				//ConstraintIndex& toPush = const_cast<ConstraintIndex&>(*target);//wont change sorting
+				//toPush.push_back(element_id);
+				target->second.push_back(element_id);
 				}
 
 			/*if (period < 0)
@@ -1763,10 +1775,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
         {
 			std::vector<int>result;
 			ConstraintIndex index(_getIndex(it), p_period, p_element);
-			std::set<ConstraintIndex>::const_iterator indexIt = m_indexes.find(index);
+			std::map<ConstraintIndex,std::vector<int>>::const_iterator indexIt = m_indexes.find(index);
 			if (indexIt!= m_indexes.end())
 				{
-				result = indexIt->getRows();
+				result = indexIt->second;
 				}
 			return result;
         }
@@ -1776,9 +1788,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			FMTmatrixelement p_element)
 		{
 			ConstraintIndex index(_getIndex(it), p_period, p_element);
-			std::set<ConstraintIndex>::iterator indexIt = m_indexes.find(index);
-			ConstraintIndex& toPush = const_cast<ConstraintIndex&>(*indexIt);//wont change sorting
-			return toPush.getRowsRef();
+			std::map<ConstraintIndex, std::vector<int>>::iterator indexIt = m_indexes.find(index);
+			//ConstraintIndex& toPush = const_cast<ConstraintIndex&>(*indexIt);//wont change sorting
+			return indexIt->second;
 		}
 
 	std::vector<Heuristics::FMToperatingareascheduler>FMTlpmodel::getoperatingareaschedulerheuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,

@@ -689,9 +689,9 @@ OGRLayer* FMTparser::createlayer(GDALDataset* dataset,
 	try {
 		std::vector<char*>optionsstrings;
 		optionsstrings.reserve(creationoptions.size());
-		for (const std::string& value : creationoptions)
+		for (std::string& value : creationoptions)
 		{
-			optionsstrings.push_back(const_cast<char*>(value.c_str()));
+			optionsstrings.push_back(&value[0]);
 		}
 		optionsstrings.push_back(nullptr);
 		char** alloptions = &optionsstrings[0];

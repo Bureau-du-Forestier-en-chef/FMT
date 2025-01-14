@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/lock_guard.hpp> 
 #include <limits>
-#include <set>
+#include <map>
 
 namespace Heuristics
 {
@@ -302,20 +302,20 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 			{
 			public:
 				ConstraintIndex(int p_constraintId, int p_period,FMTmatrixelement p_type);
-				ConstraintIndex(int p_constraintId, int p_period,
+				/*ConstraintIndex(int p_constraintId, int p_period,
 							FMTmatrixelement p_type,
-							std::allocator<int>& p_allocator,size_t p_allocation=0);
-				void push_back(const int& p_row);
+							std::allocator<int>& p_allocator,size_t p_allocation=0);*/
+				//void push_back(const int& p_row);
 				bool operator < (const ConstraintIndex& p_rhs) const;
 				bool operator == (const ConstraintIndex& p_rhs) const;
-				const std::vector<int>& getRows() const;
-				std::vector<int>& getRowsRef();
+				//const std::vector<int>& getRows() const;
+				//std::vector<int>& getRowsRef();
 				size_t getHash() const;
 			private:
 				int m_constraintId;
 				int m_period;
 				FMTmatrixelement m_type;
-				std::vector<int>m_rows;
+				//std::vector<int>m_rows;
 			};
 		// DocString: FMTlpmodel::m_rowsAllocator
 		///The int allocator for the constraintIndex
@@ -325,7 +325,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		mutable std::allocator<ConstraintIndex>m_indexAllocator;
 		// DocString: FMTlpmodel::m_indexes
 		///Locations of the constraints and variables in the matrix for the constraints / objective.
-		std::set<ConstraintIndex>m_indexes;
+		std::map<ConstraintIndex,std::vector<int>>m_indexes;
 		// DocString: FMTlpmodel::_getConstraintIndex
 		/**
 		@brief Get the constraint index iterator of a constraint.
