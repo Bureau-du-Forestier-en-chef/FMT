@@ -69,7 +69,6 @@ void Wrapper::FMTexceptionhandlerwarning::printexceptions(std::string text,
 	Core::FMTsection lsection)
 {
 	raisefromcatch(text, method, line, fil, lsection);
-
 }
 std::unique_ptr <Exception::FMTexceptionhandler> Wrapper::FMTexceptionhandlerwarning::Clone() const
 {

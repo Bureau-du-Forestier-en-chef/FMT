@@ -16,12 +16,12 @@
 void Wrapper::FMTForm::raisefromcatch(std::string text,
 	const std::string& method, const int& line, const std::string& fil)
 {
-		Wrapper::FMTexceptionhandlerwarning* exhandler = Cache->getformhandler();
-		const std::string errorstack = exhandler->geterrorstack(text, method, line, fil);
-		FeedBack("*************************************************************", gcnew System::EventArgs());
-		const std::string message = "FMT - ERROR " + errorstack;
-		FeedBack(gcnew System::String(message.c_str()), gcnew System::EventArgs());
-		exhandler->tryfileopener(errorstack);
+	Wrapper::FMTexceptionhandlerwarning* exhandler = Cache->getformhandler();
+	const std::string errorstack = exhandler->geterrorstack(text, method, line, fil);
+	FeedBack("*************************************************************", gcnew System::EventArgs());
+	const std::string message = "FMT - ERROR " + errorstack;
+	FeedBack(gcnew System::String(message.c_str()), gcnew System::EventArgs());
+	exhandler->tryfileopener(errorstack);
 }
  
 System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::ObtenirListeContraintes(

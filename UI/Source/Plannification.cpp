@@ -25,6 +25,7 @@ bool  Wrapper::FMTForm::Plannification(System::String^ fichierPri, System::Colle
 		{
 			layersoptions.push_back("SEPARATOR=SEMICOLON");
 		}
+
 		Parallel::FMTplanningtask newplanningtask(etanduSortiesMin, etanduSortiesMax, msclr::interop::marshal_as<std::string>(cheminSorties), msclr::interop::marshal_as<std::string>(providerGdal), layersoptions, static_cast<Core::FMToutputlevel>(outputLevel), msclr::interop::marshal_as<std::string>(fichierPri));
 		for each (int scen in scenarios)
 		{
@@ -50,9 +51,9 @@ bool  Wrapper::FMTForm::Plannification(System::String^ fichierPri, System::Colle
 			std::vector<Core::FMToutput> selectedoutputs = ObtenirArrayOutputsSelectionnees(optimizationmodel.getoutputs(), outputs);
 			optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playbackscen);
 			newplanningtask.push_back(optimizationmodel, cedule, selectedoutputs);
-			*logger << "FMT -> Scénario : " + optimizationmodel.getname() + " prêt a être lancer." << "\n";
+			*logger << "FMT -> Scénario : " + optimizationmodel.getname() + " prêt a être lancer." << "\n";			
 		}
-		*logger << "FMT -> Lancement des tâches en parallèle " << "\n";
+
 		Parallel::FMTtaskhandler handler(newplanningtask, nbreProcessus);
 		handler.conccurentrun();
 	}
@@ -89,8 +90,7 @@ bool Wrapper::FMTForm::Replanification(int indexScenStrategique, int indexScenSt
 		{
 			layersoptions.push_back("SEPARATOR=SEMICOLON");
 		}
-		*logger << "FMT -> Préparation de la replanification " << "\n";
-		variabilite = 0.5;
+		*logger << "FMT -> Préparation de la replanification " << "\n";		
 		std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 			global,
 			stochastic, 
