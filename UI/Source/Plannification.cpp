@@ -66,7 +66,7 @@ bool  Wrapper::FMTForm::Plannification(System::String^ fichierPri, System::Colle
 	return true;
 }
 
-bool Wrapper::FMTForm::Replanification(int indexScenStrategique, int indexScenStochastique, int indexScenTactique, int solver, int period, int periodReplannif, double variabilite, int nbreProcessus, int nombreReplicas, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, System::String^ cheminSorties, System::String^ providerGdal, int taskLogLevel, bool indProduireSolution, bool p_writeSchedule)
+bool Wrapper::FMTForm::Replanification(int indexScenStrategique, int indexScenStochastique, int indexScenTactique, int solver, int period, int periodReplannif, double variabilite, int nbreProcessus, int nombreReplicasMin, int nombreReplicasMax, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, System::String^ cheminSorties, System::String^ providerGdal, int taskLogLevel, bool indProduireSolution, bool p_writeSchedule)
 {
 	try
 	{
@@ -90,20 +90,22 @@ bool Wrapper::FMTForm::Replanification(int indexScenStrategique, int indexScenSt
 		{
 			layersoptions.push_back("SEPARATOR=SEMICOLON");
 		}
-		*logger << "FMT -> Préparation de la replanification " << "\n";		
-		std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
+		*logger << "FMT -> Préparation de la replanification " << "\n";	
+		Parallel::FMTreplanningtask* task = new Parallel::FMTreplanningtask(
 			global,
-			stochastic, 
-			local, 
+			stochastic,
+			local,
 			listeOutputs,
-			msclr::interop::marshal_as<std::string>(cheminSorties), 
+			msclr::interop::marshal_as<std::string>(cheminSorties),
 			msclr::interop::marshal_as<std::string>(providerGdal),
-			layersoptions, 
-			nombreReplicas,
-			periodReplannif, 
+			layersoptions,
+			nombreReplicasMax,
+			periodReplannif,
 			variabilite,
 			static_cast<Core::FMToutputlevel>(outputLevel),
-			indProduireSolution));
+			indProduireSolution); 
+		task->setreplicates(nombreReplicasMin, nombreReplicasMax);
+		std::unique_ptr<Parallel::FMTtask> maintaskptr(task);		
 		*logger << "FMT -> Préparation de la replanification terminée" << "\n";
 		Parallel::FMTtaskhandler handler(maintaskptr, nbreProcessus);
 		logger->settasklogginglevel(taskLogLevel);

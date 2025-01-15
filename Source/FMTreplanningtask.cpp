@@ -43,6 +43,15 @@ namespace Parallel
 		}
 	}
 
+	void FMTreplanningtask::setreplicates(const int& replicatesnumbermin, const int& replicatesnumbermax)
+	{
+		replicateids = std::queue<int>();
+		for (int replicateid = replicatesnumbermin; replicateid <= replicatesnumbermax; ++replicateid)
+		{
+			replicateids.push(replicateid);
+		}
+	}
+
 	void FMTreplanningtask::setreplanningperiods(const int& periodsnumber)
 		{
 		replanningperiods = periodsnumber;
