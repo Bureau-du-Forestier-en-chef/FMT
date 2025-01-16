@@ -105,6 +105,11 @@ namespace Parallel
 		Set the number of replicates to use...
 		*/
 		void setreplicates(const int& replicatesnumber);
+		// DocString: FMTreplanningtask::setreplicates
+		/**
+		Set the number of replicates to use...
+		*/
+		void setreplicates(const int& replicatesnumbermin, const int& replicatesnumbermax);
 		// DocString: FMTreplanningtask::setreplanningperiods
 		/**
 		Set the number oof replanning periods.

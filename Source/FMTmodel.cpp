@@ -1450,23 +1450,30 @@ bool FMTmodel::operator < (const FMTmodel& rhs) const
 void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
     {
 	try {
-		std::set<Core::FMTactualdevelopment,std::less<Core::FMTdevelopment>>sortedArea;
+		std::map<Core::FMTdevelopment,double,std::less<Core::FMTdevelopment>>sortedArea;
 		for (Core::FMTactualdevelopment adev : ldevs)
 		{
 			if (adev.getlock() > 0)
 				{
 				adev = adev.reducelocktodeath(lifespan);
 				}
-			std::pair<std::set<Core::FMTactualdevelopment>::iterator, bool> inserted = sortedArea.insert(adev);
-			sortedArea.insert(adev);
+			std::pair<std::map<Core::FMTdevelopment,double>::iterator, bool> inserted = sortedArea.insert(std::pair<Core::FMTdevelopment,double>(adev,adev.getarea()));
+			//sortedArea.insert(adev);
 			if (!inserted.second)
 				{
-				Core::FMTactualdevelopment* theDev = const_cast<Core::FMTactualdevelopment*>(&*inserted.first);
-				theDev->setarea(theDev->getarea() + adev.getarea());
+				//Core::FMTactualdevelopment* theDev = const_cast<Core::FMTactualdevelopment*>(&*inserted.first);
+				//theDev->setarea(theDev->getarea() + adev.getarea());
+				inserted.first->second += adev.getarea();
 				}
 		}
-		std::vector<Core::FMTactualdevelopment>newArea(sortedArea.begin(), sortedArea.end());
-		area.swap(newArea);
+		area.clear();
+		area.reserve(sortedArea.size());
+		for (const auto& DEV_AREA : sortedArea)
+			{
+			area.push_back(Core::FMTactualdevelopment(DEV_AREA.first, DEV_AREA.second));
+			}
+		//std::vector<Core::FMTactualdevelopment>newArea(sortedArea.begin(), sortedArea.end());
+		//area.swap(newArea);
 		
 		/*area.clear();
 		area.reserve(ldevs.size());

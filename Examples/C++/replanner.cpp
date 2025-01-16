@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
 		//allscenarios.push_back("tactique");
 		allscenarios.push_back("tactique_AllEnrqc_CC");
 	}
-
+	int repSize = length;
+	//int repSize = 20;
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	//modelparser.settasklogger();
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
-		replicate, length, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
+		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
 	Parallel::FMTtaskhandler handler(maintaskptr, n_threads); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
