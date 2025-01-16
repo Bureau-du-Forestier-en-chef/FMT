@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include <boost/unordered/concurrent_flat_map.hpp>
+#include <boost/dynamic_bitset.hpp>
 #include <memory>
 #include <string>
 #include "FMTutility.h"
@@ -17,8 +18,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 	{
 	class FMTdevelopment;
-	class FMTyieldrequest;
 	class FMTYieldDevelopment;
+	class FMTyieldrequest;
 	class FMTYieldsCache
 		{
 		public:

@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	/*const std::string folder = "../../../../Examples/Models/TWD_land/";
+	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<bool>playback;
 	std::vector<std::string>allscenarios;
@@ -22,19 +22,19 @@ int main(int argc, char *argv[])
 	playback.push_back(true);
 	allscenarios.push_back("LP4");
 	playback.push_back(false);
-	allscenarios.push_back("LP5");*/
-	const std::string folder = "D:/CC_modele_feu/WS_CC/";
+	allscenarios.push_back("LP5");
+	/*const std::string folder = "D:/CC_modele_feu/WS_CC/";
 	const std::string primlocation = folder + "Feux_2023_ouest_V01.pri";
 	std::vector<bool>playback;
 	std::vector<std::string>allscenarios;
 	//playback.push_back(true);
 	playback.push_back(true);
-	/*playback.push_back(true);
 	playback.push_back(true);
 	playback.push_back(true);
-	playback.push_back(true);*/
+	playback.push_back(true);
+	playback.push_back(true);
 	//allscenarios.push_back("0");
-	allscenarios.push_back("1");
+	allscenarios.push_back("1");*/
 	/*allscenarios.push_back("2");
 	allscenarios.push_back("3");
 	allscenarios.push_back("4");
