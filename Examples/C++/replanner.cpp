@@ -12,9 +12,6 @@
 #include <boost/filesystem.hpp>
 
 
-
-
-
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
@@ -55,8 +52,8 @@ int main(int argc, char *argv[])
 	//int repSize = 20;
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
-	//modelparser.settasklogger();
-	modelparser.setdebuglogger();
+	modelparser.settasklogger();
+	//modelparser.setdebuglogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack();
 	std::vector<Exception::FMTexc> errors;
