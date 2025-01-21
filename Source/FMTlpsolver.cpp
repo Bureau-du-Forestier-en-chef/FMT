@@ -153,6 +153,14 @@ namespace Models
 		{
 		solverinterface = buildsolverinterface(lsolvertype);
 		passinmessagehandler(*_logger);
+		if (solvertype == FMTsolverinterface::MOSEK)//weird in debug...
+			{
+			OsiMskSolverInterface* mskSolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+			MSKtask_t mskTask = mskSolver->getMutableLpPtr();
+			MSK_puttaskname(mskTask, const_cast<char*>(p_problemName.c_str()));
+			}else {
+			solverinterface->setStrParam(OsiStrParam::OsiProbName, p_problemName);//do not work in debug with msk
+			}
 		}
 
 	bool FMTlpsolver::resolve()
