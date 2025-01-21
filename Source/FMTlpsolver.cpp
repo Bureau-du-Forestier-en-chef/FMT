@@ -39,11 +39,11 @@ namespace Models
 			switch (lsolvertype)
 			{
 			case FMTsolverinterface::CLP:
-				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
+				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface());
 				break;
 #ifdef  FMTWITHMOSEK
 			case FMTsolverinterface::MOSEK:
-				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
+				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface());
 				break;
 #endif
 				/*case FMTsolverinterface::CPLEX:
@@ -53,7 +53,7 @@ namespace Models
 					newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
 				break;*/
 			default:
-				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
+				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface());
 				break;
 			}
 		}catch (...)
@@ -146,12 +146,14 @@ namespace Models
 		}
 	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype,
 		const std::string& p_ColdStartParameters,
-		const std::string& p_WarmStartParameters):
+		const std::string& p_WarmStartParameters,
+		const std::string& p_problemName):
 		Core::FMTobject(),solverinterface(),matrixcache(), solvertype(lsolvertype), usecache(true),
 		m_ColdStartParameters(strtoParams(p_ColdStartParameters)),
 		m_WarmStartParameters(strtoParams(p_WarmStartParameters))
 		{
 		solverinterface = buildsolverinterface(lsolvertype);
+		solverinterface->setStrParam(OsiStrParam::OsiProbName, p_problemName);
 		passinmessagehandler(*_logger);
 		}
 

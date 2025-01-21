@@ -1187,7 +1187,9 @@ namespace Models
 		FMTmodel(base),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(Graph::FMTgraphbuild::nobuild)),
 		solver(lsolvertype,
-			base.getparameter(FMTstrmodelparameters::SOLVER_COLD_START),base.getparameter(FMTstrmodelparameters::SOLVER_WARM_START))
+			base.getparameter(FMTstrmodelparameters::SOLVER_COLD_START),
+			base.getparameter(FMTstrmodelparameters::SOLVER_WARM_START),
+			base.getname())
 	{
 		//solver.passinobject(base);
 		//m_graph->passinobject(base);

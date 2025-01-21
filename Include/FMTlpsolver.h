@@ -94,10 +94,12 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		@brief Constructor for FMTlpsolver with a (lsolvertype) and a (logger). It's the main constructor used.
 		@param[in] p_ColdStartParameters the cold starts parameters on the form: param_name param_value /n
 		@param[in] p_WarmStartParameterss the warm starts parameters on the form: param_name param_value /n
+		@param[in] p_problemName the name of the problem.
 		*/
 		FMTlpsolver(FMTsolverinterface lsolvertype,
 			const std::string& p_ColdStartParameters,
-			const std::string& p_WarmStartParameters);
+			const std::string& p_WarmStartParameters,
+			const std::string& p_problemName);
 		// DocString: FMTlpsolver::operator==
 		/**
 		Comparison operator of FMTlpsolver
