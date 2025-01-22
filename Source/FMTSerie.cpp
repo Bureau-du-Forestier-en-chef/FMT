@@ -12,6 +12,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
+	FMTSerie::FMTSerie() :
+		m_serie(),
+		m_length()
+	{
+
+	}
 
 	FMTSerie::FMTSerie(const std::string& p_serie, int p_length) :
 		m_serie(p_serie), m_length(p_length)

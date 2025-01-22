@@ -18,6 +18,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core {
 
+	FMTtheme::FMTtheme():
+		m_id(),
+		m_start(),
+		m_attributes(),
+		m_attributenames(),
+		m_aggregates(),
+		m_aggregatenames(),
+		m_indexes(),
+		m_attribute_locations(),
+		m_name()
+		{
+
+		}
+
 
 	FMTtheme::lookiterator FMTtheme::getAttribute(const std::string& p_value,bool p_raiseifnotfound) const
 		{

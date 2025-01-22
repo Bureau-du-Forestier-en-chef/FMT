@@ -52,7 +52,7 @@ class FMTEXPORT FMTtheme : public FMTobject
 		/**
 		Default constructor for FMTtheme.
 		*/
-		FMTtheme() = default;
+		FMTtheme();
 		// DocString: ~FMTtheme()
 		/**
 		Default destructor for FMTtheme.
