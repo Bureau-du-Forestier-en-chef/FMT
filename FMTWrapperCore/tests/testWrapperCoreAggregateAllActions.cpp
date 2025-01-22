@@ -16,12 +16,14 @@ int main(int argc, char* argv[])
 	{
 		const std::string OUTPUT_DIRECTORY = "../../tests/testWrapperCoreaggregateAllActions";
 		std::string pathPri;
+		std::string priName;
 		std::vector<std::string> aggregates;
 		std::vector<std::string> order;
 		std::string scenarioName;
 		if (argc < 2)
 		{
 			pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+			priName = "PC_7002071_UA08152_FINAL";
 			scenarioName = "20_Regl_prov";
 			aggregates = { "REGAFIN", "REGAPAR", "REGAEDU", "REGAREG", "ATBEMORT", "ATBERETARD", "ASNAT", "AECHEC" };
 			order = { "REGAFIN", "REGAPAR", "REGAEDU", "REGAREG", "ATBEMORT", "ATBERETARD", "ASNAT", "AECHEC" };
@@ -57,7 +59,7 @@ int main(int argc, char* argv[])
 		ModelParser.seterrorstowarnings(errors);
 
 		const std::vector<Models::FMTmodel> MODELS =ModelParser.readproject(pathPri, SCENARIOS);
-		Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, pathPri, OUTPUT_DIRECTORY, scenarioName);
+		Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, pathPri, OUTPUT_DIRECTORY, scenarioName, priName);
 
 		// On vérifie si on a moins d'action que dans le nouveau
 		std::vector<Core::FMTaction> actions = MODELS.at(0).getactions();
