@@ -12,8 +12,6 @@
 #include <boost/filesystem.hpp>
 
 
-
-
 int main(int argc, char *argv[])
 	{
 	for (int i = 0; i < 10000;++i)
@@ -62,8 +60,8 @@ int main(int argc, char *argv[])
 	//int repSize = 20;
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
-	//modelparser.settasklogger();
-	modelparser.setdebuglogger();
+	modelparser.settasklogger();
+	//modelparser.setdebuglogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack();
 	std::vector<Exception::FMTexc> errors;

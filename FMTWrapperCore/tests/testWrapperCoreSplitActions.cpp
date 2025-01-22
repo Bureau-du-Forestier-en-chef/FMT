@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
 {
 
 	std::string pathPri;
+	std::string priName;
 	std::vector<std::string> splitted;
 	std::vector<std::string> splittedMask;
 	const std::string OUTPUT_DIRECTORY = "../../tests/testWrapperCoreSplitActions";
@@ -18,6 +19,7 @@ int main(int argc, char* argv[])
 	if (argc < 2)
 	{
 		pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
+		priName = "PC_7002071_UA08152_FINAL";
 		splitted = { "AEC", "ACT" };
 		splittedMask = { "? ? ? ? ? ? ? ? ? ? ? ? ? UTA11 ? ? ? ? ? ?", "? ? ? ? ? ? ? ? ? ? ? ? ? !UTA11 ? ? ? ? ? ?" };
 		scenarioName = "01_Regl_prov_apsp_1_6";
@@ -53,7 +55,7 @@ int main(int argc, char* argv[])
 
 
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
-	const Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODELS.at(0), pathPri, splitted, splittedMask, OUTPUT_DIRECTORY, scenarioName);
+	const Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODELS.at(0), pathPri, splitted, splittedMask, OUTPUT_DIRECTORY, scenarioName, priName);
 	
 	// On vérifie si on a plus d'actions dans le nouveau model
 	if (SPLITTED_MODEL.getactions().size() <= MODELS.at(0).getactions().size())

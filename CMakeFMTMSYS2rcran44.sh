@@ -2,11 +2,12 @@
 #Install Rtools that fits with R
 #Install Rcpp on R install.packages("Rcpp")
 #Change rtools43/etc/profile
-#In profile set MINGW_MOUNT_POINT="x86_64-w64-mingw32.static.posix"
+#In profile, put 'set MINGW_MOUNT_POINT="x86_64-w64-mingw32.static.posix"' before the unset MINGW_MOUNT_POINT line
 #And ajust those variables
 #MSYS2_PATH="/usr/local/bin:/usr/bin:/x86_64-w64-mingw32.static.posix/bin"
 #MANPATH="/usr/local/man:/usr/share/man:/usr/man:/share/man:/x86_64-w64-mingw32.static.posix/man"
 #INFOPATH="/usr/local/info:/usr/share/info:/usr/info:/share/info:/x86_64-w64-mingw32.static.posix/share/info"
+#Open mingw64.exe in Rtools44
 #cd /home
 #git clone https://github.com/Bureau-du-Forestier-en-chef/FMT.git
 #cd FMT
