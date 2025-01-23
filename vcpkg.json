@@ -13,6 +13,9 @@
     "builtin-baseline": "13766fcd1292a973fea53fba731a0fb90c7ee310",
     "overrides": [
         { "name": "python3", "version": "3.10.7" },
-        { "name":"libffi", "version": "3.4.4#2"}
+        { "name":"libffi", "version": "3.4.4#2"},
+		{"name":"coin-or-osi","version":"2023-02-01"},
+		{"name":"coinutils","version":"2023-02-02"}
+		
     ]
 }

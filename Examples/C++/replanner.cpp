@@ -14,13 +14,16 @@
 
 int main(int argc, char *argv[])
 	{
-	for (int i = 0; i < 10000;++i)
-		{
-		Models::FMTlpmodel test(Models::FMTmodel(), Models::FMTsolverinterface::MOSEK);
-		Models::FMTlpmodel test1(Models::FMTmodel(), Models::FMTsolverinterface::MOSEK);
-		Models::FMTlpmodel test2(Models::FMTmodel(), Models::FMTsolverinterface::MOSEK);
+	for (int i = 0; i < 10000; ++i)
+	{
+		/*Parser::FMTmodelparser pp;
+		std::vector<Models::FMTmodel> models = pp.readproject("C:/Logiciels/dev/FMT/Examples/Models/TWD_land/TWD_land.pri", std::vector<std::string>{"LP"});
+		Models::FMTlpmodel test(models.at(0), Models::FMTsolverinterface::MOSEK);
+		test.doplanning(true);*/
+		Models::FMTlpsolver test1(Models::FMTsolverinterface::MOSEK, "", "", "2test" + std::to_string(i));
+		Models::FMTlpsolver test2(Models::FMTsolverinterface::MOSEK, "", "", "3test" + std::to_string(i));
 		std::cout << "test " << std::to_string(i) << "\n";
-		}
+	}
 	
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
