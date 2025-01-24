@@ -34,15 +34,13 @@ cmake --install build/debug --config Debug
 cmake CMakeLists.txt \
  -B build/release \
  -G "MSYS Makefiles" \
- -DPYTHON_DIR=C:/logiciels/Anaconda3/ \
- -DR_DIR=C:/Logiciels/R-4.4.0/ \
+ -DPYTHON_DIR=C:/Logiciels/Anaconda3/ \
+ -DR_DIR=C:/Logiciels/R-4.4.1/ \
  -DCMAKE_BUILD_TYPE=Release \
  -DPARALLEL_TESTS=8 \
  -DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" \
  -DENV_PREFIX="x86_64-w64-mingw32.static.posix" \
  -DCOVERAGE=On
-
-
 	
 cmake --build build/release --config Release
 
