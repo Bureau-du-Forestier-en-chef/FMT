@@ -35,7 +35,7 @@ namespace Heuristics
 		}
 
     FMTlpheuristic::FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
-       Models::FMTlpsolver(interfacetype,std::string(), std::string()),
+       Models::FMTlpsolver(interfacetype,std::string(), std::string(),"Heuristic"+std::to_string(lseed)),
 		generator(static_cast<unsigned int>(lseed)), seed(lseed), usingsolvercopy(true/*false*/)
         {
         //this->buildsolverinterface(interfacetype);

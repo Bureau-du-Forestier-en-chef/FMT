@@ -18,19 +18,9 @@ namespace Graph
 	{
 	class FMTedgeproperties : public FMTbaseedgeproperties
 		{
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-			{
-			ar & boost::serialization::make_nvp("FMTbaseedgeproperties", boost::serialization::base_object<FMTbaseedgeproperties>(*this));
-			ar & BOOST_SERIALIZATION_NVP(variableID);
-			ar & BOOST_SERIALIZATION_NVP(proportion);
-			}
-		int variableID;
-		float proportion;
 		public:
 			~FMTedgeproperties()=default;
-			FMTedgeproperties()=default;
+			FMTedgeproperties();
 			FMTedgeproperties(const FMTedgeproperties& rhs)=default;
 			FMTedgeproperties& operator = (const FMTedgeproperties& rhs)=default;
 			inline int	getvariableID() const override
@@ -52,6 +42,17 @@ namespace Graph
 				{
 				return &variableID;
 				}
+		private:
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& boost::serialization::make_nvp("FMTbaseedgeproperties", boost::serialization::base_object<FMTbaseedgeproperties>(*this));
+				ar& BOOST_SERIALIZATION_NVP(variableID);
+				ar& BOOST_SERIALIZATION_NVP(proportion);
+			}
+			int variableID;
+			float proportion;
 			
 		};
 	}

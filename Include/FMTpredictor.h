@@ -27,15 +27,8 @@ namespace Graph
 	class FMTbaseedgeproperties;
 	class FMTEXPORT FMTpredictor
 	{
-		const FMTbasevertexproperties* source_vertex;
-		const FMTbasevertexproperties* target_vertex;
-		std::vector<double>source_yields;
-		std::vector<double>target_yields;
-		std::vector<int>periodgaps;
-		std::vector<int>sourceactions;
-		std::vector<double>getyields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const;
 	public:
-		FMTpredictor() = default;
+		FMTpredictor();
 		~FMTpredictor() = default;
 		FMTpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
 			const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid = true);
@@ -51,6 +44,14 @@ namespace Graph
 		double getTargetAge() const;
 		std::vector<double> getTargetYields() const;
 		std::vector<std::string>getpredictornames(const std::vector<std::string>& yieldnames)const;
+	private:
+		const FMTbasevertexproperties* source_vertex;
+		const FMTbasevertexproperties* target_vertex;
+		std::vector<double>source_yields;
+		std::vector<double>target_yields;
+		std::vector<int>periodgaps;
+		std::vector<int>sourceactions;
+		std::vector<double>getyields(const FMTbasevertexproperties& vertex, const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const;
 	};
 }
 
