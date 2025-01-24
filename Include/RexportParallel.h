@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -63,8 +63,7 @@ namespace R
 			std::string,
 			std::vector<std::string>,
 			Core::FMToutputlevel>("@DocString(FMTreplanningtask())")
-			.method("setreplicates", &Parallel::FMTreplanningtask::setreplicates,
-				"@DocString(FMTreplanningtask::setreplicates)")
+			.method("setreplicates", static_cast<void(Parallel::FMTreplanningtask::*)(const int&)>(&Parallel::FMTreplanningtask::setreplicates),"@DocString(FMTreplanningtask::setreplicates)")
 			.method("setreplanningperiods", &Parallel::FMTreplanningtask::setreplanningperiods,
 				"@DocString(FMTreplanningtask::setreplanningperiods)");
 

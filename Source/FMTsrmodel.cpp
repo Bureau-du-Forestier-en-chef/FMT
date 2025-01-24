@@ -813,7 +813,6 @@ namespace Models
 						}
 					}
 				}
-
 				std::vector<double>objcoefs(solver.getObjCoefficients(), solver.getNumCols() + solver.getObjCoefficients());
 				const bool usetobeoptimal = solver.isProvenOptimal();
 				int maximallock = -1;
@@ -992,7 +991,7 @@ namespace Models
 		//m_graph->passinobject(base);
 	}
 
-	FMTsrmodel::FMTsrmodel(FMTsrmodel&& rhs):
+	FMTsrmodel::FMTsrmodel(FMTsrmodel&& rhs) noexcept :
 		FMTmodel(),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>()),
 		solver()
@@ -1012,7 +1011,7 @@ namespace Models
 		return *this;
 	}
 
-	FMTsrmodel& FMTsrmodel::operator =(FMTsrmodel&& rhs)
+	FMTsrmodel& FMTsrmodel::operator =(FMTsrmodel&& rhs) noexcept
 	{
 		if (this!=&rhs)
 		{
@@ -1187,7 +1186,8 @@ namespace Models
 		FMTmodel(base),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(Graph::FMTgraphbuild::nobuild)),
 		solver(lsolvertype,
-			base.getparameter(FMTstrmodelparameters::SOLVER_COLD_START),base.getparameter(FMTstrmodelparameters::SOLVER_WARM_START))
+			base.getparameter(FMTstrmodelparameters::SOLVER_COLD_START),base.getparameter(FMTstrmodelparameters::SOLVER_WARM_START),
+			base.getname())
 	{
 		//solver.passinobject(base);
 		//m_graph->passinobject(base);

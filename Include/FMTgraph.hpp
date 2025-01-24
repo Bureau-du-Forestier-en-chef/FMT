@@ -1842,10 +1842,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							std::string value;
 							if (node.source.isnextperiod())//If it looks at next period make sure to show the right dev...
 							{
-								value = std::string(data[getgrowthsource(vertex)].get());
+								value = std::string(Core::FMTdevelopment(data[getgrowthsource(vertex)].get()));
 							}
 							else {
-								value = std::string(development);
+								value = std::string(Core::FMTdevelopment(development));
 							}
 							std::pair<std::map<std::string, double>::iterator, bool> target = values.insert(std::pair<std::string, double>(value, 0));
 							toFill = target.first;
