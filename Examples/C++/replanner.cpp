@@ -31,9 +31,15 @@
 
 int main(int argc, char* argv[])
 	{
-
-	for (int i = 0; i < 10000; ++i)
-		{
+	int tmpDbgFlag;
+	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+	_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
+	tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+	tmpDbgFlag |= _CRTDBG_DELAY_FREE_MEM_DF;
+	tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
+	_CrtSetDbgFlag(tmpDbgFlag);
+	//for (int i = 0; i < 10000; ++i)
+		//{
 		/*OsiSolverInterface* msksolver = new OsiMskSolverInterface;
 		msksolver->readLp("D:/whatGlobal.lp");
 		msksolver->initialSolve();
@@ -53,7 +59,7 @@ int main(int argc, char* argv[])
 		std::cout << "test " << std::to_string(i) << "\n";*/
 
 
-		}
+		//}
 	
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
@@ -81,7 +87,7 @@ int main(int argc, char* argv[])
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 		length = 1;
-		replicate = 100;
+		replicate = 1;
 		n_threads = 1;
 		allscenarios.push_back("strategique_AllEnrqc_CC"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
@@ -162,6 +168,7 @@ int main(int argc, char* argv[])
 	//handler.ondemandrun();
 	handler.conccurentrun();
 	#endif
+	_CrtDumpMemoryLeaks();
 	return 0;
 	
 	}

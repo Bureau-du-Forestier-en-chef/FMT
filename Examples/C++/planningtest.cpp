@@ -1,3 +1,4 @@
+
 #include <vector>
 #ifdef FMTWITHOSI
 	#include "FMTtaskhandler.h"
@@ -11,6 +12,7 @@
 
 int main(int argc, char *argv[])
 	{
+	
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	/*const std::string folder = "../../../../Examples/Models/TWD_land/";
@@ -82,6 +84,7 @@ int main(int argc, char *argv[])
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
+	
 	#endif
 	return 0;
 	}
