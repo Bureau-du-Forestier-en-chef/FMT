@@ -6,41 +6,62 @@ vcpkg_from_github(
     PATCHES glpk.patch
 )
 
+set(CMAKE_MODULE_PATH "$ENV{MODULE_PATH};${CMAKE_MODULE_PATH}")
 
-get_cmake_property(_variableNames VARIABLES)
-list (SORT _variableNames)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()
-
-
+find_package(Mosek)
 
 file(COPY "${CURRENT_INSTALLED_DIR}/share/coin-or-buildtools/" DESTINATION "${SOURCE_PATH}")
 
 set(ENV{ACLOCAL} "aclocal -I \"${SOURCE_PATH}/BuildTools\"")
 
-set(ENV{LDFLAGS} "-LIBPATH:C:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/bin fusion64_10_1.lib mosek64_10_1.lib")
+if (MOSEK_FOUND)
+message("TEST ${MOSEK_INCLUDE_DIR}")
+	set(ENV{LDFLAGS} "-LIBPATH:${MOSEK_LIB_LOCATION}${MOSEK_WIN_LIBS}")
+	#set(ENV{LDFLAGS} "-LIBPATH:C:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/bin fusion64_10_1.lib mosek64_10_1.lib")
+	vcpkg_configure_make(
+		SOURCE_PATH "${SOURCE_PATH}"
+		AUTOCONFIG
+		CONFIGURE_ENVIRONMENT_VARIABLES LIBS
+		OPTIONS
+			--disable-option-checking
+			#--with-mosek-cflags=-IC:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/h
+			#--with-mosek-lflags=-LIBPATH:C:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/bin
+			--with-mosek-cflags=-I${MOSEK_INCLUDE_DIR}
+			--with-mosek-lflags=-LIBPATH:${MOSEK_LIB_LOCATION}${MOSEK_WIN_LIBS}
+			--with-glpk
+			--with-lapack
+			--with-coinutils
+			--without-netlib
+			--without-sample
+			--without-gurobi
+			--without-xpress
+			--without-cplex
+			--without-soplex
+			--enable-relocatable
+			--disable-readline
+	)
+else()
+	vcpkg_configure_make(
+		SOURCE_PATH "${SOURCE_PATH}"
+		AUTOCONFIG
+		CONFIGURE_ENVIRONMENT_VARIABLES LIBS
+		OPTIONS
+			--with-glpk
+			--with-lapack
+			--with-coinutils
+			--without-netlib
+			--without-sample
+			--without-gurobi
+			--without-xpress
+			--without-cplex
+			--without-soplex
+			--enable-relocatable
+			--disable-readline
+	)
 
-vcpkg_configure_make(
-    SOURCE_PATH "${SOURCE_PATH}"
-    AUTOCONFIG
-	CONFIGURE_ENVIRONMENT_VARIABLES LIBS
-    OPTIONS
-		--disable-option-checking
-		--with-mosek-cflags=-IC:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/h
-		--with-mosek-lflags=-LIBPATH:C:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/bin 
-        --with-glpk
-        --with-lapack
-        --with-coinutils
-        --without-netlib
-        --without-sample
-        --without-gurobi
-        --without-xpress
-        --without-cplex
-        --without-soplex
-        --enable-relocatable
-        --disable-readline
-)
+endif(MOSEK_FOUND)
+
+
 
 vcpkg_install_make()
 vcpkg_copy_pdbs()

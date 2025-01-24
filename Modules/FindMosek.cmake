@@ -13,11 +13,11 @@ find_path(MOSEK_INCLUDE_DIR
           NAMES mosek.h
           PATHS ${POTMOSEK_INCLUDE_DIR})
 # MOSEK library detection
-if (MSVC)
+if (VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
 	FILE(GLOB_RECURSE MOSEK_POTENTIAL_LIB $ENV{MOSEK_DIR}mosek64_*_*.lib)
 else()
 	FILE(GLOB_RECURSE MOSEK_POTENTIAL_LIB $ENV{MOSEK_DIR}libmosek64_*_*${CMAKE_STATIC_LIBRARY_SUFFIX})
-ENDIF(MSVC)
+ENDIF(VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
 
 get_filename_component(MOSEK_LIB_NAME ${MOSEK_POTENTIAL_LIB} NAME)
 list(GET MOSEK_POTENTIAL_LIB 0 FIRSTLIB)
@@ -25,37 +25,48 @@ get_filename_component(POTMOSEK_LIB_DIR ${FIRSTLIB} DIRECTORY)
 
 
 FIND_LIBRARY(MOSEK_LIB NAMES "${MOSEK_LIB_NAME}" mosek64 libmosek libmosek.so libmosek64 libmosek64.so libmosek64.a  PATHS ${POTMOSEK_LIB_DIR})
+if (VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
+	get_filename_component(MOSEK_LIB_LOCATION ${MOSEK_LIB} DIRECTORY)
+	FILE(GLOB_RECURSE MOSEK_WIN_LIBS_PATHS "${MOSEK_LIB_LOCATION}/*.lib")
+	foreach(LIB ${MOSEK_WIN_LIBS_PATHS})
+			get_filename_component(THE_LIB ${LIB} NAME)
+			set(MOSEK_WIN_LIBS "${MOSEK_WIN_LIBS} ${THE_LIB}")
+	endforeach()
+	string(REPLACE "Program Files" "PROGRA~1" MOSEK_LIB_LOCATION ${MOSEK_LIB_LOCATION})
+	string(REPLACE "Program Files" "PROGRA~1" MOSEK_INCLUDE_DIR ${MOSEK_INCLUDE_DIR})
+	string(REPLACE "\"" "" MOSEK_INCLUDE_DIR ${MOSEK_INCLUDE_DIR})
+ENDIF(VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
 
 
 #Go find the Osiabstractclass if you dont have the osimoseklib but have osi and mosek dir
-#if (NOT DEFINED OSI_MSK_LIBRARY)
-	#FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiMskSolverInterface.hpp)
-	#if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
-		#list(GET OSI_POTENTIAL_INCLUDE 0 FIRST_HEADER)
-		#get_filename_component(OSIMSK_INCLUDE ${FIRST_HEADER} DIRECTORY)
-		#if (MSVC)
-		#	FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiMskSolverInterface.cpp)
-		#	list(GET OSI_POTENTIAL_INCLUDE 0 OSIMSK_DEFINITION)
-		#endif(MSVC)
-	# else()
-		# FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiSolverInterface.hpp)
-		# if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
-			# file(DOWNLOAD
-   			 # https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.hpp
-    			# ${CMAKE_SOURCE_DIR}/external/include/coin/OsiMskSolverInterface.hpp)
-			# file(DOWNLOAD
-   			 # https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskConfig.h
-    			# ${CMAKE_SOURCE_DIR}/external/include/coin/OsiMskConfig.h)
-			# file(DOWNLOAD
-   			 # https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.cpp
-    			# ${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp)
-			# set(OSIMSK_INCLUDE "${CMAKE_SOURCE_DIR}/external/include/coin/")
-			# set(OSIMSK_DEFINITION "${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp")
-		# else()
-			# message("Cannot find Osisolverinterface header...cannot compile with Mosek")
-		#endif(NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
-	#endif(NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
-#endif(NOT DEFINED OSI_MSK_LIBRARY)
+if (NOT (VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio"))
+	FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiMskSolverInterface.hpp)
+	if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+		list(GET OSI_POTENTIAL_INCLUDE 0 FIRST_HEADER)
+		get_filename_component(OSIMSK_INCLUDE ${FIRST_HEADER} DIRECTORY)
+		if (MSVC)
+			FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiMskSolverInterface.cpp)
+			list(GET OSI_POTENTIAL_INCLUDE 0 OSIMSK_DEFINITION)
+		endif(MSVC)
+	else()
+		FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiSolverInterface.hpp)
+		if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+			file(DOWNLOAD
+   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.hpp
+    			${CMAKE_SOURCE_DIR}/external/include/coin/OsiMskSolverInterface.hpp)
+			file(DOWNLOAD
+   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskConfig.h
+    			${CMAKE_SOURCE_DIR}/external/include/coin/OsiMskConfig.h)
+			file(DOWNLOAD
+   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.cpp
+    			${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp)
+			set(OSIMSK_INCLUDE "${CMAKE_SOURCE_DIR}/external/include/coin/")
+			set(OSIMSK_DEFINITION "${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp")
+		else()
+			message("Cannot find Osisolverinterface header...cannot compile with Mosek")
+		endif(NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+	endif(NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+endif(NOT (VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio"))
 
 #Dependencies
 FILE(GLOB_RECURSE MOSEK_POTENTIAL_DLL $ENV{MOSEK_DIR}mosek64_*_*.dll)
@@ -81,12 +92,12 @@ endif(MOSEK_MAJOR_VERSION LESS_EQUAL 9)
 
 include(FindPackageHandleStandardArgs)
 
-if (MSVC)
+if (VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
 	find_package_handle_standard_args(MOSEK  MOSEK_INCLUDE_DIR 
-									  MOSEK_LIB MOSEK_DLL MOSEK_MAJOR_VERSION MOSEK_MINOR_VERSION) #OSIMSK_INCLUDE OSIMSK_DEFINITION
-	mark_as_advanced(MOSEK_INCLUDE_DIR MOSEK_LIB MOSEK_FOUND MOSEK_DLL MOSEK_MAJOR_VERSION MOSEK_MINOR_VERSION) #OSIMSK_INCLUDE OSIMSK_DEFINITION
+									  MOSEK_LIB MOSEK_DLL MOSEK_MAJOR_VERSION MOSEK_MINOR_VERSION MOSEK_LIB_LOCATION MOSEK_WIN_LIBS) #OSIMSK_INCLUDE OSIMSK_DEFINITION
+	mark_as_advanced(MOSEK_INCLUDE_DIR MOSEK_LIB MOSEK_FOUND MOSEK_DLL MOSEK_MAJOR_VERSION MOSEK_MINOR_VERSION MOSEK_LIB_LOCATION MOSEK_WIN_LIBS) #OSIMSK_INCLUDE OSIMSK_DEFINITION
 else()
 	find_package_handle_standard_args(MOSEK  MOSEK_INCLUDE_DIR MOSEK_LIB MOSEK_DLL MOSEK_MAJOR_VERSION MOSEK_MINOR_VERSION) #OSIMSK_INCLUDE OSIMSK_DEFINITION
 	mark_as_advanced(MOSEK_INCLUDE_DIR MOSEK_LIB MOSEK_FOUND MOSEK_DLL MOSEK_MAJOR_VERSION MOSEK_MINOR_VERSION MOSEK_LINKER_FLAGS) #OSIMSK_INCLUDE OSIMSK_DEFINITION
-endif(MSVC)
+endif(VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
 

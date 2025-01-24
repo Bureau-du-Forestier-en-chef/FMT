@@ -1,3 +1,18 @@
+#include <crtdbg.h>
+
+#include "mosek.h"
+#include "OsiMskSolverInterface.hpp"
+#include "OsiClpSolverInterface.hpp"
+#include <OsiClpSolverInterface.hpp>
+
+/*int main(int argc, char* argv[])
+{
+	OsiSolverInterface* msksolver = new OsiMskSolverInterface;
+	msksolver->readLp("D:/whatGlobal.lp");
+	msksolver->initialSolve();
+}*/
+
+
 #include <vector>
 #include <string>
 #ifdef FMTWITHOSI
@@ -11,12 +26,35 @@
 	#include "FMTdefaultlogger.h"
 #include <boost/filesystem.hpp>
 
+#include "FMTlpsolver.h"
 
 
-
-
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 	{
+
+	for (int i = 0; i < 10000; ++i)
+		{
+		/*OsiSolverInterface* msksolver = new OsiMskSolverInterface;
+		msksolver->readLp("D:/whatGlobal.lp");
+		msksolver->initialSolve();
+		OsiSolverInterface* msksolver2 = new OsiMskSolverInterface;
+		msksolver2->readLp("D:/whatGlobal.lp");
+		msksolver2->initialSolve();
+		delete msksolver;
+		delete msksolver2;*/
+		/*Parser::FMTmodelparser pp;
+		std::vector<Models::FMTmodel> models = pp.readproject("T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/replanning_R10/PC_PROV.pri", std::vector<std::string>{"Globalreplanning", "Globalfire", "Localreplanning"});
+		Models::FMTlpmodel test(models.at(0), Models::FMTsolverinterface::MOSEK);
+		test.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+		test.doplanning(true);
+		Models::FMTlpmodel test2(models.at(1), Models::FMTsolverinterface::MOSEK);
+		test2.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+		test2.doplanning(true);
+		std::cout << "test " << std::to_string(i) << "\n";*/
+
+
+		}
+	
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	const bool writeschedule = true;
@@ -41,10 +79,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:/Logiciels/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 		length = 1;
 		replicate = 100;
-		n_threads = 5;
+		n_threads = 1;
 		allscenarios.push_back("strategique_AllEnrqc_CC"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC");
@@ -55,8 +93,8 @@ int main(int argc, char *argv[])
 	//int repSize = 20;
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
-	//modelparser.settasklogger();
-	modelparser.setdebuglogger();
+	modelparser.settasklogger();
+	//modelparser.setdebuglogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack();
 	std::vector<Exception::FMTexc> errors;
@@ -80,23 +118,20 @@ int main(int argc, char *argv[])
 	#else
 		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
 	#endif
-	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	/*global.setcompresstime(10, 12, 2);
-	global.setcompresstime(12, 14, 3);
-	global.setcompresstime(14, 16, 4);
-	global.setcompresstime(16, 30, 5);*/
-	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
-	Models::FMTnssmodel stochastic(models.at(1), 0);
-	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	#ifdef FMTWITHMOSEK
 		Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::MOSEK);
 	#else
 		Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::CLP);
 	#endif
+	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
+	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
+	Models::FMTnssmodel stochastic(models.at(1), 0);
+	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+	
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC"/*,"ORISQUE","ORISQUE_NOR", "OVOL_UA_TOTREC" ,"OSUPBRULER_ORI","OSUPBRULER_CORRIGER" ,
+	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC","ORISQUE","ORISQUE_NOR", "OVOL_UA_TOTREC" ,"OSUPBRULER_ORI","OSUPBRULER_CORRIGER" ,
 												"SUPERFICIE_RECUP_FEU" ,"OSUPPLEP_FEU23_UA","OSUPPL_FEU_POSTRECUP",
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
 												"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
@@ -104,7 +139,7 @@ int main(int argc, char *argv[])
 	"ORISQUE","ORISQUE_FEU","ORISQUE_TBE","ORISQUE_FEU_NOR","ORISQUE_TBE_NOR","ORISQUE_NOR","OVOLGFIREC","OVOLGFTREC","OVOLGRREC",
 	"SS_10","SS_25","SS_50","SS_100","SS_200","SS_400","SR_10","SR_25","SR_50","SR_100","SR_200","SR_400",
 	"REST_10","REST_25","REST_50","REST_100","REST_200","REST_400","ORISQUEYVS",
-	"OVOLTOTREC","OVOLGSEPMREC","OVOLTOTREC_RECUP","OVOLTOTRECARECUP","OSUPREALREGAREG","OSUPREALPL_BR","OSUPREALREGAREG_TOT","OSUPREALREGAEDU_TOT","OSUPREALREGAEDU","OSUPREALREGAEDU_BR","OSUPREALREGAPAR_TOT","OSUPREALREGAPAR","OSUPREALREGAPAR_BR","OSUPBRULER_ORI","OSUPBRULER_CORRIGER","MORT_ADM","OSUPMORTFEUX","OSUPTBE","OTBECOMP","OCATTBE_SS","OCATTBE_SR","OCATTBE_SF","OCATTBE_FRS","OCATTBE_PE","OCATTBE_AU","SUPERFICIE_RECUP_FEU","SUPERFICIE_ADM_RECUP_FEU","OSUPPLPIG_FEU23_UA_POSTRECUP","OSUPPLEP_FEU23_UA_POSTRECUP","OSUPPL_FEU_POSTRECUP","OSUPPLPIG_FEU23_UA_POSTRECUP_ADM","OSUPPLEP_FEU23_UA_POSTRECUP_ADM","OSUPPL_FEU_POSTRECUP_ADM","SUP_ADM_ACPPTM_BR","OSUPADM_RECUP_FEU_M3HA_SEPM_70_99","OSUPADM_RECUP_FEU_M3HA_SEPM_100_124","OSUPADM_RECUP_FEU_M3HA_SEPM_125_999","SUPERFICIE_RECUP_TBE","SUPERFICIE_ADM_RECUP_TBE","OVOLTOTRECARECUP","OVOLTOTREC_RECUP","OSUPREALPL","OVOLSABPIEDINC","OVOLGEPXPIEDINC","OVOLGFIPIEDINC","OVOLGFTPIEDINC","ORISQUE","ORISQUE_FEU","ORISQUE_TBE","OVOLGRPIEDINC","OSUPINC","OSUPECHEC"*/};
+	"OVOLTOTREC","OVOLGSEPMREC","OVOLTOTREC_RECUP","OVOLTOTRECARECUP","OSUPREALREGAREG","OSUPREALPL_BR","OSUPREALREGAREG_TOT","OSUPREALREGAEDU_TOT","OSUPREALREGAEDU","OSUPREALREGAEDU_BR","OSUPREALREGAPAR_TOT","OSUPREALREGAPAR","OSUPREALREGAPAR_BR","OSUPBRULER_ORI","OSUPBRULER_CORRIGER","MORT_ADM","OSUPMORTFEUX","OSUPTBE","OTBECOMP","OCATTBE_SS","OCATTBE_SR","OCATTBE_SF","OCATTBE_FRS","OCATTBE_PE","OCATTBE_AU","SUPERFICIE_RECUP_FEU","SUPERFICIE_ADM_RECUP_FEU","OSUPPLPIG_FEU23_UA_POSTRECUP","OSUPPLEP_FEU23_UA_POSTRECUP","OSUPPL_FEU_POSTRECUP","OSUPPLPIG_FEU23_UA_POSTRECUP_ADM","OSUPPLEP_FEU23_UA_POSTRECUP_ADM","OSUPPL_FEU_POSTRECUP_ADM","SUP_ADM_ACPPTM_BR","OSUPADM_RECUP_FEU_M3HA_SEPM_70_99","OSUPADM_RECUP_FEU_M3HA_SEPM_100_124","OSUPADM_RECUP_FEU_M3HA_SEPM_125_999","SUPERFICIE_RECUP_TBE","SUPERFICIE_ADM_RECUP_TBE","OVOLTOTRECARECUP","OVOLTOTREC_RECUP","OSUPREALPL","OVOLSABPIEDINC","OVOLGEPXPIEDINC","OVOLGFIPIEDINC","OVOLGFTPIEDINC","ORISQUE","ORISQUE_FEU","ORISQUE_TBE","OVOLGRPIEDINC","OSUPINC","OSUPECHEC"};
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
@@ -120,7 +155,7 @@ int main(int argc, char *argv[])
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
-		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
+		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,
 		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
 	Parallel::FMTtaskhandler handler(maintaskptr, n_threads); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
@@ -128,5 +163,7 @@ int main(int argc, char *argv[])
 	handler.conccurentrun();
 	#endif
 	return 0;
+	
 	}
+
 
