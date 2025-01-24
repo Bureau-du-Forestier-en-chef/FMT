@@ -15,6 +15,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 
+	FMTpredictor::FMTpredictor():
+		source_vertex(nullptr),
+		target_vertex(nullptr),
+		source_yields(),
+		target_yields(),
+		periodgaps(),
+		sourceactions()
+	{
+
+	}
+
 	std::vector<double>FMTpredictor::getyields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const
 	{
 		std::vector<double>values;

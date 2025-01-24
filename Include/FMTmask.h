@@ -101,13 +101,13 @@ class FMTEXPORT FMTmask
 		@brief Move copy constructor
 		@param[in] rhs development to swap
 		*/
-		FMTmask(FMTmask&& rhs);
+		FMTmask(FMTmask&& rhs) noexcept;
 		// DocString: FMTmask::operator=(FMTmask&& rhs)
 		/**
 		@brief Move copy assignement
 		@param[in] rhs development to swap
 		*/
-		FMTmask& operator=(FMTmask&& rhs);
+		FMTmask& operator=(FMTmask&& rhs) noexcept;
 		// DocString: swap()
 		/**
 		Swap for FMTmask.

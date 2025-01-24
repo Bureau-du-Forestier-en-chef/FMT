@@ -326,13 +326,13 @@ FMTmask::FMTmask(const FMTmask& rhs) : name(rhs.name),data(rhs.data)
 
             }
 
-FMTmask::FMTmask(FMTmask&& rhs) :
+FMTmask::FMTmask(FMTmask&& rhs) noexcept:
 	data(std::move(rhs.data)), name(std::move(rhs.name))
 	{
 
 	}
 
-FMTmask& FMTmask::operator=(FMTmask&& rhs)
+FMTmask& FMTmask::operator=(FMTmask&& rhs) noexcept
 {
 	data = std::move(rhs.data);
 	name = std::move(rhs.name);

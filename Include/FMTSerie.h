@@ -22,7 +22,7 @@ namespace Core
 class FMTEXPORT FMTSerie
     {
 	public:
-		FMTSerie() = default;
+		FMTSerie();
 		// DocString: FMTSerie(const std::string&,int)
 		/**
 		 * @brief Initialize a FMTSerie using the string description and the length of the serie

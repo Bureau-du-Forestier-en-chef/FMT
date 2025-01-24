@@ -106,12 +106,12 @@ namespace Models
 		/**
 		Default move constructor for FMTsrmodel.
 		*/
-		FMTsrmodel(FMTsrmodel&& rhs);
+		FMTsrmodel(FMTsrmodel&& rhs) noexcept;
 		// DocString: FMTsrmodel::operator=(FMTsrmodel&& rhs) 
 		/**
 		Default move assignment for FMTsrmodel.
 		*/
-		FMTsrmodel& operator =(FMTsrmodel&& rhs);
+		FMTsrmodel& operator =(FMTsrmodel&& rhs) noexcept;
 		// DocString: ~FMTsrmodel()
 		/**
 		Default destructor of FMTsrmodel
