@@ -13,8 +13,8 @@ tryCatch({
             FMTexc$FMTinvalid_geometry)
         #On applique les exceptions au parser
         newparser$seterrorstowarnings(exceptions)
-        primarylocation <- "C:/Users/Admlocal/Documents/SCRAP/01171/PC_7719_U01171_4_2018_VPF04.pri"
-        modelslist <- newparser$readproject(primarylocation, c("scenario_4"), TRUE, TRUE, TRUE)
+        primarylocation <- "T:/Donnees/Usagers/LANGA3/tempLUPCA1/pourGabriel/02251/PC_5883_U02251_4FF_V12.pri"
+        modelslist <- newparser$readproject(primarylocation, c("ROOT"), TRUE, TRUE, TRUE)
         lpmodel <- new(FMTlpmodel, modelslist[[1]], FMTsolverinterface$MOSEK)
         tolerance <- 0.01
         schedules <- newparser$readschedules(primarylocation, modelslist)[[1]]
@@ -27,11 +27,11 @@ tryCatch({
         }
         
         for (period in 1:length(schedules)) {
-            if (lpmodel$setsolution(period, schedules[[period]], tolerance)) {
+            if (lpmodel$setsolutionbylp(period, schedules[[period]], tolerance)) {
                 print(paste("Solution set at period", period))
             }
         }
-        lpmodel$doplanning(FALSE, schedules)
+        #lpmodel$doplanning(FALSE, schedules)
         outputstocalculate <- list()
         for (output in lpmodel$getoutputs()) {
             if (all(output$getname() == "OVOLTOTREC") || all(output$getname() == "OSUPREC")) {
@@ -47,6 +47,7 @@ tryCatch({
             aggregatesdata[[length(aggregatesdata) + 1]] <- theme$getaggregatesasdataframe()
             attributesdata[[length(attributesdata) + 1]] <- theme$getattributesasdataframe()
         }
+        print(outdataframe)
     } else {
         print("FMT needs to be compiled with OSI")
     }

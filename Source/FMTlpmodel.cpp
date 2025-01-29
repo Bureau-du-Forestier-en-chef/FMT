@@ -2282,27 +2282,21 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	{
 		try
 		{
-			bool bylp = false;
 			int period = 1;
+			setparameter(Models::FMTboolmodelparameters::SETSOLUTION_THROW, false);
 			for (const Core::FMTschedule& schedule: schedules)
 			{
-				if(!bylp)
+				const bool SOLUTION_FOUND = setsolution(period, schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
+				if (!SOLUTION_FOUND)
 				{
-					try
-					{
-						this->setsolution(period, schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
-					}catch(...)
-						{
-							bylp = true;
-							this->setsolutionbylp(period, schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
-						}
-				}else{
-					this->setsolutionbylp(period, schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
+					setsolutionbylp(period, schedule, parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
 				}
 				++period;
 			}
-			this->setparameter(Models::FMTintmodelparameters::LENGTH, period);
+			setparameter(Models::FMTintmodelparameters::LENGTH, period);
+			setparameter(Models::FMTboolmodelparameters::SETSOLUTION_THROW, true);
 		}catch(...){
+			setparameter(Models::FMTboolmodelparameters::SETSOLUTION_THROW, true);
 			_exhandler->raisefromcatch("", "FMTlpmodel::trysetsolution", __LINE__, __FILE__);
 		}
 		return true;

@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
 	playback.push_back(true);
 	allscenarios.push_back("LP4");
 	playback.push_back(false);
-	allscenarios.push_back("LP5");
-	/*const std::string folder = "D:/CC_modele_feu/WS_CC/";
-	const std::string primlocation = folder + "Feux_2023_ouest_V01.pri";
+	allscenarios.push_back("LP5"); //*/
+	/*const std::string folder = "T:/Donnees/Usagers/LANGA3/tempLUPCA1/pourGabriel/02251/";
+	const std::string primlocation = folder + "PC_5883_U02251_4FF_V12.pri";
 	std::vector<bool>playback;
 	std::vector<std::string>allscenarios;
 	//playback.push_back(true);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	playback.push_back(true);
 	playback.push_back(true);
 	//allscenarios.push_back("0");
-	allscenarios.push_back("1");*/
+	allscenarios.push_back("ROOT"); */
 	/*allscenarios.push_back("2");
 	allscenarios.push_back("3");
 	allscenarios.push_back("4");
