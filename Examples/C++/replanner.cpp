@@ -1,10 +1,10 @@
-#include <crtdbg.h>
-
+//#include <crtdbg.h>
+/*
 #include "mosek.h"
 #include "OsiMskSolverInterface.hpp"
 #include "OsiClpSolverInterface.hpp"
 #include <OsiClpSolverInterface.hpp>
-
+*/
 /*int main(int argc, char* argv[])
 {
 	OsiSolverInterface* msksolver = new OsiMskSolverInterface;
@@ -31,13 +31,13 @@
 
 int main(int argc, char* argv[])
 	{
-	int tmpDbgFlag;
+	/*int tmpDbgFlag;
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
 	tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 	tmpDbgFlag |= _CRTDBG_DELAY_FREE_MEM_DF;
 	tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
-	_CrtSetDbgFlag(tmpDbgFlag);
+	_CrtSetDbgFlag(tmpDbgFlag);*/
 	//for (int i = 0; i < 10000; ++i)
 		//{
 		/*OsiSolverInterface* msksolver = new OsiMskSolverInterface;
@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
 	//handler.ondemandrun();
 	handler.conccurentrun();
 	#endif
-	_CrtDumpMemoryLeaks();
+	//_CrtDumpMemoryLeaks();
 	return 0;
 	
 	}
