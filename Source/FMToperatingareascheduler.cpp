@@ -818,26 +818,30 @@ namespace Heuristics
                         }
                     if (!potentials.empty() && !userandomness)
                         {
-                        std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator vit = potentials.begin();
-                        size_t oldsize = potentials.size();
+                        //std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator vit = potentials.begin();
+						size_t potId = 0;
+						size_t oldsize = potentials.size();
                         while (potentials.size() == oldsize)
                             {
                             double potentialvalue = 0;
-                            if (vit != potentials.end())
+                            if (potId < potentials.size())//vit != potentials.end())
                                 {
                                 if (useprimal)
                                     {
-                                        potentialvalue = (*vit)->getbinariessum(primalsolution);
-                                    }
-                                    else {
-                                        potentialvalue = (*vit)->getactivitysum(dualsolution);
+                                        //potentialvalue = (*vit)->getbinariessum(primalsolution);
+									potentialvalue = potentials[potId]->getbinariessum(primalsolution);
+                                    }else {
+                                        //potentialvalue = (*vit)->getactivitysum(dualsolution);
+									potentialvalue = potentials[potId]->getactivitysum(dualsolution);
                                     }
                                 }
-                            if (vit == potentials.end() || (value - potentialvalue)>FMT_DBL_TOLERANCE)
+                            if (/*vit == potentials.end()*/ potId  == potentials.size() || (value - potentialvalue)>FMT_DBL_TOLERANCE)
                                 {
-                                potentials.insert(vit, areait);
+                                //potentials.insert(vit, areait);
+								potentials.insert(potentials.begin() + potId, areait);
                                 }
-                                ++vit;
+							++potId;
+							//++vit;
                             }
                         }else {
                             potentials.push_back(areait);

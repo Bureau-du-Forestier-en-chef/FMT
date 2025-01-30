@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	int length;
 	int replicate;
 	std::vector<std::string>allscenarios;
-	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
+	std::string outputlocation = "../../tests/replanner/test";
 	unsigned int n_threads = 5;
 	if (argc > 1) {
 		const std::string vals = argv[1];
@@ -85,15 +85,15 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 1;
-		replicate = 1;
+		primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/replanning_R10/PC_PROV.pri";
 		n_threads = 1;
-		allscenarios.push_back("strategique_AllEnrqc_CC"); //Pour test le lancé d'erreur
+		length = 5;
+		replicate = 5;
+		allscenarios.push_back("Globalreplanning"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_CC");
+		allscenarios.push_back("Globalfire");
 		//allscenarios.push_back("tactique");
-		allscenarios.push_back("tactique_AllEnrqc_CC");
+		allscenarios.push_back("Localreplanning");
 	}
 	int repSize = length;
 	//int repSize = 20;

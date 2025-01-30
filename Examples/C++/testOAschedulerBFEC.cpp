@@ -122,9 +122,20 @@ int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
             Logging::FMTdefaultlogger().logstamp();
-            const std::string primarylocation =  std::string(argv[1]);
-            const std::vector<std::string>scenarios(1,  std::string(argv[2]));
-            const std::string fichierShp =  std::string(argv[3]);
+            std::string primarylocation;
+            std::vector<std::string>scenarios;
+            std::string fichierShp;
+            if (argc>1)
+            {
+               primarylocation = std::string(argv[1]);
+               scenarios = std::vector<std::string>(1, std::string(argv[2]));
+               fichierShp = std::string(argv[3]);
+            }
+            else {
+                primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";
+                scenarios = std::vector<std::string>(1,"03_sc1a_bfecopt");
+                fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/FM/Carte/PC_7001892_U03772_SSP02.shp";
+            }
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
             modelparser.settasklogger();

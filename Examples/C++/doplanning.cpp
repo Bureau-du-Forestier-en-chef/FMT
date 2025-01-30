@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
-			scenario = "fullcarbon";
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02661_simplify/026_61_alexis.pri";
+			scenario = "ROOT";
 			length = 5;
-			objectivevalue = 16849; 
+			objectivevalue = 3478000;
 		}
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
