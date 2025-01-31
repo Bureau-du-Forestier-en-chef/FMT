@@ -356,28 +356,32 @@ namespace Models
 							{
 								inOutput = true;
 								if (DEVELOPPEMENT.operable(ACTION, yields))
-									{
+								{
 									const double* actualSolution = &newSolution[0];
 									double DEV_AREA = m_graph->inarea(frontVertex, actualSolution);
-									for (const int& actionId : m_graph->getoutactions(frontVertex))
+									for (const int& actionId : m_graph->getoutactions(frontVertex, false))
 										{
 										DEV_AREA -= m_graph->outarea(frontVertex, actionId, actualSolution);
 										}
-									const std::vector<Core::FMTdevelopmentpath> PATHS = DEVELOPPEMENT.operate(ACTION, transitions[actionId], yields, themes);
-									m_graph->addaction(actionId, GraphStats, toGrow, frontVertex, PATHS);
-									const double OPERATED_AREA = UpdateOutputs(DEVELOPPEMENT, PATHS, actionId, DEV_AREA,
-										targetedValues, actionsOutputs,
-										TARGETED_OUTPUTS);
-									newSolution.push_back(OPERATED_AREA);
-									totalOperatedArea += OPERATED_AREA;
+									if (DEV_AREA > FMT_DBL_TOLERANCE)
+									{
+										const std::vector<Core::FMTdevelopmentpath> PATHS = DEVELOPPEMENT.operate(ACTION, transitions[actionId], yields, themes);
+										m_graph->addaction(actionId, GraphStats, toGrow, frontVertex, PATHS);
+										const double OPERATED_AREA = UpdateOutputs(DEVELOPPEMENT, PATHS, actionId, DEV_AREA,
+											targetedValues, actionsOutputs,
+											TARGETED_OUTPUTS);
+										newSolution.push_back(OPERATED_AREA);
+										totalOperatedArea += OPERATED_AREA;
+									}
 									if (!DOES_NOT_GROW)
 										{
 										toGrow.push(frontVertex);
 										}
-									}else if (!DOES_NOT_GROW)
-										{
-										revisitedActives.push(frontVertex);
-										}
+								}
+								else if (!DOES_NOT_GROW)
+									{
+									revisitedActives.push(frontVertex);
+									}
 							}
 						}
 						if (!inOutput && !DOES_NOT_GROW)

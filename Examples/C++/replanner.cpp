@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
 	unsigned int n_threads = 5;
 	if (argc > 1) {
+		// fichier_pri | strat | stoch | tact | output_location | n_thread; length; replicate
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
 		boost::split(results, vals, boost::is_any_of("|"));
@@ -39,15 +40,15 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/replanning_R10/PC_PROV.pri";
-		length = 5;
-		replicate = 100;
+		primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_planningtest/Feux_2023_ouest_V01.pri";
+		length = 10;
+		replicate = 1;
 		n_threads = 1;
-		allscenarios.push_back("Globalreplanning"); //Pour test le lancé d'erreur
+		allscenarios.push_back("strategique_AllEnrqc_CC"); //Stratégique en premier
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("Globalfire");
+		allscenarios.push_back("stochastique_CC");
 		//allscenarios.push_back("tactique");
-		allscenarios.push_back("Localreplanning");
+		allscenarios.push_back("tactique_AllEnrqc_CC");
 	}
 	int repSize = length;
 	//int repSize = 20;

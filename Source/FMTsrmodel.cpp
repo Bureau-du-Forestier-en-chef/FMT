@@ -459,7 +459,7 @@ namespace Models
 	bool FMTsrmodel::setsolution(int period, const Core::FMTschedule& schedule, double tolerance)
 	{
 		try {
-			const bool WILL_THROW = getparameter(FMTboolmodelparameters::SETSOLUTION_THROW);
+			const bool WILL_THROW = parameters.getboolparameter(FMTboolmodelparameters::SETSOLUTION_THROW);
 			if (static_cast<int>(m_graph->size()) > period && period > 0)
 			{
 				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
