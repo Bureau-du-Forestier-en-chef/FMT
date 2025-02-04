@@ -1034,7 +1034,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			for (const auto& elementtype : simpleelements)
 			{
 				const std::vector<int> ELEMENTS = getMatrixElement(CONSTRAINT_IT, period, elementtype);
-				getMatrixElementRef(CONSTRAINT_IT, period, elementtype).clear();
+				if (!ELEMENTS.empty())
+					{
+					getMatrixElementRef(CONSTRAINT_IT, period, elementtype).clear();
+					}
 				if (!ELEMENTS.empty())
 				{
 					for (const int& levelid : ELEMENTS)
@@ -1142,13 +1145,29 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 
 						if (!Dconstraints.empty())
 						{
-							updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::constraint), Dconstraints);
+							if (!getMatrixElement(it, period, FMTmatrixelement::constraint).empty())
+								{
+								updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::constraint), Dconstraints);
+								}
+							
 						}
 						if (!Dvariables.empty())
 						{
-							updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::levelvariable), Dvariables);
-							updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::objectivevariable), Dvariables);
-							updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::goalvariable), Dvariables);
+							if (!getMatrixElement(it, period, FMTmatrixelement::levelvariable).empty())
+								{
+								updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::levelvariable), Dvariables);
+								}
+							//updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::levelvariable), Dvariables);
+							if (!getMatrixElement(it, period, FMTmatrixelement::objectivevariable).empty())
+							{
+								updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::objectivevariable), Dvariables);
+							}
+							//updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::objectivevariable), Dvariables);
+							if (!getMatrixElement(it, period, FMTmatrixelement::goalvariable).empty())
+							{
+								updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::goalvariable), Dvariables);
+							}
+							//updatematrixelements(getMatrixElementRef(it, period, FMTmatrixelement::goalvariable), Dvariables);
 						}
 					}
 				}
@@ -1649,7 +1668,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				}
 			}
-			else if (element_type == FMTmatrixelement::constraint  && indexes.empty())
+			if (element_type == FMTmatrixelement::constraint  && indexes.empty())
 			{
 				//*_logger << "getsetStage " + std::to_string(4) + "\n";
 				if (period>(m_graph->getfirstactiveperiod()) &&period<static_cast<int>(m_graph->size()) &&
@@ -1689,9 +1708,15 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						{
 						p_constraintId->getRHSvalue(period, lowerbound, upperbound);
 						}
-					solver.addRow(static_cast<int>(sumvariables.size()), &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound);
-					++stats->rows;
-					++stats->output_rows;
+					if (!sumvariables.empty())
+						{
+						solver.addRow(static_cast<int>(sumvariables.size()), &(*sumvariables.cbegin()), &(*sumcoefficiants.cbegin()), lowerbound, upperbound);
+						++stats->rows;
+						++stats->output_rows;
+					}else {
+						return -1;
+						}
+					
 				}
 			}
 			else {

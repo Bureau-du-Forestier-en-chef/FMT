@@ -289,7 +289,6 @@ namespace Parser
 
 						//boost::smatch outname_match;
 						//out_match = boost::smatch();
-						
 						if (!boost::regex_search(output_name, out_match, m_rxoutput))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
@@ -297,7 +296,9 @@ namespace Parser
 								"FMToptimizationparser::resume_output", __LINE__, __FILE__, _section);
 						}
 						else {
-							output_name = std::string(out_match[1]) + std::string(out_match[8]) + std::string(out_match[12]) + std::string(out_match[16]);
+							const std::string BACKUP(output_name);
+							output_name = std::string(out_match[1]) +std::string(out_match[8]) + std::string(out_match[12]) + std::string(out_match[16]);
+							boost::regex_search(BACKUP, out_match, m_rxoutput);
 							target_attribute = std::string(out_match[10]) + std::string(out_match[3]);
 							boost::trim(target_attribute);
 						}

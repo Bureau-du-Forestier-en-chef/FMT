@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutputnode.h"
 #include "FMTtimeyieldhandler.h"
 #include "FMToutput.h"
+#include <numeric>
 
 namespace Heuristics
 {
@@ -797,6 +798,7 @@ namespace Heuristics
         std::vector<std::vector<FMToperatingareascheme>::const_iterator>selected;
         try{
             std::vector<std::vector<FMToperatingareascheme>::const_iterator>potentials;
+			std::vector<double>potentialValues;
             const double* upperbounds = this->getColUpper();
             const double* lowerbounds = this->getColLower();
             const double* primalsolution = this->getColSolution();
@@ -816,10 +818,12 @@ namespace Heuristics
                     }else {
                         value = areait->getactivitysum(dualsolution);
                         }
-                    if (!potentials.empty() && !userandomness)
+					potentials.push_back(areait);
+					potentialValues.push_back(value);
+					/*if (!potentials.empty() && !userandomness)
                         {
                         std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator vit = potentials.begin();
-                        size_t oldsize = potentials.size();
+						size_t oldsize = potentials.size();
                         while (potentials.size() == oldsize)
                             {
                             double potentialvalue = 0;
@@ -828,23 +832,39 @@ namespace Heuristics
                                 if (useprimal)
                                     {
                                         potentialvalue = (*vit)->getbinariessum(primalsolution);
-                                    }
-                                    else {
+                                    }else {
                                         potentialvalue = (*vit)->getactivitysum(dualsolution);
                                     }
                                 }
-                            if (vit == potentials.end() || (value - potentialvalue)>FMT_DBL_TOLERANCE)
+                            if (vit == potentials.end()  || (value - potentialvalue)>FMT_DBL_TOLERANCE)
                                 {
                                 potentials.insert(vit, areait);
                                 }
-                                ++vit;
+							++vit;
                             }
                         }else {
                             potentials.push_back(areait);
-                            }
+                            }*/
                     }
                 ++areait;
                 }
+			if (!userandomness)
+			{
+				std::vector<int> indices(potentials.size());
+				std::iota(indices.begin(), indices.end(), 0);
+				std::sort(indices.begin(), indices.end(),
+					[&](int A, int B) -> bool {
+					return potentialValues[A]>potentialValues[B];
+				});
+				std::vector<std::vector<FMToperatingareascheme>::const_iterator>sortedPotentials;
+				sortedPotentials.reserve(potentials.size());
+				for (const int& INDEX : indices)
+					{
+					sortedPotentials.push_back(potentials[INDEX]);
+					}
+				potentials.swap(sortedPotentials);
+
+			}
             if (proportionofset==0)
                 {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,"Proportion of selected operating area equal 0","FMToperatingareascheduler::setdraw",__LINE__,__FILE__);
@@ -1029,13 +1049,18 @@ namespace Heuristics
 				}*/
 				++opat;
 			}
-			if (useprimal)
+			if (!ltargeteditems.empty())
 			{
-				this->setColSetBounds(&ltargeteditems[0], &ltargeteditems.back() + 1, &lbounds[0]);
-			}else {
-				this->setRowSetBounds(&ltargeteditems[0], &ltargeteditems.back() + 1, &lbounds[0]);
-				this->clearrowcache();
+				if (useprimal)
+				{
+					this->setColSetBounds(&ltargeteditems[0], &ltargeteditems.back() + 1, &lbounds[0]);
 				}
+				else {
+					this->setRowSetBounds(&ltargeteditems[0], &ltargeteditems.back() + 1, &lbounds[0]);
+					this->clearrowcache();
+				}
+			}
+			
 			}catch(...)
 	            {
 	            _exhandler->raisefromcatch("", "FMToperatingareascheduler::setbounds", __LINE__, __FILE__);

@@ -1152,6 +1152,8 @@ std::vector<std::string> FMToutput::getthemedecomposition(const FMTtheme& theme)
 				else {
 					std::vector<std::string>newvalid;
 					newvalid.reserve(validdecomp.size());
+					std::sort(validdecomp.begin(), validdecomp.end());
+					std::sort(unique_selection.begin(), unique_selection.end());
 					std::set_intersection(validdecomp.begin(), validdecomp.end(),
 						unique_selection.begin(), unique_selection.end(), back_inserter(newvalid));
 					validdecomp = newvalid;
@@ -1475,8 +1477,13 @@ std::string FMToutput::_operatorFormat() const
 	for (size_t i = 0; i < newOutput.sources.size(); ++i)
 	{
 		std::string source_str = std::string(newOutput.sources[i]);
-		std::string op_str = newOutput.operators[i];
-		Core::FMTokey op = operators[i].getkey();
+		std::string op_str;
+		Core::FMTokey op = Core::FMTokey::notvalid;
+		if (i < newOutput.operators.size())
+			{
+			op_str  = newOutput.operators[i];
+			op = operators[i].getkey();
+			}
 		std::string lastNum = "";
 		if (output_num > 1) 
 		{

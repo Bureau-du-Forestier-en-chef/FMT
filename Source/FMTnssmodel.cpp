@@ -105,12 +105,10 @@ namespace Models
 				{
 				const double lowerbound = std::max(lowers.at(outid),0.0);
 				double value = lowerbound;
-				if (uppers.at(outid)!= std::numeric_limits<double>::infinity())
+				if (uppers.at(outid)!= std::numeric_limits<double>::infinity()&&
+					(uppers.at(outid)-lowerbound) > FMT_DBL_TOLERANCE)
 					{
 					const double upperbound = uppers.at(outid);
-					
-
-
 					std::uniform_real_distribution<double>udist(lowerbound, upperbound);
 					value = udist(m_generator);
 					}

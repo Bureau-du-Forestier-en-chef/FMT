@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -94,7 +94,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		@brief Constructor for FMTlpsolver with a (lsolvertype) and a (logger). It's the main constructor used.
 		@param[in] p_ColdStartParameters the cold starts parameters on the form: param_name param_value /n
 		@param[in] p_WarmStartParameterss the warm starts parameters on the form: param_name param_value /n
-		@param[in] p_problemName the problem name.
+		@param[in] p_problemName the name of the problem.
 		*/
 		FMTlpsolver(FMTsolverinterface lsolvertype,
 			const std::string& p_ColdStartParameters,

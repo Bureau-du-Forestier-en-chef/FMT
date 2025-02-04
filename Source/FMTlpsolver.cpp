@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -39,11 +39,11 @@ namespace Models
 			switch (lsolvertype)
 			{
 			case FMTsolverinterface::CLP:
-				newsolverinterface = std::shared_ptr<OsiSolverInterface>(new OsiClpSolverInterface);
+				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface());
 				break;
 #ifdef  FMTWITHMOSEK
 			case FMTsolverinterface::MOSEK:
-				newsolverinterface = std::shared_ptr<OsiSolverInterface>(new OsiMskSolverInterface);
+				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface());
 				break;
 #endif
 				/*case FMTsolverinterface::CPLEX:
@@ -53,7 +53,7 @@ namespace Models
 					newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
 				break;*/
 			default:
-				newsolverinterface = std::shared_ptr<OsiSolverInterface>(new OsiClpSolverInterface);
+				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface());
 				break;
 			}
 		}catch (...)
@@ -152,17 +152,17 @@ namespace Models
 		m_ColdStartParameters(strtoParams(p_ColdStartParameters)),
 		m_WarmStartParameters(strtoParams(p_WarmStartParameters))
 		{
-		solverinterface = buildsolverinterface(solvertype);
-		/*OsiSolverInterface* test = new OsiMskSolverInterface;
-		test->setStrParam(OsiStrParam::OsiProbName, p_problemName);
-		std::string pn;
-		test->getStrParam(OsiStrParam::OsiProbName, pn);
-		OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(test);
-		MSKtask_t task = msksolver->getMutableLpPtr();
-		test->passInMessageHandler(_logger->getsolverlogger());
-		delete test;*/
-		solverinterface->setStrParam(OsiStrParam::OsiProbName, p_problemName);//do not work in debug with msk
+		solverinterface = buildsolverinterface(lsolvertype);
+		//solverinterface->setStrParam(OsiStrParam::OsiProbName, p_problemName);
 		passinmessagehandler(*_logger);
+		/*if (solvertype == FMTsolverinterface::MOSEK)//weird in debug...
+			{
+			OsiMskSolverInterface* mskSolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+			MSKtask_t mskTask = mskSolver->getMutableLpPtr();
+			MSK_puttaskname(mskTask, const_cast<char*>(p_problemName.c_str()));
+		}else {
+			solverinterface->setStrParam(OsiStrParam::OsiProbName, p_problemName);//do not work in debug with msk
+			}*/
 		}
 
 	bool FMTlpsolver::resolve()

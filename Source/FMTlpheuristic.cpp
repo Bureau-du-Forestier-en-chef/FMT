@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -35,7 +35,7 @@ namespace Heuristics
 		}
 
     FMTlpheuristic::FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
-       Models::FMTlpsolver(interfacetype,std::string(), std::string(),"Heuristic"+std::to_string(lseed)),
+       Models::FMTlpsolver(interfacetype,std::string(), std::string(),"LpHeuristic_"+std::to_string(lseed)),
 		generator(static_cast<unsigned int>(lseed)), seed(lseed), usingsolvercopy(true/*false*/)
         {
         //this->buildsolverinterface(interfacetype);

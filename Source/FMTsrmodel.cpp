@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -170,7 +170,7 @@ namespace Models
 				const int deathid = static_cast<int>(std::distance(actions.cbegin(), cit));
 				const double* actual_solution = solver.getColSolution();
 				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getdevsset(period);
-				//Copy de la solution donc les périodes précédents car c'est elle qu'on veut... Le reste on le scrap ?!
+				//Copy de la solution donc les pï¿½riodes prï¿½cï¿½dents car c'est elle qu'on veut... Le reste on le scrap ?!
 				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
 				//Contient la proportion d'area qui rentre dans le vertex qui doit resortir dans la variable... Donc 200 ha dans le vertex rentre.. 222,0.1 il y a 20 ha qui ressort dans la variable 222
 				boost::unordered_map<int,double> varproportions;
@@ -190,7 +190,7 @@ namespace Models
 					}
 				}
 				//Getoutvariables proportions for schedule...
-				//Container pour deduire le growht à partir de ce qui est placé dans les actions par dev
+				//Container pour deduire le growht ï¿½ partir de ce qui est placï¿½ dans les actions par dev
 				std::map<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,double> growthordeathdeductor;
 				for (int actionid = 0; actionid < static_cast<int>(actions.size()); ++actionid)
 				{
@@ -222,7 +222,7 @@ namespace Models
 								
 							}
 							else{
-								//message de warning pour les dévelopement initiaux qui n'existe plus ppour la schedule.
+								//message de warning pour les dï¿½velopement initiaux qui n'existe plus ppour la schedule.
 								//std::cout<<std::string(devit.first)<<" "+std::to_string(devit.second.at(0))<<" missing"<<std::endl;
 							}
 						}
@@ -346,7 +346,7 @@ namespace Models
 				while(!descriptors.empty())
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor first = descriptors.front();
-					//Cette portion est pour valider que toutes les variables qui rentrent dans le vertex on été setter par la fonction
+					//Cette portion est pour valider que toutes les variables qui rentrent dans le vertex on ï¿½tï¿½ setter par la fonction
 					//sinon on le remet a la fin de la queue 
 					const std::vector<int>invariables = m_graph->getinvariables(first);
 					const std::set<int> invariablesset(invariables.begin(), invariables.end());
@@ -442,7 +442,7 @@ namespace Models
 						}
 						descriptors.pop();
 						descriptors.push(first);
-						//handle pour ne pas avoir de boucle infini et passer ceux qui sont récursif sur la meme action genre boucle infini ... valider aussi comment on gère ça dans FMTgraph
+						//handle pour ne pas avoir de boucle infini et passer ceux qui sont rï¿½cursif sur la meme action genre boucle infini ... valider aussi comment on gï¿½re ï¿½a dans FMTgraph
 					}
 				}
 				solver.setColSolution(&new_solution[0]);
@@ -1213,7 +1213,8 @@ namespace Models
 		FMTmodel(base),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(Graph::FMTgraphbuild::nobuild)),
 		solver(lsolvertype,
-			base.getparameter(FMTstrmodelparameters::SOLVER_COLD_START),base.getparameter(FMTstrmodelparameters::SOLVER_WARM_START),
+			base.getparameter(FMTstrmodelparameters::SOLVER_COLD_START),
+			base.getparameter(FMTstrmodelparameters::SOLVER_WARM_START),
 			base.getname())
 	{
 		//solver.passinobject(base);

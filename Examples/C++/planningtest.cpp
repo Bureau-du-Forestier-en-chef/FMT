@@ -1,3 +1,4 @@
+
 #include <vector>
 #ifdef FMTWITHOSI
 	#include "FMTtaskhandler.h"
@@ -11,6 +12,7 @@
 
 int main(int argc, char *argv[])
 	{
+	
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	std::vector<bool> playback;
@@ -85,6 +87,7 @@ int main(int argc, char *argv[])
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
+	
 	#endif
 	return 0;
 	}

@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmask.h"
 #include "FMTlpsolver.h"
 #include <algorithm>
+#include <numeric>
 
 namespace Heuristics
 {
@@ -929,13 +930,21 @@ std::vector<size_t>FMToperatingareascheme::getpotentialdualschemes(const double*
 						}
 				}
 			}
+			std::vector<double>potentialValues;
 			for (const int& binary : potentials)
 			{
 				std::vector<int>::const_iterator binit = std::find(this->openingbinaries.begin(), this->openingbinaries.end(), binary);
 				size_t indexlocation = std::distance(this->openingbinaries.begin(), binit);
 				if (isthresholdactivityrows(openingconstraints.at(indexlocation), dualsolution))
 				{
-					double actualvalue = getrowsactivitysum(openingconstraints.at(indexlocation), dualsolution);
+					const double VALUE = getrowsactivitysum(openingconstraints.at(indexlocation), dualsolution);
+					if (VALUE > FMT_DBL_TOLERANCE)
+					{
+						potentialindexes.push_back(binit - this->openingbinaries.begin());
+						potentialValues.push_back(VALUE);
+					}
+					
+					/*double actualvalue = getrowsactivitysum(openingconstraints.at(indexlocation), dualsolution);
 					if (!potentialindexes.empty())
 					{
 						const size_t oldsize = potentialindexes.size();
@@ -953,9 +962,24 @@ std::vector<size_t>FMToperatingareascheme::getpotentialdualschemes(const double*
 					else if (actualvalue > FMT_DBL_TOLERANCE)
 					{
 						potentialindexes.push_back(binit - this->openingbinaries.begin());
-					}
+					}*/
 				}
-				
+			}
+			if (!potentialindexes.empty())
+			{
+				std::vector<int> indices(potentialindexes.size());
+				std::iota(indices.begin(), indices.end(), 0);
+				std::sort(indices.begin(), indices.end(),
+					[&](int A, int B) -> bool {
+					return potentialValues[A] > potentialValues[B];
+				});
+				std::vector<size_t>sortedPotentials;
+				sortedPotentials.reserve(potentials.size());
+				for (const int& INDEX : indices)
+				{
+					sortedPotentials.push_back(potentialindexes[INDEX]);
+				}
+				potentialindexes.swap(sortedPotentials);
 			}
 		}
 	return potentialindexes;
