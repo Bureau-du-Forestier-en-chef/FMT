@@ -25,7 +25,7 @@ namespace Exception
 namespace Wrapper
 {
 
-	public ref class FMTexcelcache 
+	public ref class FMTexcelcache
 	{
 		Parser::FMTmodelparser* parser;
 		Logging::FMTlogger* cachelog;

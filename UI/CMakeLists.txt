@@ -48,6 +48,11 @@ if (MSVC AND WrapperSOURCES)
 			target_include_directories(${executablename} PRIVATE ${WrapperINCLUDEDIR})
             target_link_libraries(${executablename} PRIVATE FMTWrapperCore)
             target_include_directories(${executablename} PRIVATE ${WrapperCoreINCLUDEDIR})
+			add_test(
+								NAME "${executablename}"
+								COMMAND ${executablename}
+								WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+								)
 		endforeach()    
 	endif(NOT WITHOUT_TESTS)    
 else()    
