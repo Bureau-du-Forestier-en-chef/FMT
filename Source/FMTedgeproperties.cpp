@@ -9,13 +9,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	FMTedgeproperties::FMTedgeproperties():
-		variableID(0),
-		proportion(0.0)
-	{
-
-	}
-
 	void FMTedgeproperties::setvariableID(const int& newvariableID)
 		{
 		variableID = newvariableID;

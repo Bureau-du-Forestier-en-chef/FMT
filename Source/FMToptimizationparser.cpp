@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem/operations.hpp>
 #include "FMTexceptionhandler.h"
 #include "FMTyields.h"
+#include <boost/numeric/interval.hpp>
 //#include <boost/regex.hpp>
 
 
@@ -288,7 +289,6 @@ namespace Parser
 
 						//boost::smatch outname_match;
 						//out_match = boost::smatch();
-						
 						if (!boost::regex_search(output_name, out_match, m_rxoutput))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
@@ -296,7 +296,9 @@ namespace Parser
 								"FMToptimizationparser::resume_output", __LINE__, __FILE__, _section);
 						}
 						else {
-							output_name = std::string(out_match[1]) + std::string(out_match[8]) + std::string(out_match[12]) + std::string(out_match[16]);
+							const std::string BACKUP(output_name);
+							output_name = std::string(out_match[1]) +std::string(out_match[8]) + std::string(out_match[12]) + std::string(out_match[16]);
+							boost::regex_search(BACKUP, out_match, m_rxoutput);
 							target_attribute = std::string(out_match[10]) + std::string(out_match[3]);
 							boost::trim(target_attribute);
 						}
@@ -865,7 +867,12 @@ namespace Parser
 														{
 															TheSet -= boost::icl::discrete_interval<int>::closed(Lower, Upper);
 														}
-
+														if (Lower <= -1)
+														{
+															_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+																"excluded with invalid lower bound at line " + std::to_string(_line),
+																"FMToptimizationparser::read", __LINE__, __FILE__, _section);
+														}
 
 													}
 												}
@@ -895,7 +902,7 @@ namespace Parser
 						{
 						if (ActionIntervals.empty()||(!ActionIntervals.empty() && ((*ActionIntervals.begin()) != IntervalReference)))
 						{
-							Core::FMTaction& NewAction(p_excluded.at(ActionId));
+							Core::FMTaction& NewAction = p_excluded.at(ActionId);
 							
 							while (!NewAction.empty())
 							{
@@ -907,32 +914,40 @@ namespace Parser
 							}
 							for (const boost::icl::discrete_interval<int>& OperableInterval : ActionIntervals)
 							{
-								const bool MoreThanOne = (p_actions.at(ActionId).size() > 1);
 								for (const auto& ActionData : p_actions.at(ActionId))
 								{
 									Core::FMTspec theSpec = ActionData.second;
+									bool intersectWithAction = true;
 									boost::icl::discrete_interval<int> TheInterval(OperableInterval);
 									if (!theSpec.emptyperiod())
 										{
 										const int Upper = theSpec.getperiodupperbound();
 										const int Lower = theSpec.getperiodlowerbound();
-										TheInterval = TheInterval & boost::icl::discrete_interval<int>::closed(Lower, Upper);
-										}
-									int Upper = TheInterval.upper();
-									int Lower = TheInterval.lower() + 1;
-									if (Upper!= std::numeric_limits<int>::max())
-									{
-										--Upper;
-									}
-									if (!(MoreThanOne && (Lower == 0 && Upper == 0)))
+										intersectWithAction = boost::icl::intersects(TheInterval, boost::icl::discrete_interval<int>::closed(Lower, Upper));
+										if (intersectWithAction)
 										{
-										theSpec.setbounds(Core::FMTperbounds(Core::FMTsection::Action, Upper, Lower));
-										NewAction.push_back(ActionData.first, theSpec);
+											TheInterval = TheInterval & boost::icl::discrete_interval<int>::closed(Lower, Upper);
 										}
-									
+									}
+									int Upper = 0;
+									int Lower = 0;
+									if (intersectWithAction)
+									{
+										Upper = TheInterval.upper();
+										Lower = TheInterval.lower();
+										if (TheInterval == boost::icl::discrete_interval<int>::right_open(TheInterval.lower(), TheInterval.upper()))
+										{
+											--Upper;
+										}
+										if (TheInterval == boost::icl::discrete_interval<int>::left_open(TheInterval.lower(), TheInterval.upper()))
+										{
+											++Lower;
+										}
+									}
+									theSpec.setbounds(Core::FMTperbounds(Core::FMTsection::Action, Upper, Lower));
+									NewAction.push_back(ActionData.first, theSpec);	
 								}
 							}
-							
 							NewAction.update();
 						}
 						++ActionId;

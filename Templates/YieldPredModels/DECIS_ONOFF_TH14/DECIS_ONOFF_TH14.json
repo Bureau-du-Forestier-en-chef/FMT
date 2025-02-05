@@ -1,0 +1,38 @@
+{
+    "modelFileName": "YieldPredModels/DECIS_ONOFF_TH14/DECIS_ONOFF_TH14.json",
+    "modelType": "DECISION_TREE",
+    "Tree": {
+        "yRegeneration > 50": {
+            "Yield": 0,
+            "Time": 0,
+            "Bounds": [50, 100],
+            "Branches": ["FERME", "yHmoyP7M < 30"]
+        },
+        "yHmoyP7M < 30": {
+            "Yield": 1,
+            "Time": 0,
+            "Bounds": [0, 30],
+            "Branches": ["FERME", "yOpera < 20"]
+        },
+        "yOpera < 20": {
+            "Yield": 2,
+            "Time": 0,
+            "Bounds": [0, 20],
+            "Branches": ["FERME", "OUVERT"]
+        }
+    },
+    "Decisions": {
+        "FERME": {
+            "Value": 0,
+            "Yield": 0,
+            "Rest": false
+        },
+        "OUVERT": {
+            "Value": 1,
+            "Yield": 0,
+            "Rest": true
+        }
+    },
+    "Default": [1],
+    "Reference": 3
+}

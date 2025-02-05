@@ -1530,14 +1530,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 
 
-		std::vector<int>getoutactions(const FMTvertex_descriptor& out_vertex) const
+		std::vector<int>getoutactions(const FMTvertex_descriptor& out_vertex, bool p_multipleEdges = true) const
 		{
 			std::vector<int>actions;
 			try {
 				const size_t outsize = boost::out_degree(out_vertex, data);
-				if (outsize > 1)
+				if (outsize > 1 || !p_multipleEdges)
 				{
-					actions.reserve(outsize - 1);
+					actions.reserve(outsize);
 					FMToutedge_pair edge_pair;
 					for (edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 					{
@@ -1842,10 +1842,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							std::string value;
 							if (node.source.isnextperiod())//If it looks at next period make sure to show the right dev...
 							{
-								value = std::string(data[getgrowthsource(vertex)].get());
+								value = std::string(Core::FMTdevelopment(data[getgrowthsource(vertex)].get()));
 							}
 							else {
-								value = std::string(development);
+								value = std::string(Core::FMTdevelopment(development));
 							}
 							std::pair<std::map<std::string, double>::iterator, bool> target = values.insert(std::pair<std::string, double>(value, 0));
 							toFill = target.first;
@@ -2457,6 +2457,26 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								
 								if (*(actual_solution + variable_iterator.second) > FMT_DBL_TOLERANCE) //basis solution only!!!
 								{
+									//if (dev.getage() == 9 
+									//	&& dev.getperiod() == 7 
+									//	&& (actions.at(variable_iterator.first).getname() == "ATBE" 
+									//	|| actions.at(variable_iterator.first).getname() == "AFEU"
+									//	|| actions.at(variable_iterator.first).getname() == "_DEATH")
+									//	&& *(actual_solution + variable_iterator.second) >= 74.39 
+									//	&& *(actual_solution + variable_iterator.second) <= 74.41)
+									//{
+									//	std::cout << inarea(vertex, actual_solution) << "\n";
+									//	std::cout << std::string(dev) << "\n";
+									//}
+									//if (dev.getage() == 9
+									//	&& dev.getperiod() == 7
+									//	&& (actions.at(variable_iterator.first).getname() == "_DEATH")
+									//	&& *(actual_solution + variable_iterator.second) >= 148.79
+									//	&& *(actual_solution + variable_iterator.second) <= 148.81)
+									//{
+									//	std::cout << inarea(vertex, actual_solution) << "\n";
+									//	std::cout << std::string(dev) << "\n";
+									//}
 									/*if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())
 									{
 										schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();

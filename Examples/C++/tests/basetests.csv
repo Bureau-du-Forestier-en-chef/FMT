@@ -16,7 +16,7 @@ testlpyieldmodel;;;
 testlpyieldmodelopt;;;
 testlevel;;;
 testlevelopt;;;
-planningtest;;;
+planningtest;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|LP4|LP5;../../tests/planning;5
 forcesolution;;;
 coordinatetest;;;
 stdconstraints;;;

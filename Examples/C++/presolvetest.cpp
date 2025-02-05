@@ -13,9 +13,20 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	const std::string primarylocation = argv[1];
-	const std::string scenario = argv[2];
-	const int scenario_length = std::stoi(argv[3]);
+	std::string primarylocation;
+	std::string scenario;
+	int scenario_length;
+	if (argc>1)
+	{
+		primarylocation = argv[1];
+		scenario = argv[2];
+		scenario_length = std::stoi(argv[3]);
+	}else {
+		primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TBEV02/tbe_R02_v01.pri";
+		scenario = "02_test_Recolte_ratio_series";
+		scenario_length = 2;
+	}
+
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);

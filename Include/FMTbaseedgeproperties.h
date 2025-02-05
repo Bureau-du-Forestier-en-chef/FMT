@@ -35,7 +35,7 @@ namespace Graph
 		int8_t action;
 	public:
 		virtual ~FMTbaseedgeproperties() = default;
-		FMTbaseedgeproperties();
+		FMTbaseedgeproperties()=default;
 		FMTbaseedgeproperties(const FMTbaseedgeproperties& rhs)=default;
 		FMTbaseedgeproperties& operator = (const FMTbaseedgeproperties& rhs)=default;
 		FMTbaseedgeproperties(const int& laction,

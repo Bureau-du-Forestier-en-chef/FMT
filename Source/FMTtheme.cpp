@@ -758,13 +758,21 @@ Rcpp::DataFrame FMTtheme::getaggregatesasdataframe() const
 			std::vector<std::string>locattributes;
 			std::vector<std::string>locaggregates;
 			this->fillupAggregates(themeids, locattributes, locaggregates);
-			Rcpp::IntegerVector rids(themeids.begin(), themeids.end());
-			Rcpp::StringVector rattributes(locattributes.begin(), locattributes.end());
-			Rcpp::StringVector raggregates(locaggregates.begin(), locaggregates.end());
+			Rcpp::IntegerVector rids(themeids.size());
+			std::copy(themeids.begin(), themeids.end(), rids.begin());
+			Rcpp::StringVector Rattributes(locattributes.size());
+			std::copy(locattributes.begin(), locattributes.end(), Rattributes.begin());
+			Rcpp::StringVector Raggregates(locaggregates.size());
+			std::copy(locaggregates.begin(), locaggregates.end(), Raggregates.begin());
 			data.push_back(rids, "THEMES");
-			data.push_back(rattributes, "ATTRIBUTES");
-			data.push_back(raggregates, "AGGREGATES");
-			data.attr("row.names") = Rcpp::seq(1, themeids.size());
+			data.push_back(Rattributes, "ATTRIBUTES");
+			data.push_back(Raggregates, "AGGREGATES");
+			if (themeids.size() == 0) {
+				data.attr("row.names") = Rcpp::IntegerVector::create(0); // Attribuer simplement 0
+			}
+			else {
+				data.attr("row.names") = Rcpp::seq(1, themeids.size());
+			}
 			}
 		data.attr("class") = "data.frame";
 	}

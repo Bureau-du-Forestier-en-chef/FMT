@@ -2413,7 +2413,11 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			size_t constraintId = 0;
 			for (Core::FMTconstraint& presolvedConstraint : presolvedModel->constraints)
 			{
-				const int originalid = *oriit;
+				int originalId = -1;
+				if (oriit != constraintsIds.end())
+					{
+					originalId = *oriit;
+					}
 				if (validConstraints[constraintId])
 				{
 					validConstraints[constraintId] = false;
@@ -2425,20 +2429,20 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 						presolvedConstraint.changesourcesid(keptoutputid, keptthemeid);
 						if (presolvedConstraint.canbeturnedtoyields())
 						{
-							presolvedConstraint.turntoyieldsandactions(newthemes, presolvedModel->actions,validActions, newyields, originalid);
+							presolvedConstraint.turntoyieldsandactions(newthemes, presolvedModel->actions,validActions, newyields, originalId);
 						}
 						else if (presolvedConstraint.canbeturnedtoyieldsbasedontransitions())
 						{
-							presolvedConstraint.turntoyieldsbasedontransition(newthemes, presolvedModel->transitions, presolvedModel->actions,validActions, newyields, originalid);
+							presolvedConstraint.turntoyieldsbasedontransition(newthemes, presolvedModel->transitions, presolvedModel->actions,validActions, newyields, originalId);
 						}
 						else {
-							newConstraintsIds.push_back(originalid);
+							newConstraintsIds.push_back(originalId);
 							validConstraints[constraintId] = true;
 						}
 					}
 					else if (presolvedConstraint.isspatial())
 					{
-						newConstraintsIds.push_back(originalid);
+						newConstraintsIds.push_back(originalId);
 						validConstraints[constraintId] = true;
 					}
 					++oriit;

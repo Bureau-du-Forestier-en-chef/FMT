@@ -257,12 +257,12 @@ class FMTEXPORT FMTyldbounds: public FMTbounds<double>
 	}
     std::string yield;
     public:
-	FMTyldbounds() :FMTbounds<double>(), yield() {};
+	FMTyldbounds();
 	~FMTyldbounds() = default;
 	FMTyldbounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower);
     FMTyldbounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper,const double& llower);
     FMTyldbounds(const std::string& lyield,const FMTbounds<double>& rhs);
-	FMTyldbounds(const FMTyldbounds& rhs) : FMTbounds(rhs), yield(rhs.yield) {};
+	FMTyldbounds(const FMTyldbounds& rhs);
     FMTyldbounds& operator = (const FMTyldbounds& rhs);
 	bool operator == (const FMTyldbounds& rhs) const;
     operator std::string() const;

@@ -8,7 +8,19 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	const std::string primarylocation = std::string(argv[1]); 
+	std::string primarylocation;
+	std::vector<std::string>scenarios;
+	if (argc>1)
+	{
+		primarylocation = std::string(argv[1]);
+		const std::string scenariostr = std::string(argv[2]);
+		//const std::string scenariostr = std::string("operator_separator");// changer ici pour avoir le nom souhaité du scénario
+		boost::split(scenarios, scenariostr, boost::is_any_of("|"));
+	}
+	else {
+		scenarios.push_back("operator_separator");
+		primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
+	}
 	//std::string primarylocation = std::string("../../../../Examples/Models/TWD_land/TWD_land.pri"); // changer ici pour pointer sur un modèle avec le bug
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
@@ -27,10 +39,8 @@ int main(int argc, char* argv[])
 	readErrors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	modelparser.seterrorstowarnings(readErrors);
 
-	std::vector<std::string>scenarios;
-	const std::string scenariostr =  std::string(argv[2]); 
-	//const std::string scenariostr = std::string("operator_separator");// changer ici pour avoir le nom souhaité du scénario
-	boost::split(scenarios, scenariostr,boost::is_any_of("|"));
+	
+	
 	const std::vector<Models::FMTmodel> READ_MODELS = modelparser.readproject(primarylocation, scenarios);
 	for (const Models::FMTmodel& model: READ_MODELS)
 	{

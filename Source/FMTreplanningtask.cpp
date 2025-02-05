@@ -255,6 +255,7 @@ namespace Parallel
 				p_model->getname() == local->getname())
 			{
 				scheduleList.push_back(p_model->getsolution(p_ModelPeriod, true));
+				//scheduleList.push_back(p_model->getsolution(p_ReportingPeriod, true));
 				scheduleList.back().setperiod(p_ReportingPeriod);
 			}else {//Got the strategic here got get the replicate 0 here...
 				appendExistingSchedule = false;
@@ -418,7 +419,7 @@ namespace Parallel
 					dynamicarea = stochasticcopy->getarea(replanningperiod + 1,true);
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 						{
-						developement.setperiod(0);
+						developement.setperiod(replanningperiod - 1);
 						}
 					const std::unique_ptr<Models::FMTmodel> localcopy = std::move(domodelplanning(local, replanningperiod,false,true));
 					if (!localcopy)//infeasible replicate end here
@@ -431,7 +432,8 @@ namespace Parallel
 								replanningperiods, nullptr, replanningperiod + 1);
 						break;
 						}
-					dynamicarea = localcopy->getarea(localcopy->getparameter(Models::FMTintmodelparameters::LENGTH)+1);
+					//dynamicarea = localcopy->getarea(localcopy->getparameter(Models::FMTintmodelparameters::LENGTH)+1);
+					dynamicarea = localcopy->getarea(localcopy->getparameter(Models::FMTintmodelparameters::LENGTH) + replanningperiod);
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 					{
 						developement.setperiod(replanningperiod);

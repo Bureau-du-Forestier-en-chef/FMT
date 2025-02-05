@@ -12,11 +12,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 
-	FMTbaseedgeproperties::FMTbaseedgeproperties():action(0)
-	{
-
-	}
-
 	bool FMTbaseedgeproperties::isaction(const std::vector<Core::FMTaction>& actions,
 		const Core::FMTaction& rhsaction) const
 	{
