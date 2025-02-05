@@ -91,7 +91,7 @@ namespace Parallel
 		/**
 		Get the time at which the solving should stop.
 		*/
-		std::chrono::time_point<std::chrono::high_resolution_clock>getstoppoint(const double& timegap) const;
+		std::chrono::time_point<std::chrono::high_resolution_clock>getstoppoint(const int& timegap) const;
 		// DocString: FMTopareaschedulertask::getconstraintssolution
 		/**
 		Get the outputs and constraints solution of the best scheduler and fill constraints and outputs.
@@ -171,7 +171,7 @@ namespace Parallel
 			const std::string& outputlocation,
 			const std::string& outputyieldname,
 			const unsigned int& maxiterations,
-			const double& maxtime,
+			const int& maxtime,
 			Core::FMToutput returntime_output = Core::FMToutput());
 		// DocString: FMTopareaschedulertask::split
 		/**
