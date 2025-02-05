@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_planningtest/Feux_2023_ouest_V01.pri";
-		length = 10;
+		length = 5;
 		replicate = 1;
 		n_threads = 1;
 		allscenarios.push_back("strategique_AllEnrqc_CC"); //Stratégique en premier
