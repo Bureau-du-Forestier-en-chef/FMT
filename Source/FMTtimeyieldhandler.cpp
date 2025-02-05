@@ -113,9 +113,15 @@ namespace Core {
 						return (1 / std::pow((1 + rateofreturn), pertio * exponant));
 					}else {
 						double value = lvalues->data.back();
-						if (target < static_cast<int>(lvalues->data.size()))
+						const int BASE = getbases().at(0);
+						const int INDEX = target - BASE; 
+						if (INDEX < 0)
 						{
-							value = lvalues->data.at(target);
+							value = 0;
+						}
+						else if (INDEX < static_cast<int>(lvalues->data.size()))
+						{
+							value = lvalues->data.at(INDEX);
 						}
 						return value;
 					}

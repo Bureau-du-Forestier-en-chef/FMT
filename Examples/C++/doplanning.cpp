@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
-			scenario = "TSLA";
-			length = 25;
-			objectivevalue = 1411.48;
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/WS_PC9949_08251_Ajuste_MDB/PC_9949_U08251_2028_MODB01.pri";
+			scenario = "1201_RegProv_avsp";
+			length = 1;
+			objectivevalue = 2836;
 		}
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
