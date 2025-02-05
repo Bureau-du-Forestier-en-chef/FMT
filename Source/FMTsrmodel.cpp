@@ -954,7 +954,8 @@ namespace Models
 					varsbounds[(id * 2) + 1] = cit->second.second;
 					++id;
 				}
-				solver.setColSetBounds(&*(variables.cbegin()), &*(variables.cend()), &varsbounds[0]);
+				//solver.setColSetBounds(&*(variables.cbegin()), &*(variables.cend()), &varsbounds[0]);
+				solver.setColSetBounds(&variables[0], &variables.back() + 1, &varsbounds[0]);
 				solver.setObjective(&objcoefs[0]);
 				solver.setObjSense(-1);
 				if (usetobeoptimal)

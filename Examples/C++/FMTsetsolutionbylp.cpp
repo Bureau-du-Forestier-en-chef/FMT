@@ -16,8 +16,24 @@ int main(int argc, char *argv[])
 	Logging::FMTdefaultlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		const std::string primarylocation = std::string(argv[1]);
-		const std::vector<std::string>scenarios(1, std::string(argv[2]));
+		std::string primarylocation;
+		std::vector<std::string>scenarios;
+		double ovoltotrecvalue;
+		if (argc>1)
+		{
+			primarylocation = std::string(argv[1]);
+			scenarios = std::vector<std::string>(1, std::string(argv[2]));
+			if (argc > 3)
+				{
+				ovoltotrecvalue = std::stod(argv[3]);
+				}
+		}else {
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/01171/PC_7719_U01171_4_2018_VPF04.pri";
+			scenarios = std::vector<std::string>(1, "scenario_4");
+			ovoltotrecvalue = 2085200.026;
+			argc = 4;
+		}
+
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -43,7 +59,6 @@ int main(int argc, char *argv[])
 			}
 		if (argc>3)//Got the double for validation!
 			{
-			const double ovoltotrecvalue = std::stod(argv[3]);
 			bool gotovoltotrec = false;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 				{

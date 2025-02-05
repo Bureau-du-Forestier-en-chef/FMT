@@ -121,12 +121,12 @@ namespace Parallel
 
 
 
-	std::chrono::time_point<std::chrono::high_resolution_clock> FMTopareaschedulertask::getstoppoint(const double& timegap) const
+	std::chrono::time_point<std::chrono::high_resolution_clock> FMTopareaschedulertask::getstoppoint(const int& timegap) const
 	{
 		std::chrono::time_point<std::chrono::high_resolution_clock> then;
 		try {
 			then= getclock();
-			then += std::chrono::seconds(static_cast<int>(timegap));
+			then += std::chrono::seconds(timegap);
 		}
 		catch (...)
 		{
@@ -141,7 +141,7 @@ namespace Parallel
 		const std::string& outputlocation,
 		const std::string& outputyieldname,
 		const unsigned int& maxiterations,
-		const double& maxtime,
+		const int& maxtime,
 		Core::FMToutput returntime_output):
 		bestscheduler(new Heuristics::FMToperatingareascheduler()),
 		actualscheduler(),
