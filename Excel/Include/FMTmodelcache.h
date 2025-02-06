@@ -23,7 +23,7 @@ namespace Heuristics
 
 namespace Logging
 {
-	class FMTexcellogger;
+	class FMTExcelLogger;
 }
 
 namespace Testing
@@ -63,7 +63,7 @@ namespace Wrapper
 		bool haveSerie(const std::string& p_serie, const std::string& themeselection, const std::string& aggregate) const;
 		std::vector<int> getgraphstats() const;
 		int getperiods() const;
-		Logging::FMTexcellogger* getlogger();
+		Logging::FMTExcelLogger* getlogger();
 		void putlogger(const std::unique_ptr<Logging::FMTlogger>& log);
 		std::vector<double> Juxtaposition(const std::vector<std::string>& themeselection, const std::string& yieldname, const std::string& output, const double& ratio, const double& perimeters) const;
 	private:

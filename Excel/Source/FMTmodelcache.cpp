@@ -287,7 +287,7 @@ namespace Wrapper
 	{
 		try {
 			setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-			Exception::FMTexcelexceptionhandler* excelhandler = dynamic_cast<Exception::FMTexcelexceptionhandler*>(_exhandler.get());
+			Exception::FMTExcelExceptionHandler* excelhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(_exhandler.get());
 			excelhandler->resetbuildexceptions();//Reset the exceptions
 			doplanning(false, schedules);
 			all_exceptions = excelhandler->getbuildexceptions();//get the exceptions generated
@@ -301,7 +301,7 @@ namespace Wrapper
 	bool FMTmodelcache::buildnsolve(bool solve)
 	{
 		try {
-			Exception::FMTexcelexceptionhandler* excelhandler = dynamic_cast<Exception::FMTexcelexceptionhandler*>(_exhandler.get());
+			Exception::FMTExcelExceptionHandler* excelhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(_exhandler.get());
 			excelhandler->resetbuildexceptions();//Reset the exceptions
 			const bool optimal = doplanning(solve);
 			all_exceptions = excelhandler->getbuildexceptions();//get the exceptions generated
@@ -1105,10 +1105,10 @@ namespace Wrapper
 
 
 
-	Logging::FMTexcellogger* FMTmodelcache::getlogger()
+	Logging::FMTExcelLogger* FMTmodelcache::getlogger()
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-		Logging::FMTexcellogger* log = dynamic_cast<Logging::FMTexcellogger*>(this->_logger.get());
+		Logging::FMTExcelLogger* log = dynamic_cast<Logging::FMTExcelLogger*>(this->_logger.get());
 		return log;
 		}
 

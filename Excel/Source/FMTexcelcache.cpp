@@ -16,15 +16,14 @@
 #include <cliext/list>
 #include "FMTmodelparser.h"
 #include "FMTmodelcache.h"
-#include "FMTexcellogger.h"
 #include "FMTexception.h"
 #include "FMTobject.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
-#include "FMTexcelexceptionhandler.h"
+#include "FMTExcelExceptionHandler.h"
+#include "FMTExcelLogger.h"
 #include "FMTSerie.h"
-
 
 
 namespace Wrapper
@@ -39,12 +38,12 @@ namespace Wrapper
 		exceptionraised(false)
 	{
 		
-		std::unique_ptr<Logging::FMTlogger>logger(new Logging::FMTexcellogger());
-		std::unique_ptr<Exception::FMTexceptionhandler>handler(new Exception::FMTexcelexceptionhandler());
+		std::unique_ptr<Logging::FMTlogger>logger(new Logging::FMTExcelLogger());
+		std::unique_ptr<Exception::FMTexceptionhandler>handler(new Exception::FMTExcelExceptionHandler());
 		parser->passinlogger(logger);
 		parser->passinexceptionhandler(handler);
 		cachelog = parser->getLogger();
-		cacheexceptionhandler = dynamic_cast<Exception::FMTexcelexceptionhandler*>(parser->getExceptionHandler());
+		cacheexceptionhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(parser->getExceptionHandler());
 		
 
 	}
@@ -58,7 +57,7 @@ namespace Wrapper
 	System::String^ FMTexcelcache::getlogoutput()
 		{
 		FMTmodelcache emptycache;
-		Logging::FMTexcellogger* log = emptycache.getlogger();
+		Logging::FMTExcelLogger* log = emptycache.getlogger();
 		std::string out;
 		if (log != nullptr)
 		{
@@ -214,7 +213,7 @@ namespace Wrapper
 				return true;
 			}else{
 				FMTmodelcache emptycache;
-				Logging::FMTexcellogger* log = emptycache.getlogger();
+				Logging::FMTExcelLogger* log = emptycache.getlogger();
 				if (log != nullptr)
 				{
 					log->clearout();

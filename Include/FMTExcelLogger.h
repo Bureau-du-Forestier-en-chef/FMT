@@ -1,5 +1,6 @@
-#pragma once
-#include "stdafx.h"
+#ifndef FMTEXCELLOGGER_H_INCLUDED
+#define FMTEXCELLOGGER_H_INCLUDED
+
 #include <vector>
 #include <string>
 #include <memory>
@@ -10,19 +11,21 @@
 
 namespace Logging
 {
-	class FMTexcellogger : public Logging::FMTlogger
+	class FMTEXPORT FMTExcelLogger : public Logging::FMTlogger
 	{
-		mutable std::string printout;
-	protected:
-		void cout(const char* message) const override;
 	public:
-		FMTexcellogger();
+		FMTExcelLogger();
 		std::string getprintout() const;
 		void clearout();
 	#ifdef FMTWITHOSI
 		virtual FMTlogger* clone() const;
 	#endif
 	virtual std::unique_ptr <FMTlogger> Clone() const;
+	protected:
+		void cout(const char* message) const override;
+	private:
+		mutable std::string printout;
 	};
 
 }
+#endif

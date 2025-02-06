@@ -11,31 +11,26 @@
 namespace Testing
 {
 
-	class UnitTestFMTexcelcache
+	ref class UnitTestFMTexcelcache
 		{
 		public:
-			UnitTestFMTexcelcache()
+			UnitTestFMTexcelcache() : m_cache()
 				{
-				
-				}
-			void testDefaultConstructor()
-			{
-				Wrapper::FMTexcelcache cache;
-				if (cache.size() != 0)
-				{
+				m_cache = gcnew Wrapper::FMTexcelcache();
+				if (m_cache->size() != 0)
+					{
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
 						"UnitTestFMTexcelcache::testDefaultConstructor", __LINE__, __FILE__);
 
-				}
+					}
 				std::cout << "UnitTestFMTexcelcache::testDefaultConstructor passed" << std::endl;
-			}
+				}
 			void testAddModel()
 			{
-				Wrapper::FMTexcelcache cache;
 				System::String^ MODEL = gcnew System::String("../../../../Examples/Models/TWD_land/TWD_land.pri");
 				System::String^ SCENARIO = gcnew System::String("LP");
-				cache.add(MODEL, SCENARIO);
-				if (cache.size() != 1)
+				m_cache->add(MODEL, SCENARIO);
+				if (m_cache->size() != 1)
 				{
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
 						"UnitTestFMTexcelcache::testAddModel", __LINE__, __FILE__);
@@ -44,14 +39,12 @@ namespace Testing
 				std::cout << "UnitTestFMTexcelcache::testAddModel passed" << std::endl;
 			}
 
-			void testRemoveModel()
+		void testRemoveModel()
 			{
-				Wrapper::FMTexcelcache cache;
 				System::String^ MODEL = gcnew System::String("../../../../Examples/Models/TWD_land/TWD_land.pri");
 				System::String^ SCENARIO = gcnew System::String("LP");
-				cache.add(MODEL, SCENARIO);
-				cache.remove(MODEL, SCENARIO);
-				if (cache.size() != 0)
+				m_cache->remove(MODEL, SCENARIO);
+				if (m_cache->size() != 0)
 				{
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
 						"UnitTestFMTexcelcache::testRemoveModel", __LINE__, __FILE__);
@@ -59,6 +52,8 @@ namespace Testing
 				}
 				std::cout << "UnitTestFMTexcelcache::testRemoveModel passed" << std::endl;
 			}
+		private:
+			Wrapper::FMTexcelcache^ m_cache;
 
 		};
 
@@ -70,11 +65,10 @@ namespace Testing
 int main()
 {
 	#ifdef FMTWITHMOSEK
-		Logging::FMTdefaultlogger().logstamp();
-		Testing::UnitTestFMTexcelcache test;
-		test.testDefaultConstructor();
-		test.testAddModel();
-		test.testRemoveModel();
+	Logging::FMTdefaultlogger().logstamp();
+	Testing::UnitTestFMTexcelcache test;
+	test.testAddModel();
+	test.testRemoveModel();
 	#endif 
 	return 0;
 }

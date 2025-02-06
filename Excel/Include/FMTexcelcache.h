@@ -8,7 +8,7 @@
 
 namespace Logging
 {
-	class FMTlogger;
+	class FMTExcelLogger;
 }
 
 namespace Parser
@@ -18,7 +18,7 @@ namespace Parser
 
 namespace Exception
 {
-	class FMTexcelexceptionhandler;
+	class FMTExcelExceptionHandler;
 }
 
 
@@ -29,7 +29,7 @@ namespace Wrapper
 	{
 		Parser::FMTmodelparser* parser;
 		Logging::FMTlogger* cachelog;
-		Exception::FMTexcelexceptionhandler* cacheexceptionhandler;
+		Exception::FMTExcelExceptionHandler* cacheexceptionhandler;
 		std::unordered_map<std::string, FMTmodelcache>* models;
 		bool exceptionraised;
 		std::string getprimaryname(const std::string& primarylocation);

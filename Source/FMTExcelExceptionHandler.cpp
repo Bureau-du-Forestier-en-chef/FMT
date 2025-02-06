@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "FMTexcelexceptionhandler.h"
+
+#include "FMTExcelExceptionHandler.h"
 #include "FMTwarning.h"
 #include "FMTerror.h"
 #include <boost/thread.hpp>
@@ -7,7 +7,7 @@
 namespace Exception
 {
 
-	FMTexcelexceptionhandler::FMTexcelexceptionhandler():FMTexceptionhandler(), build_exceptions()
+	FMTExcelExceptionHandler::FMTExcelExceptionHandler():FMTexceptionhandler(), build_exceptions()
 		{
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -23,15 +23,15 @@ namespace Exception
 		seterrorstowarnings(errors);
 		}
 
-	std::unordered_map<int, std::vector<std::string>> FMTexcelexceptionhandler::getbuildexceptions() const
+	std::unordered_map<int, std::vector<std::string>> FMTExcelExceptionHandler::getbuildexceptions() const
 		{
 		return build_exceptions;
 		}
-	void FMTexcelexceptionhandler::resetbuildexceptions()
+	void FMTExcelExceptionHandler::resetbuildexceptions()
 		{
 		build_exceptions.clear();
 		}
-	FMTexception FMTexcelexceptionhandler::raise(FMTexc lexception, std::string text,
+	FMTexception FMTExcelExceptionHandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file,
 		Core::FMTsection lsection, bool throwit)
 		{
@@ -69,9 +69,9 @@ namespace Exception
 		return excp;
 		}
 
-	std::unique_ptr <FMTexceptionhandler> FMTexcelexceptionhandler::Clone() const
+	std::unique_ptr <FMTexceptionhandler> FMTExcelExceptionHandler::Clone() const
 	{
-		return std::unique_ptr<FMTexceptionhandler>(new FMTexcelexceptionhandler(*this));
+		return std::unique_ptr<FMTexceptionhandler>(new FMTExcelExceptionHandler(*this));
 	}
 
 }
