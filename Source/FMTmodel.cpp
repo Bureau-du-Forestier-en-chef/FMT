@@ -984,17 +984,24 @@ std::default_random_engine* FMTmodel::getGeneratorPtr() const
 void FMTmodel::setdefaultobjects()
 	{
 	try {
+		const bool QUIET_LOG = parameters.getboolparameter(QUIET_LOGGING);
 		if (std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
-		{
-			_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction,
+		{	
+			if (!QUIET_LOG)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction,
 				"_DEATH","FMTmodel::setdefaultobjects", __LINE__, __FILE__, Core::FMTsection::Action);
+			}
 			actions.push_back(defaultdeathaction(lifespan, themes));
 			//actions.back().passinobject(*this);
 		}
 		if (std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
 		{
-			_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition,
-				"_DEATH","FMTmodel::setdefaultobjects", __LINE__, __FILE__, Core::FMTsection::Transition);
+			if (!QUIET_LOG)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition,
+					"_DEATH", "FMTmodel::setdefaultobjects", __LINE__, __FILE__, Core::FMTsection::Transition);
+			}
 			transitions.push_back(defaultdeathtransition(lifespan, themes));
 			//transitions.back().passinobject(*this);
 		}
@@ -2217,7 +2224,9 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 	std::unique_ptr<FMTmodel>presolvedModel(new FMTmodel());
 	int presolvepass = getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS);
 	try {
-		_logger->logwithlevel("Presolving " + getname() + "\n", 1);
+		const bool QUIET_LOG = parameters.getboolparameter(QUIET_LOGGING);
+		if (!QUIET_LOG)
+			_logger->logwithlevel("Presolving " + getname() + "\n", 1);
 		presolvedModel->setname(getname());
 		presolvedModel->parameters = parameters;
 		Core::FMTmaskfilter oldpresolvefilter(getbasemask(optionaldevelopments));
@@ -2509,15 +2518,18 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 	_cleanVector<Core::FMTtransition>(presolvedModel->transitions, validTransitions);
 	//presolvedConstraints.shrink_to_fit();
 	//oldconstraints.shrink_to_fit();
-	_logger->logwithlevel("Presolve stopped after " + std::to_string(getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS) - presolvepass) + " iterations\n", 1);
-	_logger->logwithlevel("Developments "+std::to_string(presolvedModel->area.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->area.size())-static_cast<int>(area.size())) + "), "
-				+"Themes "+std::to_string(presolvedModel->themes.size())+"(" + std::to_string(static_cast<int>(presolvedModel->themes.size())-static_cast<int>(themes.size())) + "), "
-				+"Yields "+std::to_string(presolvedModel->yields.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->yields.size())-static_cast<int>(yields.size())) + "), "
-				+"Actions "+std::to_string(presolvedModel->actions.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->actions.size())-static_cast<int>(actions.size())) + "), "
-				+"Transitions "+std::to_string(presolvedModel->transitions.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->transitions.size())-static_cast<int>(transitions.size())) + "), "
-				+"Outputs "+std::to_string(presolvedModel->outputs.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->outputs.size())-static_cast<int>(outputs.size())) + "), "
-				+"Constraints "+std::to_string(presolvedModel->constraints.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->constraints.size()) - static_cast<int>(constraints.size())) + ") and "
-				+"Elements "+ std::to_string(newsize)+"("+std::to_string(static_cast<int>(newsize)- static_cast<int>(originalsize)) +")\n",1);
+	if (!QUIET_LOG)
+	{ 
+		_logger->logwithlevel("Presolve stopped after " + std::to_string(getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS) - presolvepass) + " iterations\n", 1);
+		_logger->logwithlevel("Developments "+std::to_string(presolvedModel->area.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->area.size())-static_cast<int>(area.size())) + "), "
+					+"Themes "+std::to_string(presolvedModel->themes.size())+"(" + std::to_string(static_cast<int>(presolvedModel->themes.size())-static_cast<int>(themes.size())) + "), "
+					+"Yields "+std::to_string(presolvedModel->yields.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->yields.size())-static_cast<int>(yields.size())) + "), "
+					+"Actions "+std::to_string(presolvedModel->actions.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->actions.size())-static_cast<int>(actions.size())) + "), "
+					+"Transitions "+std::to_string(presolvedModel->transitions.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->transitions.size())-static_cast<int>(transitions.size())) + "), "
+					+"Outputs "+std::to_string(presolvedModel->outputs.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->outputs.size())-static_cast<int>(outputs.size())) + "), "
+					+"Constraints "+std::to_string(presolvedModel->constraints.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->constraints.size()) - static_cast<int>(constraints.size())) + ") and "
+					+"Elements "+ std::to_string(newsize)+"("+std::to_string(static_cast<int>(newsize)- static_cast<int>(originalsize)) +")\n",1);
+	}
 	std::array<std::string,6>sections{"Area","Themes","Yields","Actions","Transitions","Outputs" };//,"Constraints"};
 	std::array<size_t, 6>sizeofsections{ presolvedModel->area.size() ,
 										presolvedModel->themes.size() ,
@@ -2820,6 +2832,7 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 	{
 	bool optimal_solved = false;
 	try{
+		const bool QUIET_LOG = parameters.getboolparameter(QUIET_LOGGING);
 		const int presolve_iterations = parameters.getintparameter(PRESOLVE_ITERATIONS);
 		std::unique_ptr<FMTmodel> presolved_model;
 		if(presolve_iterations>0)
@@ -2828,7 +2841,8 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 			presolved_model = this->presolve(area);
 			//Parser::FMTmodelparser mparser;
 			//mparser.write(*presolved_model,"C:/Users/admlocal/Desktop/test/");
-			_logger->logwithlevel("Presolved " + getname() + " " +getdurationinseconds(presolvestart) + "\n", 1);
+			if (!QUIET_LOG)
+				_logger->logwithlevel("Presolved " + getname() + " " +getdurationinseconds(presolvestart) + "\n", 1);
 		}else{
 			presolved_model = this->clone();
 		}
@@ -2848,18 +2862,21 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		//
 		
 		//
-		_logger->logwithlevel("Builded " + getname() +" "+getdurationinseconds(buildstart)+ "\n", 1);
+		if (!QUIET_LOG)
+			_logger->logwithlevel("Builded " + getname() +" "+getdurationinseconds(buildstart)+ "\n", 1);
 		if(solve)
 		{
 			const std::chrono::time_point<std::chrono::high_resolution_clock>solverstart = getclock();
 			optimal_solved = presolved_model->solve();
-			_logger->logwithlevel("Solved " + getname() + " " + getdurationinseconds(solverstart) + "\n", 1);
+			if (!QUIET_LOG)
+				_logger->logwithlevel("Solved " + getname() + " " + getdurationinseconds(solverstart) + "\n", 1);
 		}
 		if (parameters.getboolparameter(POSTSOLVE) && presolve_iterations > 0)
 			{
 			const std::chrono::time_point<std::chrono::high_resolution_clock>postsolvestart = getclock();
 			presolved_model->postsolve(*this);
-			_logger->logwithlevel("Postsolved " + getname() + " " + getdurationinseconds(postsolvestart) + "\n", 1);
+			if (!QUIET_LOG)
+				_logger->logwithlevel("Postsolved " + getname() + " " + getdurationinseconds(postsolvestart) + "\n", 1);
 			}
 		this->swap_ptr(presolved_model);
 	}catch(...){

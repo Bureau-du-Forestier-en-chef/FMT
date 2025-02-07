@@ -52,7 +52,8 @@ namespace Models
 		PRESOLVE_CAN_REMOVE_STATIC_THEMES =4,//The presolve will allow the removing of static themes even in use (it can alter the area section).
         DEBUG_MATRIX = 5,//If true, when an error occur in lpmodel initialsolve or resolve, the matrix will be written. 
         SETSOLUTION_THROW = 6, //Fix pour setsolution pour ne pas throw lorsque c'est vrai TODO meilleur def
-        LastBoolModelParam = 7/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
+        QUIET_LOGGING = 7,
+        LastBoolModelParam = 8/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
     //DocString: FMTstrmodelparameters
     //

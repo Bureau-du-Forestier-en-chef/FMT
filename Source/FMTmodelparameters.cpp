@@ -35,6 +35,7 @@ namespace Models
         m_boolparameters[PRESOLVE_CAN_REMOVE_STATIC_THEMES] = false;
         m_boolparameters[DEBUG_MATRIX] = false;
         m_boolparameters[SETSOLUTION_THROW] = true;
+        m_boolparameters[QUIET_LOGGING] = false;
         //Vector for compresstime at each period
         m_compresstime = std::vector<int>(30,1);
     }

@@ -109,6 +109,7 @@ namespace Models
 
 	void FMTlpmodel::_setGraphCache(bool p_noLength)
 		{
+		const bool QUIET_LOG = parameters.getboolparameter(QUIET_LOGGING);
 		size_t length = 5;
 		if (!p_noLength)
 			{
@@ -119,7 +120,10 @@ namespace Models
 		const size_t EXPO_FACTOR = 5;
 		const size_t TO_RESERVE = length * AREA * ACTIONS * EXPO_FACTOR;
 		m_graph->reserveVerticies(TO_RESERVE);
-		_logger->logwithlevel("Graph reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") vertices\n", 1);
+		if (!QUIET_LOG)
+		{ 
+			_logger->logwithlevel("Graph reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") vertices\n", 1);
+		}
 		}
 
 	void FMTlpmodel::_setConstraintsCache()
@@ -128,6 +132,7 @@ namespace Models
 		const size_t VARIABLES = static_cast<size_t>(m_graph->getstats().cols);
 		const size_t THE_LENGTH = m_graph->size();
 		const size_t TO_RESERVE = (VARIABLES / THE_LENGTH) / FACTOR;
+		const bool QUIET_LOG = parameters.getboolparameter(QUIET_LOGGING);
 		int id = 0;
 		for (const Core::FMTconstraint CONSTRAINT : constraints)
 		{
@@ -148,7 +153,10 @@ namespace Models
 			}
 			++id;
 		}
-		_logger->logwithlevel("Constraints reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") elements\n", 1);
+		if (!QUIET_LOG)
+		{
+			_logger->logwithlevel("Constraints reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") elements\n", 1);
+		}
 	}
 
 	Heuristics::FMToperatingareaclusterer FMTlpmodel::getclusterer(
@@ -2207,6 +2215,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	bool FMTlpmodel::build(std::vector<Core::FMTschedule> schedules)
 	{
 		try{
+			const bool QUIET_LOG = parameters.getboolparameter(QUIET_LOGGING);
 			const int length = parameters.getintparameter(LENGTH);
 			bool allempty = true;
 			for(const auto& schedule : schedules)
@@ -2223,7 +2232,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size());
 			}
-			_logger->logwithlevel("Building "+getname()+" for "+std::to_string(length)+" periods. "+addon+"\n",1);
+			if (!QUIET_LOG)
+			{ 
+				_logger->logwithlevel("Building "+getname()+" for "+std::to_string(length)+" periods. "+addon+"\n",1);
+			}
 			//Period start at 0 but it's the period 1 that is created first. Reason is that schedules is a vector and the first elements 
 			//is the schedule for period 1
 			_setGraphCache();
@@ -2233,7 +2245,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 						if(period<schedules.size())
 						{
-							_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",3);
+							const Graph::FMTgraphstats PERIOD = buildperiod(schedules.at(period), forcepartialbuild, parameters.getperiodcompresstime(period));
+							if (!QUIET_LOG)
+							{
+								_logger->logwithlevel(std::string(PERIOD)+"\n",3);
+							}
 						}
 						else{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -2241,7 +2257,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 												"FMTlpmodel::build",__LINE__,__FILE__);
 						}
 					}else{
-						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(), false, parameters.getperiodcompresstime(period))) + "\n", 3);
+						const Graph::FMTgraphstats PERIOD = buildperiod(Core::FMTschedule(), false, parameters.getperiodcompresstime(period));
+						if (!QUIET_LOG)
+						{
+							_logger->logwithlevel(std::string(PERIOD) + "\n", 3);
+						}
 					}
 				}
 			if(!allempty)
@@ -2250,7 +2270,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 			if (!forcepartialbuild)
 				{
-				_logger->logwithlevel("Setting constraints on the " + getname() + ". " + addon + "\n", 1);
+				if (!QUIET_LOG)
+				{
+					_logger->logwithlevel("Setting constraints on the " + getname() + ". " + addon + "\n", 1);
+				}
 				_setConstraintsCache();
 				for (size_t constraintid = 1; constraintid < constraints.size(); ++constraintid)
 					{
@@ -2258,8 +2281,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				if (!constraints.empty())
 				{
-					
-						_logger->logwithlevel("*Graph stats with all constraints : \n" + std::string(this->setobjective(constraints.at(0))) + "\n", 1);
+					const Graph::FMTgraphstats OBJECTIVE = setobjective(constraints.at(0));
+					if (!QUIET_LOG)
+					{
+						_logger->logwithlevel("*Graph stats with all constraints : \n" + std::string(OBJECTIVE) + "\n", 1);
+					}
 				}
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,

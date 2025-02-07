@@ -219,7 +219,11 @@ namespace Core {
 					newareas.push_back(developement);
 					}
 				}
+			
 			std::unique_ptr<Models::FMTmodel>naturalgrowth = m_modelPtr->getcopy(0);
+			Logging::FMTquietlogger ModelLogger;
+			naturalgrowth->setparallellogger(ModelLogger);
+			naturalgrowth->setparameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
 			naturalgrowth->setarea(newareas);//Will only work with lp model going to get big with semodel...
 			naturalgrowth->setname(std::string(reference->getsources().begin()->getmask()));
 			//std::vector<Core::FMTaction> newactions = naturalgrowth->getactions();

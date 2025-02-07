@@ -40,24 +40,24 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_planningtest/Feux_2023_ouest_V01.pri";
+		primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_planningtest_2/Feux_2023_ouest_V01.pri";
 		length = 5;
 		replicate = 1;
 		n_threads = 1;
-		allscenarios.push_back("strategique_AllEnrqc_CC"); //Stratégique en premier
+		allscenarios.push_back("strategique_AllEnrqc_CC_2"); //Stratégique en premier
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_CC");
+		allscenarios.push_back("stochastique_CC_2");
 		//allscenarios.push_back("tactique");
-		allscenarios.push_back("tactique_AllEnrqc_CC");
+		allscenarios.push_back("tactique_AllEnrqc_CC_2");
 	}
 	int repSize = length;
 	//int repSize = 20;
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
-	modelparser.settasklogger();
-	//modelparser.setdebuglogger();
+	//modelparser.settasklogger();
+	modelparser.setdefaultlogger();
 	modelparser.setTerminateStack();
-	modelparser.setAbortStack();
+	modelparser.setAbortStack(); 
 	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
