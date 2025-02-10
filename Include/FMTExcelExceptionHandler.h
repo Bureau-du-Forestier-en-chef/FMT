@@ -19,7 +19,6 @@ namespace Exception
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true);
 		FMTExcelExceptionHandler();
-		~FMTExcelExceptionHandler() = default;
 		virtual std::unique_ptr <FMTexceptionhandler> Clone() const;
 	private:
 		std::unordered_map<int, std::vector<std::string>>build_exceptions;
