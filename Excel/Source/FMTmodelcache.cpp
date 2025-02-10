@@ -22,7 +22,7 @@
 #include "FMToperatingareascheme.h"
 #include "FMToperatingarea.h"
 #include "FMTgraphstats.h"
-#include "FMTexcelexceptionhandler.h"
+#include "FMTExcelExceptionHandler.h"
 #include <map>
 #include "FMTSerie.h"
 
