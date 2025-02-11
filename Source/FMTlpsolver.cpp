@@ -14,6 +14,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "OsiMskSolverInterface.hpp"
 #endif
 
+#ifdef  FMTWITHGLPK
+	#include "OsiGlpkSolverInterface.hpp"
+#endif
+
 
 #include "OsiClpSolverInterface.hpp"
 #include "FMTdefaultexceptionhandler.h"
@@ -41,11 +45,16 @@ namespace Models
 			case FMTsolverinterface::CLP:
 				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface());
 				break;
-#ifdef  FMTWITHMOSEK
+			#ifdef  FMTWITHMOSEK
 			case FMTsolverinterface::MOSEK:
 				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface());
 				break;
-#endif
+			#endif
+			#ifdef  FMTWITHGLPK
+			case FMTsolverinterface::GLPK:
+				newsolverinterface = std::shared_ptr<OsiGlpkSolverInterface>(new OsiGlpkSolverInterface());
+				break;
+			#endif
 				/*case FMTsolverinterface::CPLEX:
 					newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 				break;
@@ -362,6 +371,9 @@ namespace Models
 		bool erroroccured = false;
 		switch (solvertype)
 		{
+		//#ifdef FMTWITHGLPK
+		//#endif
+
 		case FMTsolverinterface::CLP:
 		{
 			//options.setSpecialOption(which,value1,value2)
@@ -457,12 +469,6 @@ namespace Models
 		}
 		break;
 		#endif
-		/*case FMTsolverinterface::CPLEX:
-			solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
-		break;
-		case FMTsolverinterface::GUROBI:
-			solverinterface = unique_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
-		break;*/
 		default:
 		{
 			solverinterface->initialSolve();
@@ -537,12 +543,16 @@ namespace Models
 			case FMTsolverinterface::CLP:
 				name = "CLP";
 				break;
-#ifdef FMTWITHMOSEK
-			case FMTsolverinterface::MOSEK:
-				name = "MOSEK";
-				break;
-#endif
-
+			#ifdef FMTWITHMOSEK
+						case FMTsolverinterface::MOSEK:
+							name = "MOSEK";
+							break;
+			#endif
+			#ifdef FMTWITHGLPK
+						case FMTsolverinterface::GLPK:
+							name = "GLPK";
+							break;
+			#endif
 				/*case FMTsolverinterface::CPLEX:
 					name = "CPLEX";
 				break;

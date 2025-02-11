@@ -24,7 +24,8 @@ namespace Models
 			MOSEK = 2,/**< MOSEK optimization software : https://www.mosek.com */
 		//#endif
 		CPLEX = 3,/**< IBM CPLEX Optimizer : https://www.ibm.com/analytics/cplex-optimizer */
-		GUROBI = 4/**< Gurobi optimizer : https://www.gurobi.com/ */
+		GUROBI = 4,/**< Gurobi optimizer : https://www.gurobi.com/ */
+		GLPK = 5/**< GNU Linear Programming Kit : https://www.gnu.org/software/glpk/ */
 	};
 
 }

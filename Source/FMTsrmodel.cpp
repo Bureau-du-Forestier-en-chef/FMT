@@ -1621,7 +1621,12 @@ namespace Models
 	{
 		std::vector<Models::FMTsolverinterface> interfaces;
 		interfaces.push_back(Models::FMTsolverinterface::CLP);
-		interfaces.push_back(Models::FMTsolverinterface::MOSEK);
+		#ifdef FMTWITHMOSEK
+			interfaces.push_back(Models::FMTsolverinterface::MOSEK);
+		#endif
+		#ifdef FMTWITHGLPK
+			interfaces.push_back(Models::FMTsolverinterface::GLPK);
+		#endif
 		return interfaces;
 	}
 
