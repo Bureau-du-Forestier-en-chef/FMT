@@ -29,7 +29,6 @@ cmake CMakeLists.txt \
 cmake --build build/debug --config Debug -j 8
 cmake --install build/debug --config Debug
 
-
 #in release
 cmake CMakeLists.txt \
  -B build/release \
@@ -43,7 +42,6 @@ cmake CMakeLists.txt \
  -DCOVERAGE=On
 	
 cmake --build build/release --config Release
-
 cmake --install build/release --config Release
 
 

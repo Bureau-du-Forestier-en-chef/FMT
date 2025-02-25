@@ -10,7 +10,7 @@ cmake CMakeLists.txt ^
 	-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
 	-DVCPKG_TARGET_TRIPLET=x64-windows ^
 	-DVCPKG_MANIFEST_MODE=ON ^
-	-DONNXR_DIR=D:/dependencies/onnxruntime/ ^
+	-DONNXR_DIR=C:/Users/Admlocal/Documents/FMT/onnxruntime/ ^
 	-DWITHOUT_TESTS=true ^
 	-DGENERATE_RELEASE_PACKAGE=true
 	
