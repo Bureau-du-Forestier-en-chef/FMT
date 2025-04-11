@@ -839,12 +839,15 @@ size_t FMToutput::hash() const
 
 bool FMToutput::operator == (const FMToutput& rhs) const
     {
-    return (name == rhs.name ||
-		(!sources.empty() && !rhs.empty() &&
-		description == rhs.description &&
-		targetthemeid() == rhs.targetthemeid() &&
-		sources == rhs.sources &&
-		operators == rhs.operators));
+	if (name != rhs.name ||
+		description != rhs.description ||
+		targetthemeid() != rhs.targetthemeid() ||
+		sources != rhs.sources ||
+		operators != rhs.operators)
+	{
+		return false;
+	}
+	return true;
     }
 
 bool FMToutput::operator != (const FMToutput& rhs) const

@@ -11,19 +11,30 @@
 int main(int argc, char* argv[])
 {
 		Logging::FMTdefaultlogger().logstamp();
-		const std::string vals = argv[1];
-		std::vector<std::string>results;
-		boost::split(results, vals, boost::is_any_of("|"));
-		const std::string PRIMARY_LOCATION =  results.at(0);
-		const std::string SCENARIO = results.at(1);
-		const std::string TARGET_YIELD = argv[2];
-		const std::string ACTION_NAME = argv[3];
-		/*const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
-		const std::string SCENARIO = "20_Regl_prov";
-		const std::string TARGET_YIELD = "YV_S_MORT";
-		const std::string ACTION_NAME = "TBE";*/
-		//const std::string OUTPUT_DIRECTORY = "outputs/";
+		std::string PRIMARY_LOCATION;
+		std::string SCENARIO;
+		std::string TARGET_YIELD;
+		std::string ACTION_NAME;
 		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsBuilder/";
+		if (argc > 1) {
+			const std::string vals = argv[1];
+			std::vector<std::string>results;
+			boost::split(results, vals, boost::is_any_of("|"));
+
+			PRIMARY_LOCATION =  results.at(0);
+			SCENARIO = results.at(1);
+			TARGET_YIELD = argv[2];
+			ACTION_NAME = argv[3];
+			//OUTPUT_DIRECTORY = "../../tests/testActionsBuilder/";
+		}
+		else {
+			PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+			SCENARIO = "20_Regl_prov";
+			TARGET_YIELD = "YV_S_MORT";
+			ACTION_NAME = "TBE";
+			//OUTPUT_DIRECTORY = "../outputs/";
+
+		}
 		Parser::FMTmodelparser ModelParser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);

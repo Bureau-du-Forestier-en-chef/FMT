@@ -80,14 +80,14 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 	return SPLITTED_MODEL;
 }
 
-Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmodel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name, const std::string& p_pri_name)
+Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmodel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_primaryPath, const std::string& p_outputDirPath, const std::string& p_scenario_name, const std::string& p_pri_name)
 {
 	Models::FMTmodel BUILDED_MODEL;
 	try
 	{
 		Parser::FMTmodelparser ModelParser;
 		std::string outputPath;
-		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
+		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_primaryPath, { p_model }).at(0);
 		BUILDED_MODEL = p_model.buildAction(p_actionName, p_targetYield);
 		BUILDED_MODEL.setname(p_scenario_name);
 		//ATTENTION il est important d'�crire le model avant la schedule car modelParser.write va �craser le fichier de schedule
@@ -96,7 +96,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		#else
 		outputPath = p_outputDirPath + "/";
 		#endif
-		ModelParser.writetoproject(p_schedulePri, BUILDED_MODEL);
+		ModelParser.writetoproject(p_primaryPath, BUILDED_MODEL);
 		if (!SCHEDULES.empty())
 		{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
