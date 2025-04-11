@@ -7,12 +7,15 @@
 
 int main(int argc, char* argv[])
 {
-	const std::string OUTPUT_DIRECTORY = "../../tests/testWrapperCoreBuildAction";
+	//const std::string OUTPUT_DIRECTORY = "../../tests/testWrapperCoreBuildAction";
 	const std::string NEW_SCENARIO_NAME = "Test_Output_scenario_name";
+
+	const std::string OUTPUT_DIRECTORY = "D:/01_Valide_ServiceOuest/01_Valide_ServiceOuest/Scenarios/" + NEW_SCENARIO_NAME;
 	std::string pathPri;
 	std::string actionName;
 	std::string targetYield;
 	std::string scenarioName;
+	std::string primaryName;
 	if (argc > 1)
 	{
 		std::vector<std::string> result;
@@ -24,10 +27,14 @@ int main(int argc, char* argv[])
 	}
 	else 
 	{
-		pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
-		actionName = "TBE";
+		//pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+		pathPri = "D:/01_Valide_ServiceOuest/01_Valide_ServiceOuest/PC_9949_U08251_2028_MODB01.pri";
+		actionName = "ATBEMORT";
 		targetYield = "YV_S_MORT";
-		scenarioName = "20_Regl_prov";
+		//scenarioName = "20_Regl_prov";
+		scenarioName = "1201_RegProv_avsp";
+		primaryName = "PC_9949_U08251_2028_MODB01";
+
 	}
 
 
@@ -48,16 +55,24 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	ModelParser.seterrorstowarnings(errors);
 
-
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
-	const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), actionName, targetYield, pathPri, OUTPUT_DIRECTORY, NEW_SCENARIO_NAME,"TEST");
+	const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), actionName, targetYield, pathPri, OUTPUT_DIRECTORY, NEW_SCENARIO_NAME, primaryName);
 
-	// on fait des vérifications sur le model construit
+	// on fait des vï¿½rifications sur le model construit
 	if (MODELS.at(0) == BUILDED_MODEL)
 	{
 		throw Exception::FMTexc::FMTfunctionfailed;
 	}
-	if (!boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + NEW_SCENARIO_NAME + ".pri")) 
+	if (!boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._are") &&
+        !boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._yld") &&
+        !boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._act") &&
+        !boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._trn") &&
+        !boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._out") &&
+        !boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._opt") &&
+        !boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._lif") &&
+        !boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._seq") &&
+		!boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + primaryName + "._lan")
+		)
 	{
 		throw Exception::FMTexc::FMTfunctionfailed;
 	}
