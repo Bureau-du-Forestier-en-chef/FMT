@@ -231,7 +231,10 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 				std::string seriename;
 				for (const std::string& val : serie)
 					{
-					seriename += val + "<-";
+					if (val != getname())
+						{
+						seriename += val + " -> ";
+						}
 					}
 				if (!seriename.empty())
 					{
