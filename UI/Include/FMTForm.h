@@ -118,6 +118,8 @@ namespace Wrapper
 		*/
 		System::Collections::Generic::List<System::String^>^ getYields(int p_modelIndex);
 
+		System::Collections::Generic::List<System::String^>^ getYieldsVol(int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_masks, System::Collections::Generic::List<System::String^>^ p_yields);
+
 		/**
 		* @brief retourne un double du yield.
 		*

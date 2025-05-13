@@ -418,6 +418,33 @@ double Wrapper::FMTForm::getYield(int p_modelIndex, System::String^ p_mask, Syst
 	}
 	return result;
 }
+// On crée une méthode qui s'apelle getYieldsVol(Model, [mask], [yield])
+// On convertie le tout et on appelle ftm wrapper core
+System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::getYieldsVol(int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_masks, System::Collections::Generic::List<System::String^>^ p_yields) {
+	System::Collections::Generic::List<System::String^>^ yieldsVolConverted = gcnew System::Collections::Generic::List<System::String^>();
+	try
+	{
+		if (Cache->empty())
+		{
+			throw std::out_of_range("Invalid model index");
+		}
+		const Models::FMTmodel MODEL = Cache->getmodel(p_modelIndex);
+		for (int i = 0; i < p_masks->Count; ++i)
+		{
+			const std::string CONVERTEDMASK = msclr::interop::marshal_as<std::string>(p_masks[i]);
+			const std::string CONVERTEDYIELD = msclr::interop::marshal_as<std::string>(p_yields[i]);
+			const double YIELD = FMTWrapperCore::Tools::getYield(MODEL, CONVERTEDMASK, CONVERTEDYIELD, age?);
+			System::String^ convertedString = gcnew System::String(std::to_string(YIELD).c_str());
+			yieldsVolConverted->Add(convertedString);
+		}
+	}
+	catch (...)
+	{
+		raisefromcatch("", "Wrapper::FMTForm::getYieldsVol", __LINE__, __FILE__);
+	}
+	return yieldsVolConverted;
+}
+
 
 double Wrapper::FMTForm::getMaxAge(int p_modelIndex)
 {
