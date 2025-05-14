@@ -22,9 +22,11 @@ int main(int argc, char *argv[])
 		scenario = argv[2];
 		scenario_length = std::stoi(argv[3]);
 	}else {
-		primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TBEV02/tbe_R02_v01.pri";
-		scenario = "02_test_Recolte_ratio_series";
-		scenario_length = 2;
+		//primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TBEV02/tbe_R02_v01.pri";
+		//scenario = "02_test_Recolte_ratio_series";
+		primarylocation = "C:/Users/Admlocal/Documents/SCRAP/Bruno/02_Travail/PC_9943_U08651_2028_MODB01.pri";
+		scenario = "120_RegProv_apsp";
+		scenario_length = 5;
 	}
 
 	std::vector<Exception::FMTexc>errors;
@@ -34,6 +36,7 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	modelparser.seterrorstowarnings(errors);

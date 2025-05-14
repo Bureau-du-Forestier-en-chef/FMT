@@ -25,7 +25,9 @@
 #include "FMTExcelExceptionHandler.h"
 #include <map>
 #include "FMTSerie.h"
-
+#include <thread>
+#include <mutex>
+#include <sstream> 
 
 namespace Wrapper
 {
@@ -514,17 +516,17 @@ namespace Wrapper
 	{
 		double value = 0;
 		try {
+			boost::lock_guard<boost::recursive_mutex> guard(*mtx); // guard pour le multi thread
+			value = Models::FMTlpmodel::getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
 
-					boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-					value = Models::FMTlpmodel::getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
-					
+			// 1-faire des prints de calcul pour voir lorsqu'il rentre versus lorsqu'il sort? Voir si des threads se pile sur les pieds
+			// 2-à chaque fois qu'il y a un appel  de getoutput, detruire et reconstruire le model pour empêcher que la cache suit
 		}
 		catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getvaluefrommodel", __LINE__, __FILE__);
 		}
 		return value;
-
 	}
 
 

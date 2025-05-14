@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 		primlocation = "C:/Users/Admlocal/Documents/FMT/SCRAP1/CC_modele_feu_20250221_0929/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 		length = 20;
 		replicate = 10;
-		n_threads = 1;
+		n_threads = 5;
 		allscenarios.push_back("strategique_AllEnrqc_CC"); //Stratégique en premier
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC");

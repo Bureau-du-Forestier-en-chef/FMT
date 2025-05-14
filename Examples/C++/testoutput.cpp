@@ -10,6 +10,8 @@
 	#include "FMTfreeexceptionhandler.h"
 #endif
 
+// comparaison de output qui sort d'un doplanning
+
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
@@ -26,14 +28,31 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.seterrorstowarnings(errors);
-		const std::string vals = argv[1];
-		std::vector<std::string>results;
-		boost::split(results, vals, boost::is_any_of("|"));
-		const std::string primarylocation =  results.at(0);
-		const std::string scenario =  results.at(1);
-		const std::string outputname =  argv[2];
-		const double outputvalue = std::stod(argv[3]);
+		std::string primarylocation;
+		std::string scenario;
+		std::string outputname;
+		int period = 2;
+		double outputvalue;
+		if (argc > 1)
+		{
+			const std::string vals = argv[1];
+			std::vector<std::string>results;
+			boost::split(results, vals, boost::is_any_of("|"));
+			primarylocation = results.at(0);
+			scenario = results.at(1);
+			outputname = argv[2];
+			outputvalue = std::stod(argv[3]);
+		}
+		else 
+		{
+			primarylocation = "C:/Users/Admlocal/Documents/issues/280/02_Travail/PC_9943_U08651_2028_MODB01.pri";
+			scenario = "120_RegProv_apsp";
+			outputname = "OSUPREGECOCOS";
+			outputvalue = 230.364845;
+			period = 14;
+		}
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
@@ -48,7 +67,7 @@ int main(int argc, char *argv[])
 			if (output.getname() == outputname)
 				{
 				gotovoltotrec = true;
-				const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
+				const double returnedvalue = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
 				std::cout << returnedvalue << "\n";
 				if ((returnedvalue < (outputvalue - tolerance)) || (returnedvalue >(outputvalue + tolerance)))
 					{

@@ -2859,6 +2859,42 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return cleaned;
 		}
 
+
+		void fillNextPeriod(
+			int p_period, 
+			int p_LastPeriod, 
+			const FMTvertex_descriptor& p_vertex, 
+			std::queue<FMTvertex_descriptor>&p_actives) const
+		{
+			FMTvertex_descriptor nextDev = data.null_vertex();
+			FMToutedge_pair edge_pair = boost::out_edges(p_vertex, data);
+			while (edge_pair.first != edge_pair.second &&
+				nextDev == data.null_vertex())
+			{
+				const FMTbaseedgeproperties& Edge = data[*edge_pair.first];
+				const int& EdgeId = Edge.getactionID();
+				
+				FMTvertex_descriptor nextDev = boost::target(*edge_pair.first, data);
+				if (EdgeId < 0) // évolution naturelle si actionid < 0
+				{
+					if (p_LastPeriod == p_period - 1 &&
+						nextDev != data.null_vertex())
+					{ 
+						p_actives.push(nextDev);
+					}
+					else if (p_period > p_LastPeriod)
+					{
+						fillNextPeriod(p_period, ++p_LastPeriod, nextDev, p_actives);
+					}
+				}
+				else
+				{
+					fillNextPeriod(p_period, p_LastPeriod, nextDev, p_actives);
+				}
+				++edge_pair.first;
+			}
+		}
+
 		FMTvertex_descriptor getNextPeriod(const FMTvertex_descriptor& p_vertex) const
 		{
 					FMTvertex_descriptor NextPeriod = data.null_vertex();
@@ -2868,7 +2904,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					{
 						const FMTbaseedgeproperties& Edge = data[*edge_pair.first];
 						const int& EdgeId = Edge.getactionID();
-						if (EdgeId < 0)
+						if (EdgeId < 0) // évolution naturelle si actionid < 0
 						{
 							NextPeriod = boost::target(*edge_pair.first, data);
 						}
@@ -2924,26 +2960,29 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						bool exact = false;
 						const std::vector<FMTvertex_descriptor>& PAST_DESCRIPTORS = nodescache.at(POTENTIAL_LAST_PERIOD).getverticies(p_node, p_model.actions, p_model.themes, exact);
 						std::queue<FMTvertex_descriptor>actives(m_allocator);
-						//std::vector<FMTvertex_descriptor>actives(m_allocator);
-						//actives.reserve(m_reserve);
-						for (FMTvertex_descriptor PAST_DESCRIPTOR : PAST_DESCRIPTORS)
-							{
-								int BasePeriod = POTENTIAL_LAST_PERIOD;
-								while (BasePeriod != p_period && PAST_DESCRIPTOR != data.null_vertex())
-								{
-									PAST_DESCRIPTOR = getNextPeriod(PAST_DESCRIPTOR);
-									++BasePeriod;
-								}
-								if (BasePeriod == p_period &&
-									PAST_DESCRIPTOR != data.null_vertex())
-								{
-									actives.push(PAST_DESCRIPTOR);
-									//actives.push_back(PAST_DESCRIPTOR);
-								}
-								//actives.push(PAST_DESCRIPTOR);
-							}
+
+						//for (FMTvertex_descriptor PAST_DESCRIPTOR : PAST_DESCRIPTORS)
+						//	{
+						//		int BasePeriod = POTENTIAL_LAST_PERIOD;
+						//		while (BasePeriod != p_period && PAST_DESCRIPTOR != data.null_vertex())
+						//		{
+						//			PAST_DESCRIPTOR = getNextPeriod(PAST_DESCRIPTOR);
+						//			++BasePeriod;
+						//		}
+						//		if (BasePeriod == p_period &&
+						//			PAST_DESCRIPTOR != data.null_vertex())
+						//		{
+						//			actives.push(PAST_DESCRIPTOR);
+						//		}
+						//	}
+						
+						for (const FMTvertex_descriptor& PAST_DESCRIPTOR : PAST_DESCRIPTORS)
+						{
+							fillNextPeriod(p_period, POTENTIAL_LAST_PERIOD, PAST_DESCRIPTOR, actives);
+						}
+
 						//const size_t INITITAL_COUNT = actives.size();
-						if (POTENTIAL_LAST_PERIOD!= p_period)
+						if (POTENTIAL_LAST_PERIOD != p_period)
 						{
 							nodescache.at(POTENTIAL_LAST_PERIOD).erasenode(p_node);//Dont make a mess in the cache and delete the last period...
 						}

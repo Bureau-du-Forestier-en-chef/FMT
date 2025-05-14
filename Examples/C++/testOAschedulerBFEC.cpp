@@ -132,12 +132,17 @@ int main(int argc, char *argv[])
                fichierShp = std::string(argv[3]);
             }
             else {
-                primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";
-                scenarios = std::vector<std::string>(1,"03_sc1a_bfecopt");
-                fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/FM/Carte/PC_7001892_U03772_SSP02.shp";
+                //primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";
+                //scenarios = std::vector<std::string>(1,"03_sc1a_bfecopt");
+                //fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/FM/Carte/PC_7001892_U03772_SSP02.shp";
+                
+                primarylocation = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/PC_9949_U08251_2028_MODB01.pri";
+                scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
+                fichierShp = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/Carte/PC_9949_UA_U08251.shp";
+            
             }
             Parser::FMTmodelparser modelparser;
-            modelparser.setdefaultexceptionhandler();
+            modelparser.setdefaultexceptionhandler(); 
             modelparser.settasklogger();
             std::vector<Exception::FMTexc>errors;
 		    errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -149,6 +154,7 @@ int main(int argc, char *argv[])
 		    errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 		    errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
             errors.push_back(Exception::FMTexc::FMTEmptyOA);
+            errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		    modelparser.seterrorstowarnings(errors);
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);

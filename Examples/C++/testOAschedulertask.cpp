@@ -105,13 +105,31 @@ int main(int argc, char *argv[])
                 fichierShp = std::string(argv[3]);
             }else
                 {
-                primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
-                scenarios = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE");
+                //primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+                //scenarios = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE");
+                //boost::filesystem::path primpath(primarylocation);
+                //const boost::filesystem::path basefolder = primpath.parent_path();
+                //lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Scenarios/13_Sc5a_Determin_avsp_CLE_PESSIERE_rand/parameters8551_flex_random.csv";
+                //fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Carte/PC_9424_UA_U08551.shp";
+                //results = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE_rand");
+                
+                //primarylocation = "C:/Users/Admlocal/Documents/SCRAP/Bruno/02_Travail/PC_9943_U08651_2028_MODB01.pri";
+                //lfichierParam = "C:/Users/Admlocal/Documents/SCRAP/Bruno/02_Travail/Scenarios/120_RegProv_apsp/Parametres_Bfecopt.csv";
+                //fichierShp = "C:/Users/Admlocal/Documents/SCRAP/Bruno/02_Travail/Carte/PC_9943_UA_U08651.shp";
+                
+                //primarylocation = "C:/Users/Admlocal/Documents/issues/280/08251/02_Travail/PC_9949_U08251_2028_MODB01.pri";
+                //lfichierParam = "C:/Users/Admlocal/Documents/issues/280/08251/02_Travail/Scenarios/120_RegProv_apsp/Parametres_Bfecopt.csv";
+                //fichierShp = "C:/Users/Admlocal/Documents/issues/280/08251/02_Travail/Carte/PC_9949_UA_U08251.shp";
+
+                primarylocation = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/PC_9949_U08251_2028_MODB01.pri";
+                lfichierParam = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/Scenarios/120_RegProv_apsp/Parametres_Bfecopt.csv";
+                fichierShp = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/Carte/PC_9949_UA_U08251.shp";
+
+                scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Scenarios/13_Sc5a_Determin_avsp_CLE_PESSIERE_rand/parameters8551_flex_random.csv";
-                fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Carte/PC_9424_UA_U08551.shp";
-                results = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE_rand");
+                results = std::vector<std::string>(1, "120_RegProv_apsp");
+
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
@@ -128,13 +146,14 @@ int main(int argc, char *argv[])
             errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
             errors.push_back(Exception::FMTexc::FMTmissingyield);
             errors.push_back(Exception::FMTexc::FMTEmptyOA);
+            errors.push_back(Exception::FMTexc::FMTdeathwithlock);
             modelparser.seterrorstowarnings(errors);
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
             //Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::CLP);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
-	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); // pour gérer les variables négatives
             //const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const int startingperiod = optimizationmodel.getparameter(Models::FMTintmodelparameters::UPDATE);
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
@@ -153,16 +172,18 @@ int main(int argc, char *argv[])
                 Parallel::FMTtaskhandler handler(maintaskptr, 4);
                 handler.settasklogger();
                 handler.conccurentrun();
-                maintaskptr->finalize();
+                maintaskptr->finalize(); // écrit ici le meilleur modèle sur le disque
             }
+            // On relit ici le nouveau "root" qui est le meilleur modèle écrit précédement 
             const std::vector<Models::FMTmodel> nmodels = modelparser.readproject("../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string>(1, "ROOT"));
             Models::FMTmodel readmodel = nmodels.at(0);
-            Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP);
+            Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
             noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
             noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             noptimizationmodel.Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
             const std::vector<Core::FMTschedule> schedules = modelparser.readschedules("../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
-            noptimizationmodel.doplanning(false, schedules);
+            // On regarde si on est capable de relire ce qu'on vient de créer
+            noptimizationmodel.doplanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 
 		#endif 
         return 0;
 	}

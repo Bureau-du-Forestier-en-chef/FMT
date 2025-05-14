@@ -770,8 +770,45 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
 set(ignoreMe "${WITHOUT_TESTS}${WITHOUT_PYTHONLIB}${COVERAGE}")
 
-
-
+function(createexecutable executablecpplocation executablename)
+  set(newprojectsourcefiles "${executablecpplocation}")
+  #list(APPEND newprojectsourcefiles "${FMTSOURCEFILES}")
+  get_filename_component(executablename "${executablecpplocation}" NAME_WE)
+  message("Generating build for ${executablename}")
+  SET(executablename "${executablename}" PARENT_SCOPE)
+  add_executable(${executablename} ${newprojectsourcefiles})
+  target_include_directories(${executablename} PRIVATE ${Boost_INCLUDE_DIRS})
+  target_link_libraries(${executablename} PRIVATE ${Boost_LIBRARIES})
+  target_compile_definitions(${executablename} PRIVATE "-DFMTLIBIMPORT")
+  target_link_libraries(${executablename} PRIVATE FMTlib)
+  target_include_directories(${executablename} PRIVATE ${FMTINCLUDEDIR})
+  
+  if (NOT MSVC)
+		set_target_properties(${executablename}
+			PROPERTIES
+			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+		)
+		set_target_properties(${executablename}
+			PROPERTIES
+			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+		)
+	endif(NOT MSVC)
+	if (MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
+	set_target_properties(
+   		${executablename} PROPERTIES
+    		VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}")
+	endif(MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
+	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD 11)
+	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD_REQUIRED ON)
+	#if (MOSEK_FOUND AND MSVC)
+	#	target_sources(${executablename} PRIVATE ${OSIMSK_DEFINITION})
+	#endif(MOSEK_FOUND AND MSVC)
+endfunction(createexecutable executablecpplocation)
+include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 
 if (NOT DEFINED WITHOUT_TESTS)
 	if(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
@@ -787,7 +824,6 @@ endif (NOT DEFINED WITHOUT_TESTS)
 include(${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/CMakeLists.txt) #will polulate FMTWrapperCore
 #add_subdirectory(FMTWrapperCore) # Supposed better than include but directory Header have not .h
 include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
-include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 
 if (NOT DEFINED PARALLEL_TESTS)
 	set(PARALLEL_TESTS 1)
