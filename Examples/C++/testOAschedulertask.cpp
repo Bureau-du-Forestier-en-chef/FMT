@@ -105,31 +105,13 @@ int main(int argc, char *argv[])
                 fichierShp = std::string(argv[3]);
             }else
                 {
-                //primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
-                //scenarios = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE");
-                //boost::filesystem::path primpath(primarylocation);
-                //const boost::filesystem::path basefolder = primpath.parent_path();
-                //lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Scenarios/13_Sc5a_Determin_avsp_CLE_PESSIERE_rand/parameters8551_flex_random.csv";
-                //fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Carte/PC_9424_UA_U08551.shp";
-                //results = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE_rand");
-                
-                //primarylocation = "C:/Users/Admlocal/Documents/SCRAP/Bruno/02_Travail/PC_9943_U08651_2028_MODB01.pri";
-                //lfichierParam = "C:/Users/Admlocal/Documents/SCRAP/Bruno/02_Travail/Scenarios/120_RegProv_apsp/Parametres_Bfecopt.csv";
-                //fichierShp = "C:/Users/Admlocal/Documents/SCRAP/Bruno/02_Travail/Carte/PC_9943_UA_U08651.shp";
-                
-                //primarylocation = "C:/Users/Admlocal/Documents/issues/280/08251/02_Travail/PC_9949_U08251_2028_MODB01.pri";
-                //lfichierParam = "C:/Users/Admlocal/Documents/issues/280/08251/02_Travail/Scenarios/120_RegProv_apsp/Parametres_Bfecopt.csv";
-                //fichierShp = "C:/Users/Admlocal/Documents/issues/280/08251/02_Travail/Carte/PC_9949_UA_U08251.shp";
-
-                primarylocation = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/PC_9949_U08251_2028_MODB01.pri";
-                lfichierParam = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/Scenarios/120_RegProv_apsp/Parametres_Bfecopt.csv";
-                fichierShp = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/Carte/PC_9949_UA_U08251.shp";
-
-                scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
+                primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+                scenarios = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                results = std::vector<std::string>(1, "120_RegProv_apsp");
-
+                lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Scenarios/13_Sc5a_Determin_avsp_CLE_PESSIERE_rand/parameters8551_flex_random.csv";
+                fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Carte/PC_9424_UA_U08551.shp";
+                results = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE_rand");
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));

@@ -845,10 +845,7 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 	}
 	size_t id = 0;
 	const std::string original(p_mask);
-	if (original == "GS1031 FORP 1 SR0794 FC2313 NAT O INC NA NA NA NA S01695 NA NA NA NA NA NA")
-	{
-		std::cout << "Yo";
-	}
+
 	p_mask.clear();
 	for (const Core::FMTtheme& theme : p_themes)
 	{
@@ -879,10 +876,6 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 
 	bool FMTtheme::validate(const std::vector<Core::FMTtheme>& p_themes, std::string& p_mask, std::string p_otherinformation)
 	{
-		if (p_mask == "GS1031 FORP 1 SR0794 FC2313 NAT O INC NA NA NA NA S01695 NA NA NA NA NA NA")
-		{
-			std::cout << "Yo";
-		}
 		std::vector<std::string>values;
 		boost::split(values, p_mask, boost::is_any_of(" \t"), boost::token_compress_on);
 		return checkMask(p_themes, values, p_mask, p_otherinformation);
