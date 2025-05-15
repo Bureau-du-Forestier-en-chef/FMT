@@ -2297,8 +2297,9 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			for (const Core::FMTtheme& theme : presolvedModel->themes)
 			{
 				Core::FMTtheme PresolvedTheme = theme.presolve(newfilter, themeid, themestart);
+				// test gab ici
 				if (!PresolvedTheme.empty())
-				{
+				{ 
 					keptthemeid.insert(oldthemeid);
 					newthemes.push_back(PresolvedTheme);
 				}

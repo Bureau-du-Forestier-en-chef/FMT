@@ -845,6 +845,7 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 	}
 	size_t id = 0;
 	const std::string original(p_mask);
+
 	p_mask.clear();
 	for (const Core::FMTtheme& theme : p_themes)
 	{

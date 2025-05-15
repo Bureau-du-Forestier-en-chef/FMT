@@ -38,6 +38,21 @@ namespace Testing
 				}
 				std::cout << "UnitTestFMTexcelcache::testAddModel passed" << std::endl;
 			}
+			void testModelGetValue()
+			{
+				System::String^ MODEL = gcnew System::String("C:/Users/Admlocal/Documents/issues/280/02_Travail/PC_9943_U08651_2028_MODB01.pri");
+				System::String^ SCENARIO = gcnew System::String("120_RegProv_apsp");
+				System::String^ THEMENAME = gcnew System::String("THEME14=S00010");
+				System::String^ OUTPUT = gcnew System::String("OSUPREGECOCOS");
+
+				m_cache->add(MODEL, SCENARIO);
+				std::vector<int> periods = {0, 8, 1, 9, 2, 10};
+				for (int period: periods)
+				{
+					double OUTPUTVALUE = m_cache->getvalue(MODEL, SCENARIO, OUTPUT, THEMENAME, period);
+					std::cout << OUTPUTVALUE << std::endl;
+				}
+			}
 
 		void testRemoveModel()
 			{
@@ -69,6 +84,7 @@ int main()
 	Testing::UnitTestFMTexcelcache test;
 	test.testAddModel();
 	test.testRemoveModel();
+	test.testModelGetValue();
 	#endif 
 	return 0;
 }

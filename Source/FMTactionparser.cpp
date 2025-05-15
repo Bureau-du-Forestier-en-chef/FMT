@@ -14,6 +14,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "FMTexceptionhandler.h"
+#include <string>
+#include <vector>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string/regex.hpp>
 
 namespace Parser{
 
@@ -301,7 +305,11 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						else if (inseries)
 						{
 						std::vector<std::string>grossserie;
-						boost::split(grossserie, line, boost::is_any_of("->"), boost::token_compress_on);
+						// remplacer les séquences "->" ou "<-" avec regex
+						boost::regex sep("(<-|->)");
+						boost::algorithm::split_regex(grossserie, line, sep);
+						//std::vector<std::string>grossserie_2;
+						//boost::split(grossserie_2, line, boost::is_any_of("->"), boost::token_compress_on);
 						std::vector<std::string>newserie;
 						for (std::string& action : grossserie)
 							{

@@ -37,21 +37,23 @@ if (MSVC AND ExcelWrapperSOURCES)
 		FILE(GLOB FMTexecutables ${CMAKE_CURRENT_SOURCE_DIR}/Excel/tests/*.cpp)
 		foreach(pathtosource ${FMTexecutables})
 			createexecutable("${pathtosource}" executablename)
-			if ("${executablename}" STREQUAL "UnitTestFMTexcelcache")
+			if ("${executablename}" STREQUAL "UnitTestFMTexcelcache" OR "${executablename}" STREQUAL "UnitTestFMToutputCache")
 				set_property(TARGET ${executablename} PROPERTY VS_DOTNET_REFERENCES
 					"System"
 						"System.Data"
 						"System.Xml"
 					)
 				set_target_properties(${executablename} PROPERTIES COMMON_LANGUAGE_RUNTIME "")
-			endif("${executablename}" STREQUAL "UnitTestFMTexcelcache")
+			endif("${executablename}" STREQUAL "UnitTestFMTexcelcache" OR "${executablename}" STREQUAL "UnitTestFMToutputCache")
 			target_link_libraries(${executablename} PRIVATE FMTExcelWrapper)
 			target_include_directories(${executablename} PRIVATE ${ExcelWrapperINCLUDEDIR})
-			add_test(
-								NAME "${executablename}"
-								COMMAND ${executablename}
-								WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-								)
+			if ("${executablename}" STREQUAL "UnitTestFMTexcelcache")
+				add_test(
+									NAME "${executablename}"
+									COMMAND ${executablename}
+									WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+									)
+			endif("${executablename}" STREQUAL "UnitTestFMTexcelcache")
 		endforeach()
 	endif(NOT WITHOUT_TESTS)
 else()
