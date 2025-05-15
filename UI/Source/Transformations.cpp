@@ -28,12 +28,12 @@ bool Wrapper::FMTForm::aggregateAllActions(const int p_modelIndex, System::Colle
 			order.push_back(msclr::interop::marshal_as<std::string>(p_order[i]));
 		}
 		const std::string PRIMARYLOCATION = msclr::interop::marshal_as<std::string>(p_shedulePri);
-		const std::string SCENARIO = msclr::interop::marshal_as<std::string>(p_scenario_name);
+		const std::string SCENARIO_NAME = msclr::interop::marshal_as<std::string>(p_scenario_name);
 		const std::string OUTPOURPATH = msclr::interop::marshal_as<std::string>(p_outputDirPath);
 		const std::string PRINAME = msclr::interop::marshal_as<std::string>(p_pri_name);
-		const std::vector<std::string> SCENARIOS(1, SCENARIO);
+		const std::vector<std::string> SCENARIOS(1, SCENARIO_NAME);
 		const Models::FMTmodel MODEL = { Cache->getmodel(p_modelIndex) };
-		const Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODEL, aggregates, order, PRIMARYLOCATION, OUTPOURPATH, SCENARIO, PRINAME);
+		const Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODEL, aggregates, order, PRIMARYLOCATION, SCENARIO_NAME);
 
 		Cache->push_back(aggregatedModel);
 		return true;
