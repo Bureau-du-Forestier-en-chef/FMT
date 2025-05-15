@@ -1,2 +1,0 @@
-C:/Users/Admlocal/Documents/FMT/FMT/UI/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Admlocal/Documents/FMT/FMT/UI/build/CMakeFiles/ZERO_CHECK.dir
