@@ -378,7 +378,7 @@ System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::getYields
 		{
 			throw std::out_of_range("Invalid model index");
 		}
-		const Models::FMTmodel MODEL = Cache->getmodel(p_index);
+		const Models::FMTmodel& MODEL = Cache->getmodel(p_index);
 
 		const Core::FMTyields YIELDS = MODEL.getyields();
 
@@ -408,7 +408,7 @@ double Wrapper::FMTForm::getYield(int p_modelIndex, System::String^ p_mask, Syst
 		}
 		const std::string CONVERTEDSTRING = msclr::interop::marshal_as<std::string>(p_mask);
 		const std::string CONVERTEDYIELD = msclr::interop::marshal_as<std::string>(p_yield);
-		const Models::FMTmodel MODEL = Cache->getmodel(p_modelIndex);
+		const Models::FMTmodel& MODEL = Cache->getmodel(p_modelIndex);
 
 		result = FMTWrapperCore::Tools::getYield(MODEL, CONVERTEDSTRING, CONVERTEDYIELD, p_age);
 	}

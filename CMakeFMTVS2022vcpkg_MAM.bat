@@ -28,3 +28,14 @@ cmake --build build/release --config Release
 
 cmake --install build/release --config Release
 
+
+cmake CMakeLists.txt ^
+    -B "%cd%/build/debug" ^
+    -G "Visual Studio 17 2022" ^
+    -T v143,version=14.36.17.6 ^
+    -DBUILD_TYPE=Debug ^
+    -DPARALLEL_TESTS=8 ^
+    -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
+    -DVCPKG_TARGET_TRIPLET=x64-windows ^
+    -DVCPKG_MANIFEST_MODE=ON ^
+    -DONNXR_DIR="D:/dependencies/onnxruntime/"

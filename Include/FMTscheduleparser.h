@@ -44,6 +44,11 @@ class FMTEXPORT FMTscheduleparser: public FMTparser
 		Default copy constructor for FMTscheduleparser
 		*/
         FMTscheduleparser(const FMTscheduleparser& rhs);
+		// DocString: FMTscheduleparser::getSchedulePath
+		/**
+		Take a primary path and a scenario name and return the path to the schedule file (in Scenario or in root).
+		*/
+		std::string getSchedulePath(const std::string& p_primary_path, const std::string& p_output_scenario_name);
 		// DocString: FMTscheduleparser::operator=
 		/**
 		Default copy assignment operator for FMTscheduleparser

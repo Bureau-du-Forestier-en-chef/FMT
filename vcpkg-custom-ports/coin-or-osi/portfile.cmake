@@ -7,7 +7,7 @@ vcpkg_from_github(
 )
 
 set(CMAKE_MODULE_PATH "$ENV{MODULE_PATH};${CMAKE_MODULE_PATH}")
-
+ 
 find_package(Mosek)
 
 file(COPY "${CURRENT_INSTALLED_DIR}/share/coin-or-buildtools/" DESTINATION "${SOURCE_PATH}")

@@ -375,7 +375,9 @@ namespace Parser {
 		if (!lanfile.empty())
 		{
 			FMTlandscapeparser landparser;
-			landparser.write(model.getthemes(),lanfile);
+			landparser.write(model.getthemes(), lanfile);
+		}
+		if (!arefile.empty()){
 			const std::vector<Core::FMTactualdevelopment>devs = model.getarea();
 			if (!devs.empty())
 			{
@@ -389,7 +391,6 @@ namespace Parser {
 				areaparser.setheader(header);
 				areaparser.write(devs, arefile);
 			}
-
 		}
 		if (!yldfile.empty())
 		{
@@ -890,54 +891,54 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 						{
 						boost::filesystem::create_directory(basefolder / "Scenarios");
 						}
-						const boost::filesystem::path scenario = basefolder / "Scenarios" / model.getname();
-						if (!boost::filesystem::is_directory(scenario))
-							{
-							boost::filesystem::create_directory(scenario);
-							}
-						std::string lanfile;
-						if (models.begin()->getthemes() != model.getthemes())
+					const boost::filesystem::path scenario = basefolder / "Scenarios" / model.getname();
+					if (!boost::filesystem::is_directory(scenario))
 						{
-							lanfile = boost::filesystem::path(scenario / (filename + "._lan")).string();
+						boost::filesystem::create_directory(scenario);
 						}
-						std::string arefile;
-						if (models.begin()->getarea() != model.getarea())
-						{
-							arefile = boost::filesystem::path(scenario / (filename + "._are")).string();
-						}
-						std::string yldfile;
-						if (models.begin()->getyields() != model.getyields())
-						{
-							yldfile = boost::filesystem::path(scenario / (filename + "._yld")).string();
-						}
-						std::string actfile;
-						if (models.begin()->getactions() != model.getactions())
-						{
-							actfile = boost::filesystem::path(scenario / (filename + "._act")).string();
-						}
-						std::string trnfile;
-						if (models.begin()->gettransitions() != model.gettransitions())
-						{
-							trnfile = boost::filesystem::path(scenario / (filename + "._trn")).string();
-						}
-						std::string outfile;
-						if (models.begin()->getoutputs() != model.getoutputs())
-						{
-							outfile = boost::filesystem::path(scenario / (filename + "._out")).string();
-						}
-						std::string optfile;
-						if (models.begin()->getconstraints() != model.getconstraints())
-						{
-							optfile = boost::filesystem::path(scenario / (filename + "._opt")).string();
-						}
-						std::string liffile;
-						if (models.begin()->getlifespan() != model.getlifespan())
-						{
-							liffile = boost::filesystem::path(scenario / (filename + "._lif")).string();
-						}
-						const std::string seqfile = boost::filesystem::path(scenario / (filename + "._seq")).string();
-						writemodel(model, lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
+					std::string lanfile;
+					if (models.begin()->getthemes() != model.getthemes())
+					{
+						lanfile = boost::filesystem::path(scenario / (filename + "._lan")).string();
 					}
+					std::string arefile;
+					if (models.begin()->getarea() != model.getarea())
+					{
+						arefile = boost::filesystem::path(scenario / (filename + "._are")).string();
+					}
+					std::string yldfile;
+					if (models.begin()->getyields() != model.getyields())
+					{
+						yldfile = boost::filesystem::path(scenario / (filename + "._yld")).string();
+					}
+					std::string actfile;
+					if (models.begin()->getactions() != model.getactions())
+					{
+						actfile = boost::filesystem::path(scenario / (filename + "._act")).string();
+					}
+					std::string trnfile;
+					if (models.begin()->gettransitions() != model.gettransitions())
+					{
+						trnfile = boost::filesystem::path(scenario / (filename + "._trn")).string();
+					}
+					std::string outfile;
+					if (models.begin()->getoutputs() != model.getoutputs())
+					{
+						outfile = boost::filesystem::path(scenario / (filename + "._out")).string();
+					}
+					std::string optfile;
+					if (models.begin()->getconstraints() != model.getconstraints())
+					{
+						optfile = boost::filesystem::path(scenario / (filename + "._opt")).string();
+					}
+					std::string liffile;
+					if (models.begin()->getlifespan() != model.getlifespan())
+					{
+						liffile = boost::filesystem::path(scenario / (filename + "._lif")).string();
+					}
+					const std::string seqfile = boost::filesystem::path(scenario / (filename + "._seq")).string();
+					writemodel(model, lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
+				}
 			}
 			catch (...)
 			{

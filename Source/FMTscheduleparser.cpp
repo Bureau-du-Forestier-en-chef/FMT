@@ -14,6 +14,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTschedule.h"
 #include "FMTexceptionhandler.h"
 
+#include <boost/filesystem.hpp>
+
 namespace Parser {
 
 	FMTscheduleparser::FMTscheduleparser() :FMTparser()
@@ -43,6 +45,30 @@ namespace Parser {
 			_exhandler->raisefromcatch( "for comment " + _comment,"FMTscheduleparser::getvariable", __LINE__, __FILE__, _section);
 		}
 		return value;
+	}
+
+	std::string FMTscheduleparser::getSchedulePath(const std::string& p_primary_path, const std::string& p_output_scenario_name) 
+	{
+		try {
+			// On vérifie si le dossier Scenarios existe et si le fichier de schedule existe, sinon on écrit dans le root
+			const boost::filesystem::path primpath(p_primary_path);
+			const boost::filesystem::path primary_name = primpath.stem();
+			const boost::filesystem::path basefolder = primpath.parent_path();
+			// On construit notre path attendu et vérifie s'il existe dans le dossier Scenarios / notre_scenario
+			boost::filesystem::path schedule_path = basefolder / "Scenarios" / boost::filesystem::path(p_output_scenario_name) / boost::filesystem::path(primary_name.string() + "._seq");
+
+			if (!boost::filesystem::exists(schedule_path))
+			{
+				schedule_path = basefolder / boost::filesystem::path(primary_name.string() + ".seq");
+			}
+
+			return schedule_path.string();
+
+		}
+		catch (const std::exception&)
+		{
+			_exhandler->printexceptions("for primary " + p_primary_path, "FMTscheduleparser::getSchedulePath", __LINE__, __FILE__, _section);
+		}
 	}
 
 	FMTscheduleparser& FMTscheduleparser::operator = (const FMTscheduleparser& rhs)

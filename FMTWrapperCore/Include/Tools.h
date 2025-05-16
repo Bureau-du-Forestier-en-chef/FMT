@@ -18,7 +18,7 @@ namespace FMTWrapperCore
     {
     public:
 		/**
-		* @brief retourne l'age max du model.
+		* @brief Retourne l'age max du model selon les yields basé sur l'age.
 		*
 		*@param p_model Le modèle à utiliser.
 		* @return int l'age max du model.

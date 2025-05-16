@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "../../../../Examples/Models/TWD_land/TWD_land.pri";
-		scenarioName = "equation";
+		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/11272/PC_9940_U11272_2028_MODB01.pri";
+		scenarioName = "121_RegProv_apsp_sansTBE";
 	}
 
 
@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
 
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 	const double maxAge = FMTWrapperCore::Tools::getMaxAge(MODELS.at(0));
+	std::cout << "MaxAge: " << maxAge << std::endl;
 
 	// on fait des vérifications sur le nombre renvoyer
 	if (maxAge < 1)

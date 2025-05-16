@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -67,20 +67,30 @@ namespace Models
 		friend class Parser::FMTmodelparser;
 		friend class Graph::FMTgraphvertextoyield;
 	public:
-		// DocString: FMTmodel:setReplicate
+        // DocString: FMTmodel::getYieldValue
+		/**
+		@brief Get yield value 
+		@param[in] p_mask mask in string format
+		@param[in] p_yield the yield name.
+        @param[in] p_age Development age
+        @param[in] p_period Development period
+        @return the yield value.
+		*/
+		double getYieldValue(const std::string& p_mask, const std::string& p_yield, int p_age, int p_period) const;
+		// DocString: FMTmodel::setReplicate
 		/**
 		@brief Set the constraints to the specified Replanning Period.
 		@param[in] p_replicate the replicate of the replanning task
 		@param[in] p_ReplanningPeriod the replanning period.
 		*/
 		void setReplicate(size_t p_replicate,int p_ReplanningPeriod);
-		// DocString: FMTmodel:gotReIgnore
+		// DocString: FMTmodel::gotReIgnore
 		/**
 		@brief check if set reignore needs to be call.
 		@return true if got ignore else false.
 		*/
 		bool gotReIgnore(const int& p_replanningPeriod) const;
-		// DocString: FMTmodel:gotReplicate
+		// DocString: FMTmodel::gotReplicate
 		/**
 		@brief check if setreplicate needs to be call.
 		@return true if got replicate else false.
