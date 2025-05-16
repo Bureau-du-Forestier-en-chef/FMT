@@ -18,11 +18,14 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "../../../../Examples/Models/TWD_land/TWD_land.pri";
-		scenarioName = "equation";
-		mask = "? ? ?";
-		yieldName = "TEST1";
-		age = 20;
+		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+		scenarioName = "20_Regl_prov";
+		//pathPri = "../../../../Examples/Models/TWD_land/TWD_land.pri";
+		//scenarioName = "equation";
+		//mask = "? ? 1 ? FCA054 ? ? ? ? ? ? !AA EL8 P0 ? ? ? ? ? ?";
+		mask = "? ? 1 ? FCA054 ? ? ? ? ? ? !AA EL16 P0 ? ? ? ? ? ?";
+		yieldName = "YV_E_SAB";
+		age = 16;
 	}
 
 
@@ -46,6 +49,7 @@ int main(int argc, char* argv[])
 
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
+	std::cout << "Yield: " << yield << std::endl;
 
 	// on fait des v�rifications sur le nombre renvoyer
 	if (yield <= 0) {
