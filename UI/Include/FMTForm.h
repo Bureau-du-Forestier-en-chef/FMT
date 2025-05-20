@@ -174,7 +174,7 @@ namespace Wrapper
 		*@param p_themes Liste des thèmes à vérifier.
 		*@return Retourne une liste de masks.
 		*/
-		System::Collections::Generic::List<System::String^>^ getAllMasks(const int p_modelIndex, System::Collections::Generic::List<int>^ p_themesNumber);
+		System::Collections::Generic::List<System::String^>^ getAllMasks(const int p_modelIndex, const int p_periods, System::Collections::Generic::List<int>^ p_themesNumber);
 	};
 }
 #endif

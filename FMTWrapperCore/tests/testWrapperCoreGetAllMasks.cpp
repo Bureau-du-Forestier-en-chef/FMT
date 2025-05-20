@@ -1,3 +1,5 @@
+// ATTENTION: Ceci est une copie de testWrapperCoreGetYield.cpp on dois l'ajuster
+
 #include <vector>
 #include <string>
 #include "FMTmodel.h"
@@ -23,8 +25,8 @@ int main(int argc, char* argv[])
 		scenarioName = "TBE_TEST_CORRECTION";
 		//pathPri = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 		//scenarioName = "equation";
-		mask = "? ? 1 ? FCA054 ? ? ? ? ? ? !AA EL8 P0 ? ? ? ? ? ?";
-		//mask = "? ? ? ? FC2582 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? POST";
+		//mask = "? ? 1 ? FCA054 ? ? ? ? ? ? !AA EL8 P0 ? ? ? ? ? ?";
+		mask = "? ? ? ? FC2582 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? POST";
 		yieldName = "YV_E_SAB";
 		age = 16;
 	}
@@ -56,7 +58,7 @@ int main(int argc, char* argv[])
 	optModel.setparameter(Models::FMTintmodelparameters::LENGTH, PERIODS);
 	optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	optModel.doplanning(false);
-	optModel.getAllMasks(THEMES);
+	optModel.getAllMasks(THEME con veu);
 	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
 	std::cout << "Yield: " << yield << std::endl;
 

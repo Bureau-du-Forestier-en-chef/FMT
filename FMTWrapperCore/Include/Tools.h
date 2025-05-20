@@ -66,6 +66,6 @@ namespace FMTWrapperCore
 		*@param un vector de themes a vérifier.
 		*@return Un set des masks.
 		*/
-		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const std::vector<int>& p_themesNumbers);
+		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers);
     };
 }

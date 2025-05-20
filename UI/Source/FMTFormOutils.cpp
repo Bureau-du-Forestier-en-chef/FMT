@@ -476,7 +476,7 @@ bool Wrapper::FMTForm::validateMask(const int p_modelIndex, System::String^ p_ma
 	}
 	return result;
 }
-System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::getAllMasks(int p_modelIndex, System::Collections::Generic::List<int>^ p_themesNumbers)
+System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::getAllMasks(int p_modelIndex, const int p_periods, System::Collections::Generic::List<int>^ p_themesNumbers)
 {
 	System::Collections::Generic::List<System::String^>^ result = gcnew System::Collections::Generic::List<System::String^>();
 	try
@@ -491,8 +491,8 @@ System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::getAllMas
 		{
 			themes.push_back(theme);
 		}
-		std::set<std::string> masks = FMTWrapperCore::Tools::getAllMasks(MODEL, themes);
-		for (const auto& mask : masks)
+		std::set<std::string> masks = FMTWrapperCore::Tools::getAllMasks(MODEL, p_periods, themes);
+		for (const std::string& mask : masks)
 		{
 			result->Add(gcnew System::String(mask.c_str()));
 		}

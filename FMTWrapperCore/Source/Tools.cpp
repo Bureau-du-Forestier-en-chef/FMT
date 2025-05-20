@@ -2,6 +2,7 @@
 #include "FMTmodel.h"
 #include "FMTlpmodel.h"
 #include "FMTerror.h"
+#include "FMTmodelparser.h"
 
 
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
@@ -44,26 +45,34 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	return result;
 }
 
-std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel& p_model, const std::vector<int>& p_themesNumbers) {
+std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers) {
 	std::set<std::string> masks;
 	try
 	{
+		Parser::FMTmodelparser ModelParser;
+		// A vérifier avec Guillaume si on peut faire autrement que de fournir le path
+		const std::vector<Models::FMTmodel> MODELS(1, p_model);
 
-		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
-		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(pathPri, MODELS).at(0);
-		//const int PERIODS = SCHEDULES.back().getperiod();
-		const int PERIODS = 5;
-		Models::FMTlpmodel optModel(MODELS.at(0), Models::FMTsolverinterface::MOSEK);
-		optModel.setparameter(Models::FMTintmodelparameters::LENGTH, PERIODS);
+		// On va chercher tous les thèmes dans le modèle
+		std::vector<Core::FMTtheme> themes;
+		for (const int themeNumber : p_themesNumbers)
+		{
+			themes.push_back(p_model.getthemes().at(themeNumber));
+		}
+
+		// On transforme notre modèle en lpModel qui lui peut faire un getAllMasks et on ajoute les paramètres qu'on a besoin.
+		Models::FMTlpmodel optModel(p_model, Models::FMTsolverinterface::MOSEK);
+		optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
 		optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optModel.doplanning(false);
-		optModel.getAllMasks(THEMES);
-		masks = p_model.getAllMasks(p_themes);
+
+		masks = optModel.getAllMasks(themes);
+		
 	}
 	catch (...)
 	{
 		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
-		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getYield", __LINE__, __FILE__);
+		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getAllMasks", __LINE__, __FILE__);
 	}
 	return masks;
 }
