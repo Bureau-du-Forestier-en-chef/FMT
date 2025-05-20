@@ -6,29 +6,43 @@
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
 #include "Tools.h"
+#include "FMTfreeexceptionhandler.h"
 
 int main(int argc, char* argv[])
 {
-	std::string pathPri;
+	std::string pathPri;	
 	std::string scenarioName;
 	std::string mask;
 	std::string yieldName;
-	int age;
+	int periods = 0;
+	std::vector<int> themesNumbers;
+	int resutlSize = 0;
+
 	if (argc > 1)
 	{
-		pathPri = argv[1];
-		scenarioName = argv[2];
+		std::vector<std::string>results;
+		const std::string vals = argv[1];
+		boost::split(results, vals, boost::is_any_of("|"));
+		pathPri = results.at(0);
+		scenarioName = results.at(1);
+		periods = std::stoi(results.at(2));
+		resutlSize = std::stoi(results.at(3));
+
+		std::vector<std::string>csvThemesNumber;
+		const std::string vals = argv[2];
+		boost::split(results, vals, boost::is_any_of("|"));
+		for (const std::string& theme : csvThemesNumber)
+		{
+			themesNumbers.push_back(std::stoi(theme));
+		}
 	}
 	else
 	{
-		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/01_Valide_ServiceOuest_TBE/PC_9949_U08251_2028_MODB01.pri";
+		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/PC_9949_U08251_2028_MODB01.pri";
 		scenarioName = "TBE_TEST_CORRECTION";
-		//pathPri = "../../../../Examples/Models/TWD_land/TWD_land.pri";
-		//scenarioName = "equation";
-		//mask = "? ? 1 ? FCA054 ? ? ? ? ? ? !AA EL8 P0 ? ? ? ? ? ?";
-		mask = "? ? ? ? FC2582 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? POST";
-		yieldName = "YV_E_SAB";
-		age = 16;
+		periods = 5;
+		resutlSize = 21821;
+		themesNumbers = { 3, 5, 12, 13, 14, 21};
 	}
 
 
@@ -50,23 +64,20 @@ int main(int argc, char* argv[])
 	ModelParser.seterrorstowarnings(errors);
 
 
-	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
-	const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(pathPri, MODELS).at(0);
-	//const int PERIODS = SCHEDULES.back().getperiod();
-	const int PERIODS = 5;
-	Models::FMTlpmodel optModel(MODELS.at(0), Models::FMTsolverinterface::MOSEK);
-	optModel.setparameter(Models::FMTintmodelparameters::LENGTH, PERIODS);
-	optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-	optModel.doplanning(false);
-	optModel.getAllMasks(THEME con veu);
-	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
-	std::cout << "Yield: " << yield << std::endl;
+	const Models::FMTmodel MODEL = ModelParser.readproject(pathPri, { scenarioName }).at(0);
 
-	// on fait des v�rifications sur le nombre renvoyer
-	if (yield <= 0) {
-		throw "Error: testWrapperCoreGetYield";
+	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(MODEL, periods, themesNumbers);
+
+	std::cout << RESULT.size() << std::endl;
+
+	if (RESULT.size() != resutlSize) {
+		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
+			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
+
 	}
-
+	//for (const std::string& res : RESULT) {
+	//	std::cout << res << std::endl;
+	//}
 
 	return 0;
 }

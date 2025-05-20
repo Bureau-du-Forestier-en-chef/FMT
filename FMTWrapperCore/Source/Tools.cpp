@@ -49,15 +49,14 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel&
 	std::set<std::string> masks;
 	try
 	{
-		Parser::FMTmodelparser ModelParser;
-		// A vérifier avec Guillaume si on peut faire autrement que de fournir le path
-		const std::vector<Models::FMTmodel> MODELS(1, p_model);
 
 		// On va chercher tous les thèmes dans le modèle
 		std::vector<Core::FMTtheme> themes;
+		const std::vector<Core::FMTtheme> THEMESMODELS = p_model.getthemes();
+
 		for (const int themeNumber : p_themesNumbers)
 		{
-			themes.push_back(p_model.getthemes().at(themeNumber));
+			themes.push_back(THEMESMODELS.at(themeNumber - 1));
 		}
 
 		// On transforme notre modèle en lpModel qui lui peut faire un getAllMasks et on ajoute les paramètres qu'on a besoin.

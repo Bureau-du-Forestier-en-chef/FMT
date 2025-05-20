@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <set>
 
 namespace Core { 
     class FMTschedule;

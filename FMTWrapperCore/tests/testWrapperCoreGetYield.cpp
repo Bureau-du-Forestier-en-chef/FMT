@@ -4,6 +4,7 @@
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
 #include "Tools.h"
+#include "FMTfreeexceptionhandler.h"
 
 int main(int argc, char* argv[])
 {
@@ -49,20 +50,13 @@ int main(int argc, char* argv[])
 
 
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
-	const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(pathPri, MODELS).at(0);
-	//const int PERIODS = SCHEDULES.back().getperiod();
-	const int PERIODS = 5;
-	Models::FMTlpmodel optModel(MODELS.at(0), Models::FMTsolverinterface::MOSEK);
-	optModel.setparameter(Models::FMTintmodelparameters::LENGTH, PERIODS);
-	optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-	optModel.doplanning(false);
-	optModel.getAllMasks(THEMES);
+
 	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
-	std::cout << "Yield: " << yield << std::endl;
 
 	// on fait des v�rifications sur le nombre renvoyer
 	if (yield <= 0) {
-		throw "Error: testWrapperCoreGetYield";
+		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de yield <= 0",
+			"TestWrapperCoreGetYield", __LINE__, __FILE__);
 	}
 
 
