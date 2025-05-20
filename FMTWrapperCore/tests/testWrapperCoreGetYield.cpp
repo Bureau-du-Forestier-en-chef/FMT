@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include "FMTmodel.h"
+#include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
 #include "Tools.h"
 
@@ -18,12 +19,12 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
-		scenarioName = "20_Regl_prov";
+		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/01_Valide_ServiceOuest_TBE/PC_9949_U08251_2028_MODB01.pri";
+		scenarioName = "TBE_TEST_CORRECTION";
 		//pathPri = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 		//scenarioName = "equation";
 		//mask = "? ? 1 ? FCA054 ? ? ? ? ? ? !AA EL8 P0 ? ? ? ? ? ?";
-		mask = "? ? 1 ? FCA054 ? ? ? ? ? ? !AA EL16 P0 ? ? ? ? ? ?";
+		mask = "? ? ? ? FC2582 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? POST";
 		yieldName = "YV_E_SAB";
 		age = 16;
 	}
@@ -48,6 +49,14 @@ int main(int argc, char* argv[])
 
 
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
+	const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(pathPri, MODELS).at(0);
+	//const int PERIODS = SCHEDULES.back().getperiod();
+	const int PERIODS = 5;
+	Models::FMTlpmodel optModel(MODELS.at(0), Models::FMTsolverinterface::MOSEK);
+	optModel.setparameter(Models::FMTintmodelparameters::LENGTH, PERIODS);
+	optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+	optModel.doplanning(false);
+	optModel.getAllMasks(THEME con veu);
 	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
 	std::cout << "Yield: " << yield << std::endl;
 

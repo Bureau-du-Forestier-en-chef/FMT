@@ -305,6 +305,13 @@ namespace Models
 		The developpements mask have to be a subset of the base_mask.
 		*/
 		std::vector<const Core::FMTdevelopment*> getnochoice(const Core::FMTmask& base_mask) const;
+		// DocString: FMTsrmodel::getAllMasks
+		/*
+		@brief Get all masks in string format for a complete grapoh only for selected themes
+		@param[in] p_selectedThemes
+		@return a set of masks
+		*/
+		std::set<std::string> getAllMasks(const std::vector<Core::FMTtheme>& p_selectedThemes) const;
 	protected:
 		// DocString: FMTsrmodel::graph
 		///graph holding the FMTdevelopments for all the periods.

@@ -58,5 +58,14 @@ namespace FMTWrapperCore
 		* @return Un double du yield
 		*/
 		static double getYield(const Models::FMTmodel& p_model, const std::string& p_mask,const std::string& p_yield, int p_age);
+
+		/**
+		* @brief retourne un set de tous les masks utiles du modèle selon les thèmes sélectionné.
+		*
+		*@param p_model le lpModele a utiliser.
+		*@param un vector de themes a vérifier.
+		*@return Un set des masks.
+		*/
+		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const std::vector<int>& p_themesNumbers);
     };
 }

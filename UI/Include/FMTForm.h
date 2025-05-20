@@ -150,23 +150,31 @@ namespace Wrapper
 		bool buildAction(const int p_modelIndex, System::String^ p_actionName, System::String^ p_targetYield, System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 		
 		/**
-		* @brief Get attributes of a specific theme inside a model
+		* @brief Donne tous les attriduts du modèle selon le thème.
 		*
 		*@param p_modelIndex Index du modèle à utiliser.
 		*@param p_themeIndex Index du thème souhaité dans la liste des thème du modèle.
-		*@return Return a list of string
+		*@return Retourne une liste d'attributs du thème.
 		*/
 		System::Collections::Generic::List<System::String^>^ getAttributes(const int p_modelIndex, const int p_themeIndex);
 
 		/**
-		* @brief 
+		* @brief Dit si le mask est valide.
 		*
-		*@param p_str.
-		*@param p_themes.
-		*@param p_mask
-		*@return Return true or false
+		*@param p_modelIndex Index du modèle à utiliser.
+		*@param p_mask Le mask à valider.
+		*@return Retourne true ou false.
 		*/
 		bool validateMask(const int p_modelIndex, System::String^ p_mask);
+
+		/**
+		* @brief Retourne tous les masks du modèle utilisé selon les thèmes.
+		*
+		*@param p_modelIndex Index du modèle à utiliser.
+		*@param p_themes Liste des thèmes à vérifier.
+		*@return Retourne une liste de masks.
+		*/
+		System::Collections::Generic::List<System::String^>^ getAllMasks(const int p_modelIndex, System::Collections::Generic::List<int>^ p_themesNumber);
 	};
 }
 #endif

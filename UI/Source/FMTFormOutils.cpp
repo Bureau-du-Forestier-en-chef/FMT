@@ -472,6 +472,35 @@ bool Wrapper::FMTForm::validateMask(const int p_modelIndex, System::String^ p_ma
 
 	catch (...)
 	{
+		raisefromcatch("", "Wrapper::FMTForm::validateMask", __LINE__, __FILE__);
+	}
+	return result;
+}
+System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::getAllMasks(int p_modelIndex, System::Collections::Generic::List<int>^ p_themesNumbers)
+{
+	System::Collections::Generic::List<System::String^>^ result = gcnew System::Collections::Generic::List<System::String^>();
+	try
+	{
+		if (Cache->empty())
+		{
+			throw std::out_of_range("Invalid model index");
+		}
+		const Models::FMTmodel& MODEL = Cache->getmodel(p_modelIndex);
+		std::vector<int> themes;
+		for each(int theme in p_themesNumbers)
+		{
+			themes.push_back(theme);
+		}
+		std::set<std::string> masks = FMTWrapperCore::Tools::getAllMasks(MODEL, themes);
+		for (const auto& mask : masks)
+		{
+			result->Add(gcnew System::String(mask.c_str()));
+		}
+	}
+	catch (...)
+	{
+		result = gcnew System::Collections::Generic::List<System::String^>();
+		raisefromcatch("", "Wrapper::FMTForm:getAllMasks", __LINE__, __FILE__);
 	}
 	return result;
 }
