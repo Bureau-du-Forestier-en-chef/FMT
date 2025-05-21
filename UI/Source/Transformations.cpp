@@ -75,7 +75,7 @@ bool Wrapper::FMTForm::splitActions(const int p_modelIndex, System::String^ p_sc
 		}
 		const Models::FMTmodel MODEL = Cache->getmodel(p_modelIndex);
 
-		Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODEL, PRIMARYLOCATION, splitted, splitted_mask, OUTPUT_DIRECTORY, SCENARIO, PRINAME);
+		Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODEL, PRIMARYLOCATION, splitted, splitted_mask, SCENARIO);
 
 		Cache->push_back(SPLITTED_MODEL);
 		return true;
@@ -138,7 +138,7 @@ bool Wrapper::FMTForm::buildAction(const int p_modelIndex, System::String^ p_act
 		const std::string PRI_NAME = msclr::interop::marshal_as<std::string>(p_pri_name);
 		const std::vector<Models::FMTmodel> MODELS = { Cache->getmodel(p_modelIndex) };
 
-		const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), ACTION_NAME, TARGET_YIELD, SCHEDULE_PRIMARY_LOCATION, OUTPUT_DIRECTORY, SCENARIO_NAME, PRI_NAME);
+		const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), ACTION_NAME, TARGET_YIELD, SCHEDULE_PRIMARY_LOCATION, SCENARIO_NAME);
 
 		Cache->push_back(BUILDED_MODEL);
 	}
