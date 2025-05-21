@@ -12,22 +12,32 @@ int main(int argc, char* argv[])
 	std::string scenarioName;
 	std::string mask;
 	std::string yieldName;
-	int age;
+	int age = 0;
+	double result = 0;
 	if (argc > 1)
 	{
-		pathPri = argv[1];
-		scenarioName = argv[2];
+		std::vector<std::string>primaryScenario;
+		const std::string vals1 = argv[1];
+		boost::split(primaryScenario, vals1, boost::is_any_of("|"));
+		pathPri = primaryScenario.at(0);
+		scenarioName = primaryScenario.at(1);
+		yieldName = primaryScenario.at(2);
+		mask = primaryScenario.at(3);
+
+		std::vector<std::string>ageResult;
+		const std::string vals2 = argv[2];
+		boost::split(ageResult, vals2, boost::is_any_of("|"));
+		age = std::stoi(ageResult.at(0));
+		result = std::stoi(ageResult.at(1));
 	}
 	else
 	{
-		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/01_Valide_ServiceOuest_TBE/PC_9949_U08251_2028_MODB01.pri";
+		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/PC_9949_U08251_2028_MODB01.pri";
 		scenarioName = "TBE_TEST_CORRECTION";
-		//pathPri = "../../../../Examples/Models/TWD_land/TWD_land.pri";
-		//scenarioName = "equation";
-		mask = "? ? 1 ? FCA054 ? ? ? ? ? ? !AA EL8 P0 ? ? ? ? ? ?";
-		//mask = "? ? ? ? FC2582 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? POST";
+		mask = "? ? ? ? FC2582 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? POST";
 		yieldName = "YV_E_SAB";
 		age = 16;
+		result = 54.53;
 	}
 
 
@@ -52,10 +62,11 @@ int main(int argc, char* argv[])
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 
 	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
+	std::cout << "Yield: " << yield << std::endl;
 
 	// on fait des v�rifications sur le nombre renvoyer
-	if (yield <= 0) {
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de yield <= 0",
+	if (yield != result) {
+		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de yield n'est pas égal au résultat attendu",
 			"TestWrapperCoreGetYield", __LINE__, __FILE__);
 	}
 

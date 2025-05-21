@@ -21,16 +21,16 @@ int main(int argc, char* argv[])
 	if (argc > 1)
 	{
 		std::vector<std::string>results;
-		const std::string vals = argv[1];
-		boost::split(results, vals, boost::is_any_of("|"));
+		const std::string vals1 = argv[1];
+		boost::split(results, vals1, boost::is_any_of("|"));
 		pathPri = results.at(0);
 		scenarioName = results.at(1);
 		periods = std::stoi(results.at(2));
 		resutlSize = std::stoi(results.at(3));
 
 		std::vector<std::string>csvThemesNumber;
-		const std::string vals = argv[2];
-		boost::split(results, vals, boost::is_any_of("|"));
+		const std::string vals2 = argv[2];
+		boost::split(results, vals2, boost::is_any_of("|"));
 		for (const std::string& theme : csvThemesNumber)
 		{
 			themesNumbers.push_back(std::stoi(theme));
