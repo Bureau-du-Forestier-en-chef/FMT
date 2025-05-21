@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -29,6 +29,24 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 namespace Models{
+
+    double FMTmodel::getYieldValue(const std::string& p_mask, const std::string& p_yield, int p_age, int p_period) const 
+    {
+	    double result = 0;
+        try
+        {
+            const Core::FMTmask MASK = Core::FMTmask(p_mask, themes);
+            const Core::FMTdevelopment DEVELOPMENT = Core::FMTdevelopment(MASK, p_age, p_period);
+            const Core::FMTyieldrequest REQUEST = DEVELOPMENT.getyieldrequest();
+            result = yields.get(REQUEST, p_yield);
+        }
+        catch (...)
+        {
+            _exhandler->raisefromcatch("", "FMTmodel::getYieldValue", __LINE__, __FILE__);
+        }
+        return result;
+    }
+
 
 	void FMTmodel::setReplicate(size_t p_replicate, int p_ReplanningPeriod)
 		{

@@ -814,6 +814,23 @@ namespace Models
 		return true;
 	}
 
+	std::set<std::string> FMTsrmodel::getAllMasks(const std::vector<Core::FMTtheme>& p_selectedThemes) const {
+		std::set<std::string> masks;
+		try {
+			std::vector<Core::FMTtheme> toIgnore;
+			for (const Core::FMTtheme& THEME : themes) {
+				if (std::find_if(p_selectedThemes.begin(), p_selectedThemes.end(), Core::FMTthemecomparator(THEME)) == p_selectedThemes.end()) {
+					toIgnore.push_back(THEME);
+				}
+			}
+			masks = m_graph->getAllDevelopmentsMask(toIgnore);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::getAllMasks", __LINE__, __FILE__);
+		}
+		return masks;
+	}
 
 	bool FMTsrmodel::setsolutionbylp(int period, const Core::FMTschedule& schedule, double tolerance)
 	{

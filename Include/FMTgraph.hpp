@@ -2575,6 +2575,30 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return theseries;
 		}
 
+		std::set<std::string> getAllDevelopmentsMask(const std::vector<Core::FMTtheme>& p_themesToIgnore) const 
+		{
+			std::set<std::string> masks;
+			try {
+				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				{
+					const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
+					Core::FMTmask maskObj(DEV.getmask());
+					for (const Core::FMTtheme& THEME : p_themesToIgnore) {
+						maskObj.set(THEME, "?");
+					}
+					masks.insert(std::string(maskObj));
+
+				}
+
+			}
+			catch (...){
+				_exhandler->raisefromcatch("", "FMTgraph::getAllDevelopmentsMask", __LINE__, __FILE__);
+
+			}
+			return masks;
+
+		}
 
 		Core::FMTschedule getoutvariablesproportions(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod, bool withlock = false) const
 		{

@@ -378,7 +378,7 @@ System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::getYields
 		{
 			throw std::out_of_range("Invalid model index");
 		}
-		const Models::FMTmodel MODEL = Cache->getmodel(p_index);
+		const Models::FMTmodel& MODEL = Cache->getmodel(p_index);
 
 		const Core::FMTyields YIELDS = MODEL.getyields();
 
@@ -408,7 +408,7 @@ double Wrapper::FMTForm::getYield(int p_modelIndex, System::String^ p_mask, Syst
 		}
 		const std::string CONVERTEDSTRING = msclr::interop::marshal_as<std::string>(p_mask);
 		const std::string CONVERTEDYIELD = msclr::interop::marshal_as<std::string>(p_yield);
-		const Models::FMTmodel MODEL = Cache->getmodel(p_modelIndex);
+		const Models::FMTmodel& MODEL = Cache->getmodel(p_modelIndex);
 
 		result = FMTWrapperCore::Tools::getYield(MODEL, CONVERTEDSTRING, CONVERTEDYIELD, p_age);
 	}
@@ -472,6 +472,35 @@ bool Wrapper::FMTForm::validateMask(const int p_modelIndex, System::String^ p_ma
 
 	catch (...)
 	{
+		raisefromcatch("", "Wrapper::FMTForm::validateMask", __LINE__, __FILE__);
+	}
+	return result;
+}
+System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::getAllMasks(int p_modelIndex, const int p_periods, System::Collections::Generic::List<int>^ p_themesNumbers)
+{
+	System::Collections::Generic::List<System::String^>^ result = gcnew System::Collections::Generic::List<System::String^>();
+	try
+	{
+		if (Cache->empty())
+		{
+			throw std::out_of_range("Invalid model index");
+		}
+		const Models::FMTmodel& MODEL = Cache->getmodel(p_modelIndex);
+		std::vector<int> themes;
+		for each(int theme in p_themesNumbers)
+		{
+			themes.push_back(theme);
+		}
+		std::set<std::string> masks = FMTWrapperCore::Tools::getAllMasks(MODEL, p_periods, themes);
+		for (const std::string& mask : masks)
+		{
+			result->Add(gcnew System::String(mask.c_str()));
+		}
+	}
+	catch (...)
+	{
+		result = gcnew System::Collections::Generic::List<System::String^>();
+		raisefromcatch("", "Wrapper::FMTForm:getAllMasks", __LINE__, __FILE__);
 	}
 	return result;
 }

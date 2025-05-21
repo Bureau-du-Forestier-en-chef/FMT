@@ -1,6 +1,8 @@
 #include  "Tools.h"
 #include "FMTmodel.h"
+#include "FMTlpmodel.h"
 #include "FMTerror.h"
+#include "FMTmodelparser.h"
 
 
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
@@ -12,15 +14,18 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 		std::vector<const Core::FMTyieldhandler*> handler;
 		for (const auto& DATA : YIELDS)
 		{
-			handler.push_back(DATA.second.get());
+            if (DATA.second->gettype() == Core::FMTyldtype::FMTageyld){
+
+                handler.push_back(DATA.second.get());
+            }
 		}
 		result = YIELDS.getmaxbase(handler);
 
 	}
 	catch (...)
 	{
-		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
-			"FMTWrapperCore::Tools::getMaxAge", __FILE__, __LINE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getMaxAge", __LINE__, __FILE__);
 	}
 	return result;
 }
@@ -30,18 +35,44 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	double result = 0;
 	try
 	{
-		const std::vector<Core::FMTtheme> THEMES = p_model.getthemes();
-		const Core::FMTmask MASK = Core::FMTmask(p_mask, THEMES);
-		const Core::FMTdevelopment DEVELOPMENT = Core::FMTdevelopment(MASK, p_age, 0);
-		const Core::FMTyieldrequest REQUEST = DEVELOPMENT.getyieldrequest();
-		const Core::FMTyields YIELDS = p_model.getyields();
-		result = YIELDS.get(REQUEST, p_yield);
+        result = p_model.getYieldValue(p_mask, p_yield, p_age, 0);
 	}
 	catch (...)
 	{
-		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
-			"Error in FMTWrapperCore::Tools::getYield", __FILE__, __LINE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getYield", __LINE__, __FILE__);
 	}
 	return result;
+}
+
+std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers) {
+	std::set<std::string> masks;
+	try
+	{
+
+		// On va chercher tous les thèmes dans le modèle
+		std::vector<Core::FMTtheme> themes;
+		const std::vector<Core::FMTtheme> THEMESMODELS = p_model.getthemes();
+
+		for (const int themeNumber : p_themesNumbers)
+		{
+			themes.push_back(THEMESMODELS.at(themeNumber - 1));
+		}
+
+		// On transforme notre modèle en lpModel qui lui peut faire un getAllMasks et on ajoute les paramètres qu'on a besoin.
+		Models::FMTlpmodel optModel(p_model, Models::FMTsolverinterface::MOSEK);
+		optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
+		optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+		optModel.doplanning(false);
+
+		masks = optModel.getAllMasks(themes);
+		
+	}
+	catch (...)
+	{
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getAllMasks", __LINE__, __FILE__);
+	}
+	return masks;
 }
 
