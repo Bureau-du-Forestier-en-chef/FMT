@@ -2577,16 +2577,21 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		std::set<std::string> getAllDevelopmentsMask(const std::vector<Core::FMTtheme>& p_themesToIgnore) const 
 		{
+			
 			std::set<std::string> masks;
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
+				const Core::FMTdevelopment& FIRST_DEV = data[*vertex_iterator].get();
+				boost::dynamic_bitset<uint8_t> bits(FIRST_DEV.getmask().getbitsetreference().size(), false);
+				Core::FMTmask baseMask(bits);
+
+				for (const Core::FMTtheme& THEME : p_themesToIgnore) {
+					baseMask.set(THEME, "?");
+				}
+				for( ;vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
-					Core::FMTmask maskObj(DEV.getmask());
-					for (const Core::FMTtheme& THEME : p_themesToIgnore) {
-						maskObj.set(THEME, "?");
-					}
 					masks.insert(std::string(maskObj));
 
 				}
