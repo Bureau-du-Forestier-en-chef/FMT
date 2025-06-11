@@ -15,7 +15,19 @@
 #include "FMTFormCache.h"
 #include "FMTplanningtask.h"
 
-bool  Wrapper::FMTForm::Plannification(System::String^ fichierPri, System::Collections::Generic::List<int>^ scenarios, int solver, int period, int nbreProcessus, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, System::String^ providerGdal, System::Collections::Generic::List<bool>^ playback)
+bool  Wrapper::FMTForm::Plannification(
+	System::String^ fichierPri, 
+	System::Collections::Generic::List<int>^ scenarios, 
+	int solver, 
+	int period, 
+	int nbreProcessus, 
+	System::Collections::Generic::List<System::String^>^ outputs, 
+	int outputLevel, 
+	int etanduSortiesMin, 
+	int etanduSortiesMax, 
+	System::String^ cheminSorties, 
+	System::String^ providerGdal, 
+	System::Collections::Generic::List<bool>^ playback)
 {
 	try
 	{
@@ -26,7 +38,12 @@ bool  Wrapper::FMTForm::Plannification(System::String^ fichierPri, System::Colle
 			layersoptions.push_back("SEPARATOR=SEMICOLON");
 		}
 
-		Parallel::FMTplanningtask newplanningtask(etanduSortiesMin, etanduSortiesMax, msclr::interop::marshal_as<std::string>(cheminSorties), msclr::interop::marshal_as<std::string>(providerGdal), layersoptions, static_cast<Core::FMToutputlevel>(outputLevel), msclr::interop::marshal_as<std::string>(fichierPri));
+		// TODO Gab: essayer ici le playback. Prendre le fichiers playback à Lorena
+		Parallel::FMTplanningtask newplanningtask(etanduSortiesMin, etanduSortiesMax, 
+			msclr::interop::marshal_as<std::string>(cheminSorties), 
+			msclr::interop::marshal_as<std::string>(providerGdal), 
+			layersoptions, static_cast<Core::FMToutputlevel>(outputLevel), 
+			msclr::interop::marshal_as<std::string>(fichierPri));
 		for each (int scen in scenarios)
 		{
 			Models::FMTlpmodel optimizationmodel(Cache->getmodel(scen), static_cast<Models::FMTsolverinterface>(solver));
@@ -66,7 +83,10 @@ bool  Wrapper::FMTForm::Plannification(System::String^ fichierPri, System::Colle
 	return true;
 }
 
-bool Wrapper::FMTForm::Replanification(int indexScenStrategique, int indexScenStochastique, int indexScenTactique, int solver, int period, int periodReplannif, double variabilite, int nbreProcessus, int nombreReplicasMin, int nombreReplicasMax, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, System::String^ cheminSorties, System::String^ providerGdal, int taskLogLevel, bool indProduireSolution, bool p_writeSchedule)
+bool Wrapper::FMTForm::Replanification(int indexScenStrategique, 
+	int indexScenStochastique, int indexScenTactique, int solver, int period, int periodReplannif, double variabilite, int nbreProcessus, 
+	int nombreReplicasMin, int nombreReplicasMax, System::Collections::Generic::List<System::String^>^ outputs, 
+	int outputLevel, System::String^ cheminSorties, System::String^ providerGdal, int taskLogLevel, bool indProduireSolution, bool p_writeSchedule)
 {
 	try
 	{
@@ -109,7 +129,8 @@ bool Wrapper::FMTForm::Replanification(int indexScenStrategique, int indexScenSt
 		*logger << "FMT -> Préparation de la replanification terminée" << "\n";
 		Parallel::FMTtaskhandler handler(maintaskptr, nbreProcessus);
 		logger->settasklogginglevel(taskLogLevel);
-		handler.conccurentrun();
+		handler.ondemandrun(); // TODO À tester
+		//handler.conccurentrun();
 		logger->setdefaultlogginglevel();
 	}
 	catch (...)

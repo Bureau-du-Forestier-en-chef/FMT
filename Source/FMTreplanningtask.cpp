@@ -26,10 +26,10 @@ namespace Parallel
 		const std::vector<std::string>& creationoptions,
 		Core::FMToutputlevel outputlevel):
 		FMTreplanningtask(globalm, stochasticm, localm,
-			globalm.getoutputs(),outputlocation,
-			gdaldriver, creationoptions,1,
+			globalm.getoutputs(), outputlocation,
+			gdaldriver, creationoptions, 1,
 			globalm.getparameter(Models::FMTintmodelparameters::LENGTH),
-			0.5,outputlevel)
+			0.5, outputlevel)
 	{
 
 	}
@@ -118,7 +118,7 @@ namespace Parallel
 			modelsptr.push_back(global.get());
 			modelsptr.push_back(stochastic.get());
 			modelsptr.push_back(local.get());
-			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation, gdaldriver, outputs, modelsptr, creationoptions,minimaldrift,outputlevel));
+			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation, gdaldriver, outputs, modelsptr, creationoptions, minimaldrift, outputlevel));
 			std::unique_ptr<Models::FMTmodel>modelcpy = global->clone();
 			_logger->logwithlevel("Initial planning started\n", 0);
 			if (!modelcpy->doplanning(true))
@@ -170,9 +170,7 @@ namespace Parallel
 		try {
 			if (resultswriter)
 			{
-				/////
-				resultswriter->setdriftprobability(global->getname(), local->getname());///testt
-				////
+				resultswriter->setdriftprobability(global->getname(), local->getname());
 				resultswriter->close();
 				resultswriter = std::shared_ptr<FMTparallelwriter>(nullptr);
 			}
@@ -193,19 +191,45 @@ namespace Parallel
 	{
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
-			std::queue<int>allreplicates=this->replicateids;
-			for (const size_t tasksize : splitwork(numberoftasks, static_cast<int>(replicateids.size())))
+			std::queue<int> allreplicates = this->replicateids;
+			// On aimerait splitter le work en round robin plutôt, donc je fais un vecteur pour créer l'ordonnance qu'on veut
+			std::vector<std::queue<int>> queues(numberoftasks);
+			size_t idx = 0;
+			while (!allreplicates.empty()) {
+				const int REPLICA_ID = allreplicates.front();
+				allreplicates.pop();
+
+				const size_t TARGET = idx % numberoftasks;
+				queues[TARGET].push(REPLICA_ID);
+
+				++idx;
+			}
+
+			for (unsigned i = 0; i < numberoftasks; ++i) {
+				if (!queues[i].empty())
 				{
-				FMTreplanningtask newtask(*this);
-				std::queue<int>replicatesoftask;
-				while (replicatesoftask.size() < tasksize)
-					{
-					replicatesoftask.push(allreplicates.front());
-					allreplicates.pop();
-					}
-				newtask.replicateids = replicatesoftask;
-				tasks.push_back(std::move(newtask.clone()));
+					FMTreplanningtask newtask(*this);
+					newtask.replicateids = std::move(queues[i]);
+
+					// clone() retourne un std::unique_ptr<FMTtask>
+					tasks.push_back(std::move(newtask.clone()));
 				}
+			}
+
+			//for (const size_t tasksize : splitwork(numberoftasks, static_cast<int>(replicateids.size())))
+			//	{
+			//	FMTreplanningtask newtask(*this);
+			//	std::queue<int>replicatesoftask;
+			//
+			//	while (replicatesoftask.size() < tasksize)
+			//		{
+			//		replicatesoftask.push(allreplicates.front());
+			//		allreplicates.pop();
+			//		}
+			//
+			//	newtask.replicateids = replicatesoftask;
+			//	tasks.push_back(std::move(newtask.clone()));
+			//	}
 			
 		}catch (...)
 			{

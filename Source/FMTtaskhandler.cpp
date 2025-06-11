@@ -163,6 +163,8 @@ namespace Parallel
 			std::list<std::unique_ptr<FMTtask>>tasks;
 			unsigned int taskid = 0;
 			std::unique_ptr<FMTtask>newtask = alltasks.at(0)->spawn();
+			FMTtask::setTotalThreads(static_cast<size_t>(maxnumberofthread));
+
 			while (taskid < maxnumberofthread && newtask)
 			{
 				tasks.push_back(std::move(newtask));
@@ -178,10 +180,6 @@ namespace Parallel
 				{
 					if ((*taskit)->isdone())
 					{
-						if (!newtask)//Finalize 
-						{
-							finalize(*taskit);
-						}
 						tasks.erase(taskit);
 						workers.erase(threadit);
 						if (newtask)
@@ -197,6 +195,7 @@ namespace Parallel
 					++threadit;
 				}
 			}
+			finalize(alltasks.back());
 			logtasktime(tasksstart);
 		}catch (...)
 			{
