@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
 	//errors.push_back(Exception::FMTexc::FMToutput_too_much_operator); // tester en relecture
 	//errors.push_back(Exception::FMTexc::FMTinvalidyield_number); // 
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	//modelparser.seterrorstowarnings(errors);
 	
 	std::vector<Exception::FMTexc> readErrors(errors);
