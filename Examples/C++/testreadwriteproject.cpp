@@ -20,6 +20,8 @@ int main(int argc, char* argv[])
 	else {
 		scenarios.push_back("operator_separator");
 		primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
+		//scenarios.push_back("120_RegProv_apsp");
+		//primarylocation = "C:/Users/Admlocal/Documents/issues/290/01_Valide/PC_9967_U06271_2028_MODB01.pri";
 	}
 	//std::string primarylocation = std::string("../../../../Examples/Models/TWD_land/TWD_land.pri"); // changer ici pour pointer sur un modèle avec le bug
 	Parser::FMTmodelparser modelparser;
@@ -32,6 +34,7 @@ int main(int argc, char* argv[])
 	//errors.push_back(Exception::FMTexc::FMToutput_too_much_operator); // tester en relecture
 	//errors.push_back(Exception::FMTexc::FMTinvalidyield_number); // 
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	//modelparser.seterrorstowarnings(errors);
 	
 	std::vector<Exception::FMTexc> readErrors(errors);

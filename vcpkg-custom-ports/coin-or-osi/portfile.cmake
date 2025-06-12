@@ -62,7 +62,6 @@ else()
 endif(MOSEK_FOUND)
 
 
-
 vcpkg_install_make()
 vcpkg_copy_pdbs()
 vcpkg_fixup_pkgconfig()
