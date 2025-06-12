@@ -1452,10 +1452,21 @@ std::string FMToutput::_operatorFormat() const
 {
 	// setup
 	Core::FMToutput newOutput(*this);
+	std::string tilde = "~";
+	std::string modified = "";
 	std::string newLine;
 	int op_count = 0;
-	int output_num = 1;
-	newLine += "*OUTPUT ~" + newOutput.getname() + " \n";
+	int output_num = 0;
+
+	if (newOutput.getname()[0] == '~')
+	{
+		tilde = "";
+		modified = "_" + std::to_string(output_num);
+		output_num += 1;
+	}
+	newLine += "*OUTPUT " + tilde + newOutput.getname();
+	newLine += modified;
+	newLine += " \n";
 	newLine += "*SOURCE ";
 	// On regarde le dernier double op * ou / pour ajuster les outputs en conséquence
 	int last_operator_position = 0;
@@ -1488,7 +1499,7 @@ std::string FMToutput::_operatorFormat() const
 			op = operators[i].getkey();
 			}
 		std::string lastNum = "";
-		if (output_num > 1) 
+		if (output_num > 0) 
 		{
 			lastNum = "_" + std::to_string(output_num - 1);
 		}
@@ -1512,19 +1523,19 @@ std::string FMToutput::_operatorFormat() const
 		else if (op_count == 2 && i < last_operator_position)
 		{
 			newLine += "\n\n";
-			newLine += "*OUTPUT ~" + newOutput.getname() + "_" + std::to_string(output_num) + " \n";
-			newLine += "*SOURCE ~" + newOutput.getname() + lastNum + " ";
+			newLine += "*OUTPUT " + tilde + newOutput.getname() + "_" + std::to_string(output_num) + " \n";
+			newLine += "*SOURCE " + tilde + newOutput.getname() + lastNum + " ";
 			newLine += op_str + " ";
-			//op_count == 1;
+			op_count -= 1;
 			output_num++;
 		}
 		else if (op_count == 2 && i >= last_operator_position)
 		{
 			newLine += "\n\n";
 			newLine += "*OUTPUT " + newOutput.getname() + " \n";
-			newLine += "*SOURCE ~" + newOutput.getname() + lastNum + " ";
+			newLine += "*SOURCE " + tilde + newOutput.getname() + lastNum + " ";
 			newLine += op_str + " ";
-			//op_count == 1;
+			op_count -= 1;
 		}
 	}
 	newLine += " \n" ;
