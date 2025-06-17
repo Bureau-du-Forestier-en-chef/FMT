@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:/Users/Admlocal/Documents/SCRAP/Bruno/02_Travail/PC_9943_U08651_2028_MODB01.pri";
-		outputlocation = "C:/Users/Admlocal/Documents/SCRAP";
-		length = 10;
-		scenario_name = "120_RegProv_apsp";
+		primlocation = "C:/Users/Admlocal/Documents/FMT/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+		outputlocation = "C:/Users/Admlocal/Documents/issues/288/playback/test";
+		length = 20;
+		scenario_name = "PlayBack_CC";
 		playback.push_back(true);
 		allscenarios.push_back(scenario_name);
 	}

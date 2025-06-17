@@ -553,7 +553,7 @@ endif(NOT Boost_FOUND AND NOT MSVC)
 
 
 if (NOT Boost_FOUND)
-    message(FATAL_ERROR "Boost not found!")
+	message(FATAL_ERROR "Boost not found!")
 endif(NOT Boost_FOUND)
 
 
