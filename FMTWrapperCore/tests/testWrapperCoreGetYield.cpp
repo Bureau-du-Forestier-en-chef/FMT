@@ -32,11 +32,13 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/PC_9949_U08251_2028_MODB01.pri";
+		pathPri = "D:/01_Valide_ServiceOuest_TBE/PC_9949_U08251_2028_MODB01.pri";
 		scenarioName = "TBE_TEST_CORRECTION";
-		mask = "? ? ? ? FC2582 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? POST";
+		//mask = "? ? 1 ? FC2551 ? ? ? ? ? ? NA EL7 S01555 ? ? ? ? ? ? POST";
+		//mask = "? ? 1 ? FC2452 ? ? ? ? ? ? NA EL9 S01727 ? ? ? ? ? ? POST";
+		mask = "? ? 1 ? FC2530 ? ? ? ? ? ? NA EL11 S01640 ? ? ? ? ? ? PRE";
 		yieldName = "YV_E_SAB";
-		age = 16;
+		age = 19;
 		result = 54.53;
 	}
 
