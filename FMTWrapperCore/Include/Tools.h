@@ -68,5 +68,11 @@ namespace FMTWrapperCore
 		*@return Un set des masks.
 		*/
 		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers);
+		
+		/*TODO*/
+		std::vector<Core::FMTconstraint> getSelectedConstraints(std::vector<Core::FMTconstraint> p_baseConstraints, std::vector<std::string>& p_selectedConstraints);
+		
+		/*TODO*/
+		std::vector<Core::FMTschedule> FMTWrapperCore::Tools::getSchedule(std::string& priFileName, Models::FMTsesmodel simulationModel)
     };
 }

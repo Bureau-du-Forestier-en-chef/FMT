@@ -50,7 +50,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel&
 	try
 	{
 
-		// On va chercher tous les thèmes dans le modèle
+		// On va chercher tous les thï¿½mes dans le modï¿½le
 		std::vector<Core::FMTtheme> themes;
 		const std::vector<Core::FMTtheme> THEMESMODELS = p_model.getthemes();
 
@@ -59,7 +59,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel&
 			themes.push_back(THEMESMODELS.at(themeNumber - 1));
 		}
 
-		// On transforme notre modèle en lpModel qui lui peut faire un getAllMasks et on ajoute les paramètres qu'on a besoin.
+		// On transforme notre modï¿½le en lpModel qui lui peut faire un getAllMasks et on ajoute les paramï¿½tres qu'on a besoin.
 		Models::FMTlpmodel optModel(p_model, Models::FMTsolverinterface::MOSEK);
 		optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
 		optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
@@ -76,3 +76,60 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel&
 	return masks;
 }
 
+std::vector<Core::FMTconstraint> FMTWrapperCore::Tools::getSelectedConstraints(
+	std::vector<Core::FMTconstraint> p_baseConstraints, 
+	std::vector<std::string>& p_selectedConstraints)
+{
+	std::vector<Core::FMTconstraint> retour;
+	try
+	{
+		for (const Core::FMTconstraint& constraint : p_baseConstraints)
+		{
+			std::string stdContraite = std::string(constraint);
+			stdContraite.erase(std::remove(stdContraite.begin(), stdContraite.end(), '\n'), stdContraite.end());
+			stdContraite.erase(std::remove(stdContraite.begin(), stdContraite.end(), '\r'), stdContraite.end());
+
+			for (const std::string& selection : p_selectedConstraints)
+			{
+				std::string stdSelection = selection;
+				stdSelection.erase(std::remove(stdSelection.begin(), stdSelection.end(), '\n'), stdSelection.end());
+				stdSelection.erase(std::remove(stdSelection.begin(), stdSelection.end(), '\r'), stdSelection.end());
+	
+				if (stdContraite == stdSelection)
+				{
+					retour.push_back(constraint);
+				}
+			}
+		}
+	}
+	catch (...)
+	{
+		// TODO	
+	}
+
+	return retour;
+}
+
+std::vector<Core::FMTschedule> FMTWrapperCore::Tools::getSchedule(
+	std::string& priFileName,
+	Models::FMTsesmodel simulationModel)
+{
+	std::vector<Core::FMTschedule> retour;
+	try
+	{
+		Parser::FMTmodelparser Modelparser;
+		std::vector<Models::FMTmodel> models;
+		models.push_back(simulationModel);
+		std::vector<Core::FMTschedule> liste = Modelparser.readschedules(priFileName, models).at(0);
+		if (liste.size() > 0)
+		{
+			retour = liste;
+		}
+	}
+	catch (...)
+	{
+		// TODO
+	}
+
+	return retour;
+}

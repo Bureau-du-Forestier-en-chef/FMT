@@ -56,8 +56,8 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ ObtenirListeOutputs(int indexScenario);
 		System::Collections::Generic::List<System::String^>^ ObtenirListeExtentionsSorties();
 		System::Collections::Generic::List<int>^ ObtenirListeSolvers();
-		int ObtenirNombreThemes(int indexScenario);
 		int ObtenirNombrePeriodes(System::String^ nomFichierPri, int indexScenario);
+		int ObtenirNombreThemes(int indexScenario);
 		bool Plannification(System::String^ fichierPri, System::Collections::Generic::List<int>^ scenarios, int solver, int period, int nbreProcessus, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, System::String^ providerGdal, System::Collections::Generic::List<bool>^ playback);
 		bool Replanification(int indexScenStrategique, int indexScenStochastique, int indexScenTactique, int solver, int period, int periodReplannif, double variabilite, int nbreProcessus, int nombreReplicasMin, int nombreReplicasMax, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, System::String^ cheminSorties, System::String^ providerGdal, int taskLogLevel, bool indProduireSolution, bool p_writeSchedule);
 		bool SimulationSpatialeExplicite(System::String^ fichierPri, System::String^ cheminRasters, int scenario, System::Collections::Generic::List<System::String^>^ contraintes, int periodes, int greedySearch, System::Collections::Generic::List<System::String^>^ outputs, bool indicateurStanlock, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, bool indGenererEvents, bool indSortiesSpatiales, System::String^ providerGdal, bool indCarbon, System::Collections::Generic::List<System::String^>^ predictoryields, System::Collections::Generic::List<int>^ growththemes);
@@ -66,62 +66,62 @@ namespace Wrapper
 		bool OperatingAreaScheduling(System::String^ fichierPri, int scenario, System::String^ fichierShp, int solver, int nombrePeriodes, int nombreThread, int numeroTheme, int tempsMaximum, int nombreIteration, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock, System::String^ cheminParametres, System::String^ nomFichierResultat, int periodeMiseAjour, System::String^ returnTimeOutput);
 		//std::vector<std::string> getAttributes(const Models::FMTmodel& p_model, int p_theme);
 		/**
-		* @brief Agrège toutes les actions en utilisant le modèle spécifié.
+		* @brief Agrï¿½ge toutes les actions en utilisant le modï¿½le spï¿½cifiï¿½.
 		*
-		* Cette fonction agrège toutes les actions basées sur l'index du modèle et les paramètres fournis.
+		* Cette fonction agrï¿½ge toutes les actions basï¿½es sur l'index du modï¿½le et les paramï¿½tres fournis.
 		*
-		* @param p_modelIndex Index du modèle à utiliser pour l'agrégation.
-		* @param p_aggregates Liste des actions agrégées.
+		* @param p_modelIndex Index du modï¿½le ï¿½ utiliser pour l'agrï¿½gation.
+		* @param p_aggregates Liste des actions agrï¿½gï¿½es.
 		* @param p_schedulePri Le path du fichier .pri.
 		* @param p_outputDirPath Le path du dossier de sortie.
-		* @param p_scenario_name Nom du scénario.
-		* @return `true` si l'agrégation a réussi, `false` sinon.
+		* @param p_scenario_name Nom du scï¿½nario.
+		* @return `true` si l'agrï¿½gation a rï¿½ussi, `false` sinon.
 		*/
 		bool aggregateAllActions(const int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_aggregates, System::Collections::Generic::List<System::String^>^ p_order,  System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 
 		/**
-		* @brief Sépare les actions en utilisant le modèle spécifié.
+		* @brief Sï¿½pare les actions en utilisant le modï¿½le spï¿½cifiï¿½.
 		*
-		* Cette fonction divise les actions basées sur l'index du modèle et les paramètres fournis.
+		* Cette fonction divise les actions basï¿½es sur l'index du modï¿½le et les paramï¿½tres fournis.
 		*
-		* @param p_modelIndex Index du modèle à utiliser pour la séparation.
+		* @param p_modelIndex Index du modï¿½le ï¿½ utiliser pour la sï¿½paration.
 		* @param p_schedulePri Le path du fichier .pri.
-		* @param p_splitted Liste sur lequel les splits sont effectué ex: {"ACT","AEC"}.
+		* @param p_splitted Liste sur lequel les splits sont effectuï¿½ ex: {"ACT","AEC"}.
 		* @param p_splitted_mask Le mask a splitter.
 		* @param p_outputDirPath Le path du dossier sortie.
-		* @param p_scenario_name Nom du scénario.
-		* @return `true` si la séparation a réussi, `false` sinon.
+		* @param p_scenario_name Nom du scï¿½nario.
+		* @return `true` si la sï¿½paration a rï¿½ussi, `false` sinon.
 		*/
 		bool splitActions(const int p_modelIndex, System::String^ p_schedulePri, System::Collections::Generic::List<System::String^>^ p_splitted, System::Collections::Generic::List<System::String^>^ p_splitted_mask, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 
 		/**
-		* @brief retourne une listes des noms d'actions du modèle.
+		* @brief retourne une listes des noms d'actions du modï¿½le.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		* @return une listes des noms d'actions du modèle sinon nullptr
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
+		* @return une listes des noms d'actions du modï¿½le sinon nullptr
 		*/
 		System::Collections::Generic::List<System::String^>^ getActionsNames(int p_modelIndex);
 
 		/**
-		* @brief retourne une listes des noms d'actions du modèle.
+		* @brief retourne une listes des noms d'actions du modï¿½le.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		* @return une listes des noms d'actions du modèle sinon nullptr
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
+		* @return une listes des noms d'actions du modï¿½le sinon nullptr
 		*/
 		System::Collections::Generic::List<System::String^>^ getAggregates(int p_modelIndex);
 
 		/**
-		* @brief retourne une listes des noms de yields du modèle.
+		* @brief retourne une listes des noms de yields du modï¿½le.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		* @return une listes des noms des yields du modèle sinon nullptr
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
+		* @return une listes des noms des yields du modï¿½le sinon nullptr
 		*/
 		System::Collections::Generic::List<System::String^>^ getYields(int p_modelIndex);
 
 		/**
 		* @brief retourne un double du yield.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
 		*@param p_yield
 		*@param p_age
 		* @return Un double du yield
@@ -131,7 +131,7 @@ namespace Wrapper
 		/**
 		* @brief retourne l'age max du model.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
 		* @return double
 		*/
 		double getMaxAge(int p_modelIndex);
@@ -139,39 +139,39 @@ namespace Wrapper
 		/**
 		* @brief Build l'action.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
 		*@param p_actionName Le nom de l'action
 		*@param p_targetYield Le targetYield
 		*@param p_schedulePri Le path du fichier .pri
 		*@param p_outputDirPath Le path du dossier de sortie
-		*@param p_scenario_name Le nom du scénario
+		*@param p_scenario_name Le nom du scï¿½nario
 		*@return vrai ou faux
 		*/
 		bool buildAction(const int p_modelIndex, System::String^ p_actionName, System::String^ p_targetYield, System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 		
 		/**
-		* @brief Donne tous les attriduts du modèle selon le thème.
+		* @brief Donne tous les attriduts du modï¿½le selon le thï¿½me.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		*@param p_themeIndex Index du thème souhaité dans la liste des thème du modèle.
-		*@return Retourne une liste d'attributs du thème.
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
+		*@param p_themeIndex Index du thï¿½me souhaitï¿½ dans la liste des thï¿½me du modï¿½le.
+		*@return Retourne une liste d'attributs du thï¿½me.
 		*/
 		System::Collections::Generic::List<System::String^>^ getAttributes(const int p_modelIndex, const int p_themeIndex);
 
 		/**
 		* @brief Dit si le mask est valide.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		*@param p_mask Le mask à valider.
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
+		*@param p_mask Le mask ï¿½ valider.
 		*@return Retourne true ou false.
 		*/
 		bool validateMask(const int p_modelIndex, System::String^ p_mask);
 
 		/**
-		* @brief Retourne tous les masks du modèle utilisé selon les thèmes.
+		* @brief Retourne tous les masks du modï¿½le utilisï¿½ selon les thï¿½mes.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		*@param p_themes Liste des thèmes à vérifier.
+		*@param p_modelIndex Index du modï¿½le ï¿½ utiliser.
+		*@param p_themes Liste des thï¿½mes ï¿½ vï¿½rifier.
 		*@return Retourne une liste de masks.
 		*/
 		System::Collections::Generic::List<System::String^>^ getAllMasks(const int p_modelIndex, const int p_periods, System::Collections::Generic::List<int>^ p_themesNumber);

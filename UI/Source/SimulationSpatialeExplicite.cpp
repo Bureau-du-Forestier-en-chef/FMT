@@ -15,91 +15,42 @@
 #include "FMTmodel.h"
 #include "FMTFormCache.h"
 #include "FMTexceptionhandlerwarning.h"
+#include "SES.h"
 
-
-void Wrapper::FMTForm::RapportdeBris(const Models::FMTsemodel& semodel)
+void Wrapper::FMTForm::RapportdeCarboneSpatial(
+    const Models::FMTsemodel& semodel, 
+    const int& nombredeperiodes, 
+    const std::vector<Core::FMTschedule>& schedules)
 {
-	try{
-		semodel.LogConstraintsInfeasibilities();
-	}catch (...)
-	{
-		Cache->getformhandler()->raisefromcatch("", "Wrapper::FMTForm::RapportdeBris", __LINE__, __FILE__);
-	}
+    try
+    {
+    	FMTWrapperCore::SES::spatialCarbonReport(
+            semodel,
+            nombredeperiodes,
+            schedules,
+            [this](const std::string& msg)
+            {
+                auto managedMsg = gcnew System::String(msg.c_str());
+                this->RetourJson(managedMsg, gcnew System::EventArgs());
+            }
+        );
+    }
+    catch (...)
+    {
+		// TODO;
+    }
 }
 
-void Wrapper::FMTForm::RapportdeCarboneSpatial(const Models::FMTsemodel& semodel,const int& nombredeperiodes, const std::vector<Core::FMTschedule>& schedules)
-{
-	try {
-		Models::FMTmodel localmodel(semodel);
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
-		const std::vector<Core::FMTschedule> newschedule = schedule.getschedules(semodel.getactions(), false);
-		size_t scid = 0;
-		for (int period = 1; period <= nombredeperiodes; ++period)
-		{
-			int jsonloc = period - 1;
-			std::vector<Core::FMTconstraint>periodicconstraints = semodel.getconstraints();
-			for (Core::FMTconstraint& periodconstraint : periodicconstraints)
-			{
-				const int lowerperiod = periodconstraint.getperiodlowerbound();
-				const int upperperiod = std::min(period, periodconstraint.getperiodupperbound());
-				periodconstraint.setlength(lowerperiod, upperperiod);
-			}
-			localmodel.setconstraints(periodicconstraints);
-			double primalinf = 0;
-			double objectivevalue = 0;
-			schedule.getsolutionstatus(objectivevalue, primalinf, localmodel, nullptr, true, false);
-			RetourJson("objectives;" + jsonloc + ";Objective;" + objectivevalue, gcnew System::EventArgs());
-			RetourJson("objectives;" + jsonloc + ";Primalinfeasibility;" + primalinf, gcnew System::EventArgs());
-			double oldtotal = 0;
-			double newtotal = 0;
-			size_t oriloc = 0;
-			for (const Core::FMTschedule& schedule : schedules)
-			{
-				if (schedule.getperiod() == period)
-				{
-					break;
-				}
-				++oriloc;
-			}
-			size_t newloc = 0;
-			for (const Core::FMTschedule& schedule : newschedule)
-			{
-				if (schedule.getperiod() == period)
-				{
-					break;
-				}
-				++newloc;
-			}
-			if (scid < newschedule.size() && scid < schedules/*.at(0)*/.size())
-			{
-				for (const auto& data : schedules.at(oriloc))
-				{
-					const double basearea = schedules.at(oriloc).actionarea(data.first);
-					double newarea = 0;
-					if (newschedule.at(newloc).find(data.first) != newschedule.at(newloc).end())
-					{
-						newarea = newschedule.at(newloc).actionarea(data.first);
-					}
-					oldtotal += basearea;
-					newtotal += newarea;
-					RetourJson("objectives;" + jsonloc + ";" + gcnew System::String(data.first.getname().c_str()) + ";" + (newarea / basearea), gcnew System::EventArgs());
-				}
-				RetourJson("objectives;" + jsonloc + ";Total;" + (newtotal / oldtotal), gcnew System::EventArgs());
-			}
-			++scid;
-		}
-	}catch (...)
-	{
-		Cache->getformhandler()->raisefromcatch("", "Wrapper::FMTForm::RapportdeCarboneSpatial", __LINE__, __FILE__);
-	}
-
-}
-
-void Wrapper::FMTForm::EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties,const int& nombredeperiodes, System::Collections::Generic::List<int>^ growththemes, const bool& incarbon)
+void Wrapper::FMTForm::EcrituredesPerturbations(
+	const Models::FMTsemodel& semodel, 
+	System::String^ cheminsorties,
+	const int& nombredeperiodes, 
+	System::Collections::Generic::List<int>^ growththemes, 
+	const bool& incarbon)
 {
 	try {
 		const std::string rastpath = msclr::interop::marshal_as<std::string>(cheminsorties);
-		std::vector<Core::FMTtheme>growththeme;
+		std::vector<Core::FMTtheme> growththeme;
 		if (growththemes->Count != 0)
 		{
 			for each (int themeID in growththemes)
@@ -107,26 +58,17 @@ void Wrapper::FMTForm::EcrituredesPerturbations(const Models::FMTsemodel& semode
 				growththeme.push_back(semodel.getthemes().at(themeID - 1));
 			}
 		}
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
-		FMTFormLogger* logger = Cache->getformlogger();
-		*logger << "FMT -> Écriture des perturbations" << "\n";
-		Parser::FMTtransitionparser transitionparser;
-		Parser::FMTareaparser areaparser;
-		for (int period = 1; period <= nombredeperiodes; ++period)
-		{
-			//const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
-			const std::vector<Core::FMTaction>actions = semodel.getactions();
-			const std::vector<Core::FMTGCBMtransition>transitions = areaparser.writedisturbances(rastpath,
-				schedule,
-				actions,
-				growththeme, period);
-			std::string fichier = rastpath + "transition" + std::to_string(period) + ".txt";
-			transitionparser.writeGCBM(transitions, fichier);
-			if (incarbon)
-			{
-				RetourJson(gcnew System::String(("GCBMtransitionlocations;" + fichier).c_str()), gcnew System::EventArgs());
-			}
-		}
+
+		FMTWrapperCore::SES::writeDisturbance(
+			semodel,
+			rastpath,
+			nombredeperiodes,
+			growthTheme,
+			incarbon,
+			[this](const std::string& msg) {
+				System::String^ managed = gcnew System::String(msg.c_str());
+				this->RetourJson(managed, gcnew System::EventArgs());
+			});
 	}catch (...)
 		{
 		Cache->getformhandler()->raisefromcatch("", "Wrapper::FMTForm::EcrituredesPerturbations", __LINE__, __FILE__);
@@ -141,7 +83,7 @@ void Wrapper::FMTForm::EcritureDesEvenements(const Models::FMTsemodel& semodel, 
 			const std::vector<Core::FMTaction>actions = semodel.getactions();
 			const std::string stats = schedule.getpatchstats(actions);
 			System::String^ eventpath = System::IO::Path::Combine(cheminsorties, gcnew System::String(std::string("events.txt").c_str()));
-			*logger << "Écriture des évènements ici: " + msclr::interop::marshal_as<std::string>(eventpath) << "\n";
+			*logger << "ï¿½criture des ï¿½vï¿½nements ici: " + msclr::interop::marshal_as<std::string>(eventpath) << "\n";
 			//InscrireLigneFichierTexte(eventpath, "Period Action size perimeter height width", false,true);
 			InscrireLigneFichierTexte(eventpath, gcnew System::String(stats.c_str()), false,true);
 			if (incarbon)
@@ -188,7 +130,7 @@ void Wrapper::FMTForm::EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semo
 	try {
 		FMTFormLogger* logger = Cache->getformlogger();
 		Parser::FMTareaparser areaparser;
-		*logger << "FMT -> Écriture des outputs spatiaux" << "\n";
+		*logger << "FMT -> ï¿½criture des outputs spatiaux" << "\n";
 		for (int period = sortiemin; period <= sortiemax; ++period)
 		{
 			for (const Core::FMToutput& output : outputs)
@@ -201,7 +143,7 @@ void Wrapper::FMTForm::EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semo
 			}
 		}
 
-		*logger << "FMT -> Écriture des outputs spatiaux terminée" << "\n";
+		*logger << "FMT -> ï¿½criture des outputs spatiaux terminï¿½e" << "\n";
 		
 	}
 	catch (...)
@@ -261,139 +203,73 @@ void Wrapper::FMTForm::EcritureDesPredicteurs(const Models::FMTsemodel& semodel,
 
 
 bool Wrapper::FMTForm::SimulationSpatialeExplicite(
-	System::String^ fichierPri, 
-	System::String^ cheminRasters, 
-	int scenario, 
-	System::Collections::Generic::List<System::String^>^ contraintes, 
-	int periodes, 
-	int greedySearch, 
-	System::Collections::Generic::List<System::String^>^ outputs, 
-	bool indicateurStanlock,
-	int outputLevel, 
-	int etanduSortiesMin, 
-	int etanduSortiesMax, 
-	System::String^ cheminSorties, 
-	bool indGenererEvents, 
-	bool indSortiesSpatiales,
-	System::String^ providerGdal, 
-	bool indCarbon, 
-	System::Collections::Generic::List<System::String^>^ predictoryields, 
-	System::Collections::Generic::List<int>^ growththemes)
+    System::String^ fichierPri,
+    System::String^ cheminRasters,
+    int scenario,
+    System::Collections::Generic::List<System::String^>^ contraintes,
+    int periodes,
+    int greedySearch,
+    System::Collections::Generic::List<System::String^>^ outputs,
+    bool indicateurStanlock,
+    int outputLevel,
+    int etanduSortiesMin,
+    int etanduSortiesMax,
+    System::String^ cheminSorties,
+    bool indGenererEvents,
+    bool indSortiesSpatiales,
+    System::String^ providerGdal,
+    bool indCarbon,
+    System::Collections::Generic::List<System::String^>^ predictoryields,
+    System::Collections::Generic::List<int>^ growththemes)
 {
-	try
-	{
+    try
+    {
+		auto toStdStr = [](System::String^ s) {
+			return msclr::interop::marshal_as<std::string>(s);
+		};
+		std::vector<std::string> nativeContraintes;
+		for each (auto^ c in contraintes) nativeContraintes.push_back(toStdStr(c));
+		std::vector<std::string> nativeOutputs;
+		for each (auto^ o in outputs) nativeOutputs.push_back(toStdStr(o));
+		std::vector<std::string> nativePredictors;
+		for each (auto^ p in predictoryields) nativePredictors.push_back(toStdStr(p));
+		std::vector<int> nativeGrowth;
+		for each (auto i in growththemes) nativeGrowth.push_back(i);
+
 		Models::FMTsesmodel simulationmodel(Cache->getmodel(scenario));
-		FMTFormLogger* logger = Cache->getformlogger();
-		*logger << "FMT -> Traitement pour le scénario : " + simulationmodel.getname() << "\n";
-		if (contraintes->Count > 0)
-		{
-			*logger << "FMT -> Intégration des contraintes sélectionnées" << "\n";
-			simulationmodel.setconstraints(ObtenirArrayContraintesSelectionnees(ObtenirArrayContraintes(scenario), contraintes));
-		}
-		*logger << "FMT -> Modification et intégration des transitions" << "\n";
-		std::vector<Core::FMTtransition> strans;
-		for (const auto& tran : simulationmodel.gettransitions())
-		{
-			strans.push_back(tran.single());
-		}
-		*logger << "FMT -> Lecture des rasters" << "\n";
-		simulationmodel.settransitions(strans);
-		Parser::FMTareaparser areaparser;
-		std::string rastpath = msclr::interop::marshal_as<std::string>(cheminRasters);
-		const std::string agerast = rastpath + "AGE.tif";
-		std::vector<std::string> themesrast;
-		for (int i = 1; i <= simulationmodel.getthemes().size(); i++)
-		{
-			themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
-		}
+
+        bool ok = FMTWrapperCore::SES::spatiallyExplicitSimulation(
+			simulationmodel,
+			toStdStr(fichierPri),
+			toStdStr(cheminRasters),
+			scenario,
+			nativeContraintes,
+			periodes,
+			greedySearch,
+			nativeOutputs,
+			indicateurStanlock,
+			outputLevel,
+			etanduSortiesMin,
+			etanduSortiesMax,
+			toStdStr(cheminSorties),
+			indGenererEvents,
+			indSortiesSpatiales,
+			toStdStr(providerGdal),
+			indCarbon,
+			nativePredictors,
+			nativeGrowth,
+
+			[this](const std::string& msg)
 			{
-				Spatial::FMTforest initialforestmap;
-				if (!indicateurStanlock)
-				{
-					initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
-				}else
-				{
-					initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001, rastpath + "STANLOCK.tif");
-				}
-				simulationmodel.setinitialmapping(initialforestmap);
+				auto managed = gcnew System::String(msg.c_str());
+				this->RetourJson(managed, gcnew System::EventArgs());
 			}
-
-		const std::vector<Core::FMTschedule> schedules = ObtenirSEQ(fichierPri, scenario);
-
-		if (schedules.back().getperiod() < periodes)
-		{
-			const std::string logout = "Dépassement de la période : size " + std::to_string(schedules.size()) + " periode " + std::to_string((schedules.back().getperiod() + 1));
-			*logger << logout << "\n";
-			return false;
-		}
-		simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, periodes);
-		simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, greedySearch);
-		simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-		simulationmodel.doplanning(false, schedules);
-		System::String^ directoryFullName;
-		if (indCarbon)
-		{
-			directoryFullName = cheminRasters;
-		}else {
-			System::IO::DirectoryInfo^ parentdir = System::IO::Directory::GetParent(cheminSorties);
-			directoryFullName = parentdir->FullName;
-		}
-
-		const Spatial::FMTspatialschedule& schedule = simulationmodel.getspschedule();
-		RapportdeBris(simulationmodel);
-		if (indCarbon) 
-			{
-			RapportdeCarboneSpatial(simulationmodel, periodes, schedules);
-			}
-		EcrituredesPerturbations(simulationmodel, directoryFullName, periodes, growththemes, indCarbon);
-		if (indGenererEvents || indCarbon)
-			{
-			EcritureDesEvenements(simulationmodel, directoryFullName, periodes, indCarbon);
-			}
-		if (outputs->Count > 0)
-		{
-			const std::vector<Core::FMToutput> listeOutputs = EcritureDesOutputs(simulationmodel, outputs, periodes, indCarbon);
-			Parser::FMTscheduleparser scheduparser;
-			System::String^ schedulepath = System::IO::Path::Combine(directoryFullName, gcnew System::String(std::string(simulationmodel.getname() + "_.seq").c_str()));
-			const std::string stdschedulepath = msclr::interop::marshal_as<std::string>(schedulepath);
-			scheduparser.write(schedule.getschedules(simulationmodel.getactions()), stdschedulepath);
-			if (!indCarbon)
-			{
-				Parser::FMTmodelparser Modelparser;
-				*logger << "FMT -> Exportations des sorties " << "\n";
-				Modelparser.writeresults(
-					simulationmodel,
-					listeOutputs,
-					etanduSortiesMin,
-					etanduSortiesMax,
-					msclr::interop::marshal_as<std::string>(cheminSorties),
-					static_cast<Core::FMToutputlevel>(outputLevel),
-					msclr::interop::marshal_as<std::string>(providerGdal)
-				);
-			}
-			else
-			{				
-				RetourJson("schedules;" + gcnew System::String(stdschedulepath.c_str()), gcnew System::EventArgs());
-				areaparser.writeforest(schedule.getforestperiod(0), simulationmodel.getthemes(), themesrast, rastpath + "AGE.tif", rastpath + "STANLOCK.tif");
-				if (predictoryields->Count > 0)
-					{
-					EcritureDesPredicteurs(simulationmodel, rastpath, periodes, predictoryields);
-					}
-			}
-			if (indSortiesSpatiales)
-			{
-				EcrituredesOutputsSpatiaux(simulationmodel, listeOutputs, etanduSortiesMin, etanduSortiesMax, directoryFullName);
-			}
-
-
-		}
-	}
-	catch (...)
-	{
-		raisefromcatch("", "Wrapper::FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
-		return false;
-	}
-
-	return true;
+        );
+        return ok;
+    }
+    catch (...)
+    {
+        raisefromcatch("", "Wrapper::FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
+        return false;
+    }
 }
