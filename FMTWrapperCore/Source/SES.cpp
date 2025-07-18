@@ -147,7 +147,7 @@ void FMTWrapperCore::SES::writeEvents(
 	}
 
 
-bool FMTWrapperCore::SES::SimulationSpatialeExplicite(
+bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 	Models::FMTsesmodel p_sesModel,
 	const std::string& p_priFilePath,
 	const std::string& p_rastersPath,
@@ -254,7 +254,7 @@ bool FMTWrapperCore::SES::SimulationSpatialeExplicite(
 		
 		if (!p_outputs.empty())
 		{
-			const std::vector<Core::FMToutput> listeOutputs = FMTForm::EcritureDesOutputs(simulationmodel, p_outputs, p_length, indCarbon);
+			const std::vector<Core::FMToutput> listeOutputs = Tools::writeOutputs(simulationmodel, p_outputs, p_length, indCarbon);
 			Parser::FMTscheduleparser scheduparser;
 			std::string schedulepath = boost::filesystem::path(directoryFullName) / simulationmodel.getname() + "_.seq";
 			const std::string stdschedulepath = schedulepath.to_string();
@@ -283,7 +283,7 @@ bool FMTWrapperCore::SES::SimulationSpatialeExplicite(
 					p_rastersPath + "STANLOCK.tif");
 				if (!predictoryields.empty())
 					{
-					EcritureDesPredicteurs(simulationmodel, p_rastersPath, p_length, predictoryields);
+					Tools::writePredictors(simulationmodel, p_rastersPath, p_length, predictoryields);
 					}
 			}
 			if (indSortiesSpatiales)
@@ -293,7 +293,7 @@ bool FMTWrapperCore::SES::SimulationSpatialeExplicite(
 	}
 	catch (...)
 	{
-		raisefromcatch("", "WrapperCore::SES::SimulationSpatialeExplicite", __LINE__, __FILE__); // TODO faire un bon raise
+		//raisefromcatch("", "WrapperCore::SES::SimulationSpatialeExplicite", __LINE__, __FILE__); // TODO faire un bon raise
 		return false;
 	}
 

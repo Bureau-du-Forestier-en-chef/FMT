@@ -73,6 +73,15 @@ namespace FMTWrapperCore
 		std::vector<Core::FMTconstraint> getSelectedConstraints(std::vector<Core::FMTconstraint> p_baseConstraints, std::vector<std::string>& p_selectedConstraints);
 		
 		/*TODO*/
-		std::vector<Core::FMTschedule> FMTWrapperCore::Tools::getSchedule(std::string& priFileName, Models::FMTsesmodel simulationModel)
+		std::vector<Core::FMTschedule> FMTWrapperCore::Tools::getSchedule(std::string& priFileName, Models::FMTsesmodel simulationModel);
+		
+		/*TODO*/
+		std::vector<Core::FMToutput> writeOutputs(const Models::FMTsesmodel& semodel, const std::vector<std::string>& selectedNames, int nombredeperiodes, bool incarbon, std::function<void(const std::string&)> report);
+
+		/*TODO*/
+		void writePredictors(const Models::FMTsesmodel& semodel, const std::string& rastpath, int periodes, const std::vector<std::string>& predictorYields, std::function<void(const std::string&)> report);
+
+		/*TODO*/
+		void FMTWrapperCore::Tools::writeSpatialOutputs(const Models::FMTsemodel& semodel, const std::vector<Core::FMToutput>& outputs, const int& sortiemin, const int& sortiemax, std::string& localisation, std::function<void(const std::string&)> report);
     };
 }

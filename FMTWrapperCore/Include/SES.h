@@ -18,7 +18,7 @@ namespace FMTWrapperCore {
     class __declspec(dllexport) SES
     {
     public:
-        bool SimulationSpatialeExplicite(
+        bool spatiallyExplicitSimulation(
             Models::FMTsesmodel p_sesModel,
             const std::string& p_priFilePath,
             const std::string& p_rastersPath,
@@ -57,11 +57,12 @@ namespace FMTWrapperCore {
             std::function<void(const std::string&)> report
         );
 
-        void EcritureDesEvenements(
+        void writeEvents(
             const Models::FMTsemodel& semodel,
             const std::string& cheminsorties,
             int nombredeperiodes,
-            bool incarbon
+            bool incarbon,
+            std::function<void(const std::string&)> report
         );
 
         std::vector<Core::FMToutput> EcritureDesOutputs(
