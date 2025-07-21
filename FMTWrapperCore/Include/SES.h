@@ -19,7 +19,7 @@ namespace FMTWrapperCore {
     {
     public:
         bool spatiallyExplicitSimulation(
-            Models::FMTsesmodel p_sesModel,
+            Models::FMTsemodel p_sesModel,
             const std::string& p_priFilePath,
             const std::string& p_rastersPath,
             int p_scenario,
@@ -87,4 +87,4 @@ namespace FMTWrapperCore {
             const std::vector<std::string>& predictoryields
         );
     }
-}
+};

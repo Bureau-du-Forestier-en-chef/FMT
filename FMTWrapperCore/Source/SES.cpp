@@ -10,71 +10,71 @@
 #include <boost/filesystem.hpp>
 
 void FMTWrapperCore::SES::spatialCarbonReport(
-    const Models::FMTsemodel& semodel,
-    int nombredeperiodes,
-    const std::vector<Core::FMTschedule>& schedules,
-    std::function<void(const std::string&)> report)
+	const Models::FMTsemodel& semodel,
+	int& nombredeperiodes,
+	const std::vector<Core::FMTschedule>& schedules,
+	std::function<void(const std::string&)> report)
 {
-    Models::FMTmodel localmodel(semodel);
-    const auto& spatialSchedule = semodel.getspschedule();
-    const auto newschedule = spatialSchedule.getschedules(semodel.getactions(), false);
+	Models::FMTmodel localmodel(semodel);
+	const auto& spatialSchedule = semodel.getspschedule();
+	const auto newschedule = spatialSchedule.getschedules(semodel.getactions(), false);
 
-    size_t scid = 0;
-    for (int period = 1; period <= nombredeperiodes; ++period)
-    {
-        int jsonloc = period - 1;
-        auto periodicconstraints = semodel.getconstraints();
-        for (auto& c : periodicconstraints)
-        {
-            int l = c.getperiodlowerbound();
-            int u = std::min(period, c.getperiodupperbound());
-            c.setlength(l, u);
-        }
-        localmodel.setconstraints(periodicconstraints);
+	size_t scid = 0;
+	for (int period = 1; period <= nombredeperiodes; ++period)
+	{
+		int jsonloc = period - 1;
+		auto periodicconstraints = semodel.getconstraints();
+		for (auto& c : periodicconstraints)
+		{
+			int l = c.getperiodlowerbound();
+			int u = std::min(period, c.getperiodupperbound());
+			c.setlength(l, u);
+		}
+		localmodel.setconstraints(periodicconstraints);
 
-        double primalinf = 0, objectivevalue = 0;
-        spatialSchedule.getsolutionstatus(objectivevalue, primalinf, localmodel, nullptr, true, false);
+		double primalinf = 0, objectivevalue = 0;
+		spatialSchedule.getsolutionstatus(objectivevalue, primalinf, localmodel, nullptr, true, false);
 
-        report("objectives;" + std::to_string(jsonloc) + ";Objective;" + std::to_string(objectivevalue));
-        report("objectives;" + std::to_string(jsonloc) + ";Primalinfeasibility;" + std::to_string(primalinf));
+		report("objectives;" + std::to_string(jsonloc) + ";Objective;" + std::to_string(objectivevalue));
+		report("objectives;" + std::to_string(jsonloc) + ";Primalinfeasibility;" + std::to_string(primalinf));
 
-        double oldtotal = 0, newtotal = 0;
-        size_t oriloc = 0, newloc = 0;
-        for (const auto& s : schedules)
-        {
-            if (s.getperiod() == period) break;
-            ++oriloc;
-        }
-        for (const auto& s : newschedule)
-        {
-            if (s.getperiod() == period) break;
-            ++newloc;
-        }
+		double oldtotal = 0, newtotal = 0;
+		size_t oriloc = 0, newloc = 0;
+		for (const auto& s : schedules)
+		{
+			if (s.getperiod() == period) break;
+			++oriloc;
+		}
+		for (const auto& s : newschedule)
+		{
+			if (s.getperiod() == period) break;
+			++newloc;
+		}
 
-        if (scid < newschedule.size() && scid < schedules.size())
-        {
-            for (const auto& data : schedules.at(oriloc))
-            {
-                double basearea = schedules.at(oriloc).actionarea(data.first);
-                double newarea = 0;
-                auto it = newschedule.at(newloc).find(data.first);
-                if (it != newschedule.at(newloc).end())
-                    newarea = newschedule.at(newloc).actionarea(data.first);
+		if (scid < newschedule.size() && scid < schedules.size())
+		{
+			for (const auto& data : schedules.at(oriloc))
+			{
+				double basearea = schedules.at(oriloc).actionarea(data.first);
+				double newarea = 0;
+				auto it = newschedule.at(newloc).find(data.first);
+				if (it != newschedule.at(newloc).end())
+					newarea = newschedule.at(newloc).actionarea(data.first);
 
-                oldtotal += basearea;
-                newtotal += newarea;
+				oldtotal += basearea;
+				newtotal += newarea;
 
-                report(
-                  "objectives;" +
-                  std::to_string(jsonloc) + ";" +
-                  data.first.getname() + ";" +
-                  std::to_string(newarea / basearea)
-                );
-            }
-            report("objectives;" + std::to_string(jsonloc) + ";Total;" + std::to_string(newtotal / oldtotal));
-        }
-        ++scid;
-    }
+				report(
+					"objectives;" +
+					std::to_string(jsonloc) + ";" +
+					data.first.getname() + ";" +
+					std::to_string(newarea / basearea)
+				);
+			}
+			report("objectives;" + std::to_string(jsonloc) + ";Total;" + std::to_string(newtotal / oldtotal));
+		}
+		++scid;
+	}
 }
 
 void FMTWrapperCore::SES::writeDisturbance(
@@ -84,7 +84,7 @@ void FMTWrapperCore::SES::writeDisturbance(
 	const std::vector<Core::FMTtheme>& growthThemes, 
 	const bool& incarbon),
 	std::function<void(const std::string&)> report)
-{
+	{
 	try {
 		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
 		FMTFormLogger* logger = Cache->getformlogger();
@@ -109,10 +109,10 @@ void FMTWrapperCore::SES::writeDisturbance(
 				report("GCBMtransitionlocations;" + fichier);
 			}
 		}
-	}catch (...)
-		{
-			// TODO
-		}
+	//}catch (...)
+	//	{
+	//		// TODO
+	//	}
 }
 
 void FMTWrapperCore::SES::writeEvents(
@@ -140,10 +140,10 @@ void FMTWrapperCore::SES::writeEvents(
 		{
 			report("eventslocation;" + eventpath);
 		}
-	}catch (...)
-		{
-			// TODO
-		}
+	//}catch (...)
+	//	{
+	//		// TODO
+	//	}
 	}
 
 

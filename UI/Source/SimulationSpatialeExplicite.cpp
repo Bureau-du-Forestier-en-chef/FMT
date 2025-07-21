@@ -24,7 +24,7 @@ void Wrapper::FMTForm::RapportdeCarboneSpatial(
 {
     try
     {
-    	FMTWrapperCore::SES::spatialCarbonReport(
+    	SES::spatialCarbonReport(
             semodel,
             nombredeperiodes,
             schedules,
@@ -63,7 +63,7 @@ void Wrapper::FMTForm::EcrituredesPerturbations(
 			semodel,
 			rastpath,
 			nombredeperiodes,
-			growthTheme,
+			growththeme,
 			incarbon,
 			[this](const std::string& msg) {
 				System::String^ managed = gcnew System::String(msg.c_str());
