@@ -24,7 +24,7 @@ void Wrapper::FMTForm::RapportdeCarboneSpatial(
 {
     try
     {
-    	SES::spatialCarbonReport(
+    	FMTWrapperCore::SES::spatialCarbonReport(
             semodel,
             nombredeperiodes,
             schedules,

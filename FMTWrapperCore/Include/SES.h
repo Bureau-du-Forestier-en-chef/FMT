@@ -19,7 +19,7 @@ namespace FMTWrapperCore {
     {
     public:
         bool spatiallyExplicitSimulation(
-            Models::FMTsemodel p_sesModel,
+            Models::FMTsemodel p_seModel,
             const std::string& p_priFilePath,
             const std::string& p_rastersPath,
             int p_scenario,
@@ -51,40 +51,42 @@ namespace FMTWrapperCore {
         void writeDisturbance(
             const Models::FMTsemodel& semodel,
             const std::string& rastersPath,
-            int nombredeperiodes,
-            const std::vector<int>& growthThemes,
-            bool incarbon,
+            const int& nombredeperiodes,
+            const std::vector<Core::FMTtheme>& growthThemes,
+            const bool& incarbon,
             std::function<void(const std::string&)> report
         );
 
         void writeEvents(
             const Models::FMTsemodel& semodel,
             const std::string& cheminsorties,
-            int nombredeperiodes,
-            bool incarbon,
+            const bool incarbon,
             std::function<void(const std::string&)> report
         );
 
-        std::vector<Core::FMToutput> EcritureDesOutputs(
+        std::vector<Core::FMToutput> writeOutputs(
             const Models::FMTsemodel& semodel,
             const std::vector<std::string>& outputs,
-            int nombredeperiodes,
-            bool incarbon
+            const int& nombredeperiodes,
+            const bool& incarbon,
+            std::function<void(const std::string&)> report
         );
 
-        void EcrituredesOutputsSpatiaux(
-            const Models::FMTsemodel& semodel,
-            const std::vector<Core::FMToutput>& outputs,
-            int sortiemin,
-            int sortiemax,
-            const std::string& localisation
-        );
-
-        void EcritureDesPredicteurs(
+        void writePredictors(
             const Models::FMTsemodel& semodel,
             const std::string& rastpath,
-            int periodes,
-            const std::vector<std::string>& predictoryields
+            const int& periodes,
+            const std::vector<std::string>& predictoryields,
+            std::function<void(const std::string&)> report
         );
-    }
-};
+
+        void writeSpatialOutputs(
+            const Models::FMTsemodel& semodel,
+            const std::vector<Core::FMToutput>& outputs,
+            const int& sortiemin,
+            const int& sortiemax,
+            std::string& localisation,
+            std::function<void(const std::string&)> report
+        );
+    };
+}

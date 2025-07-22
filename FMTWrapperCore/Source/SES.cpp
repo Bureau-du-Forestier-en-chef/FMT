@@ -5,13 +5,11 @@
 #include "FMTareaparser.h"
 #include "FMTexceptionhandler.h"
 #include "FMTmodel.h"
-#include "FMTForm.h"
-#include "FMTFormLogger.h"
 #include <boost/filesystem.hpp>
 
 void FMTWrapperCore::SES::spatialCarbonReport(
 	const Models::FMTsemodel& semodel,
-	int& nombredeperiodes,
+	const int& nombredeperiodes,
 	const std::vector<Core::FMTschedule>& schedules,
 	std::function<void(const std::string&)> report)
 {
@@ -31,7 +29,7 @@ void FMTWrapperCore::SES::spatialCarbonReport(
 			c.setlength(l, u);
 		}
 		localmodel.setconstraints(periodicconstraints);
-
+		110
 		double primalinf = 0, objectivevalue = 0;
 		spatialSchedule.getsolutionstatus(objectivevalue, primalinf, localmodel, nullptr, true, false);
 
@@ -79,100 +77,190 @@ void FMTWrapperCore::SES::spatialCarbonReport(
 
 void FMTWrapperCore::SES::writeDisturbance(
 	const Models::FMTsemodel& semodel, 
-	std::string& rastersPath,
+	const std::string& rastersPath,
 	const int& nombredeperiodes, 
 	const std::vector<Core::FMTtheme>& growthThemes, 
-	const bool& incarbon),
+	const bool& incarbon,
 	std::function<void(const std::string&)> report)
+{
+	const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
+	report("FMT -> Écriture des perturbations");
+	Parser::FMTtransitionparser transitionparser;
+	Parser::FMTareaparser areaparser;
+
+	for (int period = 1; period <= nombredeperiodes; ++period)
 	{
-	try {
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
-		FMTFormLogger* logger = Cache->getformlogger();
-		report("FMT -> Écriture des perturbations");
-		Parser::FMTtransitionparser transitionparser;
-		Parser::FMTareaparser areaparser;
+		//const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
+		const std::vector<Core::FMTaction> actions = semodel.getactions();
+		const std::vector<Core::FMTGCBMtransition> transitions = areaparser.writedisturbances(
+			rastersPath,
+			schedule,
+			actions,
+			growthThemes, 
+			period);
 
-		for (int period = 1; period <= nombredeperiodes; ++period)
-		{
-			//const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
-			const std::vector<Core::FMTaction> actions = semodel.getactions();
-			const std::vector<Core::FMTGCBMtransition> transitions = areaparser.writedisturbances(
-				rastersPath,
-				schedule,
-				actions,
-				growthThemes, 
-				period);
-
-			std::string fichier = rastersPath + "transition" + std::to_string(period) + ".txt";
-			transitionparser.writeGCBM(transitions, fichier);
-			if (incarbon){
-				report("GCBMtransitionlocations;" + fichier);
-			}
+		std::string fichier = rastersPath + "transition" + std::to_string(period) + ".txt";
+		transitionparser.writeGCBM(transitions, fichier);
+		if (incarbon){
+			report("GCBMtransitionlocations;" + fichier);
 		}
-	//}catch (...)
-	//	{
-	//		// TODO
-	//	}
+	}
 }
 
 void FMTWrapperCore::SES::writeEvents(
-	const Models::FMTsemodel& semodel, 
-	std::string& cheminsorties,
-	const int& nombredeperiodes, 
-	const bool& incarbon),
+	const Models::FMTsemodel& semodel,
+	const std::string& cheminsorties, 
+	const bool incarbon,
 	std::function<void(const std::string&)> report)
-	{
-	try {
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
-		const std::vector<Core::FMTaction> actions = semodel.getactions();
-		const std::string stats = schedule.getpatchstats(actions);
+{
+	const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
+	const std::vector<Core::FMTaction> actions = semodel.getactions();
+	const std::string stats = schedule.getpatchstats(actions);
 		
-		std::filesystem::path path = cheminsorties;
-		path /= "events.txt";
-		const std::string eventpath = path.string();
-		report("Écriture des évènements ici: " + eventpath);
+	std::filesystem::path path = cheminsorties;
+	path /= "events.txt";
+	const std::string eventpath = path.string();
+	report("Écriture des évènements ici: " + eventpath);
 
-		std::ofstream ofs;
-		ofs.open(filePath, std::ios::trunc);
-		ofs << message << '\n';
+	std::ofstream ofs;
+	ofs.open(filePath, std::ios::trunc);
+	ofs << message << '\n';
 
-		if (incarbon)
+	if (incarbon)
+	{
+		report("eventslocation;" + eventpath);
+	}
+}
+
+std::vector<Core::FMToutput> FMTWrapperCore::SES::writeOutputs(
+	const Models::FMTsemodel& semodel,
+	const std::vector<std::string>& outputs,
+	const int& nombredeperiodes,
+	const bool& incarbon,
+	std::function<void(const std::string&)> report)
+{
+	std::vector<Core::FMToutput> listeOutputs;
+	std::vector<Core::FMToutput> listeOutputs;
+	for (const Core::FMToutput& fmtOutput : semodel.getoutputs())
+	{
+		const std::string name = fmtOutput.getname();
+		if (std::find(outputs.begin(), outputs.end(), name) != outputs.end())
 		{
-			report("eventslocation;" + eventpath);
+			listeOutputs.push_back(fmtOutput);
 		}
-	//}catch (...)
-	//	{
-	//		// TODO
-	//	}
 	}
 
+	if (incarbon)
+	{
+		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
+		for (const Core::FMToutput& output : listeOutputs)
+		{
+			std::map<std::string, std::vector<double>> resultatOutputsCarbon = schedule.getoutput(semodel, output, 1, nombredeperiodes);
+
+			for (double valeurCarbon : resultatOutputsCarbon["Total"])
+			{
+				report("outputs;" + output.getname() + ";" + std::to_string(valeurCarbon));
+			}
+		}
+	}
+	return listeOutputs;
+}
+
+void FMTWrapperCore::SES::writePredictors(
+	const Models::FMTsemodel& semodel,
+	const std::string& rastpath,
+	const int& periodes,
+	const std::vector<std::string>& predictoryields,
+	std::function<void(const std::string&)> report)
+{
+	Parser::FMTareaparser areaparser;
+	const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
+	std::vector<std::vector<std::vector<double>>> allpredictors;
+	std::vector<std::string> allpredictornames;
+
+	for (size_t period = 1; period <= periodes; ++period)
+	{
+		std::vector<std::vector<Graph::FMTpredictor>> predictors = areaparser.writepredictors(rastpath, schedule, yieldsforpredictors, semodel, period);
+		std::vector<std::vector<double>> periodpredictors;
+		allpredictornames = predictors.back().back().getpredictornames(yieldsforpredictors);
+		size_t indexPredictors = 0;
+
+		for (const auto& predictorslist : predictors)
+		{
+			std::vector<double> graphpred;
+			int indexPeriode = period - 1;
+			std::string outof = std::to_string(indexPeriode + ";" + indexPredictors + ";");
+			for (const double& predval : predictorslist.back().getpredictors())
+			{
+				graphpred.push_back(predval);
+				outof += std::to_string(predval);
+				outof += ";";
+			}
+
+			++indexPredictors;
+			outof.pop_back();
+			report("allpredictionsnodes;" + outof);
+			periodpredictors.push_back(graphpred);
+		}
+		allpredictors.push_back(periodpredictors);
+	}
+	for (const std::string& value : allpredictornames)
+	{
+		report("allpredictornames;" + value);
+	}
+}
+
+void FMTWrapperCore::SES::writeSpatialOutputs(
+	const Models::FMTsemodel& semodel,
+	const std::vector<Core::FMToutput>& outputs,
+	const int& sortiemin, 
+	const int& sortiemax,
+	std::string& localisation,
+	std::function<void(const std::string&)> report)
+	{
+	Parser::FMTareaparser areaparser;
+	report("FMT -> Écriture des outputs spatiaux");
+	for (int period = sortiemin; period <= sortiemax; ++period)
+	{
+		for (const Core::FMToutput& output : outputs)
+		{
+			const std::string outputname = output.getname() + "_" + std::to_string(period) + ".tif";
+			std::filesystem::path outputpath = std::filesystem::path(localisation) / outputname;
+			const std::string stdoutputpath = outputpath.string();
+			const Spatial::FMTlayer<double> outputlayer = semodel.getspatialoutput(output, period);
+			areaparser.writelayer(outputlayer, stdoutputpath);
+		}
+	}
+
+	report("FMT -> Écriture des outputs spatiaux terminée");
+}
 
 bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
-	Models::FMTsesmodel p_sesModel,
-	const std::string& p_priFilePath,
-	const std::string& p_rastersPath,
-	int p_scenario,
-	const std::vector<std::string>& p_constraints,
-	int p_length,
-	int p_greedySearch,
-	const std::vector<std::string>& p_outputs,
-	bool p_stanlock,
-	int output_level,
-	int output_min,
-	int output_max,
-	const std::string& cheminSorties,
-	bool indGenererEvents,
-	bool indSortiesSpatiales,
-	const std::string& providerGdal,
+	Models::FMTsemodel p_seModel, 
+	const std::string& p_priFilePath, 
+	const std::string& p_rastersPath, 
+	int p_scenario, 
+	const std::vector<std::string>& p_constraints, 
+	int p_length, 
+	int p_greedySearch, 
+	const std::vector<std::string>& p_outputs, 
+	bool p_stanlock, 
+	int output_level, 
+	int etanduSortiesMin, 
+	int etanduSortiesMax, 
+	const std::string& cheminSorties, 
+	bool indGenererEvents, 
+	bool indSortiesSpatiales, 
+	const std::string& providerGdal, 
 	bool indCarbon,
-	const std::vector<std::string>& predictoryields,
-	const std::vector<int>& growththemes,
-	std::function<void(const std::string&)> report
-){
+	const std::vector<std::string>& predictoryields, 
+	const std::vector<int>& growththemes, 
+	std::function<void(const std::string&)> report)
+{
 	try
 	{
 		// Modèle
-		Models::FMTsesmodel simulationmodel = p_sesModel;
+		Models::FMTsemodel simulationmodel = p_seModel;
 		report("FMT -> Traitement pour le scénario : " + simulationmodel.getname());
 		
 		// Contraintes
@@ -233,8 +321,10 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 		if (indCarbon)
 		{
 			directoryFullName = p_rastersPath;
-		} else {
-			directoryFullName = std::filesystem::path(cheminSorties).parent_path().string()
+		} 
+		else 
+		{
+			directoryFullName = std::filesystem::path(cheminSorties).parent_path().string();
 		}
 
 		const Spatial::FMTspatialschedule& schedule = simulationmodel.getspschedule();
@@ -288,12 +378,11 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 			}
 			if (indSortiesSpatiales)
 			{
-				EcrituredesOutputsSpatiaux(simulationmodel, p_outputs, output_min, output_max, directoryFullName);
+				writeSpatialOutputs(simulationmodel, p_outputs, output_min, output_max, directoryFullName);
 			}
 	}
 	catch (...)
 	{
-		//raisefromcatch("", "WrapperCore::SES::SimulationSpatialeExplicite", __LINE__, __FILE__); // TODO faire un bon raise
 		return false;
 	}
 
