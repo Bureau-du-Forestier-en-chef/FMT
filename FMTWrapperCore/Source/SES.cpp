@@ -1,3 +1,4 @@
+#include "FMTsesmodel.h"
 #include "SES.h"
 #include "FMTmodelparser.h"
 #include "FMTscheduleparser.h"
@@ -5,6 +6,8 @@
 #include "FMTareaparser.h"
 #include "FMTexceptionhandler.h"
 #include "FMTmodel.h"
+#include "Tools.h"
+#include "FMTforest.h"
 #include <boost/filesystem.hpp>
 
 void FMTWrapperCore::SES::spatialCarbonReport(
@@ -29,7 +32,7 @@ void FMTWrapperCore::SES::spatialCarbonReport(
 			c.setlength(l, u);
 		}
 		localmodel.setconstraints(periodicconstraints);
-		110
+
 		double primalinf = 0, objectivevalue = 0;
 		spatialSchedule.getsolutionstatus(objectivevalue, primalinf, localmodel, nullptr, true, false);
 
@@ -116,15 +119,15 @@ void FMTWrapperCore::SES::writeEvents(
 	const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
 	const std::vector<Core::FMTaction> actions = semodel.getactions();
 	const std::string stats = schedule.getpatchstats(actions);
-		
-	std::filesystem::path path = cheminsorties;
+	
+	boost::filesystem::path path = cheminsorties;
 	path /= "events.txt";
 	const std::string eventpath = path.string();
 	report("Écriture des évènements ici: " + eventpath);
 
 	std::ofstream ofs;
-	ofs.open(filePath, std::ios::trunc);
-	ofs << message << '\n';
+	ofs.open(path.string(), std::ios::trunc);
+	ofs << stats << '\n';
 
 	if (incarbon)
 	{
@@ -180,16 +183,21 @@ void FMTWrapperCore::SES::writePredictors(
 
 	for (size_t period = 1; period <= periodes; ++period)
 	{
-		std::vector<std::vector<Graph::FMTpredictor>> predictors = areaparser.writepredictors(rastpath, schedule, yieldsforpredictors, semodel, period);
+		std::vector<std::vector<Graph::FMTpredictor>> predictors = areaparser.writepredictors(
+			rastpath, 
+			schedule, 
+			predictoryields,
+			semodel, 
+			period);
 		std::vector<std::vector<double>> periodpredictors;
-		allpredictornames = predictors.back().back().getpredictornames(yieldsforpredictors);
+		allpredictornames = predictors.back().back().getpredictornames(predictoryields);
 		size_t indexPredictors = 0;
 
 		for (const auto& predictorslist : predictors)
 		{
 			std::vector<double> graphpred;
 			int indexPeriode = period - 1;
-			std::string outof = std::to_string(indexPeriode + ";" + indexPredictors + ";");
+			std::string outof = std::to_string(indexPeriode) + ";" + std::to_string(indexPredictors) + ";";
 			for (const double& predval : predictorslist.back().getpredictors())
 			{
 				graphpred.push_back(predval);
@@ -225,7 +233,7 @@ void FMTWrapperCore::SES::writeSpatialOutputs(
 		for (const Core::FMToutput& output : outputs)
 		{
 			const std::string outputname = output.getname() + "_" + std::to_string(period) + ".tif";
-			std::filesystem::path outputpath = std::filesystem::path(localisation) / outputname;
+			boost::filesystem::path outputpath = boost::filesystem::path(localisation) / outputname;
 			const std::string stdoutputpath = outputpath.string();
 			const Spatial::FMTlayer<double> outputlayer = semodel.getspatialoutput(output, period);
 			areaparser.writelayer(outputlayer, stdoutputpath);
@@ -236,8 +244,8 @@ void FMTWrapperCore::SES::writeSpatialOutputs(
 }
 
 bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
-	Models::FMTsemodel p_seModel, 
-	const std::string& p_priFilePath, 
+	Models::FMTsesmodel p_sesModel, 
+	const std::string& p_priFilePath,
 	const std::string& p_rastersPath, 
 	int p_scenario, 
 	const std::vector<std::string>& p_constraints, 
@@ -248,11 +256,11 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 	int output_level, 
 	int etanduSortiesMin, 
 	int etanduSortiesMax, 
-	const std::string& cheminSorties, 
-	bool indGenererEvents, 
+	const std::string& cheminSorties,
+	bool indGenererEvents,
 	bool indSortiesSpatiales, 
 	const std::string& providerGdal, 
-	bool indCarbon,
+	bool indCarbon, 
 	const std::vector<std::string>& predictoryields, 
 	const std::vector<int>& growththemes, 
 	std::function<void(const std::string&)> report)
@@ -260,7 +268,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 	try
 	{
 		// Modèle
-		Models::FMTsemodel simulationmodel = p_seModel;
+		Models::FMTsemodel simulationmodel = p_sesModel;
 		report("FMT -> Traitement pour le scénario : " + simulationmodel.getname());
 		
 		// Contraintes
@@ -268,7 +276,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 		{
 			report("FMT -> Intégration des contraintes sélectionnées");
 			simulationmodel.setconstraints(
-				Tools::getSelectedConstraints(simulationmodel.getconstraints(), p_constraints));
+				FMTWrapperCore::Tools::getSelectedConstraints(simulationmodel.getconstraints(), p_constraints));
 		}
 		
 		// Transition

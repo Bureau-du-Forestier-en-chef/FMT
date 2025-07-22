@@ -16,9 +16,9 @@ namespace Models
 
 namespace FMTWrapperCore
 {
-    class __declspec(dllexport) Tools
-    {
-    public:
+	class __declspec(dllexport) Tools
+	{
+	public:
 		/**
 		* @brief Retourne l'age max du model selon les yields basé sur l'age.
 		*
@@ -59,7 +59,7 @@ namespace FMTWrapperCore
 		*@param p_age
 		* @return Un double du yield
 		*/
-		static double getYield(const Models::FMTmodel& p_model, const std::string& p_mask,const std::string& p_yield, int p_age);
+		static double getYield(const Models::FMTmodel& p_model, const std::string& p_mask, const std::string& p_yield, int p_age);
 
 		/**
 		* @brief retourne un set de tous les masks utiles du modèle selon les thèmes sélectionné.
@@ -69,11 +69,15 @@ namespace FMTWrapperCore
 		*@return Un set des masks.
 		*/
 		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers);
-		
+	private:
 		/*TODO*/
-		std::vector<Core::FMTconstraint> getSelectedConstraints(std::vector<Core::FMTconstraint> p_baseConstraints, std::vector<std::string>& p_selectedConstraints);
-		
+		std::vector<Core::FMTconstraint> getSelectedConstraints(
+			std::vector<Core::FMTconstraint> p_baseConstraints, 
+			std::vector<std::string>& p_selectedConstraints);
+
 		/*TODO*/
-		std::vector<Core::FMTschedule> getSchedule(std::string& priFileName, Models::FMTsemodel simulationModel);
-    };
+		std::vector<Core::FMTschedule> getSchedule(
+			std::string& priFileName, 
+			Models::FMTsemodel simulationModel);
+	};
 }

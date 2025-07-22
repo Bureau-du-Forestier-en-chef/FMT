@@ -19,7 +19,7 @@ namespace FMTWrapperCore {
     {
     public:
         bool spatiallyExplicitSimulation(
-            Models::FMTsemodel p_seModel,
+            Models::FMTsesmodel p_sesModel,
             const std::string& p_priFilePath,
             const std::string& p_rastersPath,
             int p_scenario,
