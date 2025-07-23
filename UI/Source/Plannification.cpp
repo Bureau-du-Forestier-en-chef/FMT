@@ -129,7 +129,7 @@ bool Wrapper::FMTForm::Replanification(int indexScenStrategique,
 		*logger << "FMT -> Préparation de la replanification terminée" << "\n";
 		Parallel::FMTtaskhandler handler(maintaskptr, nbreProcessus);
 		logger->settasklogginglevel(taskLogLevel);
-		handler.ondemandrun(); // TODO À tester
+		handler.ondemandrun(); // À la demande de Lorena, a été testé
 		//handler.conccurentrun();
 		logger->setdefaultlogginglevel();
 	}
