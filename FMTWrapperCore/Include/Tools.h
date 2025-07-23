@@ -72,12 +72,12 @@ namespace FMTWrapperCore
 
 		/*TODO*/
 		static std::vector<Core::FMTconstraint> getSelectedConstraints(
-			std::vector<Core::FMTconstraint> p_baseConstraints, 
-			std::vector<std::string>& p_selectedConstraints);
+			const std::vector<Core::FMTconstraint> p_baseConstraints, 
+			const std::vector<std::string>& p_selectedConstraints);
 
 		/*TODO*/
 		static std::vector<Core::FMTschedule> getSchedule(
-			std::string& priFileName, 
+			const std::string& priFileName, 
 			Models::FMTsemodel simulationModel);
 	};
 }

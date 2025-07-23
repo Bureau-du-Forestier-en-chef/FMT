@@ -82,7 +82,7 @@ void FMTWrapperCore::SES::writeDisturbance(
 	const Models::FMTsemodel& semodel, 
 	const std::string& rastersPath,
 	const int& nombredeperiodes, 
-	const std::vector<Core::FMTtheme>& growthThemes, 
+	const std::vector<int>& growthThemes, 
 	const bool& incarbon,
 	std::function<void(const std::string&)> report)
 {
@@ -90,6 +90,15 @@ void FMTWrapperCore::SES::writeDisturbance(
 	report("FMT -> Écriture des perturbations");
 	Parser::FMTtransitionparser transitionparser;
 	Parser::FMTareaparser areaparser;
+
+	std::vector<Core::FMTtheme> growth_themes;
+	if (!growthThemes.empty())
+	{
+		for each (int themeID in growthThemes)
+		{
+			growth_themes.push_back(semodel.getthemes().at(themeID - 1));
+		}
+	}
 
 	for (int period = 1; period <= nombredeperiodes; ++period)
 	{
@@ -99,7 +108,7 @@ void FMTWrapperCore::SES::writeDisturbance(
 			rastersPath,
 			schedule,
 			actions,
-			growthThemes, 
+			growth_themes, 
 			period);
 
 		std::string fichier = rastersPath + "transition" + std::to_string(period) + ".txt";
@@ -274,7 +283,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 		if (!p_constraints.empty())
 		{
 			report("FMT -> Intégration des contraintes sélectionnées");
-			auto selectedConstraints = FMTWrapperCore::Tools::getSelectedConstraints(
+			std::vector<Core::FMTconstraint> selectedConstraints = FMTWrapperCore::Tools::getSelectedConstraints(
 				simulationmodel.getconstraints(), p_constraints);
 			simulationmodel.setconstraints(selectedConstraints);
 		}
@@ -309,7 +318,8 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 		simulationmodel.setinitialmapping(initialforestmap);
 
 		// Squedules
-		const std::vector<Core::FMTschedule> schedules = FMTWrapperCore::Tools::getSchedule(p_priFilePath, simulationmodel); // différent de tommy, idk if it works
+		const std::vector<Core::FMTschedule> schedules = FMTWrapperCore::Tools::getSchedule(
+			p_priFilePath, simulationmodel); // différent de tommy, idk if it works
 		if (schedules.back().getperiod() < p_length)
 		{
 			const std::string logout = "Dépassement de la période : size " + std::to_string(schedules.size()) + " periode " + std::to_string((schedules.back().getperiod() + 1));
@@ -347,7 +357,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 
 		if (indGenererEvents || indCarbon)
 		{
-			writeEvents(simulationmodel, directoryFullName, p_length, indCarbon);
+			writeEvents(simulationmodel, directoryFullName, indCarbon);
 		}
 
 		if (!p_outputs.empty())

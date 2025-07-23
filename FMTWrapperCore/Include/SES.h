@@ -19,7 +19,7 @@ namespace FMTWrapperCore {
     class __declspec(dllexport) SES
     {
     public:
-        bool spatiallyExplicitSimulation(
+        static bool spatiallyExplicitSimulation(
             Models::FMTsesmodel p_sesModel,
             const std::string& p_priFilePath,
             const std::string& p_rastersPath,
@@ -53,7 +53,7 @@ namespace FMTWrapperCore {
             const Models::FMTsemodel& semodel,
             const std::string& rastersPath,
             const int& nombredeperiodes,
-            const std::vector<Core::FMTtheme>& growthThemes,
+            const std::vector<int>& growthThemes,
             const bool& incarbon,
             std::function<void(const std::string&)> report
         );

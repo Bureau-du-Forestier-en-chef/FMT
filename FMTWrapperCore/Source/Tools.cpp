@@ -78,8 +78,8 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel&
 }
 
 std::vector<Core::FMTconstraint> FMTWrapperCore::Tools::getSelectedConstraints(
-	std::vector<Core::FMTconstraint> p_baseConstraints, 
-	std::vector<std::string>& p_selectedConstraints)
+	const std::vector<Core::FMTconstraint> p_baseConstraints, 
+	const std::vector<std::string>& p_selectedConstraints)
 {
 	std::vector<Core::FMTconstraint> retour;
 	try
