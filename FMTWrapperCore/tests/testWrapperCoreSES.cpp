@@ -26,12 +26,12 @@ int main(int argc, char* argv[])
 			std::vector<std::string> outputs = {""};
 			int outputs_level = 0;
 			int output_min = 0;
-			int output_max = length
+			int output_max = length;
 			std::string output_name = "C:/FMT/Output/Fmtoutput.csv";
 			bool event = true;
 			bool spatial_output = true;
-			std::vector<std::string>& predictoryields, 
-			std::vector<int>& growththemes
+			std::vector<std::string>& predictoryields;
+			std::vector<int>& growththemes;
 		}
 		else 
 		{

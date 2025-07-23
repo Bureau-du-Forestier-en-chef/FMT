@@ -1,4 +1,5 @@
 #include "FMTmodel.h"
+#include "FMTsesmodel.h"
 #include <vector>
 #include <string>
 
@@ -29,8 +30,8 @@ namespace FMTWrapperCore {
             const std::vector<std::string>& p_outputs,
             bool p_stanlock,
             int output_level,
-            int etanduSortiesMin,
-            int etanduSortiesMax,
+            int output_min,
+            int output_max,
             const std::string& cheminSorties,
             bool indGenererEvents,
             bool indSortiesSpatiales,

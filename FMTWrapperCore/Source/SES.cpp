@@ -143,7 +143,6 @@ std::vector<Core::FMToutput> FMTWrapperCore::SES::writeOutputs(
 	std::function<void(const std::string&)> report)
 {
 	std::vector<Core::FMToutput> listeOutputs;
-	std::vector<Core::FMToutput> listeOutputs;
 	for (const Core::FMToutput& fmtOutput : semodel.getoutputs())
 	{
 		const std::string name = fmtOutput.getname();
@@ -239,46 +238,47 @@ void FMTWrapperCore::SES::writeSpatialOutputs(
 			areaparser.writelayer(outputlayer, stdoutputpath);
 		}
 	}
-
 	report("FMT -> Écriture des outputs spatiaux terminée");
 }
 
 bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
-	Models::FMTsesmodel p_sesModel, 
+	Models::FMTsesmodel p_sesModel,
 	const std::string& p_priFilePath,
-	const std::string& p_rastersPath, 
-	int p_scenario, 
-	const std::vector<std::string>& p_constraints, 
-	int p_length, 
-	int p_greedySearch, 
-	const std::vector<std::string>& p_outputs, 
-	bool p_stanlock, 
-	int output_level, 
-	int etanduSortiesMin, 
-	int etanduSortiesMax, 
+	const std::string& p_rastersPath,
+	int p_scenario,
+	const std::vector<std::string>& p_constraints,
+	int p_length,
+	int p_greedySearch,
+	const std::vector<std::string>& p_outputs,
+	bool p_stanlock,
+	int output_level,
+	int output_min,
+	int output_max,
 	const std::string& cheminSorties,
 	bool indGenererEvents,
-	bool indSortiesSpatiales, 
-	const std::string& providerGdal, 
-	bool indCarbon, 
-	const std::vector<std::string>& predictoryields, 
-	const std::vector<int>& growththemes, 
+	bool indSortiesSpatiales,
+	const std::string& providerGdal,
+	bool indCarbon,
+	const std::vector<std::string>& predictoryields,
+	const std::vector<int>& growththemes,
 	std::function<void(const std::string&)> report)
 {
+	bool is_successful;
 	try
 	{
 		// Modèle
 		Models::FMTsemodel simulationmodel = p_sesModel;
 		report("FMT -> Traitement pour le scénario : " + simulationmodel.getname());
-		
+
 		// Contraintes
 		if (!p_constraints.empty())
 		{
 			report("FMT -> Intégration des contraintes sélectionnées");
-			simulationmodel.setconstraints(
-				FMTWrapperCore::Tools::getSelectedConstraints(simulationmodel.getconstraints(), p_constraints));
+			auto selectedConstraints = FMTWrapperCore::Tools::getSelectedConstraints(
+				simulationmodel.getconstraints(), p_constraints);
+			simulationmodel.setconstraints(selectedConstraints);
 		}
-		
+
 		// Transition
 		std::vector<Core::FMTtransition> strans;
 		report("FMT -> Modification et intégration des transitions");
@@ -296,7 +296,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 		for (size_t i = 1; i <= simulationmodel.getthemes().size(); i++)
 		{
 			themesrast.push_back(p_rastersPath + "THEME" + std::to_string(i) + ".tif");
-		}	
+		}
 		Spatial::FMTforest initialforestmap;
 		if (!p_stanlock)
 		{
@@ -307,9 +307,9 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 			initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001, p_rastersPath + "STANLOCK.tif");
 		}
 		simulationmodel.setinitialmapping(initialforestmap);
-	
+
 		// Squedules
-		const std::vector<Core::FMTschedule> schedules = Tools::getSchedule(p_priFilePath, simulationmodel); // différent de tommy, idk if it works
+		const std::vector<Core::FMTschedule> schedules = FMTWrapperCore::Tools::getSchedule(p_priFilePath, simulationmodel); // différent de tommy, idk if it works
 		if (schedules.back().getperiod() < p_length)
 		{
 			const std::string logout = "Dépassement de la période : size " + std::to_string(schedules.size()) + " periode " + std::to_string((schedules.back().getperiod() + 1));
@@ -322,41 +322,41 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 		simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, p_greedySearch);
 		simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-		
+
 		// Simulation
 		simulationmodel.doplanning(false, schedules);
 		std::string directoryFullName;
 		if (indCarbon)
 		{
 			directoryFullName = p_rastersPath;
-		} 
-		else 
+		}
+		else
 		{
-			directoryFullName = std::filesystem::path(cheminSorties).parent_path().string();
+			directoryFullName = boost::filesystem::path(cheminSorties).parent_path().string();
 		}
 
 		const Spatial::FMTspatialschedule& schedule = simulationmodel.getspschedule();
 		// FMTForm::RapportdeBris(simulationmodel); // Ne sert à rien, est dans le header mais nul part ailleur
 
-		if (indCarbon) 
+		if (indCarbon)
 		{
 			spatialCarbonReport(simulationmodel, p_length, schedules);
 		}
 
 		writeDisturbance(simulationmodel, directoryFullName, p_length, growththemes, indCarbon);
-		
+
 		if (indGenererEvents || indCarbon)
 		{
 			writeEvents(simulationmodel, directoryFullName, p_length, indCarbon);
 		}
-		
+
 		if (!p_outputs.empty())
 		{
-			const std::vector<Core::FMToutput> listeOutputs = Tools::writeOutputs(simulationmodel, p_outputs, p_length, indCarbon);
+			const std::vector<Core::FMToutput> listeOutputs = writeOutputs(simulationmodel, p_outputs, p_length, indCarbon);
 			Parser::FMTscheduleparser scheduparser;
-			std::string schedulepath = boost::filesystem::path(directoryFullName) / simulationmodel.getname() + "_.seq";
-			const std::string stdschedulepath = schedulepath.to_string();
-			scheduparser.write(schedule.getschedules(simulationmodel.getactions()), stdschedulepath);
+			std::string schedulepath = (boost::filesystem::path(directoryFullName) / simulationmodel.getname()).string() + "_.seq";
+			scheduparser.write(schedule.getschedules(simulationmodel.getactions()), schedulepath);
+
 			if (!indCarbon)
 			{
 				Parser::FMTmodelparser Modelparser;
@@ -371,28 +371,29 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 					providerGdal);
 			}
 			else
-			{				
-				report("schedules;" + stdschedulepath);
+			{
+				report("schedules;" + schedulepath);
 				areaparser.writeforest(
-					schedule.getforestperiod(0), 
-					simulationmodel.getthemes(), 
-					themesrast, 
-					p_rastersPath + "AGE.tif", 
+					schedule.getforestperiod(0),
+					simulationmodel.getthemes(),
+					themesrast,
+					p_rastersPath + "AGE.tif",
 					p_rastersPath + "STANLOCK.tif");
 				if (!predictoryields.empty())
-					{
-					Tools::writePredictors(simulationmodel, p_rastersPath, p_length, predictoryields);
-					}
+				{
+					writePredictors(simulationmodel, p_rastersPath, p_length, predictoryields);
+				}
 			}
 			if (indSortiesSpatiales)
 			{
 				writeSpatialOutputs(simulationmodel, p_outputs, output_min, output_max, directoryFullName);
 			}
+		}
+		is_successful = true;
 	}
 	catch (...)
 	{
-		return false;
+		is_successful = false;
 	}
-
-	return true;
+	return is_successful;
 }
