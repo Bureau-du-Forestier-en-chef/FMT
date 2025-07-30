@@ -4,6 +4,7 @@
 #include "FMTscheduleparser.h"
 #include "FMTtransitionparser.h"
 #include "FMTareaparser.h"
+#include "FMTGCBMtransition.h"
 #include "FMTexceptionhandler.h"
 #include "FMTmodel.h"
 #include "Tools.h"

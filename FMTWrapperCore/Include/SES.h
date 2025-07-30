@@ -38,8 +38,7 @@ namespace FMTWrapperCore {
             const std::string& providerGdal,
             bool indCarbon,
             const std::vector<std::string>& predictoryields,
-            const std::vector<int>& growththemes,
-            std::function<void(const std::string&)> report
+            const std::vector<int>& growththemes
         );
     private:
         void spatialCarbonReport(
