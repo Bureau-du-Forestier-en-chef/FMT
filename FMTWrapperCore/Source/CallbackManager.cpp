@@ -2,39 +2,103 @@
 
 namespace FMTWrapperCore 
 {
-    // Définition de la variable statique thread-local
-    thread_local std::function<void(const std::string&)> CallbackManager::currentReportCallback = nullptr;
+    // Définitions des variables statiques thread_local
+    thread_local std::function<void(const std::string&)> CallbackManager::uiCallback = nullptr;
+    thread_local std::function<void(const std::string&)> CallbackManager::loggerCallback = nullptr;
+    thread_local std::function<void(const std::string&)> CallbackManager::debugCallback = nullptr;
     
-    void CallbackManager::setReportCallback(std::function<void(const std::string&)> callback)
+    void CallbackManager::setUICallback(std::function<void(const std::string&)> callback)
     {
-        currentReportCallback = callback;
+        uiCallback = callback;
     }
     
-    void CallbackManager::reportMessage(const std::string& message)
+    void CallbackManager::setLoggerCallback(std::function<void(const std::string&)> callback)
     {
-        // Vérification de sécurité avant d'appeler le callback
-        if (currentReportCallback)
+        loggerCallback = callback;
+    }
+    
+    void CallbackManager::setDebugCallback(std::function<void(const std::string&)> callback)
+    {
+        debugCallback = callback;
+    }
+    
+    void CallbackManager::reportMessage(MessageType type, const std::string& message)
+    {
+        try 
         {
-            try
+            switch (type)
             {
-                currentReportCallback(message);
+                case MessageType::UI_MESSAGE:
+                    if (uiCallback) 
+                    {
+                        uiCallback(message); 
+                        // Optionnel: forcer le flush si nécessaire
+                        // std::cout.flush(); // Décommentez si des problèmes de buffering
+                    }
+                    break;
+                    
+                case MessageType::LOGGER_MESSAGE:
+                    if (loggerCallback) 
+                    {
+                        loggerCallback(message);
+                    }
+                    break;
+                    
+                case MessageType::DEBUG_MESSAGE:
+                    if (debugCallback) 
+                    {
+                        debugCallback(message);
+                    }
+                    break;
             }
-            catch (...)
-            {
-                // En cas d'erreur dans le callback, on l'ignore pour ne pas 
-                // casser la logique métier. Dans un vrai système, vous pourriez
-                // logger cette erreur dans un système de logging séparé.
-            }
+        }
+        catch (...)
+        {
+            // Protection: si un callback plante, ne pas casser la simulation
+            // TODO logger cette erreur ailleurs en prod
         }
     }
     
-    void CallbackManager::clearCallback()
+    void CallbackManager::reportToUI(const std::string& message)
     {
-        currentReportCallback = nullptr;
+        reportMessage(MessageType::UI_MESSAGE, message);
     }
     
-    bool CallbackManager::hasCallback()
+    void CallbackManager::reportToLogger(const std::string& message)
     {
-        return currentReportCallback != nullptr;
+        reportMessage(MessageType::LOGGER_MESSAGE, message);
+    }
+    
+    void CallbackManager::reportToDebug(const std::string& message)
+    {
+        reportMessage(MessageType::DEBUG_MESSAGE, message);
+    }
+    
+    void CallbackManager::reportToUIAndLogger(const std::string& message)
+    {
+        reportMessage(MessageType::UI_MESSAGE, message);
+        reportMessage(MessageType::LOGGER_MESSAGE, message);l
+    }
+    
+    bool CallbackManager::hasUICallback()
+    {
+        return uiCallback != nullptr;
+    }
+    
+    bool CallbackManager::hasLoggerCallback()
+    {
+        return loggerCallback != nullptr;
+    }
+    
+    bool CallbackManager::hasDebugCallback()
+    {
+        return debugCallback != nullptr;
+    }
+    
+    void CallbackManager::clearAllCallbacks()
+    {
+        uiCallback = nullptr;
+        loggerCallback = nullptr;
+        debugCallback = nullptr;
     }
 }

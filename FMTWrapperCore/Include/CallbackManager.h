@@ -2,43 +2,81 @@
 #include <functional>
 #include <string>
 
-namespace FMTWrapperCore
+// ===== CallbackManager.h - Header complet =====
+#pragma once
+#include <functional>
+#include <string>
+
+namespace FMTWrapperCore 
 {
     /**
-     * Gestionnaire centralisé pour les callbacks de messages.
-     * Cette classe agit comme un pont de communication entre le code C++ pur
-     * et l'interface, sans dépendre d'aucune logique métier spécifique.
+     * Types de messages pour différencier les destinations
+     */
+    enum class MessageType 
+    {
+        UI_MESSAGE,      // Messages pour l'interface utilisateur (RetourJson)
+        LOGGER_MESSAGE,  // Messages pour le logger (*logger)
+        DEBUG_MESSAGE    // Messages de débogage (idk si ça peut être utile)
+    };
+    
+    /**
+     * Gestionnaire centralisé des callbacks
+     * Thread-safe et conçu pour la remontée en temps réel
      */
     class CallbackManager 
     {
     private:
-        // Stockage du callback actuel - thread-safe pour les applications multi-thread
-        static thread_local std::function<void(const std::string&)> currentReportCallback;
+        // Callbacks séparés pour chaque type de message
+        static thread_local std::function<void(const std::string&)> uiCallback;
+        static thread_local std::function<void(const std::string&)> loggerCallback;
+        static thread_local std::function<void(const std::string&)> debugCallback;
         
     public:
         /**
-         * Enregistre un callback pour recevoir les messages de rapport.
-         * @param callback Fonction qui sera appelée avec chaque message
+         * Enregistre le callback pour les messages d'interface utilisateur
+         * Ces messages iront vers RetourJson pour affichage immédiat
          */
-        static void setReportCallback(std::function<void(const std::string&)> callback);
+        static void setUICallback(std::function<void(const std::string&)> callback);
         
         /**
-         * Envoie un message via le callback enregistré.
-         * Si aucun callback n'est enregistré, le message est ignoré silencieusement.
-         * @param message Le message à transmettre
+         * Enregistre le callback pour les messages de logger technique
+         * Ces messages iront vers votre *logger existant
          */
-        static void reportMessage(const std::string& message);
+        static void setLoggerCallback(std::function<void(const std::string&)> callback);
         
         /**
-         * Nettoie le callback actuel.
-         * Important à appeler en fin de traitement pour éviter les fuites de mémoire.
+         * Enregistre le callback pour les messages de débogage (optionnel)
          */
-        static void clearCallback();
+        static void setDebugCallback(std::function<void(const std::string&)> callback);
         
         /**
-         * Vérifie si un callback est actuellement enregistré.
-         * @return true si un callback est disponible
+         * Envoie un message selon le type spécifié
+         * Garantit l'appel immédiat du callback (I hope)
          */
-        static bool hasCallback();
+        static void reportMessage(MessageType type, const std::string& message);
+        
+        /**
+         * Méthodes de convenance pour simplifier l'utilisation
+         */
+        static void reportToUI(const std::string& message);
+        static void reportToLogger(const std::string& message);
+        static void reportToDebug(const std::string& message);
+        
+        /**
+         * Envoie le même message vers plusieurs destinations
+         */
+        static void reportToUIAndLogger(const std::string& message);
+        
+        /**
+         * Vérifications de disponibilité
+         */
+        static bool hasUICallback();
+        static bool hasLoggerCallback();
+        static bool hasDebugCallback();
+        
+        /**
+         * Nettoyage complet - CRITIQUE pour éviter les fuites
+         */
+        static void clearAllCallbacks();
     };
 }
