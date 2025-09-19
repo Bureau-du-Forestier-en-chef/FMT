@@ -90,7 +90,8 @@ std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(con
 	std::vector<std::string> themesrast;
 	// Assurez-vous que le chemin se termine par un s�parateur pour une construction propre
 	const std::string agerast = p_rasterPath + "AGE.tif";
-	const std::string lockrast = p_rasterPath + "STANLOCK.tif";
+	// On avais dit sans stanlock mais je l'ai mis ici au cas ou on voulais lire avec dans le TurFu
+	//const std::string lockrast = p_rasterPath + "STANLOCK.tif";
 
 	Parser::FMTareaparser areaparser;
 	std::vector<Core::FMTactualdevelopment> area;
@@ -101,7 +102,7 @@ std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(con
 	}
 
 	Spatial::FMTforest initialforestmap = areaparser.readrasters(
-		p_model.getthemes(), themesrast, agerast, 1, 0.0001, lockrast);
+		p_model.getthemes(), themesrast, agerast, 1, 0.0001);
 
 	area = initialforestmap.getarea();
 
