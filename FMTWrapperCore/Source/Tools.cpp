@@ -3,6 +3,12 @@
 #include "FMTlpmodel.h"
 #include "FMTerror.h"
 #include "FMTmodelparser.h"
+#include "FMTareaparser.h"
+#include "FMTforest.h"
+#include <vector>
+#include <string>
+
+
 
 
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
@@ -45,22 +51,26 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	return result;
 }
 
-std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers) {
+std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath) {
 	std::set<std::string> masks;
 	try
 	{
+		// On crï¿½e une copie du modï¿½le car on dois faire un setArea avec les donnï¿½es du raster.
+		Models::FMTmodel modelCopy = p_model;
+		modelCopy.setarea(getRasterArea(modelCopy, p_rasterPath));
 
-		// On va chercher tous les thèmes dans le modèle
+
+		// On va chercher tous les thï¿½mes dans le modï¿½le
 		std::vector<Core::FMTtheme> themes;
-		const std::vector<Core::FMTtheme> THEMESMODELS = p_model.getthemes();
+		const std::vector<Core::FMTtheme> THEMESMODELS = modelCopy.getthemes();
 
 		for (const int themeNumber : p_themesNumbers)
 		{
 			themes.push_back(THEMESMODELS.at(themeNumber - 1));
 		}
 
-		// On transforme notre modèle en lpModel qui lui peut faire un getAllMasks et on ajoute les paramètres qu'on a besoin.
-		Models::FMTlpmodel optModel(p_model, Models::FMTsolverinterface::MOSEK);
+		// On transforme notre modï¿½le en lpModel qui lui peut faire un getAllMasks et on ajoute les paramï¿½tres qu'on a besoin.
+		Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
 		optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
 		optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optModel.doplanning(false);
@@ -75,4 +85,28 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel&
 	}
 	return masks;
 }
+std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath)
+{
+	std::vector<std::string> themesrast;
+	// Assurez-vous que le chemin se termine par un sï¿½parateur pour une construction propre
+	const std::string agerast = p_rasterPath + "AGE.tif";
+	const std::string lockrast = p_rasterPath + "STANLOCK.tif";
+
+	Parser::FMTareaparser areaparser;
+	std::vector<Core::FMTactualdevelopment> area;
+
+	for (size_t i = 1; i <= p_model.getthemes().size(); ++i)
+	{
+		themesrast.push_back(p_rasterPath + "THEME" + std::to_string(i) + ".tif");
+	}
+
+	Spatial::FMTforest initialforestmap = areaparser.readrasters(
+		p_model.getthemes(), themesrast, agerast, 1, 0.0001, lockrast);
+
+	area = initialforestmap.getarea();
+
+	// Correction majeure : on retourne par VALEUR pour ï¿½viter une rï¿½fï¿½rence invalide.
+	return area;
+}
+
 
