@@ -88,17 +88,17 @@ namespace Logging
 
 		}
 
-	void FMTlogger::redirectofile(const std::string& filename)
-		{
+	void FMTlogger::redirectofile(const std::string& filename, bool logstamp)
+	{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		filepath = filename;
 		settofile(filepath);
-		if (filestream && filestream->is_open())
-			{
+		if (filestream && filestream->is_open() && logstamp)
+		{
 			this->logstamp();
 			this->logtime();
-			}
 		}
+	}
 
 	FMTlogger::FMTlogger(const FMTlogger& rhs):filepath(), filestream(), mtx(), flushstream(false)
 		{

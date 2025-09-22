@@ -21,7 +21,7 @@ FMTlogger* Wrapper::FMTFormLogger::clone() const
 
 Wrapper::FMTFormLogger::FMTFormLogger(const std::string& nomFichierLogger, logfunc feed) :FMTlogger(), keepprint(false), lastprint(), sendfeedback(feed)
 {
-	redirectofile(nomFichierLogger);
+	redirectofile(nomFichierLogger, false);
 	setlogginglevel(LOGLEVEL);
 	setstreamflush(true);
 }
