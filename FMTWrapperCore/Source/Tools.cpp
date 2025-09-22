@@ -10,7 +10,6 @@
 
 
 
-
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 {
 	double result = 0;
@@ -89,24 +88,37 @@ std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(con
 {
 	std::vector<std::string> themesrast;
 	// Assurez-vous que le chemin se termine par un s�parateur pour une construction propre
-	const std::string agerast = p_rasterPath + "AGE.tif";
-	// On avais dit sans stanlock mais je l'ai mis ici au cas ou on voulais lire avec dans le TurFu
-	//const std::string lockrast = p_rasterPath + "STANLOCK.tif";
-
+	const std::string AGE_RASTER_PATH = p_rasterPath + "AGE.tif";
+	// Si le stanlock est présent dans le dossier raster on doit le prendre en compte
+	const std::string STANLOCK_RASTER_PATH = p_rasterPath + "STANLOCK.tif";
+	
+	// On vérifie si le fichier Standlock est présent
+	bool stanlockExists = false;
 	Parser::FMTareaparser areaparser;
+	Spatial::FMTforest initialforestmap;
 	std::vector<Core::FMTactualdevelopment> area;
+
+	// On vérifie si le fichier standlock est présent
+	std::ifstream file(STANLOCK_RASTER_PATH);
+	if (file) {
+		stanlockExists = true;
+	}
 
 	for (size_t i = 1; i <= p_model.getthemes().size(); ++i)
 	{
 		themesrast.push_back(p_rasterPath + "THEME" + std::to_string(i) + ".tif");
 	}
+	if (!stanlockExists) {
+		initialforestmap = areaparser.readrasters(p_model.getthemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001);
 
-	Spatial::FMTforest initialforestmap = areaparser.readrasters(
-		p_model.getthemes(), themesrast, agerast, 1, 0.0001);
+	}
+	else {
+		initialforestmap = areaparser.readrasters(p_model.getthemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001, STANLOCK_RASTER_PATH);
+
+	}
 
 	area = initialforestmap.getarea();
 
-	// Correction majeure : on retourne par VALEUR pour �viter une r�f�rence invalide.
 	return area;
 }
 
