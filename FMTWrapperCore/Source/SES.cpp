@@ -10,12 +10,12 @@
 #include "Tools.h"
 #include "FMTforest.h"
 #include <boost/filesystem.hpp>
+#include "CallbackManager.h"
 
 void FMTWrapperCore::SES::spatialCarbonReport(
 	const Models::FMTsemodel& semodel,
 	const int& nombredeperiodes,
-	const std::vector<Core::FMTschedule>& schedules,
-	std::function<void(const std::string&)> report)
+	const std::vector<Core::FMTschedule>& schedules)
 {
 	Models::FMTmodel localmodel(semodel);
 	const auto& spatialSchedule = semodel.getspschedule();
@@ -37,8 +37,8 @@ void FMTWrapperCore::SES::spatialCarbonReport(
 		double primalinf = 0, objectivevalue = 0;
 		spatialSchedule.getsolutionstatus(objectivevalue, primalinf, localmodel, nullptr, true, false);
 
-		report("objectives;" + std::to_string(jsonloc) + ";Objective;" + std::to_string(objectivevalue));
-		report("objectives;" + std::to_string(jsonloc) + ";Primalinfeasibility;" + std::to_string(primalinf));
+		CallbackManager::reportMessage("objectives;" + std::to_string(jsonloc) + ";Objective;" + std::to_string(objectivevalue));
+		CallbackManager::reportMessage("objectives;" + std::to_string(jsonloc) + ";Primalinfeasibility;" + std::to_string(primalinf));
 
 		double oldtotal = 0, newtotal = 0;
 		size_t oriloc = 0, newloc = 0;
@@ -66,14 +66,14 @@ void FMTWrapperCore::SES::spatialCarbonReport(
 				oldtotal += basearea;
 				newtotal += newarea;
 
-				report(
+				CallbackManager::reportMessage(
 					"objectives;" +
 					std::to_string(jsonloc) + ";" +
 					data.first.getname() + ";" +
 					std::to_string(newarea / basearea)
 				);
 			}
-			report("objectives;" + std::to_string(jsonloc) + ";Total;" + std::to_string(newtotal / oldtotal));
+			CallbackManager::reportMessage("objectives;" + std::to_string(jsonloc) + ";Total;" + std::to_string(newtotal / oldtotal));
 		}
 		++scid;
 	}
@@ -84,11 +84,10 @@ void FMTWrapperCore::SES::writeDisturbance(
 	const std::string& rastersPath,
 	const int& nombredeperiodes, 
 	const std::vector<int>& growthThemes, 
-	const bool& incarbon,
-	std::function<void(const std::string&)> report)
+	const bool& incarbon)
 {
 	const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
-	report("FMT -> Écriture des perturbations");
+	CallbackManager::reportMessage("FMT -> Écriture des perturbations");
 	Parser::FMTtransitionparser transitionparser;
 	Parser::FMTareaparser areaparser;
 
@@ -115,7 +114,7 @@ void FMTWrapperCore::SES::writeDisturbance(
 		std::string fichier = rastersPath + "transition" + std::to_string(period) + ".txt";
 		transitionparser.writeGCBM(transitions, fichier);
 		if (incarbon){
-			report("GCBMtransitionlocations;" + fichier);
+			CallbackManager::reportMessage("GCBMtransitionlocations;" + fichier);
 		}
 	}
 }
@@ -123,8 +122,7 @@ void FMTWrapperCore::SES::writeDisturbance(
 void FMTWrapperCore::SES::writeEvents(
 	const Models::FMTsemodel& semodel,
 	const std::string& cheminsorties, 
-	const bool incarbon,
-	std::function<void(const std::string&)> report)
+	const bool incarbon)
 {
 	const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
 	const std::vector<Core::FMTaction> actions = semodel.getactions();
@@ -133,7 +131,7 @@ void FMTWrapperCore::SES::writeEvents(
 	boost::filesystem::path path = cheminsorties;
 	path /= "events.txt";
 	const std::string eventpath = path.string();
-	report("Écriture des évènements ici: " + eventpath);
+	CallbackManager::reportMessage("Écriture des évènements ici: " + eventpath);
 
 	std::ofstream ofs;
 	ofs.open(path.string(), std::ios::trunc);
@@ -141,7 +139,7 @@ void FMTWrapperCore::SES::writeEvents(
 
 	if (incarbon)
 	{
-		report("eventslocation;" + eventpath);
+		CallbackManager::reportMessage("eventslocation;" + eventpath);
 	}
 }
 
@@ -149,8 +147,7 @@ std::vector<Core::FMToutput> FMTWrapperCore::SES::writeOutputs(
 	const Models::FMTsemodel& semodel,
 	const std::vector<std::string>& outputs,
 	const int& nombredeperiodes,
-	const bool& incarbon,
-	std::function<void(const std::string&)> report)
+	const bool& incarbon)
 {
 	std::vector<Core::FMToutput> listeOutputs;
 	for (const Core::FMToutput& fmtOutput : semodel.getoutputs())
@@ -171,7 +168,7 @@ std::vector<Core::FMToutput> FMTWrapperCore::SES::writeOutputs(
 
 			for (double valeurCarbon : resultatOutputsCarbon["Total"])
 			{
-				report("outputs;" + output.getname() + ";" + std::to_string(valeurCarbon));
+				CallbackManager::reportMessage("outputs;" + output.getname() + ";" + std::to_string(valeurCarbon));
 			}
 		}
 	}
@@ -182,8 +179,7 @@ void FMTWrapperCore::SES::writePredictors(
 	const Models::FMTsemodel& semodel,
 	const std::string& rastpath,
 	const int& periodes,
-	const std::vector<std::string>& predictoryields,
-	std::function<void(const std::string&)> report)
+	const std::vector<std::string>& predictoryields)
 {
 	Parser::FMTareaparser areaparser;
 	const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
@@ -216,14 +212,14 @@ void FMTWrapperCore::SES::writePredictors(
 
 			++indexPredictors;
 			outof.pop_back();
-			report("allpredictionsnodes;" + outof);
+			CallbackManager::reportMessage("allpredictionsnodes;" + outof);
 			periodpredictors.push_back(graphpred);
 		}
 		allpredictors.push_back(periodpredictors);
 	}
 	for (const std::string& value : allpredictornames)
 	{
-		report("allpredictornames;" + value);
+		CallbackManager::reportMessage("allpredictornames;" + value);
 	}
 }
 
@@ -232,11 +228,10 @@ void FMTWrapperCore::SES::writeSpatialOutputs(
 	const std::vector<Core::FMToutput>& outputs,
 	const int& sortiemin, 
 	const int& sortiemax,
-	std::string& localisation,
-	std::function<void(const std::string&)> report)
+	std::string& localisation)
 	{
 	Parser::FMTareaparser areaparser;
-	report("FMT -> Écriture des outputs spatiaux");
+	CallbackManager::reportMessage("FMT -> Écriture des outputs spatiaux");
 	for (int period = sortiemin; period <= sortiemax; ++period)
 	{
 		for (const Core::FMToutput& output : outputs)
@@ -248,7 +243,7 @@ void FMTWrapperCore::SES::writeSpatialOutputs(
 			areaparser.writelayer(outputlayer, stdoutputpath);
 		}
 	}
-	report("FMT -> Écriture des outputs spatiaux terminée");
+	CallbackManager::reportMessage("FMT -> Écriture des outputs spatiaux terminée");
 }
 
 bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
@@ -270,20 +265,19 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 	const std::string& providerGdal,
 	bool indCarbon,
 	const std::vector<std::string>& predictoryields,
-	const std::vector<int>& growththemes,
-	std::function<void(const std::string&)> report)
+	const std::vector<int>& growththemes)
 {
 	bool is_successful;
 	try
 	{
 		// Modèle
 		Models::FMTsemodel simulationmodel = p_sesModel;
-		report("FMT -> Traitement pour le scénario : " + simulationmodel.getname());
+		CallbackManager::reportMessage("FMT -> Traitement pour le scénario : " + simulationmodel.getname());
 
 		// Contraintes
 		if (!p_constraints.empty())
 		{
-			report("FMT -> Intégration des contraintes sélectionnées");
+			CallbackManager::reportMessage("FMT -> Intégration des contraintes sélectionnées");
 			std::vector<Core::FMTconstraint> selectedConstraints = FMTWrapperCore::Tools::getSelectedConstraints(
 				simulationmodel.getconstraints(), p_constraints);
 			simulationmodel.setconstraints(selectedConstraints);
@@ -291,7 +285,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 
 		// Transition
 		std::vector<Core::FMTtransition> strans;
-		report("FMT -> Modification et intégration des transitions");
+		CallbackManager::reportMessage("FMT -> Modification et intégration des transitions");
 		for (const auto& tran : simulationmodel.gettransitions())
 		{
 			strans.push_back(tran.single());
@@ -299,7 +293,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 		simulationmodel.settransitions(strans);
 
 		// Rasters
-		report("FMT -> Lecture des rasters");
+		CallbackManager::reportMessage("FMT -> Lecture des rasters");
 		Parser::FMTareaparser areaparser;
 		const std::string agerast = p_rastersPath + "AGE.tif";
 		std::vector<std::string> themesrast;
@@ -324,7 +318,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 		if (schedules.back().getperiod() < p_length)
 		{
 			const std::string logout = "Dépassement de la période : size " + std::to_string(schedules.size()) + " periode " + std::to_string((schedules.back().getperiod() + 1));
-			report(logout);
+			CallbackManager::reportMessage(logout);
 			return false;
 		}
 
@@ -371,7 +365,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 			if (!indCarbon)
 			{
 				Parser::FMTmodelparser Modelparser;
-				report("FMT -> Exportations des sorties");
+				CallbackManager::reportMessage("FMT -> Exportations des sorties");
 				Modelparser.writeresults(
 					simulationmodel,
 					p_outputs,
@@ -383,7 +377,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 			}
 			else
 			{
-				report("schedules;" + schedulepath);
+				CallbackManager::reportMessage("schedules;" + schedulepath);
 				areaparser.writeforest(
 					schedule.getforestperiod(0),
 					simulationmodel.getthemes(),
@@ -396,6 +390,7 @@ bool FMTWrapperCore::SES::spatiallyExplicitSimulation(
 				}
 			}
 			if (indSortiesSpatiales)
+			
 			{
 				writeSpatialOutputs(simulationmodel, p_outputs, output_min, output_max, directoryFullName);
 			}

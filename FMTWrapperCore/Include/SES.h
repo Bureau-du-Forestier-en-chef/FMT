@@ -44,8 +44,7 @@ namespace FMTWrapperCore {
         void spatialCarbonReport(
             const Models::FMTsemodel& semodel,
             const int& nombredeperiodes,
-            const std::vector<Core::FMTschedule>& schedules,
-            std::function<void(const std::string&)> report
+            const std::vector<Core::FMTschedule>& schedules
         );
 
         void writeDisturbance(
@@ -53,31 +52,27 @@ namespace FMTWrapperCore {
             const std::string& rastersPath,
             const int& nombredeperiodes,
             const std::vector<int>& growthThemes,
-            const bool& incarbon,
-            std::function<void(const std::string&)> report
+            const bool& incarbon
         );
 
         void writeEvents(
             const Models::FMTsemodel& semodel,
             const std::string& cheminsorties,
-            const bool incarbon,
-            std::function<void(const std::string&)> report
+            const bool incarbon
         );
 
         std::vector<Core::FMToutput> writeOutputs(
             const Models::FMTsemodel& semodel,
             const std::vector<std::string>& outputs,
             const int& nombredeperiodes,
-            const bool& incarbon,
-            std::function<void(const std::string&)> report
+            const bool& incarbon
         );
 
         void writePredictors(
             const Models::FMTsemodel& semodel,
             const std::string& rastpath,
             const int& periodes,
-            const std::vector<std::string>& predictoryields,
-            std::function<void(const std::string&)> report
+            const std::vector<std::string>& predictoryields
         );
 
         void writeSpatialOutputs(
@@ -85,8 +80,7 @@ namespace FMTWrapperCore {
             const std::vector<Core::FMToutput>& outputs,
             const int& sortiemin,
             const int& sortiemax,
-            std::string& localisation,
-            std::function<void(const std::string&)> report
+            std::string& localisation
         );
     };
 }
