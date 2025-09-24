@@ -183,7 +183,9 @@ namespace Parallel
 							"No output "+ globaloutput.first +" in local",
 							"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
 					}
-					std::vector<bool>passedlastiteration((*localvalues.at(globaloutput.first).begin()).size(), true);
+					std::vector<bool>passedlastiteration((*localvalues.at(globaloutput.first).begin()).size(), true); // nouveau problème lorena, peu de chance ici
+					// regarder si le pastlastiteration est empty avnat de continuer (ne ferait p-e pas de sens)
+					// maybe on raise ici si c'est empty
 					drifts[globaloutput.first][drift] = std::vector<double>();
 					int periodid = 0;
 					for (const std::vector<double>& iterationvalues : localvalues.at(globaloutput.first))
@@ -209,7 +211,7 @@ namespace Parallel
 									if (std::isnan(localvalue))
 									{
 										count = 0;
-										passedlastiteration[iterationid] = false;
+										passedlastiteration[iterationid] = false; // nouveau problème lorena
 										break;
 									}
 									if ((lower && (localvalue >= (globalvalue - (globalvalue *drift))))||
@@ -218,7 +220,7 @@ namespace Parallel
 										++count;
 									}
 									else {
-										passedlastiteration[iterationid] = false;
+										passedlastiteration[iterationid] = false; // nouveau problème lorena
 									}
 								}
 								++iterationid;

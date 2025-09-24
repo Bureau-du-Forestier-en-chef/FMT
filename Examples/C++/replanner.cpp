@@ -40,16 +40,16 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:/Users/Admlocal/Documents/FMT/SCRAP1/CC_modele_feu_20250221_0929/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		outputlocation = "C:/Users/Admlocal/Documents/issues/288/output/test_30_mai";
-		length = 1;
-		replicate = 2;
-		n_threads = 5;
-		allscenarios.push_back("strategique_AllEnrqc_CC"); //Stratégique en premier
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00985788\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
+		outputlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00985788\\output";
+		length = 2;
+		replicate = 100;
+		n_threads = 25;
+		allscenarios.push_back("ev_nat_strategique_noAnthro"); //Stratégique en premier
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_vide");
+		allscenarios.push_back("stochastique_CC_noprod");
 		//allscenarios.push_back("tactique");
-		allscenarios.push_back("tactique_AllEnrqc_CC");
+		allscenarios.push_back("ev_nat_tactique_noAnthro");
 	}
 	int repSize = length;
 	//int repSize = 20;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	#endif
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC"
+	std::vector<std::string> OutputtoLookFor = { "OVOLTOTREC"
 		/*,"ORISQUE", "ORISQUE_NOR", "OVOL_UA_TOTREC", "OSUPBRULER_ORI", "OSUPBRULER_CORRIGER", "SUPERFICIE_RECUP_FEU" ,
 		"OSUPPLEP_FEU23_UA","OSUPPL_FEU_POSTRECUP", "OSUPTBE" , "SUPERFICIE_RECUP_TBE", "OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
 		"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE", "ORISQUE","ORISQUE_FEU","ORISQUE_TBE","ORISQUE_FEU_NOR",
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 		"OSUPADM_RECUP_FEU_M3HA_SEPM_100_124","OSUPADM_RECUP_FEU_M3HA_SEPM_125_999","SUPERFICIE_RECUP_TBE","SUPERFICIE_ADM_RECUP_TBE",
 		"OVOLTOTRECARECUP","OVOLTOTREC_RECUP","OSUPREALPL","OVOLSABPIEDINC","OVOLGEPXPIEDINC","OVOLGFIPIEDINC","OVOLGFTPIEDINC",
 		"ORISQUE","ORISQUE_FEU","ORISQUE_TBE","OVOLGRPIEDINC","OSUPINC","OSUPECHEC"*/};
-	std::vector<Core::FMToutput>selectedoutputs;
+	std::vector<Core::FMToutput> selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
 		if (std::find(OutputtoLookFor.begin(), OutputtoLookFor.end(), output.getname()) != OutputtoLookFor.end())
@@ -130,8 +130,8 @@ int main(int argc, char *argv[])
 		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
 	Parallel::FMTtaskhandler handler(maintaskptr, n_threads);
 	//handler.setquietlogger();
-	handler.ondemandrun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
-	//handler.conccurentrun();
+	//handler.ondemandrun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
+	handler.conccurentrun();
 	#endif
 	return 0;
 	}
