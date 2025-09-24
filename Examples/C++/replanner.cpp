@@ -130,8 +130,8 @@ int main(int argc, char *argv[])
 		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
 	Parallel::FMTtaskhandler handler(maintaskptr, n_threads);
 	//handler.setquietlogger();
-	//handler.ondemandrun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
-	handler.conccurentrun();
+	handler.ondemandrun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
+	//handler.conccurentrun();
 	#endif
 	return 0;
 	}
