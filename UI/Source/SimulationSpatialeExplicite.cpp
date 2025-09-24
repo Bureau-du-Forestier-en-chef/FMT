@@ -109,7 +109,7 @@ void Wrapper::FMTForm::EcrituredesPerturbations(const Models::FMTsemodel& semode
 		}
 		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
 		FMTFormLogger* logger = Cache->getformlogger();
-		*logger << "FMT -> Écriture des perturbations" << "\n";
+		*logger << "FMT -> ï¿½criture des perturbations" << "\n";
 		Parser::FMTtransitionparser transitionparser;
 		Parser::FMTareaparser areaparser;
 		for (int period = 1; period <= nombredeperiodes; ++period)
@@ -141,7 +141,7 @@ void Wrapper::FMTForm::EcritureDesEvenements(const Models::FMTsemodel& semodel, 
 			const std::vector<Core::FMTaction>actions = semodel.getactions();
 			const std::string stats = schedule.getpatchstats(actions);
 			System::String^ eventpath = System::IO::Path::Combine(cheminsorties, gcnew System::String(std::string("events.txt").c_str()));
-			*logger << "Écriture des évènements ici: " + msclr::interop::marshal_as<std::string>(eventpath) << "\n";
+			*logger << "ï¿½criture des ï¿½vï¿½nements ici: " + msclr::interop::marshal_as<std::string>(eventpath) << "\n";
 			//InscrireLigneFichierTexte(eventpath, "Period Action size perimeter height width", false,true);
 			InscrireLigneFichierTexte(eventpath, gcnew System::String(stats.c_str()), false,true);
 			if (incarbon)
@@ -188,7 +188,7 @@ void Wrapper::FMTForm::EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semo
 	try {
 		FMTFormLogger* logger = Cache->getformlogger();
 		Parser::FMTareaparser areaparser;
-		*logger << "FMT -> Écriture des outputs spatiaux" << "\n";
+		*logger << "FMT -> ï¿½criture des outputs spatiaux" << "\n";
 		for (int period = sortiemin; period <= sortiemax; ++period)
 		{
 			for (const Core::FMToutput& output : outputs)
@@ -201,7 +201,7 @@ void Wrapper::FMTForm::EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semo
 			}
 		}
 
-		*logger << "FMT -> Écriture des outputs spatiaux terminée" << "\n";
+		*logger << "FMT -> ï¿½criture des outputs spatiaux terminï¿½e" << "\n";
 		
 	}
 	catch (...)
@@ -284,13 +284,13 @@ bool Wrapper::FMTForm::SimulationSpatialeExplicite(
 	{
 		Models::FMTsesmodel simulationmodel(Cache->getmodel(scenario));
 		FMTFormLogger* logger = Cache->getformlogger();
-		*logger << "FMT -> Traitement pour le scénario : " + simulationmodel.getname() << "\n";
+		*logger << "FMT -> Traitement pour le scï¿½nario : " + simulationmodel.getname() << "\n";
 		if (contraintes->Count > 0)
 		{
-			*logger << "FMT -> Intégration des contraintes sélectionnées" << "\n";
+			*logger << "FMT -> Intï¿½gration des contraintes sï¿½lectionnï¿½es" << "\n";
 			simulationmodel.setconstraints(ObtenirArrayContraintesSelectionnees(ObtenirArrayContraintes(scenario), contraintes));
 		}
-		*logger << "FMT -> Modification et intégration des transitions" << "\n";
+		*logger << "FMT -> Modification et intï¿½gration des transitions" << "\n";
 		std::vector<Core::FMTtransition> strans;
 		for (const auto& tran : simulationmodel.gettransitions())
 		{
@@ -322,7 +322,7 @@ bool Wrapper::FMTForm::SimulationSpatialeExplicite(
 
 		if (schedules.back().getperiod() < periodes)
 		{
-			const std::string logout = "Dépassement de la période : size " + std::to_string(schedules.size()) + " periode " + std::to_string((schedules.back().getperiod() + 1));
+			const std::string logout = "Dï¿½passement de la pï¿½riode : size " + std::to_string(schedules.size()) + " periode " + std::to_string((schedules.back().getperiod() + 1));
 			*logger << logout << "\n";
 			return false;
 		}

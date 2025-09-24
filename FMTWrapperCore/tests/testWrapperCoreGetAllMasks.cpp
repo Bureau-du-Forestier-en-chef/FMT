@@ -1,4 +1,3 @@
-// ATTENTION: Ceci est une copie de testWrapperCoreGetYield.cpp on dois l'ajuster
 
 #include <vector>
 #include <string>
@@ -7,6 +6,7 @@
 #include "FMTmodelparser.h"
 #include "Tools.h"
 #include "FMTfreeexceptionhandler.h"
+
 
 int main(int argc, char* argv[])
 {
@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 	int periods = 0;
 	std::vector<int> themesNumbers;
 	int resutlSize = 0;
+	std::string rastpath;
 
 	if (argc > 1)
 	{
@@ -38,13 +39,13 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "//Artemis/fecgeo/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/PC_9949_U08251_2028_MODB01.pri";
-		scenarioName = "TBE_TEST_CORRECTION";
-		periods = 5;
+		pathPri = "D:/01_Valide_Erro_NoTransfoTBE/PC_9949_U08251_2028_MODB01.pri";
+		scenarioName = "120_RegProv_apsp";
+		periods = 30;
 		resutlSize = 21821;
-		themesNumbers = { 3, 5, 12, 13, 14, 21};
+		themesNumbers = { 3, 5, 12};
+		rastpath = "D:/01_Valide_Erro_NoTransfoTBE/rasters/";
 	}
-
 
 	Parser::FMTmodelparser ModelParser;
 	std::vector<Exception::FMTexc>errors;
@@ -63,10 +64,10 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	ModelParser.seterrorstowarnings(errors);
 
+	Models::FMTmodel model = ModelParser.readproject(pathPri, { scenarioName }).at(0);
 
-	const Models::FMTmodel MODEL = ModelParser.readproject(pathPri, { scenarioName }).at(0);
 
-	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(MODEL, periods, themesNumbers);
+	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(model, periods, themesNumbers, rastpath);
 
 	std::cout << RESULT.size() << std::endl;
 
@@ -75,9 +76,9 @@ int main(int argc, char* argv[])
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
 
 	}
-	//for (const std::string& res : RESULT) {
-	//	std::cout << res << std::endl;
-	//}
+	for (const std::string& res : RESULT) {
+		std::cout << res << std::endl;
+	}
 
 	return 0;
 }

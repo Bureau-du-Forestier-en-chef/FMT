@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include "FMTmodel.h"
 
 namespace Core { 
     class FMTschedule;
@@ -67,6 +68,17 @@ namespace FMTWrapperCore
 		*@param un vector de themes a vérifier.
 		*@return Un set des masks.
 		*/
-		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers);
+		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath);
+
+	private:
+
+		/**
+		* @brief Retourne un vecteur de FMTactualdevelopment selon le raster d'aire.
+		*
+		*@param p_model le Modele a utiliser.
+		*@param p_rasterPath Le path du raster d'aire.
+		*@return Un vecteur de FMTactualdevelopment.
+		*/
+		static std::vector<Core::FMTactualdevelopment> getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath);
     };
 }

@@ -109,7 +109,7 @@ namespace Logging
 			/**
 			Redirect the log information to a file.
 			*/
-			void redirectofile(const std::string& filename);
+			void redirectofile(const std::string& filename, bool logstamp = true);
 			// DocString: FMTlogger::closefilestream
 			/**
 			Close the file stream if error occured.
