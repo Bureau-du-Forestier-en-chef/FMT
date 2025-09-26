@@ -389,10 +389,6 @@ namespace Parallel
 	void FMTreplanningtask::setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
 	{
 		try {
-			if (getiteration() == 101)
-			{
-				std::cout << "Yo";
-			}
 			if (modelcpy->gotReplicate(replanningperiod))
 			{
 				modelcpy->setReplicate(getiteration(), replanningperiod);
