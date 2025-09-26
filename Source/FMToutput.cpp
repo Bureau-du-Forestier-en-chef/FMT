@@ -839,23 +839,8 @@ size_t FMToutput::hash() const
 
 bool FMToutput::operator == (const FMToutput& rhs) const
     {
-	
-	//std::cout << "Checking name" << std::endl;
-	//if (name != rhs.name) return false;
-	//
-	//std::cout << "Checking description" << std::endl;
-	//if (description != rhs.description) return false;
-	//
-	//std::cout << "Checking sources" << std::endl;
-	//if (sources != rhs.sources) return false;
-	//
-	//std::cout << "Checking operators" << std::endl;
-	//if (operators != rhs.operators) return false;
-	//
-	//std::cout << "Checking targetthemeid" << std::endl;
-	//if (targetthemeid() != rhs.targetthemeid()) return false;
-	//return true;
-	
+	// TODO gab mettre un bool sexy
+	bool is_valid = false;
 	if (name != rhs.name ||
 		description != rhs.description ||
 		sources != rhs.sources ||

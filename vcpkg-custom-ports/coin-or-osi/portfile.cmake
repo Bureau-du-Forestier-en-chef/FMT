@@ -7,6 +7,10 @@ vcpkg_from_github(
 )
 
 set(CMAKE_MODULE_PATH "$ENV{MODULE_PATH};${CMAKE_MODULE_PATH}")
+
+if (MSVC_VERSION GREATER_EQUAL 1914)
+    string(APPEND CMAKE_CXX_FLAGS " /Zc:__cplusplus")
+endif(MSVC_VERSION GREATER_EQUAL 1914)
  
 find_package(Mosek)
 
@@ -60,7 +64,6 @@ else()
 	)
 
 endif(MOSEK_FOUND)
-
 
 vcpkg_install_make()
 vcpkg_copy_pdbs()

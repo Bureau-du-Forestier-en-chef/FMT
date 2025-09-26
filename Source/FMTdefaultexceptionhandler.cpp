@@ -47,7 +47,6 @@ namespace Exception
 	FMTexception FMTdefaultexceptionhandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 	{
-		
 		const FMTlev LEVEL = getLevel(lexception);
 		FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
 		if (lsection != Core::FMTsection::Empty)

@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
 	{
 		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00985788\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00985788\\output";
-		length = 2;
-		replicate = 100;
+		length = 1;
+		replicate = 101;
 		n_threads = 25;
 		allscenarios.push_back("ev_nat_strategique_noAnthro"); //Stratégique en premier
 		//allscenarios.push_back("strategique");

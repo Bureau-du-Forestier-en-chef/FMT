@@ -347,6 +347,10 @@ namespace Parallel
 
 	const int FMTreplanningtask::getiteration() const
 		{
+		if (replicateids.empty())
+		{
+			std::cout << "Wtf";
+		}
 		return replicateids.front();
 		}
 
@@ -385,6 +389,10 @@ namespace Parallel
 	void FMTreplanningtask::setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
 	{
 		try {
+			if (getiteration() == 101)
+			{
+				std::cout << "Yo";
+			}
 			if (modelcpy->gotReplicate(replanningperiod))
 			{
 				modelcpy->setReplicate(getiteration(), replanningperiod);
@@ -559,9 +567,13 @@ namespace Parallel
 			return std::move(modelcpy);
 		}catch (...)
 			{
-			const std::string LOCATION = model->getname() +
-				" replanning period "+std::to_string(replanningperiod) +" replicate " + std::to_string(getiteration());
-			_exhandler->raisefromcatch(LOCATION, "FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
+			std::string location = model->getname() +
+				" replanning period " + std::to_string(replanningperiod);
+			if (!replicateids.empty())
+			{
+				location += " replicate " + std::to_string(getiteration());
+			}
+			_exhandler->raisefromcatch(location, "FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 			}
 		return std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
 	}
