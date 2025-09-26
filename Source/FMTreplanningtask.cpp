@@ -347,10 +347,10 @@ namespace Parallel
 
 	const int FMTreplanningtask::getiteration() const
 		{
-		if (replicateids.empty())
-		{
-			std::cout << "Wtf";
-		}
+		//if (replicateids.empty())
+		//{
+		//	std::cout << "Wtf";
+		//}
 		return replicateids.front();
 		}
 
