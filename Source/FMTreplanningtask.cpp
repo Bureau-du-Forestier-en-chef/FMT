@@ -12,8 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlpmodel.h"
 #include "FMTexceptionhandler.h"
 #include <boost/filesystem.hpp>
-
-
+#include <boost/format.hpp>
 
 namespace Parallel
 {
@@ -233,7 +232,7 @@ namespace Parallel
 			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::gettasks", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTreplanningtask::split", __LINE__, __FILE__);
 			}
 		return tasks;
 	}
@@ -314,30 +313,34 @@ namespace Parallel
 						--lastperiod;
 					}
 				}
-				const std::map<std::string, std::vector<std::vector<double>>>results = resultswriter->getresults(modelptr, firstperiod, lastperiod);
-				
-				_logger->logwithlevel("Writing results for " + modelname + " first period at: " +
-					std::to_string(replanningperiod) + " for replicate " + std::to_string(getiteration()) + +"\n", 1);
-				
-				int reportingFirstPeriod = firstperiod;
-				int reportingLastPeriod = lastperiod;
-				if (modelsize == 1)
+				if (!replicateids.empty())
 				{
-					reportingFirstPeriod = replanningperiod;
-					reportingLastPeriod = replanningperiod;
-				}
-				if (!modelptr)
-				{
-					reportingFirstPeriod = replanningperiod;
-					reportingLastPeriod = replanningperiods;
-				}
-
-				if (m_writeSchedule && modelptr && 
-					(modelname == stochastic->getname() || modelname == local->getname() || (modelname == global->getname() && getiteration() == 0)))
+					const std::map<std::string, std::vector<std::vector<double>>>results = resultswriter->getresults(modelptr, firstperiod, lastperiod);
+					std::string location = "";
+						location += " On replicate " + std::to_string(getiteration());
+					_logger->logwithlevel("Writing results for " + modelname + " first period at: " + 
+						std::to_string(replanningperiod) + location +"\n", 1);
+				
+					int reportingFirstPeriod = firstperiod;
+					int reportingLastPeriod = lastperiod;
+					if (modelsize == 1)
 					{
-					_writeSchedule(modelptr, reportingFirstPeriod, firstperiod);
+						reportingFirstPeriod = replanningperiod;
+						reportingLastPeriod = replanningperiod;
 					}
-				resultswriter->write(modelname, results, reportingFirstPeriod, reportingLastPeriod, getiteration());
+					if (!modelptr)
+					{
+						reportingFirstPeriod = replanningperiod;
+						reportingLastPeriod = replanningperiods;
+					}
+
+					if (m_writeSchedule && modelptr && 
+						(modelname == stochastic->getname() || modelname == local->getname() || (modelname == global->getname() && getiteration() == 0)))
+						{
+						_writeSchedule(modelptr, reportingFirstPeriod, firstperiod);
+						}
+					resultswriter->write(modelname, results, reportingFirstPeriod, reportingLastPeriod, getiteration());
+				}
 			}
 		}catch (...)
 		{
@@ -347,10 +350,12 @@ namespace Parallel
 
 	const int FMTreplanningtask::getiteration() const
 		{
-		//if (replicateids.empty())
-		//{
-		//	std::cout << "Wtf";
-		//}
+		if (replicateids.empty())
+		{
+			_exhandler -> raise(Exception::FMTexc::FMTemptybound,
+				"Can't get the iteration if replaceteids is empty",
+				"FMTreplanningtask::getiteration", __LINE__, __FILE__);
+		}
 		return replicateids.front();
 		}
 
@@ -416,6 +421,9 @@ namespace Parallel
 			while (!replicateids.empty())
 			{
 				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " started\n",0);
+				// transformer le this en str
+				//std::string hex_address = (boost::format("0x%p") % static_cast<void*>(this)).str();
+				//*_logger << "Pointer address in hex: " + hex_address + " for replicate " + std::to_string(getiteration()) + "\n";
 				
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
@@ -471,13 +479,21 @@ namespace Parallel
 				dynamicconstraints = baselocalconstraints;
 				iterationglobalschedule = *baseschedule;
 				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
+				
+				std::string hex_address = (boost::format("0x%p") % static_cast<void*>(&replicateids)).str();
+				*_logger << "Pointer address in hex: " + hex_address + " for replicate " + std::to_string(getiteration()) + "\n";
+
 				replicateids.pop();
 			}
 			setstatus(true);
 		}catch (...)
 		{
-			const std::string LOCATION = "on replicate " + std::to_string(getiteration());
-			_exhandler->raisefromthreadcatch(LOCATION,"FMTreplanningtask::work", __LINE__, __FILE__);
+			std::string location = "On replicate NA";
+			if (!replicateids.empty())
+			{
+				location += " on replicate " + std::to_string(getiteration());
+			}
+			_exhandler->raisefromthreadcatch(location,"FMTreplanningtask::work", __LINE__, __FILE__);
 		}
 
 	}

@@ -38,13 +38,14 @@ int main(int argc, char *argv[])
 		length = std::stoi(argv[2]);
 		replicate = std::stoi(argv[3]);
 	}
+
 	else
 	{
 		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00985788\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00985788\\output";
 		length = 1;
 		replicate = 101;
-		n_threads = 25;
+		n_threads = 30;
 		allscenarios.push_back("ev_nat_strategique_noAnthro"); //Stratégique en premier
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC_noprod");

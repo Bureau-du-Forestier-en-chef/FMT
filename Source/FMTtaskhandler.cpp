@@ -201,7 +201,8 @@ namespace Parallel
 			{
 			for (boost::thread& worker : workers)
 				{
-				_interruptWork(worker);
+				//_interruptWork(worker);
+				worker.join();
 				}
 			_exhandler->printexceptions("", "FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
 			}
