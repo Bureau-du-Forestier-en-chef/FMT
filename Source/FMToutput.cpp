@@ -1561,10 +1561,6 @@ std::string FMToutput::_getFormatedOutputName() const
 		{
 		result += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
 		}
-	if (targetthemeid() != -1)
-		{
-		result += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
-		}
 	result += " " + description + "\n";
 	return result;
 }

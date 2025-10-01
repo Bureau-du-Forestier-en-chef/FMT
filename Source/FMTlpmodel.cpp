@@ -1592,7 +1592,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		 {
 			 if (DEBUG_MATRIX)
 			 {
-				 writeLP((boost::filesystem::current_path()+=boost::filesystem::path::preferred_separator).string());
+				 writeLP((boost::filesystem::path(getruntimelocation()) += boost::filesystem::path::preferred_separator).string());
 			 }
 			 _exhandler->printexceptions("", "FMTlpmodel::resolve", __LINE__, __FILE__);
 		 }
@@ -1906,8 +1906,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		{
 			if (DEBUG_MATRIX)
 			{
-				*_logger << "Writing matrix here " + boost::filesystem::current_path().string() << "\n";
-				writeLP((boost::filesystem::current_path() += boost::filesystem::path::preferred_separator).string());
+				*_logger << "Writing matrix here " + boost::filesystem::path(getruntimelocation()).string() << "\n";
+				writeLP((boost::filesystem::path(getruntimelocation()) += boost::filesystem::path::preferred_separator).string());
 			}
 			_exhandler->printexceptions(getname(), "FMTlpmodel::initialsolve", __LINE__, __FILE__);
 		}
