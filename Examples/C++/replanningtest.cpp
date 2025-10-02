@@ -40,14 +40,20 @@ int main(int argc, char *argv[])
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
-		if (output.getname() == "OVOLREC"|| output.getname() == "VOLINVENT" || output.getname()=="BURNEDAREA")
+		if (
+			output.getname() == "OVOLREC" ||
+			output.getname() == "VOLINVENT" ||
+			output.getname()=="BURNEDAREA" || 
+			output.getname() == "DIVIDEZERO"
+			)
 		{
 			selectedoutputs.push_back(output);
 		}
 	}
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly, true));
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
+		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 10, 10, 0.5, Core::FMToutputlevel::standard, true));
 	Parallel::FMTtaskhandler handler(maintaskptr,10);
 	//handler.setquietlogger();
 	//handler.ondemandrun();

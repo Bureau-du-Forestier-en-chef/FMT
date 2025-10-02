@@ -1,7 +1,7 @@
-*OUTPUT oSupRec Superficie récolté
+*OUTPUT oSupRec Superficie rï¿½coltï¿½
 *SOURCE ? ? ? coupetotale _AREA
 
-*OUTPUT oVolRec Volume récolté
+*OUTPUT oVolRec Volume rï¿½coltï¿½
 *SOURCE ? ? ? coupetotale volumetotal + ? ? ? arecup volumetotal * 0.5
 
 *OUTPUT oSupMassCar Superficie massifs caribou
@@ -39,6 +39,11 @@
 *OUTPUT oVolRecPEUPLEMENT2
 *SOURCE ? PEUPLEMENT2 ? coupetotale volumetotal
 
+*OUTPUT yieldzero(_TH1)
+*SOURCE ? ? coupetotale volumezero
+
+*OUTPUT DIVIDEZERO(_TH1)
+*SOURCE yieldzero / yieldzero
 
 
 

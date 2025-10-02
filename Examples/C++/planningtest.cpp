@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:/Users/Admlocal/Documents/FMT/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		outputlocation = "C:/Users/Admlocal/Documents/issues/288/playback/test";
-		length = 20;
-		scenario_name = "PlayBack_CC";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00984297\\01_Valide_8251\\01_Valide_8251\\PC_9949_U08251_2028_MODB01.pri";
+		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP\\output";
+		length = 1;
+		scenario_name = "120_RegProv_apsp";
 		playback.push_back(true);
 		allscenarios.push_back(scenario_name);
 	}
@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 	errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	modelparser.seterrorstowarnings(errors);
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");

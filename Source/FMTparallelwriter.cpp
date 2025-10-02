@@ -173,7 +173,17 @@ namespace Parallel
 			{
 				outputname = globaloutput.first;
 				drifts[globaloutput.first] = std::map<double, std::vector<double>>();
-				//const std::vector<double>& baseglobal = globaloutput.second.at(0);
+				//const std::vector<double>& baseglobal = globaloutput.second.at(0)
+				
+				if (localvalues.find(globaloutput.first) == localvalues.end() ||
+					globaloutput.second.size() != localvalues.at(globaloutput.first).size())
+				{
+					_exhandler->raise(Exception::FMTexc::FMTignore,
+						"No drift calculated for missing values in " + globaloutput.first,
+						"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+					continue;
+				}
+
 				for (double drift = resultsminimaldrift; drift >= 0; drift -= 0.05)
 				{
 					driftprob = drift;
@@ -183,9 +193,7 @@ namespace Parallel
 							"No output "+ globaloutput.first +" in local",
 							"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
 					}
-					std::vector<bool>passedlastiteration((*localvalues.at(globaloutput.first).begin()).size(), true); // nouveau problème lorena, peu de chance ici
-					// regarder si le pastlastiteration est empty avnat de continuer (ne ferait p-e pas de sens)
-					// maybe on raise ici si c'est empty
+					std::vector<bool>passedlastiteration((*localvalues.at(globaloutput.first).begin()).size(), true);
 					drifts[globaloutput.first][drift] = std::vector<double>();
 					int periodid = 0;
 					for (const std::vector<double>& iterationvalues : localvalues.at(globaloutput.first))
@@ -211,7 +219,7 @@ namespace Parallel
 									if (std::isnan(localvalue))
 									{
 										count = 0;
-										passedlastiteration[iterationid] = false; // nouveau problème lorena
+										passedlastiteration[iterationid] = false;
 										break;
 									}
 									if ((lower && (localvalue >= (globalvalue - (globalvalue *drift))))||
@@ -220,7 +228,7 @@ namespace Parallel
 										++count;
 									}
 									else {
-										passedlastiteration[iterationid] = false; // nouveau problème lorena
+										passedlastiteration[iterationid] = false;
 									}
 								}
 								++iterationid;
@@ -263,8 +271,8 @@ namespace Parallel
 					writedrift(driftlayer, lowerdrifts, upperdrifts);
 				}
 				else {
-					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-						"Empty result layers",
+					_exhandler->raise(Exception::FMTexc::FMTignore,
+						"Empty result layers, no drift probability generated",
 						"FMTparallelwriter::setdriftprobability", __LINE__, __FILE__);
 				}
 			}

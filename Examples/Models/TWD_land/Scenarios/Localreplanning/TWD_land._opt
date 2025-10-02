@@ -12,8 +12,8 @@ afire    1.._LENGTH
 *CONSTRAINTS
 
 oVolRec <= 40272 1.._LENGTH _SETFROMGLOBAL(1)
-recuparea >= operablerecuparea * 0.5 1.._LENGTH ;At least 10 ha of salvaged volume
-
+;recuparea >= operablerecuparea * 0.5 1.._LENGTH ;At least 10 ha of salvaged volume
+DIVIDEZERO = 0 2
 
 
 *FORMAT MOSEK
