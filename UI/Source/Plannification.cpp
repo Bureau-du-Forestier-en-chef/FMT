@@ -111,6 +111,7 @@ bool Wrapper::FMTForm::Replanification(int indexScenStrategique,
 			layersoptions.push_back("SEPARATOR=SEMICOLON");
 		}
 		*logger << "FMT -> Préparation de la replanification " << "\n";	
+		logger->logtime();
 		Parallel::FMTreplanningtask* task = new Parallel::FMTreplanningtask(
 			global,
 			stochastic,
@@ -129,8 +130,9 @@ bool Wrapper::FMTForm::Replanification(int indexScenStrategique,
 		*logger << "FMT -> Préparation de la replanification terminée" << "\n";
 		Parallel::FMTtaskhandler handler(maintaskptr, nbreProcessus);
 		logger->settasklogginglevel(taskLogLevel);
-		handler.ondemandrun(); // À la demande de Lorena, a été testé
+		handler.ondemandrun();
 		//handler.conccurentrun();
+		logger->logtime();
 		logger->setdefaultlogginglevel();
 	}
 	catch (...)
