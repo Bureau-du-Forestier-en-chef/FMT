@@ -14,7 +14,23 @@
 #include "FMTFormCache.h"
 #include "FMTdefaultlogger.h"
 
-bool Wrapper::FMTForm::OperatingAreaScheduling(System::String^ fichierPri, int scenario, System::String^ fichierShp, int solver, int nombrePeriodes, int nombreThread, int numeroTheme, int tempsMaximum, int nombreIteration, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock, System::String^ cheminParametres, System::String^ nomFichierResultat, int periodeMiseAjour, System::String^ returnTimeOutput)
+bool Wrapper::FMTForm::OperatingAreaScheduling(
+	System::String^ fichierPri,
+	int scenario,
+	System::String^ fichierShp,
+	int solver,
+	int nombrePeriodes,
+	int nombreThread,
+	int numeroTheme,
+	int tempsMaximum,
+	int nombreIteration,
+	System::String^ nomChampAge,
+	System::String^ nomChampSuperficie,
+	System::String^ nomChampStanlock,
+	System::String^ cheminParametres,
+	System::String^ nomFichierResultat,
+	int periodeMiseAjour,
+	System::String^ returnTimeOutput)
 {
 	Logging::FMTdefaultlogger().logstamp();
 	try
@@ -79,9 +95,24 @@ bool Wrapper::FMTForm::OperatingAreaScheduling(System::String^ fichierPri, int s
 		*/
 
 		Parser::FMTareaparser areaparser;
-		std::vector<Heuristics::FMToperatingareascheme> opeareas = areaparser.getOperatingArea(msclr::interop::marshal_as<std::string>(fichierShp), optimizationmodel.getthemes(), numeroTheme, startingperiod, msclr::interop::marshal_as<std::string>(nomChampAge), msclr::interop::marshal_as<std::string>(nomChampSuperficie), msclr::interop::marshal_as<std::string>(nomChampStanlock), msclr::interop::marshal_as<std::string>(cheminParametres));
+		std::vector<Heuristics::FMToperatingareascheme> opeareas = areaparser.getOperatingArea(
+			msclr::interop::marshal_as<std::string>(fichierShp),
+			optimizationmodel.getthemes(), numeroTheme, 
+			startingperiod, msclr::interop::marshal_as<std::string>(nomChampAge), 
+			msclr::interop::marshal_as<std::string>(nomChampSuperficie),
+			msclr::interop::marshal_as<std::string>(nomChampStanlock),
+			msclr::interop::marshal_as<std::string>(cheminParametres));
 		*logger << "Résolution du modèle" << "\n";				
-		Parallel::FMTopareaschedulertask maintask(optimizationmodel, opeareas, nodeofoutput, msclr::interop::marshal_as<std::string>(nomFichierResultat)+"\\Retour", "YOUVERT", nombreIteration, tempsMaximum, ObtenirOutputSelectionnee(optimizationmodel.getoutputs(), returnTimeOutput));
+		Parallel::FMTopareaschedulertask maintask(
+			optimizationmodel, 
+			opeareas, 
+			nodeofoutput, 
+			msclr::interop::marshal_as<std::string>(nomFichierResultat) + "\\Retour",
+			"YOUVERT", 
+			nombreIteration, 
+			tempsMaximum, 
+			ObtenirOutputSelectionnee(optimizationmodel.getoutputs(),
+			returnTimeOutput));
 		Parallel::FMTtaskhandler handler(maintask, nombreThread);
 		*logger << "Génération du calendrier de COS" << "\n";
 		handler.conccurentrun();

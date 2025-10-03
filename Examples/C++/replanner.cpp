@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 		n_threads = 1;
 		allscenarios.push_back("ev_nat_strategique_noAnthro"); //Stratégique en premier
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_CC_noprod");
+		allscenarios.push_back("stochastique_CC_SansTBE");
 		//allscenarios.push_back("tactique");
 		allscenarios.push_back("ev_nat_tactique_noAnthro");
 	}
