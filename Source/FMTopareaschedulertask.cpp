@@ -497,7 +497,7 @@ namespace Parallel
 					--iterations;
 				}
 			}
-			setstatus(true);
+			//setstatus(true);
 		}catch (...)
 		{
 			_exhandler->raisefromthreadcatch("","FMTopareaschedulertask::work", __LINE__, __FILE__);

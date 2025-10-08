@@ -207,7 +207,8 @@ namespace Parallel
 			_exhandler->raisefromthreadcatch("", "FMTtask::finalize", __LINE__, __FILE__);
 		}
 	}
-
+	
+	/*
 	void FMTtask::setstatus(bool status)
 	{
 		checksignals();
@@ -222,6 +223,7 @@ namespace Parallel
 		const bool isdone = (done );
 		return done;
 	}
+	*/
 
 
 	std::string FMTtask::getThreadId()

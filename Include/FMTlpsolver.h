@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include "FMTserializablematrix.h"
+//#include <mutex>
 
 
 class OsiSolverInterface;
@@ -561,7 +562,6 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		// DocString: FMTlpsolver::>m_WarmStartParameters
 		///Parameters used by the linear programming solver. First = parameter, Seconde = parameter values.
 		std::vector<std::pair<std::string, std::string>>m_WarmStartParameters;
-
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)

@@ -8,10 +8,6 @@ vcpkg_from_github(
 
 set(CMAKE_MODULE_PATH "$ENV{MODULE_PATH};${CMAKE_MODULE_PATH}")
 
-if (MSVC_VERSION GREATER_EQUAL 1914)
-    string(APPEND CMAKE_CXX_FLAGS " /Zc:__cplusplus")
-endif(MSVC_VERSION GREATER_EQUAL 1914)
- 
 find_package(Mosek)
 
 file(COPY "${CURRENT_INSTALLED_DIR}/share/coin-or-buildtools/" DESTINATION "${SOURCE_PATH}")
@@ -19,17 +15,13 @@ file(COPY "${CURRENT_INSTALLED_DIR}/share/coin-or-buildtools/" DESTINATION "${SO
 set(ENV{ACLOCAL} "aclocal -I \"${SOURCE_PATH}/BuildTools\"")
 
 if (MOSEK_FOUND)
-message("TEST ${MOSEK_INCLUDE_DIR}")
 	set(ENV{LDFLAGS} "-LIBPATH:${MOSEK_LIB_LOCATION}${MOSEK_WIN_LIBS}")
-	#set(ENV{LDFLAGS} "-LIBPATH:C:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/bin fusion64_10_1.lib mosek64_10_1.lib")
 	vcpkg_configure_make(
 		SOURCE_PATH "${SOURCE_PATH}"
 		AUTOCONFIG
 		CONFIGURE_ENVIRONMENT_VARIABLES LIBS
 		OPTIONS
 			--disable-option-checking
-			#--with-mosek-cflags=-IC:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/h
-			#--with-mosek-lflags=-LIBPATH:C:/PROGRA~1/Mosek/10.1/tools/platform/win64x86/bin
 			--with-mosek-cflags=-I${MOSEK_INCLUDE_DIR}
 			--with-mosek-lflags=-LIBPATH:${MOSEK_LIB_LOCATION}${MOSEK_WIN_LIBS}
 			--with-glpk
@@ -43,6 +35,10 @@ message("TEST ${MOSEK_INCLUDE_DIR}")
 			--without-soplex
 			--enable-relocatable
 			--disable-readline
+		OPTIONS_DEBUG
+			"CXXFLAGS=-Xcompiler -std:c++14 -Xcompiler -Zc:__cplusplus -Xcompiler -EHsc -Xcompiler -MDd"
+		OPTIONS_RELEASE
+			"CXXFLAGS=-Xcompiler -std:c++14 -Xcompiler -Zc:__cplusplus -Xcompiler -EHsc -Xcompiler -MD"
 	)
 else()
 	vcpkg_configure_make(
@@ -61,6 +57,10 @@ else()
 			--without-soplex
 			--enable-relocatable
 			--disable-readline
+		OPTIONS_DEBUG
+			"CXXFLAGS=-Xcompiler -std:c++14 -Xcompiler -Zc:__cplusplus -Xcompiler -EHsc -Xcompiler -MDd"
+		OPTIONS_RELEASE
+			"CXXFLAGS=-Xcompiler -std:c++14 -Xcompiler -Zc:__cplusplus -Xcompiler -EHsc -Xcompiler -MD"
 	)
 
 endif(MOSEK_FOUND)

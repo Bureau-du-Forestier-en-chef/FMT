@@ -25,7 +25,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 
-
 	bool FMTlpsolver::canupdatesource() const
 	{
 	return (solverinterface.use_count() == 2);
@@ -44,7 +43,7 @@ namespace Models
 #ifdef  FMTWITHMOSEK
 			case FMTsolverinterface::MOSEK:
 				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface());
-				break;
+			break;
 #endif
 				/*case FMTsolverinterface::CPLEX:
 					newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
@@ -70,8 +69,8 @@ namespace Models
 		try{
 			if (solver_ptr)
 				{
-				newsolverinterface.reset(solver_ptr->clone(true));
-				newsolverinterface->resolve();
+					newsolverinterface.reset(solver_ptr->clone(true));
+					newsolverinterface->resolve();
 				}
 		/*switch (lsolvertype)
 		{

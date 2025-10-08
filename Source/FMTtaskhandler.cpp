@@ -14,11 +14,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "boost/python.h"
 #endif
 #include "FMTexceptionhandler.h"
+#include "FMTWorkerTask.h"
 
 namespace Parallel
 {
-
-
 	FMTtaskhandler::FMTtaskhandler(const FMTtask& maintask, unsigned int maxthread):
 		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
 		alltasks()
@@ -152,59 +151,71 @@ namespace Parallel
 
 	void FMTtaskhandler::ondemandrun()
 	{
-		std::list<boost::thread>workers;
-		try {
-			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getclock();
+		std::list<FMTWorkerTask> workers;
+
+		try
+		{
+			const auto tasksstart = getclock();
+
 			if (alltasks.size() != 1)
 			{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Need to have one master task for ondemandrun",
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Need to have one master task for ondemandrun",
 					"FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
 			}
-			std::list<std::unique_ptr<FMTtask>>tasks;
-			unsigned int taskid = 0;
-			std::unique_ptr<FMTtask>newtask = alltasks.at(0)->spawn();
+
+			if (maxnumberofthread <= 0)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Invalid thread count",
+					"FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
+			}
+
 			FMTtask::setTotalThreads(static_cast<size_t>(maxnumberofthread));
 
-			while (taskid < maxnumberofthread && newtask)
+			std::unique_ptr<FMTtask> newtask = alltasks.at(0)->spawn();
+
+			while (workers.size() < static_cast<size_t>(maxnumberofthread) && newtask)
 			{
-				tasks.push_back(std::move(newtask));
-				workers.push_back(boost::thread(&FMTtask::run, tasks.back().get()));
-				newtask = std::move(alltasks.at(0)->spawn());
-				++taskid;
+				workers.emplace_back(std::move(newtask));
+				newtask = alltasks.at(0)->spawn();
 			}
-			while (!tasks.empty())
+
+			while (!workers.empty())
 			{
-				std::list<std::unique_ptr<FMTtask>>::iterator taskit = tasks.begin();
-				std::list<boost::thread>::const_iterator threadit = workers.begin();
-				for (size_t taskid = 0; taskid < tasks.size(); ++taskid)
+				for (auto it = workers.begin(); it != workers.end();)
 				{
-					if ((*taskit)->isdone())
+					if (it->isDone())
 					{
-						tasks.erase(taskit);
-						workers.erase(threadit);
+						it = workers.erase(it);
 						if (newtask)
 						{
-							tasks.push_back(std::move(newtask));
-							workers.push_back(boost::thread(&FMTtask::run, tasks.back().get()));
-							newtask = std::move(alltasks.at(0)->spawn());
+							workers.emplace_back(std::move(newtask));
+							newtask = alltasks.at(0)->spawn();
 						}
-						break;
 					}
-					checksignals();
-					++taskit;
-					++threadit;
+					else
+					{
+						++it;
+					}
 				}
+				checksignals();
 			}
+
 			finalize(alltasks.back());
 			logtasktime(tasksstart);
-		}catch (...)
+		}
+		catch (...)
+		{
+			for (FMTWorkerTask & wt : workers)
 			{
-			for (boost::thread& worker : workers)
-				{
-				_interruptWork(worker);
-				}
-			_exhandler->printexceptions("", "FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
+				_interruptWork(wt.getThread());
 			}
+			workers.clear();
+
+			_exhandler->printexceptions("", "FMTtaskhandler::ondemandrun",
+				__LINE__, __FILE__);
+		}
 	}
 
 	void FMTtaskhandler::logtasktime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const

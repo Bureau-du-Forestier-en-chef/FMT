@@ -40,16 +40,17 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00985788\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
-		outputlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00985788\\output";
-		length = 1;
-		replicate = 1;
-		n_threads = 1;
-		allscenarios.push_back("ev_nat_strategique_noAnthro"); //Stratégique en premier
-		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_CC_SansTBE");
-		//allscenarios.push_back("tactique");
-		allscenarios.push_back("ev_nat_tactique_noAnthro");
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\test_lorena\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
+		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP\\output";
+		length = 20;
+		replicate = 100;
+		n_threads = 30;
+		// Stratégique
+		allscenarios.push_back("strategique_CC_FR20"); 
+		// Stochastique
+		allscenarios.push_back("stochastique_CC");
+		// Tactique
+		allscenarios.push_back("tactique_CC");
 	}
 	int repSize = length;
 	//int repSize = 20;
@@ -130,6 +131,9 @@ int main(int argc, char *argv[])
 		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
 	Parallel::FMTtaskhandler handler(maintaskptr, n_threads);
 	//handler.setquietlogger();
+	if (__cplusplus >= 201103L){
+		std::cout << "YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";
+	}
 	handler.ondemandrun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
 	//handler.conccurentrun();
 	#endif

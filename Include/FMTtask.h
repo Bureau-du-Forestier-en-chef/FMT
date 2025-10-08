@@ -81,7 +81,7 @@ namespace Parallel
 		/**
 		Returns true if the job is all done.
 		*/
-		bool isdone() const;
+		//bool isdone() const;
 		// DocString: FMTtask::getthreadid()
 		/**
 		@brief Get the thread id of the task.
@@ -108,7 +108,7 @@ namespace Parallel
 		/**
 		Change the status of the task
 		*/
-		void setstatus(bool status);
+		//void setstatus(bool status);
 		// DocString: FMTtask::split()
 		/**
 		Split the totalworksize in much possible equal buckets.

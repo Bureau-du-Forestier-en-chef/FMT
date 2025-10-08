@@ -473,7 +473,7 @@ namespace Parallel
 				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
 				replicateids.pop();
 			}
-			setstatus(true);
+			//setstatus(true);
 		}catch (...)
 		{
 			const std::string LOCATION = "on replicate " + std::to_string(getiteration());
