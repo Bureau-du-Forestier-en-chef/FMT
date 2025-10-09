@@ -233,7 +233,7 @@ namespace Parallel
 			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::gettasks", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTreplanningtask::split", __LINE__, __FILE__);
 			}
 		return tasks;
 	}
