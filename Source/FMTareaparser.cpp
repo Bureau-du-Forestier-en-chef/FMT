@@ -2264,10 +2264,10 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						std::string header_line = ";*A ";
 						for (size_t theme_id = 1; theme_id <= splitted_mask.size(); ++theme_id)
 						{
-							header_line += "TH" + std::to_string(theme_id) + " ";
+							header_line += "Th" + std::to_string(theme_id) + " ";
 						}
-						header_line += "AGE";
-						header_line += " AREA";
+						header_line += "Age";
+						header_line += " Area";
 						areastream << header_line << "\n";
 						for (const Core::FMTactualdevelopment& area : areas)
 						{
