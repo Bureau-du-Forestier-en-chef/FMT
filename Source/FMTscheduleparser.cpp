@@ -49,6 +49,7 @@ namespace Parser {
 
 	std::string FMTscheduleparser::getSchedulePath(const std::string& p_primary_path, const std::string& p_output_scenario_name) 
 	{
+		std::string thePath;
 		try {
 			// On vérifie si le dossier Scenarios existe et si le fichier de schedule existe, sinon on écrit dans le root
 			const boost::filesystem::path primpath(p_primary_path);
@@ -62,13 +63,13 @@ namespace Parser {
 				schedule_path = basefolder / boost::filesystem::path(primary_name.string() + ".seq");
 			}
 
-			return schedule_path.string();
+			thePath =  schedule_path.string();
 
-		}
-		catch (const std::exception&)
+		}catch (...)
 		{
 			_exhandler->printexceptions("for primary " + p_primary_path, "FMTscheduleparser::getSchedulePath", __LINE__, __FILE__, _section);
 		}
+		return thePath;
 	}
 
 	FMTscheduleparser& FMTscheduleparser::operator = (const FMTscheduleparser& rhs)
