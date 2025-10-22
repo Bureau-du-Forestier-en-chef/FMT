@@ -140,13 +140,12 @@ namespace Parallel
 		}
 	}
 
-
-
-
-	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getresults(const std::unique_ptr<Models::FMTmodel>& modelptr,const int& firstperiod,
+	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getresults(
+		const std::unique_ptr<Models::FMTmodel>& modelptr,
+		const int& firstperiod,
 		const int& lastperiod) const
 	{
-		std::map<std::string, std::vector<std::vector<double>>>results;
+		std::map<std::string, std::vector<std::vector<double>>> results;
 		try {
 			if (modelptr)
 			{
@@ -159,6 +158,7 @@ namespace Parallel
 		}
 		return results;
 	}
+
 	const std::map<std::string, std::map<double, std::vector<double>>>FMTparallelwriter::getdriftprobability(
 		const std::map<std::string, std::vector<std::vector<double>>>& globalvalues,
 		const std::map<std::string, std::vector<std::vector<double>>>& localvalues,
@@ -168,6 +168,7 @@ namespace Parallel
 		std::string outputname;
 		double driftprob;
 		int periodof;
+		size_t iterationid = 0;
 		try {
 			for (const auto& globaloutput : globalvalues)
 			{
@@ -193,14 +194,30 @@ namespace Parallel
 							"No output "+ globaloutput.first +" in local",
 							"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
 					}
-					std::vector<bool>passedlastiteration((*localvalues.at(globaloutput.first).begin()).size(), true);
+					// TODO regarder si les length sont les mêmes entre les période (pas juste la première) donc un max()
+					std::size_t max_size = 0;
+					for (auto it = localvalues.begin(); it != localvalues.end(); ++it) {
+						const auto& value_list = it->second;
+
+						if (!value_list.empty()) {
+							std::size_t current_size = value_list.begin()->size();
+
+							if (current_size > max_size)
+								max_size = current_size;
+						}
+					}
+					int test = (*localvalues.at(globaloutput.first).begin()).size();
+					std::cout << "test size " << test << " max size " << max_size << std::endl;
+					
+					std::vector<bool> passedlastiteration(max_size, true);
+					
 					drifts[globaloutput.first][drift] = std::vector<double>();
 					int periodid = 0;
 					for (const std::vector<double>& iterationvalues : localvalues.at(globaloutput.first))
 					{
 						periodof = periodid;
-						const double total = static_cast<double>(iterationvalues.size());
-						if (static_cast<size_t>(periodid)>=globaloutput.second.size())
+						const double total = static_cast<double> (iterationvalues.size());
+						if (static_cast<size_t> (periodid) >= globaloutput.second.size())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 								"No iteration " + std::to_string(periodid) + " in global",
@@ -211,7 +228,7 @@ namespace Parallel
 						double count = 0;
 						if (!std::isnan(globalvalue))
 						{
-							size_t iterationid = 0;
+							iterationid = 0;
 							for (const double& localvalue : iterationvalues)
 							{
 								if (passedlastiteration.at(iterationid))
@@ -243,8 +260,9 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("On output "+outputname+" "+std::to_string(driftprob)+" period id "+ std::to_string(periodof),
-										"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("On output "+outputname+" "+std::to_string(driftprob)
+				+" period id "+ std::to_string(periodof) + " on replicate " + std::to_string(iterationid + 1),
+				"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
 
 		}
 		return drifts;
@@ -312,7 +330,9 @@ namespace Parallel
 
 	}
 
-	void FMTparallelwriter::getandwrite(const std::unique_ptr<Models::FMTmodel>& modelptr, const std::vector<Core::FMToutput>& loutputs)
+	void FMTparallelwriter::getandwrite(
+		const std::unique_ptr<Models::FMTmodel>& modelptr, 
+		const std::vector<Core::FMToutput>& loutputs)
 	{
 		try {
 			const int firstperiod = outputfirstperiod;

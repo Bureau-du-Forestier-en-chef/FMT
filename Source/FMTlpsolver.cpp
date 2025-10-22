@@ -444,7 +444,9 @@ namespace Models
 				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
 				MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
 				}
+			// TODO gab faire un while pour MSK_RES_ERR_LICENSE_MAX Maximum number of licenses is reached.
 			MSKrescodee error = MSK_optimize(task);
+
 			if (error > 0)
 				{
 					_exhandler->raise(Exception::FMTexc::FMTmskerror,getmskerrordesc(error),"FMTlpsolver::initialsolve", __LINE__, __FILE__);

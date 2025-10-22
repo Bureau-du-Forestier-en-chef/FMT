@@ -1586,9 +1586,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 
      bool FMTlpmodel::resolve()
         {
-		 try {
-		return solver.stockresolve();
-		 }catch (...)
+		 try 
+		 {
+			 return solver.stockresolve();
+		 }
+		 catch (...)
 		 {
 			 if (DEBUG_MATRIX)
 			 {
@@ -1596,7 +1598,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			 }
 			 _exhandler->printexceptions("", "FMTlpmodel::resolve", __LINE__, __FILE__);
 		 }
-
 
 		 return false;
         }

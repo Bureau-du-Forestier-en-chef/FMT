@@ -661,12 +661,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return all_period_stop_devs;
 
 		}
-		std::map<std::string, double> getoutput(const Models::FMTmodel& model, const Core::FMToutput& output,
-			int period, const double* solution, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const
+		std::map<std::string, double> getoutput(
+			const Models::FMTmodel& model, 
+			const Core::FMToutput& output,
+			int period, 
+			const double* solution, 
+			Core::FMToutputlevel level = Core::FMToutputlevel::standard) const
 		{
 			Core::FMTtheme targettheme;
-			std::vector<std::string>target_attributes;
-			std::map<std::string, double>results;
+			std::vector<std::string> target_attributes;
+			std::map<std::string, double> results;
 			try {
 				if (output.targetthemeid() < 0 && !(level == Core::FMToutputlevel::developpement))
 				{
@@ -740,7 +744,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}
 				}
 				else {
-					std::map<std::string, std::vector<std::string>>allequations;
+					std::map<std::string, std::vector<std::string>> allequations;
 					const std::vector<Core::FMToutputnode> allnodes = output.getnodes(equation, 1, false, period);
 
 
@@ -1259,15 +1263,20 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			m_selectedVertices.reserve(m_reserve);
 		}
 
-		std::vector<FMTvertex_descriptor> getnode(const Models::FMTmodel& model, Core::FMToutputnode& output_node, int period) const
+		std::vector<FMTvertex_descriptor> getnode(
+			const Models::FMTmodel& model, 
+			Core::FMToutputnode& output_node, 
+			int period) const
 		{
 			//std::vector<FMTvertex_descriptor>locations(m_allocator);
 			//locations.reserve(m_reserve);
 			m_selectedVertices.clear();
 			try {
-				std::vector<int>targetedperiods(m_allocator);
+				std::vector<int> targetedperiods(m_allocator);
+
 				targetedperiods.reserve(size() - 2);
-				const int maxperiod = static_cast<int>(developments.size() - 2);
+	
+				const int maxperiod = static_cast<int> (size() - 2);
 				const int node_period = output_node.settograph(targetedperiods, period, maxperiod);
 				//*_logger << "node of " << node_period<<"dev size "<< developments.size() << "\n";
 				if (node_period < 0)

@@ -42,9 +42,22 @@ if __name__ == "__main__":
                 selectedoutputs.append(output)
         outputlocation = args["folder"]
         layersoptions=["SEPARATOR=SEMICOLON"]
-        replanningtask=Parallel.FMTreplanningtask(globalmodel,stochastic, localmodel, selectedoutputs, outputlocation, "CSV", layersoptions,int(args["replicates"]),int(args["replanninglength"]),0.5, Core.FMToutputlevel.totalonly)
+        replanningtask=Parallel.FMTreplanningtask(
+            globalmodel,
+            stochastic, 
+            localmodel,
+            selectedoutputs,
+            outputlocation, 
+            "CSV", 
+            layersoptions,
+            int(args["replicates"]),
+            int(args["replanninglength"]),
+            0.5, 
+            Core.FMToutputlevel.totalonly,
+            True)
         handler = Parallel.FMTtaskhandler(replanningtask,int(args["threads"]))
-        handler.setquietlogger()
+        # Il ne faut pas écraser le logger de taskhandler en multithread sinon ça crash
+        #handler.setquietlogger()
         handler.conccurentrun()
     else:
         print("FMT needs to be compiled with OSI")

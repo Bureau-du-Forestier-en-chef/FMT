@@ -37,11 +37,11 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00984297\\01_Valide_8251\\01_Valide_8251\\PC_9949_U08251_2028_MODB01.pri";
-		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP\\output";
+		primlocation = "T:\\Donnees\\02_Courant\\07_Outil_moyen_methode\\01_Entretien_developpement\\Interne\\FMT\\Entretien\\Modeles_test\\02661\\PC_9307_U02661_4_Vg2_2023_vRP1f.pri";
+		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
 		length = 1;
-		scenario_name = "120_RegProv_apsp";
-		playback.push_back(true);
+		scenario_name = "14_Sc5_Determin_apsp";
+		playback.push_back(false);
 		allscenarios.push_back(scenario_name);
 	}
 
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
-	Parallel::FMTplanningtask newplanningtask(1, length, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::standard, primlocation);
+	Parallel::FMTplanningtask newplanningtask(0, length, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::standard, primlocation);
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTschedule>> schedules = modelparser.readschedules(primlocation, models);
 	for (size_t modelid = 0; modelid<models.size(); ++modelid)
@@ -75,7 +75,14 @@ int main(int argc, char *argv[])
 		std::vector<Core::FMToutput> selectedoutputs;
 		for (const Core::FMToutput& output : lpmodel.getoutputs())
 		{
-			if (output.getname() == "OVOLTOTREC" || output.getname() == "OVOLREC" || output.getname() == "OSUPBRULER_ORI")
+			if (
+				//output.getname() == "OVOLTOTREC" 
+				//|| output.getname() == "OVOLREC" 
+				//|| output.getname() == "OSUPBRULER_ORI"
+				output.getname() == "OSUPREGECO_HARTIF25UTR"
+				//|| output.getname() == "OSUPREGECO_HARAT100UTR"
+				//|| output.getname() == "OSUPJEUNEALERTEREGECO"
+				)
 			{
 				selectedoutputs.push_back(output);
 			}

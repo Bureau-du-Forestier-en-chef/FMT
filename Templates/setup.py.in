@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 from glob import glob
+import os
 
 try:
     from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
@@ -9,6 +10,16 @@ try:
             self.root_is_pure = False
 except ImportError:
     bdist_wheel = None
+
+def generate_YieldPredModels(base_dir="YieldPredModels"):
+    base = Path(__file__).parent / base_dir
+    patterns = []
+    for path in base.glob("**"):
+        if path.is_dir() and any(path.iterdir()):
+            rel = path.relative_to(Path(__file__).parent)
+            patterns.append(rel.as_posix() + "/*")  
+    
+    return patterns
 
 setup(
     name="FMT",
@@ -23,7 +34,17 @@ setup(
     include_package_data=True,
     packages=["FMT"],
     package_dir={"FMT": ""},
-    package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*","LICENSES/*","YieldPredModels/*","YieldPredModels/NEP_CARBON/*","YieldPredModels/POOLS_CARBON/*","YieldPredModels/NEP_CARBON_ERABLIERE/*","YieldPredModels/POOLS_CARBON_ERABLIERE/*","YieldPredModels/NEP_CARBON_PESSIERE/*","YieldPredModels/POOLS_CARBON_PESSIERE/*","YieldPredModels/NEP_CARBON_SAPINIERE/*","YieldPredModels/POOLS_CARBON_SAPINIERE/*","YieldPredModels/TESTMODEL/*","proj/*"]},
+    package_data={"FMT": [
+        "*.dll", 
+        "*.lib", 
+        "*.exp", 
+        "*.pyd", 
+        "GDAL_DATA/*.*", 
+        "GDAL_DATA/html/*.*",
+        "LICENSES/*",
+        "proj/*",
+        ] + generate_YieldPredModels()
+        },
     entry_points={},
     python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*",
     cmdclass={'bdist_wheel': bdist_wheel}

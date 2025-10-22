@@ -40,13 +40,13 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\test_lorena\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01000607\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP\\output";
 		length = 20;
 		replicate = 100;
-		n_threads = 30;
+		n_threads = 20;
 		// Stratégique
-		allscenarios.push_back("strategique_CC_FR20"); 
+		allscenarios.push_back("strategique_CC_FR30"); 
 		// Stochastique
 		allscenarios.push_back("stochastique_CC");
 		// Tactique
@@ -97,7 +97,22 @@ int main(int argc, char *argv[])
 	#endif
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<std::string> OutputtoLookFor = { "OVOLTOTREC"
+	std::vector<std::string> OutputtoLookFor = { 
+		"OVOLTOTREC", "OVOLGSEPMREC", "OVOLGRREC", "OVOLGFIREC", "OVOLGFTREC", "OVOLBOJREC", "OVOLGBPREC", "OVOLGPEUREC", "OVOLERSREC",
+		"OVOLTOTRECARECUP", "OVOLTOTREC_RECUP", "OSUPREALREGAREG", "OSUPREALPL_BR", "OSUPREALREGAREG_TOT", "OSUPREALREGAEDU_TOT",
+		"OSUPREALREGAEDU", "OSUPREALREGAEDU_BR", "OSUPREALREGAPAR_TOT", "OSUPREALREGAPAR", "OSUPREALREGAPAR_BR", "OSUPREALREGAFIN",
+		"OSUPREALREGAAUTRES", "OSUPBRULER_ORI", "OSUPBRULER_CORRIGER", "MORT_ADM", "OSUPMORTFEUX", "OSUPTBE", "OTBECOMP", "OCATTBE_SS",
+		"OCATTBE_SR", "OCATTBE_SF", "OCATTBE_FRS", "OCATTBE_PE", "OCATTBE_AU", "SUPERFICIE_RECUP_FEU", "SUPERFICIE_ADM_RECUP_FEU",
+		"OSUPPLPIG_FEU23_UA_POSTRECUP", "OSUPPLEP_FEU23_UA_POSTRECUP", "OSUPPL_FEU_POSTRECUP", "OSUPPLPIG_FEU23_UA_POSTRECUP_ADM",
+		"OSUPPLEP_FEU23_UA_POSTRECUP_ADM", "OSUPPL_FEU_POSTRECUP_ADM", "SUP_ADM_ACPPTM_BR", "SUPERFICIE_RECUP_TBE",
+		"SUPERFICIE_ADM_RECUP_TBE", "OSUPREALPL", "OVOLTOTPIEDINC", "OVOLGRPIEDINC", "OVOLSABPIEDINC", "OVOLGEPXPIEDINC",
+		"OVOLGFIPIEDINC", "OVOLGFTPIEDINC", "ORISQUE", "ORISQUE_FEU", "ORISQUE_TBE", "OSUPTOT", "OSUPINC", "OSUPEXIN", "OSUPEXTI",
+		"OSUPEXEC", "OSUPECHEC", "OSUPECHEC_INCRECUPFEU", "OSUPATBE_SS", "OSUPATBE_SR", "OSUPATBE_SF", "OSUPATBE_FRS", "OSUPATBE_PE",
+		"OSUPATBE_AU", "OSUPTOTFEU_POTENTIEL", "OSUPREGECO_UTA", "OSUPJEUNEREGECO_UTA", "OSUPJEUNEALERTEREGECO_UTA",
+		"OSUPJEUNEACCEPTREGECO_UTA", "OSUPVIEUXTOTREGECO_UTA", "OSUPVIEUXALERTEREGECO_UTA", "OSUPVIEUXACCEPTREGECO_UTA",
+		"OPROP_VOLPL_VOLTOT", "OVOLMATUREADM", "OSUPCOUV_F", "OSUPCOUV_M", "OSUPCOUV_R", "OSUPCOUV_PCTRES", "OSUPBRULE_FCTCU_R",
+		"OSUPBRULE_FCTCU_MR", "OSUPBRULE_FCTCU_F", "OSUPBRULE_FCTCU_MF", "OSUPBRULE_FCTCU_NA"
+		
 		/*,"ORISQUE", "ORISQUE_NOR", "OVOL_UA_TOTREC", "OSUPBRULER_ORI", "OSUPBRULER_CORRIGER", "SUPERFICIE_RECUP_FEU" ,
 		"OSUPPLEP_FEU23_UA","OSUPPL_FEU_POSTRECUP", "OSUPTBE" , "SUPERFICIE_RECUP_TBE", "OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
 		"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE", "ORISQUE","ORISQUE_FEU","ORISQUE_TBE","ORISQUE_FEU_NOR",
@@ -128,12 +143,10 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
-		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
+		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule));
 	Parallel::FMTtaskhandler handler(maintaskptr, n_threads);
 	//handler.setquietlogger();
-	if (__cplusplus >= 201103L){
-		std::cout << "YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";
-	}
+
 	handler.ondemandrun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
 	//handler.conccurentrun();
 	#endif
