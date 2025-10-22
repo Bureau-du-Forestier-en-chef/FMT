@@ -132,13 +132,13 @@ bool Wrapper::FMTForm::buildAction(const int p_modelIndex, System::String^ p_act
 		Parser::FMTmodelparser ModelParser;
 		const std::string ACTION_NAME = msclr::interop::marshal_as<std::string>(p_actionName);
 		const std::string TARGET_YIELD = msclr::interop::marshal_as<std::string>(p_targetYield);
-		const std::string SCHEDULE_PRIMARY_LOCATION = msclr::interop::marshal_as<std::string>(p_schedulePri);
+		const std::string SCHEDULE_PRIMARYm_location = msclr::interop::marshal_as<std::string>(p_schedulePri);
 		const std::string OUTPUT_DIRECTORY = msclr::interop::marshal_as<std::string>(p_outputDirPath);
 		const std::string SCENARIO_NAME = msclr::interop::marshal_as<std::string>(p_scenario_name);
 		const std::string PRI_NAME = msclr::interop::marshal_as<std::string>(p_pri_name);
 		const std::vector<Models::FMTmodel> MODELS = { Cache->getmodel(p_modelIndex) };
 
-		const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), ACTION_NAME, TARGET_YIELD, SCHEDULE_PRIMARY_LOCATION, SCENARIO_NAME);
+		const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), ACTION_NAME, TARGET_YIELD, SCHEDULE_PRIMARYm_location, SCENARIO_NAME);
 
 		Cache->push_back(BUILDED_MODEL);
 	}

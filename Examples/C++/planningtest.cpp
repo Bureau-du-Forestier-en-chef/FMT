@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	std::string scenario_name;
 	int length;
 	unsigned int n_threads = 1;
-	// Test arg : planningtest;pri_location|scenario_name;output_location;length
+	// Test arg : planningtest;prim_location|scenario_name;outputm_location;length
 	if (argc > 1) {
 		const std::string vals = argv[1];
 		std::vector<std::string> results;
@@ -37,11 +37,11 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00984297\\01_Valide_8251\\01_Valide_8251\\PC_9949_U08251_2028_MODB01.pri";
-		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP\\output";
+		primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08762_det/PC_9429_U08762_4_Vg1_2023_vSSP03.pri";
+		outputlocation = "C:\\Users\\admlocal\\Desktop\\test";
 		length = 1;
-		scenario_name = "120_RegProv_apsp";
-		playback.push_back(true);
+		scenario_name = "14_Sc5_Determin_apsp";
+		playback.push_back(false);
 		allscenarios.push_back(scenario_name);
 	}
 

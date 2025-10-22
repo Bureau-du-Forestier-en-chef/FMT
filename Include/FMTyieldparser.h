@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTyieldparser_H_INCLUDED
-#define FMTyieldparser_H_INCLUDED
+#ifndef FMTyieldparser_Hm_included
+#define FMTyieldparser_Hm_included
 
 #include "FMTparser.h"
 #include "FMTutility.h"
@@ -93,12 +93,12 @@ class FMTEXPORT FMTyieldparser : public FMTparser
 		Return true if the string is considered a complex yield function.
 		*/
 		bool isfunction(const std::string& strfunction) const;
-		// DocString: FMTyieldparser::getnumwithproportion
+		// DocString: FMTyieldparser::getNumwithproportion
 		/**
 		Using a string value (double or constant), a constants section and a temporal based proportions, and the actual period,
 		it will return the value has a double.
 		*/
-		double getnumwithproportion(const std::string& value,const Core::FMTconstants& constants,
+		double getNumwithproportion(const std::string& value,const Core::FMTconstants& constants,
 			const std::vector<double>& proportions, const int& location);
 		// DocString: FMTyieldparser::geteq
 		/**
@@ -163,4 +163,4 @@ class FMTEXPORT FMTyieldparser : public FMTparser
         void write(const Core::FMTyields& yields,const std::string& location) const;
     };
 }
-#endif // FMTyieldparser_H_INCLUDED
+#endif // FMTyieldparser_Hm_included

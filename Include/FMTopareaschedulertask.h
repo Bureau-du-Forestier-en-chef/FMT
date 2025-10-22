@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTopareaschedulertask_H_INCLUDED
-#define FMTopareaschedulertask_H_INCLUDED
+#ifndef FMTopareaschedulertask_Hm_included
+#define FMTopareaschedulertask_Hm_included
 
 #include "FMTutility.h"
 #include "FMTtask.h"

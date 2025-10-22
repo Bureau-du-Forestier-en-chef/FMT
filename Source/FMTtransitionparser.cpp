@@ -31,17 +31,17 @@ const boost::regex FMTtransitionparser::rxtyld = boost::regex("^([\\s\\t]*)([^\\
 
 FMTtransitionparser::FMTtransitionparser():FMTparser()
     {
-	setsection(Core::FMTsection::Transition);
+	setSection(Core::FMTsection::Transition);
     }
 
 
 Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes, Core::FMTsection section,const Core::FMTconstants& constants,const Core::FMTyields& ylds)
     {
 	try {
-		const std::vector<std::string>elements = FMTparser::spliter(line, FMTparser::rxseparator);
+		const std::vector<std::string>elements = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
 		if (elements.size() == themes.size())
 		{
-			Core::FMTtheme::validate(themes, line, " at line " + std::to_string(_line));
+			Core::FMTtheme::validate(themes, line, " at line " + std::to_string(m_line));
 			return Core::FMTmask(line, themes);
 		}
 		else {
@@ -59,15 +59,15 @@ Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& s
 			}
 			mask = mask.substr(0, mask.size() - 1);
 			rest = rest.substr(0, rest.size() - 1);
-			Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line));
+			Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line));
 			const Core::FMTmask newmask(mask, themes);
 			rest += " ";
-			rest = setspec(Core::FMTsection::Transition, Core::FMTkwor::Source, ylds, constants, spec, rest);
+			rest = setSpec(Core::FMTsection::Transition, Core::FMTkwor::Source, ylds, constants, spec, rest);
 			return newmask;
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getsource", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getsource", __LINE__, __FILE__, m_section);
 		}
 	return Core::FMTmask();
     }
@@ -78,7 +78,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
     {
 	std::vector<Core::FMTtransitionmask>alltrans;
 	try {
-		const std::vector<std::string>elements = FMTparser::spliter(line, FMTparser::rxseparator);
+		const std::vector<std::string>elements = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
 		std::vector<Core::FMTmask>multiples;
 		std::string mask = "";
 		double proportion;
@@ -89,8 +89,8 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 			++id;
 		}
 		mask = mask.substr(0, mask.size() - 1);
-		Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line));
-		proportion = getnum<double>(elements[id], constants);
+		Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line));
+		proportion = getNum<double>(elements[id], constants);
 		++id;
 		std::string rest = " ";
 		while (id < elements.size())
@@ -105,14 +105,14 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 		if (boost::regex_search(rest, kmatch, FMTtransitionparser::rxlock))
 		{
 			const std::string strlock = kmatch[4];
-			lock = getnum<int>(strlock, constants);
+			lock = getNum<int>(strlock, constants);
 			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
 			trans.addbounds(Core::FMTlockbounds(Core::FMTsection::Transition, Core::FMTkwor::Target, lock, lock));
 		}
 		if (boost::regex_search(rest, kmatch, FMTtransitionparser::rxage))
 		{
 			std::string strage = kmatch[4];
-			age = getnum<int>(strage, constants);
+			age = getNum<int>(strage, constants);
 			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
 			trans.addbounds(Core::FMTagebounds(Core::FMTsection::Transition, Core::FMTkwor::Target, age, age));
 		}
@@ -127,8 +127,8 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 				baseoperator = Core::FMToperator(stroperator);
 				}
 			const std::string stradd = kmatch[13];
-			const int targettheme = getnum<int>(strtargettheme) - 1;
-			const double addupp = getnum<double>(stradd);
+			const int targettheme = getNum<int>(strtargettheme) - 1;
+			const double addupp = getNum<double>(stradd);
 			Core::FMTmask targetmask(mask, themes);
 			targetmask.set(themes[targettheme], sourcemask.get(themes[targettheme]));
 			for (Core::FMTmask& lmask : targetmask.decompose(themes[targettheme]))
@@ -136,9 +136,9 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 				
 				const std::string actual = lmask.get(themes[targettheme]);
 				std::string newval;
-				if (isnum(actual))//just math
+				if (isNum(actual))//just math
 					{
-					const int newint =  static_cast<int>(baseoperator.call(getnum<double>(actual),addupp));
+					const int newint =  static_cast<int>(baseoperator.call(getNum<double>(actual),addupp));
 					newval = std::to_string(newint);
 				}else {
 					newval = actual+ stradd;
@@ -149,7 +149,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 					multiples.push_back(lmask);
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
-						"_REPLACE generated " + newval+" THEME("+std::string(strtargettheme)+") not in landscape", "FMTtransitionparser::getmasktran", __LINE__, __FILE__,_section);
+						"_REPLACE generated " + newval+" THEME("+std::string(strtargettheme)+") not in landscape", "FMTtransitionparser::getmasktran", __LINE__, __FILE__,m_section);
 				}
 
 			}
@@ -157,15 +157,15 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 			replaced = targettheme;
 			rest = std::string(kmatch[1]) + std::string(kmatch[14]);
 		}
-		if (isvalid(rest) && boost::regex_search(rest, kmatch, FMTtransitionparser::rxtyld))
+		if (isValid(rest) && boost::regex_search(rest, kmatch, FMTtransitionparser::rxtyld))
 		{
 			const std::string yld = kmatch[2];
 			const std::string strvalue = kmatch[4];
 			if (!yld.empty() && !strvalue.empty())
 			{
 				constexpr double upperbound = std::numeric_limits<double>::max();
-				const double lowerbound = getnum<double>(strvalue, constants);
-				isyld(ylds, yld, Core::FMTsection::Transition);
+				const double lowerbound = getNum<double>(strvalue, constants);
+				isYld(ylds, yld, Core::FMTsection::Transition);
 				trans.addbounds(Core::FMTyldbounds(Core::FMTsection::Transition, Core::FMTkwor::Target, yld, upperbound, lowerbound));
 			}
 		}
@@ -182,7 +182,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getmasktran", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getmasktran", __LINE__, __FILE__, m_section);
 		}
     return alltrans;
     }
@@ -194,7 +194,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 	try {
 		std::ifstream transitionstream(location);
 		std::vector<Core::FMTtransition>temp_transitions;
-		if (FMTparser::tryopening(transitionstream, location))
+		if (FMTparser::tryOpening(transitionstream, location))
 		{
 			std::string CASE;
 			std::string SOURCE;
@@ -205,9 +205,10 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 			std::vector<int>replacedvec;
 			Core::FMTmask srcmsk;
 			std::vector<Core::FMTtransition>::iterator last_transition = temp_transitions.end();
-			while (transitionstream.is_open())
+			std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(transitionstream, themes, constants);
+			while (!Lines.empty())
 			{
-				std::string line = getcleanlinewfor(transitionstream, themes, constants);
+				const std::string line = GetLine(Lines);
 				if (!line.empty())
 				{
 					
@@ -221,7 +222,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 					TARGET = kmatch[7];
 					if (!CASE.empty())
 					{
-						const std::vector<std::string>ptransitionname = sameas(CASE);
+						const std::vector<std::string>ptransitionname = sameAs(CASE);
 						actionname = ptransitionname.at(0);
 						temp_transitions.push_back(Core::FMTtransition(actionname));
 						last_transition = --temp_transitions.end();
@@ -233,7 +234,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 								last_transition->push_back(forkobj.first,forkobj.second);
 							}
 						}
-						if (!isact(Core::FMTsection::Transition, actions, actionname)) continue;
+						if (!isAct(Core::FMTsection::Transition, actions, actionname)) continue;
 					}
 					else if (!SOURCE.empty())
 					{
@@ -261,8 +262,8 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 								if (rep != replaced)
 								{
 									_exhandler->raise(Exception::FMTexc::FMTunsupported_transition,
-										actionname + " at line " + std::to_string(_line),
-										"FMTtransitionparser::read", __LINE__, __FILE__, _section);
+										actionname + " at line " + std::to_string(m_line),
+										"FMTtransitionparser::read", __LINE__, __FILE__, m_section);
 								}
 							}
 							replacedvec.push_back(replaced);
@@ -317,7 +318,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 					if (transition.isleaking())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTleakingtransition,
-							transition.getname(),"FMTtransitionparser::read", __LINE__, __FILE__, _section);
+							transition.getname(),"FMTtransitionparser::read", __LINE__, __FILE__, m_section);
 					}
 					else {
 						transitions.push_back(transition);
@@ -330,7 +331,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTtransitionparser::read", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMTtransitionparser::read", __LINE__, __FILE__, m_section);
 		}
     return transitions;
     }
@@ -340,7 +341,7 @@ void FMTtransitionparser::write(const std::vector<Core::FMTtransition>& transiti
 	try {
 		std::ofstream transitionstream;
 		transitionstream.open(location);
-		if (tryopening(transitionstream, location))
+		if (tryOpening(transitionstream, location))
 		{
 			for (const Core::FMTtransition& tra : transitions)
 			{
@@ -350,7 +351,7 @@ void FMTtransitionparser::write(const std::vector<Core::FMTtransition>& transiti
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at "+location,"FMTtransitionparser::write", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("at "+location,"FMTtransitionparser::write", __LINE__, __FILE__, m_section);
 		}
     }
 
@@ -359,7 +360,7 @@ void FMTtransitionparser::writeGCBM(const std::vector<Core::FMTGCBMtransition>& 
 	try{
 		std::ofstream transitionstream;
 		transitionstream.open(location);
-		if (tryopening(transitionstream, location)&& !transitions.empty())
+		if (tryOpening(transitionstream, location)&& !transitions.empty())
 		{
 			transitionstream << "22 serialization::archive 17 0 0 " + std::to_string(transitions.size())+" 0 0 0 ";
 			transitionstream << std::to_string(transitions.at(0).ageafter) << " 0 0 ";
@@ -394,7 +395,7 @@ void FMTtransitionparser::writeGCBM(const std::vector<Core::FMTGCBMtransition>& 
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("at " + location, "FMTtransitionparser::writeGCBM", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("at " + location, "FMTtransitionparser::writeGCBM", __LINE__, __FILE__, m_section);
 	}
 
 	}
@@ -405,7 +406,7 @@ std::vector<Core::FMTGCBMtransition>FMTtransitionparser::readGCBM(const std::str
 	try {
 		std::ifstream transitionstream;
 		transitionstream.open(location);
-		if (tryopening(transitionstream, location))
+		if (tryOpening(transitionstream, location))
 		{
 			boost::archive::text_iarchive transitionsarchive(transitionstream);
 			transitionsarchive >> BOOST_SERIALIZATION_NVP(transitions);
@@ -414,7 +415,7 @@ std::vector<Core::FMTGCBMtransition>FMTtransitionparser::readGCBM(const std::str
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("at " + location, "FMTtransitionparser::readGCBM", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("at " + location, "FMTtransitionparser::readGCBM", __LINE__, __FILE__, m_section);
 	}
 	return transitions;
 	}

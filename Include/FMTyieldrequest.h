@@ -20,8 +20,8 @@ namespace Graph
 
 
 
-#ifndef FMTYIELDREQUEST_H_INCLUDED
-#define FMTYIELDREQUEST_H_INCLUDED
+#ifndef FMTYIELDREQUEST_Hm_included
+#define FMTYIELDREQUEST_Hm_included
 
 namespace Core
 {
@@ -66,4 +66,4 @@ namespace Core
 }
 
 
-#endif // FMTYLD_H_INCLUDED
+#endif // FMTYLD_Hm_included

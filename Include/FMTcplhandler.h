@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTcplhandler_H_INCLUDED
-#define FMTcplhandler_H_INCLUDED
+#ifndef FMTcplhandler_Hm_included
+#define FMTcplhandler_Hm_included
 
 #if defined FMTWITHGDAL
 	#include "cpl_error.h"

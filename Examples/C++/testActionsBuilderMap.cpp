@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
         const std::string TARGET_YIELD = "YV_S_MORT";
         const std::string ACTION_NAME = "TBE";*/
         const boost::filesystem::path BASE_PATH = boost::filesystem::path(primarylocation).parent_path();
-        const std::string MAP_LOCATION = (BASE_PATH / boost::filesystem::path(maplocation)).string();
+        const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(maplocation)).string();
         const std::string	writelocation =  "../../tests/testActionsBuilderMap/";
         std::string lockfield;
         if (primarylocation.find("TWD_land")==std::string::npos)
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
         const std::vector<Core::FMTtheme> themes = BUILDED_MODEL.getthemes();
         Parser::FMTareaparser areaparser;
         //areaparser.setdefaultexceptionhandler();
-        Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(MAP_LOCATION,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0,writelocation,false);
+        Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(MAPm_location,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0,writelocation,false);
     #endif
 	return 0;
 }

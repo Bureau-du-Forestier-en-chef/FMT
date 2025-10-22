@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTOSR_H_INCLUDED
-#define FMTOSR_H_INCLUDED
+#ifndef FMTOSR_Hm_included
+#define FMTOSR_Hm_included
 
 #include "FMTbounds.hpp"
 #include "FMTmask.h"
@@ -161,7 +161,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		void fillhashmask(Core::FMTmask& basemask) const;
 		void fillhashspec(Core::FMTmask& basemask) const;
 		bool isequalbyvalue(const FMToutputsource& rhs) const;
-		inline bool isaction() const
+		inline bool isAction() const
 			{
 			return !action.empty();
 			}
@@ -236,4 +236,4 @@ namespace boost {
 
 
 
-#endif // FMTOSR_H_INCLUDED
+#endif // FMTOSR_Hm_included

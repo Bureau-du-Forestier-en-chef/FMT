@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTtheme_H_INCLUDED
-#define FMTtheme_H_INCLUDED
+#ifndef FMTtheme_Hm_included
+#define FMTtheme_Hm_included
 
 #include <boost/dynamic_bitset_fwd.hpp>
 #include <boost/serialization/serialization.hpp>
@@ -99,7 +99,7 @@ class FMTEXPORT FMTtheme : public FMTobject
 		*/
 		inline bool isattribute(const std::string& p_value) const
 		{
-			return (getAttribute(p_value) != m_attribute_locations.end());
+			return (getAttribute(p_value) != m_attributem_locations.end());
 		}
 		// DocString: FMTtheme::isaggregate
 		/**
@@ -304,9 +304,9 @@ class FMTEXPORT FMTtheme : public FMTobject
 		// DocString: FMTtheme::indexes
 		///Indexes for each attributes (can be empty).
 		std::vector<std::map<std::string, double>>m_indexes;
-		// DocString: FMTtheme::attribute_locations
+		// DocString: FMTtheme::attributem_locations
 		///Attributes location used for optimization of the whole class.
-		std::unordered_map<std::string, std::vector<size_t>>m_attribute_locations;
+		std::unordered_map<std::string, std::vector<size_t>>m_attributem_locations;
 		// DocString: FMTtheme::lookiterator
 		///Lookup iterator for the attributes.
 		typedef typename std::unordered_map<std::string, std::vector<size_t>>::const_iterator lookiterator;
@@ -395,4 +395,4 @@ class FMTEXPORT FMTtheme : public FMTobject
 
 BOOST_CLASS_EXPORT_KEY(Core::FMTtheme)
 
-#endif // FMTtheme_H_INCLUDED
+#endif // FMTtheme_Hm_included

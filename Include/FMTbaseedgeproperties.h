@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTbaseedgeproperties_H_INCLUDED
-#define FMTbaseedgeproperties_H_INCLUDED
+#ifndef FMTbaseedgeproperties_Hm_included
+#define FMTbaseedgeproperties_Hm_included
 
 
 #include <boost/serialization/serialization.hpp>
@@ -55,7 +55,7 @@ namespace Graph
 			return static_cast<int>(action);
 			}
 		void setactionID(const int& newid);
-		bool isaction(const std::vector<Core::FMTaction>& actions,
+		bool isAction(const std::vector<Core::FMTaction>& actions,
 			const Core::FMTaction& rhsaction) const;
 		/*virtual*/ bool operator == (const FMTbaseedgeproperties & rhs) const;
 		/*virtual*/ bool operator != (const FMTbaseedgeproperties& rhs) const;

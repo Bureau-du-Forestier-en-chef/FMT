@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
 		boost::split(results, vals, boost::is_any_of("|"));
-		const std::string PRIMARY_LOCATION =  results.at(0);
+		const std::string PRIMARYm_location =  results.at(0);
 		const std::string CARTE = results.at(1);
 		const std::string SCENARIO = results.at(2);
 		std::vector<std::string>SPLITTED;
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 		std::vector<std::string>SPLITTED_MASK;
 		boost::split(SPLITTED_MASK, argv[3], boost::is_any_of("|"));
 		/*
-		const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
+		const std::string PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
 		const std::string CARTE = "Carte/PC_7002071_UA_U08152.shp";
 		const std::string SCENARIO = "01_Regl_prov_apsp_1_6";
 		const std::vector<std::string>SPLITTED = { "ACT","AEC"};
@@ -57,8 +57,8 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		ModelParser.seterrorstowarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
-		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARY_LOCATION, SCENARIOS);
-		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARY_LOCATION, MODELS).at(0);
+		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
+		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
 		Models::FMTlpmodel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
 		Optimization1.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
@@ -77,10 +77,10 @@ int main(int argc, char* argv[])
 		const std::vector<Core::FMTschedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0);
 		Models::FMTsesmodel Simulation(READMODELS.at(0));
 		Parser::FMTareaparser areaParser;
-		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARY_LOCATION).parent_path();
-		const std::string MAP_LOCATION = (BASE_PATH / boost::filesystem::path(CARTE)).string();
+		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARYm_location).parent_path();
+		const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(CARTE)).string();
 		const int SIZE = 2000;
-		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAP_LOCATION, SIZE, Simulation.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
+		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAPm_location, SIZE, Simulation.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
 		Simulation.setinitialmapping(FOREST);
 		std::vector<Core::FMTtransition>NewTransitions;
 		for (const Core::FMTtransition& TRANSITION : Simulation.gettransitions())

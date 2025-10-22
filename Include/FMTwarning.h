@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTwarning_H_INCLUDED
-#define FMTwarning_H_INCLUDED
+#ifndef FMTwarning_Hm_included
+#define FMTwarning_Hm_included
 
 #include <unordered_map>
 #include "FMTexception.h"

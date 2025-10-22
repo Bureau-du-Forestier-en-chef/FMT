@@ -741,7 +741,7 @@ namespace Spatial
 		int periodstop = 0;
 		if (this->mapping.begin()->second.constraintlenght(spatialconstraint, periodstart, periodstop))
 		{
-			const std::vector<bool>actionused = spatialconstraint.isactionsused(model.actions);
+			const std::vector<bool>actionused = spatialconstraint.isActionsused(model.actions);
 			const Core::FMTconstrainttype spatialconstrainttype = spatialconstraint.getconstrainttype();
 			/*FMTeventcontainer const* container = &events;
 			if (subset!=nullptr)
@@ -1258,7 +1258,7 @@ namespace Spatial
 							setgraphcachebystatic(nodescoordinates, node); //Needs to be fixed !!!
 						}
 						const std::vector<FMTcoordinate>& staticcoordinates = cache.getnode(node, model, exactnode);//Will possibility return the whole map...
-						if (node.isactionbased() && !node.source.isinventory())
+						if (node.isActionbased() && !node.source.isinventory())
 						{
 								const std::vector<FMTcoordinate>eventscoordinate = getfromevents(node, model.actions,period);
 								std::vector<FMTcoordinate>selection;
@@ -1704,7 +1704,7 @@ namespace Spatial
 		//std::vector<const Graph::FMTlinegraph*>graphs;
 		std::vector<FMTcoordinate>coordinates;
 		try {
-			if (node.isactionbased()&& node.source.isvariable())
+			if (node.isActionbased()&& node.source.isvariable())
 			{
 				std::vector<bool>targetedactions(actions.size(),false);
 				for (const Core::FMTaction* actionptr : node.source.targets(actions))
@@ -1734,7 +1734,7 @@ namespace Spatial
 		std::vector<const Graph::FMTlinegraph*>graphs;
 
 		try {
-		if (constraint.isactionbased())
+		if (constraint.isActionbased())
 			{
 			std::vector<int>targetedactions;
 			for (const Core::FMToutputsource& osource : constraint.getsources())
@@ -1788,7 +1788,7 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 	{
 	std::map<std::string, double> values;
 	try{
-	if (!(node.isactionbased()&&linegraph.isonlygrow(period)))
+	if (!(node.isActionbased()&&linegraph.isonlygrow(period)))
 	{
 		boost::unordered_map<Core::FMTmask,double>::const_iterator cashit = nodecache.find(nodemask);
 		if (cashit != nodecache.end() && level == Core::FMToutputlevel::totalonly)//get it from cashing
@@ -2114,7 +2114,7 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 		const Core::FMTmask& basegraphmask = graph.getbasedevelopment().getmask();
 		for (FMTspatialnodescache::ucaching::iterator it= cache.begin(); it!= cache.end();it++)
 					{
-					const bool actionbased = it->first.isactionbased();
+					const bool actionbased = it->first.isActionbased();
 					if (((!graphisonlygrowth && (actionbased && !it->first.source.isinventory())) ||
 						(graphisonlygrowth && !(actionbased && !it->first.source.isinventory()))))
 					{
@@ -2131,7 +2131,7 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 									{
 									
 									if (cache.getactualnodecache()->periodicvalues.find(period)!= cache.getactualnodecache()->periodicvalues.end()&&
-										!(it->first.isactionbased() && graph.isonlygrow(period)))
+										!(it->first.isActionbased() && graph.isonlygrow(period)))
 									{
 										Core::FMTmask nodemask(basemask);
 										graph.filledgesmask(nodemask, period);

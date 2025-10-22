@@ -18,8 +18,8 @@ int main(int argc, char* argv[])
 		std::vector<std::string>Extensions;
 		if (DriverType == "vector")
 			{
-				Drivers = AreaParser.getGDALvectordrivernames();
-				std::vector<std::vector<std::string>> LocalExtensions = AreaParser.getGDALvectordriverextensions();
+				Drivers = AreaParser.getGDALVectorDriverNames();
+				std::vector<std::vector<std::string>> LocalExtensions = AreaParser.getGDALVectorDriverExtensions();
 				for (const std::vector<std::string>& ExtV : LocalExtensions)
 				{
 					for (const std::string& Ext : ExtV)
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
 					}
 				}
 			}else{
-				Drivers = AreaParser.getGDALrasterdrivernames();
-				std::vector<std::vector<std::string>> LocalExtensions = AreaParser.getGDALrasterdriverextensions();
+				Drivers = AreaParser.getGDALRasterDriverNames();
+				std::vector<std::vector<std::string>> LocalExtensions = AreaParser.getGDALRasterDriverExtensions();
 				for (const std::vector<std::string>& ExtV : LocalExtensions)
 				{
 					for (const std::string& Ext : ExtV)

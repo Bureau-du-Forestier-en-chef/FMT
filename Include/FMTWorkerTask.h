@@ -1,5 +1,5 @@
-#ifndef FMTWORKERTASK_H_INCLUDED
-#define FMTWORKERTASK_H_INCLUDED
+#ifndef FMTWORKERTASK_Hm_included
+#define FMTWORKERTASK_Hm_included
 #include <memory>
 #include <boost/thread.hpp>
 
@@ -23,4 +23,4 @@ namespace Parallel
 		std::atomic<bool> m_done;
 	};
 }
-#endif // FMTWORKERTASK_H_INCLUDED
+#endif // FMTWORKERTASK_Hm_included

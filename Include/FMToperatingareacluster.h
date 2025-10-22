@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMToperatingareacluster_H_INCLUDED
-#define FMToperatingareacluster_H_INCLUDED
+#ifndef FMToperatingareacluster_Hm_included
+#define FMToperatingareacluster_Hm_included
 
 #include "FMToperatingareaclusterbinary.h"
 #include <boost/serialization/serialization.hpp>
@@ -167,11 +167,11 @@ namespace Heuristics
 		Get the maximal potential area of the cluster.
 		*/
 		double gettotalpotentialarea() const;
-		// DocString: FMToperatingareacluster::isvalidarea
+		// DocString: FMToperatingareacluster::isValidarea
 		/**
 		Check if the (area) is a valid area for the cluster (between bounds).
 		*/
-		bool isvalidarea(const double& area) const;
+		bool isValidarea(const double& area) const;
 		// DocString: FMToperatingareacluster::setmaximalobjectivevariable
 		/**
 		Set the maximal objective variable of the cluster.
@@ -192,11 +192,11 @@ namespace Heuristics
 		Set the potential maximal area of the cluster.
 		*/
 		void setmaximalarea(const double& newmaximalarea);
-		// DocString: FMToperatingareacluster::isvalidareabounds
+		// DocString: FMToperatingareacluster::isValidareabounds
 		/**
 		Validate is the minimal and maximal area used by the user respect the binaries present in the cluster.
 		*/
-		bool isvalidareabounds() const;
+		bool isValidareabounds() const;
 		// DocString: FMToperatingareacluster::getfilteredcluster
 		/**
 		Base on a given mask the function is going to remove any binary that does not fell in the mask definition.

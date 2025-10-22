@@ -6,8 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#ifndef FMTACT_H_INCLUDED
-#define FMTACT_H_INCLUDED
+#ifndef FMTACT_Hm_included
+#define FMTACT_Hm_included
 
 #include "FMTexceptionhandler.h"
 #include "FMTlist.hpp"
@@ -414,4 +414,4 @@ boost hash for FMTaction
 
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTaction)
-#endif // FMTACT_H_INCLUDED
+#endif // FMTACT_Hm_included

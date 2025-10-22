@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMToperatingarea_H_INCLUDED
-#define FMToperatingarea_H_INCLUDED
+#ifndef FMToperatingarea_Hm_included
+#define FMToperatingarea_Hm_included
 
 #include "FMTmask.h"
 #include <vector>

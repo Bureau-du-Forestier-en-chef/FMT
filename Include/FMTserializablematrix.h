@@ -6,8 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#ifndef FMTserializablematrix_H_INCLUDED
-#define FMTserializablematrix_H_INCLUDED
+#ifndef FMTserializablematrix_Hm_included
+#define FMTserializablematrix_Hm_included
 
 
 #include <memory>

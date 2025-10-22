@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTbasevertexproperties_H_INCLUDED
-#define FMTbasevertexproperties_H_INCLUDED
+#ifndef FMTbasevertexproperties_Hm_included
+#define FMTbasevertexproperties_Hm_included
 
 
 #include "FMTactualdevelopment.h"

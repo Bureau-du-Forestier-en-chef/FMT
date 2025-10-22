@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTYLD_H_INCLUDED
-#define FMTYLD_H_INCLUDED
+#ifndef FMTYLD_Hm_included
+#define FMTYLD_Hm_included
 
 #include "FMTlist.hpp"
 #include "FMTyieldhandler.h"
@@ -102,11 +102,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		@brief clear the cache of all random yield model.
 		*/
 		void clearRandomYieldsCache();
-		// DocString: FMTyields::isyld
+		// DocString: FMTyields::isYld
 		/**
 		This function returns true if the FMTyields section contains a given (value) non null yield.
 		*/
-        bool isyld(const std::string& value,bool fromsource = false) const;
+        bool isYld(const std::string& value,bool fromsource = false) const;
 		// DocString: FMTyields::isnullyld
 		/**
 		This function returns true if the FMTyields section contains a given (value) null yield.
@@ -293,4 +293,4 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
     };
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTyields)
-#endif // FMTYLD_H_INCLUDED
+#endif // FMTYLD_Hm_included

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTobject_H_INCLUDED
-#define FMTobject_H_INCLUDED
+#ifndef FMTobject_Hm_included
+#define FMTobject_Hm_included
 
 #ifndef NOMINMAX
 	#define NOMINMAX
@@ -195,7 +195,7 @@ class FMTEXPORT FMTobject
 		{
 			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
 			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			//ar & BOOST_SERIALIZATION_NVP(_section);
+			//ar & BOOST_SERIALIZATION_NVP(m_section);
 		}
 	protected:
 		// DocString: FMTobject::_exhandler
@@ -213,7 +213,7 @@ class FMTEXPORT FMTobject
 		{
 			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
 			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			//ar & BOOST_SERIALIZATION_NVP(_section);
+			//ar & BOOST_SERIALIZATION_NVP(m_section);
 		}
 		// DocString: FMTobject:: forceload
 		/**
@@ -226,7 +226,7 @@ class FMTEXPORT FMTobject
 			//ar & BOOST_SERIALIZATION_NVP(_logger);
 			setdefaultlogger();
 			setdefaultexceptionhandler();
-			//ar & BOOST_SERIALIZATION_NVP(_section);
+			//ar & BOOST_SERIALIZATION_NVP(m_section);
 		}
 		// DocString: FMTobject::checksignals
 		/**

@@ -63,7 +63,7 @@ namespace Parallel
 	{
 		try {
 		#ifdef FMTWITHGDAL
-			resultsdataset = createOGRdataset(location, driver);
+			resultsdataset = createOGRDataset(location, driver);
 		#endif
 			if (outputs.empty())
 			{
@@ -93,7 +93,7 @@ namespace Parallel
 		std::string primaryfilelocation):
 		outputstowrite(),
 		#ifdef FMTWITHGDAL
-		resultsdataset(createOGRdataset(location, driver)),
+		resultsdataset(createOGRDataset(location, driver)),
 		resultslayer(),
 		driftlayer(),
 		#endif

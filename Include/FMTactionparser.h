@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTactionparser_H_INCLUDED
-#define FMTactionparser_H_INCLUDED
+#ifndef FMTactionparser_Hm_included
+#define FMTactionparser_Hm_included
 #include "FMTparser.h"
 #include "FMTutility.h"
 #include <boost/regex.hpp>
@@ -104,4 +104,4 @@ class FMTEXPORT FMTactionparser : public FMTparser
 
 }
 
-#endif // FMTactionparser_H_INCLUDED
+#endif // FMTactionparser_Hm_included

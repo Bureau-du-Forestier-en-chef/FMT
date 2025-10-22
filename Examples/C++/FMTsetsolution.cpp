@@ -29,9 +29,9 @@ int main(int argc, char *argv[])
 				}
 			
 		}else{
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02471/PC_9377_U02471_4_Vg2_2023_vRP1f.pri";
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02661/PC_9307_U02661_4_Vg2_2023_vRP1f.pri";
 			scenarios = std::vector<std::string>(1, "14_Sc5_Determin_apsp");
-			ovoltotrecvalue = 8748700;
+			ovoltotrecvalue = 745200;
 			argc = 4;
 		}
 

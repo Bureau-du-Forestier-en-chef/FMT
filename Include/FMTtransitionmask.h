@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTMASKTRAN_H_INCLUDED
-#define FMTMASKTRAN_H_INCLUDED
+#ifndef FMTMASKTRAN_Hm_included
+#define FMTMASKTRAN_Hm_included
 
 #include "FMTbounds.hpp"
 #include "FMTmask.h"
@@ -62,4 +62,4 @@ class FMTEXPORT FMTtransitionmask : public FMTmaskfilter,public FMTspec
     };
 
 }
-#endif // FMTMASKTRAN_H_INCLUDED
+#endif // FMTMASKTRAN_Hm_included

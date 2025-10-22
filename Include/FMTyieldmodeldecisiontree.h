@@ -6,8 +6,8 @@
 #include <map>
 #include <boost/thread/recursive_mutex.hpp>
 
-#ifndef FMTYIELDMODELDECISIONTREE_H_INCLUDED
-#define FMTYIELDMODELDECISIONTREE_H_INCLUDED
+#ifndef FMTYIELDMODELDECISIONTREE_Hm_included
+#define FMTYIELDMODELDECISIONTREE_Hm_included
 
 namespace Models
 {

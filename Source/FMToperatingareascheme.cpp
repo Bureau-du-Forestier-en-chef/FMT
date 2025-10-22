@@ -1173,12 +1173,12 @@ bool FMToperatingareascheme::operator != (const FMToperatingareascheme& rhs) con
 	return (!(*this == rhs));
 	}
 
-size_t FMToperatingareascheme::getnumberofscheme() const
+size_t FMToperatingareascheme::getNumberofscheme() const
 	{
 		return schemesperiods.size();
 	}
 
-size_t FMToperatingareascheme::getnumberofsimplescheme() const
+size_t FMToperatingareascheme::getNumberofsimplescheme() const
 	{
 	std::unordered_set<int>allperiods;
 	for (const std::vector<int>& schemeperiod : schemesperiods)

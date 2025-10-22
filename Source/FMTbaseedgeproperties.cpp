@@ -12,7 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 
-	bool FMTbaseedgeproperties::isaction(const std::vector<Core::FMTaction>& actions,
+	bool FMTbaseedgeproperties::isAction(const std::vector<Core::FMTaction>& actions,
 		const Core::FMTaction& rhsaction) const
 	{
 		if (actions[action] == rhsaction)

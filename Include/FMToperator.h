@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTOPE_H_INCLUDED
-#define FMTOPE_H_INCLUDED
+#ifndef FMTOPE_Hm_included
+#define FMTOPE_Hm_included
 
 #include "FMTutility.h"
 #include <string>
@@ -64,4 +64,4 @@ public:
 
 }
 
-#endif // FMTOPE_H_INCLUDED
+#endif // FMTOPE_Hm_included

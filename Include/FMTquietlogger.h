@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTquiettlogger_H_INCLUDED
-#define FMTquiettlogger_H_INCLUDED
+#ifndef FMTquiettlogger_Hm_included
+#define FMTquiettlogger_Hm_included
 
 #include "FMTlogger.h"
 #include <boost/serialization/nvp.hpp>

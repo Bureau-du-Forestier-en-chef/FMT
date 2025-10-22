@@ -501,11 +501,11 @@ namespace Graph
 				FMTvertex_iterator vertexit, vertexend;
 				for (boost::tie(vertexit, vertexend) = developments.at(location); vertexit != vertexend; ++vertexit)
 				{
-					const FMTvertex_descriptor vertex_location = *vertexit;
-					if (!(location == period && periodstart(vertex_location)))
+					const FMTvertex_descriptor vertexm_location = *vertexit;
+					if (!(location == period && periodstart(vertexm_location)))
 					{
 						--stats.edges;
-						boost::clear_in_edges(vertex_location, data);
+						boost::clear_in_edges(vertexm_location, data);
 						removed.push_back(*vertexit);
 					}
 				}

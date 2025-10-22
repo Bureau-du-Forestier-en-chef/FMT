@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTYIELDSCACHE_H_INCLUDED
-#define FMTYIELDSCACHE_H_INCLUDED
+#ifndef FMTYIELDSCACHE_Hm_included
+#define FMTYIELDSCACHE_Hm_included
 
 
 #include <boost/unordered/concurrent_flat_map.hpp>
@@ -45,4 +45,4 @@ namespace Core
 
 
 
-#endif // FMTDATA_H_INCLUDED
+#endif // FMTDATA_Hm_included

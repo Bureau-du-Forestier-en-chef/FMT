@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMToutput_H_INCLUDED
-#define FMToutput_H_INCLUDED
+#ifndef FMToutput_Hm_included
+#define FMToutput_Hm_included
 
 #include <vector>
 #include <string>
@@ -347,11 +347,11 @@ class FMTEXPORT FMToutput: public FMTobject
 		Set the outputsource to one period.
 		*/
 		void setperiod(const int& newperiod);
-		// DocString: FMToutput::isactionbased
+		// DocString: FMToutput::isActionbased
 		/**
 		Returns true if the output constaints action nodes
 		*/
-		bool isactionbased() const;
+		bool isActionbased() const;
 		// DocString: FMToutput::isvariablesizeof
 		/**
 		If one source is variable and masksize == source.getmask will return true else return false.
@@ -408,7 +408,7 @@ class FMTEXPORT FMToutput: public FMTobject
 		Replace the division with the bound and reverse the denominator
 		*/
 		void replacedivision(const double& bound);
-		// DocString: FMToutput::isvalidAction
+		// DocString: FMToutput::isValidAction
 		/**
 		@Valid if an action or aggregate is in p_Actions.
 		@param[in] p_actionOrAggregate name or aggregate of action
@@ -416,7 +416,7 @@ class FMTEXPORT FMToutput: public FMTobject
 		@param[in] p_validActions validity of actions.
 		@return true if it's in
 		*/
-		static bool isvalidAction(const std::string& p_actionOrAggregate,
+		static bool isValidAction(const std::string& p_actionOrAggregate,
 			const std::vector<FMTaction>& p_actions,
 			const std::vector<bool>& p_validActions);
 	private:
@@ -509,4 +509,4 @@ public:
 
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMToutput)
-#endif // FMToutput_H_INCLUDED
+#endif // FMToutput_Hm_included

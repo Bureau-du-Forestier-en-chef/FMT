@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTUTILS_H_INCLUDED
-#define FMTUTILS_H_INCLUDED
+#ifndef FMTUTILS_Hm_included
+#define FMTUTILS_Hm_included
 
 #define FMT_DBL_TOLERANCE 1.e-08
 #define FMT_STR_SEPARATOR "\t "
@@ -105,4 +105,4 @@ namespace boost
 
 
 
-#endif // FMTUTILS_H_INCLUDED
+#endif // FMTUTILS_Hm_included

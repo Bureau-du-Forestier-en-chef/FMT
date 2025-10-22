@@ -1,5 +1,5 @@
-#ifndef FMTparallelwriter_H_INCLUDED
-#define FMTparallelwriter_H_INCLUDED
+#ifndef FMTparallelwriter_Hm_included
+#define FMTparallelwriter_Hm_included
 #include "FMTmodelparser.h"
 #include <vector>
 #include <string>

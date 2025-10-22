@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	
 
 
-#ifndef FMTEXCEPTION_H_INCLUDED
-#define FMTEXCEPTION_H_INCLUDED
+#ifndef FMTEXCEPTION_Hm_included
+#define FMTEXCEPTION_Hm_included
 
 #include <exception>
 #include <string>
@@ -289,4 +289,4 @@ class FMTEXPORT FMTexception : public std::exception
 }
 
 
-#endif // FMTEXCEPTION_H_INCLUDED
+#endif // FMTEXCEPTION_Hm_included

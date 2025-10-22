@@ -61,7 +61,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		catch (...)
 		{
 			_exhandler->raisefromcatch(
-				"", "FMTareaparser::getunion", __LINE__, __FILE__, _section);
+				"", "FMTareaparser::getunion", __LINE__, __FILE__, m_section);
 		}
 		return mergedpolygons;
 		}
@@ -78,7 +78,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		catch (...)
 		{
 			_exhandler->raisefromcatch(
-				"", "FMTareaparser::destroypolygons", __LINE__, __FILE__, _section);
+				"", "FMTareaparser::destroypolygons", __LINE__, __FILE__, m_section);
 		}
 		}
 	/*
@@ -155,7 +155,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		catch (...)
 		{
 			_exhandler->raisefromcatch(
-				"", "FMTareaparser::writesasolution", __LINE__, __FILE__, _section);
+				"", "FMTareaparser::writesasolution", __LINE__, __FILE__, m_section);
 		}
         return true;
     }*/
@@ -170,15 +170,15 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			std::string projection = "";
 			for (const std::string& location : data_rasters)
 			{
-				GDALDataset* data = getdataset(location);
-				GDALRasterBand* band = getband(data);
+				GDALDataset* data = getDataset(location);
+				GDALRasterBand* band = getBand(data);
 				if (xsize > 0)
 				{
-					if ((data->GetRasterXSize() != xsize) || (data->GetRasterYSize() != ysize) || (data->GetRasterCount() != rastercount) || (data->GetProjectionRef() != projection) /*|| (band->GetOverviewCount() != overview)*/)
+					if ((data->GetRasterXSize() != xsize) || (data->GetRasterYSize() != ysize) || (data->GetRasterCount() != rastercount) || (data->GetProjectionRef() != projection) /*|| (band->getOverviewCount() != overview)*/)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidband,
 							"Rasters are not the same " + std::string(data->GetDescription()),
-							"FMTareaparser::validate_raster", __LINE__, __FILE__, _section);
+							"FMTareaparser::validate_raster", __LINE__, __FILE__, m_section);
 					}
 				}
 				else {
@@ -186,13 +186,13 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					ysize = data->GetRasterYSize();
 					rastercount = data->GetRasterCount();
 					projection = data->GetProjectionRef();
-					//overview = band->GetOverviewCount();
+					//overview = band->getOverviewCount();
 				}
 				GDALClose(data);
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","in FMTareaparser::validate_raster", __LINE__, __FILE__,_section);
+			_exhandler->raisefromcatch("","in FMTareaparser::validate_raster", __LINE__, __FILE__,m_section);
 			}
         }
 	std::vector<Core::FMTGCBMtransition> FMTareaparser::getGCBMtransitions(const Spatial::FMTlayer<std::string>& stacked_actions,
@@ -263,7 +263,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTareaparser::getGCBMtransitions", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("","FMTareaparser::getGCBMtransitions", __LINE__, __FILE__, m_section);
 			}
 		return GCBM;
 		}
@@ -318,7 +318,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTareaparser::writeforest", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("","FMTareaparser::writeforest", __LINE__, __FILE__, m_section);
 			}
 		return false;
         }
@@ -335,7 +335,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("at " + location, "FMTareaparser::getperiodpathname", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("at " + location, "FMTareaparser::getperiodpathname", __LINE__, __FILE__, m_section);
 		}
 		return full_path.string();
 	}
@@ -425,8 +425,8 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				allrasters.push_back(lock);
 			}
 			validate_raster(allrasters);
-			GDALDataset* agedataset = getdataset(age);
-			GDALRasterBand* ageband = getband(agedataset);
+			GDALDataset* agedataset = getDataset(age);
+			GDALRasterBand* ageband = getBand(agedataset);
 			int nXBlockSize, nYBlockSize;
 			ageband->GetBlockSize(&nXBlockSize, &nYBlockSize);
 			int nXBlocks = (ageband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
@@ -443,16 +443,16 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			std::vector<int>lockatts;
 			if (!lock.empty())
 			{
-				lockdataset = getdataset(lock);
-				const std::vector<std::string>lockstr = getcat(lockdataset);
+				lockdataset = getDataset(lock);
+				const std::vector<std::string>lockstr = getCat(lockdataset);
 				lockatts.reserve(lockstr.size());
 				for (const std::string& strlock : lockstr)
 				{
 					std::vector<std::string>spstr;
 					boost::split(spstr, strlock, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-					lockatts.push_back(getnum<int>(spstr[1]));
+					lockatts.push_back(getNum<int>(spstr[1]));
 				}
-				lockband = getband(lockdataset);
+				lockband = getBand(lockdataset);
 				lockdata = std::vector<GInt32>(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize), 0);
 			}
 			std::vector<GDALDataset*>datasets;
@@ -460,11 +460,11 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			std::vector<std::vector<std::string>>attributes;
 			for (const std::string& location : data_rasters)
 			{
-				GDALDataset* dataset = getdataset(location);
-				GDALRasterBand* band = getband(dataset);
+				GDALDataset* dataset = getDataset(location);
+				GDALRasterBand* band = getBand(dataset);
 				datasets.push_back(dataset);
 				bands.push_back(band);
-				attributes.push_back(getcat(dataset));
+				attributes.push_back(getCat(dataset));
 			}
 			//std::map<Spatial::FMTcoordinate, Core::FMTdevelopment>mapping;
 			const std::string projection = agedataset->GetProjectionRef();
@@ -484,7 +484,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
 							agedataset->GetDescription(),
-							"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+							"FMTareaparser::readrasters", __LINE__, __FILE__, m_section);
 					}
 					if (lockdataset != NULL)
 					{
@@ -492,7 +492,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
 								lockdataset->GetDescription(),
-								"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+								"FMTareaparser::readrasters", __LINE__, __FILE__, m_section);
 						}
 					}
 					ageband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
@@ -505,7 +505,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						if (CE_None != bands[themeid]->ReadBlock(iXBlock, iYBlock, &attributedata[0]))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
-								datasets[themeid]->GetDescription(),"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+								datasets[themeid]->GetDescription(),"FMTareaparser::readrasters", __LINE__, __FILE__, m_section);
 						}
 						unsigned int y = ystack;
 						for (int iY = 0; iY < nYValid; iY++)
@@ -530,7 +530,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 										{
 											_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 												"Coordinate out of bounds "+std::to_string(x)+" "+std::to_string(y),
-												"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+												"FMTareaparser::readrasters", __LINE__, __FILE__, m_section);
 										}
 										const uint16_t xValue = static_cast<uint16_t>(x);
 										const uint16_t yValue = static_cast<uint16_t>(y);
@@ -560,7 +560,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 								if (cacheMask.find(maskvalue) == cacheMask.end())
 									{
 									const std::string originalMask = maskvalue;
-									if (!Core::FMTtheme::validate(themes, maskvalue, " at line " + std::to_string(_line))) continue;
+									if (!Core::FMTtheme::validate(themes, maskvalue, " at line " + std::to_string(m_line))) continue;
 									mask = Core::FMTmask(maskvalue, themes);
 									cacheMask[originalMask] = mask;
 								}else {
@@ -591,7 +591,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			{
 				const std::string message = " for " + std::to_string(missing) + " raster cells";
 				_exhandler->raise(Exception::FMTexc::FMTmissingrasterattribute, message,
-					"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+					"FMTareaparser::readrasters", __LINE__, __FILE__, m_section);
 			}
 			
 			GDALClose(agedataset);
@@ -606,7 +606,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			return mapping;
 		}catch (...)
 			{
-				_exhandler->printexceptions("", "FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+				_exhandler->printexceptions("", "FMTareaparser::readrasters", __LINE__, __FILE__, m_section);
 			}
 
 
@@ -636,9 +636,9 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					boost::to_upper(slock);
 					slock.erase(0, 5);
 					boost::trim(slock);
-					if (isvalid(slock))
+					if (isValid(slock))
 					{
-						lock = getnum<int>(slock);
+						lock = getNum<int>(slock);
 					}
 				}
 				std::vector<std::string>masks(themes_fields.size());
@@ -649,7 +649,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					masks[it->first] = attribute;
 				}
 				std::string tmask = boost::algorithm::join(masks, " ");
-				if (Core::FMTtheme::validate(themes, tmask, " at line " + std::to_string(_line)))
+				if (Core::FMTtheme::validate(themes, tmask, " at line " + std::to_string(m_line)))
 				{
 					Core::FMTmask mask(tmask, themes);
 					size_t emptyTheme = themes_fields.size();
@@ -666,7 +666,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(std::to_string(feature->GetFID()),
-				"FMTareaparser::getfeaturetodevelopment", __LINE__, __FILE__, _section);
+				"FMTareaparser::getfeaturetodevelopment", __LINE__, __FILE__, m_section);
 			}
 		return Core::FMTactualdevelopment();
 		}
@@ -678,18 +678,18 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		GDALDataset* dataset=nullptr;
 		try {
 			//GDALAllRegister();
-			dataset = getvectordataset(data_vectors);
-			OGRLayer*  layer = getlayer(dataset, 0);
-			getWSfields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
+			dataset = getVectorDataset(data_vectors);
+			OGRLayer*  layer = getLayer(dataset, 0);
+			getWSFields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
 			if (themes_fields.size() > themes.size())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-					dataset->GetDescription(),"FMTareaparser::openvectorfile", __LINE__, __FILE__, _section);
+					dataset->GetDescription(),"FMTareaparser::openvectorfile", __LINE__, __FILE__, m_section);
 				}
 			layer->ResetReading();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(data_vectors,"FMTareaparser::openvectorfile", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch(data_vectors,"FMTareaparser::openvectorfile", __LINE__, __FILE__, m_section);
 			}
 		return dataset;
 		}
@@ -713,7 +713,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			layer->SetAttributeFilter(sqlcall.c_str());
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for SQL " + sqlcall,"FMTareaparser::subsetlayer", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("for SQL " + sqlcall,"FMTareaparser::subsetlayer", __LINE__, __FILE__, m_section);
 			}
 		return layer;
 		}
@@ -728,7 +728,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			int lock_field = -1;
 			int area_field = -1;
 			GDALDataset* dataset = openvectorfile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
-			OGRLayer*  layer = getlayer(dataset, 0);
+			OGRLayer*  layer = getLayer(dataset, 0);
 			layer = this->subsetlayer(layer, themes, agefield, areafield);
 			OGRFeature *feature;
 			while ((feature = layer->GetNextFeature()) != NULL)
@@ -748,12 +748,12 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					}
 				}
 				OGRFeature::DestroyFeature(feature);
-				++_line;
+				++m_line;
 			}
 			GDALClose(dataset);
 		}catch (...)
 		{
-			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::readvectors", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::readvectors", __LINE__, __FILE__, m_section);
 		}
 
 
@@ -767,19 +767,19 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 											bool fittoforel) const
 	{
 		try {
-				GDALDataset*  dataset = getvectordataset(data_vectors);
-				OGRLayer* layer = getlayer(dataset, 0);
+				GDALDataset*  dataset = getVectorDataset(data_vectors);
+				OGRLayer* layer = getLayer(dataset, 0);
 				OGRFeatureDefn* basedefinition = layer->GetLayerDefn();
 				const int fieldid = basedefinition->GetFieldIndex(field.c_str());
 				if (fieldid==-1)
 					{
 					_exhandler->raise(Exception::FMTexc::FMTmissingfield, field + " " + layer->GetDescription(),
-						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, m_section);
 					}
 				if (basedefinition->GetFieldDefn(fieldid)->GetType() == OGRFieldType::OFTReal)
 					{
 					_exhandler->raise(Exception::FMTexc::FMTinvalidlayer, std::string(layer->GetDescription())+" with Real format for field "+ field,
-						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, m_section);
 					}
 				bool usecategories = true;
 				if (basedefinition->GetFieldDefn(fieldid)->GetType() == OGRFieldType::OFTInteger||
@@ -787,9 +787,9 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					{
 					usecategories = false;
 					}
-				OGRCoordinateTransformation* coordtransf = getprojtransform(layer, fittoforel);
-				GDALDataset* memds = gettransformmemlayercopy(layer, coordtransf->GetTargetCS(), field);
-				OGRLayer* memlayer = getlayer(memds, 0);
+				OGRCoordinateTransformation* coordtransf = getProjTransform(layer, fittoforel);
+				GDALDataset* memds = getTransFormMemLayerCopy(layer, coordtransf->GetTargetCS(), field);
+				OGRLayer* memlayer = getLayer(memds, 0);
 				OGRFeatureDefn* memlayerdef = memlayer->GetLayerDefn();
 				OGRFeature* feature;
 				std::set<std::string>values;
@@ -819,7 +819,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					if (!geom->IsValid())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_geometry,
-							"for feature " + std::to_string(_line), "FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+							"for feature " + std::to_string(m_line), "FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, m_section);
 					}else {
 						OGRFeature* memfeature;
 						memfeature = OGRFeature::CreateFeature(memlayerdef);
@@ -828,7 +828,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						if (memlayer->CreateFeature(memfeature) != OGRERR_NONE)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"feature " + std::to_string(_line) + " in memory ", "FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+								"feature " + std::to_string(m_line) + " in memory ", "FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, m_section);
 						}
 						OGRFeature::DestroyFeature(memfeature);
 					}
@@ -838,16 +838,16 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				{
 					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 						"No feature were created in the memory layer, check the areafield",
-						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, m_section);
 				}
 				OGRCoordinateTransformation::DestroyCT(coordtransf);
 				GDALDataset* fieldraster = OGRlayertoRaster(memlayer, field,tifpathandname, resolution, fittoforel);
 				GDALClose(memds);
-				GDALRasterBand* fieldband = getband(fieldraster);
+				GDALRasterBand* fieldband = getBand(fieldraster);
 				if (usecategories)
 					{
 					std::vector<std::string>categories(values.begin(), values.end());
-					setcategories(fieldband, categories);
+					setCategories(fieldband, categories);
 					}
 				fieldband->ComputeStatistics(FALSE, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
 				fieldband->FlushCache();
@@ -855,7 +855,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		}catch (...)
 			{
 			_exhandler->printexceptions("at " + data_vectors,
-				"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+				"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, m_section);
 			}
 
 	}
@@ -878,20 +878,20 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			int lock_field = -1;
 			int area_field = -1;
 			GDALDataset* dataset = openvectorfile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
-			OGRLayer*  layer = getlayer(dataset, 0);
+			OGRLayer*  layer = getLayer(dataset, 0);
 			const std::vector<Core::FMTtheme>THEMES_SUBSET(themes.begin(), themes.begin() + themes_fields.size());
 			layer = this->subsetlayer(layer, THEMES_SUBSET, agefield, areafield);
-			OGRCoordinateTransformation* coordtransf = getprojtransform(layer, fittoforel);
+			OGRCoordinateTransformation* coordtransf = getProjTransform(layer, fittoforel);
 			/*OGRwkbGeometryType lgeomtype = layer->GetGeomType();
 			if (lgeomtype != wkbMultiPolygon && lgeomtype != wkbPolygon )
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
-						"Geometry type from layer is not valid, must be wkbMultiPolygon or wkbPolygon : "+std::to_string(lgeomtype),"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+						"Geometry type from layer is not valid, must be wkbMultiPolygon or wkbPolygon : "+std::to_string(lgeomtype),"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 			}
 			OGRSpatialReference* lspref = layer->GetSpatialRef();
-			GDALDataset* memds = createvectormemoryds();
+			GDALDataset* memds = createVectorMemoryDs();
 			OGRCoordinateTransformation* coordtransf = nullptr;
-			std::unique_ptr<OGRSpatialReference> forelspref = getFORELspatialref();
+			std::unique_ptr<OGRSpatialReference> forelspref = getFORELSpatialRef();
 			bool reproject = false;
 			if (fittoforel && !(lspref->IsSame(&*forelspref)))
 			{
@@ -899,7 +899,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				if (coordtransf == NULL)
 				{
 					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-										"Coordinate Transformation","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+										"Coordinate Transformation","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 				}
 				reproject=true;
 			}*/
@@ -909,25 +909,25 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			/*OGRLayer* memlayer = nullptr;
 			if (reproject)
 			{
-				memlayer = memds->CreateLayer( "Memlayer", &*forelspref, lgeomtype, NULL );
+				memlayer = memds->createLayer( "Memlayer", &*forelspref, lgeomtype, NULL );
 			}else{
-				memlayer = memds->CreateLayer( "Memlayer", lspref, lgeomtype, NULL );
+				memlayer = memds->createLayer( "Memlayer", lspref, lgeomtype, NULL );
 			}
 			if (memlayer == NULL)
 			{
 				 _exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-										"Layer in memory","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+										"Layer in memory","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 			}
 			std::string Fieldname = "devid";
 			OGRFieldDefn oField( Fieldname.c_str(), OFTInteger );
 			if (memlayer->CreateField(&oField) != OGRERR_NONE)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-										"Field definition","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+										"Field definition","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 			}*/
 			const std::string Fieldname("devid");
-			GDALDataset* memds = gettransformmemlayercopy(layer, coordtransf->GetTargetCS(), Fieldname);
-			OGRLayer* memlayer = getlayer(memds,0);
+			GDALDataset* memds = getTransFormMemLayerCopy(layer, coordtransf->GetTargetCS(), Fieldname);
+			OGRLayer* memlayer = getLayer(memds,0);
 			OGRFeatureDefn* memlayerdef = memlayer->GetLayerDefn();
 			int devid = 0;
 			OGRFeature* feature;
@@ -950,7 +950,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					if(!geom->IsValid())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_geometry,
-										"for feature "+std::to_string(_line),"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+										"for feature "+std::to_string(m_line),"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 					}else {
 						OGRFeature* memfeature;
 						memfeature = OGRFeature::CreateFeature(memlayerdef);
@@ -959,7 +959,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						if (memlayer->CreateFeature(memfeature) != OGRERR_NONE)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"feature " + std::to_string(_line) + " in memory ", "FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+								"feature " + std::to_string(m_line) + " in memory ", "FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 						}
 						OGRFeature::DestroyFeature(memfeature);
 					}
@@ -968,13 +968,13 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					++devid;
 				}
 				OGRFeature::DestroyFeature(feature);
-				++_line;
+				++m_line;
 			}
 			if(memlayer->GetFeatureCount()<=0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 								"No feature where create in the memory layer, check the areafield : "+areafield+" and the agefield : "+agefield+" because they are used for a subset selection on the layer.",
-								"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+								"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 			}
 			GDALClose(dataset);
 			//if (reproject)
@@ -1001,7 +1001,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 		}
 		return basemap;
 	}
@@ -1012,7 +1012,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		try{
 			const std::string vsi_path = "/vsimem/"+devidfield+".tif";
 			GDALDataset* devidds = OGRlayertoRaster(layer,devidfield,vsi_path,resolution,fittoforel);
-			GDALRasterBand* devidband = getband(devidds);
+			GDALRasterBand* devidband = getBand(devidds);
 			int nXBlockSize, nYBlockSize;
 			devidband->GetBlockSize(&nXBlockSize, &nYBlockSize);
 			int nXBlocks = (devidband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
@@ -1035,7 +1035,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
 							devidds->GetDescription(),
-							"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+							"FMTareaparser::readrasters", __LINE__, __FILE__, m_section);
 					}
 					devidband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
 					unsigned int y = ystack;
@@ -1053,7 +1053,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 								{
 									_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 										"Coordinate out of bounds " + std::to_string(x) + " " + std::to_string(y),
-										"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+										"FMTareaparser::readrasters", __LINE__, __FILE__, m_section);
 								}
 								const uint16_t xValue = static_cast<uint16_t>(x);
 								const uint16_t yValue = static_cast<uint16_t>(y);
@@ -1075,7 +1075,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			VSIUnlink(vsi_path.c_str());
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTareaparser::getFMTforestfromlayer", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions("", "FMTareaparser::getFMTforestfromlayer", __LINE__, __FILE__, m_section);
 		}
 		return actualforest;
 	}
@@ -1092,12 +1092,12 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			if (layer->GetExtent(&layerextent) != OGRERR_NONE)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-											"Getting the layer extent of "+std::string(layer->GetDescription()),"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, _section);
+											"Getting the layer extent of "+std::string(layer->GetDescription()),"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, m_section);
 			}
 			if (!layerextent.IsInit())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-											"Layer extent of "+std::string(layer->GetDescription())+" is not Init","FMTparser::OGRlayertoRaster", __LINE__, __FILE__, _section);
+											"Layer extent of "+std::string(layer->GetDescription())+" is not Init","FMTparser::OGRlayertoRaster", __LINE__, __FILE__, m_section);
 			}
 			double min_y = layerextent.MinY;
 			double min_x = layerextent.MinX;
@@ -1105,7 +1105,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			const double y_delta = layerextent.MaxY - layerextent.MinY;
 			if (fittoforel)
 			{
-				std::unique_ptr<OGRSpatialReference> forelref = getFORELspatialref();
+				std::unique_ptr<OGRSpatialReference> forelref = getFORELSpatialRef();
 				if(layer->GetSpatialRef()->IsSame(&*forelref))
 				{
 					const double minxforel = -831600;
@@ -1115,7 +1115,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				}else{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
 											"Layer spatial reference is not ESPG::32198 and fittoforel == True. Layer must be reproject in ESPG::32198 to use the option fitttoforel",
-											"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, _section);
+											"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, m_section);
 				}
 			}
 	        NXSize = static_cast<int>((x_delta / resolution) * (resolution / 20));
@@ -1124,7 +1124,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			if( poDriver == nullptr )
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
-					std::string(pszFormat),"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, _section);
+					std::string(pszFormat),"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, m_section);
 			}
 			char **papszOptions = NULL;
 			papszOptions = CSLSetNameValue( papszOptions, "TILED", "YES" );
@@ -1144,7 +1144,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			if (poDstDS == nullptr)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-									"Dataset to : "+outfilename,"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, _section);
+									"Dataset to : "+outfilename,"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, m_section);
 			}
 			std::vector<double>geotrans(6,0);
 			geotrans[0]=min_x;
@@ -1155,7 +1155,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			if (layer->GetSpatialRef()->exportToWkt(&spref)!=OGRERR_NONE)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-											"Spatial reference "+std::string(poDstDS->GetDescription()),"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, _section);
+											"Spatial reference "+std::string(poDstDS->GetDescription()),"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, m_section);
 			}
 			poDstDS->SetProjection(spref);
 			poDstDS->SetGeoTransform(&geotrans[0]);
@@ -1180,7 +1180,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			if (nDS == nullptr)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-									"Dataset to : "+outfilename,"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, _section);
+									"Dataset to : "+outfilename,"FMTparser::OGRlayertoRaster", __LINE__, __FILE__, m_section);
 			}
 			geotrans[0]=min_x;
 			geotrans[1]=resolution;
@@ -1199,7 +1199,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			nDS->FlushCache();
 		}catch (...)
 		{
-			_exhandler->raisefromcatch(layer->GetDescription(), "FMTareaparser::OGRlayertoRaster", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch(layer->GetDescription(), "FMTareaparser::OGRlayertoRaster", __LINE__, __FILE__, m_section);
 		}
 		return nDS;
 	}
@@ -1221,7 +1221,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		int area_field = -1;
 		GDALDataset* dataset = this->openvectorfile(themes_fields, age_field, lock_field, area_field,
 			data_vectors, agefield, areafield, lockfield, themes);
-		OGRLayer * layer = getlayer(dataset, 0);
+		OGRLayer * layer = getLayer(dataset, 0);
 		layer = this->subsetlayer(layer, themes, agefield, areafield);
 		OGRFeature *feature;
 		while ((feature = layer->GetNextFeature()) != NULL)
@@ -1255,7 +1255,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		GDALClose(dataset);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTareaparser::getmultipolygons", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("","FMTareaparser::getmultipolygons", __LINE__, __FILE__, m_section);
 			}
 		return multipolygons;
 		}
@@ -1312,7 +1312,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						if (wband->WriteBlock(iXBlock, iYBlock, &block[0]) != CPLErr::CE_None)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
-								"on band id "+	std::to_string(wband->GetBand()), "FMTareaparser::writeband", __LINE__, __FILE__, _section);
+								"on band id "+	std::to_string(wband->GetBand()), "FMTareaparser::writeband", __LINE__, __FILE__, m_section);
 							}
 						}
 					xstack += nXValid;
@@ -1322,7 +1322,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("last "+ std::to_string(lastwriten) + "at band id " + std::to_string(wband->GetBand()), "FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("last "+ std::to_string(lastwriten) + "at band id " + std::to_string(wband->GetBand()), "FMTareaparser::writelayer", __LINE__, __FILE__, m_section);
 		}
 	}
 
@@ -1339,7 +1339,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					{
 					datatype = GDALDataType::GDT_Byte;
 					}
-				GDALDataset* wdataset = createdataset(location, layer, datatype,format);
+				GDALDataset* wdataset = createDataset(location, layer, datatype,format);
 				std::vector<std::string>table;
 				if (!mapping.empty())
 				{
@@ -1349,7 +1349,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						table.push_back(it->second);
 					}
 				}
-				GDALRasterBand* wband = createband(wdataset, table);
+				GDALRasterBand* wband = createBand(wdataset, table);
 				if (datatype == GDALDataType::GDT_Byte)
 					{
 					writeband<T,uint8_t>(layer, wband, mapping);
@@ -1413,7 +1413,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				GDALClose(wdataset);
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("at "+location,"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+				_exhandler->raisefromcatch("at "+location,"FMTareaparser::writelayer", __LINE__, __FILE__, m_section);
 				}
             return true;
             }
@@ -1427,7 +1427,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("at " + location, "FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+				_exhandler->raisefromcatch("at " + location, "FMTareaparser::writelayer", __LINE__, __FILE__, m_section);
 			}
 			return false;
 		}
@@ -1445,7 +1445,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					return writelayer<std::string>(themes_layer.at(0), location, mapping,format);
 				}catch (...)
 					{
-				_exhandler->raisefromcatch("at " + location, "FMTareaparser::writeforesttheme", __LINE__, __FILE__, _section);
+				_exhandler->raisefromcatch("at " + location, "FMTareaparser::writeforesttheme", __LINE__, __FILE__, m_section);
 				}
 			return false;
 			}
@@ -1514,7 +1514,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					}
 				}catch (...)
 					{
-					_exhandler->raisefromcatch("","FMTareaparser::getneighborsfrompolygons", __LINE__, __FILE__, _section);
+					_exhandler->raisefromcatch("","FMTareaparser::getneighborsfrompolygons", __LINE__, __FILE__, m_section);
 					}
 				return operatingareas;
 				}
@@ -1529,7 +1529,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						{
 						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"Invalid number of polygons / operating area",
-							"FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, _section);
+							"FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, m_section);
 						}
 					std::map<Core::FMTmask, std::map<Core::FMTmask, double>>distances;
 					std::map<Core::FMTmask, std::map<Core::FMTmask, std::set<Core::FMTmask>>>excludedfromlink;
@@ -1590,9 +1590,9 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 							const OGRPolygon* binary_polygon = polygons.at(polygonids.at(binaryid));
 							OGRPoint binarycentroid;
 							binary_polygon->Centroid(&binarycentroid);
-							OGRLineString linking_line;
-							linking_line.setPoint(0, &maincentroid);
-							linking_line.setPoint(1, &binarycentroid);
+							OGRLineString linkingm_line;
+							linkingm_line.setPoint(0, &maincentroid);
+							linkingm_line.setPoint(1, &binarycentroid);
 							if (excludedfromlink.at(mainmask).find(binarymask)== excludedfromlink.at(mainmask).end())
 								{
 								excludedfromlink[mainmask][binarymask] = std::set<Core::FMTmask>();
@@ -1608,7 +1608,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 									exclusion->find(subbinarymask)==exclusion->end())
 								{
 									const OGRPolygon* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
-									if (linking_line.Intersects(subbinary_polygon))
+									if (linkingm_line.Intersects(subbinary_polygon))
 									{
 										linkerneighbors.push_back(subbinarymask);
 									}
@@ -1655,7 +1655,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 								}
 								if (!insertiondone)
 								{
-									const double distance = linking_line.get_Length();
+									const double distance = linkingm_line.get_Length();
 									OGRGeometry* bufferedbinary = binary_polygon->Buffer(distance);
 									OGRGeometry* bufferedmain = polygons.at(mainopareaid)->Buffer(distance);
 									OGRGeometry* intersection = bufferedbinary->Intersection(bufferedmain);
@@ -1734,7 +1734,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 
 				}catch (...)
 					{
-					_exhandler->raisefromcatch("", "FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, _section);
+					_exhandler->raisefromcatch("", "FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, m_section);
 					}
 				return clusters;
 			}
@@ -1762,7 +1762,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						}
 				}catch (...)
 				{
-					_exhandler->printexceptions("", "FMTareaparser::getschemeneighbors", __LINE__, __FILE__, _section);
+					_exhandler->printexceptions("", "FMTareaparser::getschemeneighbors", __LINE__, __FILE__, m_section);
 				}
 
 				return operatingareaparameters;
@@ -1787,7 +1787,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					this->destroypolygons(mergedpolygons);
 				}catch (...)
 				{
-					_exhandler->printexceptions("", "FMTareaparser::getclusters", __LINE__, __FILE__, _section);
+					_exhandler->printexceptions("", "FMTareaparser::getclusters", __LINE__, __FILE__, m_section);
 				}
 				return finalclusters;
 			}
@@ -1798,8 +1798,8 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			{
 				try {
 					const boost::filesystem::path path(location);
-					GDALDataset* new_dataset = createOGRdataset(path.parent_path().string());
-					OGRLayer* newlayer = createlayer(new_dataset, path.stem().string(), creationoptions);
+					GDALDataset* new_dataset = createOGRDataset(path.parent_path().string());
+					OGRLayer* newlayer = createLayer(new_dataset, path.stem().string(), creationoptions);
 					//"OA","OPT","RET","MAXRET","REP","OPR"
 					OGRFieldDefn OAField("OA",OFTString);
 					OAField.SetWidth(254);
@@ -1831,7 +1831,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						newlayer->CreateField(&GUPField) != OGRERR_NONE)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-							"Cannote create new fields outputsdrift", "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, _section);
+							"Cannote create new fields outputsdrift", "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, m_section);
 					}
 					for (const Heuristics::FMToperatingareascheme& scheme : OAschemes)
 						{
@@ -1839,7 +1839,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						if (newfeature == NULL)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote generate new feature ", "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, _section);
+								"Cannote generate new feature ", "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, m_section);
 							//Failed to generate feature
 						}
 						newfeature->SetField("OA",std::string(scheme.getmask()).c_str());
@@ -1853,7 +1853,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						if (newlayer->CreateFeature(newfeature) != OGRERR_NONE)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote create new feature id " + std::to_string(newlayer->GetFeatureCount()), "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, _section);
+								"Cannote create new feature id " + std::to_string(newlayer->GetFeatureCount()), "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, m_section);
 							//Failed to generate feature
 						}
 						OGRFeature::DestroyFeature(newfeature);
@@ -1890,7 +1890,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				try{
 					std::ifstream oaparameterfile(location);
 					std::vector<std::string> titles = { "OA","OPT","RET","MAXRET","REP"};
-					if (tryopening(oaparameterfile, location))
+					if (tryOpening(oaparameterfile, location))
 					{
 						int lineid = 0;
 						std::string line;
@@ -2063,26 +2063,26 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			FMTareaparser::FMTareaparser() :
 				FMTparser()
 			{
-				_section = Core::FMTsection::Area;
+				m_section = Core::FMTsection::Area;
 			}
 
 
-			bool FMTareaparser::_isExclude(const std::string& p_line) const
+			bool FMTareaparser::_isExclude(const std::string& pm_line) const
 				{
 				bool gotExclude = false;
 				boost::smatch theMatch;
-				if (boost::regex_search(p_line, theMatch, m_RxExclude))
+				if (boost::regex_search(pm_line, theMatch, m_RxExclude))
 					{
 					gotExclude = !std::string(theMatch[1]).empty();
 					}
 				return gotExclude;
 				}
 
-			std::string FMTareaparser::_getExcludeValue(const std::string& p_line) const
+			std::string FMTareaparser::_getExcludeValue(const std::string& pm_line) const
 				{
 				boost::smatch theMatch;
 				std::string excludeLine;
-				if (boost::regex_search(p_line, theMatch, m_RxExclude))
+				if (boost::regex_search(pm_line, theMatch, m_RxExclude))
 					{
 					excludeLine = std::string(theMatch[3]);
 					}
@@ -2106,7 +2106,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					if (!setPeriods(newSpec, PERIODS, p_constants))
 						{
 						_exhandler->raise(Exception::FMTexc::FMTunboundedperiod
-							, " at line " + std::to_string(_line), "FMTareaparser::_getExcludedSpec", __LINE__, __FILE__, _section);
+							, " at line " + std::to_string(m_line), "FMTareaparser::_getExcludedSpec", __LINE__, __FILE__, m_section);
 						}
 					returned = std::pair<Core::FMTmask, Core::FMTspec>(NEW_MASKS, newSpec);
 					}
@@ -2123,10 +2123,10 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					{
 					gotSomething = true;
 					}
-				const std::string CLEANED_LINE = _getExcludeValue(p_value);
-				//if (!CLEANED_LINE.empty())
+				const std::string CLEANEDm_line = _getExcludeValue(p_value);
+				//if (!CLEANEDm_line.empty())
 					//{
-					const std::string TARGET = CLEANED_LINE.empty() ? p_value : CLEANED_LINE;
+					const std::string TARGET = CLEANEDm_line.empty() ? p_value : CLEANEDm_line;
 					const std::pair<Core::FMTmask, Core::FMTspec> NEW_SPEC = _getExcludedSpec(p_themes, p_constants, TARGET);
 					if (!NEW_SPEC.second.empty())
 						{
@@ -2149,17 +2149,18 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						bool potential_futurs = false;
 						bool got0area = false;
 						size_t futurtype = 0;
-						if (FMTparser::tryopening(areastream, location))
+						if (FMTparser::tryOpening(areastream, location))
 						{
 							bool inactualdevs = false;
 							boost::unordered_map<Core::FMTdevelopment,size_t>devsindex;
 							Core::FMTlist<Core::FMTspec>Excluded;
-							while (areastream.is_open())
+							std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(areastream, themes, constants);
+							while (!Lines.empty())
 							{
-								const std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
+								const std::string line = GetLine(Lines);
 								if (!line.empty())
 								{
-									if (potential_futurs && inactualdevs && !_comment.empty() && got0area)
+									if (potential_futurs && inactualdevs && !m_comment.empty() && got0area)
 									{
 										++futurtype;
 										if (futurtype >= (areas.size()*0.5))
@@ -2175,7 +2176,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 										std::vector<std::string>splitted;
 										boost::trim(masknage);
 										boost::split(splitted, masknage, boost::is_any_of(FMT_STR_SEPARATOR),boost::algorithm::token_compress_on);
-										//splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
+										//splitted = FMTparser::spliter(masknage, FMTparser::m_SEPARATOR);
 										const size_t linesize = splitted.size();
 										inactualdevs = true;
 										for (size_t themeid = 0; themeid < (linesize - 2); ++themeid)
@@ -2183,18 +2184,18 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 											mask += splitted.at(themeid) + " ";
 										}
 										mask.pop_back();
-										const double area = getnum<double>(splitted.at(linesize - 1), constants);
+										const double area = getNum<double>(splitted.at(linesize - 1), constants);
 										if (area > 0)
 										{
 											got0area = false;
-											if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
+											if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
 											potential_futurs = false;
-											const int age = getnum<int>(splitted.at(linesize - 2), constants);
+											const int age = getNum<int>(splitted.at(linesize - 2), constants);
 											int lock = 0;
 											const std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
-											if (FMTparser::isvalid(strlock))
+											if (FMTparser::isValid(strlock))
 											{
-												lock = getnum<int>(strlock, constants);
+												lock = getNum<int>(strlock, constants);
 											}
 											const Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
 											bool excludeDev = false;
@@ -2234,10 +2235,10 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 									}else if(!_gotNewExclude(themes,constants, line, Excluded))
 										{ 
 										_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange
-											, line+ " at line " + std::to_string(_line), "FMTareaparser::read", __LINE__, __FILE__, _section);
+											, line+ " at line " + std::to_string(m_line), "FMTareaparser::read", __LINE__, __FILE__, m_section);
 										}
 								}
-								else if (!areas.empty() && _comment.empty())
+								else if (!areas.empty() && m_comment.empty())
 								{
 									potential_futurs = true;
 								}
@@ -2247,7 +2248,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				//areas.shrink_to_fit();
 				}catch (...)
 					{
-					_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTareaparser::read", __LINE__, __FILE__, _section);
+					_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMTareaparser::read", __LINE__, __FILE__, m_section);
 					}
 				return areas;
 			}
@@ -2256,19 +2257,19 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				try {
 					std::ofstream areastream;
 					areastream.open(location);
-					if (tryopening(areastream, location))
+					if (tryOpening(areastream, location))
 					{
 						const std::string maskstr(areas.at(0).getmask());
 						std::vector<std::string>splitted_mask;
 						boost::split(splitted_mask, maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
-						std::string header_line = ";*A ";
+						std::string headerm_line = ";*A ";
 						for (size_t theme_id = 1; theme_id <= splitted_mask.size(); ++theme_id)
 						{
-							header_line += "Th" + std::to_string(theme_id) + " ";
+							headerm_line += "Th" + std::to_string(theme_id) + " ";
 						}
-						header_line += "Age";
-						header_line += " Area";
-						areastream << header_line << "\n";
+						headerm_line += "Age";
+						headerm_line += " Area";
+						areastream << headerm_line << "\n";
 						for (const Core::FMTactualdevelopment& area : areas)
 						{
 							areastream << std::string(area) << "\n";
@@ -2277,7 +2278,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					}
 				}catch (...)
 					{
-					_exhandler->raisefromcatch("at "+location,"FMTareaparser::write", __LINE__, __FILE__, _section);
+					_exhandler->raisefromcatch("at "+location,"FMTareaparser::write", __LINE__, __FILE__, m_section);
 					}
 			}
 }

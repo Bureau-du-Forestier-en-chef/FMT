@@ -131,7 +131,7 @@ namespace Core
 
 	#else
 			int var;
-			boost::filesystem::path boost_path = boost::dll::symbol_location(var);
+			boost::filesystem::path boost_path = boost::dll::symbolm_location(var);
 	#endif
 			strDLLpath = boost_path.parent_path().string();
 		}catch (...)
@@ -188,11 +188,11 @@ namespace Core
 		std::vector<std::string>Splitted;
 		const std::string TRACE = boost::stacktrace::to_string(boost::stacktrace::stacktrace());
 		boost::split(Splitted, TRACE, boost::is_any_of("\n"));
-		for (const auto& TRACE_LINE : Splitted)
+		for (const auto& TRACEm_line : Splitted)
 			{
-				if (!TRACE_LINE.empty())
+				if (!TRACEm_line.empty())
 					{
-					*_logger << baseLine << TRACE_LINE << "\n";
+					*_logger << baseLine << TRACEm_line << "\n";
 					baseLine += "\t";
 					}
 

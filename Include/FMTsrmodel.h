@@ -8,8 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMTsrmodel_H_INCLUDED
-#define FMTsrmodel_H_INCLUDED
+#ifndef FMTsrmodel_Hm_included
+#define FMTsrmodel_Hm_included
 
 #include "FMTmodel.h"
 #include <boost/serialization/export.hpp>
