@@ -9,8 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 
 
-#ifndef FMTYIELDMODEL_H_INCLUDED
-#define FMTYIELDMODEL_H_INCLUDED
+#ifndef FMTYIELDMODEL_Hm_included
+#define FMTYIELDMODEL_Hm_included
 
 namespace Graph
 {

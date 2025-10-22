@@ -1,8 +1,8 @@
 #ifdef FMTWITHONNXR
 #include "FMTyieldmodelnn.h"
 
-#ifndef FMTYIELDMODELNEP_H_INCLUDED
-#define FMTYIELDMODELNEP_H_INCLUDED
+#ifndef FMTYIELDMODELNEP_Hm_included
+#define FMTYIELDMODELNEP_Hm_included
 
 namespace Core
 {

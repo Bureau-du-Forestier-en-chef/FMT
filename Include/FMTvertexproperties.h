@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTvertexproperties_H_INCLUDED
-#define FMTvertexproperties_H_INCLUDED
+#ifndef FMTvertexproperties_Hm_included
+#define FMTvertexproperties_Hm_included
 
 
 #include <boost/serialization/serialization.hpp>

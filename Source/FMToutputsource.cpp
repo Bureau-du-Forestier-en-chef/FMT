@@ -288,7 +288,7 @@ bool FMToutputsource::issamebutdifferentaction(const FMToutputsource& rhs) const
 
 bool FMToutputsource::isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const
 	{
-	if (isaction() && rhs.isaction())
+	if (isAction() && rhs.isAction())
 		{
 		const std::vector<const FMTaction*>allactions = FMTactioncomparator(rhs.action).getallaggregates(actions);
 		for (const FMTaction* actptr : allactions)

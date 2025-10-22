@@ -101,8 +101,8 @@ void exportModel()
 				"@DocString(FMTmodel::setareaperiod)")
             .def("getlifespan",&Models::FMTmodel::getlifespan,
 				"@DocString(FMTmodel::getlifespan)")
-            .def("isvalid",&Models::FMTmodel::isvalid,
-				"@DocString(FMTmodel::isvalid)")
+            .def("isValid",&Models::FMTmodel::isValid,
+				"@DocString(FMTmodel::isValid)")
 			.def("clearcache",&Models::FMTmodel::clearcache,
 				"@DocString(FMTmodel::clearcache)")
 			.def("getselectedmask",&Models::FMTmodel::getselectedmask,

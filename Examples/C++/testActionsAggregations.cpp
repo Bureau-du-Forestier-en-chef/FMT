@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 
 	if (Version::FMTversion().hasfeature("OSI"))
 	{
-		std::string PRIMARY_LOCATION;
+		std::string PRIMARYm_location;
 		std::string CARTE;
 		std::string SCENARIO;
 		std::vector<std::string>AGGREGATES;
@@ -33,17 +33,17 @@ int main(int argc, char* argv[])
 			const std::string vals = argv[1];
 			std::vector<std::string>results;
 			boost::split(results, vals, boost::is_any_of("|"));
-			PRIMARY_LOCATION = results.at(0);
+			PRIMARYm_location = results.at(0);
 			CARTE = results.at(1);
 			SCENARIO = results.at(2);
 			boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));
 			const std::vector<std::string>ORDERING = {};
 		}else {
-			PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+			PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
 			CARTE = "Carte/PC_7002071_UA_U08152.shp";
 			SCENARIO = "20_Regl_prov";
 
-			//PRIMARY_LOCATION = "T:/Donnees/Usagers/PICBR1/2024/Taille_min_bloc/PC9588_U07152_DET/PC_9588_U07152_4_Vg3_2023_vSSP05.pri";
+			//PRIMARYm_location = "T:/Donnees/Usagers/PICBR1/2024/Taille_min_bloc/PC9588_U07152_DET/PC_9588_U07152_4_Vg3_2023_vSSP05.pri";
 			//CARTE = "Carte/PC_9588_UA_U07152.shp";
 			//SCENARIO = "15_Sc5_Determin3_apsp_FoncObj";
 
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 			}
 
 		
-		/*const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+		/*const std::string PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
 		const std::string CARTE = "Carte/PC_7002071_UA_U08152.shp";
 		const std::string SCENARIO = "20_Regl_prov";
 		const std::vector<std::string>AGGREGATES = { "REGAFIN","REGAPAR","REGAEDU","REGAREG","ATBEMORT","ATBERETARD","ASNAT","AECHEC"};
@@ -85,8 +85,8 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		ModelParser.seterrorstowarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
-		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARY_LOCATION, SCENARIOS);
-		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARY_LOCATION, MODELS).at(0);
+		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
+		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
 		Models::FMTlpmodel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
 
 		//ModelParser.writetoproject(OUTPUT_DIRECTORY + "test.pri", Optimization1);
@@ -114,10 +114,10 @@ int main(int argc, char* argv[])
 		const std::vector<Core::FMTschedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0); //read 1
 		Models::FMTsesmodel Simulation(READMODELS.at(0));
 		Parser::FMTareaparser areaParser;
-		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARY_LOCATION).parent_path();
-		const std::string MAP_LOCATION = (BASE_PATH / boost::filesystem::path(CARTE)).string();
+		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARYm_location).parent_path();
+		const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(CARTE)).string();
 		const int SIZE = 2000;
-		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAP_LOCATION, SIZE, Simulation.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
+		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAPm_location, SIZE, Simulation.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
 		Simulation.setinitialmapping(FOREST);
 		std::vector<Core::FMTtransition>NewTransitions;
 		for (const Core::FMTtransition& TRANSITION : Simulation.gettransitions())

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTschedule_H_INCLUDED
-#define FMTschedule_H_INCLUDED
+#ifndef FMTschedule_Hm_included
+#define FMTschedule_Hm_included
 
 #include <map>
 #include <vector>
@@ -243,4 +243,4 @@ class FMTEXPORT FMTschedule : public FMTobject
 
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTschedule)
-#endif // FMTschedule_H_INCLUDED
+#endif // FMTschedule_Hm_included

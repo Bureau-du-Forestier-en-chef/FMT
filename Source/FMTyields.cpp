@@ -231,7 +231,7 @@ void FMTyields::clearRandomYieldsCache()
 		}
 	}
 
-bool FMTyields::isyld(const std::string& value, bool fromsource) const
+bool FMTyields::isYld(const std::string& value, bool fromsource) const
     {
 	bool returnvalue = false;
 	try{
@@ -251,7 +251,7 @@ bool FMTyields::isyld(const std::string& value, bool fromsource) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::isyld", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raisefromcatch("", "FMTyields::isYld", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return returnvalue;
     }

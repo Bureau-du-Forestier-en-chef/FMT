@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTMASK_H_INCLUDED
-#define FMTMASK_H_INCLUDED
+#ifndef FMTMASK_Hm_included
+#define FMTMASK_Hm_included
 
 #ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
@@ -538,4 +538,4 @@ boost hash for FMTmask
 
 BOOST_CLASS_EXPORT_KEY(Core::FMTmask)
 
-#endif // FMTMASK_H_INCLUDED
+#endif // FMTMASK_Hm_included

@@ -7,7 +7,17 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	const std::string primarylocation =  std::string(argv[1]);
+	std::string primarylocation;
+	std::vector<std::string>scenarios;
+	if (argc > 1)
+	{
+		primarylocation = std::string(argv[1]);
+		scenarios = std::vector<std::string>(1, std::string(argv[2]));
+	}else {
+		primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Feux_2023_ouest/feux_2023_ouest_V01.pri";
+		scenarios = std::vector<std::string>(1, "201_UG107_feu");
+	}
+
 	//const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/ReplaningStrat2024_04_30/Feux_2023_ouest_V01.pri";
 	//const std::string primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
@@ -30,7 +40,7 @@ int main(int argc, char* argv[])
 	readErrors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	modelparser.seterrorstowarnings(readErrors);
 
-	const std::vector<std::string>scenarios(1, std::string(argv[2]));
+	
 	//const std::vector<std::string>scenarios(1, "tactique");
 	//const std::vector<std::string>scenarios(1, "strategique");
 	//const std::vector<std::string>scenarios(1, "14_Sc5_Determin_apsp_02751_tmw");

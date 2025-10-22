@@ -122,7 +122,7 @@ namespace Wrapper
 			primaryname = base_filename.substr(0, fit);
 		}catch (...)
 		{
-			captureexception("FMTexcelcache::getprimaryname");
+			captureexception("FMTexcelcache::getPrimaryname");
 		}
 		return primaryname;
 	}

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTfunctioncall_H_INCLUDED
-#define FMTfunctioncall_H_INCLUDED
+#ifndef FMTfunctioncall_Hm_included
+#define FMTfunctioncall_Hm_included
 
 #include <string>
 

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTfuturdevelopment_H_INCLUDED
-#define FMTfuturdevelopment_H_INCLUDED
+#ifndef FMTfuturdevelopment_Hm_included
+#define FMTfuturdevelopment_Hm_included
 
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
@@ -97,4 +97,4 @@ namespace Core
 }
 
 BOOST_CLASS_EXPORT_KEY(Core::FMTfuturdevelopment)
-#endif // FMTDEV_H_INCLUDED
+#endif // FMTDEV_Hm_included

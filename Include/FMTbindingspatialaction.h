@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTBINDINGSPATIALACTION_H_INCLUDED
-#define FMTBINDINGSPATIALACTION_H_INCLUDED
+#ifndef FMTBINDINGSPATIALACTION_Hm_included
+#define FMTBINDINGSPATIALACTION_Hm_included
 
 #include <vector>
 #include <limits>

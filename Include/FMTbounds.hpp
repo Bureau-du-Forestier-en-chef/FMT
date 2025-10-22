@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTbounds_H_INCLUDED
-#define FMTbounds_H_INCLUDED
+#ifndef FMTbounds_Hm_included
+#define FMTbounds_Hm_included
 #include <limits>
 #include <map>
 #include "FMTexception.h"
@@ -581,4 +581,4 @@ namespace boost {
 }
 
 
-#endif // FMTbounds_H_INCLUDED
+#endif // FMTbounds_Hm_included

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTFORK_H_INCLUDED
-#define FMTFORK_H_INCLUDED
+#ifndef FMTFORK_Hm_included
+#define FMTFORK_Hm_included
 
 #include "FMTtransitionmask.h"
 #include "FMTbounds.hpp"
@@ -64,4 +64,4 @@ class FMTEXPORT FMTfork : public FMTspec, public FMTobject
 
 BOOST_CLASS_EXPORT_KEY(Core::FMTfork)
 
-#endif // FMTFORK_H_INCLUDED
+#endif // FMTFORK_Hm_included

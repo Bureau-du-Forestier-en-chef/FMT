@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTDATA_H_INCLUDED
-#define FMTDATA_H_INCLUDED
+#ifndef FMTDATA_Hm_included
+#define FMTDATA_Hm_included
 
 
 #include <vector>
@@ -84,4 +84,4 @@ class FMTEXPORT FMTdata
 BOOST_CLASS_EXPORT_KEY(Core::FMTdata)
 
 
-#endif // FMTDATA_H_INCLUDED
+#endif // FMTDATA_Hm_included

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTMASKFILTER_H_INCLUDED
-#define FMTMASKFILTER_H_INCLUDED
+#ifndef FMTMASKFILTER_Hm_included
+#define FMTMASKFILTER_Hm_included
 
 
 #include <boost/dynamic_bitset.hpp>
@@ -88,4 +88,4 @@ namespace boost {
 
 }
 
-#endif // FMTMASKFILTER_H_INCLUDED
+#endif // FMTMASKFILTER_Hm_included

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTDEV_H_INCLUDED
-#define FMTDEV_H_INCLUDED
+#ifndef FMTDEV_Hm_included
+#define FMTDEV_Hm_included
 
 #include "FMTmask.h"
 #include <boost/serialization/serialization.hpp>
@@ -335,4 +335,4 @@ BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTdevelopment)
 BOOST_CLASS_TRACKING(Core::FMTdevelopment, boost::serialization::track_always)
 BOOST_CLASS_EXPORT_KEY(Core::FMTdevelopment)
 
-#endif // FMTDEV_H_INCLUDED
+#endif // FMTDEV_Hm_included

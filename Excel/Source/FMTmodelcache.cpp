@@ -721,7 +721,7 @@ namespace Wrapper
 				//const Core::FMTyields& yields = model->getyields();
 				const Core::FMTmask subset = themeSelectionToMask(themeselection);
 				if (!yields.empty() &&
-					yields.isyld(yieldname) &&
+					yields.isYld(yieldname) &&
 					!(subset.empty() && !themeselection.empty()))
 				{
 					const Core::FMTdevelopment adev(subset, age, 0, period);

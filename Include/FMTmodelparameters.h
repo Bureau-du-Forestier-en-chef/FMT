@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTmodelparameters_H_INCLUDED
-#define FMTmodelparameters_H_INCLUDED
+#ifndef FMTmodelparameters_Hm_included
+#define FMTmodelparameters_Hm_included
 
 #include "FMTexceptionhandler.h"
 #include "FMTobject.h"
@@ -165,4 +165,4 @@ namespace Models
     };
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTmodelparameters)
-#endif // FMTmodelparameters_H_INCLUDED
+#endif // FMTmodelparameters_Hm_included

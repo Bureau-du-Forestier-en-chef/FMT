@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMToperatingareascheduler_H_INCLUDED
-#define FMToperatingareascheduler_H_INCLUDED
+#ifndef FMToperatingareascheduler_Hm_included
+#define FMToperatingareascheduler_Hm_included
 
 #include "FMTmask.h"
 #include "FMToperatingareascheme.h"
@@ -245,7 +245,7 @@ namespace Heuristics
 		// DocString: FMToperatingareascheduler::generateinitialproportionofset
 		/*
 		Try to calculate a good proportion of set for the initialsolve...if anything goes wrong it will be 0.25 If more complexity is
-		detected using the FMToperatingareascheme getnumberofscheme vs the getnumberofsimplescheme it will get the difference and use a factor of 0.00025
+		detected using the FMToperatingareascheme getNumberofscheme vs the getNumberofsimplescheme it will get the difference and use a factor of 0.00025
 		to decrease in a linear fashion the propotion of set to a minimum of 0.01.
 		*/
 		double generateinitialproportionofset() const;

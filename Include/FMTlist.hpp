@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTlist_H_INCLUDED
-#define FMTlist_H_INCLUDED
+#ifndef FMTlist_Hm_included
+#define FMTlist_Hm_included
 
 #include <boost/unordered_map.hpp>
 #include <functional>

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTquietexceptionhandler_H_INCLUDED
-#define FMTquietexceptionhandler_H_INCLUDED
+#ifndef FMTquietexceptionhandler_Hm_included
+#define FMTquietexceptionhandler_Hm_included
 
 #include "FMTexceptionhandler.h"
 #include "FMTexception.h"

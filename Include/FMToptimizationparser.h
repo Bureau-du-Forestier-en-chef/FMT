@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMToptimizationparser_H_INCLUDED
-#define FMToptimizationparser_H_INCLUDED
+#ifndef FMToptimizationparser_Hm_included
+#define FMToptimizationparser_Hm_included
 
 #include "FMTparser.h"
 #include <algorithm>
@@ -49,14 +49,14 @@ namespace Parser
 		FMToptimizationparser& operator = (const FMToptimizationparser& rhs)=default;
 		// DocString: FMToptimizationparser::read
 		/*
-		* @brief Read a optimization file from a given p_location
+		* @brief Read a optimization file from a given pm_location
 		* @param[in]  p_themes the themes used.
 		* @param[in]  p_actions the actions used.
 		* @param[in]  p_constants the constants.
 		* @param[in]  p_outputs the outputs.
 		* @param[in]  p_yields the yields.
 		* @param[out] p_excluded the actions to exclude.
-		* @param[in] p_location the location of the file.
+		* @param[in] pm_location the location of the file.
 		* @return Valid constraints.
 		*/
 		std::vector<Core::FMTconstraint> read(const std::vector<Core::FMTtheme>& p_themes,
@@ -65,11 +65,11 @@ namespace Parser
 				  const std::vector<Core::FMToutput>& p_outputs,
 			      const Core::FMTyields& p_yields,
 				  std::vector<Core::FMTaction>& p_excluded,
-				  const std::string& p_location);
+				  const std::string& pm_location);
 		// DocString: FMToptimizationparser::getConstraints
 		/*
 		* @brief Read a line and get a constraint
-		* @param[in] p_line the line read.
+		* @param[in] pm_line the line read.
 		* @param[in] p_constants the constants.
 		* @param[in] p_yields the yields.
 		* @param[in] p_outputs the model outputs.
@@ -77,7 +77,7 @@ namespace Parser
 		* @param[in] p_actions the model actions.
 		* @return A valid constraint.
 		*/
-		std::vector<Core::FMTconstraint> getConstraints(const std::string& p_line,
+		std::vector<Core::FMTconstraint> getConstraints(const std::string& pm_line,
 			const Core::FMTconstants& p_constants, const Core::FMTyields& p_yields,
 			const std::vector<Core::FMToutput>& p_outputs,
 			const std::vector<Core::FMTtheme>& p_themes,
@@ -86,10 +86,10 @@ namespace Parser
 		/*
 		* @brief Write down the constraints into an optimization file.
 		* @param[in] p_ constraints the constraints to write in a file.
-		* @param[in] p_location the location at which we want to write the constraints.
+		* @param[in] pm_location the location at which we want to write the constraints.
 		*/
 		void write(const std::vector<Core::FMTconstraint>& p_constraints,
-			const std::string& p_location) const;
+			const std::string& pm_location) const;
 		~FMToptimizationparser()=default;
 	private:
 		const static boost::regex m_rxsections;
@@ -97,25 +97,25 @@ namespace Parser
 		const static boost::regex m_rxexclude;
 		const static boost::regex m_rxconstraints;
 		const static boost::regex m_rxequations;
-		const static boost::regex m_rxending;
+		const static boost::regex m_m_ENDing;
 		const static boost::regex m_rxoutput;
 		const static boost::regex m_rxpenalty;
 		const static boost::regex m_rxspecialoutput;
 		const static boost::regex m_rxspatial;
 		const static boost::regex m_rxspecialobjective;
 		const static boost::regex m_rxstartwithoperator;
-		std::queue<std::string>m_ineach;
+		//std::queue<std::string>m_ineach;
 		// DocString: FMToptimizationparser::getObjective
 		/*
 		* @brief Based on a line in the optimization section return an objective.
-		* @param[in]  p_line the line read.
+		* @param[in]  pm_line the line read.
 		* @param[in]  p_constants the constants.
 		* @param[in] p_yields the yields.
 		* @param[in] p_outputs the model outputs.
 		* @param[in] p_themes the model themes.
 		* @return A valid objective.
 		*/
-		Core::FMTconstraint getObjective(const std::string& p_line,
+		Core::FMTconstraint getObjective(const std::string& pm_line,
 			const Core::FMTconstants& p_constants,
 			const Core::FMTyields& p_yields,
 			const std::vector<Core::FMToutput>& p_outputs,
@@ -126,30 +126,30 @@ namespace Parser
 			const std::vector<Core::FMToutput>& outputs,
 			const std::vector<Core::FMTtheme>& themes,
 			const Core::FMTconstants& constants);
-		std::string getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
-			const Core::FMTconstants& cons, const std::vector<Core::FMToutput>& outputs);
+		std::queue<std::pair<std::string, int>>getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
+								const Core::FMTconstants& cons, const std::vector<Core::FMToutput>& outputs);
 		std::queue<std::string> geteachlines(const std::string& line, const Core::FMTconstants& constants, const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const;
 		// DocString: FMToptimizationparser::getEquation
 		/*
 		* @brief Take the orgiginal line of the contraint and try to simplify the equation before formating it for an output
-		* @param[in]  p_line the line read by the parser.
+		* @param[in]  pm_line the line read by the parser.
 		* @param[in]  p_constants the constants.
 		* @param[in] p_yields the yields.
 		* @param[in] p_outputs the outputs.
 		* @param[in] p_lhssize the size of the RHS.
 		* @return valid outputs nodes simplified.
 		*/
-		std::map<std::string, double>getEquation(const std::string& p_line, const Core::FMTconstants& p_constants,
+		std::map<std::string, double>getEquation(const std::string& pm_line, const Core::FMTconstants& p_constants,
 			const Core::FMTyields& p_yields, const std::vector<Core::FMToutput>& p_outputs,
 			size_t p_lhssize = std::numeric_limits<size_t>::max());
 		std::vector<Core::FMTconstraint> getperiodsbounds(std::string periodstr, const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const;
 		void fillbounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const;
 		// DocString: FMToptimizationparser::getSpatialConstraint
 		/*
-		* @brief From a base contraint turn it into spatial constraint based on the p_line.
+		* @brief From a base contraint turn it into spatial constraint based on the pm_line.
 		* @param[in]  p_baseconstraint the base constraint.
 		* @param[in]  p_match the regex match
-		* @param[in]  p_line the line read by the parser.
+		* @param[in]  pm_line the line read by the parser.
 		* @param[in]  p_constants the constants.
 		* @param[in]  p_yields the yields.
 		* @param[in]  p_actions the actions.
@@ -158,7 +158,7 @@ namespace Parser
 		* @return valid spatial constraint.
 		*/
 		Core::FMTconstraint getSpatialConstraint(const Core::FMTconstraint& p_baseconstraint,
-			const boost::smatch& p_match, const std::string& p_line,
+			const boost::smatch& p_match, const std::string& pm_line,
 			const Core::FMTconstants& p_constants,
 			const Core::FMTyields& p_yields,
 			const std::vector<Core::FMTaction>& p_actions,

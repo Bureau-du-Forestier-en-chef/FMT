@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMTmatrixbuild_H_INCLUDED
-#define FMTmatrixbuild_H_INCLUDED
+#ifndef FMTmatrixbuild_Hm_included
+#define FMTmatrixbuild_Hm_included
 
 
 #include <vector>

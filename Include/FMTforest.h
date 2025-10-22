@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTFOREST_H_INCLUDED
-#define FMTFOREST_H_INCLUDED
+#ifndef FMTFOREST_Hm_included
+#define FMTFOREST_Hm_included
 
 
 #include "FMTlayer.hpp"
@@ -47,4 +47,4 @@ namespace Spatial
 		FMTforest postsolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&originalbasethemes) const;
         };
     }
-#endif // FMTFOREST_H_INCLUDED
+#endif // FMTFOREST_Hm_included

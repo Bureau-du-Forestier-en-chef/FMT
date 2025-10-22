@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTlifespanparser_H_INCLUDED
-#define FMTlifespanparser_H_INCLUDED
+#ifndef FMTlifespanparser_Hm_included
+#define FMTlifespanparser_Hm_included
 
 
 #include "FMTparser.h"
@@ -64,4 +64,4 @@ class FMTEXPORT FMTlifespanparser : public FMTparser
 }
 
 
-#endif // FMTlifespanparser_H_INCLUDED
+#endif // FMTlifespanparser_Hm_included

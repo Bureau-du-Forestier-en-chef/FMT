@@ -11,7 +11,7 @@
 int main(int argc, char* argv[])
 {
 		Logging::FMTdefaultlogger().logstamp();
-		std::string PRIMARY_LOCATION;
+		std::string PRIMARYm_location;
 		std::string SCENARIO;
 		std::string TARGET_YIELD;
 		std::string ACTION_NAME;
@@ -21,14 +21,14 @@ int main(int argc, char* argv[])
 			std::vector<std::string>results;
 			boost::split(results, vals, boost::is_any_of("|"));
 
-			PRIMARY_LOCATION =  results.at(0);
+			PRIMARYm_location =  results.at(0);
 			SCENARIO = results.at(1);
 			TARGET_YIELD = argv[2];
 			ACTION_NAME = argv[3];
 			//OUTPUT_DIRECTORY = "../../tests/testActionsBuilder/";
 		}
 		else {
-			PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+			PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
 			SCENARIO = "20_Regl_prov";
 			TARGET_YIELD = "YV_S_MORT";
 			ACTION_NAME = "TBE";
@@ -52,8 +52,8 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		ModelParser.seterrorstowarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
-		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARY_LOCATION, SCENARIOS);
-		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARY_LOCATION, MODELS).at(0);
+		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
+		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
 		//Models::FMTlpmodel optModel1(MODELS.at(0), Models::FMTsolverinterface::MOSEK);
 		//optModel1.doplanning(false, SCHEDULES);
 		//Create a addTheme function that add a theme and update all mask taking a vector of string and a default value

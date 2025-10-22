@@ -11,8 +11,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 
 
-#ifndef FMTYIELDMODELNN_H_INCLUDED
-#define FMTYIELDMODELNN_H_INCLUDED
+#ifndef FMTYIELDMODELNN_Hm_included
+#define FMTYIELDMODELNN_Hm_included
 
 namespace Ort 
 {

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTlogger_H_INCLUDED
-#define FMTlogger_H_INCLUDED
+#ifndef FMTlogger_Hm_included
+#define FMTlogger_Hm_included
 #include <boost/serialization/export.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <fstream>

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTconstantparser_H_INCLUDED
-#define FMTconstantparser_H_INCLUDED
+#ifndef FMTconstantparser_Hm_included
+#define FMTconstantparser_Hm_included
 
 #include "FMTparser.h"
 #include <string>
@@ -61,4 +61,4 @@ class FMTEXPORT FMTconstantparser : public FMTparser
         void write(const Core::FMTconstants& constants, const std::string& location) const;
     };
 }
-#endif // FMTconstantparser_H_INCLUDED
+#endif // FMTconstantparser_Hm_included

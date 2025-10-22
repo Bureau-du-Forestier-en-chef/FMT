@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTLIF_H_INCLUDED
-#define FMTLIF_H_INCLUDED
+#ifndef FMTLIF_Hm_included
+#define FMTLIF_Hm_included
 
 #include "FMTlist.hpp"
 #include <boost/serialization/serialization.hpp>
@@ -92,4 +92,4 @@ class FMTEXPORT FMTlifespans : public FMTlist<int>
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTlifespans)
 
-#endif // FMTLIF_H_INCLUDED
+#endif // FMTLIF_Hm_included

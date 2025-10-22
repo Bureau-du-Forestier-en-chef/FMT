@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	
 
 
-#ifndef FMTSEEXCEPTION_H_INCLUDED
-#define FMTSEEXCEPTION_H_INCLUDED
+#ifndef FMTSEEXCEPTION_Hm_included
+#define FMTSEEXCEPTION_Hm_included
 
 #include <stdexcept>
 
@@ -34,4 +34,4 @@ namespace Exception
     }
 
 
-#endif // FMTEXCEPTION_H_INCLUDED
+#endif // FMTEXCEPTION_Hm_included

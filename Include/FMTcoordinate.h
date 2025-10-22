@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTCOORD_H_INCLUDED
-#define FMTCOORD_H_INCLUDED
+#ifndef FMTCOORD_Hm_included
+#define FMTCOORD_Hm_included
 
 #include <memory>
 #include <boost/unordered_map.hpp>
@@ -80,4 +80,4 @@ namespace boost {
 
 }
 
-#endif // FMTCOORD_H_INCLUDED
+#endif // FMTCOORD_Hm_included

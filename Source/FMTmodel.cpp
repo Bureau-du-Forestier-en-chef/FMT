@@ -809,7 +809,7 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 			for (const Core::FMToutputsource& source : output->getsources())
 				{
 
-				if (source.isaction() &&
+				if (source.isAction() &&
 					p_Filters.find(source.getaction()) != p_Filters.end() &&
 					!p_Filters.at(source.getaction()).first.empty())
 					{
@@ -1691,7 +1691,7 @@ std::vector<const Core::FMTtheme*>FMTmodel::locatenodestaticthemes(const Core::F
 			const std::string yieldvalue = node.source.getyield();
 			for (const std::string& yldbound : node.source.getylds())
 			{
-				if (yields.isyld(yldbound))
+				if (yields.isYld(yldbound))
 				{
 					yieldstolookat.push_back(yldbound);
 				}
@@ -1835,7 +1835,7 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 bool FMTmodel::isstaticnode(const Core::FMToutputnode& node, double ratioofset) const
 {
 	try {
-		if (node.source.isinventory()&&!node.source.isaction())
+		if (node.source.isinventory()&&!node.source.isAction())
 		{
 			for (const size_t& staticid : statictransitionthemes)
 			{
@@ -1876,7 +1876,7 @@ void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 	try {
 		for (const std::string& yldname : specifier.getylds())
 		{
-			if (!yields.isyld(yldname))
+			if (!yields.isYld(yldname))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,yldname,
 					"FMTmodel::validatelistspec", __LINE__, __FILE__);
@@ -1889,32 +1889,32 @@ void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 	}
 
 
-bool FMTmodel::isvalid()
+bool FMTmodel::isValid()
     {
 	try {
-		//this->setsection(Core::FMTsection::Landscape);
+		//this->setSection(Core::FMTsection::Landscape);
 		for (const Core::FMTtheme& theme : themes)
 		{
 			if (theme.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTempty_theme,
 					"for theme id: " + std::to_string(theme.getid()),
-					"FMTmodel::isvalid", __LINE__, __FILE__, Core::FMTsection::Landscape);
+					"FMTmodel::isValid", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		}
-		//this->setsection(Core::FMTsection::Area);
+		//this->setSection(Core::FMTsection::Area);
 		for (const Core::FMTactualdevelopment& developement : area)
 		{
 			std::string name = std::string(developement.getmask());
 			Core::FMTtheme::validate(themes, name);
 		}
-		//this->setsection(Core::FMTsection::Yield);
+		//this->setSection(Core::FMTsection::Yield);
 		this->validatelistmasks(yields);
 
-		//this->setsection(Core::FMTsection::Lifespan);
+		//this->setSection(Core::FMTsection::Lifespan);
 		this->validatelistmasks(lifespan);
 
-		//this->setsection(Core::FMTsection::Action);
+		//this->setSection(Core::FMTsection::Action);
 		for (const Core::FMTaction& action : actions)
 		{
 			this->validatelistmasks(action);
@@ -1923,7 +1923,7 @@ bool FMTmodel::isvalid()
 				validatelistspec(specobject.second);
 			}
 		}
-		//this->setsection(Core::FMTsection::Transition);
+		//this->setSection(Core::FMTsection::Transition);
 		for (const Core::FMTtransition& transition : transitions)
 		{
 			this->validatelistmasks(transition);
@@ -1935,7 +1935,7 @@ bool FMTmodel::isvalid()
 		if (actions.size() != transitions.size())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Model: " + name,
-				"FMTmodel::isvalid",__LINE__, __FILE__);
+				"FMTmodel::isValid",__LINE__, __FILE__);
 		}
 		for (size_t id = 0; id < actions.size(); ++id)
 		{
@@ -1943,10 +1943,10 @@ bool FMTmodel::isvalid()
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_action,
 					"Model: " + name + " " + actions[id].getname(),
-					"FMTmodel::isvalid", __LINE__, __FILE__);
+					"FMTmodel::isValid", __LINE__, __FILE__);
 			}
 		}
-		//this->setsection(Core::FMTsection::Outputs);
+		//this->setSection(Core::FMTsection::Outputs);
 		for (const Core::FMToutput& output : outputs)
 		{
 			//Need a validate output function
@@ -1965,10 +1965,10 @@ bool FMTmodel::isvalid()
 				validatelistspec(source);
 			}
 		}
-		//this->setsection(Core::FMTsection::Empty);
+		//this->setSection(Core::FMTsection::Empty);
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::isvalid", __LINE__, __FILE__);
+		_exhandler->printexceptions("", "FMTmodel::isValid", __LINE__, __FILE__);
 	}
 
     return true;
@@ -2393,8 +2393,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				{
 					validTransitions[transitionIds] = false;
 					std::vector<Core::FMTaction>::const_iterator actionIt = std::find_if(presolvedModel->actions.begin(), presolvedModel->actions.end(), Core::FMTactioncomparator(presolvedTransition.getname()));
-					const size_t ACTION_LOCATION = std::distance(presolvedModel->actions.cbegin(), actionIt);
-					if (actionIt != presolvedModel->actions.end() && validActions[ACTION_LOCATION])
+					const size_t ACTIONm_location = std::distance(presolvedModel->actions.cbegin(), actionIt);
+					if (actionIt != presolvedModel->actions.end() && validActions[ACTIONm_location])
 					{
 						presolvedTransition.presolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
 						validTransitions[transitionIds] = true;

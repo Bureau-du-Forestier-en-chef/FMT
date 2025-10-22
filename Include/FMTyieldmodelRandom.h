@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTyieldmodelRando_H_INCLUDED
-#define FMTyieldmodelRando_H_INCLUDED
+#ifndef FMTyieldmodelRando_Hm_included
+#define FMTyieldmodelRando_Hm_included
 
 #include "FMTyieldmodel.h"
 #include <random>

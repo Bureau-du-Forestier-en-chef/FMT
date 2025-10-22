@@ -5,8 +5,8 @@
 #include <memory>
 #include <boost/thread/recursive_mutex.hpp>
 
-#ifndef FMTYIELDMODELTSLA_H_INCLUDED
-#define FMTYIELDMODELTSLA_H_INCLUDED
+#ifndef FMTYIELDMODELTSLA_Hm_included
+#define FMTYIELDMODELTSLA_Hm_included
 
 namespace Core
 {

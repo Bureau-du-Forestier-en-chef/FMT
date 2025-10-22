@@ -1,5 +1,5 @@
-#ifndef FMTEXCELEXCEPTIONHANDLER_H_INCLUDED
-#define FMTEXCELEXCEPTIONHANDLER_H_INCLUDED
+#ifndef FMTEXCELEXCEPTIONHANDLER_Hm_included
+#define FMTEXCELEXCEPTIONHANDLER_Hm_included
 
 #include "FMTexceptionhandler.h"
 #include <unordered_map>

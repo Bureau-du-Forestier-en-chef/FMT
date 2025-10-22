@@ -23,7 +23,7 @@ const boost::regex FMTconstantparser::rxconstant = boost::regex("^([\\s\\t]*)(((
 FMTconstantparser::FMTconstantparser():
 	FMTparser()
     {
-	setsection(Core::FMTsection::Constants);
+	setSection(Core::FMTsection::Constants);
     }
 
 
@@ -36,19 +36,20 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 		{
 			std::ifstream CONstream(location);
 			std::vector<Core::FMTtheme>themes;
-			if (FMTparser::tryopening(CONstream, location))
+			if (FMTparser::tryOpening(CONstream, location))
 			{
-				while (CONstream.is_open())
+				std::queue<std::pair<std::string,int>>Lines = FMTparser::GetCleanLinewfor(CONstream, themes, constants);
+				while (!Lines.empty())
 				{
-					const std::string line = FMTparser::getcleanlinewfor(CONstream, themes, constants);
+					const std::string line = GetLine(Lines);
 					if (!line.empty())
 					{
 						boost::smatch kmatch;
 						if (!boost::regex_search(line,kmatch,rxconstant))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
-								" at line " + std::to_string(_line),
-								"FMTconstantparser::read", __LINE__, __FILE__, _section);
+								" at line " + std::to_string(m_line),
+								"FMTconstantparser::read", __LINE__, __FILE__, m_section);
 						}
 						std::string key = std::string(kmatch[4]) + std::string(kmatch[6]);
 						if (!std::string(kmatch[5]).empty())
@@ -56,7 +57,7 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 							key += ")";
 							}
 						key.erase(boost::remove_if(key, boost::is_any_of(FMT_STR_SEPARATOR)), key.end());
-						const std::vector<std::string>splited = FMTparser::spliter(std::string(kmatch[8]), FMTparser::rxseparator);
+						const std::vector<std::string>splited = FMTparser::spliter(std::string(kmatch[8]), FMTparser::m_SEPARATOR);
 						std::vector<double>values;
 						for (size_t id = 0; id < splited.size(); ++id)
 						{
@@ -67,9 +68,9 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 								strid.erase(0, 1);
 								values.push_back(constants.get<double>(strid, period));
 							}
-							else if (isnum(splited.at(id)))
+							else if (isNum(splited.at(id)))
 							{
-								values.push_back(getnum<double>(splited.at(id)));
+								values.push_back(getNum<double>(splited.at(id)));
 							}
 						}
 						if (!values.empty())
@@ -79,7 +80,7 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 								constants.set(key, values);
 							}else {
 								_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
-									"Constant redefinition ignored for "+key + " at line " + std::to_string(_line), "FMTconstantparser::read", __LINE__, __FILE__, _section);
+									"Constant redefinition ignored for "+key + " at line " + std::to_string(m_line), "FMTconstantparser::read", __LINE__, __FILE__, m_section);
 							}
 							
 						}
@@ -90,7 +91,7 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 		}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTconstantparser::read", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMTconstantparser::read", __LINE__, __FILE__, m_section);
 			}
 	//constants.passinobject(*this);
     return constants;
@@ -101,14 +102,14 @@ void FMTconstantparser::write(const Core::FMTconstants& constants,const std::str
 	try {
 		std::ofstream constantstream;
 		constantstream.open(location);
-		if (tryopening(constantstream, location))
+		if (tryOpening(constantstream, location))
 		{
 			constantstream << std::string(constants);
 			constantstream.close();
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at "+location,"FMTconstantparser::write", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("at "+location,"FMTconstantparser::write", __LINE__, __FILE__, m_section);
 		}
     }
 }

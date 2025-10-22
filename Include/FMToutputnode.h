@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTOUTPUTNODE_H_INCLUDED
-#define FMTOUTPUTNODE_H_INCLUDED
+#ifndef FMTOUTPUTNODE_Hm_included
+#define FMTOUTPUTNODE_Hm_included
 
 #include "FMToutputsource.h"
 #include <map>
@@ -47,9 +47,9 @@ class FMTEXPORT FMToutputnode
 			{
 			return source.getoutputorigin();
 			}
-		inline bool isactionbased() const
+		inline bool isActionbased() const
 			{
-			return source.isaction();
+			return source.isAction();
 			}
 		bool issamevalues(const FMToutputnode& rhs) const;
 		operator std::string() const;

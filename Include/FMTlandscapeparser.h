@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTlandscapeparser_H_INCLUDED
-#define FMTlandscapeparser_H_INCLUDED
+#ifndef FMTlandscapeparser_Hm_included
+#define FMTlandscapeparser_Hm_included
 
 
 #include "FMTparser.h"
@@ -47,10 +47,10 @@ class FMTEXPORT FMTlandscapeparser : public FMTparser
 		// DocString: FMTlandscapeparser::getindexes
 		/**
 		This function is used to catch the indexed attributes of a theme in the landscape section
-		the returned map hold the parameters name (key) and value (item). It uses the complete string line (index_line) of
+		the returned map hold the parameters name (key) and value (item). It uses the complete string line (indexm_line) of
 		the landscape section and (constants).
 		*/
-		std::map<std::string,double>getindexes(std::string index_line,const Core::FMTconstants& constants);
+		std::map<std::string,double>getindexes(std::string indexm_line,const Core::FMTconstants& constants);
     public:
 		// DocString: FMTlandscapeparser::FMTlandscapeparser()
 		/**
@@ -101,4 +101,4 @@ class FMTEXPORT FMTlandscapeparser : public FMTparser
 }
 
 
-#endif // FMTlandscapeparser_H_INCLUDED
+#endif // FMTlandscapeparser_Hm_included

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTYLDDATA_H_INCLUDED
-#define FMTYLDDATA_H_INCLUDED
+#ifndef FMTYLDDATA_Hm_included
+#define FMTYLDDATA_Hm_included
 
 #include <string>
 #include <map>
@@ -128,4 +128,4 @@ private:
 };
 
 }
-#endif // FMTYLDDATA_H_INCLUDED
+#endif // FMTYLDDATA_Hm_included
