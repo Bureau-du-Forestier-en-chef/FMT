@@ -21,12 +21,19 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-    const std::string primarylocation = argv[1];
-    const std::string scenario = argv[2];
-	const double objvalue = std::stod(argv[3]);
-	/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";
-	const std::string scenario = "03_sc1a_bfecopt";
-	const double objvalue = 100;*/
+    std::string primarylocation;
+    std::string scenario;
+	double objvalue;
+	if (argc > 1)
+		{
+		primarylocation = argv[1];
+		scenario = argv[2];
+		objvalue = std::stod(argv[3]);
+		}else {
+		primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";
+		scenario = "03_sc1a_bfecopt";
+		objvalue = 216707.9809;
+		}
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
