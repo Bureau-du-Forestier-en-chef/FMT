@@ -206,8 +206,6 @@ namespace Parallel
 								max_size = current_size;
 						}
 					}
-					int test = (*localvalues.at(globaloutput.first).begin()).size();
-					std::cout << "test size " << test << " max size " << max_size << std::endl;
 					
 					std::vector<bool> passedlastiteration(max_size, true);
 					
