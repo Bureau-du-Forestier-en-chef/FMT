@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	std::string scenario_name;
 	int length;
 	unsigned int n_threads = 1;
-	// Test arg : planningtest;pri_location|scenario_name;output_location;length
+	// Test arg : planningtest;prim_location|scenario_name;outputm_location;length
 	if (argc > 1) {
 		const std::string vals = argv[1];
 		std::vector<std::string> results;

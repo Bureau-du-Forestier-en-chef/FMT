@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMTlpheuristic_H_INCLUDED
-#define FMTlpheuristic_H_INCLUDED
+#ifndef FMTlpheuristic_Hm_included
+#define FMTlpheuristic_Hm_included
 
 
 #include "FMTlpsolver.h"

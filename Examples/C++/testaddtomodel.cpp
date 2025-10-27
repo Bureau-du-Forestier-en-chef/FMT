@@ -47,7 +47,7 @@ int main()
         }
         modifmodel.addyieldhandlers(newhandlers);
         Core::FMTyields modifyields = modifmodel.getyields();
-        if(modifmodel.getyields().isyld("VOLUMETOTALNEXTAGE"))
+        if(modifmodel.getyields().isYld("VOLUMETOTALNEXTAGE"))
         {
             for(auto& dev:totest)
             {

@@ -4,8 +4,8 @@ Copyright (c) 2019 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
-#ifndef FMTSCOPEDSETRANSLATOR_H_INCLUDED
-#define FMTSCOPEDSETRANSLATOR_H_INCLUDED
+#ifndef FMTSCOPEDSETRANSLATOR_Hm_included
+#define FMTSCOPEDSETRANSLATOR_Hm_included
 
 #if defined _MSC_VER
 #ifndef NOMINMAX
@@ -35,4 +35,4 @@ namespace Exception
     }
 
 
-#endif // FMTEXCEPTION_H_INCLUDED
+#endif // FMTEXCEPTION_Hm_included

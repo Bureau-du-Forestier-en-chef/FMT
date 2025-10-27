@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTMODEL_H_INCLUDED
-#define FMTMODEL_H_INCLUDED
+#ifndef FMTMODEL_Hm_included
+#define FMTMODEL_Hm_included
 
 #include "FMTtheme.h"
 #include "FMTaction.h"
@@ -441,13 +441,13 @@ namespace Models
 		Setter for the model's outputs.
 		*/
 		void setoutputs(const std::vector<Core::FMToutput>& newoutputs);
-		// DocString: FMTmodel::isvalid
+		// DocString: FMTmodel::isValid
 		/**
 		This function validate all the FMTmodel
 		FMTtheme ->FMTactualdevelopements-> FMTyields -> FMTaction -> FMTtransition -> FMToutput -> FMTconstraint
 		return true if the model is valid.
 		*/
-		bool isvalid();
+		bool isValid();
 		// DocString: FMTmodel::locatestaticthemes(const Core::FMToutput, bool ignoreoutputvariables)
 		/**
 		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes
@@ -942,4 +942,4 @@ public:
 
 BOOST_CLASS_EXPORT_KEY(Models::FMTmodel)
 
-#endif // FMTMODEL_H_INCLUDED
+#endif // FMTMODEL_Hm_included

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTreplanningtask_H_INCLUDED
-#define FMTreplanningtask_H_INCLUDED
+#ifndef FMTreplanningtask_Hm_included
+#define FMTreplanningtask_Hm_included
 
 #include "FMTtask.h"
 #include "FMTactualdevelopment.h"

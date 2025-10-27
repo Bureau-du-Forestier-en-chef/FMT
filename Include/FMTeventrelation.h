@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTeventrelation_H_INCLUDED
-#define FMTeventrelation_H_INCLUDED
+#ifndef FMTeventrelation_Hm_included
+#define FMTeventrelation_Hm_included
 
 #include "FMTcoordinate.h"
 #include <boost/functional/hash.hpp>

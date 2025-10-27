@@ -85,10 +85,10 @@ namespace Heuristics
             }
         return (1-maxdifference);
         }
-	bool FMToperatingareaclusterer::isvalidarea(const FMToperatingareacluster& cluster, const double& area, const size_t& actives) const
+	bool FMToperatingareaclusterer::isValidarea(const FMToperatingareacluster& cluster, const double& area, const size_t& actives) const
 	{
 		try {
-			if (cluster.isvalidarea(area))
+			if (cluster.isValidarea(area))
 			{
 				if (maximalnumberofclusters>0)
 				{
@@ -151,10 +151,10 @@ namespace Heuristics
                     }
                 }
             const double maximalfiresize = this->gettargetedoperatingareasize(ignition);
-			while((!actives.empty()|| isvalidarea(ignition,firesize, actives.size())) && firesize <= maximalfiresize)
+			while((!actives.empty()|| isValidarea(ignition,firesize, actives.size())) && firesize <= maximalfiresize)
                 {
 				//*_logger << "fire size " << firesize << " " << maximalfiresize << "\n";
-				if (!isvalidarea(ignition,firesize,actives.size()) && !actives.empty())
+				if (!isValidarea(ignition,firesize,actives.size()) && !actives.empty())
 					{
 						std::vector<double>probabilities;
 						double totaldifference = 0;
@@ -205,7 +205,7 @@ namespace Heuristics
 						outcluster = updatedoutcluster;
 					}
                   
-                    if (isvalidarea(ignition,firesize, actives.size()))
+                    if (isValidarea(ignition,firesize, actives.size()))
                         {
 						//*_logger << "valid! fire size " << firesize << " " << maximalfiresize << "\n";
 						std::vector<double>bounds;
@@ -221,7 +221,7 @@ namespace Heuristics
                         return true;
                         }
                     }
-			//*_logger << "out! "<< isvalidarea(ignition, firesize, actives.size()) << "\n";
+			//*_logger << "out! "<< isValidarea(ignition, firesize, actives.size()) << "\n";
         }catch(...)
             {
             _exhandler->raisefromcatch("", "FMToperatingareaclusterer::spread", __LINE__, __FILE__);

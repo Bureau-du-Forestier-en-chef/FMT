@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMToperatingareascheme_H_INCLUDED
-#define FMToperatingareascheme_H_INCLUDED
+#ifndef FMToperatingareascheme_Hm_included
+#define FMToperatingareascheme_Hm_included
 
 #include "FMToperatingarea.h"
 #include <vector>
@@ -421,16 +421,16 @@ namespace Heuristics
 			it returns a presolved FMTmask with potentialy less data.
 			*/
 			FMToperatingareascheme presolve(const Core::FMTmask& selectedmask,const std::vector<Core::FMTtheme>&presolvedthemes) const;
-			// DocString: FMToperatingareascheme::getnumberofscheme
+			// DocString: FMToperatingareascheme::getNumberofscheme
 			/**
 			Return the number of scheme for the OA. Can only be used if schemestoLP has been set called...
 			*/
-			size_t getnumberofscheme() const;
-			// DocString: FMToperatingareascheme::getnumberofsimplescheme
+			size_t getNumberofscheme() const;
+			// DocString: FMToperatingareascheme::getNumberofsimplescheme
 			/**
 			Return the number of simple scheme with fixed returntime + openingtime
 			*/
-			size_t getnumberofsimplescheme() const;
+			size_t getNumberofsimplescheme() const;
 			// DocString: FMToperatingareascheme::getrejectednodescid
 			/**
 			

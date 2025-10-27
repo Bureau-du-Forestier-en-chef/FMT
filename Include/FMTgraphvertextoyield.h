@@ -6,8 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#ifndef FMTGRAPHTOYIELD_H_INCLUDED
-#define FMTGRAPHTOYIELD_H_INCLUDED
+#ifndef FMTGRAPHTOYIELD_Hm_included
+#define FMTGRAPHTOYIELD_Hm_included
 
 namespace Models
 {
@@ -54,4 +54,4 @@ namespace Graph
 }
 
 
-#endif // FMTYLD_H_INCLUDED
+#endif // FMTYLD_Hm_included

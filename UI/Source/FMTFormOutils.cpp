@@ -151,8 +151,8 @@ System::Collections::Generic::List<System::String^>^ Wrapper::FMTForm::ObtenirLi
 	try
 	{		
 		Parser::FMTmodelparser Modelparser;
-		const std::vector<std::vector<std::string>> listeExtensions = Modelparser.getGDALvectordriverextensions();
-		const std::vector<std::string> listeDrivers = Modelparser.getGDALvectordrivernames();
+		const std::vector<std::vector<std::string>> listeExtensions = Modelparser.getGDALVectorDriverExtensions();
+		const std::vector<std::string> listeDrivers = Modelparser.getGDALVectorDriverNames();
 
 		for (int index = 0; index < listeExtensions.size(); ++index)
 		{

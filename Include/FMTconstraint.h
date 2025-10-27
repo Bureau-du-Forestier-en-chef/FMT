@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTconstraint_H_INCLUDED
-#define FMTconstraint_H_INCLUDED
+#ifndef FMTconstraint_Hm_included
+#define FMTconstraint_Hm_included
 
 #include "FMToutput.h"
 #include <vector>
@@ -306,11 +306,11 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
 		*/
 		std::vector<int>getactionids(const std::vector<Core::FMTaction>& actions) const;
-		// DocString: FMTconstraint::isactionsused
+		// DocString: FMTconstraint::isActionsused
 		/**
 		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
 		*/
-		std::vector<bool>isactionsused(const std::vector<Core::FMTaction>& actions) const;
+		std::vector<bool>isActionsused(const std::vector<Core::FMTaction>& actions) const;
 		// DocString: FMTconstraint::canbeturnedtoyieldsbasedontransitions
 		/**
 		If the constraint can be turned to a simple action bound using a simple yield by checking the transitions before changing it, this function will returns true. 

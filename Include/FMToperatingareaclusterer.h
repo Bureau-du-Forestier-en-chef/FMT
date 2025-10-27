@@ -15,8 +15,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMToperatingareaclusterer_H_INCLUDED
-#define FMToperatingareaclusterer_H_INCLUDED
+#ifndef FMToperatingareaclusterer_Hm_included
+#define FMToperatingareaclusterer_Hm_included
 namespace Heuristics
 {
 // DocString: FMToperatingareaclusterer
@@ -134,11 +134,11 @@ class FMTEXPORT FMToperatingareaclusterer : public FMTlpheuristic
 		For a given cluster (target) this function generates a random targeted cluster size within the minimal and maximal area of the cluster.
 		*/
         double gettargetedoperatingareasize(const FMToperatingareacluster& target);
-		// DocString: FMToperatingareaclusterer::isvalidarea
+		// DocString: FMToperatingareaclusterer::isValidarea
 		/**
 		Check if the area calculated is valid.
 		*/
-		bool isvalidarea(const FMToperatingareacluster& cluster,
+		bool isValidarea(const FMToperatingareacluster& cluster,
 			const double& area, const size_t& actives) const;
          // DocString: FMToperatingareaclusterer::unboundall
 		/**

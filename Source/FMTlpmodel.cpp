@@ -246,7 +246,7 @@ namespace Models
 					}
 				
                 const Heuristics::FMToperatingareacluster newopcluster(Heuristics::FMToperatingareacluster(centroid,allbinaries),originalcluster.getrealminimalarea(),originalcluster.getrealmaximalarea());
-                if (!newopcluster.isvalidareabounds())
+                if (!newopcluster.isValidareabounds())
                     {
                     _exhandler->raise(Exception::FMTexc::FMTignore,
 									"Operating area cluster "+std::string(centroid.getmask())+" wont reach its minimal size",
@@ -1320,20 +1320,20 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						 const std::vector<int> ELEMENTS = getMatrixElement(it, period, FMTmatrixelement::levelvariable);
 						 
 						 std::vector<std::string>::const_iterator name_it = find(level_names.begin(), level_names.end(), variable_level);
-						 const size_t variable_location = std::distance(level_names.cbegin(), name_it);
-						 if (!ELEMENTS.empty() && ELEMENTS.size() > variable_location &&
+						 const size_t variablem_location = std::distance(level_names.cbegin(), name_it);
+						 if (!ELEMENTS.empty() && ELEMENTS.size() > variablem_location &&
 							 (name_it != level_names.end())) // caught a constriant with level!
 						 {
-							 return ELEMENTS.at(variable_location);
+							 return ELEMENTS.at(variablem_location);
 						 }
 						 /*const std::vector<std::vector<int>>constraint_elements = getMatrixElement(model_constraint, period);
 						 std::vector<std::string>::const_iterator name_it = find(level_names.begin(), level_names.end(), variable_level);
 						 const std::vector<int> levelconstelem = constraint_elements.at(FMTmatrixelement::levelvariable);
-						 const size_t variable_location = std::distance(level_names.cbegin(), name_it);
-						 if (!levelconstelem.empty() && levelconstelem.size() > variable_location &&
+						 const size_t variablem_location = std::distance(level_names.cbegin(), name_it);
+						 if (!levelconstelem.empty() && levelconstelem.size() > variablem_location &&
 							 (name_it != level_names.end())) // caught a constriant with level!
 						 {
-							 return levelconstelem.at(variable_location);
+							 return levelconstelem.at(variablem_location);
 						 }*/
 					 }
 				 }
@@ -1361,11 +1361,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					const std::vector<std::vector<int>>constraint_elements = getmatrixelement(model_constraint, period);
 					std::vector<std::string>::const_iterator name_it = find(level_names.begin(), level_names.end(), variable_level);
 					const std::vector<int> levelconstelem = constraint_elements.at(FMTmatrixelement::levelvariable);
-					const size_t variable_location = std::distance(level_names.cbegin(), name_it);
-					if (!levelconstelem.empty() && levelconstelem.size() > variable_location &&
+					const size_t variablem_location = std::distance(level_names.cbegin(), name_it);
+					if (!levelconstelem.empty() && levelconstelem.size() > variablem_location &&
 						(name_it != level_names.end())) // caught a constriant with level!
 					{
-						return levelconstelem.at(variable_location);
+						return levelconstelem.at(variablem_location);
 					}
 				}
 			}

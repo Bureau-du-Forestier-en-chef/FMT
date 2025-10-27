@@ -8,8 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMTsrmodel_H_INCLUDED
-#define FMTsrmodel_H_INCLUDED
+#ifndef FMTsrmodel_Hm_included
+#define FMTsrmodel_Hm_included
 
 #include "FMTmodel.h"
 #include <boost/serialization/export.hpp>
@@ -180,9 +180,17 @@ namespace Models
 		Core::FMTschedule getscheduleproportions(int period, bool withlock) const;
 		// DocString: FMTsrmodel::getstats
 		/**
-		Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
+		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
+		@return the full stats 
 		*/
 		Graph::FMTgraphstats getstats() const;
+		// DocString: FMTsrmodel::getstats
+		/**
+		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
+		@param[in] p_Subset the mask subset
+		@return the graph stats for the graph.
+		*/
+		Graph::FMTgraphstats getGraphStats(const Core::FMTmask& p_Subset) const;
 		// DocString: FMTsrmodel::getcopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.

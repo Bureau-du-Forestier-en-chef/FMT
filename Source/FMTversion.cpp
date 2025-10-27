@@ -119,11 +119,11 @@ std::string FMTversion::getlicense(bool french)
             }
     Parser::FMTparser newparser;
     std::ifstream licensestream(licenselocation);
-    if (newparser.tryopening(licensestream,licenselocation))
+    if (newparser.tryOpening(licensestream,licenselocation))
         {
         while (licensestream.is_open())
 			{
-            const std::string line = newparser.getcleanline(licensestream);
+            const std::string line = newparser.getCleanLine(licensestream);
             fulllicense+=(line+"\n");
 			}
         }

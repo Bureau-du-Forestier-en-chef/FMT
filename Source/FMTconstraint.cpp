@@ -200,7 +200,7 @@ namespace Core
 	bool FMTconstraint::dosupportrandom() const
 		{
 		try {
-			return (sources.size() == 2 && sources.at(0).isaction() && !sources.at(0).isinventory() && sources.at(0).isvariable());
+			return (sources.size() == 2 && sources.at(0).isAction() && !sources.at(0).isinventory() && sources.at(0).isvariable());
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTconstraint::dosupportrandom", __LINE__, __FILE__,Core::FMTsection::Optimize);
@@ -498,13 +498,13 @@ namespace Core
         /*if (islevel())
             {
             size_t location = 0;
-            size_t op_location = 0;
+            size_t opm_location = 0;
             double factor = 1;
             for (const FMToutputsource& source : sources)
                 {
-                if (op_location<operators.size())
+                if (opm_location<operators.size())
                     {
-                    factor = operators.at(op_location).call(0,factor);
+                    factor = operators.at(opm_location).call(0,factor);
                     }
                 if (source.islevel() && !source.isvariable())//constant level!
                     {
@@ -513,7 +513,7 @@ namespace Core
                     }
                 if (location > 0)
                     {
-                    ++op_location;
+                    ++opm_location;
                     }
                 factor = 1;
                 ++location;
@@ -1122,7 +1122,7 @@ namespace Core
 			return returnedvalue;
 			}
 
-		std::vector<bool>FMTconstraint::isactionsused(const std::vector<Core::FMTaction>& actions) const
+		std::vector<bool>FMTconstraint::isActionsused(const std::vector<Core::FMTaction>& actions) const
 		{
 				std::vector<bool>ids(actions.size(),false);
 				try {
@@ -1138,7 +1138,7 @@ namespace Core
 				}
 				catch (...)
 				{
-					_exhandler->raisefromcatch("", "FMTconstraint::isactionsused", __LINE__, __FILE__, Core::FMTsection::Optimize);
+					_exhandler->raisefromcatch("", "FMTconstraint::isActionsused", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 				return ids;
 		}
@@ -1148,7 +1148,7 @@ namespace Core
 			std::vector<int>ids;
 			try {
 				int actionid = 0;
-				for (const bool& use : isactionsused(actions))
+				for (const bool& use : isActionsused(actions))
 					{
 					if (use)
 						{
@@ -1334,7 +1334,7 @@ namespace Core
 					if (source.isvariable())
 					{
 					const std::string yieldname(baseyieldnames + "_" + std::to_string(sourceid));
-					const bool IS_VALId_ACTION = isvalidAction(source.getaction(), actions, p_valideActions);
+					const bool IS_VALId_ACTION = isValidAction(source.getaction(), actions, p_valideActions);
 					if (IS_VALId_ACTION)
 							{
 								for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(source.getaction()).getallaggregates(actions, false))

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTyieldmodelUnitCoverag_H_INCLUDED
-#define FMTyieldmodelUnitCoverag_H_INCLUDED
+#ifndef FMTyieldmodelUnitCoverag_Hm_included
+#define FMTyieldmodelUnitCoverag_Hm_included
 
 #include "FMTyieldmodel.h"
 #include "FMTmask.h"

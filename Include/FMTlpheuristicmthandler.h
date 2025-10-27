@@ -6,8 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 #ifdef FMTWITHOSI
 
-#ifndef FMTlpheuristicmthandler_H_INCLUDED
-#define FMTlpheuristicmthandler_H_INCLUDED
+#ifndef FMTlpheuristicmthandler_Hm_included
+#define FMTlpheuristicmthandler_Hm_included
 
 
 #if defined FMTWITHPYTHON

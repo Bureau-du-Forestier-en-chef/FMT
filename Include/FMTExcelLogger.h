@@ -1,5 +1,5 @@
-#ifndef FMTEXCELLOGGER_H_INCLUDED
-#define FMTEXCELLOGGER_H_INCLUDED
+#ifndef FMTEXCELLOGGER_Hm_included
+#define FMTEXCELLOGGER_Hm_included
 
 #include <vector>
 #include <string>

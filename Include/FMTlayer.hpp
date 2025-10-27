@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTLAYER_H_INCLUDED
-#define FMTLAYER_H_INCLUDED
+#ifndef FMTLAYER_Hm_included
+#define FMTLAYER_Hm_included
 #include <memory>
 #include <map>
 #include <vector>
@@ -399,4 +399,4 @@ namespace Spatial
 
     }
 
-#endif // FMTLAYER_H_INCLUDED
+#endif // FMTLAYER_Hm_included

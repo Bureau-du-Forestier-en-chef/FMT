@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#ifndef FMToperatingareaclusterbinary_H_INCLUDED
-#define FMToperatingareaclusterbinary_H_INCLUDED
+#ifndef FMToperatingareaclusterbinary_Hm_included
+#define FMToperatingareaclusterbinary_Hm_included
 
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>

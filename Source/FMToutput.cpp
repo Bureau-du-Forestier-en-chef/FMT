@@ -431,7 +431,7 @@ void FMToutput::replacedivision(const double& bound)
 	}
 }
 
-bool FMToutput::isvalidAction(const std::string& p_actionOrAggregate,
+bool FMToutput::isValidAction(const std::string& p_actionOrAggregate,
 	const std::vector<FMTaction>& p_actions,
 	const std::vector<bool>& p_validActions)
 {
@@ -892,7 +892,7 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 			if (sources.at(sourceid).isvariable())
 			{
 				const std::string& actionname = sources.at(sourceid).getaction();
-				const bool IS_VALId_ACTION = isvalidAction(actionname,actions, p_valideActions);
+				const bool IS_VALId_ACTION = isValidAction(actionname,actions, p_valideActions);
 				if (filter.canpresolve(sources.at(sourceid).getmask(), selectedthemes) &&
 					(actionname.empty() ||
 						IS_VALId_ACTION) &&
@@ -1265,7 +1265,7 @@ std::vector<const Core::FMTtheme*>FMToutput::getstaticthemes(const std::vector<C
 				const std::string yieldvalue = source.getyield();
 				for (const std::string& yldbound : source.getylds())
 					{
-					if (yields.isyld(yldbound))
+					if (yields.isYld(yldbound))
 						{
 						yieldstolookat.push_back(yldbound);
 						}
@@ -1310,7 +1310,7 @@ void FMToutput::setperiod(const int& newperiod)
 		}
 	}
 
-bool FMToutput::isactionbased() const
+bool FMToutput::isActionbased() const
 	{
 	for (const FMToutputsource& source : sources)
 		{

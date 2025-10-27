@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
 	unsigned int n_threads = 5;
 	if (argc > 1) {
-		// fichier_pri | strat | stoch | tact | output_location | n_thread; length; replicate
+		// fichier_pri | strat | stoch | tact | outputm_location | n_thread; length; replicate
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
 		boost::split(results, vals, boost::is_any_of("|"));

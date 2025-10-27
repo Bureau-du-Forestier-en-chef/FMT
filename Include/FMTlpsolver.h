@@ -6,8 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#ifndef FMTsolve_H_INCLUDED
-#define FMTsolve_H_INCLUDED
+#ifndef FMTsolve_Hm_included
+#define FMTsolve_Hm_included
 #include "FMTsolverinterface.h"
 #include "FMTmatrixbuild.h"
 #include "FMTexceptionhandler.h"

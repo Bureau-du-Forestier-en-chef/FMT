@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTMODELYIELDHANDLER_H_INCLUDED
-#define FMTMODELYIELDHANDLER_H_INCLUDED
+#ifndef FMTMODELYIELDHANDLER_Hm_included
+#define FMTMODELYIELDHANDLER_Hm_included
 
 #include "FMTyieldhandler.h"
 #include <string>

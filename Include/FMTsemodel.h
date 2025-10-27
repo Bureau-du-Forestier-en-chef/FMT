@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTSEM_H_INCLUDED
-#define FMTSEM_H_INCLUDED
+#ifndef FMTSEM_Hm_included
+#define FMTSEM_Hm_included
 
 #include "FMTmodel.h"
 #include "FMTspatialschedule.h"
@@ -204,4 +204,4 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 
 BOOST_CLASS_EXPORT_KEY(Models::FMTsemodel)
 
-#endif // FMTSEM_H_INCLUDED
+#endif // FMTSEM_Hm_included

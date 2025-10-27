@@ -62,7 +62,7 @@ namespace Parser {
 	{
 		OGRLayer* newlayer = nullptr;
 		try {
-			newlayer = createlayer(dataset, "outputsdrift", creationoptions);
+			newlayer = createLayer(dataset, "outputsdrift", creationoptions);
 			OGRFieldDefn PeriodField("Period", OFTInteger);
 			PeriodField.SetWidth(32);
 			OGRFieldDefn OutputField("Output", OFTString);
@@ -83,7 +83,7 @@ namespace Parser {
 				newlayer->CreateField(&driftfield) != OGRERR_NONE)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-					"Cannote create new fields outputsdrift", "FMTmodelparser::createdriftlayer", __LINE__, __FILE__, _section);
+					"Cannote create new fields outputsdrift", "FMTmodelparser::createdriftlayer", __LINE__, __FILE__, m_section);
 				//Cannot create field
 			}
 
@@ -111,7 +111,7 @@ namespace Parser {
 						if (newfeature == NULL)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+								"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
 							//Failed to generate feature
 						}
 						newfeature->SetField("Period", period);
@@ -122,7 +122,7 @@ namespace Parser {
 						if (layer->CreateFeature(newfeature) != OGRERR_NONE)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+								"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
 							//Failed to generate feature
 						}
 						OGRFeature::DestroyFeature(newfeature);
@@ -198,7 +198,7 @@ namespace Parser {
 	{
 		OGRLayer* newlayer = nullptr;
 		try {
-			newlayer = createlayer(p_dataset, p_modelName, p_creationOptions);
+			newlayer = createLayer(p_dataset, p_modelName, p_creationOptions);
 			OGRFieldDefn IterationField("Iteration", OFTInteger);
 			IterationField.SetWidth(32);
 			OGRFieldDefn PeriodField("Period", OFTInteger);
@@ -216,14 +216,14 @@ namespace Parser {
 				if (newlayer->CreateField(ValidDefinition) != OGRERR_NONE) 
 					{
 					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error, 
-						"Cannote create new field " + std::string(ValidDefinition->GetNameRef()), "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+						"Cannote create new field " + std::string(ValidDefinition->GetNameRef()), "FMTmodelparser::writeresults", __LINE__, __FILE__, m_section);
 					}
 
 				}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::createresultslayer", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("", "FMTmodelparser::createresultslayer", __LINE__, __FILE__, m_section);
 		}
 		return newlayer;
 	}
@@ -233,7 +233,7 @@ namespace Parser {
 		const int& iteration, const int& firstperiod, const int& lastperiod) const
 	{
 		try {
-			boost::lock_guard<boost::recursive_mutex> guard(mtx);
+			boost::lock_guard<boost::recursive_mutex> guard(m_MTX);
 			std::map<std::string, std::vector<std::vector<double>>>allvalues;
 			//Cannot fill up infeasible for non-total ... i guess
 			allvalues["Total"] = std::vector<std::vector<double>>(theoutputs.size(), std::vector<double>((lastperiod - firstperiod) + 1, std::numeric_limits<double>::quiet_NaN()));
@@ -241,7 +241,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::fillupinfeasibles", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("", "FMTmodelparser::fillupinfeasibles", __LINE__, __FILE__, m_section);
 		}
 
 	}
@@ -251,7 +251,7 @@ namespace Parser {
 		const std::map<std::string, std::vector<std::vector<double>>>& values, bool writeNaN)const
 	{
 		try {
-			boost::lock_guard<boost::recursive_mutex> guard(mtx);
+			boost::lock_guard<boost::recursive_mutex> guard(m_MTX);
 			for (const auto& toutputvalues : values)
 			{
 				size_t outputid = 0;
@@ -271,7 +271,7 @@ namespace Parser {
 							if (newfeature == NULL)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-									"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+									"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
 								//Failed to generate feature
 							}
 							newfeature->SetField("Iteration", iteration);
@@ -282,7 +282,7 @@ namespace Parser {
 							if (layer->CreateFeature(newfeature) != OGRERR_NONE)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-									"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+									"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
 								//Failed to generate feature
 							}
 							OGRFeature::DestroyFeature(newfeature);
@@ -296,7 +296,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("", "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
 		}
 
 	}
@@ -309,14 +309,14 @@ namespace Parser {
 		std::string gdaldrivername) const
 	{
 		try {
-			GDALDataset* newdataset = createOGRdataset(location, gdaldrivername);
+			GDALDataset* newdataset = createOGRDataset(location, gdaldrivername);
 			OGRLayer* newlayer = createResultsLayer(model.getname(), newdataset);
 			writefeatures(newlayer, firstperiod, 0, theoutputs, model.getoutputsfromperiods(theoutputs, firstperiod, lastperiod, level));
 			GDALClose(newdataset);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, m_section);
 		}
 	}
 #endif 
@@ -337,7 +337,7 @@ namespace Parser {
 		try {
 			std::ofstream pristream;
 			pristream.open(location);
-			if (tryopening(pristream, location))
+			if (tryOpening(pristream, location))
 			{
 				pristream << "LANDSCAPE\t\t[" + lanfile + "]\n";
 				pristream << "AREAS\t[" + arefile + "]\n";
@@ -356,7 +356,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writeprimary", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writeprimary", __LINE__, __FILE__, m_section);
 		}
 	}
 
@@ -388,7 +388,7 @@ namespace Parser {
 					sumarea += dev.getarea();
 				}
 				const std::string header = "Total area: " + std::to_string(sumarea) + "\n";
-				areaparser.setheader(header);
+				areaparser.setHeader(header);
 				areaparser.write(devs, arefile);
 			}
 		}
@@ -453,12 +453,12 @@ namespace Parser {
 				}
 			const std::string modelobjective = "Objective value: " + ObjectiveValue + "\n";
 			const std::string modelstatus = "Status: " + status + "\n";
-			scheduleparser.setheader(modelstatus+ modelobjective);
+			scheduleparser.setHeader(modelstatus+ modelobjective);
 			scheduleparser.write(schedules, seqfile, false);
 		}
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodelparser::writemodel", __LINE__, __FILE__, _section);
+		_exhandler->printexceptions("", "FMTmodelparser::writemodel", __LINE__, __FILE__, m_section);
 	}
 }
 
@@ -494,7 +494,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		
 	}catch (...)
 		{
-		_exhandler->printexceptions(" at " + folder, "FMTmodelparser::write", __LINE__, __FILE__, _section);
+		_exhandler->printexceptions(" at " + folder, "FMTmodelparser::write", __LINE__, __FILE__, m_section);
 		}
 	}
 
@@ -510,7 +510,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::read", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("", "FMTmodelparser::read", __LINE__, __FILE__, m_section);
 		}
 		return Models::FMTmodel();
 	}
@@ -530,13 +530,13 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("While getting constraint from " + constraintstr, "FMTmodelparser::getconstraintsfromstring", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions("While getting constraint from " + constraintstr, "FMTmodelparser::getconstraintsfromstring", __LINE__, __FILE__, m_section);
 		}
 		return constraints;
 	}
 
 
-	Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector<int>>& common_sections,
+	Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector<int>>& commonm_sections,
 		std::vector<Models::FMTmodel>& models,
 		const std::string& con, const std::string& lan,
 		const std::string& lif, const std::string& are, const std::string& yld,
@@ -556,17 +556,17 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			std::vector<Core::FMTconstraint>constraints;
 			if (allow_mapping)
 			{
-				std::map<std::string, std::vector<int>>::const_iterator constants_it = common_sections.find(con);
-				std::map<std::string, std::vector<int>>::const_iterator themes_it = common_sections.find(lan);
-				std::map<std::string, std::vector<int>>::const_iterator lifespan_it = common_sections.find(lif);
-				std::map<std::string, std::vector<int>>::const_iterator area_it = common_sections.find(are);
-				std::map<std::string, std::vector<int>>::const_iterator yield_it = common_sections.find(yld);
-				std::map<std::string, std::vector<int>>::const_iterator actions_it = common_sections.find(act);
-				std::map<std::string, std::vector<int>>::const_iterator transitions_it = common_sections.find(tr);
-				std::map<std::string, std::vector<int>>::const_iterator outputs_it = common_sections.find(out);
-				std::map<std::string, std::vector<int>>::const_iterator optimize_it = common_sections.find(opt);
+				std::map<std::string, std::vector<int>>::const_iterator constants_it = commonm_sections.find(con);
+				std::map<std::string, std::vector<int>>::const_iterator themes_it = commonm_sections.find(lan);
+				std::map<std::string, std::vector<int>>::const_iterator lifespan_it = commonm_sections.find(lif);
+				std::map<std::string, std::vector<int>>::const_iterator area_it = commonm_sections.find(are);
+				std::map<std::string, std::vector<int>>::const_iterator yield_it = commonm_sections.find(yld);
+				std::map<std::string, std::vector<int>>::const_iterator actions_it = commonm_sections.find(act);
+				std::map<std::string, std::vector<int>>::const_iterator transitions_it = commonm_sections.find(tr);
+				std::map<std::string, std::vector<int>>::const_iterator outputs_it = commonm_sections.find(out);
+				std::map<std::string, std::vector<int>>::const_iterator optimize_it = commonm_sections.find(opt);
 				std::vector<int>::iterator common_it;
-				if (constants_it != common_sections.end() && themes_it != common_sections.end())
+				if (constants_it != commonm_sections.end() && themes_it != commonm_sections.end())
 				{
 					std::vector<int>common_sets(themes_it->second.size() + constants_it->second.size());
 					common_it = std::set_intersection(themes_it->second.begin(), themes_it->second.end(),
@@ -576,7 +576,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					{
 						std::sort(common_sets.begin(), common_sets.end());
 						themes = models.at(*common_sets.begin()).getthemes();
-						if (area_it != common_sections.end())
+						if (area_it != commonm_sections.end())
 						{
 							std::vector<int>common_area(common_sets.size() + area_it->second.size());
 							common_it = std::set_intersection(common_sets.begin(), common_sets.end(),
@@ -588,7 +588,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 								areas = models.at(*common_area.begin()).getarea();
 							}
 						}
-						if (yield_it != common_sections.end())
+						if (yield_it != commonm_sections.end())
 						{
 							std::vector<int>common_yield(common_sets.size() + yield_it->second.size());
 							common_it = std::set_intersection(common_sets.begin(), common_sets.end(),
@@ -600,7 +600,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 								yields = models.at(*common_yield.begin()).getyields();
 							}
 						}
-						if (lifespan_it != common_sections.end())
+						if (lifespan_it != commonm_sections.end())
 						{
 							std::vector<int>common_lif(common_sets.size() + lifespan_it->second.size());
 							common_it = std::set_intersection(common_sets.begin(), common_sets.end(),
@@ -610,7 +610,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							{
 								std::sort(common_lif.begin(), common_lif.end());
 								lifespan = models.at(*common_lif.begin()).getlifespan();
-								if (actions_it != common_sections.end())
+								if (actions_it != commonm_sections.end())
 								{
 									std::vector<int>common_actions(common_lif.size() + actions_it->second.size());
 									common_it = std::set_intersection(common_lif.begin(), common_lif.end(),
@@ -620,7 +620,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 									{
 										std::sort(common_actions.begin(), common_actions.end());
 										actions = models.at(*common_actions.begin()).getactions();
-										if (transitions_it != common_sections.end())
+										if (transitions_it != commonm_sections.end())
 										{
 											std::vector<int>common_transitions(common_actions.size() + transitions_it->second.size());
 											common_it = std::set_intersection(common_actions.begin(), common_actions.end(),
@@ -637,7 +637,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							}
 						}
 
-						if (outputs_it != common_sections.end())//should be with action??
+						if (outputs_it != commonm_sections.end())//should be with action??
 						{
 							std::vector<int>common_output(common_sets.size() + outputs_it->second.size());
 							common_it = std::set_intersection(common_sets.begin(), common_sets.end(),
@@ -647,7 +647,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							{
 								std::sort(common_output.begin(), common_output.end());
 								outputs = models.at(*common_output.begin()).getoutputs();
-								if (optimize_it != common_sections.end())
+								if (optimize_it != commonm_sections.end())
 								{
 									std::vector<int>common_optimize(common_output.size() + optimize_it->second.size());
 									common_it = std::set_intersection(common_output.begin(), common_output.end(),
@@ -664,52 +664,52 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					}
 				}
 
-				const int model_location = static_cast<int>(models.size());
-				if (constants_it == common_sections.end())
+				const int modelm_location = static_cast<int>(models.size());
+				if (constants_it == commonm_sections.end())
 				{
-					common_sections[con] = std::vector<int>();
+					commonm_sections[con] = std::vector<int>();
 				}
-				common_sections[con].push_back(model_location);
-				if (themes_it == common_sections.end())
+				commonm_sections[con].push_back(modelm_location);
+				if (themes_it == commonm_sections.end())
 				{
-					common_sections[lan] = std::vector<int>();
+					commonm_sections[lan] = std::vector<int>();
 				}
-				common_sections[lan].push_back(model_location);
-				if (area_it == common_sections.end())
+				commonm_sections[lan].push_back(modelm_location);
+				if (area_it == commonm_sections.end())
 				{
-					common_sections[are] = std::vector<int>();
+					commonm_sections[are] = std::vector<int>();
 				}
-				common_sections[are].push_back(model_location);
-				if (lifespan_it == common_sections.end())
+				commonm_sections[are].push_back(modelm_location);
+				if (lifespan_it == commonm_sections.end())
 				{
-					common_sections[lif] = std::vector<int>();
+					commonm_sections[lif] = std::vector<int>();
 				}
-				common_sections[lif].push_back(model_location);
-				if (yield_it == common_sections.end())
+				commonm_sections[lif].push_back(modelm_location);
+				if (yield_it == commonm_sections.end())
 				{
-					common_sections[yld] = std::vector<int>();
+					commonm_sections[yld] = std::vector<int>();
 				}
-				common_sections[yld].push_back(model_location);
-				if (actions_it == common_sections.end())
+				commonm_sections[yld].push_back(modelm_location);
+				if (actions_it == commonm_sections.end())
 				{
-					common_sections[act] = std::vector<int>();
+					commonm_sections[act] = std::vector<int>();
 				}
-				common_sections[act].push_back(model_location);
-				if (transitions_it == common_sections.end())
+				commonm_sections[act].push_back(modelm_location);
+				if (transitions_it == commonm_sections.end())
 				{
-					common_sections[tr] = std::vector<int>();
+					commonm_sections[tr] = std::vector<int>();
 				}
-				common_sections[tr].push_back(model_location);
-				if (outputs_it == common_sections.end())
+				commonm_sections[tr].push_back(modelm_location);
+				if (outputs_it == commonm_sections.end())
 				{
-					common_sections[out] = std::vector<int>();
+					commonm_sections[out] = std::vector<int>();
 				}
-				common_sections[out].push_back(model_location);
-				if (optimize_it == common_sections.end())
+				commonm_sections[out].push_back(modelm_location);
+				if (optimize_it == commonm_sections.end())
 				{
-					common_sections[opt] = std::vector<int>();
+					commonm_sections[opt] = std::vector<int>();
 				}
-				common_sections[opt].push_back(model_location);
+				commonm_sections[opt].push_back(modelm_location);
 			}
 			const boost::filesystem::path landfile(lan);
 			const std::string modelname = landfile.stem().string();
@@ -717,34 +717,34 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			FMTconstantparser cparser;
 			//cparser.passinobject(*this);
 			constants = cparser.read(con);
-			mostrecentfile = std::max(cparser.getmostrecentfiletime(), mostrecentfile);
+			m_MostRecentFile = std::max(cparser.getMostRecentFiletime(), m_MostRecentFile);
 			if (themes.empty())
 			{
 				FMTlandscapeparser landparser;
 				//landparser.passinobject(*this);
 				themes = landparser.read(constants, lan);
-				mostrecentfile = std::max(landparser.getmostrecentfiletime(), mostrecentfile);
+				m_MostRecentFile = std::max(landparser.getMostRecentFiletime(), m_MostRecentFile);
 			}
 			if (areas.empty())
 			{
 				FMTareaparser areaparser;
 				//areaparser.passinobject(*this);
 				areas = areaparser.read(themes, constants, are);
-				mostrecentfile = std::max(areaparser.getmostrecentfiletime(), mostrecentfile);
+				m_MostRecentFile = std::max(areaparser.getMostRecentFiletime(), m_MostRecentFile);
 			}
 			if (lifespan.empty())
 			{
 				FMTlifespanparser lifespanparser;
 				//lifespanparser.passinobject(*this);
 				lifespan = lifespanparser.read(themes, constants, lif);
-				mostrecentfile = std::max(lifespanparser.getmostrecentfiletime(), mostrecentfile);
+				m_MostRecentFile = std::max(lifespanparser.getMostRecentFiletime(), m_MostRecentFile);
 			}
 			if (yields.empty())
 			{
 				FMTyieldparser yldparser;
 				//yldparser.passinobject(*this);
 				yields = yldparser.read(themes, constants, yld);
-				mostrecentfile = std::max(yldparser.getmostrecentfiletime(), mostrecentfile);
+				m_MostRecentFile = std::max(yldparser.getMostRecentFiletime(), m_MostRecentFile);
 			}
 			if (actions.empty())
 			{
@@ -757,7 +757,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 						"_DEATH", "FMTmodelparser::referenceread", __LINE__, __FILE__, Core::FMTsection::Action);
 					actions.push_back(Models::FMTmodel::defaultdeathaction(lifespan, themes));
 				}
-				mostrecentfile = std::max(actparser.getmostrecentfiletime(), mostrecentfile);
+				m_MostRecentFile = std::max(actparser.getMostRecentFiletime(), m_MostRecentFile);
 
 			}
 			if (transitions.empty())
@@ -771,14 +771,14 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 						"_DEATH", "FMTmodelparser::referenceread", __LINE__, __FILE__, Core::FMTsection::Transition);
 					transitions.push_back(Models::FMTmodel::defaultdeathtransition(lifespan, themes));
 				}
-				mostrecentfile = std::max(trnparser.getmostrecentfiletime(), mostrecentfile);
+				m_MostRecentFile = std::max(trnparser.getMostRecentFiletime(), m_MostRecentFile);
 			}
 			if (outputs.empty())
 			{
 				FMToutputparser outparser;
 				//outparser.passinobject(*this);
 				outputs = outparser.read(themes, actions, yields, constants, out);
-				mostrecentfile = std::max(outparser.getmostrecentfiletime(), mostrecentfile);
+				m_MostRecentFile = std::max(outparser.getMostRecentFiletime(), m_MostRecentFile);
 			}
 			if (!opt.empty() && constraints.empty())
 			{
@@ -787,7 +787,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
 				//optzparser.passinobject(*this);
 				constraints = optzparser.read(themes, actions, constants, outputs,yields, excluded, opt);
-				mostrecentfile = std::max(optzparser.getmostrecentfiletime(), mostrecentfile);
+				m_MostRecentFile = std::max(optzparser.getMostRecentFiletime(), m_MostRecentFile);
 				bool shouldcrapreference = (actions.size() != excluded.size());
 				if (!shouldcrapreference)
 				{
@@ -804,15 +804,15 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				}
 				if (shouldcrapreference)//send a signal to make sure no other model reference to this one!
 				{//This model is not suppose to be considered common!
-					common_sections[act].pop_back();
-					if (common_sections.at(act).empty())
+					commonm_sections[act].pop_back();
+					if (commonm_sections.at(act).empty())
 					{
-						common_sections.erase(act);
+						commonm_sections.erase(act);
 					}
-					common_sections[tr].pop_back();
-					if (common_sections.at(tr).empty())
+					commonm_sections[tr].pop_back();
+					if (commonm_sections.at(tr).empty())
 					{
-						common_sections.erase(tr);
+						commonm_sections.erase(tr);
 					}
 				}
 				actions = excluded; //here we go
@@ -837,11 +837,11 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		return returnedmodel;
 	}
 
-		void FMTmodelparser::writetoproject(const std::string& primary_location,
+		void FMTmodelparser::writetoproject(const std::string& primarym_location,
 			const Models::FMTmodel& model)
 		{
 			try {
-				boost::filesystem::path primpath(primary_location);
+				boost::filesystem::path primpath(primarym_location);
 				const std::string filename = primpath.stem().string();
 				const boost::filesystem::path basefolder = primpath.parent_path();
 				if (!boost::filesystem::is_directory(basefolder))
@@ -870,22 +870,22 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					const std::string coptfile = commonlocation + coptname;
 					const std::string cliffile = commonlocation + clifname;
 					const std::string cseqfile = commonlocation + cseqname;
-					if (_logger->logwithlevel("Writing " + primary_location + " ", 0))
+					if (_logger->logwithlevel("Writing " + primarym_location + " ", 0))
 					{
 						*_logger << "\n";
 						_logger->logstamp();
 						_logger->logtime();
 					}
-					writeprimary(primary_location,
+					writeprimary(primarym_location,
 						clanname, carename, cyldname, cactname, ctrnname, coutname, coptname, clifname, cseqname);
 					writemodel(model, clanfile, carefile, cyldfile, cactfile, ctrnfile, coutfile, coptfile, cliffile, cseqfile);
 				}else {//read the existing ROOT model...
 					const std::vector<std::string>rootmodel(1,"ROOT");
-					const std::vector<Models::FMTmodel> models = readproject(primary_location, rootmodel);
+					const std::vector<Models::FMTmodel> models = readproject(primarym_location, rootmodel);
 					if (models.empty())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-							"No Root model for the primary "+ primary_location, "FMTmodelparser::writetoproject", __LINE__, __FILE__);
+							"No Root model for the primary "+ primarym_location, "FMTmodelparser::writetoproject", __LINE__, __FILE__);
 					}
 					if (!boost::filesystem::is_directory(basefolder / "Scenarios"))
 						{
@@ -942,14 +942,14 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::writetoproject", __LINE__, __FILE__);
+				_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::writetoproject", __LINE__, __FILE__);
 			}
 
 	}
 
 	
 
-	std::vector<Models::FMTmodel>FMTmodelparser::readfromfolder(const std::string& primary_location,
+	std::vector<Models::FMTmodel>FMTmodelparser::readfromfolder(const std::string& primarym_location,
 		const std::string& folder,
 		std::vector<std::string>scenarios,
 		bool validatescenarioname,
@@ -960,14 +960,14 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		try {
 			std::vector<Models::FMTmodel>models;
 			std::map<std::string, std::vector<int>>commons;
-			if (_logger->logwithlevel("Reading " + primary_location + " ", 0))
+			if (_logger->logwithlevel("Reading " + primarym_location + " ", 0))
 			{
 				*_logger << "\n";
 				_logger->logstamp();
 				_logger->logtime();
 			}
 			readstart = getclock();
-			std::map<Core::FMTsection, std::string>bases = getprimary(primary_location);
+			std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
 
 			if (!readarea)
 			{
@@ -999,7 +999,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					bases.at(Core::FMTsection::Optimize), true);
 				models.back().setname("ROOT");
 			}
-			const boost::filesystem::path primary_path(primary_location);
+			const boost::filesystem::path primary_path(primarym_location);
 			std::string main_name = primary_path.stem().string();
 			boost::to_lower(main_name);
 			const boost::filesystem::path scenarios_path = boost::filesystem::path(folder);// (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
@@ -1021,7 +1021,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 								if (boost::filesystem::is_regular_file(fileitr->path()))
 								{
 									const std::string extension = fileitr->path().extension().string();
-									Core::FMTsection section = from_extension(extension);
+									Core::FMTsection section = fromExtension(extension);
 									std::string file_name = fileitr->path().stem().string();
 									boost::to_lower(file_name);
 									if (section != Core::FMTsection::Empty && (!validatescenarioname || file_name == main_name))
@@ -1103,12 +1103,12 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					}
 				}
 				_exhandler->raise(Exception::FMTexc::FMTmissing_scenarios,
-					boost::algorithm::join(missing_scenarios, " ") + " for " + primary_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
+					boost::algorithm::join(missing_scenarios, " ") + " for " + primarym_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
 		}
 
 		if (_logger->logwithlevel("Done reading " + getdurationinseconds(readstart) + " ", 0))
@@ -1119,42 +1119,42 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 
 	}
 
-	std::vector<Models::FMTmodel>FMTmodelparser::readtemplates(const std::string& primary_location, const std::string& templatefolder)
+	std::vector<Models::FMTmodel>FMTmodelparser::readtemplates(const std::string& primarym_location, const std::string& templatefolder)
 	{
 		try {
-			return readfromfolder(primary_location, templatefolder, std::vector<std::string>(), false);
+			return readfromfolder(primarym_location, templatefolder, std::vector<std::string>(), false);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readtemplate", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readtemplate", __LINE__, __FILE__);
 		}
 		return std::vector<Models::FMTmodel>();
 	}
 
-	std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& primary_location,
+	std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& primarym_location,
 		std::vector<std::string>scenarios,
 		bool readarea, bool readoutputs, bool readoptimize)
 	{
 		try {
-			const boost::filesystem::path primary_path(primary_location);
+			const boost::filesystem::path primary_path(primarym_location);
 			const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 			const std::string scenariofolder = scenarios_path.string();
-			return readfromfolder(primary_location, scenariofolder, scenarios, true,readarea,readoutputs,readoptimize);
+			return readfromfolder(primarym_location, scenariofolder, scenarios, true,readarea,readoutputs,readoptimize);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
 		}
 		return std::vector<Models::FMTmodel>();
 	}
 
-	std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const std::string& primary_location,
+	std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const std::string& primarym_location,
 		const std::vector<Models::FMTmodel>& models)
 	{
 		std::vector<std::vector<Core::FMTschedule>>schedules(models.size());
 		try {
-			const boost::filesystem::path primary_path(primary_location);
-			const std::map<Core::FMTsection, std::string>bases = getprimary(primary_location);
+			const boost::filesystem::path primary_path(primarym_location);
+			const std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
 			FMTscheduleparser scheduleparser;
 			scheduleparser.passinexceptionhandler(_exhandler);
 			std::vector<Models::FMTmodel>::const_iterator model_it = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator("ROOT"));
@@ -1170,7 +1170,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				}
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTempty_schedules,
-						primary_location + " for the ROOT scenario", "FMTmodelparser::readschedules", __LINE__, __FILE__);
+						primarym_location + " for the ROOT scenario", "FMTmodelparser::readschedules", __LINE__, __FILE__);
 				}
 			}
 			const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
@@ -1201,21 +1201,21 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							}
 							else {
 								_exhandler->raise(Exception::FMTexc::FMTempty_schedules,
-									primary_location + " for the scenario " + model_name, "FMTmodelparser::readschedules", __LINE__, __FILE__);
+									primarym_location + " for the scenario " + model_name, "FMTmodelparser::readschedules", __LINE__, __FILE__);
 							}
 						}
 					}
 				}
 			}
-			if (std::difftime(mostrecentfile, scheduleparser.getmostrecentfiletime()) > 0)
+			if (std::difftime(m_MostRecentFile, scheduleparser.getMostRecentFiletime()) > 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"Schedules files older than the model at " + primary_location, "FMTmodelparser::readschedules", __LINE__, __FILE__);
+					"Schedules files older than the model at " + primarym_location, "FMTmodelparser::readschedules", __LINE__, __FILE__);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readschedules", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readschedules", __LINE__, __FILE__);
 		}
 
 		return schedules;

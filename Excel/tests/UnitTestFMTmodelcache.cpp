@@ -17,9 +17,9 @@ namespace Testing
 			UnitTestFMTmodelcache() : m_cache()
 				{
 				Parser::FMTmodelparser modelParser;
-				const std::string PRIMARY_LOCATION = "../../../../Examples/Models/TWD_land/TWD_land.pri";
+				const std::string PRIMARYm_location = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 				const std::vector<std::string>SCENARIOS(1, "LP");
-				const std::vector<Models::FMTmodel> MODELS = modelParser.readproject(PRIMARY_LOCATION, SCENARIOS);
+				const std::vector<Models::FMTmodel> MODELS = modelParser.readproject(PRIMARYm_location, SCENARIOS);
 				m_cache = Wrapper::FMTmodelcache(MODELS.at(0), "");
 				}
 			void testThemeSelectionToMask()

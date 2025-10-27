@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTareaparser_H_INCLUDED
-#define FMTareaparser_H_INCLUDED
+#ifndef FMTareaparser_Hm_included
+#define FMTareaparser_Hm_included
 
 #include "FMTparser.h"
 #include <iterator>
@@ -276,14 +276,14 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		@param[in] line read
 		@return true if got exclude
 		*/
-		bool _isExclude(const std::string& p_line) const;
+		bool _isExclude(const std::string& pm_line) const;
 		// DocString: FMTareaparser::_getExcludeValue
 		/**
 		@brief get the excluded line Value
 		@param[in] line read
 		@return a non empty line if something to exclude
 		*/
-		std::string _getExcludeValue(const std::string& p_line) const;
+		std::string _getExcludeValue(const std::string& pm_line) const;
 		// DocString: FMTareaparser::_getExcludedSpec
 		/**
 		@brief get a mask n spec of the excluded line
@@ -426,5 +426,5 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			
     };
 }
-#endif // FMTareaparser_H_INCLUDED
+#endif // FMTareaparser_Hm_included
 

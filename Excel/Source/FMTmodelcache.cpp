@@ -721,7 +721,7 @@ namespace Wrapper
 				//const Core::FMTyields& yields = model->getyields();
 				const Core::FMTmask subset = themeSelectionToMask(themeselection);
 				if (!yields.empty() &&
-					yields.isyld(yieldname) &&
+					yields.isYld(yieldname) &&
 					!(subset.empty() && !themeselection.empty()))
 				{
 					const Core::FMTdevelopment adev(subset, age, 0, period);
@@ -1050,6 +1050,25 @@ namespace Wrapper
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getgraphstats", __LINE__, __FILE__);
+		}
+		return stats;
+	}
+
+	std::vector<int> FMTmodelcache::getGraphStatsSubset(const std::string& p_ThemeSelection) const
+	{
+		std::vector<int>stats;
+		try {
+			const Core::FMTmask SUBSET = themeSelectionToMask(p_ThemeSelection);
+			Graph::FMTgraphstats graphstats = FMTsrmodel::getGraphStats(SUBSET);
+			stats.push_back(graphstats.cols);
+			stats.push_back(graphstats.rows);
+			stats.push_back(graphstats.vertices);
+			stats.push_back(graphstats.edges);
+			stats.push_back(graphstats.transfer_rows);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getGraphStatsSubset", __LINE__, __FILE__);
 		}
 		return stats;
 	}

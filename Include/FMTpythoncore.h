@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTPYTHONCORE_H_INCLUDED
-#define FMTPYTHONCORE_H_INCLUDED
+#ifndef FMTPYTHONCORE_Hm_included
+#define FMTPYTHONCORE_Hm_included
 
 #if defined FMTWITHPYTHON
 #ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS

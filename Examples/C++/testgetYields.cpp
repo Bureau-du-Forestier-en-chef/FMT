@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/CahierCOS_SPAT_P10_IT1_V/13_Sc5a_Determin_avsp.pri";
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CahierCOS_SPAT_P10_IT1_V/13_Sc5a_Determin_avsp.pri";
 			scenario = "ROOT";
 			maskstr = "? ? ? ? ? ? ? INC ? ? ? ? ? P27037 ? ? ? ? ? ?";
 			yieldname = "YOUVERT";
@@ -68,9 +68,21 @@ int main(int argc, char *argv[])
 		const double tolerance = 0.01;
 		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		//optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getperiod());
 		
-		optimizationmodel.doplanning(false, schedules);
+		const bool FEASIBLE = optimizationmodel.doplanning( false, schedules);
+		/*if (FEASIBLE)
+		{
+			std::vector<Core::FMTschedule>OutSchedules;
+			for (int period = 1; period <= 10; ++period)
+			{
+				OutSchedules.push_back(optimizationmodel.getsolution(period));
+			}
+			Parser::FMTscheduleparser scparser;
+			scparser.write(OutSchedules, "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CahierCOS_SPAT_P10_IT1_V/test.seq");
+		}*/
+		
 		bool gotovoltotrec = false;
 		const Core::FMTdevelopment adev(Core::FMTmask(maskstr,optimizationmodel.getthemes()), age, 0, period);
 		const Graph::FMTgraphvertextoyield graph_info = optimizationmodel.getGraphVertexToYield();

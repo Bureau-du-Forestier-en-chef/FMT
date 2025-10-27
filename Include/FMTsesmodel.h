@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTSESM_H_INCLUDED
-#define FMTSESM_H_INCLUDED
+#ifndef FMTSESM_Hm_included
+#define FMTSESM_Hm_included
 
 #include "FMTsemodel.h"
 #include <boost/serialization/vector.hpp>
@@ -136,4 +136,4 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 
 BOOST_CLASS_EXPORT_KEY(Models::FMTsesmodel)
 
-#endif // FMTSESM_H_INCLUDED
+#endif // FMTSESM_Hm_included

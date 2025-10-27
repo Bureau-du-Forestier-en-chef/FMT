@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTtransitionparser_H_INCLUDED
-#define FMTtransitionparser_H_INCLUDED
+#ifndef FMTtransitionparser_Hm_included
+#define FMTtransitionparser_Hm_included
 
 #include "FMTparser.h"
 #include <boost/regex.hpp>
@@ -109,4 +109,4 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
 		std::vector<Core::FMTGCBMtransition>readGCBM(const std::string& location) const;
     };
 }
-#endif // FMTtransitionparser_H_INCLUDED
+#endif // FMTtransitionparser_Hm_included

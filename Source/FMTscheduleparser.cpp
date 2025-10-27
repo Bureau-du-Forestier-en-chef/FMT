@@ -20,35 +20,36 @@ namespace Parser {
 
 	FMTscheduleparser::FMTscheduleparser() :FMTparser()
 	{
-		setsection(Core::FMTsection::Schedule);
+		setSection(Core::FMTsection::Schedule);
 	}
 	FMTscheduleparser::FMTscheduleparser(const FMTscheduleparser& rhs) : FMTparser(rhs)
 	{
-		setsection(Core::FMTsection::Schedule);
+		setSection(Core::FMTsection::Schedule);
 	}
 
 	int FMTscheduleparser::getvariable() const
 	{
 		int value = 0;
 		try {
-			if (!_comment.empty())
+			if (!m_comment.empty())
 			{
-				std::string strvalue = _comment;
+				std::string strvalue = m_comment;
 				strvalue.erase(strvalue.begin() + 1);
 				std::vector<std::string>strsources;
 				boost::split(strsources, strvalue, boost::is_any_of(";\t "), boost::token_compress_on);
-				value = getnum<int>(strsources.at(1));
+				value = getNum<int>(strsources.at(1));
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch( "for comment " + _comment,"FMTscheduleparser::getvariable", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch( "for comment " + m_comment,"FMTscheduleparser::getvariable", __LINE__, __FILE__, m_section);
 		}
 		return value;
 	}
 
 	std::string FMTscheduleparser::getSchedulePath(const std::string& p_primary_path, const std::string& p_output_scenario_name) 
 	{
+		std::string thePath;
 		try {
 			// On vérifie si le dossier Scenarios existe et si le fichier de schedule existe, sinon on écrit dans le root
 			const boost::filesystem::path primpath(p_primary_path);
@@ -62,13 +63,13 @@ namespace Parser {
 				schedule_path = basefolder / boost::filesystem::path(primary_name.string() + ".seq");
 			}
 
-			return schedule_path.string();
+			thePath =  schedule_path.string();
 
-		}
-		catch (const std::exception&)
+		}catch (...)
 		{
-			_exhandler->printexceptions("for primary " + p_primary_path, "FMTscheduleparser::getSchedulePath", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions("for primary " + p_primary_path, "FMTscheduleparser::getSchedulePath", __LINE__, __FILE__, m_section);
 		}
+		return thePath;
 	}
 
 	FMTscheduleparser& FMTscheduleparser::operator = (const FMTscheduleparser& rhs)
@@ -76,7 +77,7 @@ namespace Parser {
 		if (this != &rhs)
 		{
 			FMTparser::operator=(rhs);
-			setsection(Core::FMTsection::Schedule);
+			setSection(Core::FMTsection::Schedule);
 		}
 		return *this;
 	}
@@ -86,14 +87,14 @@ namespace Parser {
 		std::vector<Core::FMTschedule>schedules;
 		try {
 			std::ifstream schedulestream(location);
-			if (FMTparser::tryopening(schedulestream, location))
+			if (FMTparser::tryOpening(schedulestream, location))
 			{
 				std::vector<std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>>data;
 				bool uselock = false;
 				bool firstline = true;
 				while (schedulestream.is_open())
 				{
-					std::string line = FMTparser::getcleanline(schedulestream);
+					std::string line = FMTparser::getCleanLine(schedulestream);
 					if (!line.empty())
 					{
 						std::vector<std::string>values;
@@ -118,28 +119,28 @@ namespace Parser {
 								mask += values[id] + " ";
 							}
 							mask.pop_back();
-							if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
-							const int age = getnum<int>(values[id]);
+							if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
+							const int age = getNum<int>(values[id]);
 							++id;
-							const double area = getnum<double>(values[id]);
+							const double area = getNum<double>(values[id]);
 							if (area > tolerance)
 							{
 								++id;
 								int lock = 0;
 								if(uselock)
 								{
-									lock = getnum<int>(values[id]);
+									lock = getNum<int>(values[id]);
 									++id;
 								}
 								const std::string actionname = values[id];
-								if (!isact(Core::FMTsection::Schedule, actions, actionname)) 
+								if (!isAct(Core::FMTsection::Schedule, actions, actionname)) 
 								{
 									_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, 
-									"The schedule must specify an action existing in the model for each developement. No action named " + actionname + " at line " + std::to_string(_line),
+									"The schedule must specify an action existing in the model for each developement. No action named " + actionname + " at line " + std::to_string(m_line),
 									"FMTscheduleparser::read", __LINE__, __FILE__);
 								}
 								++id;
-								const int period = getnum<int>(values[id]);
+								const int period = getNum<int>(values[id]);
 								if (static_cast<size_t>(period) - 1 == data.size())
 								{
 									data.push_back(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>());
@@ -189,7 +190,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTscheduleparser::read", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMTscheduleparser::read", __LINE__, __FILE__, m_section);
 		}
 		return schedules;
 	}
@@ -240,7 +241,7 @@ namespace Parser {
 				schedulestream.open(location);  // Open normaly (overwrite file)
 			}
 
-			if (tryopening(schedulestream, location))
+			if (tryOpening(schedulestream, location))
 			{
 				const auto firstnonemptyschedule = _getFirstEmptySchedule(schedules);
 				if (firstnonemptyschedule != schedules.end())
@@ -273,7 +274,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + location, "FMTscheduleparser::write", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions("at " + location, "FMTscheduleparser::write", __LINE__, __FILE__, m_section);
 		}
 	}
 

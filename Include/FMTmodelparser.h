@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTmodelparser_H_INCLUDED
-#define FMTmodelparser_H_INCLUDED
+#ifndef FMTmodelparser_Hm_included
+#define FMTmodelparser_Hm_included
 
 
 #include <map>
@@ -81,11 +81,11 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 						std::string opt = std::string());
 		// DocString: FMTmodelparser::readtemplate
 		/**
-		The readtemplate function read the base model from primary_location and then load all everything from templatefolder and 
+		The readtemplate function read the base model from primarym_location and then load all everything from templatefolder and 
 		use each folder in templatefolder has scenarios of the base model. Each folders within the templatefolder will will gave their names
 		to the FMTmodel. So within a given subfolder it will read *._act, *._yld and so on...
 		*/
-		std::vector<Models::FMTmodel>readtemplates(const std::string& primary_location,const std::string& templatefolder);
+		std::vector<Models::FMTmodel>readtemplates(const std::string& primarym_location,const std::string& templatefolder);
 		// DocString: FMTmodelparser::readproject
 		/**
 		The readproject function reads multiple scenarios based on a primary file location (.pri).
@@ -95,7 +95,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		wont be read. If readoutputs is false then output section wont be read. If readoptimize is false then the optimize section
 		wonht be read.
 		*/
-		std::vector<Models::FMTmodel>readproject(const std::string& primary_location,
+		std::vector<Models::FMTmodel>readproject(const std::string& primarym_location,
 			std::vector<std::string>scenarios = std::vector<std::string>(),
 			bool readarea = true,bool readoutputs = true, bool readoptimize = true);
 		// DocString: FMTmodelparser::writetoproject
@@ -104,16 +104,16 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		If the primary file exist it will read the scenario writen and compare each section with the model and write the model has a 
 		new scenario...
 		*/
-		void writetoproject(const std::string& primary_location,
+		void writetoproject(const std::string& primarym_location,
 			const Models::FMTmodel& model);
 		// DocString: FMTmodelparser::readschedules
 		/**
 		The readschedules function read the schedule files of the specified (models) based on a primary file
-		(primary_location). It returns a vector of vector of FMTschedule ordered the same way as the models.
+		(primarym_location). It returns a vector of vector of FMTschedule ordered the same way as the models.
 		If validate file date is true then it will validate that the parser most recent file is older than the
 		schedule parser most recent file, if it is not it will return a empty schedule.
 		*/
-		std::vector<std::vector<Core::FMTschedule>>readschedules(const std::string& primary_location,
+		std::vector<std::vector<Core::FMTschedule>>readschedules(const std::string& primarym_location,
 			const std::vector<Models::FMTmodel>& models);
 		// DocString: FMTmodelparser::getconstraintsfromstring
 		/**
@@ -220,7 +220,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		Instead of reading multiple time the same section this function read it once or reference it to
 		a section of a other model in the (models) vector.
 		*/
-		Models::FMTmodel referenceread(std::map<std::string, std::vector<int>>& common_sections,
+		Models::FMTmodel referenceread(std::map<std::string, std::vector<int>>& commonm_sections,
 			std::vector<Models::FMTmodel>& models,
 			const std::string& con, const std::string& lan,
 			const std::string& lif, const std::string& are, const std::string& yld,
@@ -228,10 +228,10 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 			std::string opt = std::string(), bool allow_mapping = false);
 		// DocString: FMTmodelparser::readfromfolder
 		/**
-		Read models from a folder (can be scenarios), based on a primary_location, if scenarios is empty it will read all models in the
+		Read models from a folder (can be scenarios), based on a primarym_location, if scenarios is empty it will read all models in the
 		folder, if validatescenarioname is true it will only read model's section with name matching the primary name else it will read anything.
 		*/
-		std::vector<Models::FMTmodel>readfromfolder(const std::string& primary_location,
+		std::vector<Models::FMTmodel>readfromfolder(const std::string& primarym_location,
 			const std::string& folder,
 			std::vector<std::string>scenarios,
 			bool validatescenarioname,
@@ -246,4 +246,4 @@ class FMTEXPORT FMTmodelparser : public FMTparser
     };
 }
 
-#endif // FMTmodelparser_H_INCLUDED
+#endif // FMTmodelparser_Hm_included

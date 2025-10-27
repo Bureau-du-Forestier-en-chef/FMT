@@ -61,6 +61,7 @@ namespace Wrapper
 		std::vector<std::string> getnoaction(const std::string& filter) const;
 		std::set<Core::FMTSerie> getRotations(const std::string& themeselection, const std::string& aggregate) const;
 		bool haveSerie(const std::string& p_serie, const std::string& themeselection, const std::string& aggregate) const;
+		std::vector<int> getGraphStatsSubset(const std::string& p_ThemeSelection) const;
 		std::vector<int> getgraphstats() const;
 		int getperiods() const;
 		Logging::FMTExcelLogger* getlogger();

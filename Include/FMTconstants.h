@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTCON_H_INCLUDED
-#define FMTCON_H_INCLUDED
+#ifndef FMTCON_Hm_included
+#define FMTCON_Hm_included
 
 #include <boost/unordered_map.hpp>
 #include <boost/serialization/serialization.hpp>
@@ -103,4 +103,4 @@ class FMTEXPORT FMTconstants : public FMTobject
 
 BOOST_CLASS_EXPORT_KEY(Core::FMTconstants)
 
-#endif // FMTCON_H_INCLUDED
+#endif // FMTCON_Hm_included
