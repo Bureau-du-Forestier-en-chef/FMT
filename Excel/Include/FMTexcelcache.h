@@ -41,6 +41,7 @@ namespace Wrapper
 		~FMTexcelcache();
 		System::Collections::Generic::List<System::String^>^ readnsolveTemplates(System::String^ primarylocation, System::String^ templatefolder, int length, bool solve);
 		bool add(System::String^ primarylocation, System::String^ scenario);
+		bool addAndBuild(System::String^ primarylocation, System::String^ scenario, int length);
 		void remove(System::String^ primarylocation, System::String^ scenario);
 		double getvalue(System::String^ primaryname, System::String^ scenario,
 			System::String^ outputname, System::String^ themeselection,int period);
@@ -64,6 +65,7 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ getperiods(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getconstraints(System::String^ primaryname, System::String^ scenario, System::String^ output);
 		System::Collections::Generic::List<int>^ getgraphstats(System::String^ primaryname, System::String^ scenario);
+		System::Collections::Generic::List<int>^ getGraphStatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection);
 		bool writejpeg(System::String^ jpeglocation, System::String^ primaryname, System::String^ scenario, int themeid, System::Collections::Generic::List<System::String^>^ attributes);
 		int size();
 		bool gotexception();

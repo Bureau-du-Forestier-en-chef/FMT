@@ -1384,6 +1384,18 @@ namespace Models
 		return m_graph->getstats();
 	}
 
+	Graph::FMTgraphstats FMTsrmodel::getGraphStats(const Core::FMTmask& p_Subset) const
+	{
+		Graph::FMTgraphstats TheStats;
+		try {
+			TheStats = m_graph->getStats(p_Subset);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::getGraphStats", __LINE__, __FILE__);
+		}
+		return TheStats;
+	}
+
 	int FMTsrmodel::getfirstactiveperiod() const
 	{
 		return m_graph->getfirstactiveperiod();

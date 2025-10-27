@@ -1610,6 +1610,40 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			return (start < static_cast<int>(developments.size()) && start <= stop);
 		}
+		FMTgraphstats getStats(const Core::FMTmask& p_Subset)
+		{
+			FMTgraphstats SubsetStats;
+			try {
+				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				std::unordered_set<int>selectedVariables;
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); 
+					vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				{
+					const FMTvertex_descriptor DESCRIPTOR = *vertex_iterator;
+					const FMTbasevertexproperties& VERTEX_PROPERTIES = data[DESCRIPTOR];
+					if (VERTEX_PROPERTIES.get().getmask().isSubsetOf(p_Subset))
+						{
+						++SubsetStats.vertices;
+						const int OUT_EDGES = static_cast<int>(boost::out_degree(DESCRIPTOR,data));
+						SubsetStats.edges += OUT_EDGES;
+						++SubsetStats.transfer_rows;
+						++SubsetStats.rows;
+						for (const int& IN_VAR : getinvariables(DESCRIPTOR))
+							{
+							if (selectedVariables.find(IN_VAR) == selectedVariables.end())//No double counting for variables
+								{
+								selectedVariables.insert(IN_VAR);
+								++SubsetStats.cols;
+								}
+							}
+						}
+				}
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("", "FMTgraph::getStats", __LINE__, __FILE__);
+				}
+			return SubsetStats;
+		}
 		FMTgraphstats getstats() const
 		{
 			return stats;

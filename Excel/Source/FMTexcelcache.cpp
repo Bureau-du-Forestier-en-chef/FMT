@@ -186,6 +186,43 @@ namespace Wrapper
 		return scenarios;
 	}
 
+	bool FMTexcelcache::addAndBuild(System::String^ primarylocation, System::String^ scenario, int length)
+	{
+		try {
+			const std::string naming = formatforcache(primarylocation, scenario);
+			if (models->find(naming) == models->end())
+			{
+				//Default behavior reload pas avec le même nom 
+				msclr::interop::marshal_context context;
+				const std::string pfile = context.marshal_as<std::string>(primarylocation);
+				const std::string sfile = context.marshal_as<std::string>(scenario);
+				std::vector<std::string>scenarios(1, sfile);
+				const std::vector<Models::FMTmodel> allmodels = parser->readproject(pfile, scenarios);
+				const std::string mappath = getmappath(pfile);
+				(*models)[naming] = FMTmodelcache(allmodels.at(0), mappath);
+				(*models)[naming].setlength(length);
+				if ((*models)[naming].buildnsolve(false))
+					{
+					return true;
+					}
+				
+			}
+			else {
+				FMTmodelcache emptycache;
+				Logging::FMTExcelLogger* log = emptycache.getlogger();
+				if (log != nullptr)
+				{
+					log->clearout();
+				}
+			}
+		}
+		catch (...)
+		{
+			captureexception(" FMTexcelcache::addAndBuild");
+		}
+		return false;
+	}
+
 	bool FMTexcelcache::add(System::String^ primarylocation, System::String^ scenario)
 	{
 		try {
@@ -514,6 +551,30 @@ namespace Wrapper
 		return list;
 	}
 
+	System::Collections::Generic::List<int>^ FMTexcelcache::getGraphStatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection)
+	{
+		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
+		try {
+			const std::string naming = formatforcache(p_PrimaryName, p_Scenario);
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				msclr::interop::marshal_context context;
+				const std::string SELECTION = context.marshal_as<std::string>(p_ThemeSelection);
+				for (const int& value : mit->second.getGraphStatsSubset(SELECTION))
+				{
+					list->Add(value);
+				}
+			}
+
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getgraphstats");
+		}
+		return list;
+	}
+
 	System::Collections::Generic::List<int>^ FMTexcelcache::getgraphstats(System::String^ primaryname, System::String^ scenario)
 	{
 		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
@@ -663,13 +724,20 @@ namespace Wrapper
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
+				std::unordered_set<std::string>UniqueRotations;
 				msclr::interop::marshal_context context;
 				const std::string sfilter = context.marshal_as<std::string>(themeselection);
 				const std::string saggregate = context.marshal_as<std::string>(aggregate);
 				for (const Core::FMTSerie& rotation : mit->second.getRotations(sfilter, saggregate))
 				{
 					System::String^ rotationName = gcnew System::String(rotation.getSerie().c_str());
-					values->Add(rotationName);
+					const std::string KEY = context.marshal_as<std::string>(themeselection);
+					if (UniqueRotations.find(KEY)== UniqueRotations.end())
+						{
+						values->Add(rotationName);
+						UniqueRotations.insert(KEY);
+						}
+				
 				}
 
 			}
