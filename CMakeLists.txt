@@ -588,6 +588,8 @@ if (DEFINED ENV{GDAL_DIR})
 				execute_process(COMMAND bash "${GDAL_CONFIG}" --libs OUTPUT_VARIABLE GDAL_LIBRARIES) #Cygwin does not like gdallibrary 
 			endif(NOT CYGWIN)
 			execute_process(COMMAND bash "${GDAL_CONFIG}" --version OUTPUT_VARIABLE GDAL_FULLVERSION)
+			string(REGEX REPLACE "-lshell32.lib" "-lshell32"  GDAL_LIBRARIES "${GDAL_LIBRARIES}")
+			string(REGEX REPLACE "-lole32.lib" "-lole32"  GDAL_LIBRARIES "${GDAL_LIBRARIES}")
 			if ("${GDAL_FULLVERSION}" VERSION_LESS "2.3")
 				 message(WARNING "You need at least GDAL 2.3 to get GDAL functionalities")
 				 unset(GDAL_FOUND)

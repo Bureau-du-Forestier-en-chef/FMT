@@ -258,6 +258,8 @@ void exportModel()
 			"@DocString(FMTsrmodel::getstats)")
 		.def("getRotations", &Models::FMTsrmodel::getRotations,
 			"@DocString(FMTsrmodel::getRotations)")
+		.def("getGraphStats", &Models::FMTsrmodel::getGraphStats,
+			"@DocString(FMTsrmodel::getGraphStats)")
 		.def("getavailablesolverinterface", &Models::FMTsrmodel::getavailablesolverinterface,
 			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
 		.def("getscheduleproportions", &Models::FMTsrmodel::getscheduleproportions,
