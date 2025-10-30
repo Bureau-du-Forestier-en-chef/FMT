@@ -8,7 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 cmake_minimum_required(VERSION 3.6)
 
-project(FMT VERSION 1.0.1 LANGUAGES CXX)
+project(FMT VERSION 1.0.2 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -1077,4 +1077,5 @@ if (GENERATE_RELEASE_PACKAGE)
 		
 
 endif(GENERATE_RELEASE_PACKAGE)
+
 
