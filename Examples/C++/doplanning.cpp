@@ -34,9 +34,9 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/WS_PC9949_08251_Ajuste_MDB/PC_9949_U08251_2028_MODB01.pri";
-			scenario = "1201_RegProv_avsp";
-			length = 1;
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/Mod_cc_v2.pri";
+			scenario = "ROOT";
+			length = 5;
 			objectivevalue = 2836;
 		}
 		Parser::FMTmodelparser modelparser;
@@ -133,11 +133,11 @@ int main(int argc, char* argv[])
 		
 		/*Parser::FMTscheduleparser schparser;
 		std::vector<Core::FMTschedule>returnschedule;
-		for (int id = 0; id < 10;++id)
+		for (int id = 0; id < length+1;++id)
 		{
 			returnschedule.push_back(optimizationmodel.getsolution(id+1, false));
 		}
-		schparser.write(returnschedule, "D:/test/schedule.seq");*/
+		schparser.write(returnschedule, "../../tests/doplanning/schedule.seq");*/
 		std::cout << " Objective: " << int(optimizationmodel.getObjValue())<<"\n";
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 		{

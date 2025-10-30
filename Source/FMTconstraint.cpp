@@ -1107,6 +1107,17 @@ namespace Core
 				default:
 				break;
 				}
+			if (returnedvalue > FMT_DBL_TOLERANCE && isgoal())
+				{
+				std::string GoalName;
+				double GoalValue = 0;
+				getgoal(GoalName, GoalValue);
+				if (GoalName=="WEIGHT")
+					{
+					returnedvalue *= GoalValue;
+					}
+
+				}
 			if ((!isobjective()&&(returnedvalue < 0 || std::isnan(returnedvalue) || isinf(returnedvalue)))||
 				(isobjective() && isinf(returnedvalue)))
 				{

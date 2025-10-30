@@ -44,11 +44,16 @@ int main(int argc, char* argv[])
 		boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
 		length = std::stoi(argv[3]);
 	}else {
-		modellocation = "T:/Donnees/Usagers/PICBR1/PC9424_U08551_DET/";
-		primarylocation = modellocation + "PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
-		scenario = "14_Sc5_Determin_apsp";
-		length = 2;
-		spatialOutputs = { "OVOLGFIREC" };
+		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Weight/";
+		primarylocation = modellocation + "PC_9964_U08451_2028_MODB01.pri";
+		scenario = "120_RegProv_apsp_AGG";
+		length = 3;
+		spatialOutputs = { "OVOLTOTREC" };*/
+		modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
+		primarylocation = modellocation + "Mod_cc_v2.pri";
+		scenario = "ROOT";
+		length = 5;
+		spatialOutputs = { "OVOLTOTREC" };
 	}
 	const std::string outdir = "../../tests/Spatial_doplanning/";
 	Parser::FMTmodelparser mparser;
@@ -80,10 +85,11 @@ int main(int argc, char* argv[])
 	const std::string rastpath = modellocation + "rasters/";
 	setMapping(rastpath, simulationmodel);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 5);
+	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 30);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false, schedules.at(0));
+	simulationmodel.LogConstraintsInfeasibilities();
 	const Spatial::FMTspatialschedule& SPATIAL_SCHEDULE = simulationmodel.getspschedule();
 	/*Parser::FMTareaparser areaParser;
 	for (int period = 1; period <= length; ++period)

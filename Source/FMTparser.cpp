@@ -1525,6 +1525,11 @@ std::string  FMTparser::_getAbsolutePath(std::string p_Path) const
 			const boost::filesystem::path finalpath = parentdir / boost::filesystem::path("../..") / basepath.filename();
 			p_Path = finalpath.string();
 		}
+		if (!boost::filesystem::exists(p_Path))
+		{
+			boost::replace_all(p_Path, "\\..\\..\\", "\\");
+			boost::replace_all(p_Path, "../..\\", "");
+		}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTparser::_getAbsolutePath", __LINE__, __FILE__, m_section);

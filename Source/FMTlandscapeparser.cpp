@@ -202,18 +202,24 @@ FMTlandscapeparser::FMTlandscapeparser() :
 						else if (!aggregate.empty())
 						{
 							pasttheme = -1;
-							const std::string targettheme = kmatch[13];
+							std::string targettheme = kmatch[13];
 							int themelocation = 0;
 							aggregatename = kmatch[20];
 							if (!targettheme.empty())
 								{
 								aggregatename = kmatch[17];
 								pasttheme= (getNum<int>(targettheme, constants) - 1);
+								if (static_cast<size_t>(pasttheme)>= themes.size())
+									{
+									targettheme.clear();
+									pasttheme = -1;
+									}
 								}
 							aggregate_redefiniton = false;
 
 							if ((std::find(aggregates.begin(), aggregates.end(), aggregatename) != aggregates.end()) ||
-								(pasttheme!=-1 && themes.at(pasttheme).isaggregate(aggregatename)))
+								(pasttheme!=-1 &&
+									themes.at(pasttheme).isaggregate(aggregatename)))
 							{
 								aggregate_redefiniton = true;
 								_exhandler->raise(Exception::FMTexc::FMTaggregate_redefinition,
