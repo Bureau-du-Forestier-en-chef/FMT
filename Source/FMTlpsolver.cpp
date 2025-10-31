@@ -204,6 +204,10 @@ namespace Models
 					MSK_putintparam(task, MSK_IPAR_LOG, 10);
 					MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
 					}
+				
+				MSK_putintparam(task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
+				// Si on veut un timeout de 1h avant que ça crash
+				//MSK_putdouparam(task, MSK_DPAR_LICENSE_WAIT_TIME, 3600);
 				MSKrescodee error = MSK_optimize(task);
 				if (error > 0)
 					{
@@ -444,7 +448,10 @@ namespace Models
 				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
 				MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
 				}
-			// TODO gab faire un while pour MSK_RES_ERR_LICENSE_MAX Maximum number of licenses is reached.
+
+			MSK_putintparam(task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
+			// Si on veut un timeout de 1h avant que ça crash
+			//MSK_putdouparam(task, MSK_DPAR_LICENSE_WAIT_TIME, 3600);
 			MSKrescodee error = MSK_optimize(task);
 
 			if (error > 0)
