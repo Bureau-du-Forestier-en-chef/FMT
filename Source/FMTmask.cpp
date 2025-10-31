@@ -82,6 +82,17 @@ std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
     return sub;
     }
 
+size_t FMTmask::_countTheme(const FMTtheme& theme) const
+ {
+	 size_t count = 0;
+	 for (size_t id = theme.m_start; id < (theme.m_start + theme.size()); ++id)
+	 {
+		 count += static_cast<size_t>(data.at(id));
+	
+	 }
+	 return count;
+ }
+
  bool FMTmask::_anyIntersect(const FMTmask& p_MASK, const FMTtheme& p_THEME) const
 	 {
 	 size_t bIt = p_THEME.m_start;
@@ -111,7 +122,7 @@ FMTmask FMTmask::getpostsolvemask(const FMTmask& mask, const std::vector<FMTthem
 
 size_t FMTmask::getsubsetcount(const FMTtheme& theme) const
 {
-	return subset(theme).count();
+	return _countTheme(theme);
 }
 
 void FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<uint8_t>& subset)
@@ -150,6 +161,7 @@ void  FMTmask::setExclusiveBits(const FMTmask& p_mask, const FMTtheme& p_theme)
 std::vector<size_t>FMTmask::getNonFullBlocks() const
 {
 	std::vector<size_t>Blocks;
+	Blocks.reserve(data.m_bits.size());
 	for (size_t Id = 0; Id < data.m_bits.size();++Id)
 		{
 		if (data.m_bits.at(Id) != 0xff)
@@ -493,6 +505,12 @@ bool FMTmask::isSubsetOf(const FMTmask& p_rhs) const
 	{
 	return data.is_subset_of(p_rhs.data);
 	}
+
+void FMTmask::reserve(size_t p_size)
+	{
+	data.reserve(p_size);
+	}
+
 
 FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes) const
 	{

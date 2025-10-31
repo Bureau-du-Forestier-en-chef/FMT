@@ -129,11 +129,13 @@ namespace Core
 			{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
-				if (yieldnames.at(id).find("GOAL_") != std::string::npos)
+				const size_t GOAL_FINDER = yieldnames.at(id).find("GOAL_");
+				if (GOAL_FINDER != std::string::npos)
 				{
-					std::vector<std::string>names;
-					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
-					name = names[1];
+					//std::vector<std::string>names;
+					//boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
+					//name = names[1];
+					name = yieldnames.at(id).substr(GOAL_FINDER+5, yieldnames.at(id).size());
 					value = yieldbounds.at(id).getlower();
 					break;
 				}
@@ -668,11 +670,10 @@ namespace Core
 			{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
-				if (yieldnames.at(id).find("GOAL_") != std::string::npos)
+				const size_t GOAL_FINDER = yieldnames.at(id).find("GOAL_");
+				if (GOAL_FINDER != std::string::npos)
 				{
-					std::vector<std::string>names;
-					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
-					goal += names[1] + ",";
+					goal += yieldnames.at(id).substr(GOAL_FINDER + 5, yieldnames.at(id).size()) + ",";
 					goal += std::to_string(yieldbounds.at(id).getlower());
 				}
 				if (yieldnames.at(id).find("_SETTOGLOBAL") != std::string::npos)
@@ -1112,7 +1113,7 @@ namespace Core
 				std::string GoalName;
 				double GoalValue = 0;
 				getgoal(GoalName, GoalValue);
-				if (GoalName=="WEIGHT")
+				if (GoalName=="_WEIGHT")
 					{
 					returnedvalue *= GoalValue;
 					}

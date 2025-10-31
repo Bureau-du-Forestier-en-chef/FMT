@@ -64,6 +64,14 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			{
 			return static_cast<int>(age);
 			}
+		// DocString: FMTdevelopment::getShortAge
+		/**
+		Get the age of the development in a short int format
+		*/
+		inline uint8_t getShortAge() const
+		{
+			return age;
+		}
 		// DocString: FMTdevelopment::getlock
 		/**
 		Get the lock of the developement.

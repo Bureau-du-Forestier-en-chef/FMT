@@ -54,6 +54,10 @@ namespace Graph
 			{
 			return static_cast<int>(action);
 			}
+		inline int8_t getShortActionID() const
+			{
+			return action;
+			}
 		void setactionID(const int& newid);
 		bool isAction(const std::vector<Core::FMTaction>& actions,
 			const Core::FMTaction& rhsaction) const;

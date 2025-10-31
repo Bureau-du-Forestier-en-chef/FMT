@@ -275,6 +275,7 @@ class FMTEXPORT FMTmask
 		Append a bitsets to the bitset data member of the FMTmask.
 		*/
         void append(const boost::dynamic_bitset<uint8_t> &bits);
+
 		// DocString: FMTmask::binarizedappend
 		/**
 		Binarize any class and append it to the mask.
@@ -391,6 +392,12 @@ class FMTEXPORT FMTmask
 		{
 			return name;
 		}
+		// DocString: FMTmask::reserve
+		/**
+		@brief reserve memory for the boost dynamicbitset.
+		@param[in] p_size number of bits to reserve.
+		*/
+		void reserve(size_t p_size);
 		// DocString: FMTmask::refine
 		/**
 		It will return a new FMTmask where the ? are completed with the attribute for the theme from (mask).
@@ -449,6 +456,13 @@ class FMTEXPORT FMTmask
 		@return true if intersect else false.
 		*/
 		bool _anyIntersect(const FMTmask& p_MASK, const FMTtheme& p_THEME) const;
+		// DocString: FMTmask::_countTheme
+		/**
+		@brief count number of bit set in the theme subset.
+		@param[in] p_THEME the theme we subset on
+		@return number of time the bits are on
+		*/
+		size_t _countTheme(const FMTtheme& p_Theme) const;
 		// DocString: FMTmask::setsubset
 		/**
 		Set a given (subset) (theme size) for the FMTtheme (theme) to the mask

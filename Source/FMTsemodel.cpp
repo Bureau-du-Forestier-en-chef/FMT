@@ -81,12 +81,22 @@ namespace Models
 			double total = 0;
 			*_logger << "Constraints infeasibilities report: " << "\n";
 			const std::vector<Core::FMTconstraint>constraints = getconstraints();
-			for (const double& value : solution.getconstraintsvalues(*this))
+			for (double value : solution.getconstraintsvalues(*this))
 			{
 				if (cid > 0 && !constraints.at(cid).isspatial())
 				{
 					if (value > 0)
 					{
+						if (constraints.at(cid).isgoal())
+						{
+							double GoalValue;
+							std::string GoalName;
+							constraints.at(cid).getgoal(GoalName, GoalValue);
+							if (GoalName=="_WEIGHT")
+								{
+								value /= GoalValue;
+								}
+						}
 						std::string constraintname = std::string(constraints.at(cid));
 						std::replace(constraintname.begin(), constraintname.end(), '\n', ' ');
 						constraintname += ("(" + std::to_string(static_cast<int>(value))+")");

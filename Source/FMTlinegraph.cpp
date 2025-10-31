@@ -654,7 +654,7 @@ namespace Graph
 		{
 		const Core::FMTdevelopment& development = getbasedevelopment();
 		p_dynamicmask.setIntersect(development.getmask());
-		p_dynamicmask.binarizedappend<int>(development.getage());
+		p_dynamicmask.binarizedappend<int8_t>(development.getShortAge());
 		filledgesmask(p_dynamicmask, p_period);
 		}
 
@@ -662,7 +662,7 @@ namespace Graph
 		{
 		const Core::FMTdevelopment& development = getbasedevelopment();
 		Core::FMTmask mask = development.getmask().getintersect(dynamicmask);
-		mask.binarizedappend<int>(development.getage());
+		mask.binarizedappend<int8_t>(development.getShortAge());
 		return mask;
 		}
 
@@ -677,9 +677,9 @@ namespace Graph
 			while (edge_iterator != edge_iterator_end && periodcount <= maximalperiod)
 				{
 					const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
-					const int actionid = edgeprop.getactionID();
-					mask.binarizedappend<int>(actionid);
-					if (actionid < 0)
+					const int8_t ACTION_ID = edgeprop.getShortActionID();
+					mask.binarizedappend<int8_t>(ACTION_ID);
+					if (ACTION_ID < 0)
 					{
 						++periodcount;
 					}
