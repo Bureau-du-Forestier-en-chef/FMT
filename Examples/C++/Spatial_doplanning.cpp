@@ -44,16 +44,16 @@ int main(int argc, char* argv[])
 		boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
 		length = std::stoi(argv[3]);
 	}else {
-		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Weight/";
+		modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Weight/";
 		primarylocation = modellocation + "PC_9964_U08451_2028_MODB01.pri";
 		scenario = "120_RegProv_apsp_AGG";
-		length = 3;
-		spatialOutputs = { "OVOLTOTREC" };*/
-		modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
+		length = 1;
+		spatialOutputs = { "OVOLTOTREC" };
+		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
 		primarylocation = modellocation + "Mod_cc_v2.pri";
 		scenario = "ROOT";
 		length = 5;
-		spatialOutputs = { "OVOLTOTREC" };
+		spatialOutputs = { "OVOLTOTREC" };*/
 	}
 	const std::string outdir = "../../tests/Spatial_doplanning/";
 	Parser::FMTmodelparser mparser;
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 	const std::string rastpath = modellocation + "rasters/";
 	setMapping(rastpath, simulationmodel);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 30);
+	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false, schedules.at(0));

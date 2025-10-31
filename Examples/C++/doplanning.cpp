@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/Mod_cc_v2.pri";
-			scenario = "ROOT";
+			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
+			scenario = "strategique_vanille";
 			length = 5;
 			objectivevalue = 2836;
 		}

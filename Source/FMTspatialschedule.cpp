@@ -1143,13 +1143,13 @@ namespace Spatial
 					}
 					if (!periodstolookfor.empty())
 					{
-						const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
+						const Core::FMTmask& DYNAMIC_MASK = cache.getactualnodecache()->dynamicmask;
 						for (const std::pair<size_t, int>& periodpair : periodstolookfor)
 						{
 							const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator> ITERATORS = getoutputfromnode(model, node, periodpair.second);
 							if (!ITERATORS.empty())
 							{
-								const std::vector<Core::FMTmask> DYNAMIC_MASKS = getDynamicMasks(ITERATORS, dynamicmask, periodpair.second);
+								const std::vector<Core::FMTmask> DYNAMIC_MASKS = getDynamicMasks(ITERATORS, DYNAMIC_MASK, periodpair.second);
 								for (size_t graphId = 0; graphId < ITERATORS.size(); ++graphId)
 								{
 									//Core::FMTmask nodemask = graphit->second.getbasemask(dynamicmask);
@@ -1316,7 +1316,12 @@ namespace Spatial
 				const int& p_period) const
 	{
 		std::vector<Core::FMTmask>AllMasks(p_Iterators.size(), p_dynamicMask);
-		const size_t NUMBER_THREADS = boost::thread::hardware_concurrency();
+		const size_t TO_RESERVE = p_dynamicMask.size() + ((sizeof(int8_t) * 8) * mapping.begin()->second.getperiod() + 1);
+		for (Core::FMTmask& Mask : AllMasks)
+		{
+			Mask.reserve(TO_RESERVE);
+		}
+		const size_t NUMBER_THREADS = std::min(unsigned int(5),boost::thread::hardware_concurrency());
 		const size_t JOB_SIZE = (p_Iterators.size() / NUMBER_THREADS);
 		size_t start = 0;
 		std::vector<boost::thread>workers;
@@ -1363,7 +1368,7 @@ namespace Spatial
 													const std::vector<FMTcoordinate>& p_coodinates) const
 	{
 		std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>AllGraphs(p_coodinates.size());
-		const size_t NUMBER_THREADS = boost::thread::hardware_concurrency();
+		const size_t NUMBER_THREADS = std::min(unsigned int(5), boost::thread::hardware_concurrency());
 		const size_t JOB_SIZE = (p_coodinates.size() / NUMBER_THREADS);
 		size_t start = 0;
 		std::vector<boost::thread>workers;
