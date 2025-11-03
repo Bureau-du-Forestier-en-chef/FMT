@@ -1321,7 +1321,7 @@ namespace Spatial
 		{
 			Mask.reserve(TO_RESERVE);
 		}
-		const size_t NUMBER_THREADS = std::min(unsigned int(5),boost::thread::hardware_concurrency());
+		const size_t NUMBER_THREADS = std::min(5U,boost::thread::hardware_concurrency());
 		const size_t JOB_SIZE = (p_Iterators.size() / NUMBER_THREADS);
 		size_t start = 0;
 		std::vector<boost::thread>workers;
@@ -1368,7 +1368,7 @@ namespace Spatial
 													const std::vector<FMTcoordinate>& p_coodinates) const
 	{
 		std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>AllGraphs(p_coodinates.size());
-		const size_t NUMBER_THREADS = std::min(unsigned int(5), boost::thread::hardware_concurrency());
+		const size_t NUMBER_THREADS = std::min(5U, boost::thread::hardware_concurrency());
 		const size_t JOB_SIZE = (p_coodinates.size() / NUMBER_THREADS);
 		size_t start = 0;
 		std::vector<boost::thread>workers;
