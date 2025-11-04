@@ -1263,9 +1263,10 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 
 
 	template<typename T, typename outT>
-	void FMTareaparser::writeband(const Spatial::FMTlayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const
+	bool FMTareaparser::writeband(const Spatial::FMTlayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const
 	{
 		double lastwriten;
+		bool gotSomething = false;
 		try {
 			int nXBlockSize, nYBlockSize;
 			wband->GetBlockSize(&nXBlockSize, &nYBlockSize);
@@ -1309,6 +1310,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 						
 					if (somethinginblock)
 						{
+						gotSomething = true;
 						if (wband->WriteBlock(iXBlock, iYBlock, &block[0]) != CPLErr::CE_None)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
@@ -1324,23 +1326,29 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 		{
 			_exhandler->raisefromcatch("last "+ std::to_string(lastwriten) + "at band id " + std::to_string(wband->GetBand()), "FMTareaparser::writelayer", __LINE__, __FILE__, m_section);
 		}
+		return gotSomething;
 	}
 
         template<typename T>
-        bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer, std::string location,const std::map<T, std::string>& mapping, std::string format) const
+        bool FMTareaparser::writelayer(
+			const Spatial::FMTlayer<T>& layer, 
+			std::string location,
+			const std::map<T, 
+			std::string>& mapping, 
+			std::string format) const
             {
 			try {
 				GDALDataType datatype = GDT_Int32;
 				if (std::is_same<double, T>::value)
-					{
+				{
 					datatype = GDT_Float64;
-					}
+				}
 				if (format == "BMP")
-					{
+				{
 					datatype = GDALDataType::GDT_Byte;
-					}
-				GDALDataset* wdataset = createDataset(location, layer, datatype,format);
-				std::vector<std::string>table;
+				}
+				GDALDataset* wdataset = createDataset(location, layer, datatype, format);
+				std::vector<std::string> table;
 				if (!mapping.empty())
 				{
 					table.reserve(mapping.size());
@@ -1350,15 +1358,18 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					}
 				}
 				GDALRasterBand* wband = createBand(wdataset, table);
-				if (datatype == GDALDataType::GDT_Byte)
-					{
-					writeband<T,uint8_t>(layer, wband, mapping);
-				}else if (datatype == GDALDataType::GDT_Int32)
-					{
-					writeband<T,int>(layer, wband, mapping);
-				}else {
-					writeband<T,double>(layer, wband, mapping);
+
+				bool bandResult = [&]() {
+					switch (datatype) {
+					case GDALDataType::GDT_Byte:
+						return writeband<T, uint8_t>(layer, wband, mapping);
+					case GDALDataType::GDT_Int32:
+						return writeband<T, int>(layer, wband, mapping);
+					default:
+						return writeband<T, double>(layer, wband, mapping);
 					}
+					}();
+
 				if (datatype == GDALDataType::GDT_Byte || datatype == GDALDataType::GDT_UInt16)
 				{
 					//Byte or Uint6 only!
@@ -1374,18 +1385,18 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					std::sort(table.begin(), table.end());
 					auto last = std::unique(table.begin(), table.end());
 					table.erase(last, table.end());
-					const double numberofentries = static_cast<double>(table.size() - 1);
+					const double numberofentries = static_cast<double> (table.size() - 1);
 					std::default_random_engine generator;
-					std::uniform_int_distribution<short>dist(0,256);
-					std::vector<short>c1;
-					std::vector<short>c2;
-					std::vector<short>c3;
-					for (size_t tsize = 0 ; tsize < table.size();++tsize)
-						{
+					std::uniform_int_distribution<short>dist(0, 256);
+					std::vector<short> c1;
+					std::vector<short> c2;
+					std::vector<short> c3;
+					for (size_t tsize = 0; tsize < table.size(); ++tsize)
+					{
 						c1.push_back(dist(generator));
 						c2.push_back(dist(generator));
 						c3.push_back(dist(generator));
-						}
+					}
 					for (typename std::map<T, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
 					{
 						//const int n = (static_cast<int>((static_cast<double>(std::distance(table.begin(), std::find(table.begin(), table.end(), it->second))) / numberofentries) * 100));
@@ -1407,7 +1418,9 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					wband->SetColorTable(&newcolors);
 					wband->SetColorInterpretation(GDALColorInterp::GCI_PaletteIndex);
 				}
-				wband->ComputeStatistics(FALSE, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+				if (bandResult) {
+					wband->ComputeStatistics(FALSE, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+				}
 				wband->FlushCache();
 				wdataset->FlushCache();
 				GDALClose(wdataset);
