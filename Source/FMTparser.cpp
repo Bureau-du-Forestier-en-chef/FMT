@@ -1483,7 +1483,12 @@ std::string  FMTparser::_getAbsolutePath(std::string p_Path) const
 		{
 			const boost::filesystem::path FORMATED_PATH(m_location);
 			const boost::filesystem::path PARENT_PATH = FORMATED_PATH.parent_path();
-			boost::replace_all(p_Path, ".\\.\\", PARENT_PATH.string() + "\\..\\..\\");
+			boost::replace_all(p_Path, ".\\", "..\\");
+			const size_t FIRST_DOT = p_Path.find(".");
+			if (FIRST_DOT!=std::string::npos)
+				{
+				p_Path = p_Path.substr(0, FIRST_DOT) + PARENT_PATH.string()+"\\" + p_Path.substr(FIRST_DOT, p_Path.size());
+				}
 		}
 		else if (boost::starts_with(p_Path, "."))
 		{

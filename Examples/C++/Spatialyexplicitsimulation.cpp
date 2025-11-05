@@ -78,7 +78,7 @@ int main()
 				{
 				Logging::FMTdefaultlogger() << "period: " << period << " X: " << value.first.getx() << " Y: " << value.first.gety() << " value: " << value.second << "\n";
 				}
-		//Logging::FMTlogger() << std::to_string(period) << " "<<simulationmodel.getoutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total") / 239184.16 <<"\n";
+		Logging::FMTdefaultlogger() << std::to_string(period) << " "<<simulationmodel.getoutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total")  <<"\n";
 		}
 	const std::vector<Core::FMTaction>actions = simulationmodel.getactions();
 	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getthemes().at(1));

@@ -2300,123 +2300,126 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 	unsigned int seed,
 	double tolerance,
 	bool log)
-	{
-		std::map<std::string, double>bestresults;
-		FMTspatialschedule solutioncopy(*this);
-		const size_t maxstall = 3;
-		std::default_random_engine generator(seed);
-		const double factorgap = 0.1;
-		const std::vector<boost::unordered_set<Core::FMTdevelopment>>scheduleoperabilities = schedule.getoperabilities(model.actions);
-		size_t stalcount = 0;
-		size_t iteration = 0;
-		const unsigned int initialseed = seed;
-		try {
-			if (scheduletype != FMTspatialscheduletype::FMTcomplete)
-			{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Cannot use a non complete schedule ",
-					"FMTspatialschedule::greedyreferencebuild", __LINE__, __FILE__);
-			}
-			bestresults["Total"] = 0;
-			const double totaliterations = static_cast<double>(randomiterations);
-			double lastprimalinf = 0;
-			double lastobjective = 0;
-			double lastschedulefactor = 1;
-			size_t failediterations = 0;
-			bool didregular = false;
-			bool mergingprimal = true;
-			const double objsense = model.constraints.at(0).sense();
-			while ((stalcount < maxstall && failediterations < randomiterations) && ((randomiterations > 1) || (randomiterations == 1) && iteration < 1))//&& iteration < randomiterations
-			{
-				double factorit = (static_cast<double>(iteration) / totaliterations);
-				double schedulefactor = (randomiterations == 1) ? 1 : 1 - ((1 - factorit) * factorgap);//bottom up
-				if (factorit > 1)
-					{
-					std::uniform_real_distribution<double>scheduledistribution(lastschedulefactor - 0.05, std::min(lastschedulefactor + 0.05, 1.00));
-					schedulefactor = scheduledistribution(generator);
-					}
-				//*_logger << "fact " << factorit<<" "<< schedulefactor << "\n";
-				if (failediterations == (randomiterations - 1) && !didregular)//The last try will be the regular stuff
-				{
-					seed = initialseed;
-					schedulefactor = 1;
-					didregular = true;
-				}
-				bool scheduleonly = false;
-				const Core::FMTschedule factoredschedule = schedule.getnewschedule(schedulefactor);
-				const std::map<std::string, double>results = solutioncopy.referencebuild(factoredschedule,model, scheduleoperabilities, generator,false, true);
-				double newprimalinf = 0;
-				double newobjective = 0;
-				solutioncopy.getsolutionstatus(newobjective, newprimalinf, model,nullptr,true,false,false);
-				const double primalgap = (newprimalinf - lastprimalinf);
-				const double objgap = ((newobjective*objsense) - (lastobjective * objsense));
-				if (iteration == 0 || (mergingprimal && (primalgap <= FMT_DBL_TOLERANCE)) ||
-					(!mergingprimal && ((primalgap <= FMT_DBL_TOLERANCE) && (objgap <= FMT_DBL_TOLERANCE))))/*solutioncopy.isbetterbygroup(*this, model)*/
-				{
-					bestresults = results;
-					lastschedulefactor = schedulefactor;
-
-					if (iteration == 0)
-					{
-						*this = solutioncopy;
-						this->getsolutionstatus(newobjective, newprimalinf, model, nullptr, true, false, false);
-					}else {
-						this->swap(solutioncopy);
-						}
-				
-					
-					lastprimalinf = newprimalinf;
-					lastobjective = newobjective;
-					failediterations = 0;
-					if ((primalgap >= -FMT_DBL_TOLERANCE) && (objgap >= -FMT_DBL_TOLERANCE))
-						{
-						++stalcount;
-					}else {
-						stalcount = 0;
-						}
-					
-				}else {
-					++failediterations;
-					}
-				if (mergingprimal&& failediterations== randomiterations)
-					{
-					mergingprimal = false;
-					failediterations = 0;
-					}
-				if (log&&(iteration % 10) ==0)
-				{
-					this->logsolutionstatus(iteration, lastobjective, lastprimalinf);
-				}
-
-				solutioncopy.eraselastperiod();//clear the last period to redo a simulate and test again!
-				++seed;
-				++iteration;
-			}
-			if (log&&stalcount == maxstall)
-			{
-				_logger->logwithlevel("Stalled after " + std::to_string(iteration) + " iterations Skipping\n", 1);
-			}
-			if (log&&failediterations == randomiterations)
-			{
-				_logger->logwithlevel("Solution stuck after " + std::to_string(iteration) + " iterations Skipping\n", 1);
-			}
-			//Need the remove the incomplete stuff from the cash before going to the next step.
-			//*_logger << "lastfactor " << lastschedulefactor << "\n";
-			for (std::map<std::string, double>::iterator facit = bestresults.begin(); facit != bestresults.end(); facit++)
-			{
-				//facit->second *= (lastschedulefactor < 1 ? 1 + (1 - lastschedulefactor) : 1 - (lastschedulefactor - 1));
-				facit->second *= lastschedulefactor;
-			}
-			bestresults["Primalinfeasibility"] = lastprimalinf;
-			bestresults["Objective"] = lastobjective;
-		}
-		catch (...)
+{
+	std::map<std::string, double>bestresults;
+	FMTspatialschedule solutioncopy(*this);
+	const size_t maxstall = 3;
+	std::default_random_engine generator(seed);
+	const double factorgap = 0.1;
+	const std::vector<boost::unordered_set<Core::FMTdevelopment>>scheduleoperabilities = schedule.getoperabilities(model.actions);
+	size_t stalcount = 0;
+	size_t iteration = 0;
+	const unsigned int initialseed = seed;
+	try {
+		if (scheduletype != FMTspatialscheduletype::FMTcomplete)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::greedyreferencebuild", __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"Cannot use a non complete schedule ",
+				"FMTspatialschedule::greedyreferencebuild", __LINE__, __FILE__);
 		}
+		bestresults["Total"] = 0;
+		const double totaliterations = static_cast<double>(randomiterations);
+		double lastprimalinf = 0;
+		double lastobjective = 0;
+		double lastschedulefactor = 1;
+		size_t failediterations = 0;
+		bool didregular = false;
+		bool mergingprimal = true;
+		const double objsense = model.constraints.at(0).sense();
+		while ((stalcount < maxstall && failediterations < randomiterations) && ((randomiterations > 1) || (randomiterations == 1) && iteration < 1))//&& iteration < randomiterations
+		{
+			double factorit = (static_cast<double>(iteration) / totaliterations);
+			double schedulefactor = (randomiterations == 1) ? 1 : 1 - ((1 - factorit) * factorgap);//bottom up
+			if (factorit > 1)
+			{
+				std::uniform_real_distribution<double>scheduledistribution(lastschedulefactor - 0.05, std::min(lastschedulefactor + 0.05, 1.00));
+				schedulefactor = scheduledistribution(generator);
+			}
+			//*_logger << "fact " << factorit<<" "<< schedulefactor << "\n";
+			if (failediterations == (randomiterations - 1) && !didregular)//The last try will be the regular stuff
+			{
+				seed = initialseed;
+				schedulefactor = 1;
+				didregular = true;
+			}
+			bool scheduleonly = false;
+			const Core::FMTschedule factoredschedule = schedule.getnewschedule(schedulefactor);
+			const std::map<std::string, double>results = solutioncopy.referencebuild(factoredschedule, model, scheduleoperabilities, generator, false, true);
+			double newprimalinf = 0;
+			double newobjective = 0;
+			solutioncopy.getsolutionstatus(newobjective, newprimalinf, model, nullptr, true, false, false);
+			const double primalgap = (newprimalinf - lastprimalinf);
+			const double objgap = ((newobjective * objsense) - (lastobjective * objsense));
+			if (iteration == 0 || (mergingprimal && (primalgap <= FMT_DBL_TOLERANCE)) ||
+				(!mergingprimal && ((primalgap <= FMT_DBL_TOLERANCE) && (objgap <= FMT_DBL_TOLERANCE))))/*solutioncopy.isbetterbygroup(*this, model)*/
+			{
+				bestresults = results;
+				lastschedulefactor = schedulefactor;
 
-		return bestresults;
+				if (iteration == 0)
+				{
+					*this = solutioncopy;
+					this->getsolutionstatus(newobjective, newprimalinf, model, nullptr, true, false, false);
+				}
+				else {
+					this->swap(solutioncopy);
+				}
+
+
+				lastprimalinf = newprimalinf;
+				lastobjective = newobjective;
+				failediterations = 0;
+				if ((primalgap >= -FMT_DBL_TOLERANCE) && (objgap >= -FMT_DBL_TOLERANCE))
+				{
+					++stalcount;
+				}
+				else {
+					stalcount = 0;
+				}
+
+			}
+			else {
+				++failediterations;
+			}
+			if (mergingprimal && failediterations == randomiterations)
+			{
+				mergingprimal = false;
+				failediterations = 0;
+			}
+			if (log && (iteration % 10) == 0)
+			{
+				this->logsolutionstatus(iteration, lastobjective, lastprimalinf);
+			}
+
+			solutioncopy.eraselastperiod();//clear the last period to redo a simulate and test again!
+			++seed;
+			++iteration;
+		}
+		if (log && stalcount == maxstall)
+		{
+			_logger->logwithlevel("Stalled after " + std::to_string(iteration) + " iterations Skipping\n", 1);
+		}
+		if (log && failediterations == randomiterations)
+		{
+			_logger->logwithlevel("Solution stuck after " + std::to_string(iteration) + " iterations Skipping\n", 1);
+		}
+		//Need the remove the incomplete stuff from the cash before going to the next step.
+		//*_logger << "lastfactor " << lastschedulefactor << "\n";
+		for (std::map<std::string, double>::iterator facit = bestresults.begin(); facit != bestresults.end(); facit++)
+		{
+			//facit->second *= (lastschedulefactor < 1 ? 1 + (1 - lastschedulefactor) : 1 - (lastschedulefactor - 1));
+			facit->second *= lastschedulefactor;
+		}
+		bestresults["Primalinfeasibility"] = lastprimalinf;
+		bestresults["Objective"] = lastobjective;
 	}
+	catch (...)
+	{
+		_exhandler->printexceptions("", "FMTsesmodel::greedyreferencebuild", __LINE__, __FILE__);
+	}
+
+	return bestresults;
+}
 
 Graph::FMTgraphstats FMTspatialschedule::randombuild(const Models::FMTmodel& model, std::default_random_engine& generator)
 	{

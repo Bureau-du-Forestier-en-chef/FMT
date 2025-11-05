@@ -150,7 +150,7 @@ namespace Models
 		std::map<std::string, double>values;
 		try {
 			const std::map<std::string, std::vector<double>>periodvalues = solution.getoutput(*this, output, period, period, level);
-			for (std::map<std::string, std::vector<double>>::const_iterator it = periodvalues.begin();it!=periodvalues.end();it++)
+			for (std::map<std::string, std::vector<double>>::const_iterator it = periodvalues.begin(); it != periodvalues.end(); it++)
 				{
 				values[it->first] = *it->second.begin();
 				}

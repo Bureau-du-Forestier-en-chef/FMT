@@ -13,14 +13,22 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-	const std::string primarylocation = argv[1];
-	const std::string scenario = argv[2];
-	const std::string maplocation = argv[3];
-	/*const std::string maplocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02471/Carte/PC_9377_COS_02471_08_09_2020t_feu_TBE.shp";
-	const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02471/PC_9377_U02471_4_Vg2_2023_vRP1f.pri";
-	const std::string scenario = "spatial";*/
 	const std::string writelocation = "../../tests/testsesevaluation/";
 	const int length = 6;
+	std::string primarylocation;
+	std::string scenario;
+	std::string maplocation;
+	if (argc>1)
+	{
+		primarylocation = argv[1];
+		scenario = argv[2];
+		maplocation = argv[3];
+	}else {
+		maplocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02471/Carte/PC_9377_COS_02471_08_09_2020t_feu_TBE.shp";
+		primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02471/PC_9377_U02471_4_Vg2_2023_vRP1f.pri";
+		scenario = "spatial";
+	}
+
 	Parser::FMTmodelparser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);

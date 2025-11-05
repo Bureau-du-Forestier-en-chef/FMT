@@ -47,8 +47,8 @@ int main(int argc, char* argv[])
 		modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Weight/";
 		primarylocation = modellocation + "PC_9964_U08451_2028_MODB01.pri";
 		scenario = "120_RegProv_apsp_AGG";
-		length = 1;
-		spatialOutputs = { "OVOLTOTREC" };
+		length = 3;
+		spatialOutputs = { "OVOLTOTREC"};
 		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
 		primarylocation = modellocation + "Mod_cc_v2.pri";
 		scenario = "ROOT";
@@ -112,8 +112,17 @@ int main(int argc, char* argv[])
 			for (int period = 1; period <= length;++period)
 				{
 				const std::string NAME = outdir + "PERIOD_"+std::to_string(period)+"_" + OUTOUT.getname() + ".tif";
-				const double FULL_VALUE = simulationmodel.getoutput(OUTOUT, period, Core::FMToutputlevel::totalonly)["Total"];
-				std::cout << NAME << " " << FULL_VALUE << "\n";
+				//const double FULL_VALUE = simulationmodel.getoutput(OUTOUT, period, Core::FMToutputlevel::totalonly)["Total"];
+				double FULL_VALUE = 0;
+				for (const auto& STANDARD : simulationmodel.getoutput(OUTOUT, period, Core::FMToutputlevel::standard))
+				{
+					std::cout << STANDARD.first << " " << STANDARD.second << "\n";
+					if (STANDARD.first=="Total")
+					{
+						FULL_VALUE = STANDARD.second;
+					}
+				}
+				
 				const Spatial::FMTlayer<double> RESULT = simulationmodel.getspatialoutput(OUTOUT, period);
 				double spatialResult = 0;
 				for (const auto& CELL : RESULT)
