@@ -537,7 +537,9 @@ void exportCore()
 				.def("getfromreplicate", &Core::FMTconstraint::getfromreplicate,
 					"@DocString(FMTconstraint::getfromreplicate)")
 				.def("getscheduleweight", &Core::FMTconstraint::getscheduleweight,
-					"@DocString(FMTconstraint::getscheduleweight)");
+					"@DocString(FMTconstraint::getscheduleweight)")
+				.def("setpenalties", &Core::FMTconstraint::setpenalties,
+					"@DocString(FMTconstraint::setpenalties)");
 
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();
