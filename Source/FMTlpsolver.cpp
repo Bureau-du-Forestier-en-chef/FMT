@@ -188,6 +188,8 @@ namespace Models
 
 					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
 					{
+						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
+							getmskerrordesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
 						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 						msksolver->freeCachedData();
 						MSKtask_t new_task = msksolver->getMutableLpPtr();
@@ -460,6 +462,8 @@ namespace Models
 
 					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
 					{
+						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
+							getmskerrordesc(error), "FMTlpsolver::initialsolve", __LINE__, __FILE__);
 						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 						msksolver->freeCachedData();
 						MSKtask_t new_task = msksolver->getMutableLpPtr();
