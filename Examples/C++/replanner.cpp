@@ -40,17 +40,17 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01000607\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
-		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP\\output";
-		length = 5;
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01004929\\CC_modele_feu\\WS_CC\\Feux_2023_ouest_V01.pri";
+		outputlocation = "C:\\Users\\Admlocal\\Documents\\FMT\\SCRAP";
+		length = 20;
 		replicate = 1;
-		n_threads = 5;
+		n_threads = 10;
 		// Stratégique
-		allscenarios.push_back("strategique_CC_FR30"); 
+		allscenarios.push_back("strategique_CC_noprod"); 
 		// Stochastique
-		allscenarios.push_back("stochastique_CC");
+		allscenarios.push_back("stochastique_noprod");
 		// Tactique
-		allscenarios.push_back("tactique_CC");
+		allscenarios.push_back("tactique_noprod");
 	}
 	int repSize = length;
 	//int repSize = 20;
