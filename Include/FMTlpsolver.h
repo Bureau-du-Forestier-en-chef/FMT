@@ -19,12 +19,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include "FMTserializablematrix.h"
-#ifdef FMTWITHMOSEK
-	#include "mosek.h"
-#endif
-#ifdef FMTWITHOSI
-	#include "OsiSolverInterface.hpp"
-#endif
 //#include <mutex>
 
 
@@ -571,14 +565,14 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		
 		// DocString: FMTlpsolver::_setMSKTaskParameters
 		/**
-		Function used to set the parameters of an MSK task before optimization
+		Function used to set the parameters of an MSK task and optimize
 		*/
-		void _setMSKTaskParameters(MSKtask_t task, std::vector<std::pair<std::string, std::string>> m_ColdStartParameters);
+		int _MSKOptimizeWithParameters();
 		// DocString: FMTlpsolver::_setCLPOptions
 		/**
 		Function used to set the options of an CLP solver before optimization
 		*/
-		void _setCLPOptions(OsiClpSolverInterface* clpsolver);
+		void _setCLPOptions();
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)

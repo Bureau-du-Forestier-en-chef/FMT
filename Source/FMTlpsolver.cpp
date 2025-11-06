@@ -167,60 +167,49 @@ namespace Models
 	bool FMTlpsolver::resolve()
 		{
 		try {
-			bool erroroccured = false;
 			matrixcache.synchronize(solverinterface);
-			if (solvertype == Models::FMTsolverinterface::CLP)//clp with dual simplex
+			bool erroroccured = false;
+			switch (solvertype)
 			{
-				OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
-				ClpSimplex* splexmodel = clpsolver->getModelPtr();
-				splexmodel->setPerturbation(-6);
-				splexmodel->setSpecialOptions(64 | 128 | 1024 | 2048 | 4096 | 32768 | 262144 | 0x01000000);
-				//splexmodel->tightenPrimalBounds();
-				splexmodel->dual();
-			}
-#ifdef  FMTWITHMOSEK
-			else if (solvertype == Models::FMTsolverinterface::MOSEK) //Mosek with interior point
-			{
-				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-				msksolver->freeCachedData();
-				MSKtask_t task = msksolver->getMutableLpPtr();
-				if (!m_WarmStartParameters.empty())
+				case FMTsolverinterface::CLP:
 				{
-					for (const std::pair<std::string, std::string>& PARAMETER : m_WarmStartParameters)
-					{
-						MSK_putparam(task, PARAMETER.first.c_str(), PARAMETER.second.c_str());
-					}
-				}else {
-					MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
-					MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
-					MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
-					//MSK_putintparam(task, MSK_IPAR_INTPNT_HOTSTART, MSK_INTPNT_HOTSTART_NONE);
-					MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
-					MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
-					MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
-					MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
-					MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
-					MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
-					MSK_putintparam(task, MSK_IPAR_LOG, 10);
-					MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
-					}
-				
-				MSK_putintparam(task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
-				// Si on veut un timeout de 1h avant que ça crash
-				//MSK_putdouparam(task, MSK_DPAR_LICENSE_WAIT_TIME, 3600);
-				MSKrescodee error = MSK_optimize(task);
-				if (error > 0)
-					{
-					_exhandler->raise(Exception::FMTexc::FMTmskerror,getmskerrordesc(error),"FMTlpsolver::resolve", __LINE__, __FILE__);
-					//In case set to warning
-					solverinterface->resolve();
-					erroroccured = true;
-					}
+					OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
+					ClpSimplex* splexmodel = clpsolver->getModelPtr();
+					splexmodel->setPerturbation(-6);
+					splexmodel->setSpecialOptions(64 | 128 | 1024 | 2048 | 4096 | 32768 | 262144 | 0x01000000);
+					//splexmodel->tightenPrimalBounds();
+					splexmodel->dual();
+				}
+				break;
+				#ifdef  FMTWITHMOSEK
+				case FMTsolverinterface::MOSEK:
+				{
+					MSKrescodee error = static_cast<MSKrescodee>(_MSKOptimizeWithParameters());
 
-			}
-#endif
-			else {//default
-				solverinterface->resolve();
+					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
+					{
+						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+						msksolver->freeCachedData();
+						MSKtask_t new_task = msksolver->getMutableLpPtr();
+						MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
+						MSKrescodee error = MSK_optimize(new_task);
+					}
+					if (error > 0)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTmskerror,
+							getmskerrordesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
+						//In case set to warning
+						solverinterface->resolve();
+						erroroccured = true;
+					}
+				}
+				break;
+				#endif
+				default:
+				{
+					solverinterface->resolve();
+				}
+				break;
 			}
 			if (erroroccured && !gotlicense())
 			{
@@ -359,8 +348,11 @@ namespace Models
 		}
 
 
-	void FMTlpsolver::_setMSKTaskParameters(MSKtask_t task, std::vector<std::pair<std::string, std::string>> m_ColdStartParameters)
+	int FMTlpsolver::_MSKOptimizeWithParameters()
 	{
+		OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+		msksolver->freeCachedData();
+		MSKtask_t task = msksolver->getMutableLpPtr();
 		if (!m_ColdStartParameters.empty())
 		{
 			for (const std::pair<std::string, std::string>& PARAMETER : m_ColdStartParameters)
@@ -382,10 +374,15 @@ namespace Models
 		MSK_putintparam(task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
 		// Si on veut un timeout de 1h avant que ça crash
 		//MSK_putdouparam(task, MSK_DPAR_LICENSE_WAIT_TIME, 3600);
+		MSKrescodee error = MSK_optimize(task);
+		
+		return error;
 	}
 
-	void FMTlpsolver::_setCLPOptions(OsiClpSolverInterface* clpsolver)
+	void FMTlpsolver::_setCLPOptions()
 	{
+		OsiClpSolverInterface* clpsolver = nullptr;
+		clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
 		//options.setSpecialOption(which,value1,value2)
 		/** which translation is:
 				which:
@@ -452,21 +449,18 @@ namespace Models
 				case FMTsolverinterface::CLP:
 				{
 					OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
-					_setCLPOptions(clpsolver);
+					_setCLPOptions();
 					clpsolver->initialSolve();
 				}
 				break;
 				#ifdef FMTWITHMOSEK
 				case FMTsolverinterface::MOSEK:
 				{
-					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-					msksolver->freeCachedData();
-					MSKtask_t task = msksolver->getMutableLpPtr();
-					_setMSKTaskParameters(task, m_ColdStartParameters);
-					MSKrescodee error = MSK_optimize(task);
+					MSKrescodee error = static_cast<MSKrescodee>(_MSKOptimizeWithParameters());
 
 					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
 					{
+						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 						msksolver->freeCachedData();
 						MSKtask_t new_task = msksolver->getMutableLpPtr();
 						MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
