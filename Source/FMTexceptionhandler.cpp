@@ -539,6 +539,9 @@ FMTlev FMTexceptionhandler::getLevel(const FMTexc p_exception) const
 		default:
 			level = FMTlev::FMT_logic;
 			break;
+		case FMTexc::FMTMSKnumerical_problem:
+			level = FMTlev::FMT_Warning;
+			break;
 		};
 	}
 	return level;

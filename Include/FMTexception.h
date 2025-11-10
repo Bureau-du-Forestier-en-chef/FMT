@@ -124,7 +124,8 @@ enum FMTexc
 	FMTthreadcrash = 82,
 	FMToutofrangeyield = 83,
 	FMTEmptyOA = 84,
-	FMTWIN32Error = 85
+	FMTWIN32Error = 85,
+	FMTMSKnumerical_problem = 86
     };
 
 // DocString: FMTexception

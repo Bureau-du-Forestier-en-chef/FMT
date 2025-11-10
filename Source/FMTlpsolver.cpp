@@ -167,60 +167,51 @@ namespace Models
 	bool FMTlpsolver::resolve()
 		{
 		try {
-			bool erroroccured = false;
 			matrixcache.synchronize(solverinterface);
-			if (solvertype == Models::FMTsolverinterface::CLP)//clp with dual simplex
+			bool erroroccured = false;
+			switch (solvertype)
 			{
-				OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
-				ClpSimplex* splexmodel = clpsolver->getModelPtr();
-				splexmodel->setPerturbation(-6);
-				splexmodel->setSpecialOptions(64 | 128 | 1024 | 2048 | 4096 | 32768 | 262144 | 0x01000000);
-				//splexmodel->tightenPrimalBounds();
-				splexmodel->dual();
-			}
-#ifdef  FMTWITHMOSEK
-			else if (solvertype == Models::FMTsolverinterface::MOSEK) //Mosek with interior point
-			{
-				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-				msksolver->freeCachedData();
-				MSKtask_t task = msksolver->getMutableLpPtr();
-				if (!m_WarmStartParameters.empty())
+				case FMTsolverinterface::CLP:
 				{
-					for (const std::pair<std::string, std::string>& PARAMETER : m_WarmStartParameters)
-					{
-						MSK_putparam(task, PARAMETER.first.c_str(), PARAMETER.second.c_str());
-					}
-				}else {
-					MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
-					MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
-					MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
-					//MSK_putintparam(task, MSK_IPAR_INTPNT_HOTSTART, MSK_INTPNT_HOTSTART_NONE);
-					MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
-					MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
-					MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
-					MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
-					MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
-					MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
-					MSK_putintparam(task, MSK_IPAR_LOG, 10);
-					MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
-					}
-				
-				MSK_putintparam(task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
-				// Si on veut un timeout de 1h avant que ça crash
-				//MSK_putdouparam(task, MSK_DPAR_LICENSE_WAIT_TIME, 3600);
-				MSKrescodee error = MSK_optimize(task);
-				if (error > 0)
-					{
-					_exhandler->raise(Exception::FMTexc::FMTmskerror,getmskerrordesc(error),"FMTlpsolver::resolve", __LINE__, __FILE__);
-					//In case set to warning
-					solverinterface->resolve();
-					erroroccured = true;
-					}
+					OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
+					ClpSimplex* splexmodel = clpsolver->getModelPtr();
+					splexmodel->setPerturbation(-6);
+					splexmodel->setSpecialOptions(64 | 128 | 1024 | 2048 | 4096 | 32768 | 262144 | 0x01000000);
+					//splexmodel->tightenPrimalBounds();
+					splexmodel->dual();
+				}
+				break;
+				#ifdef  FMTWITHMOSEK
+				case FMTsolverinterface::MOSEK:
+				{
+					MSKrescodee error = static_cast<MSKrescodee>(_MSKOptimizeWithParameters());
 
-			}
-#endif
-			else {//default
-				solverinterface->resolve();
+					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
+					{
+						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
+							getmskerrordesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
+						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+						msksolver->freeCachedData();
+						MSKtask_t new_task = msksolver->getMutableLpPtr();
+						MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
+						MSKrescodee error = MSK_optimize(new_task);
+					}
+					if (error > 0)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTmskerror,
+							getmskerrordesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
+						//In case set to warning
+						solverinterface->resolve();
+						erroroccured = true;
+					}
+				}
+				break;
+				#endif
+				default:
+				{
+					solverinterface->resolve();
+				}
+				break;
 			}
 			if (erroroccured && !gotlicense())
 			{
@@ -358,131 +349,157 @@ namespace Models
 			}
 		}
 
-	bool FMTlpsolver::initialsolve()
-		{
-		try{
-		matrixcache.synchronize(solverinterface);
-		bool erroroccured = false;
-		switch (solvertype)
-		{
-		case FMTsolverinterface::CLP:
-		{
-			//options.setSpecialOption(which,value1,value2)
-			/** which translation is:
-					 which:
-					 0 - startup in Dual  (nothing if basis exists).:
-								  0 - no basis
-					   1 - crash
-					   2 - use initiative about idiot! but no crash
-					 1 - startup in Primal (nothing if basis exists):
-								  0 - use initiative
-					   1 - use crash
-					   2 - use idiot and look at further info
-					   3 - use sprint and look at further info
-					   4 - use all slack
-					   5 - use initiative but no idiot
-					   6 - use initiative but no sprint
-					   7 - use initiative but no crash
-								  8 - do allslack or idiot
-								  9 - do allslack or sprint
-					   10 - slp before
-					   11 - no nothing and primal(0)
-					 2 - interrupt handling - 0 yes, 1 no (for threadsafe)
-					 3 - whether to make +- 1matrix - 0 yes, 1 no
-					 4 - for barrier
-								  0 - dense cholesky
-					   1 - Wssmp allowing some long columns
-					   2 - Wssmp not allowing long columns
-					   3 - Wssmp using KKT
-								  4 - Using Florida ordering
-					   8 - bit set to do scaling
-					   16 - set to be aggressive with gamma/delta?
-								  32 - Use KKT
-					 5 - for presolve
-								  1 - switch off dual stuff
-					 6 - extra switches
-				 */
-			OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
-			ClpSolve options;
-			options.setSolveType(ClpSolve::useBarrier);
-			//options.setSolveType(ClpSolve::useBarrierNoCross);
-			//Do no cross over then when you get optimal switch to primal crossover!!!!
-			//options.setSolveType(ClpSolve::tryDantzigWolfe);
-			//options.setSolveType(ClpSolve::usePrimalorSprint);
-			//options.setSolveType(ClpSolve::tryBenders);
-			options.setPresolveType(ClpSolve::presolveOn);
-			//options.setSpecialOption(1, 1);
-			//options.setSpecialOption(1, 2);
-			//options.setSpecialOption(4, 3, 4); //WSMP Florida
-			//options.setSpecialOption(4, 0); //dense cholesky
-			clpsolver->setSolveOptions(options);
-			clpsolver->initialSolve();
-			//ClpSolve simplexoptions;
-			//simplexoptions.setSolveType(ClpSolve::usePrimal); //Or sprint?
-			//simplexoptions.setSolveType(ClpSolve::usePrimalorSprint);
-			//simplexoptions.setPresolveType(ClpSolve::presolveOn);
-			//clpsolver->setSolveOptions(simplexoptions);
-			//clpsolver->resolve();
-		}
-		break;
-#ifdef FMTWITHMOSEK
-		case FMTsolverinterface::MOSEK:
-		{
-			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-			msksolver->freeCachedData();
-			MSKtask_t task = msksolver->getMutableLpPtr();
-			if (!m_ColdStartParameters.empty())
-			{
-				for (const std::pair<std::string, std::string>& PARAMETER : m_ColdStartParameters)
-					{
-					MSK_putparam(task, PARAMETER.first.c_str(), PARAMETER.second.c_str());
-					}
-			}else {
-				MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
-				MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
-				MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
-				MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
-				MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
-				MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
-				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
-				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
-				MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
-				}
 
-			MSK_putintparam(task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
-			// Si on veut un timeout de 1h avant que ça crash
-			//MSK_putdouparam(task, MSK_DPAR_LICENSE_WAIT_TIME, 3600);
-			MSKrescodee error = MSK_optimize(task);
-
-			if (error > 0)
-				{
-					_exhandler->raise(Exception::FMTexc::FMTmskerror,getmskerrordesc(error),"FMTlpsolver::initialsolve", __LINE__, __FILE__);
-					//Just to make sure the class is updated...
-					solverinterface->initialSolve();
-					erroroccured = true;
-				}
-			
-		}
-		break;
-		#endif
-		/*case FMTsolverinterface::CPLEX:
-			solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
-		break;
-		case FMTsolverinterface::GUROBI:
-			solverinterface = unique_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
-		break;*/
-		default:
+	int FMTlpsolver::_MSKOptimizeWithParameters()
+	{
+		OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+		msksolver->freeCachedData();
+		MSKtask_t task = msksolver->getMutableLpPtr();
+		if (!m_ColdStartParameters.empty())
 		{
-			solverinterface->initialSolve();
-		}
-		break;
-		}
-		if (erroroccured && !gotlicense())
+			for (const std::pair<std::string, std::string>& PARAMETER : m_ColdStartParameters)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-					" Missing solver " + getsolvername() + " License ",
-					"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+				MSK_putparam(task, PARAMETER.first.c_str(), PARAMETER.second.c_str());
 			}
+		}
+		else {
+			MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
+			MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
+			MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
+			MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
+			MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
+			MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
+			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
+			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
+			MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
+		}
+		MSK_putintparam(task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
+		// Si on veut un timeout de 1h avant que ça crash
+		//MSK_putdouparam(task, MSK_DPAR_LICENSE_WAIT_TIME, 3600);
+		MSKrescodee error = MSK_optimize(task);
+		
+		return error;
+	}
+
+	void FMTlpsolver::_setCLPOptions()
+	{
+		OsiClpSolverInterface* clpsolver = nullptr;
+		clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
+		//options.setSpecialOption(which,value1,value2)
+		/** which translation is:
+				which:
+				0 - startup in Dual  (nothing if basis exists).:
+					0 - no basis
+					1 - crash
+					2 - use initiative about idiot! but no crash
+				1 - startup in Primal (nothing if basis exists):
+					0 - use initiative
+					1 - use crash
+					2 - use idiot and look at further info
+					3 - use sprint and look at further info
+					4 - use all slack
+					5 - use initiative but no idiot
+					6 - use initiative but no sprint
+					7 - use initiative but no crash
+					8 - do allslack or idiot
+					9 - do allslack or sprint
+					10 - slp before
+					11 - no nothing and primal(0)
+				2 - interrupt handling - 0 yes, 1 no (for threadsafe)
+				3 - whether to make +- 1matrix - 0 yes, 1 no
+				4 - for barrier
+					0 - dense cholesky
+					1 - Wssmp allowing some long columns
+					2 - Wssmp not allowing long columns
+					3 - Wssmp using KKT
+					4 - Using Florida ordering
+					8 - bit set to do scaling
+					16 - set to be aggressive with gamma/delta?
+					32 - Use KKT
+				5 - for presolve
+					1 - switch off dual stuff
+				6 - extra switches
+				*/
+		ClpSolve options;
+		options.setSolveType(ClpSolve::useBarrier);
+		//options.setSolveType(ClpSolve::useBarrierNoCross);
+		//Do no cross over then when you get optimal switch to primal crossover!!!!
+		//options.setSolveType(ClpSolve::tryDantzigWolfe);
+		//options.setSolveType(ClpSolve::usePrimalorSprint);
+		//options.setSolveType(ClpSolve::tryBenders);
+		options.setPresolveType(ClpSolve::presolveOn);
+		//options.setSpecialOption(1, 1);
+		//options.setSpecialOption(1, 2);
+		//options.setSpecialOption(4, 3, 4); //WSMP Florida
+		//options.setSpecialOption(4, 0); //dense cholesky
+		clpsolver->setSolveOptions(options);
+		//ClpSolve simplexoptions;
+		//simplexoptions.setSolveType(ClpSolve::usePrimal); //Or sprint?
+		//simplexoptions.setSolveType(ClpSolve::usePrimalorSprint);
+		//simplexoptions.setPresolveType(ClpSolve::presolveOn);
+		//clpsolver->setSolveOptions(simplexoptions);
+		//clpsolver->resolve();
+	}
+
+	bool FMTlpsolver::initialsolve()
+	{
+		try {
+			matrixcache.synchronize(solverinterface);
+			bool erroroccured = false;
+			switch (solvertype)
+			{
+				case FMTsolverinterface::CLP:
+				{
+					OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
+					_setCLPOptions();
+					clpsolver->initialSolve();
+				}
+				break;
+				#ifdef FMTWITHMOSEK
+				case FMTsolverinterface::MOSEK:
+				{
+					MSKrescodee error = static_cast<MSKrescodee>(_MSKOptimizeWithParameters());
+
+					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
+					{
+						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
+							getmskerrordesc(error), "FMTlpsolver::initialsolve", __LINE__, __FILE__);
+						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+						msksolver->freeCachedData();
+						MSKtask_t new_task = msksolver->getMutableLpPtr();
+						MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
+						MSKrescodee error = MSK_optimize(new_task);
+					}
+
+					if (error > 0)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTmskerror,
+							getmskerrordesc(error),"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+						//Just to make sure the class is updated...
+						solverinterface->initialSolve();
+						erroroccured = true;
+					}
+				}
+				break;
+				#endif
+				/*case FMTsolverinterface::CPLEX:
+					solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
+				break;
+				case FMTsolverinterface::GUROBI:
+					solverinterface = unique_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
+				break;*/
+				default:
+				{
+					solverinterface->initialSolve();
+				}
+				break;
+			}
+			if (erroroccured && !gotlicense())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
+						" Missing solver " + getsolvername() + " License ",
+						"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+				}
 		}
 		catch (...)
 		{
