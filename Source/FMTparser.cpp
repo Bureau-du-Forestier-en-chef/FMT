@@ -1278,42 +1278,45 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		std::string newline;
 		std::string line;
 		try{
-        if (_safeGetline(stream,line))
-            {
-			m_comment.clear();
-            clearComments(line);
-			//std::string fullline = newline;
-           // newline = "";
-			newline.reserve(line.size());
-            for(int loc = 0; loc < static_cast<int>(line.size()); ++loc)
-                {
-                const char& VALUE = line.at(loc);
-                if(m_inComment)
-                    {
-                    if (VALUE =='}')
-                        {
-                        m_inComment = false;
-                        }
-                    }else{
-                    if (VALUE =='{')
-                        {
-                        m_inComment = true;
-                        }else{
-                        newline+=toupper(VALUE);
-                        }
-                    }
-                }
-			if (m_inComment && !m_comment.empty() && m_comment.find('}') != std::string::npos)
-				{
-				m_inComment = false;
+			if (_safeGetline(stream, line))
+			{
+				m_comment.clear();
+				clearComments(line);
+
+				//std::string fullline = newline;
+			   // newline = "";
+			
+				newline.reserve(line.size());
+				for(int loc = 0; loc < static_cast<int>(line.size()); ++loc)
+					{
+					const char& VALUE = line.at(loc);
+					if(m_inComment)
+						{
+						if (VALUE =='}')
+							{
+							m_inComment = false;
+							}
+						}else{
+						if (VALUE =='{')
+							{
+							m_inComment = true;
+							}else{
+							newline+=toupper(VALUE);
+							}
+						}
+					}
+				if (m_inComment && !m_comment.empty() && m_comment.find('}') != std::string::npos)
+					{
+					m_inComment = false;
+					}
+				if (!m_comment.empty() && m_comment.find('{') != std::string::npos)
+					{
+					m_inComment = true;
+					}
+				}else{
+				stream.close();
 				}
-			if (!m_comment.empty() && m_comment.find('{') != std::string::npos)
-				{
-				m_inComment = true;
-				}
-            }else{
-            stream.close();
-            }
+			
         boost::trim(newline);
 		if (newline.empty() && m_inComment && !m_comment.empty() && m_comment.find('}') != std::string::npos &&
 			(m_comment.find('{') == std::string::npos || m_comment.find('{') < m_comment.find('}')))

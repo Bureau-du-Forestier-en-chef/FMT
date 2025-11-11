@@ -199,6 +199,13 @@ namespace Parallel
 				const bool FEASIBLE = m_Models.front()->doplanning(SOLVE, m_allSchedules.front());
 				if (FEASIBLE||!SOLVE)
 					{
+					if (FEASIBLE) {
+						_logger->logwithlevel("Thread:" + getThreadId() 
+							+ " scenario: " + m_Models.front()->getname()
+							+ " objective value of: "
+							+ std::to_string(m_Models.front()->getobjectivevalue())
+							+ "\n", 0);
+					}
 					m_ResultsWriter->getandwrite(m_Models.front(), m_Outputs.front());
 				}else {
 					_logger->logwithlevel("Thread:" + getThreadId() + " infeasible scenario " + m_Models.front()->getname() + "\n", 0);

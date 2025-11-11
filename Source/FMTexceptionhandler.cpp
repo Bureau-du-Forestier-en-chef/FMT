@@ -957,6 +957,10 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		msg += message;
 		gotException = true;
 		break;
+	case FMTexc::FMTMSKnumerical_problem:
+		msg += "Unsolvable model with set parameters " + message;
+		gotWarning = true;
+		break;
 	default:
 		gotException = true;
 		break;

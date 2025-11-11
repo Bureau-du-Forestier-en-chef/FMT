@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "T:\\Donnees\\02_Courant\\07_Outil_moyen_methode\\01_Entretien_developpement\\Interne\\FMT\\Entretien\\Modeles_test\\02661\\PC_9307_U02661_4_Vg2_2023_vRP1f.pri";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\modele_vanille\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
-		length = 1;
-		scenario_name = "14_Sc5_Determin_apsp";
+		length = 20;
+		scenario_name = "strategique_vanille";
 		playback.push_back(false);
 		allscenarios.push_back(scenario_name);
 	}
@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 	errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
+	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	modelparser.seterrorstowarnings(errors);
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
@@ -76,12 +77,12 @@ int main(int argc, char *argv[])
 		for (const Core::FMToutput& output : lpmodel.getoutputs())
 		{
 			if (
-				//output.getname() == "OVOLTOTREC" 
-				//|| output.getname() == "OVOLREC" 
-				//|| output.getname() == "OSUPBRULER_ORI"
-				output.getname() == "OSUPREGECO_HARTIF25UTR"
-				//|| output.getname() == "OSUPREGECO_HARAT100UTR"
-				//|| output.getname() == "OSUPJEUNEALERTEREGECO"
+				output.getname() == "OVOLTOTREC" 
+				|| output.getname() == "OVOLREC" 
+				|| output.getname() == "OSUPBRULER_ORI"
+				|| output.getname() == "OSUPREGECO_HARTIF25UTR"
+				|| output.getname() == "OSUPREGECO_HARAT100UTR"
+				|| output.getname() == "OSUPJEUNEALERTEREGECO"
 				)
 			{
 				selectedoutputs.push_back(output);
