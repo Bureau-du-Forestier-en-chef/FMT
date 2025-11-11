@@ -190,11 +190,7 @@ namespace Models
 					{
 						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
 							getmskerrordesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
-						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-						msksolver->freeCachedData();
-						MSKtask_t new_task = msksolver->getMutableLpPtr();
-						MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
-						MSKrescodee error = MSK_optimize(new_task);
+						MSKrescodee error = static_cast<MSKrescodee>(_MSKOptimizeWithDefaultParameters());
 					}
 					if (error > 0)
 					{
@@ -441,6 +437,22 @@ namespace Models
 		//clpsolver->resolve();
 	}
 
+	int FMTlpsolver::_MSKOptimizeWithDefaultParameters()
+	{
+		OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+		msksolver->freeCachedData();
+		MSKtask_t new_task = msksolver->getMutableLpPtr();
+		#if MSK_VERSION_MAJOR < 11
+			MSK_setdefaults(new_task);
+		#else
+			MSK_resetparameters(new_task);
+		#endif
+		MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
+		MSKrescodee error = MSK_optimize(new_task);	
+
+		return error;
+	}
+
 	bool FMTlpsolver::initialsolve()
 	{
 		try {
@@ -464,11 +476,7 @@ namespace Models
 					{
 						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
 							getmskerrordesc(error), "FMTlpsolver::initialsolve", __LINE__, __FILE__);
-						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-						msksolver->freeCachedData();
-						MSKtask_t new_task = msksolver->getMutableLpPtr();
-						MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
-						MSKrescodee error = MSK_optimize(new_task);
+						MSKrescodee error = static_cast<MSKrescodee>(_MSKOptimizeWithDefaultParameters());
 					}
 
 					if (error > 0)

@@ -573,6 +573,11 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		Function used to set the options of an CLP solver before optimization
 		*/
 		void _setCLPOptions();
+		// DocString: FMTlpsolver::_setCLPOptions
+		/**
+		Function used to set the default options of a MSK task
+		*/
+		int _MSKOptimizeWithDefaultParameters();
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)
