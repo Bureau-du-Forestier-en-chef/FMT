@@ -536,11 +536,11 @@ FMTlev FMTexceptionhandler::getLevel(const FMTexc p_exception) const
 		case FMTexc::FMTWIN32Error:
 			level = FMTlev::FMT_logic;
 			break;
-		default:
-			level = FMTlev::FMT_logic;
-			break;
 		case FMTexc::FMTMSKnumerical_problem:
 			level = FMTlev::FMT_Warning;
+			break;
+		default:
+			level = FMTlev::FMT_logic;
 			break;
 		};
 	}

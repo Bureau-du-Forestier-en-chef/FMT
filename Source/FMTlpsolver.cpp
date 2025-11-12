@@ -476,16 +476,13 @@ namespace Models
 					{
 						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
 							getmskerrordesc(error), "FMTlpsolver::initialsolve", __LINE__, __FILE__);
-						MSKrescodee error = static_cast<MSKrescodee>(_MSKOptimizeWithDefaultParameters());
+						error = static_cast<MSKrescodee>(_MSKOptimizeWithDefaultParameters());
 					}
 
 					if (error > 0)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTmskerror,
 							getmskerrordesc(error),"FMTlpsolver::initialsolve", __LINE__, __FILE__);
-						//Just to make sure the class is updated...
-						solverinterface->initialSolve();
-						erroroccured = true;
 					}
 				}
 				break;
