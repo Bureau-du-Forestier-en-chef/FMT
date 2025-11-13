@@ -64,9 +64,24 @@ int main(int argc, char* argv[])
 		
 		boost::filesystem::path pripath(primarylocation);
 		boost::filesystem::path basefolder = pripath.parent_path();
-		boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
+		const boost::filesystem::path RASTER_LOCATION = basefolder / boost::filesystem::path("rasters");
+		Spatial::FMTforest forest;
 		Parser::FMTareaparser areaparser;
-		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
+		if (boost::filesystem::is_directory(RASTER_LOCATION))
+			{
+			std::vector<std::string>themesName;
+			size_t i = 1;
+			for (const auto& THEME : models.at(0).getthemes())
+			{
+				themesName.push_back(RASTER_LOCATION.string() + "/THEME" + std::to_string(i)+".tif");
+				++i;
+			}
+			forest = areaparser.readrasters(models.at(0).getthemes(),
+				themesName, RASTER_LOCATION.string() + "/AGE.tif", 1.0, 0.0001, RASTER_LOCATION.string() + "/STANLOCK.tif");
+		}else {
+			boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
+			forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
+			}
 		models[0].setparameter(Models::FMTintmodelparameters::SEED, 100);
 		Models::FMTsamodel optimizationmodel(models.at(0),forest);
 		//optimizationmodel.setdebuglogger();
