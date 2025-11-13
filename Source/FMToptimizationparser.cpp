@@ -1074,7 +1074,7 @@ namespace Parser
 				if (line.find("_EACH") != std::string::npos)
 					{
 					std::queue<std::string> EACH_LINES = geteachlines(line, cons, outputs, themes);
-					while (EACH_LINES.empty())
+					while (!EACH_LINES.empty())
 						{
 						FinalLines.push(FMTLineInfo(EACH_LINES.front(),m_line,m_location));
 						EACH_LINES.pop();

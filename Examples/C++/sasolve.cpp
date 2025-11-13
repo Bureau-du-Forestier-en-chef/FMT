@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.settransitions(singletransitions);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 10000);
-		optimizationmodel.redirectlogtofile(outputlocation + "/SaSolve.log");
+		//optimizationmodel.redirectlogtofile(outputlocation + "/SaSolve.log");
 		optimizationmodel.doplanning(true);
 		std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())
