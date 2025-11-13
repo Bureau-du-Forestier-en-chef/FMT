@@ -785,7 +785,7 @@ namespace Parser
 				if (FMTparser::tryOpening(optimizestream, pm_location))
 				{
 					FMToptimizationsection section = FMToptimizationsection::none;
-					std::queue<std::pair<std::string, int>>Lines  = getoptline(optimizestream, p_themes, p_constants, p_outputs);
+					std::queue<FMTparser::FMTLineInfo>Lines  = getoptline(optimizestream, p_themes, p_constants, p_outputs);
 					while (!Lines.empty())
 					{
 						std::string line = GetLine(Lines);
@@ -1062,12 +1062,12 @@ namespace Parser
 		return valuestoreplace;
 		}
 
-	std::queue<std::pair<std::string, int>> FMToptimizationparser::getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
+	std::queue<FMTparser::FMTLineInfo> FMToptimizationparser::getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
 		const Core::FMTconstants& cons, const std::vector<Core::FMToutput>& outputs)
 		{
-		std::queue<std::pair<std::string, int>>FinalLines;
+		std::queue<FMTLineInfo>FinalLines;
 		try {
-			std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(stream, themes, cons);
+			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(stream, themes, cons);
 			while (!Lines.empty())
 				{
 				const std::string line = GetLine(Lines);
@@ -1076,11 +1076,11 @@ namespace Parser
 					std::queue<std::string> EACH_LINES = geteachlines(line, cons, outputs, themes);
 					while (EACH_LINES.empty())
 						{
-						FinalLines.push(std::pair<std::string, int>(EACH_LINES.front(),m_line));
+						FinalLines.push(FMTLineInfo(EACH_LINES.front(),m_line,m_location));
 						EACH_LINES.pop();
 						}
 				}else {
-					FinalLines.push(std::pair<std::string, int>(line,m_line));
+					FinalLines.push(FMTLineInfo(line,m_line, m_location));
 					}
 				}
 		}catch (...)

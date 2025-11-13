@@ -38,7 +38,7 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 			std::vector<Core::FMTtheme>themes;
 			if (FMTparser::tryOpening(CONstream, location))
 			{
-				std::queue<std::pair<std::string,int>>Lines = FMTparser::GetCleanLinewfor(CONstream, themes, constants);
+				std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(CONstream, themes, constants);
 				while (!Lines.empty())
 				{
 					const std::string line = GetLine(Lines);

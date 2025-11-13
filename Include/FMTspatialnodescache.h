@@ -80,6 +80,7 @@ namespace Spatial
 		void insert(const FMTspatialnodescache& rhs);
 		ucaching::iterator begin();
 		ucaching::iterator end();
+		void ClearCache();
 
 	};
 

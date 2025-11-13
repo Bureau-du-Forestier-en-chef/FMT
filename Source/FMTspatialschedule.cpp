@@ -26,11 +26,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 
-	bool FMTspatialschedule::m_usePeriodCache = false;
+	bool FMTspatialschedule::m_usePeriodCache = true;
 
 	void FMTspatialschedule::setPeriodCache(bool p_value)
 		{
 		FMTspatialschedule::m_usePeriodCache = p_value;
+		}
+
+	void FMTspatialschedule::ClearNodesCache()
+		{
+		cache.ClearCache();
 		}
 
     FMTspatialschedule::FMTspatialschedule():FMTlayer<Graph::FMTlinegraph>(),cache(), scheduletype(), constraintsfactor(),events()
@@ -1100,11 +1105,16 @@ namespace Spatial
 		return global;
 	}
 
+	
+
 	std::map<std::string,std::vector<double>> FMTspatialschedule::getoutput(const Models::FMTmodel & model,
 		const Core::FMToutput& output, const int& periodstart, const int& periodstop,Core::FMToutputlevel level) const
 	{
+		//return getSafeOutput(model, output, periodstart, periodstop, level);
+		
 		std::map<std::string, std::vector<double>>values;
 		try {
+			const Core::FMTtheme* ThemePtr = &*model.themes.begin();
 			if(output.targetthemeid() < 0 && !(level == Core::FMToutputlevel::developpement))
 			{
 				level = Core::FMToutputlevel::totalonly;
@@ -1130,7 +1140,9 @@ namespace Spatial
 					periodstolookfor.reserve((periodstop- periodstart)+1);
 					for (int period = periodstart; period <= periodstop; ++period)
 					{
-						if (!m_usePeriodCache || (m_usePeriodCache && !cache.getactualnodecache()->gotcachevalue(period)))
+						if (!m_usePeriodCache || 
+							(m_usePeriodCache && (!cache.getactualnodecache()->gotcachevalue(period) || 
+								level != Core::FMToutputlevel::totalonly)))
 						{
 							periodstolookfor.push_back(std::pair<size_t, int>(periodid, period));
 							cachenotused = false;
@@ -1155,7 +1167,7 @@ namespace Spatial
 									//Core::FMTmask nodemask = graphit->second.getbasemask(dynamicmask);
 									//graphit->second.filledgesmask(nodemask, periodpair.second);
 									const std::map<std::string, double> graphreturn = getoutputfromgraph(ITERATORS.at(graphId)->second, model, node, &cellsize,
-										periodpair.second, DYNAMIC_MASKS.at(graphId), cache.getactualnodecache()->patternvalues, level);
+										periodpair.second, DYNAMIC_MASKS.at(graphId), cache.getactualnodecache()->patternvalues, ThemePtr, level);
 									//*_logger << ITERATORS.at(graphId)->first << " " << graphreturn.at("Total") << " " << DYNAMIC_MASKS.at(graphId).count() << "\n";
 									if (!graphreturn.empty() && level == Core::FMToutputlevel::totalonly)
 									{
@@ -1194,6 +1206,7 @@ namespace Spatial
 			_exhandler->raisefromcatch("", "FMTspatialschedule::getoutput", __LINE__, __FILE__);
 		}
 		return values;
+		
 	}
 
 	FMTlayer<double> FMTspatialschedule::getoutput(const Models::FMTmodel& model, const Core::FMToutput& output, const int& period) const
@@ -1201,6 +1214,7 @@ namespace Spatial
 		FMTlayer<double>outputlayer = copyextent<double>();
 		try {
 			const double cellsize = this->getcellsize();
+			const Core::FMTtheme* ThemePtr = &*model.themes.begin();
 			if (output.canbenodesonly())
 			{
 				std::vector<std::string>equation;
@@ -1215,7 +1229,7 @@ namespace Spatial
 						for (size_t graphId = 0; graphId < ITERATORS.size(); ++graphId)
 						{
 							const double graphvalue = getoutputfromgraph(ITERATORS.at(graphId)->second, model, node, &cellsize,
-								period, DYNAMIC_MASKS.at(graphId), cache.getactualnodecache()->patternvalues, Core::FMToutputlevel::totalonly).at("Total");
+								period, DYNAMIC_MASKS.at(graphId), cache.getactualnodecache()->patternvalues, ThemePtr, Core::FMToutputlevel::totalonly).at("Total");
 							if ((std::abs(graphvalue) - FMT_DBL_TOLERANCE) > 0)
 							{
 								outputlayer[ITERATORS.at(graphId)->first] = graphvalue;
@@ -1789,27 +1803,27 @@ namespace Spatial
 std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
 											 const Core::FMToutputnode& node, const double* solution, const int&period,
 											const Core::FMTmask& nodemask,
-											boost::unordered_map<Core::FMTmask, double>& nodecache, Core::FMToutputlevel level)const
+											boost::unordered_map<Core::FMTmask, double>& nodecache,
+											const Core::FMTtheme* p_theme,Core::FMToutputlevel level)const
 	{
 	std::map<std::string, double> values;
 	try{
 	if (!(node.isActionbased()&&linegraph.isonlygrow(period)))
 	{
-		boost::unordered_map<Core::FMTmask,double>::const_iterator cashit = nodecache.find(nodemask);
+		boost::unordered_map<Core::FMTmask, double>::const_iterator cashit = nodecache.find(nodemask);
 		if (cashit != nodecache.end() && level == Core::FMToutputlevel::totalonly)//get it from cashing
 		{
 			values["Total"] = cashit->second;
 		}else {
-			Core::FMTtheme targettheme;
 			if (level == Core::FMToutputlevel::standard)//Only feel the target theme
 			{
 				const int themeid = node.source.getthemetarget();
 				if (themeid >= 0)
 					{
-					targettheme = model.themes.at(themeid);
+					p_theme = &model.themes.at(themeid);
 					}
 			}
-			values = linegraph.getsource(model, node, period, targettheme, solution,level);
+			values = linegraph.getsource(model, node, period, *p_theme, solution,level);
 			if (level != Core::FMToutputlevel::developpement)//No caching for developpement
 			{
 				nodecache[nodemask] = values.at("Total");
@@ -2117,6 +2131,7 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 		
 		const bool graphisonlygrowth = graph.isonlygrow();
 		const Core::FMTmask& basegraphmask = graph.getbasedevelopment().getmask();
+		const Core::FMTtheme* ThemePtr = &*model.themes.begin();
 		for (FMTspatialnodescache::ucaching::iterator it= cache.begin(); it!= cache.end();it++)
 					{
 					const bool actionbased = it->first.isActionbased();
@@ -2142,7 +2157,8 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 										graph.filledgesmask(nodemask, period);
 										if (!remove || (cache.getactualnodecache()->patternvalues.find(nodemask) != cache.getactualnodecache()->patternvalues.end()))
 											{
-											const std::map<std::string, double> graphvalue = getoutputfromgraph(graph, model, it->first, &cellsize, period, nodemask, cache.getactualnodecache()->patternvalues);
+											const std::map<std::string, double> graphvalue = getoutputfromgraph(graph, model, it->first, &cellsize,
+												period, nodemask, cache.getactualnodecache()->patternvalues, ThemePtr);
 											const double value = graphvalue.at("Total");
 											if (remove)
 											{
@@ -2459,7 +2475,7 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 	try {
 		const Graph::FMTlinegraph& graph = mapping.at(coordinate);
 		const size_t graphsize = graph.size();
-		setgraphfromcache(graph, model,period,true);
+		//setgraphfromcache(graph, model,period,true);
 		std::map<Core::FMTdevelopment, std::vector<bool>>tabuoperability;
 		const std::vector<std::vector<bool>>actions = graph.getactions(model, period, tabuoperability);
 		boost::unordered_map<Core::FMTdevelopment, std::vector<int>>operability;
@@ -2507,7 +2523,7 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 				}
 			++localperiod;
 		}
-		setgraphfromcache(newgraph, model,period, false);
+		//setgraphfromcache(newgraph, model,period, false);
 		mapping[coordinate] = newgraph;
 	}catch (...)
 		{
@@ -2595,46 +2611,45 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTspatialschedule::getadjacency
 {
 	std::vector<std::vector<Spatial::FMTcoordinate>>coordinates;
 	try {
-		
-		boost::unordered_set<FMTeventrelation> relations;
-		for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period - 1))
-		{
-		if (actionbind.isspatialyadjacencybinding())
+			boost::unordered_set<FMTeventrelation> relations;
+			for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period - 1))
 			{
-			std::vector<bool>actionids(bindingactions.at(period - 1).size(),false);
-			for (const int& action : actionbind.getneighbors())
+			if (actionbind.isspatialyadjacencybinding())
 				{
-				actionids[action] = true;
+				std::vector<bool>actionids(bindingactions.at(period - 1).size(),false);
+				for (const int& action : actionbind.getneighbors())
+					{
+					actionids[action] = true;
+					}
+				if (!conflictonly)
+				{
+					for (FMTeventcontainer::const_iterator cit : events.getevents(period, actionids))
+					{
+						const std::vector<Spatial::FMTcoordinate>eventscoords(cit->elements.begin(), cit->elements.end());
+						coordinates.push_back(eventscoords);
+					}
+					return coordinates;
 				}
-			if (!conflictonly)
-			{
-				for (FMTeventcontainer::const_iterator cit : events.getevents(period, actionids))
-				{
+				std::vector<FMTeventcontainer::const_iterator>conflicts;
+				evaluatespatialadjacency(period, actionbind.getminimalgreenup(),
+					actionbind.getminimaladjacency(), actionbind.getmaximaladjacency(), 
+					actionbind.testminimaladjacency(), actionbind.testmaximaladjacency(), 
+					conflicts, relations, actionids);
+				for (FMTeventcontainer::const_iterator cit : conflicts)
+					{
 					const std::vector<Spatial::FMTcoordinate>eventscoords(cit->elements.begin(), cit->elements.end());
 					coordinates.push_back(eventscoords);
+					}
 				}
-				return coordinates;
+			if (conflictonly && coordinates.empty())
+			{
+				return getadjacencyconflictcoordinates(bindingactions, period, false);
 			}
-			std::vector<FMTeventcontainer::const_iterator>conflicts;
-			evaluatespatialadjacency(period, actionbind.getminimalgreenup(),
-				actionbind.getminimaladjacency(), actionbind.getmaximaladjacency(), 
-				actionbind.testminimaladjacency(), actionbind.testmaximaladjacency(), 
-				conflicts, relations, actionids);
-			for (FMTeventcontainer::const_iterator cit : conflicts)
-				{
-				const std::vector<Spatial::FMTcoordinate>eventscoords(cit->elements.begin(), cit->elements.end());
-				coordinates.push_back(eventscoords);
-				}
-			}
-		}
-		if (coordinates.empty())
-		{
-			return getadjacencyconflictcoordinates(bindingactions, period, false);
 		}
 	}catch (...)
-	{
-	_exhandler->printexceptions("", "FMTspatialschedule::getadjacencyconflictcoordinates", __LINE__, __FILE__);
-	}
+		{
+		_exhandler->printexceptions("", "FMTspatialschedule::getadjacencyconflictcoordinates", __LINE__, __FILE__);
+		}
 	return coordinates;
 }
 

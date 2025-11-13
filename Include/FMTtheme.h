@@ -99,7 +99,13 @@ class FMTEXPORT FMTtheme : public FMTobject
 		*/
 		inline bool isattribute(const std::string& p_value) const
 		{
-			return (getAttribute(p_value) != m_attributem_locations.end());
+			if (!p_value.empty() && p_value.at(0) == '!')
+			{
+				return (getAttribute(p_value.substr(1, p_value.size())) != m_attributem_locations.end());
+			}else {
+				return (getAttribute(p_value) != m_attributem_locations.end());
+				}
+			
 		}
 		// DocString: FMTtheme::isaggregate
 		/**
@@ -107,7 +113,14 @@ class FMTEXPORT FMTtheme : public FMTobject
 		*/
 		inline bool isaggregate(const std::string& p_value) const
 		{
-			return (std::find(m_aggregates.begin(), m_aggregates.end(), p_value) != m_aggregates.end());
+			if (!p_value.empty() && p_value.at(0) == '!')
+			{
+				return (std::find(m_aggregates.begin(), m_aggregates.end(), p_value.substr(1, p_value.size())) != 
+										m_aggregates.end());
+			}else {
+				return (std::find(m_aggregates.begin(), m_aggregates.end(), p_value) != m_aggregates.end());
+			}
+			
 		}
 		// DocString: FMTtheme::isindex
 		/**

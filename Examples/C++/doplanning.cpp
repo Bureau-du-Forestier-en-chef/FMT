@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 		}
 		else {
 			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
-			scenario = "strategique_vanille";
+			scenario = "strategique_vanille_COS";
 			length = 5;
 			objectivevalue = 2836;
 		}

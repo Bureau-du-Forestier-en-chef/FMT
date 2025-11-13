@@ -126,7 +126,7 @@ namespace Parser
 			const std::vector<Core::FMToutput>& outputs,
 			const std::vector<Core::FMTtheme>& themes,
 			const Core::FMTconstants& constants);
-		std::queue<std::pair<std::string, int>>getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
+		std::queue<FMTparser::FMTLineInfo>getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
 								const Core::FMTconstants& cons, const std::vector<Core::FMToutput>& outputs);
 		std::queue<std::string> geteachlines(const std::string& line, const Core::FMTconstants& constants, const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const;
 		// DocString: FMToptimizationparser::getEquation

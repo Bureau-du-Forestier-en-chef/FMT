@@ -172,7 +172,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			std::vector<std::vector<std::string>>allseries;
 			if (FMTparser::tryOpening(actionstream, location))
 			{
-				std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(actionstream, themes, constants);
+				std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(actionstream, themes, constants);
 				while (!Lines.empty())
 				{
 					std::string line = GetLine(Lines);

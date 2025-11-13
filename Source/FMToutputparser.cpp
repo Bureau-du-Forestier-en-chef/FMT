@@ -176,7 +176,7 @@ namespace Parser
 					}
 					if (FMTparser::tryOpening(outputstream, location))
 					{
-						std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(outputstream, themes, constants);
+						std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(outputstream, themes, constants);
 						while (!Lines.empty())
 						{
 							const std::string line = GetLine(Lines);

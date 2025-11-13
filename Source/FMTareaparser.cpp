@@ -2167,7 +2167,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 							bool inactualdevs = false;
 							boost::unordered_map<Core::FMTdevelopment,size_t>devsindex;
 							Core::FMTlist<Core::FMTspec>Excluded;
-							std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(areastream, themes, constants);
+							std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(areastream, themes, constants);
 							while (!Lines.empty())
 							{
 								const std::string line = GetLine(Lines);
