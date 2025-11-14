@@ -2375,8 +2375,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				if (validActions[actionIds])
 				{
 					validActions[actionIds] = false;
-					const Core::FMTmask testedmask = PresolvedAction.getunion(presolvedModel->themes);
-					if (newfilter.canpresolve(testedmask, maskthemes) && !PresolvedAction.notUse())
+					const Core::FMTmask TESTED_MASK = PresolvedAction.getunion(presolvedModel->themes);
+					if (newfilter.canpresolve(TESTED_MASK, maskthemes) && !PresolvedAction.notUse())
 					{
 						PresolvedAction.presolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
 						validActions[actionIds] = true;
@@ -2398,7 +2398,10 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 					validTransitions[transitionIds] = false;
 					std::vector<Core::FMTaction>::const_iterator actionIt = std::find_if(presolvedModel->actions.begin(), presolvedModel->actions.end(), Core::FMTactioncomparator(presolvedTransition.getname()));
 					const size_t ACTIONm_location = std::distance(presolvedModel->actions.cbegin(), actionIt);
-					if (actionIt != presolvedModel->actions.end() && validActions[ACTIONm_location])
+					const Core::FMTmask TESTED_MASK = presolvedTransition.getunion(presolvedModel->themes);
+					if (actionIt != presolvedModel->actions.end() && 
+						validActions[ACTIONm_location] && 
+						newfilter.canpresolve(TESTED_MASK, maskthemes))
 					{
 						presolvedTransition.presolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
 						validTransitions[transitionIds] = true;

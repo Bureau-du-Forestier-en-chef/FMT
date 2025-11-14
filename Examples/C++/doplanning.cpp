@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
 		}
 		else {
 			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/Mod_cc_v2.pri";
-			scenario = "ROOT";
-			length = 5;
+			scenario = "strategique_vanille";
+			length = 20;
 			objectivevalue = 2836;
 		}
 		Parser::FMTmodelparser modelparser;
