@@ -270,7 +270,8 @@ void FMTyieldparser::checkpreexisting(const std::vector<std::string>& preexists)
         for (const std::string& yl : preexists)
             {
             _exhandler->raise(Exception::FMTexc::FMTpreexisting_yield,
-				yl+" at line "+ std::to_string(m_line),"FMTyieldparser::checkpreexisting", __LINE__, __FILE__, m_section);
+				yl+" at line "+ std::to_string(m_line) + " in " + m_location,
+				"FMTyieldparser::checkpreexisting", __LINE__, __FILE__, m_section);
             }
         }
     }
@@ -474,7 +475,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 		size_t overrideid = 1;
 		if (FMTparser::tryOpening(yieldstream, location))
 		{
-			std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(yieldstream, themes, constants);
+			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(yieldstream, themes, constants);
 			while (!Lines.empty())
 			{
 				const std::string line = GetLine(Lines);

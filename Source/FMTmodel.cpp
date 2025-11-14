@@ -1688,7 +1688,8 @@ std::vector<const Core::FMTtheme*>FMTmodel::locatenodestaticthemes(const Core::F
 			{
 				statics = node.source.getmask().getstaticthemes(statics);
 			}
-			const std::string yieldvalue = node.source.getyield();
+			const std::string SOURCE_YIELD_VALUE = node.source.getyield();
+			const std::string FACTOR_YIELD_VALUE = node.factor.getyield();
 			for (const std::string& yldbound : node.source.getylds())
 			{
 				if (yields.isYld(yldbound))
@@ -1696,9 +1697,13 @@ std::vector<const Core::FMTtheme*>FMTmodel::locatenodestaticthemes(const Core::F
 					yieldstolookat.push_back(yldbound);
 				}
 			}
-			if (!yieldvalue.empty())
+			if (!SOURCE_YIELD_VALUE.empty())
 			{
-				yieldstolookat.push_back(yieldvalue);
+				yieldstolookat.push_back(SOURCE_YIELD_VALUE);
+			}
+			if (!FACTOR_YIELD_VALUE.empty())
+			{
+				yieldstolookat.push_back(FACTOR_YIELD_VALUE);
 			}
 		}
 		std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::const_iterator handlerit = yields.begin();
@@ -1799,7 +1804,7 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 	Core::FMTmask selection;
 	try {
 		std::vector<const Core::FMTtheme*>staticcthemes = locatestatictransitionsthemes();
-		staticcthemes = locatenodestaticthemes(node, ignoreoutputvariables, staticcthemes);
+		const std::vector<const Core::FMTtheme*> NODE_THEMES = locatenodestaticthemes(node, ignoreoutputvariables, staticcthemes);
 		
 		std::string basename;
 		for (const Core::FMTtheme& theme : themes)
@@ -1809,11 +1814,10 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 		}
 
 		basename.pop_back();
-		
-		
+		//return Core::FMTmask(basename, themes);
 		const Core::FMTmask submask(basename, themes);
 		 boost::dynamic_bitset<uint8_t>bits = submask.getbitsetreference();
-		for (const Core::FMTtheme* theme : staticcthemes)
+		for (const Core::FMTtheme* theme : NODE_THEMES)
 		{
 			
 			const size_t start = static_cast<size_t>(theme->getstart());
@@ -2371,8 +2375,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				if (validActions[actionIds])
 				{
 					validActions[actionIds] = false;
-					const Core::FMTmask testedmask = PresolvedAction.getunion(presolvedModel->themes);
-					if (newfilter.canpresolve(testedmask, maskthemes) && !PresolvedAction.notUse())
+					const Core::FMTmask TESTED_MASK = PresolvedAction.getunion(presolvedModel->themes);
+					if (newfilter.canpresolve(TESTED_MASK, maskthemes) && !PresolvedAction.notUse())
 					{
 						PresolvedAction.presolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
 						validActions[actionIds] = true;
@@ -2394,7 +2398,10 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 					validTransitions[transitionIds] = false;
 					std::vector<Core::FMTaction>::const_iterator actionIt = std::find_if(presolvedModel->actions.begin(), presolvedModel->actions.end(), Core::FMTactioncomparator(presolvedTransition.getname()));
 					const size_t ACTIONm_location = std::distance(presolvedModel->actions.cbegin(), actionIt);
-					if (actionIt != presolvedModel->actions.end() && validActions[ACTIONm_location])
+					const Core::FMTmask TESTED_MASK = presolvedTransition.getunion(presolvedModel->themes);
+					if (actionIt != presolvedModel->actions.end() && 
+						validActions[ACTIONm_location] && 
+						newfilter.canpresolve(TESTED_MASK, maskthemes))
 					{
 						presolvedTransition.presolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
 						validTransitions[transitionIds] = true;

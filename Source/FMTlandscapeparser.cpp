@@ -150,7 +150,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 			int pasttheme = -1;
 			if (FMTparser::tryOpening(landstream, location))
 			{
-				std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(landstream, themes, constants);
+				std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(landstream, themes, constants);
 				while (!Lines.empty())
 				{
 					const std::string line = GetLine(Lines);
@@ -251,7 +251,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 									)
 								{
 									_exhandler->raise(Exception::FMTexc::FMTignore,
-										val + " at line " + std::to_string(m_line),"FMTlandscapeparser::read", __LINE__, __FILE__, m_section);
+										val + " at line " + std::to_string(m_line) + " in "+m_location,
+										"FMTlandscapeparser::read", __LINE__, __FILE__, m_section);
 
 								}else if(pasttheme>=0)
 								{
@@ -264,7 +265,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							if (pasttheme==-1&&aggregatenames.at(std::distance(aggregates.begin(), std::find(aggregates.begin(), aggregates.end(), aggregatename))).size() == 0)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTignore,
-									aggregatename + " empty at line " + std::to_string(m_line),
+									aggregatename + " empty at line " + std::to_string(m_line) + " in " + m_location,
 									"FMTlandscapeparser::read",__LINE__, __FILE__, m_section);
 							}
 						}
@@ -289,7 +290,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							if (std::find(attributes.begin(), attributes.end(), ltheme) != attributes.end())
 							{
 								_exhandler->raise(Exception::FMTexc::FMTattribute_redefinition,
-									ltheme + " at line " + std::to_string(m_line),
+									ltheme + " at line " + std::to_string(m_line) + " in " + m_location,
 									"FMTlandscapeparser::read", __LINE__, __FILE__, m_section); 
 							}
 							else {
