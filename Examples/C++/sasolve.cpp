@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 		std::string scenario;
 		int length;
 		double objectivevalue;
+		int resolution = 1420;
 		if (argc>1)
 		{
 			const std::string vals = argv[1];
@@ -34,10 +35,12 @@ int main(int argc, char* argv[])
 			length = std::stoi(argv[2]);
 			objectivevalue = std::stod(argv[3]);
 		}else {
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02662/PC_9309_U02662_4_Vg2_2023_vRP1f.pri";
-			scenario = "spatial";
-			length = 1;
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Weight/PC_9964_U08451_2028_MODB01.pri";
+			scenario = "120_RegProv_apsp_AGG";
+			length = 3;
 			objectivevalue = 1000;
+			resolution = 200;
+			//resolution = 1000;
 			}
 		const std::string outputlocation = "../../tests/sasolve";
 		Parser::FMTmodelparser modelparser;
@@ -51,6 +54,9 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTunclosedforloop);
+		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
+		errors.push_back(Exception::FMTexc::FMTempty_schedules);
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
@@ -58,11 +64,27 @@ int main(int argc, char* argv[])
 		
 		boost::filesystem::path pripath(primarylocation);
 		boost::filesystem::path basefolder = pripath.parent_path();
-		boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
+		const boost::filesystem::path RASTER_LOCATION = basefolder / boost::filesystem::path("rasters");
+		Spatial::FMTforest forest;
 		Parser::FMTareaparser areaparser;
-		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation.string(), 1420, models.at(0).getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
+		if (boost::filesystem::is_directory(RASTER_LOCATION))
+			{
+			std::vector<std::string>themesName;
+			size_t i = 1;
+			for (const auto& THEME : models.at(0).getthemes())
+			{
+				themesName.push_back(RASTER_LOCATION.string() + "/THEME" + std::to_string(i)+".tif");
+				++i;
+			}
+			forest = areaparser.readrasters(models.at(0).getthemes(),
+				themesName, RASTER_LOCATION.string() + "/AGE.tif", 1.0, 0.0001, RASTER_LOCATION.string() + "/STANLOCK.tif");
+		}else {
+			boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
+			forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
+			}
 		models[0].setparameter(Models::FMTintmodelparameters::SEED, 100);
 		Models::FMTsamodel optimizationmodel(models.at(0),forest);
+		//optimizationmodel.setdebuglogger();
 		std::vector<Core::FMTtransition>singletransitions;
 		for (const Core::FMTtransition transition : optimizationmodel.gettransitions())
 			{
@@ -71,6 +93,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.settransitions(singletransitions);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 10000);
+		//optimizationmodel.redirectlogtofile(outputlocation + "/SaSolve.log");
 		optimizationmodel.doplanning(true);
 		std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())

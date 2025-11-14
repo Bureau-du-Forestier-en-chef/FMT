@@ -246,7 +246,7 @@ bool FMTtheme::inAggregate(const std::string& p_value, const std::string& p_aggr
 bool FMTtheme::isValid(const std::string& p_value) const
 	{
 	try {
-		return (p_value == "?" || isattribute(p_value) || (p_value.at(0) == '!' && isattribute(p_value.substr(1, p_value.size()))));
+		return (p_value == "?" || isattribute(p_value));
 	}
 	catch (...)
 	{

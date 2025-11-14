@@ -162,6 +162,7 @@ namespace Models
 		return values;
 	}
 
+
 	Spatial::FMTlayer<double> FMTsemodel::getspatialoutput(const Core::FMToutput& output, int period) const
 	{
 		try {

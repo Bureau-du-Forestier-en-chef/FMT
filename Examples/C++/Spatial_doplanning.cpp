@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 			for (int period = 1; period <= length;++period)
 				{
 				const std::string NAME = outdir + "PERIOD_"+std::to_string(period)+"_" + OUTOUT.getname() + ".tif";
-				//const double FULL_VALUE = simulationmodel.getoutput(OUTOUT, period, Core::FMToutputlevel::totalonly)["Total"];
+				const double TOTAL_VALUE = simulationmodel.getoutput(OUTOUT, period, Core::FMToutputlevel::totalonly)["Total"];
 				double FULL_VALUE = 0;
 				for (const auto& STANDARD : simulationmodel.getoutput(OUTOUT, period, Core::FMToutputlevel::standard))
 				{
@@ -129,6 +129,7 @@ int main(int argc, char* argv[])
 					{
 					spatialResult += (CELL.second);
 					}
+				std::cout <<"NON SPATIAL TOTAL "<< TOTAL_VALUE<<" NON SPATIAL THEMATIC "<< FULL_VALUE << " SPATIAL " << spatialResult << "\n";
 				if (std::abs(spatialResult - FULL_VALUE)>1)
 					{
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
@@ -136,6 +137,11 @@ int main(int argc, char* argv[])
 						"Spatial_doplanning", __LINE__, primarylocation);
 					}
 				areaParser.writelayer(RESULT, NAME);
+				/*const std::map<std::string, double>SAFE = SPATIAL_SCHEDULE.getSafeOutput(simulationmodel, OUTOUT, period, Core::FMToutputlevel::totalonly);
+				for (const auto& OUTPUT : SAFE)
+				{
+					std::cout << "SAFE " << OUTPUT.first << " " << OUTPUT.second << "\n";
+				}*/
 				}
 			
 			}

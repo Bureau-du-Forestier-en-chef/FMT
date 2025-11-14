@@ -38,7 +38,7 @@ Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& th
 		std::ifstream LIFstream(location);
 		if (FMTparser::tryOpening(LIFstream, location))
 		{
-			std::queue<std::pair<std::string, int>>Lines = FMTparser::GetCleanLinewfor(LIFstream, themes, constants);
+			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(LIFstream, themes, constants);
 			while (!Lines.empty())
 			{
 				const std::string line = GetLine(Lines);

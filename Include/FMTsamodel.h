@@ -104,7 +104,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         /**
         Get the selected action from the bindings
         */
-        std::vector<bool> GetFromBindings(const Spatial::FMTspatialschedule::actionbindings& bindingactions) const;
+        std::vector<bool> GetFromBindings(const Spatial::FMTspatialschedule::actionbindings& bindingactions, bool adjacency = false) const;
         // DocString: FMTsamodel::GetCycleMoves
         /**
         Get the total number of moves of the last cycle
@@ -119,7 +119,12 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         /**
         Returns true if the bindings allow to destroy some events
        */
-        bool AllowDestruction(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        bool AllowAreaDestruction(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        // DocString: FMTsamodel::AllowAdjacencyDestruction
+           /**
+           Returns true if the bindings allow to destroy some events
+          */
+        bool AllowAdjacencyDestruction(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const;
         // DocString: FMTsamodel::AllowMove
         /**
         Check If you can allow the move 
@@ -246,6 +251,11 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Update failed move count using NotAcceptedMovesCount and the move stats
         */
         void UpdateFailedMoveCount();
+        // DocString: FMTsamodel::ValidateCache
+        /**
+        @brief check the amount of memory used by the solution if the amount is greater then 10 go then delete.
+        */
+        void ValidateCache();
 	public:
         // DocString: FMTsemodel::LogMovesReport
         /**

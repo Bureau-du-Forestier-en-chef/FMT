@@ -153,6 +153,14 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		*/
 		static Core::FMTsection fromExtension(const std::string& p_Extension);
 	protected:
+		class FMTLineInfo
+			{
+			public:
+				FMTLineInfo(const std::string p_line, int p_number, const std::string& p_file);
+				std::string m_lineValue;
+				int m_lineNumber;
+				std::string m_file;
+			};
 		// DocString: FMTparser::m_SEPARATOR
 		///A regex for splitting general string.
 		const static boost::regex m_SEPARATOR;
@@ -324,8 +332,8 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_ForOut is the output of for loops unrol
 		@return a queue of lines to process.
 		*/
-		std::queue<std::pair<std::string, int>> TryInclude(const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
-															std::queue<std::pair<std::string, int>>p_ForOut) const;
+		std::queue<FMTLineInfo> TryInclude(const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
+															std::queue<FMTLineInfo>p_ForOut) const;
 
 		// DocString: FMTparser::GetCleanLinewfor
 		/**
@@ -335,7 +343,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_const the model constants
 		@return a queue of lines to process
 		*/
-		std::queue<std::pair<std::string, int>> GetCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTtheme>& p_themes,
+		std::queue<FMTLineInfo> GetCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTtheme>& p_themes,
 																const Core::FMTconstants& p_cons) const;
 		// DocString: FMTparser::isNum
 		/**
@@ -472,7 +480,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		*/
 		void ProcessForLoops(const std::vector<Core::FMTtheme>& p_themes,
 			const Core::FMTconstants& p_constants,
-			std::queue<std::pair<std::string, int>>& p_queue) const;
+			std::queue<FMTLineInfo>& p_queue) const;
 		// DocString: FMTparser::IsForLoops
 		/**
 		@brief Test if you got a for loops in the line
@@ -493,7 +501,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_Lines
 		@return the line value
 		*/
-		std::string GetLine(std::queue<std::pair<std::string, int>>& p_Lines) const;
+		std::string GetLine(std::queue<FMTLineInfo>& p_Lines) const;
 	private:
 		// DocString: FMTparser::m_VECTOR_THEME
 		///Regex to capture theme.
@@ -569,7 +577,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			@param[in] p_queue queue of lines
 			@return the front line
 			*/
-			std::pair<std::string, int> _SetForLoopLines(std::queue<std::pair<std::string, int>>& p_queue) const;
+			FMTLineInfo _SetForLoopLines(std::queue<FMTLineInfo>& p_queue) const;
     };
 
 }

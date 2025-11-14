@@ -472,6 +472,11 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		@param[in] p_value true if used else false.
 		*/
 		static void setPeriodCache(bool p_value);
+		// DocString: FMTsemodel::ClearNodesCache
+		/**
+		@brief clear the nodes cache of the solution.
+		*/
+		void ClearNodesCache();
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**
@@ -494,7 +499,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 */
 		std::map<std::string,double> getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
 			const Core::FMToutputnode& node, const double* solution,const int&period, const Core::FMTmask& nodemask,
-			boost::unordered_map<Core::FMTmask, double>& nodecache, Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
+			boost::unordered_map<Core::FMTmask, double>& nodecache, const Core::FMTtheme*  p_theme,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 
 		// DocString: FMTspatialschedule::setgraphcachebystatic
 		 /**
@@ -553,6 +558,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 			std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
 			const size_t p_start,
 			const size_t p_stop) const;
+
 
 		
 		

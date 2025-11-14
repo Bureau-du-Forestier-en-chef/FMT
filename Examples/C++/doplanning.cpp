@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
-			scenario = "strategique_vanille";
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/Mod_cc_v2.pri";
+			scenario = "ROOT";
 			length = 5;
 			objectivevalue = 2836;
 		}
@@ -78,6 +78,22 @@ int main(int argc, char* argv[])
 			//arepars.write(optimizationmodel.getarea(1), "D:/test/test.are");
 			
 			std::vector<Core::FMToutput>outputs;
+			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			{
+				if (output.getname() == "OVOLTOTREC")
+				{
+					for (int period = 1; period < 10; ++period)
+					{
+					const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::standard);
+					for (const auto& val : outs)
+						{
+						std::cout << val.first << " " << val.second << "\n";
+	
+						}
+					}
+				}
+			}
+
 			/*for (const auto& solution : optimizationmodel.getsolution(1))
 			{
 				for (const auto& val : solution.second)

@@ -219,4 +219,9 @@ namespace Spatial
 		return patterncache.end();
 		}
 
+	void FMTspatialnodescache::ClearCache()
+		{
+		patterncache.clear();
+		}
+
 }
