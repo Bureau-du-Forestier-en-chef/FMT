@@ -223,7 +223,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							{
 								aggregate_redefiniton = true;
 								_exhandler->raise(Exception::FMTexc::FMTaggregate_redefinition,
-									aggregatename + " at line " + std::to_string(m_line)+". The lattest definition will be ignored.",
+									aggregatename + " at line " + std::to_string(m_line)+" in "+ m_location +". The lattest definition will be ignored.",
 									"FMTlandscapeparser::read", __LINE__, __FILE__, m_section);
 							}
 							if (!aggregate_redefiniton)

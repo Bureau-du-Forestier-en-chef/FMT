@@ -1643,6 +1643,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 				for (int iField = 0; iField < FIELD_DEFINITIONS->GetFieldCount(); ++iField)
 					{
 					Data[iField][featureId] = feature->GetFieldAsString(iField);
+					boost::to_upper(Data[iField][featureId]);
 					}
 				OGRFeature::DestroyFeature(feature);
 				++featureId;
@@ -1767,6 +1768,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 							for (const auto& VARIABLE : Variables)
 							{
 								ModifiedLine = boost::regex_replace(ModifiedLine, boost::regex(VARIABLE), VariablesData[variableID][REPLACER_ID]);
+								boost::trim(ModifiedLine);
 								++variableID;
 							}
 							ForloopQueues[UnrolId].push_back(FMTLineInfo(ModifiedLine,m_line,m_location));
@@ -1787,7 +1789,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 				{
 				for (const FMTLineInfo& UNROLED_LINE : UNROLED)
 					{
-					FinalQueue.push(UNROLED_LINE);
+					FinalQueue.push(UNROLED_LINE);	
 					}
 				}
 			//Fill the rest in the queue
