@@ -1479,6 +1479,7 @@ std::string  FMTparser::_getAbsolutePath(std::string p_Path) const
 	{
 	try {
 		boost::filesystem::path includedpath(p_Path);
+		// TODO GAB C2 à carlo pour inclure un scenario
 		if (p_Path.find("_PRIMARY") != std::string::npos)
 		{
 			if (primarym_sections.find(m_section) != primarym_sections.end())
