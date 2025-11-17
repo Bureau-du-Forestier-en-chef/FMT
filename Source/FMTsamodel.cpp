@@ -668,7 +668,8 @@ namespace Models
         bool FMTsamodel::isCycleProvenOptimal() const
         {
             try {
-                return (!((GetCycleMoves() - GetAcceptedCycleMoves()) < 500 && GetCycleMoves() < 1000));
+                return (!((GetCycleMoves() - GetAcceptedCycleMoves()) < getparameter(FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES) && 
+                    GetCycleMoves() < getparameter(FMTintmodelparameters::MAX_CYCLE_MOVES)));
             }
             catch (...)
             {
