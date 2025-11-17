@@ -47,7 +47,7 @@ set "MODULE_PATH=%MODULE_PATH:\=/%"
 set VCPKG_KEEP_ENV_VARS=MOSEK_DIR;MODULE_PATH
 ::::::::::::::::::::::::::::::::::::::::::::
 
-cmake CMakeLists.txt -B build/release -G "Visual Studio 17 2022" -DBUILD_TYPE=Release -T v143,version=14.36.17.6 -DPARALLEL_TESTS=2 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DONNXR_DIR=D:/dependencies/onnxruntime/ -DVCPKG_MANIFEST_MODE=ON
+cmake CMakeLists.txt -B build/release -G "Visual Studio 17 2022" -DBUILD_TYPE=Release -T v143,version=14.36.17.6 -DPARALLEL_TESTS=8 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DONNXR_DIR=D:/dependencies/onnxruntime/ -DVCPKG_MANIFEST_MODE=ON
 
 
 cmake CMakeLists.txt ^

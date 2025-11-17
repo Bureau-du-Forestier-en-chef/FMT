@@ -24,6 +24,8 @@ namespace Models
         m_intparameters[MATRIX_TYPE] = 2;//Default value is type II
         m_intparameters[UPDATE] = 2;//Default is that model period update stop at 2
         m_intparameters[MAX_MOVES] = 80000;
+        m_intparameters[MAX_ACCEPTED_CYCLE_MOVES] = 500;
+        m_intparameters[MAX_CYCLE_MOVES] = 1000;
         //DBLparameters
         m_dblparameters[TOLERANCE]= FMT_DBL_TOLERANCE;
         m_dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;
