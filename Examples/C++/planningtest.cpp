@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\modele_vanille\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01009233\\PC_10116_U05151_MODB01_20250912\\PC_10116_U05151_2028_MODB01.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
-		length = 20;
-		scenario_name = "strategique_vanille";
+		length = 30;
+		scenario_name = "Ovoltotrec_complexite";
 		playback.push_back(false);
 		allscenarios.push_back(scenario_name);
 	}
