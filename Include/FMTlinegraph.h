@@ -245,6 +245,11 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Comparison operator of FMTlinegraph
 		*/
 		bool operator == (const FMTlinegraph& rhs) const;
+			// DocString:  FMTlinegraph::operator==
+			/**
+			Comparison operator of FMTlinegraph
+			*/
+		bool operator < (const FMTlinegraph& rhs) const;
 		// DocString:  FMTlinegraph::clearnodecache
 		/**
 		Clear the node cache when getting outpus of the linegraph.

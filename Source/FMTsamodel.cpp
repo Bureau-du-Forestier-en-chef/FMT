@@ -164,7 +164,7 @@ namespace Models
     }
 
 
-	bool FMTsamodel::IsBetter(const Spatial::FMTspatialschedule& actual,const Spatial::FMTspatialschedule& candidat) const
+	bool FMTsamodel::IsBetter(const Spatial::FMTSpatialSchedule& actual,const Spatial::FMTSpatialSchedule& candidat) const
 		{
 		try {
             const double temp = CoolingSchedule->GetTemp();
@@ -204,8 +204,8 @@ namespace Models
        return sizeofmove;
     }
 
-   Spatial::FMTspatialschedule FMTsamodel::DoConflictDestruction(const Spatial::FMTspatialschedule& actual,
-       const Spatial::FMTspatialschedule::actionbindings& bindings,
+   Spatial::FMTSpatialSchedule FMTsamodel::DoConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
+       const Spatial::FMTSpatialSchedule::actionbindings& bindings,
        std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool, const int& period) const
    {
        try {
@@ -229,7 +229,7 @@ namespace Models
                ++selected;
            }
            std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = finalselection.begin();
-           Spatial::FMTspatialschedule newsolution(actual, finalselection.begin(), finalselection.end());
+           Spatial::FMTSpatialSchedule newsolution(actual, finalselection.begin(), finalselection.end());
            while (luckycoordinateit != finalselection.end())
            {
                newsolution.perturbgraph(*luckycoordinateit, period, *this, m_generator, bindings);
@@ -244,8 +244,8 @@ namespace Models
        return actual;
    }
 
-   Spatial::FMTspatialschedule FMTsamodel::DoEventsAdjacencyConflictDestrutorMove(const Spatial::FMTspatialschedule& actual,
-       const Spatial::FMTspatialschedule::actionbindings& bindings) const
+   Spatial::FMTSpatialSchedule FMTsamodel::DoEventsAdjacencyConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
+       const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
            const std::vector<bool>selectedactions = GetFromBindings(bindings,true);
@@ -259,7 +259,7 @@ namespace Models
        return actual;
    }
 
-   bool FMTsamodel::AllowAreaDestruction(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const
+   bool FMTsamodel::AllowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
            const std::vector<bool>selectedactions = GetFromBindings(bindings);
@@ -276,7 +276,7 @@ namespace Models
        return false;
    }
 
-   bool FMTsamodel::AllowAdjacencyDestruction(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const
+   bool FMTsamodel::AllowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
            const std::vector<bool>selectedactions = GetFromBindings(bindings,true);
@@ -293,7 +293,7 @@ namespace Models
    }
 
 
-   std::vector<bool> FMTsamodel::GetFromBindings(const Spatial::FMTspatialschedule::actionbindings& bindingactions,bool adjacency) const
+   std::vector<bool> FMTsamodel::GetFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions,bool adjacency) const
    {
        std::vector<bool>selectedactions(actions.size(), false);
        try {
@@ -328,8 +328,8 @@ namespace Models
 
   
 
-    Spatial::FMTspatialschedule FMTsamodel::DoEventsAreaConflictDestrutorMove(const Spatial::FMTspatialschedule& actual,
-        const Spatial::FMTspatialschedule::actionbindings& bindings) const
+    Spatial::FMTSpatialSchedule FMTsamodel::DoEventsAreaConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
+        const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
     {
         try {
             const std::vector<bool>selectedactions = GetFromBindings(bindings);
@@ -344,8 +344,8 @@ namespace Models
         return actual;
     }
 
-    Spatial::FMTspatialschedule FMTsamodel::DoLocalMove(const Spatial::FMTspatialschedule& actual,
-        const Spatial::FMTspatialschedule::actionbindings& bindings,
+    Spatial::FMTSpatialSchedule FMTsamodel::DoLocalMove(const Spatial::FMTSpatialSchedule& actual,
+        const Spatial::FMTSpatialSchedule::actionbindings& bindings,
         const std::vector<Spatial::FMTcoordinate>* movable,
         boost::unordered_map<Core::FMTdevelopment, bool>* operability) const
     {
@@ -367,9 +367,9 @@ namespace Models
             std::shuffle(selectionPool.begin(), selectionPool.end(), m_generator);
             std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = selectionPool.begin();
             size_t perturbationdone = 0;
-            const size_t SELECTED = std::min(MOVE_SIZE, selectionPool.size());
+            const size_t SELECTED = std::min(MOVE_SIZE, selectionPool.size()-1);
             _logger->logwithlevel("Local Move Selected " + std::to_string(SELECTED)+"\n", 2);
-            Spatial::FMTspatialschedule newsolution(actual, selectionPool.begin(), selectionPool.begin() + SELECTED);
+            Spatial::FMTSpatialSchedule newsolution(actual, selectionPool.begin(), selectionPool.begin() + SELECTED);
             //Spatial::FMTspatialschedule newsolution(actual);
             while (luckycoordinateit != selectionPool.end() && perturbationdone < MOVE_SIZE)
             {
@@ -386,8 +386,8 @@ namespace Models
         return actual;
     }
 
-	Spatial::FMTspatialschedule FMTsamodel::Move(const Spatial::FMTspatialschedule& actual,
-										const Spatial::FMTspatialschedule::actionbindings& bindings,
+	Spatial::FMTSpatialSchedule FMTsamodel::Move(const Spatial::FMTSpatialSchedule& actual,
+										const Spatial::FMTSpatialSchedule::actionbindings& bindings,
 										const std::vector<Spatial::FMTcoordinate>*movable,
 										boost::unordered_map<Core::FMTdevelopment, bool>*operability) const
 		{
@@ -459,9 +459,9 @@ namespace Models
         }
     }
 
-    Spatial::FMTspatialschedule FMTsamodel::GetRebuild(const Spatial::FMTspatialschedule& actual) const
+    Spatial::FMTSpatialSchedule FMTsamodel::GetRebuild(const Spatial::FMTSpatialSchedule& actual) const
     {
-        Spatial::FMTspatialschedule newsolution;
+        Spatial::FMTSpatialSchedule newsolution;
         try {
             const std::vector<Core::FMTschedule>nonspatialschedules = actual.getschedules(actions, true);
             if (nonspatialschedules.empty())
@@ -471,15 +471,17 @@ namespace Models
             }
             const Spatial::FMTforest baseforest = actual.getforestperiod(0);
             const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH));
-            newsolution = Spatial::FMTspatialschedule(baseforest, LENGTH);
-            const std::vector<double>factors = actual.getconstraintsfactor();
-            if (!factors.empty())
+            newsolution = Spatial::FMTSpatialSchedule(baseforest, LENGTH);
+            const std::vector<double>& FACTORS = actual.getConstraintsFactor();
+            if (!FACTORS.empty())
             {
-                newsolution.setconstraintsfactor(*this, factors);
+                newsolution.setconstraintsfactor(*this, FACTORS);
             }
             for (const Core::FMTschedule& schedule : nonspatialschedules)
                 {
-                newsolution.greedyreferencebuild(schedule, *this, 10,getparameter(Models::FMTintmodelparameters::SEED), FMT_DBL_TOLERANCE,false);
+                newsolution.greedyreferencebuild(schedule, *this, 
+                    getparameter(NUMBER_OF_ITERATIONS),
+                    getparameter(Models::FMTintmodelparameters::SEED), FMT_DBL_TOLERANCE,false);
                 }
         }catch (...)
         {
@@ -518,7 +520,7 @@ namespace Models
     }
 
 
-    FMTsamodel::FMTsamove FMTsamodel::GetAMove(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const
+    FMTsamodel::FMTsamove FMTsamodel::GetAMove(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
     {
         FMTsamove move =  FMTsamove::Local;
         try {
@@ -576,8 +578,8 @@ namespace Models
 
 
 
-	double FMTsamodel::Warmup(const Spatial::FMTspatialschedule& actual,
-		const Spatial::FMTspatialschedule::actionbindings& bindings,
+	double FMTsamodel::Warmup(const Spatial::FMTSpatialSchedule& actual,
+		const Spatial::FMTSpatialSchedule::actionbindings& bindings,
 		const std::vector<Spatial::FMTcoordinate>*movable,
 		boost::unordered_map<Core::FMTdevelopment, bool>*operability,
 		double initprobability, size_t iterations)
@@ -593,7 +595,7 @@ namespace Models
         //double deltasum = 0;
         while (iterations > 0)
         {
-            const Spatial::FMTspatialschedule newsolution = Move(actual, bindings, movable, operability);
+            const Spatial::FMTSpatialSchedule newsolution = Move(actual, bindings, movable, operability);
             size_t cntid = 0;
             for (const double& value : newsolution.getconstraintsvalues(*this))
             {
@@ -669,7 +671,8 @@ namespace Models
         {
             try {
                 return (!((GetCycleMoves() - GetAcceptedCycleMoves()) < getparameter(FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES) && 
-                    GetCycleMoves() < getparameter(FMTintmodelparameters::MAX_CYCLE_MOVES)));
+                    GetCycleMoves() < getparameter(FMTintmodelparameters::MAX_CYCLE_MOVES) &&
+                    TotalMoves < getparameter(FMTintmodelparameters::MAX_MOVES)));
             }
             catch (...)
             {
@@ -768,7 +771,7 @@ namespace Models
 		{
 		try {
 			const std::vector<Spatial::FMTcoordinate>movables = solution.getstaticsmovablecoordinates(*this);
-			const Spatial::FMTspatialschedule::actionbindings actionsbinding = solution.getbindingactionsbyperiod(*this);
+			const Spatial::FMTSpatialSchedule::actionbindings actionsbinding = solution.getbindingactionsbyperiod(*this);
 			boost::unordered_map<Core::FMTdevelopment, bool>operability;
             *_logger << "Generator initial state: " << m_generator() << "\n";
 			const double initialtemperature = Warmup(solution, actionsbinding,&movables,&operability,0.9);
@@ -782,24 +785,24 @@ namespace Models
                 LastGlobalObjectiveValue = 0;
 				while (!isCycleProvenOptimal())
 					{
-					Spatial::FMTspatialschedule newsolution = Move(solution, actionsbinding,&movables,&operability);
+					Spatial::FMTSpatialSchedule newsolution = Move(solution, actionsbinding,&movables,&operability);
                     if (IsBetter( solution, newsolution))
-                    {
-                        if (newsolution.ispartial())
                         {
-                            solution.copyfrompartial(newsolution);
+                            if (newsolution.ispartial())
+                            {
+                                solution.copyfrompartial(newsolution);
+                            }
+                            else {
+                                solution.swap(newsolution);
+                            }
+                            LastGlobalObjectiveValue = std::max(LastGlobalObjectiveValue, solution.getglobalobjective(*this));//Get the Worst one
+                            CycleMoves.back().Accepted = true;
                         }
-                        else {
-                            solution.swap(newsolution);
-                        }
-                        LastGlobalObjectiveValue = std::max(LastGlobalObjectiveValue, solution.getglobalobjective(*this));//Get the Worst one
-                        CycleMoves.back().Accepted = true;
-                    }
-                    DoFactorization();
-                    LogSolutionStatus();
+                        ValidateCache();
+                        DoFactorization();
+                        LogSolutionStatus();
 					++TotalMoves;
 					}
-                ValidateCache();
                 UpdateFailedMoveCount();
                 LogCycleStatus();
 				CoolDown();
@@ -817,7 +820,7 @@ namespace Models
     bool FMTsamodel::build(std::vector<Core::FMTschedule> schedules)
     {
         try {
-            solution.setPeriodCache(true);
+            //solution.setPeriodCache(true);
             if (schedules.empty()||
                 (!schedules.empty() && schedules.begin()->empty())) //From no solution
             {

@@ -81,7 +81,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		/**
 		Getter returning a copy of the spatially explicit solution.
 		*/
-		inline Spatial::FMTspatialschedule getspschedule() const
+		inline Spatial::FMTSpatialSchedule getspschedule() const
 		{
 			return solution;
 		}
@@ -181,7 +181,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 	protected:
 		// DocString: FMTsemodel::spschedule
 		///Contains the builded spatialsolution latest or best one.
-		Spatial::FMTspatialschedule solution;
+		Spatial::FMTSpatialSchedule solution;
 		// DocString: FMTsemodel::m_staticMaskMemorize
 		///Static memorization of output nodes.
 		mutable boost::unordered_map<Core::FMToutputsource, Core::FMTmask>m_staticMaskMemorize;

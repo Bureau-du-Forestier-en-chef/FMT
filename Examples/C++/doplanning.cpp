@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/Mod_cc_v2.pri";
+			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
 			scenario = "strategique_vanille";
 			length = 20;
 			objectivevalue = 2836;
@@ -69,10 +69,9 @@ int main(int argc, char* argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
-		
-		//modelparser.write(optimizationmodel, "D:/test/");
+		modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doplanning(true)) {
-			//modelparser.write(optimizationmodel, "D:/ttt/");
+			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
 			//Parser::FMTareaparser arepars;
 			//arepars.write(optimizationmodel.getarea(1), "D:/test/test.are");

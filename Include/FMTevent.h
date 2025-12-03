@@ -247,7 +247,7 @@ class FMTEXPORT FMTevent
         Check if events are split and fill vector of split events
         Remove all elements from the current event and put it in the events in splittedevents
         */
-        bool splitevent(const unsigned int& ldistance, std::vector<FMTevent>& splittedevents) const;
+        bool splitevent(std::vector<FMTevent>& splittedevents) const;
 		// DocString: FMTevent::getterritory
 	   /**
 		Returns the adjacent territory of the event base on a distance.

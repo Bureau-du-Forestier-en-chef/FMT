@@ -64,7 +64,7 @@ namespace Models
         {
 		try {
 			const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH)+2);
-			Spatial::FMTspatialschedule newSolution(forest, LENGTH);
+			Spatial::FMTSpatialSchedule newSolution(forest, LENGTH);
 			solution.swap(newSolution);
 		}catch (...)
 		{
@@ -125,9 +125,9 @@ namespace Models
 	{
 		try {
 			*_logger << "Constraints factor report" << "\n";
-			const std::vector<double>factors = solution.getconstraintsfactor();
+			const std::vector<double>FACTORS = solution.getConstraintsFactor();
 			size_t constraintid = 0;
-			for (const double& value : factors)
+			for (const double& value : FACTORS)
 				{
 				std::string constraintname = constraints.at(constraintid);
 				std::replace(constraintname.begin(), constraintname.end(), '\n', ' ');
@@ -149,12 +149,7 @@ namespace Models
 	{
 		std::map<std::string, double>values;
 		try {
-			const std::map<std::string, std::vector<double>>periodvalues = solution.getoutput(*this, output, period, period, level);
-			for (std::map<std::string, std::vector<double>>::const_iterator it = periodvalues.begin(); it != periodvalues.end(); it++)
-				{
-				values[it->first] = *it->second.begin();
-				}
-
+			values = solution.getoutput(*this, output, period, level);
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTsemodel::getoutput", __LINE__, __FILE__);
@@ -166,7 +161,7 @@ namespace Models
 	Spatial::FMTlayer<double> FMTsemodel::getspatialoutput(const Core::FMToutput& output, int period) const
 	{
 		try {
-			return solution.getoutput(*this, output, period);
+			return solution.getSpatialOutput(*this, output, period);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsemodel::getoutput", __LINE__, __FILE__);
@@ -219,7 +214,7 @@ namespace Models
 				const boost::dynamic_bitset<uint8_t>&bitsets = baseMask.getbitsetreference();
 				//presolvedses->solution = Spatial::FMTspatialschedule(solution.getforestperiod(0).presolve(presolvefilter, presolvedses->themes));
 				const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH) + 2);
-				Spatial::FMTspatialschedule presolvedSolution = solution.presolve(presolveFilter, presolvedses->themes, LENGTH);
+				Spatial::FMTSpatialSchedule presolvedSolution = solution.presolve(presolveFilter, presolvedses->themes, LENGTH);
 				presolvedses->solution.swap(presolvedSolution);
 				return presolvedmod;
 			}

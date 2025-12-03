@@ -610,7 +610,69 @@ namespace Graph
 
 	bool FMTlinegraph::operator == (const FMTlinegraph& rhs) const
 		{
-		return FMTgraph::operator==(rhs);
+		if (getbasedevelopment() == rhs.getbasedevelopment())
+			{
+			const size_t THIS_EDGES = boost::num_edges(data);
+			const size_t RHS_EDGES = boost::num_edges(rhs.data);
+			if (THIS_EDGES!= RHS_EDGES)
+				{
+				return false;
+				}
+			FMTedge_iterator edge_iterator, edge_iterator_end, rhs_edge_iterator, rhs_edge_iterator_end;
+			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+			boost::tie(rhs_edge_iterator, rhs_edge_iterator_end) = boost::edges(rhs.data);
+			while (edge_iterator != edge_iterator_end && 
+					rhs_edge_iterator != rhs_edge_iterator_end)
+				{
+				const FMTbaseedgeproperties& THIS_PROPERTIES = data[*edge_iterator];
+				const FMTbaseedgeproperties& RHS_PROPERTIES = data[*rhs_edge_iterator];
+				if (THIS_PROPERTIES.getShortActionID() !=
+					RHS_PROPERTIES.getShortActionID())
+					{
+					return false;
+					}
+				++edge_iterator;
+				++rhs_edge_iterator;
+				}
+			return (edge_iterator != edge_iterator_end ||
+				rhs_edge_iterator != rhs_edge_iterator_end);
+			}
+		return false;
+		}
+
+	bool FMTlinegraph::operator < (const FMTlinegraph& rhs) const
+		{
+		const Core::FMTdevelopment& THIS_BASE = getbasedevelopment();
+		const Core::FMTdevelopment& RHS_BASE = rhs.getbasedevelopment();
+		//strict ordering
+		if (THIS_BASE < RHS_BASE)
+			return true;
+		if (RHS_BASE < THIS_BASE)
+			return false;
+		const size_t THIS_EDGES = boost::num_edges(data);
+		const size_t RHS_EDGES = boost::num_edges(rhs.data);
+		if (THIS_EDGES < RHS_EDGES)
+			return true;
+		if (RHS_EDGES < THIS_EDGES)
+			return false;
+		FMTedge_iterator edge_iterator, edge_iterator_end, rhs_edge_iterator, rhs_edge_iterator_end;
+		boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+		boost::tie(rhs_edge_iterator, rhs_edge_iterator_end) = boost::edges(rhs.data);
+		while (edge_iterator != edge_iterator_end &&
+			rhs_edge_iterator != rhs_edge_iterator_end)
+		{
+			const FMTbaseedgeproperties& THIS_PROPERTIES = data[*edge_iterator];
+			const FMTbaseedgeproperties& RHS_PROPERTIES = data[*rhs_edge_iterator];
+			const int8_t THIS_ACTION = THIS_PROPERTIES.getShortActionID();
+			const int8_t RHS_ACTION = RHS_PROPERTIES.getShortActionID();
+			if (THIS_ACTION < RHS_ACTION)
+				return true;
+			if (RHS_ACTION < THIS_ACTION)
+				return false;
+			++edge_iterator;
+			++rhs_edge_iterator;
+		}
+		return false;
 		}
 
 	const Core::FMTdevelopment& FMTlinegraph::getbasedevelopment() const

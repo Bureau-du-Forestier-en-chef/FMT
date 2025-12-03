@@ -42,7 +42,7 @@ namespace Parser
 
 namespace Spatial
 {
-	class FMTspatialschedule;
+	class FMTSpatialSchedule;
 	class FMTspatialnodescache;
 }
 /// Namespace containing all enumerator and classes used to construct or manipulate the different type of model in FMT.
@@ -62,7 +62,7 @@ namespace Models
 		template<class T1,class T2>
 		friend class Graph::FMTgraph;
 		friend class Graph::FMTlinegraph;
-		friend class Spatial::FMTspatialschedule;
+		friend class Spatial::FMTSpatialSchedule;
 		friend class Spatial::FMTspatialnodescache;
 		friend class Parser::FMTmodelparser;
 		friend class Graph::FMTgraphvertextoyield;
