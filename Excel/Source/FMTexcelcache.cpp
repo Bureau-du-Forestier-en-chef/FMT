@@ -177,6 +177,11 @@ namespace Wrapper
 					{
 						scenarios->Add(modelname);
 					}
+					else {
+						FMTmodelcache emptycache;
+						Logging::FMTExcelLogger* log = emptycache.getlogger();
+						*log << "Infeasable model: " + name + "\n";
+					}
 				}
 			}
 		}catch (...)
