@@ -78,6 +78,7 @@ int main(int argc, char* argv[])
 			//arepars.write(optimizationmodel.getarea(1), "D:/test/test.are");
 			
 			std::vector<Core::FMToutput>outputs;
+			/*
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
 				if (output.getname() == "OVOLTOTREC")
@@ -93,6 +94,7 @@ int main(int argc, char* argv[])
 					}
 				}
 			}
+			*/
 
 			/*for (const auto& solution : optimizationmodel.getsolution(1))
 			{

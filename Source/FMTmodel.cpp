@@ -2854,7 +2854,7 @@ return newshedules;
 
 
 
-bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules)
+bool FMTmodel::doplanning(const bool& solve, std::vector<Core::FMTschedule> schedules)
 	{
 	bool optimal_solved = false;
 	try{
@@ -2873,7 +2873,7 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 			presolved_model = this->clone();
 		}
 		std::vector<Core::FMTschedule> presolved_schedules;
-		if(presolve_iterations>0 && !schedules.empty())
+		if(presolve_iterations > 0 && !schedules.empty())
 		{
 			for (const Core::FMTschedule schedule : schedules )
 			{
@@ -2883,7 +2883,7 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 			presolved_schedules = schedules;
 		}
 		presolved_schedules = setupschedulesforbuild(presolved_schedules);
-		const std::chrono::time_point<std::chrono::high_resolution_clock>buildstart = getclock();
+		const std::chrono::time_point<std::chrono::high_resolution_clock> buildstart = getclock();
 		presolved_model->build(presolved_schedules);
 		//
 		
@@ -2892,7 +2892,7 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 			_logger->logwithlevel("Builded " + getname() +" "+getdurationinseconds(buildstart)+ "\n", 1);
 		if(solve)
 		{
-			const std::chrono::time_point<std::chrono::high_resolution_clock>solverstart = getclock();
+			const std::chrono::time_point<std::chrono::high_resolution_clock> solverstart = getclock();
 			optimal_solved = presolved_model->solve();
 			if (!QUIET_LOG)
 				_logger->logwithlevel("Solved " + getname() + " " + getdurationinseconds(solverstart) + "\n", 1);

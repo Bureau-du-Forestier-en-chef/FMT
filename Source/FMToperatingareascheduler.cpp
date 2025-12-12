@@ -985,7 +985,7 @@ namespace Heuristics
 					}
 
 				}
-				std::vector<size_t>potentialschemes;
+				std::vector<size_t> potentialschemes;
 				if (useprimal)
 				{
 					potentialschemes = opit->getpotentialprimalschemes(primalsolution, lowerprimalbounds, upperprimalbounds, allneighbors);
@@ -1015,38 +1015,13 @@ namespace Heuristics
 				const bool opgotschedule = getbounds(opit, ltargeteditems, lbounds, boundallscheme, schemeid, keeploose);
 				if (!opgotschedule && schemestoskip.empty())
 				{
+					std::cout << "Yup";
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 					"No schedule found for Operating area "+std::string(opit->getmask()),
 					"FMToperatingareascheduler::setbounds",__LINE__, __FILE__);
 				}
 				gotschedule += opgotschedule;
-				/*if (!potentialschemes.empty())
-				{
-					//if (userandomness)
-					//{
-					//	std::shuffle(potentialschemes.begin(), potentialschemes.end(), generator);
-					//}
-					++gotschedule;
-					if (useprimal)
-					{
-						opit->boundprimalscheme(targeteditems, bounds, *potentialschemes.begin());
-					}
-					else {
-						bool emptyness = opit->unbounddualscheme(targeteditems, bounds, *potentialschemes.begin());
-					}
-				}
-				else {
-					_exhandler->raise(Exception::FMTexc::FMTignore,
-						"No schedule found for Operating area "+std::s__LINE__opit->getmask()),
-						"FMToperatingareascheduler::setbounds",__LINE__, __FILE__);
-					if (useprimal)
-					{
-						opit->boundallprimalschemes(targeteditems, bounds);
-					}
-					else {
-						opit->boundalldualschemes(targeteditems, bounds);
-					}
-				}*/
+
 				++opat;
 			}
 			if (!ltargeteditems.empty())

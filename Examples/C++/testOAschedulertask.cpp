@@ -105,19 +105,19 @@ int main(int argc, char *argv[])
                 fichierShp = std::string(argv[3]);
             }else
                 {
-                primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
-                scenarios = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE");
+                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\ModWS_08251\\01_08251\\PC_9949_U08251_2028_MODB01.pri";
+                scenarios = std::vector<std::string> (1, "250_Fin_Etape1_avsp");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Scenarios/13_Sc5a_Determin_avsp_CLE_PESSIERE_rand/parameters8551_flex_random.csv";
-                fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Carte/PC_9424_UA_U08551.shp";
-                results = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE_rand");
+                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\Seuil_min_10%\\Parametres_Bfecopt.csv";
+                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\ModWS_08251\\01_08251\\Carte\\PC_9949_UA_U08251.shp";
+                results = std::vector<std::string> (1, "250_Fin_Etape1_avsp");
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
-            std::vector<Exception::FMTexc>errors;
+            std::vector<Exception::FMTexc> errors;
             errors.push_back(Exception::FMTexc::FMTmissingyield);
             errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
             errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
             const std::vector<Models::FMTmodel> nmodels = modelparser.readproject("../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string>(1, "ROOT"));
             Models::FMTmodel readmodel = nmodels.at(0);
             Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
-            noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+            noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 20);
             noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             noptimizationmodel.Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
             const std::vector<Core::FMTschedule> schedules = modelparser.readschedules("../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
