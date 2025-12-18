@@ -55,7 +55,7 @@ namespace Models
 	{
 	std::map<std::string, double>bestresults;
 	try {
-		bestresults = solution.greedyreferencebuild(schedule, *this, randomiterations, seed, tolerance);
+		bestresults = GreedyReferenceBuild(m_BestSolution, schedule, randomiterations, seed, tolerance);
 		}catch (...)
 		{
 		_exhandler->printexceptions("", "FMTsesmodel::greedyreferencebuild", __LINE__, __FILE__);

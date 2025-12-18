@@ -103,7 +103,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Grow the last active vertex of the linegraph generating new edge and vertex.
 		*/
-		void grow();
+		void grow(int p_Length=1);
 		// DocString: FMTlinegraph::getactivevertex
 		/**
 		Returns the last active vertex of the graph.

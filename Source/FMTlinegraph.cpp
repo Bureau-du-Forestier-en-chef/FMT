@@ -127,27 +127,32 @@ namespace Graph
 		return paths.size();
 	}
 
-	void FMTlinegraph::grow()
+	void FMTlinegraph::grow(int p_Length)
 	{
 		try {
-			FMTvertex_descriptor active = getactivevertex();
-			const Core::FMTdevelopment& active_development = getdevelopment(active);
-			const Core::FMTfuturdevelopment grown_up = active_development.grow();
-			FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor next_period = adddevelopment(grown_up);
-			const Graph::FMTbaseedgeproperties newedge(-1);
-			boost::add_edge(active, next_period, newedge, data);
-			++stats.edges;
-			//close The last period
-			FMTvertex_iterator vertex, vend,firstof;
-			boost::tie(vertex, vend) = boost::vertices(data);
-			firstof = vend;
-			--firstof;
+			while (p_Length>0)
+			{
+				FMTvertex_descriptor active = getactivevertex();
+				const Core::FMTdevelopment& active_development = getdevelopment(active);
+				const Core::FMTfuturdevelopment grown_up = active_development.grow();
+				FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor next_period = adddevelopment(grown_up);
+				const Graph::FMTbaseedgeproperties newedge(-1);
+				boost::add_edge(active, next_period, newedge, data);
+				++stats.edges;
+				//close The last period
+				FMTvertex_iterator vertex, vend, firstof;
+				boost::tie(vertex, vend) = boost::vertices(data);
+				firstof = vend;
+				--firstof;
+
+				developments.back() = FMTvertex_pair(developments.back().first, firstof);
+				//Open the new period
+				developments.push_back(FMTvertex_pair(firstof, vend));
+				//nodescache.clear();
+				rebasecache();
+				--p_Length;
+			}
 			
-			developments.back() = FMTvertex_pair(developments.back().first, firstof);
-			//Open the new period
-			developments.push_back(FMTvertex_pair(firstof, vend));
-			//nodescache.clear();
-			rebasecache();
 
 		}catch (...)
 			{

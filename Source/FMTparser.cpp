@@ -1746,10 +1746,10 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 						}
 
 					ForloopQueues = std::vector<std::vector<FMTLineInfo>>(VariablesData.begin()->size());
-					for (std::vector<FMTLineInfo>& toFill : ForloopQueues)
+					/*for (std::vector<FMTLineInfo>& toFill : ForloopQueues)
 						{
-						toFill.reserve(VariablesData.begin()->size() * p_queue.size());
-						}
+						toFill.reserve(VariablesData.begin()->size() * (p_queue.size()-1));
+						}*/
 				}else {
 					SeenOtherForLoop = true;
 				}

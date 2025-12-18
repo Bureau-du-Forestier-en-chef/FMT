@@ -24,11 +24,16 @@ namespace Core {
 	class FMTdevelopment;
 }
 
+namespace Models{
+	class FMTsemodel;
+}
+
 
 
 namespace Spatial
 {
 class FMTforest;
+class FMTSpatialGraphs;
 enum  FMTSpatialScheduletype
 	{
 		FMTcomplete = 1,
@@ -52,7 +57,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Default move constructor for FMTSpatialSchedule.
 		*/
-		FMTSpatialSchedule(FMTSpatialSchedule&& rhs) noexcept;
+		//FMTSpatialSchedule(FMTSpatialSchedule&& rhs) noexcept;
         // DocString: FMTSpatialSchedule()
 		/**
 		Default constructor of FMTSpatialSchedule
@@ -64,7 +69,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		@param[in] p_InitialMap the initial map of the schedule.
 		@param[in] p_LengthReserve the amount of memory to reserve for each linegraph.
 		*/
-        FMTSpatialSchedule(const FMTforest& p_InitialMap,size_t p_LengthReserve);
+        FMTSpatialSchedule(const FMTforest& p_InitialMap,
+				size_t p_LengthReserve, FMTSpatialGraphs& p_SpatialGraph);
         // DocString: ~FMTSpatialSchedule()
 		/**
 		Default destructor of FMTSpatialSchedule
@@ -187,36 +193,35 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Return operated schedules from linegraph. 
 		*/
-		std::vector<Core::FMTschedule> getschedules(const std::vector<Core::FMTaction>& modelactions,bool withlock=false) const;
+		std::vector<Core::FMTschedule> getschedules(const FMTSpatialGraphs p_Graphs,bool withlock=false) const;
 		// DocString: FMTSpatialSchedule::isbetterthan
 		/**
 			Compare two spatialschedule and return a vector of bool with true if the constraint group has a better value then the
 			compared solution else false.
 		*/
 		std::vector<int> isbetterthan(const FMTSpatialSchedule& newsolution,
-									 const Models::FMTmodel& model) const;
+								const Spatial::FMTSpatialGraphs& p_Graphs) const;
 		// DocString: FMTSpatialSchedule::getconstraintevaluation
 		/**
 			Returns the double value of the evaluated solution constraint.
 		*/
-		double getconstraintevaluation(const Core::FMTconstraint&constraint,
-			const Models::FMTmodel& model) const;
+		double getconstraintevaluation(const FMTSpatialGraphs& p_Graphs, size_t p_ConstraintId) const;
 		// DocString: FMTSpatialSchedule::getconstraintsvalues
 		/**
 			Fill up a vector of values for for each contraints (used for normalization)
 		*/
-		std::vector<double> getconstraintsvalues(const Models::FMTmodel& model) const;
+		std::vector<double> getconstraintsvalues(const Spatial::FMTSpatialGraphs& p_Graphs) const;
 		// DocString: FMTSpatialSchedule::getweightedfactors
 		/**
 			Generates factors based on the actual solution.
 		*/
-		std::vector<double> getweightedfactors(const Models::FMTmodel& model) const;
+		std::vector<double> getweightedfactors(const Spatial::FMTSpatialGraphs& p_Graphs) const;
 		// DocString: FMTSpatialSchedule::getdualinfeasibility
 		/**
 			Returns dual infeasibility of a set of constraints.
 		*/
 		double getprimalinfeasibility(const std::vector<const Core::FMTconstraint*>& constraints,
-			const Models::FMTmodel& model, bool withfactorization = false) const;
+			const Spatial::FMTSpatialGraphs& p_Graphs, bool withfactorization = false) const;
 		// DocString: FMTSpatialSchedule::logsolutionstatus
 		/**
 			Log the status of the solution
@@ -227,24 +232,19 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 			Get the primal infeasibility and objective value
 		*/
 		void getsolutionstatus(double& objective, double& primalinfeasibility,
-			const Models::FMTmodel& model, bool withsense = true, bool withfactorization = false,bool withspatial = true) const;
+			const FMTSpatialGraphs& p_Graphs, 
+			bool withsense = true, bool withfactorization = false,bool withspatial = true) const;
 		// DocString: FMTSpatialSchedule::getglobalobjective
 		/**
 		Usefull to evaluate the quality of the solution it mixes objective to infeasibility and return it has double
 		the lower the returned value is better is the solution. You can get a negative global objective.
 		*/
-		double getglobalobjective(const Models::FMTmodel& model) const;
+		double getglobalobjective(const FMTSpatialGraphs& p_Graphs) const;
 		// DocString: FMTSpatialSchedule::getobjectivevaluey
 		/**
 			Returns the objective value of the spatialschedule
 		*/
-		double getobjectivevalue(const Core::FMTconstraint& constraint, 
-			const Models::FMTmodel& model,bool withsense = true) const;
-		// DocString: FMTSpatialSchedule::setgraphfromcache
-		/**
-			Removes the cached values for every nodes of the model of a given graph.If remove = false it add values to cache
-		*/
-		void setgraphfromcache(const Graph::FMTlinegraph& graph, const Models::FMTmodel& model, const int&startingperiod, bool remove = true);
+		double getobjectivevalue(const FMTSpatialGraphs& p_Graphs,bool withsense = true) const;
 
 		// DocString: FMTSpatialSchedule::getpatchstats
 		/**
@@ -304,7 +304,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		even if the area harvested target for that action is not reach. The user can also set the seed
 		to get different solutions from the simulator.
 		*/
-		std::map<std::string, double> greedyreferencebuild(const Core::FMTschedule& schedule, const Models::FMTmodel& model,
+		std::map<std::string, double> greedyreferencebuild(const Core::FMTschedule& schedule, const FMTSpatialGraphs& p_Graphs,
 										const size_t& randomiterations,
 										unsigned int seed = 0,
 										double tolerance = FMT_DBL_TOLERANCE,
@@ -325,7 +325,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Compare solution by constraint group.
 		*/
-		bool isbetterbygroup(const FMTSpatialSchedule& rhs, const Models::FMTmodel& model) const;
+		bool isbetterbygroup(const FMTSpatialSchedule& rhs, const FMTSpatialGraphs& p_Graphs) const;
 		// DocString: FMTSpatialSchedule::swap
 		/**
 		Swap operator for FMTSpatialSchedule.
@@ -388,12 +388,12 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Return true if the solution looks unscaled and need new factors
 		*/
-		bool needsrefactortorization(const Models::FMTmodel& model) const;
+		bool needsrefactortorization(const FMTSpatialGraphs& p_Graphs) const;
 		// DocString: FMTSpatialSchedule::dorefactortorization
 		/**
 		Return true if the solution looks unscaled and need new factors
 		*/
-		void dorefactortorization(const Models::FMTmodel& model);
+		void dorefactortorization(const FMTSpatialGraphs& p_Graphs);
 		// DocString: FMTSpatialSchedule::getConstraintsFactor
 		/**
 		Get the constraints factors for nomalization
@@ -406,7 +406,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or developement name if level == FMToutputlevel::developpement
 		*/
-		std::map<std::string,double> getoutput(const Models::FMTmodel& p_model, const Core::FMToutput& p_output,
+		std::map<std::string,double> getoutput(const FMTSpatialGraphs& p_Graphs, const Core::FMToutput& p_output,
 			int p_period,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 		// DocString: FMTSpatialSchedule::getSpatialOutput
 		/**
@@ -439,8 +439,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		@return A presolved FMTSpatialSchedule.
 		*/
 		FMTSpatialSchedule presolve(const Core::FMTmaskfilter& p_filter,
-			const std::vector<Core::FMTtheme>& p_presolvedThemes,size_t p_ReserveSize) const;
-		// DocString: FMTsemodel::getarea
+			FMTSpatialGraphs& p_Graphs,size_t p_ReserveSize) const;
+		// DocString: FMTSpatialSchedule::getarea
 		/**
 		@brief Get the area of a given period based on the solution of the model.
 		@param[in] period the period selected
@@ -448,17 +448,9 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		@return the vector of actualdevelopment...
 		*/
 		std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
-		// DocString: FMTsemodel::setPeriodCache
-		/**
-		@Set the use of the period cache.
-		@param[in] p_value true if used else false.
-		*/
-		static void setPeriodCache(bool p_value);
-		// DocString: FMTsemodel::ClearNodesCache
-		/**
-		@brief clear the nodes cache of the solution.
-		*/
-		void ClearNodesCache();
+
+		FMTSpatialSchedule GetBaseSchedule(const FMTSpatialGraphs& p_SpatialGraph) const;
+		void SetSpatialGraphs(const Spatial::FMTSpatialSchedule& p_ToCopy, FMTSpatialGraphs& p_SpatialGraph);
 	protected:
 		// DocString: FMTSpatialSchedule::m_events
 		/**
@@ -482,12 +474,6 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		std::map<std::string,double> getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
 			const Core::FMToutputnode& node, const double* solution,const int&period, const Core::FMTmask& nodemask,
 			boost::unordered_map<Core::FMTmask, double>& nodecache, const Core::FMTtheme*  p_theme,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
-
-		// DocString: FMTSpatialSchedule::setgraphcachebystatic
-		 /**
-		 
-		 */
-		void setgraphcachebystatic(const std::vector<FMTcoordinate>& coordinates, const Core::FMToutputnode& node) const;
 		// DocString: FMTSpatialSchedule::getmaximalpatchsizes
 		 /**
 		 Return the maximal patch size of a vector of spatialactions.
@@ -499,17 +485,12 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		 */
 		bool inscheduleoperabilities(const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
 			Core::FMTdevelopment const* dev,const int& actionid, const Core::FMTaction& action) const;
-		// DocString: FMTSpatialSchedule::getoutputfromnode
-		 /**
-		 Return the value of a given node at different linegraph const iterator
-		 */
-		std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator> getoutputfromnode(const Models::FMTmodel& model, const Core::FMToutputnode& node, const int& period) const;
     private:
-		// DocString: FMTSpatialSchedule::m_Graphs
+		// DocString: FMTSpatialSchedule::m_NonSpatialSolution
 		/**
-		All  the unique graph in the solution.
+		The non spatial solution.
 		*/
-		std::map<Graph::FMTlinegraph, size_t>m_Graphs;
+		std::vector<size_t>m_NonSpatialSolution;
 		// DocString: FMTSpatialSchedule::evaluatespatialadjacency
 		 /**
 		Evaluate adjacency conflicts for each events
@@ -525,38 +506,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 			boost::unordered_set<FMTeventrelation>& relations,
 			const std::vector<bool>& actionused) const;
 
-		std::vector<Core::FMTmask> getDynamicMasks(
-			const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
-			const Core::FMTmask& p_dynamicMask,
-			const int& p_period) const;
 
-		void getDynamicMasksOnThread(
-			std::vector<Core::FMTmask>& p_Masks,
-			const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
-			const int p_period,
-			const size_t p_start,
-			const size_t p_stop) const;
-		const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator> getGraphs(
-			std::vector<FMTcoordinate>& p_coodinates) const;
-
-		void getGraphsOnThread(
-			const std::vector<FMTcoordinate>& p_coodinates,
-			std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
-			const size_t p_start,
-			const size_t p_stop) const;
-
-		void _CopyVirtualLineGraphsFrom(const FMTSpatialSchedule& rhs);
-
-
-		std::unordered_map<const Graph::FMTlinegraph*,double> _getOutputValues(
-						const Models::FMTmodel& p_model,
-						const Core::FMToutput& p_output, 
-						int p_Period) const;
-
-		std::vector<double> _getPeriodsOutputValues(
-			const Models::FMTmodel& p_model,
-			const Core::FMToutput& p_output,
-			int p_PeriodStart,int p_PeriodStop) const;
+		size_t _GetNonSpatialCellsCount() const;
 
 
 		

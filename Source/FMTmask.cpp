@@ -38,7 +38,9 @@ FMTmask::FMTmask(const std::vector<FMTtheme>& themes)
 	for (const FMTtheme& theme : themes)
 	{
 		basesize += theme.size();
+		name += "!? ";
 	}
+	name.pop_back();
 	data.resize(basesize, false);
 	}
 

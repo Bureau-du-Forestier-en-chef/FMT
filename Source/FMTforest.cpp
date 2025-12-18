@@ -52,15 +52,16 @@ std::vector<Core::FMTactualdevelopment>FMTforest::getarea() const
 	std::vector<Core::FMTactualdevelopment>devs;
             for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
                 {
-                const Core::FMTactualdevelopment newadev(it->second,1*cellsize);
+                const Core::FMTactualdevelopment newadev(it->second,cellsize);
 				std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(devs.begin(),devs.end(), Core::FMTactualdevelopmentcomparator(&newadev));
                 if (devit==devs.end())
                     {
                     devs.push_back(newadev);
                     }else{
-                    devit->setarea(devit->getarea()+(1 * cellsize));
+                    devit->setarea(devit->getarea()+(cellsize));
                     }
                 }
+			
             return devs;
             }
 FMTforest FMTforest::grow() const

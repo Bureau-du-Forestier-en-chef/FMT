@@ -62,19 +62,6 @@ namespace Models
         }
     }
 
-    void FMTsamodel::ValidateCache()
-    {
-        try {
-            if ((Core::FMTobject::getavailablememory() / 1073741824) < 10)
-                {
-                solution.ClearNodesCache();
-                }
-        }catch (...)
-            {
-            _exhandler->raisefromcatch("", "FMTsamodel::ValidateCache", __LINE__, __FILE__);
-            }
-    }
-
 
     FMTsamodel::~FMTsamodel() = default;
 
@@ -88,6 +75,7 @@ namespace Models
     {
 
     }
+
 
     FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
         FMTsemodel(rhs),
@@ -160,7 +148,7 @@ namespace Models
 
     Graph::FMTgraphstats FMTsamodel::buildperiod()
     {
-		return solution.randombuild(*this,m_generator);
+		return m_BestSolution.randombuild(*this,m_generator);
     }
 
 
@@ -168,8 +156,8 @@ namespace Models
 		{
 		try {
             const double temp = CoolingSchedule->GetTemp();
-			const double actualglobalobjective = actual.getglobalobjective(*this);
-			const double candidatglobalobjective = candidat.getglobalobjective(*this);
+			const double actualglobalobjective = GetGlobalObjective(actual);
+			const double candidatglobalobjective = GetGlobalObjective(candidat);
 			double probability = 1;
             const double objectivediff = (actualglobalobjective - candidatglobalobjective);
             CycleMoves.back().ObjectiveImpact = objectivediff;
@@ -191,7 +179,7 @@ namespace Models
        size_t sizeofmove = 0;
        try {
            const double mapratio = (CoolingSchedule->GetTemp() / CoolingSchedule->GetInitialTemp());
-           const size_t maxmoves = static_cast<size_t>(static_cast<double>(solution.size()/20) * mapratio);
+           const size_t maxmoves = static_cast<size_t>(static_cast<double>(m_BestSolution.size()/20) * mapratio);
            const size_t movamaximalsize = std::max(size_t(1), maxmoves);//20 % of the map
            std::uniform_int_distribution<int> mosizedist(1, static_cast<int>(movamaximalsize));
            sizeofmove = mosizedist(m_generator);
@@ -434,7 +422,7 @@ namespace Models
             int modellength = getparameter(Models::FMTintmodelparameters::LENGTH);
             while (modellength>0)
                 {
-                solution.grow();
+                m_BestSolution.grow();
                 --modellength;
                 }
         }catch (...)
@@ -449,7 +437,7 @@ namespace Models
             int modellength = getparameter(Models::FMTintmodelparameters::LENGTH);
             while (modellength > 0)
             {
-                solution.randombuild(*this, m_generator);
+                m_BestSolution.randombuild(*this, m_generator);
                 --modellength;
             }
         }
@@ -463,7 +451,7 @@ namespace Models
     {
         Spatial::FMTSpatialSchedule newsolution;
         try {
-            const std::vector<Core::FMTschedule>nonspatialschedules = actual.getschedules(actions, true);
+            const std::vector<Core::FMTschedule>nonspatialschedules = GetSchedules(actual,true);
             if (nonspatialschedules.empty())
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -471,7 +459,7 @@ namespace Models
             }
             const Spatial::FMTforest baseforest = actual.getforestperiod(0);
             const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH));
-            newsolution = Spatial::FMTSpatialSchedule(baseforest, LENGTH);
+            newsolution = GetNewSolution(actual);
             const std::vector<double>& FACTORS = actual.getConstraintsFactor();
             if (!FACTORS.empty())
             {
@@ -479,9 +467,9 @@ namespace Models
             }
             for (const Core::FMTschedule& schedule : nonspatialschedules)
                 {
-                newsolution.greedyreferencebuild(schedule, *this, 
+                GreedyReferenceBuild(newsolution, schedule,
                     getparameter(NUMBER_OF_ITERATIONS),
-                    getparameter(Models::FMTintmodelparameters::SEED), FMT_DBL_TOLERANCE,false);
+                    getparameter(Models::FMTintmodelparameters::SEED), FMT_DBL_TOLERANCE, false);
                 }
         }catch (...)
         {
@@ -566,7 +554,7 @@ namespace Models
             const size_t alliterations = static_cast<size_t>(getparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS));
             for (const Core::FMTschedule& schedule : schedules)
                 {
-                solution.greedyreferencebuild(schedule,*this, alliterations);
+                GreedyReferenceBuild(m_BestSolution, schedule, alliterations);
                 }
         }
         catch (...)
@@ -587,7 +575,7 @@ namespace Models
 		double temperature = 0;
 		try {
         //const double actualobjective = actual.getglobalobjective(*this);
-        const std::vector<double>actuals = actual.getconstraintsvalues(*this);
+        const std::vector<double>actuals = GetConstraintsValues(actual);
         std::vector<double>maximals = actuals;
         std::vector<double>deltasums(constraints.size(), 0);
         const double normalizationfactor = 2;
@@ -597,7 +585,7 @@ namespace Models
         {
             const Spatial::FMTSpatialSchedule newsolution = Move(actual, bindings, movable, operability);
             size_t cntid = 0;
-            for (const double& value : newsolution.getconstraintsvalues(*this))
+            for (const double& value : GetConstraintsValues(newsolution))
             {
                 //*_logger << "Value " << value << "\n";
                 if (value != 0 && (maximals.at(cntid) > 0 && maximals.at(cntid) < value ||
@@ -626,7 +614,7 @@ namespace Models
             ++cntid;
         }
         temperature = -(deltasum / totalits) / std::log(initprobability);
-        solution.setconstraintsfactor(*this, maximals);
+        m_BestSolution.setconstraintsfactor(*this, maximals);
                 }
         catch (...)
         {
@@ -686,7 +674,7 @@ namespace Models
             try {
                 if (TotalMoves % 100 == 0)
                 {
-                    solution.dorefactortorization(*this);
+                    DoReFactortorization(m_BestSolution);
                 }
             }
             catch (...)
@@ -702,8 +690,8 @@ namespace Models
                 {
                     double objective = 0;
                     double primalinf = 0;
-                    solution.getsolutionstatus(objective, primalinf, *this);
-                    solution.logsolutionstatus(TotalMoves, objective, primalinf);
+                    GetSolutionStatus(m_BestSolution, objective, primalinf);
+                    m_BestSolution.logsolutionstatus(TotalMoves, objective, primalinf);
                     
                 
             }
@@ -770,11 +758,11 @@ namespace Models
 	bool FMTsamodel::initialsolve()
 		{
 		try {
-			const std::vector<Spatial::FMTcoordinate>movables = solution.getstaticsmovablecoordinates(*this);
-			const Spatial::FMTSpatialSchedule::actionbindings actionsbinding = solution.getbindingactionsbyperiod(*this);
+			const std::vector<Spatial::FMTcoordinate>movables = m_BestSolution.getstaticsmovablecoordinates(*this);
+			const Spatial::FMTSpatialSchedule::actionbindings actionsbinding = m_BestSolution.getbindingactionsbyperiod(*this);
 			boost::unordered_map<Core::FMTdevelopment, bool>operability;
-            *_logger << "Generator initial state: " << m_generator() << "\n";
-			const double initialtemperature = Warmup(solution, actionsbinding,&movables,&operability,0.9);
+            *_logger << "Generator initial state: " + std::to_string(m_generator()) << "\n";
+			const double initialtemperature = Warmup(m_BestSolution, actionsbinding,&movables,&operability,0.9);
             CoolingSchedule->SetInitialTemperature(initialtemperature);
             //LogCycleStatus();
 			while (!isProvenOptimal())
@@ -785,20 +773,20 @@ namespace Models
                 LastGlobalObjectiveValue = 0;
 				while (!isCycleProvenOptimal())
 					{
-					Spatial::FMTSpatialSchedule newsolution = Move(solution, actionsbinding,&movables,&operability);
-                    if (IsBetter( solution, newsolution))
+					Spatial::FMTSpatialSchedule newsolution = Move(m_BestSolution, actionsbinding,&movables,&operability);
+                    if (IsBetter(m_BestSolution, newsolution))
                         {
                             if (newsolution.ispartial())
                             {
-                                solution.copyfrompartial(newsolution);
+                                m_BestSolution.copyfrompartial(newsolution);
                             }
                             else {
-                                solution.swap(newsolution);
+                                m_BestSolution.swap(newsolution);
                             }
-                            LastGlobalObjectiveValue = std::max(LastGlobalObjectiveValue, solution.getglobalobjective(*this));//Get the Worst one
+                            LastGlobalObjectiveValue = std::max(LastGlobalObjectiveValue, 
+                                GetGlobalObjective(m_BestSolution));//Get the Worst one
                             CycleMoves.back().Accepted = true;
                         }
-                        ValidateCache();
                         DoFactorization();
                         LogSolutionStatus();
 					++TotalMoves;
@@ -856,7 +844,11 @@ namespace Models
     std::unique_ptr<FMTmodel>FMTsamodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
     {
         try {
-            return std::unique_ptr<FMTmodel>(new FMTsamodel(*(dynamic_cast<FMTsemodel*>(FMTsemodel::presolve(optionaldevelopments).get()))));
+            std::unique_ptr<FMTmodel>BASE_PRESOLVE = FMTsemodel::presolve(optionaldevelopments);
+            std::unique_ptr<FMTmodel>PRESOLVED = std::unique_ptr<FMTmodel>(
+                                new FMTsamodel(
+                                    *(dynamic_cast<FMTsemodel*>(BASE_PRESOLVE.get()))));
+            return PRESOLVED;
         }
         catch (...)
         {

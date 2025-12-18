@@ -1249,6 +1249,26 @@ FMTmask FMToutput::getvariableintersect() const
 	return mask;
 }
 
+FMTmask FMToutput::getMasksUnion() const
+	{
+	FMTmask mask;
+	for (const FMToutputsource& source : sources)
+		{
+		if (source.isvariable())
+			{
+				if (mask.empty())
+				{
+					mask = source.getmask();
+				}
+				else {
+					mask = mask.getunion(source.getmask());
+				}
+
+			}
+		}
+	return mask;
+	}
+
 std::vector<const Core::FMTtheme*>FMToutput::getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables) const
 {
 	std::vector<const Core::FMTtheme*>statics;

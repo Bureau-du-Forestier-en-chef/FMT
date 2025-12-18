@@ -251,11 +251,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Update failed move count using NotAcceptedMovesCount and the move stats
         */
         void UpdateFailedMoveCount();
-        // DocString: FMTsamodel::ValidateCache
-        /**
-        @brief check the amount of memory used by the solution if the amount is greater then 10 go then delete.
-        */
-        void ValidateCache();
 	public:
         // DocString: FMTsemodel::LogMovesReport
         /**
@@ -316,6 +311,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		virtual std::unique_ptr<FMTmodel>clone() const final;
         
         Graph::FMTgraphstats buildperiod();
+
 
     };
 }

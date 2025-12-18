@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 		}
 		else {
 			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
-			scenario = "strategique_vanille";
+			scenario = "PlayBack_CC";
 			length = 20;
 			objectivevalue = 2836;
 		}
@@ -79,11 +79,11 @@ int main(int argc, char* argv[])
 			std::vector<Core::FMToutput>outputs;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
-				if (output.getname() == "OVOLTOTREC")
+				if (output.getname() == "OMOYMOD_R")
 				{
 					for (int period = 1; period < 10; ++period)
 					{
-					const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::standard);
+					const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::developpement);
 					for (const auto& val : outs)
 						{
 						std::cout << val.first << " " << val.second << "\n";
