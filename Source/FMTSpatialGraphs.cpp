@@ -58,7 +58,7 @@ namespace Spatial
 		return value;
 	}
 
-	FMTVirtualLineGraph FMTSpatialGraphs::GetGraphNaturalGrowth(const Graph::FMTlinegraph& p_LineGraph)
+	FMTVirtualLineGraph FMTSpatialGraphs::GetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph)
 	{
 		size_t Family = 0;
 		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.begin()->end();
@@ -68,28 +68,63 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetGraphNaturalGrowth",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetVirtualGraph",
 				__LINE__, __FILE__);
 		}
 		return FMTVirtualLineGraph(*this, Iterator, Family);
 	}
 
-
-	std::vector<size_t>FMTSpatialGraphs::GetNaturalGrowthSolution() const
+	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::GetBaseIterator(size_t p_family) const
 	{
-		return m_NaturalGrowth;
+		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.at(p_family).end();
+		try {
+			size_t MinId = m_LastGraphId;
+			for (std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator It = m_AllGraphs.at(p_family).begin();
+				It != m_AllGraphs.at(p_family).end();++It)
+				{
+				if (It->second.GetGraphId()<MinId)
+					{
+					MinId = It->second.GetGraphId();
+					Iterator = It;
+					}
+				}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetBaseIterator",
+				__LINE__, __FILE__);
+		}
+		return Iterator;
 	}
 
-	std::vector<size_t>FMTSpatialGraphs::GetBaseSolution(size_t p_SolutionSize) const
+	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::GetLastPeriodIterator(
+		size_t p_family,
+		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const
 	{
-		std::vector<size_t>NewSolution(p_SolutionSize, 0);
-		size_t i = 0;
-		for (size_t BASE : m_NaturalGrowth)
+		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.at(p_family).end();
+		try {
+			for (std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator It = m_AllGraphs.at(p_family).begin();
+				It != m_AllGraphs.at(p_family).end(); ++It)
+			{
+				if (p_iterator->first.IsLessPeriod(It->first))
+				{
+					return It;
+				}
+			}
+			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+				"Cant Get Less period for graph id " + std::to_string(p_iterator->second.GetGraphId())
+				, "FMTSpatialGraphs::GetLastPeriodIteratorr", __LINE__, __FILE__);
+		}catch (...)
 		{
-			NewSolution.at(i) = BASE;
-			++i;
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetLastPeriodIterator",
+				__LINE__, __FILE__);
 		}
-		return NewSolution;
+		return Iterator;
+	}
+
+
+	std::vector<size_t>FMTSpatialGraphs::GetBaseSolution() const
+	{
+		return m_BaseSolution;
 	}
 
 	bool FMTSpatialGraphs::IsNotNull(size_t p_family,
@@ -248,7 +283,7 @@ namespace Spatial
 		m_LastGraphId(0),
 		m_Constraints(),
 		m_GraphsMasks(),
-		m_NaturalGrowth(),
+		m_BaseSolution(),
 		m_Model(&p_model)
 	{
 		_BuildGraphs(p_model, p_CellSize);
@@ -284,7 +319,7 @@ namespace Spatial
 			const size_t LENGTH = static_cast<size_t>(p_model.getparameter(Models::FMTintmodelparameters::LENGTH));
 			const Core::FMTmask USEFULL_BITS = _GetUseFullBits(p_model);
 			const std::vector<Core::FMTactualdevelopment>AREAS = p_model.Models::FMTmodel::getarea();
-			m_NaturalGrowth = std::vector<size_t>(AREAS.size());
+			m_BaseSolution = std::vector<size_t>(AREAS.size());
 			for (const auto& DEV : AREAS)
 			{
 				const Core::FMTmask& DEV_MASK = DEV.getmask();
@@ -301,7 +336,7 @@ namespace Spatial
 
 				const size_t NUMBER_OF_CELLS = static_cast<size_t> (std::round(NewDevs.begin()->getarea() / p_CellSize));
 				NewDevs.begin()->setarea(p_CellSize);
-				m_NaturalGrowth[m_LastGraphId] = NUMBER_OF_CELLS;
+				m_BaseSolution[m_LastGraphId] = NUMBER_OF_CELLS;
 				local_graph.initialize(NewDevs);
 				//local_graph.grow(LENGTH);
 				m_AllGraphs[GRAPHS_LOCATION][local_graph] = FMTGraphInfo(m_LastGraphId);
@@ -477,12 +512,6 @@ namespace Spatial
 			{
 				if (p_results.empty())
 				{
-					if (_GetMinGraphLength(p_solution)!= _GetMaxGraphLength(p_solution))
-					{
-						std::cout << "MIN" + std::to_string(_GetMinGraphLength(p_solution))+ " "+std::to_string(CELLS) << "\n";
-						std::cout << "MAX" + std::to_string(_GetMaxGraphLength(p_solution)) + " " + std::to_string(CELLS) << "\n";
-					}
-
 					p_results = std::vector<double>(p_GraphInfo.GetValues(p_Constraint).size(), 0.0);
 				}
 				size_t i = 0;

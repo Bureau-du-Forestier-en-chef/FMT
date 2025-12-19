@@ -42,7 +42,7 @@ namespace Spatial
 		constraintsfactor(), m_events(), m_NonSpatialSolution()
     {
         FMTlayer<FMTVirtualLineGraph>::operator = (p_InitialMap.copyextent<FMTVirtualLineGraph>());//Setting layer information
-		m_NonSpatialSolution = p_SpatialGraph.GetNaturalGrowthSolution();
+		m_NonSpatialSolution = p_SpatialGraph.GetBaseSolution();
 		boost::unordered_map<Core::FMTdevelopment, FMTcoordinate>cacheGraph;
 		size_t id = 0;
         for(FMTlayer<Core::FMTdevelopment>::const_iterator devit = p_InitialMap.begin(); devit != p_InitialMap.end(); ++devit)
@@ -53,7 +53,7 @@ namespace Spatial
 				actdevelopment[0] = actdevelopment.at(0).reducelocktodeath(p_SpatialGraph.GetModel().lifespan);
 				Graph::FMTlinegraph local_graph(p_LengthReserve);
 				std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
-				mapping[devit->first] = p_SpatialGraph.GetGraphNaturalGrowth(local_graph);
+				mapping[devit->first] = p_SpatialGraph.GetVirtualGraph(local_graph);
 				cacheGraph[devit->second] = devit->first;
 			}else {
 				mapping[devit->first] = mapping[cacheGraph[devit->second]];
@@ -65,7 +65,10 @@ namespace Spatial
 	FMTSpatialSchedule FMTSpatialSchedule::GetBaseSchedule(const FMTSpatialGraphs& p_SpatialGraph) const
 	{
 		FMTSpatialSchedule NewSchedule(*this);
-		NewSchedule.m_NonSpatialSolution = p_SpatialGraph.GetBaseSolution(m_NonSpatialSolution.size());
+		for (auto& GRAPH : NewSchedule)
+			{
+			GRAPH.second.SetBaseGraph(NewSchedule.m_NonSpatialSolution);
+			}
 		NewSchedule.m_events.clear();
 		return NewSchedule;
 	}
@@ -1299,9 +1302,10 @@ namespace Spatial
 			const int lastperiod = this->mapping.begin()->second.getLineGraph().getperiod() - 1;
 			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 				{
-				Graph::FMTlinegraph copied = graphit->second.getLineGraph();
-				copied.clearfromperiod(lastperiod, true);
-				graphit->second.setLineGraph(copied,m_NonSpatialSolution);
+				//Graph::FMTlinegraph copied = graphit->second.getLineGraph();
+				//copied.clearfromperiod(lastperiod, true);
+				//graphit->second.setLineGraph(copied,m_NonSpatialSolution);
+				graphit->second.SetLastPeriod(m_NonSpatialSolution);
 				}
 			std::set<FMTevent>::const_iterator periodit = m_events.getbounds(lastperiod).first;
 			while (periodit!=m_events.end())
@@ -1487,7 +1491,7 @@ FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTmaskfilter& p_fil
 		presolvedSchedule.FMTlayer<FMTVirtualLineGraph>::operator = (copyextent<FMTVirtualLineGraph>());
 		boost::unordered_map<Core::FMTdevelopment, FMTcoordinate>cacheGraph;
 		std::vector<FMTcoordinate>coordinates(mapping.size());
-		presolvedSchedule.m_NonSpatialSolution = p_Graphs.GetNaturalGrowthSolution();
+		presolvedSchedule.m_NonSpatialSolution = p_Graphs.GetBaseSolution();
 		size_t id = 0;
 		for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphIt = mapping.begin(); graphIt != mapping.end(); ++graphIt)
 			{
@@ -1500,7 +1504,7 @@ FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTmaskfilter& p_fil
 				actDevelopment.push_back(PRESOLVED_DEV);
 				Graph::FMTlinegraph local_graph(p_ReserveSize);
 				std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actDevelopment);
-				presolvedSchedule.mapping[graphIt->first] = p_Graphs.GetGraphNaturalGrowth(local_graph);
+				presolvedSchedule.mapping[graphIt->first] = p_Graphs.GetVirtualGraph(local_graph);
 				cacheGraph[PRESOLVED_DEV] = graphIt->first;
 			}else {
 				presolvedSchedule.mapping[graphIt->first] = presolvedSchedule.mapping[cacheGraph[PRESOLVED_DEV]];
@@ -1905,7 +1909,6 @@ std::map<std::string, double> FMTSpatialSchedule::greedyreferencebuild(const Cor
 			{
 				this->logsolutionstatus(iteration, lastobjective, lastprimalinf);
 			}
-
 			solutioncopy.eraselastperiod();//clear the last period to redo a simulate and test again!
 			++seed;
 			++iteration;

@@ -49,9 +49,8 @@ namespace Spatial
 			FMTSpatialGraphs(const Models::FMTmodel& p_model, double p_CellSize);
 			double GetConstraintsValue(size_t NonSpatialConstraintId,
 											const std::vector<size_t>& p_solution) const;
-			FMTVirtualLineGraph GetGraphNaturalGrowth(const Graph::FMTlinegraph& p_LineGraph);
-			std::vector<size_t>GetNaturalGrowthSolution() const;
-			std::vector<size_t>GetBaseSolution(size_t p_SolutionSize) const;
+			FMTVirtualLineGraph GetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
+			std::vector<size_t>GetBaseSolution() const;
 			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator GetIterator(
 												const Graph::FMTlinegraph& p_Graph,
 															size_t p_family) const;
@@ -74,7 +73,10 @@ namespace Spatial
 				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const;
 			std::vector<Core::FMTschedule> GetSchedules(const std::vector<size_t>& p_Solution,
 											bool WithLock = false) const;
-
+			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator GetBaseIterator(size_t p_family) const;
+			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator GetLastPeriodIterator(
+				size_t p_family,
+				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const;
 		private:
 			const static size_t SOLUTION_RESIZE_FACTOR = 2;
 			const static size_t MAX_ASYNC_JOBS = 5;
@@ -82,7 +84,7 @@ namespace Spatial
 			size_t m_LastGraphId;
 			std::vector<std::vector<size_t>>m_Constraints;
 			boost::unordered_map<Core::FMTmask, size_t>m_GraphsMasks;
-			std::vector<size_t>m_NaturalGrowth;
+			std::vector<size_t>m_BaseSolution;
 			std::vector<size_t>m_ConstraintsId;
 			Models::FMTmodel const * m_Model;
 			void _BuildConstraintsLocator(const Models::FMTmodel& p_model);

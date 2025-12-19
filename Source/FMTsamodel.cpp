@@ -457,8 +457,6 @@ namespace Models
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                     "Cannot rebuild empty solution", "FMTsamodel::GetRebuild", __LINE__, __FILE__);
             }
-            const Spatial::FMTforest baseforest = actual.getforestperiod(0);
-            const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH));
             newsolution = GetNewSolution(actual);
             const std::vector<double>& FACTORS = actual.getConstraintsFactor();
             if (!FACTORS.empty())

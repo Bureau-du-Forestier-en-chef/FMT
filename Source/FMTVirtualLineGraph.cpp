@@ -40,6 +40,19 @@ namespace Spatial{
 		_insertInto(p_LineGraph, p_solution);
 		}
 
+	void FMTVirtualLineGraph::SetBaseGraph(std::vector<size_t>& p_solution)
+		{
+		_remove(p_solution);
+		m_Iterator = m_Graphs->GetBaseIterator(m_GraphFamily);
+		_add(p_solution);
+		}
+
+	void FMTVirtualLineGraph::SetLastPeriod(std::vector<size_t>& p_solution)
+		{
+		_remove(p_solution);
+		m_Iterator = m_Graphs->GetLastPeriodIterator(m_GraphFamily, m_Iterator);
+		_add(p_solution);
+		}
 
 	void FMTVirtualLineGraph::_insertInto(const Graph::FMTlinegraph& p_LineGraph,
 		std::vector<size_t>& p_solution)

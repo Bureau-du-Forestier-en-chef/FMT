@@ -613,6 +613,32 @@ namespace Graph
 		return false;
 		}
 
+	bool  FMTlinegraph::IsLessPeriod(const FMTlinegraph& rhs) const
+	{
+		if (getbasedevelopment() == rhs.getbasedevelopment()&&
+			rhs.getperiod() == getperiod()-1)
+		{
+			FMTedge_iterator edge_iterator, edge_iterator_end, rhs_edge_iterator, rhs_edge_iterator_end;
+			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+			boost::tie(rhs_edge_iterator, rhs_edge_iterator_end) = boost::edges(rhs.data);
+			while (edge_iterator != edge_iterator_end &&
+				rhs_edge_iterator != rhs_edge_iterator_end)
+			{
+				const FMTbaseedgeproperties& THIS_PROPERTIES = data[*edge_iterator];
+				const FMTbaseedgeproperties& RHS_PROPERTIES = data[*rhs_edge_iterator];
+				if (THIS_PROPERTIES.getShortActionID() !=
+					RHS_PROPERTIES.getShortActionID())
+				{
+					return false;
+				}
+				++edge_iterator;
+				++rhs_edge_iterator;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	bool FMTlinegraph::operator == (const FMTlinegraph& rhs) const
 		{
 		if (getbasedevelopment() == rhs.getbasedevelopment())

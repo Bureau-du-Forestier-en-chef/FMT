@@ -55,6 +55,8 @@ namespace Spatial
 			double GetOutput(const Models::FMTmodel& p_model,
 				const std::vector<size_t>& p_solution,
 				const Core::FMToutput& p_output, int p_period) const;
+			void SetBaseGraph(std::vector<size_t>& p_solution);
+			void SetLastPeriod(std::vector<size_t>& p_solution);
 		private:
 			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator m_Iterator;
 			size_t m_GraphFamily;
