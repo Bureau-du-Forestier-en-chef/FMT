@@ -590,10 +590,10 @@ void FMTmask::presolveRef(const FMTmaskfilter& p_filter,
 bool FMTmask::canPresolve(const FMTmaskfilter& p_filter,
 	const std::vector<FMTtheme>& p_presolvedThemes) const
 {
-	const boost::dynamic_bitset<uint8_t> PRESOLVED = _getPresolveMask(p_filter, p_presolvedThemes);
+	const Core::FMTmask PRESOLVED = Core::FMTmask(_getPresolveMask(p_filter, p_presolvedThemes));
 	for (const FMTtheme& theme : p_presolvedThemes)
 		{
-		if (subset(theme).count() == 0)
+		if (PRESOLVED.subset(theme).count() == 0)
 			{
 			return false;
 			}
