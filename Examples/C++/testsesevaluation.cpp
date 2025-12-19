@@ -64,12 +64,11 @@ int main(int argc, char* argv[])
 				100,
 				0,
 				0.1);
-			const Spatial::FMTspatialschedule spschedule = simmodel.getspschedule();
 			for (const Core::FMTconstraint& constraint : simmodel.getconstraints())
 			{
 				if (constraint.isspatial())
 				{
-				if (spschedule.getconstraintevaluation(constraint, simmodel) > 0)
+				if (simmodel.GetConstraintEvaluation(constraint) > 0)
 					{
 					std::cout << std::string(constraint) << "\n";
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
@@ -84,7 +83,7 @@ int main(int argc, char* argv[])
 					Core::FMTconstraint bindingconstraint(constraint);
 					lower += 10000000000;
 					bindingconstraint.setrhs(lower,upper);
-					const double penalty = spschedule.getconstraintevaluation(bindingconstraint, simmodel);
+					const double penalty = simmodel.GetConstraintEvaluation(bindingconstraint);
 					if (penalty == 0)
 					{
 						std::cout << std::string(bindingconstraint) << "\n";

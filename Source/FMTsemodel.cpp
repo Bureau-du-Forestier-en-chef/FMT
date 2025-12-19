@@ -432,6 +432,20 @@ namespace Models
 
 	}
 
+	double FMTsemodel::GetConstraintEvaluation(const Core::FMTconstraint& p_Constraint) const
+	{
+		double value = 0.0;
+		try {
+			const size_t Id = std::distance(constraints.begin(),std::find(constraints.begin(), constraints.end(), p_Constraint));
+			value = m_BestSolution.getconstraintevaluation(m_SpatialGraphs, Id);
+
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsemodel::GetConstraintEvaluation", __LINE__, __FILE__);
+		}
+		return value;
+	}
+
 	void FMTsemodel::DoReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
 	{
 		try {

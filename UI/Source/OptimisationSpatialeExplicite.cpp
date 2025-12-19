@@ -70,7 +70,7 @@ bool Wrapper::FMTForm::OptimisationSpatialeExplicite(System::String^ fichierPri,
 		System::IO::DirectoryInfo^ parentDirectory = System::IO::Directory::GetParent(cheminSorties);
 		System::String^ directoryFullName = parentDirectory->FullName;
 
-		const Spatial::FMTspatialschedule& SCHEDULE = OptimizationModel.getspschedule();
+		const Spatial::FMTSpatialSchedule& SCHEDULE = OptimizationModel.getspschedule();
 
 		RapportdeBris(OptimizationModel);
 		System::Collections::Generic::List<int>^ growthThemes = gcnew System::Collections::Generic::List<int>();
@@ -88,7 +88,7 @@ bool Wrapper::FMTForm::OptimisationSpatialeExplicite(System::String^ fichierPri,
 			System::String^ schedulePath = System::IO::Path::Combine(directoryFullName, 
 											gcnew System::String(std::string(OptimizationModel.getname() + "_.seq").c_str()));
 			const std::string stdSchedulePath = msclr::interop::marshal_as<std::string>(schedulePath);
-			scheduParser.write(SCHEDULE.getschedules(OptimizationModel.getactions()), stdSchedulePath);
+			scheduParser.write(OptimizationModel.GetSchedules(SCHEDULE), stdSchedulePath);
 				Parser::FMTmodelparser Modelparser;
 				*Logger << "FMT -> Exportations des sorties " << "\n";
 				Modelparser.writeresults(

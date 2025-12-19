@@ -163,6 +163,28 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Return the value of the globalobjective of the actual solution
 		*/
 		virtual double getobjectivevalue() const;
+		// DocString: FMTsemodel::GetSchedules
+		/**
+		@brief Get the schedules of the spatial solution
+		@param[in] p_SpatialSchedule spatial schedule
+		@param[in] withlock lock in schedule
+		@return the vector of schedules
+		*/
+		std::vector<Core::FMTschedule> GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+			bool withlock = false) const;
+		// DocString: FMTsemodel::GetSolutionStatus
+		/**
+		@brief Get the solution status
+		*/
+		void GetSolutionStatus(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+			double& p_Objective, double& p_PrimalInFeasibility,
+			bool withsense = true, bool withfactorization = false, bool withspatial = true) const;
+		// DocString: FMTsemodel::GetConstraintEvaluation
+		/**
+		@brief Evaluate the constraint with the actual solution
+		@return the evaluation value.
+		*/
+		double GetConstraintEvaluation(const Core::FMTconstraint& p_Constraint) const;
 	protected:
 		// DocString: FMTsemodel::spschedule
 		///Contains the builded spatialsolution latest or best one.
@@ -181,13 +203,10 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 										double tolerance = FMT_DBL_TOLERANCE,
 										bool log = true) const;
 		std::vector<double> GetConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
-		void GetSolutionStatus(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
-			double& p_Objective, double& p_PrimalInFeasibility,
-			bool withsense = true, bool withfactorization = false, bool withspatial = true) const;
+
 		void DoReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
 		Spatial::FMTSpatialSchedule GetNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
-		std::vector<Core::FMTschedule> GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
-														bool withlock = false) const;
+		
 	private:
 		// DocString: FMTsemodel::Serialize
 		/**
@@ -198,7 +217,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-			ar& BOOST_SERIALIZATION_NVP(solution);
+			//ar& BOOST_SERIALIZATION_NVP(m_BestSolution);
 		}
 		virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
 		void _BuildArea(const Spatial::FMTforest& p_Forest);

@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false, schedules.at(0));
 	simulationmodel.LogConstraintsInfeasibilities();
-	const Spatial::FMTspatialschedule& SPATIAL_SCHEDULE = simulationmodel.getspschedule();
+	const Spatial::FMTSpatialSchedule& SPATIAL_SCHEDULE = simulationmodel.getspschedule();
 	/*Parser::FMTareaparser areaParser;
 	for (int period = 1; period <= length; ++period)
 	{

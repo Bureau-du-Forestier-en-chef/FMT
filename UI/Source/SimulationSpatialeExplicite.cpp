@@ -31,8 +31,8 @@ void Wrapper::FMTForm::RapportdeCarboneSpatial(const Models::FMTsemodel& semodel
 {
 	try {
 		Models::FMTmodel localmodel(semodel);
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
-		const std::vector<Core::FMTschedule> newschedule = schedule.getschedules(semodel.getactions(), false);
+		const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
+		const std::vector<Core::FMTschedule> newschedule = semodel.GetSchedules(schedule, false);
 		size_t scid = 0;
 		for (int period = 1; period <= nombredeperiodes; ++period)
 		{
@@ -47,7 +47,8 @@ void Wrapper::FMTForm::RapportdeCarboneSpatial(const Models::FMTsemodel& semodel
 			localmodel.setconstraints(periodicconstraints);
 			double primalinf = 0;
 			double objectivevalue = 0;
-			schedule.getsolutionstatus(objectivevalue, primalinf, localmodel, nullptr, true, false);
+			Models::FMTsemodel*  SE = dynamic_cast<Models::FMTsemodel*>(&localmodel);
+			SE->GetSolutionStatus(schedule,objectivevalue, primalinf,   true, false);
 			RetourJson("objectives;" + jsonloc + ";Objective;" + objectivevalue, gcnew System::EventArgs());
 			RetourJson("objectives;" + jsonloc + ";Primalinfeasibility;" + primalinf, gcnew System::EventArgs());
 			double oldtotal = 0;
@@ -107,7 +108,7 @@ void Wrapper::FMTForm::EcrituredesPerturbations(const Models::FMTsemodel& semode
 				growththeme.push_back(semodel.getthemes().at(themeID - 1));
 			}
 		}
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
+		const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
 		FMTFormLogger* logger = Cache->getformlogger();
 		*logger << "FMT -> �criture des perturbations" << "\n";
 		Parser::FMTtransitionparser transitionparser;
@@ -137,7 +138,7 @@ void Wrapper::FMTForm::EcritureDesEvenements(const Models::FMTsemodel& semodel, 
 	{
 	try {
 		FMTFormLogger* logger = Cache->getformlogger();
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
+		const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
 			const std::vector<Core::FMTaction>actions = semodel.getactions();
 			const std::string stats = schedule.getpatchstats(actions);
 			System::String^ eventpath = System::IO::Path::Combine(cheminsorties, gcnew System::String(std::string("events.txt").c_str()));
@@ -160,18 +161,17 @@ std::vector<Core::FMToutput>  Wrapper::FMTForm::EcritureDesOutputs(const Models:
 	std::vector<Core::FMToutput> listeOutputs;
 	try {
 		FMTFormLogger* logger = Cache->getformlogger();
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
+		const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
 		listeOutputs = ObtenirArrayOutputsSelectionnees(semodel.getoutputs(), outputs);
 		for (const Core::FMToutput& output : listeOutputs)
 			{
 			if (incarbon)
 			{
-				std::map<std::string, std::vector<double>> resultatOutputsCarbon = schedule.getoutput(semodel, output, 1, nombredeperiodes);
-
-				for (double valeurCarbon : resultatOutputsCarbon["Total"])
-				{
-					*logger << "outputs;" + output.getname() + ";" + std::to_string(valeurCarbon) << "\n";
-					RetourJson("outputs;" + gcnew System::String(output.getname().c_str()) + ";" + valeurCarbon, gcnew System::EventArgs());
+				for (int period = 1; period <= nombredeperiodes;++period)
+					{
+					const std::map<std::string, double> OUTS = semodel.getoutput(output, period, Core::FMToutputlevel::totalonly);
+					*logger << "outputs;" + output.getname() + ";" + std::to_string(OUTS.at("Total")) << "\n";
+					RetourJson("outputs;" + gcnew System::String(output.getname().c_str()) + ";" + OUTS.at("Total"), gcnew System::EventArgs());
 				}
 			}
 
@@ -219,7 +219,7 @@ void Wrapper::FMTForm::EcritureDesPredicteurs(const Models::FMTsemodel& semodel,
 		{
 			yieldsforpredictors.push_back(msclr::interop::marshal_as<std::string>(valeur));
 		}
-		const Spatial::FMTspatialschedule& schedule = semodel.getspschedule();
+		const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
 		std::vector<std::vector<std::vector<double>>> allpredictors;
 		std::vector<std::string>allpredictornames;
 		for (size_t period = 1; period <= periodes; ++period)
@@ -340,7 +340,7 @@ bool Wrapper::FMTForm::SimulationSpatialeExplicite(
 			directoryFullName = parentdir->FullName;
 		}
 
-		const Spatial::FMTspatialschedule& schedule = simulationmodel.getspschedule();
+		const Spatial::FMTSpatialSchedule& schedule = simulationmodel.getspschedule();
 		RapportdeBris(simulationmodel);
 		if (indCarbon) 
 			{
@@ -357,7 +357,7 @@ bool Wrapper::FMTForm::SimulationSpatialeExplicite(
 			Parser::FMTscheduleparser scheduparser;
 			System::String^ schedulepath = System::IO::Path::Combine(directoryFullName, gcnew System::String(std::string(simulationmodel.getname() + "_.seq").c_str()));
 			const std::string stdschedulepath = msclr::interop::marshal_as<std::string>(schedulepath);
-			scheduparser.write(schedule.getschedules(simulationmodel.getactions()), stdschedulepath);
+			scheduparser.write(simulationmodel.GetSchedules(schedule), stdschedulepath);
 			if (!indCarbon)
 			{
 				Parser::FMTmodelparser Modelparser;

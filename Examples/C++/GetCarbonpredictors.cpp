@@ -85,7 +85,7 @@ int main()
 					}
 					Logging::FMTdefaultlogger() << "\n";
 				}
-				Spatial::FMTspatialschedule spatialschedule = simulationmodel.getspschedule();	
+				Spatial::FMTSpatialSchedule spatialschedule = simulationmodel.getspschedule();	
 				std::vector<std::vector<std::vector<std::pair<std::string,double>>>> allpredictors;
 				std::set<std::string> allprednames;
 				for (size_t period = 1; period <= 5; ++period)

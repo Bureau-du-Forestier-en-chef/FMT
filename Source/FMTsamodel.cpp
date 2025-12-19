@@ -888,6 +888,8 @@ namespace Models
             std::unique_ptr<FMTmodel>PRESOLVED = std::unique_ptr<FMTmodel>(
                                 new FMTsamodel(
                                     *(dynamic_cast<FMTsemodel*>(BASE_PRESOLVE.get()))));
+            FMTsamodel* SA = dynamic_cast<FMTsamodel*>(PRESOLVED.get());
+            SA->m_WorkingDirectory = m_WorkingDirectory;
             return PRESOLVED;
         }
         catch (...)
