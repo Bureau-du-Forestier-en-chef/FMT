@@ -551,8 +551,9 @@ FMTmask FMTmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTthem
 	return newMask;
 	}
 
-void FMTmask::presolveRef(const FMTmaskfilter& p_filter, 
-	const std::vector<FMTtheme>& p_presolvedThemes, bool p_allowReallocation)
+
+boost::dynamic_bitset<uint8_t> FMTmask::_getPresolveMask(const FMTmaskfilter& p_filter,
+	const std::vector<FMTtheme>& p_presolvedThemes) const
 {
 	boost::dynamic_bitset<uint8_t>newData(p_filter.flippedselection.count(), false);
 	size_t selectedloc = 0;
@@ -564,7 +565,13 @@ void FMTmask::presolveRef(const FMTmaskfilter& p_filter,
 			++selectedloc;
 		}
 	}
-	data.swap(newData);
+	return newData;
+}
+
+void FMTmask::presolveRef(const FMTmaskfilter& p_filter, 
+	const std::vector<FMTtheme>& p_presolvedThemes, bool p_allowReallocation)
+{
+	data = _getPresolveMask(p_filter, p_presolvedThemes);
 	if (!name.empty())
 	{
 		name.clear();
@@ -578,6 +585,20 @@ void FMTmask::presolveRef(const FMTmaskfilter& p_filter,
 			name.shrink_to_fit();
 			}
 	}
+}
+
+bool FMTmask::canPresolve(const FMTmaskfilter& p_filter,
+	const std::vector<FMTtheme>& p_presolvedThemes) const
+{
+	const boost::dynamic_bitset<uint8_t> PRESOLVED = _getPresolveMask(p_filter, p_presolvedThemes);
+	for (const FMTtheme& theme : p_presolvedThemes)
+		{
+		if (subset(theme).count() == 0)
+			{
+			return false;
+			}
+		}
+	return true;
 }
 
 FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,

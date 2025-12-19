@@ -184,7 +184,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		@brief Evaluate the constraint with the actual solution
 		@return the evaluation value.
 		*/
-		double GetConstraintEvaluation(const Core::FMTconstraint& p_Constraint) const;
+		double GetConstraintEvaluation(size_t p_Constraint) const;
 	protected:
 		// DocString: FMTsemodel::spschedule
 		///Contains the builded spatialsolution latest or best one.

@@ -424,6 +424,15 @@ class FMTEXPORT FMTmask
 		@param[in] p_allowReallocation
 		*/
 		void presolveRef(const FMTmaskfilter& p_filter, const std::vector<FMTtheme>& p_presolvedThemes,bool p_allowReallocation = true);
+
+		// DocString: FMTmask::canPresolve
+		/**
+		@brief Check if the mask can be presolved
+		@param[in] p_filter
+		@param[in] p_presolvedThemes
+		@return true if you can presolve
+		*/
+		bool canPresolve(const FMTmaskfilter& p_filter, const std::vector<FMTtheme>& p_presolvedThemes) const;
 		// DocString: FMTmask::postsolve
 		/**
 		Using aFMTmaskfilter (filter) and the original FMTthemes it returns a postsolved FMTmask.
@@ -463,6 +472,15 @@ class FMTEXPORT FMTmask
 		@return number of time the bits are on
 		*/
 		size_t _countTheme(const FMTtheme& p_Theme) const;
+		// DocString: FMTmask::_getPresolveMas
+		/**
+		@brief Get a presolve mask
+		@param[in] filter
+		@param[in] p_presolvedThemes
+		@return mask to presolve
+		*/
+		boost::dynamic_bitset<uint8_t> _getPresolveMask(const FMTmaskfilter& p_filter,
+								const std::vector<FMTtheme>& p_presolvedThemes) const;
 		// DocString: FMTmask::setsubset
 		/**
 		Set a given (subset) (theme size) for the FMTtheme (theme) to the mask

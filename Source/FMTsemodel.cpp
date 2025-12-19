@@ -432,12 +432,11 @@ namespace Models
 
 	}
 
-	double FMTsemodel::GetConstraintEvaluation(const Core::FMTconstraint& p_Constraint) const
+	double FMTsemodel::GetConstraintEvaluation(size_t p_Constraint) const
 	{
 		double value = 0.0;
 		try {
-			const size_t Id = std::distance(constraints.begin(),std::find(constraints.begin(), constraints.end(), p_Constraint));
-			value = m_BestSolution.getconstraintevaluation(m_SpatialGraphs, Id);
+				value = m_BestSolution.getconstraintevaluation(m_SpatialGraphs, p_Constraint);
 
 		}catch (...)
 		{
