@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include "FMTgraph.hpp"
-
+#include "FMTobject.h"
 
 namespace Core
 {
@@ -40,7 +40,7 @@ namespace Heuristics
 	FMToperatingscheme area have to be based on static themes (not used within transitions).
 	Multiple potential schedules will be generated for the FMToperatingarea formulated as a heuristic and/or MIP.
 	*/
-	class FMTEXPORT FMToperatingareascheme: public FMToperatingarea
+	class FMTEXPORT FMToperatingareascheme: public FMToperatingarea, public Core::FMTobject
 		{
 		// DocString: FMToperatingareascheme::serialize
 		/**
@@ -156,7 +156,7 @@ namespace Heuristics
 		/**
 		Return true if the rows activities are above threshold
 		*/
-		bool isthresholdactivityrows(const std::vector<int>& rows, const double* dualsolution) const;
+		bool isthresholdactivityrows(const std::vector<int>& rows, const double* dualsolution, double tempThreshold = -1) const;
 		// DocString: FMToperatingareascheme::fillpattern
 		/**
 		We use this function to generate the final yield solution using a (pattern) like : 110000,
@@ -448,7 +448,13 @@ namespace Heuristics
 			const int& getmaximalschemesconstraint() const;
 
 			const size_t& getgreenup() const { return greenup; };
-
+		
+		private:
+			// DocString: FMToperatingareascheme::_maxNearThresholdActivityRows
+			/**
+			Return the maximum threshold possible
+			*/
+			double FMToperatingareascheme::_maxNearThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution) const;
 		};
 
 	// DocString: FMToperatingareaschemecomparator

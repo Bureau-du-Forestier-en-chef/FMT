@@ -905,36 +905,41 @@ double FMToperatingareascheme::getrowsactivitysum(const std::vector<int>& rows, 
 	return value;
 	}
 
-std::vector<size_t>FMToperatingareascheme::getpotentialdualschemes(const double* dualsolution, const double* upperbound, const std::vector<FMToperatingareascheme>& neighbors) const
+std::vector<size_t> FMToperatingareascheme::getpotentialdualschemes(
+	const double* dualsolution, 
+	const double* upperbound, 
+	const std::vector<FMToperatingareascheme>& neighbors) const
 	{
-	std::vector<size_t>potentialindexes;
+	std::vector<size_t> potentialindexes;
 	if (haveactivitysolution(dualsolution))//Got something more than zero...
 		{
-			std::vector<int>potentials = this->openingbinaries;
+			std::vector<int> potentials = this->openingbinaries;
 			for (const FMToperatingareascheme& neighbor : neighbors)
 			{
 				if (neighbor.isdualbounded(upperbound))
 				{
 					size_t neighborsolution = 0;
 					if (neighbor.getdualsolutionindex(upperbound, neighborsolution))
-						{
+					{
 						const std::map<int, std::vector<int>>commons = neighbor.getcommonbinairies(*this);
 						for (const int& binary : commons.at(neighbor.openingbinaries.at(neighborsolution)))
-							{
+						{
 							std::vector<int>::iterator binit = std::find(potentials.begin(), potentials.end(), binary);
-								if (binit != potentials.end())
-								{
-									potentials.erase(binit);
-								}
+							if (binit != potentials.end())
+							{
+								potentials.erase(binit);
 							}
 						}
+					}
 				}
 			}
-			std::vector<double>potentialValues;
+			// On itère sur les différentes cédules potentielles pour un seul COS
+			std::vector<double> potentialValues;
 			for (const int& binary : potentials)
 			{
 				std::vector<int>::const_iterator binit = std::find(this->openingbinaries.begin(), this->openingbinaries.end(), binary);
 				size_t indexlocation = std::distance(this->openingbinaries.begin(), binit);
+				
 				if (isthresholdactivityrows(openingconstraints.at(indexlocation), dualsolution))
 				{
 					const double VALUE = getrowsactivitysum(openingconstraints.at(indexlocation), dualsolution);
@@ -943,28 +948,40 @@ std::vector<size_t>FMToperatingareascheme::getpotentialdualschemes(const double*
 						potentialindexes.push_back(binit - this->openingbinaries.begin());
 						potentialValues.push_back(VALUE);
 					}
-					
-					/*double actualvalue = getrowsactivitysum(openingconstraints.at(indexlocation), dualsolution);
-					if (!potentialindexes.empty())
-					{
-						const size_t oldsize = potentialindexes.size();
-						std::vector<size_t>::iterator indexid = potentialindexes.begin();
-						while (oldsize == potentialindexes.size())
-						{
-							if (indexid == potentialindexes.end() ||
-								actualvalue > getrowsactivitysum(openingconstraints.at(*indexid), dualsolution))
-							{
-								potentialindexes.insert(indexid, binit - this->openingbinaries.begin());
-							}
-							++indexid;
-						}
-					}
-					else if (actualvalue > FMT_DBL_TOLERANCE)
-					{
-						potentialindexes.push_back(binit - this->openingbinaries.begin());
-					}*/
 				}
 			}
+
+			if (potentialValues.empty() && threshold > 0)
+			{
+				std::vector<double> tempThresholds;
+				std::vector<size_t> tempBinary;
+				for (const int& binary : potentials)
+				{
+					std::vector<int>::const_iterator binit = std::find(this->openingbinaries.begin(), this->openingbinaries.end(), binary);
+					size_t indexlocation = std::distance(this->openingbinaries.begin(), binit);
+				
+					if (!isthresholdactivityrows(openingconstraints.at(indexlocation), dualsolution) && threshold > 0)
+					{
+						tempThresholds.push_back(_maxNearThresholdActivityRows(openingconstraints.at(indexlocation), dualsolution));
+						tempBinary.push_back(indexlocation);
+					}
+				}
+				std::vector<double>::iterator it = std::max_element(tempThresholds.begin(), tempThresholds.end()); 
+				size_t index = std::distance(tempThresholds.begin(), it);
+
+				std::vector<int>::const_iterator binit = std::find(this->openingbinaries.begin(), this->openingbinaries.end(), tempBinary[index]);
+				size_t indexlocation = std::distance(this->openingbinaries.begin(), binit);
+				if (isthresholdactivityrows(openingconstraints.at(indexlocation), dualsolution, tempThresholds[index]))
+				{
+					const double VALUE = getrowsactivitysum(openingconstraints.at(indexlocation), dualsolution);
+					if (VALUE > FMT_DBL_TOLERANCE)
+					{
+						potentialindexes.push_back(binit - this->openingbinaries.begin());
+						potentialValues.push_back(VALUE);
+					}
+				}
+			}
+
 			if (!potentialindexes.empty())
 			{
 				std::vector<int> indices(potentialindexes.size());
@@ -1077,12 +1094,35 @@ double FMToperatingareascheme::getactivitysum(const double* dualsolution) const
 	return total;
 }
 
+double FMToperatingareascheme::_maxNearThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution) const
+{
+	double maxValue = 0;
+	size_t idWithMaxValue = 0;
+	size_t optid = 0;
+	while (optid < openingtime && optid < rows.size())
+	{
+		const double VALUE = *(dualsolution + rows.at(optid));
+		if (VALUE > maxValue)
+		{
+			maxValue = VALUE;
+			idWithMaxValue = optid;
+		}
+		++optid;
+	}
+	
+	double newThreshold = (maxValue / (_area + FMT_DBL_TOLERANCE));
+	std::cout << "NewThreshold: " + std::to_string(newThreshold) + "\n";
+	/*_exhandler->raise(Exception::FMTexc::FMTunreachable_threshold,
+		"Initial threshold of " + std::to_string(threshold) +
+		" is unreachable. New threshold set at " + std::to_string(maxValue / _area) +
+		" for operating area scheme" + std::string(getmask()),
+		"FMToperatingareascheme::_maxNearThresholdActivityRows",
+		__LINE__, __FILE__);*/
 
+	return newThreshold;
+}
 
-
-
-
-bool FMToperatingareascheme::isthresholdactivityrows(const std::vector<int>& rows,const double* dualsolution) const
+bool FMToperatingareascheme::isthresholdactivityrows(const std::vector<int>& rows, const double* dualsolution, double tempThreshold) const
 {
 	/*for (const int& constraint : rows)
 	{
@@ -1093,10 +1133,15 @@ bool FMToperatingareascheme::isthresholdactivityrows(const std::vector<int>& row
 	}*/
 	//Only first period
 	////////////////////////
+	double thresholdValue = threshold;
+	if (tempThreshold > 0)
+	{
+		thresholdValue = tempThreshold;
+	}
 	size_t optid = 0;
 	while (optid < openingtime && optid < rows.size())
 	{
-		if (*(dualsolution + rows.at(optid)) < ((threshold * _area) - FMT_DBL_TOLERANCE))
+		if (*(dualsolution + rows.at(optid)) < ((thresholdValue * _area) - FMT_DBL_TOLERANCE))
 		{
 			return false;
 		}
@@ -1105,7 +1150,6 @@ bool FMToperatingareascheme::isthresholdactivityrows(const std::vector<int>& row
 	////////////////////////
 	return true;
 }
-
 
 bool FMToperatingareascheme::isthresholdactivity(const double* dualsolution) const
 {
