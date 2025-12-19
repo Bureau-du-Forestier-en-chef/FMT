@@ -94,11 +94,25 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::NotAcceptedMovesCount
     ///Count the number of cycle the moves gave had no acceptance
     std::array<size_t, FMTsamove::MoveCount>NotAcceptedMovesCount;
+    // DocString: FMTsamodel::m_WorkingDirectory
+    ///The working directory to write disturbances
+    std::string m_WorkingDirectory;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use
     */
     FMTsamodel(const FMTsemodel& rhs);
+    // DocString: FMTsamodel::_DoWriteDisturbances
+    /**
+    @brief check if dirtubances writing needed
+    @return true or false
+    */
+    bool _DoWriteDisturbances() const;
+    // DocString: FMTsamodel::_WriteDisrturbances
+     /**
+     @brief Write the disturbances of the best solution
+     */
+    void _WriteDisrturbances() const;
     protected:
         // DocString: FMTsamodel::GetFromBindings
         /**
@@ -311,6 +325,8 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		virtual std::unique_ptr<FMTmodel>clone() const final;
         
         Graph::FMTgraphstats buildperiod();
+
+        void SetWorkingDirectory(const std::string& p_ValidDirectory);
 
 
     };

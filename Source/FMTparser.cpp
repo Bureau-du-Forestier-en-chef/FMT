@@ -125,6 +125,31 @@ Core::FMTsection FMTparser::fromExtension(const std::string& ext)
 	return Core::FMTsection::Empty;
     }
 
+std::string FMTparser::CreateSubDirectory(const std::string& p_Directory,
+										const std::string& p_SubDirectory)
+{
+	std::string fullPath;
+	try {
+		const boost::filesystem::path BASE(p_Directory);
+		if (!boost::filesystem::is_directory(BASE))
+			{
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+				p_Directory, "FMTparser::CreateSubDirectory", __LINE__, __FILE__);
+			}
+		const boost::filesystem::path SUB(p_SubDirectory);
+		const boost::filesystem::path FINAL = BASE / SUB;
+		if (!boost::filesystem::is_directory(FINAL))
+			{
+			boost::filesystem::create_directory(FINAL);
+			}
+		fullPath = FINAL.string();
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::CreateSubDirectory", __LINE__, __FILE__);
+		}
+	return fullPath;
+}
+
 #if defined FMTWITHGDAL
 void FMTparser::_initializeGDAL()
 	{

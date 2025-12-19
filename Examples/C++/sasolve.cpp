@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 500);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 1000);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
-		//optimizationmodel.redirectlogtofile(outputlocation + "/SaSolve.log");
+		optimizationmodel.SetWorkingDirectory(outputlocation);
 		optimizationmodel.doplanning(true);
 		std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())

@@ -17,6 +17,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.h"
 #include "FMTsaschedule.h"
 #include "FMTexponentialschedule.h"
+#include "FMTareaparser.h"
+#include "FMTGCBMtransition.h"
 
 namespace Models
 
@@ -71,7 +73,8 @@ namespace Models
         CycleMoves(),
         LastGlobalObjectiveValue(),
         CoolingSchedule(),
-        NotAcceptedMovesCount()
+        NotAcceptedMovesCount(),
+        m_WorkingDirectory()
     {
 
     }
@@ -83,7 +86,8 @@ namespace Models
         CycleMoves(rhs.CycleMoves),
         LastGlobalObjectiveValue(rhs.LastGlobalObjectiveValue),
         CoolingSchedule(rhs.CoolingSchedule->Clone()),
-        NotAcceptedMovesCount()
+        NotAcceptedMovesCount(),
+        m_WorkingDirectory(rhs.m_WorkingDirectory)
     {
 
     }
@@ -94,7 +98,8 @@ namespace Models
         CycleMoves(),
         LastGlobalObjectiveValue(),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
-        NotAcceptedMovesCount()
+        NotAcceptedMovesCount(),
+        m_WorkingDirectory()
     {
 
     }
@@ -105,7 +110,8 @@ namespace Models
         CycleMoves(),
         LastGlobalObjectiveValue(),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
-        NotAcceptedMovesCount()
+        NotAcceptedMovesCount(),
+        m_WorkingDirectory()
     {
 
     }
@@ -116,7 +122,8 @@ namespace Models
         CycleMoves(),
         LastGlobalObjectiveValue(),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
-        NotAcceptedMovesCount()
+        NotAcceptedMovesCount(),
+        m_WorkingDirectory()
     {
 
     }
@@ -131,6 +138,7 @@ namespace Models
             CycleMoves = rhs.CycleMoves;
             LastGlobalObjectiveValue = rhs.LastGlobalObjectiveValue;
             CoolingSchedule = std::move(CoolingSchedule->Clone());
+            m_WorkingDirectory = rhs.m_WorkingDirectory;
             }
         return *this;
     }
@@ -149,6 +157,39 @@ namespace Models
     Graph::FMTgraphstats FMTsamodel::buildperiod()
     {
 		return m_BestSolution.randombuild(*this,m_generator);
+    }
+
+    void FMTsamodel::SetWorkingDirectory(const std::string& p_ValidDirectory)
+    {
+        m_WorkingDirectory = p_ValidDirectory;
+    }
+
+    bool FMTsamodel::_DoWriteDisturbances() const
+    {
+        return !m_WorkingDirectory.empty();
+    }
+
+    void FMTsamodel::_WriteDisrturbances() const
+    {
+        try {
+            if (_DoWriteDisturbances())
+            {
+                Parser::FMTareaparser AreaParser;
+                const int LENGTH = getparameter(Models::FMTintmodelparameters::LENGTH);
+                const std::string COOLING_LEVEL = "Level" + std::to_string(CoolingSchedule->GetLevel());
+                const std::string DIRECTORY = AreaParser.CreateSubDirectory(
+                    m_WorkingDirectory, COOLING_LEVEL);
+                for (int period = 1; period <= LENGTH; ++period)
+                {
+                    AreaParser.writedisturbances(DIRECTORY, getspschedule(),
+                        actions, themes, period);
+                }
+            }
+           
+        }catch (...)
+        {
+            _exhandler->raisefromcatch("", "FMTsamodel::_WriteDisrturbances", __LINE__, __FILE__);
+        }
     }
 
 
@@ -791,6 +832,7 @@ namespace Models
 					}
                 UpdateFailedMoveCount();
                 LogCycleStatus();
+                _WriteDisrturbances();
 				CoolDown();
 				}
             LogConstraintsFactors();

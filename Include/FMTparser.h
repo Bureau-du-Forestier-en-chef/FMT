@@ -152,6 +152,14 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@return the FMTsection that fit with the p_Extension
 		*/
 		static Core::FMTsection fromExtension(const std::string& p_Extension);
+		// DocString: FMTparser::CreateSubDirectory
+		/**
+		@brief Create a sub directory in directory
+		@param[in] p_Directory the base directory
+		@param[in]  p_SubDirectory the sub directory
+		@return full directory path
+		*/
+		std::string CreateSubDirectory(const std::string& p_Directory, const std::string& p_SubDirectory);
 	protected:
 		class FMTLineInfo
 			{
