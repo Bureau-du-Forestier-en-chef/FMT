@@ -135,7 +135,9 @@ int main(int argc, char *argv[])
             //Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::CLP);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
-	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); // pour gérer les variables négatives
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); 
+            // pour gérer les variables négatives
             //const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const int startingperiod = optimizationmodel.getparameter(Models::FMTintmodelparameters::UPDATE);
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
@@ -162,7 +164,6 @@ int main(int argc, char *argv[])
             Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
             noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
             noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-            noptimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
             noptimizationmodel.Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
             const std::vector<Core::FMTschedule> schedules = modelparser.readschedules("../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
             // On regarde si on est capable de relire ce qu'on vient de créer
