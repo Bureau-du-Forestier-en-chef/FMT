@@ -34,9 +34,9 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
-			scenario = "PlayBack_CC";
-			length = 20;
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02251/PC_5883_U02251_4FF_V12.pri";
+			scenario = "ROOT";
+			length = 5;
 			objectivevalue = 2836;
 		}
 		Parser::FMTmodelparser modelparser;

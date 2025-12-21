@@ -1420,7 +1420,7 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 bool FMToutput::_sourceCounter(const std::string& p_source) const
 {
 	bool passed = true;
-	const int MAXSIZE = 256;
+	//const int MAXSIZE = 256;
 	int count = 0;
 
 	for (std::size_t i = 0; i < p_source.size(); ++i) {
@@ -1433,13 +1433,13 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 			else
 			{
 				count++;
-				if (count > MAXSIZE)
+				/*if (count > MAXSIZE)
 				{
 					const std::string ERRORMESSAGE = "Le nombre de caratères par ligne est trop grand. Nombre de caractères : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 						 ERRORMESSAGE, "FMToutput::splitSource" ,__LINE__, __FILE__);
 					passed = false;
-				}
+				}*/
 
 			}
 		}
