@@ -304,7 +304,9 @@ namespace Models
 			if (m_BestSolution.actperiod()>=1)//just postsolve if you have a solution
 			{
 				const Core::FMTmaskfilter presolvedmask = this->getpostsolvefilter(originalbasemodel.getthemes(), originalbasemodel.getarea().begin()->getmask());
-				m_BestSolution.postsolve(presolvedmask,this->getactions(),originalbasemodel);
+				Spatial::FMTSpatialGraphs postSolvedGraphs = Spatial::FMTSpatialGraphs(originalbasemodel, m_BestSolution.getcellsize());
+				m_BestSolution.postsolve(presolvedmask,this->getactions(), postSolvedGraphs);
+				m_SpatialGraphs.swap(postSolvedGraphs);
 				FMTmodel::postsolve(originalbasemodel);
 			}
 		}catch (...)

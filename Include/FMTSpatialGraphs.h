@@ -50,6 +50,7 @@ namespace Spatial
 			double GetConstraintsValue(size_t NonSpatialConstraintId,
 											const std::vector<size_t>& p_solution) const;
 			FMTVirtualLineGraph GetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
+			FMTVirtualLineGraph SetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
 			std::vector<size_t>GetBaseSolution() const;
 			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator GetIterator(
 												const Graph::FMTlinegraph& p_Graph,
@@ -77,6 +78,7 @@ namespace Spatial
 			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator GetLastPeriodIterator(
 				size_t p_family,
 				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const;
+			void swap(FMTSpatialGraphs& p_Other);
 		private:
 			const static size_t SOLUTION_RESIZE_FACTOR = 2;
 			const static size_t MAX_ASYNC_JOBS = 5;

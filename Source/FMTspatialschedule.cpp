@@ -1441,11 +1441,11 @@ std::map<std::string,double> FMTSpatialSchedule::getoutputfromgraph(const Graph:
 
 void FMTSpatialSchedule::postsolve(const Core::FMTmaskfilter& p_Filter,
 								const std::vector<Core::FMTaction>& p_PresolveActions,
-							const Models::FMTmodel& p_OriginalBaseModel)
+								Spatial::FMTSpatialGraphs& p_Graphs)
 	{
 	try {
-		const std::vector<Core::FMTtheme> postsolvethemes = p_OriginalBaseModel.getthemes();
-		const std::vector<Core::FMTaction> postsolveactions = p_OriginalBaseModel.getactions();
+		m_NonSpatialSolution = p_Graphs.GetBaseSolution();
+		const std::vector<Core::FMTaction> postsolveactions = p_Graphs.GetModel().getactions();
 		std::vector<int>actionmapping;
 		actionmapping.reserve(p_PresolveActions.size());
 		for (const Core::FMTaction action : p_PresolveActions)
@@ -1453,14 +1453,11 @@ void FMTSpatialSchedule::postsolve(const Core::FMTmaskfilter& p_Filter,
 			const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
 			actionmapping.push_back(loc);
 		}
-		
-		std::vector<FMTcoordinate>coordinates;
+	
 		for (std::map<FMTcoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 			{
-			Graph::FMTlinegraph graphCopy = graphit->second.getLineGraph();
-			graphCopy.postsolve(p_Filter, postsolvethemes, actionmapping);
-			graphit->second.setLineGraph(graphCopy, m_NonSpatialSolution);
-			coordinates.push_back(graphit->first);
+			graphit->second = graphit->second.PostSolve(p_Filter, actionmapping,
+								p_Graphs, m_NonSpatialSolution);
 			}
 		FMTeventcontainer newevents;
 		for (FMTeventcontainer::iterator eventit= m_events.begin(); eventit!=m_events.end();eventit++)

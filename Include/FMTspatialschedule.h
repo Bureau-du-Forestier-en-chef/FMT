@@ -429,7 +429,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		*/
 		void postsolve(const Core::FMTmaskfilter&  p_Filter,
 			const std::vector<Core::FMTaction>& p_PresolveActions,
-			const Models::FMTmodel& p_OriginalBaseModel);
+			Spatial::FMTSpatialGraphs& p_Graphs);
 		// DocString: FMTSpatialSchedule::presolve
 		/**
 		@brief Returned a presolved solution of the original solution.

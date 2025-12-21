@@ -27,6 +27,7 @@ namespace Models
 namespace Core
 {
 	class FMToutput;
+	class FMTmaskfilter;
 }
 
 
@@ -57,6 +58,10 @@ namespace Spatial
 				const Core::FMToutput& p_output, int p_period) const;
 			void SetBaseGraph(std::vector<size_t>& p_solution);
 			void SetLastPeriod(std::vector<size_t>& p_solution);
+			FMTVirtualLineGraph PostSolve(const Core::FMTmaskfilter& p_Filter,
+					const std::vector<int>& p_actionMapping,
+					FMTSpatialGraphs& p_Graphs,
+					std::vector<size_t>& p_solution) const;
 		private:
 			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator m_Iterator;
 			size_t m_GraphFamily;

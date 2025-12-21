@@ -74,6 +74,22 @@ namespace Spatial
 		return FMTVirtualLineGraph(*this, Iterator, Family);
 	}
 
+	FMTVirtualLineGraph FMTSpatialGraphs::SetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph)
+	{
+		size_t Family = 0;
+		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.begin()->end();
+		try {
+			Family = _GetFamily(p_LineGraph);
+			Iterator = SetIterator(p_LineGraph, Family);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::SetVirtualGraph",
+				__LINE__, __FILE__);
+		}
+		return FMTVirtualLineGraph(*this, Iterator, Family);
+	}
+
 	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::GetBaseIterator(size_t p_family) const
 	{
 		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.at(p_family).end();
@@ -121,6 +137,17 @@ namespace Spatial
 		return Iterator;
 	}
 
+	void FMTSpatialGraphs::swap(FMTSpatialGraphs& p_Other)
+	{
+		m_AllGraphs.swap(p_Other.m_AllGraphs);
+		m_LastGraphId = p_Other.m_LastGraphId;
+		m_Constraints.swap(p_Other.m_Constraints);
+		m_GraphsMasks.swap(p_Other.m_GraphsMasks);
+		m_BaseSolution.swap(p_Other.m_BaseSolution);
+		m_ConstraintsId.swap(p_Other.m_ConstraintsId);
+		m_Model = p_Other.m_Model;
+	}
+
 
 	std::vector<size_t>FMTSpatialGraphs::GetBaseSolution() const
 	{
@@ -149,13 +176,17 @@ namespace Spatial
 						{
 							const Core::FMTschedule SCHEDULE = GRAPH.first.getschedule(GetModel().actions,
 								&CELLS, period, WithLock);
-							if (period >= Schedules.size())
+							if (!SCHEDULE.empty())
 							{
-								Schedules.push_back(SCHEDULE);
+								if (period > Schedules.size())
+								{
+									Schedules.push_back(SCHEDULE);
+								}
+								else {
+									Schedules[period - 1] += SCHEDULE;
+								}
 							}
-							else {
-								Schedules[period - 1] += SCHEDULE;
-							}
+							
 						}
 					}
 				}
@@ -231,6 +262,9 @@ namespace Spatial
 		return Iterator;
 
 	}
+
+
+
 
 	void FMTSpatialGraphs::SetModel(const Models::FMTmodel& p_model)
 	{

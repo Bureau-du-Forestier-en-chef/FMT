@@ -73,8 +73,7 @@ namespace Models
         CycleMoves(),
         LastGlobalObjectiveValue(),
         CoolingSchedule(),
-        NotAcceptedMovesCount(),
-        m_WorkingDirectory()
+        NotAcceptedMovesCount()
     {
 
     }
@@ -86,8 +85,7 @@ namespace Models
         CycleMoves(rhs.CycleMoves),
         LastGlobalObjectiveValue(rhs.LastGlobalObjectiveValue),
         CoolingSchedule(rhs.CoolingSchedule->Clone()),
-        NotAcceptedMovesCount(),
-        m_WorkingDirectory(rhs.m_WorkingDirectory)
+        NotAcceptedMovesCount()
     {
 
     }
@@ -98,8 +96,7 @@ namespace Models
         CycleMoves(),
         LastGlobalObjectiveValue(),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
-        NotAcceptedMovesCount(),
-        m_WorkingDirectory()
+        NotAcceptedMovesCount()
     {
 
     }
@@ -110,8 +107,7 @@ namespace Models
         CycleMoves(),
         LastGlobalObjectiveValue(),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
-        NotAcceptedMovesCount(),
-        m_WorkingDirectory()
+        NotAcceptedMovesCount()
     {
 
     }
@@ -122,8 +118,7 @@ namespace Models
         CycleMoves(),
         LastGlobalObjectiveValue(),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
-        NotAcceptedMovesCount(),
-        m_WorkingDirectory()
+        NotAcceptedMovesCount()
     {
 
     }
@@ -137,8 +132,7 @@ namespace Models
             TotalMoves = rhs.TotalMoves;
             CycleMoves = rhs.CycleMoves;
             LastGlobalObjectiveValue = rhs.LastGlobalObjectiveValue;
-            CoolingSchedule = std::move(CoolingSchedule->Clone());
-            m_WorkingDirectory = rhs.m_WorkingDirectory;
+            CoolingSchedule = std::move(CoolingSchedule->Clone());;
             }
         return *this;
     }
@@ -159,14 +153,9 @@ namespace Models
 		return m_BestSolution.randombuild(*this,m_generator);
     }
 
-    void FMTsamodel::SetWorkingDirectory(const std::string& p_ValidDirectory)
-    {
-        m_WorkingDirectory = p_ValidDirectory;
-    }
-
     bool FMTsamodel::_DoWriteDisturbances() const
     {
-        return !m_WorkingDirectory.empty();
+        return !getparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY).empty();
     }
 
     void FMTsamodel::_WriteDisrturbances() const
@@ -178,7 +167,8 @@ namespace Models
                 const int LENGTH = getparameter(Models::FMTintmodelparameters::LENGTH);
                 const std::string COOLING_LEVEL = "Level" + std::to_string(CoolingSchedule->GetLevel());
                 const std::string DIRECTORY = AreaParser.CreateSubDirectory(
-                    m_WorkingDirectory, COOLING_LEVEL);
+                    getparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY),
+                    COOLING_LEVEL);
                 for (int period = 1; period <= LENGTH; ++period)
                 {
                     AreaParser.writedisturbances(DIRECTORY, getspschedule(),
@@ -889,7 +879,6 @@ namespace Models
                                 new FMTsamodel(
                                     *(dynamic_cast<FMTsemodel*>(BASE_PRESOLVE.get()))));
             FMTsamodel* SA = dynamic_cast<FMTsamodel*>(PRESOLVED.get());
-            SA->m_WorkingDirectory = m_WorkingDirectory;
             return PRESOLVED;
         }
         catch (...)

@@ -63,7 +63,8 @@ namespace Models
     {
         SOLVER_COLD_START = 0,/*Cold start parameters located in scenario folder*<  */
         SOLVER_WARM_START = 1,/*Warm start parameters location in scenario folder*<  */
-        LastStrModelParam = 2/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
+        WORKING_DIRECTORY = 2,/*SA working directory*<  */
+        LastStrModelParam = 3/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
 
 

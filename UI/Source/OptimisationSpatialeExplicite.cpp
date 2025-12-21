@@ -59,14 +59,15 @@ bool Wrapper::FMTForm::OptimisationSpatialeExplicite(System::String^ fichierPri,
 				}
 				OptimizationModel.setinitialmapping(initialForestMap);
 		}
-
+		const std::string OUTPUT_PATH = msclr::interop::marshal_as<std::string>(cheminSorties);
+		OptimizationModel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, OUTPUT_PATH);
 		OptimizationModel.setparameter(Models::FMTintmodelparameters::LENGTH, periodes);
 		OptimizationModel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, p_MaxMoves);
 		OptimizationModel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, p_MaxAcceptedMoves);
 		OptimizationModel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, p_MaxCycleMoves);
 		OptimizationModel.doplanning(true);
 
-
+		
 		System::IO::DirectoryInfo^ parentDirectory = System::IO::Directory::GetParent(cheminSorties);
 		System::String^ directoryFullName = parentDirectory->FullName;
 
@@ -96,7 +97,7 @@ bool Wrapper::FMTForm::OptimisationSpatialeExplicite(System::String^ fichierPri,
 					OUTPUTS_LIST,
 					etanduSortiesMin,
 					etanduSortiesMax,
-					msclr::interop::marshal_as<std::string>(cheminSorties),
+					OUTPUT_PATH,
 					static_cast<Core::FMToutputlevel>(outputLevel),
 					msclr::interop::marshal_as<std::string>(providerGdal)
 				);

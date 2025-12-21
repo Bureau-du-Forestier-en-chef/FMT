@@ -54,6 +54,19 @@ namespace Spatial{
 		_add(p_solution);
 		}
 
+	FMTVirtualLineGraph FMTVirtualLineGraph::PostSolve(const Core::FMTmaskfilter& p_Filter,
+		const std::vector<int>& p_actionMapping,
+		FMTSpatialGraphs& p_Graphs,
+		std::vector<size_t>& p_solution) const
+	{
+		Graph::FMTlinegraph graphCopy = getLineGraph();
+		graphCopy.postsolve(p_Filter, 
+			p_Graphs.GetModel().getthemes(), p_actionMapping);
+		FMTVirtualLineGraph postSolved = p_Graphs.SetVirtualGraph(graphCopy);
+		postSolved._add(p_solution);
+		return postSolved;
+	}
+
 	void FMTVirtualLineGraph::_insertInto(const Graph::FMTlinegraph& p_LineGraph,
 		std::vector<size_t>& p_solution)
 	{
@@ -124,6 +137,7 @@ namespace Spatial{
 			{
 			return false;
 			}
+		return false;
 		}
 
 	size_t FMTVirtualLineGraph::hash() const

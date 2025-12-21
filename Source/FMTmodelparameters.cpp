@@ -38,6 +38,7 @@ namespace Models
         m_boolparameters[DEBUG_MATRIX] = false;
         m_boolparameters[SETSOLUTION_THROW] = true;
         m_boolparameters[QUIET_LOGGING] = false;
+        m_strparameters[WORKING_DIRECTORY] = "";
         //Vector for compresstime at each period
         m_compresstime = std::vector<int>(30,1);
     }
