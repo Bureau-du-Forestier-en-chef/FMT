@@ -308,6 +308,7 @@ namespace Models
 				m_BestSolution.postsolve(presolvedmask,this->getactions(), postSolvedGraphs);
 				m_SpatialGraphs.swap(postSolvedGraphs);
 				FMTmodel::postsolve(originalbasemodel);
+				m_SpatialGraphs.SetModel(*this);
 			}
 		}catch (...)
 			{
