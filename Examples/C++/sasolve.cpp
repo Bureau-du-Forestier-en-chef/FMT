@@ -35,16 +35,16 @@ int main(int argc, char* argv[])
 			length = std::stoi(argv[2]);
 			objectivevalue = std::stod(argv[3]);
 		}else {
-			/*primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Weight/PC_9964_U08451_2028_MODB01.pri";
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Weight/PC_9964_U08451_2028_MODB01.pri";
 			scenario = "120_RegProv_apsp_AGG";
 			length = 3;
 			objectivevalue = 1000;
-			resolution = 200;*/
+			resolution = 200;
 			//resolution = 1000;
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02662/PC_9309_U02662_4_Vg2_2023_vRP1f.pri";
+			/*primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02662/PC_9309_U02662_4_Vg2_2023_vRP1f.pri";
 			scenario = "spatial";
 			length = 1;
-			objectivevalue = 1000;
+			objectivevalue = 1000;*/
 			}
 		const std::string outputlocation = "../../tests/sasolve";
 		Parser::FMTmodelparser modelparser;
