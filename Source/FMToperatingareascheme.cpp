@@ -1142,8 +1142,8 @@ bool FMToperatingareascheme::isthresholdactivityrows(const std::vector<int>& row
 			return false;
 		}
 	}*/
-	//Only first period
 
+	// Only first period + fix unreachable threshold
 	double thresholdValue = (tempThreshold > 0) ? tempThreshold : threshold;
 	size_t optid = 0;
 

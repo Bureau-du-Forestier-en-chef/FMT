@@ -403,7 +403,7 @@ namespace Parallel
 
 	std::vector<std::unique_ptr<FMTtask>>FMTopareaschedulertask::split(const unsigned int& numberoftasks) const
 	{
-		std::vector<std::unique_ptr<FMTtask>>tasks;
+		std::vector<std::unique_ptr<FMTtask>> tasks;
 		try {
 			for (unsigned int taskid = 0 ; taskid < numberoftasks;++taskid)
 				{
@@ -428,7 +428,7 @@ namespace Parallel
 		try {
 			if (goodtogo())
 			{
-				std::unique_ptr<FMTtask>newtask(new FMTopareaschedulertask(*this));
+				std::unique_ptr<FMTtask> newtask(new FMTopareaschedulertask(*this));
 				FMTopareaschedulertask* newtaskptr = dynamic_cast<FMTopareaschedulertask*>(newtask.get());
 				newtaskptr->actualscheduler->setnumberofthreads(1);
 				if (lastspawned > 0)
@@ -452,7 +452,7 @@ namespace Parallel
 			actualscheduler->passinlogger(logger);
 			if (gotinitialsolution())
 			{
-				const boost::lock_guard<boost::mutex>lock(generalmutex);
+				const boost::lock_guard<boost::mutex> lock(generalmutex);
 				bestscheduler->passinlogger(logger);
 			}
 		}catch (...)
@@ -475,7 +475,7 @@ namespace Parallel
 					//If initialsolve fail, you need to redo an initialsolve
 					needinitialsolve = !actualscheduler->initialsolve();
 				}else {
-					actualscheduler->greedypass(relax_objective,iterations);
+					actualscheduler->greedypass(relax_objective, iterations);
 					}
 				if (needinitialsolve) 
 				{
