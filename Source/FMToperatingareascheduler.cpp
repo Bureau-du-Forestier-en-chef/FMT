@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -1016,7 +1016,6 @@ namespace Heuristics
 				const bool opgotschedule = getbounds(opit, ltargeteditems, lbounds, boundallscheme, schemeid, keeploose);
 				if (!opgotschedule && schemestoskip.empty())
 				{
-					std::cout << "Yup \n";
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"No schedule found for Operating area " + std::string(opit->getmask()),
 						"FMToperatingareascheduler::setbounds", __LINE__, __FILE__);
