@@ -37,7 +37,7 @@ doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|division;5;349540
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|mai;2;0
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|equation;2;26665
 replanningmodeladaption;;;
-templatestest;;;
+templatestest;../../../../Examples/Models/TWD_land/TWD_land.pri;../../../../Examples/Models/TWD_land/Templates;5
 testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;LEVEL1;
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|COS;3;302
 testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|DISTANCE;RATIO;6.58

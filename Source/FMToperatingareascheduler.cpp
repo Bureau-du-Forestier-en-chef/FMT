@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -985,7 +985,7 @@ namespace Heuristics
 					}
 
 				}
-				std::vector<size_t>potentialschemes;
+				std::vector<size_t> potentialschemes;
 				if (useprimal)
 				{
 					potentialschemes = opit->getpotentialprimalschemes(primalsolution, lowerprimalbounds, upperprimalbounds, allneighbors);
@@ -993,6 +993,7 @@ namespace Heuristics
 				else {
 					potentialschemes = opit->getpotentialdualschemes(dualsolution, rowupperbound, allneighbors);
 				}
+
 				bool boundallscheme = true;
 				size_t schemeid;
 				if(!potentialschemes.empty())
@@ -1016,8 +1017,8 @@ namespace Heuristics
 				if (!opgotschedule && schemestoskip.empty())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
-					"No schedule found for Operating area "+std::string(opit->getmask()),
-					"FMToperatingareascheduler::setbounds",__LINE__, __FILE__);
+						"No schedule found for Operating area " + std::string(opit->getmask()),
+						"FMToperatingareascheduler::setbounds", __LINE__, __FILE__);
 				}
 				gotschedule += opgotschedule;
 				/*if (!potentialschemes.empty())

@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01009233\\PC_10116_U05151_MODB01_20250912\\PC_10116_U05151_2028_MODB01.pri";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01007296\\PC9425_U08663_DET_test\\PC_9425_U08663_4_Vg1_2023_vSSP03.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
-		length = 30;
-		scenario_name = "Ovoltotrec_complexite";
+		length = 2;
+		scenario_name = "CAROPER_TDI-DIF_0";
 		playback.push_back(false);
 		allscenarios.push_back(scenario_name);
 	}

@@ -539,6 +539,9 @@ FMTlev FMTexceptionhandler::getLevel(const FMTexc p_exception) const
 		case FMTexc::FMTMSKnumerical_problem:
 			level = FMTlev::FMT_Warning;
 			break;
+		case FMTexc::FMTunreachable_threshold:
+			level = FMTlev::FMT_Warning;
+			break;
 		default:
 			level = FMTlev::FMT_logic;
 			break;
@@ -959,6 +962,10 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		break;
 	case FMTexc::FMTMSKnumerical_problem:
 		msg += "Unsolvable model with set parameters: " + message;
+		gotWarning = true;
+		break;
+	case FMTexc::FMTunreachable_threshold:
+		msg += "Threshold unreachable with set parameters: " + message;
 		gotWarning = true;
 		break;
 	default:

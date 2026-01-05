@@ -52,6 +52,7 @@ namespace Parser
 	const boost::regex Parser::FMTparser::m_REMOVE_COMMENT = boost::regex("^(.*?)([;]+.*)");
 	const boost::regex Parser::FMTparser::m_VALID = boost::regex("^(?!\\s*$).+");
 	const boost::regex Parser::FMTparser::m_INCLUDE = boost::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
+	// regex de foreeach ici?
 	const boost::regex Parser::FMTparser::m_FOR = boost::regex(
 		"^(FOREACH)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(IN)([\\s\\t]*)((\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*\\)[\\s\\t]*\\))|"//thematic for each
 		"(\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\))|(\\()(\\d*)(\\.\\.)(\\d*)(\\))|(\\()([^\\)]*)(\\)))|(\\bFOR\\b)([\\s\\t]*)([^\\:\\=]*)([\\:\\=\\s\\t]*)(\\d*)([\\s\\t]*)(TO)([\\s\\t]*)(\\d*)|"//regular for loops
@@ -1500,16 +1501,28 @@ bool FMTparser::IsForLoopsEnd(const std::string& p_line) const
 }
 
 
-std::string  FMTparser::_getAbsolutePath(std::string p_Path) const
+std::string FMTparser::_getAbsolutePath(std::string p_Path) const
 	{
 	try {
 		boost::filesystem::path includedpath(p_Path);
-		// TODO GAB C2 à carlo pour inclure un scenario
 		if (p_Path.find("_PRIMARY") != std::string::npos)
 		{
 			if (primarym_sections.find(m_section) != primarym_sections.end())
 			{
-				p_Path = primarym_sections[m_section];
+				boost::filesystem::path new_path = primarym_sections[m_section];
+				
+				size_t openParen = p_Path.find("(");
+				size_t closeParen = p_Path.find(")");
+				// Utile pour les template à Louis. LANGA3 2025-11-25
+				if (openParen != std::string::npos && closeParen != std::string::npos)
+				{
+					std::string scenarioName = p_Path.substr(openParen + 1, closeParen - openParen - 1);
+					std::string extension = new_path.extension().string().insert(1, "_");
+					std::string filename = new_path.stem().string();
+					
+					new_path = new_path.parent_path() / "Scenarios" / scenarioName / (filename + extension);
+				}
+				p_Path = new_path.string();
 			}
 		}
 		else if (includedpath.is_absolute())

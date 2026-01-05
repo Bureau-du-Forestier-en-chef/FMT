@@ -125,7 +125,8 @@ enum FMTexc
 	FMToutofrangeyield = 83,
 	FMTEmptyOA = 84,
 	FMTWIN32Error = 85,
-	FMTMSKnumerical_problem = 86
+	FMTMSKnumerical_problem = 86,
+	FMTunreachable_threshold = 87
     };
 
 // DocString: FMTexception

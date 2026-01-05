@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	if (argc > 1) {
 		// fichier_pri | strat | stoch | tact | outputm_location | n_thread; length; replicate
 		const std::string vals = argv[1];
-		std::vector<std::string>results;
+		std::vector<std::string> results;
 		boost::split(results, vals, boost::is_any_of("|"));
 		primlocation = results[0];
 		allscenarios.push_back(results[1]);
