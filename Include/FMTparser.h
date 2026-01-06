@@ -144,7 +144,14 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Clean a line and make it ready to be read by a parser.
 		*/
-		std::string getCleanLine(std::ifstream& stream) const;
+		std::string getCleanLine(std::istream& stream) const;
+		// DocString: FMTparser::getCleanLine
+		/**
+		@brief Clean a line and make it ready to be read by a parser.
+		@param[in] p_input input file.
+		@return cleaned line.
+		*/
+		std::string getCleanLine(const std::string& p_input) const;
 		// DocString: FMTparser::fromExtension
 		/**
 		@brief Get the FMTsection from the extension of the file.

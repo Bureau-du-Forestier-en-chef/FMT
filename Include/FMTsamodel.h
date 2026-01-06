@@ -94,6 +94,12 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::NotAcceptedMovesCount
     ///Count the number of cycle the moves gave had no acceptance
     std::array<size_t, FMTsamove::MoveCount>NotAcceptedMovesCount;
+    // DocString: FMTsamodel::WARM_UP_ITERATIONS
+    ///Number of iterations in the warm up
+    static const size_t WARM_UP_ITERATIONS = 1000;
+    // DocString: FMTsamodel::MINIMAL_ACCEPTED_MOVES
+    ///Number of iterations in the warm up
+    static const size_t MINIMAL_ACCEPTED_MOVES = 3;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use
@@ -110,6 +116,12 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
      @brief Write the disturbances of the best solution
      */
     void _WriteDisrturbances() const;
+    // DocString: FMTsamodel::_SetFactorByConstraintsLength
+    /**
+    @brief factorize based on the length of the constraint, short length = bigger factor
+    @param[in] p_factors the factor
+    */
+    void _SetFactorByConstraintsLength(std::vector<double>& p_factors) const;
     protected:
         // DocString: FMTsamodel::GetFromBindings
         /**
@@ -200,7 +212,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 			const Spatial::FMTSpatialSchedule::actionbindings& bindings,
 			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
 			boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr,
-			double initprobability = 0.5,size_t iterations=10);
+			double initprobability = 0.5);
         // DocString: FMTsamodel::initialgrow
         /**
         Do an initial grow till you reach the length of the model with the actual solution

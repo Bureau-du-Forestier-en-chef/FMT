@@ -1306,7 +1306,22 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		}
         return vecmask;
         }
-	std::string FMTparser::getCleanLine(std::ifstream& stream) const
+
+	std::string FMTparser::getCleanLine(const std::string& p_input) const
+	{
+		std::string out;
+		try {
+			std::istringstream inputStream(p_input);
+			out = getCleanLine(inputStream);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTparser::getCleanLine", __LINE__, __FILE__, m_section);
+			}
+		return out;
+	}
+
+
+	std::string FMTparser::getCleanLine(std::istream& stream) const
         {
         ++m_line;
 		std::string newline;
@@ -1347,9 +1362,10 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 					{
 					m_inComment = true;
 					}
-				}else{
-				stream.close();
-				}
+				 } else if(std::ifstream* ifs = dynamic_cast<std::ifstream*>(&stream) )
+					{
+					 ifs->close();
+					}
 			
         boost::trim(newline);
 		if (newline.empty() && m_inComment && !m_comment.empty() && m_comment.find('}') != std::string::npos &&
@@ -1667,7 +1683,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 				{
 				for (int iField = 0; iField < FIELD_DEFINITIONS->GetFieldCount(); ++iField)
 					{
-					Data[iField][featureId] = feature->GetFieldAsString(iField);
+					Data[iField][featureId] = getCleanLine(feature->GetFieldAsString(iField));
 					boost::to_upper(Data[iField][featureId]);
 					}
 				OGRFeature::DestroyFeature(feature);

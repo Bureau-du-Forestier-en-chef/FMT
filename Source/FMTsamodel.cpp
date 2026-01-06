@@ -182,6 +182,28 @@ namespace Models
         }
     }
 
+    void FMTsamodel::_SetFactorByConstraintsLength(std::vector<double>& p_factors) const
+    {
+        try {
+            const int LENGTH = getparameter(Models::FMTintmodelparameters::LENGTH);
+            for (size_t i = 0 ; i < constraints.size(); ++i)
+                {
+                const int UPPER = constraints[i].getperiodupperbound();
+                if (UPPER<LENGTH)
+                    {
+                    const double FACTOR = static_cast<double>(LENGTH - UPPER);
+                    p_factors.at(i) *= FACTOR;
+                    }
+
+                }
+
+        }catch (...)
+        {
+            _exhandler->raisefromcatch("", "FMTsamodel::_SetFactorByConstraintsLength"
+                                        , __LINE__, __FILE__);
+        }
+    }
+
 
 	bool FMTsamodel::IsBetter(const Spatial::FMTSpatialSchedule& actual,const Spatial::FMTSpatialSchedule& candidat) const
 		{
@@ -510,7 +532,7 @@ namespace Models
     bool  FMTsamodel::AllowMove(const FMTsamove& move) const
     {
         try {
-            return  (NotAcceptedMovesCount.at(static_cast<int>(move) - 1) <= 3);
+            return  (NotAcceptedMovesCount.at(static_cast<int>(move) - 1) <= MINIMAL_ACCEPTED_MOVES);
         }catch (...)
         {
             _exhandler->raisefromcatch("", "FMTsamodel::AllowMove", __LINE__, __FILE__);
@@ -599,7 +621,7 @@ namespace Models
 		const Spatial::FMTSpatialSchedule::actionbindings& bindings,
 		const std::vector<Spatial::FMTcoordinate>*movable,
 		boost::unordered_map<Core::FMTdevelopment, bool>*operability,
-		double initprobability, size_t iterations)
+		double initprobability)
 		{
 		double temperature = 0;
 		try {
@@ -607,8 +629,8 @@ namespace Models
         const std::vector<double>actuals = GetConstraintsValues(actual);
         std::vector<double>maximals = actuals;
         std::vector<double>deltasums(constraints.size(), 0);
-        const double normalizationfactor = 2;
-        const double totalits = static_cast<double>(iterations);
+        size_t iterations = WARM_UP_ITERATIONS;
+        const double totalits = static_cast<double>(WARM_UP_ITERATIONS);
         //double deltasum = 0;
         while (iterations > 0)
         {
@@ -638,11 +660,17 @@ namespace Models
             {
                 value = 1;
             }
-            value = (1000 / (std::abs(value) * normalizationfactor));
+            if (cntid==0)
+            {
+                value = 1.0;
+            }else {
+                value = (1000 / (std::abs(value)));
+            }
             deltasum += (deltasums[cntid] * value);
             ++cntid;
         }
         temperature = -(deltasum / totalits) / std::log(initprobability);
+        _SetFactorByConstraintsLength(maximals);
         m_BestSolution.setconstraintsfactor(*this, maximals);
                 }
         catch (...)
@@ -791,7 +819,8 @@ namespace Models
 			const Spatial::FMTSpatialSchedule::actionbindings actionsbinding = m_BestSolution.getbindingactionsbyperiod(*this);
 			boost::unordered_map<Core::FMTdevelopment, bool>operability;
             *_logger << "Generator initial state: " + std::to_string(m_generator()) << "\n";
-			const double initialtemperature = Warmup(m_BestSolution, actionsbinding,&movables,&operability,0.9);
+			const double initialtemperature = Warmup(m_BestSolution, actionsbinding,
+                &movables,&operability,0.9);
             CoolingSchedule->SetInitialTemperature(initialtemperature);
             //LogCycleStatus();
 			while (!isProvenOptimal())

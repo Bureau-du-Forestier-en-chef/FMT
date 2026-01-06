@@ -2267,7 +2267,7 @@ void FMTSpatialSchedule::dorefactortorization(const FMTSpatialGraphs& p_Graphs)
 			for (const double& value : getconstraintsvalues(p_Graphs))
 			{
 				const double valuewfactor = constraintsfactor.at(cntid)*value;
-				if (valuewfactor > 1000 || valuewfactor < -1000)
+				if (cntid>0 && (valuewfactor > 1000 || valuewfactor < -1000)) //not the objective please
 				{
 					constraintsfactor[cntid] = std::abs(1000 / value);
 				}
