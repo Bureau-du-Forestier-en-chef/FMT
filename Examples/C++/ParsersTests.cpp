@@ -18,8 +18,14 @@ int main(int argc, char* argv[])
 	Logging::FMTdefaultlogger().logstamp();
 	if (Version::FMTversion().hasfeature("GDAL"))
 	{
-		const std::string TEST_FOLDER = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/DatabaseParserTests/";// argv[1];
-		const boost::filesystem::path FOLDER_PATH(TEST_FOLDER);
+		std::string path;
+		if (argc > 1) {
+			path = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/DatabaseParserTests/";// argv[1];
+		}
+		else {
+			path = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01010313\\projet_ws\\";
+		}
+		const boost::filesystem::path FOLDER_PATH(path);
 		Core::FMTconstants baseConstants;
 		std::vector<Core::FMTtheme>baseThemes;
 		Parser::FMTareaparser AreaParser;

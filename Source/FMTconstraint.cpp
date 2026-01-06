@@ -666,6 +666,7 @@ namespace Core
 		std::string goal = "";
 		std::string penalty = "";
 		std::string global = "";
+		std::string ScheduleWeight = "";
 		if (!this->emptyylds())
 			{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
@@ -701,6 +702,10 @@ namespace Core
 
 					}
 				}
+				if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
+				{
+					ScheduleWeight += std::to_string(yieldbounds.at(id).getlower());
+				}
 			}
 			
 			if (!penalty.empty())
@@ -716,6 +721,10 @@ namespace Core
 				{
 				global = "_SETTOGLOBAL(" + global + ")";
 				}
+			if (!ScheduleWeight.empty())
+			{
+				ScheduleWeight = "_SETGLOBALSCHEDULE(" + ScheduleWeight + ")";
+			}
 			}
 		switch (this->type)
 			{
@@ -728,7 +737,7 @@ namespace Core
 					line += penalty;
 					}
 				line += " ";
-				line += period_bounds + "\n";
+				line += period_bounds + " " + ScheduleWeight + "\n";
 				break;
 				}
 			case FMTconstrainttype::FMTMINobjective:
@@ -740,7 +749,7 @@ namespace Core
 					line += penalty;
 					}
 				line += " ";
-				line += period_bounds + "\n";
+				line += period_bounds + " " + ScheduleWeight + "\n";
 				break;
 				}
 			case FMTconstrainttype::FMTMAXMINobjective:
@@ -752,7 +761,7 @@ namespace Core
 					line += penalty;
 					}
 				line += " ";
-				line += period_bounds + "\n";
+				line += period_bounds + " " + ScheduleWeight + "\n";
 				break;
 				}
 			case FMTconstrainttype::FMTMINMAXobjective:
@@ -764,7 +773,7 @@ namespace Core
 					line += penalty;
 				}
 				line += " ";
-				line += period_bounds + "\n";
+				line += period_bounds + " " + ScheduleWeight + "\n";
 				break;
 				}
 			case FMTconstrainttype::FMTevenflow:

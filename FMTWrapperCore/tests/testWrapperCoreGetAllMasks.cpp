@@ -39,12 +39,13 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "D:/01_Valide_Erro_NoTransfoTBE/PC_9949_U08251_2028_MODB01.pri";
-		scenarioName = "120_RegProv_apsp";
-		periods = 30;
-		resutlSize = 21821;
-		themesNumbers = { 3, 5, 12};
-		rastpath = "D:/01_Valide_Erro_NoTransfoTBE/rasters/";
+		pathPri = "C:\\Users\\Admlocal\\Documents\\issues\\temp_run\\"
+			"01_Valide_1272_120_RegProv_apsp_TBE\\01_Valide_1272_120_RegProv_apsp_TBE\\PC_9936_U01272_2028_MODB01.pri";
+		scenarioName = "120_RegProv_apsp_TBE";
+		periods = 6;
+		resutlSize = 32953;
+		themesNumbers = {3, 5, 12, 13, 14, 21};
+		rastpath = "";
 	}
 
 	Parser::FMTmodelparser ModelParser;
@@ -67,7 +68,8 @@ int main(int argc, char* argv[])
 	Models::FMTmodel model = ModelParser.readproject(pathPri, { scenarioName }).at(0);
 
 
-	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(model, periods, themesNumbers, rastpath);
+	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(
+		model, periods, themesNumbers, rastpath);
 
 	std::cout << RESULT.size() << std::endl;
 

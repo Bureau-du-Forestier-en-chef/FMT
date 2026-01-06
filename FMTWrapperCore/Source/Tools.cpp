@@ -50,15 +50,22 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	return result;
 }
 
-std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath) {
+std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
+	const Models::FMTmodel& p_model, 
+	const int p_periods, 
+	const std::vector<int>& p_themesNumbers, 
+	const std::string& p_rasterPath) 
+{
 	std::set<std::string> masks;
 	try
 	{
 		// On cr�e une copie du mod�le car on dois faire un setArea avec les donn�es du raster.
 		Models::FMTmodel modelCopy = p_model;
-		modelCopy.setarea(getRasterArea(modelCopy, p_rasterPath));
-
-
+		modelCopy.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, false);
+		if (!p_rasterPath.empty())
+		{
+			modelCopy.setarea(getRasterArea(modelCopy, p_rasterPath));
+		}
 		// On va chercher tous les th�mes dans le mod�le
 		std::vector<Core::FMTtheme> themes;
 		const std::vector<Core::FMTtheme> THEMESMODELS = modelCopy.getthemes();
@@ -68,14 +75,20 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(const Models::FMTmodel&
 			themes.push_back(THEMESMODELS.at(themeNumber - 1));
 		}
 
+		std::vector<Core::FMTactualdevelopment> area = modelCopy.getarea();
 		// On transforme notre mod�le en lpModel qui lui peut faire un getAllMasks et on ajoute les param�tres qu'on a besoin.
-		Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
-		optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
-		optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		optModel.doplanning(false);
 
-		masks = optModel.getAllMasks(themes);
-		
+		for (int i = 0; i < p_periods; ++i)
+		{
+			Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+			optModel.setarea(area);
+			
+			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+			optModel.doplanning(false);
+			std::set<std::string> tempMasks = optModel.getAllMasks(themes);
+			masks.insert(tempMasks.begin(), tempMasks.end());
+			area = optModel.getarea(i + 1);
+		}
 	}
 	catch (...)
 	{

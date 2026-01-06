@@ -44,13 +44,17 @@ class FMTEXPORT FMTlandscapeparser : public FMTparser
 		// DocString: FMTlandscapeparser::rxparameter
 		///This regex catch the parameters of a indexed theme.
 		const static boost::regex rxparameter;
+		// DocString: FMTlandscapeparser::rxattributes
+		const static boost::regex rxattributes;
 		// DocString: FMTlandscapeparser::getindexes
 		/**
 		This function is used to catch the indexed attributes of a theme in the landscape section
 		the returned map hold the parameters name (key) and value (item). It uses the complete string line (indexm_line) of
 		the landscape section and (constants).
 		*/
-		std::map<std::string,double>getindexes(std::string indexm_line,const Core::FMTconstants& constants);
+		std::map<std::string, double> getindexes(std::string indexm_line, const Core::FMTconstants& constants);
+		// Docstring: FMTlandscapeparser::isPreDeclaredTheme
+		std::tuple<bool, int> isPreDeclaredTheme(int preDeclaredThemeId, std::string line, const Core::FMTconstants& constants);
     public:
 		// DocString: FMTlandscapeparser::FMTlandscapeparser()
 		/**
