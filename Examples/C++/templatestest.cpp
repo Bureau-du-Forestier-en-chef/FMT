@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 		{
 			primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01010307\\PC_10116_U05151_MODB01_20250912\\PC_10116_U05151_2028_MODB01.pri";
 			templatefolder = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01010307\\Template_complexite";
-			length = 20;
+			length = 2;
 		}
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc> errors;
