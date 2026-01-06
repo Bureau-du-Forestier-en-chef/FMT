@@ -11,8 +11,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 
-
-
 int main(int argc, char* argv[])
 {
 	Logging::FMTdefaultlogger().logstamp();
@@ -23,7 +21,7 @@ int main(int argc, char* argv[])
 			path = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/DatabaseParserTests/";// argv[1];
 		}
 		else {
-			path = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01010313\\projet_ws\\";
+			path = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01010307\\Template_complexite\\Ovoltotrec_complexite";
 		}
 		const boost::filesystem::path FOLDER_PATH(path);
 		Core::FMTconstants baseConstants;
