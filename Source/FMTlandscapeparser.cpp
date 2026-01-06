@@ -20,8 +20,7 @@ namespace Parser
 {
 	const boost::regex FMTlandscapeparser::rxattributes = boost::regex(
 		"^(\\*ATTRIBUTES)([\\s\\t]*)\\(([\\s\\t]*)_TH(\\d+)([\\s\\t]*)\\)",
-		boost::regex_constants::ECMAScript | boost::regex_constants::icase
-	);
+		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMTlandscapeparser::rxcleanlans = boost::regex(
 		"^(\\*THEME)([\\s\\t]*)(([0-9]*$)|([0-9]*)([\\s\\t]*)(.+))|(\\*AGGREGATE)([\\s\\t]*)(\\()([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*)(\\))([\\s\\t]*)(.+)|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", 
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
@@ -158,9 +157,11 @@ FMTlandscapeparser::FMTlandscapeparser() :
         }
 #endif
 
-	std::vector<Core::FMTtheme>FMTlandscapeparser::read(const Core::FMTconstants& constants,const std::string& location)
+	std::vector<Core::FMTtheme>FMTlandscapeparser::read(
+		const Core::FMTconstants& constants,
+		const std::string& location)
         {
-		std::vector<Core::FMTtheme>themes;
+		std::vector<Core::FMTtheme> themes;
 		try {
 			std::ifstream landstream(location);
 			std::vector<std::string> attributes;
@@ -186,6 +187,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 					const std::string line = GetLine(Lines);
 					if (!line.empty())
 					{
+						/*
 						boost::smatch kmatch2;
 						if (boost::regex_search(line, kmatch2, FMTlandscapeparser::rxattributes))
 						{
@@ -207,7 +209,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 
 							continue;
 						}
-
+						*/
 
 						boost::smatch kmatch;
 						boost::regex_search(line, kmatch, FMTlandscapeparser::rxcleanlans);
@@ -237,12 +239,13 @@ FMTlandscapeparser::FMTlandscapeparser() :
 										"Theme " + std::to_string(id + 1),"FMTlandscapeparser::read", __LINE__, __FILE__, m_section);
 								}
 								
+								/*
 								if (preDeclarations.find(themes.size() + 1) != preDeclarations.end())
 								{
 									attributes.insert(attributes.begin(), preDeclarations[themes.size() + 1].first.begin(), preDeclarations[themes.size() + 1].first.end());
 									attributenames.insert(attributenames.begin(), preDeclarations[themes.size() + 1].second.begin(), preDeclarations[themes.size() + 1].second.end());
 								}
-								
+								*/
 								themes.push_back(Core::FMTtheme(
 									attributes, attributenames, aggregates, aggregatenames, indexes_values, id, start, themename));
 								
