@@ -719,16 +719,13 @@ namespace Models
 								locking.pop_back();
 								locking += ")";
 							}
-							if (WILL_THROW)
-							{
-							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+
+							const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
+							_exhandler->raise(EXCEPTION,
 								std::to_string(rest) + " negative growth solution for " +
 								std::string(dev) + " operated by " + actionnames + locking + " in area " + std::to_string(inarea),
 								"FMTsrmodel::setsolution", __LINE__, __FILE__);
-							}
-							else {
-								return false;
-							}
+							return false;
 						}
 						if ((targetaction < 0) && setrest)//Ajust only natural growth and not _DEATH
 						{
@@ -769,17 +766,12 @@ namespace Models
 					}
 					if ((rest + tolerance) < 0)
 					{
-						if (WILL_THROW)
-						{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+						const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
+						_exhandler->raise(EXCEPTION,
 							std::to_string(rest) + " negative growth solution for " +
 							std::string(m_graph->getdevelopment(first)),
 							"FMTsrmodel::setsolution", __LINE__, __FILE__);
-						}
-						else
-						{
-							return false;
-						}
+						return false;
 					}
 					const bool setrest = !(typeII&&m_graph->isnotransfer(first, 1));
 					if ((targetaction < 0) && setrest)

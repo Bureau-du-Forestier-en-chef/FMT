@@ -100,6 +100,9 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::MINIMAL_ACCEPTED_MOVES
     ///Number of iterations in the warm up
     static const size_t MINIMAL_ACCEPTED_MOVES = 3;
+    // DocString: FMTsamodel::UPDATE_PERIOD_FACTOR
+   ///Factor multiplicator for period 1
+    static const size_t UPDATE_PERIOD_FACTOR = 10;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use

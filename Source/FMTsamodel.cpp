@@ -186,13 +186,13 @@ namespace Models
     {
         try {
             const int LENGTH = getparameter(Models::FMTintmodelparameters::LENGTH);
+            const int UPDATE = getparameter(Models::FMTintmodelparameters::UPDATE);
             for (size_t i = 0 ; i < constraints.size(); ++i)
                 {
                 const int UPPER = constraints[i].getperiodupperbound();
-                if (UPPER<LENGTH)
+                if (UPPER < UPDATE)//Update period only...
                     {
-                    const double FACTOR = static_cast<double>(LENGTH - UPPER);
-                    p_factors.at(i) *= FACTOR;
+                    p_factors.at(i) *= static_cast<double>(UPDATE_PERIOD_FACTOR);
                     }
 
                 }

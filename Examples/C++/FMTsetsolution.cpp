@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 				}
 			
 		}else{
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02661/PC_9307_U02661_4_Vg2_2023_vRP1f.pri";
-			scenarios = std::vector<std::string>(1, "14_Sc5_Determin_apsp");
+			primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/08251/30_Phase2/33_ModeleWS/02_Travail/PC_9949_U08251_2028_MODB01.pri";
+			scenarios = std::vector<std::string>(1, "200_StratReg_apsp");
 			ovoltotrecvalue = 745200;
 			argc = 4;
 		}
@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
+		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
