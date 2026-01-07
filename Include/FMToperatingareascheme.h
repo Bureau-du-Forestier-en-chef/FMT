@@ -454,17 +454,17 @@ namespace Heuristics
 			/**
 			Return the maximum threshold possible
 			*/
-			double FMToperatingareascheme::_maxNearThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution) const;
+			double _maxNearThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution) const;
 			// DocString:
 			/**
 			
 			*/
-			size_t FMToperatingareascheme::_findIndexLocation(int binary) const;
+			size_t _findIndexLocation(int binary) const;
 			// DocString:
 			/**
 
 			*/
-			void FMToperatingareascheme::_addPotentialResults(
+			void _addPotentialResults(
 				size_t indexlocation, 
 				std::vector<size_t>& potentialindexes, 
 				std::vector<double>& potentialValues,
