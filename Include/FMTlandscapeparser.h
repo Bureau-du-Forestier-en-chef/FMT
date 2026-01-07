@@ -32,12 +32,12 @@ It can also get a landscape section from a vector or raster files (generating FM
 If FMT is compiled without the compile proprocessor FMTWITHGDAL then some funcionalities of the FMTlandscapeparser wont be
 available to the user. This class is also used by the FMTmodelparser.
 */
-class FMTEXPORT FMTlandscapeparser : public FMTparser
-    {
-    private:
+	class FMTEXPORT FMTlandscapeparser : public FMTparser
+	{
+	private:
 		// DocString: FMTlandscapeparser::rxcleanlans
 		///This regex is the main regex to catch themes and aggregates.
-        const static boost::regex rxcleanlans;
+		const static boost::regex rxcleanlans;
 		// DocString: FMTlandscapeparser::rxindex
 		///This regex catch the index of a given theme.
 		const static boost::regex rxindex;
@@ -53,8 +53,22 @@ class FMTEXPORT FMTlandscapeparser : public FMTparser
 		the landscape section and (constants).
 		*/
 		std::map<std::string, double> getindexes(std::string indexm_line, const Core::FMTconstants& constants);
-		// Docstring: FMTlandscapeparser::isPreDeclaredTheme
-		std::tuple<bool, int> isPreDeclaredTheme(int preDeclaredThemeId, std::string line, const Core::FMTconstants& constants);
+		// DocString: FMTlandscapeparser::ParseState
+		enum class ParseState { NORMAL, IN_PRE_DECLARATION };
+		//
+		struct PreDeclarationContext {
+			ParseState state;
+			int currentThemeId;
+			std::map<size_t, std::pair<std::vector<std::string>, std::vector<std::string>>> declarations;
+			
+			PreDeclarationContext();
+		};
+
+		//DocString: FMTlandscapeparser::ProcessPreDeclarationLine
+		bool ProcessPreDeclarationLine(const std::string& line,
+			PreDeclarationContext& context,
+			const Core::FMTconstants& constants);
+
     public:
 		// DocString: FMTlandscapeparser::FMTlandscapeparser()
 		/**
