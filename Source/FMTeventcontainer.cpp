@@ -117,7 +117,7 @@ namespace Spatial
 			{
 				event.erase(coord);
 				std::vector<FMTevent> splittedevents;
-				if (event.splitevent(1, splittedevents))
+				if (event.splitevent(splittedevents))
 				{
 					for (auto e : splittedevents)
 					{
@@ -480,7 +480,7 @@ namespace Spatial
 						{
 							event.erase(coord);
 							std::vector<FMTevent> splittedevents;
-							if (event.splitevent(1, splittedevents))
+							if (event.splitevent(splittedevents))
 							{
 								for (auto e : splittedevents)
 								{

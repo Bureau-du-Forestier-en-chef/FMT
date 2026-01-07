@@ -38,7 +38,7 @@ namespace Graph
 namespace Spatial
 {
 	class FMTforest;
-	class FMTspatialschedule;
+	class FMTSpatialSchedule;
 	class FMTsasolution;
 }
 
@@ -119,7 +119,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		this planning period.
 		*/
 		std::vector<Core::FMTGCBMtransition> writedisturbances(const std::string& location,
-			const Spatial::FMTspatialschedule& disturbances,
+			const Spatial::FMTSpatialSchedule& disturbances,
 			const std::vector<Core::FMTaction>& actions,
 			const std::vector<Core::FMTtheme>& themes,
 			const int& period) const;
@@ -131,7 +131,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		this planning period.
 		*/
 		std::vector<std::vector<Graph::FMTpredictor>> writepredictors(const std::string& location,
-			const Spatial::FMTspatialschedule& spatialsolution,
+			const Spatial::FMTSpatialSchedule& spatialsolution,
 			const std::vector<std::string>& yieldnames,
 			const Models::FMTmodel& model,
 			const int& period,

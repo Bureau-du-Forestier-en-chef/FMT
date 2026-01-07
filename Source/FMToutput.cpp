@@ -1249,6 +1249,26 @@ FMTmask FMToutput::getvariableintersect() const
 	return mask;
 }
 
+FMTmask FMToutput::getMasksUnion() const
+	{
+	FMTmask mask;
+	for (const FMToutputsource& source : sources)
+		{
+		if (source.isvariable())
+			{
+				if (mask.empty())
+				{
+					mask = source.getmask();
+				}
+				else {
+					mask = mask.getunion(source.getmask());
+				}
+
+			}
+		}
+	return mask;
+	}
+
 std::vector<const Core::FMTtheme*>FMToutput::getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables) const
 {
 	std::vector<const Core::FMTtheme*>statics;
@@ -1400,7 +1420,7 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 bool FMToutput::_sourceCounter(const std::string& p_source) const
 {
 	bool passed = true;
-	const int MAXSIZE = 256;
+	//const int MAXSIZE = 256;
 	int count = 0;
 
 	for (std::size_t i = 0; i < p_source.size(); ++i) {
@@ -1413,13 +1433,13 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 			else
 			{
 				count++;
-				if (count > MAXSIZE)
+				/*if (count > MAXSIZE)
 				{
 					const std::string ERRORMESSAGE = "Le nombre de caratères par ligne est trop grand. Nombre de caractères : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 						 ERRORMESSAGE, "FMToutput::splitSource" ,__LINE__, __FILE__);
 					passed = false;
-				}
+				}*/
 
 			}
 		}

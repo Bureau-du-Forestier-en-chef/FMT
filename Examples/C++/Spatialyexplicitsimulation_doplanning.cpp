@@ -77,7 +77,7 @@ int main()
 			"presolvetest", __LINE__, primarylocation);
 	}
 	mparser.writeresults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
-	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
+	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getspschedule();
 	const std::string stats = spatialsolution.getpatchstats(simulationmodel.getactions());
 	std::vector<std::string>results;
 	boost::split(results, stats, boost::is_any_of("\n"));

@@ -419,9 +419,17 @@ FMTschedule::operator std::string() const
 				for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 				{
 					FMTdevelopment newdev(devit->first);
-
-					newdev.setmask(newdev.getmask().presolve(filter, newthemes));
-					newmapping[newdev] = devit->second;
+					const Core::FMTmask& BASE = newdev.getmask();
+					if (BASE.canPresolve(filter, newthemes))
+						{
+						newdev.setmask(newdev.getmask().presolve(filter, newthemes));
+						newmapping[newdev] = devit->second;
+					}else {
+						_exhandler->raise(Exception::FMTexc::FMTignore,
+							"Presolve Removed "+std::string(newdev)+" from the base solution",
+							"FMTschedule::presolve", __LINE__, __FILE__);
+					}
+					
 				}
 				if (!newmapping.empty())
 				{

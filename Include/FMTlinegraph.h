@@ -103,7 +103,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Grow the last active vertex of the linegraph generating new edge and vertex.
 		*/
-		void grow();
+		void grow(int p_Length=1);
 		// DocString: FMTlinegraph::getactivevertex
 		/**
 		Returns the last active vertex of the graph.
@@ -245,6 +245,17 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Comparison operator of FMTlinegraph
 		*/
 		bool operator == (const FMTlinegraph& rhs) const;
+		// DocString:  FMTlinegraph::operator==
+		/**
+		Comparison operator of FMTlinegraph
+		*/
+		bool operator < (const FMTlinegraph& rhs) const;
+		// DocString:  FMTlinegraph::IsLessPeriod
+		/**
+		@brief check if rhs is the same graph with one less period
+		@return true if same graph with one less period.
+		*/
+		bool IsLessPeriod(const FMTlinegraph& rhs) const;
 		// DocString:  FMTlinegraph::clearnodecache
 		/**
 		Clear the node cache when getting outpus of the linegraph.

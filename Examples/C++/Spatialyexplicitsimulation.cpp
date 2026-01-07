@@ -69,7 +69,7 @@ int main()
 			spatialoutput = output;
 		}
 	}
-	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
+	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getspschedule();
 	Logging::FMTdefaultlogger() << "xsize : " << spatialsolution.GetXSize() << "\n";
 	Logging::FMTdefaultlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
 	for (int period = 1; period <=30; ++period)

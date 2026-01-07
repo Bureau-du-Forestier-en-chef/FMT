@@ -23,6 +23,7 @@ namespace Exception
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		seterrorstowarnings(errors);
+		setmaxwarningsbeforesilenced(1000);
 		}
 
 	std::unordered_map<int, std::vector<std::string>> FMTExcelExceptionHandler::getbuildexceptions() const

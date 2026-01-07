@@ -502,17 +502,12 @@ namespace Models
 								std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 								if (varit == outvariables.cend())
 								{
-									if (WILL_THROW)
-									{
-									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+									const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
+									_exhandler->raise(EXCEPTION,
 										"Developement " + std::string(devit.first) + " is not operable "
 										" for action " + actionit->first.getname(),
 										"FMTsrmodel::setsolution", __LINE__, __FILE__);
-									}
-									else 
-									{
-										return false;
-									}
+									return false;
 								}
 								const int variable = varit->second;
 								new_solution[variable] = devit.second.at(0);
@@ -608,17 +603,12 @@ namespace Models
 											std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 											if (varit == outvariables.cend())
 											{
-												if (WILL_THROW)
-												{
-												_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+												const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
+												_exhandler->raise(EXCEPTION,
 													"Developement " + std::string(devit.first) + " is not operable "
 													" for action " + actionit->first.getname(),
 													"FMTsrmodel::setsolution", __LINE__, __FILE__);
-												}
-												else
-												{
-													return false;
-												}
+												return false;
 											}
 											const int variable = varit->second;
 											new_solution[variable] += areatoput;
@@ -636,16 +626,11 @@ namespace Models
 										}
 										else if (secondpass)
 										{
-											if (WILL_THROW)
-											{
-												_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-													"Cannot allocate area of " + std::to_string(areatoput) + " to " +
-													std::string(devit.first) + " for action " + actionit->first.getname(), "FMTsrmodel::setsolution", __LINE__, __FILE__);
-											}
-											else
-											{
-												return false;
-											}
+											const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
+											_exhandler->raise(EXCEPTION,
+												"Cannot allocate area of " + std::to_string(areatoput) + " to " +
+												std::string(devit.first) + " for action " + actionit->first.getname(), "FMTsrmodel::setsolution", __LINE__, __FILE__);
+											return false;
 										}
 										else {
 											lockstoadress.push_back(areatoput);
@@ -734,16 +719,13 @@ namespace Models
 								locking.pop_back();
 								locking += ")";
 							}
-							if (WILL_THROW)
-							{
-							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+
+							const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
+							_exhandler->raise(EXCEPTION,
 								std::to_string(rest) + " negative growth solution for " +
 								std::string(dev) + " operated by " + actionnames + locking + " in area " + std::to_string(inarea),
 								"FMTsrmodel::setsolution", __LINE__, __FILE__);
-							}
-							else {
-								return false;
-							}
+							return false;
 						}
 						if ((targetaction < 0) && setrest)//Ajust only natural growth and not _DEATH
 						{
@@ -784,17 +766,12 @@ namespace Models
 					}
 					if ((rest + tolerance) < 0)
 					{
-						if (WILL_THROW)
-						{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+						const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
+						_exhandler->raise(EXCEPTION,
 							std::to_string(rest) + " negative growth solution for " +
 							std::string(m_graph->getdevelopment(first)),
 							"FMTsrmodel::setsolution", __LINE__, __FILE__);
-						}
-						else
-						{
-							return false;
-						}
+						return false;
 					}
 					const bool setrest = !(typeII&&m_graph->isnotransfer(first, 1));
 					if ((targetaction < 0) && setrest)

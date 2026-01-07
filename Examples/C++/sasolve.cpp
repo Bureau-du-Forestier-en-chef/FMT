@@ -41,6 +41,10 @@ int main(int argc, char* argv[])
 			objectivevalue = 1000;
 			resolution = 200;
 			//resolution = 1000;
+			/*primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02662/PC_9309_U02662_4_Vg2_2023_vRP1f.pri";
+			scenario = "spatial";
+			length = 1;
+			objectivevalue = 1000;*/
 			}
 		const std::string outputlocation = "../../tests/sasolve";
 		Parser::FMTmodelparser modelparser;
@@ -92,9 +96,13 @@ int main(int argc, char* argv[])
 			}
 		optimizationmodel.settransitions(singletransitions);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 10000);
-		//optimizationmodel.redirectlogtofile(outputlocation + "/SaSolve.log");
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 10000000);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 500);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 1000);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
+		optimizationmodel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
 		optimizationmodel.doplanning(true);
+		optimizationmodel.LogConstraintsInfeasibilities();
 		std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())
 		{

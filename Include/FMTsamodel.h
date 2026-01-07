@@ -94,17 +94,43 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::NotAcceptedMovesCount
     ///Count the number of cycle the moves gave had no acceptance
     std::array<size_t, FMTsamove::MoveCount>NotAcceptedMovesCount;
+    // DocString: FMTsamodel::WARM_UP_ITERATIONS
+    ///Number of iterations in the warm up
+    static const size_t WARM_UP_ITERATIONS = 1000;
+    // DocString: FMTsamodel::MINIMAL_ACCEPTED_MOVES
+    ///Number of iterations in the warm up
+    static const size_t MINIMAL_ACCEPTED_MOVES = 3;
+    // DocString: FMTsamodel::UPDATE_PERIOD_FACTOR
+   ///Factor multiplicator for period 1
+    static const size_t UPDATE_PERIOD_FACTOR = 5;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use
     */
     FMTsamodel(const FMTsemodel& rhs);
+    // DocString: FMTsamodel::_DoWriteDisturbances
+    /**
+    @brief check if dirtubances writing needed
+    @return true or false
+    */
+    bool _DoWriteDisturbances() const;
+    // DocString: FMTsamodel::_WriteDisrturbances
+     /**
+     @brief Write the disturbances of the best solution
+     */
+    void _WriteDisrturbances() const;
+    // DocString: FMTsamodel::_SetFactorByConstraintsLength
+    /**
+    @brief factorize based on the length of the constraint, short length = bigger factor
+    @param[in] p_factors the factor
+    */
+    void _SetFactorByConstraintsLength(std::vector<double>& p_factors) const;
     protected:
-        // DocString: FMTspatialschedule::GetFromBindings
+        // DocString: FMTsamodel::GetFromBindings
         /**
         Get the selected action from the bindings
         */
-        std::vector<bool> GetFromBindings(const Spatial::FMTspatialschedule::actionbindings& bindingactions, bool adjacency = false) const;
+        std::vector<bool> GetFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions, bool adjacency = false) const;
         // DocString: FMTsamodel::GetCycleMoves
         /**
         Get the total number of moves of the last cycle
@@ -119,12 +145,12 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         /**
         Returns true if the bindings allow to destroy some events
        */
-        bool AllowAreaDestruction(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        bool AllowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTsamodel::AllowAdjacencyDestruction
            /**
            Returns true if the bindings allow to destroy some events
           */
-        bool AllowAdjacencyDestruction(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        bool AllowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTsamodel::AllowMove
         /**
         Check If you can allow the move 
@@ -139,57 +165,57 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         /**
         Will return coordinates that might be good candidat to disturb
         */
-        FMTsamove GetAMove(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        FMTsamove GetAMove(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
 		// DocString: FMTsamodel::evaluate
 		/**
 		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
 		the actual solution.Based on a temp.
 		*/
-		bool IsBetter(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule& candidat) const;
+		bool IsBetter(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule& candidat) const;
         // DocString: FMTsamodel::DoLocalMove
         /**
         Do a loval move and disturb a random number of graph at a random period
         */
-        Spatial::FMTspatialschedule DoLocalMove(const Spatial::FMTspatialschedule& actual,
-            const Spatial::FMTspatialschedule::actionbindings& bindings,
+        Spatial::FMTSpatialSchedule DoLocalMove(const Spatial::FMTSpatialSchedule& actual,
+            const Spatial::FMTSpatialSchedule::actionbindings& bindings,
             const std::vector<Spatial::FMTcoordinate>* movable,
             boost::unordered_map<Core::FMTdevelopment, bool>* operability) const;
         // DocString: FMTsamodel::DoConflictDestruction
         /**
         Destroy the conflicts for a given periods and coordinates
          */
-        Spatial::FMTspatialschedule DoConflictDestruction(const Spatial::FMTspatialschedule& actual,
-            const Spatial::FMTspatialschedule::actionbindings& bindings,
+        Spatial::FMTSpatialSchedule DoConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
+            const Spatial::FMTSpatialSchedule::actionbindings& bindings,
            std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool, const int& period) const;
        // DocString: FMTsamodel::DoEventsAreaConflictDestrutorMove
        /**
        Destroy events that have some area conflict
        */
-        Spatial::FMTspatialschedule DoEventsAreaConflictDestrutorMove(const Spatial::FMTspatialschedule& actual,
-            const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        Spatial::FMTSpatialSchedule DoEventsAreaConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
+            const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTsamodel::DoEventsAdjacencyConflictDestrutorMove
       /**
       Destroy events that have adjacency conflict
       */
-        Spatial::FMTspatialschedule DoEventsAdjacencyConflictDestrutorMove(const Spatial::FMTspatialschedule& actual,
-            const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        Spatial::FMTSpatialSchedule DoEventsAdjacencyConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
+            const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTsamodel::move
 		/**
 		Perturb a solution and produce a new one
 		*/
-		Spatial::FMTspatialschedule Move(const Spatial::FMTspatialschedule& actual,
-						const Spatial::FMTspatialschedule::actionbindings& bindings,
+		Spatial::FMTSpatialSchedule Move(const Spatial::FMTSpatialSchedule& actual,
+						const Spatial::FMTSpatialSchedule::actionbindings& bindings,
 						const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
 						boost::unordered_map<Core::FMTdevelopment, bool>*operability= nullptr) const;
 		// DocString: FMTsamodel::warmup
 		/**
 		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
 		*/
-		double Warmup(const Spatial::FMTspatialschedule& actual,
-			const Spatial::FMTspatialschedule::actionbindings& bindings,
+		double Warmup(const Spatial::FMTSpatialSchedule& actual,
+			const Spatial::FMTSpatialSchedule::actionbindings& bindings,
 			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
 			boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr,
-			double initprobability = 0.5,size_t iterations=10);
+			double initprobability = 0.5);
         // DocString: FMTsamodel::initialgrow
         /**
         Do an initial grow till you reach the length of the model with the actual solution
@@ -220,7 +246,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Take the actual non spatial solution of the actual solution and then
         Rebuild the solution using greedyreferencebuild
         */
-        Spatial::FMTspatialschedule GetRebuild(const Spatial::FMTspatialschedule& actual) const;
+        Spatial::FMTSpatialSchedule GetRebuild(const Spatial::FMTSpatialSchedule& actual) const;
         // DocString: FMTsamodel::isCycleProvenOptimal
         /**
         Return true if is optimal based on the termination criteria of the actual temp level
@@ -251,11 +277,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Update failed move count using NotAcceptedMovesCount and the move stats
         */
         void UpdateFailedMoveCount();
-        // DocString: FMTsamodel::ValidateCache
-        /**
-        @brief check the amount of memory used by the solution if the amount is greater then 10 go then delete.
-        */
-        void ValidateCache();
 	public:
         // DocString: FMTsemodel::LogMovesReport
         /**
@@ -316,6 +337,9 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		virtual std::unique_ptr<FMTmodel>clone() const final;
         
         Graph::FMTgraphstats buildperiod();
+
+        
+
 
     };
 }

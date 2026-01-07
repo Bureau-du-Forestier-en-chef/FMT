@@ -207,12 +207,12 @@ void FMTyieldparser::setoveridedylds(Core::FMTyields& yielddata,
 					if (!yldptr->comparesources(yld, *actptr))
 					{
 						_exhandler->raise(Exception::FMTexc::FMToveridedyield, "For overrided yield " + yld
-							+ " at line " + std::to_string(m_line) + " ",
+							+ " at line " + std::to_string(m_line) + " in " + m_location,
 							"FMTyieldparser::getylduse", __LINE__, __FILE__, m_section);
 					}
 					if (actualyield->second->getoverrideindex()==0)
 					{
-						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use non overrided at line " + std::to_string(m_line) + " ",
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use non overrided at line " + std::to_string(m_line) + " in " + m_location,
 							"FMTyieldparser::getylduse", __LINE__, __FILE__, m_section);
 					}
 					yldptr->settabou(actualyield->second->getoverrideindex());
@@ -350,7 +350,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 									__LINE__, __FILE__, m_section);*/
 								
 								_exhandler->raise(Exception::FMTexc::FMTignore,
-									"No theme index provided for " + token +" replaced by a value of 0" , "FMTyieldparser::read", __LINE__, __FILE__, m_section);
+									"No theme index provided for " + token +" replaced by a value of 0 in " + m_location, "FMTyieldparser::read", __LINE__, __FILE__, m_section);
 								source_value = "0";
 							}
 						}
@@ -572,7 +572,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									}else if(!multipledef)
 									{
 										_exhandler->raise(Exception::FMTexc::FMTignore,
-											yldname + " at line " + std::to_string(m_line)+ " multiple definition", "FMTyieldparser::read", __LINE__, __FILE__, m_section);
+											yldname + " at line " + std::to_string(m_line)+ " multiple definition in " + m_location, "FMTyieldparser::read", __LINE__, __FILE__, m_section);
 										multipledef = true;
 
 									}
@@ -778,7 +778,8 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 											if (!yields.isYld(values[id], true))
 											{
 												_exhandler->raise(Exception::FMTexc::FMTignore,
-													values[id] + " at line " + std::to_string(m_line), "FMTyieldparser::read", __LINE__, __FILE__, m_section);
+													values[id] + " at line " + std::to_string(m_line)+" in " + m_location,
+													"FMTyieldparser::read", __LINE__, __FILE__, m_section);
 											}
 											stacking.push_back(true);
 											csource.push_back(values[id]);
@@ -823,7 +824,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									if (!yields.isYld(yld, true))
 									{
 										_exhandler->raise(Exception::FMTexc::FMTignore,
-											yld + " at line " + std::to_string(m_line), "FMTyieldparser::read", __LINE__, __FILE__, m_section);
+											yld + " at line " + std::to_string(m_line) + " in " + m_location, "FMTyieldparser::read", __LINE__, __FILE__, m_section);
 									}
 								}
 								
@@ -896,7 +897,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 						handler_values[index] = theme.getindex(attribute, index);
 					}else {
 						_exhandler->raise(Exception::FMTexc::FMTignore,
-							"No theme index provided for "+attribute+" at theme "+std::to_string(themeid)+" replaced "+index+" by a value of 0", "FMTyieldparser::read", __LINE__, __FILE__, m_section);
+							"No theme index provided for "+attribute+" at theme "+std::to_string(themeid)+" replaced "+index+" by a value of 0 in " + m_location, "FMTyieldparser::read", __LINE__, __FILE__, m_section);
 						handler_values[index] = 0;
 						}
 				}

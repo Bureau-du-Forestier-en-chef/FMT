@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareascheme.h"
 #include "FMToperatingareacluster.h"
 #include "FMTdevelopment.h"
-#include "FMTspatialschedule.h"
+#include "FMTSpatialSchedule.h"
 //#include "FMTsasolution.h"
 #include "FMTactualdevelopment.h"
 #include <boost/filesystem.hpp>
@@ -343,7 +343,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 	
 
 	std::vector<Core::FMTGCBMtransition> FMTareaparser::writedisturbances(const std::string& location,
-		const Spatial::FMTspatialschedule& disturbances,
+		const Spatial::FMTSpatialSchedule& disturbances,
 		const std::vector<Core::FMTaction>& actions,
 		const std::vector<Core::FMTtheme>& themes,
 		const int& period) const
@@ -386,7 +386,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 
 	std::vector<std::vector<Graph::FMTpredictor>> FMTareaparser::writepredictors(
 		const std::string& location,
-		const Spatial::FMTspatialschedule& spatialsolution,
+		const Spatial::FMTSpatialSchedule& spatialsolution,
 		const std::vector<std::string>& yieldnames,
 		const Models::FMTmodel& model,
 		const int& period,

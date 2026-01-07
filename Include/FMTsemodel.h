@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+#include "FMTSpatialGraphs.h"
 
 namespace Spatial
 {
@@ -62,16 +63,6 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Copy assignment of FMTsemodel
 		*/
         FMTsemodel& operator = (const FMTsemodel& rhs);
-		// DocString: FMTsemodel(FMTsemodel&&)
-		/**
-		Default move constructor for FMTsemodel.
-		*/
-		FMTsemodel(FMTsemodel&& rhs)=default;
-		// DocString: FMTsemodel::operator=(FMTsemodel&& rhs) 
-		/**
-		Default move assignment for FMTsemodel.
-		*/
-		FMTsemodel& operator =(FMTsemodel&& rhs) =default;
 		// DocString: FMTsemodel::getmapping
 		/**
 		Getter returning a copy the actual spatial forest stades of each FMTdevelopement (map).
@@ -81,9 +72,9 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		/**
 		Getter returning a copy of the spatially explicit solution.
 		*/
-		inline Spatial::FMTspatialschedule getspschedule() const
+		inline Spatial::FMTSpatialSchedule getspschedule() const
 		{
-			return solution;
+			return m_BestSolution;
 		}
 		// DocString: FMTsemodel::getdisturbancestats
 		/**
@@ -146,6 +137,8 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		If with lock is true then the schedule will contain locked developement.
 		*/
 		virtual Core::FMTschedule getsolution(int period, bool withlock = false) const;
+
+		
 		// DocString: FMTsemodel::clone
 		/**
 		Get a clone of the FMTsemodel
@@ -170,21 +163,50 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Return the value of the globalobjective of the actual solution
 		*/
 		virtual double getobjectivevalue() const;
-		// DocString: FMTmodel::getstaticmask
+		// DocString: FMTsemodel::GetSchedules
 		/**
-		@brief Get the static mask of a given node. It may use the caching.
-		@param[in] the output node
-		@param[in] ignoreoutputvariables 
-		@return A static FMTmask.
+		@brief Get the schedules of the spatial solution
+		@param[in] p_SpatialSchedule spatial schedule
+		@param[in] withlock lock in schedule
+		@return the vector of schedules
 		*/
-		virtual Core::FMTmask getstaticmask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
+		std::vector<Core::FMTschedule> GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+			bool withlock = false) const;
+		// DocString: FMTsemodel::GetSolutionStatus
+		/**
+		@brief Get the solution status
+		*/
+		void GetSolutionStatus(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+			double& p_Objective, double& p_PrimalInFeasibility,
+			bool withsense = true, bool withfactorization = false, bool withspatial = true) const;
+		// DocString: FMTsemodel::GetConstraintEvaluation
+		/**
+		@brief Evaluate the constraint with the actual solution
+		@return the evaluation value.
+		*/
+		double GetConstraintEvaluation(size_t p_Constraint) const;
 	protected:
 		// DocString: FMTsemodel::spschedule
 		///Contains the builded spatialsolution latest or best one.
-		Spatial::FMTspatialschedule solution;
-		// DocString: FMTsemodel::m_staticMaskMemorize
-		///Static memorization of output nodes.
-		mutable boost::unordered_map<Core::FMToutputsource, Core::FMTmask>m_staticMaskMemorize;
+		Spatial::FMTSpatialSchedule m_BestSolution;
+		// DocString: FMTsemodel::FMTSpatialGraphs
+		///Contains all the SpatialGraphs
+		Spatial::FMTSpatialGraphs m_SpatialGraphs;
+
+		double GetGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const;
+
+		std::map<std::string, double> GreedyReferenceBuild(
+										Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+										const Core::FMTschedule& schedule,
+										const size_t& randomiterations,
+										unsigned int seed = 0,
+										double tolerance = FMT_DBL_TOLERANCE,
+										bool log = true) const;
+		std::vector<double> GetConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+
+		void DoReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+		Spatial::FMTSpatialSchedule GetNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
+		
 	private:
 		// DocString: FMTsemodel::Serialize
 		/**
@@ -195,9 +217,14 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-			ar& BOOST_SERIALIZATION_NVP(solution);
+			//ar& BOOST_SERIALIZATION_NVP(m_BestSolution);
 		}
 		virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
+		void _BuildArea(const Spatial::FMTforest& p_Forest);
+		void _BuildGraphs(double p_cellSize);
+		void _BuildSolution(const Spatial::FMTforest& p_Forest);
+		void _CopyGraphs(const Spatial::FMTSpatialGraphs& pToCopy);
+		void _CopySolution(const Spatial::FMTSpatialSchedule& pToCopy);
     };
 
 }

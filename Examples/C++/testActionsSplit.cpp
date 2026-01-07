@@ -31,6 +31,14 @@ int main(int argc, char* argv[])
 		boost::split(SPLITTED, argv[2], boost::is_any_of("|"));
 		std::vector<std::string>SPLITTED_MASK;
 		boost::split(SPLITTED_MASK, argv[3], boost::is_any_of("|"));
+
+		if (argc>1)
+		{
+
+		}
+		else {
+
+		}
 		/*
 		const std::string PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
 		const std::string CARTE = "Carte/PC_7002071_UA_U08152.shp";

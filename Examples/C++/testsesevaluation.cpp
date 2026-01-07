@@ -64,12 +64,13 @@ int main(int argc, char* argv[])
 				100,
 				0,
 				0.1);
-			const Spatial::FMTspatialschedule spschedule = simmodel.getspschedule();
-			for (const Core::FMTconstraint& constraint : simmodel.getconstraints())
+			const std::vector<Core::FMTconstraint>BASE_CONSTRAINTS = simmodel.getconstraints();
+			size_t i = 0;
+			for (const Core::FMTconstraint& constraint : BASE_CONSTRAINTS)
 			{
 				if (constraint.isspatial())
 				{
-				if (spschedule.getconstraintevaluation(constraint, simmodel) > 0)
+				if (simmodel.GetConstraintEvaluation(i) > 0)
 					{
 					std::cout << std::string(constraint) << "\n";
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
@@ -84,7 +85,10 @@ int main(int argc, char* argv[])
 					Core::FMTconstraint bindingconstraint(constraint);
 					lower += 10000000000;
 					bindingconstraint.setrhs(lower,upper);
-					const double penalty = spschedule.getconstraintevaluation(bindingconstraint, simmodel);
+					std::vector<Core::FMTconstraint>Constraints = BASE_CONSTRAINTS;
+					Constraints.push_back(bindingconstraint);
+					simmodel.setconstraints(Constraints);
+					const double penalty = simmodel.GetConstraintEvaluation(Constraints.size()-1);
 					if (penalty == 0)
 					{
 						std::cout << std::string(bindingconstraint) << "\n";
@@ -93,10 +97,11 @@ int main(int argc, char* argv[])
 					}else {
 						std::cout << std::string(bindingconstraint)<< "Penalty of "<< penalty << "\n";
 					}
+					simmodel.setconstraints(BASE_CONSTRAINTS);
 				}
 				
 				}
-
+				++i;
 				}
 			}
 		

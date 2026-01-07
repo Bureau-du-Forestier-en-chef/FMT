@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTevent.h"
 #include "FMTeventrelation.h"
+#include <boost/unordered_set.hpp>
 #include <queue>
 
 namespace Spatial
@@ -535,28 +536,45 @@ namespace Spatial
         return FMTcoordinate::getTerritory(getenveloppe(), distance);
 	}
 
-    bool FMTevent::splitevent(const unsigned int& ldistance, std::vector<FMTevent>& splittedevents) const
+    bool FMTevent::splitevent(std::vector<FMTevent>& splittedevents) const
     {
         std::queue<FMTcoordinate> active;
         std::set<FMTcoordinate> coordinates = elements;
         active.push(*coordinates.begin());
+        boost::unordered_set<FMTcoordinate>ActivesSeen;
         while(!coordinates.empty())
         {
             FMTevent newevent(active.front(),action_id,period);
             while(!active.empty())
             {
                 //Kind of a spread to create new event
-                FMTcoordinate coord = active.front();
-                coordinates.erase(coord);
-                newevent.insert(coord);
-                std::set<FMTcoordinate> spreadcoord = coord.getneighbors((ldistance*2)+1,true);
+                const FMTcoordinate& COORDINATE = active.front();
+                coordinates.erase(COORDINATE);
+                newevent.insert(COORDINATE);
+                /*std::set<FMTcoordinate> spreadcoord = COORDINATE.getneighbors((ldistance * 2) + 1, true);
                 for (std::set<FMTcoordinate>::const_iterator nit=spreadcoord.begin();nit!=spreadcoord.end();++nit)
                 {
                     if (coordinates.find(*nit)!=coordinates.end())
                     {
                         active.push(*nit);
                     }
+                }*/
+                if (!coordinates.empty())
+                {
+                    for (unsigned int i = 0; i < 8u; ++i)
+                    {
+                        const FMTcoordinate NEIGHBOR = COORDINATE.at(i);
+                        if (ActivesSeen.find(NEIGHBOR) == ActivesSeen.end() &&
+                            coordinates.find(NEIGHBOR) != coordinates.end())
+                        {
+                            ActivesSeen.insert(NEIGHBOR);
+                            active.push(NEIGHBOR);
+                        }
+
+                    }
                 }
+               
+
                 active.pop();
             }
             //If there is no more actives put the event in the vector and find the next coord not in an event

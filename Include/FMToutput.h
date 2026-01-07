@@ -301,6 +301,12 @@ class FMTEXPORT FMToutput: public FMTobject
 		Returns the intersected FMTmask of all variables
 		*/
 		FMTmask getvariableintersect() const;
+		// DocString: FMToutput::getMasksUnion
+		/**
+		@brief get the union of all masks of the sources and factor
+		@return the union of the mask.
+		*/
+		FMTmask getMasksUnion() const;
 		// DocString: FMToutput::getstaticthemes()
 		/**
 		Returns the static themes of the whole output.

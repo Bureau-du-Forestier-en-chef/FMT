@@ -126,6 +126,31 @@ Core::FMTsection FMTparser::fromExtension(const std::string& ext)
 	return Core::FMTsection::Empty;
     }
 
+std::string FMTparser::CreateSubDirectory(const std::string& p_Directory,
+										const std::string& p_SubDirectory)
+{
+	std::string fullPath;
+	try {
+		const boost::filesystem::path BASE(p_Directory);
+		if (!boost::filesystem::is_directory(BASE))
+			{
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+				p_Directory, "FMTparser::CreateSubDirectory", __LINE__, __FILE__);
+			}
+		const boost::filesystem::path SUB(p_SubDirectory);
+		const boost::filesystem::path FINAL = BASE / SUB;
+		if (!boost::filesystem::is_directory(FINAL))
+			{
+			boost::filesystem::create_directory(FINAL);
+			}
+		fullPath = FINAL.string();
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::CreateSubDirectory", __LINE__, __FILE__);
+		}
+	return fullPath;
+}
+
 #if defined FMTWITHGDAL
 void FMTparser::_initializeGDAL()
 	{
@@ -1282,7 +1307,22 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		}
         return vecmask;
         }
-	std::string FMTparser::getCleanLine(std::ifstream& stream) const
+
+	std::string FMTparser::getCleanLine(const std::string& p_input) const
+	{
+		std::string out;
+		try {
+			std::istringstream inputStream(p_input);
+			out = getCleanLine(inputStream);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTparser::getCleanLine", __LINE__, __FILE__, m_section);
+			}
+		return out;
+	}
+
+
+	std::string FMTparser::getCleanLine(std::istream& stream) const
         {
         ++m_line;
 		std::string newline;
@@ -1323,9 +1363,10 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 					{
 					m_inComment = true;
 					}
-				}else{
-				stream.close();
-				}
+				 } else if(std::ifstream* ifs = dynamic_cast<std::ifstream*>(&stream) )
+					{
+					 ifs->close();
+					}
 			
         boost::trim(newline);
 		if (newline.empty() && m_inComment && !m_comment.empty() && m_comment.find('}') != std::string::npos &&
@@ -1410,6 +1451,7 @@ std::map<std::string, std::vector<std::string>>  FMTparser::GetForLoops(const st
 			std::string localTarget = TARGET;
 			if (!std::string(kmatch[28]).empty())
 				{
+				allValues.erase(TARGET);
 				localTarget = kmatch[28];
 				if (allValues.find(localTarget) == allValues.end())
 					{
@@ -1655,8 +1697,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 				{
 				for (int iField = 0; iField < FIELD_DEFINITIONS->GetFieldCount(); ++iField)
 					{
-					Data[iField][featureId] = feature->GetFieldAsString(iField);
-					boost::to_upper(Data[iField][featureId]);
+					Data[iField][featureId] = getCleanLine(feature->GetFieldAsString(iField));
 					}
 				OGRFeature::DestroyFeature(feature);
 				++featureId;
@@ -1759,10 +1800,6 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 						}
 
 					ForloopQueues = std::vector<std::vector<FMTLineInfo>>(VariablesData.begin()->size());
-					for (std::vector<FMTLineInfo>& toFill : ForloopQueues)
-						{
-						toFill.reserve(VariablesData.begin()->size() * p_queue.size());
-						}
 				}else {
 					SeenOtherForLoop = true;
 				}
