@@ -102,7 +102,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     static const size_t MINIMAL_ACCEPTED_MOVES = 3;
     // DocString: FMTsamodel::UPDATE_PERIOD_FACTOR
    ///Factor multiplicator for period 1
-    static const size_t UPDATE_PERIOD_FACTOR = 10;
+    static const size_t UPDATE_PERIOD_FACTOR = 5;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use

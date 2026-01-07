@@ -1451,6 +1451,7 @@ std::map<std::string, std::vector<std::string>>  FMTparser::GetForLoops(const st
 			std::string localTarget = TARGET;
 			if (!std::string(kmatch[28]).empty())
 				{
+				allValues.erase(TARGET);
 				localTarget = kmatch[28];
 				if (allValues.find(localTarget) == allValues.end())
 					{
@@ -1697,7 +1698,6 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 				for (int iField = 0; iField < FIELD_DEFINITIONS->GetFieldCount(); ++iField)
 					{
 					Data[iField][featureId] = getCleanLine(feature->GetFieldAsString(iField));
-					boost::to_upper(Data[iField][featureId]);
 					}
 				OGRFeature::DestroyFeature(feature);
 				++featureId;
@@ -1800,10 +1800,6 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 						}
 
 					ForloopQueues = std::vector<std::vector<FMTLineInfo>>(VariablesData.begin()->size());
-					/*for (std::vector<FMTLineInfo>& toFill : ForloopQueues)
-						{
-						toFill.reserve(VariablesData.begin()->size() * (p_queue.size()-1));
-						}*/
 				}else {
 					SeenOtherForLoop = true;
 				}
