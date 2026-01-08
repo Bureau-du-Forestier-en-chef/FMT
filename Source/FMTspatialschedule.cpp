@@ -614,11 +614,11 @@ namespace Spatial
 					{
 						if (eventit != eventof)//They will have the same address if it's the same event!
 						{
-							const FMTeventrelation ofrelation = eventof->getrelation(*eventit);
+							/*const FMTeventrelation ofrelation = eventof->getrelation(*eventit);
 							const FMTeventrelation itrelation = eventit->getrelation(*eventof);
 							if (relations.find(ofrelation) == relations.end() &&
 								relations.find(itrelation) == relations.end())
-							{
+							{*/
 								if (testlower&&eventit->within(lowerlookup, *eventof)) //too close
 								{
 									returnvalue += ((lower - eventit->distance(*eventof)) * periodfactor);
@@ -628,9 +628,9 @@ namespace Spatial
 									returnvalue += ((eventit->distance(*eventof) - upper) * periodfactor);
 									conflicts.push_back(eventof);
 								}
-								relations.insert(ofrelation);
+								/*relations.insert(ofrelation);
 								relations.insert(itrelation);
-							}
+							}*/
 
 						}
 					}
