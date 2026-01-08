@@ -55,7 +55,7 @@ available to the user. This class is also used by the FMTmodelparser.
 		std::map<std::string, double> getindexes(std::string indexm_line, const Core::FMTconstants& constants);
 		// DocString: FMTlandscapeparser::ParseState
 		enum class ParseState { NORMAL, IN_PRE_DECLARATION };
-		//
+		// DocString: FMTlandscapeparser::PreDeclarationContext
 		struct PreDeclarationContext {
 			ParseState state;
 			int currentThemeId;
@@ -63,12 +63,48 @@ available to the user. This class is also used by the FMTmodelparser.
 			
 			PreDeclarationContext();
 		};
-
 		//DocString: FMTlandscapeparser::ProcessPreDeclarationLine
 		bool ProcessPreDeclarationLine(const std::string& line,
 			PreDeclarationContext& context,
 			const Core::FMTconstants& constants);
+		// DocString: FMTlandscapeparser::ThemeParsingContext
+		struct ThemeParsingContext {
+			std::vector<std::string> attributes;
+			std::vector<std::string> attributenames;
+			std::vector<std::string> aggregates;
+			std::vector<std::vector<std::string>> aggregatenames;
+			std::vector<std::map<std::string, double>> indexes_values;
+			std::string themename;
+			std::string aggregatename;
+			size_t id;
+			size_t start;
+			size_t stop;
+			int pasttheme;
+			bool aggregate_redefinition;
 
+			ThemeParsingContext();
+			void clear();
+		};
+		// DocString: FMTlandscapeparser::ProcessThemeLine
+		void ProcessThemeLine(const boost::smatch& kmatch,
+			ThemeParsingContext& ctx,
+			PreDeclarationContext& preContext,
+			std::vector<Core::FMTtheme>& themes,
+			const Core::FMTconstants& constants,
+			size_t& unknownID);
+		// DocString: FMTlandscapeparser::ProcessAggregateLine
+		void ProcessAggregateLine(const boost::smatch& kmatch,
+			ThemeParsingContext& ctx,
+			std::vector<Core::FMTtheme>& themes,
+			const Core::FMTconstants& constants);
+		// DocString: FMTlandscapeparser::ProcessAggregateValueLine
+		void ProcessAggregateValueLine(const std::string& line,
+			ThemeParsingContext& ctx,
+			std::vector<Core::FMTtheme>& themes);
+		// DocString: FMTlandscapeparser::ProcessAttributeLine
+		void ProcessAttributeLine(const std::string& line,
+			ThemeParsingContext& ctx,
+			const Core::FMTconstants& constants);
     public:
 		// DocString: FMTlandscapeparser::FMTlandscapeparser()
 		/**
