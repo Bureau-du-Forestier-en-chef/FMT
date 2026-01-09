@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTcoordinate.h"
 #include "FMTforest.h"
-//#include "FMTspatialschedule.h"
+#include "FMTSpatialSchedule.h"
 //#include "FMTspatialaction.h"
 #include "FMTeventcontainer.h"
 //#include "FMTsaschedule.h"
@@ -121,20 +121,20 @@ void exportSpatial()
 
     define_FMTlayer<Graph::FMTlinegraph>();
 
-	bp::class_<Spatial::FMTspatialschedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
-		.def(bp::init<Spatial::FMTspatialschedule>())
-		.def("getforestperiod", &Spatial::FMTspatialschedule::getforestperiod, getforestperiod_overloads(bp::args("period","periodstart"),"@DocString(FMTspatialschedule::getforestperiod)"))
-        .def("getoutputbycoordinate", &Spatial::FMTspatialschedule::getoutputbycoordinate, "@DocString(FMTspatialschedule::getoutputbycoordinate)")
-        .def("getbindingactions", &Spatial::FMTspatialschedule::getbindingactions, "@DocString(FMTspatialschedule::getbindingactions)")
-        .def("operatecoord", &Spatial::FMTspatialschedule::operatecoord, "@DocString(FMTspatialschedule::operatecoord)")
-        .def("getconstraintevaluation", &Spatial::FMTspatialschedule::getconstraintevaluation, getconstraintevaluation_overloads(bp::args("constraint","model"),"@DocString(FMTspatialschedule::getconstraintevaluation)"))
-        .def("grow", &Spatial::FMTspatialschedule::grow, "@DocString(FMTspatialschedule::grow)");
-	define_pylist<Spatial::FMTspatialschedule>();
+	bp::class_<Spatial::FMTSpatialSchedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTSpatialSchedule", "@DocString(FMTSpatialSchedule)")
+		.def(bp::init<Spatial::FMTSpatialSchedule>())
+		.def("getforestperiod", &Spatial::FMTSpatialSchedule::getforestperiod, getforestperiod_overloads(bp::args("period","periodstart"),"@DocString(FMTSpatialSchedule::getforestperiod)"))
+        .def("getoutputbycoordinate", &Spatial::FMTSpatialSchedule::getoutputbycoordinate, "@DocString(FMTSpatialSchedule::getoutputbycoordinate)")
+        .def("getbindingactions", &Spatial::FMTSpatialSchedule::getbindingactions, "@DocString(FMTSpatialSchedule::getbindingactions)")
+        .def("operatecoord", &Spatial::FMTSpatialSchedule::operatecoord, "@DocString(FMTSpatialSchedule::operatecoord)")
+        .def("getconstraintevaluation", &Spatial::FMTSpatialSchedule::getconstraintevaluation, getconstraintevaluation_overloads(bp::args("constraint","model"),"@DocString(FMTSpatialSchedule::getconstraintevaluation)"))
+        .def("grow", &Spatial::FMTSpatialSchedule::grow, "@DocString(FMTSpatialSchedule::grow)");
+	define_pylist<Spatial::FMTSpatialSchedule>();
 
     bp::class_<Spatial::FMTbindingspatialaction>("FMTbindingspatialaction", "@DocString(FMTbindingspatialaction)")
-        .def("getminimaladjacency", &Spatial::FMTbindingspatialaction::getminimaladjacency,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTspatialschedule::getminimaladjacency)")
-        .def("getminimalsize",&Spatial::FMTbindingspatialaction::getminimalsize,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTspatialschedule::getminimalsize)")
-        .def("getmaximalsize",&Spatial::FMTbindingspatialaction::getmaximalsize,boost::python::return_value_policy<boost::python::copy_const_reference>(), "@DocString(FMTspatialschedule::getmaximalsize)");
+        .def("getminimaladjacency", &Spatial::FMTbindingspatialaction::getminimaladjacency,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTSpatialSchedule::getminimaladjacency)")
+        .def("getminimalsize",&Spatial::FMTbindingspatialaction::getminimalsize,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTSpatialSchedule::getminimalsize)")
+        .def("getmaximalsize",&Spatial::FMTbindingspatialaction::getmaximalsize,boost::python::return_value_policy<boost::python::copy_const_reference>(), "@DocString(FMTSpatialSchedule::getmaximalsize)");
 
 	define_pylist<Spatial::FMTbindingspatialaction>();
 
