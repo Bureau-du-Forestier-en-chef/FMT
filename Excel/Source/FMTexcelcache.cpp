@@ -740,7 +740,7 @@ namespace Wrapper
 				for (const Core::FMTSerie& rotation : mit->second.getRotations(sfilter, saggregate))
 				{
 					System::String^ rotationName = gcnew System::String(rotation.getSerie().c_str());
-					const std::string KEY = context.marshal_as<std::string>(themeselection);
+					const std::string KEY = context.marshal_as<std::string>(rotationName);
 					if (UniqueRotations.find(KEY)== UniqueRotations.end())
 						{
 						values->Add(rotationName);
