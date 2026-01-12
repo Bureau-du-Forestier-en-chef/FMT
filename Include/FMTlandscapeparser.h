@@ -62,6 +62,7 @@ available to the user. This class is also used by the FMTmodelparser.
 			std::map<size_t, std::pair<std::vector<std::string>, std::vector<std::string>>> declarations;
 			
 			PreDeclarationContext();
+			void clearTheme(size_t themeId);
 		};
 		//DocString: FMTlandscapeparser::ProcessPreDeclarationLine
 		bool ProcessPreDeclarationLine(const std::string& line,

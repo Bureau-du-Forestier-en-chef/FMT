@@ -100,16 +100,18 @@ namespace Parser
 					m_section);
 			}
 
-			if (preContext.declarations.find(themes.size() + 1) != preContext.declarations.end())
+			if (preContext.declarations.find(tempid - 1) != preContext.declarations.end())
 			{
+				std::cout << 'YES';
 				ctx.attributes.insert(
 					ctx.attributes.begin(),
-					preContext.declarations[themes.size() + 1].first.begin(),
-					preContext.declarations[themes.size() + 1].first.end());
+					preContext.declarations[tempid - 1].first.begin(),
+					preContext.declarations[tempid - 1].first.end());
 				ctx.attributenames.insert(
 					ctx.attributenames.begin(),
-					preContext.declarations[themes.size() + 1].second.begin(),
-					preContext.declarations[themes.size() + 1].second.end());
+					preContext.declarations[tempid - 1].second.begin(),
+					preContext.declarations[tempid - 1].second.end());
+				preContext.clear();
 			}
 
 			themes.push_back(Core::FMTtheme(
@@ -271,7 +273,12 @@ namespace Parser
 		indexes_values.clear();
 	}
 
-	FMTlandscapeparser::PreDeclarationContext::PreDeclarationContext() : state(ParseState::NORMAL), currentThemeId(-1) {}
+	FMTlandscapeparser::PreDeclarationContext::PreDeclarationContext() : state(ParseState::NORMAL), currentThemeId(-1) 
+	{}
+	void FMTlandscapeparser::PreDeclarationContext::clearTheme(size_t themeId)
+	{
+		declarations.erase(themeId);
+	}
 
 	bool FMTlandscapeparser::ProcessPreDeclarationLine(
 		const std::string& line,
@@ -429,6 +436,19 @@ namespace Parser
 						"FMTlandscapeparser::read",__LINE__, __FILE__,m_section);
 				}
 				
+				if (!preContext.declarations.empty())
+				{
+					ctx.attributes.insert(
+						ctx.attributes.begin(),
+						preContext.declarations[ctx.id].first.begin(),
+						preContext.declarations[ctx.id].first.end());
+					ctx.attributenames.insert(
+						ctx.attributenames.begin(),
+						preContext.declarations[ctx.id].second.begin(),
+						preContext.declarations[ctx.id].second.end());
+					preContext.clear();
+				}
+
 				themes.push_back(Core::FMTtheme(
 					ctx.attributes,
 					ctx.attributenames,

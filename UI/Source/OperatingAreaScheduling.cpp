@@ -32,10 +32,10 @@ bool Wrapper::FMTForm::OperatingAreaScheduling(
 	int periodeMiseAjour,
 	System::String^ returnTimeOutput)
 {
-	Logging::FMTdefaultlogger().logstamp();
 	try
 	{
 		FMTFormLogger* logger = Cache->getformlogger();
+		*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
 		*logger << "Préparation du modèle" << "\n";
 		Models::FMTlpmodel optimizationmodel(Cache->getmodel(scenario), static_cast<Models::FMTsolverinterface>(solver));
 		*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getname() << "\n";

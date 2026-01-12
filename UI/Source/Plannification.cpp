@@ -14,6 +14,7 @@
 #include "FMTForm.h"
 #include "FMTFormCache.h"
 #include "FMTplanningtask.h"
+#include "FMTdefaultlogger.h"
 
 bool  Wrapper::FMTForm::Plannification(
 	System::String^ fichierPri, 
@@ -32,13 +33,13 @@ bool  Wrapper::FMTForm::Plannification(
 	try
 	{
 		FMTFormLogger* logger = Cache->getformlogger();
-		std::vector<std::string>layersoptions;
+		*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
+		std::vector<std::string> layersoptions;
 		if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
 		{
 			layersoptions.push_back("SEPARATOR=SEMICOLON");
 		}
 
-		// TODO Gab: essayer ici le playback. Prendre le fichiers playback à Lorena
 		Parallel::FMTplanningtask newplanningtask(etanduSortiesMin, etanduSortiesMax, 
 			msclr::interop::marshal_as<std::string>(cheminSorties), 
 			msclr::interop::marshal_as<std::string>(providerGdal), 
@@ -83,14 +84,29 @@ bool  Wrapper::FMTForm::Plannification(
 	return true;
 }
 
-bool Wrapper::FMTForm::Replanification(int indexScenStrategique, 
-	int indexScenStochastique, int indexScenTactique, int solver, int period, int periodReplannif, double variabilite, int nbreProcessus, 
-	int nombreReplicasMin, int nombreReplicasMax, System::Collections::Generic::List<System::String^>^ outputs, 
-	int outputLevel, System::String^ cheminSorties, System::String^ providerGdal, int taskLogLevel, bool indProduireSolution, bool p_writeSchedule)
+bool Wrapper::FMTForm::Replanification(
+	int indexScenStrategique, 
+	int indexScenStochastique, 
+	int indexScenTactique, 
+	int solver, 
+	int period, 
+	int periodReplannif, 
+	double variabilite,
+	int nbreProcessus, 
+	int nombreReplicasMin, 
+	int nombreReplicasMax, 
+	System::Collections::Generic::List<System::String^>^ outputs, 
+	int outputLevel, 
+	System::String^ cheminSorties, 
+	System::String^ providerGdal, 
+	int taskLogLevel, 
+	bool indProduireSolution, 
+	bool p_writeSchedule)
 {
 	try
 	{
 		FMTFormLogger* logger = Cache->getformlogger();
+		*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
 		Models::FMTlpmodel global(Cache->getmodel(indexScenStrategique), static_cast<Models::FMTsolverinterface>(solver));
 		global.setparameter(Models::FMTintmodelparameters::LENGTH, period);
 		global.setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
