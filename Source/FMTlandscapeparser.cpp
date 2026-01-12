@@ -111,7 +111,7 @@ namespace Parser
 					ctx.attributenames.begin(),
 					preContext.declarations[tempid - 1].second.begin(),
 					preContext.declarations[tempid - 1].second.end());
-				preContext.clear();
+				preContext.clearTheme(tempid - 1);
 			}
 
 			themes.push_back(Core::FMTtheme(
@@ -446,7 +446,6 @@ namespace Parser
 						ctx.attributenames.begin(),
 						preContext.declarations[ctx.id].second.begin(),
 						preContext.declarations[ctx.id].second.end());
-					preContext.clear();
 				}
 
 				themes.push_back(Core::FMTtheme(
