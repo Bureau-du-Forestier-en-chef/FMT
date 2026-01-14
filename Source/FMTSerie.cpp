@@ -22,6 +22,14 @@ namespace Core{
 
 	}
 
+	FMTSerie::FMTSerie(const std::string& p_serie, int p_length):
+		m_serie(), m_length(p_length)
+	{
+		boost::split(m_serie, p_serie, 
+			boost::is_any_of(m_SEPERATOR));
+	
+	}
+
 
 	FMTSerie::FMTSerie(const std::vector<std::string>& p_serie, int p_length):
 		m_serie(p_serie), m_length(p_length)

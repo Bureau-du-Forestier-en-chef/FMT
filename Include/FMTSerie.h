@@ -27,6 +27,13 @@ class FMTEXPORT FMTSerie
 		// DocString: FMTSerie()
 		/**
 		 * @brief Initialize a FMTSerie using the string description of the serie
+		 * @param[in] p_serie serie string
+		 * @param[in] p_length the length of the serie in period.
+		 */
+		FMTSerie(const std::string& p_serie, int p_length);
+		// DocString: FMTSerie()
+		/**
+		 * @brief Initialize a FMTSerie using the string description of the serie
 		 * @param[in] p_serie the vector string of the serie
 		 * @param[in] p_length the length of the serie in period.
 		 */
