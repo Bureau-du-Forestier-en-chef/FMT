@@ -321,8 +321,8 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						"FMTactionparser::_GetSerie", __LINE__, __FILE__, m_section);
 					}
 				const std::string BASE_SERIES = std::string(kmatch[1]) + std::string(kmatch[6]);
-				const bool isASAP = std::string(kmatch[4]).empty();
-				const bool isALAP = std::string(kmatch[5]).empty();
+				const bool isASAP = !std::string(kmatch[4]).empty();
+				const bool isALAP = !std::string(kmatch[5]).empty();
 				std::vector<std::string>grossserie;
 				const boost::regex SEP("(<-|->)");
 				boost::algorithm::split_regex(grossserie, BASE_SERIES, SEP);

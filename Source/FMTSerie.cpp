@@ -24,7 +24,7 @@ namespace Core{
 
 
 	FMTSerie::FMTSerie(const std::vector<std::string>& p_serie, int p_length):
-		m_serie(p_serie), m_length(0)
+		m_serie(p_serie), m_length(p_length)
 		{
 		
 
