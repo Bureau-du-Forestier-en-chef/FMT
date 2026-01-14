@@ -34,9 +34,9 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
-			scenario = "ForLoops";
-			length = 5;
+			primarylocation = "C:/Users/admlocal/Desktop/ActionSeries_Emilie/PC_9967_U06271_2028_MODB01.pri";
+			scenario = "200_StratReg_apsp";
+			length = 20;
 			objectivevalue = 2836;
 		}
 		Parser::FMTmodelparser modelparser;

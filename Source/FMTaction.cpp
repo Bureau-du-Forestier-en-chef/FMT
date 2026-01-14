@@ -71,7 +71,8 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
                 name(""),
                 lock(false),
                 reset(false),
-				series() {}
+				m_series(),
+				m_InSerie(false){}
 
     FMTaction::FMTaction(const std::string& lname): FMTlist<FMTspec>(),
 						aggregates(),
@@ -80,10 +81,11 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
                         name(lname),
                         lock(false),
                         reset(false),
-						series() {}
+						m_series(),
+						m_InSerie(false) {}
     FMTaction::FMTaction(const std::string& lname, const bool& lock,const bool& reset): FMTlist<FMTspec>(), aggregates(), partials(),
 		agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
-		name(lname),lock(lock),reset(reset), series()
+		name(lname),lock(lock),reset(reset), m_series(), m_InSerie(false)
         {
 
         }
@@ -103,7 +105,8 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
                         name(rhs.name),
                         lock(rhs.lock),
                         reset(rhs.reset),
-						series(rhs.series)
+						m_series(rhs.m_series),
+		m_InSerie(rhs.m_InSerie)
         {
 
         }
@@ -115,13 +118,14 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
             name = rhs.name;
             lock = rhs.lock;
             reset = rhs.reset;
-			series = rhs.series;
+			m_series = rhs.m_series;
             partials = rhs.partials;
 			aggregates = rhs.aggregates;
 			agelowerbound = rhs.agelowerbound;
 			ageupperbound = rhs.ageupperbound;
 			periodlowerbound = rhs.periodlowerbound;
 			periodupperbound = rhs.periodupperbound;
+			m_InSerie = rhs.m_InSerie;
             }
         return *this;
         }
@@ -204,11 +208,9 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		try {
 			if (!seriemask.empty())
 			{
-				for (const std::vector<std::string>& serie : series)
+				for (const FMTSerie& SERIE : m_series)
 				{
-					std::vector<std::string>::const_iterator firstelement = std::find_first_of(seriemask.begin(), seriemask.end(),serie.begin(),serie.end());
-					if (firstelement!= seriemask.end()&&
-						std::equal(firstelement, seriemask.end(), serie.begin()))
+					if (SERIE.isAllowedInSerie(seriemask))
 					{
 						return true;
 					}
@@ -222,20 +224,40 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return false;
 	}
 
+	const FMTSerie* FMTaction::GetSerie(const std::vector<std::string>& p_SerieMask) const
+	{
+		try {
+			if (!p_SerieMask.empty())
+			{
+				for (const FMTSerie& SERIE : m_series)
+				{
+					if (SERIE.isAllowedInSerie(p_SerieMask))
+					{
+						return &SERIE;
+					}
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for action " + this->getname(),
+				"FMTaction::isallowedinserie", __LINE__, __FILE__, Core::FMTsection::Action);
+			}
+		return nullptr;
+	}
+
+	const std::vector<FMTSerie>& FMTaction::GetSeries() const
+	{
+		return  m_series;
+	}
+
+
 	std::vector<std::string>FMTaction::getseriesnames() const
 	{
 		std::vector<std::string>seriesnames;
 		try {
-			for (const std::vector<std::string>& serie : series)
+			for (const FMTSerie& SERIE : m_series)
 				{
-				std::string seriename;
-				for (const std::string& val : serie)
-					{
-					if (val != getname())
-						{
-						seriename += val + " -> ";
-						}
-					}
+				std::string seriename = SERIE.getSerie();
 				if (!seriename.empty())
 					{
 					seriename += getname();
@@ -256,9 +278,10 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		try {
 			if (ispartofaserie())
 				{
-				for (const std::vector<std::string>& serie : series)
+				for (const FMTSerie& SERIE : m_series)
 					{
-					sizeofserie = std::max(sizeofserie, serie.size());
+					sizeofserie = std::max(sizeofserie, 
+										SERIE.getActions().size());
 					}
 				}
 		}catch (...)
@@ -270,20 +293,25 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 	}
 
 
-	void FMTaction::setseries(std::vector<std::vector<std::string>> seriesnames)
+	void FMTaction::setSeries(std::vector<Core::FMTSerie> p_series)
 	{
 		try {
-			series.clear();
-			for (std::vector<std::string> actionsname : seriesnames)
+			m_series.clear();
+			for (const FMTSerie& SERIE : p_series)
 				{
+				std::vector<std::string>  actionsname = SERIE.getActions();
 				std::vector<std::string>::iterator ait = std::find(actionsname.begin(), actionsname.end(), getname());
 				if (ait!= actionsname.end())
 					{
+					if (!m_InSerie)
+						{
+						m_InSerie = true;
+						}
 					while (ait != actionsname.end())
 						{
 							if (ait != actionsname.end() && std::distance(actionsname.begin(), ait + 1) > 1)//Ok in serie
 								{
-								series.push_back(std::vector<std::string>(actionsname.begin(), ait + 1));
+								m_series.push_back(FMTSerie(std::vector<std::string>(actionsname.begin(), ait + 1),SERIE.getLength()));
 								}
 							if (!actionsname.empty())
 								{
@@ -497,6 +525,13 @@ bool FMTaction::isPartOf(const std::string& p_name) const
 	return (name == p_name ||
 		std::find(aggregates.begin(), aggregates.end(), p_name) != aggregates.end());
 	}
+
+bool FMTaction::IsInSeries() const
+	{
+	return m_InSerie;
+	}
+
+
 
 std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p_mask,
 											const std::vector<Core::FMTtheme>& p_themes) const

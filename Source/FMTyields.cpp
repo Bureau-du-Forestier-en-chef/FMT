@@ -175,8 +175,7 @@ void FMTyields::_updateYieldLocations()
 			for (const std::string& yldName : handlerObj.second->getyieldnames())
 			{
 				std::pair<std::unordered_map<std::string, size_t>::iterator,bool>inserted = m_yieldsLocations.insert(std::pair<std::string, size_t>(yldName, SIZE_OF));
-				if (!handlerObj.second->isnullyield(yldName)&&
-					inserted.first->second == SIZE_OF)
+				if (inserted.first->second == SIZE_OF)
 					{
 					inserted.first->second = Id;
 					}
