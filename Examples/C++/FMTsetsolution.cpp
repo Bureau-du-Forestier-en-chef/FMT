@@ -33,6 +33,8 @@ int main(int argc, char *argv[])
 			scenarios = std::vector<std::string>(1, "200_StratReg_apsp");
 			ovoltotrecvalue = 745200;
 			argc = 4;
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08251/PC_9943_U08651_2028_MODB01.pri";
+			scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
 		}
 
 

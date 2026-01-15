@@ -52,6 +52,7 @@ namespace Testing
 						++i;
 					}	
 				}
+				std::cout << "UnitTestFMToutputCache::testModelGetValues passed" << std::endl;
 			}
 
 		private:
@@ -67,9 +68,19 @@ namespace Testing
 int main(int argc, char *argv[])
 {
 	#ifdef FMTWITHMOSEK
-	const std::string PRIMARY = argv[1];
-	const std::string SCENARIO = argv[2];
-	const std::string TEST = argv[3];
+	std::string PRIMARY;
+	std::string SCENARIO;
+	std::string TEST;
+	if (argc>1)
+		{
+			PRIMARY = argv[1];
+			SCENARIO = argv[2];
+			TEST = argv[3];
+		}else {
+			PRIMARY = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08251/PC_9943_U08651_2028_MODB01.pri";
+			SCENARIO = "120_RegProv_apsp";
+			TEST = "testOutputCache";
+		}
 	Logging::FMTdefaultlogger().logstamp();
 	Testing::UnitTestFMToutputCache test;
 	test.testModelGetValues(PRIMARY, SCENARIO, TEST);
