@@ -44,8 +44,10 @@ available to the user. This class is also used by the FMTmodelparser.
 		// DocString: FMTlandscapeparser::rxparameter
 		///This regex catch the parameters of a indexed theme.
 		const static boost::regex rxparameter;
-		// DocString: FMTlandscapeparser::rxattributes
-		const static boost::regex rxattributes;
+		// DocString: FMTlandscapeparser::rxPreAttributes
+		const static boost::regex rxPreAttributes;
+		// DocString: FMTlandscapeparser::rxPreAggregate
+		const static boost::regex rxPreAggregate;
 		// DocString: FMTlandscapeparser::getindexes
 		/**
 		This function is used to catch the indexed attributes of a theme in the landscape section
@@ -58,11 +60,11 @@ available to the user. This class is also used by the FMTmodelparser.
 		// DocString: FMTlandscapeparser::PreDeclarationContext
 		struct PreDeclarationContext {
 			ParseState state;
-			int currentThemeId;
-			std::map<size_t, std::pair<std::vector<std::string>, std::vector<std::string>>> declarations;
+			std::string currentKey; 
+			std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string>>> declarations;
 			
 			PreDeclarationContext();
-			void clearTheme(size_t themeId);
+			void clearTheme(std::string nameID);
 		};
 		//DocString: FMTlandscapeparser::ProcessPreDeclarationLine
 		bool ProcessPreDeclarationLine(const std::string& line,

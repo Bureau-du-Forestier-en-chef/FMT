@@ -18,8 +18,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser
 {
-	const boost::regex FMTlandscapeparser::rxattributes = boost::regex(
+	const boost::regex FMTlandscapeparser::rxPreAttributes = boost::regex(
 		"^(\\*ATTRIBUTES)([\\s\\t]*)\\(([\\s\\t]*)_TH(\\d+)([\\s\\t]*)\\)",
+		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTlandscapeparser::rxPreAggregate = boost::regex(
+		"^(\\*AGGREGATE)([\\s\\t]*)\\(([\\s\\t]*)_(\\w+)([\\s\\t]*)\\)",
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMTlandscapeparser::rxcleanlans = boost::regex(
 		"^(\\*THEME)([\\s\\t]*)(([0-9]*$)|([0-9]*)([\\s\\t]*)(.+))|(\\*AGGREGATE)([\\s\\t]*)(\\()([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*)(\\))([\\s\\t]*)(.+)|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", 
@@ -91,7 +94,6 @@ namespace Parser
 
 		if (tempid > 1)
 		{
-			ctx.stop = ctx.attributes.size();
 			if (ctx.attributes.size() == 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTempty_theme,
@@ -100,20 +102,20 @@ namespace Parser
 					m_section);
 			}
 
-			if (preContext.declarations.find(tempid - 1) != preContext.declarations.end())
+			if (preContext.declarations.find("THEME_" + std::to_string(tempid - 1)) != preContext.declarations.end())
 			{
-				std::cout << 'YES';
 				ctx.attributes.insert(
 					ctx.attributes.begin(),
-					preContext.declarations[tempid - 1].first.begin(),
-					preContext.declarations[tempid - 1].first.end());
+					preContext.declarations["THEME_" + std::to_string(tempid - 1)].first.begin(),
+					preContext.declarations["THEME_" + std::to_string(tempid - 1)].first.end());
 				ctx.attributenames.insert(
 					ctx.attributenames.begin(),
-					preContext.declarations[tempid - 1].second.begin(),
-					preContext.declarations[tempid - 1].second.end());
-				preContext.clearTheme(tempid - 1);
+					preContext.declarations["THEME_" + std::to_string(tempid - 1)].second.begin(),
+					preContext.declarations["THEME_" + std::to_string(tempid - 1)].second.end());
+				preContext.clearTheme(std::to_string(tempid - 1));
 			}
 
+			ctx.stop = ctx.attributes.size();
 			themes.push_back(Core::FMTtheme(
 				ctx.attributes, ctx.attributenames, ctx.aggregates,
 				ctx.aggregatenames, ctx.indexes_values, ctx.id, ctx.start, ctx.themename));
@@ -273,11 +275,11 @@ namespace Parser
 		indexes_values.clear();
 	}
 
-	FMTlandscapeparser::PreDeclarationContext::PreDeclarationContext() : state(ParseState::NORMAL), currentThemeId(-1) 
+	FMTlandscapeparser::PreDeclarationContext::PreDeclarationContext() : state(ParseState::NORMAL), currentKey("")
 	{}
-	void FMTlandscapeparser::PreDeclarationContext::clearTheme(size_t themeId)
+	void FMTlandscapeparser::PreDeclarationContext::clearTheme(std::string nameID)
 	{
-		declarations.erase(themeId);
+		declarations.erase(nameID);
 	}
 
 	bool FMTlandscapeparser::ProcessPreDeclarationLine(
@@ -286,9 +288,16 @@ namespace Parser
 		const Core::FMTconstants& constants)
 	{
 		boost::smatch preDeclaredMatch;
-		if (boost::regex_search(line, preDeclaredMatch, FMTlandscapeparser::rxattributes)) {
+		if (boost::regex_search(line, preDeclaredMatch, FMTlandscapeparser::rxPreAttributes)) {
 			context.state = ParseState::IN_PRE_DECLARATION;
-			context.currentThemeId = getNum<int>(std::string(preDeclaredMatch[4]), constants);
+			int themeID = getNum<int>(std::string(preDeclaredMatch[4]), constants);
+			context.currentKey = "THEME_" + std::to_string(themeID);
+			return true;
+		}
+		
+		if (boost::regex_search(line, preDeclaredMatch, FMTlandscapeparser::rxPreAggregate)) {
+			context.state = ParseState::IN_PRE_DECLARATION;
+			context.currentKey = "AGGREGATE_" + std::string(preDeclaredMatch[4]);
 			return true;
 		}
 
@@ -298,14 +307,17 @@ namespace Parser
 
 		if (line[0] == '*') {
 			context.state = ParseState::NORMAL;
-			context.currentThemeId = -1;
+			context.currentKey = "";
 			return false;
 		}
 
 		std::vector<std::string> splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
-		context.declarations[context.currentThemeId].first.push_back(splited[0]);
-		context.declarations[context.currentThemeId].second.push_back(
-			splited.size() > 1 ? splited[1] : std::string());
+		if (context.state != ParseState::NORMAL)
+		{
+			context.declarations[context.currentKey].first.push_back(splited[0]);
+			context.declarations[context.currentKey].second.push_back(
+				splited.size() > 1 ? splited[1] : std::string());
+		}
 
 		return true;
 	}
@@ -333,9 +345,9 @@ namespace Parser
 			_exhandler->printexceptions("", "FMTlandscapeparser::readrasters", __LINE__, __FILE__,m_section);
 		}
 			
-
         return themes;
         }
+
     std::vector<Core::FMTtheme>FMTlandscapeparser::readvectors(const std::string& location)
         {
 		std::vector<Core::FMTtheme>themes;
@@ -440,12 +452,12 @@ namespace Parser
 				{
 					ctx.attributes.insert(
 						ctx.attributes.begin(),
-						preContext.declarations[ctx.id].first.begin(),
-						preContext.declarations[ctx.id].first.end());
+						preContext.declarations[std::to_string(ctx.id + 1)].first.begin(),
+						preContext.declarations[std::to_string(ctx.id + 1)].first.end());
 					ctx.attributenames.insert(
 						ctx.attributenames.begin(),
-						preContext.declarations[ctx.id].second.begin(),
-						preContext.declarations[ctx.id].second.end());
+						preContext.declarations[std::to_string(ctx.id + 1)].second.begin(),
+						preContext.declarations[std::to_string(ctx.id + 1)].second.end());
 				}
 
 				themes.push_back(Core::FMTtheme(
