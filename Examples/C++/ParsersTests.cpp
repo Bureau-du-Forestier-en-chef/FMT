@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 			path = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/DatabaseParserTests/";// argv[1];
 		}
 		else {
-			path = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01010307\\Template_complexite\\Ovoltotrec_complexite";
+			path = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\Pour_Bruno";
 		}
 		const boost::filesystem::path FOLDER_PATH(path);
 		Core::FMTconstants baseConstants;
