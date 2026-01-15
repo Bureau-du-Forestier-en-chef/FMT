@@ -93,9 +93,9 @@ namespace Core
 						{
 							const int devlifespan = lifespanfound.at(0)->second;
 							const int agelock = baseage+lock;
-							if(agelock >= devlifespan)
+							if(agelock > devlifespan)
 							{
-								const int newlock = std::max(lock-(agelock - devlifespan),0);
+								const int newlock = std::max(lock-(agelock - devlifespan),0)+1;
 								_exhandler->raise	(Exception::FMTexc::FMTdeathwithlock,
 													std::string(newdev)+" death age is "+std::to_string(devlifespan)+ ". The lock "+std::to_string(lock)+" on the age class "+std::to_string(baseage)+" will exceed the death age. If this error is set to warning, the lock will be reduce to "+std::to_string(newlock)+" to reproduce the behavior of WS.",
 													"FMTactualdevelopment::reducelocktodeath",
@@ -103,6 +103,7 @@ namespace Core
 													__FILE__);
 								newdev.setlock(newlock);
 							}
+
 						}
 					}
 				}catch (...)

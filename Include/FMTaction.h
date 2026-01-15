@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.h"
 #include "FMTlist.hpp"
 #include "FMTbounds.hpp"
+#include "FMTSerie.h"
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -190,7 +191,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		*/
 		inline bool ispartofaserie() const
 		{
-			return !series.empty();
+			return !m_series.empty();
 		}
 		// DocString: FMTaction::isallowedinserie
 		/**
@@ -198,6 +199,19 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		return false.
 		*/
 		bool isallowedinserie(const std::vector<std::string>& serie) const;
+		// DocString: FMTaction::GetSerie
+		/**
+		@brief get the serie with the partial mask p_SerieMask
+		@param[in] p_SerieMask the partial serie mask
+		@return pointer to valid serie
+		*/
+		const FMTSerie* GetSerie(const std::vector<std::string>& p_SerieMask) const;
+		// DocString: FMTaction::GetSeries
+		/**
+		@brief get all series of the actions
+		@return vector of series
+		*/
+		const std::vector<FMTSerie>& GetSeries() const;
 		// DocString: FMTaction::getseriesnames
 		/**
 		Returns the series names of the action.
@@ -208,12 +222,12 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Returns the size of the largest serie.
 		*/
 		size_t getlargestseriesize() const;
-		// DocString: FMTaction::setseries
+		// DocString: FMTaction::setSeries
 		/**
 		Giving a serie complete names, and the actions id of the serie occuring before this action,
 		Will go across all series and check if part of it and build it if in.
 		*/
-		void setseries(std::vector<std::vector<std::string>> seriesnames);
+		void setSeries(std::vector<Core::FMTSerie> p_series);
 		// DocString: FMTaction::useyield
 		/**
 		Return true if the yield is used by the action to set operability.
@@ -292,6 +306,12 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		@return true if is part else false.
 		*/
 		bool isPartOf(const std::string& p_name) const;
+		// DocString: FMTaction:: IsInSeries
+		/**
+		@brief return true if you find this action first in a serie
+		@return true if first else false
+		*/
+		bool IsInSeries() const;
 	protected:
 		// DocString: FMTaction::aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.
@@ -312,9 +332,12 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		// DocString: FMTaction::reset
 		///If reset is true then the action is age reset Y else the action  doen't reset age
 		bool reset;
-		// DocString: FMTaction::series
+		// DocString: FMTaction::m_series
 		///The action series that the action is part of
-		std::vector<std::vector<std::string>>series;
+		std::vector<FMTSerie>m_series;
+		// DocString: FMTaction::m_InSerie
+		///True if the actions is in a serie
+		bool m_InSerie;
 		// DocString: FMTaction::setbounds
 		/**
 		This function is for optimization it iterates on the specifications to get the 

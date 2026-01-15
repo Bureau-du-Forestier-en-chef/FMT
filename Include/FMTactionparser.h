@@ -19,6 +19,7 @@ namespace Core
 	class FMTtheme;
 	class FMTaction;
 	class FMTyields;
+	class FMTSerie;
 }
 
 
@@ -38,6 +39,18 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		// DocString: FMTactionparser::rxoperator
 		///This regex catches the operators used in the action section.
 		const static boost::regex rxoperator;
+		// DocString: FMTactionparser::m_SERIES_MATCH
+		///This regex catchesthe series.
+		const static boost::regex m_SERIES_MATCH;
+		// DocString: FMTactionparser::_GetSerie
+		/**
+		@brief get a serie from a line
+		@param[in] p_line parsed line
+		@param[in] p_actions the actions generated
+		@return a valid serie
+		*/
+		Core::FMTSerie _GetSerie(const std::string& p_line,
+			const std::vector<Core::FMTaction>& p_actions) const;
 		// DocString: FMTactionparser::sameactionas
 		/**
 		Using a string containing potential action names (all_set) and a vector of (actions) this function
@@ -54,11 +67,6 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		This functions turns aggregates of aggregates into simple aggregates of action map.
 		*/
 		std::map<std::string, std::vector<std::string>>valagg(std::vector<Core::FMTaction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
-		// DocString: FMTactionparser::cleanactionseries
-		/**
-		Remove action series that are already part of other series and returns the new series.
-		*/
-		std::vector<std::vector<std::string>> cleanactionseries(const std::vector<std::vector<std::string>>& series) const;
 	public:
 		// DocString: FMTactionparser()
 		/**
