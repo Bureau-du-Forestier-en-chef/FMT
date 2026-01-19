@@ -37,11 +37,11 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01007296\\PC9425_U08663_DET_test\\PC_9425_U08663_4_Vg1_2023_vSSP03.pri";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\Pour_Bruno\\PC_9929_U11171_2028_MODB01.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
 		length = 2;
-		scenario_name = "CAROPER_TDI-DIF_0";
-		playback.push_back(false);
+		scenario_name = "200_stratreg_apsp_sen_tyfres_cosint_crb";
+		playback.push_back(true);
 		allscenarios.push_back(scenario_name);
 	}
 

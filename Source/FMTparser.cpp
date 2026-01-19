@@ -920,7 +920,13 @@ std::string FMTparser::setSpecs(Core::FMTsection section, Core::FMTkwor key,cons
     return rest;
     }
 
-std::string FMTparser::setSpec(Core::FMTsection section, Core::FMTkwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,Core::FMTspec& spec, const std::string& line)
+std::string FMTparser::setSpec(
+	Core::FMTsection section, 
+	Core::FMTkwor key,
+	const Core::FMTyields& ylds,
+	const Core::FMTconstants& constants,
+	Core::FMTspec& spec, 
+	const std::string& line)
     {
 	std::string rest = "";
 	try {
@@ -952,6 +958,10 @@ std::string FMTparser::setSpec(Core::FMTsection section, Core::FMTkwor key,const
 				}
 				else {
 					lowerbound = getNum<double>(singlebound, constants);
+					if (section == Core::FMTsection::Transition)
+					{
+						upperbound = lowerbound;
+					}
 				}
 				
 				if (pushaagebound)
