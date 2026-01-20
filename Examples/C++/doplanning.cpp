@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\Pour_Bruno\\PC_9929_U11171_2028_MODB01.pri";
-			scenario = "200_stratreg_apsp_sen_tyfres_cosint_crb";
+			primarylocation = "C:\\Users\\Admlocal\\Documents\\FMT\\FMT\\Examples\\Models\\TWD_land\\TWD_land.pri";
+			scenario = "Predeclared_Primary";
 			length = 3; 
 			objectivevalue = 302;
 		}

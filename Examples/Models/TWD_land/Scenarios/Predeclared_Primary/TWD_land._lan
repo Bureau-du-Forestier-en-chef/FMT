@@ -1,13 +1,4 @@
 *ATTRIBUTES (_TH2)
 feu
 
-*ATTRIBUTES (_TH3)
-UTR3
-
-*AGGREGATE (_UTA2)
-UTR3
-
-*AGGREGATE (_UTRS)
-UTR3
-
 *INCLUDE _PRIMARY(Predeclared_Primary_ref)

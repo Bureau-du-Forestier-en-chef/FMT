@@ -129,13 +129,13 @@ int main(int argc, char *argv[])
                 length = 5;
             }else
                 {
-                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\03_Emilie\\PC_9967_U06271_2028_MODB01.pri";
-                scenarios = std::vector<std::string> (1, "200_StratReg_apsp");
+                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+                scenarios = std::vector<std::string> (1, "ROOT");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\03_Emilie\\Parametres_Bfecopt.csv";
-                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\03_Emilie\\Carte\\PC_9967_UA_U06271.shp";
-                results = std::vector<std::string> (1, "200_StratReg_apsp");
+                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\parameters.csv";
+                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\Carte\\PC_9424_UA_U08551.shp";
+                results = std::vector<std::string> (1, "ROOT");
                 length = 20;
                 }
            
