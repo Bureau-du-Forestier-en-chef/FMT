@@ -2396,7 +2396,10 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				if (validTransitions[transitionIds])
 				{
 					validTransitions[transitionIds] = false;
-					std::vector<Core::FMTaction>::const_iterator actionIt = std::find_if(presolvedModel->actions.begin(), presolvedModel->actions.end(), Core::FMTactioncomparator(presolvedTransition.getname()));
+					std::vector<Core::FMTaction>::const_iterator actionIt = std::find_if(
+						presolvedModel->actions.begin(), 
+						presolvedModel->actions.end(), 
+						Core::FMTactioncomparator(presolvedTransition.getname()));
 					const size_t ACTIONm_location = std::distance(presolvedModel->actions.cbegin(), actionIt);
 					const Core::FMTmask TESTED_MASK = presolvedTransition.getunion(presolvedModel->themes);
 					if (actionIt != presolvedModel->actions.end() && 
