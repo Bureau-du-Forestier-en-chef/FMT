@@ -94,16 +94,16 @@ namespace Parser
 
 		if (tempid > 1)
 		{
-			if (preContext.declarations.find("THEME_" + std::to_string(tempid - 1)) != preContext.declarations.end())
+			if (preContext.declarations.find( std::to_string(tempid - 1)) != preContext.declarations.end())
 			{
 				ctx.attributes.insert(
 					ctx.attributes.begin(),
-					preContext.declarations["THEME_" + std::to_string(tempid - 1)].first.begin(),
-					preContext.declarations["THEME_" + std::to_string(tempid - 1)].first.end());
+					preContext.declarations[std::to_string(tempid - 1)].first.begin(),
+					preContext.declarations[std::to_string(tempid - 1)].first.end());
 				ctx.attributenames.insert(
 					ctx.attributenames.begin(),
-					preContext.declarations["THEME_" + std::to_string(tempid - 1)].second.begin(),
-					preContext.declarations["THEME_" + std::to_string(tempid - 1)].second.end());
+					preContext.declarations[std::to_string(tempid - 1)].second.begin(),
+					preContext.declarations[std::to_string(tempid - 1)].second.end());
 				preContext.clearTheme(std::to_string(tempid - 1));
 			}
 
@@ -291,15 +291,10 @@ namespace Parser
 		if (boost::regex_search(line, preDeclaredMatch, FMTlandscapeparser::rxPreAttributes)) {
 			context.state = ParseState::IN_PRE_DECLARATION;
 			int themeID = getNum<int>(std::string(preDeclaredMatch[4]), constants);
-			context.currentKey = "THEME_" + std::to_string(themeID);
+			context.currentKey = std::to_string(themeID);
 			return true;
 		}
-		
-		if (boost::regex_search(line, preDeclaredMatch, FMTlandscapeparser::rxPreAggregate)) {
-			context.state = ParseState::IN_PRE_DECLARATION;
-			context.currentKey = "AGGREGATE_" + std::string(preDeclaredMatch[4]);
-			return true;
-		}
+
 
 		if (context.state == ParseState::NORMAL) {
 			return false; 
