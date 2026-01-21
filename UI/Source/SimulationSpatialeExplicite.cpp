@@ -31,7 +31,7 @@ void Wrapper::FMTForm::RapportdeBris(const Models::FMTsemodel& semodel)
 void Wrapper::FMTForm::RapportdeCarboneSpatial(const Models::FMTsemodel& semodel,const int& nombredeperiodes, const std::vector<Core::FMTschedule>& schedules)
 {
 	try {
-		Models::FMTmodel localmodel(semodel);
+		Models::FMTsemodel localmodel(semodel);
 		const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
 		const std::vector<Core::FMTschedule> newschedule = semodel.GetSchedules(schedule, false);
 		size_t scid = 0;
@@ -48,8 +48,7 @@ void Wrapper::FMTForm::RapportdeCarboneSpatial(const Models::FMTsemodel& semodel
 			localmodel.setconstraints(periodicconstraints);
 			double primalinf = 0;
 			double objectivevalue = 0;
-			Models::FMTsemodel*  SE = dynamic_cast<Models::FMTsemodel*>(&localmodel);
-			SE->GetSolutionStatus(schedule,objectivevalue, primalinf,   true, false);
+			localmodel.GetSolutionStatus(schedule, objectivevalue, primalinf, true, false);
 			RetourJson("objectives;" + jsonloc + ";Objective;" + objectivevalue, gcnew System::EventArgs());
 			RetourJson("objectives;" + jsonloc + ";Primalinfeasibility;" + primalinf, gcnew System::EventArgs());
 			double oldtotal = 0;
