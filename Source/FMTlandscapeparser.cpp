@@ -94,14 +94,6 @@ namespace Parser
 
 		if (tempid > 1)
 		{
-			if (ctx.attributes.size() == 0)
-			{
-				_exhandler->raise(Exception::FMTexc::FMTempty_theme,
-					"Theme " + std::to_string(ctx.id + 1),
-					"FMTlandscapeparser::read", __LINE__, __FILE__,
-					m_section);
-			}
-
 			if (preContext.declarations.find("THEME_" + std::to_string(tempid - 1)) != preContext.declarations.end())
 			{
 				ctx.attributes.insert(
@@ -116,6 +108,15 @@ namespace Parser
 			}
 
 			ctx.stop = ctx.attributes.size();
+
+			if (ctx.attributes.size() == 0)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTempty_theme,
+					"Theme " + std::to_string(ctx.id + 1),
+					"FMTlandscapeparser::read", __LINE__, __FILE__,
+					m_section);
+			}
+
 			themes.push_back(Core::FMTtheme(
 				ctx.attributes, ctx.attributenames, ctx.aggregates,
 				ctx.aggregatenames, ctx.indexes_values, ctx.id, ctx.start, ctx.themename));
@@ -200,9 +201,8 @@ namespace Parser
 				themes[ctx.pasttheme].push_aggregate_value(ctx.aggregatename, val);
 			}
 			else {
-				size_t aggIndex = std::distance(ctx.aggregates.begin(),
-					std::find(ctx.aggregates.begin(), ctx.aggregates.end(), ctx.aggregatename));
-				ctx.aggregatenames[aggIndex].push_back(val);
+				ctx.aggregatenames[std::distance(ctx.aggregates.begin(),
+					std::find(ctx.aggregates.begin(), ctx.aggregates.end(), ctx.aggregatename))].push_back(val);
 			}
 		}
 

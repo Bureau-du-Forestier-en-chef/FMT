@@ -10,11 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTcoordinate.h"
 #include "FMTforest.h"
-<<<<<<< HEAD
-#include "FMTspatialschedule.h"
-=======
 #include "FMTSpatialSchedule.h"
->>>>>>> master
 //#include "FMTspatialaction.h"
 #include "FMTeventcontainer.h"
 //#include "FMTsaschedule.h"
