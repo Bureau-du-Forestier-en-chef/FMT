@@ -10,8 +10,7 @@
 #include "FMTForm.h"
 #include "FMTmodel.h"
 #include "FMTFormCache.h"
-
-
+#include "FMTdefaultlogger.h"
 
 bool Wrapper::FMTForm::OptimisationSpatialeExplicite(System::String^ fichierPri, System::String^ cheminRasters, int scenario,
 		System::Collections::Generic::List<System::String^>^ contraintes, int periodes,
@@ -24,6 +23,7 @@ bool Wrapper::FMTForm::OptimisationSpatialeExplicite(System::String^ fichierPri,
 	{
 		Models::FMTsamodel OptimizationModel(Cache->getmodel(scenario));
 		FMTFormLogger* Logger = Cache->getformlogger();
+		*Logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
 		*Logger << "FMT -> Traitement pour le sc�nario : " + OptimizationModel.getname() << "\n";
 		if (contraintes->Count > 0)
 		{

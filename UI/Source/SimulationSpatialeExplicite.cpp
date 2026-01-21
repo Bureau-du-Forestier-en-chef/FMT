@@ -15,6 +15,7 @@
 #include "FMTmodel.h"
 #include "FMTFormCache.h"
 #include "FMTexceptionhandlerwarning.h"
+#include "FMTdefaultlogger.h"
 
 
 void Wrapper::FMTForm::RapportdeBris(const Models::FMTsemodel& semodel)
@@ -283,6 +284,7 @@ bool Wrapper::FMTForm::SimulationSpatialeExplicite(
 	{
 		Models::FMTsesmodel simulationmodel(Cache->getmodel(scenario));
 		FMTFormLogger* logger = Cache->getformlogger();
+		*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
 		*logger << "FMT -> Traitement pour le sc�nario : " + simulationmodel.getname() << "\n";
 		if (contraintes->Count > 0)
 		{

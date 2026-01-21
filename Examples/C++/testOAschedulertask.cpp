@@ -16,18 +16,36 @@
 #endif
 #ifdef FMTWITHOSI
 
-std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const std::string& fichierShp,const std::vector<Core::FMTtheme>& themes, const int& numeroTheme,const int& startingperiod,
-                                                                        const std::string& nomChampAge,const std::string& nomChampSuperficie,const std::string& nomChampStanlock, const std::string& fichierParam
-                                                                    )
+std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
+    const std::string& fichierShp,
+    const std::vector<Core::FMTtheme>& themes,
+    const int& numeroTheme,
+    const int& startingperiod,
+    const std::string& nomChampAge,
+    const std::string& nomChampSuperficie,
+    const std::string& nomChampStanlock,
+    const std::string& fichierParam)
     {
         Parser::FMTareaparser areaParser;
-        std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(fichierParam,themes,numeroTheme-1,startingperiod);
+        std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(
+            fichierParam,
+            themes,
+            numeroTheme - 1,
+            startingperiod);
         for (const auto& op : opeareas) 
         {
             if (op.getneihgborsperimeter() > 0 || op.getgreenup() > 0)
             {
                 Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
-                opeareas = areaParser.getschemeneighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1, nomChampStanlock);
+                opeareas = areaParser.getschemeneighbors(
+                    opeareas, 
+                    themes, 
+                    fichierShp, 
+                    nomChampAge, 
+                    nomChampSuperficie, 
+                    1.0, 
+                    1, 
+                    nomChampStanlock);
                 return opeareas;
             }
         }
@@ -48,8 +66,10 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
                     std::vector<std::string> agg = action.getaggregates();
                     if (std::count(agg.begin(), agg.end(), Agg_name))
                     {
-                        Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
-                        "testOAschedulerBFEC", __LINE__,model.getname());  
+                        Exception::FMTfreeexceptionhandler().raise(
+                            Exception::FMTexc::FMTfunctionfailed, 
+                            "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
+                            "testOAschedulerBFEC", __LINE__,model.getname());  
                     }
 
                     action.push_aggregate(Agg_name);
@@ -60,8 +80,10 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 
             if (youvert < 1)
             {
-                Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Aucune action dans le modèle n'a de youvert",
-                        "testOAschedulerBFEC", __LINE__,model.getname()) ;
+                Exception::FMTfreeexceptionhandler().raise(
+                    Exception::FMTexc::FMTfunctionfailed, 
+                    "Aucune action dans le modèle n'a de youvert",
+                    "testOAschedulerBFEC", __LINE__,model.getname()) ;
             }
 
             model.setactions(newactions);
@@ -89,29 +111,32 @@ int main(int argc, char *argv[])
         #ifdef FMTWITHOSI
             Logging::FMTdefaultlogger().logstamp();
             std::string primarylocation;
-            std::vector<std::string>results;
-            std::vector<std::string>scenarios;
+            std::vector<std::string> results;
+            std::vector<std::string> scenarios;
             std::string lfichierParam;
             std::string fichierShp;
+            int length;
             if (argc > 1)
             {
                 primarylocation = std::string(argv[1]);
                 const std::string vals = argv[2];
                 boost::split(results, vals, boost::is_any_of("|"));
-                scenarios = std::vector<std::string>(1, results.at(0));
+                scenarios = std::vector<std::string> (1, results.at(0));
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
                 lfichierParam = basefolder.string() + "/Scenarios/" + results.at(0) + "/" + results.at(1);
                 fichierShp = std::string(argv[3]);
+                length = 5;
             }else
                 {
-                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\ModWS_08251\\01_08251\\PC_9949_U08251_2028_MODB01.pri";
-                scenarios = std::vector<std::string> (1, "250_Fin_Etape1_avsp");
+                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+                scenarios = std::vector<std::string> (1, "ROOT");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\Seuil_min_10%\\Parametres_Bfecopt.csv";
-                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\OAScheduler\\ModWS_08251\\01_08251\\Carte\\PC_9949_UA_U08251.shp";
-                results = std::vector<std::string> (1, "250_Fin_Etape1_avsp");
+                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\parameters.csv";
+                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\Carte\\PC_9424_UA_U08551.shp";
+                results = std::vector<std::string> (1, "ROOT");
+                length = 20;
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
@@ -134,7 +159,7 @@ int main(int argc, char *argv[])
             Models::FMTmodel model = models.at(0);
             //Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::CLP);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
             optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); 
             // pour gérer les variables négatives
@@ -150,22 +175,40 @@ int main(int argc, char *argv[])
                     break;
                     }
                 }
-            const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK", lfichierParam);
+            const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(
+                fichierShp,
+                optimizationmodel.getthemes(),
+                14, 
+                startingperiod, 
+                "AGE", 
+                "SUPERFICIE", 
+                "STANLOCK", 
+                lfichierParam);
             {
-                std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput, out, "YOUVERT", 10, 9000, adm7m));//120));
+                std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(
+                    optimizationmodel, 
+                    opeareas, 
+                    nodeofoutput, 
+                    out, 
+                    "YOUVERT", 
+                    10, 
+                    9000, 
+                    adm7m));//120));
                 Parallel::FMTtaskhandler handler(maintaskptr, 4);
                 handler.settasklogger();
                 handler.conccurentrun();
                 maintaskptr->finalize(); // écrit ici le meilleur modèle sur le disque
             }
             // On relit ici le nouveau "root" qui est le meilleur modèle écrit précédement 
-            const std::vector<Models::FMTmodel> nmodels = modelparser.readproject("../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string>(1, "ROOT"));
+            const std::vector<Models::FMTmodel> nmodels = modelparser.readproject(
+                "../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string> (1, "ROOT"));
             Models::FMTmodel readmodel = nmodels.at(0);
             Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
-            noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+            noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
             noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             noptimizationmodel.Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-            const std::vector<Core::FMTschedule> schedules = modelparser.readschedules("../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
+            const std::vector<Core::FMTschedule> schedules = modelparser.readschedules(
+                "../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
             // On regarde si on est capable de relire ce qu'on vient de créer
             noptimizationmodel.doplanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 
 		#endif 
