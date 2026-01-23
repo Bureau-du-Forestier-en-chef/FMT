@@ -83,6 +83,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Need to have a builded graph with a solution to use this function.
         */
         virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
+        FMTsamodel()=default;
         ///Destructor
         ~FMTsamodel();
         ///Copy constructor

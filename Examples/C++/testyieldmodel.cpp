@@ -67,7 +67,7 @@ int main()
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
 	{
-		for (const auto& t : simulationmodel.greedyreferencebuild(schedules.at(0).at(period), greedysearch))
+		for (const auto& t : simulationmodel.GreedyReferenceBuild(schedules.at(0).at(period), greedysearch))
 		{
 			Logging::FMTdefaultlogger() << t.first << " " << t.second << " ";
 		}

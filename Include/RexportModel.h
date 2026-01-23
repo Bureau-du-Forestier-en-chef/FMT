@@ -146,8 +146,8 @@ void exportModel()
 		.derives<Models::FMTsemodel>("FMTsemodel")
 		.constructor("@DocString(FMTsesmodel())")
 		.constructor<Models::FMTmodel>("@DocString(FMTsesmodel(Models::FMTmodel))")
-		.method("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
-			"@DocString(FMTsesmodel:::greedyreferencebuild)");
+		.method("greedyreferencebuild", &Models::FMTsesmodel::GreedyReferenceBuild,
+			"@DocString(FMTsesmodel:::GreedyReferenceBuild)");
 
 	#ifdef FMTWITHOSI
 	Rcpp::class_<Models::FMTlpsolver>("FMTlpsolver", "@DocString(FMTlpsolver)")

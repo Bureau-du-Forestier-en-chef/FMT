@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 		simmodel.setinitialmapping(forest);
 		for (int period = 1; period <= length; ++period)
 		{
-			simmodel.greedyreferencebuild(optimizationmodel.getsolution(period),
+			simmodel.GreedyReferenceBuild(optimizationmodel.getsolution(period),
 				100,
 				0,
 				0.1);
