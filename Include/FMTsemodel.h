@@ -185,6 +185,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		@return the evaluation value.
 		*/
 		double GetConstraintEvaluation(size_t p_Constraint) const;
+		
 	protected:
 		// DocString: FMTsemodel::spschedule
 		///Contains the builded spatialsolution latest or best one.
@@ -195,18 +196,17 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 
 		double GetGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const;
 
-		std::map<std::string, double> GreedyReferenceBuild(
-										Spatial::FMTSpatialSchedule& p_SpatialSchedule,
-										const Core::FMTschedule& schedule,
-										const size_t& randomiterations,
-										unsigned int seed = 0,
-										double tolerance = FMT_DBL_TOLERANCE,
-										bool log = true) const;
 		std::vector<double> GetConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
 
 		void DoReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
 		Spatial::FMTSpatialSchedule GetNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
-		
+		std::map<std::string, double> GreedyReferenceBuild(
+			Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+			const Core::FMTschedule& schedule,
+			const size_t& randomiterations,
+			unsigned int seed = 0,
+			double tolerance = FMT_DBL_TOLERANCE,
+			bool log = true) const;
 	private:
 		// DocString: FMTsemodel::Serialize
 		/**

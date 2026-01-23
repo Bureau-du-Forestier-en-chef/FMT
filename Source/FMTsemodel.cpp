@@ -80,7 +80,8 @@ namespace Models
 	}
 
 
-    FMTsemodel::FMTsemodel(): FMTmodel(), m_BestSolution(), m_SpatialGraphs()
+    FMTsemodel::FMTsemodel(): FMTmodel(), m_BestSolution(),
+		m_SpatialGraphs()
         {
 
         }
@@ -105,7 +106,8 @@ namespace Models
 	}
 
 	FMTsemodel::FMTsemodel(const FMTmodel& rhs) :
-		FMTmodel(rhs), m_BestSolution(), m_SpatialGraphs()
+		FMTmodel(rhs), m_BestSolution(),
+		m_SpatialGraphs()
         {
 		
         }
@@ -463,6 +465,7 @@ namespace Models
 		{
 		return p_FromSolution.GetBaseSchedule(m_SpatialGraphs);
 		}
+
 
 	std::vector<Core::FMTschedule>  FMTsemodel::GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,bool withlock) const
 	{

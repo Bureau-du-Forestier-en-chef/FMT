@@ -41,7 +41,8 @@ enum  FMTconstrainttype
 	FMTspatialsize = 9,
 	FMTspatialadjacency = 10,
 	FMTspatialgreenup = 11,
-	FMTrandomaction = 12//need to be deleted
+	FMTSpatialGroup = 12,
+	FMTrandomaction = 13//need to be deleted
 };
 // DocString: FMTconstraint
 /**
@@ -343,6 +344,8 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 						const std::vector<bool>& p_valideActions,
 						 Core::FMTyields& yields,
 						 const int& constraintid) const;
+
+		int GetThemeTarget() const;
 	private:
 		// DocString: FMTconstraint::serialize
 	/**

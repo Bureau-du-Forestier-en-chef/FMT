@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01007296\\PC9425_U08663_DET_test\\PC_9425_U08663_4_Vg1_2023_vSSP03.pri";
-		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
-		length = 2;
-		scenario_name = "CAROPER_TDI-DIF_0";
+		primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_planningtest/Feux_2023_ouest_V01.pri";
+		outputlocation = "D:/test/";
+		length = 5;
+		scenario_name = "1";
 		playback.push_back(false);
 		allscenarios.push_back(scenario_name);
 	}

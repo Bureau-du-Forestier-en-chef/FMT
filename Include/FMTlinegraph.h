@@ -62,6 +62,13 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		@param[in] p_LengthReserve the size to reserve
 		*/
         FMTlinegraph(size_t p_LengthReserve);
+		// DocString: FMTlinegraph(const Core::FMTactualdevelopment&,size_t )
+		/**
+		@brief Construct line graph
+		@param[in] p_LengthReserve the size to reserve
+		@param[in] p_dev the base dev.
+		*/
+		FMTlinegraph(size_t p_LengthReserve, const Core::FMTactualdevelopment& p_dev);
 		// DocString: FMTlinegraph(const FMTlinegraph&)
 		/**
 			Copy constructor of the FMTlinegraph.

@@ -12,7 +12,7 @@
 
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 {
-	double result = 0;
+	int result = 0;
 	try
 	{
 		const Core::FMTyields YIELDS = p_model.getyields();

@@ -47,7 +47,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		/**
 		Default constructor of FMTsesmodel
 		*/
-        FMTsesmodel();
+		FMTsesmodel() = default;
 		// DocString: ~FMTsesmodel()
 		/**
 		Default destructor of FMTsesmodel
@@ -57,7 +57,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		/**
 		Copy constructor of FMTsesmodel
 		*/
-        FMTsesmodel(const FMTsesmodel& rhs);
+        FMTsesmodel(const FMTsesmodel& rhs)=default;
 		// DocString: FMTsesmodel(const FMTmodel)
 		/**
 		Parent constructor for FMTsesmodel (easiest way to get information from a FMTmodel)
@@ -72,7 +72,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		/**
 		Copy assignment of FMTsesmodel
 		*/
-        FMTsesmodel& operator = (const FMTsesmodel& rhs);
+        FMTsesmodel& operator = (const FMTsesmodel& rhs)=default;
 		// DocString: FMTsesmodel(FMTsesmodel&&)
 		/**
 		Default move constructor for FMTsesmodel.
@@ -88,16 +88,17 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
 		*/
 		std::string getdisturbancestats() const;
-		// DocString: FMTsesmodel::greedyreferencebuild
+		// DocString: FMTsesmodel::GreedyReferenceBuild
 		/**
 		This function call multiple time the function FMTspatialschedule::referencebuild function to 
 		find the best possible spatialisation for a given schedule using random draw. It uses a schedule of actions (schedule) on the actual
 		spatialy explicit forest.  The user can also set the seed to get different solutions from the simulator.
 		*/
-		std::map<std::string, double> greedyreferencebuild(const Core::FMTschedule& schedule,
-			const size_t& randomiterations,
-			unsigned int seed = 0,
-			double tolerance = FMT_DBL_TOLERANCE);
+		std::map<std::string, double> GreedyReferenceBuild(
+			const Core::FMTschedule& p_schedule,
+			size_t p_randomIterations,
+			int p_seed = 0,
+			double p_tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTsesmodel::clone
 		/**
 		Get a clone of the FMTsesmodel
