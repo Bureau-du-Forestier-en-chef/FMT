@@ -22,7 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python
 {
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(greedyreferencebuild_overloads,greedyreferencebuild, 2, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(greedyreferencebuild_overloads, GreedyReferenceBuild, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getsolution_overloads, getsolution, 1, 2)
@@ -178,8 +178,8 @@ void exportModel()
 	bp::class_<Models::FMTsesmodel, bp::bases<Models::FMTsemodel>>("FMTsesmodel", "@DocString(FMTsesmodel)")
 		.def(bp::init<Models::FMTmodel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTsesmodel>())
-		.def("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
-			greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::greedyreferencebuild)"));
+		.def("greedyreferencebuild", &Models::FMTsesmodel::GreedyReferenceBuild,
+			greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::GreedyReferenceBuild)"));
 
     define_pylist<Models::FMTsesmodel>();
 

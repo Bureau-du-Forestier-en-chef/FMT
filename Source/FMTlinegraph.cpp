@@ -28,6 +28,16 @@ namespace Graph
 		reserveVerticies(p_LengthReserve);
     }
 
+	FMTlinegraph::FMTlinegraph(
+		size_t p_LengthReserve, const Core::FMTactualdevelopment& p_dev):
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(FMTgraphbuild::schedulebuild)
+	{
+		reserveVerticies(p_LengthReserve);
+		const std::vector<Core::FMTactualdevelopment> BASES(1, p_dev);
+		initialize(BASES);
+	}
+
+
     FMTlinegraph::FMTlinegraph(const FMTlinegraph& rhs):
 		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(rhs)
     {

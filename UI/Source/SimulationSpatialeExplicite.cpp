@@ -48,7 +48,7 @@ void Wrapper::FMTForm::RapportdeCarboneSpatial(const Models::FMTsemodel& semodel
 			localmodel.setconstraints(periodicconstraints);
 			double primalinf = 0;
 			double objectivevalue = 0;
-			localmodel.GetSolutionStatus(schedule, objectivevalue, primalinf, true, false);
+			localmodel.GetSolutionStatus(schedule,objectivevalue, primalinf,   true, false);
 			RetourJson("objectives;" + jsonloc + ";Objective;" + objectivevalue, gcnew System::EventArgs());
 			RetourJson("objectives;" + jsonloc + ";Primalinfeasibility;" + primalinf, gcnew System::EventArgs());
 			double oldtotal = 0;
@@ -71,6 +71,7 @@ void Wrapper::FMTForm::RapportdeCarboneSpatial(const Models::FMTsemodel& semodel
 				}
 				++newloc;
 			}
+			
 			if (scid < newschedule.size() && scid < schedules/*.at(0)*/.size())
 			{
 				for (const auto& data : schedules.at(oriloc))
@@ -343,10 +344,10 @@ bool Wrapper::FMTForm::SimulationSpatialeExplicite(
 
 		const Spatial::FMTSpatialSchedule& schedule = simulationmodel.getspschedule();
 		RapportdeBris(simulationmodel);
-		if (indCarbon) 
-			{
+		//if (indCarbon) 
+		//	{
 			RapportdeCarboneSpatial(simulationmodel, periodes, schedules);
-			}
+		//	}
 		EcrituredesPerturbations(simulationmodel, directoryFullName, periodes, growththemes, indCarbon);
 		if (indGenererEvents || indCarbon)
 			{

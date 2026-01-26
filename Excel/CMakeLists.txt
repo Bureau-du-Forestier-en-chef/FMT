@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.20)
 set(ExcelWrapperINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Excel/Include/")
 set(ExcelWrapperSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Excel/Source/")
 FILE(GLOB ExcelWrapperSOURCES ${ExcelWrapperSOURCEDIR}*.cpp)

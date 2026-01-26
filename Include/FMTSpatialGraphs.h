@@ -58,6 +58,7 @@ namespace Spatial
 			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator SetIterator(
 								const Graph::FMTlinegraph& p_Graph,
 								size_t p_family);
+			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator  SetNaturalGrowthIterator(size_t p_family);
 			const Models::FMTmodel& GetModel() const;
 			std::map<std::string, double> GetOutput(
 				const std::vector<size_t>& p_Solution,
@@ -79,6 +80,9 @@ namespace Spatial
 				size_t p_family,
 				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const;
 			void swap(FMTSpatialGraphs& p_Other);
+			size_t GetNumberOfCategories(int p_themeId) const;
+			size_t GetCategoryOf(int p_themeId, size_t p_family) const;
+			void DeleteNonCompleteGraphs();
 		private:
 			const static size_t SOLUTION_RESIZE_FACTOR = 2;
 			const static size_t MAX_ASYNC_JOBS = 5;
@@ -107,6 +111,8 @@ namespace Spatial
 			double _GetGraphCells(const std::vector<size_t>& p_solution, const FMTGraphInfo& p_GraphInfo) const;
 			size_t _GetMaxGraphLength(const std::vector<size_t>& p_solution) const;
 			size_t _GetMinGraphLength(const std::vector<size_t>& p_solution) const;
+			void _RemoveGraphsShorterThan(size_t p_GraphSize);
+			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator _GetNaturalGrowthIterator(size_t p_family) const;
 			
 
 		};

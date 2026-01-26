@@ -34,8 +34,7 @@ int main(int argc, char *argv[])
 		}
 		outputlocation = argv[2];
 		length = std::stoi(argv[3]);
-	}
-	else
+	}else
 	{
 		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\PC_9929_U11171_2028_MODB01.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";

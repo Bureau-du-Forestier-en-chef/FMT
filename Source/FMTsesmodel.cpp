@@ -12,54 +12,42 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
     {
-    FMTsesmodel::FMTsesmodel(): FMTsemodel()
-        {
 
-        }
-    FMTsesmodel::FMTsesmodel(const FMTsesmodel& rhs):
-		FMTsemodel(rhs)
-        {
-
-        }
     FMTsesmodel::FMTsesmodel(const FMTmodel& rhs):
 		FMTsemodel(rhs)
         {
-
+		
         }
+
 	FMTsesmodel::FMTsesmodel(const FMTsemodel& rhs):
 		FMTsemodel(rhs)
-		{
-
-		}
-
-	FMTsesmodel::FMTsesmodel(const FMTmodel& rhs, const Spatial::FMTforest& forest) :
-		FMTsemodel(rhs, forest)
 	{
 
 	}
 
-    FMTsesmodel& FMTsesmodel::operator = (const FMTsesmodel& rhs)
-        {
-        if (this!=&rhs)
-            {
-            FMTsemodel::operator = (rhs);
-            }
-        return *this;
-        }
+
+	FMTsesmodel::FMTsesmodel(const FMTmodel& rhs, const Spatial::FMTforest& forest) :
+		FMTsemodel(rhs, forest)
+	{
+		
+	}
 
 
-	std::map<std::string, double> FMTsesmodel::greedyreferencebuild(const Core::FMTschedule& schedule,
-																	const size_t& randomiterations,
-																	unsigned int seed,
-																	double tolerance)
+
+	std::map<std::string, double> FMTsesmodel::GreedyReferenceBuild(const Core::FMTschedule& p_schedule,
+																	size_t p_randomIterations,
+																	int p_seed,
+																	double p_tolerance)
 	{
 	std::map<std::string, double>bestresults;
 	try {
-		bestresults = GreedyReferenceBuild(m_BestSolution, schedule, randomiterations, seed, tolerance);
+		
+		bestresults = FMTsemodel::GreedyReferenceBuild(m_BestSolution,p_schedule,p_randomIterations, p_seed, p_tolerance);
+		m_SpatialGraphs.DeleteNonCompleteGraphs();
 		}catch (...)
-		{
-		_exhandler->printexceptions("", "FMTsesmodel::greedyreferencebuild", __LINE__, __FILE__);
-		}
+			{
+			_exhandler->printexceptions("", "FMTsesmodel::GreedyReferenceBuild", __LINE__, __FILE__);
+			}
 	return bestresults;
 	}
 
@@ -74,7 +62,7 @@ namespace Models
 		try {
 			for (const Core::FMTschedule& schedule : schedules)
 			{
-				this->greedyreferencebuild(schedule,getparameter(NUMBER_OF_ITERATIONS));
+				this->GreedyReferenceBuild(schedule,getparameter(NUMBER_OF_ITERATIONS));
 			}
 		}
 		catch (...)

@@ -35,7 +35,7 @@ namespace Parser
 	const boost::regex FMToptimizationparser::m_rxoutput = boost::regex("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::m_rxpenalty = boost::regex("^(_PENALTY)(\\()([^\\)]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::m_rxspecialoutput = boost::regex("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxspatial = boost::regex("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::m_rxspatial = boost::regex("^(_SIZE|_ADJACENCY|_RANDOM|_GROUP)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::m_rxspecialobjective = boost::regex("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::m_rxstartwithoperator = boost::regex("([\\s\\t]*)([-+])(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	
@@ -391,6 +391,7 @@ namespace Parser
 			double upperneighborsize =std::numeric_limits<double>::max();
 			std::vector<std::string>splitted;
 			const std::string inargument(p_match[4]);
+			double ThemeId = -1;
 			std::string actionoraggregates;
 			if (constrainttypestr == "_RANDOM")
 			{
@@ -418,16 +419,40 @@ namespace Parser
 					lowergreenup = getNum<double>(boost::trim_copy(splitted.at(1)), p_constants);
 					constrainttype = Core::FMTconstrainttype::FMTspatialadjacency;
 				}
+				else if (constrainttypestr == "_GROUP")
+				{
+					boost::smatch ThMatch;
+					if (boost::regex_search(boost::trim_copy(splitted.at(1)), ThMatch,
+						boost::regex("(_TH)([\\d]*)")))
+					{
+						ThemeId = getNum<double>(ThMatch[2], p_constants);
+						lowergreenup = getNum<double>(
+							boost::trim_copy(splitted.at(2)), p_constants);
+					}else {
+						lowergreenup = getNum<double>(
+							boost::trim_copy(splitted.at(1)), p_constants);
+						}
+					constrainttype = Core::FMTconstrainttype::FMTSpatialGroup;
+				}
 				constraint = Core::FMTconstraint(constrainttype, Core::FMToutput(naming));
+				const std::string GUP_TARGET("GUP");
 				if (Core::FMTconstrainttype::FMTspatialadjacency == constrainttype)
 				{
-					const std::string target("GUP");
-					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, uppergreenup, lowergreenup));
+					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, GUP_TARGET,
+						uppergreenup, lowergreenup));
 				}
 				else if (Core::FMTconstrainttype::FMTspatialsize == constrainttype)
 				{
 					const std::string target("NSIZE");
 					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, upperneighborsize, lowerneighborsize));
+				}
+				else if (Core::FMTconstrainttype::FMTSpatialGroup == constrainttype)
+				{
+					const std::string THEME_TARGET("THEME");
+					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, GUP_TARGET,
+						uppergreenup, lowergreenup));
+					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, THEME_TARGET,
+						ThemeId, ThemeId));
 				}
 			}
 			double lower = 0;

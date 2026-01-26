@@ -148,6 +148,28 @@ namespace Spatial
 		m_Model = p_Other.m_Model;
 	}
 
+	size_t FMTSpatialGraphs::GetNumberOfCategories(int p_themeId) const
+	{
+		return m_Model->themes.at(p_themeId).size(); 
+	}
+
+	size_t FMTSpatialGraphs::GetCategoryOf(int p_themeId, size_t p_family) const
+	{
+		const Core::FMTmask& MASK = m_AllGraphs.at(p_family).begin()->first.getbasedevelopment().getmask();
+		return std::distance(&*m_Model->themes.at(p_themeId).getbaseattributes().begin(),
+			&MASK.getAttribute(m_Model->themes.at(p_themeId)));
+	}
+
+	void FMTSpatialGraphs::DeleteNonCompleteGraphs()
+	{
+		const std::vector<size_t>COMPLETE_SOLUTION(m_LastGraphId,size_t(1));
+		const size_t MAX_GRAPH_LENGTH = _GetMaxGraphLength(COMPLETE_SOLUTION);
+		_RemoveGraphsShorterThan(MAX_GRAPH_LENGTH);
+	}
+
+
+
+
 
 	std::vector<size_t>FMTSpatialGraphs::GetBaseSolution() const
 	{
@@ -163,8 +185,14 @@ namespace Spatial
 	std::vector<Core::FMTschedule> FMTSpatialGraphs::GetSchedules(const std::vector<size_t>& p_Solution,
 		bool WithLock) const
 	{
-		std::vector<Core::FMTschedule> Schedules;
+		std::vector<Core::FMTschedule> Schedules(m_Model->getparameter(Models::FMTintmodelparameters::LENGTH));
 		try {
+			int SchedulePeriod = 1;
+			for (Core::FMTschedule& Schedule : Schedules)
+			{
+				Schedule.setperiod(SchedulePeriod);
+				++SchedulePeriod;
+			}
 			for (const auto& FAMILY : m_AllGraphs)
 			{
 				for (const auto& GRAPH : FAMILY)
@@ -176,16 +204,7 @@ namespace Spatial
 						{
 							const Core::FMTschedule SCHEDULE = GRAPH.first.getschedule(GetModel().actions,
 								&CELLS, period, WithLock);
-							if (!SCHEDULE.empty())
-							{
-								if (period > Schedules.size())
-								{
-									Schedules.push_back(SCHEDULE);
-								}
-								else {
-									Schedules[period - 1] += SCHEDULE;
-								}
-							}
+							Schedules[period - 1] += SCHEDULE;
 							
 						}
 					}
@@ -221,6 +240,7 @@ namespace Spatial
 		if (IsNotNull(p_family, p_iterator))
 		{
 			--p_solution.at(p_iterator->second.GetGraphId());
+			
 		}
 	}
 
@@ -261,6 +281,29 @@ namespace Spatial
 		}
 		return Iterator;
 
+	}
+
+
+	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator  FMTSpatialGraphs::SetNaturalGrowthIterator(size_t p_family)
+	{
+		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.at(p_family).end();
+		try {
+			Iterator = _GetNaturalGrowthIterator(p_family);
+			if (Iterator==m_AllGraphs.at(p_family).end())
+				{
+				const int LENGTH = m_Model->getparameter(Models::FMTintmodelparameters::LENGTH);
+				const Core::FMTactualdevelopment* BASE = dynamic_cast<const Core::FMTactualdevelopment*>(
+					&m_AllGraphs.at(p_family).begin()->first.getbasedevelopment());
+				Graph::FMTlinegraph NewGraph(static_cast<size_t>(LENGTH), *BASE);
+				NewGraph.grow(LENGTH);
+				Iterator = SetIterator(NewGraph, p_family);
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "SetNaturalGrowthIterator",
+				__LINE__, __FILE__);
+			}
+		return Iterator;
 	}
 
 
@@ -621,6 +664,39 @@ namespace Spatial
 				__LINE__, __FILE__);
 		}
 		return area;
+	}
+
+	void FMTSpatialGraphs::_RemoveGraphsShorterThan(size_t p_GraphSize)
+	{
+		for (auto& FAMILY : m_AllGraphs)
+		{
+			for (auto GraphIt = FAMILY.begin(); GraphIt != FAMILY.end();)
+				{
+				const size_t GRAPH_SIZE = static_cast<size_t>(GraphIt->first.getperiod());
+				if (GRAPH_SIZE < p_GraphSize)
+				{
+					GraphIt = FAMILY.erase(GraphIt);
+				}else {
+					++GraphIt;
+					}
+				}
+		}
+	}
+
+	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::_GetNaturalGrowthIterator(size_t p_family) const
+	{
+		const int LENGTH = m_Model->getparameter(Models::FMTintmodelparameters::LENGTH);
+		for (std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator It = m_AllGraphs.at(p_family).begin();
+				It != m_AllGraphs.at(p_family).end(); ++It)
+			{
+				if (It->first.getperiod() - 1 == LENGTH &&
+					It->first.isonlygrow())
+				{
+					return It;
+				}
+
+			}
+		return m_AllGraphs.at(p_family).end();
 	}
 	
 

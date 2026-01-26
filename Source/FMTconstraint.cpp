@@ -481,7 +481,7 @@ namespace Core
         lower = 0;
         upper = 0;
 		try{
-		if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency || type == FMTconstrainttype::FMTspatialsize || type == FMTconstrainttype::FMTrandomaction)
+		if (type == FMTconstrainttype::FMTstandard || isspatial() || type == FMTconstrainttype::FMTrandomaction)
 		{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
@@ -893,7 +893,9 @@ namespace Core
 
 		bool FMTconstraint::isspatial() const
 			{
-			return (type==Core::FMTconstrainttype::FMTspatialadjacency||type== Core::FMTconstrainttype::FMTspatialsize);
+			return (type==Core::FMTconstrainttype::FMTspatialadjacency||
+				type== Core::FMTconstrainttype::FMTspatialsize ||
+				type == Core::FMTconstrainttype::FMTSpatialGroup);
 			}
 
 		bool FMTconstraint::israndomaction() const
@@ -946,11 +948,33 @@ namespace Core
 		{
 			try {
 				setoutput(FMToutput::presolve(p_filter, p_originalThemes, p_selectedThemes, p_newThemes, p_actions, p_valideActions, p_yields));
-			}
-			catch (...)
-			{
+				if (type == Core::FMTconstrainttype::FMTSpatialGroup)
+					{
+					const std::string THEME_TARGET("THEME");
+					double ThemeId = getyieldbound(THEME_TARGET).getlower();
+					if (ThemeId >= 0)
+						{
+						const size_t BASE_ID = static_cast<size_t>(ThemeId) - 1;
+						std::vector<FMTtheme>::const_iterator SelectedIt =
+							std::find_if(p_newThemes.begin(), p_newThemes.end(), 
+								Core::FMTthemecomparator(p_originalThemes.at(BASE_ID),true));
+						if (SelectedIt!= p_newThemes.end())
+							{
+							ThemeId = static_cast<double>(std::distance(p_newThemes.begin(), SelectedIt)) + 1.0;
+							addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, THEME_TARGET,
+								ThemeId, ThemeId));
+						}else {
+							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+								"Presolved removed theme used for grouping " + std::string(*this) ,
+								"FMTconstraint::presolveRef", __LINE__, __FILE__);
+							}
+						}
+					}
+
+			}catch (...)
+				{
 				_exhandler->raisefromcatch("for " + std::string(*this), "FMTconstraint::presolveRef", __LINE__, __FILE__, Core::FMTsection::Optimize);
-			}
+				}
 		}
 
 		void FMTconstraint::getmaxandmin(const std::vector<double>& values, double& min, double& max) const
@@ -1389,6 +1413,17 @@ namespace Core
 			{
 				_exhandler->raisefromcatch("", "FMTconstraint::turntoyieldsandactions", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
+		}
+
+
+	int FMTconstraint::GetThemeTarget() const
+		{
+		int target = targetthemeid();
+		if (type == FMTconstrainttype::FMTSpatialGroup)
+			{
+			target = static_cast<int>(getyieldbound("THEME").getlower());
+			}
+		return target;
 		}
 
 }

@@ -11,7 +11,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlinegraph.h"
 #include "FMTeventcontainer.h"
 #include "FMTbindingspatialaction.h"
-#include "FMTspatialnodescache.h"
 #include "FMTVirtualLineGraph.h"
 
 namespace Core {
@@ -141,8 +140,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Return the constraint evaluation value of a spatial constraint. If the subset is not a nullptr the 
 		*/
-	   double evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint,
-		   const Models::FMTmodel& model/*, const FMTeventcontainer* subset = nullptr*/) const;
+	   double EvaluateSpatialConstraint(const Core::FMTconstraint& p_SpatialConstraint,
+					const FMTSpatialGraphs& p_SpatialGraph) const;
 	   // DocString: FMTSpatialSchedule::evaluatedistance
 		/**
 		Return the constraint evaluation value of a spatial constraint.
@@ -314,6 +313,14 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		With a generator randomly create a solution for one period.
 		*/
 		Graph::FMTgraphstats randombuild(const Models::FMTmodel& model, std::default_random_engine& generator);
+		// DocString: FMTSpatialSchedule::SetGrow
+		/**
+		@brief set natural growth on coordinates (remove every actions)
+		@param[in] p_coordinates coordinates to set to growth
+		@param[in] p_model the model to use
+		*/
+		void SetGrow(const std::vector<FMTcoordinate>& p_coordinates,
+									const Models::FMTmodel& p_model);
 		// DocString: FMTSpatialSchedule::perturbgraph
 		/**
 		Change one graph in the solution remove it's contribution to objective and add contribution to the newly generated to the objective.
@@ -451,6 +458,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 
 		FMTSpatialSchedule GetBaseSchedule(const FMTSpatialGraphs& p_SpatialGraph) const;
 		void SetSpatialGraphs(const Spatial::FMTSpatialSchedule& p_ToCopy, FMTSpatialGraphs& p_SpatialGraph);
+		std::vector<FMTcoordinate> GetGroupsConflict(const Core::FMTconstraint& p_SpatialConstraint,
+			const FMTSpatialGraphs& p_SpatialGraph) const;
 	protected:
 		// DocString: FMTSpatialSchedule::m_events
 		/**
@@ -491,25 +500,50 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		The non spatial solution.
 		*/
 		std::vector<size_t>m_NonSpatialSolution;
-		// DocString: FMTSpatialSchedule::evaluatespatialadjacency
+		// DocString: FMTSpatialSchedule::_EvaluateSpatialAdjacency
 		 /**
 		Evaluate adjacency conflicts for each events
 		*/
-		double evaluatespatialadjacency(
-			const int& period,
-			const size_t& greenup,
-			const size_t& lowerlookup,
-			const size_t& upperlookup,
-			const bool& testlower,
-			const bool& testupper,
-			std::vector<FMTeventcontainer::const_iterator>& conflicts,
-			boost::unordered_set<FMTeventrelation>& relations,
-			const std::vector<bool>& actionused) const;
+		double _EvaluateSpatialAdjacency(
+			int p_period,
+			int p_greenup,
+			int p_lowerLookup,
+			int p_upperLookup,
+			bool p_testLower,
+			const std::vector<bool>& p_actions) const;
+
+		double _EvaluateSpatialGroups(
+			const FMTSpatialGraphs& p_SpatialGraph,
+			int p_period,
+			int p_greenup,
+			int p_lowerLookup,
+			int p_upperLookup,
+			int p_theme,
+			bool p_testLower,
+			const std::vector<bool>& p_actions) const;
+
+		std::vector<FMTeventcontainer::const_iterator> _GetSpatialGroupsConflict(
+			const FMTSpatialGraphs& p_SpatialGraph,
+			int p_period,
+			int p_greenup,
+			int p_lowerLookup,
+			int p_upperLookup,
+			int p_theme,
+			bool p_testLower,
+			const std::vector<bool>& p_actions) const;
+
+		std::vector<FMTeventcontainer::const_iterator> _GetAdjacencyConflict(
+			int p_period,
+			int p_greenup,
+			int p_lowerLookup,
+			int p_upperLookup,
+			bool p_testLower,
+			const std::vector<bool>& p_actions) const;
 
 
 		size_t _GetNonSpatialCellsCount() const;
 
-
+		static const int BUFFER_LOOKUP = 1;
 		
 		
 };

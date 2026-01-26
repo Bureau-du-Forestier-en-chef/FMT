@@ -21,6 +21,7 @@ namespace Spatial
 {
 
 class FMTbindingspatialaction;
+class  FMTSpatialGraphs;
 
 // DocString: FMTeventcontainer
 /**
@@ -33,14 +34,6 @@ You can  remove FMTcoordinate and add FMTcoordinate by period and action.
 */
 class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 {
-    friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-        ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-        ar & BOOST_SERIALIZATION_NVP(events);
-	}
-
     public:
         typedef typename std::set<FMTevent>::value_type value_type;
         typedef typename std::set<FMTevent>::iterator iterator;
@@ -50,7 +43,7 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         /**
         Default constructor
         */
-        FMTeventcontainer();
+        FMTeventcontainer()=default;
         // DocString: ~FMTeventcontainer()
         /**
         Destructor
@@ -60,12 +53,12 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         /**
         Copy constructor
         */
-        FMTeventcontainer(const FMTeventcontainer& rhs);
+        FMTeventcontainer(const FMTeventcontainer& rhs)=default;
         // DocString: FMTeventcontainer::operator=
         /**
         Copy assignment operator
         */
-        FMTeventcontainer& operator=(const FMTeventcontainer& rhs);
+        FMTeventcontainer& operator=(const FMTeventcontainer& rhs)=default;
         // DocString: FMTeventcontainer::operator==
         /**
         Comparison operator equal to
@@ -80,22 +73,22 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         /**
         Return a const iterator to the first FMTevent in events.
         */
-        const_iterator begin() const{return events.cbegin();}
+        const_iterator begin() const;
         // DocString: FMTeventcontainer::end
         /**
         Return a const iterator to the past-the-end element in events.
         */
-		const_iterator end() const{return events.cend();}
+        const_iterator end() const;
         // DocString: FMTeventcontainer::empty
         /**
         Test whether the container is empty.
         */
-		bool empty() const {return events.empty();}
+        bool empty() const;
 		// DocString: FMTeventcontainer::size
         /**
         Return container size.
         */
-        size_t size() const {return events.size();}
+        size_t size() const;
         // DocString: FMTeventcontainer::find
         /**
         Get const iterator to the first event found with the coord at the period specified.
@@ -105,15 +98,12 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 		/**
 		Get const iterator to the element.
 		*/
-		const_iterator find(const FMTevent& event) const { return events.find(event); }
+        const_iterator find(const FMTevent& event) const;
         // DocString: FMTeventcontainer::insert
         /**
         Insert an event in the container.
         */
-		void insert(const FMTevent& event)
-			{
-			events.insert(event);
-			}
+        void insert(const FMTevent& event);
 		// DocString: FMTeventcontainer::merge
 		/**
 		Merge two FMTeventcontainer
@@ -133,7 +123,7 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         /**
         Clear content of the container.
         */
-        void clear (){events.clear();}
+        void clear();
         // DocString: FMTeventcontainer::lasperiod
         /*
         Return the period of the last event in the container
@@ -163,13 +153,15 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         /*
         Add an action at coordinate and add to existing event if possible or aggregate events based on binding
         */
-        void addaction (const FMTcoordinate& coord, const int& period,const int& actionid,const FMTbindingspatialaction& binding);
+        void addaction (const FMTcoordinate& coord, const int& period,
+            const int& actionid,const FMTbindingspatialaction& binding, size_t p_GraphFamily);
 		// DocString: FMTeventcontainer::addactions()
 		/*
 		Add actions at coordinate and add to existing event if possible or aggregate events based on (bindings). 
         (bindings) must be the size of the vector of action in model because we use (actionids) to find the right ones.  
 		*/
-		void addactions(const FMTcoordinate& coord, const int& period, const std::vector<int>& actionids, const std::vector<FMTbindingspatialaction>& bindings);
+		void addactions(const FMTcoordinate& coord, const int& period, 
+            const std::vector<int>& actionids, const std::vector<FMTbindingspatialaction>& bindings, size_t p_GraphFamily);
         // DocString: FMTeventcontainer::getevents(const int&, const int&)
         /*
         Get events at specified period with specified action
@@ -223,7 +215,8 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 		calculate the infeasibility of those events.
 		*/
 		FMTeventcontainer geteventstoadd(const FMTcoordinate& coord, const int& period, const int& actionid,
-									const FMTbindingspatialaction& binding, FMTeventcontainer& newevents) const;
+									const FMTbindingspatialaction& binding, FMTeventcontainer& newevents,
+                                    size_t p_GraphFamily) const;
 		// DocString: FMTeventcontainer::getcontainer
 		/*
 		Get container subset on the interesting coordinates.
@@ -259,12 +252,48 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 			const double& upperdistancetoevent,
 			const int& period, const std::vector<bool>& actionsused,
 			boost::unordered_set<FMTeventrelation>& relations) const;
+
+        double EvaluateSize(const std::vector<bool>& p_actions,
+            int p_period,size_t  p_lowerBound, size_t p_upperBound, bool p_testLower) const;
+
+        double GetDispertion(const std::vector<bool>& p_actions,
+                            const FMTSpatialGraphs& p_Graphs,
+                            int p_themeId,int p_FirstPeriod, 
+                            int p_LastPeriod, int p_bound) const;
+
+        std::vector<FMTeventcontainer::const_iterator> GetDispertionConflicts(const std::vector<bool>& p_actions,
+                                                const FMTSpatialGraphs& p_Graphs,
+                                                int p_themeId,int p_FirstPeriod,
+                                                int p_LastPeriod, int p_bound) const;
      private:
+         class BoundingBox
+            {
+            public:
+                BoundingBox();
+                void add(FMTeventcontainer::const_iterator p_event);
+                double EvaluateUpperBound(int p_UpperBound) const;
+                std::vector<FMTeventcontainer::const_iterator> GetEvents() const;
+            private:
+                FMTcoordinate m_bottomLeft;
+                uint16_t m_Width;
+                uint16_t m_Height;
+                FMTeventcontainer::const_iterator m_Top;
+                FMTeventcontainer::const_iterator m_Bottom;
+                FMTeventcontainer::const_iterator m_Left;
+                FMTeventcontainer::const_iterator m_Right;
+                bool _IsNull() const;
+                double _GetSize() const;
+            };
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive& ar, const unsigned int version)
+            {
+             ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+             ar& BOOST_SERIALIZATION_NVP(m_events);
+            }
         ///Set containing the events
-        std::set<FMTevent> events;
+        std::set<FMTevent> m_events;
         //Actually not needed
-        /*iterator end(){return events.end();}
-        iterator begin(){return events.begin();}*/
         ///Returns an iterator pointing to the first element in the container which is considered to go after val.
         const_iterator upper_bound(const int& period) const;
         ///Returns an iterator pointing to the first element in the container which is considered to go after val.
@@ -284,7 +313,8 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 		Push an action in container
 		*/
 		void pushaction(const std::vector<FMTeventcontainer::const_iterator>& iterators,
-			const FMTcoordinate& coord, const int& period, const int& actionid,size_t neighborsize);
+			const FMTcoordinate& coord, const int& period, const int& actionid,
+            size_t neighborsize, size_t p_GraphFamily);
         // DocString: FMTeventcontainer::getaroundevents()
 		/*
 		Return iterators to events considerate around based on neighborsize
@@ -296,6 +326,11 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 		Sort events by proximity to a coordinate
 		*/
 		void nthelements(std::vector<FMTeventcontainer::const_iterator>& iterators,const FMTcoordinate& coord,const size_t& nelement) const;
+
+
+        std::vector<BoundingBox> _GetBoundingBoxes(const std::vector<bool>& p_actions, 
+                           const FMTSpatialGraphs& p_Graphs, int p_themeId,
+                           int p_FirstPeriod, int p_LastPeriod) const;
 
 		class FMTeventiteratorsorter
 		{

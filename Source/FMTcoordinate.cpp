@@ -85,7 +85,7 @@ namespace Spatial
 
 
 
-    FMTcoordinate FMTcoordinate::getAverageCentroid(const std::vector<FMTcoordinate>& p_enveloppe)
+    FMTcoordinate FMTcoordinate::getAverageCentroid(const std::array<FMTcoordinate, 4>& p_enveloppe)
     {
         const uint16_t startx = p_enveloppe.at(0).m_x;
         const uint16_t starty = p_enveloppe.at(0).m_y;
@@ -94,7 +94,7 @@ namespace Spatial
         return FMTcoordinate(startx + plusx, starty + plusy);
     }
 
-    std::set<FMTcoordinate> FMTcoordinate::getTerritory(const std::vector<FMTcoordinate>& p_enveloppe, const size_t& p_distance)
+    std::set<FMTcoordinate> FMTcoordinate::getTerritory(const std::array<FMTcoordinate, 4>& p_enveloppe, const size_t& p_distance)
     {
         std::set<FMTcoordinate>territory;
         const int distanceof = static_cast<int>(p_distance);
@@ -106,7 +106,7 @@ namespace Spatial
         return territory;
     }
 
-    size_t FMTcoordinate::getHeight(const std::vector<FMTcoordinate>& p_enveloppe)
+    size_t FMTcoordinate::getHeight(const std::array<FMTcoordinate, 4>& p_enveloppe)
     {
         size_t height = 0;
         if (p_enveloppe.at(0).m_y > p_enveloppe.at(2).m_y)
@@ -120,7 +120,7 @@ namespace Spatial
 
     }
 
-    size_t FMTcoordinate::getWidth(const std::vector<FMTcoordinate>& p_enveloppe)
+    size_t FMTcoordinate::getWidth(const std::array<FMTcoordinate, 4>& p_enveloppe)
     {
         //const std::vector<FMTcoordinate>enveloppe = getenveloppe();
         //return static_cast<size_t>(enveloppe.at(1).getXDistance(enveloppe.at(0))) + 1;
@@ -180,7 +180,7 @@ namespace Spatial
 		 return hash;
 		}
 
-    void FMTcoordinate::upenveloppe(std::vector<FMTcoordinate>& enveloppe) const
+    void FMTcoordinate::upenveloppe(std::array<FMTcoordinate, 4>& enveloppe) const
         {
 		//0//-//1//
 		//-//-//-//

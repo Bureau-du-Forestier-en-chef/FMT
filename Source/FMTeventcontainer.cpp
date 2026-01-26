@@ -9,37 +9,24 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTeventrelation.h"
 #include "FMTexceptionhandler.h"
 #include "FMTbindingspatialaction.h"
+#include "FMTSpatialGraphs.h"
 
 #include <limits>
 #include <queue>
 
 namespace Spatial
 {
-    FMTeventcontainer::FMTeventcontainer():FMTobject(),events(){}
-
-    FMTeventcontainer::FMTeventcontainer(const FMTeventcontainer& rhs):
-											FMTobject(rhs),
-                                            events(rhs.events){}
-
-    FMTeventcontainer& FMTeventcontainer::operator = (const FMTeventcontainer& rhs)
-    {
-        if (this!=&rhs)
-            {
-				FMTobject::operator=(rhs);
-                events = rhs.events;
-            }
-        return *this;
-    }
+   
 
 
     bool FMTeventcontainer::operator==(const FMTeventcontainer& rhs) const
     {
-        return events==rhs.events;
+        return m_events==rhs.m_events;
     }
 
     void FMTeventcontainer::swap(FMTeventcontainer& rhs)
     {
-        events.swap(rhs.events);
+		m_events.swap(rhs.m_events);
     }
 
 	FMTeventcontainer::const_iterator FMTeventcontainer::find(const int & period, const FMTcoordinate & coord) const
@@ -51,33 +38,53 @@ namespace Spatial
 		}
 		else
 		{
-			return events.cend();
+			return m_events.cend();
 		}
 	}
 
 	void FMTeventcontainer::merge(const FMTeventcontainer & levents)
 	{
-		events.insert(levents.begin(), levents.end());
+		m_events.insert(levents.begin(), levents.end());
 	}
 
 	void FMTeventcontainer::erase(const FMTevent& event)
     {
-        events.erase(event);
+		m_events.erase(event);
     }
+
+	void FMTeventcontainer::clear()
+	{
+		m_events.clear();
+	}
 
     FMTeventcontainer::const_iterator FMTeventcontainer::erase(const FMTeventcontainer::const_iterator event)
     {
-        return events.erase(event);
+        return m_events.erase(event);
     }
 
     int FMTeventcontainer::lastperiod()const
     {
-        return events.rbegin()->getperiod();
+        return m_events.rbegin()->getperiod();
     }
+
+	void FMTeventcontainer::insert(const FMTevent& event)
+	{
+		m_events.insert(event);
+	}
+
+	FMTeventcontainer::const_iterator FMTeventcontainer::begin() const { return m_events.cbegin(); }
+
+	FMTeventcontainer::const_iterator FMTeventcontainer::end() const { return m_events.cend(); }
+
+	bool FMTeventcontainer::empty() const { return m_events.empty(); }
+
+	size_t FMTeventcontainer::size() const { return m_events.size(); }
+
+	FMTeventcontainer::const_iterator FMTeventcontainer::find(const FMTevent& event) const { return m_events.find(event); }
 
     int FMTeventcontainer::firstperiod()const
     {
-        return events.begin()->getperiod();
+        return m_events.begin()->getperiod();
     }
 
 	void FMTeventcontainer::erase(const FMTcoordinate& coord,const std::vector<FMTeventcontainer::iterator>& iterators)
@@ -224,8 +231,10 @@ namespace Spatial
 
 
 
-	void FMTeventcontainer::pushaction(const std::vector<FMTeventcontainer::const_iterator>& iterators,
-		const FMTcoordinate& coord, const int& period, const int& actionid,size_t neighborsize)
+	void FMTeventcontainer::pushaction(
+		const std::vector<FMTeventcontainer::const_iterator>& iterators,
+		const FMTcoordinate& coord, const int& period, 
+		const int& actionid,size_t neighborsize, size_t p_GraphFamily)
 	{
 		try
 		{
@@ -237,13 +246,13 @@ namespace Spatial
 			}
 			if (aroundevents.empty())
 			{
-				FMTevent newevent(coord, actionid, period);
+				FMTevent newevent(coord, actionid, period, p_GraphFamily);
 				//newevent.insert(coord);
 				insert(newevent);
 			}
 			else
 			{
-				FMTevent combinedevents(coord, actionid, period);
+				FMTevent combinedevents(coord, actionid, period, p_GraphFamily);
 				//combinedevents.insert(coord);
 				for (FMTeventcontainer::const_iterator e : aroundevents)
 				{
@@ -298,7 +307,8 @@ namespace Spatial
 		}
 
 
-	void FMTeventcontainer::addaction (const FMTcoordinate& coord, const int& period,const int& actionid, const FMTbindingspatialaction& binding)
+	void FMTeventcontainer::addaction (const FMTcoordinate& coord, const int& period,
+		const int& actionid, const FMTbindingspatialaction& binding,size_t p_GraphFamily)
 		{
 		// If maxsize is numeric limits, it means that there is no evaluation for maxsize and neighborsize
 		//So we push the action as an event for each cell.
@@ -311,10 +321,13 @@ namespace Spatial
 		const uint16_t miny = coord.gety() > maxsizeof ? coord.gety() - maxsizeof : 0;
 		const FMTcoordinate lower(minx, miny);
 		const FMTcoordinate upper(coord.getx()+ maxsizeof, coord.gety() + maxsizeof);
-		pushaction(getevents(period, actionid, lower, upper), coord, period, actionid, binding.getminimalneighborsize());
+		pushaction(getevents(period, actionid, lower, upper),
+			coord, period, actionid, binding.getminimalneighborsize(), p_GraphFamily);
 		}
 
-	void FMTeventcontainer::addactions(const FMTcoordinate& coord, const int& period, const std::vector<int>& actionids, const std::vector<FMTbindingspatialaction>& bindings)
+	void FMTeventcontainer::addactions(const FMTcoordinate& coord, const int& period,
+		const std::vector<int>& actionids, const std::vector<FMTbindingspatialaction>& bindings,
+		size_t p_GraphFamily)
 		{
 		uint16_t maxsizeof = 0;
 		for (const int& id : actionids)
@@ -334,7 +347,7 @@ namespace Spatial
 		for (const std::vector<FMTeventcontainer::const_iterator>& eventits : getmultipleevents(period, actionids, lower, upper))
 			{
 			const int& actid = actionids.at(id);
-			pushaction(eventits, coord, period, actid, bindings.at(actid).getminimalneighborsize());
+			pushaction(eventits, coord, period, actid, bindings.at(actid).getminimalneighborsize(), p_GraphFamily);
 			++id;
 			}
 		}
@@ -345,7 +358,7 @@ namespace Spatial
         FMTeventcontainer::const_iterator upper = upper_bound(period);
         FMTeventcontainer::const_iterator lower = lower_bound(period);
         std::vector<FMTeventcontainer::const_iterator> selectedevents;
-        for  (FMTeventcontainer::const_iterator it = lower ; it != upper && it!=events.end() ; ++it)
+        for  (FMTeventcontainer::const_iterator it = lower ; it != upper && it!= m_events.end() ; ++it)
         {
             if (it->getactionid()==action_id /*&& it->getperiod()==period*/)
             {
@@ -356,7 +369,7 @@ namespace Spatial
     }
 
 	FMTeventcontainer FMTeventcontainer::geteventstoadd(const FMTcoordinate& coord, const int& period, const int& actionid,
-		const FMTbindingspatialaction& binding, FMTeventcontainer& newevents) const
+		const FMTbindingspatialaction& binding, FMTeventcontainer& newevents, size_t p_GraphFamily) const
 	{
 		uint16_t maxsizeof = 0;
 		if(binding.getmaximalsize()<std::numeric_limits<size_t>::max())
@@ -378,13 +391,13 @@ namespace Spatial
 		FMTeventcontainer tocalculate;
 		if (aroundevents.empty())
 		{
-			FMTevent newevent(coord, actionid, period);
+			FMTevent newevent(coord, actionid, period, p_GraphFamily);
 			//newevent.insert(coord);
 			newevents.insert(newevent);
 		}
 		else
 		{
-			FMTevent combinedevents(coord, actionid, period);
+			FMTevent combinedevents(coord, actionid, period, p_GraphFamily);
 			//combinedevents.insert(coord);
 			for (FMTeventcontainer::const_iterator e : aroundevents)
 			{
@@ -401,14 +414,14 @@ namespace Spatial
 
 	FMTeventcontainer FMTeventcontainer::addupdate(const FMTeventcontainer& newevents, const FMTeventcontainer& eventstoremove)
 	{
-		for (FMTeventcontainer::const_iterator it = eventstoremove.events.begin(); it != eventstoremove.events.end(); ++it)
+		for (FMTeventcontainer::const_iterator it = eventstoremove.m_events.begin(); it != eventstoremove.m_events.end(); ++it)
 			{
-			events.erase(*it);
+			m_events.erase(*it);
 			}
 		FMTeventcontainer newlyadded;
-		for (FMTeventcontainer::const_iterator it = newevents.events.begin(); it != newevents.events.end(); ++it)
+		for (FMTeventcontainer::const_iterator it = newevents.m_events.begin(); it != newevents.m_events.end(); ++it)
 			{
-			newlyadded.insert(*events.insert(*it).first);
+			newlyadded.insert(*m_events.insert(*it).first);
 			}
 		return newlyadded;
 	}	
@@ -668,33 +681,33 @@ namespace Spatial
     FMTeventcontainer::const_iterator FMTeventcontainer::upper_bound(const int& period) const
     {
 		constexpr uint16_t MAX_BOUND = std::numeric_limits<uint16_t>::max();
-        FMTeventcontainer::const_iterator upper = events.upper_bound(FMTevent(FMTcoordinate(MAX_BOUND, MAX_BOUND),
+        FMTeventcontainer::const_iterator upper = m_events.upper_bound(FMTevent(FMTcoordinate(MAX_BOUND, MAX_BOUND),
                                                              INT_MAX,
-                                                             period));
+                                                             period,0));
         return upper;
     }
 
     FMTeventcontainer::const_iterator FMTeventcontainer::upper_bound(const int& period, const FMTcoordinate& maxxycoord) const
     {
-        FMTeventcontainer::const_iterator upper = events.upper_bound(FMTevent(maxxycoord,
+        FMTeventcontainer::const_iterator upper = m_events.upper_bound(FMTevent(maxxycoord,
                                                                                   INT_MAX,
-                                                                                  period));
+                                                                                  period,0));
         return upper;
     }
 
     FMTeventcontainer::const_iterator FMTeventcontainer::lower_bound(const int& period) const
     {
-        FMTeventcontainer::const_iterator lower = events.lower_bound(FMTevent(FMTcoordinate(0,0),
+        FMTeventcontainer::const_iterator lower = m_events.lower_bound(FMTevent(FMTcoordinate(0,0),
                                                              0,
-                                                             period));
+                                                             period,0));
         return lower;
     }
 
     FMTeventcontainer::const_iterator FMTeventcontainer::lower_bound(const int& period,const FMTcoordinate& minxycoord) const
     {
-        FMTeventcontainer::const_iterator lower = events.lower_bound(FMTevent(minxycoord,
+        FMTeventcontainer::const_iterator lower = m_events.lower_bound(FMTevent(minxycoord,
                                                              0,
-                                                             period));
+                                                             period,0));
         return lower;
     }
 
@@ -757,4 +770,178 @@ namespace Spatial
 		}
 	return distancevalue;
 	}
+
+
+	FMTeventcontainer::BoundingBox::BoundingBox():
+			m_bottomLeft(std::numeric_limits< uint16_t>::max(),0),
+			m_Width(0),
+			m_Height(0),
+			m_Top(),
+			m_Bottom(),
+			m_Left(),
+			m_Right()
+
+	{
+
+	}
+
+	double FMTeventcontainer::EvaluateSize(const std::vector<bool>& p_actions,
+		int p_period, size_t  p_lowerBound, size_t p_upperBound, bool p_testLower) const
+	{
+		double value = 0.0;
+		for (const FMTeventcontainer::const_iterator& eventIt : getevents(p_period, p_actions))
+		{
+			const size_t EVENT_SIZE = eventIt->size();
+			size_t EventValue = 0;
+			if (p_testLower && 
+				EVENT_SIZE < p_lowerBound)
+			{
+				EventValue = p_lowerBound - EVENT_SIZE;
+			}
+			else if (!p_testLower && 
+				EVENT_SIZE > p_upperBound)
+			{
+				EventValue = EVENT_SIZE - p_upperBound;
+			}
+			value += static_cast<double>(EventValue);
+		}
+		return value;
+	}
+
+	double FMTeventcontainer::GetDispertion(
+		const std::vector<bool>& p_actions, 
+		const FMTSpatialGraphs& p_Graphs,
+		int p_themeId,
+		int p_FirstPeriod, int p_LastPeriod, int p_bound) const
+	{
+		const std::vector<BoundingBox> BOXES = _GetBoundingBoxes(p_actions, p_Graphs, 
+									p_themeId, p_FirstPeriod, p_LastPeriod);
+		double total = 0;
+		for (const BoundingBox& BOX : BOXES)
+			{
+			total += BOX.EvaluateUpperBound(p_bound);
+			}
+		return total;
+	}
+
+
+
+	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::GetDispertionConflicts(
+		const std::vector<bool>& p_actions,
+		const FMTSpatialGraphs& p_Graphs,
+		int p_themeId,
+		int p_FirstPeriod, int p_LastPeriod, int p_bound) const
+	{
+		const std::vector<BoundingBox> BOXES = _GetBoundingBoxes(p_actions, p_Graphs, 
+			p_themeId, p_FirstPeriod,p_LastPeriod);
+		std::vector<FMTeventcontainer::const_iterator> conflicts;
+		for (const BoundingBox& BOX : BOXES)
+			{
+			const std::vector<FMTeventcontainer::const_iterator> BOX_CONFLICTS = BOX.GetEvents();
+			if (BOX.EvaluateUpperBound(p_bound)>FMT_DBL_TOLERANCE)
+				{
+				conflicts.insert(conflicts.end(),
+					BOX_CONFLICTS.begin(), BOX_CONFLICTS.end());
+				}
+			}
+		return  conflicts;
+	}
+
+
+
+	std::vector<FMTeventcontainer::BoundingBox> FMTeventcontainer::_GetBoundingBoxes(
+		const std::vector<bool>& p_actions,
+		const FMTSpatialGraphs& p_Graphs,
+		int p_themeId,
+		int p_FirstPeriod, int p_LastPeriod) const
+	{
+		size_t numberOfCategory = size_t(1);
+		if (p_themeId>=0)
+			{
+			numberOfCategory = p_Graphs.GetNumberOfCategories(p_themeId);
+			}
+		std::vector<BoundingBox>Boxes(numberOfCategory,BoundingBox());
+		for (int period = p_FirstPeriod; period <= p_LastPeriod; ++period)
+		{
+			for (const auto& EVENT : getevents(period, p_actions))
+			{
+				size_t category = 0;
+				if (p_themeId >= 0)
+					{
+					category = p_Graphs.GetCategoryOf(p_themeId,
+						EVENT->getGraphFamily());
+
+					}
+				Boxes.at(category).add(EVENT);
+			}
+		}
+		return Boxes;
+	}
+
+
+
+	void FMTeventcontainer::BoundingBox::add(FMTeventcontainer::const_iterator p_event)
+	{
+
+			const std::array<FMTcoordinate, 4> EVENT_BOX = p_event->getEnveloppe();
+			
+			const uint16_t EVENT_MIN_X = std::min(EVENT_BOX[2].getx(), EVENT_BOX[0].getx());
+			const uint16_t MIN_X = std::min(EVENT_MIN_X,m_bottomLeft.getx());
+
+			const uint16_t EVENT_MAX_Y = std::max(EVENT_BOX[2].gety(), EVENT_BOX[3].gety());
+			const uint16_t MAX_Y = std::max(EVENT_MAX_Y, m_bottomLeft.gety());
+
+			const uint16_t EVENT_MAX_X = std::max(EVENT_BOX[1].getx(), EVENT_BOX[3].getx());
+			const uint16_t MAX_X = !_IsNull() ? std::max(EVENT_MAX_X,
+								uint16_t(m_bottomLeft.getx() + m_Width)) : EVENT_MAX_X;
+
+			const uint16_t EVENT_MIN_Y = std::min(EVENT_BOX[0].gety(), EVENT_BOX[1].gety());
+			const uint16_t MIN_Y = !_IsNull() ? std::min(EVENT_MIN_Y,
+								uint16_t(m_bottomLeft.gety() - m_Height)) : EVENT_MIN_Y;
+			if (EVENT_MIN_X == MIN_X)
+				{
+				m_Left = p_event;
+				}
+			if (EVENT_MAX_X == MAX_X)
+				{
+				m_Right = p_event;
+				}
+			if (EVENT_MAX_Y == MAX_Y)
+				{
+				m_Bottom = p_event;
+				}
+			if (EVENT_MIN_Y == MIN_Y)
+				{
+				m_Top = p_event;
+				}
+			m_bottomLeft = FMTcoordinate(MIN_X, MAX_Y);
+			m_Width = MAX_X - MIN_X;
+			m_Height = MAX_Y - MIN_Y;
+	}
+
+	bool FMTeventcontainer::BoundingBox::_IsNull() const
+		{
+		return (m_bottomLeft.getx() == std::numeric_limits< uint16_t>::max());
+		}
+
+	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::BoundingBox::GetEvents() const
+		{
+		std::vector<FMTeventcontainer::const_iterator>returned;
+		if (!_IsNull())
+			{
+			returned = std::vector<FMTeventcontainer::const_iterator>{m_Top, m_Right, m_Bottom, m_Left};
+			}
+		return returned;
+		}
+
+	double FMTeventcontainer::BoundingBox::EvaluateUpperBound(int p_UpperBound) const
+	{
+		return std::max(_GetSize() - static_cast<double>(p_UpperBound), 0.0);
+	}
+
+	double FMTeventcontainer::BoundingBox::_GetSize() const
+		{
+		return static_cast<double>(std::max(m_Width, m_Height));
+		}
+
 }

@@ -32,7 +32,7 @@ namespace Spatial
             double distance(const FMTcoordinate& coord) const;
             template<typename T>
             bool within(const T& ldistance, const FMTcoordinate& coord) const;
-            void upenveloppe(std::vector<FMTcoordinate>& enveloppe) const;
+            void upenveloppe(std::array<FMTcoordinate, 4>& enveloppe) const;
             size_t hash() const;
             FMTcoordinate& operator = (const FMTcoordinate& rhs);
             const std::vector<double> getSpatialCoordinate(std::vector<double> geoTransform) const;
@@ -41,10 +41,10 @@ namespace Spatial
             std::set<FMTcoordinate>::const_iterator closest(const std::vector<std::set<FMTcoordinate>::const_iterator>& coordinates, double& approximation) const;
             operator std::string() const;
             std::set<FMTcoordinate> getneighbors(const uint16_t& nsize, const bool& circle = false) const;
-            static FMTcoordinate getAverageCentroid(const std::vector<FMTcoordinate>& p_enveloppe);
-            static std::set<FMTcoordinate> getTerritory(const std::vector<FMTcoordinate>& p_enveloppe, const size_t& p_distance);
-            static size_t getHeight(const std::vector<FMTcoordinate>& p_enveloppe);
-            static size_t getWidth(const std::vector<FMTcoordinate>& p_enveloppe);
+            static FMTcoordinate getAverageCentroid(const std::array<FMTcoordinate, 4>& p_enveloppe);
+            static std::set<FMTcoordinate> getTerritory(const std::array<FMTcoordinate, 4>& p_enveloppe, const size_t& p_distance);
+            static size_t getHeight(const std::array<FMTcoordinate, 4>& p_enveloppe);
+            static size_t getWidth(const std::array<FMTcoordinate, 4>& p_enveloppe);
             uint16_t getx() const;
             uint16_t gety() const;
         private:

@@ -79,7 +79,7 @@ int main()
 				simulationmodel.setinitialmapping(initialforestmap);
 				for (size_t period = 1; period <= 5; ++period)
 				{
-					for (const auto& t : simulationmodel.greedyreferencebuild(optimizationmodel.getsolution(period),10))
+					for (const auto& t : simulationmodel.GreedyReferenceBuild(optimizationmodel.getsolution(period),10))
 					{
 						Logging::FMTdefaultlogger() << t.first << " " << t.second << " ";
 					}

@@ -55,7 +55,7 @@ int main()
 	for (int period = 0; period < 10; ++period)
 		{
 		Core::FMTschedule sche = schedules.at(0).at(period);
-		for (const auto& t : simulationmodel.greedyreferencebuild(sche, greedysearch))
+		for (const auto& t : simulationmodel.GreedyReferenceBuild(sche, greedysearch))
 			{
 			Logging::FMTdefaultlogger()<< t.first << " " << t.second << " ";
 			}

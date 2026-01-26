@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.20)
 set(WrapperINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/UI/Include/")
 set(WrapperSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/UI/Source/")
 set(WrapperCoreINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/Include/")

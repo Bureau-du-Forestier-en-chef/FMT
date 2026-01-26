@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/set.hpp>
+#include <array>
 
 namespace Spatial
 {
@@ -26,97 +27,55 @@ corresponding to the FMTcoordinates presents in the event.
 */
 class FMTEXPORT FMTevent
     {
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		//ar & BOOST_SERIALIZATION_NVP(ignition);
-		//ar & BOOST_SERIALIZATION_NVP(active);
-		ar & BOOST_SERIALIZATION_NVP(action_id);
-		ar & BOOST_SERIALIZATION_NVP(period);
-		ar & BOOST_SERIALIZATION_NVP(elements);
-	}
-    protected:
-        // DocString: FMTevent::ignition
-        /**
-        Coordinate where the event started
-        */
-        //FMTcoordinate ignition;
-		// DocString: FMTevent::active
-		/**
-		Used in spread, the active coordinate are the next to spread.
-		*/
-		//std::vector<FMTcoordinate>active;
-		// DocString: FMTsaevent::action_id
-        /**
-        Action id from the FMTmodel.
-        */
-        int action_id;
-        // DocString: FMTsaevent::period
-        /**
-        Period at which the event take place
-        */
-        int period;
     public:
 		// DocString: FMTevent::midposition()
 		/**
 		Get mid point of elements.
 		*/
-		inline std::set<FMTcoordinate>::const_iterator midposition() const
-		{
-			std::set<FMTcoordinate>::const_iterator it = elements.begin();
-			if (elements.size() > 1)
-			{
-				const size_t midlocation = (elements.size() / 2);
-				std::advance(it, midlocation);
-			}
-			return it;
-		}
-        // DocString: FMTevent::elements
-        /**
-        Coordinates presents in the event
-        */
-        std::set<FMTcoordinate>elements;
+        std::set<FMTcoordinate>::const_iterator midposition() const;
         // DocString: ~FMTevent()
         /**
         Destructor
         */
-        virtual ~FMTevent() = default;
-        // DocString: FMTevent()
-        /**
-        Constructor
-        */
-        FMTevent();
-		// DocString: FMTsaevent(const FMTcoordinate&,const int&,const int&)
-        /**
-        Constructor with coordinate, action_id and period
-        */
-        FMTevent(const FMTcoordinate& location,const int& laction_id,const int& lperiod);
+        ~FMTevent() = default;
         // DocString: FMTevent(const FMTevent&)
         /**
         Copy constructor
         */
-		FMTevent(const FMTevent& rhs);
+        FMTevent(const FMTevent& rhs) = default;
         // DocString: FMTevent::operator=
         /**
         Copy assignment operator
         */
-        FMTevent& operator=(const FMTevent& rhs);
+        FMTevent& operator=(const FMTevent& rhs) = default;
+        // DocString: FMTevent()
+        /**
+        Constructor
+        */
+        FMTevent() = default;
+		// DocString: FMTsaevent(const FMTcoordinate&,const int&,const int&)
+        /**
+        Constructor with coordinate, action_id and period
+        */
+        FMTevent(const FMTcoordinate& p_location,
+            int p_actionId,
+            int p_period,
+            size_t p_centroidGraphFamily);
         // DocString: FMTevent::empty()
         /**
         Test whether event is empty
         */
-        bool empty() const {return elements.empty();}
+        bool empty() const;
         // DocString: FMTevent::size()
         /**
         Return event size
         */
-        size_t size() const {return elements.size();}
+        size_t size() const;
         // DocString: FMTevent::hash()
         /**
 
         */
-		size_t hash() const;// {return boost::hash<Spatial::FMTcoordinate>()(ignition); }
+		size_t hash() const;
 		// DocString: FMTevent::getrelation(const FMTevent&)
 		/**
 
@@ -126,7 +85,7 @@ class FMTEXPORT FMTevent
         /**
         Comparison operator equal to
         */
-        virtual bool operator==(const FMTevent& rhs) const;
+        bool operator==(const FMTevent& rhs) const;
         // DocString: FMTevent::operator!=(const FMTevent&)
         /**
         Comparison operator different than
@@ -136,7 +95,7 @@ class FMTEXPORT FMTevent
         /**
         Comparison operator less than
         */
-        virtual bool operator<(const FMTevent& rhs) const;
+        bool operator<(const FMTevent& rhs) const;
         // DocString: FMTevent::perimeter()
         /**
         The perimeter of the event, including any internal holes in the
@@ -187,27 +146,34 @@ class FMTEXPORT FMTevent
         /**
         Setter for action id
         */
-        void setactionid(const int& laction_id){action_id=laction_id;}
-        // DocString: FMTevent::setperiod(const int&)
-        /**
-        Setter for period
-        */
-        void setperiod(const int& lperiod){period=lperiod;}
+        void setactionid(const int& laction_id);
         // DocString: FMTevent::getactionid()
         /**
         Getter of the action id
         */
-        inline const int& getactionid() const {return action_id;}
+        const int& getactionid() const;
         // DocString: FMTevent::getperiod()
         /**
         Getter of the period
         */
-        inline const int& getperiod() const {return period;}
+        const int& getperiod() const;
+        // DocString: FMTevent::getGraphFamily()
+        /**
+        Getter for the graph family
+        */
+        const size_t& getGraphFamily() const;
+        // DocString: FMTevent::getElements
+        /**
+        @brief Getter of the period
+        @return The event elements
+        */
+        const std::set<FMTcoordinate>& getElements() const;
         // DocString: FMTevent::ignit(const FMTspatialaction&, const FMTcoordinate&, const int&, const int&)
         /**
 
         */
-        virtual std::vector<std::set<FMTcoordinate>::const_iterator> ignit(const size_t& eventmaximalsize,const std::set<FMTcoordinate>::const_iterator& ignit, const int& laction_id, const int& lperiod);
+        virtual std::vector<std::set<FMTcoordinate>::const_iterator> ignit(const size_t& eventmaximalsize,
+            const std::set<FMTcoordinate>::const_iterator& ignit, int p_actionId, int p_period, size_t p_GraphFamily);
         // DocString: FMTevent::spread(const size_t& eventminimalsize,const size_t& eventmaximalsize,const size_t& neighboringsize,const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active)
         /**
 
@@ -266,7 +232,7 @@ class FMTEXPORT FMTevent
 		//2//-//3//
 		Returns coordinate of the enveloppe
 		*/
-		std::vector<FMTcoordinate>getenveloppe() const;
+		std::array<FMTcoordinate,4>getEnveloppe() const;
 		// DocString: FMTevent::getclosescoordinate
 		/**
 		Return the closes coordinate between two FMTevent
@@ -274,6 +240,35 @@ class FMTEXPORT FMTevent
 		void getclosescoordinates(const FMTevent& rhs,
 			std::set<FMTcoordinate>::const_iterator& thiscoordinate,
 			std::set<FMTcoordinate>::const_iterator& rhscoordinate) const;
+    private:
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive& ar, const unsigned int version)
+        {
+            ar& BOOST_SERIALIZATION_NVP(m_actionId);
+            ar& BOOST_SERIALIZATION_NVP(m_period);
+            ar& BOOST_SERIALIZATION_NVP(elements);
+        }
+        // DocString: FMTevent::m_actionId
+        /**
+        Action id from the FMTmodel.
+        */
+        int m_actionId;
+        // DocString: FMTevent::m_period
+        /**
+        Period at which the event take place
+        */
+        int m_period;
+        // DocString: FMTevent::m_centroidGraphFamily
+        /**
+        The graph family of the centroid
+        */
+        size_t m_centroidGraphFamily;
+        // DocString: FMTevent::m_elements
+        /**
+        Coordinates presents in the event
+       */
+        std::set<FMTcoordinate>m_elements;
     };
 
 }
@@ -285,8 +280,7 @@ namespace boost {
     {
     std::size_t operator()(const Spatial::FMTevent& event) const
 		 {
-
-      return (event.hash());
+       return (event.hash());
 		}
     };
 

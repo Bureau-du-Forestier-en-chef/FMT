@@ -21,7 +21,7 @@ namespace Spatial{
 			const double* SOLUTION = &AREA;
 			return m_Iterator->first.getoutput(p_model, p_output, p_period, SOLUTION, Core::FMToutputlevel::totalonly).at("Total");
 		}
-	return 0xd;
+	return 0.0;
 	}
 
 
@@ -40,6 +40,11 @@ namespace Spatial{
 		_insertInto(p_LineGraph, p_solution);
 		}
 
+	size_t FMTVirtualLineGraph::GetGraphFamily() const
+		{
+		return m_GraphFamily;
+		}
+
 	void FMTVirtualLineGraph::SetBaseGraph(std::vector<size_t>& p_solution)
 		{
 		_remove(p_solution);
@@ -51,6 +56,13 @@ namespace Spatial{
 		{
 		_remove(p_solution);
 		m_Iterator = m_Graphs->GetLastPeriodIterator(m_GraphFamily, m_Iterator);
+		_add(p_solution);
+		}
+
+	void FMTVirtualLineGraph::SetNaturalGrowth(std::vector<size_t>& p_solution)
+		{
+		_remove(p_solution);
+		m_Iterator = m_Graphs->SetNaturalGrowthIterator(m_GraphFamily);
 		_add(p_solution);
 		}
 
