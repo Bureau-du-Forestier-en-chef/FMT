@@ -786,18 +786,20 @@ namespace Spatial
 	}
 
 	double FMTeventcontainer::EvaluateSize(const std::vector<bool>& p_actions,
-		int p_period, size_t  p_lowerBound, size_t p_upperBound) const
+		int p_period, size_t  p_lowerBound, size_t p_upperBound, bool p_testLower) const
 	{
 		double value = 0.0;
 		for (const FMTeventcontainer::const_iterator& eventIt : getevents(p_period, p_actions))
 		{
 			const size_t EVENT_SIZE = eventIt->size();
 			size_t EventValue = 0;
-			if (EVENT_SIZE < p_lowerBound)
+			if (p_testLower && 
+				EVENT_SIZE < p_lowerBound)
 			{
 				EventValue = p_lowerBound - EVENT_SIZE;
 			}
-			else if (EVENT_SIZE > p_upperBound)
+			else if (!p_testLower && 
+				EVENT_SIZE > p_upperBound)
 			{
 				EventValue = EVENT_SIZE - p_upperBound;
 			}
@@ -817,7 +819,7 @@ namespace Spatial
 		double total = 0;
 		for (const BoundingBox& BOX : BOXES)
 			{
-			total += std::max(static_cast<double>(BOX.GetSize()) - static_cast<double>(p_bound), 0.0);
+			total += BOX.EvaluateUpperBound(p_bound);
 			}
 		return total;
 	}
@@ -835,9 +837,12 @@ namespace Spatial
 		std::vector<FMTeventcontainer::const_iterator> conflicts;
 		for (const BoundingBox& BOX : BOXES)
 			{
-			const 	std::vector<FMTeventcontainer::const_iterator> BOX_CONFLICTS = BOX.GetEvents();
-			conflicts.insert(conflicts.end(), 
-				BOX_CONFLICTS.begin(), BOX_CONFLICTS.end());
+			const std::vector<FMTeventcontainer::const_iterator> BOX_CONFLICTS = BOX.GetEvents();
+			if (BOX.EvaluateUpperBound(p_bound)>FMT_DBL_TOLERANCE)
+				{
+				conflicts.insert(conflicts.end(),
+					BOX_CONFLICTS.begin(), BOX_CONFLICTS.end());
+				}
 			}
 		return  conflicts;
 	}
@@ -929,9 +934,14 @@ namespace Spatial
 		return returned;
 		}
 
-	size_t FMTeventcontainer::BoundingBox::GetSize() const
+	double FMTeventcontainer::BoundingBox::EvaluateUpperBound(int p_UpperBound) const
+	{
+		return std::max(_GetSize() - static_cast<double>(p_UpperBound), 0.0);
+	}
+
+	double FMTeventcontainer::BoundingBox::_GetSize() const
 		{
-		return static_cast<size_t>(std::max(m_Width, m_Height));
+		return static_cast<double>(std::max(m_Width, m_Height));
 		}
 
 }

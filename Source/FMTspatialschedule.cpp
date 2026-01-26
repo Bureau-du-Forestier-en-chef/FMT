@@ -841,7 +841,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 				case Core::FMTconstrainttype::FMTspatialsize:
 						{
 						returnvalue += m_events.EvaluateSize(ACTION_USED,
-							period, lower, upper);
+							period, lower, upper, TEST_LOWER_BOUND);
 						break;
 						}
 					case Core::FMTconstrainttype::FMTspatialadjacency:

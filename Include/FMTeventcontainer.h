@@ -254,7 +254,7 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 			boost::unordered_set<FMTeventrelation>& relations) const;
 
         double EvaluateSize(const std::vector<bool>& p_actions,
-            int p_period,size_t  p_lowerBound, size_t p_upperBound) const;
+            int p_period,size_t  p_lowerBound, size_t p_upperBound, bool p_testLower) const;
 
         double GetDispertion(const std::vector<bool>& p_actions,
                             const FMTSpatialGraphs& p_Graphs,
@@ -271,7 +271,7 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
             public:
                 BoundingBox();
                 void add(FMTeventcontainer::const_iterator p_event);
-                size_t GetSize() const;
+                double EvaluateUpperBound(int p_UpperBound) const;
                 std::vector<FMTeventcontainer::const_iterator> GetEvents() const;
             private:
                 FMTcoordinate m_bottomLeft;
@@ -282,6 +282,7 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
                 FMTeventcontainer::const_iterator m_Left;
                 FMTeventcontainer::const_iterator m_Right;
                 bool _IsNull() const;
+                double _GetSize() const;
             };
         friend class boost::serialization::access;
         template<class Archive>
