@@ -129,14 +129,14 @@ int main(int argc, char *argv[])
                 length = 5;
             }else
                 {
-                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\PC_9929_U11171_2028_MODB01.pri";
                 scenarios = std::vector<std::string> (1, "ROOT");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\parameters.csv";
-                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\Carte\\PC_9424_UA_U08551.shp";
+                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\Parametres_Bfecopt.csv";
+                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\Carte\\PC_9929_UA_U11171.shp";
                 results = std::vector<std::string> (1, "ROOT");
-                length = 20;
+                length = 5;
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));

@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\Pour_Bruno\\PC_9929_U11171_2028_MODB01.pri";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\PC_9929_U11171_2028_MODB01.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
 		length = 2;
-		scenario_name = "200_stratreg_apsp_sen_tyfres_cosint_crb";
+		scenario_name = "ROOT";
 		playback.push_back(true);
 		allscenarios.push_back(scenario_name);
 	}

@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01010307\\PC_10116_U05151_MODB01_20250912\\PC_10116_U05151_2028_MODB01.pri";
-			templatefolder = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01010307\\Template_complexite";
-			length = 2;
+			primlocation = "T:\\Donnees\\Usagers\\FILDO1\\Modele_pour_Remsoft\\01272\\PC_9936_U01272_2028_MODB01.pri";
+			templatefolder = "T:\\Donnees\\Usagers\\FILDO1\\Modele_pour_Remsoft\\01272\\Scenarios";
+			length = 30;
 		}
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc> errors;
@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<Models::FMTmodel> models = modelparser.readtemplates(primlocation, templatefolder);
 		if (models.size() < 1)

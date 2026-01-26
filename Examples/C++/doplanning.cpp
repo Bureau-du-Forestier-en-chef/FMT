@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "C:\\Users\\Admlocal\\Documents\\FMT\\FMT\\Examples\\Models\\TWD_land\\TWD_land.pri";
-			scenario = "Predeclared_Primary";
-			length = 3; 
-			objectivevalue = 302;
+			primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\FMT_305\\CC_V2\\Mod_cc_v2.pri";
+			scenario = "strategique_CC_modified";
+			length = 5; 
+			objectivevalue = -1026547388;
 		}
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
