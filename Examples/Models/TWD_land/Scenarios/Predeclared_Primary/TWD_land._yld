@@ -1,0 +1,79 @@
+*Y ? peuplement1 ?
+_AGE volumetotal
+0    0
+5    100
+10   150
+15   200
+20   250
+25   300
+30   350
+
+*Y ? peuplement2 ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+*Y ? peuplement3 ?
+_AGE volumetotal
+0    0
+5    75
+10   125
+15   175
+20   225
+25   250
+30   200
+
+*Y ? feu ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+*YT ? ? UTR1
+yHmoyM7MP12M 0 1 1 1 1
+yHmoyM7M 0 1 0 0 0
+yHmoyP12M 0 1 0 0 0
+ypremature 0 1 0 0 0
+yreference 0 1 1 1 1
+
+
+*YT ? ? UTRS
+yHmoyM7MP12M 0 1 0 0 0
+yHmoyM7M 0 1 0 0 0
+yHmoyP12M 0 1 1 1
+ypremature 0 1 0 0 0
+yreference 0 1 1 1 1
+
+
+FOREACH Utr IN (_TH3(UTRS))
+	*YM ? ? Utr
+	youvert _PRED(DECISION_COS,yHmoyM7MP12M,yHmoyM7M,yHmoyP12M,ypremature,yreference)
+ENDFOR
+
+{
+yHmoyM7M _RANGE(volumetotal,0,100)
+yHmoyP12M _RANGE(volumetotal,200,500)
+temprange _SUM(yHmoyM7M,yHmoyP12M)
+yHmoyM7MP12M _RANGE(temprange,1,3)
+ypremature _RANGE(volumetotal,100,200)
+yreference _RANGE(volumetotal,0,10000)
+
+
+FOREACH Utr IN (_TH3(UTRS))
+	*YM ? ? Utr
+	youvert _PRED(DECISION_COS,yHmoyM7MP12M,yHmoyM7M,yHmoyP12M,ypremature,yreference)
+ENDFOR
+}
+
+
+*YT ? ? ?
+youvert 0 1 1 1

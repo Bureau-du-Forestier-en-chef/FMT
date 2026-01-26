@@ -14,8 +14,8 @@ int main(int argc, char* argv[])
 		primarylocation = std::string(argv[1]);
 		scenarios = std::vector<std::string>(1, std::string(argv[2]));
 	}else {
-		primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Feux_2023_ouest/feux_2023_ouest_V01.pri";
-		scenarios = std::vector<std::string>(1, "201_UG107_feu");
+		primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TBEV02/tbe_R02_v01.pri";
+		scenarios = std::vector<std::string> (1, "02_test_Recolte_ratio_series");
 	}
 
 	//const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";

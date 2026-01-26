@@ -32,20 +32,22 @@ It can also get a landscape section from a vector or raster files (generating FM
 If FMT is compiled without the compile proprocessor FMTWITHGDAL then some funcionalities of the FMTlandscapeparser wont be
 available to the user. This class is also used by the FMTmodelparser.
 */
-class FMTEXPORT FMTlandscapeparser : public FMTparser
-    {
-    private:
+	class FMTEXPORT FMTlandscapeparser : public FMTparser
+	{
+	private:
 		// DocString: FMTlandscapeparser::rxcleanlans
 		///This regex is the main regex to catch themes and aggregates.
-        const static boost::regex rxcleanlans;
+		const static boost::regex rxcleanlans;
 		// DocString: FMTlandscapeparser::rxindex
 		///This regex catch the index of a given theme.
 		const static boost::regex rxindex;
 		// DocString: FMTlandscapeparser::rxparameter
 		///This regex catch the parameters of a indexed theme.
 		const static boost::regex rxparameter;
-		// DocString: FMTlandscapeparser::rxattributes
-		const static boost::regex rxattributes;
+		// DocString: FMTlandscapeparser::rxPreAttributes
+		const static boost::regex rxPreAttributes;
+		// DocString: FMTlandscapeparser::rxPreAggregate
+		const static boost::regex rxPreAggregate;
 		// DocString: FMTlandscapeparser::getindexes
 		/**
 		This function is used to catch the indexed attributes of a theme in the landscape section
@@ -53,8 +55,59 @@ class FMTEXPORT FMTlandscapeparser : public FMTparser
 		the landscape section and (constants).
 		*/
 		std::map<std::string, double> getindexes(std::string indexm_line, const Core::FMTconstants& constants);
-		// Docstring: FMTlandscapeparser::isPreDeclaredTheme
-		std::tuple<bool, int> isPreDeclaredTheme(int preDeclaredThemeId, std::string line, const Core::FMTconstants& constants);
+		// DocString: FMTlandscapeparser::ParseState
+		enum class ParseState { NORMAL, IN_PRE_DECLARATION };
+		// DocString: FMTlandscapeparser::PreDeclarationContext
+		struct PreDeclarationContext {
+			ParseState state;
+			std::string currentKey; 
+			std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string>>> declarations;
+			
+			PreDeclarationContext();
+			void clearTheme(std::string nameID);
+		};
+		//DocString: FMTlandscapeparser::ProcessPreDeclarationLine
+		bool ProcessPreDeclarationLine(const std::string& line,
+			PreDeclarationContext& context,
+			const Core::FMTconstants& constants);
+		// DocString: FMTlandscapeparser::ThemeParsingContext
+		struct ThemeParsingContext {
+			std::vector<std::string> attributes;
+			std::vector<std::string> attributenames;
+			std::vector<std::string> aggregates;
+			std::vector<std::vector<std::string>> aggregatenames;
+			std::vector<std::map<std::string, double>> indexes_values;
+			std::string themename;
+			std::string aggregatename;
+			size_t id;
+			size_t start;
+			size_t stop;
+			int pasttheme;
+			bool aggregate_redefinition;
+
+			ThemeParsingContext();
+			void clear();
+		};
+		// DocString: FMTlandscapeparser::ProcessThemeLine
+		void ProcessThemeLine(const boost::smatch& kmatch,
+			ThemeParsingContext& ctx,
+			PreDeclarationContext& preContext,
+			std::vector<Core::FMTtheme>& themes,
+			const Core::FMTconstants& constants,
+			size_t& unknownID);
+		// DocString: FMTlandscapeparser::ProcessAggregateLine
+		void ProcessAggregateLine(const boost::smatch& kmatch,
+			ThemeParsingContext& ctx,
+			std::vector<Core::FMTtheme>& themes,
+			const Core::FMTconstants& constants);
+		// DocString: FMTlandscapeparser::ProcessAggregateValueLine
+		void ProcessAggregateValueLine(const std::string& line,
+			ThemeParsingContext& ctx,
+			std::vector<Core::FMTtheme>& themes);
+		// DocString: FMTlandscapeparser::ProcessAttributeLine
+		void ProcessAttributeLine(const std::string& line,
+			ThemeParsingContext& ctx,
+			const Core::FMTconstants& constants);
     public:
 		// DocString: FMTlandscapeparser::FMTlandscapeparser()
 		/**
