@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ExcelDnaToolsPath Condition="$(ExcelDnaToolsPath) == '' Or $(ExcelDnaToolsPath) == '*Undefined*'">$(MSBuildThisFileDirectory)..\tools\</ExcelDnaToolsPath>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(MSBuildRuntimeType)' == 'Core'">
+		<ExcelDnaTasksPath>$(ExcelDnaToolsPath)net6.0-windows7.0\</ExcelDnaTasksPath>
+		<ExcelDnaDscomIntegrationPath>$(ExcelDnaToolsPath)net6.0-windows7.0</ExcelDnaDscomIntegrationPath>
+</PropertyGroup>
+	<PropertyGroup Condition="'$(MSBuildRuntimeType)' != 'Core'">
+		<ExcelDnaTasksPath>$(ExcelDnaToolsPath)net452\</ExcelDnaTasksPath>
+		<ExcelDnaDscomIntegrationPath>$(ExcelDnaToolsPath)net452</ExcelDnaDscomIntegrationPath>
+	</PropertyGroup>
+	
+	<UsingTask TaskName="ExcelDna.AddIn.Tasks.SetDebuggerOptions" AssemblyFile="$(ExcelDnaTasksPath)ExcelDna.AddIn.Tasks.dll" />
+	<UsingTask TaskName="ExcelDna.AddIn.Tasks.SetLaunchSettings" AssemblyFile="$(ExcelDnaTasksPath)ExcelDna.AddIn.Tasks.dll" />
+	<UsingTask TaskName="ExcelDna.AddIn.Tasks.CleanExcelAddIn" AssemblyFile="$(ExcelDnaTasksPath)ExcelDna.AddIn.Tasks.dll" />
+	<UsingTask TaskName="ExcelDna.AddIn.Tasks.CreateExcelAddIn" AssemblyFile="$(ExcelDnaTasksPath)ExcelDna.AddIn.Tasks.dll" />
+	<UsingTask TaskName="ExcelDna.AddIn.Tasks.PackExcelAddIn" AssemblyFile="$(ExcelDnaTasksPath)ExcelDna.AddIn.Tasks.dll" />
+
+  <!--
+    Extend the Clean target to call our ExcelDnaClean target
+  -->
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      ExcelDnaClean;
+    </CleanDependsOn>
+  </PropertyGroup>
+
+  <!--
+    Extend the Build target to call our ExcelDnaDebugger, ExcelDnaBuild, and ExcelDnaPack targets
+  -->
+  <PropertyGroup>
+    <BuildDependsOn>
+			ExcelDnaSetDebuggerOptions;
+			ExcelDnaSetLaunchSettings;
+			$(BuildDependsOn);
+			ExcelDnaBuild;
+			ExcelDnaPack;
+		</BuildDependsOn>
+  </PropertyGroup>
+
+  <!--
+    Load configuration properties file for the project, if exist
+  -->
+  <PropertyGroup>
+    <ExcelDnaProjectPath Condition="'$(ExcelDnaProjectPath)' == ''">$(MSBuildProjectDirectory)\</ExcelDnaProjectPath>
+    <ExcelDnaPropsFilePath Condition="'$(ExcelDnaPropsFilePath)' == ''">$(ExcelDnaProjectPath)\Properties\ExcelDna.Build.props</ExcelDnaPropsFilePath>
+  </PropertyGroup>
+  <Import Project="$(ExcelDnaPropsFilePath)" Condition="Exists('$(ExcelDnaPropsFilePath)')" />
+
+  <!--
+    Default values for configuration properties - in case they were not set in via .props file or command-line
+  -->
+  <PropertyGroup>
+    <RunExcelDnaSetDebuggerOptions Condition="'$(RunExcelDnaSetDebuggerOptions)' == ''">true</RunExcelDnaSetDebuggerOptions>
+    <RunExcelDnaClean Condition="'$(RunExcelDnaClean)' == ''">true</RunExcelDnaClean>
+    <RunExcelDnaBuild Condition="'$(RunExcelDnaBuild)' == ''">true</RunExcelDnaBuild>
+    <RunExcelDnaPack Condition="'$(RunExcelDnaPack)' == ''">true</RunExcelDnaPack>
+
+    <ExcelDnaCreate32BitAddIn Condition="'$(ExcelDnaCreate32BitAddIn)' == ''">true</ExcelDnaCreate32BitAddIn>
+    <ExcelDnaCreate64BitAddIn Condition="'$(ExcelDnaCreate64BitAddIn)' == ''">true</ExcelDnaCreate64BitAddIn>
+
+    <ExcelDna32BitAddInSuffix Condition="'$(ExcelDna32BitAddInSuffix)' == ''"></ExcelDna32BitAddInSuffix>
+    <ExcelDna64BitAddInSuffix Condition="'$(ExcelDna64BitAddInSuffix)' == ''">64</ExcelDna64BitAddInSuffix>
+
+    <ExcelDnaPackXllSuffix Condition="'$(ExcelDnaPackXllSuffix)' == ''">-packed</ExcelDnaPackXllSuffix>
+    <ExcelDnaPackCompressResources Condition="'$(ExcelDnaPackCompressResources)' == ''">true</ExcelDnaPackCompressResources>
+    <ExcelDnaPackRunMultithreaded Condition="'$(ExcelDnaPackRunMultithreaded)' == ''">true</ExcelDnaPackRunMultithreaded>
+    <ExcelDnaPublishPath Condition="'$(ExcelDnaPublishPath)' == '' AND '$(UsingMicrosoftNETSdk)' != 'true'">%none%</ExcelDnaPublishPath>
+  </PropertyGroup>
+
+	<Target Name="ExcelDnaDscomIntegration" BeforeTargets="DsComExportTypeLibraryAfterBuild">
+		<ItemGroup>
+			<DsComTlbExportAssemblyPaths Include="$(ExcelDnaDscomIntegrationPath)" />
+		</ItemGroup>
+	</Target>
+
+	<!--
+    Executes DsComExportTypeLibraryAfterBuild target if available
+  -->
+	<Target Name="ExcelDnaDscomRunner" DependsOnTargets="ExcelDnaDscomPackageDetection;ExcelDnaDscomRunnerImpl">
+	</Target>
+
+	<Target Name="ExcelDnaDscomRunnerImpl" DependsOnTargets="DsComExportTypeLibraryAfterBuild" Condition="'$(ExcelDnaDscomPackageDetected)'== 'true'">
+	</Target>
+
+	<Target Name="ExcelDnaDscomPackageDetection">
+		<PropertyGroup>
+			<ExcelDnaDscomPackageDetected>false</ExcelDnaDscomPackageDetected>
+			<ExcelDnaDscomPackageDetected Condition="'%(PackageReference.Identity)' == 'dSPACE.Runtime.InteropServices.BuildTasks'">true</ExcelDnaDscomPackageDetected>
+		</PropertyGroup>
+	</Target>
+
+  <!--
+    Target that ensures ExcelDna.Integration.dll is not copied to the output folder
+    https://github.com/Excel-DNA/ExcelDna/issues/188
+  -->
+  <Target Name="ExcelDnaPreventIntegrationCopyLocal" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+                               Condition="'%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)' == 'ExcelDna.Integration.dll'" />
+    </ItemGroup>
+  </Target>
+
+	<!--
+		Configure debugger options (Path for EXCEL.EXE, add-in to open, etc).
+	-->
+	<Target Name="ExcelDnaSetDebuggerOptions"
+					BeforeTargets="PreBuildEvent"
+					Condition="'$(RunExcelDnaSetDebuggerOptions)'== 'true' AND ('$(BuildingInsideVisualStudio)' == 'true' OR '$(RunExcelDnaSetDebuggerOptionsOutsideVisualStudio)'== 'true') AND '$(BuildingByReSharper)' != 'true' AND '$(PackageReferenceCompatibleProjectStyle)' != 'true' AND '$(RestoreProjectStyle)' != 'ProjectJson' AND '$(NuGetProjectStyle)' != 'PackageReference'">
+		<Message Text="---" Importance="High" />
+
+		<Error Text="ExcelDna32BitAddInSuffix and ExcelDna64BitAddInSuffix cannot be identical. Fix your ExcelDna.Build.props file"
+						Condition="'$(ExcelDna32BitAddInSuffix)' == '$(ExcelDna64BitAddInSuffix)'" />
+
+		<ItemGroup>
+			<ExcelDnaSetDebuggerOptionsFilesInProject Include="@(None)" />
+			<ExcelDnaSetDebuggerOptionsFilesInProject Include="@(Content)" />
+		</ItemGroup>
+
+		<SetDebuggerOptions
+		ProjectName="$(MSBuildProjectName)"
+		ExcelExePath="$(ExcelDnaExcelExePath)"
+		AddInForDebugging="$(ExcelDnaAddInForDebugging)"
+		FilesInProject="@(ExcelDnaSetDebuggerOptionsFilesInProject)"
+		OutDirectory="$(OutDir)"
+		FileSuffix32Bit="$(ExcelDna32BitAddInSuffix)"
+		FileSuffix64Bit="$(ExcelDna64BitAddInSuffix)"
+		AddInFileName="$(ExcelAddInFileName)">
+		</SetDebuggerOptions>
+	</Target>
+
+	<Target Name="ExcelDnaSetLaunchSettings"
+					BeforeTargets="PreBuildEvent"
+					Condition="'$(RunExcelDnaSetDebuggerOptions)'== 'true' AND ('$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingInsideDnaKode)' == 'true' OR '$(RunExcelDnaSetDebuggerOptionsOutsideVisualStudio)'== 'true') AND '$(UsingMicrosoftNETSdk)' == 'true' AND '$(BuildingByReSharper)' != 'true'">
+		<Message Text="---" Importance="High" />
+
+		<Error Text="ExcelDna32BitAddInSuffix and ExcelDna64BitAddInSuffix cannot be identical. Fix your ExcelDna.Build.props file"
+						Condition="'$(ExcelDna32BitAddInSuffix)' == '$(ExcelDna64BitAddInSuffix)'" />
+
+		<ItemGroup>
+			<ExcelDnaSetLaunchSettingsFilesInProject Include="@(None)" />
+			<ExcelDnaSetLaunchSettingsFilesInProject Include="@(Content)" />
+		</ItemGroup>
+
+		<SetLaunchSettings
+			ProjectDirectory="$(MSBuildProjectDirectory)"
+			ProjectName="$(MSBuildProjectName)"
+			ProjectExtension="$(MSBuildProjectExtension)"
+			ExcelExePath="$(ExcelDnaExcelExePath)"
+			AddInForDebugging="$(ExcelDnaAddInForDebugging)"
+			FilesInProject="@(ExcelDnaSetLaunchSettingsFilesInProject)"
+			OutDirectory="$(OutDir)"
+			FileSuffix32Bit="$(ExcelDna32BitAddInSuffix)"
+			FileSuffix64Bit="$(ExcelDna64BitAddInSuffix)"
+			AddInFileName="$(ExcelAddInFileName)">
+		</SetLaunchSettings>
+	</Target>
+
+  <!--
+    Target that removes .dna, .xll, and .xll.config from the build output folder
+  -->
+  <Target Name="ExcelDnaClean"
+          Condition="'$(RunExcelDnaClean)' == 'true'">
+    <Message Text="---" Importance="High" />
+
+    <Error Text="ExcelDna32BitAddInSuffix and ExcelDna64BitAddInSuffix cannot be identical. Fix your ExcelDna.Build.props file"
+              Condition="'$(ExcelDna32BitAddInSuffix)' == '$(ExcelDna64BitAddInSuffix)'" />
+
+    <ItemGroup>
+      <ExcelDnaCleanFilesInProject Include="@(None)" />
+      <ExcelDnaCleanFilesInProject Include="@(Content)" />
+    </ItemGroup>
+
+    <CleanExcelAddIn
+      FilesInProject="@(ExcelDnaCleanFilesInProject)"
+      OutDirectory="$(OutDir)"
+      Xll32FilePath="ExcelDna.xll"
+      Xll64FilePath="ExcelDna64.xll"
+      FileSuffix32Bit="$(ExcelDna32BitAddInSuffix)"
+      FileSuffix64Bit="$(ExcelDna64BitAddInSuffix)"
+      UnpackIsEnabled="$(ExcelDnaUnpack)"
+      PackIsEnabled="$(RunExcelDnaPack)"
+      PackedFileSuffix="$(ExcelDnaPackXllSuffix)"
+      Packed32BitXllName="$(ExcelDnaPack32BitXllName)"
+      Packed64BitXllName="$(ExcelDnaPack64BitXllName)"			
+ 	  AddInFileName="$(ExcelAddInFileName)"
+      PublishPath="$(ExcelDnaPublishPath)"
+ 	  ProjectName="$(MSBuildProjectName)">
+    </CleanExcelAddIn>
+  </Target>
+
+  <!--
+    Target that copies .dna, .xll, and .xll.config to the build output folder, for each platform
+  -->
+  <Target Name="ExcelDnaBuild" BeforeTargets="PostBuildEvent" Condition="'$(RunExcelDnaBuild)' == 'true'">
+
+	<PropertyGroup>
+		<ExcelDnaTlbDscom Condition="'$(ExcelDnaTlbDscom)' == ''">false</ExcelDnaTlbDscom>
+	</PropertyGroup>
+		
+	<PropertyGroup Condition="'$(TargetFrameworkVersion.Length())' >= '2' AND '$(TargetFrameworkVersion.Substring(1,1))' >= '6'">
+		<ExcelDnaRuntimeToolsPath>$(ExcelDnaToolsPath)\net6.0-windows7.0\</ExcelDnaRuntimeToolsPath>
+		<ExcelDnaTlbDscom>true</ExcelDnaTlbDscom>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFrameworkVersion.Length())' >= '2' AND '$(TargetFrameworkVersion.Substring(0,2))' == 'v4'">
+		<ExcelDnaRuntimeToolsPath>$(ExcelDnaToolsPath)\net452\</ExcelDnaRuntimeToolsPath>
+	</PropertyGroup>
+
+	<Message Text="---" Importance="High" />
+
+    <Error Text="ExcelDna32BitAddInSuffix and ExcelDna64BitAddInSuffix cannot be identical. Fix your ExcelDna.Build.props file"
+              Condition="'$(ExcelDna32BitAddInSuffix)' == '$(ExcelDna64BitAddInSuffix)'" />
+
+	<Error Text="The publish directory and the pack suffix can't both be blank."
+           Condition="('$(ExcelDnaPackXllSuffix)' == '%none%') AND ('$(ExcelDnaPublishPath)' == '%none%') AND ('$(RunExcelDnaPack)' == 'true')" />
+		
+	<Error Text="The target platform should specified as Windows in the project file. For example, &lt;TargetFramework&gt;net6.0-windows&lt;/TargetFramework&gt;." Condition="'$(TargetPlatformIdentifier)' != 'Windows'" />		
+
+    <Warning Text="ExcelDnaCreate32BitAddIn and ExcelDnaCreate64BitAddIn are both 'false'. Nothing to do"
+             Condition="('$(ExcelDnaCreate32BitAddIn)' == 'false') AND ('$(ExcelDnaCreate64BitAddIn)' == 'false')" />
+
+    <ItemGroup>
+      <ExcelDnaBuildFilesInProject Include="@(None)" />
+      <ExcelDnaBuildFilesInProject Include="@(Content)" />
+    </ItemGroup>
+
+    <CreateExcelAddIn
+      FilesInProject="@(ExcelDnaBuildFilesInProject)"
+      OutDirectory="$(OutDir)"
+      Xll32FilePath="$(ExcelDnaRuntimeToolsPath)ExcelDna.xll"
+      Xll64FilePath="$(ExcelDnaRuntimeToolsPath)ExcelDna64.xll"
+      Create32BitAddIn="$(ExcelDnaCreate32BitAddIn)"
+      Create64BitAddIn="$(ExcelDnaCreate64BitAddIn)"
+      FileSuffix32Bit="$(ExcelDna32BitAddInSuffix)"
+      FileSuffix64Bit="$(ExcelDna64BitAddInSuffix)"
+      UnpackIsEnabled="$(ExcelDnaUnpack)"
+      PackIsEnabled="$(RunExcelDnaPack)"
+      PackedFileSuffix="$(ExcelDnaPackXllSuffix)"
+      Packed32BitXllName="$(ExcelDnaPack32BitXllName)"
+      Packed64BitXllName="$(ExcelDnaPack64BitXllName)"
+      PackManagedOnWindows="$(ExcelDnaPackManagedResourcePackingOnWindows)"
+      PublishPath="$(ExcelDnaPublishPath)"
+      CompressResources="$(ExcelDnaPackCompressResources)"
+ 	  AddInName="$(ExcelAddInName)"
+ 	  AddInFileName="$(ExcelAddInFileName)"
+ 	  AddInInclude="$(ExcelAddInInclude)"
+ 	  AddInExports="$(ExcelAddInExports)"
+ 	  AddInExternalLibraryPath="$(ExcelAddInExternalLibraryPath)"
+ 	  DisableAssemblyContextUnload="$(ExcelAddInDisableAssemblyContextUnload)"
+ 	  CustomRuntimeConfiguration="$(ExcelAddInCustomRuntimeConfiguration)"
+ 	  ProjectName="$(MSBuildProjectName)"
+	  TargetFileName="$(TargetFileName)"
+	  RollForward="$(RollForward)"
+	  TargetFrameworkVersion="$(TargetFrameworkVersion)"
+	  TlbDscom="$(ExcelDnaTlbDscom)"
+	  TlbExp="$(ExcelAddInTlbExp)"
+	  TlbCreate="$(ExcelAddInTlbCreate)"
+	  UseVersionAsOutputVersion="$(ExcelAddInUseVersionAsOutputVersion)"
+	  ExplicitExports="$(ExcelAddInExplicitExports)"
+	  ExplicitRegistration="$(ExcelAddInExplicitRegistration)"
+		ComServer="$(ExcelAddInComServer)"
+	  IntegrationDllPath="$(ExcelDnaRuntimeToolsPath)ExcelDna.Integration.dll"
+	  TemplateDnaPath="$(MSBuildThisFileDirectory)..\content\ExcelDna-Template.dna">
+      <Output TaskParameter="DnaFilesToPack" ItemName="ExcelDnaFilesToPack" />
+    </CreateExcelAddIn>
+
+    <Message Text="---" Condition="'$(RunExcelDnaPack)' == 'true'" Importance="High" />
+  </Target>
+
+  <!--
+    Target that packs files for each .dna copied to the build output folder
+  -->
+  <Target Name="ExcelDnaPack" DependsOnTargets="ExcelDnaBuild;ExcelDnaDscomRunner" BeforeTargets="PostBuildEvent" Condition="('$(ExcelDnaUnpack)' != 'true') AND ('$(RunExcelDnaPack)' == 'true') AND ('@(ExcelDnaFilesToPack->Count())' &gt; 0)" Outputs="%(ExcelDnaFilesToPack.Identity)">
+
+    <Message Text="ExcelDnaPack: %(ExcelDnaFilesToPack.OutputDnaFileName) -> %(ExcelDnaFilesToPack.OutputPackedXllFileName)" Importance="High" />
+	<PackExcelAddIn
+		OutputDnaFileName="%(ExcelDnaFilesToPack.OutputDnaFileName)"
+		OutputPackedXllFileName="%(ExcelDnaFilesToPack.OutputPackedXllFileName)"
+		OutputBitness="%(ExcelDnaFilesToPack.OutputBitness)"
+		CompressResources="$(ExcelDnaPackCompressResources)"
+		RunMultithreaded="$(ExcelDnaPackRunMultithreaded)"
+		PackNativeLibraryDependencies="$(ExcelDnaPackNativeLibraryDependencies)"
+		PackManagedDependencies="$(ExcelDnaPackManagedDependencies)"
+		ExcludeDependencies="$(ExcelDnaPackExcludeDependencies)"
+		PackManagedOnWindows="$(ExcelDnaPackManagedResourcePackingOnWindows)"
+		SignTool="$(ExcelAddInSignTool)"
+		SignOptions="$(ExcelAddInSignOptions)">
+	</PackExcelAddIn>
+
+    <!-- Copy .xll.config file to -packed.xll.config (if .xll.config exists) -->
+    <Message Text="ExcelDnaPack: %(ExcelDnaFilesToPack.OutputXllConfigFileName) -> %(ExcelDnaFilesToPack.OutputPackedXllFileName).config" Importance="High"
+             Condition="Exists('%(ExcelDnaFilesToPack.OutputXllConfigFileName)')" />
+
+    <Copy SourceFiles="%(ExcelDnaFilesToPack.OutputXllConfigFileName)"
+          DestinationFiles="%(ExcelDnaFilesToPack.OutputPackedXllFileName).config"
+          Condition="Exists('%(ExcelDnaFilesToPack.OutputXllConfigFileName)')"
+          ContinueOnError="false"
+          OverwriteReadOnlyFiles="true"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="HideExcelDnaInteropEmbeddableAssemblies" AfterTargets="ResolveReferences" BeforeTargets="FindReferenceAssembliesForReferences" Condition="$(MSBuildProjectExtension)!='.fsproj'">
+		<ItemGroup>
+			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'ExcelDna.Interop'" />
+			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'ExcelDna.Interop.Dao'" />
+		</ItemGroup>
+  </Target>
+	
+</Project>
