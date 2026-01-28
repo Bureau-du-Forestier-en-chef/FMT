@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DnaLibrary Name="FMTExcel Add-In" RuntimeVersion="v4.0" xmlns="http://schemas.excel-dna.net/addin/2020/07/dnalibrary">
+  <ExternalLibrary Path="FMTExcel.dll" ExplicitExports="false" LoadFromBytes="true" Pack="true" IncludePdb="false" />
+  <!--
+       The RuntimeVersion attribute above allows only the following setting:
+       * RuntimeVersion="v4.0" - for .NET 4.5 or higher
+
+       You can have IntelliSense (autocomplete) and validation for this file.
+       See https://github.com/Excel-DNA/ExcelDna/tree/master/Distribution/XmlSchemas/
+
+       Additional referenced assemblies can be specified by adding 'Reference' tags. 
+       These libraries will not be examined and registered with Excel as add-in libraries, 
+       but will be packed into the -packed.xll file and loaded at runtime as needed.
+       For example:
+
+       <Reference Path="Another.Library.dll" Pack="true" />
+
+       Excel-DNA also allows the XML for ribbon UI extensions to be specified in the .dna file.
+       See the main Excel-DNA site at https://excel-dna.net for downloads of the full distribution.
+  -->
+  <CustomUI>
+    <customUI onLoad="Ribbon_Load" xmlns='http://schemas.microsoft.com/office/2009/07/customui'>
+      <ribbon>
+        <tabs>
+          <tab id='FMT' label='FMT' visible='true'>
+            <group id='Modèle' label='Modèles' visible='true'>
+              <button id='AjouterAvecSolution' label='Ajouter un modèle avec solution' size='large'  getImage="GetImage" getEnabled='addmodel_GetEnabled' onAction='addmodel' visible='true' screentip='Ajoutez un modèle avec solution' supertip='Cliquez ici pour ajouter un nouveau modèle avec solution'/>
+              <button id='AjouterSansSolution' label='Ajouter un modèle sans solution' size='large'  getImage="GetImage" getEnabled='addmodel_GetEnabled' onAction='addUnsolvedModel' visible='true' screentip='Ajoutez un modèle sans solution' supertip='Cliquez ici pour ajouter un nouveau modèle sans solution'/>
+              <button id='Retirer' label='Retirer un modèle' size='large' getImage="GetImage" getEnabled='removeModel_GetEnabled' onAction='removeModel' visible='true' screentip='Retirez un modèle' supertip='Cliquez ici pour retirer un modèle existant'/>
+              <gallery id="Modeles" label="Modèles" columns="1" getItemCount="CombogetCount" onAction ="SaveModelChoice" getItemLabel ="CombogetModels" getEnabled='removeModel_GetEnabled' screentip='Modèles en cache' supertip='Sélectionnez une cellule et sélectionnez un modèle'/>
+            </group >
+            <group id='MJ' label='Mise à jour' visible='true'>
+              <button id='TMJ' label='Tout mettre à jour' size='large'  getImage="GetImage" onAction='updateAll' visible='true' screentip='Mise à jour du cahier' supertip='Cliquez ici pour mettre à jour tout le cahier'/>
+              <button id='AMJ' label='Mettre à jour feuille active' size='large'  getImage="GetImage" onAction='updateActive' visible='true' screentip='Mise à jour de la feuille active' supertip='Cliquez ici pour mettre à jour les fonctions FMT de la feuille active'/>
+            </group >
+            <group id='Doc' label='Documentation' visible='true'>
+              <button id='github' label='FMT' size='large'  getImage="GetImage" onAction='toGithub' visible='true' screentip='Repertoir Github de FMT' supertip='Cliquez ici pour atteindre le répertoir GITHUB de FMT'/>
+              <button id='docFMT' label='Documentation FMT' size='large'  getImage="GetImage" onAction='toWebDoc' visible='true' screentip='Documentation de FMT' supertip='Cliquez ici pour atteindre la documentation web de FMT'/>
+              <button id='docF' label='Fonctions' size='large'  getImage="GetImage" onAction='getFonctions' visible='true'  screentip='Sélection de fonction' supertip='Sélectionnez une cellule et sélectionnez une fonction'/>
+            </group >
+          </tab>
+        </tabs>
+      </ribbon>
+    </customUI>
+  </CustomUI>
+</DnaLibrary>
