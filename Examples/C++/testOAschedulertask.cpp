@@ -129,14 +129,14 @@ int main(int argc, char *argv[])
                 length = 5;
             }else
                 {
-                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\PC_9929_U11171_2028_MODB01.pri";
-                scenarios = std::vector<std::string> (1, "ROOT");
+                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\PC_10082_U04251_2028_MODB03_20260123\\PC_10082_U04251_2028_MODB03.pri";
+                scenarios = std::vector<std::string> (1, "2201_ciblesP7M_avsp");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\Parametres_Bfecopt.csv";
-                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\Carte\\PC_9929_UA_U11171.shp";
-                results = std::vector<std::string> (1, "ROOT");
-                length = 5;
+                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\Parametres_Bfecopt.csv";
+                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\PC_10082_U04251_2028_MODB03_20260123\\Carte\\PC_10082_UA_U04251.shp";
+                results = std::vector<std::string> (1, "2201_ciblesP7M_avsp");
+                length = 10;
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
