@@ -27,7 +27,9 @@ namespace Spatial
 
 namespace Models
 {
-
+#ifdef FMTWITHOSI
+    class FMTlpmodel;
+#endif
 /**
 This model is an area restricted model (ARM) using the simulated annealing
 meta-heuristic to solve the spatial optimization problem. Constraints must
@@ -127,6 +129,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         GroupsConflictDestructor = 5,
         MoveCount = 6
     };
+    static std::string GetMovesName(FMTsamove p_move);
     class FMTmovestats
         {
         public:
@@ -170,6 +173,9 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::UPDATE_PERIOD_FACTOR
    ///Factor multiplicator for period 1
     static const size_t UPDATE_PERIOD_FACTOR = 5;
+    // DocString: FMTsamodel::SOLUTION_MERGE_ITERATIONS
+    ///Number of iterations on greedy merge
+    static const size_t SOLUTION_MERGE_ITERATIONS = 20000;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use
@@ -351,10 +357,22 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Update failed move count using NotAcceptedMovesCount and the move stats
         */
         void _UpdateFailedMoveCount();
+
+        std::vector<Core::FMTschedule>_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const;
+
+        #ifdef FMTWITHOSI
+            Models::FMTlpmodel _GetRandomLpModel(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+        #endif
+
+        void _SetBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution);
+
+        std::vector<double> _GetMergeFactors() const;
+
+        void _DoGreedyMerge(const Spatial::FMTSpatialSchedule::actionbindings& p_bindings,
+                            const std::vector<Spatial::FMTcoordinate>* p_movable,
+                            boost::unordered_map<Core::FMTdevelopment, bool>* p_operability);
+        void _ResetTabouMoves();
 	
-
-        
-
 
     };
 }

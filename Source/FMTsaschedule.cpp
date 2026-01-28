@@ -57,6 +57,11 @@ namespace Spatial
         return Temperature;
     }
 
+    void FMTsaschedule::SetTemp(double p_Temp)
+    {
+        Temperature = p_Temp;
+    }
+
     size_t FMTsaschedule::GetLevel()const
     {
         return Level;

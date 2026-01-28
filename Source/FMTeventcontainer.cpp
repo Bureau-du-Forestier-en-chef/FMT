@@ -936,7 +936,14 @@ namespace Spatial
 
 	double FMTeventcontainer::BoundingBox::EvaluateUpperBound(int p_UpperBound) const
 	{
-		return std::max(_GetSize() - static_cast<double>(p_UpperBound), 0.0);
+		double value = 0.0;
+		const double BOUND = static_cast<double>(p_UpperBound);
+		if (!_IsNull() && 
+			_GetSize() > BOUND)
+		{
+			value = _GetSize() - BOUND;
+		}
+		return value;
 	}
 
 	double FMTeventcontainer::BoundingBox::_GetSize() const

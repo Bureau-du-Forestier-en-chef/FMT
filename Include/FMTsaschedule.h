@@ -33,6 +33,7 @@ class FMTsaschedule
         virtual~FMTsaschedule();//Destructor
         virtual void ReduceTemp();//
         double GetTemp() const;//
+        void SetTemp( double p_Temp);
         double GetInitialTemp() const;//
         virtual std::unique_ptr<FMTsaschedule> Clone()const;
     };
