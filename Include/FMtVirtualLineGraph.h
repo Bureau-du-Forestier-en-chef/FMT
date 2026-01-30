@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <map>
 #include <memory>
 #include "FMTGraphInfo.h"
+#include "FMTSpatialGraphs.h"
 
 namespace Graph
 {
@@ -36,13 +37,12 @@ namespace Spatial
 	{
 	template <typename T>
 	class FMTlayer;
-	class FMTSpatialGraphs;
 	class FMTEXPORT FMTVirtualLineGraph
 		{
 		public:
 			FMTVirtualLineGraph()=default;
 			FMTVirtualLineGraph(FMTSpatialGraphs& p_Graphs,
-							std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_Iterator,
+							FMTSpatialGraphs::const_iterator p_Iterator,
 							size_t p_Family);
 			FMTVirtualLineGraph(const FMTVirtualLineGraph& p_LineGraph, FMTSpatialGraphs& p_Graphs);
 			FMTVirtualLineGraph(const FMTVirtualLineGraph& p_LineGraph);
@@ -66,7 +66,7 @@ namespace Spatial
 					FMTSpatialGraphs& p_Graphs,
 					std::vector<size_t>& p_solution) const;
 		private:
-			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator m_Iterator;
+			FMTSpatialGraphs::const_iterator m_Iterator;
 			size_t m_GraphFamily;
 			FMTSpatialGraphs* m_Graphs;
 			void _insertInto(const Graph::FMTlinegraph& p_LineGraph,

@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 			}
 		models[0].setparameter(Models::FMTintmodelparameters::SEED, 100);
 		Models::FMTsamodel optimizationmodel(models.at(0),forest);
-		//optimizationmodel.setdebuglogger();
+		//optimizationmodel.redirectlogtofile(outputlocation + "/SA.log");
 		std::vector<Core::FMTtransition>singletransitions;
 		for (const Core::FMTtransition transition : optimizationmodel.gettransitions())
 			{
@@ -96,14 +96,14 @@ int main(int argc, char* argv[])
 			}
 		optimizationmodel.settransitions(singletransitions);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 150000);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 1000);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 500);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 1000);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
 		optimizationmodel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
 		optimizationmodel.doplanning(true);
 		optimizationmodel.LogConstraintsInfeasibilities();
-		std::vector<Core::FMToutput>outputs;
+		/*std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())
 		{
 			if (out.getname().find("OVOL")!=std::string::npos)
@@ -116,13 +116,8 @@ int main(int argc, char* argv[])
 		for (int period = 1; period <= length; ++period)
 			{
 			areaparser.writedisturbances(outputlocation, optimizationmodel.getspschedule(), optimizationmodel.getactions(), optimizationmodel.getthemes(), period);
-			}
+			}*/
 		
-		/*if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
-		{
-			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
-				"presolvetest", __LINE__, primarylocation);
-		}*/
 	}
 	else {
 		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";

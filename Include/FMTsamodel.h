@@ -155,9 +155,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::CycleMoves
     ///The move done during the last cycle
     mutable std::vector<FMTmovestats>CycleMoves;
-    // DocString: FMTsamodel::LastGlobalObjectiveValue
-    ///The value of the last globalobjective of the last level
-    double LastGlobalObjectiveValue;
     // DocString: FMTsamodel::CoolingSchedule
     ///Cooling schedule for simulated annealing algorithm.
     std::unique_ptr<Spatial::FMTsaschedule> CoolingSchedule;
@@ -175,7 +172,10 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     static const size_t UPDATE_PERIOD_FACTOR = 5;
     // DocString: FMTsamodel::SOLUTION_MERGE_ITERATIONS
     ///Number of iterations on greedy merge
-    static const size_t SOLUTION_MERGE_ITERATIONS = 20000;
+    static const size_t SOLUTION_MERGE_ITERATIONS = 200;
+    // DocString: FMTsamodel::INITIAL_ACCEPTANCE_PROBABILITY
+    ///Initial acceptance probability of the SA
+    static const double INITIAL_ACCEPTANCE_PROBABILITY;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use
@@ -249,7 +249,8 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
 		the actual solution.Based on a temp.
 		*/
-		bool _IsBetter(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule& candidat) const;
+		bool _IsBetter(const Spatial::FMTSpatialSchedule& p_actual,
+                    const Spatial::FMTSpatialSchedule& p_candidat) const;
         // DocString: FMTsamodel::DoLocalMove
         /**
         Do a loval move and disturb a random number of graph at a random period
@@ -299,8 +300,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		double _Warmup(const Spatial::FMTSpatialSchedule& actual,
 			const Spatial::FMTSpatialSchedule::actionbindings& bindings,
 			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
-			boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr,
-			double initprobability = 0.5);
+			boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr);
         // DocString: FMTsamodel::initialgrow
         /**
         Do an initial grow till you reach the length of the model with the actual solution
@@ -366,7 +366,20 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 
         void _SetBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution);
 
-        std::vector<double> _GetMergeFactors() const;
+        void _GetConstraintsStats(const Spatial::FMTSpatialSchedule& p_NewBestSolution,double& p_Objective,
+                                 double& p_SpatialRatio, double& p_InventoryRatio, double& p_TotalRatiom,
+                                 double& p_PrimalInf) const;
+
+
+        std::vector<double> _GetMergeFactors(const std::vector<double>& p_factors,
+                                            bool p_update = false,
+                                            bool p_inventory = false, 
+                                            bool p_spatial = false,
+                                            bool p_flow = false) const;
+        std::vector<double> _GetLowHangingFruitsFactors(const Spatial::FMTSpatialSchedule& p_NewBestSolution,
+                                                            const std::vector<double>& p_factors) const;
+
+        
 
         void _DoGreedyMerge(const Spatial::FMTSpatialSchedule::actionbindings& p_bindings,
                             const std::vector<Spatial::FMTcoordinate>* p_movable,

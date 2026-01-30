@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include <map>
+//#include <boost/container/flat_map.hpp>
 #include <vector>
 #include <string>
 #include <memory>
@@ -43,6 +44,8 @@ namespace Spatial
 	class FMTSpatialGraphs: public Core::FMTobject
 		{
 		public:
+			using const_iterator = std::map<Graph::FMTlinegraph, 
+				FMTGraphInfo>::const_iterator;
 			FMTSpatialGraphs() = default;
 			FMTSpatialGraphs(const FMTSpatialGraphs&)=default;
 			FMTSpatialGraphs& operator = (const FMTSpatialGraphs&)=default;
@@ -52,13 +55,13 @@ namespace Spatial
 			FMTVirtualLineGraph GetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
 			FMTVirtualLineGraph SetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
 			std::vector<size_t>GetBaseSolution() const;
-			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator GetIterator(
+			const_iterator GetIterator(
 												const Graph::FMTlinegraph& p_Graph,
 															size_t p_family) const;
-			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator SetIterator(
+			const_iterator SetIterator(
 								const Graph::FMTlinegraph& p_Graph,
 								size_t p_family);
-			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator  SetNaturalGrowthIterator(size_t p_family);
+			const_iterator SetNaturalGrowthIterator(size_t p_family);
 			const Models::FMTmodel& GetModel() const;
 			std::map<std::string, double> GetOutput(
 				const std::vector<size_t>& p_Solution,
@@ -67,23 +70,26 @@ namespace Spatial
 			void SetModel(const Models::FMTmodel& p_model);
 			void AddToSolution(std::vector<size_t>& p_solution,
 				size_t p_family,
-				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator);
+				const_iterator p_iterator);
 			void RemoveToSolution(std::vector<size_t>& p_solution,
 				size_t p_family,
-				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator);
+				const_iterator p_iterator);
 			bool IsNotNull(size_t p_family,
-				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const;
+				const_iterator p_iterator) const;
 			std::vector<Core::FMTschedule> GetSchedules(const std::vector<size_t>& p_Solution,
 											bool WithLock = false) const;
-			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator GetBaseIterator(size_t p_family) const;
-			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator GetLastPeriodIterator(
+			const_iterator GetBaseIterator(size_t p_family) const;
+			const_iterator GetLastPeriodIterator(
 				size_t p_family,
-				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const;
+				const_iterator p_iterator) const;
 			void swap(FMTSpatialGraphs& p_Other);
 			size_t GetNumberOfCategories(int p_themeId) const;
 			size_t GetCategoryOf(int p_themeId, size_t p_family) const;
 			void DeleteNonCompleteGraphs();
 		private:
+			using iterator = std::map<Graph::FMTlinegraph,
+				FMTGraphInfo>::iterator;
+			using family_iterator = std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>::iterator;
 			const static size_t SOLUTION_RESIZE_FACTOR = 2;
 			const static size_t MAX_ASYNC_JOBS = 5;
 			std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>m_AllGraphs;
@@ -96,10 +102,10 @@ namespace Spatial
 			void _BuildConstraintsLocator(const Models::FMTmodel& p_model);
 			void _BuildGraphs(const Models::FMTmodel& p_model, double p_CellSize);
 			void _BuildConstraintsValues( 
-					std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>::iterator FirstGraphFamily,
-				std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>::iterator GraphFamilyEnd);
+				family_iterator FirstGraphFamily,
+				family_iterator GraphFamilyEnd);
 			void _BuildConstraintsValues(
-				std::map<Graph::FMTlinegraph, FMTGraphInfo>::iterator p_Graph,
+				iterator p_Graph,
 				size_t p_family);
 			static Core::FMTmask _GetUseFullBits(const Models::FMTmodel& p_model);
 			size_t _GetFamily(const Graph::FMTlinegraph& p_Graph) const;
@@ -112,9 +118,7 @@ namespace Spatial
 			size_t _GetMaxGraphLength(const std::vector<size_t>& p_solution) const;
 			size_t _GetMinGraphLength(const std::vector<size_t>& p_solution) const;
 			void _RemoveGraphsShorterThan(size_t p_GraphSize);
-			std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator _GetNaturalGrowthIterator(size_t p_family) const;
-			
-
+			const_iterator _GetNaturalGrowthIterator(size_t p_family) const;
 		};
 }
 
