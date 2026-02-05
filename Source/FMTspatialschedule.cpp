@@ -962,14 +962,11 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 			#ifndef NDEBUG
 				assert(mapping.size() == _GetNonSpatialCellsCount());
 			#endif
-			std::vector<Core::FMTconstraint>constraints = p_Graphs.GetModel().getconstraints();
+			const std::vector<Core::FMTconstraint>& CONSTRAINTS = p_Graphs.GetModel().getconstraints();
 			allvalues.push_back(this->getobjectivevalue(p_Graphs,false));
-			constraints.erase(constraints.begin());
-			size_t ConstraintId = 1;
-			for (const Core::FMTconstraint& constraint : constraints)
+			for (size_t ConstraintId = 1; ConstraintId < CONSTRAINTS.size(); ++ConstraintId)
 				{
 				allvalues.push_back(getconstraintevaluation(p_Graphs, ConstraintId));
-				++ConstraintId;
 				}
 		}catch (...)
 			{
@@ -990,7 +987,8 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 				double cntvalue = getconstraintevaluation(p_Graphs, ID);
 				if (withfactorization && !constraintsfactor.empty())
 					{
-					cntvalue *= constraintsfactor.at(fid);
+					cntvalue = _GetExponentialFactorization(
+						cntvalue, constraintsfactor.at(fid));
 					}
 					value += cntvalue;
 				fid += 1;
@@ -1092,7 +1090,8 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 			objective = this->getobjectivevalue(p_Graphs, withsense);
 			if (withfactorization&&!constraintsfactor.empty())
 				{
-				objective = (objective*constraintsfactor.at(0));
+				objective = _GetExponentialFactorization(
+					objective, constraintsfactor.at(0));
 				}
 			/*constraints.erase(constraints.begin());
 			std::vector<Core::FMTconstraint>constraintssubset;
@@ -2399,30 +2398,21 @@ size_t FMTSpatialSchedule::_GetNonSpatialCellsCount() const
 	return totalCount;
 	}
 
-
-void FMTSpatialSchedule::dorefactortorization(const FMTSpatialGraphs& p_Graphs)
+double FMTSpatialSchedule::_GetExponentialFactorization(double p_value, double p_factor)
 {
-	try {
-		if (!constraintsfactor.empty())
-		{
-			size_t cntid = 0;
-			for (const double& value : getconstraintsvalues(p_Graphs))
-			{
-				const double valuewfactor = constraintsfactor.at(cntid)*value;
-				if (cntid > 0 && (valuewfactor > 1000 || valuewfactor < -1000))
-				{
-					constraintsfactor[cntid] = std::abs(1000 / value);
-				}
-				++cntid;
-			}
-		}
-	}
-	catch (...)
+	double returned = 0.0;
+	const double EXPONENTIAL_VALUE = std::exp(std::abs(p_value) *
+							p_factor) - 1.0;
+	if (p_value < FMT_DBL_TOLERANCE)
 	{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::dorefactortorization", __LINE__, __FILE__);
+		returned = -EXPONENTIAL_VALUE;
 	}
-
+	else {
+		returned = EXPONENTIAL_VALUE;
+	}
+	return returned;
 }
+
 
 
 

@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "C:\\Users\\Admlocal\\Documents\\FMT\\FMT\\Examples\\Models\\TWD_land\\TWD_land.pri";
-			scenario = "Predeclared_Primary";
+			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
+			scenario = "strategique_Histo";
 			length = 3; 
 			objectivevalue = 302;
 		}
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
-		//modelparser.write(optimizationmodel, "D:/test/");
+		modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doplanning(true)) {
 			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;

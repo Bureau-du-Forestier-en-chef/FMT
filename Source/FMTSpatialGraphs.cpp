@@ -34,16 +34,16 @@ namespace Spatial
 		double value = 0.0;
 		try {
 			std::vector<double>results;
-			ConstraintId = _GetNonSpatialId(ConstraintId);
+			const size_t NON_SPATIAL_ID  = _GetNonSpatialId(ConstraintId);
 #ifndef NDEBUG
 			assert(p_solution.size() >= m_LastGraphId);
 			assert(ConstraintId < m_Constraints.size());
 #endif
-			for (size_t GraphFamily : m_Constraints.at(ConstraintId))
+			for (size_t GraphFamily : m_Constraints.at(NON_SPATIAL_ID))
 			{
 				for (const auto& GRAPH : m_AllGraphs.at(GraphFamily))
 				{
-					_FillConstraintResults(ConstraintId, GRAPH.second,
+					_FillConstraintResults(NON_SPATIAL_ID, GRAPH.second,
 						results, p_solution);
 				}
 			}

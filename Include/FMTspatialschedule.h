@@ -396,11 +396,6 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		Return true if the solution looks unscaled and need new factors
 		*/
 		bool needsrefactortorization(const FMTSpatialGraphs& p_Graphs) const;
-		// DocString: FMTSpatialSchedule::dorefactortorization
-		/**
-		Return true if the solution looks unscaled and need new factors
-		*/
-		void dorefactortorization(const FMTSpatialGraphs& p_Graphs);
 		// DocString: FMTSpatialSchedule::getConstraintsFactor
 		/**
 		Get the constraints factors for nomalization
@@ -542,6 +537,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 
 
 		size_t _GetNonSpatialCellsCount() const;
+
+		static double _GetExponentialFactorization(double p_value, double p_factor);
 
 		static const int BUFFER_LOOKUP = 1;
 		
