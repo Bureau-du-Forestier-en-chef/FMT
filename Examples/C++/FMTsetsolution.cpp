@@ -29,12 +29,13 @@ int main(int argc, char *argv[])
 				}
 			
 		}else{
-			primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/08251/30_Phase2/33_ModeleWS/02_Travail/PC_9949_U08251_2028_MODB01.pri";
-			scenarios = std::vector<std::string>(1, "200_StratReg_apsp");
-			ovoltotrecvalue = 745200;
+			primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/08152/10_ModeleDeBase/17_ModeleWS/WS_PC9947_08152_livraison_MDB_20250116_corr/PC_9947_U08152_2028_MODB01.pri";
+			scenarios = std::vector<std::string>(1, "02_Sc0_Rend_sout");
+			ovoltotrecvalue = 2968252.961844;
 			argc = 4;
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08251/PC_9943_U08651_2028_MODB01.pri";
-			scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
+			
+			//primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/ActionSeries_Emilie/PC_9967_U06271_2028_MODB01.pri";
+			//scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
 		}
 
 
@@ -59,6 +60,7 @@ int main(int argc, char *argv[])
 		//optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		modelparser.write(optimizationmodel, "D:/test/");
 		optimizationmodel.doplanning(false, schedules);
 		/*for (size_t period = 1; period <= 6; ++period)
 			{
@@ -78,6 +80,7 @@ int main(int argc, char *argv[])
 					{
 					gotovoltotrec = true;
 					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
+					std::cout << "OVOLTOTREC " +std::to_string(returnedvalue) << "\n";
 					if ((returnedvalue < (ovoltotrecvalue - tolerance)) || (returnedvalue >(ovoltotrecvalue + tolerance)))
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
@@ -93,7 +96,7 @@ int main(int argc, char *argv[])
 				}
 			//modelparser.writeresults(optimizationmodel, selected, 1, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
 			}
-			//modelparser.write(optimizationmodel, "D:/test/");
+			//
 	}else {
 		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

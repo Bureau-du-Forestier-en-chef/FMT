@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
-			scenario = "strategique_Histo";
-			length = 3; 
-			objectivevalue = 302;
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/ActionSeries_Emilie/PC_9967_U06271_2028_MODB01.pri";
+			scenario = "200_StratReg_apsp";
+			length = 20; 
+			objectivevalue = 162921918;
 		}
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
-		modelparser.write(optimizationmodel, "D:/test/");
+		//modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doplanning(true)) {
 			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
