@@ -129,14 +129,14 @@ int main(int argc, char *argv[])
                 length = 5;
             }else
                 {
-                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
-                scenarios = std::vector<std::string> (1, "ROOT");
+                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\PC_10082_U04251_2028_MODB03_20260123\\PC_10082_U04251_2028_MODB03.pri";
+                scenarios = std::vector<std::string> (1, "2201_ciblesP7M_avsp");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\parameters.csv";
-                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\test\\PC_9424_U08551_4_Vg1_2023_vSSP03_20210317_DET\\Carte\\PC_9424_UA_U08551.shp";
-                results = std::vector<std::string> (1, "ROOT");
-                length = 20;
+                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\PC_10082_U04251_2028_MODB03_20260123\\Parametres_Bfecopt.csv";
+                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\PC_10082_U04251_2028_MODB03_20260123\\Carte\\PC_10082_UA_U04251.shp";
+                results = std::vector<std::string> (1, "2201_ciblesP7M_avsp");
+                length = 5;
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
                     10, 
                     9000, 
                     adm7m));//120));
-                Parallel::FMTtaskhandler handler(maintaskptr, 4);
+                Parallel::FMTtaskhandler handler(maintaskptr, 1);
                 handler.settasklogger();
                 handler.conccurentrun();
                 maintaskptr->finalize(); // écrit ici le meilleur modèle sur le disque
