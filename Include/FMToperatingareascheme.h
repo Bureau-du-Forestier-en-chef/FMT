@@ -469,6 +469,11 @@ namespace Heuristics
 				std::vector<size_t>& potentialindexes, 
 				std::vector<double>& potentialValues,
 				const double* dualsolution) const;
+			// DocString:
+			/**
+
+			*/
+			bool _checkDoubleIncludes(const std::vector<std::vector<int>>& openingconstraints) const;
 		};
 
 	// DocString: FMToperatingareaschemecomparator

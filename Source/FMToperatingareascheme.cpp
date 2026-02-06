@@ -92,6 +92,8 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 						++closing;
 					}
 				}
+
+
 				if (validscheme && !newscheme.empty() && enumdone.find(newenum) == enumdone.end())
 				{
 					enumdone.insert(newenum);
@@ -1133,6 +1135,34 @@ void FMToperatingareascheme::_addPotentialResults(
 	}
 }
 
+bool FMToperatingareascheme::_checkDoubleIncludes(const std::vector<std::vector<int>>& openingconstraints) const
+{
+	for (const auto& OP_CONSTRAINT : openingconstraints)
+	{
+		size_t numberOfIncludes = 0;
+		for (const auto& OP_INCLUDE : openingconstraints)
+		{
+			if (OP_CONSTRAINT != OP_INCLUDE)
+			{
+				if (std::includes(
+					OP_CONSTRAINT.begin(),
+					OP_CONSTRAINT.end(),
+					OP_INCLUDE.begin(),
+					OP_INCLUDE.end())
+					)
+				{
+					++numberOfIncludes;
+				}
+			}
+		}
+		if (numberOfIncludes == openingconstraints.size() - 1)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool FMToperatingareascheme::isthresholdactivityrows(const std::vector<int>& rows, const double* dualsolution, double tempThreshold) const
 {
 	/*for (const int& constraint : rows)
@@ -1190,6 +1220,7 @@ bool FMToperatingareascheme::isdualbounded(const double* upperbounds) const
 		{
 		return true;
 		}
+
 	for (const std::vector<int>& constraints : openingconstraints)
 		{
 			for (const int& constraint : constraints)
@@ -1200,8 +1231,15 @@ bool FMToperatingareascheme::isdualbounded(const double* upperbounds) const
 					}
 			}
 		}
+
+	if (openingconstraints.size() > 1)
+	{
+		return _checkDoubleIncludes(openingconstraints);
+	}
+
 	return false;
 	}
+
 
 FMToperatingareascheme FMToperatingareascheme::presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>& presolvedthemes) const
 {
