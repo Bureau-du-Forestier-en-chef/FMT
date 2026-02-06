@@ -97,8 +97,8 @@ int main(int argc, char* argv[])
 		optimizationmodel.settransitions(singletransitions);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 200000);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 500);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 1000);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 1000);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 5000);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
 		optimizationmodel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
 		optimizationmodel.doplanning(true);

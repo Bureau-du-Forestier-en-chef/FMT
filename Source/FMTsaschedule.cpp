@@ -20,57 +20,48 @@ namespace Spatial
 //FMTsaschedule base class
 
     FMTsaschedule::FMTsaschedule(const std::string& typesc) :
-        ScheduleType(typesc),
-        Level(0),
-        Temperature(std::numeric_limits<double>::max()),
-        InitialTemperature(std::numeric_limits<double>::max())
+        m_ScheduleType(typesc),
+        m_Level(0),
+        m_Temperature(std::numeric_limits<double>::max()),
+        m_InitialTemperature(std::numeric_limits<double>::max())
     {
 
     }
 
-
-    FMTsaschedule::FMTsaschedule():
-        ScheduleType("None"),
-        Level(0),
-        Temperature(std::numeric_limits<double>::max()),
-        InitialTemperature(std::numeric_limits<double>::max())
-    {
-
-    }
 
     FMTsaschedule::~FMTsaschedule(){}
 
     void FMTsaschedule::SetInitialTemperature(const double& Temp)
     {
-        InitialTemperature = Temp;
-        Temperature = Temp;
+        m_InitialTemperature = Temp;
+        m_Temperature = Temp;
     }
 
 
     void FMTsaschedule::ReduceTemp()
     {
-        ++Level;
+        ++m_Level;
     }
 
     double FMTsaschedule::GetTemp() const
     {
-        return Temperature;
+        return m_Temperature;
     }
 
     void FMTsaschedule::SetTemp(double p_Temp)
     {
-        Temperature = p_Temp;
+        m_Temperature = p_Temp;
     }
 
     size_t FMTsaschedule::GetLevel()const
     {
-        return Level;
+        return m_Level;
     }
    
 
 	std::string FMTsaschedule::GetScheduleType()const
     {
-        return ScheduleType;
+        return m_ScheduleType;
     }
 
 	std::unique_ptr<FMTsaschedule> FMTsaschedule::Clone()const
@@ -80,7 +71,7 @@ namespace Spatial
 
     double FMTsaschedule::GetInitialTemp() const
         {
-        return InitialTemperature;
+        return m_InitialTemperature;
         }
 
 }

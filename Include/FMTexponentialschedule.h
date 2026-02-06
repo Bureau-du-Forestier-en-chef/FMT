@@ -18,13 +18,13 @@ namespace Spatial
 
 class FMTexponentialschedule : public FMTsaschedule
     {
-    protected:
-        double alpha;
     public:
-        FMTexponentialschedule(double lalpha = 0.9);
+        FMTexponentialschedule();
         ~FMTexponentialschedule()=default;
         void ReduceTemp();
 		std::unique_ptr<FMTsaschedule> Clone()const;
+    private:
+        static const double m_ANNEALING_RATE;
 
     };
 }
