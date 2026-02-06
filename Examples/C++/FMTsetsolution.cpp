@@ -29,9 +29,11 @@ int main(int argc, char *argv[])
 				}
 			
 		}else{
-			primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/08152/10_ModeleDeBase/17_ModeleWS/WS_PC9947_08152_livraison_MDB_20250116_corr/PC_9947_U08152_2028_MODB01.pri";
-			scenarios = std::vector<std::string>(1, "02_Sc0_Rend_sout");
-			ovoltotrecvalue = 2968252.961844;
+			//primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/08152/10_ModeleDeBase/17_ModeleWS/WS_PC9947_08152_livraison_MDB_20250116_corr/PC_9947_U08152_2028_MODB01.pri";
+			//scenarios = std::vector<std::string>(1, "02_Sc0_Rend_sout");
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08251/PC_9943_U08651_2028_MODB01.pri";
+			scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
+			ovoltotrecvalue = 2751200;
 			argc = 4;
 			
 			//primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/ActionSeries_Emilie/PC_9967_U06271_2028_MODB01.pri";
@@ -60,7 +62,7 @@ int main(int argc, char *argv[])
 		//optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
-		modelparser.write(optimizationmodel, "D:/test/");
+		//delparser.write(optimizationmodel, "D:/test/");
 		optimizationmodel.doplanning(false, schedules);
 		/*for (size_t period = 1; period <= 6; ++period)
 			{

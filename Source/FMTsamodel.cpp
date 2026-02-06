@@ -895,24 +895,20 @@ namespace Models
                     }*/
                 }
             std::vector<FMTsamove>nontaboumoves;
-            bool GotOneMove = false;
             for (const FMTsamove& move : allmoves)
             {
                 if (NotAcceptedMovesCount.at(static_cast<int>(move) - 1)
                     <= MAX_NON_ACCEPTED_MOVES_FOR_TABOU)
                     {
                     nontaboumoves.push_back(move);
-                    GotOneMove = true;
                     }
             }
-            if (!GotOneMove)
+            if (!nontaboumoves.empty())
                 {
-                _exhandler->raise(Exception::FMTexc::FMTrangeerror,
-                    "No move allowed ", 
-                    "FMTsamodel::_GetAMove", __LINE__, __FILE__);
+                std::shuffle(nontaboumoves.begin(), nontaboumoves.end(), m_generator);
+                move = nontaboumoves.back();
                 }
-            std::shuffle(nontaboumoves.begin(), nontaboumoves.end(), m_generator);
-            move = nontaboumoves.back();
+           
         }catch (...)
         {
             _exhandler->raisefromcatch("", "FMTsamodel::_GetAMove", __LINE__, __FILE__);
