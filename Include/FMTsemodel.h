@@ -207,6 +207,8 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 			unsigned int seed = 0,
 			double tolerance = FMT_DBL_TOLERANCE,
 			bool log = true) const;
+		double GetConstraintFactor(size_t p_constraint, double p_GrossValue) const;
+		bool IsValidFactor(double p_GrossValue)const;
 	private:
 		// DocString: FMTsemodel::Serialize
 		/**
@@ -225,6 +227,9 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		void _BuildSolution(const Spatial::FMTforest& p_Forest);
 		void _CopyGraphs(const Spatial::FMTSpatialGraphs& pToCopy);
 		void _CopySolution(const Spatial::FMTSpatialSchedule& pToCopy);
+		double _GetConstraintNumerator(size_t p_constraint) const;
+		static const double MAX_FACTOR;
+		
     };
 
 }

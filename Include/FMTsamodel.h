@@ -161,6 +161,9 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::NotAcceptedMovesCount
     ///Count the number of cycle the moves gave had no acceptance
     std::array<size_t, FMTsamove::MoveCount>NotAcceptedMovesCount;
+    // DocString: FMTsamodel::m_BestObjective
+    ///The objective value of the best solution
+    double m_BestObjective;
     // DocString: FMTsamodel::WARM_UP_ITERATIONS
     ///Number of iterations in the warm up
     static const size_t WARM_UP_ITERATIONS = 1000;
@@ -173,6 +176,9 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::SOLUTION_MERGE_ITERATIONS
     ///Number of iterations on greedy merge
     static const size_t SOLUTION_MERGE_ITERATIONS = 200;
+    // DocString: FMTsamodel::MAX_NON_ACCEPTED_MOVES_FOR_TABOU
+    ///Number of iterations on greedy merge
+    static const size_t MAX_NON_ACCEPTED_MOVES_FOR_TABOU = 3;
     // DocString: FMTsamodel::INITIAL_ACCEPTANCE_PROBABILITY
     ///Initial acceptance probability of the SA
     static const double INITIAL_ACCEPTANCE_PROBABILITY;
@@ -192,12 +198,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
      @brief Write the disturbances of the best solution
      */
     void _WriteDisrturbances() const;
-    // DocString: FMTsamodel::_SetFactorByConstraintsLength
-    /**
-    @brief factorize based on the length of the constraint, short length = bigger factor
-    @param[in] p_factors the factor
-    */
-    void _SetFactorByConstraintsLength(std::vector<double>& p_factors) const;
         // DocString: FMTsamodel::GetFromBindings
         /**
         Get the selected action from the bindings
@@ -249,8 +249,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
 		the actual solution.Based on a temp.
 		*/
-		bool _IsBetter(const Spatial::FMTSpatialSchedule& p_actual,
-                    const Spatial::FMTSpatialSchedule& p_candidat) const;
+		bool _IsBetter(double p_candidatObjective) const;
         // DocString: FMTsamodel::DoLocalMove
         /**
         Do a loval move and disturb a random number of graph at a random period
@@ -364,7 +363,8 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
             Models::FMTlpmodel _GetRandomLpModel(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
         #endif
 
-        void _SetBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution);
+        void _SetBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution,
+                                double p_ObjectiveValue);
 
         void _GetConstraintsStats(const Spatial::FMTSpatialSchedule& p_NewBestSolution,double& p_Objective,
                                  double& p_SpatialRatio, double& p_InventoryRatio, double& p_TotalRatiom,

@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\FMT_305\\CC_V2\\Mod_cc_v2.pri";
-			scenario = "strategique_CC_modified";
-			length = 5; 
-			objectivevalue = -1026547388;
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08251/PC_9943_U08651_2028_MODB01.pri";
+			scenario = "120_RegProv_apsp";
+			length = 10; 
+			objectivevalue = 162921918;
 		}
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 		std::vector<Core::FMTschedule>returnschedule;
 		for (int id = 0; id < length+1;++id)
 		{
-			returnschedule.push_back(optimizationmodel.getsolution(id+1, false));
+			returnschedule.push_back(optimizationmodel.getsolution(id+1, true));
 		}
 		schparser.write(returnschedule, "../../tests/doplanning/schedule.seq");*/
 		std::cout << " Objective: " << int(optimizationmodel.getObjValue())<<"\n";

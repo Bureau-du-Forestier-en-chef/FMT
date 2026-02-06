@@ -84,24 +84,34 @@ namespace Core
 		{
 			FMTactualdevelopment newdev(*this);
 			try {
-					const int lock = newdev.getlock();
-					const int baseage = newdev.getage();
-					if(lock>0)
+					const int LOCK = newdev.getlock();
+					const int BASE_AGE = newdev.getage();
+					if(LOCK >0)
 					{
 						std::vector<FMTlifespans::const_iterator> lifespanfound = lifespans.findsets(newdev.getmask());
 						if(!lifespanfound.empty())
 						{
-							const int devlifespan = lifespanfound.at(0)->second;
-							const int agelock = baseage+lock;
-							if(agelock > devlifespan)
+							const int DEV_LIFESPAN = lifespanfound.at(0)->second;
+							const int AGE_LOCK = BASE_AGE + LOCK;
+
+							if(AGE_LOCK >DEV_LIFESPAN)
 							{
-								const int newlock = std::max(lock-(agelock - devlifespan),0)+1;
+								int fix = 1;
+								if (LOCK - (AGE_LOCK - DEV_LIFESPAN) == 0)
+								{
+									fix = 0;
+								}
+								const int NEW_LOCK = std::max(LOCK - (AGE_LOCK - DEV_LIFESPAN),0)+ fix;
+
 								_exhandler->raise	(Exception::FMTexc::FMTdeathwithlock,
-													std::string(newdev)+" death age is "+std::to_string(devlifespan)+ ". The lock "+std::to_string(lock)+" on the age class "+std::to_string(baseage)+" will exceed the death age. If this error is set to warning, the lock will be reduce to "+std::to_string(newlock)+" to reproduce the behavior of WS.",
+													std::string(newdev)+" death age is "+
+												std::to_string(DEV_LIFESPAN)+ ". The lock "+std::to_string(LOCK)+" on the age class "+std::to_string(BASE_AGE)+
+												" will exceed the death age. If this error is set to warning, the lock will be reduce to "+
+												std::to_string(NEW_LOCK)+" to reproduce the behavior of WS.",
 													"FMTactualdevelopment::reducelocktodeath",
 													__LINE__,
 													__FILE__);
-								newdev.setlock(newlock);
+								newdev.setlock(NEW_LOCK);
 							}
 
 						}
