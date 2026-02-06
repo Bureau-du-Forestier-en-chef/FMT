@@ -133,10 +133,10 @@ int main(int argc, char *argv[])
                 scenarios = std::vector<std::string> (1, "2201_ciblesP7M_avsp");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\Parametres_Bfecopt.csv";
+                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\PC_10082_U04251_2028_MODB03_20260123\\Parametres_Bfecopt.csv";
                 fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\Pourcentage\\PC_10082_U04251_2028_MODB03_20260123\\Carte\\PC_10082_UA_U04251.shp";
                 results = std::vector<std::string> (1, "2201_ciblesP7M_avsp");
-                length = 10;
+                length = 5;
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
                     10, 
                     9000, 
                     adm7m));//120));
-                Parallel::FMTtaskhandler handler(maintaskptr, 4);
+                Parallel::FMTtaskhandler handler(maintaskptr, 1);
                 handler.settasklogger();
                 handler.conccurentrun();
                 maintaskptr->finalize(); // écrit ici le meilleur modèle sur le disque

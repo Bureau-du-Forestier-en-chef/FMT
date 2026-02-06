@@ -807,8 +807,13 @@ namespace Heuristics
             std::vector<FMToperatingareascheme>::const_iterator areait = operatingareas.begin();
             while (areait != operatingareas.end())
                 {
-                if (!areait->empty() && ((useprimal && !areait->isprimalbounded(lowerbounds, upperbounds) && !areait->isallprimalbounded(lowerbounds, upperbounds))||
-                    (!useprimal && !areait->isdualbounded(rhsupper)   && areait->isthresholdactivity(rhsupper))))
+                if (!areait->empty() 
+					&& ((useprimal 
+					&& !areait->isprimalbounded(lowerbounds, upperbounds) 
+					&& !areait->isallprimalbounded(lowerbounds, upperbounds))
+						||
+                    (!useprimal && !areait->isdualbounded(rhsupper)   
+					&& areait->isthresholdactivity(rhsupper))))
                     {
                     //Make sure it's sorted!
                     double value = 0;
