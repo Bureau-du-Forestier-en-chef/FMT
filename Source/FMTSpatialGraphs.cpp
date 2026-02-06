@@ -24,6 +24,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 
+	
+
 
 	double FMTSpatialGraphs::GetConstraintsValue(
 		size_t ConstraintId,
@@ -61,7 +63,7 @@ namespace Spatial
 	FMTVirtualLineGraph FMTSpatialGraphs::GetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph)
 	{
 		size_t Family = 0;
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.begin()->end();
+		const_iterator Iterator = m_AllGraphs.begin()->end();
 		try {
 			Family = _GetFamily(p_LineGraph);
 			Iterator = GetIterator(p_LineGraph, Family);
@@ -77,7 +79,7 @@ namespace Spatial
 	FMTVirtualLineGraph FMTSpatialGraphs::SetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph)
 	{
 		size_t Family = 0;
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.begin()->end();
+		const_iterator Iterator = m_AllGraphs.begin()->end();
 		try {
 			Family = _GetFamily(p_LineGraph);
 			Iterator = SetIterator(p_LineGraph, Family);
@@ -90,12 +92,12 @@ namespace Spatial
 		return FMTVirtualLineGraph(*this, Iterator, Family);
 	}
 
-	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::GetBaseIterator(size_t p_family) const
+	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::GetBaseIterator(size_t p_family) const
 	{
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.at(p_family).end();
+		const_iterator Iterator = m_AllGraphs.at(p_family).end();
 		try {
 			size_t MinId = m_LastGraphId;
-			for (std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator It = m_AllGraphs.at(p_family).begin();
+			for (const_iterator It = m_AllGraphs.at(p_family).begin();
 				It != m_AllGraphs.at(p_family).end();++It)
 				{
 				if (It->second.GetGraphId()<MinId)
@@ -112,13 +114,13 @@ namespace Spatial
 		return Iterator;
 	}
 
-	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::GetLastPeriodIterator(
+	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::GetLastPeriodIterator(
 		size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const
+		FMTSpatialGraphs::const_iterator p_iterator) const
 	{
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.at(p_family).end();
+		FMTSpatialGraphs::const_iterator Iterator = m_AllGraphs.at(p_family).end();
 		try {
-			for (std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator It = m_AllGraphs.at(p_family).begin();
+			for (FMTSpatialGraphs::const_iterator It = m_AllGraphs.at(p_family).begin();
 				It != m_AllGraphs.at(p_family).end(); ++It)
 			{
 				if (p_iterator->first.IsLessPeriod(It->first))
@@ -177,7 +179,7 @@ namespace Spatial
 	}
 
 	bool FMTSpatialGraphs::IsNotNull(size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator) const
+		FMTSpatialGraphs::const_iterator p_iterator) const
 	{
 		return (p_iterator != m_AllGraphs.at(p_family).end());
 	}
@@ -221,7 +223,7 @@ namespace Spatial
 
 	void FMTSpatialGraphs::AddToSolution(std::vector<size_t>& p_solution,
 		size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator)
+		FMTSpatialGraphs::const_iterator p_iterator)
 	{
 		if (IsNotNull(p_family, p_iterator))
 		{
@@ -235,7 +237,7 @@ namespace Spatial
 
 	void FMTSpatialGraphs::RemoveToSolution(std::vector<size_t>& p_solution,
 		size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_iterator)
+		FMTSpatialGraphs::const_iterator p_iterator)
 	{
 		if (IsNotNull(p_family, p_iterator))
 		{
@@ -244,11 +246,11 @@ namespace Spatial
 		}
 	}
 
-	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::GetIterator(
+	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::GetIterator(
 		const Graph::FMTlinegraph& p_Graph,
 		size_t p_family) const
 	{
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator It = m_AllGraphs.at(p_family).find(p_Graph);
+		FMTSpatialGraphs::const_iterator It = m_AllGraphs.at(p_family).find(p_Graph);
 		if (It == m_AllGraphs.at(p_family).end())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -259,13 +261,13 @@ namespace Spatial
 		return It;
 	}
 
-	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::SetIterator(
+	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::SetIterator(
 		const Graph::FMTlinegraph& p_Graph,
 		size_t p_family)
 	{
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.at(p_family).end();
+		const_iterator Iterator = m_AllGraphs.at(p_family).end();
 		try {
-			std::pair<std::map<Graph::FMTlinegraph, FMTGraphInfo>::iterator, bool> inserted = m_AllGraphs.at(p_family).insert(
+			std::pair<FMTSpatialGraphs::iterator, bool> inserted = m_AllGraphs.at(p_family).insert(
 				std::pair<Graph::FMTlinegraph, FMTGraphInfo>(p_Graph, FMTGraphInfo(m_LastGraphId)));
 			if (inserted.second)//Calculate constraints
 			{
@@ -284,9 +286,9 @@ namespace Spatial
 	}
 
 
-	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator  FMTSpatialGraphs::SetNaturalGrowthIterator(size_t p_family)
+	FMTSpatialGraphs::const_iterator  FMTSpatialGraphs::SetNaturalGrowthIterator(size_t p_family)
 	{
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator Iterator = m_AllGraphs.at(p_family).end();
+		const_iterator Iterator = m_AllGraphs.at(p_family).end();
 		try {
 			Iterator = _GetNaturalGrowthIterator(p_family);
 			if (Iterator==m_AllGraphs.at(p_family).end())
@@ -406,7 +408,8 @@ namespace Spatial
 				const size_t GRAPHS_LOCATION = InSertedMask.first->second;
 				if (GRAPHS_LOCATION == m_AllGraphs.size())
 				{
-					m_AllGraphs.push_back(std::map<Graph::FMTlinegraph, FMTGraphInfo>());
+					m_AllGraphs.push_back(std::map<Graph::FMTlinegraph,
+											FMTGraphInfo>());
 				}
 				Graph::FMTlinegraph local_graph(LENGTH);
 				std::vector<Core::FMTactualdevelopment> NewDevs(1, DEV);
@@ -462,7 +465,7 @@ namespace Spatial
 	}
 
 	void FMTSpatialGraphs::_BuildConstraintsValues(
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::iterator p_Graph,
+		FMTSpatialGraphs::iterator p_Graph,
 		size_t p_family)
 	{
 		try {
@@ -515,14 +518,14 @@ namespace Spatial
 
 
 	void FMTSpatialGraphs::_BuildConstraintsValues(
-		std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>::iterator FirstGraphFamily,
-		std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>::iterator GraphFamilyEnd)
+		FMTSpatialGraphs::family_iterator FirstGraphFamily,
+		FMTSpatialGraphs::family_iterator GraphFamilyEnd)
 	{
 		try {
 			size_t Family = 0;
-			for (std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>::iterator It = FirstGraphFamily; It != GraphFamilyEnd; ++It)
+			for (family_iterator It = FirstGraphFamily; It != GraphFamilyEnd; ++It)
 			{
-				for (std::map<Graph::FMTlinegraph, FMTGraphInfo>::iterator GraphIt = It->begin();
+				for (iterator GraphIt = It->begin();
 					GraphIt != It->end(); ++GraphIt)
 				{
 					_BuildConstraintsValues(GraphIt, Family);
@@ -683,10 +686,10 @@ namespace Spatial
 		}
 	}
 
-	std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator FMTSpatialGraphs::_GetNaturalGrowthIterator(size_t p_family) const
+	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::_GetNaturalGrowthIterator(size_t p_family) const
 	{
 		const int LENGTH = m_Model->getparameter(Models::FMTintmodelparameters::LENGTH);
-		for (std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator It = m_AllGraphs.at(p_family).begin();
+		for (const_iterator It = m_AllGraphs.at(p_family).begin();
 				It != m_AllGraphs.at(p_family).end(); ++It)
 			{
 				if (It->first.getperiod() - 1 == LENGTH &&
@@ -698,6 +701,8 @@ namespace Spatial
 			}
 		return m_AllGraphs.at(p_family).end();
 	}
+
+
 	
 
 }

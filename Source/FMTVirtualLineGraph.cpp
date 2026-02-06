@@ -27,7 +27,7 @@ namespace Spatial{
 
 	FMTVirtualLineGraph::FMTVirtualLineGraph(
 				FMTSpatialGraphs& p_Graphs,
-				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_Iterator,
+				FMTSpatialGraphs::const_iterator p_Iterator,
 				size_t p_Family):
 		m_Iterator(p_Iterator), m_GraphFamily(p_Family), m_Graphs(&p_Graphs)
 		{
