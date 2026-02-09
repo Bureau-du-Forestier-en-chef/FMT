@@ -27,7 +27,7 @@ namespace Models
 
 {
 
-    const double FMTsamodel::m_INITIAL_ACCEPTANCE_PROBABILITY = 0.7;
+    const double FMTsamodel::m_INITIAL_ACCEPTANCE_PROBABILITY = 0.6;
 
     std::string FMTsamodel::GetMovesName(FMTsamove p_move)
     {
@@ -230,30 +230,55 @@ namespace Models
 		}
 		return false;
 		}
+
+    size_t FMTsamodel::_GetMaximalMoveSize(size_t p_MaxSize) const
+    {
+        size_t sizeOfMove = 0;
+        try {
+            const double MAP_RATIO = (m_CoolingSchedule->GetTemp() / 
+                                            m_CoolingSchedule->GetInitialTemp());
+            const size_t MINIMUM_MOVES = size_t(1);
+            const size_t MAXIMUM_MOVES = static_cast<size_t>(
+                static_cast<double>(p_MaxSize) * MAP_RATIO);
+            sizeOfMove = std::max(MINIMUM_MOVES,MAXIMUM_MOVES);
+        }catch (...)
+            {
+            _exhandler->raisefromcatch("", 
+                "FMTsamodel::_GetMaximalMoveSize", __LINE__, __FILE__);
+            }
+        return sizeOfMove;
+    }
+
+    size_t FMTsamodel::_GetRandomMoveSize(size_t p_MaxSize) const
+    {
+        size_t sizeOfMove = 0;
+        try {
+            const size_t MAXIMAL_SIZE = _GetMaximalMoveSize(p_MaxSize);
+            std::uniform_int_distribution<size_t> moveSizeDistribution(size_t(1), MAXIMAL_SIZE);
+            sizeOfMove = moveSizeDistribution(m_generator);
+        }catch (...)
+            {
+            _exhandler->raisefromcatch("",
+                "FMTsamodel::_GetRandomMoveSize", __LINE__, __FILE__);
+            }
+        return sizeOfMove;
+    }
+
    size_t FMTsamodel::_GetLocalMoveSize() const
     {
        size_t sizeOfMove = 0;
        try {
-           const double MAP_RATIO = (m_CoolingSchedule->GetTemp() / m_CoolingSchedule->GetInitialTemp());
-          
-           const size_t MINIMUM_MOVES = size_t(1);
-           const size_t MAXIMUM_MOVES = static_cast<size_t>(
-                                                static_cast<double>(m_BestSolution.size() / 20) * MAP_RATIO);
-           const size_t MAXIMAL_SIZE = std::max(MINIMUM_MOVES, MAXIMUM_MOVES);//20 % of the map
-           std::uniform_int_distribution<int> mosizedist(1, static_cast<int>(MAXIMAL_SIZE));
-           sizeOfMove = mosizedist(m_generator);
+           sizeOfMove = _GetRandomMoveSize(m_BestSolution.size() / 20);
            if (sizeOfMove >= m_BestSolution.size())
                 {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                    "Move Too Large ", "FMTsamodel::_GetLocalMoveSize", __LINE__, __FILE__);
                 }
-           
            m_CycleMoves.back().MoveSize = sizeOfMove;
-       }
-       catch (...)
-       {
-           _exhandler->raisefromcatch("", "FMTsamodel::_GetLocalMoveSize", __LINE__, __FILE__);
-       }
+       } catch (...)
+            {
+            _exhandler->raisefromcatch("", "FMTsamodel::_GetLocalMoveSize", __LINE__, __FILE__);
+            }
        return sizeOfMove;
     }
 
@@ -329,6 +354,9 @@ namespace Models
                ++ConstraintIt;
            }
            Spatial::FMTSpatialSchedule newSolution(p_actual);
+           const size_t MOVE_SIZE = _GetRandomMoveSize(allCoordinates.size()-1);
+           allCoordinates.erase(allCoordinates.begin() + MOVE_SIZE, allCoordinates.end());
+           std::shuffle(allCoordinates.begin(), allCoordinates.end(), m_generator);
            newSolution.SetGrow(allCoordinates, *this);
            return newSolution;
        }catch (...)

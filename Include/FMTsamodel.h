@@ -320,6 +320,20 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Generate the size of the local move.
          */
         size_t _GetLocalMoveSize() const;
+        // DocString: FMTsamodel:_GetMaximalMoveSize
+        /**
+        @brief get maximal move size based on temperature
+        @param[in] p_maxSize
+        @return max move size
+         */
+        size_t _GetMaximalMoveSize(size_t p_MaxSize) const;
+        // DocString: FMTsamodel:_GetRandomMoveSize
+       /**
+       @brief get random move size based on temperature
+       @param[in] p_maxSize
+       @return move size
+        */
+        size_t _GetRandomMoveSize(size_t p_MaxSize) const;
         // DocString: FMTsamodel::GetRebuild
         /**
         Take the actual non spatial solution of the actual solution and then
