@@ -74,21 +74,29 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 		{
 			themes.push_back(THEMESMODELS.at(themeNumber - 1));
 		}
+		// Marc-Alex : J'ai réactivé l'ancien code ici et désactivé l'optimisation
+		Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+		optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
+		optModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+		optModel.doplanning(false);
 
-		std::vector<Core::FMTactualdevelopment> area = modelCopy.getarea();
+		masks = optModel.getAllMasks(themes);
+
+		//std::vector<Core::FMTactualdevelopment> area = modelCopy.getarea();
 		// On transforme notre mod�le en lpModel qui lui peut faire un getAllMasks et on ajoute les param�tres qu'on a besoin.
 
-		for (int i = 0; i < p_periods; ++i)
-		{
-			Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
-			optModel.setarea(area);
-			
-			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-			optModel.doplanning(false);
-			std::set<std::string> tempMasks = optModel.getAllMasks(themes);
-			masks.insert(tempMasks.begin(), tempMasks.end());
-			area = optModel.getarea(i + 1);
-		}
+		// Cette optimisation faisait en sorte qu'il manque des mask, trouvé dans GCBM Growth_Curve_id
+		//for (int i = 0; i < p_periods; ++i)
+		//{
+		//	Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+		//	optModel.setarea(area);
+		//	
+		//	optModel.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+		//	optModel.doplanning(false);
+		//	std::set<std::string> tempMasks = optModel.getAllMasks(themes);
+		//	masks.insert(tempMasks.begin(), tempMasks.end());
+		//	area = optModel.getarea(i + 1);
+		//}
 	}
 	catch (...)
 	{
