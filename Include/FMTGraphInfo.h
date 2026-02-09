@@ -20,7 +20,10 @@ namespace Spatial
 			FMTGraphInfo() = default;
 			FMTGraphInfo(size_t Id);
 			const std::vector<double>& GetValues(size_t p_ConstraintId) const;
-			size_t GetGraphId() const;
+			inline size_t GetGraphId() const
+				{
+				return m_GraphId;
+				}
 			void SetValues(size_t p_ConstraintId,
 							const std::vector<double>& p_Values);
 			void SetValuesSize(size_t p_ValuesSize);

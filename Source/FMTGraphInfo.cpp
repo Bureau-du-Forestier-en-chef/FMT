@@ -25,10 +25,7 @@ namespace Spatial
 	{
 		return m_Values.at(p_ConstraintId).get().GetValues();
 	}
-	size_t FMTGraphInfo::GetGraphId() const
-	{
-		return m_GraphId;
-	}
+
 	void FMTGraphInfo::SetValues(size_t p_ConstraintId,const std::vector<double>& p_Values)
 	{
 		m_Values.at(p_ConstraintId) = FMTGraphValues(p_Values);

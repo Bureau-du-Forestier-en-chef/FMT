@@ -1,16 +1,16 @@
-
 #include <vector>
 #include <string>
+#include <fstream>
 #include "FMTmodel.h"
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
 #include "Tools.h"
 #include "FMTfreeexceptionhandler.h"
-
+#include <set>
 
 int main(int argc, char* argv[])
 {
-	std::string pathPri;	
+	std::string pathPri;
 	std::string scenarioName;
 	std::string mask;
 	std::string yieldName;
@@ -18,10 +18,13 @@ int main(int argc, char* argv[])
 	std::vector<int> themesNumbers;
 	int resutlSize = 0;
 	std::string rastpath;
+	std::string outputFilePath;
+	bool writeOnDisk;
 
 	if (argc > 1)
 	{
 		std::vector<std::string>results;
+		writeOnDisk = false;
 		const std::string vals1 = argv[1];
 		boost::split(results, vals1, boost::is_any_of("|"));
 		pathPri = results.at(0);
@@ -39,12 +42,13 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "C:\\Users\\Admlocal\\Documents\\issues\\temp_run\\"
-			"01_Valide_1272_120_RegProv_apsp_TBE\\01_Valide_1272_120_RegProv_apsp_TBE\\PC_9936_U01272_2028_MODB01.pri";
-		scenarioName = "120_RegProv_apsp_TBE";
-		periods = 6;
-		resutlSize = 32953;
-		themesNumbers = {3, 5, 12, 13, 14, 21};
+		pathPri = "D:\\Working_dir\\01_Valide_modele_complet\\PC_9936_U01272_2028_MODB01.pri";
+		scenarioName = "120_TBE_V2";
+		periods = 10;
+		writeOnDisk = true;
+		outputFilePath = "get_all_mask_output.txt";
+		//resutlSize = 32953;
+		themesNumbers = { 3, 5, 12, 13, 14, 21 };
 		rastpath = "";
 	}
 
@@ -71,17 +75,32 @@ int main(int argc, char* argv[])
 	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(
 		model, periods, themesNumbers, rastpath);
 
-	std::cout << RESULT.size() << std::endl;
+	std::cout << "Nombre de résultats : " << RESULT.size() << std::endl;
+
+	// Écriture sur le disque en cas de test manuel
+	if (writeOnDisk) {
+		std::ofstream outputFile(outputFilePath);
+
+		if (outputFile.is_open()) {
+			for (const std::string& res : RESULT) {
+				outputFile << res << std::endl;
+			}
+			outputFile.close();
+			std::cout << "Les résultats ont été écrits dans " << outputFilePath << std::endl;
+		}
+		else {
+			std::cerr << "Erreur: Impossible d'ouvrir le fichier " << outputFilePath << " pour l'écriture." << std::endl;
+			return 1;
+		}
+
+	}
 
 	if (RESULT.size() != resutlSize) {
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
 
 	}
-	for (const std::string& res : RESULT) {
-		std::cout << res << std::endl;
-	}
+
 
 	return 0;
 }
-
