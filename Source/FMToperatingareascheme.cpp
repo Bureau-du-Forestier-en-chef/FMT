@@ -1135,12 +1135,12 @@ void FMToperatingareascheme::_addPotentialResults(
 	}
 }
 
-bool FMToperatingareascheme::_checkDoubleIncludes(const std::vector<std::vector<int>>& openingconstraints) const
+bool FMToperatingareascheme::_checkDoubleIncludes(const std::vector<std::vector<int>>& p_openingconstraints)
 {
-	for (const auto& OP_CONSTRAINT : openingconstraints)
+	for (const auto& OP_CONSTRAINT : p_openingconstraints)
 	{
 		size_t numberOfIncludes = 0;
-		for (const auto& OP_INCLUDE : openingconstraints)
+		for (const auto& OP_INCLUDE : p_openingconstraints)
 		{
 			if (OP_CONSTRAINT != OP_INCLUDE)
 			{
@@ -1155,7 +1155,7 @@ bool FMToperatingareascheme::_checkDoubleIncludes(const std::vector<std::vector<
 				}
 			}
 		}
-		if (numberOfIncludes == openingconstraints.size() - 1)
+		if (numberOfIncludes == p_openingconstraints.size() - 1)
 		{
 			return true;
 		}
