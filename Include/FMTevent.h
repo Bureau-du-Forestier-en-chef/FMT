@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -247,7 +247,7 @@ class FMTEXPORT FMTevent
         {
             ar& BOOST_SERIALIZATION_NVP(m_actionId);
             ar& BOOST_SERIALIZATION_NVP(m_period);
-            ar& BOOST_SERIALIZATION_NVP(elements);
+            ar& BOOST_SERIALIZATION_NVP(m_elements);
         }
         // DocString: FMTevent::m_actionId
         /**

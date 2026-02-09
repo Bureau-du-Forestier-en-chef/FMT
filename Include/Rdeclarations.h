@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -31,7 +31,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 #include "FMTsesmodel.h"
 #include "FMTsaschedule.h"
-#include "FMTexponentialschedule.h"
+//#include "FMTexponentialschedule.h" // Comment Gab 2026-02-09
 #include "FMTsamodel.h"
 #include "FMToperatingarea.h"
 #include "FMToperatingareascheduler.h"

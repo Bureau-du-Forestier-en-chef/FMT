@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 cmake_minimum_required(VERSION 3.20)
 
 project(FMT VERSION 1.0.2 LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 string(TIMESTAMP DATE "%Y-%m-%d")
@@ -189,7 +189,7 @@ else()
 		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 	)
 endif(NOT MSVC)
-	set_property(TARGET FMTlib PROPERTY CXX_STANDARD 11)
+	set_property(TARGET FMTlib PROPERTY CXX_STANDARD 17)
 	set_property(TARGET FMTlib PROPERTY CXX_STANDARD_REQUIRED ON)
 	target_compile_definitions(FMTlib PRIVATE "-DFMTSHAREDLIB")
 #if (MSVC)
@@ -313,7 +313,7 @@ endif(DEFINED ONNXR_DIR)
 
 
 if (NOT DEFINED WITHOUT_PYTHONLIB)
-	set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
+	set_property(TARGET FMT PROPERTY CXX_STANDARD 17)
 	set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
 endif(NOT DEFINED WITHOUT_PYTHONLIB)
 
@@ -804,7 +804,7 @@ function(createexecutable executablecpplocation executablename)
    		${executablename} PROPERTIES
     		VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}")
 	endif(MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
-	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD 11)
+	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD 17)
 	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD_REQUIRED ON)
 	#if (MOSEK_FOUND AND MSVC)
 	#	target_sources(${executablename} PRIVATE ${OSIMSK_DEFINITION})
