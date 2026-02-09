@@ -14,7 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
     {
 
-
+	const double FMTsemodel::MAX_FACTOR = 1.0;
 
 	void FMTsemodel::_BuildArea(const Spatial::FMTforest& p_Forest)
 		{
@@ -77,6 +77,32 @@ namespace Models
 				"FMTsemodel::_CopySolution", __LINE__, __FILE__);
 		}
 
+	}
+
+	double FMTsemodel::GetConstraintFactor(size_t p_constraint, double p_GrossValue) const
+	{
+		double value =  _GetConstraintNumerator(p_constraint) / std::abs(p_GrossValue);
+		if (value == std::numeric_limits<double>::infinity())
+			{
+			value = MAX_FACTOR;
+			}
+		return value;
+	}
+
+	bool FMTsemodel::IsValidFactor(double p_GrossValue)const
+		{
+		return p_GrossValue < MAX_FACTOR;
+		}
+
+	double FMTsemodel::_GetConstraintNumerator(size_t p_constraint) const
+	{
+		double Numerator = MAX_FACTOR;
+		const int UPDATE = getparameter(Models::FMTintmodelparameters::UPDATE);
+		if (constraints[p_constraint].getperiodupperbound() < UPDATE)
+		{
+			Numerator = MAX_FACTOR * 10;
+		}
+		return Numerator;
 	}
 
 
@@ -453,12 +479,28 @@ namespace Models
 	void FMTsemodel::DoReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
 	{
 		try {
-			p_SpatialSchedule.dorefactortorization(m_SpatialGraphs);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", " FMTsemodel::DoReFactortorization", __LINE__, __FILE__);
-		}
+			const std::vector<double>& FACTORS = p_SpatialSchedule.getConstraintsFactor();
+			if (!FACTORS.empty())
+				{
+				std::vector<double>NewFactors(FACTORS);
+				size_t cntid = 0;
+				for (const double& VALUE : p_SpatialSchedule.getconstraintsvalues(m_SpatialGraphs))
+				{
+					const double VALUE_WITH_FACTOR = FACTORS.at(cntid) * VALUE;
+					if ((VALUE_WITH_FACTOR > _GetConstraintNumerator(cntid) ||
+						VALUE_WITH_FACTOR < -_GetConstraintNumerator(cntid)))
+					{
+						NewFactors[cntid] = GetConstraintFactor(cntid, VALUE);
+					}
+					++cntid;
+				}
+				p_SpatialSchedule.setconstraintsfactor(*this,NewFactors);
+				
+				}
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsemodel::DoReFactortorization", __LINE__, __FILE__);
+			}
 	}
 
 	Spatial::FMTSpatialSchedule  FMTsemodel::GetNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const

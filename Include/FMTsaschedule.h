@@ -19,14 +19,9 @@ namespace Spatial
 class FMTsaschedule
 //Abstract class for cooling schedule
     {
-    protected:
-		std::string ScheduleType;
-        size_t Level;
-        double Temperature;
-        double InitialTemperature;
     public:
         FMTsaschedule(const std::string& typesc);//Constructor
-        FMTsaschedule();//Constructor
+        FMTsaschedule()=default;//Constructor
         std::string GetScheduleType()const;
         size_t GetLevel()const;
         void SetInitialTemperature(const double& Temp);
@@ -36,6 +31,11 @@ class FMTsaschedule
         void SetTemp( double p_Temp);
         double GetInitialTemp() const;//
         virtual std::unique_ptr<FMTsaschedule> Clone()const;
+    protected:
+        std::string m_ScheduleType;
+        size_t m_Level;
+        double m_Temperature;
+        double m_InitialTemperature;
     };
 }
 #endif // FMTSASCHEDULE_H
