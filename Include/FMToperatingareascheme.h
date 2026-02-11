@@ -473,7 +473,7 @@ namespace Heuristics
 			/**
 
 			*/
-			bool _checkDoubleIncludes(const std::vector<std::vector<int>>& openingconstraints) const;
+			static bool _checkDoubleIncludes(const std::vector<std::vector<int>>& openingconstraints);
 		};
 
 	// DocString: FMToperatingareaschemecomparator

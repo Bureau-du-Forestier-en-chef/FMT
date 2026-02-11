@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -46,8 +46,8 @@ RCPP_EXPOSED_AS(Graph::FMTlinegraph);
 RCPP_DEFINEMAP(Spatial::FMTcoordinate,Graph::FMTlinegraph);//For FMTlayer
 
 
-RCPP_EXPOSED_WRAP(Spatial::FMTexponentialschedule);
-RCPP_EXPOSED_AS(Spatial::FMTexponentialschedule);
+//RCPP_EXPOSED_WRAP(Spatial::FMTexponentialschedule); / Comment Gab 2026-02-09
+// RCPP_EXPOSED_AS(Spatial::FMTexponentialschedule); / Comment Gab 2026-02-09
 /*
 RCPP_EXPOSED_WRAP(Spatial::FMTsasolution);
 RCPP_EXPOSED_AS(Spatial::FMTsasolution);
@@ -115,10 +115,10 @@ void exportSpatial()
         .field("size_weight",&Spatial::FMTspatialaction::size_weight);
 		*/
 
-
-	Rcpp::class_<Spatial::FMTexponentialschedule>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
-		.constructor("@DocString(FMTexponentialschedule())")
-        .constructor<double>("@DocString(FMTexponentialschedule(double))");
+// comment Gab 2026-02-09
+//	Rcpp::class_<Spatial::FMTexponentialschedule>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
+//		.constructor("@DocString(FMTexponentialschedule())")
+//       .constructor<double>("@DocString(FMTexponentialschedule(double))");
 		
 
 	define_FMTlayer<Graph::FMTlinegraph>("FMTgraphlayer");
