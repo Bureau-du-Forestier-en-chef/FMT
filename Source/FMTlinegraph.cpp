@@ -349,7 +349,7 @@ namespace Graph
 		}
 		return getdevelopment(*vertexit);
 	}
-	
+
 
     int FMTlinegraph::randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model,
                                             FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
@@ -623,9 +623,14 @@ namespace Graph
 		return false;
 		}
 
+	bool FMTlinegraph::IsSameBase(const FMTlinegraph& rhs) const
+	{
+		return (getbasedevelopment() == rhs.getbasedevelopment());
+	}
+
 	bool  FMTlinegraph::IsLessPeriod(const FMTlinegraph& rhs) const
 	{
-		if (getbasedevelopment() == rhs.getbasedevelopment()&&
+		if (IsSameBase(rhs) &&
 			rhs.getperiod() == getperiod()-1)
 		{
 			FMTedge_iterator edge_iterator, edge_iterator_end, rhs_edge_iterator, rhs_edge_iterator_end;
@@ -651,7 +656,7 @@ namespace Graph
 
 	bool FMTlinegraph::operator == (const FMTlinegraph& rhs) const
 		{
-		if (getbasedevelopment() == rhs.getbasedevelopment())
+		if (IsSameBase(rhs))
 			{
 			const size_t THIS_EDGES = boost::num_edges(data);
 			const size_t RHS_EDGES = boost::num_edges(rhs.data);

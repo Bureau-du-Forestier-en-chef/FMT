@@ -2413,6 +2413,102 @@ double FMTSpatialSchedule::_GetExponentialFactorization(double p_value, double p
 	return returned;
 }
 
+void FMTSpatialSchedule::SetSpread(
+	std::vector<FMTSpatialSchedule::EventSpread>::const_iterator p_first,
+	std::vector<FMTSpatialSchedule::EventSpread>::const_iterator p_end)
+{
+	try {
+		std::map<const FMTevent*, FMTevent>ToChange;
+		for (std::vector<FMTSpatialSchedule::EventSpread>::const_iterator It = p_first; It != p_end; ++It)
+			{
+			ToChange.insert(std::pair<const FMTevent*, FMTevent>(&(*(p_first->m_Event)), *p_first->m_Event));
+			}
+		for (std::vector<FMTSpatialSchedule::EventSpread>::const_iterator It = p_first; It != p_end; ++It)
+			{
+			It->m_OutEvent->second.setLineGraph(
+				It->m_InEvent->second.getLineGraph(),
+				m_NonSpatialSolution);
+			ToChange[&(*It->m_Event)].insert(It->m_OutEvent->first);
+			}
+		FMTeventcontainer ToRemove;
+		FMTeventcontainer ToAdd;
+		for (const auto& NEW_EVENT : ToChange)
+			{
+			ToRemove.insert(*NEW_EVENT.first);
+			ToAdd.insert(NEW_EVENT.second);
+			}
+		m_events.addupdate(ToAdd, ToRemove);
+	}catch (...)
+		{
+		_exhandler->printexceptions("",
+			"FMTSpatialSchedule::SetSpread", __LINE__, __FILE__);
+		}
+}
+
+bool FMTSpatialSchedule::CanDoEventSpread(int p_period) const
+	{
+	bool canDoIt = false;
+	std::pair<FMTeventcontainer::const_iterator,
+		FMTeventcontainer::const_iterator> BOUNDS = m_events.getbounds(p_period);
+	FMTeventcontainer::iterator it = BOUNDS.first;
+	FMTeventcontainer::iterator last = BOUNDS.second;
+	while (it != last && !canDoIt)
+		{
+			for (const auto& COORDINATE : it->GetOutsideBordersPair())
+			{
+				FMTlayer::const_iterator CANDIDATE_IT = find(COORDINATE.second);
+				if (CANDIDATE_IT != end()) // InMap
+				{
+					FMTlayer::const_iterator BASE_IT = find(COORDINATE.first);
+					const Graph::FMTlinegraph& CANDIDATE = CANDIDATE_IT->second.getLineGraph();
+					const Graph::FMTlinegraph& BASE = BASE_IT->second.getLineGraph();
+					if (CANDIDATE.isonlygrow() &&
+						BASE.IsSameBase(CANDIDATE))
+					{
+						canDoIt = true;
+					}
+				}
+			}
+			++it;
+		}
+	return canDoIt;
+	}
+
+
+std::vector<FMTSpatialSchedule::EventSpread> FMTSpatialSchedule::GetPotentialSpread(int p_period)
+{
+	std::vector<FMTSpatialSchedule::EventSpread>ValidSpreads;
+	try {
+		std::pair<FMTeventcontainer::const_iterator,
+			FMTeventcontainer::const_iterator> BOUNDS = m_events.getbounds(p_period);
+		FMTeventcontainer::iterator it = BOUNDS.first;
+		FMTeventcontainer::iterator last = BOUNDS.second;
+		for (;it!=last;++it)
+			{
+			for (const auto& COORDINATE : it->GetOutsideBordersPair())
+				{
+				FMTlayer::iterator CANDIDATE_IT = find(COORDINATE.second);
+				if (CANDIDATE_IT!=end()) // InMap
+					{
+					FMTlayer::const_iterator BASE_IT = find(COORDINATE.first);
+					const Graph::FMTlinegraph& CANDIDATE = CANDIDATE_IT->second.getLineGraph();
+					const Graph::FMTlinegraph& BASE = BASE_IT->second.getLineGraph();
+					if (CANDIDATE.isonlygrow() &&
+						BASE.IsSameBase(CANDIDATE))
+						{
+						ValidSpreads.push_back(FMTSpatialSchedule::EventSpread(BASE_IT, CANDIDATE_IT, it));
+						}
+					}
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->printexceptions("", 
+				"FMTSpatialSchedule::GetPotentialSpread", __LINE__, __FILE__);
+			}
+	return ValidSpreads;
+}
+
 
 
 

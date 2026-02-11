@@ -127,7 +127,8 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         AreaConflictDestrutor = 3,
         AdjacencyConflictDestrutor = 4,
         GroupsConflictDestructor = 5,
-        MoveCount = 6
+        EventsSpread = 6,
+        MoveCount = 7
     };
     static std::string GetMovesName(FMTsamove p_move);
     class FMTmovestats
@@ -176,9 +177,15 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::SOLUTION_MERGE_ITERATIONS
     ///Number of iterations on greedy merge
     static const size_t m_SOLUTION_MERGE_ITERATIONS = 200;
-    // DocString: FMTsamodel::MAX_NON_ACCEPTED_MOVES_FOR_TABOU
+    // DocString: FMTsamodel::m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU
     ///Number of iterations on greedy merge
-    static const size_t m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU = 3;
+    static const size_t m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU = 5;
+    // DocString: FMTsamodel::m_TABOU_FLUSH
+    ///Number of iterations before flushing tabou
+    static const size_t m_TABOU_FLUSH = 100000;
+    // DocString: FMTsamodel::m_MOVE_SIZE_FACTOR
+    ///Factor to put on move size
+    static const size_t m_MOVE_SIZE_FACTOR = 20;
     // DocString: FMTsamodel::INITIAL_ACCEPTANCE_PROBABILITY
     ///Initial acceptance probability of the SA
     static const double m_INITIAL_ACCEPTANCE_PROBABILITY;
@@ -218,17 +225,24 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Returns true if the bindings allow to destroy some events
        */
         bool _AllowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
-        // DocString: FMTsamodel::AllowAdjacencyDestruction
+        // DocString: FMTsamodel::_AllowAdjacencyDestruction
            /**
            Returns true if the bindings allow to destroy some events
           */
         bool _AllowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
-        // DocString: FMTsamodel::AllowGroupDestruction
+        // DocString: FMTsamodel::_AllowGroupDestruction
         /**
         @param[in] the solution to test
         @return Returns true if allow group destruction move
         */
         bool _AllowGroupDestruction(const Spatial::FMTSpatialSchedule& p_actual) const;
+        // DocString: FMTsamodel::_AllowEventsSpread
+        /**
+        @brief check if event can be spread
+        @param[in] the solution to test
+        @return Returns true allow events spread
+        */
+        bool _AllowEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const;
         // DocString: FMTsamodel::AllowMove
         /**
         Check If you can allow the move 
@@ -284,6 +298,15 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         @return a new solution
         */
         Spatial::FMTSpatialSchedule _DoGroupsConflictDestrutorMove(const Spatial::FMTSpatialSchedule& p_actual) const;
+        // DocString: FMTsamodel::_DoEventsSpread
+         /**
+        @brief Spread same actions to other cells
+        @param[in] the actual solution
+        @return a new solution
+        */
+        Spatial::FMTSpatialSchedule _DoEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const;
+
+        
         // DocString: FMTsamodel::move
 		/**
 		Perturb a solution and produce a new one
@@ -385,19 +408,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
                                  double& p_PrimalInf) const;
 
 
-        std::vector<double> _GetMergeFactors(const std::vector<double>& p_factors,
-                                            bool p_update = false,
-                                            bool p_inventory = false, 
-                                            bool p_spatial = false,
-                                            bool p_flow = false) const;
-        std::vector<double> _GetLowHangingFruitsFactors(const Spatial::FMTSpatialSchedule& p_NewBestSolution,
-                                                            const std::vector<double>& p_factors) const;
-
-        
-
-        void _DoGreedyMerge(const Spatial::FMTSpatialSchedule::actionbindings& p_bindings,
-                            const std::vector<Spatial::FMTcoordinate>* p_movable,
-                            boost::unordered_map<Core::FMTdevelopment, bool>* p_operability);
         void _ResetTabouMoves();
 	
 

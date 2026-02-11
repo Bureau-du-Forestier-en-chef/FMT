@@ -259,6 +259,26 @@ namespace Spatial
             return false;
         }
 
+
+    std::vector<std::pair<FMTcoordinate, FMTcoordinate>>FMTevent::GetOutsideBordersPair() const
+    {
+        std::vector<std::pair<FMTcoordinate, FMTcoordinate>>Borders;
+        for (const auto& IN_COORD : m_elements)
+            {
+            for (int i = 0; i < 4; ++i)
+                {
+                const FMTcoordinate LOOK_UP = IN_COORD.at(i);
+                if (m_elements.find(LOOK_UP) == m_elements.end())
+                    {
+                    Borders.push_back(
+                        std::pair<FMTcoordinate, FMTcoordinate>(IN_COORD, LOOK_UP));
+
+                    }
+                }
+            }
+        return Borders;
+       }
+
 	std::vector<std::set<FMTcoordinate>::const_iterator>FMTevent::getborders() const
 	{
 		std::vector<std::set<FMTcoordinate>::const_iterator>borders;

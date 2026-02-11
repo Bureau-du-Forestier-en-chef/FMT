@@ -58,6 +58,11 @@ namespace Models
                 return "GroupsConflictDestructor";
                 break;
             }
+            case FMTsamove::EventsSpread:
+            {
+                return "EventsSpread";
+                break;
+            }
             default:
                 break;
             }
@@ -240,7 +245,7 @@ namespace Models
             const size_t MINIMUM_MOVES = size_t(1);
             const size_t MAXIMUM_MOVES = static_cast<size_t>(
                 static_cast<double>(p_MaxSize) * MAP_RATIO);
-            sizeOfMove = std::max(MINIMUM_MOVES,MAXIMUM_MOVES);
+            sizeOfMove = std::max(MINIMUM_MOVES,MAXIMUM_MOVES / m_MOVE_SIZE_FACTOR);
         }catch (...)
             {
             _exhandler->raisefromcatch("", 
@@ -268,7 +273,7 @@ namespace Models
     {
        size_t sizeOfMove = 0;
        try {
-           sizeOfMove = _GetRandomMoveSize(m_BestSolution.size() / 20);
+           sizeOfMove = _GetRandomMoveSize(m_BestSolution.size());
            if (sizeOfMove >= m_BestSolution.size())
                 {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -421,6 +426,51 @@ namespace Models
        return  allowed;
    }
 
+   bool FMTsamodel::_AllowEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const
+   {
+       bool allowed = false;
+       try {
+           int modelLength = getparameter(Models::FMTintmodelparameters::LENGTH);
+           while (!allowed && modelLength > 0)
+                {
+                allowed = p_actual.CanDoEventSpread(modelLength);
+                --modelLength;
+                }
+       }catch (...)
+            {
+           _exhandler->raisefromcatch("", 
+               "FMTsamodel::_AllowEventsSpread", __LINE__, __FILE__);
+            }
+       return  allowed;
+   }
+
+   Spatial::FMTSpatialSchedule FMTsamodel::_DoEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const
+   {
+       Spatial::FMTSpatialSchedule newSolution(p_actual);
+       try {
+           const int MODEL_LENGTH = getparameter(Models::FMTintmodelparameters::LENGTH);
+           std::vector<
+           std::vector<Spatial::FMTSpatialSchedule::EventSpread>>AllPotentials;
+           for (int period = 1; period <= MODEL_LENGTH; ++period)
+                {
+                const  std::vector<Spatial::FMTSpatialSchedule::EventSpread> LOCAL = 
+                    newSolution.GetPotentialSpread(period);
+                AllPotentials.push_back(LOCAL);
+                }
+           std::shuffle(AllPotentials.begin(), AllPotentials.end(), m_generator);
+           const size_t MOVE_SIZE = _GetRandomMoveSize(AllPotentials.begin()->size());
+           std::shuffle(AllPotentials.begin()->begin(), 
+               AllPotentials.begin()->begin() + MOVE_SIZE, m_generator);
+           newSolution.SetSpread(AllPotentials.begin()->begin(),
+               AllPotentials.begin()->begin() + MOVE_SIZE);
+       }catch (...)
+            {
+           _exhandler->raisefromcatch("",
+               "FMTsamodel::_DoEventsSpread", __LINE__, __FILE__);
+            }
+       return newSolution;
+   }
+
 
    std::vector<bool> FMTsamodel::_GetFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions,bool adjacency) const
    {
@@ -551,6 +601,11 @@ namespace Models
                 return _DoGroupsConflictDestrutorMove(actual);
                 break;
             }
+            case FMTsamove::EventsSpread:
+            {
+                return _DoEventsSpread(actual);
+                break;
+            }
             default:
                 break;
             }
@@ -645,75 +700,20 @@ namespace Models
     #endif
 
 
-   std::vector<double>FMTsamodel::_GetMergeFactors(const std::vector<double>& p_factors,
-                                                   bool p_update,
-                                                   bool p_inventory,
-                                                   bool p_spatial,
-                                                   bool p_flow) const
-        {
-        std::vector<double> MergeFactors;
-        try {
-            const int UPDATE = getparameter(Models::FMTintmodelparameters::UPDATE);
-            MergeFactors = std::vector<double>(p_factors.size(),0.0);
-            const bool ALL_CONSTRAINTS = !p_update && !p_inventory && !p_spatial && !p_flow;
-            size_t constraintID = 0;
-            for (const Core::FMTconstraint& CONSTRAINT : constraints)
-                {
-                if (constraintID == 0)
-                {
-                    MergeFactors[constraintID] = 1;
-                }
-                const int UPPER = constraints[constraintID].getperiodupperbound();
-                if (ALL_CONSTRAINTS ||
-                    p_inventory && CONSTRAINT.isinventory()|| //inventory constraints
-                    p_spatial && CONSTRAINT.isspatial() || //spatial constraints
-                    p_flow && CONSTRAINT.acrossperiod() || //flow
-                    p_update && UPPER < UPDATE) //Update constraints
-                    {
-                    MergeFactors[constraintID] = p_factors[constraintID];
-                    }
-                ++constraintID;
-                }
-        }catch (...)
-            {
-            _exhandler->raisefromcatch("", "FMTsamodel::_GetMergeFactors", __LINE__, __FILE__);
-            }
-        return MergeFactors;
-        }
+  
 
    void  FMTsamodel::_ResetTabouMoves()
         {
-       for (auto& MOVE : m_NotAcceptedMovesCount)
+        if (m_TotalMoves % m_TABOU_FLUSH  == 0)
             {
-           MOVE = size_t(0);
+            for (auto& MOVE : m_NotAcceptedMovesCount)
+                {
+                MOVE = size_t(0);
+                }
             }
         }
 
-   std::vector<double> FMTsamodel::_GetLowHangingFruitsFactors(const Spatial::FMTSpatialSchedule& p_NewBestSolution,
-                                                                        const std::vector<double>& p_factors) const
-   {
-       std::vector<double> newFactors(p_factors.size(), 0.0);
-       std::vector<std::pair<size_t, double>>ToSort;
-       size_t i = 0;
-       size_t totalAccepted = 0;
-       for (const double VALUE : p_NewBestSolution.getconstraintsvalues(m_SpatialGraphs))
-       {
-           if (i > 0 && VALUE > FMT_DBL_TOLERANCE && p_factors.at(i) > FMT_DBL_TOLERANCE)
-                {
-                ToSort.push_back(std::pair<size_t, double>(i, VALUE));
-                ++totalAccepted;
-                }
-           ++i;
-       }
-       std::sort(ToSort.begin(), ToSort.end(), [](auto& left, auto& right) {
-                        return left.second < right.second;
-                        });
-       for (size_t j = 0; j < totalAccepted / 2;++j)//first 50%
-            {
-            newFactors[ToSort[j].first] = p_factors[ToSort[j].first];
-            }
-       return newFactors;
-   }
+ 
 
 
    void  FMTsamodel::_GetConstraintsStats(const Spatial::FMTSpatialSchedule& p_NewBestSolution,
@@ -754,62 +754,6 @@ namespace Models
        p_TotalRatio = totalBroken / Total;
    }
 
-   void FMTsamodel::_DoGreedyMerge(const Spatial::FMTSpatialSchedule::actionbindings& p_bindings,
-                                   const std::vector<Spatial::FMTcoordinate>* p_movable,
-                                   boost::unordered_map<Core::FMTdevelopment, bool>* p_operability)
-        {
-           try {
-               const std::vector<double> BASE_FACTORS = m_BestSolution.getConstraintsFactor();
-               std::vector<double>  BASE_MERGE_FACTORS= _GetMergeFactors(BASE_FACTORS,false,
-                                                                true,true);
-               m_BestSolution.setconstraintsfactor(*this, BASE_MERGE_FACTORS);
-               size_t MoveTillBetterFound = 0;
-               m_CoolingSchedule->SetTemp(0.0);
-               _ResetTabouMoves();
-               m_CycleMoves.clear();
-               LogConstraintsInfeasibilities();
-               *_logger << "Merging" << "\n";
-               double Objective = 0.0;
-               double PrimalInf = 0.0;
-               GetSolutionStatus(m_BestSolution, 
-                   Objective, PrimalInf,false,true);
-               while (PrimalInf > FMT_DBL_TOLERANCE)
-                       {
-                       Spatial::FMTSpatialSchedule newSolution = _Move(m_BestSolution, p_bindings, p_movable, p_operability);
-                       double NewObjective = 0.0;
-                       double NewPrimalInf = 0.0;
-                       GetSolutionStatus(newSolution,
-                           NewObjective, NewPrimalInf,false,true);
-                       const double OBJECTIVE_GAP = (Objective - NewObjective / Objective);
-                       const double PRIMALINF_GAP = (PrimalInf - NewPrimalInf / PrimalInf);
-                       if ((NewObjective <= Objective && NewPrimalInf < PrimalInf) ||
-                           (MoveTillBetterFound > m_SOLUTION_MERGE_ITERATIONS &&
-                           NewPrimalInf < PrimalInf &&
-                           OBJECTIVE_GAP < (PRIMALINF_GAP / 2)))
-                            {
-                           _SetBestSolutionTo(newSolution, Objective);
-                           Objective = NewObjective;
-                           PrimalInf = NewPrimalInf;
-                           MoveTillBetterFound = 0;
-                           }else {
-                               ++MoveTillBetterFound;
-                                }
-                       if (m_TotalMoves % 1000 == 0)
-                            {
-                            LogConstraintsInfeasibilities();
-                            }
-                       ++m_TotalMoves;
-                      
-                       //_LogSolutionStatus();
-                       _ResetTabouMoves();
-                       m_CycleMoves.clear();
-                       }
-               *_logger << "Merge done." << "\n";
-           }catch (...)
-                {
-               _exhandler->raisefromcatch("", "FMTsamodel::_DoGreedyMerge", __LINE__, __FILE__);
-                }
-        }
 
     std::vector<Core::FMTschedule>FMTsamodel::_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const
     {
@@ -917,6 +861,10 @@ namespace Models
                 if (_AllowGroupDestruction(actual))
                     {
                     allmoves.push_back(FMTsamove::GroupsConflictDestructor);
+                    }
+                if (_AllowEventsSpread(actual))
+                    {
+                    allmoves.push_back(FMTsamove::EventsSpread);
                     }
                 /*if (CycleMoves.size() % 100 == 0)//Each 1000 moves...
                     {
@@ -1186,9 +1134,8 @@ namespace Models
                 _LogCycleStatus();
                 _WriteDisrturbances();
 				_CoolDown();
+                _ResetTabouMoves();
 				}
-            //_DoGreedyMerge(ACTIONS_BINDING,
-            //    &MOVABLES, &operability);
             LogConstraintsFactors();
             LogConstraintsInfeasibilities();
             *_logger << "Generator final state: " << m_generator() << "\n";

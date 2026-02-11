@@ -455,6 +455,20 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		void SetSpatialGraphs(const Spatial::FMTSpatialSchedule& p_ToCopy, FMTSpatialGraphs& p_SpatialGraph);
 		std::vector<FMTcoordinate> GetGroupsConflict(const Core::FMTconstraint& p_SpatialConstraint,
 			const FMTSpatialGraphs& p_SpatialGraph) const;
+		struct EventSpread
+			{
+			EventSpread(FMTlayer::const_iterator p_InIt,
+				FMTlayer::iterator p_OutIt, FMTeventcontainer::iterator p_Event):
+				m_InEvent(p_InIt), m_OutEvent(p_OutIt), m_Event(p_Event){}
+			FMTlayer::const_iterator m_InEvent;
+			FMTlayer::iterator  m_OutEvent;
+			FMTeventcontainer::iterator m_Event;
+			};
+		std::vector<EventSpread>GetPotentialSpread(int p_period);
+		bool CanDoEventSpread(int p_period) const;
+		void SetSpread(
+			std::vector<EventSpread>::const_iterator p_first,
+			std::vector<EventSpread>::const_iterator p_end);
 	protected:
 		// DocString: FMTSpatialSchedule::m_events
 		/**
@@ -539,6 +553,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		size_t _GetNonSpatialCellsCount() const;
 
 		static double _GetExponentialFactorization(double p_value, double p_factor);
+
+		
 
 		static const int BUFFER_LOOKUP = 1;
 		

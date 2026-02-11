@@ -263,6 +263,12 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		@return true if same graph with one less period.
 		*/
 		bool IsLessPeriod(const FMTlinegraph& rhs) const;
+		// DocString:  FMTlinegraph::IsSameBase
+		/**
+		@brief Check if same base dev
+		@return true if same
+		*/
+		bool IsSameBase(const FMTlinegraph& rhs) const;
 		// DocString:  FMTlinegraph::clearnodecache
 		/**
 		Clear the node cache when getting outpus of the linegraph.
