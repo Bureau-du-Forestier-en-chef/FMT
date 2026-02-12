@@ -66,7 +66,8 @@ int main(int argc, char* argv[])
 		const Models::FMTmodel BUILDED_MODEL = MODELS.at(0).buildAction(ACTION_NAME, TARGET_YIELD);
 		ModelParser.writetoproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", BUILDED_MODEL);
 		Parser::FMTscheduleparser SCHEDULE_PARSER;
-		const std::vector<Core::FMTschedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), SCHEDULES);
+		const std::vector<Core::FMTschedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), 
+			MODELS.at(0),TARGET_YIELD, SCHEDULES);
 		SCHEDULE_PARSER.write(NEW_SCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq");
 		const std::vector<std::string>ROOT(1, "ROOT");
 		const std::vector<Models::FMTmodel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);

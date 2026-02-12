@@ -103,7 +103,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		if (!SCHEDULES.empty())
 		{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
-			const std::vector<Core::FMTschedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), SCHEDULES);
+			const std::vector<Core::FMTschedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), 
+				p_model,p_targetYield, SCHEDULES);
 			std::string schedule_path = SCHEDULE_PARSER.getSchedulePath(p_primaryPath, p_scenario_name);
 			SCHEDULE_PARSER.write(NEW_SCHEDULE, schedule_path);
 		}

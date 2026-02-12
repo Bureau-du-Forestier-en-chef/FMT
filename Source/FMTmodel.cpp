@@ -92,6 +92,8 @@ namespace Models{
 	}
 
 	std::vector<Core::FMTschedule>FMTmodel::buildSchedule(const Core::FMTaction& p_action,
+															const FMTmodel& p_BaseModel,
+															const std::string& p_Targetyield,
 															const std::vector<Core::FMTschedule>& p_schedules) const
 	{
 		
@@ -99,6 +101,8 @@ namespace Models{
 		try {
 			Core::FMTmask ActionMask = p_action.getunion(themes);
 			ActionMask.update(themes);
+			const std::string BEFORE = "PRE";
+			const std::string AFTER = "POST";
 			const std::vector<size_t>Static = statictransitionthemes;
 			for (size_t thId = 0; thId < themes.size();++thId)
 				{
@@ -109,9 +113,10 @@ namespace Models{
 				}
 			const int MAX_PERIOD = std::min(p_action.getperiodupperbound(),
 				getparameter(Models::FMTintmodelparameters::LENGTH));
-			const std::string POST_ATTRIBUTE = themes.back().getbaseattributes().back();
+			const std::vector<size_t>AGGREGATE_THEMES = p_BaseModel._GetAggregatesThemes(p_Targetyield);
+			//const std::string POST_ATTRIBUTE = themes.back().getbaseattributes().back();
 			boost::unordered_map<Core::FMTdevelopment, double>ActToRemove;
-			for (const Core::FMTschedule& ACT_SCHEDULE : extendSchedule(p_schedules))
+			for (const Core::FMTschedule& ACT_SCHEDULE : p_schedules)
 			{
 				const int PERIOD = ACT_SCHEDULE.getperiod();
 				Core::FMTschedule baseSchedule(PERIOD, ACT_SCHEDULE, ACT_SCHEDULE.douselock());
@@ -119,14 +124,20 @@ namespace Models{
 					{
 					for (const auto& dev : ACTION.second)
 						{
+						const std::string BASE_THEME = p_BaseModel._GetYieldAttribute(dev.first.getmask(),
+																					p_Targetyield);
+						const std::string BEFORE_THEME = BASE_THEME +BEFORE;
+						const std::string AFTER_THEME = BASE_THEME + AFTER;
 						Core::FMTdevelopment newDev(dev.first);
+						Core::FMTmask newMask = Core::FMTmask(newDev.getmask(),themes);
+						newMask.set(themes.back(), BEFORE_THEME);
+						newDev.setmask(newMask);
 						if (dev.first.getmask().isSubsetOf(ActionMask))
 							{
 							if (PERIOD > MAX_PERIOD)
 								{
-								Core::FMTmask maskToChange = dev.first.getmask();
-								maskToChange.set(themes.back(), POST_ATTRIBUTE);
-								newDev.setmask(maskToChange);
+								newMask.set(themes.back(), AFTER_THEME);
+								newDev.setmask(newMask);
 							}else{
 								double total = 0;
 								for (const double& value : dev.second)
@@ -216,23 +227,121 @@ namespace Models{
 		return newSchedules;
 	}
 
+	std::string FMTmodel::_GetAggregatesWrap(const Core::FMTmask& p_mask,
+		const std::vector<size_t>& p_themes) const
+	{
+		std::string Wrap;
+		try {
+			for (size_t i : p_themes)
+				{
+				std::string subSet = p_mask.get(themes.at(i));
+				if (subSet!="?")
+					{
+					Wrap += subSet;
+					}
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("",
+				"FMTmodel::_GetAggregatesWrap", __LINE__, __FILE__);
+			}
+		return Wrap;
+	}
+
+	std::vector<size_t> FMTmodel::_GetAggregatesThemes(const std::string& p_yieldName) const
+	{
+		std::vector<size_t> aggregateThemes;
+		try {
+			aggregateThemes = getstatictransitionthemes();
+			std::set<size_t>subset;
+			for (const auto& HANDLER :
+				yields.gethandleroftype(Core::FMTyldtype::FMTageyld))
+			{
+				if (HANDLER->containsyield(p_yieldName))
+				{
+					for (size_t i : aggregateThemes)
+					{
+						if (themes.at(i).isaggregate(HANDLER->getmask().get(themes.at(i))))
+							{
+							subset.insert(i);
+							}
+					}
+				}
+			}
+			aggregateThemes = std::vector<size_t>(subset.begin(), subset.end());
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("",
+				"FMTmodel::_GetAggregatesThemes", __LINE__, __FILE__);
+		}
+		return aggregateThemes;
+	}
+
+	std::string FMTmodel::_GetYieldAttribute(const Core::FMTmask& p_devMask, const std::string& p_yieldName) const
+	{
+		try {
+			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_yieldName);
+			for (const auto& YIELD : yields.findsets(
+				Core::FMTmask(std::string(p_devMask),themes)))
+			{
+				if (YIELD->second->containsyield(p_yieldName)&&
+					YIELD->second->gettype() == Core::FMTyldtype::FMTageyld)
+				{
+					return _GetAggregatesWrap(YIELD->second->getmask(), AGGREGATES);
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("",
+				"FMTmodel::_GetYieldAttribute", __LINE__, __FILE__);
+			}
+		return std::string();
+	}
+
+	std::set<std::string>FMTmodel::_GetYieldsStraticAggregates(const std::string& p_yieldName) const
+	{
+		std::set<std::string> selections;
+		try {
+			const std::vector<size_t>AGGREGATE_THEMES = _GetAggregatesThemes(p_yieldName);
+			for (const auto& HANDLER :
+				yields.gethandleroftype(Core::FMTyldtype::FMTageyld))
+			{
+				if (HANDLER->containsyield(p_yieldName) &&
+					HANDLER->gettype() == Core::FMTyldtype::FMTageyld)
+				{
+					selections.insert(
+						_GetAggregatesWrap(HANDLER->getmask(), AGGREGATE_THEMES));
+				}
+
+			}
+
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", 
+				"FMTmodel::_GetYieldsStraticAggregates", __LINE__, __FILE__);
+			}
+		return selections;
+	}
+
 
 	FMTmodel FMTmodel::buildAction(const std::string& p_actionName,
 		const std::string& p_Targetyield) const
 	{
 		FMTmodel newModel(*this);
 		try {
-			const std::vector<std::string>ATTRIBUTES{ "PRE","POST" };
-			newModel.pushTheme("~FMT_THEME_" + p_actionName, ATTRIBUTES);
+			std::vector<std::string>newAttributes;
+			const std::string BEFORE = "PRE";
+			const std::string AFTER = "POST";
+			for (const auto& SUB : _GetYieldsStraticAggregates(p_Targetyield))
+				{
+				newAttributes.push_back(SUB+ BEFORE);
+				newAttributes.push_back(SUB + AFTER);
+				}
+			newModel.pushTheme("~FMT_THEME_" + p_actionName, p_Targetyield,newAttributes);
 			Core::FMTaction newAction(p_actionName,false,true);
 			Core::FMTtransition newTransition(p_actionName);
-			std::string BMask;
-			for (size_t themeId = 0; themeId < newModel.themes.size() - 1; ++themeId)
-			{
-				BMask += "? ";
-			}
-			BMask += ATTRIBUTES.back();
-			Core::FMTmask ActionMask;
+			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_Targetyield);
+			Core::FMTmask ActionMask;			
 			boost::unordered_map<Core::FMTmask,double>YieldMasks;
 			for (const auto& yield : yields)
 				{
@@ -245,7 +354,8 @@ namespace Models{
 						{
 						const Core::FMTmask MASK = AGE_HANDLER->getmask();
 						YieldMasks[MASK] = PEAK;
-						const Core::FMTmask NEW_MASK(std::string(MASK) + " "+*ATTRIBUTES.begin(), newModel.themes);
+						const Core::FMTmask NEW_MASK(std::string(MASK) + " " +
+							_GetAggregatesWrap(MASK, AGGREGATES) + BEFORE, newModel.themes);
 						Core::FMTspec specification;
 						specification.setbounds(Core::FMTperbounds(Core::FMTsection::Action, PEAK, PEAK));
 						if (ActionMask.empty())
@@ -256,7 +366,13 @@ namespace Models{
 							}
 						newAction.push_back(NEW_MASK, specification);
 						Core::FMTfork fork;
-						const Core::FMTtransitionmask TR_MASK(std::string(BMask), newModel.themes, 100.0);
+						Core::FMTmask AfterMask(std::string(MASK) + " " +
+							_GetAggregatesWrap(MASK, AGGREGATES) + AFTER, newModel.themes);
+						for (size_t i = 0; i < themes.size();++i)
+							{
+							AfterMask.set(themes.at(i), "?");
+							}
+						const Core::FMTtransitionmask TR_MASK(std::string(AfterMask), newModel.themes, 100.0);
 						fork.add(TR_MASK);
 						newTransition.push_back(NEW_MASK, fork);
 						}
@@ -273,7 +389,8 @@ namespace Models{
 				if (YieldMasks.find(YIELD_MASK)!= YieldMasks.end())
 					{
 					const size_t TO_SPLIT = static_cast<size_t>(YieldMasks.at(YIELD_MASK)) + 1;
-					const Core::FMTmask NEW_SPLITTED_MASK(std::string(YIELD_MASK) + " "+ ATTRIBUTES.back(), newModel.themes);
+					const Core::FMTmask NEW_SPLITTED_MASK(std::string(YIELD_MASK) + " " +
+						_GetAggregatesWrap(YIELD_MASK, AGGREGATES) + AFTER, newModel.themes);
 					std::unique_ptr<Core::FMTyieldhandler>newSplittedYield(new Core::FMTageyieldhandler(NEW_SPLITTED_MASK));
 					const std::vector<int> BASES = yield.second->getbases();
 					const int SPLIT_DISTANCE = static_cast<int>(std::distance(BASES.begin() + TO_SPLIT, BASES.end()));
@@ -304,7 +421,7 @@ namespace Models{
 		return newModel;
 	}
 
-	void FMTmodel::pushTheme(const std::string& p_themeName,
+	void FMTmodel::pushTheme(const std::string& p_themeName,const std::string& p_yieldName,
 		const std::vector<std::string>& p_attributes)
 	{
 		try {
@@ -313,15 +430,15 @@ namespace Models{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme, "Missing attributes for "+ p_themeName,
 					"FMTmodel::pushTheme", __LINE__, __FILE__);
 				}
+			for (auto& dev : area)
+				{
+				const std::string BASE_THEME = _GetYieldAttribute(dev.getmask(), p_yieldName) + "PRE";
+				dev.setmask(Core::FMTmask(std::string(dev.getmask()) + " " + BASE_THEME, themes));
+				}
 			const size_t THEME_START = themes.back().getstart() + themes.back().size();
 			std::vector<Core::FMTtheme> Oldthemes(themes);
 			themes.emplace_back(p_attributes, themes.size(), THEME_START, p_themeName);
 			const std::string DEFAULT_ATTRIBUTE = "?";
-			const std::string DEFAULT_BASE = *p_attributes.begin();
-			for (auto& dev : area)
-				{
-				dev.setmask(Core::FMTmask(std::string(dev.getmask()) + " " + DEFAULT_BASE,themes));
-				}
 			for (auto& action : actions)
 				{
 				action.unshrink(Oldthemes);

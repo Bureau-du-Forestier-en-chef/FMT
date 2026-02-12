@@ -111,19 +111,25 @@ namespace Models
 		/**
 		 * @brief Build schedule by looking at operability of the actual devs.
 		 * @param[in] p_action the action we want to build a schedule
+		 * @param[in] p_yield names
+		 * @param[in] p_BaseModel model
 		 * @param[in] p_schedules the non extended schedule we want to build on.
 		 * @return a complete schedule of length of the model with actual dev
 		 */
 		std::vector<Core::FMTschedule> buildSchedule(const Core::FMTaction& p_action,
+													const FMTmodel& p_BaseModel,
+													const std::string& p_Targetyield,
 													const std::vector<Core::FMTschedule>& p_schedules) const;
 		
 		// DocString: FMTmodel::pushTheme
 		/**
 		 * @brief Push a new theme and update the whole model with it
 		 * @param[in] p_themeName the Name of the theme to push
+		 * @param[in] p_targetYield yield used for SBW
 		 * @param[in] p_attributes the attributes of the theme ? will be the default of every masks.
 		 */
 		void pushTheme(const std::string& p_themeName,
+			const std::string& p_yieldName,
 			const std::vector<std::string>& p_attributes);
 		// DocString: FMTmodel::aggregateAllActions
 		/**
@@ -919,6 +925,37 @@ namespace Models
 					}
 				}
 			}
+		// DocString: FMTmodel::_GetYieldsStraticAggregates
+		/**
+		 * @brief Get potential new themes attributes for a yields
+		 * @param[in] p_yieldName the yield name
+		 * @return the static aggregates split by -
+		 */
+		std::set<std::string>_GetYieldsStraticAggregates(const std::string& p_yieldName) const;
+		// DocString: FMTmodel::_GetAggregatesWrap
+		/**
+		 * @brief Wrap aggreagates together with - seprator
+		 * @param[in] p_mask to check for aggregates
+		 * @param[in] p_themes themes to check for
+		 * @return wrapper aggregates.
+		 */
+		std::string _GetAggregatesWrap(const Core::FMTmask& p_mask,
+			const std::vector<size_t>& p_themes) const;
+		// DocString: FMTmodel::_GetAggregatesThemes
+		/**
+		 * @brief select the yields containing p_yieldName and return the theme if of the aggregates in the mask
+		 * @param[in]p_yieldName yield ot get
+		 * @return id of the themes
+		 */
+		std::vector<size_t> _GetAggregatesThemes(const std::string& p_yieldName) const;
+		// DocString: FMTmodel::_GetYieldAttribute
+		/**
+		 * @brief Get the yield mask for a given dev containing p_yieldName
+		 * @param[in]p_devMask
+		 * @param[in]p_yieldName yield ot get
+		 * @return attribute
+		 */
+		std::string _GetYieldAttribute(const Core::FMTmask& p_devMask,const std::string& p_yieldName) const;
     };
 // DocString: FMTmodelcomparator
 /**
