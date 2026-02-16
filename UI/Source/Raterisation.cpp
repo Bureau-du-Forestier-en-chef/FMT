@@ -12,7 +12,7 @@ bool Wrapper::FMTForm::Raterisation(System::String^ fichierPri, int scenario, Sy
 {
 	try
 	{
-		const std::vector<Core::FMTtheme> themes = Cache->getmodel(scenario).getthemes();
+		const std::vector<Core::FMTtheme> themes = FMTFormCache::GetInstance()->getmodel(scenario).getthemes();
 		Parser::FMTareaparser areaparser;
 		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(
 			msclr::interop::marshal_as<std::string>(fichierShp),

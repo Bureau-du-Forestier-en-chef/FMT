@@ -10,7 +10,9 @@
 #include "FMTFormCache.h"
 #include "FMTdefaultlogger.h"
 
-bool Wrapper::FMTForm::InitialAreaVariability(
+namespace Wrapper{
+
+bool FMTForm::InitialAreaVariability(
 	System::String^ fichierPri,
 	int scenario, 
 	int solver,
@@ -26,9 +28,9 @@ bool Wrapper::FMTForm::InitialAreaVariability(
 {
 	try
 	{
-		FMTFormLogger* logger = Cache->getformlogger();
+		FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 		*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
-		Models::FMTlpmodel optimizationmodel(Cache->getmodel(scenario), static_cast<Models::FMTsolverinterface>(solver));
+		Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getmodel(scenario), static_cast<Models::FMTsolverinterface>(solver));
 		*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getname() << "\n";
 		*logger << "FMT Event Spatialy Explicit Simulation c++ - > Intégration des contraintes sélectionnées" << "\n";
 		optimizationmodel.setconstraints(ObtenirArrayContraintesSelectionnees(optimizationmodel.getconstraints(), contraintes));
@@ -118,9 +120,11 @@ bool Wrapper::FMTForm::InitialAreaVariability(
 	}
 	catch (...)
 	{
-		raisefromcatch("", "Wrapper::FMTForm::InitialAreaVariability", __LINE__, __FILE__);
+		raisefromcatch("", "FMTForm::InitialAreaVariability", __LINE__, __FILE__);
 		return false;
 	}	
 
 	return true;
+}
+
 }

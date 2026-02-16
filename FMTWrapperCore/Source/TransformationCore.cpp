@@ -42,7 +42,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
 		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::TransformationCore::aggregateAllActions", __LINE__, __FILE__);
 	}
 	return aggregatedModel;
@@ -79,7 +79,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
 		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::TransformationCore::splitActions", __LINE__, __FILE__);
 	}
 	return SPLITTED_MODEL;
@@ -110,7 +110,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		}
 	}
 	catch (...) {
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
 		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::TransformationCore::buildAction", __LINE__, __FILE__);
 	}
 	return BUILDED_MODEL;

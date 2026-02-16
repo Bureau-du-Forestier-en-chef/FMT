@@ -43,7 +43,7 @@ namespace Wrapper
 		parser->passinlogger(logger);
 		parser->passinexceptionhandler(handler);
 		cachelog = parser->getLogger();
-		cacheexceptionhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(parser->getExceptionHandler());
+		cacheexceptionhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(parser->GetExceptionHandler());
 		
 
 	}
