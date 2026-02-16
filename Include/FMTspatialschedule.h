@@ -554,7 +554,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 
 		static double _GetExponentialFactorization(double p_value, double p_factor);
 
-		
+		double _GetConstraintFloorValue(double p_inValue) const;
 
 		static const int BUFFER_LOOKUP = 1;
 		

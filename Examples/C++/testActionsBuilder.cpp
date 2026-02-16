@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
 			//OUTPUT_DIRECTORY = "../../tests/testActionsBuilder/";
 		}
 		else {
-			PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
-			SCENARIO = "20_Regl_prov";
+			PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/01_Valide/01_Valide/PC_9936_U01272_2028_MODB01.pri";
+			SCENARIO = "120_RegProv_apsp";
 			TARGET_YIELD = "YV_S_MORT";
 			ACTION_NAME = "TBE";
 			//OUTPUT_DIRECTORY = "../outputs/";

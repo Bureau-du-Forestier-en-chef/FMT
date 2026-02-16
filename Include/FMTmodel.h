@@ -953,9 +953,11 @@ namespace Models
 		 * @brief Get the yield mask for a given dev containing p_yieldName
 		 * @param[in]p_devMask
 		 * @param[in]p_yieldName yield ot get
+		 * @param[in]p_AggregatedThemes aggregated themes
 		 * @return attribute
 		 */
-		std::string _GetYieldAttribute(const Core::FMTmask& p_devMask,const std::string& p_yieldName) const;
+		std::string _GetYieldAttribute(const Core::FMTmask& p_devMask,
+			const std::string& p_yieldName, const std::vector<size_t>& p_AggregatedThemes) const;
     };
 // DocString: FMTmodelcomparator
 /**

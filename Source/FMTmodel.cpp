@@ -116,6 +116,7 @@ namespace Models{
 			const std::vector<size_t>AGGREGATE_THEMES = p_BaseModel._GetAggregatesThemes(p_Targetyield);
 			//const std::string POST_ATTRIBUTE = themes.back().getbaseattributes().back();
 			boost::unordered_map<Core::FMTdevelopment, double>ActToRemove;
+			const std::vector<size_t> AGGREGATES = p_BaseModel._GetAggregatesThemes(p_Targetyield);
 			for (const Core::FMTschedule& ACT_SCHEDULE : p_schedules)
 			{
 				const int PERIOD = ACT_SCHEDULE.getperiod();
@@ -125,7 +126,7 @@ namespace Models{
 					for (const auto& dev : ACTION.second)
 						{
 						const std::string BASE_THEME = p_BaseModel._GetYieldAttribute(dev.first.getmask(),
-																					p_Targetyield);
+																					p_Targetyield, AGGREGATES);
 						const std::string BEFORE_THEME = BASE_THEME +BEFORE;
 						const std::string AFTER_THEME = BASE_THEME + AFTER;
 						Core::FMTdevelopment newDev(dev.first);
@@ -237,6 +238,7 @@ namespace Models{
 				std::string subSet = p_mask.get(themes.at(i));
 				if (subSet!="?")
 					{
+					std::replace(subSet.begin(), subSet.end(), '!', 'N');
 					Wrap += subSet;
 					}
 				}
@@ -245,6 +247,7 @@ namespace Models{
 			_exhandler->raisefromcatch("",
 				"FMTmodel::_GetAggregatesWrap", __LINE__, __FILE__);
 			}
+
 		return Wrap;
 	}
 
@@ -277,17 +280,18 @@ namespace Models{
 		return aggregateThemes;
 	}
 
-	std::string FMTmodel::_GetYieldAttribute(const Core::FMTmask& p_devMask, const std::string& p_yieldName) const
+	std::string FMTmodel::_GetYieldAttribute(const Core::FMTmask& p_devMask, 
+							const std::string& p_yieldName,
+							const std::vector<size_t>& p_AggregatedThemes) const
 	{
 		try {
-			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_yieldName);
 			for (const auto& YIELD : yields.findsets(
 				Core::FMTmask(std::string(p_devMask),themes)))
 			{
 				if (YIELD->second->containsyield(p_yieldName)&&
 					YIELD->second->gettype() == Core::FMTyldtype::FMTageyld)
 				{
-					return _GetAggregatesWrap(YIELD->second->getmask(), AGGREGATES);
+					return _GetAggregatesWrap(YIELD->second->getmask(), p_AggregatedThemes);
 				}
 			}
 		}catch (...)
@@ -430,9 +434,10 @@ namespace Models{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme, "Missing attributes for "+ p_themeName,
 					"FMTmodel::pushTheme", __LINE__, __FILE__);
 				}
+			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_yieldName);
 			for (auto& dev : area)
 				{
-				const std::string BASE_THEME = _GetYieldAttribute(dev.getmask(), p_yieldName) + "PRE";
+				const std::string BASE_THEME = _GetYieldAttribute(dev.getmask(), p_yieldName, AGGREGATES) + "PRE";
 				dev.setmask(Core::FMTmask(std::string(dev.getmask()) + " " + BASE_THEME, themes));
 				}
 			const size_t THEME_START = themes.back().getstart() + themes.back().size();

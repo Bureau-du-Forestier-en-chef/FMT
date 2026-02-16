@@ -66,8 +66,8 @@ namespace Wrapper
 			const std::string OUTPUT_PATH = msclr::interop::marshal_as<std::string>(cheminSorties);
 			System::IO::DirectoryInfo^ parentDirectory = System::IO::Directory::GetParent(cheminSorties);
 			System::String^ directoryFullName = parentDirectory->FullName;
-			const std::string WORKING_DIRECTORY = msclr::interop::marshal_as<std::string>(directoryFullName);
-			OptimizationModel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, WORKING_DIRECTORY);
+			//const std::string WORKING_DIRECTORY = msclr::interop::marshal_as<std::string>(directoryFullName);
+			//OptimizationModel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, WORKING_DIRECTORY);
 			OptimizationModel.setparameter(Models::FMTintmodelparameters::LENGTH, periodes);
 			OptimizationModel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, p_MaxMoves);
 			OptimizationModel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, p_MaxAcceptedMoves);
