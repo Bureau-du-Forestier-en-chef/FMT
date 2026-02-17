@@ -27,6 +27,11 @@ namespace FMTXLL
             lbox.IntegralHeight = false; 
             lbox.ScrollAlwaysVisible = true;
             lbox.HorizontalScrollbar = true;
+            if (lbox.Items.Count > 0)
+                {
+                lbox.TopIndex = lbox.Items.Count - 1;
+                lbox.SelectedIndex = lbox.Items.Count - 1;
+            }
             Controls.Add(lbox);
         }
 
