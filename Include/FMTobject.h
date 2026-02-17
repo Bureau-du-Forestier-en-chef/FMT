@@ -55,12 +55,12 @@ class FMTEXPORT FMTobject
 		@return the valid FMTlogger
 		*/
 		static Logging::FMTlogger* getLogger();
-		// DocString: FMTobject::getExceptionHandler
+		// DocString: FMTobject::GetExceptionHandler
 		/**
 		@brief get a pointer to the actual exception handler.
 		@return the valid FMTexceptionhandler;
 		*/
-		static Exception::FMTexceptionhandler* getExceptionHandler();
+		static Exception::FMTexceptionhandler* GetExceptionHandler();
 		// DocString: FMTobject::getruntimelocation
 		/**
 		This function return the location of the FMT shared library location.

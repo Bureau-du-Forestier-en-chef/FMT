@@ -77,7 +77,7 @@ namespace Core
 		return _logger.get();
 	}
 
-	Exception::FMTexceptionhandler* FMTobject::getExceptionHandler()
+	Exception::FMTexceptionhandler* FMTobject::GetExceptionHandler()
 	{
 		return _exhandler.get();
 	}

@@ -346,6 +346,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 						 const int& constraintid) const;
 
 		int GetThemeTarget() const;
+		double GetWeight() const;
 	private:
 		// DocString: FMTconstraint::serialize
 	/**

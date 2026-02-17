@@ -20,25 +20,28 @@ namespace Wrapper
 {
 	class FMTFormLogger;
 	class FMTexceptionhandlerwarning;
-	public class FMTformCache
+	class FMTFormCache
 	{
-		/*Exception::FMTexceptionhandler* ExceptHandler;*/
-		Parser::FMTmodelparser* ModelParser;
-		std::vector<std::unique_ptr<Models::FMTmodel>> Models;
-		Logging::FMTlogger* Logger; 
-		Exception::FMTexceptionhandler* getExceptionHandler() const;
 		public:
-			FMTformCache();
-			~FMTformCache();
+			~FMTFormCache()=default;
 			const Models::FMTmodel& getmodel(const int& index) const;
-			FMTexceptionhandlerwarning* getformhandler();
-			FMTFormLogger* getformlogger();
+			FMTexceptionhandlerwarning* GetFormHandler();
+			Exception::FMTexceptionhandler* GetExceptionHandler() const;
+			FMTFormLogger* GetFormLogger();
+			static FMTFormCache* GetInstance();
+			bool empty() const;
 			void push_back(const Models::FMTmodel& model);
 			void erase(const int& index);
 			void clear();
-			void initializeexceptionhandler(const int& maxwarnings, const std::vector<Exception::FMTexc>& warning);
-			void initializelogger(const std::string& filename,System::IntPtr intptrptr);
-			bool empty() const;
+			void InitializeExceptionHandler(const int& maxwarnings, const std::vector<Exception::FMTexc>& warning);
+			void InitializeLogger(const std::string& filename,System::IntPtr intptrptr);
+			FMTFormCache(const FMTFormCache& rhs) = delete;
+			FMTFormCache& operator =(const FMTFormCache& rhs) = delete;
+		private:
+			FMTFormCache()=default;
+			std::vector<std::unique_ptr<Models::FMTmodel>> m_Models;
+			static std::unique_ptr<FMTFormCache> m_Instance;
+			
 			
 
 	};

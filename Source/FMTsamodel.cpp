@@ -1128,14 +1128,14 @@ namespace Models
                         }
                     _DoFactorization();
                     _LogSolutionStatus();
+                    _ResetTabouMoves();
 					++m_TotalMoves;
 					}
                 _UpdateFailedMoveCount();
                 _LogCycleStatus();
                 _WriteDisrturbances();
 				_CoolDown();
-                _ResetTabouMoves();
-				}
+               	}
             LogConstraintsFactors();
             LogConstraintsInfeasibilities();
             *_logger << "Generator final state: " << m_generator() << "\n";

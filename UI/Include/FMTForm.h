@@ -16,37 +16,12 @@ namespace Models{
 }
 namespace Wrapper
 {
-	class FMTformCache;
 
 	public ref class FMTForm
 	{
-	private:
-		FMTformCache* Cache;
-		void InscrireLigneFichierTexte(System::String^ nomFichier, System::String^ message, bool indicateurFeedback, bool nouveaufichier);
-		std::vector<Core::FMTconstraint> ObtenirArrayContraintes(int indexScenario);
-		std::vector<Core::FMTconstraint> ObtenirArrayContraintesSelectionnees(std::vector<Core::FMTconstraint> contraitesBase, System::Collections::Generic::List<System::String^>^ contraintesSelection);
-		Core::FMToutput ObtenirOutputSelectionnee(std::vector<Core::FMToutput> outputsBase, System::String^ outputSelection);
-		std::vector<Core::FMToutput> ObtenirArrayOutputsSelectionnees(std::vector<Core::FMToutput> outputsBase, System::Collections::Generic::List<System::String^>^ outputsSelection);
-		//std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(System::Collections::Generic::List<System::Collections::Generic::List<System::String^>^>^ listeParametres, System::String^ fichierShp, Core::FMTmask selectedmask, std::vector<Core::FMTtheme> presolvedthemes, std::vector<Core::FMTtheme> postsolvedthemes, int numeroTheme, int startingperiod, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock, System::Collections::Generic::List<int>^ listeWarnings);
-		delegate void managedFeed(const char*);
-		managedFeed^ managed;
-		System::IntPtr unmanaged;
-		void ToFeedBack(const char* message);
-		void raisefromcatch(std::string text,
-			const std::string& method, const int& line, const std::string& fil);
-		std::vector<Core::FMTschedule> ObtenirSEQ(System::String^ nomFichierPri, int indexScenario);
-		void RapportdeBris(const Models::FMTsemodel& semodel);
-		void RapportdeCarboneSpatial(const Models::FMTsemodel& semodel, const int& nombredeperiodes, const std::vector<Core::FMTschedule>& schedules);
-		void EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, System::Collections::Generic::List<int>^ growththemes, const bool& incarbon);
-		void EcritureDesEvenements(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, const bool& incarbon);
-		std::vector<Core::FMToutput>  EcritureDesOutputs(const Models::FMTsemodel& semodel, System::Collections::Generic::List<System::String^>^ outputs, const int& nombredeperiodes, const bool& incarbon);
-		void EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semodel, const std::vector<Core::FMToutput>& outputs, const int& sortiemin, const int& sortiemax, System::String^ localisation);
-		void EcritureDesPredicteurs(const Models::FMTsemodel& semodel, const std::string& rastpath, const int& periodes, System::Collections::Generic::List<System::String^>^ predictoryields);
 	public:
 		event System::EventHandler^ FeedBack;
 		event System::EventHandler^ RetourJson;
-		FMTForm();
-		~FMTForm();
 		bool Cache_AjouterScenarios(System::String^ fichierPriSystem, System::String^ scenarioSystem);
 		void Cache_Vider();
 		void Cache_InitialiserModelParser(System::Collections::Generic::List<int>^ listeWarnings, int maxWarnings);
@@ -181,6 +156,26 @@ namespace Wrapper
 		*@return Retourne une liste de masks.
 		*/
 		System::Collections::Generic::List<System::String^>^ getAllMasks(const int p_modelIndex, const int p_periods, System::Collections::Generic::List<int>^ p_themesNumber, System::String^ cheminRasters);
+	private:
+		void InscrireLigneFichierTexte(System::String^ nomFichier, System::String^ message, bool indicateurFeedback, bool nouveaufichier);
+		std::vector<Core::FMTconstraint> ObtenirArrayContraintes(int indexScenario);
+		std::vector<Core::FMTconstraint> ObtenirArrayContraintesSelectionnees(std::vector<Core::FMTconstraint> contraitesBase, System::Collections::Generic::List<System::String^>^ contraintesSelection);
+		Core::FMToutput ObtenirOutputSelectionnee(std::vector<Core::FMToutput> outputsBase, System::String^ outputSelection);
+		std::vector<Core::FMToutput> ObtenirArrayOutputsSelectionnees(std::vector<Core::FMToutput> outputsBase, System::Collections::Generic::List<System::String^>^ outputsSelection);
+		delegate void managedFeed(const char*);
+		managedFeed^ managed;
+		System::IntPtr unmanaged;
+		void ToFeedBack(const char* message);
+		void raisefromcatch(std::string text,
+			const std::string& method, const int& line, const std::string& fil);
+		std::vector<Core::FMTschedule> ObtenirSEQ(System::String^ nomFichierPri, int indexScenario);
+		void RapportdeBris(const Models::FMTsemodel& semodel);
+		void RapportdeCarboneSpatial(const Models::FMTsemodel& semodel, const int& nombredeperiodes, const std::vector<Core::FMTschedule>& schedules);
+		void EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, System::Collections::Generic::List<int>^ growththemes, const bool& incarbon);
+		void EcritureDesEvenements(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, const bool& incarbon);
+		std::vector<Core::FMToutput>  EcritureDesOutputs(const Models::FMTsemodel& semodel, System::Collections::Generic::List<System::String^>^ outputs, const int& nombredeperiodes, const bool& incarbon);
+		void EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semodel, const std::vector<Core::FMToutput>& outputs, const int& sortiemin, const int& sortiemax, System::String^ localisation);
+		void EcritureDesPredicteurs(const Models::FMTsemodel& semodel, const std::string& rastpath, const int& periodes, System::Collections::Generic::List<System::String^>^ predictoryields);
 	};
 }
 #endif

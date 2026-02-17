@@ -841,7 +841,9 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 				case Core::FMTconstrainttype::FMTspatialsize:
 						{
 						returnvalue += m_events.EvaluateSize(ACTION_USED,
-							period, lower, upper, TEST_LOWER_BOUND);
+							period, 
+							static_cast<size_t>(lower), static_cast<size_t>(upper),
+							TEST_LOWER_BOUND);
 						break;
 						}
 					case Core::FMTconstrainttype::FMTspatialadjacency:
@@ -883,7 +885,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 		{
 		_exhandler->raisefromcatch("", "FMTSpatialSchedule::evaluatespatialconstraint", __LINE__, __FILE__);
 		}
-	return returnvalue;
+	return returnvalue + _GetConstraintFloorValue(returnvalue);
 	}
 
 
@@ -907,6 +909,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 			else{
 				value = this->EvaluateSpatialConstraint(CONSTRAINT, 
 														p_Graphs);
+
 				}
 		}catch (...)
 		{
@@ -2412,6 +2415,16 @@ double FMTSpatialSchedule::_GetExponentialFactorization(double p_value, double p
 	}
 	return returned;
 }
+
+double FMTSpatialSchedule::_GetConstraintFloorValue(double p_inValue) const
+	{
+	double returned = 0;
+	if (p_inValue>FMT_DBL_TOLERANCE)
+		{
+		returned = static_cast<double>(constraintsfactor.size() - 1);
+		}
+	return returned;
+	}
 
 void FMTSpatialSchedule::SetSpread(
 	std::vector<FMTSpatialSchedule::EventSpread>::const_iterator p_first,

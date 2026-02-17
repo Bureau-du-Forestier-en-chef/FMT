@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <string>
-#include "FMTmodelparser.h"
 #include "FMTexceptionhandlerwarning.h"
 #include "FMTdefaultexceptionhandler.h"
 #include <msclr\marshal_cppstd.h>
@@ -8,140 +7,143 @@
 #include "FMTmodel.h"
 #include "FMTFormCache.h"
 
-Wrapper::FMTformCache::FMTformCache() : ModelParser(), Models(), Logger()
+namespace Wrapper
 {
+std::unique_ptr<FMTFormCache> FMTFormCache::m_Instance = std::unique_ptr<FMTFormCache>(nullptr);
 
-}
-
-
-
-Wrapper::FMTformCache::~FMTformCache() = default;
-
-const Models::FMTmodel& Wrapper::FMTformCache::getmodel(const int& index) const
+FMTFormCache* FMTFormCache::GetInstance()
 	{
-	try {
-		if (static_cast<size_t>(index)>=Models.size())
+	if (!m_Instance)
 		{
-			getExceptionHandler()->raise(
-				Exception::FMTexc::FMTrangeerror, "no scenario for index " + std::to_string(index) + " in cache ",
-				"Wrapper::FMTformCache::getmodel", __LINE__, __FILE__);
+		m_Instance = std::unique_ptr<FMTFormCache>(new FMTFormCache());
 		}
-
-	}catch (...)
-		{
-		getExceptionHandler()->raisefromcatch("", "Wrapper::FMTformCache::getmodel", __LINE__, __FILE__);
-		}
-	return *Models.at(index).get();
+	return m_Instance.get();
 	}
 
 
-Wrapper::FMTexceptionhandlerwarning* Wrapper::FMTformCache::getformhandler()
+const Models::FMTmodel& FMTFormCache::getmodel(const int& index) const
+	{
+	try {
+		if (static_cast<size_t>(index)>= m_Models.size())
+		{
+			GetExceptionHandler()->raise(
+				Exception::FMTexc::FMTrangeerror, "no scenario for index " + std::to_string(index) + " in cache ",
+				"FMTFormCache::getmodel", __LINE__, __FILE__);
+		}
+
+	}catch (...)
+		{
+		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::getmodel", __LINE__, __FILE__);
+		}
+	return *m_Models.at(index).get();
+	}
+
+
+FMTexceptionhandlerwarning* FMTFormCache::GetFormHandler()
 {
-	FMTexceptionhandlerwarning* wwarptr = dynamic_cast<FMTexceptionhandlerwarning*>(getExceptionHandler());
+	FMTexceptionhandlerwarning* wwarptr = dynamic_cast<FMTexceptionhandlerwarning*>(GetExceptionHandler());
 	try {
 		if (!wwarptr)
 		{
-			getExceptionHandler()->raise(
+			GetExceptionHandler()->raise(
 				Exception::FMTexc::FMTrangeerror, "no valid FMTexceptionhandlerwarning in cache ",
-				"Wrapper::FMTformCache::getformhandler", __LINE__, __FILE__);
+				"FMTFormCache::GetFormHandler", __LINE__, __FILE__);
 		}
 	}catch (...)
 		{
-		getExceptionHandler()->raisefromcatch("", "Wrapper::FMTformCache::getformhandler", __LINE__, __FILE__);
+		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::GetFormHandler", __LINE__, __FILE__);
 		}
 	return wwarptr;
 }
-Wrapper::FMTFormLogger*  Wrapper::FMTformCache::getformlogger()
+FMTFormLogger*  FMTFormCache::GetFormLogger()
 {
-	FMTFormLogger* loggerptr = dynamic_cast<FMTFormLogger*>(Logger);
+	FMTFormLogger* loggerptr = dynamic_cast<FMTFormLogger*>(Models::FMTmodel::getLogger());
 	try{
 		if (!loggerptr)
 		{
-			getExceptionHandler()->raise(
+			GetExceptionHandler()->raise(
 				Exception::FMTexc::FMTrangeerror, "no valid FMTexceptionhandlerwarning in cache ",
-				"Wrapper::FMTformCache::getformlogger", __LINE__, __FILE__);
+				"FMTFormCache::GetFormLogger", __LINE__, __FILE__);
 		}
 	}catch (...)
 	{
-		getExceptionHandler()->raisefromcatch("", "Wrapper::FMTformCache::getformlogger", __LINE__, __FILE__);
+		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::GetFormLogger", __LINE__, __FILE__);
 	}
 	return loggerptr;
 }
 
 
-void Wrapper::FMTformCache::push_back(const Models::FMTmodel& model)
+void FMTFormCache::push_back(const Models::FMTmodel& model)
 {
 	try {
-		Models.push_back(std::move(std::unique_ptr<Models::FMTmodel>(new Models::FMTmodel(model))));
+		m_Models.push_back(std::move(std::unique_ptr<Models::FMTmodel>(new Models::FMTmodel(model))));
 	}catch (...)
 		{
-			getExceptionHandler()->raisefromcatch("", "Wrapper::FMTformCache::push_back", __LINE__, __FILE__);
+			GetExceptionHandler()->raisefromcatch("", "FMTFormCache::push_back", __LINE__, __FILE__);
 		}
 		
 }
-void Wrapper::FMTformCache::erase(const int& index)
+void FMTFormCache::erase(const int& index)
 {
 	try{
-		Models.erase(Models.begin() + index);
+		m_Models.erase(m_Models.begin() + index);
 }catch (...)
 	{
-		getExceptionHandler()->raisefromcatch("", "Wrapper::FMTformCache::erase", __LINE__, __FILE__);
+		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::erase", __LINE__, __FILE__);
 	}
 }
-void Wrapper::FMTformCache::clear()
+void FMTFormCache::clear()
 {
 	try{
-		Models.clear();
+		m_Models.clear();
 	}catch (...)
 	{
-		getExceptionHandler()->raisefromcatch("", "Wrapper::FMTformCache::clear", __LINE__, __FILE__);
+		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::clear", __LINE__, __FILE__);
 	}
 }
 
-void Wrapper::FMTformCache::initializeexceptionhandler(const int& maxwarnings,const std::vector<Exception::FMTexc>& warnings)
+void FMTFormCache::InitializeExceptionHandler(const int& maxwarnings,const std::vector<Exception::FMTexc>& warnings)
 	{
 	try {
-		Parser::FMTmodelparser modelparser;
-		if (getExceptionHandler())
+		if (GetExceptionHandler())
 		{
-			FMTexceptionhandlerwarning* old = dynamic_cast<FMTexceptionhandlerwarning*>(getExceptionHandler());
+			FMTexceptionhandlerwarning* old = dynamic_cast<FMTexceptionhandlerwarning*>(GetExceptionHandler());
 			old->ResetThread();
 		}
 
 		std::unique_ptr<Exception::FMTexceptionhandler> handler(new FMTexceptionhandlerwarning(maxwarnings));
-		modelparser.passinexceptionhandler(handler);		
-		modelparser.seterrorstowarnings(warnings);
-		modelparser.setTerminateStack();
-		modelparser.setAbortStack();
-		ModelParser = &modelparser;
+		Models::FMTmodel useLessModel;
+		useLessModel.passinexceptionhandler(handler);
+		useLessModel.seterrorstowarnings(warnings);
+		useLessModel.setTerminateStack();
+		useLessModel.setAbortStack();
 	}
 	catch (...)
 		{
-		getExceptionHandler()->raisefromcatch("", "Wrapper::FMTformCache::initializeexceptionhandler", __LINE__, __FILE__);
+		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::InitializeExceptionHandler", __LINE__, __FILE__);
 		}
 	}
 
-void Wrapper::FMTformCache::initializelogger(const std::string& filename, System::IntPtr intptrptr)
+void FMTFormCache::InitializeLogger(const std::string& filename, System::IntPtr intptrptr)
 	{
 	try{
-	std::unique_ptr<Logging::FMTlogger> logger(new Wrapper::FMTFormLogger(filename,(logfunc)(void*)intptrptr));
-	Parser::FMTmodelparser Modelparser;
-	Modelparser.passinlogger(logger);
-	Logger = Modelparser.getLogger();
+	std::unique_ptr<Logging::FMTlogger> logger(new FMTFormLogger(filename,(logfunc)(void*)intptrptr));
+	Models::FMTmodel useLessModel;
+	useLessModel.passinlogger(logger);
 	}catch (...)
 		{
-		getExceptionHandler()->raisefromcatch("", "Wrapper::FMTformCache::initializelogger", __LINE__, __FILE__);
+		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::InitializeLogger", __LINE__, __FILE__);
 		}
 	}
 
-Exception::FMTexceptionhandler* Wrapper::FMTformCache::getExceptionHandler() const
+Exception::FMTexceptionhandler* FMTFormCache::GetExceptionHandler() const
 {
-	return ModelParser->getExceptionHandler();
+	return Models::FMTmodel::GetExceptionHandler();
 }
 
-bool Wrapper::FMTformCache::empty() const
+bool FMTFormCache::empty() const
 	{
-	return Models.empty();
+	return m_Models.empty();
 	}
 
-
+}

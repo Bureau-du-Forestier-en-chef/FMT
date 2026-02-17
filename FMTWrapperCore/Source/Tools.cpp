@@ -29,7 +29,7 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
 		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getMaxAge", __LINE__, __FILE__);
 	}
 	return result;
@@ -44,7 +44,7 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
 		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getYield", __LINE__, __FILE__);
 	}
 	return result;
@@ -100,7 +100,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
 		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getAllMasks", __LINE__, __FILE__);
 	}
 	return masks;
