@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08251/PC_9943_U08651_2028_MODB01.pri";
-			scenario = "120_RegProv_apsp";
-			length = 10; 
-			objectivevalue = 162921918;
+			primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02002099\\PC_3753_09551_3FF_V06\\PC_3753_09551_3FF_V06.pri";
+			scenario = "scenario_4";
+			length = 20; 
+			objectivevalue = 14406932.651803;
 		}
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();

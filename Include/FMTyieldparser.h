@@ -54,6 +54,8 @@ class FMTEXPORT FMTyieldparser : public FMTparser
 		// DocString: FMTyieldparser::rxpredictor
 		///regex to capture _pred keyword.
 		const static boost::regex rxpredictor;
+		///regex to capture two keyword for a solo yield declaration.
+		const static boost::regex rxyieldsolo;
 		// DocString: FMTyieldparser::getyldtype
 		/**
 		Returns the yield type based on the string of the yield type.

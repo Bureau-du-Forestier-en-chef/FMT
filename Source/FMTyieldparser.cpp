@@ -36,8 +36,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldmodelUnitCoverage.h"
 
 
-
-
 namespace Parser{
 
 const boost::regex FMTyieldparser::rxyieldtype = boost::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
@@ -45,6 +43,7 @@ const boost::regex FMTyieldparser::rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s
 const boost::regex FMTyieldparser::rxeqs = boost::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
 const boost::regex FMTyieldparser::rxdiscount = boost::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
 const boost::regex FMTyieldparser::rxpredictor = boost::regex("^(.+)(_PRED)(\\()(.+)(\\))");
+const boost::regex FMTyieldparser::rxyieldsolo = boost::regex("^\\s*(?!\\d+\\b)(\\S+)\\s+(\\S+)\\s*$", boost::regex_constants::ECMAScript);
 
 
 FMTyieldparser::FMTyieldparser():FMTparser()
@@ -718,6 +717,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 						else if (actualyield->second->gettype() == Core::FMTyldtype::FMTcomplexyld)
 						{
 							boost::smatch kmatch;
+							boost::smatch kmatch2;
 							const size_t should_be_equation = line.find_first_of("+-*/");
 							bool simple_match = boost::regex_search(line, kmatch, rxcomplex);
 							if (simple_match || should_be_equation != std::string::npos)
@@ -793,10 +793,14 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								{
 									setoveridedylds(yields, actualyield,yldname);
 								}
-								
-								
-
 							}
+
+							else if (boost::regex_search(line, kmatch2, rxyieldsolo) &&
+								yields.isYld(kmatch2[2], true))
+							{
+								actualyield->second->push_data(kmatch2[1], geteq(kmatch2[2], constants, yields, themes));
+							}
+
 							else {
 								_exhandler->raise(Exception::FMTexc::FMTunsupported_yield,
 									line + " at line " + std::to_string(m_line), "FMTyieldparser::read", __LINE__, __FILE__, m_section);

@@ -14,8 +14,8 @@ int main(int argc, char* argv[])
 		primarylocation = std::string(argv[1]);
 		scenarios = std::vector<std::string>(1, std::string(argv[2]));
 	}else {
-		primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\FMT_305\\CC_V2\\Mod_cc_v2.pri";
-		scenarios = std::vector<std::string> (1, "strategique_CC_modified");
+		primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02002099\\PC_3753_09551_3FF_V06\\PC_3753_09551_3FF_V06.pri";
+		scenarios = std::vector<std::string> (1, "scenario_4");
 	}
 
 	//const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
