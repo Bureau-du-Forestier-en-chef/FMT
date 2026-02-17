@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ExcelDna.Integration;
+﻿using ExcelDna.Integration;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security.Policy;
+using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
-using System.IO;
 
 
 
@@ -61,8 +62,6 @@ namespace FMTXLL
         public static void reportAndCrash(string message,bool closeexcel=true,string windowname = "Erreur!")
         {
             System.Windows.Forms.Form window = new ErrorWindow(message, windowname);
-            window.AutoScroll = true;
-            window.AutoSize = false;
             window.ShowDialog();
             if (closeexcel)
             {

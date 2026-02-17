@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace FMTXLL
 {
@@ -7,21 +9,24 @@ namespace FMTXLL
     {
         public ErrorWindow(string message, string windowname)
         {
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
             IntPtr Hicon = FMTExcel.Properties.Resources.LogoFMT.GetHicon();
             Icon newIcon = Icon.FromHandle(Hicon);
             Icon = newIcon;
             Text = windowname;
             System.Windows.Forms.ListBox lbox = new System.Windows.Forms.ListBox();
-            int width = 0;
             foreach (string value in message.Split('\n'))
             {
-                width = Math.Max(width, value.Length * 10);
                 lbox.Items.Add(value);
             }
-            width = Math.Max(500, width + 10);
-            lbox.Size = new System.Drawing.Size(width, 700);
-            ClientSize = new System.Drawing.Size(width, 700);
+            MinimumSize = new System.Drawing.Size(windowname.Count(),
+                                            lbox.Items.Count);
+            lbox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            AutoSize = false;
+            lbox.Dock = DockStyle.Fill;
+            lbox.IntegralHeight = false; 
+            lbox.ScrollAlwaysVisible = true;
+            lbox.HorizontalScrollbar = true;
             Controls.Add(lbox);
         }
 
