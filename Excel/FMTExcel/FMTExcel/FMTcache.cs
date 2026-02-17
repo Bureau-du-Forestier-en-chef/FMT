@@ -61,6 +61,8 @@ namespace FMTXLL
         public static void reportAndCrash(string message,bool closeexcel=true,string windowname = "Erreur!")
         {
             System.Windows.Forms.Form window = new ErrorWindow(message, windowname);
+            window.AutoScroll = true;
+            window.AutoSize = false;
             window.ShowDialog();
             if (closeexcel)
             {
