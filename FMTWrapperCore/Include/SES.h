@@ -11,6 +11,7 @@ namespace Core {
     class FMToutput;
     class FMTtheme;
     class FMTaction;
+    class FMTmodel;
 }
 
 namespace Models {
@@ -36,7 +37,7 @@ namespace FMTWrapperCore
             double totalRatio;
             std::map<std::string, double> actionRatios; // actionName -> ratio
         };
-        
+
         std::vector<PeriodData> periods;
     };
 
@@ -58,7 +59,7 @@ namespace FMTWrapperCore
             std::string outputName;
             std::map<int, double> periodValues; // period -> value
         };
-        
+
         std::vector<OutputResult> results;
         std::vector<Core::FMToutput> outputObjects; // Pour usage ultérieur
     };
@@ -74,7 +75,7 @@ namespace FMTWrapperCore
             int nodeIndex;
             std::vector<double> values;
         };
-        
+
         std::vector<std::string> predictorNames;
         std::vector<PredictorNode> nodes;
     };
@@ -111,24 +112,24 @@ namespace FMTWrapperCore
     {
         bool success;
         std::string errorMessage;
-        
+
         // Rapports
         std::vector<std::string> infeasibilityMessages;
         CarbonReportData carbonReport;  // CHANGEMENT: Toujours généré maintenant
-        
+
         // Fichiers créés
         std::vector<std::string> disturbanceFiles;
         EventsData eventsData;
         std::string eventsFilePath;
-        
+
         // Outputs
         OutputsData outputsData;
         std::string scheduleFilePath;
         std::vector<std::string> spatialOutputFiles;
-        
+
         // Prédicteurs
         PredictorsData predictorsData;
-        
+
         SESResults() : success(false) {}
     };
 
@@ -144,13 +145,13 @@ namespace FMTWrapperCore
          * @param baseModel Modèle FMT de base (déjà chargé)
          * @param schedules Schedules à utiliser pour la simulation
          * @return Résultats complets de la simulation
-         * 
+         *
          * Cette méthode orchestre toute la simulation et peut être appelée
          * directement depuis du code C++ pur pour les tests et le débogage.
          */
-        static SESResults RunSimulation(
+        static SESResults RunSES(
             const SESParameters& params,
-            const Models::FMTlpmodel& baseModel,
+            const Core::FMTmodel& baseModel,
             const std::vector<Core::FMTschedule>& schedules);
 
         /**
@@ -159,7 +160,7 @@ namespace FMTWrapperCore
          * @param schedules Schedules à utiliser pour la simulation
          * @return Résultats complets de la simulation
          */
-        static SESResults RunSimulation(
+        static SESResults RunSES(
             const SESParameters& params,
             const std::vector<Core::FMTschedule>& schedules);
 
@@ -213,7 +214,8 @@ namespace FMTWrapperCore
         static OutputsData CalculateOutputs(
             const Models::FMTsemodel& semodel,
             const std::vector<std::string>& outputNames,
-            const int numberOfPeriods);
+            const int numberOfPeriods,
+            const bool indCarbon);
 
         /**
          * @brief Écrit les outputs spatiaux

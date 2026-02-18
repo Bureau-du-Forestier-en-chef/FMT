@@ -7,7 +7,7 @@
 #include "FMTscheduleparser.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTFormLogger.h"
-#include "FMTForm.h"
+#include "SES.h"
 #include "FMTmodel.h"
 #include "FMTFormCache.h"
 #include "FMTdefaultlogger.h"
@@ -90,7 +90,8 @@ namespace Wrapper
 
 			if (outputs->Count > 0)
 			{
-				const std::vector<Core::FMToutput> OUTPUTS_LIST = EcritureDesOutputs(OptimizationModel, outputs, periodes, false);
+				const std::vector<Core::FMToutput> OUTPUTS_LIST = FMTWrapperCore::SES::CalculateOutputs(
+					OptimizationModel, msloutputs, periodes, false);
 				Parser::FMTscheduleparser scheduParser;
 				System::String^ schedulePath = System::IO::Path::Combine(directoryFullName,
 					gcnew System::String(std::string(OptimizationModel.getname() + "_.seq").c_str()));
@@ -109,7 +110,8 @@ namespace Wrapper
 				);
 				if (indSortiesSpatiales)
 				{
-					EcrituredesOutputsSpatiaux(OptimizationModel, OUTPUTS_LIST, etanduSortiesMin, etanduSortiesMax, directoryFullName);
+					std::string directoryFullName = msclr::interop::marshal_as<std::string>(directoryFullName);
+					FMTWrapperCore::SES::WriteSpatialOutputs(OptimizationModel, OUTPUTS_LIST, etanduSortiesMin, etanduSortiesMax, directoryFullName);
 				}
 			}
 		}
