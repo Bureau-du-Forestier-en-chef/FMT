@@ -1,6 +1,6 @@
 #include "SES.h"
 #include "FMTsesmodel.h"
-#include "FMTmodel.h"
+#include "FMTsamodel.h"
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
 #include "FMTareaparser.h"
@@ -15,15 +15,12 @@
 #include "FMToutput.h"
 #include "FMTtheme.h"
 #include "FMTaction.h"
+#include "FMTmodel.h"
 #include <sstream>
 #include <fstream>
 
 namespace FMTWrapperCore
 {
-    // ========================================================================
-    // Méthodes privées
-    // ========================================================================
-
     std::vector<Core::FMToutput> SES::FilterOutputs(
         const std::vector<Core::FMToutput>& allOutputs,
         const std::vector<std::string>& selectedNames)
@@ -66,26 +63,17 @@ namespace FMTWrapperCore
         return growthThemes;
     }
 
-    // ========================================================================
-    // Méthodes publiques
-    // ========================================================================
-
     SESResults SES::RunSES(
         const SESParameters& params,
-        const Core::FMTmodel& baseModel,
+        const Models::FMTmodel& baseModel,
         const std::vector<Core::FMTschedule>& schedules)
     {
         SESResults results;
 
         try
         {
-            // ================================================================
-            // ÉTAPE 1: Préparation du modèle SES
-            // ================================================================
-
             Models::FMTsesmodel simulationModel(baseModel);
 
-            // Filtrer et appliquer les contraintes sélectionnées
             if (!params.constraintNames.empty())
             {
                 std::vector<Core::FMTconstraint> allConstraints = simulationModel.getconstraints();
@@ -106,7 +94,6 @@ namespace FMTWrapperCore
                 simulationModel.setconstraints(selectedConstraints);
             }
 
-            // Modification des transitions (single)
             std::vector<Core::FMTtransition> singleTransitions;
             for (const auto& transition : simulationModel.gettransitions())
             {
@@ -114,21 +101,15 @@ namespace FMTWrapperCore
             }
             simulationModel.settransitions(singleTransitions);
 
-            // ================================================================
-            // ÉTAPE 2: Lecture des rasters et initialisation de la forêt
-            // ================================================================
-
             Parser::FMTareaparser areaparser;
             const std::string ageRasterPath = params.rastersPath + "AGE.tif";
 
-            // Construire les chemins des rasters de thèmes
             std::vector<std::string> themeRasterPaths;
             for (size_t i = 1; i <= simulationModel.getthemes().size(); ++i)
             {
                 themeRasterPaths.push_back(params.rastersPath + "THEME" + std::to_string(i) + ".tif");
             }
 
-            // Lecture de la forêt initiale
             Spatial::FMTforest initialForest;
             if (!params.useStanlock)
             {
@@ -153,10 +134,6 @@ namespace FMTWrapperCore
 
             simulationModel.setinitialmapping(initialForest);
 
-            // ================================================================
-            // ÉTAPE 3: Vérification des schedules
-            // ================================================================
-
             if (schedules.empty())
             {
                 results.errorMessage = "No schedules provided";
@@ -171,47 +148,27 @@ namespace FMTWrapperCore
                 return results;
             }
 
-            // ================================================================
-            // ÉTAPE 4: Configuration et exécution de la simulation
-            // ================================================================
-
             simulationModel.setparameter(Models::FMTintmodelparameters::LENGTH, params.numberOfPeriods);
             simulationModel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, params.greedySearchIterations);
             simulationModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
             simulationModel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 
-            // Exécution de la simulation
             simulationModel.doplanning(false, schedules);
 
-            // Déterminer le répertoire de sortie
             std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath;
 
-            // ================================================================
-            // ÉTAPE 5: Génération des rapports
-            // ================================================================
-
-            // Rapport d'infaisabilité
             results.infeasibilityMessages = GenerateInfeasibilityReport(simulationModel);
 
-            // CHANGEMENT: Rapport de carbone TOUJOURS généré maintenant
             results.carbonReport = GenerateCarbonReport(
                 simulationModel,
                 params.numberOfPeriods,
                 schedules);
-
-            // ================================================================
-            // ÉTAPE 6: Écriture des perturbations
-            // ================================================================
 
             results.disturbanceFiles = WriteDisturbances(
                 simulationModel,
                 outputDirectory,
                 params.numberOfPeriods,
                 params.growthThemes);
-
-            // ================================================================
-            // ÉTAPE 7: Génération des événements
-            // ================================================================
 
             if (params.generateEvents || params.carbonMode)
             {
@@ -227,22 +184,15 @@ namespace FMTWrapperCore
                 }
             }
 
-            // ================================================================
-            // ÉTAPE 8: Calcul et export des outputs
-            // ================================================================
-
             if (!params.outputNames.empty())
             {
-                // Calcul des outputs
                 results.outputsData = CalculateOutputs(
                     simulationModel,
                     params.outputNames,
                     params.numberOfPeriods);
 
-                // Écriture du schedule
                 results.scheduleFilePath = WriteSchedule(simulationModel, outputDirectory);
 
-                // Mode normal: export complet
                 if (!params.carbonMode)
                 {
                     ExportResults(
@@ -254,10 +204,8 @@ namespace FMTWrapperCore
                         params.outputLevel,
                         params.gdalProvider);
                 }
-                // Mode carbone: exports spécifiques
                 else
                 {
-                    // Écriture de la forêt mise à jour
                     WriteUpdatedForest(
                         simulationModel,
                         params.rastersPath,
@@ -265,7 +213,6 @@ namespace FMTWrapperCore
                         ageRasterPath,
                         params.rastersPath + "STANLOCK.tif");
 
-                    // Calcul des prédicteurs
                     if (!params.predictorYields.empty())
                     {
                         results.predictorsData = CalculatePredictors(
@@ -276,7 +223,6 @@ namespace FMTWrapperCore
                     }
                 }
 
-                // Outputs spatiaux
                 if (params.generateSpatialOutputs)
                 {
                     results.spatialOutputFiles = WriteSpatialOutputs(
@@ -287,10 +233,6 @@ namespace FMTWrapperCore
                         outputDirectory);
                 }
             }
-
-            // ================================================================
-            // ÉTAPE 9: Succès
-            // ================================================================
 
             results.success = true;
         }
@@ -316,9 +258,8 @@ namespace FMTWrapperCore
 
         try
         {
-            // Charger le modèle depuis le fichier
             Parser::FMTmodelparser parser;
-            std::vector<Core::FMTmodel> models = parser.readproject(params.primaryFilePath);
+            std::vector<Models::FMTmodel> models = parser.readproject(params.primaryFilePath);
 
             if (params.scenarioIndex < 0 || params.scenarioIndex >= static_cast<int>(models.size()))
             {
@@ -327,7 +268,6 @@ namespace FMTWrapperCore
                 return results;
             }
 
-            // Appeler la version principale avec le modèle chargé
             return RunSES(params, models.at(params.scenarioIndex), schedules);
         }
         catch (const std::exception& e)
@@ -362,6 +302,152 @@ namespace FMTWrapperCore
         return messages;
     }
 
+    SAResults SES::RunOptimization(
+        const SAParameters& params,
+        const Models::FMTmodel& baseModel)
+    {
+        SAResults results;
+
+        try
+        {
+            Models::FMTsamodel optimizationModel(baseModel);
+
+            if (!params.constraintNames.empty())
+            {
+                std::vector<Core::FMTconstraint> allConstraints = optimizationModel.getconstraints();
+                std::vector<Core::FMTconstraint> selectedConstraints;
+
+                for (const std::string& name : params.constraintNames)
+                {
+                    for (const Core::FMTconstraint& constraint : allConstraints)
+                    {
+                        if (constraint.getname() == name)
+                        {
+                            selectedConstraints.push_back(constraint);
+                            break;
+                        }
+                    }
+                }
+
+                optimizationModel.setconstraints(selectedConstraints);
+            }
+
+            std::vector<Core::FMTtransition> modifiedTransitions;
+            for (const Core::FMTtransition& transition : optimizationModel.gettransitions())
+            {
+                modifiedTransitions.push_back(transition.single());
+            }
+            optimizationModel.settransitions(modifiedTransitions);
+
+            Parser::FMTareaparser areaparser;
+            const std::string ageRasterPath = params.rastersPath + "AGE.tif";
+
+            std::vector<std::string> themeRasterPaths;
+            for (size_t i = 1; i <= optimizationModel.getthemes().size(); ++i)
+            {
+                themeRasterPaths.push_back(params.rastersPath + "THEME" + std::to_string(i) + ".tif");
+            }
+
+            Spatial::FMTforest initialForest;
+            if (!params.useStanlock)
+            {
+                initialForest = areaparser.readrasters(
+                    optimizationModel.getthemes(),
+                    themeRasterPaths,
+                    ageRasterPath,
+                    1,
+                    0.0001);
+            }
+            else
+            {
+                const std::string stanlockPath = params.rastersPath + "STANLOCK.tif";
+                initialForest = areaparser.readrasters(
+                    optimizationModel.getthemes(),
+                    themeRasterPaths,
+                    ageRasterPath,
+                    1,
+                    0.0001,
+                    stanlockPath);
+            }
+
+            optimizationModel.setinitialmapping(initialForest);
+
+            optimizationModel.setparameter(Models::FMTintmodelparameters::LENGTH, params.numberOfPeriods);
+            optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, params.maxMoves);
+            optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, params.maxAcceptedMoves);
+            optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, params.maxCycleMoves);
+
+            optimizationModel.doplanning(true);
+
+            std::string outputDirectory = params.outputPath;
+
+            results.infeasibilityMessages = GenerateInfeasibilityReport(optimizationModel);
+
+            std::vector<int> emptyGrowthThemes;
+            results.disturbanceFiles = WriteDisturbances(
+                optimizationModel,
+                outputDirectory,
+                params.numberOfPeriods,
+                emptyGrowthThemes);
+
+            if (params.generateEvents)
+            {
+                results.eventsData = GenerateEventsData(optimizationModel);
+
+                results.eventsFilePath = outputDirectory + "/events.txt";
+                std::ofstream eventsFile(results.eventsFilePath);
+                if (eventsFile.is_open())
+                {
+                    eventsFile << results.eventsData.statistics;
+                    eventsFile.close();
+                }
+            }
+
+            if (!params.outputNames.empty())
+            {
+                results.outputsData = CalculateOutputs(
+                    optimizationModel,
+                    params.outputNames,
+                    params.numberOfPeriods);
+
+                results.scheduleFilePath = WriteSchedule(optimizationModel, outputDirectory);
+
+                ExportResults(
+                    optimizationModel,
+                    results.outputsData.outputObjects,
+                    params.outputMinPeriod,
+                    params.outputMaxPeriod,
+                    params.outputPath,
+                    params.outputLevel,
+                    params.gdalProvider);
+
+                if (params.generateSpatialOutputs)
+                {
+                    results.spatialOutputFiles = WriteSpatialOutputs(
+                        optimizationModel,
+                        results.outputsData.outputObjects,
+                        params.outputMinPeriod,
+                        params.outputMaxPeriod,
+                        outputDirectory);
+                }
+            }
+
+            results.success = true;
+        }
+        catch (const std::exception& e)
+        {
+            results.success = false;
+            results.errorMessage = std::string("Exception: ") + e.what();
+        }
+        catch (...)
+        {
+            results.success = false;
+            results.errorMessage = "Unknown error occurred during optimization";
+        }
+
+        return results;
+    }
+
     CarbonReportData SES::GenerateCarbonReport(
         const Models::FMTsemodel& semodel,
         const int numberOfPeriods,
@@ -382,7 +468,6 @@ namespace FMTWrapperCore
                 CarbonReportData::PeriodData periodData;
                 periodData.period = period;
 
-                // Mise à jour des contraintes pour la période
                 std::vector<Core::FMTconstraint> periodicconstraints = semodel.getconstraints();
                 for (Core::FMTconstraint& periodconstraint : periodicconstraints)
                 {
@@ -392,7 +477,6 @@ namespace FMTWrapperCore
                 }
                 localmodel.setconstraints(periodicconstraints);
 
-                // Calcul du statut de la solution
                 double primalinf = 0;
                 double objectivevalue = 0;
                 localmodel.GetSolutionStatus(schedule, objectivevalue, primalinf, true, false);
@@ -400,11 +484,9 @@ namespace FMTWrapperCore
                 periodData.objectiveValue = objectivevalue;
                 periodData.primalInfeasibility = primalinf;
 
-                // Calcul des ratios d'actions
                 double oldtotal = 0;
                 double newtotal = 0;
 
-                // Trouver l'index du schedule original pour cette période
                 size_t oriloc = 0;
                 for (const Core::FMTschedule& schedule : schedules)
                 {
@@ -415,7 +497,6 @@ namespace FMTWrapperCore
                     ++oriloc;
                 }
 
-                // Trouver l'index du nouveau schedule pour cette période
                 size_t newloc = 0;
                 for (const Core::FMTschedule& schedule : newschedule)
                 {
@@ -426,7 +507,6 @@ namespace FMTWrapperCore
                     ++newloc;
                 }
 
-                // Calculer les ratios pour chaque action
                 if (scid < newschedule.size() && scid < schedules.size())
                 {
                     for (const auto& data : schedules.at(oriloc))
@@ -483,7 +563,6 @@ namespace FMTWrapperCore
 
             for (int period = 1; period <= numberOfPeriods; ++period)
             {
-                // Écriture des perturbations
                 const std::vector<Core::FMTGCBMtransition> transitions =
                     areaparser.writedisturbances(
                         outputBasePath,
@@ -492,7 +571,6 @@ namespace FMTWrapperCore
                         growthThemes,
                         period);
 
-                // Écriture du fichier de transition
                 std::string fichier = outputBasePath + "transition" + std::to_string(period) + ".txt";
                 transitionparser.writeGCBM(transitions, fichier);
 
@@ -529,8 +607,7 @@ namespace FMTWrapperCore
     OutputsData SES::CalculateOutputs(
         const Models::FMTsemodel& semodel,
         const std::vector<std::string>& outputNames,
-        const int numberOfPeriods,
-        const bool indCarbon)
+        const int numberOfPeriods)
     {
         OutputsData outputsData;
 
@@ -539,31 +616,27 @@ namespace FMTWrapperCore
             const std::vector<Core::FMToutput> allOutputs = semodel.getoutputs();
             std::vector<Core::FMToutput> selectedOutputs = FilterOutputs(allOutputs, outputNames);
 
-            // Stocker les objets outputs pour usage ultérieur
             outputsData.outputObjects = selectedOutputs;
 
-            if (indCarbon)
+            for (const Core::FMToutput& output : selectedOutputs)
             {
-                for (const Core::FMToutput& output : selectedOutputs)
+                OutputsData::OutputResult result;
+                result.outputName = output.getname();
+
+                for (int period = 1; period <= numberOfPeriods; ++period)
                 {
-                    OutputsData::OutputResult result;
-                    result.outputName = output.getname();
+                    const std::map<std::string, double> OUTS = semodel.getoutput(
+                        output,
+                        period,
+                        Core::FMToutputlevel::totalonly);
 
-                    for (int period = 1; period <= numberOfPeriods; ++period)
+                    if (OUTS.find("Total") != OUTS.end())
                     {
-                        const std::map<std::string, double> OUTS = semodel.getoutput(
-                            output,
-                            period,
-                            Core::FMToutputlevel::totalonly);
-
-                        if (OUTS.find("Total") != OUTS.end())
-                        {
-                            result.periodValues[period] = OUTS.at("Total");
-                        }
+                        result.periodValues[period] = OUTS.at("Total");
                     }
-
-                    outputsData.results.push_back(result);
                 }
+
+                outputsData.results.push_back(result);
             }
         }
         catch (...)

@@ -7,120 +7,143 @@
 #include "FMTscheduleparser.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTFormLogger.h"
-#include "SES.h"
+#include "FMTForm.h"
 #include "FMTmodel.h"
 #include "FMTFormCache.h"
 #include "FMTdefaultlogger.h"
+#include "SES.h"
 
 namespace Wrapper
 {
+    namespace {
 
-	bool FMTForm::OptimisationSpatialeExplicite(System::String^ fichierPri, System::String^ cheminRasters, int scenario,
-		System::Collections::Generic::List<System::String^>^ contraintes, int periodes,
-		int p_MaxMoves, int p_MaxAcceptedMoves, int p_MaxCycleMoves,
-		System::Collections::Generic::List<System::String^>^ outputs, bool indicateurStanlock, int outputLevel,
-		int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, bool indGenererEvents, bool indSortiesSpatiales,
-		System::String^ providerGdal)
-	{
-		try
-		{
-			Models::FMTsamodel OptimizationModel(FMTFormCache::GetInstance()->getmodel(scenario));
-			FMTFormLogger* Logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*Logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
-			*Logger << "FMT -> Traitement pour le sc�nario : " + OptimizationModel.getname() << "\n";
-			if (contraintes->Count > 0)
-			{
-				*Logger << "FMT -> Int�gration des contraintes s�lectionn�es" << "\n";
-				OptimizationModel.setconstraints(ObtenirArrayContraintesSelectionnees(ObtenirArrayContraintes(scenario), contraintes));
-			}
-			*Logger << "FMT -> Modification et int�gration des transitions" << "\n";
-			std::vector<Core::FMTtransition> modifiedTransitions;
-			for (const Core::FMTtransition& TRANSITION : OptimizationModel.gettransitions())
-			{
-				modifiedTransitions.push_back(TRANSITION.single());
-			}
-			*Logger << "FMT -> Lecture des rasters" << "\n";
-			OptimizationModel.settransitions(modifiedTransitions);
-			Parser::FMTareaparser areaParser;
-			const std::string RASTERS_PATH = msclr::interop::marshal_as<std::string>(cheminRasters);
-			const std::string AGE_RASTER = RASTERS_PATH + "AGE.tif";
-			std::vector<std::string> themeRasters;
-			for (int i = 1; i <= OptimizationModel.getthemes().size(); i++)
-			{
-				themeRasters.push_back(RASTERS_PATH + "THEME" + std::to_string(i) + ".tif");
-			}
-			{
-				Spatial::FMTforest initialForestMap;
-				if (!indicateurStanlock)
-				{
-					initialForestMap = areaParser.readrasters(OptimizationModel.getthemes(),
-						themeRasters, AGE_RASTER, 1, 0.0001);
-				}
-				else
-				{
-					initialForestMap = areaParser.readrasters(OptimizationModel.getthemes(),
-						themeRasters, AGE_RASTER, 1, 0.0001, RASTERS_PATH + "STANLOCK.tif");
-				}
-				OptimizationModel.setinitialmapping(initialForestMap);
-			}
-			const std::string OUTPUT_PATH = msclr::interop::marshal_as<std::string>(cheminSorties);
-			System::IO::DirectoryInfo^ parentDirectory = System::IO::Directory::GetParent(cheminSorties);
-			System::String^ directoryFullName = parentDirectory->FullName;
-			//const std::string WORKING_DIRECTORY = msclr::interop::marshal_as<std::string>(directoryFullName);
-			//OptimizationModel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, WORKING_DIRECTORY);
-			OptimizationModel.setparameter(Models::FMTintmodelparameters::LENGTH, periodes);
-			OptimizationModel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, p_MaxMoves);
-			OptimizationModel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, p_MaxAcceptedMoves);
-			OptimizationModel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, p_MaxCycleMoves);
-			OptimizationModel.doplanning(true);
+        FMTWrapperCore::SAParameters ConvertirParametresOptimisation(
+            System::String^ cheminRasters,
+            int scenario,
+            System::Collections::Generic::List<System::String^>^ contraintes,
+            int periodes,
+            int p_MaxMoves,
+            int p_MaxAcceptedMoves,
+            int p_MaxCycleMoves,
+            System::Collections::Generic::List<System::String^>^ outputs,
+            bool indicateurStanlock,
+            int outputLevel,
+            int etanduSortiesMin,
+            int etanduSortiesMax,
+            System::String^ cheminSorties,
+            bool indGenererEvents,
+            bool indSortiesSpatiales,
+            System::String^ providerGdal)
+        {
+            FMTWrapperCore::SAParameters params;
 
+            // Conversion des chemins
+            params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
+            params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
+            params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
 
+            // Paramètres numériques
+            params.scenarioIndex = scenario;
+            params.numberOfPeriods = periodes;
+            params.maxMoves = p_MaxMoves;
+            params.maxAcceptedMoves = p_MaxAcceptedMoves;
+            params.maxCycleMoves = p_MaxCycleMoves;
+            params.outputLevel = outputLevel;
+            params.outputMinPeriod = etanduSortiesMin;
+            params.outputMaxPeriod = etanduSortiesMax;
 
+            // Options booléennes
+            params.useStanlock = indicateurStanlock;
+            params.generateEvents = indGenererEvents;
+            params.generateSpatialOutputs = indSortiesSpatiales;
 
-			const Spatial::FMTSpatialSchedule& SCHEDULE = OptimizationModel.getspschedule();
+            // Conversion des listes C# → C++
+            for each (System::String ^ constraint in contraintes)
+            {
+                params.constraintNames.push_back(msclr::interop::marshal_as<std::string>(constraint));
+            }
 
-			RapportdeBris(OptimizationModel);
-			System::Collections::Generic::List<int>^ growthThemes = gcnew System::Collections::Generic::List<int>();
-			EcrituredesPerturbations(OptimizationModel, directoryFullName, periodes, growthThemes, false);
+            for each (System::String ^ output in outputs)
+            {
+                params.outputNames.push_back(msclr::interop::marshal_as<std::string>(output));
+            }
 
-			if (indGenererEvents)
-			{
-				EcritureDesEvenements(OptimizationModel, directoryFullName, periodes, false);
-			}
+            return params;
+        }
 
-			if (outputs->Count > 0)
-			{
-				const std::vector<Core::FMToutput> OUTPUTS_LIST = FMTWrapperCore::SES::CalculateOutputs(
-					OptimizationModel, msloutputs, periodes, false);
-				Parser::FMTscheduleparser scheduParser;
-				System::String^ schedulePath = System::IO::Path::Combine(directoryFullName,
-					gcnew System::String(std::string(OptimizationModel.getname() + "_.seq").c_str()));
-				const std::string stdSchedulePath = msclr::interop::marshal_as<std::string>(schedulePath);
-				scheduParser.write(OptimizationModel.GetSchedules(SCHEDULE), stdSchedulePath);
-				Parser::FMTmodelparser Modelparser;
-				*Logger << "FMT -> Exportations des sorties " << "\n";
-				Modelparser.writeresults(
-					OptimizationModel,
-					OUTPUTS_LIST,
-					etanduSortiesMin,
-					etanduSortiesMax,
-					OUTPUT_PATH,
-					static_cast<Core::FMToutputlevel>(outputLevel),
-					msclr::interop::marshal_as<std::string>(providerGdal)
-				);
-				if (indSortiesSpatiales)
-				{
-					std::string directoryFullName = msclr::interop::marshal_as<std::string>(directoryFullName);
-					FMTWrapperCore::SES::WriteSpatialOutputs(OptimizationModel, OUTPUTS_LIST, etanduSortiesMin, etanduSortiesMax, directoryFullName);
-				}
-			}
-		}
-		catch (...)
-		{
-			raisefromcatch("", "FMTForm::OptimisationSpatialeExplicite", __LINE__, __FILE__);
-			return false;
-		}
+        void EnvoyerResultatsOptimisation(
+            const FMTWrapperCore::SAResults& results,
+            FMTFormLogger* logger)
+        {
+            // Logging des outputs
+            for (const auto& result : results.outputsData.results)
+            {
+                for (const auto& periodValue : result.periodValues)
+                {
+                    *logger << "outputs;" + result.outputName + ";" + std::to_string(periodValue.second) << "\n";
+                }
+            }
+        }
 
-		return true;
-	}
-}
+    } 
+
+    bool FMTForm::OptimisationSpatialeExplicite(
+        System::String^ fichierPri,
+        System::String^ cheminRasters,
+        int scenario,
+        System::Collections::Generic::List<System::String^>^ contraintes,
+        int periodes,
+        int p_MaxMoves,
+        int p_MaxAcceptedMoves,
+        int p_MaxCycleMoves,
+        System::Collections::Generic::List<System::String^>^ outputs,
+        bool indicateurStanlock,
+        int outputLevel,
+        int etanduSortiesMin,
+        int etanduSortiesMax,
+        System::String^ cheminSorties,
+        bool indGenererEvents,
+        bool indSortiesSpatiales,
+        System::String^ providerGdal)
+    {
+        try
+        {
+            FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
+            *logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
+
+            FMTWrapperCore::SAParameters params = ConvertirParametresOptimisation(
+                cheminRasters, scenario, contraintes, periodes,
+                p_MaxMoves, p_MaxAcceptedMoves, p_MaxCycleMoves,
+                outputs, indicateurStanlock, outputLevel,
+                etanduSortiesMin, etanduSortiesMax, cheminSorties,
+                indGenererEvents, indSortiesSpatiales, providerGdal);
+
+            Models::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
+            *logger << "FMT -> Traitement pour le scénario : " + baseModel.getname() << "\n";
+
+            *logger << "FMT -> Démarrage de l'optimisation" << "\n";
+
+            FMTWrapperCore::SAResults results =
+                FMTWrapperCore::SES::RunOptimization(params, baseModel);
+
+            if (!results.success)
+            {
+                *logger << "FMT -> Erreur d'optimisation: " + results.errorMessage << "\n";
+                return false;
+            }
+
+            *logger << "FMT -> Optimisation terminée avec succès" << "\n";
+
+            *logger << "FMT -> Exportations des sorties " << "\n";
+            EnvoyerResultatsOptimisation(results, logger);
+
+            return true;
+        }
+        catch (...)
+        {
+            raisefromcatch("", "FMTForm::OptimisationSpatialeExplicite", __LINE__, __FILE__);
+            return false;
+        }
+    }
+
+} // namespace Wrapper

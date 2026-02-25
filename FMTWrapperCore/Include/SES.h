@@ -11,7 +11,10 @@ namespace Core {
     class FMToutput;
     class FMTtheme;
     class FMTaction;
-    class FMTmodel;
+}
+
+namespace Models {
+    class FMTmodel;  // Forward declaration corrigée
 }
 
 namespace Models {
@@ -134,6 +137,53 @@ namespace FMTWrapperCore
     };
 
     /**
+     * @brief Paramètres pour l'optimisation spatiale (Simulated Annealing)
+     */
+    struct SAParameters
+    {
+        std::string rastersPath;
+        int scenarioIndex;
+        std::vector<std::string> constraintNames;
+        int numberOfPeriods;
+        int maxMoves;
+        int maxAcceptedMoves;
+        int maxCycleMoves;
+        std::vector<std::string> outputNames;
+        bool useStanlock;
+        int outputLevel;
+        int outputMinPeriod;
+        int outputMaxPeriod;
+        std::string outputPath;
+        bool generateEvents;
+        bool generateSpatialOutputs;
+        std::string gdalProvider;
+    };
+
+    /**
+     * @brief Résultats de l'optimisation spatiale
+     */
+    struct SAResults
+    {
+        bool success;
+        std::string errorMessage;
+
+        // Rapports
+        std::vector<std::string> infeasibilityMessages;
+
+        // Fichiers créés
+        std::vector<std::string> disturbanceFiles;
+        EventsData eventsData;
+        std::string eventsFilePath;
+
+        // Outputs
+        OutputsData outputsData;
+        std::string scheduleFilePath;
+        std::vector<std::string> spatialOutputFiles;
+
+        SAResults() : success(false) {}
+    };
+
+    /**
      * @brief Classe pour les simulations spatiales explicites
      */
     class __declspec(dllexport) SES
@@ -151,7 +201,7 @@ namespace FMTWrapperCore
          */
         static SESResults RunSES(
             const SESParameters& params,
-            const Core::FMTmodel& baseModel,
+            const Models::FMTmodel& baseModel,
             const std::vector<Core::FMTschedule>& schedules);
 
         /**
@@ -163,6 +213,19 @@ namespace FMTWrapperCore
         static SESResults RunSES(
             const SESParameters& params,
             const std::vector<Core::FMTschedule>& schedules);
+
+        /**
+         * @brief Exécute une optimisation spatiale (Simulated Annealing)
+         * @param params Paramètres d'optimisation
+         * @param baseModel Modèle FMT de base (déjà chargé)
+         * @return Résultats complets de l'optimisation
+         *
+         * Cette méthode orchestre toute l'optimisation spatiale et peut être appelée
+         * directement depuis du code C++ pur pour les tests et le débogage.
+         */
+        static SAResults RunOptimization(
+            const SAParameters& params,
+            const Models::FMTmodel& baseModel);
 
         /**
          * @brief Génère le rapport des contraintes infaisables
@@ -214,8 +277,7 @@ namespace FMTWrapperCore
         static OutputsData CalculateOutputs(
             const Models::FMTsemodel& semodel,
             const std::vector<std::string>& outputNames,
-            const int numberOfPeriods,
-            const bool indCarbon);
+            const int numberOfPeriods);
 
         /**
          * @brief Écrit les outputs spatiaux

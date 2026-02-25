@@ -93,7 +93,6 @@ namespace Wrapper
             bool indCarbon,
             System::EventHandler^ RetourJson)
         {
-            // Rapport de carbone (TOUJOURS disponible maintenant)
             for (const auto& periodData : results.carbonReport.periods)
             {
                 int jsonloc = periodData.period - 1;
@@ -178,7 +177,7 @@ namespace Wrapper
             }
         }
 
-    }
+    } 
 
     bool FMTForm::SimulationSpatialeExplicite(
         System::String^ fichierPri,
@@ -205,10 +204,6 @@ namespace Wrapper
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
             *logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
 
-            // ================================================================
-            // ÉTAPE 1: CONVERSION DES PARAMÈTRES C# → C++
-            // ================================================================
-
             FMTWrapperCore::SESParameters params = ConvertirParametres(
                 fichierPri, cheminRasters, scenario, contraintes, periodes,
                 greedySearch, outputs, indicateurStanlock, outputLevel,
@@ -216,27 +211,15 @@ namespace Wrapper
                 indGenererEvents, indSortiesSpatiales, providerGdal,
                 indCarbon, predictoryields, growththemes);
 
-            // ================================================================
-            // ÉTAPE 2: RÉCUPÉRATION DU MODÈLE ET DES SCHEDULES (via Cache)
-            // ================================================================
-
-            Core::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
+            Models::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
             *logger << "FMT -> Traitement pour le scénario : " + baseModel.getname() << "\n";
 
             const std::vector<Core::FMTschedule> schedules = ObtenirSEQ(fichierPri, scenario);
-
-            // ================================================================
-            // ÉTAPE 3: APPEL UNIQUE À LA LOGIQUE (TOUTE LA MAGIE EST ICI)
-            // ================================================================
 
             *logger << "FMT -> Démarrage de la simulation" << "\n";
 
             FMTWrapperCore::SESResults results =
                 FMTWrapperCore::SES::RunSES(params, baseModel, schedules);
-
-            // ================================================================
-            // ÉTAPE 4: VÉRIFICATION DU SUCCÈS
-            // ================================================================
 
             if (!results.success)
             {
@@ -245,10 +228,6 @@ namespace Wrapper
             }
 
             *logger << "FMT -> Simulation terminée avec succès" << "\n";
-
-            // ================================================================
-            // ÉTAPE 5: LOGGING DES RÉSULTATS
-            // ================================================================
 
             if (indCarbon && !results.outputsData.results.empty())
             {
@@ -261,12 +240,8 @@ namespace Wrapper
                 }
             }
 
-            // ================================================================
-            // ÉTAPE 6: ENVOI DES RÉSULTATS À L'INTERFACE C#
-            // ================================================================
-
             EnvoyerResultatsInterface(results, indCarbon, RetourJson);
-
+        
             *logger << "FMT -> Envoi des résultats à l'interface terminé" << "\n";
 
             return true;
@@ -293,5 +268,4 @@ namespace Wrapper
     //
     // Toute la logique est maintenant orchestrée par SES::RunSES()
     // ============================================================================
-
-}
+} 

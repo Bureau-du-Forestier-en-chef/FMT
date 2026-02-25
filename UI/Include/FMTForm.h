@@ -21,6 +21,8 @@ namespace Wrapper
 	public:
 		event System::EventHandler^ FeedBack;
 		event System::EventHandler^ RetourJson;
+        //delegate void RetourJsonDelegate(System::String^ message, System::EventArgs^ args);
+        //event RetourJsonDelegate^ RetourJson;
 		bool Cache_AjouterScenarios(System::String^ fichierPriSystem, System::String^ scenarioSystem);
 		void Cache_Vider();
 		void Cache_InitialiserModelParser(System::Collections::Generic::List<int>^ listeWarnings, int maxWarnings);
@@ -44,7 +46,6 @@ namespace Wrapper
 		bool InitialAreaVariability(System::String^ fichierPri, int scenario, int solver, System::Collections::Generic::List<System::String^>^ contraintes, int period, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, System::String^ providerGdal, System::Collections::Generic::List<System::Collections::Generic::List<System::String^>^>^ ListeInformations);
 		bool Raterisation(System::String^ fichierPri, int scenario, System::String^ fichierShp, System::String^ repertoireSortie, int resolution, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock);
 		bool OperatingAreaScheduling(System::String^ fichierPri, int scenario, System::String^ fichierShp, int solver, int nombrePeriodes, int nombreThread, int numeroTheme, int tempsMaximum, int nombreIteration, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock, System::String^ cheminParametres, System::String^ nomFichierResultat, int periodeMiseAjour, System::String^ returnTimeOutput);
-
 		bool aggregateAllActions(const int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_aggregates, System::Collections::Generic::List<System::String^>^ p_order, System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 		bool splitActions(const int p_modelIndex, System::String^ p_schedulePri, System::Collections::Generic::List<System::String^>^ p_splitted, System::Collections::Generic::List<System::String^>^ p_splitted_mask, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 		System::Collections::Generic::List<System::String^>^ getActionsNames(int p_modelIndex);
