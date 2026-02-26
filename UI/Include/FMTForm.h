@@ -21,8 +21,6 @@ namespace Wrapper
 	public:
 		event System::EventHandler^ FeedBack;
 		event System::EventHandler^ RetourJson;
-        //delegate void RetourJsonDelegate(System::String^ message, System::EventArgs^ args);
-        //event RetourJsonDelegate^ RetourJson;
 		bool Cache_AjouterScenarios(System::String^ fichierPriSystem, System::String^ scenarioSystem);
 		void Cache_Vider();
 		void Cache_InitialiserModelParser(System::Collections::Generic::List<int>^ listeWarnings, int maxWarnings);
