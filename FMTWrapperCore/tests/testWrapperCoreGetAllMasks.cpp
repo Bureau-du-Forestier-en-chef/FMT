@@ -42,13 +42,13 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "D:\\Working_dir\\01_Valide_modele_complet\\PC_9936_U01272_2028_MODB01.pri";
-		scenarioName = "120_TBE_V2";
-		periods = 10;
+		pathPri = "C:\\Users\\Admlocal\\Documents\\FMT\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
+		scenarioName = "strategique_Histo";
+		periods = 2;
 		writeOnDisk = true;
 		outputFilePath = "get_all_mask_output.txt";
 		//resutlSize = 32953;
-		themesNumbers = { 3, 5, 12, 13, 14, 21 };
+		themesNumbers = { 3, 5, 12, 13, 14};
 		rastpath = "";
 	}
 
