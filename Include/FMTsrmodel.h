@@ -241,6 +241,32 @@ namespace Models
 		Need to have a builded graph with a solution to use this function.
 		*/
 		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const override;
+		// DocString: FMTsrmodel::getPotentialArea
+		/**
+		* @brief Computes the potential development area for a given period.
+		*
+		* This method evaluates the theoretical (maximum) potential area by forcing
+		* all decision variables in the underlying solver to a value of 1.0.
+		* A temporary copy of the current FMTsrmodel instance is created to avoid
+		* modifying the state of the original model.
+		*
+		* The method then calls getarea() on the temporary model using the provided
+		* period and growth/death timing option.
+		*
+		* @param p_Period The planning period for which the potential area is evaluated.
+		* @param p_BeforeGrowAndDeath If true, computes the area before growth and mortality
+		* processes are applied; otherwise, computes it after these processes.
+		*
+		* @return A vector of Core::FMTactualdevelopment representing the potential
+		* development area for the specified period.
+		*
+		* @note This function does not modify the current model instance.
+		* @note In case of an exception, the error is handled internally and an empty
+		* vector may be returned.
+		*/
+		std::vector<Core::FMTactualdevelopment>getPotentialArea(int p_Period = 0, bool p_BeforeGrowAndDeath = false) const;
+		
+		
 		// DocString: FMTsrmodel::getsolverptr()
 		/**
 		Get a pointer to the solver behind the model.
