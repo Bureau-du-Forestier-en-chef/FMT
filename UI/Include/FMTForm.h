@@ -13,6 +13,9 @@ namespace Core {
 namespace Models {
 	class FMTsemodel;
 }
+namespace FMTWrapperCore {
+	struct SESResults;
+}
 namespace Wrapper
 {
 
@@ -44,6 +47,7 @@ namespace Wrapper
 		bool InitialAreaVariability(System::String^ fichierPri, int scenario, int solver, System::Collections::Generic::List<System::String^>^ contraintes, int period, System::Collections::Generic::List<System::String^>^ outputs, int outputLevel, int etanduSortiesMin, int etanduSortiesMax, System::String^ cheminSorties, System::String^ providerGdal, System::Collections::Generic::List<System::Collections::Generic::List<System::String^>^>^ ListeInformations);
 		bool Raterisation(System::String^ fichierPri, int scenario, System::String^ fichierShp, System::String^ repertoireSortie, int resolution, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock);
 		bool OperatingAreaScheduling(System::String^ fichierPri, int scenario, System::String^ fichierShp, int solver, int nombrePeriodes, int nombreThread, int numeroTheme, int tempsMaximum, int nombreIteration, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock, System::String^ cheminParametres, System::String^ nomFichierResultat, int periodeMiseAjour, System::String^ returnTimeOutput);
+
 		bool aggregateAllActions(const int p_modelIndex, System::Collections::Generic::List<System::String^>^ p_aggregates, System::Collections::Generic::List<System::String^>^ p_order, System::String^ p_schedulePri, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 		bool splitActions(const int p_modelIndex, System::String^ p_schedulePri, System::Collections::Generic::List<System::String^>^ p_splitted, System::Collections::Generic::List<System::String^>^ p_splitted_mask, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name);
 		System::Collections::Generic::List<System::String^>^ getActionsNames(int p_modelIndex);
@@ -68,6 +72,9 @@ namespace Wrapper
 		void ToFeedBack(const char* message);
 		void raisefromcatch(std::string text, const std::string& method, const int& line, const std::string& fil);
 		std::vector<Core::FMTschedule> ObtenirSEQ(System::String^ nomFichierPri, int indexScenario);
+
+		// Méthode helper pour envoyer les résultats via RetourJson
+		void EnvoyerResultatsInterface(const FMTWrapperCore::SESResults& results, bool indCarbon);
 
 		// ===================================================================
 		// MÉTHODES SUPPRIMÉES - Logique déplacée dans SES.cpp

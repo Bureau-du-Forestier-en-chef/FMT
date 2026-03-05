@@ -40,7 +40,8 @@ namespace Wrapper
             System::String^ providerGdal,
             bool indCarbon,
             System::Collections::Generic::List<System::String^>^ predictoryields,
-            System::Collections::Generic::List<int>^ growththemes)
+            System::Collections::Generic::List<int>^ growththemes,
+            const std::string& scenarioName)
         {
             FMTWrapperCore::SESParameters params;
 
@@ -49,9 +50,9 @@ namespace Wrapper
             params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
             params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
             params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
+            params.scenarioName = scenarioName;
 
             // Paramètres numériques
-            params.scenarioIndex = scenario;
             params.numberOfPeriods = periodes;
             params.greedySearchIterations = greedySearch;
             params.outputLevel = outputLevel;
@@ -88,96 +89,95 @@ namespace Wrapper
             return params;
         }
 
-        void EnvoyerResultatsInterface(
-            const FMTWrapperCore::SESResults& results,
-            bool indCarbon,
-            System::EventHandler^ RetourJson)
+    } 
+
+    void FMTForm::EnvoyerResultatsInterface(
+        const FMTWrapperCore::SESResults& results,
+        bool indCarbon)
+    {
+        for (const auto& periodData : results.carbonReport.periods)
         {
-            for (const auto& periodData : results.carbonReport.periods)
+            int jsonloc = periodData.period - 1;
+
+            RetourJson("objectives;" + jsonloc + ";Objective;" + periodData.objectiveValue,
+                gcnew System::EventArgs());
+            RetourJson("objectives;" + jsonloc + ";Primalinfeasibility;" + periodData.primalInfeasibility,
+                gcnew System::EventArgs());
+
+            for (const auto& actionRatio : periodData.actionRatios)
             {
-                int jsonloc = periodData.period - 1;
-
-                RetourJson("objectives;" + jsonloc + ";Objective;" + periodData.objectiveValue,
-                    gcnew System::EventArgs());
-                RetourJson("objectives;" + jsonloc + ";Primalinfeasibility;" + periodData.primalInfeasibility,
-                    gcnew System::EventArgs());
-
-                for (const auto& actionRatio : periodData.actionRatios)
-                {
-                    RetourJson("objectives;" + jsonloc + ";" +
-                        gcnew System::String(actionRatio.first.c_str()) + ";" + actionRatio.second,
-                        gcnew System::EventArgs());
-                }
-
-                RetourJson("objectives;" + jsonloc + ";Total;" + periodData.totalRatio,
+                RetourJson("objectives;" + jsonloc + ";" +
+                    gcnew System::String(actionRatio.first.c_str()) + ";" + actionRatio.second,
                     gcnew System::EventArgs());
             }
 
-            // Fichiers de perturbations
-            if (indCarbon)
-            {
-                for (const std::string& fichier : results.disturbanceFiles)
-                {
-                    RetourJson(gcnew System::String(("GCBMtransitionlocations;" + fichier).c_str()),
-                        gcnew System::EventArgs());
-                }
-            }
+            RetourJson("objectives;" + jsonloc + ";Total;" + periodData.totalRatio,
+                gcnew System::EventArgs());
+        }
 
-            // Fichier d'événements
-            if (!results.eventsFilePath.empty() && indCarbon)
+        // Fichiers de perturbations
+        if (indCarbon)
+        {
+            for (const std::string& fichier : results.disturbanceFiles)
             {
-                RetourJson(gcnew System::String(("eventslocation;" + results.eventsFilePath).c_str()),
+                RetourJson(gcnew System::String(("GCBMtransitionlocations;" + fichier).c_str()),
                     gcnew System::EventArgs());
             }
+        }
 
-            // Outputs
-            if (indCarbon && !results.outputsData.results.empty())
+        // Fichier d'événements
+        if (!results.eventsFilePath.empty() && indCarbon)
+        {
+            RetourJson(gcnew System::String(("eventslocation;" + results.eventsFilePath).c_str()),
+                gcnew System::EventArgs());
+        }
+
+        // Outputs
+        if (indCarbon && !results.outputsData.results.empty())
+        {
+            for (const auto& result : results.outputsData.results)
             {
-                for (const auto& result : results.outputsData.results)
+                for (const auto& periodValue : result.periodValues)
                 {
-                    for (const auto& periodValue : result.periodValues)
-                    {
-                        RetourJson("outputs;" + gcnew System::String(result.outputName.c_str()) +
-                            ";" + periodValue.second, gcnew System::EventArgs());
-                    }
-                }
-            }
-
-            // Schedule
-            if (!results.scheduleFilePath.empty() && indCarbon)
-            {
-                RetourJson("schedules;" + gcnew System::String(results.scheduleFilePath.c_str()),
-                    gcnew System::EventArgs());
-            }
-
-            // Prédicteurs
-            if (indCarbon && !results.predictorsData.nodes.empty())
-            {
-                for (const auto& node : results.predictorsData.nodes)
-                {
-                    int indexPeriode = node.period - 1;
-                    std::string outof = std::to_string(indexPeriode) + ";" + std::to_string(node.nodeIndex) + ";";
-
-                    for (const double& predval : node.values)
-                    {
-                        outof += std::to_string(predval);
-                        outof += ";";
-                    }
-
-                    outof.pop_back();
-                    RetourJson("allpredictionsnodes;" + gcnew System::String(outof.c_str()),
-                        gcnew System::EventArgs());
-                }
-
-                for (const std::string& name : results.predictorsData.predictorNames)
-                {
-                    RetourJson("allpredictornames;" + gcnew System::String(name.c_str()),
-                        gcnew System::EventArgs());
+                    RetourJson("outputs;" + gcnew System::String(result.outputName.c_str()) +
+                        ";" + periodValue.second, gcnew System::EventArgs());
                 }
             }
         }
 
-    } 
+        // Schedule
+        if (!results.scheduleFilePath.empty() && indCarbon)
+        {
+            RetourJson("schedules;" + gcnew System::String(results.scheduleFilePath.c_str()),
+                gcnew System::EventArgs());
+        }
+
+        // Prédicteurs
+        if (indCarbon && !results.predictorsData.nodes.empty())
+        {
+            for (const auto& node : results.predictorsData.nodes)
+            {
+                int indexPeriode = node.period - 1;
+                std::string outof = std::to_string(indexPeriode) + ";" + std::to_string(node.nodeIndex) + ";";
+
+                for (const double& predval : node.values)
+                {
+                    outof += std::to_string(predval);
+                    outof += ";";
+                }
+
+                outof.pop_back();
+                RetourJson("allpredictionsnodes;" + gcnew System::String(outof.c_str()),
+                    gcnew System::EventArgs());
+            }
+
+            for (const std::string& name : results.predictorsData.predictorNames)
+            {
+                RetourJson("allpredictornames;" + gcnew System::String(name.c_str()),
+                    gcnew System::EventArgs());
+            }
+        }
+    }
 
     bool FMTForm::SimulationSpatialeExplicite(
         System::String^ fichierPri,
@@ -204,22 +204,68 @@ namespace Wrapper
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
             *logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
 
+            Models::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
+            const std::string scenarioName = baseModel.getname();
+
             FMTWrapperCore::SESParameters params = ConvertirParametres(
                 fichierPri, cheminRasters, scenario, contraintes, periodes,
                 greedySearch, outputs, indicateurStanlock, outputLevel,
                 etanduSortiesMin, etanduSortiesMax, cheminSorties,
                 indGenererEvents, indSortiesSpatiales, providerGdal,
-                indCarbon, predictoryields, growththemes);
+                indCarbon, predictoryields, growththemes,
+                scenarioName); 
 
-            Models::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
-            *logger << "FMT -> Traitement pour le scénario : " + baseModel.getname() << "\n";
+            Parser::FMTmodelparser modelparser;
+            std::vector<std::string> scenariosName;
+            scenariosName.push_back(params.scenarioName);
+            std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenariosName);
+            Models::FMTmodel& selectedModel = models[0];
+
+			*logger << "primaryFilePath: " + params.primaryFilePath << "\n";
+			*logger << "rastersPath: " + params.rastersPath << "\n";
+			*logger << "outputPath: " + params.outputPath << "\n";
+			*logger << "scenarioName: " + params.scenarioName << "\n";
+			*logger << "numberOfPeriods: " + std::to_string(params.numberOfPeriods) << "\n";
+			*logger << "greedySearchIterations: " + std::to_string(params.greedySearchIterations) << "\n";
+			*logger << "useStanlock: " + std::string(params.useStanlock ? "true" : "false") << "\n";
+			*logger << "outputLevel: " + std::to_string(params.outputLevel) << "\n";
+			*logger << "outputMinPeriod: " + std::to_string(params.outputMinPeriod) << "\n";
+			*logger << "outputMaxPeriod: " + std::to_string(params.outputMaxPeriod) << "\n";
+			*logger << "gdalProvider: " + params.gdalProvider << "\n";
+			*logger << "carbonMode: " + std::string(params.carbonMode ? "true" : "false") << "\n";
+			*logger << "generateEvents: " + std::string(params.generateEvents ? "true" : "false") << "\n";
+			*logger << "generateSpatialOutputs: " + std::string(params.generateSpatialOutputs ? "true" : "false") << "\n";
+			*logger << "constraintNames: " << "\n";
+			for (const std::string& constraint : params.constraintNames)
+			{
+				*logger << "  - " + constraint << "\n";
+			}
+			*logger << "outputNames: " << "\n";
+			for (const std::string& output : params.outputNames)
+			{
+				*logger << "  - " + output << "\n";
+			}
+			*logger << "predictorYields: " << "\n";
+			for (const std::string& yield : params.predictorYields)
+			{
+				*logger << "  - " + yield << "\n";
+			}
+			*logger << "growthThemes: " << "\n";
+			for (const int& theme : params.growthThemes)
+			{
+				*logger << "  - " + std::to_string(theme) << "\n";
+			}
+
+
+
+            *logger << "FMT -> Traitement pour le scénario : " + scenarioName << "\n";
 
             const std::vector<Core::FMTschedule> schedules = ObtenirSEQ(fichierPri, scenario);
 
             *logger << "FMT -> Démarrage de la simulation" << "\n";
 
             FMTWrapperCore::SESResults results =
-                FMTWrapperCore::SES::RunSES(params, baseModel, schedules);
+                FMTWrapperCore::SES::RunSES(params, selectedModel, schedules);
 
             if (!results.success)
             {
@@ -240,8 +286,8 @@ namespace Wrapper
                 }
             }
 
-            EnvoyerResultatsInterface(results, indCarbon, RetourJson);
-        
+            EnvoyerResultatsInterface(results, indCarbon);
+
             *logger << "FMT -> Envoi des résultats à l'interface terminé" << "\n";
 
             return true;

@@ -3,6 +3,7 @@
 #include "FMTexception.h"
 #include "FMTmodel.h"
 #include "FMTmodelparser.h"
+#include "FMTscheduleparser.h"
 #include "SES.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
@@ -17,24 +18,25 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		params.primaryFilePath = primaryFilePath;
-		params.rastersPath = rastersPath;
-		params.scenarioIndex = scenarioIndex;
-		params.constraintNames = constraintNames;
-		params.numberOfPeriods = numberOfPeriods;
-		params.greedySearchIterations = greedySearchIterations;
-		params.outputNames = outputNames;
-		params.useStanlock = useStanlock;
-		params.outputLevel = outputLevel;
-		params.outputMinPeriod = outputMinPeriod;
-		params.outputMaxPeriod = outputMaxPeriod;
-		params.outputPath = outputPath;
-		params.generateEvents = generateEvents;
-		params.generateSpatialOutputs = generateSpatialOutputs;
-		params.gdalProvider = gdalProvider;
-		params.carbonMode = carbonMode;
-		params.predictorYields = predictorYields;
-		params.growthThemes = growthThemes;
+		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
+		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
+		params.outputPath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\output";
+		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
+		params.numberOfPeriods = 5;
+		params.greedySearchIterations = 5;
+		params.useStanlock = false;
+		//outputLevel: STRATE = 3, THÉMATIQUE = 1, TOTALE = 2
+		params.outputLevel = 2;
+		params.outputMinPeriod = 1;
+		params.outputMaxPeriod = 5;
+		params.gdalProvider = "CSV";
+		params.carbonMode = false;
+		params.generateEvents = true;
+		params.generateSpatialOutputs = true;
+		params.constraintNames = { "_MAX OVOLTOTREC_YP23 2.._LENGTH \n" };
+		params.outputNames = { "OVOLTOTREC"}; 
+		params.predictorYields = {};
+		params.growthThemes = {};
 	}
 
 	Parser::FMTmodelparser modelparser;
@@ -42,7 +44,8 @@ int main(int argc, char* argv[])
 	modelparser.setdefaultlogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack();
-	std::vector<Exception::FMTexc>errors;
+
+	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
 	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
@@ -58,12 +61,18 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	modelparser.seterrorstowarnings(errors);
 
-	std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, allscenarios);
-	Parser::FMTscheduleparser schedule_parser;
-	models.push_back(FMTFormCache::GetInstance()->getmodel(params.scenarioIndex));
-	std::vector<Core::FMTschedule> schedules = Modelparser.readschedules(params.primaryFilePath), models).at(0);
+    std::vector<std::string> scenarioName;
+	scenarioName.push_back(params.scenarioName);
+    std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenarioName);
 
-	FMTWrapperCore::SES::RunSES(params, models, schedules);
+    Models::FMTmodel& selectedModel = models[0];
+
+	std::vector<Core::FMTschedule> schedules = modelparser.readschedules(params.primaryFilePath, models).at(0);
+
+    FMTWrapperCore::SESResults results = FMTWrapperCore::SES::RunSES(
+        params,        
+        selectedModel,    
+        schedules);       
 
 	return 0;
 }

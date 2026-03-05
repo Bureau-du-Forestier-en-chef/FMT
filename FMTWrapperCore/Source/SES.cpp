@@ -83,7 +83,7 @@ namespace FMTWrapperCore
                 {
                     for (const Core::FMTconstraint& constraint : allConstraints)
                     {
-                        if (constraint.getname() == name)
+                        if (std::string(constraint) == name)
                         {
                             selectedConstraints.push_back(constraint);
                             break;
@@ -250,48 +250,12 @@ namespace FMTWrapperCore
         return results;
     }
 
-    SESResults SES::RunSES(
-        const SESParameters& params,
-        const std::vector<Core::FMTschedule>& schedules)
-    {
-        SESResults results;
-
-        try
-        {
-            Parser::FMTmodelparser parser;
-            std::vector<Models::FMTmodel> models = parser.readproject(params.primaryFilePath);
-
-            if (params.scenarioIndex < 0 || params.scenarioIndex >= static_cast<int>(models.size()))
-            {
-                results.success = false;
-                results.errorMessage = "Invalid scenario index: " + std::to_string(params.scenarioIndex);
-                return results;
-            }
-
-            return RunSES(params, models.at(params.scenarioIndex), schedules);
-        }
-        catch (const std::exception& e)
-        {
-            results.success = false;
-            results.errorMessage = std::string("Error loading model: ") + e.what();
-            return results;
-        }
-        catch (...)
-        {
-            results.success = false;
-            results.errorMessage = "Unknown error while loading model";
-            return results;
-        }
-    }
-
     std::vector<std::string> SES::GenerateInfeasibilityReport(const Models::FMTsemodel& semodel)
     {
         std::vector<std::string> messages;
 
         try
         {
-            // La méthode LogConstraintsInfeasibilities écrit directement dans le logger
-            // On la laisse comme elle est pour ne rien casser
             semodel.LogConstraintsInfeasibilities();
         }
         catch (...)

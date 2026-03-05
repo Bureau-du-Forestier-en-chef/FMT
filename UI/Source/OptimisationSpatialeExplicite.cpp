@@ -33,7 +33,8 @@ namespace Wrapper
             System::String^ cheminSorties,
             bool indGenererEvents,
             bool indSortiesSpatiales,
-            System::String^ providerGdal)
+            System::String^ providerGdal,
+            const std::string& scenarioName) 
         {
             FMTWrapperCore::SAParameters params;
 
@@ -41,9 +42,9 @@ namespace Wrapper
             params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
             params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
             params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
+            params.scenarioName = scenarioName;
 
             // Paramètres numériques
-            params.scenarioIndex = scenario;
             params.numberOfPeriods = periodes;
             params.maxMoves = p_MaxMoves;
             params.maxAcceptedMoves = p_MaxAcceptedMoves;
@@ -85,7 +86,7 @@ namespace Wrapper
             }
         }
 
-    } 
+    }
 
     bool FMTForm::OptimisationSpatialeExplicite(
         System::String^ fichierPri,
@@ -111,15 +112,18 @@ namespace Wrapper
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
             *logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
 
+            Models::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
+            const std::string scenarioName = baseModel.getname();
+
             FMTWrapperCore::SAParameters params = ConvertirParametresOptimisation(
                 cheminRasters, scenario, contraintes, periodes,
                 p_MaxMoves, p_MaxAcceptedMoves, p_MaxCycleMoves,
                 outputs, indicateurStanlock, outputLevel,
                 etanduSortiesMin, etanduSortiesMax, cheminSorties,
-                indGenererEvents, indSortiesSpatiales, providerGdal);
+                indGenererEvents, indSortiesSpatiales, providerGdal,
+                scenarioName); 
 
-            Models::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
-            *logger << "FMT -> Traitement pour le scénario : " + baseModel.getname() << "\n";
+            *logger << "FMT -> Traitement pour le scénario : " + scenarioName << "\n";
 
             *logger << "FMT -> Démarrage de l'optimisation" << "\n";
 
@@ -146,4 +150,4 @@ namespace Wrapper
         }
     }
 
-} // namespace Wrapper
+}

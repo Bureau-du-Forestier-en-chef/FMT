@@ -90,7 +90,7 @@ namespace FMTWrapperCore
     {
         std::string primaryFilePath;
         std::string rastersPath;
-        int scenarioIndex;
+        std::string scenarioName;
         std::vector<std::string> constraintNames;
         int numberOfPeriods;
         int greedySearchIterations;
@@ -118,7 +118,7 @@ namespace FMTWrapperCore
 
         // Rapports
         std::vector<std::string> infeasibilityMessages;
-        CarbonReportData carbonReport;  // CHANGEMENT: Toujours généré maintenant
+        CarbonReportData carbonReport;  
 
         // Fichiers créés
         std::vector<std::string> disturbanceFiles;
@@ -142,7 +142,7 @@ namespace FMTWrapperCore
     struct SAParameters
     {
         std::string rastersPath;
-        int scenarioIndex;
+        std::string scenarioName;
         std::vector<std::string> constraintNames;
         int numberOfPeriods;
         int maxMoves;
@@ -192,7 +192,7 @@ namespace FMTWrapperCore
         /**
          * @brief Exécute une simulation spatiale explicite complète
          * @param params Paramètres de simulation
-         * @param baseModel Modèle FMT de base (déjà chargé)
+         * @param baseModel Modèle FMT de base
          * @param schedules Schedules à utiliser pour la simulation
          * @return Résultats complets de la simulation
          *
@@ -202,16 +202,6 @@ namespace FMTWrapperCore
         static SESResults RunSES(
             const SESParameters& params,
             const Models::FMTmodel& baseModel,
-            const std::vector<Core::FMTschedule>& schedules);
-
-        /**
-         * @brief Version alternative qui charge le modèle depuis le fichier
-         * @param params Paramètres de simulation (doit inclure primaryFilePath et scenarioIndex)
-         * @param schedules Schedules à utiliser pour la simulation
-         * @return Résultats complets de la simulation
-         */
-        static SESResults RunSES(
-            const SESParameters& params,
             const std::vector<Core::FMTschedule>& schedules);
 
         /**
