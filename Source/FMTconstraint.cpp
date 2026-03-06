@@ -615,231 +615,172 @@ namespace Core
 		{
 		std::string line = "";
 		std::string period_bounds = "";
-		try{
-			
-		period_bounds += std::to_string(this->getperiodlowerbound());
-		period_bounds += "..";
-		int maxperiod = this->getperiodupperbound();
-		if (maxperiod == std::numeric_limits<int>::max())
+		try {
+			period_bounds += std::to_string(this->getperiodlowerbound());
+			period_bounds += "..";
+			int maxperiod = this->getperiodupperbound();
+			if (maxperiod == std::numeric_limits<int>::max())
 			{
-			period_bounds += "_LENGTH";
-		}else {
-			period_bounds += std::to_string(maxperiod);
+				period_bounds += "_LENGTH";
 			}
-		if (this->getperiodupperbound() == this->getperiodlowerbound())
-			{
-			period_bounds = std::to_string(maxperiod);
+			else {
+				period_bounds += std::to_string(maxperiod);
 			}
-		std::string variation = "";
-		if (!this->emptyylds())
+			if (this->getperiodupperbound() == this->getperiodlowerbound())
 			{
-			size_t location = 0;
-			bool gotvariation = false;
-			for (const std::string& yldname : yieldnames)
-				{
-				if (yldname.find("Variation") != std::string::npos)
-				{
-					gotvariation = true;
-					break;
-				}
-				++location;
-				}
-			if (gotvariation)
-			{
-				if (/*yieldbounds.at(location).getlower() != yieldbounds.at(location).getupper() &&*/
-					yieldbounds.at(location).getupper() > 0)
-				{
-					variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%,";
-					variation += std::to_string(static_cast<int>(yieldbounds.at(location).getupper())) + "%";
-				}
-				else if (yieldbounds.at(location).getlower() != 0)
-				{
-					variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%";
-				}
-
-
+				period_bounds = std::to_string(maxperiod);
 			}
-			
-			}
-
-
-		std::string goal = "";
-		std::string penalty = "";
-		std::string global = "";
-		std::string ScheduleWeight = "";
-		if (!this->emptyylds())
+			std::string variation = "";
+			if (!this->emptyylds())
 			{
-			for (size_t id = 0; id < yieldnames.size(); ++id)
-			{
-				const size_t GOAL_FINDER = yieldnames.at(id).find("GOAL_");
-				if (GOAL_FINDER != std::string::npos)
+				size_t location = 0;
+				bool gotvariation = false;
+				for (const std::string& yldname : yieldnames)
 				{
-					goal += yieldnames.at(id).substr(GOAL_FINDER + 5, yieldnames.at(id).size()) + ",";
-					goal += std::to_string(yieldbounds.at(id).getlower());
-				}
-				if (yieldnames.at(id).find("_SETTOGLOBAL") != std::string::npos)
-				{
-					global += std::to_string(yieldbounds.at(id).getlower());
-				}
-				if (yieldnames.at(id).find("Penalty") != std::string::npos)
-				{
-					std::vector<std::string>names;
-					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
-
-					if (names.at(1) == "_ALL")
+					if (yldname.find("Variation") != std::string::npos)
 					{
-						penalty += (std::string(1, names.at(0).back()) + "_PENALTY(_ALL");
+						gotvariation = true;
+						break;
 					}
-					else {
-						if (!penalty.empty())
+					++location;
+				}
+				if (gotvariation)
+				{
+					if (/*yieldbounds.at(location).getlower() != yieldbounds.at(location).getupper() &&*/
+						yieldbounds.at(location).getupper() > 0)
+					{
+						variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%,";
+						variation += std::to_string(static_cast<int>(yieldbounds.at(location).getupper())) + "%";
+					}
+					else if (yieldbounds.at(location).getlower() != 0)
+					{
+						variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%";
+					}
+
+
+				}
+
+			}
+
+			std::string goal = "";
+			std::string penalty = "";
+			std::string global = "";
+			std::string ScheduleWeight = "";
+			if (!this->emptyylds())
+			{
+				for (size_t id = 0; id < yieldnames.size(); ++id)
+				{
+					const size_t GOAL_FINDER = yieldnames.at(id).find("GOAL_");
+					if (GOAL_FINDER != std::string::npos)
+					{
+						goal += yieldnames.at(id).substr(GOAL_FINDER + 5, yieldnames.at(id).size()) + ",";
+						goal += std::to_string(yieldbounds.at(id).getlower());
+					}
+					if (yieldnames.at(id).find("_SETTOGLOBAL") != std::string::npos)
+					{
+						global += std::to_string(yieldbounds.at(id).getlower());
+					}
+					if (yieldnames.at(id).find("Penalty") != std::string::npos)
+					{
+						std::vector<std::string>names;
+						boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
+
+						if (names.at(1) == "_ALL")
 						{
-							penalty += "," + names.at(1);
+							penalty += (std::string(1, names.at(0).back()) + "_PENALTY(_ALL");
 						}
 						else {
-							penalty += (std::string(1, names.at(0).back()) + "_PENALTY(");
-							penalty += names.at(1);
-						}
+							if (!penalty.empty())
+							{
+								penalty += "," + names.at(1);
+							}
+							else {
+								penalty += (std::string(1, names.at(0).back()) + "_PENALTY(");
+								penalty += names.at(1);
+							}
 
+						}
+					}
+					if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
+					{
+						ScheduleWeight += std::to_string(yieldbounds.at(id).getlower());
 					}
 				}
-				if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
+
+				if (!penalty.empty())
 				{
-					ScheduleWeight += std::to_string(yieldbounds.at(id).getlower());
+					penalty += ")";
+				}
+				if (!goal.empty())
+				{
+					goal.pop_back();
+					goal = "_GOAL(" + goal + ")";
+				}
+				if (!global.empty())
+				{
+					global = "_SETTOGLOBAL(" + global + ")";
+				}
+				if (!ScheduleWeight.empty())
+				{
+					ScheduleWeight = "_SETGLOBALSCHEDULE(" + ScheduleWeight + ")";
 				}
 			}
-			
-			if (!penalty.empty())
-				{
-				penalty += ")";
-				}
-			if (!goal.empty())
-				{
-				goal.pop_back();
-				goal = "_GOAL(" + goal + ")";
-				}
-			if (!global.empty())
-				{
-				global = "_SETTOGLOBAL(" + global + ")";
-				}
-			if (!ScheduleWeight.empty())
+			switch (this->type)
 			{
-				ScheduleWeight = "_SETGLOBALSCHEDULE(" + ScheduleWeight + ")";
-			}
-			}
-		switch (this->type)
-			{
-			case FMTconstrainttype::FMTMAXobjective:
+				case FMTconstrainttype::FMTMAXobjective:
+				case FMTconstrainttype::FMTMINobjective:
+				case FMTconstrainttype::FMTMAXMINobjective:
+				case FMTconstrainttype::FMTMINMAXobjective:
 				{
-				line += "_MAX ";
-				line += this->name;
-				if (!penalty.empty())
-					{
-					line += penalty;
-					}
-				line += " ";
-				line += period_bounds + " " + ScheduleWeight + "\n";
-				break;
+					static const std::unordered_map<FMTconstrainttype, std::string> prefixes = {
+						{FMTconstrainttype::FMTMAXobjective,    "_MAX "},
+						{FMTconstrainttype::FMTMINobjective,    "_MIN "},
+						{FMTconstrainttype::FMTMAXMINobjective, "_MAXMIN "},
+						{FMTconstrainttype::FMTMINMAXobjective, "_MINMAX "},
+					};
+					line += prefixes.at(this->type);
+					line += this->name;
+					if (!penalty.empty()) line += penalty;
+					line += " ";
+					line += period_bounds + " " + ScheduleWeight;
+					break;
 				}
-			case FMTconstrainttype::FMTMINobjective:
+
+				case FMTconstrainttype::FMTevenflow:
+				case FMTconstrainttype::FMTnondeclining:
+				case FMTconstrainttype::FMTsequence:
 				{
-				line += "_MIN ";
-				line += this->name;
-				if(!penalty.empty())
-					{
-					line += penalty;
-					}
-				line += " ";
-				line += period_bounds + " " + ScheduleWeight + "\n";
-				break;
-				}
-			case FMTconstrainttype::FMTMAXMINobjective:
-				{
-				line += "_MAXMIN ";
-				line += this->name;
-				if (!penalty.empty())
-					{
-					line += penalty;
-					}
-				line += " ";
-				line += period_bounds + " " + ScheduleWeight + "\n";
-				break;
-				}
-			case FMTconstrainttype::FMTMINMAXobjective:
-				{
-				line += "_MINMAX ";
-				line += this->name;
-				if (!penalty.empty())
-				{
-					line += penalty;
-				}
-				line += " ";
-				line += period_bounds + " " + ScheduleWeight + "\n";
-				break;
-				}
-			case FMTconstrainttype::FMTevenflow:
-				{
-				line += "_EVEN(";
-				line += this->name;
-				if (!variation.empty())
-					{
-					line += variation;
-					}
-				line += ") ";
-				line += period_bounds + " " + goal + "\n";
-				break;
-				}
-			case FMTconstrainttype::FMTnondeclining:
-				{
-				line += "_NDY(";
-				line += this->name;
-				if (!variation.empty())
-					{
-					line += variation;
-					}
-				line += ") ";
-				line += period_bounds +" "+ goal + "\n";
-				break;
-				}
-			case FMTconstrainttype::FMTsequence:
-				{
-				line += "_SEQ(";
-				line += this->name;
-				if (!variation.empty())
-					{
-					line += variation;
-					}
+					static const std::unordered_map<FMTconstrainttype, std::string> keywords = {
+						{FMTconstrainttype::FMTevenflow,    "_EVEN("},
+						{FMTconstrainttype::FMTnondeclining, "_NDY("},
+						{FMTconstrainttype::FMTsequence,    "_SEQ("},
+					};
+					line += keywords.at(this->type);
+					line += this->name;
+					if (!variation.empty()) line += variation;
 					line += ") ";
-				line += period_bounds + " "+ goal + "\n";
-				break;
+					line += period_bounds + " " + goal;
+					break;
 				}
-			case FMTconstrainttype::FMTstandard:
-				{
-                standardstring(line,period_bounds,goal,global);
-				break;
-				}
-            case FMTconstrainttype::FMTspatialadjacency:
-                {
-                standardstring(line,period_bounds,goal, global,true);
-				break;
-				}
-            case FMTconstrainttype::FMTspatialsize :
-                {
-				standardstring(line, period_bounds, goal, global,true);
-				break;
-				}
-			case FMTconstrainttype::FMTrandomaction:
-			{
-				standardstring(line, period_bounds, goal, global);
-				break;
+				case FMTconstrainttype::FMTspatialadjacency:
+				case FMTconstrainttype::FMTspatialsize:
+					standardstring(line, period_bounds, goal, global, true);
+					break;
+
+				case FMTconstrainttype::FMTstandard:
+				case FMTconstrainttype::FMTrandomaction:
+					standardstring(line, period_bounds, goal, global);
+					break;
+
+				default:
+					break;
 			}
-			default:
-			break;
-			}
-			}
+		}
 			catch (...)
 			{
 				_exhandler->printexceptions("", "FMTconstraint::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
+		boost::algorithm::trim_right(line);
 		return line;
 		}
 
