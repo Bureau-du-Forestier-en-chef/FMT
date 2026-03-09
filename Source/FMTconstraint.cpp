@@ -817,21 +817,16 @@ namespace Core
                 standardstring(line,period_bounds,goal,global);
 				break;
 				}
-            case FMTconstrainttype::FMTspatialadjacency:
-                {
-                standardstring(line,period_bounds,goal, global,true);
-				break;
-				}
-            case FMTconstrainttype::FMTspatialsize :
-                {
-				standardstring(line, period_bounds, goal, global,true);
-				break;
-				}
 			case FMTconstrainttype::FMTrandomaction:
 			{
 				standardstring(line, period_bounds, goal, global);
 				break;
 			}
+			case FMTconstrainttype::FMTspatialadjacency:
+			case FMTconstrainttype::FMTSpatialGroup:
+			case FMTconstrainttype::FMTspatialsize:
+				standardstring(line, period_bounds, goal, global, true);
+				break;
 			default:
 			break;
 			}

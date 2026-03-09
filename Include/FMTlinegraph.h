@@ -28,23 +28,6 @@ spatialy explicit models.
 */
 class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>
 {
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & boost::serialization::make_nvp("Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph::FMTbaseedgeproperties>",boost::serialization::base_object<FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>>(*this));
-
-	}
-	// DocString: FMTlinegraph::isanyactionofedge
-	/**
-	Returns true if the action of the edgte is in the unordered map.
-	*/
-	bool isanyactionofedge(const FMTbaseedgeproperties& edgeproperty,const std::unordered_set<int>& actions) const;
-	// DocString: FMTlinegraph::isanyvertexusage
-	/**
-	Returns true The vertex is in the outputsource based on (yields).
-	*/
-	bool isanyvertexusage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const;
     public:
 		// DocString: FMTlinegraph()
 		/**
@@ -146,13 +129,6 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Get a reference to the last development(vertex) seen in the (period).
 		*/
 		const Core::FMTdevelopment& getperiodstopdev(const int& period) const;
-		// DocString: FMTlinegraph::randomoperate
-		/**
-		Randomly operate an (active _developement) (front_vertex) and returns the action id.
-		*/
-		int randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model,
-                                            FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
-                                            const Core::FMTdevelopment& active_development,bool dontchoosegrow=false);
 		// DocString: FMTlinegraph::randombuildperiod
 		/**
 		Randomly operate the active vertex to completybuild the active period of the graph.
@@ -161,17 +137,6 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		std::vector<int> randombuildperiod(const Models::FMTmodel& model,std::default_random_engine& generator,
 									boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& operability,
 									bool dontchoosegrow=false);
-		// DocString: FMTlinegraph::clearfromperiod
-		/**
-		This function will remove every vertex and edge present in the graph starting from this (period).
-		if updatedevelopements is true the map holding the developements location will be updated.
-		*/
-        FMTgraphstats clearfromperiod(const int& period,bool updatedevelopments=false);
-		// DocString: FMTlinegraph::partialcopy
-		/**
-		This function will copy all verticies and edges of the graph from period = 0 to (period).
-		*/
-        FMTlinegraph partialcopy(const int& period) const;
 		// DocString: FMTlinegraph::getactions
 		/**
 		Starting (fromperiod) the function will return the a vector of of vector of bool if true the action is operable
@@ -245,8 +210,8 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Returns true if the graph can be modified at (period) and operated by different action or can be turned into natural grow.
 		*/
-		bool ismovable(const std::vector<const Core::FMTaction*>& actions,
-			const Core::FMTyields& yields, const int& period, boost::unordered_map<Core::FMTdevelopment, bool>*operability =nullptr) const;
+		bool isMovable(const Models::FMTmodel& p_model, const int& period,
+			boost::unordered_map<Core::FMTdevelopment, std::vector<int>>&p_operability) const;
 		// DocString:  FMTlinegraph::operator==
 		/**
 		Comparison operator of FMTlinegraph
@@ -279,7 +244,36 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Returns the period at which the vertex fall within the outputnode description. 
 		*/
 		std::vector<int> anyusageof(Core::FMToutputnode output_node, const Models::FMTmodel& model, const int& startingperiod) const;
-		
+		static const std::vector<int>& GetSetOperability(
+			const Core::FMTdevelopment& p_development,
+			const Models::FMTmodel& p_model,
+			boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& p_Cache);
+		private:
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& boost::serialization::make_nvp("Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph::FMTbaseedgeproperties>", boost::serialization::base_object<FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>>(*this));
+
+			}
+			// DocString: FMTlinegraph::isanyactionofedge
+			/**
+			Returns true if the action of the edgte is in the unordered map.
+			*/
+			bool isanyactionofedge(const FMTbaseedgeproperties& edgeproperty, const std::unordered_set<int>& actions) const;
+			// DocString: FMTlinegraph::isanyvertexusage
+			/**
+			Returns true The vertex is in the outputsource based on (yields).
+			*/
+			bool isanyvertexusage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const;
+			// DocString: FMTlinegraph::_randomOperate
+			/**
+			Randomly operate an (active _developement) (front_vertex) and returns the action id.
+			*/
+			int _randomOperate(const std::vector<int>& operables, const Models::FMTmodel& model,
+				FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
+				const Core::FMTdevelopment& active_development, bool dontchoosegrow = false);
+			
 		
 };
 }

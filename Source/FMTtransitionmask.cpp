@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldrequest.h"
 #include "FMTtheme.h"
 #include "FMTyields.h"
+#include "FMTdevelopmentpath.h"
 
 namespace Core{
 
@@ -39,9 +40,15 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         {
         this->build(lmask,themes);
         }
-    FMTmask FMTtransitionmask::trans(const FMTmask& basemask) const
+    FMTmask FMTtransitionmask::trans(const FMTmask& p_baseMask,
+                            const std::vector<FMTtheme>& p_themes) const
         {
-        return FMTmask(((flippedselection & basemask.getbitsetreference()) | selection));
+        FMTmask newMask(((flippedselection & p_baseMask.getbitsetreference()) | selection));
+        if (!p_themes.empty())
+            {
+            newMask.update(p_themes);
+            }
+        return newMask;
         }
     FMTtransitionmask::FMTtransitionmask(const FMTtransitionmask& rhs) :FMTmaskfilter(rhs),FMTspec(rhs) , mask(rhs.mask),proportion(rhs.proportion)
         {
@@ -69,17 +76,12 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         line += "*TARGET " + std::string(mask) + " " + std::to_string(proportion) + " " + FMTspec::operator std::string();
         return line;
         }
-    FMTdevelopment FMTtransitionmask::disturb(const Core::FMTdevelopment& dev,const FMTyields& yields,const std::vector<FMTtheme>& themes, const bool& reset_age) const
+    FMTdevelopmentpath FMTtransitionmask::disturb(const Core::FMTdevelopment& dev,const FMTyields& yields,
+                                                const std::vector<FMTtheme>& themes, const bool& reset_age) const
         {
-        //FMTdevelopment newdev(dev);
-        //newdev.mask = this->trans(dev.mask);
-		FMTdevelopment newdev(this->trans(dev.getmask()),dev.getage(),dev.getlock(),dev.getperiod());
-		if (!themes.empty())
-		{
-			Core::FMTmask newmask = newdev.getmask();
-			newmask.update(themes);
-			newdev.setmask(newmask);
-		}
+        FMTdevelopmentpath newPath(this->trans(dev.getmask(), themes),
+                    dev.getage(), dev.getlock(), dev.getperiod(), proportion);
+        FMTdevelopment& newdev = newPath.getDevelopmentReference();
 		bool age_change = false;
         if (!lock.empty())
             {
@@ -96,12 +98,11 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
                 newdev.setage(yields.getage(newrequest, *this));
 				age_change = true;
                 }
-        
 		if (reset_age && !age_change)
 			{
 			newdev.setage(0);
 			}
-        return newdev;
+        return newPath;
         }
 
     void FMTtransitionmask::setproportion(double newproportion)

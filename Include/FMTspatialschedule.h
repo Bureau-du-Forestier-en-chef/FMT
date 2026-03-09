@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTeventcontainer.h"
 #include "FMTbindingspatialaction.h"
 #include "FMTVirtualLineGraph.h"
+#include "FMTSolutionTracker.h"
 
 namespace Core {
 	class FMTGCBMtransition;
@@ -47,9 +48,6 @@ with a schedule.
 */
 class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 {
-	//mutable FMTspatialnodescache cache;
-	FMTSpatialScheduletype scheduletype;
-	std::vector<double>constraintsfactor;
     public:
 		typedef std::vector<std::vector<Spatial::FMTbindingspatialaction>> actionbindings;
 		// DocString: FMTSpatialSchedule(FMTSpatialSchedule&&)
@@ -61,7 +59,22 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Default constructor of FMTSpatialSchedule
 		*/
-        FMTSpatialSchedule();
+        FMTSpatialSchedule()=default;
+		// DocString: ~FMTSpatialSchedule()
+	   /**
+	   Default destructor of FMTSpatialSchedule
+	   */
+		virtual ~FMTSpatialSchedule() = default;
+		// DocString: FMTSpatialSchedule::=
+		/**
+		Copy assignment of FMTSpatialSchedule
+		*/
+		FMTSpatialSchedule& operator=(const FMTSpatialSchedule& rhs) = default;
+		// DocString: FMTSpatialSchedule(const FMTSpatialSchedule)
+		/**
+		Copy constructor of FMTSpatialSchedule
+		*/
+		FMTSpatialSchedule(const FMTSpatialSchedule& other) = default;
         // DocString: FMTSpatialSchedule(const FMTforest,size_t)
 		/**
 		@brief Constructor of FMTSpatialSchedule based on FMTforest. It's initializing every graph in the map base on developments types in each cell.
@@ -70,16 +83,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		*/
         FMTSpatialSchedule(const FMTforest& p_InitialMap,
 				size_t p_LengthReserve, FMTSpatialGraphs& p_SpatialGraph);
-        // DocString: ~FMTSpatialSchedule()
-		/**
-		Default destructor of FMTSpatialSchedule
-		*/
-        virtual ~FMTSpatialSchedule() = default;
-        // DocString: FMTSpatialSchedule(const FMTSpatialSchedule)
-		/**
-		Copy constructor of FMTSpatialSchedule
-		*/
-        FMTSpatialSchedule(const FMTSpatialSchedule& other);
+       
 		// DocString: FMTSpatialSchedule(const FMTSpatialSchedule,const std::vector<FMTcoordinate>)
 		/**
 		Create a partial copy of the complete solution base on coordinates.
@@ -87,11 +91,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		FMTSpatialSchedule(const FMTSpatialSchedule& other,
 			const std::vector<FMTcoordinate>::const_iterator& firstcoord,
 			const std::vector<FMTcoordinate>::const_iterator& endcoord);
-        // DocString: FMTSpatialSchedule::=
-		/**
-		Copy assignment of FMTSpatialSchedule
-		*/
-        FMTSpatialSchedule& operator=(const FMTSpatialSchedule& rhs);
+        
         // DocString: FMTSpatialSchedule::==
 		/**
 		Comparison operator equal to
@@ -342,9 +342,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		
 		*/
-		std::vector<Spatial::FMTcoordinate>getmovablecoordinates(const Models::FMTmodel& model,const int& period,
-																					const std::vector<Spatial::FMTcoordinate>* statics,
-																					boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr) const;
+		std::vector<Spatial::FMTcoordinate>getmovablecoordinates(const Models::FMTmodel& model,const int& period) const;
 
 		// DocString: FMTSpatialSchedule::getperiodwithmaximalevents
 		/**
@@ -361,11 +359,6 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		Returns adjacency conflicts coordinate that need to be destroyed
 		*/
 		std::vector<std::vector<Spatial::FMTcoordinate>>getadjacencyconflictcoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly = true) const;
-		// DocString: FMTSpatialSchedule::getstaticsmovablecoordinates
-		/**
-		Returns a vector of coordinate that are considered movable
-		*/
-		std::vector<Spatial::FMTcoordinate>getstaticsmovablecoordinates(const Models::FMTmodel& model) const;
 		// DocString: FMTSpatialSchedule::ispartial
 		/**
 		return true if solution is partial.
@@ -469,12 +462,10 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		void SetSpread(
 			std::vector<EventSpread>::const_iterator p_first,
 			std::vector<EventSpread>::const_iterator p_end);
+		void SetStaticsMovableCoordinates(const Models::FMTmodel& p_model);
+		void EnableSolutionTracker(const FMTSpatialGraphs& p_SpatialGraph);
+		void DisableSolutionTracker();
 	protected:
-		// DocString: FMTSpatialSchedule::m_events
-		/**
-		
-		*/
-		FMTeventcontainer m_events;
 		// DocString: FMTSpatialSchedule::getfromevents(const Core::FMTconstraint&, const std::vector<Core::FMTaction>&, const int&, const int&)
 		 /**
 		 Get theline graph using the eventcontainer
@@ -504,11 +495,29 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		bool inscheduleoperabilities(const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
 			Core::FMTdevelopment const* dev,const int& actionid, const Core::FMTaction& action) const;
     private:
-		// DocString: FMTSpatialSchedule::m_NonSpatialSolution
-		/**
-		The non spatial solution.
-		*/
-		std::vector<size_t>m_NonSpatialSolution;
+		// DocString: FMTSpatialSchedule::m_scheduleType
+		//Schedule type complete or partial
+		FMTSpatialScheduletype m_scheduleType = FMTSpatialScheduletype::FMTcomplete;
+		// DocString: FMTSpatialSchedule::m_ConstraintsFactor
+		//Constraints factors.
+		std::vector<double>m_ConstraintsFactor;
+		// DocString: FMTSpatialSchedule::m_events
+		//Events of the schedule
+		FMTeventcontainer m_events;
+		// DocString: FMTSpatialSchedule::m_Tracker
+		// Non spatial solution tracker
+		FMTSolutionTracker m_Tracker;
+		//DocString: FMTSpatialSchedule::m_OperabilityCache
+		//Operability cache
+		static boost::unordered_map<Core::FMTdevelopment,
+			std::vector<int>>m_OperabilityCache;
+		//DocString: FMTSpatialSchedule::m_Movables
+		//Coordinates where you can actualy operate something.
+		static std::vector<Spatial::FMTcoordinate>m_Movables;
+		//DocString: FMTSpatialSchedule::m_BUFFER_LOOKUP
+		//buffer lookup for events
+		static const int m_BUFFER_LOOKUP = 1;
+		
 		// DocString: FMTSpatialSchedule::_EvaluateSpatialAdjacency
 		 /**
 		Evaluate adjacency conflicts for each events
@@ -556,7 +565,19 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 
 		double _GetConstraintFloorValue(double p_inValue) const;
 
-		static const int BUFFER_LOOKUP = 1;
+		
+
+		static std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>> _PutTabouInCache(
+			const Models::FMTmodel& p_model,
+			std::map<Core::FMTdevelopment, std::vector<bool>>& p_tabou);
+		static void _SetTabouOutOfCache(
+			std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>>& p_GoodValues);
+
+	
+
+		
+
+		
 		
 		
 };

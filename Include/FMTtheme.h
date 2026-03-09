@@ -331,13 +331,59 @@ class FMTEXPORT FMTtheme : public FMTobject
 		Convert an attribute|aggregate|? (value) to a bitset for the entire theme size.
 		*/
 		 boost::dynamic_bitset<uint8_t> strToBits(const std::string& p_value) const;
+		// DocString: FMTtheme::_GetCount
+		/**
+		@brief Get the turned on bits of the theme subset.
+		@param[in] the mask.
+		@return the count
+		*/
+		size_t _GetCount(const Core::FMTmask& p_mask) const;
+		// DocString: FMTtheme::_GetFlipCount
+		/**
+		@brief Get the turned off bits of the theme subset.
+		@param[in] the mask.
+		@return the count
+		*/
+		size_t _GetFlipCount(const Core::FMTmask& p_mask) const;
+		// DocString: FMTtheme::_FindFirstFlip
+		/**
+		@brief Get the turned off bits of the theme subset.
+		@param[in] the mask.
+		@return the count
+		*/
+		size_t _FindFirstFlip(const Core::FMTmask& p_mask) const;
+		// DocString: FMTtheme::_FindFirst
+		/**
+		@brief Get the turned on bits of the theme subset.
+		@param[in] the mask.
+		@return the count
+		*/
+		size_t _FindFirst(const Core::FMTmask& p_mask) const;
+		// DocString: FMTtheme::_IsEqual
+		/**
+		@brief check if mask subset is equal to p_bits
+		@param[in] the mask.
+		@param[in] the bits to check.
+		@return true if equal
+		*/
+		bool _IsEqual(const Core::FMTmask& p_mask,
+			const boost::dynamic_bitset<uint8_t>& p_bits) const;
+		// DocString: FMTtheme::_IsFlipEqual
+		/**
+		@brief check if fmask subset is equal to flipped p_bits
+		@param[in] the mask.
+		@param[in] the bits to check.
+		@return true if equal
+		*/
+		bool _IsFlipEqual(const Core::FMTmask& p_mask,
+			const boost::dynamic_bitset<uint8_t>& p_bits) const;
 		// DocString: FMTtheme::bitsToStr
 		/**
 		@brief Convert a bitset to an attribute|aggregate|? (value) for the entire theme size.
-		@param[in] just a subset of theme.
+		@param[in] the mask
 		@return the string value;
 		*/
-		std::string bitsToStr(const boost::dynamic_bitset<uint8_t>& p_bits) const;
+		std::string bitsToStr(const Core::FMTmask& p_mask) const;
 		// DocString: FMTtheme::_getAttribute
 		/**
 		@brief get a string reference to the attribute targeted by attributeId

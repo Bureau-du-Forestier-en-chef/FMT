@@ -11,21 +11,32 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <memory>
 #include "FMTutility.h"
+#include "FMTdevelopment.h"
 
 namespace Core
 {
-class FMTdevelopment;
+
+class FMTmask;
 
 class FMTEXPORT FMTdevelopmentpath
 	{
 	public:
 		FMTdevelopmentpath();
+		FMTdevelopmentpath& operator = (const FMTdevelopmentpath& rhs)=default;
+		FMTdevelopmentpath(const FMTdevelopmentpath& rhs) = default;
+		~FMTdevelopmentpath() = default;
 		// DocString: FMTdevelopmentpath::getDevelopment
 		/**
 		@brief Get the new development
 		@return a newly generated developement
 		*/
 		const FMTdevelopment& getDevelopment() const;
+		// DocString: FMTdevelopmentpath::getDevelopmentReference
+		/**
+		@brief Get the new development
+		@return a newly generated developement
+		*/
+		FMTdevelopment& getDevelopmentReference();
 		// DocString: FMTdevelopmentpath::getProportion
 		/**
 		@brief Get the proportion of area going to this dev
@@ -34,19 +45,15 @@ class FMTEXPORT FMTdevelopmentpath
 		double getProportion() const;
 		// DocString: FMTdevelopmentpath::setProportion
 		/**
-		@brief set the proportion of the path
-		@param[in] the new proportion
+		@brief Set the proportion of area going to this dev
+		@param[in] the proportion
 		*/
 		void setProportion(double p_proportion);
-		FMTdevelopmentpath(const FMTdevelopmentpath& rhs);
-		FMTdevelopmentpath(const FMTdevelopment& ldevelopment, 
-			const double& lproportion);
-		FMTdevelopmentpath& operator = (const FMTdevelopmentpath& rhs);
-		~FMTdevelopmentpath()=default;
+		FMTdevelopmentpath(const FMTmask& p_mask, 
+			int p_age, int p_lock, int p_period,double p_proportion);
 	private:
-		std::unique_ptr<FMTdevelopment> m_development;
+		FMTdevelopment m_development;
 		double m_proportion;
-		bool m_own_development;
 	};
 }
 

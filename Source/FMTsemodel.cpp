@@ -503,6 +503,7 @@ namespace Models
 			}
 	}
 
+
 	Spatial::FMTSpatialSchedule  FMTsemodel::GetNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const
 		{
 		return p_FromSolution.GetBaseSchedule(m_SpatialGraphs);
