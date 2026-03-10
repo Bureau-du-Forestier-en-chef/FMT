@@ -435,14 +435,14 @@ namespace Models{
 					"FMTmodel::pushTheme", __LINE__, __FILE__);
 				}
 			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_yieldName);
+			const size_t THEME_START = themes.back().getstart() + themes.back().size();
+			std::vector<Core::FMTtheme> Oldthemes(themes);
+			themes.emplace_back(p_attributes, themes.size(), THEME_START, p_themeName);
 			for (auto& dev : area)
 				{
 				const std::string BASE_THEME = _GetYieldAttribute(dev.getmask(), p_yieldName, AGGREGATES) + "PRE";
 				dev.setmask(Core::FMTmask(std::string(dev.getmask()) + " " + BASE_THEME, themes));
 				}
-			const size_t THEME_START = themes.back().getstart() + themes.back().size();
-			std::vector<Core::FMTtheme> Oldthemes(themes);
-			themes.emplace_back(p_attributes, themes.size(), THEME_START, p_themeName);
 			const std::string DEFAULT_ATTRIBUTE = "?";
 			for (auto& action : actions)
 				{

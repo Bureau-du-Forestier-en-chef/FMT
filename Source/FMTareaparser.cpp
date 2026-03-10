@@ -47,6 +47,27 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 
 #ifdef FMTWITHGDAL
 
+bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_themes,
+	const std::string& p_VectorsMap) const
+{
+	try {
+		GDALDataset* VDataset = getVectorDataset(p_VectorsMap);
+		OGRLayer* layer = getLayer(VDataset, 0);
+		std::map<int, int>themeFields;
+		int age = 0;
+		int area = 0;
+		int lock = 0;
+		getWSFields(layer, themeFields,age,area,lock);
+		return (themeFields.size() == p_themes.size());
+		GDALClose(VDataset);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch(
+			"", "FMTareaparser::_IsMapWithSameThemes", __LINE__, __FILE__, m_section);
+		}
+	return false;
+}
+
 	std::vector<OGRPolygon*> FMTareaparser::getunion(const std::vector<OGRMultiPolygon>& multipartpolygons) const
 		{
 		std::vector<OGRPolygon*> mergedpolygons;
@@ -88,84 +109,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 				"", "FMTareaparser::destroypolygons", __LINE__, __FILE__, m_section);
 		}
 		}
-	/*
-    bool FMTareaparser::writesasolution(const std::string location, const Spatial::FMTsasolution& solution,
-                                        const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions,
-                                        const bool& writeevents, int periodstart, int periodstop) const
-    {
-		try{
-        const Spatial::FMTeventcontainer& events = solution.getevents();
-        if (periodstart==-1)
-        {
-            periodstart = events.firstperiod();
-        }
-        if (periodstop==-1)
-        {
-            periodstop = events.lastperiod();
-        }
-        boost::filesystem::path basepath(location);
-        boost::filesystem::path agefile("AGE.tif");
-        boost::filesystem::path lockfile("LOCK.tif");
-        for (int period = periodstart;period<=periodstop;++period)
-        {
-            boost::filesystem::path new_dir("/Period"+std::to_string(period));
-            boost::filesystem::path dirpath = basepath / new_dir;
-            if (!boost::filesystem::exists(dirpath))
-            {
-                boost::filesystem::create_directory(dirpath);
-            }
-            Spatial::FMTforest forest = solution.getforestperiod(period);
-            std::vector<std::string> themespaths;
-            themespaths.reserve(themes.size());
-            for (size_t i = 1; i <= themes.size();i++)
-            {
-                boost::filesystem::path fpath("THEME"+std::to_string(i)+".tif");
-                boost::filesystem::path filepath = dirpath / fpath;
-                themespaths.push_back(fpath.string());
-            }
-            boost::filesystem::path agepath = dirpath / agefile;
-            boost::filesystem::path lockpath = dirpath / lockfile;
-            writeforest(forest,themes,themespaths,agepath.string(),lockpath.string());
-            if (writeevents)
-            {
-                for (int aid=0; aid<static_cast<int>(actions.size()); ++aid)
-                {
-                    Spatial::FMTlayer<int> action_layer(solution.copyextent<int>());//Setting layer information
-                    int event_id = 1; //To write in the map
-                    std::map<int, std::string> event_map;
-                    std::vector<Spatial::FMTeventcontainer::const_iterator> eventsit = events.getevents(period,aid);
-                    if (!eventsit.empty())
-                    {
-                        for(const auto eventit :eventsit)
-                        {
-                            Spatial::FMTevent event = *eventit;
-                            for (std::set<Spatial::FMTcoordinate>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
-                            {
-
-                                action_layer[*coordit]=event_id;
-                            }
-                            event_map[event_id] = "Event_"+ std::to_string(event_id);
-                            event_id++;
-                        }
-                        if (!action_layer.empty())
-                        {
-                            const std::string action_name = actions.at(aid).getname();
-                            boost::filesystem::path filepath(action_name+"_events_period_"+std::to_string(period)+".tif");
-                            boost::filesystem::path out_path = dirpath / filepath ;
-                            writelayer(action_layer,out_path.string(),event_map);
-                        }
-                    }
-                }
-            }
-        }
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch(
-				"", "FMTareaparser::writesasolution", __LINE__, __FILE__, m_section);
-		}
-        return true;
-    }*/
+	
 
     void FMTareaparser::validate_raster(const std::vector<std::string>&data_rasters) const
         {
@@ -274,6 +218,37 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			}
 		return GCBM;
 		}
+
+	bool FMTareaparser::WriteForest(const Spatial::FMTforest& p_for_layer,
+		const std::vector<Core::FMTtheme>& p_themes,
+		const std::string& p_folder,
+		std::vector<std::map<std::string, std::string>> p_mapping ) const
+	{
+		try {
+			if (!p_folder.empty())
+			{
+				*_logger << "Writing FMTforest to : " << p_folder << "\n";
+				boost::filesystem::path basepath(p_folder);
+				boost::filesystem::path agepath = basepath / "AGE.tif";
+				boost::filesystem::path lockpath = basepath / "STANLOCK.tif";
+				std::vector<std::string> themespaths;
+				themespaths.reserve(p_themes.size());
+				for (size_t i = 1; i <= p_themes.size(); i++)
+				{
+					boost::filesystem::path fpath("THEME" + std::to_string(i) + ".tif");
+					boost::filesystem::path filepath = basepath / fpath;
+					themespaths.push_back(filepath.string());
+				}
+				writeforest(p_for_layer, p_themes, themespaths, agepath.string(), lockpath.string(), p_mapping);
+			}
+			return false;
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTareaparser::writeForest",
+				__LINE__, __FILE__, m_section);
+		}
+		return false;
+	}
 
 
 
@@ -893,49 +868,6 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			const std::vector<Core::FMTtheme>THEMES_SUBSET(themes.begin(), themes.begin() + themes_fields.size());
 			layer = this->subsetlayer(layer, THEMES_SUBSET, agefield, areafield);
 			OGRCoordinateTransformation* coordtransf = getProjTransform(layer, fittoforel);
-			/*OGRwkbGeometryType lgeomtype = layer->GetGeomType();
-			if (lgeomtype != wkbMultiPolygon && lgeomtype != wkbPolygon )
-			{
-				_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
-						"Geometry type from layer is not valid, must be wkbMultiPolygon or wkbPolygon : "+std::to_string(lgeomtype),"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
-			}
-			OGRSpatialReference* lspref = layer->GetSpatialRef();
-			GDALDataset* memds = createVectorMemoryDs();
-			OGRCoordinateTransformation* coordtransf = nullptr;
-			std::unique_ptr<OGRSpatialReference> forelspref = getFORELSpatialRef();
-			bool reproject = false;
-			if (fittoforel && !(lspref->IsSame(&*forelspref)))
-			{
-				coordtransf = OGRCreateCoordinateTransformation(lspref, &*forelspref);
-				if (coordtransf == NULL)
-				{
-					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-										"Coordinate Transformation","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
-				}
-				reproject=true;
-			}*/
-			/*
-			Here we create a layer in memory and populate the field 'devid' with the id of the development in (devs) 
-			*/
-			/*OGRLayer* memlayer = nullptr;
-			if (reproject)
-			{
-				memlayer = memds->createLayer( "Memlayer", &*forelspref, lgeomtype, NULL );
-			}else{
-				memlayer = memds->createLayer( "Memlayer", lspref, lgeomtype, NULL );
-			}
-			if (memlayer == NULL)
-			{
-				 _exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-										"Layer in memory","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
-			}
-			std::string Fieldname = "devid";
-			OGRFieldDefn oField( Fieldname.c_str(), OFTInteger );
-			if (memlayer->CreateField(&oField) != OGRERR_NONE)
-			{
-				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-										"Field definition","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
-			}*/
 			const std::string Fieldname("devid");
 			GDALDataset* memds = getTransFormMemLayerCopy(layer, coordtransf->GetTargetCS(), Fieldname);
 			OGRLayer* memlayer = getLayer(memds,0);
@@ -994,28 +926,34 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			//}
 			basemap = getFMTforestfromlayer(memlayer,devs,Fieldname,resolution,areafactor,fittoforel);
 			GDALClose(memds);
-			if(writeforestfolder!="")
-			{
-				*_logger<<"Writing FMTforest to : "<<writeforestfolder<<"\n";
-				boost::filesystem::path basepath(writeforestfolder);
-				boost::filesystem::path agepath = basepath / "AGE.tif";
-        		boost::filesystem::path lockpath = basepath / "STANLOCK.tif";
-				std::vector<std::string> themespaths;
-				themespaths.reserve(themes.size());
-            	for (size_t i = 1; i <= themes.size();i++)
-				{
-					boost::filesystem::path fpath("THEME"+std::to_string(i)+".tif");
-					boost::filesystem::path filepath = basepath / fpath;
-					themespaths.push_back(filepath.string());
-				}
-				writeforest(basemap,themes,themespaths,agepath.string(),lockpath.string());
-			}
+			WriteForest(basemap, themes, writeforestfolder);
 		}catch (...)
 		{
 			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
 		}
 		return basemap;
 	}
+
+	void FMTareaparser::WriteForestExtended(Spatial::FMTforest& p_forest, 
+		const std::string& p_VectorFile,const std::vector<Core::FMTtheme> p_themes,
+		const std::vector<Core::FMTactualdevelopment>& p_area, const std::string& p_folder) const
+	{
+		try {
+			if (!_IsMapWithSameThemes(p_themes, p_VectorFile));
+			{
+				p_forest.SetLastThemeWithArea(p_area, p_themes);
+			}
+			WriteForest(p_forest, p_themes, p_folder);
+		}catch (...)
+			{
+			_exhandler->printexceptions("",
+				"FMTareaparser::WriteForestExtended", 
+				__LINE__, __FILE__, m_section);
+			}
+	}
+
+
+
 	Spatial::FMTforest FMTareaparser::getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTactualdevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const
 	{
 		//GDALAllRegister();
