@@ -103,14 +103,14 @@ namespace Models{
 			ActionMask.update(themes);
 			const std::string BEFORE = "PRE";
 			const std::string AFTER = "POST";
-			const std::vector<size_t>Static = statictransitionthemes;
+			/*const std::vector<size_t>Static = statictransitionthemes;
 			for (size_t thId = 0; thId < themes.size();++thId)
 				{
 				if (std::find(Static.begin(),Static.end(), thId)== Static.end())
 					{
 					ActionMask.set(themes.at(thId), "?");
 					}
-				}
+				}*/
 			const int MAX_PERIOD = std::min(p_action.getperiodupperbound(),
 				getparameter(Models::FMTintmodelparameters::LENGTH));
 			const std::vector<size_t>AGGREGATE_THEMES = p_BaseModel._GetAggregatesThemes(p_Targetyield);
