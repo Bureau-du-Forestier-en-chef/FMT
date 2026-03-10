@@ -1453,6 +1453,22 @@ namespace Models
 	}
 
 
+	std::vector<Core::FMTactualdevelopment> FMTsrmodel::getPotentialArea(int p_Period, bool p_BeforeGrowAndDeath) const
+	{
+		std::vector<Core::FMTactualdevelopment> devArea;
+		try {
+			const std::vector<double> POTENTIAL_SOLUTION(solver.getNumCols(), 1.0);
+			FMTsrmodel newModel(*this);
+			newModel.solver.setColSolution(&*POTENTIAL_SOLUTION.cbegin());
+			devArea = newModel.getarea(p_Period, p_BeforeGrowAndDeath);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::getPotentialArea", __LINE__, __FILE__);
+		}
+		return devArea;
+	}
+
 	FMTlpsolver* FMTsrmodel::getsolverptr()
 	{
 		return &solver;

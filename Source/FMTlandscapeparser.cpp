@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -294,7 +294,6 @@ namespace Parser
 			context.currentKey = std::to_string(themeID);
 			return true;
 		}
-
 
 		if (context.state == ParseState::NORMAL) {
 			return false; 
