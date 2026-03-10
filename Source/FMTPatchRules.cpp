@@ -29,13 +29,15 @@ namespace Spatial
 
 	FMTPatchRules::FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
 		const std::vector<Core::FMTaction>& p_actions, int p_Id):
-		m_MinimalGreenUp(),
-		m_MaximalGreenUp(),
+		m_GreenUp(),
 		m_MinimalAdjacency(),
 		m_MaximalAdjacency(),
 		m_MinimalSize(),
 		m_MaximalSize(),
+		m_NeighborSize(),
+		m_GroupGreenUp(),
 		m_ActionTargets(),
+		m_GroupTheme(),
 		m_RulesId(),
 		m_MinimalPeriod(),
 		m_MaximalPeriod()
@@ -43,20 +45,20 @@ namespace Spatial
 
 	}
 
-std:vector<std::pair<std::vector<int>,
+std::vector<std::pair<std::vector<int>,
 	std::pair<int, int>>>  FMTPatchRules::_GetOrderedRules(
 		const std::vector<Core::FMTconstraint>& p_constraints,
 		const std::vector<Core::FMTaction>& p_actions)
 	{
-	std:vector<std::pair<std::vector<int>,
+	std::vector<std::pair<std::vector<int>,
 		std::pair<int, int>>> Rules;
 		for (const Core::FMTconstraint& CONSTRAINT : p_constraints)
 			{
 				if (CONSTRAINT.isspatial())
 				{
-					const std::vector<int>ACTION_IDS = constraint.getactionids(p_actions);
-					const int LOWER_PERIOD = constraint.getperiodlowerbound();
-					const int UPPER_PERIOD = constraint.getperiodupperbound();
+					const std::vector<int>ACTION_IDS = CONSTRAINT.getactionids(p_actions);
+					const int LOWER_PERIOD = CONSTRAINT.getperiodlowerbound();
+					const int UPPER_PERIOD = CONSTRAINT.getperiodupperbound();
 					const std::pair<std::vector<int>, std::pair<int, int>> NEW_RULES =
 						std::pair<std::vector<int>, std::pair<int, int>>(ACTION_IDS,
 							std::pair<int, int>(LOWER_PERIOD, UPPER_PERIOD));
@@ -96,53 +98,53 @@ std:vector<std::pair<std::vector<int>,
 		const std::vector<Core::FMTaction>& p_actions, int p_Id)
 	{
 		try {
-			const std:vector<std::pair<std::vector<int>,
-				std::pair<int, int>>> RULES = _GetOrderedRules();
+			const std::vector<std::pair<std::vector<int>,
+				std::pair<int, int>>> RULES = _GetOrderedRules(p_constraints, p_actions);
 			for (const Core::FMTconstraint& CONSTRAINT : p_constraints)
 			{
 				if (CONSTRAINT.isspatial())
 				{
-					const std::vector<int>ACTION_IDS = constraint.getactionids(p_actions);
-					const int LOWER_PERIOD = constraint.getperiodlowerbound();
-					const int UPPER_PERIOD = constraint.getperiodupperbound();
+					const std::vector<int>ACTION_IDS = CONSTRAINT.getactionids(p_actions);
+					const int LOWER_PERIOD = CONSTRAINT.getperiodlowerbound();
+					const int UPPER_PERIOD = CONSTRAINT.getperiodupperbound();
 					const std::pair<std::vector<int>, std::pair<int, int>> NEW_RULES =
 						std::pair<std::vector<int>, std::pair<int, int>>(ACTION_IDS,
 							std::pair<int, int>(LOWER_PERIOD, UPPER_PERIOD));
-					const int RULE = static_cast<int>(std::distance(Rules.begin(), 
-									std::find(Rules.begin(), Rules.end(), NEW_RULES)));
+					const int RULE = static_cast<int>(std::distance(RULES.begin(),
+									std::find(RULES.begin(), RULES.end(), NEW_RULES)));
 					if (RULE == p_Id)
 					{
 						m_RulesId = RULE;
 						m_ActionTargets = ACTION_IDS;
 						m_MinimalPeriod = LOWER_PERIOD;
 						m_MaximalPeriod = UPPER_PERIOD;
-						if (constraint.getconstrainttype() == 
+						if (CONSTRAINT.getconstrainttype() ==
 							Core::FMTconstrainttype::FMTspatialsize)
 							{
-							const Core::FMTyldbounds& BOUNDS = constraint.getyieldbound("NSIZE");
+							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getyieldbound("NSIZE");
 							m_NeighborSize = static_cast<size_t>(BOUNDS.getlower());
 							double lowerSIZE = 0;
 							double upperSIZE = 0;
-							constraint.getbounds(lowerSIZE, upperSIZE, 0);
+							CONSTRAINT.getbounds(lowerSIZE, upperSIZE, 0);
 							_GetBounds<size_t>(lowerSIZE, upperSIZE,
 								m_MinimalSize, m_MaximalSize);
-						}else if (constraint.getconstrainttype() == 
+						}else if (CONSTRAINT.getconstrainttype() ==
 							Core::FMTconstrainttype::FMTspatialadjacency)
 							{
-							const Core::FMTyldbounds& BOUNDS = constraint.getyieldbound("GUP");
+							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getyieldbound("GUP");
 							m_GreenUp = static_cast<size_t>(BOUNDS.getlower());
 							size_t minimalGreenUp = 0;
 							size_t maximalGreenUp = 0;
 							double lowerGreenUp = 0;
 							double upperGreenUp = 0;
-							constraint.getbounds(lowerGreenUp, upperGreenUp, 0);
+							CONSTRAINT.getbounds(lowerGreenUp, upperGreenUp, 0);
 							_GetBounds<size_t>(lowerGreenUp, upperGreenUp,
 								m_MinimalAdjacency, m_MaximalAdjacency);
-						}else if (constraint.getconstrainttype() == 
+						}else if (CONSTRAINT.getconstrainttype() ==
 							Core::FMTconstrainttype::FMTSpatialGroup)
 							{
-							m_GroupGreenUp = static_cast<size_t>(constraint.getyieldbound("GUP").getlower());
-							const Core::FMTyldbounds& THEME_BOUNDS = p_SpatialConstraint.getyieldbound("THEME");
+							m_GroupGreenUp = static_cast<size_t>(CONSTRAINT.getyieldbound("GUP").getlower());
+							const Core::FMTyldbounds& THEME_BOUNDS = CONSTRAINT.getyieldbound("THEME");
 							int themeTarget = -1;
 							if (THEME_BOUNDS.getlower() >= 0.0)
 								{
@@ -173,7 +175,7 @@ std:vector<std::pair<std::vector<int>,
 	bool FMTPatchRules::IsAdjacencyUsed() const
 	{
 		return (!m_ActionTargets.empty() && (m_MinimalAdjacency > 0 ||
-			m_MaximalAdajacency != std::numeric_limits<size_t>::max()));
+			m_MaximalAdjacency != std::numeric_limits<size_t>::max()));
 	}
 	bool FMTPatchRules::HasMinimalAdjacency() const
 	{
@@ -181,20 +183,17 @@ std:vector<std::pair<std::vector<int>,
 	}
 	bool FMTPatchRules::HasMaximalAdjacency() const
 	{
-		return (!m_ActionTargetsempty() &&
+		return (!m_ActionTargets.empty() &&
 			m_MaximalAdjacency != std::numeric_limits<size_t>::max());
 	}
 	const std::vector<int>& FMTPatchRules::GetActions() const
 	{
 		return m_ActionTargets;
 	}
-	size_t FMTPatchRules::GetMinimalGreenUp() const
+
+	size_t FMTPatchRules::GetGreenUp() const
 	{
-		return m_MinimalGreenUp;
-	}
-	size_t FMTPatchRules::GetMaximalGreenUp() const
-	{
-		return m_MaximalGreenUp;
+		return m_GreenUp;
 	}
 	size_t FMTPatchRules::GetMinimalAdjacency() const
 	{

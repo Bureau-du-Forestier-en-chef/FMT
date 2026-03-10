@@ -32,8 +32,7 @@ namespace Spatial
 		bool HasMinimalAdjacency() const;
 		bool HasMaximalAdjacency() const;
 		const std::vector<int>& GetActions() const;
-		size_t GetMinimalGreenUp() const;
-		size_t GetMaximalGreenUp() const;
+		size_t GetGreenUp() const;
 		size_t GetMinimalAdjacency() const;
 		size_t GetMaximalAdjacency() const;
 		size_t GetMinimalSize() const;
@@ -45,7 +44,7 @@ namespace Spatial
 			const std::vector<Core::FMTaction>& p_actions, int p_Id);
 		void _BuildPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
 			const std::vector<Core::FMTaction>& p_actions, int p_Id);
-		static std:vector<std::pair<std::vector<int>,
+		static std::vector<std::pair<std::vector<int>,
 						std::pair<int,int>>> _GetOrderedRules(const std::vector<Core::FMTconstraint>& p_constraints,
 						const std::vector<Core::FMTaction>& p_actions);
 		template <typename U>
