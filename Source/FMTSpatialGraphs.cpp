@@ -244,10 +244,11 @@ namespace Spatial
 					const double CELLS = _GetGraphCells(p_Solution, GRAPH.second);
 					if (CELLS > FMT_DBL_TOLERANCE)
 					{
+						const double GRAPH_AREA = CELLS * GRAPH.first.getbasedevelopment().getarea();
 						for (int period = 1; period < GRAPH.first.getperiod(); ++period)
 						{
 							const Core::FMTschedule SCHEDULE = GRAPH.first.getschedule(GetModel().actions,
-								&CELLS, period, WithLock);
+								&GRAPH_AREA, period, WithLock);
 							Schedules[period - 1] += SCHEDULE;
 							
 						}

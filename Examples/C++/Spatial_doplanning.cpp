@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 		modellocation = "D:/CC_modele_feu/CC_V2/";
 		primarylocation = modellocation + "Mod_cc_v2.pri";
 		scenario = "PlayBack_Histo";
-		length = 1;
+		length = 5;
 		spatialOutputs = { "OVOLTOTREC"};
 		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
 		primarylocation = modellocation + "Mod_cc_v2.pri";

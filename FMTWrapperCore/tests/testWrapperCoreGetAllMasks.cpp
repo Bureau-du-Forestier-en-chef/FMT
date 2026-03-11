@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
 	else
 	{
 		pathPri = "D:\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
-		scenarioName = "strategique_Histo";
-		periods = 2;
+		scenarioName = "PlayBack_Histo";
+		periods = 20;
 		writeOnDisk = true;
 		outputFilePath = "get_all_mask_output.txt";
 		//resutlSize = 32953;
