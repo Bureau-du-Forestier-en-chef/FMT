@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmaskfilter.h"
 #include <boost/serialization/serialization.hpp>
 #include <string>
+#include <vector>
 #include "FMTutility.h"
 
 
@@ -21,6 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 class FMTdevelopment;
+class FMTdevelopmentpath;
 class FMTyields;
 class FMTyieldrequest;
 class FMTtheme;
@@ -44,11 +46,12 @@ class FMTEXPORT FMTtransitionmask : public FMTmaskfilter,public FMTspec
 		~FMTtransitionmask()=default;
         FMTtransitionmask(const std::string& lmask,const std::vector<FMTtheme>& themes,
 						const double& lproportion);
-        FMTmask trans(const FMTmask& basemask) const;
+        FMTmask trans(const FMTmask& p_baseMask,
+                        const std::vector<FMTtheme>& p_themes) const;
         FMTtransitionmask(const FMTtransitionmask& rhs);
         FMTtransitionmask(const FMTtransitionmask& rhs,const FMTmask& lmask,const std::vector<FMTtheme>& themes);
         FMTtransitionmask& operator = (const FMTtransitionmask& rhs);
-        FMTdevelopment disturb(const Core::FMTdevelopment& dev, const FMTyields& yields,
+        FMTdevelopmentpath disturb(const Core::FMTdevelopment& dev, const FMTyields& yields,
 			const std::vector<FMTtheme>& themes,const bool& reset_age) const;
 		std::map<std::string, std::string>get(const std::vector<FMTtheme>& themes) const;
 		bool operator == (const FMTtransitionmask& rhs) const;

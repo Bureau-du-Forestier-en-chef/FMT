@@ -44,9 +44,9 @@ int main(int argc, char* argv[])
 		boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
 		length = std::stoi(argv[3]);
 	}else {
-		modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Carbone_SES/";
-		primarylocation = modellocation + "PC_9936_U01272_2028_MODB01.pri";
-		scenario = "120_TBE";
+		modellocation = "D:/CC_modele_feu/CC_V2/";
+		primarylocation = modellocation + "Mod_cc_v2.pri";
+		scenario = "PlayBack_Histo";
 		length = 5;
 		spatialOutputs = { "OVOLTOTREC"};
 		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
@@ -84,6 +84,7 @@ int main(int argc, char* argv[])
 	simulationmodel.settransitions(strans);
 	const std::string rastpath = modellocation + "rasters/";
 	setMapping(rastpath, simulationmodel);
+	//mparser.write(simulationmodel, "D:/test/");
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);

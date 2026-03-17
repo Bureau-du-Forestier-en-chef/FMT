@@ -351,7 +351,7 @@ namespace Graph
 	}
 
 
-    int FMTlinegraph::randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model,
+    int FMTlinegraph::_randomOperate(const std::vector<int>& operables, const Models::FMTmodel& model,
                                             FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
                                             const Core::FMTdevelopment& active_development, bool dontchoosegrow)
     {
@@ -387,67 +387,64 @@ namespace Graph
 			else
 			{
 				grow();
-				/*const Core::FMTfuturdevelopment grown_up = active_development.grow();
-				FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
-				const FMTedgeproperties newedge(-1, 0, 100);
-				boost::add_edge(vertex, next_period, newedge, data);
-				++stats.edges;
-				//close the last element
-				FMTvertex_iterator vertex_iterator, vertex_iterator_end, first_vertex;
-				boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
-				first_vertex = vertex_iterator_end;
-				--first_vertex;
-				developments.back() = FMTvertex_pair(developments.back().first, first_vertex);
-				developments.push_back(FMTvertex_pair(first_vertex, vertex_iterator_end));
-				rebasecache();*/
 				return -1;
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlinegraph::randomoperate", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::_randomOperate", __LINE__, __FILE__);
 			}
 		return -1;
     }
+
+	const std::vector<int>& FMTlinegraph::GetSetOperability(
+		const Core::FMTdevelopment& p_development,
+		const Models::FMTmodel& p_model,
+		boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& p_Cache)
+	{
+		boost::unordered_map<Core::FMTdevelopment, std::vector<int>>::iterator OpIt = p_Cache.end();
+		try {
+			OpIt = p_Cache.find(p_development);
+			if (OpIt == p_Cache.end())
+				{
+				std::vector<int> operables;
+				int action_id = 0;
+				for (const Core::FMTaction& action : p_model.actions)
+				{
+					if (p_development.operable(action, p_model.yields))
+					{
+						operables.push_back(action_id);
+					}
+					++action_id;
+				}
+				OpIt = p_Cache.insert(
+					std::pair<Core::FMTdevelopment, std::vector<int>>(p_development, operables)).first;
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch(
+				"", "FMTlinegraph::_GetSetOperability", __LINE__, __FILE__);
+			}
+		return OpIt->second;
+	}
 
     std::vector<int> FMTlinegraph::randombuildperiod(const Models::FMTmodel& model, std::default_random_engine& generator,
 											boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& operability,bool dontchoosegrow)
 	{
 		std::vector<int>actioned;
 		try {
-			/*FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-			boost::tie(vertex_iterator, vertex_iterator_end) = vertices(data);
-			developments.push_back(FMTvertex_pair(developments.back().second, vertex_iterator_end));
-			rebasecache();*/
 			Graph::FMTlinegraph::FMTvertex_descriptor active = getactivevertex();
-			std::vector<int>operated;
 			while (active!= boost::graph_traits<FMTadjacency_list>::null_vertex())
 			{
 				const FMTbasevertexproperties& front_properties = data[active];
 				const Core::FMTdevelopment& active_development = front_properties.get();
-				std::vector<int> operables;
-				if (operability.find(active_development) != operability.end())
+				const std::vector<int>& DEV_OP = GetSetOperability(active_development, model, operability);
+	
+				const int SELECTED_ACTION = _randomOperate(DEV_OP, model,
+					active, generator, active_development, dontchoosegrow);
+
+				if (SELECTED_ACTION > -1)
 				{
-					operables = operability.at(active_development);
-				}
-				else {
-					int action_id = 0;
-					for (const Core::FMTaction& action : model.actions)
-					{
-						if (active_development.operable(action, model.yields))
-						{
-							operables.push_back(action_id);
-						}
-						++action_id;
-					}
-				operability[active_development] = operables;
-				}
-
-
-				const int selectedaction = randomoperate(operables, model,active, generator, active_development, dontchoosegrow);
-
-				if (selectedaction > -1)
-				{
-					actioned.push_back(selectedaction);
+					actioned.push_back(SELECTED_ACTION);
 				}
 			}
 		}catch (...)
@@ -505,69 +502,6 @@ namespace Graph
 	}
 
 
-    FMTgraphstats FMTlinegraph::clearfromperiod(const int& period,bool updatedevelopments)
-    {
-		try {
-			const int basesize = static_cast<int>(this->size() - 1);
-			std::vector<FMTvertex_descriptor>removed;
-			for (int location = basesize; location >= period; --location)
-			{
-				
-				FMTvertex_iterator vertexit, vertexend;
-				for (boost::tie(vertexit, vertexend) = developments.at(location); vertexit != vertexend; ++vertexit)
-				{
-					const FMTvertex_descriptor vertexm_location = *vertexit;
-					if (!(location == period && periodstart(vertexm_location)))
-					{
-						--stats.edges;
-						boost::clear_in_edges(vertexm_location, data);
-						removed.push_back(*vertexit);
-					}
-				}
-				
-				/*if (updatedevelopments && developments.back().empty())
-				{
-					developments.pop_back();
-				}*/
-
-			}
-			std::sort(removed.rbegin(), removed.rend());
-			for (FMTvertex_descriptor it : removed)
-			{
-				boost::remove_vertex(it, data);
-				--stats.vertices;
-				/*if (updatedevelopments)
-				{
-					developments.at(location).erase(it);
-				}*/
-			}
-			if (updatedevelopments)
-			{
-				generatedevelopments();
-				nodescache.clear();
-			}
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTlinegraph::clearfromperiod", __LINE__, __FILE__);
-			}
-    return stats;
-    }
-
-
-
-    FMTlinegraph FMTlinegraph::partialcopy(const int& period) const
-    {
-        FMTlinegraph newgraph(*this);
-		try {
-        const FMTgraphstats delstats = newgraph.clearfromperiod(period);
-        newgraph.generatedevelopments();
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::partialcopy", __LINE__, __FILE__);
-		}
-        return newgraph;
-    }
 
     
 
@@ -588,38 +522,22 @@ namespace Graph
 		nodescache.clear();
 		}
 
-	bool FMTlinegraph::ismovable(const std::vector<const Core::FMTaction*>& actions,const Core::FMTyields& yields, const int& period,
-		boost::unordered_map<Core::FMTdevelopment,bool>*operability) const
+	bool FMTlinegraph::isMovable(const Models::FMTmodel& p_model, const int& period,
+		boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& p_operability) const
 		{
 		try{
-		const int lastperiod = getperiod();
-		for (int localperiod = period; localperiod < lastperiod;++localperiod)
+			const int lastperiod = getperiod();
+			for (int localperiod = period; localperiod < lastperiod;++localperiod)
+				{
+				const Core::FMTdevelopment& startingdev = getperiodstartdev(localperiod);
+				const std::vector<int>& DEV_OP = GetSetOperability(startingdev, 
+																p_model, p_operability);
+				return !DEV_OP.empty();
+				}
+		}catch (...)
 			{
-			const Core::FMTdevelopment& startingdev = getperiodstartdev(localperiod);
-			bool operable = false;
-			if (operability!=nullptr&&operability->find(startingdev)!=operability->end())
-				{
-				operable = operability->at(startingdev);
-			}else {
-				if (startingdev.anyoperable(actions, yields))
-					{
-					operable = true;
-					}
-				if (operability != nullptr)
-					{
-					(*operability)[startingdev] = operable;
-					}
-				}
-			if (operable)
-				{
-				return true;
-				}
+			_exhandler->raisefromcatch("", "FMTlinegraph::isMovable", __LINE__, __FILE__);
 			}
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::ismovable", __LINE__, __FILE__);
-		}
 		return false;
 		}
 

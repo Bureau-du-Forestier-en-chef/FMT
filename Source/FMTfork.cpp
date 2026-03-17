@@ -22,43 +22,26 @@ namespace Core{
 
 
 
-FMTfork::FMTfork():FMTspec(),FMTobject(), transitions()
+FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
     {
 
 
     }
-    FMTfork::FMTfork(const FMTfork& rhs):
-        FMTspec(rhs),
-        FMTobject(rhs),
-        transitions(rhs.transitions)
-        {
 
-
-        }
-    FMTfork& FMTfork::operator = (const FMTfork& rhs)
-        {
-        if (this!=&rhs)
-            {
-            FMTspec::operator=(rhs);
-            FMTobject::operator=(rhs);
-            transitions = rhs.transitions;
-            }
-        return *this;
-        }
     void FMTfork::add(const FMTtransitionmask& transition)
         {
-        transitions.push_back(transition);
+        m_transitions.push_back(transition);
         }
     void FMTfork::clear()
     {
-        transitions.clear();
+        m_transitions.clear();
     }
 
 
      double FMTfork::sumprop() const
         {
         double total = 0;
-        for(const FMTtransitionmask& transition : transitions)
+        for(const FMTtransitionmask& transition : m_transitions)
             {
             total+=transition.getproportion();
             }
@@ -66,14 +49,14 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), transitions()
         }
     size_t FMTfork::size() const
         {
-        return transitions.size();
+        return m_transitions.size();
         }
     FMTfork::operator std::string() const
         {
 		std::string line;
         line+=" "+FMTspec::operator std::string();
         line+="\n";
-        for(const FMTtransitionmask& transition : transitions)
+        for(const FMTtransitionmask& transition : m_transitions)
             {
             line+= std::string(transition);
             line+="\n";
@@ -90,72 +73,88 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), transitions()
 
     void FMTfork::presolveRef(const FMTmaskfilter& filter, const std::vector<FMTtheme>& presolvedthemes)
         {
-        for (FMTtransitionmask& trmask : transitions)
+        for (FMTtransitionmask& trmask : m_transitions)
             {
             trmask.presolveRef(filter, presolvedthemes);
             }
         }
+
+    FMTdevelopmentpath FMTfork::_GetPath(const FMTtransitionmask& p_target, 
+        const Core::FMTdevelopment& p_base, const Core::FMTyields& p_yields,
+        const std::vector<FMTtheme>& p_themes, bool p_AgeReset) const
+    {
+        try {
+            FMTdevelopmentpath newPath = p_target.disturb(p_base, p_yields, p_themes, p_AgeReset);
+            FMTdevelopment& newdev = newPath.getDevelopmentReference();
+            if (!p_AgeReset && p_base == newdev)
+                {
+                _exhandler->raise(Exception::FMTexc::FMTsourcetotarget_transition,
+                    "from " + std::string(p_base) + " to " + std::string(newdev) + "\n",
+                    "FMTfork::_GetPath", __LINE__, __FILE__, Core::FMTsection::Transition);
+                newdev.setlock(newdev.getlock() + 1);
+                }
+            return newPath;
+        }catch (...)
+            {
+            _exhandler->raisefromcatch("", "FMTfork::_GetPath", __LINE__, __FILE__,
+                Core::FMTsection::Transition);
+            }
+        return FMTdevelopmentpath();
+    }
 
 	std::vector<FMTdevelopmentpath> FMTfork::getpaths(const Core::FMTdevelopment& base,const Core::FMTyields& ylds,
 		const std::vector<FMTtheme>& themes, const bool& reset_age) const
 		{
         std::vector<FMTdevelopmentpath>paths;
         try{
-        paths.reserve(transitions.size());
-        boost::unordered_map<Core::FMTdevelopment,size_t>pathmap;
-        bool keeptags = false;
-        if (size()>1)
+            paths.reserve(size());
+        if (size() == 1)
             {
-            keeptags = true;
-            pathmap.reserve(transitions.size());
-            }   
-        size_t pathid = 0;
-        for (const FMTtransitionmask& tran : transitions)
-        {
-           Core::FMTdevelopment newdev = tran.disturb(base, ylds, themes, reset_age);
-           if (!reset_age && base==newdev)
+            paths.push_back(_GetPath(*m_transitions.begin(), base, ylds,
+                themes, reset_age));
+        }else {
+            boost::unordered_map<Core::FMTdevelopment, size_t>pathmap;
+            size_t pathid = 0;
+            for (const FMTtransitionmask& tran : m_transitions)
                 {
-                _exhandler->raise(Exception::FMTexc::FMTsourcetotarget_transition,
-                    "from "+ std::string(base) +" to "+ std::string(newdev) + "\n",
-                    "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
-                newdev.setlock(newdev.getlock()+1);
+                const FMTdevelopmentpath NEW_PATH = _GetPath(tran, base, ylds,
+                    themes, reset_age);
+                const FMTdevelopment& newdev = NEW_PATH.getDevelopment();
+                boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator mapit = pathmap.find(newdev);
+                if (mapit != pathmap.end())
+                    {
+                        _exhandler->raise(Exception::FMTexc::FMTsame_transitiontargets,
+                            "from " + std::string(base) + " to " + std::string(newdev) + "\n",
+                            "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
+                        paths[mapit->second].setProportion(paths[mapit->second].getProportion() + tran.getproportion());
+                        continue;
+                    }else {
+                        pathmap[newdev] = pathid;
+                    }
+                paths.push_back(NEW_PATH);
+                ++pathid;
                 }
-           if (keeptags)
-                {
-                   boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator mapit = pathmap.find(newdev);
-                   if (mapit != pathmap.end())
-                        {
-                       _exhandler->raise(Exception::FMTexc::FMTsame_transitiontargets,
-                           "from " + std::string(base) + " to " + std::string(newdev) + "\n",
-                           "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
-                       paths[mapit->second].setProportion(paths[mapit->second].getProportion() + tran.getproportion());
-                       continue;
-                   }else {
-                       pathmap[newdev] = pathid;
-                       }
-                }
-            paths.emplace_back(newdev,tran.getproportion());
-            ++pathid;
-        }
+            }
         }catch (...)
             {
-            _exhandler->raisefromcatch("", "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
+            _exhandler->raisefromcatch("", "FMTfork::getpaths",
+                __LINE__, __FILE__, Core::FMTsection::Transition);
              }
         return paths;
 		}
 
 	std::vector<FMTtransitionmask> FMTfork::getmasktrans() const
         {
-        return transitions;
+        return m_transitions;
         }
 
      FMTfork FMTfork::single() const
         {
         FMTfork newfork(*this);
-        newfork.transitions.clear();
+        newfork.m_transitions.clear();
         double lastproportion = 0;
         FMTtransitionmask singletrans;
-        for(const FMTtransitionmask& tran : transitions)
+        for(const FMTtransitionmask& tran : m_transitions)
             {
             const double proportion = tran.getproportion();
             if (proportion > lastproportion)
@@ -165,7 +164,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), transitions()
                 }
             }
         singletrans.setproportion(100);
-        newfork.transitions.push_back(singletrans);
+        newfork.m_transitions.push_back(singletrans);
         return newfork;
         }
 
@@ -173,12 +172,12 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), transitions()
         {
         double lastproportion = 0;
         FMTdevelopment dev;
-        for(const FMTtransitionmask& tran : transitions)
+        for(const FMTtransitionmask& tran : m_transitions)
             {
             const double proportion = tran.getproportion();
             if (proportion > lastproportion)
                 {
-                dev = tran.disturb(base,ylds,themes,reset_age);
+                dev = tran.disturb(base,ylds,themes,reset_age).getDevelopment();
                 }
             }
         return dev;
@@ -187,7 +186,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), transitions()
 	bool FMTfork::operator == (const FMTfork& rhs) const
 		{
         return (FMTspec::operator == (rhs) &&
-            transitions == rhs.transitions);
+            m_transitions == rhs.m_transitions);
             
 		}
 }

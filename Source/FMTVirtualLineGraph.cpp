@@ -6,16 +6,17 @@
 #include "FMTGraphInfo.h"
 #include "FMTmodel.h"
 #include "FMToutput.h"
+#include "FMTSolutionTracker.h"
 
 
 namespace Spatial{
 
 
 	double FMTVirtualLineGraph::GetOutput(const Models::FMTmodel& p_model, 
-		const std::vector<size_t>& p_solution,
+		const FMTSolutionTracker& p_solution,
 		const Core::FMToutput& p_output, int p_period) const
 	{
-		if (p_solution.at(m_Iterator->second.GetGraphId())>0)
+		if (p_solution.GetNumberOfCells(m_Iterator->second.GetGraphId())>0)
 		{
 			const double AREA = m_Iterator->first.getbasedevelopment().getarea();
 			const double* SOLUTION = &AREA;
@@ -35,7 +36,7 @@ namespace Spatial{
 		}
 
 	void FMTVirtualLineGraph::setLineGraph(const Graph::FMTlinegraph& p_LineGraph,
-						std::vector<size_t>& p_solution)
+		FMTSolutionTracker& p_solution)
 		{
 		_insertInto(p_LineGraph, p_solution);
 		}
@@ -45,21 +46,21 @@ namespace Spatial{
 		return m_GraphFamily;
 		}
 
-	void FMTVirtualLineGraph::SetBaseGraph(std::vector<size_t>& p_solution)
+	void FMTVirtualLineGraph::SetBaseGraph(FMTSolutionTracker& p_solution)
 		{
 		_remove(p_solution);
 		m_Iterator = m_Graphs->GetBaseIterator(m_GraphFamily);
 		_add(p_solution);
 		}
 
-	void FMTVirtualLineGraph::SetLastPeriod(std::vector<size_t>& p_solution)
+	void FMTVirtualLineGraph::SetLastPeriod(FMTSolutionTracker& p_solution)
 		{
 		_remove(p_solution);
 		m_Iterator = m_Graphs->GetLastPeriodIterator(m_GraphFamily, m_Iterator);
 		_add(p_solution);
 		}
 
-	void FMTVirtualLineGraph::SetNaturalGrowth(std::vector<size_t>& p_solution)
+	void FMTVirtualLineGraph::SetNaturalGrowth(FMTSolutionTracker& p_solution)
 		{
 		_remove(p_solution);
 		m_Iterator = m_Graphs->SetNaturalGrowthIterator(m_GraphFamily);
@@ -69,7 +70,7 @@ namespace Spatial{
 	FMTVirtualLineGraph FMTVirtualLineGraph::PostSolve(const Core::FMTmaskfilter& p_Filter,
 		const std::vector<int>& p_actionMapping,
 		FMTSpatialGraphs& p_Graphs,
-		std::vector<size_t>& p_solution) const
+		FMTSolutionTracker& p_solution) const
 	{
 		Graph::FMTlinegraph graphCopy = getLineGraph();
 		graphCopy.postsolve(p_Filter, 
@@ -80,7 +81,7 @@ namespace Spatial{
 	}
 
 	void FMTVirtualLineGraph::_insertInto(const Graph::FMTlinegraph& p_LineGraph,
-		std::vector<size_t>& p_solution)
+		FMTSolutionTracker& p_solution)
 	{
 		_remove(p_solution);
 		m_Iterator =  m_Graphs->SetIterator(p_LineGraph,m_GraphFamily);
@@ -162,11 +163,11 @@ namespace Spatial{
 		return m_Graphs->IsNotNull(m_GraphFamily, m_Iterator);
 		}
 
-	void FMTVirtualLineGraph::_add(std::vector<size_t>& p_solution)
+	void FMTVirtualLineGraph::_add(FMTSolutionTracker& p_solution)
 		{
 		m_Graphs->AddToSolution(p_solution, m_GraphFamily, m_Iterator);
 		}
-	void FMTVirtualLineGraph::_remove(std::vector<size_t>& p_solution)
+	void FMTVirtualLineGraph::_remove(FMTSolutionTracker& p_solution)
 		{
 		m_Graphs->RemoveToSolution(p_solution, m_GraphFamily, m_Iterator);
 		}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -56,7 +56,7 @@ available to the user. This class is also used by the FMTmodelparser.
 		*/
 		std::map<std::string, double> getindexes(std::string indexm_line, const Core::FMTconstants& constants);
 		// DocString: FMTlandscapeparser::ParseState
-		enum class ParseState { NORMAL, IN_PRE_DECLARATION };
+		enum class ParseState {NORMAL = 0, IN_PRE_DECLARATION = 1};
 		// DocString: FMTlandscapeparser::PreDeclarationContext
 		struct PreDeclarationContext {
 			ParseState state;

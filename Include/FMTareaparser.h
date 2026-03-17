@@ -101,6 +101,14 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			const std::string& age,
 			const std::string& lock,
 			std::vector<std::map<std::string, std::string>> mapping = std::vector<std::map<std::string, std::string>>()) const;
+		// DocString: FMTareaparser::writeForest
+		/**
+		Write FMT forest in a folder.
+		*/
+		bool WriteForest(const Spatial::FMTforest& p_for_layer,
+			const std::vector<Core::FMTtheme>& p_themes,
+			const std::string& p_folder,
+			std::vector<std::map<std::string, std::string>> p_mapping = std::vector<std::map<std::string, std::string>>()) const;
 		// DocString: FMTareaparser::writeforesttheme
 		/**
 		Write a forest theme based on a mapping for a FMTforest with a given file format in raster file.
@@ -227,6 +235,12 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		--In the future, arguments will be added to change the resampling type and allow field with float type.
 		*/
 		GDALDataset* OGRlayertoRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution, const bool& fittoforel) const;
+
+		void WriteForestExtended(Spatial::FMTforest& p_forest,const std::string& p_VectorFile,
+						const std::vector<Core::FMTtheme> p_themes,
+						const std::vector<Core::FMTactualdevelopment>& p_area,
+							const std::string& p_folder) const;
+
 #endif
 		// DocString: FMTareaparser()
 		/**
@@ -403,8 +417,9 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			FMToperating area based on a maximal clustering distance.
 			*/
 			std::vector<Heuristics::FMToperatingareacluster> getclustersfrompolygons(const std::vector<OGRPolygon*>&polygons,
-																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,
-																		const double& maximaldistance) const;
+																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,const double& maximaldistance) const;
+			bool _IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_themes,
+				const std::string& p_VectorsMap) const;
 		#endif
 			// DocString: FMTareaparser::getFMTforestfromlayer
 			/**

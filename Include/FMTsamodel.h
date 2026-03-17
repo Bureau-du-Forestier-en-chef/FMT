@@ -123,12 +123,12 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     enum FMTsamove
     {
         Local = 1,
-        ReBuilder = 2,
-        AreaConflictDestrutor = 3,
-        AdjacencyConflictDestrutor = 4,
-        GroupsConflictDestructor = 5,
-        EventsSpread = 6,
-        MoveCount = 7
+        AreaConflictDestrutor = 2,
+        AdjacencyConflictDestrutor = 3,
+        GroupsConflictDestructor = 4,
+        EventsSpread = 5,
+        //ReBuilder = 7,
+        MoveCount = 6
     };
     static std::string GetMovesName(FMTsamove p_move);
     class FMTmovestats
@@ -269,9 +269,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Do a loval move and disturb a random number of graph at a random period
         */
         Spatial::FMTSpatialSchedule _DoLocalMove(const Spatial::FMTSpatialSchedule& actual,
-            const Spatial::FMTSpatialSchedule::actionbindings& bindings,
-            const std::vector<Spatial::FMTcoordinate>* movable,
-            boost::unordered_map<Core::FMTdevelopment, bool>* operability) const;
+            const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTsamodel::DoConflictDestruction
         /**
         Destroy the conflicts for a given periods and coordinates
@@ -312,17 +310,13 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		Perturb a solution and produce a new one
 		*/
 		Spatial::FMTSpatialSchedule _Move(const Spatial::FMTSpatialSchedule& actual,
-						const Spatial::FMTSpatialSchedule::actionbindings& bindings,
-						const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
-						boost::unordered_map<Core::FMTdevelopment, bool>*operability= nullptr) const;
+						const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
 		// DocString: FMTsamodel::warmup
 		/**
 		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
 		*/
 		double _Warmup(const Spatial::FMTSpatialSchedule& actual,
-			const Spatial::FMTSpatialSchedule::actionbindings& bindings,
-			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
-			boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr);
+			const Spatial::FMTSpatialSchedule::actionbindings& bindings);
         // DocString: FMTsamodel::initialgrow
         /**
         Do an initial grow till you reach the length of the model with the actual solution
@@ -409,6 +403,11 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 
 
         void _ResetTabouMoves();
+
+        std::vector<FMTsamove> _GetNonTabouMoves() const;
+
+        bool _AllowMove(FMTsamove p_move, const Spatial::FMTSpatialSchedule& p_actual,
+            const Spatial::FMTSpatialSchedule::actionbindings& p_bindings) const;
 	
 
     };

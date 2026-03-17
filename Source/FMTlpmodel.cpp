@@ -108,23 +108,32 @@ namespace Models
 		}
 
 	void FMTlpmodel::_setGraphCache(bool p_noLength)
-		{
+	{
 		const bool QUIET_LOG = parameters.getboolparameter(QUIET_LOGGING);
 		size_t length = 5;
 		if (!p_noLength)
-			{
+		{
 			length = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH));
-			}
+		}
 		const size_t AREA = area.size();
 		const size_t ACTIONS = actions.size();
 		const size_t EXPO_FACTOR = 5;
 		const size_t TO_RESERVE = length * AREA * ACTIONS * EXPO_FACTOR;
-		m_graph->reserveVerticies(TO_RESERVE);
-		if (!QUIET_LOG)
-		{ 
-			_logger->logwithlevel("Graph reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") vertices\n", 1);
+		try
+		{
+			m_graph->reserveVerticies(TO_RESERVE);
+			if (!QUIET_LOG)
+			{ 
+				_logger->logwithlevel("Graph reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") vertices\n", 1);
+			}
 		}
+		catch (...)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTWIN32Error,
+				"Unsufficient RAM",
+				"FMTlpmodel::_setGraphCache", __LINE__, __FILE__);
 		}
+	}
 
 	void FMTlpmodel::_setConstraintsCache()
 	{

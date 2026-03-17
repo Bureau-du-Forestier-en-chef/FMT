@@ -24,10 +24,10 @@ int main(int argc, char* argv[])
 	}
 	else 
 	{
-		primary_path = "C:\\Users\\Admlocal\\Documents\\issues\\C2_00984297\\01_Valide_8251\\01_Valide_8251\\PC_9949_U08251_2028_MODB01.pri";
+		primary_path = "C:/Users/admlocal/Desktop/03_Carbone/03_Carbone/PC_9981_U06471_2028_MODB01.pri";
 		actionName = "ATBEMORT";
 		targetYield = "YV_S_MORT";
-		scenarioName = "120_RegProv_apsp";
+		scenarioName = "200_StratReg_apsp";
 
 	}
 	std::string output_scenario_name = scenarioName + "_test";

@@ -380,56 +380,144 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
         return bits;
         }
 
-std::string FMTtheme::bitsToStr(const boost::dynamic_bitset<uint8_t>& p_bits) const
-        {
-		try {
-			const size_t bitcounts = p_bits.count();
-			const size_t themesize = p_bits.size();
-			if (themesize>1 && bitcounts == themesize)
+ std::string FMTtheme::bitsToStr(const Core::FMTmask& p_mask) const
+	{
+	 try {
+		 const size_t BITS_COUNT = _GetCount(p_mask);
+		 const size_t BITS_SIZE = size();
+		 if (BITS_SIZE > 1 && BITS_COUNT == BITS_SIZE)
+		 {
+			 return "?";
+		 }
+		 else {
+			 if (BITS_COUNT == 1)
+			 {
+				 const size_t FIRST_TRUE = _FindFirst(p_mask);
+				 if (FIRST_TRUE < m_attributes.size())
+				 {
+					 return m_attributes.at(FIRST_TRUE);
+				 }
+			 }
+			 else {
+				 for (const std::string& AGGREGATE : m_aggregates)
+				 {
+					 const boost::dynamic_bitset<uint8_t>TO_TEST = strToBits(AGGREGATE);
+					 if (_IsEqual(p_mask, TO_TEST))
+					 {
+						 return AGGREGATE;
+					 }
+					 else if (_IsFlipEqual(p_mask, TO_TEST))
+					 {
+						 return "!" + AGGREGATE;
+					 }
+				 }
+				 if (_GetFlipCount(p_mask) == 1)
+				 {
+					 const size_t FIRST_TRUE = _FindFirstFlip(p_mask);
+					 if (FIRST_TRUE < m_attributes.size())
+					 {
+						 return "!" + m_attributes.at(FIRST_TRUE);
+					 }
+				 }
+			 }
+			 _exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
+				 "for bitset count of " + std::to_string(BITS_COUNT) + " in theme " + std::to_string(m_id),
+				 "FMTtheme:::bitsToStr", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		 }
+
+
+	 }catch (...)
+		{
+		 _exhandler->raisefromcatch("", "FMTtheme::bitsToStr",
+			 __LINE__, __FILE__, Core::FMTsection::Landscape);
+		}
+	}
+
+ size_t FMTtheme::_GetCount(const Core::FMTmask& p_mask) const
+	{
+	size_t countOf = 0;
+	for (size_t i = m_start; i < (m_start + size());++i)
+		{
+		countOf += static_cast<size_t>(p_mask[i]);
+		}
+	return countOf; 
+	}
+
+ size_t FMTtheme::_GetFlipCount(const Core::FMTmask& p_mask) const
+ {
+	 size_t countOf = 0;
+	 for (size_t i = m_start; i < (m_start + size()); ++i)
+	 {
+		 countOf += static_cast<size_t>(!p_mask[i]);
+	 }
+	 return countOf;
+ }
+
+ size_t FMTtheme::_FindFirstFlip(const Core::FMTmask& p_mask) const
+ {
+	 size_t STOP = (m_start + size());
+	 size_t firstOf = STOP;
+	 size_t i = m_start;
+	 while (firstOf == STOP &&
+		 i < STOP)
+	 {
+		 if (!p_mask[i])
+		 {
+			 firstOf = i - m_start;
+		 }
+		 ++i;
+	 }
+	 return firstOf;
+ }
+
+ size_t FMTtheme::_FindFirst(const Core::FMTmask& p_mask) const
+	{
+	const size_t STOP = (m_start + size());
+	size_t firstOf = STOP;
+	size_t i = m_start;
+	while (firstOf== STOP &&
+				i<STOP)
+		{
+		if (p_mask[i])
 			{
-				return "?";
+			firstOf = i - m_start;
 			}
-			else {
-				if (bitcounts == 1)
-				{
-					const size_t firsttrue = p_bits.find_first();
-					if (firsttrue < m_attributes.size())
-					{
-						return m_attributes.at(firsttrue);
-					}
-				}
-				else {
-					for (const std::string& aggregate : m_aggregates)
-					{
-						 boost::dynamic_bitset<uint8_t>totest = strToBits(aggregate);
-						if (totest == p_bits)
-						{
-							return aggregate;
-						}else if (totest.flip() == p_bits)
-							{
-							return "!" + aggregate;
-							}
-					}
-					 boost::dynamic_bitset<uint8_t> flipped(p_bits);
-					flipped.flip();
-					if (flipped.count()==1)
-					{
-						const size_t firstTrue = flipped.find_first();
-						if (firstTrue < m_attributes.size())
-						{
-							return "!" + m_attributes.at(firstTrue);
-						}
-					}
-				}
-				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-					"for bitset count of " + std::to_string(bitcounts) + " in theme " + std::to_string(m_id), "FMTtheme:::bitsToStr", __LINE__, __FILE__, Core::FMTsection::Landscape);
-			}
-		}catch (...)
+		++i;
+		}
+	return firstOf;
+	}
+
+ bool FMTtheme::_IsEqual(const Core::FMTmask& p_mask,
+	 const boost::dynamic_bitset<uint8_t>& p_bits) const
+ {
+	 size_t j= 0;
+	 for (size_t i = m_start; i < (m_start + size()); ++i)
+	 {
+		 if (p_mask[i] != p_bits[j])
 			{
-			_exhandler->raisefromcatch("", "FMTtheme:::bitsToStr", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			return false;
 			}
-		return "";
-        }
+		++j;
+	 }
+	 return true;
+ }
+
+ bool FMTtheme::_IsFlipEqual(const Core::FMTmask& p_mask,
+	 const boost::dynamic_bitset<uint8_t>& p_bits) const
+ {
+	 size_t j = 0;
+	 for (size_t i = m_start; i < (m_start + size()); ++i)
+	 {
+		 if (p_mask[i] != (!p_bits[j]))
+		 {
+			 return false;
+		 }
+		 ++j;
+	 }
+	 return true;
+ }
+
+
 
 const std::string& FMTtheme::_getAttribute(size_t p_attributeId) const
 	{
@@ -628,7 +716,7 @@ std::string FMTtheme::updateFromMask(const Core::FMTmask& p_globalmask)
 			m_attributem_locations[newaggregate] = aggregateindex;
 			//buildattributelocations();
 			}
-		return bitsToStr(global);
+		return bitsToStr(p_globalmask);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTtheme::updateFromMask", __LINE__, __FILE__);

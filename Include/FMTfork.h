@@ -32,19 +32,11 @@ class FMTmaskfilter;
 
 class FMTEXPORT FMTfork : public FMTspec, public FMTobject
     {
-	friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-        ar& boost::serialization::make_nvp("specifications", boost::serialization::base_object<FMTspec>(*this));
-        ar& transitions;
-    }
-	std::vector<FMTtransitionmask>transitions;
     public:
         FMTfork();
-        FMTfork(const FMTfork& rhs);
+        FMTfork(const FMTfork& rhs)=default;
 		~FMTfork();
-        FMTfork& operator = (const FMTfork& rhs);
+        FMTfork& operator = (const FMTfork& rhs)=default;
         void add(const FMTtransitionmask& transition);
         void clear();
 		std::vector<FMTdevelopmentpath> getpaths(const Core::FMTdevelopment& base, const Core::FMTyields& ylds,
@@ -58,6 +50,18 @@ class FMTEXPORT FMTfork : public FMTspec, public FMTobject
 		FMTfork presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
         void presolveRef(const FMTmaskfilter& filter, const std::vector<FMTtheme>& presolvedthemes);
         operator std::string() const override;
+    private:
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive& ar, const unsigned int version)
+        {
+            ar& boost::serialization::make_nvp("specifications", boost::serialization::base_object<FMTspec>(*this));
+            ar& m_transitions;
+        }
+        std::vector<FMTtransitionmask>m_transitions;
+        FMTdevelopmentpath _GetPath(const FMTtransitionmask& p_target,
+            const Core::FMTdevelopment& p_base, const Core::FMTyields& p_yields,
+            const std::vector<FMTtheme>& p_themes, bool p_AgeReset) const;
     };
 
 }

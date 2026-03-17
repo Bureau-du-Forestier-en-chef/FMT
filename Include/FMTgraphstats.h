@@ -73,12 +73,12 @@ class FMTEXPORT FMTgraphstats
 		/**
 		Default copy constructor for FMTgraphstats.
 		*/
-		FMTgraphstats(const FMTgraphstats& rhs);
+		FMTgraphstats(const FMTgraphstats& rhs)=default;
 		// DocString: FMTgraphstats::operator=
 		/**
 		Default copy assignment for FMTgraphstats.
 		*/
-		FMTgraphstats& operator = (const FMTgraphstats& rhs);
+		FMTgraphstats& operator = (const FMTgraphstats& rhs)=default;
 		// DocString: FMTgraphstats::operator+=
 		/**
 		Default += compount assignment for FMTgraphstats.

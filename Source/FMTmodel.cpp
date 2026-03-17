@@ -103,14 +103,14 @@ namespace Models{
 			ActionMask.update(themes);
 			const std::string BEFORE = "PRE";
 			const std::string AFTER = "POST";
-			const std::vector<size_t>Static = statictransitionthemes;
+			/*const std::vector<size_t>Static = statictransitionthemes;
 			for (size_t thId = 0; thId < themes.size();++thId)
 				{
 				if (std::find(Static.begin(),Static.end(), thId)== Static.end())
 					{
 					ActionMask.set(themes.at(thId), "?");
 					}
-				}
+				}*/
 			const int MAX_PERIOD = std::min(p_action.getperiodupperbound(),
 				getparameter(Models::FMTintmodelparameters::LENGTH));
 			const std::vector<size_t>AGGREGATE_THEMES = p_BaseModel._GetAggregatesThemes(p_Targetyield);
@@ -435,14 +435,14 @@ namespace Models{
 					"FMTmodel::pushTheme", __LINE__, __FILE__);
 				}
 			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_yieldName);
+			const size_t THEME_START = themes.back().getstart() + themes.back().size();
+			std::vector<Core::FMTtheme> Oldthemes(themes);
+			themes.emplace_back(p_attributes, themes.size(), THEME_START, p_themeName);
 			for (auto& dev : area)
 				{
 				const std::string BASE_THEME = _GetYieldAttribute(dev.getmask(), p_yieldName, AGGREGATES) + "PRE";
 				dev.setmask(Core::FMTmask(std::string(dev.getmask()) + " " + BASE_THEME, themes));
 				}
-			const size_t THEME_START = themes.back().getstart() + themes.back().size();
-			std::vector<Core::FMTtheme> Oldthemes(themes);
-			themes.emplace_back(p_attributes, themes.size(), THEME_START, p_themeName);
 			const std::string DEFAULT_ATTRIBUTE = "?";
 			for (auto& action : actions)
 				{

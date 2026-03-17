@@ -457,6 +457,13 @@ class FMTEXPORT FMTmask
 		The subset is the length of the FMTtheme.
 		*/
 		boost::dynamic_bitset<uint8_t> subset(const FMTtheme& theme) const;
+		// DocString: FMTmask::operator []
+		/**
+		@brief get bit value at i position.
+		@param[in] i position
+		@return true if on false if off
+		*/
+		bool operator [](int i) const;
 		// DocString: FMTmask::_anyIntersect
 		/**
 		@brief check if two subset of mask intersect each other.

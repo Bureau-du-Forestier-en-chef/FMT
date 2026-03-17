@@ -84,6 +84,12 @@ std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
     return sub;
     }
 
+ bool FMTmask::operator [](int i) const
+	{
+	return data[i];
+	}
+
+
 size_t FMTmask::_countTheme(const FMTtheme& theme) const
  {
 	 size_t count = 0;
@@ -142,10 +148,9 @@ std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
 	std::string value = "";
     for(const FMTtheme& theme : themes)
         {
-        const boost::dynamic_bitset<uint8_t>bits = this->subset(theme);
-        value += theme.bitsToStr(bits) + " ";
+        value += theme.bitsToStr(*this) + " ";
         }
-    value = value.substr(0, value.size()-1);
+	value.pop_back();
     return value;
     }
 
@@ -220,8 +225,9 @@ void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     }
 std::string FMTmask::get(const FMTtheme& theme) const
     {
-    const boost::dynamic_bitset<uint8_t>bits =  this->subset(theme);
-    return theme.bitsToStr(bits);
+    //const boost::dynamic_bitset<uint8_t>bits =  this->subset(theme);
+    //return theme.bitsToStr(bits);
+	return  theme.bitsToStr(*this);
     }
 
 const std::string& FMTmask::getAttribute(const FMTtheme& p_theme) const
@@ -298,15 +304,12 @@ void FMTmask::append(const boost::dynamic_bitset<uint8_t> &bits)
 
 void FMTmask::update(const std::vector<FMTtheme>& themes)
     {
-    //name = "";
 	name.clear();
-    for(const FMTtheme& the : themes)
+    for(const FMTtheme& THEME : themes)
         {
-        const boost::dynamic_bitset<uint8_t>sub = subset(the);
-        name+=the.bitsToStr(sub)+" ";
+        name+= THEME.bitsToStr(*this)+" ";
         }
-    name = name.substr(0, name.size()-1);
-	//name.shrink_to_fit();
+	name.pop_back();
     }
 
 FMTmask FMTmask::getunion(const FMTmask& rhs) const
@@ -577,7 +580,7 @@ void FMTmask::presolveRef(const FMTmaskfilter& p_filter,
 		name.clear();
 		for (const FMTtheme& theme : p_presolvedThemes)
 			{
-			name += theme.bitsToStr(subset(theme)) + " ";
+			name += theme.bitsToStr(*this) + " ";
 			}
 		name.pop_back();
 		if (p_allowReallocation)
@@ -616,7 +619,7 @@ FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
 		}
 	for (const FMTtheme& theme: basethemes)
 		{
-		newmask.name += theme.bitsToStr(newmask.subset(theme)) + " ";
+		newmask.name += theme.bitsToStr(newmask) + " ";
 		}
 	newmask.name.pop_back();
 	//newmask.name.shrink_to_fit();

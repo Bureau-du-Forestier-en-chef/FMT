@@ -7,6 +7,8 @@ namespace Core {
     class FMTschedule;
     class FMTconstraint;
     class FMToutput;
+	class FMTtheme;
+	class FMTmask;
 }
 
 namespace Models
@@ -71,7 +73,6 @@ namespace FMTWrapperCore
 		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath);
 
 	private:
-
 		/**
 		* @brief Retourne un vecteur de FMTactualdevelopment selon le raster d'aire.
 		*
@@ -80,5 +81,12 @@ namespace FMTWrapperCore
 		*@return Un vecteur de FMTactualdevelopment.
 		*/
 		static std::vector<Core::FMTactualdevelopment> getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath);
-    };
+		static const size_t m_GET_ALL_MASKS_THRESHOLD = 1000000;
+		static Core::FMTmask _GetFullMask(const std::vector<Core::FMTtheme>& p_themes);
+		static std::set<std::string> _GetThemesDecomposition(
+					const Core::FMTmask& p_mask,
+					const std::vector<Core::FMTtheme>& p_themes);
+		
+	
+	};
 }

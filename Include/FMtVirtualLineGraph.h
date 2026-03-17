@@ -37,6 +37,7 @@ namespace Spatial
 	{
 	template <typename T>
 	class FMTlayer;
+	class FMTSolutionTracker;
 	class FMTEXPORT FMTVirtualLineGraph
 		{
 		public:
@@ -53,26 +54,26 @@ namespace Spatial
 			size_t hash() const;
 			const Graph::FMTlinegraph& getLineGraph() const;
 			void setLineGraph(const Graph::FMTlinegraph& p_LineGraph,
-								std::vector<size_t>& p_solution);
+							FMTSolutionTracker& p_solution);
 			double GetOutput(const Models::FMTmodel& p_model,
-				const std::vector<size_t>& p_solution,
+				const FMTSolutionTracker& p_solution,
 				const Core::FMToutput& p_output, int p_period) const;
 			size_t GetGraphFamily() const;
-			void SetBaseGraph(std::vector<size_t>& p_solution);
-			void SetLastPeriod(std::vector<size_t>& p_solution);
-			void SetNaturalGrowth(std::vector<size_t>& p_solution);
+			void SetBaseGraph(FMTSolutionTracker& p_solution);
+			void SetLastPeriod(FMTSolutionTracker& p_solution);
+			void SetNaturalGrowth(FMTSolutionTracker& p_solution);
 			FMTVirtualLineGraph PostSolve(const Core::FMTmaskfilter& p_Filter,
 					const std::vector<int>& p_actionMapping,
 					FMTSpatialGraphs& p_Graphs,
-					std::vector<size_t>& p_solution) const;
+				FMTSolutionTracker& p_solution) const;
 		private:
 			FMTSpatialGraphs::const_iterator m_Iterator;
 			size_t m_GraphFamily;
 			FMTSpatialGraphs* m_Graphs;
 			void _insertInto(const Graph::FMTlinegraph& p_LineGraph,
-							std::vector<size_t>& p_solution);
-			void _add(std::vector<size_t>& p_solution);
-			void _remove(std::vector<size_t>& p_solution);
+					FMTSolutionTracker& p_solution);
+			void _add(FMTSolutionTracker& p_solution);
+			void _remove(FMTSolutionTracker& p_solution);
 			bool notNull() const;
 		};
 	}

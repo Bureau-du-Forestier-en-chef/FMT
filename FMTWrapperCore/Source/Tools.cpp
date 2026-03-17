@@ -50,6 +50,36 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	return result;
 }
 
+
+Core::FMTmask FMTWrapperCore::Tools::_GetFullMask(const std::vector<Core::FMTtheme>& p_themes)
+{
+	std::string mask;
+	for (const Core::FMTtheme& THEME: p_themes)
+		{
+		mask += "? ";
+		}
+	mask.pop_back();
+	return Core::FMTmask(mask, p_themes);
+}
+std::set<std::string> FMTWrapperCore::Tools::_GetThemesDecomposition(
+	const Core::FMTmask& p_mask,
+	const std::vector<Core::FMTtheme>& p_themes)
+{
+	std::vector<Core::FMTmask>Allmasks;
+	Allmasks.push_back(p_mask);
+	for (const Core::FMTtheme& THEME : p_themes)
+	{
+		std::vector<Core::FMTmask>NewMasks;
+		for (const Core::FMTmask& MASK : Allmasks)
+			{
+			const std::vector<Core::FMTmask> NEW = MASK.decompose(THEME);
+			NewMasks.insert(NewMasks.end(), NEW.begin(), NEW.end());
+			}
+		Allmasks.swap(NewMasks);
+	}
+return std::set<std::string>(Allmasks.begin(), Allmasks.end());
+}
+
 std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	const Models::FMTmodel& p_model, 
 	const int p_periods, 
@@ -68,26 +98,32 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 		}
 		// On va chercher tous les th�mes dans le mod�le
 		std::vector<Core::FMTtheme> themes;
+		size_t numberOfAttributes = 1;
 		const std::vector<Core::FMTtheme> THEMESMODELS = modelCopy.getthemes();
-
 		for (const int themeNumber : p_themesNumbers)
-		{
+			{
 			themes.push_back(THEMESMODELS.at(themeNumber - 1));
-		}
-
-		std::vector<Core::FMTactualdevelopment> area = modelCopy.getarea();
-
-		for (int i = 0; i < p_periods; ++i)
+			numberOfAttributes *= themes.back().size();
+			}
+		if (numberOfAttributes > m_GET_ALL_MASKS_THRESHOLD)
 		{
-			Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
-			
-			optModel.setarea(area);
-			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, i + 1);
-			optModel.doplanning(false);
-			std::set<std::string> tempMasks = optModel.getAllMasks(themes);
-			masks.insert(tempMasks.begin(), tempMasks.end());
-			area = optModel.getPotentialArea(i + 1);
-		}
+			std::vector<Core::FMTactualdevelopment> area = modelCopy.getarea();
+			for (int i = 0; i < p_periods; ++i)
+			{
+				Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+
+				optModel.setarea(area);
+				optModel.setparameter(Models::FMTintmodelparameters::LENGTH, i + 1);
+				optModel.doplanning(false);
+				std::set<std::string> tempMasks = optModel.getAllMasks(themes);
+				masks.insert(tempMasks.begin(), tempMasks.end());
+				area = optModel.getPotentialArea(i + 1);
+			}
+		}else {
+			const Core::FMTmask PLAIN_MASK = _GetFullMask(THEMESMODELS);
+			masks = _GetThemesDecomposition(PLAIN_MASK, themes);
+			}
+		
 	}
 	catch (...)
 	{

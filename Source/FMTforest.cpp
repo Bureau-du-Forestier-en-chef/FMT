@@ -76,45 +76,6 @@ FMTforest FMTforest::grow() const
             return newforest;
             }
 
-/*FMTforest FMTforest::operate(const std::vector<FMTsesevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
-                     const Core::FMTyields& ylds,const std::vector<Core::FMTtheme>& themes, boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>& cached_transitions,
-					Core::FMTschedule& schedule) const
-            {
-            FMTforest newforest(FMTlayer<Core::FMTdevelopment>(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize));
-			//non spatial schedule
-			///
-			if (schedule.find(action) == schedule.end())
-				{
-				schedule[action] = std::map<Core::FMTdevelopment, std::vector<double>>();
-				}
-			///
-            for(const FMTsesevent<Core::FMTdevelopment>& cut : cuts)
-                {
-                for(std::map<FMTcoordinate,const Core::FMTdevelopment*>::const_iterator devit  = cut.mapped_elements.begin(); devit!= cut.mapped_elements.end(); devit++)
-                    {
-					//keeping non spatial schedule
-					///
-					const Core::FMTdevelopment lockclear = devit->second->clearlock();
-					if (schedule.at(action).find(lockclear) == schedule.at(action).end())
-						{
-						schedule[action][lockclear] = std::vector<double>(1, 0.0);
-						}
-					schedule[action][lockclear][0] += this->getcellsize();
-					///
-                    const Core::FMTdevelopment* dev = devit->second;
-					if (cached_transitions.find(*dev) == cached_transitions.end())
-						{
-						const std::vector<Core::FMTdevelopmentpath>paths = dev->operate(action, Transition, ylds, themes);
-						newforest.mapping[devit->first] = *paths[0].development;
-						cached_transitions[*dev] = *paths[0].development;
-					}else{
-						newforest.mapping[devit->first] = cached_transitions[*dev];
-						}
-                    }
-                }
-            return newforest;
-            }*/
-
 std::vector<FMTlayer<std::string>> FMTforest::getthemes(const std::vector<Core::FMTtheme>& themes) const
             {
 			std::vector<FMTlayer<std::string>> newlayers(themes.size(),FMTlayer<std::string>(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize));
@@ -138,59 +99,6 @@ FMTlayer<int>FMTforest::getage() const
             return newlayer;
             }
 
-/*std::map<Core::FMTaction,FMTforest> FMTforest::getschedule(const Core::FMTschedule& selection,
-										boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cached_operability,
-                                             const Core::FMTyields& yields,
-                                             bool schedule_only) const
-            {
-			std::map<Core::FMTaction,FMTforest>scheduling;
-			for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator itc = mapping.begin(); itc != mapping.end(); ++itc)
-                {
-                const Core::FMTdevelopment* cdev = &itc->second;
-				if (cached_operability.find(*cdev) == cached_operability.end())
-					{
-					if (!schedule_only)
-						{
-						cached_operability[*cdev] = std::vector<bool>(selection.size(), false);
-						}
-					int action_id = 0;
-					for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.begin();it != selection.end();it++)
-						{
-						//const std::map<Core::FMTdevelopment, std::vector<double>>* devsptr = &it->second;
-						if (selection.operated(it->first, itc->second)||
-							(!schedule_only && cdev->operable(it->first,yields)))
-							{
-							if (scheduling.find(it->first)==scheduling.end())
-								{
-								scheduling[it->first] = FMTforest(FMTlayer<Core::FMTdevelopment>(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize));
-								}
-							scheduling[it->first].mapping[itc->first] = itc->second;
-							if (!schedule_only)
-								{
-								cached_operability[*cdev][action_id] = true;
-								}
-							}
-						++action_id;
-						}
-					}else{
-						int action_id = 0;
-						for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.begin(); it != selection.end(); it++)
-							{
-							if (cached_operability[*cdev][action_id])
-								{
-								if(scheduling.find(it->first) == scheduling.end())
-									{
-									scheduling[it->first] = FMTforest(FMTlayer<Core::FMTdevelopment>(this->geotransform, this->maxx, this->maxy, this->SRS_WKT, this->cellsize));
-									}
-								scheduling[it->first].mapping[itc->first] = itc->second;
-								}
-							++action_id;
-							}
-					}
-                }
-            return scheduling;
-            }*/
-
 FMTforest FMTforest::getcopy(bool copydata) const
     {
     FMTlayer<Core::FMTdevelopment> forest(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
@@ -200,61 +108,41 @@ FMTforest FMTforest::getcopy(bool copydata) const
         }
     return forest;
     }
+void  FMTforest::SetLastThemeWithArea(const std::vector<Core::FMTactualdevelopment>& p_devs,
+							const std::vector<Core::FMTtheme>& p_themes)
+{
+	try {
+		std::map<std::string, std::string>new_Masks;
+		for (const Core::FMTactualdevelopment& DEV : p_devs)
+		{
+			std::string subset;
+			for (size_t i = 0; i < p_themes.size() - 1; ++i)
+			{
+				subset += DEV.getmask().getAttribute(p_themes.at(i))+ " ";
+			}
+			new_Masks[subset] = DEV.getmask().getAttribute(p_themes.back());
+		}
+		for (auto& DevWithLocation : *this)
+			{
+			std::string subset;
+			for (size_t i = 0; i < p_themes.size() - 1; ++i)
+				{
+				subset += DevWithLocation.second.getmask().getAttribute(p_themes.at(i))+" ";
+				}
+			if (new_Masks.find(subset)== new_Masks.end())
+				{
+                _exhandler->raise(Exception::FMTexc::FMTinvalid_theme, "Missing mask " + subset +" in area",
+                    "FMTforest::SetLastThemeWithArea", __LINE__, __FILE__);
+				}
+			subset += new_Masks[subset];
+			DevWithLocation.second.setmask(Core::FMTmask(subset, p_themes));
+			}
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTforest::SetLastThemeWithArea", __LINE__, __FILE__);
+	}
 
-/*std::vector<FMTsesevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double& target,
-                                       const FMTspatialaction& targetaction,
-										std::default_random_engine& generator,
-										const int& pass) const
-    {
-    double harvested_area = 0;
-	std::vector<FMTsesevent<Core::FMTdevelopment>>cuts;
-	std::vector<int>locations(mapping.size());
-    unsigned int locid = 0;
-    std::iota(locations.begin(),locations.end(),0);
-    int tooclosecall = 0;
-    int initdone = 0;
-    int spreaddone = 0;
-	bool check_adjacency = (std::find(targetaction.neighbors.begin(), targetaction.neighbors.end(), targetaction.getname()) != targetaction.neighbors.end());
-    if(!mapping.empty())
-        {
-		std::shuffle(locations.begin(),locations.end(),generator);
-		std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator randomit;
-        while(harvested_area<target&&locid<locations.size())
-            {
-            randomit = mapping.begin();
-            std::advance(randomit, locations[locid]);
-            FMTcut newcut(this->mapping,pass);
-            if (newcut.ignit(targetaction,randomit->first))
-                {
-                ++initdone;
-                if (newcut.spread(targetaction))
-                    {
-                    ++spreaddone;
-					bool tooclose = false;
-					if (check_adjacency)
-						{
-						for (const FMTsesevent<Core::FMTdevelopment>& cut : cuts)
-							{
-							if (cut.within(static_cast<unsigned int>(targetaction.adjacency), newcut))
-								{
-								tooclose = true;
-								++tooclosecall;
-								break;
-								}
-							}
-						}
-                    if(!tooclose)
-                        {
-                        cuts.push_back(newcut);
-                        harvested_area+=(static_cast<double>(newcut.elements.size())*cellsize);
-                        }
-                    }
-                }
-            ++locid;
-            }
-        }
-    return cuts;
-    }*/
+}
 
 FMTforest FMTforest::presolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const
 	{
