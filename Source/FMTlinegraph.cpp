@@ -281,7 +281,7 @@ namespace Graph
 		return id;
 	}
 
-	std::vector<int> FMTlinegraph::getperiodactionids(const int& period) const
+	std::vector<int> FMTlinegraph::getperiodactionids(const int& period, bool p_ordered) const
 	{
 		std::vector<int> ids;
 		try {
@@ -295,7 +295,7 @@ namespace Graph
 					ids.push_back(getinedgeactionid(outv));
 				}
 			}
-			if(ids.size()>1)
+			if(ids.size()>1 && p_ordered)
 			{
 				std::sort(ids.begin(),ids.end());
 				//Because we operate in order of action and its not recursive, so the first action cannot be triger after the last action. But the last action can be triger after the first action.

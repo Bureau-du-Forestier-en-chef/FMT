@@ -108,7 +108,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Get the action id of every action done in period in order.
 		*/
-		std::vector<int> getperiodactionids(const int& period)const;
+		std::vector<int> getperiodactionids(const int& period, bool p_ordered = true)const;
 		// DocString: FMTlinegraph::getperiodpredictors
 		/**
 		Returns a vector of predictors for a given (period), (actionsmap), (yieldnames) and yields.
