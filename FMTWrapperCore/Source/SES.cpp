@@ -18,6 +18,7 @@
 #include "FMTmodel.h"
 #include <sstream>
 #include <fstream>
+#include <filesystem>
 
 namespace FMTWrapperCore
 {
@@ -712,7 +713,7 @@ namespace FMTWrapperCore
             const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
             const std::vector<Core::FMTschedule> schedules = semodel.GetSchedules(schedule);
 
-            schedulePath = outputPath + "/" + semodel.getname() + "_.seq";
+            schedulePath = outputPath + "/" + semodel.getname() + "._seq";
             scheduparser.write(schedules, schedulePath);
         }
         catch (...)
@@ -766,9 +767,20 @@ namespace FMTWrapperCore
                 outputs,
                 minPeriod,
                 maxPeriod,
-                outputPath,
+                outputPath + "\\csv",
                 static_cast<Core::FMToutputlevel>(outputLevel),
                 gdalProvider);
+
+            std::filesystem::path csvDir = outputPath + "\\csv";
+
+            for (const auto& entry : std::filesystem::directory_iterator(csvDir)) {
+                if (entry.is_regular_file()) {
+                    std::filesystem::path destination = outputPath / entry.path().filename();
+                    std::filesystem::rename(entry.path(), destination);
+                }
+            }
+
+            std::filesystem::remove(csvDir);
         }
         catch (...)
         {

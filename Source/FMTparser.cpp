@@ -698,8 +698,9 @@ GDALDataset* FMTparser::getTransFormMemLayerCopy(OGRLayer* baselayer, const OGRS
 	return memds;
 	}
 
-GDALDataset* FMTparser::createOGRDataset(std::string location,
-										std::string gdaldrivername) const
+GDALDataset* FMTparser::createOGRDataset(
+	std::string location,
+	std::string gdaldrivername) const
 {
 	GDALDataset* newdataset = nullptr;
 	try {

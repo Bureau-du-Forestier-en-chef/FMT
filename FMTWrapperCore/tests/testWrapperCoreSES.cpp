@@ -33,8 +33,8 @@ int main(int argc, char* argv[])
 		params.carbonMode = false;
 		params.generateEvents = true;
 		params.generateSpatialOutputs = true;
-		params.constraintNames = { "_MAX OVOLTOTREC_YP23 2.._LENGTH" };
-		params.outputNames = { "OVOLTOTREC"}; 
+		params.constraintNames = {"_MAX OVOLTOTREC_YP23 2.._LENGTH"};
+		params.outputNames = {"OVOLTOTREC"}; 
 		params.predictorYields = {};
 		params.growthThemes = {};
 	}
