@@ -74,5 +74,10 @@ int main(int argc, char* argv[])
         selectedModel,    
         schedules);       
 
+	if (argc > 1)
+	{
+
+	}
+
 	return 0;
 }

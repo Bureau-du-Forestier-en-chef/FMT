@@ -156,7 +156,7 @@ namespace FMTWrapperCore
 
             simulationModel.doplanning(false, schedules);
 
-            std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath;
+            std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath + "\\";
 
             results.infeasibilityMessages = GenerateInfeasibilityReport(simulationModel);
 
@@ -176,7 +176,7 @@ namespace FMTWrapperCore
                 results.eventsData = GenerateEventsData(simulationModel);
 
                 // Écrire le fichier d'événements
-                results.eventsFilePath = outputDirectory + "/events.txt";
+                results.eventsFilePath = outputDirectory + "events.txt";
                 std::ofstream eventsFile(results.eventsFilePath);
                 if (eventsFile.is_open())
                 {
@@ -630,7 +630,7 @@ namespace FMTWrapperCore
                 for (const Core::FMToutput& output : outputs)
                 {
                     const std::string outputname = output.getname() + "_" + std::to_string(period) + ".tif";
-                    const std::string outputrasterpath = outputPath + "/" + outputname;
+                    const std::string outputrasterpath = outputPath + outputname;
 
                     const Spatial::FMTlayer<double> outputlayer = semodel.getspatialoutput(output, period);
                     areaparser.writelayer(outputlayer, outputrasterpath);
@@ -713,7 +713,7 @@ namespace FMTWrapperCore
             const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
             const std::vector<Core::FMTschedule> schedules = semodel.GetSchedules(schedule);
 
-            schedulePath = outputPath + "/" + semodel.getname() + "._seq";
+            schedulePath = outputPath + semodel.getname() + "._seq";
             scheduparser.write(schedules, schedulePath);
         }
         catch (...)
@@ -767,11 +767,11 @@ namespace FMTWrapperCore
                 outputs,
                 minPeriod,
                 maxPeriod,
-                outputPath + "\\csv",
+                outputPath + "csv",
                 static_cast<Core::FMToutputlevel>(outputLevel),
                 gdalProvider);
 
-            std::filesystem::path csvDir = outputPath + "\\csv";
+            std::filesystem::path csvDir = outputPath + "csv";
 
             for (const auto& entry : std::filesystem::directory_iterator(csvDir)) {
                 if (entry.is_regular_file()) {
