@@ -221,6 +221,7 @@ namespace Wrapper
             std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenariosName);
             Models::FMTmodel& selectedModel = models[0];
 
+            /*
 			*logger << "primaryFilePath: " + params.primaryFilePath << "\n";
 			*logger << "rastersPath: " + params.rastersPath << "\n";
 			*logger << "outputPath: " + params.outputPath << "\n";
@@ -256,6 +257,7 @@ namespace Wrapper
 				*logger << "  - " + std::to_string(theme) << "\n";
 			}
 
+            */
 
 
             *logger << "FMT -> Traitement pour le scénario : " + scenarioName << "\n";

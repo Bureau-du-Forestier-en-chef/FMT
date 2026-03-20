@@ -54,19 +54,19 @@ int main(int argc, char* argv[])
 		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
 		params.outputPath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\output";
 		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
-		params.numberOfPeriods = 5;
+		params.numberOfPeriods = 20;
 		params.greedySearchIterations = 5;
 		params.useStanlock = false;
 		//outputLevel: STRATE = 3, TH�MATIQUE = 1, TOTALE = 2
 		params.outputLevel = 2;
 		params.outputMinPeriod = 1;
-		params.outputMaxPeriod = 5;
+		params.outputMaxPeriod = 20;
 		params.gdalProvider = "CSV";
 		params.carbonMode = false;
 		params.generateEvents = true;
 		params.generateSpatialOutputs = true;
 		params.constraintNames = {"_MAX OVOLTOTREC_YP23 2.._LENGTH"};
-		params.outputNames = {"OVOLTOTREC"}; 
+		params.outputNames = {"OVOLTOTREC", "OSUPREGECOCOS"};
 		params.predictorYields = {};
 		params.growthThemes = {};
 	}

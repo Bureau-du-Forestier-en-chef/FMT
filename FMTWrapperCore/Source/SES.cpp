@@ -670,7 +670,6 @@ namespace FMTWrapperCore
                         semodel,
                         period);
 
-                // Extraire les noms des prédicteurs (seulement une fois)
                 if (predictorsData.predictorNames.empty() && !predictors.empty() && !predictors.back().empty())
                 {
                     predictorsData.predictorNames = predictors.back().back().getpredictornames(predictorYields);
