@@ -470,7 +470,10 @@ namespace Models
                 {
                 const  std::vector<Spatial::FMTSpatialSchedule::EventSpread> LOCAL = 
                     newSolution.GetPotentialSpread(period);
-                AllPotentials.push_back(LOCAL);
+                if (!newSolution.empty())
+                    {
+                    AllPotentials.push_back(LOCAL);
+                    }
                 }
            std::shuffle(AllPotentials.begin(), AllPotentials.end(), m_generator);
            const size_t MOVE_SIZE = _GetRandomMoveSize(AllPotentials.begin()->size());
@@ -1182,7 +1185,7 @@ namespace Models
     void FMTsamodel::_SetBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution,
                                         double p_ObjectiveValue)
     {
-        if (p_NewBestSolution.ispartial())
+        if (p_NewBestSolution.IsPartial())
         {
             m_BestSolution.copyfrompartial(p_NewBestSolution);
         }

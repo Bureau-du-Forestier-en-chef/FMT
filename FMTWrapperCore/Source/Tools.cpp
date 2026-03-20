@@ -107,13 +107,23 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			}
 		if (numberOfAttributes > m_GET_ALL_MASKS_THRESHOLD)
 		{
+			
+			modelCopy.setconstraints(std::vector<Core::FMTconstraint>());
+			modelCopy.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+			/*Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
+			optModel.doplanning(false);
+			masks = optModel.getAllMasks(themes);*/
+			//1938
 			std::vector<Core::FMTactualdevelopment> area = modelCopy.getarea();
-			for (int i = 0; i < p_periods; ++i)
+			for (int i = 1; i <= p_periods; ++i)
 			{
 				Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
-
+				for (auto& dev : area)
+					{
+					dev.setperiod(i-1);
+					}
 				optModel.setarea(area);
-				optModel.setparameter(Models::FMTintmodelparameters::LENGTH, i + 1);
 				optModel.doplanning(false);
 				std::set<std::string> tempMasks = optModel.getAllMasks(themes);
 				masks.insert(tempMasks.begin(), tempMasks.end());

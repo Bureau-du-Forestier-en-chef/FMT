@@ -121,9 +121,9 @@ namespace Models
 		const size_t TO_RESERVE = length * AREA * ACTIONS * EXPO_FACTOR;
 		m_graph->reserveVerticies(TO_RESERVE);
 		if (!QUIET_LOG)
-		{ 
+			{ 
 			_logger->logwithlevel("Graph reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") vertices\n", 1);
-		}
+			}
 		}
 
 	void FMTlpmodel::_setConstraintsCache()

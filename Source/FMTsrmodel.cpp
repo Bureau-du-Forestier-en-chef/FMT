@@ -1310,7 +1310,9 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsrmodel::buildperiod", __LINE__, __FILE__);
+			const int PERIOD = static_cast<int>(m_graph->size() - 3);
+			_exhandler->printexceptions("At Period "+std::to_string(PERIOD), 
+								"FMTsrmodel::buildperiod", __LINE__, __FILE__);
 		}
 
 		return m_graph->getstats();

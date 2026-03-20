@@ -359,11 +359,11 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		Returns adjacency conflicts coordinate that need to be destroyed
 		*/
 		std::vector<std::vector<Spatial::FMTcoordinate>>getadjacencyconflictcoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly = true) const;
-		// DocString: FMTSpatialSchedule::ispartial
+		// DocString: FMTSpatialSchedule::IsPartial
 		/**
 		return true if solution is partial.
 		*/
-		bool ispartial() const;
+		bool IsPartial() const;
 		// DocString: FMTSpatialSchedule::emptyevents
 		/**
 		Return true if there's no events

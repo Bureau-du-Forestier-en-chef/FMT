@@ -435,17 +435,22 @@ namespace Graph
 			Graph::FMTlinegraph::FMTvertex_descriptor active = getactivevertex();
 			while (active!= boost::graph_traits<FMTadjacency_list>::null_vertex())
 			{
-				const FMTbasevertexproperties& front_properties = data[active];
-				const Core::FMTdevelopment& active_development = front_properties.get();
-				const std::vector<int>& DEV_OP = GetSetOperability(active_development, model, operability);
-	
-				const int SELECTED_ACTION = _randomOperate(DEV_OP, model,
-					active, generator, active_development, dontchoosegrow);
+				if (IsNotDead(active, model.actions))
+					{
+					const FMTbasevertexproperties& front_properties = data[active];
+					const Core::FMTdevelopment& active_development = front_properties.get();
+					const std::vector<int>& DEV_OP = GetSetOperability(active_development, model, operability);
 
-				if (SELECTED_ACTION > -1)
-				{
-					actioned.push_back(SELECTED_ACTION);
-				}
+					const int SELECTED_ACTION = _randomOperate(DEV_OP, model,
+							active, generator, active_development, dontchoosegrow);
+
+						if (SELECTED_ACTION > -1)
+						{
+							actioned.push_back(SELECTED_ACTION);
+						}
+					}else {
+						active = boost::graph_traits<FMTadjacency_list>::null_vertex();
+						}
 			}
 		}catch (...)
 			{
@@ -545,6 +550,13 @@ namespace Graph
 	{
 		return (getbasedevelopment() == rhs.getbasedevelopment());
 	}
+
+	bool FMTlinegraph::IsNotDead(FMTvertex_descriptor p_Descriptor,
+			const std::vector<Core::FMTaction>& p_actions) const
+		{
+		return (getinedgeactionid(p_Descriptor) < 
+			static_cast<int>(p_actions.size()) - 1);//_death is the last action
+		}
 
 	bool  FMTlinegraph::IsLessPeriod(const FMTlinegraph& rhs) const
 	{
