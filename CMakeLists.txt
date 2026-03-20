@@ -811,6 +811,7 @@ function(createexecutable executablecpplocation executablename)
 	#endif(MOSEK_FOUND AND MSVC)
 endfunction(createexecutable executablecpplocation)
 include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
+include(${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/CMakeLists.txt) #will polulate FMTWrapperCore
 
 if (NOT DEFINED WITHOUT_TESTS)
 	if(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
@@ -822,8 +823,6 @@ if (NOT DEFINED WITHOUT_TESTS)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
 endif (NOT DEFINED WITHOUT_TESTS)
 
-
-include(${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/CMakeLists.txt) #will polulate FMTWrapperCore
 #add_subdirectory(FMTWrapperCore) # Supposed better than include but directory Header have not .h
 include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
 

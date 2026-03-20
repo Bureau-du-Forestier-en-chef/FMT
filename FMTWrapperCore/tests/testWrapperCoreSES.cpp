@@ -105,6 +105,12 @@ int main(int argc, char* argv[])
         params,        
         selectedModel,    
         schedules);       
+	
+	if (!results.success)
+	{
+		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+			"testWrapperCoreSES", __LINE__, params.primaryFilePath);
+	}
 
 	if (argc > 1)
 	{
