@@ -81,7 +81,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 				else
 				{
 					OGRGeometry* geometry = polygons.UnionCascaded();
-					OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
+					OGRPolygon* polygon = dynamic_cast<OGRPolygon*>(geometry);
 					mergedpolygons.push_back(polygon);
 				}
 			}
@@ -1638,7 +1638,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 										const Core::FMTmask subbinarymask(subbinary.getmask());
 										if (subbinarymask != binarymask && subbinarymask != mainmask && intersection->Intersects(subbinary_polygon))
 										{
-											OGRPolygon* subintersection = reinterpret_cast<OGRPolygon*>(intersection->Intersection(subbinary_polygon));
+											OGRPolygon* subintersection = dynamic_cast<OGRPolygon*>(intersection->Intersection(subbinary_polygon));
 											if (subintersection->get_Area() >= subbinary_polygon->get_Area()*0.5)
 											{
 												insertiondone = true;
