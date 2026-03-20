@@ -126,13 +126,12 @@ namespace Models
 			{ 
 				_logger->logwithlevel("Graph reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") vertices\n", 1);
 			}
-		}
-		catch (...)
-		{
+		}catch (...)
+			{
 			_exhandler->raise(Exception::FMTexc::FMTWIN32Error,
 				"Unsufficient RAM",
 				"FMTlpmodel::_setGraphCache", __LINE__, __FILE__);
-		}
+			}
 	}
 
 	void FMTlpmodel::_setConstraintsCache()

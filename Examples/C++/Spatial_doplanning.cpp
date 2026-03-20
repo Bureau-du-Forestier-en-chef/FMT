@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 		boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
 		length = std::stoi(argv[3]);
 	}else {
-		modellocation = "D:/CC_modele_feu/CC_V2/";
+		modellocation = "C:/Users/Admlocal/Documents/issues/validation_carbone/CC_modele_feu/CC_V2/";
 		primarylocation = modellocation + "Mod_cc_v2.pri";
 		scenario = "PlayBack_Histo";
 		length = 5;
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 	setMapping(rastpath, simulationmodel);
 	//mparser.write(simulationmodel, "D:/test/");
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
+	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 2);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false, schedules.at(0));
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 	}*/
 	Parser::FMTareaparser areaParser;
 	std::vector<Core::FMTtheme>selected(1, simulationmodel.getthemes().at(7));
-	areaParser.writedisturbances(outdir, SPATIAL_SCHEDULE, simulationmodel.getactions(), selected, 1);
+	areaParser.writedisturbances(outdir, SPATIAL_SCHEDULE, simulationmodel.getactions(), selected, length);
 	for (const Core::FMToutput& OUTOUT : simulationmodel.getoutputs())
 		{
 		if (std::find(spatialOutputs.begin(), spatialOutputs.end(), OUTOUT.getname())!= spatialOutputs.end())

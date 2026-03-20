@@ -108,7 +108,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Get the action id of every action done in period in order.
 		*/
-		std::vector<int> getperiodactionids(const int& period)const;
+		std::vector<int> getperiodactionids(const int& period, bool p_ordered = true)const;
 		// DocString: FMTlinegraph::getperiodpredictors
 		/**
 		Returns a vector of predictors for a given (period), (actionsmap), (yieldnames) and yields.
@@ -234,6 +234,15 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		@return true if same
 		*/
 		bool IsSameBase(const FMTlinegraph& rhs) const;
+		// DocString:  FMTlinegraph::IsNotDead
+		/**
+		@brief Check if descriptor got the _death action
+		@param[in] vertex descriptor  p_Descriptor
+		@param[in] p_actions the model actions
+		@return true if not dead
+		*/
+		bool IsNotDead(FMTvertex_descriptor p_Descriptor,
+			const std::vector<Core::FMTaction>& p_actions) const;
 		// DocString:  FMTlinegraph::clearnodecache
 		/**
 		Clear the node cache when getting outpus of the linegraph.

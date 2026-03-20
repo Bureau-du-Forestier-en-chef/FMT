@@ -112,7 +112,7 @@ namespace Spatial
 		{
 			FMTevent event = emodif.front();
 			emodif.pop();
-			if (!event.potentialysplitevent(coord))
+			if (!event.WillSplitEvent(coord))
 			{
 				event.erase(coord);
 				if (!event.empty())
@@ -481,7 +481,7 @@ namespace Spatial
 					{
 						FMTevent event = emodif.front();
 						emodif.pop();
-						if (!event.potentialysplitevent(coord))
+						if (!event.WillSplitEvent(coord))
 						{
 							event.erase(coord);
 							if (!event.empty())

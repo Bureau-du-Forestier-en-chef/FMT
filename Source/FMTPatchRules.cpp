@@ -17,6 +17,7 @@ namespace Spatial
 		const std::vector<Core::FMTconstraint>& p_constraints,
 		const std::vector<Core::FMTaction>& p_actions)
 	{
+		std::vector<FMTPatchRules> Rules;
 		try {
 
 		}catch (...)
@@ -24,7 +25,7 @@ namespace Spatial
 			_exhandler->raisefromcatch("",
 				"FMTPatchRules::GetRules", __LINE__, __FILE__);
 			}
-
+		return Rules;
 	}
 
 	FMTPatchRules::FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,

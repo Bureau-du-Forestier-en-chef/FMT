@@ -202,12 +202,12 @@ class FMTEXPORT FMTevent
         Return true if coordinate is in elements
         */
         bool contain(const FMTcoordinate& coord)const;
-        // DocString: FMTevent::potentialysplittedevent(const FMTcoordinate&)
+        // DocString: FMTevent::WillSplitEvent(const FMTcoordinate&)
         /**
-        Fastest way to evaluate if an event will be split after erasing a coordinate.
-        Only when neighbors the 4 around the pixel
+        @param[in] p_coordinate the coordinate that will be removed
+        @return true if it will split the event
         */
-        bool potentialysplitevent(const FMTcoordinate& coord) const;
+        bool WillSplitEvent(const FMTcoordinate& p_coordinate) const;
         // DocString: FMTevent::splitevent(const unsigned int&, std::vector<FMTsaevent>&)
         /**
         Check if events are split and fill vector of split events

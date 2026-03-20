@@ -294,50 +294,43 @@ namespace Spatial
 				{
 				const Graph::FMTlinegraph& lg = mapping.at(updated).getLineGraph();
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor& active = lg.getactivevertex();
-				const Core::FMTdevelopment& active_development = lg.getdevelopment(active);
-				//*_logger << "op at period " << active_development.getperiod() << "\n";
-				const int lastactionid = lg.getinedgeactionid(active);
-				/*if (active_development.period != selection.getperiod())
+				if (lg.IsNotDead(active, model.actions))
 					{
-					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-						"Wrong developement/schedule period " + std::to_string(active_development.period),
-						"FMTSpatialSchedule::getupdatedscheduling", __LINE__, __FILE__);
-					}*/
-				boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator cacheit = cachedactions.find(active_development);
-				if (cacheit == cachedactions.end())
-					{
-					std::pair<boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator,bool>insertedpair = cachedactions.insert(std::make_pair(active_development, std::vector<bool>(model.actions.size(), false)));
-					cacheit = insertedpair.first;
-					for (const int& actionid : actiontargets)
+						const Core::FMTdevelopment& active_development = lg.getdevelopment(active);
+						//*_logger << "op at period " << active_development.getperiod() << "\n";
+						const int LAST_ACTION_ID = lg.getinedgeactionid(active);
+						boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator cacheit = cachedactions.find(active_development);
+						if (cacheit == cachedactions.end())
 						{
-						if ((actionid > lastactionid || lastactionid < 0) &&
-							((schedule_only && (inscheduleoperabilities(scheduleoperabilities, &active_development, actionid, model.actions.at(actionid))/*selection.operated(action, active_development)*/)) ||
-							(!schedule_only && active_development.operable(model.actions.at(actionid), model.yields))))
-						{
-							/*if (model.actions.at(actionid).getname() == "ACT")
+							std::pair<boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator, bool>insertedpair = cachedactions.insert(std::make_pair(active_development, std::vector<bool>(model.actions.size(), false)));
+							cacheit = insertedpair.first;
+							for (const int& actionid : actiontargets)
 							{
-								*_logger << "GOT op!" << "\n";
-							}*/
-							cacheit->second[actionid] = true;
+								if ((actionid > LAST_ACTION_ID || LAST_ACTION_ID < 0) &&
+									((schedule_only && (inscheduleoperabilities(scheduleoperabilities, &active_development, actionid, model.actions.at(actionid))/*selection.operated(action, active_development)*/)) ||
+										(!schedule_only && active_development.operable(model.actions.at(actionid), model.yields))))
+								{
+									cacheit->second[actionid] = true;
+								}
+								else {
+									cacheit->second[actionid] = false;
+								}
+							}
 						}
-						else {
-							cacheit->second[actionid] = false;
-						}
-						}
-					}
-				
-				for (const int& actionid : actiontargets)
-					{
-					std::set<Spatial::FMTcoordinate>& settochange = original[actionid];
-					if (cacheit->second.at(actionid))
-					{
-						settochange.insert(updated);
-					}else if (!settochange.empty())//Pile of empty actions
-						{
-						settochange.erase(updated);
-						}
-					}
 
+						for (const int& actionid : actiontargets)
+						{
+							std::set<Spatial::FMTcoordinate>& settochange = original[actionid];
+							if (cacheit->second.at(actionid))
+							{
+								settochange.insert(updated);
+							}
+							else if (!settochange.empty())//Pile of empty actions
+							{
+								settochange.erase(updated);
+							}
+						}
+					}
 				}
 		}catch (...)
 			{
@@ -860,9 +853,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 	{
 		double value = 0;
 		try {
-			#ifndef NDEBUG
-				assert(mapping.size() == _GetNonSpatialCellsCount());
-			#endif
+			assert(IsPartial() || mapping.size() == _GetNonSpatialCellsCount());
 			const Core::FMTconstraint& CONSTRAINT = p_Graphs.GetModel().constraints.at(p_ConstraintId);
 			if (!CONSTRAINT.isspatial())
 			{
@@ -929,9 +920,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 	{
 		std::vector<double>allvalues;
 		try {
-			#ifndef NDEBUG
-				assert(mapping.size() == _GetNonSpatialCellsCount());
-			#endif
+			assert(IsPartial() || mapping.size() == _GetNonSpatialCellsCount());
 			const std::vector<Core::FMTconstraint>& CONSTRAINTS = p_Graphs.GetModel().getconstraints();
 			allvalues.push_back(this->getobjectivevalue(p_Graphs,false));
 			for (size_t ConstraintId = 1; ConstraintId < CONSTRAINTS.size(); ++ConstraintId)
@@ -2021,9 +2010,7 @@ Graph::FMTgraphstats FMTSpatialSchedule::randombuild(const Models::FMTmodel& mod
 	{
 	Graph::FMTgraphstats periodstats;
 	try {
-		#ifndef NDEBUG
-				assert(mapping.size() == _GetNonSpatialCellsCount());
-		#endif
+		assert(IsPartial()||mapping.size() == _GetNonSpatialCellsCount());
 		const int period = this->mapping.begin()->second.getLineGraph().getperiod();
 		const std::vector<FMTbindingspatialaction> bindings = getbindingactions(model, period);
 		std::uniform_int_distribution<int> dosomethingactions(1, model.getparameter(Models::FMTintmodelparameters::LENGTH));
@@ -2048,10 +2035,7 @@ Graph::FMTgraphstats FMTSpatialSchedule::randombuild(const Models::FMTmodel& mod
 			
 
 			}
-	#ifndef NDEBUG
-		assert(mapping.size() == _GetNonSpatialCellsCount());
-	#endif
-
+		assert(IsPartial()||mapping.size() == _GetNonSpatialCellsCount());
 
 	}catch (...)
 		{
@@ -2334,7 +2318,7 @@ std::vector<Spatial::FMTcoordinate>FMTSpatialSchedule::getmovablecoordinates(con
 	return coordinates;
 }
 
-bool FMTSpatialSchedule::ispartial() const
+bool FMTSpatialSchedule::IsPartial() const
 {
 	return (m_scheduleType == FMTSpatialScheduletype::FMTpartial);
 }
@@ -2367,6 +2351,7 @@ void FMTSpatialSchedule::copyfrompartial(FMTSpatialSchedule& rhs)
 		m_events.swap(rhs.m_events);
 		m_ConstraintsFactor.swap(rhs.m_ConstraintsFactor);
 		m_Tracker.swap(rhs.m_Tracker);
+		assert(mapping.size() == _GetNonSpatialCellsCount());
 	}
 	catch (...)
 	{

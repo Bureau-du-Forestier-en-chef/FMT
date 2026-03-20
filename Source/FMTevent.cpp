@@ -404,159 +404,35 @@ namespace Spatial
         return (m_elements.find(coord) != m_elements.end());
     }
 
-    bool FMTevent::potentialysplitevent(const FMTcoordinate& coord) const
-    {
-        std::set<int> coordat;
-        for (int i=0; i<8 ; ++i)
-        {
-            //8//1//5//
-            //4// //2//
-            //7//3//6//
-            FMTcoordinate icoord = coord.at(i);
-            if (m_elements.find(icoord)!= m_elements.end())
-            {
-                coordat.insert(i+1);
-            }
-        }
-        if (coordat.size()==8)
-        {
-            return false;
-        }
-        std::set<int>::const_iterator upit = coordat.upper_bound(4);
-        std::set<int>::const_iterator firstit = coordat.begin();
-        const int casetype = static_cast<int>(std::distance(firstit,upit));
-        switch (casetype)
-        {
-            case 1:
-            {
-                const int first = *firstit;
-                const int second = *++firstit;
-                if (first==1 && (second==5||second==8))
-                {
-                    return false;
-                }
-                if (first==2 && (second==5||second==6))
-                {
-                    return false;
-                }
-                if (first==3 && (second==7||second==6))
-                {
-                    return false;
-                }
-                if (first==4 && (second==7||second==8))
-                {
-                    return false;
-                }
-                else{return true;}
-            }
-            case 2:
-            {
-                if (upit==coordat.end())
-                {
-                    return true;
-                }
-                const int first = *firstit;
-                const int second = *++firstit;
-                int dist = second-first;
-                if (dist == 3)
-                {
-                    if (coordat.find(8)!=coordat.end())
-                    {
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-                else if (dist == 2)
-                {
-                    return true;
-                }
-                else if (dist == 1)
-                {
-                    if (first == 1)
-                    {
-                        if (coordat.find(5)!=coordat.end())
-                        {
-                            return false;
-                        }else{return true;}
-                    }
-                    else if (first == 2)
-                    {
-                        if (coordat.find(6)!=coordat.end())
-                        {
-                            return false;
-                        }else{return true;}
-                    }
-                    else if (first == 3)
-                    {
-                        if (coordat.find(7)!=coordat.end())
-                        {
-                            return false;
-                        }else{return true;}
-                    }else {return true;}
-                }else{return true;}
 
-            }
-            case 3:
+    bool FMTevent::WillSplitEvent(const FMTcoordinate& p_coordinate) const
+        {
+        bool returned = false;
+        if (size()>2)
             {
-                if (upit==coordat.end())
+            FMTevent subEvent(*this);
+            subEvent.erase(p_coordinate);
+            std::queue<FMTcoordinate>activeCoordinates;
+            activeCoordinates.push(*subEvent.m_elements.begin());
+            subEvent.erase(*subEvent.m_elements.begin());
+            while (!subEvent.m_elements.empty() &&
+                !activeCoordinates.empty())
                 {
-                    return true;
-                }
-                const int first = *firstit;
-                const int second = *++firstit;
-                const int third = *++firstit;
-                if (first == 1)
-                {
-                    if (second == 2)
+                for (int i = 0; i < 8; ++i)
                     {
-                        if (third == 3)
+                    FMTcoordinate iCoord = activeCoordinates.front().at(i);
+                    if (subEvent.contain(iCoord))
                         {
-                            if (coordat.find(5)!=coordat.end() && coordat.find(6)!=coordat.end())
-                            {
-                                return false;
-                            }else{return true;}
+                        activeCoordinates.push(iCoord);
+                        subEvent.erase(iCoord);
                         }
-                        else if(third == 4)
-                        {
-                            if (coordat.find(5)!=coordat.end() && coordat.find(8)!=coordat.end())
-                            {
-                                return false;
-                            }else{return true;}
-
-                        }else{return true;}
                     }
-                    else if (second==3)
-                    {
-                        if (coordat.find(7)!=coordat.end() && coordat.find(8)!=coordat.end())
-                        {
-                            return false;
-                        }else{return true;}
-                    }else{return true;}
+                    activeCoordinates.pop();
                 }
-                else if (first == 2)
-                {
-                    if (coordat.find(6)!=coordat.end() && coordat.find(7)!=coordat.end())
-                    {
-                        return false;
-                    }else{return true;}
-                }else{return true;}
+            returned = !subEvent.m_elements.empty();
             }
-            case 4:
-            {
-                if (coordat.size()>6)
-                {
-                    return false;
-                }
-                else{return true;}
-            }
-            default:
-            {
-                return true;
-            }
+        return returned;
         }
-
-    }
 
 	std::set<FMTcoordinate>FMTevent::getterritory(const size_t& distance) const
 	{
