@@ -999,7 +999,7 @@ namespace Parser
 				if (constraints.at(0).isobjective())
 				{
 					optimizestream << "*OBJECTIVE " << "\n";
-					optimizestream << std::string(constraints.at(0));
+					optimizestream << std::string(constraints.at(0)) << "\n";
 					++objid;
 				}
 				if (constraints.size() - objid > 0)
@@ -1007,7 +1007,7 @@ namespace Parser
 					optimizestream << "*CONSTRAINTS " << "\n";
 					for (size_t cid = objid; cid < constraints.size(); ++cid)
 					{
-						optimizestream << std::string(constraints.at(cid));
+						optimizestream << std::string(constraints.at(cid)) << "\n";
 					}
 				}
 				optimizestream.close();
