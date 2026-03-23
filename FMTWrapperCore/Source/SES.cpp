@@ -175,7 +175,6 @@ namespace FMTWrapperCore
             {
                 results.eventsData = GenerateEventsData(simulationModel);
 
-                // Écrire le fichier d'événements
                 results.eventsFilePath = outputDirectory + "events.txt";
                 std::ofstream eventsFile(results.eventsFilePath);
                 if (eventsFile.is_open())

@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	std::string yieldName;
 	int periods = 0;
 	std::vector<int> themesNumbers;
-	int resutlSize = 0;
+	int resultSize = 0;
 	std::string rastpath;
 	std::string outputFilePath;
 	bool writeOnDisk;
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 		pathPri = results.at(0);
 		scenarioName = results.at(1);
 		periods = std::stoi(results.at(2));
-		resutlSize = std::stoi(results.at(3));
+		resultSize = std::stoi(results.at(3));
 
 		std::vector<std::string>csvThemesNumber;
 		const std::string vals2 = argv[2];
@@ -42,13 +42,14 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "C:\\Users\\admlocal\\Desktop\\06471\\PC_9981_U06471_2028_MODB01.pri";
-		scenarioName = "160_TBE";
-		periods = 30;
+		pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/PC_9949_U08251_2028_MODB01.pri";
+		scenarioName = "TBE_TEST_CORRECTION";
+		periods = 5;
 		writeOnDisk = true;
-		outputFilePath = "get_all_mask_output.txt";
-		//resutlSize = 32953;
-		themesNumbers = { 3,5,6,12,21};
+		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\get_all_mask_output.txt";
+		//resultSize = 21821;
+		resultSize = 19607;
+		themesNumbers = {3, 5, 12, 13, 14, 21};
 		rastpath = "";
 	}
 
@@ -95,10 +96,9 @@ int main(int argc, char* argv[])
 
 	}
 
-	if (RESULT.size() != resutlSize) {
+	if (RESULT.size() != resultSize) {
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
-
 	}
 
 

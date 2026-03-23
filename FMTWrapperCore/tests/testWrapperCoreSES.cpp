@@ -6,6 +6,7 @@
 #include "FMTscheduleparser.h"
 #include "SES.h"
 #include "FMTfreeexceptionhandler.h"
+#include <filesystem>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -52,7 +53,7 @@ int main(int argc, char* argv[])
 	{
 		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
 		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
-		params.outputPath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\output";
+		params.outputPath = "..\\..\\tests\\testWrapperCoreSES\\ForetMontmorency";
 		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
 		params.numberOfPeriods = 20;
 		params.greedySearchIterations = 5;
@@ -101,6 +102,18 @@ int main(int argc, char* argv[])
 
 	std::vector<Core::FMTschedule> schedules = modelparser.readschedules(params.primaryFilePath, models).at(0);
 
+	if (!std::filesystem::is_directory(params.outputPath))
+	{
+		std::filesystem::create_directories(params.outputPath);
+	}
+	if (!std::filesystem::is_directory(params.rastersPath))
+	{
+		Exception::FMTfreeexceptionhandler().raise(
+			Exception::FMTexc::FMTfunctionfailed,
+			"Not a valid raster path",
+			"testWrapperCoreSES", __LINE__, params.primaryFilePath);
+	}
+
     FMTWrapperCore::SESResults results = FMTWrapperCore::SES::RunSES(
         params,        
         selectedModel,    
@@ -108,7 +121,9 @@ int main(int argc, char* argv[])
 	
 	if (!results.success)
 	{
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+		Exception::FMTfreeexceptionhandler().raise(
+			Exception::FMTexc::FMTfunctionfailed, 
+			results.errorMessage,
 			"testWrapperCoreSES", __LINE__, params.primaryFilePath);
 	}
 
@@ -130,8 +145,13 @@ int main(int argc, char* argv[])
 			{
 				if (std::abs(it->periodValues.at(itemNum) - item.second.get_value<double>()) >= 1)
 				{
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
-						"testWrapperCoreSES", __LINE__, argv[2]);
+					std::cout << ("Error: " + std::to_string(it->periodValues.at(itemNum)) 
+						+ "!=" + std::to_string(item.second.get_value<double>()) 
+						+ "at period " + std::to_string(itemNum) + "\n");
+					Exception::FMTfreeexceptionhandler().raise(
+						Exception::FMTexc::FMTfunctionfailed,
+						results.errorMessage,
+						"testWrapperCoreSES", __LINE__, params.primaryFilePath);
 				}
 				++itemNum;
 			}
