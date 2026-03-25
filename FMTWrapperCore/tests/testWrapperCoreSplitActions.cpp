@@ -16,11 +16,10 @@ int main(int argc, char* argv[])
 	std::string scenarioName;
 	if (argc < 2)
 	{
-		primary_path = "D:/01_Valide_ServiceOuest/01_Valide_ServiceOuest/PC_9949_U08251_2028_MODB01.pri";
+		primary_path = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
 		splitted = { "AEC", "ACT" };
 		splittedMask = { "? ? ? ? ? ? ? ? ? ? ? ? ? UTA11 ? ? ? ? ? ?", "? ? ? ? ? ? ? ? ? ? ? ? ? !UTA11 ? ? ? ? ? ?" };
-		scenarioName = "1201_RegProv_avsp";
-		
+		scenarioName = "01_Regl_prov_apsp_1_6";
 	}
 	else 
 	{

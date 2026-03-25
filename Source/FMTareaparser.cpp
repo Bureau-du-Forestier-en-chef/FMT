@@ -252,12 +252,13 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 
 
 
-    bool FMTareaparser::writeforest(const Spatial::FMTforest& for_layer,
-                         const std::vector<Core::FMTtheme>& themes,
-                         const std::vector<std::string>&data_rasters,
-                         const std::string& age,
-                         const std::string& lock,
-						std::vector<std::map<std::string, std::string>>mapping) const
+    bool FMTareaparser::writeforest(
+		const Spatial::FMTforest& for_layer,
+		const std::vector<Core::FMTtheme>& themes,
+		const std::vector<std::string>&data_rasters,
+		const std::string& age,
+		const std::string& lock,
+		std::vector<std::map<std::string, std::string>>mapping) const
         {
         const std::vector<Spatial::FMTlayer<std::string>> themes_layer = for_layer.getthemes(themes);
 		try {

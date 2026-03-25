@@ -102,7 +102,9 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Will Create a OGR vector file based on a given drivername and a location.
 		*/
-		GDALDataset* createOGRDataset(std::string location = std::string(),std::string gdaldrivername = "CSV") const;
+		GDALDataset* createOGRDataset(
+			std::string location = std::string(),
+			std::string gdaldrivername = "CSV") const;
 		// DocString: FMTparser::createLayer()
 		/**
 		Create a layer with from a dataset, it will delete layer with the same name before creation if it exist in the dataset
