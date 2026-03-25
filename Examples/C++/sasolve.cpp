@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
 			length = std::stoi(argv[2]);
 			objectivevalue = std::stod(argv[3]);
 		}else {
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Weight/PC_9964_U08451_2028_MODB01.pri";
-			scenario = "120_RegProv_apsp_AGG";
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08251_ADAPT/PC_9949_U08251_2028_MODB01.pri";
+			scenario = "205_StratReg_OPE60_SANSTBE_SNAT_apsp";
 			length = 3;
 			objectivevalue = 1000;
 			resolution = 200;

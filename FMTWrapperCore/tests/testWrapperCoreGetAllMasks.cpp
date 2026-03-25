@@ -43,13 +43,13 @@ int main(int argc, char* argv[])
 	else
 	{
 		pathPri = "C:\\Users\\admlocal\\Desktop\\06471\\PC_9981_U06471_2028_MODB01.pri";
-		scenarioName = "160_TBE";
+		scenarioName = "TBE_V3";
 		periods = 30;
 		writeOnDisk = true;
 		outputFilePath = "get_all_mask_output.txt";
 		//resutlSize = 32953;
 		themesNumbers = { 3,5,6,12,21};
-		rastpath = "";
+		rastpath = "C:\\Users\\admlocal\\Desktop\\06471\\rasters\\";
 	}
 
 	Parser::FMTmodelparser ModelParser;

@@ -110,7 +110,8 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			
 			modelCopy.setconstraints(std::vector<Core::FMTconstraint>());
 			modelCopy.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-			/*Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+			//modelCopy.setparameter(Models::FMTintmodelparameters::LENGTH, 30);
+			/**Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
 			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
 			optModel.doplanning(false);
 			masks = optModel.getAllMasks(themes);*/

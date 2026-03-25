@@ -34,6 +34,7 @@ namespace Spatial
 {
 class FMTforest;
 class FMTSpatialGraphs;
+class FMTPatchRules;
 enum  FMTSpatialScheduletype
 	{
 		FMTcomplete = 1,
@@ -565,7 +566,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 
 		double _GetConstraintFloorValue(double p_inValue) const;
 
-		
+		double _GetRulesEvaluation(const std::vector<FMTPatchRules>& p_rules,
+			const FMTSpatialGraphs& p_SpatialGraph) const;
 
 		static std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>> _PutTabouInCache(
 			const Models::FMTmodel& p_model,
@@ -573,7 +575,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		static void _SetTabouOutOfCache(
 			std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>>& p_GoodValues);
 
-	
+		
 
 		
 

@@ -20,25 +20,20 @@ namespace Core {
 namespace Spatial
 
 {
+	class FMTeventcontainer;
+	class FMTSpatialGraphs;
 	class FMTPatchRules : public Core::FMTobject
 	{
 	public:
 		FMTPatchRules()=default;
 		FMTPatchRules(const FMTPatchRules& rhs) = default;
 		FMTPatchRules& operator = (const FMTPatchRules& rhs)=default;
-		bool IsBinding() const;
-		bool IsSizeUsed() const;
-		bool IsAdjacencyUsed() const;
-		bool HasMinimalAdjacency() const;
-		bool HasMaximalAdjacency() const;
-		const std::vector<int>& GetActions() const;
-		size_t GetGreenUp() const;
-		size_t GetMinimalAdjacency() const;
-		size_t GetMaximalAdjacency() const;
-		size_t GetMinimalSize() const;
-		size_t GetMaximalSize() const;
+		
 		static std::vector<FMTPatchRules> GetRules(const std::vector<Core::FMTconstraint>& p_constraints,
 											const std::vector<Core::FMTaction>& p_actions);
+		double Evaluate(const FMTeventcontainer& p_events, 
+				const FMTSpatialGraphs& p_SpatialGraphs) const;
+
 	private:
 		FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
 			const std::vector<Core::FMTaction>& p_actions, int p_Id);
@@ -50,13 +45,26 @@ namespace Spatial
 		template <typename U>
 		static void _GetBounds(double p_lower, double p_upper,
 			U& p_NewLower, U& p_NewUpper);
+		bool _IsSizeUsed() const;
+		bool _IsAdjacencyUsed() const;
+		bool _HasMinimalAdjacency() const;
+		bool _HasMaximalAdjacency() const;
+		bool _IsGroupUsed() const;
+		double _EvaluateSize(const FMTeventcontainer& p_events,
+				const FMTSpatialGraphs& p_SpatialGraphs) const;
+		double _EvaluateAdjacency(const FMTeventcontainer& p_events,
+			const FMTSpatialGraphs& p_SpatialGraphs) const;
+		double _EvaluateGroup(const FMTeventcontainer& p_events,
+			const FMTSpatialGraphs& p_SpatialGraphs) const;
 		size_t m_GreenUp;
 		size_t m_MinimalAdjacency;
 		size_t m_MaximalAdjacency;
 		size_t m_MinimalSize;
 		size_t m_MaximalSize;
 		size_t m_NeighborSize;
-		size_t m_GroupGreenUp;
+		int m_GroupGreenUp;
+		int m_MinimalGroupDistance;
+		int m_MaximalGroupDistance;
 		std::vector<int>m_ActionTargets;
 		int m_GroupTheme;
 		int m_RulesId;

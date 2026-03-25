@@ -44,10 +44,10 @@ int main(int argc, char* argv[])
 		boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
 		length = std::stoi(argv[3]);
 	}else {
-		modellocation = "C:/Users/Admlocal/Documents/issues/validation_carbone/CC_modele_feu/CC_V2/";
-		primarylocation = modellocation + "Mod_cc_v2.pri";
-		scenario = "PlayBack_Histo";
-		length = 5;
+		modellocation = "C:\\Users\\admlocal\\Desktop\\06471\\";
+		primarylocation = modellocation + "PC_9981_U06471_2028_MODB01.pri";
+		scenario = "TBE_V3";
+		length = 2;
 		spatialOutputs = { "OVOLTOTREC"};
 		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
 		primarylocation = modellocation + "Mod_cc_v2.pri";
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 		areaParser.writeforest(SPATIAL_SCHEDULE.getforestperiod(period), simulationmodel.getthemes(), themesrast, NAME + "AGE.tif", NAME + "LOCK.tif");
 	}*/
 	Parser::FMTareaparser areaParser;
-	std::vector<Core::FMTtheme>selected(1, simulationmodel.getthemes().at(7));
+	std::vector<Core::FMTtheme>selected(1, simulationmodel.getthemes().at(2));
 	areaParser.writedisturbances(outdir, SPATIAL_SCHEDULE, simulationmodel.getactions(), selected, length);
 	for (const Core::FMToutput& OUTOUT : simulationmodel.getoutputs())
 		{

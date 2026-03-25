@@ -470,7 +470,7 @@ namespace Models
                 {
                 const  std::vector<Spatial::FMTSpatialSchedule::EventSpread> LOCAL = 
                     newSolution.GetPotentialSpread(period);
-                if (!newSolution.empty())
+                if (!LOCAL.empty())
                     {
                     AllPotentials.push_back(LOCAL);
                     }

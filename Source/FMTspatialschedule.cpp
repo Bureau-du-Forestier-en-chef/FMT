@@ -22,6 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/thread.hpp>
 #include "FMTSpatialGraphs.h"
 #include "FMTsemodel.h"
+#include "FMTPatchRules.h"
 
 
 namespace Spatial
@@ -290,16 +291,19 @@ namespace Spatial
 				}
 			//boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>cachedactions;
 			//cachedactions.reserve(updatedcoordinate.size());
+			const int8_t DEATH_ID = static_cast<int8_t>(model.actions.size())-1;
 			for (const FMTcoordinate& updated : updatedcoordinate)
 				{
 				const Graph::FMTlinegraph& lg = mapping.at(updated).getLineGraph();
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor& active = lg.getactivevertex();
-				if (lg.IsNotDead(active, model.actions))
+				
+				boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator cacheit = cachedactions.end();
+				if (lg.IsNotDead(active, DEATH_ID))
 					{
 						const Core::FMTdevelopment& active_development = lg.getdevelopment(active);
 						//*_logger << "op at period " << active_development.getperiod() << "\n";
 						const int LAST_ACTION_ID = lg.getinedgeactionid(active);
-						boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator cacheit = cachedactions.find(active_development);
+						cacheit = cachedactions.find(active_development);
 						if (cacheit == cachedactions.end())
 						{
 							std::pair<boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator, bool>insertedpair = cachedactions.insert(std::make_pair(active_development, std::vector<bool>(model.actions.size(), false)));
@@ -317,11 +321,13 @@ namespace Spatial
 								}
 							}
 						}
+					}
 
 						for (const int& actionid : actiontargets)
 						{
 							std::set<Spatial::FMTcoordinate>& settochange = original[actionid];
-							if (cacheit->second.at(actionid))
+							if (cacheit!=cachedactions.end() &&
+								cacheit->second.at(actionid))
 							{
 								settochange.insert(updated);
 							}
@@ -330,7 +336,6 @@ namespace Spatial
 								settochange.erase(updated);
 							}
 						}
-					}
 				}
 		}catch (...)
 			{
@@ -846,6 +851,24 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 		_exhandler->raisefromcatch("", "FMTSpatialSchedule::evaluatespatialconstraint", __LINE__, __FILE__);
 		}
 	return returnvalue + _GetConstraintFloorValue(returnvalue);
+	}
+
+
+	double FMTSpatialSchedule::_GetRulesEvaluation(const std::vector<FMTPatchRules>& p_rules,
+		const FMTSpatialGraphs& p_SpatialGraph) const
+	{
+		double cost = 0;
+		try {
+			for (const FMTPatchRules& RULE : p_rules)
+				{
+				cost += RULE.Evaluate(m_events, p_SpatialGraph);
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", 
+				"FMTSpatialSchedule::_GetRulesEvaluation", __LINE__, __FILE__);
+			}
+		return cost + _GetConstraintFloorValue(cost);
 	}
 
 
