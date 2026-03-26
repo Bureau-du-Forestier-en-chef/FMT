@@ -103,6 +103,11 @@ namespace Models{
 			ActionMask.update(themes);
 			const std::string BEFORE = "PRE";
 			const std::string AFTER = "POST";
+			std::vector<const Core::FMTtheme*>themesTest;
+			for (const Core::FMTtheme& p_theme : themes)
+				{
+				themesTest.push_back(&p_theme);
+				}
 			/*const std::vector<size_t>Static = statictransitionthemes;
 			for (size_t thId = 0; thId < themes.size();++thId)
 				{
@@ -133,7 +138,8 @@ namespace Models{
 						Core::FMTmask newMask = Core::FMTmask(newDev.getmask(),themes);
 						newMask.set(themes.back(), BEFORE_THEME);
 						newDev.setmask(newMask);
-						if (dev.first.getmask().isSubsetOf(ActionMask))
+						if (//dev.first.getmask().isSubsetOf(ActionMask)&&
+							!newMask.isnotthemessubset(ActionMask,themesTest))
 							{
 							if (PERIOD > MAX_PERIOD)
 								{
@@ -392,6 +398,8 @@ namespace Models{
 				newYield->setMask(NEW_MASK);
 				if (YieldMasks.find(YIELD_MASK)!= YieldMasks.end())
 					{
+					const Core::FMTmask SUB_MASK(std::string(YIELD_MASK) + " "+BEFORE, newModel.themes);
+					newYield->setMask(SUB_MASK);
 					const size_t TO_SPLIT = static_cast<size_t>(YieldMasks.at(YIELD_MASK)) + 1;
 					const Core::FMTmask NEW_SPLITTED_MASK(std::string(YIELD_MASK) + " " +
 						_GetAggregatesWrap(YIELD_MASK, AGGREGATES) + AFTER, newModel.themes);
@@ -408,9 +416,11 @@ namespace Models{
 						const std::vector<double>NEW_DATA(BASE_DATA.data.begin() + TO_SPLIT, BASE_DATA.data.end());
 						newSplittedYield->push_data(YIELD_NAME, Core::FMTdata(NEW_DATA, BASE_DATA.getop(), BASE_DATA.getSourcesCopy()));
 						}
+					newYields.push_back(SUB_MASK, newYield);
 					newYields.push_back(NEW_SPLITTED_MASK, newSplittedYield);
-					}
-				newYields.push_back(NEW_MASK, newYield);
+					}else{ 
+						newYields.push_back(NEW_MASK, newYield);
+						}
 				}
 			newYields.update();
 			newAction.update();

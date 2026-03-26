@@ -298,6 +298,8 @@ namespace Spatial
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor& active = lg.getactivevertex();
 				
 				boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator cacheit = cachedactions.end();
+				const Core::FMTdevelopment& test = lg.getdevelopment(active);
+
 				if (lg.IsNotDead(active, DEATH_ID))
 					{
 						const Core::FMTdevelopment& active_development = lg.getdevelopment(active);

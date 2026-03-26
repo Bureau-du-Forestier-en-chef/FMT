@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 		primary_path = "C:/Users/admlocal/Desktop/03_Carbone/03_Carbone/PC_9981_U06471_2028_MODB01.pri";
 		actionName = "ATBEMORT";
 		targetYield = "YV_S_MORT";
-		scenarioName = "200_StratReg_apsp";
+		scenarioName = "160_Equ_apsp";
 
 	}
 	std::string output_scenario_name = scenarioName + "_test";

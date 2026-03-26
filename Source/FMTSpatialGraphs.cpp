@@ -171,9 +171,9 @@ namespace Spatial
 					return It;
 				}
 			}
-			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+			/*_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Cant Get Less period for graph id " + std::to_string(p_iterator->second.GetGraphId())
-				, "FMTSpatialGraphs::GetLastPeriodIteratorr", __LINE__, __FILE__);
+				, "FMTSpatialGraphs::GetLastPeriodIteratorr", __LINE__, __FILE__);*/
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetLastPeriodIterator",
@@ -573,8 +573,10 @@ namespace Spatial
 							}
 							const double GRAPH_AREA = p_Graph->first.getbasedevelopment().getarea();
 							const double* SOLUTION = &GRAPH_AREA;
-							size_t i = 0;
 							std::vector<double>Values((UpperPeriod - LowestPeriod) + 1, 0.0);
+							size_t i  = _FillValuesFromLastPeriod(p_family, p_Graph, ConstraintId,
+								Values);
+							LowestPeriod += static_cast<int>(i);
 							for (int period = LowestPeriod; period <= UpperPeriod; ++period)
 							{
 								Values.at(i) = p_Graph->first.getoutput(GetModel(),
@@ -596,6 +598,37 @@ namespace Spatial
 				__LINE__, __FILE__);
 		}
 	}
+
+	size_t FMTSpatialGraphs::_FillValuesFromLastPeriod(
+		size_t p_family,
+		FMTSpatialGraphs::iterator p_Graph,
+		size_t p_ConstraintId,
+		std::vector<double>& p_constraintValues) const
+	{
+		size_t i = 0;
+		try {
+			if(p_constraintValues.size() > 1)
+			{
+				FMTSpatialGraphs::const_iterator LAST_GRAPH = GetLastPeriodIterator(p_family, p_Graph);
+				if (IsNotNull(p_family, LAST_GRAPH))
+				{
+
+					for (const double& VALUE : LAST_GRAPH->second.GetValues(p_ConstraintId))
+					{
+						p_constraintValues.at(i) = VALUE;
+						++i;
+					}
+					
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_FillValuesFromLastPeriod",
+				__LINE__, __FILE__);
+			}
+		return i;
+	}
+
 
 
 	void FMTSpatialGraphs::_BuildConstraintsValues(

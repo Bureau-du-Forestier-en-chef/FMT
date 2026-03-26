@@ -8,6 +8,7 @@
 	#include "FMToutput.h"
 	#include "FMTfreeexceptionhandler.h"
 	#include "FMTGCBMtransition.h"
+	#include "FMTscheduleparser.h"
 #endif
 
 void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
@@ -72,6 +73,7 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	mparser.seterrorstowarnings(errors);
+	mparser.setmaxwarningsbeforesilenced(10000000);
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
@@ -86,13 +88,15 @@ int main(int argc, char* argv[])
 	setMapping(rastpath, simulationmodel);
 	//mparser.write(simulationmodel, "D:/test/");
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 2);
+	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 30);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false, schedules.at(0));
 	simulationmodel.LogConstraintsInfeasibilities();
 	const Spatial::FMTSpatialSchedule& SPATIAL_SCHEDULE = simulationmodel.getspschedule();
 	const auto test = simulationmodel.getschedule(false);
+	Parser::FMTscheduleparser scheduleParser;
+	scheduleParser.write(test, outdir + "schedules.seq");
 
 	/*Parser::FMTareaparser areaParser;
 	for (int period = 1; period <= length; ++period)
