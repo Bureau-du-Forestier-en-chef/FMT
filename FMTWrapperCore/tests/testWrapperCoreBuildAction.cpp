@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 		scenarioName = "160_Equ_apsp";
 
 	}
-	std::string output_scenario_name = scenarioName + "_test";
+	std::string output_scenario_name = scenarioName + "_test2";
 
 
 	Parser::FMTmodelparser ModelParser;

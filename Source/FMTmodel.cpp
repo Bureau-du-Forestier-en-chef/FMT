@@ -22,6 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTfuturdevelopment.h"
 #include <numeric>
 #include <thread>
+#include <algorithm>
 //#include <cvmarkersobj.h>
 #include <memory>
 //#include <boost/container/flat_set.hpp>
@@ -164,7 +165,10 @@ namespace Models{
 							}
 						for (const double& AREA : dev.second)
 							{
-							baseSchedule.addevent(newDev, AREA, ACTION.first);
+							if (AREA > FMT_DBL_TOLERANCE)
+								{
+								baseSchedule.addevent(newDev, AREA, ACTION.first);
+								}
 							}
 						}
 					}
@@ -348,7 +352,7 @@ namespace Models{
 				newAttributes.push_back(SUB + AFTER);
 				}
 			newModel.pushTheme("~FMT_THEME_" + p_actionName, p_Targetyield,newAttributes);
-			Core::FMTaction newAction(p_actionName,false,true);
+			Core::FMTaction newAction(p_actionName,false,false);
 			Core::FMTtransition newTransition(p_actionName);
 			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_Targetyield);
 			Core::FMTmask ActionMask;			
@@ -396,19 +400,20 @@ namespace Models{
 				const Core::FMTmask NEW_MASK(std::string(YIELD_MASK) + " ?", newModel.themes);
 				std::unique_ptr<Core::FMTyieldhandler>newYield(yield.second->clone());
 				newYield->setMask(NEW_MASK);
+				const std::string AGGREGATE_WRAP = _GetAggregatesWrap(YIELD_MASK, AGGREGATES);
 				if (YieldMasks.find(YIELD_MASK)!= YieldMasks.end())
 					{
-					const Core::FMTmask SUB_MASK(std::string(YIELD_MASK) + " "+BEFORE, newModel.themes);
+					const Core::FMTmask SUB_MASK(std::string(YIELD_MASK) + " "+ AGGREGATE_WRAP +BEFORE, newModel.themes);
 					newYield->setMask(SUB_MASK);
-					const size_t TO_SPLIT = static_cast<size_t>(YieldMasks.at(YIELD_MASK)) + 1;
+					const size_t TO_SPLIT = static_cast<size_t>(YieldMasks.at(YIELD_MASK)) - 1;
 					const Core::FMTmask NEW_SPLITTED_MASK(std::string(YIELD_MASK) + " " +
-						_GetAggregatesWrap(YIELD_MASK, AGGREGATES) + AFTER, newModel.themes);
+						AGGREGATE_WRAP + AFTER, newModel.themes);
 					std::unique_ptr<Core::FMTyieldhandler>newSplittedYield(new Core::FMTageyieldhandler(NEW_SPLITTED_MASK));
 					const std::vector<int> BASES = yield.second->getbases();
-					const int SPLIT_DISTANCE = static_cast<int>(std::distance(BASES.begin() + TO_SPLIT, BASES.end()));
-					for (int i = 1; i <= SPLIT_DISTANCE;++i)
+					const size_t SPLIT_DISTANCE = std::distance(BASES.begin() + TO_SPLIT, BASES.end());
+					for (size_t i = TO_SPLIT; i <= SPLIT_DISTANCE;++i)
 						{
-						newSplittedYield->push_base(i);
+						newSplittedYield->push_base(BASES.at(i));
 						}
 					for (const std::string& YIELD_NAME : yield.second->getyieldnames())
 						{

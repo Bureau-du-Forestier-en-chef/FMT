@@ -852,7 +852,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 		{
 		_exhandler->raisefromcatch("", "FMTSpatialSchedule::evaluatespatialconstraint", __LINE__, __FILE__);
 		}
-	return returnvalue + _GetConstraintFloorValue(returnvalue);
+	return returnvalue;
 	}
 
 
@@ -870,7 +870,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 			_exhandler->raisefromcatch("", 
 				"FMTSpatialSchedule::_GetRulesEvaluation", __LINE__, __FILE__);
 			}
-		return cost + _GetConstraintFloorValue(cost);
+		return cost;
 	}
 
 
