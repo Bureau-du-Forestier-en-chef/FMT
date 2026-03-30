@@ -99,9 +99,13 @@ namespace Models
 		double Numerator = MAX_FACTOR;
 		const int UPDATE = getparameter(Models::FMTintmodelparameters::UPDATE);
 		if (constraints[p_constraint].getperiodupperbound() < UPDATE)
-		{
-			Numerator = MAX_FACTOR * 10;
-		}
+			{
+			Numerator *= 10;
+			}
+		if (constraints[p_constraint].isspatial())
+			{
+			Numerator *= 10;
+			}
 		return Numerator;
 	}
 

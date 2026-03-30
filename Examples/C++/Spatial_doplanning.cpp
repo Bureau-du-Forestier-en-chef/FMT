@@ -8,6 +8,7 @@
 	#include "FMToutput.h"
 	#include "FMTfreeexceptionhandler.h"
 	#include "FMTGCBMtransition.h"
+	#include "FMTscheduleparser.h"
 #endif
 
 void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
@@ -44,10 +45,10 @@ int main(int argc, char* argv[])
 		boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
 		length = std::stoi(argv[3]);
 	}else {
-		modellocation = "C:/Users/Admlocal/Documents/issues/validation_carbone/CC_modele_feu/CC_V2/";
-		primarylocation = modellocation + "Mod_cc_v2.pri";
-		scenario = "PlayBack_Histo";
-		length = 5;
+		modellocation = "C:\\Users\\admlocal\\Desktop\\06471\\";
+		primarylocation = modellocation + "PC_9981_U06471_2028_MODB01.pri";
+		scenario = "TBE_V3";
+		length = 2;
 		spatialOutputs = { "OVOLTOTREC"};
 		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
 		primarylocation = modellocation + "Mod_cc_v2.pri";
@@ -72,6 +73,7 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	mparser.seterrorstowarnings(errors);
+	mparser.setmaxwarningsbeforesilenced(10000000);
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
@@ -86,13 +88,15 @@ int main(int argc, char* argv[])
 	setMapping(rastpath, simulationmodel);
 	//mparser.write(simulationmodel, "D:/test/");
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 2);
+	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 30);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false, schedules.at(0));
 	simulationmodel.LogConstraintsInfeasibilities();
 	const Spatial::FMTSpatialSchedule& SPATIAL_SCHEDULE = simulationmodel.getspschedule();
 	const auto test = simulationmodel.getschedule(false);
+	Parser::FMTscheduleparser scheduleParser;
+	scheduleParser.write(test, outdir + "schedules.seq");
 
 	/*Parser::FMTareaparser areaParser;
 	for (int period = 1; period <= length; ++period)
@@ -106,7 +110,7 @@ int main(int argc, char* argv[])
 		areaParser.writeforest(SPATIAL_SCHEDULE.getforestperiod(period), simulationmodel.getthemes(), themesrast, NAME + "AGE.tif", NAME + "LOCK.tif");
 	}*/
 	Parser::FMTareaparser areaParser;
-	std::vector<Core::FMTtheme>selected(1, simulationmodel.getthemes().at(7));
+	std::vector<Core::FMTtheme>selected(1, simulationmodel.getthemes().at(2));
 	areaParser.writedisturbances(outdir, SPATIAL_SCHEDULE, simulationmodel.getactions(), selected, length);
 	for (const Core::FMToutput& OUTOUT : simulationmodel.getoutputs())
 		{

@@ -378,7 +378,7 @@ namespace Graph
 				const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(model.actions.at(action_id), model.transitions.at(action_id), model.yields, model.themes);
 				std::queue<FMTvertex_descriptor>actives;
 				addaction(action_id,stats,actives,vertex, paths);
-				if (!actives.empty())
+				if (!actives.empty() && model.actions.at(action_id).getname() != "_DEATH")
 					{
 					front_vertex = actives.front();
 					}
@@ -435,8 +435,6 @@ namespace Graph
 			Graph::FMTlinegraph::FMTvertex_descriptor active = getactivevertex();
 			while (active!= boost::graph_traits<FMTadjacency_list>::null_vertex())
 			{
-				if (IsNotDead(active, model.actions))
-					{
 					const FMTbasevertexproperties& front_properties = data[active];
 					const Core::FMTdevelopment& active_development = front_properties.get();
 					const std::vector<int>& DEV_OP = GetSetOperability(active_development, model, operability);
@@ -447,9 +445,6 @@ namespace Graph
 						if (SELECTED_ACTION > -1)
 						{
 							actioned.push_back(SELECTED_ACTION);
-						}
-					}else {
-						active = boost::graph_traits<FMTadjacency_list>::null_vertex();
 						}
 			}
 		}catch (...)
@@ -551,11 +546,27 @@ namespace Graph
 		return (getbasedevelopment() == rhs.getbasedevelopment());
 	}
 
-	bool FMTlinegraph::IsNotDead(FMTvertex_descriptor p_Descriptor,
-			const std::vector<Core::FMTaction>& p_actions) const
+	bool FMTlinegraph::IsNotDead(FMTvertex_descriptor p_Descriptor,int8_t p_DeathId) const
 		{
-		return (getinedgeactionid(p_Descriptor) < 
-			static_cast<int>(p_actions.size()) - 1);//_death is the last action
+		bool returned = true;
+		/*if (boost::num_vertices(data) != size())//to be death you need more then just grow
+			{
+			const FMTbasevertexproperties& VERTEX_PROPERTIES = data[p_Descriptor];
+			const Core::FMTdevelopment& ACTIVE = VERTEX_PROPERTIES.get();
+			FMTvertex_iterator VertexIt,VertexEnd;
+			boost::tie(VertexIt, VertexEnd) = boost::vertices(data);
+			if (std::distance(developments.at(ACTIVE.getperiod()).first, VertexEnd)>1)
+				{*/
+					FMTinedge_iterator inedge_iterator, inedge_end;
+					boost::tie(inedge_iterator, inedge_end) = boost::in_edges(p_Descriptor, data);
+					if (inedge_iterator != inedge_end)
+					{
+						const FMTbaseedgeproperties& EDGE_PROPERTIES = data[*inedge_iterator];
+						returned = (EDGE_PROPERTIES.getShortActionID() < p_DeathId);
+					}
+			/* }
+			}*/
+		return returned;
 		}
 
 	bool  FMTlinegraph::IsLessPeriod(const FMTlinegraph& rhs) const

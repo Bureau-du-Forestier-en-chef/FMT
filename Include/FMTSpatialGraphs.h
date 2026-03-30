@@ -107,6 +107,11 @@ namespace Spatial
 			void _BuildConstraintsValues(
 				iterator p_Graph,
 				size_t p_family);
+			size_t _FillValuesFromLastPeriod(
+				size_t p_family,
+				FMTSpatialGraphs::iterator p_Graph,
+				size_t p_ConstraintId,
+				std::vector<double>& p_constraintValues) const;
 			static Core::FMTmask _GetUseFullBits(const Models::FMTmodel& p_model);
 			size_t _GetFamily(const Graph::FMTlinegraph& p_Graph) const;
 			size_t _GetNonSpatialId(size_t p_Constraint) const;

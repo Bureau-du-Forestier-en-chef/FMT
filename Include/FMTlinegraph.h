@@ -238,11 +238,10 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		@brief Check if descriptor got the _death action
 		@param[in] vertex descriptor  p_Descriptor
-		@param[in] p_actions the model actions
+		@param[in] p_DeathId death action id
 		@return true if not dead
 		*/
-		bool IsNotDead(FMTvertex_descriptor p_Descriptor,
-			const std::vector<Core::FMTaction>& p_actions) const;
+		bool IsNotDead(FMTvertex_descriptor p_Descriptor,int8_t p_DeathId) const;
 		// DocString:  FMTlinegraph::clearnodecache
 		/**
 		Clear the node cache when getting outpus of the linegraph.
