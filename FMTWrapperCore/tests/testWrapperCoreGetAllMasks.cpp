@@ -42,14 +42,13 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/PC_9949_U08251_2028_MODB01.pri";
-		scenarioName = "TBE_TEST_CORRECTION";
-		periods = 5;
+		pathPri = "C:\\Users\\Admlocal\\Documents\\FMT\\FMT\\Examples\\Models\\TWD_land\\TWD_land.pri";
+		scenarioName = "LP";
+		periods = 10;
 		writeOnDisk = true;
 		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\get_all_mask_output.txt";
-		//resultSize = 21821;
 		resultSize = 19607;
-		themesNumbers = {3, 5, 12, 13, 14, 21};
+		themesNumbers = {1, 3};
 		rastpath = "";
 	}
 
@@ -100,7 +99,6 @@ int main(int argc, char* argv[])
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
 	}
-
 
 	return 0;
 }

@@ -34,15 +34,21 @@ namespace Models
 
 
 
-	std::map<std::string, double> FMTsesmodel::GreedyReferenceBuild(const Core::FMTschedule& p_schedule,
-																	size_t p_randomIterations,
-																	int p_seed,
-																	double p_tolerance)
+	std::map<std::string, double> FMTsesmodel::GreedyReferenceBuild(
+		const Core::FMTschedule& p_schedule,
+		size_t p_randomIterations,
+		int p_seed,
+		double p_tolerance)
 	{
-	std::map<std::string, double>bestresults;
+	std::map<std::string, double> bestresults;
 	try {
 		
-		bestresults = FMTsemodel::GreedyReferenceBuild(m_BestSolution,p_schedule,p_randomIterations, p_seed, p_tolerance);
+		bestresults = FMTsemodel::GreedyReferenceBuild(
+			m_BestSolution, 
+			p_schedule, 
+			p_randomIterations, 
+			p_seed, 
+			p_tolerance);
 		m_SpatialGraphs.DeleteNonCompleteGraphs();
 		}catch (...)
 			{

@@ -51,23 +51,31 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
-		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
-		params.outputPath = "..\\..\\tests\\testWrapperCoreSES\\ForetMontmorency";
-		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
-		params.numberOfPeriods = 20;
-		params.greedySearchIterations = 5;
+		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\issues\\FM\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
+		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\FM\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
+		params.outputPath = "C:\\Users\\Admlocal\\Documents\\issues\\FM\\output";
+		params.scenarioName = "reference_3772_apsp_V3_NoCOS_510_511";
+		params.numberOfPeriods = 30;
+		params.greedySearchIterations = 1;
 		params.useStanlock = false;
 		//outputLevel: STRATE = 3, TH�MATIQUE = 1, TOTALE = 2
 		params.outputLevel = 2;
 		params.outputMinPeriod = 1;
-		params.outputMaxPeriod = 20;
+		params.outputMaxPeriod = 30;
 		params.gdalProvider = "CSV";
-		params.carbonMode = false;
+		params.carbonMode = true;
 		params.generateEvents = true;
 		params.generateSpatialOutputs = true;
-		params.constraintNames = {"_MAX OVOLTOTREC_YP23 2.._LENGTH"};
-		params.outputNames = {"OVOLTOTREC", "OSUPREGECOCOS"};
+		params.constraintNames = {
+			"_MAX OVOLTOTREC_YP23 2.._LENGTH", 
+			"OVOLTOTREC = 57270.000000 1",
+			"_EVEN(OVOLTOTREC) 2..6",
+			"_NDY(OVOLTOTREC) 6.._LENGTH",
+			"_EVEN(OVOLGFIREC) 2..6",
+			"_NDY(OVOLGFIREC) 6.._LENGTH",
+			"_EVEN(OVOLGRREC) 2..6",
+			"_NDY(OVOLGRREC) 6.._LENGTH"};
+		params.outputNames = { "OVOLTOTREC", "OVOLGFIREC", "OVOLGRREC" };
 		params.predictorYields = {};
 		params.growthThemes = {};
 	}
