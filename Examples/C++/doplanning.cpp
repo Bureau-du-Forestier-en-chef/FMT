@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02002099\\PC_3753_09551_3FF_V06\\PC_3753_09551_3FF_V06.pri";
-			scenario = "scenario_4";
+			primarylocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
+			scenario = "strategique_vanille";
 			length = 20; 
 			objectivevalue = 14406932.651803;
 		}

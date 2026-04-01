@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <map>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/map.hpp>
+#include <boost/serialization/vector.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>
 #include "FMTexceptionhandler.h"

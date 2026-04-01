@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 		modellocation = "C:\\Users\\admlocal\\Desktop\\06471\\";
 		primarylocation = modellocation + "PC_9981_U06471_2028_MODB01.pri";
 		scenario = "TBE_V3";
-		length = 2;
+		length = 30;
 		spatialOutputs = { "OVOLTOTREC"};
 		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";
 		primarylocation = modellocation + "Mod_cc_v2.pri";

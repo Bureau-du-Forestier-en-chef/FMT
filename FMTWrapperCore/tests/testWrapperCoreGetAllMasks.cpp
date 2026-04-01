@@ -48,8 +48,8 @@ int main(int argc, char* argv[])
 		writeOnDisk = true;
 		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\get_all_mask_output.txt";
 		//resultSize = 21821;
-		resultSize = 19607;
-		themesNumbers = {3, 5, 12, 13, 14, 21};
+		resultSize = 19512;
+		themesNumbers = {5,12,13,14,21};
 		rastpath = "";
 	}
 

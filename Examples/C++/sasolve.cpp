@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
 		//optimizationmodel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
 		optimizationmodel.doplanning(true);
-		optimizationmodel.LogConstraintsInfeasibilities();
+		//optimizationmodel.LogConstraintsInfeasibilities();
 		/*std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())
 		{

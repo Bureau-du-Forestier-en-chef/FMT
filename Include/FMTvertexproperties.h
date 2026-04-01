@@ -10,9 +10,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include <boost/serialization/serialization.hpp>
-#include <boost/serialization/unique_ptr.hpp>
-#include <memory>
+#include <boost/functional/hash.hpp>
 #include "FMTbasevertexproperties.h"
+#include <boost/serialization/export.hpp>
+#include "FMTutility.h"
 
 namespace Core
 {

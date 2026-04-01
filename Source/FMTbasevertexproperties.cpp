@@ -7,9 +7,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTbasevertexproperties.h"
 #include "FMTfuturdevelopment.h"
+#include "FMTactualdevelopment.h"
+#include "FMTdevelopment.h"
 
 namespace Graph
 {
+	
 	int FMTbasevertexproperties::getConstraintId() const
 		{
 		return 0;
@@ -17,51 +20,61 @@ namespace Graph
 
 	const Core::FMTdevelopment& FMTbasevertexproperties::get() const
 		{
-		return m_development;
+		return *m_development;
 		}
 
 	bool FMTbasevertexproperties::operator < (const FMTbasevertexproperties& rhs) const
 	{
-		if (m_development.getperiod() < rhs.m_development.getperiod())
+		if (m_development->getperiod() < rhs.m_development->getperiod())
 		{
 			return true;
 		}
-		if (m_development < rhs.m_development)
+		if (*m_development < *rhs.m_development)
 		{
 			return true;
 		}
 		return false;
 	}
+	
+	FMTbasevertexproperties::FMTbasevertexproperties(const FMTbasevertexproperties& rhs) :
+		m_development(rhs.m_development->Clone())
+	{
 
+
+	}
+	FMTbasevertexproperties& FMTbasevertexproperties::operator = (const FMTbasevertexproperties& rhs)
+	{
+		if (this != &rhs)
+		{
+			m_development = rhs.m_development->Clone();
+		}
+		return *this;
+	}
+	
 	FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTfuturdevelopment& p_development) :
-		m_development(p_development,0.0)
+		m_development( new Core::FMTfuturdevelopment(p_development))
 		{
 
 		}
 	FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTactualdevelopment& p_development) :
-		m_development(p_development)
-	{
+		m_development(new Core::FMTactualdevelopment(p_development))
+		{
 
-	}
-	/*FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTdevelopment& p_development) :
-		m_development(p_development,0.0)
-	{
-
-	}*/
+		}
 
 	void FMTbasevertexproperties::setDevlopementMask(const Core::FMTmask& p_newmask)
 	{
-		m_development.setmask(p_newmask);
+		m_development->setmask(p_newmask);
 	}
 
 	double FMTbasevertexproperties::getBaseRhs() const
 	{
-		return m_development.getarea();
+		return m_development->getarea();
 	}
 
 	bool FMTbasevertexproperties::operator == (const FMTbasevertexproperties& rhs) const
 	{
-		return (m_development == rhs.m_development);
+		return (*m_development == *rhs.m_development);
 	}
 	bool FMTbasevertexproperties::operator != (const FMTbasevertexproperties& rhs) const
 	{
@@ -70,9 +83,19 @@ namespace Graph
 
 	size_t FMTbasevertexproperties::hash() const
 	{
-		return boost::hash<Core::FMTdevelopment>()(m_development);
+		return m_development->hash();
 	}
 
+
+	void FMTbasevertexproperties::_Save(double p_area)
+		{
+		if (p_area > 0)
+			{
+				m_development = std::unique_ptr<Core::FMTdevelopment>(new Core::FMTactualdevelopment(*m_development, p_area));
+			}else {
+				m_development = std::unique_ptr<Core::FMTdevelopment>(new Core::FMTfuturdevelopment(*m_development));
+				}
+		}
 
 }
 

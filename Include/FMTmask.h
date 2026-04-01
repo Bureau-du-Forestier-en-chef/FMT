@@ -23,11 +23,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/functional/hash.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/dynamic_bitset/serialization.hpp>
 #include "FMTexception.h"
 #include <vector>
 #include <string>
 
 
+
+
+#if (BOOST_VERSION / 100 % 1000) < 71
 /**
 Function part of boost and serialization needed to serialize boost::dynamic_bitset<uint8_t>.
 */
@@ -40,16 +45,16 @@ namespace boost {
 			std::vector<Block> blocks(bs.num_blocks());
 			to_block_range(bs, blocks.begin());
 
-			ar & BOOST_SERIALIZATION_NVP(num_bits);
-			ar & BOOST_SERIALIZATION_NVP(blocks);
+			ar& BOOST_SERIALIZATION_NVP(num_bits);
+			ar& BOOST_SERIALIZATION_NVP(blocks);
 		}
 
 		template <typename Ar, typename Block, typename Alloc>
 		void load(Ar& ar, dynamic_bitset<Block, Alloc>& bs, unsigned) {
 			size_t num_bits;
 			std::vector<Block> blocks;
-			ar & BOOST_SERIALIZATION_NVP(num_bits);
-			ar & BOOST_SERIALIZATION_NVP(blocks);
+			ar& BOOST_SERIALIZATION_NVP(num_bits);
+			ar& BOOST_SERIALIZATION_NVP(blocks);
 
 			bs.resize(num_bits);
 			from_block_range(blocks.begin(), blocks.end(), bs);
@@ -66,7 +71,6 @@ namespace boost {
 /**
 The boost::dynamic_bitset<uint8_t> hashing was missing the boost version older thant 1.71
 */
-#if (BOOST_VERSION / 100 % 1000) < 71
 namespace boost {
 	template <typename Block, typename Alloc>
 	std::size_t hash_value(const boost::dynamic_bitset<Block, Alloc>& bs)

@@ -1480,7 +1480,7 @@ std::map<std::string, std::vector<std::string>>  FMTparser::GetForLoops(const st
 		}else if (!std::string(kmatch[35]).empty())//In a Query
 		{
 			const std::string PATH_TO_DATABASE = std::string(kmatch[41]);
-			const std::string QUERY = std::string(kmatch[46]);
+			const std::string QUERY = _ProcessConstants(kmatch[46], p_cons);
 			const std::string BASE_TARGET = std::string(kmatch[37]);
 			#ifdef FMTWITHGDAL
 				allValues = _QueryDatabase(PATH_TO_DATABASE, BASE_TARGET, QUERY);
@@ -1755,6 +1755,31 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 		return FMTLineInfo(Line, FULL_LINE.m_lineNumber, FULL_LINE.m_file);
 	}
 
+	std::string FMTparser::_ProcessConstants(std::string p_input,
+		const Core::FMTconstants& p_constants) const
+	{
+		try {
+			const boost::regex Constants("(#[^\\s^\\t]*)");
+			boost::smatch matches;
+			std::string::const_iterator start = p_input.begin();
+			std::string::const_iterator end = p_input.end();
+			std::string TargetCopy(p_input);
+			while (boost::regex_search(start, end, matches, Constants))
+				{
+				const std::string TARGET = matches[1].str();
+				const int VALUE = getNum<int>(TARGET, p_constants);
+				boost::replace_all(TargetCopy, TARGET, std::to_string(VALUE));
+				start = matches[0].second;
+				}
+			TargetCopy.swap(p_input);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("Failed to constants " + std::to_string(m_line) + " in " + m_location,
+				"FMTparser::_ProcessConstants", __LINE__, __FILE__, m_section);
+			}
+		return p_input;
+	}
+
 
 	void FMTparser::ProcessForLoops(const std::vector<Core::FMTtheme>& p_themes,
 		const Core::FMTconstants& p_constants,
@@ -1871,25 +1896,52 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 			p_queue = FinalQueue;
 	}
 
+	std::queue<FMTparser::FMTLineInfo> FMTparser::GetAllLines(std::ifstream& p_stream) const
+	{
+		std::queue<FMTLineInfo> lines;
+		try {
+			while (p_stream.is_open())//Need to reopen this stream!!!
+			{
+				const std::string LINE = getCleanLine(p_stream);
+				if (!LINE.empty())
+				{
+					lines.push(FMTLineInfo(LINE, m_line, m_location));
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTparser::GetAllLines", __LINE__, __FILE__, m_section);
+			}
+		return lines;
+	}
+
+	std::queue<FMTparser::FMTLineInfo> FMTparser::ProcessForLoopsNInclude(
+		const std::vector<Core::FMTtheme>& p_themes,
+		const Core::FMTconstants& p_cons,
+		std::queue<FMTLineInfo>p_AllLines) const
+	{
+		try {
+			if (!p_AllLines.empty())
+				{
+				ProcessForLoops(p_themes, p_cons, p_AllLines);
+				p_AllLines = TryInclude(p_themes, p_cons, p_AllLines);
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTparser::ProcessForLoopsNInclude",
+								__LINE__, __FILE__, m_section);
+			}
+		return p_AllLines;
+	}
+
 	std::queue<FMTparser::FMTLineInfo> FMTparser::GetCleanLinewfor(std::ifstream& p_stream,
 																		const std::vector<Core::FMTtheme>& p_themes,
 																		const Core::FMTconstants& p_cons) const
 	{
 		std::queue<FMTLineInfo> lines;
 		try {
-			while (p_stream.is_open())//Need to reopen this stream!!!
-				{
-				const std::string LINE = getCleanLine(p_stream);
-				if (!LINE.empty())
-					{
-					lines.push(FMTLineInfo(LINE, m_line,m_location));
-					}
-				}
-			if (!lines.empty())
-				{
-				ProcessForLoops(p_themes, p_cons, lines);
-				lines = TryInclude(p_themes, p_cons, lines);
-				}
+			lines = GetAllLines(p_stream);
+			lines = ProcessForLoopsNInclude(p_themes,p_cons, lines);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTparser::GetCleanLinewfor", __LINE__, __FILE__, m_section);
