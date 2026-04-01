@@ -187,7 +187,7 @@ namespace Models
 			const std::vector<Core::FMTconstraint>constraints = getconstraints();
 			for (double value : m_BestSolution.getconstraintsvalues(m_SpatialGraphs))
 			{
-				if (cid > 0 && !constraints.at(cid).isspatial())
+				if (cid > 0 /* && !constraints.at(cid).isspatial()*/)
 				{
 					if (value > 0)
 					{

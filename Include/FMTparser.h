@@ -54,6 +54,11 @@ namespace Spatial
 	class FMTlayer;
 }
 
+namespace Testing
+{
+	class UnitTestFMTParser;
+}
+
 
 /// Namespace handling all FMT's parsers. Everything related to I/O should be located in this namespace.
 namespace Parser
@@ -349,7 +354,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_ForOut is the output of for loops unrol
 		@return a queue of lines to process.
 		*/
-		std::queue<FMTLineInfo> TryInclude(const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
+		virtual std::queue<FMTLineInfo> TryInclude(const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
 															std::queue<FMTLineInfo>p_ForOut) const;
 
 		// DocString: FMTparser::GetCleanLinewfor
@@ -360,8 +365,27 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_const the model constants
 		@return a queue of lines to process
 		*/
-		std::queue<FMTLineInfo> GetCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTtheme>& p_themes,
+		virtual std::queue<FMTLineInfo> GetCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTtheme>& p_themes,
 																const Core::FMTconstants& p_cons) const;
+		// DocString: FMTparser::GetAllLines
+		/**
+		@brief Get all lines of a file
+		@param[p_stream] p_stream  is the file stream
+		@return a queue of lines to process
+		*/
+		std::queue<FMTLineInfo> GetAllLines(std::ifstream& p_stream) const;
+		// DocString: FMTparser::ProcessForLoopsNInclude
+		/**
+		@brief process for loops and include lines
+		@param[in] p_themes model themes
+		@param[in] p_const the model constants
+		@param[in] p_AllLines all lines read from file or pre processed
+		@return a queue of lines to process.
+		*/
+		std::queue<FMTLineInfo> ProcessForLoopsNInclude(
+			const std::vector<Core::FMTtheme>& p_themes,
+			const Core::FMTconstants& p_cons,
+			std::queue<FMTLineInfo>p_AllLines) const;
 		// DocString: FMTparser::isNum
 		/**
 		Return true if the value is a number.
@@ -520,6 +544,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		*/
 		std::string GetLine(std::queue<FMTLineInfo>& p_Lines) const;
 	private:
+		friend class Testing::UnitTestFMTParser;
 		// DocString: FMTparser::m_VECTOR_THEME
 		///Regex to capture theme.
 		const static boost::regex m_VECTOR_THEME;
@@ -595,6 +620,14 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			@return the front line
 			*/
 			FMTLineInfo _SetForLoopLines(std::queue<FMTLineInfo>& p_queue) const;
+			// DocString: FMTparser:: _ProcessConstants
+			/**
+			@brief Turn the string with constant into string with regular numbers
+			@param[in] p_input input string
+			@return a valid string without constants #
+			*/
+			std::string _ProcessConstants(std::string p_input,
+				const Core::FMTconstants& p_constants) const;
     };
 
 }

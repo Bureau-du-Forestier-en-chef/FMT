@@ -9,11 +9,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTbasevertexproperties_Hm_included
 
 
-#include "FMTactualdevelopment.h"
+
 #include <boost/serialization/serialization.hpp>
-#include <boost/serialization/unique_ptr.hpp>
-#include <boost/serialization/split_member.hpp>
+#include <boost/functional/hash.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <memory>
+#include "FMTutility.h"
+
+
+namespace Core {
+	class FMTactualdevelopment;
+	class FMTfuturdevelopment;
+	class FMTmask;
+	class FMTdevelopment;
+}
 
 
 
@@ -31,20 +41,20 @@ namespace Graph
 		/**
 		@brief Default constructor
 		*/
-		FMTbasevertexproperties()=default;
+		FMTbasevertexproperties() = default;
 		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const FMTbasevertexproperties&)
 		/**
 		@brief copy constructor
 		@param[in] a vertexproperties to copy.
 		*/
-		FMTbasevertexproperties(const FMTbasevertexproperties& rhs)=default;
+		FMTbasevertexproperties(const FMTbasevertexproperties& rhs);
 		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const FMTbasevertexproperties&)
 		/**
 		@brief copy constructor of vertexproperties
 		@param[in] a vertexproperties to copy.
 		@return a reference to the vertexproperties.
 		*/
-		FMTbasevertexproperties& operator = (const FMTbasevertexproperties& rhs) = default;
+		FMTbasevertexproperties& operator = (const FMTbasevertexproperties& rhs);
 		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTfuturdevelopment&)
 		/**
 		@brief constructor based on futur development.
@@ -115,21 +125,28 @@ namespace Graph
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
+		void serialize(Archive& ar, unsigned int version)
 			{
-			ar& BOOST_SERIALIZATION_NVP(m_development);
+			double area = getBaseRhs();
+			ar& BOOST_SERIALIZATION_NVP(*m_development);
+			ar& BOOST_SERIALIZATION_NVP(area);
+			if (Archive::is_saving::value)
+				{
+				_Save(area);
+				}
 			}
 		// DocString: FMTbasevertexproperties::m_development
 		///The developement that hold the information about the strata.
-		Core::FMTactualdevelopment m_development;
+		std::unique_ptr<Core::FMTdevelopment> m_development;
+		void _Save(double p_area);
 	};
 }
 
 
-BOOST_CLASS_EXPORT_KEY(Graph::FMTbasevertexproperties)
+ BOOST_CLASS_EXPORT_KEY(Graph::FMTbasevertexproperties)
 
 
-namespace boost {
+ namespace boost {
 
 	template <>
 	struct hash<Graph::FMTbasevertexproperties>

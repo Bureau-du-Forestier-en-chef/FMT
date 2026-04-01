@@ -46,6 +46,7 @@ int main(int argc, char* argv[])
 		periods = 5;
 		writeOnDisk = true;
 		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\get_all_mask_output.txt";
+		//resultSize = 21821;
 		resultSize = 19607;
 		themesNumbers = {3, 5, 12, 13, 14, 21};
 		rastpath = "";
@@ -84,7 +85,7 @@ int main(int argc, char* argv[])
 	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(
 		model, periods, themesNumbers, rastpath);
 
-	// Écriture sur le disque en cas de test manuel
+	// ï¿½criture sur le disque en cas de test manuel
 	if (writeOnDisk) {
 		std::ofstream outputFile(outputFilePath);
 
@@ -93,10 +94,10 @@ int main(int argc, char* argv[])
 				outputFile << res << std::endl;
 			}
 			outputFile.close();
-			std::cout << "Les résultats ont été écrits dans " << outputFilePath << std::endl;
+			std::cout << "Les rï¿½sultats ont ï¿½tï¿½ ï¿½crits dans " << outputFilePath << std::endl;
 		}
 		else {
-			std::cerr << "Erreur: Impossible d'ouvrir le fichier " << outputFilePath << " pour l'écriture." << std::endl;
+			std::cerr << "Erreur: Impossible d'ouvrir le fichier " << outputFilePath << " pour l'ï¿½criture." << std::endl;
 			return 1;
 		}
 

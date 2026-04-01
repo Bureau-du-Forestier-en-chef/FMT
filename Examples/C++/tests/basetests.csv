@@ -69,3 +69,4 @@ testWrapperCoreGetyield;../../../../Examples/Models/TWD_land/TWD_land.pri;equati
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ExcludeArea;5;16849
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ForLoops;5;65733
 testWrapperCoreGetAllMasks;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|10|9;1|3;;
+UnitTestFMTParser;;;

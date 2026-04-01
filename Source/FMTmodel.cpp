@@ -183,7 +183,7 @@ namespace Models{
 				//futurDev.setlock(0);
 				for (int period = 1; period <= MAX_PERIOD;++period)
 					{
-					newSchedules[period - 1].setperiod(period);
+					//newSchedules[period - 1].setperiod(period);
 					//newSchedules[period - 1].setuselock(false);
 					if (futurDev.operable(p_action,yields))
 						{
@@ -411,7 +411,7 @@ namespace Models{
 					std::unique_ptr<Core::FMTyieldhandler>newSplittedYield(new Core::FMTageyieldhandler(NEW_SPLITTED_MASK));
 					const std::vector<int> BASES = yield.second->getbases();
 					const size_t SPLIT_DISTANCE = std::distance(BASES.begin() + TO_SPLIT, BASES.end());
-					for (size_t i = TO_SPLIT; i <= SPLIT_DISTANCE;++i)
+					for (size_t i = TO_SPLIT; i < SPLIT_DISTANCE;++i)
 						{
 						newSplittedYield->push_base(BASES.at(i));
 						}
