@@ -23,18 +23,17 @@ int main(int argc, char* argv[])
 
 	if (argc > 1)
 	{
-		std::vector<std::string>results;
-		writeOnDisk = false;
-		const std::string vals1 = argv[1];
-		boost::split(results, vals1, boost::is_any_of("|"));
+		std::vector<std::string> results;
+		writeOnDisk = true;
+		boost::split(results,argv[1], boost::is_any_of("|"));
 		pathPri = results.at(0);
 		scenarioName = results.at(1);
 		periods = std::stoi(results.at(2));
 		resultSize = std::stoi(results.at(3));
+		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\" + scenarioName + ".txt";
 
-		std::vector<std::string>csvThemesNumber;
-		const std::string vals2 = argv[2];
-		boost::split(results, vals2, boost::is_any_of("|"));
+		std::vector<std::string> csvThemesNumber;
+		boost::split(results, argv[2], boost::is_any_of("|"));
 		for (const std::string& theme : csvThemesNumber)
 		{
 			themesNumbers.push_back(std::stoi(theme));
@@ -42,13 +41,13 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "C:\\Users\\Admlocal\\Documents\\FMT\\FMT\\Examples\\Models\\TWD_land\\TWD_land.pri";
-		scenarioName = "LP";
-		periods = 10;
+		pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_TBE_CourbesHorsHorizon/PC_9949_U08251_2028_MODB01.pri";
+		scenarioName = "TBE_TEST_CORRECTION";
+		periods = 5;
 		writeOnDisk = true;
 		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\get_all_mask_output.txt";
 		resultSize = 19607;
-		themesNumbers = {1, 3};
+		themesNumbers = {3, 5, 12, 13, 14, 21};
 		rastpath = "";
 	}
 
@@ -71,11 +70,19 @@ int main(int argc, char* argv[])
 
 	Models::FMTmodel model = ModelParser.readproject(pathPri, { scenarioName }).at(0);
 
+	std::cout << pathPri << "\n";
+	std::cout << scenarioName << "\n";
+	std::cout << periods << "\n";
+	std::cout << resultSize << "\n";
+	std::cout << outputFilePath << "\n"; 
+
+	for (const int& theme : themesNumbers)
+	{
+		std::cout << "theme " + std::to_string(theme) << "\n";
+	}
 
 	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(
 		model, periods, themesNumbers, rastpath);
-
-	std::cout << "Nombre de résultats : " << RESULT.size() << std::endl;
 
 	// Écriture sur le disque en cas de test manuel
 	if (writeOnDisk) {
@@ -96,6 +103,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (RESULT.size() != resultSize) {
+		std::cout << std::to_string(RESULT.size()) + "!=" + std::to_string(resultSize);
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
 	}

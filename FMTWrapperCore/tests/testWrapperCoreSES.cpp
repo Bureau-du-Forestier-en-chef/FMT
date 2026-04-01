@@ -51,31 +51,23 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\issues\\FM\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
-		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\FM\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
-		params.outputPath = "C:\\Users\\Admlocal\\Documents\\issues\\FM\\output";
-		params.scenarioName = "reference_3772_apsp_V3_NoCOS_510_511";
-		params.numberOfPeriods = 30;
-		params.greedySearchIterations = 1;
+		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
+		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\rasters\\";
+		params.outputPath = "..\\..\\tests\\testWrapperCoreSES\\CCV2";
+		params.scenarioName = "PlayBack_Histo";
+		params.numberOfPeriods = 6;
+		params.greedySearchIterations = 5;
 		params.useStanlock = false;
 		//outputLevel: STRATE = 3, TH�MATIQUE = 1, TOTALE = 2
 		params.outputLevel = 2;
 		params.outputMinPeriod = 1;
-		params.outputMaxPeriod = 30;
+		params.outputMaxPeriod = 20;
 		params.gdalProvider = "CSV";
-		params.carbonMode = true;
+		params.carbonMode = false;
 		params.generateEvents = true;
 		params.generateSpatialOutputs = true;
-		params.constraintNames = {
-			"_MAX OVOLTOTREC_YP23 2.._LENGTH", 
-			"OVOLTOTREC = 57270.000000 1",
-			"_EVEN(OVOLTOTREC) 2..6",
-			"_NDY(OVOLTOTREC) 6.._LENGTH",
-			"_EVEN(OVOLGFIREC) 2..6",
-			"_NDY(OVOLGFIREC) 6.._LENGTH",
-			"_EVEN(OVOLGRREC) 2..6",
-			"_NDY(OVOLGRREC) 6.._LENGTH"};
-		params.outputNames = { "OVOLTOTREC", "OVOLGFIREC", "OVOLGRREC" };
+		params.constraintNames = {"_MAX OVOLTOTREC_YP23 2.._LENGTH"};
+		params.outputNames = {"OVOLTOTREC"};
 		params.predictorYields = {};
 		params.growthThemes = {};
 	}
