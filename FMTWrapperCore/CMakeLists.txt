@@ -31,6 +31,7 @@ if (FMTWRAPPERCORE_SOURCES)
     target_link_libraries(FMTWrapperCore PRIVATE ${Boost_LIBRARIES})
     #target_compile_definitions(FMTWrapper PRIVATE "-DFMTLIBIMPORT")
     target_include_directories(FMTWrapperCore PRIVATE ${WrapperCoreINCLUDEDIR})
+	SetBinaryLocation(FMTWrapperCore)
     #target_link_libraries(FMTWrapperCore PRIVATE "${FMTliblocation}/${CMAKE_SHARED_LIBRARY_PREFIX}${BUILD_TYPE}/FMTlib${CMAKE_STATIC_LIBRARY_SUFFIX}")
     #target_include_directories(FMTWrapper PRIVATE "${FMTINCLUDEDIR}")
 	# Lier FMTWrapperCore à FMTlib

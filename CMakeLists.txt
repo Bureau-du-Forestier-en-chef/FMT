@@ -5,7 +5,6 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
-
 cmake_minimum_required(VERSION 3.20)
 
 project(FMT VERSION 1.0.2 LANGUAGES CXX)
@@ -23,6 +22,8 @@ else()
 		set(BUILD_TYPE "${CMAKE_BUILD_TYPE}")
 	endif()
 endif(MSVC)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigFunctions.cmake) 
 
 set(FMTMAJOR "-DFMT_MAJOR=${PROJECT_VERSION_MAJOR}")
 add_definitions("${FMTMAJOR}")
@@ -66,81 +67,23 @@ if (DEFINED ENV{PATH})
 	list(APPEND DLLlookuppaths $ENV{PATH})
 	string(REPLACE "\\" "/" DLLlookuppaths "${DLLlookuppaths}")
 endif(DEFINED ENV{PATH})
-if (DEFINED OSI_DIR)
-	if (EXISTS "${OSI_DIR}")
-		set(ENV{OSI_DIR} "${OSI_DIR}")
-		list(APPEND DLLlookuppaths ${OSI_DIR})
-	else()
-		message(WARNING "${OSI_DIR} is not a valid directory")
-	endif(EXISTS "${OSI_DIR}")
-endif(DEFINED OSI_DIR)
 
-if (DEFINED MOSEK_DIR)
-	if (EXISTS "${MOSEK_DIR}")
-		set(ENV{MOSEK_DIR} "${MOSEK_DIR}")
-		list(APPEND DLLlookuppaths ${MOSEK_DIR})
-	else()
-		message(WARNING "${MOSEK_DIR} is not a valid directory")
-	endif(EXISTS "${MOSEK_DIR}")
-endif(DEFINED MOSEK_DIR)
+TargetDependency(OSI_DIR DLLlookuppaths)
+
+TargetDependency(MOSEK_DIR DLLlookuppaths)
 
 if (DEFINED ENV{MOSEK_DIR})
 	list(APPEND DLLlookuppaths ${MOSEK_DIR})
 endif(DEFINED ENV{MOSEK_DIR})
 
-if (DEFINED BOOST_DIR)
-	if (EXISTS "${BOOST_DIR}")
-		set(ENV{BOOSTROOT} "${BOOST_DIR}")
-		list(APPEND DLLlookuppaths ${BOOST_DIR})
-	else()
-		message(WARNING "${BOOST_DIR} is not a valid directory")
-	endif(EXISTS "${BOOST_DIR}")
-endif(DEFINED BOOST_DIR)
+TargetDependency(BOOST_DIR DLLlookuppaths)
+TargetDependency(GDAL_DIR DLLlookuppaths)
+TargetDependency(R_DIR DLLlookuppaths)
+TargetDependency(GEOS_DIR DLLlookuppaths)
+TargetDependency(PYTHON_DIR DLLlookuppaths)
+TargetDependency(ONNXR_DIR DLLlookuppaths)
 
-if (DEFINED GDAL_DIR)
-	if (EXISTS "${GDAL_DIR}")
-		set(ENV{GDAL_DIR} "${GDAL_DIR}")
-		list(APPEND DLLlookuppaths ${GDAL_DIR})
-	else()
-		message(WARNING "${GDAL_DIR} is not a valid directory")
-	endif(EXISTS "${GDAL_DIR}")
-endif(DEFINED GDAL_DIR)
 
-if (DEFINED R_DIR)
-	if (EXISTS "${R_DIR}")
-		set(ENV{R_DIR} "${R_DIR}")
-		list(APPEND DLLlookuppaths ${R_DIR})
-	else()
-		message(WARNING "${R_DIR} is not a valid directory")
-	endif(EXISTS "${R_DIR}")
-endif(DEFINED R_DIR)
-
-if (DEFINED GEOS_DIR)
-	if (EXISTS "${GEOS_DIR}")
-		set(ENV{GEOS_DIR} "${GEOS_DIR}")
-		list(APPEND DLLlookuppaths ${GEOS_DIR})
-	else()
-		message(WARNING "${GEOS_DIR} is not a valid directory")
-	endif(EXISTS "${GEOS_DIR}")
-endif(DEFINED GEOS_DIR)
-
-if (DEFINED PYTHON_DIR)
-	if (EXISTS "${PYTHON_DIR}")
-		set(ENV{PYTHON_DIR} "${PYTHON_DIR}")
-		list(APPEND DLLlookuppaths ${PYTHON_DIR})
-	else()
-		message(WARNING "${PYTHON_DIR} is not a valid directory")
-	endif(EXISTS "${PYTHON_DIR}")
-endif(DEFINED PYTHON_DIR)
-
-if (DEFINED ONNXR_DIR)
-	if (EXISTS "${ONNXR_DIR}")
-		set(ENV{ONNXR_DIR} "${ONNXR_DIR}")
-		list(APPEND DLLlookuppaths ${ONNXR_DIR})
-	else()
-		message(WARNING "${ONNXR_DIR} is not a valid directory")
-	endif(EXISTS "${ONNXR_DIR}")
-endif(DEFINED ONNXR_DIR)
 
 if (MSVC)
 	add_definitions("-DFMT_EXPORTS")
@@ -174,21 +117,7 @@ add_library(FMTlib SHARED ${FMTSOURCEFILES} ${FMTHEADERFILES})
 
 target_include_directories(FMTlib PRIVATE "${FMTINCLUDEDIR}")
 #include_directories("${FMTINCLUDEDIR}")
-if (NOT MSVC)
-		set_target_properties( FMTlib
-			PROPERTIES
-			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-		)
-else()
-	set_target_properties( FMTlib
-		PROPERTIES
-		ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-		LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-	)
-endif(NOT MSVC)
+	SetBinaryLocation(FMTlib)
 	set_property(TARGET FMTlib PROPERTY CXX_STANDARD 17)
 	set_property(TARGET FMTlib PROPERTY CXX_STANDARD_REQUIRED ON)
 	target_compile_definitions(FMTlib PRIVATE "-DFMTSHAREDLIB")
@@ -199,21 +128,6 @@ endif(NOT MSVC)
 ##################################################################################################
 ##################################################################################################
 
-
-function(target_lib libtotarget)
-	string(STRIP "${libtotarget}" libtotarget)
-		target_link_libraries(FMTlib PRIVATE ${libtotarget})
-		if (NOT MSVC AND DEFINED ENV{R_DIR})
-			target_link_libraries(FMT PRIVATE ${libtotarget})
-		endif(NOT MSVC AND DEFINED ENV{R_DIR})
-endfunction(target_lib libtotarget)
-
-function(target_include includetotarget)
-	target_include_directories(FMTlib PRIVATE ${includetotarget})
-	if (NOT MSVC AND DEFINED ENV{R_DIR})
-		target_include_directories(FMT PRIVATE ${includetotarget})
-	endif(NOT MSVC AND DEFINED ENV{R_DIR})
-endfunction(target_include  includetotarget)
 
 
 
@@ -270,21 +184,8 @@ if (DEFINED PYTHON_DIR OR DEFINED R_DIR)
 	endif(NOT DEFINED WITHOUT_PYTHONLIB)
 endif(DEFINED PYTHON_DIR OR DEFINED R_DIR)
 
-if (NOT MSVC)
-set_target_properties( FMT
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-)
-elseif(NOT DEFINED WITHOUT_PYTHONLIB)
-set_target_properties( FMT
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
-endif(NOT MSVC)
+
+SetBinaryLocation(FMT)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/modules)
 
@@ -772,44 +673,7 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
 set(ignoreMe "${WITHOUT_TESTS}${WITHOUT_PYTHONLIB}${COVERAGE}")
 
-function(createexecutable executablecpplocation executablename)
-  set(newprojectsourcefiles "${executablecpplocation}")
-  #list(APPEND newprojectsourcefiles "${FMTSOURCEFILES}")
-  get_filename_component(executablename "${executablecpplocation}" NAME_WE)
-  message("Generating build for ${executablename}")
-  SET(executablename "${executablename}" PARENT_SCOPE)
-  add_executable(${executablename} ${newprojectsourcefiles})
-  target_include_directories(${executablename} PRIVATE ${Boost_INCLUDE_DIRS})
-  target_link_libraries(${executablename} PRIVATE ${Boost_LIBRARIES})
-  target_compile_definitions(${executablename} PRIVATE "-DFMTLIBIMPORT")
-  target_link_libraries(${executablename} PRIVATE FMTlib)
-  target_include_directories(${executablename} PRIVATE ${FMTINCLUDEDIR})
-  
-  if (NOT MSVC)
-		set_target_properties(${executablename}
-			PROPERTIES
-			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-		)
-		set_target_properties(${executablename}
-			PROPERTIES
-			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-		)
-	endif(NOT MSVC)
-	if (MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
-	set_target_properties(
-   		${executablename} PROPERTIES
-    		VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}")
-	endif(MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
-	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD 17)
-	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD_REQUIRED ON)
-	#if (MOSEK_FOUND AND MSVC)
-	#	target_sources(${executablename} PRIVATE ${OSIMSK_DEFINITION})
-	#endif(MOSEK_FOUND AND MSVC)
-endfunction(createexecutable executablecpplocation)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 include(${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/CMakeLists.txt) #will polulate FMTWrapperCore
 
@@ -838,243 +702,10 @@ if (DEFINED EXTRALINKERFLAGS)
 	target_link_libraries(FMTlib PRIVATE "${EXTRALINKERFLAGS}")
 endif(DEFINED EXTRALINKERFLAGS)
 
-
-
-
-
-
-#install part
-install (CODE
-    "set (PATHS_DEPS \"${DLLlookuppaths}\")
-	set(GDAL_FOUND \"${GDAL_FOUND}\")
-    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
-    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
-    if (GDAL_FOUND)
-        #Copy gdal data
-		if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\")
-			file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
-			file(RENAME \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\")
-		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\")
-		if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\" AND EXISTS \"${PROJDIR}\")
-			file(COPY \"${PROJDIR}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
-			if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
-				file(RENAME \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/${PROJDIRNAME}\" \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
-			endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
-		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\" AND EXISTS \"${PROJDIR}\")
-    endif(GDAL_FOUND)
-	set(DEPENDENCIES \"${FMTDEPENDENCIES}\")
-	if(${CMAKE_VERSION} VERSION_LESS \"3.16.0\") 
-    	message(\"Please consider to switch to CMake 3.16.0\")
-	else()
-		FILE(GLOB_RECURSE FMTlibLocations \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/*FMTlib${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-		list(GET FMTlibLocations 0 FMTloc)
-		file(	GET_RUNTIME_DEPENDENCIES
-				RESOLVED_DEPENDENCIES_VAR DEPENDENCIESfound
-				UNRESOLVED_DEPENDENCIES_VAR deps_unresolved
-				CONFLICTING_DEPENDENCIES_PREFIX deps_conflicts
-				PRE_EXCLUDE_REGEXES 
-                \"api-ms-*\" 
-            	POST_EXCLUDE_REGEXES
-                \".*system32/.*\\\\.dll\"
-				LIBRARIES \"\${FMTloc}\"
-				DIRECTORIES \${PATHS_DEPS}
-				)
-		if (deps_unresolved)
-			message(FATAL_ERROR \"Unresolved dependencies on \${deps_unresolved}\")
-		endif(deps_unresolved)
-		list (APPEND DEPENDENCIES \${DEPENDENCIESfound})
-	endif(${CMAKE_VERSION} VERSION_LESS \"3.16.0\")
-    if (DEPENDENCIES)
-        #Copy dependencies
-        foreach(FMTdep \${DEPENDENCIES}\)
-            get_filename_component(depname \"\${FMTdep}\" NAME)
-            file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
-        endforeach()
-    endif(DEPENDENCIES)
-	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\" AND NOT EXISTS \"${R_DIR}\")
-	set (PYTHON \"${Python_EXECUTABLE}\")
-	if (NOT EXISTS \"$\{PYTHON\}\")
-		#MESSAGE ERREUR
-		message(FATAL_ERROR \"No Python found cannot install FMT\")
-	else()
-		#Ensure pip 
-		execute_process(
-          	COMMAND \"$\{PYTHON\}\" -m ensurepip
-         	 WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
-       		 )
-		#Call pip from python and install it....
-		execute_process(
-          	COMMAND \"$\{PYTHON\}\" -m pip install wheel
-         	 WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
-       		 )
-	endif(NOT EXISTS \"$\{PYTHON\}\")
-        execute_process(
-          COMMAND \"$\{PYTHON\}\" -m pip wheel . 
-          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
-        )
-		FILE(GLOB_RECURSE wheelfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT*.whl\")
-		list(GET wheelfiles 0 wheelloc)
-		get_filename_component(wheelname \"\${wheelloc}\" NAME)
-		execute_process(
-          COMMAND \"$\{PYTHON\}\" -m pip install \"\${wheelname}\" --force-reinstall
-          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
-        )
-    endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\" AND NOT EXISTS \"${R_DIR}\")
-	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
-		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
-		if (GDAL_FOUND)
-			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
-			if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
-				file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
-			endif(EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
-		endif(GDAL_FOUND)
-		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT${CMAKE_SHARED_LIBRARY_SUFFIX}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
-		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/libFMT${CMAKE_SHARED_LIBRARY_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
-        if (DEPENDENCIES)
-			#Copy dependencies
-			foreach(FMTdep \${DEPENDENCIES}\)
-				file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
-			endforeach()
-		 endif(DEPENDENCIES)
-		find_program(RLOCATION \"R\" PATHS \"${R_DIR}/bin/x64\")
-        execute_process(
-          COMMAND \"$\{RLOCATION\}\" CMD build FMT
-          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
-        )
-		set(R_package \"FMT_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.tar.gz\")
-		execute_process(
-          COMMAND \"$\{RLOCATION\}\" CMD INSTALL --no-multiarch \"\${R_package\}\"
-          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
-        )
-endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
-	set (WITHOUT_TESTS \"${WITHOUT_TESTS}\")
-	if (NOT WITHOUT_TESTS)
-		execute_process(
-					  COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
-					  WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
-					)
-		set (DO_COVERAGE \"${COVERAGE}\")
-		set(MSVC \"${MSVC}\")
-		#Replace in readme the coverage
-		set (readme \"${CMAKE_CURRENT_SOURCE_DIR}/README.md\")
-		set (frreadme \"${CMAKE_CURRENT_SOURCE_DIR}/README.fr.md\")
-		if (DO_COVERAGE AND NOT MSVC)
-			 execute_process(
-					  COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\" -T Coverage
-					  WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
-					)
-			FILE(GLOB_RECURSE config_files \"${CMAKE_BINARY_DIR}/Testing/*Coverage.xml\")
-			list(GET config_files 0 config_file)
-			file(STRINGS \"\${config_file}\" configm_lines)
-			while(configm_lines)
-				list(POP_FRONT configm_lines LINE)
-				string(REGEX MATCH \"(<LOCTested>)([0-9]*)(<\/LOCTested>)\" _ \"\${LINE}\")
-				if (CMAKE_MATCH_2)
-					set(SUCCESS \"\${CMAKE_MATCH_2}\")
-				else()
-					string(REGEX MATCH \"(<LOC>)([0-9]*)(<\/LOC>)\" _ \"\${LINE}\")
-					if (CMAKE_MATCH_2)
-						set(TESTED \"\${CMAKE_MATCH_2}\")
-					endif(CMAKE_MATCH_2)
-				endif(CMAKE_MATCH_2)
-			endwhile()
-			math(EXPR total_coverage \"((\${SUCCESS} * 100) / \${TESTED})\")
-			set (coverage_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/coverage-\${total_coverage}\%25-red)\")
-			if (total_coverage GREATER_EQUAL 80)
-				set (coverage_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/coverage-\${total_coverage}\%25-brightgreen)\")
-			elseif(total_coverage GREATER_EQUAL 50)
-				set (coverage_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/coverage-\${total_coverage}\%25-orange)\")
-			endif(total_coverage GREATER_EQUAL 80)
-		set (coverage_regex \"${CMAKE_CXX_COMPILER_ID}[^\\n]*coverage[^\\n]*\")
-		#English
-		file(READ \"\${readme}\" filedata)
-		string(REGEX REPLACE \"\${coverage_regex}\" \"\${coverage_badge}\"  filedata \"\${filedata}\")
-		file(WRITE \"\${readme}\" \"\${filedata}\")
-		#French
-		file(READ \"\${frreadme}\" filedata)
-		string(REGEX REPLACE \"\${coverage_regex}\" \"\${coverage_badge}\"  filedata \"\${filedata}\")
-		file(WRITE \"\${frreadme}\" \"\${filedata}\")
-		endif(DO_COVERAGE AND NOT MSVC)
-	if (EXISTS \"${CMAKE_BINARY_DIR}/Testing/Temporary/LastTestsFailed.log\")
-		file(STRINGS \"${CMAKE_BINARY_DIR}/Testing/Temporary/LastTestsFailed.log\" TESTS_FILE)
-	endif(EXISTS \"${CMAKE_BINARY_DIR}/Testing/Temporary/LastTestsFailed.log\")
-	list(LENGTH TESTS_FILE FAILED_TESTS)
-	set (build_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/build-broken-red)\")
-	if (FAILED_TESTS LESS 10)#Not Broken
-		set (build_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/build-pass-brightgreen)\")
-	endif(FAILED_TESTS LESS 10)
-	set (build_regex \"${CMAKE_CXX_COMPILER_ID}[^\\n^c]*build[^\\n]*\")
-	#English
-	file(READ \"\${readme}\" filedata)
-	string(REGEX REPLACE \"\${build_regex}\" \"\${build_badge}\"  filedata \"\${filedata}\")
-	file(WRITE \"\${readme}\" \"\${filedata}\")
-	#French
-	file(READ \"\${frreadme}\" filedata)
-	string(REGEX REPLACE \"\${build_regex}\" \"\${build_badge}\"  filedata \"\${filedata}\")
-	file(WRITE \"\${frreadme}\" \"\${filedata}\")
-	endif(NOT WITHOUT_TESTS)
-")
-
+ExportAllVariablesToInstall()
+install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/BaseInstall.cmake")
 if (GENERATE_RELEASE_PACKAGE)
-	install (CODE 
-		"set(FMTpackageloc \"FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-w64-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}\")
-		set(FMTdir \"${CMAKE_BINARY_DIR}/\${FMTpackageloc\}\")
-		message(\"Building \${FMTdir\}\")
-		file(MAKE_DIRECTORY \"\${FMTdir\}\")
-		file(MAKE_DIRECTORY \"\${FMTdir\}/Include\")
-		set(headers \"${FMTHEADERFILES}\")
-		foreach(headerfile \${headers}\)
-			file(COPY \"\${headerfile}\" DESTINATION \"\${FMTdir\}/Include\")
-		endforeach()
-		set(MSVC \"${MSVC}\")
-		if (MSVC)
-			FILE(GLOB FMTlibfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMTlib*\")
-		else()
-			FILE(GLOB FMTlibfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/libFMTlib*\")
-		endif(MSVC)
-		set (FMTlibdir \"\${FMTdir\}/lib\")
-		#Copy data
-		if (GDAL_FOUND)
-			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\" DESTINATION \"\${FMTlibdir\}\")
-			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\" DESTINATION \"\${FMTlibdir\}\")
-		endif(GDAL_FOUND)
-		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/LICENSES\" DESTINATION \"\${FMTlibdir\}\")
-		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/YieldPredModels\" DESTINATION \"\${FMTlibdir\}\")
-		#Copy the lib
-		foreach(FMTlibof \${FMTlibfiles}\)
-			file(COPY \"\${FMTlibof}\" DESTINATION \"\${FMTlibdir\}\")
-		endforeach()
-		#Copy the dependencies
-		if (DEPENDENCIES)
-			#Copy dependencies
-			foreach(FMTdep \${DEPENDENCIES}\)
-				file(COPY \"\${FMTdep}\" DESTINATION \"\${FMTlibdir\}\")
-			endforeach()
-		endif(DEPENDENCIES)
-		#Compress the C++ lib
-		message(\"Compressing \${FMTdir\}\")
-		FIND_PROGRAM(ZIP_EXECUTABLE 7z PATHS \"C:/Program Files/7-Zip/\")
-		IF(ZIP_EXECUTABLE)
-			execute_process(
-				COMMAND \"$\{ZIP_EXECUTABLE\}\" a -t7z \"\${FMTpackageloc\}.7z\" \"\${FMTpackageloc\}\"
-				WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
-				)
-		ENDIF(ZIP_EXECUTABLE)
-		set(PYTHON_FOUND \"${PYTHONNAMING}\")
-		if (DEFINED PYTHON_FOUND)
-			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/\${wheelname\}\" DESTINATION \"${CMAKE_BINARY_DIR}\")
-			message(\"Python package is here ${CMAKE_BINARY_DIR}/\${wheelname\}\")
-		endif(DEFINED PYTHON_FOUND)
-		set(R_FOUND \"${R_FOUND}\")
-		if (R_FOUND)
-			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/\${R_package\}\" DESTINATION \"${CMAKE_BINARY_DIR}\")
-			message(\"R package is here ${CMAKE_BINARY_DIR}/\${R_package\}\")
-		endif(R_FOUND)
-		
-		message(\"Release done\")
-		")
-		
-
+	install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReleaseInstall.cmake")
 endif(GENERATE_RELEASE_PACKAGE)
 
 
