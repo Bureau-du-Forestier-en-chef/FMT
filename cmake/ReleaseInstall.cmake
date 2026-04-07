@@ -37,7 +37,7 @@ set(FMTpackageloc "FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_
 		FIND_PROGRAM(ZIP_EXECUTABLE 7z PATHS "C:/Program Files/7-Zip/")
 		IF(ZIP_EXECUTABLE)
 			execute_process(
-				COMMAND "$\{ZIP_EXECUTABLE}" a -t7z "${FMTpackageloc}.7z" "${FMTpackageloc}"
+				COMMAND "${ZIP_EXECUTABLE}" a -t7z "${FMTpackageloc}.7z" "${FMTpackageloc}"
 				WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 				)
 		ENDIF(ZIP_EXECUTABLE)

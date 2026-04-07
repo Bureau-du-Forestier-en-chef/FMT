@@ -345,7 +345,7 @@ namespace Models
 			}
 		}
 
-
+#ifdef FMTWITHMOSEK
 	int FMTlpsolver::_MSKOptimizeWithParameters()
 	{
 		OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
@@ -376,6 +376,7 @@ namespace Models
 		
 		return error;
 	}
+#endif
 
 	void FMTlpsolver::_setCLPOptions()
 	{
@@ -436,22 +437,23 @@ namespace Models
 		//clpsolver->setSolveOptions(simplexoptions);
 		//clpsolver->resolve();
 	}
+	#ifdef FMTWITHMOSEK
+		int FMTlpsolver::_MSKOptimizeWithDefaultParameters()
+		{
+			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+			msksolver->freeCachedData();
+			MSKtask_t new_task = msksolver->getMutableLpPtr();
+			#if MSK_VERSION_MAJOR < 11
+				MSK_setdefaults(new_task);
+			#else
+				MSK_resetparameters(new_task);
+			#endif
+			MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
+			MSKrescodee error = MSK_optimize(new_task);	
 
-	int FMTlpsolver::_MSKOptimizeWithDefaultParameters()
-	{
-		OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-		msksolver->freeCachedData();
-		MSKtask_t new_task = msksolver->getMutableLpPtr();
-		#if MSK_VERSION_MAJOR < 11
-			MSK_setdefaults(new_task);
-		#else
-			MSK_resetparameters(new_task);
-		#endif
-		MSK_putintparam(new_task, MSK_IPAR_LICENSE_WAIT, MSK_ON);
-		MSKrescodee error = MSK_optimize(new_task);	
-
-		return error;
-	}
+			return error;
+		}
+	#endif
 
 	bool FMTlpsolver::initialsolve()
 	{
