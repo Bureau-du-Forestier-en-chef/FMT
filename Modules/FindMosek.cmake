@@ -6,6 +6,22 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
+include(FetchContent)
+
+# Télécharge le dépôt OSI via Git (utilise le git système, pas libcurl de CMake)
+# CONFIGURE_DEPENDS assure que le contenu est disponible dès la configuration
+FetchContent_Declare(
+    OsiMskSources
+    GIT_REPOSITORY https://github.com/coin-or/Osi.git
+    GIT_TAG        master
+    GIT_SHALLOW    TRUE  
+	GIT_SUBMODULES ""        
+)
+
+FetchContent_MakeAvailable(OsiMskSources)
+FetchContent_GetProperties(OsiMskSources SOURCE_DIR OSI_MSK_SOURCE_DIR)
+
+
 FILE(GLOB_RECURSE MOSEK_POTENTIAL_INCLUDE $ENV{MOSEK_DIR}mosek.h)
 list(GET MOSEK_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
 get_filename_component(POTMOSEK_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
@@ -51,15 +67,26 @@ if (NOT (VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio"))
 	else()
 		FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiSolverInterface.hpp)
 		if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
-			file(DOWNLOAD
-   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.hpp
-    			${CMAKE_SOURCE_DIR}/external/include/coin/OsiMskSolverInterface.hpp)
-			file(DOWNLOAD
-   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskConfig.h
-    			${CMAKE_SOURCE_DIR}/external/include/coin/OsiMskConfig.h)
-			file(DOWNLOAD
-   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.cpp
-    			${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp)
+			set(OSI_MSK_DIR "${OSI_MSK_SOURCE_DIR}/src/OsiMsk")
+
+			foreach(header_file OsiMskSolverInterface.hpp OsiMskConfig.h)
+				if(EXISTS "${OSI_MSK_DIR}/${header_file}")
+					file(COPY "${OSI_MSK_DIR}/${header_file}"
+						DESTINATION "${CMAKE_SOURCE_DIR}/external/include/coin/")
+					message(STATUS "[FindMosek] Copié: ${header_file}")
+				else()
+					message(WARNING "[FindMosek] Fichier introuvable après fetch: ${header_file}")
+				endif()
+			endforeach()
+
+			if(EXISTS "${OSI_MSK_DIR}/OsiMskSolverInterface.cpp")
+				file(COPY "${OSI_MSK_DIR}/OsiMskSolverInterface.cpp"
+					DESTINATION "${CMAKE_SOURCE_DIR}/external/source/coin/")
+				message(STATUS "[FindMosek] Copié: OsiMskSolverInterface.cpp")
+			else()
+				message(WARNING "[FindMosek] Fichier introuvable après fetch: OsiMskSolverInterface.cpp")
+			endif()
+
 			set(OSIMSK_INCLUDE "${CMAKE_SOURCE_DIR}/external/include/coin/")
 			set(OSIMSK_DEFINITION "${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp")
 		else()
