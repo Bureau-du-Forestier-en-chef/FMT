@@ -174,17 +174,19 @@ void exportCore()
 		.method("enablenestedexceptions", &Core::FMTobject::enablenestedexceptions,
 			"@DocString(FMTobject::enablenestedexceptions)")
 		.method("setquietlogger", &Core::FMTobject::setquietlogger,
-			"@DocString(FMTobject::setquietlogger")
+			"@DocString(FMTobject::setquietlogger)")
 		.method("settasklogger", &Core::FMTobject::settasklogger,
-			"@DocString(FMTobject::settasklogger")
+			"@DocString(FMTobject::settasklogger)")
 		.method("setdefaultlogger", &Core::FMTobject::setdefaultlogger,
-			"@DocString(FMTobject::setdefaultlogger")
+			"@DocString(FMTobject::setdefaultlogger)")
 		.method("setdebuglogger", &Core::FMTobject::setdebuglogger,
-			"@DocString(FMTobject::setdebuglogger")
+			"@DocString(FMTobject::setdebuglogger)")
 		.method("redirectlogtofile", &Core::FMTobject::redirectlogtofile,
 			"@DocString(FMTobject::redirectlogtofile)")
 		.method("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
-			"@DocString(FMTobject::seterrorstowarnings)");
+			"@DocString(FMTobject::seterrorstowarnings)")
+		.method("setmaxwarningsbeforesilenced", &Core::FMTobject::setmaxwarningsbeforesilenced,
+			"@DocString(FMTobject::setmaxwarningsbeforesilenced)");
 
 		Rcpp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
 				.constructor("@DocString(FMTmask())")
