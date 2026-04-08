@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\" + scenarioName + ".txt";
 
 		std::vector<std::string> csvThemesNumber;
-		boost::split(results, argv[2], boost::is_any_of("|"));
+		boost::split(csvThemesNumber, argv[2], boost::is_any_of("|"));
 		for (const std::string& theme : csvThemesNumber)
 		{
 			themesNumbers.push_back(std::stoi(theme));
@@ -46,7 +46,6 @@ int main(int argc, char* argv[])
 		periods = 5;
 		writeOnDisk = true;
 		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\get_all_mask_output.txt";
-		//resultSize = 21821;
 		resultSize = 19607;
 		themesNumbers = {3, 5, 12, 13, 14, 21};
 		rastpath = "";
