@@ -127,9 +127,9 @@ void FMTFormCache::InitializeExceptionHandler(const int& maxwarnings,const std::
 void FMTFormCache::InitializeLogger(const std::string& filename, System::IntPtr intptrptr)
 	{
 	try{
-	std::unique_ptr<Logging::FMTlogger> logger(new FMTFormLogger(filename,(logfunc)(void*)intptrptr));
-	Models::FMTmodel useLessModel;
-	useLessModel.passinlogger(logger);
+		std::unique_ptr<Logging::FMTlogger> logger(new FMTFormLogger(filename,(logfunc)(void*)intptrptr));
+		Models::FMTmodel useLessModel;
+		useLessModel.passinlogger(logger);
 	}catch (...)
 		{
 		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::InitializeLogger", __LINE__, __FILE__);

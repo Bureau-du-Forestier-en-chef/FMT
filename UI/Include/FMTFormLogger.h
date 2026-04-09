@@ -20,6 +20,7 @@ namespace Wrapper
 		void cout(const char* message) const;
 	public:
 		FMTFormLogger() = default;
+		FMTFormLogger(const FMTFormLogger&) = default;
 		~FMTFormLogger() = default;
 		void dokeepprint();
 		std::string getlastprint() const;

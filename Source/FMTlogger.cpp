@@ -66,14 +66,13 @@ namespace Logging
 
 	void FMTlogger::settofile(const std::string& filename) const
 		{
-		if (filestream!=nullptr)
+		if (m_FileStream !=nullptr)
 			{
-			filestream->close();
-			delete filestream;
+			m_FileStream->close();
 			}
 		if (!filename.empty())
 			{
-			filestream = new std::ofstream(filename);
+			m_FileStream = std::unique_ptr<std::ofstream>(new std::ofstream(filename,std::ios_base::app));
 			}
 		
 		}
@@ -82,7 +81,7 @@ namespace Logging
 #if defined FMTWITHOSI
 		solverref(new FMTsolverlogger(*this)),
 #endif
-		filepath(),filestream(), mtx(),flushstream(false)
+		filepath(), m_FileStream(), mtx(),flushstream(false)
 		{
 		
 
@@ -93,14 +92,14 @@ namespace Logging
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		filepath = filename;
 		settofile(filepath);
-		if (filestream && filestream->is_open() && logstamp)
+		if (m_FileStream && m_FileStream->is_open() && logstamp)
 		{
 			this->logstamp();
 			this->logtime();
 		}
 	}
 
-	FMTlogger::FMTlogger(const FMTlogger& rhs):filepath(), filestream(), mtx(), flushstream(false)
+	FMTlogger::FMTlogger(const FMTlogger& rhs):filepath(), m_FileStream(), mtx(), flushstream(false)
 		{
 		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
 		filepath=rhs.filepath;
@@ -141,24 +140,22 @@ namespace Logging
 	void FMTlogger::closefilestream()
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		if (filestream && filestream->is_open())
+		if (m_FileStream && m_FileStream->is_open())
 			{
 			this->logtime();
-			filestream->close();
+			m_FileStream->close();
 			filepath.clear();
-			delete filestream;
 			}
 		}
 
 	FMTlogger::~FMTlogger()
 		{
-		//this->logstamp();
-		//this->logtime();
-		if (filestream && filestream->is_open())
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		if (m_FileStream && m_FileStream->is_open())
 			{
 			this->logtime();
-			filestream->close();
-			delete filestream;
+			m_FileStream->close();
+			m_FileStream = std::unique_ptr<std::ofstream>(nullptr);
 			}
 		}
 
@@ -285,12 +282,12 @@ namespace Logging
 			{
 			thread.clear();
 			}
-		if (filestream && filestream->is_open())
+		if (m_FileStream && m_FileStream->is_open())
 			{
-			(*filestream)<< thread << (message);
-			if (flushstream)
+			(*m_FileStream)<< thread << (message);
+			if (m_FileStream)
 				{
-				filestream->flush();
+				m_FileStream->flush();
 				}
 		}else {
 			#if defined(FMTWITHPYTHON)
