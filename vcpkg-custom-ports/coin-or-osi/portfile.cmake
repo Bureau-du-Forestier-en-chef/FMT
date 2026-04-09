@@ -6,6 +6,7 @@ vcpkg_from_github(
     PATCHES glpk.patch
 )
 
+
 set(CMAKE_MODULE_PATH "$ENV{MODULE_PATH};${CMAKE_MODULE_PATH}")
 
 find_package(Mosek)

@@ -563,21 +563,24 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		///Parameters used by the linear programming solver. First = parameter, Seconde = parameter values.
 		std::vector<std::pair<std::string, std::string>>m_WarmStartParameters;
 		
-		// DocString: FMTlpsolver::_setMSKTaskParameters
+	#ifdef FMTWITHMOSEK
+		// DocString: FMTlpsolver::_MSKOptimizeWithParameters
 		/**
-		Function used to set the parameters of an MSK task and optimize
+		@brief Function used to set the parameters of an MSK task and optimize
 		*/
 		int _MSKOptimizeWithParameters();
+		// DocString: FMTlpsolver::_MSKOptimizeWithDefaultParameters
+		/**
+		@brief Set default parameters for mosek
+		*/
+		int _MSKOptimizeWithDefaultParameters();
+	#endif
 		// DocString: FMTlpsolver::_setCLPOptions
 		/**
 		Function used to set the options of an CLP solver before optimization
 		*/
 		void _setCLPOptions();
-		// DocString: FMTlpsolver::_setCLPOptions
-		/**
-		Function used to set the default options of a MSK task
-		*/
-		int _MSKOptimizeWithDefaultParameters();
+		
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)

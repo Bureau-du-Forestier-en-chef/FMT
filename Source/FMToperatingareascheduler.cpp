@@ -454,7 +454,7 @@ namespace Heuristics
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions("Thread : " + getthreadid(), "FMTopera__LINE__eascheduler::greedypass", __LINE__, __FILE__);
+			_exhandler->printexceptions("Thread : " + getthreadid(), "FMToperatingareascheduler::greedypass", __LINE__, __FILE__);
 		}
 		return this->isProvenOptimal();
 	}

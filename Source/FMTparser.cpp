@@ -1686,6 +1686,12 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 			const char* DIALECT_OPTION = nullptr;
 			OGRGeometry* NULL_GEOMETRY = nullptr;
 			OGRLayer* SUBSET_LAYER = DATASET->ExecuteSQL(p_Query.c_str(), NULL_GEOMETRY, DIALECT_OPTION);
+			if (SUBSET_LAYER == nullptr)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+					"Invalid Query " + ABSOLUTE_DATABASE_PATH + " with this query \n" + p_Query + " at line " +
+					std::to_string(m_line), "FMTparser::_QueryDatabaser", __LINE__, __FILE__, m_section);
+				}
 			OGRFeatureDefn* FIELD_DEFINITIONS = SUBSET_LAYER->GetLayerDefn();
 			const size_t FEATURE_COUNT = static_cast<size_t>(SUBSET_LAYER->GetFeatureCount());
 			if (FEATURE_COUNT == 0)
