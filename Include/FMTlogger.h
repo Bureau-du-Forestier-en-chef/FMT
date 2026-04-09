@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/thread/recursive_mutex.hpp>
 #include <fstream>
 #include <string>
+#include <memory>
 #include "FMTexception.h"
 
 namespace boost
@@ -35,60 +36,6 @@ namespace Logging
 	*/
 	class FMTEXPORT FMTlogger
 		{
-		friend class boost::serialization::access;
-		// DocString: FMTlogger::save
-		/**
-		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		template<class Archive>
-		void save(Archive& ar, const unsigned int version) const;
-		// DocString: FMTlogger::load
-		/**
-		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		template<class Archive>
-		void load(Archive& ar, const unsigned int version);
-		// DocString: FMTlogger::serialize
-		/**
-		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		template<class Archive>
-		void serialize(Archive &ar, const unsigned int file_version);
-		// DocString: FMTlogger::settofile
-		/**
-		Redirect the log information to a file.
-		*/
-		void settofile(const std::string& filename) const;
-		protected:
-		#if defined FMTWITHOSI
-			std::unique_ptr<FMTsolverlogger>solverref;
-		#endif
-			// DocString: FMTlogger::pathtostream
-			///string path the the potential filestream
-			std::string filepath;
-			// DocString: FMTlogger::filestream
-			///stream if the logger redirect the logging into somesort of file.
-			mutable std::ofstream* filestream;
-			// DocString: FMTlogger::mtx
-			///Mutex for multi-threading.
-			//mutable std::recursive_mutex mtx;
-			mutable boost::recursive_mutex mtx;
-			// DocString: FMTlogger::flushstream
-			///If true will flush stream at each write
-			bool flushstream;
-			// DocString: FMTlogger::cout
-			/**
-			cout function of the logger sometimes on Windows if using boost::python the std::cout needs
-			a little help to print directly into the python window.
-			*/
-			virtual void cout(const char* message) const;
-			#ifdef FMTWITHOSI
-				// DocString: FMTlogger::setlogginglevel
-				/**
-				Set the solverlogger logging level
-				*/
-				virtual void setlogginglevel(const int& level);
-			#endif // FMTWITHOSI
 		public:
 			// DocString: FMTlogger()
 			/**
@@ -220,6 +167,61 @@ namespace Logging
 			@return a valid cloned FMTlogger
 			*/
 			virtual std::unique_ptr <FMTlogger> Clone() const = 0;
+		protected:
+			#if defined FMTWITHOSI
+			std::unique_ptr<FMTsolverlogger>solverref;
+			#endif
+			// DocString: FMTlogger::pathtostream
+			///string path the the potential filestream
+			std::string filepath;
+			// DocString: FMTlogger::m_FileStream
+			///stream if the logger redirect the logging into somesort of file.
+			mutable std::unique_ptr<std::ofstream>m_FileStream;
+			// DocString: FMTlogger::mtx
+			///Mutex for multi-threading.
+			//mutable std::recursive_mutex mtx;
+			mutable boost::recursive_mutex mtx;
+			// DocString: FMTlogger::flushstream
+			///If true will flush stream at each write
+			bool flushstream;
+			// DocString: FMTlogger::cout
+			/**
+			cout function of the logger sometimes on Windows if using boost::python the std::cout needs
+			a little help to print directly into the python window.
+			*/
+			virtual void cout(const char* message) const;
+			#ifdef FMTWITHOSI
+			// DocString: FMTlogger::setlogginglevel
+			/**
+			Set the solverlogger logging level
+			*/
+			virtual void setlogginglevel(const int& level);
+			#endif // FMTWITHOSI
+		private:
+			friend class boost::serialization::access;
+			// DocString: FMTlogger::save
+			/**
+			Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+			*/
+			template<class Archive>
+			void save(Archive& ar, const unsigned int version) const;
+			// DocString: FMTlogger::load
+			/**
+			Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+			*/
+			template<class Archive>
+			void load(Archive& ar, const unsigned int version);
+			// DocString: FMTlogger::serialize
+			/**
+			Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+			*/
+			template<class Archive>
+			void serialize(Archive& ar, const unsigned int file_version);
+			// DocString: FMTlogger::settofile
+			/**
+			Redirect the log information to a file.
+			*/
+			void settofile(const std::string& filename) const;
 			
 		};
 
