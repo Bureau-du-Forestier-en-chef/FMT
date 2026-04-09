@@ -1314,10 +1314,20 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::GetGroupsConflict(const Core::FMT
 			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 			{
 				// lastaction id = -1 no action in period
-				int lastactionid = graphit->second.getLineGraph().getlastactionid(period);
-				if (lastactionid >= 0)
+				const std::vector<int> periodactionids = graphit->second.getLineGraph().getperiodactionids(period, false);
+	
+				std::string actionsStr;
+				for (const int& aid : periodactionids)
 				{
-					stackedactions[graphit->first] = modelactions.at(lastactionid).getname();
+					if (aid >= 0)
+					{
+						if (!actionsStr.empty()) actionsStr += ";";
+						actionsStr += modelactions.at(aid).getname();
+					}
+				}
+				if (!actionsStr.empty())
+				{
+					stackedactions[graphit->first] = actionsStr;
 					//For each classifier, append the value at the begining of the period and keep track of value at the end in finalattributes. Also keep the ageafter.
 					if (!classifiers.empty())
 					{
