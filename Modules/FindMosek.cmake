@@ -10,16 +10,20 @@ include(FetchContent)
 
 # Télécharge le dépôt OSI via Git (utilise le git système, pas libcurl de CMake)
 # CONFIGURE_DEPENDS assure que le contenu est disponible dès la configuration
-FetchContent_Declare(
-    OsiMskSources
-    GIT_REPOSITORY https://github.com/coin-or/Osi.git
-    GIT_TAG        master
-    GIT_SHALLOW    TRUE  
-	GIT_SUBMODULES ""        
-)
+if(NOT DEFINED PORT)
+    include(FetchContent)
 
-FetchContent_MakeAvailable(OsiMskSources)
-FetchContent_GetProperties(OsiMskSources SOURCE_DIR OSI_MSK_SOURCE_DIR)
+    FetchContent_Declare(
+        OsiMskSources
+        GIT_REPOSITORY https://github.com/coin-or/Osi.git
+        GIT_TAG        master
+        GIT_SHALLOW    TRUE  
+        GIT_SUBMODULES ""        
+    )
+
+    FetchContent_MakeAvailable(OsiMskSources)
+    FetchContent_GetProperties(OsiMskSources SOURCE_DIR OSI_MSK_SOURCE_DIR)
+endif()
 
 
 FILE(GLOB_RECURSE MOSEK_POTENTIAL_INCLUDE $ENV{MOSEK_DIR}mosek.h)
@@ -66,7 +70,7 @@ if (NOT (VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio"))
 		endif(MSVC)
 	else()
 		FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiSolverInterface.hpp)
-		if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+		if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "" AND NOT DEFINED PORT)
 			set(OSI_MSK_DIR "${OSI_MSK_SOURCE_DIR}/src/OsiMsk")
 
 			foreach(header_file OsiMskSolverInterface.hpp OsiMskConfig.h)

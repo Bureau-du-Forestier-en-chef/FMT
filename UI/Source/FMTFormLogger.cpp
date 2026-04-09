@@ -33,7 +33,7 @@ void Wrapper::FMTFormLogger::dokeepprint()
 std::string Wrapper::FMTFormLogger::getlastprint() const
 {
 	return lastprint;
-}+
+}
 
 
 void Wrapper::FMTFormLogger::cout(const char * message) const
