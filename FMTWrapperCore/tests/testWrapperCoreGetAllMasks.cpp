@@ -23,18 +23,17 @@ int main(int argc, char* argv[])
 
 	if (argc > 1)
 	{
-		std::vector<std::string>results;
-		writeOnDisk = false;
-		const std::string vals1 = argv[1];
-		boost::split(results, vals1, boost::is_any_of("|"));
+		std::vector<std::string> results;
+		writeOnDisk = true;
+		boost::split(results,argv[1], boost::is_any_of("|"));
 		pathPri = results.at(0);
 		scenarioName = results.at(1);
 		periods = std::stoi(results.at(2));
 		resultSize = std::stoi(results.at(3));
+		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\" + scenarioName + ".txt";
 
-		std::vector<std::string>csvThemesNumber;
-		const std::string vals2 = argv[2];
-		boost::split(results, vals2, boost::is_any_of("|"));
+		std::vector<std::string> csvThemesNumber;
+		boost::split(csvThemesNumber, argv[2], boost::is_any_of("|"));
 		for (const std::string& theme : csvThemesNumber)
 		{
 			themesNumbers.push_back(std::stoi(theme));
@@ -47,9 +46,8 @@ int main(int argc, char* argv[])
 		periods = 5;
 		writeOnDisk = true;
 		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\get_all_mask_output.txt";
-		//resultSize = 21821;
-		resultSize = 21821;
-		themesNumbers = {3,5,12,13,14,21};
+		resultSize = 19607;
+		themesNumbers = {3, 5, 12, 13, 14, 21};
 		rastpath = "";
 	}
 
@@ -72,13 +70,21 @@ int main(int argc, char* argv[])
 
 	Models::FMTmodel model = ModelParser.readproject(pathPri, { scenarioName }).at(0);
 
+	std::cout << pathPri << "\n";
+	std::cout << scenarioName << "\n";
+	std::cout << periods << "\n";
+	std::cout << resultSize << "\n";
+	std::cout << outputFilePath << "\n"; 
+
+	for (const int& theme : themesNumbers)
+	{
+		std::cout << "theme " + std::to_string(theme) << "\n";
+	}
 
 	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(
 		model, periods, themesNumbers, rastpath);
 
-	std::cout << "Nombre de résultats : " << RESULT.size() << std::endl;
-
-	// Écriture sur le disque en cas de test manuel
+	// ï¿½criture sur le disque en cas de test manuel
 	if (writeOnDisk) {
 		std::ofstream outputFile(outputFilePath);
 
@@ -87,20 +93,20 @@ int main(int argc, char* argv[])
 				outputFile << res << std::endl;
 			}
 			outputFile.close();
-			std::cout << "Les résultats ont été écrits dans " << outputFilePath << std::endl;
+			std::cout << "Les rï¿½sultats ont ï¿½tï¿½ ï¿½crits dans " << outputFilePath << std::endl;
 		}
 		else {
-			std::cerr << "Erreur: Impossible d'ouvrir le fichier " << outputFilePath << " pour l'écriture." << std::endl;
+			std::cerr << "Erreur: Impossible d'ouvrir le fichier " << outputFilePath << " pour l'ï¿½criture." << std::endl;
 			return 1;
 		}
 
 	}
 
 	if (RESULT.size() != resultSize) {
+		std::cout << std::to_string(RESULT.size()) + "!=" + std::to_string(resultSize);
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
 	}
-
 
 	return 0;
 }

@@ -51,11 +51,11 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
-		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\FMT\\model_test\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
-		params.outputPath = "..\\..\\tests\\testWrapperCoreSES\\ForetMontmorency";
-		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
-		params.numberOfPeriods = 20;
+		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
+		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\rasters\\";
+		params.outputPath = "..\\..\\tests\\testWrapperCoreSES\\CCV2";
+		params.scenarioName = "PlayBack_Histo";
+		params.numberOfPeriods = 6;
 		params.greedySearchIterations = 5;
 		params.useStanlock = false;
 		//outputLevel: STRATE = 3, TH�MATIQUE = 1, TOTALE = 2
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 		params.generateEvents = true;
 		params.generateSpatialOutputs = true;
 		params.constraintNames = {"_MAX OVOLTOTREC_YP23 2.._LENGTH"};
-		params.outputNames = {"OVOLTOTREC", "OSUPREGECOCOS"};
+		params.outputNames = {"OVOLTOTREC"};
 		params.predictorYields = {};
 		params.growthThemes = {};
 	}
