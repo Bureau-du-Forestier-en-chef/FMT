@@ -86,8 +86,9 @@ int main(int argc, char* argv[])
 			boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
 			forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
 			}
-		models[0].setparameter(Models::FMTintmodelparameters::SEED, 100);
-		Models::FMTsamodel optimizationmodel(models.at(0),forest);
+		//models[0].setparameter(Models::FMTintmodelparameters::SEED, 100);
+		Models::FMTsamodel optimizationmodel(models.at(0));
+		optimizationmodel.setinitialmapping(forest);
 		//optimizationmodel.redirectlogtofile(outputlocation + "/SA.log");
 		std::vector<Core::FMTtransition>singletransitions;
 		for (const Core::FMTtransition transition : optimizationmodel.gettransitions())
@@ -99,7 +100,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 500000);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 3000);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 5000);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
+		//optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
 		//optimizationmodel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
 		optimizationmodel.doplanning(true);
 		//optimizationmodel.LogConstraintsInfeasibilities();
