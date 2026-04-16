@@ -41,7 +41,8 @@ namespace Models
     {
         TOLERANCE = 0,/**< Double tolerance used in doplanning */
         GOALING_SCHEDULE_WEIGHT = 1,/**< Not needed ... maybe more for task ....The weight to use when trying goal a schedule from a strategic model */
-        LastDblModelParam = 2/**< End marker, used to allocate a fixed-sized array to store double parameters. */
+        INITIAL_ACCEPTANCE_PROBABILITY = 2,
+        LastDblModelParam = 3/**< End marker, used to allocate a fixed-sized array to store double parameters. */
     };
     //DocString: FMTboolmodelparameters
     //

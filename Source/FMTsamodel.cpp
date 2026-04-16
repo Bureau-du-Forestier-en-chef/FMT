@@ -27,8 +27,6 @@ namespace Models
 
 {
 
-    const double FMTsamodel::m_INITIAL_ACCEPTANCE_PROBABILITY = 0.6;
-
     std::string FMTsamodel::GetMovesName(FMTsamove p_move)
     {
         switch (p_move)
@@ -999,7 +997,8 @@ namespace Models
             ++cntid;
         }
         //maximals[0] = (AverageFactor / AverageCount);
-        temperature = (- (deltasum / totalits) * 100) / std::log(m_INITIAL_ACCEPTANCE_PROBABILITY);
+        temperature = (- (deltasum / totalits) * 100) / std::log(
+            getparameter(Models::FMTdblmodelparameters::INITIAL_ACCEPTANCE_PROBABILITY));
         m_BestSolution.setconstraintsfactor(*this, maximals);
         m_BestObjective = GetGlobalObjective(m_BestSolution);
         }catch (...)

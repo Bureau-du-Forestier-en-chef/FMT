@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTPATCHRULES_m_included
 
 #include <vector>
+#include <set>
 #include "FMTobject.h"
 
 namespace Core {
@@ -21,6 +22,7 @@ namespace Spatial
 
 {
 	class FMTeventcontainer;
+	class FMTevent;
 	class FMTSpatialGraphs;
 	class FMTPatchRules : public Core::FMTobject
 	{
@@ -28,12 +30,18 @@ namespace Spatial
 		FMTPatchRules()=default;
 		FMTPatchRules(const FMTPatchRules& rhs) = default;
 		FMTPatchRules& operator = (const FMTPatchRules& rhs)=default;
-		
-		static std::vector<FMTPatchRules> GetRules(const std::vector<Core::FMTconstraint>& p_constraints,
-											const std::vector<Core::FMTaction>& p_actions);
+		static std::vector<FMTPatchRules> 
+			GetRules(const std::vector<Core::FMTconstraint>& p_constraints,
+					const std::vector<Core::FMTaction>& p_actions);
 		double Evaluate(const FMTeventcontainer& p_events, 
 				const FMTSpatialGraphs& p_SpatialGraphs) const;
-
+		void FillTooSmallEvents(
+			std::vector<std::set<FMTevent>::iterator>& p_SmallEvents,
+			FMTeventcontainer& p_events) const;
+		void FillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
+			FMTeventcontainer& p_events) const;
+		void FillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
+					FMTeventcontainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const;
 	private:
 		FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
 			const std::vector<Core::FMTaction>& p_actions, int p_Id);
@@ -45,6 +53,8 @@ namespace Spatial
 		template <typename U>
 		static void _GetBounds(double p_lower, double p_upper,
 			U& p_NewLower, U& p_NewUpper);
+		bool _TooSmall(const FMTevent& p_event, size_t& p_cost) const;
+		bool _TooBig(const FMTevent& p_event, size_t& p_cost) const;
 		bool _IsSizeUsed() const;
 		bool _IsAdjacencyUsed() const;
 		bool _HasMinimalAdjacency() const;
@@ -56,6 +66,8 @@ namespace Spatial
 			const FMTSpatialGraphs& p_SpatialGraphs) const;
 		double _EvaluateGroup(const FMTeventcontainer& p_events,
 			const FMTSpatialGraphs& p_SpatialGraphs) const;
+		
+	
 		size_t m_GreenUp;
 		size_t m_MinimalAdjacency;
 		size_t m_MaximalAdjacency;

@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 			length = std::stoi(argv[2]);
 			objectivevalue = std::stod(argv[3]);
 		}else {
-			primarylocation = "C:/Users/admlocal/Desktop/08251/PC_9949_U08251_2028_MODB01.pri";
+			primarylocation = "C:/Users/admlocal/Desktop/08251_SA/PC_9949_U08251_2028_MODB01.pri";
 			scenario = "205_StratReg_OPE60_SANSTBE_SNAT_apsp";
 			length = 3;
 			objectivevalue = 1000;

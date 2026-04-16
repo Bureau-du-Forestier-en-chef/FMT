@@ -29,6 +29,7 @@ namespace Models
         //DBLparameters
         m_dblparameters[TOLERANCE]= FMT_DBL_TOLERANCE;
         m_dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;
+        m_dblparameters[INITIAL_ACCEPTANCE_PROBABILITY] = 0.80;
         //BOOLparameters
         m_boolparameters[FORCE_PARTIAL_BUILD]=false;
         m_boolparameters[STRICTLY_POSITIVE]=false;

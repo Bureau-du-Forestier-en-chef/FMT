@@ -21,7 +21,7 @@ namespace Spatial
 {
 
 class FMTbindingspatialaction;
-class  FMTSpatialGraphs;
+class FMTSpatialGraphs;
 
 // DocString: FMTeventcontainer
 /**
@@ -261,10 +261,22 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
                             int p_themeId,int p_FirstPeriod, 
                             int p_LastPeriod, int p_bound) const;
 
+        double GetDispertion(int p_RuleId,
+            const FMTSpatialGraphs& p_Graphs,
+            int p_themeId, int p_FirstPeriod,
+            int p_LastPeriod, int p_bound) const;
+
         std::vector<FMTeventcontainer::const_iterator> GetDispertionConflicts(const std::vector<bool>& p_actions,
                                                 const FMTSpatialGraphs& p_Graphs,
                                                 int p_themeId,int p_FirstPeriod,
                                                 int p_LastPeriod, int p_bound) const;
+        std::vector<FMTeventcontainer::const_iterator> GetDispertionConflicts(int p_RuleId,
+                                                            const FMTSpatialGraphs& p_Graphs,
+                                                            int p_themeId, int p_FirstPeriod,
+                                                            int p_LastPeriod, int p_bound) const;
+        std::vector<FMTeventcontainer::const_iterator>GetEventsOf(int p_RuleId, 
+                                                        int p_MinimalPeriod, int p_MaximalPeriod) const;
+       
      private:
          class BoundingBox
             {
@@ -331,6 +343,10 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         std::vector<BoundingBox> _GetBoundingBoxes(const std::vector<bool>& p_actions, 
                            const FMTSpatialGraphs& p_Graphs, int p_themeId,
                            int p_FirstPeriod, int p_LastPeriod) const;
+
+        std::vector<BoundingBox> _GetBoundingBoxes(int p_RuleId,
+                        const FMTSpatialGraphs& p_Graphs, int p_themeId,
+                        int p_FirstPeriod, int p_LastPeriod) const;
 
 		class FMTeventiteratorsorter
 		{
