@@ -676,7 +676,7 @@ namespace Core
 						goal += yieldnames.at(id).substr(GOAL_FINDER + 5, yieldnames.at(id).size()) + ",";
 						goal += std::to_string(yieldbounds.at(id).getlower());
 					}
-					if (yieldnames.at(id).find("_SETTOGLOBAL") != std::string::npos)
+					if (yieldnames.at(id).find("_SETFROMGLOBAL") != std::string::npos)
 					{
 						global += std::to_string(yieldbounds.at(id).getlower());
 					}
@@ -718,7 +718,7 @@ namespace Core
 				}
 				if (!global.empty())
 				{
-					global = "_SETTOGLOBAL(" + global + ")";
+					global = "_SETFROMGLOBAL(" + global + ")";
 				}
 				if (!ScheduleWeight.empty())
 				{

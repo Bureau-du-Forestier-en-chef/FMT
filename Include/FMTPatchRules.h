@@ -55,15 +55,14 @@ namespace Spatial
 			U& p_NewLower, U& p_NewUpper);
 		bool _TooSmall(const FMTevent& p_event, size_t& p_cost) const;
 		bool _TooBig(const FMTevent& p_event, size_t& p_cost) const;
+		bool _IsTooClose(const FMTevent& p_event, const FMTeventcontainer& p_events, size_t& p_cost) const;
 		bool _IsSizeUsed() const;
 		bool _IsAdjacencyUsed() const;
 		bool _HasMinimalAdjacency() const;
 		bool _HasMaximalAdjacency() const;
 		bool _IsGroupUsed() const;
-		double _EvaluateSize(const FMTeventcontainer& p_events,
-				const FMTSpatialGraphs& p_SpatialGraphs) const;
-		double _EvaluateAdjacency(const FMTeventcontainer& p_events,
-			const FMTSpatialGraphs& p_SpatialGraphs) const;
+		double _EvaluateSize(const FMTeventcontainer& p_events) const;
+		double _EvaluateAdjacency(const FMTeventcontainer& p_events) const;
 		double _EvaluateGroup(const FMTeventcontainer& p_events,
 			const FMTSpatialGraphs& p_SpatialGraphs) const;
 		

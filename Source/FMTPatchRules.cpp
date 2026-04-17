@@ -44,11 +44,11 @@ namespace Spatial
 		try {
 			if (_IsSizeUsed())
 			{
-				cost += _EvaluateSize(p_events, p_SpatialGraphs);
+				cost += _EvaluateSize(p_events);
 			}
 			if (_IsAdjacencyUsed())
 			{
-				cost += _EvaluateAdjacency(p_events, p_SpatialGraphs);
+				cost += _EvaluateAdjacency(p_events);
 			}
 			if (_IsGroupUsed())
 			{
@@ -137,8 +137,7 @@ namespace Spatial
 	}
 
 
-	double FMTPatchRules::_EvaluateSize(const FMTeventcontainer& p_events,
-		const FMTSpatialGraphs& p_SpatialGraphs) const
+	double FMTPatchRules::_EvaluateSize(const FMTeventcontainer& p_events) const
 	{
 		double cost = 0;
 		try {
@@ -162,15 +161,45 @@ namespace Spatial
 			}
 		return cost;
 	}
-	double FMTPatchRules::_EvaluateAdjacency(const FMTeventcontainer& p_events,
-		const FMTSpatialGraphs& p_SpatialGraphs) const
+
+	bool FMTPatchRules::_IsTooClose(const FMTevent& p_event, const FMTeventcontainer& p_events, size_t& p_cost) const
+		{
+		bool TooClose = false;
+		if (_HasMinimalAdjacency())
+			{
+			for (int period = p_event.getperiod(); period <= p_event.getperiod() + m_GreenUp; ++period)
+				{
+				for (const FMTeventcontainer::const_iterator eventIt : p_events.getevents(period, m_RulesId))
+					{
+					if (*eventIt != p_event &&
+						p_event.within(m_MinimalAdjacency, *eventIt))
+						{
+						p_cost += m_MinimalAdjacency - p_event.distance(*eventIt);
+						TooClose = true;
+						}
+					}
+				}
+			}
+		return TooClose;
+		}
+
+
+	double FMTPatchRules::_EvaluateAdjacency(const FMTeventcontainer& p_events) const
 	{
 		double cost = 0;
 		try {
-			for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
+			if (_IsAdjacencyUsed())
 				{
+				for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
+					{
+					for (const FMTeventcontainer::const_iterator eventIt : p_events.getevents(period, m_RulesId))
+						{
+						
+						}
 
+					}
 				}
+			
 			/*if (_IsAdjacencyUsed())
 			{
 				int baselookup = 0;
