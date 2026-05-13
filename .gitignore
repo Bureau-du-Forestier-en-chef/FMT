@@ -39,6 +39,7 @@ gdal/*
 /build/
 compile_commands.json
 .cmake/*
+.junie/*
 /Examples/C++/tests/BFECtests.csv
 .vscode/*
 *html
