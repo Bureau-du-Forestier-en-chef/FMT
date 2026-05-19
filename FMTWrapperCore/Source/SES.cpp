@@ -287,14 +287,13 @@ namespace FMTWrapperCore
                 {
                     for (const Core::FMTconstraint& constraint : allConstraints)
                     {
-                        if (constraint.getname() == name)
+                        if (std::string(constraint) == name)
                         {
                             selectedConstraints.push_back(constraint);
                             break;
                         }
                     }
                 }
-
                 optimizationModel.setconstraints(selectedConstraints);
             }
 

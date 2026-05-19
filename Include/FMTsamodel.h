@@ -186,9 +186,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::m_MOVE_SIZE_FACTOR
     ///Factor to put on move size
     static const size_t m_MOVE_SIZE_FACTOR = 20;
-    // DocString: FMTsamodel::INITIAL_ACCEPTANCE_PROBABILITY
-    ///Initial acceptance probability of the SA
-    static const double m_INITIAL_ACCEPTANCE_PROBABILITY;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use

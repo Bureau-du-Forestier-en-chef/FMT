@@ -693,6 +693,11 @@ namespace Models
 		@return a pointer to the generator or a nullptr;
 		*/
 		std::default_random_engine* getGeneratorPtr() const;
+		// DocString: FMTmodel::GetStaticTransitionThemes
+		/**
+		locate the static transition themes.
+		*/
+		std::vector<size_t>GetStaticTransitionThemes() const;
     protected:
 		// DocString: FMTmodel::m_generator
 		///Random number generator.
@@ -748,11 +753,7 @@ namespace Models
 		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopements.
 		*/
 		Core::FMTmask getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const;
-		// DocString: FMTmodel::getstatictransitionthemes
-		/**
-		locate the static transition themes.
-		*/
-		std::vector<size_t>getstatictransitionthemes() const;
+		
 		// DocString: FMTmodel::getstaticpresolvethemes
 		/**
 		Using the transition themes look at constraints and actions or yields actions to return
@@ -784,6 +785,7 @@ namespace Models
 		Get the maximal serie size for the whole model.
 		*/
 		size_t getseriesmaxsize() const;
+
 	private:
 		// DocString: FMTmodel::save
 		/**

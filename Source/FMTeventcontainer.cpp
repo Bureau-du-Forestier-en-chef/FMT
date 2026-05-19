@@ -824,6 +824,21 @@ namespace Spatial
 		return total;
 	}
 
+	double FMTeventcontainer::GetDispertion(int p_RuleId,
+		const FMTSpatialGraphs& p_Graphs,
+		int p_themeId, int p_FirstPeriod,
+		int p_LastPeriod, int p_bound) const
+	{
+		const std::vector<BoundingBox> BOXES = _GetBoundingBoxes(p_RuleId, p_Graphs,
+			p_themeId, p_FirstPeriod, p_LastPeriod);
+		double total = 0;
+		for (const BoundingBox& BOX : BOXES)
+		{
+			total += BOX.EvaluateUpperBound(p_bound);
+		}
+		return total;
+	}
+
 
 
 	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::GetDispertionConflicts(
@@ -846,6 +861,43 @@ namespace Spatial
 			}
 		return  conflicts;
 	}
+
+	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::GetDispertionConflicts(int p_RuleId,
+		const FMTSpatialGraphs& p_Graphs,
+		int p_themeId, int p_FirstPeriod,
+		int p_LastPeriod, int p_bound) const
+	{
+		const std::vector<BoundingBox> BOXES = _GetBoundingBoxes(p_RuleId, p_Graphs,
+			p_themeId, p_FirstPeriod, p_LastPeriod);
+		std::vector<FMTeventcontainer::const_iterator> conflicts;
+		for (const BoundingBox& BOX : BOXES)
+		{
+			const std::vector<FMTeventcontainer::const_iterator> BOX_CONFLICTS = BOX.GetEvents();
+			if (BOX.EvaluateUpperBound(p_bound) > FMT_DBL_TOLERANCE)
+			{
+				conflicts.insert(conflicts.end(),
+					BOX_CONFLICTS.begin(), BOX_CONFLICTS.end());
+			}
+		}
+		return  conflicts;
+	}
+
+
+	std::vector<FMTeventcontainer::const_iterator>FMTeventcontainer::GetEventsOf(int p_RuleId,
+		int p_MinimalPeriod, int p_MaximalPeriod) const
+		{
+		std::vector<FMTeventcontainer::const_iterator> RuleEvents;
+		for (FMTeventcontainer::const_iterator it = lower_bound(p_MinimalPeriod);
+			it != upper_bound(p_MaximalPeriod); ++it)
+			{
+			if (it->getactionid() == p_RuleId &&
+				(p_MinimalPeriod <= it->getperiod() <= p_MaximalPeriod))
+				{
+					RuleEvents.push_back(it);
+				}
+			}
+		return RuleEvents;
+		}
 
 
 
@@ -872,6 +924,33 @@ namespace Spatial
 						EVENT->getGraphFamily());
 
 					}
+				Boxes.at(category).add(EVENT);
+			}
+		}
+		return Boxes;
+	}
+
+	std::vector<FMTeventcontainer::BoundingBox> FMTeventcontainer::_GetBoundingBoxes(int p_RuleId,
+		const FMTSpatialGraphs& p_Graphs, int p_themeId,
+		int p_FirstPeriod, int p_LastPeriod) const
+	{
+		size_t numberOfCategory = size_t(1);
+		if (p_themeId >= 0)
+		{
+			numberOfCategory = p_Graphs.GetNumberOfCategories(p_themeId);
+		}
+		std::vector<BoundingBox>Boxes(numberOfCategory, BoundingBox());
+		for (int period = p_FirstPeriod; period <= p_LastPeriod; ++period)
+		{
+			for (const auto& EVENT : getevents(period, p_RuleId))
+			{
+				size_t category = 0;
+				if (p_themeId >= 0)
+				{
+					category = p_Graphs.GetCategoryOf(p_themeId,
+						EVENT->getGraphFamily());
+
+				}
 				Boxes.at(category).add(EVENT);
 			}
 		}

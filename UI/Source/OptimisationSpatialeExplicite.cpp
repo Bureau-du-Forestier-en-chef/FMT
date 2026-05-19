@@ -53,6 +53,8 @@ namespace Wrapper
             params.outputMinPeriod = etanduSortiesMin;
             params.outputMaxPeriod = etanduSortiesMax;
 
+
+
             // Options booléennes
             params.useStanlock = indicateurStanlock;
             params.generateEvents = indGenererEvents;
@@ -112,8 +114,10 @@ namespace Wrapper
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
             *logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
 
-            Models::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
-            const std::string scenarioName = baseModel.getname();
+            const Models::FMTmodel& BASE_MODEL = FMTFormCache::GetInstance()->getmodel(scenario);
+            const std::string scenarioName = BASE_MODEL.getname();
+
+           
 
             FMTWrapperCore::SAParameters params = ConvertirParametresOptimisation(
                 cheminRasters, scenario, contraintes, periodes,
@@ -121,14 +125,17 @@ namespace Wrapper
                 outputs, indicateurStanlock, outputLevel,
                 etanduSortiesMin, etanduSortiesMax, cheminSorties,
                 indGenererEvents, indSortiesSpatiales, providerGdal,
-                scenarioName); 
+                scenarioName);
+
+
+            
 
             *logger << "FMT -> Traitement pour le scénario : " + scenarioName << "\n";
 
             *logger << "FMT -> Démarrage de l'optimisation" << "\n";
 
             FMTWrapperCore::SAResults results =
-                FMTWrapperCore::SES::RunOptimization(params, baseModel);
+                FMTWrapperCore::SES::RunOptimization(params, BASE_MODEL);
 
             if (!results.success)
             {

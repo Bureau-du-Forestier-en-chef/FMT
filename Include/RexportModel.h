@@ -110,6 +110,8 @@ void exportModel()
 				"@DocString(FMTmodel::isoptimal)")
 			.method("getobjectivevalue", &Models::FMTmodel::getobjectivevalue,
 				"@DocString(FMTmodel::getobjectivevalue)")
+			.method("GetStaticTransitionThemes", &Models::FMTmodel::GetStaticTransitionThemes,
+				"@DocString(FMTmodel::GetStaticTransitionThemes)")
 			.method("setboolparameter",
 				static_cast<bool(Models::FMTmodel::*)(const Models::FMTboolmodelparameters&, const bool&)>(&Models::FMTmodel::setparameter),
 				"@DocString(Models::FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")

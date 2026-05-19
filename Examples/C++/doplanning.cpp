@@ -35,9 +35,9 @@ int main(int argc, char* argv[])
 		}
 		else {
 			primarylocation = "D:/CC_modele_feu/CC_V3/Mod_cc_v3.pri";
-			scenario = "strategique_vanille";
-			//primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/03_Modele_de_base/08_Modele_WS/01_2028_2033/PC_9940_U11272_2028_MODB01/PC_9940_U11272_2028_MODB01.pri";
-			//scenario = "200_StratReg_apsp";
+			scenario = "PlayBack_CC_09";
+			//primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/02571/22_Phase1_Corr_Volume/24_ModeleWS/02_Travail/2026-04-13/PC_10067_U02571_2028_Corr_volume/PC_10067_U02571_2028_MODB01.pri";
+			//scenario = "160_Equi_apsp";
 			length = 20; 
 			objectivevalue = 14406932.651803;
 		}
