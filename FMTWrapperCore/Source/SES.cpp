@@ -80,6 +80,7 @@ namespace FMTWrapperCore
                 std::vector<Core::FMTconstraint> allConstraints = simulationModel.getconstraints();
                 std::vector<Core::FMTconstraint> selectedConstraints;
 
+                // faire méthode pour ça et le changer dans RunOptimization
                 for (const std::string& name : params.constraintNames)
                 {
                     for (const Core::FMTconstraint& constraint : allConstraints)
@@ -281,6 +282,7 @@ namespace FMTWrapperCore
                 std::vector<Core::FMTconstraint> allConstraints = optimizationModel.getconstraints();
                 std::vector<Core::FMTconstraint> selectedConstraints;
 
+                // changer ici pour que ça soit une méthode avec le getname de fixed
                 for (const std::string& name : params.constraintNames)
                 {
                     for (const Core::FMTconstraint& constraint : allConstraints)

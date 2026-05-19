@@ -35,7 +35,7 @@ namespace Graph
 		graphtype(FMTgraphrequest::fullgraph),
 		modelptr(&model)
 	{
-		
+		 
 	}
 
 	const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>* const FMTgraphvertextoyield::getlinegraph() const
