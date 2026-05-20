@@ -129,13 +129,13 @@ int main(int argc, char *argv[])
                 length = 5;
             }else
                 {
-                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\calendrier\\01_Travail\\PC_9936_U01272_2028_MODB01.pri";
-                scenarios = std::vector<std::string> (1, "2002_StratReg_PLLI_avsp");
+                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02020265\\02_Travail_Realisme\\PC_9949_U08251_2028_MODB01.pri";
+                scenarios = std::vector<std::string> (1, "323_TYFSansPre_avsp");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\calendrier\\Parametres_Bfecopt.csv";
-                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\calendrier\\01_Travail\\Carte\\PC_9936_UA_U01272.shp";
-                results = std::vector<std::string> (1, "2002_StratReg_PLLI_avsp");
+                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02020265\\Parametres_Bfecopt.csv";
+                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02020265\\02_Travail_Realisme\\Carte\\PC_9949_UA_U08251.shp";
+                results = std::vector<std::string> (1, "323_TYFSansPre_avsp");
                 length = 20;
                 }
            
