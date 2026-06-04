@@ -744,7 +744,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            // L'erreur sera gérée par le wrapper
+            throw;
         }
     }
 
@@ -783,7 +783,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            // L'erreur sera gérée par le wrapper
+            throw;
         }
     }
 

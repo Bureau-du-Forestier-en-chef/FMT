@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "FMTexception.h"
+#include "FMTmodelparser.h"
 
 namespace Models
 {
@@ -26,6 +27,7 @@ namespace Wrapper
 			~FMTFormCache()=default;
 			const Models::FMTmodel& getmodel(const int& index) const;
 			FMTexceptionhandlerwarning* GetFormHandler();
+			const FMTexceptionhandlerwarning* GetFormHandler() const;
 			Exception::FMTexceptionhandler* GetExceptionHandler() const;
 			FMTFormLogger* GetFormLogger();
 			static FMTFormCache* GetInstance();
@@ -35,6 +37,7 @@ namespace Wrapper
 			void clear();
 			void InitializeExceptionHandler(const int& maxwarnings, const std::vector<Exception::FMTexc>& warning);
 			void InitializeLogger(const std::string& filename,System::IntPtr intptrptr);
+			Parser::FMTmodelparser GetConfiguredParser() const;
 			FMTFormCache(const FMTFormCache& rhs) = delete;
 			FMTFormCache& operator =(const FMTFormCache& rhs) = delete;
 		private:

@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
 		length = std::stoi(argv[3]);
 	}else
 	{
-		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\YLD_parser\\PC_9929_U11171_2028_MODB01.pri";
-		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
-		length = 2;
-		scenario_name = "ROOT";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02031521\\PC_10067_U02571_2028_Corr_Vol_Phase2\\PC_10067_U02571_2028_MODB01.pri";
+		outputlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02031521\\output";
+		length = 20;
+		scenario_name = "200_StratReg_apsp";
 		playback.push_back(true);
 		allscenarios.push_back(scenario_name);
 	}
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
-	Parallel::FMTplanningtask newplanningtask(0, length, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::standard, primlocation);
+	Parallel::FMTplanningtask newplanningtask(0, length, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTschedule>> schedules = modelparser.readschedules(primlocation, models);
 	for (size_t modelid = 0; modelid<models.size(); ++modelid)
@@ -77,11 +77,11 @@ int main(int argc, char *argv[])
 		{
 			if (
 				output.getname() == "OVOLTOTREC" 
-				|| output.getname() == "OVOLREC" 
-				|| output.getname() == "OSUPBRULER_ORI"
-				|| output.getname() == "OSUPREGECO_HARTIF25UTR"
-				|| output.getname() == "OSUPREGECO_HARAT100UTR"
-				|| output.getname() == "OSUPJEUNEALERTEREGECO"
+				//|| output.getname() == "OVOLREC" 
+				//|| output.getname() == "OSUPBRULER_ORI"
+				//|| output.getname() == "OSUPREGECO_HARTIF25UTR"
+				//|| output.getname() == "OSUPREGECO_HARAT100UTR"
+				//|| output.getname() == "OSUPJEUNEALERTEREGECO"
 				)
 			{
 				selectedoutputs.push_back(output);

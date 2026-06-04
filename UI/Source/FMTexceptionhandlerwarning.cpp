@@ -60,8 +60,9 @@ std::string Wrapper::FMTexceptionhandlerwarning::geterrorstack(std::string text,
 		{
 		//Do nothing
 		}
-	return ModifLogger->getlastprint();
-
+	finalstack = ModifLogger->getlastprint();
+	ModifLogger->resetkeepprint();
+	return finalstack;
 }
 
 void Wrapper::FMTexceptionhandlerwarning::printexceptions(std::string text,

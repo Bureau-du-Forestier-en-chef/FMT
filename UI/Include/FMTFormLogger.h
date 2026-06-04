@@ -16,15 +16,18 @@ namespace Wrapper
 		bool keepprint;
 		mutable std::string lastprint;
 		logfunc sendfeedback;
+		bool m_isMainInstance;
 	protected:
 		void cout(const char* message) const;
 	public:
+		void logtime() override;
 		FMTFormLogger() = default;
-		FMTFormLogger(const FMTFormLogger&) = default;
+		FMTFormLogger(const FMTFormLogger& rhs);
 		~FMTFormLogger() = default;
 		void dokeepprint();
+		void resetkeepprint();
 		std::string getlastprint() const;
-		FMTFormLogger(const std::string& nomFichierLogger,logfunc feed);
+		FMTFormLogger(const std::string& nomFichierLogger, logfunc feed);
 		void settasklogginglevel(int taskLogLevel);
 		void setdefaultlogginglevel();
 		virtual std::unique_ptr <FMTlogger> Clone() const;

@@ -153,7 +153,7 @@ namespace Wrapper
 
 		try
 		{
-			Parser::FMTmodelparser Modelparser;
+			Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
 			const std::vector<std::vector<std::string>> listeExtensions = Modelparser.getGDALVectorDriverExtensions();
 			const std::vector<std::string> listeDrivers = Modelparser.getGDALVectorDriverNames();
 
@@ -297,7 +297,7 @@ namespace Wrapper
 		try
 		{
 			Parser::FMTscheduleparser schedulerparser;
-			Parser::FMTmodelparser Modelparser;
+			Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
 			std::vector<Models::FMTmodel> models;
 			models.push_back(FMTFormCache::GetInstance()->getmodel(indexScenario));
 			std::vector<Core::FMTschedule> liste = Modelparser.readschedules(msclr::interop::marshal_as<std::string>(nomFichierPri), models).at(0);

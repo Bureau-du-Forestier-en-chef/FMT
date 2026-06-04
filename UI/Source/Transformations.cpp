@@ -12,8 +12,6 @@ namespace Wrapper {
 	{
 		try
 		{
-			Parser::FMTmodelparser ModelParser;
-
 			if (FMTFormCache::GetInstance()->empty())
 			{
 				throw std::out_of_range("Invalid model index");
@@ -47,13 +45,19 @@ namespace Wrapper {
 		}
 
 	}
-	bool FMTForm::splitActions(const int p_modelIndex, System::String^ p_schedulePri, System::Collections::Generic::List<System::String^>^ p_splitted, System::Collections::Generic::List<System::String^>^ p_splitted_mask, System::String^ p_outputDirPath, System::String^ p_scenario_name, System::String^ p_pri_name)
+	bool FMTForm::splitActions(
+		const int p_modelIndex, 
+		System::String^ p_schedulePri, 
+		System::Collections::Generic::List<System::String^>^ p_splitted, 
+		System::Collections::Generic::List<System::String^>^ p_splitted_mask, 
+		System::String^ p_outputDirPath, 
+		System::String^ p_scenario_name, 
+		System::String^ p_pri_name)
 	{
 		try
 		{
 			std::vector<std::string>splitted = {}; // Exemple : { "ACT","AEC"}
 			std::vector<std::string>splitted_mask = {}; //Exemple : { "? ? ? ? ? ? ? ? ? ? ? ? ? UTA11 ? ? ? ? ? ", "? ? ? ? ? ? ? ? ? ? ? ? ? !UTA11 ? ? ? ? ? ?" };
-			Parser::FMTmodelparser ModelParser;
 			const std::string PRIMARYLOCATION = msclr::interop::marshal_as<std::string>(p_schedulePri);
 			const std::string OUTPUT_DIRECTORY = msclr::interop::marshal_as<std::string>(p_outputDirPath);
 			const std::string SCENARIO = msclr::interop::marshal_as<std::string>(p_scenario_name);
@@ -77,7 +81,12 @@ namespace Wrapper {
 			}
 			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getmodel(p_modelIndex);
 
-			Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODEL, PRIMARYLOCATION, splitted, splitted_mask, SCENARIO);
+			Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(
+				MODEL, 
+				PRIMARYLOCATION, 
+				splitted, 
+				splitted_mask, 
+				SCENARIO);
 
 			FMTFormCache::GetInstance()->push_back(SPLITTED_MODEL);
 			return true;
@@ -131,7 +140,7 @@ namespace Wrapper {
 				passed = false;
 				throw std::out_of_range("Invalid model index");
 			}
-			Parser::FMTmodelparser ModelParser;
+			Parser::FMTmodelparser ModelParser = FMTFormCache::GetInstance()->GetConfiguredParser();
 			const std::string ACTION_NAME = msclr::interop::marshal_as<std::string>(p_actionName);
 			const std::string TARGET_YIELD = msclr::interop::marshal_as<std::string>(p_targetYield);
 			const std::string SCHEDULE_PRIMARYm_location = msclr::interop::marshal_as<std::string>(p_schedulePri);

@@ -11,6 +11,32 @@ namespace Wrapper
 {
 std::unique_ptr<FMTFormCache> FMTFormCache::m_Instance = std::unique_ptr<FMTFormCache>(nullptr);
 
+Parser::FMTmodelparser FMTFormCache::GetConfiguredParser() const
+{
+	Parser::FMTmodelparser parser;
+	try
+	{
+		FMTFormLogger* mainLogger =
+			dynamic_cast<FMTFormLogger*>(Models::FMTmodel::getLogger());
+		if (mainLogger)
+		{
+			std::unique_ptr<Logging::FMTlogger> loggerClone =
+				mainLogger->Clone();
+			parser.passinlogger(loggerClone);
+		}
+		const FMTexceptionhandlerwarning* handler = GetFormHandler();
+		std::unique_ptr<Exception::FMTexceptionhandler> handlerClone =
+			handler->Clone();
+		parser.passinexceptionhandler(handlerClone);
+	}
+	catch (...)
+	{
+		GetExceptionHandler()->raisefromcatch(
+			"", "FMTFormCache::GetConfiguredParser", __LINE__, __FILE__);
+	}
+	return parser;
+}
+
 FMTFormCache* FMTFormCache::GetInstance()
 	{
 	if (!m_Instance)
@@ -55,6 +81,27 @@ FMTexceptionhandlerwarning* FMTFormCache::GetFormHandler()
 		}
 	return wwarptr;
 }
+
+const FMTexceptionhandlerwarning* FMTFormCache::GetFormHandler() const
+{
+	const FMTexceptionhandlerwarning* wwarptr =
+		dynamic_cast<const FMTexceptionhandlerwarning*>(GetExceptionHandler());
+	try {
+		if (!wwarptr)
+		{
+			GetExceptionHandler()->raise(
+				Exception::FMTexc::FMTrangeerror,
+				"no valid FMTexceptionhandlerwarning in cache ",
+				"FMTFormCache::GetFormHandler", __LINE__, __FILE__);
+		}
+	}
+	catch (...) {
+		GetExceptionHandler()->raisefromcatch(
+			"", "FMTFormCache::GetFormHandler", __LINE__, __FILE__);
+	}
+	return wwarptr;
+}
+
 FMTFormLogger*  FMTFormCache::GetFormLogger()
 {
 	FMTFormLogger* loggerptr = dynamic_cast<FMTFormLogger*>(Models::FMTmodel::getLogger());

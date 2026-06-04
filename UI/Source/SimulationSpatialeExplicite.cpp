@@ -215,7 +215,7 @@ namespace Wrapper
                 indCarbon, predictoryields, growththemes,
                 scenarioName); 
 
-            Parser::FMTmodelparser modelparser;
+            Parser::FMTmodelparser modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
             std::vector<std::string> scenariosName;
             scenariosName.push_back(params.scenarioName);
             std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenariosName);
@@ -272,6 +272,8 @@ namespace Wrapper
             if (!results.success)
             {
                 *logger << "FMT -> Erreur de simulation: " + results.errorMessage << "\n";
+                raisefromcatch(results.errorMessage,
+                    "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
                 return false;
             }
 

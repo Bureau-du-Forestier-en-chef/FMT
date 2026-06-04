@@ -88,7 +88,7 @@ bool FMTForm::InitialAreaVariability(
 					}
 				}
 				*logger << "FMT - Démarrage de Initial Area Variability" << "\n";
-				Parser::FMTmodelparser Modelparser;
+				Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
 				Modelparser.writeresults(
 					optimizationmodel.getmodelfromproportions(masktargets, proportions),
 					listeOutputs,

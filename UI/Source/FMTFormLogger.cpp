@@ -19,17 +19,42 @@ FMTlogger* Wrapper::FMTFormLogger::clone() const
 	return new Wrapper::FMTFormLogger(*this);
 }
 
-Wrapper::FMTFormLogger::FMTFormLogger(const std::string& nomFichierLogger, logfunc feed) :FMTlogger(), keepprint(false), lastprint(), sendfeedback(feed)
+Wrapper::FMTFormLogger::FMTFormLogger(
+	const std::string& nomFichierLogger, logfunc feed)
+	: FMTlogger(), keepprint(false), m_isMainInstance(true),
+	lastprint(), sendfeedback(feed)
 {
 	redirectofile(nomFichierLogger, false);
 	setlogginglevel(LOGLEVEL);
 	setstreamflush(true);
 }
 
+Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
+	: FMTlogger(rhs), keepprint(rhs.keepprint),
+	m_isMainInstance(false), // les clones ne sont jamais l'instance principale
+	lastprint(rhs.lastprint), sendfeedback(rhs.sendfeedback)
+{
+}
+
+void Wrapper::FMTFormLogger::logtime()
+{
+	if (m_isMainInstance)
+	{
+		Logging::FMTlogger::logtime();
+	}
+}
+
 void Wrapper::FMTFormLogger::dokeepprint()
 {
 	keepprint = true;
 }
+
+void Wrapper::FMTFormLogger::resetkeepprint()
+{
+	keepprint = false;
+	lastprint.clear();
+}
+
 std::string Wrapper::FMTFormLogger::getlastprint() const
 {
 	return lastprint;
@@ -38,7 +63,10 @@ std::string Wrapper::FMTFormLogger::getlastprint() const
 
 void Wrapper::FMTFormLogger::cout(const char * message) const
 {
-	Logging::FMTlogger::cout(message);
+	if (m_FileStream && m_FileStream->is_open())
+	{
+		Logging::FMTlogger::cout(message);
+	}
 	if (keepprint)
 	{
 		lastprint += message;
