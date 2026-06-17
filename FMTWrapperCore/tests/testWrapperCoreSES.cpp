@@ -55,8 +55,8 @@ int main(int argc, char* argv[])
 		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\ses\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
 		params.outputPath = "C:\\Users\\Admlocal\\Documents\\SCRAP";
 		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
-		params.numberOfPeriods = 6;
-		params.greedySearchIterations = 5;
+		params.numberOfPeriods = 1;
+		params.greedySearchIterations = 1;
 		params.useStanlock = false;
 		//outputLevel: STRATE = 3, TH�MATIQUE = 1, TOTALE = 2
 		params.outputLevel = 2;
@@ -125,6 +125,8 @@ int main(int argc, char* argv[])
 	catch (const std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
+		try { std::rethrow_if_nested(e); }
+		catch (const std::exception& nested) { std::cerr << nested.what() << std::endl; }
 		return 1;
 	}
 	catch (...)

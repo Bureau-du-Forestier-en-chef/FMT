@@ -17,6 +17,9 @@
 #include "FMTexceptionhandlerwarning.h"
 #include "FMTdefaultlogger.h"
 #include "SES.h"
+#include <iostream>
+#include <thread>
+#include <chrono>
 
 namespace Wrapper
 {
@@ -290,8 +293,6 @@ namespace Wrapper
         }
         catch (...)
         {
-            raisefromcatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
-
             return false;
         }
     }
