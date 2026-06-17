@@ -242,25 +242,13 @@ namespace FMTWrapperCore
         {
             results.success = false;
             results.errorMessage = std::string("Exception: ") + e.what();
-
-            Exception::FMTfreeexceptionhandler().raise(
-                Exception::FMTexc::FMTfunctionfailed,
-                results.errorMessage,
-                "SES.cpp", 
-                __LINE__,
-                __FILE__);
+            throw;
         }
         catch (...)
         {
             results.success = false;
             results.errorMessage = "Unknown error occurred during simulation";
-            
-            Exception::FMTfreeexceptionhandler().raise(
-                Exception::FMTexc::FMTfunctionfailed,
-                results.errorMessage,
-                "SES.cpp", 
-                __LINE__,
-                __FILE__);
+            throw;
         }
 
         return results;
@@ -276,7 +264,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            messages.push_back("Error generating infeasibility report");
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::GenerateInfeasibilityReport", __LINE__, __FILE__);
         }
 
         return messages;
@@ -418,11 +406,13 @@ namespace FMTWrapperCore
         {
             results.success = false;
             results.errorMessage = std::string("Exception: ") + e.what();
+            throw;
         }
         catch (...)
         {
             results.success = false;
             results.errorMessage = "Unknown error occurred during optimization";
+            throw;
         }
 
         return results;
@@ -515,7 +505,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            // En cas d'erreur, retourner les données partielles
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::GenerateCarbonReport", __LINE__, __FILE__);
         }
 
         return reportData;
@@ -559,7 +549,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            // En cas d'erreur, retourner les fichiers partiellement créés
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteDisturbances", __LINE__, __FILE__);
         }
 
         return transitionFiles;
@@ -579,6 +569,7 @@ namespace FMTWrapperCore
         catch (...)
         {
             eventsData.statistics = "";
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::GenerateEventsData", __LINE__, __FILE__);
         }
 
         return eventsData;
@@ -621,7 +612,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            // En cas d'erreur, retourner les données partielles
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::CalculateOutputs", __LINE__, __FILE__);
         }
 
         return outputsData;
@@ -656,7 +647,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            // En cas d'erreur, retourner les fichiers partiellement créés
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteSpatialOutputs", __LINE__, __FILE__);
         }
 
         return rasterFiles;
@@ -709,7 +700,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            // En cas d'erreur, retourner les données partielles
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::CalculatePredictors", __LINE__, __FILE__);
         }
 
         return predictorsData;
@@ -733,6 +724,7 @@ namespace FMTWrapperCore
         catch (...)
         {
             schedulePath = "";
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteSchedule", __LINE__, __FILE__);
         }
 
         return schedulePath;
@@ -759,7 +751,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteUpdatedForest", __LINE__, __FILE__);
         }
     }
 
@@ -798,8 +790,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::ExportResults", __LINE__, __FILE__);
         }
     }
-
 }

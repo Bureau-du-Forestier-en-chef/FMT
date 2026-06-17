@@ -67,11 +67,9 @@ int main(int argc, char* argv[])
 	//modelparser.write(optmodel, outdir+"other/");
 	if ((finalobjvalue < (initobjvalue - 1)) || (finalobjvalue > (initobjvalue + 1)))
 	{
-		std::cout << "ok" << std::endl;
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"FMTsetsolution", __LINE__, primarylocation);
 	}
-	// Create a console output say "hello"
 
 
 #endif

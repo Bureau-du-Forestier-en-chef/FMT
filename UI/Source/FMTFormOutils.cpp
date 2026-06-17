@@ -21,6 +21,12 @@ namespace Wrapper
 	{
 		FMTexceptionhandlerwarning* exhandler = FMTFormCache::GetInstance()->GetFormHandler();
 		const std::string errorstack = exhandler->geterrorstack(text, method, line, fil);
+		// Écrire dans le fichier log
+		FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
+		*logger << "*************************************************************\n";
+		*logger << "FMT - ERROR " + errorstack + "\n";
+
+		// Écrire dans l'interface
 		FeedBack("*************************************************************", gcnew System::EventArgs());
 		const std::string message = "FMT - ERROR " + errorstack;
 		FeedBack(gcnew System::String(message.c_str()), gcnew System::EventArgs());

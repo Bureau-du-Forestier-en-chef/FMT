@@ -51,17 +51,17 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
-		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\rasters\\";
+		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\issues\\ses\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
+		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\ses\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
 		params.outputPath = "C:\\Users\\Admlocal\\Documents\\SCRAP";
-		params.scenarioName = "PlayBack_Histo";
+		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
 		params.numberOfPeriods = 6;
 		params.greedySearchIterations = 5;
 		params.useStanlock = false;
 		//outputLevel: STRATE = 3, TH�MATIQUE = 1, TOTALE = 2
 		params.outputLevel = 2;
 		params.outputMinPeriod = 1;
-		params.outputMaxPeriod = 20;
+		params.outputMaxPeriod = 6;
 		params.gdalProvider = "CSV";
 		params.carbonMode = false;
 		params.generateEvents = true;

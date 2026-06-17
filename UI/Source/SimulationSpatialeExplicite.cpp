@@ -269,14 +269,6 @@ namespace Wrapper
             FMTWrapperCore::SESResults results =
                 FMTWrapperCore::SES::RunSES(params, selectedModel, schedules);
 
-            if (!results.success)
-            {
-                *logger << "FMT -> Erreur de simulation: " + results.errorMessage << "\n";
-                raisefromcatch(results.errorMessage,
-                    "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
-                return false;
-            }
-
             *logger << "FMT -> Simulation terminée avec succès" << "\n";
 
             if (indCarbon && !results.outputsData.results.empty())
