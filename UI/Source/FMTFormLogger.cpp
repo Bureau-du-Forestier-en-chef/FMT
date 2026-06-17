@@ -30,10 +30,14 @@ Wrapper::FMTFormLogger::FMTFormLogger(
 }
 
 Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
-	: FMTlogger(rhs), keepprint(rhs.keepprint),
-	m_isMainInstance(false), // les clones ne sont jamais l'instance principale
-	lastprint(rhs.lastprint), sendfeedback(rhs.sendfeedback)
+	: FMTlogger(rhs), 
+	keepprint(rhs.keepprint),
+	m_isMainInstance(false),
+	lastprint(rhs.lastprint), 
+	sendfeedback(rhs.sendfeedback)
 {
+	//m_FileStream.reset();
+	//filepath.clear();
 }
 
 void Wrapper::FMTFormLogger::logtime()
@@ -65,7 +69,8 @@ void Wrapper::FMTFormLogger::cout(const char * message) const
 {
 	if (m_FileStream && m_FileStream->is_open())
 	{
-		Logging::FMTlogger::cout(message);
+		(*m_FileStream) << message;
+		m_FileStream->flush();
 	}
 	if (keepprint)
 	{

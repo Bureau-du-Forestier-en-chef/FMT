@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	{
 		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02031521\\PC_10067_U02571_2028_Corr_Vol_Phase2\\PC_10067_U02571_2028_MODB01.pri";
 		outputlocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02031521\\output";
-		length = 20;
+		length = 1;
 		scenario_name = "200_StratReg_apsp";
 		playback.push_back(true);
 		allscenarios.push_back(scenario_name);

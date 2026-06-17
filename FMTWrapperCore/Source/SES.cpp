@@ -16,6 +16,7 @@
 #include "FMTtheme.h"
 #include "FMTaction.h"
 #include "FMTmodel.h"
+#include "FMTfreeexceptionhandler.h"
 #include <sstream>
 #include <fstream>
 #include <filesystem>
@@ -241,11 +242,25 @@ namespace FMTWrapperCore
         {
             results.success = false;
             results.errorMessage = std::string("Exception: ") + e.what();
+
+            Exception::FMTfreeexceptionhandler().raise(
+                Exception::FMTexc::FMTfunctionfailed,
+                results.errorMessage,
+                "SES.cpp", 
+                __LINE__,
+                __FILE__);
         }
         catch (...)
         {
             results.success = false;
             results.errorMessage = "Unknown error occurred during simulation";
+            
+            Exception::FMTfreeexceptionhandler().raise(
+                Exception::FMTexc::FMTfunctionfailed,
+                results.errorMessage,
+                "SES.cpp", 
+                __LINE__,
+                __FILE__);
         }
 
         return results;
@@ -744,7 +759,7 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            throw;
+
         }
     }
 
@@ -783,8 +798,8 @@ namespace FMTWrapperCore
         }
         catch (...)
         {
-            throw;
+
         }
     }
 
-} // namespace FMTWrapperCore
+}

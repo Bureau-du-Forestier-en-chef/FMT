@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	{
 		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
 		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\rasters\\";
-		params.outputPath = "..\\..\\tests\\testWrapperCoreSES\\CCV2";
+		params.outputPath = "C:\\Users\\Admlocal\\Documents\\SCRAP";
 		params.scenarioName = "PlayBack_Histo";
 		params.numberOfPeriods = 6;
 		params.greedySearchIterations = 5;

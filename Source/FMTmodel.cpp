@@ -2998,6 +2998,7 @@ bool FMTmodel::doplanning(const bool& solve, std::vector<Core::FMTschedule> sche
 	{
 	bool optimal_solved = false;
 	try{
+		throw std::runtime_error("test exception");
 		const bool QUIET_LOG = parameters.getboolparameter(QUIET_LOGGING);
 		const int presolve_iterations = parameters.getintparameter(PRESOLVE_ITERATIONS);
 		std::unique_ptr<FMTmodel> presolved_model;

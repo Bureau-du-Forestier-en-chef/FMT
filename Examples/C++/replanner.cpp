@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		primlocation = "D:/CC_modele_feu/CC_V2/Mod_cc_v2.pri";
-		outputlocation = "D:/test/";
-		length = 10;
-		replicate = 5;
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\validation_carbone\\CC_modele_feu\\CC_V2\\Mod_cc_v2.pri";
+		outputlocation = "C:\\Users\\Admlocal\\Documents\\FMT\\SCRAP";
+		length = 1;
+		replicate = 1;
 		n_threads = 1;
 		// Stratégique
 		allscenarios.push_back("strategique_CC"); 

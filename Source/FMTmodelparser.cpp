@@ -964,7 +964,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			{
 				*_logger << "\n";
 				_logger->logstamp();
-				_logger->logtime();
+				//_logger->logtime();
 			}
 			readstart = getclock();
 			std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
@@ -1113,7 +1113,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 
 		if (_logger->logwithlevel("Done reading " + getdurationinseconds(readstart) + " ", 0))
 		{
-			_logger->logtime();
+			//_logger->logtime();
 		}
 		return sortedmodels;
 

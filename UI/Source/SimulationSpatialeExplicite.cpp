@@ -214,8 +214,8 @@ namespace Wrapper
                 indGenererEvents, indSortiesSpatiales, providerGdal,
                 indCarbon, predictoryields, growththemes,
                 scenarioName); 
-
-            Parser::FMTmodelparser modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
+           
+            Parser::FMTmodelparser modelparser;
             std::vector<std::string> scenariosName;
             scenariosName.push_back(params.scenarioName);
             std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenariosName);
@@ -299,6 +299,7 @@ namespace Wrapper
         catch (...)
         {
             raisefromcatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
+
             return false;
         }
     }
