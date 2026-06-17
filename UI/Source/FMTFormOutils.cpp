@@ -9,6 +9,7 @@
 #include "FMTscheduleparser.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTForm.h"
+#include "FMTFormLogger.h"
 #include "FMTexceptionhandlerwarning.h"
 #include "FMTFormCache.h"
 #include "Tools.h"
@@ -23,8 +24,8 @@ namespace Wrapper
 		const std::string errorstack = exhandler->geterrorstack(text, method, line, fil);
 		// Écrire dans le fichier log
 		FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-		*logger << "*************************************************************\n";
-		*logger << "FMT - ERROR " + errorstack + "\n";
+		logger->logwithlevel("*************************************************************\n", 0);
+		logger->logwithlevel("FMT - ERROR " + errorstack + "\n", 0);
 
 		// Écrire dans l'interface
 		FeedBack("*************************************************************", gcnew System::EventArgs());

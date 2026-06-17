@@ -114,17 +114,23 @@ int main(int argc, char* argv[])
 			"testWrapperCoreSES", __LINE__, params.primaryFilePath);
 	}
 
-    FMTWrapperCore::SESResults results = FMTWrapperCore::SES::RunSES(
-        params,        
-        selectedModel,    
-        schedules);       
-	
-	if (!results.success)
+	FMTWrapperCore::SESResults results;
+	try
 	{
-		Exception::FMTfreeexceptionhandler().raise(
-			Exception::FMTexc::FMTfunctionfailed, 
-			results.errorMessage,
-			"testWrapperCoreSES", __LINE__, params.primaryFilePath);
+		results = FMTWrapperCore::SES::RunSES(
+			params,        
+			selectedModel,    
+			schedules);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
+	catch (...)
+	{
+		std::cerr << "Unknown error" << std::endl;
+		return 1;
 	}
 
 	if (argc > 1)

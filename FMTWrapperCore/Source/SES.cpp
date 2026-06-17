@@ -71,186 +71,170 @@ namespace FMTWrapperCore
         const std::vector<Core::FMTschedule>& schedules)
     {
         SESResults results;
+        
+        Models::FMTsesmodel simulationModel(baseModel);
 
-        try
+        if (!params.constraintNames.empty())
         {
-            Models::FMTsesmodel simulationModel(baseModel);
+            std::vector<Core::FMTconstraint> allConstraints = simulationModel.getconstraints();
+            std::vector<Core::FMTconstraint> selectedConstraints;
 
-            if (!params.constraintNames.empty())
+            // faire méthode pour ça et le changer dans RunOptimization
+            for (const std::string& name : params.constraintNames)
             {
-                std::vector<Core::FMTconstraint> allConstraints = simulationModel.getconstraints();
-                std::vector<Core::FMTconstraint> selectedConstraints;
-
-                // faire méthode pour ça et le changer dans RunOptimization
-                for (const std::string& name : params.constraintNames)
+                for (const Core::FMTconstraint& constraint : allConstraints)
                 {
-                    for (const Core::FMTconstraint& constraint : allConstraints)
+                    if (std::string(constraint) == name)
                     {
-                        if (std::string(constraint) == name)
-                        {
-                            selectedConstraints.push_back(constraint);
-                            break;
-                        }
+                        selectedConstraints.push_back(constraint);
+                        break;
                     }
                 }
-
-                simulationModel.setconstraints(selectedConstraints);
             }
 
-            std::vector<Core::FMTtransition> singleTransitions;
-            for (const auto& transition : simulationModel.gettransitions())
+            simulationModel.setconstraints(selectedConstraints);
+        }
+
+        std::vector<Core::FMTtransition> singleTransitions;
+        for (const auto& transition : simulationModel.gettransitions())
+        {
+            singleTransitions.push_back(transition.single());
+        }
+        simulationModel.settransitions(singleTransitions);
+
+        Parser::FMTareaparser areaparser;
+        const std::string ageRasterPath = params.rastersPath + "AGE.tif";
+
+        std::vector<std::string> themeRasterPaths;
+        for (size_t i = 1; i <= simulationModel.getthemes().size(); ++i)
+        {
+            themeRasterPaths.push_back(params.rastersPath + "THEME" + std::to_string(i) + ".tif");
+        }
+
+        Spatial::FMTforest initialForest;
+        if (!params.useStanlock)
+        {
+            initialForest = areaparser.readrasters(
+                simulationModel.getthemes(),
+                themeRasterPaths,
+                ageRasterPath,
+                1,
+                0.0001);
+        }
+        else
+        {
+            const std::string stanlockPath = params.rastersPath + "STANLOCK.tif";
+            initialForest = areaparser.readrasters(
+                simulationModel.getthemes(),
+                themeRasterPaths,
+                ageRasterPath,
+                1,
+                0.0001,
+                stanlockPath);
+        }
+
+        simulationModel.setinitialmapping(initialForest);
+
+        if (schedules.empty())
+        {
+            results.errorMessage = "No schedules provided";
+            return results;
+        }
+
+        if (schedules.back().getperiod() < params.numberOfPeriods)
+        {
+            results.errorMessage = "Dépassement de la période : size " +
+                std::to_string(schedules.size()) + " periode " +
+                std::to_string((schedules.back().getperiod() + 1));
+            return results;
+        }
+
+        simulationModel.setparameter(Models::FMTintmodelparameters::LENGTH, params.numberOfPeriods);
+        simulationModel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, params.greedySearchIterations);
+        simulationModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+        simulationModel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+
+        simulationModel.doplanning(false, schedules);
+
+        std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath + "\\";
+
+        results.infeasibilityMessages = GenerateInfeasibilityReport(simulationModel);
+
+        results.carbonReport = GenerateCarbonReport(
+            simulationModel,
+            params.numberOfPeriods,
+            schedules);
+
+        results.disturbanceFiles = WriteDisturbances(
+            simulationModel,
+            outputDirectory,
+            params.numberOfPeriods,
+            params.growthThemes);
+
+        if (params.generateEvents || params.carbonMode)
+        {
+            results.eventsData = GenerateEventsData(simulationModel);
+
+            results.eventsFilePath = outputDirectory + "events.txt";
+            std::ofstream eventsFile(results.eventsFilePath);
+            if (eventsFile.is_open())
             {
-                singleTransitions.push_back(transition.single());
+                eventsFile << results.eventsData.statistics;
+                eventsFile.close();
             }
-            simulationModel.settransitions(singleTransitions);
+        }
 
-            Parser::FMTareaparser areaparser;
-            const std::string ageRasterPath = params.rastersPath + "AGE.tif";
+        if (!params.outputNames.empty())
+        {
+            results.outputsData = CalculateOutputs(
+                simulationModel,
+                params.outputNames,
+                params.numberOfPeriods);
 
-            std::vector<std::string> themeRasterPaths;
-            for (size_t i = 1; i <= simulationModel.getthemes().size(); ++i)
+            results.scheduleFilePath = WriteSchedule(simulationModel, outputDirectory);
+
+            if (!params.carbonMode)
             {
-                themeRasterPaths.push_back(params.rastersPath + "THEME" + std::to_string(i) + ".tif");
-            }
-
-            Spatial::FMTforest initialForest;
-            if (!params.useStanlock)
-            {
-                initialForest = areaparser.readrasters(
-                    simulationModel.getthemes(),
-                    themeRasterPaths,
-                    ageRasterPath,
-                    1,
-                    0.0001);
+                ExportResults(
+                    simulationModel,
+                    results.outputsData.outputObjects,
+                    params.outputMinPeriod,
+                    params.outputMaxPeriod,
+                    params.outputPath,
+                    params.outputLevel,
+                    params.gdalProvider);
             }
             else
             {
-                const std::string stanlockPath = params.rastersPath + "STANLOCK.tif";
-                initialForest = areaparser.readrasters(
-                    simulationModel.getthemes(),
+                WriteUpdatedForest(
+                    simulationModel,
+                    params.rastersPath,
                     themeRasterPaths,
                     ageRasterPath,
-                    1,
-                    0.0001,
-                    stanlockPath);
-            }
+                    params.rastersPath + "STANLOCK.tif");
 
-            simulationModel.setinitialmapping(initialForest);
-
-            if (schedules.empty())
-            {
-                results.errorMessage = "No schedules provided";
-                return results;
-            }
-
-            if (schedules.back().getperiod() < params.numberOfPeriods)
-            {
-                results.errorMessage = "Dépassement de la période : size " +
-                    std::to_string(schedules.size()) + " periode " +
-                    std::to_string((schedules.back().getperiod() + 1));
-                return results;
-            }
-
-            simulationModel.setparameter(Models::FMTintmodelparameters::LENGTH, params.numberOfPeriods);
-            simulationModel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, params.greedySearchIterations);
-            simulationModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-            simulationModel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-
-            simulationModel.doplanning(false, schedules);
-
-            std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath + "\\";
-
-            results.infeasibilityMessages = GenerateInfeasibilityReport(simulationModel);
-
-            results.carbonReport = GenerateCarbonReport(
-                simulationModel,
-                params.numberOfPeriods,
-                schedules);
-
-            results.disturbanceFiles = WriteDisturbances(
-                simulationModel,
-                outputDirectory,
-                params.numberOfPeriods,
-                params.growthThemes);
-
-            if (params.generateEvents || params.carbonMode)
-            {
-                results.eventsData = GenerateEventsData(simulationModel);
-
-                results.eventsFilePath = outputDirectory + "events.txt";
-                std::ofstream eventsFile(results.eventsFilePath);
-                if (eventsFile.is_open())
+                if (!params.predictorYields.empty())
                 {
-                    eventsFile << results.eventsData.statistics;
-                    eventsFile.close();
-                }
-            }
-
-            if (!params.outputNames.empty())
-            {
-                results.outputsData = CalculateOutputs(
-                    simulationModel,
-                    params.outputNames,
-                    params.numberOfPeriods);
-
-                results.scheduleFilePath = WriteSchedule(simulationModel, outputDirectory);
-
-                if (!params.carbonMode)
-                {
-                    ExportResults(
-                        simulationModel,
-                        results.outputsData.outputObjects,
-                        params.outputMinPeriod,
-                        params.outputMaxPeriod,
-                        params.outputPath,
-                        params.outputLevel,
-                        params.gdalProvider);
-                }
-                else
-                {
-                    WriteUpdatedForest(
+                    results.predictorsData = CalculatePredictors(
                         simulationModel,
                         params.rastersPath,
-                        themeRasterPaths,
-                        ageRasterPath,
-                        params.rastersPath + "STANLOCK.tif");
-
-                    if (!params.predictorYields.empty())
-                    {
-                        results.predictorsData = CalculatePredictors(
-                            simulationModel,
-                            params.rastersPath,
-                            params.numberOfPeriods,
-                            params.predictorYields);
-                    }
-                }
-
-                if (params.generateSpatialOutputs)
-                {
-                    results.spatialOutputFiles = WriteSpatialOutputs(
-                        simulationModel,
-                        results.outputsData.outputObjects,
-                        params.outputMinPeriod,
-                        params.outputMaxPeriod,
-                        outputDirectory);
+                        params.numberOfPeriods,
+                        params.predictorYields);
                 }
             }
 
-            results.success = true;
-        }
-        catch (const std::exception& e)
-        {
-            results.success = false;
-            results.errorMessage = std::string("Exception: ") + e.what();
-            throw;
-        }
-        catch (...)
-        {
-            results.success = false;
-            results.errorMessage = "Unknown error occurred during simulation";
-            throw;
+            if (params.generateSpatialOutputs)
+            {
+                results.spatialOutputFiles = WriteSpatialOutputs(
+                    simulationModel,
+                    results.outputsData.outputObjects,
+                    params.outputMinPeriod,
+                    params.outputMaxPeriod,
+                    outputDirectory);
+            }
         }
 
+        results.success = true;
         return results;
     }
 
