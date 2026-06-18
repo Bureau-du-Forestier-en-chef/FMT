@@ -17,9 +17,6 @@
 #include "FMTexceptionhandlerwarning.h"
 #include "FMTdefaultlogger.h"
 #include "SES.h"
-#include <iostream>
-#include <thread>
-#include <chrono>
 
 namespace Wrapper
 {
