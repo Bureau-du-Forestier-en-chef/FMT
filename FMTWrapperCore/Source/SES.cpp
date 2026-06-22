@@ -246,9 +246,13 @@ namespace FMTWrapperCore
         {
             semodel.LogConstraintsInfeasibilities();
         }
+        catch (std::exception& e)
+        {
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::GenerateInfeasibilityReport", __LINE__, __FILE__);
+        }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::GenerateInfeasibilityReport", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::GenerateInfeasibilityReport", __LINE__, __FILE__);
         }
 
         return messages;
@@ -260,145 +264,129 @@ namespace FMTWrapperCore
     {
         SAResults results;
 
-        try
+        Models::FMTsamodel optimizationModel(baseModel);
+
+        if (!params.constraintNames.empty())
         {
-            Models::FMTsamodel optimizationModel(baseModel);
+            std::vector<Core::FMTconstraint> allConstraints = optimizationModel.getconstraints();
+            std::vector<Core::FMTconstraint> selectedConstraints;
 
-            if (!params.constraintNames.empty())
+            // changer ici pour que ça soit une méthode avec le getname de fixed
+            for (const std::string& name : params.constraintNames)
             {
-                std::vector<Core::FMTconstraint> allConstraints = optimizationModel.getconstraints();
-                std::vector<Core::FMTconstraint> selectedConstraints;
-
-                // changer ici pour que ça soit une méthode avec le getname de fixed
-                for (const std::string& name : params.constraintNames)
+                for (const Core::FMTconstraint& constraint : allConstraints)
                 {
-                    for (const Core::FMTconstraint& constraint : allConstraints)
+                    if (std::string(constraint) == name)
                     {
-                        if (std::string(constraint) == name)
-                        {
-                            selectedConstraints.push_back(constraint);
-                            break;
-                        }
+                        selectedConstraints.push_back(constraint);
+                        break;
                     }
                 }
-                optimizationModel.setconstraints(selectedConstraints);
             }
+            optimizationModel.setconstraints(selectedConstraints);
+        }
 
-            std::vector<Core::FMTtransition> modifiedTransitions;
-            for (const Core::FMTtransition& transition : optimizationModel.gettransitions())
+        std::vector<Core::FMTtransition> modifiedTransitions;
+        for (const Core::FMTtransition& transition : optimizationModel.gettransitions())
+        {
+            modifiedTransitions.push_back(transition.single());
+        }
+        optimizationModel.settransitions(modifiedTransitions);
+
+        Parser::FMTareaparser areaparser;
+        const std::string ageRasterPath = params.rastersPath + "AGE.tif";
+
+        std::vector<std::string> themeRasterPaths;
+        for (size_t i = 1; i <= optimizationModel.getthemes().size(); ++i)
+        {
+            themeRasterPaths.push_back(params.rastersPath + "THEME" + std::to_string(i) + ".tif");
+        }
+
+        Spatial::FMTforest initialForest;
+        if (!params.useStanlock)
+        {
+            initialForest = areaparser.readrasters(
+                optimizationModel.getthemes(),
+                themeRasterPaths,
+                ageRasterPath,
+                1,
+                0.0001);
+        }
+        else
+        {
+            const std::string stanlockPath = params.rastersPath + "STANLOCK.tif";
+            initialForest = areaparser.readrasters(
+                optimizationModel.getthemes(),
+                themeRasterPaths,
+                ageRasterPath,
+                1,
+                0.0001,
+                stanlockPath);
+        }
+
+        optimizationModel.setinitialmapping(initialForest);
+
+        optimizationModel.setparameter(Models::FMTintmodelparameters::LENGTH, params.numberOfPeriods);
+        optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, params.maxMoves);
+        optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, params.maxAcceptedMoves);
+        optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, params.maxCycleMoves);
+
+        optimizationModel.doplanning(true);
+
+        std::string outputDirectory = params.outputPath;
+
+        results.infeasibilityMessages = GenerateInfeasibilityReport(optimizationModel);
+
+        std::vector<int> emptyGrowthThemes;
+        results.disturbanceFiles = WriteDisturbances(
+            optimizationModel,
+            outputDirectory,
+            params.numberOfPeriods,
+            emptyGrowthThemes);
+
+        if (params.generateEvents)
+        {
+            results.eventsData = GenerateEventsData(optimizationModel);
+
+            results.eventsFilePath = outputDirectory + "/events.txt";
+            std::ofstream eventsFile(results.eventsFilePath);
+            if (eventsFile.is_open())
             {
-                modifiedTransitions.push_back(transition.single());
+                eventsFile << results.eventsData.statistics;
+                eventsFile.close();
             }
-            optimizationModel.settransitions(modifiedTransitions);
+        }
 
-            Parser::FMTareaparser areaparser;
-            const std::string ageRasterPath = params.rastersPath + "AGE.tif";
-
-            std::vector<std::string> themeRasterPaths;
-            for (size_t i = 1; i <= optimizationModel.getthemes().size(); ++i)
-            {
-                themeRasterPaths.push_back(params.rastersPath + "THEME" + std::to_string(i) + ".tif");
-            }
-
-            Spatial::FMTforest initialForest;
-            if (!params.useStanlock)
-            {
-                initialForest = areaparser.readrasters(
-                    optimizationModel.getthemes(),
-                    themeRasterPaths,
-                    ageRasterPath,
-                    1,
-                    0.0001);
-            }
-            else
-            {
-                const std::string stanlockPath = params.rastersPath + "STANLOCK.tif";
-                initialForest = areaparser.readrasters(
-                    optimizationModel.getthemes(),
-                    themeRasterPaths,
-                    ageRasterPath,
-                    1,
-                    0.0001,
-                    stanlockPath);
-            }
-
-            optimizationModel.setinitialmapping(initialForest);
-
-            optimizationModel.setparameter(Models::FMTintmodelparameters::LENGTH, params.numberOfPeriods);
-            optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, params.maxMoves);
-            optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, params.maxAcceptedMoves);
-            optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, params.maxCycleMoves);
-
-            optimizationModel.doplanning(true);
-
-            std::string outputDirectory = params.outputPath;
-
-            results.infeasibilityMessages = GenerateInfeasibilityReport(optimizationModel);
-
-            std::vector<int> emptyGrowthThemes;
-            results.disturbanceFiles = WriteDisturbances(
+        if (!params.outputNames.empty())
+        {
+            results.outputsData = CalculateOutputs(
                 optimizationModel,
-                outputDirectory,
-                params.numberOfPeriods,
-                emptyGrowthThemes);
+                params.outputNames,
+                params.numberOfPeriods);
 
-            if (params.generateEvents)
+            results.scheduleFilePath = WriteSchedule(optimizationModel, outputDirectory);
+
+            ExportResults(
+                optimizationModel,
+                results.outputsData.outputObjects,
+                params.outputMinPeriod,
+                params.outputMaxPeriod,
+                params.outputPath,
+                params.outputLevel,
+                params.gdalProvider);
+
+            if (params.generateSpatialOutputs)
             {
-                results.eventsData = GenerateEventsData(optimizationModel);
-
-                results.eventsFilePath = outputDirectory + "/events.txt";
-                std::ofstream eventsFile(results.eventsFilePath);
-                if (eventsFile.is_open())
-                {
-                    eventsFile << results.eventsData.statistics;
-                    eventsFile.close();
-                }
-            }
-
-            if (!params.outputNames.empty())
-            {
-                results.outputsData = CalculateOutputs(
-                    optimizationModel,
-                    params.outputNames,
-                    params.numberOfPeriods);
-
-                results.scheduleFilePath = WriteSchedule(optimizationModel, outputDirectory);
-
-                ExportResults(
+                results.spatialOutputFiles = WriteSpatialOutputs(
                     optimizationModel,
                     results.outputsData.outputObjects,
                     params.outputMinPeriod,
                     params.outputMaxPeriod,
-                    params.outputPath,
-                    params.outputLevel,
-                    params.gdalProvider);
-
-                if (params.generateSpatialOutputs)
-                {
-                    results.spatialOutputFiles = WriteSpatialOutputs(
-                        optimizationModel,
-                        results.outputsData.outputObjects,
-                        params.outputMinPeriod,
-                        params.outputMaxPeriod,
-                        outputDirectory);
-                }
+                    outputDirectory);
             }
-
-            results.success = true;
-        }
-        catch (const std::exception& e)
-        {
-            results.success = false;
-            results.errorMessage = std::string("Exception: ") + e.what();
-            throw;
-        }
-        catch (...)
-        {
-            results.success = false;
-            results.errorMessage = "Unknown error occurred during optimization";
-            throw;
         }
 
+        results.success = true;
         return results;
     }
 
@@ -487,9 +475,13 @@ namespace FMTWrapperCore
                 ++scid;
             }
         }
+        catch (std::exception& e)
+        {
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::GenerateCarbonReport", __LINE__, __FILE__);
+        }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::GenerateCarbonReport", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::GenerateCarbonReport", __LINE__, __FILE__);
         }
 
         return reportData;
@@ -531,6 +523,10 @@ namespace FMTWrapperCore
                 transitionFiles.push_back(fichier);
             }
         }
+        catch (std::exception& e)
+        {
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::WriteDisturbances", __LINE__, __FILE__);
+        }
         catch (...)
         {
             Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteDisturbances", __LINE__, __FILE__);
@@ -550,10 +546,15 @@ namespace FMTWrapperCore
 
             eventsData.statistics = schedule.getpatchstats(actions);
         }
+        catch (std::exception& e)
+        {
+            eventsData.statistics = "";
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::GenerateEventsData", __LINE__, __FILE__);
+        }
         catch (...)
         {
             eventsData.statistics = "";
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::GenerateEventsData", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::GenerateEventsData", __LINE__, __FILE__);
         }
 
         return eventsData;
@@ -594,9 +595,13 @@ namespace FMTWrapperCore
                 outputsData.results.push_back(result);
             }
         }
+        catch (std::exception& e)
+        {
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::CalculateOutputs", __LINE__, __FILE__);
+        }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::CalculateOutputs", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::CalculateOutputs", __LINE__, __FILE__);
         }
 
         return outputsData;
@@ -629,9 +634,13 @@ namespace FMTWrapperCore
                 }
             }
         }
+        catch (std::exception& e)
+        {
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::WriteSpatialOutputs", __LINE__, __FILE__);
+        }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteSpatialOutputs", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::WriteSpatialOutputs", __LINE__, __FILE__);
         }
 
         return rasterFiles;
@@ -682,9 +691,13 @@ namespace FMTWrapperCore
                 }
             }
         }
+        catch (std::exception& e)
+        {
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::CalculatePredictors", __LINE__, __FILE__);
+        }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::CalculatePredictors", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::CalculatePredictors", __LINE__, __FILE__);
         }
 
         return predictorsData;
@@ -705,10 +718,15 @@ namespace FMTWrapperCore
             schedulePath = outputPath + semodel.getname() + "._seq";
             scheduparser.write(schedules, schedulePath);
         }
+        catch (std::exception& e)
+        {
+            schedulePath = "";
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::WriteSchedule", __LINE__, __FILE__);
+        }
         catch (...)
         {
             schedulePath = "";
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteSchedule", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::WriteSchedule", __LINE__, __FILE__);
         }
 
         return schedulePath;
@@ -733,9 +751,13 @@ namespace FMTWrapperCore
                 ageRasterPath,
                 stanlockRasterPath);
         }
+        catch (std::exception& e)
+        {
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::WriteUpdatedForest", __LINE__, __FILE__);
+        }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteUpdatedForest", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::WriteUpdatedForest", __LINE__, __FILE__);
         }
     }
 
@@ -772,9 +794,13 @@ namespace FMTWrapperCore
 
             std::filesystem::remove(csvDir);
         }
+        catch (std::exception& e)
+        {
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::ExportResults", __LINE__, __FILE__);
+        }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::ExportResults", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::ExportResults", __LINE__, __FILE__);
         }
     }
 }

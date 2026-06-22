@@ -17,6 +17,13 @@
 #include "FMTexceptionhandlerwarning.h"
 #include "FMTdefaultlogger.h"
 #include "SES.h"
+#include <fstream>
+
+static void mark(const char* m)
+{
+    std::ofstream d("C:\\Users\\Admlocal\\Documents\\SCRAP\\ses_debug.txt", std::ios::app);
+    d << m << std::endl;
+}
 
 namespace Wrapper
 {
@@ -201,11 +208,16 @@ namespace Wrapper
     {
         try
         {
-            FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-            *logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
+            std::unique_ptr<Logging::FMTlogger> savedLogger;
+            {
+                FMTFormLogger* mainLogger = FMTFormCache::GetInstance()->GetFormLogger();
+                if (mainLogger)
+                {
+                    savedLogger = mainLogger->Clone();
+                }
+            }
 
-            Models::FMTmodel baseModel = FMTFormCache::GetInstance()->getmodel(scenario);
-            const std::string scenarioName = baseModel.getname();
+            const std::string scenarioName = FMTFormCache::GetInstance()->getmodel(scenario).getname();
 
             FMTWrapperCore::SESParameters params = ConvertirParametres(
                 fichierPri, cheminRasters, scenario, contraintes, periodes,
@@ -215,56 +227,22 @@ namespace Wrapper
                 indCarbon, predictoryields, growththemes,
                 scenarioName); 
            
-            Parser::FMTmodelparser modelparser;
             std::vector<std::string> scenariosName;
             scenariosName.push_back(params.scenarioName);
+            Parser::FMTmodelparser modelparser;
             std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenariosName);
             Models::FMTmodel& selectedModel = models[0];
 
-            /*
-			*logger << "primaryFilePath: " + params.primaryFilePath << "\n";
-			*logger << "rastersPath: " + params.rastersPath << "\n";
-			*logger << "outputPath: " + params.outputPath << "\n";
-			*logger << "scenarioName: " + params.scenarioName << "\n";
-			*logger << "numberOfPeriods: " + std::to_string(params.numberOfPeriods) << "\n";
-			*logger << "greedySearchIterations: " + std::to_string(params.greedySearchIterations) << "\n";
-			*logger << "useStanlock: " + std::string(params.useStanlock ? "true" : "false") << "\n";
-			*logger << "outputLevel: " + std::to_string(params.outputLevel) << "\n";
-			*logger << "outputMinPeriod: " + std::to_string(params.outputMinPeriod) << "\n";
-			*logger << "outputMaxPeriod: " + std::to_string(params.outputMaxPeriod) << "\n";
-			*logger << "gdalProvider: " + params.gdalProvider << "\n";
-			*logger << "carbonMode: " + std::string(params.carbonMode ? "true" : "false") << "\n";
-			*logger << "generateEvents: " + std::string(params.generateEvents ? "true" : "false") << "\n";
-			*logger << "generateSpatialOutputs: " + std::string(params.generateSpatialOutputs ? "true" : "false") << "\n";
-			*logger << "constraintNames: " << "\n";
-			for (const std::string& constraint : params.constraintNames)
-			{
-				*logger << "  - " + constraint << "\n";
-			}
-			*logger << "outputNames: " << "\n";
-			for (const std::string& output : params.outputNames)
-			{
-				*logger << "  - " + output << "\n";
-			}
-			*logger << "predictorYields: " << "\n";
-			for (const std::string& yield : params.predictorYields)
-			{
-				*logger << "  - " + yield << "\n";
-			}
-			*logger << "growthThemes: " << "\n";
-			for (const int& theme : params.growthThemes)
-			{
-				*logger << "  - " + std::to_string(theme) << "\n";
-			}
-
-            */
-
-
-            *logger << "FMT -> Traitement pour le scénario : " + scenarioName << "\n";
-
             const std::vector<Core::FMTschedule> schedules = ObtenirSEQ(fichierPri, scenario);
+    
+            if (savedLogger)
+            {
+                selectedModel.passinlogger(savedLogger);
+            }
+            // Re-acquérir le pointeur valide vers le logger restauré
+            FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 
-            *logger << "FMT -> Démarrage de la simulation" << "\n";
+            *logger << "FMT -> Démarrage de la simulation pour le scénario: " + scenarioName << "\n";
 
             FMTWrapperCore::SESResults results =
                 FMTWrapperCore::SES::RunSES(params, selectedModel, schedules);

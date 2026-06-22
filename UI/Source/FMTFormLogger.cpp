@@ -42,10 +42,9 @@ Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
 
 void Wrapper::FMTFormLogger::logtime()
 {
-	if (m_isMainInstance)
-	{
-		Logging::FMTlogger::logtime();
-	}
+	// No-op intentionnel : sendfeedback ne peut pas être appelé depuis un thread natif.
+	// Le fichier log est ouvert une fois dans le constructeur via redirectofile().
+	// Les timestamps sont écrits explicitement via *logger << logstamp
 }
 
 void Wrapper::FMTFormLogger::dokeepprint()

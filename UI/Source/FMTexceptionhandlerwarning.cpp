@@ -48,11 +48,20 @@ void Wrapper::FMTexceptionhandlerwarning::tryfileopener(const std::string& fulle
 	}
 
 
-std::string Wrapper::FMTexceptionhandlerwarning::geterrorstack(std::string text,
-	const std::string& method, const int& line, const std::string& fil)
+std::string Wrapper::FMTexceptionhandlerwarning::geterrorstack(
+	std::string text,
+	const std::string& method, 
+	const int& line, 
+	const std::string& fil)
 {
 	std::string finalstack;
 	Wrapper::FMTFormLogger* ModifLogger = dynamic_cast<Wrapper::FMTFormLogger*>(_logger);
+	if (!ModifLogger)
+	{
+		// Le logger a été remplacé (setdefaultlogger). On ne peut pas capturer via keepprint ;
+		// on renvoie au moins le contexte sans déréférencer un pointeur null.
+		return text + " In Method(" + method + ") At Line(" + std::to_string(line) + ")";
+	}
 	ModifLogger->dokeepprint();
 	try {
 		Exception::FMTexceptionhandler::printexceptions(text, method, line, fil, Core::FMTsection::Empty);
