@@ -156,7 +156,7 @@ namespace FMTWrapperCore
 
         simulationModel.doplanning(false, schedules);
 
-        std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath + "\\";
+        std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath;
 
         results.infeasibilityMessages = GenerateInfeasibilityReport(simulationModel);
 
@@ -402,7 +402,6 @@ namespace FMTWrapperCore
             Models::FMTsemodel localmodel(semodel);
             const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
             const std::vector<Core::FMTschedule> newschedule = semodel.GetSchedules(schedule, false);
-
             size_t scid = 0;
 
             for (int period = 1; period <= numberOfPeriods; ++period)
@@ -422,7 +421,6 @@ namespace FMTWrapperCore
                 double primalinf = 0;
                 double objectivevalue = 0;
                 localmodel.GetSolutionStatus(schedule, objectivevalue, primalinf, true, false);
-
                 periodData.objectiveValue = objectivevalue;
                 periodData.primalInfeasibility = primalinf;
 
@@ -470,7 +468,6 @@ namespace FMTWrapperCore
 
                     periodData.totalRatio = (oldtotal > 0) ? (newtotal / oldtotal) : 0.0;
                 }
-
                 reportData.periods.push_back(periodData);
                 ++scid;
             }
@@ -500,7 +497,6 @@ namespace FMTWrapperCore
             const std::vector<Core::FMTtheme> growthThemes = BuildGrowthThemes(
                 semodel.getthemes(),
                 growthThemeIndices);
-
             const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
             const std::vector<Core::FMTaction> actions = semodel.getactions();
 
@@ -511,7 +507,7 @@ namespace FMTWrapperCore
             {
                 const std::vector<Core::FMTGCBMtransition> transitions =
                     areaparser.writedisturbances(
-                        outputBasePath,
+                        outputBasePath + "\\",
                         schedule,
                         actions,
                         growthThemes,
@@ -543,7 +539,6 @@ namespace FMTWrapperCore
         {
             const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
             const std::vector<Core::FMTaction> actions = semodel.getactions();
-
             eventsData.statistics = schedule.getpatchstats(actions);
         }
         catch (std::exception& e)
@@ -715,7 +710,7 @@ namespace FMTWrapperCore
             const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
             const std::vector<Core::FMTschedule> schedules = semodel.GetSchedules(schedule);
 
-            schedulePath = outputPath + semodel.getname() + "._seq";
+            schedulePath = outputPath + "\\" + semodel.getname() + "._seq";
             scheduparser.write(schedules, schedulePath);
         }
         catch (std::exception& e)

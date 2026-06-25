@@ -17,13 +17,6 @@
 #include "FMTexceptionhandlerwarning.h"
 #include "FMTdefaultlogger.h"
 #include "SES.h"
-#include <fstream>
-
-static void mark(const char* m)
-{
-    std::ofstream d("C:\\Users\\Admlocal\\Documents\\SCRAP\\ses_debug.txt", std::ios::app);
-    d << m << std::endl;
-}
 
 namespace Wrapper
 {
@@ -226,7 +219,7 @@ namespace Wrapper
                 indGenererEvents, indSortiesSpatiales, providerGdal,
                 indCarbon, predictoryields, growththemes,
                 scenarioName); 
-           
+
             std::vector<std::string> scenariosName;
             scenariosName.push_back(params.scenarioName);
             Parser::FMTmodelparser modelparser;
@@ -242,6 +235,10 @@ namespace Wrapper
             // Re-acquérir le pointeur valide vers le logger restauré
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 
+            *logger << "carbonMode: " + std::string(params.carbonMode ? "true" : "false") << "\n";
+            *logger << "generateEvents: " + std::string(params.generateEvents ? "true" : "false") << "\n";
+            *logger << "generateSpatialOutputs: " + std::string(params.generateSpatialOutputs ? "true" : "false") << "\n";
+           
             *logger << "FMT -> Démarrage de la simulation pour le scénario: " + scenarioName << "\n";
 
             FMTWrapperCore::SESResults results =
@@ -262,12 +259,11 @@ namespace Wrapper
 
             EnvoyerResultatsInterface(results, indCarbon);
 
-            *logger << "FMT -> Envoi des résultats à l'interface terminé" << "\n";
-
             return true;
         }
         catch (...)
         {
+            raisefromcatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
             return false;
         }
     }

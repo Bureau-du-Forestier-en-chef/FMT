@@ -13,13 +13,6 @@
 #include "FMTexceptionhandlerwarning.h"
 #include "FMTFormCache.h"
 #include "Tools.h"
-#include <fstream>
-
-static void mark(const char* m)
-{
-	std::ofstream d("C:\\Users\\Admlocal\\Documents\\SCRAP\\ses_debug.txt", std::ios::app);
-	d << m << std::endl;
-}
 
 namespace Wrapper
 {
