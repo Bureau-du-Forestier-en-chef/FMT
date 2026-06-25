@@ -42,9 +42,26 @@ Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
 
 void Wrapper::FMTFormLogger::logtime()
 {
-	// No-op intentionnel : sendfeedback ne peut pas �tre appel� depuis un thread natif.
+	// No-op intentionnel : sendfeedback ne peut pas être appelé depuis un thread natif.
 	// Le fichier log est ouvert une fois dans le constructeur via redirectofile().
-	// Les timestamps sont �crits explicitement via *logger << logstamp
+	// Les timestamps sont écrits explicitement via *logger << logstamp
+}
+
+Wrapper::FMTFormLogger::~FMTFormLogger()
+{
+	// Ferme et lib�re le flux fichier AVANT l'ex�cution du destructeur de base
+	// FMTlogger::~FMTlogger(). Sinon, la répartition virtuelle pendant la destruction
+	// appelle FMTlogger::logtime() (la partie dérivée étant déjà détruite, l'override
+	// no-op n'est plus atteint), ce qui insère une ligne timestamp parasite
+	// "Thread(id) <date>" dans le log à chaque destruction d'un clone du logger.
+	if (m_FileStream)
+	{
+		if (m_FileStream->is_open())
+		{
+			m_FileStream->close();
+		}
+		m_FileStream.reset();
+	}
 }
 
 void Wrapper::FMTFormLogger::dokeepprint()

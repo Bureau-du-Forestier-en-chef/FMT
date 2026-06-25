@@ -23,7 +23,7 @@ namespace Wrapper
 		void logtime() override;
 		FMTFormLogger() = default;
 		FMTFormLogger(const FMTFormLogger& rhs);
-		~FMTFormLogger() = default;
+		~FMTFormLogger();
 		void dokeepprint();
 		void resetkeepprint();
 		std::string getlastprint() const;

@@ -220,11 +220,7 @@ namespace Wrapper
                 indCarbon, predictoryields, growththemes,
                 scenarioName); 
 
-            std::vector<std::string> scenariosName;
-            scenariosName.push_back(params.scenarioName);
-            Parser::FMTmodelparser modelparser;
-            std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenariosName);
-            Models::FMTmodel& selectedModel = models[0];
+            Models::FMTmodel selectedModel = FMTFormCache::GetInstance()->getmodel(scenario);
 
             const std::vector<Core::FMTschedule> schedules = ObtenirSEQ(fichierPri, scenario);
     
@@ -235,10 +231,6 @@ namespace Wrapper
             // Re-acquérir le pointeur valide vers le logger restauré
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 
-            *logger << "carbonMode: " + std::string(params.carbonMode ? "true" : "false") << "\n";
-            *logger << "generateEvents: " + std::string(params.generateEvents ? "true" : "false") << "\n";
-            *logger << "generateSpatialOutputs: " + std::string(params.generateSpatialOutputs ? "true" : "false") << "\n";
-           
             *logger << "FMT -> Démarrage de la simulation pour le scénario: " + scenarioName << "\n";
 
             FMTWrapperCore::SESResults results =

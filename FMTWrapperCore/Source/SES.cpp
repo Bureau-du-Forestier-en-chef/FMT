@@ -156,7 +156,7 @@ namespace FMTWrapperCore
 
         simulationModel.doplanning(false, schedules);
 
-        std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath;
+        std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath + "\\";
 
         results.infeasibilityMessages = GenerateInfeasibilityReport(simulationModel);
 
@@ -507,7 +507,7 @@ namespace FMTWrapperCore
             {
                 const std::vector<Core::FMTGCBMtransition> transitions =
                     areaparser.writedisturbances(
-                        outputBasePath + "\\",
+                        outputBasePath,
                         schedule,
                         actions,
                         growthThemes,
@@ -710,7 +710,7 @@ namespace FMTWrapperCore
             const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
             const std::vector<Core::FMTschedule> schedules = semodel.GetSchedules(schedule);
 
-            schedulePath = outputPath + "\\" + semodel.getname() + "._seq";
+            schedulePath = outputPath + semodel.getname() + "._seq";
             scheduparser.write(schedules, schedulePath);
         }
         catch (std::exception& e)
