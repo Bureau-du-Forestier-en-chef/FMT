@@ -1765,19 +1765,39 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 		const Core::FMTconstants& p_constants) const
 	{
 		try {
-			const boost::regex Constants("(#[^\\s^\\t]*)");
+			// The constant token stops at whitespace, tabs and quotes so that a
+			// quote wrapping the constant is not part of the captured token.
+			const boost::regex Constants("(#[^\\s\\t'\"]*)");
 			boost::smatch matches;
-			std::string::const_iterator start = p_input.begin();
-			std::string::const_iterator end = p_input.end();
-			std::string TargetCopy(p_input);
+			const std::string Source(p_input);
+			std::string::const_iterator start = Source.begin();
+			const std::string::const_iterator end = Source.end();
+			std::string Result;
+			Result.reserve(Source.size());
 			while (boost::regex_search(start, end, matches, Constants))
 				{
 				const std::string TARGET = matches[1].str();
-				const int VALUE = getNum<int>(TARGET, p_constants);
-				boost::replace_all(TargetCopy, TARGET, std::to_string(VALUE));
-				start = matches[0].second;
+				// Keep everything located before the matched constant.
+				Result.append(start, matches[1].first);
+				// Characters wrapping the matched constant, if any.
+				const char BEFORE = (matches[1].first != Source.begin()) ? *(matches[1].first - 1) : '\0';
+				const char AFTER = (matches[1].second != end) ? *(matches[1].second) : '\0';
+				const bool WRAPPED_IN_QUOTES = (BEFORE == '\'' && AFTER == '\'') || (BEFORE == '"' && AFTER == '"');
+				if (WRAPPED_IN_QUOTES)
+					{
+					// A quoted constant such as '#test' or "#test" is left untouched.
+					Result.append(TARGET);
+					}
+				else
+					{
+					const int VALUE = getNum<int>(TARGET, p_constants);
+					Result.append(std::to_string(VALUE));
+					}
+				start = matches[1].second;
 				}
-			TargetCopy.swap(p_input);
+			// Keep the remaining tail of the string.
+			Result.append(start, end);
+			p_input.swap(Result);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("Failed to constants " + std::to_string(m_line) + " in " + m_location,
