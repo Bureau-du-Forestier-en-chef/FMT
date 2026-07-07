@@ -149,21 +149,32 @@ void FMTFormCache::clear()
 	}
 }
 
+void FMTFormCache::buildExceptionHandler()
+	{
+	if (GetExceptionHandler())
+	{
+		FMTexceptionhandlerwarning* old = dynamic_cast<FMTexceptionhandlerwarning*>(GetExceptionHandler());
+		if (old)
+		{
+			old->ResetThread();
+		}
+	}
+
+	std::unique_ptr<Exception::FMTexceptionhandler> handler(new FMTexceptionhandlerwarning(m_maxwarnings));
+	Models::FMTmodel useLessModel;
+	useLessModel.passinexceptionhandler(handler);
+	useLessModel.seterrorstowarnings(m_warnings);
+	useLessModel.setTerminateStack();
+	useLessModel.setAbortStack();
+	}
+
 void FMTFormCache::InitializeExceptionHandler(const int& maxwarnings,const std::vector<Exception::FMTexc>& warnings)
 	{
 	try {
-		if (GetExceptionHandler())
-		{
-			FMTexceptionhandlerwarning* old = dynamic_cast<FMTexceptionhandlerwarning*>(GetExceptionHandler());
-			old->ResetThread();
-		}
-
-		std::unique_ptr<Exception::FMTexceptionhandler> handler(new FMTexceptionhandlerwarning(maxwarnings));
-		Models::FMTmodel useLessModel;
-		useLessModel.passinexceptionhandler(handler);
-		useLessModel.seterrorstowarnings(warnings);
-		useLessModel.setTerminateStack();
-		useLessModel.setAbortStack();
+		m_maxwarnings = maxwarnings;
+		m_warnings = warnings;
+		m_handlerInitialized = true;
+		buildExceptionHandler();
 	}
 	catch (...)
 		{
@@ -171,15 +182,63 @@ void FMTFormCache::InitializeExceptionHandler(const int& maxwarnings,const std::
 		}
 	}
 
+void FMTFormCache::buildLogger()
+	{
+	std::unique_ptr<Logging::FMTlogger> logger(new FMTFormLogger(m_loggerFilename, (logfunc)m_loggerFuncPtr));
+	Models::FMTmodel useLessModel;
+	useLessModel.passinlogger(logger);
+	}
+
 void FMTFormCache::InitializeLogger(const std::string& filename, System::IntPtr intptrptr)
 	{
 	try{
-		std::unique_ptr<Logging::FMTlogger> logger(new FMTFormLogger(filename,(logfunc)(void*)intptrptr));
-		Models::FMTmodel useLessModel;
-		useLessModel.passinlogger(logger);
+		// La LOCATION du log est figee a la premiere initialisation et ne doit
+		// JAMAIS changer durant la run 
+		if (!m_loggerInitialized)
+		{
+			m_loggerFilename = filename;
+			m_loggerInitialized = true;
+		}
+		// on reconstruit le logger sur ce fichier (mode append).
+		// le pointeur de fonction provient d'un delegue manage
+		// (Marshal::GetFunctionPointerForDelegate). A chaque appel le UI recree son
+		// delegue ; sauter la reconstruction laisserait le logger avec l'ANCIEN
+		// funcptr, qui devient pendouillant des que l'ancien delegue est collecte
+		// par le GC -> sendfeedback() appelle un pointeur invalide -> crash silencieux
+		// (access violation non rattrapee par les catch). On refige donc le funcptr.
+		m_loggerFuncPtr = intptrptr.ToPointer();
+		buildLogger();
 	}catch (...)
 		{
 		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::InitializeLogger", __LINE__, __FILE__);
+		}
+	}
+
+const std::string& FMTFormCache::GetLoggerFilename() const
+	{
+	return m_loggerFilename;
+	}
+
+void FMTFormCache::RecoverLoggerAndHandler(System::IntPtr intptrptr)
+	{
+	try{
+		// Apres un crash, le logger et/ou le handler peuvent avoir ete remplaces ou
+		// laisses dans un etat instable. On les reconstruit a partir de la config
+		// figee. Le fichier log est rouvert en mode append (settofile) : le contenu
+		// existant est conserve. On rafraichit le pointeur de fonction avec le
+		// delegue frais fourni (l'ancien peut etre invalide).
+		if (m_loggerInitialized)
+		{
+			m_loggerFuncPtr = intptrptr.ToPointer();
+			buildLogger();
+		}
+		if (m_handlerInitialized)
+		{
+			buildExceptionHandler();
+		}
+	}catch (...)
+		{
+		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::RecoverLoggerAndHandler", __LINE__, __FILE__);
 		}
 	}
 

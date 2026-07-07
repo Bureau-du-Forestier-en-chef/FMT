@@ -11,7 +11,7 @@ namespace Wrapper
 { 
 
 
-void FMTForm::Cache_InitialiserModelParser(
+void FMTForm::SetErrorsToWarnings(
 	System::Collections::Generic::List<int>^ listeWarnings,
 	int maxWarnings)
 {
@@ -32,7 +32,32 @@ void FMTForm::Cache_InitialiserModelParser(
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_InitialiserModelParser", __LINE__, __FILE__);
+		raisefromcatch("", "FMTForm::SetErrorsToWarnings", __LINE__, __FILE__);
+	}
+}
+
+void FMTForm::Cache_InitialiserModelParser(
+	System::Collections::Generic::List<int>^ listeWarnings,
+	int maxWarnings)
+{
+	// Alias retrocompatible : le UI .NET externe appelle encore cette methode.
+	SetErrorsToWarnings(listeWarnings, maxWarnings);
+}
+
+void FMTForm::RecoverFromCrash()
+{
+	try
+	{
+		// Recree un delegue manage frais : apres un crash, l'ancien pointeur de
+		// fonction peut etre invalide. Le logger est ensuite reconstruit sur le
+		// fichier deja fige (mode append), avec un exception handler neuf.
+		managed = gcnew managedFeed(this, &FMTForm::ToFeedBack);
+		unmanaged = System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(managed);
+		FMTFormCache::GetInstance()->RecoverLoggerAndHandler(unmanaged);
+	}
+	catch (...)
+	{
+		raisefromcatch("", "FMTForm::RecoverFromCrash", __LINE__, __FILE__);
 	}
 }
 

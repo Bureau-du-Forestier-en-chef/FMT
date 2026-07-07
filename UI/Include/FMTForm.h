@@ -29,10 +29,20 @@ namespace Wrapper
 			System::String^ scenarioSystem);
 		void Cache_Vider();
 		void Cache_InitialiserModelParser(
-			System::Collections::Generic::List<int>^ listeWarnings, 
+			System::Collections::Generic::List<int>^ listeWarnings,
+			int maxWarnings);
+		// Definit la liste des erreurs a traiter comme de simples warnings, ainsi que
+		// le nombre maximal de warnings avant silence. Remplace conceptuellement
+		// Cache_InitialiserModelParser (qui est conserve comme alias retrocompatible).
+		void SetErrorsToWarnings(
+			System::Collections::Generic::List<int>^ listeWarnings,
 			int maxWarnings);
 		void Cache_AssignerNomLogger(
 			System::String^ nomFichierLogger);
+		// A appeler apres un crash : reconstruit un Logger (rouvert sur le meme fichier,
+		// en append) et un exception handler frais a partir de la configuration figee,
+		// pour que les operations suivantes loggent de nouveau correctement.
+		void RecoverFromCrash();
 		bool Cache_EnleverModel(
 			int indexScenario);
 		System::Collections::Generic::List<System::String^>^ ObtenirListeContraintes(
@@ -162,17 +172,17 @@ namespace Wrapper
 			System::String^ p_scenario_name, 
 			System::String^ p_pri_name);
 		/**
-		* @brief Sépare les actions en utilisant le modèle spécifié.
+		* @brief SÃ©pare les actions en utilisant le modÃ¨le spÃ©cifiÃ©.
 		*
-		* Cette fonction divise les actions basées sur l'index du modèle et les paramètres fournis.
+		* Cette fonction divise les actions basÃ©es sur l'index du modÃ¨le et les paramÃ¨tres fournis.
 		*
-		* @param p_modelIndex Index du modèle à utiliser pour la séparation.
+		* @param p_modelIndex Index du modÃ¨le Ã  utiliser pour la sÃ©paration.
 		* @param p_schedulePri Le path du fichier .pri.
-		* @param p_splitted Liste sur lequel les splits sont effectué ex: {"ACT","AEC"}.
+		* @param p_splitted Liste sur lequel les splits sont effectuÃ© ex: {"ACT","AEC"}.
 		* @param p_splitted_mask Le mask a splitter.
 		* @param p_outputDirPath Le path du dossier sortie.
-		* @param p_scenario_name Nom du scénario.
-		* @return `true` si la séparation a réussi, `false` sinon.
+		* @param p_scenario_name Nom du scÃ©nario.
+		* @return `true` si la sÃ©paration a rÃ©ussi, `false` sinon.
 		*/
 		bool splitActions(
 			const int p_modelIndex, 
@@ -183,33 +193,33 @@ namespace Wrapper
 			System::String^ p_scenario_name, 
 			System::String^ p_pri_name);
 		/**
-		* @brief retourne une listes des noms d'actions du modèle.
+		* @brief retourne une listes des noms d'actions du modÃ¨le.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		* @return une listes des noms d'actions du modèle sinon nullptr
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
+		* @return une listes des noms d'actions du modÃ¨le sinon nullptr
 		*/
 		System::Collections::Generic::List<System::String^>^ getActionsNames(
 			int p_modelIndex);
 		/**
-		* @brief retourne une listes des noms d'actions du modèle.
+		* @brief retourne une listes des noms d'actions du modÃ¨le.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		* @return une listes des noms d'actions du modèle sinon nullptr
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
+		* @return une listes des noms d'actions du modÃ¨le sinon nullptr
 		*/
 		System::Collections::Generic::List<System::String^>^ getAggregates(
 			int p_modelIndex);
 		/**
-		* @brief retourne une listes des noms de yields du modèle.
+		* @brief retourne une listes des noms de yields du modÃ¨le.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		* @return une listes des noms des yields du modèle sinon nullptr
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
+		* @return une listes des noms des yields du modÃ¨le sinon nullptr
 		*/
 		System::Collections::Generic::List<System::String^>^ getYields(
 			int p_modelIndex);
 		/**
 		* @brief retourne un double du yield.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
 		*@param p_yield
 		*@param p_age
 		* @return Un double du yield
@@ -222,7 +232,7 @@ namespace Wrapper
 		/**
 		* @brief retourne l'age max du model.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
 		* @return double
 		*/
 		double getMaxAge(
@@ -230,12 +240,12 @@ namespace Wrapper
 		/**
 		* @brief Build l'action.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
 		*@param p_actionName Le nom de l'action
 		*@param p_targetYield Le targetYield
 		*@param p_schedulePri Le path du fichier .pri
 		*@param p_outputDirPath Le path du dossier de sortie
-		*@param p_scenario_name Le nom du scénario
+		*@param p_scenario_name Le nom du scÃ©nario
 		*@return vrai ou faux
 		*/
 		bool buildAction(
@@ -247,11 +257,11 @@ namespace Wrapper
 			System::String^ p_scenario_name, 
 			System::String^ p_pri_name);
 		/**
-		* @brief Donne tous les attriduts du modèle selon le thème.
+		* @brief Donne tous les attriduts du modÃ¨le selon le thÃ¨me.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		*@param p_themeIndex Index du thème souhaité dans la liste des thème du modèle.
-		*@return Retourne une liste d'attributs du thème.
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
+		*@param p_themeIndex Index du thÃ¨me souhaitÃ© dans la liste des thÃ¨me du modÃ¨le.
+		*@return Retourne une liste d'attributs du thÃ¨me.
 		*/
 		System::Collections::Generic::List<System::String^>^ getAttributes(
 			const int p_modelIndex, 
@@ -259,18 +269,18 @@ namespace Wrapper
 		/**
 		* @brief Dit si le mask est valide.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		*@param p_mask Le mask à valider.
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
+		*@param p_mask Le mask Ã  valider.
 		*@return Retourne true ou false.
 		*/
 		bool validateMask(
 			const int p_modelIndex, 
 			System::String^ p_mask);
 		/**
-		* @brief Retourne tous les masks du modèle utilisé selon les thèmes.
+		* @brief Retourne tous les masks du modÃ¨le utilisÃ© selon les thÃ¨mes.
 		*
-		*@param p_modelIndex Index du modèle à utiliser.
-		*@param p_themes Liste des thèmes à vérifier.
+		*@param p_modelIndex Index du modÃ¨le Ã  utiliser.
+		*@param p_themes Liste des thÃ¨mes Ã  vÃ©rifier.
 		*@return Retourne une liste de masks.
 		*/
 		System::Collections::Generic::List<System::String^>^ getAllMasks(
@@ -292,13 +302,13 @@ namespace Wrapper
 		void raisefromcatch(std::string text, const std::string& method, const int& line, const std::string& fil);
 		std::vector<Core::FMTschedule> ObtenirSEQ(System::String^ nomFichierPri, int indexScenario);
 
-		// Méthode helper pour envoyer les résultats via RetourJson
+		// MÃ©thode helper pour envoyer les rÃ©sultats via RetourJson
 		void EnvoyerResultatsInterface(const FMTWrapperCore::SESResults& results, bool indCarbon);
 
 		// ===================================================================
-		// MÉTHODES SUPPRIMÉES - Logique déplacée dans SES.cpp
+		// MÃ‰THODES SUPPRIMÃ‰ES - Logique dÃ©placÃ©e dans SES.cpp
 		// ===================================================================
-		// Les méthodes suivantes ont été supprimées car leur logique
+		// Les mÃ©thodes suivantes ont Ã©tÃ© supprimÃ©es car leur logique
 		// est maintenant dans FMTWrapperCore::SES :
 		// 
 		// void RapportdeBris(const Models::FMTsemodel& semodel);
@@ -309,7 +319,7 @@ namespace Wrapper
 		// void EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semodel, const std::vector<Core::FMToutput>& outputs, const int& sortiemin, const int& sortiemax, System::String^ localisation);
 		// void EcritureDesPredicteurs(const Models::FMTsemodel& semodel, const std::string& rastpath, const int& periodes, System::Collections::Generic::List<System::String^>^ predictoryields);
 		//
-		// Toute la logique est maintenant orchestrée par SES::RunSES()
+		// Toute la logique est maintenant orchestrÃ©e par SES::RunSES()
 		// ===================================================================
 	};
 }

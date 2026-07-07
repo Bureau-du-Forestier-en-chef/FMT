@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <string>
+#include <fstream>
 #include "FMTconstraint.h"
 #include "FMTmodelparser.h"
 #include "FMToutput.h"
@@ -22,10 +23,38 @@ namespace Wrapper
 	{
 		FMTexceptionhandlerwarning* exhandler = FMTFormCache::GetInstance()->GetFormHandler();
 		const std::string errorstack = exhandler->geterrorstack(text, method, line, fil);
-		// Écrire dans le fichier log
+		// Écrire dans le fichier log. GetFormLogger() peut retourner nullptr si le
+		// logger courant n'est plus un FMTFormLogger (remplace lors d'un crash) : on
+		// ne doit JAMAIS dereferencer null ici, sinon la fonction censee afficher
+		// l'erreur provoque elle-meme un crash silencieux. Fallback : handler libre.
 		FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-		logger->logwithlevel("*************************************************************\n", 0);
-		logger->logwithlevel("FMT - ERROR " + errorstack + "\n", 0);
+		if (logger)
+		{
+			logger->logwithlevel("*************************************************************\n", 0);
+			logger->logwithlevel("FMT - ERROR " + errorstack + "\n", 0);
+		}
+		else
+		{
+			// Dernier recours : ecrire directement dans le fichier log (mode append)
+			// sans passer par l'objet logger, qui peut etre invalide apres un crash.
+			try
+			{
+				const std::string& logfile = FMTFormCache::GetInstance()->GetLoggerFilename();
+				if (!logfile.empty())
+				{
+					std::ofstream out(logfile, std::ios_base::app);
+					if (out.is_open())
+					{
+						out << "*************************************************************\n";
+						out << "FMT - ERROR " << errorstack << "\n";
+					}
+				}
+			}
+			catch (...)
+			{
+				// On a deja l'errorstack ; on le renvoie a l'UI
+			}
+		}
 
 		// Écrire dans l'interface
 		FeedBack("*************************************************************", gcnew System::EventArgs());
@@ -152,7 +181,6 @@ namespace Wrapper
 		return retour;
 
 	}
-
 
 	System::Collections::Generic::List<System::String^>^ FMTForm::ObtenirListeExtentionsSorties()
 	{

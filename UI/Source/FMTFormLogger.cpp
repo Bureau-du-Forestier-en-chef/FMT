@@ -49,7 +49,7 @@ void Wrapper::FMTFormLogger::logtime()
 
 Wrapper::FMTFormLogger::~FMTFormLogger()
 {
-	// Ferme et lib�re le flux fichier AVANT l'ex�cution du destructeur de base
+	// Ferme et libere le flux fichier AVANT l'execution du destructeur de base
 	// FMTlogger::~FMTlogger(). Sinon, la répartition virtuelle pendant la destruction
 	// appelle FMTlogger::logtime() (la partie dérivée étant déjà détruite, l'override
 	// no-op n'est plus atteint), ce qui insère une ligne timestamp parasite
