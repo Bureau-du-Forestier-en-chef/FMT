@@ -20,6 +20,7 @@
 #include <sstream>
 #include <fstream>
 #include <filesystem>
+#include <algorithm>
 
 namespace FMTWrapperCore
 {
@@ -65,6 +66,94 @@ namespace FMTWrapperCore
         return growthThemes;
     }
 
+    std::vector<Core::FMTconstraint> SES::FilterConstraints(
+        const std::vector<Core::FMTconstraint>& allConstraints,
+        const std::vector<std::string>& selectedNames)
+    {
+        std::vector<Core::FMTconstraint> selectedConstraints;
+
+        for (const std::string& name : selectedNames)
+        {
+            for (const Core::FMTconstraint& constraint : allConstraints)
+            {
+                if (std::string(constraint) == name)
+                {
+                    selectedConstraints.push_back(constraint);
+                    break;
+                }
+            }
+        }
+
+        return selectedConstraints;
+    }
+
+    void SES::ApplySingleTransitions(Models::FMTmodel& model)
+    {
+        std::vector<Core::FMTtransition> singleTransitions;
+        for (const Core::FMTtransition& transition : model.gettransitions())
+        {
+            singleTransitions.push_back(transition.single());
+        }
+        model.settransitions(singleTransitions);
+    }
+
+    void SES::PrepareInitialForest(
+        Models::FMTsemodel& model,
+        const std::string& rastersPath,
+        bool useStanlock,
+        std::string& ageRasterPath,
+        std::vector<std::string>& themeRasterPaths)
+    {
+        ageRasterPath = rastersPath + "AGE.tif";
+
+        themeRasterPaths.clear();
+        for (size_t i = 1; i <= model.getthemes().size(); ++i)
+        {
+            themeRasterPaths.push_back(rastersPath + "THEME" + std::to_string(i) + ".tif");
+        }
+
+        Parser::FMTareaparser areaparser;
+        Spatial::FMTforest initialForest;
+        if (!useStanlock)
+        {
+            initialForest = areaparser.readrasters(
+                model.getthemes(),
+                themeRasterPaths,
+                ageRasterPath,
+                1,
+                0.0001);
+        }
+        else
+        {
+            const std::string stanlockPath = rastersPath + "STANLOCK.tif";
+            initialForest = areaparser.readrasters(
+                model.getthemes(),
+                themeRasterPaths,
+                ageRasterPath,
+                1,
+                0.0001,
+                stanlockPath);
+        }
+
+        model.setinitialmapping(initialForest);
+    }
+
+    EventsData SES::WriteEventsFile(
+        const Models::FMTsemodel& semodel,
+        const std::string& eventsFilePath)
+    {
+        EventsData eventsData = GenerateEventsData(semodel);
+
+        std::ofstream eventsFile(eventsFilePath);
+        if (eventsFile.is_open())
+        {
+            eventsFile << eventsData.statistics;
+            eventsFile.close();
+        }
+
+        return eventsData;
+    }
+
     SESResults SES::RunSES(
         const SESParameters& params,
         const Models::FMTmodel& baseModel,
@@ -76,64 +165,20 @@ namespace FMTWrapperCore
 
         if (!params.constraintNames.empty())
         {
-            std::vector<Core::FMTconstraint> allConstraints = simulationModel.getconstraints();
-            std::vector<Core::FMTconstraint> selectedConstraints;
-
-            // faire méthode pour ça et le changer dans RunOptimization
-            for (const std::string& name : params.constraintNames)
-            {
-                for (const Core::FMTconstraint& constraint : allConstraints)
-                {
-                    if (std::string(constraint) == name)
-                    {
-                        selectedConstraints.push_back(constraint);
-                        break;
-                    }
-                }
-            }
-
-            simulationModel.setconstraints(selectedConstraints);
+            simulationModel.setconstraints(
+                FilterConstraints(simulationModel.getconstraints(), params.constraintNames));
         }
 
-        std::vector<Core::FMTtransition> singleTransitions;
-        for (const auto& transition : simulationModel.gettransitions())
-        {
-            singleTransitions.push_back(transition.single());
-        }
-        simulationModel.settransitions(singleTransitions);
+        ApplySingleTransitions(simulationModel);
 
-        Parser::FMTareaparser areaparser;
-        const std::string ageRasterPath = params.rastersPath + "AGE.tif";
-
+        std::string ageRasterPath;
         std::vector<std::string> themeRasterPaths;
-        for (size_t i = 1; i <= simulationModel.getthemes().size(); ++i)
-        {
-            themeRasterPaths.push_back(params.rastersPath + "THEME" + std::to_string(i) + ".tif");
-        }
-
-        Spatial::FMTforest initialForest;
-        if (!params.useStanlock)
-        {
-            initialForest = areaparser.readrasters(
-                simulationModel.getthemes(),
-                themeRasterPaths,
-                ageRasterPath,
-                1,
-                0.0001);
-        }
-        else
-        {
-            const std::string stanlockPath = params.rastersPath + "STANLOCK.tif";
-            initialForest = areaparser.readrasters(
-                simulationModel.getthemes(),
-                themeRasterPaths,
-                ageRasterPath,
-                1,
-                0.0001,
-                stanlockPath);
-        }
-
-        simulationModel.setinitialmapping(initialForest);
+        PrepareInitialForest(
+            simulationModel,
+            params.rastersPath,
+            params.useStanlock,
+            ageRasterPath,
+            themeRasterPaths);
 
         if (schedules.empty())
         {
@@ -173,15 +218,8 @@ namespace FMTWrapperCore
 
         if (params.generateEvents || params.carbonMode)
         {
-            results.eventsData = GenerateEventsData(simulationModel);
-
             results.eventsFilePath = outputDirectory + "events.txt";
-            std::ofstream eventsFile(results.eventsFilePath);
-            if (eventsFile.is_open())
-            {
-                eventsFile << results.eventsData.statistics;
-                eventsFile.close();
-            }
+            results.eventsData = WriteEventsFile(simulationModel, results.eventsFilePath);
         }
 
         if (!params.outputNames.empty())
@@ -244,7 +282,45 @@ namespace FMTWrapperCore
 
         try
         {
+            // Journalise le rapport (via le logger du modèle) puis reconstruit
+            // les mêmes messages pour les retourner à l'appelant.
             semodel.LogConstraintsInfeasibilities();
+
+            const std::vector<Core::FMTconstraint> constraints = semodel.getconstraints();
+            double brokenup = 0;
+            double total = 0;
+
+            // L'indice 0 correspond à l'objectif : on commence à 1 comme dans
+            // FMTsemodel::LogConstraintsInfeasibilities().
+            for (size_t cid = 1; cid < constraints.size(); ++cid)
+            {
+                double value = semodel.GetConstraintEvaluation(cid);
+                if (value > 0)
+                {
+                    const Core::FMTconstraint& constraint = constraints.at(cid);
+                    if (constraint.isgoal())
+                    {
+                        double goalValue = 0;
+                        std::string goalName;
+                        constraint.getgoal(goalName, goalValue);
+                        if (goalName == "_WEIGHT")
+                        {
+                            value /= goalValue;
+                        }
+                    }
+
+                    std::string constraintname = std::string(constraint);
+                    std::replace(constraintname.begin(), constraintname.end(), '\n', ' ');
+                    constraintname += ("(" + std::to_string(static_cast<int>(value)) + ")");
+                    messages.push_back(constraintname);
+                    ++brokenup;
+                }
+                ++total;
+            }
+
+            const double ratio = (brokenup > 0) ? (brokenup / total) * 100 : 0;
+            messages.push_back("Percentage of infeasible constraints " +
+                std::to_string(static_cast<int>(ratio)) + " %");
         }
         catch (std::exception& e)
         {
@@ -268,63 +344,20 @@ namespace FMTWrapperCore
 
         if (!params.constraintNames.empty())
         {
-            std::vector<Core::FMTconstraint> allConstraints = optimizationModel.getconstraints();
-            std::vector<Core::FMTconstraint> selectedConstraints;
-
-            // changer ici pour que ça soit une méthode avec le getname de fixed
-            for (const std::string& name : params.constraintNames)
-            {
-                for (const Core::FMTconstraint& constraint : allConstraints)
-                {
-                    if (std::string(constraint) == name)
-                    {
-                        selectedConstraints.push_back(constraint);
-                        break;
-                    }
-                }
-            }
-            optimizationModel.setconstraints(selectedConstraints);
+            optimizationModel.setconstraints(
+                FilterConstraints(optimizationModel.getconstraints(), params.constraintNames));
         }
 
-        std::vector<Core::FMTtransition> modifiedTransitions;
-        for (const Core::FMTtransition& transition : optimizationModel.gettransitions())
-        {
-            modifiedTransitions.push_back(transition.single());
-        }
-        optimizationModel.settransitions(modifiedTransitions);
+        ApplySingleTransitions(optimizationModel);
 
-        Parser::FMTareaparser areaparser;
-        const std::string ageRasterPath = params.rastersPath + "AGE.tif";
-
+        std::string ageRasterPath;
         std::vector<std::string> themeRasterPaths;
-        for (size_t i = 1; i <= optimizationModel.getthemes().size(); ++i)
-        {
-            themeRasterPaths.push_back(params.rastersPath + "THEME" + std::to_string(i) + ".tif");
-        }
-
-        Spatial::FMTforest initialForest;
-        if (!params.useStanlock)
-        {
-            initialForest = areaparser.readrasters(
-                optimizationModel.getthemes(),
-                themeRasterPaths,
-                ageRasterPath,
-                1,
-                0.0001);
-        }
-        else
-        {
-            const std::string stanlockPath = params.rastersPath + "STANLOCK.tif";
-            initialForest = areaparser.readrasters(
-                optimizationModel.getthemes(),
-                themeRasterPaths,
-                ageRasterPath,
-                1,
-                0.0001,
-                stanlockPath);
-        }
-
-        optimizationModel.setinitialmapping(initialForest);
+        PrepareInitialForest(
+            optimizationModel,
+            params.rastersPath,
+            params.useStanlock,
+            ageRasterPath,
+            themeRasterPaths);
 
         optimizationModel.setparameter(Models::FMTintmodelparameters::LENGTH, params.numberOfPeriods);
         optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, params.maxMoves);
@@ -346,15 +379,8 @@ namespace FMTWrapperCore
 
         if (params.generateEvents)
         {
-            results.eventsData = GenerateEventsData(optimizationModel);
-
             results.eventsFilePath = outputDirectory + "/events.txt";
-            std::ofstream eventsFile(results.eventsFilePath);
-            if (eventsFile.is_open())
-            {
-                eventsFile << results.eventsData.statistics;
-                eventsFile.close();
-            }
+            results.eventsData = WriteEventsFile(optimizationModel, results.eventsFilePath);
         }
 
         if (!params.outputNames.empty())

@@ -217,10 +217,64 @@ namespace FMTWrapperCore
             const SAParameters& params,
             const Models::FMTmodel& baseModel);
 
+    private:
+        /**
+         * @brief Filtre les contraintes selon les noms spécifiés
+         * @param allConstraints Toutes les contraintes du modèle
+         * @param selectedNames Noms des contraintes sélectionnées
+         * @return Vecteur des contraintes filtrées
+         */
+        static std::vector<Core::FMTconstraint> FilterConstraints(
+            const std::vector<Core::FMTconstraint>& allConstraints,
+            const std::vector<std::string>& selectedNames);
+
+        /**
+         * @brief Filtre les outputs selon les noms spécifiés
+         * @param allOutputs Tous les outputs du modèle
+         * @param selectedNames Noms des outputs sélectionnés
+         * @return Vecteur des outputs filtrés
+         */
+        static std::vector<Core::FMToutput> FilterOutputs(
+            const std::vector<Core::FMToutput>& allOutputs,
+            const std::vector<std::string>& selectedNames);
+
+        /**
+         * @brief Construit les thèmes de croissance à partir des indices
+         * @param allThemes Tous les thèmes du modèle
+         * @param themeIndices Indices des thèmes (1-based)
+         * @return Vecteur des thèmes sélectionnés
+         */
+        static std::vector<Core::FMTtheme> BuildGrowthThemes(
+            const std::vector<Core::FMTtheme>& allThemes,
+            const std::vector<int>& themeIndices);
+
+        /**
+         * @brief Convertit toutes les transitions du modèle en transitions "single"
+         * @param model Le modèle dont les transitions sont modifiées en place
+         */
+        static void ApplySingleTransitions(Models::FMTmodel& model);
+
+        /**
+         * @brief Construit les chemins des rasters, lit la forêt initiale et
+         *        l'assigne au modèle.
+         * @param model Le modèle SES qui reçoit la forêt initiale
+         * @param rastersPath Chemin de base des rasters
+         * @param useStanlock true pour utiliser le raster STANLOCK
+         * @param[out] ageRasterPath Chemin du raster d'âge construit
+         * @param[out] themeRasterPaths Chemins des rasters de thèmes construits
+         */
+        static void PrepareInitialForest(
+            Models::FMTsemodel& model,
+            const std::string& rastersPath,
+            bool useStanlock,
+            std::string& ageRasterPath,
+            std::vector<std::string>& themeRasterPaths);
+
         /**
          * @brief Génère le rapport des contraintes infaisables
          * @param semodel Le modèle SES à analyser
-         * @return Vecteur de messages d'infaisabilité
+         * @return Vecteur de messages d'infaisabilité (un par contrainte brisée,
+         *         suivi du pourcentage global de contraintes infaisables)
          */
         static std::vector<std::string> GenerateInfeasibilityReport(const Models::FMTsemodel& semodel);
 
@@ -256,6 +310,16 @@ namespace FMTWrapperCore
          * @return Structure contenant les statistiques d'événements
          */
         static EventsData GenerateEventsData(const Models::FMTsemodel& semodel);
+
+        /**
+         * @brief Génère les données d'événements et les écrit dans un fichier
+         * @param semodel Le modèle SES
+         * @param eventsFilePath Chemin complet du fichier d'événements à écrire
+         * @return Structure contenant les statistiques d'événements
+         */
+        static EventsData WriteEventsFile(
+            const Models::FMTsemodel& semodel,
+            const std::string& eventsFilePath);
 
         /**
          * @brief Calcule les outputs pour toutes les périodes
@@ -342,27 +406,6 @@ namespace FMTWrapperCore
             const std::string& outputPath,
             const int outputLevel,
             const std::string& gdalProvider);
-
-    private:
-        /**
-         * @brief Filtre les outputs selon les noms spécifiés
-         * @param allOutputs Tous les outputs du modèle
-         * @param selectedNames Noms des outputs sélectionnés
-         * @return Vecteur des outputs filtrés
-         */
-        static std::vector<Core::FMToutput> FilterOutputs(
-            const std::vector<Core::FMToutput>& allOutputs,
-            const std::vector<std::string>& selectedNames);
-
-        /**
-         * @brief Construit les thèmes de croissance à partir des indices
-         * @param allThemes Tous les thèmes du modèle
-         * @param themeIndices Indices des thèmes (1-based)
-         * @return Vecteur des thèmes sélectionnés
-         */
-        static std::vector<Core::FMTtheme> BuildGrowthThemes(
-            const std::vector<Core::FMTtheme>& allThemes,
-            const std::vector<int>& themeIndices);
     };
 }
 
