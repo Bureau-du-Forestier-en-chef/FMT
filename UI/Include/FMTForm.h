@@ -284,10 +284,23 @@ namespace Wrapper
 		*@return Retourne une liste de masks.
 		*/
 		System::Collections::Generic::List<System::String^>^ getAllMasks(
-			const int p_modelIndex, 
+			const int p_modelIndex,
 			const int p_periods,
-			System::Collections::Generic::List<int>^ p_themesNumber, 
+			System::Collections::Generic::List<int>^ p_themesNumber,
 			System::String^ cheminRasters);
+		/**
+		* @brief �crit sur le disque tous les mod�les pr�sents dans la cache.
+		*
+		* Parcourt la cache et �crit chaque mod�le � la m�me localisation .pri via
+		* FMTmodelparser::writetoproject : le 1er mod�le devient la base (ROOT) du
+		* projet, les suivants sont �crits comme sc�narios dans
+		* Scenarios/<nom_du_model>/. Chaque mod�le doit donc porter un nom distinct.
+		*
+		*@param p_primaryLocation Le path du fichier .pri de destination.
+		*@return `true` si l'�criture a r�ussi, `false` sinon.
+		*/
+		bool writetoprojectfromcache(
+			System::String^ p_primaryLocation);
 
 	private:
 		void InscrireLigneFichierTexte(System::String^ nomFichier, System::String^ message, bool indicateurFeedback, bool nouveaufichier);

@@ -544,4 +544,29 @@ namespace Wrapper
 		}
 		return result;
 	}
+
+	bool FMTForm::writetoprojectfromcache(System::String^ p_primaryLocation)
+	{
+		bool passed = true;
+		try
+		{
+			if (FMTFormCache::GetInstance()->empty())
+			{
+				throw std::out_of_range("Empty cache");
+			}
+			const std::string PRIMARY_LOCATION = msclr::interop::marshal_as<std::string>(p_primaryLocation);
+			// Le 1er model �crit devient la base (ROOT); les suivants sont �crits
+			// comme sc�narios dans Scenarios/<nom_du_model>/ par writetoproject.
+			for (size_t index = 0; index < FMTFormCache::GetInstance()->size(); ++index)
+			{
+				FMTWrapperCore::Tools::writetoproject(FMTFormCache::GetInstance()->getmodel(static_cast<int>(index)), PRIMARY_LOCATION);
+			}
+		}
+		catch (...)
+		{
+			raisefromcatch("", "FMTForm::writetoprojectfromcache", __LINE__, __FILE__);
+			passed = false;
+		}
+		return passed;
+	}
 }

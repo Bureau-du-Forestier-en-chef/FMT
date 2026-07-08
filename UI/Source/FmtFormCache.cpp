@@ -252,4 +252,9 @@ bool FMTFormCache::empty() const
 	return m_Models.empty();
 	}
 
+size_t FMTFormCache::size() const
+	{
+	return m_Models.size();
+	}
+
 }
