@@ -143,6 +143,20 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	}
 	return masks;
 }
+void FMTWrapperCore::Tools::writetoproject(const Models::FMTmodel& p_model, const std::string& p_primaryLocation)
+{
+	try
+	{
+		Parser::FMTmodelparser ModelParser;
+		ModelParser.writetoproject(p_primaryLocation, p_model);
+	}
+	catch (...)
+	{
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
+		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::writetoproject", __LINE__, __FILE__);
+	}
+}
+
 std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath)
 {
 	std::vector<std::string> themesrast;

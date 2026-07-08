@@ -72,6 +72,14 @@ namespace FMTWrapperCore
 		*/
 		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath);
 
+		/**
+		* @brief �crit un model sur le disque en appelant FMTmodelparser::writetoproject.
+		*
+		*@param p_model Le mod�le � �crire sur le disque.
+		*@param p_primaryLocation Le path du fichier .pri de destination.
+		*/
+		static void writetoproject(const Models::FMTmodel& p_model, const std::string& p_primaryLocation);
+
 	private:
 		/**
 		* @brief Retourne un vecteur de FMTactualdevelopment selon le raster d'aire.

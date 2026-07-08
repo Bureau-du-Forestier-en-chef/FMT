@@ -510,19 +510,22 @@ namespace Wrapper
 		return result;
 	}
 
-	bool FMTForm::writetoprojectfromcache(const int p_modelIndex, System::String^ p_primaryLocation)
+	bool FMTForm::writetoprojectfromcache(System::String^ p_primaryLocation)
 	{
 		bool passed = true;
 		try
 		{
 			if (FMTFormCache::GetInstance()->empty())
 			{
-				throw std::out_of_range("Invalid model index");
+				throw std::out_of_range("Empty cache");
 			}
-			Parser::FMTmodelparser ModelParser;
 			const std::string PRIMARY_LOCATION = msclr::interop::marshal_as<std::string>(p_primaryLocation);
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getmodel(p_modelIndex);
-			ModelParser.writetoproject(PRIMARY_LOCATION, MODEL);
+			// Le 1er model �crit devient la base (ROOT); les suivants sont �crits
+			// comme sc�narios dans Scenarios/<nom_du_model>/ par writetoproject.
+			for (size_t index = 0; index < FMTFormCache::GetInstance()->size(); ++index)
+			{
+				FMTWrapperCore::Tools::writetoproject(FMTFormCache::GetInstance()->getmodel(static_cast<int>(index)), PRIMARY_LOCATION);
+			}
 		}
 		catch (...)
 		{

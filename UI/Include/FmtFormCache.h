@@ -30,6 +30,7 @@ namespace Wrapper
 			FMTFormLogger* GetFormLogger();
 			static FMTFormCache* GetInstance();
 			bool empty() const;
+			size_t size() const;
 			void push_back(const Models::FMTmodel& model);
 			void erase(const int& index);
 			void clear();

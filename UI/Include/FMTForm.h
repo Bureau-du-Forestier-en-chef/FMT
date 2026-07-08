@@ -279,17 +279,17 @@ namespace Wrapper
 			System::Collections::Generic::List<int>^ p_themesNumber,
 			System::String^ cheminRasters);
 		/**
-		* @brief �crit sur le disque un mod�le pr�sent dans la cache.
+		* @brief �crit sur le disque tous les mod�les pr�sents dans la cache.
 		*
-		* R�cup�re le mod�le � l'index sp�cifi� dans la cache et l'�crit sur le
-		* disque en appelant FMTmodelparser::writetoproject.
+		* Parcourt la cache et �crit chaque mod�le � la m�me localisation .pri via
+		* FMTmodelparser::writetoproject : le 1er mod�le devient la base (ROOT) du
+		* projet, les suivants sont �crits comme sc�narios dans
+		* Scenarios/<nom_du_model>/. Chaque mod�le doit donc porter un nom distinct.
 		*
-		*@param p_modelIndex Index du mod�le � utiliser dans la cache.
 		*@param p_primaryLocation Le path du fichier .pri de destination.
 		*@return `true` si l'�criture a r�ussi, `false` sinon.
 		*/
 		bool writetoprojectfromcache(
-			const int p_modelIndex,
 			System::String^ p_primaryLocation);
 
 	private:
