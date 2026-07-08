@@ -192,20 +192,7 @@ void FMTFormCache::buildLogger()
 void FMTFormCache::InitializeLogger(const std::string& filename, System::IntPtr intptrptr)
 	{
 	try{
-		// La LOCATION du log est figee a la premiere initialisation et ne doit
-		// JAMAIS changer durant la run 
-		if (!m_loggerInitialized)
-		{
-			m_loggerFilename = filename;
-			m_loggerInitialized = true;
-		}
-		// on reconstruit le logger sur ce fichier (mode append).
-		// le pointeur de fonction provient d'un delegue manage
-		// (Marshal::GetFunctionPointerForDelegate). A chaque appel le UI recree son
-		// delegue ; sauter la reconstruction laisserait le logger avec l'ANCIEN
-		// funcptr, qui devient pendouillant des que l'ancien delegue est collecte
-		// par le GC -> sendfeedback() appelle un pointeur invalide -> crash silencieux
-		// (access violation non rattrapee par les catch). On refige donc le funcptr.
+		m_loggerFilename = filename;
 		m_loggerFuncPtr = intptrptr.ToPointer();
 		buildLogger();
 	}catch (...)
