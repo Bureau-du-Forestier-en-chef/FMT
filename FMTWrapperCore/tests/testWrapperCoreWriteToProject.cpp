@@ -54,27 +54,23 @@ int main(int argc, char* argv[])
 	Models::FMTmodel scenarioModelB = BASE_MODEL;
 	scenarioModelB.setname(SCENARIO_B);
 
-	// L'ordre compte : le 1er model �crit devient la base (ROOT) du projet.
 	std::vector<Models::FMTmodel> models;
 	models.push_back(BASE_MODEL);
 	models.push_back(scenarioModelA);
 	models.push_back(scenarioModelB);
 
-	// On s'assure que le dossier de sortie existe (writetoproject exige un dossier valide)
 	if (!boost::filesystem::is_directory(output_directory))
 	{
 		boost::filesystem::create_directories(output_directory);
 	}
 	const boost::filesystem::path OUTPUT_PRI = boost::filesystem::path(output_directory) / boost::filesystem::path("writetoproject_test.pri");
 
-	// On �crit chaque model sur le disque via la fonction test�e, comme le fait
 	// FMTForm::writetoprojectfromcache en bouclant sur la cache.
 	for (const Models::FMTmodel& MODEL : models)
 	{
 		FMTWrapperCore::Tools::writetoproject(MODEL, OUTPUT_PRI.string());
 	}
 
-	// 1) On v�rifie que le projet de base (ROOT) et ses sections principales existent
 	std::vector<std::string> extensions = { ".pri", ".lan", ".are", ".yld", ".act", ".trn" };
 	for (const std::string& EXT : extensions)
 	{
@@ -85,7 +81,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	// 2) On v�rifie que chaque model suivant a bien �t� �crit dans son propre dossier de sc�nario
 	const boost::filesystem::path SCENARIOS_DIR = OUTPUT_PRI.parent_path() / boost::filesystem::path("Scenarios");
 	for (const std::string& SCENARIO : { SCENARIO_A, SCENARIO_B })
 	{
