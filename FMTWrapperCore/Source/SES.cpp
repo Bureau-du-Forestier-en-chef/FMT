@@ -774,11 +774,11 @@ namespace FMTWrapperCore
                 outputs,
                 minPeriod,
                 maxPeriod,
-                outputPath + "csv",
+                outputPath,
                 static_cast<Core::FMToutputlevel>(outputLevel),
                 gdalProvider);
 
-            std::filesystem::path csvDir = outputPath + "csv";
+            std::filesystem::path csvDir = outputPath + gdalProvider;
 
             for (const auto& entry : std::filesystem::directory_iterator(csvDir)) {
                 if (entry.is_regular_file()) {
