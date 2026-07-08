@@ -52,6 +52,22 @@ namespace Testing
 						}
 					std::cout << "UnitTestFMTParser::testQuotedConstantsAreNotConverted passed" << std::endl;
 				}
+			void testConstantsWithPunctuationDelimiters()
+				{
+					Core::FMTconstants constants;
+					constants.set("TEST1", std::vector<double>(1, 1.0));
+					constants.set("TEST2", std::vector<double>(1, 2.0));
+					const std::string TEST_STRING(",#TEST1, #TEST2) (#TEST1)");
+					const std::string VALID_STRING(",1, 2) (1)");
+					const std::string TEST_RESULT = m_Parser._ProcessConstants(TEST_STRING, constants);
+					if (TEST_RESULT != VALID_STRING)
+						{
+						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+								"Constant delimited by punctuation should be converted",
+							"UnitTestFMTParser::testConstantsWithPunctuationDelimiters", __LINE__, __FILE__);
+						}
+					std::cout << "UnitTestFMTParser::testConstantsWithPunctuationDelimiters passed" << std::endl;
+				}
 		private:
 			Parser::FMTparser m_Parser;
 
@@ -67,6 +83,7 @@ int main()
 	Testing::UnitTestFMTParser test;
 	test.testStringToConstants();
 	test.testQuotedConstantsAreNotConverted();
+	test.testConstantsWithPunctuationDelimiters();
 	return 0;
 }
 

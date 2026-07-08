@@ -1765,9 +1765,10 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 		const Core::FMTconstants& p_constants) const
 	{
 		try {
-			// The constant token stops at whitespace, tabs and quotes so that a
-			// quote wrapping the constant is not part of the captured token.
-			const boost::regex Constants("(#[^\\s\\t'\"]*)");
+			// The constant token stops at whitespace, tabs, quotes, commas and
+			// parentheses so that a delimiter surrounding the constant (a quote or
+			// punctuation such as ',' '(' ')') is not part of the captured token.
+			const boost::regex Constants("(#[^\\s\\t'\"(),]*)");
 			boost::smatch matches;
 			const std::string Source(p_input);
 			std::string::const_iterator start = Source.begin();
@@ -1777,15 +1778,12 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 			while (boost::regex_search(start, end, matches, Constants))
 				{
 				const std::string TARGET = matches[1].str();
-				// Keep everything located before the matched constant.
 				Result.append(start, matches[1].first);
-				// Characters wrapping the matched constant, if any.
 				const char BEFORE = (matches[1].first != Source.begin()) ? *(matches[1].first - 1) : '\0';
 				const char AFTER = (matches[1].second != end) ? *(matches[1].second) : '\0';
 				const bool WRAPPED_IN_QUOTES = (BEFORE == '\'' && AFTER == '\'') || (BEFORE == '"' && AFTER == '"');
 				if (WRAPPED_IN_QUOTES)
 					{
-					// A quoted constant such as '#test' or "#test" is left untouched.
 					Result.append(TARGET);
 					}
 				else
@@ -1795,7 +1793,6 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 					}
 				start = matches[1].second;
 				}
-			// Keep the remaining tail of the string.
 			Result.append(start, end);
 			p_input.swap(Result);
 		}catch (...)
