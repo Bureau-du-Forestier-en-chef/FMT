@@ -107,14 +107,14 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getMaskTran(const std:
 			const std::string strlock = kmatch[4];
 			lock = getNum<int>(strlock, constants);
 			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
-			trans.addbounds(Core::FMTlockbounds(Core::FMTsection::Transition, Core::FMTkwor::Target, lock, lock));
+			trans.addBounds(Core::FMTlockbounds(Core::FMTsection::Transition, Core::FMTkwor::Target, lock, lock));
 		}
 		if (boost::regex_search(rest, kmatch, FMTtransitionparser::rxage))
 		{
 			std::string strage = kmatch[4];
 			age = getNum<int>(strage, constants);
 			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
-			trans.addbounds(Core::FMTagebounds(Core::FMTsection::Transition, Core::FMTkwor::Target, age, age));
+			trans.addBounds(Core::FMTagebounds(Core::FMTsection::Transition, Core::FMTkwor::Target, age, age));
 		}
 		if (boost::regex_search(rest, kmatch, FMTtransitionparser::rxreplace))
 		{
@@ -166,7 +166,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getMaskTran(const std:
 				constexpr double upperbound = std::numeric_limits<double>::max();
 				const double lowerbound = getNum<double>(strvalue, constants);
 				isYld(ylds, yld, Core::FMTsection::Transition);
-				trans.addbounds(Core::FMTyldbounds(Core::FMTsection::Transition, Core::FMTkwor::Target, yld, upperbound, lowerbound));
+				trans.addBounds(Core::FMTyldbounds(Core::FMTsection::Transition, Core::FMTkwor::Target, yld, upperbound, lowerbound));
 			}
 		}
 

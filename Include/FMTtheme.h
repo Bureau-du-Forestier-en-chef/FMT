@@ -222,7 +222,7 @@ class FMTEXPORT FMTtheme : public FMTobject
 		}
 		// DocString: FMTtheme::presolve
 		/**
-		The function presolve the FMTtheme so it removes non used attributes base on the basemask and fill up the
+		The function presolve the FMTtheme so it removes non used attributes base on the baseMask and fill up the
 		selected mask we the selected attribute is the presolved FMTtheme is not empty and size > 1 then
 		it gets an newid and a newstart and increment both.
 		*/

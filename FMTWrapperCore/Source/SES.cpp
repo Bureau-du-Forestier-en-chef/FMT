@@ -427,7 +427,7 @@ namespace FMTWrapperCore
         {
             Models::FMTsemodel localmodel(semodel);
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTschedule> newschedule = semodel.getSchedules(schedule, false);
+            const std::vector<Core::FMTschedule> newSchedule = semodel.getSchedules(schedule, false);
             size_t scid = 0;
 
             for (int period = 1; period <= numberOfPeriods; ++period)
@@ -464,7 +464,7 @@ namespace FMTWrapperCore
                 }
 
                 size_t newloc = 0;
-                for (const Core::FMTschedule& schedule : newschedule)
+                for (const Core::FMTschedule& schedule : newSchedule)
                 {
                     if (schedule.getperiod() == period)
                     {
@@ -473,16 +473,16 @@ namespace FMTWrapperCore
                     ++newloc;
                 }
 
-                if (scid < newschedule.size() && scid < schedules.size())
+                if (scid < newSchedule.size() && scid < schedules.size())
                 {
                     for (const auto& data : schedules.at(oriloc))
                     {
                         const double basearea = schedules.at(oriloc).actionArea(data.first);
                         double newarea = 0;
 
-                        if (newschedule.at(newloc).find(data.first) != newschedule.at(newloc).end())
+                        if (newSchedule.at(newloc).find(data.first) != newSchedule.at(newloc).end())
                         {
-                            newarea = newschedule.at(newloc).actionArea(data.first);
+                            newarea = newSchedule.at(newloc).actionArea(data.first);
                         }
 
                         oldtotal += basearea;

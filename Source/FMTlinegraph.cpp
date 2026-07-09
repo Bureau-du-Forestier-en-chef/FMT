@@ -83,7 +83,7 @@ namespace Graph
 			developments.back() = FMTvertex_pair(developments.back().first, vertex_iterator);
 			developments.push_back(FMTvertex_pair(firstiterator, vertex_iterator_end));
 			//developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
-			rebasecache();
+			rebaseCache();
 			if (activessize > 1)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than one active at the begining of the period", "FMTlinegraph::newperiod()", __LINE__, __FILE__);
@@ -104,10 +104,10 @@ namespace Graph
 		try {
 			for (const Core::FMTdevelopmentpath& devpath : paths)
 			{
-				const FMTedgeproperties newedge(actionID, 0, devpath.getProportion());
+				const FMTedgeproperties newEdge(actionID, 0, devpath.getProportion());
 				FMTvertex_descriptor tovertex;
 				tovertex = this->adddevelopment(devpath.getDevelopment());
-				boost::add_edge(active, tovertex, newedge, data);
+				boost::add_edge(active, tovertex, newEdge, data);
 				++stats.edges;
 			}
 		}
@@ -146,8 +146,8 @@ namespace Graph
 				const Core::FMTdevelopment& active_development = getDevelopment(active);
 				const Core::FMTfuturdevelopment grown_up = active_development.grow();
 				FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor next_period = adddevelopment(grown_up);
-				const Graph::FMTbaseedgeproperties newedge(-1);
-				boost::add_edge(active, next_period, newedge, data);
+				const Graph::FMTbaseedgeproperties newEdge(-1);
+				boost::add_edge(active, next_period, newEdge, data);
 				++stats.edges;
 				//close The last period
 				FMTvertex_iterator vertex, vend, firstof;
@@ -159,7 +159,7 @@ namespace Graph
 				//Open the new period
 				developments.push_back(FMTvertex_pair(firstof, vend));
 				//nodescache.clear();
-				rebasecache();
+				rebaseCache();
 				--p_Length;
 			}
 			

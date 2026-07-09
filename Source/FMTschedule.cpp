@@ -167,14 +167,14 @@ FMTschedule& FMTschedule::operator += (const FMTschedule& rhs)
 
 FMTschedule FMTschedule::operator + (const FMTschedule& rhs) const
     {
-    FMTschedule newschedule(*this);
+    FMTschedule newSchedule(*this);
 	try {
-		newschedule += rhs;
+		newSchedule += rhs;
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTschedule::operator+", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
-    return newschedule;
+    return newSchedule;
     }
 
 
@@ -410,23 +410,23 @@ FMTschedule::operator std::string() const
 		const std::vector<FMTtheme>& newthemes,
 		const std::vector<FMTaction>&presolvedaction) const
 	{
-		FMTschedule newschedule(*this);
+		FMTschedule newSchedule(*this);
 		try {
-			newschedule.elements.clear();
+			newSchedule.elements.clear();
 			for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
 			{
 				std::map<FMTdevelopment, std::vector<double>>newmapping;
 				for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 				{
-					FMTdevelopment newdev(devit->first);
-					const Core::FMTmask& BASE = newdev.getmask();
+					FMTdevelopment newDev(devit->first);
+					const Core::FMTmask& BASE = newDev.getmask();
 					if (BASE.canPresolve(filter, newthemes))
 						{
-						newdev.setMask(newdev.getmask().presolve(filter, newthemes));
-						newmapping[newdev] = devit->second;
+						newDev.setMask(newDev.getmask().presolve(filter, newthemes));
+						newmapping[newDev] = devit->second;
 					}else {
 						_exhandler->raise(Exception::FMTexc::FMTignore,
-							"Presolve Removed "+std::string(newdev)+" from the base solution",
+							"Presolve Removed "+std::string(newDev)+" from the base solution",
 							"FMTschedule::presolve", __LINE__, __FILE__);
 					}
 					
@@ -436,7 +436,7 @@ FMTschedule::operator std::string() const
 					std::vector<FMTaction>::const_iterator actfit = std::find_if(presolvedaction.begin(), presolvedaction.end(), FMTactioncomparator(actit->first.getname()));
 					if (actfit != presolvedaction.end())
 					{
-						newschedule.elements[*actfit] = newmapping;
+						newSchedule.elements[*actfit] = newmapping;
 					}
 				}
 			}
@@ -444,31 +444,31 @@ FMTschedule::operator std::string() const
 			{
 			_exhandler->raisefromcatch("","FMTschedule::presolve", __LINE__, __FILE__,Core::FMTsection::Schedule);
 			}
-	return newschedule;
+	return newSchedule;
 	}
 
 	FMTschedule FMTschedule::postsolve(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const
 	{
-		FMTschedule newschedule(*this);
+		FMTschedule newSchedule(*this);
 		try {
-			newschedule.elements.clear();
+			newSchedule.elements.clear();
 			for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
 			{
 				std::map<FMTdevelopment, std::vector<double>>newmapping;
 				for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 				{
-					FMTdevelopment newdev(devit->first);
+					FMTdevelopment newDev(devit->first);
 
-					newdev.setMask(newdev.getmask().postsolve(filter, originalbasethemes));
-					newmapping[newdev] = devit->second;
+					newDev.setMask(newDev.getmask().postsolve(filter, originalbasethemes));
+					newmapping[newDev] = devit->second;
 				}
 				if (!newmapping.empty())
 				{
 					std::vector<FMTaction>::const_iterator actfit = std::find_if(originalbasebaseactions.begin(), originalbasebaseactions.end(), FMTactioncomparator(actit->first.getname()));
 					if (actfit != originalbasebaseactions.end())
 					{
-						newschedule.elements[*actfit] = newmapping;
+						newSchedule.elements[*actfit] = newmapping;
 					}
 				}
 			}
@@ -476,7 +476,7 @@ FMTschedule::operator std::string() const
 			{
 			_exhandler->raisefromcatch("","FMTschedule::postsolve", __LINE__, __FILE__, Core::FMTsection::Schedule);
 			}
-		return newschedule;
+		return newSchedule;
 	}
 
 	void FMTschedule::setPeriod(const int& newperiod)
@@ -490,9 +490,9 @@ FMTschedule::operator std::string() const
 				for (std::map<FMTdevelopment, std::vector<double>>::iterator devit = actit->second.begin();
 					devit != actit->second.end(); devit++)
 					{
-					FMTdevelopment newdev(devit->first);
-					newdev.setPeriod(newperiod);
-					newmapping[newdev] = devit->second;
+					FMTdevelopment newDev(devit->first);
+					newDev.setPeriod(newperiod);
+					newmapping[newDev] = devit->second;
 					}
 				actit->second = newmapping;
 			}

@@ -295,7 +295,7 @@ namespace Models{
 							const std::vector<size_t>& p_AggregatedThemes) const
 	{
 		try {
-			for (const auto& YIELD : yields.findsets(
+			for (const auto& YIELD : yields.findSets(
 				Core::FMTmask(std::string(p_devMask),themes)))
 			{
 				if (YIELD->second->containsYield(p_yieldName)&&
@@ -461,7 +461,7 @@ namespace Models{
 			const std::string DEFAULT_ATTRIBUTE = "?";
 			for (auto& action : actions)
 				{
-				action.unshrink(Oldthemes);
+				action.unShrink(Oldthemes);
 				for (auto& op : action)
 					{
 					op.first = Core::FMTmask(std::string(op.first) + " " + DEFAULT_ATTRIBUTE, themes);
@@ -470,7 +470,7 @@ namespace Models{
 				}
 			for (auto& transition : transitions)
 				{
-				transition.unshrink(Oldthemes);
+				transition.unShrink(Oldthemes);
 				for (auto& op : transition)
 					{
 					op.first = Core::FMTmask(std::string(op.first) + " " + DEFAULT_ATTRIBUTE, themes);
@@ -485,14 +485,14 @@ namespace Models{
 					}
 				transition.update();
 				}
-			yields.unshrink(Oldthemes);
+			yields.unShrink(Oldthemes);
 			for (auto& yield : yields)
 			{
 				yield.first = Core::FMTmask(std::string(yield.first) + " " + DEFAULT_ATTRIBUTE, themes);
 				yield.second->setMask(Core::FMTmask(std::string(yield.second->getmask()) + " " + DEFAULT_ATTRIBUTE, themes));
 			}
 			yields.update();
-			lifespan.unshrink(Oldthemes);
+			lifespan.unShrink(Oldthemes);
 			for (auto& lifespanItem : lifespan)
 			{
 				lifespanItem.first = Core::FMTmask(std::string(lifespanItem.first) + " " + DEFAULT_ATTRIBUTE, themes);
@@ -815,7 +815,7 @@ namespace Models{
 							"FMTmodel::aggregateActions", __LINE__, __FILE__);
 						}
 					ActionCover.insert(Action->getname());
-					NoCompress.unshrink(themes);
+					NoCompress.unShrink(themes);
 					const Core::FMTmask Filter = NoCompress.getUnion(themes);
 
 					ActionFilters[Action->getname()] = std::pair<std::string, Core::FMTmask>(Aggregate, Filter);
@@ -894,15 +894,15 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 				}
 			}
 		Core::FMTtransition DEATH_TRANSITION = transitions.back();
-		DEATH_TRANSITION.unshrink(themes);
+		DEATH_TRANSITION.unShrink(themes);
 		NewTransitions.push_back(DEATH_TRANSITION);
 		for (Core::FMTtransition& transition : transitions)
 			{
 			if (p_Filters.find(transition.getname()) != p_Filters.end())
 			{
 				Core::FMTtransition NewTransition(transition.getname());
-				//NewTransition.unshrink(themes);
-				transition.unshrink(themes);
+				//NewTransition.unShrink(themes);
+				transition.unShrink(themes);
 				for (const auto& element : transition)
 				{
 					const Core::FMTmask Intersection = p_Filters.at(transition.getname()).second.getIntersect(element.first);
@@ -1223,7 +1223,7 @@ std::vector<const Core::FMTtheme*>FMTmodel::getStaticPresolveThemes() const
 		std::vector<Core::FMTaction>uactions(actions);
 		for (Core::FMTaction& action : uactions)
 			{
-			action.unshrink(themes);
+			action.unShrink(themes);
 			for (const auto& actit : action)
 				{
 				std::vector<const Core::FMTtheme*>newstatics;
@@ -1238,7 +1238,7 @@ std::vector<const Core::FMTtheme*>FMTmodel::getStaticPresolveThemes() const
 				}
 			}
 		Core::FMTyields uyields(yields);
-		uyields.unshrink(themes);
+		uyields.unShrink(themes);
 		for (auto& yieldit : uyields)
 			{
 			std::vector<const Core::FMTtheme*>newstatics;
@@ -1445,7 +1445,7 @@ Core::FMTaction FMTmodel::defaultDeathAction(const Core::FMTlifespans& llifespan
 			const std::string mask(intobject.first);
 			const Core::FMTmask amask(mask, lthemes);
 			Core::FMTspec specifier;
-			specifier.addbounds(Core::FMTagebounds(Core::FMTsection::Action, std::numeric_limits<int>::max(), intobject.second));
+			specifier.addBounds(Core::FMTagebounds(Core::FMTsection::Action, std::numeric_limits<int>::max(), intobject.second));
 			death_action.push_back(amask, specifier);
 		}
 		const std::string GCBMaggregate = "~GCBM:" + std::to_string(FMTGCBMDEATHID) + ":Stand Replacing Natural Succession";
@@ -1526,7 +1526,7 @@ void FMTmodel::addOutput(const std::string& name,
 void FMTmodel::addYieldHandlersFromPtr(const std::vector<std::unique_ptr<Core::FMTyieldhandler>>& yieldhandlers)
 {
 	try {
-		yields.unshrink(themes);
+		yields.unShrink(themes);
 		for (const std::unique_ptr<Core::FMTyieldhandler>& yldhandler : yieldhandlers)
 		{
 			yields.push_back(yldhandler->getmask(),yldhandler);
@@ -1827,7 +1827,7 @@ std::vector<const Core::FMTtheme*>FMTmodel::locateNodeStaticThemes(const Core::F
 			}
 			const std::string SOURCE_YIELD_VALUE = node.source.getYield();
 			const std::string FACTOR_YIELD_VALUE = node.factor.getYield();
-			for (const std::string& yldbound : node.source.getylds())
+			for (const std::string& yldbound : node.source.getYlds())
 			{
 				if (yields.isYld(yldbound))
 				{
@@ -2015,7 +2015,7 @@ Core::FMTmask FMTmodel::getStaticMask(const Core::FMToutputnode& node, bool igno
 void FMTmodel::validateListSpec(const Core::FMTspec& specifier) const
 	{
 	try {
-		for (const std::string& yldname : specifier.getylds())
+		for (const std::string& yldname : specifier.getYlds())
 		{
 			if (!yields.isYld(yldname))
 			{
@@ -2145,7 +2145,7 @@ void FMTmodel::clearCache()
 
 Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
-	Core::FMTmask basemask( boost::dynamic_bitset<uint8_t>(area.begin()->getmask().size(), false));
+	Core::FMTmask baseMask( boost::dynamic_bitset<uint8_t>(area.begin()->getmask().size(), false));
 	try {
 		optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
 		Core::FMTmask areamask( boost::dynamic_bitset<uint8_t>(area.begin()->getmask().size(), false));
@@ -2172,7 +2172,7 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 					for (const Core::FMTtransitionmask& fork : transitionobject.second.getMaskTrans())
 					{
 						const Core::FMTmask maskwithoutaggregates = fork.getmask().removeAggregates(themes);
-						basemask = basemask.getUnion(maskwithoutaggregates);
+						baseMask = baseMask.getUnion(maskwithoutaggregates);
 					}
 				}
 				jumptransitions.push_back(false);
@@ -2181,7 +2181,7 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 		}
 		if (!getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 		{
-			basemask = basemask.getUnion(areamask);
+			baseMask = baseMask.getUnion(areamask);
 		}else {
 			trid = 0;
 			for (const Core::FMTtransition& transition : transitions)
@@ -2191,7 +2191,7 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 					for (const auto& transitionobject : transition)
 					{
 						const Core::FMTmask source(std::string(transitionobject.first), themes);
-						basemask = basemask.getUnion(source.removeAggregates(themes, true));
+						baseMask = baseMask.getUnion(source.removeAggregates(themes, true));
 					}
 				}
 				++trid;
@@ -2204,7 +2204,7 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 					for (const auto& actionobject : action)
 					{
 						const Core::FMTmask opq(std::string(actionobject.first), themes);
-						basemask = basemask.getUnion(opq.removeAggregates(themes, true));
+						baseMask = baseMask.getUnion(opq.removeAggregates(themes, true));
 					}
 				}
 				++acid;
@@ -2212,12 +2212,12 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 			for (const auto& yieldobject : yields)
 			{
 				const Core::FMTmask source(std::string(yieldobject.first), themes);
-				basemask = basemask.getUnion(source.removeAggregates(themes, true));
+				baseMask = baseMask.getUnion(source.removeAggregates(themes, true));
 			}
 			for (const auto& lifespanobject : lifespan)
 			{
 				const Core::FMTmask source(std::string(lifespanobject.first), themes);
-				basemask = basemask.getUnion(source.removeAggregates(themes, true));
+				baseMask = baseMask.getUnion(source.removeAggregates(themes, true));
 			}
 			for (const Core::FMTconstraint& constraint : constraints)
 			{
@@ -2225,17 +2225,17 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 				{
 					if (source.isVariable())
 					{
-						basemask = basemask.getUnion(source.getmask().removeAggregates(themes, true));
+						baseMask = baseMask.getUnion(source.getmask().removeAggregates(themes, true));
 					}
 				}
 			}
-			 boost::dynamic_bitset<uint8_t>bits(basemask.size(),false);
+			 boost::dynamic_bitset<uint8_t>bits(baseMask.size(),false);
 			const boost::dynamic_bitset<uint8_t>& areamaskref = areamask.getBitsetReference();
-			const boost::dynamic_bitset<uint8_t>& basemaskref = basemask.getBitsetReference();
+			const boost::dynamic_bitset<uint8_t>& basemaskref = baseMask.getBitsetReference();
 			for (const Core::FMTtheme& theme : themes)
 				{
 				const size_t start = static_cast<size_t>(theme.getStart());
-				if (basemask.getSubsetCount(theme) == 0)
+				if (baseMask.getSubsetCount(theme) == 0)
 					{ 
 					const size_t areacount = areamask.getSubsetCount(theme);
 					size_t biton = (theme.size() + start) - 1;
@@ -2254,13 +2254,13 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 						}
 					}
 				}
-			basemask = basemask.getUnion(Core::FMTmask(bits));
+			baseMask = baseMask.getUnion(Core::FMTmask(bits));
 			}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::getbasemask", __LINE__, __FILE__);
 		}
-	return basemask;
+	return baseMask;
 	}
 
 Core::FMTmaskfilter FMTmodel::getPostsolveFilter(const std::vector<Core::FMTtheme>& originalthemes,const Core::FMTmask& devmask) const
@@ -2473,30 +2473,30 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				for (const Core::FMTactualdevelopment& development : presolvedModel->area)
 				{
 					const Core::FMTmask& devmask = development.getmask();
-					Core::FMTactualdevelopment newdev(development);
+					Core::FMTactualdevelopment newDev(development);
 					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = topresolve.find(devmask);
 					if (mskit != topresolve.end())
 					{
-						newdev.setMask(mskit->second);
+						newDev.setMask(mskit->second);
 					}
 					else {
 						const Core::FMTmask presolvedmask = devmask.presolve(newfilter, newthemes);
 						topresolve[devmask] = presolvedmask;
-						newdev.setMask(presolvedmask);
+						newDev.setMask(presolvedmask);
 					}
 					
 					if (getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 					{
-						std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(newarea.begin(), newarea.end(), Core::FMTactualdevelopmentcomparator(&newdev));
+						std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(newarea.begin(), newarea.end(), Core::FMTactualdevelopmentcomparator(&newDev));
 						if (devit != newarea.end())
 						{
-							devit->setArea(devit->getarea() + newdev.getarea());
+							devit->setArea(devit->getarea() + newDev.getarea());
 						}
 						else {
-							newarea.push_back(newdev);
+							newarea.push_back(newDev);
 						}
 					}else {
-						newarea.push_back(newdev);
+						newarea.push_back(newDev);
 						}
 					}
 			}else {
@@ -2737,15 +2737,15 @@ void FMTmodel::postsolve(const FMTmodel& originalbasemodel)
 Core::FMTschedule FMTmodel::presolveSchedule(const Core::FMTschedule& originalbaseschedule,
 	const FMTmodel& originalbasemodel) const
 	{
-	Core::FMTschedule newschedule;
+	Core::FMTschedule newSchedule;
 	try {
 		const Core::FMTmaskfilter newfilter = getPresolveFilter(originalbasemodel.getthemes());
-		newschedule = originalbaseschedule.presolve(newfilter, this->themes, this->actions);
+		newSchedule = originalbaseschedule.presolve(newfilter, this->themes, this->actions);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::presolveschedule", __LINE__, __FILE__);
 		}
-	return newschedule;
+	return newSchedule;
 	}
 
 
@@ -2821,15 +2821,15 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 			}
 			else {
 				Core::FMTaction rhsaction(action);
-				actionitr->unshrink(themes);
-				rhsaction.unshrink(newthemes);
+				actionitr->unShrink(themes);
+				rhsaction.unShrink(newthemes);
 				actionitr->push_back(rhsaction);
 				std::vector<Core::FMTtransition>::iterator transitionitr = std::find_if(finaltransitions.begin(), finaltransitions.end(), Core::FMTtransitioncomparator(action.getname()));
 				if (transitionitr != transitions.end())
 				{
 					Core::FMTtransition rhstransition(rhs.transitions.at(id));
-					rhstransition.unshrink(rhs.themes);
-					transitionitr->unshrink(themes);
+					rhstransition.unShrink(rhs.themes);
+					transitionitr->unShrink(themes);
 					transitionitr->push_back(rhstransition);
 				}
 			}
@@ -2858,14 +2858,14 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 		}
 		Core::FMTyields newyields(yields);
 		Core::FMTyields rhsyields(rhs.yields);
-		newyields.unshrink(themes);
-		rhsyields.unshrink(rhs.themes);
+		newyields.unShrink(themes);
+		rhsyields.unShrink(rhs.themes);
 		newyields.push_back(rhs.yields);
 		newyields.update();
 		Core::FMTlifespans newlifespan(lifespan);
 		Core::FMTlifespans rhslifespan(rhs.lifespan);
-		newlifespan.unshrink(themes);
-		rhslifespan.unshrink(rhs.themes);
+		newlifespan.unShrink(themes);
+		rhslifespan.unShrink(rhs.themes);
 		newlifespan.push_back(rhslifespan);
 		/*area = newarea;
 		themes = newthemes;
@@ -2958,17 +2958,17 @@ try{
 	bool gotemptyschedule = true;
 	for (int period = 1; period <= parameters.getIntParameter(LENGTH);++period)
 		{
-		Core::FMTschedule newschedule;
+		Core::FMTschedule newSchedule;
 		for (const Core::FMTschedule& schedule : schedules)
 			{
 			if (schedule.getperiod()==period)
 				{
-				newschedule = schedule;
+				newSchedule = schedule;
 				gotemptyschedule = false;
 				break;
 				}
 			}
-		newshedules.push_back(newschedule);
+		newshedules.push_back(newSchedule);
 		}
 	if (parameters.getBoolParameter(FORCE_PARTIAL_BUILD)&&gotemptyschedule)
 		{
@@ -3286,13 +3286,13 @@ std::vector<Core::FMTconstraint>FMTmodel::getTacticalConstraints(double penalty,
 				Core::FMTconstraint globalset(Core::FMTconstrainttype::FMTstandard,Core::FMToutput(constraint));
 				globalset.setRhs(lowerbound, upperbound);
 				globalset.setLength(1, 1);
-				globalset.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_SETFROMGLOBAL", objectivefactor, objectivefactor));
+				globalset.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_SETFROMGLOBAL", objectivefactor, objectivefactor));
 				newconstraints.push_back(globalset);
 				//Set schedule weight
 				Core::FMTconstraint newobjective(constraint);
 				if (scheduleweight > 0)
 					{
-					newobjective.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_SETGLOBALSCHEDULE", scheduleweight, scheduleweight));
+					newobjective.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_SETGLOBALSCHEDULE", scheduleweight, scheduleweight));
 					}
 				newconstraints.push_back(newobjective);
 			}else if(constraint.getConstraintType()==Core::FMTconstrainttype::FMTstandard) 
@@ -3301,7 +3301,7 @@ std::vector<Core::FMTconstraint>FMTmodel::getTacticalConstraints(double penalty,
 				if (constraint.getPeriodLowerBound() == 1 &&
 					constraint.getPeriodUpperBound() == 1)
 					{
-					newconstraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_REIGNORE", 2,2));
+					newconstraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_REIGNORE", 2,2));
 					}
 				newconstraints.push_back(newconstraint);
 				}

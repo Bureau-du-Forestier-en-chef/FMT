@@ -50,7 +50,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 					const std::string  yield = elements[loc - 1];
 					if (yield == "_AGE")
 					{
-						spec.addbounds(Core::FMTagebounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
+						spec.addBounds(Core::FMTagebounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
 					}
 					else if (yield == "_CP")
 					{
@@ -58,7 +58,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 					}
 					else {
 						yields.push_back(yield);
-						spec.addbounds(Core::FMTyldbounds(yield, bounds<double>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
+						spec.addBounds(Core::FMTyldbounds(yield, bounds<double>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
 					}
 					if (maskloc == 0)
 					{

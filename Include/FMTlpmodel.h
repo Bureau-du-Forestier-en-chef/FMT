@@ -465,11 +465,11 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		from the solverinterface matrix.
 		*/
 		bool updateMatrixNGraph(bool updategraph = true);
-		// DocString: FMTlpmodel::getamountofpaths
+		// DocString: FMTlpmodel::getAmountOfPaths
 		/**
 		Get the number of possible paths if an action is commited on a development.
 		*/
-		//size_t getamountofpaths(const Core::FMTdevelopment& dev, const int& actionid) const;
+		//size_t getAmountOfPaths(const Core::FMTdevelopment& dev, const int& actionid) const;
 		// DocString: FMTlpmodel::isMatrixElement
 		/**
 		Check if the FMTconstraint had a element of (element_type) located in the matrix for a given period.

@@ -26,7 +26,7 @@ namespace Core
 	class FMTyieldmodeldecisiontree : public FMTyieldmodel
 	{
 	// DocString: FMTyieldmodeldecisiontree::mtx
-	///Mutex for naturalgrowth.
+	///Mutex for naturalGrowth.
 	//mutable std::recursive_mutex mtx;
 	mutable boost::recursive_mutex mtx;
 	// DocString: FMTyieldmodeldecisiontree::values
@@ -70,9 +70,9 @@ namespace Core
 	Core::FMTconstraint buildConstraint(const std::string& name, const std::string& yld, const Core::FMTmask& mask, const double& lowerbound, const double& upperbound,const int& lag) const;
 	// DocString: FMTyieldmodeldecisiontree::getadecision
 	/**
-	From de constraint id return a new constraint id based on the naturalgrowth and the period with the decision tree
+	From de constraint id return a new constraint id based on the naturalGrowth and the period with the decision tree
 	*/
-	size_t getADecision(const std::unique_ptr<Models::FMTmodel>& naturalgrowth,const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const;
+	size_t getADecision(const std::unique_ptr<Models::FMTmodel>& naturalGrowth,const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const;
 	// DocString: FMTyieldmodeldecisiontree::getnaturalgrowth
 	/**
 	Build the natural growth model with a request (original model) to be able to call getadecision on the growthmodel
@@ -118,7 +118,7 @@ namespace Core
 		std::unique_ptr<FMTyieldmodel>Clone() const;
 		// DocString: FMTyieldmodeldecisiontree::predict
 		/**
-		Runs the decision tree so if the values are not set build a naturalgrowth model and run the decision tree and get the decision for all
+		Runs the decision tree so if the values are not set build a naturalGrowth model and run the decision tree and get the decision for all
 		periods. Finaly return the predictions.
 		*/
 		const std::vector<double>predict(const Core::FMTyieldrequest& request) const;

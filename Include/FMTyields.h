@@ -124,12 +124,12 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		looking at age,period,lock,mask etc... it returns  the yield value.
 		*/
 		//double getsingle(const FMTdevelopment& dev,const std::string& target) const;
-		//std::map<std::string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
-		// DocString: FMTyields::getylds
+		//std::map<std::string,double>getYlds(const FMTdevelopment& dev,const FMTspec& spec) const;
+		// DocString: FMTyields::getYlds
 		/**
 		This function gets the yields used and its values (map) by a given specification (spec) for a given developement (dev).
 		*/
-		//std::vector<double>getylds(const FMTdevelopment& dev, const FMTspec& spec) const;
+		//std::vector<double>getYlds(const FMTdevelopment& dev, const FMTspec& spec) const;
 		// DocString: FMTyields::getAge
 		/**
 		This function is used to get the new age of a FMTdevelopement (dev) 

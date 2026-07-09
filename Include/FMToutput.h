@@ -314,7 +314,7 @@ class FMTEXPORT FMToutput: public FMTobject
 		std::vector<const Core::FMTtheme*>getStaticThemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables = false) const;
 		// DocString: FMToutput::presolve
 		/**
-		Presolve the FMToutput and remove unused outputsource base on a (basemask), original themes (originalthemes)
+		Presolve the FMToutput and remove unused outputsource base on a (baseMask), original themes (originalthemes)
 		presolved themes (newthemes) and presolved actions vector (actions)
 		and a presolved yields section (yields).
 		*/

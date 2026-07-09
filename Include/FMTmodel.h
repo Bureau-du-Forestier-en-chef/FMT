@@ -374,7 +374,7 @@ namespace Models
 		void addYieldHandlers(const std::vector<T>& yieldhandlers)
 		{
 			try {
-				yields.unshrink(themes);
+				yields.unShrink(themes);
 				for (const auto& yldhandler : yieldhandlers)
 				{
 					std::unique_ptr<Core::FMTyieldhandler> yldhandlerptr = yldhandler.clone();

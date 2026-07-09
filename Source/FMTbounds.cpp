@@ -49,7 +49,7 @@ namespace Core{
 			}
         FMTyldbounds::operator std::string() const
             {
-            return FMTbounds::tostring(yield);
+            return FMTbounds::toString(yield);
             }
 
 
@@ -81,7 +81,7 @@ namespace Core{
         }
     FMTagebounds::operator std::string() const
         {
-        return FMTbounds::tostring("_AGE");
+        return FMTbounds::toString("_AGE");
         }
 	bool  FMTagebounds::operator == (const FMTagebounds& rhs) const
 		{
@@ -112,7 +112,7 @@ namespace Core{
         }
     FMTperbounds::operator std::string() const
         {
-        return FMTbounds::tostring("_CP");
+        return FMTbounds::toString("_CP");
         }
 	bool FMTperbounds::operator == (const FMTperbounds& rhs) const
 		{
@@ -144,7 +144,7 @@ FMTlockbounds& FMTlockbounds::operator = (const FMTlockbounds& rhs)
     }
 FMTlockbounds::operator std::string() const
     {
-    return FMTbounds::tostring("_LOCK");
+    return FMTbounds::toString("_LOCK");
     }
 
 bool FMTlockbounds::operator == (const FMTlockbounds& rhs) const
@@ -203,11 +203,11 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
         {
         return per.add(bound);
         }
-    bool FMTspec::addbounds(const FMTagebounds& bound)
+    bool FMTspec::addBounds(const FMTagebounds& bound)
         {
         return age.add(bound);
         }
-    bool FMTspec::addbounds(const FMTyldbounds& bound)
+    bool FMTspec::addBounds(const FMTyldbounds& bound)
         {
 		std::vector<std::string>::const_iterator nameit = std::find(yieldnames.begin(), yieldnames.end(), bound.yield);
 		if (nameit != yieldnames.end())
@@ -226,7 +226,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
             }*/
         return true;
         }
-    bool FMTspec::addbounds(const FMTlockbounds& bound)
+    bool FMTspec::addBounds(const FMTlockbounds& bound)
         {
         return lock.add(bound);
         }
@@ -321,7 +321,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 		return false;
 		}
 
-	/*std::vector<std::string>FMTspec::getylds() const
+	/*std::vector<std::string>FMTspec::getYlds() const
         {
 		std::vector<std::string>values;
         if(!ylds.empty())
@@ -334,7 +334,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
             }
         return values;
         }
-	std::map<std::string, FMTyldbounds>FMTspec::getyldsbounds() const
+	std::map<std::string, FMTyldbounds>FMTspec::getYldsBounds() const
 		{
 		return ylds;
 		}*/
@@ -348,44 +348,44 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 	size_t FMTspec::hash() const
 		{
 		std::size_t seed = 0;
-		boost::hash_combine(seed, std::hash<int>()(per.getlower()));
-		boost::hash_combine(seed, std::hash<int>()(per.getupper()));
-		boost::hash_combine(seed, std::hash<int>()(age.getlower()));
-		boost::hash_combine(seed, std::hash<int>()(age.getupper()));
-		boost::hash_combine(seed, std::hash<int>()(lock.getlower()));
-		boost::hash_combine(seed, std::hash<int>()(lock.getupper()));
+		boost::hash_combine(seed, std::hash<int>()(per.getLower()));
+		boost::hash_combine(seed, std::hash<int>()(per.getUpper()));
+		boost::hash_combine(seed, std::hash<int>()(age.getLower()));
+		boost::hash_combine(seed, std::hash<int>()(age.getUpper()));
+		boost::hash_combine(seed, std::hash<int>()(lock.getLower()));
+		boost::hash_combine(seed, std::hash<int>()(lock.getUpper()));
 		for (size_t ylid = 0; ylid < yieldnames.size(); ++ylid)
 		{
 			boost::hash_combine(seed, std::hash<std::string>()(yieldnames.at(ylid)));
-			boost::hash_combine(seed, std::hash<double>()(yieldbounds.at(ylid).getlower()));
-			boost::hash_combine(seed, std::hash<double>()(yieldbounds.at(ylid).getupper()));
+			boost::hash_combine(seed, std::hash<double>()(yieldbounds.at(ylid).getLower()));
+			boost::hash_combine(seed, std::hash<double>()(yieldbounds.at(ylid).getUpper()));
 		}
 		/*if (!ylds.empty())
 			{
 			for (std::map<std::string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
 				{
-				boost::hash_combine(seed, std::hash<double>()(it->second.getlower()));
-				boost::hash_combine(seed, std::hash<double>()(it->second.getupper()));
+				boost::hash_combine(seed, std::hash<double>()(it->second.getLower()));
+				boost::hash_combine(seed, std::hash<double>()(it->second.getUpper()));
 				}
 			}*/
 		return seed;
 		}
 
-	bool FMTspec::emptylock() const
+	bool FMTspec::emptyLock() const
 		{
 		return lock.empty();
 		}
 
-	bool FMTspec::emptyage() const
+	bool FMTspec::emptyAge() const
 		{
 		return age.empty();
 		}
-	bool FMTspec::emptyylds() const
+	bool FMTspec::emptyYlds() const
 		{
 		return yieldnames.empty();
 		}
 
-	bool FMTspec::emptyperiod() const
+	bool FMTspec::emptyPeriod() const
 		{
 		return per.empty();
 		}
@@ -397,12 +397,12 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 	{
 		return per.lower;
 	}
-	int FMTspec::getlockupperbound() const
+	int FMTspec::getLockUpperBound() const
 	{
 		return lock.upper;
 	}
 
-	int FMTspec::getlocklowerbound() const
+	int FMTspec::getLockLowerBound() const
 	{
 		return lock.lower;
 	}
@@ -423,7 +423,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 		bool persubset = true;
 		if (!per.empty() && !rhs.per.empty())
 			{
-			persubset = (per.getlower() >= rhs.per.getlower()) && (per.getupper() <= rhs.per.getupper());
+			persubset = (per.getLower() >= rhs.per.getLower()) && (per.getUpper() <= rhs.per.getUpper());
 		}else if (!rhs.per.empty() && per.empty())
 			{
 			persubset = false;
@@ -431,7 +431,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 		bool agesubset = true;
 		if (!age.empty() && !rhs.age.empty())
 			{
-			agesubset = (age.getlower() >= rhs.age.getlower()) && (age.getupper() <= rhs.age.getupper());
+			agesubset = (age.getLower() >= rhs.age.getLower()) && (age.getUpper() <= rhs.age.getUpper());
 			}
 			else if (!rhs.age.empty() && age.empty())
 			{
@@ -450,7 +450,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 				}
 				else {
 					const size_t location = std::distance(rhs.yieldnames.begin(),it);
-					yldssubset = (rhs.yieldbounds.at(location).getlower() >= yieldbounds.at(ylid).getlower()) && (yieldbounds.at(ylid).getupper() <= rhs.yieldbounds.at(location).getupper());
+					yldssubset = (rhs.yieldbounds.at(location).getLower() >= yieldbounds.at(ylid).getLower()) && (yieldbounds.at(ylid).getUpper() <= rhs.yieldbounds.at(location).getUpper());
 				}
 			}
 		/*for (std::map<std::string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
@@ -460,7 +460,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 				yldssubset = false;
 				break;
 			}else {
-				yldssubset = (it->second.getlower() >= it->second.getlower()) && (it->second.getupper() <= it->second.getupper());
+				yldssubset = (it->second.getLower() >= it->second.getLower()) && (it->second.getUpper() <= it->second.getUpper());
 				}
 
 			}*/

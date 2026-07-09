@@ -347,7 +347,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 			}
 			else
 			{
-				Spatial::FMTlayer<std::string> lastDistLayer(disturbances.copyextent<std::string>());
+				Spatial::FMTlayer<std::string> lastDistLayer(disturbances.copyExtent<std::string>());
 				transitions = disturbances.getGCBMtransitions(lastDistLayer, actions, themes, period);
 				if (!lastDistLayer.getMapping().empty())
 				{
@@ -378,7 +378,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 	{
 		std::vector<std::vector<Graph::FMTpredictor>>predictors;
 		try {
-			Spatial::FMTlayer<int> predictorids(spatialsolution.copyextent<int>());
+			Spatial::FMTlayer<int> predictorids(spatialsolution.copyExtent<int>());
 			//transitions = disturbances.getGCBMtransitions(lastDistLayer, actions, themes, period);
 			if (!spatialsolution.empty())
 			{
@@ -412,8 +412,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 			GDALRasterBand* ageband = getBand(agedataset);
 			int nXBlockSize, nYBlockSize;
 			ageband->GetBlockSize(&nXBlockSize, &nYBlockSize);
-			int nXBlocks = (ageband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
-			int nYBlocks = (ageband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
+			int nXBlocks = (ageband->getXSize() + nXBlockSize - 1) / nXBlockSize;
+			int nYBlocks = (ageband->getYSize() + nYBlockSize - 1) / nYBlockSize;
 			int nodata = int(ageband->GetNoDataValue());
 			std::vector<GInt32>agedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
 			std::vector<GInt32>attributedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
@@ -451,8 +451,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 			}
 			//std::map<Spatial::FMTcoordinate, Core::FMTdevelopment>mapping;
 			const std::string projection = agedataset->GetProjectionRef();
-			const unsigned int xsize = ageband->GetXSize();
-			const unsigned int ysize = ageband->GetYSize();
+			const unsigned int xsize = ageband->getXSize();
+			const unsigned int ysize = ageband->getYSize();
 			Spatial::FMTlayer<Core::FMTdevelopment>mapping(pad, xsize, ysize, projection, cellsize);
 			int missing = 0;
 			unsigned int ystack = 0;
@@ -645,9 +645,9 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 						mask.set(themes.at(emptyTheme),*themes.at(emptyTheme).getbaseattributes().begin());
 						++emptyTheme;
 						}
-					Core::FMTactualdevelopment newdev(mask, age, lock, area);
-					//newdev.passinobject(*this);
-					return newdev;
+					Core::FMTactualdevelopment newDev(mask, age, lock, area);
+					//newDev.passinobject(*this);
+					return newDev;
 				}
 			}
 		}catch (...)
@@ -965,8 +965,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 			GDALRasterBand* devidband = getBand(devidds);
 			int nXBlockSize, nYBlockSize;
 			devidband->GetBlockSize(&nXBlockSize, &nYBlockSize);
-			int nXBlocks = (devidband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
-			int nYBlocks = (devidband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
+			int nXBlocks = (devidband->getXSize() + nXBlockSize - 1) / nXBlockSize;
+			int nYBlocks = (devidband->getYSize() + nYBlockSize - 1) / nYBlockSize;
 			int nodata = int(devidband->GetNoDataValue());
 			std::vector<GInt32>iddata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
 			std::vector<double>pad(6);
@@ -1018,8 +1018,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 				ystack += nYValid;
 			}
 			const std::string projection = devidds->GetProjectionRef();
-			const unsigned int xsize = devidband->GetXSize();
-			const unsigned int ysize = devidband->GetYSize();
+			const unsigned int xsize = devidband->getXSize();
+			const unsigned int ysize = devidband->getYSize();
 			actualforest = Spatial::FMTforest(Spatial::FMTlayer<Core::FMTdevelopment>(mapping, pad, xsize, ysize, projection, cellsize));
 			GDALClose(devidds);
 			VSIUnlink(vsi_path.c_str());
@@ -1225,8 +1225,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 		try {
 			int nXBlockSize, nYBlockSize;
 			wband->GetBlockSize(&nXBlockSize, &nYBlockSize);
-			int nXBlocks = (wband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
-			int nYBlocks = (wband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
+			int nXBlocks = (wband->getXSize() + nXBlockSize - 1) / nXBlockSize;
+			int nYBlocks = (wband->getYSize() + nYBlockSize - 1) / nYBlockSize;
 			lastwriten = wband->GetNoDataValue();
 			const outT nodata = static_cast<outT>(wband->GetNoDataValue());
 			unsigned int ystack = 0;
@@ -2174,7 +2174,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 											bool excludeDev = false;
 											if (!Excluded.empty())
 												{
-												std::vector<Core::FMTlist<Core::FMTspec>::const_iterator> SPECIFICATIONS = Excluded.findsets(actualdevelopment.getmask());
+												std::vector<Core::FMTlist<Core::FMTspec>::const_iterator> SPECIFICATIONS = Excluded.findSets(actualdevelopment.getmask());
 												size_t i = 0;
 												while (!excludeDev && i < SPECIFICATIONS.size())
 													{

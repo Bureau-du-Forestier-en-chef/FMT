@@ -158,7 +158,7 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
         bool operator != (const FMTtransition& rhs) const;
 		// DocString: FMTtransition::presolve
 		/**
-		Returns a presolved FMTtransition based on a (basemask), the actual model FMTtheme (originalthemes),
+		Returns a presolved FMTtransition based on a (baseMask), the actual model FMTtheme (originalthemes),
 		a (presolvedmask) and the new presolved themes list.
 		*/
 		FMTtransition presolve(const FMTmaskfilter& filter,
@@ -166,7 +166,7 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 			std::vector<FMTtheme>& newthemes,bool compressdata=false) const;
 		// DocString: FMTtransition::presolveRef
 		/**
-		@brief Returns a presolved FMTtransition based on a (basemask), the actual model FMTtheme (originalthemes),
+		@brief Returns a presolved FMTtransition based on a (baseMask), the actual model FMTtheme (originalthemes),
 		a (presolvedmask) and the new presolved themes list.
 		@param[in] p_filter
 		@param[in] p_originalThemes

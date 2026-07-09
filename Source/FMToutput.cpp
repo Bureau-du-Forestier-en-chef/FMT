@@ -589,19 +589,19 @@ FMToutput FMToutput::boundTo(const std::vector<FMTtheme>& themes, const FMTperbo
 		}
 		if (specialbound.empty() && !bound.empty())
 		{
-			if ( bound.getlower() == bound.getupper())//single bounded
+			if ( bound.getLower() == bound.getUpper())//single bounded
 			{
-				newoutput.name = newoutput.name + "[" + std::to_string(bound.getlower()) + "]";
+				newoutput.name = newoutput.name + "[" + std::to_string(bound.getLower()) + "]";
 			}
 			/*/else if (!specialbound.empty())
 			{
 				std::string name = specialbound;
 				name += "(" + newoutput.name;
-				if (!(bound.getupper() == std::numeric_limits<double>::max() && bound.getlower() == 1) )
+				if (!(bound.getUpper() == std::numeric_limits<double>::max() && bound.getLower() == 1) )
 				{
 					name += ",";
-					name += std::to_string(bound.getlower()) + "..";
-					name += std::to_string(bound.getupper());
+					name += std::to_string(bound.getLower()) + "..";
+					name += std::to_string(bound.getUpper());
 				}
 				name += ")";
 				newoutput.name = name;
@@ -614,8 +614,8 @@ FMToutput FMToutput::boundTo(const std::vector<FMTtheme>& themes, const FMTperbo
 			if (!bound.empty())
 			{
 				name += ",";
-				name += std::to_string(bound.getlower()) + "..";
-				name += std::to_string(bound.getupper());
+				name += std::to_string(bound.getLower()) + "..";
+				name += std::to_string(bound.getUpper());
 			}
 			name += ")";
 			newoutput.name = name;
@@ -798,7 +798,7 @@ bool FMToutput::isSinglePeriod() const
 	{
 	for (const FMToutputsource& source : this->sources)
 		{
-		if (source.emptyperiod() || (source.getPeriodLowerBound() != source.getPeriodUpperBound()))
+		if (source.emptyPeriod() || (source.getPeriodLowerBound() != source.getPeriodUpperBound()))
 			{
 			return false;
 			}
@@ -1283,7 +1283,7 @@ std::vector<const Core::FMTtheme*>FMToutput::getStaticThemes(const std::vector<C
 					statics = source.getmask().getStaticThemes(statics);
 					}
 				const std::string yieldvalue = source.getYield();
-				for (const std::string& yldbound : source.getylds())
+				for (const std::string& yldbound : source.getYlds())
 					{
 					if (yields.isYld(yldbound))
 						{

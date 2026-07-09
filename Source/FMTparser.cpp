@@ -472,14 +472,14 @@ GDALDataset* FMTparser::createDataset(const std::string& location, const Spatial
 			{
 			papszOptions = CSLSetNameValue(papszOptions, "WORLDFILE", "YES");
 			}
-		poDstDS = poDriver->Create(location.c_str(), layer.GetXSize(), layer.GetYSize(), 1, datatype, papszOptions);
+		poDstDS = poDriver->Create(location.c_str(), layer.getXSize(), layer.getYSize(), 1, datatype, papszOptions);
 		if (poDstDS == nullptr)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset
 				, poDstDS->GetDescription(), "FMTparser::createDataset", __LINE__, __FILE__, m_section);
 		}
-		std::vector<double>geotrans = layer.getgeotransform();
-		const std::string projection = layer.getprojection();
+		std::vector<double>geotrans = layer.getGeoTransform();
+		const std::string projection = layer.getProjection();
 		poDstDS->SetProjection(projection.c_str());
 		poDstDS->SetGeoTransform(&geotrans[0]);
 		poDstDS->FlushCache();
@@ -903,9 +903,9 @@ std::string FMTparser::setSpecs(Core::FMTsection section, Core::FMTkwor key,cons
 					{
 						const int intupper = (rit->upper() == std::numeric_limits<double>::max()) ? std::numeric_limits<int>::max() : static_cast<int>(rit->upper());
 						const int intlower = (rit->lower() == std::numeric_limits<double>::min()) ? std::numeric_limits<int>::min() : static_cast<int>(rit->lower());
-						newspec.addbounds(Core::FMTagebounds(section, key, intupper, intlower));
+						newspec.addBounds(Core::FMTagebounds(section, key, intupper, intlower));
 					}else {
-						newspec.addbounds(Core::FMTyldbounds(section, key, yld, rit->upper(), rit->lower()));
+						newspec.addBounds(Core::FMTyldbounds(section, key, yld, rit->upper(), rit->lower()));
 						}
 					specs.push_back(newspec);
 				}
@@ -967,9 +967,9 @@ std::string FMTparser::setSpec(
 				
 				if (pushaagebound)
 					{
-					spec.addbounds(Core::FMTagebounds(section, key, static_cast<int>(upperbound), static_cast<int>(lowerbound)));
+					spec.addBounds(Core::FMTagebounds(section, key, static_cast<int>(upperbound), static_cast<int>(lowerbound)));
 				}else {
-					spec.addbounds(Core::FMTyldbounds(section, key, yld, upperbound, lowerbound));
+					spec.addBounds(Core::FMTyldbounds(section, key, yld, upperbound, lowerbound));
 					}
 				
 				rest = " " + std::string(kmatch[1]) + std::string(kmatch[16]) + std::string(kmatch[28]);
@@ -997,7 +997,7 @@ std::string FMTparser::setSpec(
 					lowerbound = getNum<int>(singlebound, constants);
 					upperbound = lowerbound;
 				}
-				spec.addbounds(Core::FMTagebounds(section, key, upperbound, lowerbound));
+				spec.addBounds(Core::FMTagebounds(section, key, upperbound, lowerbound));
 				rest = " " + std::string(kmatch[1]) + std::string(kmatch[15]) + std::string(kmatch[16]) + std::string(kmatch[24]);
 			}
 		}catch (...)

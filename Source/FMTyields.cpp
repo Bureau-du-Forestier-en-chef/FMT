@@ -292,7 +292,7 @@ FMTyields FMTyields::presolve(const FMTmaskfilter& filter,
 	FMTyields newyields(*this);
 	try {
 		
-		newyields.presolvelist(filter, originalthemes, newthemes);
+		newyields.presolveList(filter, originalthemes, newthemes);
 		if (!filter.emptyFlipped())
 		{
 			for (auto& yieldObject : newyields)
@@ -315,7 +315,7 @@ void FMTyields::presolveRef(const FMTmaskfilter& p_filter,
 	const std::vector<FMTtheme>& p_newThemes)
 {
 	try {
-		presolvelist(p_filter, p_originalThemes, p_newThemes);
+		presolveList(p_filter, p_originalThemes, p_newThemes);
 		if (!p_filter.emptyFlipped())
 		{
 			for (auto& yieldobject : *this)
@@ -400,8 +400,8 @@ double FMTyields::get(const FMTyieldrequest& request, const std::string& yld) co
 	const std::string& target) const
 {
 	try {
-		const Core::FMTmask filteredmask = this->filtermask(dev.getmask());
-		const std::vector<const FMTyieldhandler*>datas = this->findsetswithfiltered(filteredmask);
+		const Core::FMTmask filteredmask = this->filterMask(dev.getmask());
+		const std::vector<const FMTyieldhandler*>datas = this->findSetsWithFiltered(filteredmask);
 		for (const FMTyieldhandler* data : datas)
 		{
 			if (data->elements.find(target) != data->elements.end())
@@ -425,8 +425,8 @@ std::vector<double>FMTyields::get(const std::vector<FMTyieldrequest>& requests) 
 {
 	std::vector<double>values(requests.size());
 	try {
-		//const Core::FMTmask filteredmask = this->filtermask(dev.getmask());
-		//const std::vector<const FMTyieldhandler*>datas = this->findsetswithfiltered(filteredmask);
+		//const Core::FMTmask filteredmask = this->filterMask(dev.getmask());
+		//const std::vector<const FMTyieldhandler*>datas = this->findSetsWithFiltered(filteredmask);
 		size_t location = 0;
 		for (const FMTyieldrequest& request : requests)
 		{
@@ -457,15 +457,15 @@ std::vector<double>FMTyields::get(const std::vector<FMTyieldrequest>& requests) 
 	return values;
 }
 
-std::vector<double>FMTyields::getylds(const FMTdevelopment& dev, const FMTspec& spec) const
+std::vector<double>FMTyields::getYlds(const FMTdevelopment& dev, const FMTspec& spec) const
 {
 	try {
-		const std::vector<std::string>& lnames = spec.getylds();
+		const std::vector<std::string>& lnames = spec.getYlds();
 		return get(dev, lnames);
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for development " + std::string(dev), "FMTyields::getylds", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("for development " + std::string(dev), "FMTyields::getYlds", __LINE__, __FILE__);
 	}
 	return std::vector<double>();
 }*/
@@ -630,7 +630,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getA
     {
 	int age = dev.age;
 	try {
-		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
+		const std::vector<const FMTyieldhandler*>datas = this->findSets(dev.mask);
 		if (!datas.empty())
 		{
 			for (const FMTyieldhandler* data : datas)
@@ -642,7 +642,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getA
 						if (data->elements.find(spec.yieldnames.at(id)) != data->elements.end())
 						{
 							const FMTyldbounds* bound = &spec.yieldbounds.at(id);
-							const int new_age = data->getAge(spec.yieldnames.at(id), bound->getlower(), dev.age);
+							const int new_age = data->getAge(spec.yieldnames.at(id), bound->getLower(), dev.age);
 							if (new_age < age)
 							{
 								age = new_age;
@@ -668,16 +668,16 @@ FMTyieldhandler FMTyields::complexYldToAgeYld(const FMTyieldhandler* complexyld,
 	const FMTmask cplxmask = complexyld->getmask();
 	FMTyieldhandler nhandler(FMTyldtype::FMTageyld, cplxmask);
 	try {
-		const std::vector<std::string>& yldnames = lspec.getylds();
+		const std::vector<std::string>& yldnames = lspec.getYlds();
 		for (size_t id = 0; id < yldnames.size(); ++id)
 		{
 			if (complexyld->containsYield(yldnames.at(id)))
 			{
-				Core::FMTdevelopment newdev(request.getDevelopment());
+				Core::FMTdevelopment newDev(request.getDevelopment());
 				for (int age = 0; age <= request.getDevelopment().getAge(); ++age)
 				{
-					newdev.setAge(age);
-					const FMTyieldrequest newrequest(newdev);
+					newDev.setAge(age);
+					const FMTyieldrequest newrequest(newDev);
 					nhandler.pushBase(age);
 					nhandler.pushData(yldnames.at(id), complexyld->get(yldnames.at(id), newrequest));
 				}

@@ -64,7 +64,7 @@ namespace Parser
 						{
 						//Replicate_replicatedid_perioid
 						const std::string replicatename = "REPLICATE_" + std::to_string(replicateid) + "_" + std::to_string(period);
-						constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, replicatename, value, value));
+						constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, replicatename, value, value));
 						++replicateid;
 						}
 					++period;
@@ -79,7 +79,7 @@ namespace Parser
 					//yieldtarget = "GOAL_" + std::string(kmatch[6]);
 				}
 				else {
-					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
+					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
 				}
 				
 				}
@@ -438,20 +438,20 @@ namespace Parser
 				const std::string GUP_TARGET("GUP");
 				if (Core::FMTconstrainttype::FMTspatialadjacency == constrainttype)
 				{
-					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, GUP_TARGET,
+					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, GUP_TARGET,
 						uppergreenup, lowergreenup));
 				}
 				else if (Core::FMTconstrainttype::FMTspatialsize == constrainttype)
 				{
 					const std::string target("NSIZE");
-					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, upperneighborsize, lowerneighborsize));
+					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, upperneighborsize, lowerneighborsize));
 				}
 				else if (Core::FMTconstrainttype::FMTSpatialGroup == constrainttype)
 				{
 					const std::string THEME_TARGET("THEME");
-					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, GUP_TARGET,
+					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, GUP_TARGET,
 						uppergreenup, lowergreenup));
-					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, THEME_TARGET,
+					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, THEME_TARGET,
 						ThemeId, ThemeId));
 				}
 			}
@@ -461,12 +461,12 @@ namespace Parser
 			fillBounds(senseofconstraint, rhs,lower,upper);
 			const std::string target("RHS");
 			
-			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,upper,lower));
+			constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,upper,lower));
 			if (constrainttypestr != "_RANDOM")
 			{
 				for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(actionoraggregates).getAllAggregates(p_actions))
 				{
-					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, actionptr->getname(), rhs, rhs));
+					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, actionptr->getname(), rhs, rhs));
 				}
 			}
 			const std::vector<Core::FMTconstraint> returnedconstraints = getPeriodsBounds(periodstring, constraint, p_constants);
@@ -551,7 +551,7 @@ namespace Parser
 					higher_var = getNum<double>(high_variation, p_constants);
 				}
 				const std::string yld_name = "Variation";
-				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yld_name, higher_var, lower_var));
+				constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yld_name, higher_var, lower_var));
 				//const std::string periodstring = std::string(kmatch[18]);
 				const std::string periodstring = std::string(kmatch[23]);
 				
@@ -675,7 +675,7 @@ namespace Parser
 				if (keyword=="_SETGLOBALSCHEDULE")
 					{
 					const double scheduleweight = getNum<double>(std::string(specialmatch[4]), p_constants);
-					objective.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize,keyword,scheduleweight, scheduleweight));
+					objective.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize,keyword,scheduleweight, scheduleweight));
 					}
 
 				}
@@ -834,7 +834,7 @@ namespace Parser
 								case FMToptimizationsection::objective:
 								{
 									Core::FMTconstraint objective = getObjective(line, p_constants, p_yields, p_outputs, p_themes);
-									if (objective.emptyperiod())
+									if (objective.emptyPeriod())
 									{
 										_exhandler->raise(Exception::FMTexc::FMTmissingobjective,
 											" at line " + std::to_string(m_line),
@@ -945,7 +945,7 @@ namespace Parser
 									Core::FMTspec theSpec = ActionData.second;
 									bool intersectWithAction = true;
 									boost::icl::discrete_interval<int> TheInterval(OperableInterval);
-									if (!theSpec.emptyperiod())
+									if (!theSpec.emptyPeriod())
 										{
 										const int Upper = theSpec.getPeriodUpperBound();
 										const int Lower = theSpec.getPeriodLowerBound();

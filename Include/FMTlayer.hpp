@@ -249,11 +249,11 @@ namespace Spatial
 					}
 				}
 
-			// DocString: FMTlayer::setextentfrom
+			// DocString: FMTlayer::setExtentFrom
 			/**
 			Using an other layer (rhs) it's going to set the informations (other than the main map) to this.
 			*/
-			void setextentfrom(const FMTlayer<T>& rhs)
+			void setExtentFrom(const FMTlayer<T>& rhs)
 				{
 				this->geotransform = rhs.geotransform;
 				this->maxx = rhs.maxx;
@@ -261,12 +261,12 @@ namespace Spatial
 				this->SRS_WKT = rhs.SRS_WKT;
 				this->cellsize = rhs.cellsize;
 				}
-			// DocString: FMTlayer::copyextent
+			// DocString: FMTlayer::copyExtent
 			/**
 			Create a new FMTlayer by copying informations (other than the main map) to a new FMTlayer from this.
 			*/
             template<typename newtype>
-            FMTlayer<newtype>copyextent() const
+            FMTlayer<newtype>copyExtent() const
 
                 {
                 return FMTlayer<newtype>(std::map<FMTcoordinate,newtype>(),
@@ -284,35 +284,35 @@ namespace Spatial
 			{
 				return *this;
 			}
-			// DocString: FMTlayer::GetXSize
+			// DocString: FMTlayer::getXSize
 			/**
 			Returns the maximal x value of the FMTlayer.
 			*/
-            unsigned int GetXSize() const
+            unsigned int getXSize() const
                 {
                 return maxx;
                 }
-			// DocString: FMTlayer::GetYSize
+			// DocString: FMTlayer::getYSize
 			/**
 			Returns the maximal y value of the FMTlayer.
 			*/
-            unsigned int GetYSize() const
+            unsigned int getYSize() const
                 {
                 return maxy;
                 }
-			// DocString: FMTlayer::getgeotransform
+			// DocString: FMTlayer::getGeoTransform
 			/**
 			Returns the geotransform of the layer.
 			*/
-			std::vector<double> getgeotransform() const
+			std::vector<double> getGeoTransform() const
                 {
                 return geotransform;
                 }
-			// DocString: FMTlayer::getprojection
+			// DocString: FMTlayer::getProjection
 			/**
 			Returns the projection of the FMTlayer.
 			*/
-			std::string getprojection() const
+			std::string getProjection() const
                 {
                 return SRS_WKT;
                 }
@@ -332,11 +332,11 @@ namespace Spatial
                 {
                 return (cellsize * static_cast<double>(mapping.size()));
                 }
-			// DocString: FMTlayer::getcellsize
+			// DocString: FMTlayer::getCellSize
 			/**
 			Get the cell size for a single coordinate of the map.
 			*/
-			double getcellsize() const
+			double getCellSize() const
 				{
 				return cellsize;
 				}

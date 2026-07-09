@@ -151,15 +151,15 @@ namespace Core {
 	int FMTageyieldhandler::getAge(const FMTyieldrequest& request, const FMTspec& spec) const
 	{
 		try {
-			const std::vector<std::string>&yieldnames = spec.getylds();
-			const std::vector<FMTyldbounds>&yieldbounds = spec.getyldbounds();
+			const std::vector<std::string>&yieldnames = spec.getYlds();
+			const std::vector<FMTyldbounds>&yieldbounds = spec.getYldBounds();
 			int age = request.getDevelopment().getAge();
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
 				if (containsYield(yieldnames.at(id)))
 				{
 					const FMTyldbounds* bound = &yieldbounds.at(id);
-					const int new_age = getAge(yieldnames.at(id), bound->getlower(), request.getDevelopment().getAge());
+					const int new_age = getAge(yieldnames.at(id), bound->getLower(), request.getDevelopment().getAge());
 					if (new_age < age)
 					{
 						age = new_age;

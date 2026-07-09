@@ -62,12 +62,12 @@ namespace Core {
 			size_t tsla = std::numeric_limits<size_t>::max();
 			if (linegraph)
 			{
-				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
-				tsla = linegraph->timesincelastaction(*vertex);
+				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getVertexFromVertexInfo(graphinfo);
+				tsla = linegraph->timeSinceLastAction(*vertex);
 			}else if (fullgraph)
 			{
-				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getvertexfromvertexinfo(graphinfo);
-				tsla = fullgraph->timesincelastaction(*vertex);
+				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getVertexFromVertexInfo(graphinfo);
+				tsla = fullgraph->timeSinceLastAction(*vertex);
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "No graph in graph info " + getModelType(),
 					"FMTyieldmodelTSLA::Predict", __LINE__, __FILE__);

@@ -922,7 +922,7 @@ void FMTyieldparser::cleanUp(Core::FMTyields& yields,const std::vector<Core::FMT
 			//delete the handler at it's yields location
 			//decompose and insert all new handlers
 			//std::vector<Core::FMTyieldhandler>::iterator handler_it = yields.databegin();
-		yields.unshrink(themes);
+		yields.unShrink(themes);
 		std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::iterator handler_it = yields.begin();
 		const std::vector<std::string>yldnames = yields.getallyieldnames();
 		while (handler_it != yields.end())

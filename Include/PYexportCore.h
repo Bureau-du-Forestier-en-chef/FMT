@@ -248,11 +248,11 @@ void exportCore()
 			.def("getperiodupperbound", &Core::FMTspec::getPeriodUpperBound,
 				"@DocString(FMTspec::getperiodupperbound)")
 			.def("setbounds", &Core::FMTspec::setBounds, "@DocString(Core::FMTspec::setbounds())")
-			.def<bool(Core::FMTspec::*)(const Core::FMTagebounds&)>("addbounds", &Core::FMTspec::addbounds,
+			.def<bool(Core::FMTspec::*)(const Core::FMTagebounds&)>("addbounds", &Core::FMTspec::addBounds,
 				"@DocString(Core::FMTspec::addbounds(const FMTagebounds&))")
-			.def<bool(Core::FMTspec::*)(const Core::FMTyldbounds&)>("addbounds",&Core::FMTspec::addbounds,
+			.def<bool(Core::FMTspec::*)(const Core::FMTyldbounds&)>("addbounds",&Core::FMTspec::addBounds,
 				"@DocString(Core::FMTspec::addbounds(const FMTyldbounds&))")
-			.def<bool(Core::FMTspec::*)(const Core::FMTlockbounds&)>("addbounds",&Core::FMTspec::addbounds,
+			.def<bool(Core::FMTspec::*)(const Core::FMTlockbounds&)>("addbounds",&Core::FMTspec::addBounds,
 				"@DocString(Core::FMTspec::addbounds(const FMTlockbounds&))");
 
 		bp::class_<Core::FMTtransitionmask>("FMTtransitionmask", "@DocString(FMTtransitionmask)")

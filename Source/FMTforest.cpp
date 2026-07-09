@@ -70,8 +70,8 @@ FMTforest FMTforest::grow() const
             for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator devit = mapping.begin(); devit != mapping.end(); ++devit)
                 {
                 const Core::FMTdevelopment* dev = &devit->second;
-                const Core::FMTdevelopment newdev = dev->grow();
-                newforest.mapping[devit->first] = newdev;
+                const Core::FMTdevelopment newDev = dev->grow();
+                newforest.mapping[devit->first] = newDev;
                 }
             return newforest;
             }
@@ -99,10 +99,10 @@ FMTlayer<int>FMTforest::getAge() const
             return newlayer;
             }
 
-FMTforest FMTforest::getCopy(bool copydata) const
+FMTforest FMTforest::getCopy(bool copyData) const
     {
     FMTlayer<Core::FMTdevelopment> forest(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
-    if(copydata)
+    if(copyData)
         {
         forest = *this;
         }

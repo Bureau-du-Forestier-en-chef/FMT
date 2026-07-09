@@ -79,8 +79,8 @@ void FMTyieldrequest::_updateData(const FMTyields& yields) const
 		if (resume_mask.empty())
 		{
 			m_yields = &yields;
-			resume_mask = yields.filtermask(development->getmask());
-			datas = yields.findsetswithfiltered(resume_mask);
+			resume_mask = yields.filterMask(development->getmask());
+			datas = yields.findSetsWithFiltered(resume_mask);
 		}
 	}
 	catch (...)

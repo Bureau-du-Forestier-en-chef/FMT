@@ -390,12 +390,12 @@ FMTdata::FMTdata(const std::vector<double>& lvalues,
 
 FMTdata FMTdata::operator * (const double& factor) const
 	{
-	FMTdata newdata(*this);
-	for (double& value : newdata.data)
+	FMTdata newData(*this);
+	for (double& value : newData.data)
 		{
 		value *= factor;
 		}
-	return newdata;
+	return newData;
 	}
 
 }

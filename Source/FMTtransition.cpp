@@ -186,14 +186,14 @@ const FMTfork* FMTtransition::getFork(const Core::FMTdevelopment& developement,c
     {
 	try{
 	const Core::FMTyieldrequest& request = developement.getYieldRequest();
-    for(const FMTtransition::const_iterator fork : this->findsets(developement.getmask()))
+    for(const FMTtransition::const_iterator fork : this->findSets(developement.getmask()))
        {
-		if (fork->second.allowwithoutyield(developement.getperiod(), developement.getAge(), developement.getLock()))
+		if (fork->second.allowWithoutYield(developement.getperiod(), developement.getAge(), developement.getLock()))
 			{
-			const std::vector<FMTyldbounds>&bounds = fork->second.getyldbounds();
+			const std::vector<FMTyldbounds>&bounds = fork->second.getYldBounds();
 			size_t bid = 0;
 			bool usefork = true;
-			for (const std::string& yldname : fork->second.getylds())
+			for (const std::string& yldname : fork->second.getYlds())
 			{
 				if (bounds.at(bid).out(ylds.get(request,yldname)))
 					{
@@ -312,11 +312,11 @@ FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	 std::vector<FMTtheme>& p_newthemes, bool p_compressdata)
  {
 	 try {
-		presolvelist(p_filter, p_originalThemes, p_newthemes);
+		presolveList(p_filter, p_originalThemes, p_newthemes);
 		update();
 		 if (p_compressdata)
 		 {
-			 compressmasks(p_newthemes);
+			 compressMasks(p_newthemes);
 		 }
 		 if (!p_filter.emptyFlipped())
 		 {

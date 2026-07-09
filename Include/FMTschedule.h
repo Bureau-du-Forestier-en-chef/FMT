@@ -165,14 +165,14 @@ class FMTEXPORT FMTschedule : public FMTobject
 		size_t size() const;
 		// DocString: FMTschedule::presolve
 		/**
-		Presolve all masks base on a basemask a preolved mask
+		Presolve all masks base on a baseMask a preolved mask
 		and presolved themes and presolved actions list. The returned schedule can also be empty.
 		*/
 		FMTschedule presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& newthemes, const std::vector<FMTaction>&presolvedaction) const;
 		// DocString: FMTschedule::postsolve
 		/**
-		Postsolve all masks base on a basemask and the original themes and actions.
+		Postsolve all masks base on a baseMask and the original themes and actions.
 		*/
 		FMTschedule postsolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const;

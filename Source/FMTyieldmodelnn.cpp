@@ -208,7 +208,7 @@ namespace Core {
 			std::vector<double> result(getModelOutputNames().size(), 0.0);
 			if (linegraph != nullptr)//Im a linegraph
 			{
-				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
+				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getVertexFromVertexInfo(graphinfo);
 				const std::vector<Graph::FMTpredictor>predictors = linegraph->getPredictors(*vertex, *modelptr, modelYields, 3);
 				if (predictors.empty())
 				{
@@ -232,7 +232,7 @@ namespace Core {
 			}
 			else if (fullgraph != nullptr)//Im a full graph
 			{
-				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getvertexfromvertexinfo(graphinfo);
+				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getVertexFromVertexInfo(graphinfo);
 				const std::vector<Graph::FMTpredictor>predictors = fullgraph->getPredictors(*vertex, *modelptr, modelYields, 3);
 				if (predictors.empty())
 					{
@@ -244,7 +244,7 @@ namespace Core {
 				const Models::FMTsrmodel* srmodelptr = dynamic_cast<const Models::FMTsrmodel*>(modelptr); //cast to a srmodel
 				const Models::FMTlpsolver* solverptr = srmodelptr->getConstSolverPtr(); //getsolver
 				bool withoutsolution = false;
-				if ((fullgraph->getbuildtype() == Graph::FMTgraphbuild::fullbuild) &&
+				if ((fullgraph->getBuildType() == Graph::FMTgraphbuild::fullbuild) &&
 					(!solverptr->isProvenOptimal()))
 				{
 					//Si le lpsolver n'est pas optimal faudrait trouver une autre solution...
@@ -256,8 +256,8 @@ namespace Core {
 					//	"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 				const double* solution = solverptr->getColSolution();
-				const std::vector<int>invariables = fullgraph->getinvariables(*vertex);
-				const std::vector<double>inproportions = fullgraph->getinproportions(*vertex);
+				const std::vector<int>invariables = fullgraph->getInVariables(*vertex);
+				const std::vector<double>inproportions = fullgraph->getInProportions(*vertex);
 				double totalarea = 0;
 				if (!withoutsolution)
 				{

@@ -1225,7 +1225,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			try {
 				if (updategraph)
 				{
-					m_graph->updatematrixindex(deletedvariables, deletedconstraints);
+					m_graph->updateMatrixIndex(deletedvariables, deletedconstraints);
 				}
 				updateConstraintsMapping(deletedvariables, deletedconstraints);
 				solver.synchronize();
@@ -2197,8 +2197,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		try {
 			std::vector<std::string>colnames(solver.getNumCols());
 			std::vector<std::string>rownames(solver.getNumRows());
-			m_graph->getvariablenames(actions,colnames);
-			m_graph->gettransferrownames(rownames);
+			m_graph->getVariableNames(actions,colnames);
+			m_graph->getTransferRowNames(rownames);
 			updateGeneralConstraintsNaming(colnames,rownames);
 			int colid = 0;
 			for (const std::string& name : colnames)

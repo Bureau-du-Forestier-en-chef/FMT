@@ -81,7 +81,7 @@ class FMTEXPORT FMTlifespans : public FMTlist<int>
 		void update() override;
 		// DocString: FMTlifespans::presolve
 		/**
-		Eliminate FMTlist elements and presolve all masks based on a basemask a preolved mask
+		Eliminate FMTlist elements and presolve all masks based on a baseMask a preolved mask
 		and presolved themes.
 		*/
 		FMTlifespans presolve(const FMTmaskfilter& filter,

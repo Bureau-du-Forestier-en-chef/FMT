@@ -25,12 +25,12 @@ namespace Core
 
 	bool FMToutputnode::singlePeriod() const
 		{
-		return (!source.emptyperiod() && source.getPeriodLowerBound() == source.getPeriodUpperBound());
+		return (!source.emptyPeriod() && source.getPeriodLowerBound() == source.getPeriodUpperBound());
 		}
 
 	bool FMToutputnode::multiPeriod() const
 		{
-		return (!source.emptyperiod() && source.getPeriodLowerBound() != source.getPeriodUpperBound());
+		return (!source.emptyPeriod() && source.getPeriodLowerBound() != source.getPeriodUpperBound());
 		}
 
 	bool FMToutputnode::isNull() const
@@ -191,7 +191,7 @@ namespace Core
 				targetedperiods.push_back(local_period);
 			}
 		}
-		else if (this->source.emptyperiod() && (this->source.isSum() || this->source.isAverage()))
+		else if (this->source.emptyPeriod() && (this->source.isSum() || this->source.isAverage()))
 		{	
 			const int minperiod = 1;
 			const int maxperiod = period;
@@ -227,17 +227,17 @@ namespace Core
 
 	Core::FMTmask FMToutputnode::getHashMask() const
 	{
-		Core::FMTmask basemask;
-		source.fillHashMask(basemask);
-		factor.fillHashMask(basemask);
-		basemask.binarizedAppend<double>(constant);
-		return basemask;
+		Core::FMTmask baseMask;
+		source.fillHashMask(baseMask);
+		factor.fillHashMask(baseMask);
+		baseMask.binarizedAppend<double>(constant);
+		return baseMask;
 	}
 
-	void FMToutputnode::fillHashMaskSpec(Core::FMTmask& basemask) const
+	void FMToutputnode::fillHashMaskSpec(Core::FMTmask& baseMask) const
 	{
-		source.fillHashSpec(basemask);
-		factor.fillHashSpec(basemask);
+		source.fillHashSpec(baseMask);
+		factor.fillHashSpec(baseMask);
 	}
 
 	

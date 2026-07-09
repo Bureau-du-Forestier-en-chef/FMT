@@ -263,7 +263,7 @@ namespace Parallel
 			Models::FMTlpmodel modelcopy(*basemodel);
 			modelcopy.doPlanning(false);
 			Core::FMTyields newyields = modelcopy.getyields();
-			newyields.unshrink(modelcopy.getthemes());
+			newyields.unShrink(modelcopy.getthemes());
 			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getSolution(outyldname))
 			{
 				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));

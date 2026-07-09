@@ -140,7 +140,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			std::vector<std::pair<FMTmask, FMTspec>>::const_iterator datait = this->begin();
 			for (size_t id = 0; id < this->size(); ++id)
 			{
-				if (!datait->second.emptyage())
+				if (!datait->second.emptyAge())
 				{
 					int upperbound = datait->second.getAgeUpperBound();
 					if (upperbound > ageupperbound)
@@ -157,7 +157,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 					ageupperbound = std::numeric_limits<int>::max();
 					agelowerbound = 0;
 				}
-				if (!datait->second.emptyperiod())
+				if (!datait->second.emptyPeriod())
 				{
 					int upperbound = datait->second.getPeriodUpperBound();
 					if (upperbound > periodupperbound)
@@ -363,9 +363,9 @@ bool FMTaction::useyield(const std::string& yldname) const
 	try {
 		for (const auto& speclitit : *this)
 		{
-			if (!speclitit.second.emptyylds())
+			if (!speclitit.second.emptyYlds())
 			{
-				const std::vector<std::string> specyields = speclitit.second.getylds();
+				const std::vector<std::string> specyields = speclitit.second.getYlds();
 				if (std::find(specyields.begin(), specyields.end(), yldname) != specyields.end())
 				{
 					return true;
@@ -510,7 +510,7 @@ bool FMTaction::notUse() const
 	size_t count = 0;
 	for (const auto& value : *this)
 		{
-		if (!value.second.emptyperiod()&&
+		if (!value.second.emptyPeriod()&&
 			value.second.getPeriodLowerBound() == 0 &&
 			value.second.getPeriodUpperBound() == 0)
 			{
@@ -573,10 +573,10 @@ void FMTaction::presolveRef(const FMTmaskfilter& p_filter,
 	std::vector<FMTtheme>& p_newthemes, bool p_compressdata)
 {
 	try {
-		presolvelist(p_filter, p_originalthemes, p_newthemes);
+		presolveList(p_filter, p_originalthemes, p_newthemes);
 		if (p_compressdata)
 			{
-			compressmasks(p_newthemes);
+			compressMasks(p_newthemes);
 			}
 		update();
 	}catch (...)

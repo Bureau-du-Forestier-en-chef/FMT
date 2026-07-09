@@ -47,13 +47,13 @@ namespace Models
 	{
 		Graph::FMTgraphstats stats;
 		try {
-			const int ncols = static_cast<int>(m_graph->nedges());
+			const int ncols = static_cast<int>(m_graph->nEdges());
 			const std::vector<int>column_Starts(static_cast<size_t>(ncols) + 1, 0);
 			const std::vector<int>targetrows(static_cast<size_t>(ncols), 0);
 			const std::vector<double>nelements(ncols, 0.0);
 			std::vector<double>lower_bounds(ncols, 0.0);
 			std::vector<double>upper_bounds(ncols, 0.0);
-			m_graph->getinitialbounds(lower_bounds, upper_bounds);
+			m_graph->getInitialBounds(lower_bounds, upper_bounds);
 			solver.addCols(ncols, &column_Starts[0], &targetrows[0],
 				&nelements[0], &lower_bounds[0],
 				&upper_bounds[0], &nelements[0]);
@@ -169,7 +169,7 @@ namespace Models
 				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
 				const int deathid = static_cast<int>(std::distance(actions.cbegin(), cit));
 				const double* actual_solution = solver.getColSolution();
-				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getdevsset(period);
+				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getDevsSet(period);
 				//Copy de la solution donc les p�riodes pr�c�dents car c'est elle qu'on veut... Le reste on le scrap ?!
 				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
 				//Contient la proportion d'area qui rentre dans le vertex qui doit resortir dans la variable... Donc 200 ha dans le vertex rentre.. 222,0.1 il y a 20 ha qui ressort dans la variable 222
@@ -178,7 +178,7 @@ namespace Models
 				const bool typeII = (getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					if (typeII&&m_graph->isnotransfer(*vertex_iterator, 1))//Dont need to set to 0 global growth variable.
+					if (typeII&&m_graph->isNoTransfer(*vertex_iterator, 1))//Dont need to set to 0 global growth variable.
 						{
 						continue;
 						}
@@ -199,7 +199,7 @@ namespace Models
 					{
 						for (const auto& devit : actionit->second)
 						{
-							if(m_graph->containsdevelopment(devit.first, lookup))
+							if(m_graph->containsDevelopment(devit.first, lookup))
 							{
 								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getDevelopment(devit.first, lookup);
 								if(growthordeathdeductor.find(vdescriptor)==growthordeathdeductor.end())
@@ -260,8 +260,8 @@ namespace Models
 					//since it's comming from growth and nothing else we know the area
 					if (m_graph->periodstart(*vertex_iterator))//get inperiod
 					{
-						const std::map<int,int> inidsvars = m_graph->getinidsvariables(*vertex_iterator);
-						const bool setrest = !(typeII&&m_graph->isnotransfer(*vertex_iterator, 1));
+						const std::map<int,int> inidsvars = m_graph->getInIdsVariables(*vertex_iterator);
+						const bool setrest = !(typeII&&m_graph->isNoTransfer(*vertex_iterator, 1));
 						if(inidsvars.size()>1)
 						{
 							//Because what comes from previous period must have inarea ... will be set later 
@@ -348,7 +348,7 @@ namespace Models
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor first = descriptors.front();
 					//Cette portion est pour valider que toutes les variables qui rentrent dans le vertex on �t� setter par la fonction
 					//sinon on le remet a la fin de la queue 
-					const std::vector<int>invariables = m_graph->getinvariables(first);
+					const std::vector<int>invariables = m_graph->getInVariables(first);
 					const std::set<int> invariablesset(invariables.begin(), invariables.end());
 					std::set<int> notprocessedvariables;
 					std::set_difference(invariablesset.begin(), invariablesset.end(), processedvariables.begin(), processedvariables.end(), std::inserter(notprocessedvariables, notprocessedvariables.end()));
@@ -361,7 +361,7 @@ namespace Models
 							canprocess = false;
 						}
 					}
-					const bool setrest = !(typeII&&m_graph->isnotransfer(first, 1));
+					const bool setrest = !(typeII&&m_graph->isNoTransfer(first, 1));
 					if	(canprocess)
 					{
 						passwithoutprocess=0;
@@ -465,13 +465,13 @@ namespace Models
 				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
 				const int deathid = static_cast<int>(std::distance(actions.cbegin(), cit));
 				const double* actual_solution = solver.getColSolution();
-				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getdevsset(period);
+				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getDevsSet(period);
 				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				const bool typeII = (getparameter(Models::FMTintmodelparameters::MATRIX_TYPE)==2);
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					if (typeII&&m_graph->isnotransfer(*vertex_iterator,1))//Dont need to set to 0 global growth variable.
+					if (typeII&&m_graph->isNoTransfer(*vertex_iterator,1))//Dont need to set to 0 global growth variable.
 						{
 						continue;
 						}
@@ -493,7 +493,7 @@ namespace Models
 						size_t allocated = 0;
 						for (const auto& devit : actionit->second)
 						{
-							if (((schedule.doUseLock() || actionit->first.doRespectLock()) && m_graph->containsdevelopment(devit.first, lookup)))
+							if (((schedule.doUseLock() || actionit->first.doRespectLock()) && m_graph->containsDevelopment(devit.first, lookup)))
 							{
 								//*_logger << "t1 " << actionit->first.getname() << "\n";
 								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getDevelopment(devit.first, lookup);
@@ -527,7 +527,7 @@ namespace Models
 								for (int lockid = 0; lockid <= maximallock; ++lockid)
 								{
 									locked.setLock(lockid);
-									if (m_graph->containsdevelopment(locked, lookup))
+									if (m_graph->containsDevelopment(locked, lookup))
 									{
 										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getDevelopment(locked, lookup);
 										const double* newsolutionptr = &new_solution[0];
@@ -538,7 +538,7 @@ namespace Models
 										}
 										if (!(m_graph->onlypertiodstart(vdescriptor) && originalinarea == std::numeric_limits<double>::max()))
 										{
-											locksorter.push_back(std::pair<size_t, size_t>(locksfound.size(), m_graph->getamountofpaths(locked, -1, *this, lookup)));
+											locksorter.push_back(std::pair<size_t, size_t>(locksfound.size(), m_graph->getAmountOfPaths(locked, -1, *this, lookup)));
 											locksfound.push_back(std::pair<Core::FMTdevelopment, double>(locked, originalinarea));
 
 										}
@@ -677,7 +677,7 @@ namespace Models
 						{
 							variables.erase(targetaction);
 						}
-						const bool setrest = !(typeII&&m_graph->isnotransfer(*vertex_iterator, 1));
+						const bool setrest = !(typeII&&m_graph->isNoTransfer(*vertex_iterator, 1));
 						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 						{
 							std::vector<Core::FMTdevelopmentpath> paths = m_graph->getPaths(*vertex_iterator, varit->first);
@@ -711,7 +711,7 @@ namespace Models
 								for (int locklevel = 0; locklevel < 30; ++locklevel)
 								{
 									locked.setLock(locklevel);
-									if (m_graph->containsdevelopment(locked, lookup))
+									if (m_graph->containsDevelopment(locked, lookup))
 									{
 										locking += std::to_string(locklevel) + ",";
 									}
@@ -773,7 +773,7 @@ namespace Models
 							"FMTsrmodel::setsolution", __LINE__, __FILE__);
 						return false;
 					}
-					const bool setrest = !(typeII&&m_graph->isnotransfer(first, 1));
+					const bool setrest = !(typeII&&m_graph->isNoTransfer(first, 1));
 					if ((targetaction < 0) && setrest)
 					{
 
@@ -812,7 +812,7 @@ namespace Models
 	bool FMTsrmodel::setSolutionByLp(int period, const Core::FMTschedule& schedule, double tolerance)
 	{
 		try {
-			if (Graph::FMTgraphbuild::schedulebuild != m_graph->getbuildtype())
+			if (Graph::FMTgraphbuild::schedulebuild != m_graph->getBuildType())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot set solution by lp on a non partial graph",
@@ -820,7 +820,7 @@ namespace Models
 			}
 			if (static_cast<int>(m_graph->size()) > period && period > 0)
 			{
-				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getdevsset(period);
+				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getDevsSet(period);
 				std::map<int, std::pair<double, double>>bounds;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
@@ -846,7 +846,7 @@ namespace Models
 						for (const auto& devit : actionit->second)
 						{
 							//(Lock in schedule or action not LOCKEXEMPT) and dev in graph 
-							if ((schedule.doUseLock() || actionit->first.doRespectLock()) && m_graph->containsdevelopment(devit.first, lookup))
+							if ((schedule.doUseLock() || actionit->first.doRespectLock()) && m_graph->containsDevelopment(devit.first, lookup))
 							{
 								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getDevelopment(devit.first, lookup);
 								//const int variable = m_graph->getoutvariables(vdescriptor)[actionid];
@@ -893,7 +893,7 @@ namespace Models
 								for (int lockid = 0; lockid <= maximallock; ++lockid)
 								{
 									locked.setLock(lockid);
-									if (m_graph->containsdevelopment(locked, lookup))
+									if (m_graph->containsDevelopment(locked, lookup))
 									{
 										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getDevelopment(locked, lookup);
 										//const int variable = m_graph->getoutvariables(vdescriptor)[actionid];
@@ -1061,7 +1061,7 @@ namespace Models
 	bool FMTsrmodel::isOptimal() const
 	{
 		try {
-			if (m_graph->getbuildtype() == Graph::FMTgraphbuild::fullbuild)//Only global Graph
+			if (m_graph->getBuildType() == Graph::FMTgraphbuild::fullbuild)//Only global Graph
 			{
 				return solver.isProvenOptimal();
 			}
@@ -1107,34 +1107,34 @@ namespace Models
 
 	Core::FMTschedule FMTsrmodel::getSolution(int period, bool withlock) const
 	{
-		Core::FMTschedule newschedule;
+		Core::FMTschedule newSchedule;
 		try
 		{
 			//setparameter(SHOW_LOCK_IN_SCHEDULES,withlock);
 			const double* actual_solution = solver.getColSolution();
-			newschedule = m_graph->getSchedule(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
+			newSchedule = m_graph->getSchedule(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
 
 		}
 		catch (...)
 		{
 			_exhandler->printexceptions("at period " + std::to_string(period), "FMTsrmodel::getsolution", __LINE__, __FILE__);
 		}
-		return newschedule;
+		return newSchedule;
 	}
 
 	Core::FMTschedule FMTsrmodel::getScheduleProportions(int period, bool withlock) const
 	{
-		Core::FMTschedule newschedule;
+		Core::FMTschedule newSchedule;
 		try
 		{
 			const double* actual_solution = solver.getColSolution();
-			newschedule = m_graph->getoutvariablesproportions(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
+			newSchedule = m_graph->getOutVariablesProportions(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
 		}
 		catch (...)
 		{
 			_exhandler->printexceptions("at period " + std::to_string(period), "FMTsrmodel::getscheduleproportions", __LINE__, __FILE__);
 		}
-		return newschedule;
+		return newSchedule;
 	}
 
 	Graph::FMTgraphstats FMTsrmodel::updateMatrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
@@ -1168,12 +1168,12 @@ namespace Models
 			const bool typeII = (getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
 			for (boost::tie(it, itend) = targets; it != itend; ++it)
 			{
-				if (typeII&&m_graph->isnotransfer(*it,1))//We dont need a transfer Row here
+				if (typeII&&m_graph->isNoTransfer(*it,1))//We dont need a transfer Row here
 				{
 					//Type II behavior
 				}else {//Else add a new transfer row.
 					m_graph->setconstraintID(*it, newconstraintID);
-					if (m_graph->gettransferrow(*it, row_Starts, targetcols, elements))
+					if (m_graph->getTransferRow(*it, row_Starts, targetcols, elements))
 					{
 
 					}
@@ -1298,10 +1298,10 @@ namespace Models
 			if (!forcepartialbuild && schedule.empty()) // full build
 			{
 				buildstats = m_graph->build(*this, actives, compressageclassoperability);
-				m_graph->setbuildtype(Graph::FMTgraphbuild::fullbuild);
+				m_graph->setBuildType(Graph::FMTgraphbuild::fullbuild);
 			}
 			else {//partial build for result
-				m_graph->setbuildtype(Graph::FMTgraphbuild::schedulebuild);
+				m_graph->setBuildType(Graph::FMTgraphbuild::schedulebuild);
 				buildstats = m_graph->buildschedule(*this, actives, schedule);
 			}
 			const int location = static_cast<int>(m_graph->size() - 2);
@@ -1327,7 +1327,7 @@ namespace Models
 
 	void FMTsrmodel::clearGraphDevelopements()
 	{
-		m_graph->cleardevelopments();
+		m_graph->clearDevelopments();
 	}
 	void FMTsrmodel::clearGraphCache()
 	{
@@ -1702,7 +1702,7 @@ namespace Models
 		std::vector<const Core::FMTdevelopment*>devs;
 		try {
 			const int death_id = static_cast<int>(actions.size() - 1);
-			devs = m_graph->nochoice(base_mask, death_id);
+			devs = m_graph->noChoice(base_mask, death_id);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTsrmodel::getnochoice", __LINE__, __FILE__);

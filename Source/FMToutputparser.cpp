@@ -648,7 +648,7 @@ namespace Parser
 																{
 																	const int lower = 1;
 																	constexpr int upper = std::numeric_limits<int>::max();
-																	spec.addbounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
+																	spec.addBounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
 																							Core::FMTkwor::Source, upper, lower));
 																}
 																sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
@@ -664,7 +664,7 @@ namespace Parser
 																	{
 																		const int lower = 1;
 																		constexpr int upper = std::numeric_limits<int>::max();
-																		spec.addbounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
+																		spec.addBounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
 																								Core::FMTkwor::Source, upper, lower));
 																	}
 																	sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
@@ -682,7 +682,7 @@ namespace Parser
 																{
 																	const int lower = 1;
 																	constexpr int upper = std::numeric_limits<int>::max();
-																	specs.at(0).addbounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
+																	specs.at(0).addBounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
 																							Core::FMTkwor::Source, upper, lower));
 																}
 

@@ -39,7 +39,7 @@ namespace Spatial
 			std::vector<Core::FMTactualdevelopment>getarea() const;
 			void setLastThemeWithArea(const std::vector<Core::FMTactualdevelopment>& p_devs,
 										const std::vector<Core::FMTtheme>& p_themes);
-        FMTforest getCopy(bool copydata = true) const;
+        FMTforest getCopy(bool copyData = true) const;
         FMTforest grow() const;
 		std::vector<FMTlayer<std::string>> getthemes(const std::vector<Core::FMTtheme>& themes) const;
         FMTlayer<int>getAge() const;

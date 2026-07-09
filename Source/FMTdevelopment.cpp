@@ -130,19 +130,19 @@ namespace Core{
         }
     FMTfuturdevelopment FMTdevelopment::grow() const
         {
-        FMTfuturdevelopment newdev(*this);
+        FMTfuturdevelopment newDev(*this);
 		try {
-			++newdev.age;
-			if (newdev.lock > 0)
+			++newDev.age;
+			if (newDev.lock > 0)
 			{
-				--newdev.lock;
+				--newDev.lock;
 			}
-			++newdev.period;
+			++newDev.period;
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::grow", __LINE__, __FILE__);
 			}
-        return newdev;
+        return newDev;
         }
 
 	bool FMTdevelopment::worthTestingOperability(const FMTaction& action) const
@@ -167,7 +167,7 @@ namespace Core{
 		 try{
 			if (worthTestingOperability(action))
 				{
-				for (const FMTaction::const_iterator spec: action.findsets(mask))
+				for (const FMTaction::const_iterator spec: action.findSets(mask))
 					{
 					if (is(spec->second, ylds,graphyieldrequest))
 						{
@@ -267,9 +267,9 @@ namespace Core{
 			 }
 			 else {
 				 std::string yldsStr;
-				 for (const FMTtransition::const_iterator fork : Transition.findsets(getmask()))
+				 for (const FMTtransition::const_iterator fork : Transition.findSets(getmask()))
 				 {
-					 for (const std::string& YLD_NAME : fork->second.getylds())
+					 for (const std::string& YLD_NAME : fork->second.getYlds())
 					 {
 						 if (yldsStr.find(YLD_NAME)==std::string::npos)
 						 {
@@ -366,12 +366,12 @@ namespace Core{
 		{
 		bool allow = false;
 		try {
-			allow = specification.allowwithoutyield(getperiod(), getAge(), getLock());
-			if (allow && !specification.emptyylds())
+			allow = specification.allowWithoutYield(getperiod(), getAge(), getLock());
+			if (allow && !specification.emptyYlds())
 				{
 				const FMTyieldrequest REQUEST = getYieldRequest(graphyieldrequest);
-				const std::vector<Core::FMTyldbounds>& BOUNDS= specification.getyldbounds();
-				const std::vector<std::string>& YLD_NAMES = specification.getylds();
+				const std::vector<Core::FMTyldbounds>& BOUNDS= specification.getYldBounds();
+				const std::vector<std::string>& YLD_NAMES = specification.getYlds();
 				size_t boundId = 0;
 				while (allow && boundId < BOUNDS.size())
 					{

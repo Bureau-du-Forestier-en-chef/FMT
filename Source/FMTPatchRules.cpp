@@ -383,8 +383,8 @@ std::vector<std::pair<std::vector<int>,
 						if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTspatialsize)
 							{
-							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getyieldbound("NSIZE");
-							m_NeighborSize = static_cast<size_t>(BOUNDS.getlower());
+							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getYieldBound("NSIZE");
+							m_NeighborSize = static_cast<size_t>(BOUNDS.getLower());
 							double lowerSIZE = 0;
 							double upperSIZE = 0;
 							CONSTRAINT.getBounds(lowerSIZE, upperSIZE, 0);
@@ -393,8 +393,8 @@ std::vector<std::pair<std::vector<int>,
 						}else if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTspatialadjacency)
 							{
-							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getyieldbound("GUP");
-							m_GreenUp = static_cast<size_t>(BOUNDS.getlower());
+							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getYieldBound("GUP");
+							m_GreenUp = static_cast<size_t>(BOUNDS.getLower());
 							size_t minimalGreenUp = 0;
 							size_t maximalGreenUp = 0;
 							double lowerGreenUp = 0;
@@ -405,12 +405,12 @@ std::vector<std::pair<std::vector<int>,
 						}else if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTSpatialGroup)
 							{
-							m_GroupGreenUp = static_cast<int>(CONSTRAINT.getyieldbound("GUP").getlower());
-							const Core::FMTyldbounds& THEME_BOUNDS = CONSTRAINT.getyieldbound("THEME");
+							m_GroupGreenUp = static_cast<int>(CONSTRAINT.getYieldBound("GUP").getLower());
+							const Core::FMTyldbounds& THEME_BOUNDS = CONSTRAINT.getYieldBound("THEME");
 							int themeTarget = -1;
-							if (THEME_BOUNDS.getlower() >= 0.0)
+							if (THEME_BOUNDS.getLower() >= 0.0)
 								{
-								m_GroupTheme = (static_cast<int>(THEME_BOUNDS.getlower()) - 1);
+								m_GroupTheme = (static_cast<int>(THEME_BOUNDS.getLower()) - 1);
 								}
 							double lowerDistance = 0;
 							double upperDistance = 0;

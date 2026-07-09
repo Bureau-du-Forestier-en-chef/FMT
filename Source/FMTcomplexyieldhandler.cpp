@@ -140,11 +140,11 @@ namespace Core {
 			{
 				if (containsYield(yieldnames.at(id)))
 				{
-					Core::FMTdevelopment newdev(request.getDevelopment());
+					Core::FMTdevelopment newDev(request.getDevelopment());
 					for (int age = minage; age <= maxage; ++age)
 					{
-						newdev.setAge(age);
-						const FMTyieldrequest newrequest(newdev, request);
+						newDev.setAge(age);
+						const FMTyieldrequest newrequest(newDev, request);
 						nhandler.pushData(yieldnames.at(id), get(yieldnames.at(id), newrequest));
 					}
 				}
@@ -926,7 +926,7 @@ namespace Core {
 	{
 		
 		try {
-			return toAgeYld(request, lspec.getylds(), 0, request.getDevelopment().getAge());
+			return toAgeYld(request, lspec.getYlds(), 0, request.getDevelopment().getAge());
 		}
 		catch (...) {
 			_exhandler->raisefromcatch("Error in converting complexyield to ageyield for yieldhandler " + std::string(*this), "FMTyieldrequest::complexyldtoageyld", __LINE__, __FILE__);

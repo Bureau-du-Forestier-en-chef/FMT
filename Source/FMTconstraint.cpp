@@ -98,7 +98,7 @@ namespace Core
         {
         sense = 1;
 		std::vector<std::string>penalties;
-        if (!this->emptyylds())
+        if (!this->emptyYlds())
 			{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
@@ -125,7 +125,7 @@ namespace Core
 
    void FMTconstraint::getGoal(std::string& name,double& value) const
         {
-        if (!this->emptyylds())
+        if (!this->emptyYlds())
 			{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
@@ -136,7 +136,7 @@ namespace Core
 					//boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
 					//name = names[1];
 					name = yieldnames.at(id).substr(GOAL_FINDER+5, yieldnames.at(id).size());
-					value = yieldbounds.at(id).getlower();
+					value = yieldbounds.at(id).getLower();
 					break;
 				}
 			}
@@ -149,7 +149,7 @@ namespace Core
 		   if (!isObjective())
 				{
 			    const std::string yieldtarget = "GOAL_" + goalname;
-			    addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, value, value));
+			    addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, value, value));
 				}
 	   }
 	   catch (...)
@@ -167,12 +167,12 @@ namespace Core
 			   if (variables.size()==1 && (*variables.begin()) == "_ALL")
 			   {
 				   const std::string target = yldbound + (penaltyoperator + (*variables.begin()));
-				   addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,0.0,0.0));
+				   addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,0.0,0.0));
 			   }else {
 				   for (const std::string& penalty_var : variables)
 				   {
 					   const std::string target = yldbound + penaltyoperator + "_" + penalty_var;
-					   addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,0.0,0.0));
+					   addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,0.0,0.0));
 				   }
 			   }
 			}
@@ -185,7 +185,7 @@ namespace Core
 
 	bool FMTconstraint::isGoal() const
 		{
-		if (!this->emptyylds())
+		if (!this->emptyYlds())
 			{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
@@ -216,7 +216,7 @@ namespace Core
 		if (p_period >= getPeriodLowerBound() &&
 			p_period <= getPeriodUpperBound())
 		{
-			if (!this->emptyylds())
+			if (!this->emptyYlds())
 			{
 				int period = getPeriodLowerBound();
 				const int upperperiod = getPeriodUpperBound();
@@ -234,7 +234,7 @@ namespace Core
 						const int RepPeriod = std::stoi(yieldnames.at(id).substr(yieldnames.at(id).find_last_of("_")+1, yieldnames.at(id).size()));
 						if (RepId == (p_replicate - 1) && period == RepPeriod)
 						{
-							p_bound = yieldbounds.at(id).getlower();
+							p_bound = yieldbounds.at(id).getLower();
 							return true;
 
 						}
@@ -298,7 +298,7 @@ namespace Core
 		if (p_period >= getPeriodLowerBound() &&
 			p_period <= getPeriodUpperBound())
 		{
-			if (!this->emptyylds())
+			if (!this->emptyYlds())
 			{
 				for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
@@ -329,13 +329,13 @@ namespace Core
 	double FMTconstraint::getScheduleWeight() const
 	{
 		try {
-			if (!this->emptyylds()&&isObjective())
+			if (!this->emptyYlds()&&isObjective())
 			{
 				for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
 					if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
 					{
-						return getyieldbound("_SETGLOBALSCHEDULE").getlower();
+						return getYieldBound("_SETGLOBALSCHEDULE").getLower();
 					}
 				}
 			}
@@ -354,13 +354,13 @@ namespace Core
 			double lower = 0;
 			double upper = 0;
 			double factor = 1.0;
-			if (!this->emptyylds())
+			if (!this->emptyYlds())
 			{
 				for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
 					if (yieldnames.at(id).find("_SETFROM"+modeltype) != std::string::npos)
 					{
-						factor = yieldbounds.at(id).getlower();
+						factor = yieldbounds.at(id).getLower();
 						break;
 					}
 				}
@@ -386,12 +386,12 @@ namespace Core
 	bool FMTconstraint::isReIgnore(const int& replanningperiod) const
 	{
 		try {
-			if (!this->emptyylds())
+			if (!this->emptyYlds())
 			{
 				for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
 					if (yieldnames.at(id).find("_REIGNORE") != std::string::npos&&
-						getyieldbound("_REIGNORE").getlower()<= replanningperiod)
+						getYieldBound("_REIGNORE").getLower()<= replanningperiod)
 					{
 						if (type != FMTconstrainttype::FMTstandard)
 						{
@@ -414,7 +414,7 @@ namespace Core
 	bool FMTconstraint::isSetFrom(const std::string& modeltype) const
 	{
 		try {
-			if (!this->emptyylds())
+			if (!this->emptyYlds())
 			{
 				for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
@@ -467,7 +467,7 @@ namespace Core
 			}
 			replaceDivision(multilywith);
 			}
-			this->addbounds(FMTyldbounds(FMTsection::Optimize, "RHS", upper, lower));
+			this->addBounds(FMTyldbounds(FMTsection::Optimize, "RHS", upper, lower));
 
 		}
 
@@ -487,8 +487,8 @@ namespace Core
 			{
 				if (yieldnames.at(id).find("RHS") != std::string::npos)
 				{
-					lower = yieldbounds.at(id).getlower();
-					upper = yieldbounds.at(id).getupper();
+					lower = yieldbounds.at(id).getLower();
+					upper = yieldbounds.at(id).getUpper();
 					break;
 				}
 			}
@@ -549,8 +549,8 @@ namespace Core
 		{
 			if (yieldnames.at(id).find("Variation") != std::string::npos)
 			{
-				lower = (yieldbounds.at(id).getlower() / 100);
-				upper = (yieldbounds.at(id).getupper() / 100);
+				lower = (yieldbounds.at(id).getLower() / 100);
+				upper = (yieldbounds.at(id).getUpper() / 100);
 				break;
 			}
 		}
@@ -558,7 +558,7 @@ namespace Core
 
 	bool FMTconstraint::isMultiple() const
 		{
-		//std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+		//std::map<std::string, FMTyldbounds> thebounds = this->getYldsBounds();
 		//return (thebounds.find("Variation") != thebounds.end());
 		for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
@@ -631,7 +631,7 @@ namespace Core
 				period_bounds = std::to_string(maxperiod);
 			}
 			std::string variation = "";
-			if (!this->emptyylds())
+			if (!this->emptyYlds())
 			{
 				size_t location = 0;
 				bool gotvariation = false;
@@ -646,15 +646,15 @@ namespace Core
 				}
 				if (gotvariation)
 				{
-					if (/*yieldbounds.at(location).getlower() != yieldbounds.at(location).getupper() &&*/
-						yieldbounds.at(location).getupper() > 0)
+					if (/*yieldbounds.at(location).getLower() != yieldbounds.at(location).getUpper() &&*/
+						yieldbounds.at(location).getUpper() > 0)
 					{
-						variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%,";
-						variation += std::to_string(static_cast<int>(yieldbounds.at(location).getupper())) + "%";
+						variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getLower())) + "%,";
+						variation += std::to_string(static_cast<int>(yieldbounds.at(location).getUpper())) + "%";
 					}
-					else if (yieldbounds.at(location).getlower() != 0)
+					else if (yieldbounds.at(location).getLower() != 0)
 					{
-						variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%";
+						variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getLower())) + "%";
 					}
 
 
@@ -666,7 +666,7 @@ namespace Core
 			std::string penalty = "";
 			std::string global = "";
 			std::string ScheduleWeight = "";
-			if (!this->emptyylds())
+			if (!this->emptyYlds())
 			{
 				for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
@@ -674,11 +674,11 @@ namespace Core
 					if (GOAL_FINDER != std::string::npos)
 					{
 						goal += yieldnames.at(id).substr(GOAL_FINDER + 5, yieldnames.at(id).size()) + ",";
-						goal += std::to_string(yieldbounds.at(id).getlower());
+						goal += std::to_string(yieldbounds.at(id).getLower());
 					}
 					if (yieldnames.at(id).find("_SETFROMGLOBAL") != std::string::npos)
 					{
-						global += std::to_string(yieldbounds.at(id).getlower());
+						global += std::to_string(yieldbounds.at(id).getLower());
 					}
 					if (yieldnames.at(id).find("Penalty") != std::string::npos)
 					{
@@ -703,7 +703,7 @@ namespace Core
 					}
 					if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
 					{
-						ScheduleWeight += std::to_string(yieldbounds.at(id).getlower());
+						ScheduleWeight += std::to_string(yieldbounds.at(id).getLower());
 					}
 				}
 
@@ -795,8 +795,8 @@ namespace Core
 				{
 					if (yieldnames.at(id) == "RHS")
 					{
-						lower_b = yieldbounds.at(id).getlower();
-						upper_b = yieldbounds.at(id).getupper();
+						lower_b = yieldbounds.at(id).getLower();
+						upper_b = yieldbounds.at(id).getUpper();
 						break;
 					}
 				}
@@ -893,7 +893,7 @@ namespace Core
 				if (type == Core::FMTconstrainttype::FMTSpatialGroup)
 					{
 					const std::string THEME_TARGET("THEME");
-					double ThemeId = getyieldbound(THEME_TARGET).getlower();
+					double ThemeId = getYieldBound(THEME_TARGET).getLower();
 					if (ThemeId >= 0)
 						{
 						const size_t BASE_ID = static_cast<size_t>(ThemeId) - 1;
@@ -903,7 +903,7 @@ namespace Core
 						if (SelectedIt!= p_newThemes.end())
 							{
 							ThemeId = static_cast<double>(std::distance(p_newThemes.begin(), SelectedIt)) + 1.0;
-							addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, THEME_TARGET,
+							addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, THEME_TARGET,
 								ThemeId, ThemeId));
 						}else {
 							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -1102,7 +1102,7 @@ namespace Core
 		{
 				std::vector<bool>ids(actions.size(),false);
 				try {
-					for (const std::string& actionname : this->getylds())
+					for (const std::string& actionname : this->getYlds())
 					{
 						std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
 						if (cit != actions.end())
@@ -1149,7 +1149,7 @@ namespace Core
 						{
 						for (const Core::FMToutputsource& source: sources)
 						{
-							if ((source.isVariable()&&(!source.getYield().empty()||!source.empty()||!source.getAction().empty()||!source.emptyage()))||
+							if ((source.isVariable()&&(!source.getYield().empty()||!source.empty()||!source.getAction().empty()||!source.emptyAge()))||
 								(source.isConstant()&&source.getValue()<0))
 							{
 								return false;
@@ -1232,7 +1232,7 @@ namespace Core
 					{
 					for (const Core::FMToutputsource& source: sources)
 					{
-						if ((source.isVariable()&&(!source.getYield().empty()||!source.empty()||source.getAction().empty()||!source.emptyage()))||
+						if ((source.isVariable()&&(!source.getYield().empty()||!source.empty()||source.getAction().empty()||!source.emptyAge()))||
 							(source.isConstant()&&source.getValue()<0))
 						{
 							return false;
@@ -1304,7 +1304,7 @@ namespace Core
 				defaulthandler->pushBase(0);
 				//defaulthandler.pushBase(1);
 				size_t sourceid = 0;
-				yields.unshrink(themes);
+				yields.unShrink(themes);
 				for (const Core::FMToutputsource& source : sources)
 				{
 					if (source.isVariable())
@@ -1317,7 +1317,7 @@ namespace Core
 								{
 									for (auto& itvalue : actions[std::distance(&*(actions.cbegin()), actionptr)])
 									{
-										itvalue.second.addbounds(Core::FMTyldbounds(Core::FMTsection::Action, yieldname, 1.0, 1.0));
+										itvalue.second.addBounds(Core::FMTyldbounds(Core::FMTsection::Action, yieldname, 1.0, 1.0));
 									}
 								}
 							}
@@ -1352,7 +1352,7 @@ namespace Core
 		int target = targetThemeId();
 		if (type == FMTconstrainttype::FMTSpatialGroup)
 			{
-			target = static_cast<int>(getyieldbound("THEME").getlower());
+			target = static_cast<int>(getYieldBound("THEME").getLower());
 			}
 		return target;
 		}

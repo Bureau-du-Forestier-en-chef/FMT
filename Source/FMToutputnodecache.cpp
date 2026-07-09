@@ -14,19 +14,19 @@ namespace Graph
 	void FMToutputnodecache::setinitialcache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph)
 			{
 			searchtree.clear();
-			basenode.resize(initialgraph.size());
+			baseNode.resize(initialgraph.size());
 			size_t idv = 0;
 			for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator itgraph = initialgraph.begin();
 				itgraph!= initialgraph.end();itgraph++)
 				{
-				basenode[idv] = itgraph->second;
+				baseNode[idv] = itgraph->second;
 				++idv;
 				}
-			std::sort(basenode.begin(), basenode.end());
+			std::sort(baseNode.begin(), baseNode.end());
 			}
 
 	FMToutputnodecache::FMToutputnodecache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph):
-		basenode(), searchtree()
+		baseNode(), searchtree()
 		{
 		this->setinitialcache(initialgraph);
 		}
@@ -138,7 +138,7 @@ namespace Graph
 			{
 			return parent->second;
 			}
-		std::vector<FMTvertex_descriptor> cleaned = basenode;
+		std::vector<FMTvertex_descriptor> cleaned = baseNode;
 		if (parent!=searchtree.end())
 			{
 			cleaned = parent->second;
@@ -170,13 +170,13 @@ namespace Graph
 		return (returniterator.first)->second;
 		}
 
-	FMToutputnodecache::FMToutputnodecache() : basenode(), searchtree()
+	FMToutputnodecache::FMToutputnodecache() : baseNode(), searchtree()
 		{
 
 		}
 
 
-	FMToutputnodecache::FMToutputnodecache(const FMToutputnodecache& rhs) : basenode(rhs.basenode),searchtree(rhs.searchtree)
+	FMToutputnodecache::FMToutputnodecache(const FMToutputnodecache& rhs) : baseNode(rhs.baseNode),searchtree(rhs.searchtree)
 		{
 
 		}
@@ -185,7 +185,7 @@ namespace Graph
 		{
 		if (this!=&rhs)
 			{
-			basenode = rhs.basenode;
+			baseNode = rhs.baseNode;
 			searchtree = rhs.searchtree;
 			}
 		return *this;
@@ -205,7 +205,7 @@ namespace Graph
 
 	void FMToutputnodecache::clear()
 		{
-		basenode.clear();
+		baseNode.clear();
 		searchtree.clear();
 		}
 

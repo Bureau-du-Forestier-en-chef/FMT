@@ -130,7 +130,7 @@ namespace Models
 	{
 		
 		_BuildArea(forest);
-		_BuildGraphs(forest.getcellsize());
+		_BuildGraphs(forest.getCellSize());
 		_BuildSolution(forest);
 		
 	}
@@ -168,7 +168,7 @@ namespace Models
         {
 		try {
 			_BuildArea(forest);
-			_BuildGraphs(forest.getcellsize());
+			_BuildGraphs(forest.getCellSize());
 			_BuildSolution(forest);
 		}catch (...)
 		{
@@ -318,7 +318,7 @@ namespace Models
 				const boost::dynamic_bitset<uint8_t>&bitsets = baseMask.getBitsetReference();
 				//presolvedses->solution = Spatial::FMTspatialschedule(solution.getForestPeriod(0).presolve(presolvefilter, presolvedses->themes));
 				const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH) + 2);
-				presolvedses->m_SpatialGraphs = Spatial::FMTSpatialGraphs(*presolvedses, m_BestSolution.getcellsize());
+				presolvedses->m_SpatialGraphs = Spatial::FMTSpatialGraphs(*presolvedses, m_BestSolution.getCellSize());
 				Spatial::FMTSpatialSchedule presolvedSolution = m_BestSolution.presolve(presolveFilter, presolvedses->m_SpatialGraphs, LENGTH);
 				presolvedses->m_BestSolution.swap(presolvedSolution);
 				return presolvedmod;
@@ -336,7 +336,7 @@ namespace Models
 			if (m_BestSolution.actPeriod()>=1)//just postsolve if you have a solution
 			{
 				const Core::FMTmaskfilter presolvedmask = this->getPostsolveFilter(originalbasemodel.getthemes(), originalbasemodel.getarea().begin()->getmask());
-				Spatial::FMTSpatialGraphs postSolvedGraphs = Spatial::FMTSpatialGraphs(originalbasemodel, m_BestSolution.getcellsize());
+				Spatial::FMTSpatialGraphs postSolvedGraphs = Spatial::FMTSpatialGraphs(originalbasemodel, m_BestSolution.getCellSize());
 				m_BestSolution.postsolve(presolvedmask,this->getactions(), postSolvedGraphs);
 				m_SpatialGraphs.swap(postSolvedGraphs);
 				FMTmodel::postsolve(originalbasemodel);

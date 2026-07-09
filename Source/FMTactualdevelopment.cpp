@@ -66,29 +66,29 @@ namespace Core
 
 	FMTactualdevelopment FMTactualdevelopment::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
 		{
-		FMTactualdevelopment newdev(*this);
+		FMTactualdevelopment newDev(*this);
 		try {
 			if (!filter.emptyFlipped())
 			{
-				newdev.setMask(newdev.getmask().presolve(filter, presolvedthemes));
-				//newdev.mask = mask.presolve(selectedmask, presolvedthemes);
+				newDev.setMask(newDev.getmask().presolve(filter, presolvedthemes));
+				//newDev.mask = mask.presolve(selectedmask, presolvedthemes);
 			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::presolve", __LINE__, __FILE__);
 			}
-		return newdev;
+		return newDev;
 		}
 	
 	FMTactualdevelopment FMTactualdevelopment::reduceLockToDeath(const FMTlifespans& lifespans) const
 		{
-			FMTactualdevelopment newdev(*this);
+			FMTactualdevelopment newDev(*this);
 			try {
-					const int LOCK = newdev.getLock();
-					const int BASE_AGE = newdev.getAge();
+					const int LOCK = newDev.getLock();
+					const int BASE_AGE = newDev.getAge();
 					if(LOCK >0)
 					{
-						std::vector<FMTlifespans::const_iterator> lifespanfound = lifespans.findsets(newdev.getmask());
+						std::vector<FMTlifespans::const_iterator> lifespanfound = lifespans.findSets(newDev.getmask());
 						if(!lifespanfound.empty())
 						{
 							const int DEV_LIFESPAN = lifespanfound.at(0)->second;
@@ -104,14 +104,14 @@ namespace Core
 								const int NEW_LOCK = std::max(LOCK - (AGE_LOCK - DEV_LIFESPAN),0)+ fix;
 
 								_exhandler->raise	(Exception::FMTexc::FMTdeathwithlock,
-													std::string(newdev)+" death age is "+
+													std::string(newDev)+" death age is "+
 												std::to_string(DEV_LIFESPAN)+ ". The lock "+std::to_string(LOCK)+" on the age class "+std::to_string(BASE_AGE)+
 												" will exceed the death age. If this error is set to warning, the lock will be reduce to "+
 												std::to_string(NEW_LOCK)+" to reproduce the behavior of WS.",
 													"FMTactualdevelopment::reducelocktodeath",
 													__LINE__,
 													__FILE__);
-								newdev.setLock(NEW_LOCK);
+								newDev.setLock(NEW_LOCK);
 							}
 
 						}
@@ -120,7 +120,7 @@ namespace Core
 					{
 					_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::reducelocktodeath", __LINE__, __FILE__);
 					}
-			return newdev;
+			return newDev;
 		}
 
 	bool FMTactualdevelopment::operator != (const FMTactualdevelopment& rhs) const

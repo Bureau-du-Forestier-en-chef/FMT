@@ -158,8 +158,8 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		double getConstantValue(const std::vector<Core::FMTactualdevelopment>& area,
 								const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const;
 		size_t hash(int period = -1,bool withyield = false) const;
-		void fillHashMask(Core::FMTmask& basemask) const;
-		void fillHashSpec(Core::FMTmask& basemask) const;
+		void fillHashMask(Core::FMTmask& baseMask) const;
+		void fillHashSpec(Core::FMTmask& baseMask) const;
 		bool isEqualByValue(const FMToutputsource& rhs) const;
 		inline bool isAction() const
 			{

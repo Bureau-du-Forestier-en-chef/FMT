@@ -271,13 +271,13 @@ void exportCore()
 			.constructor("@DocString(FMTspec())")
 			.method("setbounds",&Core::FMTspec::setBounds,"@DocString(Core::FMTspec::setbounds())")
 			.method("addbounds",
-				static_cast<bool(Core::FMTspec::*)(const Core::FMTagebounds&)>(&Core::FMTspec::addbounds),
+				static_cast<bool(Core::FMTspec::*)(const Core::FMTagebounds&)>(&Core::FMTspec::addBounds),
 				"@DocString(Core::FMTspec::addbounds(const FMTagebounds&))")
 			.method("addbounds",
-				static_cast<bool(Core::FMTspec::*)(const Core::FMTyldbounds&)>(&Core::FMTspec::addbounds),
+				static_cast<bool(Core::FMTspec::*)(const Core::FMTyldbounds&)>(&Core::FMTspec::addBounds),
 				"@DocString(Core::FMTspec::addbounds(const FMTyldbounds&))")
 			.method("addbounds",
-				static_cast<bool(Core::FMTspec::*)(const Core::FMTlockbounds&)>(&Core::FMTspec::addbounds),
+				static_cast<bool(Core::FMTspec::*)(const Core::FMTlockbounds&)>(&Core::FMTspec::addBounds),
 				"@DocString(Core::FMTspec::addbounds(const FMTlockbounds&))");
 		
 

@@ -56,7 +56,7 @@ class FMTEXPORT FMToutputnode
 		operator std::string() const;
 		std::string getHashString() const;
 		Core::FMTmask getHashMask() const;
-		void fillHashMaskSpec(Core::FMTmask& basemask) const;
+		void fillHashMaskSpec(Core::FMTmask& baseMask) const;
 		FMToutputnode setPeriod(int period) const;
 		FMToutputnode& operator = (const FMToutputnode& rhs);
 		int setToGraph(std::vector<int>& targetedperiods, int period,int max_period);

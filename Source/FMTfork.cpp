@@ -85,13 +85,13 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
     {
         try {
             FMTdevelopmentpath newPath = p_target.disturb(p_base, p_yields, p_themes, p_AgeReset);
-            FMTdevelopment& newdev = newPath.getDevelopmentReference();
-            if (!p_AgeReset && p_base == newdev)
+            FMTdevelopment& newDev = newPath.getDevelopmentReference();
+            if (!p_AgeReset && p_base == newDev)
                 {
                 _exhandler->raise(Exception::FMTexc::FMTsourcetotarget_transition,
-                    "from " + std::string(p_base) + " to " + std::string(newdev) + "\n",
+                    "from " + std::string(p_base) + " to " + std::string(newDev) + "\n",
                     "FMTfork::_GetPath", __LINE__, __FILE__, Core::FMTsection::Transition);
-                newdev.setLock(newdev.getLock() + 1);
+                newDev.setLock(newDev.getLock() + 1);
                 }
             return newPath;
         }catch (...)
@@ -119,17 +119,17 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
                 {
                 const FMTdevelopmentpath NEW_PATH = _GetPath(tran, base, ylds,
                     themes, reset_age);
-                const FMTdevelopment& newdev = NEW_PATH.getDevelopment();
-                boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator mapit = pathmap.find(newdev);
+                const FMTdevelopment& newDev = NEW_PATH.getDevelopment();
+                boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator mapit = pathmap.find(newDev);
                 if (mapit != pathmap.end())
                     {
                         _exhandler->raise(Exception::FMTexc::FMTsame_transitiontargets,
-                            "from " + std::string(base) + " to " + std::string(newdev) + "\n",
+                            "from " + std::string(base) + " to " + std::string(newDev) + "\n",
                             "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
                         paths[mapit->second].setProportion(paths[mapit->second].getProportion() + tran.getProportion());
                         continue;
                     }else {
-                        pathmap[newdev] = pathid;
+                        pathmap[newDev] = pathid;
                     }
                 paths.push_back(NEW_PATH);
                 ++pathid;

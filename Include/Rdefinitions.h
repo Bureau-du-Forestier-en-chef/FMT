@@ -87,7 +87,7 @@ namespace R
 			.method("update", &Core::FMTlist<T>::update,
 				"@DocString(FMTlist::update)")
 			.method("push_back",
-				Core::FMTlist<T>::APIpush_back,
+				Core::FMTlist<T>::apiPushBack,
 				"@DocString(FMTyieldhandler::APIpush_back)");
 
 		}
@@ -97,19 +97,19 @@ namespace R
 		{
 		Rcpp::class_<Spatial::FMTlayer<T>>(name, "@DocString(FMTlayer)")
 				.constructor("@DocString(FMTlayer())")
-				.method("getXSize", &Spatial::FMTlayer<T>::GetXSize,
+				.method("getXSize", &Spatial::FMTlayer<T>::getXSize,
 					"@DocString(FMTlayer::GetXSize)")
-				.method("getYSize", &Spatial::FMTlayer<T>::GetYSize,
+				.method("getYSize", &Spatial::FMTlayer<T>::getYSize,
 					"@DocString(FMTlayer::GetYSize)")
-				.method("getgeotransform", &Spatial::FMTlayer<T>::getgeotransform,
+				.method("getgeotransform", &Spatial::FMTlayer<T>::getGeoTransform,
 					"@DocString(FMTlayer::getgeotransform)")
-				.method("getprojection", &Spatial::FMTlayer<T>::getprojection,
+				.method("getprojection", &Spatial::FMTlayer<T>::getProjection,
 					"@DocString(FMTlayer::getprojection)")
 				.method("getmapping", &Spatial::FMTlayer<T>::getMapping,
 					"@DocString(FMTlayer::getmapping)")
 				.method("area", &Spatial::FMTlayer<T>::area,
 					"@DocString(FMTlayer::area)")
-				.method("getcellsize", &Spatial::FMTlayer<T>::getcellsize,
+				.method("getcellsize", &Spatial::FMTlayer<T>::getCellSize,
 					"@DocString(FMTlayer::getcellsize)")
 				.method("size", &Spatial::FMTlayer<T>::size,
 					"@DocString(FMTlayer::size)");

@@ -57,15 +57,15 @@ class FMTbounds
 
             }
 		virtual ~FMTbounds() = default;
-        void setorbound()
+        void setOrBound()
             {
             andbound = false;
             }
-        T getlower() const
+        T getLower() const
             {
             return lower;
             }
-         T getupper() const
+         T getUpper() const
             {
             return upper;
             }
@@ -162,7 +162,7 @@ class FMTbounds
             use = true;
             return true;
             }
-		std::string tostring(const std::string& name) const
+		std::string toString(const std::string& name) const
             {
             std::string line;
             const std::string slower = std::to_string(lower);
@@ -406,40 +406,40 @@ public:
 	/**
 	Set age bounds
 	*/
-    bool addbounds(const FMTagebounds& bound);
+    bool addBounds(const FMTagebounds& bound);
 	// DocString: FMTspec::setyldbounds
 	/**
 	Set yield bounds
 	*/
-    bool addbounds(const FMTyldbounds& bound);
+    bool addBounds(const FMTyldbounds& bound);
 	// DocString: FMTspec::setlockbounds
 	/**
 	Set lock bounds
 	*/
-    bool addbounds(const FMTlockbounds& bound);
-	// DocString: FMTspec::allowwithoutyield
+    bool addBounds(const FMTlockbounds& bound);
+	// DocString: FMTspec::allowWithoutYield
 	/**
 	return true if the given period, age and lock respect the age,period and lock bounds.
 	*/
-	inline bool allowwithoutyield(const int& tperiod, const int& tage, const int& tlock) const
+	inline bool allowWithoutYield(const int& tperiod, const int& tage, const int& tlock) const
 		{
 		return (per.in(tperiod) &&
 			age.in(tage) &&
 			(lock.empty() || (tlock >= lock.lower)));
 		}
-	// DocString: FMTspec::getyieldbound
+	// DocString: FMTspec::getYieldBound
 	/**
 	return the reference of a given FMTyldbounds using the name of the FMTyldbounds.
 	*/
-	inline const FMTyldbounds& getyieldbound(const std::string& name) const
+	inline const FMTyldbounds& getYieldBound(const std::string& name) const
 		{
 		return yieldbounds.at(std::distance(yieldnames.begin(), std::find(yieldnames.begin(), yieldnames.end(), name)));
 		}
-	// DocString: FMTspec::allowyields
+	// DocString: FMTspec::allowYields
 	/**
 	Return true if all the yields (values) are within the yield bounds.
 	*/
-	inline bool allowyields(const std::vector<double>& values) const
+	inline bool allowYields(const std::vector<double>& values) const
 	{
 		for (size_t location = 0; location < yieldnames.size(); ++location)
 		{
@@ -464,21 +464,21 @@ public:
 				return false;
 				}
 		}
-		return (allowwithoutyield(tperiod,tage,tlock));
+		return (allowWithoutYield(tperiod,tage,tlock));
 		}
-	// DocString: FMTspec::getylds
+	// DocString: FMTspec::getYlds
 	/**
 	Return the yields names of the yield bounds.
 	*/
-	inline const std::vector<std::string>& getylds() const
+	inline const std::vector<std::string>& getYlds() const
 		{
 		return yieldnames;
 		}
-	// DocString: FMTspec::getyldbounds
+	// DocString: FMTspec::getYldBounds
 	/**
 	Return tthe yields bounds of the spec.
 	*/
-	inline const std::vector<FMTyldbounds>& getyldbounds() const
+	inline const std::vector<FMTyldbounds>& getYldBounds() const
 		{
 		return yieldbounds;
 		}
@@ -507,26 +507,26 @@ public:
 	Return true if all bounds are empty.
 	*/
     bool empty() const;
-	// DocString: FMTspec::emptyage
+	// DocString: FMTspec::emptyAge
 	/**
 	Return true if age bound is empty.
 	*/
-	bool emptyage() const;
-	// DocString: FMTspec::emptyylds
+	bool emptyAge() const;
+	// DocString: FMTspec::emptyYlds
 	/**
 	Return true if yields bounds are empty.
 	*/
-	bool emptyylds() const;
-	// DocString: FMTspec::emptyperiod
+	bool emptyYlds() const;
+	// DocString: FMTspec::emptyPeriod
 	/**
 	Return true if period bounds is empty.
 	*/
-	bool emptyperiod() const;
-	// DocString: FMTspec::emptylock
+	bool emptyPeriod() const;
+	// DocString: FMTspec::emptyLock
 	/**
 	Return true if lock bounds is empty.
 	*/
-	bool emptylock() const;
+	bool emptyLock() const;
 	// DocString: FMTspec::getAgeUpperBound
 	/**
 	Get the upper bounds of the age bounds.
@@ -547,16 +547,16 @@ public:
 	Get the lower bound of the period bounds.
 	*/
 	int getPeriodLowerBound() const;
-	// DocString: FMTspec::getlockupperbound
+	// DocString: FMTspec::getLockUpperBound
 	/**
 	Get the upper bounds of the age bounds.
 	*/
-	int getlockupperbound() const;
-	// DocString: FMTspec::getlocklowerbound
+	int getLockUpperBound() const;
+	// DocString: FMTspec::getLockLowerBound
 	/**
 	Get the lower bound of the age bounds.
 	*/
-	int getlocklowerbound() const;
+	int getLockLowerBound() const;
 	// DocString: FMTspec::isSubsetOf
 	/**
 	return true if this spec is the subset of the rhs spec.

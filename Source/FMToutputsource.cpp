@@ -104,17 +104,17 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
     return *this;
     }
 
-void FMToutputsource::fillHashMask(Core::FMTmask& basemask) const
+void FMToutputsource::fillHashMask(Core::FMTmask& baseMask) const
 	{
-		//basemask.append(mask.getBitsetReference());
-		basemask.binarizedAppend<std::string>(std::string(mask));
-		basemask.binarizedAppend<int>(static_cast<int>(target));
+		//baseMask.append(mask.getBitsetReference());
+		baseMask.binarizedAppend<std::string>(std::string(mask));
+		baseMask.binarizedAppend<int>(static_cast<int>(target));
 		for (const double& lvalue : values)
 		{
-			basemask.binarizedAppend<double>(lvalue);
+			baseMask.binarizedAppend<double>(lvalue);
 		}
-		basemask.binarizedAppend<std::string>(yield);
-		basemask.binarizedAppend<std::string>(action);
+		baseMask.binarizedAppend<std::string>(yield);
+		baseMask.binarizedAppend<std::string>(action);
 	}
 
 bool FMToutputsource::isEqualByValue(const FMToutputsource& rhs) const
@@ -125,9 +125,9 @@ bool FMToutputsource::isEqualByValue(const FMToutputsource& rhs) const
 	}
 
 
-void FMToutputsource::fillHashSpec(Core::FMTmask& basemask) const
+void FMToutputsource::fillHashSpec(Core::FMTmask& baseMask) const
 	{
-	basemask.binarizedAppend<std::string>(FMTspec::operator std::string());
+	baseMask.binarizedAppend<std::string>(FMTspec::operator std::string());
 	}
 
 
@@ -174,11 +174,11 @@ FMToutputsource::operator std::string() const
                 {
                 line+="_INVENT("+action+") ";
 				}
-				/*else if (this->lock.getlower() > 0)
+				/*else if (this->lock.getLower() > 0)
 				{
 				line += "_INVLOCK ";
 
-				}*/else if (emptylock()) {
+				}*/else if (emptyLock()) {
                 line+= "_INVENT ";
                 }
             if (!yield.empty())
@@ -333,7 +333,7 @@ FMToutputsource FMToutputsource::presolve(const FMTmaskfilter& filter, const std
 bool FMToutputsource::canBeDeducedToConstant() const
 	{
 	return (isVariable() && isInventory() &&
-		!emptyperiod() && getPeriodLowerBound() == 0 &&
+		!emptyPeriod() && getPeriodLowerBound() == 0 &&
 		getPeriodUpperBound() == 0);
 	}
 

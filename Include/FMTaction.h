@@ -101,7 +101,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		void update() override;
 		// DocString: FMTaction::presolve
 		/**
-		Eliminate FMTspecification and presolve all masks base on a basemask a preolved mask
+		Eliminate FMTspecification and presolve all masks base on a baseMask a preolved mask
 		and presolved themes. The returned action can also be empty.
 		*/
 		FMTaction presolve(const FMTmaskfilter& filter,
@@ -109,7 +109,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 			std::vector<FMTtheme>& newthemes, bool compressdata = false) const;
 		// DocString: FMTaction::presolveRef
 		/**
-		@brief Eliminate FMTspecification and presolve all masks base on a basemask a preolved mask
+		@brief Eliminate FMTspecification and presolve all masks base on a baseMask a preolved mask
 		and presolved themes. The returned action can also be empty.
 		@param[in] p_filter
 		@param[in] p_originalthemes

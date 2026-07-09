@@ -37,7 +37,7 @@ void define_FMTlist()
          .def("update", &Core::FMTlist<T>::update,
              "@DocString(FMTlist::update)")
          .def("push_back",
-             &Core::FMTlist<T>::APIpush_back,
+             &Core::FMTlist<T>::apiPushBack,
              "@DocString(FMTyieldhandler::APIpush_back)");
 	definePyList<T>();
     }
@@ -47,19 +47,19 @@ void define_FMTlayer()
     {
 
 	boost::python::class_<Spatial::FMTlayer<T>>("FMTlayer", "@DocString(FMTlayer)")
-        .def("getXSize",&Spatial::FMTlayer<T>::GetXSize,
+        .def("getXSize",&Spatial::FMTlayer<T>::getXSize,
 			"@DocString(FMTlayer::GetXSize)")
-        .def("getYSize",&Spatial::FMTlayer<T>::GetYSize,
+        .def("getYSize",&Spatial::FMTlayer<T>::getYSize,
 			"@DocString(FMTlayer::GetYSize)")
-        .def("getgeotransform",&Spatial::FMTlayer<T>::getgeotransform,
+        .def("getgeotransform",&Spatial::FMTlayer<T>::getGeoTransform,
 			"@DocString(FMTlayer::getgeotransform)")
-        .def("getprojection",&Spatial::FMTlayer<T>::getprojection,
+        .def("getprojection",&Spatial::FMTlayer<T>::getProjection,
 			"@DocString(FMTlayer::getprojection)")
         .def("getmapping",&Spatial::FMTlayer<T>::getMapping,
 			"@DocString(FMTlayer::getmapping)")
         .def("area",&Spatial::FMTlayer<T>::area,
 			"@DocString(FMTlayer::area)")
-        .def("getcellsize",&Spatial::FMTlayer<T>::getcellsize,
+        .def("getcellsize",&Spatial::FMTlayer<T>::getCellSize,
 			"@DocString(FMTlayer::getcellsize)")
         .def("__len__",&Spatial::FMTlayer<T>::size,
 			"@DocString(FMTlayer::size)")

@@ -298,7 +298,7 @@ namespace Models
 			m_generator = std::default_random_engine(getparameter(Models::FMTintmodelparameters::SEED));
 			//First make some noise
 			std::shuffle(area.begin(), area.end(), m_generator);
-			m_graph->setbuildtype(Graph::FMTgraphbuild::schedulebuild);
+			m_graph->setBuildType(Graph::FMTgraphbuild::schedulebuild);
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives = getActives();
 			const int GRAPH_SIZE = static_cast<int>(getGraphSize());
 			int period = static_cast<int>(GRAPH_SIZE -1);
@@ -409,7 +409,7 @@ namespace Models
 				++actionId;
 			}
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrowWithSolution(actives);
-			GraphStats = m_graph->naturalgrowth(actives, GraphStats, false);
+			GraphStats = m_graph->naturalGrowth(actives, GraphStats, false);
 			while (!toGrowWithSolution.empty())
 			{
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& GrowVertex = toGrowWithSolution.front();

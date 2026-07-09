@@ -263,7 +263,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		// DocString: FMTconstraint::presolve
 		/**
 		Like FMToutput class this function presolve the FMTconstraint and can returns an empty FMTconstraint if 
-		based on a (basemask), the (originalthemes), the presolved themes, the presolved actions and presolved yields.
+		based on a (baseMask), the (originalthemes), the presolved themes, the presolved actions and presolved yields.
 		See FMToutput presolve for more information.
 		*/
 		FMTconstraint presolve(const FMTmaskfilter& filter,

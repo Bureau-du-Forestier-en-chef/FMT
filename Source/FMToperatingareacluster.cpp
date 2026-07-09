@@ -100,21 +100,21 @@ namespace Heuristics
         return (getTotalPotentialArea() >= minimalarea && maximalarea >= minimalarea);
         }
 
-    FMToperatingareacluster FMToperatingareacluster::getFilteredCluster(const Core::FMTmask& filtermask) const
+    FMToperatingareacluster FMToperatingareacluster::getFilteredCluster(const Core::FMTmask& filterMask) const
         {
         FMToperatingareacluster newcluster(*this);
-        if (centroid.getmask().isSubsetOf(filtermask))
+        if (centroid.getmask().isSubsetOf(filterMask))
             {
             std::vector<FMToperatingareaclusterbinary>newbinaries;
             for (const FMToperatingareaclusterbinary& binary : binaries)
                 {
-                if (binary.getmask().isSubsetOf(filtermask))
+                if (binary.getmask().isSubsetOf(filterMask))
                     {
                     FMToperatingareaclusterbinary newbinary(binary);
                     std::vector<Core::FMTmask>newneighbors;
                     for (const Core::FMTmask& link : binary.getNeighbors())
                         {
-                        if (link.isSubsetOf(filtermask))
+                        if (link.isSubsetOf(filterMask))
                             {
                             newneighbors.push_back(link);
                             }

@@ -77,7 +77,7 @@ namespace Core {
 			constraint.setRhs(lowerbound, upperbound);
 			constraint.setLength(1);
 			const double dbl_lag = static_cast<double>(lag);
-			constraint.addbounds(FMTyldbounds(FMTsection::Optimize, "LAG", dbl_lag, dbl_lag));
+			constraint.addBounds(FMTyldbounds(FMTsection::Optimize, "LAG", dbl_lag, dbl_lag));
 		}
 		catch (...)
 		{
@@ -154,7 +154,7 @@ namespace Core {
 				{
 					const double positive = static_cast<double>(locations.at(targets.at(constraint_id).first));
 					const double negative = static_cast<double>(locations.at(targets.at(constraint_id).second));
-					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Yield, "Decisions", positive, negative));
+					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Yield, "Decisions", positive, negative));
 				}
 				
 				++constraint_id;
@@ -220,13 +220,13 @@ namespace Core {
 					}
 				}
 			
-			std::unique_ptr<Models::FMTmodel>naturalgrowth = m_modelPtr->getCopy(0);
+			std::unique_ptr<Models::FMTmodel>naturalGrowth = m_modelPtr->getCopy(0);
 			Logging::FMTquietlogger ModelLogger;
-			naturalgrowth->setParallelLogger(ModelLogger);
-			naturalgrowth->setparameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
-			naturalgrowth->setArea(newareas);//Will only work with lp model going to get big with semodel...
-			naturalgrowth->setName(std::string(reference->getSources().begin()->getmask()));
-			//std::vector<Core::FMTaction> newactions = naturalgrowth->getactions();
+			naturalGrowth->setParallelLogger(ModelLogger);
+			naturalGrowth->setparameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
+			naturalGrowth->setArea(newareas);//Will only work with lp model going to get big with semodel...
+			naturalGrowth->setName(std::string(reference->getSources().begin()->getmask()));
+			//std::vector<Core::FMTaction> newactions = naturalGrowth->getactions();
 			const int updatestopat = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
 			/*for (Core::FMTaction& action : newactions)
 			{
@@ -241,11 +241,11 @@ namespace Core {
 					action.update();
 					}
 			}
-			naturalgrowth->setactions(newactions);*/
+			naturalGrowth->setactions(newactions);*/
 			std::vector<Core::FMTconstraint>newconstraints;
 
 			/*size_t constraintid = 0;
-			for (const Core::FMTconstraint& constraint : naturalgrowth->getconstraints())
+			for (const Core::FMTconstraint& constraint : naturalGrowth->getconstraints())
 			{
 				if (constraintid>0)
 				{
@@ -262,16 +262,16 @@ namespace Core {
 
 				++constraintid;
 			}*/
-			naturalgrowth->setconstraints(newconstraints);
-			naturalgrowth->setactions(std::vector<Core::FMTaction>());
-			//naturalgrowth->setconstraints(naturalgrowth->goalConstraints());
-			//naturalgrowth->setParallelLogger(Logging::FMTquietlogger());
-			if (!naturalgrowth->doPlanning(true))
+			naturalGrowth->setconstraints(newconstraints);
+			naturalGrowth->setactions(std::vector<Core::FMTaction>());
+			//naturalGrowth->setconstraints(naturalGrowth->goalConstraints());
+			//naturalGrowth->setParallelLogger(Logging::FMTquietlogger());
+			if (!naturalGrowth->doPlanning(true))
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
 					"Infeasible natural growth for "+std::string(mask) , "FMTyieldmodeldecisiontree::GetNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
-			return naturalgrowth;
+			return naturalGrowth;
 		}catch (...)
 		{
 			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::GetNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -279,24 +279,24 @@ namespace Core {
 	return std::unique_ptr<Models::FMTmodel>(nullptr);
 	}
 
-	size_t FMTyieldmodeldecisiontree::getADecision(const std::unique_ptr<Models::FMTmodel>& naturalgrowth, const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const
+	size_t FMTyieldmodeldecisiontree::getADecision(const std::unique_ptr<Models::FMTmodel>& naturalGrowth, const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const
 		{
 		size_t target = 0;
 		try {
-			const int time_lag = static_cast<int>(nodes.at(constraint_id).getyieldbound("LAG").getlower());
-			const int update_period = naturalgrowth->getparameter(Models::FMTintmodelparameters::UPDATE);
+			const int time_lag = static_cast<int>(nodes.at(constraint_id).getYieldBound("LAG").getLower());
+			const int update_period = naturalGrowth->getparameter(Models::FMTintmodelparameters::UPDATE);
 			const int targeted_period = std::max(period + time_lag, update_period);
-			const double reference_value = naturalgrowth->getOutput(*reference, targeted_period, Core::FMToutputlevel::totalonly).at("Total");
-			const double value = naturalgrowth->getOutput(nodes.at(constraint_id), targeted_period, Core::FMToutputlevel::totalonly).at("Total");
+			const double reference_value = naturalGrowth->getOutput(*reference, targeted_period, Core::FMToutputlevel::totalonly).at("Total");
+			const double value = naturalGrowth->getOutput(nodes.at(constraint_id), targeted_period, Core::FMToutputlevel::totalonly).at("Total");
 			const double percentage_value = (value/reference_value) * 100;
 			//decision_stack += ("("+std::to_string(percentage_value)+")");
 			std::vector<double>evaluates;
 			evaluates.push_back(percentage_value);
 			if (nodes.at(constraint_id).evaluate(evaluates)>0)
 				{
-				target = static_cast<size_t>(nodes.at(constraint_id).getyieldbound("Decisions").getlower());
+				target = static_cast<size_t>(nodes.at(constraint_id).getYieldBound("Decisions").getLower());
 			}else {
-				target = static_cast<size_t>(nodes.at(constraint_id).getyieldbound("Decisions").getupper());
+				target = static_cast<size_t>(nodes.at(constraint_id).getYieldBound("Decisions").getUpper());
 				}
 			
 		}catch (...)
@@ -341,7 +341,7 @@ namespace Core {
 						double upperbound = 0;//target yield
 						nodes.at(target_node).getBounds(lowerbound, upperbound, 1);
 						const size_t yieldid = static_cast<size_t>(upperbound);
-						const int rest_of_period = static_cast<int>(nodes.at(target_node).getyieldbound("LAG").getlower());
+						const int rest_of_period = static_cast<int>(nodes.at(target_node).getYieldBound("LAG").getLower());
 						if (rest_of_period)
 						{
 							for (; period <= MAX_PERIOD; ++period)

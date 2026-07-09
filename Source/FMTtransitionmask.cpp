@@ -81,26 +81,26 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         {
         FMTdevelopmentpath newPath(this->trans(dev.getmask(), themes),
                     dev.getAge(), dev.getLock(), dev.getperiod(), proportion);
-        FMTdevelopment& newdev = newPath.getDevelopmentReference();
+        FMTdevelopment& newDev = newPath.getDevelopmentReference();
 		bool age_change = false;
         if (!lock.empty())
             {
-			const int lower_lock = lock.getlower();
-            newdev.setLock(std::max(lower_lock, newdev.getLock()));
+			const int lower_lock = lock.getLower();
+            newDev.setLock(std::max(lower_lock, newDev.getLock()));
             }
         if(!age.empty())
             {
-            newdev.setAge(age.getlower());
+            newDev.setAge(age.getLower());
 			age_change = true;
             }else if(!yieldnames.empty())
                 {
-				const FMTyieldrequest newrequest = newdev.getYieldRequest();
-                newdev.setAge(yields.getAge(newrequest, *this));
+				const FMTyieldrequest newrequest = newDev.getYieldRequest();
+                newDev.setAge(yields.getAge(newrequest, *this));
 				age_change = true;
                 }
 		if (reset_age && !age_change)
 			{
-			newdev.setAge(0);
+			newDev.setAge(0);
 			}
         return newPath;
         }
