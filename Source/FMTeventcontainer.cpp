@@ -681,7 +681,7 @@ namespace Spatial
     FMTeventcontainer::const_iterator FMTeventcontainer::upperBound(const int& period) const
     {
 		constexpr uint16_t MAX_BOUND = std::numeric_limits<uint16_t>::max();
-        FMTeventcontainer::const_iterator upper = m_events.upperBound(FMTevent(FMTcoordinate(MAX_BOUND, MAX_BOUND),
+        FMTeventcontainer::const_iterator upper = m_events.upper_bound(FMTevent(FMTcoordinate(MAX_BOUND, MAX_BOUND),
                                                              INT_MAX,
                                                              period,0));
         return upper;
@@ -689,7 +689,7 @@ namespace Spatial
 
     FMTeventcontainer::const_iterator FMTeventcontainer::upperBound(const int& period, const FMTcoordinate& maxxycoord) const
     {
-        FMTeventcontainer::const_iterator upper = m_events.upperBound(FMTevent(maxxycoord,
+        FMTeventcontainer::const_iterator upper = m_events.upper_bound(FMTevent(maxxycoord,
                                                                                   INT_MAX,
                                                                                   period,0));
         return upper;
@@ -697,7 +697,7 @@ namespace Spatial
 
     FMTeventcontainer::const_iterator FMTeventcontainer::lowerBound(const int& period) const
     {
-        FMTeventcontainer::const_iterator lower = m_events.lowerBound(FMTevent(FMTcoordinate(0,0),
+        FMTeventcontainer::const_iterator lower = m_events.lower_bound(FMTevent(FMTcoordinate(0,0),
                                                              0,
                                                              period,0));
         return lower;
@@ -705,7 +705,7 @@ namespace Spatial
 
     FMTeventcontainer::const_iterator FMTeventcontainer::lowerBound(const int& period,const FMTcoordinate& minxycoord) const
     {
-        FMTeventcontainer::const_iterator lower = m_events.lowerBound(FMTevent(minxycoord,
+        FMTeventcontainer::const_iterator lower = m_events.lower_bound(FMTevent(minxycoord,
                                                              0,
                                                              period,0));
         return lower;

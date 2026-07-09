@@ -2229,7 +2229,7 @@ std::istream& FMTparser::_safeGetline(std::istream& is, std::string& t) const
 			return is;
 		case std::streambuf::traits_type::eof():
 			if (t.empty())
-				is.setState(std::ios::eofbit);
+				is.setstate(std::ios::eofbit);
 			return is;
 		default:
 			t += (char)c;
