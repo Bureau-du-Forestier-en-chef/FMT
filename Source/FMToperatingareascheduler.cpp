@@ -296,7 +296,7 @@ namespace Heuristics
 				this->setAllInteger();
 				this->branchAndBound();
 			}
-			this->MIPparameters();
+			this->mipParameters();
 			this->unboundAll(true);
 			this->branchAndBound();
         	}catch(...)

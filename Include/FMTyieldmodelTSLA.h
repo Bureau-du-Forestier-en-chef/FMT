@@ -44,16 +44,16 @@ namespace Core
 		Implements FMTyieldmodel::Clone().
 		*/
 		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodelTSLA::Predict
+		// DocString: FMTyieldmodelTSLA::predict
 		/**
 		Will give the value of time since last action.
 		*/
-		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
-		// DocString: FMTyieldmodelTSLA::GetModelType()
+		const std::vector<double>predict(const Core::FMTyieldrequest& request) const;
+		// DocString: FMTyieldmodelTSLA::getModelType()
 		/**
 		Return the modeltype of the FMTyieldmodel.
 		*/
-		static std::string GetModelType();
+		static std::string getModelType();
 		// DocString: FMTyieldmodelTSLA::presolve
 		/**
 		Return a presolved FMTyieldmodelTSLA

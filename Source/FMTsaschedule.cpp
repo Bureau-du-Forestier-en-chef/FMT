@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -31,35 +31,35 @@ namespace Spatial
 
     FMTsaschedule::~FMTsaschedule(){}
 
-    void FMTsaschedule::SetInitialTemperature(const double& Temp)
+    void FMTsaschedule::setInitialTemperature(const double& Temp)
     {
         m_InitialTemperature = Temp;
         m_Temperature = Temp;
     }
 
 
-    void FMTsaschedule::ReduceTemp()
+    void FMTsaschedule::reduceTemp()
     {
         ++m_Level;
     }
 
-    double FMTsaschedule::GetTemp() const
+    double FMTsaschedule::getTemp() const
     {
         return m_Temperature;
     }
 
-    void FMTsaschedule::SetTemp(double p_Temp)
+    void FMTsaschedule::setTemp(double p_Temp)
     {
         m_Temperature = p_Temp;
     }
 
-    size_t FMTsaschedule::GetLevel()const
+    size_t FMTsaschedule::getLevel()const
     {
         return m_Level;
     }
    
 
-	std::string FMTsaschedule::GetScheduleType()const
+	std::string FMTsaschedule::getScheduleType()const
     {
         return m_ScheduleType;
     }
@@ -69,7 +69,7 @@ namespace Spatial
         return std::unique_ptr<FMTsaschedule>(new FMTsaschedule(*this));
     }
 
-    double FMTsaschedule::GetInitialTemp() const
+    double FMTsaschedule::getInitialTemp() const
         {
         return m_InitialTemperature;
         }

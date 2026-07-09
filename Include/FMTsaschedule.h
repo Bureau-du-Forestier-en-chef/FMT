@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -22,14 +22,14 @@ class FMTsaschedule
     public:
         FMTsaschedule(const std::string& typesc);//Constructor
         FMTsaschedule()=default;//Constructor
-        std::string GetScheduleType()const;
-        size_t GetLevel()const;
-        void SetInitialTemperature(const double& Temp);
+        std::string getScheduleType()const;
+        size_t getLevel()const;
+        void setInitialTemperature(const double& Temp);
         virtual~FMTsaschedule();//Destructor
-        virtual void ReduceTemp();//
-        double GetTemp() const;//
-        void SetTemp( double p_Temp);
-        double GetInitialTemp() const;//
+        virtual void reduceTemp();//
+        double getTemp() const;//
+        void setTemp( double p_Temp);
+        double getInitialTemp() const;//
         virtual std::unique_ptr<FMTsaschedule> Clone()const;
     protected:
         std::string m_ScheduleType;

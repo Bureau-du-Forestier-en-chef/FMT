@@ -94,16 +94,16 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Has to be set before greedyreferencedbuild() is called.
 		*/
         bool setInitialMapping(const Spatial::FMTforest& forest);
-		// DocString: FMTsemodel::LogConstraintsInfeasibilities
+		// DocString: FMTsemodel::logConstraintsInfeasibilities
 		/**
 		Log the constraints infeasibilities spatial or not spatial
 		*/
-		void LogConstraintsInfeasibilities() const;
-		// DocString: FMTsemodel::LogConstraintsFactors
+		void logConstraintsInfeasibilities() const;
+		// DocString: FMTsemodel::logConstraintsFactors
 		/**
 		Log the constraints factors
 		*/
-		void LogConstraintsFactors() const;
+		void logConstraintsFactors() const;
 		// DocString: FMTsemodel::presolve
 		/**
 		Presolve the semodel to get a more simple model call original presolve() and presolve the
@@ -163,28 +163,28 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Return the value of the globalobjective of the actual solution
 		*/
 		virtual double getObjectiveValue() const;
-		// DocString: FMTsemodel::GetSchedules
+		// DocString: FMTsemodel::getSchedules
 		/**
 		@brief Get the schedules of the spatial solution
 		@param[in] p_SpatialSchedule spatial schedule
 		@param[in] withlock lock in schedule
 		@return the vector of schedules
 		*/
-		std::vector<Core::FMTschedule> GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+		std::vector<Core::FMTschedule> getSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
 			bool withlock = false) const;
-		// DocString: FMTsemodel::GetSolutionStatus
+		// DocString: FMTsemodel::getSolutionStatus
 		/**
 		@brief Get the solution status
 		*/
-		void GetSolutionStatus(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+		void getSolutionStatus(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
 			double& p_Objective, double& p_PrimalInFeasibility,
 			bool withsense = true, bool withfactorization = false, bool withspatial = true) const;
-		// DocString: FMTsemodel::GetConstraintEvaluation
+		// DocString: FMTsemodel::getConstraintEvaluation
 		/**
-		@brief Evaluate the constraint with the actual solution
+		@brief evaluate the constraint with the actual solution
 		@return the evaluation value.
 		*/
-		double GetConstraintEvaluation(size_t p_Constraint) const;
+		double getConstraintEvaluation(size_t p_Constraint) const;
 		
 	protected:
 		// DocString: FMTsemodel::spschedule
@@ -194,21 +194,21 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		///Contains all the SpatialGraphs
 		Spatial::FMTSpatialGraphs m_SpatialGraphs;
 
-		double GetGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const;
+		double getGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const;
 
-		std::vector<double> GetConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+		std::vector<double> getConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
 
-		void DoReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
-		Spatial::FMTSpatialSchedule GetNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
-		std::map<std::string, double> GreedyReferenceBuild(
+		void doReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+		Spatial::FMTSpatialSchedule getNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
+		std::map<std::string, double> greedyReferenceBuild(
 			Spatial::FMTSpatialSchedule& p_SpatialSchedule,
 			const Core::FMTschedule& schedule,
 			const size_t& randomiterations,
 			unsigned int seed = 0,
 			double tolerance = FMT_DBL_TOLERANCE,
 			bool log = true) const;
-		double GetConstraintFactor(size_t p_constraint, double p_GrossValue) const;
-		bool IsValidFactor(double p_GrossValue)const;
+		double getConstraintFactor(size_t p_constraint, double p_GrossValue) const;
+		bool isValidFactor(double p_GrossValue)const;
 	private:
 		// DocString: FMTsemodel::Serialize
 		/**

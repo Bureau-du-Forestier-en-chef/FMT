@@ -115,7 +115,7 @@ namespace Parallel
 		bool gotInitialSolution() const;
 		// DocString: FMTopareaschedulertask::evaluateAndCopy
 		/**
-		Evaluate if the actualscheduler is better than the bestscheduler. If it is push the actualscheduler to the best scheduler.
+		evaluate if the actualscheduler is better than the bestscheduler. If it is push the actualscheduler to the best scheduler.
 		Else take the solution from the bestscheduler.
 		*/
 		void evaluateAndCopy();

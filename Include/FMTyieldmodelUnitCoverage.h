@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Gouvernement du Québec
+Copyright (c) 2024 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -33,13 +33,13 @@ namespace Core
 		*/
 		FMTyieldmodelUnitCoverage(const boost::property_tree::ptree& p_jsonProps,
 			const std::vector<std::string>& p_yields, const Core::FMTmask& p_mask);
-		// DocString: FMTyieldmodelUnitCoverage::Predict
+		// DocString: FMTyieldmodelUnitCoverage::predict
 		/**
-		@brief Predict the yields values using this class.
+		@brief predict the yields values using this class.
 		@param[in] p_request a valid FMTyieldrequest.
 		@return calculate the sum of each yields throught the spatial unit.
 		*/
-		const std::vector<double>Predict(const Core::FMTyieldrequest& p_request) const;
+		const std::vector<double>predict(const Core::FMTyieldrequest& p_request) const;
 		// DocString: FMTyieldmodelRandom::presolve
 		/**
 		@brief If the FMTyieldmodelUnitCoverage contains Core classes it also need to be presolved when presolved is called on the FMTmodel.
@@ -65,12 +65,12 @@ namespace Core
 		@return a cloned FMTyieldmodel.
 		*/
 		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodelUnitCoverage::GetModelType
+		// DocString: FMTyieldmodelUnitCoverage::getModelType
 		/**
 		@brief Get the model type.
 		@return a string of the model type _random.
 		*/
-		static std::string GetModelType();
+		static std::string getModelType();
 	private:
 		// DocString: FMTyieldmodelUnitCoverage::getOutputs
 		/**

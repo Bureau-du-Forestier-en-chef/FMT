@@ -24,7 +24,7 @@ namespace Spatial
         //Constructor
     }
 
-    void FMTexponentialschedule::ReduceTemp()
+    void FMTexponentialschedule::reduceTemp()
     {
         const double exponant = std::max(static_cast<double>(m_Level), 1.0);
         ++m_Level;

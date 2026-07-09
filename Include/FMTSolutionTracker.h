@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -38,22 +38,22 @@ namespace Spatial
 			FMTSolutionTracker(const FMTSolutionTracker& p_rhs) = default;
 			FMTSolutionTracker& operator=(const FMTSolutionTracker& p_rhs) = default;
 			~FMTSolutionTracker() = default;
-			void AddToSolution(size_t p_family,
+			void addToSolution(size_t p_family,
 				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_NewGraph,
 				size_t p_LastGraphId);
-			void RemoveFromSolution(size_t p_family,
+			void removeFromSolution(size_t p_family,
 				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_OldGraph);
-			const std::vector<double>& GetConstraintsValues(size_t p_Constraint)const;
-			size_t GetNumberOfCells(size_t p_GraphId) const;
+			const std::vector<double>& getConstraintsValues(size_t p_Constraint)const;
+			size_t getNumberOfCells(size_t p_GraphId) const;
 			size_t size() const;
 			void swap(FMTSolutionTracker& p_tracker);
-			size_t GetNonSpatialCellsCount() const;
-			void SetConstraintValues(const std::vector<std::vector<double>>& p_constraintValues,
+			size_t getNonSpatialCellsCount() const;
+			void setConstraintValues(const std::vector<std::vector<double>>& p_constraintValues,
 								const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
 									size_t p_NumberOfFamilies);
-			bool EnableTracking();
-			void DisableTracking();
-			bool IsTrackingEnable() const;
+			bool enableTracking();
+			void disableTracking();
+			bool isTrackingEnable() const;
 		private:
 			std::vector<std::vector<double>>m_LastConstraintsEvaluation;
 			std::vector<size_t>m_Solution;

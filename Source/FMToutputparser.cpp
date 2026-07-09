@@ -176,10 +176,10 @@ namespace Parser
 					}
 					if (FMTparser::tryOpening(outputstream, location))
 					{
-						std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(outputstream, themes, constants);
+						std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(outputstream, themes, constants);
 						while (!Lines.empty())
 						{
-							const std::string line = GetLine(Lines);
+							const std::string line = getLine(Lines);
 							if (!line.empty())
 							{
 								boost::smatch kmatch;

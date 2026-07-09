@@ -34,7 +34,7 @@ namespace Models
 
 
 
-	std::map<std::string, double> FMTsesmodel::GreedyReferenceBuild(
+	std::map<std::string, double> FMTsesmodel::greedyReferenceBuild(
 		const Core::FMTschedule& p_schedule,
 		size_t p_randomIterations,
 		int p_seed,
@@ -43,13 +43,13 @@ namespace Models
 	std::map<std::string, double> bestresults;
 	try {
 		
-		bestresults = FMTsemodel::GreedyReferenceBuild(
+		bestresults = FMTsemodel::greedyReferenceBuild(
 			m_BestSolution, 
 			p_schedule, 
 			p_randomIterations, 
 			p_seed, 
 			p_tolerance);
-		m_SpatialGraphs.DeleteNonCompleteGraphs();
+		m_SpatialGraphs.deleteNonCompleteGraphs();
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTsesmodel::GreedyReferenceBuild", __LINE__, __FILE__);
@@ -68,7 +68,7 @@ namespace Models
 		try {
 			for (const Core::FMTschedule& schedule : schedules)
 			{
-				this->GreedyReferenceBuild(schedule,getparameter(NUMBER_OF_ITERATIONS));
+				this->greedyReferenceBuild(schedule,getparameter(NUMBER_OF_ITERATIONS));
 			}
 		}
 		catch (...)

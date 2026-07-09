@@ -26,7 +26,7 @@ namespace Core
 		modelYields = p_yields;
 	}
 
-	const std::vector<double>FMTyieldmodelUnitCoverage::Predict(const Core::FMTyieldrequest& p_request) const
+	const std::vector<double>FMTyieldmodelUnitCoverage::predict(const Core::FMTyieldrequest& p_request) const
 	{
 		std::vector<double> Predictions;
 		try {
@@ -54,7 +54,7 @@ namespace Core
 			newPresolved.m_mask = newPresolved.m_mask.presolve(p_filter, p_newThemes);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch(GetModelName(), "FMTyieldmodelUnitCoverage::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(getModelName(), "FMTyieldmodelUnitCoverage::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(newPresolved));
 	}
@@ -72,7 +72,7 @@ namespace Core
 		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(*this));
 	}
 
-	std::string FMTyieldmodelUnitCoverage::GetModelType()
+	std::string FMTyieldmodelUnitCoverage::getModelType()
 	{
 		return "UNIT_COVERAGE";
 	}

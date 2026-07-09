@@ -27,7 +27,7 @@ namespace Core {
 
 	
 
-	const std::vector<double> FMTyieldmodelpools::GetInputValues(const Graph::FMTpredictor& predictor) const
+	const std::vector<double> FMTyieldmodelpools::getInputValues(const Graph::FMTpredictor& predictor) const
 	{
 		std::vector<double> values;
 		std::vector<double> sourceYields = predictor.getSourceYields();
@@ -47,7 +47,7 @@ namespace Core {
 		return values;
 	}
 
-	std::string FMTyieldmodelpools::GetModelType()
+	std::string FMTyieldmodelpools::getModelType()
 	{
 		return "POOLS";
 	}

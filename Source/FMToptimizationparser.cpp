@@ -813,7 +813,7 @@ namespace Parser
 					std::queue<FMTparser::FMTLineInfo>Lines  = getOptline(optimizestream, p_themes, p_constants, p_outputs);
 					while (!Lines.empty())
 					{
-						std::string line = GetLine(Lines);
+						std::string line = getLine(Lines);
 						if (!line.empty())
 						{
 							FMToptimizationsection newsection = getSection(line);
@@ -1092,10 +1092,10 @@ namespace Parser
 		{
 		std::queue<FMTLineInfo>FinalLines;
 		try {
-			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(stream, themes, cons);
+			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(stream, themes, cons);
 			while (!Lines.empty())
 				{
-				const std::string line = GetLine(Lines);
+				const std::string line = getLine(Lines);
 				if (line.find("_EACH") != std::string::npos)
 					{
 					std::queue<std::string> EACH_LINES = getEachLines(line, cons, outputs, themes);

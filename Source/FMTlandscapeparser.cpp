@@ -69,7 +69,7 @@ namespace Parser
         return indexes;
         }
 
-	void FMTlandscapeparser::ProcessThemeLine(
+	void FMTlandscapeparser::processThemeLine(
 		const boost::smatch& kmatch, 
 		ThemeParsingContext& ctx, 
 		PreDeclarationContext& preContext, 
@@ -129,7 +129,7 @@ namespace Parser
 		ctx.themename = themename_match;
 	}
 
-	void FMTlandscapeparser::ProcessAggregateLine(
+	void FMTlandscapeparser::processAggregateLine(
 		const boost::smatch& kmatch, 
 		ThemeParsingContext& ctx, 
 		std::vector<Core::FMTtheme>& themes, 
@@ -177,7 +177,7 @@ namespace Parser
 		}
 	}
 
-	void FMTlandscapeparser::ProcessAggregateValueLine(const std::string& line, ThemeParsingContext& ctx, std::vector<Core::FMTtheme>& themes)
+	void FMTlandscapeparser::processAggregateValueLine(const std::string& line, ThemeParsingContext& ctx, std::vector<Core::FMTtheme>& themes)
 	{
 		const std::vector<std::string> splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
 
@@ -219,7 +219,7 @@ namespace Parser
 		}
 	}
 
-	void FMTlandscapeparser::ProcessAttributeLine(
+	void FMTlandscapeparser::processAttributeLine(
 		const std::string& line, 
 		ThemeParsingContext& ctx, 
 		const Core::FMTconstants& constants)
@@ -282,7 +282,7 @@ namespace Parser
 		declarations.erase(nameID);
 	}
 
-	bool FMTlandscapeparser::ProcessPreDeclarationLine(
+	bool FMTlandscapeparser::processPreDeclarationLine(
 		const std::string& line,
 		PreDeclarationContext& context, 
 		const Core::FMTconstants& constants)
@@ -402,13 +402,13 @@ namespace Parser
 	
 			if (FMTparser::tryOpening(landstream, location))
 			{
-				std::queue<FMTparser::FMTLineInfo> Lines = FMTparser::GetCleanLinewfor(landstream, themes, constants);
+				std::queue<FMTparser::FMTLineInfo> Lines = FMTparser::getCleanLinewfor(landstream, themes, constants);
 				while (!Lines.empty())
 				{
-					const std::string line = GetLine(Lines);
+					const std::string line = getLine(Lines);
 					if (!line.empty())
 					{
-						if (ProcessPreDeclarationLine(line, preContext, constants)) {
+						if (processPreDeclarationLine(line, preContext, constants)) {
 							continue; 
 						}
 
@@ -419,19 +419,19 @@ namespace Parser
 			
 						if (!potentialtheme.empty())
 						{
-							ProcessThemeLine(kmatch, ctx, preContext, themes, constants, unknownID);
+							processThemeLine(kmatch, ctx, preContext, themes, constants, unknownID);
 						}
 						else if (!aggregate.empty())
 						{
-							ProcessAggregateLine(kmatch, ctx, themes, constants);
+							processAggregateLine(kmatch, ctx, themes, constants);
 						}
 						else if (!ctx.aggregatename.empty() /* && !aggregate_redefiniton*/)
 						{
-							ProcessAggregateValueLine(line, ctx, themes);
+							processAggregateValueLine(line, ctx, themes);
 						}
 						else 
 						{
-							ProcessAttributeLine(line, ctx, constants);
+							processAttributeLine(line, ctx, constants);
 						}
 					}
 				}

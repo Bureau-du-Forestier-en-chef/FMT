@@ -24,7 +24,7 @@
 
 namespace FMTWrapperCore
 {
-    std::vector<Core::FMToutput> SES::FilterOutputs(
+    std::vector<Core::FMToutput> SES::filterOutputs(
         const std::vector<Core::FMToutput>& allOutputs,
         const std::vector<std::string>& selectedNames)
     {
@@ -45,7 +45,7 @@ namespace FMTWrapperCore
         return filtered;
     }
 
-    std::vector<Core::FMTtheme> SES::BuildGrowthThemes(
+    std::vector<Core::FMTtheme> SES::buildGrowthThemes(
         const std::vector<Core::FMTtheme>& allThemes,
         const std::vector<int>& themeIndices)
     {
@@ -66,7 +66,7 @@ namespace FMTWrapperCore
         return growthThemes;
     }
 
-    std::vector<Core::FMTconstraint> SES::FilterConstraints(
+    std::vector<Core::FMTconstraint> SES::filterConstraints(
         const std::vector<Core::FMTconstraint>& allConstraints,
         const std::vector<std::string>& selectedNames)
     {
@@ -87,7 +87,7 @@ namespace FMTWrapperCore
         return selectedConstraints;
     }
 
-    void SES::ApplySingleTransitions(Models::FMTmodel& model)
+    void SES::applySingleTransitions(Models::FMTmodel& model)
     {
         std::vector<Core::FMTtransition> singleTransitions;
         for (const Core::FMTtransition& transition : model.getTransitions())
@@ -97,7 +97,7 @@ namespace FMTWrapperCore
         model.setTransitions(singleTransitions);
     }
 
-    void SES::PrepareInitialForest(
+    void SES::prepareInitialForest(
         Models::FMTsemodel& model,
         const std::string& rastersPath,
         bool useStanlock,
@@ -138,11 +138,11 @@ namespace FMTWrapperCore
         model.setInitialMapping(initialForest);
     }
 
-    EventsData SES::WriteEventsFile(
+    EventsData SES::writeEventsFile(
         const Models::FMTsemodel& semodel,
         const std::string& eventsFilePath)
     {
-        EventsData eventsData = GenerateEventsData(semodel);
+        EventsData eventsData = generateEventsData(semodel);
 
         std::ofstream eventsFile(eventsFilePath);
         if (eventsFile.is_open())
@@ -166,14 +166,14 @@ namespace FMTWrapperCore
         if (!params.constraintNames.empty())
         {
             simulationModel.setconstraints(
-                FilterConstraints(simulationModel.getconstraints(), params.constraintNames));
+                filterConstraints(simulationModel.getconstraints(), params.constraintNames));
         }
 
-        ApplySingleTransitions(simulationModel);
+        applySingleTransitions(simulationModel);
 
         std::string ageRasterPath;
         std::vector<std::string> themeRasterPaths;
-        PrepareInitialForest(
+        prepareInitialForest(
             simulationModel,
             params.rastersPath,
             params.useStanlock,
@@ -203,14 +203,14 @@ namespace FMTWrapperCore
 
         std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath + "\\";
 
-        results.infeasibilityMessages = GenerateInfeasibilityReport(simulationModel);
+        results.infeasibilityMessages = generateInfeasibilityReport(simulationModel);
 
-        results.carbonReport = GenerateCarbonReport(
+        results.carbonReport = generateCarbonReport(
             simulationModel,
             params.numberOfPeriods,
             schedules);
 
-        results.disturbanceFiles = WriteDisturbances(
+        results.disturbanceFiles = writeDisturbances(
             simulationModel,
             outputDirectory,
             params.numberOfPeriods,
@@ -219,21 +219,21 @@ namespace FMTWrapperCore
         if (params.generateEvents || params.carbonMode)
         {
             results.eventsFilePath = outputDirectory + "events.txt";
-            results.eventsData = WriteEventsFile(simulationModel, results.eventsFilePath);
+            results.eventsData = writeEventsFile(simulationModel, results.eventsFilePath);
         }
 
         if (!params.outputNames.empty())
         {
-            results.outputsData = CalculateOutputs(
+            results.outputsData = calculateOutputs(
                 simulationModel,
                 params.outputNames,
                 params.numberOfPeriods);
 
-            results.scheduleFilePath = WriteSchedule(simulationModel, outputDirectory);
+            results.scheduleFilePath = writeSchedule(simulationModel, outputDirectory);
 
             if (!params.carbonMode)
             {
-                ExportResults(
+                exportResults(
                     simulationModel,
                     results.outputsData.outputObjects,
                     params.outputMinPeriod,
@@ -244,7 +244,7 @@ namespace FMTWrapperCore
             }
             else
             {
-                WriteUpdatedForest(
+                writeUpdatedForest(
                     simulationModel,
                     params.rastersPath,
                     themeRasterPaths,
@@ -253,7 +253,7 @@ namespace FMTWrapperCore
 
                 if (!params.predictorYields.empty())
                 {
-                    results.predictorsData = CalculatePredictors(
+                    results.predictorsData = calculatePredictors(
                         simulationModel,
                         params.rastersPath,
                         params.numberOfPeriods,
@@ -263,7 +263,7 @@ namespace FMTWrapperCore
 
             if (params.generateSpatialOutputs)
             {
-                results.spatialOutputFiles = WriteSpatialOutputs(
+                results.spatialOutputFiles = writeSpatialOutputs(
                     simulationModel,
                     results.outputsData.outputObjects,
                     params.outputMinPeriod,
@@ -276,7 +276,7 @@ namespace FMTWrapperCore
         return results;
     }
 
-    std::vector<std::string> SES::GenerateInfeasibilityReport(const Models::FMTsemodel& semodel)
+    std::vector<std::string> SES::generateInfeasibilityReport(const Models::FMTsemodel& semodel)
     {
         std::vector<std::string> messages;
 
@@ -284,17 +284,17 @@ namespace FMTWrapperCore
         {
             // Journalise le rapport (via le logger du modèle) puis reconstruit
             // les mêmes messages pour les retourner à l'appelant.
-            semodel.LogConstraintsInfeasibilities();
+            semodel.logConstraintsInfeasibilities();
 
             const std::vector<Core::FMTconstraint> constraints = semodel.getconstraints();
             double brokenup = 0;
             double total = 0;
 
             // L'indice 0 correspond à l'objectif : on commence à 1 comme dans
-            // FMTsemodel::LogConstraintsInfeasibilities().
+            // FMTsemodel::logConstraintsInfeasibilities().
             for (size_t cid = 1; cid < constraints.size(); ++cid)
             {
-                double value = semodel.GetConstraintEvaluation(cid);
+                double value = semodel.getConstraintEvaluation(cid);
                 if (value > 0)
                 {
                     const Core::FMTconstraint& constraint = constraints.at(cid);
@@ -345,14 +345,14 @@ namespace FMTWrapperCore
         if (!params.constraintNames.empty())
         {
             optimizationModel.setconstraints(
-                FilterConstraints(optimizationModel.getconstraints(), params.constraintNames));
+                filterConstraints(optimizationModel.getconstraints(), params.constraintNames));
         }
 
-        ApplySingleTransitions(optimizationModel);
+        applySingleTransitions(optimizationModel);
 
         std::string ageRasterPath;
         std::vector<std::string> themeRasterPaths;
-        PrepareInitialForest(
+        prepareInitialForest(
             optimizationModel,
             params.rastersPath,
             params.useStanlock,
@@ -368,10 +368,10 @@ namespace FMTWrapperCore
 
         std::string outputDirectory = params.outputPath;
 
-        results.infeasibilityMessages = GenerateInfeasibilityReport(optimizationModel);
+        results.infeasibilityMessages = generateInfeasibilityReport(optimizationModel);
 
         std::vector<int> emptyGrowthThemes;
-        results.disturbanceFiles = WriteDisturbances(
+        results.disturbanceFiles = writeDisturbances(
             optimizationModel,
             outputDirectory,
             params.numberOfPeriods,
@@ -380,19 +380,19 @@ namespace FMTWrapperCore
         if (params.generateEvents)
         {
             results.eventsFilePath = outputDirectory + "/events.txt";
-            results.eventsData = WriteEventsFile(optimizationModel, results.eventsFilePath);
+            results.eventsData = writeEventsFile(optimizationModel, results.eventsFilePath);
         }
 
         if (!params.outputNames.empty())
         {
-            results.outputsData = CalculateOutputs(
+            results.outputsData = calculateOutputs(
                 optimizationModel,
                 params.outputNames,
                 params.numberOfPeriods);
 
-            results.scheduleFilePath = WriteSchedule(optimizationModel, outputDirectory);
+            results.scheduleFilePath = writeSchedule(optimizationModel, outputDirectory);
 
-            ExportResults(
+            exportResults(
                 optimizationModel,
                 results.outputsData.outputObjects,
                 params.outputMinPeriod,
@@ -403,7 +403,7 @@ namespace FMTWrapperCore
 
             if (params.generateSpatialOutputs)
             {
-                results.spatialOutputFiles = WriteSpatialOutputs(
+                results.spatialOutputFiles = writeSpatialOutputs(
                     optimizationModel,
                     results.outputsData.outputObjects,
                     params.outputMinPeriod,
@@ -416,7 +416,7 @@ namespace FMTWrapperCore
         return results;
     }
 
-    CarbonReportData SES::GenerateCarbonReport(
+    CarbonReportData SES::generateCarbonReport(
         const Models::FMTsemodel& semodel,
         const int numberOfPeriods,
         const std::vector<Core::FMTschedule>& schedules)
@@ -427,7 +427,7 @@ namespace FMTWrapperCore
         {
             Models::FMTsemodel localmodel(semodel);
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTschedule> newschedule = semodel.GetSchedules(schedule, false);
+            const std::vector<Core::FMTschedule> newschedule = semodel.getSchedules(schedule, false);
             size_t scid = 0;
 
             for (int period = 1; period <= numberOfPeriods; ++period)
@@ -446,7 +446,7 @@ namespace FMTWrapperCore
 
                 double primalinf = 0;
                 double objectivevalue = 0;
-                localmodel.GetSolutionStatus(schedule, objectivevalue, primalinf, true, false);
+                localmodel.getSolutionStatus(schedule, objectivevalue, primalinf, true, false);
                 periodData.objectiveValue = objectivevalue;
                 periodData.primalInfeasibility = primalinf;
 
@@ -510,7 +510,7 @@ namespace FMTWrapperCore
         return reportData;
     }
 
-    std::vector<std::string> SES::WriteDisturbances(
+    std::vector<std::string> SES::writeDisturbances(
         const Models::FMTsemodel& semodel,
         const std::string& outputBasePath,
         const int numberOfPeriods,
@@ -520,7 +520,7 @@ namespace FMTWrapperCore
 
         try
         {
-            const std::vector<Core::FMTtheme> growthThemes = BuildGrowthThemes(
+            const std::vector<Core::FMTtheme> growthThemes = buildGrowthThemes(
                 semodel.getthemes(),
                 growthThemeIndices);
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
@@ -557,7 +557,7 @@ namespace FMTWrapperCore
         return transitionFiles;
     }
 
-    EventsData SES::GenerateEventsData(const Models::FMTsemodel& semodel)
+    EventsData SES::generateEventsData(const Models::FMTsemodel& semodel)
     {
         EventsData eventsData;
 
@@ -581,7 +581,7 @@ namespace FMTWrapperCore
         return eventsData;
     }
 
-    OutputsData SES::CalculateOutputs(
+    OutputsData SES::calculateOutputs(
         const Models::FMTsemodel& semodel,
         const std::vector<std::string>& outputNames,
         const int numberOfPeriods)
@@ -591,7 +591,7 @@ namespace FMTWrapperCore
         try
         {
             const std::vector<Core::FMToutput> allOutputs = semodel.getoutputs();
-            std::vector<Core::FMToutput> selectedOutputs = FilterOutputs(allOutputs, outputNames);
+            std::vector<Core::FMToutput> selectedOutputs = filterOutputs(allOutputs, outputNames);
 
             outputsData.outputObjects = selectedOutputs;
 
@@ -628,7 +628,7 @@ namespace FMTWrapperCore
         return outputsData;
     }
 
-    std::vector<std::string> SES::WriteSpatialOutputs(
+    std::vector<std::string> SES::writeSpatialOutputs(
         const Models::FMTsemodel& semodel,
         const std::vector<Core::FMToutput>& outputs,
         const int minPeriod,
@@ -667,7 +667,7 @@ namespace FMTWrapperCore
         return rasterFiles;
     }
 
-    PredictorsData SES::CalculatePredictors(
+    PredictorsData SES::calculatePredictors(
         const Models::FMTsemodel& semodel,
         const std::string& rasterPath,
         const int numberOfPeriods,
@@ -724,7 +724,7 @@ namespace FMTWrapperCore
         return predictorsData;
     }
 
-    std::string SES::WriteSchedule(
+    std::string SES::writeSchedule(
         const Models::FMTsemodel& semodel,
         const std::string& outputPath)
     {
@@ -734,7 +734,7 @@ namespace FMTWrapperCore
         {
             Parser::FMTscheduleparser scheduparser;
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTschedule> schedules = semodel.GetSchedules(schedule);
+            const std::vector<Core::FMTschedule> schedules = semodel.getSchedules(schedule);
 
             schedulePath = outputPath + semodel.getname() + "._seq";
             scheduparser.write(schedules, schedulePath);
@@ -753,7 +753,7 @@ namespace FMTWrapperCore
         return schedulePath;
     }
 
-    void SES::WriteUpdatedForest(
+    void SES::writeUpdatedForest(
         const Models::FMTsemodel& semodel,
         const std::string& rasterPath,
         const std::vector<std::string>& themeRasterPaths,
@@ -782,7 +782,7 @@ namespace FMTWrapperCore
         }
     }
 
-    void SES::ExportResults(
+    void SES::exportResults(
         const Models::FMTsemodel& semodel,
         const std::vector<Core::FMToutput>& outputs,
         const int minPeriod,

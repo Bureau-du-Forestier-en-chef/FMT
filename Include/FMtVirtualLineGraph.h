@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -55,14 +55,14 @@ namespace Spatial
 			const Graph::FMTlinegraph& getLineGraph() const;
 			void setLineGraph(const Graph::FMTlinegraph& p_LineGraph,
 							FMTSolutionTracker& p_solution);
-			double GetOutput(const Models::FMTmodel& p_model,
+			double getOutput(const Models::FMTmodel& p_model,
 				const FMTSolutionTracker& p_solution,
 				const Core::FMToutput& p_output, int p_period) const;
-			size_t GetGraphFamily() const;
-			void SetBaseGraph(FMTSolutionTracker& p_solution);
-			void SetLastPeriod(FMTSolutionTracker& p_solution);
-			void SetNaturalGrowth(FMTSolutionTracker& p_solution);
-			FMTVirtualLineGraph PostSolve(const Core::FMTmaskfilter& p_Filter,
+			size_t getGraphFamily() const;
+			void setBaseGraph(FMTSolutionTracker& p_solution);
+			void setLastPeriod(FMTSolutionTracker& p_solution);
+			void setNaturalGrowth(FMTSolutionTracker& p_solution);
+			FMTVirtualLineGraph postSolve(const Core::FMTmaskfilter& p_Filter,
 					const std::vector<int>& p_actionMapping,
 					FMTSpatialGraphs& p_Graphs,
 				FMTSolutionTracker& p_solution) const;

@@ -166,14 +166,14 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@return the FMTsection that fit with the p_Extension
 		*/
 		static Core::FMTsection fromExtension(const std::string& p_Extension);
-		// DocString: FMTparser::CreateSubDirectory
+		// DocString: FMTparser::createSubDirectory
 		/**
 		@brief Create a sub directory in directory
 		@param[in] p_Directory the base directory
 		@param[in]  p_SubDirectory the sub directory
 		@return full directory path
 		*/
-		std::string CreateSubDirectory(const std::string& p_Directory, const std::string& p_SubDirectory);
+		std::string createSubDirectory(const std::string& p_Directory, const std::string& p_SubDirectory);
 	protected:
 		class FMTLineInfo
 			{
@@ -354,10 +354,10 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_ForOut is the output of for loops unrol
 		@return a queue of lines to process.
 		*/
-		virtual std::queue<FMTLineInfo> TryInclude(const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
+		virtual std::queue<FMTLineInfo> tryInclude(const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
 															std::queue<FMTLineInfo>p_ForOut) const;
 
-		// DocString: FMTparser::GetCleanLinewfor
+		// DocString: FMTparser::getCleanLinewfor
 		/**
 		@brief Get a clean line and consider for loops when reading the file.
 		@param[p_stream] p_stream  is the file stream
@@ -365,16 +365,16 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_const the model constants
 		@return a queue of lines to process
 		*/
-		virtual std::queue<FMTLineInfo> GetCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTtheme>& p_themes,
+		virtual std::queue<FMTLineInfo> getCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTtheme>& p_themes,
 																const Core::FMTconstants& p_cons) const;
-		// DocString: FMTparser::GetAllLines
+		// DocString: FMTparser::getAllLines
 		/**
 		@brief Get all lines of a file
 		@param[p_stream] p_stream  is the file stream
 		@return a queue of lines to process
 		*/
-		std::queue<FMTLineInfo> GetAllLines(std::ifstream& p_stream) const;
-		// DocString: FMTparser::ProcessForLoopsNInclude
+		std::queue<FMTLineInfo> getAllLines(std::ifstream& p_stream) const;
+		// DocString: FMTparser::processForLoopsNInclude
 		/**
 		@brief process for loops and include lines
 		@param[in] p_themes model themes
@@ -382,7 +382,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_AllLines all lines read from file or pre processed
 		@return a queue of lines to process.
 		*/
-		std::queue<FMTLineInfo> ProcessForLoopsNInclude(
+		std::queue<FMTLineInfo> processForLoopsNInclude(
 			const std::vector<Core::FMTtheme>& p_themes,
 			const Core::FMTconstants& p_cons,
 			std::queue<FMTLineInfo>p_AllLines) const;
@@ -501,7 +501,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		bool setPeriods(Core::FMTspec& p_spec,
 			const std::string& p_periods,
 			const Core::FMTconstants& p_constants) const;
-		// DocString: FMTparser::GetForLoops
+		// DocString: FMTparser::getForLoops
 		/**
 		@brief Fill up the for loops queue p_allValues with targeted variables
 		@param[in] p_line is the for loop header line
@@ -509,40 +509,40 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_cons the model constants
 		@return the for loops values with target has key
 		*/
-		std::map<std::string, std::vector<std::string>> GetForLoops(const std::string& p_line,
+		std::map<std::string, std::vector<std::string>> getForLoops(const std::string& p_line,
 			const std::vector<Core::FMTtheme>& p_themes,
 			const Core::FMTconstants& p_cons) const;
-		// DocString: FMTparser::GetForLoops
+		// DocString: FMTparser::getForLoops
 		/**
 		@brief Unrol for loops in the queue and set the results in the queues.
 		@param[in] p_themes model themes
 		@param[in] p_constants model constant
 		@param[out] p_queue the resulting queue of lines
 		*/
-		void ProcessForLoops(const std::vector<Core::FMTtheme>& p_themes,
+		void processForLoops(const std::vector<Core::FMTtheme>& p_themes,
 			const Core::FMTconstants& p_constants,
 			std::queue<FMTLineInfo>& p_queue) const;
-		// DocString: FMTparser::IsForLoops
+		// DocString: FMTparser::isForLoops
 		/**
 		@brief Test if you got a for loops in the line
 		@param[in] p_line is the for loop header line
 		@return true if it is a for loops.
 		*/
-		bool IsForLoops(const std::string& p_line) const;
-		// DocString: FMTparser::IsForLoopsEnd
+		bool isForLoops(const std::string& p_line) const;
+		// DocString: FMTparser::isForLoopsEnd
 		/**
 		@brief Test if you got a end of the for loops
 		@param[in] p_line is the for loop header line
 		@return true if it is the end.
 		*/
-		bool IsForLoopsEnd(const std::string& p_line) const;
-		// DocString: FMTparser:::GetLine
+		bool isForLoopsEnd(const std::string& p_line) const;
+		// DocString: FMTparser:::getLine
 		/**
 		@brief get front element in queue and set line then do pop
 		@param[in] p_Lines
 		@return the line value
 		*/
-		std::string GetLine(std::queue<FMTLineInfo>& p_Lines) const;
+		std::string getLine(std::queue<FMTLineInfo>& p_Lines) const;
 	private:
 		friend class Testing::UnitTestFMTParser;
 		// DocString: FMTparser::m_VECTOR_THEME

@@ -27,7 +27,7 @@ namespace Models
 
 {
 
-    std::string FMTsamodel::GetMovesName(FMTsamove p_move)
+    std::string FMTsamodel::getMovesName(FMTsamove p_move)
     {
         switch (p_move)
             {
@@ -70,7 +70,7 @@ namespace Models
     void FMTsamodel::_CoolDown()
     {
         try {
-            m_CoolingSchedule->ReduceTemp();
+            m_CoolingSchedule->reduceTemp();
         }catch (...)
         {
             _exhandler->raisefromcatch("", "FMTsamodel::_CoolDown", __LINE__, __FILE__);
@@ -194,8 +194,8 @@ namespace Models
             {
                 Parser::FMTareaparser AreaParser;
                 const int LENGTH = getparameter(Models::FMTintmodelparameters::LENGTH);
-                const std::string COOLING_LEVEL = "Level" + std::to_string(m_CoolingSchedule->GetLevel());
-                const std::string DIRECTORY = AreaParser.CreateSubDirectory(
+                const std::string COOLING_LEVEL = "Level" + std::to_string(m_CoolingSchedule->getLevel());
+                const std::string DIRECTORY = AreaParser.createSubDirectory(
                     getparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY),
                     COOLING_LEVEL);
                 for (int period = 1; period <= LENGTH; ++period)
@@ -215,7 +215,7 @@ namespace Models
 	bool FMTsamodel::_IsBetter(double p_candidatObjective) const
 		{
 		try {
-            const double temp = m_CoolingSchedule->GetTemp();
+            const double temp = m_CoolingSchedule->getTemp();
 			double probability = 1;
             const double objectivediff = (m_BestObjective - p_candidatObjective);
             m_CycleMoves.back().ObjectiveImpact = objectivediff;
@@ -238,8 +238,8 @@ namespace Models
     {
         size_t sizeOfMove = 0;
         try {
-            const double MAP_RATIO = (m_CoolingSchedule->GetTemp() / 
-                                            m_CoolingSchedule->GetInitialTemp());
+            const double MAP_RATIO = (m_CoolingSchedule->getTemp() / 
+                                            m_CoolingSchedule->getInitialTemp());
             const size_t MINIMUM_MOVES = size_t(1);
             const size_t MAXIMUM_MOVES = static_cast<size_t>(
                 static_cast<double>(p_MaxSize) * MAP_RATIO);
@@ -312,7 +312,7 @@ namespace Models
            }
            std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = finalSelection.begin();
            Spatial::FMTSpatialSchedule newsolution(actual, finalSelection.begin(), finalSelection.end());
-           newsolution.EnableSolutionTracker(m_SpatialGraphs);
+           newsolution.enableSolutionTracker(m_SpatialGraphs);
            while (luckycoordinateit != finalSelection.end())
            {
                newsolution.perturbGraph(*luckycoordinateit, period, *this, m_generator, bindings);
@@ -351,18 +351,18 @@ namespace Models
            {
                if (ConstraintIt->getConstraintType() == Core::FMTconstrainttype::FMTSpatialGroup)
                {
-                   const  std::vector<Spatial::FMTcoordinate> CONSTRAINT_C = p_actual.GetGroupsConflict(
+                   const  std::vector<Spatial::FMTcoordinate> CONSTRAINT_C = p_actual.getGroupsConflict(
                        *ConstraintIt, m_SpatialGraphs);
                    allCoordinates.insert(allCoordinates.end(), CONSTRAINT_C.begin(), CONSTRAINT_C.end());
                }
                ++ConstraintIt;
            }
            Spatial::FMTSpatialSchedule newSolution(p_actual);
-           newSolution.EnableSolutionTracker(m_SpatialGraphs);
+           newSolution.enableSolutionTracker(m_SpatialGraphs);
            const size_t MOVE_SIZE = _GetRandomMoveSize(allCoordinates.size()-1);
            allCoordinates.erase(allCoordinates.begin() + MOVE_SIZE, allCoordinates.end());
            std::shuffle(allCoordinates.begin(), allCoordinates.end(), m_generator);
-           newSolution.SetGrow(allCoordinates, *this);
+           newSolution.setGrow(allCoordinates, *this);
            return newSolution;
        }catch (...)
             {
@@ -421,7 +421,7 @@ namespace Models
                {
                    if (ConstraintIt->getConstraintType() == Core::FMTconstrainttype::FMTSpatialGroup)
                    {
-                       allowed = !p_actual.GetGroupsConflict(
+                       allowed = !p_actual.getGroupsConflict(
                            *ConstraintIt, m_SpatialGraphs).empty();
                    }
                    ++ConstraintIt;
@@ -444,7 +444,7 @@ namespace Models
                int modelLength = getparameter(Models::FMTintmodelparameters::LENGTH);
                while (!allowed && modelLength > 0)
                {
-                   allowed = p_actual.CanDoEventSpread(modelLength);
+                   allowed = p_actual.canDoEventSpread(modelLength);
                    --modelLength;
                }
            }
@@ -460,14 +460,14 @@ namespace Models
    {
        Spatial::FMTSpatialSchedule newSolution(p_actual);
        try {
-           newSolution.EnableSolutionTracker(m_SpatialGraphs);
+           newSolution.enableSolutionTracker(m_SpatialGraphs);
            const int MODEL_LENGTH = getparameter(Models::FMTintmodelparameters::LENGTH);
            std::vector<
            std::vector<Spatial::FMTSpatialSchedule::EventSpread>>AllPotentials;
            for (int period = 1; period <= MODEL_LENGTH; ++period)
                 {
                 const  std::vector<Spatial::FMTSpatialSchedule::EventSpread> LOCAL = 
-                    newSolution.GetPotentialSpread(period);
+                    newSolution.getPotentialSpread(period);
                 if (!LOCAL.empty())
                     {
                     AllPotentials.push_back(LOCAL);
@@ -477,7 +477,7 @@ namespace Models
            const size_t MOVE_SIZE = _GetRandomMoveSize(AllPotentials.begin()->size());
            std::shuffle(AllPotentials.begin()->begin(), 
                AllPotentials.begin()->begin() + MOVE_SIZE, m_generator);
-           newSolution.SetSpread(AllPotentials.begin()->begin(),
+           newSolution.setSpread(AllPotentials.begin()->begin(),
                AllPotentials.begin()->begin() + MOVE_SIZE);
        }catch (...)
             {
@@ -564,7 +564,7 @@ namespace Models
             const size_t SELECTED = std::min(MOVE_SIZE, selectionPool.size());
             _logger->logwithlevel("Local Move Selected " + std::to_string(SELECTED)+"\n", 2);
             Spatial::FMTSpatialSchedule newsolution(actual, selectionPool.begin(), selectionPool.begin() + SELECTED);
-            newsolution.EnableSolutionTracker(m_SpatialGraphs);
+            newsolution.enableSolutionTracker(m_SpatialGraphs);
             while (luckycoordinateit != selectionPool.end() && perturbationdone < MOVE_SIZE)
             {
                 newsolution.perturbGraph(*luckycoordinateit, period, *this, m_generator, bindings);
@@ -783,10 +783,10 @@ namespace Models
                             newSchedules.push_back(newLp.getSolution(period, withlock));
                             }
                     }else {
-                        newSchedules = GetSchedules(p_SpatialSchedule, withlock);
+                        newSchedules = getSchedules(p_SpatialSchedule, withlock);
                         }
                 #else
-                    newSchedules = GetSchedules(p_SpatialSchedule, withlock);
+                    newSchedules = getSchedules(p_SpatialSchedule, withlock);
                 #endif
         }catch (...)
             {
@@ -806,7 +806,7 @@ namespace Models
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                     "Cannot rebuild empty solution", "FMTsamodel::_GetRebuild", __LINE__, __FILE__);
             }
-            newsolution = GetNewSolution(actual);
+            newsolution = getNewSolution(actual);
 
             const std::vector<double>& FACTORS = actual.getConstraintsFactor();
             if (!FACTORS.empty())
@@ -815,7 +815,7 @@ namespace Models
             }
             for (const Core::FMTschedule& schedule : nonspatialschedules)
                 {
-                GreedyReferenceBuild(newsolution, schedule,
+                greedyReferenceBuild(newsolution, schedule,
                     getparameter(NUMBER_OF_ITERATIONS),
                     getparameter(Models::FMTintmodelparameters::SEED), FMT_DBL_TOLERANCE, false);
                 }
@@ -941,7 +941,7 @@ namespace Models
             const size_t alliterations = static_cast<size_t>(getparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS));
             for (const Core::FMTschedule& schedule : schedules)
                 {
-                GreedyReferenceBuild(m_BestSolution, schedule, alliterations);
+                greedyReferenceBuild(m_BestSolution, schedule, alliterations);
                 }
         }
         catch (...)
@@ -958,7 +958,7 @@ namespace Models
 		{
 		double temperature = 0;
 		try {
-        const std::vector<double>actuals = GetConstraintsValues(actual);
+        const std::vector<double>actuals = getConstraintsValues(actual);
         std::vector<double>maximals = actuals;
         std::vector<double>deltasums(constraints.size(), 0);
         size_t iterations = m_WARM_UP_ITERATIONS;
@@ -968,7 +968,7 @@ namespace Models
         {
             const Spatial::FMTSpatialSchedule newsolution = _Move(actual, bindings);
             size_t cntid = 0;
-            for (const double& value : GetConstraintsValues(newsolution))
+            for (const double& value : getConstraintsValues(newsolution))
             {
                 //*_logger << "Value " << value << "\n";
                 if (value != 0 && (maximals.at(cntid) > 0 && maximals.at(cntid) < value ||
@@ -987,8 +987,8 @@ namespace Models
         //double AverageCount = 0.0;
         for (double& value : maximals)//Need to normalize the calculated delta
         {
-            value = GetConstraintFactor(cntid, value);
-            /*if (IsValidFactor(value))
+            value = getConstraintFactor(cntid, value);
+            /*if (isValidFactor(value))
                 {
                 AverageFactor += value;
                 AverageCount += 1;
@@ -1000,7 +1000,7 @@ namespace Models
         temperature = (- (deltasum / totalits) * 100) / std::log(
             getparameter(Models::FMTdblmodelparameters::INITIAL_ACCEPTANCE_PROBABILITY));
         m_BestSolution.setConstraintsFactor(*this, maximals);
-        m_BestObjective = GetGlobalObjective(m_BestSolution);
+        m_BestObjective = getGlobalObjective(m_BestSolution);
         }catch (...)
             {
             _exhandler->raisefromcatch("", "FMTsamodel::_warmup", __LINE__, __FILE__);
@@ -1013,7 +1013,7 @@ namespace Models
             try {
                
                 return ((m_TotalMoves >= getparameter(FMTintmodelparameters::MAX_MOVES)) ||
-                             (m_CoolingSchedule->GetTemp() < FMT_DBL_TOLERANCE && m_TotalMoves > 0 && !_AllowAnyMove()));
+                             (m_CoolingSchedule->getTemp() < FMT_DBL_TOLERANCE && m_TotalMoves > 0 && !_AllowAnyMove()));
             }
             catch (...)
             {
@@ -1059,7 +1059,7 @@ namespace Models
             try {
                 if (m_TotalMoves % 100 == 0)
                 {
-                    DoReFactortorization(m_BestSolution);
+                    doReFactortorization(m_BestSolution);
                 }
             }
             catch (...)
@@ -1075,7 +1075,7 @@ namespace Models
                 {
                     double objective = 0;
                     double primalinf = 0;
-                    GetSolutionStatus(m_BestSolution, objective, primalinf);
+                    getSolutionStatus(m_BestSolution, objective, primalinf);
                     m_BestSolution.logSolutionStatus(m_TotalMoves, objective, primalinf);
                     
                 
@@ -1087,7 +1087,7 @@ namespace Models
         }
     }
 
-    void FMTsamodel::LogMovesReport() const
+    void FMTsamodel::logMovesReport() const
         {
         try {
             *_logger << "Moves report" << "\n";
@@ -1111,7 +1111,7 @@ namespace Models
                 }
                 for (const auto& element : Numberofaccepted)
                 {
-                    const std::string moveid = "   Move: " + GetMovesName(element.first);
+                    const std::string moveid = "   Move: " + getMovesName(element.first);
                     const std::string acceptedratio = "    Accepted (" + std::to_string((static_cast<double>(element.second) / static_cast<double>(Numberofdone.at(element.first))) * 100) + "%)";
                     *_logger << moveid + "\n" + acceptedratio  << "\n";
                 }
@@ -1126,10 +1126,10 @@ namespace Models
     {
         try {
              const double acceptanceratio = (static_cast<double>(_GetAcceptedCycleMoves()) / static_cast<double>(_GetCycleMoves())) * 100;
-             const double Temperature = m_CoolingSchedule->GetTemp();
-             if (_logger->logwithlevel("Temp(" + std::to_string(Temperature) + ") Accepted(" + std::to_string(acceptanceratio) + "%) Level(" + std::to_string(m_CoolingSchedule->GetLevel()) + ")\n", 1))
+             const double Temperature = m_CoolingSchedule->getTemp();
+             if (_logger->logwithlevel("Temp(" + std::to_string(Temperature) + ") Accepted(" + std::to_string(acceptanceratio) + "%) Level(" + std::to_string(m_CoolingSchedule->getLevel()) + ")\n", 1))
                 {
-                LogMovesReport();
+                logMovesReport();
                 }
              
         }catch (...)
@@ -1144,17 +1144,17 @@ namespace Models
 		try {
 			const Spatial::FMTSpatialSchedule::actionbindings ACTIONS_BINDING = 
                 m_BestSolution.getBindingActionsByPeriod(*this);
-            m_BestSolution.SetStaticsMovableCoordinates(*this);
+            m_BestSolution.setStaticsMovableCoordinates(*this);
             *_logger << "Generator initial state: " + std::to_string(m_generator()) << "\n";
 			const double INITIAL_TEMPERATURE = _Warmup(m_BestSolution, ACTIONS_BINDING);
-            m_CoolingSchedule->SetInitialTemperature(INITIAL_TEMPERATURE);
+            m_CoolingSchedule->setInitialTemperature(INITIAL_TEMPERATURE);
 			while (!isProvenOptimal())
 				{
                 m_CycleMoves.clear();
 				while (!_isCycleProvenOptimal())
 					{
 					Spatial::FMTSpatialSchedule newSolution = _Move(m_BestSolution, ACTIONS_BINDING);
-                    const double CANDIDAT_OBJECTIVE = GetGlobalObjective(newSolution);
+                    const double CANDIDAT_OBJECTIVE = getGlobalObjective(newSolution);
                     if (_IsBetter(CANDIDAT_OBJECTIVE))
                         {
                         _SetBestSolutionTo(newSolution,
@@ -1171,8 +1171,8 @@ namespace Models
                 _WriteDisrturbances();
 				_CoolDown();
                	}
-            LogConstraintsFactors();
-            LogConstraintsInfeasibilities();
+            logConstraintsFactors();
+            logConstraintsInfeasibilities();
             *_logger << "Generator final state: " << m_generator() << "\n";
 		}catch (...)
 			{
@@ -1184,7 +1184,7 @@ namespace Models
     void FMTsamodel::_SetBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution,
                                         double p_ObjectiveValue)
     {
-        if (p_NewBestSolution.IsPartial())
+        if (p_NewBestSolution.isPartial())
         {
             m_BestSolution.copyFromPartial(p_NewBestSolution);
         }

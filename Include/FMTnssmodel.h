@@ -177,7 +177,7 @@ namespace Models
 			@return a vector of pair of action / outputs.
 			*/
 			std::vector<std::set<size_t>> getActionsTargets(const std::vector<const Core::FMToutput*>& p_allOutputs) const;
-			// DocString: FMTnssmodel::UpdateOutputs
+			// DocString: FMTnssmodel::updateOutputs
 			/**
 			@brief Update the targeted output value and the outputs index remove the p_index from p_actionsoutputs and remove dev 
 			valculated value from p_targets
@@ -190,7 +190,7 @@ namespace Models
 			@param[in] p_allOutputs the outputs to update.
 			@return the harvested area of the dev.
 			*/
-			double UpdateOutputs(const Core::FMTdevelopment& p_development,
+			double updateOutputs(const Core::FMTdevelopment& p_development,
 								const std::vector<Core::FMTdevelopmentpath>& p_paths,
 								const int& p_action, const double& p_devArea,
 								std::vector<double>& p_targets, std::vector<std::set<size_t>>& p_actionsoutputs,

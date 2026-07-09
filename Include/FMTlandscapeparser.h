@@ -66,8 +66,8 @@ available to the user. This class is also used by the FMTmodelparser.
 			PreDeclarationContext();
 			void clearTheme(std::string nameID);
 		};
-		//DocString: FMTlandscapeparser::ProcessPreDeclarationLine
-		bool ProcessPreDeclarationLine(const std::string& line,
+		//DocString: FMTlandscapeparser::processPreDeclarationLine
+		bool processPreDeclarationLine(const std::string& line,
 			PreDeclarationContext& context,
 			const Core::FMTconstants& constants);
 		// DocString: FMTlandscapeparser::ThemeParsingContext
@@ -88,24 +88,24 @@ available to the user. This class is also used by the FMTmodelparser.
 			ThemeParsingContext();
 			void clear();
 		};
-		// DocString: FMTlandscapeparser::ProcessThemeLine
-		void ProcessThemeLine(const boost::smatch& kmatch,
+		// DocString: FMTlandscapeparser::processThemeLine
+		void processThemeLine(const boost::smatch& kmatch,
 			ThemeParsingContext& ctx,
 			PreDeclarationContext& preContext,
 			std::vector<Core::FMTtheme>& themes,
 			const Core::FMTconstants& constants,
 			size_t& unknownID);
-		// DocString: FMTlandscapeparser::ProcessAggregateLine
-		void ProcessAggregateLine(const boost::smatch& kmatch,
+		// DocString: FMTlandscapeparser::processAggregateLine
+		void processAggregateLine(const boost::smatch& kmatch,
 			ThemeParsingContext& ctx,
 			std::vector<Core::FMTtheme>& themes,
 			const Core::FMTconstants& constants);
-		// DocString: FMTlandscapeparser::ProcessAggregateValueLine
-		void ProcessAggregateValueLine(const std::string& line,
+		// DocString: FMTlandscapeparser::processAggregateValueLine
+		void processAggregateValueLine(const std::string& line,
 			ThemeParsingContext& ctx,
 			std::vector<Core::FMTtheme>& themes);
-		// DocString: FMTlandscapeparser::ProcessAttributeLine
-		void ProcessAttributeLine(const std::string& line,
+		// DocString: FMTlandscapeparser::processAttributeLine
+		void processAttributeLine(const std::string& line,
 			ThemeParsingContext& ctx,
 			const Core::FMTconstants& constants);
     public:

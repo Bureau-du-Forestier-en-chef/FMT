@@ -280,7 +280,7 @@ namespace Models
 		}
 	}
 
-	void FMTlpsolver::MIPparameters()
+	void FMTlpsolver::mipParameters()
 		{
 			try {
 				switch (solvertype)

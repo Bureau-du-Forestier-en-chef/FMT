@@ -126,7 +126,7 @@ Core::FMTsection FMTparser::fromExtension(const std::string& ext)
 	return Core::FMTsection::Empty;
     }
 
-std::string FMTparser::CreateSubDirectory(const std::string& p_Directory,
+std::string FMTparser::createSubDirectory(const std::string& p_Directory,
 										const std::string& p_SubDirectory)
 {
 	std::string fullPath;
@@ -1392,7 +1392,7 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
         return newline;
         }
 
-	std::string FMTparser::GetLine(std::queue<FMTLineInfo>& p_Lines) const
+	std::string FMTparser::getLine(std::queue<FMTLineInfo>& p_Lines) const
 		{
 		std::string returnedValue = p_Lines.front().m_lineValue;
 		m_line = p_Lines.front().m_lineNumber;
@@ -1401,7 +1401,7 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		return returnedValue;
 		}
 
-std::map<std::string, std::vector<std::string>>  FMTparser::GetForLoops(const std::string& p_line,
+std::map<std::string, std::vector<std::string>>  FMTparser::getForLoops(const std::string& p_line,
 	const std::vector<Core::FMTtheme>& p_themes,
 	const Core::FMTconstants& p_cons) const
 	{
@@ -1498,7 +1498,7 @@ std::map<std::string, std::vector<std::string>>  FMTparser::GetForLoops(const st
 	return allValues;
 	}
 
-bool FMTparser::IsForLoops(const std::string& p_line) const
+bool FMTparser::isForLoops(const std::string& p_line) const
 	{
 	bool IsValid = false;
 		try {
@@ -1515,7 +1515,7 @@ bool FMTparser::IsForLoops(const std::string& p_line) const
 		return IsValid;
 	}
 
-bool FMTparser::IsForLoopsEnd(const std::string& p_line) const
+bool FMTparser::isForLoopsEnd(const std::string& p_line) const
 {
 	bool IsValid = false;
 	try {
@@ -1622,7 +1622,7 @@ std::string FMTparser::_getAbsolutePath(std::string p_Path) const
 	return p_Path;
 	}
 
-std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
+std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 	const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
 	std::queue<FMTLineInfo>p_ForOut) const
 	{
@@ -1642,7 +1642,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 				{
 					while (newstream.is_open())
 					{
-						std::queue<FMTLineInfo> OutLoops = newparser.GetCleanLinewfor(newstream,p_themes,p_cons);
+						std::queue<FMTLineInfo> OutLoops = newparser.getCleanLinewfor(newstream,p_themes,p_cons);
 						while (!OutLoops.empty())
 						{
 							const FMTLineInfo& FOR_ELEMENT = OutLoops.front();
@@ -1745,7 +1745,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 		p_queue.pop();
 		std::string Line = FULL_LINE.m_lineValue;
 		m_line = FULL_LINE.m_lineNumber;
-		if (!IsForLoops(FULL_LINE.m_lineValue) && Line.find("FOREACH") != std::string::npos)
+		if (!isForLoops(FULL_LINE.m_lineValue) && Line.find("FOREACH") != std::string::npos)
 		{
 			size_t OpeningBraces = 0;
 			size_t ClosingBraces = 0;
@@ -1804,7 +1804,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 	}
 
 
-	void FMTparser::ProcessForLoops(const std::vector<Core::FMTtheme>& p_themes,
+	void FMTparser::processForLoops(const std::vector<Core::FMTtheme>& p_themes,
 		const Core::FMTconstants& p_constants,
 		std::queue<FMTLineInfo>& p_queue) const
 	{
@@ -1822,9 +1822,9 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 			p_queue.pop();*/
 			const FMTLineInfo FULL_LINE = _SetForLoopLines(p_queue);
 			m_line = FULL_LINE.m_lineNumber;
-			const bool GOT_FOR_LOOPS = IsForLoops(FULL_LINE.m_lineValue);
+			const bool GOT_FOR_LOOPS = isForLoops(FULL_LINE.m_lineValue);
 			bool IgnoreThisLine = false;
-			if (IsForLoopsEnd(FULL_LINE.m_lineValue))
+			if (isForLoopsEnd(FULL_LINE.m_lineValue))
 			{
 				if (OpenedForLoops==1)
 					{
@@ -1837,7 +1837,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 				if (!FirstLoopFound)
 					{
 					IgnoreThisLine = true;
-					const std::map<std::string, std::vector<std::string>> LOOP_VARIABLES = GetForLoops(FULL_LINE.m_lineValue, p_themes, p_constants);
+					const std::map<std::string, std::vector<std::string>> LOOP_VARIABLES = getForLoops(FULL_LINE.m_lineValue, p_themes, p_constants);
 					std::map<size_t, std::vector<std::string>>SortedVariables;
 					for (const auto& LOOP : LOOP_VARIABLES)
 						{
@@ -1905,7 +1905,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 			while (!p_queue.empty())
 				{
 				const FMTLineInfo FULL_LINE = _SetForLoopLines(p_queue);
-				const bool GOT_FOR_LOOPS = IsForLoops(FULL_LINE.m_lineValue);
+				const bool GOT_FOR_LOOPS = isForLoops(FULL_LINE.m_lineValue);
 				if (GOT_FOR_LOOPS)
 					{
 					SeenOtherForLoop = true;
@@ -1914,12 +1914,12 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 				}
 			if (SeenOtherForLoop)
 				{
-				ProcessForLoops(p_themes, p_constants, FinalQueue);
+				processForLoops(p_themes, p_constants, FinalQueue);
 				}
 			p_queue = FinalQueue;
 	}
 
-	std::queue<FMTparser::FMTLineInfo> FMTparser::GetAllLines(std::ifstream& p_stream) const
+	std::queue<FMTparser::FMTLineInfo> FMTparser::getAllLines(std::ifstream& p_stream) const
 	{
 		std::queue<FMTLineInfo> lines;
 		try {
@@ -1938,7 +1938,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 		return lines;
 	}
 
-	std::queue<FMTparser::FMTLineInfo> FMTparser::ProcessForLoopsNInclude(
+	std::queue<FMTparser::FMTLineInfo> FMTparser::processForLoopsNInclude(
 		const std::vector<Core::FMTtheme>& p_themes,
 		const Core::FMTconstants& p_cons,
 		std::queue<FMTLineInfo>p_AllLines) const
@@ -1946,8 +1946,8 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 		try {
 			if (!p_AllLines.empty())
 				{
-				ProcessForLoops(p_themes, p_cons, p_AllLines);
-				p_AllLines = TryInclude(p_themes, p_cons, p_AllLines);
+				processForLoops(p_themes, p_cons, p_AllLines);
+				p_AllLines = tryInclude(p_themes, p_cons, p_AllLines);
 				}
 		}catch (...)
 			{
@@ -1957,14 +1957,14 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::TryInclude(
 		return p_AllLines;
 	}
 
-	std::queue<FMTparser::FMTLineInfo> FMTparser::GetCleanLinewfor(std::ifstream& p_stream,
+	std::queue<FMTparser::FMTLineInfo> FMTparser::getCleanLinewfor(std::ifstream& p_stream,
 																		const std::vector<Core::FMTtheme>& p_themes,
 																		const Core::FMTconstants& p_cons) const
 	{
 		std::queue<FMTLineInfo> lines;
 		try {
-			lines = GetAllLines(p_stream);
-			lines = ProcessForLoopsNInclude(p_themes,p_cons, lines);
+			lines = getAllLines(p_stream);
+			lines = processForLoopsNInclude(p_themes,p_cons, lines);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTparser::GetCleanLinewfor", __LINE__, __FILE__, m_section);

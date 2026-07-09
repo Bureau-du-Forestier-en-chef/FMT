@@ -105,7 +105,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		/**
 		Write FMT forest in a folder.
 		*/
-		bool WriteForest(const Spatial::FMTforest& p_for_layer,
+		bool writeForest(const Spatial::FMTforest& p_for_layer,
 			const std::vector<Core::FMTtheme>& p_themes,
 			const std::string& p_folder,
 			std::vector<std::map<std::string, std::string>> p_mapping = std::vector<std::map<std::string, std::string>>()) const;
@@ -226,7 +226,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			const int& resolution,
 			const std::string& field,
 			bool fittoforel = true) const;
-		// DocString: FMTareaparser::OGRlayertoRaster
+		// DocString: FMTareaparser::ogrLayerToRaster
 		/**
 		This function first rasterize the layer to a resolution of 20x20 in memory using gdal virtual file system.
 		Then, the raster is reproject with the given (resolution) using (for now) only MODE as resampling.
@@ -234,7 +234,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		If (fittoforel), the layer must be projected in ESPG32198 and will align with the Quebec FOREL rasters.
 		--In the future, arguments will be added to change the resampling type and allow field with float type.
 		*/
-		GDALDataset* OGRlayertoRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution, const bool& fittoforel) const;
+		GDALDataset* ogrLayerToRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution, const bool& fittoforel) const;
 
 		void WriteForestExtended(Spatial::FMTforest& p_forest,const std::string& p_VectorFile,
 						const std::vector<Core::FMTtheme> p_themes,

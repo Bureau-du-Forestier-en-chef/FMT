@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -19,15 +19,15 @@ namespace Spatial
 		public:
 			FMTGraphInfo() = default;
 			FMTGraphInfo(size_t Id);
-			const std::vector<double>& GetValues(size_t p_ConstraintId) const;
-			inline size_t GetGraphId() const
+			const std::vector<double>& getValues(size_t p_ConstraintId) const;
+			inline size_t getGraphId() const
 				{
 				return m_GraphId;
 				}
-			void SetValues(size_t p_ConstraintId,
+			void setValues(size_t p_ConstraintId,
 							const std::vector<double>& p_Values);
-			void SetValuesSize(size_t p_ValuesSize);
-			bool IsEmpty() const;
+			void setValuesSize(size_t p_ValuesSize);
+			bool isEmpty() const;
 		private:
 			std::vector<boost::flyweight<FMTGraphValues>> m_Values;
 			size_t m_GraphId;

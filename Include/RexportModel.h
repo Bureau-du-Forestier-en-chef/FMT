@@ -110,7 +110,7 @@ void exportModel()
 				"@DocString(FMTmodel::isoptimal)")
 			.method("getobjectivevalue", &Models::FMTmodel::getObjectiveValue,
 				"@DocString(FMTmodel::getobjectivevalue)")
-			.method("GetStaticTransitionThemes", &Models::FMTmodel::GetStaticTransitionThemes,
+			.method("GetStaticTransitionThemes", &Models::FMTmodel::getStaticTransitionThemes,
 				"@DocString(FMTmodel::GetStaticTransitionThemes)")
 			.method("setboolparameter",
 				static_cast<bool(Models::FMTmodel::*)(const Models::FMTboolmodelparameters&, const bool&)>(&Models::FMTmodel::setparameter),
@@ -148,7 +148,7 @@ void exportModel()
 		.derives<Models::FMTsemodel>("FMTsemodel")
 		.constructor("@DocString(FMTsesmodel())")
 		.constructor<Models::FMTmodel>("@DocString(FMTsesmodel(Models::FMTmodel))")
-		.method("greedyreferencebuild", &Models::FMTsesmodel::GreedyReferenceBuild,
+		.method("greedyreferencebuild", &Models::FMTsesmodel::greedyReferenceBuild,
 			"@DocString(FMTsesmodel:::GreedyReferenceBuild)");
 
 	#ifdef FMTWITHOSI

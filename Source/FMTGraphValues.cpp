@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -31,7 +31,7 @@ namespace Spatial
 		return hash;
 	}
 
-	const std::vector<double>& FMTGraphValues::GetValues() const
+	const std::vector<double>& FMTGraphValues::getValues() const
 	{
 		return m_Values;
 	}

@@ -1347,7 +1347,7 @@ namespace Core
 		}
 
 
-	int FMTconstraint::GetThemeTarget() const
+	int FMTconstraint::getThemeTarget() const
 		{
 		int target = targetThemeId();
 		if (type == FMTconstrainttype::FMTSpatialGroup)
@@ -1357,7 +1357,7 @@ namespace Core
 		return target;
 		}
 
-	double FMTconstraint::GetWeight() const
+	double FMTconstraint::getWeight() const
 	{
 		double returned = 0.0;
 		if (isGoal())

@@ -205,10 +205,10 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 			std::vector<int>replacedvec;
 			Core::FMTmask srcmsk;
 			std::vector<Core::FMTtransition>::iterator last_transition = temp_transitions.end();
-			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(transitionstream, themes, constants);
+			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(transitionstream, themes, constants);
 			while (!Lines.empty())
 			{
-				const std::string line = GetLine(Lines);
+				const std::string line = getLine(Lines);
 				if (!line.empty())
 				{
 					

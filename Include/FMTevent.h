@@ -202,12 +202,12 @@ class FMTEXPORT FMTevent
         Return true if coordinate is in elements
         */
         bool contain(const FMTcoordinate& coord)const;
-        // DocString: FMTevent::WillSplitEvent(const FMTcoordinate&)
+        // DocString: FMTevent::willSplitEvent(const FMTcoordinate&)
         /**
         @param[in] p_coordinate the coordinate that will be removed
         @return true if it will split the event
         */
-        bool WillSplitEvent(const FMTcoordinate& p_coordinate) const;
+        bool willSplitEvent(const FMTcoordinate& p_coordinate) const;
         // DocString: FMTevent::splitEvent(const unsigned int&, std::vector<FMTsaevent>&)
         /**
         Check if events are split and fill vector of split events
@@ -229,7 +229,7 @@ class FMTEXPORT FMTevent
         @brief get ouside borders of the event
         @return a set of coordinates
        */
-        std::vector<std::pair<FMTcoordinate,FMTcoordinate>>GetOutsideBordersPair() const;
+        std::vector<std::pair<FMTcoordinate,FMTcoordinate>>getOutsideBordersPair() const;
 		// DocString: FMTevent::getenveloppe
 		/**
 		Coordinates that create the envelope of the event

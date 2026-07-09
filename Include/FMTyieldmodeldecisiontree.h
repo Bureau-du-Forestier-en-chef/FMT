@@ -53,11 +53,11 @@ namespace Core
 	// DocString: FMTyieldmodeldecisiontree::JSON_PROP_DEFAULT
 	///The json default values key
 	const std::string JSON_PROP_DEFAULT = "Default";
-	// DocString: FMTyieldmodeldecisiontree::GetMask
+	// DocString: FMTyieldmodeldecisiontree::getMask
 	/**
 	Get the mask of the actual decision tree. Will return a valid mask of the reference output
 	*/
-	Core::FMTmask GetMask() const;
+	Core::FMTmask getMask() const;
 	// DocString: FMTyieldmodeldecisiontree::buildconstraint
 	/**
 	Take the yield, the main mask lowerbound and upperbound and build up a constraint on the form of:
@@ -67,23 +67,23 @@ namespace Core
 	constraint >= lowerbound
 	lag is the amount of period added or removed when getting constraint output values.
 	*/
-	Core::FMTconstraint BuildConstraint(const std::string& name, const std::string& yld, const Core::FMTmask& mask, const double& lowerbound, const double& upperbound,const int& lag) const;
+	Core::FMTconstraint buildConstraint(const std::string& name, const std::string& yld, const Core::FMTmask& mask, const double& lowerbound, const double& upperbound,const int& lag) const;
 	// DocString: FMTyieldmodeldecisiontree::getadecision
 	/**
 	From de constraint id return a new constraint id based on the naturalgrowth and the period with the decision tree
 	*/
-	size_t GetADecision(const std::unique_ptr<Models::FMTmodel>& naturalgrowth,const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const;
+	size_t getADecision(const std::unique_ptr<Models::FMTmodel>& naturalgrowth,const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const;
 	// DocString: FMTyieldmodeldecisiontree::getnaturalgrowth
 	/**
 	Build the natural growth model with a request (original model) to be able to call getadecision on the growthmodel
 	this function has to be thread safe. Only build a small model dedicated to the reference output 
 	*/
-	std::unique_ptr<Models::FMTmodel> GetNaturalGrowth(const Core::FMTyieldrequest& request) const;
+	std::unique_ptr<Models::FMTmodel> getNaturalGrowth(const Core::FMTyieldrequest& request) const;
 	// DocString: FMTyieldmodeldecisiontree::modify
 	/**
 	This will modify the class if presolve = true will do presolve, if not will do postsolve.
 	*/
-	std::unique_ptr<FMTyieldmodel> Modify(const FMTmaskfilter& filter,
+	std::unique_ptr<FMTyieldmodel> modify(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& newthemes,bool presolve = true) const;
 	public:
 		// DocString: FMTyieldmodeldecisiontree::FMTyieldmodeldecisiontree()
@@ -116,17 +116,17 @@ namespace Core
 		Implements FMTyieldmodel::Clone().
 		*/
 		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodeldecisiontree::Predict
+		// DocString: FMTyieldmodeldecisiontree::predict
 		/**
 		Runs the decision tree so if the values are not set build a naturalgrowth model and run the decision tree and get the decision for all
 		periods. Finaly return the predictions.
 		*/
-		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
-		// DocString: FMTyieldmodeldecisiontree::GetModelType()
+		const std::vector<double>predict(const Core::FMTyieldrequest& request) const;
+		// DocString: FMTyieldmodeldecisiontree::getModelType()
 		/**
 		Return the modeltype of the FMTyieldmodel.
 		*/
-		static std::string GetModelType();
+		static std::string getModelType();
 		// DocString: FMTyieldmodeldecisiontree::presolve
 		/**
 		Return a presolved FMTyieldmodeldecisiontree

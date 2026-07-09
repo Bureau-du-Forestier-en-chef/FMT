@@ -80,7 +80,7 @@ class FMTEXPORT FMTyieldparser : public FMTparser
                                    const std::vector<std::string>& values) const;
 		// DocString: FMTyieldparser::setOveridedYlds
 		/**
-		Modify the yiedldata based on the actualyield handler.
+		modify the yiedldata based on the actualyield handler.
 		*/
 		void setOveridedYlds(Core::FMTyields& yielddata,
 			std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,

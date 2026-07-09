@@ -70,26 +70,26 @@ namespace Core
 		Default equality operator.
 		*/
 		FMTyieldmodel& operator = (const FMTyieldmodel& rhs)=default;
-		// DocString: FMTyieldmodel::GetModelName()
+		// DocString: FMTyieldmodel::getModelName()
 		/**
 		Returns the model name.
 		*/
-		const std::string& GetModelName() const;
-		// DocString: FMTyieldmodelnn::GetModelYields()
+		const std::string& getModelName() const;
+		// DocString: FMTyieldmodelnn::getModelYields()
 		/**
 		Return model yields' names.
 		*/
-		const std::vector<std::string>& GetModelYields() const;
+		const std::vector<std::string>& getModelYields() const;
 		// DocString: FMTyieldmodel::Clone()
 		/**
 		Implements FMTyieldmodel::Clone().
 		*/
 		virtual std::unique_ptr<FMTyieldmodel>Clone() const = 0;
-		// DocString: FMTyieldmodel::Predict
+		// DocString: FMTyieldmodel::predict
 		/**
-		Predict the yield
+		predict the yield
 		*/
-		virtual const std::vector<double>Predict(const Core::FMTyieldrequest& request) const = 0;
+		virtual const std::vector<double>predict(const Core::FMTyieldrequest& request) const = 0;
 		// DocString: FMTyieldmodel::presolve
 		/**
 		If the FMTyieldmodel contains Core classes it also need to be presolved when presolved is called on the FMTmodel.

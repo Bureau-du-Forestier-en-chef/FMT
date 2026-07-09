@@ -222,26 +222,26 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Comparison operator of FMTlinegraph
 		*/
 		bool operator < (const FMTlinegraph& rhs) const;
-		// DocString:  FMTlinegraph::IsLessPeriod
+		// DocString:  FMTlinegraph::isLessPeriod
 		/**
 		@brief check if rhs is the same graph with one less period
 		@return true if same graph with one less period.
 		*/
-		bool IsLessPeriod(const FMTlinegraph& rhs) const;
-		// DocString:  FMTlinegraph::IsSameBase
+		bool isLessPeriod(const FMTlinegraph& rhs) const;
+		// DocString:  FMTlinegraph::isSameBase
 		/**
 		@brief Check if same base dev
 		@return true if same
 		*/
-		bool IsSameBase(const FMTlinegraph& rhs) const;
-		// DocString:  FMTlinegraph::IsNotDead
+		bool isSameBase(const FMTlinegraph& rhs) const;
+		// DocString:  FMTlinegraph::isNotDead
 		/**
 		@brief Check if descriptor got the _death action
 		@param[in] vertex descriptor  p_Descriptor
 		@param[in] p_DeathId death action id
 		@return true if not dead
 		*/
-		bool IsNotDead(FMTvertex_descriptor p_Descriptor,int8_t p_DeathId) const;
+		bool isNotDead(FMTvertex_descriptor p_Descriptor,int8_t p_DeathId) const;
 		// DocString:  FMTlinegraph::clearNodeCache
 		/**
 		Clear the node cache when getting outpus of the linegraph.
@@ -252,7 +252,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Returns the period at which the vertex fall within the outputnode description. 
 		*/
 		std::vector<int> anyUsageOf(Core::FMToutputnode output_node, const Models::FMTmodel& model, const int& startingperiod) const;
-		static const std::vector<int>& GetSetOperability(
+		static const std::vector<int>& getSetOperability(
 			const Core::FMTdevelopment& p_development,
 			const Models::FMTmodel& p_model,
 			boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& p_Cache);

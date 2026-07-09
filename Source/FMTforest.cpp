@@ -108,7 +108,7 @@ FMTforest FMTforest::getCopy(bool copydata) const
         }
     return forest;
     }
-void  FMTforest::SetLastThemeWithArea(const std::vector<Core::FMTactualdevelopment>& p_devs,
+void  FMTforest::setLastThemeWithArea(const std::vector<Core::FMTactualdevelopment>& p_devs,
 							const std::vector<Core::FMTtheme>& p_themes)
 {
 	try {

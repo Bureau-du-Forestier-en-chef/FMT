@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -38,10 +38,10 @@ Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& th
 		std::ifstream LIFstream(location);
 		if (FMTparser::tryOpening(LIFstream, location))
 		{
-			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(LIFstream, themes, constants);
+			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(LIFstream, themes, constants);
 			while (!Lines.empty())
 			{
-				const std::string line = GetLine(Lines);
+				const std::string line = getLine(Lines);
 				if (!line.empty())
 				{
 					std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);

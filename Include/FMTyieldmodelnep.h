@@ -43,16 +43,16 @@ namespace Core
 		Implements FMTyieldmodel::Clone().
 		*/
 		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodelnep::GetModelOutputNames()
+		// DocString: FMTyieldmodelnep::getModelOutputNames()
 		/**
-		Implements FMTyieldmodel::GetInputValues(const Graph::FMTpredictor& predictor).
+		Implements FMTyieldmodel::getInputValues(const Graph::FMTpredictor& predictor).
 		*/
-		const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const;
-		// DocString: FMTyieldmodelnep::GetModelType()
+		const std::vector<double> getInputValues(const Graph::FMTpredictor& predictor) const;
+		// DocString: FMTyieldmodelnep::getModelType()
 		/**
 		Return the modeltype of the FMTyieldmodel.
 		*/
-		static std::string GetModelType();
+		static std::string getModelType();
 	};
 }
 

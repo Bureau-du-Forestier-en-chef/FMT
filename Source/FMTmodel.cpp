@@ -265,7 +265,7 @@ namespace Models{
 	{
 		std::vector<size_t> aggregateThemes;
 		try {
-			aggregateThemes = GetStaticTransitionThemes();
+			aggregateThemes = getStaticTransitionThemes();
 			std::set<size_t>subset;
 			for (const auto& HANDLER :
 				yields.getHandlerOfType(Core::FMTyldtype::FMTageyld))
@@ -1164,7 +1164,7 @@ void FMTmodel::setDefaultObjects()
 		{
 			action.update();
 		}
-		statictransitionthemes = GetStaticTransitionThemes();
+		statictransitionthemes = getStaticTransitionThemes();
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::setdefaultobjects", __LINE__, __FILE__);
@@ -1172,7 +1172,7 @@ void FMTmodel::setDefaultObjects()
 	
 	}
 
-std::vector<size_t>FMTmodel::GetStaticTransitionThemes() const
+std::vector<size_t>FMTmodel::getStaticTransitionThemes() const
 	{
 	std::vector<size_t>statics;
 	try {
@@ -1667,7 +1667,7 @@ void FMTmodel::setThemes(const std::vector<Core::FMTtheme>& lthemes)
 		themes = lthemes;
 		themes.shrink_to_fit();
 		//After theme change every masks needs to be reevaluated?.
-		statictransitionthemes = GetStaticTransitionThemes();
+		statictransitionthemes = getStaticTransitionThemes();
 		statictransitionthemes.shrink_to_fit();
 	}catch (...)
 	{
@@ -1715,7 +1715,7 @@ void FMTmodel::setTransitions(const std::vector<Core::FMTtransition>& ltransitio
 			transition.update();
 		}
 		this->setDefaultObjects();
-		statictransitionthemes = GetStaticTransitionThemes();
+		statictransitionthemes = getStaticTransitionThemes();
 		statictransitionthemes.shrink_to_fit();
 		transitions.shrink_to_fit();
 	}catch (...)

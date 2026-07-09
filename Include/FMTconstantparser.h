@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -74,7 +74,7 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		*/
 		bool _FillConstants(Core::FMTconstants& p_constants, 
 			const std::string& p_input, bool p_allowNonValid = false) const;
-		// DocString: FMTparser::GetCleanLinewfor
+		// DocString: FMTparser::getCleanLinewfor
 		/**
 		@brief Get a clean line and consider for loops when reading the file and also a temps fill of constants.
 		@param[p_stream] p_stream  is the file stream
@@ -82,7 +82,7 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		@param[in] p_const the model constants
 		@return a queue of lines to process
 		*/
-		std::queue<FMTLineInfo> GetCleanLinewfor(std::ifstream& p_stream, 
+		std::queue<FMTLineInfo> getCleanLinewfor(std::ifstream& p_stream, 
 			const std::vector<Core::FMTtheme>& p_themes,
 			const Core::FMTconstants& p_cons) const override;
 

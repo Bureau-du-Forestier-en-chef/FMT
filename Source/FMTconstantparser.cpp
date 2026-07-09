@@ -88,21 +88,21 @@ bool FMTconstantparser::_FillConstants(Core::FMTconstants& p_constants,
 	return true;
 	}
 
-std::queue<FMTparser::FMTLineInfo> FMTconstantparser::GetCleanLinewfor(std::ifstream& p_stream,
+std::queue<FMTparser::FMTLineInfo> FMTconstantparser::getCleanLinewfor(std::ifstream& p_stream,
 	const std::vector<Core::FMTtheme>& p_themes,
 	const Core::FMTconstants& p_cons) const
 {
 	std::queue<FMTLineInfo> lines;
 	try {
-		std::queue<FMTLineInfo> TempQueue = GetAllLines(p_stream);
+		std::queue<FMTLineInfo> TempQueue = getAllLines(p_stream);
 		Core::FMTconstants constantsCopy(p_cons);
 		while (!TempQueue.empty())
 			{
 			lines.push(TempQueue.front());
-			const std::string LINE = GetLine(TempQueue);
+			const std::string LINE = getLine(TempQueue);
 			_FillConstants(constantsCopy, LINE,true);
 			}
-		lines = ProcessForLoopsNInclude(p_themes, constantsCopy, lines);
+		lines = processForLoopsNInclude(p_themes, constantsCopy, lines);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTconstantparser::GetCleanLinewfor",
@@ -124,11 +124,11 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 			std::vector<Core::FMTtheme>themes;
 			if (FMTparser::tryOpening(CONstream, location))
 			{
-				std::queue<FMTparser::FMTLineInfo>Lines = GetCleanLinewfor(CONstream, 
+				std::queue<FMTparser::FMTLineInfo>Lines = getCleanLinewfor(CONstream, 
 										themes, constants);
 				while (!Lines.empty())
 					{
-					const std::string LINE = GetLine(Lines);
+					const std::string LINE = getLine(Lines);
 					_FillConstants(constants, LINE);
 					}
 			}

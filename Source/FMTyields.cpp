@@ -88,7 +88,7 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), m_yieldsLoca
 			FMTmodelyieldhandler newhandler(base_mask);
 			const std::unique_ptr<Core::FMTyieldmodel>TSLA(new FMTyieldmodelTSLA());
 			newhandler.pushBackModel(TSLA);
-			newhandler.setYield(0, 0, TSLA->GetModelName());
+			newhandler.setYield(0, 0, TSLA->getModelName());
 			const std::unique_ptr<Core::FMTyieldhandler>TSLAhandler(new FMTmodelyieldhandler(newhandler));
 			push_back(base_mask,TSLAhandler);
 		}catch (...)

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Gouvernement du Québec
+Copyright (c) 2024 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -39,13 +39,13 @@ namespace Core
 		@brief Flush the random number cache to redraw new random sequence.
 		*/
 		void clearRandomYieldsCache() override;
-		// DocString: FMTyieldmodelRandom::Predict
+		// DocString: FMTyieldmodelRandom::predict
 		/**
-		@brief Predict the yields values using this class.
+		@brief predict the yields values using this class.
 		@param[in] p_request a valid FMTyieldrequest.
 		@return Predicted random values ranging from the distribution lower to upper bound.
 		*/
-		const std::vector<double>Predict(const Core::FMTyieldrequest& p_request) const;
+		const std::vector<double>predict(const Core::FMTyieldrequest& p_request) const;
 		// DocString: FMTyieldmodelRandom::presolve
 		/**
 		@brief If the FMTyieldmodelRandom contains Core classes it also need to be presolved when presolved is called on the FMTmodel.
@@ -71,12 +71,12 @@ namespace Core
 		@return a cloned FMTyieldmodel.
 		*/
 		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodelRandom:: GetModelType
+		// DocString: FMTyieldmodelRandom:: getModelType
 		/**
 		@brief Get the model type.
 		@return a string of the model type _random.
 		*/
-		static std::string GetModelType();
+		static std::string getModelType();
 		// DocString: FMTyieldmodelRandom::setModel
 		/**
 		@brief set The model to the yielmodel and change the seed.!

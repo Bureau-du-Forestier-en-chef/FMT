@@ -88,13 +88,13 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
 		*/
 		std::string getDisturbanceStats() const;
-		// DocString: FMTsesmodel::GreedyReferenceBuild
+		// DocString: FMTsesmodel::greedyReferenceBuild
 		/**
 		This function call multiple time the function FMTspatialschedule::referenceBuild function to 
 		find the best possible spatialisation for a given schedule using random draw. It uses a schedule of actions (schedule) on the actual
 		spatialy explicit forest.  The user can also set the seed to get different solutions from the simulator.
 		*/
-		std::map<std::string, double> GreedyReferenceBuild(
+		std::map<std::string, double> greedyReferenceBuild(
 			const Core::FMTschedule& p_schedule,
 			size_t p_randomIterations,
 			int p_seed = 0,

@@ -74,7 +74,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 		try {
 			for (const OGRMultiPolygon& polygons : multipartpolygons)
 			{
-				if (polygons.IsEmpty())
+				if (polygons.isEmpty())
 				{
 					mergedpolygons.push_back(nullptr);
 				}
@@ -219,7 +219,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 		return GCBM;
 		}
 
-	bool FMTareaparser::WriteForest(const Spatial::FMTforest& p_for_layer,
+	bool FMTareaparser::writeForest(const Spatial::FMTforest& p_for_layer,
 		const std::vector<Core::FMTtheme>& p_themes,
 		const std::string& p_folder,
 		std::vector<std::map<std::string, std::string>> p_mapping ) const
@@ -828,7 +828,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, m_section);
 				}
 				OGRCoordinateTransformation::DestroyCT(coordtransf);
-				GDALDataset* fieldraster = OGRlayertoRaster(memlayer, field,tifpathandname, resolution, fittoforel);
+				GDALDataset* fieldraster = ogrLayerToRaster(memlayer, field,tifpathandname, resolution, fittoforel);
 				GDALClose(memds);
 				GDALRasterBand* fieldband = getBand(fieldraster);
 				if (usecategories)
@@ -927,7 +927,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 			//}
 			basemap = getFMTforestfromlayer(memlayer,devs,Fieldname,resolution,areafactor,fittoforel);
 			GDALClose(memds);
-			WriteForest(basemap, themes, writeforestfolder);
+			writeForest(basemap, themes, writeforestfolder);
 		}catch (...)
 		{
 			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, m_section);
@@ -942,9 +942,9 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 		try {
 			if (!_IsMapWithSameThemes(p_themes, p_VectorFile));
 			{
-				p_forest.SetLastThemeWithArea(p_area, p_themes);
+				p_forest.setLastThemeWithArea(p_area, p_themes);
 			}
-			WriteForest(p_forest, p_themes, p_folder);
+			writeForest(p_forest, p_themes, p_folder);
 		}catch (...)
 			{
 			_exhandler->printexceptions("",
@@ -961,7 +961,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 		Spatial::FMTforest actualforest;
 		try{
 			const std::string vsi_path = "/vsimem/"+devidfield+".tif";
-			GDALDataset* devidds = OGRlayertoRaster(layer,devidfield,vsi_path,resolution,fittoforel);
+			GDALDataset* devidds = ogrLayerToRaster(layer,devidfield,vsi_path,resolution,fittoforel);
 			GDALRasterBand* devidband = getBand(devidds);
 			int nXBlockSize, nYBlockSize;
 			devidband->GetBlockSize(&nXBlockSize, &nYBlockSize);
@@ -1030,7 +1030,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 		return actualforest;
 	}
 
-	GDALDataset* FMTareaparser::OGRlayertoRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution,const bool& fittoforel) const
+	GDALDataset* FMTareaparser::ogrLayerToRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution,const bool& fittoforel) const
 	{
 		//GDALAllRegister();
 		const char *pszFormat = "GTiff";
@@ -1432,7 +1432,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 						double fullbuffered = 0;
 						std::vector<size_t>neighborsid;
 						std::vector<double>areas;
-						if (polygons.at(opareaindex) && !polygons.at(opareaindex)->IsEmpty() && polygons.at(opareaindex)->IsValid())
+						if (polygons.at(opareaindex) && !polygons.at(opareaindex)->isEmpty() && polygons.at(opareaindex)->IsValid())
 						{
 							OGRGeometry* buffered = (polygons.at(opareaindex)->Buffer(buffersize));
 							for (size_t opareaneighborindex = 0; opareaneighborindex < operatingareas.size(); ++opareaneighborindex)
@@ -1441,7 +1441,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 									buffered->Intersects(polygons.at(opareaneighborindex)))
 								{
 									OGRGeometry* intersect = buffered->Intersection(polygons.at(opareaneighborindex));
-									if (intersect || !intersect->IsEmpty())
+									if (intersect || !intersect->isEmpty())
 									{
 										const OGRSurface* area = dynamic_cast<OGRSurface*>(intersect);
 										if (area)
@@ -2127,10 +2127,10 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 							bool inactualdevs = false;
 							boost::unordered_map<Core::FMTdevelopment,size_t>devsindex;
 							Core::FMTlist<Core::FMTspec>Excluded;
-							std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(areastream, themes, constants);
+							std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(areastream, themes, constants);
 							while (!Lines.empty())
 							{
-								const std::string line = GetLine(Lines);
+								const std::string line = getLine(Lines);
 								if (!line.empty())
 								{
 									if (potential_futurs && inactualdevs && !m_comment.empty() && got0area)

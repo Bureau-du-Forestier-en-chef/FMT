@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -31,16 +31,16 @@ namespace Spatial
 		FMTPatchRules(const FMTPatchRules& rhs) = default;
 		FMTPatchRules& operator = (const FMTPatchRules& rhs)=default;
 		static std::vector<FMTPatchRules> 
-			GetRules(const std::vector<Core::FMTconstraint>& p_constraints,
+			getRules(const std::vector<Core::FMTconstraint>& p_constraints,
 					const std::vector<Core::FMTaction>& p_actions);
-		double Evaluate(const FMTeventcontainer& p_events, 
+		double evaluate(const FMTeventcontainer& p_events, 
 				const FMTSpatialGraphs& p_SpatialGraphs) const;
-		void FillTooSmallEvents(
+		void fillTooSmallEvents(
 			std::vector<std::set<FMTevent>::iterator>& p_SmallEvents,
 			FMTeventcontainer& p_events) const;
-		void FillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
+		void fillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
 			FMTeventcontainer& p_events) const;
-		void FillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
+		void fillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
 					FMTeventcontainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const;
 	private:
 		FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,

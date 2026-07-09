@@ -159,7 +159,7 @@ namespace Core {
 			size_t location = 0;
 			for (const std::unique_ptr<FMTyieldmodel>& model : models)
 			{
-				modelmapping[model->GetModelName()] = location;
+				modelmapping[model->getModelName()] = location;
 				++location;
 			}
 		}
@@ -192,7 +192,7 @@ namespace Core {
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
 					"FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}*/
-			const std::vector<double>predictions = model->Predict(request);
+			const std::vector<double>predictions = model->predict(request);
 			return (predictions.at(yieldid));
 		}catch (...)
 			{

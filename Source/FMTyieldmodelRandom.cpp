@@ -97,7 +97,7 @@ namespace Core
 		FMTyieldmodel::setModel(p_modelPtr);
 	}
 
-	const std::vector<double>FMTyieldmodelRandom::Predict(const Core::FMTyieldrequest& p_request) const
+	const std::vector<double>FMTyieldmodelRandom::predict(const Core::FMTyieldrequest& p_request) const
 	{
 		std::vector<double>result;
 		try {
@@ -134,7 +134,7 @@ namespace Core
 			return Clone();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(GetModelName(), "FMTyieldmodelRandom::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(getModelName(), "FMTyieldmodelRandom::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
@@ -144,7 +144,7 @@ namespace Core
 	{
 		return Clone();
 	}
-	std::string FMTyieldmodelRandom::GetModelType()
+	std::string FMTyieldmodelRandom::getModelType()
 	{
 		return "RANDOM";
 	}

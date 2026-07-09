@@ -693,11 +693,11 @@ namespace Models
 		@return a pointer to the generator or a nullptr;
 		*/
 		std::default_random_engine* getGeneratorPtr() const;
-		// DocString: FMTmodel::GetStaticTransitionThemes
+		// DocString: FMTmodel::getStaticTransitionThemes
 		/**
 		locate the static transition themes.
 		*/
-		std::vector<size_t>GetStaticTransitionThemes() const;
+		std::vector<size_t>getStaticTransitionThemes() const;
     protected:
 		// DocString: FMTmodel::m_generator
 		///Random number generator.

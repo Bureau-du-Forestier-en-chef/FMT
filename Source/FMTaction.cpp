@@ -224,7 +224,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return false;
 	}
 
-	const FMTSerie* FMTaction::GetSerie(const std::vector<std::string>& p_SerieMask) const
+	const FMTSerie* FMTaction::getSerie(const std::vector<std::string>& p_SerieMask) const
 	{
 		try {
 			if (!p_SerieMask.empty())
@@ -245,7 +245,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return nullptr;
 	}
 
-	const std::vector<FMTSerie>& FMTaction::GetSeries() const
+	const std::vector<FMTSerie>& FMTaction::getSeries() const
 	{
 		return  m_series;
 	}
@@ -526,7 +526,7 @@ bool FMTaction::isPartOf(const std::string& p_name) const
 		std::find(aggregates.begin(), aggregates.end(), p_name) != aggregates.end());
 	}
 
-bool FMTaction::IsInSeries() const
+bool FMTaction::isInSeries() const
 	{
 	return m_InSerie;
 	}

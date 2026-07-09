@@ -411,7 +411,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								{
 								const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
 								addAction(action_id, statsdiff, new_actives, front_vertex,
-									paths, actualdevs, action.IsInSeries());
+									paths, actualdevs, action.isInSeries());
 								}
 						}
 						if (DoGrow)
@@ -3208,7 +3208,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			try {
 				const std::vector<std::string> TARGET_SERIE = _GetActionSerie(p_target,
 																p_MaxSerieSize, p_model.actions);
-				const Core::FMTSerie* SERIE = p_ActionSerie->GetSerie(TARGET_SERIE);
+				const Core::FMTSerie* SERIE = p_ActionSerie->getSerie(TARGET_SERIE);
 				p_Operable = true;
 				const int MODEL_LENGTH = p_model.getparameter(Models::FMTintmodelparameters::LENGTH);
 				Core::FMTdevelopment stand = data[p_target].get().grow();

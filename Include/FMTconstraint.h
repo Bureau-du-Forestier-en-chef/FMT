@@ -345,8 +345,8 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 						 Core::FMTyields& yields,
 						 const int& constraintid) const;
 
-		int GetThemeTarget() const;
-		double GetWeight() const;
+		int getThemeTarget() const;
+		double getWeight() const;
 	private:
 		// DocString: FMTconstraint::serialize
 	/**

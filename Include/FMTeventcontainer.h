@@ -253,28 +253,28 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 			const int& period, const std::vector<bool>& actionsused,
 			boost::unordered_set<FMTeventrelation>& relations) const;
 
-        double EvaluateSize(const std::vector<bool>& p_actions,
+        double evaluateSize(const std::vector<bool>& p_actions,
             int p_period,size_t  p_lowerBound, size_t p_upperBound, bool p_testLower) const;
 
-        double GetDispertion(const std::vector<bool>& p_actions,
+        double getDispertion(const std::vector<bool>& p_actions,
                             const FMTSpatialGraphs& p_Graphs,
                             int p_themeId,int p_FirstPeriod, 
                             int p_LastPeriod, int p_bound) const;
 
-        double GetDispertion(int p_RuleId,
+        double getDispertion(int p_RuleId,
             const FMTSpatialGraphs& p_Graphs,
             int p_themeId, int p_FirstPeriod,
             int p_LastPeriod, int p_bound) const;
 
-        std::vector<FMTeventcontainer::const_iterator> GetDispertionConflicts(const std::vector<bool>& p_actions,
+        std::vector<FMTeventcontainer::const_iterator> getDispertionConflicts(const std::vector<bool>& p_actions,
                                                 const FMTSpatialGraphs& p_Graphs,
                                                 int p_themeId,int p_FirstPeriod,
                                                 int p_LastPeriod, int p_bound) const;
-        std::vector<FMTeventcontainer::const_iterator> GetDispertionConflicts(int p_RuleId,
+        std::vector<FMTeventcontainer::const_iterator> getDispertionConflicts(int p_RuleId,
                                                             const FMTSpatialGraphs& p_Graphs,
                                                             int p_themeId, int p_FirstPeriod,
                                                             int p_LastPeriod, int p_bound) const;
-        std::vector<FMTeventcontainer::const_iterator>GetEventsOf(int p_RuleId, 
+        std::vector<FMTeventcontainer::const_iterator>getEventsOf(int p_RuleId, 
                                                         int p_MinimalPeriod, int p_MaximalPeriod) const;
        
      private:
@@ -283,8 +283,8 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
             public:
                 BoundingBox();
                 void add(FMTeventcontainer::const_iterator p_event);
-                double EvaluateUpperBound(int p_UpperBound) const;
-                std::vector<FMTeventcontainer::const_iterator> GetEvents() const;
+                double evaluateUpperBound(int p_UpperBound) const;
+                std::vector<FMTeventcontainer::const_iterator> getEvents() const;
             private:
                 FMTcoordinate m_bottomLeft;
                 uint16_t m_Width;

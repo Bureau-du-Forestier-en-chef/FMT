@@ -24,11 +24,11 @@ namespace Core {
 
 	FMTyieldmodelTSLA::FMTyieldmodelTSLA() :FMTyieldmodel() 
 	{
-		modelName = FMTyieldmodelTSLA::GetModelType();
+		modelName = FMTyieldmodelTSLA::getModelType();
 	}
 
 
-	std::string FMTyieldmodelTSLA::GetModelType()
+	std::string FMTyieldmodelTSLA::getModelType()
 	{
 		return "_TSLA";
 	}
@@ -42,19 +42,19 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(GetModelType(), "FMTyieldmodelTSLA::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
-	const std::vector<double>FMTyieldmodelTSLA::Predict(const Core::FMTyieldrequest& request) const
+	const std::vector<double>FMTyieldmodelTSLA::predict(const Core::FMTyieldrequest& request) const
 	{
 		std::vector<double>returned(1, std::numeric_limits<double>::max());
 		try {
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
 			if (!graphinfo)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty graph info info for " + GetModelType(),
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty graph info info for " + getModelType(),
 					"FMTyieldmodelTSLA::Predict", __LINE__, __FILE__);
 				}
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
@@ -69,7 +69,7 @@ namespace Core {
 				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getvertexfromvertexinfo(graphinfo);
 				tsla = fullgraph->timesincelastaction(*vertex);
 			}else {
-				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "No graph in graph info " + GetModelType(),
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "No graph in graph info " + getModelType(),
 					"FMTyieldmodelTSLA::Predict", __LINE__, __FILE__);
 			}
 			if (tsla != std::numeric_limits<size_t>::max())
@@ -79,7 +79,7 @@ namespace Core {
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(GetModelType(), "FMTyieldmodelTSLA::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return returned;
 	}
@@ -92,7 +92,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(GetModelType(), "FMTyieldmodelTSLA::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
@@ -105,7 +105,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(GetModelType(), "FMTyieldmodelTSLA::postsolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::postsolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}

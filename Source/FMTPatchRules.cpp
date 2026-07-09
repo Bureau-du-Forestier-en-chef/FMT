@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 
-	std::vector<FMTPatchRules> FMTPatchRules::GetRules(
+	std::vector<FMTPatchRules> FMTPatchRules::getRules(
 		const std::vector<Core::FMTconstraint>& p_constraints,
 		const std::vector<Core::FMTaction>& p_actions)
 	{
@@ -37,7 +37,7 @@ namespace Spatial
 		return Rules;
 	}
 
-	double FMTPatchRules::Evaluate(const FMTeventcontainer& p_events,
+	double FMTPatchRules::evaluate(const FMTeventcontainer& p_events,
 		const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
 		double cost = 0;
@@ -87,12 +87,12 @@ namespace Spatial
 	}
 
 
-	void  FMTPatchRules::FillTooSmallEvents(std::vector<std::set<FMTevent>::iterator>& p_SmallEvents,
+	void  FMTPatchRules::fillTooSmallEvents(std::vector<std::set<FMTevent>::iterator>& p_SmallEvents,
 		FMTeventcontainer& p_events) const
 	{
 		if (_IsSizeUsed())
 			{
-			for (const auto& EVENT : p_events.GetEventsOf(m_RulesId,
+			for (const auto& EVENT : p_events.getEventsOf(m_RulesId,
 				m_MinimalPeriod, m_MaximalPeriod))
 			{
 				size_t useLess = 0;
@@ -103,12 +103,12 @@ namespace Spatial
 			}
 			}
 	}
-	void  FMTPatchRules::FillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
+	void  FMTPatchRules::fillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
 		FMTeventcontainer& p_events) const
 	{
 		if (_IsSizeUsed())
 		{
-			for (const auto& EVENT : p_events.GetEventsOf(m_RulesId,
+			for (const auto& EVENT : p_events.getEventsOf(m_RulesId,
 				m_MinimalPeriod, m_MaximalPeriod))
 			{
 				size_t useLess = 0;
@@ -120,7 +120,7 @@ namespace Spatial
 		}
 	}
 
-	void FMTPatchRules::FillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
+	void FMTPatchRules::fillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
 		FMTeventcontainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
 		if (_IsGroupUsed())
@@ -128,7 +128,7 @@ namespace Spatial
 			for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 				{
 				const std::vector < std::set<FMTevent>::iterator > CONFLICTS =
-					p_events.GetDispertionConflicts(m_RulesId, p_SpatialGraphs,
+					p_events.getDispertionConflicts(m_RulesId, p_SpatialGraphs,
 						m_GroupTheme, period,
 						period + m_GroupGreenUp, m_MaximalGroupDistance);
 				p_Dispertion.insert(p_Dispertion.end(), CONFLICTS.begin(), CONFLICTS.end());
@@ -143,7 +143,7 @@ namespace Spatial
 		try {
 			if (_IsSizeUsed())
 				{
-					for (const auto& EVENT : p_events.GetEventsOf(m_RulesId,
+					for (const auto& EVENT : p_events.getEventsOf(m_RulesId,
 						m_MinimalPeriod, m_MaximalPeriod))
 					{
 						size_t EventCost = 0;
@@ -272,7 +272,7 @@ namespace Spatial
 			{
 				for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 				{
-					cost += p_events.GetDispertion(m_RulesId, p_SpatialGraphs,
+					cost += p_events.getDispertion(m_RulesId, p_SpatialGraphs,
 						m_GroupTheme, period,
 						period + m_GroupGreenUp, m_MaximalGroupDistance);
 				}

@@ -45,11 +45,11 @@ cooling schedule and FMTspatialaction must be set for the model.
 class FMTEXPORT FMTsamodel final: public FMTsemodel
     {
     public:
-        // DocString: FMTsemodel::LogMovesReport
+        // DocString: FMTsemodel::logMovesReport
         /**
         Log the Moves report
         */
-        void LogMovesReport() const;
+        void logMovesReport() const;
         // DocString: FMTsamodel::isProvenOptimal
         /**
         Return true if is optimal based on the termination criteria
@@ -130,7 +130,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         //ReBuilder = 7,
         MoveCount = 6
     };
-    static std::string GetMovesName(FMTsamove p_move);
+    static std::string getMovesName(FMTsamove p_move);
     class FMTmovestats
         {
         public:
@@ -257,7 +257,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         FMTsamove _GetAMove(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
 		// DocString: FMTsamodel::evaluate
 		/**
-		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
+		evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
 		the actual solution.Based on a temp.
 		*/
 		bool _IsBetter(double p_candidatObjective) const;

@@ -129,10 +129,10 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			std::vector<Core::FMTSerie>allseries;
 			if (FMTparser::tryOpening(actionstream, location))
 			{
-				std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(actionstream, themes, constants);
+				std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(actionstream, themes, constants);
 				while (!Lines.empty())
 				{
-					std::string line = GetLine(Lines);
+					std::string line = getLine(Lines);
 					if (!line.empty())
 					{
 						boost::smatch kmatch;
@@ -426,7 +426,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 					}
 					if (act.isPartOfASerie())
 						{
-						for (const Core::FMTSerie& SERIE : act.GetSeries())
+						for (const Core::FMTSerie& SERIE : act.getSeries())
 							{
 							series.push_back(SERIE);
 							}

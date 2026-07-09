@@ -141,7 +141,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Return the constraint evaluation value of a spatial constraint. If the subset is not a nullptr the 
 		*/
-	   double EvaluateSpatialConstraint(const Core::FMTconstraint& p_SpatialConstraint,
+	   double evaluateSpatialConstraint(const Core::FMTconstraint& p_SpatialConstraint,
 					const FMTSpatialGraphs& p_SpatialGraph) const;
 	   // DocString: FMTSpatialSchedule::evaluateDistance
 		/**
@@ -314,13 +314,13 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		With a generator randomly create a solution for one period.
 		*/
 		Graph::FMTgraphstats randomBuild(const Models::FMTmodel& model, std::default_random_engine& generator);
-		// DocString: FMTSpatialSchedule::SetGrow
+		// DocString: FMTSpatialSchedule::setGrow
 		/**
 		@brief set natural growth on coordinates (remove every actions)
 		@param[in] p_coordinates coordinates to set to growth
 		@param[in] p_model the model to use
 		*/
-		void SetGrow(const std::vector<FMTcoordinate>& p_coordinates,
+		void setGrow(const std::vector<FMTcoordinate>& p_coordinates,
 									const Models::FMTmodel& p_model);
 		// DocString: FMTSpatialSchedule::perturbGraph
 		/**
@@ -360,11 +360,11 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		Returns adjacency conflicts coordinate that need to be destroyed
 		*/
 		std::vector<std::vector<Spatial::FMTcoordinate>>getAdjacencyConflictCoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly = true) const;
-		// DocString: FMTSpatialSchedule::IsPartial
+		// DocString: FMTSpatialSchedule::isPartial
 		/**
 		return true if solution is partial.
 		*/
-		bool IsPartial() const;
+		bool isPartial() const;
 		// DocString: FMTSpatialSchedule::emptyEvents
 		/**
 		Return true if there's no events
@@ -445,9 +445,9 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		*/
 		std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
 
-		FMTSpatialSchedule GetBaseSchedule(const FMTSpatialGraphs& p_SpatialGraph) const;
-		void SetSpatialGraphs(const Spatial::FMTSpatialSchedule& p_ToCopy, FMTSpatialGraphs& p_SpatialGraph);
-		std::vector<FMTcoordinate> GetGroupsConflict(const Core::FMTconstraint& p_SpatialConstraint,
+		FMTSpatialSchedule getBaseSchedule(const FMTSpatialGraphs& p_SpatialGraph) const;
+		void setSpatialGraphs(const Spatial::FMTSpatialSchedule& p_ToCopy, FMTSpatialGraphs& p_SpatialGraph);
+		std::vector<FMTcoordinate> getGroupsConflict(const Core::FMTconstraint& p_SpatialConstraint,
 			const FMTSpatialGraphs& p_SpatialGraph) const;
 		struct EventSpread
 			{
@@ -458,14 +458,14 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 			FMTlayer::iterator  m_OutEvent;
 			FMTeventcontainer::iterator m_Event;
 			};
-		std::vector<EventSpread>GetPotentialSpread(int p_period);
-		bool CanDoEventSpread(int p_period) const;
-		void SetSpread(
+		std::vector<EventSpread>getPotentialSpread(int p_period);
+		bool canDoEventSpread(int p_period) const;
+		void setSpread(
 			std::vector<EventSpread>::const_iterator p_first,
 			std::vector<EventSpread>::const_iterator p_end);
-		void SetStaticsMovableCoordinates(const Models::FMTmodel& p_model);
-		void EnableSolutionTracker(const FMTSpatialGraphs& p_SpatialGraph);
-		void DisableSolutionTracker();
+		void setStaticsMovableCoordinates(const Models::FMTmodel& p_model);
+		void enableSolutionTracker(const FMTSpatialGraphs& p_SpatialGraph);
+		void disableSolutionTracker();
 	protected:
 		// DocString: FMTSpatialSchedule::getFromEvents(const Core::FMTconstraint&, const std::vector<Core::FMTaction>&, const int&, const int&)
 		 /**
@@ -521,7 +521,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		
 		// DocString: FMTSpatialSchedule::_EvaluateSpatialAdjacency
 		 /**
-		Evaluate adjacency conflicts for each events
+		evaluate adjacency conflicts for each events
 		*/
 		double _EvaluateSpatialAdjacency(
 			int p_period,

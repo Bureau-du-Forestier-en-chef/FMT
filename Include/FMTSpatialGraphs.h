@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -51,43 +51,43 @@ namespace Spatial
 			FMTSpatialGraphs(const FMTSpatialGraphs&)=default;
 			FMTSpatialGraphs& operator = (const FMTSpatialGraphs&)=default;
 			FMTSpatialGraphs(const Models::FMTmodel& p_model, double p_CellSize);
-			double GetConstraintsValue(size_t NonSpatialConstraintId,
+			double getConstraintsValue(size_t NonSpatialConstraintId,
 											const FMTSolutionTracker& p_solution) const;
-			FMTVirtualLineGraph GetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
-			FMTVirtualLineGraph SetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
-			FMTSolutionTracker GetBaseSolution() const;
-			const_iterator GetIterator(
+			FMTVirtualLineGraph getVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
+			FMTVirtualLineGraph setVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
+			FMTSolutionTracker getBaseSolution() const;
+			const_iterator getIterator(
 												const Graph::FMTlinegraph& p_Graph,
 															size_t p_family) const;
-			const_iterator SetIterator(
+			const_iterator setIterator(
 								const Graph::FMTlinegraph& p_Graph,
 								size_t p_family);
-			const_iterator SetNaturalGrowthIterator(size_t p_family);
-			const Models::FMTmodel& GetModel() const;
-			std::map<std::string, double> GetOutput(
+			const_iterator setNaturalGrowthIterator(size_t p_family);
+			const Models::FMTmodel& getModel() const;
+			std::map<std::string, double> getOutput(
 				const FMTSolutionTracker& p_Solution,
 				const Core::FMToutput& p_output,
 				int p_period, Core::FMToutputlevel level) const;
-			void SetModel(const Models::FMTmodel& p_model);
-			void AddToSolution(FMTSolutionTracker& p_solution,
+			void setModel(const Models::FMTmodel& p_model);
+			void addToSolution(FMTSolutionTracker& p_solution,
 				size_t p_family,
 				const_iterator p_iterator);
-			void RemoveToSolution(FMTSolutionTracker& p_solution,
+			void removeToSolution(FMTSolutionTracker& p_solution,
 				size_t p_family,
 				const_iterator p_iterator);
-			bool IsNotNull(size_t p_family,
+			bool isNotNull(size_t p_family,
 				const_iterator p_iterator) const;
-			std::vector<Core::FMTschedule> GetSchedules(const FMTSolutionTracker& p_Solution,
+			std::vector<Core::FMTschedule> getSchedules(const FMTSolutionTracker& p_Solution,
 											bool WithLock = false) const;
-			const_iterator GetBaseIterator(size_t p_family) const;
-			const_iterator GetLastPeriodIterator(
+			const_iterator getBaseIterator(size_t p_family) const;
+			const_iterator getLastPeriodIterator(
 				size_t p_family,
 				const_iterator p_iterator) const;
 			void swap(FMTSpatialGraphs& p_Other);
-			size_t GetNumberOfCategories(int p_themeId) const;
-			size_t GetCategoryOf(int p_themeId, size_t p_family) const;
-			void DeleteNonCompleteGraphs();
-			void EnableSolutionTracker(FMTSolutionTracker& p_tracker) const;
+			size_t getNumberOfCategories(int p_themeId) const;
+			size_t getCategoryOf(int p_themeId, size_t p_family) const;
+			void deleteNonCompleteGraphs();
+			void enableSolutionTracker(FMTSolutionTracker& p_tracker) const;
 		private:
 			using iterator = std::map<Graph::FMTlinegraph,
 				FMTGraphInfo>::iterator;

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -21,7 +21,7 @@ class FMTexponentialschedule : public FMTsaschedule
     public:
         FMTexponentialschedule();
         ~FMTexponentialschedule()=default;
-        void ReduceTemp();
+        void reduceTemp();
 		std::unique_ptr<FMTsaschedule> Clone()const;
     private:
         static const double m_ANNEALING_RATE;

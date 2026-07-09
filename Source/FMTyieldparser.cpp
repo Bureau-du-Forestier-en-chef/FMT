@@ -424,24 +424,24 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::st
 
 		const std::string modelType = modelTypeIt->second.data();
 		#ifdef FMTWITHONNXR
-			if (modelType == Core::FMTyieldmodelpools::GetModelType())
+			if (modelType == Core::FMTyieldmodelpools::getModelType())
 			{
 				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelpools(root, inputYields));
 			}
-			if (modelType == Core::FMTyieldmodelnep::GetModelType())
+			if (modelType == Core::FMTyieldmodelnep::getModelType())
 			{
 				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelnep(root, inputYields));
 			}
 		#endif
-			if (modelType == Core::FMTyieldmodeldecisiontree::GetModelType())
+			if (modelType == Core::FMTyieldmodeldecisiontree::getModelType())
 			{
 				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodeldecisiontree(root, inputYields, mainmask));
 			}
-			if (modelType == Core::FMTyieldmodelRandom::GetModelType())
+			if (modelType == Core::FMTyieldmodelRandom::getModelType())
 			{
 				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelRandom(root,inputYields));
 			}
-			if (modelType == Core::FMTyieldmodelUnitCoverage::GetModelType())
+			if (modelType == Core::FMTyieldmodelUnitCoverage::getModelType())
 			{
 				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelUnitCoverage(root, inputYields, mainmask));
 			}
@@ -474,10 +474,10 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 		size_t overrideid = 1;
 		if (FMTparser::tryOpening(yieldstream, location))
 		{
-			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::GetCleanLinewfor(yieldstream, themes, constants);
+			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(yieldstream, themes, constants);
 			while (!Lines.empty())
 			{
-				const std::string line = GetLine(Lines);
+				const std::string line = getLine(Lines);
 				if (!line.empty())
 				{
 					lineerror = line;

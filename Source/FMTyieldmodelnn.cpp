@@ -62,11 +62,11 @@ namespace Core {
 			sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 			#endif
 			std::ifstream file(stdParamsFileName);
-			std::vector<std::string> headers = GetNextLineAndSplitIntoTokens(file);
+			std::vector<std::string> headers = getNextLineAndSplitIntoTokens(file);
 			headers.erase(headers.begin());
-			std::vector<std::string> strMeans = GetNextLineAndSplitIntoTokens(file);
+			std::vector<std::string> strMeans = getNextLineAndSplitIntoTokens(file);
 			strMeans.erase(strMeans.begin());
-			std::vector<std::string> strVars = GetNextLineAndSplitIntoTokens(file);
+			std::vector<std::string> strVars = getNextLineAndSplitIntoTokens(file);
 			strVars.erase(strVars.begin());
 
 			std::vector<std::string> yields;
@@ -75,7 +75,7 @@ namespace Core {
 				yields.push_back(item.second.get_value<std::string>());
 			}
 
-			ValidateInputYields(yields, inputYields);
+			validateInputYields(yields, inputYields);
 
 			modelYields = inputYields;
 
@@ -104,10 +104,10 @@ namespace Core {
 
 	FMTyieldmodelnn::FMTyieldmodelnn(const FMTyieldmodelnn& rhs):
 		FMTyieldmodel(rhs),
-		modelType(rhs.GetModelType()),
-		standardParamMeans(rhs.GetStandardParamMeans()),
-		standardParamVars(rhs.GetStandardParamVars()),
-		modelOutputs(rhs.GetModelOutputNames())
+		modelType(rhs.getModelType()),
+		standardParamMeans(rhs.getStandardParamMeans()),
+		standardParamVars(rhs.getStandardParamVars()),
+		modelOutputs(rhs.getModelOutputNames())
 	{
 	#ifdef FMTWITHONNXR
 		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
@@ -123,7 +123,7 @@ namespace Core {
 	}
 
 
-	const std::vector<std::string> FMTyieldmodelnn::GetNextLineAndSplitIntoTokens(std::istream& str)
+	const std::vector<std::string> FMTyieldmodelnn::getNextLineAndSplitIntoTokens(std::istream& str)
 	{
 		std::vector<std::string>   result;
 		std::string                line;
@@ -145,7 +145,7 @@ namespace Core {
 		return result;
 	}
 
-	const std::vector<float> FMTyieldmodelnn::Standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars)
+	const std::vector<float> FMTyieldmodelnn::standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars)
 	{
 		std::vector<float> output(input.size());
 		for (size_t i = 0; i < input.size(); i++)
@@ -156,7 +156,7 @@ namespace Core {
 		return std::vector<float>(output.begin(), output.end());
 	}
 	
-	void FMTyieldmodelnn::ValidateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const
+	void FMTyieldmodelnn::validateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const
 	{
 		size_t expectedNbYld = expectedYields.size();
 		size_t recievedNbYld = inputYields.size();
@@ -174,12 +174,12 @@ namespace Core {
 	}
 
 
-	const std::vector<double>FMTyieldmodelnn::Predict(const Core::FMTyieldrequest& request) const
+	const std::vector<double>FMTyieldmodelnn::predict(const Core::FMTyieldrequest& request) const
 	{
 		try {
-			const std::string mdlName = GetModelName();
+			const std::string mdlName = getModelName();
 		#ifdef FMTWITHONNXR
-			const std::vector<std::string> modelYields = GetModelYields();
+			const std::vector<std::string> modelYields = getModelYields();
 			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 			Ort::AllocatorWithDefaultOptions allocator;
 			#if ORT_API_VERSION <= 4
@@ -205,7 +205,7 @@ namespace Core {
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
 
-			std::vector<double> result(GetModelOutputNames().size(), 0.0);
+			std::vector<double> result(getModelOutputNames().size(), 0.0);
 			if (linegraph != nullptr)//Im a linegraph
 			{
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
@@ -217,11 +217,11 @@ namespace Core {
 
 				}
 				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
-				std::vector<double> inputsDbl = GetInputValues(predictor);
+				std::vector<double> inputsDbl = getInputValues(predictor);
 				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
-				RemoveNans(inputs);
+				removeNans(inputs);
 				std::vector<int64_t> inputShape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-				std::vector<float> stdInput = Standardize(inputs, GetStandardParamMeans(), GetStandardParamVars());
+				std::vector<float> stdInput = standardize(inputs, getStandardParamMeans(), getStandardParamVars());
 				const Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memoryInfo, stdInput.data(), stdInput.size(), inputShape.data(), inputShape.size());
 				std::vector<Ort::Value> output_tensors = sessionPtr->Run(Ort::RunOptions{ nullptr }, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
 				std::vector<int64_t> outputShape = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
@@ -253,7 +253,7 @@ namespace Core {
 					withoutsolution = true;
 					//Pour l'instant on va mettre un message d'erreur
 					//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " without solution",
-					//	"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+					//	"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 				const double* solution = solverptr->getColSolution();
 				const std::vector<int>invariables = fullgraph->getinvariables(*vertex);
@@ -281,11 +281,11 @@ namespace Core {
 					for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
 					{
 						const Graph::FMTpredictor& predictor = predictors.at(inedgeid);
-						std::vector<double> inputsDbl = GetInputValues(predictor);
+						std::vector<double> inputsDbl = getInputValues(predictor);
 						std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
-						RemoveNans(inputs);
+						removeNans(inputs);
 						std::vector<int64_t> inputShape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-						std::vector<float> stdInput = Standardize(inputs, GetStandardParamMeans(), GetStandardParamVars());
+						std::vector<float> stdInput = standardize(inputs, getStandardParamMeans(), getStandardParamVars());
 						const Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memoryInfo, stdInput.data(), stdInput.size(), inputShape.data(), inputShape.size());
 						std::vector<Ort::Value> output_tensors = sessionPtr->Run(Ort::RunOptions{ nullptr }, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
 						std::vector<int64_t> outputShape = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
@@ -323,27 +323,27 @@ namespace Core {
 		return std::vector<double>();
 	}
 
-	const std::string& FMTyieldmodelnn::GetModelType() const
+	const std::string& FMTyieldmodelnn::getModelType() const
 	{
 		return modelType;
 	}
 
-	const std::vector<float>& FMTyieldmodelnn::GetStandardParamMeans() const
+	const std::vector<float>& FMTyieldmodelnn::getStandardParamMeans() const
 	{
 		return standardParamMeans;
 	}
 
-	const std::vector<float>& FMTyieldmodelnn::GetStandardParamVars() const
+	const std::vector<float>& FMTyieldmodelnn::getStandardParamVars() const
 	{
 		return standardParamVars;
 	}
 
-	const std::vector<std::string>& FMTyieldmodelnn::GetModelOutputNames() const
+	const std::vector<std::string>& FMTyieldmodelnn::getModelOutputNames() const
 	{
 		return modelOutputs;
 	}
 
-	const void FMTyieldmodelnn::RemoveNans(std::vector<float>& input) const
+	const void FMTyieldmodelnn::removeNans(std::vector<float>& input) const
 	{
 		for (int i = 0; i < input.size(); i++)
 		{

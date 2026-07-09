@@ -25,7 +25,7 @@ namespace Core {
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
-	std::string FMTyieldmodelnep::GetModelType()
+	std::string FMTyieldmodelnep::getModelType()
 	{
 		return "NEP";
 	}
@@ -33,7 +33,7 @@ namespace Core {
 
 	
 
-	const std::vector<double> FMTyieldmodelnep::GetInputValues(const Graph::FMTpredictor& predictor) const
+	const std::vector<double> FMTyieldmodelnep::getInputValues(const Graph::FMTpredictor& predictor) const
 	{
 		std::vector<double> values;
 		std::vector<double> sourceYields = predictor.getSourceYields();

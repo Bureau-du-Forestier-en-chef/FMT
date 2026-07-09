@@ -240,7 +240,7 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}
 
-	double FMTnssmodel::UpdateOutputs(const Core::FMTdevelopment& p_development, 
+	double FMTnssmodel::updateOutputs(const Core::FMTdevelopment& p_development, 
 								    const std::vector<Core::FMTdevelopmentpath>& p_paths,
 									const int& p_action, const double& p_devArea,
 									std::vector<double>& p_targets, std::vector<std::set<size_t>>& p_actionsoutputs,
@@ -365,7 +365,7 @@ namespace Models
 									{
 										const std::vector<Core::FMTdevelopmentpath> PATHS = DEVELOPPEMENT.operate(ACTION, transitions[actionId], yields, themes);
 										m_graph->addAction(actionId, GraphStats, toGrow, frontVertex, PATHS);
-										const double OPERATED_AREA = UpdateOutputs(DEVELOPPEMENT, PATHS, actionId, DEV_AREA,
+										const double OPERATED_AREA = updateOutputs(DEVELOPPEMENT, PATHS, actionId, DEV_AREA,
 											targetedValues, actionsOutputs,
 											TARGETED_OUTPUTS);
 										newSolution.push_back(OPERATED_AREA);

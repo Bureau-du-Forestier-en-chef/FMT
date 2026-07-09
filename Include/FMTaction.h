@@ -199,19 +199,19 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		return false.
 		*/
 		bool isAllowedInSerie(const std::vector<std::string>& serie) const;
-		// DocString: FMTaction::GetSerie
+		// DocString: FMTaction::getSerie
 		/**
 		@brief get the serie with the partial mask p_SerieMask
 		@param[in] p_SerieMask the partial serie mask
 		@return pointer to valid serie
 		*/
-		const FMTSerie* GetSerie(const std::vector<std::string>& p_SerieMask) const;
-		// DocString: FMTaction::GetSeries
+		const FMTSerie* getSerie(const std::vector<std::string>& p_SerieMask) const;
+		// DocString: FMTaction::getSeries
 		/**
 		@brief get all series of the actions
 		@return vector of series
 		*/
-		const std::vector<FMTSerie>& GetSeries() const;
+		const std::vector<FMTSerie>& getSeries() const;
 		// DocString: FMTaction::getSeriesNames
 		/**
 		Returns the series names of the action.
@@ -306,12 +306,12 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		@return true if is part else false.
 		*/
 		bool isPartOf(const std::string& p_name) const;
-		// DocString: FMTaction:: IsInSeries
+		// DocString: FMTaction:: isInSeries
 		/**
 		@brief return true if you find this action first in a serie
 		@return true if first else false
 		*/
-		bool IsInSeries() const;
+		bool isInSeries() const;
 	protected:
 		// DocString: FMTaction::aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.

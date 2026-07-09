@@ -396,7 +396,7 @@ namespace Graph
 		return -1;
     }
 
-	const std::vector<int>& FMTlinegraph::GetSetOperability(
+	const std::vector<int>& FMTlinegraph::getSetOperability(
 		const Core::FMTdevelopment& p_development,
 		const Models::FMTmodel& p_model,
 		boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& p_Cache)
@@ -437,7 +437,7 @@ namespace Graph
 			{
 					const FMTbasevertexproperties& front_properties = data[active];
 					const Core::FMTdevelopment& active_development = front_properties.get();
-					const std::vector<int>& DEV_OP = GetSetOperability(active_development, model, operability);
+					const std::vector<int>& DEV_OP = getSetOperability(active_development, model, operability);
 
 					const int SELECTED_ACTION = _randomOperate(DEV_OP, model,
 							active, generator, active_development, dontchoosegrow);
@@ -530,7 +530,7 @@ namespace Graph
 			for (int localperiod = period; localperiod < lastPeriod;++localperiod)
 				{
 				const Core::FMTdevelopment& startingdev = getPeriodStartDev(localperiod);
-				const std::vector<int>& DEV_OP = GetSetOperability(startingdev, 
+				const std::vector<int>& DEV_OP = getSetOperability(startingdev, 
 																p_model, p_operability);
 				return !DEV_OP.empty();
 				}
@@ -541,12 +541,12 @@ namespace Graph
 		return false;
 		}
 
-	bool FMTlinegraph::IsSameBase(const FMTlinegraph& rhs) const
+	bool FMTlinegraph::isSameBase(const FMTlinegraph& rhs) const
 	{
 		return (getBaseDevelopment() == rhs.getBaseDevelopment());
 	}
 
-	bool FMTlinegraph::IsNotDead(FMTvertex_descriptor p_Descriptor,int8_t p_DeathId) const
+	bool FMTlinegraph::isNotDead(FMTvertex_descriptor p_Descriptor,int8_t p_DeathId) const
 		{
 		bool returned = true;
 		/*if (boost::num_vertices(data) != size())//to be death you need more then just grow
@@ -569,9 +569,9 @@ namespace Graph
 		return returned;
 		}
 
-	bool  FMTlinegraph::IsLessPeriod(const FMTlinegraph& rhs) const
+	bool  FMTlinegraph::isLessPeriod(const FMTlinegraph& rhs) const
 	{
-		if (IsSameBase(rhs) &&
+		if (isSameBase(rhs) &&
 			rhs.getperiod() == getperiod()-1)
 		{
 			FMTedge_iterator edge_iterator, edge_iterator_end, rhs_edge_iterator, rhs_edge_iterator_end;
@@ -597,7 +597,7 @@ namespace Graph
 
 	bool FMTlinegraph::operator == (const FMTlinegraph& rhs) const
 		{
-		if (IsSameBase(rhs))
+		if (isSameBase(rhs))
 			{
 			const size_t THIS_EDGES = boost::num_edges(data);
 			const size_t RHS_EDGES = boost::num_edges(rhs.data);

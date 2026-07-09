@@ -260,7 +260,7 @@ namespace Spatial
         }
 
 
-    std::vector<std::pair<FMTcoordinate, FMTcoordinate>>FMTevent::GetOutsideBordersPair() const
+    std::vector<std::pair<FMTcoordinate, FMTcoordinate>>FMTevent::getOutsideBordersPair() const
     {
         std::vector<std::pair<FMTcoordinate, FMTcoordinate>>Borders;
         std::set<FMTcoordinate>OutsideCoordinates;
@@ -405,7 +405,7 @@ namespace Spatial
     }
 
 
-    bool FMTevent::WillSplitEvent(const FMTcoordinate& p_coordinate) const
+    bool FMTevent::willSplitEvent(const FMTcoordinate& p_coordinate) const
         {
         bool returned = false;
         if (size()>2)

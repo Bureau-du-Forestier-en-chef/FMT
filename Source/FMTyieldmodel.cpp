@@ -30,12 +30,12 @@ namespace Core {
 	}
 
 
-	const std::vector<std::string>& FMTyieldmodel::GetModelYields() const
+	const std::vector<std::string>& FMTyieldmodel::getModelYields() const
 	{
 		return modelYields;
 	}
 
-	const std::string& FMTyieldmodel::GetModelName() const
+	const std::string& FMTyieldmodel::getModelName() const
 	{
 		return modelName;
 	}
@@ -72,12 +72,12 @@ namespace Core {
 	{
 		std::string value = "";
 		try {
-			const std::string completename = GetModelName();
+			const std::string completename = getModelName();
 			const boost::filesystem::path modelpath(completename);
 			const boost::filesystem::path dir = modelpath.parent_path();
 			const std::string shortmodelname = dir.stem().string();
 			std::string data(shortmodelname);
-			for (const std::string yield : GetModelYields())
+			for (const std::string yield : getModelYields())
 			{
 				data += ("," + yield);
 			}
