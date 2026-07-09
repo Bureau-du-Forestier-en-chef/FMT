@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -739,7 +739,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								}
 								else {
 									yldname = kmatch[1];
-									for (int id = 4; id < 18; ++id) //12 - >13 -> 16
+									for (int id = 4; id < 18; ++id) //12 - > 13 -> 16
 									{
 										cyld += std::string(kmatch[id]);
 									}

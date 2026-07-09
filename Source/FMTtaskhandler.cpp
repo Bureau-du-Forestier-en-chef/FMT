@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -143,7 +143,7 @@ namespace Parallel
 
 	void FMTtaskhandler::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
-		// TODO GAB faire un warning si on passe par ici on crer un nouveau logger qui va chier en multithreads
+		// TODO GAB faire un warning si on passe par ici on créer un nouveau logger qui va chier en multithreads
 		for (std::unique_ptr<FMTtask>& task : alltasks)
 			{
 			task->passinlogger(logger);

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -173,7 +173,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		*
 		* @param number Sous format de string&
 
-		* @return Retourne la valeur trimm en std::string
+		* @return Retourne la valeur trimmé en std::string
 		*/
 		static std::string trimDouble(const std::string& string_number);
 		// DocString: FMToutputsource::setYield

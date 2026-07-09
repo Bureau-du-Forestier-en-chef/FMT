@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -1118,7 +1118,7 @@ void FMTexceptionhandler::gutsOfPrintExceptions(std::string text,
 		_logger->setstreamflush(true);
 	}
 	const bool keepit =  ((!isMainThread() && isThisThreadThrowed()));// && !print);
-	//Keep it est a vrai sur le main mais devrait tre  faux...
+	//Keep it est a vrai sur le main mais devrait être à faux...
 	bool needtolog = logfirstlevel;
 
 	/*if (keepit || (levelreference > 0))

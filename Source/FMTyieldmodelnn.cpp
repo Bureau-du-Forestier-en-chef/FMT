@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -249,7 +249,7 @@ namespace Core {
 				{
 					//Si le lpsolver n'est pas optimal faudrait trouver une autre solution...
 					//C'est le cas qu'on veut optimiser du carbone
-					//Peut-etre faire un "solution" avec des 1 partout pour representer chaque edge de faon equivalente?
+					//Peut-etre faire un "solution" avec des 1 partout pour representer chaque edge de façon equivalente?
 					withoutsolution = true;
 					//Pour l'instant on va mettre un message d'erreur
 					//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " without solution",
@@ -267,7 +267,7 @@ namespace Core {
 						totalarea += *(solution + invariables.at(inedgeid));
 					}*/
 				}else {
-					if (invariables.size()>1)//Avertissement sur les valeurs de prdite car on applique un weight quivalent
+					if (invariables.size()>1)//Avertissement sur les valeurs de prédite car on applique un weight équivalent
 					{
 						_exhandler->raise(Exception::FMTexc::FMTyieldmodelprediction,"using "+ mdlName+
 							" Multiple in edges for "+ std::string(request.getDevelopment()) ,

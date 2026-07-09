@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -2897,7 +2897,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				const int& EdgeId = Edge.getactionID();
 				
 				FMTvertex_descriptor nextDev = boost::target(*edge_pair.first, data);
-				if (EdgeId < 0) // volution naturelle si actionid < 0
+				if (EdgeId < 0) // évolution naturelle si actionid < 0
 				{
 					if (p_LastPeriod == p_period - 1 &&
 						nextDev != data.null_vertex())
@@ -2926,7 +2926,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					{
 						const FMTbaseedgeproperties& Edge = data[*edge_pair.first];
 						const int& EdgeId = Edge.getactionID();
-						if (EdgeId < 0) // volution naturelle si actionid < 0
+						if (EdgeId < 0) // évolution naturelle si actionid < 0
 						{
 							NextPeriod = boost::target(*edge_pair.first, data);
 						}

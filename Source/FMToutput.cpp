@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -1435,7 +1435,7 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 				count++;
 				/*if (count > MAXSIZE)
 				{
-					const std::string ERRORMESSAGE = "Le nombre de caratres par ligne est trop grand. Nombre de caractres : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
+					const std::string ERRORMESSAGE = "Le nombre de caratères par ligne est trop grand. Nombre de caractères : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 						 ERRORMESSAGE, "FMToutput::splitSource" ,__LINE__, __FILE__);
 					passed = false;
@@ -1495,7 +1495,7 @@ std::string FMToutput::_operatorFormat() const
 	newLine += modified;
 	newLine += " \n";
 	newLine += "*SOURCE ";
-	// On regarde le dernier double op * ou / pour ajuster les outputs en consquence
+	// On regarde le dernier double op * ou / pour ajuster les outputs en conséquence
 	int last_operator_position = 0;
 	for (size_t i = newOutput.operators.size(); i-- > 0; )
 	{
@@ -1514,7 +1514,7 @@ std::string FMToutput::_operatorFormat() const
 			break;
 		}
 	}
-	// On rcrit les outputs
+	// On réécrit les outputs
 	for (size_t i = 0; i < newOutput.sources.size(); ++i)
 	{
 		std::string source_str = std::string(newOutput.sources[i]);

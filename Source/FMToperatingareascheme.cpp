@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -935,7 +935,7 @@ std::vector<size_t> FMToperatingareascheme::getPotentialDualSchemes(
 					}
 				}
 			}
-			// On itre sur les diffrentes cdules potentielles pour un seul COS
+			// On itère sur les différentes cédules potentielles pour un seul COS
 			std::vector<double> potentialValues;
 			for (const int& binary : potentials)
 			{

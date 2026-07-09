@@ -58,8 +58,8 @@ std::string Wrapper::FMTexceptionhandlerwarning::geterrorstack(
 	Wrapper::FMTFormLogger* ModifLogger = dynamic_cast<Wrapper::FMTFormLogger*>(_logger);
 	if (!ModifLogger)
 	{
-		// Le logger a t remplac (setDefaultLogger). On ne peut pas capturer via keepprint ;
-		// on renvoie au moins le contexte sans drfrencer un pointeur null.
+		// Le logger a été remplacé (setDefaultLogger). On ne peut pas capturer via keepprint ;
+		// on renvoie au moins le contexte sans déréférencer un pointeur null.
 		return text + " In Method(" + method + ") At Line(" + std::to_string(line) + ")";
 	}
 	ModifLogger->dokeepprint();

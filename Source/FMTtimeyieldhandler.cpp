@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qubecvalue = (*ddata)->getPeak(srcsdata.begin()->first, age)
+Copyright (c) 2019 Gouvernement du Québecvalue = (*ddata)->getPeak(srcsdata.begin()->first, age)
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
