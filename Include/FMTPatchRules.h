@@ -40,7 +40,7 @@ namespace Spatial
 			FMTeventcontainer& p_events) const;
 		void fillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
 			FMTeventcontainer& p_events) const;
-		void fillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
+		void fillDispersionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispersion,
 					FMTeventcontainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const;
 	private:
 		FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,

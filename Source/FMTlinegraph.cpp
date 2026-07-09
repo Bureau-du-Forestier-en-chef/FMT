@@ -25,14 +25,14 @@ namespace Graph
     FMTlinegraph::FMTlinegraph(size_t p_LengthReserve):
 		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(FMTgraphbuild::schedulebuild)
     {
-		reserveVerticies(p_LengthReserve);
+		reserveVertices(p_LengthReserve);
     }
 
 	FMTlinegraph::FMTlinegraph(
 		size_t p_LengthReserve, const Core::FMTactualdevelopment& p_dev):
 		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(FMTgraphbuild::schedulebuild)
 	{
-		reserveVerticies(p_LengthReserve);
+		reserveVertices(p_LengthReserve);
 		const std::vector<Core::FMTactualdevelopment> BASES(1, p_dev);
 		initialize(BASES);
 	}
@@ -224,7 +224,7 @@ namespace Graph
 		try {
 			FMTvertex_iterator vertexit;
 			FMTvertex_iterator vertexend;
-			for (boost::tie(vertexit, vertexend) = getperiodverticies(period); vertexit != vertexend; ++vertexit)
+			for (boost::tie(vertexit, vertexend) = getperiodvertices(period); vertexit != vertexend; ++vertexit)
 			{
 				const FMTvertex_descriptor& outv = *vertexit;
 				if (periodstop(outv) &&
@@ -252,7 +252,7 @@ namespace Graph
 		try {
 			FMTvertex_iterator vertexit;
 			FMTvertex_iterator vertexend;
-			for (boost::tie(vertexit, vertexend) = getperiodverticies(period); vertexit != vertexend; ++vertexit)
+			for (boost::tie(vertexit, vertexend) = getperiodvertices(period); vertexit != vertexend; ++vertexit)
 			{
 				const FMTvertex_descriptor& outv = *vertexit;
 				if (periodstop(outv))
@@ -287,7 +287,7 @@ namespace Graph
 		try {
 			FMTvertex_iterator vertexit;
 			FMTvertex_iterator vertexend;
-			for (boost::tie(vertexit, vertexend) = getperiodverticies(period); vertexit != vertexend; ++vertexit)
+			for (boost::tie(vertexit, vertexend) = getperiodvertices(period); vertexit != vertexend; ++vertexit)
 			{
 				const FMTvertex_descriptor& outv = *vertexit;
 				if (!periodstart(outv))
@@ -473,8 +473,8 @@ namespace Graph
 		try {
 			for (int period = startingperiod; period < getperiod(); ++period)
 			{
-				const std::vector<FMTvertex_descriptor>verticies = getnode(model, output_node, period);
-				if (!verticies.empty())
+				const std::vector<FMTvertex_descriptor>vertices = getnode(model, output_node, period);
+				if (!vertices.empty())
 					{
 					periods.push_back(period);
 					}

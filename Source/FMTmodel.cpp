@@ -686,7 +686,7 @@ namespace Models{
 					std::vector<Core::FMTaction>::const_iterator ActIt = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(GLOBAL_ACTION));
 					if (ActIt == actions.end())//Got aggregate
 						{
-						boost::unordered_set<Core::FMTdevelopment>DevelopementsSet;
+						boost::unordered_set<Core::FMTdevelopment>DevelopmentsSet;
 						
 						const std::vector<const Core::FMTaction*> ACTIONS = Core::FMTactioncomparator(GLOBAL_ACTION, true).getAllAggregates(actions,true);
 						if (ACTIONS.empty())
@@ -701,10 +701,10 @@ namespace Models{
 							for (const auto& DEV : ACTION_ELEMENTS.second)
 							{
 								if (DEV.first.getmask().isSubsetOf(ACTION_MASK) &&
-									DevelopementsSet.find(DEV.first) == DevelopementsSet.end())
+									DevelopmentsSet.find(DEV.first) == DevelopmentsSet.end())
 								{
 									NewMapping[DEV.first] = DEV.second;
-									DevelopementsSet.insert(DEV.first);
+									DevelopmentsSet.insert(DEV.first);
 								}
 							}
 							if (!NewMapping.empty())
@@ -2044,9 +2044,9 @@ bool FMTmodel::isValid()
 			}
 		}
 		//this->setSection(Core::FMTsection::Area);
-		for (const Core::FMTactualdevelopment& developement : area)
+		for (const Core::FMTactualdevelopment& development : area)
 		{
-			std::string name = std::string(developement.getmask());
+			std::string name = std::string(development.getmask());
 			Core::FMTtheme::validate(themes, name);
 		}
 		//this->setSection(Core::FMTsection::Yield);
@@ -2149,9 +2149,9 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 	try {
 		optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
 		Core::FMTmask areamask( boost::dynamic_bitset<uint8_t>(area.begin()->getmask().size(), false));
-		for (const Core::FMTactualdevelopment& developement : optionaldevelopments)
+		for (const Core::FMTactualdevelopment& development : optionaldevelopments)
 			{
-			areamask = areamask.getUnion(developement.getmask());
+			areamask = areamask.getUnion(development.getmask());
 			}
 		size_t trid = 0;
 		std::vector<bool>jumptransitions;

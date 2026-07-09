@@ -348,18 +348,18 @@ namespace Spatial
 
 
 
-	std::set<FMTcoordinate> FMTSpatialSchedule::verifySpatialFeasability(const int& targetaction,
+	std::set<FMTcoordinate> FMTSpatialSchedule::verifySpatialFeasibility(const int& targetaction,
 		const std::vector<Spatial::FMTbindingspatialaction>& bindingactions,
 		const int& period, const std::set<FMTcoordinate>& operables) const
 	{
-		std::set<FMTcoordinate> spatialyallowable;
+		std::set<FMTcoordinate> spatiallyallowable;
 		try
 		{
 			for (std::set<FMTcoordinate>::const_iterator itc = operables.begin(); itc != operables.end(); ++itc)
 			{
 				if (allowAction(targetaction, bindingactions,*itc, period))
 				{
-					spatialyallowable.insert(*itc);
+					spatiallyallowable.insert(*itc);
 				}
 			}
 		}
@@ -367,7 +367,7 @@ namespace Spatial
 		{
 			_exhandler->raisefromcatch("", "FMTSpatialSchedule::verifyspatialfeasability", __LINE__, __FILE__);
 		}
-		return spatialyallowable;
+		return spatiallyallowable;
 	}
 
 
@@ -547,7 +547,7 @@ namespace Spatial
 			if (!p_testLower)
 				{
 				const int FIRST_PERIOD = std::max(1, p_period - p_greenup);
-				returnvalue = m_events.getDispertion(p_actions, p_SpatialGraph,
+				returnvalue = m_events.getDispersion(p_actions, p_SpatialGraph,
 					p_theme, FIRST_PERIOD, p_period, p_upperLookup);
 				}
 		}catch (...)
@@ -572,7 +572,7 @@ namespace Spatial
 			if (!p_testLower)
 			{
 				const int FIRST_PERIOD = std::max(1, p_period - p_greenup);
-				conflicts = m_events.getDispertionConflicts(p_actions, p_SpatialGraph,
+				conflicts = m_events.getDispersionConflicts(p_actions, p_SpatialGraph,
 					p_theme, FIRST_PERIOD, p_period, p_upperLookup);
 			}
 		}catch (...)
@@ -1596,7 +1596,7 @@ FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTmaskfilter& p_fil
 		size_t id = 0;
 		for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphIt = mapping.begin(); graphIt != mapping.end(); ++graphIt)
 			{
-			//std::queue<Graph::FMTlinegraph::FMTvertex_descriptor> allDescriptors = graphIt->second.getLineGraph().getactiveverticies();
+			//std::queue<Graph::FMTlinegraph::FMTvertex_descriptor> allDescriptors = graphIt->second.getLineGraph().getactivevertices();
 			const Core::FMTdevelopment& NON_PRESOLVED = graphIt->second.getLineGraph().getPeriodStopDev(0);
 			const Core::FMTactualdevelopment PRESOLVED_DEV = Core::FMTactualdevelopment(NON_PRESOLVED, getCellSize()).presolve(p_filter, p_Graphs.getModel().themes);
 			if (cacheGraph.find(PRESOLVED_DEV) == cacheGraph.end())
@@ -1851,11 +1851,11 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 					const std::set<Spatial::FMTcoordinate>& allowable_coordinates = actions_operabilities.at(action_id);
 					if (!allowable_coordinates.empty() && action_area > 0)
 					{
-						const std::set<Spatial::FMTcoordinate> spatialy_allowable = this->verifySpatialFeasability(action_id, bindingactions, period, allowable_coordinates);
-						if (!spatialy_allowable.empty())
+						const std::set<Spatial::FMTcoordinate> spatially_allowable = this->verifySpatialFeasibility(action_id, bindingactions, period, allowable_coordinates);
+						if (!spatially_allowable.empty())
 						{
 							std::vector<Spatial::FMTcoordinate> updatedcells;
-							const Spatial::FMTeventcontainer harvest = this->buildHarvest(action_area, bindingactions.at(action_id), p_randomEngine, spatialy_allowable, period, action_id, updatedcells);
+							const Spatial::FMTeventcontainer harvest = this->buildHarvest(action_area, bindingactions.at(action_id), p_randomEngine, spatially_allowable, period, action_id, updatedcells);
 							if (harvest.size() > 0)
 							{
 								const double operatedarea = this->operateEvents(harvest,model.actions.at(action_id), action_id, model.transitions[action_id], model.yields, model.themes);
@@ -2222,7 +2222,7 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAreaConfl
 		int actionid = 0;
 		for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period-1))
 		{
-			if (actionbind.isSpatialyAreaBinding()||!conflictonly)
+			if (actionbind.isSpatiallyAreaBinding()||!conflictonly)
 			{
 				for (const FMTeventcontainer::const_iterator eventit : m_events.getEvents(period, actionid))
 				{
@@ -2274,7 +2274,7 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAdjacency
 			boost::unordered_set<FMTeventrelation> relations;
 			for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period - 1))
 			{
-			if (actionbind.isSpatialyAdjacencyBinding())
+			if (actionbind.isSpatiallyAdjacencyBinding())
 				{
 				std::vector<bool>actionids(bindingactions.at(period - 1).size(),false);
 				for (const int& action : actionbind.getNeighbors())
@@ -2526,7 +2526,7 @@ std::vector<FMTSpatialSchedule::EventSpread> FMTSpatialSchedule::getPotentialSpr
 
 
 
-bool FMTSpatialSchedule::needsRefactortorization(const FMTSpatialGraphs& p_Graphs) const
+bool FMTSpatialSchedule::needsRefactorization(const FMTSpatialGraphs& p_Graphs) const
 {
 	try {
 		if (!m_ConstraintsFactor.empty())

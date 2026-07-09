@@ -100,9 +100,9 @@ namespace Heuristics
 		// DocString: FMToperatingareascheme::getarea
 		/**
 			Get the area of the operating area base on a (primalsolution) 
-			for the initial (verticies) of the FMTlpmodel graph.
+			for the initial (vertices) of the FMTlpmodel graph.
 		*/
-		double getPrimalArea(const double* primalsolution, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& verticies) const;
+		double getPrimalArea(const double* primalsolution, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& vertices) const;
 		// DocString: FMToperatingareascheme::getBestSchemeId
 		/**
 			Get the best possible scheme looking at the primal solution,
@@ -118,27 +118,27 @@ namespace Heuristics
 			This fonction generate all potential schemes of the operating area if the "harvest stade" exist within the matrix.
 			If full enumeration is set to true then it will enumerate all possible patterns....
 		*/
-		std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> generateSchemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies);
+		std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> generateSchemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices);
 		// DocString: FMToperatingareascheme::schemestoLP
 		/**
-		Using the generated (schemes) from the generateSchemes functions, and all periodic verticies (periodics),
-		initial verticies (totalareaverticies) and the (primalsolution) for calculating the _area, solverinterface, graph and actionids.
-		The function fills the opening constraints and opening binairies member data and also add the newly formulated
-		constraints and binairies to the solverinterface. But the model is kept linear.
+		Using the generated (schemes) from the generateSchemes functions, and all periodic vertices (periodics),
+		initial vertices (totalareavertices) and the (primalsolution) for calculating the _area, solverinterface, graph and actionids.
+		The function fills the opening constraints and opening binaries member data and also add the newly formulated
+		constraints and binaries to the solverinterface. But the model is kept linear.
 		*/
 		void schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
 			const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodictargetednodes,
-			const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareaverticies,
+			const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
 			Models::FMTlpsolver& solver,
 			const double* primalsolution,
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<int>& actionIDS);
 
-		// DocString: FMToperatingareascheme::getIgnoredVerticies
+		// DocString: FMToperatingareascheme::getIgnoredVertices
 		/**
-		Get a vector with the verticies that are not in the schemes, they must be set to 0 in the matrix
+		Get a vector with the vertices that are not in the schemes, they must be set to 0 in the matrix
 		*/
-		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> getIgnoredVerticies(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
-			const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targetedperiodsverticies) const;
+		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> getIgnoredVertices(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
+			const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targetedperiodsvertices) const;
 
 		// DocString: FMToperatingareascheme::schemesToPeriods
 		/**
@@ -235,14 +235,14 @@ namespace Heuristics
 			Will return true if every constraint has above threshold
 			*/
 			bool isThresholdActivity(const double* dualsolution) const;
-			// DocString: FMToperatingareascheme::getCommonBinairies
+			// DocString: FMToperatingareascheme::getCommonBinaries
 			/**
 			Using the greenup data member of each operating area (neighbor and this) we get the map<>
 			key = this binary index and elements are a vector of binary indexes of the neighbor.
 			We need this function to validate which schemes of an operating area is constraining the usage of 
 			the schemes of a other (neighbor).
 			*/
-			std::map<int, std::vector<int>> getCommonBinairies(const FMToperatingareascheme& neighbor) const;
+			std::map<int, std::vector<int>> getCommonBinaries(const FMToperatingareascheme& neighbor) const;
 			// DocString: FMToperatingareascheme::getPrimalSolutionIndex
 			/**
 			Only when a operating area is bounded to a given scheme we can use this function that gets
@@ -366,8 +366,8 @@ namespace Heuristics
 			This function will fill-up all data member related to matrix elements (constraints and variables).
 			The user has to synchronize matrixbuild to the matrix after iterating on all operatingarea.
 			*/
-			void setconstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies,
-				const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareaverticies,
+			void setconstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices,
+				const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
 				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph,Models::FMTlpsolver& solver,
 				const double* primalsolution,
 				const std::vector<int>& actionIDS);

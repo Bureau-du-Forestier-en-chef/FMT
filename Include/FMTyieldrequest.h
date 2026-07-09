@@ -30,9 +30,9 @@ namespace Core
 	class FMTyields;
 	// DocString: FMTyieldrequest
 	/**
-	Using a pointer to a given graph and a FMTdevelopement you can create thise class to request yield values.
+	Using a pointer to a given graph and a FMTdevelopment you can create thise class to request yield values.
 	The yield will be calculated using the FMTyields class but also using the FMTgraph so the location of the 
-	actual state of the FMTdevelopement.You can also build a yield request without anyreference to a graph for calculatin yield values.
+	actual state of the FMTdevelopment.You can also build a yield request without anyreference to a graph for calculatin yield values.
 	*/
 	class FMTyieldrequest final : public FMTobject
 	{

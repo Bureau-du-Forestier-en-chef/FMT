@@ -416,7 +416,7 @@ FMTlev FMTexceptionhandler::getLevel(const FMTexc p_exception) const
 		case FMTexc::FMTundefined_constant:
 			level = FMTlev::FMT_logic;
 			break;
-		case FMTexc::FMTmissingdevelopement:
+		case FMTexc::FMTmissingdevelopment:
 			level = FMTlev::FMT_logic;
 			break;
 		case FMTexc::FMTmissingobjective:
@@ -762,7 +762,7 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		
 		gotException=true;
 		break;
-	case FMTexc::FMTmissingdevelopement:
+	case FMTexc::FMTmissingdevelopment:
 		msg += "Missing developement: " + message;
 		
 		gotException=true;

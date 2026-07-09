@@ -28,13 +28,13 @@ class FMTEXPORT FMTdevelopmentpath
 		// DocString: FMTdevelopmentpath::getDevelopment
 		/**
 		@brief Get the new development
-		@return a newly generated developement
+		@return a newly generated development
 		*/
 		const FMTdevelopment& getDevelopment() const;
 		// DocString: FMTdevelopmentpath::getDevelopmentReference
 		/**
 		@brief Get the new development
-		@return a newly generated developement
+		@return a newly generated development
 		*/
 		FMTdevelopment& getDevelopmentReference();
 		// DocString: FMTdevelopmentpath::getProportion

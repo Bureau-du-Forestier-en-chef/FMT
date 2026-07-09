@@ -31,10 +31,10 @@ std::vector<Core::FMTmask>FMToperatingarea::getNeighbors() const
 	return neighbors;
 	}
 
-FMToperatingarea::FMToperatingarea(const Core::FMTmask& lmask,const double& lneihgborsperimeter):
+FMToperatingarea::FMToperatingarea(const Core::FMTmask& lmask,const double& lneighborsperimeter):
 	mask(lmask),
 	neighbors(),
-	neihgborsperimeter(lneihgborsperimeter),
+	neighborsperimeter(lneighborsperimeter),
 	_area()
 	{
 
@@ -50,9 +50,9 @@ void FMToperatingarea::setNeighbors(const std::vector<Core::FMTmask>& lneighbors
 	neighbors = lneighbors;
 	}
 
-double FMToperatingarea::getNeihgborsPerimeter() const
+double FMToperatingarea::getNeighborsPerimeter() const
 	{
-	return neihgborsperimeter;
+	return neighborsperimeter;
 	}
 
 Core::FMTmask FMToperatingarea::getmask() const

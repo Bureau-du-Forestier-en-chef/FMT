@@ -81,7 +81,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         /**
         This function returns a copy of the FMTmodel of the selected period.
         If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
-        a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
+        a copy of the FMTmodel based on the developments of the FMTgraph of the FMTlpmodel.
         Need to have a builded graph with a solution to use this function.
         */
         virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;

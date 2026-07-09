@@ -182,13 +182,13 @@ std::vector<Core::FMTmask> FMTtransition::canProduce(const Core::FMTmask& testma
 
 	}
 
-const FMTfork* FMTtransition::getFork(const Core::FMTdevelopment& developement,const FMTyields& ylds) const
+const FMTfork* FMTtransition::getFork(const Core::FMTdevelopment& development,const FMTyields& ylds) const
     {
 	try{
-	const Core::FMTyieldrequest& request = developement.getYieldRequest();
-    for(const FMTtransition::const_iterator fork : this->findSets(developement.getmask()))
+	const Core::FMTyieldrequest& request = development.getYieldRequest();
+    for(const FMTtransition::const_iterator fork : this->findSets(development.getmask()))
        {
-		if (fork->second.allowWithoutYield(developement.getperiod(), developement.getAge(), developement.getLock()))
+		if (fork->second.allowWithoutYield(development.getperiod(), development.getAge(), development.getLock()))
 			{
 			const std::vector<FMTyldbounds>&bounds = fork->second.getYldBounds();
 			size_t bid = 0;

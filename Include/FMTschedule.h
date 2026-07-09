@@ -22,8 +22,8 @@ namespace Core
 class FMTconstraint;
 // DocString: FMTschedule
 /**
-FMTschedule is the representation of a spatialy referenced schedule. It can be used by the FMTlpmodel and the FMTsesmodel.
-It describes the area of a given developements for which an FMTaction can be operated (key).
+FMTschedule is the representation of a spatially referenced schedule. It can be used by the FMTlpmodel and the FMTsesmodel.
+It describes the area of a given developments for which an FMTaction can be operated (key).
 The vector is a reprensentation of lock level at position 0 in the vector the lock level = 0 (if lock level 0 exist in the graph
 , at position 1 lock level = 1.
 */
@@ -105,7 +105,7 @@ class FMTEXPORT FMTschedule : public FMTobject
 			}
 		// DocString: FMTschedule::doUseLock
 		/**
-		Return true if the schedule can contains locked developement.
+		Return true if the schedule can contains locked development.
 		*/
 		inline bool doUseLock() const
 		{
@@ -113,7 +113,7 @@ class FMTEXPORT FMTschedule : public FMTobject
 		}
 		// DocString: FMTschedule::setUseLock
 		/**
-		Mark the schedule has can contains locked developement.
+		Mark the schedule has can contains locked development.
 		*/
 		void setUseLock(const bool& lock);
 		// DocString: FMTschedule::actionArea
@@ -123,7 +123,7 @@ class FMTEXPORT FMTschedule : public FMTobject
         double actionArea(const FMTaction& action) const;
 		// DocString: FMTschedule::addEvent
 		/**
-		Add a new event to the shedule based on the developement,action and area. See clean function also.
+		Add a new event to the shedule based on the development,action and area. See clean function also.
 		*/
 		void addEvent(const Core::FMTdevelopment& dev, const double& area, const Core::FMTaction& action);
 		// DocString: FMTschedule::clean
@@ -142,7 +142,7 @@ class FMTEXPORT FMTschedule : public FMTobject
 		Check if a given FMTdevelopment has been actioned for the this FMTschedule.
 		*/
 		bool operated(const FMTaction& action,
-			const FMTdevelopment& developement) const;
+			const FMTdevelopment& development) const;
 		// DocString: FMTschedule::getOperabilities
 		/**
 		Get all operabilities of the schedules in an hash table.
@@ -177,7 +177,7 @@ class FMTEXPORT FMTschedule : public FMTobject
 		FMTschedule postsolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const;
 		/**
-		Setter for the period of the Schedule and the period developements of the schedule.
+		Setter for the period of the Schedule and the period developments of the schedule.
 		*/
 		void setPeriod(const int& newperiod);
 		// DocString: FMTschedule::getNewSchedule
@@ -230,7 +230,7 @@ class FMTEXPORT FMTschedule : public FMTobject
 		///If true the schedule contains locked development by default it is False.
 		bool uselock;
 		// DocString: FMTschedule::elements
-		///Main FMTschedule elements action has key, followed by a map of FMTdevelopement and a vector of double
+		///Main FMTschedule elements action has key, followed by a map of FMTdevelopment and a vector of double
 		///The vector of double represent the _lock level.
 		std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> elements;
 		// DocString: FMTschedule::sameElements

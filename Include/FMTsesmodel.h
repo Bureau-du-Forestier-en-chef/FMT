@@ -18,8 +18,8 @@ namespace Models
 {
 // DocString: FMTsesmodel
 /**
-This model is a spatialy explicit simulation (ses) model.
-It uses simple cellular automaton to spatialy simulate FMTactions on
+This model is a spatially explicit simulation (ses) model.
+It uses simple cellular automaton to spatially simulate FMTactions on
 a raster stack for a given planning horizon following an harvest schedule.
 The FMTaction ordering is realy important because the simulator will
 attend to place the first action of the list on the map and so on.
@@ -92,7 +92,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		/**
 		This function call multiple time the function FMTspatialschedule::referenceBuild function to 
 		find the best possible spatialisation for a given schedule using random draw. It uses a schedule of actions (schedule) on the actual
-		spatialy explicit forest.  The user can also set the seed to get different solutions from the simulator.
+		spatially explicit forest.  The user can also set the seed to get different solutions from the simulator.
 		*/
 		std::map<std::string, double> greedyReferenceBuild(
 			const Core::FMTschedule& p_schedule,
@@ -127,7 +127,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
 		If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
-		a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
+		a copy of the FMTmodel based on the developments of the FMTgraph of the FMTlpmodel.
 		Need to have a builded graph with a solution to use this function.
 		*/
 		virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;

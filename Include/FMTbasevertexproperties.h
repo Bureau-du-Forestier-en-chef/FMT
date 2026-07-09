@@ -58,13 +58,13 @@ namespace Graph
 		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTfuturdevelopment&)
 		/**
 		@brief constructor based on futur development.
-		@param[in] futur developement.
+		@param[in] futur development.
 		*/
 		FMTbasevertexproperties(const Core::FMTfuturdevelopment& p_development);
 		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTactualdevelopment&)
 		/**
 		@brief constructor based on actual development.
-		@param[in] actual developement.
+		@param[in] actual development.
 		*/
 		FMTbasevertexproperties(const Core::FMTactualdevelopment& p_development);
 		//FMTbasevertexproperties(const Core::FMTdevelopment& p_development);
@@ -136,7 +136,7 @@ namespace Graph
 				}
 			}
 		// DocString: FMTbasevertexproperties::m_development
-		///The developement that hold the information about the strata.
+		///The development that hold the information about the strata.
 		std::unique_ptr<Core::FMTdevelopment> m_development;
 		void _Save(double p_area);
 	};

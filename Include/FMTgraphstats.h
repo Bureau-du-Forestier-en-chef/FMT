@@ -50,7 +50,7 @@ class FMTEXPORT FMTgraphstats
 		///Number of rows in the matrix of FMTlpsolver.
 		int rows;
 		// DocString: FMTgraphstats::vertices
-		///Number of verticies in the FMTgraph.
+		///Number of vertices in the FMTgraph.
 		int vertices;
 		// DocString: FMTgraphstats::edges
 		///Number of edges in the FMTgraph.

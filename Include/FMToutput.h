@@ -33,7 +33,7 @@ namespace Core
 FMToutput let the user formulate constraint in the optimize section or just collect data across the FMTgraph.
 FMToutput hold a vector of outputsources and operators. Outputs  that are non linear cannot be used into
 matrix constraints formulation. Outputs have multiple outputs node representing a set of FMTdevelopment in the 
-FMTgraph. Each FMTdevelopement can be part of one FMToutput.
+FMTgraph. Each FMTdevelopment can be part of one FMToutput.
 */
 class FMTEXPORT FMToutput: public FMTobject
     {

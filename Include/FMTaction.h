@@ -36,8 +36,8 @@ namespace Core
 class FMTactioncomparator;
 // DocString: FMTaction
 /**
-FMTaction hold informations to check if a FMTdevelopement is operable or not to this.
-The operability testing for a given action is in the FMTdevelopement class.
+FMTaction hold informations to check if a FMTdevelopment is operable or not to this.
+The operability testing for a given action is in the FMTdevelopment class.
 FMTaction consist of a list of specifications that dictate the operability of 
 a subsets of FMTdevelopments.
 */
@@ -169,8 +169,8 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		}
 		// DocString: FMTaction::doRespectLock
 		/**
-		If True the action needs to respect the _lock stade of the developement.
-		Else the action doesn't car about the _lock of the developement.
+		If True the action needs to respect the _lock stade of the development.
+		Else the action doesn't car about the _lock of the development.
 		*/
 		inline bool doRespectLock() const
 		{
@@ -178,7 +178,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		}
 		// DocString: FMTaction::isResetAge
 		/**
-		If True When operated by this the FMTdevelopement is set to 0.
+		If True When operated by this the FMTdevelopment is set to 0.
 		Else it stays the same
 		*/
 		inline bool isResetAge() const

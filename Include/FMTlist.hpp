@@ -98,8 +98,8 @@ namespace Core
 			Core::FMTmask testedMask(std::string(this->begin()->first), themes);
 			for (const auto& object : *this)
 			{
-				const Core::FMTmask specificierMask(std::string(object.first), themes);
-				testedMask = testedMask.getUnion(specificierMask);
+				const Core::FMTmask specifierMask(std::string(object.first), themes);
+				testedMask = testedMask.getUnion(specifierMask);
 			}
 			return testedMask;
 		}

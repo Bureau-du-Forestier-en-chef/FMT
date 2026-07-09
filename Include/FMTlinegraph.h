@@ -20,11 +20,11 @@ namespace Graph
 {
 // DocString: FMTlinegraph
 /**
-FMTlinegraph is a simple graph  where edges - verticies -1. Each actions occuring in the graph
+FMTlinegraph is a simple graph  where edges - vertices -1. Each actions occuring in the graph
 generate only one new vertex like that 0----0----0----0. This graph is used with FMTlayer to
 simulate the preocess of growth and havest of a single forest stand where each action produce only
 one new stade. This class is heavely used in the FMTsesmodel and FMTsamodel and is normaly used with
-spatialy explicit models.
+spatially explicit models.
 */
 class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>
 {
@@ -146,22 +146,22 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 			std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const;
 		// DocString: FMTlinegraph::getBaseDevelopment
 		/**
-		Returns a reference to the first developement of the graph.
+		Returns a reference to the first development of the graph.
 		*/
 		const Core::FMTdevelopment& getBaseDevelopment() const;
 		// DocString: FMTlinegraph::getBaseHash
 		/**
-		Returnsa base hash of the starting developement of the linegraph based on a dynamicmask filter.
+		Returnsa base hash of the starting development of the linegraph based on a dynamicmask filter.
 		*/
 		size_t getBaseHash(const Core::FMTmask& dynamicmask) const;
 		// DocString:FMTlinegraph::getBaseStr
 		/**
-		Returns a base string of the starting developement of the linegraph based on a dynamicmask filter.
+		Returns a base string of the starting development of the linegraph based on a dynamicmask filter.
 		*/
 		std::string getBaseStr(const Core::FMTmask& dynamicmask) const;
 		// DocString: FMTlinegraph::getBaseMask
 		/**
-		Returns a filtered mask of the starting developement mask of the linegraph based on a dynamicmask filter.
+		Returns a filtered mask of the starting development mask of the linegraph based on a dynamicmask filter.
 		*/
 		Core::FMTmask getBaseMask(const Core::FMTmask& dynamicmask) const;
 		// DocString: FMTlinegraph::setBaseMask
@@ -173,7 +173,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		void setBaseMask(Core::FMTmask& p_dynamicmask,const int& p_period) const;
 		// DocString: FMTlinegraph::getBaseMask
 		/**
-		Returns a filtered mask of the starting developement mask of the linegraph based on a dynamicmask filter.
+		Returns a filtered mask of the starting development mask of the linegraph based on a dynamicmask filter.
 		*/
 		size_t getEdgesHash(const int& maximalperiod,bool& gotthewhole) const;
 		// DocString: FMTlinegraph::getEdgesStr
@@ -203,7 +203,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		bool isOnlyGrow(int period=0) const;
 		// DocString:FMTlinegraph::addfromevents
 		/**
-		Add actions (edges) + (verticies) to the graph based an event.
+		Add actions (edges) + (vertices) to the graph based an event.
 		*/
 		//void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;
 		// DocString: FMTlinegraph::ismovable
@@ -276,7 +276,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 			bool isAnyVertexUsage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const;
 			// DocString: FMTlinegraph::_randomOperate
 			/**
-			Randomly operate an (active _developement) (front_vertex) and returns the action id.
+			Randomly operate an (active _development) (front_vertex) and returns the action id.
 			*/
 			int _randomOperate(const std::vector<int>& operables, const Models::FMTmodel& model,
 				FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,

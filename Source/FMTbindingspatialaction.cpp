@@ -26,18 +26,18 @@ namespace Spatial
 	{
 
 	}
-	bool FMTbindingspatialaction::isSpatialyBinding() const
+	bool FMTbindingspatialaction::isSpatiallyBinding() const
 	{
-		return (isSpatialyAdjacencyBinding()|| isSpatialyAreaBinding());
+		return (isSpatiallyAdjacencyBinding()|| isSpatiallyAreaBinding());
 	}
 
-	bool FMTbindingspatialaction::isSpatialyAdjacencyBinding() const
+	bool FMTbindingspatialaction::isSpatiallyAdjacencyBinding() const
 	{
 		return (!neighbors.empty() && (minimal_adjacency > 0 ||
 			maximal_adjacency != std::numeric_limits<size_t>::max()));
 	}
 
-	bool FMTbindingspatialaction::isSpatialyAreaBinding() const
+	bool FMTbindingspatialaction::isSpatiallyAreaBinding() const
 		{
 		return (!neighbors.empty() && (minimal_size > 0 ||
 				maximal_size != std::numeric_limits<size_t>::max()));

@@ -84,7 +84,7 @@ enum FMTexc
 	FMTmissingyield = 42,
 	FMTattribute_redefinition = 43,
 	FMTundefined_constant = 44,
-	FMTmissingdevelopement = 45,
+	FMTmissingdevelopment = 45,
 	FMTmissingobjective = 46,
 	FMTunsupported_objective = 47,
 	FMTinvalid_constraint = 48,

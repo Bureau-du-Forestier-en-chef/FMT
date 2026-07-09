@@ -355,7 +355,7 @@ FMTschedule::operator std::string() const
 	}
 
 	bool FMTschedule::operated(const FMTaction& action,
-		const FMTdevelopment& developement) const
+		const FMTdevelopment& development) const
 	{
 		bool value = false;
 		try{
@@ -365,10 +365,10 @@ FMTschedule::operator std::string() const
 			std::map<FMTdevelopment, std::vector<double>>::const_iterator devit;
 			if (uselock||action.doRespectLock())
 			{
-				devit = actit->second.find(developement);
+				devit = actit->second.find(development);
 			}
 			else {
-				devit = actit->second.find(developement.clearLock());
+				devit = actit->second.find(development.clearLock());
 			}
 			if (devit != actit->second.end())
 			{

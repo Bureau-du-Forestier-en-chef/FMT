@@ -174,7 +174,7 @@ RCPP_DECLAREVECTOR(Core::FMTGCBMtransition);//For vector
 RCPP_DECLAREVECTOR(Core::FMTconstraint);//For vector
 RCPP_DECLAREMAP(Core::FMTdevelopment, std::vector<double>);//For dev of doubles
 RCPP_DECLAREMAP(std::string, std::vector<double>);//For string of double map
-RCPP_DECLAREMAP(std::string, std::vector<Core::FMTdevelopment>);//For string of vector of developements
+RCPP_DECLAREMAP(std::string, std::vector<Core::FMTdevelopment>);//For string of vector of developments
 RCPP_DECLAREMAP(Core::FMTaction , std::map<Core::FMTdevelopment RCPP_COMMA std::vector<double>>);//For action of ...
 RCPP_DECLAREMAP(std::string , std::map<std::string RCPP_COMMA std::vector<double>>);//For string of ...
 RCPP_DECLAREPAIR(Core::FMTmask, Core::FMToutputsource);//pair for FMTlist

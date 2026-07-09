@@ -37,7 +37,7 @@ class FMTspec;
 class FMTyldbounds;
 // DocString: FMTdevelopment
 /**
-FMTdevelopment is the base class of FMTactualdevelopement and FMTfuturdevelopement. This class is the thing that look like
+FMTdevelopment is the base class of FMTactualdevelopment and FMTfuturdevelopment. This class is the thing that look like
 a forest stand. It holds informations about it's age, at which period it exist, the lock level of the stand and finaly
 the mask hold a description of the growth/spatial reference/ and other potential sutff.
 */
@@ -74,7 +74,7 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		}
 		// DocString: FMTdevelopment::getLock
 		/**
-		Get the lock of the developement.
+		Get the lock of the development.
 		*/
 		inline int getLock() const
 			{
@@ -82,7 +82,7 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			}
 		// DocString: FMTdevelopment::getperiod
 		/**
-		Get the period of the developement.
+		Get the period of the development.
 		*/
 		inline int getperiod() const
 			{
@@ -90,7 +90,7 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			}
 		// DocString: FMTdevelopment::getmask
 		/**
-		Get the mask of the developement.
+		Get the mask of the development.
 		*/
 		inline const Core::FMTmask& getmask() const
 			{
@@ -98,7 +98,7 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			}
 		// DocString: FMTdevelopment::getMaskCopy
 		/**
-		Get the mask of the developement.
+		Get the mask of the development.
 		*/
 		inline Core::FMTmask getMaskCopy() const
 		{
@@ -111,89 +111,89 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		void setAge(const int& lage);
 		// DocString: FMTdevelopment::setLock
 		/**
-		Set the lock of the developement.
+		Set the lock of the development.
 		*/
 		void setLock(const int& llock);
 		// DocString: FMTdevelopment::setPeriod
 		/**
-		Set the period of the developement.
+		Set the period of the development.
 		*/
 		void setPeriod(const int& lperiod);
 		// DocString: FMTdevelopment::setMask
 		/**
-		Set the mask of the developement.
+		Set the mask of the development.
 		*/
 		void setMask(const Core::FMTmask& lmask);
 		// DocString: FMTdevelopment()
 		/**
-		Default constructor for FMTdevelopement
+		Default constructor for FMTdevelopment
 		*/
         FMTdevelopment();
 		// DocString: ~FMTdevelopment()
 		/**
-		Default destructor for FMTdevelopement.
+		Default destructor for FMTdevelopment.
 		*/
 		virtual ~FMTdevelopment() = default;
 		// DocString: FMTdevelopment(const FMTmask&,const int&,const int&)
 		/**
-		FMTdevelopement constructor using a FMTmask the age and the lock level of the FMTdevelopment.
+		FMTdevelopment constructor using a FMTmask the age and the lock level of the FMTdevelopment.
 		*/
 		FMTdevelopment(const FMTmask& mask, const int& age, const int& lock);
 		// DocString: FMTdevelopment(const FMTmask,const int&,const int&,const int&)
 		/**
-		FMTdevelopement constructor using a FMTmask the age and the lock level and the period of the FMTdevelopment.
+		FMTdevelopment constructor using a FMTmask the age and the lock level and the period of the FMTdevelopment.
 		*/
 		FMTdevelopment(const FMTmask& lmask, const int& lage, const int& llock, const int& lperiod);
 		// DocString: FMTdevelopment(const FMTdevelopment&)
 		/**
-		FMTdevelopement copy constructor.
+		FMTdevelopment copy constructor.
 		*/
 		FMTdevelopment(const FMTdevelopment& rhs);
 		// DocString: FMTdevelopment::Clone()
 		/**
-		Virtual clone function for FMTdevelopement for abstraction
+		Virtual clone function for FMTdevelopment for abstraction
 		*/
 		virtual std::unique_ptr<FMTdevelopment> Clone() const;
 		// DocString: FMTdevelopment::operator=
 		/**
-		FMTdevelopement copy assignment.
+		FMTdevelopment copy assignment.
 		*/
         FMTdevelopment& operator = (const FMTdevelopment& rhs);
 		// DocString: FMTdevelopment::operator==
 		/**
-		FMTdevelopement equality operator.
+		FMTdevelopment equality operator.
 		*/
         bool operator == (const FMTdevelopment& rhs) const;
 		// DocString: FMTdevelopment::operator!=
 		/**
-		FMTdevelopement nonequality operator.
+		FMTdevelopment nonequality operator.
 		*/
         bool operator != (const FMTdevelopment& rhs) const;
 		// DocString: FMTdevelopment::operator<
 		/**
-		FMTdevelopement less than operator.
+		FMTdevelopment less than operator.
 		*/
 		bool operator < (const FMTdevelopment& rhs) const;
 		// DocString: FMTdevelopment::grow
 		/**
-		The function returns a grown up copy of this FMTdevelopement increasing the age and the period and
+		The function returns a grown up copy of this FMTdevelopment increasing the age and the period and
 		decreasing the lock level if the lock level was > 0.
 		*/
         FMTfuturdevelopment grow() const;
 		// DocString: FMTdevelopment::getYieldRequest
 		/**
-		Get a yieldrequest without any reference to a FMTgraph for a given (ylds) and this FMTdevelopement.
+		Get a yieldrequest without any reference to a FMTgraph for a given (ylds) and this FMTdevelopment.
 		*/
 		FMTyieldrequest getYieldRequest(const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::operable
 		/**
-		Check if this FMTdevelopement is operable to an FMTaction (action) based on multiple yields (yields).
+		Check if this FMTdevelopment is operable to an FMTaction (action) based on multiple yields (yields).
 		*/
         bool operable(const FMTaction& action,const Core::FMTyields& ylds,
 			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::anyOperable
 		/**
-		Check if this FMTdevelopement is operable to any of FMTaction in the (actions) vector based on multiple yields (yields).
+		Check if this FMTdevelopment is operable to any of FMTaction in the (actions) vector based on multiple yields (yields).
 		*/
 		bool anyOperable(const std::vector<const FMTaction*>& actions, const Core::FMTyields& ylds,
 			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
@@ -214,7 +214,7 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		FMTdevelopment clearLock() const;
 		// DocString: FMTdevelopment::operate
 		/**
-		Returns a vector of FMTdevelopementpath if the FMTdevelopement is operated by 
+		Returns a vector of FMTdevelopmentpath if the FMTdevelopment is operated by 
 		an (action), a (Transition) bases on multiple yields and the sorted FMTthemes of the model.
 		*/
 		std::vector<FMTdevelopmentpath> operate(const FMTaction& action,
@@ -223,16 +223,16 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTdevelopment::getInventoryCoef
 		/**
-		Returns inventory coefficiant of the FMTdevelopement for a given yield (target_yield) based on (yields).
-		The amount of (yield) do this FMTdevelopement has.
+		Returns inventory coefficiant of the FMTdevelopment for a given yield (target_yield) based on (yields).
+		The amount of (yield) do this FMTdevelopment has.
 		*/
 		double getInventoryCoef(const Core::FMTyields& ylds,const std::string& target_yield,
 			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::getHarvestCoef
 		/**
-		Returns the harvest coefficiant of the FMTdevelopement for a given yield (target_yield) if it follows
-		multiple developement path for a given action and based on yields.
-		It gives the amount of yield the action produce if the *this FMTdevelopement is operated.
+		Returns the harvest coefficiant of the FMTdevelopment for a given yield (target_yield) if it follows
+		multiple development path for a given action and based on yields.
+		It gives the amount of yield the action produce if the *this FMTdevelopment is operated.
 		*/
 		double getHarvestCoef(const std::vector<FMTdevelopmentpath>& topaths,
 			const FMTaction& action,const Core::FMTyields& ylds,const std::string& target_yield,
@@ -263,7 +263,7 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			const std::vector<FMTaction>& allactions) const noexcept;
 		// DocString: FMTdevelopment::hash
 		/**
-		Hash function for FMTdevelopment combining mask,age,lock and period of the FMTdevelopement.
+		Hash function for FMTdevelopment combining mask,age,lock and period of the FMTdevelopment.
 		*/
 		inline size_t hash() const
 			{

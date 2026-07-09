@@ -18,7 +18,7 @@ namespace Core
 class FMTlifespans;
 // DocString: FMTactualdevelopment
 /**
-FMTactualdevelopement is the child class of FMTdevelopement. It stands for the representation of an
+FMTactualdevelopment is the child class of FMTdevelopment. It stands for the representation of an
 actual forest stand so it holds the amount of area of this stand as a member variable.
 */
 class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
@@ -39,42 +39,42 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		FMTactualdevelopment& operator=(FMTactualdevelopment&& rhs);
 		// DocString: FMTactualdevelopment()
 		/**
-		Default constructor for FMTactualdevelopement
+		Default constructor for FMTactualdevelopment
 		*/
 		FMTactualdevelopment();
 		// DocString: ~FMTactualdevelopment()
 		/**
-		Default destructor for FMTactualdevelopement.
+		Default destructor for FMTactualdevelopment.
 		*/
 		~FMTactualdevelopment()=default;
 		// DocString: FMTactualdevelopment(const FMTactualdevelopment&)
 		/**
-		FMTactualdevelopement copy constructor.
+		FMTactualdevelopment copy constructor.
 		*/
 		FMTactualdevelopment(const FMTactualdevelopment& rhs);
 		// DocString: FMTactualdevelopment(const FMTmask&,const int&,const int&,const int&,const double&)
 		/**
-		FMTactualdevelopement constructor using a FMTmask the age and the lock level period  and the area of the FMTactualdevelopment.
+		FMTactualdevelopment constructor using a FMTmask the age and the lock level period  and the area of the FMTactualdevelopment.
 		*/
 		FMTactualdevelopment(const FMTmask& mask, const int& age, const int& lock, const double& area);
 		// DocString: FMTactualdevelopment(const FMTdevelopment&,double)
 		/**
-		FMTactualdevelopement constructor using a FMTdevelopment and an area.
+		FMTactualdevelopment constructor using a FMTdevelopment and an area.
 		*/
 		FMTactualdevelopment(const FMTdevelopment& rhs, double larea);
 		// DocString: FMTactualdevelopment::operator=
 		/**
-		FMTactualdevelopement copy assignment.
+		FMTactualdevelopment copy assignment.
 		*/
 		FMTactualdevelopment& operator = (const FMTactualdevelopment& rhs);
 		// DocString: FMTactualdevelopment::operator==
 		/**
-		FMTactualdevelopement equality operator.
+		FMTactualdevelopment equality operator.
 		*/
 		bool operator == (const FMTactualdevelopment& rhs) const;
 		// DocString: FMTactualdevelopment::operator!=
 		/**
-		FMTactualdevelopement nonequality operator.
+		FMTactualdevelopment nonequality operator.
 		*/
 		bool operator != (const FMTactualdevelopment& rhs) const;
 		// DocString: FMTactualdevelopment::operator<
@@ -89,27 +89,27 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		operator std::string() const override;
 		// DocString: FMTactualdevelopment::getarea
 		/**
-		Returns the area of the FMTactualdevelopement.
+		Returns the area of the FMTactualdevelopment.
 		*/
 		double getarea() const override;
 		// DocString: FMTactualdevelopment::setArea
 		/**
-		Set the newarea has the area of the FMTactualdevelopement.
+		Set the newarea has the area of the FMTactualdevelopment.
 		*/
 		void setArea(const double& newarea);
 		// DocString: FMTactualdevelopment::clone
 		/**
-		Return a unique_ptr of FMTdevelopment of the FMTactualdevelopement.
+		Return a unique_ptr of FMTdevelopment of the FMTactualdevelopment.
 		*/
 		std::unique_ptr<FMTdevelopment> Clone() const override;
 		// DocString: FMTactualdevelopment::presolve
 		/**
-		Will presolve the FMTactualdevelopment using the FMTdevelopement::presolve() function.
+		Will presolve the FMTactualdevelopment using the FMTdevelopment::presolve() function.
 		*/
 		FMTactualdevelopment presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
 		// DocString: FMTactualdevelopment::reduceLockToDeath
 		/**
-		This function check if the actualdevelopement lifespan is shorter than the lock present in area section. If not so, it raise the 
+		This function check if the actualdevelopment lifespan is shorter than the lock present in area section. If not so, it raise the 
 		error FMTdeathwithlock and if the error is set to warning, it returns a FMTactualdevelopment with the lock reduced accordingly.
 		If the lifespan is shorter than the lock, it returns a copy of itself. This is mainly use in FMTmodel::setArea.  
 		*/
@@ -134,18 +134,18 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 			}
 		}
 		// DocString: FMTactualdevelopment::area
-		///The area of the actual developement.
+		///The area of the actual development.
 		double area;
 	};
 
 // DocString: FMTactualdevelopmentcomparator
 /**
-FMTactioncomparator to check if the base FMTdevelopement is the actualdev.
+FMTactioncomparator to check if the base FMTdevelopment is the actualdev.
 */
 class FMTactualdevelopmentcomparator
 	{
 		// DocString: FMTactioncomparator::basedev
-		///The FMTdevelopement that we compare
+		///The FMTdevelopment that we compare
 		const FMTdevelopment* basedev;
 	public:
 		// DocString: FMTactualdevelopmentcomparator(const FMTdevelopment*)

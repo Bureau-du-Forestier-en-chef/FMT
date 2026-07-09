@@ -24,7 +24,7 @@ namespace Models
 	// DocString: FMTnssmodel
 	/**
 	FMTnssmodel stands for non spatial simulation model. This model is mainly used to simulate
-	stochastics actions during the local replanning phase. Before using any kind of spatialy explicit model
+	stochastics actions during the local replanning phase. Before using any kind of spatially explicit model
 	sometime using a simple non spatial model can help to understand the basic idea of simulation.
 	*/
 	class FMTEXPORT FMTnssmodel : public FMTsrmodel
@@ -112,7 +112,7 @@ namespace Models
 			/**
 			This function returns a copy of the FMTmodel of the selected period.
 			If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
-			a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
+			a copy of the FMTmodel based on the developments of the FMTgraph of the FMTlpmodel.
 			Need to have a builded graph with a solution to use this function.
 			*/
 			virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
@@ -160,7 +160,7 @@ namespace Models
 								const std::set<size_t>& p_outputIds) const;
 			// DocString: FMTnssmodel::getFirstOperable
 			/**
-			@brief Get the first operable action for the developement
+			@brief Get the first operable action for the development
 			@param[in] development the development to test operability
 			@param[in] targest the targeted actions.
 			@param[in] the outputs values.

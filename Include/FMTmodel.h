@@ -214,7 +214,7 @@ namespace Models
 		FMTmodel& operator =(FMTmodel&& rhs);
 		// DocString: FMTmodel::getarea
 		/**
-			Virtual function to get the area of a given period into actualdevelopement. If before grow = true it will returns the developement before it grow and death to the next period.
+			Virtual function to get the area of a given period into actualdevelopment. If before grow = true it will returns the development before it grow and death to the next period.
 		*/
 		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
 		// DocString: FMTmodel::getCopy
@@ -261,7 +261,7 @@ namespace Models
 		// DocString: FMTmodel::presolveSchedule
 		/**
 		Using the original schedule (not presolved) and the original model (not presolved) it returns a new schedule with
-		presolved FMTdevelopements masks and actions.
+		presolved FMTdevelopments masks and actions.
 		*/
 		Core::FMTschedule presolveSchedule(const Core::FMTschedule& originalbaseschedule,
 			const FMTmodel& originalbasemodel) const;
@@ -404,7 +404,7 @@ namespace Models
 		// DocString: FMTmodel::setArea
 		/**
 		Setter for initial FMTactualdevelopment (area section) will replace the originals.
-		This function also check if the actualdevelopement lifespan is shorter than the lock.
+		This function also check if the actualdevelopment lifespan is shorter than the lock.
 		If not so, it raise the error FMTdeathwithlock and if the error is set to warning,
 		the locks of the FMTactualdevelpement will be reduced accordingly.
 		*/
@@ -452,7 +452,7 @@ namespace Models
 		// DocString: FMTmodel::isValid
 		/**
 		This function validate all the FMTmodel
-		FMTtheme ->FMTactualdevelopements-> FMTyields -> FMTaction -> FMTtransition -> FMToutput -> FMTconstraint
+		FMTtheme ->FMTactualdevelopments-> FMTyields -> FMTaction -> FMTtransition -> FMToutput -> FMTconstraint
 		return true if the model is valid.
 		*/
 		bool isValid();
@@ -546,7 +546,7 @@ namespace Models
 		// DocString: FMTmodel::getPotentialSchedule
 		/**
 		The function will remove (toRemove) developments from a selected vector (selection). Test operability of the
-		difference and return a schedule containing an area of 1.0 if the developement is operable to this actions.
+		difference and return a schedule containing an area of 1.0 if the development is operable to this actions.
 		*/
 		Core::FMTschedule getPotentialSchedule(std::vector<Core::FMTactualdevelopment> toRemove,
 			std::vector<Core::FMTactualdevelopment> selection, bool withlock = true) const;
@@ -565,14 +565,14 @@ namespace Models
 		Get the output value of a output for a given period using the spatial solution.
 		the map key returned consist of output name
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
-		or developement name if level == FMToutputlevel::developpement
+		or development name if level == FMToutputlevel::developpement
 		*/
 		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		// DocString: FMTmodel::getSolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
-		If with lock is true then the schedule will contain locked developement.
+		If with lock is true then the schedule will contain locked development.
 		*/
 		virtual Core::FMTschedule getSolution(int period, bool withlock = false) const;
 		// DocString: FMTmodel::getOutputsFromPeriods
@@ -750,7 +750,7 @@ namespace Models
 		void setDefaultObjects();
 		// DocString: FMTmodel::getBaseMask
 		/**
-		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopements.
+		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopments.
 		*/
 		Core::FMTmask getBaseMask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const;
 		

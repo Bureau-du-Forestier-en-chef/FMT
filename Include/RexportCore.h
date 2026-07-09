@@ -141,7 +141,7 @@ RCPP_EXPOSED_AS(Core::FMTconstraint);
 RCPP_DEFINEVECTOR(Core::FMTconstraint);//For vector
 RCPP_DEFINEMAP(Core::FMTdevelopment, std::vector<double>);//For dev of doubles
 RCPP_DEFINEMAP(std::string, std::vector<double>);//For string of double map
-RCPP_DEFINEMAP(std::string, std::vector<Core::FMTdevelopment>);//For string of vector of developements
+RCPP_DEFINEMAP(std::string, std::vector<Core::FMTdevelopment>);//For string of vector of developments
 RCPP_DEFINEMAP(Core::FMTaction , std::map<Core::FMTdevelopment RCPP_COMMA std::vector<double>>);//For action of ...
 RCPP_DEFINEMAP(std::string , std::map<std::string RCPP_COMMA std::vector<double>>);//For string of ...
 RCPP_DEFINEMAP(std::string, std::string);//map of string definition

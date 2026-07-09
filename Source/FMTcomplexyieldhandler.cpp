@@ -520,9 +520,9 @@ namespace Core {
 			const double upval = (*ddata)->getYieldLinearValue(*SOURCES.at(0), p_request);
 			const int AGE = p_request.getDevelopment().getAge();
 			const int newage = AGE - 1;
-			Core::FMTdevelopment newdevelopement(p_request.getDevelopment());
-			newdevelopement.setAge(newage);
-			const FMTyieldrequest newrequest(newdevelopement, p_request);
+			Core::FMTdevelopment newdevelopment(p_request.getDevelopment());
+			newdevelopment.setAge(newage);
+			const FMTyieldrequest newrequest(newdevelopment, p_request);
 			//const double dwval = (*ddata)->getYieldLinearValue(sources.at(0), newage);
 			const double dwval = (*ddata)->getYieldLinearValue(*SOURCES.at(0), newrequest);
 			value = ((upval - dwval) / (year));
@@ -598,9 +598,9 @@ namespace Core {
 			const std::map<std::string, double>source_values = _toMap(p_request, SOURCES, SOURCES_DATA);
 			const int PERIOD = p_request.getDevelopment().getperiod();
 			const int periodtolookat = std::max(0, PERIOD + static_cast<int>(C_DATA->data.back()));
-			Core::FMTdevelopment newdevelopement(p_request.getDevelopment());
-			newdevelopement.setPeriod(periodtolookat);
-			const FMTyieldrequest newrequest(newdevelopement, p_request);
+			Core::FMTdevelopment newdevelopment(p_request.getDevelopment());
+			newdevelopment.setPeriod(periodtolookat);
+			const FMTyieldrequest newrequest(newdevelopment, p_request);
 			const std::map<std::string, double>periodic_source_values = _toMap(newrequest, SOURCES, SOURCES_DATA);
 			value = std::abs(source_values.begin()->second - periodic_source_values.begin()->second);
 		}catch (...)
@@ -626,18 +626,18 @@ namespace Core {
 			double minage = 0.0;
 			double maxage = 0.0;
 			double dblage = 0.0;
-			Core::FMTdevelopment newdevelopement(p_request.getDevelopment());
-			newdevelopement.setAge(1);
-			FMTyieldrequest newrequest(newdevelopement, p_request);
+			Core::FMTdevelopment newdevelopment(p_request.getDevelopment());
+			newdevelopment.setAge(1);
+			FMTyieldrequest newrequest(newdevelopment, p_request);
 			const std::unique_ptr<FMTyieldhandler>* ddata = SOURCES_DATA.at(0);
 			const double peakage = (*ddata)->getPeak(newrequest, *SOURCES.at(0), 0);
 			bool gotminage = false;
 			bool gotmaxage = false;
 			while (localvalue < upperBound && dblage <= peakage)
 			{
-				newdevelopement.setAge(localage);
+				newdevelopment.setAge(localage);
 				dblage = static_cast<double>(localage);
-				const FMTyieldrequest localrequest(newdevelopement, p_request);
+				const FMTyieldrequest localrequest(newdevelopment, p_request);
 				//const std::vector<double>values = getSourcesArray(srcsdata, localrequest, age_only);
 				//localvalue = values.at(0);
 				localvalue = (*SOURCES_DATA.at(0))->get(*SOURCES.at(0), localrequest);

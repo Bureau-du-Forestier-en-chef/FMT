@@ -39,7 +39,7 @@ class FMTtimeyieldhandler;
 /**
 FMTyields is one FMTlist containing multiple yieldhandlers has seen in the yield section.
 FMTyields hold all the information related to the forest productivity this class is sometime super large.
-FMTyields is a class used to check if a given FMTdevelopement can be operable to an action, calculate outputs,
+FMTyields is a class used to check if a given FMTdevelopment can be operable to an action, calculate outputs,
 constraints and disturb a forest stand in a FMTtransition.
 */
 class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
@@ -114,25 +114,25 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		bool isNullYld(const std::string& value) const;
 		// DocString: FMTyields::get
 		/**
-		This function is the main function used to get the yields value (targets) for a given FMTdevelopement (dev),
+		This function is the main function used to get the yields value (targets) for a given FMTdevelopment (dev),
 		looking at age,period,lock,mask etc... it returns a map of yield name (keys) and there vlues(items).
 		*/
 		//std::vector<double>get(std::vector<FMTyieldrequest>& requests) const;
 		// DocString: FMTyields::getsingle
 		/**
-		This function is the main function used to get the yield value (target) for a given FMTdevelopement (dev),
+		This function is the main function used to get the yield value (target) for a given FMTdevelopment (dev),
 		looking at age,period,lock,mask etc... it returns  the yield value.
 		*/
 		//double getsingle(const FMTdevelopment& dev,const std::string& target) const;
 		//std::map<std::string,double>getYlds(const FMTdevelopment& dev,const FMTspec& spec) const;
 		// DocString: FMTyields::getYlds
 		/**
-		This function gets the yields used and its values (map) by a given specification (spec) for a given developement (dev).
+		This function gets the yields used and its values (map) by a given specification (spec) for a given development (dev).
 		*/
 		//std::vector<double>getYlds(const FMTdevelopment& dev, const FMTspec& spec) const;
 		// DocString: FMTyields::getAge
 		/**
-		This function is used to get the new age of a FMTdevelopement (dev) 
+		This function is used to get the new age of a FMTdevelopment (dev) 
 		when disturbed by a given FMTtransition specification (sepc).
 		*/
         int getAge(const FMTyieldrequest& request,const FMTspec& spec) const;
@@ -199,7 +199,7 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
 		// DocString: FMTyields::get
 		/**
-		This function is the main function used to get the yields value (targets) for a given FMTdevelopement (dev),
+		This function is the main function used to get the yields value (targets) for a given FMTdevelopment (dev),
 		looking at age,period,lock,mask etc... it returns a map of yield name (keys) and there vlues(items).
 		*/
 		double get(const FMTyieldrequest& request,const std::string& yld) const;

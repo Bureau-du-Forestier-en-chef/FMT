@@ -1460,7 +1460,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 						std::vector<Core::FMTmask>validneighbors;
 						for (size_t neighborid = 0; neighborid < neighborsid.size(); ++neighborid)
 						{
-							if ((areas.at(neighborid) / fullbuffered) >= operatingareas.at(neighborsid.at(neighborid)).getNeihgborsPerimeter())
+							if ((areas.at(neighborid) / fullbuffered) >= operatingareas.at(neighborsid.at(neighborid)).getNeighborsPerimeter())
 							{
 								validneighbors.push_back(operatingareas.at(neighborsid.at(neighborid)).getmask());
 							}
@@ -1821,7 +1821,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 						newfeature->SetField("MAXRET", static_cast<int>(scheme.getMaximalReturnTime()));
 						newfeature->SetField("REP", static_cast<int>(scheme.getRepetition()));
 						newfeature->SetField("OPR", static_cast<int>(scheme.getThreshold()));
-						newfeature->SetField("NEP", static_cast<double>(scheme.getNeihgborsPerimeter()));
+						newfeature->SetField("NEP", static_cast<double>(scheme.getNeighborsPerimeter()));
 						newfeature->SetField("GUP", static_cast<int>(scheme.getGreenUp()));
 						if (newlayer->CreateFeature(newfeature) != OGRERR_NONE)
 						{
@@ -1847,7 +1847,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 				std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, themes, numeroTheme, startingperiod);
 				for (const auto& op : opeareas)
 				{
-					if (op.getNeihgborsPerimeter() > 0 || op.getGreenUp() > 0)
+					if (op.getNeighborsPerimeter() > 0 || op.getGreenUp() > 0)
 					{
 						Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
 						opeareas = areaParser.getSchemeNeighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1, nomChampStanlock);

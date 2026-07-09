@@ -423,7 +423,7 @@ namespace Models
 				toGrowWithSolution.pop();
 			}
 			const int location = static_cast<int>(m_graph->size() - 2);
-			const Graph::FMTgraphstats newStats = this->updateMatrix(m_graph->getperiodverticies(location), GraphStats);
+			const Graph::FMTgraphstats newStats = this->updateMatrix(m_graph->getperiodvertices(location), GraphStats);
 			if (solver.getNumCols() != static_cast<int>(newSolution.size()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -520,11 +520,11 @@ namespace Models
 				}
 			//Need to take care of the _DEATH!
 			const Core::FMTaction& deathaction = actions.back();
-			for (const Core::FMTactualdevelopment& developement : actualarea)
+			for (const Core::FMTactualdevelopment& development : actualarea)
 				{
-				if (developement.operable(deathaction,yields))
+				if (development.operable(deathaction,yields))
 					{
-					schedule.addEvent(developement, developement.getarea(),deathaction);
+					schedule.addEvent(development, development.getarea(),deathaction);
 					}
 				}				
 			if (!anyallocation)
@@ -556,7 +556,7 @@ namespace Models
 			const size_t AREA = area.size();
 			const size_t ACTIONS = actions.size();
 			const size_t EXPO_FACTOR = 12;
-			m_graph->reserveVerticies(LENGTH * AREA * ACTIONS * EXPO_FACTOR);
+			m_graph->reserveVertices(LENGTH * AREA * ACTIONS * EXPO_FACTOR);
 			for (int period = 0; period< getparameter(FMTintmodelparameters::LENGTH);++period)
 			{
 				simulate();

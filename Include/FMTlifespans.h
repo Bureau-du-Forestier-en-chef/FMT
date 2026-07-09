@@ -16,7 +16,7 @@ namespace Core
 {
 // DocString: FMTlifespans
 /**
-FMTlifespans class keeps the information about the maximum age of an aggregate of FMTdevelopements.
+FMTlifespans class keeps the information about the maximum age of an aggregate of FMTdevelopments.
 It's derived from FMTlist<int> each element of the FMTlist is a maximum age given for a FMTmask.
 The class is used by the FMTparser but also into the when generating the default _DEATH action and transition.
 */

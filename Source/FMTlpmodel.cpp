@@ -121,7 +121,7 @@ namespace Models
 		const size_t TO_RESERVE = length * AREA * ACTIONS * EXPO_FACTOR;
 		try
 		{
-			m_graph->reserveVerticies(TO_RESERVE);
+			m_graph->reserveVertices(TO_RESERVE);
 			if (!QUIET_LOG)
 			{ 
 				_logger->logwithlevel("Graph reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") vertices\n", 1);
@@ -345,7 +345,7 @@ namespace Models
 				}
 		
 			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
 				std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 				variables.erase(-1);
@@ -457,7 +457,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					}*/
 				//on doit seulement utiliser le outputid le plus élevé obtenue dans TOUS les noeuds lue!!!!
 				//output_negvar ne doit pas être une liste mais bien un seul élément unique.
-				//Sur cet élément unique on doit recuellir tous les verticies par attribut du output
+				//Sur cet élément unique on doit recuellir tous les vertices par attribut du output
 				//Et setter chaque attribut comme étant >= 0
 				if (strictlypositivesoutputsmatrix && node_it->second<0 && !node.source.getYield().empty())
 					{
@@ -852,7 +852,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"Global masks and tolerances are not the same length", "FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 			}
-			//const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTdevelopment>>& initialperiod = m_graph->getperiodverticies(0);
+			//const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTdevelopment>>& initialperiod = m_graph->getperiodvertices(0);
 			std::vector<int>colstarget;
 			std::vector<double>originalbounds;
 			std::vector<double>newbounds;
@@ -861,7 +861,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			std::vector<bool>foundcorresponding(globalmasks.size(), false);
 			//const int firstfutrecolumn = static_cast<int>(initialperiod.size());
 			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(0); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(0); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
 				size_t maskid = 0;
 				size_t gotvariables = 0;

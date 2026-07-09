@@ -153,12 +153,12 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		   const int& period, const std::vector<bool>& actionsused,
 		   std::unordered_set<size_t>& relations,
 		   const std::vector<FMTeventcontainer::const_iterator>& events) const;*/
-		// DocString: FMTSpatialSchedule::verifySpatialFeasability
+		// DocString: FMTSpatialSchedule::verifySpatialFeasibility
 		/**
 		For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables. Mainly only check for coord
 		respecting the greenup constraint.
 		*/
-		std::set<FMTcoordinate> verifySpatialFeasability(const int& targetaction,
+		std::set<FMTcoordinate> verifySpatialFeasibility(const int& targetaction,
 			const std::vector<Spatial::FMTbindingspatialaction>& bindingactions,
 			const int& period, const std::set<FMTcoordinate>& operables) const;
 		// DocString: FMTSpatialSchedule::buildHarvest
@@ -285,8 +285,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		// DocString: FMTSpatialSchedule::referenceBuild
 		/**
 		This is the main function to simulate a schedule of actions (schedule) on the actual
-		spatialy explicit forest. If the (schedule_only) switch is turned on the simulator wont try
-		to find some operable developements (not present in the potential schedule)
+		spatially explicit forest. If the (schedule_only) switch is turned on the simulator wont try
+		to find some operable developments (not present in the potential schedule)
 		even if the area harvested target for that action is not reach. The user can also set the seed
 		to get different solutions from the simulator.
 		*/
@@ -299,8 +299,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		This function call multiple time the simulate function to find the best possible spatialisation for
 		a given schedule using random draw. It uses a schedule of actions (schedule) on the actual
-		spatialy explicit forest. If the (schedule_only) switch is turned on the simulator wont try
-		to find some operable developements (not present in the potential schedule)
+		spatially explicit forest. If the (schedule_only) switch is turned on the simulator wont try
+		to find some operable developments (not present in the potential schedule)
 		even if the area harvested target for that action is not reach. The user can also set the seed
 		to get different solutions from the simulator.
 		*/
@@ -385,11 +385,11 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		Set the constraints factors for nomalization
 		*/
 		void setConstraintsFactor(const Models::FMTmodel& model,const std::vector<double>&factors);
-		// DocString: FMTSpatialSchedule::needsRefactortorization
+		// DocString: FMTSpatialSchedule::needsRefactorization
 		/**
 		Return true if the solution looks unscaled and need new factors
 		*/
-		bool needsRefactortorization(const FMTSpatialGraphs& p_Graphs) const;
+		bool needsRefactorization(const FMTSpatialGraphs& p_Graphs) const;
 		// DocString: FMTSpatialSchedule::getConstraintsFactor
 		/**
 		Get the constraints factors for nomalization
@@ -400,7 +400,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		Get the output value of a output for a given period using the solution..
 		the map key returned consist of output name
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
-		or developement name if level == FMToutputlevel::developpement
+		or development name if level == FMToutputlevel::developpement
 		*/
 		std::map<std::string,double> getOutput(const FMTSpatialGraphs& p_Graphs, const Core::FMToutput& p_output,
 			int p_period,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
@@ -431,7 +431,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		@brief Returned a presolved solution of the original solution.
 		@param[in] p_filter filter to keep mask
 		@param[in] p_presolvedThemes The themes of the presolved model.
-		@param[in] the number of verticies to reserve per linegraph
+		@param[in] the number of vertices to reserve per linegraph
 		@return A presolved FMTSpatialSchedule.
 		*/
 		FMTSpatialSchedule presolve(const Core::FMTmaskfilter& p_filter,

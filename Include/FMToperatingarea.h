@@ -37,7 +37,7 @@ namespace Heuristics
 			{
 			ar & BOOST_SERIALIZATION_NVP(mask);
 			ar & BOOST_SERIALIZATION_NVP(neighbors);
-			ar & BOOST_SERIALIZATION_NVP(neihgborsperimeter);
+			ar & BOOST_SERIALIZATION_NVP(neighborsperimeter);
 			ar & BOOST_SERIALIZATION_NVP(_area);
 			}
 		protected:
@@ -47,9 +47,9 @@ namespace Heuristics
 		// DocString: FMToperatingarea::neighbors
 		///Neighbors mask of the operating area
 		std::vector<Core::FMTmask>neighbors;
-		// DocString: FMToperatingarea::neihgborsperimeter
+		// DocString: FMToperatingarea::neighborsperimeter
 		///neighborsperimeter is the ratio a operatingarea needs to share to a other operatingarea to be considered neighbor.
-		double neihgborsperimeter;
+		double neighborsperimeter;
 		// DocString: FMToperatingarea::_area
 		///The initial area of the operating area used as big M for the MIP.
 		double _area;
@@ -69,12 +69,12 @@ namespace Heuristics
 				Get the area of the operating area.
 			*/
 			double getarea() const;
-			// DocString: FMToperatingarea::getNeihgborsPerimeter
+			// DocString: FMToperatingarea::getNeighborsPerimeter
 			/**
 			Getter returning the percentage of perimeter the oprating area needs to share with a other operating area,
 			to be considered neighbor.
 			*/
-			double getNeihgborsPerimeter() const;
+			double getNeighborsPerimeter() const;
 			// DocString: FMToperatingarea::getmask
 			/**
 			Getter returning mask of the operating area.
@@ -90,7 +90,7 @@ namespace Heuristics
 			Main FMToperatingarea constructor targeting the user. Before synchronizing everything to the solverinterface,
 			the user has to provide to the heuristics all the green-up, returntime etc.... for each operating area.
 			*/
-			FMToperatingarea(const Core::FMTmask& lmask,const double& lneihgborsperimeter);
+			FMToperatingarea(const Core::FMTmask& lmask,const double& lneighborsperimeter);
 			// DocString: FMToperatingarea::setArea
 			/**
 			Set the area of the operating area.

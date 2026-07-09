@@ -498,12 +498,12 @@ namespace Models
            {
                for (size_t actionid = 0; actionid < actions.size(); ++actionid)
                {
-                   if (!adjacency&& binding.at(actionid).isSpatialyAreaBinding())
+                   if (!adjacency&& binding.at(actionid).isSpatiallyAreaBinding())
                    {
                        selectedactions[actionid] = true;
                        gotaction = true;
                    }
-                   else if (adjacency && binding.at(actionid).isSpatialyAdjacencyBinding())
+                   else if (adjacency && binding.at(actionid).isSpatiallyAdjacencyBinding())
                    {
                        selectedactions[actionid] = true;
                        gotaction = true;
@@ -1059,7 +1059,7 @@ namespace Models
             try {
                 if (m_TotalMoves % 100 == 0)
                 {
-                    doReFactortorization(m_BestSolution);
+                    doRefactorization(m_BestSolution);
                 }
             }
             catch (...)

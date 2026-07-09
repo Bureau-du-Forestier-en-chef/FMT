@@ -120,7 +120,7 @@ namespace Spatial
 		}
 	}
 
-	void FMTPatchRules::fillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
+	void FMTPatchRules::fillDispersionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispersion,
 		FMTeventcontainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
 		if (_IsGroupUsed())
@@ -128,10 +128,10 @@ namespace Spatial
 			for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 				{
 				const std::vector < std::set<FMTevent>::iterator > CONFLICTS =
-					p_events.getDispertionConflicts(m_RulesId, p_SpatialGraphs,
+					p_events.getDispersionConflicts(m_RulesId, p_SpatialGraphs,
 						m_GroupTheme, period,
 						period + m_GroupGreenUp, m_MaximalGroupDistance);
-				p_Dispertion.insert(p_Dispertion.end(), CONFLICTS.begin(), CONFLICTS.end());
+				p_Dispersion.insert(p_Dispersion.end(), CONFLICTS.begin(), CONFLICTS.end());
 				}
 			}
 	}
@@ -272,7 +272,7 @@ namespace Spatial
 			{
 				for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 				{
-					cost += p_events.getDispertion(m_RulesId, p_SpatialGraphs,
+					cost += p_events.getDispersion(m_RulesId, p_SpatialGraphs,
 						m_GroupTheme, period,
 						period + m_GroupGreenUp, m_MaximalGroupDistance);
 				}

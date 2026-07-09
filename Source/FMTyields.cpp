@@ -658,7 +658,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getA
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for developement "+std::string(dev),"FMTyields::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+		_exhandler->raisefromcatch("for development "+std::string(dev),"FMTyields::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return age;
 	}

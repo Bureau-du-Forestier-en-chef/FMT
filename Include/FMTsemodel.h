@@ -26,7 +26,7 @@ namespace Models
 {
 // DocString: FMTsemodel
 /**
-This model is an abstract class for spatialy explicit model. It's the parent of FMTsesmodel and FMTsamodel.
+This model is an abstract class for spatially explicit model. It's the parent of FMTsesmodel and FMTsamodel.
 It contains a spatialschedule (the best solution) in case of optimization or the latest solution in term of
 simulation.
 */
@@ -65,7 +65,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
         FMTsemodel& operator = (const FMTsemodel& rhs);
 		// DocString: FMTsemodel::getMapping
 		/**
-		Getter returning a copy the actual spatial forest stades of each FMTdevelopement (map).
+		Getter returning a copy the actual spatial forest stades of each FMTdevelopment (map).
 		*/
 		Spatial::FMTforest getMapping() const;
 		// DocString: FMTsemodel::getSpSchedule
@@ -122,7 +122,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Get the output value of a output for a given period using the spatial solution.
 		the map key returned consist of output name
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
-		or developement name if level == FMToutputlevel::developpement
+		or development name if level == FMToutputlevel::developpement
 		*/
 		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
@@ -134,7 +134,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		// DocString: FMTsemodel::getSolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
-		If with lock is true then the schedule will contain locked developement.
+		If with lock is true then the schedule will contain locked development.
 		*/
 		virtual Core::FMTschedule getSolution(int period, bool withlock = false) const;
 
@@ -198,7 +198,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 
 		std::vector<double> getConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
 
-		void doReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+		void doRefactorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
 		Spatial::FMTSpatialSchedule getNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
 		std::map<std::string, double> greedyReferenceBuild(
 			Spatial::FMTSpatialSchedule& p_SpatialSchedule,

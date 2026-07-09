@@ -31,7 +31,7 @@ class FMTtheme;
 FMTtransition is a list of FMTfork (FMTspec). Each FMTaction has it's FMTtransition.
 Using a FMTdevelopment you can simulate the impact of harvesting that development with a FMTtransition.
 Each fork is a transition source and its linked targets. FMTaction test for operability and FMTtransition only
-"disturb" the FMTdevelopement and generates new FMTdevelopementpath.
+"disturb" the FMTdevelopment and generates new FMTdevelopmentpath.
 */
 class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
     {
@@ -75,9 +75,9 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
         operator std::string() const;
 		// DocString: FMTtransition::single
 		/**
-		A transition can lead to multiple FMTdevelopementpath but for cell basesd models the FMTtransition should lead
-		to only one futurdevelopementtype. Calling this function returns the a new FMTtransition that does not allow multiple
-		FMTdevelopementpath. It select the path where the area proportion is the higher.
+		A transition can lead to multiple FMTdevelopmentpath but for cell basesd models the FMTtransition should lead
+		to only one futurdevelopmenttype. Calling this function returns the a new FMTtransition that does not allow multiple
+		FMTdevelopmentpath. It select the path where the area proportion is the higher.
 		*/
         FMTtransition single() const;
 		// DocString: FMTtransition::getname
@@ -105,7 +105,7 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		Returns the FMTfork pointer for which the FMTdevelopment (dev) can be disturbed based on a given FMTyields section (ylds).
 		Looking at every possible fork returns only the first usefull fork.
 		*/
-        const FMTfork* getFork(const Core::FMTdevelopment& developement, const FMTyields& ylds) const;
+        const FMTfork* getFork(const Core::FMTdevelopment& development, const FMTyields& ylds) const;
 		// DocString: FMTtransition::getStaticThemes
 		/**
 		Using a list of (themes) this function returns a subset of the theme list for which their's no attribute change
@@ -120,8 +120,8 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		// DocString: FMTtransition::ageAfter
 		/**
 		For GCBM a GCBMtransition is described by the age of the stand after the disturbance of the stand. Using a
-		vector of FMTdevelopement (devs) this functions return the average age after disturbances optained calculating the
-		return age for each FMTdevelopement in the list.
+		vector of FMTdevelopment (devs) this functions return the average age after disturbances optained calculating the
+		return age for each FMTdevelopment in the list.
 		*/
 		unsigned int ageAfter(const std::vector<FMTdevelopment>& devs,
 			const FMTaction& action,
@@ -130,13 +130,13 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		// DocString: FMTtransition::mainTarget
 		/**
 		Again for GCBM each GCBMtransition needs to have only one possible mask target. So this function returns 
-		the most targeted FMTmask across the developements list (devs) based on a given yields section (ylds).
+		the most targeted FMTmask across the developments list (devs) based on a given yields section (ylds).
 		*/
         FMTmask mainTarget(const std::vector<FMTdevelopment>& devs,
                             const FMTyields& ylds) const;
 		// DocString: FMTtransition::attributeTargets
 		/**
-		This function classify the FMTdevelopement list (devs) by FMTmask key based on a FMTyields section (ylds). 
+		This function classify the FMTdevelopment list (devs) by FMTmask key based on a FMTyields section (ylds). 
 		The returned map key is an FMTmask string separed by "-"
 		*/
 		std::map<std::string, std::vector<FMTdevelopment>> attributeTargets(const std::vector<FMTdevelopment>& devs,

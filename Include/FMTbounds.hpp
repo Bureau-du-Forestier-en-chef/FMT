@@ -333,8 +333,8 @@ class FMTEXPORT FMTlockbounds : public FMTbounds<int>
 class FMTyields;
 // DocString: FMTspec
 /**
-FMTspec represent the specifications of a group of FMTdevelopement. You can characterize a
-FMTdevelopement by it's period (FMTperbounds), it's age (FMTagebounds), it's lock (FMTlockbounds) and 
+FMTspec represent the specifications of a group of FMTdevelopment. You can characterize a
+FMTdevelopment by it's period (FMTperbounds), it's age (FMTagebounds), it's lock (FMTlockbounds) and 
 it's yields (yieldbounds). Bounds are "bounds" lower and upper bounds:
 Example: 1>=age<=10, 5>=period<=20, 0>=lock<=10 and 145<=yield<=700
 */

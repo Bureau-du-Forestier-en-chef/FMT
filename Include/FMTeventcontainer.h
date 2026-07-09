@@ -256,21 +256,21 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         double evaluateSize(const std::vector<bool>& p_actions,
             int p_period,size_t  p_lowerBound, size_t p_upperBound, bool p_testLower) const;
 
-        double getDispertion(const std::vector<bool>& p_actions,
+        double getDispersion(const std::vector<bool>& p_actions,
                             const FMTSpatialGraphs& p_Graphs,
                             int p_themeId,int p_FirstPeriod, 
                             int p_LastPeriod, int p_bound) const;
 
-        double getDispertion(int p_RuleId,
+        double getDispersion(int p_RuleId,
             const FMTSpatialGraphs& p_Graphs,
             int p_themeId, int p_FirstPeriod,
             int p_LastPeriod, int p_bound) const;
 
-        std::vector<FMTeventcontainer::const_iterator> getDispertionConflicts(const std::vector<bool>& p_actions,
+        std::vector<FMTeventcontainer::const_iterator> getDispersionConflicts(const std::vector<bool>& p_actions,
                                                 const FMTSpatialGraphs& p_Graphs,
                                                 int p_themeId,int p_FirstPeriod,
                                                 int p_LastPeriod, int p_bound) const;
-        std::vector<FMTeventcontainer::const_iterator> getDispertionConflicts(int p_RuleId,
+        std::vector<FMTeventcontainer::const_iterator> getDispersionConflicts(int p_RuleId,
                                                             const FMTSpatialGraphs& p_Graphs,
                                                             int p_themeId, int p_FirstPeriod,
                                                             int p_LastPeriod, int p_bound) const;

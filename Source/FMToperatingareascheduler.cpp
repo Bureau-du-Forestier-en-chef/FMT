@@ -578,7 +578,7 @@ namespace Heuristics
 		try {
 			Core::FMToutputnode specifictarget(target);
 			const std::vector<Core::FMTaction>modelactions = model.getactions();
-			//const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> basedescriptors = maingraph.getperiodverticies(maingraph.getFirstActivePeriod());
+			//const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> basedescriptors = maingraph.getperiodvertices(maingraph.getFirstActivePeriod());
 			Core::FMToutputnode areatarget(specifictarget);
 			Core::FMTmask areamask = areatarget.source.getmask();
 			for (const Core::FMTtheme& theme : model.getthemes())
@@ -694,7 +694,7 @@ namespace Heuristics
 					std::map<int, std::vector<int>> neighborsbin;
 					if (opneighbor!= operatingareas.end())
 						{
-						neighborsbin  = operatingareait->getCommonBinairies(*opneighbor);
+						neighborsbin  = operatingareait->getCommonBinaries(*opneighbor);
 						}
 					std::vector<int>constraintindexes;
 					for (std::map<int, std::vector<int>>::const_iterator binit = neighborsbin.begin();binit!=neighborsbin.end();++binit)

@@ -89,14 +89,14 @@ namespace Graph
 			}
 			return removedmemory;
 		}
-		const std::vector<tvdescriptor>& getVerticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
+		const std::vector<tvdescriptor>& getVertices(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
 			const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
 			{
 			return this->getCleanDescriptors(targetnode, actions, themes, exactvecticies);
 			}
-		void setValidVerticies(const Core::FMToutputnode& targetnode,const std::vector<tvdescriptor>& verticies) const
+		void setValidVertices(const Core::FMToutputnode& targetnode,const std::vector<tvdescriptor>& vertices) const
 			{
-			searchtree[targetnode.source] = verticies;
+			searchtree[targetnode.source] = vertices;
 			searchtree[targetnode.source].shrink_to_fit();
 			}
 		void clear()

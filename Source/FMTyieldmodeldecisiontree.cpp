@@ -212,11 +212,11 @@ namespace Core {
 			//const Models::FMTmodel* modelptr = graphinfo->getmodel();
 			std::vector<Core::FMTactualdevelopment>newareas;
 			const Core::FMTmask mask = reference->getSources().begin()->getmask();
-			for (const Core::FMTactualdevelopment& developement : m_modelPtr->getarea())
+			for (const Core::FMTactualdevelopment& development : m_modelPtr->getarea())
 				{
-				if (developement.getmask().isSubsetOf(mask))
+				if (development.getmask().isSubsetOf(mask))
 					{
-					newareas.push_back(developement);
+					newareas.push_back(development);
 					}
 				}
 			

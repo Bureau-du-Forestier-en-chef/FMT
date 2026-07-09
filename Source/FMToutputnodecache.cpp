@@ -192,15 +192,15 @@ namespace Graph
 		}
 
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getVerticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
+	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getVertices(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
 																const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
 		{
 		return this->getCleanDescriptors(targetnode,actions,themes, exactvecticies);
 		}
 
-	void FMToutputnodecache::setValidVerticies(const Core::FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& verticies) const
+	void FMToutputnodecache::setValidVertices(const Core::FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& vertices) const
 		{
-		searchtree[targetnode] = verticies;
+		searchtree[targetnode] = vertices;
 		}
 
 	void FMToutputnodecache::clear()

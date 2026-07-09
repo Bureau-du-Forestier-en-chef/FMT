@@ -56,7 +56,7 @@ void exportHeuristics()
 			"@DocString(FMToperatingarea::setneighbors)")
 		.method("getmask", &Heuristics::FMToperatingarea::getmask,
 			"@DocString(FMToperatingarea::getmask)")
-		.method("getneihgborsperimeter", &Heuristics::FMToperatingarea::getNeihgborsPerimeter,
+		.method("getneihgborsperimeter", &Heuristics::FMToperatingarea::getNeighborsPerimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
 
 	Rcpp::class_<Heuristics::FMToperatingareacluster>("FMToperatingareacluster", "@DocString(FMToperatingareacluster)")

@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include "FMTexceptionhandler.h"
 
-/// The spatial namespace provides classes for spatialy explicit simulation/optimization based on raster files.
+/// The spatial namespace provides classes for spatially explicit simulation/optimization based on raster files.
 namespace Spatial
     {
 	// DocString: FMTlayer

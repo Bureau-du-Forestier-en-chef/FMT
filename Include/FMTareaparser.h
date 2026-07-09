@@ -70,7 +70,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		// DocString: FMTareaparser::readRasters
 		/**
 		Using a complete vector of (themes), a vector of raster files path (data_rasters) each raster represent a theme, an (age) raster file and some optional parameters
-		(agefactor=1.0),(areafactor=0.0001) to multiply with the actualdevelopement age and area and a optional (lock) raster file.
+		(agefactor=1.0),(areafactor=0.0001) to multiply with the actualdevelopment age and area and a optional (lock) raster file.
 		The function generates a FMTforest layer from those rasters files.
 		*/
 		Spatial::FMTforest readRasters(const std::vector<Core::FMTtheme>& themes, const std::vector<std::string>& data_rasters,
@@ -199,7 +199,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 #endif
 		// DocString: FMTareaparser::readVectors
 		/**
-		This function returns a vector of actualdevelopement present in a vector file (data_vectors) using a complete (themes) vector,
+		This function returns a vector of actualdevelopment present in a vector file (data_vectors) using a complete (themes) vector,
 		an age field name (agefield), and area field name (areafield), an age factor (agefactor), and areafactor (areafactor), an optional
 		lock field name (lockfield) and an (minimal_area) which is this minimal size a feature needs to have to be selected.
 		*/

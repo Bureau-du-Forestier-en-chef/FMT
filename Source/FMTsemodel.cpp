@@ -480,7 +480,7 @@ namespace Models
 		return value;
 	}
 
-	void FMTsemodel::doReFactortorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
+	void FMTsemodel::doRefactorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
 	{
 		try {
 			const std::vector<double>& FACTORS = p_SpatialSchedule.getConstraintsFactor();

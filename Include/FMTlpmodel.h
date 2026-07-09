@@ -120,7 +120,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Get the output value of a output for a given period using the solution of the matrix.
 		the map key returned consist of output name
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
-		or developement name if level == FMToutputlevel::developpement, this function can also return the value of
+		or development name if level == FMToutputlevel::developpement, this function can also return the value of
 		a variable output.
 		*/
 		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
@@ -186,7 +186,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 											std::vector<double> tolerances) const;
 		// DocString: FMTlpmodel::getAreaVariabilities
 		/**
-		Sometime it is usefull to know what is the impact on some outputs of changing a set of developements
+		Sometime it is usefull to know what is the impact on some outputs of changing a set of developments
 		of the area of the model for a given global mask. This function uses the globalmasks has target and returns
 		the change in outputs resulting from a variation > 0 or < 0, will generate no map key if infeasible.
 		*/
@@ -293,7 +293,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
 		If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
-		a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
+		a copy of the FMTmodel based on the developments of the FMTgraph of the FMTlpmodel.
 		Need to have a builded graph with a solution to use this function.
 		*/
 		virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
@@ -349,7 +349,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		int _getIndex(const std::vector<Core::FMTconstraint>::const_iterator& p_it) const;
 		// DocString: FMTlpmodel::_setGraphCache
 		/**
-		@brief reserve memory for verticies in the graph.
+		@brief reserve memory for vertices in the graph.
 		@param[in] p_noLength if true wont use the length of the actual model (base guess).
 		*/
 		void _setGraphCache(bool p_noLength = false);
@@ -461,7 +461,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		When the erasePeriod function is called the matrix size is shrinked and the variables/constraints indexes have
 		to be updated. This function update the indexes of all the FMTconstraints of the elements
-		and also the FMTdevelopement constraints and variables of in the graph and delete those variables and constraints
+		and also the FMTdevelopment constraints and variables of in the graph and delete those variables and constraints
 		from the solverinterface matrix.
 		*/
 		bool updateMatrixNGraph(bool updategraph = true);

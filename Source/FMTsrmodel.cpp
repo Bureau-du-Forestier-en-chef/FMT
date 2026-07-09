@@ -78,7 +78,7 @@ namespace Models
 				const double* columnsupperbounds = solver.getColUpper();
 				const double* columnslowerbounds = solver.getColLower();
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it, itend;
-				for (boost::tie(it, itend) = m_graph->getperiodverticies(period); it != itend; ++it)
+				for (boost::tie(it, itend) = m_graph->getperiodvertices(period); it != itend; ++it)
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& vertex_descriptor = *it;
 					const std::map<int, int>variables = m_graph->getoutvariables(vertex_descriptor);
@@ -113,7 +113,7 @@ namespace Models
 				std::vector<int>variable_index;
 				std::vector<double>bounds;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it, itend;
-				for (boost::tie(it, itend) = m_graph->getperiodverticies(period); it != itend; ++it)
+				for (boost::tie(it, itend) = m_graph->getperiodvertices(period); it != itend; ++it)
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = *it;
 					std::map<int, int>variables = m_graph->getoutvariables(vertex_descriptor);
@@ -176,7 +176,7 @@ namespace Models
 				boost::unordered_map<int,double> varproportions;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				const bool typeII = (getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					if (typeII&&m_graph->isNoTransfer(*vertex_iterator, 1))//Dont need to set to 0 global growth variable.
 						{
@@ -255,7 +255,7 @@ namespace Models
 				boost::unordered_set<Core::FMTdevelopment> processed;
 				//store all out vertex out of variables set to process in queue
 				std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>descriptors;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					//since it's comming from growth and nothing else we know the area
 					if (m_graph->periodstart(*vertex_iterator))//get inperiod
@@ -469,7 +469,7 @@ namespace Models
 				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				const bool typeII = (getparameter(Models::FMTintmodelparameters::MATRIX_TYPE)==2);
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					if (typeII&&m_graph->isNoTransfer(*vertex_iterator,1))//Dont need to set to 0 global growth variable.
 						{
@@ -648,7 +648,7 @@ namespace Models
 								}
 							}
 							else {
-								_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit->first.getname(),
+								_exhandler->raise(Exception::FMTexc::FMTmissingdevelopment, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit->first.getname(),
 									"FMTsrmodel::setsolution", __LINE__, __FILE__);
 								return false;
 							}
@@ -659,7 +659,7 @@ namespace Models
 				boost::unordered_map<Core::FMTdevelopment, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>processed;
 				std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>descriptors;
 				//Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					if (m_graph->periodstart(*vertex_iterator))//get inperiod
 					{
@@ -823,7 +823,7 @@ namespace Models
 				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getDevsSet(period);
 				std::map<int, std::pair<double, double>>bounds;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					const std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
@@ -928,7 +928,7 @@ namespace Models
 								}
 							}
 							else {
-								_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit->first.getname(),
+								_exhandler->raise(Exception::FMTexc::FMTmissingdevelopment, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit->first.getname(),
 									"FMTsrmodel::setsolutionbylp", __LINE__, __FILE__);
 								return false;
 							}
@@ -962,7 +962,7 @@ namespace Models
 
 				if (!solver.isProvenOptimal())
 				{
-					/*for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+					/*for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 					{
 						const std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
@@ -1279,7 +1279,7 @@ namespace Models
 				m_graph->setstats(BUILD_STATS);
 			}
 			else {
-				actives = m_graph->getactiveverticies();
+				actives = m_graph->getactivevertices();
 			}
 		}catch (...)
 		{
@@ -1305,7 +1305,7 @@ namespace Models
 				buildstats = m_graph->buildschedule(*this, actives, schedule);
 			}
 			const int location = static_cast<int>(m_graph->size() - 2);
-			const Graph::FMTgraphstats newstats = this->updateMatrix(m_graph->getperiodverticies(location), buildstats);
+			const Graph::FMTgraphstats newstats = this->updateMatrix(m_graph->getperiodvertices(location), buildstats);
 			m_graph->setstats(newstats);
 		}
 		catch (...)
@@ -1325,7 +1325,7 @@ namespace Models
 		return m_graph->size();
 	}
 
-	void FMTsrmodel::clearGraphDevelopements()
+	void FMTsrmodel::clearGraphDevelopments()
 	{
 		m_graph->clearDevelopments();
 	}
@@ -1420,25 +1420,25 @@ namespace Models
 			{
 				--period;
 			}
-			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodvertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
 				if ((!beforegrowanddeath&&m_graph->periodstart(*vertex_iterator)))
 				{
-					const Core::FMTdevelopment& graphdevelopement = m_graph->getDevelopment(*vertex_iterator);
-					const double areaofdevelopement = m_graph->inarea(*vertex_iterator, modelsolution,-1,true);
-					if (areaofdevelopement > FMT_DBL_TOLERANCE)
+					const Core::FMTdevelopment& graphdevelopment = m_graph->getDevelopment(*vertex_iterator);
+					const double areaofdevelopment = m_graph->inarea(*vertex_iterator, modelsolution,-1,true);
+					if (areaofdevelopment > FMT_DBL_TOLERANCE)
 					{
-						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
+						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopment, areaofdevelopment));
 					}
 				}
 				else if (beforegrowanddeath)
 				{
-					const Core::FMTdevelopment& graphdevelopement = m_graph->getDevelopment(*vertex_iterator);
+					const Core::FMTdevelopment& graphdevelopment = m_graph->getDevelopment(*vertex_iterator);
 					const double indeatharea = m_graph->inarea(*vertex_iterator, modelsolution, deathactionid, true);
-					const double areaofdevelopement = m_graph->outarea(*vertex_iterator, -1, modelsolution) +m_graph->outarea(*vertex_iterator, deathactionid, modelsolution) -indeatharea;
-					if (areaofdevelopement > FMT_DBL_TOLERANCE)
+					const double areaofdevelopment = m_graph->outarea(*vertex_iterator, -1, modelsolution) +m_graph->outarea(*vertex_iterator, deathactionid, modelsolution) -indeatharea;
+					if (areaofdevelopment > FMT_DBL_TOLERANCE)
 					{
-						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
+						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopment, areaofdevelopment));
 					}
 
 				}
@@ -1506,7 +1506,7 @@ namespace Models
 				std::vector<double>bounds;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it, itend;
 
-				for (boost::tie(it, itend) = m_graph->getperiodverticies(period); it != itend; ++it)
+				for (boost::tie(it, itend) = m_graph->getperiodvertices(period); it != itend; ++it)
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = *it;
 					const std::map<int, int>variables = m_graph->getoutvariables(vertex_descriptor);

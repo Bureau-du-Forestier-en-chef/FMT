@@ -53,7 +53,7 @@ void exportHeuristics()
 			"@DocString(FMToperatingarea::setneighbors)")
 		.def("getmask", &Heuristics::FMToperatingarea::getmask,
 			"@DocString(FMToperatingarea::getmask)")
-		.def("getneihgborsperimeter", &Heuristics::FMToperatingarea::getNeihgborsPerimeter,
+		.def("getneihgborsperimeter", &Heuristics::FMToperatingarea::getNeighborsPerimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
 
 	definePyList<Heuristics::FMToperatingarea>();

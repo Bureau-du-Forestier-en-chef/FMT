@@ -137,11 +137,11 @@ namespace Models
 		Check if FMTdevelopment area are bounded on there primal variables for a given period.
 		*/
 		bool isPeriodBounded(int period) const;
-		// DocString: FMTsrmodel::clearGraphDevelopements
+		// DocString: FMTsrmodel::clearGraphDevelopments
 		/**
 		Clear developments location by periods in the graph
 		*/
-		void clearGraphDevelopements();
+		void clearGraphDevelopments();
 		// DocString: FMTsrmodel::clearGraphCache
 		/**
 		Clear the node caching in the graph
@@ -170,23 +170,23 @@ namespace Models
 		// DocString: FMTsrmodel::getSolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
-		If with lock is true then the schedule will contain locked developement.
+		If with lock is true then the schedule will contain locked development.
 		*/
 		Core::FMTschedule getSolution(int period, bool withlock = false) const final;
 		// DocString: FMTsrmodel::getScheduleProportions
 		/**
-		Same as getSolution but the schedule area represent the percentage of area of the developement.
+		Same as getSolution but the schedule area represent the percentage of area of the development.
 		*/
 		Core::FMTschedule getScheduleProportions(int period, bool withlock) const;
 		// DocString: FMTsrmodel::getStats
 		/**
-		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
+		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/vertices...)
 		@return the full stats 
 		*/
 		Graph::FMTgraphstats getStats() const;
 		// DocString: FMTsrmodel::getStats
 		/**
-		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
+		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/vertices...)
 		@param[in] p_Subset the mask subset
 		@return the graph stats for the graph.
 		*/
@@ -195,7 +195,7 @@ namespace Models
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
 		If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
-		a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
+		a copy of the FMTmodel based on the developments of the FMTgraph of the FMTlpmodel.
 		Need to have a builded graph with a solution to use this function.
 		*/
 		virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
@@ -204,14 +204,14 @@ namespace Models
 		Get the output value of a output for a given period using the solution of the matrix.
 		the map key returned consist of output name
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
-		or developement name if level == FMToutputlevel::developpement
+		or development name if level == FMToutputlevel::developpement
 		*/
 		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		#if defined FMTWITHR
 		// DocString: FMTsrmodel::getOutputsDataFrame
 		/**
-		Returns a dataframe filled up with outputs from first period to last period at the developement level.
+		Returns a dataframe filled up with outputs from first period to last period at the development level.
 		For multiple outputs.
 		*/
 		Rcpp::DataFrame getOutputsDataFrame(const std::vector<Core::FMToutput>& outputsdata, int firstPeriod, int lastPeriod) const;
@@ -236,7 +236,7 @@ namespace Models
 		/**
 		This function returns an area for a given period for a FMTsrmodel.
 		If period = 0 the area is the same has FMTmodel::getarea().
-		For period > 0 the area returned is the FMTdevelopement of the graph
+		For period > 0 the area returned is the FMTdevelopment of the graph
 		that can be (actual of futur) existing at the beginning of the period.
 		Need to have a builded graph with a solution to use this function.
 		*/
@@ -310,7 +310,7 @@ namespace Models
 		bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
 		// DocString: FMTsrmodel::getGraphStats
 		/**
-		Return the statistics of the actual graph (number of cols,rows,edges,verticies)
+		Return the statistics of the actual graph (number of cols,rows,edges,vertices)
 		*/
 		Graph::FMTgraphstats getGraphStats() const;
 		// DocString: FMTsrmodel::getRotations
@@ -368,7 +368,7 @@ namespace Models
 		// DocString: FMTsrmodel::updateMatrix
 		/**
 		During a call to build period after the graph has been updated with nes developments type the solverinterface matrix
-		need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
+		need to be updated. Variables and constraints related to each of those new developments will be added to the matrix.
 		So area transfer row and natural growth plus action variables.
 		*/
 		Graph::FMTgraphstats updateMatrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
@@ -385,7 +385,7 @@ namespace Models
 		void postsolveGraph(const FMTmodel& originalbasemodel);
 		// DocString: FMTsrmodel::getActives
 		/**
-		@brief If the graph is not initialize then initialise the graph based on the area else return the actives verticies.
+		@brief If the graph is not initialize then initialise the graph based on the area else return the actives vertices.
 		@return a queue of actives vertices of the graph.
 		*/
 		std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> getActives();

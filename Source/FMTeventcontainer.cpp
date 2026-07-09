@@ -808,7 +808,7 @@ namespace Spatial
 		return value;
 	}
 
-	double FMTeventcontainer::getDispertion(
+	double FMTeventcontainer::getDispersion(
 		const std::vector<bool>& p_actions, 
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId,
@@ -824,7 +824,7 @@ namespace Spatial
 		return total;
 	}
 
-	double FMTeventcontainer::getDispertion(int p_RuleId,
+	double FMTeventcontainer::getDispersion(int p_RuleId,
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId, int p_FirstPeriod,
 		int p_LastPeriod, int p_bound) const
@@ -841,7 +841,7 @@ namespace Spatial
 
 
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getDispertionConflicts(
+	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getDispersionConflicts(
 		const std::vector<bool>& p_actions,
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId,
@@ -862,7 +862,7 @@ namespace Spatial
 		return  conflicts;
 	}
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getDispertionConflicts(int p_RuleId,
+	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getDispersionConflicts(int p_RuleId,
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId, int p_FirstPeriod,
 		int p_LastPeriod, int p_bound) const

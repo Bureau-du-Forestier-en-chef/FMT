@@ -252,7 +252,7 @@ void exportModel()
 		.def("setsolutionbylp", &Models::FMTsrmodel::setSolutionByLp,
 			setsolutionbylp_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolutionbylp)"))
 		//.def("getOutput", &Models::FMTsrmodel::getOutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsrmodel::getOutput)"))
-		.def("cleargraphdevelopements", &Models::FMTsrmodel::clearGraphDevelopements,
+		.def("cleargraphdevelopements", &Models::FMTsrmodel::clearGraphDevelopments,
 			"@DocString(FMTsrmodel::cleargraphdevelopements)")
 		.def("getstats", &Models::FMTsrmodel::getStats,
 			"@DocString(FMTsrmodel::getstats)")
