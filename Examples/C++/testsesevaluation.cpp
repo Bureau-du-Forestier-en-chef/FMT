@@ -45,22 +45,22 @@ int main(int argc, char* argv[])
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	if (optimizationmodel.doplanning(true))
+	if (optimizationmodel.doPlanning(true))
 	{
 		std::cout << "OBJECTIVE VALUE " << optimizationmodel.getObjValue() << "\n";
 		Models::FMTsesmodel simmodel(optimizationmodel);
 		std::vector<Core::FMTtransition>newtransitions;
-		for (const Core::FMTtransition& transition : simmodel.gettransitions())
+		for (const Core::FMTtransition& transition : simmodel.getTransitions())
 		{
 			newtransitions.push_back(transition.single());
 		}
-		simmodel.settransitions(newtransitions);
+		simmodel.setTransitions(newtransitions);
 		Parser::FMTareaparser areaparser;
 		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
-		simmodel.setinitialmapping(forest);
+		simmodel.setInitialMapping(forest);
 		for (int period = 1; period <= length; ++period)
 		{
-			simmodel.GreedyReferenceBuild(optimizationmodel.getsolution(period),
+			simmodel.greedyReferenceBuild(optimizationmodel.getSolution(period),
 				100,
 				0,
 				0.1);
@@ -68,9 +68,9 @@ int main(int argc, char* argv[])
 			size_t i = 0;
 			for (const Core::FMTconstraint& constraint : BASE_CONSTRAINTS)
 			{
-				if (constraint.isspatial())
+				if (constraint.isSpatial())
 				{
-				if (simmodel.GetConstraintEvaluation(i) > 0)
+				if (simmodel.getConstraintEvaluation(i) > 0)
 					{
 					std::cout << std::string(constraint) << "\n";
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
@@ -79,16 +79,16 @@ int main(int argc, char* argv[])
 				
 				double lower = 0;
 				double upper = 0;
-				constraint.getbounds(lower, upper);
+				constraint.getBounds(lower, upper);
 				if (lower>0 && lower < std::numeric_limits<double>::max())
 				{
 					Core::FMTconstraint bindingconstraint(constraint);
 					lower += 10000000000;
-					bindingconstraint.setrhs(lower,upper);
+					bindingconstraint.setRhs(lower,upper);
 					std::vector<Core::FMTconstraint>Constraints = BASE_CONSTRAINTS;
 					Constraints.push_back(bindingconstraint);
 					simmodel.setconstraints(Constraints);
-					const double penalty = simmodel.GetConstraintEvaluation(Constraints.size()-1);
+					const double penalty = simmodel.getConstraintEvaluation(Constraints.size()-1);
 					if (penalty == 0)
 					{
 						std::cout << std::string(bindingconstraint) << "\n";

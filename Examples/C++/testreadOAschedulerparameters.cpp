@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     const std::string scenario = std::string(argv[3]);
     const std::string fichierParam = std::string(argv[1]);
     Parser::FMTmodelparser modelparser;
-    modelparser.setdefaultexceptionhandler();
+    modelparser.setDefaultExceptionHandler();
     std::vector<Exception::FMTexc>errors;
     errors.push_back(Exception::FMTexc::FMTmissingyield);
     errors.push_back(Exception::FMTexc::FMToutput_missing_operator);

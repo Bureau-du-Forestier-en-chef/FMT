@@ -124,7 +124,7 @@ namespace Wrapper
 		{
 		try {
 			if (cachingswitch&&
-				this->getgraphsize() > 0 &&
+				this->getGraphSize() > 0 &&
 				outputcache.empty()&&
 				generalcache.empty()&&
 				maskcache.empty())
@@ -185,7 +185,7 @@ namespace Wrapper
 						}
 						++attributeid; 
 					}
-				return areaparser.writeforesttheme(
+				return areaparser.writeForestTheme(
 					*map,
 					theme,
 					jpeglocation,
@@ -272,7 +272,7 @@ namespace Wrapper
 
 	}
 
-	void  FMTmodelcache::setlength(const int& period)
+	void  FMTmodelcache::setLength(const int& period)
 	{
 		try {
 			setparameter(Models::FMTintmodelparameters::LENGTH, period);
@@ -285,14 +285,14 @@ namespace Wrapper
 	}
 
 
-	void FMTmodelcache::setsolution(const std::vector<Core::FMTschedule>& schedules) 
+	void FMTmodelcache::setSolution(const std::vector<Core::FMTschedule>& schedules) 
 	{
 		try {
 			setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 			Exception::FMTExcelExceptionHandler* excelhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(_exhandler.get());
-			excelhandler->resetbuildexceptions();//Reset the exceptions
-			doplanning(false, schedules);
-			all_exceptions = excelhandler->getbuildexceptions();//get the exceptions generated
+			excelhandler->resetBuildExceptions();//Reset the exceptions
+			doPlanning(false, schedules);
+			all_exceptions = excelhandler->getBuildExceptions();//get the exceptions generated
 		}
 		catch (...)
 		{
@@ -304,9 +304,9 @@ namespace Wrapper
 	{
 		try {
 			Exception::FMTExcelExceptionHandler* excelhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(_exhandler.get());
-			excelhandler->resetbuildexceptions();//Reset the exceptions
-			const bool optimal = doplanning(solve);
-			all_exceptions = excelhandler->getbuildexceptions();//get the exceptions generated
+			excelhandler->resetBuildExceptions();//Reset the exceptions
+			const bool optimal = doPlanning(solve);
+			all_exceptions = excelhandler->getBuildExceptions();//get the exceptions generated
 			return (!solve || optimal);
 		}
 		catch (...)
@@ -428,15 +428,15 @@ namespace Wrapper
 						
 						if (localtheme)
 						{
-							if (localtheme->isattribute(attribute) ||
-								localtheme->isaggregate(attribute) ||
+							if (localtheme->isAttribute(attribute) ||
+								localtheme->isAggregate(attribute) ||
 								attribute == "?")
 							{
 								localMask.set(*localtheme, attribute);
 							}
 							//attributes names is a vector of string that the string can be empty ... so we cannot search in it
 							else if (!attribute.empty()) {
-								const std::vector<std::string>& attributenames = localtheme->getattributenames();
+								const std::vector<std::string>& attributenames = localtheme->getAttributeNames();
 								std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
 								if (ait == attributenames.end())//raise
 								{
@@ -457,14 +457,14 @@ namespace Wrapper
 						{
 						subset = localMask;
 						}else {
-						subset = subset.getunion(localMask);
+						subset = subset.getUnion(localMask);
 						std::string final_value;
 						for (const std::string& VAL : composition)
 							{
 							final_value += VAL + " ";
 							}
 						final_value.pop_back();
-						subset = Core::FMTmask(final_value, subset.getbitsetreference());
+						subset = Core::FMTmask(final_value, subset.getBitsetReference());
 						}
 					
 					}
@@ -485,7 +485,7 @@ namespace Wrapper
 	
 
 
-	Core::FMToutput FMTmodelcache::getoutput(const std::string& outputname, const Core::FMTmask& subset) const
+	Core::FMToutput FMTmodelcache::getOutput(const std::string& outputname, const Core::FMTmask& subset) const
 	{
 		try {
 			std::unordered_map<std::string,size_t>::const_iterator outit = outputsmap.find(outputname);
@@ -500,7 +500,7 @@ namespace Wrapper
 					const std::string cachekey = outputname +"_"+ std::string(subset);
 					if (!getfromoutputcache(cachekey, output))
 						{
-						output = outputs.at(outit->second).intersectwithmask(subset, themes);
+						output = outputs.at(outit->second).intersectWithMask(subset, themes);
 						writetooutputcache(cachekey, output);
 						}
 					return output;
@@ -517,10 +517,10 @@ namespace Wrapper
 		double value = 0;
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard(*mtx); // guard pour le multi thread
-			value = Models::FMTlpmodel::getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
+			value = Models::FMTlpmodel::getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
 
 			// 1-faire des prints de calcul pour voir lorsqu'il rentre versus lorsqu'il sort? Voir si des threads se pile sur les pieds
-			// 2-à chaque fois qu'il y a un appel  de getoutput, detruire et reconstruire le model pour empêcher que la cache suit
+			// 2-à chaque fois qu'il y a un appel  de getOutput, detruire et reconstruire le model pour empêcher que la cache suit
 		}
 		catch (...)
 		{
@@ -575,7 +575,7 @@ namespace Wrapper
 			const Core::FMTmask mask_filter = themeSelectionToMask(filter);
 			if (!mask_filter.empty())
 				{
-				for (const Core::FMTdevelopment* dev : this->getnochoice(mask_filter))
+				for (const Core::FMTdevelopment* dev : this->getNoChoice(mask_filter))
 					{
 					masks.push_back(std::string(*dev));
 					}
@@ -620,7 +620,7 @@ namespace Wrapper
 			if (!allscheme.empty())
 				{
 				Parser::FMTareaparser areaparser;
-				const std::vector<Heuristics::FMToperatingareascheme> Ioop = areaparser.getschemeneighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
+				const std::vector<Heuristics::FMToperatingareascheme> Ioop = areaparser.getSchemeNeighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
 				for (const Heuristics::FMToperatingareascheme& scheme : Ioop)
 					{
 					allmasks.push_back(OAcache->size());
@@ -637,15 +637,15 @@ namespace Wrapper
 				double notrespected = 0.0;
 				for (const std::string& thselection : selected)
 					{
-					if (getyield(yieldname, thselection, 0, period)>0)
+					if (getYield(yieldname, thselection, 0, period)>0)
 					{
-						for (const Core::FMTmask& neighbor : OAcache->at(allmasks.at(oaid)).getneighbors())
+						for (const Core::FMTmask& neighbor : OAcache->at(allmasks.at(oaid)).getNeighbors())
 						{
 							if (masklocation.find(neighbor)!= masklocation.end())
 							{
 								const std::string nselection = selected.at(masklocation.at(neighbor));
-								if (!got_output || ((getyield(yieldname, nselection, 0, period) > 0) &&
-									(getvalue(output, nselection, period) >= ratio)))
+								if (!got_output || ((getYield(yieldname, nselection, 0, period) > 0) &&
+									(getValue(output, nselection, period) >= ratio)))
 								{
 									++notrespected;
 									break;
@@ -667,7 +667,7 @@ namespace Wrapper
 	}
 
 
-	double  FMTmodelcache::getvalue(const std::string& outputname, const std::string& themeselection, const int& period) const
+	double  FMTmodelcache::getValue(const std::string& outputname, const std::string& themeselection, const int& period) const
 	{
 		double value = 0;
 		try {
@@ -676,7 +676,7 @@ namespace Wrapper
 			if (!incache)
 			{
 				const Core::FMTmask subset = themeSelectionToMask(themeselection);
-				const Core::FMToutput theoutput = getoutput(outputname, subset);
+				const Core::FMToutput theoutput = getOutput(outputname, subset);
 				if (!outputs.empty() &&
 					outputsmap.find(outputname) != outputsmap.end() &&
 					!theoutput.empty())
@@ -710,7 +710,7 @@ namespace Wrapper
 
 	}
 
-	double FMTmodelcache::getyield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const
+	double FMTmodelcache::getYield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const
 	{
 		double value = 0;
 		try {
@@ -726,7 +726,7 @@ namespace Wrapper
 				{
 					const Core::FMTdevelopment adev(subset, age, 0, period);
 					const Graph::FMTgraphvertextoyield graph_info = getGraphVertexToYield();
-					const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest(&graph_info);
+					const Core::FMTyieldrequest yieldrequest = adev.getYieldRequest(&graph_info);
 					value = getyieldfrommodel(yieldrequest, yieldname);
 				}
 				settocache(cachekey, value);
@@ -739,18 +739,18 @@ namespace Wrapper
 		return value;
 	}
 
-	std::vector<std::string> FMTmodelcache::getattributes(const int& themeid, const std::string& value,const bool& aggregates) const
+	std::vector<std::string> FMTmodelcache::getAttributes(const int& themeid, const std::string& value,const bool& aggregates) const
 	{
 		std::vector<std::string> attributes;
 		try {
 			if (!themes.empty() &&
 				(static_cast<size_t>(themeid) < themes.size()))
 				{
-				if (themes.at(themeid).isattribute(value) || themes.at(themeid).isaggregate(value))
+				if (themes.at(themeid).isAttribute(value) || themes.at(themeid).isAggregate(value))
 					{
-					attributes = themes.at(themeid).getattributes(value,aggregates);
+					attributes = themes.at(themeid).getAttributes(value,aggregates);
 				}else {
-					attributes =  themes.at(themeid).getattributes("?",aggregates);
+					attributes =  themes.at(themeid).getAttributes("?",aggregates);
 					}
 				}
 		}catch (...)
@@ -767,14 +767,14 @@ namespace Wrapper
 			if (!themes.empty() &&
 				(static_cast<size_t>(themeid) < themes.size()))
 			{
-				std::vector<std::string>basenames = themes.at(themeid).getattributenames();
+				std::vector<std::string>basenames = themes.at(themeid).getAttributeNames();
 				std::vector<std::string>references;
-				if (themes.at(themeid).isattribute(value))
+				if (themes.at(themeid).isAttribute(value))
 				{
-					references = themes.at(themeid).getattributes(value);
+					references = themes.at(themeid).getAttributes(value);
 				}
 				else {
-					references = themes.at(themeid).getattributes("?");
+					references = themes.at(themeid).getAttributes("?");
 				}
 				for (const std::string& refvalue : references)
 					{
@@ -957,7 +957,7 @@ namespace Wrapper
 		return constraintsname;
 	}
 
-	std::vector<std::string>FMTmodelcache::getbuildexceptions(const int& exceptionid) const
+	std::vector<std::string>FMTmodelcache::getBuildExceptions(const int& exceptionid) const
 		{
 		std::vector<std::string>values;
 		try {
@@ -1035,11 +1035,11 @@ namespace Wrapper
 	}
 
 
-	std::vector<int> FMTmodelcache::getgraphstats() const
+	std::vector<int> FMTmodelcache::getGraphStats() const
 	{
 		std::vector<int>stats;
 		try {
-			Graph::FMTgraphstats graphstats = FMTsrmodel::getgraphstats();
+			Graph::FMTgraphstats graphstats = FMTsrmodel::getGraphStats();
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
 			stats.push_back(graphstats.vertices);

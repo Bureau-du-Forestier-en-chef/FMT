@@ -42,13 +42,13 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	modelparser.seterrorstowarnings(errors);
     const std::vector<std::string>scenarios(1, scenario);
     const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
    
 		Models::FMTsolverinterface solverinterface = Models::FMTsolverinterface::CLP;
-        if(Version::FMTversion::hasfeature("MOSEK"))
+        if(Version::FMTversion::hasFeature("MOSEK"))
         {
 			solverinterface = Models::FMTsolverinterface::MOSEK;
         }
@@ -63,10 +63,10 @@ int main(int argc, char *argv[])
 		constraints.erase(constraints.begin());
 		for (const Core::FMTconstraint& constraint : constraints)
 		{
-			optimizationmodel.setconstraint(constraint);
+			optimizationmodel.setConstraint(constraint);
 		}
-		optimizationmodel.setobjective(objective);
-		if (optimizationmodel.initialsolve())
+		optimizationmodel.setObjective(objective);
+		if (optimizationmodel.initialSolve())
 			{
                 const double modelobjvalue = optimizationmodel.getObjValue();
                 if(roundobjectivevalue(objvalue) != roundobjectivevalue(modelobjvalue)) 

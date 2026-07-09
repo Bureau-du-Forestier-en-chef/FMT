@@ -29,7 +29,7 @@ int main()
 	{
 #if defined FMTWITHGDAL && defined FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		#ifdef FMTWITHONNXR
 			
@@ -61,45 +61,45 @@ int main()
 		constraints.erase(constraints.begin());
 		for (const Core::FMTconstraint& constraint : constraints)
 		{
-			optimizationmodel.setconstraint(constraint);
+			optimizationmodel.setConstraint(constraint);
 		}
-		optimizationmodel.setobjective(objective);
-		if (optimizationmodel.initialsolve())
+		optimizationmodel.setObjective(objective);
+		if (optimizationmodel.initialSolve())
 			{
 				Models::FMTsesmodel simulationmodel(optimizationmodel);
 				std::vector<Core::FMTtransition> strans;
-				for (const auto& tran : simulationmodel.gettransitions())
+				for (const auto& tran : simulationmodel.getTransitions())
 					{
 						strans.push_back(tran.single());
 					}
-				simulationmodel.settransitions(strans);
+				simulationmodel.setTransitions(strans);
 				Parser::FMTareaparser areaparser;
 				//areaparser.passinobject(modelparser);
 				Spatial::FMTforest initialforestmap=areaparser.vectormaptoFMTforest(maplocation,380,optimizationmodel.getthemes(),agefield,areafield,1,0.0001,lockfield,0.0,"",false);
-				simulationmodel.setinitialmapping(initialforestmap);
+				simulationmodel.setInitialMapping(initialforestmap);
 				for (size_t period = 1; period <= 5; ++period)
 				{
-					for (const auto& t : simulationmodel.GreedyReferenceBuild(optimizationmodel.getsolution(period),10))
+					for (const auto& t : simulationmodel.greedyReferenceBuild(optimizationmodel.getSolution(period),10))
 					{
 						Logging::FMTdefaultlogger() << t.first << " " << t.second << " ";
 					}
 					Logging::FMTdefaultlogger() << "\n";
 				}
-				Spatial::FMTSpatialSchedule spatialschedule = simulationmodel.getspschedule();	
+				Spatial::FMTSpatialSchedule spatialschedule = simulationmodel.getSpSchedule();	
 				std::vector<std::vector<std::vector<std::pair<std::string,double>>>> allpredictors;
 				std::set<std::string> allprednames;
 				for (size_t period = 1; period <= 5; ++period)
 				{
 					std::vector<std::vector<std::pair<std::string,double>>> periodpredictors;
-					std::vector<std::vector<Graph::FMTpredictor>> predictors = areaparser.writepredictors(outdir,spatialschedule,yieldsforpredictors,simulationmodel,period);
+					std::vector<std::vector<Graph::FMTpredictor>> predictors = areaparser.writePredictors(outdir,spatialschedule,yieldsforpredictors,simulationmodel,period);
 					for (const auto& predictorslist : predictors)
 					{
 						for (const auto& predict : predictorslist)
 						{
 							std::vector<std::pair<std::string,double>> graphpred;
 							size_t nameid = 0;
-							const std::vector<double> predvals = predict.getpredictors();
-							for (const std::string& predname : predict.getpredictornames(yieldsforpredictors))
+							const std::vector<double> predvals = predict.getPredictors();
+							for (const std::string& predname : predict.getPredictorNames(yieldsforpredictors))
 							{
 								graphpred.push_back(std::pair<std::string,double>(predname,predvals.at(nameid)));
 								allprednames.insert(predname);

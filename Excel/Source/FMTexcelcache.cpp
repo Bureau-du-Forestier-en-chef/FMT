@@ -61,8 +61,8 @@ namespace Wrapper
 		std::string out;
 		if (log != nullptr)
 		{
-			out = log->getprintout();
-			log->clearout();
+			out = log->getPrintOut();
+			log->clearOut();
 		}
 		System::String^ str2 = gcnew System::String(out.c_str());
 		return str2;
@@ -166,7 +166,7 @@ namespace Wrapper
 			msclr::interop::marshal_context context;
 			const std::string pfile = context.marshal_as<std::string>(primarylocation);
 			const std::string sfile = context.marshal_as<std::string>(templatefolder);
-			const std::vector<Models::FMTmodel> allmodels = parser->readtemplates(pfile, sfile);
+			const std::vector<Models::FMTmodel> allmodels = parser->readTemplates(pfile, sfile);
 			const std::string mappath = getmappath(pfile);
 			for (const Models::FMTmodel& model :  allmodels)
 			{
@@ -176,7 +176,7 @@ namespace Wrapper
 					System::String^ modelname = gcnew System::String(name.c_str());
 					const std::string naming = formatforcache(primarylocation, modelname);
 					(*models)[naming] = FMTmodelcache(model, mappath);
-					(*models)[naming].setlength(length);
+					(*models)[naming].setLength(length);
 					if ((*models)[naming].buildnsolve(solve))
 					{
 						scenarios->Add(modelname);
@@ -209,7 +209,7 @@ namespace Wrapper
 				const std::vector<Models::FMTmodel> allmodels = parser->readproject(pfile, scenarios);
 				const std::string mappath = getmappath(pfile);
 				(*models)[naming] = FMTmodelcache(allmodels.at(0), mappath);
-				(*models)[naming].setlength(length);
+				(*models)[naming].setLength(length);
 				if ((*models)[naming].buildnsolve(false))
 					{
 					return true;
@@ -221,7 +221,7 @@ namespace Wrapper
 				Logging::FMTExcelLogger* log = emptycache.getlogger();
 				if (log != nullptr)
 				{
-					log->clearout();
+					log->clearOut();
 				}
 			}
 		}
@@ -252,17 +252,17 @@ namespace Wrapper
 					period = std::max(period, schedule.getperiod());
 				}
 				(*models)[naming] = FMTmodelcache(allmodels.at(0), mappath);
-				(*models)[naming].setlength(period);
+				(*models)[naming].setLength(period);
 				//(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
 				//Removed from constructor because of the copy after it's created, the solver started ....
-				models->at(naming).setsolution(allschedule.at(0));
+				models->at(naming).setSolution(allschedule.at(0));
 				return true;
 			}else{
 				FMTmodelcache emptycache;
 				Logging::FMTExcelLogger* log = emptycache.getlogger();
 				if (log != nullptr)
 				{
-					log->clearout();
+					log->clearOut();
 				}
 			}
 		}catch (...)
@@ -342,7 +342,7 @@ namespace Wrapper
 				msclr::interop::marshal_context context;
 				const std::string outname = context.marshal_as<std::string>(outputname);
 				const std::string selection = context.marshal_as<std::string>(themeselection);
-				value = mit->second.getvalue(outname, selection, period);
+				value = mit->second.getValue(outname, selection, period);
 				}
 		}catch (...)
 		{
@@ -365,7 +365,7 @@ namespace Wrapper
 				msclr::interop::marshal_context context;
 				const std::string yieldnamec = context.marshal_as<std::string>(yieldname);
 				const std::string selection = context.marshal_as<std::string>(themeselection);
-				value = mit->second.getyield(yieldnamec, selection, age, period);
+				value = mit->second.getYield(yieldnamec, selection, age, period);
 			}
 			
 		}
@@ -387,7 +387,7 @@ namespace Wrapper
 				{
 				msclr::interop::marshal_context context;
 				const std::string valueof = context.marshal_as<std::string>(value);
-				for (const std::string& value : mit->second.getattributes(themeid, valueof,aggregates))
+				for (const std::string& value : mit->second.getAttributes(themeid, valueof,aggregates))
 					{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
@@ -408,7 +408,7 @@ namespace Wrapper
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(formatforcache(primaryname, scenario));
 			if (mit != models->end())
 			{
-				for (const std::string& value : mit->second.getbuildexceptions(exception))
+				for (const std::string& value : mit->second.getBuildExceptions(exception))
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
@@ -560,7 +560,7 @@ namespace Wrapper
 		return list;
 	}
 
-	System::Collections::Generic::List<int>^ FMTexcelcache::getGraphStatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection)
+	System::Collections::Generic::List<int>^ FMTexcelcache::getgraphstatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection)
 	{
 		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
 		try {
@@ -592,7 +592,7 @@ namespace Wrapper
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
-				for (const int& value : mit->second.getgraphstats())
+				for (const int& value : mit->second.getGraphStats())
 				{
 					list->Add(value);
 				}

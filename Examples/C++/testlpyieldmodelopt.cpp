@@ -18,7 +18,7 @@
 				const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 				Models::FMTlpmodel optimizationmodel(models.at(0),Models::FMTsolverinterface::CLP);
 				optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
-				optimizationmodel.doplanning(true);
+				optimizationmodel.doPlanning(true);
 		#endif
 	#endif  
 	return 0;

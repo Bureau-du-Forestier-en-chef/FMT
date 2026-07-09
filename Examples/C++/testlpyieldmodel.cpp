@@ -20,7 +20,7 @@
 			const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 			Models::FMTlpmodel optimizationmodel(models.at(0),Models::FMTsolverinterface::CLP);
 			optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
-			if (optimizationmodel.doplanning(true))
+			if (optimizationmodel.doPlanning(true))
 				{
 				for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 					{
@@ -28,7 +28,7 @@
 						{
 						for (int period = 1; period < 11; ++period)
 							{
-							Logging::FMTdefaultlogger() << "output value "<< output.getname() <<" " << optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
+							Logging::FMTdefaultlogger() << "output value "<< output.getname() <<" " << optimizationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
 							}
 						//break;
 						}

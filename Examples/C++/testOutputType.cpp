@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	//const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 	//const std::string primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	const std::string outdir = "../../tests/testOutputType/";
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);

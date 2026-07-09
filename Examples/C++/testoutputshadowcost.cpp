@@ -43,21 +43,21 @@ int main()
 		constraints.erase(constraints.begin());
 		for (const Core::FMTconstraint& constraint : constraints)
 		{
-			optimizationmodel.setconstraint(constraint);
+			optimizationmodel.setConstraint(constraint);
 		}
-		const Graph::FMTgraphstats BASE_STATS = optimizationmodel.setobjective(objective);
-		if (optimizationmodel.initialsolve())
+		const Graph::FMTgraphstats BASE_STATS = optimizationmodel.setObjective(objective);
+		if (optimizationmodel.initialSolve())
 		{
 			for (const Core::FMToutput& output : outputtotest)
 			{
-			const double returnedvalue = optimizationmodel.getoutput(output,1,Core::FMToutputlevel::totalonly).at("Total");
+			const double returnedvalue = optimizationmodel.getOutput(output,1,Core::FMToutputlevel::totalonly).at("Total");
 			Logging::FMTdefaultlogger() << "Base value of " + output.getname() << " " << returnedvalue << " ";
 			}
 		Logging::FMTdefaultlogger() << "\n";
 		Logging::FMTdefaultlogger() << "BASE ROWS OF " << BASE_STATS.rows << "\n";
 		for (const Core::FMTconstraint& constraint : constraints)
 			{
-			const Graph::FMTgraphstats STATS = optimizationmodel.eraseconstraint(constraint);
+			const Graph::FMTgraphstats STATS = optimizationmodel.eraseConstraint(constraint);
 			Logging::FMTdefaultlogger() << "ROWS Of "<< STATS.rows <<" "<< std::string(constraint) << "\n";
 			if (!optimizationmodel.resolve())
 				{
@@ -66,11 +66,11 @@ int main()
 				}
 			for (const Core::FMToutput& output : outputtotest)
 				{
-				const double returnedvalue = optimizationmodel.getoutput(output, 1, Core::FMToutputlevel::totalonly).at("Total");
+				const double returnedvalue = optimizationmodel.getOutput(output, 1, Core::FMToutputlevel::totalonly).at("Total");
 				Logging::FMTdefaultlogger() << std::string(constraint) + " value of " + output.getname() << " " << returnedvalue << " ";
 				}
 			Logging::FMTdefaultlogger() << "\n";
-			optimizationmodel.setconstraint(constraint);
+			optimizationmodel.setConstraint(constraint);
 			if (!optimizationmodel.resolve())
 				{
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve when setting " + constraint.getname(),

@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	}
 	//std::string primarylocation = std::string("../../../../Examples/Models/TWD_land/TWD_land.pri"); // changer ici pour pointer sur un modèle avec le bug
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	const std::string outdir = "../../tests/testreadwriteproject/";
 	//const std::string outdir = "D:/FMT/build/release/tests/testreadwriteproject/";
 	
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 	for (const Models::FMTmodel& model: READ_MODELS)
 	{
 		Models::FMTlpmodel lpmodel(model,Models::FMTsolverinterface::CLP);
-		lpmodel.doplanning(true);
+		lpmodel.doPlanning(true);
 		modelparser.writetoproject(outdir + "test.pri", lpmodel);
 	}
 	scenarios.erase(scenarios.begin());

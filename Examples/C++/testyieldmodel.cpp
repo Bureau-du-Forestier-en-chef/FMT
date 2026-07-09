@@ -38,11 +38,11 @@ int main()
 	Models::FMTsesmodel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
 	std::vector<Core::FMTtransition> strans;
-	for (const auto& tran : simulationmodel.gettransitions())
+	for (const auto& tran : simulationmodel.getTransitions())
 	{
 		strans.push_back(tran.single());
 	}
-	simulationmodel.settransitions(strans);
+	simulationmodel.setTransitions(strans);
 	std::vector<Core::FMTconstraint>newconstraints;
 	size_t id = 0;
 	for (const Core::FMTconstraint& cnt : simulationmodel.getconstraints())
@@ -62,12 +62,12 @@ int main()
 	{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 	}
-	Spatial::FMTforest initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
-	simulationmodel.setinitialmapping(initialforestmap);
+	Spatial::FMTforest initialforestmap = areaparser.readRasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
+	simulationmodel.setInitialMapping(initialforestmap);
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
 	{
-		for (const auto& t : simulationmodel.GreedyReferenceBuild(schedules.at(0).at(period), greedysearch))
+		for (const auto& t : simulationmodel.greedyReferenceBuild(schedules.at(0).at(period), greedysearch))
 		{
 			Logging::FMTdefaultlogger() << t.first << " " << t.second << " ";
 		}
@@ -89,7 +89,7 @@ int main()
 	{
 		for (int period = 1; period < 11; ++period)
 		{
-			Logging::FMTdefaultlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
+			Logging::FMTdefaultlogger() << "output value " << output.getname() << " " << simulationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
 		}
 	}
 #endif

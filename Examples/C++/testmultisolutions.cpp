@@ -32,10 +32,10 @@ int main()
 		constraints.erase(constraints.begin());
 		for (const Core::FMTconstraint& constraint : constraints)
 		{
-			optimizationmodel.setconstraint(constraint);
+			optimizationmodel.setConstraint(constraint);
 		}
-		optimizationmodel.setobjective(objective);
-		if (optimizationmodel.initialsolve())
+		optimizationmodel.setObjective(objective);
+		if (optimizationmodel.initialSolve())
 		{
 			std::vector<Core::FMToutput>outputtotest;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
@@ -46,7 +46,7 @@ int main()
 					break;
 					}
 				}
-			optimizationmodel.getvariabilities(outputtotest,1,10);
+			optimizationmodel.getVariabilities(outputtotest,1,10);
 		}
 	
 #endif 

@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
 		std::vector<std::string>scenarios;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
 
 		Parser::FMTmodelparser modelparser;
-		modelparser.setdefaultexceptionhandler();
+		modelparser.setDefaultExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -58,14 +58,14 @@ int main(int argc, char *argv[])
 		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
 		//delparser.write(optimizationmodel, "D:/test/");
-		optimizationmodel.doplanning(false, schedules);
+		optimizationmodel.doPlanning(false, schedules);
 		/*for (size_t period = 1; period <= 6; ++period)
 			{
 			optimizationmodel.buildperiod(schedules.at(period - 1));
 			}
 		for (size_t period = 1; period <= 6; ++period)
 			{
-			optimizationmodel.setsolution(period,schedules.at(period-1), tolerance);
+			optimizationmodel.setSolution(period,schedules.at(period-1), tolerance);
 			}*/
 		if (argc>3)//Got the double for validation!
 			{
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 				if (output.getname() == "OVOLTOTREC")
 					{
 					gotovoltotrec = true;
-					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
+					const double returnedvalue = optimizationmodel.getOutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
 					std::cout << "OVOLTOTREC " +std::to_string(returnedvalue) << "\n";
 					if ((returnedvalue < (ovoltotrecvalue - tolerance)) || (returnedvalue >(ovoltotrecvalue + tolerance)))
 						{

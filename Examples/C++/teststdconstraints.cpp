@@ -14,7 +14,7 @@ int main()
 	{
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
@@ -23,7 +23,7 @@ int main()
 		scenarios.push_back("stdconstraints");
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel lpmodel(models.at(0),Models::FMTsolverinterface::CLP);
-		lpmodel.doplanning(true);
+		lpmodel.doPlanning(true);
 	}else {
 		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

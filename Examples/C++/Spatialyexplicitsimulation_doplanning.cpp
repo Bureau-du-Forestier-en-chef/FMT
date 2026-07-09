@@ -39,20 +39,20 @@ int main()
 	Models::FMTsesmodel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
 	std::vector<Core::FMTtransition> strans;
-	for (const auto& tran : simulationmodel.gettransitions())
+	for (const auto& tran : simulationmodel.getTransitions())
 		{
 			strans.push_back(tran.single());
 		}
-	simulationmodel.settransitions(strans);
+	simulationmodel.setTransitions(strans);
 	Parser::FMTareaparser areaparser;
 	const std::string shpfile = modellocation + "Carte/TWD_land.shp";
 	Spatial::FMTforest initialforestmap = areaparser.vectormaptoFMTforest(shpfile,380,simulationmodel.getthemes(),"AGE","SUPERFICIE", 1, 0.0001);
-	simulationmodel.setinitialmapping(initialforestmap);
+	simulationmodel.setInitialMapping(initialforestmap);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,10);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-	simulationmodel.doplanning(false,schedules.at(0));
+	simulationmodel.doPlanning(false,schedules.at(0));
 	Core::FMToutput spatialoutput;
 	Core::FMToutput sumoutputs;
 	std::vector<Core::FMToutput>outputs;
@@ -67,8 +67,8 @@ int main()
 			sumoutputs = output;
 		}
 	}
-	const double thevalue = simulationmodel.getoutput(sumoutputs,1, Core::FMToutputlevel::totalonly).at("Total");
-	const double globalvalue = simulationmodel.getoutput(spatialoutput, 1, Core::FMToutputlevel::totalonly).at("Total");
+	const double thevalue = simulationmodel.getOutput(sumoutputs,1, Core::FMToutputlevel::totalonly).at("Total");
+	const double globalvalue = simulationmodel.getOutput(spatialoutput, 1, Core::FMToutputlevel::totalonly).at("Total");
 	Logging::FMTdefaultlogger() << "outvalues " << thevalue << "\n";
 	Logging::FMTdefaultlogger() << "outglobalvalues " << globalvalue << "\n";
 	if (thevalue < globalvalue)
@@ -77,8 +77,8 @@ int main()
 			"presolvetest", __LINE__, primarylocation);
 	}
 	mparser.writeresults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
-	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getspschedule();
-	const std::string stats = spatialsolution.getpatchstats(simulationmodel.getactions());
+	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getSpSchedule();
+	const std::string stats = spatialsolution.getPatchStats(simulationmodel.getactions());
 	std::vector<std::string>results;
 	boost::split(results, stats, boost::is_any_of("\n"));
 	for (const std::string& result : results)
@@ -92,13 +92,13 @@ int main()
 			}
 	}
 
-	Logging::FMTdefaultlogger() <<"xsize : "<< spatialsolution.GetXSize() << "\n";
-	Logging::FMTdefaultlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
+	Logging::FMTdefaultlogger() <<"xsize : "<< spatialsolution.getXSize() << "\n";
+	Logging::FMTdefaultlogger() << "ysize : " << spatialsolution.getYSize() << "\n";
 	for (int period = 1; period <= 10; ++period)
 		{
-		for (const std::pair<Spatial::FMTcoordinate,double>& value : spatialsolution.getoutputbycoordinate(simulationmodel, spatialoutput, period))
+		for (const std::pair<Spatial::FMTcoordinate,double>& value : spatialsolution.getOutputByCoordinate(simulationmodel, spatialoutput, period))
 				{
-				Logging::FMTdefaultlogger() << "period: " << period << " X: " << value.first.getx() << " Y: " << value.first.gety() << " value: " << value.second << "\n";
+				Logging::FMTdefaultlogger() << "period: " << period << " X: " << value.first.getX() << " Y: " << value.first.getY() << " value: " << value.second << "\n";
 				}
 		}
 	

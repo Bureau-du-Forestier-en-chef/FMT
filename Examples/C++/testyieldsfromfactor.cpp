@@ -23,7 +23,7 @@ int main()
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	modelparser.seterrorstowarnings(errors);
 	const std::vector<std::string>scenarios(1,"LP");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
@@ -48,17 +48,17 @@ int main()
 	yieldstochange.push_back("VOLUMETOTAL");
 	//Change the Yields...
 	const Core::FMTyields baseyields = optimizationmodel.getyields();
-	const Core::FMTyields lowerboundyields = baseyields.getfromfactor(0.9, yieldstochange);//-10%
-	lowerboundmodel.setyields(lowerboundyields);
-	const Core::FMTyields upperboundyields = baseyields.getfromfactor(1.1, yieldstochange);//+10%
-	upperboundmodel.setyields(upperboundyields);
+	const Core::FMTyields lowerboundyields = baseyields.getFromFactor(0.9, yieldstochange);//-10%
+	lowerboundmodel.setYields(lowerboundyields);
+	const Core::FMTyields upperboundyields = baseyields.getFromFactor(1.1, yieldstochange);//+10%
+	upperboundmodel.setYields(upperboundyields);
 	//Solve all models
-	lowerboundmodel.doplanning(true);
-	upperboundmodel.doplanning(true);
-	optimizationmodel.doplanning(true);
-	const double basevalue = optimizationmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
-	const double lowervalue = lowerboundmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
-	const double uppervalue = upperboundmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
+	lowerboundmodel.doPlanning(true);
+	upperboundmodel.doPlanning(true);
+	optimizationmodel.doPlanning(true);
+	const double basevalue = optimizationmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
+	const double lowervalue = lowerboundmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
+	const double uppervalue = upperboundmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
 	Logging::FMTdefaultlogger() << "LOWER: "<< lowervalue << "BASE: "<< basevalue << "UPPER: "<< uppervalue << "\n";
 	if ((lowervalue>uppervalue)||(basevalue<lowervalue)||(basevalue > uppervalue))
 	{

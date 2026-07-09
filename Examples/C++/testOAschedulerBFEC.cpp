@@ -21,7 +21,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
 	
 	    std::vector<Heuristics::FMToperatingareascheme> opeareas;
 	    bool spatialconstraints = false;
-        std::vector<std::string>operatingareasname = themes.at(numeroTheme-1).getattributes("?",false);
+        std::vector<std::string>operatingareasname = themes.at(numeroTheme-1).getAttributes("?",false);
         for (const auto& OA : operatingareasname)
         {
             if (OA != "NA")
@@ -64,7 +64,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         {
             Parser::FMTareaparser areaParser;
             Logging::FMTdefaultlogger()<<"Lecture des blocs voisins."<<"\n";
-            opeareas = areaParser.getschemeneighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1,nomChampStanlock);
+            opeareas = areaParser.getSchemeNeighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1,nomChampStanlock);
         }
         return opeareas;
 }
@@ -137,8 +137,8 @@ int main(int argc, char *argv[])
                 fichierShp = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/Carte/PC_9949_UA_U08251.shp";
             }
             Parser::FMTmodelparser modelparser;
-            modelparser.setdefaultexceptionhandler(); 
-            modelparser.settasklogger();
+            modelparser.setDefaultExceptionHandler(); 
+            modelparser.setTaskLogger();
             std::vector<Exception::FMTexc>errors;
 		    errors.push_back(Exception::FMTexc::FMTmissingyield);
 		    errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -159,22 +159,22 @@ int main(int argc, char *argv[])
 	        optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
             optimizationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
           
-            const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
-            optimizationmodel.doplanning(true);
+            const int startingperiod = optimizationmodel.getconstraints().at(0).getPeriodLowerBound();
+            optimizationmodel.doPlanning(true);
             const double initialobjectivevalue = optimizationmodel.getObjValue();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
-            std::vector<Heuristics::FMToperatingareascheduler> opareaheuristics = optimizationmodel.getoperatingareaschedulerheuristics(opeareas, nodeofoutput);
-            //opareaheuristics[0].setproportionofset(0.25);
+            std::vector<Heuristics::FMToperatingareascheduler> opareaheuristics = optimizationmodel.getOperatingAreaSchedulerHeuristics(opeareas, nodeofoutput);
+            //opareaheuristics[0].setProportionOfSet(0.25);
 			Heuristics::FMTlpheuristicmthandler handler = Heuristics::FMTlpheuristicmthandler(opareaheuristics, initialobjectivevalue);
-            const double calculatedpropotion = opareaheuristics[0].generateinitialproportionofset();
+            const double calculatedpropotion = opareaheuristics[0].generateInitialProportionOfSet();
             std::cout<< "Initial proportion of set of : " + std::to_string(calculatedpropotion) << "\n";
-            opareaheuristics[0].setproportionofset(calculatedpropotion);
-			size_t bestpos = handler.initialsolve();
-            bestpos = handler.greedysolve(5,10000000);
+            opareaheuristics[0].setProportionOfSet(calculatedpropotion);
+			size_t bestpos = handler.initialSolve();
+            bestpos = handler.greedySolve(5,10000000);
 			const Heuristics::FMToperatingareascheduler bestsolve = opareaheuristics[bestpos];
-            const std::vector<Core::FMTtimeyieldhandler> ythandler = bestsolve.getsolution("YOUVERT");
-            /*for (const auto& out : bestsolve.getlevelsolution("COS", "BFECOPTtata", model.getoutputs().size()))
+            const std::vector<Core::FMTtimeyieldhandler> ythandler = bestsolve.getSolution("YOUVERT");
+            /*for (const auto& out : bestsolve.getLevelSolution("COS", "BFECOPTtata", model.getoutputs().size()))
                 {
                 std::cout << std::string(out) << "\n";
                 }*/
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
             yldparser.write(yields, solutionname);
             //
             Core::FMTyields myields = model.getyields();
-            myields.unshrink(model.getthemes());
+            myields.unShrink(model.getthemes());
             for(const auto& yth : ythandler)
             {   
                 myields.push_front( yth.getmask(),
@@ -200,11 +200,11 @@ int main(int argc, char *argv[])
             }
             myields.update();
             optimizationmodel = Models::FMTlpmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setyields(myields);
+            optimizationmodel.setYields(myields);
             optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
             optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
-            if (optimizationmodel.doplanning(true)) 
+            if (optimizationmodel.doPlanning(true)) 
             {
                 const double objectivevalue = optimizationmodel.getObjValue();
                 const double bfecoptvalue = bestsolve.getObjValue();

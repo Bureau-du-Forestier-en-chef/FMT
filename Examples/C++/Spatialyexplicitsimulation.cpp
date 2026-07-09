@@ -36,11 +36,11 @@ int main()
 	Models::FMTsesmodel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
 	std::vector<Core::FMTtransition> strans;
-	for (const auto& tran : simulationmodel.gettransitions())
+	for (const auto& tran : simulationmodel.getTransitions())
 		{
 			strans.push_back(tran.single());
 		}
-	simulationmodel.settransitions(strans);
+	simulationmodel.setTransitions(strans);
 	Parser::FMTareaparser areaparser;
 	const std::string rastpath = modellocation + "rasters/";
 	const std::string agerast = rastpath + "AGE.tif";
@@ -49,13 +49,13 @@ int main()
 		{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 		}
-	Spatial::FMTforest initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
-	simulationmodel.setinitialmapping(initialforestmap);
+	Spatial::FMTforest initialforestmap = areaparser.readRasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
+	simulationmodel.setInitialMapping(initialforestmap);
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
 		{
 		Core::FMTschedule sche = schedules.at(0).at(period);
-		for (const auto& t : simulationmodel.GreedyReferenceBuild(sche, greedysearch))
+		for (const auto& t : simulationmodel.greedyReferenceBuild(sche, greedysearch))
 			{
 			Logging::FMTdefaultlogger()<< t.first << " " << t.second << " ";
 			}
@@ -69,23 +69,23 @@ int main()
 			spatialoutput = output;
 		}
 	}
-	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getspschedule();
-	Logging::FMTdefaultlogger() << "xsize : " << spatialsolution.GetXSize() << "\n";
-	Logging::FMTdefaultlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
+	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getSpSchedule();
+	Logging::FMTdefaultlogger() << "xsize : " << spatialsolution.getXSize() << "\n";
+	Logging::FMTdefaultlogger() << "ysize : " << spatialsolution.getYSize() << "\n";
 	for (int period = 1; period <=30; ++period)
 		{
-		for (const std::pair<Spatial::FMTcoordinate, double>& value : spatialsolution.getoutputbycoordinate(simulationmodel, spatialoutput, period))
+		for (const std::pair<Spatial::FMTcoordinate, double>& value : spatialsolution.getOutputByCoordinate(simulationmodel, spatialoutput, period))
 				{
-				Logging::FMTdefaultlogger() << "period: " << period << " X: " << value.first.getx() << " Y: " << value.first.gety() << " value: " << value.second << "\n";
+				Logging::FMTdefaultlogger() << "period: " << period << " X: " << value.first.getX() << " Y: " << value.first.getY() << " value: " << value.second << "\n";
 				}
-		Logging::FMTdefaultlogger() << std::to_string(period) << " "<<simulationmodel.getoutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total")  <<"\n";
+		Logging::FMTdefaultlogger() << std::to_string(period) << " "<<simulationmodel.getOutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total")  <<"\n";
 		}
 	const std::vector<Core::FMTaction>actions = simulationmodel.getactions();
 	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getthemes().at(1));
 	Parser::FMTtransitionparser transitionparser;
 	for (int period = 1; period <= 10; ++period)
 		{
-		const std::vector<Core::FMTGCBMtransition>transitions = areaparser.writedisturbances(outdir,
+		const std::vector<Core::FMTGCBMtransition>transitions = areaparser.writeDisturbances(outdir,
 			spatialsolution,
 			actions,
 			growththeme, period);

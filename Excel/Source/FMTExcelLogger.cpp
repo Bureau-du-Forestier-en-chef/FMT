@@ -17,12 +17,12 @@ namespace Logging
 	
 
 	}
-	std::string FMTExcelLogger::getprintout() const
+	std::string FMTExcelLogger::getPrintOut() const
 		{
 		return printout;
 		}
 
-	void FMTExcelLogger::clearout()
+	void FMTExcelLogger::clearOut()
 		{
 		printout.clear();
 		}

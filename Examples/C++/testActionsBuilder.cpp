@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
 		//Models::FMTlpmodel optModel1(MODELS.at(0), Models::FMTsolverinterface::MOSEK);
-		//optModel1.doplanning(false, SCHEDULES);
+		//optModel1.doPlanning(false, SCHEDULES);
 		//Create a addTheme function that add a theme and update all mask taking a vector of string and a default value
 		//Detect Yields
 		//Split Yields
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 		const std::vector<Models::FMTmodel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
 		const std::vector<Core::FMTschedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0);
 		//Models::FMTlpmodel optModel(READMODELS.at(0), Models::FMTsolverinterface::MOSEK);
-		//optModel.doplanning(true);
+		//optModel.doPlanning(true);
 	return 0;
 }
 

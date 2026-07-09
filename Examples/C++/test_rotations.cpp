@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 2);
-		optimizationmodel.doplanning(false);//No solve!
+		optimizationmodel.doPlanning(false);//No solve!
 		std::string fullmask;
 		for (size_t thid = 0; thid < optimizationmodel.getthemes().size(); ++thid)
 		{

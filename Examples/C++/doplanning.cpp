@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		std::string primarylocation;
 		std::string scenario;
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 			objectivevalue = 14406932.651803;
 		}
 		Parser::FMTmodelparser modelparser;
-		//modelparser.setdebugexceptionhandler();
+		//modelparser.setDebugExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
 		//modelparser.write(optimizationmodel, "D:/test/");
-		if (optimizationmodel.doplanning(true)) {
+		if (optimizationmodel.doPlanning(true)) {
 			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
 			//Parser::FMTareaparser arepars;
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 				{
 					for (int period = 1; period < 10; ++period)
 					{
-					const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly);
+					const std::map<std::string, double>outs = optimizationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly);
 					for (const auto& val : outs)
 						{
 						std::cout << val.first << " " << val.second << "\n";
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
 			}
 			*/
 
-			/*for (const auto& solution : optimizationmodel.getsolution(1))
+			/*for (const auto& solution : optimizationmodel.getSolution(1))
 			{
 				for (const auto& val : solution.second)
 				{
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 					std::map<std::string, std::vector<double>>alls;
 					for (int period =1 ; period <=5; ++period)
 						{
-						const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::standard);
+						const std::map<std::string, double>outs = optimizationmodel.getOutput(output, period, Core::FMToutputlevel::standard);
 						for (const auto& val : outs)
 						{
 							if (alls.find(val.first)== alls.end())
@@ -154,9 +154,9 @@ int main(int argc, char* argv[])
 		std::vector<Core::FMTschedule>returnschedule;
 		for (int id = 0; id < length+1;++id)
 		{
-			returnschedule.push_back(optimizationmodel.getsolution(id+1, true));
+			returnschedule.push_back(optimizationmodel.getSolution(id+1, true));
 		}
-		schparser.write(returnschedule, "../../tests/doplanning/schedule.seq");*/
+		schparser.write(returnschedule, "../../tests/doPlanning/schedule.seq");*/
 		std::cout << " Objective: " << int(optimizationmodel.getObjValue())<<"\n";
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 		{

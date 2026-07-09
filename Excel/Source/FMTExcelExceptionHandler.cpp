@@ -26,11 +26,11 @@ namespace Exception
 		setmaxwarningsbeforesilenced(1000);
 		}
 
-	std::unordered_map<int, std::vector<std::string>> FMTExcelExceptionHandler::getbuildexceptions() const
+	std::unordered_map<int, std::vector<std::string>> FMTExcelExceptionHandler::getBuildExceptions() const
 		{
 		return build_exceptions;
 		}
-	void FMTExcelExceptionHandler::resetbuildexceptions()
+	void FMTExcelExceptionHandler::resetBuildExceptions()
 		{
 		build_exceptions.clear();
 		}

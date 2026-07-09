@@ -42,13 +42,13 @@ namespace Wrapper
 		FMTmodelcache& operator = (const FMTmodelcache& rhs);
 		virtual ~FMTmodelcache();
 		FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation);
-		void setlength(const int& period);
-		void setsolution(const std::vector<Core::FMTschedule>& schedules);
+		void setLength(const int& period);
+		void setSolution(const std::vector<Core::FMTschedule>& schedules);
 		bool buildnsolve(bool solve = true);
-		double getvalue(const std::string& outputname, const std::string& themeselection, const int& period) const;
-		double getyield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const;
+		double getValue(const std::string& outputname, const std::string& themeselection, const int& period) const;
+		double getYield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const;
 		bool writejpeg(const size_t& themeid, const std::vector<std::string>attributevalues, const std::string& jpeglocation) const;
-		std::vector<std::string> getattributes(const int& themeid, const std::string& value, const bool& aggregates) const;
+		std::vector<std::string> getAttributes(const int& themeid, const std::string& value, const bool& aggregates) const;
 		std::vector<std::string> getattributesdescription(const int& themeid, const std::string& value) const;
 		std::vector<std::string> getaggregates(const int& themeid) const;
 		std::vector<std::string> getactions(const std::string& filter) const;
@@ -57,12 +57,12 @@ namespace Wrapper
 		std::vector<std::string> getyields() const;
 		std::vector<std::string> getthemes() const;
 		std::vector<std::string> getconstraints(const std::string& output) const;
-		std::vector<std::string> getbuildexceptions(const int& exceptionid) const;
+		std::vector<std::string> getBuildExceptions(const int& exceptionid) const;
 		std::vector<std::string> getnoaction(const std::string& filter) const;
 		std::set<Core::FMTSerie> getRotations(const std::string& themeselection, const std::string& aggregate) const;
 		bool haveSerie(const std::string& p_serie, const std::string& themeselection, const std::string& aggregate) const;
 		std::vector<int> getGraphStatsSubset(const std::string& p_ThemeSelection) const;
-		std::vector<int> getgraphstats() const;
+		std::vector<int> getGraphStats() const;
 		int getperiods() const;
 		Logging::FMTExcelLogger* getlogger();
 		void putlogger(const std::unique_ptr<Logging::FMTlogger>& log);
@@ -95,7 +95,7 @@ namespace Wrapper
 		* @throw invalid mask.
 		* */
 		Core::FMTmask themeSelectionToMask(const std::string& p_themeSelection) const;
-		Core::FMToutput getoutput(const std::string& outputname, const Core::FMTmask& subset) const;
+		Core::FMToutput getOutput(const std::string& outputname, const Core::FMTmask& subset) const;
 		void loadmap() const;
 		std::string getcachekey(const std::string& type,
 			const std::string& outputname, const std::string& themeselection,

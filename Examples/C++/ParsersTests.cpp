@@ -14,7 +14,7 @@
 int main(int argc, char* argv[])
 {
 	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("GDAL"))
+	if (Version::FMTversion().hasFeature("GDAL"))
 	{
 		std::string path;
 		if (argc > 1) {

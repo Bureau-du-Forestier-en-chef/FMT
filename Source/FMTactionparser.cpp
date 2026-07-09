@@ -263,7 +263,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						else if (inseries)
 						{
 							const Core::FMTSerie NEW_SERIE = _GetSerie(line, actions);
-							if (!NEW_SERIE.IsEmpty())
+							if (!NEW_SERIE.isEmpty())
 								{
 								allseries.push_back(NEW_SERIE);
 								}

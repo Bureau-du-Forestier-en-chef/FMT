@@ -15,21 +15,21 @@
 
 bool keepandupdate(Core::FMTspec& spec, const int& updateto)
 {
-	if (spec.emptyperiod())
+	if (spec.emptyPeriod())
 	{
 		return true;
 	}
-	const int lower_length = spec.getperiodlowerbound();
-	const int upper_length = spec.getperiodupperbound();
+	const int lower_length = spec.getPeriodLowerBound();
+	const int upper_length = spec.getPeriodUpperBound();
 	if (!(upper_length <= updateto))//Keep the constraint
 	{
-		const int firstperiod = std::max(1, lower_length - updateto);
-		int lastperiod = upper_length;
-		if (lastperiod != std::numeric_limits<int>::max())
+		const int firstPeriod = std::max(1, lower_length - updateto);
+		int lastPeriod = upper_length;
+		if (lastPeriod != std::numeric_limits<int>::max())
 		{
-			lastperiod -= updateto;
+			lastPeriod -= updateto;
 		}
-		spec.setbounds(Core::FMTperbounds(Core::FMTsection::Optimize, lastperiod, firstperiod));
+		spec.setBounds(Core::FMTperbounds(Core::FMTsection::Optimize, lastPeriod, firstPeriod));
 		return true;
 	}
 	return false;
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";
@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,length);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
-		optimizationmodel.doplanning(true);
+		optimizationmodel.doPlanning(true);
 		const std::vector<Core::FMTactualdevelopment>newarea = optimizationmodel.getarea(updateto);
-		optimizationmodel.setarea(newarea);
+		optimizationmodel.setArea(newarea);
 		std::vector<Core::FMTconstraint>constraints;
 		for (const Core::FMTconstraint& constraint : optimizationmodel.getconstraints())
 			{
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 			}
 		optimizationmodel.setactions(actions);
 		std::vector<Core::FMTtransition>transitions;
-		for (const Core::FMTtransition& transition : optimizationmodel.gettransitions())
+		for (const Core::FMTtransition& transition : optimizationmodel.getTransitions())
 		{
 			Core::FMTtransition newtransition(transition);
 			bool gotone = false;
@@ -116,17 +116,17 @@ int main(int argc, char *argv[])
 				transitions.push_back(newtransition);
 			}
 		}
-		optimizationmodel.settransitions(transitions);
+		optimizationmodel.setTransitions(transitions);
 		Core::FMTyields yields = optimizationmodel.getyields();
 		for (auto& yieldlist : yields)
 		{
-			if (yieldlist.second->gettype() == Core::FMTyldtype::FMTtimeyld)
+			if (yieldlist.second->getType() == Core::FMTyldtype::FMTtimeyld)
 			{
 				Core::FMTtimeyieldhandler* timeyield = dynamic_cast<Core::FMTtimeyieldhandler*>(yieldlist.second.get());
-				const int firstbase = *(timeyield->getbases().begin());
+				const int firstbase = *(timeyield->getBases().begin());
 				int newbase = std::max(0, firstbase - updateto);
 				std::vector<int>bases(1, newbase);
-				for (const std::string& yield : timeyield->getyieldnames())
+				for (const std::string& yield : timeyield->getYieldNames())
 				{
 					Core::FMTdata& values = (*timeyield)[yield];
 					if (firstbase <= updateto)
@@ -139,10 +139,10 @@ int main(int argc, char *argv[])
 						values.data.erase(values.data.begin() + keepfirst, values.data.begin() + (updateto - firstbase)+1);
 					}
 				}
-				timeyield->setbase(bases);
+				timeyield->setBase(bases);
 			}
 		}
-		optimizationmodel.setyields(yields);
+		optimizationmodel.setYields(yields);
 		modelparser.write(optimizationmodel,"../../tests/nonspatialupdate/");
 
 

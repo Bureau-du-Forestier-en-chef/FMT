@@ -82,10 +82,10 @@ int main()
 	double fc4j = 0;
 	for (size_t age = 1 ; age < 50; ++age)
 		{
-		fc6yield.push_base(age);
-		fc4yield.push_base(age);
-		fc6yield.push_data("YVTOT", fc6j);
-		fc4yield.push_data("YVTOT", fc4j);
+		fc6yield.pushBase(age);
+		fc4yield.pushBase(age);
+		fc6yield.pushData("YVTOT", fc6j);
+		fc4yield.pushData("YVTOT", fc4j);
 		fc6j += 10;
 		fc4j += 5;
 		}
@@ -97,7 +97,7 @@ int main()
 	std::vector<Core::FMTaction>actions;
 	actions.push_back(Core::FMTaction("ACT", true, true));
 	Core::FMTspec actionspec;
-	actionspec.addbounds(Core::FMTagebounds(Core::FMTsection::Action,100,3));
+	actionspec.addBounds(Core::FMTagebounds(Core::FMTsection::Action,100,3));
 	actions[0].push_back(Core::FMTmask("? ? ?",themes), actionspec);
 	actions[0].update();
 	//////////////////////////////////////////////////////////
@@ -128,30 +128,30 @@ int main()
 	std::vector<Core::FMTconstraint>constraints;
 	//objective
 	Core::FMTconstraint objective(Core::FMTconstrainttype::FMTMAXMINobjective,outputs.at(0));
-	objective.setlength(1);
+	objective.setLength(1);
 	constraints.push_back(objective);
 	//even flow
 	Core::FMTconstraint evenflow(Core::FMTconstrainttype::FMTevenflow, outputs.at(0));
-	evenflow.setlength(1);
+	evenflow.setLength(1);
 	constraints.push_back(evenflow);
 	///////////////////////////////////////////////////////////
 	//Create Model
 	Models::FMTlpmodel model(Models::FMTmodel(),Models::FMTsolverinterface::MOSEK);
-	model.setname("TEST");
-	model.setthemes(themes);
-	model.setyields(yields);
-	model.setarea(area);
-	model.setlifespan(lifespan);
-	model.settransitions(transitions);
+	model.setName("TEST");
+	model.setThemes(themes);
+	model.setYields(yields);
+	model.setArea(area);
+	model.setLifespan(lifespan);
+	model.setTransitions(transitions);
 	model.setactions(actions);
-	model.setoutputs(outputs);
+	model.setOutputs(outputs);
 	model.setconstraints(constraints);
 	model.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
 	Parser::FMTmodelparser mparser;
 	//Write model
 	mparser.write(model, "../../tests/createmodel/");
 	//Solve model
-	model.doplanning(true);
+	model.doPlanning(true);
 	return 0;
 #endif
 }

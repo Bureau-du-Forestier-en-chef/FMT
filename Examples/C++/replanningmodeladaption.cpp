@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("Globalfire");
 	allscenarios.push_back("Localreplanning");
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
 	global.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly));
 	Parallel::FMTtaskhandler handler(maintaskptr,10);
-	//handler.setquietlogger();
+	//handler.setQuietLogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
 	#endif

@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("Localreplanning");
 	Parser::FMTmodelparser modelparser;
 	Parser::FMTscheduleparser scheduleParser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
 	global.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 10, 10, 0.5, Core::FMToutputlevel::standard, true));
 	Parallel::FMTtaskhandler handler(maintaskptr,10);
-	//handler.setquietlogger();
+	//handler.setQuietLogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("feux");
 	allscenarios.push_back("13_Sc5a_Determin_avsp_Local");
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly));
 	Parallel::FMTtaskhandler handler(maintaskptr,2);
-	//handler.setquietlogger();
+	//handler.setQuietLogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
 	#endif*/

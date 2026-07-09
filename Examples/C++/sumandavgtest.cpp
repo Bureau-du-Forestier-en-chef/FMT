@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	playback.push_back(false);
 	allscenarios.push_back("sumavg");
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	modelparser.seterrorstowarnings(errors);
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
 	Parallel::FMTplanningtask newplanningtask(1,10, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
-	newplanningtask.setkeepmodels();
+	newplanningtask.setKeepModels();
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTschedule>> schedules = modelparser.readschedules(primlocation, models);
 	std::vector<Core::FMToutput>selectedoutputs;
@@ -48,18 +48,18 @@ int main(int argc, char *argv[])
 			}
 		}
 		lpmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
-		lpmodel.setoutputs(selectedoutputs);
+		lpmodel.setOutputs(selectedoutputs);
 		newplanningtask.push_back(lpmodel,schedules.at(modelid));
 		}
 	Parallel::FMTtaskhandler handler(newplanningtask,1);
-	handler.setquietlogger();
+	handler.setQuietLogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
-	const std::vector<const Parallel::FMTplanningtask*> tasks= handler.gettasksfromdynamiccast<Parallel::FMTplanningtask>();
-	const std::vector<const Models::FMTlpmodel*> modelsresults =  tasks.at(0)->getmodelsfromdynamiccast<Models::FMTlpmodel>();
+	const std::vector<const Parallel::FMTplanningtask*> tasks= handler.getTasksFromDynamicCast<Parallel::FMTplanningtask>();
+	const std::vector<const Models::FMTlpmodel*> modelsresults =  tasks.at(0)->getModelsFromDynamicCast<Models::FMTlpmodel>();
 	Logging::FMTdefaultlogger() <<"OBJECTIVE "<< modelsresults.at(0)->getObjValue() << "\n";
-	const double sumvalue = modelsresults.at(0)->getoutput(selectedoutputs.at(1), 5, Core::FMToutputlevel::totalonly).at("Total");
-	const double avgvalue = modelsresults.at(0)->getoutput(selectedoutputs.at(2), 5, Core::FMToutputlevel::totalonly).at("Total");
+	const double sumvalue = modelsresults.at(0)->getOutput(selectedoutputs.at(1), 5, Core::FMToutputlevel::totalonly).at("Total");
+	const double avgvalue = modelsresults.at(0)->getOutput(selectedoutputs.at(2), 5, Core::FMToutputlevel::totalonly).at("Total");
 	if (std::abs(sumvalue-1498.60684)>0.1)
 		{
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value for sum "+std::to_string(sumvalue),

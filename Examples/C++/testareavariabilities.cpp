@@ -32,10 +32,10 @@ int main()
 		constraints.erase(constraints.begin());
 		for (const Core::FMTconstraint& constraint : constraints)
 		{
-			optimizationmodel.setconstraint(constraint);
+			optimizationmodel.setConstraint(constraint);
 		}
-		optimizationmodel.setobjective(objective);
-		if (optimizationmodel.initialsolve())
+		optimizationmodel.setObjective(objective);
+		if (optimizationmodel.initialSolve())
 		{
 			std::vector<Core::FMTmask>globalmasks;
 			const std::vector<Core::FMTtheme>themes = optimizationmodel.getthemes();
@@ -51,8 +51,8 @@ int main()
 					{
 					for (size_t period = 1; period <= 10; ++period)
 						{
-						Logging::FMTdefaultlogger() <<"At period "<<period<< " OLD value is " << newmodel.getoutput(output, 5, Core::FMToutputlevel::totalonly).at("Total") <<
-							"NEW value is " << optimizationmodel.getoutput(output,period, Core::FMToutputlevel::totalonly).at("Total") << "\n";
+						Logging::FMTdefaultlogger() <<"At period "<<period<< " OLD value is " << newmodel.getOutput(output, 5, Core::FMToutputlevel::totalonly).at("Total") <<
+							"NEW value is " << optimizationmodel.getOutput(output,period, Core::FMToutputlevel::totalonly).at("Total") << "\n";
 						}
 					break;
 					}

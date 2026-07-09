@@ -34,10 +34,10 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
             startingperiod);
         for (const auto& op : opeareas) 
         {
-            if (op.getneihgborsperimeter() > 0 || op.getgreenup() > 0)
+            if (op.getneighborsperimeter() > 0 || op.getGreenUp() > 0)
             {
                 Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
-                opeareas = areaParser.getschemeneighbors(
+                opeareas = areaParser.getSchemeNeighbors(
                     opeareas, 
                     themes, 
                     fichierShp, 
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTmodelparser modelparser;
-            modelparser.setdefaultexceptionhandler();
+            modelparser.setDefaultExceptionHandler();
             std::vector<Exception::FMTexc> errors;
             errors.push_back(Exception::FMTexc::FMTmissingyield);
             errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
             optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); 
             // pour gérer les variables négatives
-            //const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
+            //const int startingperiod = optimizationmodel.getconstraints().at(0).getPeriodLowerBound();
             const int startingperiod = optimizationmodel.getparameter(Models::FMTintmodelparameters::UPDATE);
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             Core::FMToutput adm7m;
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
                     9000, 
                     adm7m));//120));
                 Parallel::FMTtaskhandler handler(maintaskptr, 1);
-                handler.settasklogger();
+                handler.setTaskLogger();
                 handler.conccurentrun();
                 maintaskptr->finalize(); // écrit ici le meilleur modèle sur le disque
             }
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
             const std::vector<Core::FMTschedule> schedules = modelparser.readschedules(
                 "../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
             // On regarde si on est capable de relire ce qu'on vient de créer
-            noptimizationmodel.doplanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 
+            noptimizationmodel.doPlanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 
 		#endif 
         return 0;
 	}

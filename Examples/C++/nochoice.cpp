@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
@@ -46,13 +46,13 @@ int main(int argc, char* argv[])
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-		optimizationmodel.doplanning(false);
+		optimizationmodel.doPlanning(false);
 		for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
 			if (output.getname() == outputname)
 				{
-					const Core::FMTmask mask = output.getsources().at(0).getmask();
-					const int size_of_no_choice = optimizationmodel.getnochoice(mask).size();
+					const Core::FMTmask mask = output.getSources().at(0).getmask();
+					const int size_of_no_choice = optimizationmodel.getNoChoice(mask).size();
 					if (size_of_no_choice!=no_action_size)
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",

@@ -17,7 +17,7 @@ int main()
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
         const std::string	primarylocation = modellocation + "TWD_land.pri";
@@ -35,16 +35,16 @@ int main()
 		initialmodel.setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
 		Models::FMTlpmodel optimizationmodel(initialmodel, Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
-		optimizationmodel.doplanning(false,schedules);
+		optimizationmodel.doPlanning(false,schedules);
         std::vector<Core::FMTschedule> lockedproportionscheduled;
 		for (size_t period = 1; period <= static_cast<size_t>(lenght); ++period)
 		{
-			lockedproportionscheduled.push_back(optimizationmodel.getscheduleproportions(period,true));
+			lockedproportionscheduled.push_back(optimizationmodel.getScheduleProportions(period,true));
 		}
 		optimizationmodel = Models::FMTlpmodel(initialmodel, Models::FMTsolverinterface::CLP);
 		// ici on vient changer la section area 
 		#ifdef FMTWITHGDAL
-		const std::vector<Core::FMTactualdevelopment> newarea = areaparser.readvectors(	optimizationmodel.getthemes(),
+		const std::vector<Core::FMTactualdevelopment> newarea = areaparser.readVectors(	optimizationmodel.getthemes(),
 																						modellocation+"Carte/TWD_LAND_forcesolution_modif.shp",
                                    														"AGE","SUPERFICIE", 1.0, 1);
 		#else
@@ -52,14 +52,14 @@ int main()
 		#endif
 		areaparser.write(newarea,testfolderout+"forcemodifshp._area");
 		scheparser.write(lockedproportionscheduled,testfolderout+"lockedandpropos._seq");
-        optimizationmodel.setarea(newarea);
+        optimizationmodel.setArea(newarea);
 		std::vector<Core::FMTschedule> mschedules;
         for (size_t period = 1; period <=  static_cast<size_t>(lenght); ++period)
 		{
 			const Core::FMTschedule periodpropschedule = lockedproportionscheduled.at(period-1);
 			optimizationmodel.buildperiod(periodpropschedule,true);
-			optimizationmodel.forcesolution(period,periodpropschedule);
-			mschedules.push_back(optimizationmodel.getsolution(period,true));
+			optimizationmodel.forceSolution(period,periodpropschedule);
+			mschedules.push_back(optimizationmodel.getSolution(period,true));
 		}
 		scheparser.write(mschedules,testfolderout+"forcemodif._seq");
 		const std::vector<Core::FMTactualdevelopment> aream = optimizationmodel.getarea();
@@ -74,7 +74,7 @@ int main()
 		const std::vector<double> values = {1533.167187, 1710.335763, 1520.664235,1807.036679, 1319.965304, 667.893761};
 		for (size_t period = 1; period <= static_cast<size_t>(lenght); ++period)
 		{
-			const double sum_actions = optimizationmodel.getoutput(*out_it,period,Core::FMToutputlevel::totalonly).at("Total");
+			const double sum_actions = optimizationmodel.getOutput(*out_it,period,Core::FMToutputlevel::totalonly).at("Total");
 			//std::cout<<std::to_string(period)+" "+std::to_string(sum_actions)<<std::endl;
 			if(std::abs(sum_actions-values.at(period-1))>0.001)
 			{

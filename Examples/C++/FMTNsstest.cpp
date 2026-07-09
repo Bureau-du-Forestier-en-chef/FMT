@@ -61,12 +61,12 @@ int main(int argc, char* argv[])
 	std::vector<Core::FMTactualdevelopment>newDevs;
 	for (Core::FMTactualdevelopment dev : NssModel.getarea())
 		{
-		dev.setperiod(PERIOD-1);
+		dev.setPeriod(PERIOD-1);
 		newDevs.push_back(dev);
 		}
-	NssModel.setarea(newDevs);
+	NssModel.setArea(newDevs);
 	NssModel.setparameter(Models::FMTintmodelparameters::LENGTH, LENGTH);
-	NssModel.doplanning(true);
+	NssModel.doPlanning(true);
 	Core::FMToutput sumOutput;
 	for (const Core::FMToutput& output : NssModel.getoutputs())
 	{
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	const double RESULT = NssModel.getoutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
+	const double RESULT = NssModel.getOutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
 	Logging::FMTdefaultlogger() << "VALUE OF "<< RESULT<<" "<< OUTPUT_VALUE << "\n";
 	if (argc == 4 && std::abs(RESULT - OUTPUT_VALUE)>1)
 	{

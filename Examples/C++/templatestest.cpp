@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.seterrorstowarnings(errors);
-		const std::vector<Models::FMTmodel> models = modelparser.readtemplates(primlocation, templatefolder);
+		const std::vector<Models::FMTmodel> models = modelparser.readTemplates(primlocation, templatefolder);
 		if (models.size() < 1)
 			{
 			Exception::FMTfreeexceptionhandler().raise(
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 				: Models::FMTsolverinterface::MOSEK;
 			Models::FMTlpmodel test(models.at(id), solver);
 			test.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-			test.doplanning(true);
+			test.doPlanning(true);
 		}
 	#endif
 	return 0;

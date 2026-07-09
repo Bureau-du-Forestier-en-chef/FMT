@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	modelparser.seterrorstowarnings(errors);
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
@@ -46,12 +46,12 @@ int main(int argc, char *argv[])
 	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,scenario_length);
 	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
-	optimizationmodel.doplanning(true);
+	optimizationmodel.doPlanning(true);
 	Models::FMTlpmodel presolvedoptimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, scenario_length);
 	presolvedoptimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
-	presolvedoptimizationmodel.doplanning(true);
+	presolvedoptimizationmodel.doPlanning(true);
 	const double nopresolve = optimizationmodel.getObjValue();
 	const double presolve = presolvedoptimizationmodel.getObjValue();
 	if (std::abs(nopresolve - presolve) >= 0.1)

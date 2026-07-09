@@ -41,7 +41,7 @@ namespace Testing
 					size_t i = 0;
 					for (int period: periods)
 					{
-						const int OUTPUTVALUE = static_cast<int>(m_cache->getvalue(MODEL, SCENARIO, OUTPUT, THEMENAME, period));
+						const int OUTPUTVALUE = static_cast<int>(m_cache->getValue(MODEL, SCENARIO, OUTPUT, THEMENAME, period));
 						if (OUTPUTVALUE != values[i])
 						{
 							std::cout << OUTPUTVALUE << " != " << values[i] << std::endl;

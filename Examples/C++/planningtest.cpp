@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	}
 
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -88,11 +88,11 @@ int main(int argc, char *argv[])
 			}
 		}
 		lpmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
-		//lpmodel.setoutputs(selectedoutputs);
+		//lpmodel.setOutputs(selectedoutputs);
 		newplanningtask.push_back(lpmodel, schedules.at(modelid), selectedoutputs);
 		}
 	Parallel::FMTtaskhandler handler(newplanningtask, 1);
-	//handler.setquietlogger();
+	//handler.setQuietLogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
 	

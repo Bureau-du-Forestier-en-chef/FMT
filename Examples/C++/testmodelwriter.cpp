@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02751/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Feux_2023_ouest/feux_2023_ouest_V01.pri";
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	const std::string outdir = "../../tests/testmodelwriter/";
 
 	std::vector<Exception::FMTexc> errors;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 	optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 	optmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
-	optmodel.doplanning(true);
+	optmodel.doPlanning(true);
 	//optmodel.writeLP("D:/FMT/build/release/tests/testmodelwriter/strategic");
 	//return 0;
 	modelparser.write(optmodel, outdir);
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH,3);
 	optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 3);
 	optmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	optmodel.doplanning(true);
+	optmodel.doPlanning(true);
 	const double finalobjvalue = optmodel.getObjValue();
 	std::cout << finalobjvalue << " " << initobjvalue << std::endl;
 	//modelparser.write(optmodel, outdir+"other/");

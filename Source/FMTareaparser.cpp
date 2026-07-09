@@ -1869,7 +1869,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 						std::string line;
 						std::map<std::string, int>columns;
 						bool useRETasMAXRET = true;
-						while (getLine(oaparameterfile, line))
+						while (std::getline(oaparameterfile, line))
 						{
 							//std::vector<std::string>splittedline = splitoaparamlines(line);
 							std::vector<std::string>splittedline;

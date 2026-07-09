@@ -24,28 +24,28 @@ int main()
         std::vector<Core::FMTageyieldhandler> newhandlers;
         const std::vector<int> bases = {0,5,10,15,20,25,30};
         std::vector<Core::FMTdevelopment> totest;
-        for (const std::string& forestattributes : themes.at(1).getattributes("?"))
+        for (const std::string& forestattributes : themes.at(1).getAttributes("?"))
         {
             if (forestattributes.find("PEUPLEMENT")==0)
             {
                 const std::string maskstr = "? "+forestattributes+" ?";
                 Core::FMTmask newmask = Core::FMTmask(maskstr,themes);
-                Core::FMTdevelopment newdev = Core::FMTdevelopment();
-                newdev.setlock(0);  
-                newdev.setmask(newmask);
+                Core::FMTdevelopment newDev = Core::FMTdevelopment();
+                newDev.setLock(0);  
+                newDev.setMask(newmask);
                 std::vector<double> newvalues;
                 for (const int& age : bases)
                 {  
-                    newdev.setage(age+5);
-                    Core::FMTyieldrequest yldrequest = newdev.getyieldrequest();
+                    newDev.setAge(age+5);
+                    Core::FMTyieldrequest yldrequest = newDev.getYieldRequest();
                     newvalues.push_back(modifmodel.getyields().get(yldrequest,"VOLUMETOTAL"));
                 }
                 Core::FMTageyieldhandler nhandler(newmask);
-                nhandler.setyieldvalues("VOLUMETOTALNEXTAGE",bases,newvalues);  
+                nhandler.setYieldValues("VOLUMETOTALNEXTAGE",bases,newvalues);  
                 newhandlers.push_back(nhandler);
             }
         }
-        modifmodel.addyieldhandlers(newhandlers);
+        modifmodel.addYieldHandlers(newhandlers);
         Core::FMTyields modifyields = modifmodel.getyields();
         if(modifmodel.getyields().isYld("VOLUMETOTALNEXTAGE"))
         {
@@ -54,10 +54,10 @@ int main()
                 Core::FMTdevelopment devcopy = dev;
                 for (const int& age : bases)
                 {
-                    dev.setage(age);
-                    Core::FMTyieldrequest actualyldrequest = dev.getyieldrequest();
-                    devcopy.setage(age+5);
-                    Core::FMTyieldrequest futuryldrequest = devcopy.getyieldrequest();
+                    dev.setAge(age);
+                    Core::FMTyieldrequest actualyldrequest = dev.getYieldRequest();
+                    devcopy.setAge(age+5);
+                    Core::FMTyieldrequest futuryldrequest = devcopy.getYieldRequest();
                     if(modifyields.get(actualyldrequest,"VOLUMETOTALNEXTAGE")!=modifyields.get(futuryldrequest,"VOLUMETOTAL"))
                     {
                         Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "The yields were not correctly added",

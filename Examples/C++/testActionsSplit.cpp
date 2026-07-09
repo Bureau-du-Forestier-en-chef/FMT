@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 		Optimization1.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
-		Optimization1.doplanning(false, SCHEDULES);
+		Optimization1.doPlanning(false, SCHEDULES);
 		const Models::FMTmodel SPLITTED_MODEL = MODELS.at(0).splitActions(SPLITTED, SPLITTED_MASK);
 		ModelParser.writetoproject(OUTPUT_DIRECTORY + SCENARIO +".pri", SPLITTED_MODEL);
 		if (!SCHEDULES.empty())
@@ -89,17 +89,17 @@ int main(int argc, char* argv[])
 		const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(CARTE)).string();
 		const int SIZE = 2000;
 		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAPm_location, SIZE, Simulation.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
-		Simulation.setinitialmapping(FOREST);
+		Simulation.setInitialMapping(FOREST);
 		std::vector<Core::FMTtransition>NewTransitions;
-		for (const Core::FMTtransition& TRANSITION : Simulation.gettransitions())
+		for (const Core::FMTtransition& TRANSITION : Simulation.getTransitions())
 			{
 			NewTransitions.push_back(TRANSITION.single());
 			}
-		Simulation.settransitions(NewTransitions);
+		Simulation.setTransitions(NewTransitions);
 		Simulation.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		Simulation.FMTmodel::setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 		Simulation.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
-		Simulation.doplanning(true, READSCHEDULE);
+		Simulation.doPlanning(true, READSCHEDULE);
 	}else {
 		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 	}

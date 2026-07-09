@@ -55,9 +55,9 @@ int main(int argc, char *argv[])
 	int repSize = length;
 	//int repSize = 20;
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
-	//modelparser.settasklogger();
-	modelparser.setdefaultlogger();
+	modelparser.setDefaultExceptionHandler();
+	//modelparser.setTaskLogger();
+	modelparser.setDefaultLogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack(); 
 	std::vector<Exception::FMTexc> errors;
@@ -82,10 +82,10 @@ int main(int argc, char *argv[])
 		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
 	#endif
 	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	/*global.setcompresstime(10, 12, 2);
-	global.setcompresstime(12, 14, 3);
-	global.setcompresstime(14, 16, 4);
-	global.setcompresstime(16, 30, 5);*/
+	/*global.setCompressTime(10, 12, 2);
+	global.setCompressTime(12, 14, 3);
+	global.setCompressTime(14, 16, 4);
+	global.setCompressTime(16, 30, 5);*/
 	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
 		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule));
 	Parallel::FMTtaskhandler handler(maintaskptr, n_threads);
-	//handler.setquietlogger();
+	//handler.setQuietLogger();
 
 	handler.ondemandrun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
 	//handler.conccurentrun();

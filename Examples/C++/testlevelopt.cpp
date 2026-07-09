@@ -14,7 +14,7 @@ int main()
 	{
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
@@ -58,10 +58,10 @@ int main()
 			for (const Core::FMTconstraint& constraint : constraints)
 			{
 				const std::string cval = std::string(constraint);
-				optimizationmodel.setconstraint(constraint);
+				optimizationmodel.setConstraint(constraint);
 			}
-			optimizationmodel.setobjective(objective);
-			if (optimizationmodel.initialsolve())
+			optimizationmodel.setObjective(objective);
+			if (optimizationmodel.initialSolve())
 			{
 				const double value = optimizationmodel.getObjValue();
 				if (1 < std::abs(value - objectivevalues.at(scnid)))

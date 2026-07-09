@@ -13,7 +13,7 @@ int main()
 {
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 		const std::string scenario = "landaggregates";
@@ -36,7 +36,7 @@ int main()
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
-		if (optimizationmodel.doplanning(true)) {
+		if (optimizationmodel.doPlanning(true)) {
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
 		}
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)

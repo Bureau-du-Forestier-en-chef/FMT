@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 {
 	Logging::FMTdefaultlogger().logstamp();
 
-	if (Version::FMTversion().hasfeature("GDAL"))
+	if (Version::FMTversion().hasFeature("GDAL"))
 	{
 		std::string primarylocation;
 		std::string scenario;
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 				themesName.push_back(RASTER_LOCATION.string() + "/THEME" + std::to_string(i)+".tif");
 				++i;
 			}
-			forest = areaparser.readrasters(models.at(0).getthemes(),
+			forest = areaparser.readRasters(models.at(0).getthemes(),
 				themesName, RASTER_LOCATION.string() + "/AGE.tif", 1.0, 0.0001, RASTER_LOCATION.string() + "/STANLOCK.tif");
 		}else {
 			boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
@@ -88,22 +88,22 @@ int main(int argc, char* argv[])
 			}
 		//models[0].setparameter(Models::FMTintmodelparameters::SEED, 100);
 		Models::FMTsamodel optimizationmodel(models.at(0));
-		optimizationmodel.setinitialmapping(forest);
-		//optimizationmodel.redirectlogtofile(outputlocation + "/SA.log");
+		optimizationmodel.setInitialMapping(forest);
+		//optimizationmodel.redirectLogToFile(outputlocation + "/SA.log");
 		std::vector<Core::FMTtransition>singletransitions;
-		for (const Core::FMTtransition transition : optimizationmodel.gettransitions())
+		for (const Core::FMTtransition transition : optimizationmodel.getTransitions())
 			{
 			singletransitions.push_back(transition.single());
 			}
-		optimizationmodel.settransitions(singletransitions);
+		optimizationmodel.setTransitions(singletransitions);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 500000);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 3000);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 5000);
 		//optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
 		//optimizationmodel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
-		optimizationmodel.doplanning(true);
-		//optimizationmodel.LogConstraintsInfeasibilities();
+		optimizationmodel.doPlanning(true);
+		//optimizationmodel.logConstraintsInfeasibilities();
 		/*std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())
 		{
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
 		modelparser.writeresults(optimizationmodel, outputs, 1, length, outputlocation, Core::FMToutputlevel::totalonly);
 		for (int period = 1; period <= length; ++period)
 			{
-			areaparser.writedisturbances(outputlocation, optimizationmodel.getspschedule(), optimizationmodel.getactions(), optimizationmodel.getthemes(), period);
+			areaparser.writeDisturbances(outputlocation, optimizationmodel.getSpSchedule(), optimizationmodel.getactions(), optimizationmodel.getthemes(), period);
 			}*/
 		
 	}
