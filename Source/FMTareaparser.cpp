@@ -74,7 +74,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 		try {
 			for (const OGRMultiPolygon& polygons : multipartpolygons)
 			{
-				if (polygons.isEmpty())
+				if (polygons.IsEmpty())
 				{
 					mergedpolygons.push_back(nullptr);
 				}
@@ -412,8 +412,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 			GDALRasterBand* ageband = getBand(agedataset);
 			int nXBlockSize, nYBlockSize;
 			ageband->GetBlockSize(&nXBlockSize, &nYBlockSize);
-			int nXBlocks = (ageband->getXSize() + nXBlockSize - 1) / nXBlockSize;
-			int nYBlocks = (ageband->getYSize() + nYBlockSize - 1) / nYBlockSize;
+			int nXBlocks = (ageband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
+			int nYBlocks = (ageband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
 			int nodata = int(ageband->GetNoDataValue());
 			std::vector<GInt32>agedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
 			std::vector<GInt32>attributedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
@@ -451,8 +451,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 			}
 			//std::map<Spatial::FMTcoordinate, Core::FMTdevelopment>mapping;
 			const std::string projection = agedataset->GetProjectionRef();
-			const unsigned int xsize = ageband->getXSize();
-			const unsigned int ysize = ageband->getYSize();
+			const unsigned int xsize = ageband->GetXSize();
+			const unsigned int ysize = ageband->GetYSize();
 			Spatial::FMTlayer<Core::FMTdevelopment>mapping(pad, xsize, ysize, projection, cellsize);
 			int missing = 0;
 			unsigned int ystack = 0;
@@ -965,8 +965,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 			GDALRasterBand* devidband = getBand(devidds);
 			int nXBlockSize, nYBlockSize;
 			devidband->GetBlockSize(&nXBlockSize, &nYBlockSize);
-			int nXBlocks = (devidband->getXSize() + nXBlockSize - 1) / nXBlockSize;
-			int nYBlocks = (devidband->getYSize() + nYBlockSize - 1) / nYBlockSize;
+			int nXBlocks = (devidband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
+			int nYBlocks = (devidband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
 			int nodata = int(devidband->GetNoDataValue());
 			std::vector<GInt32>iddata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
 			std::vector<double>pad(6);
@@ -1018,8 +1018,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 				ystack += nYValid;
 			}
 			const std::string projection = devidds->GetProjectionRef();
-			const unsigned int xsize = devidband->getXSize();
-			const unsigned int ysize = devidband->getYSize();
+			const unsigned int xsize = devidband->GetXSize();
+			const unsigned int ysize = devidband->GetYSize();
 			actualforest = Spatial::FMTforest(Spatial::FMTlayer<Core::FMTdevelopment>(mapping, pad, xsize, ysize, projection, cellsize));
 			GDALClose(devidds);
 			VSIUnlink(vsi_path.c_str());
@@ -1225,8 +1225,8 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 		try {
 			int nXBlockSize, nYBlockSize;
 			wband->GetBlockSize(&nXBlockSize, &nYBlockSize);
-			int nXBlocks = (wband->getXSize() + nXBlockSize - 1) / nXBlockSize;
-			int nYBlocks = (wband->getYSize() + nYBlockSize - 1) / nYBlockSize;
+			int nXBlocks = (wband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
+			int nYBlocks = (wband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
 			lastwriten = wband->GetNoDataValue();
 			const outT nodata = static_cast<outT>(wband->GetNoDataValue());
 			unsigned int ystack = 0;
@@ -1432,7 +1432,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 						double fullbuffered = 0;
 						std::vector<size_t>neighborsid;
 						std::vector<double>areas;
-						if (polygons.at(opareaindex) && !polygons.at(opareaindex)->isEmpty() && polygons.at(opareaindex)->IsValid())
+						if (polygons.at(opareaindex) && !polygons.at(opareaindex)->IsEmpty() && polygons.at(opareaindex)->IsValid())
 						{
 							OGRGeometry* buffered = (polygons.at(opareaindex)->Buffer(buffersize));
 							for (size_t opareaneighborindex = 0; opareaneighborindex < operatingareas.size(); ++opareaneighborindex)
@@ -1441,7 +1441,7 @@ bool FMTareaparser::_IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 									buffered->Intersects(polygons.at(opareaneighborindex)))
 								{
 									OGRGeometry* intersect = buffered->Intersection(polygons.at(opareaneighborindex));
-									if (intersect || !intersect->isEmpty())
+									if (intersect || !intersect->IsEmpty())
 									{
 										const OGRSurface* area = dynamic_cast<OGRSurface*>(intersect);
 										if (area)

@@ -127,12 +127,12 @@ namespace Core {
 	{
 		std::vector<std::string>   result;
 		std::string                line;
-		std::getLine(str, line);
+		std::getline(str, line);
 
 		std::stringstream          lineStream(line);
 		std::string                cell;
 
-		while (std::getLine(lineStream, cell, ','))
+		while (std::getline(lineStream, cell, ','))
 		{
 			result.push_back(cell);
 		}

@@ -301,12 +301,12 @@ namespace Core {
 				std::vector<double>::const_iterator location;
 				if (value < bound)
 				{
-					location = std::lowerBound(it->second.data.begin(), it->second.data.end(), bound);
+					location = std::lower_bound(it->second.data.begin(), it->second.data.end(), bound);
 				}
 				else if (value > bound)
 				{
 					std::vector<double>::const_iterator startinglocation = it->second.data.begin() + lowerstep;
-					location = std::upperBound(startinglocation, it->second.data.end(), bound);
+					location = std::upper_bound(startinglocation, it->second.data.end(), bound);
 				}
 				locid = std::distance(it->second.data.begin(), location);
 				locid = std::min(locid, (it->second.data.size() - 1));

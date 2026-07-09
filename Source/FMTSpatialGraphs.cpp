@@ -561,7 +561,7 @@ namespace Spatial
 					{
 						int LowestPeriod = CONSTRAINT.getPeriodLowerBound();
 						int UpperPeriod = CONSTRAINT.getPeriodUpperBound();
-						if (p_Graph->second.isEmpty())
+						if (p_Graph->second.IsEmpty())
 						{
 							p_Graph->second.setValuesSize(getModel().constraints.size());
 						}

@@ -1362,7 +1362,7 @@ namespace Models
 			{
 				std::stringstream ss(p_params);
 				std::string line;
-				while (std::getLine(ss, line, '\n'))
+				while (std::getline(ss, line, '\n'))
 				{
 					const size_t SPACE = line.find(' ');
 					const std::string PARAMETER_NAME = line.substr(0, SPACE);
