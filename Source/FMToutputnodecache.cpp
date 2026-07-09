@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -52,13 +52,13 @@ namespace Graph
 		return searchtree.end();
 		}
 
-	void FMToutputnodecache::getactionrebuild(const Core::FMToutputnode& targetnode,
+	void FMToutputnodecache::getActionRebuild(const Core::FMToutputnode& targetnode,
 											const std::vector<Core::FMTaction>& actions,
 											std::vector<FMTvertex_descriptor>& cleaned,
 											bool& exactnode) const
 		{
-		const std::string actionname = targetnode.source.getaction();
-		const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getallaggregates(actions,true);
+		const std::string actionname = targetnode.source.getAction();
+		const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getAllAggregates(actions,true);
 		if (!actionname.empty() && !aggregatesptr.empty()) //so it's a aggregate!
 			{
 			std::map<std::string,std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>>potentials;
@@ -71,7 +71,7 @@ namespace Graph
 				{
 				if (sit->first.isSubsetOf(targetnode,actions))
 					{
-					const std::string nodeaction= sit->first.source.getaction();
+					const std::string nodeaction= sit->first.source.getAction();
 					potentials[nodeaction].push_back(sit);
 					}
 				}
@@ -86,7 +86,7 @@ namespace Graph
 			while (testting!= potentials.begin()->second.end())
 				{
 				size_t attid = 0;
-				std::vector<FMTvertex_descriptor>finalselection((*testting)->second);
+				std::vector<FMTvertex_descriptor>finalSelection((*testting)->second);
 				size_t insertingdone = 1;
 				for (const auto& attribute : potentials)
 					{
@@ -94,9 +94,9 @@ namespace Graph
 						{
 						for (std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator it : potentials.at(attribute.first))
 							{
-							if ((*testting)->first.issamebutdifferentaction(it->first))
+							if ((*testting)->first.isSameButDifferentAction(it->first))
 								{
-								finalselection.insert(finalselection.end(), it->second.begin(), it->second.end());
+								finalSelection.insert(finalSelection.end(), it->second.begin(), it->second.end());
 								++insertingdone;
 								break;
 								}
@@ -108,15 +108,15 @@ namespace Graph
 					}
 				if (insertingdone == potentials.size())
 					{
-					std::sort(finalselection.begin(), finalselection.end());
-					if ((*testting)->first.issamebutdifferentaction(targetnode)) //we got a exact match!!!
+					std::sort(finalSelection.begin(), finalSelection.end());
+					if ((*testting)->first.isSameButDifferentAction(targetnode)) //we got a exact match!!!
 						{
 						exactnode = true;
-						cleaned = finalselection;
+						cleaned = finalSelection;
 					}else {
 						std::vector<FMTvertex_descriptor>intersection;
 						std::set_intersection(cleaned.begin(), cleaned.end(),
-							finalselection.begin(), finalselection.end(), std::inserter(intersection, intersection.begin()));
+							finalSelection.begin(), finalSelection.end(), std::inserter(intersection, intersection.begin()));
 						cleaned = intersection;
 						}
 					}
@@ -127,7 +127,7 @@ namespace Graph
 			}
 		}
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getcleandescriptors(const Core::FMToutputnode& targetnode,
+	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getCleanDescriptors(const Core::FMToutputnode& targetnode,
 																					const std::vector<Core::FMTaction>& actions,
 																					const std::vector<Core::FMTtheme>&themes,
 																					bool& exactnode) const
@@ -143,25 +143,25 @@ namespace Graph
 			{
 			cleaned = parent->second;
 			}
-		getactionrebuild(targetnode, actions, cleaned,exactnode); // should be able to find also exact!!!!!!!!
+		getActionRebuild(targetnode, actions, cleaned,exactnode); // should be able to find also exact!!!!!!!!
 		if (!exact)
 			{
-			std::vector<FMTvertex_descriptor>toremove;
+			std::vector<FMTvertex_descriptor>toRemove;
 			for (std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 				sit != searchtree.rend(); sit++) 
 				{
 					
-					if (targetnode.source.getmask().isnotthemessubset(sit->first.source.getmask(),themes))//deal only with mask
+					if (targetnode.source.getmask().isNotThemesSubset(sit->first.source.getmask(),themes))//deal only with mask
 					{
-						toremove.insert(toremove.end(), sit->second.begin(), sit->second.end());
+						toRemove.insert(toRemove.end(), sit->second.begin(), sit->second.end());
 					}
 				}
-			if (!toremove.empty())
+			if (!toRemove.empty())
 				{
 				std::vector<FMTvertex_descriptor>difference;
-				std::sort(toremove.begin(), toremove.end());
+				std::sort(toRemove.begin(), toRemove.end());
 				std::set_difference(cleaned.begin(), cleaned.end(),
-					toremove.begin(), toremove.end(), std::inserter(difference, difference.begin()));
+					toRemove.begin(), toRemove.end(), std::inserter(difference, difference.begin()));
 				cleaned = difference;
 				}
 			}
@@ -192,13 +192,13 @@ namespace Graph
 		}
 
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getverticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
+	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getVerticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
 																const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
 		{
-		return this->getcleandescriptors(targetnode,actions,themes, exactvecticies);
+		return this->getCleanDescriptors(targetnode,actions,themes, exactvecticies);
 		}
 
-	void FMToutputnodecache::setvalidverticies(const Core::FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& verticies) const
+	void FMToutputnodecache::setValidVerticies(const Core::FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& verticies) const
 		{
 		searchtree[targetnode] = verticies;
 		}

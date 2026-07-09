@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -68,15 +68,15 @@ void exportModel()
 				"@DocString(FMTmodel::getname)")
             .method("getyields",&Models::FMTmodel::getyields,
 				"@DocString(FMTmodel::getyields)")
-			.method("setyields", &Models::FMTmodel::setyields,
+			.method("setyields", &Models::FMTmodel::setYields,
 				"@DocString(FMTmodel::setyields)")
             .method("getarea",&Models::FMTmodel::getarea,
 				"@DocString(FMTmodel::getarea)")
-			.method("setarea", &Models::FMTmodel::setarea,
+			.method("setarea", &Models::FMTmodel::setArea,
 				"@DocString(FMTmodel::setarea)")
             .method("getthemes",&Models::FMTmodel::getthemes,
 				"@DocString(FMTmodel::getthemes)")
-			.method("setthemes", &Models::FMTmodel::setthemes,
+			.method("setthemes", &Models::FMTmodel::setThemes,
 				"@DocString(FMTmodel::setthemes)")
             .method("getactions",&Models::FMTmodel::getactions,
 				"@DocString(FMTmodel::getactions)")
@@ -84,31 +84,31 @@ void exportModel()
 				"@DocString(FMTmodel::setactions)")
 			.method("getoutputs", &Models::FMTmodel::getoutputs, 
 				"@DocString(FMTmodel::getoutputs)")
-			.method("setoutputs", &Models::FMTmodel::setoutputs,
+			.method("setoutputs", &Models::FMTmodel::setOutputs,
 				"@DocString(FMTmodel::setoutputs)")
 			.method("getconstraints", &Models::FMTmodel::getconstraints,
 				"@DocString(FMTmodel::getconstraints)")
 			.method("setconstraints", &Models::FMTmodel::setconstraints,
 				"@DocString(FMTmodel::setconstraints)")
-            .method("gettransitions",&Models::FMTmodel::gettransitions,
+            .method("gettransitions",&Models::FMTmodel::getTransitions,
 				"@DocString(FMTmodel::gettransitions)")
-            .method("settransitions",&Models::FMTmodel::settransitions,
+            .method("settransitions",&Models::FMTmodel::setTransitions,
 				"@DocString(FMTmodel::settransitions)")
-			.method("setname", &Models::FMTmodel::setname,
+			.method("setname", &Models::FMTmodel::setName,
 				"@DocString(FMTmodel::setname)")
-			.method("setareaperiod", &Models::FMTmodel::setareaperiod,
+			.method("setareaperiod", &Models::FMTmodel::setAreaPeriod,
 				"@DocString(FMTmodel::setareaperiod)")
-            .method("getlifespan",&Models::FMTmodel::getlifespan,
+            .method("getlifespan",&Models::FMTmodel::getLifespan,
 				"@DocString(FMTmodel::getlifespan)")
-			.method("setlifespan", &Models::FMTmodel::setlifespan,
+			.method("setlifespan", &Models::FMTmodel::setLifespan,
 				"@DocString(FMTmodel::setlifespan)")
             .method("isValid",&Models::FMTmodel::isValid,
 				"@DocString(FMTmodel::isValid)")
-			.method("getpostsolvefilter", &Models::FMTmodel::getpostsolvefilter,
+			.method("getpostsolvefilter", &Models::FMTmodel::getPostsolveFilter,
 				"@DocString(FMTmodel::getpostsolvefilter)")
-			.method("isoptimal", &Models::FMTmodel::isoptimal,
+			.method("isoptimal", &Models::FMTmodel::isOptimal,
 				"@DocString(FMTmodel::isoptimal)")
-			.method("getobjectivevalue", &Models::FMTmodel::getobjectivevalue,
+			.method("getobjectivevalue", &Models::FMTmodel::getObjectiveValue,
 				"@DocString(FMTmodel::getobjectivevalue)")
 			.method("GetStaticTransitionThemes", &Models::FMTmodel::GetStaticTransitionThemes,
 				"@DocString(FMTmodel::GetStaticTransitionThemes)")
@@ -121,26 +121,26 @@ void exportModel()
 			.method("setdblparameter",
 				static_cast<bool(Models::FMTmodel::*)(const Models::FMTdblmodelparameters&, const double&)>(&Models::FMTmodel::setparameter),
 				"@DocString(Models::FMTmodel::setparameter(const FMTdblmodelparameters,const int))")
-			.method("showparameters",&Models::FMTmodel::showparameters,
+			.method("showparameters",&Models::FMTmodel::showParameters,
 			"@DocString(FMTmodel::showparameters)")
-			.method("doplanning",&Models::FMTmodel::doplanning,
+			.method("doplanning",&Models::FMTmodel::doPlanning,
 				"@DocString(FMTmodel::doplanning)");
 
 	Rcpp::class_<Models::FMTsemodel>("FMTsemodel", "@DocString(FMTsemodel)")
 		.derives<Models::FMTmodel>("FMTmodel")
 		.constructor("@DocString(FMTsemodel())")
 		.constructor<Models::FMTmodel>("@DocString(FMTsemodel(Models::FMTmodel))")
-		.method("getmapping", &Models::FMTsemodel::getmapping,
+		.method("getmapping", &Models::FMTsemodel::getMapping,
 			"@DocString(FMTsemodel::getmapping)")
-		.method("getschedule", &Models::FMTsemodel::getschedule,
+		.method("getschedule", &Models::FMTsemodel::getSchedule,
 			"@DocString(FMTsemodel::getschedule)")
-		.method("getspschedule", &Models::FMTsemodel::getspschedule,
+		.method("getspschedule", &Models::FMTsemodel::getSpSchedule,
 			"@DocString(FMTsemodel::getdisturbances)")
-		.method("setinitialmapping", &Models::FMTsemodel::setinitialmapping,
+		.method("setinitialmapping", &Models::FMTsemodel::setInitialMapping,
 			"@DocString(FMTsemodel::setinitialmapping)")
-		.method("getspatialoutput", &Models::FMTsemodel::getspatialoutput,
+		.method("getspatialoutput", &Models::FMTsemodel::getSpatialOutput,
 			"@DocString(FMTsemodel::getschedule)")
-		.method("getdisturbancestats", &Models::FMTsemodel::getdisturbancestats,
+		.method("getdisturbancestats", &Models::FMTsemodel::getDisturbanceStats,
 			"@DocString(FMTsemodel::getdisturbancestats)");
 
 
@@ -169,19 +169,19 @@ void exportModel()
 		.constructor("@DocString(FMTsrmodel())")
 		.method("buildperiod", &Models::FMTsrmodel::buildperiod,
 			"@DocString(FMTsrmodel::buildperiod)")
-		.method("boundsolution", &Models::FMTsrmodel::boundsolution,
+		.method("boundsolution", &Models::FMTsrmodel::boundSolution,
 			"@DocString(FMTsrmodel::boundsolution)")
-		.method("getsolution", &Models::FMTsrmodel::getsolution,
+		.method("getsolution", &Models::FMTsrmodel::getSolution,
 			"@DocString(FMTsrmodel::getsolution)")
-		.method("setsolution", &Models::FMTsrmodel::setsolution,
+		.method("setsolution", &Models::FMTsrmodel::setSolution,
 			"@DocString(FMTsrmodel::setsolution)")
-		.method("setsolutionbylp", &Models::FMTsrmodel::setsolutionbylp,
+		.method("setsolutionbylp", &Models::FMTsrmodel::setSolutionByLp,
 			"@DocString(FMTsrmodel::setsolutionbylp)")
-		.method("getoutputsdataframe", &Models::FMTsrmodel::getoutputsdataframe,
+		.method("getoutputsdataframe", &Models::FMTsrmodel::getOutputsDataFrame,
 			"@DocString(FMTsrmodel::getoutputsdataframe)")
-		.method("getoutput", &Models::FMTsrmodel::getoutput,
+		.method("getoutput", &Models::FMTsrmodel::getOutput,
 			"@DocString(FMTsrmodel::getoutput)")
-		.method("getstats", &Models::FMTsrmodel::getstats,
+		.method("getstats", &Models::FMTsrmodel::getStats,
 			"@DocString(FMTsrmodel::getstats)");
 
 	Rcpp::class_<Models::FMTnssmodel>("FMTnssmodel", "@DocString(FMTnssmodel)")
@@ -198,27 +198,27 @@ void exportModel()
 		.constructor<Models::FMTmodel, Models::FMTsolverinterface>("@DocString(FMTlpmodel(Models::FMTmodel,Models::FMTsolverinterface))")
 		.constructor("@DocString(FMTlpmodel())")
 		.constructor<Models::FMTlpmodel>("@DocString(FMTlpmodel(const FMTlpmodel&))")
-		.method("setobjective", &Models::FMTlpmodel::setobjective,
+		.method("setobjective", &Models::FMTlpmodel::setObjective,
 			"@DocString(FMTlpmodel::setobjective)")
-		.method("setconstraint", &Models::FMTlpmodel::setconstraint,
+		.method("setconstraint", &Models::FMTlpmodel::setConstraint,
 			"@DocString(FMTlpmodel::setconstraint)")
-		.method("eraseconstraint", &Models::FMTlpmodel::eraseconstraint,
+		.method("eraseconstraint", &Models::FMTlpmodel::eraseConstraint,
 			"@DocString(FMTlpmodel::eraseconstraint)")
-		.method("eraseperiod", &Models::FMTlpmodel::eraseperiod,
+		.method("eraseperiod", &Models::FMTlpmodel::erasePeriod,
 			"@DocString(FMTlpmodel::eraseperiod)")
 		.method("resolve", &Models::FMTlpmodel::resolve,
 			"@DocString(FMTlpmodel::resolve)")
-		.method("initialsolve", &Models::FMTlpmodel::initialsolve,
+		.method("initialsolve", &Models::FMTlpmodel::initialSolve,
 			"@DocString(FMTlpmodel::initialsolve)")
 		.method("eq", &Models::FMTlpmodel::operator ==,
 			"@DocString(FMTlpmodel::operator==)")
 		.method("ne", &Models::FMTlpmodel::operator !=,
 			"@DocString(FMTlpmodel::operator!=)")
-		.method("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getoperatingareaschedulerheuristics,
+		.method("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getOperatingAreaSchedulerHeuristics,
 			"@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)")
-		.method("getvariabilities", &Models::FMTlpmodel::getvariabilities,
+		.method("getvariabilities", &Models::FMTlpmodel::getVariabilities,
 			"@DocString(FMTlpmodel::getvariabilities)")
-		.method("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,
+		.method("getareavariabilities", &Models::FMTlpmodel::getAreaVariabilities,
 			"@DocString(FMTlpmodel::getareavariabilities)")
 		.method("writeLP", &Models::FMTlpmodel::writeLP,
 			"@DocString(FMTlpmodel::writeLP)")
@@ -237,7 +237,7 @@ void exportModel()
 		.derives<Models::FMTsemodel>("FMTmodel")
 		.constructor<Models::FMTmodel>("@DocString(FMTsamodel(FMTmodel))")
 		.constructor("@DocString(FMTsamodel())")
-		.method("initialsolve", &Models::FMTsamodel::initialsolve,
+		.method("initialsolve", &Models::FMTsamodel::initialSolve,
 			"@DocString(FMTsamodel::initialsolve)");
 	
     }

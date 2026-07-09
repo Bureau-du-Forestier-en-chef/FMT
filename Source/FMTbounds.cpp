@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -199,7 +199,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
             }*/
         return true;
         }
-    bool FMTspec::setbounds(const FMTperbounds& bound)
+    bool FMTspec::setBounds(const FMTperbounds& bound)
         {
         return per.add(bound);
         }
@@ -389,11 +389,11 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 		{
 		return per.empty();
 		}
-	int FMTspec::getperiodupperbound() const
+	int FMTspec::getPeriodUpperBound() const
 	{
 		return per.upper;
 	}
-	int FMTspec::getperiodlowerbound() const
+	int FMTspec::getPeriodLowerBound() const
 	{
 		return per.lower;
 	}
@@ -409,11 +409,11 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 
 
 
-	int FMTspec::getageupperbound() const
+	int FMTspec::getAgeUpperBound() const
 		{
 		return age.upper;
 		}
-	int FMTspec::getagelowerbound() const
+	int FMTspec::getAgeLowerBound() const
 		{
 		return age.lower;
 		}

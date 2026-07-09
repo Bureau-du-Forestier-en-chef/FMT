@@ -57,7 +57,7 @@ namespace Graph
 				}
 
 		}
-		void erasenode(const Core::FMToutputnode& node)
+		void eraseNode(const Core::FMToutputnode& node)
 			{
 			searchtree.erase(node.source);
 			}
@@ -67,7 +67,7 @@ namespace Graph
 			return searchtree.find(node.source) != searchtree.end();
 			}
 
-		unsigned long long removelargest()
+		unsigned long long removeLargest()
 		{
 			size_t largestsize = 0;
 			unsigned long long  removedmemory = 0;
@@ -89,12 +89,12 @@ namespace Graph
 			}
 			return removedmemory;
 		}
-		const std::vector<tvdescriptor>& getverticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
+		const std::vector<tvdescriptor>& getVerticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
 			const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
 			{
-			return this->getcleandescriptors(targetnode, actions, themes, exactvecticies);
+			return this->getCleanDescriptors(targetnode, actions, themes, exactvecticies);
 			}
-		void setvalidverticies(const Core::FMToutputnode& targetnode,const std::vector<tvdescriptor>& verticies) const
+		void setValidVerticies(const Core::FMToutputnode& targetnode,const std::vector<tvdescriptor>& verticies) const
 			{
 			searchtree[targetnode.source] = verticies;
 			searchtree[targetnode.source].shrink_to_fit();
@@ -124,7 +124,7 @@ namespace Graph
 			searchtree.insert(rhs.searchtree.begin(), rhs.searchtree.end());
 			}
 
-		void pushtovector(std::vector<tvdescriptor>& refvecs) const
+		void pushToVector(std::vector<tvdescriptor>& refvecs) const
 		{
 			if (beginit!=nullptr)
 			{
@@ -159,7 +159,7 @@ namespace Graph
 		size_t m_reserve;
         typedef typename std::map<Core::FMToutputsource,std::vector<tvdescriptor>>::const_iterator notecacheit;
 		
-		const std::vector<tvdescriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
+		const std::vector<tvdescriptor>& getCleanDescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
 		{
 			exactnode = false;
@@ -178,36 +178,36 @@ namespace Graph
 				cleaned = parent->second;
 			}else {
 				cleaned.reserve(m_reserve);
-				pushtovector(cleaned);
+				pushToVector(cleaned);
 			}
-			getactionrebuild(targetnode, actions, cleaned, exactnode);// , TO_RESERVE); // should be able to find also exact!!!!!!!!
+			getActionRebuild(targetnode, actions, cleaned, exactnode);// , TO_RESERVE); // should be able to find also exact!!!!!!!!
 			if (!exactnode)
 			{
-				std::vector<tvdescriptor>toremove(*m_allocator);
+				std::vector<tvdescriptor>toRemove(*m_allocator);
 				bool gotSomething = false;
 				const Core::FMTmask& targetmask = targetnode.source.getmask();
 				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 					sit != searchtree.rend(); sit++)
 				{
 					const Core::FMTmask& nodemask = sit->first.getmask();
-					if (targetmask.isnotthemessubset(nodemask, themes))//deal only with mask
+					if (targetmask.isNotThemesSubset(nodemask, themes))//deal only with mask
 					{
 						if (!gotSomething)
 							{
-							toremove.reserve(cleaned.size());
+							toRemove.reserve(cleaned.size());
 							}
-						toremove.insert(toremove.end(), sit->second.begin(), sit->second.end());
+						toRemove.insert(toRemove.end(), sit->second.begin(), sit->second.end());
 						gotSomething = true;
 
 					}
 				}
-				if (!toremove.empty())
+				if (!toRemove.empty())
 				{
 					std::vector<tvdescriptor>difference(*m_allocator);
 					difference.reserve(cleaned.size());
-					std::sort(toremove.begin(), toremove.end());
+					std::sort(toRemove.begin(), toRemove.end());
 					std::set_difference(cleaned.begin(), cleaned.end(),
-						toremove.begin(), toremove.end(), std::inserter(difference, difference.begin()));
+						toRemove.begin(), toRemove.end(), std::inserter(difference, difference.begin()));
 					cleaned.swap(difference);
 				}
 			}
@@ -216,13 +216,13 @@ namespace Graph
 			//return (returniterator.first)->second;
 			return cleaned;
 		}
-		void getactionrebuild(const Core::FMToutputnode& targetnode,
+		void getActionRebuild(const Core::FMToutputnode& targetnode,
 			const std::vector<Core::FMTaction>& actions,
 			std::vector<tvdescriptor>& cleaned,
 			bool& exactnode/*, const size_t& p_reserve*/) const
 		{
-			const std::string actionname = targetnode.source.getaction();
-			const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getallaggregates(actions, true);
+			const std::string actionname = targetnode.source.getAction();
+			const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getAllAggregates(actions, true);
 			if (!actionname.empty() && !aggregatesptr.empty()) //so it's a aggregate!
 			{
 				std::map<std::string, std::vector< notecacheit>>potentials;
@@ -237,7 +237,7 @@ namespace Graph
 					if (sit->first.isSubsetOf(targetnode.source, actions) && 
 						(sit->first != targetnode.source))
 					{
-						const std::string nodeaction = sit->first.getaction();
+						const std::string nodeaction = sit->first.getAction();
 						/*if (potentials[nodeaction].capacity() <= (potentials[nodeaction].size() + 1))
 						{
 							std::cout << "problem!/n";
@@ -256,7 +256,7 @@ namespace Graph
 				while (testting != potentials.begin()->second.end())
 				{
 					size_t attid = 0;
-					std::vector<tvdescriptor>finalselection((*testting)->second);
+					std::vector<tvdescriptor>finalSelection((*testting)->second);
 					size_t insertingdone = 1;
 					for (const auto& attribute : potentials)
 					{
@@ -264,9 +264,9 @@ namespace Graph
 						{
 							for (notecacheit it : potentials.at(attribute.first))
 							{
-								if ((*testting)->first.issamebutdifferentaction(it->first))
+								if ((*testting)->first.isSameButDifferentAction(it->first))
 								{
-									finalselection.insert(finalselection.end(), it->second.begin(), it->second.end());
+									finalSelection.insert(finalSelection.end(), it->second.begin(), it->second.end());
 									++insertingdone;
 									break;
 								}
@@ -278,18 +278,18 @@ namespace Graph
 					}
 					if (insertingdone == potentials.size())
 					{
-						std::sort(finalselection.begin(), finalselection.end());
+						std::sort(finalSelection.begin(), finalSelection.end());
 						//Weird fix BF
-						finalselection.erase(std::unique(finalselection.begin(), finalselection.end()),finalselection.end());
-						if ((*testting)->first.issamebutdifferentaction(targetnode.source)) //we got a exact match!!!
+						finalSelection.erase(std::unique(finalSelection.begin(), finalSelection.end()),finalSelection.end());
+						if ((*testting)->first.isSameButDifferentAction(targetnode.source)) //we got a exact match!!!
 						{
 							exactnode = true;
-							cleaned = finalselection;
+							cleaned = finalSelection;
 						}
 						else {
 							std::vector<tvdescriptor>intersection;
 							std::set_intersection(cleaned.begin(), cleaned.end(),
-								finalselection.begin(), finalselection.end(), std::inserter(intersection, intersection.begin()));
+								finalSelection.begin(), finalSelection.end(), std::inserter(intersection, intersection.begin()));
 							cleaned = intersection;
 						}
 					}

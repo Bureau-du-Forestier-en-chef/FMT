@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -108,7 +108,7 @@ FMTserializablematrix::FMTserializablematrix(const std::shared_ptr<OsiSolverInte
 	}
 
 
-void FMTserializablematrix::setmatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const
+void FMTserializablematrix::setMatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const
 	{
 	if (!collb.empty())
 		{
@@ -119,7 +119,7 @@ void FMTserializablematrix::setmatrix(std::shared_ptr<OsiSolverInterface>& solve
 	
 	}
 
-void FMTserializablematrix::getsetmatrixelements(bool loading,
+void FMTserializablematrix::getSetMatrixElements(bool loading,
 	bool& order,
 	double& extragap,
 	double& extramajor,
@@ -187,7 +187,7 @@ void FMTserializablematrix::getsetmatrixelements(bool loading,
 }
 
 
-void FMTserializablematrix::getsetmemberelements(bool loading,
+void FMTserializablematrix::getSetMemberElements(bool loading,
 	std::vector<double>& lcollb,
 	std::vector<double>& lcolub,
 	std::vector<double>& lobj,

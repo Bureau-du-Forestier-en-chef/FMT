@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -128,126 +128,126 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         /*
         Return the period of the last event in the container
         */
-        int lastperiod()const;
-        // DocString: FMTeventcontainer::firstperiod
+        int lastPeriod()const;
+        // DocString: FMTeventcontainer::firstPeriod
         /*
         Return the period of the first event in the container
         */
-        int firstperiod()const;
-        // DocString: FMTeventcontainer::erasecoordinate
+        int firstPeriod()const;
+        // DocString: FMTeventcontainer::eraseCoordinate
         /*
         Erase all coordinate corresponding to coord in events from the period start.
         */
-        //void erasecoordinate(const FMTcoordinate& coord, const int& periodstart);
-		// DocString: FMTeventcontainer::erasecoordinate
+        //void eraseCoordinate(const FMTcoordinate& coord, const int& periodstart);
+		// DocString: FMTeventcontainer::eraseCoordinate
 	   /*
 	   Erase all coordinate corresponding to coord in events from the period start.
 	   */
-		void erasecoordinate(const FMTcoordinate& coord, const int& periodstart,const std::vector<std::vector<bool>>& actionstarget);
-        // DocString: FMTeventcontainer::getbounds(const int&)
+		void eraseCoordinate(const FMTcoordinate& coord, const int& periodstart,const std::vector<std::vector<bool>>& actionstarget);
+        // DocString: FMTeventcontainer::getBounds(const int&)
         /*
         Return a pair of iterator pointing to the first and the last elements in the period
         */
-        std::pair<const_iterator,const_iterator> getbounds(const int& period) const;
-        // DocString: FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&,const FMTbindingspatialaction&)
+        std::pair<const_iterator,const_iterator> getBounds(const int& period) const;
+        // DocString: FMTeventcontainer::addAction(const FMTcoordinate&, const int&, const int&,const FMTbindingspatialaction&)
         /*
         Add an action at coordinate and add to existing event if possible or aggregate events based on binding
         */
-        void addaction (const FMTcoordinate& coord, const int& period,
+        void addAction (const FMTcoordinate& coord, const int& period,
             const int& actionid,const FMTbindingspatialaction& binding, size_t p_GraphFamily);
-		// DocString: FMTeventcontainer::addactions()
+		// DocString: FMTeventcontainer::addActions()
 		/*
 		Add actions at coordinate and add to existing event if possible or aggregate events based on (bindings). 
         (bindings) must be the size of the vector of action in model because we use (actionids) to find the right ones.  
 		*/
-		void addactions(const FMTcoordinate& coord, const int& period, 
+		void addActions(const FMTcoordinate& coord, const int& period, 
             const std::vector<int>& actionids, const std::vector<FMTbindingspatialaction>& bindings, size_t p_GraphFamily);
-        // DocString: FMTeventcontainer::getevents(const int&, const int&)
+        // DocString: FMTeventcontainer::getEvents(const int&, const int&)
         /*
         Get events at specified period with specified action
         */
-        std::vector<const_iterator> getevents(const int& period, const int& action_id) const;
-		// DocString: FMTeventcontainer::getevents(const int&, const int&,const FMTcoordinate&,const FMTcoordinate&)
+        std::vector<const_iterator> getEvents(const int& period, const int& action_id) const;
+		// DocString: FMTeventcontainer::getEvents(const int&, const int&,const FMTcoordinate&,const FMTcoordinate&)
 		/*
 		Get events at specified period with specified action for a minimal and maximalcoordinate.
 		*/
-		std::vector<const_iterator> getevents(const int& period, const int& action_id,
+		std::vector<const_iterator> getEvents(const int& period, const int& action_id,
 			const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const;
-		// DocString: FMTeventcontainer::getmultipleevents()
+		// DocString: FMTeventcontainer::getMultipleEvents()
 		/*
 		Get events at specified period with specified action for a minimal and maximalcoordinate.
 		*/
-		std::vector<std::vector<const_iterator>> getmultipleevents(const int& period, const std::vector<int>& action_ids,
+		std::vector<std::vector<const_iterator>> getMultipleEvents(const int& period, const std::vector<int>& action_ids,
 						const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const;
-        // DocString: FMTeventcontainer::getevents(const int&, const std::vector<int>&)
+        // DocString: FMTeventcontainer::getEvents(const int&, const std::vector<int>&)
         /*
         Get events at specified period with multiple actions id
         */
-        std::vector<const_iterator> getevents(const int& period, const std::vector<int>& actions_id) const;
-		// DocString: FMTeventcontainer::getevents(const int&, const std::vector<bool>&)
+        std::vector<const_iterator> getEvents(const int& period, const std::vector<int>& actions_id) const;
+		// DocString: FMTeventcontainer::getEvents(const int&, const std::vector<bool>&)
 		/*
 		 Get events at specified period is action is used
 		 */
-		std::vector<const_iterator> getevents(const int& period, const std::vector<bool>& actions_used) const;
-		// DocString: FMTeventcontainer::getevents(const int&, const std::vector<bool>&,const FMTcoordinate&, const FMTcoordinate&)
+		std::vector<const_iterator> getEvents(const int& period, const std::vector<bool>& actions_used) const;
+		// DocString: FMTeventcontainer::getEvents(const int&, const std::vector<bool>&,const FMTcoordinate&, const FMTcoordinate&)
 		/*
 		Get events at specified period for multiple (actions_used), between a minimal coordinate and a maximal coordinate.
 		*/
-		std::vector<const_iterator> getevents(const int& period, const std::vector<bool>& actions_used,
+		std::vector<const_iterator> getEvents(const int& period, const std::vector<bool>& actions_used,
 			const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const;
-        // DocString: FMTeventcontainer::getevents(const int&, const FMTcoordinate&)
+        // DocString: FMTeventcontainer::getEvents(const int&, const FMTcoordinate&)
         /*
         ///Get events at specified period with specified coordinates
         */
-        std::vector<const_iterator> getevents(const int& period, const FMTcoordinate& coord) const;
-		// DocString: FMTeventcontainer::getevents(const int&, const FMTcoordinate&)
+        std::vector<const_iterator> getEvents(const int& period, const FMTcoordinate& coord) const;
+		// DocString: FMTeventcontainer::getEvents(const int&, const FMTcoordinate&)
 		/*
 		Get events starting from a period based on a buffer around events returns the events to delete if you remove coord
 		The newevents container is the container containing modified events resulting from erasing the coord. Following a move,
 		get the infeasibility of the erased events, add the infeasibility of the events in the newevents added the this container with erased events.
 		*/
-		FMTeventcontainer geteventstoerase(const int& fromperiod, const std::vector<std::vector<bool>>& actionstarget,
+		FMTeventcontainer getEventsToErase(const int& fromperiod, const std::vector<std::vector<bool>>& actionstarget,
 			const FMTcoordinate& coord,const size_t& buffer,FMTeventcontainer& newevents) const;
-		// DocString: FMTeventcontainer::geteventstoadd
+		// DocString: FMTeventcontainer::getEventsToAdd
 		/*
 		Add the action to the coordinate and return the modified events that infeasibility need to be calculated (removed). The newevents
 		contains the new events to calculated infeasibility you need to delete the vector returned and add the newevents to the container and
 		calculate the infeasibility of those events.
 		*/
-		FMTeventcontainer geteventstoadd(const FMTcoordinate& coord, const int& period, const int& actionid,
+		FMTeventcontainer getEventsToAdd(const FMTcoordinate& coord, const int& period, const int& actionid,
 									const FMTbindingspatialaction& binding, FMTeventcontainer& newevents,
                                     size_t p_GraphFamily) const;
-		// DocString: FMTeventcontainer::getcontainer
+		// DocString: FMTeventcontainer::getContainer
 		/*
 		Get container subset on the interesting coordinates.
 		*/
-		FMTeventcontainer getcontainer(std::vector<FMTcoordinate> coordinates, const int& minperiod, const int& maxperiod, const size_t& buffer) const;
+		FMTeventcontainer getContainer(std::vector<FMTcoordinate> coordinates, const int& minperiod, const int& maxperiod, const size_t& buffer) const;
 
-		// DocString: FMTeventcontainer::addupdate
+		// DocString: FMTeventcontainer::addUpdate
 		/*
 		Update the events container.
 		Used to calculate infeasibility.
 		*/
-		FMTeventcontainer addupdate(const FMTeventcontainer& newevents,const FMTeventcontainer& eventstoremove);
+		FMTeventcontainer addUpdate(const FMTeventcontainer& newevents,const FMTeventcontainer& eventstoremove);
 
-        // DocString: FMTeventcontainer::getevents(const int&, const std::set<FMTcoordinate>&)
+        // DocString: FMTeventcontainer::getEvents(const int&, const std::set<FMTcoordinate>&)
         /*
         ///Get events at specified period with multiple specified coordinates
         */
-        std::vector<const_iterator> getevents(const int& period, const std::set<FMTcoordinate>& territory) const;
-        // DocString: FMTeventcontainer::minimaldistance
+        std::vector<const_iterator> getEvents(const int& period, const std::set<FMTcoordinate>& territory) const;
+        // DocString: FMTeventcontainer::minimalDistance
         /**
         This function is used when we want to verify if the event is within a certain distance from
         other events. If it's not, the specified distance distance+1 is return, else the minimal distance
         is return. It's principally use to calculate penalty for simulated annealing models.
         */
-        double minimaldistance(const FMTevent&,const unsigned int& distancel,const int& period, const std::vector<int>& actionsid) const;
-		// DocString: FMTeventcontainer::minimaldistance
+        double minimalDistance(const FMTevent&,const unsigned int& distancel,const int& period, const std::vector<int>& actionsid) const;
+		// DocString: FMTeventcontainer::minimalDistance
 		/**
 		The function add each distance from the event if the even is within the ditancetoevent for a given period if within = true. If within = false
 		the if the event is not within the distance it will add up the distances.
 		*/
-		double evaluatedistance(const FMTevent&,
+		double evaluateDistance(const FMTevent&,
 			const double& lowerdistancetoevent,
 			const double& upperdistancetoevent,
 			const int& period, const std::vector<bool>& actionsused,
@@ -307,37 +307,37 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         std::set<FMTevent> m_events;
         //Actually not needed
         ///Returns an iterator pointing to the first element in the container which is considered to go after val.
-        const_iterator upper_bound(const int& period) const;
+        const_iterator upperBound(const int& period) const;
         ///Returns an iterator pointing to the first element in the container which is considered to go after val.
-        const_iterator upper_bound(const int& period,const FMTcoordinate& maxxycoord) const;
+        const_iterator upperBound(const int& period,const FMTcoordinate& maxxycoord) const;
         ///Returns an iterator pointing to the first element in the container which is not considered to go before val.
         ///(i.e., either it is equivalent or goes after)
-        const_iterator lower_bound(const int& period) const;
+        const_iterator lowerBound(const int& period) const;
         ///Returns an iterator pointing to the first element in the container which is not considered to go before val.
         ///(i.e., either it is equivalent or goes after)
-        const_iterator lower_bound(const int& period, const FMTcoordinate& minxycoord) const;
+        const_iterator lowerBound(const int& period, const FMTcoordinate& minxycoord) const;
 		///Update the container by erasing a coordinate from the iterators
 		///(i.e., either it is equivalent or goes after)
         ///Now it's splitting automatically if a coord is not within a distance of 1
 		void erase(const FMTcoordinate& coord, const std::vector<const_iterator>& iterators);
-		// DocString: FMTeventcontainer::pushaction
+		// DocString: FMTeventcontainer::pushAction
 		/*
 		Push an action in container
 		*/
-		void pushaction(const std::vector<FMTeventcontainer::const_iterator>& iterators,
+		void pushAction(const std::vector<FMTeventcontainer::const_iterator>& iterators,
 			const FMTcoordinate& coord, const int& period, const int& actionid,
             size_t neighborsize, size_t p_GraphFamily);
-        // DocString: FMTeventcontainer::getaroundevents()
+        // DocString: FMTeventcontainer::getAroundEvents()
 		/*
 		Return iterators to events considerate around based on neighborsize
 		*/
-		std::vector<FMTeventcontainer::const_iterator> getaroundevents(const std::vector<FMTeventcontainer::const_iterator>& iterators,
+		std::vector<FMTeventcontainer::const_iterator> getAroundEvents(const std::vector<FMTeventcontainer::const_iterator>& iterators,
 			const FMTcoordinate& coord, const size_t& neighborsize) const;
 		// DocString: FMTeventcontainer::fastsort
 		/*
 		Sort events by proximity to a coordinate
 		*/
-		void nthelements(std::vector<FMTeventcontainer::const_iterator>& iterators,const FMTcoordinate& coord,const size_t& nelement) const;
+		void nthElements(std::vector<FMTeventcontainer::const_iterator>& iterators,const FMTcoordinate& coord,const size_t& nelement) const;
 
 
         std::vector<BoundingBox> _GetBoundingBoxes(const std::vector<bool>& p_actions, 

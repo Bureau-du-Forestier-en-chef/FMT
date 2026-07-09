@@ -38,7 +38,7 @@ namespace Heuristics
        Models::FMTlpsolver(interfacetype,std::string(), std::string(),"LpHeuristic_"+std::to_string(lseed)),
 		generator(static_cast<unsigned int>(lseed)), seed(lseed), usingsolvercopy(true/*false*/)
         {
-        //this->buildsolverinterface(interfacetype);
+        //this->buildSolverInterface(interfacetype);
         }
 
 	FMTlpheuristic::FMTlpheuristic(Models::FMTlpsolver& basesolve, size_t lseed,bool copysolver):
@@ -49,7 +49,7 @@ namespace Heuristics
 				{
 				FMTlpsolver::operator=(basesolve);
 			}else {
-				FMTlpsolver::passinsolver(basesolve);
+				FMTlpsolver::passInSolver(basesolve);
 				}
 		}catch (...)
 			{
@@ -58,13 +58,13 @@ namespace Heuristics
 		}
 
 
-	void FMTlpheuristic::setgeneratorseed(const size_t& lseed)
+	void FMTlpheuristic::setGeneratorSeed(const size_t& lseed)
 		{
 		seed = lseed;
 		generator.seed(static_cast<unsigned int>(lseed));
 		}
 
-	bool FMTlpheuristic::branchnboundsolve()
+	bool FMTlpheuristic::branchNBoundSolve()
 		{
 		try {
 			Models::FMTlpsolver::branchAndBound();
@@ -74,11 +74,11 @@ namespace Heuristics
 			}
 		return Models::FMTlpsolver::isProvenOptimal();
        }
-	bool FMTlpheuristic::greedypass(const double& initsol,const unsigned int& iteration)
+	bool FMTlpheuristic::greedyPass(const double& initsol,const unsigned int& iteration)
 	{
 		///Need to be implemented
 		try {
-			initialsolve();
+			initialSolve();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpheuristic::greedypass", __LINE__, __FILE__);
@@ -86,14 +86,14 @@ namespace Heuristics
 		return Models::FMTlpsolver::isProvenOptimal();
 	  }
 
-	void FMTlpheuristic::paralleloptimize(const double& initbestsolution, const unsigned int& iterations,const double& maxtime, const std::chrono::steady_clock::time_point& Starttime)
+	void FMTlpheuristic::parallelOptimize(const double& initbestsolution, const unsigned int& iterations,const double& maxtime, const std::chrono::steady_clock::time_point& Starttime)
 		{
 			unsigned int pass = 0;
 			bool mxtreach = false;
 			double mxt;
 			while(pass <= iterations &&  !mxtreach)
 			{
-				greedypass(initbestsolution,pass);
+				greedyPass(initbestsolution,pass);
 				const std::chrono::steady_clock::time_point Enditer = std::chrono::steady_clock::now();
 				std::chrono::duration<double,std::milli> Elapsed = Enditer - Starttime;
 				if(pass==0)

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parallel
 {
 
-	std::list<std::unique_ptr<Models::FMTmodel>>FMTplanningtask::copymodels(const std::list<std::unique_ptr<Models::FMTmodel>>& tocopy) const
+	std::list<std::unique_ptr<Models::FMTmodel>>FMTplanningtask::copyModels(const std::list<std::unique_ptr<Models::FMTmodel>>& tocopy) const
 	{
 		std::list<std::unique_ptr<Models::FMTmodel>>newmodels;
 		try {
@@ -35,7 +35,7 @@ namespace Parallel
 
 	FMTplanningtask::FMTplanningtask(const FMTplanningtask& rhs):
 		m_ResultsWriter(rhs.m_ResultsWriter),
-		m_Models(copymodels(rhs.m_Models)),
+		m_Models(copyModels(rhs.m_Models)),
 		m_allSchedules(rhs.m_allSchedules),
 		m_Outputs(rhs.m_Outputs),
 		m_keepModels(rhs.m_keepModels)
@@ -49,7 +49,7 @@ namespace Parallel
 		if (this!=&rhs)
 		{
 			m_ResultsWriter = rhs.m_ResultsWriter;
-			m_Models = copymodels(rhs.m_Models);
+			m_Models = copyModels(rhs.m_Models);
 			m_allSchedules = rhs.m_allSchedules;
 			m_Outputs = rhs.m_Outputs;
 			m_keepModels = rhs.m_keepModels;
@@ -86,7 +86,7 @@ namespace Parallel
 	{
 		try {
 			m_Models.push_back(std::move(model.clone()));
-			m_Models.back()->setparallellogger(*tasklogger.get());
+			m_Models.back()->setParallelLogger(*tasklogger.get());
 			const std::string SCENARIO_NAME = m_Models.back()->getname();
 			if (!model.getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)||
 				!(!SCENARIO_NAME.empty() && SCENARIO_NAME.find_first_not_of("0123456789") == std::string::npos))
@@ -112,10 +112,10 @@ namespace Parallel
 	{
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
-			std::list<std::unique_ptr<Models::FMTmodel>>allmodels=copymodels(m_Models);
+			std::list<std::unique_ptr<Models::FMTmodel>>allmodels=copyModels(m_Models);
 			std::list<std::vector<Core::FMTschedule>>modelschedules(m_allSchedules);
 			std::list<std::vector<Core::FMToutput>>modeloutputs(m_Outputs);
-			for (const size_t tasksize : splitwork(numberoftasks, static_cast<int>(m_Models.size())))
+			for (const size_t tasksize : splitWork(numberoftasks, static_cast<int>(m_Models.size())))
 				{
 				FMTplanningtask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTmodel>>modelsoftask;
@@ -130,7 +130,7 @@ namespace Parallel
 					modelschedules.pop_front();
 					modeloutputs.pop_front();
 					}
-				newtask.m_Models = copymodels(modelsoftask);
+				newtask.m_Models = copyModels(modelsoftask);
 				newtask.m_allSchedules = schedulesoftask;
 				newtask.m_Outputs = outputsoftask;
 				tasks.push_back(std::move(newtask.clone()));
@@ -182,7 +182,7 @@ namespace Parallel
 			}
 		}
 
-	void FMTplanningtask::setkeepmodels()
+	void FMTplanningtask::setKeepModels()
 		{
 		m_keepModels = true;
 		}
@@ -196,17 +196,17 @@ namespace Parallel
 			{
 				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + m_Models.front()->getname() + " started\n",0);
 				const bool SOLVE = !m_Models.front()->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD);
-				const bool FEASIBLE = m_Models.front()->doplanning(SOLVE, m_allSchedules.front());
+				const bool FEASIBLE = m_Models.front()->doPlanning(SOLVE, m_allSchedules.front());
 				if (FEASIBLE||!SOLVE)
 					{
 					if (FEASIBLE) {
 						_logger->logwithlevel("Thread:" + getThreadId() 
 							+ " scenario: " + m_Models.front()->getname()
 							+ " objective value of: "
-							+ std::to_string(m_Models.front()->getobjectivevalue())
+							+ std::to_string(m_Models.front()->getObjectiveValue())
 							+ "\n", 0);
 					}
-					m_ResultsWriter->getandwrite(m_Models.front(), m_Outputs.front());
+					m_ResultsWriter->getAndWrite(m_Models.front(), m_Outputs.front());
 				}else {
 					_logger->logwithlevel("Thread:" + getThreadId() + " infeasible scenario " + m_Models.front()->getname() + "\n", 0);
 					}
@@ -229,7 +229,7 @@ namespace Parallel
 			//setstatus(true);
 		}catch (...)
 		{
-			_exhandler->raisefromthreadcatch("","FMTplanningtask::work", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("","FMTplanningtask::work", __LINE__, __FILE__);
 		}
 	}
 

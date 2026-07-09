@@ -27,7 +27,7 @@ namespace Parser {
 		setSection(Core::FMTsection::Schedule);
 	}
 
-	int FMTscheduleparser::getvariable() const
+	int FMTscheduleparser::getVariable() const
 	{
 		int value = 0;
 		try {
@@ -107,7 +107,7 @@ namespace Parser {
 							break;
 						}
 						else {
-							int variable = getvariable();
+							int variable = getVariable();
 							if (firstline&&line.find("_FUTURE")==std::string::npos&&
 								line.find("_EXISTING")==std::string::npos&&
 								(values.size()-themes.size())==5)
@@ -160,7 +160,7 @@ namespace Parser {
 								Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, lock, period);
 								//dev.passinobject(*this);
 								std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
-								if (act->dorespectlock())
+								if (act->doRespectLock())
 								{
 									variable = 0;
 								}
@@ -186,7 +186,7 @@ namespace Parser {
 				{
 					schedules.emplace_back(period, inschedule);
 					//schedules.back().passinobject(*this);
-					schedules.back().setuselock(uselock);
+					schedules.back().setUseLock(uselock);
 					++period;
 				}
 			}
@@ -262,7 +262,7 @@ namespace Parser {
 							schedulestream << "TH" + std::to_string(thid + 1) + " ";
 						}
 						schedulestream << "AGE AREA ";
-						if (firstnonemptyschedule -> douselock())
+						if (firstnonemptyschedule -> doUseLock())
 						{
 							schedulestream << "LOCK ";
 						}

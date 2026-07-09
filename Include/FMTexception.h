@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -232,16 +232,16 @@ class FMTEXPORT FMTexception : public std::exception
 	FMTexception default copy assignment operator.
 	*/
     FMTexception& operator = (const FMTexception& rhs);
-	// DocString: FMTexception::gettype
+	// DocString: FMTexception::getType
 	/**
 	The function returns the type of exception kept by this FMTexception.
 	*/
-	FMTexc gettype() const;
-	// DocString: FMTexception::getsection
+	FMTexc getType() const;
+	// DocString: FMTexception::getSection
 	/**
 	The function returns the section in which the exception occured.
 	*/
-	Core::FMTsection getsection() const;
+	Core::FMTsection getSection() const;
 	// DocString: FMTexception::what
 	/**
 	This function override the what function of the exception base class returning the message string.
@@ -252,40 +252,40 @@ class FMTEXPORT FMTexception : public std::exception
 	Returns the value of the holdup member.
 	*/
 	bool hold() const;
-	// DocString: FMTexception::sethold
+	// DocString: FMTexception::setHold
 	/**
 	The function sets the value of holdup member.
 	*/
-	void sethold(bool side);
-	// DocString: FMTexception::getmethod
+	void setHold(bool side);
+	// DocString: FMTexception::getMethod
 	/**
 	Returns the method in which the exception occured.
 	*/
-	inline std::string getmethod() const
+	inline std::string getMethod() const
 		{
 		return method;
 		}
-	// DocString: FMTexception::getfile
+	// DocString: FMTexception::getFile
 	/**
 	Returns the source file in which the exception occured.
 	*/
-	inline std::string getfile() const
+	inline std::string getFile() const
 		{
 		return file;
 		}
-	// DocString: FMTexception::getline
+	// DocString: FMTexception::getLine
 	/**
 	Returns the source file line in which the exception occured.
 	*/
-	inline int getline() const
+	inline int getLine() const
 		{
 		return line;
 		}
-	// DocString: FMTexception::getsrcinfo
+	// DocString: FMTexception::getSrcInfo
 	/**
 	Returns a formated string for the location of the exception.
 	*/
-	std::string getsrcinfo() const;
+	std::string getSrcInfo() const;
     };
 
 }

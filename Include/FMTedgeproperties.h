@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -38,7 +38,7 @@ namespace Graph
 			return variableID;
 		}
 		void setvariableID(const int& newvariableID);
-		inline  double getproportion() const override
+		inline  double getProportion() const override
 		{
 			return static_cast<double>(proportion);
 		}
@@ -47,8 +47,8 @@ namespace Graph
 			const double& lproportion);
 		bool operator == (const FMTedgeproperties& rhs) const;
 		bool operator != (const FMTedgeproperties& rhs) const;
-		inline std::string variablename() const;
-		inline const int* getvariableptr() const
+		inline std::string variableName() const;
+		inline const int* getVariablePtr() const
 		{
 			return &variableID;
 		}

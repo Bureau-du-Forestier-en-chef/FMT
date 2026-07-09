@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -52,24 +52,24 @@ void FMTexceptionhandler::translateStructuralWIN32Exceptions(unsigned int p_u, E
 	}
 #endif
 
-bool FMTexceptionhandler::ismainthread() const
+bool FMTexceptionhandler::isMainThread() const
 	{
 	return (boost::this_thread::get_id() == mainthreadid);
 	}
 
-bool FMTexceptionhandler::isthrowedonthread() const
+bool FMTexceptionhandler::isThrowedOnThread() const
 	{
 	return (crashedthreadid != mainthreadid);
 	}
 
-bool FMTexceptionhandler::isthisthreadthrowed() const
+bool FMTexceptionhandler::isThisThreadThrowed() const
 	{
-	return (!ismainthread() && boost::this_thread::get_id() == crashedthreadid);
+	return (!isMainThread() && boost::this_thread::get_id() == crashedthreadid);
 	}
 
-void FMTexceptionhandler::checksignals() const
+void FMTexceptionhandler::checkSignals() const
 	{
-	if (FMTexceptionhandler::ismainthread())
+	if (FMTexceptionhandler::isMainThread())
 		{
 		#if defined FMTWITHPYTHON
 				if (PyErr_CheckSignals() == -1)
@@ -135,7 +135,7 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 void FMTexceptionhandler::throw_nested(const std::exception& texception, int& level,bool rethrow)
 {
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		gutsofexceptionlog(texception, level);
+		gutsOfExceptionLog(texception, level);
 		try {
 			const auto _Nested = dynamic_cast<const std::nested_exception*>(&texception);
 			if (_Nested && _Nested->nested_ptr())
@@ -171,13 +171,13 @@ void FMTexceptionhandler::throw_nested(const std::exception& texception, int& le
 		}
 }
 
-void FMTexceptionhandler::enablenestedexceptions()
+void FMTexceptionhandler::enableNestedExceptions()
 	{
 	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	usenestedexceptions = true;
 	}
 
-void FMTexceptionhandler::disablenestedexceptions()
+void FMTexceptionhandler::disableNestedExceptions()
 	{
 	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	usenestedexceptions = false;
@@ -983,7 +983,7 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
 			_exception = lexception;
-			if (!ismainthread() && !isthrowedonthread())
+			if (!isMainThread() && !isThrowedOnThread())
 			{
 				crashedthreadid = boost::this_thread::get_id();
 			}
@@ -991,11 +991,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 	return msg;
 }
 
-void FMTexceptionhandler::raisefromthreadcatch(std::string text,
+void FMTexceptionhandler::raiseFromThreadCatch(std::string text,
 	const std::string& method, const int& line, const std::string& file,
 	Core::FMTsection lsection)
 {
-	if (isthisthreadthrowed())
+	if (isThisThreadThrowed())
 	{
 		try {
 			raisefromcatch(text, method, line, file, lsection);
@@ -1003,32 +1003,32 @@ void FMTexceptionhandler::raisefromthreadcatch(std::string text,
 		{
 			threadcrashexception = std::current_exception();
 		}
-	}else if (ismainthread())
+	}else if (isMainThread())
 	{
 		raisefromcatch(text, method, line, file, lsection);
 	}
 	//Do nothing if you are a thread an you have not thrown...all your exceptions are lost
 }
 
-void FMTexceptionhandler::registerworkerthread()
+void FMTexceptionhandler::registerWorkerThread()
 {
 	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	registered_threads.insert(boost::this_thread::get_id());
 }
 
-bool FMTexceptionhandler::isthreadregistered() const
+bool FMTexceptionhandler::isThreadRegistered() const
 {
 return (registered_threads.find(boost::this_thread::get_id()) != registered_threads.end());
 }
 
 
 
-void FMTexceptionhandler::reraiseifthreadcrash()
+void FMTexceptionhandler::reRaiseIfThreadCrash()
 {
 	
-	if (isthrowedonthread() && !isthisthreadthrowed() && !isthreadregistered())
+	if (isThrowedOnThread() && !isThisThreadThrowed() && !isThreadRegistered())
 	{
-		registerworkerthread();
+		registerWorkerThread();
 		//registered_threads.insert(boost::this_thread::get_id());
 		//Raise a dumy exception to make sure the main thread and the slave thread are aware of crash
 		raise(Exception::FMTexc::FMTthreadcrash,"","FMTexceptionhandler::reraiseifthreadcrash",__LINE__,__FILE__);
@@ -1098,7 +1098,7 @@ FMTexception FMTexceptionhandler::raisefromcatch(std::string text,
 	return this->raise(lexception,text, method, line, file, lsection);
 }
 
-void FMTexceptionhandler::gutsofprintexceptions(std::string text,
+void FMTexceptionhandler::gutsOfPrintExceptions(std::string text,
 	const std::string& method, const int& line, const std::string& fil,int& levelreference,
 	Core::FMTsection lsection, bool logfirstlevel)
 {
@@ -1117,8 +1117,8 @@ void FMTexceptionhandler::gutsofprintexceptions(std::string text,
 	{
 		_logger->setstreamflush(true);
 	}
-	const bool keepit =  ((!ismainthread() && isthisthreadthrowed()));// && !print);
-	//Keep it est a vrai sur le main mais devrait être à faux...
+	const bool keepit =  ((!isMainThread() && isThisThreadThrowed()));// && !print);
+	//Keep it est a vrai sur le main mais devrait tre  faux...
 	bool needtolog = logfirstlevel;
 
 	/*if (keepit || (levelreference > 0))
@@ -1207,7 +1207,7 @@ void FMTexceptionhandler::gutsofprintexceptions(std::string text,
 	}
 }
 
-void FMTexceptionhandler::gutsofexceptionlog(const std::exception& texception, const int& level)
+void FMTexceptionhandler::gutsOfExceptionLog(const std::exception& texception, const int& level)
 {
 	const std::string linereplacement = "\n" + std::string(level, ' ');
 	std::string message = texception.what();
@@ -1230,7 +1230,7 @@ void FMTexceptionhandler::printexceptions(std::string text,
 {
 	int levelofprint = 0;
 	try {
-		gutsofprintexceptions(text, method, line, fil, levelofprint,lsection);
+		gutsOfPrintExceptions(text, method, line, fil, levelofprint,lsection);
 	}catch (...)
 	{
 		if (threadcrashexception)
@@ -1242,7 +1242,7 @@ void FMTexceptionhandler::printexceptions(std::string text,
 			catch (...)
 			{
 				
-				gutsofprintexceptions(text, method, line, fil, levelofprint, lsection,false);
+				gutsOfPrintExceptions(text, method, line, fil, levelofprint, lsection,false);
 			}
 		}
 		throw;

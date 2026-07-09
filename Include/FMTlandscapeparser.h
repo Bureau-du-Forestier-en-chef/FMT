@@ -48,13 +48,13 @@ available to the user. This class is also used by the FMTmodelparser.
 		const static boost::regex rxPreAttributes;
 		// DocString: FMTlandscapeparser::rxPreAggregate
 		const static boost::regex rxPreAggregate;
-		// DocString: FMTlandscapeparser::getindexes
+		// DocString: FMTlandscapeparser::getIndexes
 		/**
 		This function is used to catch the indexed attributes of a theme in the landscape section
 		the returned map hold the parameters name (key) and value (item). It uses the complete string line (indexm_line) of
 		the landscape section and (constants).
 		*/
-		std::map<std::string, double> getindexes(std::string indexm_line, const Core::FMTconstants& constants);
+		std::map<std::string, double> getIndexes(std::string indexm_line, const Core::FMTconstants& constants);
 		// DocString: FMTlandscapeparser::ParseState
 		enum class ParseState {NORMAL = 0, IN_PRE_DECLARATION = 1};
 		// DocString: FMTlandscapeparser::PreDeclarationContext
@@ -136,18 +136,18 @@ available to the user. This class is also used by the FMTmodelparser.
 		*/
         std::vector<Core::FMTtheme>read(const Core::FMTconstants& constants,const std::string& location);
 		#ifdef FMTWITHGDAL
-			// DocString: FMTlandscapeparser::readvectors
+			// DocString: FMTlandscapeparser::readVectors
 			/**
 			Using the (location) of a spatial vector file like a shapefile, this function will
 			return a vector of themes present in the spatial vector file.
 			*/
-			std::vector<Core::FMTtheme>readvectors(const  std::string& location);
-			// DocString: FMTlandscapeparser::readrasters
+			std::vector<Core::FMTtheme>readVectors(const  std::string& location);
+			// DocString: FMTlandscapeparser::readRasters
 			/**
 			Using the vector of (locations) of raster files, this funtion will return a vector
 			of themes present in the rasters. Each raster represent a theme in the location vector.
 			*/
-			std::vector<Core::FMTtheme>readrasters(const  std::vector< std::string>& locations);
+			std::vector<Core::FMTtheme>readRasters(const  std::vector< std::string>& locations);
 		#endif
 		// DocString: FMTlandscapeparser::write
 		/**

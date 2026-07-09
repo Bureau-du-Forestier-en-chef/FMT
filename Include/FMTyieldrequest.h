@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -46,10 +46,10 @@ namespace Core
 		FMTyieldrequest() = default;
 		FMTyieldrequest(const FMTyieldrequest& rhs) = default;
 		FMTyieldrequest& operator = (const FMTyieldrequest& rhs)=default;
-		const FMTdevelopment& getdevelopment() const;
-		const std::vector<const_iterator>&getdatas() const;
-		const Core::FMTmask& getresumemask() const;
-		const Graph::FMTgraphvertextoyield* getvertexgraphinfo() const;
+		const FMTdevelopment& getDevelopment() const;
+		const std::vector<const_iterator>&getDatas() const;
+		const Core::FMTmask& getResumeMask() const;
+		const Graph::FMTgraphvertextoyield* getVertexGraphInfo() const;
 		const_iterator getFirstSeen(const std::string& p_yield) const;
 	private:
 		friend class FMTyields;

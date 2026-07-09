@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -55,10 +55,10 @@ class FMTEXPORT FMTtransitionmask : public FMTmaskfilter,public FMTspec
 			const std::vector<FMTtheme>& themes,const bool& reset_age) const;
 		std::map<std::string, std::string>get(const std::vector<FMTtheme>& themes) const;
 		bool operator == (const FMTtransitionmask& rhs) const;
-        double getproportion() const;
+        double getProportion() const;
         FMTmask getmask() const;
-        void setmask(const Core::FMTmask& mtmask);
-        void setproportion(double newproportion);
+        void setMask(const Core::FMTmask& mtmask);
+        void setProportion(double newproportion);
 		FMTtransitionmask presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
         void presolveRef(const FMTmaskfilter& filter, const std::vector<FMTtheme>& presolvedthemes);
         operator std::string() const override;

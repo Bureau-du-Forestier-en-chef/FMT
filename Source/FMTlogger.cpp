@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -52,7 +52,7 @@ namespace Logging
 		ar & filepath;
 		if (!filepath.empty())
 		{
-			settofile(filepath);
+			setToFile(filepath);
 		}
 	}
 
@@ -64,7 +64,7 @@ namespace Logging
 
 
 
-	void FMTlogger::settofile(const std::string& filename) const
+	void FMTlogger::setToFile(const std::string& filename) const
 		{
 		if (m_FileStream !=nullptr)
 			{
@@ -91,7 +91,7 @@ namespace Logging
 	{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		filepath = filename;
-		settofile(filepath);
+		setToFile(filepath);
 		if (m_FileStream && m_FileStream->is_open() && logstamp)
 		{
 			this->logstamp();
@@ -103,7 +103,7 @@ namespace Logging
 		{
 		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
 		filepath=rhs.filepath;
-		settofile(filepath);
+		setToFile(filepath);
 		flushstream=rhs.flushstream;
 		#if defined FMTWITHOSI
 			solverref.reset(new FMTsolverlogger(*this));
@@ -131,13 +131,13 @@ namespace Logging
 					}
 			#endif
 			filepath = rhs.filepath;
-			settofile(filepath);
+			setToFile(filepath);
 			flushstream = rhs.flushstream;
 			}
 		return *this;
 		}
 
-	void FMTlogger::closefilestream()
+	void FMTlogger::closeFileStream()
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		if (m_FileStream && m_FileStream->is_open())
@@ -161,8 +161,8 @@ namespace Logging
 
 	std::string FMTlogger::getlogstamp() const
 	{
-		const std::string message = "FMT " + Version::FMTversion().getversion() +
-			", build: " + Version::FMTversion().getbuilddate();
+		const std::string message = "FMT " + Version::FMTversion().getVersion() +
+			", build: " + Version::FMTversion().getBuildDate();
 		return message;
 	}
 
@@ -175,7 +175,7 @@ namespace Logging
 	void FMTlogger::logtime()
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		const std::string message = Version::FMTversion().getdatenow();
+		const std::string message = Version::FMTversion().getDatenow();
 		*this << (message);
 		}
 
@@ -333,7 +333,7 @@ namespace Logging
 			return 0;
 			}
 
-		FMTsolverlogger* FMTlogger::getsolverlogger()
+		FMTsolverlogger* FMTlogger::getSolverLogger()
 			{
 			return solverref.get();
 			}

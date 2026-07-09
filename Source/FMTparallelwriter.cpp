@@ -76,7 +76,7 @@ namespace Parallel
 				setLayer(modelptr->getname());
 				}
 			#ifdef FMTWITHGDAL
-			driftlayer = createdriftlayer(resultsdataset);
+			driftlayer = createDriftLayer(resultsdataset);
 			#endif
 		}catch (...)
 			{
@@ -88,8 +88,8 @@ namespace Parallel
 		const std::string& driver,
 		Core::FMToutputlevel outputlevel,
 		std::vector<std::string>layersoptions,
-		int firstperiod,
-		int lastperiod,
+		int firstPeriod,
+		int lastPeriod,
 		std::string primaryfilelocation):
 		outputstowrite(),
 		#ifdef FMTWITHGDAL
@@ -101,8 +101,8 @@ namespace Parallel
 		resultsminimaldrift(),
 		outputslevel(outputlevel),
 		alllayeroptions(layersoptions),
-		outputfirstperiod(firstperiod),
-		outputlastperiod(lastperiod),
+		outputfirstperiod(firstPeriod),
+		outputlastperiod(lastPeriod),
 		projectdirectory(),
 		projectname(),
 		m_outputLocationPath(location)
@@ -140,16 +140,16 @@ namespace Parallel
 		}
 	}
 
-	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getresults(
+	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getResults(
 		const std::unique_ptr<Models::FMTmodel>& modelptr,
-		const int& firstperiod,
-		const int& lastperiod) const
+		const int& firstPeriod,
+		const int& lastPeriod) const
 	{
 		std::map<std::string, std::vector<std::vector<double>>> results;
 		try {
 			if (modelptr)
 			{
-			results = modelptr->getoutputsfromperiods(outputstowrite, firstperiod, lastperiod, outputslevel);
+			results = modelptr->getOutputsFromPeriods(outputstowrite, firstPeriod, lastPeriod, outputslevel);
 			}
 		}
 		catch (...)
@@ -159,7 +159,7 @@ namespace Parallel
 		return results;
 	}
 
-	const std::map<std::string, std::map<double, std::vector<double>>>FMTparallelwriter::getdriftprobability(
+	const std::map<std::string, std::map<double, std::vector<double>>>FMTparallelwriter::getDriftProbability(
 		const std::map<std::string, std::vector<std::vector<double>>>& globalvalues,
 		const std::map<std::string, std::vector<std::vector<double>>>& localvalues,
 		const bool lower) const
@@ -268,7 +268,7 @@ namespace Parallel
 
 
 
-	void FMTparallelwriter::setdriftprobability(const std::string& globalmodel, const std::string& localmodel) const
+	void FMTparallelwriter::setDriftProbability(const std::string& globalmodel, const std::string& localmodel) const
 	{
 		boost::lock_guard<boost::recursive_mutex> lock(mtx);
 		try {
@@ -278,13 +278,13 @@ namespace Parallel
 				resultslayer.at(globalmodel) &&
 				resultslayer.at(localmodel))
 			{
-				const std::map<std::string, std::vector<std::vector<double>>> globalvalues = getiterationsvalues(resultslayer.at(globalmodel));
-				const std::map<std::string, std::vector<std::vector<double>>> localvalues = getiterationsvalues(resultslayer.at(localmodel));
+				const std::map<std::string, std::vector<std::vector<double>>> globalvalues = getIterationsValues(resultslayer.at(globalmodel));
+				const std::map<std::string, std::vector<std::vector<double>>> localvalues = getIterationsValues(resultslayer.at(localmodel));
 				if (!globalvalues.empty() && !localvalues.empty())
 				{
-					const std::map<std::string, std::map<double, std::vector<double>>>lowerdrifts = getdriftprobability(globalvalues, localvalues);
-					const std::map<std::string, std::map<double, std::vector<double>>>upperdrifts = getdriftprobability(globalvalues, localvalues, false);
-					writedrift(driftlayer, lowerdrifts, upperdrifts);
+					const std::map<std::string, std::map<double, std::vector<double>>>lowerdrifts = getDriftProbability(globalvalues, localvalues);
+					const std::map<std::string, std::map<double, std::vector<double>>>upperdrifts = getDriftProbability(globalvalues, localvalues, false);
+					writeDrift(driftlayer, lowerdrifts, upperdrifts);
 				}
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
@@ -309,16 +309,16 @@ namespace Parallel
 
 	void FMTparallelwriter::write(const std::string& modelname,
 		const std::map<std::string, std::vector<std::vector<double>>>& results,
-		const int& firstperiod, const int& lastperiod, const int& iteration) const
+		const int& firstPeriod, const int& lastPeriod, const int& iteration) const
 	{
 		boost::lock_guard<boost::recursive_mutex> lock(mtx);
 		try {
 		#ifdef FMTWITHGDAL
 			if (!results.empty())
 				{
-				writefeatures(resultslayer.at(modelname), firstperiod, iteration, outputstowrite, results);
+				writeFeatures(resultslayer.at(modelname), firstPeriod, iteration, outputstowrite, results);
 			}else {
-				fillupinfeasibles(resultslayer.at(modelname), outputstowrite, iteration, firstperiod, lastperiod);
+				fillUpInfeasibles(resultslayer.at(modelname), outputstowrite, iteration, firstPeriod, lastPeriod);
 				}
 		#endif
 		}catch (...)
@@ -328,13 +328,13 @@ namespace Parallel
 
 	}
 
-	void FMTparallelwriter::getandwrite(
+	void FMTparallelwriter::getAndWrite(
 		const std::unique_ptr<Models::FMTmodel>& modelptr, 
 		const std::vector<Core::FMToutput>& loutputs)
 	{
 		try {
-			const int firstperiod = outputfirstperiod;
-			const int lastperiod = std::min(outputlastperiod, modelptr->getparameter(Models::FMTintmodelparameters::LENGTH));
+			const int firstPeriod = outputfirstperiod;
+			const int lastPeriod = std::min(outputlastperiod, modelptr->getparameter(Models::FMTintmodelparameters::LENGTH));
 			boost::lock_guard<boost::recursive_mutex> lock(mtx);
 			outputstowrite = loutputs;
 			if (!outputstowrite.empty())
@@ -348,9 +348,9 @@ namespace Parallel
 					writeName = projectname;
 					}
 				write(writeName,
-					getresults(modelptr, firstperiod, lastperiod),
-					firstperiod,
-					lastperiod,
+					getResults(modelptr, firstPeriod, lastPeriod),
+					firstPeriod,
+					lastPeriod,
 					replicateId);
 			}
 			if (!(projectdirectory.empty()) && !(modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
@@ -365,7 +365,7 @@ namespace Parallel
 				std::vector<Core::FMTschedule>solution;
 				for (int period = 1 ; period <= modelptr->getparameter(Models::FMTintmodelparameters::LENGTH);++period)
 					{
-					solution.push_back(modelptr->getsolution(period,true));
+					solution.push_back(modelptr->getSolution(period,true));
 					}
 				parser.write(solution, schedulelocation);
 				}

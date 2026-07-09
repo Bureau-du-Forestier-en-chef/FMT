@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -63,37 +63,37 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Copy assignment of FMTsemodel
 		*/
         FMTsemodel& operator = (const FMTsemodel& rhs);
-		// DocString: FMTsemodel::getmapping
+		// DocString: FMTsemodel::getMapping
 		/**
 		Getter returning a copy the actual spatial forest stades of each FMTdevelopement (map).
 		*/
-		Spatial::FMTforest getmapping() const;
-		// DocString: FMTsemodel::getspschedule
+		Spatial::FMTforest getMapping() const;
+		// DocString: FMTsemodel::getSpSchedule
 		/**
 		Getter returning a copy of the spatially explicit solution.
 		*/
-		inline Spatial::FMTSpatialSchedule getspschedule() const
+		inline Spatial::FMTSpatialSchedule getSpSchedule() const
 		{
 			return m_BestSolution;
 		}
-		// DocString: FMTsemodel::getdisturbancestats
+		// DocString: FMTsemodel::getDisturbanceStats
 		/**
 		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
 		*/
-		std::string getdisturbancestats() const;
-		// DocString: FMTsemodel::getschedule
+		std::string getDisturbanceStats() const;
+		// DocString: FMTsemodel::getSchedule
 		/**
 		Getter returning a copy of the operated schedules of the FMTsemodel.
 		The operated schedule can differ from the potential schedule provided by the user in the function
 		greedyreferencedbuild(). Which we call spatialisation impact.
 		*/
-		std::vector<Core::FMTschedule> getschedule(bool withlock=false) const;
-		// DocString: FMTsemodel::setinitialmapping
+		std::vector<Core::FMTschedule> getSchedule(bool withlock=false) const;
+		// DocString: FMTsemodel::setInitialMapping
 		/**
 		Setter of the initial forest state (spatial map of FMTdevelopment)
 		Has to be set before greedyreferencedbuild() is called.
 		*/
-        bool setinitialmapping(const Spatial::FMTforest& forest);
+        bool setInitialMapping(const Spatial::FMTforest& forest);
 		// DocString: FMTsemodel::LogConstraintsInfeasibilities
 		/**
 		Log the constraints infeasibilities spatial or not spatial
@@ -117,26 +117,26 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		actions and outputs of the original not presolved model.
 		*/
 		virtual void postsolve(const FMTmodel& originalbasemodel);
-		// DocString: FMTsemodel::getoutput
+		// DocString: FMTsemodel::getOutput
 		/**
 		Get the output value of a output for a given period using the spatial solution.
 		the map key returned consist of output name
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or developement name if level == FMToutputlevel::developpement
 		*/
-		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
+		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
-		// DocString: FMTsemodel::getoutput
+		// DocString: FMTsemodel::getOutput
 		/**
 		Get the spatial output value based on the spatial solution.
 		*/
-		virtual Spatial::FMTlayer<double> getspatialoutput(const Core::FMToutput& output,int period) const;
-		// DocString: FMTsemodel::getsolution
+		virtual Spatial::FMTlayer<double> getSpatialOutput(const Core::FMToutput& output,int period) const;
+		// DocString: FMTsemodel::getSolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
 		If with lock is true then the schedule will contain locked developement.
 		*/
-		virtual Core::FMTschedule getsolution(int period, bool withlock = false) const;
+		virtual Core::FMTschedule getSolution(int period, bool withlock = false) const;
 
 		
 		// DocString: FMTsemodel::clone
@@ -152,17 +152,17 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		@return the vector of actualdevelopment...
 		*/
 		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
-		// DocString: FMTsemodel::getcopy
+		// DocString: FMTsemodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
 		The function is going to clean the FMTconstraints and keep the objective.
 		*/
-		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
-		// DocString: FMTmodel::getobjectivevalue
+		virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
+		// DocString: FMTmodel::getObjectiveValue
 		/**
 		Return the value of the globalobjective of the actual solution
 		*/
-		virtual double getobjectivevalue() const;
+		virtual double getObjectiveValue() const;
 		// DocString: FMTsemodel::GetSchedules
 		/**
 		@brief Get the schedules of the spatial solution
@@ -221,7 +221,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 			//ar& BOOST_SERIALIZATION_NVP(m_BestSolution);
 		}
-		virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
+		virtual void swapPtr(std::unique_ptr<FMTmodel>& rhs);
 		void _BuildArea(const Spatial::FMTforest& p_Forest);
 		void _BuildGraphs(double p_cellSize);
 		void _BuildSolution(const Spatial::FMTforest& p_Forest);

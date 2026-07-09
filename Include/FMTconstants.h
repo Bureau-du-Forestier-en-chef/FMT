@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -72,17 +72,17 @@ class FMTEXPORT FMTconstants : public FMTobject
 	*/
     template<typename T>
 	T get(std::string key, int period = 0) const;
-	// DocString: FMTconstants::getall
+	// DocString: FMTconstants::getAll
 	/**
 	For a given constant (key) the function gets all the values of the constant.
 	*/
     template<typename T>
-	std::vector<T>getall(std::string key) const;
-	// DocString: FMTconstants::isconstant
+	std::vector<T>getAll(std::string key) const;
+	// DocString: FMTconstants::isConstant
 	/**
 	Returns true if the (value) is considered a constant.
 	*/
-    bool isconstant(std::string value) const;
+    bool isConstant(std::string value) const;
 	// DocString: FMTconstants::length
 	/**
 	Returns the length of the constant (value), which is the number of double values kept by the constant.

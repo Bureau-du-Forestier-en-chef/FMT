@@ -48,7 +48,7 @@ namespace Parallel
 			boost::mutex::scoped_lock guard(m_checkpointMutex);
 			while (m_workingThreads != m_allThreads) m_checkpoint.wait(guard);
 			}
-		//*_logger << "out " << getthreadid() << "\n";
+		//*_logger << "out " << getThreadId() << "\n";
 	}
 	
 
@@ -142,7 +142,7 @@ namespace Parallel
 		return std::move(std::unique_ptr<FMTtask>(new FMTtask()));
 	}
 
-	std::vector<size_t>FMTtask::splitwork(int numberoftasks, const int& totalworksize) const
+	std::vector<size_t>FMTtask::splitWork(int numberoftasks, const int& totalworksize) const
 		{
 		std::vector<size_t>taskssize;
 		try {
@@ -181,7 +181,7 @@ namespace Parallel
 			work();
 		}catch (...)
 			{
-			_exhandler->raisefromthreadcatch("", "FMTtask::run", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("", "FMTtask::run", __LINE__, __FILE__);
 			}
 		}
 
@@ -192,7 +192,7 @@ namespace Parallel
 				"FMTtask::work", __LINE__, __FILE__);
 		}catch (...)
 		{
-			_exhandler->raisefromthreadcatch("", "FMTtask::work", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("", "FMTtask::work", __LINE__, __FILE__);
 		}
 	}
 
@@ -204,21 +204,21 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromthreadcatch("", "FMTtask::finalize", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("", "FMTtask::finalize", __LINE__, __FILE__);
 		}
 	}
 	
 	/*
 	void FMTtask::setstatus(bool status)
 	{
-		checksignals();
+		checkSignals();
 		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
 		done = status;
 	}
 
 	bool FMTtask::isdone() const
 	{
-		checksignals();
+		checkSignals();
 		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
 		const bool isdone = (done );
 		return done;

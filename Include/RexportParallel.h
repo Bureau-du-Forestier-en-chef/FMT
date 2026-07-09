@@ -64,7 +64,7 @@ namespace R
 			std::vector<std::string>,
 			Core::FMToutputlevel>("@DocString(FMTreplanningtask())")
 			.method("setreplicates", static_cast<void(Parallel::FMTreplanningtask::*)(const int&)>(&Parallel::FMTreplanningtask::setreplicates),"@DocString(FMTreplanningtask::setreplicates)")
-			.method("setreplanningperiods", &Parallel::FMTreplanningtask::setreplanningperiods,
+			.method("setreplanningperiods", &Parallel::FMTreplanningtask::setReplanningPeriods,
 				"@DocString(FMTreplanningtask::setreplanningperiods)");
 
 

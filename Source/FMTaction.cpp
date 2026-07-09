@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -94,7 +94,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		aggregates.push_back(aggregate);
 		}
 
-    void FMTaction::push_partials(const std::string& yield)
+    void FMTaction::pushPartials(const std::string& yield)
         {
         partials.push_back(yield);
         }
@@ -130,7 +130,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
         return *this;
         }
 
-	void FMTaction::setbounds()
+	void FMTaction::setBounds()
 		{
 		try {
 			ageupperbound = 0;
@@ -142,12 +142,12 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			{
 				if (!datait->second.emptyage())
 				{
-					int upperbound = datait->second.getageupperbound();
+					int upperbound = datait->second.getAgeUpperBound();
 					if (upperbound > ageupperbound)
 					{
 						ageupperbound = upperbound;
 					}
-					int lowerbound = datait->second.getagelowerbound();
+					int lowerbound = datait->second.getAgeLowerBound();
 					if (lowerbound < agelowerbound)
 					{
 						agelowerbound = lowerbound;
@@ -159,12 +159,12 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 				}
 				if (!datait->second.emptyperiod())
 				{
-					int upperbound = datait->second.getperiodupperbound();
+					int upperbound = datait->second.getPeriodUpperBound();
 					if (upperbound > periodupperbound)
 					{
 						periodupperbound = upperbound;
 					}
-					int lowerbound = datait->second.getperiodlowerbound();
+					int lowerbound = datait->second.getPeriodLowerBound();
 					if (lowerbound < periodlowerbound)
 					{
 						periodlowerbound = lowerbound;
@@ -187,7 +187,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		{
 		try {
 			FMTlist<FMTspec>::update();
-			this->setbounds();
+			this->setBounds();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),
@@ -198,12 +198,12 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 
 	
 
-	std::vector<std::string>FMTaction::getpartials() const
+	std::vector<std::string>FMTaction::getPartials() const
         {
         return partials;
         }
 
-	bool FMTaction::isallowedinserie(const std::vector<std::string>& seriemask) const
+	bool FMTaction::isAllowedInSerie(const std::vector<std::string>& seriemask) const
 	{
 		try {
 			if (!seriemask.empty())
@@ -251,7 +251,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 	}
 
 
-	std::vector<std::string>FMTaction::getseriesnames() const
+	std::vector<std::string>FMTaction::getSeriesNames() const
 	{
 		std::vector<std::string>seriesnames;
 		try {
@@ -272,11 +272,11 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return seriesnames;
 	}
 
-	size_t FMTaction::getlargestseriesize() const
+	size_t FMTaction::getLargestSerieSize() const
 	{
 		size_t sizeofserie = 0;
 		try {
-			if (ispartofaserie())
+			if (isPartOfASerie())
 				{
 				for (const FMTSerie& SERIE : m_series)
 					{
@@ -387,7 +387,7 @@ std::vector<std::string>FMTaction::getaggregates() const
 	return aggregates;
 	}
 
-void FMTaction::setaggregates(const std::vector<std::string>& p_aggregates)
+void FMTaction::setAggregates(const std::vector<std::string>& p_aggregates)
 	{
 	aggregates = p_aggregates;
 	}
@@ -424,7 +424,7 @@ bool FMTactioncomparator::operator()(const FMTaction& action) const
 		std::find(action.aggregates.begin(), action.aggregates.end(),action_name)!= action.aggregates.end()));
 	}
 
-std::vector<const FMTaction*>FMTactioncomparator::getallaggregates(const std::vector<FMTaction>&actions,bool aggregateonly) const
+std::vector<const FMTaction*>FMTactioncomparator::getAllAggregates(const std::vector<FMTaction>&actions,bool aggregateonly) const
 	{
 	std::vector<const FMTaction*>actionsptr;
 	std::vector<FMTaction>::const_iterator actit = actions.begin();
@@ -439,7 +439,7 @@ std::vector<const FMTaction*>FMTactioncomparator::getallaggregates(const std::ve
 	return actionsptr;
 	}
 
-std::unordered_set<int>FMTactioncomparator::getallaggregatesset(const std::vector<FMTaction>&actions, bool aggregateonly) const
+std::unordered_set<int>FMTactioncomparator::getAllAggregatesSet(const std::vector<FMTaction>&actions, bool aggregateonly) const
 {
 	std::unordered_set<int>actionsptr;
 	std::vector<FMTaction>::const_iterator actit = actions.begin();
@@ -511,8 +511,8 @@ bool FMTaction::notUse() const
 	for (const auto& value : *this)
 		{
 		if (!value.second.emptyperiod()&&
-			value.second.getperiodlowerbound() == 0 &&
-			value.second.getperiodupperbound() == 0)
+			value.second.getPeriodLowerBound() == 0 &&
+			value.second.getPeriodUpperBound() == 0)
 			{
 			++count;
 			}
@@ -548,9 +548,9 @@ std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p
 			for (const auto& data : *this)
 				{
 				Core::FMTmask subMAsk =  Core::FMTmask(std::string(data.first), p_themes);
-				if (!subMAsk.isnotthemessubset(MASK,p_themes))
+				if (!subMAsk.isNotThemesSubset(MASK,p_themes))
 					{
-					subMAsk = MASK.getintersect(subMAsk);
+					subMAsk = MASK.getIntersect(subMAsk);
 					subMAsk.update(p_themes);
 					NewAction.push_back(subMAsk, data.second);
 					}

@@ -52,7 +52,7 @@ namespace Parallel
 		}
 	}
 
-	void FMTreplanningtask::setreplanningperiods(const int& periodsnumber)
+	void FMTreplanningtask::setReplanningPeriods(const int& periodsnumber)
 		{
 		replanningperiods = periodsnumber;
 		}
@@ -121,7 +121,7 @@ namespace Parallel
 			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation, gdaldriver, outputs, modelsptr, creationoptions, minimaldrift, outputlevel));
 			std::unique_ptr<Models::FMTmodel>modelcpy = global->clone();
 			_logger->logwithlevel("Initial planning started\n", 0);
-			if (!modelcpy->doplanning(true))
+			if (!modelcpy->doPlanning(true))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Infeasible Global model",
@@ -130,19 +130,19 @@ namespace Parallel
 			replicateids.push(0);
 			writeresults(global->getname(),
 				global->getparameter(Models::FMTintmodelparameters::LENGTH),modelcpy,1);
-			const std::string OBJ_VALUE = std::to_string(modelcpy->getobjectivevalue());
+			const std::string OBJ_VALUE = std::to_string(modelcpy->getObjectiveValue());
 			_logger->logwithlevel("Initial planning Obj("+ OBJ_VALUE +") done\n", 0);
 			replicateids.pop();
-			baseschedule = std::shared_ptr<Core::FMTschedule>(new Core::FMTschedule(modelcpy->getsolution(1, true)));
+			baseschedule = std::shared_ptr<Core::FMTschedule>(new Core::FMTschedule(modelcpy->getSolution(1, true)));
 			iterationglobalschedule = *baseschedule;
-			dynamicconstraints = modelcpy->getreplanningconstraints("GLOBAL",local->getconstraints(), 1);
+			dynamicconstraints = modelcpy->getReplanningConstraints("GLOBAL",local->getconstraints(), 1);
 			for (int replicateid = 1; replicateid < (replicates+1); ++replicateid)
 			{
 				replicateids.push(replicateid);
 			}
-			global->setparallellogger(*tasklogger.get());
-			local->setparallellogger(*tasklogger.get());
-			stochastic->setparallellogger(*tasklogger.get());
+			global->setParallelLogger(*tasklogger.get());
+			local->setParallelLogger(*tasklogger.get());
+			stochastic->setParallelLogger(*tasklogger.get());
 		}
 		catch (...)
 		{
@@ -150,12 +150,12 @@ namespace Parallel
 		}
 	}
 
-	std::unique_ptr<Models::FMTmodel>FMTreplanningtask::copysharedmodel(const std::shared_ptr<Models::FMTmodel>model)
+	std::unique_ptr<Models::FMTmodel>FMTreplanningtask::copySharedModel(const std::shared_ptr<Models::FMTmodel>model)
 		{
 		try {
 			//boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
 			std::unique_ptr<Models::FMTmodel>modelcpy = std::move(model->clone());
-			modelcpy->setparallellogger(*tasklogger.get());
+			modelcpy->setParallelLogger(*tasklogger.get());
 			return std::move(modelcpy);
 			}catch (...)
 			{
@@ -170,7 +170,7 @@ namespace Parallel
 		try {
 			if (resultswriter)
 			{
-				resultswriter->setdriftprobability(global->getname(), local->getname());
+				resultswriter->setDriftProbability(global->getname(), local->getname());
 				resultswriter->close();
 				resultswriter = std::shared_ptr<FMTparallelwriter>(nullptr);
 			}
@@ -216,7 +216,7 @@ namespace Parallel
 				}
 			}
 
-			//for (const size_t tasksize : splitwork(numberoftasks, static_cast<int>(replicateids.size())))
+			//for (const size_t tasksize : splitWork(numberoftasks, static_cast<int>(replicateids.size())))
 			//	{
 			//	FMTreplanningtask newtask(*this);
 			//	std::queue<int>replicatesoftask;
@@ -262,7 +262,7 @@ namespace Parallel
 	{
 		try {
 			const std::string SEQ_NAME = m_primaryName + "._seq";
-			const std::string replicateFolder = "scenarios/replicat" + std::to_string(getiteration());
+			const std::string replicateFolder = "scenarios/replicat" + std::to_string(getIteration());
 			boost::filesystem::create_directories(m_outputlocation + '/' + replicateFolder);
 			const std::string SCHEDULE_PATH = m_outputlocation + '/' + replicateFolder + "/" + SEQ_NAME;
 			bool appendExistingSchedule = true;
@@ -278,14 +278,14 @@ namespace Parallel
 			if (p_model->getname() == stochastic->getname()||
 				p_model->getname() == local->getname())
 			{
-				scheduleList.push_back(p_model->getsolution(p_ModelPeriod, true));
-				//scheduleList.push_back(p_model->getsolution(p_ReportingPeriod, true));
-				scheduleList.back().setperiod(p_ReportingPeriod);
+				scheduleList.push_back(p_model->getSolution(p_ModelPeriod, true));
+				//scheduleList.push_back(p_model->getSolution(p_ReportingPeriod, true));
+				scheduleList.back().setPeriod(p_ReportingPeriod);
 			}else {//Got the strategic here got get the replicate 0 here...
 				appendExistingSchedule = false;
 				for (int period = 1; period <= p_model->getparameter(Models::FMTintmodelparameters::LENGTH);++period)
 					{
-					scheduleList.push_back(p_model->getsolution(period, true));
+					scheduleList.push_back(p_model->getSolution(period, true));
 					}
 				}
 			resultswriter->writeSchedules(SCHEDULE_PATH, scheduleList, appendExistingSchedule);
@@ -304,23 +304,23 @@ namespace Parallel
 			if (replanningperiod <= replanningperiods)//Dont write outside the replanningsperiods
 			{
 				int modelsize = modellength;
-				int firstperiod = dynamicarea.begin()->getperiod() + 1;
-				int lastperiod = firstperiod;
+				int firstPeriod = dynamicarea.begin()->getperiod() + 1;
+				int lastPeriod = firstPeriod;
 				if (!onlyfirstperiod)
 				{
-					lastperiod += modelsize;
-					if (firstperiod == 1)
+					lastPeriod += modelsize;
+					if (firstPeriod == 1)
 					{
-						--lastperiod;
+						--lastPeriod;
 					}
 				}
-				const std::map<std::string, std::vector<std::vector<double>>>results = resultswriter->getresults(modelptr, firstperiod, lastperiod);
+				const std::map<std::string, std::vector<std::vector<double>>>results = resultswriter->getResults(modelptr, firstPeriod, lastPeriod);
 				
 				_logger->logwithlevel("Writing results for " + modelname + " first period at: " +
-					std::to_string(replanningperiod) + " for replicate " + std::to_string(getiteration()) + +"\n", 1);
+					std::to_string(replanningperiod) + " for replicate " + std::to_string(getIteration()) + +"\n", 1);
 				
-				int reportingFirstPeriod = firstperiod;
-				int reportingLastPeriod = lastperiod;
+				int reportingFirstPeriod = firstPeriod;
+				int reportingLastPeriod = lastPeriod;
 				if (modelsize == 1)
 				{
 					reportingFirstPeriod = replanningperiod;
@@ -333,11 +333,11 @@ namespace Parallel
 				}
 
 				if (m_writeSchedule && modelptr && 
-					(modelname == stochastic->getname() || modelname == local->getname() || (modelname == global->getname() && getiteration() == 0)))
+					(modelname == stochastic->getname() || modelname == local->getname() || (modelname == global->getname() && getIteration() == 0)))
 					{
-					_writeSchedule(modelptr, reportingFirstPeriod, firstperiod);
+					_writeSchedule(modelptr, reportingFirstPeriod, firstPeriod);
 					}
-				resultswriter->write(modelname, results, reportingFirstPeriod, reportingLastPeriod, getiteration());
+				resultswriter->write(modelname, results, reportingFirstPeriod, reportingLastPeriod, getIteration());
 			}
 		}catch (...)
 		{
@@ -345,7 +345,7 @@ namespace Parallel
 		}
 	}
 
-	const int FMTreplanningtask::getiteration() const
+	const int FMTreplanningtask::getIteration() const
 		{
 		//if (replicateids.empty())
 		//{
@@ -361,7 +361,7 @@ namespace Parallel
 		local->passinlogger(logger);
 		}
 
-	void FMTreplanningtask::setreignore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
+	void FMTreplanningtask::setReIgnore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
 	{
 		try {
 			if(modelcpy->gotReIgnore(replanningperiod))
@@ -371,7 +371,7 @@ namespace Parallel
 				newconstraints.reserve(MODEL_CONSTRAINTS.size());
 				for (const Core::FMTconstraint& constraint : MODEL_CONSTRAINTS)
 				{
-					if (!constraint.isreignore(replanningperiod))
+					if (!constraint.isReIgnore(replanningperiod))
 					{
 						newconstraints.push_back(constraint);
 					}
@@ -386,18 +386,18 @@ namespace Parallel
 	}
 
 
-	void FMTreplanningtask::setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
+	void FMTreplanningtask::setReplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
 	{
 		try {
 			if (modelcpy->gotReplicate(replanningperiod))
 			{
-				modelcpy->setReplicate(getiteration(), replanningperiod);
+				modelcpy->setReplicate(getIteration(), replanningperiod);
 				/*std::vector<Core::FMTconstraint>newconstraints;
 				const std::vector<Core::FMTconstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
 				newconstraints.reserve(MODEL_CONSTRAINTS.size());
 				for (const Core::FMTconstraint& basenssconstraint : MODEL_CONSTRAINTS)
 				{
-					newconstraints.push_back(basenssconstraint.getfromreplicate(getiteration(), replanningperiod));
+					newconstraints.push_back(basenssconstraint.getFromReplicate(getIteration(), replanningperiod));
 				}
 				modelcpy->setconstraints(newconstraints);*/
 			}
@@ -415,7 +415,7 @@ namespace Parallel
 			const std::vector<Core::FMTconstraint>baselocalconstraints(dynamicconstraints);
 			while (!replicateids.empty())
 			{
-				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " started\n",0);
+				_logger->logwithlevel("Replanning on replicate " + std::to_string(getIteration()) + " started\n",0);
 				
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
@@ -424,7 +424,7 @@ namespace Parallel
 					if (replanningperiod != 1)
 					{
 						//boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
-						const std::unique_ptr<Models::FMTmodel>globalcopy = std::move(domodelplanning(global,replanningperiod,true));
+						const std::unique_ptr<Models::FMTmodel>globalcopy = std::move(doModelPlanning(global,replanningperiod,true));
 						if (!globalcopy)//infeasible replicate end here
 							{
 							//Also write infeasible for stochastic
@@ -443,13 +443,13 @@ namespace Parallel
 						checkpoint();//reduce heap contention
 					}*/
 					
-					const std::unique_ptr<Models::FMTmodel> stochasticcopy = std::move(domodelplanning(stochastic,replanningperiod,false,false,false));
+					const std::unique_ptr<Models::FMTmodel> stochasticcopy = std::move(doModelPlanning(stochastic,replanningperiod,false,false,false));
 					dynamicarea = stochasticcopy->getarea(replanningperiod + 1,true);
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 						{
-						developement.setperiod(replanningperiod - 1);
+						developement.setPeriod(replanningperiod - 1);
 						}
-					const std::unique_ptr<Models::FMTmodel> localcopy = std::move(domodelplanning(local, replanningperiod,false,true));
+					const std::unique_ptr<Models::FMTmodel> localcopy = std::move(doModelPlanning(local, replanningperiod,false,true));
 					if (!localcopy)//infeasible replicate end here
 						{
 						//Write infeasible for next global
@@ -464,26 +464,26 @@ namespace Parallel
 					dynamicarea = localcopy->getarea(localcopy->getparameter(Models::FMTintmodelparameters::LENGTH) + replanningperiod);
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 					{
-						developement.setperiod(replanningperiod);
+						developement.setPeriod(replanningperiod);
 					}
 				}
 				dynamicarea = global->getarea();
 				dynamicconstraints = baselocalconstraints;
 				iterationglobalschedule = *baseschedule;
-				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
+				_logger->logwithlevel("Replanning on replicate " + std::to_string(getIteration()) + " done\n", 0);
 				replicateids.pop();
 			}
 			//setstatus(true);
 		}catch (...)
 		{
-			const std::string LOCATION = "on replicate " + std::to_string(getiteration());
-			_exhandler->raisefromthreadcatch(LOCATION,"FMTreplanningtask::work", __LINE__, __FILE__);
+			const std::string LOCATION = "on replicate " + std::to_string(getIteration());
+			_exhandler->raiseFromThreadCatch(LOCATION,"FMTreplanningtask::work", __LINE__, __FILE__);
 		}
 
 	}
 
 
-	std::unique_ptr<Models::FMTmodel>FMTreplanningtask::domodelplanning(
+	std::unique_ptr<Models::FMTmodel>FMTreplanningtask::doModelPlanning(
 		const std::shared_ptr<Models::FMTmodel>model,
 		const int& replanningperiod,
 		bool getsolutionandlocal,
@@ -494,38 +494,38 @@ namespace Parallel
 		try {
 		
 			_logger->logwithlevel("starting model planning on "+ model ->getname()+"\n",1);
-			std::unique_ptr<Models::FMTmodel>modelcpy = copysharedmodel(model);
+			std::unique_ptr<Models::FMTmodel>modelcpy = copySharedModel(model);
 			int modelsize = modelcpy->getparameter(Models::FMTintmodelparameters::LENGTH);
-			const int randomseedperiod = (replanningperiod << 8) + static_cast<int>(getiteration());
+			const int randomseedperiod = (replanningperiod << 8) + static_cast<int>(getIteration());
 			modelcpy->setparameter(Models::FMTintmodelparameters::SEED, randomseedperiod);//For stochastic
 			const std::string modelname = modelcpy->getname();
 			bool writefirstperiodonly = true;
-			modelcpy->setarea(dynamicarea);
+			modelcpy->setArea(dynamicarea);
 			if (setdynamicconstraints)
 				{
 				modelcpy->setconstraints(dynamicconstraints);
 				}
-			setreignore(modelcpy, replanningperiod);
-			setreplicate(modelcpy, replanningperiod);
+			setReIgnore(modelcpy, replanningperiod);
+			setReplicate(modelcpy, replanningperiod);
 			if (applyscheduleweight)//local is here
 			{
 				bool solvedmodel = false;
 				#ifdef FMTWITHOSI
 					Models::FMTlpmodel* lpmodel = dynamic_cast<Models::FMTlpmodel*>(modelcpy.get());
-					lpmodel->doplanning(false);
-					const double  globalsolutionweight = lpmodel->getconstraints().at(0).getscheduleweight();
-					lpmodel->addscheduletoobjective(iterationglobalschedule, globalsolutionweight);
-					solvedmodel = lpmodel->initialsolve();
+					lpmodel->doPlanning(false);
+					const double  globalsolutionweight = lpmodel->getconstraints().at(0).getScheduleWeight();
+					lpmodel->addScheduleToObjective(iterationglobalschedule, globalsolutionweight);
+					solvedmodel = lpmodel->initialSolve();
 					#else
-					solvedmodel = modelcpy->doplanning(true);
+					solvedmodel = modelcpy->doPlanning(true);
 				#endif
 				if (solvedmodel)
 					{
 					optimal = true;
-					dynamicconstraints = modelcpy->getreplanningconstraints("LOCAL", global->getconstraints(), modelsize);
+					dynamicconstraints = modelcpy->getReplanningConstraints("LOCAL", global->getconstraints(), modelsize);
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTreplanningwarning,
-						"infeasible model named " + modelcpy->getname() + " on replicate " + std::to_string(getiteration()) + " at replanning period " + std::to_string(replanningperiod),
+						"infeasible model named " + modelcpy->getname() + " on replicate " + std::to_string(getIteration()) + " at replanning period " + std::to_string(replanningperiod),
 						"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 					modelcpy = std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
 				}
@@ -535,14 +535,14 @@ namespace Parallel
 					}
 				//lpmodel->writeLP("C:/Users/cyrgu3/Desktop/test/FMT2/FMT/build/debug/bin/Debug/tests/testlocal"+std::to_string(replanningperiod));
 			}else {
-				if (modelcpy->doplanning(true))
+				if (modelcpy->doPlanning(true))
 				{
 					optimal = true;
 					if (getsolutionandlocal)
 					{
-						dynamicconstraints = modelcpy->getreplanningconstraints("GLOBAL",local->getconstraints(), replanningperiod + 1);
-						iterationglobalschedule = modelcpy->getsolution(replanningperiod, true);
-						iterationglobalschedule.setperiod(1);
+						dynamicconstraints = modelcpy->getReplanningConstraints("GLOBAL",local->getconstraints(), replanningperiod + 1);
+						iterationglobalschedule = modelcpy->getSolution(replanningperiod, true);
+						iterationglobalschedule.setPeriod(1);
 						if (iterationglobalschedule.empty())
 							{
 							_exhandler->raise(Exception::FMTexc::FMTreplanningwarning,
@@ -552,7 +552,7 @@ namespace Parallel
 					}
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTreplanningwarning,
-						"infeasible model named " + modelcpy->getname() + " on replicate " + std::to_string(getiteration()) + " at replanning period " + std::to_string(replanningperiod),
+						"infeasible model named " + modelcpy->getname() + " on replicate " + std::to_string(getIteration()) + " at replanning period " + std::to_string(replanningperiod),
 						"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 
 					modelcpy = std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
@@ -567,7 +567,7 @@ namespace Parallel
 				" replanning period " + std::to_string(replanningperiod);
 			if (!replicateids.empty())
 			{
-				location += " replicate " + std::to_string(getiteration());
+				location += " replicate " + std::to_string(getIteration());
 			}
 			_exhandler->raisefromcatch(location, "FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 			}

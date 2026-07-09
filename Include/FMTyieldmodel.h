@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -108,12 +108,12 @@ namespace Core
 		When it comes to write down in a string the yield model.
 		*/
 		virtual  operator std::string() const;
-		// DocString: FMTyieldmodel::getperiodicvalues
+		// DocString: FMTyieldmodel::getPeriodicValues
 		/**
 		Try to turn the FMTyieldmodel into periodic constant values. if returns an non empty vector then
 		each first dimension is the yield id and each second dimension are the periodic value calculated by the yield.
 		*/
-		virtual std::vector<std::vector<double>>getperiodicvalues() const;
+		virtual std::vector<std::vector<double>>getPeriodicValues() const;
 		// DocString: FMTyieldmodel::clearRandomYieldsCache
 		/**
 		@brief clear the cache of all random yield model.

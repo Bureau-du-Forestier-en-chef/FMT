@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python
 {
-BOOST_PYTHON_FUNCTION_OVERLOADS(getlicense_overloads, Version::FMTversion::getlicense, 0, 1)
+BOOST_PYTHON_FUNCTION_OVERLOADS(getlicense_overloads, Version::FMTversion::getLicense, 0, 1)
 
 void exportVersion()
 {
@@ -32,19 +32,19 @@ void exportVersion()
 
 
 	boost::python::class_<Version::FMTversion>("FMTversion", "@DocString(FMTversion)")
-		.def("getmajor", &Version::FMTversion::getmajor,
+		.def("getmajor", &Version::FMTversion::getMajor,
 			"@DocString(FMTversion::getmajor)").staticmethod("getmajor")
-		.def("getminor",&Version::FMTversion::getminor,
+		.def("getminor",&Version::FMTversion::getMinor,
 			"@DocString(FMTversion::getminor)").staticmethod("getminor")
-		.def("getpatch", &Version::FMTversion::getpatch,
+		.def("getpatch", &Version::FMTversion::getPatch,
 			"@DocString(FMTversion::getpatch)").staticmethod("getpatch")
-		.def("getversion", &Version::FMTversion::getversion,
+		.def("getversion", &Version::FMTversion::getVersion,
 			"@DocString(FMTversion::getversion)").staticmethod("getversion")
-		.def("isatleast", &Version::FMTversion::isatleast,
+		.def("isatleast", &Version::FMTversion::isAtLeast,
 			"@DocString(FMTversion::isatleast)").staticmethod("isatleast")
-		.def("hasfeature", &Version::FMTversion::hasfeature,
+		.def("hasfeature", &Version::FMTversion::hasFeature,
 			"@DocString(FMTversion::hasfeature)").staticmethod("hasfeature")
-        .def("getlicense",&Version::FMTversion::getlicense,
+        .def("getlicense",&Version::FMTversion::getLicense,
 			getlicense_overloads(bp::args("french"),"@DocString(FMTversion::getlicense)")).staticmethod("getlicense");
 	}
 }

@@ -58,7 +58,7 @@ namespace Parser {
 
 #ifdef FMTWITHGDAL
 
-	OGRLayer* FMTmodelparser::createdriftlayer(GDALDataset* dataset, std::vector<std::string> creationoptions) const
+	OGRLayer* FMTmodelparser::createDriftLayer(GDALDataset* dataset, std::vector<std::string> creationoptions) const
 	{
 		OGRLayer* newlayer = nullptr;
 		try {
@@ -95,7 +95,7 @@ namespace Parser {
 		return newlayer;
 	}
 
-	void FMTmodelparser::writedrift(OGRLayer* layer, const std::map<std::string, std::map<double, std::vector<double>>>& lowervalues,
+	void FMTmodelparser::writeDrift(OGRLayer* layer, const std::map<std::string, std::map<double, std::vector<double>>>& lowervalues,
 		const std::map<std::string, std::map<double, std::vector<double>>>& uppervalues) const
 	{
 		try {
@@ -137,7 +137,7 @@ namespace Parser {
 		}
 	}
 
-	std::map<std::string, std::vector<std::vector<double>>>FMTmodelparser::getiterationsvalues(OGRLayer* layer) const
+	std::map<std::string, std::vector<std::vector<double>>>FMTmodelparser::getIterationsValues(OGRLayer* layer) const
 	{
 		std::map<std::string, std::vector<std::vector<double>>>results;
 		try {
@@ -228,16 +228,16 @@ namespace Parser {
 		return newlayer;
 	}
 
-	void FMTmodelparser::fillupinfeasibles(OGRLayer* layer,
+	void FMTmodelparser::fillUpInfeasibles(OGRLayer* layer,
 		const std::vector<Core::FMToutput>& theoutputs,
-		const int& iteration, const int& firstperiod, const int& lastperiod) const
+		const int& iteration, const int& firstPeriod, const int& lastPeriod) const
 	{
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard(m_MTX);
 			std::map<std::string, std::vector<std::vector<double>>>allvalues;
 			//Cannot fill up infeasible for non-total ... i guess
-			allvalues["Total"] = std::vector<std::vector<double>>(theoutputs.size(), std::vector<double>((lastperiod - firstperiod) + 1, std::numeric_limits<double>::quiet_NaN()));
-			writefeatures(layer, firstperiod, iteration, theoutputs, allvalues, true);
+			allvalues["Total"] = std::vector<std::vector<double>>(theoutputs.size(), std::vector<double>((lastPeriod - firstPeriod) + 1, std::numeric_limits<double>::quiet_NaN()));
+			writeFeatures(layer, firstPeriod, iteration, theoutputs, allvalues, true);
 		}
 		catch (...)
 		{
@@ -246,7 +246,7 @@ namespace Parser {
 
 	}
 
-	void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, const int& iteration,
+	void FMTmodelparser::writeFeatures(OGRLayer* layer, const int& firstPeriod, const int& iteration,
 		const std::vector<Core::FMToutput>& theoutputs,
 		const std::map<std::string, std::vector<std::vector<double>>>& values, bool writeNaN)const
 	{
@@ -257,7 +257,7 @@ namespace Parser {
 				size_t outputid = 0;
 				for (const std::vector<double>& outputvalues : toutputvalues.second)
 				{
-					int period = firstperiod;
+					int period = firstPeriod;
 					for (const double& value : outputvalues)
 					{
 						if (!std::isnan(value) || writeNaN)
@@ -303,7 +303,7 @@ namespace Parser {
 
 	void FMTmodelparser::writeresults(const Models::FMTmodel& model,
 		const std::vector<Core::FMToutput>& theoutputs,
-		const int& firstperiod, const int& lastperiod,
+		const int& firstPeriod, const int& lastPeriod,
 		const std::string& location,
 		Core::FMToutputlevel level,
 		std::string gdaldrivername) const
@@ -311,7 +311,7 @@ namespace Parser {
 		try {
 			GDALDataset* newdataset = createOGRDataset(location, gdaldrivername);
 			OGRLayer* newlayer = createResultsLayer(model.getname(), newdataset);
-			writefeatures(newlayer, firstperiod, 0, theoutputs, model.getoutputsfromperiods(theoutputs, firstperiod, lastperiod, level));
+			writeFeatures(newlayer, firstPeriod, 0, theoutputs, model.getOutputsFromPeriods(theoutputs, firstPeriod, lastPeriod, level));
 			GDALClose(newdataset);
 		}
 		catch (...)
@@ -322,7 +322,7 @@ namespace Parser {
 #endif 
 
 
-	void FMTmodelparser::writeprimary(
+	void FMTmodelparser::writePrimary(
 		const std::string& location,
 		const std::string& lanfile,
 		const std::string& arefile,
@@ -360,7 +360,7 @@ namespace Parser {
 		}
 	}
 
-	void  FMTmodelparser::writemodel(const Models::FMTmodel& model,
+	void  FMTmodelparser::writeModel(const Models::FMTmodel& model,
 		const std::string& lanfile,
 		const std::string& arefile,
 		const std::string& yldfile,
@@ -407,12 +407,12 @@ namespace Parser {
 		if (!trnfile.empty())
 		{
 			FMTtransitionparser trnparser;
-			trnparser.write(model.gettransitions(), trnfile);
+			trnparser.write(model.getTransitions(), trnfile);
 		}
 		if (!liffile.empty())
 		{
 			FMTlifespanparser lifparser;
-			lifparser.write(model.getlifespan(), liffile);
+			lifparser.write(model.getLifespan(), liffile);
 		}
 		if (!outfile.empty())
 		{
@@ -435,7 +435,7 @@ namespace Parser {
 		std::vector<Core::FMTschedule>schedules;
 		for (int period = 1; period <= model.getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
 		{
-			const Core::FMTschedule periodschedule = model.getsolution(period, true);
+			const Core::FMTschedule periodschedule = model.getSolution(period, true);
 			if (!periodschedule.empty())
 			{
 				schedules.push_back(periodschedule);
@@ -446,10 +446,10 @@ namespace Parser {
 			FMTscheduleparser scheduleparser;
 			std::string status = "Non Optimal";
 			std::string ObjectiveValue = "NA";
-			if (model.isoptimal())
+			if (model.isOptimal())
 				{
 				status = "Optimal";
-				ObjectiveValue =  std::to_string(model.getobjectivevalue());
+				ObjectiveValue =  std::to_string(model.getObjectiveValue());
 				}
 			const std::string modelobjective = "Objective value: " + ObjectiveValue + "\n";
 			const std::string modelstatus = "Status: " + status + "\n";
@@ -488,9 +488,9 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		const std::string optfile = folder + optname;
 		const std::string liffile = folder + lifname;
 		const std::string seqfile = folder + seqname;
-			writeprimary(folder + modelname + ".pri",
+			writePrimary(folder + modelname + ".pri",
 				lanname, arename, yldname, actname, trnname, outname, optname, lifname, seqname);
-			writemodel(model, lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
+			writeModel(model, lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
 		
 	}catch (...)
 		{
@@ -505,7 +505,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		try {
 			std::map<std::string, std::vector<int>> commons;
 			std::vector<Models::FMTmodel>models;
-			return referenceread(commons, models,
+			return referenceRead(commons, models,
 				con, lan, lif, are, yld, act, trn, out, opt);
 		}
 		catch (...)
@@ -515,7 +515,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		return Models::FMTmodel();
 	}
 
-	std::vector<Core::FMTconstraint>FMTmodelparser::getconstraintsfromstring(std::string constraintstr, const Models::FMTmodel& model, Core::FMTconstants constants)
+	std::vector<Core::FMTconstraint>FMTmodelparser::getConstraintsFromString(std::string constraintstr, const Models::FMTmodel& model, Core::FMTconstants constants)
 	{
 		std::vector<Core::FMTconstraint>constraints;
 		try {
@@ -536,7 +536,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 	}
 
 
-	Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector<int>>& commonm_sections,
+	Models::FMTmodel FMTmodelparser::referenceRead(std::map<std::string, std::vector<int>>& commonm_sections,
 		std::vector<Models::FMTmodel>& models,
 		const std::string& con, const std::string& lan,
 		const std::string& lif, const std::string& are, const std::string& yld,
@@ -609,7 +609,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							if (!common_lif.empty())
 							{
 								std::sort(common_lif.begin(), common_lif.end());
-								lifespan = models.at(*common_lif.begin()).getlifespan();
+								lifespan = models.at(*common_lif.begin()).getLifespan();
 								if (actions_it != commonm_sections.end())
 								{
 									std::vector<int>common_actions(common_lif.size() + actions_it->second.size());
@@ -629,7 +629,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 											if (!common_transitions.empty())
 											{
 												std::sort(common_transitions.begin(), common_transitions.end());
-												transitions = models.at(*common_transitions.begin()).gettransitions();
+												transitions = models.at(*common_transitions.begin()).getTransitions();
 											}
 										}
 									}
@@ -755,7 +755,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				{
 					_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction,
 						"_DEATH", "FMTmodelparser::referenceread", __LINE__, __FILE__, Core::FMTsection::Action);
-					actions.push_back(Models::FMTmodel::defaultdeathaction(lifespan, themes));
+					actions.push_back(Models::FMTmodel::defaultDeathAction(lifespan, themes));
 				}
 				m_MostRecentFile = std::max(actparser.getMostRecentFiletime(), m_MostRecentFile);
 
@@ -769,7 +769,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				{
 					_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition,
 						"_DEATH", "FMTmodelparser::referenceread", __LINE__, __FILE__, Core::FMTsection::Transition);
-					transitions.push_back(Models::FMTmodel::defaultdeathtransition(lifespan, themes));
+					transitions.push_back(Models::FMTmodel::defaultDeathTransition(lifespan, themes));
 				}
 				m_MostRecentFile = std::max(trnparser.getMostRecentFiletime(), m_MostRecentFile);
 			}
@@ -824,7 +824,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				setSolverParameters(returnedmodel, opt);
 				}
 			//returnedmodel.passinobject(*this);
-			returnedmodel.cleanactionsntransitions();
+			returnedmodel.cleanActionsNTransitions();
 			if (allow_mapping)
 			{
 				models.push_back(returnedmodel);
@@ -876,9 +876,9 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 						_logger->logstamp();
 						_logger->logtime();
 					}
-					writeprimary(primarym_location,
+					writePrimary(primarym_location,
 						clanname, carename, cyldname, cactname, ctrnname, coutname, coptname, clifname, cseqname);
-					writemodel(model, clanfile, carefile, cyldfile, cactfile, ctrnfile, coutfile, coptfile, cliffile, cseqfile);
+					writeModel(model, clanfile, carefile, cyldfile, cactfile, ctrnfile, coutfile, coptfile, cliffile, cseqfile);
 				}else {//read the existing ROOT model...
 					const std::vector<std::string>rootmodel(1,"ROOT");
 					const std::vector<Models::FMTmodel> models = readproject(primarym_location, rootmodel);
@@ -917,7 +917,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 						actfile = boost::filesystem::path(scenario / (filename + "._act")).string();
 					}
 					std::string trnfile;
-					if (models.begin()->gettransitions() != model.gettransitions())
+					if (models.begin()->getTransitions() != model.getTransitions())
 					{
 						trnfile = boost::filesystem::path(scenario / (filename + "._trn")).string();
 					}
@@ -932,12 +932,12 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 						optfile = boost::filesystem::path(scenario / (filename + "._opt")).string();
 					}
 					std::string liffile;
-					if (models.begin()->getlifespan() != model.getlifespan())
+					if (models.begin()->getLifespan() != model.getLifespan())
 					{
 						liffile = boost::filesystem::path(scenario / (filename + "._lif")).string();
 					}
 					const std::string seqfile = boost::filesystem::path(scenario / (filename + "._seq")).string();
-					writemodel(model, lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
+					writeModel(model, lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
 				}
 			}
 			catch (...)
@@ -949,7 +949,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 
 	
 
-	std::vector<Models::FMTmodel>FMTmodelparser::readfromfolder(const std::string& primarym_location,
+	std::vector<Models::FMTmodel>FMTmodelparser::readFromFolder(const std::string& primarym_location,
 		const std::string& folder,
 		std::vector<std::string>scenarios,
 		bool validatescenarioname,
@@ -966,7 +966,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				_logger->logstamp();
 				//_logger->logtime();
 			}
-			readstart = getclock();
+			readstart = getClock();
 			std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
 
 			if (!readarea)
@@ -986,7 +986,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			if (tookroot || (validatescenarioname && scenarios.empty())) //load the modelroot!
 			{
 				_logger->logwithlevel("Reading scenario ROOT\n", 0);
-				Models::FMTmodel scenario = referenceread(commons,
+				Models::FMTmodel scenario = referenceRead(commons,
 					models,
 					bases.at(Core::FMTsection::Constants),
 					bases.at(Core::FMTsection::Landscape),
@@ -997,7 +997,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					bases.at(Core::FMTsection::Transition),
 					bases.at(Core::FMTsection::Outputs),
 					bases.at(Core::FMTsection::Optimize), true);
-				models.back().setname("ROOT");
+				models.back().setName("ROOT");
 			}
 			const boost::filesystem::path primary_path(primarym_location);
 			std::string main_name = primary_path.stem().string();
@@ -1046,7 +1046,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 								scenario_files.at(Core::FMTsection::Optimize) = "";
 							}
 							_logger->logwithlevel("Reading scenario " + model_name + "\n", 0);
-							Models::FMTmodel scenario = referenceread(commons,
+							Models::FMTmodel scenario = referenceRead(commons,
 								models,
 								scenario_files.at(Core::FMTsection::Constants),
 								scenario_files.at(Core::FMTsection::Landscape),
@@ -1057,7 +1057,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 								scenario_files.at(Core::FMTsection::Transition),
 								scenario_files.at(Core::FMTsection::Outputs),
 								scenario_files.at(Core::FMTsection::Optimize), true);
-							models.back().setname(model_name);
+							models.back().setName(model_name);
 						}
 					}
 				}
@@ -1067,11 +1067,11 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			{
 				for (Models::FMTmodel& model : models)
 				{
-					model.cleanactionsntransitions();
+					model.cleanActionsNTransitions();
 					sortedmodels.push_back(model);
 				}
 
-				//models.begin()->cleanactionsntransitions();
+				//models.begin()->cleanActionsNTransitions();
 				//sortedmodels.push_back(*models.begin());
 			}
 			else {
@@ -1080,7 +1080,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					std::vector<Models::FMTmodel>::iterator modelit = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator(scenario));
 					if (modelit != models.end())
 					{
-						modelit->cleanactionsntransitions();
+						modelit->cleanActionsNTransitions();
 						sortedmodels.push_back(*modelit);
 					}
 				}
@@ -1111,7 +1111,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
 		}
 
-		if (_logger->logwithlevel("Done reading " + getdurationinseconds(readstart) + " ", 0))
+		if (_logger->logwithlevel("Done reading " + getDurationInSeconds(readstart) + " ", 0))
 		{
 			//_logger->logtime();
 		}
@@ -1119,10 +1119,10 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 
 	}
 
-	std::vector<Models::FMTmodel>FMTmodelparser::readtemplates(const std::string& primarym_location, const std::string& templatefolder)
+	std::vector<Models::FMTmodel>FMTmodelparser::readTemplates(const std::string& primarym_location, const std::string& templatefolder)
 	{
 		try {
-			return readfromfolder(primarym_location, templatefolder, std::vector<std::string>(), false);
+			return readFromFolder(primarym_location, templatefolder, std::vector<std::string>(), false);
 		}
 		catch (...)
 		{
@@ -1139,7 +1139,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			const boost::filesystem::path primary_path(primarym_location);
 			const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 			const std::string scenariofolder = scenarios_path.string();
-			return readfromfolder(primarym_location, scenariofolder, scenarios, true,readarea,readoutputs,readoptimize);
+			return readFromFolder(primarym_location, scenariofolder, scenarios, true,readarea,readoutputs,readoptimize);
 		}
 		catch (...)
 		{

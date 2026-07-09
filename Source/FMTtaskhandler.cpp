@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -66,12 +66,12 @@ namespace Parallel
 		return *this;
 		}
 
-	const std::vector<std::unique_ptr<FMTtask>>& FMTtaskhandler::gettasks() const
+	const std::vector<std::unique_ptr<FMTtask>>& FMTtaskhandler::getTasks() const
 		{
 		return alltasks;
 		}
 	
-	void FMTtaskhandler::splittasks()
+	void FMTtaskhandler::splitTasks()
 		{
 		try {
 			if (alltasks.size()>1)
@@ -113,8 +113,8 @@ namespace Parallel
 		{
 		std::vector<boost::thread>workers;
 		try {
-			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getclock();
-			splittasks();
+			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getClock();
+			splitTasks();
 			FMTtask::setTotalThreads(alltasks.size());
 			for (std::unique_ptr<FMTtask>& task : alltasks)
 				{
@@ -124,12 +124,12 @@ namespace Parallel
 				{
 				worker.join();
 				}
-			checksignals();
+			checkSignals();
 			if (!alltasks.empty())
 			{
 				finalize(alltasks.back());
 			}
-			logtasktime(tasksstart);
+			logTaskTime(tasksstart);
 		}catch (...)
 			{
 			for (boost::thread& worker : workers)
@@ -143,7 +143,7 @@ namespace Parallel
 
 	void FMTtaskhandler::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
-		// TODO GAB faire un warning si on passe par ici on créer un nouveau logger qui va chier en multithreads
+		// TODO GAB faire un warning si on passe par ici on crer un nouveau logger qui va chier en multithreads
 		for (std::unique_ptr<FMTtask>& task : alltasks)
 			{
 			task->passinlogger(logger);
@@ -156,7 +156,7 @@ namespace Parallel
 
 		try
 		{
-			const auto tasksstart = getclock();
+			const auto tasksstart = getClock();
 
 			if (alltasks.size() != 1)
 			{
@@ -200,11 +200,11 @@ namespace Parallel
 						++it;
 					}
 				}
-				checksignals();
+				checkSignals();
 			}
 
 			finalize(alltasks.back());
-			logtasktime(tasksstart);
+			logTaskTime(tasksstart);
 		}
 		catch (...)
 		{
@@ -219,10 +219,10 @@ namespace Parallel
 		}
 	}
 
-	void FMTtaskhandler::logtasktime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const
+	void FMTtaskhandler::logTaskTime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const
 	{
 		try {
-			_logger->logwithlevel("All tasks completed " + getdurationinseconds(startime) + "\n", 0);
+			_logger->logwithlevel("All tasks completed " + getDurationInSeconds(startime) + "\n", 0);
 		}
 		catch (...)
 		{

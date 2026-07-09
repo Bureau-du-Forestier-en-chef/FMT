@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -21,23 +21,23 @@ namespace Heuristics
 
 		}
 
-	void FMToperatingareaclusterbinary::setstatistic(const double& statvalue)
+	void FMToperatingareaclusterbinary::setStatistic(const double& statvalue)
 		{
 		statistic = statvalue;
 		}
 
-	void FMToperatingareaclusterbinary::setvariable(const int& lvariable)
+	void FMToperatingareaclusterbinary::setVariable(const int& lvariable)
 		{
 		variable = lvariable;
 		}
 
 
-	Core::FMToutput FMToperatingareaclusterbinary::getoutputintersect(const Core::FMToutput& output,const std::vector<Core::FMTtheme>& themes) const
+	Core::FMToutput FMToperatingareaclusterbinary::getOutputIntersect(const Core::FMToutput& output,const std::vector<Core::FMTtheme>& themes) const
 		{
-		return output.intersectwithmask(getmask(),themes);
+		return output.intersectWithMask(getmask(),themes);
 		}
 
-	std::vector<FMToperatingareaclusterbinary> FMToperatingareaclusterbinary::filterneighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const
+	std::vector<FMToperatingareaclusterbinary> FMToperatingareaclusterbinary::filterNeighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const
 		{
 		std::vector<FMToperatingareaclusterbinary>finalbinaries;
 		while (finalbinaries.size()!= potentiallink.size())
@@ -59,7 +59,7 @@ namespace Heuristics
 					{
 						if (dcit->first != mainbinary.getmask())
 						{
-							const std::vector<Core::FMTmask> baseneighbors = mainbinary.getneighbors();
+							const std::vector<Core::FMTmask> baseneighbors = mainbinary.getNeighbors();
 							dcit->second.insert(dcit->second.end(), baseneighbors.begin(), baseneighbors.end());
 						}
 					}

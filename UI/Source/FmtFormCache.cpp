@@ -211,7 +211,7 @@ void FMTFormCache::RecoverLoggerAndHandler(System::IntPtr intptrptr)
 	try{
 		// Apres un crash, le logger et/ou le handler peuvent avoir ete remplaces ou
 		// laisses dans un etat instable. On les reconstruit a partir de la config
-		// figee. Le fichier log est rouvert en mode append (settofile) : le contenu
+		// figee. Le fichier log est rouvert en mode append (setToFile) : le contenu
 		// existant est conserve. On rafraichit le pointeur de fonction avec le
 		// delegue frais fourni (l'ancien peut etre invalide).
 		if (m_loggerInitialized)

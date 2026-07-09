@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -20,7 +20,7 @@ namespace Models
 		{
 		try{
 			
-			setarea(p_Forest.getarea());
+			setArea(p_Forest.getarea());
 		}catch (...)
 			{
 			_exhandler->printexceptions("", 
@@ -98,11 +98,11 @@ namespace Models
 	{
 		double Numerator = MAX_FACTOR;
 		const int UPDATE = getparameter(Models::FMTintmodelparameters::UPDATE);
-		if (constraints[p_constraint].getperiodupperbound() < UPDATE)
+		if (constraints[p_constraint].getPeriodUpperBound() < UPDATE)
 			{
 			Numerator *= 10;
 			}
-		if (constraints[p_constraint].isspatial())
+		if (constraints[p_constraint].isSpatial())
 			{
 			Numerator *= 10;
 			}
@@ -152,11 +152,11 @@ namespace Models
         return *this;
         }
 
-	std::vector<Core::FMTschedule> FMTsemodel::getschedule(bool withlock) const
+	std::vector<Core::FMTschedule> FMTsemodel::getSchedule(bool withlock) const
 	{
 		try
 		{
-			return m_BestSolution.getschedules(m_SpatialGraphs,withlock);
+			return m_BestSolution.getSchedules(m_SpatialGraphs,withlock);
 		}
 		catch (...)
 		{
@@ -164,7 +164,7 @@ namespace Models
 		}
 		return std::vector<Core::FMTschedule>();
 	}
-	bool FMTsemodel::setinitialmapping(const Spatial::FMTforest& forest)
+	bool FMTsemodel::setInitialMapping(const Spatial::FMTforest& forest)
         {
 		try {
 			_BuildArea(forest);
@@ -185,26 +185,26 @@ namespace Models
 			double total = 0;
 			*_logger << "Constraints infeasibilities report: " << "\n";
 			const std::vector<Core::FMTconstraint>constraints = getconstraints();
-			for (double value : m_BestSolution.getconstraintsvalues(m_SpatialGraphs))
+			for (double value : m_BestSolution.getConstraintsValues(m_SpatialGraphs))
 			{
-				if (cid > 0 /* && !constraints.at(cid).isspatial()*/)
+				if (cid > 0 /* && !constraints.at(cid).isSpatial()*/)
 				{
 					if (value > 0)
 					{
-						if (constraints.at(cid).isgoal())
+						if (constraints.at(cid).isGoal())
 						{
 							double GoalValue;
 							std::string GoalName;
-							constraints.at(cid).getgoal(GoalName, GoalValue);
+							constraints.at(cid).getGoal(GoalName, GoalValue);
 							if (GoalName=="_WEIGHT")
 								{
 								value /= GoalValue;
 								}
 						}
-						std::string constraintname = std::string(constraints.at(cid));
-						std::replace(constraintname.begin(), constraintname.end(), '\n', ' ');
-						constraintname += ("(" + std::to_string(static_cast<int>(value))+")");
-						*_logger << constraintname << "\n";
+						std::string constraintName = std::string(constraints.at(cid));
+						std::replace(constraintName.begin(), constraintName.end(), '\n', ' ');
+						constraintName += ("(" + std::to_string(static_cast<int>(value))+")");
+						*_logger << constraintName << "\n";
 						++brokenup;
 					}
 					++total;
@@ -233,10 +233,10 @@ namespace Models
 			size_t constraintid = 0;
 			for (const double& value : FACTORS)
 				{
-				std::string constraintname = constraints.at(constraintid);
-				std::replace(constraintname.begin(), constraintname.end(), '\n', ' ');
-				constraintname+= " (" + std::to_string(value)+")";
-				*_logger << constraintname << "\n";
+				std::string constraintName = constraints.at(constraintid);
+				std::replace(constraintName.begin(), constraintName.end(), '\n', ' ');
+				constraintName+= " (" + std::to_string(value)+")";
+				*_logger << constraintName << "\n";
 				++constraintid;
 				}
 			*_logger << "Constraints factor report done" << "\n";
@@ -248,12 +248,12 @@ namespace Models
 	}
 
 
-	std::map<std::string, double> FMTsemodel::getoutput(const Core::FMToutput& output,
+	std::map<std::string, double> FMTsemodel::getOutput(const Core::FMToutput& output,
 		int period, Core::FMToutputlevel level) const
 	{
 		std::map<std::string, double>values;
 		try {
-			values = m_BestSolution.getoutput(m_SpatialGraphs, output, period, level);
+			values = m_BestSolution.getOutput(m_SpatialGraphs, output, period, level);
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTsemodel::getoutput", __LINE__, __FILE__);
@@ -262,7 +262,7 @@ namespace Models
 	}
 
 
-	Spatial::FMTlayer<double> FMTsemodel::getspatialoutput(const Core::FMToutput& output, int period) const
+	Spatial::FMTlayer<double> FMTsemodel::getSpatialOutput(const Core::FMToutput& output, int period) const
 	{
 		try {
 			return m_BestSolution.getSpatialOutput(*this, output, period);
@@ -274,11 +274,11 @@ namespace Models
 	}
 
 
-	Core::FMTschedule FMTsemodel::getsolution(int period, bool withlock) const
+	Core::FMTschedule FMTsemodel::getSolution(int period, bool withlock) const
 	{
 		Core::FMTschedule baseschedule;
 		try {
-			const std::vector<Core::FMTschedule> allschedules = m_BestSolution.getschedules(m_SpatialGraphs,withlock);
+			const std::vector<Core::FMTschedule> allschedules = m_BestSolution.getSchedules(m_SpatialGraphs,withlock);
 			size_t scheduleid = 0;
 			while (scheduleid < allschedules.size())
 			{
@@ -297,26 +297,26 @@ namespace Models
 	}
 
 
-	std::string FMTsemodel::getdisturbancestats() const
+	std::string FMTsemodel::getDisturbanceStats() const
 	{
-		return m_BestSolution.getpatchstats(actions);
+		return m_BestSolution.getPatchStats(actions);
 	}
 
 	std::unique_ptr<FMTmodel>FMTsemodel::presolve(
 		std::vector<Core::FMTactualdevelopment> optionaldevelopments ) const
 		{
 		try {
-			if (m_BestSolution.actperiod() == 1)//just presolve if no solution
+			if (m_BestSolution.actPeriod() == 1)//just presolve if no solution
 			{
-				//const std::vector<Core::FMTactualdevelopment>areas = solution.getforestperiod(0).getarea();
+				//const std::vector<Core::FMTactualdevelopment>areas = solution.getForestPeriod(0).getarea();
 				const std::vector<Core::FMTactualdevelopment>areas = m_BestSolution.getarea();
 				optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
 				std::unique_ptr<FMTmodel>presolvedmod(new FMTsemodel(*(FMTmodel::presolve(optionaldevelopments))));
 				FMTsemodel*presolvedses = dynamic_cast<FMTsemodel*>(presolvedmod.get());
-				Core::FMTmaskfilter presolveFilter = presolvedses->getpresolvefilter(themes);
-				const Core::FMTmask baseMask = this->getbasemask(optionaldevelopments);
-				const boost::dynamic_bitset<uint8_t>&bitsets = baseMask.getbitsetreference();
-				//presolvedses->solution = Spatial::FMTspatialschedule(solution.getforestperiod(0).presolve(presolvefilter, presolvedses->themes));
+				Core::FMTmaskfilter presolveFilter = presolvedses->getPresolveFilter(themes);
+				const Core::FMTmask baseMask = this->getBaseMask(optionaldevelopments);
+				const boost::dynamic_bitset<uint8_t>&bitsets = baseMask.getBitsetReference();
+				//presolvedses->solution = Spatial::FMTspatialschedule(solution.getForestPeriod(0).presolve(presolvefilter, presolvedses->themes));
 				const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH) + 2);
 				presolvedses->m_SpatialGraphs = Spatial::FMTSpatialGraphs(*presolvedses, m_BestSolution.getcellsize());
 				Spatial::FMTSpatialSchedule presolvedSolution = m_BestSolution.presolve(presolveFilter, presolvedses->m_SpatialGraphs, LENGTH);
@@ -333,9 +333,9 @@ namespace Models
 	void FMTsemodel::postsolve(const FMTmodel& originalbasemodel)
 		{
 		try {
-			if (m_BestSolution.actperiod()>=1)//just postsolve if you have a solution
+			if (m_BestSolution.actPeriod()>=1)//just postsolve if you have a solution
 			{
-				const Core::FMTmaskfilter presolvedmask = this->getpostsolvefilter(originalbasemodel.getthemes(), originalbasemodel.getarea().begin()->getmask());
+				const Core::FMTmaskfilter presolvedmask = this->getPostsolveFilter(originalbasemodel.getthemes(), originalbasemodel.getarea().begin()->getmask());
 				Spatial::FMTSpatialGraphs postSolvedGraphs = Spatial::FMTSpatialGraphs(originalbasemodel, m_BestSolution.getcellsize());
 				m_BestSolution.postsolve(presolvedmask,this->getactions(), postSolvedGraphs);
 				m_SpatialGraphs.swap(postSolvedGraphs);
@@ -348,10 +348,10 @@ namespace Models
 			}
 		}
 
-	Spatial::FMTforest FMTsemodel::getmapping() const
+	Spatial::FMTforest FMTsemodel::getMapping() const
 		{
 		try {
-			return m_BestSolution.getforestperiod(m_BestSolution.actperiod()-1);
+			return m_BestSolution.getForestPeriod(m_BestSolution.actPeriod()-1);
 		}
 		catch (...)
 			{
@@ -365,7 +365,7 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(new FMTsemodel(*this));
 		}
 
-	void FMTsemodel::swap_ptr(std::unique_ptr<FMTmodel>& rhs)
+	void FMTsemodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
 	{
 		*this = std::move(*dynamic_cast<FMTsemodel*>(rhs.get()));
 	}
@@ -382,10 +382,10 @@ namespace Models
 	return std::vector<Core::FMTactualdevelopment>();
 	}
 
-	std::unique_ptr<FMTmodel> FMTsemodel::getcopy(int period) const
+	std::unique_ptr<FMTmodel> FMTsemodel::getCopy(int period) const
 	{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTsemodel(*this, m_BestSolution.getforestperiod(period)));
+			return std::unique_ptr<FMTmodel>(new FMTsemodel(*this, m_BestSolution.getForestPeriod(period)));
 		}
 		catch (...)
 		{
@@ -394,11 +394,11 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}
 
-	double FMTsemodel::getobjectivevalue() const
+	double FMTsemodel::getObjectiveValue() const
 	{
 		double value = std::numeric_limits<double>::quiet_NaN();
 		try {
-			value = m_BestSolution.getglobalobjective(m_SpatialGraphs);
+			value = m_BestSolution.getGlobalObjective(m_SpatialGraphs);
 		}
 		catch (...)
 		{
@@ -411,7 +411,7 @@ namespace Models
 	{
 		double value = 0.0;
 		try {
-			value = p_Schedule.getglobalobjective(m_SpatialGraphs);
+			value = p_Schedule.getGlobalObjective(m_SpatialGraphs);
 		}
 		catch (...)
 		{
@@ -431,7 +431,7 @@ namespace Models
 	{
 		std::map<std::string, double> value;
 		try {
-			value = p_SpatialSchedule.greedyreferencebuild(schedule, m_SpatialGraphs, randomiterations, seed, tolerance, log);
+			value = p_SpatialSchedule.greedyReferenceBuild(schedule, m_SpatialGraphs, randomiterations, seed, tolerance, log);
 		}
 		catch (...)
 		{
@@ -444,7 +444,7 @@ namespace Models
 		{
 		std::vector<double> values;
 		try {
-			values = p_SpatialSchedule.getconstraintsvalues(m_SpatialGraphs);
+			values = p_SpatialSchedule.getConstraintsValues(m_SpatialGraphs);
 		}
 		catch (...)
 		{
@@ -458,7 +458,7 @@ namespace Models
 		bool withsense, bool withfactorization, bool withspatial) const
 	{
 		try {
-			p_SpatialSchedule.getsolutionstatus(p_Objective, p_PrimalInFeasibility, m_SpatialGraphs, withsense, withfactorization, withspatial);
+			p_SpatialSchedule.getSolutionStatus(p_Objective, p_PrimalInFeasibility, m_SpatialGraphs, withsense, withfactorization, withspatial);
 		}
 		catch (...)
 		{
@@ -471,7 +471,7 @@ namespace Models
 	{
 		double value = 0.0;
 		try {
-				value = m_BestSolution.getconstraintevaluation(m_SpatialGraphs, p_Constraint);
+				value = m_BestSolution.getConstraintEvaluation(m_SpatialGraphs, p_Constraint);
 
 		}catch (...)
 		{
@@ -488,7 +488,7 @@ namespace Models
 				{
 				std::vector<double>NewFactors(FACTORS);
 				size_t cntid = 0;
-				for (const double& VALUE : p_SpatialSchedule.getconstraintsvalues(m_SpatialGraphs))
+				for (const double& VALUE : p_SpatialSchedule.getConstraintsValues(m_SpatialGraphs))
 				{
 					const double VALUE_WITH_FACTOR = FACTORS.at(cntid) * VALUE;
 					if ((VALUE_WITH_FACTOR > _GetConstraintNumerator(cntid) ||
@@ -498,7 +498,7 @@ namespace Models
 					}
 					++cntid;
 				}
-				p_SpatialSchedule.setconstraintsfactor(*this,NewFactors);
+				p_SpatialSchedule.setConstraintsFactor(*this,NewFactors);
 				
 				}
 		}catch (...)
@@ -516,7 +516,7 @@ namespace Models
 
 	std::vector<Core::FMTschedule>  FMTsemodel::GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,bool withlock) const
 	{
-		return  p_SpatialSchedule.getschedules(m_SpatialGraphs, withlock);
+		return  p_SpatialSchedule.getSchedules(m_SpatialGraphs, withlock);
 	}
 
 

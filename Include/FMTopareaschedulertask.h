@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -76,60 +76,60 @@ namespace Parallel
 		// DocString: FMTopareaschedulertask::lastspawned
 		///Last thread id and seed used by the spawner.
 		int lastspawned;
-		// DocString: FMTopareaschedulertask::solveinitialmodel
+		// DocString: FMTopareaschedulertask::solveInitialModel
 		/**
 		Solve the initial model and return the objective value.
 		*/
-		double solveinitialmodel(Models::FMTlpmodel& model) const;
-		// DocString: FMTopareaschedulertask::setinitialscheduler
+		double solveInitialModel(Models::FMTlpmodel& model) const;
+		// DocString: FMTopareaschedulertask::setInitialScheduler
 		/**
 		Set the initialscheduler from the lpmodel using the operating areas and the output node.
 		*/
-		void setinitialscheduler(Models::FMTlpmodel& model,
+		void setInitialScheduler(Models::FMTlpmodel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,const Core::FMToutputnode& node);
-		// DocString: FMTopareaschedulertask::getstoppoint
+		// DocString: FMTopareaschedulertask::getStopPoint
 		/**
 		Get the time at which the solving should stop.
 		*/
-		std::chrono::time_point<std::chrono::high_resolution_clock>getstoppoint(const int& timegap) const;
-		// DocString: FMTopareaschedulertask::getconstraintssolution
+		std::chrono::time_point<std::chrono::high_resolution_clock>getStopPoint(const int& timegap) const;
+		// DocString: FMTopareaschedulertask::getConstraintsSolution
 		/**
 		Get the outputs and constraints solution of the best scheduler and fill constraints and outputs.
 		*/
-		void getconstraintssolution(std::vector<Core::FMToutput>& outputs,std::vector<Core::FMTconstraint>& constraints) const;
-		// DocString: FMTopareaschedulertask::writefinalmodel
+		void getConstraintsSolution(std::vector<Core::FMToutput>& outputs,std::vector<Core::FMTconstraint>& constraints) const;
+		// DocString: FMTopareaschedulertask::writeFinalModel
 		/**
 		Using the solution of the best heuristic just rebuild the base model without anyconstraint and apply the solution found.
 		Then get the folder of the resulting solution et write the entire model and the solution.
 		*/
-		void writefinalmodel() const;
-		// DocString: FMTopareaschedulertask::writesolution
+		void writeFinalModel() const;
+		// DocString: FMTopareaschedulertask::writeSolution
 		/**
 		Using the solution location write down the solution.
 		*/
-		void writesolution() const;
-		// DocString: FMTopareaschedulertask::gotinitialsolution
+		void writeSolution() const;
+		// DocString: FMTopareaschedulertask::gotInitialSolution
 		/**
 		Returns true if the bestscheduler is not empty and have an initial solution.
 		*/
-		bool gotinitialsolution() const;
-		// DocString: FMTopareaschedulertask::evaluateandcopy
+		bool gotInitialSolution() const;
+		// DocString: FMTopareaschedulertask::evaluateAndCopy
 		/**
 		Evaluate if the actualscheduler is better than the bestscheduler. If it is push the actualscheduler to the best scheduler.
 		Else take the solution from the bestscheduler.
 		*/
-		void evaluateandcopy();
-		// DocString: FMTopareaschedulertask::goodtogo
+		void evaluateAndCopy();
+		// DocString: FMTopareaschedulertask::goodToGo
 		/**
 		Return true if iterations > 0 and still time left.
 		*/
-		bool goodtogo() const;
-		// DocString: FMTopareaschedulertask::getreturntimefromoutput
+		bool goodToGo() const;
+		// DocString: FMTopareaschedulertask::getReturnTimeFromOutput
 		/**
 		Will return a new vector of FMToperatingareascheme with new return_time value based on the output calculed
 		in the model for each operaging area.
 		*/
-		std::vector<Heuristics::FMToperatingareascheme> getreturntimefromoutput(Models::FMTlpmodel& model,
+		std::vector<Heuristics::FMToperatingareascheme> getReturnTimeFromOutput(Models::FMTlpmodel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 			const Core::FMToutput& output) const;
 	public:
@@ -160,7 +160,7 @@ namespace Parallel
 		std::unique_ptr<FMTtask>clone() const;
 		// DocString: FMTopareaschedulertask::FMTopareaschedulertask(...)
 		/**
-		Using a model the constructor will call doplanning of the model.
+		Using a model the constructor will call doPlanning of the model.
 		So you have to set the length and other parameters before. Then the task will obtain the operatingareascheme
 		from the FMTlpmodel and setup everything else. If the returntime_output is non empty then it will use it to get the result
 		for each FMToperatingareascheme and set the value to the returntime using the initial solution.

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -62,12 +62,12 @@ FMTdata& FMTdata::operator = (const FMTdata& rhs)
     return *this;
     }
 
-FMTyieldparserop FMTdata::getop() const
+FMTyieldparserop FMTdata::getOp() const
     {
     return ops;
     }
 
-void FMTdata::clearcache()
+void FMTdata::clearCache()
 	{
 		//_cache = std::unique_ptr<boost::unordered_map<FMTdevelopment,double>>(new boost::unordered_map<FMTdevelopment,double>());
 		//delete _cache;
@@ -88,7 +88,7 @@ bool FMTdata::constant() const
 	return false;
 	}
 
-bool FMTdata::nulldata() const
+bool FMTdata::nullData() const
 	{
 	if (ops == FMTyieldparserop::FMTnone)
 		{
@@ -119,9 +119,9 @@ bool FMTdata::nulldata() const
 	return seed;
 	}*/
 
-FMTdevelopment FMTdata::getsummarydevelopment(const FMTyieldrequest& request) const
+FMTdevelopment FMTdata::getSummaryDevelopment(const FMTyieldrequest& request) const
 	{
-	const Core::FMTdevelopment& refdev = request.getdevelopment();
+	const Core::FMTdevelopment& refdev = request.getDevelopment();
 	int lperiod = refdev.getperiod();
 	if (ops != FMTyieldparserop::FMTcai && ops != FMTyieldparserop::FMTmai && ops!= FMTyieldparserop::FMTytp && ops != FMTyieldparserop::FMTrange)
 		{
@@ -130,24 +130,24 @@ FMTdevelopment FMTdata::getsummarydevelopment(const FMTyieldrequest& request) co
 			lperiod=0;
 			}
 		}
-	return FMTdevelopment(request.getresumemask(), refdev.getage(),0, refdev.getperiod());
+	return FMTdevelopment(request.getResumeMask(), refdev.getAge(),0, refdev.getperiod());
 	}
 
-bool FMTdata::cachevalue(const FMTyieldrequest& request) const
+bool FMTdata::cacheValue(const FMTyieldrequest& request) const
 	{
 	allocateCache();
-	return _cache->find(this->getsummarydevelopment(request)) != _cache->end();
+	return _cache->find(this->getSummaryDevelopment(request)) != _cache->end();
 	}
 double FMTdata::get(const FMTyieldrequest& request) const
 	{
 	allocateCache();
-	return _cache->at(this->getsummarydevelopment(request));
+	return _cache->at(this->getSummaryDevelopment(request));
 	}
 void FMTdata::set(const double& value, const FMTyieldrequest& request,const bool& age_only) const
 	{
 	allocateCache();
 	_agebase = age_only;
-	_cache->operator[](this->getsummarydevelopment(request)) = value;
+	_cache->operator[](this->getSummaryDevelopment(request)) = value;
 	}
 
 std::vector<const std::string*> FMTdata::getSources() const
@@ -192,7 +192,7 @@ std::vector<std::string> FMTdata::getSourcesCopy() const
 }
 
 /*
-std::vector<std::string> FMTdata::getsource() const
+std::vector<std::string> FMTdata::getSource() const
     {
 	if (ops == FMTyieldparserop::FMTequation)
 		{
@@ -345,7 +345,7 @@ std::vector<double>FMTdata::tovalues(const std::map<std::string, double>& source
 	}
 */
 
-FMTexpression FMTdata::toexpression() const
+FMTexpression FMTdata::toExpression() const
 	{
 	std::vector<std::string>vals(source.size());
 	int loc = 0;

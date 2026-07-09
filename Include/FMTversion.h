@@ -1,6 +1,6 @@
 
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -51,52 +51,52 @@ class FMTEXPORT FMTversion : public Core::FMTobject
 		Destructor of FMTversion.
 		*/
 		~FMTversion()=default;
-		// DocString: FMTversion::getmajor
+		// DocString: FMTversion::getMajor
 		/**
 		Getter of the major version of FMT.
 		*/
-		static int getmajor();
-		// DocString: FMTversion::getminor
+		static int getMajor();
+		// DocString: FMTversion::getMinor
 		/**
 		Getter of the minor version of FMT.
 		*/
-		static int getminor();
-		// DocString: FMTversion::getpatch
+		static int getMinor();
+		// DocString: FMTversion::getPatch
 		/**
 		Getter of the patch version of FMT.
 		*/
-		static int getpatch();
-		// DocString: FMTversion::getversion
+		static int getPatch();
+		// DocString: FMTversion::getVersion
 		/**
 		Getter of the string of the version : MAjor.Minor.PATCH
 		*/
-		static std::string getversion();
-		// DocString: FMTversion::getdatenow
+		static std::string getVersion();
+		// DocString: FMTversion::getDatenow
 		/**
 		Getter of the actual date: Day Month date
 		*/
-		static std::string getdatenow();
-		// DocString: FMTversion::getbuilddate
+		static std::string getDatenow();
+		// DocString: FMTversion::getBuildDate
 		/**
 		Getter of the build date: date
 		*/
-		static std::string getbuilddate();
-		// DocString: FMTversion::isatleast
+		static std::string getBuildDate();
+		// DocString: FMTversion::isAtLeast
 		/**
 		Test if the FMT version is at least the given major/minor/patch parameters.
 		*/
-		static bool isatleast(int major, int minor, int patch);
-		// DocString: FMTversion::hasfeature
+		static bool isAtLeast(int major, int minor, int patch);
+		// DocString: FMTversion::hasFeature
 		/**
 		Test if the FMT version have the named feature.
 		Features GDAL,OSI,MOSEK,PYTHON,R.
 		*/
-		static bool hasfeature(const std::string& name);
-		// DocString: FMTversion::getlicense
+		static bool hasFeature(const std::string& name);
+		// DocString: FMTversion::getLicense
 		/**
 		Returns thes license has a regular string if french = true the returned license will be in french
 		*/
-		static std::string getlicense(bool french=false);
+		static std::string getLicense(bool french=false);
 	};
 }
 

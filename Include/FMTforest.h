@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -39,12 +39,12 @@ namespace Spatial
 			std::vector<Core::FMTactualdevelopment>getarea() const;
 			void SetLastThemeWithArea(const std::vector<Core::FMTactualdevelopment>& p_devs,
 										const std::vector<Core::FMTtheme>& p_themes);
-        FMTforest getcopy(bool copydata = true) const;
+        FMTforest getCopy(bool copydata = true) const;
         FMTforest grow() const;
 		std::vector<FMTlayer<std::string>> getthemes(const std::vector<Core::FMTtheme>& themes) const;
-        FMTlayer<int>getage() const;
-        FMTlayer<std::string>getlock() const;
-		void setperiod(int period);
+        FMTlayer<int>getAge() const;
+        FMTlayer<std::string>getLock() const;
+		void setPeriod(int period);
 		FMTforest presolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const;
 		FMTforest postsolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&originalbasethemes) const;
         };

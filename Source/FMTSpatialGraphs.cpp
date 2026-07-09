@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -200,7 +200,7 @@ namespace Spatial
 
 	size_t FMTSpatialGraphs::GetCategoryOf(int p_themeId, size_t p_family) const
 	{
-		const Core::FMTmask& MASK = m_AllGraphs.at(p_family).begin()->first.getbasedevelopment().getmask();
+		const Core::FMTmask& MASK = m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment().getmask();
 		return std::distance(&*m_Model->themes.at(p_themeId).getbaseattributes().begin(),
 			&MASK.getAttribute(m_Model->themes.at(p_themeId)));
 	}
@@ -234,7 +234,7 @@ namespace Spatial
 			int SchedulePeriod = 1;
 			for (Core::FMTschedule& Schedule : Schedules)
 			{
-				Schedule.setperiod(SchedulePeriod);
+				Schedule.setPeriod(SchedulePeriod);
 				++SchedulePeriod;
 			}
 			for (const auto& FAMILY : m_AllGraphs)
@@ -244,10 +244,10 @@ namespace Spatial
 					const double CELLS = _GetGraphCells(p_Solution, GRAPH.second);
 					if (CELLS > FMT_DBL_TOLERANCE)
 					{
-						const double GRAPH_AREA = CELLS * GRAPH.first.getbasedevelopment().getarea();
+						const double GRAPH_AREA = CELLS * GRAPH.first.getBaseDevelopment().getarea();
 						for (int period = 1; period < GRAPH.first.getperiod(); ++period)
 						{
-							const Core::FMTschedule SCHEDULE = GRAPH.first.getschedule(GetModel().actions,
+							const Core::FMTschedule SCHEDULE = GRAPH.first.getSchedule(GetModel().actions,
 								&GRAPH_AREA, period, WithLock);
 							Schedules[period - 1] += SCHEDULE;
 							
@@ -334,7 +334,7 @@ namespace Spatial
 				{
 				const int LENGTH = m_Model->getparameter(Models::FMTintmodelparameters::LENGTH);
 				const Core::FMTactualdevelopment* BASE = dynamic_cast<const Core::FMTactualdevelopment*>(
-					&m_AllGraphs.at(p_family).begin()->first.getbasedevelopment());
+					&m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment());
 				Graph::FMTlinegraph NewGraph(static_cast<size_t>(LENGTH), *BASE);
 				NewGraph.grow(LENGTH);
 				Iterator = SetIterator(NewGraph, p_family);
@@ -370,10 +370,10 @@ namespace Spatial
 					const double CELLS = _GetGraphCells(p_Solution, GRAPH.second);
 					if (CELLS > FMT_DBL_TOLERANCE)
 					{
-						const double GRAPH_AREA = GRAPH.first.getbasedevelopment().getarea();
+						const double GRAPH_AREA = GRAPH.first.getBaseDevelopment().getarea();
 						const double VALUE = CELLS * GRAPH_AREA;
 						const double* SOLUTION = &VALUE;
-						for (const auto& DATA : GRAPH.first.getoutput(GetModel(), p_output, p_period, SOLUTION, level))
+						for (const auto& DATA : GRAPH.first.getOutput(GetModel(), p_output, p_period, SOLUTION, level))
 						{
 							if (results.find(DATA.first) == results.end())
 							{
@@ -414,7 +414,7 @@ namespace Spatial
 	{
 		Core::FMTmask usefullBits(p_model.themes);
 		try {
-			const std::vector<const Core::FMTtheme*> STATIC_THEMES = p_model.locatestatictransitionsthemes();
+			const std::vector<const Core::FMTtheme*> STATIC_THEMES = p_model.locateStaticTransitionsThemes();
 			for (const Core::FMTtheme& THEME : p_model.themes)
 			{
 				if (std::find(STATIC_THEMES.begin(),
@@ -443,7 +443,7 @@ namespace Spatial
 			for (const auto& DEV : AREAS)
 			{
 				const Core::FMTmask& DEV_MASK = DEV.getmask();
-				Core::FMTmask SORT_MASK = DEV_MASK.getintersect(USEFULL_BITS);
+				Core::FMTmask SORT_MASK = DEV_MASK.getIntersect(USEFULL_BITS);
 				std::pair<boost::unordered_map<Core::FMTmask, size_t>::iterator, bool> InSertedMask =
 					m_GraphsMasks.insert(std::pair<Core::FMTmask, size_t>(SORT_MASK, m_AllGraphs.size()));
 				const size_t GRAPHS_LOCATION = InSertedMask.first->second;
@@ -456,7 +456,7 @@ namespace Spatial
 				std::vector<Core::FMTactualdevelopment> NewDevs(1, DEV);
 
 				const size_t NUMBER_OF_CELLS = static_cast<size_t> (std::round(NewDevs.begin()->getarea() / p_CellSize));
-				NewDevs.begin()->setarea(p_CellSize);
+				NewDevs.begin()->setArea(p_CellSize);
 				BaseSolution[m_LastGraphId] = NUMBER_OF_CELLS;
 				local_graph.initialize(NewDevs);
 				//local_graph.grow(LENGTH);
@@ -520,11 +520,11 @@ namespace Spatial
 			for (const Core::FMTconstraint& CONSTRAINT : p_model.constraints)
 			{
 				m_ConstraintsId.push_back(Id);
-				if (!CONSTRAINT.isspatial())
+				if (!CONSTRAINT.isSpatial())
 				{
 					std::vector<size_t>selectedGraphs;
 					const Core::FMTmask UNION_MASK = CONSTRAINT.getMasksUnion();
-					Core::FMTmask Intersect = UNION_MASK.getintersect(UNION_MASK);
+					Core::FMTmask Intersect = UNION_MASK.getIntersect(UNION_MASK);
 					for (const auto& MASKS : m_GraphsMasks)
 					{
 						if (MASKS.first.isSubsetOf(Intersect))
@@ -553,25 +553,25 @@ namespace Spatial
 			size_t ConstraintId = 0;
 			for (const Core::FMTconstraint& CONSTRAINT : GetModel().constraints)
 			{
-				if (!CONSTRAINT.isspatial())
+				if (!CONSTRAINT.isSpatial())
 				{
 					if (std::find(m_Constraints.at(ConstraintId).begin(),
 						m_Constraints.at(ConstraintId).end(),
 						p_family) != m_Constraints.at(ConstraintId).end())
 					{
-						int LowestPeriod = CONSTRAINT.getperiodlowerbound();
-						int UpperPeriod = CONSTRAINT.getperiodupperbound();
+						int LowestPeriod = CONSTRAINT.getPeriodLowerBound();
+						int UpperPeriod = CONSTRAINT.getPeriodUpperBound();
 						if (p_Graph->second.IsEmpty())
 						{
 							p_Graph->second.SetValuesSize(GetModel().constraints.size());
 						}
 						if (p_Graph->first.constraintlenght(CONSTRAINT, LowestPeriod, UpperPeriod))
 						{
-							if (CONSTRAINT.acrossperiod())
+							if (CONSTRAINT.acrossPeriod())
 							{
 								++UpperPeriod;
 							}
-							const double GRAPH_AREA = p_Graph->first.getbasedevelopment().getarea();
+							const double GRAPH_AREA = p_Graph->first.getBaseDevelopment().getarea();
 							const double* SOLUTION = &GRAPH_AREA;
 							std::vector<double>Values((UpperPeriod - LowestPeriod) + 1, 0.0);
 							size_t i  = _FillValuesFromLastPeriod(p_family, p_Graph, ConstraintId,
@@ -579,7 +579,7 @@ namespace Spatial
 							LowestPeriod += static_cast<int>(i);
 							for (int period = LowestPeriod; period <= UpperPeriod; ++period)
 							{
-								Values.at(i) = p_Graph->first.getoutput(GetModel(),
+								Values.at(i) = p_Graph->first.getOutput(GetModel(),
 									CONSTRAINT, period, SOLUTION, Core::FMToutputlevel::totalonly).at("Total");
 								++i;
 							}
@@ -658,9 +658,9 @@ namespace Spatial
 	{
 		try {
 			const Core::FMTmask USEFULL_BITS = _GetUseFullBits(GetModel());
-			const Core::FMTdevelopment& DEVELOPPEMENT = p_Graph.getbasedevelopment();
+			const Core::FMTdevelopment& DEVELOPPEMENT = p_Graph.getBaseDevelopment();
 			Core::FMTmask DEV_MASK = DEVELOPPEMENT.getmask();
-			DEV_MASK = DEV_MASK.getintersect(USEFULL_BITS);
+			DEV_MASK = DEV_MASK.getIntersect(USEFULL_BITS);
 			for (const auto& MASK : m_GraphsMasks)
 			{
 				if (DEV_MASK == MASK.first)
@@ -795,7 +795,7 @@ namespace Spatial
 				It != m_AllGraphs.at(p_family).end(); ++It)
 			{
 				if (It->first.getperiod() - 1 == LENGTH &&
-					It->first.isonlygrow())
+					It->first.isOnlyGrow())
 				{
 					return It;
 				}

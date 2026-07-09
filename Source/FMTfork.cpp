@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -38,12 +38,12 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
     }
 
 
-     double FMTfork::sumprop() const
+     double FMTfork::sumProp() const
         {
         double total = 0;
         for(const FMTtransitionmask& transition : m_transitions)
             {
-            total+=transition.getproportion();
+            total+=transition.getProportion();
             }
         return total;
         }
@@ -91,7 +91,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
                 _exhandler->raise(Exception::FMTexc::FMTsourcetotarget_transition,
                     "from " + std::string(p_base) + " to " + std::string(newdev) + "\n",
                     "FMTfork::_GetPath", __LINE__, __FILE__, Core::FMTsection::Transition);
-                newdev.setlock(newdev.getlock() + 1);
+                newdev.setLock(newdev.getLock() + 1);
                 }
             return newPath;
         }catch (...)
@@ -102,7 +102,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
         return FMTdevelopmentpath();
     }
 
-	std::vector<FMTdevelopmentpath> FMTfork::getpaths(const Core::FMTdevelopment& base,const Core::FMTyields& ylds,
+	std::vector<FMTdevelopmentpath> FMTfork::getPaths(const Core::FMTdevelopment& base,const Core::FMTyields& ylds,
 		const std::vector<FMTtheme>& themes, const bool& reset_age) const
 		{
         std::vector<FMTdevelopmentpath>paths;
@@ -126,7 +126,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
                         _exhandler->raise(Exception::FMTexc::FMTsame_transitiontargets,
                             "from " + std::string(base) + " to " + std::string(newdev) + "\n",
                             "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
-                        paths[mapit->second].setProportion(paths[mapit->second].getProportion() + tran.getproportion());
+                        paths[mapit->second].setProportion(paths[mapit->second].getProportion() + tran.getProportion());
                         continue;
                     }else {
                         pathmap[newdev] = pathid;
@@ -143,7 +143,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
         return paths;
 		}
 
-	std::vector<FMTtransitionmask> FMTfork::getmasktrans() const
+	std::vector<FMTtransitionmask> FMTfork::getMaskTrans() const
         {
         return m_transitions;
         }
@@ -156,25 +156,25 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
         FMTtransitionmask singletrans;
         for(const FMTtransitionmask& tran : m_transitions)
             {
-            const double proportion = tran.getproportion();
+            const double proportion = tran.getProportion();
             if (proportion > lastproportion)
                 {
                 singletrans = tran;
 				lastproportion = proportion;
                 }
             }
-        singletrans.setproportion(100);
+        singletrans.setProportion(100);
         newfork.m_transitions.push_back(singletrans);
         return newfork;
         }
 
-    FMTdevelopment FMTfork::getmax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes,const bool& reset_age) const
+    FMTdevelopment FMTfork::getMax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes,const bool& reset_age) const
         {
         double lastproportion = 0;
         FMTdevelopment dev;
         for(const FMTtransitionmask& tran : m_transitions)
             {
-            const double proportion = tran.getproportion();
+            const double proportion = tran.getProportion();
             if (proportion > lastproportion)
                 {
                 dev = tran.disturb(base,ylds,themes,reset_age).getDevelopment();

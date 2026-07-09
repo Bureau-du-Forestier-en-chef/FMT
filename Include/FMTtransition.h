@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -94,52 +94,52 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		@param[in] 
 		*/
 		void setName(const std::string& p_name);
-		// DocString: FMTtransition::isleaking
+		// DocString: FMTtransition::isLeaking
 		/**
 		This function checks if each FMTfork has a total proportion equal to 1 if the transition proportion != 1
-		then isleaking returns true.
+		then isLeaking returns true.
 		*/
-		bool isleaking() const;
-		// DocString: FMTtransition::getfork
+		bool isLeaking() const;
+		// DocString: FMTtransition::getFork
 		/**
 		Returns the FMTfork pointer for which the FMTdevelopment (dev) can be disturbed based on a given FMTyields section (ylds).
 		Looking at every possible fork returns only the first usefull fork.
 		*/
-        const FMTfork* getfork(const Core::FMTdevelopment& developement, const FMTyields& ylds) const;
-		// DocString: FMTtransition::getstaticthemes
+        const FMTfork* getFork(const Core::FMTdevelopment& developement, const FMTyields& ylds) const;
+		// DocString: FMTtransition::getStaticThemes
 		/**
 		Using a list of (themes) this function returns a subset of the theme list for which their's no attribute change
 		in the FMTtransitionmask (what we call here static themes).
 		*/
-		std::vector<const FMTtheme*>getstaticthemes(const std::vector<const FMTtheme*>& themes) const;
-		// DocString: FMTtransition::canproduce
+		std::vector<const FMTtheme*>getStaticThemes(const std::vector<const FMTtheme*>& themes) const;
+		// DocString: FMTtransition::canProduce
 		/**
 		The function return all the possibles masks, if pass as a source for the transition, that can produce the given(mask).
 		*/
-		std::vector<Core::FMTmask> canproduce(const Core::FMTmask& testmask,const std::vector<Core::FMTtheme>& themes) const;
-		// DocString: FMTtransition::age_after
+		std::vector<Core::FMTmask> canProduce(const Core::FMTmask& testmask,const std::vector<Core::FMTtheme>& themes) const;
+		// DocString: FMTtransition::ageAfter
 		/**
 		For GCBM a GCBMtransition is described by the age of the stand after the disturbance of the stand. Using a
 		vector of FMTdevelopement (devs) this functions return the average age after disturbances optained calculating the
 		return age for each FMTdevelopement in the list.
 		*/
-		unsigned int age_after(const std::vector<FMTdevelopment>& devs,
+		unsigned int ageAfter(const std::vector<FMTdevelopment>& devs,
 			const FMTaction& action,
 			const FMTyields& ylds,
 			const std::vector<FMTtheme>& themes) const;
-		// DocString: FMTtransition::main_target
+		// DocString: FMTtransition::mainTarget
 		/**
 		Again for GCBM each GCBMtransition needs to have only one possible mask target. So this function returns 
 		the most targeted FMTmask across the developements list (devs) based on a given yields section (ylds).
 		*/
-        FMTmask main_target(const std::vector<FMTdevelopment>& devs,
+        FMTmask mainTarget(const std::vector<FMTdevelopment>& devs,
                             const FMTyields& ylds) const;
-		// DocString: FMTtransition::attribute_targets
+		// DocString: FMTtransition::attributeTargets
 		/**
 		This function classify the FMTdevelopement list (devs) by FMTmask key based on a FMTyields section (ylds). 
 		The returned map key is an FMTmask string separed by "-"
 		*/
-		std::map<std::string, std::vector<FMTdevelopment>> attribute_targets(const std::vector<FMTdevelopment>& devs,
+		std::map<std::string, std::vector<FMTdevelopment>> attributeTargets(const std::vector<FMTdevelopment>& devs,
 											const FMTyields& ylds, const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTtransition::operator<
 		/**

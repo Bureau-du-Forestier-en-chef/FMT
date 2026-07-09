@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -77,11 +77,11 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Generate a new period container at the end of the linegraph.
 		*/
 		//void newperiod();
-		// DocString: FMTlinegraph::setaction
+		// DocString: FMTlinegraph::setAction
 		/**
 		Add an edge action based on paths on an active vertex.
 		*/
-		void setaction(	FMTvertex_descriptor active,const int& actionID,
+		void setAction(	FMTvertex_descriptor active,const int& actionID,
 						const std::vector<Core::FMTdevelopmentpath>& paths);
 		// DocString: FMTlinegraph::operate
 		/**
@@ -94,47 +94,47 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Grow the last active vertex of the linegraph generating new edge and vertex.
 		*/
 		void grow(int p_Length=1);
-		// DocString: FMTlinegraph::getactivevertex
+		// DocString: FMTlinegraph::getActiveVertex
 		/**
 		Returns the last active vertex of the graph.
 		*/
-		FMTvertex_descriptor getactivevertex() const;
-		// DocString: FMTlinegraph::getlastactionid
+		FMTvertex_descriptor getActiveVertex() const;
+		// DocString: FMTlinegraph::getLastActionId
 		/**
 		Get the last action id of the last edge of the (period) of the graph.
 		*/
-		int getlastactionid(const int& period)const;
-		// DocString: FMTlinegraph::getperiodactionids
+		int getLastActionId(const int& period)const;
+		// DocString: FMTlinegraph::getPeriodActionIds
 		/**
 		Get the action id of every action done in period in order.
 		*/
-		std::vector<int> getperiodactionids(const int& period, bool p_ordered = true)const;
-		// DocString: FMTlinegraph::getperiodpredictors
+		std::vector<int> getPeriodActionIds(const int& period, bool p_ordered = true)const;
+		// DocString: FMTlinegraph::getPeriodPredictors
 		/**
 		Returns a vector of predictors for a given (period), (actionsmap), (yieldnames) and yields.
 		*/
-		std::vector<FMTpredictor>getperiodpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues =false,bool withGCBMid = true) const;
-		// DocString: FMTlinegraph::getinedgeactionid
+		std::vector<FMTpredictor>getPeriodPredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues =false,bool withGCBMid = true) const;
+		// DocString: FMTlinegraph::getInEdgeActionId
 		/**
 		Get the in edge action id of a vertex.
 		*/
-		int getinedgeactionid(const FMTvertex_descriptor& vdesc)const;
-		// DocString: FMTlinegraph::getperiodstartdev
+		int getInEdgeActionId(const FMTvertex_descriptor& vdesc)const;
+		// DocString: FMTlinegraph::getPeriodStartDev
 		/**
 		Get a reference to the first development(vertex) seen in the (period).
 		*/
-		const Core::FMTdevelopment& getperiodstartdev(const int& period) const;
-		// DocString: FMTlinegraph::getperiodstopdev
+		const Core::FMTdevelopment& getPeriodStartDev(const int& period) const;
+		// DocString: FMTlinegraph::getPeriodStopDev
 		/**
 		Get a reference to the last development(vertex) seen in the (period).
 		*/
-		const Core::FMTdevelopment& getperiodstopdev(const int& period) const;
-		// DocString: FMTlinegraph::randombuildperiod
+		const Core::FMTdevelopment& getPeriodStopDev(const int& period) const;
+		// DocString: FMTlinegraph::randomBuildPeriod
 		/**
 		Randomly operate the active vertex to completybuild the active period of the graph.
 		Returns the action id of the new edges generated.
 		*/
-		std::vector<int> randombuildperiod(const Models::FMTmodel& model,std::default_random_engine& generator,
+		std::vector<int> randomBuildPeriod(const Models::FMTmodel& model,std::default_random_engine& generator,
 									boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& operability,
 									bool dontchoosegrow=false);
 		// DocString: FMTlinegraph::getactions
@@ -144,26 +144,26 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		*/
 		std::vector<std::vector<bool>>getactions(const Models::FMTmodel& model,const int& fromperiod,
 			std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const;
-		// DocString: FMTlinegraph::getbasedevelopment
+		// DocString: FMTlinegraph::getBaseDevelopment
 		/**
 		Returns a reference to the first developement of the graph.
 		*/
-		const Core::FMTdevelopment& getbasedevelopment() const;
-		// DocString: FMTlinegraph::getbasehash
+		const Core::FMTdevelopment& getBaseDevelopment() const;
+		// DocString: FMTlinegraph::getBaseHash
 		/**
 		Returnsa base hash of the starting developement of the linegraph based on a dynamicmask filter.
 		*/
-		size_t getbasehash(const Core::FMTmask& dynamicmask) const;
-		// DocString:FMTlinegraph::getbasestr
+		size_t getBaseHash(const Core::FMTmask& dynamicmask) const;
+		// DocString:FMTlinegraph::getBaseStr
 		/**
 		Returns a base string of the starting developement of the linegraph based on a dynamicmask filter.
 		*/
-		std::string getbasestr(const Core::FMTmask& dynamicmask) const;
-		// DocString: FMTlinegraph::getbasemask
+		std::string getBaseStr(const Core::FMTmask& dynamicmask) const;
+		// DocString: FMTlinegraph::getBaseMask
 		/**
 		Returns a filtered mask of the starting developement mask of the linegraph based on a dynamicmask filter.
 		*/
-		Core::FMTmask getbasemask(const Core::FMTmask& dynamicmask) const;
+		Core::FMTmask getBaseMask(const Core::FMTmask& dynamicmask) const;
 		// DocString: FMTlinegraph::setBaseMask
 		/**
 		@brief set the base mask to the dynamic mask by intersect.
@@ -171,36 +171,36 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		@param[in] p_period the period to which we want to get a dynamic mask.
 		*/
 		void setBaseMask(Core::FMTmask& p_dynamicmask,const int& p_period) const;
-		// DocString: FMTlinegraph::getbasemask
+		// DocString: FMTlinegraph::getBaseMask
 		/**
 		Returns a filtered mask of the starting developement mask of the linegraph based on a dynamicmask filter.
 		*/
-		size_t getedgeshash(const int& maximalperiod,bool& gotthewhole) const;
-		// DocString: FMTlinegraph::getedgesstr
+		size_t getEdgesHash(const int& maximalperiod,bool& gotthewhole) const;
+		// DocString: FMTlinegraph::getEdgesStr
 		/**
 		Returns a string representing the edges of the linegraph from 0 to period (maximalperiod)
 		*/
-		std::string getedgesstr(const int& maximalperiod, bool& gotthewhole) const;
-		// DocString: FMTlinegraph::filledgesmask
+		std::string getEdgesStr(const int& maximalperiod, bool& gotthewhole) const;
+		// DocString: FMTlinegraph::fillEdgesMask
 		/**
 		Fill up a unique mask based on the edges from period 0 to (maximalperiod).
 		*/
-		void filledgesmask(Core::FMTmask& mask, const int& maximalperiod) const;
-		// DocString: FMTlinegraph::stringforconstraint
+		void fillEdgesMask(Core::FMTmask& mask, const int& maximalperiod) const;
+		// DocString: FMTlinegraph::stringForConstraint
 		/**
 		Fill a string for uniqueness of the FMTlinegraph.
 		*/
-		bool stringforconstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const;
-		// DocString: FMTlinegraph::hashforconstraint
+		bool stringForConstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const;
+		// DocString: FMTlinegraph::hashForConstraint
 		/**
 		Fill a hash for uniqueness of the FMTlinegraph.
 		*/
-		bool hashforconstraint(size_t& hashvalue,const int& stop,const Core::FMTmask& dynamicmask) const;
-		// DocString: FMTlinegraph::isonlygrow
+		bool hashForConstraint(size_t& hashvalue,const int& stop,const Core::FMTmask& dynamicmask) const;
+		// DocString: FMTlinegraph::isOnlyGrow
 		/**
 		Returns true if the graph is never operated by any actions.
 		*/
-		bool isonlygrow(int period=0) const;
+		bool isOnlyGrow(int period=0) const;
 		// DocString:FMTlinegraph::addfromevents
 		/**
 		Add actions (edges) + (verticies) to the graph based an event.
@@ -242,16 +242,16 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		@return true if not dead
 		*/
 		bool IsNotDead(FMTvertex_descriptor p_Descriptor,int8_t p_DeathId) const;
-		// DocString:  FMTlinegraph::clearnodecache
+		// DocString:  FMTlinegraph::clearNodeCache
 		/**
 		Clear the node cache when getting outpus of the linegraph.
 		*/
-		void clearnodecache();
-		// DocString:  FMTlinegraph::anyusageof
+		void clearNodeCache();
+		// DocString:  FMTlinegraph::anyUsageOf
 		/**
 		Returns the period at which the vertex fall within the outputnode description. 
 		*/
-		std::vector<int> anyusageof(Core::FMToutputnode output_node, const Models::FMTmodel& model, const int& startingperiod) const;
+		std::vector<int> anyUsageOf(Core::FMToutputnode output_node, const Models::FMTmodel& model, const int& startingperiod) const;
 		static const std::vector<int>& GetSetOperability(
 			const Core::FMTdevelopment& p_development,
 			const Models::FMTmodel& p_model,
@@ -264,16 +264,16 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 				ar& boost::serialization::make_nvp("Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph::FMTbaseedgeproperties>", boost::serialization::base_object<FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>>(*this));
 
 			}
-			// DocString: FMTlinegraph::isanyactionofedge
+			// DocString: FMTlinegraph::isAnyActionOfEdge
 			/**
 			Returns true if the action of the edgte is in the unordered map.
 			*/
-			bool isanyactionofedge(const FMTbaseedgeproperties& edgeproperty, const std::unordered_set<int>& actions) const;
-			// DocString: FMTlinegraph::isanyvertexusage
+			bool isAnyActionOfEdge(const FMTbaseedgeproperties& edgeproperty, const std::unordered_set<int>& actions) const;
+			// DocString: FMTlinegraph::isAnyVertexUsage
 			/**
 			Returns true The vertex is in the outputsource based on (yields).
 			*/
-			bool isanyvertexusage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const;
+			bool isAnyVertexUsage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const;
 			// DocString: FMTlinegraph::_randomOperate
 			/**
 			Randomly operate an (active _developement) (front_vertex) and returns the action id.

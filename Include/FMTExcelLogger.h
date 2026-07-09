@@ -15,8 +15,8 @@ namespace Logging
 	{
 	public:
 		FMTExcelLogger();
-		std::string getprintout() const;
-		void clearout();
+		std::string getPrintOut() const;
+		void clearOut();
 	#ifdef FMTWITHOSI
 		virtual FMTlogger* clone() const;
 	#endif

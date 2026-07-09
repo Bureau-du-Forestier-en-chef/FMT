@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -30,7 +30,7 @@ namespace Spatial
         return FMTcoordinate(m_x+(x_n[id]*factor), m_y+(y_n[id]*factor));
         }
 
-	void FMTcoordinate::getxygap(const FMTcoordinate& rhs, int& xgap, int& y_gap) const
+	void FMTcoordinate::getXyGap(const FMTcoordinate& rhs, int& xgap, int& y_gap) const
 		{
 		xgap = (static_cast<int>(m_x) - static_cast<int>(rhs.m_x));
 		y_gap = (static_cast<int>(m_y) - static_cast<int>(rhs.m_y));
@@ -38,14 +38,14 @@ namespace Spatial
 
     double FMTcoordinate::distance(const FMTcoordinate& coord) const
         {
-        return std::sqrt(distanceapproximation(coord));
+        return std::sqrt(distanceApproximation(coord));
         }
 
-	double FMTcoordinate::distanceapproximation(const FMTcoordinate& coord) const
+	double FMTcoordinate::distanceApproximation(const FMTcoordinate& coord) const
 		{
 		int distancex = 0;
 		int distancey = 0;
-		getxygap(coord, distancex, distancey);
+		getXyGap(coord, distancex, distancey);
 		return static_cast<double>(distancex * distancex + distancey * distancey);
 		}
 
@@ -55,7 +55,7 @@ namespace Spatial
 		std::set<FMTcoordinate>::const_iterator bestcoordinate;
 		for (const std::set<FMTcoordinate>::const_iterator& coordinate : coordinates)
 			{
-			const double value = distanceapproximation(*coordinate);
+			const double value = distanceApproximation(*coordinate);
 			if (value < approximation)
 				{
 				approximation = value;
@@ -74,7 +74,7 @@ namespace Spatial
             }
             int distancex = 0;
             int distancey = 0;
-            getxygap(coord, distancex, distancey);
+            getXyGap(coord, distancex, distancey);
             return (static_cast<decltype(ldistance)>(std::abs(distancex)) <= ldistance && static_cast<decltype(ldistance)>(std::abs(distancey)) <= ldistance &&
                 std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
         }
@@ -137,11 +137,11 @@ namespace Spatial
     }
 
 
-    /*unsigned int FMTcoordinate::getx() const
+    /*unsigned int FMTcoordinate::getX() const
         {
         return x;
         }
-    unsigned int FMTcoordinate::gety() const
+    unsigned int FMTcoordinate::getY() const
         {
         return y;
         }*/
@@ -180,7 +180,7 @@ namespace Spatial
 		 return hash;
 		}
 
-    void FMTcoordinate::upenveloppe(std::array<FMTcoordinate, 4>& enveloppe) const
+    void FMTcoordinate::upEnveloppe(std::array<FMTcoordinate, 4>& enveloppe) const
         {
 		//0//-//1//
 		//-//-//-//
@@ -203,16 +203,16 @@ namespace Spatial
 		return "X"+std::to_string(m_x)+" Y"+std::to_string(m_y);
         }
 
-    uint16_t FMTcoordinate::getx() const
+    uint16_t FMTcoordinate::getX() const
     {
         return m_x;
     }
-    uint16_t FMTcoordinate::gety() const
+    uint16_t FMTcoordinate::getY() const
     {
         return m_y;
     }
 
-    std::set<FMTcoordinate> FMTcoordinate::getneighbors(const uint16_t& nsize,const bool& circle) const
+    std::set<FMTcoordinate> FMTcoordinate::getNeighbors(const uint16_t& nsize,const bool& circle) const
         {   ///nsize must be odd number
             ///https://grass.osgeo.org/grass78/manuals/r.neighbors.html
             std::set<FMTcoordinate> n;

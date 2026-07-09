@@ -50,9 +50,9 @@ int main(int argc, char* argv[])
 	const std::string SCENARIO_A = "writetoproject_test_A";
 	const std::string SCENARIO_B = "writetoproject_test_B";
 	Models::FMTmodel scenarioModelA = BASE_MODEL;
-	scenarioModelA.setname(SCENARIO_A);
+	scenarioModelA.setName(SCENARIO_A);
 	Models::FMTmodel scenarioModelB = BASE_MODEL;
-	scenarioModelB.setname(SCENARIO_B);
+	scenarioModelB.setName(SCENARIO_B);
 
 	std::vector<Models::FMTmodel> models;
 	models.push_back(BASE_MODEL);

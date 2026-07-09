@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -36,7 +36,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		{
 		ar & boost::serialization::make_nvp("semodel", boost::serialization::base_object<FMTsemodel>(*this));
 		}
-	virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
+	virtual void swapPtr(std::unique_ptr<FMTmodel>& rhs);
 	// DocString: FMTsesmodel()
 	/**
 	Constructor for presolve use
@@ -83,14 +83,14 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		Default move assignment for FMTsesmodel.
 		*/
 		FMTsesmodel& operator =(FMTsesmodel&& rhs) =default;
-		// DocString: FMTsesmodel::getdisturbancestats
+		// DocString: FMTsesmodel::getDisturbanceStats
 		/**
 		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
 		*/
-		std::string getdisturbancestats() const;
+		std::string getDisturbanceStats() const;
 		// DocString: FMTsesmodel::GreedyReferenceBuild
 		/**
-		This function call multiple time the function FMTspatialschedule::referencebuild function to 
+		This function call multiple time the function FMTspatialschedule::referenceBuild function to 
 		find the best possible spatialisation for a given schedule using random draw. It uses a schedule of actions (schedule) on the actual
 		spatialy explicit forest.  The user can also set the seed to get different solutions from the simulator.
 		*/
@@ -106,7 +106,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		virtual std::unique_ptr<FMTmodel>clone() const;
 		// DocString: FMTsesmodel::build
 		/**
-		This function will use the function greedyreferencebuild over the number of period set as LENGTH in model parameters.
+		This function will use the function greedyReferenceBuild over the number of period set as LENGTH in model parameters.
 		*/
 		virtual bool build(std::vector<Core::FMTschedule> schedules=std::vector<Core::FMTschedule>());
 		// DocString: FMTsesmodel::solve
@@ -123,14 +123,14 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 		*/
 		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
-		// DocString: FMTsesmodel::getcopy
+		// DocString: FMTsesmodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
-		If period = 0 it returns the FMTmodel::getcopy if period > 0 then it returns
+		If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
 		a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
 		Need to have a builded graph with a solution to use this function.
 		*/
-		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
+		virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
     };
 
 }

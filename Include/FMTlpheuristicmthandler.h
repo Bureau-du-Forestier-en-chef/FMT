@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -30,8 +30,8 @@ namespace Heuristics
 		{
 		double initialsolution;
 		std::vector<FMTlpheuristic*> heuristics;
-		size_t best_heuristic() const;
-		void reset_number_of_threads(const unsigned int& ncpu) const;
+		size_t bestHeuristic() const;
+		void resetNumberOfThreads(const unsigned int& ncpu) const;
 		public:
 		FMTlpheuristicmthandler();
 		FMTlpheuristicmthandler(std::vector<FMToperatingareascheduler>& lheuristics, const double& linitialsolution);
@@ -39,8 +39,8 @@ namespace Heuristics
 		#if defined FMTWITHPYTHON
 			FMTlpheuristicmthandler(boost::python::list& lheuristics, const double& linitialsolution);
 		#endif
-		size_t initialsolve() const;
-		size_t greedysolve(const unsigned int& iterations, const double& maxtime) const;
+		size_t initialSolve() const;
+		size_t greedySolve(const unsigned int& iterations, const double& maxtime) const;
 	    };
 }
 //BOOST_CLASS_EXPORT_KEY(Heuristics::FMTlpheuristicmthandler)

@@ -40,7 +40,7 @@ namespace Parser
 		setSection(Core::FMTsection::Landscape);
         }
 
-    std::map<std::string,double>FMTlandscapeparser::getindexes(std::string indexm_line,const Core::FMTconstants& constants)
+    std::map<std::string,double>FMTlandscapeparser::getIndexes(std::string indexm_line,const Core::FMTconstants& constants)
         {
 		std::map<std::string,double>indexes;
 		try {
@@ -137,17 +137,17 @@ namespace Parser
 	{
 		ctx.pasttheme = -1;
 
-		std::string targettheme = std::string(kmatch[13]);
+		std::string targetTheme = std::string(kmatch[13]);
 		ctx.aggregatename = std::string(kmatch[20]);
 
-		if (!targettheme.empty())
+		if (!targetTheme.empty())
 		{
 			ctx.aggregatename = std::string(kmatch[17]);
-			ctx.pasttheme = getNum<int>(targettheme, constants) - 1;
+			ctx.pasttheme = getNum<int>(targetTheme, constants) - 1;
 
 			if (static_cast<size_t>(ctx.pasttheme) >= themes.size())
 			{
-				targettheme.clear();
+				targetTheme.clear();
 				ctx.pasttheme = -1;
 			}
 		}
@@ -155,7 +155,7 @@ namespace Parser
 		ctx.aggregate_redefinition = false;
 
 		if ((std::find(ctx.aggregates.begin(), ctx.aggregates.end(), ctx.aggregatename) != ctx.aggregates.end()) ||
-			(ctx.pasttheme != -1 && themes.at(ctx.pasttheme).isaggregate(ctx.aggregatename)))
+			(ctx.pasttheme != -1 && themes.at(ctx.pasttheme).isAggregate(ctx.aggregatename)))
 		{
 			ctx.aggregate_redefinition = true;
 			_exhandler->raise(Exception::FMTexc::FMTaggregate_redefinition,
@@ -166,7 +166,7 @@ namespace Parser
 
 		if (!ctx.aggregate_redefinition)
 		{
-			if (targettheme.empty())
+			if (targetTheme.empty())
 			{
 				ctx.aggregates.push_back(ctx.aggregatename);
 				ctx.aggregatenames.push_back(std::vector<std::string>());
@@ -187,8 +187,8 @@ namespace Parser
 				((std::find(ctx.aggregates.begin(), ctx.aggregates.end(), val) == ctx.aggregates.end()) ||
 					(ctx.aggregatename == val)) &&
 				(ctx.pasttheme < 0 ||
-					(ctx.pasttheme >= 0 && !(themes.at(ctx.pasttheme).isattribute(val) ||
-						themes.at(ctx.pasttheme).isaggregate(val))));
+					(ctx.pasttheme >= 0 && !(themes.at(ctx.pasttheme).isAttribute(val) ||
+						themes.at(ctx.pasttheme).isAggregate(val))));
 
 			if (isInvalid)
 			{
@@ -198,7 +198,7 @@ namespace Parser
 			}
 			else if (ctx.pasttheme >= 0)
 			{
-				themes[ctx.pasttheme].push_aggregate_value(ctx.aggregatename, val);
+				themes[ctx.pasttheme].pushAggregateValue(ctx.aggregatename, val);
 			}
 			else {
 				ctx.aggregatenames[std::distance(ctx.aggregates.begin(),
@@ -235,7 +235,7 @@ namespace Parser
 			splited.erase(splited.begin());
 			name = boost::algorithm::join(splited, " ");
 
-			const std::map<std::string, double> indexes = getindexes(name, constants);
+			const std::map<std::string, double> indexes = getIndexes(name, constants);
 			if (!indexes.empty())
 			{
 				const size_t indexlocation = std::distance(ctx.attributes.begin(),
@@ -317,7 +317,7 @@ namespace Parser
 	}
 
 #ifdef FMTWITHGDAL
-	std::vector<Core::FMTtheme>FMTlandscapeparser::readrasters(const std::vector<std::string>& locations)
+	std::vector<Core::FMTtheme>FMTlandscapeparser::readRasters(const std::vector<std::string>& locations)
         {
 		std::vector<Core::FMTtheme>themes;
 		try {
@@ -342,7 +342,7 @@ namespace Parser
         return themes;
         }
 
-    std::vector<Core::FMTtheme>FMTlandscapeparser::readvectors(const std::string& location)
+    std::vector<Core::FMTtheme>FMTlandscapeparser::readVectors(const std::string& location)
         {
 		std::vector<Core::FMTtheme>themes;
 		try {

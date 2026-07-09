@@ -322,7 +322,7 @@ T FMTparser::getNum(const std::string& value, const Core::FMTconstants& constant
 		{
 			nvalue = getNum<T>(value,true/*newvalue*/);
 		}
-		else if (constant.isconstant(value/*newvalue*/))
+		else if (constant.isConstant(value/*newvalue*/))
 		{
 			nvalue = constant.get<T>(value/*newvalue*/, period);
 			_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
@@ -1186,7 +1186,7 @@ void FMTparser::setPeriodWithBounds(Core::FMTspec& p_spec,
 	const Core::FMTconstants& p_constants) const
 {
 	const Core::FMTperbounds PERIOD_BOUND = getPerBound(p_lower, p_upper, p_constants);
-	p_spec.setbounds(PERIOD_BOUND);
+	p_spec.setBounds(PERIOD_BOUND);
 }
 
 bool FMTparser::setPeriods(Core::FMTspec& p_spec,
@@ -1215,7 +1215,7 @@ bool FMTparser::setPeriods(Core::FMTspec& p_spec,
 bool FMTparser::isNum(const std::string& value, const Core::FMTconstants& constant, bool throwerror) const
 {
 	try {
-		if (!(isNum(value) || constant.isconstant(value)))
+		if (!(isNum(value) || constant.isConstant(value)))
 			{
 			if (throwerror)
 				{
@@ -1449,13 +1449,13 @@ std::map<std::string, std::vector<std::string>>  FMTparser::GetForLoops(const st
 		{
 			const int theme = getNum<int>(std::string(kmatch[16])) - 1;
 			std::string att = "?";
-			allValues[TARGET] = p_themes[theme].getattributes(att);
+			allValues[TARGET] = p_themes[theme].getAttributes(att);
 		}
 		else if (!std::string(kmatch[10]).empty())
 		{
 			const int theme = getNum<int>(std::string(kmatch[10])) - 1;
 			std::string aggregate = kmatch[12];
-			allValues[TARGET] = p_themes[theme].getattributes(aggregate,true);
+			allValues[TARGET] = p_themes[theme].getAttributes(aggregate,true);
 		}
 		else if (!std::string(kmatch[19]).empty() || !std::string(kmatch[26]).empty())
 		{
@@ -2229,7 +2229,7 @@ std::istream& FMTparser::_safeGetline(std::istream& is, std::string& t) const
 			return is;
 		case std::streambuf::traits_type::eof():
 			if (t.empty())
-				is.setstate(std::ios::eofbit);
+				is.setState(std::ios::eofbit);
 			return is;
 		default:
 			t += (char)c;

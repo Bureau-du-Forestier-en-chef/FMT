@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -36,14 +36,14 @@ namespace Graph
 		FMTpredictor& operator = (const FMTpredictor& rhs);
 		bool operator==(const FMTpredictor& rhs) const;
 		bool operator<(const FMTpredictor& rhs) const;
-		std::vector<double>getpredictors() const;
+		std::vector<double>getPredictors() const;
 		double getDistance(size_t actId) const;
 		double getDisturbance(size_t actId) const;
 		double getSourceAge() const;
 		std::vector<double> getSourceYields() const;
 		double getTargetAge() const;
 		std::vector<double> getTargetYields() const;
-		std::vector<std::string>getpredictornames(const std::vector<std::string>& yieldnames)const;
+		std::vector<std::string>getPredictorNames(const std::vector<std::string>& yieldnames)const;
 	private:
 		const FMTbasevertexproperties* source_vertex;
 		const FMTbasevertexproperties* target_vertex;

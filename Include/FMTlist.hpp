@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -89,17 +89,17 @@ namespace Core
 			filter.swap(rhs.filter);
 			fastpass.swap(rhs.fastpass);
 		}
-		// DocString: FMTlist::getunion
+		// DocString: FMTlist::getUnion
 		/**
 		Get a global union mask from all the masks of the FMTlist.
 		*/
-		FMTmask getunion(const std::vector<FMTtheme>& themes) const
+		FMTmask getUnion(const std::vector<FMTtheme>& themes) const
 		{
 			Core::FMTmask testedmask(std::string(this->begin()->first), themes);
 			for (const auto& object : *this)
 			{
 				const Core::FMTmask specificiermask(std::string(object.first), themes);
-				testedmask = testedmask.getunion(specificiermask);
+				testedmask = testedmask.getUnion(specificiermask);
 			}
 			return testedmask;
 		}
@@ -187,11 +187,11 @@ namespace Core
 		{
 			return filter.empty();
 		}
-		// DocString: FMTlist::clearcache
+		// DocString: FMTlist::clearCache
 		/**
 		Clear fastpass by swaping with an empty container.
 		*/
-		virtual void clearcache()
+		virtual void clearCache()
 		{
 			boost::unordered_map<FMTmask, std::vector<int>>().swap(fastpass);
 		}
@@ -461,10 +461,10 @@ namespace Core
 						typename std::list<std::pair<FMTmask, T>>::iterator baseit = newdata.begin();
 						typename std::list<std::pair<FMTmask, T>>::iterator datait = newdata.begin();
 						++datait;
-						std::vector<typename std::list<std::pair<FMTmask, T>>::iterator>toremove;
-						toremove.reserve(newdata.size());
+						std::vector<typename std::list<std::pair<FMTmask, T>>::iterator>toRemove;
+						toRemove.reserve(newdata.size());
 						Core::FMTmask basemask(baseit->first);
-						const boost::dynamic_bitset<uint8_t> selecinter = selectedbits & baseit->first.getbitsetreference();
+						const boost::dynamic_bitset<uint8_t> selecinter = selectedbits & baseit->first.getBitsetReference();
 						boost::dynamic_bitset<uint8_t> reverselect(selecinter);
 						for (size_t loc = thstart; loc < (theme.size() + thstart); ++loc)
 							{
@@ -476,26 +476,26 @@ namespace Core
 							{
 							/*Core::FMTmask datamask(datait->first);
 							datamask.set(theme, "?");*/
-							const boost::dynamic_bitset<uint8_t>&dataref = datait->first.getbitsetreference();
+							const boost::dynamic_bitset<uint8_t>&dataref = datait->first.getBitsetReference();
 							if (dataref.is_subset_of(reverselect))
 							{
 								const boost::dynamic_bitset<uint8_t> datainter = selectedbits & dataref;
 								if (datainter == selecinter &&
 									baseit->second == datait->second)
 								{
-									basemask = basemask.getunion(datait->first);
-									toremove.push_back(datait);
+									basemask = basemask.getUnion(datait->first);
+									toRemove.push_back(datait);
 								}
 							}
 							++datait;
 							}
 						std::pair<FMTmask, T>newelement(basemask,baseit->second);
 						newdata.erase(newdata.begin());
-						for (typename std::list<std::pair<FMTmask, T>>::iterator remove : toremove)
+						for (typename std::list<std::pair<FMTmask, T>>::iterator remove : toRemove)
 							{
 							newdata.erase(remove);
 							}
-						if(!toremove.empty())//aggregation done set new aggregate and refresh mask
+						if(!toRemove.empty())//aggregation done set new aggregate and refresh mask
 							{
 							std::string newmask;
 							for (const FMTtheme& subtheme : newthemes)
@@ -539,12 +539,12 @@ namespace Core
 				{
 					unshrink(originalthemes);
 				}
-				const std::vector<const FMTtheme*>maskthemes = filter.getselectedthemes(originalthemes);
+				const std::vector<const FMTtheme*>maskthemes = filter.getSelectedThemes(originalthemes);
 				size_t dataId = data.size();
 				while (dataId!=0)
 					{
 					--dataId;
-					if (!filter.emptyflipped() && filter.canpresolve(data[dataId].first, maskthemes))
+					if (!filter.emptyFlipped() && filter.canPresolve(data[dataId].first, maskthemes))
 						{
 						data[dataId].first.presolveRef(filter, newthemes,false);
 					}else {
@@ -558,10 +558,10 @@ namespace Core
 				newdata.reserve(data.size());
 				for (const std::pair<FMTmask, T>& object : data)
 				{
-					if (filter.canpresolve(object.first,maskthemes))
+					if (filter.canPresolve(object.first,maskthemes))
 					{
 						FMTmask mskkey = object.first;
-						if (!filter.emptyflipped())
+						if (!filter.emptyFlipped())
 						{
 							mskkey = mskkey.presolve(filter, newthemes);
 						}

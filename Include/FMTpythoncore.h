@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -37,7 +37,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace boost{
 
 template<class T>
-static size_t pyhash(const T& value)
+static size_t pyHash(const T& value)
     {
     return boost::hash<T>()(value);
     }
@@ -262,10 +262,10 @@ namespace Python
 			boost::python::list keys = mapping.keys();
 			for (int i = 0; i < boost::python::len(keys); ++i)
 			{
-				boost::python::extract<k> extracted_key(keys[i]);
-				k newkey = extracted_key;
-				boost::python::extract<e> extracted_val(mapping[newkey]);
-				e value = extracted_val;
+				boost::python::extract<k> extractedKey(keys[i]);
+				k newkey = extractedKey;
+				boost::python::extract<e> extractedVal(mapping[newkey]);
+				e value = extractedVal;
 				v[newkey] = value;
 			}
 

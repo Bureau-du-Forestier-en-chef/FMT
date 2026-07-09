@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -34,18 +34,18 @@ namespace Core
 		FMTmodelyieldhandler(const FMTmodelyieldhandler& rhs);
 		FMTmodelyieldhandler& operator = (const FMTmodelyieldhandler& rhs);
 		FMTmodelyieldhandler(const FMTmask& mask);
-		std::map<std::string, size_t>getmodelsnamebyindex() const;
-		void push_backmodel(const std::unique_ptr<FMTyieldmodel>& model);
-		void setyield(const size_t& modelid,const size_t& yieldid,const std::string& yldname);
+		std::map<std::string, size_t>getModelsNameByIndex() const;
+		void pushBackModel(const std::unique_ptr<FMTyieldmodel>& model);
+		void setYield(const size_t& modelid,const size_t& yieldid,const std::string& yldname);
 		virtual std::unique_ptr<FMTyieldhandler>clone() const;
 		virtual bool operator == (const FMTmodelyieldhandler& rhs) const;
 		virtual bool empty() const;
 		virtual size_t size() const;
-		virtual FMTyldtype gettype() const;
-		virtual bool containsyield(const std::string& yldname) const;
-		virtual bool isnullyield(const std::string& yldname) const;
-		virtual std::vector<std::string>getyieldnames() const;
-		virtual void clearcache();
+		virtual FMTyldtype getType() const;
+		virtual bool containsYield(const std::string& yldname) const;
+		virtual bool isNullYield(const std::string& yldname) const;
+		virtual std::vector<std::string>getYieldNames() const;
+		virtual void clearCache();
 		virtual std::unique_ptr<FMTyieldhandler> presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const;
 		virtual std::unique_ptr<FMTyieldhandler> postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const;
 		// DocString: FMTmodelyieldhandler::clearRandomYieldsCache
@@ -53,11 +53,11 @@ namespace Core
 		@brief clear the cache of all random yield model.
 		*/
 		void clearRandomYieldsCache();
-		// DocString: FMTmodelyieldhandler::totimehandler
+		// DocString: FMTmodelyieldhandler::toTimeHandler
 		/**
 		If you can turn all your yieldmodel to time then you can return a timeyieldhandler.
 		*/
-		FMTtimeyieldhandler totimehandler() const;
+		FMTtimeyieldhandler toTimeHandler() const;
 		// DocString: FMTmodelyieldhandler::setModel
 		/**
 		@brief set The model to the yielmodel.

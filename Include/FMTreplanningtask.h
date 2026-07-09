@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -110,11 +110,11 @@ namespace Parallel
 		Set the number of replicates to use...
 		*/
 		void setreplicates(const int& replicatesnumbermin, const int& replicatesnumbermax);
-		// DocString: FMTreplanningtask::setreplanningperiods
+		// DocString: FMTreplanningtask::setReplanningPeriods
 		/**
 		Set the number oof replanning periods.
 		*/
-		void setreplanningperiods(const int& periodsnumber);
+		void setReplanningPeriods(const int& periodsnumber);
 		// DocString: FMTreplanningtask::split
 		/**
 		The split fonction that split the main task into multiple tasks of replanning.
@@ -148,7 +148,7 @@ namespace Parallel
 		void setWriteSchedule(const bool p_write);
 	private:
 		// DocString: FMTreplanningtask::resultswriter
-		///Concurrent results writer who writes the results of each abstract model after each call to doplanning
+		///Concurrent results writer who writes the results of each abstract model after each call to doPlanning
 		std::shared_ptr<FMTparallelwriter>resultswriter;
 		// DocString: FMTreplanningtask::baseschedule
 		///This is the schedule of the solved global model at period 1.
@@ -169,7 +169,7 @@ namespace Parallel
 		///This is the dynamic area that changes at each replanning step
 		std::vector<Core::FMTactualdevelopment>dynamicarea;
 		// DocString: FMTreplanningtask::iterationglobalschedule
-		///This is the schedule that the global model generates after a call to doplanning
+		///This is the schedule that the global model generates after a call to doPlanning
 		Core::FMTschedule iterationglobalschedule;
 		// DocString: FMTreplanningtask::dynamicconstraints
 		///Local constraints set using the results obtained in the global or local model.
@@ -181,18 +181,18 @@ namespace Parallel
 		///A boolean for write Schedule in replanning,true, = create a schedule for each replicate.
 		bool m_writeSchedule;
 		std::string m_outputlocation;
-		// DocString: FMTreplanningtask::copysharedmodel
+		// DocString: FMTreplanningtask::copySharedModel
 		/**
 		Solver logger make it not save to clone a solver with a common logger.
 		So we need to lock this function to make sure that there's no racing between threads.
 		*/
-		std::unique_ptr<Models::FMTmodel>copysharedmodel(const std::shared_ptr<Models::FMTmodel>model);
-		// DocString: FMTreplanningtask::domodelplanning
+		std::unique_ptr<Models::FMTmodel>copySharedModel(const std::shared_ptr<Models::FMTmodel>model);
+		// DocString: FMTreplanningtask::doModelPlanning
 		/**
-		The main do planning function that call doplanning on model for a given replanning period and will keep solution and constraints
+		The main do planning function that call doPlanning on model for a given replanning period and will keep solution and constraints
 		id getsolutionandlocal = true and will apply the schedule weight if applyscheduleweight = true.
 		*/
-		std::unique_ptr<Models::FMTmodel>domodelplanning(
+		std::unique_ptr<Models::FMTmodel>doModelPlanning(
 			const std::shared_ptr<Models::FMTmodel>model,
 			const int& replanningperiod,
 			bool getsolutionandlocal = false,
@@ -213,22 +213,22 @@ namespace Parallel
 		*/
 		void _writeSchedule(const std::unique_ptr<Models::FMTmodel>& p_model,
 							int p_ReportingPeriod, int p_ModelPeriod) const;
-		// DocString: FMTreplanningtask::getiteration
+		// DocString: FMTreplanningtask::getIteration
 		/**
 		Get the actual iteration done by the task (front in the queue)
 		*/
-		const int getiteration() const;
-		// DocString: FMTreplanningtask::setreignore
+		const int getIteration() const;
+		// DocString: FMTreplanningtask::setReIgnore
 		/**
 		Remove reignore constraints based on the replanning period.
 		*/
-		void setreignore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
-		// DocString: FMTreplanningtask::setreplicate
+		void setReIgnore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
+		// DocString: FMTreplanningtask::setReplicate
 		/**
 		Ajuste constraints based on the replicate keyword
 		*/
-		void setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
-		// DocString: FMTreplanningtask::setreplicate
+		void setReplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
+		// DocString: FMTreplanningtask::setReplicate
 		/**
 		Primary name extracted to the path.
 		*/

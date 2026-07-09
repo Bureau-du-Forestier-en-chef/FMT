@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québecvalue = (*ddata)->getpeak(srcsdata.begin()->first, age)
+Copyright (c) 2019 Gouvernement du Qubecvalue = (*ddata)->getPeak(srcsdata.begin()->first, age)
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -48,7 +48,7 @@ namespace Core {
 	}
 
 
-	bool FMTtimeyieldhandler::push_data(const std::string& yld, const double& value)
+	bool FMTtimeyieldhandler::pushData(const std::string& yld, const double& value)
 	{
 		try {
 			if (m_elements.find(yld) == m_elements.end())
@@ -57,7 +57,7 @@ namespace Core {
 				if (m_elements.size() > 1  && bases.size() >= m_elements.size())//presume that the last base pushed is the base of the push data...
 				{
 					const size_t newlocation = std::distance(std::begin(m_elements), m_elements.find(yld));
-					const int lastbase = getlastbase();
+					const int lastbase = getLastBase();
 					bases.insert(bases.begin() + newlocation, lastbase);
 					bases.pop_back();
 				}
@@ -68,14 +68,14 @@ namespace Core {
 			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::push_data", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return true;
-		//return (basepush_data(elements, yld, value));
+		//return (basePushData(elements, yld, value));
 	}
 
-	bool FMTtimeyieldhandler::push_data(const std::string& yld, const FMTdata& data)
+	bool FMTtimeyieldhandler::pushData(const std::string& yld, const FMTdata& data)
 	{
-		return (basepush_data(m_elements, yld, data));
+		return (basePushData(m_elements, yld, data));
 	}
-	FMTyldtype FMTtimeyieldhandler::gettype() const
+	FMTyldtype FMTtimeyieldhandler::getType() const
 	{
 		return FMTyldtype::FMTtimeyld;
 	}
@@ -94,8 +94,8 @@ namespace Core {
 				if (data0it != m_elements.end())
 				{
 					const FMTdata* lvalues = &data0it->second;
-					const int target = request.getdevelopment().getperiod();
-					if (lvalues->getop() == FMTyieldparserop::FMTdiscountfactor)
+					const int target = request.getDevelopment().getperiod();
+					if (lvalues->getOp() == FMTyieldparserop::FMTdiscountfactor)
 					{
 						const double perioddbl = static_cast<double>(target);
 						const double pertio = lvalues->data.at(1);
@@ -113,7 +113,7 @@ namespace Core {
 						return (1 / std::pow((1 + rateofreturn), pertio * exponant));
 					}else {
 						double value = lvalues->data.back();
-						const int BASE = getbases().at(0);
+						const int BASE = getBases().at(0);
 						const int INDEX = target - BASE; 
 						if (INDEX < 0)
 						{
@@ -134,14 +134,14 @@ namespace Core {
 		return 0;
 	}
 
-	double FMTtimeyieldhandler::getlastvalue(const std::string yld) const
+	double FMTtimeyieldhandler::getLastValue(const std::string yld) const
 	{
 		std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		return it->second.data.back();
 	}
 
 
-	std::unique_ptr<FMTyieldhandler> FMTtimeyieldhandler::getfromfactor(const double& factor,
+	std::unique_ptr<FMTyieldhandler> FMTtimeyieldhandler::getFromFactor(const double& factor,
 		std::vector<std::string>yieldnames) const
 	{
 		FMTtimeyieldhandler newhandler(*this);
@@ -193,12 +193,12 @@ namespace Core {
 	{
 		return m_elements.at(yldname);
 	}
-	bool FMTtimeyieldhandler::containsyield(const std::string& yldname) const
+	bool FMTtimeyieldhandler::containsYield(const std::string& yldname) const
 	{
 		return (m_elements.find(yldname) != m_elements.end());
 	}
 
-	std::vector<std::string>FMTtimeyieldhandler::getyieldnames() const
+	std::vector<std::string>FMTtimeyieldhandler::getYieldNames() const
 	{
 		std::vector<std::string>results;
 		results.reserve(m_elements.size());
@@ -209,7 +209,7 @@ namespace Core {
 		return results;
 	}
 
-	void FMTtimeyieldhandler::clearcache()
+	void FMTtimeyieldhandler::clearCache()
 	{
 
 	}
@@ -225,7 +225,7 @@ namespace Core {
 		return std::unique_ptr<FMTyieldhandler>(new FMTtimeyieldhandler(*this));
 	}
 
-	std::map<std::string, std::vector<double>>FMTtimeyieldhandler::getallyieldsdata(const int& maxbase)const
+	std::map<std::string, std::vector<double>>FMTtimeyieldhandler::getAllYieldsData(const int& maxbase)const
 	{
 		std::map<std::string, std::vector<double>>localstuff;
 		try {
@@ -241,18 +241,18 @@ namespace Core {
 		return localstuff;
 	}
 
-	void FMTtimeyieldhandler::setyieldvalues(const std::string& yldname,const int& startingperiod,const std::vector<double>& values)
+	void FMTtimeyieldhandler::setYieldValues(const std::string& yldname,const int& startingperiod,const std::vector<double>& values)
 	{
 		try{
-			if(this->getbases().empty())
+			if(this->getBases().empty())
 			{
-				this->push_base(startingperiod);
-			}else if(this->getbases().size()>1)
+				this->pushBase(startingperiod);
+			}else if(this->getBases().size()>1)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Yieldhandler have multiple starting period ...",
 				"FMTtimeyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
-			}else if(this->getbases()[0]!=startingperiod)
+			}else if(this->getBases()[0]!=startingperiod)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Starting period is different from this FMTtimeyieldhandler. \nYou must create a new FMTtimeyieldhandler for those values",
@@ -260,7 +260,7 @@ namespace Core {
 			}
 			for(const double& value : values)
 			{
-				this->push_data(yldname,value);
+				this->pushData(yldname,value);
 			}
 		}catch(...){
 			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);

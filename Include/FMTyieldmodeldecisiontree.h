@@ -139,12 +139,12 @@ namespace Core
 		*/
 		virtual std::unique_ptr<FMTyieldmodel> postsolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& basethemes) const;
-		// DocString: FMTyieldmodeldecisiontreel::getperiodicvalues
+		// DocString: FMTyieldmodeldecisiontreel::getPeriodicValues
 		/**
 		Try to turn the FMTyieldmodel into periodic constant values. if returns an non empty vector then
 		each first dimension is the yield id and each second dimension are the periodic value calculated by the yield.
 		*/
-		virtual std::vector<std::vector<double>>getperiodicvalues() const;
+		virtual std::vector<std::vector<double>>getPeriodicValues() const;
 	};
 }
 

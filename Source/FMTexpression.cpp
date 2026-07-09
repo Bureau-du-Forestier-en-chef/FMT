@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -43,7 +43,7 @@ FMTexpression::operator std::string() const
     }
 
 
-std::vector<std::string> FMTexpression::getpostfix(const std::vector<std::string>& localinfix) const
+std::vector<std::string> FMTexpression::getPostFix(const std::vector<std::string>& localinfix) const
 	{
 	std::stack<std::string> values;
 	std::stack<bool>function_parenthesis;
@@ -111,19 +111,19 @@ std::vector<std::string> FMTexpression::getpostfix(const std::vector<std::string
 	}
 
 
-bool FMTexpression::is_number(const std::string& s) const
+bool FMTexpression::isNumber(const std::string& s) const
     {
 	std::string::const_iterator it = s.begin();
     while (it != s.end() && (isdigit(*it) || (*it)=='.')) ++it;
     return !s.empty() && it == s.end();
     }
 
-std::vector<std::string>FMTexpression::getvariables() const
+std::vector<std::string>FMTexpression::getVariables() const
     {
 	std::vector<std::string>variables;
     for (const std::string& value : infix)
         {
-        if(!is_number(value) && !FMToperator(value).valid() && !FMTfunctioncall(value).valid()) //assign 0 to all variables!
+        if(!isNumber(value) && !FMToperator(value).valid() && !FMTfunctioncall(value).valid()) //assign 0 to all variables!
             {
             variables.push_back(value);
             }
@@ -136,20 +136,20 @@ FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) cons
 	std::map<std::string,double>shuntvalues;
     for (const std::string& value : infix)
         {
-        if(!is_number(value) && !FMToperator(value).valid() && !value.empty()) //assign 0 to all variables!
+        if(!isNumber(value) && !FMToperator(value).valid() && !value.empty()) //assign 0 to all variables!
             {
             shuntvalues[value] = 0;
 			
             }
         }
-    double rest = this->shuntingyard(shuntvalues);
+    double rest = this->shuntingYard(shuntvalues);
 	
     values["RHS"] = -rest;
 	std::vector<std::string>new_expression;
     for (std::map<std::string,double>::iterator shuntit = shuntvalues.begin(); shuntit != shuntvalues.end(); shuntit++)
         {
         shuntit->second = 1;//set to 1
-        const double factorwrest = this->shuntingyard(shuntvalues);
+        const double factorwrest = this->shuntingYard(shuntvalues);
         const double variable_factor = (factorwrest - rest);
 
         if (variable_factor!=0)
@@ -193,7 +193,7 @@ FMTexpression::FMTexpression(const std::vector<std::string>& lsources) :infix(ls
 
 	}
 
-std::vector<std::string> FMTexpression::replacevariables(const std::map<std::string, double>& mapping) const
+std::vector<std::string> FMTexpression::replaceVariables(const std::map<std::string, double>& mapping) const
 	{
 	if (!mapping.empty())
 		{
@@ -213,7 +213,7 @@ std::vector<std::string> FMTexpression::replacevariables(const std::map<std::str
 	return infix;
 	}
 
-double FMTexpression::evaluatepostfix(const std::vector<std::string>& postfix) const
+double FMTexpression::evaluatePostFix(const std::vector<std::string>& postfix) const
 	{
 	std::stack<double>values;
 	for (const std::string& post : postfix)
@@ -246,19 +246,19 @@ double FMTexpression::evaluatepostfix(const std::vector<std::string>& postfix) c
 
 
 
-std::vector<std::string>FMTexpression::getinfix() const
+std::vector<std::string>FMTexpression::getInFix() const
     {
     return infix;
     }
 
-double FMTexpression::shuntingyard(const std::map<std::string, double>& mapping) const
+double FMTexpression::shuntingYard(const std::map<std::string, double>& mapping) const
 	{
 	double result = 0;
 	if (!infix.empty())
 		{
-		const std::vector<std::string>newin = replacevariables(mapping);
-		const std::vector<std::string>postfix = getpostfix(newin);
-		result = evaluatepostfix(postfix);
+		const std::vector<std::string>newin = replaceVariables(mapping);
+		const std::vector<std::string>postfix = getPostFix(newin);
+		result = evaluatePostFix(postfix);
 		}
 	return result;
 	}

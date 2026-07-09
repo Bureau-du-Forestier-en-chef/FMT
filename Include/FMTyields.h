@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -47,26 +47,26 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 	friend class Models::FMTmodel;
 	friend class Models::FMTnssmodel;
     public:
-		// DocString: FMTyields::generatedefaultyields
+		// DocString: FMTyields::generateDefaultYields
 		/**
 		Generate the default yields like _TSLA in the yield class.
 		*/
-		void generatedefaultyields(const std::vector<Core::FMTtheme>& themes);
+		void generateDefaultYields(const std::vector<Core::FMTtheme>& themes);
 		// DocString: FMTyields::swap
 		/**
 		Swap FMTyield.
 		*/
 		void swap(FMTyields& rhs);
-		// DocString: FMTyields::gotyieldtype
+		// DocString: FMTyields::gotYieldType
 		/**
 		Returns true if the yield section has a given yield type.
 		*/
-		bool gotyieldtype(FMTyldtype type) const;
-		// DocString: FMTyields::setactionsmappingtomodelhandlers
+		bool gotYieldType(FMTyldtype type) const;
+		// DocString: FMTyields::setActionsMappingToModelHandlers
 		/**
 		Clear the actual actionsmapping of every yield model handlers and replace it with the new.
 		*/
-		void setactionsmappingtomodelhandlers(const std::vector<int>& actionids);
+		void setActionsMappingToModelHandlers(const std::vector<int>& actionids);
 		// DocString: FMTyields::getallyieldnames
 		/**
 		return all yield names from the FMTlist.
@@ -92,11 +92,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		Default copy assignment for FMTyields.
 		*/
         FMTyields& operator = (const FMTyields& rhs);
-		// DocString: FMTyields::clearcache
+		// DocString: FMTyields::clearCache
 		/**
 		Clear caching from all FMTdata.
 		*/
-		void clearcache() final;
+		void clearCache() final;
 		// DocString: FMTyields::clearRandomYieldsCache
 		/**
 		@brief clear the cache of all random yield model.
@@ -107,11 +107,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		This function returns true if the FMTyields section contains a given (value) non null yield.
 		*/
         bool isYld(const std::string& value,bool fromsource = false) const;
-		// DocString: FMTyields::isnullyld
+		// DocString: FMTyields::isNullYld
 		/**
 		This function returns true if the FMTyields section contains a given (value) null yield.
 		*/
-		bool isnullyld(const std::string& value) const;
+		bool isNullYld(const std::string& value) const;
 		// DocString: FMTyields::get
 		/**
 		This function is the main function used to get the yields value (targets) for a given FMTdevelopement (dev),
@@ -130,19 +130,19 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		This function gets the yields used and its values (map) by a given specification (spec) for a given developement (dev).
 		*/
 		//std::vector<double>getylds(const FMTdevelopment& dev, const FMTspec& spec) const;
-		// DocString: FMTyields::getage
+		// DocString: FMTyields::getAge
 		/**
 		This function is used to get the new age of a FMTdevelopement (dev) 
 		when disturbed by a given FMTtransition specification (sepc).
 		*/
-        int getage(const FMTyieldrequest& request,const FMTspec& spec) const;
-		// DocString: FMTyields::getallyields
+        int getAge(const FMTyieldrequest& request,const FMTspec& spec) const;
+		// DocString: FMTyields::getAllYields
 		/**
 		This function returns a map with mask has key (with only one FMTtheme) for only given FMTyieldhandler type (type).
 		The map contains all the yield values for each yield name (map key). This function is used for generating a text file 
 		containing all the yields values for GCBM (might be only usefull for Forestier en chef) .
 		*/
-		std::map<std::string, std::map<std::string, std::vector<double>>>getallyields(const FMTtheme& target,FMTyldtype type) const;
+		std::map<std::string, std::map<std::string, std::vector<double>>>getAllYields(const FMTtheme& target,FMTyldtype type) const;
 		// DocString: FMTyields::operator==
 		/**
 		FMTyields equality operator check if FMTyields are the same.
@@ -184,18 +184,18 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		void presolveRef(const FMTmaskfilter& p_filter,
 			const std::vector<FMTtheme>& p_originalThemes,
 			const std::vector<FMTtheme>& p_newThemes);
-		// DocString: FMTyields::getstacked
+		// DocString: FMTyields::getStacked
 		/**
 		This function returns the FMTyields has a string in a vector.
 		*/
-		std::vector<std::string>getstacked() const;
-		// DocString: FMTyields::getfromfactor
+		std::vector<std::string>getStacked() const;
+		// DocString: FMTyields::getFromFactor
 		/**
 		This function multiply yields section with a factor and returns a new yields function.
 		If vector of yieldnames is given by the user then only the data within this names list is going
 		to be multiplied by the factor.
 		*/
-		FMTyields getfromfactor(const double& factor,
+		FMTyields getFromFactor(const double& factor,
 			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
 		// DocString: FMTyields::get
 		/**
@@ -203,23 +203,23 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		looking at age,period,lock,mask etc... it returns a map of yield name (keys) and there vlues(items).
 		*/
 		double get(const FMTyieldrequest& request,const std::string& yld) const;
-		// DocString: FMTyields::push_backagehandler
+		// DocString: FMTyields::pushBackAgeHandler
 		/**
 		Push back ageyield for R
 		*/
-		void push_backagehandler(const FMTmask& mask, const FMTageyieldhandler& value);
-		// DocString: FMTyields::push_backtimehandler
+		void pushBackAgeHandler(const FMTmask& mask, const FMTageyieldhandler& value);
+		// DocString: FMTyields::pushBackTimeHandler
 		/**
 		Push back timeyield for R
 		*/
-		void push_backtimehandler(const FMTmask& mask, const FMTtimeyieldhandler& value);
+		void pushBackTimeHandler(const FMTmask& mask, const FMTtimeyieldhandler& value);
 		// DocString: FMTyields::getNullYield
 		/*
 		* @brief get a nullyield
 		* @return null yield value.
 		*/
 		static const std::string& getNullYield();
-		// DocString: FMTyields::getmaxbase
+		// DocString: FMTyields::getMaxBase
 		/**
 		 * @brief Returns the maximum age seen in the yield handlers.
 		 *
@@ -229,7 +229,7 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		 * @param handlers A vector of pointers to FMTyieldhandler objects.
 		 * @return The maximum age observed among the yield handlers.
 		 */
-		static int getmaxbase(const std::vector<const FMTyieldhandler*>& handlers);
+		static int getMaxBase(const std::vector<const FMTyieldhandler*>& handlers);
 		// DocString: FMTyields::clear
 		/**
 		 * @brief clear all yield data.
@@ -260,18 +260,18 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		// DocString: FMTyields::nullYield
 		///the null yields.
 		static const std::string m_nullYield;
-		// DocString: FMTyields::gethandleroftype
+		// DocString: FMTyields::getHandlerOfType
 		/**
 		The function returns a vector of pointer to all yieldhandler of a given (type).
 		(Can returns all handler related to time/age/complex ...)
 		*/
-		std::vector<const FMTyieldhandler*> gethandleroftype(FMTyldtype type) const;
-		// DocString: FMTyields::gethandleroftype
+		std::vector<const FMTyieldhandler*> getHandlerOfType(FMTyldtype type) const;
+		// DocString: FMTyields::getHandlerOfType
 		/**
 		The function returns a vector of pointer to all yieldhandler of a given (type).
 		(Can returns all handler related to time/age/complex ...)
 		*/
-		std::vector<FMTyieldhandler*> gethandlers(FMTyldtype type);
+		std::vector<FMTyieldhandler*> getHandlers(FMTyldtype type);
 		// DocString: FMTyields::_updateYieldLocations
 		/**
 		@brief Update the yields presence true or false.

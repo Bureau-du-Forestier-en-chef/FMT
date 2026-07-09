@@ -23,14 +23,14 @@ int main(int argc, char *argv[])
 	playback.push_back(false);
 	allscenarios.push_back("LP5");
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	modelparser.seterrorstowarnings(errors);
 	const std::string outputlocation = "tests/planning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
+	//Si on fournit la localisation du fichier primaire  la task il crira la schedule pour tous les scnarios.
 	Parallel::FMTplanningtask newplanningtask(1,7, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly/*, primlocation*/);
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTschedule>> schedules = modelparser.readschedules(primlocation, models);
@@ -48,11 +48,11 @@ int main(int argc, char *argv[])
 			}
 		}
 		lpmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
-		lpmodel.setoutputs(selectedoutputs);
+		lpmodel.setOutputs(selectedoutputs);
 		newplanningtask.push_back(lpmodel,schedules.at(modelid));
 		}
 	Parallel::FMTtaskhandler handler(newplanningtask,3);
-	handler.setquietlogger();
+	handler.setQuietLogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
 	#endif

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -136,9 +136,9 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 FMToutput& FMToutput::operator  *= (const FMToutputsource& p_source)
 	{
 	try {
-		if (!this->name.empty() && (!p_source.isconstant() || p_source.getvalue() != 1.0))
+		if (!this->name.empty() && (!p_source.isConstant() || p_source.getValue() != 1.0))
 		{
-			if (p_source.istimeyield())
+			if (p_source.isTimeYield())
 			{
 				this->name = this->name + " * " + std::string(p_source);
 				this->description = this->description + " * " + std::string(p_source);
@@ -157,10 +157,10 @@ FMToutput& FMToutput::operator  *= (const FMToutputsource& p_source)
 			for (const FMToutputsource& source : sources)
 			{
 				new_sources.push_back(source);
-				if (source.isvariable() || source.islevel())
+				if (source.isVariable() || source.isLevel())
 				{
-					LocalSource.setthemetarget(source.getthemetarget());
-					LocalSource.setoutputorigin(source.getoutputorigin());
+					LocalSource.setThemeTarget(source.getThemeTarget());
+					LocalSource.setOutputOrigin(source.getOutputOrigin());
 					new_operators.push_back(FMToperator("*"));
 					new_sources.push_back(LocalSource);
 				}
@@ -186,7 +186,7 @@ FMToutput& FMToutput::operator  *= (const FMToutputsource& p_source)
 FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
 	{
 	try{
-	if (!this->name.empty() && (!p_source.isconstant() || p_source.getvalue() != 1.0))
+	if (!this->name.empty() && (!p_source.isConstant() || p_source.getValue() != 1.0))
 		{
 		this->name = this->name + "/" + std::string(p_source);
 		this->description = this->description + "/" + std::string(p_source);
@@ -205,10 +205,10 @@ FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
 			{
 				new_operators.push_back(operators.at(location));
 			}
-			if (source.isvariable() || source.isvariablelevel())
+			if (source.isVariable() || source.isVariableLevel())
 			{
-				LocalSource.setthemetarget(source.getthemetarget());
-				LocalSource.setoutputorigin(source.getoutputorigin());
+				LocalSource.setThemeTarget(source.getThemeTarget());
+				LocalSource.setOutputOrigin(source.getOutputOrigin());
 				new_sources.push_back(LocalSource);
 				new_operators.push_back(FMToperator("/"));
 			}
@@ -240,10 +240,10 @@ FMToutput::operator std::string() const
 		}
 		else {
 			line = _getFormatedOutputName();
-			if (isconstantlevel())
+			if (isConstantLevel())
 			{
 				line += "*SOURCE ";
-				for (const double& value : sources.begin()->getvalues())
+				for (const double& value : sources.begin()->getValues())
 				{
 
 					line += FMToutputsource::trimDouble(std::to_string(value)) + " ";
@@ -252,7 +252,7 @@ FMToutput::operator std::string() const
 				line += "\n";
 
 			}
-			else if (!isonlylevel())
+			else if (!isOnlyLevel())
 			{
 				line += "*SOURCE ";
 				for (size_t id = 0; id < sources.size(); ++id)
@@ -260,7 +260,7 @@ FMToutput::operator std::string() const
 					line += std::string(sources[id]) + " ";
 					if (id < operators.size())
 					{
-						operators[id].isfactor() ? line += std::string(operators[id]) + " " : line += std::string(operators[id]) + "\n";
+						operators[id].isFactor() ? line += std::string(operators[id]) + " " : line += std::string(operators[id]) + "\n";
 					}
 				}
 				line += "\n";
@@ -285,11 +285,11 @@ bool FMToutput::empty() const
 	{
 	return sources.empty();
 	}
-bool FMToutput::islevel() const
+bool FMToutput::isLevel() const
 	{
 	for (const FMToutputsource& src : sources)
 		{
-		if (src.gettarget() == FMTotar::level)
+		if (src.getTarget() == FMTotar::level)
 			{
 			return true;
 			}
@@ -297,11 +297,11 @@ bool FMToutput::islevel() const
     return false;
 	}
 
-bool FMToutput::isconstantlevel() const
+bool FMToutput::isConstantLevel() const
 {
 	for (const FMToutputsource& src : sources)
 	{
-		if (src.gettarget() != FMTotar::level || src.isvariablelevel())
+		if (src.getTarget() != FMTotar::level || src.isVariableLevel())
 		{
 			return false;
 		}
@@ -309,11 +309,11 @@ bool FMToutput::isconstantlevel() const
 	return true;
 }
 
-bool FMToutput::isonlylevel() const
+bool FMToutput::isOnlyLevel() const
 	{
 	for (const FMToutputsource& src : sources)
 		{
-		if (src.gettarget() != FMTotar::level)
+		if (src.getTarget() != FMTotar::level)
 			{
 			return false;
 			}
@@ -322,11 +322,11 @@ bool FMToutput::isonlylevel() const
 	}
 
 
-bool FMToutput::isconstant() const
+bool FMToutput::isConstant() const
 	{
 	for (const FMToutputsource& src : sources)
 		{
-		if (src.gettarget() != FMTotar::val)
+		if (src.getTarget() != FMTotar::val)
 			{
 			return false;
 			}
@@ -334,18 +334,18 @@ bool FMToutput::isconstant() const
 	return true;
 	}
 
-double FMToutput::getconstantvalue() const
+double FMToutput::getConstantValue() const
 	{
 	double value = 0;
 	try{
 	std::vector<double>values;
-	if (isconstant())
+	if (isConstant())
 		{
 		for (const FMToutputsource& src : sources)
 			{
-			values.push_back(src.getvalue());
+			values.push_back(src.getValue());
 			}
-		value = shuntingyard(values, this->operators);
+		value = shuntingYard(values, this->operators);
 		}
 	}
 	catch (...)
@@ -357,11 +357,11 @@ double FMToutput::getconstantvalue() const
 	}
 
 
-bool FMToutput::containslevel() const
+bool FMToutput::containsLevel() const
 	{
 	for (const FMToutputsource& src : sources)
 		{
-		if (src.islevel())
+		if (src.isLevel())
 			{
 			return true;
 			}
@@ -369,11 +369,11 @@ bool FMToutput::containslevel() const
 	return false;
 	}
 
-bool FMToutput::isdivision() const
+bool FMToutput::isDivision() const
 {
 	for (const FMToperator& opr : operators)
 	{
-		if (opr.isdivide())
+		if (opr.isDivide())
 		{
 			return true;
 		}
@@ -381,7 +381,7 @@ bool FMToutput::isdivision() const
 	return false;
 }
 
-void FMToutput::replacedivision(const double& bound)
+void FMToutput::replaceDivision(const double& bound)
 {
 	try {
 	std::vector<Core::FMToperator>baseoperators(operators);
@@ -392,7 +392,7 @@ void FMToutput::replacedivision(const double& bound)
 	operators.clear();
 	for (FMToutputsource& source : sources)
 	{
-		if (baseoperators.at(opid).isdivide())
+		if (baseoperators.at(opid).isDivide())
 		{
 			denominator = true;
 			operators.push_back(Core::FMToperator("+"));
@@ -402,16 +402,16 @@ void FMToutput::replacedivision(const double& bound)
 		}
 		if (denominator)
 		{
-			if (!source.isvariable() && (source.isconstant()||source.islevel()))
+			if (!source.isVariable() && (source.isConstant()||source.isLevel()))
 			{
 				if (!gotonefactor)
 				{
-					std::vector<double>allvalues = source.getvalues();
+					std::vector<double>allvalues = source.getValues();
 					for (double& value : allvalues)
 					{
 						value *= -bound;
 					}
-					source = FMToutputsource(source.gettarget(), allvalues, source.getoutputorigin(), source.getthemetarget());
+					source = FMToutputsource(source.getTarget(), allvalues, source.getOutputOrigin(), source.getThemeTarget());
 				}
 				gotonefactor = true;
 			}
@@ -448,7 +448,7 @@ bool FMToutput::isValidAction(const std::string& p_actionOrAggregate,
 	return isValid;
 }
 
-void FMToutput::setproportions(std::map<std::string, std::vector<std::string>>& allequations,const std::vector<std::string>& baseequation) const
+void FMToutput::setProportions(std::map<std::string, std::vector<std::string>>& allequations,const std::vector<std::string>& baseequation) const
 {
 	try {
 		const double totalentry = static_cast<double>(allequations.size());
@@ -485,22 +485,22 @@ void FMToutput::setproportions(std::map<std::string, std::vector<std::string>>& 
 		}
 }
 
-bool FMToutput::canbenodesonly() const
+bool FMToutput::canBeNodesOnly() const
 	{
 	try {
-		if (islinear()&& !isdivision())
+		if (isLinear()&& !isDivision())
 		{
 			std::vector<Core::FMToperator>baseoperators(operators);
 			baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
 			size_t opid = 0;
 			for (const FMToutputsource& source : sources)
 				{
-				if (((source.islevel()&&!source.isvariablelevel())||
-					source.istimeyield()||
-					source.isconstant())&&
-					!baseoperators.at(opid).isfactor())
+				if (((source.isLevel()&&!source.isVariableLevel())||
+					source.isTimeYield()||
+					source.isConstant())&&
+					!baseoperators.at(opid).isFactor())
 					{
-					if (source.istimeyield())
+					if (source.isTimeYield())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 							"for output " + std::string(*this),
@@ -521,7 +521,7 @@ bool FMToutput::canbenodesonly() const
 	return false;
 	}
 
-bool FMToutput::islinear() const
+bool FMToutput::isLinear() const
 	{
 	try{
 	if (sources.size() > 1 && (find(operators.begin(), operators.end(), FMToperator("*")) != operators.end() ||
@@ -531,11 +531,11 @@ bool FMToutput::islinear() const
 		int lastnonlinear = -1;
 		for (const FMToutputsource& source : sources)
 			{
-			if (source.isvariable() && lastnonlinear!=-1 && location == (lastnonlinear+1))
+			if (source.isVariable() && lastnonlinear!=-1 && location == (lastnonlinear+1))
 				{
 				return false;
 				}
-			if (source.isvariable() && location < static_cast<int>(operators.size()) &&
+			if (source.isVariable() && location < static_cast<int>(operators.size()) &&
 				(operators[location] == FMToperator("*") || operators[location] == FMToperator("/")))
 				{
 				lastnonlinear = location;
@@ -552,7 +552,7 @@ bool FMToutput::islinear() const
 	}
 	return true;
 	}
-double FMToutput::shuntingyard(const std::vector<double>& sourcevalues,const std::vector<FMToperator>& simple_operators) const
+double FMToutput::shuntingYard(const std::vector<double>& sourcevalues,const std::vector<FMToperator>& simple_operators) const
 	{
 	try {
 		std::map<std::string, double>mapping;
@@ -571,7 +571,7 @@ double FMToutput::shuntingyard(const std::vector<double>& sourcevalues,const std
 			++id;
 		}
 		const FMTexpression newexpression(expression_inputs);
-		return newexpression.shuntingyard(mapping);
+		return newexpression.shuntingYard(mapping);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("for " + this->getname(),"FMToutput::shuntingyard", __LINE__, __FILE__, Core::FMTsection::Outputs);
@@ -579,7 +579,7 @@ double FMToutput::shuntingyard(const std::vector<double>& sourcevalues,const std
 	return 0;
 	}
 
-FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbounds& bound,const std::string& specialbound, std::string attribute) const
+FMToutput FMToutput::boundTo(const std::vector<FMTtheme>& themes, const FMTperbounds& bound,const std::string& specialbound, std::string attribute) const
 	{
 	FMToutput newoutput(*this);
 	try {
@@ -620,59 +620,59 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 			name += ")";
 			newoutput.name = name;
 		}
-		//if (!newoutput.islevel())
+		//if (!newoutput.isLevel())
 		//{
 			for (FMToutputsource& source : newoutput.sources)
 			{
 				
-				if (source.isvariable()||source.isvariablelevel())
+				if (source.isVariable()||source.isVariableLevel())
 				{
-					/*if (source.isvariablelevel())
+					/*if (source.isVariableLevel())
 					{
 						source = Core::FMToutputsource(Core::FMTotar::level, 0, "",
-							newoutput.name, source.getoutputorigin(), source.getthemetarget());
+							newoutput.name, source.getOutputOrigin(), source.getThemeTarget());
 					}*/
 					if (!bound.empty())
 					{
-						source.setbounds(bound);
+						source.setBounds(bound);
 					}
 					if (!attribute.empty())
 					{
-						if (source.isvariablelevel())
+						if (source.isVariableLevel())
 						{
-							source.setaction(source.getaction() + "("+ attribute +")");
+							source.setAction(source.getAction() + "("+ attribute +")");
 						}else {
 							FMTmask oldmask = FMTmask(source.getmask());
-							oldmask.set(themes.at(targetthemeid()), attribute);
-							source.setmask(oldmask);
+							oldmask.set(themes.at(targetThemeId()), attribute);
+							source.setMask(oldmask);
 							}
 						}
 					if (!specialbound.empty())
 					{
 						if (specialbound == "_AVG")
 						{
-							source.setaverage();
+							source.setAverage();
 						}
 						else if (specialbound == "_SUM")
 						{
-							source.setsum();
+							source.setSum();
 						}
 					}
 
 					
-				}/*else if (source.isvariablelevel())
+				}/*else if (source.isVariableLevel())
 					{
 					source = Core::FMToutputsource(Core::FMTotar::level,0, "",
-						newoutput.name, source.getoutputorigin(), source.getthemetarget());
+						newoutput.name, source.getOutputOrigin(), source.getThemeTarget());
 					}*/
 			}
-		/*}else if(newoutput.islevel())
+		/*}else if(newoutput.isLevel())
 			{
 			std::vector<FMToutputsource>levelsources;
 			for (const FMToutputsource& source : newoutput.sources)
 				{
-				levelsources.push_back(Core::FMToutputsource(Core::FMTotar::level,source.getvalue(),"",
-										newoutput.name, source.getoutputorigin(),source.getthemetarget()));
+				levelsources.push_back(Core::FMToutputsource(Core::FMTotar::level,source.getValue(),"",
+										newoutput.name, source.getOutputOrigin(),source.getThemeTarget()));
 				}
 			newoutput.sources = levelsources;
 			}*/
@@ -683,7 +683,7 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 	return newoutput;
 	}
 
-std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equation,double multiplier,bool orderbyoutputid,int period) const
+std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equation,double multiplier,bool orderbyoutputid,int period) const
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	std::vector<FMToutputnode>nodes;
@@ -696,7 +696,7 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 			//std::queue<FMToperator>ops;
 			//ops.push(FMToperator("+"));
 			std::deque<FMToperator>ops(operators.begin(), operators.end());
-			//if (ops.empty() || ops.front().isfactor())
+			//if (ops.empty() || ops.front().isFactor())
 			//{
 			ops.push_front(FMToperator("+"));
 			//}
@@ -714,19 +714,19 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 			bool pushedfactor = false;
 			while (!srs.empty())
 			{
-				if (srs.front().isvariable() || srs.front().isvariablelevel())
+				if (srs.front().isVariable() || srs.front().isVariableLevel())
 				{
 					double constant = 1;
-					//Its now handle in FMToutputnode settograph
-					/*if (srs.front().isaverage())
+					//Its now handle in FMToutputnode setToGraph
+					/*if (srs.front().isAverage())
 						{
 						constant *= multiplier;
 						}8=*/
-					if (!ops.front().isfactor())
+					if (!ops.front().isFactor())
 					{
 						constant *= ops.front().call(0, 1);
 					}
-					if (ops.front().isfactor())
+					if (ops.front().isFactor())
 					{
 						equation.push_back(")");
 						equation.push_back(ops.front());
@@ -744,25 +744,25 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 					equation.push_back("O" + std::to_string(nodes.size()));
 					ops.pop_front();
 					nodes.emplace_back(srs.front(),
-						FMToutputsource(FMTotar::val, 1, "", "", srs.front().getoutputorigin()), constant);
+						FMToutputsource(FMTotar::val, 1, "", "", srs.front().getOutputOrigin()), constant);
 					pushednode = true;
 					pushedfactor = false;
 				}
-				else if (ops.front().isfactor() && (pushednode || pushedfactor))
+				else if (ops.front().isFactor() && (pushednode || pushedfactor))
 				{
-					if (srs.front().isconstant())
+					if (srs.front().isConstant())
 					{
-						nodes.back().constant = ops.front().call(nodes.back().constant, srs.front().getvalue());
+						nodes.back().constant = ops.front().call(nodes.back().constant, srs.front().getValue());
 					}
 					else {
-						if (nodes.back().factor.istimeyield() &&
-							srs.front().istimeyield())
+						if (nodes.back().factor.isTimeYield() &&
+							srs.front().isTimeYield())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 								"for output " + std::string(*this),
 								"FMToutput::getnodes", __LINE__, __FILE__);
 						}
-						nodes.back().factor.resetvalues(ops.front(), srs.front());
+						nodes.back().factor.resetValues(ops.front(), srs.front());
 					}
 					pushednode = false;
 					pushedfactor = true;
@@ -770,7 +770,7 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 				}
 				else {
 					equation.push_back(ops.front());
-					const double value = srs.front().getvalue(period);
+					const double value = srs.front().getValue(period);
 					equation.push_back(std::to_string(value));
 					pushednode = false;
 					pushedfactor = false;
@@ -794,11 +794,11 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 	return nodes;
 	}
 
-bool FMToutput::issingleperiod() const
+bool FMToutput::isSinglePeriod() const
 	{
 	for (const FMToutputsource& source : this->sources)
 		{
-		if (source.emptyperiod() || (source.getperiodlowerbound() != source.getperiodupperbound()))
+		if (source.emptyperiod() || (source.getPeriodLowerBound() != source.getPeriodUpperBound()))
 			{
 			return false;
 			}
@@ -806,17 +806,17 @@ bool FMToutput::issingleperiod() const
 	return true;
 	}
 
-bool FMToutput::hasaverage() const
+bool FMToutput::hasAverage() const
 {
 return (name.find("_AVG") != std::string::npos);
 }
 
-int FMToutput::gettargetperiod() const
+int FMToutput::getTargetPeriod() const
 	{
 	int target = -1;
-	if (issingleperiod())
+	if (isSinglePeriod())
 		{
-		return sources.at(0).getperiodlowerbound();
+		return sources.at(0).getPeriodLowerBound();
 		}
 	return target;
 	}
@@ -831,7 +831,7 @@ size_t FMToutput::hash() const
 	for (const FMToutputsource& src : sources)
 		{
 		boost::hash_combine(seed, src.hash());
-		boost::hash_combine(seed, src.getyield());
+		boost::hash_combine(seed, src.getYield());
 		}
 	return seed;
 	}
@@ -850,7 +850,7 @@ bool FMToutput::operator == (const FMToutput& rhs) const
 	}
 	if (!sources.empty() && !rhs.sources.empty())
 	{
-		if (targetthemeid() != rhs.targetthemeid()) {
+		if (targetThemeId() != rhs.targetThemeId()) {
 			return false;
 		}
 	}
@@ -888,17 +888,17 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 		for (size_t sourceid = 0; sourceid < sources.size(); ++sourceid)
 		{
 			bool pushedsource = true;
-			const std::string& yieldname = sources.at(sourceid).getyield();
-			if (sources.at(sourceid).isvariable())
+			const std::string& yieldname = sources.at(sourceid).getYield();
+			if (sources.at(sourceid).isVariable())
 			{
-				const std::string& actionname = sources.at(sourceid).getaction();
+				const std::string& actionname = sources.at(sourceid).getAction();
 				const bool IS_VALId_ACTION = isValidAction(actionname,actions, p_valideActions);
-				if (filter.canpresolve(sources.at(sourceid).getmask(), selectedthemes) &&
+				if (filter.canPresolve(sources.at(sourceid).getmask(), selectedthemes) &&
 					(actionname.empty() ||
 						IS_VALId_ACTION) &&
-						(yieldname.empty() || !yields.isnullyld(yieldname)))
+						(yieldname.empty() || !yields.isNullYld(yieldname)))
 				{
-					if (!filter.emptyflipped())
+					if (!filter.emptyFlipped())
 					{
 						newsources.push_back(sources.at(sourceid).presolve(filter, newthemes));
 						pushfactor = true;
@@ -911,18 +911,18 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 					pushedsource = false;
 				}
 			}
-			else if (pushfactor&&!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
-				(sources.at(sourceid).isconstant())))
+			else if (pushfactor&&!sources.at(sourceid).isVariable() && (sources.at(sourceid).isLevel() || (sources.at(sourceid).isTimeYield() && !yields.isNullYld(yieldname)) ||
+				(sources.at(sourceid).isConstant())))
 			{
 				pushedsource = true;
 				if (turntonegative)
 				{
-					newsources.push_back(FMToutputsource(sources.at(sourceid).gettarget(),
-						sources.at(sourceid).getvalue()*-1,
-						sources.at(sourceid).getyield(),
-						sources.at(sourceid).getaction(),
-						sources.at(sourceid).getoutputorigin(),
-						sources.at(sourceid).getthemetarget()));
+					newsources.push_back(FMToutputsource(sources.at(sourceid).getTarget(),
+						sources.at(sourceid).getValue()*-1,
+						sources.at(sourceid).getYield(),
+						sources.at(sourceid).getAction(),
+						sources.at(sourceid).getOutputOrigin(),
+						sources.at(sourceid).getThemeTarget()));
 				}
 				else {
 					newsources.push_back(sources.at(sourceid));
@@ -936,7 +936,7 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 			{
 				newoperators.push_back(operators.at(operatorid));
 			}else if (operatorid < operators.size() && !pushedsource
-				&&operators.at(operatorid).isfactor())
+				&&operators.at(operatorid).isFactor())
 			{
 				pushfactor = false;
 			}else if (operatorid < operators.size() && !pushedsource&&
@@ -960,12 +960,12 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 	return newoutput;
 	}
 
-void FMToutput::changesourcesid(const int& outid)
+void FMToutput::changeSourcesId(const int& outid)
 {
 	try {
 		for (Core::FMToutputsource& source : sources)
 			{
-			source.setoutputorigin(outid);
+			source.setOutputOrigin(outid);
 			}
 	}catch (...)
 		{
@@ -986,9 +986,9 @@ Core::FMToutput FMToutput::removeRHSvalue() const
 		std::vector<Core::FMToperator>newoperators;
 		for (const FMToutputsource& source : sources)
 		{
-			if (((source.islevel() && !source.isvariablelevel()) ||
-				source.isconstant()) &&
-				!baseoperators.at(opid).isfactor())
+			if (((source.isLevel() && !source.isVariableLevel()) ||
+				source.isConstant()) &&
+				!baseoperators.at(opid).isFactor())
 			{//get double and remove the rest
 
 			}else {
@@ -1018,10 +1018,10 @@ void FMToutput::getRHSvalue(const int& period, double& lower, double& upper) con
 		for (const FMToutputsource& source : sources)
 		{
 
-			if (((source.islevel() && !source.isvariablelevel()) ||
-				source.isconstant()))
+			if (((source.isLevel() && !source.isVariableLevel()) ||
+				source.isConstant()))
 			{
-				toshunt.push_back(source.getvalue(period));
+				toshunt.push_back(source.getValue(period));
 			}else
 			{
 				toshunt.push_back(0);
@@ -1029,7 +1029,7 @@ void FMToutput::getRHSvalue(const int& period, double& lower, double& upper) con
 
 		}
 
-		const double outrhs = this->shuntingyard(toshunt, operators);
+		const double outrhs = this->shuntingYard(toshunt, operators);
 
 
 		if (outrhs!=1)
@@ -1053,12 +1053,12 @@ void FMToutput::getRHSvalue(const int& period, double& lower, double& upper) con
 }
 
 
-void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid)
+void FMToutput::changeSourcesId(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid)
 	{
 	try{
 		for (Core::FMToutputsource& source : sources)
 		{
-			const int oldorigin = source.getoutputorigin();
+			const int oldorigin = source.getOutputOrigin();
 			std::set<int>::const_iterator koit = newoutputsorigin.find(oldorigin);
 			const int neworigin = static_cast<int>(std::distance(newoutputsorigin.begin(),koit));
 			if (koit==newoutputsorigin.end() && !(source.getmask().empty()))
@@ -1067,9 +1067,9 @@ void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std:
 							"FMToutput::changeoutputsorigin", __LINE__, __FILE__);
 			}else if(oldorigin!=neworigin)
 			{
-				source.setoutputorigin(neworigin);
+				source.setOutputOrigin(neworigin);
 			}
-			const int oldthemetarget = source.getthemetarget();
+			const int oldthemetarget = source.getThemeTarget();
 			if (oldthemetarget >= 0)
 			{
 				std::set<int>::const_iterator ktit = newthemeid.find(oldthemetarget);
@@ -1080,7 +1080,7 @@ void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std:
 				}
 				if (oldthemetarget!=newtarget)
 				{
-					source.setthemetarget(newtarget);
+					source.setThemeTarget(newtarget);
 				}
 			}
 		}
@@ -1090,7 +1090,7 @@ void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std:
 		}
 	}
 
-void FMToutput::setsources(const std::vector<FMToutputsource>& p_sources)
+void FMToutput::setSources(const std::vector<FMToutputsource>& p_sources)
 	{
 	sources = p_sources;
 	}
@@ -1100,23 +1100,23 @@ void FMToutput::setOperators(const std::vector<FMToperator>& p_operators)
 	operators = p_operators;
 	}
 
-std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>& themes) const
+std::vector<std::string> FMToutput::getDecomposition(const std::vector<FMTtheme>& themes) const
 	{
 	std::vector<std::string>validdecomp;
 	try{
-	if (targetthemeid()!=-1)
+	if (targetThemeId()!=-1)
 		{
-		return getthemedecomposition(themes[targetthemeid()]);
+		return getThemeDecomposition(themes[targetThemeId()]);
 		/*int srcid = 0;
 		for (const FMToutputsource& source : sources)
 			{
-			if (source.isvariable())
+			if (source.isVariable())
 				{
 				const FMTmask srcmask = source.getmask();
 				std::vector<std::string>unique_selection;
-				for (const FMTmask& decmask : srcmask.decompose(themes[targetthemeid()]))
+				for (const FMTmask& decmask : srcmask.decompose(themes[targetThemeId()]))
 					{
-					unique_selection.push_back(decmask.get(themes[targetthemeid()]));
+					unique_selection.push_back(decmask.get(themes[targetThemeId()]));
 					}
 				if (srcid==0)
 					{
@@ -1139,14 +1139,14 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 	return validdecomp;
 	}
 
-std::vector<std::string> FMToutput::getthemedecomposition(const FMTtheme& theme) const
+std::vector<std::string> FMToutput::getThemeDecomposition(const FMTtheme& theme) const
 {
 	std::vector<std::string>validdecomp;
 	try {
 		int srcid = 0;
 		for (const FMToutputsource& source : sources)
 		{
-			if (source.isvariable())
+			if (source.isVariable())
 			{
 				const FMTmask srcmask = source.getmask();
 				const std::vector<FMTmask> ALL_MASKS = srcmask.decompose(theme);
@@ -1179,20 +1179,20 @@ std::vector<std::string> FMToutput::getthemedecomposition(const FMTtheme& theme)
 	return validdecomp;
 }
 
-FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask,
+FMToutput FMToutput::intersectWithMask(const Core::FMTmask& mask,
 	const std::vector<Core::FMTtheme>& themes) const
 	{
 	FMToutput newoutput(*this);
 	try{
 		for (FMToutputsource& source : newoutput.sources)
 		{
-			if (source.isvariable())
+			if (source.isVariable())
 			{
-				Core::FMTmask newmask = source.getmask().getintersect(mask);
+				Core::FMTmask newmask = source.getmask().getIntersect(mask);
 				bool outmask = false;
 				for (const Core::FMTtheme& theme : themes)
 					{
-					if (newmask.getsubsetcount(theme)==0)
+					if (newmask.getSubsetCount(theme)==0)
 						{
 						outmask = true;
 						break;
@@ -1201,12 +1201,12 @@ FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask,
 				if (!outmask)
 				{
 					newmask.update(themes);
-					source.setmask(newmask);
+					source.setMask(newmask);
 				}else {
 					//if the intersect gives mask with only 0 in one theme, change source for level = 0 
 					source = Core::FMToutputsource(Core::FMTotar::val,
 						std::vector<double>(3,0),
-						source.getoutputorigin(), source.getthemetarget());//constant level!
+						source.getOutputOrigin(), source.getThemeTarget());//constant level!
 				}
 			}
 		}
@@ -1214,7 +1214,7 @@ FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask,
 		//{
 			//_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 			//	"for output " + std::string(newoutput),
-			//	"FMToutput::canbenodesonly", __LINE__, __FILE__);
+			//	"FMToutput::canBeNodesOnly", __LINE__, __FILE__);
 		//}
 	}catch (...)
 		{
@@ -1224,19 +1224,19 @@ FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask,
 	return newoutput;
 	}
 
-FMTmask FMToutput::getvariableintersect() const
+FMTmask FMToutput::getVariableIntersect() const
 {
 	FMTmask mask;
 	try{
 		for (const FMToutputsource& source :sources)
 		{
-			if (source.isvariable())
+			if (source.isVariable())
 			{
 				if (mask.empty())
 					{
 					mask = source.getmask();
 				}else {
-					mask = mask.getintersect(source.getmask());
+					mask = mask.getIntersect(source.getmask());
 				}
 			
 			}
@@ -1254,14 +1254,14 @@ FMTmask FMToutput::getMasksUnion() const
 	FMTmask mask;
 	for (const FMToutputsource& source : sources)
 		{
-		if (source.isvariable())
+		if (source.isVariable())
 			{
 				if (mask.empty())
 				{
 					mask = source.getmask();
 				}
 				else {
-					mask = mask.getunion(source.getmask());
+					mask = mask.getUnion(source.getmask());
 				}
 
 			}
@@ -1269,20 +1269,20 @@ FMTmask FMToutput::getMasksUnion() const
 	return mask;
 	}
 
-std::vector<const Core::FMTtheme*>FMToutput::getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables) const
+std::vector<const Core::FMTtheme*>FMToutput::getStaticThemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables) const
 {
 	std::vector<const Core::FMTtheme*>statics;
 	try {
 		std::vector<std::string>yieldstolookat;
 		for (const FMToutputsource& source : sources)
 		{
-			if (source.isvariable())
+			if (source.isVariable())
 			{
 				if (!ignoreoutputvariables)
 					{
-					statics = source.getmask().getstaticthemes(statics);
+					statics = source.getmask().getStaticThemes(statics);
 					}
-				const std::string yieldvalue = source.getyield();
+				const std::string yieldvalue = source.getYield();
 				for (const std::string& yldbound : source.getylds())
 					{
 					if (yields.isYld(yldbound))
@@ -1300,14 +1300,14 @@ std::vector<const Core::FMTtheme*>FMToutput::getstaticthemes(const std::vector<C
 		while (handlerit!=yields.end()&&!yieldstolookat.empty())
 			{
 			std::vector<std::string>::const_iterator yieldit = yieldstolookat.begin();
-			while (yieldit!= yieldstolookat.end() && !handlerit->second->containsyield(*yieldit))
+			while (yieldit!= yieldstolookat.end() && !handlerit->second->containsYield(*yieldit))
 				{
 				++yieldit;
 				}
 			if (yieldit != yieldstolookat.end())
 				{
 				const Core::FMTmask maskof(std::string(handlerit->first), themes);
-				const std::vector<const Core::FMTtheme*>newstatic = maskof.getstaticthemes(statics);
+				const std::vector<const Core::FMTtheme*>newstatic = maskof.getStaticThemes(statics);
 				statics = newstatic;
 				yieldstolookat.erase(yieldit);
 				}
@@ -1322,11 +1322,11 @@ std::vector<const Core::FMTtheme*>FMToutput::getstaticthemes(const std::vector<C
 	}
 
 
-void FMToutput::setperiod(const int& newperiod)
+void FMToutput::setPeriod(const int& newperiod)
 	{
 	for (FMToutputsource& source : sources)
 		{
-		source.setbounds(FMTperbounds(FMTsection::Outputs, newperiod, newperiod));
+		source.setBounds(FMTperbounds(FMTsection::Outputs, newperiod, newperiod));
 		}
 	}
 
@@ -1334,7 +1334,7 @@ bool FMToutput::isActionbased() const
 	{
 	for (const FMToutputsource& source : sources)
 		{
-		if (!source.getaction().empty())
+		if (!source.getAction().empty())
 			{
 			return true;
 			}
@@ -1342,11 +1342,11 @@ bool FMToutput::isActionbased() const
 	return false;
 	}
 
-bool FMToutput::isvariablesizeof(const size_t& masksize) const
+bool FMToutput::isVariableSizeOf(const size_t& masksize) const
 	{
 	for (const FMToutputsource& source : sources)
 		{
-			if (source.isvariable())
+			if (source.isVariable())
 			{
 				return (masksize == source.getmask().size());
 			}
@@ -1355,11 +1355,11 @@ bool FMToutput::isvariablesizeof(const size_t& masksize) const
 	}
 
 
-bool FMToutput::isinventory() const
+bool FMToutput::isInventory() const
 	{
 	for (const FMToutputsource& source : sources)
 	{
-		if (source.isinventory())
+		if (source.isInventory())
 		{
 			return true;
 		}
@@ -1367,13 +1367,13 @@ bool FMToutput::isinventory() const
 	return false;
 	}
 
-void FMToutput::fillfromshuntingyard(const std::vector<std::string>baseeq,
+void FMToutput::fillFromShuntingYard(const std::vector<std::string>baseeq,
 						std::map<std::string, double>& results,
 						const std::vector<Core::FMToutputnode>& nodes,
 						std::map<std::string,std::vector<std::string>>& allequations) const
 	{
 	try {
-		setproportions(allequations,baseeq);
+		setProportions(allequations,baseeq);
 		for (std::map<std::string, std::vector<std::string>>::const_iterator outit = allequations.begin(); outit != allequations.end(); outit++)
 		{
 			size_t oid = 0;
@@ -1387,7 +1387,7 @@ void FMToutput::fillfromshuntingyard(const std::vector<std::string>baseeq,
 				}
 			Core::FMTexpression expression(equation);
 			std::map<std::string, double>vals;
-			results[outit->first] = expression.shuntingyard(vals);
+			results[outit->first] = expression.shuntingYard(vals);
 		}
 	}catch (...)
 		{
@@ -1397,11 +1397,11 @@ void FMToutput::fillfromshuntingyard(const std::vector<std::string>baseeq,
 	}
 
 
-FMTtheme FMToutput::targettheme(const std::vector<FMTtheme>& themes) const
+FMTtheme FMToutput::targetTheme(const std::vector<FMTtheme>& themes) const
 	{
-	if (targetthemeid()>=0)
+	if (targetThemeId()>=0)
 		{
-		return themes[targetthemeid()];
+		return themes[targetThemeId()];
 		}
 	return FMTtheme();
 	}
@@ -1435,7 +1435,7 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 				count++;
 				/*if (count > MAXSIZE)
 				{
-					const std::string ERRORMESSAGE = "Le nombre de caratères par ligne est trop grand. Nombre de caractères : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
+					const std::string ERRORMESSAGE = "Le nombre de caratres par ligne est trop grand. Nombre de caractres : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 						 ERRORMESSAGE, "FMToutput::splitSource" ,__LINE__, __FILE__);
 					passed = false;
@@ -1459,7 +1459,7 @@ bool FMToutput::_verifyOperatorOrder() const
 	bool need_change = false;
 	int count = 0;
 	for (size_t i = 0; i < operators.size(); ++i) {
-		Core::FMTokey op = operators[i].getkey();
+		Core::FMTokey op = operators[i].getKey();
 		if (op == Core::FMTokey::multiply || op == Core::FMTokey::divide) {
 			count++;
 		}
@@ -1495,12 +1495,12 @@ std::string FMToutput::_operatorFormat() const
 	newLine += modified;
 	newLine += " \n";
 	newLine += "*SOURCE ";
-	// On regarde le dernier double op * ou / pour ajuster les outputs en conséquence
+	// On regarde le dernier double op * ou / pour ajuster les outputs en consquence
 	int last_operator_position = 0;
 	for (size_t i = newOutput.operators.size(); i-- > 0; )
 	{
-		if (newOutput.operators[i].getkey() == Core::FMTokey::multiply ||
-			newOutput.operators[i].getkey() == Core::FMTokey::divide)
+		if (newOutput.operators[i].getKey() == Core::FMTokey::multiply ||
+			newOutput.operators[i].getKey() == Core::FMTokey::divide)
 		{
 			last_operator_position ++;
 		}
@@ -1514,7 +1514,7 @@ std::string FMToutput::_operatorFormat() const
 			break;
 		}
 	}
-	// On réécrit les outputs
+	// On rcrit les outputs
 	for (size_t i = 0; i < newOutput.sources.size(); ++i)
 	{
 		std::string source_str = std::string(newOutput.sources[i]);
@@ -1523,7 +1523,7 @@ std::string FMToutput::_operatorFormat() const
 		if (i < newOutput.operators.size())
 			{
 			op_str  = newOutput.operators[i];
-			op = operators[i].getkey();
+			op = operators[i].getKey();
 			}
 		std::string lastNum = "";
 		if (output_num > 0) 
@@ -1572,14 +1572,14 @@ std::string FMToutput::_operatorFormat() const
 std::string FMToutput::_getFormatedOutputName() const
 {
 	std::string result("*OUTPUT ");
-	if (isonlylevel())
+	if (isOnlyLevel())
 	{
 		result = "*LEVEL ";
 	}
 	result += name;
-	if (targetthemeid() != -1)
+	if (targetThemeId() != -1)
 		{
-		result += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
+		result += " (_TH" + std::to_string(targetThemeId() + 1) + ")";
 		}
 	result += " " + description + "\n";
 	return result;
@@ -1588,17 +1588,17 @@ std::string FMToutput::_getFormatedOutputName() const
 bool FMToutput::_needWsFormat() const
 {
 	bool needit = false;
-	if (!isconstant())
+	if (!isConstant())
 	{
 		bool useInEdges = false;
 		bool useOutEdges = false;
 		for (const FMToutputsource& SOURCE : sources)
 		{
-			if (SOURCE.useinedges())
+			if (SOURCE.useInEdges())
 			{
 				useInEdges = true;
 			}
-			else if (SOURCE.useoutedges())
+			else if (SOURCE.useOutEdges())
 			{
 				useOutEdges = true;
 			}
@@ -1614,16 +1614,16 @@ std::string FMToutput::_toWsFormat() const
 	std::vector<Core::FMToperator>tempOperators;
 	std::vector<Core::FMToutputsource>tempSources;
 	std::string tempName;
-	bool isInEdge = sources.begin()->useinedges();
+	bool isInEdge = sources.begin()->useInEdges();
 	size_t outputId = 0;
 	size_t operatorId = 0;
 	std::string SumOutput(_getFormatedOutputName() +"*SOURCE ");
 	std::array<std::string,2>outTypes{"OUT","IN"};
 	for (const FMToutputsource& SOURCE : sources)
 		{
-		const bool SOURCE_TYPE = SOURCE.useinedges();
+		const bool SOURCE_TYPE = SOURCE.useInEdges();
 		bool packNGo = false;
-		if (SOURCE_TYPE!=isInEdge && SOURCE.isvariable())//build an output
+		if (SOURCE_TYPE!=isInEdge && SOURCE.isVariable())//build an output
 			{
 			packNGo = true;
 			isInEdge = SOURCE_TYPE;
@@ -1643,7 +1643,7 @@ std::string FMToutput::_toWsFormat() const
 					outputOperator = tempOperators.back();
 					tempOperators.pop_back();
 			//	}
-			const Core::FMToutput NEW_OUTPUT(tempName, "", getgroup(), tempSources, tempOperators);
+			const Core::FMToutput NEW_OUTPUT(tempName, "", getGroup(), tempSources, tempOperators);
 			result += std::string(NEW_OUTPUT) + "\n";
 			SumOutput += tempName +" " + std::string(outputOperator)+ " ";
 			tempOperators.clear();
@@ -1667,7 +1667,7 @@ std::string FMToutput::_toWsFormat() const
 				tempSources.push_back(SOURCE);
 				}
 			tempName = "~" + getname() + std::to_string(outputId) + outTypes.at(static_cast<size_t>(isInEdge));
-			const Core::FMToutput NEW_OUTPUT(tempName, "", getgroup(), tempSources, tempOperators);
+			const Core::FMToutput NEW_OUTPUT(tempName, "", getGroup(), tempSources, tempOperators);
 			result += std::string(NEW_OUTPUT) + "\n";
 			SumOutput += tempName + "\n";
 			}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -39,13 +39,13 @@ class FMTEXPORT FMTfork : public FMTspec, public FMTobject
         FMTfork& operator = (const FMTfork& rhs)=default;
         void add(const FMTtransitionmask& transition);
         void clear();
-		std::vector<FMTdevelopmentpath> getpaths(const Core::FMTdevelopment& base, const Core::FMTyields& ylds,
+		std::vector<FMTdevelopmentpath> getPaths(const Core::FMTdevelopment& base, const Core::FMTyields& ylds,
 				const std::vector<FMTtheme>& themes,const bool& reset_age) const;
-        FMTdevelopment getmax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes, const bool& reset_age) const;
-		std::vector<FMTtransitionmask> getmasktrans() const;
+        FMTdevelopment getMax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes, const bool& reset_age) const;
+		std::vector<FMTtransitionmask> getMaskTrans() const;
 		bool operator == (const FMTfork& rhs) const;
         FMTfork single() const;
-        double sumprop() const;
+        double sumProp() const;
         size_t size() const;
 		FMTfork presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
         void presolveRef(const FMTmaskfilter& filter, const std::vector<FMTtheme>& presolvedthemes);

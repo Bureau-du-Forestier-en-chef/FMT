@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -54,89 +54,89 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		bool operator == (const FMToutputsource& rhs) const;
 		bool operator != (const FMToutputsource& rhs) const;
 		bool operator < (const FMToutputsource& rhs) const;
-		inline int getoutputorigin() const
+		inline int getOutputOrigin() const
 			{
 			return outputorigin;
 			}
-		inline int getthemetarget() const
+		inline int getThemeTarget() const
 			{
 			return themetarget;
 			}
-		bool isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
+		bool isInAggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool isSubsetOf(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool isSubsetOf(const FMToutputsource& rhs) const;
-		bool issamebutdifferentaction(const FMToutputsource& rhs) const;
+		bool isSameButDifferentAction(const FMToutputsource& rhs) const;
 		inline const FMTmask& getmask() const
 			{
 			return mask;
 			}
-		void setmask(const FMTmask& newmask);
-		void setaction(const std::string& actionname);
-		void settarget(const FMTotar& newtype);
-		void setthemetarget(const int& newttarget);
-		void setoutputorigin(const int& neworigin);
-		void resetvalues(const FMToperator& op,const FMToutputsource& other);
-		inline const std::string& getaction() const
+		void setMask(const FMTmask& newmask);
+		void setAction(const std::string& actionname);
+		void setTarget(const FMTotar& newtype);
+		void setThemeTarget(const int& newttarget);
+		void setOutputOrigin(const int& neworigin);
+		void resetValues(const FMToperator& op,const FMToutputsource& other);
+		inline const std::string& getAction() const
 			{
 			return action;
 			}
-		inline const std::string& getyield() const
+		inline const std::string& getYield() const
 			{
 			return yield;
 			}
-		inline const FMTotar& gettarget() const
+		inline const FMTotar& getTarget() const
 			{
 			return target;
 			}
-		double getvalue(int period = 0) const;
-		inline bool isvariable() const
+		double getValue(int period = 0) const;
+		inline bool isVariable() const
 			{
 			return bool(mask);
 			}
-		inline bool islevel() const
+		inline bool isLevel() const
 			{
 			return (target == FMTotar::level);
 			}
-		inline bool isconstant() const
+		inline bool isConstant() const
 			{
 			return (target == FMTotar::val);
 			}
-		inline bool isvariablelevel() const
+		inline bool isVariableLevel() const
 			{
-			return (!action.empty() && islevel());
+			return (!action.empty() && isLevel());
 			}
-		inline const std::string& getlevel() const
+		inline const std::string& getLevel() const
 			{
 			return yield;
 			}
-		inline const std::vector<double>& getvalues() const
+		inline const std::vector<double>& getValues() const
 		{
 			return values;
 		}
-		bool isnull(const FMTyields& ylds) const;
-		inline bool istimeyield() const
+		bool isNull(const FMTyields& ylds) const;
+		inline bool isTimeYield() const
 			{
 			return (target == FMTotar::timeyld);
 			}
 		std::vector<const FMTaction*>targets(const std::vector<FMTaction>& actions) const;
-		std::unordered_set<int>targetsset(const std::vector<FMTaction>& actions) const;
-		inline bool isinventory() const
+		std::unordered_set<int>targetsSet(const std::vector<FMTaction>& actions) const;
+		inline bool isInventory() const
 			{
 			return (target == FMTotar::inventory);
 			}
-		inline bool useinedges() const
+		inline bool useInEdges() const
 			{
 			return (target == FMTotar::inventory);
 			}
-		inline bool isnextperiod() const
+		inline bool isNextPeriod() const
 			{
 			return (target == FMTotar::inventory && action.empty());
 			}
-		inline bool useoutedges() const
+		inline bool useOutEdges() const
 			{
 			return (target == FMTotar::actual);
 			}
-		double getcoef(const FMTdevelopment& development,
+		double getCoef(const FMTdevelopment& development,
 			const FMTyields& yields,
 			const Graph::FMTgraphvertextoyield* graphinfo =nullptr,
 			std::vector<FMTdevelopmentpath> const * paths=nullptr,
@@ -144,23 +144,23 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		bool use(const FMTdevelopment& development, const FMTyields& ylds,
 			const Graph::FMTgraphvertextoyield* graphinfo = nullptr) const;
 		FMToutputsource presolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>& newthemes) const;
-		void setaverage();
-		inline bool isaverage() const
+		void setAverage();
+		inline bool isAverage() const
 			{
 			return average;
 			}
-		void setsum();
-		inline bool issum() const
+		void setSum();
+		inline bool isSum() const
 		{
 			return sum;
 		}
-		bool canbededucedtoconstant() const;
-		double getconstantvalue(const std::vector<Core::FMTactualdevelopment>& area,
+		bool canBeDeducedToConstant() const;
+		double getConstantValue(const std::vector<Core::FMTactualdevelopment>& area,
 								const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const;
 		size_t hash(int period = -1,bool withyield = false) const;
-		void fillhashmask(Core::FMTmask& basemask) const;
-		void fillhashspec(Core::FMTmask& basemask) const;
-		bool isequalbyvalue(const FMToutputsource& rhs) const;
+		void fillHashMask(Core::FMTmask& basemask) const;
+		void fillHashSpec(Core::FMTmask& basemask) const;
+		bool isEqualByValue(const FMToutputsource& rhs) const;
 		inline bool isAction() const
 			{
 			return !action.empty();
@@ -173,7 +173,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		*
 		* @param number Sous format de string&
 
-		* @return Retourne la valeur trimmé en std::string
+		* @return Retourne la valeur trimm en std::string
 		*/
 		static std::string trimDouble(const std::string& string_number);
 		// DocString: FMToutputsource::setYield
@@ -205,7 +205,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		int outputorigin;
 		int themetarget;
 		//target =-1 or themetarget constructor
-		void pushvalues(const std::vector<double>& newvalues);
+		void pushValues(const std::vector<double>& newvalues);
     };
 
 class FMToutputsourcecomparator

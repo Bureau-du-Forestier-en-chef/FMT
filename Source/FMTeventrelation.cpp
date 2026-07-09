@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -11,9 +11,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 	{
 	FMTeventrelation::FMTeventrelation(const Spatial::FMTevent& fromevent, const Spatial::FMTevent& toevent) :
-		fromaction(fromevent.getactionid()), toaction(toevent.getactionid()),
+		fromaction(fromevent.getActionId()), toaction(toevent.getActionId()),
 		fromperiod(fromevent.getperiod()), toperiod(toevent.getperiod()),
-		fromcoord(*fromevent.midposition()),tocoord(*toevent.midposition())
+		fromcoord(*fromevent.midPosition()),tocoord(*toevent.midPosition())
 		{
 
 		}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -43,18 +43,18 @@ class FMTEXPORT FMTdata
                 const std::vector<std::string>& lsource,
 				const std::vector<bool>& varstack);
         FMTdata& operator = (const FMTdata& rhs);
-        FMTyieldparserop getop() const;
-        void clearcache();
+        FMTyieldparserop getOp() const;
+        void clearCache();
 		bool constant() const;
-		bool nulldata() const;
-		bool cachevalue(const FMTyieldrequest& request) const;
+		bool nullData() const;
+		bool cacheValue(const FMTyieldrequest& request) const;
 		double get(const FMTyieldrequest& request) const;
 		void set(const double& value, const FMTyieldrequest& request, const bool& age_only) const;
 		std::vector<const std::string*> getSources() const;
 		std::vector<std::string> getSourcesCopy() const;
 		std::vector<const double*>getValues() const;
 		//std::vector<double>tovalues(const std::map<std::string, double>& sources) const;
-		FMTexpression toexpression() const;
+		FMTexpression toExpression() const;
 		bool operator == (const FMTdata& rhs) const;
         operator std::string() const;
 		FMTdata operator * (const double& factor) const;
@@ -75,7 +75,7 @@ class FMTEXPORT FMTdata
 		mutable std::unique_ptr<std::map<FMTdevelopment, double>> _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
 		mutable bool _agebase;
 		//size_t hashdata(const int& period, const int& age, const FMTmask& mask) const;
-		FMTdevelopment getsummarydevelopment(const FMTyieldrequest& request) const;
+		FMTdevelopment getSummaryDevelopment(const FMTyieldrequest& request) const;
 		void allocateCache() const;
 		void deAllocateCache() const;
     };

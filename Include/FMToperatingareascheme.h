@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -102,14 +102,14 @@ namespace Heuristics
 			Get the area of the operating area base on a (primalsolution) 
 			for the initial (verticies) of the FMTlpmodel graph.
 		*/
-		double getprimalarea(const double* primalsolution, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& verticies) const;
-		// DocString: FMToperatingareascheme::getbestschemeid
+		double getPrimalArea(const double* primalsolution, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& verticies) const;
+		// DocString: FMToperatingareascheme::getBestSchemeId
 		/**
 			Get the best possible scheme looking at the primal solution,
 			return the index of that scheme.
 		*/
-		size_t getbestschemeid(const double* primalsolution) const;
-		// DocString: FMToperatingareascheme::generateschemes
+		size_t getBestSchemeId(const double* primalsolution) const;
+		// DocString: FMToperatingareascheme::generateSchemes
 		/**
 			Generate potential schemes for the operating area
 			here is 2 different schemes for a returntime = 4 and a openingtime = 2:
@@ -118,10 +118,10 @@ namespace Heuristics
 			This fonction generate all potential schemes of the operating area if the "harvest stade" exist within the matrix.
 			If full enumeration is set to true then it will enumerate all possible patterns....
 		*/
-		std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies);
+		std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> generateSchemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies);
 		// DocString: FMToperatingareascheme::schemestoLP
 		/**
-		Using the generated (schemes) from the generateschemes functions, and all periodic verticies (periodics),
+		Using the generated (schemes) from the generateSchemes functions, and all periodic verticies (periodics),
 		initial verticies (totalareaverticies) and the (primalsolution) for calculating the _area, solverinterface, graph and actionids.
 		The function fills the opening constraints and opening binairies member data and also add the newly formulated
 		constraints and binairies to the solverinterface. But the model is kept linear.
@@ -133,233 +133,233 @@ namespace Heuristics
 			const double* primalsolution,
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<int>& actionIDS);
 
-		// DocString: FMToperatingareascheme::getignoredverticies
+		// DocString: FMToperatingareascheme::getIgnoredVerticies
 		/**
 		Get a vector with the verticies that are not in the schemes, they must be set to 0 in the matrix
 		*/
-		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> getignoredverticies(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
+		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> getIgnoredVerticies(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
 			const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targetedperiodsverticies) const;
 
-		// DocString: FMToperatingareascheme::schemestoperiods
+		// DocString: FMToperatingareascheme::schemesToPeriods
 		/**
 		When generating the yield solution we need to keep track of the periods used in each potential scheme.
 		This function just get the corresponding periods of the different schemes from the graph.
 		*/
-		std::vector<std::vector<int>> schemestoperiods(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph) const;
-		// DocString: FMToperatingareascheme::getrowsactivitysum
+		std::vector<std::vector<int>> schemesToPeriods(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph) const;
+		// DocString: FMToperatingareascheme::getRowsActivitySum
 		/**
 		Looking at the (dualsolution) for a given sets of (rows) we summarize the total amount of activities of those rows.
 		The more activity we have on a row the more the schemes with this row is the one we need to choose.
 		*/
-		double getrowsactivitysum(const std::vector<int>& rows, const double* dualsolution) const;
-		// DocString: FMToperatingareascheme::isthresholdactivityrows
+		double getRowsActivitySum(const std::vector<int>& rows, const double* dualsolution) const;
+		// DocString: FMToperatingareascheme::isThresholdActivityRows
 		/**
 		Return true if the rows activities are above threshold
 		*/
-		bool isthresholdactivityrows(const std::vector<int>& rows, const double* dualsolution, double tempThreshold = -1) const;
-		// DocString: FMToperatingareascheme::fillpattern
+		bool isThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution, double tempThreshold = -1) const;
+		// DocString: FMToperatingareascheme::fillPattern
 		/**
 		We use this function to generate the final yield solution using a (pattern) like : 110000,
 		with the starting period and repetition data members we buil a complete pattern like:
 		0110000110000110000
 		*/
-		std::vector<double>fillpattern(const std::vector<double>& pattern, const int& startat) const;
-		// DocString: FMToperatingareascheme::closenoactivity
+		std::vector<double>fillPattern(const std::vector<double>& pattern, const int& startat) const;
+		// DocString: FMToperatingareascheme::closeNoActivity
 		/**
 		If no activity is detected in the opened OA then close it with no cost to the LP problem.
 		*/
-		void closenoactivity(std::vector<double>& filleduppattern, const size_t& selected, const double* dualsolution) const;
-		// DocString: FMToperatingareascheme::getmaxperiod
+		void closeNoActivity(std::vector<double>& filleduppattern, const size_t& selected, const double* dualsolution) const;
+		// DocString: FMToperatingareascheme::getMaxPeriod
 		/**
 		Get the maximal period of all potential schemes
 		*/
-		int getmaxperiod() const;
+		int getMaxPeriod() const;
 		public:
-			// DocString: FMToperatingareascheme::setreturntime
+			// DocString: FMToperatingareascheme::setReturnTime
 			/**
 			Set the minimal and maximal return time. 
 			*/
-			void setreturntime(const size_t& minimalreturntime,const size_t& maximalreturntime);
-			// DocString: FMToperatingareascheme::getthreshold
+			void setReturnTime(const size_t& minimalreturntime,const size_t& maximalreturntime);
+			// DocString: FMToperatingareascheme::getThreshold
 			/**
 			Get the threshold
 			*/
-			double getthreshold() const;
-			// DocString: FMToperatingareascheme::getopeningtime
+			double getThreshold() const;
+			// DocString: FMToperatingareascheme::getOpeningTime
 			/**
 			Get the opening time
 			*/
-			size_t getopeningtime() const;
-			// DocString: FMToperatingareascheme::getminimalreturntime
+			size_t getOpeningTime() const;
+			// DocString: FMToperatingareascheme::getMinimalReturnTime
 			/**
 			Get the minimal return time.
 			*/
-			size_t getminimalreturntime() const;
-			// DocString: FMToperatingareascheme::getrepetition
+			size_t getMinimalReturnTime() const;
+			// DocString: FMToperatingareascheme::getRepetition
 			/**
 			Get the repetition of the pattern.
 			*/
-			size_t getrepetition() const;
-			// DocString: FMToperatingareascheme::getmaximalreturntime
+			size_t getRepetition() const;
+			// DocString: FMToperatingareascheme::getMaximalReturnTime
 			/**
 			Get the maximal return time.
 			*/
-			size_t getmaximalreturntime() const;
+			size_t getMaximalReturnTime() const;
 			// DocString: FMToperatingareascheme::empty
 			/**
 			Check if the operating area is empty can be possible if there's no potential developpement to operate.
 			*/
 			bool empty() const;
-			// DocString: FMToperatingareascheme::getopeningbinaries
+			// DocString: FMToperatingareascheme::getOpeningBinaries
 			/**
 			Getter returning variables index of the binaries of all potential schemes of the operatingarea.
 			*/
-			const std::vector<int>& getopeningbinaries() const;
-			// DocString: FMToperatingareascheme::getstartingperiod
+			const std::vector<int>& getOpeningBinaries() const;
+			// DocString: FMToperatingareascheme::getStartingPeriod
 			/**
 			Getter returning starting period at which all schemes of the operating area starts.
 			*/
-			size_t getstartingperiod() const;
-			// DocString: FMToperatingareascheme::getbinariessum
+			size_t getStartingPeriod() const;
+			// DocString: FMToperatingareascheme::getBinariesSum
 			/**
 			Looking at the (primalsolution) we summarize the value of all binary variables for all potential schemes.
 			*/
-			double getbinariessum(const double* primalsolution) const;
-			// DocString: FMToperatingareascheme::getactivitysum
+			double getBinariesSum(const double* primalsolution) const;
+			// DocString: FMToperatingareascheme::getActivitySum
 			/**
 			Looking at the (dualsolution) we summarize the value of all constraints for all potential schemes.
 			*/
-			double getactivitysum(const double* dualsolution) const;
+			double getActivitySum(const double* dualsolution) const;
 			// DocString: FMToperatingareascheme::getthresholdactivity
 			/**
 			Will return true if every constraint has above threshold
 			*/
-			bool isthresholdactivity(const double* dualsolution) const;
-			// DocString: FMToperatingareascheme::getcommonbinairies
+			bool isThresholdActivity(const double* dualsolution) const;
+			// DocString: FMToperatingareascheme::getCommonBinairies
 			/**
 			Using the greenup data member of each operating area (neighbor and this) we get the map<>
 			key = this binary index and elements are a vector of binary indexes of the neighbor.
 			We need this function to validate which schemes of an operating area is constraining the usage of 
 			the schemes of a other (neighbor).
 			*/
-			std::map<int, std::vector<int>> getcommonbinairies(const FMToperatingareascheme& neighbor) const;
-			// DocString: FMToperatingareascheme::getprimalsolutionindex
+			std::map<int, std::vector<int>> getCommonBinairies(const FMToperatingareascheme& neighbor) const;
+			// DocString: FMToperatingareascheme::getPrimalSolutionIndex
 			/**
 			Only when a operating area is bounded to a given scheme we can use this function that gets
 			the index of the bounded scheme looking at the (primalsolution)
 			*/
-			size_t getprimalsolutionindex(const double* primalsolution) const;
-			// DocString: FMToperatingareascheme::getdualsolutionindex
+			size_t getPrimalSolutionIndex(const double* primalsolution) const;
+			// DocString: FMToperatingareascheme::getDualSolutionIndex
 			/**
 			This function gets the index of the scheme used (locid) by the operating area
 			using the (rows upperbound), is no scheme index is found the function returns false.
 			*/
-			bool getdualsolutionindex(const double* upperbound, size_t& locid) const;
-			// DocString: FMToperatingareascheme::havepotentialsolution
+			bool getDualSolutionIndex(const double* upperbound, size_t& locid) const;
+			// DocString: FMToperatingareascheme::havePotentialSolution
 			/**
 			Checks if by any chance we have a scheme binary with a value > 0 using the (primalsolution)
 			indicating that there's a potential scheme to choose for primal.
 			*/
-			bool havepotentialsolution(const double* primalsolution) const;
-			// DocString: FMToperatingareascheme::haveactivitysolution
+			bool havePotentialSolution(const double* primalsolution) const;
+			// DocString: FMToperatingareascheme::haveActivitySolution
 			/**
 			Checks if by any chance we have a set of scheme constraint with a activity value > 0 using the (dualsolution)
 			indicating that there's a potential scheme to choose for dual.
 			*/
-			bool haveactivitysolution(const double* dualsolution) const;
-			// DocString: FMToperatingareascheme::isallprimalbounded
+			bool haveActivitySolution(const double* dualsolution) const;
+			// DocString: FMToperatingareascheme::isAllPrimalBounded
 			/**
 			Will return false if any binary (lowerbounds) or (upperbounds) is not set to 1.
 			*/
-			bool isallprimalbounded(const double* lowerbounds, const double* upperbounds) const;
-			// DocString: FMToperatingareascheme::isalldualbounded
+			bool isAllPrimalBounded(const double* lowerbounds, const double* upperbounds) const;
+			// DocString: FMToperatingareascheme::isAllDualBounded
 			/**
 			Will return false if any constraint (upperbounds) is different from 0.
 			*/
-			bool isalldualbounded(const double* upperbounds) const;
-			// DocString: FMToperatingareascheme::isprimalbounded
+			bool isAllDualBounded(const double* upperbounds) const;
+			// DocString: FMToperatingareascheme::isPrimalBounded
 			/**
 			Will return true if any binary (lowerbounds) or (upperbounds) is set to 1.
 			*/
-			bool isprimalbounded(const double* lowerbounds, const double* upperbounds) const;
-			// DocString: FMToperatingareascheme::isdualbounded
+			bool isPrimalBounded(const double* lowerbounds, const double* upperbounds) const;
+			// DocString: FMToperatingareascheme::isDualBounded
 			/**
 			Will return true if any constraints (upperbounds) is set to 0.
 			*/
-			bool isdualbounded(const double* upperbounds) const;
-			// DocString: FMToperatingareascheme::getpotentialprimalschemes
+			bool isDualBounded(const double* upperbounds) const;
+			// DocString: FMToperatingareascheme::getPotentialPrimalSchemes
 			/**
 			Using the (primalsolution), variables (lowerbounds)(upperbounds) and the neighboring operating area,
 			this function get the potential sheme indexes. The order begin with the scheme with more area used to
 			the scehme with the less area used but > 0.
 			*/
-			std::vector<size_t>getpotentialprimalschemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds,const std::vector<FMToperatingareascheme>& neighbors) const;
-			// DocString: FMToperatingareascheme::getpotentialdualschemes
+			std::vector<size_t>getPotentialPrimalSchemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds,const std::vector<FMToperatingareascheme>& neighbors) const;
+			// DocString: FMToperatingareascheme::getPotentialDualSchemes
 			/**
 			Using the (dualsolution), rows (upperbounds) and the neighboring operating area,
 			this function get the potential sheme indexes. The order begin with the scheme with more area used to
 			the scehme with the less area used but > 0.
 			*/
-			std::vector<size_t>getpotentialdualschemes(const double* dualsolution, const double* upperbound, const std::vector<FMToperatingareascheme>& neighbors) const;
-			// DocString: FMToperatingareascheme::getressourcestodelete
+			std::vector<size_t>getPotentialDualSchemes(const double* dualsolution, const double* upperbound, const std::vector<FMToperatingareascheme>& neighbors) const;
+			// DocString: FMToperatingareascheme::getRessourcesToDelete
 			/**
 			Push all the variables of this operating area to the (colstodelete) vector and
 			push all the co of this operating area to the (colstodelete) vector and
 			*/
-			void getressourcestodelete(std::vector<int>& colstodelete, std::vector<int>& rowstodelete) const; //Remove all variable and constraints related to the operating area from the solver
-			// DocString: FMToperatingareascheme::pushbinaries
+			void getRessourcesToDelete(std::vector<int>& colstodelete, std::vector<int>& rowstodelete) const; //Remove all variable and constraints related to the operating area from the solver
+			// DocString: FMToperatingareascheme::pushBinaries
 			/**
 			Push all all binaries to a vector<> (targets)
 			*/
-			void pushbinaries(std::vector<int>& targets) const;
-			// DocString: FMToperatingareascheme::unboundallprimalschemes
+			void pushBinaries(std::vector<int>& targets) const;
+			// DocString: FMToperatingareascheme::unboundAllPrimalSchemes
 			/**
 			Push binary index into vector (targets) and push into (bounds) 0 and 1.
 			*/
-			size_t unboundallprimalschemes(std::vector<int>& targets, std::vector<double>& bounds) const;
-			// DocString: FMToperatingareascheme::unboundalldualschemes
+			size_t unboundAllPrimalSchemes(std::vector<int>& targets, std::vector<double>& bounds) const;
+			// DocString: FMToperatingareascheme::unboundAllDualSchemes
 			/**
 			Push constraints index into vector (targets) and push into (bounds) -inf and _area and return the id of the scheme unbounded
 			*/
-			size_t unboundalldualschemes(std::vector<int>& targets, std::vector<double>& bounds) const;
-			// DocString: FMToperatingareascheme::boundallprimalschemes
+			size_t unboundAllDualSchemes(std::vector<int>& targets, std::vector<double>& bounds) const;
+			// DocString: FMToperatingareascheme::boundAllPrimalSchemes
 			/**
 			Push variables index into vector (targets) and push (boundvalue ) into (bounds).
 			*/
-			size_t boundallprimalschemes(std::vector<int>& targets, std::vector<double>& bounds,double boundvalue = 1.0) const;
-			// DocString: FMToperatingareascheme::boundalldualschemes
+			size_t boundAllPrimalSchemes(std::vector<int>& targets, std::vector<double>& bounds,double boundvalue = 1.0) const;
+			// DocString: FMToperatingareascheme::boundAllDualSchemes
 			/**
 			Push constraints index into vector (targets) and push (boundvalue ) into (bounds).
 			*/
-			size_t boundalldualschemes(std::vector<int>& targets, std::vector<double>& bounds) const;
-			// DocString: FMToperatingareascheme::boundprimalscheme
+			size_t boundAllDualSchemes(std::vector<int>& targets, std::vector<double>& bounds) const;
+			// DocString: FMToperatingareascheme::boundPrimalScheme
 			/**
 			Using the scheme binary variable of a given (schemeid) push it's variable index into (targets) and push into (bounds) (1 and 1)
 			*/
-			bool boundprimalscheme(std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid) const; 
-			// DocString: FMToperatingareascheme::unbounddualscheme
+			bool boundPrimalScheme(std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid) const; 
+			// DocString: FMToperatingareascheme::unboundDualScheme
 			/**
 			Using the constraints of a given (schemeid) push it's constraints index into (targets) and push into (bounds) (-inf and _area)
 			and for all other constraints from the other schemes push them into (targets) and push into (bounds) (0 and 0)
 			*/
-			bool unbounddualscheme(const double* rowactivities, std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid, bool looseset=true) const;
-			// DocString: FMToperatingareascheme::getprimalsolution
+			bool unboundDualScheme(const double* rowactivities, std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid, bool looseset=true) const;
+			// DocString: FMToperatingareascheme::getPrimalSolution
 			/**
 			Gets the yield solution of the primal problem using (primalsolution) it sums up all binary variables
 			into a single vector of double.
 			*/
-			std::vector<double> getprimalsolution(const double* primalsolution) const;
-			// DocString: FMToperatingareascheme::getdualsolution
+			std::vector<double> getPrimalSolution(const double* primalsolution) const;
+			// DocString: FMToperatingareascheme::getDualSolution
 			/**
 			Gets the yield solution of the dual problem using (dualsolution) it set the selected
 			scheme solution into a vector of double.
 			*/
-			std::vector<double> getdualsolution(const double* upperbounds, const double* dualsolution, bool& canbreakneighboring) const;
-			// DocString: FMToperatingareascheme::getduallowerbounds
+			std::vector<double> getDualSolution(const double* upperbounds, const double* dualsolution, bool& canbreakneighboring) const;
+			// DocString: FMToperatingareascheme::getDualLowerBounds
 			/**
 			Gets the lowerbounds of the solution for bounding the minimal harvested area.
 			*/
-			std::vector<double> getduallowerbounds(const double* lowerbounds,const double* upperbounds) const;
+			std::vector<double> getDualLowerBounds(const double* lowerbounds,const double* upperbounds) const;
 			// DocString: FMToperatingareascheme::setconstraints
 			/**
 			Main function setting up constraints and variables using a (matrixbuild) and a primal solution.
@@ -395,11 +395,11 @@ namespace Heuristics
 			FMToperatingareascheme copy assignment
 			*/
 			FMToperatingareascheme& operator = (const FMToperatingareascheme& rhs)=default;
-			// DocString: FMToperatingareascheme::fillboundsnvariables
+			// DocString: FMToperatingareascheme::fillBoundsNVariables
 			/**
 			For each scheme consttraints go take the constraints bounds of the actual model.
 			*/
-			void fillboundsnvariables(const double* lowerb, const double* upperb, std::vector<int>& constraintstargets,std::vector<double>&bounds) const;
+			void fillBoundsNVariables(const double* lowerb, const double* upperb, std::vector<int>& constraintstargets,std::vector<double>&bounds) const;
 			// DocString: FMToperatingareascheme::operator==
 			/**
 			Comparison operator of FMToperatingareascheme
@@ -431,23 +431,23 @@ namespace Heuristics
 			Return the number of simple scheme with fixed returntime + openingtime
 			*/
 			size_t getNumberofsimplescheme() const;
-			// DocString: FMToperatingareascheme::getrejectednodescid
+			// DocString: FMToperatingareascheme::getRejectedNodesCid
 			/**
 			
 			*/
-			const int& getrejectednodescid() const;
+			const int& getRejectedNodesCid() const;
 			// DocString: FMToperatingareascheme::getschemesperiods
 			/**
 			
 			*/
-			const std::vector<std::vector<int>>& getopeningconstraints() const;
+			const std::vector<std::vector<int>>& getOpeningConstraints() const;
 			// DocString: FMToperatingareascheme::maximalschemesconstraint
 			/**
 			
 			*/
-			const int& getmaximalschemesconstraint() const;
+			const int& getMaximalSchemesConstraint() const;
 
-			const size_t& getgreenup() const { return greenup; };
+			const size_t& getGreenUp() const { return greenup; };
 		
 		private:
 			// DocString: FMToperatingareascheme::_maxNearThresholdActivityRows

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -59,17 +59,17 @@ namespace Parallel
 		Default copy assignement for FMTtaskhandler
 		*/
 		FMTtaskhandler& operator =(const FMTtaskhandler& rhs);
-		// DocString: FMTtaskhandler::gettasks
+		// DocString: FMTtaskhandler::getTasks
 		/**
 		Return reference to the task handled by the task handler.
 		*/
-		const std::vector<std::unique_ptr<FMTtask>>& gettasks() const;
-		// DocString: FMTtaskhandler::gettasksfromdynamiccast
+		const std::vector<std::unique_ptr<FMTtask>>& getTasks() const;
+		// DocString: FMTtaskhandler::getTasksFromDynamicCast
 		/**
 		Return reference to the task already in the ptrype.
 		*/
 		template<class ptrtype>
-		const std::vector<const ptrtype*> gettasksfromdynamiccast() const
+		const std::vector<const ptrtype*> getTasksFromDynamicCast() const
 		{
 			std::vector<const ptrtype*>castedptr;
 			for (const std::unique_ptr<FMTtask>& task : alltasks)
@@ -102,21 +102,21 @@ namespace Parallel
 		// DocString: FMTtaskhandler::alltasks
 		///All the tasks that are running
 		std::vector<std::unique_ptr<FMTtask>>alltasks;
-		// DocString: FMTtaskhandler::splittasks
+		// DocString: FMTtaskhandler::splitTasks
 		/**
 		Will split all task in alltasks and replace it with new splitted tasks
 		*/
-		void splittasks();
+		void splitTasks();
 		// DocString: FMTtaskhandler::finalize
 		/**
 		This function will call the FMTtask::finalize function when the last task is done.
 		*/
 		void finalize(std::unique_ptr<FMTtask>& lasttask);
-		// DocString: FMTtaskhandler::logtasktime
+		// DocString: FMTtaskhandler::logTaskTime
 		/**
 		Juste write down all the time it took to run all tasks
 		*/
-		void logtasktime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const;
+		void logTaskTime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const;
 		// DocString: FMTtaskhandler::_interruptWork
 		/**
 		@brief interupt the work of a thread in case on a exception to make sure to dont get a std::terminate if joinable.

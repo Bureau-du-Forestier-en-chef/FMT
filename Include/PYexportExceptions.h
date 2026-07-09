@@ -67,12 +67,12 @@ void exportException()
 		.value("FMTsame_transitiontargets", Exception::FMTexc::FMTsame_transitiontargets)
 		.export_values();
 
-	define_pylist<Exception::FMTexc>();
+	definePyList<Exception::FMTexc>();
 
 	bp::class_<Exception::FMTexception>Exceptionclass("FMTexception", "@DocString(FMTexception)");
-	Exceptionclass.def("gettype", &Exception::FMTexception::gettype,
+	Exceptionclass.def("gettype", &Exception::FMTexception::getType,
 		"@DocString(FMTexception::gettype)");
-	Exceptionclass.def("getsection", &Exception::FMTexception::getsection,
+	Exceptionclass.def("getsection", &Exception::FMTexception::getSection,
 		"@DocString(FMTexception::getsection)");
 	Exceptionclass.def("what", &Exception::FMTexception::what,
 		"@DocString(FMTexception::what)");

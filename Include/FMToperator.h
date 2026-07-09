@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -56,9 +56,9 @@ public:
 	FMToperator reverse() const;
 	bool valid() const;
 	size_t hash() const;
-	bool isfactor() const;
-	bool isdivide() const;
-	FMTokey getkey() const;
+	bool isFactor() const;
+	bool isDivide() const;
+	FMTokey getKey() const;
     operator std::string() const;
 };
 

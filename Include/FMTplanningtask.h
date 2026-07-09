@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -33,7 +33,7 @@ namespace Parallel
 	class FMTparallelwriter;
 	// DocString: FMTplanningtask
 	/**
-	This task make it easier to carry multiple parallel optimization of different FMTmodel using the doplanning function.
+	This task make it easier to carry multiple parallel optimization of different FMTmodel using the doPlanning function.
 	*/
 	class FMTEXPORT FMTplanningtask : public FMTtask
 	{
@@ -63,11 +63,11 @@ namespace Parallel
 		Clone function for FMTplanningtask
 		*/
 		std::unique_ptr<FMTtask>clone() const;
-		// DocString: FMTplanningtask::setkeepmodels
+		// DocString: FMTplanningtask::setKeepModels
 		/**
 		This function will force the task to keep the models... may consume memory.
 		*/
-		void setkeepmodels();
+		void setKeepModels();
 		// DocString: FMTplanningtask::push_back
 		/**
 		Push a new FMTmodel in the task queue with optional schedule.
@@ -112,12 +112,12 @@ namespace Parallel
 		Pass the logger
 		*/
 		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
-		// DocString: FMTplanningtask::getmodelsfromdynamiccast
+		// DocString: FMTplanningtask::getModelsFromDynamicCast
 		/**
 		Get the models pointer casted in a given model type.
 		*/
 		template<class ptrtype>
-		const std::vector<const ptrtype*> getmodelsfromdynamiccast() const
+		const std::vector<const ptrtype*> getModelsFromDynamicCast() const
 		{
 			std::vector<const ptrtype*>castedptr;
 			for (const std::unique_ptr<Models::FMTmodel>& model : m_Models)
@@ -128,7 +128,7 @@ namespace Parallel
 		}
 	private:
 		// DocString: FMTplanningtask::m_ResultsWriter
-		///Concurrent results writer who writes the results of each abstract model after each call to doplanning
+		///Concurrent results writer who writes the results of each abstract model after each call to doPlanning
 		std::shared_ptr<FMTparallelwriter>m_ResultsWriter;
 		// DocString: FMTplanningtask::m_Models
 		///Abstracts models that need to be build and solve by the task.
@@ -142,11 +142,11 @@ namespace Parallel
 		// DocString: FMTplanningtask::m_keepModels
 		///If keep models is true the models will be kept after work
 		bool m_keepModels;
-		// DocString: FMTplanningtask::copymodels
+		// DocString: FMTplanningtask::copyModels
 		/**
 		Copy models for unique model...
 		*/
-		std::list<std::unique_ptr<Models::FMTmodel>>copymodels(const std::list<std::unique_ptr<Models::FMTmodel>>& tocopy) const;
+		std::list<std::unique_ptr<Models::FMTmodel>>copyModels(const std::list<std::unique_ptr<Models::FMTmodel>>& tocopy) const;
 
 	};
 

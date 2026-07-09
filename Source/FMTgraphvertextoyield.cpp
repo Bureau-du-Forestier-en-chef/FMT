@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -38,7 +38,7 @@ namespace Graph
 		 
 	}
 
-	const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>* const FMTgraphvertextoyield::getlinegraph() const
+	const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>* const FMTgraphvertextoyield::getLineGraph() const
 	{
 		if (graphtype == FMTgraphrequest::linegraph)
 		{
@@ -46,7 +46,7 @@ namespace Graph
 		}
 		return nullptr;
 	}
-	const FMTgraph<FMTvertexproperties,FMTedgeproperties>* const FMTgraphvertextoyield::getfullgraph() const
+	const FMTgraph<FMTvertexproperties,FMTedgeproperties>* const FMTgraphvertextoyield::getFullGraph() const
 	{
 		if (graphtype == FMTgraphrequest::fullgraph)
 		{

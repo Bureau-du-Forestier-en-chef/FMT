@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -41,7 +41,7 @@ namespace Core {
 			if (p_raiseifnotfound &&lookit== m_attributem_locations.end())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-					p_value + " at theme "+std::to_string(getid())+" "+getname(),
+					p_value + " at theme "+std::to_string(getId())+" "+getname(),
 					"FMTtheme::getAttribute", __LINE__, __FILE__);
 				}
 		}catch (...)
@@ -246,7 +246,7 @@ bool FMTtheme::inAggregate(const std::string& p_value, const std::string& p_aggr
 bool FMTtheme::isValid(const std::string& p_value) const
 	{
 	try {
-		return (p_value == "?" || isattribute(p_value));
+		return (p_value == "?" || isAttribute(p_value));
 	}
 	catch (...)
 	{
@@ -256,7 +256,7 @@ bool FMTtheme::isValid(const std::string& p_value) const
 	}
 
 
-bool FMTtheme::isindex(const std::string& p_value) const
+bool FMTtheme::isIndex(const std::string& p_value) const
 {
 	try{
 		for (const std::map<std::string, double>& indexer : m_indexes)
@@ -274,7 +274,7 @@ bool FMTtheme::isindex(const std::string& p_value) const
 
 }
 
-bool FMTtheme::isindex(const std::string& p_attribute, const std::string& p_value) const
+bool FMTtheme::isIndex(const std::string& p_attribute, const std::string& p_value) const
 {
 	try {
 		lookiterator lookit = getAttribute(p_attribute);
@@ -296,7 +296,7 @@ bool FMTtheme::isindex(const std::string& p_attribute, const std::string& p_valu
 	return false;
 }
 
-bool FMTtheme::useindex() const
+bool FMTtheme::useIndex() const
     {
     if(!m_indexes.empty())
         {
@@ -305,7 +305,7 @@ bool FMTtheme::useindex() const
     return false;
     }
 
- double FMTtheme::getindex(const std::string& p_attribute,const std::string& p_value) const
+ double FMTtheme::getIndex(const std::string& p_attribute,const std::string& p_value) const
     {
 	 try {
 		 lookiterator lookit = getAttribute(p_attribute,true);
@@ -525,7 +525,7 @@ const std::string& FMTtheme::_getAttribute(size_t p_attributeId) const
 	}
 
 
-std::vector<std::string>FMTtheme::getattributes(const std::string& p_value, bool p_aggregate_source) const
+std::vector<std::string>FMTtheme::getAttributes(const std::string& p_value, bool p_aggregate_source) const
         {
 		std::vector<std::string>result;
 		try {
@@ -537,7 +537,7 @@ std::vector<std::string>FMTtheme::getattributes(const std::string& p_value, bool
 				const std::string TARGET = p_value.substr(1, p_value.size());
 				lookiterator lookit = getAttribute(TARGET, true);
 				std::vector<std::string>BANNED;
-				if (isaggregate(TARGET) && lookit != m_attributem_locations.end())
+				if (isAggregate(TARGET) && lookit != m_attributem_locations.end())
 				{
 					BANNED.reserve(lookit->second.size());
 					for (const size_t& location : lookit->second)
@@ -558,7 +558,7 @@ std::vector<std::string>FMTtheme::getattributes(const std::string& p_value, bool
 			
 			}else {
 				lookiterator lookit = getAttribute(p_value, true);
-				if (isaggregate(p_value) && lookit != m_attributem_locations.end())
+				if (isAggregate(p_value) && lookit != m_attributem_locations.end())
 				{
 					if (p_aggregate_source)
 					{
@@ -632,7 +632,7 @@ void FMTtheme::fillupAggregates(std::vector<int>& p_themeids, std::vector<std::s
 	try {
 		for (const std::string& aggregate : m_aggregates)
 			{
-			for (const std::string& attribute : getattributes(aggregate))
+			for (const std::string& attribute : getAttributes(aggregate))
 				{
 				p_themeids.push_back(static_cast<int>(m_id)+1);
 				p_locattributes.push_back(attribute);
@@ -650,7 +650,7 @@ void FMTtheme::fillupAggregates(std::vector<int>& p_themeids, std::vector<std::s
 void FMTtheme::push_aggregate(const std::string& p_aggregatename)
 	{
 	try {
-		if (isaggregate(p_aggregatename))
+		if (isAggregate(p_aggregatename))
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 				p_aggregatename+" is already an aggregate", "FMTtheme::presolve", __LINE__, __FILE__);
@@ -665,10 +665,10 @@ void FMTtheme::push_aggregate(const std::string& p_aggregatename)
 	}
 
 
-void FMTtheme::push_aggregate_value(const std::string& p_aggregatename, const std::string& p_value)
+void FMTtheme::pushAggregateValue(const std::string& p_aggregatename, const std::string& p_value)
 	{
 	try {
-		if (isaggregate(p_aggregatename))
+		if (isAggregate(p_aggregatename))
 			{
 			m_aggregatenames[std::distance(m_aggregates.begin(), std::find(m_aggregates.begin(), m_aggregates.end(), p_aggregatename))].push_back(p_value);
 			}
@@ -684,7 +684,7 @@ std::string FMTtheme::updateFromMask(const Core::FMTmask& p_globalmask)
 		const boost::dynamic_bitset<uint8_t>global = p_globalmask.subset(*this);
 		if ((global.count()>1)&&(global.count()<global.size()))
 			{
-			std::string lastFMTaggregate("~FMT"+std::to_string(getid())+"A_0");
+			std::string lastFMTaggregate("~FMT"+std::to_string(getId())+"A_0");
 			for (const std::string& aggregate : m_aggregates)
 				{
 				if (strToBits(aggregate) == global)
@@ -708,7 +708,7 @@ std::string FMTtheme::updateFromMask(const Core::FMTmask& p_globalmask)
 				{
 				if (global[bid])
 					{
-					push_aggregate_value(newaggregate,m_attributes.at(bid));
+					pushAggregateValue(newaggregate,m_attributes.at(bid));
 					aggregateindex.push_back(bid);
 					}
 
@@ -826,7 +826,7 @@ bool FMTthemecomparator::operator()(const FMTtheme& p_theme) const
 	}else{
 		for (const std::string& attribute : p_theme.getbaseattributes())
 		{
-			if (!m_base_theme.isattribute(attribute))
+			if (!m_base_theme.isAttribute(attribute))
 			{
 				return false;
 			}
@@ -836,7 +836,7 @@ bool FMTthemecomparator::operator()(const FMTtheme& p_theme) const
 	}
 
 #if defined FMTWITHR
-Rcpp::DataFrame FMTtheme::getaggregatesasdataframe() const
+Rcpp::DataFrame FMTtheme::getAggregatesAsDataFrame() const
 {
 	Rcpp::DataFrame data = Rcpp::DataFrame();
 	try {
@@ -871,7 +871,7 @@ Rcpp::DataFrame FMTtheme::getaggregatesasdataframe() const
 	return data;
 }
 
-Rcpp::DataFrame FMTtheme::getattributesasdataframe() const
+Rcpp::DataFrame FMTtheme::getAttributesAsDataFrame() const
 {
 	Rcpp::DataFrame data = Rcpp::DataFrame();
 	try {
@@ -939,7 +939,7 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 	{
 		if (id < p_values.size() && !theme.isValid(p_values[id]))
 		{
-			const std::string message = p_values[id] + " at theme " + std::to_string(theme.getid() + 1) + p_otherinformation;
+			const std::string message = p_values[id] + " at theme " + std::to_string(theme.getId() + 1) + p_otherinformation;
 			_exhandler->raise(Exception::FMTexc::FMTundefined_attribute, message,
 				"FMTthem::checkmask", __LINE__, __FILE__);
 			returnvalue = false;

@@ -73,8 +73,8 @@ int main(int argc, char* argv[])
 	}
 
 	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
-	modelparser.setdefaultlogger();
+	modelparser.setDefaultExceptionHandler();
+	modelparser.setDefaultLogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack();
 

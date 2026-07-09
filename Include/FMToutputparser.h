@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -48,20 +48,20 @@ class FMTEXPORT FMToutputparser : public FMTparser
 	// DocString: FMToutputparser::rxoutputconstant
 	///Regex to capture constant output.
 	const static boost::regex rxoutputconstant;
-	// DocString: FMToutputparser::readnfill
+	// DocString: FMToutputparser::readNFill
 	/**
-	Main function used by read and addoutputs to parse a file and fill a vector of outputs
+	Main function used by read and addOutputs to parse a file and fill a vector of outputs
 	*/
-	void readnfill(std::vector<Core::FMToutput>* outputs, 
+	void readNFill(std::vector<Core::FMToutput>* outputs, 
 					const std::vector<Core::FMTtheme>& themes,
 					const std::vector<Core::FMTaction>& actions,
 					const Core::FMTyields& ylds,const Core::FMTconstants& constants,
 					const std::string& location);
-	// DocString: FMToutputparser::appendtooutput
+	// DocString: FMToutputparser::appendToOutput
 	/**
 	When you need to append output data to output.
 	*/
-	void appendtooutput(
+	void appendToOutput(
 		const std::string& strvalue,
 		const int& outputid,
 		const int& themetarget,
@@ -100,13 +100,13 @@ class FMTEXPORT FMToutputparser : public FMTparser
                             const std::vector<Core::FMTaction>& actions,
                             const Core::FMTyields& ylds,const Core::FMTconstants& constants,
 							const std::string& location);
-		// DocString: FMToutputparser::addoutputs
+		// DocString: FMToutputparser::addOutputs
 		/**
 		This function read a output file and add the desired outputs(outputsnames) found in the output file(location) to the vector of outputs(oldoutputs) 
 		based on (themes),(actions),(yields),(constants) and returns a vector of FMToutput. If outputsnames is empty, all the outputs in the file will
 		be add to the vector of outputs.
 		*/
-		std::vector<Core::FMToutput> addoutputs(const std::vector<Core::FMToutput> oldoutputs, 
+		std::vector<Core::FMToutput> addOutputs(const std::vector<Core::FMToutput> oldoutputs, 
 							const std::vector<Core::FMTtheme>& themes,
                             const std::vector<Core::FMTaction>& actions,
                             const Core::FMTyields& ylds,const Core::FMTconstants& constants,

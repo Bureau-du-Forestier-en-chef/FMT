@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -39,7 +39,7 @@ void exportParallel()
 	bp::class_<Parallel::FMTtask, bp::bases<Core::FMTobject>>("FMTtask", "@DocString(FMTtask)")
 			.def(bp::init<Parallel::FMTtask>());
 
-	define_pylist<Parallel::FMTtask>();
+	definePyList<Parallel::FMTtask>();
 
 	bp::class_<Parallel::FMTreplanningtask, bp::bases<Parallel::FMTtask>>("FMTreplanningtask", "@DocString(FMTreplanningtask)")
 			.def(bp::init<Parallel::FMTreplanningtask>())
@@ -48,7 +48,7 @@ void exportParallel()
 				const int&,const int&,double,Core::FMToutputlevel,const bool>(
 					bp::args("Strategic model", "stochastic model","tactic model","selected outputs","Output folder","GDAL driver name","GDAL driver creation options","Number of replicates","Number of replanning periods","minimaldrift","output level","Write schedule"), "@DocString(FMTreplanningtask::FMTreplanningtask(const Models::FMTmodel&,const Models::FMTmodel&,const Models::FMTmodel&))"));
 
-	define_pylist<Parallel::FMTreplanningtask>();
+	definePyList<Parallel::FMTreplanningtask>();
 
 
 	bp::class_<Parallel::FMTplanningtask, bp::bases<Parallel::FMTtask>>("FMTplanningtask", "@DocString(FMTplanningtask)")
@@ -58,7 +58,7 @@ void exportParallel()
 				bp::args("Min output period", "Max output period", "Output folder", "GDAL driver name", "GDAL driver creation options", "output level", "primary file localisation"), "@DocString(FMTplanningtask::FMTplanningtask(...))"))
 		.def("push_back", &Parallel::FMTplanningtask::push_back, push_back_overloads(bp::args("model", "schedules", "outputs"), "@DocString(FMTplanningtask::push_back)"));
 
-	define_pylist<Parallel::FMTplanningtask>();
+	definePyList<Parallel::FMTplanningtask>();
 
 	bp::class_<Parallel::FMTopareaschedulertask, bp::bases<Parallel::FMTtask>>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask")
 		.def(bp::init<Parallel::FMTopareaschedulertask>())
@@ -68,7 +68,7 @@ void exportParallel()
 			const double&,Core::FMToutput>(
 				bp::args("model", "operating areas", "node", "output location", "output yield name", "maxiterations","maxtime","returntime_output"), "@DocString(FMTopareaschedulertask::FMTopareaschedulertask(...))"));
 
-	define_pylist<Parallel::FMTopareaschedulertask>();
+	definePyList<Parallel::FMTopareaschedulertask>();
 
 
 	bp::class_<Parallel::FMTtaskhandler, bp::bases<Core::FMTobject>>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
@@ -77,7 +77,7 @@ void exportParallel()
 		.def("conccurentrun", &Parallel::FMTtaskhandler::conccurentrun,"@DocString(FMTtaskhandler::conccurentrun)")
 		.def("ondemandrun", &Parallel::FMTtaskhandler::ondemandrun, "@DocString(FMTtaskhandler::ondemandrun)");
 
-	define_pylist<Parallel::FMTtaskhandler>();
+	definePyList<Parallel::FMTtaskhandler>();
 
     }
 }

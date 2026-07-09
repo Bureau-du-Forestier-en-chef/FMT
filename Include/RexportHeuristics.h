@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -50,25 +50,25 @@ void exportHeuristics()
 	Rcpp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
 		.constructor("@DocString(FMToperatingarea())")
 		.constructor<Core::FMTmask,double>("@DocString(FMToperatingarea(const Core::FMTmask&,const double&))")
-		.method("getneighbors", &Heuristics::FMToperatingarea::getneighbors,
+		.method("getneighbors", &Heuristics::FMToperatingarea::getNeighbors,
 			"@DocString(FMToperatingarea::getneighbors)")
-		.method("setneighbors", &Heuristics::FMToperatingarea::setneighbors,
+		.method("setneighbors", &Heuristics::FMToperatingarea::setNeighbors,
 			"@DocString(FMToperatingarea::setneighbors)")
 		.method("getmask", &Heuristics::FMToperatingarea::getmask,
 			"@DocString(FMToperatingarea::getmask)")
-		.method("getneihgborsperimeter", &Heuristics::FMToperatingarea::getneihgborsperimeter,
+		.method("getneihgborsperimeter", &Heuristics::FMToperatingarea::getNeihgborsPerimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
 
 	Rcpp::class_<Heuristics::FMToperatingareacluster>("FMToperatingareacluster", "@DocString(FMToperatingareacluster)")
         .constructor("@DocString(FMToperatingareacluster())")
         .constructor<Heuristics::FMToperatingareacluster,double,double>("@DocString(FMToperatingareacluster(const FMToperatingareacluster&,const double&,const double&))")
-        .method("getfilteredcluster",&Heuristics::FMToperatingareacluster::getfilteredcluster,
+        .method("getfilteredcluster",&Heuristics::FMToperatingareacluster::getFilteredCluster,
              "@DocString(FMToperatingareacluster::getfilteredcluster)")
-        .method("getallmasks",&Heuristics::FMToperatingareacluster::getallmasks,
+        .method("getallmasks",&Heuristics::FMToperatingareacluster::getAllMasks,
              "@DocString(FMToperatingareacluster::getallmasks)")
-        .method("setminimalarea",&Heuristics::FMToperatingareacluster::setminimalarea,
+        .method("setminimalarea",&Heuristics::FMToperatingareacluster::setMinimalArea,
              "@DocString(FMToperatingareacluster::setminimalarea)")
-        .method("setmaximalarea",&Heuristics::FMToperatingareacluster::setmaximalarea,
+        .method("setmaximalarea",&Heuristics::FMToperatingareacluster::setMaximalArea,
              "@DocString(FMToperatingareacluster::setmaximalarea)");
 
 	Rcpp::class_<Heuristics::FMToperatingareascheme>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
@@ -84,21 +84,21 @@ void exportHeuristics()
 		.derives<Heuristics::FMTlpheuristic>("FMTlpheuristic")
 		//.derives<Models::FMTlpsolver>("FMTlpsolver")
 		.constructor("@DocString(FMToperatingareascheduler())")
-		.method("initialsolve", &Heuristics::FMToperatingareascheduler::initialsolve,
+		.method("initialsolve", &Heuristics::FMToperatingareascheduler::initialSolve,
 			"@DocString(FMToperatingareascheduler::initialsolve)")
-		.method("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,
+		.method("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchNBoundSolve,
 			"@DocString(FMToperatingareascheduler::branchnboundsolve)")
-		.method("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
+		.method("getsolution", &Heuristics::FMToperatingareascheduler::getSolution,
 			"@DocString(FMToperatingareascheduler::getsolution)");
 
     Rcpp::class_<Heuristics::FMToperatingareaclusterer>("FMToperatingareaclusterer", "@DocString(FMToperatingareaclusterer)")
         .derives<Heuristics::FMTlpheuristic>("FMTlpheuristic")
         .constructor("@DocString(FMToperatingareaclusterer())")
-		.method("initialsolve", &Heuristics::FMToperatingareaclusterer::initialsolve,
+		.method("initialsolve", &Heuristics::FMToperatingareaclusterer::initialSolve,
 			"@DocString(FMToperatingareaclusterer::initialsolve)")
-		.method("branchnboundsolve", &Heuristics::FMToperatingareaclusterer::branchnboundsolve,
+		.method("branchnboundsolve", &Heuristics::FMToperatingareaclusterer::branchNBoundSolve,
 			"@DocString(FMToperatingareaclusterer::branchnboundsolve)")
-		.method("getsolution", &Heuristics::FMToperatingareaclusterer::getsolution,
+		.method("getsolution", &Heuristics::FMToperatingareaclusterer::getSolution,
 			"@DocString(FMToperatingareaclusterer::getsolution)");
 
 	#endif

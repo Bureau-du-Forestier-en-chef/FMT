@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -30,7 +30,7 @@ namespace Graph
 	{
 		std::vector<double>values;
 		values.reserve(yieldnames.size());
-		const Core::FMTyieldrequest request = vertex.get().getyieldrequest();
+		const Core::FMTyieldrequest request = vertex.get().getYieldRequest();
 		for (const std::string& yldname : yieldnames)
 		{
 			values.push_back(yields.get(request, yldname));
@@ -113,18 +113,18 @@ namespace Graph
 
 	bool FMTpredictor::operator==(const FMTpredictor& rhs) const
 		{
-		return (getpredictors() == rhs.getpredictors());
+		return (getPredictors() == rhs.getPredictors());
 		}
 	bool FMTpredictor::operator<(const FMTpredictor& rhs) const
 	{
 		//strict ordering
-		if (getpredictors() < rhs.getpredictors())
+		if (getPredictors() < rhs.getPredictors())
 			return true;
-		if (rhs.getpredictors() < getpredictors())
+		if (rhs.getPredictors() < getPredictors())
 			return false;
 		return false;
 	}
-	std::vector<double>FMTpredictor::getpredictors() const
+	std::vector<double>FMTpredictor::getPredictors() const
 	{
 		std::vector<double>returned;
 		for (size_t actid = 1; actid < sourceactions.size();++actid)
@@ -138,7 +138,7 @@ namespace Graph
 				returned.push_back(static_cast<double>(sourceactions.at(actid)));
 				}
 			}
-		returned.push_back(static_cast<double>(source_vertex->get().getage()));
+		returned.push_back(static_cast<double>(source_vertex->get().getAge()));
 		//returned.push_back(static_cast<double>(source_vertex->get().period));
 		returned.insert(returned.end(), source_yields.begin(), source_yields.end());
 		double gap = periodgaps.at(0);
@@ -148,7 +148,7 @@ namespace Graph
 		}
 		returned.push_back(static_cast<double>(gap));
 		returned.push_back(static_cast<double>(sourceactions.at(0)));
-		returned.push_back(static_cast<double>(target_vertex->get().getage()));
+		returned.push_back(static_cast<double>(target_vertex->get().getAge()));
 		//returned.push_back(static_cast<double>(target_vertex->get().period));
 		returned.insert(returned.end(), target_yields.begin(), target_yields.end());
 		returned.shrink_to_fit();
@@ -182,7 +182,7 @@ namespace Graph
 
 	double FMTpredictor::getSourceAge() const
 	{
-		return static_cast<double>(source_vertex->get().getage());
+		return static_cast<double>(source_vertex->get().getAge());
 	}
 
 	std::vector<double> FMTpredictor::getSourceYields() const
@@ -192,7 +192,7 @@ namespace Graph
 
 	double FMTpredictor::getTargetAge() const
 	{
-		return static_cast<double>(target_vertex->get().getage());
+		return static_cast<double>(target_vertex->get().getAge());
 	}
 
 	std::vector<double> FMTpredictor::getTargetYields() const
@@ -200,7 +200,7 @@ namespace Graph
 		return target_yields;
 	}
 
-	std::vector<std::string>FMTpredictor::getpredictornames(const std::vector<std::string>& yieldnames)const
+	std::vector<std::string>FMTpredictor::getPredictorNames(const std::vector<std::string>& yieldnames)const
 	{
 		std::vector<std::string>predictornames;
 		const std::vector<std::string>devpredictornames = { "disturbance","age","period" };

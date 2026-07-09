@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -46,7 +46,7 @@ namespace Graph
 				const int& lconstraintID);
             FMTvertexproperties(const Core::FMTdevelopment& ldevelopment,
                 const int& lconstraintID);
-			std::string constraintname() const;
+			std::string constraintName() const;
 			inline int getConstraintId() const override
 				{
 				return constraintID;

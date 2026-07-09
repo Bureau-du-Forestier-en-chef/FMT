@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -53,9 +53,9 @@ class FMTEXPORT FMTmaskfilter
         FMTmask filter(const FMTmask& devmask) const;
 		void swap(FMTmaskfilter& rhs);
 		FMTmaskfilter presolve(const std::vector<FMTtheme>& themes) const;
-		bool canpresolve(const FMTmask& mask, const std::vector<const Core::FMTtheme*>& themes) const;
-		std::vector<const Core::FMTtheme*> getselectedthemes(const std::vector<Core::FMTtheme>& themes) const;
-		inline bool emptyflipped() const
+		bool canPresolve(const FMTmask& mask, const std::vector<const Core::FMTtheme*>& themes) const;
+		std::vector<const Core::FMTtheme*> getSelectedThemes(const std::vector<Core::FMTtheme>& themes) const;
+		inline bool emptyFlipped() const
 			{
 			return flippedselection.empty();
 			}

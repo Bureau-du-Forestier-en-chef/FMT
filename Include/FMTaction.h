@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -77,11 +77,11 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Push back aggregate to the aggregates data member vector
 		*/
 		void push_aggregate(const std::string& aggregate);
-		// DocString: FMTaction::push_partials
+		// DocString: FMTaction::pushPartials
 		/**
 		Push back a partiel yield name to the partials data member vector
 		*/
-		void push_partials(const std::string& yield);
+		void pushPartials(const std::string& yield);
 		// DocString: FMTaction(const FMTaction&)
 		/**
 		Copy constructor of FMTaction
@@ -95,7 +95,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		// DocString: FMTaction::update
 		/**
 		Every FMTlist container need to have a update() function
-		this function calls setbounds() to update all bounds and also shrink
+		this function calls setBounds() to update all bounds and also shrink
 		the FMTlist (all for optimization of the process)
 		*/
 		void update() override;
@@ -119,35 +119,35 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		void presolveRef(const FMTmaskfilter& p_filter,
 			const std::vector<FMTtheme>& p_originalthemes,
 			std::vector<FMTtheme>& p_newthemes, bool p_compressdata = false);
-		// DocString: FMTaction::getagelowerbound
+		// DocString: FMTaction::getAgeLowerBound
 		/**
 		Get the age lower bound for all FMTspecs.
 		*/
-		inline const int& getagelowerbound() const
+		inline const int& getAgeLowerBound() const
 		{
 			return agelowerbound;
 		}
-		// DocString: FMTaction::getageupperbound
+		// DocString: FMTaction::getAgeUpperBound
 		/**
 		Get the age upper bound for all FMTspecs.
 		*/
-		inline const int& getageupperbound() const
+		inline const int& getAgeUpperBound() const
 		{
 			return ageupperbound;
 		}
-		// DocString: FMTaction::getperiodlowerbound
+		// DocString: FMTaction::getPeriodLowerBound
 		/**
 		Get the period lower bound for all FMTspecs.
 		*/
-		inline const int& getperiodlowerbound() const
+		inline const int& getPeriodLowerBound() const
 		{
 			return periodlowerbound;
 		}
-		// DocString: FMTaction::getperiodupperbound
+		// DocString: FMTaction::getPeriodUpperBound
 		/**
 		Get the period upper bound for all FMTspecs.
 		*/
-		inline const int& getperiodupperbound() const
+		inline const int& getPeriodUpperBound() const
 		{
 			return periodupperbound;
 		}
@@ -167,38 +167,38 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		{
 			return name;
 		}
-		// DocString: FMTaction::dorespectlock
+		// DocString: FMTaction::doRespectLock
 		/**
 		If True the action needs to respect the _lock stade of the developement.
 		Else the action doesn't car about the _lock of the developement.
 		*/
-		inline bool dorespectlock() const
+		inline bool doRespectLock() const
 		{
 			return lock;
 		}
-		// DocString: FMTaction::isresetage
+		// DocString: FMTaction::isResetAge
 		/**
 		If True When operated by this the FMTdevelopement is set to 0.
 		Else it stays the same
 		*/
-		inline bool isresetage() const
+		inline bool isResetAge() const
 		{
 			return reset;
 		}
-		// DocString: FMTaction::ispartofaserie
+		// DocString: FMTaction::isPartOfASerie
 		/**
 		Return true if the action is part of a serie.
 		*/
-		inline bool ispartofaserie() const
+		inline bool isPartOfASerie() const
 		{
 			return !m_series.empty();
 		}
-		// DocString: FMTaction::isallowedinserie
+		// DocString: FMTaction::isAllowedInSerie
 		/**
 		Return true if the serie mask is part of one serie of the action if not
 		return false.
 		*/
-		bool isallowedinserie(const std::vector<std::string>& serie) const;
+		bool isAllowedInSerie(const std::vector<std::string>& serie) const;
 		// DocString: FMTaction::GetSerie
 		/**
 		@brief get the serie with the partial mask p_SerieMask
@@ -212,16 +212,16 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		@return vector of series
 		*/
 		const std::vector<FMTSerie>& GetSeries() const;
-		// DocString: FMTaction::getseriesnames
+		// DocString: FMTaction::getSeriesNames
 		/**
 		Returns the series names of the action.
 		*/
-		std::vector<std::string>getseriesnames() const;
-		// DocString: FMTaction::getlargestseriesize
+		std::vector<std::string>getSeriesNames() const;
+		// DocString: FMTaction::getLargestSerieSize
 		/**
 		Returns the size of the largest serie.
 		*/
-		size_t getlargestseriesize() const;
+		size_t getLargestSerieSize() const;
 		// DocString: FMTaction::setSeries
 		/**
 		Giving a serie complete names, and the actions id of the serie occuring before this action,
@@ -238,17 +238,17 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Gets all the aggregates name of which the action is part of.
 		*/
 		std::vector<std::string>getaggregates() const;
-		// DocString: FMTaction::setaggregates
+		// DocString: FMTaction::setAggregates
 		/**
 		@brief Set a new vector of aggregates
 		@param[in] p_aggregates the vector of aggregates to set.
 		*/
-		void setaggregates(const std::vector<std::string>& p_aggregates);
-		// DocString: FMTaction::getpartials
+		void setAggregates(const std::vector<std::string>& p_aggregates);
+		// DocString: FMTaction::getPartials
 		/**
 		Gets all the partial yields name of the FMTaction.
 		*/
-		std::vector<std::string>getpartials() const;
+		std::vector<std::string>getPartials() const;
 		// DocString: FMTaction::operator<
 		/**
 		FMTaction less than operator (first test the action length and then the string name to place the action).
@@ -338,12 +338,12 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		// DocString: FMTaction::m_InSerie
 		///True if the actions is in a serie
 		bool m_InSerie;
-		// DocString: FMTaction::setbounds
+		// DocString: FMTaction::setBounds
 		/**
 		This function is for optimization it iterates on the specifications to get the 
 		agelowerbound, ageupperbound,periodlowerbound,periodupperbound and sets all member data.
 		*/
-		void setbounds();
+		void setBounds();
 		// DocString: FMTaction::getGCBMactiondef
 		/**
 		Returns the corresponding GCBM action definition.
@@ -397,18 +397,18 @@ class FMTactioncomparator
 		if checkaggregate = true it will also return actions within the named aggregate.
 		*/
 		FMTactioncomparator(std::string name, bool lcheckaggregate = false);
-		// DocString: FMTactioncomparator::getallaggregates
+		// DocString: FMTactioncomparator::getAllAggregates
 		/**
 		Looking at the actions vector if aggregateonly = false it will returns actions mathching
 		the action_name if aggregateonly = true it will return only matching aggregates.
 		*/
-		std::vector<const FMTaction*>getallaggregates(const std::vector<FMTaction>&actions,bool aggregateonly = false) const;
-		// DocString: FMTactioncomparator::getallaggregatesset
+		std::vector<const FMTaction*>getAllAggregates(const std::vector<FMTaction>&actions,bool aggregateonly = false) const;
+		// DocString: FMTactioncomparator::getAllAggregatesSet
 		/**
 		Looking at the actions vector if aggregateonly = false it will returns actions ids mathching
 		the action_name if aggregateonly = true it will return only matching aggregates.
 		*/
-		std::unordered_set<int>getallaggregatesset(const std::vector<FMTaction>&actions, bool aggregateonly = false) const;
+		std::unordered_set<int>getAllAggregatesSet(const std::vector<FMTaction>&actions, bool aggregateonly = false) const;
 		// DocString: FMTactioncomparator::operator()(const FMTaction&)
 		/**
 		Matching test operator for FMTactioncomparator.

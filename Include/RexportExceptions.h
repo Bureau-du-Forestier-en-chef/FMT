@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -71,9 +71,9 @@ void exportException()
 
 	Rcpp::class_<Exception::FMTexception>("FMTexception")
 		.constructor("@DocString(FMTdebugexceptionhandler())")
-		.method("gettype", &Exception::FMTexception::gettype,
+		.method("gettype", &Exception::FMTexception::getType,
 			"@DocString(FMTdebugexceptionhandler::gettype)")
-		.method("getsection", &Exception::FMTexception::getsection,
+		.method("getsection", &Exception::FMTexception::getSection,
 			"@DocString(FMTdebugexceptionhandler::getsection)")
 		.method("what", &Exception::FMTexception::what,
 			"@DocString(FMTdebugexceptionhandler::what)");

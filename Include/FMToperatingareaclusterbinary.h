@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -75,42 +75,42 @@ statistic and finaly the statistic varlue of the binary used to calculate the ob
         FMToperatingareaclusterbinary constructor using a base FMToperatingarea.
 		*/
 		FMToperatingareaclusterbinary(const FMToperatingarea& oparea);
-		// DocString: FMToperatingareaclusterbinary::filterneighbors
+		// DocString: FMToperatingareaclusterbinary::filterNeighbors
 		/**
         This function takes a vector of potential binary link and filter this list by looking at the neighbors of each binary
         to make sure that the linked list are real.y neighbors.
 		*/
-		std::vector<FMToperatingareaclusterbinary> filterneighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const;
-		// DocString: FMToperatingareaclusterbinary::getoutputintersect
+		std::vector<FMToperatingareaclusterbinary> filterNeighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const;
+		// DocString: FMToperatingareaclusterbinary::getOutputIntersect
 		/**
         Using an (output) this function is going to intersect the mask of the output with the mask of the operating area and it will result
         of an output targeting only the operating area.
 		*/
-		Core::FMToutput getoutputintersect(const Core::FMToutput& output,
+		Core::FMToutput getOutputIntersect(const Core::FMToutput& output,
 			const std::vector<Core::FMTtheme>& themes) const;
-		// DocString: FMToperatingareaclusterbinary::setstatistic
+		// DocString: FMToperatingareaclusterbinary::setStatistic
 		/**
         Setter for the statistic of the clusterbinary that is going to be used in the global objective for minimizing heterogenity.
 		*/
-		void setstatistic(const double& statvalue);
-		// DocString: FMToperatingareaclusterbinary::setstatistic
+		void setStatistic(const double& statvalue);
+		// DocString: FMToperatingareaclusterbinary::setStatistic
 		/**
         Setter for the binary variable of the lpmodel that represent the operating area.
 		*/
-		void setvariable(const int& lvariable);
-		// DocString: FMToperatingareaclusterbinary::getvariable
+		void setVariable(const int& lvariable);
+		// DocString: FMToperatingareaclusterbinary::getVariable
 		/**
         Getter for the binary variable of the lpmodel that represent the operating area.
 		*/
-		inline const int& getvariable() const
+		inline const int& getVariable() const
 			{
 			return variable;
 			}
-        // DocString: FMToperatingareaclusterbinary::getstatistic
+        // DocString: FMToperatingareaclusterbinary::getStatistic
 		/**
         Getter for the statistic value of the operating area.
 		*/
-		inline const double& getstatistic() const
+		inline const double& getStatistic() const
 			{
 			return statistic;
 			}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Gouvernement du Québec
+Copyright (c) 2024 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -108,7 +108,7 @@ namespace Core
 			const int PERIOD_TARGET = m_modelPtr->getAreaPeriod();
 			for (const FMToutput& OUTPUT : p_outputs)
 			{
-				returnedValues[outId] = m_modelPtr->getoutput(OUTPUT, PERIOD_TARGET, Core::FMToutputlevel::totalonly).at("Total");
+				returnedValues[outId] = m_modelPtr->getOutput(OUTPUT, PERIOD_TARGET, Core::FMToutputlevel::totalonly).at("Total");
 				outId += 1;
 			}
 		}

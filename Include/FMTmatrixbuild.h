@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -56,53 +56,53 @@ namespace Models
 		// DocString: FMTmatrixbuild::rownames
 		///Cached row names;
 		std::vector<std::string>rownames;
-		// DocString: FMTmatrixbuild::sortelementsandclean
+		// DocString: FMTmatrixbuild::sortElementsAndClean
 		/**
 		The function removes duplicate and sort a vector of (elements).
 		*/
-		void sortelementsandclean(std::vector<int>& elements) const;
-		// DocString: FMTmatrixbuild::formatformatrixname
+		void sortElementsAndClean(std::vector<int>& elements) const;
+		// DocString: FMTmatrixbuild::formatForMatrixName
 		/**
 		Format a string for matrix naming variables and constraints.
 		*/
-		std::string formatformatrixname(std::string name, bool shortformat) const;
+		std::string formatForMatrixName(std::string name, bool shortformat) const;
 	public:
 		// DocString: FMTmatrixbuild::swap
 		/**
 		Swap for FMTmatrixbuild
 		*/
 		void swap(FMTmatrixbuild& rhs);
-		// DocString: FMTmatrixbuild::getcolumnnames
+		// DocString: FMTmatrixbuild::getColumnNames
 		/**
 		Return cached column names.
 		*/
-		inline std::vector<std::string>& getcolumnnames()
+		inline std::vector<std::string>& getColumnNames()
 			{
 			return columnnames;
 			}
-		// DocString: FMTmatrixbuild::getrownames
+		// DocString: FMTmatrixbuild::getRowNames
 		/**
 		Return cached row names.
 		*/
-		inline std::vector<std::string>& getrownames()
+		inline std::vector<std::string>& getRowNames()
 			{
 			return rownames;
 			}
-		// DocString: FMTmatrixbuild::formatallnames
+		// DocString: FMTmatrixbuild::formatAllNames
 		/**
 		Formats names of row and column in cache.
 		*/
-		void formatallnames(bool shortformat);
-		// DocString: FMTmatrixbuild::setcolname
+		void formatAllNames(bool shortformat);
+		// DocString: FMTmatrixbuild::setColName
 		/**
 		set column name.
 		*/
-		void setcolname(const std::string& name,const int& columnid);
-		// DocString: FMTmatrixbuild::setrowname
+		void setColName(const std::string& name,const int& columnid);
+		// DocString: FMTmatrixbuild::setRowName
 		/**
 		set row name.
 		*/
-		void setrowname(const std::string& name, const int& rowid);
+		void setRowName(const std::string& name, const int& rowid);
 		// DocString: FMTmatrixbuild::synchronize
 		/**
 		This function synchronize the cols from colsbuild and the row of rowbuild 
@@ -183,50 +183,50 @@ namespace Models
 			{
 			return static_cast<int>(deletedvariables.size());
 			}
-		// DocString: FMTmatrixbuild::getdeletedconstraints
+		// DocString: FMTmatrixbuild::getDeletedConstraints
 		/**
 		Returns the newly deleted rows that are in the matrix cache.
 		*/
-		inline const std::vector<int>& getdeletedconstraints() const
+		inline const std::vector<int>& getDeletedConstraints() const
 			{
 			return deletedconstraints;
 			}
-		// DocString: FMTmatrixbuild::getdeletedvariables
+		// DocString: FMTmatrixbuild::getDeletedVariables
 		/**
 		Returns the newly deleted columns that are in the matrix cache.
 		*/
-		inline const std::vector<int>& getdeletedvariables() const
+		inline const std::vector<int>& getDeletedVariables() const
 			{
 			return deletedvariables;
 			}
-		// DocString: FMTmatrixbuild::sortandcleandeleted
+		// DocString: FMTmatrixbuild::sortAndCleanDeleted
 		/**
 		The function will remove duplicate from the deleted rows and columns elements and then sort the vector.
 		*/
-		void sortandcleandeleted();
-		// DocString: FMTmatrixbuild::getrowstosynchronize
+		void sortAndCleanDeleted();
+		// DocString: FMTmatrixbuild::getRowsToSynchronize
 		/**
 		The function is mainly for debugging it returns a string of all the rows that are in the matrix cache.
 		*/
-		std::string getrowstosynchronize() const;
-		// DocString: FMTmatrixbuild::getrowstosynchronize
+		std::string getRowsToSynchronize() const;
+		// DocString: FMTmatrixbuild::getRowsToSynchronize
 		/**
 		The function is mainly for debugging it returns a string of all the columns that are in the matrix cache.
 		*/
-		std::string getcolstosynchronize() const;
-		// DocString: FMTmatrixbuild::getrow
+		std::string getColsToSynchronize() const;
+		// DocString: FMTmatrixbuild::getRow
 		/**
 		Given a given row (whichRow) the function will fill up the row lower bound (rowLower), the row upper bound (rowUpper),
 		the row's (indicies) and the row's elements present in the cache.
 		*/
-		int getrow(int whichRow, double &rowLower, double &rowUpper,
+		int getRow(int whichRow, double &rowLower, double &rowUpper,
 			std::vector<int>& indices, std::vector<double>&elements) const;
-		// DocString: FMTmatrixbuild::getcol
+		// DocString: FMTmatrixbuild::getCol
 		/**
 		Given a col (whichCol) the function will fill up the column lower bound (colLower), the column upper bound (colUpper),
 		the column's objective (objectiveValue), the column's (indicies) and the column's elements present in the cache.
 		*/
-		int getcol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
+		int getCol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
 			std::vector<int>& indices, std::vector<double>&elements) const;
 
 

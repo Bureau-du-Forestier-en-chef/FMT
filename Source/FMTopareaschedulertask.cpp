@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -36,10 +36,10 @@ namespace Parallel
 	std::unique_ptr<Models::FMTlpmodel> FMTopareaschedulertask::basemodel(nullptr);
 
 
-	double FMTopareaschedulertask::solveinitialmodel(Models::FMTlpmodel& model) const
+	double FMTopareaschedulertask::solveInitialModel(Models::FMTlpmodel& model) const
 	{
 		try {
-			if (model.doplanning(true))
+			if (model.doPlanning(true))
 				{
 				return model.getObjValue();
 			}else {
@@ -55,7 +55,7 @@ namespace Parallel
 		return 0;
 	}
 
-	std::vector<Heuristics::FMToperatingareascheme> FMTopareaschedulertask::getreturntimefromoutput(
+	std::vector<Heuristics::FMToperatingareascheme> FMTopareaschedulertask::getReturnTimeFromOutput(
 		Models::FMTlpmodel& model,
 		const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 		const Core::FMToutput& output) const
@@ -67,11 +67,11 @@ namespace Parallel
 			for (const Heuristics::FMToperatingareascheme& opscheduler : opareas)
 				{
 				double total_value = 0;
-				const Core::FMToutput local_output = output.intersectwithmask(opscheduler.getmask(), themes);
+				const Core::FMToutput local_output = output.intersectWithMask(opscheduler.getmask(), themes);
 				double non_zero = 0;
 				for (int period = 0; period < model_length; ++period)
 					{
-					const double output_value = model.getoutput(local_output, period, Core::FMToutputlevel::totalonly).at("Total");
+					const double output_value = model.getOutput(local_output, period, Core::FMToutputlevel::totalonly).at("Total");
 					if (output_value > FMT_DBL_TOLERANCE)
 						{
 						total_value += output_value;
@@ -82,7 +82,7 @@ namespace Parallel
 				if (non_zero>0)
 				{
 					const size_t return_time = static_cast<size_t>(std::round(total_value/non_zero));
-					const size_t diff = (new_scheme.getminimalreturntime() - new_scheme.getmaximalreturntime()) / 2;
+					const size_t diff = (new_scheme.getMinimalReturnTime() - new_scheme.getMaximalReturnTime()) / 2;
 					const size_t LowerReturn = return_time - diff;
 					const size_t UpperReturn = return_time + diff;
 					if (LowerReturn == 0 ||
@@ -93,7 +93,7 @@ namespace Parallel
 							std::to_string(LowerReturn)+","+ std::to_string(UpperReturn),
 							"FMTopareaschedulertask::getreturntimefromoutput", __LINE__, __FILE__);
 						}
-					new_scheme.setreturntime(return_time - diff, return_time + diff);
+					new_scheme.setReturnTime(return_time - diff, return_time + diff);
 					}
 					newschemes.push_back(new_scheme);
 				}
@@ -104,15 +104,15 @@ namespace Parallel
 		return newschemes;
 	}
 
-	void FMTopareaschedulertask::setinitialscheduler(Models::FMTlpmodel& model,
+	void FMTopareaschedulertask::setInitialScheduler(Models::FMTlpmodel& model,
 		const std::vector<Heuristics::FMToperatingareascheme>& opareas, const Core::FMToutputnode& node)
 	{
 		try {
-			const std::vector<Heuristics::FMToperatingareascheduler>heuristics = model.getoperatingareaschedulerheuristics(opareas, node);
+			const std::vector<Heuristics::FMToperatingareascheduler>heuristics = model.getOperatingAreaSchedulerHeuristics(opareas, node);
 			actualscheduler = std::move(std::unique_ptr<Heuristics::FMToperatingareascheduler>(new Heuristics::FMToperatingareascheduler(heuristics.at(0))));
-			const double calculatedpropotion = actualscheduler->generateinitialproportionofset();
+			const double calculatedpropotion = actualscheduler->generateInitialProportionOfSet();
 			* _logger << "Initial proportion of set of : " + std::to_string(calculatedpropotion) << "\n";
-			actualscheduler->setproportionofset(calculatedpropotion);
+			actualscheduler->setProportionOfSet(calculatedpropotion);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTopareaschedulertask::setinitialscheduler", __LINE__, __FILE__);
@@ -121,11 +121,11 @@ namespace Parallel
 
 
 
-	std::chrono::time_point<std::chrono::high_resolution_clock> FMTopareaschedulertask::getstoppoint(const int& timegap) const
+	std::chrono::time_point<std::chrono::high_resolution_clock> FMTopareaschedulertask::getStopPoint(const int& timegap) const
 	{
 		std::chrono::time_point<std::chrono::high_resolution_clock> then;
 		try {
-			then= getclock();
+			then= getClock();
 			then += std::chrono::seconds(timegap);
 		}
 		catch (...)
@@ -153,10 +153,10 @@ namespace Parallel
 			modelcopy.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
 			//Keep the non build modelcopy.
 			basemodel = std::move(std::unique_ptr<Models::FMTlpmodel>(new Models::FMTlpmodel(modelcopy)));
-			solveinitialmodel(modelcopy);
+			solveInitialModel(modelcopy);
 			if (!returntime_output.empty())
 				{
-				const std::vector<Heuristics::FMToperatingareascheme> newschemes = getreturntimefromoutput(modelcopy, opareas, returntime_output);
+				const std::vector<Heuristics::FMToperatingareascheme> newschemes = getReturnTimeFromOutput(modelcopy, opareas, returntime_output);
 				Parser::FMTareaparser area_parser;
 				const std::string location = (outputlocation +"/"+returntime_output.getname() + ".csv");
 				std::vector<std::string>layersoptions;
@@ -165,14 +165,14 @@ namespace Parallel
 				#ifdef FMTWITHGDAL
 					area_parser.writeOAschedulerparameters(location, newschemes, layersoptions);
 				#endif
-				setinitialscheduler(modelcopy, newschemes, node);
+				setInitialScheduler(modelcopy, newschemes, node);
 				}else {
-				setinitialscheduler(modelcopy, opareas, node);
+				setInitialScheduler(modelcopy, opareas, node);
 				}
 			relax_objective = actualscheduler->getObjValue();
 			iterations = maxiterations;
 			solutionlocation = outputlocation;
-			stoptime = getstoppoint(maxtime);
+			stoptime = getStopPoint(maxtime);
 			outyldname = outputyieldname;
 		}catch (...)
 		{
@@ -202,7 +202,7 @@ namespace Parallel
 		return *this;
 	}
 
-	bool FMTopareaschedulertask::gotinitialsolution() const
+	bool FMTopareaschedulertask::gotInitialSolution() const
 	{
 		try {
 			const boost::lock_guard<boost::mutex>lock(generalmutex);
@@ -215,11 +215,11 @@ namespace Parallel
 		return false;
 	}
 
-	bool FMTopareaschedulertask::goodtogo() const
+	bool FMTopareaschedulertask::goodToGo() const
 	{
 		try {
 			const boost::lock_guard<boost::mutex>lock(generalmutex);
-			return (iterations > 0 && getclock() < stoptime);
+			return (iterations > 0 && getClock() < stoptime);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTopareaschedulertask::goodtogo", __LINE__, __FILE__);
@@ -230,7 +230,7 @@ namespace Parallel
 	void FMTopareaschedulertask::finalize()
 		{
 		try {
-			if (gotinitialsolution())
+			if (gotInitialSolution())
 			{
 				if (!bestscheduler->isProvenOptimal())
 				{
@@ -239,8 +239,8 @@ namespace Parallel
 						"FMTopareaschedulertask::finalize", __LINE__, __FILE__);
 				}
 				else {
-					writesolution();
-					writefinalmodel();
+					writeSolution();
+					writeFinalModel();
 				}
 				bestscheduler = std::shared_ptr<Heuristics::FMToperatingareascheduler>(nullptr);
 			}
@@ -254,29 +254,29 @@ namespace Parallel
 
 
 
-	void FMTopareaschedulertask::writefinalmodel() const
+	void FMTopareaschedulertask::writeFinalModel() const
 	{
 		try {
 			
 			const double* thesolution = bestscheduler->getColSolution();
-			basemodel->getsolverptr()->passinmessagehandler(*tasklogger.get());
+			basemodel->getSolverPtr()->passInMessageHandler(*tasklogger.get());
 			Models::FMTlpmodel modelcopy(*basemodel);
-			modelcopy.doplanning(false);
+			modelcopy.doPlanning(false);
 			Core::FMTyields newyields = modelcopy.getyields();
 			newyields.unshrink(modelcopy.getthemes());
-			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getsolution(outyldname))
+			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getSolution(outyldname))
 			{
 				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
 				newyields.push_front(newyield->getmask(), newyield);
 			}
 			newyields.update();
-			modelcopy.setyields(newyields);
+			modelcopy.setYields(newyields);
 			std::vector<Core::FMTconstraint>constraints=basemodel->getconstraints();
 			std::vector<Core::FMToutput>outputs=basemodel->getoutputs();
-			getconstraintssolution(outputs, constraints);
+			getConstraintsSolution(outputs, constraints);
 			modelcopy.setconstraints(constraints);
-			modelcopy.setoutputs(outputs);
-			Models::FMTlpsolver* solver = modelcopy.getsolverptr();
+			modelcopy.setOutputs(outputs);
+			Models::FMTlpsolver* solver = modelcopy.getSolverPtr();
 			solver->setColSolution(thesolution);
 			Parser::FMTmodelparser modelparser;
 			const boost::filesystem::path filepath(solutionlocation + ".txt");
@@ -290,14 +290,14 @@ namespace Parallel
 
 	}
 
-	void FMTopareaschedulertask::getconstraintssolution(std::vector<Core::FMToutput>& outputs, std::vector<Core::FMTconstraint>& constraints) const
+	void FMTopareaschedulertask::getConstraintsSolution(std::vector<Core::FMToutput>& outputs, std::vector<Core::FMTconstraint>& constraints) const
 		{
 		try {
 			//output levels...
 			const std::string bfecoptaggregates("~BFECOPTOUTPUTYOUVERT~");
 			const int lastid = static_cast<int>(basemodel->getoutputs().size());
 			size_t outoriginalsize = outputs.size();
-			for (const Core::FMToutput& output : bestscheduler->getlevelsolution("OPunit", bfecoptaggregates, lastid))
+			for (const Core::FMToutput& output : bestscheduler->getLevelSolution("OPunit", bfecoptaggregates, lastid))
 			{
 				outputs.push_back(output);
 			}
@@ -306,8 +306,8 @@ namespace Parallel
 				Core::FMToutput constraintoutput(outputs.at(oid));
 				constraintoutput -= outputs.at(oid + 1);
 				Core::FMTconstraint newconstraint(Core::FMTconstrainttype::FMTstandard, constraintoutput);
-				newconstraint.setlength(1, basemodel->getparameter(Models::FMTintmodelparameters::LENGTH));
-				newconstraint.setrhs(-std::numeric_limits<double>::max(), 0.0);
+				newconstraint.setLength(1, basemodel->getparameter(Models::FMTintmodelparameters::LENGTH));
+				newconstraint.setRhs(-std::numeric_limits<double>::max(), 0.0);
 				constraints.push_back(newconstraint);
 				}
 		}catch (...)
@@ -317,14 +317,14 @@ namespace Parallel
 		}
 
 
-	void FMTopareaschedulertask::writesolution() const
+	void FMTopareaschedulertask::writeSolution() const
 	{
 		try {
 			const double bestobjvalue = bestscheduler->getObjValue();
 			const std::string relativevalue = std::to_string(static_cast<int>(std::abs(relax_objective - bestobjvalue) * 100 / relax_objective));
 			*_logger << "Best solution found objective: "+std::to_string(bestobjvalue) +" ("+relativevalue+"%)" << "\n";
 			Core::FMTyields yields;
-			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getsolution(outyldname))
+			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getSolution(outyldname))
 				{
 				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
 				yields.push_back(newyield->getmask(),newyield);
@@ -335,13 +335,13 @@ namespace Parallel
 			yldparser.write(yields, solutionname);
 			std::vector<Core::FMTconstraint>constraints;
 			std::vector<Core::FMToutput>outputs;
-			getconstraintssolution(outputs, constraints);
+			getConstraintsSolution(outputs, constraints);
 			const std::string outputname = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".out";
-			const std::string constraintname = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".opt";
+			const std::string constraintName = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".opt";
 			Parser::FMToutputparser outparser;
 			outparser.write(outputs, outputname);
 			Parser::FMToptimizationparser optparser;
-			optparser.write(constraints, constraintname);
+			optparser.write(constraints, constraintName);
 
 		}catch (...)
 		{
@@ -352,7 +352,7 @@ namespace Parallel
 
 
 
-	void FMTopareaschedulertask::evaluateandcopy()
+	void FMTopareaschedulertask::evaluateAndCopy()
 	{
 		try {
 			if (!actualscheduler->isProvenOptimal())
@@ -386,7 +386,7 @@ namespace Parallel
 						*bestscheduler = *actualscheduler;
 					}else {
 						*actualscheduler = *bestscheduler;
-						actualscheduler->passinmessagehandler(*tasklogger.get());
+						actualscheduler->passInMessageHandler(*tasklogger.get());
 					}
 				}
 		}catch (...)
@@ -409,12 +409,12 @@ namespace Parallel
 				{
 				tasks.push_back(std::move(std::unique_ptr<FMTtask>(new FMTopareaschedulertask(*this))));
 				FMTopareaschedulertask* newtaskptr = dynamic_cast<FMTopareaschedulertask*>(tasks.back().get());
-				newtaskptr->actualscheduler->setnumberofthreads(1);
+				newtaskptr->actualscheduler->setNumberOfThreads(1);
 				if (taskid>0)
 					{
-					newtaskptr->actualscheduler->setasrandom();
+					newtaskptr->actualscheduler->setAsRandom();
 					}
-				newtaskptr->actualscheduler->setgeneratorseed(taskid);
+				newtaskptr->actualscheduler->setGeneratorSeed(taskid);
 				}
 		}catch (...)
 			{
@@ -426,16 +426,16 @@ namespace Parallel
 	std::unique_ptr<FMTtask>FMTopareaschedulertask::spawn()
 	{
 		try {
-			if (goodtogo())
+			if (goodToGo())
 			{
 				std::unique_ptr<FMTtask> newtask(new FMTopareaschedulertask(*this));
 				FMTopareaschedulertask* newtaskptr = dynamic_cast<FMTopareaschedulertask*>(newtask.get());
-				newtaskptr->actualscheduler->setnumberofthreads(1);
+				newtaskptr->actualscheduler->setNumberOfThreads(1);
 				if (lastspawned > 0)
 				{
-					newtaskptr->actualscheduler->setasrandom();
+					newtaskptr->actualscheduler->setAsRandom();
 				}
-				newtaskptr->actualscheduler->setgeneratorseed(lastspawned);
+				newtaskptr->actualscheduler->setGeneratorSeed(lastspawned);
 				++lastspawned;
 				return std::move(newtask);
 			}
@@ -450,7 +450,7 @@ namespace Parallel
 		{
 		try {
 			actualscheduler->passinlogger(logger);
-			if (gotinitialsolution())
+			if (gotInitialSolution())
 			{
 				const boost::lock_guard<boost::mutex> lock(generalmutex);
 				bestscheduler->passinlogger(logger);
@@ -465,32 +465,32 @@ namespace Parallel
 	void FMTopareaschedulertask::work()
 	{
 		try {
-			//If you dont have initialsolution, you need to do an initialsolve
-			actualscheduler->passinmessagehandler(*tasklogger.get());
-			bool needinitialsolve = !gotinitialsolution();
-			while (goodtogo())
+			//If you dont have initialsolution, you need to do an initialSolve
+			actualscheduler->passInMessageHandler(*tasklogger.get());
+			bool needinitialsolve = !gotInitialSolution();
+			while (goodToGo())
 			{
 				if (needinitialsolve)
 					{
-					//If initialsolve fail, you need to redo an initialsolve
-					needinitialsolve = !actualscheduler->initialsolve();
+					//If initialSolve fail, you need to redo an initialSolve
+					needinitialsolve = !actualscheduler->initialSolve();
 				}else {
-					actualscheduler->greedypass(relax_objective, iterations);
+					actualscheduler->greedyPass(relax_objective, iterations);
 					}
 				if (needinitialsolve) 
 				{
 					//But if in the mean time another thread got a solution, take it and go to greedy
-					if (gotinitialsolution()) 
+					if (gotInitialSolution()) 
 					{
 						needinitialsolve = false;
 						*actualscheduler = *bestscheduler;
-						actualscheduler->passinmessagehandler(*tasklogger.get());
+						actualscheduler->passInMessageHandler(*tasklogger.get());
 					}
 				}
 				else {
-					evaluateandcopy();
+					evaluateAndCopy();
 					//To only draw 1 operating area a the time
-					actualscheduler->setproportionofset(0.00000000001);
+					actualscheduler->setProportionOfSet(0.00000000001);
 				}
 				if (iterations > 0)
 				{
@@ -500,7 +500,7 @@ namespace Parallel
 			//setstatus(true);
 		}catch (...)
 		{
-			_exhandler->raisefromthreadcatch("","FMTopareaschedulertask::work", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("","FMTopareaschedulertask::work", __LINE__, __FILE__);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -23,21 +23,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python
 {
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readrasters_overloads,readrasters, 3, 6)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readvectors_overloads,readvectors, 4, 8)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschemeneighbors_overloads, getschemeneighbors, 5, 10)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getclusters_overloads,getclusters,6, 11)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addoutputs_overloads,addoutputs,6, 7)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readrasters_overloads,readRasters, 3, 6)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readvectors_overloads,readVectors, 4, 8)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschemeneighbors_overloads, getSchemeNeighbors, 5, 10)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getclusters_overloads,getClusters,6, 11)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addoutputs_overloads,addOutputs,6, 7)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectormaptoFMTforest_overloads,vectormaptoFMTforest,5,11)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectorfieldtoraster_overloads, vectorfieldtoraster,4,5)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectorfieldtoraster_overloads, vectorFieldToRaster,4,5)
 
 
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeforest, 5, 6)
-//BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writedisturbances_overloads,writedisturbances, 5, 6)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writepredictors_overloads,writepredictors, 5, 7)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeForest, 5, 6)
+//BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writedisturbances_overloads,writeDisturbances, 5, 6)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writepredictors_overloads,writePredictors, 5, 7)
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readmodel_overloads, read, 8, 9)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getconstraintsfromstring_overloads,getconstraintsfromstring,2,3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getconstraintsfromstring_overloads,getConstraintsFromString,2,3)
 
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readproject_overloads, readproject,1,5)
@@ -58,22 +58,22 @@ void exportParser()
 
 	bp::class_<Parser::FMTparser, bp::bases<Core::FMTobject>>("FMTparser", "@DocString(FMTparser)");
 
-	define_pydict<std::string,std::string>();
+	definePyDict<std::string,std::string>();
 
 	bp::class_<Parser::FMTareaparser, bp::bases<Parser::FMTparser>>("FMTareaparser", "@DocString(FMTareaparser)")
                 .def("read", &Parser::FMTareaparser::read, "@DocString(FMTareaparser::read)")
 				#ifdef FMTWITHGDAL
-					.def("readvectors", &Parser::FMTareaparser::readvectors,readvectors_overloads(bp::args("themes", "data_vectors", "agefield", "areafield", "areafactor", "lockfield","minimalarea"), "@DocString(FMTareaparser::readvectors)"))
-					.def("readrasters", &Parser::FMTareaparser::readrasters,readrasters_overloads(bp::args("themes","data_rasters","age","agefactor","areafactor","lock"), "@DocString(FMTareaparser::readrasters)"))
-					.def("writeforest",&Parser::FMTareaparser::writeforest,writeforest_overloads(bp::args("for_layer", "themes", "data_rasters", "age", "lock", "mapping"), "@DocString(FMTareaparser::writeforest)"))
-					//.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads(bp::args("location", "spatialschedule", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writedisturbances)"))
-					.def("writedisturbances", &Parser::FMTareaparser::writedisturbances)
-					.def("writepredictors", &Parser::FMTareaparser::writepredictors,writepredictors_overloads(bp::args("location", "spatialsolution", "yieldnames", "model", "period", "withGCBMid"), "@DocString(FMTareaparser::writepredictors)"))
+					.def("readvectors", &Parser::FMTareaparser::readVectors,readvectors_overloads(bp::args("themes", "data_vectors", "agefield", "areafield", "areafactor", "lockfield","minimalarea"), "@DocString(FMTareaparser::readvectors)"))
+					.def("readrasters", &Parser::FMTareaparser::readRasters,readrasters_overloads(bp::args("themes","data_rasters","age","agefactor","areafactor","lock"), "@DocString(FMTareaparser::readrasters)"))
+					.def("writeforest",&Parser::FMTareaparser::writeForest,writeforest_overloads(bp::args("for_layer", "themes", "data_rasters", "age", "lock", "mapping"), "@DocString(FMTareaparser::writeforest)"))
+					//.def("writeDisturbances",&Parser::FMTareaparser::writeDisturbances,writedisturbances_overloads(bp::args("location", "spatialschedule", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writeDisturbances)"))
+					.def("writedisturbances", &Parser::FMTareaparser::writeDisturbances)
+					.def("writepredictors", &Parser::FMTareaparser::writePredictors,writepredictors_overloads(bp::args("location", "spatialsolution", "yieldnames", "model", "period", "withGCBMid"), "@DocString(FMTareaparser::writepredictors)"))
 					.def("vectormaptoFMTforest", &Parser::FMTareaparser::vectormaptoFMTforest,vectormaptoFMTforest_overloads(bp::args("data_vectors","resolution","themes","agefield","areafield","agefactor","areafactor","lockfield","minimalarea","writeforestfolder","fittoforel"),"@DocString(FMTareaparser::vectormaptoFMTforest)"))
-					.def("vectorfieldtoraster", &Parser::FMTareaparser::vectorfieldtoraster, vectorfieldtoraster_overloads(bp::args("data_vectors", "tifpathandname", "resolution", "field", "fittoforel"), "@DocString(FMTareaparser::vectorfieldtoraster)"))
+					.def("vectorfieldtoraster", &Parser::FMTareaparser::vectorFieldToRaster, vectorfieldtoraster_overloads(bp::args("data_vectors", "tifpathandname", "resolution", "field", "fittoforel"), "@DocString(FMTareaparser::vectorfieldtoraster)"))
 					#ifdef FMTWITHOSI
-						.def("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors, getschemeneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getschemeneighbors)"))
-                        .def("getclusters",&Parser::FMTareaparser::getclusters,getclusters_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield","maximaldistance","agefactor","areafractor","lockfield","minimal_area","buffersize"),"@DocString(FMTareaparser::getclusters)"))
+						.def("getschemeneighbors",&Parser::FMTareaparser::getSchemeNeighbors, getschemeneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getschemeneighbors)"))
+                        .def("getclusters",&Parser::FMTareaparser::getClusters,getclusters_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield","maximaldistance","agefactor","areafractor","lockfield","minimal_area","buffersize"),"@DocString(FMTareaparser::getclusters)"))
 					#endif
 				#endif
 				.def("write", &Parser::FMTareaparser::write,
@@ -82,9 +82,9 @@ void exportParser()
                 .def("read",&Parser::FMTlandscapeparser::read,
 					"@DocString(FMTlandscapeparser::read)")
 				#ifdef FMTWITHGDAL
-					.def("readvectors", &Parser::FMTlandscapeparser::readvectors,
+					.def("readvectors", &Parser::FMTlandscapeparser::readVectors,
 						"@DocString(FMTlandscapeparser::readvectors)")
-					.def("readrasters",&Parser::FMTlandscapeparser::readrasters,
+					.def("readrasters",&Parser::FMTlandscapeparser::readRasters,
 						"@DocString(FMTlandscapeparser::readrasters)")
 				#endif
                 .def("write",&Parser::FMTlandscapeparser::write,
@@ -121,7 +121,7 @@ void exportParser()
 	bp::class_<Parser::FMToutputparser, bp::bases<Parser::FMTparser>>("FMToutputparser", "@DocString(FMToutputparser)")
                 .def("read",&Parser::FMToutputparser::read,
 					"@DocString(FMToutputparser::read)")
-				.def("addoutputs",&Parser::FMToutputparser::addoutputs,addoutputs_overloads(bp::args("oldoutputs","themes","actions","ylds","constants","location","outputsname"),"@DocString(FMToutputparser::addoutputs)"))
+				.def("addoutputs",&Parser::FMToutputparser::addOutputs,addoutputs_overloads(bp::args("oldoutputs","themes","actions","ylds","constants","location","outputsname"),"@DocString(FMToutputparser::addoutputs)"))
                 .def("write",&Parser::FMToutputparser::write,
 					"@DocString(FMToutputparser::write)");
 	bp::class_<Parser::FMToptimizationparser, bp::bases<Parser::FMTparser>>("FMToptimizationparser", "@DocString(FMToptimizationparser)")
@@ -132,7 +132,7 @@ void exportParser()
 	bp::class_<Parser::FMTmodelparser, bp::bases<Parser::FMTparser>>("FMTmodelparser", "@DocString(FMTmodelparser)")
                 .def("read",&Parser::FMTmodelparser::read, readmodel_overloads(bp::args("con","lan","lif","are","yld","act","tr","out","opt"), "@DocString(FMTmodel::read)"))
 				.def("readproject", &Parser::FMTmodelparser::readproject, readproject_overloads(bp::args("primary_location","scenarios","readarea","readoutputs","readoptimize"), "@DocString(FMTmodel::readproject)"))
-				.def("getconstraintsfromstring",&Parser::FMTmodelparser::getconstraintsfromstring, getconstraintsfromstring_overloads(bp::args("constraintstr", "model", "constants"), "@DocString(FMTmodel::getconstraintsfromstring)"))
+				.def("getconstraintsfromstring",&Parser::FMTmodelparser::getConstraintsFromString, getconstraintsfromstring_overloads(bp::args("constraintstr", "model", "constants"), "@DocString(FMTmodel::getconstraintsfromstring)"))
 				.def("readschedules", &Parser::FMTmodelparser::readschedules,
 					"@DocString(FMTmodelparser::readschedules)")
 				#ifdef FMTWITHGDAL

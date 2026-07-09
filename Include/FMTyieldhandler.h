@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -64,26 +64,26 @@ struct cmpYieldString
 class FMTEXPORT FMTyieldhandler : public FMTobject
 {
 public:
-	virtual size_t getoverrideindex() const;
-	virtual std::vector<size_t> gettabous() const;
-	virtual void setoverrideindex(const size_t& newindex);
+	virtual size_t getOverrideIndex() const;
+	virtual std::vector<size_t> getTabous() const;
+	virtual void setOverrideIndex(const size_t& newindex);
 	virtual ~FMTyieldhandler() = default;
 	FMTyieldhandler() = default;
 	FMTyieldhandler(const FMTyieldhandler& rhs) = default;
 	FMTyieldhandler& operator = (const FMTyieldhandler& rhs) = default;
 	FMTyieldhandler(const FMTmask& lmask);
-	double getlinearvalue(const std::vector<double>& dls, const int& agetarget, bool allowoutofrange) const;
-	virtual int getlastbase() const;
-	const std::vector<int>& getbases() const;
+	double getLinearValue(const std::vector<double>& dls, const int& agetarget, bool allowoutofrange) const;
+	virtual int getLastBase() const;
+	const std::vector<int>& getBases() const;
 	FMTmask getmask() const;
 	void setMask(const FMTmask& p_mask);
-	bool push_base(const int& base);
-	void setbase(const std::vector<int>& allvalues);
-	bool inlookat(const std::string& yld) const;
-	virtual double getlastvalue(const std::string yld) const;
+	bool pushBase(const int& base);
+	void setBase(const std::vector<int>& allvalues);
+	bool inLookAt(const std::string& yld) const;
+	virtual double getLastValue(const std::string yld) const;
 	virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
-	virtual bool push_data(const std::string& yld, const double& value);
-	virtual bool push_data(const std::string& yld, const FMTdata& data);
+	virtual bool pushData(const std::string& yld, const double& value);
+	virtual bool pushData(const std::string& yld, const FMTdata& data);
 	virtual std::vector<std::string> indexes(const std::vector<std::string>& names) const;
 	virtual  operator std::string() const;
 	virtual std::vector<std::string> compare(const std::vector<std::string>& keys) const;
@@ -91,30 +91,30 @@ public:
 	virtual bool operator == (const FMTyieldhandler& rhs) const;
 	virtual bool empty() const;
 	virtual size_t size() const;
-	virtual FMTyldtype gettype() const;
+	virtual FMTyldtype getType() const;
 	virtual FMTdata& operator[](const std::string& yldname);
 	virtual const FMTdata& at(const std::string& yldname) const;
-	virtual bool containsyield(const std::string& yldname) const;
-	virtual bool isnullyield(const std::string& yldname) const;
-	virtual std::vector<std::string>getyieldnames() const;
-	virtual void clearcache();
-	virtual std::map<std::string, std::vector<double>>getallyieldsdata(const int& maxbase)const;
+	virtual bool containsYield(const std::string& yldname) const;
+	virtual bool isNullYield(const std::string& yldname) const;
+	virtual std::vector<std::string>getYieldNames() const;
+	virtual void clearCache();
+	virtual std::map<std::string, std::vector<double>>getAllYieldsData(const int& maxbase)const;
 	virtual std::unique_ptr<FMTyieldhandler> presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const;
 	virtual std::unique_ptr<FMTyieldhandler> postsolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>& basethemes) const;
-	virtual std::unique_ptr<FMTyieldhandler> getfromfactor(const double& factor,
+	virtual std::unique_ptr<FMTyieldhandler> getFromFactor(const double& factor,
 		std::vector<std::string>yieldnames = std::vector<std::string>()) const;
-	virtual int getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;
-	virtual double getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const;
-	virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
-	virtual double getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
+	virtual int getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;
+	virtual double getPeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const;
+	virtual int getAge(const FMTyieldrequest& request, const FMTspec& spec) const;
+	virtual double getYieldLinearValue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
 protected:
 	FMTmask mask;
 	std::vector<int>bases;
 	mutable std::unordered_set<std::string>lookat;
-	static bool basepush_data(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const double& value);
-	static bool basepush_data(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const FMTdata& data);
-	double getchangesfrom(const int& targetage, const int& peakstep) const;
-	int getmaxbase(const FMTyieldrequest& request) const;
+	static bool basePushData(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const double& value);
+	static bool basePushData(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const FMTdata& data);
+	double getChangesFrom(const int& targetage, const int& peakstep) const;
+	int getMaxBase(const FMTyieldrequest& request) const;
 private:
 	friend class boost::serialization::access;
 	template<class Archive>

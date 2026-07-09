@@ -19,12 +19,12 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 		std::vector<const Core::FMTyieldhandler*> handler;
 		for (const auto& DATA : YIELDS)
 		{
-            if (DATA.second->gettype() == Core::FMTyldtype::FMTageyld){
+            if (DATA.second->getType() == Core::FMTyldtype::FMTageyld){
 
                 handler.push_back(DATA.second.get());
             }
 		}
-		result = YIELDS.getmaxbase(handler);
+		result = YIELDS.getMaxBase(handler);
 
 	}
 	catch (...)
@@ -94,7 +94,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 		modelCopy.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, false);
 		if (!p_rasterPath.empty())
 		{
-			modelCopy.setarea(getRasterArea(modelCopy, p_rasterPath));
+			modelCopy.setArea(getRasterArea(modelCopy, p_rasterPath));
 		}
 		// On va chercher tous les th�mes dans le mod�le
 		std::vector<Core::FMTtheme> themes;
@@ -113,7 +113,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			//modelCopy.setparameter(Models::FMTintmodelparameters::LENGTH, 30);
 			/**Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
 			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
-			optModel.doplanning(false);
+			optModel.doPlanning(false);
 			masks = optModel.getAllMasks(themes);*/
 			//1938
 			std::vector<Core::FMTactualdevelopment> area = modelCopy.getarea();
@@ -122,10 +122,10 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 				Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
 				for (auto& dev : area)
 					{
-					dev.setperiod(i-1);
+					dev.setPeriod(i-1);
 					}
-				optModel.setarea(area);
-				optModel.doplanning(false);
+				optModel.setArea(area);
+				optModel.doPlanning(false);
 				std::set<std::string> tempMasks = optModel.getAllMasks(themes);
 				masks.insert(tempMasks.begin(), tempMasks.end());
 				area = optModel.getPotentialArea(i + 1);
@@ -182,11 +182,11 @@ std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(con
 		themesrast.push_back(p_rasterPath + "THEME" + std::to_string(i) + ".tif");
 	}
 	if (!stanlockExists) {
-		initialforestmap = areaparser.readrasters(p_model.getthemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001);
+		initialforestmap = areaparser.readRasters(p_model.getthemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001);
 
 	}
 	else {
-		initialforestmap = areaparser.readrasters(p_model.getthemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001, STANLOCK_RASTER_PATH);
+		initialforestmap = areaparser.readRasters(p_model.getthemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001, STANLOCK_RASTER_PATH);
 
 	}
 

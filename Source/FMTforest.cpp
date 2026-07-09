@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -25,24 +25,24 @@ FMTforest& FMTforest::operator = (const FMTforest& rhs)
     return *this;
     }
 
-FMTlayer<std::string>FMTforest::getlock() const
+FMTlayer<std::string>FMTforest::getLock() const
     {
     FMTlayer<std::string>newlayer(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
     for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
         {
-        if (it->second.getlock() > 0 )
+        if (it->second.getLock() > 0 )
             {
-            newlayer[it->first] = "_Lock " + std::to_string(it->second.getlock());
+            newlayer[it->first] = "_Lock " + std::to_string(it->second.getLock());
             }
         }
     return newlayer;
     }
 
-void FMTforest::setperiod(int period)
+void FMTforest::setPeriod(int period)
 	{
 	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator it = mapping.begin(); it != mapping.end(); ++it)
 		{
-		it->second.setperiod(period);
+		it->second.setPeriod(period);
 		}
 	}
 
@@ -58,7 +58,7 @@ std::vector<Core::FMTactualdevelopment>FMTforest::getarea() const
                     {
                     devs.push_back(newadev);
                     }else{
-                    devit->setarea(devit->getarea()+(cellsize));
+                    devit->setArea(devit->getarea()+(cellsize));
                     }
                 }
 			
@@ -89,17 +89,17 @@ std::vector<FMTlayer<std::string>> FMTforest::getthemes(const std::vector<Core::
                 }
             return newlayers;
             }
-FMTlayer<int>FMTforest::getage() const
+FMTlayer<int>FMTforest::getAge() const
             {
             FMTlayer<int>newlayer(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
             for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
                 {
-                newlayer[it->first] = it->second.getage();
+                newlayer[it->first] = it->second.getAge();
                 }
             return newlayer;
             }
 
-FMTforest FMTforest::getcopy(bool copydata) const
+FMTforest FMTforest::getCopy(bool copydata) const
     {
     FMTlayer<Core::FMTdevelopment> forest(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
     if(copydata)
@@ -135,7 +135,7 @@ void  FMTforest::SetLastThemeWithArea(const std::vector<Core::FMTactualdevelopme
                     "FMTforest::SetLastThemeWithArea", __LINE__, __FILE__);
 				}
 			subset += new_Masks[subset];
-			DevWithLocation.second.setmask(Core::FMTmask(subset, p_themes));
+			DevWithLocation.second.setMask(Core::FMTmask(subset, p_themes));
 			}
 	}catch (...)
 	{
@@ -171,7 +171,7 @@ FMTforest FMTforest::postsolve(const Core::FMTmaskfilter& filter, const std::vec
 	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = newforest.mapping.begin();
 		coordit != newforest.mapping.end(); ++coordit)
 		{
-		coordit->second.setmask(coordit->second.getmask().postsolve(filter, originalbasethemes));
+		coordit->second.setMask(coordit->second.getmask().postsolve(filter, originalbasethemes));
 		}
 	return newforest;
 	}

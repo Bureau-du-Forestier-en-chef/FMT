@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -169,7 +169,7 @@ namespace Spatial
 			{
 			for (int period = p_event.getperiod(); period <= p_event.getperiod() + m_GreenUp; ++period)
 				{
-				for (const FMTeventcontainer::const_iterator eventIt : p_events.getevents(period, m_RulesId))
+				for (const FMTeventcontainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
 					{
 					if (*eventIt != p_event &&
 						p_event.within(m_MinimalAdjacency, *eventIt))
@@ -192,7 +192,7 @@ namespace Spatial
 				{
 				for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 					{
-					for (const FMTeventcontainer::const_iterator eventIt : p_events.getevents(period, m_RulesId))
+					for (const FMTeventcontainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
 						{
 						
 						}
@@ -217,7 +217,7 @@ namespace Spatial
 				}
 
 
-				for (const FMTeventcontainer::const_iterator eventit : m_events.getevents(p_period, p_actions))
+				for (const FMTeventcontainer::const_iterator eventit : m_events.getEvents(p_period, p_actions))
 				{
 					const uint16_t containerlookup = static_cast<uint16_t>(baselookup + eventit->size());
 
@@ -225,17 +225,17 @@ namespace Spatial
 					//-//-//-//
 					//2//-//3//
 					const std::array<FMTcoordinate, 4> enveloppe = eventit->getEnveloppe();
-					const uint16_t minimalx = containerlookup < enveloppe.at(0).getx() ? enveloppe.at(0).getx() - containerlookup : 0;
-					const uint16_t minimaly = containerlookup < enveloppe.at(0).gety() ? enveloppe.at(0).gety() - containerlookup : 0;
-					const uint16_t maximalx = enveloppe.at(3).getx() + containerlookup;
-					const uint16_t maximaly = enveloppe.at(3).gety() + containerlookup;
+					const uint16_t minimalx = containerlookup < enveloppe.at(0).getX() ? enveloppe.at(0).getX() - containerlookup : 0;
+					const uint16_t minimaly = containerlookup < enveloppe.at(0).getY() ? enveloppe.at(0).getY() - containerlookup : 0;
+					const uint16_t maximalx = enveloppe.at(3).getX() + containerlookup;
+					const uint16_t maximaly = enveloppe.at(3).getY() + containerlookup;
 					const FMTcoordinate minimalcoord(minimalx, minimaly);
 					const FMTcoordinate maximalcoord(maximalx, maximaly);
 					double totalwithincount = 0;
 					for (int gupperiod = std::max(1, p_period - p_greenup); gupperiod <= p_period; ++gupperiod)
 					{
 						const double periodfactor = static_cast<double>((p_greenup - (p_period - gupperiod))) + 1;
-						for (const FMTeventcontainer::const_iterator eventof : m_events.getevents(gupperiod, p_actions, minimalcoord, maximalcoord))
+						for (const FMTeventcontainer::const_iterator eventof : m_events.getEvents(gupperiod, p_actions, minimalcoord, maximalcoord))
 						{
 							if (eventit != eventof)//They will have the same address if it's the same event!
 							{
@@ -316,11 +316,11 @@ std::vector<std::pair<std::vector<int>,
 		std::pair<int, int>>> Rules;
 		for (const Core::FMTconstraint& CONSTRAINT : p_constraints)
 			{
-				if (CONSTRAINT.isspatial())
+				if (CONSTRAINT.isSpatial())
 				{
-					const std::vector<int>ACTION_IDS = CONSTRAINT.getactionids(p_actions);
-					const int LOWER_PERIOD = CONSTRAINT.getperiodlowerbound();
-					const int UPPER_PERIOD = CONSTRAINT.getperiodupperbound();
+					const std::vector<int>ACTION_IDS = CONSTRAINT.getActionIds(p_actions);
+					const int LOWER_PERIOD = CONSTRAINT.getPeriodLowerBound();
+					const int UPPER_PERIOD = CONSTRAINT.getPeriodUpperBound();
 					const std::pair<std::vector<int>, std::pair<int, int>> NEW_RULES =
 						std::pair<std::vector<int>, std::pair<int, int>>(ACTION_IDS,
 							std::pair<int, int>(LOWER_PERIOD, UPPER_PERIOD));
@@ -364,11 +364,11 @@ std::vector<std::pair<std::vector<int>,
 				std::pair<int, int>>> RULES = _GetOrderedRules(p_constraints, p_actions);
 			for (const Core::FMTconstraint& CONSTRAINT : p_constraints)
 			{
-				if (CONSTRAINT.isspatial())
+				if (CONSTRAINT.isSpatial())
 				{
-					const std::vector<int>ACTION_IDS = CONSTRAINT.getactionids(p_actions);
-					const int LOWER_PERIOD = CONSTRAINT.getperiodlowerbound();
-					const int UPPER_PERIOD = CONSTRAINT.getperiodupperbound();
+					const std::vector<int>ACTION_IDS = CONSTRAINT.getActionIds(p_actions);
+					const int LOWER_PERIOD = CONSTRAINT.getPeriodLowerBound();
+					const int UPPER_PERIOD = CONSTRAINT.getPeriodUpperBound();
 					const std::pair<std::vector<int>, std::pair<int, int>> NEW_RULES =
 						std::pair<std::vector<int>, std::pair<int, int>>(ACTION_IDS,
 							std::pair<int, int>(LOWER_PERIOD, UPPER_PERIOD));
@@ -380,17 +380,17 @@ std::vector<std::pair<std::vector<int>,
 						m_ActionTargets = ACTION_IDS;
 						m_MinimalPeriod = LOWER_PERIOD;
 						m_MaximalPeriod = UPPER_PERIOD;
-						if (CONSTRAINT.getconstrainttype() ==
+						if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTspatialsize)
 							{
 							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getyieldbound("NSIZE");
 							m_NeighborSize = static_cast<size_t>(BOUNDS.getlower());
 							double lowerSIZE = 0;
 							double upperSIZE = 0;
-							CONSTRAINT.getbounds(lowerSIZE, upperSIZE, 0);
+							CONSTRAINT.getBounds(lowerSIZE, upperSIZE, 0);
 							_GetBounds<size_t>(lowerSIZE, upperSIZE,
 								m_MinimalSize, m_MaximalSize);
-						}else if (CONSTRAINT.getconstrainttype() ==
+						}else if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTspatialadjacency)
 							{
 							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getyieldbound("GUP");
@@ -399,10 +399,10 @@ std::vector<std::pair<std::vector<int>,
 							size_t maximalGreenUp = 0;
 							double lowerGreenUp = 0;
 							double upperGreenUp = 0;
-							CONSTRAINT.getbounds(lowerGreenUp, upperGreenUp, 0);
+							CONSTRAINT.getBounds(lowerGreenUp, upperGreenUp, 0);
 							_GetBounds<size_t>(lowerGreenUp, upperGreenUp,
 								m_MinimalAdjacency, m_MaximalAdjacency);
-						}else if (CONSTRAINT.getconstrainttype() ==
+						}else if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTSpatialGroup)
 							{
 							m_GroupGreenUp = static_cast<int>(CONSTRAINT.getyieldbound("GUP").getlower());
@@ -414,7 +414,7 @@ std::vector<std::pair<std::vector<int>,
 								}
 							double lowerDistance = 0;
 							double upperDistance = 0;
-							CONSTRAINT.getbounds(lowerDistance, upperDistance, 0);
+							CONSTRAINT.getBounds(lowerDistance, upperDistance, 0);
 							_GetBounds<int>(lowerDistance, upperDistance,
 								m_MinimalGroupDistance, m_MaximalGroupDistance);
 							}

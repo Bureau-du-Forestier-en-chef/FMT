@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -46,7 +46,7 @@ namespace Parser
 		setSection(Core::FMTsection::Optimize);
 		}
 
-	bool FMToptimizationparser::setending(Core::FMTconstraint& constraint,std::string& line, const Core::FMTconstants& constants)
+	bool FMToptimizationparser::setEnding(Core::FMTconstraint& constraint,std::string& line, const Core::FMTconstants& constants)
 		{
 		boost::smatch kmatch;
 		try{
@@ -57,7 +57,7 @@ namespace Parser
 			if (target == "_REPLICATE")
 			{
 				int period = 1;//should selected only the targeted period?!?!?!
-				for (const std::vector<double>& periodvalues : getreplicatechanges(std::string(kmatch[21])))
+				for (const std::vector<double>& periodvalues : getReplicateChanges(std::string(kmatch[21])))
 					{
 					int replicateid = 0;
 					for (const double& value : periodvalues)
@@ -75,7 +75,7 @@ namespace Parser
 				std::string yieldtarget(target);
 				if (target == "_GOAL")
 				{
-					constraint.setgoal(std::string(kmatch[6]), variale_value);
+					constraint.setGoal(std::string(kmatch[6]), variale_value);
 					//yieldtarget = "GOAL_" + std::string(kmatch[6]);
 				}
 				else {
@@ -87,7 +87,7 @@ namespace Parser
 			boost::trim(line);
 			if (target != "_GOAL" && !line.empty())
 				{
-				setending(constraint, line, constants);
+				setEnding(constraint, line, constants);
 				}
 			return true;
 			}
@@ -129,7 +129,7 @@ namespace Parser
 						boost::trim(simple_value);
 						if (isNum(simple_value, p_constants,false))
 						{
-							if (p_constants.isconstant(simple_value) && p_constants.length(simple_value) > 1)
+							if (p_constants.isConstant(simple_value) && p_constants.length(simple_value) > 1)
 								{
 								_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
 									"Periodic based not supported "+ simple_value + " at line " + std::to_string(m_line),
@@ -177,7 +177,7 @@ namespace Parser
 			boost::trim(simple_value);
 			if (isNum(simple_value, p_constants, false))
 			{
-				if (p_constants.isconstant(simple_value) && p_constants.length(simple_value) > 1)
+				if (p_constants.isConstant(simple_value) && p_constants.length(simple_value) > 1)
 				{
 					_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
 						"Periodic based not supported " + simple_value + " at line " + std::to_string(m_line),
@@ -210,7 +210,7 @@ namespace Parser
         return nodes;
         }
 
-	std::vector<std::vector<double>>FMToptimizationparser::getreplicatechanges(const std::string& replicateargument)
+	std::vector<std::vector<double>>FMToptimizationparser::getReplicateChanges(const std::string& replicateargument)
 		{
 		std::vector<std::vector<double>>periodicvalues;
 		//_REPPLICATES(filename.txt) keyword?
@@ -240,7 +240,7 @@ namespace Parser
 		}
 
 
-    Core::FMToutput FMToptimizationparser::resume_output(const std::map<std::string,double>& nodes,
+    Core::FMToutput FMToptimizationparser::resumeOutput(const std::map<std::string,double>& nodes,
                                                    const std::vector<Core::FMToutput>& outputs,
                                                    const std::vector<Core::FMTtheme>& themes,
                                                    const Core::FMTconstants& constants)
@@ -317,13 +317,13 @@ namespace Parser
 						}
 					boost::trim(target_attribute);
 
-					const Core::FMTtheme targeted_theme = target_out->targettheme(themes);
+					const Core::FMTtheme targeted_theme = target_out->targetTheme(themes);
 					if (!target_attribute.empty())
 					{
 						if (targeted_theme.empty() ||
 							(!targeted_theme.empty() &&
-							(!targeted_theme.isattribute(target_attribute) &&
-								!targeted_theme.isaggregate(target_attribute))))
+							(!targeted_theme.isAttribute(target_attribute) &&
+								!targeted_theme.isAggregate(target_attribute))))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTundefinedoutput_attribute,
 								target_attribute + " at line " + std::to_string(m_line),
@@ -341,11 +341,11 @@ namespace Parser
 					}
 					//copy the output and the specify the attribute and the periods!!!
 					
-					Core::FMToutput newoutput = target_out->boundto(themes, bounding, specialtype, target_attribute);
+					Core::FMToutput newoutput = target_out->boundTo(themes, bounding, specialtype, target_attribute);
 					
 					if (OPERATOR != std::string::npos)
 						{
-						if (OtherOperator.isdivide())
+						if (OtherOperator.isDivide())
 							{
 							newoutput /= OtherFactor;
 						}else {
@@ -398,10 +398,10 @@ namespace Parser
 				constraint = p_baseconstraint;
 				std::map<std::string, double> nodes = getEquation(inargument, p_constants, p_yields, p_outputs, inargument.size());
 				nodes.erase("RHS");
-				const Core::FMToutput targetout = resume_output(nodes, p_outputs, p_themes, p_constants);
+				const Core::FMToutput targetout = resumeOutput(nodes, p_outputs, p_themes, p_constants);
 				constrainttype = Core::FMTconstrainttype::FMTrandomaction;
-				constraint.setconstrainttype(constrainttype);
-				constraint.setoutput(targetout);
+				constraint.setConstraintType(constrainttype);
+				constraint.setOutput(targetout);
 				
 			}
 			else {
@@ -458,18 +458,18 @@ namespace Parser
 			double lower = 0;
 			double upper = 0;
 			const double rhs = getNum<double>(rhsstring, p_constants);
-			fillbounds(senseofconstraint, rhs,lower,upper);
+			fillBounds(senseofconstraint, rhs,lower,upper);
 			const std::string target("RHS");
 			
 			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,upper,lower));
 			if (constrainttypestr != "_RANDOM")
 			{
-				for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(actionoraggregates).getallaggregates(p_actions))
+				for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(actionoraggregates).getAllAggregates(p_actions))
 				{
 					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, actionptr->getname(), rhs, rhs));
 				}
 			}
-			const std::vector<Core::FMTconstraint> returnedconstraints = getperiodsbounds(periodstring, constraint, p_constants);
+			const std::vector<Core::FMTconstraint> returnedconstraints = getPeriodsBounds(periodstring, constraint, p_constants);
 			constraint = *returnedconstraints.begin();
 		}catch (...)
 		{
@@ -493,7 +493,7 @@ namespace Parser
 		try {
 			boost::smatch kmatch;
 			std::string rest = pm_line;
-			setending(constraint, rest, p_constants);
+			setEnding(constraint, rest, p_constants);
 			if (boost::regex_search(rest, kmatch, m_rxspatial))
 			{
 				returnedconstraints.push_back(getSpatialConstraint(constraint,kmatch, pm_line, p_constants,p_yields, p_actions, p_outputs, p_themes));
@@ -509,7 +509,7 @@ namespace Parser
 
 				std::map<std::string, double> nodes = getEquation(target, p_constants, p_yields, p_outputs, target.size());
 				nodes.erase("RHS");
-				const Core::FMToutput targetout = resume_output(nodes, p_outputs, p_themes, p_constants);
+				const Core::FMToutput targetout = resumeOutput(nodes, p_outputs, p_themes, p_constants);
 				const std::string keyword = kmatch[1];
 				Core::FMTconstrainttype ctype = Core::FMTconstrainttype::FMTstandard;
 
@@ -526,8 +526,8 @@ namespace Parser
 				{
 					ctype = Core::FMTconstrainttype::FMTsequence;
 				}
-				constraint.setoutput(targetout);
-				constraint.setconstrainttype(ctype);
+				constraint.setOutput(targetout);
+				constraint.setConstraintType(ctype);
 				//std::string lower_variation = std::string(kmatch[14]) + std::string(kmatch[8]);
 				std::string lower_variation = std::string(kmatch[18]) + std::string(kmatch[9]);
 				double lower_var = 0;
@@ -555,7 +555,7 @@ namespace Parser
 				//const std::string periodstring = std::string(kmatch[18]);
 				const std::string periodstring = std::string(kmatch[23]);
 				
-				returnedconstraints = getperiodsbounds(periodstring, constraint, p_constants);
+				returnedconstraints = getPeriodsBounds(periodstring, constraint, p_constants);
 
 			}
 			else if (boost::regex_search(rest.cbegin(), rest.cend(), Bmatch, m_rxequations))
@@ -582,14 +582,14 @@ namespace Parser
 				nodes.erase("RHS");
 				double lower = 0;
 				double upper = 0;
-				fillbounds(str_operator, bound, lower, upper);
-				const Core::FMToutput final_output = resume_output(nodes, p_outputs, p_themes, p_constants);
+				fillBounds(str_operator, bound, lower, upper);
+				const Core::FMToutput final_output = resumeOutput(nodes, p_outputs, p_themes, p_constants);
 
-				for (Core::FMTconstraint baseconstraint : getperiodsbounds(periodstring, constraint, p_constants))
+				for (Core::FMTconstraint baseconstraint : getPeriodsBounds(periodstring, constraint, p_constants))
 				{
-					baseconstraint.setoutput(final_output);
-					baseconstraint.setconstrainttype(cctype);
-					baseconstraint.setrhs(lower, upper);
+					baseconstraint.setOutput(final_output);
+					baseconstraint.setConstraintType(cctype);
+					baseconstraint.setRhs(lower, upper);
 					returnedconstraints.push_back(baseconstraint);
 					
 				}
@@ -605,7 +605,7 @@ namespace Parser
 		return returnedconstraints;
 		}
 
-		void FMToptimizationparser::fillbounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const
+		void FMToptimizationparser::fillBounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const
 			{
 			try {
 				lower = 0;
@@ -631,7 +631,7 @@ namespace Parser
 				}
 			}
 
-		std::vector<Core::FMTconstraint> FMToptimizationparser::getperiodsbounds(std::string periodstr, const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const
+		std::vector<Core::FMTconstraint> FMToptimizationparser::getPeriodsBounds(std::string periodstr, const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const
 		{
 			std::vector<Core::FMTconstraint>constraints;
 			try {
@@ -701,7 +701,7 @@ namespace Parser
 				{
 					cctype = Core::FMTconstrainttype::FMTMINMAXobjective;
 				}
-				objective.setconstrainttype(cctype);
+				objective.setConstraintType(cctype);
 				const std::string lower_period = std::string(kmatch[7]) + std::string(kmatch[10]);
 				const std::string upper_period = std::string(kmatch[9]);
 				std::string body = std::string(kmatch[3]);
@@ -740,16 +740,16 @@ namespace Parser
 					}else {
 						boost::split(allpenalties, penalty_values, boost::is_any_of(","));
 					}
-					objective.setpenalties(penalty_operator, allpenalties);
+					objective.setPenalties(penalty_operator, allpenalties);
 				}
 				Core::FMToutput final_output;
 				if (!main_equation.empty())
 				{
 					std::map<std::string, double>nodes = getEquation(main_equation, p_constants,p_yields, p_outputs);
 					nodes.erase("RHS");
-					final_output = resume_output(nodes, p_outputs, p_themes, p_constants);
+					final_output = resumeOutput(nodes, p_outputs, p_themes, p_constants);
 				}
-				objective.setoutput(final_output);
+				objective.setOutput(final_output);
 				
 				setPeriodWithBounds(objective, lower_period, upper_period, p_constants);
 			}
@@ -760,7 +760,7 @@ namespace Parser
 		return objective;
 		}
 
-	FMToptimizationsection FMToptimizationparser::getsection(const std::string& line) const
+	FMToptimizationsection FMToptimizationparser::getSection(const std::string& line) const
 		{
 		FMToptimizationsection section = FMToptimizationsection::none;
 		try {
@@ -810,13 +810,13 @@ namespace Parser
 				if (FMTparser::tryOpening(optimizestream, pm_location))
 				{
 					FMToptimizationsection section = FMToptimizationsection::none;
-					std::queue<FMTparser::FMTLineInfo>Lines  = getoptline(optimizestream, p_themes, p_constants, p_outputs);
+					std::queue<FMTparser::FMTLineInfo>Lines  = getOptline(optimizestream, p_themes, p_constants, p_outputs);
 					while (!Lines.empty())
 					{
 						std::string line = GetLine(Lines);
 						if (!line.empty())
 						{
-							FMToptimizationsection newsection = getsection(line);
+							FMToptimizationsection newsection = getSection(line);
 							if (newsection == FMToptimizationsection::exclude)
 							{
 								boost::trim(line);
@@ -866,8 +866,8 @@ namespace Parser
 										const std::string action_name = kmatch[3];
 										//const int period_lower = getNum<int>(std::string(kmatch[7]) + std::string(kmatch[10]), constants);
 										const std::string periodstr = std::string(kmatch[5]);
-										std::vector<Core::FMTconstraint> BoundedConstraints = getperiodsbounds(periodstr, Core::FMTconstraint(), p_constants);
-										const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getallaggregates(p_excluded);
+										std::vector<Core::FMTconstraint> BoundedConstraints = getPeriodsBounds(periodstr, Core::FMTconstraint(), p_constants);
+										const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getAllAggregates(p_excluded);
 										if (!action_ptrs.empty())
 											{
 											if (ActionPeriods.empty())
@@ -884,8 +884,8 @@ namespace Parser
 												{
 													for (const Core::FMTspec& Bound : BoundedConstraints)
 													{
-														const int Upper = Bound.getperiodupperbound();
-														const int Lower = Bound.getperiodlowerbound();
+														const int Upper = Bound.getPeriodUpperBound();
+														const int Lower = Bound.getPeriodLowerBound();
 														if (boost::icl::discrete_interval<int>::closed(Lower, Upper) == IntervalReference)
 														{
 															TheSet.clear();
@@ -947,8 +947,8 @@ namespace Parser
 									boost::icl::discrete_interval<int> TheInterval(OperableInterval);
 									if (!theSpec.emptyperiod())
 										{
-										const int Upper = theSpec.getperiodupperbound();
-										const int Lower = theSpec.getperiodlowerbound();
+										const int Upper = theSpec.getPeriodUpperBound();
+										const int Lower = theSpec.getPeriodLowerBound();
 										intersectWithAction = boost::icl::intersects(TheInterval, boost::icl::discrete_interval<int>::closed(Lower, Upper));
 										if (intersectWithAction)
 										{
@@ -970,7 +970,7 @@ namespace Parser
 											++Lower;
 										}
 									}
-									theSpec.setbounds(Core::FMTperbounds(Core::FMTsection::Action, Upper, Lower));
+									theSpec.setBounds(Core::FMTperbounds(Core::FMTsection::Action, Upper, Lower));
 									NewAction.push_back(ActionData.first, theSpec);	
 								}
 							}
@@ -996,7 +996,7 @@ namespace Parser
 			if (tryOpening(optimizestream, location))
 			{
 				size_t objid = 0;
-				if (constraints.at(0).isobjective())
+				if (constraints.at(0).isObjective())
 				{
 					optimizestream << "*OBJECTIVE " << "\n";
 					optimizestream << std::string(constraints.at(0)) << "\n";
@@ -1018,7 +1018,7 @@ namespace Parser
 			}
 		}
 
-	std::queue<std::string> FMToptimizationparser::geteachlines(const std::string& line, const Core::FMTconstants& constants,const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const
+	std::queue<std::string> FMToptimizationparser::getEachLines(const std::string& line, const Core::FMTconstants& constants,const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const
 		{
 		std::queue<std::string>valuestoreplace;
 		try {
@@ -1064,7 +1064,7 @@ namespace Parser
 					}
 					if (themeid >= 0)
 					{
-						if (themeid != target_out->targetthemeid())
+						if (themeid != target_out->targetThemeId())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 								"Non matching _EACH outputs attributes at line " + std::to_string(m_line),
@@ -1072,10 +1072,10 @@ namespace Parser
 						}
 					}
 
-					themeid = target_out->targetthemeid();
+					themeid = target_out->targetThemeId();
 					boost::replace_all(subline, keyword, "");
 				}
-				for (const std::string& value : target_out->getdecomposition(themes))
+				for (const std::string& value : target_out->getDecomposition(themes))
 				{
 					valuestoreplace.push(boost::replace_all_copy(line, "_EACH", value));
 				}
@@ -1087,7 +1087,7 @@ namespace Parser
 		return valuestoreplace;
 		}
 
-	std::queue<FMTparser::FMTLineInfo> FMToptimizationparser::getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
+	std::queue<FMTparser::FMTLineInfo> FMToptimizationparser::getOptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
 		const Core::FMTconstants& cons, const std::vector<Core::FMToutput>& outputs)
 		{
 		std::queue<FMTLineInfo>FinalLines;
@@ -1098,7 +1098,7 @@ namespace Parser
 				const std::string line = GetLine(Lines);
 				if (line.find("_EACH") != std::string::npos)
 					{
-					std::queue<std::string> EACH_LINES = geteachlines(line, cons, outputs, themes);
+					std::queue<std::string> EACH_LINES = getEachLines(line, cons, outputs, themes);
 					while (!EACH_LINES.empty())
 						{
 						FinalLines.push(FMTLineInfo(EACH_LINES.front(),m_line,m_location));

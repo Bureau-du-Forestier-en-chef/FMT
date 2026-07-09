@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -21,12 +21,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define RCPP_DEFINEVECTOR(CLASS) namespace Rcpp{\
 template <> std::vector<CLASS> as(SEXP obj){\
 const int RTYPE = traits::r_sexptype_traits<CLASS>::rtype;\
-Vector<RTYPE> rcppvec(obj);\
+Vector<RTYPE> rcppVec(obj);\
 std::vector<CLASS>newvec;\
-newvec.reserve(rcppvec.size());\
-for(int index = 0; index < rcppvec.size();++index)\
+newvec.reserve(rcppVec.size());\
+for(int index = 0; index < rcppVec.size();++index)\
 {\
-newvec.push_back(rcppvec[index]);\
+newvec.push_back(rcppVec[index]);\
 }\
 return newvec;}\
 template <> SEXP wrap(const std::vector<CLASS>& obj){\
@@ -35,47 +35,47 @@ return Vector<RTYPE>(obj.begin(), obj.end());}}
 
 #define RCPP_DEFINELIST(CLASS) namespace Rcpp{\
 template <> std::vector<CLASS> as(SEXP obj){\
-List listobj(obj);\
+List listObj(obj);\
 std::vector<CLASS>newvec;\
-newvec.reserve(listobj.size());\
-for(int index = 0; index < listobj.size();++index)\
+newvec.reserve(listObj.size());\
+for(int index = 0; index < listObj.size();++index)\
 {\
-newvec.push_back(as<CLASS>(listobj[index]));\
+newvec.push_back(as<CLASS>(listObj[index]));\
 }\
 return newvec;}\
 template <> SEXP wrap(const std::vector<CLASS>& obj){\
-List listobj(obj.size());\
-for(int index = 0; index < listobj.size();++index)\
+List listObj(obj.size());\
+for(int index = 0; index < listObj.size();++index)\
 {\
-listobj[index]=wrap<CLASS>(obj.at(index));\
+listObj[index]=wrap<CLASS>(obj.at(index));\
 }\
-return listobj;}}
+return listObj;}}
 
 #define RCPP_DEFINEPAIR(FIRST,SECOND)namespace Rcpp{\
 template <> std::pair<FIRST,SECOND> as(SEXP obj){\
-Rcpp::List rcpplist(obj);\
-return std::pair<FIRST,SECOND>(as<FIRST>(rcpplist["first"]), as<SECOND>(rcpplist["second"]));}\
+Rcpp::List rcppList(obj);\
+return std::pair<FIRST,SECOND>(as<FIRST>(rcppList["first"]), as<SECOND>(rcppList["second"]));}\
 template <> SEXP wrap(const std::pair<FIRST,SECOND>& obj){\
 return List::create(Named("first") = wrap<FIRST>(obj.first),Named("second") = wrap<SECOND>(obj.second));}}
 
 #define RCPP_DEFINEMAP(KEY,OBJECT)namespace Rcpp{\
 template <> std::map<KEY,OBJECT> as(SEXP obj){\
-List rcpplist(obj);\
+List rcppList(obj);\
 std::map<KEY,OBJECT>newmap;\
-for(int index = 0; index < rcpplist.size();++index)\
+for(int index = 0; index < rcppList.size();++index)\
 {\
-newmap[as<KEY>(as<List>(rcpplist[index])["first"])]=as<OBJECT>(as<List>(rcpplist[index])["second"]);\
+newmap[as<KEY>(as<List>(rcppList[index])["first"])]=as<OBJECT>(as<List>(rcppList[index])["second"]);\
 }\
 return newmap;}\
 template <> SEXP wrap(const std::map<KEY,OBJECT>& obj){\
-List rcpplist(obj.size());\
+List rcppList(obj.size());\
 size_t index = 0;\
 for(const auto& mapobject: obj)\
 {\
-rcpplist[index]=List::create(Named("first")=wrap<KEY>(mapobject.first),Named("second")=wrap<OBJECT>(mapobject.second));\
+rcppList[index]=List::create(Named("first")=wrap<KEY>(mapobject.first),Named("second")=wrap<OBJECT>(mapobject.second));\
 ++index;\
 }\
-return rcpplist;}}
+return rcppList;}}
 
 namespace R
 {
@@ -105,7 +105,7 @@ namespace R
 					"@DocString(FMTlayer::getgeotransform)")
 				.method("getprojection", &Spatial::FMTlayer<T>::getprojection,
 					"@DocString(FMTlayer::getprojection)")
-				.method("getmapping", &Spatial::FMTlayer<T>::getmapping,
+				.method("getmapping", &Spatial::FMTlayer<T>::getMapping,
 					"@DocString(FMTlayer::getmapping)")
 				.method("area", &Spatial::FMTlayer<T>::area,
 					"@DocString(FMTlayer::area)")

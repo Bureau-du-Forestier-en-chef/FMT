@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -65,7 +65,7 @@ FMTschedule& FMTschedule::operator = (const FMTschedule& rhs)
     return *this;
     }
 
-bool FMTschedule::sameelements(const FMTschedule& rhs) const
+bool FMTschedule::sameElements(const FMTschedule& rhs) const
 	{
 	try {
 		if (elements.size() != rhs.elements.size())
@@ -115,7 +115,7 @@ bool FMTschedule::sameelements(const FMTschedule& rhs) const
 
 bool FMTschedule::operator == (const FMTschedule& rhs) const
 	{
-	return (period == rhs.period&& uselock ==rhs.uselock && sameelements(rhs));
+	return (period == rhs.period&& uselock ==rhs.uselock && sameElements(rhs));
 	}
 
 bool FMTschedule::operator != (const FMTschedule& rhs) const
@@ -189,10 +189,10 @@ FMTschedule::operator std::string() const
             const FMTdevelopment* dev = &devit->first;
 			for (const double & value : devit->second)
 				{
-				line += std::string(dev->getmask()) + " " + std::to_string(dev->getage()) + " " + std::to_string(value);
+				line += std::string(dev->getmask()) + " " + std::to_string(dev->getAge()) + " " + std::to_string(value);
 				if (uselock)
 					{
-					line += " " + std::to_string(dev->getlock());
+					line += " " + std::to_string(dev->getLock());
 					}
 				line += +" " + actit->first.getname() + " " + std::to_string(period);
 				line+=+"\n";
@@ -207,7 +207,7 @@ FMTschedule::operator std::string() const
 		return line;
 	}
 
-	void FMTschedule::setuselock(const bool& lock)
+	void FMTschedule::setUseLock(const bool& lock)
 	{
 		uselock = lock;
 	}
@@ -242,7 +242,7 @@ FMTschedule::operator std::string() const
 		}
 	}
 
-	void FMTschedule::addevent(const Core::FMTdevelopment& dev, const double& area, const Core::FMTaction& action)
+	void FMTschedule::addEvent(const Core::FMTdevelopment& dev, const double& area, const Core::FMTaction& action)
 	{
 		try {
 			iterator actit = elements.find(action);
@@ -260,8 +260,8 @@ FMTschedule::operator std::string() const
 					}
 				devit->second[0] += area;
 			}else {
-				const Core::FMTdevelopment lockout = dev.clearlock();
-				const int leveltarget = dev.getlock();
+				const Core::FMTdevelopment lockout = dev.clearLock();
+				const int leveltarget = dev.getLock();
 				devit = actit->second.find(lockout);
 				if (devit == actit->second.end())
 					{
@@ -282,7 +282,7 @@ FMTschedule::operator std::string() const
 	}
 
 
-	double FMTschedule::actionarea(const FMTaction& action) const
+	double FMTschedule::actionArea(const FMTaction& action) const
 	{
 		double value = 0;
 		try{
@@ -327,7 +327,7 @@ FMTschedule::operator std::string() const
 		return value;
 	}
 
-	std::vector<boost::unordered_set<FMTdevelopment>> FMTschedule::getoperabilities(const std::vector<FMTaction>& actions) const
+	std::vector<boost::unordered_set<FMTdevelopment>> FMTschedule::getOperabilities(const std::vector<FMTaction>& actions) const
 	{
 		std::vector<boost::unordered_set<FMTdevelopment>>table(actions.size(),boost::unordered_set<FMTdevelopment>());
 		try {
@@ -363,12 +363,12 @@ FMTschedule::operator std::string() const
 		if (actit != elements.end())
 		{
 			std::map<FMTdevelopment, std::vector<double>>::const_iterator devit;
-			if (uselock||action.dorespectlock())
+			if (uselock||action.doRespectLock())
 			{
 				devit = actit->second.find(developement);
 			}
 			else {
-				devit = actit->second.find(developement.clearlock());
+				devit = actit->second.find(developement.clearLock());
 			}
 			if (devit != actit->second.end())
 			{
@@ -422,7 +422,7 @@ FMTschedule::operator std::string() const
 					const Core::FMTmask& BASE = newdev.getmask();
 					if (BASE.canPresolve(filter, newthemes))
 						{
-						newdev.setmask(newdev.getmask().presolve(filter, newthemes));
+						newdev.setMask(newdev.getmask().presolve(filter, newthemes));
 						newmapping[newdev] = devit->second;
 					}else {
 						_exhandler->raise(Exception::FMTexc::FMTignore,
@@ -460,7 +460,7 @@ FMTschedule::operator std::string() const
 				{
 					FMTdevelopment newdev(devit->first);
 
-					newdev.setmask(newdev.getmask().postsolve(filter, originalbasethemes));
+					newdev.setMask(newdev.getmask().postsolve(filter, originalbasethemes));
 					newmapping[newdev] = devit->second;
 				}
 				if (!newmapping.empty())
@@ -479,7 +479,7 @@ FMTschedule::operator std::string() const
 		return newschedule;
 	}
 
-	void FMTschedule::setperiod(const int& newperiod)
+	void FMTschedule::setPeriod(const int& newperiod)
 		{
 			period = newperiod;
 			try{
@@ -491,7 +491,7 @@ FMTschedule::operator std::string() const
 					devit != actit->second.end(); devit++)
 					{
 					FMTdevelopment newdev(devit->first);
-					newdev.setperiod(newperiod);
+					newdev.setPeriod(newperiod);
 					newmapping[newdev] = devit->second;
 					}
 				actit->second = newmapping;
@@ -503,7 +503,7 @@ FMTschedule::operator std::string() const
 			}
 		}
 
-	FMTschedule FMTschedule::getnewschedule(const double& factor) const
+	FMTschedule FMTschedule::getNewSchedule(const double& factor) const
 		{
 		FMTschedule newscedule(*this);
 		try{
@@ -528,12 +528,12 @@ FMTschedule::operator std::string() const
 		return newscedule;
 		}
 
-	bool FMTschedule::isfuturconstraints(const std::vector<Core::FMTconstraint>& constraints) const
+	bool FMTschedule::isFuturConstraints(const std::vector<Core::FMTconstraint>& constraints) const
 		{
 		try{
 		for (const Core::FMTconstraint& constraint : constraints)
 			{
-			if (constraint.acrossperiod()&&constraint.getperiodlowerbound()==period)
+			if (constraint.acrossPeriod()&&constraint.getPeriodLowerBound()==period)
 				{
 				return true;
 				}

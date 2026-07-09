@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -42,7 +42,7 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::strin
 	outputorigin(origin),
 	themetarget(ttarget)
     {
-	if (istimeyield())
+	if (isTimeYield())
 		{
 		values.clear();
 		}
@@ -104,20 +104,20 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
     return *this;
     }
 
-void FMToutputsource::fillhashmask(Core::FMTmask& basemask) const
+void FMToutputsource::fillHashMask(Core::FMTmask& basemask) const
 	{
-		//basemask.append(mask.getbitsetreference());
-		basemask.binarizedappend<std::string>(std::string(mask));
-		basemask.binarizedappend<int>(static_cast<int>(target));
+		//basemask.append(mask.getBitsetReference());
+		basemask.binarizedAppend<std::string>(std::string(mask));
+		basemask.binarizedAppend<int>(static_cast<int>(target));
 		for (const double& lvalue : values)
 		{
-			basemask.binarizedappend<double>(lvalue);
+			basemask.binarizedAppend<double>(lvalue);
 		}
-		basemask.binarizedappend<std::string>(yield);
-		basemask.binarizedappend<std::string>(action);
+		basemask.binarizedAppend<std::string>(yield);
+		basemask.binarizedAppend<std::string>(action);
 	}
 
-bool FMToutputsource::isequalbyvalue(const FMToutputsource& rhs) const
+bool FMToutputsource::isEqualByValue(const FMToutputsource& rhs) const
 	{
 	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
 		yield == rhs.yield && action == rhs.action && values == rhs.values &&
@@ -125,9 +125,9 @@ bool FMToutputsource::isequalbyvalue(const FMToutputsource& rhs) const
 	}
 
 
-void FMToutputsource::fillhashspec(Core::FMTmask& basemask) const
+void FMToutputsource::fillHashSpec(Core::FMTmask& basemask) const
 	{
-	basemask.binarizedappend<std::string>(FMTspec::operator std::string());
+	basemask.binarizedAppend<std::string>(FMTspec::operator std::string());
 	}
 
 
@@ -240,25 +240,25 @@ bool FMToutputsource::operator != (const FMToutputsource& rhs) const
 	return (!(*this==rhs));
 	}
 
-void FMToutputsource::setthemetarget(const int& newttarget)
+void FMToutputsource::setThemeTarget(const int& newttarget)
 	{
 		themetarget=newttarget;
 	}
-void FMToutputsource::setoutputorigin(const int& neworigin)
+void FMToutputsource::setOutputOrigin(const int& neworigin)
 	{
 		outputorigin=neworigin;
 	}
 
-void FMToutputsource::resetvalues(const FMToperator& op,const FMToutputsource& other)
+void FMToutputsource::resetValues(const FMToperator& op,const FMToutputsource& other)
 	{
 	std::vector<double>newvalues(std::max(other.values.size(), values.size()),0);
 	for (int period = 1; period < static_cast<int>(newvalues.size()+1);++period)
 		{
-		const double othervalue = other.getvalue(period);
-		newvalues[period-1]=op.call(getvalue(period), othervalue);
+		const double othervalue = other.getValue(period);
+		newvalues[period-1]=op.call(getValue(period), othervalue);
 		}
 	values.swap(newvalues);
-	if (other.istimeyield())
+	if (other.isTimeYield())
 		{
 		yield = other.yield;
 		target = FMTotar::timeyld;
@@ -267,7 +267,7 @@ void FMToutputsource::resetvalues(const FMToperator& op,const FMToutputsource& o
 
 bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs) const
 	{
-	if ((this->isvariable() && rhs.isvariable() &&
+	if ((this->isVariable() && rhs.isVariable() &&
 		target == rhs.target && FMTspec::isSubsetOf(rhs) &&
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) &&
 		(mask.isSubsetOf(rhs.mask) &&
@@ -280,17 +280,17 @@ bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs) const
 	return false;
 	}
 
-bool FMToutputsource::issamebutdifferentaction(const FMToutputsource& rhs) const
+bool FMToutputsource::isSameButDifferentAction(const FMToutputsource& rhs) const
 	{
 	return (FMTspec::operator == (rhs) && target == rhs.target && mask == rhs.mask && action != rhs.action);
 	}
 
 
-bool FMToutputsource::isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const
+bool FMToutputsource::isInAggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const
 	{
 	if (isAction() && rhs.isAction())
 		{
-		const std::vector<const FMTaction*>allactions = FMTactioncomparator(rhs.action).getallaggregates(actions);
+		const std::vector<const FMTaction*>allactions = FMTactioncomparator(rhs.action).getAllAggregates(actions);
 		for (const FMTaction* actptr : allactions)
 			{
 				if (actptr->getname() == action)
@@ -307,13 +307,13 @@ bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs,
 	const std::vector<Core::FMTaction>& actions) const
 	{
 	
-	if ((this->isvariable() && rhs.isvariable() && 
+	if ((this->isVariable() && rhs.isVariable() && 
 		target == rhs.target && FMTspec::isSubsetOf(rhs) && 
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) && 
 		(mask.isSubsetOf(rhs.mask) &&
 		((action.empty() && rhs.action.empty()) || 
 		(!action.empty() && !rhs.action.empty() && 
-			isinaggregate(rhs,actions)))))
+			isInAggregate(rhs,actions)))))
 			{
 			return true;
 			}
@@ -323,21 +323,21 @@ bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs,
 FMToutputsource FMToutputsource::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const
 	{
 	FMToutputsource newsource(*this);
-	if (newsource.isvariable())
+	if (newsource.isVariable())
 		{
 		newsource.mask = newsource.mask.presolve(filter, newthemes);
 		}
 	return newsource;
 	}
 
-bool FMToutputsource::canbededucedtoconstant() const
+bool FMToutputsource::canBeDeducedToConstant() const
 	{
-	return (isvariable() && isinventory() &&
-		!emptyperiod() && getperiodlowerbound() == 0 &&
-		getperiodupperbound() == 0);
+	return (isVariable() && isInventory() &&
+		!emptyperiod() && getPeriodLowerBound() == 0 &&
+		getPeriodUpperBound() == 0);
 	}
 
-double FMToutputsource::getconstantvalue(const std::vector<Core::FMTactualdevelopment>& area,
+double FMToutputsource::getConstantValue(const std::vector<Core::FMTactualdevelopment>& area,
 	const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const
 	{
 	std::vector<const FMTaction*> operabletoactions = this->targets(actions);
@@ -345,12 +345,12 @@ double FMToutputsource::getconstantvalue(const std::vector<Core::FMTactualdevelo
 	for (const Core::FMTactualdevelopment& development : area)
 		{
 		if (use(development,yields)  && operabletoactions.empty()
-			|| development.anyoperable(operabletoactions, yields))
+			|| development.anyOperable(operabletoactions, yields))
 			{
 			double developmentvalue = development.getarea();
 			if (!yield.empty())
 				{
-				developmentvalue*=development.getinventorycoef(yields, yield);
+				developmentvalue*=development.getInventoryCoef(yields, yield);
 				}
 			value += developmentvalue;
 			}
@@ -359,36 +359,36 @@ double FMToutputsource::getconstantvalue(const std::vector<Core::FMTactualdevelo
 	}
 
 
-void FMToutputsource::setaverage()
+void FMToutputsource::setAverage()
 	{
 	average = true;
 	}
 
 
-void FMToutputsource::setsum()
+void FMToutputsource::setSum()
 {
 	sum = true;
 }
 
-bool FMToutputsource::isnull(const FMTyields& ylds) const
+bool FMToutputsource::isNull(const FMTyields& ylds) const
 	{
 	if (!yield.empty())
 		{
-		return ylds.isnullyld(yield);
+		return ylds.isNullYld(yield);
 		}
-	if (!isvariable())
+	if (!isVariable())
 		{
-		return (getvalue() == 0);
+		return (getValue() == 0);
 		}
 	return false;
 	}
 
-void  FMToutputsource::pushvalues(const std::vector<double>& newvalues)
+void  FMToutputsource::pushValues(const std::vector<double>& newvalues)
 	{
 	values.insert(values.end(),newvalues.begin(), newvalues.end());
 	}
 
-double FMToutputsource::getvalue(int period) const
+double FMToutputsource::getValue(int period) const
 	{
 	double returnvalue = 0;
 	if (target == FMTotar::timeyld&&
@@ -409,17 +409,17 @@ double FMToutputsource::getvalue(int period) const
 	return returnvalue;
 	}
 
-void FMToutputsource::setmask(const FMTmask& newmask)
+void FMToutputsource::setMask(const FMTmask& newmask)
 	{
 	mask = newmask;
 	}
 
-void FMToutputsource::setaction(const std::string& actionname)
+void FMToutputsource::setAction(const std::string& actionname)
 	{
 	action = actionname;
 	}
 
-void FMToutputsource::settarget(const FMTotar& newtype)
+void FMToutputsource::setTarget(const FMTotar& newtype)
 	{
 	target = newtype;
 	}
@@ -428,16 +428,16 @@ std::vector<const FMTaction*>FMToutputsource::targets(const std::vector<FMTactio
 	{
 	if (target != FMTotar::level && !action.empty())
         {
-		return FMTactioncomparator(action).getallaggregates(actions);
+		return FMTactioncomparator(action).getAllAggregates(actions);
         }
 	return std::vector<const FMTaction*>();
 	}
 
-std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>& actions) const
+std::unordered_set<int>FMToutputsource::targetsSet(const std::vector<FMTaction>& actions) const
 {
 	if (target != FMTotar::level && !action.empty())
 	{
-		return FMTactioncomparator(action).getallaggregatesset(actions);
+		return FMTactioncomparator(action).getAllAggregatesSet(actions);
 	}
 	return std::unordered_set<int>();
 }
@@ -475,33 +475,33 @@ void FMToutputsource::setYield(const std::string& p_Yield)
 	yield = p_Yield;
 	}
 
-double FMToutputsource::getcoef(const FMTdevelopment& development,
+double FMToutputsource::getCoef(const FMTdevelopment& development,
 	const FMTyields& yields,
 	const Graph::FMTgraphvertextoyield* graphinfo,
 	std::vector<FMTdevelopmentpath> const * paths,
 	FMTaction const * modelaction) const
 	{
 	double coef = 1;
-	if (isvariable())
+	if (isVariable())
 		{
 		if (!yield.empty())
 			{
 			if (target == FMTotar::inventory)
 			{
-				coef = development.getinventorycoef(yields, yield, graphinfo);
+				coef = development.getInventoryCoef(yields, yield, graphinfo);
 			}
 			else {
-				coef = development.getharvestcoef(*paths, *modelaction, yields, yield, graphinfo);
+				coef = development.getHarvestCoef(*paths, *modelaction, yields, yield, graphinfo);
 			}
 			}
 		}else{
 			if (!values.empty())
 			{
-				coef = getvalue(development.getperiod());
+				coef = getValue(development.getperiod());
 			}
-			if (istimeyield())
+			if (isTimeYield())
 				{
-				coef *= development.getinventorycoef(yields, yield, graphinfo);
+				coef *= development.getInventoryCoef(yields, yield, graphinfo);
 				}
 			}
 	return coef;
@@ -536,9 +536,9 @@ bool FMToutputsourcecomparator::operator()(const FMToutputsource& source) const
 	{
 	if (variable)
 		{
-		return source.isvariable();
+		return source.isVariable();
 	}else {
-		return source.isconstant();
+		return source.isConstant();
 	}
 	return false;
 	}

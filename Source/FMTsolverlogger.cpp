@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -28,7 +28,7 @@ FMTsolverlogger::FMTsolverlogger():
 
 	}
 
-void FMTsolverlogger::cleanup()
+void FMTsolverlogger::cleanUp()
 {
 	if (baselogger && ownthelogger)
 	{
@@ -39,14 +39,14 @@ void FMTsolverlogger::cleanup()
 
 void FMTsolverlogger::copy(const FMTsolverlogger& rhs)
 {
-	cleanup();
+	cleanUp();
 	baselogger = rhs.baselogger->clone();
 	ownthelogger = true;
 }
 
 FMTsolverlogger::~FMTsolverlogger()
 	{
-	cleanup();
+	cleanUp();
 	}
 
 /*FMTsolverlogger::FMTsolverlogger(const FMTsolverlogger& rhs) :

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -18,31 +18,31 @@ namespace Core
 
 		}
 
-	bool FMToutputnode::allowcashdeduction() const
+	bool FMToutputnode::allowCashdeduction() const
 		{
-		return (!factor.istimeyield());
+		return (!factor.isTimeYield());
 		}
 
-	bool FMToutputnode::singleperiod() const
+	bool FMToutputnode::singlePeriod() const
 		{
-		return (!source.emptyperiod() && source.getperiodlowerbound() == source.getperiodupperbound());
+		return (!source.emptyperiod() && source.getPeriodLowerBound() == source.getPeriodUpperBound());
 		}
 
-	bool FMToutputnode::multiperiod() const
+	bool FMToutputnode::multiPeriod() const
 		{
-		return (!source.emptyperiod() && source.getperiodlowerbound() != source.getperiodupperbound());
+		return (!source.emptyperiod() && source.getPeriodLowerBound() != source.getPeriodUpperBound());
 		}
 
-	bool FMToutputnode::isnull() const
+	bool FMToutputnode::isNull() const
 		{
-		return ((factor.isconstant() && factor.getvalue() == 0) || constant == 0);
+		return ((factor.isConstant() && factor.getValue() == 0) || constant == 0);
 		}
 
-    bool FMToutputnode::ispastperiod() const
+    bool FMToutputnode::isPastPeriod() const
 		{
-		if (singleperiod())
+		if (singlePeriod())
 			{
-			if (source.getperiodlowerbound() < 0)
+			if (source.getPeriodLowerBound() < 0)
 				{
 				return true;
 				}
@@ -57,11 +57,11 @@ namespace Core
 		}
 
 
-    FMToutputnode FMToutputnode::setperiod(int period) const
+    FMToutputnode FMToutputnode::setPeriod(int period) const
         {
         FMToutputnode newnode(*this);
-        newnode.source.setbounds(FMTperbounds(FMTsection::Optimize,period,period));
-        newnode.factor.setbounds(FMTperbounds(FMTsection::Optimize,period,period));
+        newnode.source.setBounds(FMTperbounds(FMTsection::Optimize,period,period));
+        newnode.factor.setBounds(FMTperbounds(FMTsection::Optimize,period,period));
         return newnode;
         }
 
@@ -92,7 +92,7 @@ namespace Core
 		return seed;
 		}
 
-	size_t FMToutputnode::hashforvalue() const
+	size_t FMToutputnode::hashForValue() const
 		{
 		size_t seed = 0;
 		boost::hash_combine(seed, source.hash(-1,true));
@@ -121,14 +121,14 @@ namespace Core
 		return source.isSubsetOf(rhs.source,actions);
 		}
 
-	bool FMToutputnode::issamebutdifferentaction(const FMToutputnode& rhs) const
+	bool FMToutputnode::isSameButDifferentAction(const FMToutputnode& rhs) const
 		{
-		return source.issamebutdifferentaction(rhs.source);
+		return source.isSameButDifferentAction(rhs.source);
 		}
 
-	bool FMToutputnode::issamevalues(const FMToutputnode& rhs) const
+	bool FMToutputnode::isSameValues(const FMToutputnode& rhs) const
 		{
-		return (constant == rhs.constant &&  factor.isequalbyvalue(rhs.factor) && source.isequalbyvalue(rhs.source));
+		return (constant == rhs.constant &&  factor.isEqualByValue(rhs.factor) && source.isEqualByValue(rhs.source));
 		}
 
 
@@ -143,62 +143,62 @@ namespace Core
 		return *this;
 		}
 
-	int FMToutputnode::settograph(std::vector<int>& targetedperiods, int period, int max_period)
+	int FMToutputnode::setToGraph(std::vector<int>& targetedperiods, int period, int max_period)
 		{
 		int node_period = period;
-		if (this->source.isnextperiod())
+		if (this->source.isNextPeriod())
 		{
 			++node_period;
 		}
 		
-		if (this->singleperiod())
+		if (this->singlePeriod())
 		{
-			if (this->ispastperiod())
+			if (this->isPastPeriod())
 			{
-				if ((this->source.getperiodlowerbound() + node_period) >= 0)
+				if ((this->source.getPeriodLowerBound() + node_period) >= 0)
 				{
-					node_period = (this->source.getperiodlowerbound() + node_period);
+					node_period = (this->source.getPeriodLowerBound() + node_period);
 					const FMTperbounds perbound(FMTsection::Optimize, node_period, node_period);
-					this->source.setbounds(perbound);
-					this->factor.setbounds(perbound);
+					this->source.setBounds(perbound);
+					this->factor.setBounds(perbound);
 				}
 				else {
 					return -1;//dont need that node...
 				}
 			}
 			else {
-				node_period = this->source.getperiodlowerbound();
-				if (this->source.isnextperiod())
+				node_period = this->source.getPeriodLowerBound();
+				if (this->source.isNextPeriod())
 				{
 					++node_period;
 					const FMTperbounds perbound(FMTsection::Optimize, node_period, node_period);
-					this->source.setbounds(perbound);
-					this->factor.setbounds(perbound);
+					this->source.setBounds(perbound);
+					this->factor.setBounds(perbound);
 				}
 			}
 		}
-		if (this->multiperiod())
+		if (this->multiPeriod())
 		{
-			const int minperiod = std::max(this->source.getperiodlowerbound(), 1);
-			const int maxperiod = std::min(this->source.getperiodupperbound(), max_period);
+			const int minperiod = std::max(this->source.getPeriodLowerBound(), 1);
+			const int maxperiod = std::min(this->source.getPeriodUpperBound(), max_period);
 			for (int periodid = minperiod; periodid <= maxperiod; ++periodid)
 			{
 				int local_period = periodid;
-				if (this->source.isnextperiod())
+				if (this->source.isNextPeriod())
 				{
 					++local_period;
 				}
 				targetedperiods.push_back(local_period);
 			}
 		}
-		else if (this->source.emptyperiod() && (this->source.issum() || this->source.isaverage()))
+		else if (this->source.emptyperiod() && (this->source.isSum() || this->source.isAverage()))
 		{	
 			const int minperiod = 1;
 			const int maxperiod = period;
 			for (int periodid = minperiod; periodid <= maxperiod; ++periodid)
 			{
 				int local_period = periodid;
-				if (this->source.isnextperiod())
+				if (this->source.isNextPeriod())
 				{
 					++local_period;
 				}
@@ -208,14 +208,14 @@ namespace Core
 		else {
 			targetedperiods.push_back(node_period);
 		}
-		if (this->source.isaverage())
+		if (this->source.isAverage())
 		{
 			constant *= 1/static_cast<double>(targetedperiods.size());//average factor = 1/sum(targeted_period)
 		}
 		return node_period;
 		}
 
-	std::string FMToutputnode::gethashstring() const
+	std::string FMToutputnode::getHashString() const
 	{
 		/*std::string value(static_cast<const char*>(static_cast<const void*>(&source)));
 		value += std::string(static_cast<const char*>(static_cast<const void*>(&factor)));
@@ -225,19 +225,19 @@ namespace Core
 		return std::string(*this);
 	}
 
-	Core::FMTmask FMToutputnode::gethashmask() const
+	Core::FMTmask FMToutputnode::getHashMask() const
 	{
 		Core::FMTmask basemask;
-		source.fillhashmask(basemask);
-		factor.fillhashmask(basemask);
-		basemask.binarizedappend<double>(constant);
+		source.fillHashMask(basemask);
+		factor.fillHashMask(basemask);
+		basemask.binarizedAppend<double>(constant);
 		return basemask;
 	}
 
-	void FMToutputnode::fillhashmaskspec(Core::FMTmask& basemask) const
+	void FMToutputnode::fillHashMaskSpec(Core::FMTmask& basemask) const
 	{
-		source.fillhashspec(basemask);
-		factor.fillhashspec(basemask);
+		source.fillHashSpec(basemask);
+		factor.fillHashSpec(basemask);
 	}
 
 	
@@ -245,21 +245,21 @@ namespace Core
 
 	bool FMToutputnodevaluecomparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
 		{
-		return node1.issamevalues(node2);
+		return node1.isSameValues(node2);
 		}
 
 	bool FMToutputnodeorigincomparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
 		{
-		return (node1.getoutputid()<node2.getoutputid());
+		return (node1.getOutputId()<node2.getOutputId());
 		}
 
 
 	size_t FMToutputnodehasher::operator()(const FMToutputnode & node) const
 		{
-		return node.hashforvalue();
+		return node.hashForValue();
 		}
 
-	void FMToutputnode::fillupequation(std::map<std::string,std::vector<std::string>>& allequations,
+	void FMToutputnode::fillUpEquation(std::map<std::string,std::vector<std::string>>& allequations,
 		const std::map<std::string, double>& graphvalues,
 		const std::vector<std::string>& equation, const size_t& nodeid) const
 		{

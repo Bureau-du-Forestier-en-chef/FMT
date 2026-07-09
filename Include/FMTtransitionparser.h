@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -70,18 +70,18 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
 		Copy assignment for FMTtransitionparser.
 		*/
         FMTtransitionparser& operator = (const FMTtransitionparser& rhs)=default;
-		// DocString: FMTtransitionparser::getsource
+		// DocString: FMTtransitionparser::getSource
 		/**
 		Returns a mask for the transition mask and fill up the spec of the transition mask.
 		*/
-		Core::FMTmask getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,
+		Core::FMTmask getSource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,
 							Core::FMTsection section,const Core::FMTconstants& constant,
                           const Core::FMTyields& ylds);
-		// DocString: FMTtransitionparser::getmasktran
+		// DocString: FMTtransitionparser::getMaskTran
 		/**
 		Get a vector of transition masks based on a single transition line mask of the transition file.
 		*/
-        std::vector<Core::FMTtransitionmask> getmasktran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
+        std::vector<Core::FMTtransitionmask> getMaskTran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
                                         const Core::FMTconstants& constants, const Core::FMTyields& ylds,
                                         const Core::FMTmask& sourcemask, int& replaced);
 		// DocString: FMTtransitionparser::read

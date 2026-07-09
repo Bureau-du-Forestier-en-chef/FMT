@@ -24,7 +24,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(
 		std::vector<std::string> scheduleOrder = p_model.getSchedulesPriorities(SCHEDULES);
 
 		aggregatedModel = p_model.aggregateAllActions(p_aggregates, scheduleOrder);
-		aggregatedModel.setname(p_output_scenario_name);
+		aggregatedModel.setName(p_output_scenario_name);
 		std::string outputPath;
 		
 		//ATTENTION il est important d'�crire le model avant la schedule car modelParser.write va �craser le fichier de schedule
@@ -60,7 +60,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 		Parser::FMTmodelparser ModelParser;
 
 		SPLITTED_MODEL = p_model.splitActions(p_splitted, p_splitted_mask);
-		SPLITTED_MODEL.setname(p_scenario_name);
+		SPLITTED_MODEL.setName(p_scenario_name);
 
 		std::string outputPath;
 
@@ -94,7 +94,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		std::string outputPath;
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_primaryPath, { p_model }).at(0);
 		BUILDED_MODEL = p_model.buildAction(p_actionName, p_targetYield);
-		BUILDED_MODEL.setname(p_scenario_name);
+		BUILDED_MODEL.setName(p_scenario_name);
 
 		//ATTENTION il est important d'�crire le model avant la schedule car modelParser.write va �craser le fichier de schedule
 

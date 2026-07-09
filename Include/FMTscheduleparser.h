@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -69,12 +69,12 @@ class FMTEXPORT FMTscheduleparser: public FMTparser
         void write(const std::vector<Core::FMTschedule>& schedules, const std::string& location, bool append = false) const;
 
 	private:
-		// DocString: FMTscheduleparser::getvariable
+		// DocString: FMTscheduleparser::getVariable
 		/**
 		This function uses the comment present in the schedule section representing the
 		variable index of the scheduled area to harvest and return it has a int value.
 		*/
-		int getvariable() const;
+		int getVariable() const;
 		// DocString: FMTscheduleparser::
 		/**
 

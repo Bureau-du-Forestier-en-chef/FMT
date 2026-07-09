@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -66,11 +66,11 @@ class FMTEXPORT FMTobject
 		This function return the location of the FMT shared library location.
 		*/
 		static std::string getruntimelocation();
-		// DocString: FMTobject::getavailablememory
+		// DocString: FMTobject::getAvailableMemory
 		/**
 		Get the available memory in bytes
 		*/
-		static unsigned long long getavailablememory();
+		static unsigned long long getAvailableMemory();
 		// DocString: FMTobject()
 		/**
 		FMTobject default constructor.
@@ -107,63 +107,63 @@ class FMTEXPORT FMTobject
 		It's sometime usefull to pass in the exception handler of an other FMTobject.
 		*/
 		void passinexceptionhandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler);
-		// DocString: FMTobject::redirectlogtofile
+		// DocString: FMTobject::redirectLogToFile
 		/**
 		redict the log to a specific file (will append to it)
 		*/
-		void redirectlogtofile(const std::string& location);
-		// DocString: FMTobject::setdefaultlogger
+		void redirectLogToFile(const std::string& location);
+		// DocString: FMTobject::setDefaultLogger
 		/**
 		Create and set a default logger to the FMTobject.
 		*/
-		virtual void setdefaultlogger();
-		// DocString: FMTobject::setquietlogger
+		virtual void setDefaultLogger();
+		// DocString: FMTobject::setQuietLogger
 		/**
 		Create and set a quiet logger to the FMTobject.
 		*/
-		virtual void setquietlogger();
-		// DocString: FMTobject::settasklogger
+		virtual void setQuietLogger();
+		// DocString: FMTobject::setTaskLogger
 		/**
 		Create and set a quiet logger to the FMTobject.
 		*/
-		virtual void settasklogger();
-		// DocString: FMTobject::setdebuglogger
+		virtual void setTaskLogger();
+		// DocString: FMTobject::setDebugLogger
 		/**
 		Create and set a debug logger to the FMTobject.
 		*/
-		virtual void setdebuglogger();
-		// DocString: FMTobject::setdefaultexceptionhandler
+		virtual void setDebugLogger();
+		// DocString: FMTobject::setDefaultExceptionHandler
 		/**
 		Create and set a default exception handler to the FMTobject.
 		*/
-		void setdefaultexceptionhandler();
-		// DocString: FMTobject::setquietexceptionhandler
+		void setDefaultExceptionHandler();
+		// DocString: FMTobject::setQuietExceptionHandler
 		/**
 		Create and set a quiet exception handler to the FMTobject.
 		*/
-		void setquietexceptionhandler();
-		// DocString: FMTobject::setdebugexceptionhandler
+		void setQuietExceptionHandler();
+		// DocString: FMTobject::setDebugExceptionHandler
 		/**
 		Create and set a debug exception handler to the FMTobject.
 		*/
-		void setdebugexceptionhandler();
-		// DocString: FMTobject::setfreeexceptionhandler
+		void setDebugExceptionHandler();
+		// DocString: FMTobject::setFreeExceptionHandler
 		/**
 		Create and set a free exception handler to the FMTobject.
 		*/
-		void setfreeexceptionhandler();
-		// DocString: FMTobject::disablenestedexceptions
+		void setFreeExceptionHandler();
+		// DocString: FMTobject::disableNestedExceptions
 		/**
 		Disable nested exception throw of the Exceptionhandler by default all handlers
 		do nested exception throw.
 		*/
-		void disablenestedexceptions();
-		// DocString: FMTobject::enablenestedexceptions
+		void disableNestedExceptions();
+		// DocString: FMTobject::enableNestedExceptions
 		/**
 		Enable nested exception throw of the Exceptionhandler by default all handlers
 		do nested exception throw.
 		*/
-		void enablenestedexceptions();
+		void enableNestedExceptions();
 		// DocString: FMTobject::seterrorstowarnings
 		/**
 		Very hazardous function if you want to live dangerously you can
@@ -204,56 +204,56 @@ class FMTEXPORT FMTobject
 		// DocString: FMTobject::_logger
 		///A shared pointer to the logger.
 		static std::unique_ptr<Logging::FMTlogger> _logger;
-		// DocString: FMTobject:: forcesave
+		// DocString: FMTobject:: forceSave
 		/**
 		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
 		*/
 		template<class Archive>
-		void forcesave(Archive& ar, const unsigned int version) const
+		void forceSave(Archive& ar, const unsigned int version) const
 		{
 			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
 			//ar & BOOST_SERIALIZATION_NVP(_logger);
 			//ar & BOOST_SERIALIZATION_NVP(m_section);
 		}
-		// DocString: FMTobject:: forceload
+		// DocString: FMTobject:: forceLoad
 		/**
 		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
 		*/
 		template<class Archive>
-		void forceload(Archive& ar, const unsigned int version)
+		void forceLoad(Archive& ar, const unsigned int version)
 		{
 			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
 			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			setdefaultlogger();
-			setdefaultexceptionhandler();
+			setDefaultLogger();
+			setDefaultExceptionHandler();
 			//ar & BOOST_SERIALIZATION_NVP(m_section);
 		}
-		// DocString: FMTobject::checksignals
+		// DocString: FMTobject::checkSignals
 		/**
 		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
 		*/
-		void checksignals() const;
+		void checkSignals() const;
 		// DocString: FMTobject::setCPLhandler
 		/**
 		This function is for gdal only it pass the FMT exception handler to gdal exception handler.
 		*/
 		void setCPLhandler();
-		// DocString: FMTobject::getclock
+		// DocString: FMTobject::getClock
 		/**
 		Will return a clock of "now" time.
 		*/
-		static std::chrono::time_point<std::chrono::high_resolution_clock> getclock();
-		// DocString: FMTobject::getduration
+		static std::chrono::time_point<std::chrono::high_resolution_clock> getClock();
+		// DocString: FMTobject::getDuration
 		/**
 		With the high resolution clock you can get the time it took has a double.
 		*/
 		template<class chrono>
-		static double getduration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-		// DocString: FMTobject::getdurationinseconds
+		static double getDuration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+		// DocString: FMTobject::getDurationInSeconds
 		/**
 		With the clock time calculate time spent in second and return a string.
 		*/
-		static std::string getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+		static std::string getDurationInSeconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 		// DocString: FMTexceptionhandler::_logStack
 		/**
 		@brief Log the stack trace...

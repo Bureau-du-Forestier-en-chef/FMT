@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -397,12 +397,12 @@ public:
 	Add yields spec or age, period or lock spec from an other spec.
 	*/
     bool add(const FMTspec& rhs);
-	// DocString: FMTspec::setbounds
+	// DocString: FMTspec::setBounds
 	/**
 	Set period bounds
 	*/
-    bool setbounds(const FMTperbounds& bound);
-	// DocString: FMTspec::setbounds
+    bool setBounds(const FMTperbounds& bound);
+	// DocString: FMTspec::setBounds
 	/**
 	Set age bounds
 	*/
@@ -527,26 +527,26 @@ public:
 	Return true if lock bounds is empty.
 	*/
 	bool emptylock() const;
-	// DocString: FMTspec::getageupperbound
+	// DocString: FMTspec::getAgeUpperBound
 	/**
 	Get the upper bounds of the age bounds.
 	*/
-	int getageupperbound() const;
-	// DocString: FMTspec::getagelowerbound
+	int getAgeUpperBound() const;
+	// DocString: FMTspec::getAgeLowerBound
 	/**
 	Get the lower bound of the age bounds.
 	*/
-	int getagelowerbound() const;
-	// DocString: FMTspec::getperiodupperbound
+	int getAgeLowerBound() const;
+	// DocString: FMTspec::getPeriodUpperBound
 	/**
 	Get the upper bound of the period bounds.
 	*/
-	int getperiodupperbound() const;
-	// DocString: FMTspec::getperiodlowerbound
+	int getPeriodUpperBound() const;
+	// DocString: FMTspec::getPeriodLowerBound
 	/**
 	Get the lower bound of the period bounds.
 	*/
-	int getperiodlowerbound() const;
+	int getPeriodLowerBound() const;
 	// DocString: FMTspec::getlockupperbound
 	/**
 	Get the upper bounds of the age bounds.

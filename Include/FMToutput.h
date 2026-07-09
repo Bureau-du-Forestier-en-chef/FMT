@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -119,19 +119,19 @@ class FMTEXPORT FMToutput: public FMTobject
 		{
 			return name;
 		}
-		// DocString: FMToutput::getdescription
+		// DocString: FMToutput::getDescription
 		/**
 		Getter for the FMToutput description.
 		*/
-		inline std::string getdescription() const
+		inline std::string getDescription() const
 		{
 			return description;
 		}
-		// DocString: FMToutput::getgroup
+		// DocString: FMToutput::getGroup
 		/**
 		Getter for the group of the output
 		*/
-		inline std::string getgroup() const
+		inline std::string getGroup() const
 		{
 			return group;
 		}
@@ -145,173 +145,173 @@ class FMTEXPORT FMToutput: public FMTobject
 		Returns the number of outputsource that the output contains.
 		*/
 		size_t size() const;
-		// DocString: FMToutput::islinear
+		// DocString: FMToutput::isLinear
 		/**
 		Check if the FMToutput is linear no variable to variable multiplication or division.
 		Only Linear output can be added to a linear programming matrix.
 		*/
-		bool islinear() const;
-		// DocString: FMToutput::canbenodesonly
+		bool isLinear() const;
+		// DocString: FMToutput::canBeNodesOnly
 		/**
 		If the output can be used as nodes only so in LP it will return true.
 		It has to be linear and dont have -+ of level or timeyield or constant.
 		*/
-		bool canbenodesonly() const;
-		// DocString: FMToutput::islevel
+		bool canBeNodesOnly() const;
+		// DocString: FMToutput::isLevel
 		/**
 		Returns true if one outputsources of the FMToutput is a level.
 		*/
-		bool islevel() const;
-		// DocString: FMToutput::isonlylevel
+		bool isLevel() const;
+		// DocString: FMToutput::isOnlyLevel
 		/**
 		Returns true if all outputsources of the FMToutput are level.
 		*/
-		bool isonlylevel() const;
-		// DocString: FMToutput::isconstantlevel
+		bool isOnlyLevel() const;
+		// DocString: FMToutput::isConstantLevel
 		/**
 		Returns true if all outputsources of the FMToutput are constant level
 		*/
-		bool isconstantlevel() const;
-		// DocString: FMToutput::isconstant
+		bool isConstantLevel() const;
+		// DocString: FMToutput::isConstant
 		/**
 		Returns true if all outputsources of the FMToutput are constants.
 		*/
-		bool isconstant() const;
-		// DocString: FMToutput::getconstantvalue
+		bool isConstant() const;
+		// DocString: FMToutput::getConstantValue
 		/**
 		Get the constant value if the FMToutput is just one constant.
 		*/
-		double getconstantvalue() const;
-		// DocString: FMToutput::containslevel
+		double getConstantValue() const;
+		// DocString: FMToutput::containsLevel
 		/**
 		Check if the FMToutput contains any one level.
 		*/
-		bool containslevel() const;
+		bool containsLevel() const;
 
-		// DocString: FMToutput::shuntingyard
+		// DocString: FMToutput::shuntingYard
 		/**
-		Call shuntingyard using a vector of value for each outputsource and a vector of operators.
+		Call shuntingYard using a vector of value for each outputsource and a vector of operators.
 		*/
-		double shuntingyard(const std::vector<double>& sourcevalues, const std::vector<FMToperator>& simple_operators) const;
-		// DocString: FMToutput::boundto
+		double shuntingYard(const std::vector<double>& sourcevalues, const std::vector<FMToperator>& simple_operators) const;
+		// DocString: FMToutput::boundTo
 		/**
 		Bound a output to specific periods bounds (for FMTconstraint) and return the new generated output.
 		Can also modify a given targeted themes target (mask) of the new ouput.
 		*/
-		FMToutput boundto(const std::vector<FMTtheme>& themes, const FMTperbounds& bound, const std::string& specialbound, std::string attribute = "") const;
-		// DocString: FMToutput::getnodes
+		FMToutput boundTo(const std::vector<FMTtheme>& themes, const FMTperbounds& bound, const std::string& specialbound, std::string attribute = "") const;
+		// DocString: FMToutput::getNodes
 		/**
 		This function returns a vector of FMToutputnode generated from the outputnodesource and FMToperators for the FMTouput,
 		a multiplier can be added to multiply all the nodesource with a factor.
 		*/
-		std::vector<FMToutputnode> getnodes(std::vector<std::string>& equation,
+		std::vector<FMToutputnode> getNodes(std::vector<std::string>& equation,
 			double multiplier = 1,
 			bool orderbyoutputid = false,
 			int period = 1) const;
-		// DocString: FMToutput::issingleperiod
+		// DocString: FMToutput::isSinglePeriod
 		/**
 		Returns true if the FMToutput cover only one single period of the FMTgraph, false if
 		the FMToutput covers multiple periods.
 		*/
-		bool issingleperiod() const;
-		// DocString: FMToutput::hasaverage
+		bool isSinglePeriod() const;
+		// DocString: FMToutput::hasAverage
 		/**
 		Returns true if the output needs to be averaged.
 		*/
-		bool hasaverage() const;
-		// DocString: FMToutput::gettargetperiod
+		bool hasAverage() const;
+		// DocString: FMToutput::getTargetPeriod
 		/**
 		If single period is true then it will return the targeted period of the FMTouput.
 		*/
-		int gettargetperiod() const;
+		int getTargetPeriod() const;
 		// DocString: FMToutput::hash
 		/**
 		Hashing fuction for FMToutput.
 		*/
 		size_t hash() const;
-		// DocString: FMToutput::setsources
+		// DocString: FMToutput::setSources
 		/**
 		* @brief set new sources for this output
 		* @param p_sources is the newly sources to set.
 		*/
-		void setsources(const std::vector<FMToutputsource>& p_sources);
+		void setSources(const std::vector<FMToutputsource>& p_sources);
 		// DocString: FMToutput::setOperators
 		/**
 		* @brief set new operators to output
 		* @param p_operators is the newly oeprators to set.
 		*/
 		void setOperators(const std::vector<FMToperator>& p_operators);
-		// DocString: FMToutput::getsources
+		// DocString: FMToutput::getSources
 		/**
 		Getter for the vector of FMToutputsource of the FMToutput.
 		*/
-		inline std::vector<FMToutputsource> getsources() const
+		inline std::vector<FMToutputsource> getSources() const
 		{
 			return sources;
 		}
-		// DocString: FMToutput::getsourcesreference
+		// DocString: FMToutput::getSourcesReference
 		/**
 		Getter for the vector of FMToutputsource of the FMToutput.
 		*/
-		inline const std::vector<FMToutputsource>& getsourcesreference() const
+		inline const std::vector<FMToutputsource>& getSourcesReference() const
 		{
 			return sources;
 		}
-		// DocString: FMToutput::getopes
+		// DocString: FMToutput::getOpes
 		/**
 		Getter for the FMToperator of the FMToutput.
 		*/
-		inline std::vector<FMToperator> getopes() const
+		inline std::vector<FMToperator> getOpes() const
 		{
 			return operators;
 		}
-		// DocString: FMToutput::targettheme
+		// DocString: FMToutput::targetTheme
 		/**
 		If theme_target is not equal to -1 then the FMToutput can target a given theme
 		given all the model themes this function returns the FMToutput targeted theme.
 		*/
-		FMTtheme targettheme(const std::vector<FMTtheme>& themes) const;
-		// DocString: FMToutput::targetthemeid
+		FMTtheme targetTheme(const std::vector<FMTtheme>& themes) const;
+		// DocString: FMToutput::targetThemeId
 		/**
 		Getter for the targeted theme id.
 		*/
-		inline int targetthemeid() const
+		inline int targetThemeId() const
 		{
-			return sources.begin()->getthemetarget();
+			return sources.begin()->getThemeTarget();
 		}
-		// DocString: FMToutput::getdecomposition
+		// DocString: FMToutput::getDecomposition
 		/**
 		Returns all possible attribute values the FMToutput can for the specified theme based on the model (themes).
 		*/
-		std::vector<std::string>getthemedecomposition(const FMTtheme& theme) const;
-		// DocString: FMToutput::getdecomposition
+		std::vector<std::string>getThemeDecomposition(const FMTtheme& theme) const;
+		// DocString: FMToutput::getDecomposition
 		/**
 		Returns all possible attribute values the FMToutput can have if the attribute_target != -1
 		else returns a empty vector, based on the model (themes).
 		*/
-		std::vector<std::string>getdecomposition(const std::vector<FMTtheme>& themes) const;
-		// DocString: FMToutput::intersectwithmask
+		std::vector<std::string>getDecomposition(const std::vector<FMTtheme>& themes) const;
+		// DocString: FMToutput::intersectWithMask
 		/**
 		Returns the intersected FMToutput resulting from the mask intersection with this output.
 		*/
-		FMToutput intersectwithmask(const Core::FMTmask& mask,
+		FMToutput intersectWithMask(const Core::FMTmask& mask,
 			const std::vector<Core::FMTtheme>& themes) const;
-		// DocString: FMToutput::getvariableintersect
+		// DocString: FMToutput::getVariableIntersect
 		/**
 		Returns the intersected FMTmask of all variables
 		*/
-		FMTmask getvariableintersect() const;
+		FMTmask getVariableIntersect() const;
 		// DocString: FMToutput::getMasksUnion
 		/**
 		@brief get the union of all masks of the sources and factor
 		@return the union of the mask.
 		*/
 		FMTmask getMasksUnion() const;
-		// DocString: FMToutput::getstaticthemes()
+		// DocString: FMToutput::getStaticThemes()
 		/**
 		Returns the static themes of the whole output.
 		*/
-		std::vector<const Core::FMTtheme*>getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables = false) const;
+		std::vector<const Core::FMTtheme*>getStaticThemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables = false) const;
 		// DocString: FMToutput::presolve
 		/**
 		Presolve the FMToutput and remove unused outputsource base on a (basemask), original themes (originalthemes)
@@ -327,15 +327,15 @@ class FMTEXPORT FMToutput: public FMTobject
 			const FMTyields& yields) const;
 		// DocString: FMToutput::changeoutputsorigin
 		/**
-		Change outputorigin and targetthemeid of each source with the distance from the begining of the set corresponding to the old outputorigin and themeid.
+		Change outputorigin and targetThemeId of each source with the distance from the begining of the set corresponding to the old outputorigin and themeid.
 		Every output origin in the sources must be in the set. Normally used after presolve when some output are removed. Could also be overided with map.
 		*/
-		void changesourcesid(const std::set<int>& newoutputsorigin, const std::set<int>& newthemeid);
+		void changeSourcesId(const std::set<int>& newoutputsorigin, const std::set<int>& newthemeid);
 		// DocString: FMToutput::changeoutputsorigin
 		/**
 		Change outputorigin for the optimizationparser
 		*/
-		void changesourcesid(const int& outid);
+		void changeSourcesId(const int& outid);
 		// DocString: FMToutput::extractRHSvalue
 		/**
 		It has to be a mix between noded output and constant level.
@@ -348,32 +348,32 @@ class FMTEXPORT FMToutput: public FMTobject
 		*/
 		void getRHSvalue(const int& period, double& lower, double& upper) const;
 
-		// DocString: FMToutput::setperiod
+		// DocString: FMToutput::setPeriod
 		/**
 		Set the outputsource to one period.
 		*/
-		void setperiod(const int& newperiod);
+		void setPeriod(const int& newperiod);
 		// DocString: FMToutput::isActionbased
 		/**
 		Returns true if the output constaints action nodes
 		*/
 		bool isActionbased() const;
-		// DocString: FMToutput::isvariablesizeof
+		// DocString: FMToutput::isVariableSizeOf
 		/**
 		If one source is variable and masksize == source.getmask will return true else return false.
 		Will return true if no sources are variable.
 		*/
-		bool isvariablesizeof(const size_t& masksize) const;
-		// DocString: FMToutput::isinventory
+		bool isVariableSizeOf(const size_t& masksize) const;
+		// DocString: FMToutput::isInventory
 		/**
 		Returns true if contains inventory
 		*/
-		bool isinventory() const;
-		// DocString: FMToutput::fillfromshuntingyard
+		bool isInventory() const;
+		// DocString: FMToutput::fillFromShuntingYard
 		/**
 		If the output is non linear you need to use this function to get values.
 		*/
-		void fillfromshuntingyard(
+		void fillFromShuntingYard(
 			const std::vector<std::string>baseeq,
 			std::map<std::string, double>& results,
 			const std::vector<Core::FMToutputnode>& nodes,
@@ -398,22 +398,22 @@ class FMTEXPORT FMToutput: public FMTobject
 		// DocString: FMToutput::group
 		///This is the group of the output, if empty there's no group
 		std::string group;
-		// DocString: FMToutput::setproportions
+		// DocString: FMToutput::setProportions
 		/**
 		Set equations proportions for developpements....when original entry is numeric turn it into proportion.
 		*/
-		void setproportions(std::map<std::string, std::vector<std::string>>& allequations,
+		void setProportions(std::map<std::string, std::vector<std::string>>& allequations,
 			const std::vector<std::string>& baseequation) const;
-		// DocString: FMToutput::isdivision
+		// DocString: FMToutput::isDivision
 		/**
 		Return true if output contains division
 		*/
-		bool isdivision() const;
-		// DocString: FMToutput::isdivision
+		bool isDivision() const;
+		// DocString: FMToutput::isDivision
 		/**
 		Replace the division with the bound and reverse the denominator
 		*/
-		void replacedivision(const double& bound);
+		void replaceDivision(const double& bound);
 		// DocString: FMToutput::isValidAction
 		/**
 		@Valid if an action or aggregate is in p_Actions.

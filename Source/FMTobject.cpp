@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -83,7 +83,7 @@ namespace Core
 	}
 
 
-	unsigned long long FMTobject::getavailablememory()
+	unsigned long long FMTobject::getAvailableMemory()
 	{
 		unsigned long long available = 0;
 		try {
@@ -141,12 +141,12 @@ namespace Core
 		return strDLLpath;
 	}
 
-	void FMTobject::checksignals() const
+	void FMTobject::checkSignals() const
 	{
 		if (_exhandler)
 		{
-			_exhandler->checksignals();
-			_exhandler->reraiseifthreadcrash();
+			_exhandler->checkSignals();
+			_exhandler->reRaiseIfThreadCrash();
 		}
 	}
 
@@ -168,12 +168,12 @@ namespace Core
 
 	FMTobject::FMTobject()
 	{
-		this->checksignals();
+		this->checkSignals();
 	}
 
 	FMTobject::~FMTobject()
 	{
-		//this->checksignals();
+		//this->checkSignals();
 
 	}
 
@@ -236,22 +236,22 @@ namespace Core
 	{
 		_exhandler = std::move(exhandler->Clone());
 		_exhandler->passinlogger(_logger);
-		this->checksignals();
+		this->checkSignals();
 
 	}
 	FMTobject::FMTobject(const FMTobject& rhs)
 	{
-		this->checksignals();
+		this->checkSignals();
 	}
 	FMTobject& FMTobject::operator = (const FMTobject& rhs)
 	{
-		this->checksignals();
+		this->checkSignals();
 		return *this;
 	}
 	void FMTobject::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		try{
-			this->checksignals();
+			this->checkSignals();
 			_logger = logger->Clone();
 			_exhandler->passinlogger(_logger);
 		}catch (...)
@@ -263,7 +263,7 @@ namespace Core
 	void FMTobject::passinexceptionhandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler)
 		{
 		try{
-			this->checksignals();
+			this->checkSignals();
 			_exhandler = exhandler->Clone();
 			_exhandler->passinlogger(_logger);
 			setCPLhandler();
@@ -274,16 +274,16 @@ namespace Core
 		}
 
 
-	void FMTobject::redirectlogtofile(const std::string& location)
+	void FMTobject::redirectLogToFile(const std::string& location)
 		{
 		_logger->redirectofile(location);
-		this->checksignals();
+		this->checkSignals();
 		}
 
-	void FMTobject::setdefaultlogger()
+	void FMTobject::setDefaultLogger()
 		{
 		try {
-			this->checksignals();
+			this->checkSignals();
 			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdefaultlogger()));
 		}catch (...)
 			{
@@ -291,10 +291,10 @@ namespace Core
 			}
 		}
 
-	void FMTobject::setquietlogger()
+	void FMTobject::setQuietLogger()
 		{
 		try{
-			this->checksignals();
+			this->checkSignals();
 			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger()));
 		}
 		catch (...)
@@ -303,10 +303,10 @@ namespace Core
 		}
 		}
 
-	void FMTobject::settasklogger()
+	void FMTobject::setTaskLogger()
 	{
 		try {
-			this->checksignals();
+			this->checkSignals();
 			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()));
 
 		}
@@ -316,10 +316,10 @@ namespace Core
 		}
 	}
 
-	void FMTobject::setdebuglogger()
+	void FMTobject::setDebugLogger()
 		{
 		try {
-			this->checksignals();
+			this->checkSignals();
 			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdebuglogger()));
 		}	
 		catch (...)
@@ -328,10 +328,10 @@ namespace Core
 		}
 		}
 
-	void FMTobject::setdefaultexceptionhandler()
+	void FMTobject::setDefaultExceptionHandler()
 		{
 		try{
-			this->checksignals();
+			this->checkSignals();
 			this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdefaultexceptionhandler()));
 		}
 		catch (...)
@@ -339,20 +339,20 @@ namespace Core
 			_exhandler->raisefromcatch("", "FMTobject::setdefaultexceptionhandler", __LINE__, __FILE__);
 		}
 		}
-	void FMTobject::setquietexceptionhandler()
+	void FMTobject::setQuietExceptionHandler()
 	{
 		try{
-			this->checksignals();
+			this->checkSignals();
 			this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTquietexceptionhandler()));
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTobject::setquietexceptionhandler", __LINE__, __FILE__);
 			}
 	}
-	void FMTobject::setdebugexceptionhandler()
+	void FMTobject::setDebugExceptionHandler()
 	{
 		try{
-		this->checksignals();
+		this->checkSignals();
 		this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdebugexceptionhandler()));
 		}
 		catch (...)
@@ -361,10 +361,10 @@ namespace Core
 		}
 	}
 
-	void  FMTobject::setfreeexceptionhandler()
+	void  FMTobject::setFreeExceptionHandler()
 	{
 		try{
-			this->checksignals();
+			this->checkSignals();
 			this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTfreeexceptionhandler()));
 		}
 		catch (...)
@@ -373,22 +373,22 @@ namespace Core
 		}
 	}
 
-	void FMTobject::disablenestedexceptions()
+	void FMTobject::disableNestedExceptions()
 		{
 		try {
-			this->checksignals();
-			_exhandler->disablenestedexceptions();
+			this->checkSignals();
+			_exhandler->disableNestedExceptions();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTobject::disablenestedexceptions", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTobject::enablenestedexceptions()
+	void FMTobject::enableNestedExceptions()
 		{
 		try{
-			this->checksignals();
-			_exhandler->enablenestedexceptions();
+			this->checkSignals();
+			_exhandler->enableNestedExceptions();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTobject::enablenestedexceptions", __LINE__, __FILE__);
@@ -417,7 +417,7 @@ namespace Core
 		}
 	}
 
-	std::chrono::time_point<std::chrono::high_resolution_clock> FMTobject::getclock()
+	std::chrono::time_point<std::chrono::high_resolution_clock> FMTobject::getClock()
 		{
 		std::chrono::time_point<std::chrono::high_resolution_clock> newclock;
 		try {
@@ -431,11 +431,11 @@ namespace Core
 
 
 	template<class chrono>
-	double FMTobject::getduration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
+	double FMTobject::getDuration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
 	{
 		double result = 0;
 		try {
-			const std::chrono::time_point<std::chrono::high_resolution_clock> stopclock = getclock();
+			const std::chrono::time_point<std::chrono::high_resolution_clock> stopclock = getClock();
 			const std::chrono::duration<double, chrono>spent(stopclock - startclock);
 			result = spent.count();
 		}catch (...)
@@ -445,16 +445,16 @@ namespace Core
 		return result;
 	}
 
-	template double FMTobject::getduration<std::chrono::milliseconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-	template double FMTobject::getduration<std::chrono::seconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-	template double FMTobject::getduration<std::chrono::minutes::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-	template double FMTobject::getduration<std::chrono::hours::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTobject::getDuration<std::chrono::milliseconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTobject::getDuration<std::chrono::seconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTobject::getDuration<std::chrono::minutes::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTobject::getDuration<std::chrono::hours::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 
-	std::string FMTobject::getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
+	std::string FMTobject::getDurationInSeconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
 	{
 		std::string value;
 		try {
-			const double dblvalue = getduration<std::chrono::seconds::period>(startclock);
+			const double dblvalue = getDuration<std::chrono::seconds::period>(startclock);
 			value = "in "+std::to_string(dblvalue)+" seconds";
 		}catch (...)
 			{

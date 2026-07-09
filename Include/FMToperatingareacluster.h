@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -94,120 +94,120 @@ namespace Heuristics
 		FMToperatingareacluster default destructor.
 		*/
 		~FMToperatingareacluster() = default;
-		// DocString: FMToperatingareacluster::getbinary
+		// DocString: FMToperatingareacluster::getBinary
 		/**
 		Returns the corresponding binary const reference of the cluster corresponding to the given (mask).
 		*/
-		const FMToperatingareaclusterbinary& getbinary(const Core::FMTmask& mask) const;
-		// DocString: FMToperatingareacluster::getcentroid
+		const FMToperatingareaclusterbinary& getBinary(const Core::FMTmask& mask) const;
+		// DocString: FMToperatingareacluster::getCentroid
 		/**
 		Getter for cluster centroid binary.
 		*/
-		inline FMToperatingareaclusterbinary getcentroid() const
+		inline FMToperatingareaclusterbinary getCentroid() const
             {
             return centroid;
             }
-		// DocString: FMToperatingareacluster::getbinaries
+		// DocString: FMToperatingareacluster::getBinaries
 		/**
 		Getter for the binaries vector member data.
 		*/
-		inline std::vector<FMToperatingareaclusterbinary> getbinaries() const
+		inline std::vector<FMToperatingareaclusterbinary> getBinaries() const
             {
             return binaries;
             }
-		// DocString: FMToperatingareacluster::getmaximalobjectivevariable
+		// DocString: FMToperatingareacluster::getMaximalObjectiveVariable
 		/**
 		Getter for the maximal objective variable.
 		*/
-		inline int getmaximalobjectivevariable() const
+		inline int getMaximalObjectiveVariable() const
             {
             return maxvar;
             }
-        // DocString: FMToperatingareacluster::getminimalobjectivevariable
+        // DocString: FMToperatingareacluster::getMinimalObjectiveVariable
 		/**
 		Getter for the minimal objective variable.
 		*/
-		inline int getminimalobjectivevariable() const
+		inline int getMinimalObjectiveVariable() const
             {
             return minvar;
             }
-        // DocString: FMToperatingareacluster::getminimalarea
+        // DocString: FMToperatingareacluster::getMinimalArea
 		/**
 		Get the minimal area of the potential cluster considering the number of binaries in the cluster.
 		*/
-		double getminimalarea() const;
-		// DocString: FMToperatingareacluster::getmaximalarea
+		double getMinimalArea() const;
+		// DocString: FMToperatingareacluster::getMaximalArea
 		/**
 		Get the maximal area of the potential cluster considering the number of binaries in the cluster.
 		*/
-		double getmaximalarea() const;
-		// DocString: FMToperatingareacluster::getmaximalstats
+		double getMaximalArea() const;
+		// DocString: FMToperatingareacluster::getMaximalStats
 		/**
 		Get maximal stats for the whole cluster.
 		*/
-		double getmaximalstats() const;
-		// DocString: FMToperatingareacluster::getrealminimalarea
+		double getMaximalStats() const;
+		// DocString: FMToperatingareacluster::getRealMinimalArea
 		/**
 		Getter for the minimalarea.
 		*/
-		inline double getrealminimalarea() const
+		inline double getRealMinimalArea() const
             {
             return minimalarea;
             }
-        // DocString: FMToperatingareacluster::getrealmaximalarea
+        // DocString: FMToperatingareacluster::getRealMaximalArea
 		/**
 		Getter for the maximalarea.
 		*/
-		inline double getrealmaximalarea() const
+		inline double getRealMaximalArea() const
             {
             return maximalarea;
             }
-        // DocString: FMToperatingareacluster::gettotalpotentialarea
+        // DocString: FMToperatingareacluster::getTotalPotentialArea
 		/**
 		Get the maximal potential area of the cluster.
 		*/
-		double gettotalpotentialarea() const;
+		double getTotalPotentialArea() const;
 		// DocString: FMToperatingareacluster::isValidarea
 		/**
 		Check if the (area) is a valid area for the cluster (between bounds).
 		*/
 		bool isValidarea(const double& area) const;
-		// DocString: FMToperatingareacluster::setmaximalobjectivevariable
+		// DocString: FMToperatingareacluster::setMaximalObjectiveVariable
 		/**
 		Set the maximal objective variable of the cluster.
 		*/
-		void setmaximalobjectivevariable(const int& lmaxvar);
-		// DocString: FMToperatingareacluster::setminimalobjectivevariable
+		void setMaximalObjectiveVariable(const int& lmaxvar);
+		// DocString: FMToperatingareacluster::setMinimalObjectiveVariable
 		/**
 		Set the minimal objective variable of the cluster.
 		*/
-		void setminimalobjectivevariable(const int& lminvar);
-		// DocString: FMToperatingareacluster::setminimalarea
+		void setMinimalObjectiveVariable(const int& lminvar);
+		// DocString: FMToperatingareacluster::setMinimalArea
 		/**
 		Set the minimal area of the cluster.
 		*/
-		void setminimalarea(const double& newminimalarea);
-		// DocString: FMToperatingareacluster::setmaximalarea
+		void setMinimalArea(const double& newminimalarea);
+		// DocString: FMToperatingareacluster::setMaximalArea
 		/**
 		Set the potential maximal area of the cluster.
 		*/
-		void setmaximalarea(const double& newmaximalarea);
+		void setMaximalArea(const double& newmaximalarea);
 		// DocString: FMToperatingareacluster::isValidareabounds
 		/**
 		Validate is the minimal and maximal area used by the user respect the binaries present in the cluster.
 		*/
 		bool isValidareabounds() const;
-		// DocString: FMToperatingareacluster::getfilteredcluster
+		// DocString: FMToperatingareacluster::getFilteredCluster
 		/**
 		Base on a given mask the function is going to remove any binary that does not fell in the mask definition.
 		It can reduce the size of the binaries.
 		*/
-		FMToperatingareacluster getfilteredcluster(const Core::FMTmask& filtermask) const;
-		// DocString: FMToperatingareacluster::getallmasks
+		FMToperatingareacluster getFilteredCluster(const Core::FMTmask& filtermask) const;
+		// DocString: FMToperatingareacluster::getAllMasks
 		/**
 		Returns all the mask contained by the cluster including the operating area centroid.
 		*/
-		std::vector<Core::FMTmask>getallmasks() const;
+		std::vector<Core::FMTmask>getAllMasks() const;
 	};
 }
 

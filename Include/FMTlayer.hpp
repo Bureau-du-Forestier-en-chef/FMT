@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -316,11 +316,11 @@ namespace Spatial
                 {
                 return SRS_WKT;
                 }
-			// DocString: FMTlayer::getmapping
+			// DocString: FMTlayer::getMapping
 			/**
 			Returns the underlying map of the FMTlayer.
 			*/
-			std::map<FMTcoordinate,T>getmapping() const
+			std::map<FMTcoordinate,T>getMapping() const
                 {
                 return mapping;
                 }
@@ -340,11 +340,11 @@ namespace Spatial
 				{
 				return cellsize;
 				}
-			// DocString: FMTlayer::getattributes
+			// DocString: FMTlayer::getAttributes
 			/**
 			Returns a vector of unique attributes present in the FMTlayer.
 			*/
-            std::vector<T>getattributes() const
+            std::vector<T>getAttributes() const
                 {
 				std::vector<T>unique_attributes;
                 for(typename std::map<FMTcoordinate,T>::const_iterator it = mapping.begin();it != mapping.end(); it++)

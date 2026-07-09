@@ -69,9 +69,9 @@ void exportSpatial()
         .constructor<unsigned int,unsigned int>("@DocString(FMTcoordinate(unsigned int,unsigned int))")
         .method("lt",&Spatial::FMTcoordinate::operator <,
 			"@DocString(FMTcoordinate::operator<)")
-		.method("getx",&Spatial::FMTcoordinate::getx,
+		.method("getx",&Spatial::FMTcoordinate::getX,
 			"@DocString(FMTcoordinate::getx)")
-		.method("gety",&Spatial::FMTcoordinate::gety,
+		.method("gety",&Spatial::FMTcoordinate::getY,
 			"@DocString(FMTcoordinate::gety)");
 
 
@@ -131,8 +131,8 @@ void exportSpatial()
 			"@DocString(FMTsasolution::getsolution_stats)")
         .method("getobjfvalue",&Spatial::FMTsasolution::getobjfvalue,
 			"@DocString(FMTsasolution::getobjfvalue)")
-        .method("get_forest_at_period",&Spatial::FMTsasolution::getforestperiod,
-			"@DocString(FMTsasolution::getforestperiod)");
+        .method("get_forest_at_period",&Spatial::FMTsasolution::getForestPeriod,
+			"@DocString(FMTsasolution::getForestPeriod)");
 	*/
     }
 }

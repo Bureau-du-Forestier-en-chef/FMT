@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -85,7 +85,7 @@ class FMTEXPORT FMTserializablematrix
 		std::vector<double> lrowprice;
 		if (!loading)
 		{
-			getsetmatrixelements(false,
+			getSetMatrixElements(false,
 				order,
 				extragap,
 				extramajor,
@@ -98,7 +98,7 @@ class FMTEXPORT FMTserializablematrix
 				lindex,
 				llength,
 				lstart);
-			getsetmemberelements(false,
+			getSetMemberElements(false,
 				lcollb,
 				lcolub,
 				lobj,
@@ -129,7 +129,7 @@ class FMTEXPORT FMTserializablematrix
 		ar& lrowprice;
 		if (loading)
 			{
-			getsetmatrixelements(true,
+			getSetMatrixElements(true,
 				order,
 				extragap,
 				extramajor,
@@ -142,7 +142,7 @@ class FMTEXPORT FMTserializablematrix
 				lindex,
 				llength,
 				lstart);
-			getsetmemberelements(true,
+			getSetMemberElements(true,
 				lcollb,
 				lcolub,
 				lobj,
@@ -154,7 +154,7 @@ class FMTEXPORT FMTserializablematrix
 		
 
 		}
-	void getsetmatrixelements(bool loading,
+	void getSetMatrixElements(bool loading,
 		bool& order,
 		double& extragap,
 		double& extramajor,
@@ -167,7 +167,7 @@ class FMTEXPORT FMTserializablematrix
 		std::vector<int>& lindex,
 		std::vector<int>& llength,
 		std::vector<int>& lstart);
-	void getsetmemberelements(bool loading,
+	void getSetMemberElements(bool loading,
 		std::vector<double>&lcollb,
 		std::vector<double>&lcolub,
 		std::vector<double>&lobj,
@@ -197,26 +197,26 @@ class FMTEXPORT FMTserializablematrix
 		Normaly used during the saving part of serialization.
 		*/
 		FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface);
-		// DocString: FMTserializablematrix::setsolvertype
+		// DocString: FMTserializablematrix::setSolverType
 		/**
 		Setter of the solvertype of the serializable matrix.
 		*/
-		//void setsolvertype(FMTsolverinterface& lsolvertype) const;
-		// DocString: FMTserializablematrix::setmatrix
+		//void setSolverType(FMTsolverinterface& lsolvertype) const;
+		// DocString: FMTserializablematrix::setMatrix
 		/**
 		This function will set it's contain to a solverinterface matrix, used during the loading part of serialization.
 		*/
-		void setmatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const;
-		// DocString: FMTserializablematrix::buildsolverinterface
+		void setMatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const;
+		// DocString: FMTserializablematrix::buildSolverInterface
 		/**
 		Function used to build a shared pointer of a solverinterface passing the message handler to the pointer.
 		*/
-		//std::shared_ptr<OsiSolverInterface> buildsolverinterface(const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
-		// DocString: FMTserializablematrix::copysolverinterface
+		//std::shared_ptr<OsiSolverInterface> buildSolverInterface(const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
+		// DocString: FMTserializablematrix::copySolverInterface
 		/**
 		Function used to copy a shared pointer of a solverinterface passing the message handler to the pointer to a other shared pointer.
 		*/
-		//std::shared_ptr<OsiSolverInterface> copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
+		//std::shared_ptr<OsiSolverInterface> copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
 		// DocString: ~FMTserializablematrix()
 		/**
 		Default destructor of FMTserializablematrix

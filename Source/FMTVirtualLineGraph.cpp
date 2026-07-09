@@ -18,9 +18,9 @@ namespace Spatial{
 	{
 		if (p_solution.GetNumberOfCells(m_Iterator->second.GetGraphId())>0)
 		{
-			const double AREA = m_Iterator->first.getbasedevelopment().getarea();
+			const double AREA = m_Iterator->first.getBaseDevelopment().getarea();
 			const double* SOLUTION = &AREA;
-			return m_Iterator->first.getoutput(p_model, p_output, p_period, SOLUTION, Core::FMToutputlevel::totalonly).at("Total");
+			return m_Iterator->first.getOutput(p_model, p_output, p_period, SOLUTION, Core::FMToutputlevel::totalonly).at("Total");
 		}
 	return 0.0;
 	}

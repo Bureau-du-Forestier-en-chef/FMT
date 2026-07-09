@@ -27,7 +27,7 @@ namespace Parser
 		    setSection(Core::FMTsection::Outputs);
             }
 
-	   void FMToutputparser::appendtooutput(
+	   void FMToutputparser::appendToOutput(
 		   const std::string& strvalue,
 		   const int& outputid,
 		   const int& themetarget,
@@ -48,13 +48,13 @@ namespace Parser
 				   isNumber = true;
 				   targetof = Core::FMTotar::val;
 				   Core::FMToperator lastopof(lastoperator);
-				   if (lastopof.isfactor())
+				   if (lastopof.isFactor())
 						{
 					    for (size_t factorId = 0; factorId < operators.size() - 1; ++factorId)
 							{
-							if (operators.at(factorId).isdivide())
+							if (operators.at(factorId).isDivide())
 								{
-								if (lastopof.isdivide())
+								if (lastopof.isDivide())
 								{
 									value = 1.0 * value;
 								}else {
@@ -89,28 +89,28 @@ namespace Parser
 					   //if (isNumber)
 					   //{
 						   double srcvalue = value;
-						   if (id > 0 && (sources.at(id - 1).isvariable() || (sources.at(id  - 1).islevel() && !sources.at(id  - 1).isvariablelevel())) /* && operators.at(lastop).isfactor()*/)
+						   if (id > 0 && (sources.at(id - 1).isVariable() || (sources.at(id  - 1).isLevel() && !sources.at(id  - 1).isVariableLevel())) /* && operators.at(lastop).isFactor()*/)
 						   {
-							   /*if (!operators.at(lastop).isfactor()) // If it comes from same output dont multiply...
+							   /*if (!operators.at(lastop).isFactor()) // If it comes from same output dont multiply...
 							   {
 								   std::cout << "Test "<<id << "\n";
 							   }*/
 							   //if (isNumber)
 							   //{
-								   if (sources.at(id).isconstant()&&isNumber)
+								   if (sources.at(id).isConstant()&&isNumber)
 								   {
-									   srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getvalue());
+									   srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getValue());
 								   }
 								   else{
 									   newoperators.push_back(Core::FMToperator(lastoperator));
 								   }
-								newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getoutputorigin(), sources.at(id).getthemetarget()));
+								newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getOutputOrigin(), sources.at(id).getThemeTarget()));
 							   //}
 							   
 						   }
 						   
 					   //}
-					   if (sources.at(id).isvariable()  || sources.at(id).islevel() || sources.at(id).istimeyield() || !isNumber)
+					   if (sources.at(id).isVariable()  || sources.at(id).isLevel() || sources.at(id).isTimeYield() || !isNumber)
 					   {
 						   newsources.push_back(sources.at(id));
 					   }
@@ -120,9 +120,9 @@ namespace Parser
 						   ++lastop;
 					   }
 				   }
-				   if (newsources.back().isvariable() || newsources.back().islevel() /* || !isNumber*/)
+				   if (newsources.back().isVariable() || newsources.back().isLevel() /* || !isNumber*/)
 				   {
-					   newsources.push_back(Core::FMToutputsource(targetof, value, yldtarget, "", newsources.back().getoutputorigin(), newsources.back().getthemetarget()));
+					   newsources.push_back(Core::FMToutputsource(targetof, value, yldtarget, "", newsources.back().getOutputOrigin(), newsources.back().getThemeTarget()));
 
 					   newoperators.push_back(Core::FMToperator(lastoperator));
 				   }
@@ -149,7 +149,7 @@ namespace Parser
 	   }
 
 
-		void FMToutputparser::readnfill(std::vector<Core::FMToutput>* outputs, 
+		void FMToutputparser::readNFill(std::vector<Core::FMToutput>* outputs, 
 					const std::vector<Core::FMTtheme>& themes,
 					const std::vector<Core::FMTaction>& actions,
 					const Core::FMTyields& ylds,const Core::FMTconstants& constants,
@@ -358,7 +358,7 @@ namespace Parser
 										{
 											continue;
 										}
-										if (!processing_level && (isNum(strsrc) || constants.isconstant(strsrc)))
+										if (!processing_level && (isNum(strsrc) || constants.isConstant(strsrc)))
 										{
 											const double value = getNum<double>(strsrc, constants);
 											if ((/*(!stroperators.empty() &&
@@ -371,7 +371,7 @@ namespace Parser
 												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 													name + " at line " + std::to_string(m_line),"FMToutputparser::read", __LINE__, __FILE__, m_section);
 											}
-											appendtooutput(
+											appendToOutput(
 												std::to_string(value),
 												outputid,
 												themetarget,
@@ -386,7 +386,7 @@ namespace Parser
 										else if (processing_level)
 										{
 											std::vector<double>values;
-											if (constants.isconstant(strsrc))
+											if (constants.isConstant(strsrc))
 											{
 												for (size_t period = 0; period < constants.length(strsrc); ++period)
 												{
@@ -401,9 +401,9 @@ namespace Parser
 													values.push_back(getNum<double>(number, constants));
 												}
 											}
-											if (operators.empty()&&!sources.empty()&&!sources.back().isvariablelevel())//Well push it
+											if (operators.empty()&&!sources.empty()&&!sources.back().isVariableLevel())//Well push it
 												{
-												sources.back().pushvalues(values);
+												sources.back().pushValues(values);
 											}else {
 												sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values, outputid, themetarget,name));//constant level!
 												}
@@ -427,22 +427,22 @@ namespace Parser
 														const int inttarget_period = getNum<int>(std::string(constantmatch[3]), constants);
 														targetoutput = *std::find_if(outputs->begin(), outputs->end(), Core::FMToutputcomparator(outputname));
 														Core::FMTperbounds bounding(Core::FMTsection::Optimize, inttarget_period, inttarget_period);
-														targetoutput = targetoutput.boundto(themes, bounding, "");
+														targetoutput = targetoutput.boundTo(themes, bounding, "");
 													}else {
 														targetoutput = *it;
 														}
 
-													if (!targetoutput.islevel() || (targetoutput.islevel() && !targetoutput.getsources().empty()))
+													if (!targetoutput.isLevel() || (targetoutput.isLevel() && !targetoutput.getSources().empty()))
 													{
 														//lastoutput = sources.size();
 														bool themediff=false;
-														for (const Core::FMToutputsource& src : targetoutput.getsources())
+														for (const Core::FMToutputsource& src : targetoutput.getSources())
 														{
-															if(src.getthemetarget()!=themetarget)
+															if(src.getThemeTarget()!=themetarget)
 															{
 																//warning
 																Core::FMToutputsource newsource = src;
-																newsource.setthemetarget(themetarget);
+																newsource.setThemeTarget(themetarget);
 																sources.push_back(newsource);
 																themediff=true;
 
@@ -461,12 +461,12 @@ namespace Parser
 														}
 														//lastopt = operators.size();
 														bool convertoperator = false;
-														if (!operators.empty() && operators.back().getkey() == Core::FMTokey::sub)
+														if (!operators.empty() && operators.back().getKey() == Core::FMTokey::sub)
 														{
 															
 															convertoperator = true;
 														}
-														for (const Core::FMToperator& src : targetoutput.getopes())
+														for (const Core::FMToperator& src : targetoutput.getOpes())
 														{
 															if (convertoperator)
 															{
@@ -495,7 +495,7 @@ namespace Parser
 												else if (ylds.isYld(strsrc))//isYld(ylds,strsrc,m_section))
 												{
 													//sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc,"",outputid,themetarget));
-													appendtooutput(
+													appendToOutput(
 														strsrc,
 														outputid,
 														themetarget,
@@ -812,7 +812,7 @@ namespace Parser
 			int index = 0; 
 			for (Core::FMToutput& output : *outputs)
 				{
-				output.changesourcesid(index);
+				output.changeSourcesId(index);
 				++index;
 				}
 			/*-----------------------------------------
@@ -830,14 +830,14 @@ namespace Parser
             {
 			std::vector<Core::FMToutput>outputs;
 			try {
-				readnfill(&outputs,themes,actions,ylds,constants,location);
+				readNFill(&outputs,themes,actions,ylds,constants,location);
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::read", __LINE__, __FILE__,m_section);
 				}
             return outputs;
             }
-		std::vector<Core::FMToutput> FMToutputparser::addoutputs(const std::vector<Core::FMToutput> oldoutputs, 
+		std::vector<Core::FMToutput> FMToutputparser::addOutputs(const std::vector<Core::FMToutput> oldoutputs, 
 																	const std::vector<Core::FMTtheme>& themes,
 																	const std::vector<Core::FMTaction>& actions,
 																	const Core::FMTyields& ylds,const Core::FMTconstants& constants,
@@ -846,7 +846,7 @@ namespace Parser
 		{
 			std::vector<Core::FMToutput>outputs = oldoutputs;
 			try {
-				readnfill(&outputs,themes,actions,ylds,constants,location);
+				readNFill(&outputs,themes,actions,ylds,constants,location);
 				//This part remove all outputs parsed from file that are not in outputsname
 				if (!outputsnames.empty())
 				{
@@ -875,7 +875,7 @@ namespace Parser
 					}
 					for(Core::FMToutput& output : returnoutputs)
 					{
-						output.changesourcesid(outputkeptid,themeids);
+						output.changeSourcesId(outputkeptid,themeids);
 					}
 					outputs=returnoutputs;
 				}
@@ -895,10 +895,10 @@ namespace Parser
 				{
 					for (const Core::FMToutput& out : outputs)
 					{
-						if (lastgroup != out.getgroup())
+						if (lastgroup != out.getGroup())
 							{
-							outputstream << "*GROUP "+out.getgroup() << "\n";
-							lastgroup = out.getgroup();
+							outputstream << "*GROUP "+out.getGroup() << "\n";
+							lastgroup = out.getGroup();
 							}
 							outputstream << std::string(out) << "\n";
 						}

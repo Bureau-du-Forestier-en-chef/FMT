@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -31,7 +31,7 @@ namespace Graph
 		{
 	
 		}
-	std::string FMTedgeproperties::variablename() const
+	std::string FMTedgeproperties::variableName() const
 		{
 		std::string stype = "";
 		if (action >= 0)

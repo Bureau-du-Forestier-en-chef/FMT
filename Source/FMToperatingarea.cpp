@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -26,7 +26,7 @@ double FMToperatingarea::getarea() const
 	}
 
 
-std::vector<Core::FMTmask>FMToperatingarea::getneighbors() const
+std::vector<Core::FMTmask>FMToperatingarea::getNeighbors() const
 	{
 	return neighbors;
 	}
@@ -40,17 +40,17 @@ FMToperatingarea::FMToperatingarea(const Core::FMTmask& lmask,const double& lnei
 
 	}
 
-void FMToperatingarea::setarea(const double& newarea)
+void FMToperatingarea::setArea(const double& newarea)
     {
     _area = newarea;
     }
 
-void FMToperatingarea::setneighbors(const std::vector<Core::FMTmask>& lneighbors)
+void FMToperatingarea::setNeighbors(const std::vector<Core::FMTmask>& lneighbors)
 	{
 	neighbors = lneighbors;
 	}
 
-double FMToperatingarea::getneihgborsperimeter() const
+double FMToperatingarea::getNeihgborsPerimeter() const
 	{
 	return neihgborsperimeter;
 	}
@@ -85,7 +85,7 @@ bool FMToperatingareacomparator::operator()(const FMToperatingarea& oparea) cons
 	return (oparea.getmask() == mask);
 	}
 
-FMToperatingarea FMToperatingarea::presolveoperatingarea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>& presolvedthemes) const
+FMToperatingarea FMToperatingarea::presolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>& presolvedthemes) const
 {
 	FMToperatingarea presolvedoparea(*this);
 	presolvedoparea.mask = this->mask.presolve(filter, presolvedthemes);
@@ -96,7 +96,7 @@ FMToperatingarea FMToperatingarea::presolveoperatingarea(const Core::FMTmaskfilt
 	return presolvedoparea;
 }
 
-FMToperatingarea FMToperatingarea::postsolveoperatingarea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&basethemes) const
+FMToperatingarea FMToperatingarea::postsolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&basethemes) const
 {
 	FMToperatingarea postsolvedoparea(*this);
 	postsolvedoparea.mask = postsolvedoparea.mask.postsolve(filter,basethemes);

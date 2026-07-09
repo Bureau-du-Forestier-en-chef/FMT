@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -31,26 +31,26 @@ namespace Core
 		Constructor for FMTtimeyieldhandler with a FMTmask
 		*/		
 		FMTtimeyieldhandler(const FMTmask& mask);
-		// DocString: FMTtimeyieldhandler::setyieldvalues
+		// DocString: FMTtimeyieldhandler::setYieldValues
 		/**
 		Set the values for given yield name. 
 		*/
-		virtual void setyieldvalues(const std::string& yldname,const int& startingperiod,const std::vector<double>& values);	
-		virtual double getlastvalue(const std::string yld) const;
-		virtual bool push_data(const std::string& yld, const double& value);
-		virtual bool push_data(const std::string& yld, const FMTdata& data);
+		virtual void setYieldValues(const std::string& yldname,const int& startingperiod,const std::vector<double>& values);	
+		virtual double getLastValue(const std::string yld) const;
+		virtual bool pushData(const std::string& yld, const double& value);
+		virtual bool pushData(const std::string& yld, const FMTdata& data);
 		virtual std::unique_ptr<FMTyieldhandler>clone() const;
 		virtual bool operator == (const FMTtimeyieldhandler& rhs) const;
 		virtual bool empty() const;
 		virtual size_t size() const;
-		virtual FMTyldtype gettype() const;
+		virtual FMTyldtype getType() const;
 		virtual FMTdata& operator[](const std::string& yldname);
 		virtual const FMTdata& at(const std::string& yldname) const;
-		virtual bool containsyield(const std::string& yldname) const;
-		virtual std::vector<std::string>getyieldnames() const;
-		virtual void clearcache();
-		virtual std::map<std::string, std::vector<double>>getallyieldsdata(const int& maxbase)const;
-		virtual std::unique_ptr<FMTyieldhandler> getfromfactor(const double& factor,
+		virtual bool containsYield(const std::string& yldname) const;
+		virtual std::vector<std::string>getYieldNames() const;
+		virtual void clearCache();
+		virtual std::map<std::string, std::vector<double>>getAllYieldsData(const int& maxbase)const;
+		virtual std::unique_ptr<FMTyieldhandler> getFromFactor(const double& factor,
 			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
 	private:
 		friend class boost::serialization::access;

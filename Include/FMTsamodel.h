@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -55,11 +55,11 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Return true if is optimal based on the termination criteria
         */
         bool isProvenOptimal() const;
-        // DocString: FMTsamodel::initialsolve
+        // DocString: FMTsamodel::initialSolve
         /**
         Try to solve the model from a coldstart.
         */
-        bool initialsolve();
+        bool initialSolve();
         // DocString: FMTsamodel::build
         /**
         This function TRY to build the solution FMTschedule to spatialschedule if there's a schedule if not it will
@@ -68,7 +68,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         virtual bool build(std::vector<Core::FMTschedule> schedules = std::vector<Core::FMTschedule>());
         // DocString: FMTsamodel::solve
         /**
-        This function call initialsolve on the solver.
+        This function call initialSolve on the solver.
         */
         virtual bool solve();
         // DocString: FMTsamodel::presolve
@@ -77,14 +77,14 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
         */
         virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
-        // DocString: FMTsamodel::getcopy
+        // DocString: FMTsamodel::getCopy
         /**
         This function returns a copy of the FMTmodel of the selected period.
-        If period = 0 it returns the FMTmodel::getcopy if period > 0 then it returns
+        If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
         a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
         Need to have a builded graph with a solution to use this function.
         */
-        virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
+        virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
         FMTsamodel()=default;
         ///Destructor
         ~FMTsamodel();
@@ -104,11 +104,11 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 
         Graph::FMTgraphstats buildperiod();
     protected:
-        // DocString: FMTsamodel::swap_ptr
+        // DocString: FMTsamodel::swapPtr
         /**
         Swap with an abstract FMTmodel
         */
-        virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
+        virtual void swapPtr(std::unique_ptr<FMTmodel>& rhs);
     private:
     // DocString: FMTsamodel::Serialize
     /**
@@ -351,7 +351,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         // DocString: FMTsamodel::GetRebuild
         /**
         Take the actual non spatial solution of the actual solution and then
-        Rebuild the solution using greedyreferencebuild
+        Rebuild the solution using greedyReferenceBuild
         */
         Spatial::FMTSpatialSchedule _GetRebuild(const Spatial::FMTSpatialSchedule& actual) const;
         // DocString: FMTsamodel::isCycleProvenOptimal

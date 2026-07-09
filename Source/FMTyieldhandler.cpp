@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -54,7 +54,7 @@ FMTyieldhandler::operator std::string() const
 
 
 
-    bool FMTyieldhandler::push_base(const int& base)
+    bool FMTyieldhandler::pushBase(const int& base)
         {
 		try {
 			bases.push_back(base);
@@ -65,7 +65,7 @@ FMTyieldhandler::operator std::string() const
 		}
 		return false;
         }
-    bool FMTyieldhandler::push_data(const std::string& yld,const double& value)
+    bool FMTyieldhandler::pushData(const std::string& yld,const double& value)
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -77,7 +77,7 @@ FMTyieldhandler::operator std::string() const
 		return false;
         }
 
-	bool FMTyieldhandler::basepush_data(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const double& value)
+	bool FMTyieldhandler::basePushData(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const double& value)
 	{
 		if (elements.find(yld) == elements.end())
 		{
@@ -86,18 +86,18 @@ FMTyieldhandler::operator std::string() const
 		elements[yld].data.push_back(value);
 		return true;
 	}
-	bool FMTyieldhandler::basepush_data(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const FMTdata& data)
+	bool FMTyieldhandler::basePushData(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const FMTdata& data)
 	{
 		elements[yld] = FMTdata(data);
 		return true;
 	}
 
-	void FMTyieldhandler::setbase(const std::vector<int>& allvalues)
+	void FMTyieldhandler::setBase(const std::vector<int>& allvalues)
 		{
 		bases = allvalues;
 		}
 
-	bool FMTyieldhandler::inlookat(const std::string& yld) const
+	bool FMTyieldhandler::inLookAt(const std::string& yld) const
 	{
 		return (lookat.find(yld) != lookat.end());
 	}
@@ -116,7 +116,7 @@ FMTyieldhandler::operator std::string() const
 		return std::vector<std::string>();
         }
 
-    bool FMTyieldhandler::push_data(const std::string& yld,const FMTdata& data)
+    bool FMTyieldhandler::pushData(const std::string& yld,const FMTdata& data)
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -128,7 +128,7 @@ FMTyieldhandler::operator std::string() const
 		}
         return true;
         }
-    FMTyldtype FMTyieldhandler::gettype() const
+    FMTyldtype FMTyieldhandler::getType() const
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -159,7 +159,7 @@ FMTyieldhandler::operator std::string() const
 			try {
 				for (const std::string& key : keys)
 				{
-					if (containsyield(key))
+					if (containsYield(key))
 					{
 						same.push_back(key);
 					}
@@ -201,7 +201,7 @@ FMTyieldhandler::operator std::string() const
 
 	
 
-	double FMTyieldhandler::getlinearvalue(const std::vector<double>& dls, const int& agetarget,bool allowoutofrange) const
+	double FMTyieldhandler::getLinearValue(const std::vector<double>& dls, const int& agetarget,bool allowoutofrange) const
 		{
 		double value = 0;
 		try{
@@ -251,7 +251,7 @@ FMTyieldhandler::operator std::string() const
 		return value;
 		}
 
-	int FMTyieldhandler::getlastbase() const
+	int FMTyieldhandler::getLastBase() const
 		{
 		int basevalue = 0;
 		if (!bases.empty())
@@ -261,27 +261,27 @@ FMTyieldhandler::operator std::string() const
 		return basevalue;
 		}
 
-	size_t FMTyieldhandler::getoverrideindex() const
+	size_t FMTyieldhandler::getOverrideIndex() const
 		{
 		return 0;
 		}
 
-	std::vector<size_t> FMTyieldhandler::gettabous() const
+	std::vector<size_t> FMTyieldhandler::getTabous() const
 	{
 		return std::vector<size_t>();
 	}
 
-	void FMTyieldhandler::setoverrideindex(const size_t& newindex)
+	void FMTyieldhandler::setOverrideIndex(const size_t& newindex)
 		{
 		
 		}
 
-	const std::vector<int>& FMTyieldhandler::getbases() const
+	const std::vector<int>& FMTyieldhandler::getBases() const
 		{
 		return bases;
 		}
 
-	double FMTyieldhandler::getlastvalue(const std::string yld) const
+	double FMTyieldhandler::getLastValue(const std::string yld) const
 		{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -294,7 +294,7 @@ FMTyieldhandler::operator std::string() const
 		return 0;
 		}
 
-double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request,bool allowoutofrange) const
+double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMTyieldrequest& request,bool allowoutofrange) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -307,7 +307,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		return 0;
 	}
 
-	double FMTyieldhandler::getchangesfrom(const int& targetage, const int& peakstep) const
+	double FMTyieldhandler::getChangesFrom(const int& targetage, const int& peakstep) const
 		{
 		double value = 0;
 		try{
@@ -333,7 +333,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		}
 
 
-	int FMTyieldhandler::getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
+	int FMTyieldhandler::getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
 		{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -346,7 +346,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		return 0;
 		}
 
-	int FMTyieldhandler::getage(const FMTyieldrequest& request, const FMTspec& spec) const
+	int FMTyieldhandler::getAge(const FMTyieldrequest& request, const FMTspec& spec) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -359,13 +359,13 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		return 0;
 	}
 
-	int FMTyieldhandler::getmaxbase(const FMTyieldrequest& request) const
+	int FMTyieldhandler::getMaxBase(const FMTyieldrequest& request) const
 	{
 		int maxage = 0;
 		try {
-			for (const auto& data : request.getdatas())
+			for (const auto& data : request.getDatas())
 			{
-				const int maxbase = (data->second)->getlastbase();
+				const int maxbase = (data->second)->getLastBase();
 				if (maxbase> maxage)
 				{
 					maxage = maxbase;
@@ -381,7 +381,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 	}
 
 
-    double FMTyieldhandler::getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const
+    double FMTyieldhandler::getPeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -418,7 +418,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 				{
 					for (const FMTtheme& bt : basethemes)
 					{
-						if(bt.isaggregate(value))
+						if(bt.isAggregate(value))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot postsolve mask with aggregates " + std::string(newhandler->mask),
 														"FMTyieldhandler::postsolve", __LINE__, __FILE__);
@@ -433,7 +433,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 			return newhandler;
 			}
 
-	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::getfromfactor(const double& factor,
+	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::getFromFactor(const double& factor,
 		std::vector<std::string>yieldnames) const
 		{
 		try {
@@ -481,8 +481,8 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		{
 			_exhandler->raisefromcatch("", "FMTyieldhandler::operator[]", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		FMTdata nulldata;
-		return nulldata;
+		FMTdata nullData;
+		return nullData;
 	}
 	const FMTdata& FMTyieldhandler::at(const std::string& yldname) const
 	{
@@ -494,14 +494,14 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		{
 			_exhandler->raisefromcatch("", "FMTyieldhandler::at", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		FMTdata nulldata;
-		return nulldata;
+		FMTdata nullData;
+		return nullData;
 	}
 
-	bool FMTyieldhandler::isnullyield(const std::string& yldname) const
+	bool FMTyieldhandler::isNullYield(const std::string& yldname) const
 	{
 		try {
-			return at(yldname).nulldata();
+			return at(yldname).nullData();
 		}
 		catch (...)
 		{
@@ -510,7 +510,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		return false;
 	}
 
-	bool FMTyieldhandler::containsyield(const std::string& yldname) const
+	bool FMTyieldhandler::containsYield(const std::string& yldname) const
 		{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -523,7 +523,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		return false;
 		}
 
-	std::vector<std::string>FMTyieldhandler::getyieldnames() const
+	std::vector<std::string>FMTyieldhandler::getYieldNames() const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -536,13 +536,13 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		return std::vector<std::string>();
 	}
 
-	void FMTyieldhandler::clearcache()
+	void FMTyieldhandler::clearCache()
 	{
 		
 	}
 
 
-	std::map<std::string, std::vector<double>>FMTyieldhandler::getallyieldsdata(const int& maxbase)const
+	std::map<std::string, std::vector<double>>FMTyieldhandler::getAllYieldsData(const int& maxbase)const
 	{
 		try{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",

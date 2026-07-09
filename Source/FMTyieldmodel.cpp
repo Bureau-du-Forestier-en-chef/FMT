@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -53,7 +53,7 @@ namespace Core {
 		return Clone();
 	}
 
-	std::vector<std::vector<double>>FMTyieldmodel::getperiodicvalues() const
+	std::vector<std::vector<double>>FMTyieldmodel::getPeriodicValues() const
 	{
 		return  std::vector<std::vector<double>>();
 	}

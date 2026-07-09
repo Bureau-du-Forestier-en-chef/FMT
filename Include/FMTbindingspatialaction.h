@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -35,44 +35,44 @@ namespace Spatial
 			const size_t& minadjacency, const size_t& maxadjacency,
 			const size_t& minsize, const size_t& maxsize,
 			const size_t& minnsize, const size_t& maxnsize);
-		bool isspatialybinding() const;
-		bool isspatialyareabinding() const;
-		bool isspatialyadjacencybinding() const;
-		bool testminimaladjacency() const;
-		bool testmaximaladjacency() const;
-		inline const std::vector<int>& getneighbors() const
+		bool isSpatialyBinding() const;
+		bool isSpatialyAreaBinding() const;
+		bool isSpatialyAdjacencyBinding() const;
+		bool testMinimalAdjacency() const;
+		bool testMaximalAdjacency() const;
+		inline const std::vector<int>& getNeighbors() const
 			{
 			return neighbors;
 			}
-		inline const size_t& getminimalgreenup() const
+		inline const size_t& getMinimalGreenUp() const
 			{
 			return minimal_green_up;
 			}
-		inline const size_t& getmaximalgreenup() const
+		inline const size_t& getMaximalGreenUp() const
 			{
 			return maximal_green_up;
 			}
-		inline const size_t& getminimaladjacency() const
+		inline const size_t& getMinimalAdjacency() const
 			{
 			return minimal_adjacency;
 			}
-		inline const size_t& getmaximaladjacency() const
+		inline const size_t& getMaximalAdjacency() const
 			{
 			return maximal_adjacency;
 			}
-		inline const size_t& getminimalsize() const
+		inline const size_t& getMinimalSize() const
 			{
 			return minimal_size;
 			}
-		inline const size_t& getmaximalsize() const
+		inline const size_t& getMaximalSize() const
 			{
 			return maximal_size;
 			}
-		inline const size_t& getminimalneighborsize() const
+		inline const size_t& getMinimalNeighborSize() const
 			{
 			return minimal_neighbors_size;
 			}
-		inline const size_t& getmaximalneighborsize() const
+		inline const size_t& getMaximalNeighborSize() const
 			{
 			return maximal_neighbors_size;
 			}

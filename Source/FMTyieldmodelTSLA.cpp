@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -51,14 +51,14 @@ namespace Core {
 	{
 		std::vector<double>returned(1, std::numeric_limits<double>::max());
 		try {
-			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
+			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
 			if (!graphinfo)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty graph info info for " + GetModelType(),
 					"FMTyieldmodelTSLA::Predict", __LINE__, __FILE__);
 				}
-			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getlinegraph();
-			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getfullgraph();
+			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
+			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
 			size_t tsla = std::numeric_limits<size_t>::max();
 			if (linegraph)
 			{

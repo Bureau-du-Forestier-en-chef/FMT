@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -56,11 +56,11 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		@param[in] rhs development to swap
 		*/
 		FMTdevelopment& operator=(FMTdevelopment&& rhs);
-		// DocString: FMTdevelopment::getage
+		// DocString: FMTdevelopment::getAge
 		/**
 		Get the age of the development.
 		*/
-		inline int getage() const
+		inline int getAge() const
 			{
 			return static_cast<int>(age);
 			}
@@ -72,11 +72,11 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		{
 			return age;
 		}
-		// DocString: FMTdevelopment::getlock
+		// DocString: FMTdevelopment::getLock
 		/**
 		Get the lock of the developement.
 		*/
-		inline int getlock() const
+		inline int getLock() const
 			{
 			return static_cast<int>(lock);
 			}
@@ -96,34 +96,34 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			{
 			return mask;
 			}
-		// DocString: FMTdevelopment::getmaskcopy
+		// DocString: FMTdevelopment::getMaskCopy
 		/**
 		Get the mask of the developement.
 		*/
-		inline Core::FMTmask getmaskcopy() const
+		inline Core::FMTmask getMaskCopy() const
 		{
 			return mask;
 		}
-		// DocString: FMTdevelopment::setage
+		// DocString: FMTdevelopment::setAge
 		/**
 		Set the age of the development.
 		*/
-		void setage(const int& lage);
-		// DocString: FMTdevelopment::setlock
+		void setAge(const int& lage);
+		// DocString: FMTdevelopment::setLock
 		/**
 		Set the lock of the developement.
 		*/
-		void setlock(const int& llock);
-		// DocString: FMTdevelopment::setperiod
+		void setLock(const int& llock);
+		// DocString: FMTdevelopment::setPeriod
 		/**
 		Set the period of the developement.
 		*/
-		void setperiod(const int& lperiod);
-		// DocString: FMTdevelopment::setmask
+		void setPeriod(const int& lperiod);
+		// DocString: FMTdevelopment::setMask
 		/**
 		Set the mask of the developement.
 		*/
-		void setmask(const Core::FMTmask& lmask);
+		void setMask(const Core::FMTmask& lmask);
 		// DocString: FMTdevelopment()
 		/**
 		Default constructor for FMTdevelopement
@@ -180,22 +180,22 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		decreasing the lock level if the lock level was > 0.
 		*/
         FMTfuturdevelopment grow() const;
-		// DocString: FMTdevelopment::getyieldrequest
+		// DocString: FMTdevelopment::getYieldRequest
 		/**
 		Get a yieldrequest without any reference to a FMTgraph for a given (ylds) and this FMTdevelopement.
 		*/
-		FMTyieldrequest getyieldrequest(const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
+		FMTyieldrequest getYieldRequest(const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::operable
 		/**
 		Check if this FMTdevelopement is operable to an FMTaction (action) based on multiple yields (yields).
 		*/
         bool operable(const FMTaction& action,const Core::FMTyields& ylds,
 			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
-		// DocString: FMTdevelopment::anyoperable
+		// DocString: FMTdevelopment::anyOperable
 		/**
 		Check if this FMTdevelopement is operable to any of FMTaction in the (actions) vector based on multiple yields (yields).
 		*/
-		bool anyoperable(const std::vector<const FMTaction*>& actions, const Core::FMTyields& ylds,
+		bool anyOperable(const std::vector<const FMTaction*>& actions, const Core::FMTyields& ylds,
 			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::operator std::string
 		/**
@@ -207,11 +207,11 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		Returns the area of the FMTdevelopment
 		*/
 		virtual double getarea() const;
-		// DocString: FMTdevelopment::clearlock
+		// DocString: FMTdevelopment::clearLock
 		/**
 		Returns a copy of this FMTdevelopment but set the lock level to 0.
 		*/
-		FMTdevelopment clearlock() const;
+		FMTdevelopment clearLock() const;
 		// DocString: FMTdevelopment::operate
 		/**
 		Returns a vector of FMTdevelopementpath if the FMTdevelopement is operated by 
@@ -221,20 +221,20 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			const FMTtransition& Transition,
 			const Core::FMTyields& ylds,
 			const std::vector<FMTtheme>& themes) const;
-		// DocString: FMTdevelopment::getinventorycoef
+		// DocString: FMTdevelopment::getInventoryCoef
 		/**
 		Returns inventory coefficiant of the FMTdevelopement for a given yield (target_yield) based on (yields).
 		The amount of (yield) do this FMTdevelopement has.
 		*/
-		double getinventorycoef(const Core::FMTyields& ylds,const std::string& target_yield,
+		double getInventoryCoef(const Core::FMTyields& ylds,const std::string& target_yield,
 			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
-		// DocString: FMTdevelopment::getharvestcoef
+		// DocString: FMTdevelopment::getHarvestCoef
 		/**
 		Returns the harvest coefficiant of the FMTdevelopement for a given yield (target_yield) if it follows
 		multiple developement path for a given action and based on yields.
 		It gives the amount of yield the action produce if the *this FMTdevelopement is operated.
 		*/
-		double getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
+		double getHarvestCoef(const std::vector<FMTdevelopmentpath>& topaths,
 			const FMTaction& action,const Core::FMTyields& ylds,const std::string& target_yield,
 			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::is
@@ -243,23 +243,23 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		*/
 		bool is(const FMTspec& specification, const Core::FMTyields& ylds,
 			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
-		// DocString: FMTdevelopment::worthtestingoperability
+		// DocString: FMTdevelopment::worthTestingOperability
 		/**
 		This function returns true if the function worth testing for operability for the action.
 		Use for optimization.
 		*/
-		bool worthtestingoperability(const FMTaction& action) const;
-		// DocString: FMTdevelopment::anyworthtestingoperability
+		bool worthTestingOperability(const FMTaction& action) const;
+		// DocString: FMTdevelopment::anyWorthTestingOperability
 		/**
 		Check if any action in the actions vector worth testing the operability and returns it's pointer distance from
 		the firestaction.
 		*/
-		std::vector<int> anyworthtestingoperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const;
-		// DocString: FMTdevelopment::isanyworthtestingoperability
+		std::vector<int> anyWorthTestingOperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const;
+		// DocString: FMTdevelopment::isAnyWorthTestingOperability
 		/**
 		Return a vector if true worth testting if false dont test for operability.
 		*/
-		std::vector<bool> isanyworthtestingoperability(const std::vector<const FMTaction*>& actions,
+		std::vector<bool> isAnyWorthTestingOperability(const std::vector<const FMTaction*>& actions,
 			const std::vector<FMTaction>& allactions) const noexcept;
 		// DocString: FMTdevelopment::hash
 		/**

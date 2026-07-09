@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -78,7 +78,7 @@ namespace Models
 	return true;
 	}
 
-	void FMTsesmodel::swap_ptr(std::unique_ptr<FMTmodel>& rhs)
+	void FMTsesmodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
 	{
 		*this = std::move(*dynamic_cast<FMTsesmodel*>(rhs.get()));
 	}
@@ -94,10 +94,10 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
 
-	std::unique_ptr<FMTmodel>FMTsesmodel::getcopy(int period) const
+	std::unique_ptr<FMTmodel>FMTsesmodel::getCopy(int period) const
 	{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTsesmodel(*dynamic_cast<FMTsemodel*>(FMTsemodel::getcopy(period).get())));
+			return std::unique_ptr<FMTmodel>(new FMTsesmodel(*dynamic_cast<FMTsemodel*>(FMTsemodel::getCopy(period).get())));
 		}
 		catch (...)
 		{

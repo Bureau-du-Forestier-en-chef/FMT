@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -26,11 +26,11 @@ namespace Spatial
 
         return 0;
         }
-    unsigned int FMTcoordinate::getx() const
+    unsigned int FMTcoordinate::getX() const
         {
         return x;
         }
-    unsigned int FMTcoordinate::gety() const
+    unsigned int FMTcoordinate::getY() const
         {
         return y;
         }

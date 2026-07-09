@@ -25,7 +25,7 @@ namespace Models
     {
         LENGTH = 0,/**< The number of period to optimize or simulate */
         SEED = 1, /**< The seed used for stochastique process in FMTsamodel, FMTnssmodel and FMTsesmodel */
-        NUMBER_OF_ITERATIONS = 2,/**< The number of iterations to do in FMTsesmodel::greedyreferencebuild  */
+        NUMBER_OF_ITERATIONS = 2,/**< The number of iterations to do in FMTsesmodel::greedyReferenceBuild  */
         PRESOLVE_ITERATIONS = 3,/**< The number of iterations to do in FMTmodel::presolve */
         NUMBER_OF_THREADS = 4,/**< Number of thread use by solver for optimisation */
 		MATRIX_TYPE = 5,/**< matrix forest model TYPE I,II,III (1,2,3) */
@@ -39,7 +39,7 @@ namespace Models
     //
     enum FMTdblmodelparameters
     {
-        TOLERANCE = 0,/**< Double tolerance used in doplanning */
+        TOLERANCE = 0,/**< Double tolerance used in doPlanning */
         GOALING_SCHEDULE_WEIGHT = 1,/**< Not needed ... maybe more for task ....The weight to use when trying goal a schedule from a strategic model */
         INITIAL_ACCEPTANCE_PROBABILITY = 2,
         LastDblModelParam = 3/**< End marker, used to allocate a fixed-sized array to store double parameters. */
@@ -48,13 +48,13 @@ namespace Models
     //
     enum FMTboolmodelparameters
     {
-        FORCE_PARTIAL_BUILD = 0,/**< Force partial build of the graph if schedules are passed to doplanning */
+        FORCE_PARTIAL_BUILD = 0,/**< Force partial build of the graph if schedules are passed to doPlanning */
         STRICTLY_POSITIVE = 1,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective if coefficient is negative and it contains a yield for FMTlpmodel */
-        POSTSOLVE = 2,/**< Return a postsolved model for the doplanning */
+        POSTSOLVE = 2,/**< Return a postsolved model for the doPlanning */
         SHOW_LOCK_IN_SCHEDULES = 3,//Not needed or change parameters in fonctions ... maybe more for task
 		PRESOLVE_CAN_REMOVE_STATIC_THEMES =4,//The presolve will allow the removing of static themes even in use (it can alter the area section).
-        DEBUG_MATRIX = 5,//If true, when an error occur in lpmodel initialsolve or resolve, the matrix will be written. 
-        SETSOLUTION_THROW = 6, //Fix pour setsolution pour ne pas throw lorsque c'est vrai TODO meilleur def
+        DEBUG_MATRIX = 5,//If true, when an error occur in lpmodel initialSolve or resolve, the matrix will be written. 
+        SETSOLUTION_THROW = 6, //Fix pour setSolution pour ne pas throw lorsque c'est vrai TODO meilleur def
         QUIET_LOGGING = 7,
         LastBoolModelParam = 8/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
@@ -128,18 +128,18 @@ namespace Models
             */
             void swap(FMTmodelparameters& rhs);
             //###Setter
-            bool setintparameter(FMTintmodelparameters key,const int& value);
-            bool setdblparameter(FMTdblmodelparameters key,const double& value);
-            bool setboolparameter(FMTboolmodelparameters key,const bool& value);
-            bool setstrparameter(FMTstrmodelparameters p_key, const std::string& p_value);
-            bool setperiodcompresstime(const int& period, const int& value);
+            bool setIntParameter(FMTintmodelparameters key,const int& value);
+            bool setDblParameter(FMTdblmodelparameters key,const double& value);
+            bool setBoolParameter(FMTboolmodelparameters key,const bool& value);
+            bool setStrParameter(FMTstrmodelparameters p_key, const std::string& p_value);
+            bool setPeriodCompressTime(const int& period, const int& value);
             //###Getter
-            int getintparameter(FMTintmodelparameters key) const;
-            double getdblparameter(FMTdblmodelparameters key) const;
-            bool getboolparameter(FMTboolmodelparameters key) const;
-            const std::string& getstrparameter(FMTstrmodelparameters p_key) const;
-            int getperiodcompresstime(const int& period)const;
-            std::vector<int> getcompresstime() const;
+            int getIntParameter(FMTintmodelparameters key) const;
+            double getDblParameter(FMTdblmodelparameters key) const;
+            bool getBoolParameter(FMTboolmodelparameters key) const;
+            const std::string& getStrParameter(FMTstrmodelparameters p_key) const;
+            int getPeriodCompressTime(const int& period)const;
+            std::vector<int> getCompressTime() const;
         private:
             friend class boost::serialization::access;
             // DocString: FMTmodelparameters::serialize

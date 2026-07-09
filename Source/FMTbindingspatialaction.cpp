@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -26,28 +26,28 @@ namespace Spatial
 	{
 
 	}
-	bool FMTbindingspatialaction::isspatialybinding() const
+	bool FMTbindingspatialaction::isSpatialyBinding() const
 	{
-		return (isspatialyadjacencybinding()|| isspatialyareabinding());
+		return (isSpatialyAdjacencyBinding()|| isSpatialyAreaBinding());
 	}
 
-	bool FMTbindingspatialaction::isspatialyadjacencybinding() const
+	bool FMTbindingspatialaction::isSpatialyAdjacencyBinding() const
 	{
 		return (!neighbors.empty() && (minimal_adjacency > 0 ||
 			maximal_adjacency != std::numeric_limits<size_t>::max()));
 	}
 
-	bool FMTbindingspatialaction::isspatialyareabinding() const
+	bool FMTbindingspatialaction::isSpatialyAreaBinding() const
 		{
 		return (!neighbors.empty() && (minimal_size > 0 ||
 				maximal_size != std::numeric_limits<size_t>::max()));
 		}
 
-	bool FMTbindingspatialaction::testminimaladjacency() const
+	bool FMTbindingspatialaction::testMinimalAdjacency() const
 	{
 		return (!neighbors.empty() &&  minimal_adjacency > 0);
 	}
-	bool FMTbindingspatialaction::testmaximaladjacency() const
+	bool FMTbindingspatialaction::testMaximalAdjacency() const
 	{
 		return (!neighbors.empty() &&  maximal_adjacency != std::numeric_limits<size_t>::max());
 	}

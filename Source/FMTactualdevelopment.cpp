@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -49,12 +49,12 @@ namespace Core
 	FMTactualdevelopment::operator std::string() const
 	{
 		std::string line;
-		if (getlock() > 0)
+		if (getLock() > 0)
 		{
-			line = "*A " + std::string(getmask()) + " " + std::to_string(getage()) + " " + std::to_string(getarea()) + " _lock " + std::to_string(getlock());
+			line = "*A " + std::string(getmask()) + " " + std::to_string(getAge()) + " " + std::to_string(getarea()) + " _lock " + std::to_string(getLock());
 		}
 		else {
-			line = "*A " + std::string(getmask()) + " " + std::to_string(getage()) + " " + std::to_string(getarea());
+			line = "*A " + std::string(getmask()) + " " + std::to_string(getAge()) + " " + std::to_string(getarea());
 		}
 		return line;
 	}
@@ -68,9 +68,9 @@ namespace Core
 		{
 		FMTactualdevelopment newdev(*this);
 		try {
-			if (!filter.emptyflipped())
+			if (!filter.emptyFlipped())
 			{
-				newdev.setmask(newdev.getmask().presolve(filter, presolvedthemes));
+				newdev.setMask(newdev.getmask().presolve(filter, presolvedthemes));
 				//newdev.mask = mask.presolve(selectedmask, presolvedthemes);
 			}
 		}catch (...)
@@ -80,12 +80,12 @@ namespace Core
 		return newdev;
 		}
 	
-	FMTactualdevelopment FMTactualdevelopment::reducelocktodeath(const FMTlifespans& lifespans) const
+	FMTactualdevelopment FMTactualdevelopment::reduceLockToDeath(const FMTlifespans& lifespans) const
 		{
 			FMTactualdevelopment newdev(*this);
 			try {
-					const int LOCK = newdev.getlock();
-					const int BASE_AGE = newdev.getage();
+					const int LOCK = newdev.getLock();
+					const int BASE_AGE = newdev.getAge();
 					if(LOCK >0)
 					{
 						std::vector<FMTlifespans::const_iterator> lifespanfound = lifespans.findsets(newdev.getmask());
@@ -111,7 +111,7 @@ namespace Core
 													"FMTactualdevelopment::reducelocktodeath",
 													__LINE__,
 													__FILE__);
-								newdev.setlock(NEW_LOCK);
+								newdev.setLock(NEW_LOCK);
 							}
 
 						}
@@ -132,7 +132,7 @@ namespace Core
 		return area;
 		}
 
-	void FMTactualdevelopment::setarea(const double& newarea)
+	void FMTactualdevelopment::setArea(const double& newarea)
 		{
 		area = newarea;
 		}

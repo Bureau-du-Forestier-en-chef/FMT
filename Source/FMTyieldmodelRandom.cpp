@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Gouvernement du Québec
+Copyright (c) 2024 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -45,9 +45,9 @@ namespace Core
 			for (const std::string& yieldName : p_yields)
 			{
 				bool gotYield = false;
-				for (const FMTyieldrequest::const_iterator yield : p_request.getdatas())
+				for (const FMTyieldrequest::const_iterator yield : p_request.getDatas())
 				{
-					if ((yield->second)->containsyield(yieldName))
+					if ((yield->second)->containsYield(yieldName))
 					{
 						const double VALUE = std::abs((yield->second)->get(yieldName, p_request));
 						totalValue += VALUE;
@@ -59,7 +59,7 @@ namespace Core
 				if (!gotYield)
 				{
 					_exhandler->raise(Exception::FMTexc::FMTmissingyield,
-						yieldName + " for developement " + std::string(p_request.getdevelopment()),
+						yieldName + " for developement " + std::string(p_request.getDevelopment()),
 						"FMTyieldmodelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 				++nameId;
@@ -102,15 +102,15 @@ namespace Core
 		std::vector<double>result;
 		try {
 			double value = 0;
-			if (m_useCache && m_cache.find(p_request.getdevelopment().getperiod()) != m_cache.end())
+			if (m_useCache && m_cache.find(p_request.getDevelopment().getperiod()) != m_cache.end())
 			{
-				value = m_cache.at(p_request.getdevelopment().getperiod());
+				value = m_cache.at(p_request.getDevelopment().getperiod());
 			}else {
 				const std::vector<size_t>DISTRIBUTION = getNormalizedYields(modelYields, p_request);
 				value = getRandomIndex(DISTRIBUTION);		
 				if (m_useCache)
 					{
-					m_cache[p_request.getdevelopment().getperiod()] = value;
+					m_cache[p_request.getDevelopment().getperiod()] = value;
 					}
 			}
 			result.push_back(value);

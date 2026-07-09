@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -32,8 +32,8 @@ namespace Core
 		{
 		if (m_cache->empty())
 			{
-			const size_t NUMBER_OF_ATTRIBUTS = p_request.getresumemask().size();
-			const Graph::FMTgraphvertextoyield* VERTEX_PTR = p_request.getvertexgraphinfo();
+			const size_t NUMBER_OF_ATTRIBUTS = p_request.getResumeMask().size();
+			const Graph::FMTgraphvertextoyield* VERTEX_PTR = p_request.getVertexGraphInfo();
 			size_t toReserve = 0;
 			if (VERTEX_PTR!=nullptr)
 				{
@@ -42,7 +42,7 @@ namespace Core
 				const FMTyields YIELDS = MODEL_Ptr->getyields();
 				for (const auto& HANDLER : YIELDS)
 					{
-					if (HANDLER.second->gettype()==Core::FMTyldtype::FMTcomplexyld)
+					if (HANDLER.second->getType()==Core::FMTyldtype::FMTcomplexyld)
 						{
 						toReserve += (HANDLER.second->size() * NUMBER_OF_ATTRIBUTS * LENGTH * 2);
 						}
@@ -72,7 +72,7 @@ namespace Core
 			{
 			//boost::lock_guard<boost::mutex> memoryGuard(m_memoryMutex);
 			//I realy dont trust GlobalMemoryStatusEx to be thread-safe even if ()
-			needToClear = (Core::FMTobject::getavailablememory() / 1073741824) < 10;
+			needToClear = (Core::FMTobject::getAvailableMemory() / 1073741824) < 10;
 			}
 		if (needToClear)
 			{
@@ -82,13 +82,13 @@ namespace Core
 
 		/*if (TABLE_SIZE > 0 && //works on 128 go
 			(TABLE_SIZE % 100000) == 0 &&
-			(Core::FMTobject::getavailablememory() / 1073741824) < 10) //If less then 10 Go then delete
+			(Core::FMTobject::getAvailableMemory() / 1073741824) < 10) //If less then 10 Go then delete
 			{
 			m_cache->clear();
 			}*/
 
 
-		/*if ((Core::FMTobject::getavailablememory() / 1073741824) < 10000) //original
+		/*if ((Core::FMTobject::getAvailableMemory() / 1073741824) < 10000) //original
 			{
 			m_cache->clear();
 			}*/
@@ -107,8 +107,8 @@ namespace Core
 	FMTYieldDevelopment FMTYieldsCache::_getKey(const FMTyieldrequest& p_request,
 									const std::string& p_yield) const
 		{
-		const Core::FMTdevelopment& REF_DEV = p_request.getdevelopment();
-		const FMTYieldDevelopment KEY(REF_DEV.getage(), REF_DEV.getperiod(),p_request.getresumemask().getbitsetreference(), p_yield);
+		const Core::FMTdevelopment& REF_DEV = p_request.getDevelopment();
+		const FMTYieldDevelopment KEY(REF_DEV.getAge(), REF_DEV.getperiod(),p_request.getResumeMask().getBitsetReference(), p_yield);
 		return KEY;
 		}
 

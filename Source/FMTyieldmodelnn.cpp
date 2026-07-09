@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -127,12 +127,12 @@ namespace Core {
 	{
 		std::vector<std::string>   result;
 		std::string                line;
-		std::getline(str, line);
+		std::getLine(str, line);
 
 		std::stringstream          lineStream(line);
 		std::string                cell;
 
-		while (std::getline(lineStream, cell, ','))
+		while (std::getLine(lineStream, cell, ','))
 		{
 			result.push_back(cell);
 		}
@@ -200,16 +200,16 @@ namespace Core {
 			outputNames.push_back(outputNodeNameAllocatedStrings.back().get());
 			#endif
 
-			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
+			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
 			const Models::FMTmodel* modelptr = graphinfo->getmodel();
-			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getlinegraph();
-			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getfullgraph();
+			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
+			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
 
 			std::vector<double> result(GetModelOutputNames().size(), 0.0);
 			if (linegraph != nullptr)//Im a linegraph
 			{
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
-				const std::vector<Graph::FMTpredictor>predictors = linegraph->getpredictors(*vertex, *modelptr, modelYields, 3);
+				const std::vector<Graph::FMTpredictor>predictors = linegraph->getPredictors(*vertex, *modelptr, modelYields, 3);
 				if (predictors.empty())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
@@ -233,7 +233,7 @@ namespace Core {
 			else if (fullgraph != nullptr)//Im a full graph
 			{
 				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getvertexfromvertexinfo(graphinfo);
-				const std::vector<Graph::FMTpredictor>predictors = fullgraph->getpredictors(*vertex, *modelptr, modelYields, 3);
+				const std::vector<Graph::FMTpredictor>predictors = fullgraph->getPredictors(*vertex, *modelptr, modelYields, 3);
 				if (predictors.empty())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
@@ -242,14 +242,14 @@ namespace Core {
 				//Dans un fullgraph il existe plusieurs predicteurs pour chaque noeud predictors.size() >= 1 <= a beaucoup
 				//On peut faire du blackmagic pour aller chercher la solution existante de chaque predictor...
 				const Models::FMTsrmodel* srmodelptr = dynamic_cast<const Models::FMTsrmodel*>(modelptr); //cast to a srmodel
-				const Models::FMTlpsolver* solverptr = srmodelptr->getconstsolverptr(); //getsolver
+				const Models::FMTlpsolver* solverptr = srmodelptr->getConstSolverPtr(); //getsolver
 				bool withoutsolution = false;
 				if ((fullgraph->getbuildtype() == Graph::FMTgraphbuild::fullbuild) &&
 					(!solverptr->isProvenOptimal()))
 				{
 					//Si le lpsolver n'est pas optimal faudrait trouver une autre solution...
 					//C'est le cas qu'on veut optimiser du carbone
-					//Peut-etre faire un "solution" avec des 1 partout pour representer chaque edge de façon equivalente?
+					//Peut-etre faire un "solution" avec des 1 partout pour representer chaque edge de faon equivalente?
 					withoutsolution = true;
 					//Pour l'instant on va mettre un message d'erreur
 					//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " without solution",
@@ -267,10 +267,10 @@ namespace Core {
 						totalarea += *(solution + invariables.at(inedgeid));
 					}*/
 				}else {
-					if (invariables.size()>1)//Avertissement sur les valeurs de prédite car on applique un weight équivalent
+					if (invariables.size()>1)//Avertissement sur les valeurs de prdite car on applique un weight quivalent
 					{
 						_exhandler->raise(Exception::FMTexc::FMTyieldmodelprediction,"using "+ mdlName+
-							" Multiple in edges for "+ std::string(request.getdevelopment()) ,
+							" Multiple in edges for "+ std::string(request.getDevelopment()) ,
 								"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 					}
 					totalarea = static_cast<double>(invariables.size()); // we consider a solution of 1 everywhere

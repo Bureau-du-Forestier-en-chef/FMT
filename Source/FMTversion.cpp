@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -17,44 +17,44 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Version
 {
-int FMTversion::getmajor()
+int FMTversion::getMajor()
 	{
 	return FMT_MAJOR;
 	}
-int FMTversion::getminor()
+int FMTversion::getMinor()
 	{
 	return FMT_MINOR;
 	}
-int FMTversion::getpatch()
+int FMTversion::getPatch()
 	{
 	return FMT_PATCH;
 	}
 
-std::string FMTversion::getdatenow()
+std::string FMTversion::getDatenow()
 	{
 	auto now = std::chrono::system_clock::now();
 	std::time_t end_time = std::chrono::system_clock::to_time_t(now);
 	return static_cast<std::string>(std::ctime(&end_time));
 	}
 
-std::string FMTversion::getbuilddate()
+std::string FMTversion::getBuildDate()
 	{
 	return (static_cast<std::string>((__DATE__)) +" "+ static_cast<std::string>(std::string(__TIME__)));
 	}
 
-std::string FMTversion::getversion()
+std::string FMTversion::getVersion()
 	{
-	return std::to_string(getmajor()) + "." + std::to_string(getminor()) + "." + std::to_string(getpatch());
+	return std::to_string(getMajor()) + "." + std::to_string(getMinor()) + "." + std::to_string(getPatch());
 	}
-bool FMTversion::isatleast(int major, int minor, int patch)
+bool FMTversion::isAtLeast(int major, int minor, int patch)
 	{
-	if (getmajor()>=major && getminor()>=minor && getpatch()>=patch)
+	if (getMajor()>=major && getMinor()>=minor && getPatch()>=patch)
 		{
 		return true;
 		}
 	return false;
 	}
-bool FMTversion::hasfeature(const std::string& name)
+bool FMTversion::hasFeature(const std::string& name)
 	{
 	#ifdef FMTWITHR
 		if (name == "R")
@@ -95,7 +95,7 @@ bool FMTversion::hasfeature(const std::string& name)
 	return false;
 	}
 
-std::string FMTversion::getlicense(bool french)
+std::string FMTversion::getLicense(bool french)
     {
     std::string fulllicense;
     try{

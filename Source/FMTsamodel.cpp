@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -166,7 +166,7 @@ namespace Models
         return *this;
     }
 
-    void FMTsamodel::swap_ptr(std::unique_ptr<FMTmodel>& rhs)
+    void FMTsamodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
     {
         *this = std::move(*dynamic_cast<FMTsamodel*>(rhs.get()));
     }
@@ -179,7 +179,7 @@ namespace Models
 
     Graph::FMTgraphstats FMTsamodel::buildperiod()
     {
-		return m_BestSolution.randombuild(*this,m_generator);
+		return m_BestSolution.randomBuild(*this,m_generator);
     }
 
     bool FMTsamodel::_DoWriteDisturbances() const
@@ -200,7 +200,7 @@ namespace Models
                     COOLING_LEVEL);
                 for (int period = 1; period <= LENGTH; ++period)
                 {
-                    AreaParser.writedisturbances(DIRECTORY, getspschedule(),
+                    AreaParser.writeDisturbances(DIRECTORY, getSpSchedule(),
                         actions, themes, period);
                 }
             }
@@ -298,24 +298,24 @@ namespace Models
            }
            std::shuffle(selectionpool.begin(), selectionpool.end(),m_generator);
            size_t totalsize = 0;
-           std::vector<Spatial::FMTcoordinate>finalselection;
+           std::vector<Spatial::FMTcoordinate>finalSelection;
            std::vector<std::vector<Spatial::FMTcoordinate>>::const_iterator selected = selectionpool.begin();
            while (totalsize < MOVE_SIZE && 
                selected != selectionpool.end())
            {
                for (const Spatial::FMTcoordinate& coordinate : *selected)
                {
-                   finalselection.push_back(coordinate);
+                   finalSelection.push_back(coordinate);
                    ++totalsize;
                }
                ++selected;
            }
-           std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = finalselection.begin();
-           Spatial::FMTSpatialSchedule newsolution(actual, finalselection.begin(), finalselection.end());
+           std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = finalSelection.begin();
+           Spatial::FMTSpatialSchedule newsolution(actual, finalSelection.begin(), finalSelection.end());
            newsolution.EnableSolutionTracker(m_SpatialGraphs);
-           while (luckycoordinateit != finalselection.end())
+           while (luckycoordinateit != finalSelection.end())
            {
-               newsolution.perturbgraph(*luckycoordinateit, period, *this, m_generator, bindings);
+               newsolution.perturbGraph(*luckycoordinateit, period, *this, m_generator, bindings);
                ++luckycoordinateit;
            }
            return newsolution;
@@ -332,8 +332,8 @@ namespace Models
    {
        try {
            const std::vector<bool>selectedactions = _GetFromBindings(bindings,true);
-           const int period = actual.getperiodwithmaximalevents(selectedactions);
-           const std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool = actual.getadjacencyconflictcoordinates(bindings, period);
+           const int period = actual.getPeriodWithMaximalEvents(selectedactions);
+           const std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool = actual.getAdjacencyConflictCoordinates(bindings, period);
            return _DoConflictDestruction(actual, bindings, selectionpool, period);
        }catch (...)
             {
@@ -349,7 +349,7 @@ namespace Models
            std::vector<Spatial::FMTcoordinate>allCoordinates;
            while (ConstraintIt != constraints.end())
            {
-               if (ConstraintIt->getconstrainttype() == Core::FMTconstrainttype::FMTSpatialGroup)
+               if (ConstraintIt->getConstraintType() == Core::FMTconstrainttype::FMTSpatialGroup)
                {
                    const  std::vector<Spatial::FMTcoordinate> CONSTRAINT_C = p_actual.GetGroupsConflict(
                        *ConstraintIt, m_SpatialGraphs);
@@ -374,12 +374,12 @@ namespace Models
    bool FMTsamodel::_AllowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
-           if (!actual.emptyevents())
+           if (!actual.emptyEvents())
                {
                    const std::vector<bool>selectedactions = _GetFromBindings(bindings);
                    if (!selectedactions.empty())
                    {
-                       return (actual.getperiodwithmaximalevents(selectedactions) > 0);
+                       return (actual.getPeriodWithMaximalEvents(selectedactions) > 0);
                    }
                }
            
@@ -394,12 +394,12 @@ namespace Models
    bool FMTsamodel::_AllowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
-           if (!actual.emptyevents())
+           if (!actual.emptyEvents())
            {
                const std::vector<bool>selectedactions = _GetFromBindings(bindings, true);
                if (!selectedactions.empty())
                {
-                   return (actual.getperiodwithmaximalevents(selectedactions) > 0);
+                   return (actual.getPeriodWithMaximalEvents(selectedactions) > 0);
                }
            }
        }
@@ -414,12 +414,12 @@ namespace Models
    {
        bool allowed = false;
        try {
-           if (!p_actual.emptyevents())
+           if (!p_actual.emptyEvents())
            {
                std::vector<Core::FMTconstraint>::const_iterator ConstraintIt = constraints.begin();
                while (!allowed && ConstraintIt != constraints.end())
                {
-                   if (ConstraintIt->getconstrainttype() == Core::FMTconstrainttype::FMTSpatialGroup)
+                   if (ConstraintIt->getConstraintType() == Core::FMTconstrainttype::FMTSpatialGroup)
                    {
                        allowed = !p_actual.GetGroupsConflict(
                            *ConstraintIt, m_SpatialGraphs).empty();
@@ -439,7 +439,7 @@ namespace Models
    {
        bool allowed = false;
        try {
-           if (!p_actual.emptyevents())
+           if (!p_actual.emptyEvents())
            {
                int modelLength = getparameter(Models::FMTintmodelparameters::LENGTH);
                while (!allowed && modelLength > 0)
@@ -498,12 +498,12 @@ namespace Models
            {
                for (size_t actionid = 0; actionid < actions.size(); ++actionid)
                {
-                   if (!adjacency&& binding.at(actionid).isspatialyareabinding())
+                   if (!adjacency&& binding.at(actionid).isSpatialyAreaBinding())
                    {
                        selectedactions[actionid] = true;
                        gotaction = true;
                    }
-                   else if (adjacency && binding.at(actionid).isspatialyadjacencybinding())
+                   else if (adjacency && binding.at(actionid).isSpatialyAdjacencyBinding())
                    {
                        selectedactions[actionid] = true;
                        gotaction = true;
@@ -529,8 +529,8 @@ namespace Models
     {
         try {
             const std::vector<bool>selectedactions = _GetFromBindings(bindings);
-            const int period = actual.getperiodwithmaximalevents(selectedactions);
-            const std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool = actual.getareaconflictcoordinates(bindings, period);
+            const int period = actual.getPeriodWithMaximalEvents(selectedactions);
+            const std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool = actual.getAreaConflictCoordinates(bindings, period);
             return _DoConflictDestruction(actual, bindings, selectionpool, period);
         }
         catch (...)
@@ -545,13 +545,13 @@ namespace Models
     {
         try {
             const size_t MOVE_SIZE = _GetLocalMoveSize();
-            std::uniform_int_distribution<int> perioddistribution(1, actual.actperiod() - 1);//period to change
+            std::uniform_int_distribution<int> perioddistribution(1, actual.actPeriod() - 1);//period to change
             std::vector<Spatial::FMTcoordinate> selectionPool;
             int period = 0;
             while (selectionPool.empty())
             {
                 period = perioddistribution(m_generator);
-                selectionPool = actual.getmovablecoordinates(*this, period);
+                selectionPool = actual.getMovableCoordinates(*this, period);
             }
             if (selectionPool.empty())
             {
@@ -567,7 +567,7 @@ namespace Models
             newsolution.EnableSolutionTracker(m_SpatialGraphs);
             while (luckycoordinateit != selectionPool.end() && perturbationdone < MOVE_SIZE)
             {
-                newsolution.perturbgraph(*luckycoordinateit, period, *this, m_generator, bindings);
+                newsolution.perturbGraph(*luckycoordinateit, period, *this, m_generator, bindings);
                 ++perturbationdone;
                 ++luckycoordinateit;
             }
@@ -651,7 +651,7 @@ namespace Models
             int modellength = getparameter(Models::FMTintmodelparameters::LENGTH);
             while (modellength > 0)
             {
-                m_BestSolution.randombuild(*this, m_generator);
+                m_BestSolution.randomBuild(*this, m_generator);
                 --modellength;
             }
         }
@@ -671,16 +671,16 @@ namespace Models
                     size_t constraintId = 0;
                     for (const Core::FMTconstraint& CONSTRAINT : constraints)
                         {
-                        if (!CONSTRAINT.isspatial())
+                        if (!CONSTRAINT.isSpatial())
                             {
                             shuffledConstraints.push_back(CONSTRAINT);
-                            if (CONSTRAINT.isobjective())
+                            if (CONSTRAINT.isObjective())
                             {
                                 const std::string SENSE = CONSTRAINT.sense() < 0 ? "-" : "+";
                                 std::vector<std::string>Weights(1, "_ALL");
-                                shuffledConstraints.back().setpenalties(SENSE, Weights);
+                                shuffledConstraints.back().setPenalties(SENSE, Weights);
                             }else {
-                                shuffledConstraints.back().setgoal("G" + std::to_string(constraintId),
+                                shuffledConstraints.back().setGoal("G" + std::to_string(constraintId),
                                     FACTORS.at(constraintId));
                                 }
                             }
@@ -688,7 +688,7 @@ namespace Models
                         }
                     std::vector<Core::FMTconstraint>::iterator firstToShuffle = shuffledConstraints.begin();
                     if (!constraints.empty() &&
-                        constraints.at(0).isobjective())
+                        constraints.at(0).isObjective())
                         {
                         ++firstToShuffle;
                         }
@@ -696,12 +696,12 @@ namespace Models
                     std::vector<Core::FMTactualdevelopment>shuffledArea(area);
                     std::shuffle(shuffledArea.begin(), shuffledArea.end(), m_generator);
                     FMTsolverinterface SolverInterface = FMTsolverinterface::CLP;
-                    if (Version::FMTversion::hasfeature("MOSEK"))
+                    if (Version::FMTversion::hasFeature("MOSEK"))
                         {
                        SolverInterface = FMTsolverinterface::MOSEK;
                         }
                     newLp = Models::FMTlpmodel(*this, SolverInterface);
-                    newLp.setarea(shuffledArea);
+                    newLp.setArea(shuffledArea);
                     newLp.setconstraints(shuffledConstraints);
                     newLp.setparameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
             }catch (...)
@@ -740,18 +740,18 @@ namespace Models
        double brokenInventory = 0;
        double totalBroken = 0;
        double Total = 0;
-       for (const double VALUE : p_NewBestSolution.getconstraintsvalues(m_SpatialGraphs))
+       for (const double VALUE : p_NewBestSolution.getConstraintsValues(m_SpatialGraphs))
             {
             if (i == 0)
                {
                p_Objective = VALUE;
             }else {
                 const double BROKEN_UP = static_cast<double>(VALUE > 0);
-                if (constraints.at(i).isspatial())
+                if (constraints.at(i).isSpatial())
                     {
                     brokenSpatial += BROKEN_UP;
                     ++spatialCount;
-                }else if (constraints.at(i).isinventory())
+                }else if (constraints.at(i).isInventory())
                     {
                     brokenInventory += BROKEN_UP;
                     ++InventoryCount;
@@ -775,12 +775,12 @@ namespace Models
                 #ifdef FMTWITHOSI
                      Models::FMTlpmodel newLp = _GetRandomLpModel(p_SpatialSchedule);
                      Logging::FMTquietlogger TEMP_LOGGER;
-                     newLp.setparallellogger(TEMP_LOGGER);
-                    if (newLp.doplanning(true))
+                     newLp.setParallelLogger(TEMP_LOGGER);
+                    if (newLp.doPlanning(true))
                         {
                         for (int period = 1; period <= getparameter(Models::FMTintmodelparameters::LENGTH);++period)
                             {
-                            newSchedules.push_back(newLp.getsolution(period, withlock));
+                            newSchedules.push_back(newLp.getSolution(period, withlock));
                             }
                     }else {
                         newSchedules = GetSchedules(p_SpatialSchedule, withlock);
@@ -811,7 +811,7 @@ namespace Models
             const std::vector<double>& FACTORS = actual.getConstraintsFactor();
             if (!FACTORS.empty())
             {
-                newsolution.setconstraintsfactor(*this, FACTORS);
+                newsolution.setConstraintsFactor(*this, FACTORS);
             }
             for (const Core::FMTschedule& schedule : nonspatialschedules)
                 {
@@ -999,7 +999,7 @@ namespace Models
         //maximals[0] = (AverageFactor / AverageCount);
         temperature = (- (deltasum / totalits) * 100) / std::log(
             getparameter(Models::FMTdblmodelparameters::INITIAL_ACCEPTANCE_PROBABILITY));
-        m_BestSolution.setconstraintsfactor(*this, maximals);
+        m_BestSolution.setConstraintsFactor(*this, maximals);
         m_BestObjective = GetGlobalObjective(m_BestSolution);
         }catch (...)
             {
@@ -1076,7 +1076,7 @@ namespace Models
                     double objective = 0;
                     double primalinf = 0;
                     GetSolutionStatus(m_BestSolution, objective, primalinf);
-                    m_BestSolution.logsolutionstatus(m_TotalMoves, objective, primalinf);
+                    m_BestSolution.logSolutionStatus(m_TotalMoves, objective, primalinf);
                     
                 
             }
@@ -1139,11 +1139,11 @@ namespace Models
     }
 
 
-	bool FMTsamodel::initialsolve()
+	bool FMTsamodel::initialSolve()
 		{
 		try {
 			const Spatial::FMTSpatialSchedule::actionbindings ACTIONS_BINDING = 
-                m_BestSolution.getbindingactionsbyperiod(*this);
+                m_BestSolution.getBindingActionsByPeriod(*this);
             m_BestSolution.SetStaticsMovableCoordinates(*this);
             *_logger << "Generator initial state: " + std::to_string(m_generator()) << "\n";
 			const double INITIAL_TEMPERATURE = _Warmup(m_BestSolution, ACTIONS_BINDING);
@@ -1186,7 +1186,7 @@ namespace Models
     {
         if (p_NewBestSolution.IsPartial())
         {
-            m_BestSolution.copyfrompartial(p_NewBestSolution);
+            m_BestSolution.copyFromPartial(p_NewBestSolution);
         }
         else {
             m_BestSolution.swap(p_NewBestSolution);
@@ -1215,7 +1215,7 @@ namespace Models
     bool FMTsamodel::solve()
     {
         try {
-            return initialsolve();
+            return initialSolve();
         }catch (...)
         {
             _exhandler->printexceptions("", "FMTsamodel::solve", __LINE__, __FILE__);
@@ -1240,10 +1240,10 @@ namespace Models
         return std::unique_ptr<FMTmodel>(nullptr);
     }
 
-    std::unique_ptr<FMTmodel>FMTsamodel::getcopy(int period) const
+    std::unique_ptr<FMTmodel>FMTsamodel::getCopy(int period) const
     {
         try {
-            return std::unique_ptr<FMTmodel>(new FMTsamodel(*dynamic_cast<FMTsemodel*>(FMTsemodel::getcopy(period).get())));
+            return std::unique_ptr<FMTmodel>(new FMTsamodel(*dynamic_cast<FMTsemodel*>(FMTsemodel::getCopy(period).get())));
         }
         catch (...)
         {

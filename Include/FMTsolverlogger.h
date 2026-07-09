@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -79,11 +79,11 @@ namespace Logging
 			// DocString: FMTsolverlogger::ownthelogger
 			///If true the logger own the baselogger and need to delete it when destructor called.
 			bool ownthelogger;
-			// DocString: FMTsolverlogger::cleanup()
+			// DocString: FMTsolverlogger::cleanUp()
 			/**
 			Check if you can delete baselogger and delete it if so.
 			*/
-			void cleanup();
+			void cleanUp();
 			// DocString: FMTsolverlogger::copy()
 			/**
 			Safely copy from an other solverlogger

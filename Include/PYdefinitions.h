@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -14,14 +14,14 @@ namespace Python
 { 
 
 template<class T>
-void define_pylist()
+void definePyList()
 {
 	boost::python::to_python_converter<std::vector<T, std::allocator<T>>, VecToList<T>>();
 	iterable_converter().from_python<std::vector<T>>();
 }
 
 template<class T>
-void define_pyset()
+void definePySet()
 {
     boost::python::to_python_converter<std::set<T>, SetToList<T>>();
     iterable_converter().from_python<std::set<T>>();
@@ -39,7 +39,7 @@ void define_FMTlist()
          .def("push_back",
              &Core::FMTlist<T>::APIpush_back,
              "@DocString(FMTyieldhandler::APIpush_back)");
-	define_pylist<T>();
+	definePyList<T>();
     }
 
 template <class T>
@@ -55,7 +55,7 @@ void define_FMTlayer()
 			"@DocString(FMTlayer::getgeotransform)")
         .def("getprojection",&Spatial::FMTlayer<T>::getprojection,
 			"@DocString(FMTlayer::getprojection)")
-        .def("getmapping",&Spatial::FMTlayer<T>::getmapping,
+        .def("getmapping",&Spatial::FMTlayer<T>::getMapping,
 			"@DocString(FMTlayer::getmapping)")
         .def("area",&Spatial::FMTlayer<T>::area,
 			"@DocString(FMTlayer::area)")
@@ -70,7 +70,7 @@ void define_FMTlayer()
     }
 
 template<class k,class v>
-void define_pydict()
+void definePyDict()
     {
     boost::python::to_python_converter<std::map<k,v>,MapToDict<k,v>>();
 	MapFrDict<k,v>();
@@ -106,7 +106,7 @@ struct PythonToPairConverter {
 };*/
 
 template<typename T1, typename T2>
-void define_pypair() {
+void definePyPair() {
 	boost::python::to_python_converter<std::pair<T1, T2>, PairToPythonConverter<T1, T2>>();
     PythonToPairConverter<T1, T2>();
 	}

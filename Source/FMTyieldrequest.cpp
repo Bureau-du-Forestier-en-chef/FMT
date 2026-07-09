@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -50,19 +50,19 @@ namespace Core
 
 	}
 
-	const FMTdevelopment& FMTyieldrequest::getdevelopment() const
+	const FMTdevelopment& FMTyieldrequest::getDevelopment() const
 	{
 		return *development;
 	}
-	const std::vector<FMTyieldrequest::const_iterator>&FMTyieldrequest::getdatas() const
+	const std::vector<FMTyieldrequest::const_iterator>&FMTyieldrequest::getDatas() const
 	{
 		return datas;
 	}
-	const Core::FMTmask& FMTyieldrequest::getresumemask() const
+	const Core::FMTmask& FMTyieldrequest::getResumeMask() const
 	{
 		return resume_mask;
 	}
-	const Graph::FMTgraphvertextoyield* FMTyieldrequest::getvertexgraphinfo() const
+	const Graph::FMTgraphvertextoyield* FMTyieldrequest::getVertexGraphInfo() const
 	{
 		return graphvertex;
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -58,9 +58,9 @@ namespace Heuristics
 		void load(Archive& ar, const unsigned int version)
 		{
 			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
-			this->passinmessagehandler(*this->_logger);
+			this->passInMessageHandler(*this->_logger);
 			ar & BOOST_SERIALIZATION_NVP(seed);
-			this->setgeneratorseed(seed);
+			this->setGeneratorSeed(seed);
 			ar & BOOST_SERIALIZATION_NVP(usingsolvercopy);
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
@@ -75,11 +75,11 @@ namespace Heuristics
 		///If true the heuristic will work from it's own copy of solverinterface, else it's going to work on the FMTlpmodel solverinterface.
 		bool usingsolvercopy;
 	public:
-		// DocString: FMTlpheuristic::setgeneratorseed
+		// DocString: FMTlpheuristic::setGeneratorSeed
 		/**
 		Setter for the seed data member
 		*/
-		void setgeneratorseed(const size_t& lseed);
+		void setGeneratorSeed(const size_t& lseed);
 		// DocString: FMTlpheuristic(Models::FMTlpsolver&,size_t lseed,bool copysolver)
 		/**
 		Main constructor used to initialize a FMToperatingareaheuristic, the constructor needs
@@ -114,18 +114,18 @@ namespace Heuristics
 		FMTlpheuristic copy assignment
 		*/
 		FMTlpheuristic& operator = (const FMTlpheuristic& rhs);
-		// DocString: FMTlpheuristic::branchnboundsolve
+		// DocString: FMTlpheuristic::branchNBoundSolve
 		/**
-		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()
+		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialSolve()
 		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
 		*/
-		virtual bool branchnboundsolve();
-		// DocString: FMTlpheuristic::greedypass
+		virtual bool branchNBoundSolve();
+		// DocString: FMTlpheuristic::greedyPass
 		/**
 
 		*/
-		virtual bool greedypass(const double& initsol,const unsigned int& iteration);
-		virtual void paralleloptimize(const double& initbestsolution, const unsigned int& iterations,const double& maxtime, const std::chrono::steady_clock::time_point& Starttime);
+		virtual bool greedyPass(const double& initsol,const unsigned int& iteration);
+		virtual void parallelOptimize(const double& initbestsolution, const unsigned int& iterations,const double& maxtime, const std::chrono::steady_clock::time_point& Starttime);
 		// DocString: FMTlpheuristic::isfeasible
 		/**
 		Return true if the actual solution of the heuristic is feasible.

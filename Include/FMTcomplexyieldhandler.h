@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -21,38 +21,38 @@ namespace Core
 	class FMTEXPORT FMTcomplexyieldhandler final : public FMTyieldhandler
 	{
 	public:
-		void settabou(const size_t& index);
-		void settabou(const FMTcomplexyieldhandler& rhs);
-		std::vector<size_t>gettabous() const override;
-		virtual void setoverrideindex(const size_t& newindex);
-		virtual size_t  getoverrideindex() const;
-		virtual int getlastbase() const;
+		void setTabou(const size_t& index);
+		void setTabou(const FMTcomplexyieldhandler& rhs);
+		std::vector<size_t>getTabous() const override;
+		virtual void setOverrideIndex(const size_t& newindex);
+		virtual size_t  getOverrideIndex() const;
+		virtual int getLastBase() const;
 		virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
-		bool comparesources(const std::string& yield,const FMTcomplexyieldhandler& overridedyield) const;
+		bool compareSources(const std::string& yield,const FMTcomplexyieldhandler& overridedyield) const;
 		virtual  operator std::string() const;
 		~FMTcomplexyieldhandler();
 		FMTcomplexyieldhandler();
 		FMTcomplexyieldhandler(const FMTcomplexyieldhandler& rhs) = default;
 		FMTcomplexyieldhandler& operator = (const FMTcomplexyieldhandler& rhs) = default;
 		FMTcomplexyieldhandler(const FMTmask& mask);
-		const std::map<std::string, FMTdata,cmpYieldString>& getdataelements() const;
+		const std::map<std::string, FMTdata,cmpYieldString>& getDataElements() const;
 		virtual std::vector<std::string> indexes(const std::vector<std::string>& names) const;
-		virtual double getpeak(const FMTyieldrequest& request, const std::string& yld, const int& targetage) const;
-		std::unique_ptr<FMTyieldhandler>complexyldtoageyld(const FMTyieldrequest& request, const FMTspec& lspec) const;
-		virtual bool push_data(const std::string& yld, const double& value);
-		virtual bool push_data(const std::string& yld, const FMTdata& data);
+		virtual double getPeak(const FMTyieldrequest& request, const std::string& yld, const int& targetage) const;
+		std::unique_ptr<FMTyieldhandler>complexYldToAgeYld(const FMTyieldrequest& request, const FMTspec& lspec) const;
+		virtual bool pushData(const std::string& yld, const double& value);
+		virtual bool pushData(const std::string& yld, const FMTdata& data);
 		virtual std::unique_ptr<FMTyieldhandler>clone() const;
 		virtual bool operator == (const FMTcomplexyieldhandler& rhs) const;
 		virtual bool empty() const;
 		virtual size_t size() const;
-		virtual FMTyldtype gettype() const;
+		virtual FMTyldtype getType() const;
 		virtual FMTdata& operator[](const std::string& yldname);
 		virtual const FMTdata& at(const std::string& yldname) const;
-		virtual bool containsyield(const std::string& yldname) const;
-		virtual std::vector<std::string>getyieldnames() const;
-		virtual void clearcache();
-		virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
-		virtual double getyieldlinearvalue(const std::string& yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
+		virtual bool containsYield(const std::string& yldname) const;
+		virtual std::vector<std::string>getYieldNames() const;
+		virtual void clearCache();
+		virtual int getAge(const FMTyieldrequest& request, const FMTspec& spec) const;
+		virtual double getYieldLinearValue(const std::string& yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
 	private:
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -62,7 +62,7 @@ namespace Core
 			ar& BOOST_SERIALIZATION_NVP(m_elements);
 		}
 		std::map<std::string, FMTdata, cmpYieldString>m_elements;
-		std::map<std::string, double> getsources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
+		std::map<std::string, double> getSources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
 			const FMTyieldrequest& request, bool& age_only) const;
 
 		std::vector<const std::unique_ptr<FMTyieldhandler>*>_getData(const FMTyieldrequest& request,
@@ -72,9 +72,9 @@ namespace Core
 											const std::vector<const std::string*>& p_names,
 											const std::vector<const std::unique_ptr<FMTyieldhandler>*>& p_data);
 
-		std::vector<double>getsourcesarray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
+		std::vector<double>getSourcesArray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
 			const FMTyieldrequest& request, bool& age_only) const;
-		std::unique_ptr<FMTyieldhandler>toageyld(const FMTyieldrequest& request,
+		std::unique_ptr<FMTyieldhandler>toAgeYld(const FMTyieldrequest& request,
 			const std::vector<std::string>& yieldnames, const int& minage, const int& maxage) const;
 		double _getRange(const FMTdata* p_data,const std::string& p_yld, const FMTyieldrequest& p_request) const;
 		double _getMultiply(const FMTdata* p_data, const std::string& p_yld, const FMTyieldrequest& p_request) const;

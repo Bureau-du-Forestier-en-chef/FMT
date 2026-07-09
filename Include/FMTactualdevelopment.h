@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -92,11 +92,11 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		Returns the area of the FMTactualdevelopement.
 		*/
 		double getarea() const override;
-		// DocString: FMTactualdevelopment::setarea
+		// DocString: FMTactualdevelopment::setArea
 		/**
 		Set the newarea has the area of the FMTactualdevelopement.
 		*/
-		void setarea(const double& newarea);
+		void setArea(const double& newarea);
 		// DocString: FMTactualdevelopment::clone
 		/**
 		Return a unique_ptr of FMTdevelopment of the FMTactualdevelopement.
@@ -107,13 +107,13 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		Will presolve the FMTactualdevelopment using the FMTdevelopement::presolve() function.
 		*/
 		FMTactualdevelopment presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
-		// DocString: FMTactualdevelopment::reducelocktodeath
+		// DocString: FMTactualdevelopment::reduceLockToDeath
 		/**
 		This function check if the actualdevelopement lifespan is shorter than the lock present in area section. If not so, it raise the 
 		error FMTdeathwithlock and if the error is set to warning, it returns a FMTactualdevelopment with the lock reduced accordingly.
-		If the lifespan is shorter than the lock, it returns a copy of itself. This is mainly use in FMTmodel::setarea.  
+		If the lifespan is shorter than the lock, it returns a copy of itself. This is mainly use in FMTmodel::setArea.  
 		*/
-		FMTactualdevelopment reducelocktodeath(const FMTlifespans& lifespans) const;
+		FMTactualdevelopment reduceLockToDeath(const FMTlifespans& lifespans) const;
 	private:
 		// DocString: FMTactualdevelopment::serialize
 		/**

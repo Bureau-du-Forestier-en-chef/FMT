@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -84,49 +84,49 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		FMTconstraint not equality operator check if FMTconstraint are not the same.
 		*/
 		bool operator != (const FMTconstraint& rhs) const;
-		// DocString: FMTconstraint::extravariables
+		// DocString: FMTconstraint::extraVariables
 		/**
-		Returns true if the FMTconstraint need extravariables in the matrix formulation.
+		Returns true if the FMTconstraint need extraVariables in the matrix formulation.
 		*/
-		bool extravariables() const;
-		// DocString: FMTconstraint::isgoal
+		bool extraVariables() const;
+		// DocString: FMTconstraint::isGoal
 		/**
 		Returns true if the constraint have goal weight
 		*/
-		bool isgoal() const;
-		// DocString: FMTconstraint::issetfrom
+		bool isGoal() const;
+		// DocString: FMTconstraint::isSetFrom
 		/**
 		Returns true if the constraint needs to be set from a specific model.
 		*/
-		bool issetfrom(const std::string& modeltype) const;
-		// DocString: FMTconstraint::isreignore
+		bool isSetFrom(const std::string& modeltype) const;
+		// DocString: FMTconstraint::isReIgnore
 		/**
 		Returns true if we need to ignore the constraint from the replanning period
 		*/
-		bool isreignore(const int& replanningperiod) const;
-		// DocString: FMTconstraint::dosupportrandom
+		bool isReIgnore(const int& replanningperiod) const;
+		// DocString: FMTconstraint::doSupportRandom
 		/**
 		Return true if the constraint has only one source and only based on action area.
 		So the contraint will support _RANDOM keywod.
 		*/
-		bool dosupportrandom() const;
-		// DocString: FMTconstraint::setfrom
+		bool doSupportRandom() const;
+		// DocString: FMTconstraint::setFrom
 		/**
 		Using the value of the global model for the constraint output it will
 		return a new constraints set with the model type value.
 		*/
-		Core::FMTconstraint setfrom(const std::string& modeltype,const double& value) const;
-		// DocString: FMTconstraint::getscheduleweight
+		Core::FMTconstraint setFrom(const std::string& modeltype,const double& value) const;
+		// DocString: FMTconstraint::getScheduleWeight
 		/**
 		If you are an objective and are a local model you can have a global schedule weight in the objective function.
 		*/
-		double getscheduleweight() const;
-		// DocString: FMTconstraint::getfromreplicate
+		double getScheduleWeight() const;
+		// DocString: FMTconstraint::getFromReplicate
 		/**
 		If the constraint is build with a replicate tables it will gives a new constraint with the corresponding replicate value
 		See keyword _REPLICATE in optimization seciton.
 		*/
-		Core::FMTconstraint getfromreplicate(const size_t& replicate,const int& period) const;
+		Core::FMTconstraint getFromReplicate(const size_t& replicate,const int& period) const;
 		// DocString: FMTconstraint::setFromReplicate
 		/**
 		@brief If the constraint is build with a replicate tables it will gives a new constraint with the corresponding replicate value
@@ -143,123 +143,123 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		@return true if contains replicate
 		*/
 		bool gotReplicate(const int& p_period) const;
-		// DocString: FMTconstraint::getpenalties
+		// DocString: FMTconstraint::getPenalties
 		/**
 		If the constraint is goal then you can get the name of the penalties of the constraint. like _GOAL(penaltyname,weight)
 		*/
-		std::vector<std::string>getpenalties(double & sense) const;
-		// DocString: FMTconstraint::getvariablelevels
+		std::vector<std::string>getPenalties(double & sense) const;
+		// DocString: FMTconstraint::getVariableLevels
 		/**
 		If the constraint is a level this function will return the level name of the constraint.
 		*/
-		std::vector<std::string>getvariablelevels() const;
-		// DocString: FMTconstraint::getgoal
+		std::vector<std::string>getVariableLevels() const;
+		// DocString: FMTconstraint::getGoal
 		/**
 		If the constraint has a goal this function fill up the name of the goal and it's weight.
 		*/
-		void getgoal(std::string& name,double& value) const;
-		// DocString: FMTconstraint::setgoal
+		void getGoal(std::string& name,double& value) const;
+		// DocString: FMTconstraint::setGoal
 		/**
 		If the constraint is not an objective set a goal of goalname with a value
 		*/
-		void setgoal(const std::string& goalname, const double& value);
-		// DocString: FMTconstraint::setpenalties
+		void setGoal(const std::string& goalname, const double& value);
+		// DocString: FMTconstraint::setPenalties
 		/**
 		If the constraint is an objectif it will set penalties
 		*/
-		void setpenalties(const std::string& penaltyoperator, const std::vector<std::string>& variables);
-		// DocString: FMTconstraint::isobjective
+		void setPenalties(const std::string& penaltyoperator, const std::vector<std::string>& variables);
+		// DocString: FMTconstraint::isObjective
 		/**
 		Returns true if the constraint is an objective.
 		*/
-		bool isobjective() const;
+		bool isObjective() const;
 		// DocString: FMTconstraint::sense
 		/**
 		If the constraint is an objective the function returns the sense of the objective,
 		1 = minimisation, -1 = maximisation.
 		*/
 		double sense() const;
-		// DocString: FMTconstraint::getbounds
+		// DocString: FMTconstraint::getBounds
 		/**
 		This function fills up the (lower) and (upper) bound for a given period, if
 		the constraint can be applied to this (period). Use with osisolverinterfacer with rowsetbounds().
 		*/
-		void getbounds(double& lower, double& upper,int period = 0) const;
-		// DocString: FMTconstraint::setrhs
+		void getBounds(double& lower, double& upper,int period = 0) const;
+		// DocString: FMTconstraint::setRhs
 		/**
 		This functions sets the RHS of this FMTconstraint with a row (lower) and (upper) bound.
 		*/
-		void setrhs(double lower,double upper);
-		// DocString: FMTconstraint::setlength
+		void setRhs(double lower,double upper);
+		// DocString: FMTconstraint::setLength
 		/**
 		This functions sets the length of the FMTconstraint
 		*/
-		void setlength(int firstperiod = 1,int lastperiod = std::numeric_limits<int>::max());
-		// DocString: FMTconstraint::getvariations
+		void setLength(int firstPeriod = 1,int lastPeriod = std::numeric_limits<int>::max());
+		// DocString: FMTconstraint::getVariations
 		/**
 		Get the variation for constraint like _EVEN _SEQ,_NDY etc... _EVEN(lowervariation,uppervariation).
 		*/
-		void getvariations(double& lower, double& upper) const;
-		// DocString: FMTconstraint::ismultiple
+		void getVariations(double& lower, double& upper) const;
+		// DocString: FMTconstraint::isMultiple
 		/**
 		Returns true if the FMTconstraint allow some sort of variability like _EVEN(lowervariation,uppervariation).
 		*/
-		bool ismultiple() const;
-		// DocString: FMTconstraint::acrossperiod
+		bool isMultiple() const;
+		// DocString: FMTconstraint::acrossPeriod
 		/**
 		Returns true if the FMTconstraint needs so be set across multiple periods like _EVEN,_SEQ,_NDY
 		*/
-		bool acrossperiod() const;
+		bool acrossPeriod() const;
 		// DocString: FMTconstraint::hash
 		/**
 		Hasghing for FMTconstraint.
 		*/
 		size_t hash(bool hashrhs = true,bool hashoutputonly = false) const;
-		// DocString: FMTconstraint::hashasoutput
+		// DocString: FMTconstraint::hasHasOutput
 		/**
 		Hasghing for FMToutput.
 		*/
-		size_t hashasoutput() const;
-		// DocString: FMTconstraint::setoutput
+		size_t hasHasOutput() const;
+		// DocString: FMTconstraint::setOutput
 		/**
 		Setter for the FMToutput of the FMTconstraint.
 		*/
-		void setoutput(const FMToutput& out);
-		// DocString: FMTconstraint::setconstrainttype
+		void setOutput(const FMToutput& out);
+		// DocString: FMTconstraint::setConstraintType
 		/**
 		Setter for the FMTconstrainttype of FMTconstraint.
 		*/
-		void setconstrainttype(FMTconstrainttype ltype);
-		// DocString: FMTconstraint::getconstrainttype
+		void setConstraintType(FMTconstrainttype ltype);
+		// DocString: FMTconstraint::getConstraintType
 		/**
 		Getter for the constrainttype.
 		*/
-		FMTconstrainttype getconstrainttype() const;
+		FMTconstrainttype getConstraintType() const;
 		// DocString: FMTconstraint::operator std::string
 		/**
 		Get the string reprensentation like in the optimization section  of a FMTconstraint.
 		*/
 		operator std::string() const;
-		// DocString: FMTconstraint::isspatial
+		// DocString: FMTconstraint::isSpatial
 		/**
 		Returns true if spatial constraint
 		*/
-		bool isspatial() const;
-		// DocString: FMTconstraint::israndomaction
+		bool isSpatial() const;
+		// DocString: FMTconstraint::isRandomAction
 		/**
 		Returns true if spatial constraint
 		*/
-		bool israndomaction() const;
-		// DocString: FMTconstraint::getgroup
+		bool isRandomAction() const;
+		// DocString: FMTconstraint::getGroup
 		/**
 		Returns the group of the constraint (objective = 0,spatial = 1,other = 2 or userdefined)
 		*/
-		size_t getgroup() const;
-		// DocString: FMTconstraint::outputempty
+		size_t getGroup() const;
+		// DocString: FMTconstraint::outputEmpty
 		/**
 		Returns true if the FMTconstraint output is empty.
 		*/
-		size_t outputempty() const;
+		size_t outputEmpty() const;
 		// DocString: FMTconstraint::presolve
 		/**
 		Like FMToutput class this function presolve the FMTconstraint and can returns an empty FMTconstraint if 
@@ -302,44 +302,44 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		For a real constraint the more the value is close to 0 the better it is. For an objective smaller is better (can be negative).
 		*/
 		double evaluate(const std::vector<double>& temporalvalues) const;
-		// DocString: FMTconstraint::getactionids
+		// DocString: FMTconstraint::getActionIds
 		/**
 		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
 		*/
-		std::vector<int>getactionids(const std::vector<Core::FMTaction>& actions) const;
+		std::vector<int>getActionIds(const std::vector<Core::FMTaction>& actions) const;
 		// DocString: FMTconstraint::isActionsused
 		/**
 		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
 		*/
 		std::vector<bool>isActionsused(const std::vector<Core::FMTaction>& actions) const;
-		// DocString: FMTconstraint::canbeturnedtoyieldsbasedontransitions
+		// DocString: FMTconstraint::canBeTurnedToYieldsBasedOnTransitions
 		/**
 		If the constraint can be turned to a simple action bound using a simple yield by checking the transitions before changing it, this function will returns true. 
 		*/
-		bool canbeturnedtoyieldsbasedontransitions() const;
-		// DocString: FMTconstraint::turntoyieldsbasedontransition
+		bool canBeTurnedToYieldsBasedOnTransitions() const;
+		// DocString: FMTconstraint::turnToYieldsBasedOnTransition
 		/**
 		This function check for 
 		*/
-		void turntoyieldsbasedontransition(	const std::vector<Core::FMTtheme>& themes,
+		void turnToYieldsBasedOnTransition(	const std::vector<Core::FMTtheme>& themes,
 											const std::vector<Core::FMTtransition>& trans,
 											std::vector<Core::FMTaction>&actions,
 											const std::vector<bool>& p_valideActions,
 											Core::FMTyields& yields,
 											const int& constraintid) const;
-		// DocString: FMTconstraint::canbeturnedtoyields
+		// DocString: FMTconstraint::canBeTurnedToYields
 		/**
 		If the constraint can be turned to a simple action bound using a simple yield this function will returns true.
 		*/
-		bool canbeturnedtoyields() const;
-		// DocString: FMTconstraint::turntoyieldsandactions
+		bool canBeTurnedToYields() const;
+		// DocString: FMTconstraint::turnToYieldsAndActions
 		/**
 		This function will generate two yields handler from the constraint 1st: value = 0 for specific mask then the default handler.
 		You need to specify the constraint id to generate a decent yield name. It will modify the actions in the action vectors.
 		Then the yields will be included in the yields section. The constraint can be ignored after this.
 		This will help reduce the size of the matrix.
 		*/
-		void turntoyieldsandactions(const std::vector<Core::FMTtheme>& themes,
+		void turnToYieldsAndActions(const std::vector<Core::FMTtheme>& themes,
 						 std::vector<Core::FMTaction>&actions,
 						const std::vector<bool>& p_valideActions,
 						 Core::FMTyields& yields,
@@ -363,32 +363,32 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		// DocString: FMTconstraint::type
 		///This enumerator sets the type of constraint of the FMTconstraint (objective/constraint/evenflow...)
 		FMTconstrainttype type;
-		// DocString: FMTconstraint::standardstring
+		// DocString: FMTconstraint::standardString
 		/**
 		Function used for string formating for FMTconstraint in to string conversion.
 		*/
-		void standardstring(std::string& line, std::string& period_bounds,
+		void standardString(std::string& line, std::string& period_bounds,
 			std::string& goal, std::string& global,bool asInt = false) const;
-		// DocString: FMTconstraint::getmaxandmin
+		// DocString: FMTconstraint::getMaxAndMin
 		/**
 		Returns the maximal and minimal value of a vector of double for the constraint
 		*/
-		void getmaxandmin(const std::vector<double>& values, double& min, double& max) const;
-		// DocString: FMTconstraint::getsum
+		void getMaxAndMin(const std::vector<double>& values, double& min, double& max) const;
+		// DocString: FMTconstraint::getSum
 		/**
 		Returns the sum of a vector of double
 		*/
-		double getsum(const std::vector<double>& values) const;
-		// DocString: FMTconstraint::getperiodicvariationcost
+		double getSum(const std::vector<double>& values) const;
+		// DocString: FMTconstraint::getPeriodicVariationCost
 		/**
 		Returns the variation of harvest for a vector of double
 		*/
-		double getperiodicvariationcost(const std::vector<double>& values, bool evaluateupper = false) const;
-		// DocString: FMTconstraint::getvariability
+		double getPeriodicVariationCost(const std::vector<double>& values, bool evaluateupper = false) const;
+		// DocString: FMTconstraint::getVariability
 		/**
 		Returns the variability based on a double input
 		*/
-		double getvariability(const std::vector<double>& values, const double& var, const double& lowarvar) const;
+		double getVariability(const std::vector<double>& values, const double& var, const double& lowarvar) const;
 		// DocString: FMTconstraint::_getReplicateValues
 		/**
 		@brief get the bound values for a specific replicate.

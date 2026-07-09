@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -41,7 +41,7 @@ namespace Core{
 		return *this;
 	}
 
-	void FMTdevelopment::setage(const int& lage)
+	void FMTdevelopment::setAge(const int& lage)
 	{
 		try {
 			age = static_cast<uint8_t>(lage);
@@ -52,7 +52,7 @@ namespace Core{
 		}
 	}
 
-	void FMTdevelopment::setlock(const int& llock)
+	void FMTdevelopment::setLock(const int& llock)
 	{
 		try{
 		lock = static_cast<uint8_t>(llock);
@@ -63,7 +63,7 @@ namespace Core{
 		}
 	}
 
-	void FMTdevelopment::setperiod(const int& lperiod)
+	void FMTdevelopment::setPeriod(const int& lperiod)
 	{
 		try{
 		period = static_cast<uint8_t>(lperiod);
@@ -74,7 +74,7 @@ namespace Core{
 		}
 	}
 
-	void FMTdevelopment::setmask(const Core::FMTmask& lmask)
+	void FMTdevelopment::setMask(const Core::FMTmask& lmask)
 	{
 		mask = lmask;
 	}
@@ -145,14 +145,14 @@ namespace Core{
         return newdev;
         }
 
-	bool FMTdevelopment::worthtestingoperability(const FMTaction& action) const
+	bool FMTdevelopment::worthTestingOperability(const FMTaction& action) const
 		{
-		return (((action.dorespectlock() && lock == 0) || !action.dorespectlock()) &&
-			action.getagelowerbound() <= getage() && getage() <= action.getageupperbound() &&
-			action.getperiodlowerbound() <= getperiod() && getperiod() <= action.getperiodupperbound());
+		return (((action.doRespectLock() && lock == 0) || !action.doRespectLock()) &&
+			action.getAgeLowerBound() <= getAge() && getAge() <= action.getAgeUpperBound() &&
+			action.getPeriodLowerBound() <= getperiod() && getperiod() <= action.getPeriodUpperBound());
 		}
 
-	FMTyieldrequest FMTdevelopment::getyieldrequest(const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+	FMTyieldrequest FMTdevelopment::getYieldRequest(const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 			if (graphyieldrequest != nullptr)
 			{
@@ -165,7 +165,7 @@ namespace Core{
      bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds, const Graph::FMTgraphvertextoyield* graphyieldrequest) const
         {
 		 try{
-			if (worthtestingoperability(action))
+			if (worthTestingOperability(action))
 				{
 				for (const FMTaction::const_iterator spec: action.findsets(mask))
 					{
@@ -181,7 +181,7 @@ namespace Core{
 			}
         return false;
         }
-	 bool FMTdevelopment::anyoperable(const std::vector<const FMTaction*>& actions, const FMTyields& ylds,
+	 bool FMTdevelopment::anyOperable(const std::vector<const FMTaction*>& actions, const FMTyields& ylds,
 		 const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 		 try{
@@ -200,13 +200,13 @@ namespace Core{
 		 return false;
 		}
 
-	 std::vector<int> FMTdevelopment::anyworthtestingoperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const
+	 std::vector<int> FMTdevelopment::anyWorthTestingOperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const
 		{
 		 std::vector<int>potentials;
 		 try{
 			for (const FMTaction* action : actions)
 				{
-				 if (this->worthtestingoperability(*action))
+				 if (this->worthTestingOperability(*action))
 					{
 					 const int location = static_cast<int>(std::distance(&firstaction, action));
 					 potentials.push_back(location);
@@ -220,7 +220,7 @@ namespace Core{
 		 return potentials;
 		}
 
-	 std::vector<bool> FMTdevelopment::isanyworthtestingoperability(const std::vector<const FMTaction*>& actions,
+	 std::vector<bool> FMTdevelopment::isAnyWorthTestingOperability(const std::vector<const FMTaction*>& actions,
 		 const std::vector<FMTaction>& allactions) const noexcept
 	 {
 		 try {
@@ -229,7 +229,7 @@ namespace Core{
 			 worth.reserve(actions.size());
 			 for (const FMTaction* action : actions)
 			 {
-				 if (this->worthtestingoperability(*action))
+				 if (this->worthTestingOperability(*action))
 				 {
 					 worth.push_back(static_cast<int8_t>(std::distance(firstaction, action)));
 				 }
@@ -259,10 +259,10 @@ namespace Core{
 		{
 		 std::vector<FMTdevelopmentpath>newpaths;
 		 try {
-			 const FMTfork* fork = Transition.getfork(*this,ylds);
+			 const FMTfork* fork = Transition.getFork(*this,ylds);
 			 if (fork)
 			 {
-				 newpaths = fork->getpaths(*this, ylds, themes, action.isresetage());
+				 newpaths = fork->getPaths(*this, ylds, themes, action.isResetAge());
 		
 			 }
 			 else {
@@ -273,7 +273,7 @@ namespace Core{
 					 {
 						 if (yldsStr.find(YLD_NAME)==std::string::npos)
 						 {
-							 yldsStr += YLD_NAME + ":" + std::to_string(ylds.get(getyieldrequest(), YLD_NAME)) + "\n";
+							 yldsStr += YLD_NAME + ":" + std::to_string(ylds.get(getYieldRequest(), YLD_NAME)) + "\n";
 						 }
 					 }
 				 }
@@ -326,8 +326,8 @@ namespace Core{
         {
 		std::string line = "";
         line+=std::string(mask)+" ";
-        line+=std::to_string(getage())+" ";
-        line+=std::to_string(getlock())+" ";
+        line+=std::to_string(getAge())+" ";
+        line+=std::to_string(getLock())+" ";
         line+=std::to_string(getperiod())+" ";
         return line;
         }
@@ -336,7 +336,7 @@ namespace Core{
 		return 0;
 		}
 
-	FMTdevelopment FMTdevelopment::clearlock() const
+	FMTdevelopment FMTdevelopment::clearLock() const
 		{
 		FMTdevelopment nolock(*this);
 		nolock.lock = 0;
@@ -366,10 +366,10 @@ namespace Core{
 		{
 		bool allow = false;
 		try {
-			allow = specification.allowwithoutyield(getperiod(), getage(), getlock());
+			allow = specification.allowwithoutyield(getperiod(), getAge(), getLock());
 			if (allow && !specification.emptyylds())
 				{
-				const FMTyieldrequest REQUEST = getyieldrequest(graphyieldrequest);
+				const FMTyieldrequest REQUEST = getYieldRequest(graphyieldrequest);
 				const std::vector<Core::FMTyldbounds>& BOUNDS= specification.getyldbounds();
 				const std::vector<std::string>& YLD_NAMES = specification.getylds();
 				size_t boundId = 0;
@@ -392,11 +392,11 @@ namespace Core{
 			}
 		return allow;
 		}
-	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const std::string& target_yield,
+	double FMTdevelopment::getInventoryCoef(const FMTyields& ylds, const std::string& target_yield,
 		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 	{
 		try {
-			const FMTyieldrequest request = getyieldrequest(graphyieldrequest);
+			const FMTyieldrequest request = getYieldRequest(graphyieldrequest);
 			return ylds.get(request,target_yield);
 		}catch (...)
 		{
@@ -404,18 +404,18 @@ namespace Core{
 		}
 		return 0;
 		}
-	double FMTdevelopment::getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
+	double FMTdevelopment::getHarvestCoef(const std::vector<FMTdevelopmentpath>& topaths,
 			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield,
 		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 		double value = 0;
 		try {
-			const double actual_value = this->getinventorycoef(ylds, target_yield, graphyieldrequest);
+			const double actual_value = this->getInventoryCoef(ylds, target_yield, graphyieldrequest);
 			if (action.partial(target_yield))
 			{
 				for (const FMTdevelopmentpath& path : topaths)
 				{
-					const double dif_value = (actual_value - path.getDevelopment().getinventorycoef(ylds, target_yield, graphyieldrequest));
+					const double dif_value = (actual_value - path.getDevelopment().getInventoryCoef(ylds, target_yield, graphyieldrequest));
 					value += (dif_value * (path.getProportion() / 100));
 				}
 			}

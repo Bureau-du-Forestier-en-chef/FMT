@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -68,7 +68,7 @@ bool FMTconstantparser::_FillConstants(Core::FMTconstants& p_constants,
 			}
 			if (!values.empty())
 			{
-				if (!p_constants.isconstant("#" + key))
+				if (!p_constants.isConstant("#" + key))
 				{
 					p_constants.set(key, values);
 				}

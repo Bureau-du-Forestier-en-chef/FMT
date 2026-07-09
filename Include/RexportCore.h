@@ -161,27 +161,27 @@ void exportCore()
 
 	Rcpp::class_<Core::FMTobject>("FMTobject", "@DocString(FMTobject)")
 		.constructor("@DocString(FMTobject())")
-		.method("setdefaultexceptionhandler", &Core::FMTobject::setdefaultexceptionhandler,
+		.method("setdefaultexceptionhandler", &Core::FMTobject::setDefaultExceptionHandler,
 			"@DocString(FMTobject::setdefaultexceptionhandler)")
-		.method("setquietexceptionhandler", &Core::FMTobject::setquietexceptionhandler,
+		.method("setquietexceptionhandler", &Core::FMTobject::setQuietExceptionHandler,
 			"@DocString(FMTobject::setquietexceptionhandler)")
-		.method("setdebugexceptionhandler", &Core::FMTobject::setdebugexceptionhandler,
+		.method("setdebugexceptionhandler", &Core::FMTobject::setDebugExceptionHandler,
 			"@DocString(FMTobject::setdebugexceptionhandler)")
-		.method("setfreeexceptionhandler", &Core::FMTobject::setfreeexceptionhandler,
+		.method("setfreeexceptionhandler", &Core::FMTobject::setFreeExceptionHandler,
 			"@DocString(FMTobject::setfreeexceptionhandler)")
-		.method("disablenestedexceptions", &Core::FMTobject::disablenestedexceptions,
+		.method("disablenestedexceptions", &Core::FMTobject::disableNestedExceptions,
 			"@DocString(FMTobject::disablenestedexceptions)")
-		.method("enablenestedexceptions", &Core::FMTobject::enablenestedexceptions,
+		.method("enablenestedexceptions", &Core::FMTobject::enableNestedExceptions,
 			"@DocString(FMTobject::enablenestedexceptions)")
-		.method("setquietlogger", &Core::FMTobject::setquietlogger,
+		.method("setquietlogger", &Core::FMTobject::setQuietLogger,
 			"@DocString(FMTobject::setquietlogger)")
-		.method("settasklogger", &Core::FMTobject::settasklogger,
+		.method("settasklogger", &Core::FMTobject::setTaskLogger,
 			"@DocString(FMTobject::settasklogger)")
-		.method("setdefaultlogger", &Core::FMTobject::setdefaultlogger,
+		.method("setdefaultlogger", &Core::FMTobject::setDefaultLogger,
 			"@DocString(FMTobject::setdefaultlogger)")
-		.method("setdebuglogger", &Core::FMTobject::setdebuglogger,
+		.method("setdebuglogger", &Core::FMTobject::setDebugLogger,
 			"@DocString(FMTobject::setdebuglogger)")
-		.method("redirectlogtofile", &Core::FMTobject::redirectlogtofile,
+		.method("redirectlogtofile", &Core::FMTobject::redirectLogToFile,
 			"@DocString(FMTobject::redirectlogtofile)")
 		.method("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
 			"@DocString(FMTobject::seterrorstowarnings)")
@@ -216,21 +216,21 @@ void exportCore()
 
 		Rcpp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
 				.constructor("@DocString(FMTdevelopment())")
-				.method("getage", &Core::FMTdevelopment::getage,
+				.method("getage", &Core::FMTdevelopment::getAge,
 					"@DocString(FMTdevelopment::getage)")
-				.method("getlock", &Core::FMTdevelopment::getlock,
+				.method("getlock", &Core::FMTdevelopment::getLock,
 					"@DocString(FMTdevelopment::getlock)")
 				.method("getperiod", &Core::FMTdevelopment::getperiod,
 					"@DocString(FMTdevelopment::getperiod)")
-				.method("getmask", &Core::FMTdevelopment::getmaskcopy,
+				.method("getmask", &Core::FMTdevelopment::getMaskCopy,
 					"@DocString(FMTdevelopment::getmask)")
-				.method("setage", &Core::FMTdevelopment::setage,
+				.method("setage", &Core::FMTdevelopment::setAge,
 					"@DocString(FMTdevelopment::setage)")
-				.method("setlock", &Core::FMTdevelopment::setlock,
+				.method("setlock", &Core::FMTdevelopment::setLock,
 					"@DocString(FMTdevelopment::setlock)")
-				.method("setperiod", &Core::FMTdevelopment::setperiod,
+				.method("setperiod", &Core::FMTdevelopment::setPeriod,
 					"@DocString(FMTdevelopment::setperiod)")
-				.method("setmask", &Core::FMTdevelopment::setmask,
+				.method("setmask", &Core::FMTdevelopment::setMask,
 					"@DocString(FMTdevelopment::setmask)")
 				.method("eq", &Core::FMTdevelopment::operator ==,
 					"@DocString(FMTdevelopment::operator==)")
@@ -269,7 +269,7 @@ void exportCore()
 
 		Rcpp::class_<Core::FMTspec>("FMTspec", "@DocString(FMTspec)")
 			.constructor("@DocString(FMTspec())")
-			.method("setbounds",&Core::FMTspec::setbounds,"@DocString(Core::FMTspec::setbounds())")
+			.method("setbounds",&Core::FMTspec::setBounds,"@DocString(Core::FMTspec::setbounds())")
 			.method("addbounds",
 				static_cast<bool(Core::FMTspec::*)(const Core::FMTagebounds&)>(&Core::FMTspec::addbounds),
 				"@DocString(Core::FMTspec::addbounds(const FMTagebounds&))")
@@ -287,7 +287,7 @@ void exportCore()
 				.constructor<Core::FMTmask,int,int,double>("@DocString(FMTactualdevelopment(const FMTmask&,const int&,const int&,const int&,const double&))")
                 .method("getarea", &Core::FMTactualdevelopment::getarea,
 					"@DocString(FMTactualdevelopment::getarea)")
-				.method("setarea", &Core::FMTactualdevelopment::setarea,
+				.method("setarea", &Core::FMTactualdevelopment::setArea,
 					"@DocString(FMTactualdevelopment::setarea)")
 				.method("eq", &Core::FMTactualdevelopment::operator ==,
 					"@DocString(FMTactualdevelopment::operator==)")
@@ -315,9 +315,9 @@ void exportCore()
 					"@DocString(FMTaction::operator std::string)")
                 .method("getname",&Core::FMTaction::getname,
 					"@DocString(FMTaction::getname)")
-                .method("dorespectlock",&Core::FMTaction::dorespectlock,
+                .method("dorespectlock",&Core::FMTaction::doRespectLock,
 					"@DocString(FMTaction::dorespectlock)")
-                .method("isresetage",&Core::FMTaction::isresetage,
+                .method("isresetage",&Core::FMTaction::isResetAge,
 					"@DocString(FMTaction::isresetage)");
 
 			
@@ -341,9 +341,9 @@ void exportCore()
 			Rcpp::class_<Core::FMTyieldhandler>("FMTyieldhandler", "@DocString(FMTyieldhandler)")
 				.constructor("@DocString(FMTyieldhandler())")
 				.method("push_data",
-					static_cast<bool (Core::FMTyieldhandler::*)(const std::string&,const double&)>(&Core::FMTyieldhandler::push_data),
+					static_cast<bool (Core::FMTyieldhandler::*)(const std::string&,const double&)>(&Core::FMTyieldhandler::pushData),
 					"@DocString(FMTyieldhandler::push_data(const std::string&,const double&))")
-				.method("push_base", &Core::FMTyieldhandler::push_base,
+				.method("push_base", &Core::FMTyieldhandler::pushBase,
 					"@DocString(FMTyieldhandler::push_base)");
 
 			Rcpp::class_<Core::FMTageyieldhandler>("FMTageyieldhandler", "@DocString(FMTageyieldhandler)")
@@ -366,15 +366,15 @@ void exportCore()
 			Rcpp::class_<Core::FMTyields>("FMTyields", "@DocString(FMTyields)")
 				//.derives<Core::FMTlist<Core::FMTyieldhandler>>("FMTyieldhandlerlist")
 				.constructor("@DocString(FMTyields())")
-				.method("getallyields", &Core::FMTyields::getallyields,
+				.method("getallyields", &Core::FMTyields::getAllYields,
 					"@DocString(FMTyields::getallyields)")
-				.method("getfromfactor", &Core::FMTyields::getfromfactor,
+				.method("getfromfactor", &Core::FMTyields::getFromFactor,
 					"@DocString(FMTyields::getfromfactor)")
 				.method("update", &Core::FMTyields::update,
 					"@DocString(FMTyields::update)")
-				.method("push_back",Core::FMTyields::push_backagehandler,
+				.method("push_back",Core::FMTyields::pushBackAgeHandler,
 					"@DocString(Core::FMTyields::push_backagehandler")
-				.method("push_back", Core::FMTyields::push_backtimehandler,
+				.method("push_back", Core::FMTyields::pushBackTimeHandler,
 					"@DocString(Core::FMTyields::push_backtimehandler");
 
 			
@@ -386,11 +386,11 @@ void exportCore()
 				.constructor<std::string>("@DocString(FMTtransition(const std::string&))")
                 .method("single",&Core::FMTtransition::single,
 					"@DocString(FMTtransition::single)")
-				.method("main_target", &Core::FMTtransition::main_target,
+				.method("main_target", &Core::FMTtransition::mainTarget,
 					"@DocString(FMTtransition::main_target)")
-				.method("age_after", &Core::FMTtransition::age_after,
+				.method("age_after", &Core::FMTtransition::ageAfter,
 					"@DocString(FMTtransition::age_after)")
-				.method("attribute_targets", &Core::FMTtransition::attribute_targets,
+				.method("attribute_targets", &Core::FMTtransition::attributeTargets,
 					"@DocString(FMTtransition::attribute_targets)")
 				.method("str", &Core::FMTtransition::operator std::string,
 					"@DocString(FMTtransition::operator std::string)")
@@ -425,18 +425,18 @@ void exportCore()
 					std::vector<Core::FMToperator>>("@DocString(FMToutput(const std::string&,const std::string&,const int&,std::vector<FMToutputsource>&,std::vector<FMToperator>&))")
 				.method("getname",&Core::FMToutput::getname,
 					"@DocString(FMToutput::getname)")
-				.method("getdescription",&Core::FMToutput::getdescription,
+				.method("getdescription",&Core::FMToutput::getDescription,
 					"@DocString(FMToutput::getdescription)")
 				.method("empty", &Core::FMToutput::empty,
 					"@DocString(FMToutput::empty)")
-				.method("containslevel",&Core::FMToutput::containslevel,
+				.method("containslevel",&Core::FMToutput::containsLevel,
 					"@DocString(FMToutput::containslevel)")
-				.method("islevel", &Core::FMToutput::islevel,
+				.method("islevel", &Core::FMToutput::isLevel,
 					"@DocString(FMToutput::islevel)")
-				.method("isonlylevel", &Core::FMToutput::isonlylevel,
+				.method("isonlylevel", &Core::FMToutput::isOnlyLevel,
 					"@DocString(FMToutput::isonlylevel)")
-				//.method("getnodes",&Core::FMToutput::getnodes,
-				//	"@DocString(FMToutput::getnodes)")
+				//.method("getNodes",&Core::FMToutput::getNodes,
+				//	"@DocString(FMToutput::getNodes)")
 				.method("str", &Core::FMToutput::operator std::string,
 					"@DocString(FMToutput::operator std::string)")
 				.method("eq",&Core::FMToutput::operator ==,
@@ -457,13 +457,13 @@ void exportCore()
 					"@DocString(FMTtheme::operator std::string)")
 				.method("eq", &Core::FMTtheme::operator ==,
 					"@DocString(FMTtheme::operator==)")
-				.method("getattributes", &Core::FMTtheme::getattributes,
+				.method("getattributes", &Core::FMTtheme::getAttributes,
 					"@DocString(FMTtheme::getattributes)")
 				.method("getname", &Core::FMTtheme::getname,
 					"@DocString(FMTtheme::getname)")
-				.method("getaggregatesasdataframe", &Core::FMTtheme::getaggregatesasdataframe,
+				.method("getaggregatesasdataframe", &Core::FMTtheme::getAggregatesAsDataFrame,
 					"@DocString(FMTtheme::getaggregatesasdataframee)")
-				.method("getattributesasdataframe", &Core::FMTtheme::getattributesasdataframe,
+				.method("getattributesasdataframe", &Core::FMTtheme::getAttributesAsDataFrame,
 					"@DocString(FMTtheme::getattributesasdataframe)");
 
 
@@ -478,11 +478,11 @@ void exportCore()
 					"@DocString(FMTschedule::operator std::string)")
 				.method("add", &Core::FMTschedule::operator +,
 					"@DocString(FMTschedule::operator+)")
-				.method("actionarea", &Core::FMTschedule::actionarea,
+				.method("actionarea", &Core::FMTschedule::actionArea,
 					"@DocString(FMTschedule::actionarea)")
 				.method("getperiod", &Core::FMTschedule::getperiod,
 					"@DocString(FMTschedule::getperiod)")
-				.method("setperiod", &Core::FMTschedule::setperiod,
+				.method("setperiod", &Core::FMTschedule::setPeriod,
 					"@DocString(FMTschedule::setperiod)")
 				.method("eq", &Core::FMTschedule::operator ==,
 					"@DocString(FMTschedule::operator==)")
@@ -504,7 +504,7 @@ void exportCore()
 				.derives<Core::FMToutput>("FMToutput")
 				.constructor("@DocString(FMTconstraint())")
 				.constructor<Core::FMTconstrainttype,Core::FMToutput>("@DocString(FMTconstraint(FMTconstrainttype,const FMToutput&))")
-				.method("setlength", &Core::FMTconstraint::setlength,
+				.method("setlength", &Core::FMTconstraint::setLength,
 					"@DocString(FMTconstraint::setlength)")
 				.method("realconstraintstring", &Core::FMTconstraint::operator std::string,
 					"@DocString(FMTconstraint::operator std::string)")

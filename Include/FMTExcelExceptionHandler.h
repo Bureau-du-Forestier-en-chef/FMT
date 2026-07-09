@@ -13,8 +13,8 @@ namespace Exception
 	class FMTEXPORT FMTExcelExceptionHandler : public FMTexceptionhandler
 	{
 	public:
-		std::unordered_map<int, std::vector<std::string>> getbuildexceptions() const;
-		void resetbuildexceptions();
+		std::unordered_map<int, std::vector<std::string>> getBuildExceptions() const;
+		void resetBuildExceptions();
 		virtual FMTexception raise(FMTexc lexception, std::string text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true);

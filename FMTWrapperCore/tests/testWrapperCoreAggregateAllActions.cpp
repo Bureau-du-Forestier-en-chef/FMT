@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		std::string primary_path;
 		std::vector<std::string> aggregates;

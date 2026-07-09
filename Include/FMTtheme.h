@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -94,11 +94,11 @@ class FMTEXPORT FMTtheme : public FMTobject
 		Copy assignment for FMTtheme.
 		*/
 		FMTtheme& operator = (const FMTtheme& rhs);
-		// DocString: FMTtheme::isattribute
+		// DocString: FMTtheme::isAttribute
 		/**
 		Return true if the (value) is an attribute of the FMTtheme.
 		*/
-		inline bool isattribute(const std::string& p_value) const
+		inline bool isAttribute(const std::string& p_value) const
 		{
 			if (!p_value.empty() && p_value.at(0) == '!')
 			{
@@ -108,11 +108,11 @@ class FMTEXPORT FMTtheme : public FMTobject
 				}
 			
 		}
-		// DocString: FMTtheme::isaggregate
+		// DocString: FMTtheme::isAggregate
 		/**
 		Return true if the (value) is an aggregate of the FMTtheme.
 		*/
-		inline bool isaggregate(const std::string& p_value) const
+		inline bool isAggregate(const std::string& p_value) const
 		{
 			if (!p_value.empty() && p_value.at(0) == '!')
 			{
@@ -123,26 +123,26 @@ class FMTEXPORT FMTtheme : public FMTobject
 			}
 			
 		}
-		// DocString: FMTtheme::isindex
+		// DocString: FMTtheme::isIndex
 		/**
 		Return true if the (value) is an index of the FMTtheme (only use in yields section).
 		*/
-		bool isindex(const std::string& p_attribute, const std::string& p_value) const;
-		// DocString: FMTtheme::isindex
+		bool isIndex(const std::string& p_attribute, const std::string& p_value) const;
+		// DocString: FMTtheme::isIndex
 		/**
 		Return true if the (value) is an index of the FMTtheme (only use in yields section).
 		*/
-		bool isindex(const std::string& p_value) const;
-		// DocString: FMTtheme::useindex
+		bool isIndex(const std::string& p_value) const;
+		// DocString: FMTtheme::useIndex
 		/**
 		Return true if the FMTtheme uses index.
 		*/
-		bool useindex() const;
-		// DocString: FMTtheme::getindex
+		bool useIndex() const;
+		// DocString: FMTtheme::getIndex
 		/**
 		Get the index for the given (attribute) of the index (value).
 		*/
-		double getindex(const std::string& p_attribute, const std::string& p_value) const;
+		double getIndex(const std::string& p_attribute, const std::string& p_value) const;
 		// DocString: FMTtheme::inAggregate
 		/**
 		Check if the (value) is part of the (aggregate).
@@ -166,19 +166,19 @@ class FMTEXPORT FMTtheme : public FMTobject
 		{
 			return m_attributes.size();
 		}
-		// DocString: FMTtheme::getstart
+		// DocString: FMTtheme::getStart
 		/**
 		Return the bit location of the mask at which the theme starts.
 		*/
-		inline const size_t& getstart() const
+		inline const size_t& getStart() const
 		{
 			return m_start;
 		}
-		// DocString: FMTtheme::getid
+		// DocString: FMTtheme::getId
 		/**
 		Getter for the FMTtheme id.
 		*/
-		inline const size_t& getid() const
+		inline const size_t& getId() const
 		{
 			return m_id;
 		}
@@ -198,12 +198,12 @@ class FMTEXPORT FMTtheme : public FMTobject
 		{
 			return m_attributes.empty();
 		}
-		// DocString: FMTtheme::getattributes
+		// DocString: FMTtheme::getAttributes
 		/**
 		Get the attributes of a aggregate (value) for the FMTtheme if aggregate_source == true then the
 		aggregate source map is used.
 		*/
-		std::vector<std::string>getattributes(const std::string& p_value, bool p_aggregate_source = false) const;
+		std::vector<std::string>getAttributes(const std::string& p_value, bool p_aggregate_source = false) const;
 		// DocString: FMTtheme::getbaseattributes
 		/**
 		Get a reference to the base attributes of the theme.
@@ -212,11 +212,11 @@ class FMTEXPORT FMTtheme : public FMTobject
 		{
 			return m_attributes;
 		}
-		// DocString: FMTtheme::getattributenames
+		// DocString: FMTtheme::getAttributeNames
 		/**
 		Get the names of the attributes.
 		*/
-		const std::vector<std::string>& getattributenames() const
+		const std::vector<std::string>& getAttributeNames() const
 		{
 			return m_attributenames;
 		}
@@ -243,12 +243,12 @@ class FMTEXPORT FMTtheme : public FMTobject
 		/**
 		Returns a dataframe filled up with the aggregates of each themes (col1 = THEME, col2 = ATTRIBUTES,col3 = AGGREGATES)
 		*/
-		Rcpp::DataFrame getaggregatesasdataframe() const;
-		// DocString:  FMTtheme::getattributesasdataframe
+		Rcpp::DataFrame getAggregatesAsDataFrame() const;
+		// DocString:  FMTtheme::getAttributesAsDataFrame
 		/**
 		Returns a dataframe filled up with the attributes (col1 = ATTRIBUTE, col2 = NAMES)
 		*/
-		Rcpp::DataFrame getattributesasdataframe() const;
+		Rcpp::DataFrame getAttributesAsDataFrame() const;
 #endif
 		// DocString: FMTtheme::validate
 		/**
@@ -417,7 +417,7 @@ class FMTEXPORT FMTtheme : public FMTobject
 		/**
 		Push a new aggregate value.
 		*/
-		void push_aggregate_value(const std::string& p_aggregatename, const std::string& p_value);
+		void pushAggregateValue(const std::string& p_aggregatename, const std::string& p_value);
 	
 	
     };

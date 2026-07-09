@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -35,7 +35,7 @@ FMTtransitionparser::FMTtransitionparser():FMTparser()
     }
 
 
-Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes, Core::FMTsection section,const Core::FMTconstants& constants,const Core::FMTyields& ylds)
+Core::FMTmask FMTtransitionparser::getSource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes, Core::FMTsection section,const Core::FMTconstants& constants,const Core::FMTyields& ylds)
     {
 	try {
 		const std::vector<std::string>elements = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
@@ -72,7 +72,7 @@ Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& s
 	return Core::FMTmask();
     }
 
-std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
+std::vector<Core::FMTtransitionmask> FMTtransitionparser::getMaskTran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
                                           const Core::FMTconstants& constants, const Core::FMTyields& ylds,
                                           const Core::FMTmask& sourcemask, int& replaced)
     {
@@ -127,14 +127,14 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 				baseoperator = Core::FMToperator(stroperator);
 				}
 			const std::string stradd = kmatch[13];
-			const int targettheme = getNum<int>(strtargettheme) - 1;
+			const int targetTheme = getNum<int>(strtargettheme) - 1;
 			const double addupp = getNum<double>(stradd);
 			Core::FMTmask targetmask(mask, themes);
-			targetmask.set(themes[targettheme], sourcemask.get(themes[targettheme]));
-			for (Core::FMTmask& lmask : targetmask.decompose(themes[targettheme]))
+			targetmask.set(themes[targetTheme], sourcemask.get(themes[targetTheme]));
+			for (Core::FMTmask& lmask : targetmask.decompose(themes[targetTheme]))
 			{
 				
-				const std::string actual = lmask.get(themes[targettheme]);
+				const std::string actual = lmask.get(themes[targetTheme]);
 				std::string newval;
 				if (isNum(actual))//just math
 					{
@@ -143,9 +143,9 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 				}else {
 					newval = actual+ stradd;
 					}
-				if (themes[targettheme].isattribute(newval))
+				if (themes[targetTheme].isAttribute(newval))
 				{
-					lmask.set(themes[targettheme], newval);
+					lmask.set(themes[targetTheme], newval);
 					multiples.push_back(lmask);
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
@@ -154,7 +154,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 
 			}
 			
-			replaced = targettheme;
+			replaced = targetTheme;
 			rest = std::string(kmatch[1]) + std::string(kmatch[14]);
 		}
 		if (isValid(rest) && boost::regex_search(rest, kmatch, FMTtransitionparser::rxtyld))
@@ -241,7 +241,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 						std::string data;
 						data = kmatch[6];
 						Core::FMTfork fork;
-						srcmsk = getsource(data, fork, themes, Core::FMTsection::Transition, constants, ylds);
+						srcmsk = getSource(data, fork, themes, Core::FMTsection::Transition, constants, ylds);
 						
 						last_transition->push_back(srcmsk, fork);
 						fptrs.clear();
@@ -254,7 +254,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 					{
 						int replaced = -1;
 						
-						std::vector<Core::FMTtransitionmask>mtrs = getmasktran(line, themes, constants, ylds, srcmsk, replaced);
+						std::vector<Core::FMTtransitionmask>mtrs = getMaskTran(line, themes, constants, ylds, srcmsk, replaced);
 						if (replaced > -1)
 						{
 							for (const int& rep : replacedvec)
@@ -315,7 +315,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 			{
 				if (!transition.empty())
 				{
-					if (transition.isleaking())
+					if (transition.isLeaking())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTleakingtransition,
 							transition.getname(),"FMTtransitionparser::read", __LINE__, __FILE__, m_section);

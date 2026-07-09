@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -25,9 +25,9 @@ namespace Core {
 	{
 		Core::FMTmask mask;
 		try {
-			if (reference && !reference->getsources().empty())
+			if (reference && !reference->getSources().empty())
 			{
-				mask = reference->getsources().begin()->getmask();
+				mask = reference->getSources().begin()->getmask();
 
 			}
 		}
@@ -41,7 +41,7 @@ namespace Core {
 
 
 
-	std::vector<std::vector<double>>FMTyieldmodeldecisiontree::getperiodicvalues() const
+	std::vector<std::vector<double>>FMTyieldmodeldecisiontree::getPeriodicValues() const
 	{
 		std::vector<std::vector<double>>returned;
 		try {
@@ -74,8 +74,8 @@ namespace Core {
 				sources.push_back(source);
 			}
 			constraint = Core::FMTconstraint(Core::FMTconstrainttype::FMTstandard, Core::FMToutput(name, "", "Decision_tree", sources, std::vector<Core::FMToperator>()));
-			constraint.setrhs(lowerbound, upperbound);
-			constraint.setlength(1);
+			constraint.setRhs(lowerbound, upperbound);
+			constraint.setLength(1);
 			const double dbl_lag = static_cast<double>(lag);
 			constraint.addbounds(FMTyldbounds(FMTsection::Optimize, "LAG", dbl_lag, dbl_lag));
 		}
@@ -208,10 +208,10 @@ namespace Core {
 	std::unique_ptr<Models::FMTmodel> FMTyieldmodeldecisiontree::GetNaturalGrowth(const Core::FMTyieldrequest& request) const
 	{
 		try {
-			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
+			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
 			//const Models::FMTmodel* modelptr = graphinfo->getmodel();
 			std::vector<Core::FMTactualdevelopment>newareas;
-			const Core::FMTmask mask = reference->getsources().begin()->getmask();
+			const Core::FMTmask mask = reference->getSources().begin()->getmask();
 			for (const Core::FMTactualdevelopment& developement : m_modelPtr->getarea())
 				{
 				if (developement.getmask().isSubsetOf(mask))
@@ -220,12 +220,12 @@ namespace Core {
 					}
 				}
 			
-			std::unique_ptr<Models::FMTmodel>naturalgrowth = m_modelPtr->getcopy(0);
+			std::unique_ptr<Models::FMTmodel>naturalgrowth = m_modelPtr->getCopy(0);
 			Logging::FMTquietlogger ModelLogger;
-			naturalgrowth->setparallellogger(ModelLogger);
+			naturalgrowth->setParallelLogger(ModelLogger);
 			naturalgrowth->setparameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
-			naturalgrowth->setarea(newareas);//Will only work with lp model going to get big with semodel...
-			naturalgrowth->setname(std::string(reference->getsources().begin()->getmask()));
+			naturalgrowth->setArea(newareas);//Will only work with lp model going to get big with semodel...
+			naturalgrowth->setName(std::string(reference->getSources().begin()->getmask()));
 			//std::vector<Core::FMTaction> newactions = naturalgrowth->getactions();
 			const int updatestopat = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
 			/*for (Core::FMTaction& action : newactions)
@@ -234,9 +234,9 @@ namespace Core {
 					{
 					for (auto& element : action)
 						{
-						const int lower = std::max(element.second.getperiodlowerbound(), 1);
-						const int upper = std::max(element.second.getperiodupperbound(), updatestopat-1);
-						element.second.setbounds(Core::FMTperbounds(Core::FMTsection::Action, upper, lower));
+						const int lower = std::max(element.second.getPeriodLowerBound(), 1);
+						const int upper = std::max(element.second.getPeriodUpperBound(), updatestopat-1);
+						element.second.setBounds(Core::FMTperbounds(Core::FMTsection::Action, upper, lower));
 						}
 					action.update();
 					}
@@ -256,7 +256,7 @@ namespace Core {
 					sources.push_back(source);
 					Core::FMToutput newoutput("naturalgrowth","","", sources, std::vector<Core::FMToperator>());
 					Core::FMTconstraint newobjective(FMTconstrainttype::FMTMINobjective, newoutput);
-					newobjective.setlength(1);
+					newobjective.setLength(1);
 					newconstraints.push_back(newobjective);
 			/* }
 
@@ -264,9 +264,9 @@ namespace Core {
 			}*/
 			naturalgrowth->setconstraints(newconstraints);
 			naturalgrowth->setactions(std::vector<Core::FMTaction>());
-			//naturalgrowth->setconstraints(naturalgrowth->goalconstraints());
-			//naturalgrowth->setparallellogger(Logging::FMTquietlogger());
-			if (!naturalgrowth->doplanning(true))
+			//naturalgrowth->setconstraints(naturalgrowth->goalConstraints());
+			//naturalgrowth->setParallelLogger(Logging::FMTquietlogger());
+			if (!naturalgrowth->doPlanning(true))
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
 					"Infeasible natural growth for "+std::string(mask) , "FMTyieldmodeldecisiontree::GetNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -286,8 +286,8 @@ namespace Core {
 			const int time_lag = static_cast<int>(nodes.at(constraint_id).getyieldbound("LAG").getlower());
 			const int update_period = naturalgrowth->getparameter(Models::FMTintmodelparameters::UPDATE);
 			const int targeted_period = std::max(period + time_lag, update_period);
-			const double reference_value = naturalgrowth->getoutput(*reference, targeted_period, Core::FMToutputlevel::totalonly).at("Total");
-			const double value = naturalgrowth->getoutput(nodes.at(constraint_id), targeted_period, Core::FMToutputlevel::totalonly).at("Total");
+			const double reference_value = naturalgrowth->getOutput(*reference, targeted_period, Core::FMToutputlevel::totalonly).at("Total");
+			const double value = naturalgrowth->getOutput(nodes.at(constraint_id), targeted_period, Core::FMToutputlevel::totalonly).at("Total");
 			const double percentage_value = (value/reference_value) * 100;
 			//decision_stack += ("("+std::to_string(percentage_value)+")");
 			std::vector<double>evaluates;
@@ -313,7 +313,7 @@ namespace Core {
 			const int MODEL_LENGTH = m_modelPtr->getparameter(Models::FMTintmodelparameters::LENGTH);
 			if (values.empty())
 			{
-				const int DEV_PERIOD = request.getdevelopment().getperiod();
+				const int DEV_PERIOD = request.getDevelopment().getperiod();
 				
 				const int UPDATE_PERIOD = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
 				if (DEV_PERIOD< UPDATE_PERIOD)
@@ -339,7 +339,7 @@ namespace Core {
 						}
 						double lowerbound = 0;//value
 						double upperbound = 0;//target yield
-						nodes.at(target_node).getbounds(lowerbound, upperbound, 1);
+						nodes.at(target_node).getBounds(lowerbound, upperbound, 1);
 						const size_t yieldid = static_cast<size_t>(upperbound);
 						const int rest_of_period = static_cast<int>(nodes.at(target_node).getyieldbound("LAG").getlower());
 						if (rest_of_period)
@@ -361,7 +361,7 @@ namespace Core {
 			
 			for (std::map<size_t,std::vector<double>>::const_iterator valuesit = values.begin(); valuesit!=values.end(); ++valuesit)
 			{
-				const size_t INDEX = std::min(static_cast<size_t>(request.getdevelopment().getperiod()), valuesit->second.size() - 1);
+				const size_t INDEX = std::min(static_cast<size_t>(request.getDevelopment().getperiod()), valuesit->second.size() - 1);
 				returned.push_back(valuesit->second.at(INDEX));
 			}
 			
@@ -385,33 +385,33 @@ namespace Core {
 			{
 				if (!constraint.FMToutput::empty())
 				{
-					Core::FMToutputsource oldsource = *constraint.getsources().begin();
+					Core::FMToutputsource oldsource = *constraint.getSources().begin();
 					if (presolve)
 					{
-						oldsource.setmask(oldsource.getmask().presolve(filter, newthemes));
+						oldsource.setMask(oldsource.getmask().presolve(filter, newthemes));
 					}
 					else {
-						oldsource.setmask(oldsource.getmask().postsolve(filter, newthemes));
+						oldsource.setMask(oldsource.getmask().postsolve(filter, newthemes));
 					}
 
 					std::vector<Core::FMToutputsource>sources;
 					sources.push_back(oldsource);
-					Core::FMToutput newoutput(constraint.getname(), constraint.getdescription(), constraint.FMToutput::getgroup(), sources, std::vector<Core::FMToperator>());
-					constraint.setoutput(newoutput);
+					Core::FMToutput newoutput(constraint.getname(), constraint.getDescription(), constraint.FMToutput::getGroup(), sources, std::vector<Core::FMToperator>());
+					constraint.setOutput(newoutput);
 				}
 				
 			}
-			Core::FMToutputsource oldsource = *reference->getsources().begin();
+			Core::FMToutputsource oldsource = *reference->getSources().begin();
 			if (presolve)
 			{
-				oldsource.setmask(oldsource.getmask().presolve(filter, newthemes));
+				oldsource.setMask(oldsource.getmask().presolve(filter, newthemes));
 			}
 			else {
-				oldsource.setmask(oldsource.getmask().postsolve(filter, newthemes));
+				oldsource.setMask(oldsource.getmask().postsolve(filter, newthemes));
 			}
 			std::vector<Core::FMToutputsource>sources;
 			sources.push_back(oldsource);
-			newdecisions.reference = std::unique_ptr<Core::FMToutput>(new Core::FMToutput(reference->getname(), reference->getdescription(), reference->getgroup(), sources, std::vector<Core::FMToperator>()));
+			newdecisions.reference = std::unique_ptr<Core::FMToutput>(new Core::FMToutput(reference->getname(), reference->getDescription(), reference->getGroup(), sources, std::vector<Core::FMToperator>()));
 			return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodeldecisiontree(newdecisions));
 
 		}

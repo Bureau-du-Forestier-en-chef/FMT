@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -20,7 +20,7 @@ namespace Core {
 	{
 		std::string value;
 		try {
-			FMTtimeyieldhandler potentialtime = totimehandler();
+			FMTtimeyieldhandler potentialtime = toTimeHandler();
 			if (!potentialtime.empty())
 				{
 				return std::string(potentialtime);
@@ -68,7 +68,7 @@ namespace Core {
 	}
 
 
-	FMTtimeyieldhandler FMTmodelyieldhandler::totimehandler() const
+	FMTtimeyieldhandler FMTmodelyieldhandler::toTimeHandler() const
 		{
 		try {
 			FMTtimeyieldhandler newhandler(getmask());
@@ -76,7 +76,7 @@ namespace Core {
 			size_t modelid = 0;
 			for (const std::unique_ptr<FMTyieldmodel>& model : models)
 				{
-				std::vector<std::vector<double>> values = model->getperiodicvalues();
+				std::vector<std::vector<double>> values = model->getPeriodicValues();
 				if (values.empty())
 				{
 					gotallmodel = false;
@@ -93,7 +93,7 @@ namespace Core {
 					size_t yieldid = 0;
 					for (const std::vector<double>& yield_values : values)
 						{
-						newhandler.setyieldvalues(modelmapping.at(yieldid), 0, yield_values);
+						newhandler.setYieldValues(modelmapping.at(yieldid), 0, yield_values);
 						++yieldid;
 						}
 					}
@@ -111,7 +111,7 @@ namespace Core {
 		return FMTtimeyieldhandler(getmask());
 		}
 	
-	FMTyldtype FMTmodelyieldhandler::gettype() const
+	FMTyldtype FMTmodelyieldhandler::getType() const
 	{
 		return FMTyldtype::FMTmodelyld;
 	}
@@ -152,7 +152,7 @@ namespace Core {
 	}
 
 
-	std::map<std::string, size_t>FMTmodelyieldhandler::getmodelsnamebyindex() const
+	std::map<std::string, size_t>FMTmodelyieldhandler::getModelsNameByIndex() const
 	{
 		std::map<std::string, size_t>modelmapping;
 		try {
@@ -210,26 +210,26 @@ namespace Core {
 		return m_yldnames.size();
 	}
 
-	void FMTmodelyieldhandler::push_backmodel(const std::unique_ptr<FMTyieldmodel>& model)
+	void FMTmodelyieldhandler::pushBackModel(const std::unique_ptr<FMTyieldmodel>& model)
 	{
 		models.push_back(std::move(model->Clone()));
 	}
-	void FMTmodelyieldhandler::setyield(const size_t& modelid, const size_t& yieldid, const std::string& yldname)
+	void FMTmodelyieldhandler::setYield(const size_t& modelid, const size_t& yieldid, const std::string& yldname)
 	{
 		m_yldnames[yldname] = std::pair<size_t,size_t>(modelid,yieldid);
 	}
 	
-	bool FMTmodelyieldhandler::containsyield(const std::string& yldname) const
+	bool FMTmodelyieldhandler::containsYield(const std::string& yldname) const
 	{
 		return (m_yldnames.find(yldname) != m_yldnames.end());
 	}
 
-	bool FMTmodelyieldhandler::isnullyield(const std::string& yldname) const
+	bool FMTmodelyieldhandler::isNullYield(const std::string& yldname) const
 	{
 		return false;
 	}
 
-	std::vector<std::string>FMTmodelyieldhandler::getyieldnames() const
+	std::vector<std::string>FMTmodelyieldhandler::getYieldNames() const
 	{
 		std::vector<std::string>results;
 		results.reserve(m_yldnames.size());
@@ -240,7 +240,7 @@ namespace Core {
 		return results;
 	}
 
-	void FMTmodelyieldhandler::clearcache()
+	void FMTmodelyieldhandler::clearCache()
 	{
 		
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -108,14 +108,14 @@ namespace Models
 			Override setter for boolmodelparameters.
 			*/
 			bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
-			// DocString: FMTnssmodel::getcopy
+			// DocString: FMTnssmodel::getCopy
 			/**
 			This function returns a copy of the FMTmodel of the selected period.
-			If period = 0 it returns the FMTmodel::getcopy if period > 0 then it returns
+			If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
 			a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
 			Need to have a builded graph with a solution to use this function.
 			*/
-			virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
+			virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
 		private:
 			// DocString: FMTnssmodel::save
 			/**
@@ -200,12 +200,12 @@ namespace Models
 			Constructor for FMTnssmodel taking a FMTsrmodel and a seed to initialize the random number generator.
 			*/
 			FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed);
-			// DocString: FMTnssmodel::swap_ptr
+			// DocString: FMTnssmodel::swapPtr
 			/**
 			@brief swap from unique_ptr of model
 			@param[in] a unique pointer to a FMTmodel.
 			*/
-			virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
+			virtual void swapPtr(std::unique_ptr<FMTmodel>& rhs);
 
 	};
 }

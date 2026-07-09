@@ -90,11 +90,11 @@ namespace FMTWrapperCore
     void SES::ApplySingleTransitions(Models::FMTmodel& model)
     {
         std::vector<Core::FMTtransition> singleTransitions;
-        for (const Core::FMTtransition& transition : model.gettransitions())
+        for (const Core::FMTtransition& transition : model.getTransitions())
         {
             singleTransitions.push_back(transition.single());
         }
-        model.settransitions(singleTransitions);
+        model.setTransitions(singleTransitions);
     }
 
     void SES::PrepareInitialForest(
@@ -116,7 +116,7 @@ namespace FMTWrapperCore
         Spatial::FMTforest initialForest;
         if (!useStanlock)
         {
-            initialForest = areaparser.readrasters(
+            initialForest = areaparser.readRasters(
                 model.getthemes(),
                 themeRasterPaths,
                 ageRasterPath,
@@ -126,7 +126,7 @@ namespace FMTWrapperCore
         else
         {
             const std::string stanlockPath = rastersPath + "STANLOCK.tif";
-            initialForest = areaparser.readrasters(
+            initialForest = areaparser.readRasters(
                 model.getthemes(),
                 themeRasterPaths,
                 ageRasterPath,
@@ -135,7 +135,7 @@ namespace FMTWrapperCore
                 stanlockPath);
         }
 
-        model.setinitialmapping(initialForest);
+        model.setInitialMapping(initialForest);
     }
 
     EventsData SES::WriteEventsFile(
@@ -199,7 +199,7 @@ namespace FMTWrapperCore
         simulationModel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
         simulationModel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 
-        simulationModel.doplanning(false, schedules);
+        simulationModel.doPlanning(false, schedules);
 
         std::string outputDirectory = params.carbonMode ? params.rastersPath : params.outputPath + "\\";
 
@@ -298,21 +298,21 @@ namespace FMTWrapperCore
                 if (value > 0)
                 {
                     const Core::FMTconstraint& constraint = constraints.at(cid);
-                    if (constraint.isgoal())
+                    if (constraint.isGoal())
                     {
                         double goalValue = 0;
                         std::string goalName;
-                        constraint.getgoal(goalName, goalValue);
+                        constraint.getGoal(goalName, goalValue);
                         if (goalName == "_WEIGHT")
                         {
                             value /= goalValue;
                         }
                     }
 
-                    std::string constraintname = std::string(constraint);
-                    std::replace(constraintname.begin(), constraintname.end(), '\n', ' ');
-                    constraintname += ("(" + std::to_string(static_cast<int>(value)) + ")");
-                    messages.push_back(constraintname);
+                    std::string constraintName = std::string(constraint);
+                    std::replace(constraintName.begin(), constraintName.end(), '\n', ' ');
+                    constraintName += ("(" + std::to_string(static_cast<int>(value)) + ")");
+                    messages.push_back(constraintName);
                     ++brokenup;
                 }
                 ++total;
@@ -364,7 +364,7 @@ namespace FMTWrapperCore
         optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, params.maxAcceptedMoves);
         optimizationModel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, params.maxCycleMoves);
 
-        optimizationModel.doplanning(true);
+        optimizationModel.doPlanning(true);
 
         std::string outputDirectory = params.outputPath;
 
@@ -426,7 +426,7 @@ namespace FMTWrapperCore
         try
         {
             Models::FMTsemodel localmodel(semodel);
-            const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
+            const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
             const std::vector<Core::FMTschedule> newschedule = semodel.GetSchedules(schedule, false);
             size_t scid = 0;
 
@@ -438,9 +438,9 @@ namespace FMTWrapperCore
                 std::vector<Core::FMTconstraint> periodicconstraints = semodel.getconstraints();
                 for (Core::FMTconstraint& periodconstraint : periodicconstraints)
                 {
-                    const int lowerperiod = periodconstraint.getperiodlowerbound();
-                    const int upperperiod = std::min(period, periodconstraint.getperiodupperbound());
-                    periodconstraint.setlength(lowerperiod, upperperiod);
+                    const int lowerperiod = periodconstraint.getPeriodLowerBound();
+                    const int upperperiod = std::min(period, periodconstraint.getPeriodUpperBound());
+                    periodconstraint.setLength(lowerperiod, upperperiod);
                 }
                 localmodel.setconstraints(periodicconstraints);
 
@@ -477,12 +477,12 @@ namespace FMTWrapperCore
                 {
                     for (const auto& data : schedules.at(oriloc))
                     {
-                        const double basearea = schedules.at(oriloc).actionarea(data.first);
+                        const double basearea = schedules.at(oriloc).actionArea(data.first);
                         double newarea = 0;
 
                         if (newschedule.at(newloc).find(data.first) != newschedule.at(newloc).end())
                         {
-                            newarea = newschedule.at(newloc).actionarea(data.first);
+                            newarea = newschedule.at(newloc).actionArea(data.first);
                         }
 
                         oldtotal += basearea;
@@ -523,7 +523,7 @@ namespace FMTWrapperCore
             const std::vector<Core::FMTtheme> growthThemes = BuildGrowthThemes(
                 semodel.getthemes(),
                 growthThemeIndices);
-            const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
+            const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
             const std::vector<Core::FMTaction> actions = semodel.getactions();
 
             Parser::FMTtransitionparser transitionparser;
@@ -532,7 +532,7 @@ namespace FMTWrapperCore
             for (int period = 1; period <= numberOfPeriods; ++period)
             {
                 const std::vector<Core::FMTGCBMtransition> transitions =
-                    areaparser.writedisturbances(
+                    areaparser.writeDisturbances(
                         outputBasePath,
                         schedule,
                         actions,
@@ -563,9 +563,9 @@ namespace FMTWrapperCore
 
         try
         {
-            const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
+            const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
             const std::vector<Core::FMTaction> actions = semodel.getactions();
-            eventsData.statistics = schedule.getpatchstats(actions);
+            eventsData.statistics = schedule.getPatchStats(actions);
         }
         catch (std::exception& e)
         {
@@ -602,7 +602,7 @@ namespace FMTWrapperCore
 
                 for (int period = 1; period <= numberOfPeriods; ++period)
                 {
-                    const std::map<std::string, double> OUTS = semodel.getoutput(
+                    const std::map<std::string, double> OUTS = semodel.getOutput(
                         output,
                         period,
                         Core::FMToutputlevel::totalonly);
@@ -648,8 +648,8 @@ namespace FMTWrapperCore
                     const std::string outputname = output.getname() + "_" + std::to_string(period) + ".tif";
                     const std::string outputrasterpath = outputPath + outputname;
 
-                    const Spatial::FMTlayer<double> outputlayer = semodel.getspatialoutput(output, period);
-                    areaparser.writelayer(outputlayer, outputrasterpath);
+                    const Spatial::FMTlayer<double> outputlayer = semodel.getSpatialOutput(output, period);
+                    areaparser.writeLayer(outputlayer, outputrasterpath);
 
                     rasterFiles.push_back(outputrasterpath);
                 }
@@ -678,12 +678,12 @@ namespace FMTWrapperCore
         try
         {
             Parser::FMTareaparser areaparser;
-            const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
+            const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
 
             for (size_t period = 1; period <= static_cast<size_t>(numberOfPeriods); ++period)
             {
                 std::vector<std::vector<Graph::FMTpredictor>> predictors =
-                    areaparser.writepredictors(
+                    areaparser.writePredictors(
                         rasterPath,
                         schedule,
                         predictorYields,
@@ -692,7 +692,7 @@ namespace FMTWrapperCore
 
                 if (predictorsData.predictorNames.empty() && !predictors.empty() && !predictors.back().empty())
                 {
-                    predictorsData.predictorNames = predictors.back().back().getpredictornames(predictorYields);
+                    predictorsData.predictorNames = predictors.back().back().getPredictorNames(predictorYields);
                 }
 
                 // Extraire les valeurs pour chaque nœud
@@ -704,7 +704,7 @@ namespace FMTWrapperCore
                         PredictorsData::PredictorNode node;
                         node.period = period;
                         node.nodeIndex = indexPredictors;
-                        node.values = predictorslist.back().getpredictors();
+                        node.values = predictorslist.back().getPredictors();
 
                         predictorsData.nodes.push_back(node);
                     }
@@ -733,7 +733,7 @@ namespace FMTWrapperCore
         try
         {
             Parser::FMTscheduleparser scheduparser;
-            const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
+            const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
             const std::vector<Core::FMTschedule> schedules = semodel.GetSchedules(schedule);
 
             schedulePath = outputPath + semodel.getname() + "._seq";
@@ -763,10 +763,10 @@ namespace FMTWrapperCore
         try
         {
             Parser::FMTareaparser areaparser;
-            const Spatial::FMTSpatialSchedule& schedule = semodel.getspschedule();
+            const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
 
-            areaparser.writeforest(
-                schedule.getforestperiod(0),
+            areaparser.writeForest(
+                schedule.getForestPeriod(0),
                 semodel.getthemes(),
                 themeRasterPaths,
                 ageRasterPath,

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -46,14 +46,14 @@ void exportGraph()
 			"@DocString(FMTgraphstats::output_cols)");
 
 	bp::class_<Graph::FMTpredictor>("FMTpredictor", "@DocString(FMTpredictor)")
-		.def("getpredictors", &Graph::FMTpredictor::getpredictors,
+		.def("getpredictors", &Graph::FMTpredictor::getPredictors,
 			"@DocString(FMTpredictor::getpredictors)")
-		.def("getpredictornames", &Graph::FMTpredictor::getpredictornames,
+		.def("getpredictornames", &Graph::FMTpredictor::getPredictorNames,
 			"@DocString(FMTpredictor::getpredictornames)");
 
-	define_pylist<Graph::FMTpredictor>();
-	define_pydict<int, int>();
-	define_pylist<std::vector<Graph::FMTpredictor>>();
+	definePyList<Graph::FMTpredictor>();
+	definePyDict<int, int>();
+	definePyList<std::vector<Graph::FMTpredictor>>();
 	bp::enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
 		.value("schedulebuild", Graph::FMTgraphbuild::schedulebuild)
 		.value("fullbuild", Graph::FMTgraphbuild::fullbuild)
@@ -63,7 +63,7 @@ void exportGraph()
 	//	.def_pickle(FMT_pickle_suite<Graph::FMTgraph>());
 
 	bp::class_<Graph::FMTlinegraph>("FMTlinegraph","@DocString(FMTgraph)")
-		.def("getperiodactionids",&Graph::FMTlinegraph::getperiodactionids,"@DocString(FMTgraphstats::getperiodactionids)");
+		.def("getperiodactionids",&Graph::FMTlinegraph::getPeriodActionIds,"@DocString(FMTgraphstats::getperiodactionids)");
 
 }
 

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -21,7 +21,7 @@ namespace Models
 {
 	FMTmatrixbuild::~FMTmatrixbuild() = default;
 
-	std::string FMTmatrixbuild::formatformatrixname(std::string name,bool shortformat) const
+	std::string FMTmatrixbuild::formatForMatrixName(std::string name,bool shortformat) const
 	{
 		std::string to = "_";
 		if (shortformat)
@@ -32,19 +32,19 @@ namespace Models
 		return name;
 	}
 
-	void FMTmatrixbuild::sortelementsandclean(std::vector<int>& elements) const
+	void FMTmatrixbuild::sortElementsAndClean(std::vector<int>& elements) const
 		{
 		std::sort(elements.begin(), elements.end());
 		elements.erase(std::unique(elements.begin(), elements.end()), elements.end());
 		}
 
-	void FMTmatrixbuild::sortandcleandeleted()
+	void FMTmatrixbuild::sortAndCleanDeleted()
 		{
-		sortelementsandclean(deletedconstraints);
-		sortelementsandclean(deletedvariables);
+		sortElementsAndClean(deletedconstraints);
+		sortElementsAndClean(deletedvariables);
 		}
 
-	int FMTmatrixbuild::getrow(int whichRow, double &rowLower, double &rowUpper,
+	int FMTmatrixbuild::getRow(int whichRow, double &rowLower, double &rowUpper,
 		std::vector<int>& indices, std::vector<double>&elements) const 
 		{
 		const int * indicesarray;
@@ -58,7 +58,7 @@ namespace Models
 		return sizeofrow;
 		}
 
-	int FMTmatrixbuild::getcol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
+	int FMTmatrixbuild::getCol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
 		std::vector<int>& indices, std::vector<double>&elements) const
 		{
 		const int * indicesarray;
@@ -72,7 +72,7 @@ namespace Models
 		return sizeofcol;
 		}
 
-	void FMTmatrixbuild::formatallnames(bool shortformat)
+	void FMTmatrixbuild::formatAllNames(bool shortformat)
 		{
 		int colid = 0;
 		for (std::string& colname : columnnames)
@@ -81,7 +81,7 @@ namespace Models
 				{
 				colname = "C" + std::to_string(colid);
 				}
-			colname = formatformatrixname(colname, shortformat);
+			colname = formatForMatrixName(colname, shortformat);
 			++colid;
 			}
 		int rowid = 0;
@@ -91,14 +91,14 @@ namespace Models
 				{
 				rowname = "R" + std::to_string(rowid);
 				}
-			rowname = formatformatrixname(rowname, shortformat);
+			rowname = formatForMatrixName(rowname, shortformat);
 			++rowid;
 			}
 
 		}
 
 
-	void FMTmatrixbuild::setcolname(const std::string& name, const int& columnid)
+	void FMTmatrixbuild::setColName(const std::string& name, const int& columnid)
 		{
 		const size_t sizeofcontainer = static_cast<size_t>(columnid + 1);
 		if (sizeofcontainer>columnnames.size())
@@ -109,7 +109,7 @@ namespace Models
 		}
 
 
-	void FMTmatrixbuild::setrowname(const std::string& name, const int& rowid)
+	void FMTmatrixbuild::setRowName(const std::string& name, const int& rowid)
 		{
 		const size_t sizeofcontainer = static_cast<size_t>(rowid + 1);
 		if (sizeofcontainer > rownames.size())
@@ -128,13 +128,13 @@ namespace Models
 			
 			if (!deletedconstraints.empty())
 			{
-				sortelementsandclean(deletedconstraints);
+				sortElementsAndClean(deletedconstraints);
 				solver->deleteRows(static_cast<int>(deletedconstraints.size()), &deletedconstraints[0]);
 				deletedconstraints.clear();
 			}
 			if (!deletedvariables.empty())
 			{
-				sortelementsandclean(deletedvariables);
+				sortElementsAndClean(deletedvariables);
 				solver->deleteCols(static_cast<int>(deletedvariables.size()), &deletedvariables[0]);
 				deletedvariables.clear();
 			}
@@ -209,7 +209,7 @@ namespace Models
 		return *this;
 		}
 
-	std::string FMTmatrixbuild::getrowstosynchronize() const
+	std::string FMTmatrixbuild::getRowsToSynchronize() const
 		{
 		std::string rows;
 		for (int irow =0; irow< rowsbuild->numberRows();++irow)
@@ -252,7 +252,7 @@ namespace Models
 		rows += "\n";
 		return rows;
 		}
-	std::string FMTmatrixbuild::getcolstosynchronize() const
+	std::string FMTmatrixbuild::getColsToSynchronize() const
 		{
 		std::string cols;
 		for (int icol = 0; icol < colsbuild->numberColumns(); ++icol)

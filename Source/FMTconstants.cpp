@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -20,7 +20,7 @@ void FMTconstants::set(const std::string& key, std::vector<double>values)
     {
     data[key] = values;
     }
-bool FMTconstants::isconstant(std::string value) const
+bool FMTconstants::isConstant(std::string value) const
     {
     if (value.find("#")!= std::string::npos)
         {
@@ -63,7 +63,7 @@ template int FMTconstants::get<int>(std::string key, int period) const;
 template size_t FMTconstants::get<size_t>(std::string key, int period) const;
 
 template<typename T>
-std::vector<T>FMTconstants::getall(std::string key) const
+std::vector<T>FMTconstants::getAll(std::string key) const
 {
 	std::vector<T>values;
 	try {
@@ -79,9 +79,9 @@ std::vector<T>FMTconstants::getall(std::string key) const
 	return values;
 }
 
-template std::vector<double>FMTconstants::getall<double>(std::string key) const;
-template std::vector<int>FMTconstants::getall<int>(std::string key) const;
-template std::vector<size_t> FMTconstants::getall<size_t>(std::string key) const;
+template std::vector<double>FMTconstants::getAll<double>(std::string key) const;
+template std::vector<int>FMTconstants::getAll<int>(std::string key) const;
+template std::vector<size_t> FMTconstants::getAll<size_t>(std::string key) const;
 
 
 FMTconstants& FMTconstants::operator = (const FMTconstants& rhs)

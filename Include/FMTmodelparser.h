@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -85,7 +85,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		use each folder in templatefolder has scenarios of the base model. Each folders within the templatefolder will will gave their names
 		to the FMTmodel. So within a given subfolder it will read *._act, *._yld and so on...
 		*/
-		std::vector<Models::FMTmodel>readtemplates(const std::string& primarym_location,const std::string& templatefolder);
+		std::vector<Models::FMTmodel>readTemplates(const std::string& primarym_location,const std::string& templatefolder);
 		// DocString: FMTmodelparser::readproject
 		/**
 		The readproject function reads multiple scenarios based on a primary file location (.pri).
@@ -115,11 +115,11 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		*/
 		std::vector<std::vector<Core::FMTschedule>>readschedules(const std::string& primarym_location,
 			const std::vector<Models::FMTmodel>& models);
-		// DocString: FMTmodelparser::getconstraintsfromstring
+		// DocString: FMTmodelparser::getConstraintsFromString
 		/**
 		Get constraints from string.
 		*/
-		std::vector<Core::FMTconstraint>getconstraintsfromstring(std::string constraintstr,
+		std::vector<Core::FMTconstraint>getConstraintsFromString(std::string constraintstr,
 			const Models::FMTmodel& model,Core::FMTconstants constants = Core::FMTconstants());
 		// DocString: FMTmodelparser::write
 		/**
@@ -139,18 +139,18 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 			const std::string& p_modelName,
 			GDALDataset* p_dataset,
 			std::vector<std::string> p_creationOptions = std::vector<std::string>()) const;
-		// DocString: FMTmodelparser::fillupinfeasibles
+		// DocString: FMTmodelparser::fillUpInfeasibles
 		/**
 		Fill up the OGRlayer of infeasible values.
 		*/
-		void fillupinfeasibles(OGRLayer* layer,
+		void fillUpInfeasibles(OGRLayer* layer,
 			const std::vector<Core::FMToutput>&theoutputs,
-			const int& iteration,const int& firstperiod, const int&lastperiod) const;
-		// DocString: FMTmodelparser::writefeatures
+			const int& iteration,const int& firstPeriod, const int&lastPeriod) const;
+		// DocString: FMTmodelparser::writeFeatures
 		/**
 		Write multiple features (outputs)
 		*/
-		void writefeatures(OGRLayer* layer,const int& firstperiod, const int& iteration,
+		void writeFeatures(OGRLayer* layer,const int& firstPeriod, const int& iteration,
 			const std::vector<Core::FMToutput>&theoutputs,
 			const std::map<std::string,std::vector<std::vector<double>>>& values, bool writeNaN = false)const;
 		// DocString: FMTmodelparser::writeresults
@@ -160,35 +160,35 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		*/
 		void writeresults(const Models::FMTmodel& model,
 			const std::vector<Core::FMToutput>&theoutputs,
-			const int& firstperiod, const int& lastperiod,
+			const int& firstPeriod, const int& lastPeriod,
 			const std::string& location,
 			Core::FMToutputlevel level = Core::FMToutputlevel::standard,
 			std::string gdaldrivername= "CSV") const;
 		#endif 
 	protected:
 	#ifdef FMTWITHGDAL
-		// DocString: FMTmodelparser::getiterationsvalues()
+		// DocString: FMTmodelparser::getIterationsValues()
 		/**
 		Go back in the layer and get all values per iteration and periods.
 		*/
-		std::map<std::string, std::vector<std::vector<double>>>getiterationsvalues(OGRLayer* layer) const;
-		// DocString: FMTmodelparser::createdriftlayer()
+		std::map<std::string, std::vector<std::vector<double>>>getIterationsValues(OGRLayer* layer) const;
+		// DocString: FMTmodelparser::createDriftLayer()
 		/**
 		Create a output drift layer.
 		*/
-		OGRLayer* createdriftlayer(GDALDataset* dataset, std::vector<std::string> creationoptions = std::vector<std::string>()) const;
+		OGRLayer* createDriftLayer(GDALDataset* dataset, std::vector<std::string> creationoptions = std::vector<std::string>()) const;
 		// DocString: FMTmodelparser::writedriftr()
 		/**
 		Go back in the layer and get all values per iteration and periods.
 		*/
-		void writedrift(OGRLayer* layer, const std::map<std::string, std::map<double, std::vector<double>>>& lowervalues,
+		void writeDrift(OGRLayer* layer, const std::map<std::string, std::map<double, std::vector<double>>>& lowervalues,
 			const std::map<std::string, std::map<double, std::vector<double>>>& uppervalues) const;
 	#endif
-		// DocString: FMTmodelparser::writeprimary()
+		// DocString: FMTmodelparser::writePrimary()
 		/**
 		Write the primary file with all the other file name.
 		*/
-		void writeprimary(
+		void writePrimary(
 			const std::string& location,
 			const std::string& lanfile,
 			const std::string& arefile,
@@ -199,11 +199,11 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 			const std::string& optfile,
 			const std::string& liffile,
 			std::string seqfile = std::string()) const;
-		// DocString: FMTmodelparser::writemodel
+		// DocString: FMTmodelparser::writeModel
 		/**
 		Base function to write model section if string non empty then write the corresponding section of the model with the schedules also if not empty
 		*/
-		void writemodel(const Models::FMTmodel& model,
+		void writeModel(const Models::FMTmodel& model,
 			const std::string& lanfile,
 			const std::string& arefile,
 			const std::string& yldfile,
@@ -214,24 +214,24 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 			const std::string& liffile,
 			const std::string& seqfile) const;
 	private:
-		// DocString: FMTmodelparser::referenceread
+		// DocString: FMTmodelparser::referenceRead
 		/**
 		When reading multiple scenarios at the same time, sometime some scenarios share the same section.
 		Instead of reading multiple time the same section this function read it once or reference it to
 		a section of a other model in the (models) vector.
 		*/
-		Models::FMTmodel referenceread(std::map<std::string, std::vector<int>>& commonm_sections,
+		Models::FMTmodel referenceRead(std::map<std::string, std::vector<int>>& commonm_sections,
 			std::vector<Models::FMTmodel>& models,
 			const std::string& con, const std::string& lan,
 			const std::string& lif, const std::string& are, const std::string& yld,
 			const std::string& act, const std::string& tr, const std::string& out,
 			std::string opt = std::string(), bool allow_mapping = false);
-		// DocString: FMTmodelparser::readfromfolder
+		// DocString: FMTmodelparser::readFromFolder
 		/**
 		Read models from a folder (can be scenarios), based on a primarym_location, if scenarios is empty it will read all models in the
 		folder, if validatescenarioname is true it will only read model's section with name matching the primary name else it will read anything.
 		*/
-		std::vector<Models::FMTmodel>readfromfolder(const std::string& primarym_location,
+		std::vector<Models::FMTmodel>readFromFolder(const std::string& primarym_location,
 			const std::string& folder,
 			std::vector<std::string>scenarios,
 			bool validatescenarioname,

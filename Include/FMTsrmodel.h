@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -64,12 +64,12 @@ namespace Models
 		This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTsrmodel is also postsolved.
 		*/
 		virtual void postsolve(const FMTmodel& originalbasemodel);
-		// DocString: FMTsrmodel::setparallellogger
+		// DocString: FMTsrmodel::setParallelLogger
 		/**
 		Solver's logger cannot work in parallel so you need to pass a logger owned
 		by the thead to the solver to make sure it does not work in concurrency.
 		*/
-		void setparallellogger(Logging::FMTlogger& logger) override;
+		void setParallelLogger(Logging::FMTlogger& logger) override;
 		// DocString: FMTsrmodel::getavailablesolverinterface
 		/**
 		Return a vector of solverinterface available
@@ -127,94 +127,94 @@ namespace Models
 		Comparison operator of FMTsrmodel
 		*/
 		bool operator != (const FMTsrmodel& rhs) const;
-		// DocString: FMTsrmodel::unboundsolution
+		// DocString: FMTsrmodel::unboundSolution
 		/**
 		Unbound the primal bounds of a given period.
 		*/
-		bool unboundsolution(int period);
-		// DocString: FMTsrmodel::isperiodbounded
+		bool unboundSolution(int period);
+		// DocString: FMTsrmodel::isPeriodBounded
 		/**
 		Check if FMTdevelopment area are bounded on there primal variables for a given period.
 		*/
-		bool isperiodbounded(int period) const;
-		// DocString: FMTsrmodel::cleargraphdevelopements
+		bool isPeriodBounded(int period) const;
+		// DocString: FMTsrmodel::clearGraphDevelopements
 		/**
 		Clear developments location by periods in the graph
 		*/
-		void cleargraphdevelopements();
-		// DocString: FMTsrmodel::cleargraphcache
+		void clearGraphDevelopements();
+		// DocString: FMTsrmodel::clearGraphCache
 		/**
 		Clear the node caching in the graph
 		*/
-		void cleargraphcache();
-		// DocString: FMTsrmodel::setsolution
+		void clearGraphCache();
+		// DocString: FMTsrmodel::setSolution
 		/**
 		If the user wants to set a solution for a given period for warmstarting the model or prepare to
 		bound the model to that solution.
 		*/
-		bool setsolution(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTsrmodel::setsolutionbylp
+		bool setSolution(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTsrmodel::setSolutionByLp
 		/**
 		In some cases if you avec a lot of _lockexcempt actions comming from a Ws model it might be easier to
-		use the setsolutionbylp to set the solution on a partial graph. This function will change the objective function,
+		use the setSolutionByLp to set the solution on a partial graph. This function will change the objective function,
 		constraints and variables bounds so juste use it in a "Get results" context ( only valid for partial graph).
 		*/
-		bool setsolutionbylp(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTsrmodel::forcesolution
+		bool setSolutionByLp(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTsrmodel::forceSolution
 		/**
 		Force a solution by using a schedule based on proportions instead of area. So if there is modifications to the model, it will
 		place only the parts of the solution that are possible considering the modifications. 
 		The schedule must be with lock indicators if locks are used in the model. 
 		*/
-		bool forcesolution(int period, const Core::FMTschedule& proportionschedulewithlock);
-		// DocString: FMTsrmodel::getsolution
+		bool forceSolution(int period, const Core::FMTschedule& proportionschedulewithlock);
+		// DocString: FMTsrmodel::getSolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
 		If with lock is true then the schedule will contain locked developement.
 		*/
-		Core::FMTschedule getsolution(int period, bool withlock = false) const final;
-		// DocString: FMTsrmodel::getscheduleproportions
+		Core::FMTschedule getSolution(int period, bool withlock = false) const final;
+		// DocString: FMTsrmodel::getScheduleProportions
 		/**
-		Same as getsolution but the schedule area represent the percentage of area of the developement.
+		Same as getSolution but the schedule area represent the percentage of area of the developement.
 		*/
-		Core::FMTschedule getscheduleproportions(int period, bool withlock) const;
-		// DocString: FMTsrmodel::getstats
+		Core::FMTschedule getScheduleProportions(int period, bool withlock) const;
+		// DocString: FMTsrmodel::getStats
 		/**
 		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
 		@return the full stats 
 		*/
-		Graph::FMTgraphstats getstats() const;
-		// DocString: FMTsrmodel::getstats
+		Graph::FMTgraphstats getStats() const;
+		// DocString: FMTsrmodel::getStats
 		/**
 		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
 		@param[in] p_Subset the mask subset
 		@return the graph stats for the graph.
 		*/
 		Graph::FMTgraphstats getGraphStats(const Core::FMTmask& p_Subset) const;
-		// DocString: FMTsrmodel::getcopy
+		// DocString: FMTsrmodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
-		If period = 0 it returns the FMTmodel::getcopy if period > 0 then it returns
+		If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
 		a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
 		Need to have a builded graph with a solution to use this function.
 		*/
-		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
-		// DocString: FMTsrmodel::getoutput
+		virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
+		// DocString: FMTsrmodel::getOutput
 		/**
 		Get the output value of a output for a given period using the solution of the matrix.
 		the map key returned consist of output name
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or developement name if level == FMToutputlevel::developpement
 		*/
-		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
+		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		#if defined FMTWITHR
-		// DocString: FMTsrmodel::getoutputsdataframe
+		// DocString: FMTsrmodel::getOutputsDataFrame
 		/**
 		Returns a dataframe filled up with outputs from first period to last period at the developement level.
 		For multiple outputs.
 		*/
-		Rcpp::DataFrame getoutputsdataframe(const std::vector<Core::FMToutput>& outputsdata, int firstperiod, int lastperiod) const;
+		Rcpp::DataFrame getOutputsDataFrame(const std::vector<Core::FMToutput>& outputsdata, int firstPeriod, int lastPeriod) const;
 		#endif 
 		// DocString: FMTsrmodel::buildperiod
 		/**
@@ -226,12 +226,12 @@ namespace Models
 		*/
 		Graph::FMTgraphstats buildperiod(Core::FMTschedule schedule = Core::FMTschedule(),
 				bool forcepartialbuild = false, int compressageclassoperability = 1);
-		// DocString: FMTsrmodel::getfirstactiveperiod
+		// DocString: FMTsrmodel::getFirstActivePeriod
 		/**
 		Return the first active period should be always 0 in case or planning.
-		But when eraseperiod is called the first active period is going to move to 1 and so on.
+		But when erasePeriod is called the first active period is going to move to 1 and so on.
 		*/
-		int getfirstactiveperiod() const;
+		int getFirstActivePeriod() const;
 		// DocString: FMTsrmodel::getarea
 		/**
 		This function returns an area for a given period for a FMTsrmodel.
@@ -267,16 +267,16 @@ namespace Models
 		std::vector<Core::FMTactualdevelopment>getPotentialArea(int p_Period = 0, bool p_BeforeGrowAndDeath = false) const;
 		
 		
-		// DocString: FMTsrmodel::getsolverptr()
+		// DocString: FMTsrmodel::getSolverPtr()
 		/**
 		Get a pointer to the solver behind the model.
 		*/
-		FMTlpsolver* getsolverptr();
-		// DocString: FMTsrmodel::getconstsolverptr()
+		FMTlpsolver* getSolverPtr();
+		// DocString: FMTsrmodel::getConstSolverPtr()
 		/**
 		Get a pointer to the const solver behind the model.
 		*/
-		const FMTlpsolver* getconstsolverptr() const;
+		const FMTlpsolver* getConstSolverPtr() const;
 		// DocString: FMTsrmodel::clone
 		/**
 		Get a clone of the FMTsrmodel
@@ -292,12 +292,12 @@ namespace Models
 		Presolve a FMTsrmodel.
 		*/
 		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const override;
-		// DocString: FMTsrmodel::boundsolution
+		// DocString: FMTsrmodel::boundSolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for
 		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
 		*/
-		bool boundsolution(int period, double tolerance = FMT_DBL_TOLERANCE);
+		bool boundSolution(int period, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTsrmodel::setparameter(const FMTintmodelparameters, const int)
 		/**
 		Override setter for intmodelparameters.
@@ -308,11 +308,11 @@ namespace Models
 		Override setter for boolmodelparameters.
 		*/
 		bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
-		// DocString: FMTsrmodel::getgraphstats
+		// DocString: FMTsrmodel::getGraphStats
 		/**
 		Return the statistics of the actual graph (number of cols,rows,edges,verticies)
 		*/
-		Graph::FMTgraphstats getgraphstats() const;
+		Graph::FMTgraphstats getGraphStats() const;
 		// DocString: FMTsrmodel::getRotations
 		/**
 		Based on a mask and an action get all the unique rotations (in period) taken to complete a serie of action. A serie can contain a subserie for an
@@ -323,22 +323,22 @@ namespace Models
 		Returns: Unique FMTSerie (where the serie is in string action1-action2-action3... string is the serie and int is the number of periods taken to complete the serie.
 		*/
 		std::set<Core::FMTSerie>getRotations(const Core::FMTmask& mask, const std::string& aggregate) const;
-		// DocString: FMTsrmodel::isoptimal
+		// DocString: FMTsrmodel::isOptimal
 		/**
 		Return true if the solver consider the solution optimal.
 		*/
-		virtual bool isoptimal() const;
-		// DocString: FMTsrmodel::getobjectivevalue
+		virtual bool isOptimal() const;
+		// DocString: FMTsrmodel::getObjectiveValue
 		/**
 		Return the value of the solver objective.
 		*/
-		virtual double getobjectivevalue() const;
-		// DocString: FMTsrmodel::getnochoice
+		virtual double getObjectiveValue() const;
+		// DocString: FMTsrmodel::getNoChoice
 		/**
 		Giving a base_mask returns period 0 developpements that have no actions assigned for the whole planning horizon.
 		The developpements mask have to be a subset of the base_mask.
 		*/
-		std::vector<const Core::FMTdevelopment*> getnochoice(const Core::FMTmask& base_mask) const;
+		std::vector<const Core::FMTdevelopment*> getNoChoice(const Core::FMTmask& base_mask) const;
 		// DocString: FMTsrmodel::getAllMasks
 		/*
 		@brief Get all masks in string format for a complete grapoh only for selected themes
@@ -360,29 +360,29 @@ namespace Models
 		*/
 		bool summarize(const std::map<int, double>& variables,
 			std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const;
-		// DocString: FMTsrmodel::initializematrix
+		// DocString: FMTsrmodel::initializeMatrix
 		/**
 		Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
 		*/
-		Graph::FMTgraphstats initializematrix();
-		// DocString: FMTsrmodel::updatematrix
+		Graph::FMTgraphstats initializeMatrix();
+		// DocString: FMTsrmodel::updateMatrix
 		/**
 		During a call to build period after the graph has been updated with nes developments type the solverinterface matrix
 		need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
 		So area transfer row and natural growth plus action variables.
 		*/
-		Graph::FMTgraphstats updatematrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
+		Graph::FMTgraphstats updateMatrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
 			const Graph::FMTgraphstats& newstats);
 		// DocString: FMTsrmodel::getgraphlength
 		/**
 		Return the size of the graph.
 		*/
-		size_t getgraphsize() const;
-		// DocString: FMTsrmodel::postsolvegraph
+		size_t getGraphSize() const;
+		// DocString: FMTsrmodel::postsolveGraph
 		/**
 		Post solve this graph and return a presolved graph for each vertex and edges based on the original model.
 		*/
-		void postsolvegraph(const FMTmodel& originalbasemodel);
+		void postsolveGraph(const FMTmodel& originalbasemodel);
 		// DocString: FMTsrmodel::getActives
 		/**
 		@brief If the graph is not initialize then initialise the graph based on the area else return the actives verticies.
@@ -412,7 +412,7 @@ namespace Models
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 			ar& BOOST_SERIALIZATION_NVP(solver);
 			ar& BOOST_SERIALIZATION_NVP(m_graph);
-			solver.passinmessagehandler(*_logger);
+			solver.passInMessageHandler(*_logger);
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -29,11 +29,11 @@ void FMTtransition::setName(const std::string& p_name)
 	name = p_name;
 	}
 
-bool FMTtransition::isleaking() const
+bool FMTtransition::isLeaking() const
 	{
 	for (const auto& forkobj : *this)
 		{
-		if (forkobj.second.sumprop() != 100)
+		if (forkobj.second.sumProp() != 100)
 			{
 			return true;
 			}
@@ -102,7 +102,7 @@ bool FMTtransition::operator != (const FMTtransition& rhs) const
     return !(*this==rhs);
     }
 
-unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
+unsigned int FMTtransition::ageAfter(const std::vector<FMTdevelopment>& devs,
                                const FMTaction& action,
                                const FMTyields& ylds,
                                const std::vector<FMTtheme>& themes) const
@@ -117,7 +117,7 @@ unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
 				const std::vector<FMTdevelopmentpath>newpaths = dev.operate(action, *this, ylds, themes);
 				for (const FMTdevelopmentpath& path : newpaths)
 				{
-					total_age += path.getDevelopment().getage();
+					total_age += path.getDevelopment().getAge();
 					++age_count;
 				}
 			}
@@ -133,17 +133,17 @@ unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
     return (total_age/age_count);
     }
 
-std::vector<const FMTtheme*>FMTtransition::getstaticthemes(const std::vector<const FMTtheme*>& themes) const
+std::vector<const FMTtheme*>FMTtransition::getStaticThemes(const std::vector<const FMTtheme*>& themes) const
 	{
 	std::vector<const FMTtheme*>staticthemes = themes;
 	try {
 		std::vector<std::pair<FMTmask, FMTfork>>::const_iterator fork_it = this->begin();
 		while (fork_it != this->end() && !staticthemes.empty())
 		{
-			for (const FMTtransitionmask& trnmask : fork_it->second.getmasktrans())
+			for (const FMTtransitionmask& trnmask : fork_it->second.getMaskTrans())
 			{
 				const FMTmask msk = trnmask.getmask();
-				staticthemes = msk.getstaticthemes(staticthemes);
+				staticthemes = msk.getStaticThemes(staticthemes);
 			}
 			++fork_it;
 		}
@@ -155,18 +155,18 @@ std::vector<const FMTtheme*>FMTtransition::getstaticthemes(const std::vector<con
 	return staticthemes;
 	}
 
-std::vector<Core::FMTmask> FMTtransition::canproduce(const Core::FMTmask& testmask,const std::vector<Core::FMTtheme>& themes) const
+std::vector<Core::FMTmask> FMTtransition::canProduce(const Core::FMTmask& testmask,const std::vector<Core::FMTtheme>& themes) const
 	{
 		std::vector<Core::FMTmask> possiblesourcesfortransitions;
 		try {
 			for(const auto& forkobj : *this)
 			{
 				const Core::FMTmask unshrinkedsourcemask(std::string(forkobj.first), themes);
-				for (const FMTtransitionmask& transmask : forkobj.second.getmasktrans())
+				for (const FMTtransitionmask& transmask : forkobj.second.getMaskTrans())
 				{
 					Core::FMTmask refinedmask = transmask.getmask().refine(unshrinkedsourcemask,themes);
-					const Core::FMTmask intersect = refinedmask.getintersect(testmask);
-					if(!testmask.isnotthemessubset(intersect,themes))
+					const Core::FMTmask intersect = refinedmask.getIntersect(testmask);
+					if(!testmask.isNotThemesSubset(intersect,themes))
 					{
 						possiblesourcesfortransitions.push_back(unshrinkedsourcemask.refine(testmask, themes));
 						break;
@@ -182,13 +182,13 @@ std::vector<Core::FMTmask> FMTtransition::canproduce(const Core::FMTmask& testma
 
 	}
 
-const FMTfork* FMTtransition::getfork(const Core::FMTdevelopment& developement,const FMTyields& ylds) const
+const FMTfork* FMTtransition::getFork(const Core::FMTdevelopment& developement,const FMTyields& ylds) const
     {
 	try{
-	const Core::FMTyieldrequest& request = developement.getyieldrequest();
+	const Core::FMTyieldrequest& request = developement.getYieldRequest();
     for(const FMTtransition::const_iterator fork : this->findsets(developement.getmask()))
        {
-		if (fork->second.allowwithoutyield(developement.getperiod(), developement.getage(), developement.getlock()))
+		if (fork->second.allowwithoutyield(developement.getperiod(), developement.getAge(), developement.getLock()))
 			{
 			const std::vector<FMTyldbounds>&bounds = fork->second.getyldbounds();
 			size_t bid = 0;
@@ -216,7 +216,7 @@ const FMTfork* FMTtransition::getfork(const Core::FMTdevelopment& developement,c
     return nullptr;
     }
 
-FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
+FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	const FMTyields& ylds) const
 {
 	FMTmask bestmask;
@@ -224,10 +224,10 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 		std::map<FMTmask, unsigned int>hits;
 	for (const FMTdevelopment& dev : devs)
 	{
-		const FMTfork* fork = this->getfork(dev,ylds);
+		const FMTfork* fork = this->getFork(dev,ylds);
 		if (fork)
 		{
-			for (const FMTtransitionmask& target : fork->getmasktrans())
+			for (const FMTtransitionmask& target : fork->getMaskTrans())
 			{
 				const FMTmask msktarget = target.getmask();
 				if (hits.find(msktarget) == hits.end())
@@ -257,14 +257,14 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 	}
     return bestmask;
     }
- std::map<std::string, std::vector<FMTdevelopment>> FMTtransition::attribute_targets(const std::vector<FMTdevelopment>& devs,
+ std::map<std::string, std::vector<FMTdevelopment>> FMTtransition::attributeTargets(const std::vector<FMTdevelopment>& devs,
 	 const FMTyields& ylds, const std::vector<FMTtheme>& themes) const
 	{
 	 std::map<std::string, std::vector<FMTdevelopment>>results;
 	 try {
 		 for (const FMTdevelopment& dev : devs)
 		 {
-			 const FMTfork* fork = this->getfork(dev,ylds);
+			 const FMTfork* fork = this->getFork(dev,ylds);
 			 if (fork)
 			 {
 				 std::string key = this->name;
@@ -318,7 +318,7 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 		 {
 			 compressmasks(p_newthemes);
 		 }
-		 if (!p_filter.emptyflipped())
+		 if (!p_filter.emptyFlipped())
 		 {
 			 for (auto& transitionobject : *this)
 			 {

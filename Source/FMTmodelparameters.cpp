@@ -70,7 +70,7 @@ namespace Models
     }
 
     //###Setter
-    bool FMTmodelparameters::setintparameter(FMTintmodelparameters key,const int& value)
+    bool FMTmodelparameters::setIntParameter(FMTintmodelparameters key,const int& value)
     {
         try{
             if (key == LastIntModelParam) return (false) ;
@@ -94,7 +94,7 @@ namespace Models
         return true;
     }
 
-    bool FMTmodelparameters::setdblparameter(FMTdblmodelparameters key,const double& value)
+    bool FMTmodelparameters::setDblParameter(FMTdblmodelparameters key,const double& value)
     {
         try{
             if (key == LastDblModelParam) return (false) ;
@@ -106,7 +106,7 @@ namespace Models
 
     }
 
-    bool FMTmodelparameters::setboolparameter(FMTboolmodelparameters key,const bool& value)
+    bool FMTmodelparameters::setBoolParameter(FMTboolmodelparameters key,const bool& value)
     {
         try{
             if (key == LastBoolModelParam) return (false) ;
@@ -117,7 +117,7 @@ namespace Models
         return true;
     }
 
-    bool FMTmodelparameters::setstrparameter(FMTstrmodelparameters p_key, const std::string& p_value)
+    bool FMTmodelparameters::setStrParameter(FMTstrmodelparameters p_key, const std::string& p_value)
     {
         try {
             if (p_key == LastStrModelParam) return (false);
@@ -129,7 +129,7 @@ namespace Models
         return true;
     }
 
-    bool FMTmodelparameters::setperiodcompresstime(const int& period, const int& value)
+    bool FMTmodelparameters::setPeriodCompressTime(const int& period, const int& value)
     {
         try{
             m_compresstime[period]=value;
@@ -140,7 +140,7 @@ namespace Models
 
     }
     //###Getter
-    int FMTmodelparameters::getintparameter(FMTintmodelparameters key) const
+    int FMTmodelparameters::getIntParameter(FMTintmodelparameters key) const
     {
         int value;
         try{
@@ -158,7 +158,7 @@ namespace Models
         return value;
     }
 
-    double FMTmodelparameters::getdblparameter(FMTdblmodelparameters key) const
+    double FMTmodelparameters::getDblParameter(FMTdblmodelparameters key) const
     {
         double value;
         try{
@@ -176,7 +176,7 @@ namespace Models
         return value;
     }
 
-    bool FMTmodelparameters::getboolparameter(FMTboolmodelparameters key) const
+    bool FMTmodelparameters::getBoolParameter(FMTboolmodelparameters key) const
     {
         bool value;
         try{
@@ -194,7 +194,7 @@ namespace Models
         return value;
     }
 
-    const std::string& FMTmodelparameters::getstrparameter(FMTstrmodelparameters p_key) const
+    const std::string& FMTmodelparameters::getStrParameter(FMTstrmodelparameters p_key) const
     {
         try {
             if (p_key == LastStrModelParam)
@@ -212,7 +212,7 @@ namespace Models
         return nullptr;
     }
 
-    int FMTmodelparameters::getperiodcompresstime(const int& period) const
+    int FMTmodelparameters::getPeriodCompressTime(const int& period) const
     {
         int value;
         try{
@@ -225,7 +225,7 @@ namespace Models
 
     }
 
-    std::vector<int> FMTmodelparameters::getcompresstime() const
+    std::vector<int> FMTmodelparameters::getCompressTime() const
     {
         return m_compresstime;
     }

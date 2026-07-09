@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -57,11 +57,11 @@ namespace Logging
 			Redirect the log information to a file.
 			*/
 			void redirectofile(const std::string& filename, bool logstamp = true);
-			// DocString: FMTlogger::closefilestream
+			// DocString: FMTlogger::closeFileStream
 			/**
 			Close the file stream if error occured.
 			*/
-			void closefilestream();
+			void closeFileStream();
 			// DocString: FMTlogger::operator=
 			/**
 			FMTlogger copy assignment operator.
@@ -155,11 +155,11 @@ namespace Logging
 			*/
 			virtual bool logwithlevel(const std::string& p_msg, const int& p_messageLevel) const;
 			#ifdef FMTWITHOSI
-			// DocString: FMTlogger::getsolverlogger
+			// DocString: FMTlogger::getSolverLogger
 			/**
 			Return the ABSTRACT logger used by osisolverinterface.
 			*/
-			virtual FMTsolverlogger* getsolverlogger();
+			virtual FMTsolverlogger* getSolverLogger();
 			#endif
 			// DocString: FMTlogger::Clone
 			/**
@@ -217,11 +217,11 @@ namespace Logging
 			*/
 			template<class Archive>
 			void serialize(Archive& ar, const unsigned int file_version);
-			// DocString: FMTlogger::settofile
+			// DocString: FMTlogger::setToFile
 			/**
 			Redirect the log information to a file.
 			*/
-			void settofile(const std::string& filename) const;
+			void setToFile(const std::string& filename) const;
 			
 		};
 

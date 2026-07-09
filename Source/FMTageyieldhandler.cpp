@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -20,7 +20,7 @@ namespace Core {
 		try {
 				value += "*Y " + std::string(mask) + "\n";
 				value += "_AGE \t";
-				const std::vector<std::string> yieldNames = getyieldnames();
+				const std::vector<std::string> yieldNames = getYieldNames();
 				for (const std::string& NAME : yieldNames)
 				{
 					value += NAME + "\t";
@@ -48,14 +48,14 @@ namespace Core {
 	}
 
 
-	bool FMTageyieldhandler::push_data(const std::string& yld, const double& value)
+	bool FMTageyieldhandler::pushData(const std::string& yld, const double& value)
 	{
-		return (basepush_data(m_elements, yld, value));
+		return (basePushData(m_elements, yld, value));
 	}
 
-	bool FMTageyieldhandler::push_data(const std::string& yld, const FMTdata& data)
+	bool FMTageyieldhandler::pushData(const std::string& yld, const FMTdata& data)
 	{
-		return (basepush_data(m_elements, yld,data));
+		return (basePushData(m_elements, yld,data));
 	}
 
 	FMTageyieldhandler::FMTageyieldhandler(const FMTmask& mask) :
@@ -75,11 +75,11 @@ namespace Core {
 	{
 		try {
 				try {
-					const int target = request.getdevelopment().getage();
+					const int target = request.getDevelopment().getAge();
 					std::map<std::string, Core::FMTdata, cmpYieldString>::const_iterator data0it = m_elements.find(yld);
 					if (data0it != m_elements.end())
 						{
-						return getlinearvalue(data0it->second.data, target,true);
+						return getLinearValue(data0it->second.data, target,true);
 						}
 				}catch (...)
 					{
@@ -99,12 +99,12 @@ namespace Core {
 		}
 
 
-	double FMTageyieldhandler::getlastvalue(const std::string yld) const
+	double FMTageyieldhandler::getLastValue(const std::string yld) const
 	{
 		std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		return it->second.data.back();
 	}
-	int FMTageyieldhandler::getage(const std::string yld, const double& value, const int& starting_age) const
+	int FMTageyieldhandler::getAge(const std::string yld, const double& value, const int& starting_age) const
 	{
 		int age = 0;
 		try {
@@ -135,11 +135,11 @@ namespace Core {
 		return age;
 	}
 
-	double FMTageyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange) const
+	double FMTageyieldhandler::getYieldLinearValue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange) const
 	{
 		try {
 			const FMTdata& lvalues = this->at(yldname);
-			return getlinearvalue(lvalues.data, request.getdevelopment().getage(),allowoutofrange);
+			return getLinearValue(lvalues.data, request.getDevelopment().getAge(),allowoutofrange);
 		}
 		catch (...)
 		{
@@ -148,18 +148,18 @@ namespace Core {
 		return 0;
 	}
 
-	int FMTageyieldhandler::getage(const FMTyieldrequest& request, const FMTspec& spec) const
+	int FMTageyieldhandler::getAge(const FMTyieldrequest& request, const FMTspec& spec) const
 	{
 		try {
 			const std::vector<std::string>&yieldnames = spec.getylds();
 			const std::vector<FMTyldbounds>&yieldbounds = spec.getyldbounds();
-			int age = request.getdevelopment().getage();
+			int age = request.getDevelopment().getAge();
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
-				if (containsyield(yieldnames.at(id)))
+				if (containsYield(yieldnames.at(id)))
 				{
 					const FMTyldbounds* bound = &yieldbounds.at(id);
-					const int new_age = getage(yieldnames.at(id), bound->getlower(), request.getdevelopment().getage());
+					const int new_age = getAge(yieldnames.at(id), bound->getlower(), request.getDevelopment().getAge());
 					if (new_age < age)
 					{
 						age = new_age;
@@ -175,7 +175,7 @@ namespace Core {
 		return 0;
 	}
 
-	std::unique_ptr<FMTyieldhandler> FMTageyieldhandler::getfromfactor(const double& factor,
+	std::unique_ptr<FMTyieldhandler> FMTageyieldhandler::getFromFactor(const double& factor,
 		std::vector<std::string>yieldnames) const
 	{
 		FMTageyieldhandler newhandler(*this);
@@ -227,13 +227,13 @@ namespace Core {
 	{
 		return m_elements.at(yldname);
 	}
-	bool FMTageyieldhandler::containsyield(const std::string& yldname) const
+	bool FMTageyieldhandler::containsYield(const std::string& yldname) const
 	{
 		return (m_elements.find(yldname) != m_elements.end());
 	}
 
 
-	std::vector<std::string>FMTageyieldhandler::getyieldnames() const
+	std::vector<std::string>FMTageyieldhandler::getYieldNames() const
 	{
 		std::vector<std::string>results;
 		results.reserve(m_elements.size());
@@ -245,7 +245,7 @@ namespace Core {
 		return results;
 	}
 
-	void FMTageyieldhandler::clearcache()
+	void FMTageyieldhandler::clearCache()
 	{
 		
 	}
@@ -255,17 +255,17 @@ namespace Core {
 		return std::unique_ptr<FMTyieldhandler>(new FMTageyieldhandler(*this));
 		}
 
-	FMTyldtype FMTageyieldhandler::gettype() const
+	FMTyldtype FMTageyieldhandler::getType() const
 		{
 		return FMTyldtype::FMTageyld;
 		}
 
-	std::map<std::string, std::vector<double>>FMTageyieldhandler::getallyieldsdata(const int& maxbase)const
+	std::map<std::string, std::vector<double>>FMTageyieldhandler::getAllYieldsData(const int& maxbase)const
 	{
 		std::map<std::string, std::vector<double>>localstuff;
 		try {
-			const int lastbase = getlastbase();
-			std::vector<int>bases = getbases();
+			const int lastbase = getLastBase();
+			std::vector<int>bases = getBases();
 			for (std::map<std::string, FMTdata, cmpYieldString>::const_iterator cit = m_elements.begin(); cit != m_elements.end(); cit++)
 			{
 				localstuff[cit->first] = std::vector<double>();
@@ -293,7 +293,7 @@ namespace Core {
 		return localstuff;
 	}
 
-	int FMTageyieldhandler::getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
+	int FMTageyieldhandler::getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
 	{
 		size_t locid = 0;
 		try {
@@ -301,12 +301,12 @@ namespace Core {
 				std::vector<double>::const_iterator location;
 				if (value < bound)
 				{
-					location = std::lower_bound(it->second.data.begin(), it->second.data.end(), bound);
+					location = std::lowerBound(it->second.data.begin(), it->second.data.end(), bound);
 				}
 				else if (value > bound)
 				{
 					std::vector<double>::const_iterator startinglocation = it->second.data.begin() + lowerstep;
-					location = std::upper_bound(startinglocation, it->second.data.end(), bound);
+					location = std::upperBound(startinglocation, it->second.data.end(), bound);
 				}
 				locid = std::distance(it->second.data.begin(), location);
 				locid = std::min(locid, (it->second.data.size() - 1));
@@ -319,12 +319,12 @@ namespace Core {
 		return static_cast<int>(locid);
 	}
 
-	double FMTageyieldhandler::getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const
+	double FMTageyieldhandler::getPeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const
 	{
 		double value = 0;
 		try {
-			const int peak = static_cast<int>(getpeakfrom(yld));
-			value = getchangesfrom(targetage, peak);
+			const int peak = static_cast<int>(getPeakfrom(yld));
+			value = getChangesFrom(targetage, peak);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTageyieldhandler::getpeak", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -334,7 +334,7 @@ namespace Core {
 
 
 
-	double FMTageyieldhandler::getpeakfrom(const std::string& yld, double maxvalue) const
+	double FMTageyieldhandler::getPeakfrom(const std::string& yld, double maxvalue) const
 	{
 		std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		int location = 0;
@@ -359,7 +359,7 @@ namespace Core {
 		return peak;
 	}
 
-	void FMTageyieldhandler::setyieldvalues(const std::string& yldname,const std::vector<int>& baseages,const std::vector<double>& values)
+	void FMTageyieldhandler::setYieldValues(const std::string& yldname,const std::vector<int>& baseages,const std::vector<double>& values)
 	{
 		try{
 			if(values.size()!=baseages.size())
@@ -368,10 +368,10 @@ namespace Core {
 				"Vector of baseages and values are not the same size.",
 				"FMTageyieldhandler::setvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
-			if(this->getbases().empty())
+			if(this->getBases().empty())
 			{
-				this->setbase(baseages);
-			}else if(this->getbases() != baseages)
+				this->setBase(baseages);
+			}else if(this->getBases() != baseages)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Vector of baseages and values of bases already set are different. \nYou must create a new FMTageyieldhandler for those values",
@@ -379,7 +379,7 @@ namespace Core {
 			}
 			for(const double& value : values)
 			{
-				this->push_data(yldname,value);
+				this->pushData(yldname,value);
 			}
 		}catch(...){
 			_exhandler->raisefromcatch("", "FMTageyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);

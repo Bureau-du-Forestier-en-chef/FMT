@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -33,35 +33,35 @@ class FMTEXPORT FMToutputnode
 		*/
 		FMToutputnode(const Core::FMTmask& generalmask,const std::string& actionaggregate);
 		size_t hash() const;
-		size_t hashforvalue() const;
-		bool allowcashdeduction() const;
-		bool singleperiod() const;
-		bool multiperiod() const;
-		bool ispastperiod() const;
-		bool isnull() const;
+		size_t hashForValue() const;
+		bool allowCashdeduction() const;
+		bool singlePeriod() const;
+		bool multiPeriod() const;
+		bool isPastPeriod() const;
+		bool isNull() const;
 		bool operator < (const FMToutputnode& rhs) const;
 		bool operator == (const FMToutputnode& rhs) const;
 		bool isSubsetOf(const FMToutputnode& rhs) const;
 		bool isSubsetOf(const FMToutputnode& rhs,const std::vector<Core::FMTaction>& actions) const;
-		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
-		inline int getoutputid() const
+		bool isSameButDifferentAction(const FMToutputnode& rhs) const;
+		inline int getOutputId() const
 			{
-			return source.getoutputorigin();
+			return source.getOutputOrigin();
 			}
 		inline bool isActionbased() const
 			{
 			return source.isAction();
 			}
-		bool issamevalues(const FMToutputnode& rhs) const;
+		bool isSameValues(const FMToutputnode& rhs) const;
 		operator std::string() const;
-		std::string gethashstring() const;
-		Core::FMTmask gethashmask() const;
-		void fillhashmaskspec(Core::FMTmask& basemask) const;
-		FMToutputnode setperiod(int period) const;
+		std::string getHashString() const;
+		Core::FMTmask getHashMask() const;
+		void fillHashMaskSpec(Core::FMTmask& basemask) const;
+		FMToutputnode setPeriod(int period) const;
 		FMToutputnode& operator = (const FMToutputnode& rhs);
-		int settograph(std::vector<int>& targetedperiods, int period,int max_period);
+		int setToGraph(std::vector<int>& targetedperiods, int period,int max_period);
 		~FMToutputnode()=default;
-		void fillupequation(std::map<std::string,std::vector<std::string>>& allequations,
+		void fillUpEquation(std::map<std::string,std::vector<std::string>>& allequations,
 			const std::map<std::string, double>& graphvalues,
 			const std::vector<std::string>& equation, const size_t& nodeid) const;
 	};

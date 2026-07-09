@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -47,7 +47,7 @@ namespace Heuristics
 		}
 		#endif
 
-		size_t FMTlpheuristicmthandler::best_heuristic() const
+		size_t FMTlpheuristicmthandler::bestHeuristic() const
 		{
 			double sol=heuristics[0]->getObjValue();
 			size_t bestsol=0;
@@ -65,16 +65,16 @@ namespace Heuristics
 
 		}
 
-		void FMTlpheuristicmthandler::reset_number_of_threads(const unsigned int& ncpu) const
+		void FMTlpheuristicmthandler::resetNumberOfThreads(const unsigned int& ncpu) const
 		{
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
 			{
-				heuristics[i]->setnumberofthreads(static_cast<size_t>(ncpu));
+				heuristics[i]->setNumberOfThreads(static_cast<size_t>(ncpu));
 			}
 
 		}
 
-		size_t FMTlpheuristicmthandler::initialsolve() const
+		size_t FMTlpheuristicmthandler::initialSolve() const
 		{
 			const unsigned int processor_count = boost::thread::hardware_concurrency();
 			int mosek_process = static_cast<int>(processor_count/heuristics.size());
@@ -83,18 +83,18 @@ namespace Heuristics
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
 			{
 				FMTlpheuristic* heuristic = heuristics[i];
-				heuristic->setnumberofthreads(static_cast<size_t>(mosek_process));
-				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::initialsolve, heuristic)));
+				heuristic->setNumberOfThreads(static_cast<size_t>(mosek_process));
+				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::initialSolve, heuristic)));
 			}
 			for(boost::thread& thr : threads)
 			{
 				thr.join();
 			}
-			reset_number_of_threads(processor_count);
-			return best_heuristic();
+			resetNumberOfThreads(processor_count);
+			return bestHeuristic();
 		}
 
-		size_t FMTlpheuristicmthandler::greedysolve(const unsigned int& iterations, const double& maxtime) const
+		size_t FMTlpheuristicmthandler::greedySolve(const unsigned int& iterations, const double& maxtime) const
 		{
 			const unsigned int processor_count = boost::thread::hardware_concurrency();
 			int mosek_process = static_cast<int>(processor_count/heuristics.size());
@@ -104,15 +104,15 @@ namespace Heuristics
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
 			{
 				FMTlpheuristic* heuristic = heuristics[i];
-				heuristic->setnumberofthreads(static_cast<size_t>(mosek_process));
-				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::paralleloptimize, heuristic, initialsolution,iterations,maxtime,Start)));
+				heuristic->setNumberOfThreads(static_cast<size_t>(mosek_process));
+				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::parallelOptimize, heuristic, initialsolution,iterations,maxtime,Start)));
 			}
 			for(boost::thread& thr : threads)
 			{
 				thr.join();
 			}
-			reset_number_of_threads(processor_count);
-			return best_heuristic();
+			resetNumberOfThreads(processor_count);
+			return bestHeuristic();
 		}
 }
 //BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristicmthandler)

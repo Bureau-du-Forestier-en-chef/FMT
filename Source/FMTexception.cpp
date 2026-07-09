@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -73,7 +73,7 @@ namespace Exception
 		holdup(false), _msg(), exceptiontype(lexception), section(lsection),method(lmethod),file(lfile),line(lline)
 		{
 		_msg = "FMTexc(" + std::to_string(lexception) + ")" + message +
-			" FMTsection(" + std::to_string(lsection) + ")" + Core::FMTsection_str(lsection) + "\n" + FMTexception::getsrcinfo();
+			" FMTsection(" + std::to_string(lsection) + ")" + Core::FMTsection_str(lsection) + "\n" + FMTexception::getSrcInfo();
 		}
 
 	FMTexception::FMTexception(const FMTexc lexception, Core::FMTsection lsection, const std::string message,
@@ -88,7 +88,7 @@ namespace Exception
 		const std::string& lmethod, const std::string& lfile, const int& lline) : holdup(false), _msg(), exceptiontype(lexception), section()
 		, method(lmethod), file(lfile), line(lline)
 	{
-		_msg = "FMTexc(" + std::to_string(lexception) + ")" + message+"\n"+ FMTexception::getsrcinfo();
+		_msg = "FMTexc(" + std::to_string(lexception) + ")" + message+"\n"+ FMTexception::getSrcInfo();
 	}
 
 	FMTexception::FMTexception(const FMTexc lexception, const std::string message,
@@ -119,12 +119,12 @@ namespace Exception
         return _msg.c_str();
         }
 
-	FMTexc FMTexception::gettype() const
+	FMTexc FMTexception::getType() const
 		{
 		return exceptiontype;
 		}
 
-	Core::FMTsection FMTexception::getsection() const
+	Core::FMTsection FMTexception::getSection() const
 		{
 		return section;
 		}
@@ -134,12 +134,12 @@ namespace Exception
 		return holdup;
 		}
 
-	void FMTexception::sethold(bool side)
+	void FMTexception::setHold(bool side)
 		{
 		holdup = side;
 		}
 
-	std::string FMTexception::getsrcinfo() const
+	std::string FMTexception::getSrcInfo() const
 		{
 		return "In Method("+ method +") In File(" + file + ") At Line(" + std::to_string(line) + ")";
 		}

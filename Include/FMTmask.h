@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -196,11 +196,11 @@ class FMTEXPORT FMTmask
 		@return a const reference to the attribute.
 		*/
 		const std::string& getAttribute(const FMTtheme& p_theme) const;
-		// DocString: FMTmask::getsubsetcount
+		// DocString: FMTmask::getSubsetCount
 		/**
 		Get the number of bits set for the given theme subset.
 		*/
-		size_t getsubsetcount(const FMTtheme& theme) const;
+		size_t getSubsetCount(const FMTtheme& theme) const;
 		// DocString: FMTmask::set
 		/**
 		Set the bitset data for some FMTthemes (themes) for a mask string (value).
@@ -232,32 +232,32 @@ class FMTEXPORT FMTmask
 		Set the bitset data for a given FMTtheme (theme) for a attribute (value).
 		*/
 		void set(const FMTtheme& theme, const std::string& value);
-		// DocString: FMTmask::getstaticthemes
+		// DocString: FMTmask::getStaticThemes
 		/**
 		Filter FMTtheme from themes that are only using aggregates or ? for the FMTmask.
 		*/
-		std::vector<const Core::FMTtheme*>getstaticthemes(const std::vector<const Core::FMTtheme*>& themes) const;
-		// DocString: FMTmask::getselectedthemes
+		std::vector<const Core::FMTtheme*>getStaticThemes(const std::vector<const Core::FMTtheme*>& themes) const;
+		// DocString: FMTmask::getSelectedThemes
 		/**
 		Takes vector of FMTtheme and return a vector of FMTtheme from which theme have any true bits.
 		*/
-		std::vector<const Core::FMTtheme*> getselectedthemes(const  std::vector<Core::FMTtheme>& themes) const;
-		// DocString: FMTmask::isnotthemessubset
+		std::vector<const Core::FMTtheme*> getSelectedThemes(const  std::vector<Core::FMTtheme>& themes) const;
+		// DocString: FMTmask::isNotThemesSubset
 		/**
 		By looking at each FMTtheme in the FMTmask return true if *this is not part of rhs base on sorted FMTtheme (themes).
 		*/
-		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<const Core::FMTtheme*>& themes) const;
-		// DocString: FMTmask::isnotthemessubset
+		bool isNotThemesSubset(const FMTmask& rhs, const  std::vector<const Core::FMTtheme*>& themes) const;
+		// DocString: FMTmask::isNotThemesSubset
 		/**
 		By looking at each FMTtheme in the FMTmask return true if *this is not part of rhs base on sorted FMTtheme (themes).
 		*/
-		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<Core::FMTtheme>& themes) const;
-		// DocString: FMTmask::removeaggregates
+		bool isNotThemesSubset(const FMTmask& rhs, const  std::vector<Core::FMTtheme>& themes) const;
+		// DocString: FMTmask::removeAggregates
 		/**
 		For each FMTtheme in (themes) if the attribute is an aggregate or ? will unset all
 		bits of the given aggregate or ? and return a new FMTmask.
 		*/
-		FMTmask removeaggregates(const std::vector<FMTtheme>& themes,bool questionmarkonly=false) const;
+		FMTmask removeAggregates(const std::vector<FMTtheme>& themes,bool questionmarkonly=false) const;
 		// DocString: FMTmask::empty
 		/**
 		Returns true if the data member is empty.
@@ -280,12 +280,12 @@ class FMTEXPORT FMTmask
 		*/
         void append(const boost::dynamic_bitset<uint8_t> &bits);
 
-		// DocString: FMTmask::binarizedappend
+		// DocString: FMTmask::binarizedAppend
 		/**
 		Binarize any class and append it to the mask.
 		*/
 		template <class typetobinarize>
-		void binarizedappend(const typetobinarize& element)
+		void binarizedAppend(const typetobinarize& element)
 		{
 			size_t  location = data.size();
 			data.resize(data.size() + (sizeof(typetobinarize) * 8));
@@ -300,28 +300,28 @@ class FMTEXPORT FMTmask
 				}
 			}
 		}
-		// DocString: FMTmask::getunion
+		// DocString: FMTmask::getUnion
 		/**
 		Do a union operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
 		*/
-		FMTmask getunion(const FMTmask& rhs) const;
-		// DocString: FMTmask::getintersect
+		FMTmask getUnion(const FMTmask& rhs) const;
+		// DocString: FMTmask::getIntersect
 		/**
 		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
 		*/
-		FMTmask getintersect(const FMTmask& rhs) const;
+		FMTmask getIntersect(const FMTmask& rhs) const;
 		// DocString: FMTmask::setIntersect
 		/**
 		@brief set the intersect with this mask using rhs mask.
 		@param[in] rhs the mask we intersect with.
 		*/
 		void setIntersect(const FMTmask& rhs);
-		// DocString: FMTmask::getbitsetintersect
+		// DocString: FMTmask::getBitsetIntersect
 		/**
 		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs)
 		but return the bitset.
 		*/
-		boost::dynamic_bitset<uint8_t> getbitsetintersect(const FMTmask& rhs) const;
+		boost::dynamic_bitset<uint8_t> getBitsetIntersect(const FMTmask& rhs) const;
 		// DocString: FMTmask::operator=
 		/**
 		FMTmask copy assignment operator.
@@ -360,11 +360,11 @@ class FMTEXPORT FMTmask
 			{
 			return boost::hash<boost::dynamic_bitset<uint8_t>>()(data);
 			}
-		// DocString: FMTmask::getbitsstring
+		// DocString: FMTmask::getBitsString
 		/**
 		Returns the binary representation of the dynamic bitset in a simple string.
 		*/
-        std::string getbitsstring() const;
+        std::string getBitsString() const;
 		// DocString: FMTmask::operator std::string
 		/**
 		Returns the name of the FMTmask.
@@ -380,19 +380,19 @@ class FMTEXPORT FMTmask
 		@return true if subset or false.
 		*/
 		bool isSubsetOf(const FMTmask& p_rhs) const;
-		// DocString: FMTmask::getbitsetreference
+		// DocString: FMTmask::getBitsetReference
 		/**
 		Get a const referencer ot the boost::dynamic_bitset data member.
 		*/
-		inline const boost::dynamic_bitset<uint8_t>& getbitsetreference() const
+		inline const boost::dynamic_bitset<uint8_t>& getBitsetReference() const
 			{
 			return data;
 			}
-		// DocString: FMTmask::getstringreference
+		// DocString: FMTmask::getStringReference
 		/**
 		Get a const referencer ot the std::string data member.
 		*/
-		inline const std::string& getstringreference() const
+		inline const std::string& getStringReference() const
 		{
 			return name;
 		}
@@ -408,11 +408,11 @@ class FMTEXPORT FMTmask
 		If the attribute is not ? for this mask, the attribute will not change. 
 		*/
 		FMTmask refine(const FMTmask& mask, const std::vector<FMTtheme>& themes) const;
-		// DocString: FMTmask::getpostsolvemask
+		// DocString: FMTmask::getPostsolveMask
 		/**
 		If this is a base postsolve mask it uses mask to turn off bits for themes that are still active.
 		*/
-		FMTmask getpostsolvemask(const FMTmask& mask,const std::vector<FMTtheme>& themes) const;
+		FMTmask getPostsolveMask(const FMTmask& mask,const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTmask::presolve
 		/**
 		Using a FMTmaskfilter (filter) and a subset of the original FMTthemes used to construct the FMTmask,
@@ -492,11 +492,11 @@ class FMTEXPORT FMTmask
 		*/
 		boost::dynamic_bitset<uint8_t> _getPresolveMask(const FMTmaskfilter& p_filter,
 								const std::vector<FMTtheme>& p_presolvedThemes) const;
-		// DocString: FMTmask::setsubset
+		// DocString: FMTmask::setSubset
 		/**
 		Set a given (subset) (theme size) for the FMTtheme (theme) to the mask
 		*/
-		void setsubset(const FMTtheme& theme, const boost::dynamic_bitset<uint8_t>& subset);
+		void setSubset(const FMTtheme& theme, const boost::dynamic_bitset<uint8_t>& subset);
 		// DocString: FMTmask::name
 		///name of the FMTmask attributes or aggregates splitted by a space
 		std::string name;
@@ -506,7 +506,7 @@ class FMTEXPORT FMTmask
     };
 
 
-template<> inline void FMTmask::binarizedappend<std::string>(const std::string& element)
+template<> inline void FMTmask::binarizedAppend<std::string>(const std::string& element)
 	{
 		size_t  location = data.size();
 		data.resize(data.size() + (element.size() * 8));
@@ -522,7 +522,7 @@ template<> inline void FMTmask::binarizedappend<std::string>(const std::string& 
 		}
 	}
 
-template<> inline void FMTmask::binarizedappend<double>(const double& element)
+template<> inline void FMTmask::binarizedAppend<double>(const double& element)
 {
 	size_t  location = data.size();
 	const int corrected = static_cast<int>(element*(1 / FMT_DBL_TOLERANCE));

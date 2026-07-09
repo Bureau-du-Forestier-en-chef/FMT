@@ -28,11 +28,11 @@ corresponding to the FMTcoordinates presents in the event.
 class FMTEXPORT FMTevent
     {
     public:
-		// DocString: FMTevent::midposition()
+		// DocString: FMTevent::midPosition()
 		/**
 		Get mid point of elements.
 		*/
-        std::set<FMTcoordinate>::const_iterator midposition() const;
+        std::set<FMTcoordinate>::const_iterator midPosition() const;
         // DocString: ~FMTevent()
         /**
         Destructor
@@ -76,11 +76,11 @@ class FMTEXPORT FMTevent
 
         */
 		size_t hash() const;
-		// DocString: FMTevent::getrelation(const FMTevent&)
+		// DocString: FMTevent::getRelation(const FMTevent&)
 		/**
 
 		*/
-		FMTeventrelation getrelation(const FMTevent& rhs) const;
+		FMTeventrelation getRelation(const FMTevent& rhs) const;
         // DocString: FMTevent::operator==(const FMTevent&)
         /**
         Comparison operator equal to
@@ -112,21 +112,21 @@ class FMTEXPORT FMTevent
         Return width of the event
         */
         size_t width() const;
-        // DocString: FMTevent::averagecentroid()
+        // DocString: FMTevent::averageCentroid()
         /**
         Return centroid based on the envelope of the event
         */
-        FMTcoordinate averagecentroid() const;
-        // DocString: FMTevent::getstatsheader()
+        FMTcoordinate averageCentroid() const;
+        // DocString: FMTevent::getStatsHeader()
         /**
         Return the header of the patch stats (size, perimeter, height and width)
         */
-        static std::string getstatsheader();
-        // DocString: FMTevent::getstats()
+        static std::string getStatsHeader();
+        // DocString: FMTevent::getStats()
         /**
         Return string containing size, perimeter, height and width
         */
-        std::string getstats() const;
+        std::string getStats() const;
         // DocString: FMTevent::erase(const FMTcoordinate&)
         /**
         Erase coordinate from event
@@ -142,16 +142,16 @@ class FMTEXPORT FMTevent
         Insert coordinate in the event
         */
         virtual void insert(const FMTcoordinate& newlocation);
-        // DocString: FMTevent::setactionid(const int&)
+        // DocString: FMTevent::setActionId(const int&)
         /**
         Setter for action id
         */
-        void setactionid(const int& laction_id);
-        // DocString: FMTevent::getactionid()
+        void setActionId(const int& laction_id);
+        // DocString: FMTevent::getActionId()
         /**
         Getter of the action id
         */
-        const int& getactionid() const;
+        const int& getActionId() const;
         // DocString: FMTevent::getperiod()
         /**
         Getter of the period
@@ -208,22 +208,22 @@ class FMTEXPORT FMTevent
         @return true if it will split the event
         */
         bool WillSplitEvent(const FMTcoordinate& p_coordinate) const;
-        // DocString: FMTevent::splitevent(const unsigned int&, std::vector<FMTsaevent>&)
+        // DocString: FMTevent::splitEvent(const unsigned int&, std::vector<FMTsaevent>&)
         /**
         Check if events are split and fill vector of split events
         Remove all elements from the current event and put it in the events in splittedevents
         */
-        bool splitevent(std::vector<FMTevent>& splittedevents) const;
-		// DocString: FMTevent::getterritory
+        bool splitEvent(std::vector<FMTevent>& splittedevents) const;
+		// DocString: FMTevent::getTerritory
 	   /**
 		Returns the adjacent territory of the event base on a distance.
 	   */
-		std::set<FMTcoordinate>getterritory(const size_t& distance) const;
-		// DocString: FMTevent::getborders
+		std::set<FMTcoordinate>getTerritory(const size_t& distance) const;
+		// DocString: FMTevent::getBorders
 	   /**
 		Returns coordinate of the border of the even
 	   */
-		std::vector<std::set<FMTcoordinate>::const_iterator>getborders() const;
+		std::vector<std::set<FMTcoordinate>::const_iterator>getBorders() const;
         // DocString: FMTevent::GetOutsideBorders
        /**
         @brief get ouside borders of the event
@@ -243,7 +243,7 @@ class FMTEXPORT FMTevent
 		/**
 		Return the closes coordinate between two FMTevent
 		*/
-		void getclosescoordinates(const FMTevent& rhs,
+		void getClosesCoordinates(const FMTevent& rhs,
 			std::set<FMTcoordinate>::const_iterator& thiscoordinate,
 			std::set<FMTcoordinate>::const_iterator& rhscoordinate) const;
     private:

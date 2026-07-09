@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -82,7 +82,7 @@ namespace Parallel
 		Returns true if the job is all done.
 		*/
 		//bool isdone() const;
-		// DocString: FMTtask::getthreadid()
+		// DocString: FMTtask::getThreadId()
 		/**
 		@brief Get the thread id of the task.
 		*/
@@ -113,7 +113,7 @@ namespace Parallel
 		/**
 		Split the totalworksize in much possible equal buckets.
 		*/
-		std::vector<size_t>splitwork(int numberoftasks,const int& totalworksize) const;
+		std::vector<size_t>splitWork(int numberoftasks,const int& totalworksize) const;
 		// DocString: FMTtask::decrementWorkingThread()
 		/**
 		@brief decrement the number of thread working.

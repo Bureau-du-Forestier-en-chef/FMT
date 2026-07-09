@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -36,7 +36,7 @@ namespace Exception
 
 FMTfreeexceptionhandler::FMTfreeexceptionhandler()
 {
-	this->disablenestedexceptions();
+	this->disableNestedExceptions();
 }
 
 
@@ -56,7 +56,7 @@ FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
 			excp = FMTexception(lexception, lsection, updatestatus(lexception, text), method, file, line);
 		}
 	}
-	excp.sethold(true);
+	excp.setHold(true);
 	if (throwit)
 	{
 		if (LEVEL == FMTlev::FMT_Warning)

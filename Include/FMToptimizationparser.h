@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -120,15 +120,15 @@ namespace Parser
 			const Core::FMTyields& p_yields,
 			const std::vector<Core::FMToutput>& p_outputs,
 			const std::vector<Core::FMTtheme>& p_themes);
-		FMToptimizationsection getsection(const std::string& line) const;
-		bool setending(Core::FMTconstraint& constraint, std::string& line, const Core::FMTconstants& constants);
-		Core::FMToutput resume_output(const std::map<std::string, double>& nodes,
+		FMToptimizationsection getSection(const std::string& line) const;
+		bool setEnding(Core::FMTconstraint& constraint, std::string& line, const Core::FMTconstants& constants);
+		Core::FMToutput resumeOutput(const std::map<std::string, double>& nodes,
 			const std::vector<Core::FMToutput>& outputs,
 			const std::vector<Core::FMTtheme>& themes,
 			const Core::FMTconstants& constants);
-		std::queue<FMTparser::FMTLineInfo>getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
+		std::queue<FMTparser::FMTLineInfo>getOptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
 								const Core::FMTconstants& cons, const std::vector<Core::FMToutput>& outputs);
-		std::queue<std::string> geteachlines(const std::string& line, const Core::FMTconstants& constants, const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const;
+		std::queue<std::string> getEachLines(const std::string& line, const Core::FMTconstants& constants, const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const;
 		// DocString: FMToptimizationparser::getEquation
 		/*
 		* @brief Take the orgiginal line of the contraint and try to simplify the equation before formating it for an output
@@ -142,8 +142,8 @@ namespace Parser
 		std::map<std::string, double>getEquation(const std::string& pm_line, const Core::FMTconstants& p_constants,
 			const Core::FMTyields& p_yields, const std::vector<Core::FMToutput>& p_outputs,
 			size_t p_lhssize = std::numeric_limits<size_t>::max());
-		std::vector<Core::FMTconstraint> getperiodsbounds(std::string periodstr, const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const;
-		void fillbounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const;
+		std::vector<Core::FMTconstraint> getPeriodsBounds(std::string periodstr, const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const;
+		void fillBounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const;
 		// DocString: FMToptimizationparser::getSpatialConstraint
 		/*
 		* @brief From a base contraint turn it into spatial constraint based on the pm_line.
@@ -164,7 +164,7 @@ namespace Parser
 			const std::vector<Core::FMTaction>& p_actions,
 			const std::vector<Core::FMToutput>& p_outputs,
 			const std::vector<Core::FMTtheme>& p_themes);
-		std::vector<std::vector<double>>getreplicatechanges(const std::string& replicateargument);
+		std::vector<std::vector<double>>getReplicateChanges(const std::string& replicateargument);
 	};
 }
 

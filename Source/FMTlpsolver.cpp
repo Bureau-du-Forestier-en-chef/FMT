@@ -25,13 +25,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 
-	bool FMTlpsolver::canupdatesource() const
+	bool FMTlpsolver::canUpdateSource() const
 	{
 	return (solverinterface.use_count() == 2);
 	}
 
 
-	std::shared_ptr<OsiSolverInterface> FMTlpsolver::buildsolverinterface(const FMTsolverinterface& lsolvertype) const
+	std::shared_ptr<OsiSolverInterface> FMTlpsolver::buildSolverInterface(const FMTsolverinterface& lsolvertype) const
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
 		try {
@@ -63,7 +63,7 @@ namespace Models
 	}
 
 
-	std::shared_ptr<OsiSolverInterface> FMTlpsolver::copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr,const FMTsolverinterface& lsolvertype) const
+	std::shared_ptr<OsiSolverInterface> FMTlpsolver::copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr,const FMTsolverinterface& lsolvertype) const
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
 		try{
@@ -105,13 +105,13 @@ namespace Models
 		matrixcache(rhs.matrixcache),solvertype(rhs.solvertype), usecache(rhs.usecache),
 		m_ColdStartParameters(rhs.m_ColdStartParameters),m_WarmStartParameters(rhs.m_WarmStartParameters)
 		{
-		solverinterface = copysolverinterface(rhs.solverinterface, rhs.solvertype);
+		solverinterface = copySolverInterface(rhs.solverinterface, rhs.solvertype);
 		//Fix because mosek resolve in the copysolver maybe return an non optimal solution 
 		if(rhs.solverinterface->isProvenOptimal() && !solverinterface->isProvenOptimal())
 		{
 			this->resolve();
 		}
-		//passinmessagehandler(*_logger);
+		//passInMessageHandler(*_logger);
 		}
 
 	void FMTlpsolver::swap(FMTlpsolver& rhs)
@@ -132,14 +132,14 @@ namespace Models
 			matrixcache = rhs.matrixcache;
 			usecache = rhs.usecache;
 			solvertype = rhs.solvertype;
-			solverinterface = copysolverinterface(rhs.solverinterface,rhs.solvertype);
+			solverinterface = copySolverInterface(rhs.solverinterface,rhs.solvertype);
 			m_ColdStartParameters=rhs.m_ColdStartParameters;
 			m_WarmStartParameters=rhs.m_WarmStartParameters;
 			if(rhs.solverinterface->isProvenOptimal() && !solverinterface->isProvenOptimal())
 			{
 				this->resolve();
 			}
-			//passinmessagehandler(*_logger);
+			//passInMessageHandler(*_logger);
 			}
 		return *this;
 		}
@@ -151,9 +151,9 @@ namespace Models
 		m_ColdStartParameters(strtoParams(p_ColdStartParameters)),
 		m_WarmStartParameters(strtoParams(p_WarmStartParameters))
 		{
-		solverinterface = buildsolverinterface(lsolvertype);
+		solverinterface = buildSolverInterface(lsolvertype);
 		//solverinterface->setStrParam(OsiStrParam::OsiProbName, p_problemName);
-		passinmessagehandler(*_logger);
+		passInMessageHandler(*_logger);
 		/*if (solvertype == FMTsolverinterface::MOSEK)//weird in debug...
 			{
 			OsiMskSolverInterface* mskSolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
@@ -189,13 +189,13 @@ namespace Models
 					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
 					{
 						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
-							getmskerrordesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
+							getMskErrorDesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
 						MSKrescodee error = static_cast<MSKrescodee>(_MSKOptimizeWithDefaultParameters());
 					}
 					if (error > 0)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTmskerror,
-							getmskerrordesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
+							getMskErrorDesc(error), "FMTlpsolver::resolve", __LINE__, __FILE__);
 						//In case set to warning
 						solverinterface->resolve();
 						erroroccured = true;
@@ -209,10 +209,10 @@ namespace Models
 				}
 				break;
 			}
-			if (erroroccured && !gotlicense())
+			if (erroroccured && !gotLicense())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-					" Missing solver " + getsolvername() + " License ",
+					" Missing solver " + getSolverName() + " License ",
 					"FMTlpsolver::resolve", __LINE__, __FILE__);
 			}
 		}catch (...)
@@ -222,7 +222,7 @@ namespace Models
 		return solverinterface->isProvenOptimal();
 		}
 
-	void FMTlpsolver::setnumberofthreads(const size_t& nthread)
+	void FMTlpsolver::setNumberOfThreads(const size_t& nthread)
 		{
 		try {
 			switch (solvertype)
@@ -244,7 +244,7 @@ namespace Models
 					}
 				#endif
 				default:
-					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set number of threads used for "+getsolvername(),
+					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set number of threads used for "+getSolverName(),
 						"FMTlpsolver::setnumberofthreads", __LINE__, __FILE__);
 				break;
 				}
@@ -269,7 +269,7 @@ namespace Models
 				}
 			#endif
 			default:
-				_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set gap tolerance for " + getsolvername(),
+				_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set gap tolerance for " + getSolverName(),
 					"FMTlpsolver::setMIPgaptolerance", __LINE__, __FILE__);
 				break;
 			}
@@ -307,7 +307,7 @@ namespace Models
 					}
 				#endif
 				default:
-					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set gap feasible pump level for " + getsolvername(),
+					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set gap feasible pump level for " + getSolverName(),
 						"FMTlpsolver::MIPparameters", __LINE__, __FILE__);
 					break;
 				}
@@ -334,7 +334,7 @@ namespace Models
 					}
 				#endif
 				default:
-					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set max time for " + getsolvername(),
+					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set max time for " + getSolverName(),
 						"FMTlpsolver::setoptimizerMAXtime", __LINE__, __FILE__);
 					break;
 				}
@@ -455,7 +455,7 @@ namespace Models
 		}
 	#endif
 
-	bool FMTlpsolver::initialsolve()
+	bool FMTlpsolver::initialSolve()
 	{
 		try {
 			matrixcache.synchronize(solverinterface);
@@ -477,14 +477,14 @@ namespace Models
 					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
 					{
 						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
-							getmskerrordesc(error), "FMTlpsolver::initialsolve", __LINE__, __FILE__);
+							getMskErrorDesc(error), "FMTlpsolver::initialsolve", __LINE__, __FILE__);
 						error = static_cast<MSKrescodee>(_MSKOptimizeWithDefaultParameters());
 					}
 
 					if (error > 0)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTmskerror,
-							getmskerrordesc(error),"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+							getMskErrorDesc(error),"FMTlpsolver::initialsolve", __LINE__, __FILE__);
 					}
 				}
 				break;
@@ -501,10 +501,10 @@ namespace Models
 				}
 				break;
 			}
-			if (erroroccured && !gotlicense())
+			if (erroroccured && !gotLicense())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-						" Missing solver " + getsolvername() + " License ",
+						" Missing solver " + getSolverName() + " License ",
 						"FMTlpsolver::initialsolve", __LINE__, __FILE__);
 				}
 		}
@@ -515,17 +515,17 @@ namespace Models
 		return solverinterface->isProvenOptimal();
 		}
 
-	void FMTlpsolver::passinmessagehandler(Logging::FMTlogger& logger)
+	void FMTlpsolver::passInMessageHandler(Logging::FMTlogger& logger)
 		{
 		try{
-		solverinterface->passInMessageHandler(dynamic_cast<CoinMessageHandler*>(logger.getsolverlogger()));
+		solverinterface->passInMessageHandler(dynamic_cast<CoinMessageHandler*>(logger.getSolverLogger()));
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
 			}
 		}
 
-	bool FMTlpsolver::gotlicense() const
+	bool FMTlpsolver::gotLicense() const
 		{
 		bool licensestatus = false;
 		try{
@@ -560,7 +560,7 @@ namespace Models
 		return licensestatus;
 		}
 
-	std::string FMTlpsolver::getsolvername() const
+	std::string FMTlpsolver::getSolverName() const
 		{
 		std::string name;
 		try {
@@ -779,7 +779,7 @@ namespace Models
 			
 		}
 
-	int FMTlpsolver::getiterationcount() const
+	int FMTlpsolver::getIterationCount() const
 		{
 		int iterations = 0;
 		try{
@@ -821,12 +821,12 @@ namespace Models
 		return iterations;
 		}
 
-	void FMTlpsolver::setsolvertype(FMTsolverinterface& lsolvertype) const
+	void FMTlpsolver::setSolverType(FMTsolverinterface& lsolvertype) const
 		{
 		lsolvertype = solvertype;
 		}
 
-	void FMTlpsolver::passinsolver(const FMTlpsolver& solver)
+	void FMTlpsolver::passInSolver(const FMTlpsolver& solver)
 		{
 		try{
 		Core::FMTobject::operator=(solver);
@@ -834,7 +834,7 @@ namespace Models
 		matrixcache = solver.matrixcache;
 		solvertype = solver.solvertype;
 		solverinterface = solver.solverinterface;
-		passinmessagehandler(*_logger);
+		passInMessageHandler(*_logger);
 		}
 		catch (...)
 		{
@@ -852,7 +852,7 @@ namespace Models
 		}
 	}
 
-	void FMTlpsolver::clearrowcache()
+	void FMTlpsolver::clearRowCache()
 		{
 		try{
 		#ifdef  FMTWITHMOSEK
@@ -881,7 +881,7 @@ namespace Models
 			}
 		}
 
-	bool FMTlpsolver::stockresolve()
+	bool FMTlpsolver::stockResolve()
 		{
 		try {
 			matrixcache.synchronize(solverinterface);
@@ -976,7 +976,7 @@ namespace Models
 	{
 		try {
 			Core::FMTobject::passinlogger(logger);
-			passinmessagehandler(*getLogger());
+			passInMessageHandler(*getLogger());
 		}
 		catch (...)
 		{
@@ -984,10 +984,10 @@ namespace Models
 		}
 	}
 
-	void FMTlpsolver::setcolname(const std::string& name, const int& columnid) const
+	void FMTlpsolver::setColName(const std::string& name, const int& columnid) const
 	{
 		try {
-			matrixcache.setcolname(name, columnid);
+			matrixcache.setColName(name, columnid);
 		}
 		catch (...)
 		{
@@ -995,10 +995,10 @@ namespace Models
 		}
 	}
 	
-	void FMTlpsolver::setrowname(const std::string& name, const int& rowid) const
+	void FMTlpsolver::setRowName(const std::string& name, const int& rowid) const
 	{
 		try {
-			matrixcache.setrowname(name, rowid);
+			matrixcache.setRowName(name, rowid);
 		}
 		catch (...)
 		{
@@ -1006,13 +1006,13 @@ namespace Models
 		}
 	}
 
-	void FMTlpsolver::updaterowsandcolsnames(bool shortformat)
+	void FMTlpsolver::updateRowsAndColsNames(bool shortformat)
 	{
 		try {
 			matrixcache.synchronize(solverinterface);
-			matrixcache.formatallnames(shortformat);
-			std::vector<std::string>& cachedrownames = matrixcache.getrownames();
-			std::vector<std::string>& cachedcolnames = matrixcache.getcolumnnames();
+			matrixcache.formatAllNames(shortformat);
+			std::vector<std::string>& cachedrownames = matrixcache.getRowNames();
+			std::vector<std::string>& cachedcolnames = matrixcache.getColumnNames();
 			if(cachedcolnames.size() != static_cast<size_t>(getNumCols()) || cachedrownames.size() != static_cast<size_t>(getNumRows()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, 
@@ -1046,7 +1046,7 @@ namespace Models
 		}
 	}
 	/*
-	void FMTlpsolver::updatematrixnaming(const std::unordered_map<int, std::string>& colsnames,
+	void FMTlpsolver::updateMatrixNaming(const std::unordered_map<int, std::string>& colsnames,
 		const std::unordered_map<int, std::string>& rownames)
 	{
 		try {
@@ -1089,7 +1089,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::updatematrixnaming", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::updateMatrixNaming", __LINE__, __FILE__);
 		}
 	}
 	*/
@@ -1190,11 +1190,11 @@ namespace Models
 		return (!(*this==rhs));
 		}
 
-	void FMTlpsolver::enablematrixcaching()
+	void FMTlpsolver::enableMatrixCaching()
 		{
 		usecache = true;
 		}
-	void FMTlpsolver::disablematrixcaching()
+	void FMTlpsolver::disableMatrixCaching()
 		{
 		try {
 			matrixcache.synchronize(solverinterface);
@@ -1205,10 +1205,10 @@ namespace Models
 			}
 		}
 
-	void FMTlpsolver::sortdeletedcache()
+	void FMTlpsolver::sortDeletedCache()
 		{
 		try{
-		matrixcache.sortandcleandeleted();
+		matrixcache.sortAndCleanDeleted();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpsolver::sortdeletedcache", __LINE__, __FILE__);
@@ -1220,13 +1220,13 @@ namespace Models
 
 		}
 
-	std::string FMTlpsolver::getcacheelements() const
+	std::string FMTlpsolver::getCacheElements() const
 		{
-		return matrixcache.getrowstosynchronize() + "\n" +
-			matrixcache.getcolstosynchronize();
+		return matrixcache.getRowsToSynchronize() + "\n" +
+			matrixcache.getColsToSynchronize();
 		}
 
-	std::string FMTlpsolver::lowernuppertostr(const double& lower, const double& upper) const
+	std::string FMTlpsolver::lowerNUpperToStr(const double& lower, const double& upper) const
 		{
 		std::string value;
 		try{
@@ -1253,7 +1253,7 @@ namespace Models
 		return value;
 		}
 
-	int FMTlpsolver::getrow(int whichRow, double &rowLower, double &rowUpper,
+	int FMTlpsolver::getRow(int whichRow, double &rowLower, double &rowUpper,
 		std::vector<int>&indices, std::vector<double>&elements) const
 		{
 		try{
@@ -1264,7 +1264,7 @@ namespace Models
 		}else if (whichRow >= numberofnoncacherows &&
 			whichRow <(numberofnoncacherows + matrixcache.numbernewRows()))
 			{
-			return matrixcache.getrow(whichRow, rowLower, rowUpper, indices, elements);
+			return matrixcache.getRow(whichRow, rowLower, rowUpper, indices, elements);
 			}
 		if (whichRow<solverinterface->getNumRows())
 			{
@@ -1294,7 +1294,7 @@ namespace Models
 		return -1;
 		}
 
-	int FMTlpsolver::getcol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
+	int FMTlpsolver::getCol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
 		std::vector<int>& indices, std::vector<double>&elements) const
 		{
 		try{
@@ -1307,7 +1307,7 @@ namespace Models
 		else if (whichCol >= numberofnoncachecols &&
 			whichCol < (numberofnoncachecols + matrixcache.numbernewCols()))
 		{
-			return matrixcache.getcol(whichCol, colLower, colUpper, objectiveValue, indices, elements);
+			return matrixcache.getCol(whichCol, colLower, colUpper, objectiveValue, indices, elements);
 		}
 		if (whichCol < solverinterface->getNumCols())
 		{
@@ -1341,7 +1341,7 @@ namespace Models
 		}
 
 	#ifdef FMTWITHMOSEK
-		std::string FMTlpsolver::getmskerrordesc(int error) const
+		std::string FMTlpsolver::getMskErrorDesc(int error) const
 		{
 			std::string errordescription;
 			char symname[MSK_MAX_STR_LEN];
@@ -1362,7 +1362,7 @@ namespace Models
 			{
 				std::stringstream ss(p_params);
 				std::string line;
-				while (std::getline(ss, line, '\n'))
+				while (std::getLine(ss, line, '\n'))
 				{
 					const size_t SPACE = line.find(' ');
 					const std::string PARAMETER_NAME = line.substr(0, SPACE);

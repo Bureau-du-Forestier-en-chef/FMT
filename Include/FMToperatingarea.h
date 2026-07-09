@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -59,43 +59,43 @@ namespace Heuristics
 			Add area to the operating area.
 			*/
 			FMToperatingarea& operator += (const double& value);
-			// DocString: FMToperatingarea::getneighbors
+			// DocString: FMToperatingarea::getNeighbors
 			/**
 			Getter returning a copy of the neighbors masks data of the operatingarea.
 			*/
-			std::vector<Core::FMTmask> getneighbors() const;
+			std::vector<Core::FMTmask> getNeighbors() const;
 			// DocString: FMToperatingarea::getarea
 			/**
 				Get the area of the operating area.
 			*/
 			double getarea() const;
-			// DocString: FMToperatingarea::getneihgborsperimeter
+			// DocString: FMToperatingarea::getNeihgborsPerimeter
 			/**
 			Getter returning the percentage of perimeter the oprating area needs to share with a other operating area,
 			to be considered neighbor.
 			*/
-			double getneihgborsperimeter() const;
+			double getNeihgborsPerimeter() const;
 			// DocString: FMToperatingarea::getmask
 			/**
 			Getter returning mask of the operating area.
 			*/
 			Core::FMTmask getmask() const;
-			// DocString: FMToperatingarea::setneighbors
+			// DocString: FMToperatingarea::setNeighbors
 			/**
 			Setter for the neighbors mask member data.
 			*/
-			void setneighbors(const std::vector<Core::FMTmask>& lneighbors);
+			void setNeighbors(const std::vector<Core::FMTmask>& lneighbors);
 			// DocString: FMToperatingarea(const Core::FMTmask,const double)
 			/**
 			Main FMToperatingarea constructor targeting the user. Before synchronizing everything to the solverinterface,
 			the user has to provide to the heuristics all the green-up, returntime etc.... for each operating area.
 			*/
 			FMToperatingarea(const Core::FMTmask& lmask,const double& lneihgborsperimeter);
-			// DocString: FMToperatingarea::setarea
+			// DocString: FMToperatingarea::setArea
 			/**
 			Set the area of the operating area.
 			*/
-			void setarea(const double& newarea);
+			void setArea(const double& newarea);
 
 			// DocString: FMToperatingarea()
 			/**
@@ -132,12 +132,12 @@ namespace Heuristics
 			Using a FMTmask (selectedmask) and a subset of the original FMTthemes used to construct the FMTmask,
 			it returns a presolved FMTmask with potentialy less data.
 			*/
-			FMToperatingarea presolveoperatingarea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const;
+			FMToperatingarea presolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const;
 			// DocString: FMToperatingarea::postsolve
 			/**
 			Using a FMTmask (selectedmask) and the original FMTthemes it returns a postsolved FMTmask.
 			*/
-			FMToperatingarea postsolveoperatingarea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&basethemes) const;
+			FMToperatingarea postsolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&basethemes) const;
 
 		};
 

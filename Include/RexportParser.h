@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -66,22 +66,22 @@ void exportParser()
                 .method("read", &Parser::FMTareaparser::read,
 					"@DocString(FMTareaparser::read)")
 				#ifdef FMTWITHGDAL
-					.method("readvectors", &Parser::FMTareaparser::readvectors,
+					.method("readvectors", &Parser::FMTareaparser::readVectors,
 						"@DocString(FMTareaparser::readvectors)")
-					.method("readrasters", &Parser::FMTareaparser::readrasters,
+					.method("readrasters", &Parser::FMTareaparser::readRasters,
 						"@DocString(FMTareaparser::readrasters)")
 					.method("vectormaptoFMTforest", &Parser::FMTareaparser::vectormaptoFMTforest,
 						"@DocString(FMTareaparser::vectormaptoFMTforest)")
-					.method("vectorfieldtoraster", &Parser::FMTareaparser::vectorfieldtoraster,
+					.method("vectorfieldtoraster", &Parser::FMTareaparser::vectorFieldToRaster,
 						"@DocString(FMTareaparser::vectorfieldtoraster)")
-					.method("writeforest",&Parser::FMTareaparser::writeforest,
+					.method("writeforest",&Parser::FMTareaparser::writeForest,
 						"@DocString(FMTareaparser::writeforest)")
-					.method("writedisturbances",&Parser::FMTareaparser::writedisturbances,
+					.method("writedisturbances",&Parser::FMTareaparser::writeDisturbances,
 						"@DocString(FMTareaparser::writedisturbances)")
 					#ifdef FMTWITHOSI
-						.method("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors,
+						.method("getschemeneighbors",&Parser::FMTareaparser::getSchemeNeighbors,
 							"@DocString(FMTareaparser::getschemeneighbors)")
-                        .method("getclusters",&Parser::FMTareaparser::getclusters,
+                        .method("getclusters",&Parser::FMTareaparser::getClusters,
                              "@DocString(FMTareaparser::getclusters)")
 					#endif
 				#endif
@@ -93,9 +93,9 @@ void exportParser()
                 .method("read",&Parser::FMTlandscapeparser::read,
 					"@DocString(FMTlandscapeparser::read)")
 				#ifdef FMTWITHGDAL
-					.method("readvectors", &Parser::FMTlandscapeparser::readvectors,
+					.method("readvectors", &Parser::FMTlandscapeparser::readVectors,
 						"@DocString(FMTlandscapeparser::readvectors)")
-					.method("readrasters",&Parser::FMTlandscapeparser::readrasters,
+					.method("readrasters",&Parser::FMTlandscapeparser::readRasters,
 						"@DocString(FMTlandscapeparser::readrasters)")
 				#endif
                 .method("write",&Parser::FMTlandscapeparser::write,
@@ -140,7 +140,7 @@ void exportParser()
 				.constructor("@DocString(FMToutputparser())")
                 .method("read",&Parser::FMToutputparser::read,
 					"@DocString(FMToutputparser::read)")
-				.method("addoutputs",&Parser::FMToutputparser::addoutputs,
+				.method("addoutputs",&Parser::FMToutputparser::addOutputs,
 					"@DocString(FMToutputparser::addoutputs)")
                 .method("write",&Parser::FMToutputparser::write,
 					"@DocString(FMToutputparser::write)");

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Qubec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -103,32 +103,32 @@ class FMTEXPORT FMTschedule : public FMTobject
 			{
 			return period;
 			}
-		// DocString: FMTschedule::douselock
+		// DocString: FMTschedule::doUseLock
 		/**
 		Return true if the schedule can contains locked developement.
 		*/
-		inline bool douselock() const
+		inline bool doUseLock() const
 		{
 			return uselock;
 		}
-		// DocString: FMTschedule::setuselock
+		// DocString: FMTschedule::setUseLock
 		/**
 		Mark the schedule has can contains locked developement.
 		*/
-		void setuselock(const bool& lock);
-		// DocString: FMTschedule::actionarea
+		void setUseLock(const bool& lock);
+		// DocString: FMTschedule::actionArea
 		/**
 		Return the total harvested area of a FMTaction present in the FMTschedule.
 		*/
-        double actionarea(const FMTaction& action) const;
-		// DocString: FMTschedule::addevent
+        double actionArea(const FMTaction& action) const;
+		// DocString: FMTschedule::addEvent
 		/**
 		Add a new event to the shedule based on the developement,action and area. See clean function also.
 		*/
-		void addevent(const Core::FMTdevelopment& dev, const double& area, const Core::FMTaction& action);
+		void addEvent(const Core::FMTdevelopment& dev, const double& area, const Core::FMTaction& action);
 		// DocString: FMTschedule::clean
 		/**
-		After calling multiple time addevent the schedule will end up with empty area if uselock == false.
+		After calling multiple time addEvent the schedule will end up with empty area if uselock == false.
 		So you need to call this function to clean the schedule before using it.
 		*/
 		void clean();
@@ -143,11 +143,11 @@ class FMTEXPORT FMTschedule : public FMTobject
 		*/
 		bool operated(const FMTaction& action,
 			const FMTdevelopment& developement) const;
-		// DocString: FMTschedule::getoperabilities
+		// DocString: FMTschedule::getOperabilities
 		/**
 		Get all operabilities of the schedules in an hash table.
 		*/
-		std::vector<boost::unordered_set<FMTdevelopment>> getoperabilities(const std::vector<FMTaction>& actions) const;
+		std::vector<boost::unordered_set<FMTdevelopment>> getOperabilities(const std::vector<FMTaction>& actions) const;
 		// DocString: FMTschedule::sort
 		/**
 		Sort the vector of double of the lock level per area for the FMTschedule.
@@ -179,17 +179,17 @@ class FMTEXPORT FMTschedule : public FMTobject
 		/**
 		Setter for the period of the Schedule and the period developements of the schedule.
 		*/
-		void setperiod(const int& newperiod);
-		// DocString: FMTschedule::getnewschedule
+		void setPeriod(const int& newperiod);
+		// DocString: FMTschedule::getNewSchedule
 		/**
 		Multiply this schedule with a factor and return it
 		*/
-		FMTschedule getnewschedule(const double& factor) const;
-		// DocString: FMTschedule::isfuturconstraints
+		FMTschedule getNewSchedule(const double& factor) const;
+		// DocString: FMTschedule::isFuturConstraints
 		/**
 		Check if the schedule period will be bounded by new constraints.
 		*/
-		bool isfuturconstraints(const std::vector<Core::FMTconstraint>& constraints) const;
+		bool isFuturConstraints(const std::vector<Core::FMTconstraint>& constraints) const;
 		/**
 		Functions that make sure the FMTschedule acts like a std c++ container
 		*/
@@ -233,11 +233,11 @@ class FMTEXPORT FMTschedule : public FMTobject
 		///Main FMTschedule elements action has key, followed by a map of FMTdevelopement and a vector of double
 		///The vector of double represent the _lock level.
 		std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> elements;
-		// DocString: FMTschedule::sameelements
+		// DocString: FMTschedule::sameElements
 		/**
 		Return true if the FMTschedule contains the same elements.
 		*/
-		bool sameelements(const FMTschedule& rhs) const;
+		bool sameElements(const FMTschedule& rhs) const;
     };
 
 
