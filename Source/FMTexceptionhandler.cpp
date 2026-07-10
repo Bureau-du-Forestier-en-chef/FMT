@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -1089,6 +1089,16 @@ FMTexception FMTexceptionhandler::raisefromcatch(std::string text,
 				}
 			}
 		#endif
+		catch (const std::exception& stdexception)
+		{
+			//Instrumentation: surface the real std::exception type/message instead of
+			//a bare "Unhandled error" so we can see the failing container/key.
+			updatestatus(FMTexc::FMTunhandlederror,
+				std::string("std::exception: ") + stdexception.what());
+			lexception = FMTexc::FMTunhandlederror;
+			return this->raise(lexception, std::string(stdexception.what()) + " " + text,
+				method, line, file, lsection);
+		}
 		catch (...)
 		{
 			lexception = FMTexc::FMTunhandlederror;
@@ -1118,7 +1128,7 @@ void FMTexceptionhandler::gutsofprintexceptions(std::string text,
 		_logger->setstreamflush(true);
 	}
 	const bool keepit =  ((!ismainthread() && isthisthreadthrowed()));// && !print);
-	//Keep it est a vrai sur le main mais devrait être à faux...
+	//Keep it est a vrai sur le main mais devrait ï¿½tre ï¿½ faux...
 	bool needtolog = logfirstlevel;
 
 	/*if (keepit || (levelreference > 0))
