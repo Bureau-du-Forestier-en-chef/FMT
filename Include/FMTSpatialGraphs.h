@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <string>
 #include <memory>
+#include <unordered_map>
 #include <boost/unordered_map.hpp>
 #include "FMTobject.h"
 #include "FMTGraphInfo.h"
@@ -99,6 +100,11 @@ namespace Spatial
 			FMTSolutionTracker m_BaseSolution;
 			std::vector<size_t>m_ConstraintsId;
 			Models::FMTmodel const * m_Model;
+			// Run-scoped deduplication pool for graph constraint values (replaces the former
+			// process-wide boost::flyweight static factory). Keyed by value-vector hash, holding
+			// weak_ptr so distinct vectors are shared while alive and released with the graphs.
+			std::unordered_map<std::size_t, std::vector<std::weak_ptr<const FMTGraphValues>>> m_ValuesPool;
+			std::shared_ptr<const FMTGraphValues> _internValues(const std::vector<double>& p_Values);
 			void _BuildConstraintsLocator(const Models::FMTmodel& p_model);
 			std::vector<size_t> _BuildGraphs(const Models::FMTmodel& p_model, double p_CellSize);
 			void _BuildConstraintsValues( 

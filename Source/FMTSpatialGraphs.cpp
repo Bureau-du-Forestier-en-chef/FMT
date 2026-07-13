@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -18,8 +18,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTVirtualLineGraph.h"
 #include "FMTSolutionTracker.h"
 #include "FMTschedule.h"
+#include "FMTGraphValues.h"
 #include <future>
 #include <list>
+#include <memory>
+#include <boost/functional/hash.hpp>
 
 
 namespace Spatial
@@ -583,7 +586,9 @@ namespace Spatial
 									CONSTRAINT, period, SOLUTION, Core::FMToutputlevel::totalonly).at("Total");
 								++i;
 							}
-							p_Graph->second.setValues(ConstraintId, Values);
+							//Values are interned through a run-scoped pool (see _InternValues) so that
+							//identical value vectors are shared without any process-wide static factory.
+							p_Graph->second.setValues(ConstraintId, _internValues(Values));
 						}
 					}
 
@@ -597,6 +602,46 @@ namespace Spatial
 			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_BuildConstraintsValues",
 				__LINE__, __FILE__);
 		}
+	}
+
+	std::shared_ptr<const FMTGraphValues> FMTSpatialGraphs::_internValues(
+		const std::vector<double>& p_Values)
+	{
+		//Run-scoped deduplication pool. Replaces the former process-wide boost::flyweight
+		//static factory: identical value vectors are shared through weak_ptr, so a single
+		//copy of each distinct vector is kept alive by the graphs referencing it, and the
+		//whole pool dies with this FMTSpatialGraphs instance at the end of the run. This
+		//removes the shared static state that could be corrupted between successive runs.
+		std::shared_ptr<const FMTGraphValues> interned;
+		try {
+			std::size_t hashvalue = 0;
+			boost::hash_range(hashvalue, p_Values.begin(), p_Values.end());
+			std::vector<std::weak_ptr<const FMTGraphValues>>& bucket = m_ValuesPool[hashvalue];
+			for (std::vector<std::weak_ptr<const FMTGraphValues>>::iterator it = bucket.begin();
+				it != bucket.end(); )
+			{
+				if (std::shared_ptr<const FMTGraphValues> existing = it->lock())
+				{
+					if (existing->getValues() == p_Values)
+					{
+						return existing;
+					}
+					++it;
+				}
+				else
+				{
+					it = bucket.erase(it);//prune expired entries
+				}
+			}
+			interned = std::make_shared<const FMTGraphValues>(p_Values);
+			bucket.push_back(interned);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_InternValues",
+				__LINE__, __FILE__);
+		}
+		return interned;
 	}
 
 	size_t FMTSpatialGraphs::_FillValuesFromLastPeriod(
