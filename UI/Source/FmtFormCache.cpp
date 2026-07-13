@@ -200,6 +200,24 @@ void FMTFormCache::InitializeLogger(const std::string& filename, System::IntPtr 
 		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::InitializeLogger", __LINE__, __FILE__);
 		}
 	}
+	
+void FMTFormCache::CloseLogger()
+{
+	try
+	{
+		FMTFormLogger* logger = GetFormLogger();
+
+		if (logger)
+		{
+			logger->closeFile();
+		}
+	}
+	catch (...)
+	{
+		GetExceptionHandler()->raisefromcatch(
+			"", "FMTFormCache::CloseLogger", __LINE__, __FILE__);
+	}
+}
 
 const std::string& FMTFormCache::GetLoggerFilename() const
 	{
