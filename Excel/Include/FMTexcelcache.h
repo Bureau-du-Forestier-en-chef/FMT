@@ -65,7 +65,7 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ getperiods(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getconstraints(System::String^ primaryname, System::String^ scenario, System::String^ output);
 		System::Collections::Generic::List<int>^ getgraphstats(System::String^ primaryname, System::String^ scenario);
-		System::Collections::Generic::List<int>^ getgraphstatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection);
+		System::Collections::Generic::List<int>^ getGraphStatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection);
 		bool writejpeg(System::String^ jpeglocation, System::String^ primaryname, System::String^ scenario, int themeid, System::Collections::Generic::List<System::String^>^ attributes);
 		int size();
 		bool gotexception();

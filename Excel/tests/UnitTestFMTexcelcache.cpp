@@ -62,7 +62,7 @@ namespace Testing
 				std::vector<int> periods = {1, 8, 1, 9, 2, 10};
 				for (int period: periods)
 				{
-					double OUTPUTVALUE = m_cache->getValue(MODEL, SCENARIO, OUTPUT, THEMENAME, period);
+					double OUTPUTVALUE = m_cache->getvalue(MODEL, SCENARIO, OUTPUT, THEMENAME, period);
 					//std::cout << OUTPUTVALUE << std::endl;
 				}
 				m_cache->remove(MODEL, SCENARIO);
@@ -110,7 +110,7 @@ namespace Testing
 					"UnitTestFMTexcelcache::testAddAndBuild", __LINE__, __FILE__);
 
 			}
-			System::Collections::Generic::List<int>^ GRAPH_STATS = m_cache->getGraphStats(MODEL, SCENARIO);
+			System::Collections::Generic::List<int>^ GRAPH_STATS = m_cache->getgraphstats(MODEL, SCENARIO);
 			for each (int^ STATS in GRAPH_STATS)
 			{
 				if (*STATS == 0)

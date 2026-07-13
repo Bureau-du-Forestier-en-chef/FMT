@@ -560,7 +560,7 @@ namespace Wrapper
 		return list;
 	}
 
-	System::Collections::Generic::List<int>^ FMTexcelcache::getgraphstatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection)
+	System::Collections::Generic::List<int>^ FMTexcelcache::getGraphStatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection)
 	{
 		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
 		try {

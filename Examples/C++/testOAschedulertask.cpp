@@ -34,7 +34,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
             startingperiod);
         for (const auto& op : opeareas) 
         {
-            if (op.getneighborsperimeter() > 0 || op.getGreenUp() > 0)
+            if (op.getNeighborsPerimeter() > 0 || op.getGreenUp() > 0)
             {
                 Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
                 opeareas = areaParser.getSchemeNeighbors(
