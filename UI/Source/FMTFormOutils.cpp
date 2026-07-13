@@ -569,4 +569,16 @@ namespace Wrapper
 		}
 		return passed;
 	}
+	
+	void FMTForm::CloseLogger()
+	{
+		try
+		{
+			FMTFormCache::GetInstance()->CloseLogger();
+		}
+		catch (...)
+		{
+			raisefromcatch("", "FMTForm::CloseLogger", __LINE__, __FILE__);
+		}
+	}
 }

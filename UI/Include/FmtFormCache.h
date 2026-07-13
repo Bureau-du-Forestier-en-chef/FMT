@@ -37,6 +37,7 @@ namespace Wrapper
 			void erase(const int& index);
 			void clear();
 			void InitializeExceptionHandler(const int& maxwarnings, const std::vector<Exception::FMTexc>& warning);
+			void CloseLogger();
 			void InitializeLogger(const std::string& filename,System::IntPtr intptrptr);
 			// Reconstruit le logger ET l'exception handler a partir de la configuration
 			// enregistree lors des Initialize*, suite a un crash. Le logger est rouvert

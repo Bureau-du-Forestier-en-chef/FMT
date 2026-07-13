@@ -54,6 +54,11 @@ Wrapper::FMTFormLogger::~FMTFormLogger()
 	// appelle FMTlogger::logtime() (la partie dérivée étant déjà détruite, l'override
 	// no-op n'est plus atteint), ce qui insère une ligne timestamp parasite
 	// "Thread(id) <date>" dans le log à chaque destruction d'un clone du logger.
+	closeFile();
+}
+
+void Wrapper::FMTFormLogger::closeFile()
+{
 	if (m_FileStream)
 	{
 		if (m_FileStream->is_open())
