@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -329,7 +329,7 @@ namespace Models
 			setparameter(Models::FMTintmodelparameters::MATRIX_TYPE, 3);
 			bool allocatedArea = false;
 			double totalOperatedArea = 0;
-			Graph::FMTgraphstats GraphStats = getGraphStats();
+			Graph::FMTgraphstats GraphStats = getStats();
 			const double* ColSolution = solver.getColSolution();
 			std::vector<double>newSolution(ColSolution, ColSolution+solver.getNumCols());
 			int actionId = 0;

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -308,11 +308,6 @@ namespace Models
 		Override setter for boolmodelparameters.
 		*/
 		bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
-		// DocString: FMTsrmodel::getGraphStats
-		/**
-		Return the statistics of the actual graph (number of cols,rows,edges,vertices)
-		*/
-		Graph::FMTgraphstats getGraphStats() const;
 		// DocString: FMTsrmodel::getRotations
 		/**
 		Based on a mask and an action get all the unique rotations (in period) taken to complete a serie of action. A serie can contain a subserie for an

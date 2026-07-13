@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qu�bec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -60,12 +60,19 @@ void exportParser()
 
 	definePyDict<std::string,std::string>();
 
+	// writeForest est surchargé (worker chemins explicites vs. version dossier) : on fixe la surcharge
+	// à exposer (le worker à 6 args) via un pointeur typé, sinon &FMTareaparser::writeForest est ambigu.
+	bool (Parser::FMTareaparser::*writeForestPtr)(
+		const Spatial::FMTforest&, const std::vector<Core::FMTtheme>&,
+		const std::vector<std::string>&, const std::string&, const std::string&,
+		std::vector<std::map<std::string, std::string>>) const = &Parser::FMTareaparser::writeForest;
+
 	bp::class_<Parser::FMTareaparser, bp::bases<Parser::FMTparser>>("FMTareaparser", "@DocString(FMTareaparser)")
                 .def("read", &Parser::FMTareaparser::read, "@DocString(FMTareaparser::read)")
 				#ifdef FMTWITHGDAL
 					.def("readvectors", &Parser::FMTareaparser::readVectors,readvectors_overloads(bp::args("themes", "data_vectors", "agefield", "areafield", "areafactor", "lockfield","minimalarea"), "@DocString(FMTareaparser::readvectors)"))
 					.def("readrasters", &Parser::FMTareaparser::readRasters,readrasters_overloads(bp::args("themes","data_rasters","age","agefactor","areafactor","lock"), "@DocString(FMTareaparser::readrasters)"))
-					.def("writeforest",&Parser::FMTareaparser::writeForest,writeforest_overloads(bp::args("for_layer", "themes", "data_rasters", "age", "lock", "mapping"), "@DocString(FMTareaparser::writeforest)"))
+					.def("writeforest",writeForestPtr,writeforest_overloads(bp::args("for_layer", "themes", "data_rasters", "age", "lock", "mapping"), "@DocString(FMTareaparser::writeforest)"))
 					//.def("writeDisturbances",&Parser::FMTareaparser::writeDisturbances,writedisturbances_overloads(bp::args("location", "spatialschedule", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writeDisturbances)"))
 					.def("writedisturbances", &Parser::FMTareaparser::writeDisturbances)
 					.def("writepredictors", &Parser::FMTareaparser::writePredictors,writepredictors_overloads(bp::args("location", "spatialsolution", "yieldnames", "model", "period", "withGCBMid"), "@DocString(FMTareaparser::writepredictors)"))

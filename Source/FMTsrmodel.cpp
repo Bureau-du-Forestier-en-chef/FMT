@@ -1679,11 +1679,6 @@ namespace Models
 		return true;
 	}
 
-	Graph::FMTgraphstats FMTsrmodel::getGraphStats() const
-	{
-		return m_graph->getStats();
-	}
-
 	std::set<Core::FMTSerie>FMTsrmodel::getRotations(const Core::FMTmask& mask, const std::string& aggregate) const
 	{
 		std::set<Core::FMTSerie>rotations;

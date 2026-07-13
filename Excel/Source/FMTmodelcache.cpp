@@ -520,7 +520,7 @@ namespace Wrapper
 			value = Models::FMTlpmodel::getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
 
 			// 1-faire des prints de calcul pour voir lorsqu'il rentre versus lorsqu'il sort? Voir si des threads se pile sur les pieds
-			// 2-à chaque fois qu'il y a un appel  de getOutput, detruire et reconstruire le model pour empêcher que la cache suit
+			// 2-Ã  chaque fois qu'il y a un appel  de getOutput, detruire et reconstruire le model pour empÃªcher que la cache suit
 		}
 		catch (...)
 		{
@@ -1039,7 +1039,7 @@ namespace Wrapper
 	{
 		std::vector<int>stats;
 		try {
-			Graph::FMTgraphstats graphstats = FMTsrmodel::getGraphStats();
+			Graph::FMTgraphstats graphstats = FMTsrmodel::getStats();
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
 			stats.push_back(graphstats.vertices);

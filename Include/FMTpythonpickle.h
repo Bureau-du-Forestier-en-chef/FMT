@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qu�bec
+Copyright (c) 2019 Gouvernement du Qu�bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -34,11 +34,13 @@ namespace Python {
 			{
 			return typeid(T).name();
 			}
-		static boost::python::tuple getInitArgs(const T&)
+		// Noms imposés par Boost.Python (protocole pickle) : NE PAS passer en camelCase,
+		// sinon boost::python::pickle_suite ne les détecte plus (voir pickle_support.hpp).
+		static boost::python::tuple getinitargs(const T&)
 		{
 			return(boost::python::make_tuple());
 		}
-		static boost::python::object getState(const T& target)
+		static boost::python::object getstate(const T& target)
 		{
 			std::stringstream os;
 				{
@@ -52,7 +54,7 @@ namespace Python {
 			boost::iostreams::copy(out, compressed);
 			return boost::python::make_tuple(compressed.str());
 		}
-		static void setState(T& target, boost::python::tuple state)
+		static void setstate(T& target, boost::python::tuple state)
 		{
 			boost::python::extract<std::string> input(state[0]);
 			std::stringstream compressed(input);

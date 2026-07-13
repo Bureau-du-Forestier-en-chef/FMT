@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qu�bec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -57,6 +57,13 @@ namespace R
 {
 void exportParser()
     {
+	// writeForest est surchargé (worker chemins explicites vs. version dossier) : on fixe la surcharge
+	// à exposer (le worker à 6 args) via un pointeur typé, sinon &FMTareaparser::writeForest est ambigu.
+	bool (Parser::FMTareaparser::*writeForestPtr)(
+		const Spatial::FMTforest&, const std::vector<Core::FMTtheme>&,
+		const std::vector<std::string>&, const std::string&, const std::string&,
+		std::vector<std::map<std::string, std::string>>) const = &Parser::FMTareaparser::writeForest;
+
 	Rcpp::class_<Parser::FMTparser>("FMTparser", "@DocString(FMTparser)")
 		.derives<Core::FMTobject>("FMTobject")
 		.constructor("@DocString(FMTparser())");
@@ -74,7 +81,7 @@ void exportParser()
 						"@DocString(FMTareaparser::vectormaptoFMTforest)")
 					.method("vectorfieldtoraster", &Parser::FMTareaparser::vectorFieldToRaster,
 						"@DocString(FMTareaparser::vectorfieldtoraster)")
-					.method("writeforest",&Parser::FMTareaparser::writeForest,
+					.method("writeforest",writeForestPtr,
 						"@DocString(FMTareaparser::writeforest)")
 					.method("writedisturbances",&Parser::FMTareaparser::writeDisturbances,
 						"@DocString(FMTareaparser::writedisturbances)")
