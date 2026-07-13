@@ -1,8 +1,0 @@
-{
- "getattributes": "getAttributes",
- "getbuildexceptions": "getBuildExceptions",
- "getgraphstats": "getGraphStats",
- "getnochoice": "getNoChoice",
- "getvalue": "getValue",
- "getyield": "getYield"
-}

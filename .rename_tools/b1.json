@@ -1,8 +1,0 @@
-{
- "getneighbors":"getNeighbors",
- "getneihgborsperimeter":"getNeihgborsPerimeter",
- "setneighbors":"setNeighbors",
- "setarea":"setArea",
- "presolveoperatingarea":"presolveOperatingArea",
- "postsolveoperatingarea":"postsolveOperatingArea"
-}
