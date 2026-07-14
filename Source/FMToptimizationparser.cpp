@@ -93,7 +93,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::setending", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::setEnding", __LINE__, __FILE__);
 			}
 		return false;
 		}
@@ -230,11 +230,11 @@ namespace Parser
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
 					FILEm_location.string() + " at line " + std::to_string(m_line)+" in "+m_location,
-					"FMToptimizationparser::getreplicatechanges", __LINE__, __FILE__, m_section);
+					"FMToptimizationparser::getReplicateChanges", __LINE__, __FILE__, m_section);
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMToptimizationparser::getreplicatechanges", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("","FMToptimizationparser::getReplicateChanges", __LINE__, __FILE__, m_section);
 			}
 		return periodicvalues;
 		}
@@ -293,7 +293,7 @@ namespace Parser
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 								output_name + " at line " + std::to_string(m_line),
-								"FMToptimizationparser::resume_output", __LINE__, __FILE__, m_section);
+								"FMToptimizationparser::resumeOutput", __LINE__, __FILE__, m_section);
 						}
 						else {
 							const std::string BACKUP(output_name);
@@ -309,7 +309,7 @@ namespace Parser
 					{
 						_exhandler->raise(Exception::FMTexc::FMTundefined_output,
 							 output_name + " at line " + std::to_string(m_line),
-							"FMToptimizationparser::resume_output", __LINE__, __FILE__, m_section);
+							"FMToptimizationparser::resumeOutput", __LINE__, __FILE__, m_section);
 					}
 					if (target_attribute.empty())
 						{
@@ -327,7 +327,7 @@ namespace Parser
 						{
 							_exhandler->raise(Exception::FMTexc::FMTundefinedoutput_attribute,
 								target_attribute + " at line " + std::to_string(m_line),
-								"FMToptimizationparser::resume_output", __LINE__, __FILE__, m_section);
+								"FMToptimizationparser::resumeOutput", __LINE__, __FILE__, m_section);
 							target_attribute.clear();
 						}
 					}
@@ -362,13 +362,13 @@ namespace Parser
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 						output_it->first + " at line " + std::to_string(m_line),
-						"FMToptimizationparser::resume_output", __LINE__, __FILE__, m_section);
+						"FMToptimizationparser::resumeOutput", __LINE__, __FILE__, m_section);
 				}
 			}
 			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToptimizationparser::resume_output", __LINE__, __FILE__,m_section);
+			_exhandler->raisefromcatch("", "FMToptimizationparser::resumeOutput", __LINE__, __FILE__,m_section);
 			}
         return final_output;
         }
@@ -627,7 +627,7 @@ namespace Parser
 				}
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("","FMToptimizationparser::fillbounds", __LINE__, __FILE__, m_section);
+				_exhandler->raisefromcatch("","FMToptimizationparser::fillBounds", __LINE__, __FILE__, m_section);
 				}
 			}
 
@@ -644,14 +644,14 @@ namespace Parser
 						{
 						_exhandler->raise(Exception::FMTexc::FMTemptybound,
 							" for " + value,
-							"FMToptimizationparser::getperiodsbounds", __LINE__, __FILE__, m_section);
+							"FMToptimizationparser::getPeriodsBounds", __LINE__, __FILE__, m_section);
 						}
 					constraints.push_back(newconstraint);
 					}
 	
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("for " + periodstr, "FMToptimizationparser::getperiodsbounds", __LINE__, __FILE__, m_section);
+				_exhandler->raisefromcatch("for " + periodstr, "FMToptimizationparser::getPeriodsBounds", __LINE__, __FILE__, m_section);
 				}
 			return constraints;
 		}
@@ -787,7 +787,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::getsection", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::getSection", __LINE__, __FILE__, m_section);
 			}
 		return section;
 		}
@@ -1060,7 +1060,7 @@ namespace Parser
 					{
 						_exhandler->raise(Exception::FMTexc::FMTundefined_output,
 							output_name + " at line " + std::to_string(m_line),
-							"FMToptimizationparser::geteachlines",__LINE__, __FILE__, m_section);
+							"FMToptimizationparser::getEachLines",__LINE__, __FILE__, m_section);
 					}
 					if (themeid >= 0)
 					{
@@ -1068,7 +1068,7 @@ namespace Parser
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 								"Non matching _EACH outputs attributes at line " + std::to_string(m_line),
-								"FMToptimizationparser::geteachlines",__LINE__, __FILE__, m_section);
+								"FMToptimizationparser::getEachLines",__LINE__, __FILE__, m_section);
 						}
 					}
 
@@ -1082,7 +1082,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::geteachlines", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::getEachLines", __LINE__, __FILE__, m_section);
 			}
 		return valuestoreplace;
 		}
@@ -1110,7 +1110,7 @@ namespace Parser
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMToptimizationparser::getoptline", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("","FMToptimizationparser::getOptline", __LINE__, __FILE__, m_section);
 			}
 		return FinalLines;
 		}

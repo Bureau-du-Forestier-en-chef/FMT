@@ -132,14 +132,14 @@ void  FMTforest::setLastThemeWithArea(const std::vector<Core::FMTactualdevelopme
 			if (new_Masks.find(subset)== new_Masks.end())
 				{
                 _exhandler->raise(Exception::FMTexc::FMTinvalid_theme, "Missing mask " + subset +" in area",
-                    "FMTforest::SetLastThemeWithArea", __LINE__, __FILE__);
+                    "FMTforest::setLastThemeWithArea", __LINE__, __FILE__);
 				}
 			subset += new_Masks[subset];
 			DevWithLocation.second.setMask(Core::FMTmask(subset, p_themes));
 			}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTforest::SetLastThemeWithArea", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTforest::setLastThemeWithArea", __LINE__, __FILE__);
 	}
 
 }
@@ -165,13 +165,13 @@ FMTforest FMTforest::presolve(const Core::FMTmaskfilter& filter, const std::vect
 
 
 
-FMTforest FMTforest::postsolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&originalbasethemes) const
+FMTforest FMTforest::postSolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&originalbasethemes) const
 	{
 	FMTforest newforest(*this);
 	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = newforest.mapping.begin();
 		coordit != newforest.mapping.end(); ++coordit)
 		{
-		coordit->second.setMask(coordit->second.getmask().postsolve(filter, originalbasethemes));
+		coordit->second.setMask(coordit->second.getmask().postSolve(filter, originalbasethemes));
 		}
 	return newforest;
 	}

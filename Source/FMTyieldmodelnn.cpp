@@ -213,7 +213,7 @@ namespace Core {
 				if (predictors.empty())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
-						"FMTyieldmodel::Predict", __LINE__, __FILE__);
+						"FMTyieldmodel::predict", __LINE__, __FILE__);
 
 				}
 				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
@@ -237,7 +237,7 @@ namespace Core {
 				if (predictors.empty())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
-						"FMTyieldmodel::Predict", __LINE__, __FILE__);
+						"FMTyieldmodel::predict", __LINE__, __FILE__);
 					}
 				//Dans un fullgraph il existe plusieurs predicteurs pour chaque noeud predictors.size() >= 1 <= a beaucoup
 				//On peut faire du blackmagic pour aller chercher la solution existante de chaque predictor...
@@ -261,7 +261,7 @@ namespace Core {
 				double totalarea = 0;
 				if (!withoutsolution)
 				{
-					totalarea = fullgraph->inarea(*vertex, solution);
+					totalarea = fullgraph->inArea(*vertex, solution);
 					/*for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
 					{
 						totalarea += *(solution + invariables.at(inedgeid));
@@ -271,7 +271,7 @@ namespace Core {
 					{
 						_exhandler->raise(Exception::FMTexc::FMTyieldmodelprediction,"using "+ mdlName+
 							" Multiple in edges for "+ std::string(request.getDevelopment()) ,
-								"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+								"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 					}
 					totalarea = static_cast<double>(invariables.size()); // we consider a solution of 1 everywhere
 					}
@@ -307,18 +307,18 @@ namespace Core {
 			}
 			else {//Im nothing
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " yield model without graph info",
-					"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+					"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 
 			return result;
 		#endif
 
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Something went wrong in " + mdlName,
-				"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::vector<double>();
 	}

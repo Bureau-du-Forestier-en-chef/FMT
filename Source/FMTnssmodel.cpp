@@ -235,7 +235,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::getcopy", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTnssmodel::getCopy", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}
@@ -287,7 +287,7 @@ namespace Models
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::UpdateOutputs", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTnssmodel::updateOutputs", __LINE__, __FILE__);
 		}
 		return harvestedArea;
 	}
@@ -356,10 +356,10 @@ namespace Models
 								if (DEVELOPPEMENT.operable(ACTION, yields))
 								{
 									const double* actualSolution = &newSolution[0];
-									double DEV_AREA = m_graph->inarea(frontVertex, actualSolution);
-									for (const int& actionId : m_graph->getoutactions(frontVertex, false))
+									double DEV_AREA = m_graph->inArea(frontVertex, actualSolution);
+									for (const int& actionId : m_graph->getOutActions(frontVertex, false))
 										{
-										DEV_AREA -= m_graph->outarea(frontVertex, actionId, actualSolution);
+										DEV_AREA -= m_graph->outArea(frontVertex, actionId, actualSolution);
 										}
 									if (DEV_AREA > FMT_DBL_TOLERANCE)
 									{
@@ -414,16 +414,16 @@ namespace Models
 			{
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& GrowVertex = toGrowWithSolution.front();
 				const double* actualSolution = &newSolution[0];
-				double DEV_AREA = m_graph->inarea(GrowVertex, actualSolution);
-				for (const int& Id : m_graph->getoutactions(GrowVertex))
+				double DEV_AREA = m_graph->inArea(GrowVertex, actualSolution);
+				for (const int& Id : m_graph->getOutActions(GrowVertex))
 				{
-					DEV_AREA -= m_graph->outarea(GrowVertex, Id, actualSolution);
+					DEV_AREA -= m_graph->outArea(GrowVertex, Id, actualSolution);
 				}
 				newSolution.push_back(DEV_AREA);
 				toGrowWithSolution.pop();
 			}
 			const int location = static_cast<int>(m_graph->size() - 2);
-			const Graph::FMTgraphstats newStats = this->updateMatrix(m_graph->getperiodvertices(location), GraphStats);
+			const Graph::FMTgraphstats newStats = this->updateMatrix(m_graph->getPeriodVertices(location), GraphStats);
 			if (solver.getNumCols() != static_cast<int>(newSolution.size()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -431,7 +431,7 @@ namespace Models
 					" vs Solution cols of " + std::to_string(newSolution.size()),
 					"FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
-			m_graph->setstats(newStats);
+			m_graph->setStats(newStats);
 			solver.setColSolution(&newSolution[0]);
 			this->boundSolution(period);
 		}catch (...)
@@ -460,8 +460,8 @@ namespace Models
 				actualarea = area;
 				for (Core::FMTactualdevelopment& actdev : actualarea)
 					{
-					simulatedperiod =actdev.getperiod() + 1;
-					actdev.setPeriod(actdev.getperiod()+1);
+					simulatedperiod =actdev.getPeriod() + 1;
+					actdev.setPeriod(actdev.getPeriod()+1);
 					}
 			}else {
 				actualarea = getarea(actualgraphlength - 1);

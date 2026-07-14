@@ -97,11 +97,11 @@ namespace Core
 		*/
 		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& filter,
 				const std::vector<FMTtheme>& newthemes) const;
-		// DocString: FMTyieldmodel::postsolve
+		// DocString: FMTyieldmodel::postSolve
 		/**
 		Postsolve the yieldmodel by default it will return a clone.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> postsolve(const FMTmaskfilter& filter,
+		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& basethemes) const;
 		// DocString: FMTyieldmodel::std::string()
 		/**

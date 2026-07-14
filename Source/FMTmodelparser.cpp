@@ -83,14 +83,14 @@ namespace Parser {
 				newlayer->CreateField(&driftfield) != OGRERR_NONE)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-					"Cannote create new fields outputsdrift", "FMTmodelparser::createdriftlayer", __LINE__, __FILE__, m_section);
+					"Cannote create new fields outputsdrift", "FMTmodelparser::createDriftLayer", __LINE__, __FILE__, m_section);
 				//Cannot create field
 			}
 
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::createdriftlayer", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTmodelparser::createDriftLayer", __LINE__, __FILE__);
 		}
 		return newlayer;
 	}
@@ -111,7 +111,7 @@ namespace Parser {
 						if (newfeature == NULL)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
+								"Cannote generate new feature ", "FMTmodelparser::writeFeatures", __LINE__, __FILE__, m_section);
 							//Failed to generate feature
 						}
 						newfeature->SetField("Period", period);
@@ -122,7 +122,7 @@ namespace Parser {
 						if (layer->CreateFeature(newfeature) != OGRERR_NONE)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
+								"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writeFeatures", __LINE__, __FILE__, m_section);
 							//Failed to generate feature
 						}
 						OGRFeature::DestroyFeature(newfeature);
@@ -133,7 +133,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::writedrift", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTmodelparser::writeDrift", __LINE__, __FILE__);
 		}
 	}
 
@@ -186,7 +186,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::getiterationsvalues", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTmodelparser::getIterationsValues", __LINE__, __FILE__);
 		}
 		return results;
 	}
@@ -223,7 +223,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::createresultslayer", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("", "FMTmodelparser::createResultsLayer", __LINE__, __FILE__, m_section);
 		}
 		return newlayer;
 	}
@@ -241,7 +241,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::fillupinfeasibles", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("", "FMTmodelparser::fillUpInfeasibles", __LINE__, __FILE__, m_section);
 		}
 
 	}
@@ -271,7 +271,7 @@ namespace Parser {
 							if (newfeature == NULL)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-									"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
+									"Cannote generate new feature ", "FMTmodelparser::writeFeatures", __LINE__, __FILE__, m_section);
 								//Failed to generate feature
 							}
 							newfeature->SetField("Iteration", iteration);
@@ -282,7 +282,7 @@ namespace Parser {
 							if (layer->CreateFeature(newfeature) != OGRERR_NONE)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-									"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
+									"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writeFeatures", __LINE__, __FILE__, m_section);
 								//Failed to generate feature
 							}
 							OGRFeature::DestroyFeature(newfeature);
@@ -296,7 +296,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::writefeatures", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("", "FMTmodelparser::writeFeatures", __LINE__, __FILE__, m_section);
 		}
 
 	}
@@ -356,7 +356,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writeprimary", __LINE__, __FILE__, m_section);
+			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writePrimary", __LINE__, __FILE__, m_section);
 		}
 	}
 
@@ -458,7 +458,7 @@ namespace Parser {
 		}
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodelparser::writemodel", __LINE__, __FILE__, m_section);
+		_exhandler->printexceptions("", "FMTmodelparser::writeModel", __LINE__, __FILE__, m_section);
 	}
 }
 
@@ -530,7 +530,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("While getting constraint from " + constraintstr, "FMTmodelparser::getconstraintsfromstring", __LINE__, __FILE__, m_section);
+			_exhandler->printexceptions("While getting constraint from " + constraintstr, "FMTmodelparser::getConstraintsFromString", __LINE__, __FILE__, m_section);
 		}
 		return constraints;
 	}
@@ -754,7 +754,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				if (find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction,
-						"_DEATH", "FMTmodelparser::referenceread", __LINE__, __FILE__, Core::FMTsection::Action);
+						"_DEATH", "FMTmodelparser::referenceRead", __LINE__, __FILE__, Core::FMTsection::Action);
 					actions.push_back(Models::FMTmodel::defaultDeathAction(lifespan, themes));
 				}
 				m_MostRecentFile = std::max(actparser.getMostRecentFiletime(), m_MostRecentFile);
@@ -768,7 +768,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				if (find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition,
-						"_DEATH", "FMTmodelparser::referenceread", __LINE__, __FILE__, Core::FMTsection::Transition);
+						"_DEATH", "FMTmodelparser::referenceRead", __LINE__, __FILE__, Core::FMTsection::Transition);
 					transitions.push_back(Models::FMTmodel::defaultDeathTransition(lifespan, themes));
 				}
 				m_MostRecentFile = std::max(trnparser.getMostRecentFiletime(), m_MostRecentFile);
@@ -832,7 +832,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::referenceread", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTmodelparser::referenceRead", __LINE__, __FILE__);
 		}
 		return returnedmodel;
 	}
@@ -1103,12 +1103,12 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					}
 				}
 				_exhandler->raise(Exception::FMTexc::FMTmissing_scenarios,
-					boost::algorithm::join(missing_scenarios, " ") + " for " + primarym_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
+					boost::algorithm::join(missing_scenarios, " ") + " for " + primarym_location, "FMTmodelparser::readFromFolder", __LINE__, __FILE__);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readFromFolder", __LINE__, __FILE__);
 		}
 
 		if (_logger->logwithlevel("Done reading " + getDurationInSeconds(readstart) + " ", 0))

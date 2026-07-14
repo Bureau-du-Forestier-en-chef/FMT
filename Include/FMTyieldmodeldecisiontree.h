@@ -81,7 +81,7 @@ namespace Core
 	std::unique_ptr<Models::FMTmodel> getNaturalGrowth(const Core::FMTyieldrequest& request) const;
 	// DocString: FMTyieldmodeldecisiontree::modify
 	/**
-	This will modify the class if presolve = true will do presolve, if not will do postsolve.
+	This will modify the class if presolve = true will do presolve, if not will do postSolve.
 	*/
 	std::unique_ptr<FMTyieldmodel> modify(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& newthemes,bool presolve = true) const;
@@ -133,11 +133,11 @@ namespace Core
 		*/
 		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& newthemes) const;
-		// DocString: FMTyieldmodeldecisiontree::postsolve
+		// DocString: FMTyieldmodeldecisiontree::postSolve
 		/**
 		Change the output and constraints mask to return to the original constraints and outputs.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> postsolve(const FMTmaskfilter& filter,
+		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& basethemes) const;
 		// DocString: FMTyieldmodeldecisiontreel::getPeriodicValues
 		/**

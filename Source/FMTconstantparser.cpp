@@ -105,7 +105,7 @@ std::queue<FMTparser::FMTLineInfo> FMTconstantparser::getCleanLinewfor(std::ifst
 		lines = processForLoopsNInclude(p_themes, constantsCopy, lines);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTconstantparser::GetCleanLinewfor",
+		_exhandler->raisefromcatch("", "FMTconstantparser::getCleanLinewfor",
 			__LINE__, __FILE__, m_section);
 		}
 	return lines;

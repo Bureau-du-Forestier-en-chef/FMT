@@ -99,7 +99,7 @@ FMToperatingarea FMToperatingarea::presolveOperatingArea(const Core::FMTmaskfilt
 FMToperatingarea FMToperatingarea::postsolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&basethemes) const
 {
 	FMToperatingarea postsolvedoparea(*this);
-	postsolvedoparea.mask = postsolvedoparea.mask.postsolve(filter,basethemes);
+	postsolvedoparea.mask = postsolvedoparea.mask.postSolve(filter,basethemes);
 	return postsolvedoparea;
 }
 

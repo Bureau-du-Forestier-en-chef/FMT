@@ -152,11 +152,11 @@ class FMTEXPORT FMTevent
         Getter of the action id
         */
         const int& getActionId() const;
-        // DocString: FMTevent::getperiod()
+        // DocString: FMTevent::getPeriod()
         /**
         Getter of the period
         */
-        const int& getperiod() const;
+        const int& getPeriod() const;
         // DocString: FMTevent::getGraphFamily()
         /**
         Getter for the graph family

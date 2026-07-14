@@ -27,7 +27,7 @@ namespace Parallel
 				}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTplanningtask::copymodels", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTplanningtask::copyModels", __LINE__, __FILE__);
 		}
 		return newmodels;
 	}

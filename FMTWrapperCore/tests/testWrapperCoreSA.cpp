@@ -132,32 +132,42 @@ int main(int argc, char* argv[])
 
 	if (argc > 1)
 	{
-		std::string resultsJsonLocation = argv[2];
-		boost::property_tree::ptree resultsTree;
-		boost::property_tree::read_json(resultsJsonLocation, resultsTree);
+		try {
+			std::string resultsJsonLocation = argv[2];
+			boost::property_tree::ptree resultsTree;
+			boost::property_tree::read_json(resultsJsonLocation, resultsTree);
 
-		for (const std::string& output : params.outputNames)
-		{
-			auto it = std::find_if(results.outputsData.results.begin(), results.outputsData.results.end(),
-				[&output](const auto& item) { return item.outputName == output; });
-
-			if (it == results.outputsData.results.end()) continue;
-
-			int itemNum = 1;
-			for (const auto& item : resultsTree.get_child(output))
+			for (const std::string& output : params.outputNames)
 			{
-				if (std::abs(it->periodValues.at(itemNum) - item.second.get_value<double>()) >= 1)
+				auto it = std::find_if(results.outputsData.results.begin(), results.outputsData.results.end(),
+					[&output](const auto& item) { return item.outputName == output; });
+
+				if (it == results.outputsData.results.end()) continue;
+
+				int itemNum = 1;
+				for (const auto& item : resultsTree.get_child(output))
 				{
-					std::cout << ("Error: " + std::to_string(it->periodValues.at(itemNum))
-						+ "!=" + std::to_string(item.second.get_value<double>())
-						+ "at period " + std::to_string(itemNum) + "\n");
-					Exception::FMTfreeexceptionhandler().raise(
-						Exception::FMTexc::FMTfunctionfailed,
-						results.errorMessage,
-						"testWrapperCoreSA", __LINE__, primaryFilePath);
+					if (std::abs(it->periodValues.at(itemNum) - item.second.get_value<double>()) >= 1)
+					{
+						std::cout << ("Error: " + std::to_string(it->periodValues.at(itemNum))
+							+ "!=" + std::to_string(item.second.get_value<double>())
+							+ "at period " + std::to_string(itemNum) + "\n");
+						Exception::FMTfreeexceptionhandler().raise(
+							Exception::FMTexc::FMTfunctionfailed,
+							results.errorMessage,
+							"testWrapperCoreSA", __LINE__, primaryFilePath);
+					}
+					++itemNum;
 				}
-				++itemNum;
 			}
+		}
+		catch (const std::exception& e)
+		{
+			// La comparaison a levé une FMTexception (valeurs différentes). On la capture ICI
+			// pour faire échouer le test proprement (return != 0) au lieu de la laisser sortir
+			// de main : sinon std::terminate déclenche le dump de pile de FMTobject::_terminate.
+			std::cerr << e.what() << std::endl;
+			return 1;
 		}
 	}
 

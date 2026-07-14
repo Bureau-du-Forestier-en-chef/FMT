@@ -57,7 +57,7 @@ namespace Models
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("Cannot build solver","FMTlpsolver::buildsolverinterface", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("Cannot build solver","FMTlpsolver::buildSolverInterface", __LINE__, __FILE__);
 			}
 		return newsolverinterface;
 	}
@@ -96,7 +96,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("Cannot copy solver", +"FMTlpsolver::copysolverinterface", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("Cannot copy solver", +"FMTlpsolver::copySolverInterface", __LINE__, __FILE__);
 		}
 		return newsolverinterface;
 	}
@@ -245,12 +245,12 @@ namespace Models
 				#endif
 				default:
 					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set number of threads used for "+getSolverName(),
-						"FMTlpsolver::setnumberofthreads", __LINE__, __FILE__);
+						"FMTlpsolver::setNumberOfThreads", __LINE__, __FILE__);
 				break;
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlpsolver::setnumberofthreads", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setNumberOfThreads", __LINE__, __FILE__);
 			}
 		}
 
@@ -308,7 +308,7 @@ namespace Models
 				#endif
 				default:
 					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set gap feasible pump level for " + getSolverName(),
-						"FMTlpsolver::MIPparameters", __LINE__, __FILE__);
+						"FMTlpsolver::mipParameters", __LINE__, __FILE__);
 					break;
 				}
 			}
@@ -477,14 +477,14 @@ namespace Models
 					if (error == MSK_RES_TRM_NUMERICAL_PROBLEM) //100025 Numéro pour MSK_RES_TRM_NUMERICAL_PROBLEM
 					{
 						_exhandler->raise(Exception::FMTexc::FMTMSKnumerical_problem,
-							getMskErrorDesc(error), "FMTlpsolver::initialsolve", __LINE__, __FILE__);
+							getMskErrorDesc(error), "FMTlpsolver::initialSolve", __LINE__, __FILE__);
 						error = static_cast<MSKrescodee>(_MSKOptimizeWithDefaultParameters());
 					}
 
 					if (error > 0)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTmskerror,
-							getMskErrorDesc(error),"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+							getMskErrorDesc(error),"FMTlpsolver::initialSolve", __LINE__, __FILE__);
 					}
 				}
 				break;
@@ -505,12 +505,12 @@ namespace Models
 				{
 				_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
 						" Missing solver " + getSolverName() + " License ",
-						"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+						"FMTlpsolver::initialSolve", __LINE__, __FILE__);
 				}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", +"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", +"FMTlpsolver::initialSolve", __LINE__, __FILE__);
 		}
 		return solverinterface->isProvenOptimal();
 		}
@@ -521,7 +521,7 @@ namespace Models
 		solverinterface->passInMessageHandler(dynamic_cast<CoinMessageHandler*>(logger.getSolverLogger()));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::passInMessageHandler", __LINE__, __FILE__);
 			}
 		}
 
@@ -555,7 +555,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", +"FMTlpsolver::gotlicense", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", +"FMTlpsolver::gotLicense", __LINE__, __FILE__);
 		}
 		return licensestatus;
 		}
@@ -590,7 +590,7 @@ namespace Models
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", +"FMTlpsolver::getsolvername", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", +"FMTlpsolver::getSolverName", __LINE__, __FILE__);
 			}
 		return name;
 		}
@@ -816,7 +816,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::getiterationcount", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::getIterationCount", __LINE__, __FILE__);
 		}
 		return iterations;
 		}
@@ -838,7 +838,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::passinsolver", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::passInSolver", __LINE__, __FILE__);
 		}
 		}
 
@@ -866,7 +866,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::clearrowcache", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::clearRowCache", __LINE__, __FILE__);
 		}
 		}
 
@@ -889,7 +889,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::stockresolve", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::stockResolve", __LINE__, __FILE__);
 		}
 		return solverinterface->isProvenOptimal();
 		}
@@ -991,7 +991,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::setcolname", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setColName", __LINE__, __FILE__);
 		}
 	}
 	
@@ -1002,7 +1002,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::setrowname", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setRowName", __LINE__, __FILE__);
 		}
 	}
 
@@ -1016,7 +1016,7 @@ namespace Models
 			if(cachedcolnames.size() != static_cast<size_t>(getNumCols()) || cachedrownames.size() != static_cast<size_t>(getNumRows()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, 
-								"NumCols or NumRows size is different of the number of names given", "FMTlpsolver::updaterowsandcolsnames", __LINE__, __FILE__);		
+								"NumCols or NumRows size is different of the number of names given", "FMTlpsolver::updateRowsAndColsNames", __LINE__, __FILE__);		
 			}
 			if (solvertype == Models::FMTsolverinterface::MOSEK)
 			{
@@ -1042,7 +1042,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::updaterowsandcolsnames", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::updateRowsAndColsNames", __LINE__, __FILE__);
 		}
 	}
 	/*
@@ -1201,7 +1201,7 @@ namespace Models
 			usecache = false;
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlpsolver::disablematrixcaching", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::disableMatrixCaching", __LINE__, __FILE__);
 			}
 		}
 
@@ -1211,7 +1211,7 @@ namespace Models
 		matrixcache.sortAndCleanDeleted();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlpsolver::sortdeletedcache", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::sortDeletedCache", __LINE__, __FILE__);
 			}
 		}
 
@@ -1248,7 +1248,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::lowernuppertostr", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::lowerNUpperToStr", __LINE__, __FILE__);
 		}
 		return value;
 		}
@@ -1285,11 +1285,11 @@ namespace Models
 			return static_cast<int>(indices.size());
 			}else {
 					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"for row id " + std::to_string(whichRow), "FMTlpsolver::getrow", __LINE__, __FILE__);
+					"for row id " + std::to_string(whichRow), "FMTlpsolver::getRow", __LINE__, __FILE__);
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlpsolver::getrow", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::getRow", __LINE__, __FILE__);
 			}
 		return -1;
 		}
@@ -1330,12 +1330,12 @@ namespace Models
 		}
 		else {
 			Exception::FMTdefaultexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
-				"for column id " + std::to_string(whichCol), "FMTlpsolver::getcol", __LINE__, __FILE__);
+				"for column id " + std::to_string(whichCol), "FMTlpsolver::getCol", __LINE__, __FILE__);
 		}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::getcol", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::getCol", __LINE__, __FILE__);
 		}
 		return -1;
 		}

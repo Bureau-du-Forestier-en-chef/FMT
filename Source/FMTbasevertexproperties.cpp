@@ -25,7 +25,7 @@ namespace Graph
 
 	bool FMTbasevertexproperties::operator < (const FMTbasevertexproperties& rhs) const
 	{
-		if (m_development->getperiod() < rhs.m_development->getperiod())
+		if (m_development->getPeriod() < rhs.m_development->getPeriod())
 		{
 			return true;
 		}

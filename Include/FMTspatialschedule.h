@@ -115,9 +115,9 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
         int actPeriod() const;
         // DocString: FMTSpatialSchedule::getForestPeriod
         /**
-        Return the FMTforest corresponding to the period asked. If periodstart, the forest pass wil be the one before the actions as been set otherwise, it will be the forest after the actions as been set. 
+        Return the FMTforest corresponding to the period asked. If periodStart, the forest pass wil be the one before the actions as been set otherwise, it will be the forest after the actions as been set. 
         */
-        FMTforest getForestPeriod(const int& period,bool periodstart=false) const;
+        FMTforest getForestPeriod(const int& period,bool periodStart=false) const;
 		// DocString: FMTSpatialSchedule::allowAction
 		/**
 		Check in all events around the location during periods corresponding to green up delay
@@ -416,14 +416,14 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		*/
 		std::vector<std::pair<FMTcoordinate, double>>getOutputByCoordinate(const Models::FMTmodel & model,
 			const Core::FMToutput& output, const int& period) const;
-		// DocString: FMTSpatialSchedule::postsolve
+		// DocString: FMTSpatialSchedule::postSolve
 		/**
-		@brief postsolve the spatial solution.
+		@brief postSolve the spatial solution.
 		@param[in] p_Filter filter used for presolve
 		@param[in] p_PresolveActions the vector of presolved actions
 		@param[in] p_OriginalBaseModel the original model.
 		*/
-		void postsolve(const Core::FMTmaskfilter&  p_Filter,
+		void postSolve(const Core::FMTmaskfilter&  p_Filter,
 			const std::vector<Core::FMTaction>& p_PresolveActions,
 			Spatial::FMTSpatialGraphs& p_Graphs);
 		// DocString: FMTSpatialSchedule::presolve

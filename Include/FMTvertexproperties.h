@@ -51,7 +51,7 @@ namespace Graph
 				{
 				return constraintID;
 				}
-			void setconstraintID(const int& ID);
+			void setConstraintID(const int& ID);
 		};
 }
 

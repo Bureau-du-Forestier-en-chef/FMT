@@ -159,7 +159,7 @@ namespace Parallel
 			return std::move(modelcpy);
 			}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::copysharedmodel", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTreplanningtask::copySharedModel", __LINE__, __FILE__);
 			}
 		return std::unique_ptr<Models::FMTmodel>(nullptr);
 		}
@@ -304,7 +304,7 @@ namespace Parallel
 			if (replanningperiod <= replanningperiods)//Dont write outside the replanningsperiods
 			{
 				int modelsize = modellength;
-				int firstPeriod = dynamicarea.begin()->getperiod() + 1;
+				int firstPeriod = dynamicarea.begin()->getPeriod() + 1;
 				int lastPeriod = firstPeriod;
 				if (!onlyfirstperiod)
 				{
@@ -381,7 +381,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::setreignore", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTreplanningtask::setReIgnore", __LINE__, __FILE__);
 		}
 	}
 
@@ -405,7 +405,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::setreplicate", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTreplanningtask::setReplicate", __LINE__, __FILE__);
 		}
 	}
 
@@ -526,7 +526,7 @@ namespace Parallel
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTreplanningwarning,
 						"infeasible model named " + modelcpy->getname() + " on replicate " + std::to_string(getIteration()) + " at replanning period " + std::to_string(replanningperiod),
-						"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
+						"FMTreplanningtask::doModelPlanning", __LINE__, __FILE__);
 					modelcpy = std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
 				}
 				if (modelsize>1)
@@ -547,13 +547,13 @@ namespace Parallel
 							{
 							_exhandler->raise(Exception::FMTexc::FMTreplanningwarning,
 								"empty schedule generated for model "+model->getname()+" at replanning period "+std::to_string(replanningperiod),
-								"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
+								"FMTreplanningtask::doModelPlanning", __LINE__, __FILE__);
 						}
 					}
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTreplanningwarning,
 						"infeasible model named " + modelcpy->getname() + " on replicate " + std::to_string(getIteration()) + " at replanning period " + std::to_string(replanningperiod),
-						"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
+						"FMTreplanningtask::doModelPlanning", __LINE__, __FILE__);
 
 					modelcpy = std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
 				}
@@ -569,7 +569,7 @@ namespace Parallel
 			{
 				location += " replicate " + std::to_string(getIteration());
 			}
-			_exhandler->raisefromcatch(location, "FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
+			_exhandler->raisefromcatch(location, "FMTreplanningtask::doModelPlanning", __LINE__, __FILE__);
 			}
 		return std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
 	}

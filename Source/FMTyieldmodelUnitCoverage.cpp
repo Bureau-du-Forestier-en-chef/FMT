@@ -40,7 +40,7 @@ namespace Core
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTyieldmodelUnitCoverage::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTyieldmodelUnitCoverage::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 	return Predictions;
 	}
@@ -59,11 +59,11 @@ namespace Core
 		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(newPresolved));
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelUnitCoverage::postsolve(const FMTmaskfilter& p_filter,
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelUnitCoverage::postSolve(const FMTmaskfilter& p_filter,
 		const std::vector<FMTtheme>& p_baseThemes) const
 	{
 		FMTyieldmodelUnitCoverage newPostsolved(*this);
-		newPostsolved.m_mask.postsolve(p_filter, p_baseThemes);
+		newPostsolved.m_mask.postSolve(p_filter, p_baseThemes);
 		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(newPostsolved));
 	}
 
@@ -102,7 +102,7 @@ namespace Core
 			{
 				_exhandler->raise(Exception::FMTfunctionfailed,
 					"No available model",
-					"FMTyieldmodelUnitCoverage::getOutputValuesl", __LINE__, __FILE__);
+					"FMTyieldmodelUnitCoverage::getOutputValues", __LINE__, __FILE__);
 			}
 			size_t outId = 0;
 			const int PERIOD_TARGET = m_modelPtr->getAreaPeriod();

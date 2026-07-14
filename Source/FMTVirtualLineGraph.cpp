@@ -73,7 +73,7 @@ namespace Spatial{
 		FMTSolutionTracker& p_solution) const
 	{
 		Graph::FMTlinegraph graphCopy = getLineGraph();
-		graphCopy.postsolve(p_Filter, 
+		graphCopy.postSolve(p_Filter, 
 			p_Graphs.getModel().getthemes(), p_actionMapping);
 		FMTVirtualLineGraph postSolved = p_Graphs.setVirtualGraph(graphCopy);
 		postSolved._add(p_solution);

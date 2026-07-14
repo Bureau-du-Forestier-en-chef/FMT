@@ -41,6 +41,7 @@ cmake CMakeLists.txt \
  -DCMAKE_BUILD_TYPE=Release \
  -DPARALLEL_TESTS=8 \
  -DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" \
+ -DDART_TESTING_TIMEOUT=100000 \
  -DENV_PREFIX="x86_64-w64-mingw32.static.posix" \
  -DCOVERAGE=On
 	

@@ -136,7 +136,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparallelwriter::setlayer", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparallelwriter::setLayer", __LINE__, __FILE__);
 		}
 	}
 
@@ -181,7 +181,7 @@ namespace Parallel
 				{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"No drift calculated for missing values in " + globaloutput.first,
-						"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+						"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
 					continue;
 				}
 
@@ -192,7 +192,7 @@ namespace Parallel
 					{
 						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"No output "+ globaloutput.first +" in local",
-							"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+							"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
 					}
 					// TODO regarder si les length sont les mêmes entre les période (pas juste la première) donc un max()
 					std::size_t max_size = 0;
@@ -219,7 +219,7 @@ namespace Parallel
 						{
 							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 								"No iteration " + std::to_string(periodid) + " in global",
-								"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+								"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
 							return drifts;
 						}
 						const double globalvalue = globaloutput.second.at(periodid).at(0);
@@ -260,7 +260,7 @@ namespace Parallel
 		{
 			_exhandler->raisefromcatch("On output "+outputname+" "+std::to_string(driftprob)
 				+" period id "+ std::to_string(periodof) + " on replicate " + std::to_string(iterationid + 1),
-				"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+				"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
 
 		}
 		return drifts;
@@ -289,18 +289,18 @@ namespace Parallel
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"Empty result layers, no drift probability generated",
-						"FMTparallelwriter::setdriftprobability", __LINE__, __FILE__);
+						"FMTparallelwriter::setDriftProbability", __LINE__, __FILE__);
 				}
 			}
 			else {
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"No layers to get",
-					"FMTparallelwriter::setdriftprobability", __LINE__, __FILE__);
+					"FMTparallelwriter::setDriftProbability", __LINE__, __FILE__);
 			}
 		#endif
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparallelwriter::setdriftprobability", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparallelwriter::setDriftProbability", __LINE__, __FILE__);
 		}
 	}
 
@@ -371,7 +371,7 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTparallelwriter::getandwrite", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMTparallelwriter::getAndWrite", __LINE__, __FILE__);
 			}
 	}
 	void FMTparallelwriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTschedule> scheduleList, bool append) const

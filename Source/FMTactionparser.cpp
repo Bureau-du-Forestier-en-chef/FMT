@@ -85,7 +85,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(
-				"for "+line,"FMTactionparser::getbounds", __LINE__, __FILE__, m_section);
+				"for "+line,"FMTactionparser::getBounds", __LINE__, __FILE__, m_section);
 			}
         return mask;
         }
@@ -104,7 +104,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(
-				"","FMTactionparser::valagg", __LINE__, __FILE__, m_section);
+				"","FMTactionparser::valAgg", __LINE__, __FILE__, m_section);
 			}
         return aggs;
         }
@@ -475,7 +475,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(
-				"","FMTactionparser::sameactionas", __LINE__, __FILE__, m_section);
+				"","FMTactionparser::sameActionAs", __LINE__, __FILE__, m_section);
 			}
         return all_pointers;
         }

@@ -71,11 +71,11 @@ Core::FMTyldtype FMTyieldparser::getYldType(const std::string& value) const
 			return Core::FMTyldtype::FMTmodelyld;
 		}
 		else {
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTyieldparser::getyldtype", __LINE__, __FILE__, m_section);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTyieldparser::getYldType", __LINE__, __FILE__, m_section);
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for " + value,"FMTyieldparser::getyldtype", __LINE__, __FILE__ ,m_section);
+		_exhandler->raisefromcatch("for " + value,"FMTyieldparser::getYldType", __LINE__, __FILE__ ,m_section);
 		}
     return Core::FMTyldtype::FMTageyld;
     }
@@ -112,7 +112,7 @@ std::unique_ptr<Core::FMTyieldhandler> FMTyieldparser::getHandler(const Core::FM
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyieldparser::getyldtype", __LINE__, __FILE__, m_section);
+		_exhandler->raisefromcatch("", "FMTyieldparser::getYldType", __LINE__, __FILE__, m_section);
 	}
 	return std::unique_ptr<Core::FMTyieldhandler>();
 }
@@ -175,12 +175,12 @@ Core::FMTyieldparserop FMTyieldparser::getYldCtype(const std::string& value) con
 		{
 			return Core::FMTyieldparserop::FMTmin;
 		}else {
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTyieldparser::getyldctype", __LINE__, __FILE__, m_section);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTyieldparser::getYldCtype", __LINE__, __FILE__, m_section);
 		}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(
-			"for " + value,"FMTyieldparser::getyldctype", __LINE__, __FILE__, m_section);
+			"for " + value,"FMTyieldparser::getYldCtype", __LINE__, __FILE__, m_section);
 		}
 	return Core::FMTyieldparserop::FMTnone;
     }
@@ -207,12 +207,12 @@ void FMTyieldparser::setOveridedYlds(Core::FMTyields& yielddata,
 					{
 						_exhandler->raise(Exception::FMTexc::FMToveridedyield, "For overrided yield " + yld
 							+ " at line " + std::to_string(m_line) + " in " + m_location,
-							"FMTyieldparser::getylduse", __LINE__, __FILE__, m_section);
+							"FMTyieldparser::getYldUse", __LINE__, __FILE__, m_section);
 					}
 					if (actualyield->second->getOverrideIndex()==0)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use non overrided at line " + std::to_string(m_line) + " in " + m_location,
-							"FMTyieldparser::getylduse", __LINE__, __FILE__, m_section);
+							"FMTyieldparser::getYldUse", __LINE__, __FILE__, m_section);
 					}
 					yldptr->setTabou(actualyield->second->getOverrideIndex());
 				}
@@ -223,7 +223,7 @@ void FMTyieldparser::setOveridedYlds(Core::FMTyields& yielddata,
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyieldparser::setoveridedylds", __LINE__, __FILE__, m_section);
+		_exhandler->raisefromcatch("", "FMTyieldparser::setOveridedYlds", __LINE__, __FILE__, m_section);
 	}
 }
 
@@ -258,7 +258,7 @@ std::vector<std::string> FMTyieldparser::getYldUse(Core::FMTyields& yielddata,
 		}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("","FMTyieldparser::getylduse", __LINE__, __FILE__,m_section);
+		_exhandler->raisefromcatch("","FMTyieldparser::getYldUse", __LINE__, __FILE__,m_section);
 	}
     return dump;
     }
@@ -270,7 +270,7 @@ void FMTyieldparser::checkPreexisting(const std::vector<std::string>& preexists)
             {
             _exhandler->raise(Exception::FMTexc::FMTpreexisting_yield,
 				yl+" at line "+ std::to_string(m_line) + " in " + m_location,
-				"FMTyieldparser::checkpreexisting", __LINE__, __FILE__, m_section);
+				"FMTyieldparser::checkPreexisting", __LINE__, __FILE__, m_section);
             }
         }
     }
@@ -303,7 +303,7 @@ bool FMTyieldparser::isFunction(const std::string& strfunction) const
 		}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyieldparser::isfunction", __LINE__, __FILE__, m_section);
+		_exhandler->raisefromcatch("", "FMTyieldparser::isFunction", __LINE__, __FILE__, m_section);
 	}
 	return false;
 	}
@@ -363,7 +363,7 @@ Core::FMTdata FMTyieldparser::getEq(const std::string& basestr,
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for "+ basestr,"FMTyieldparser::geteq", __LINE__, __FILE__,m_section);
+			_exhandler->raisefromcatch("for "+ basestr,"FMTyieldparser::getEq", __LINE__, __FILE__,m_section);
 			}
 		return Core::FMTdata(numbers, Core::FMTyieldparserop::FMTequation,valuesnoperators);
 	}
@@ -377,7 +377,7 @@ void FMTyieldparser::cleanAll(Core::FMTyields& ylds, const std::vector<Core::FMT
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyieldparser::cleanall", __LINE__, __FILE__, m_section);
+		_exhandler->raisefromcatch("", "FMTyieldparser::cleanAll", __LINE__, __FILE__, m_section);
 	}
 }
 
@@ -390,7 +390,7 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::st
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
 							  modeldirectory.string() + " is not a valid directory ",
-							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, m_section);
+							  "FMTyieldparser::readYieldModel", __LINE__, __FILE__, m_section);
 		}
 		const boost::filesystem::path modeljson = modeldirectory / boost::filesystem::path(modelname + ".json");
 		if (!boost::filesystem::is_regular_file(modeljson))
@@ -398,7 +398,7 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::st
 
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
 							  modeljson.string(),
-							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, m_section);
+							  "FMTyieldparser::readYieldModel", __LINE__, __FILE__, m_section);
 		}
 		std::ifstream jsonstream(modeljson.string());
 		Parser::FMTparser yieldsParser;
@@ -406,7 +406,7 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::st
 		{
 			_exhandler->raise(Exception::FMTunhandlederror,
 							  modeljson.string(),
-							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, m_section);
+							  "FMTyieldparser::readYieldModel", __LINE__, __FILE__, m_section);
 		}
 
 		boost::property_tree::ptree root;
@@ -419,7 +419,7 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::st
 		{
 			_exhandler->raise(Exception::FMTfunctionfailed,
 				"No valid model type for "+modeljson.string(),
-				"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, m_section);
+				"FMTyieldparser::readYieldModel", __LINE__, __FILE__, m_section);
 		}
 
 		const std::string modelType = modelTypeIt->second.data();
@@ -447,10 +447,10 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::st
 			}
 		_exhandler->raise(Exception::FMTfunctionfailed,
 			"No valid model type for " + modeljson.string(),
-							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, m_section);
+							  "FMTyieldparser::readYieldModel", __LINE__, __FILE__, m_section);
 	} catch (...)
 	{
-		_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, m_section);
+		_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readYieldModel", __LINE__, __FILE__, m_section);
 	}
 	return std::unique_ptr<Core::FMTyieldmodel>(nullptr);
 }
@@ -910,7 +910,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 		catch (...)
 		{
 			_exhandler->raisefromcatch(
-				"for "+std::string(mask)+" at index "+ indexerror+" for theme "+std::to_string(themeid), "FMTyieldparser::getindexvalues", __LINE__, __FILE__, m_section);
+				"for "+std::string(mask)+" at index "+ indexerror+" for theme "+std::to_string(themeid), "FMTyieldparser::getIndexValues", __LINE__, __FILE__, m_section);
 		}
 	return handler_values;
 	}
@@ -1006,7 +1006,7 @@ void FMTyieldparser::cleanUp(Core::FMTyields& yields,const std::vector<Core::FMT
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(
-			"", "FMTyieldparser::cleanup", __LINE__, __FILE__, m_section);
+			"", "FMTyieldparser::cleanUp", __LINE__, __FILE__, m_section);
 		}
 	}
 

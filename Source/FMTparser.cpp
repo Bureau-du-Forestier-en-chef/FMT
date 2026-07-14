@@ -135,7 +135,7 @@ std::string FMTparser::createSubDirectory(const std::string& p_Directory,
 		if (!boost::filesystem::is_directory(BASE))
 			{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-				p_Directory, "FMTparser::CreateSubDirectory", __LINE__, __FILE__);
+				p_Directory, "FMTparser::createSubDirectory", __LINE__, __FILE__);
 			}
 		const boost::filesystem::path SUB(p_SubDirectory);
 		const boost::filesystem::path FINAL = BASE / SUB;
@@ -146,7 +146,7 @@ std::string FMTparser::createSubDirectory(const std::string& p_Directory,
 		fullPath = FINAL.string();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTparser::CreateSubDirectory", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::createSubDirectory", __LINE__, __FILE__);
 		}
 	return fullPath;
 }
@@ -1523,7 +1523,7 @@ bool FMTparser::isForLoopsEnd(const std::string& p_line) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::IsForLoopsEnd", __LINE__, __FILE__, m_section);
+		_exhandler->raisefromcatch("", "FMTparser::isForLoopsEnd", __LINE__, __FILE__, m_section);
 	}
 	return IsValid;
 }
@@ -1690,7 +1690,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
 					"Invalid Query " + ABSOLUTE_DATABASE_PATH + " with this query \n" + p_Query + " at line " +
-					std::to_string(m_line), "FMTparser::_QueryDatabaser", __LINE__, __FILE__, m_section);
+					std::to_string(m_line), "FMTparser::_QueryDatabase", __LINE__, __FILE__, m_section);
 				}
 			OGRFeatureDefn* FIELD_DEFINITIONS = SUBSET_LAYER->GetLayerDefn();
 			const size_t FEATURE_COUNT = static_cast<size_t>(SUBSET_LAYER->GetFeatureCount());
@@ -1698,14 +1698,14 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"No lines generated for this database " + ABSOLUTE_DATABASE_PATH + " with this query \n" + p_Query + " at line " +
-					std::to_string(m_line), "FMTparser::_QueryDatabaser", __LINE__, __FILE__, m_section);
+					std::to_string(m_line), "FMTparser::_QueryDatabase", __LINE__, __FILE__, m_section);
 				}
 			const size_t FIELD_COUNT = static_cast<size_t>(FIELD_DEFINITIONS->GetFieldCount());
 			if (FIELD_COUNT == 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"No columns generated for this database " + ABSOLUTE_DATABASE_PATH + " with this query \n" + p_Query + " at line " +
-					std::to_string(m_line), "FMTparser::_QueryDatabaser", __LINE__, __FILE__, m_section);
+					std::to_string(m_line), "FMTparser::_QueryDatabase", __LINE__, __FILE__, m_section);
 			}
 			std::vector<std::vector<std::string>>Data(FIELD_COUNT, std::vector<std::string>(FEATURE_COUNT));
 			OGRFeature* feature;
@@ -1933,7 +1933,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTparser::GetAllLines", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("", "FMTparser::getAllLines", __LINE__, __FILE__, m_section);
 			}
 		return lines;
 	}
@@ -1951,7 +1951,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTparser::ProcessForLoopsNInclude",
+			_exhandler->raisefromcatch("", "FMTparser::processForLoopsNInclude",
 								__LINE__, __FILE__, m_section);
 			}
 		return p_AllLines;
@@ -1967,7 +1967,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 			lines = processForLoopsNInclude(p_themes,p_cons, lines);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTparser::GetCleanLinewfor", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch("", "FMTparser::getCleanLinewfor", __LINE__, __FILE__, m_section);
 			}
 		return lines;
 	}

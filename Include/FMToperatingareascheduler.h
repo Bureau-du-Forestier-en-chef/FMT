@@ -291,7 +291,7 @@ namespace Heuristics
 		Gets the actual solution into a FMTyieldhandler format (time yield)
 		The user can decide the (yldname) to use. Each operating area will have its own
 		yieldhandler. If (selectedmask) and (basethemes) are given, the yieldhandler return
-		will be postsolve. To get (selectedmask), you must call the function FMTmodel::getSelectedMask()
+		will be postSolve. To get (selectedmask), you must call the function FMTmodel::getSelectedMask()
 		after presolving the model. (basethemes) are the themes of the original model. 
 		*/
 		std::vector<Core::FMTtimeyieldhandler> getSolution(	const std::string& yldname) const;

@@ -52,7 +52,7 @@ namespace Models
 		m_SpatialGraphs.deleteNonCompleteGraphs();
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsesmodel::GreedyReferenceBuild", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsesmodel::greedyReferenceBuild", __LINE__, __FILE__);
 			}
 	return bestresults;
 	}
@@ -101,7 +101,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::getcopy", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsesmodel::getCopy", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}

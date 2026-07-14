@@ -80,7 +80,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
                                                 const std::vector<FMTtheme>& themes, const bool& reset_age) const
         {
         FMTdevelopmentpath newPath(this->trans(dev.getmask(), themes),
-                    dev.getAge(), dev.getLock(), dev.getperiod(), proportion);
+                    dev.getAge(), dev.getLock(), dev.getPeriod(), proportion);
         FMTdevelopment& newDev = newPath.getDevelopmentReference();
 		bool age_change = false;
         if (!lock.empty())

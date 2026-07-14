@@ -179,7 +179,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action "+this->getname(),
-				"FMTaction::setbounds", __LINE__, __FILE__,Core::FMTsection::Action);
+				"FMTaction::setBounds", __LINE__, __FILE__,Core::FMTsection::Action);
 			}
 		}
 
@@ -219,7 +219,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),
-				"FMTaction::isallowedinserie", __LINE__, __FILE__, Core::FMTsection::Action);
+				"FMTaction::isAllowedInSerie", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return false;
 	}
@@ -240,7 +240,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),
-				"FMTaction::isallowedinserie", __LINE__, __FILE__, Core::FMTsection::Action);
+				"FMTaction::isAllowedInSerie", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return nullptr;
 	}
@@ -267,7 +267,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),
-				"FMTaction::getseriesnames", __LINE__, __FILE__, Core::FMTsection::Action);
+				"FMTaction::getSeriesNames", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return seriesnames;
 	}
@@ -287,7 +287,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),
-				"FMTaction::getlargestseriesize", __LINE__, __FILE__, Core::FMTsection::Action);
+				"FMTaction::getLargestSerieSize", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return sizeofserie;
 	}
@@ -323,7 +323,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 				}
 		}catch (...){
 			_exhandler->raisefromcatch("for action " + this->getname(),
-				"FMTaction::setseries", __LINE__, __FILE__, Core::FMTsection::Action);
+				"FMTaction::setSeries", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
 	}
 

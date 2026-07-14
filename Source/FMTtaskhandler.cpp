@@ -83,7 +83,7 @@ namespace Parallel
 			alltasks.swap(newtasks);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtaskhandler::splittasks", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTtaskhandler::splitTasks", __LINE__, __FILE__);
 			}
 		}
 
@@ -226,7 +226,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTtaskhandler::logtasktime", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTtaskhandler::logTaskTime", __LINE__, __FILE__);
 		}
 	}
 

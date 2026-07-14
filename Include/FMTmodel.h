@@ -237,7 +237,7 @@ namespace Models
 		Core::FMTmaskfilter getPresolveFilter(const std::vector<Core::FMTtheme>& originalthemes) const;
 		// DocString: FMTmodel::getPostsolveFilter
 		/**
-		Get the postsolve filter used by the presolve (in case you want to turn presolved mask into postsolve mask).
+		Get the postSolve filter used by the presolve (in case you want to turn presolved mask into postSolve mask).
 		*/
 		Core::FMTmaskfilter getPostsolveFilter(const std::vector<Core::FMTtheme>& originalthemes, const Core::FMTmask& devmask) const;
 		// DocString: FMTmodel::getSelectedMask
@@ -253,11 +253,11 @@ namespace Models
 		if the model is badly formulated.
 		*/
 		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
-		// DocString: FMTmodel::postsolve
+		// DocString: FMTmodel::postSolve
 		/*
 		This function is for postsolving the presolved model into the original model.
 		*/
-		virtual void postsolve(const FMTmodel& originalbasemodel);
+		virtual void postSolve(const FMTmodel& originalbasemodel);
 		// DocString: FMTmodel::presolveSchedule
 		/**
 		Using the original schedule (not presolved) and the original model (not presolved) it returns a new schedule with
@@ -636,9 +636,9 @@ namespace Models
 		const std::string& getparameter(const FMTstrmodelparameters& p_key) const;
 		// DocString: FMTmodel::setCompressTime
 		/**
-		Set compresstime value for a range of periods (periodstart,periodstop). See FMTmodelparameters.h.
+		Set compresstime value for a range of periods (periodStart,periodStop). See FMTmodelparameters.h.
 		*/
-		bool setCompressTime(const int& periodstart, const int& periodstop, const int& value);
+		bool setCompressTime(const int& periodStart, const int& periodStop, const int& value);
 		// DocString: FMTmodel::getCompressTime
 		/**
 		Return avec vector with compresstime value for each periods. First period is the index 0 in the vector. See FMTmodelparameters.h.
@@ -854,7 +854,7 @@ namespace Models
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTmodel::validatelistmasks", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTmodel::validateListMasks", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTmodel::validateListSpec

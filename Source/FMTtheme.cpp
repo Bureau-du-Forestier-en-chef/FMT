@@ -268,7 +268,7 @@ bool FMTtheme::isIndex(const std::string& p_value) const
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("For value: " + p_value, "FMTtheme::isindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raisefromcatch("For value: " + p_value, "FMTtheme::isIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return false;
 
@@ -291,7 +291,7 @@ bool FMTtheme::isIndex(const std::string& p_attribute, const std::string& p_valu
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("For attribute: " + p_attribute+" at value "+ p_value, "FMTtheme::isindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raisefromcatch("For attribute: " + p_attribute+" at value "+ p_value, "FMTtheme::isIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return false;
 }
@@ -321,7 +321,7 @@ bool FMTtheme::useIndex() const
 			}
 	 }catch (...)
 		{
-		 _exhandler->raisefromcatch("For attribute: " + p_attribute + " at value " + p_value, "FMTtheme::getindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		 _exhandler->raisefromcatch("For attribute: " + p_attribute + " at value " + p_value, "FMTtheme::getIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return 0;
     }
@@ -581,7 +581,7 @@ std::vector<std::string>FMTtheme::getAttributes(const std::string& p_value, bool
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtheme::getattributes", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			_exhandler->raisefromcatch("", "FMTtheme::getAttributes", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
         return result;
         }
@@ -674,7 +674,7 @@ void FMTtheme::pushAggregateValue(const std::string& p_aggregatename, const std:
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTtheme::push_aggregate_value", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTtheme::pushAggregateValue", __LINE__, __FILE__);
 		}
 	}
 
@@ -866,7 +866,7 @@ Rcpp::DataFrame FMTtheme::getAggregatesAsDataFrame() const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTtheme::getaggregatesasdataframe", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTtheme::getAggregatesAsDataFrame", __LINE__, __FILE__);
 	}
 	return data;
 }
@@ -901,7 +901,7 @@ Rcpp::DataFrame FMTtheme::getAttributesAsDataFrame() const
 		data.attr("class") = "data.frame";
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTtheme::getaggregatesasdataframe", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTtheme::getAggregatesAsDataFrame", __LINE__, __FILE__);
 	}
 	return data;
 }
@@ -915,7 +915,7 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 	bool returnvalue = true;
 	if (p_themes.size() > p_values.size())
 	{
-		//_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkmask", __LINE__, __FILE__, m_section);
+		//_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkMask", __LINE__, __FILE__, m_section);
 		const std::string original(p_mask);
 		p_mask.clear();
 		for (const std::string& value : p_values)
@@ -928,7 +928,7 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 		}
 		p_mask.pop_back();
 		_exhandler->raise(Exception::FMTexc::FMTignore,
-			"Extended mask " + original + " to " + p_mask, "FMTobject::checkmask", __LINE__, __FILE__);
+			"Extended mask " + original + " to " + p_mask, "FMTobject::checkMask", __LINE__, __FILE__);
 		//returnvalue = true; //???
 	}
 	size_t id = 0;
@@ -941,7 +941,7 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 		{
 			const std::string message = p_values[id] + " at theme " + std::to_string(theme.getId() + 1) + p_otherinformation;
 			_exhandler->raise(Exception::FMTexc::FMTundefined_attribute, message,
-				"FMTthem::checkmask", __LINE__, __FILE__);
+				"FMTthem::checkMask", __LINE__, __FILE__);
 			returnvalue = false;
 		}
 		std::string value = "?";
@@ -956,7 +956,7 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 	if (p_values.size() != p_themes.size())
 	{
 		_exhandler->raise(Exception::FMTexc::FMTignore,
-			"Subset mask " + original + " to " + p_mask, "FMTtheme::checkmask", __LINE__, __FILE__);
+			"Subset mask " + original + " to " + p_mask, "FMTtheme::checkMask", __LINE__, __FILE__);
 	}
 
 	return  returnvalue;

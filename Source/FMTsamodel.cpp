@@ -331,8 +331,8 @@ namespace Models
        const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
-           const std::vector<bool>selectedactions = _GetFromBindings(bindings,true);
-           const int period = actual.getPeriodWithMaximalEvents(selectedactions);
+           const std::vector<bool>selectedActions = _GetFromBindings(bindings,true);
+           const int period = actual.getPeriodWithMaximalEvents(selectedActions);
            const std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool = actual.getAdjacencyConflictCoordinates(bindings, period);
            return _DoConflictDestruction(actual, bindings, selectionpool, period);
        }catch (...)
@@ -376,10 +376,10 @@ namespace Models
        try {
            if (!actual.emptyEvents())
                {
-                   const std::vector<bool>selectedactions = _GetFromBindings(bindings);
-                   if (!selectedactions.empty())
+                   const std::vector<bool>selectedActions = _GetFromBindings(bindings);
+                   if (!selectedActions.empty())
                    {
-                       return (actual.getPeriodWithMaximalEvents(selectedactions) > 0);
+                       return (actual.getPeriodWithMaximalEvents(selectedActions) > 0);
                    }
                }
            
@@ -396,10 +396,10 @@ namespace Models
        try {
            if (!actual.emptyEvents())
            {
-               const std::vector<bool>selectedactions = _GetFromBindings(bindings, true);
-               if (!selectedactions.empty())
+               const std::vector<bool>selectedActions = _GetFromBindings(bindings, true);
+               if (!selectedActions.empty())
                {
-                   return (actual.getPeriodWithMaximalEvents(selectedactions) > 0);
+                   return (actual.getPeriodWithMaximalEvents(selectedActions) > 0);
                }
            }
        }
@@ -491,7 +491,7 @@ namespace Models
    std::vector<bool> FMTsamodel::_GetFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions,
                                                             bool adjacency) const
    {
-       std::vector<bool>selectedactions(actions.size(), false);
+       std::vector<bool>selectedActions(actions.size(), false);
        try {
            bool gotaction = false;
            for (const auto& binding : bindingactions)
@@ -500,12 +500,12 @@ namespace Models
                {
                    if (!adjacency&& binding.at(actionid).isSpatiallyAreaBinding())
                    {
-                       selectedactions[actionid] = true;
+                       selectedActions[actionid] = true;
                        gotaction = true;
                    }
                    else if (adjacency && binding.at(actionid).isSpatiallyAdjacencyBinding())
                    {
-                       selectedactions[actionid] = true;
+                       selectedActions[actionid] = true;
                        gotaction = true;
                    }
 
@@ -513,13 +513,13 @@ namespace Models
            }
            if (!gotaction)
            {
-               selectedactions.clear();
+               selectedActions.clear();
            }
        }catch (...)
        {
            _exhandler->raisefromcatch("", "FMTsamodel::_GetFromBindings", __LINE__, __FILE__);
        }
-       return selectedactions;
+       return selectedActions;
    }
 
   
@@ -528,8 +528,8 @@ namespace Models
         const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
     {
         try {
-            const std::vector<bool>selectedactions = _GetFromBindings(bindings);
-            const int period = actual.getPeriodWithMaximalEvents(selectedactions);
+            const std::vector<bool>selectedActions = _GetFromBindings(bindings);
+            const int period = actual.getPeriodWithMaximalEvents(selectedActions);
             const std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool = actual.getAreaConflictCoordinates(bindings, period);
             return _DoConflictDestruction(actual, bindings, selectionpool, period);
         }
@@ -624,7 +624,7 @@ namespace Models
             }
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTsamodel::_move", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTsamodel::_Move", __LINE__, __FILE__);
 			}
 		//return newsolution;
 		return actual;
@@ -641,7 +641,7 @@ namespace Models
                 }
         }catch (...)
         {
-            _exhandler->raisefromcatch("", "FMTsamodel::_initialgrow", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTsamodel::_InitialGrow", __LINE__, __FILE__);
         }
     }
 
@@ -657,7 +657,7 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raisefromcatch("", "FMTsamodel::_randombuild", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTsamodel::_RandomBuild", __LINE__, __FILE__);
         }
     }
 
@@ -946,7 +946,7 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raisefromcatch("", "FMTsamodel::_schedulesbuild", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTsamodel::_SchedulesBuild", __LINE__, __FILE__);
         }
 
     }
@@ -1003,7 +1003,7 @@ namespace Models
         m_BestObjective = getGlobalObjective(m_BestSolution);
         }catch (...)
             {
-            _exhandler->raisefromcatch("", "FMTsamodel::_warmup", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTsamodel::_Warmup", __LINE__, __FILE__);
             }
         return temperature;
         }
@@ -1017,7 +1017,7 @@ namespace Models
             }
             catch (...)
             {
-                _exhandler->raisefromcatch("", "FMTsamodel::_isProvenOptimal", __LINE__, __FILE__);
+                _exhandler->raisefromcatch("", "FMTsamodel::isProvenOptimal", __LINE__, __FILE__);
             }
             return false;
         }
@@ -1064,7 +1064,7 @@ namespace Models
             }
             catch (...)
             {
-                _exhandler->raisefromcatch("", "FMTsamodel::_Dofactorization", __LINE__, __FILE__);
+                _exhandler->raisefromcatch("", "FMTsamodel::_DoFactorization", __LINE__, __FILE__);
             }
         }
 
@@ -1118,7 +1118,7 @@ namespace Models
            *_logger << "Moves report done" << "\n";
         }catch (...)
             {
-            _exhandler->raisefromcatch("", "FMTsamodel::_LogMovesReport", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTsamodel::logMovesReport", __LINE__, __FILE__);
             }
         }
 
@@ -1176,7 +1176,7 @@ namespace Models
             *_logger << "Generator final state: " << m_generator() << "\n";
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsamodel::initialsolve", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsamodel::initialSolve", __LINE__, __FILE__);
 			}
         return true;
 		}
@@ -1247,7 +1247,7 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->printexceptions("", "FMTsamodel::getcopy", __LINE__, __FILE__);
+            _exhandler->printexceptions("", "FMTsamodel::getCopy", __LINE__, __FILE__);
         }
         return std::unique_ptr<FMTmodel>(nullptr);
     }

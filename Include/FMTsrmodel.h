@@ -59,11 +59,11 @@ namespace Models
 		the function return a filled Graphvertexyoyield without a specific vertex selected.
 		*/
 		Graph::FMTgraphvertextoyield getGraphVertexToYield() const;
-		// DocString: FMTsrmodel::postsolve
+		// DocString: FMTsrmodel::postSolve
 		/*
 		This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTsrmodel is also postsolved.
 		*/
-		virtual void postsolve(const FMTmodel& originalbasemodel);
+		virtual void postSolve(const FMTmodel& originalbasemodel);
 		// DocString: FMTsrmodel::setParallelLogger
 		/**
 		Solver's logger cannot work in parallel so you need to pass a logger owned
@@ -93,7 +93,7 @@ namespace Models
 		FMTsrmodel(const FMTsrmodel& rhs);
 		// DocString: FMTsrmodel(const FMTmodel, const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>,	const FMTlpsolver)
 		/**
-		Constructor of FMTsrmodel mainly use in postsolve.
+		Constructor of FMTsrmodel mainly use in postSolve.
 		*/
 		FMTsrmodel(FMTmodel&& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
 					const FMTlpsolver& lsolver);

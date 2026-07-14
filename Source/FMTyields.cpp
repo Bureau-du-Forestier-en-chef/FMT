@@ -93,7 +93,7 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), m_yieldsLoca
 			push_back(base_mask,TSLAhandler);
 		}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTyields::generatedefaultyields", __LINE__, __FILE__, FMTsection::Yield);
+				_exhandler->raisefromcatch("", "FMTyields::generateDefaultYields", __LINE__, __FILE__, FMTsection::Yield);
 			}
 	}
 
@@ -156,7 +156,7 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), m_yieldsLoca
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyields::getstacked", __LINE__, __FILE__,FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTyields::getStacked", __LINE__, __FILE__,FMTsection::Yield);
 		}
        
         return values;
@@ -356,7 +356,7 @@ FMTyields FMTyields::getFromFactor(const double& factor,
 	}catch (...)
 		{
 		_exhandler->printexceptions("for factor "+std::to_string(factor),
-			"FMTyields::getfromfactor", __LINE__, __FILE__, Core::FMTsection::Yield);
+			"FMTyields::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return newyields;
 	}
@@ -406,7 +406,7 @@ double FMTyields::get(const FMTyieldrequest& request, const std::string& yld) co
 		{
 			if (data->elements.find(target) != data->elements.end())
 			{
-				return data->get(datas, target, dev.getAge(), dev.getperiod(), filteredmask);
+				return data->get(datas, target, dev.getAge(), dev.getPeriod(), filteredmask);
 			}
 		}
 
@@ -497,7 +497,7 @@ std::vector<const FMTyieldhandler*> FMTyields::getHandlerOfType(FMTyldtype type)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::gethandleroftype", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raisefromcatch("", "FMTyields::getHandlerOfType", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return selectedhandlers;
 	}
@@ -538,7 +538,7 @@ std::vector<FMTyieldhandler*> FMTyields::getHandlers(FMTyldtype type)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::gethandlers", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raisefromcatch("", "FMTyields::getHandlers", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return selectedhandlers;
 	}
@@ -550,7 +550,7 @@ bool FMTyields::gotYieldType(FMTyldtype type) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::gotyieldtype", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raisefromcatch("", "FMTyields::gotYieldType", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return false;
 }
@@ -566,7 +566,7 @@ void FMTyields::setActionsMappingToModelHandlers(const std::vector<int>& actioni
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::setactionsmappingtomodelhandlers", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raisefromcatch("", "FMTyields::setActionsMappingToModelHandlers", __LINE__, __FILE__, FMTsection::Yield);
 	}
 }
 
@@ -586,7 +586,7 @@ int FMTyields::getMaxBase(const std::vector<const FMTyieldhandler*>& handlers)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::getmaxbase", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raisefromcatch("", "FMTyields::getMaxBase", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return maxbase;
 	}
@@ -620,7 +620,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getA
 		}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("","FMTyields::getallyields", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("","FMTyields::getAllYields", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return result;
 	}
@@ -713,7 +713,7 @@ int FMTyields::getAge(const FMTyieldrequest& request,const FMTspec& spec) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for developement " + std::string(request.getDevelopment()), "FMTyield::getage", __LINE__, __FILE__, Core::FMTsection::Yield);
+		_exhandler->raisefromcatch("for developement " + std::string(request.getDevelopment()), "FMTyield::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 	}
 	return age;
 	}

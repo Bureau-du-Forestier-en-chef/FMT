@@ -100,7 +100,7 @@ namespace Core
 			#endif
 		}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTobject::getavailablememory", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTobject::getAvailableMemory", __LINE__, __FILE__);
 			}
 		return available;
 	}
@@ -287,7 +287,7 @@ namespace Core
 			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdefaultlogger()));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::setdefaultlogger", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::setDefaultLogger", __LINE__, __FILE__);
 			}
 		}
 
@@ -299,7 +299,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setquietlogger", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::setQuietLogger", __LINE__, __FILE__);
 		}
 		}
 
@@ -312,7 +312,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::settasklogger", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::setTaskLogger", __LINE__, __FILE__);
 		}
 	}
 
@@ -324,7 +324,7 @@ namespace Core
 		}	
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setdebuglogger", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::setDebugLogger", __LINE__, __FILE__);
 		}
 		}
 
@@ -336,7 +336,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setdefaultexceptionhandler", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::setDefaultExceptionHandler", __LINE__, __FILE__);
 		}
 		}
 	void FMTobject::setQuietExceptionHandler()
@@ -346,7 +346,7 @@ namespace Core
 			this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTquietexceptionhandler()));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::setquietexceptionhandler", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::setQuietExceptionHandler", __LINE__, __FILE__);
 			}
 	}
 	void FMTobject::setDebugExceptionHandler()
@@ -357,7 +357,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setdebugexceptionhandler", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::setDebugExceptionHandler", __LINE__, __FILE__);
 		}
 	}
 
@@ -369,7 +369,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setfreeexceptionhandler", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::setFreeExceptionHandler", __LINE__, __FILE__);
 		}
 	}
 
@@ -380,7 +380,7 @@ namespace Core
 			_exhandler->disableNestedExceptions();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::disablenestedexceptions", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::disableNestedExceptions", __LINE__, __FILE__);
 			}
 		}
 
@@ -391,7 +391,7 @@ namespace Core
 			_exhandler->enableNestedExceptions();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::enablenestedexceptions", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::enableNestedExceptions", __LINE__, __FILE__);
 			}
 		}
 
@@ -424,7 +424,7 @@ namespace Core
 			newclock = std::chrono::high_resolution_clock::now();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::getclock", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::getClock", __LINE__, __FILE__);
 			}
 		return newclock;
 		}
@@ -440,7 +440,7 @@ namespace Core
 			result = spent.count();
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::getduration", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::getDuration", __LINE__, __FILE__);
 		}
 		return result;
 	}
@@ -458,7 +458,7 @@ namespace Core
 			value = "in "+std::to_string(dblvalue)+" seconds";
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::getdurationinseconds", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTobject::getDurationInSeconds", __LINE__, __FILE__);
 			}
 		return value;
 	}

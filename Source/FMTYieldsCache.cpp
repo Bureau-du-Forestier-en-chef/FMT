@@ -108,7 +108,7 @@ namespace Core
 									const std::string& p_yield) const
 		{
 		const Core::FMTdevelopment& REF_DEV = p_request.getDevelopment();
-		const FMTYieldDevelopment KEY(REF_DEV.getAge(), REF_DEV.getperiod(),p_request.getResumeMask().getBitsetReference(), p_yield);
+		const FMTYieldDevelopment KEY(REF_DEV.getAge(), REF_DEV.getPeriod(),p_request.getResumeMask().getBitsetReference(), p_yield);
 		return KEY;
 		}
 

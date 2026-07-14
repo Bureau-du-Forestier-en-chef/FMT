@@ -108,7 +108,7 @@ bool FMTschedule::sameElements(const FMTschedule& rhs) const
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTschedule::sameelements", __LINE__, __FILE__, Core::FMTsection::Schedule);
+		_exhandler->raisefromcatch("", "FMTschedule::sameElements", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 	return true;
 	}
@@ -276,7 +276,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::addevent", __LINE__, __FILE__, Core::FMTsection::Schedule);
+			_exhandler->raisefromcatch("", "FMTschedule::addEvent", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 
 	}
@@ -299,7 +299,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::actionarea", __LINE__, __FILE__, Core::FMTsection::Schedule);
+			_exhandler->raisefromcatch("", "FMTschedule::actionArea", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 		return value;
 	}
@@ -349,7 +349,7 @@ FMTschedule::operator std::string() const
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTschedule::getoperabilities", __LINE__, __FILE__, Core::FMTsection::Schedule);
+			_exhandler->raisefromcatch("", "FMTschedule::getOperabilities", __LINE__, __FILE__, Core::FMTsection::Schedule);
 			}
 		return table;
 	}
@@ -447,7 +447,7 @@ FMTschedule::operator std::string() const
 	return newSchedule;
 	}
 
-	FMTschedule FMTschedule::postsolve(const FMTmaskfilter& filter,
+	FMTschedule FMTschedule::postSolve(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const
 	{
 		FMTschedule newSchedule(*this);
@@ -460,7 +460,7 @@ FMTschedule::operator std::string() const
 				{
 					FMTdevelopment newDev(devit->first);
 
-					newDev.setMask(newDev.getmask().postsolve(filter, originalbasethemes));
+					newDev.setMask(newDev.getmask().postSolve(filter, originalbasethemes));
 					newmapping[newDev] = devit->second;
 				}
 				if (!newmapping.empty())
@@ -474,7 +474,7 @@ FMTschedule::operator std::string() const
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTschedule::postsolve", __LINE__, __FILE__, Core::FMTsection::Schedule);
+			_exhandler->raisefromcatch("","FMTschedule::postSolve", __LINE__, __FILE__, Core::FMTsection::Schedule);
 			}
 		return newSchedule;
 	}
@@ -499,7 +499,7 @@ FMTschedule::operator std::string() const
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTschedule::setperiod", __LINE__, __FILE__,Core::FMTsection::Schedule);
+				_exhandler->raisefromcatch("", "FMTschedule::setPeriod", __LINE__, __FILE__,Core::FMTsection::Schedule);
 			}
 		}
 
@@ -523,7 +523,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::getnewschedule", __LINE__, __FILE__, Core::FMTsection::Schedule);
+			_exhandler->raisefromcatch("", "FMTschedule::getNewSchedule", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 		return newscedule;
 		}
@@ -541,7 +541,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::isfuturconstraints", __LINE__, __FILE__, Core::FMTsection::Schedule);
+			_exhandler->raisefromcatch("", "FMTschedule::isFuturConstraints", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 		return false;
 		}

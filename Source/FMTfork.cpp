@@ -125,7 +125,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
                     {
                         _exhandler->raise(Exception::FMTexc::FMTsame_transitiontargets,
                             "from " + std::string(base) + " to " + std::string(newDev) + "\n",
-                            "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
+                            "FMTfork::getPaths", __LINE__, __FILE__, Core::FMTsection::Transition);
                         paths[mapit->second].setProportion(paths[mapit->second].getProportion() + tran.getProportion());
                         continue;
                     }else {
@@ -137,7 +137,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
             }
         }catch (...)
             {
-            _exhandler->raisefromcatch("", "FMTfork::getpaths",
+            _exhandler->raisefromcatch("", "FMTfork::getPaths",
                 __LINE__, __FILE__, Core::FMTsection::Transition);
              }
         return paths;

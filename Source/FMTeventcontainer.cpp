@@ -64,7 +64,7 @@ namespace Spatial
 
     int FMTeventcontainer::lastPeriod()const
     {
-        return m_events.rbegin()->getperiod();
+        return m_events.rbegin()->getPeriod();
     }
 
 	void FMTeventcontainer::insert(const FMTevent& event)
@@ -84,7 +84,7 @@ namespace Spatial
 
     int FMTeventcontainer::firstPeriod()const
     {
-        return m_events.begin()->getperiod();
+        return m_events.begin()->getPeriod();
     }
 
 	void FMTeventcontainer::erase(const FMTcoordinate& coord,const std::vector<FMTeventcontainer::iterator>& iterators)
@@ -146,11 +146,11 @@ namespace Spatial
 		}
 	}
 
-	void FMTeventcontainer::eraseCoordinate(const FMTcoordinate& coord, const int& periodstart, const std::vector<std::vector<bool>>& actionstarget)
+	void FMTeventcontainer::eraseCoordinate(const FMTcoordinate& coord, const int& periodStart, const std::vector<std::vector<bool>>& actionstarget)
 		{
-		const int lastPeriod = static_cast<int>(actionstarget.size()) + periodstart;
+		const int lastPeriod = static_cast<int>(actionstarget.size()) + periodStart;
 		size_t periodid = 0;
-		for (int period = periodstart; period < lastPeriod; ++period)
+		for (int period = periodStart; period < lastPeriod; ++period)
 			{
 			if (!actionstarget.at(periodid).empty())
 				{
@@ -165,10 +165,10 @@ namespace Spatial
 			}
 		}
 
-	/*void FMTeventcontainer::eraseCoordinate (const FMTcoordinate& coord, const int& periodstart)
+	/*void FMTeventcontainer::eraseCoordinate (const FMTcoordinate& coord, const int& periodStart)
     {
         const int lperiod=lastPeriod();
-        for (int period=periodstart;period<=lperiod;++period)
+        for (int period=periodStart;period<=lperiod;++period)
         {
             const FMTeventcontainer::const_iterator upper = upperBound(period);
             FMTeventcontainer::const_iterator lower = lowerBound(period);
@@ -262,7 +262,7 @@ namespace Spatial
 				insert(combinedevents);
 			}
 		}catch(...){
-			_exhandler->raisefromcatch("","FMTeventcontainer::pushaction", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMTeventcontainer::pushAction", __LINE__, __FILE__);
 		}
 	}
 
@@ -282,7 +282,7 @@ namespace Spatial
 					}
 				}
 		}catch(...){
-			_exhandler->raisefromcatch("","FMTeventcontainer::getaroundevents", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMTeventcontainer::getAroundEvents", __LINE__, __FILE__);
 		}
 		return aroundevents;
 	}
@@ -360,7 +360,7 @@ namespace Spatial
         std::vector<FMTeventcontainer::const_iterator> selectedevents;
         for  (FMTeventcontainer::const_iterator it = lower ; it != upper && it!= m_events.end() ; ++it)
         {
-            if (it->getActionId()==action_id /*&& it->getperiod()==period*/)
+            if (it->getActionId()==action_id /*&& it->getPeriod()==period*/)
             {
                 selectedevents.push_back(it);
             }
@@ -532,7 +532,7 @@ namespace Spatial
 		std::vector<FMTeventcontainer::const_iterator> selectedevents;
 		for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
 		{
-			if (actions_used.at(it->getActionId()) /*&& it->getperiod() == period*/)
+			if (actions_used.at(it->getActionId()) /*&& it->getPeriod() == period*/)
 			{
 				selectedevents.push_back(it);
 			}
@@ -549,7 +549,7 @@ namespace Spatial
 		std::vector<FMTeventcontainer::const_iterator> selectedevents;
 		for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
 		{
-			if (it->getActionId() == action_id /*&& it->getperiod() == period*/)
+			if (it->getActionId() == action_id /*&& it->getPeriod() == period*/)
 			{
 				selectedevents.push_back(it);
 			}
@@ -585,7 +585,7 @@ namespace Spatial
         std::vector<FMTeventcontainer::const_iterator> selectedevents;
         for  (FMTeventcontainer::const_iterator it = lower ; it != upper ; ++it)
         {
-            if (std::find(actions_id.begin(),actions_id.end(),it->getActionId())!=actions_id.end() && it->getperiod()==period)
+            if (std::find(actions_id.begin(),actions_id.end(),it->getActionId())!=actions_id.end() && it->getPeriod()==period)
             {
                 selectedevents.push_back(it);
             }
@@ -608,7 +608,7 @@ namespace Spatial
 		std::vector<FMTeventcontainer::const_iterator> selectedevents;
 		for (FMTeventcontainer::const_iterator it = lowerBound(period); it != upperBound(period); ++it)
 		{
-			if (actions_used.at(it->getActionId()) && it->getperiod()==period)
+			if (actions_used.at(it->getActionId()) && it->getPeriod()==period)
 			{
 				selectedevents.push_back(it);
 			}
@@ -645,8 +645,8 @@ namespace Spatial
             FMTeventcontainer::const_iterator lower = lowerBound(period,minxy);
             FMTeventcontainer::const_iterator upper = upperBound(period,maxxy);
             ///Debug
-            //std::cout<<"Upper "<<upper->averageCentroid().getX()<<upper->averageCentroid().getY()<<" Action : "<<upper->getActionId()<<" Period : "<<upper->getperiod()<<std::endl;
-            //std::cout<<"Lower "<<lower->averageCentroid().getX()<<lower->averageCentroid().getY()<<" Action : "<<lower->getActionId()<<" Period : "<<lower->getperiod()<<std::endl;
+            //std::cout<<"Upper "<<upper->averageCentroid().getX()<<upper->averageCentroid().getY()<<" Action : "<<upper->getActionId()<<" Period : "<<upper->getPeriod()<<std::endl;
+            //std::cout<<"Lower "<<lower->averageCentroid().getX()<<lower->averageCentroid().getY()<<" Action : "<<lower->getActionId()<<" Period : "<<lower->getPeriod()<<std::endl;
             /*do {
                     if (lower!=events.end())
                     {
@@ -654,7 +654,7 @@ namespace Spatial
                         {
                             if(
                                (upper->averageCentroid() == maxxy || upper->averageCentroid() < maxxy)&&
-                               (upper->getperiod() == period)
+                               (upper->getPeriod() == period)
                                )
                             {
                                 selectedevents.push_back(lower);
@@ -891,7 +891,7 @@ namespace Spatial
 			it != upperBound(p_MaximalPeriod); ++it)
 			{
 			if (it->getActionId() == p_RuleId &&
-				(p_MinimalPeriod <= it->getperiod() <= p_MaximalPeriod))
+				(p_MinimalPeriod <= it->getPeriod() <= p_MaximalPeriod))
 				{
 					RuleEvents.push_back(it);
 				}

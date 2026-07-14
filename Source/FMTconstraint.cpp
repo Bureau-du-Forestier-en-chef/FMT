@@ -154,7 +154,7 @@ namespace Core
 	   }
 	   catch (...)
 	   {
-		   _exhandler->printexceptions("", "FMTconstraint::setgoal", __LINE__, __FILE__, Core::FMTsection::Optimize);
+		   _exhandler->printexceptions("", "FMTconstraint::setGoal", __LINE__, __FILE__, Core::FMTsection::Optimize);
 	   }
    }
 
@@ -179,7 +179,7 @@ namespace Core
 	   }
 	   catch (...)
 	   {
-		   _exhandler->printexceptions("", "FMTconstraint::setpenalties", __LINE__, __FILE__, Core::FMTsection::Optimize);
+		   _exhandler->printexceptions("", "FMTconstraint::setPenalties", __LINE__, __FILE__, Core::FMTsection::Optimize);
 	   }
    }
 
@@ -205,7 +205,7 @@ namespace Core
 			return (sources.size() == 2 && sources.at(0).isAction() && !sources.at(0).isInventory() && sources.at(0).isVariable());
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTconstraint::dosupportrandom", __LINE__, __FILE__,Core::FMTsection::Optimize);
+			_exhandler->printexceptions("", "FMTconstraint::doSupportRandom", __LINE__, __FILE__,Core::FMTsection::Optimize);
 			}
 		return false;
 		}
@@ -278,7 +278,7 @@ namespace Core
 				}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::getfromreplicate", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			_exhandler->printexceptions("", "FMTconstraint::getFromReplicate", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 	return *this;
 	}
@@ -321,7 +321,7 @@ namespace Core
 				newconstraint._setIterationChange(p_PeriodChanges);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTconstraint::getiterationchange", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			_exhandler->raisefromcatch("", "FMTconstraint::_getIterationChange", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		return newconstraint;
 	}
@@ -341,7 +341,7 @@ namespace Core
 			}
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTconstraint::getscheduleweight", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			_exhandler->printexceptions("", "FMTconstraint::getScheduleWeight", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
 		return 0;
 	}
@@ -378,7 +378,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::setfrom", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			_exhandler->printexceptions("", "FMTconstraint::setFrom", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		return newconstraint;
 	}
@@ -397,7 +397,7 @@ namespace Core
 						{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 								"Constraint " + std::string(*this) + " cannot be set",
-								"FMTconstraint::issetfrom", __LINE__, __FILE__);
+								"FMTconstraint::isSetFrom", __LINE__, __FILE__);
 						}
 						return true;
 					}
@@ -406,7 +406,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::isreignore", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTconstraint::isReIgnore", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -424,7 +424,7 @@ namespace Core
 							{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 								"Constraint "+std::string(*this)+" cannot be set",
-								"FMTconstraint::issetfrom", __LINE__, __FILE__);
+								"FMTconstraint::isSetFrom", __LINE__, __FILE__);
 							}
 						return true;
 					}
@@ -433,7 +433,7 @@ namespace Core
 		}
 		catch (...)
 			{
-			_exhandler->printexceptions("", "FMTconstraint::issetfrom", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTconstraint::isSetFrom", __LINE__, __FILE__);
 			}
 		return false;
 	}
@@ -525,7 +525,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::getbounds", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			_exhandler->printexceptions("", "FMTconstraint::getBounds", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		}
 
@@ -829,7 +829,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::standardstring", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			_exhandler->printexceptions("", "FMTconstraint::standardString", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		}
 
@@ -999,7 +999,7 @@ namespace Core
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTconstraint::getperiodicvariationcost", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				_exhandler->printexceptions("", "FMTconstraint::getPeriodicVariationCost", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
 			return costsum;
 			}
@@ -1134,7 +1134,7 @@ namespace Core
 					}
 			}catch(...)
 				{
-				_exhandler->raisefromcatch("", "FMTconstraint::getactionids", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				_exhandler->raisefromcatch("", "FMTconstraint::getActionIds", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 			return ids;
 			}
@@ -1170,7 +1170,7 @@ namespace Core
 				}
 				catch (...)
 				{
-					_exhandler->raisefromcatch("", "FMTconstraint::canbeturnedtoyieldsbasedontransitions", __LINE__, __FILE__, Core::FMTsection::Optimize);
+					_exhandler->raisefromcatch("", "FMTconstraint::canBeTurnedToYieldsBasedOnTransitions", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 				return false;
 				}
@@ -1219,7 +1219,7 @@ namespace Core
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTconstraint::turntoyieldsbasedontransition", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				_exhandler->raisefromcatch("", "FMTconstraint::turnToYieldsBasedOnTransition", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
 		}
 		bool FMTconstraint::canBeTurnedToYields() const
@@ -1253,7 +1253,7 @@ namespace Core
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTconstraint::canbeturnedtoyields", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				_exhandler->raisefromcatch("", "FMTconstraint::canBeTurnedToYields", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
 			return false;
 		}
@@ -1342,7 +1342,7 @@ namespace Core
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTconstraint::turntoyieldsandactions", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				_exhandler->raisefromcatch("", "FMTconstraint::turnToYieldsAndActions", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
 		}
 

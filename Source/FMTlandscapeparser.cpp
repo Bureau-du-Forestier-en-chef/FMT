@@ -64,7 +64,7 @@ namespace Parser
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(
-				 "for line " + indexm_line,"FMTlandscapeparser::getindexes", __LINE__, __FILE__,m_section);
+				 "for line " + indexm_line,"FMTlandscapeparser::getIndexes", __LINE__, __FILE__,m_section);
 			}
         return indexes;
         }
@@ -336,7 +336,7 @@ namespace Parser
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTlandscapeparser::readrasters", __LINE__, __FILE__,m_section);
+			_exhandler->printexceptions("", "FMTlandscapeparser::readRasters", __LINE__, __FILE__,m_section);
 		}
 			
         return themes;
@@ -381,7 +381,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-				_exhandler->printexceptions("at " + location, "FMTlandscapeparser::readvectors",
+				_exhandler->printexceptions("at " + location, "FMTlandscapeparser::readVectors",
 					__LINE__, __FILE__, m_section);
 			}
 

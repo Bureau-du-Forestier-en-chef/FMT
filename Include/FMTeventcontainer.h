@@ -138,12 +138,12 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         /*
         Erase all coordinate corresponding to coord in events from the period start.
         */
-        //void eraseCoordinate(const FMTcoordinate& coord, const int& periodstart);
+        //void eraseCoordinate(const FMTcoordinate& coord, const int& periodStart);
 		// DocString: FMTeventcontainer::eraseCoordinate
 	   /*
 	   Erase all coordinate corresponding to coord in events from the period start.
 	   */
-		void eraseCoordinate(const FMTcoordinate& coord, const int& periodstart,const std::vector<std::vector<bool>>& actionstarget);
+		void eraseCoordinate(const FMTcoordinate& coord, const int& periodStart,const std::vector<std::vector<bool>>& actionstarget);
         // DocString: FMTeventcontainer::getBounds(const int&)
         /*
         Return a pair of iterator pointing to the first and the last elements in the period

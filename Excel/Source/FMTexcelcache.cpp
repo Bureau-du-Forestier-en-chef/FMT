@@ -122,7 +122,7 @@ namespace Wrapper
 			primaryname = base_filename.substr(0, fit);
 		}catch (...)
 		{
-			captureexception("FMTexcelcache::getPrimaryname");
+			captureexception("FMTexcelcache::getprimaryname");
 		}
 		return primaryname;
 	}
@@ -249,7 +249,7 @@ namespace Wrapper
 				int period = 0;
 				for (const Core::FMTschedule& schedule : allschedule.at(0))
 				{
-					period = std::max(period, schedule.getperiod());
+					period = std::max(period, schedule.getPeriod());
 				}
 				(*models)[naming] = FMTmodelcache(allmodels.at(0), mappath);
 				(*models)[naming].setLength(period);

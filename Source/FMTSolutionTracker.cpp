@@ -98,7 +98,7 @@ namespace Spatial
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("",
-				"FMTSolutionTracker::GetNumberOfCells", __LINE__, __FILE__);
+				"FMTSolutionTracker::getNumberOfCells", __LINE__, __FILE__);
 			}
 		return numberOf;
 		}
@@ -142,7 +142,7 @@ namespace Spatial
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("",
-				"FMTSolutionTracker::AddToSolution", __LINE__, __FILE__);
+				"FMTSolutionTracker::addToSolution", __LINE__, __FILE__);
 			}
 	}
 	void FMTSolutionTracker::removeFromSolution(size_t p_family,
@@ -157,7 +157,7 @@ namespace Spatial
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("",
-				"FMTSolutionTracker::RemoveFromSolution", __LINE__, __FILE__);
+				"FMTSolutionTracker::removeFromSolution", __LINE__, __FILE__);
 		}
 	}
 

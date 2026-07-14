@@ -74,7 +74,7 @@ std::vector<T>FMTconstants::getAll(std::string key) const
 	}
 	catch (...)
 	{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for " + key, "FMTconstants::getall", __LINE__, __FILE__, Core::FMTsection::Constants);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for " + key, "FMTconstants::getAll", __LINE__, __FILE__, Core::FMTsection::Constants);
 	}
 	return values;
 }

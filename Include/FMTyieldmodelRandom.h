@@ -56,14 +56,14 @@ namespace Core
 		*/
 		 std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& p_filter,
 			const std::vector<FMTtheme>& p_newThemes) const;
-		// DocString: FMTyieldmodelRandom::postsolve
+		// DocString: FMTyieldmodelRandom::postSolve
 		/**
 		@brief Postsolve the yieldmodel by default it will return a clone.
 		@param[in] p_filter the mask filter to apply.
 		@param[in] p_baseThemes the non presolved themes.
 		@return a pointer to a postsolved FMTyieldmodel.
 		*/
-		std::unique_ptr<FMTyieldmodel> postsolve(const FMTmaskfilter& p_filter,
+		std::unique_ptr<FMTyieldmodel> postSolve(const FMTmaskfilter& p_filter,
 			const std::vector<FMTtheme>& p_baseThemes) const;
 		// DocString: FMTyieldmodelRandom::Clone
 		/**

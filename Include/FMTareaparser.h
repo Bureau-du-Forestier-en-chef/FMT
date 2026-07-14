@@ -154,8 +154,8 @@ class FMTEXPORT FMTareaparser : public FMTparser
 						   const std::vector<Core::FMTtheme>& themes,
 						   const std::vector<Core::FMTaction>& actions,
 						   const bool& writeevents = true,
-						   int periodstart=-1,
-						   int periodstop=-1) const;*/
+						   int periodStart=-1,
+						   int periodStop=-1) const;*/
 	#ifdef FMTWITHOSI
 						   // DocString: FMTareaparser::getSchemeNeighbors
 						   /**

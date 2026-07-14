@@ -23,9 +23,9 @@ double FMToperatingareascheme::getPrimalArea(const double* primalsolution, const
 	double area = 0;
 	for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : vertices)
 		{
-		if (maingraph.periodstart(descriptor))
+		if (maingraph.periodStart(descriptor))
 			{
-			area += maingraph.inarea(descriptor, primalsolution);
+			area += maingraph.inArea(descriptor, primalsolution);
 			}
 		}
 	return area;
@@ -161,7 +161,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 		if (!totalareavertices.empty())
 			{
 			const double area = this->getPrimalArea(primalsolution, maingraph, totalareavertices);
-			//To remove the numeric instability from the multiplication in the graph inarea
+			//To remove the numeric instability from the multiplication in the graph inArea
 			_area = static_cast<double>((static_cast<int>(area/100)*100)+100);
 			//old code
 			//_area=this->getPrimalArea(primalsolution, maingraph, totalareavertices);
@@ -179,7 +179,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 			std::vector<int> variablestoignore;
 			for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : ignoredvert)
 			{
-				const std::map<int, int>actions = maingraph.getoutvariables(descriptor);
+				const std::map<int, int>actions = maingraph.getOutVariables(descriptor);
 				for (const int& action : actionIDS)
 				{
 					std::map<int, int>::const_iterator actit = actions.find(action);
@@ -213,7 +213,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 					}
 					for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : localblock)
 					{
-						const std::map<int, int>actions = maingraph.getoutvariables(descriptor);
+						const std::map<int, int>actions = maingraph.getOutVariables(descriptor);
 						for (const int& action : actionIDS)
 						{
 							std::map<int, int>::const_iterator actit = actions.find(action);
@@ -630,7 +630,7 @@ std::vector<std::vector<int>> FMToperatingareascheme::schemesToPeriods(const std
 			{
 			if (!block.empty())
 				{
-				periodids.push_back(maingraph.getDevelopment(*(block.begin())).getperiod());
+				periodids.push_back(maingraph.getDevelopment(*(block.begin())).getPeriod());
 				}
 			}
 		if (!periodids.empty())

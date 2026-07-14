@@ -89,7 +89,7 @@ namespace Models
             }
             m_intparameters[key] = value;
         }catch(...){
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setintparameter", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTmodelparameters::setIntParameter", __LINE__, __FILE__);
         }
         return true;
     }
@@ -100,7 +100,7 @@ namespace Models
             if (key == LastDblModelParam) return (false) ;
                 m_dblparameters[key] = value;
         }catch(...){
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setdblparameter", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTmodelparameters::setDblParameter", __LINE__, __FILE__);
         }
         return true;
 
@@ -124,7 +124,7 @@ namespace Models
             m_strparameters[p_key] = p_value;
         }
         catch (...) {
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setstrparameter", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTmodelparameters::setStrParameter", __LINE__, __FILE__);
         }
         return true;
     }
@@ -134,7 +134,7 @@ namespace Models
         try{
             m_compresstime[period]=value;
         }catch(...){
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setcompresstime", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTmodelparameters::setCompressTime", __LINE__, __FILE__);
         }
         return true;
 
@@ -148,7 +148,7 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"LastIntModelParam is not a parameter",
-							"FMTmodelparameters::getintparameter", __LINE__, __FILE__);
+							"FMTmodelparameters::getIntParameter", __LINE__, __FILE__);
             }
             value = m_intparameters[key];
         }catch(...)
@@ -166,7 +166,7 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"LastDblModelParam is not a parameter",
-							"FMTmodelparameters::getdblparameter", __LINE__, __FILE__);
+							"FMTmodelparameters::getDblParameter", __LINE__, __FILE__);
             }
             value = m_dblparameters[key];
         }catch(...)
@@ -184,7 +184,7 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"LastBoolModelParam is not a parameter",
-							"FMTmodelparameters::getboolparameter", __LINE__, __FILE__);
+							"FMTmodelparameters::getBoolParameter", __LINE__, __FILE__);
             }
             value = m_boolparameters[key];
         }catch(...)
@@ -201,7 +201,7 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                     "LastStrModelParam is not a parameter",
-                    "FMTmodelparameters::getstrparameter", __LINE__, __FILE__);
+                    "FMTmodelparameters::getStrParameter", __LINE__, __FILE__);
             }
             return m_strparameters[p_key];
         }
@@ -219,7 +219,7 @@ namespace Models
             value = m_compresstime.at(period);
         }catch(...)
         {
-            _exhandler->raisefromcatch("", "FMTmodelparameters::getcompresstime", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMTmodelparameters::getCompressTime", __LINE__, __FILE__);
         }
         return value;
 

@@ -48,7 +48,7 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setage", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setAge", __LINE__, __FILE__);
 		}
 	}
 
@@ -59,7 +59,7 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setlock", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setLock", __LINE__, __FILE__);
 		}
 	}
 
@@ -70,7 +70,7 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setperiod", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setPeriod", __LINE__, __FILE__);
 		}
 	}
 
@@ -149,7 +149,7 @@ namespace Core{
 		{
 		return (((action.doRespectLock() && lock == 0) || !action.doRespectLock()) &&
 			action.getAgeLowerBound() <= getAge() && getAge() <= action.getAgeUpperBound() &&
-			action.getPeriodLowerBound() <= getperiod() && getperiod() <= action.getPeriodUpperBound());
+			action.getPeriodLowerBound() <= getPeriod() && getPeriod() <= action.getPeriodUpperBound());
 		}
 
 	FMTyieldrequest FMTdevelopment::getYieldRequest(const Graph::FMTgraphvertextoyield* graphyieldrequest) const
@@ -195,7 +195,7 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::anyoperable", __LINE__, __FILE__);
+			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::anyOperable", __LINE__, __FILE__);
 		 }
 		 return false;
 		}
@@ -215,7 +215,7 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::anyworthtestingoperability", __LINE__, __FILE__);
+			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::anyWorthTestingOperability", __LINE__, __FILE__);
 		 }
 		 return potentials;
 		}
@@ -247,7 +247,7 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::isanyworthtestingoperability", __LINE__, __FILE__);
+			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::isAnyWorthTestingOperability", __LINE__, __FILE__);
 		 }
 		 return std::vector<bool>();
 	 }
@@ -328,7 +328,7 @@ namespace Core{
         line+=std::string(mask)+" ";
         line+=std::to_string(getAge())+" ";
         line+=std::to_string(getLock())+" ";
-        line+=std::to_string(getperiod())+" ";
+        line+=std::to_string(getPeriod())+" ";
         return line;
         }
 	double FMTdevelopment::getarea() const
@@ -366,7 +366,7 @@ namespace Core{
 		{
 		bool allow = false;
 		try {
-			allow = specification.allowWithoutYield(getperiod(), getAge(), getLock());
+			allow = specification.allowWithoutYield(getPeriod(), getAge(), getLock());
 			if (allow && !specification.emptyYlds())
 				{
 				const FMTyieldrequest REQUEST = getYieldRequest(graphyieldrequest);
@@ -400,7 +400,7 @@ namespace Core{
 			return ylds.get(request,target_yield);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this) , "FMTdevelopment::getinventorycoef", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("for " + std::string(*this) , "FMTdevelopment::getInventoryCoef", __LINE__, __FILE__);
 		}
 		return 0;
 		}
@@ -425,7 +425,7 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this)+" for action "+action.getname(), "FMTdevelopment::getharvestcoef", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("for " + std::string(*this)+" for action "+action.getname(), "FMTdevelopment::getHarvestCoef", __LINE__, __FILE__);
 		}
 		return value;
 		}

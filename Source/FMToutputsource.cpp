@@ -497,7 +497,7 @@ double FMToutputsource::getCoef(const FMTdevelopment& development,
 		}else{
 			if (!values.empty())
 			{
-				coef = getValue(development.getperiod());
+				coef = getValue(development.getPeriod());
 			}
 			if (isTimeYield())
 				{

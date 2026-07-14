@@ -12,7 +12,7 @@ namespace Spatial
 	{
 	FMTeventrelation::FMTeventrelation(const Spatial::FMTevent& fromevent, const Spatial::FMTevent& toevent) :
 		fromaction(fromevent.getActionId()), toaction(toevent.getActionId()),
-		fromperiod(fromevent.getperiod()), toperiod(toevent.getperiod()),
+		fromperiod(fromevent.getPeriod()), toperiod(toevent.getPeriod()),
 		fromcoord(*fromevent.midPosition()),tocoord(*toevent.midPosition())
 		{
 

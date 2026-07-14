@@ -44,7 +44,7 @@ namespace Spatial
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetConstraintsValues",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getConstraintsValues",
 				__LINE__, __FILE__);
 			}
 		return results;
@@ -73,7 +73,7 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::EnableSolutionTracler",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::enableSolutionTracker",
 				__LINE__, __FILE__);
 			}
 		}
@@ -100,7 +100,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetConstraintsValues",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getConstraintsValues",
 				__LINE__, __FILE__);
 		}
 		return value;
@@ -116,7 +116,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetVirtualGraph",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getVirtualGraph",
 				__LINE__, __FILE__);
 		}
 		return FMTVirtualLineGraph(*this, Iterator, Family);
@@ -132,7 +132,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::SetVirtualGraph",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::setVirtualGraph",
 				__LINE__, __FILE__);
 		}
 		return FMTVirtualLineGraph(*this, Iterator, Family);
@@ -154,7 +154,7 @@ namespace Spatial
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetBaseIterator",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getBaseIterator",
 				__LINE__, __FILE__);
 		}
 		return Iterator;
@@ -176,10 +176,10 @@ namespace Spatial
 			}
 			/*_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Cant Get Less period for graph id " + std::to_string(p_iterator->second.getGraphId())
-				, "FMTSpatialGraphs::GetLastPeriodIteratorr", __LINE__, __FILE__);*/
+				, "FMTSpatialGraphs::getLastPeriodIterator", __LINE__, __FILE__);*/
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetLastPeriodIterator",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getLastPeriodIterator",
 				__LINE__, __FILE__);
 		}
 		return Iterator;
@@ -248,7 +248,7 @@ namespace Spatial
 					if (CELLS > FMT_DBL_TOLERANCE)
 					{
 						const double GRAPH_AREA = CELLS * GRAPH.first.getBaseDevelopment().getarea();
-						for (int period = 1; period < GRAPH.first.getperiod(); ++period)
+						for (int period = 1; period < GRAPH.first.getPeriod(); ++period)
 						{
 							const Core::FMTschedule SCHEDULE = GRAPH.first.getSchedule(getModel().actions,
 								&GRAPH_AREA, period, WithLock);
@@ -261,7 +261,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetSchedule",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getSchedule",
 				__LINE__, __FILE__);
 		}
 		return  Schedules;
@@ -298,7 +298,7 @@ namespace Spatial
 			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Empty Iterator for Graph Family " + std::to_string(p_family) +
 				" Family size of " + std::to_string(m_AllGraphs.at(p_family).size())
-				, "FMTSpatialGraphs::GetIterator", __LINE__, __FILE__);
+				, "FMTSpatialGraphs::getIterator", __LINE__, __FILE__);
 		}
 		return It;
 	}
@@ -320,7 +320,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::SetIterator",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::setIterator",
 				__LINE__, __FILE__);
 		}
 		return Iterator;
@@ -390,7 +390,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::GetOutput",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getOutput",
 				__LINE__, __FILE__);
 		}
 		return results;
@@ -568,7 +568,7 @@ namespace Spatial
 						{
 							p_Graph->second.setValuesSize(getModel().constraints.size());
 						}
-						if (p_Graph->first.constraintlenght(CONSTRAINT, LowestPeriod, UpperPeriod))
+						if (p_Graph->first.constraintLenght(CONSTRAINT, LowestPeriod, UpperPeriod))
 						{
 							if (CONSTRAINT.acrossPeriod())
 							{
@@ -638,7 +638,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_InternValues",
+			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_internValues",
 				__LINE__, __FILE__);
 		}
 		return interned;
@@ -778,7 +778,7 @@ namespace Spatial
 			for (const auto& GRAPH : FAMILY)
 			{
 				maxLength = std::max(maxLength, 
-						static_cast<size_t>(GRAPH.first.getperiod()));
+						static_cast<size_t>(GRAPH.first.getPeriod()));
 			}
 		}
 		return maxLength;
@@ -791,7 +791,7 @@ namespace Spatial
 			for (const auto& GRAPH : FAMILY)
 			{
 				minLength = std::min(minLength,
-					static_cast<size_t>(GRAPH.first.getperiod()));
+					static_cast<size_t>(GRAPH.first.getPeriod()));
 			}
 		}
 		return minLength;
@@ -822,7 +822,7 @@ namespace Spatial
 		{
 			for (auto GraphIt = FAMILY.begin(); GraphIt != FAMILY.end();)
 				{
-				const size_t GRAPH_SIZE = static_cast<size_t>(GraphIt->first.getperiod());
+				const size_t GRAPH_SIZE = static_cast<size_t>(GraphIt->first.getPeriod());
 				if (GRAPH_SIZE < p_GraphSize)
 				{
 					GraphIt = FAMILY.erase(GraphIt);
@@ -839,7 +839,7 @@ namespace Spatial
 		for (const_iterator It = m_AllGraphs.at(p_family).begin();
 				It != m_AllGraphs.at(p_family).end(); ++It)
 			{
-				if (It->first.getperiod() - 1 == LENGTH &&
+				if (It->first.getPeriod() - 1 == LENGTH &&
 					It->first.isOnlyGrow())
 				{
 					return It;

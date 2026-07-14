@@ -165,7 +165,7 @@ void exportCore()
 					"@DocString(FMTmask::issubsetof)")
 				.def("presolve",&Core::FMTmask::presolve,
 					"@DocString(FMTmask::presolve)")
-				.def("postsolve",&Core::FMTmask::postsolve,
+				.def("postsolve",&Core::FMTmask::postSolve,
 					"@DocString(FMTmask::postsolve)");
 
 		bp::class_<Core::FMTdevelopmentpath>("FMTdevelopmentpath", "@DocString(FMTdevelopmentpath)")
@@ -195,7 +195,7 @@ void exportCore()
 					"@DocString(FMTdevelopment::getage)")
 				.def("getlock", &Core::FMTdevelopment::getLock,
 					"@DocString(FMTdevelopment::getlock)")
-				.def("getperiod", &Core::FMTdevelopment::getperiod,
+				.def("getperiod", &Core::FMTdevelopment::getPeriod,
 					"@DocString(FMTdevelopment::getperiod)")
 				.def("getmask", &Core::FMTdevelopment::getMaskCopy,
 					"@DocString(FMTdevelopment::getmask)")
@@ -493,7 +493,7 @@ void exportCore()
 					"@DocString(FMTschedule::operator+)")
 				.def("actionarea", &Core::FMTschedule::actionArea,
 					"@DocString(FMTschedule::actionarea)")
-				.def("getperiod", &Core::FMTschedule::getperiod,
+				.def("getperiod", &Core::FMTschedule::getPeriod,
 					"@DocString(FMTschedule::getperiod)")
 				.def("setperiod", &Core::FMTschedule::setPeriod,
 					"@DocString(FMTschedule::setperiod)")

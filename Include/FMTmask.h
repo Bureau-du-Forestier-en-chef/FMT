@@ -410,7 +410,7 @@ class FMTEXPORT FMTmask
 		FMTmask refine(const FMTmask& mask, const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTmask::getPostsolveMask
 		/**
-		If this is a base postsolve mask it uses mask to turn off bits for themes that are still active.
+		If this is a base postSolve mask it uses mask to turn off bits for themes that are still active.
 		*/
 		FMTmask getPostsolveMask(const FMTmask& mask,const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTmask::presolve
@@ -437,11 +437,11 @@ class FMTEXPORT FMTmask
 		@return true if you can presolve
 		*/
 		bool canPresolve(const FMTmaskfilter& p_filter, const std::vector<FMTtheme>& p_presolvedThemes) const;
-		// DocString: FMTmask::postsolve
+		// DocString: FMTmask::postSolve
 		/**
 		Using aFMTmaskfilter (filter) and the original FMTthemes it returns a postsolved FMTmask.
 		*/
-		FMTmask postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&basethemes) const;
+		FMTmask postSolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&basethemes) const;
 	private:
 		friend class FMTtheme;
 		// DocString: FMTmask::serialize

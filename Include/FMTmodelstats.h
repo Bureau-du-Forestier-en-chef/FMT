@@ -17,8 +17,8 @@ namespace Models
 {
 	// DocString: FMTmodelstats
 	/**
-	This class is used to report the stats of a FMTmodel. Used alot with the presolve and postsolve functions.
-	Calling presolve or postsolve will changes the model stats.
+	This class is used to report the stats of a FMTmodel. Used alot with the presolve and postSolve functions.
+	Calling presolve or postSolve will changes the model stats.
 	*/
 	class FMTEXPORT FMTmodelstats
 	{

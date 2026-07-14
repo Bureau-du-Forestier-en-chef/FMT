@@ -95,11 +95,11 @@ class FMTEXPORT FMTschedule : public FMTobject
 		Convert the FMTschedule to a string like seen in a regular scedule file.
 		*/
         operator std::string() const;
-		// DocString: FMTschedule::getperiod
+		// DocString: FMTschedule::getPeriod
 		/**
 		Getter for the schedule period.
 		*/
-		inline int getperiod() const
+		inline int getPeriod() const
 			{
 			return period;
 			}
@@ -170,11 +170,11 @@ class FMTEXPORT FMTschedule : public FMTobject
 		*/
 		FMTschedule presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& newthemes, const std::vector<FMTaction>&presolvedaction) const;
-		// DocString: FMTschedule::postsolve
+		// DocString: FMTschedule::postSolve
 		/**
 		Postsolve all masks base on a baseMask and the original themes and actions.
 		*/
-		FMTschedule postsolve(const FMTmaskfilter& filter,
+		FMTschedule postSolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const;
 		/**
 		Setter for the period of the Schedule and the period developments of the schedule.

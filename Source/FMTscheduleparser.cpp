@@ -42,7 +42,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch( "for comment " + m_comment,"FMTscheduleparser::getvariable", __LINE__, __FILE__, m_section);
+			_exhandler->raisefromcatch( "for comment " + m_comment,"FMTscheduleparser::getVariable", __LINE__, __FILE__, m_section);
 		}
 		return value;
 	}

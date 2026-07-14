@@ -80,11 +80,11 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			{
 			return static_cast<int>(lock);
 			}
-		// DocString: FMTdevelopment::getperiod
+		// DocString: FMTdevelopment::getPeriod
 		/**
 		Get the period of the development.
 		*/
-		inline int getperiod() const
+		inline int getPeriod() const
 			{
 			return static_cast<int>(period);
 			}

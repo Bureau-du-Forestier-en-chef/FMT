@@ -1031,7 +1031,7 @@ void FMTexceptionhandler::reRaiseIfThreadCrash()
 		registerWorkerThread();
 		//registered_threads.insert(boost::this_thread::get_id());
 		//Raise a dumy exception to make sure the main thread and the slave thread are aware of crash
-		raise(Exception::FMTexc::FMTthreadcrash,"","FMTexceptionhandler::reraiseifthreadcrash",__LINE__,__FILE__);
+		raise(Exception::FMTexc::FMTthreadcrash,"","FMTexceptionhandler::reRaiseIfThreadCrash",__LINE__,__FILE__);
 	}
 }
 

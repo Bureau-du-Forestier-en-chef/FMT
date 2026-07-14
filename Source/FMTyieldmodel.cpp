@@ -47,7 +47,7 @@ namespace Core {
 		return Clone();
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::postsolve(const FMTmaskfilter& filter,
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::postSolve(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& basethemes) const
 	{
 		return Clone();

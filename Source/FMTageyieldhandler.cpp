@@ -130,7 +130,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::getage", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return age;
 	}
@@ -143,7 +143,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::getyieldlinearvalue", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
@@ -170,7 +170,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::getage", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
@@ -206,7 +206,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::getfromfactor", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return newhandler.clone();
 	}
@@ -288,7 +288,7 @@ namespace Core {
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::getallyieldsdata", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return localstuff;
 	}
@@ -314,7 +314,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::getendpoint", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return static_cast<int>(locid);
 	}
@@ -327,7 +327,7 @@ namespace Core {
 			value = getChangesFrom(targetage, peak);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::getpeak", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return value;
 	}
@@ -354,7 +354,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::getpeakfrom", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::getPeakfrom", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return peak;
 	}
@@ -366,7 +366,7 @@ namespace Core {
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Vector of baseages and values are not the same size.",
-				"FMTageyieldhandler::setvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTageyieldhandler::setValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			if(this->getBases().empty())
 			{
@@ -375,14 +375,14 @@ namespace Core {
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Vector of baseages and values of bases already set are different. \nYou must create a new FMTageyieldhandler for those values",
-				"FMTageyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTageyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			for(const double& value : values)
 			{
 				this->pushData(yldname,value);
 			}
 		}catch(...){
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 

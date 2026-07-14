@@ -55,7 +55,7 @@ namespace Core {
 			if (!graphinfo)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty graph info info for " + getModelType(),
-					"FMTyieldmodelTSLA::Predict", __LINE__, __FILE__);
+					"FMTyieldmodelTSLA::predict", __LINE__, __FILE__);
 				}
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
@@ -70,7 +70,7 @@ namespace Core {
 				tsla = fullgraph->timeSinceLastAction(*vertex);
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "No graph in graph info " + getModelType(),
-					"FMTyieldmodelTSLA::Predict", __LINE__, __FILE__);
+					"FMTyieldmodelTSLA::predict", __LINE__, __FILE__);
 			}
 			if (tsla != std::numeric_limits<size_t>::max())
 				{
@@ -79,7 +79,7 @@ namespace Core {
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return returned;
 	}
@@ -97,7 +97,7 @@ namespace Core {
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelTSLA::postsolve(const FMTmaskfilter& filter,
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelTSLA::postSolve(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& basethemes) const
 	{
 		try {
@@ -105,7 +105,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::postsolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}

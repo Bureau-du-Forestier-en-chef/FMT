@@ -106,7 +106,7 @@ namespace Core {
 		
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::totimehandler", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::toTimeHandler", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return FMTtimeyieldhandler(getmask());
 		}
@@ -165,7 +165,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::getmodelsnamebyindex", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::getModelsNameByIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return modelmapping;
 	}
@@ -277,20 +277,20 @@ namespace Core {
 	}
 
 
-	std::unique_ptr<FMTyieldhandler> FMTmodelyieldhandler::postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const
+	std::unique_ptr<FMTyieldhandler> FMTmodelyieldhandler::postSolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const
 	{
 		try {
 			FMTmodelyieldhandler newhandler(*this);
 			newhandler.models.clear();
 			for (const std::unique_ptr<FMTyieldmodel>& yieldmodelptr : models)
 			{
-				newhandler.models.push_back(yieldmodelptr->postsolve(filter, basethemes));
+				newhandler.models.push_back(yieldmodelptr->postSolve(filter, basethemes));
 			}
-			return newhandler.FMTyieldhandler::postsolve(filter, basethemes);
+			return newhandler.FMTyieldhandler::postSolve(filter, basethemes);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::postsolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldhandler>(nullptr);
 	}

@@ -46,7 +46,7 @@ namespace Spatial
 
     const int& FMTevent::getActionId() const { return m_actionId; }
 
-    const int& FMTevent::getperiod() const { return m_period; }
+    const int& FMTevent::getPeriod() const { return m_period; }
 
     const size_t& FMTevent::getGraphFamily() const { return m_centroidGraphFamily; }
 

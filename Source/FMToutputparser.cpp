@@ -143,7 +143,7 @@ namespace Parser
 			   }
 		   }catch (...)
 		   {
-			   _exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line), "FMToutputparser::appendtooutput", __LINE__, __FILE__, m_section);
+			   _exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line), "FMToutputparser::appendToOutput", __LINE__, __FILE__, m_section);
 		   }
 	
 	   }
@@ -820,7 +820,7 @@ namespace Parser
 			-------------------------------------------*/
 			}catch(...)
 			{
-				_exhandler->raisefromcatch("Output "+name +" In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::readnfill", __LINE__, __FILE__,m_section);
+				_exhandler->raisefromcatch("Output "+name +" In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::readNFill", __LINE__, __FILE__,m_section);
 			}
 		}
 
@@ -868,7 +868,7 @@ namespace Parser
 						if(it==outputs.end())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTundefined_output,
-														outputname+" not found in file "+location,"FMToutputparser::addoutputs", __LINE__, __FILE__, m_section);
+														outputname+" not found in file "+location,"FMToutputparser::addOutputs", __LINE__, __FILE__, m_section);
 						}
 						returnoutputs.push_back(*it);
 						outputkeptid.insert(static_cast<int>(std::distance(outputs.cbegin(),it)));
@@ -881,7 +881,7 @@ namespace Parser
 				}
 			}catch (...)
 				{
-				_exhandler->printexceptions("In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::addoutputs", __LINE__, __FILE__,m_section);
+				_exhandler->printexceptions("In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::addOutputs", __LINE__, __FILE__,m_section);
 				}
             return outputs;
            }

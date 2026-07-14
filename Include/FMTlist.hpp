@@ -229,7 +229,7 @@ namespace Core
 		@param[in] p_newKey the mask to select subset
 		@return a vector of const iterator on the data.
 		*/
-		std::vector<FMTlist::const_iterator>findSetsWithFiltered(const FMTmask& p_newKey) const
+		std::vector<FMTlist::const_iterator> findSetsWithFiltered(const FMTmask& p_newKey) const
 		{
 			std::vector<const_iterator>allhits;
 			try {
@@ -265,7 +265,7 @@ namespace Core
 				}
 			}catch (...) 
 				{
-				_exhandler->raisefromcatch("", "FMTlist::findsetswithfiltered", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTlist::findSetsWithFiltered", __LINE__, __FILE__);
 				}
 			return allhits;
 		}
@@ -518,7 +518,7 @@ namespace Core
 				shrink();
 			}catch (...)
 					{
-				_exhandler->raisefromcatch("", "compressmasks", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "compressMasks", __LINE__, __FILE__);
 				}
 			}
 		// DocString: FMTlist::presolveList
@@ -530,7 +530,8 @@ namespace Core
 		Use this function with care because it's going to change the stade of the list
 		if user attempt to reference to a deleted element the model will seems broken.
 		*/
-		void presolveList(const FMTmaskfilter& filter,
+		void presolveList(
+			const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
 			const std::vector<FMTtheme>& newthemes)
 			{
@@ -573,7 +574,7 @@ namespace Core
 				//data.shrink_to_fit();
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("","FMTlist::presolvelist", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("","FMTlist::presolveList", __LINE__, __FILE__);
 				}
 			}
 		void copyData(const Core::FMTlist<T>& rhs)
@@ -643,27 +644,35 @@ namespace Core
 	{
 
 	}
-	
 
-	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::insert(const size_t& location, const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& value)
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::insert(
+		const size_t& location, 
+		const FMTmask& mask, 
+		const std::unique_ptr<Core::FMTyieldhandler>& value)
 	{
 		std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>> newobject = std::make_pair(mask, std::move(value->clone()));
 		data.insert(data.begin() + location, std::move(newobject));
 	}
 
-	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::pushToData(std::vector<std::pair<FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>& datavector,
-		const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& maskdata) const
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::pushToData(
+		std::vector<std::pair<FMTmask, 
+		std::unique_ptr<Core::FMTyieldhandler>>>& datavector,
+		const FMTmask& mask, 
+		const std::unique_ptr<Core::FMTyieldhandler>& maskdata) const
 	{
 		std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>> newobject = std::make_pair(mask, std::move(maskdata->clone()));
 		datavector.push_back(std::move(newobject));
 	}
 
-	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::push_back(const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& value)
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::push_back(
+		const FMTmask& mask, 
+		const std::unique_ptr<Core::FMTyieldhandler>& value)
 	{
 		pushToData(data, mask, value);
 	}
 
-	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::copyData(const FMTlist<std::unique_ptr<Core::FMTyieldhandler>>& rhs)
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::copyData(
+		const FMTlist<std::unique_ptr<Core::FMTyieldhandler>>& rhs)
 	{
 		data.clear();
 		data.reserve(rhs.data.size());
@@ -672,9 +681,6 @@ namespace Core
 			pushToData(data, object.first, object.second);
 		}
 	}
-
-
 }
-
 
 #endif

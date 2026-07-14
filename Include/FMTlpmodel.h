@@ -83,7 +83,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		FMTlpmodel();
 		// DocString: FMTlpmodel(const FMTmodel, const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>, const FMTlpsolver, const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>)
 		/**
-		Constructor of FMTlpmodel mainly use in postsolve to pass each attributes of the class.
+		Constructor of FMTlpmodel mainly use in postSolve to pass each attributes of the class.
 		*/
 		/*FMTlpmodel(const FMTmodel& base, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& lgraph,
 					const FMTlpsolver& lsolver,const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>& lelements);*/
@@ -168,7 +168,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Graph::FMTgraphstats eraseConstraint(const Core::FMTconstraint& constraint,int period=-1);
 		// DocString: FMTlpmodel::getVariabilities
 		/**
-		Get the variability of multiple outputs for a given tolerance(see modelparameters) for each period between (periodstart) and (periodstop).
+		Get the variability of multiple outputs for a given tolerance(see modelparameters) for each period between (periodStart) and (periodStop).
 		Need to call this function after initialSolve.
 		The actual objective function is transform to a constraint and then each output
 		are minimized and maximized to get their actual range for each period.
@@ -176,7 +176,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		LB for lower bound (minimization). This function  do a lot of resolve.
 		*/
 		std::map<std::string, std::vector<double>>getVariabilities(const std::vector<Core::FMToutput>& outputs,
-																 const int& periodstart,const int& periodstop);
+																 const int& periodStart,const int& periodStop);
 		// DocString: FMTlpmodel::getmodelfromproportions
 		/**
 		Will returns a new FMTlpmodel with changes in the initial area based on the tolerances of each globalmasks

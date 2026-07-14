@@ -32,7 +32,7 @@ namespace Spatial
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("",
-				"FMTPatchRules::GetRules", __LINE__, __FILE__);
+				"FMTPatchRules::getRules", __LINE__, __FILE__);
 			}
 		return Rules;
 	}
@@ -57,7 +57,7 @@ namespace Spatial
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("",
-				"FMTPatchRules::Evaluate", __LINE__, __FILE__);
+				"FMTPatchRules::evaluate", __LINE__, __FILE__);
 			}
 		return cost;
 	}
@@ -167,7 +167,7 @@ namespace Spatial
 		bool TooClose = false;
 		if (_HasMinimalAdjacency())
 			{
-			for (int period = p_event.getperiod(); period <= p_event.getperiod() + m_GreenUp; ++period)
+			for (int period = p_event.getPeriod(); period <= p_event.getPeriod() + m_GreenUp; ++period)
 				{
 				for (const FMTeventcontainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
 					{

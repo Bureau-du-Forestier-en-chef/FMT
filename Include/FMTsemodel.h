@@ -111,12 +111,12 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>presolve(
 			std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
-		// DocString: FMTsemodel::postsolve
+		// DocString: FMTsemodel::postSolve
 		/**
-		Using the original FMTmodel it postsolve the actual ses model to turn it back into a complete model with all themes,
+		Using the original FMTmodel it postSolve the actual ses model to turn it back into a complete model with all themes,
 		actions and outputs of the original not presolved model.
 		*/
-		virtual void postsolve(const FMTmodel& originalbasemodel);
+		virtual void postSolve(const FMTmodel& originalbasemodel);
 		// DocString: FMTsemodel::getOutput
 		/**
 		Get the output value of a output for a given period using the spatial solution.

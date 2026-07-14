@@ -47,7 +47,7 @@ namespace Core
 		virtual std::vector<std::string>getYieldNames() const;
 		virtual void clearCache();
 		virtual std::unique_ptr<FMTyieldhandler> presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const;
-		virtual std::unique_ptr<FMTyieldhandler> postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const;
+		virtual std::unique_ptr<FMTyieldhandler> postSolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const;
 		// DocString: FMTmodelyieldhandler::clearRandomYieldsCache
 		/**
 		@brief clear the cache of all random yield model.

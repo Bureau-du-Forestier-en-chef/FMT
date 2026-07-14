@@ -45,12 +45,12 @@ namespace Parallel
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					model.getname()+" is infeasible at initialsolve",
-					"FMTopareaschedulertask::solveinitialmodel", __LINE__, __FILE__);
+					"FMTopareaschedulertask::solveInitialModel", __LINE__, __FILE__);
 			}
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::solveinitialmodel", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::solveInitialModel", __LINE__, __FILE__);
 		}
 		return 0;
 	}
@@ -91,7 +91,7 @@ namespace Parallel
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"Wrong returntime value for "+ std::string(opscheduler.getmask())+" values "+
 							std::to_string(LowerReturn)+","+ std::to_string(UpperReturn),
-							"FMTopareaschedulertask::getreturntimefromoutput", __LINE__, __FILE__);
+							"FMTopareaschedulertask::getReturnTimeFromOutput", __LINE__, __FILE__);
 						}
 					new_scheme.setReturnTime(return_time - diff, return_time + diff);
 					}
@@ -99,7 +99,7 @@ namespace Parallel
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getreturntimefromoutput", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getReturnTimeFromOutput", __LINE__, __FILE__);
 		}
 		return newschemes;
 	}
@@ -115,7 +115,7 @@ namespace Parallel
 			actualscheduler->setProportionOfSet(calculatedpropotion);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::setinitialscheduler", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::setInitialScheduler", __LINE__, __FILE__);
 		}
 	}
 
@@ -130,7 +130,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getstoppoint", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getStopPoint", __LINE__, __FILE__);
 		}
 		return then;
 	}
@@ -149,7 +149,7 @@ namespace Parallel
 	{
 		try {
 			Models::FMTlpmodel modelcopy(model);
-			//Force postsolve to keep logic with the FMToperatingareascheme
+			//Force postSolve to keep logic with the FMToperatingareascheme
 			modelcopy.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
 			//Keep the non build modelcopy.
 			basemodel = std::move(std::unique_ptr<Models::FMTlpmodel>(new Models::FMTlpmodel(modelcopy)));
@@ -210,7 +210,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::gotinitialsolution", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::gotInitialSolution", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -222,7 +222,7 @@ namespace Parallel
 			return (iterations > 0 && getClock() < stoptime);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::goodtogo", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::goodToGo", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -285,7 +285,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writefinalmodel", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writeFinalModel", __LINE__, __FILE__);
 		}
 
 	}
@@ -312,7 +312,7 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getconstraintssolution", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getConstraintsSolution", __LINE__, __FILE__);
 			}
 		}
 
@@ -345,7 +345,7 @@ namespace Parallel
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writesolution", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writeSolution", __LINE__, __FILE__);
 		}
 
 	}
@@ -359,7 +359,7 @@ namespace Parallel
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot evaluate actual schedule",
-					"FMTopareaschedulertask::evaluateandcopy", __LINE__, __FILE__);
+					"FMTopareaschedulertask::evaluateAndCopy", __LINE__, __FILE__);
 				}
 				const boost::lock_guard<boost::mutex>lock(generalmutex);
 				if (bestscheduler->empty())
@@ -369,14 +369,14 @@ namespace Parallel
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"Non optimal best schedule copy",
-							"FMTopareaschedulertask::evaluateandcopy", __LINE__, __FILE__);
+							"FMTopareaschedulertask::evaluateAndCopy", __LINE__, __FILE__);
 					}
 				}else {
 					if (!bestscheduler->isProvenOptimal())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"Cannot evaluate best schedule",
-							"FMTopareaschedulertask::evaluateandcopy", __LINE__, __FILE__);
+							"FMTopareaschedulertask::evaluateAndCopy", __LINE__, __FILE__);
 					}
 					const double sense = actualscheduler->getObjSense();
 					const double actualobjective = actualscheduler->getObjValue();
@@ -391,7 +391,7 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::evaluateandcopy", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::evaluateAndCopy", __LINE__, __FILE__);
 			}
 	}
 

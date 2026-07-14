@@ -172,7 +172,7 @@ namespace Models
 			_BuildSolution(forest);
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::setinitialmapping", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::setInitialMapping", __LINE__, __FILE__);
 		}
 		return true;
         }
@@ -221,7 +221,7 @@ namespace Models
 			*_logger << "Constraints infeasibilities report done" << "\n";
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::LogConstraintsInfeasibilities", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::logConstraintsInfeasibilities", __LINE__, __FILE__);
 		}
 	}
 
@@ -243,7 +243,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::LogConstraintsFactors", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::logConstraintsFactors", __LINE__, __FILE__);
 		}
 	}
 
@@ -256,7 +256,7 @@ namespace Models
 			values = m_BestSolution.getOutput(m_SpatialGraphs, output, period, level);
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsemodel::getoutput", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getOutput", __LINE__, __FILE__);
 			}
 		return values;
 	}
@@ -268,7 +268,7 @@ namespace Models
 			return m_BestSolution.getSpatialOutput(*this, output, period);
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::getoutput", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getOutput", __LINE__, __FILE__);
 		}
 		return Spatial::FMTlayer<double>();
 	}
@@ -282,7 +282,7 @@ namespace Models
 			size_t scheduleid = 0;
 			while (scheduleid < allschedules.size())
 			{
-				if (allschedules.at(scheduleid).getperiod()==period)
+				if (allschedules.at(scheduleid).getPeriod()==period)
 					{
 					baseschedule = allschedules.at(scheduleid);
 					break;
@@ -291,7 +291,7 @@ namespace Models
 			}
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsemodel::getsolution", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getSolution", __LINE__, __FILE__);
 			}
 		return baseschedule;
 	}
@@ -330,21 +330,21 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
 
-	void FMTsemodel::postsolve(const FMTmodel& originalbasemodel)
+	void FMTsemodel::postSolve(const FMTmodel& originalbasemodel)
 		{
 		try {
-			if (m_BestSolution.actPeriod()>=1)//just postsolve if you have a solution
+			if (m_BestSolution.actPeriod()>=1)//just postSolve if you have a solution
 			{
 				const Core::FMTmaskfilter presolvedmask = this->getPostsolveFilter(originalbasemodel.getthemes(), originalbasemodel.getarea().begin()->getmask());
 				Spatial::FMTSpatialGraphs postSolvedGraphs = Spatial::FMTSpatialGraphs(originalbasemodel, m_BestSolution.getCellSize());
-				m_BestSolution.postsolve(presolvedmask,this->getactions(), postSolvedGraphs);
+				m_BestSolution.postSolve(presolvedmask,this->getactions(), postSolvedGraphs);
 				m_SpatialGraphs.swap(postSolvedGraphs);
-				FMTmodel::postsolve(originalbasemodel);
+				FMTmodel::postSolve(originalbasemodel);
 				m_SpatialGraphs.setModel(*this);
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTsemodel::postsolve", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTsemodel::postSolve", __LINE__, __FILE__);
 			}
 		}
 
@@ -355,7 +355,7 @@ namespace Models
 		}
 		catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsemodel::getmapping", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getMapping", __LINE__, __FILE__);
 			}
 		return Spatial::FMTforest();
 		}
@@ -389,7 +389,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::getcopy", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getCopy", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}
@@ -402,7 +402,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::getobjectivevalue", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getObjectiveValue", __LINE__, __FILE__);
 		}
 		return value;
 	}
@@ -415,7 +415,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::GetGlobalObjective", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getGlobalObjective", __LINE__, __FILE__);
 		}
 		return value;
 	}
@@ -435,7 +435,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::GreedyReferenceBuild", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::greedyReferenceBuild", __LINE__, __FILE__);
 		}
 		return value;
 	}
@@ -448,7 +448,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::GetConstraintsValues", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getConstraintsValues", __LINE__, __FILE__);
 		}
 		return values;
 		}
@@ -462,7 +462,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::GetSolutionStatus", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getSolutionStatus", __LINE__, __FILE__);
 		}
 
 	}
@@ -475,7 +475,7 @@ namespace Models
 
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsemodel::GetConstraintEvaluation", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsemodel::getConstraintEvaluation", __LINE__, __FILE__);
 		}
 		return value;
 	}

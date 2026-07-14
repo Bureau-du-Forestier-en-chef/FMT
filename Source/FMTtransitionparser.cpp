@@ -67,7 +67,7 @@ Core::FMTmask FMTtransitionparser::getSource(std::string& line, Core::FMTspec& s
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getsource", __LINE__, __FILE__, m_section);
+		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getSource", __LINE__, __FILE__, m_section);
 		}
 	return Core::FMTmask();
     }
@@ -149,7 +149,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getMaskTran(const std:
 					multiples.push_back(lmask);
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
-						"_REPLACE generated " + newval+" THEME("+std::string(strtargettheme)+") not in landscape", "FMTtransitionparser::getmasktran", __LINE__, __FILE__,m_section);
+						"_REPLACE generated " + newval+" THEME("+std::string(strtargettheme)+") not in landscape", "FMTtransitionparser::getMaskTran", __LINE__, __FILE__,m_section);
 				}
 
 			}
@@ -182,7 +182,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getMaskTran(const std:
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getmasktran", __LINE__, __FILE__, m_section);
+		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getMaskTran", __LINE__, __FILE__, m_section);
 		}
     return alltrans;
     }

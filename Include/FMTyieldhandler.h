@@ -100,7 +100,7 @@ public:
 	virtual void clearCache();
 	virtual std::map<std::string, std::vector<double>>getAllYieldsData(const int& maxbase)const;
 	virtual std::unique_ptr<FMTyieldhandler> presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const;
-	virtual std::unique_ptr<FMTyieldhandler> postsolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>& basethemes) const;
+	virtual std::unique_ptr<FMTyieldhandler> postSolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>& basethemes) const;
 	virtual std::unique_ptr<FMTyieldhandler> getFromFactor(const double& factor,
 		std::vector<std::string>yieldnames = std::vector<std::string>()) const;
 	virtual int getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;

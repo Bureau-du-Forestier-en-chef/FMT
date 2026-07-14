@@ -186,11 +186,11 @@ namespace FMTWrapperCore
             return results;
         }
 
-        if (schedules.back().getperiod() < params.numberOfPeriods)
+        if (schedules.back().getPeriod() < params.numberOfPeriods)
         {
             results.errorMessage = "Dépassement de la période : size " +
                 std::to_string(schedules.size()) + " periode " +
-                std::to_string((schedules.back().getperiod() + 1));
+                std::to_string((schedules.back().getPeriod() + 1));
             return results;
         }
 
@@ -324,11 +324,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::GenerateInfeasibilityReport", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::generateInfeasibilityReport", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::GenerateInfeasibilityReport", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::generateInfeasibilityReport", __LINE__, __FILE__);
         }
 
         return messages;
@@ -456,7 +456,7 @@ namespace FMTWrapperCore
                 size_t oriloc = 0;
                 for (const Core::FMTschedule& schedule : schedules)
                 {
-                    if (schedule.getperiod() == period)
+                    if (schedule.getPeriod() == period)
                     {
                         break;
                     }
@@ -466,7 +466,7 @@ namespace FMTWrapperCore
                 size_t newloc = 0;
                 for (const Core::FMTschedule& schedule : newSchedule)
                 {
-                    if (schedule.getperiod() == period)
+                    if (schedule.getPeriod() == period)
                     {
                         break;
                     }
@@ -500,11 +500,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::GenerateCarbonReport", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::generateCarbonReport", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::GenerateCarbonReport", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::generateCarbonReport", __LINE__, __FILE__);
         }
 
         return reportData;
@@ -547,11 +547,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::WriteDisturbances", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::writeDisturbances", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::WriteDisturbances", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("", "SES::writeDisturbances", __LINE__, __FILE__);
         }
 
         return transitionFiles;
@@ -570,12 +570,12 @@ namespace FMTWrapperCore
         catch (std::exception& e)
         {
             eventsData.statistics = "";
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::GenerateEventsData", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::generateEventsData", __LINE__, __FILE__);
         }
         catch (...)
         {
             eventsData.statistics = "";
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::GenerateEventsData", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::generateEventsData", __LINE__, __FILE__);
         }
 
         return eventsData;
@@ -618,11 +618,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::CalculateOutputs", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::calculateOutputs", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::CalculateOutputs", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::calculateOutputs", __LINE__, __FILE__);
         }
 
         return outputsData;
@@ -657,11 +657,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::WriteSpatialOutputs", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::writeSpatialOutputs", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::WriteSpatialOutputs", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::writeSpatialOutputs", __LINE__, __FILE__);
         }
 
         return rasterFiles;
@@ -714,11 +714,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::CalculatePredictors", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::calculatePredictors", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::CalculatePredictors", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::calculatePredictors", __LINE__, __FILE__);
         }
 
         return predictorsData;
@@ -742,12 +742,12 @@ namespace FMTWrapperCore
         catch (std::exception& e)
         {
             schedulePath = "";
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::WriteSchedule", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::writeSchedule", __LINE__, __FILE__);
         }
         catch (...)
         {
             schedulePath = "";
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::WriteSchedule", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::writeSchedule", __LINE__, __FILE__);
         }
 
         return schedulePath;
@@ -774,11 +774,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::WriteUpdatedForest", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::writeUpdatedForest", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::WriteUpdatedForest", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::writeUpdatedForest", __LINE__, __FILE__);
         }
     }
 
@@ -817,11 +817,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::ExportResults", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch(e.what(), "SES::exportResults", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::ExportResults", __LINE__, __FILE__);
+            Exception::FMTfreeexceptionhandler().raisefromcatch("Unknown error", "SES::exportResults", __LINE__, __FILE__);
         }
     }
 }

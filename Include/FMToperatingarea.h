@@ -133,7 +133,7 @@ namespace Heuristics
 			it returns a presolved FMTmask with potentialy less data.
 			*/
 			FMToperatingarea presolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const;
-			// DocString: FMToperatingarea::postsolve
+			// DocString: FMToperatingarea::postSolve
 			/**
 			Using a FMTmask (selectedmask) and the original FMTthemes it returns a postsolved FMTmask.
 			*/

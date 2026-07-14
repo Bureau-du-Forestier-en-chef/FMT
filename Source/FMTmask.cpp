@@ -604,7 +604,7 @@ bool FMTmask::canPresolve(const FMTmaskfilter& p_filter,
 	return true;
 }
 
-FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
+FMTmask FMTmask::postSolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>&basethemes) const
 	{
 	FMTmask newmask(filter.flippedselection);

@@ -122,7 +122,7 @@ bool FMTdata::nullData() const
 FMTdevelopment FMTdata::getSummaryDevelopment(const FMTyieldrequest& request) const
 	{
 	const Core::FMTdevelopment& refdev = request.getDevelopment();
-	int lperiod = refdev.getperiod();
+	int lperiod = refdev.getPeriod();
 	if (ops != FMTyieldparserop::FMTcai && ops != FMTyieldparserop::FMTmai && ops!= FMTyieldparserop::FMTytp && ops != FMTyieldparserop::FMTrange)
 		{
 		if (!_agebase)
@@ -130,7 +130,7 @@ FMTdevelopment FMTdata::getSummaryDevelopment(const FMTyieldrequest& request) co
 			lperiod=0;
 			}
 		}
-	return FMTdevelopment(request.getResumeMask(), refdev.getAge(),0, refdev.getperiod());
+	return FMTdevelopment(request.getResumeMask(), refdev.getAge(),0, refdev.getPeriod());
 	}
 
 bool FMTdata::cacheValue(const FMTyieldrequest& request) const

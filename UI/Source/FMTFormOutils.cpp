@@ -314,7 +314,7 @@ namespace Wrapper
 
 		try
 		{
-			retour = ObtenirSEQ(nomFichierPri, indexScenario).back().getperiod();
+			retour = ObtenirSEQ(nomFichierPri, indexScenario).back().getPeriod();
 		}
 		catch (...)
 		{

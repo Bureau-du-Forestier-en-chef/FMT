@@ -65,7 +65,7 @@ namespace Core {
 			m_elements[yld].data.push_back(value);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::push_data", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return true;
 		//return (basePushData(elements, yld, value));
@@ -94,7 +94,7 @@ namespace Core {
 				if (data0it != m_elements.end())
 				{
 					const FMTdata* lvalues = &data0it->second;
-					const int target = request.getDevelopment().getperiod();
+					const int target = request.getDevelopment().getPeriod();
 					if (lvalues->getOp() == FMTyieldparserop::FMTdiscountfactor)
 					{
 						const double perioddbl = static_cast<double>(target);
@@ -172,7 +172,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::getfromfactor", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return newhandler.clone();
 	}
@@ -236,7 +236,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::getallyieldsdata", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return localstuff;
 	}
@@ -251,19 +251,19 @@ namespace Core {
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Yieldhandler have multiple starting period ...",
-				"FMTtimeyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTtimeyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}else if(this->getBases()[0]!=startingperiod)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Starting period is different from this FMTtimeyieldhandler. \nYou must create a new FMTtimeyieldhandler for those values",
-				"FMTtimeyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTtimeyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			for(const double& value : values)
 			{
 				this->pushData(yldname,value);
 			}
 		}catch(...){
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 

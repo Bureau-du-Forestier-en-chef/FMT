@@ -45,7 +45,7 @@ namespace Heuristics
             this->setInteger(&integervariables[0], static_cast<int>(integervariables.size()));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::setallinteger", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::setAllInteger", __LINE__, __FILE__);
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace Heuristics
             this->setColSetBounds(&integervariables[0],&integervariables.back() + 1,&colsbounds[0]);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::unboundall", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::unboundAll", __LINE__, __FILE__);
 			}
 		}
 
@@ -81,7 +81,7 @@ namespace Heuristics
             }
         }catch(...)
             {
-            _exhandler->raisefromcatch("", "FMToperatingareaclusterer::getspreadprobability", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMToperatingareaclusterer::getSpreadProbability", __LINE__, __FILE__);
             }
         return (1-maxdifference);
         }
@@ -103,7 +103,7 @@ namespace Heuristics
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::gettargetedoperatingareasize", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::getTargetedOperatingAreaSize", __LINE__, __FILE__);
 			}
 		return false;
 	}
@@ -121,7 +121,7 @@ namespace Heuristics
             returnedsize = areadistribution(generator);
         }catch(...)
             {
-            _exhandler->raisefromcatch("", "FMToperatingareaclusterer::gettargetedoperatingareasize", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMToperatingareaclusterer::getTargetedOperatingAreaSize", __LINE__, __FILE__);
             }
         return returnedsize;
         }
@@ -255,7 +255,7 @@ namespace Heuristics
 			returnsize = getAllBinaries().size();
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMToperatingareaclusterer::getbinariescount", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMToperatingareaclusterer::getBinariesCount", __LINE__, __FILE__);
 			}
 		return returnsize;
 		}
@@ -333,7 +333,7 @@ namespace Heuristics
                 }
             }catch(...)
                 {
-                _exhandler->printexceptions("", "FMToperatingareaclusterer::initialsolve", __LINE__, __FILE__);
+                _exhandler->printexceptions("", "FMToperatingareaclusterer::initialSolve", __LINE__, __FILE__);
                 }
         return false;
         }
@@ -360,7 +360,7 @@ namespace Heuristics
                 }
         }catch(...)
             {
-            _exhandler->printexceptions("", "FMToperatingareaclusterer::getsolution", __LINE__, __FILE__);
+            _exhandler->printexceptions("", "FMToperatingareaclusterer::getSolution", __LINE__, __FILE__);
             }
         return solution;
         }
@@ -396,7 +396,7 @@ namespace Heuristics
 			clusters = newclusterswithvariables;
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::buildclustersvariables", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::buildClustersVariables", __LINE__, __FILE__);
 			}
 
 		}
@@ -444,7 +444,7 @@ namespace Heuristics
 		
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addmaxminobjective", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addMaxMinObjective", __LINE__, __FILE__);
 			}
 		}
 
@@ -459,7 +459,7 @@ namespace Heuristics
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "MToperatingareaclusterer::gettotalarea", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "MToperatingareaclusterer::getTotalArea", __LINE__, __FILE__);
 		}
 		return totalarea;
 	}
@@ -490,7 +490,7 @@ namespace Heuristics
                 }
         }catch (...)
             {
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::getallbinaries", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::getAllBinaries", __LINE__, __FILE__);
             }
         return allbinaries;
         }
@@ -542,7 +542,7 @@ namespace Heuristics
 			this->setObjSense(1.0);
 		}catch (...)
             {
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addobjective", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addObjective", __LINE__, __FILE__);
             }
 		}
 
@@ -574,7 +574,7 @@ namespace Heuristics
                 }
         }catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addlinksrows", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addLinksRows", __LINE__, __FILE__);
 			}
         }
 
@@ -601,7 +601,7 @@ namespace Heuristics
 					_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
 						"of minimal number of cluster " + std::to_string(numberofpot) +
 						" min cluster(" + std::to_string(minimalnumberofclusters) + ")",
-						"FMToperatingareaclusterer::addareaconstraints", __LINE__, __FILE__);
+						"FMToperatingareaclusterer::addAreaConstraints", __LINE__, __FILE__);
 					}
 				setRowName("MINCLUSTER", getNumRows());
 				this->addRow(static_cast<int>(centroidvariables.size()), &centroidvariables[0], &params[0],minimalnumberofclusters, std::numeric_limits<double>::max());
@@ -610,7 +610,7 @@ namespace Heuristics
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addnumberofclusterrows", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addNumberOfClusterRows", __LINE__, __FILE__);
 		}
 	}
 
@@ -633,7 +633,7 @@ namespace Heuristics
 
 		}catch (...)
             {
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addforcingrows", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addForcingRows", __LINE__, __FILE__);
             }
 
         }
@@ -666,7 +666,7 @@ namespace Heuristics
 							"at value of "+std::to_string(potentialarea)+" cluster centroid " +
 							std::string(cluster.getCentroid().getmask()) + 
 							" min area("+std::to_string(cluster.getRealMinimalArea())+")",
-							"FMToperatingareaclusterer::addareaconstraints", __LINE__, __FILE__);
+							"FMToperatingareaclusterer::addAreaConstraints", __LINE__, __FILE__);
 						}
 					setRowName("MINA" + std::to_string(clusterid), getNumRows());
                     this->addRow(static_cast<int>(minvalues.size()),&minindexes[0],&minvalues[0],0);
@@ -687,7 +687,7 @@ namespace Heuristics
 									"at value of " + std::to_string(minimalbinarea) + " cluster centroid " +
 									std::string(cluster.getCentroid().getmask()) +
 									" max area(" + std::to_string(cluster.getRealMaximalArea()) + ")",
-									"FMToperatingareaclusterer::addareaconstraints", __LINE__, __FILE__);
+									"FMToperatingareaclusterer::addAreaConstraints", __LINE__, __FILE__);
 							}
 					setRowName("MAXA" + std::to_string(clusterid), getNumRows());
                     this->addRow(static_cast<int>(maxvalues.size()),&maxindexes[0],&maxvalues[0],-std::numeric_limits<double>::max(),cluster.getRealMaximalArea());
@@ -696,7 +696,7 @@ namespace Heuristics
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addareaconstraints", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addAreaConstraints", __LINE__, __FILE__);
 			}
 		}
 
@@ -719,7 +719,7 @@ namespace Heuristics
 				}
         }catch(...)
             {
-            _exhandler->printexceptions("", "FMToperatingareaclusterer::branchnboundsolve", __LINE__, __FILE__);
+            _exhandler->printexceptions("", "FMToperatingareaclusterer::branchNBoundSolve", __LINE__, __FILE__);
             }
 		return this->isProvenOptimal();
         }
@@ -736,7 +736,7 @@ namespace Heuristics
 			this->updateRowsAndColsNames(false);
          }catch(...)
             {
-            _exhandler->raisefromcatch("", "FMToperatingareaclusterer::buildproblem", __LINE__, __FILE__);
+            _exhandler->raisefromcatch("", "FMToperatingareaclusterer::buildProblem", __LINE__, __FILE__);
             }
         }
 

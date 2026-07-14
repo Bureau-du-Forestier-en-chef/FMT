@@ -106,14 +106,14 @@ namespace Graph
 			{
 				const FMTedgeproperties newEdge(actionID, 0, devpath.getProportion());
 				FMTvertex_descriptor tovertex;
-				tovertex = this->adddevelopment(devpath.getDevelopment());
+				tovertex = this->addDevelopment(devpath.getDevelopment());
 				boost::add_edge(active, tovertex, newEdge, data);
 				++stats.edges;
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::setaction", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::setAction", __LINE__, __FILE__);
 		}
 	}
 
@@ -145,7 +145,7 @@ namespace Graph
 				FMTvertex_descriptor active = getActiveVertex();
 				const Core::FMTdevelopment& active_development = getDevelopment(active);
 				const Core::FMTfuturdevelopment grown_up = active_development.grow();
-				FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor next_period = adddevelopment(grown_up);
+				FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor next_period = addDevelopment(grown_up);
 				const Graph::FMTbaseedgeproperties newEdge(-1);
 				boost::add_edge(active, next_period, newEdge, data);
 				++stats.edges;
@@ -180,7 +180,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getactivevertex", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getActiveVertex", __LINE__, __FILE__);
 		}
 		return active;
 	}
@@ -224,11 +224,11 @@ namespace Graph
 		try {
 			FMTvertex_iterator vertexit;
 			FMTvertex_iterator vertexend;
-			for (boost::tie(vertexit, vertexend) = getperiodvertices(period); vertexit != vertexend; ++vertexit)
+			for (boost::tie(vertexit, vertexend) = getPeriodVertices(period); vertexit != vertexend; ++vertexit)
 			{
 				const FMTvertex_descriptor& outv = *vertexit;
-				if (periodstop(outv) &&
-					(data[outv].get().getperiod() != 0)
+				if (periodStop(outv) &&
+					(data[outv].get().getPeriod() != 0)
 					/*!(devit.pointerobject->period==1 && getInEdgeActionId(outv)==-1)*/)
 				{
 					const std::vector<FMTpredictor>devpredictor = FMTgraph::getPredictors(outv, model, yieldnames, 3,periodonevalues,withGCBMid);
@@ -238,7 +238,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodpredictors", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getPeriodPredictors", __LINE__, __FILE__);
 		}
 		return allpredictors;
 	}
@@ -252,10 +252,10 @@ namespace Graph
 		try {
 			FMTvertex_iterator vertexit;
 			FMTvertex_iterator vertexend;
-			for (boost::tie(vertexit, vertexend) = getperiodvertices(period); vertexit != vertexend; ++vertexit)
+			for (boost::tie(vertexit, vertexend) = getPeriodVertices(period); vertexit != vertexend; ++vertexit)
 			{
 				const FMTvertex_descriptor& outv = *vertexit;
-				if (periodstop(outv))
+				if (periodStop(outv))
 				{
 					perstcount++;
 					id = getInEdgeActionId(outv);
@@ -275,7 +275,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getlastactionid", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getLastActionId", __LINE__, __FILE__);
 		}
 		//return ids.at(0);
 		return id;
@@ -287,10 +287,10 @@ namespace Graph
 		try {
 			FMTvertex_iterator vertexit;
 			FMTvertex_iterator vertexend;
-			for (boost::tie(vertexit, vertexend) = getperiodvertices(period); vertexit != vertexend; ++vertexit)
+			for (boost::tie(vertexit, vertexend) = getPeriodVertices(period); vertexit != vertexend; ++vertexit)
 			{
 				const FMTvertex_descriptor& outv = *vertexit;
-				if (!periodstart(outv))
+				if (!periodStart(outv))
 				{
 					ids.push_back(getInEdgeActionId(outv));
 				}
@@ -303,7 +303,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodactionids", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getPeriodActionIds", __LINE__, __FILE__);
 		}
 		return ids;
 	}
@@ -315,14 +315,14 @@ namespace Graph
 			FMTvertex_iterator vertexend;
 			for (boost::tie(vertexit, vertexend) = developments.at(period); vertexit != vertexend; ++vertexit)
 			{
-				if (periodstart(*vertexit))
+				if (periodStart(*vertexit))
 				{
 					return getDevelopment(*vertexit);
 				}
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodstartdev", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getPeriodStartDev", __LINE__, __FILE__);
 		}
 	return getDevelopment(*vertexit);
 	}
@@ -334,7 +334,7 @@ namespace Graph
 			FMTvertex_iterator vertexend;
 			for (boost::tie(vertexit, vertexend) = developments.at(period); vertexit != vertexend; ++vertexit)
 			{
-				if (periodstop(*vertexit))
+				if (periodStop(*vertexit))
 				{
 					return getDevelopment(*vertexit);
 				}
@@ -345,7 +345,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodstopdev", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getPeriodStopDev", __LINE__, __FILE__);
 		}
 		return getDevelopment(*vertexit);
 	}
@@ -422,7 +422,7 @@ namespace Graph
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(
-				"", "FMTlinegraph::_GetSetOperability", __LINE__, __FILE__);
+				"", "FMTlinegraph::getSetOperability", __LINE__, __FILE__);
 			}
 		return OpIt->second;
 	}
@@ -449,7 +449,7 @@ namespace Graph
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlinegraph::randombuildperiod", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::randomBuildPeriod", __LINE__, __FILE__);
 			}
         return actioned;
 	}
@@ -461,7 +461,7 @@ namespace Graph
 			return  (source.use(dev, yields));
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::isanyvertexusage", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::isAnyVertexUsage", __LINE__, __FILE__);
 		}
 		return false;
 
@@ -471,9 +471,9 @@ namespace Graph
 	{
 		std::vector<int>periods;
 		try {
-			for (int period = startingperiod; period < getperiod(); ++period)
+			for (int period = startingperiod; period < getPeriod(); ++period)
 			{
-				const std::vector<FMTvertex_descriptor>vertices = getnode(model, output_node, period);
+				const std::vector<FMTvertex_descriptor>vertices = getNode(model, output_node, period);
 				if (!vertices.empty())
 					{
 					periods.push_back(period);
@@ -481,7 +481,7 @@ namespace Graph
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::anyusageof", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::anyUsageOf", __LINE__, __FILE__);
 		}
 		return periods;
 	}
@@ -496,7 +496,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::isanyactionofedge", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::isAnyActionOfEdge", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -526,7 +526,7 @@ namespace Graph
 		boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& p_operability) const
 		{
 		try{
-			const int lastPeriod = getperiod();
+			const int lastPeriod = getPeriod();
 			for (int localperiod = period; localperiod < lastPeriod;++localperiod)
 				{
 				const Core::FMTdevelopment& startingdev = getPeriodStartDev(localperiod);
@@ -555,7 +555,7 @@ namespace Graph
 			const Core::FMTdevelopment& ACTIVE = VERTEX_PROPERTIES.get();
 			FMTvertex_iterator VertexIt,VertexEnd;
 			boost::tie(VertexIt, VertexEnd) = boost::vertices(data);
-			if (std::distance(developments.at(ACTIVE.getperiod()).first, VertexEnd)>1)
+			if (std::distance(developments.at(ACTIVE.getPeriod()).first, VertexEnd)>1)
 				{*/
 					FMTinedge_iterator inedge_iterator, inedge_end;
 					boost::tie(inedge_iterator, inedge_end) = boost::in_edges(p_Descriptor, data);
@@ -572,7 +572,7 @@ namespace Graph
 	bool  FMTlinegraph::isLessPeriod(const FMTlinegraph& rhs) const
 	{
 		if (isSameBase(rhs) &&
-			rhs.getperiod() == getperiod()-1)
+			rhs.getPeriod() == getPeriod()-1)
 		{
 			FMTedge_iterator edge_iterator, edge_iterator_end, rhs_edge_iterator, rhs_edge_iterator_end;
 			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
@@ -679,7 +679,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getbasehash", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getBaseHash", __LINE__, __FILE__);
 		}
 		return hashvalue;
 		}
@@ -694,7 +694,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getbasestr", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getBaseStr", __LINE__, __FILE__);
 		}
 		return value;
 		}
@@ -738,7 +738,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::filledgesmask", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::fillEdgesMask", __LINE__, __FILE__);
 		}
 		}
 
@@ -748,7 +748,7 @@ namespace Graph
 		
 		std::string hashstr;
 		try {
-			const int actPeriod = getperiod() - 1;
+			const int actPeriod = getPeriod() - 1;
 		if (!isOnlyGrow())
 		{
 			FMTedge_iterator edge_iterator, edge_iterator_end;
@@ -777,7 +777,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getedgesstr", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getEdgesStr", __LINE__, __FILE__);
 		}
 		return hashstr;
 		}
@@ -791,7 +791,7 @@ namespace Graph
 		{
 			FMTedge_iterator edge_iterator, edge_iterator_end;
 			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
-			const int lastPeriod = getperiod() - 1;
+			const int lastPeriod = getPeriod() - 1;
 			allactions = std::vector<std::vector<bool>>((lastPeriod - fromperiod)+1, std::vector<bool>(model.actions.size(), false));
 			while (edge_iterator != edge_iterator_end)
 			{
@@ -802,7 +802,7 @@ namespace Graph
 					const FMTvertex_descriptor descriptor = boost::source(*edge_iterator, data);
 					const FMTbasevertexproperties& vertexprop = data[descriptor];
 					const Core::FMTdevelopment& dev = data[descriptor].get();
-					const int period = dev.getperiod();
+					const int period = dev.getPeriod();
 					if (period>=fromperiod&&period<=lastPeriod)
 						{
 						if (operability.find(dev)== operability.end())
@@ -854,7 +854,7 @@ namespace Graph
 				{
 				const FMTvertex_descriptor descriptor = boost::source(*edge_iterator,data);
 				const FMTbasevertexproperties& vertexprop = data[descriptor];
-				events.addAction(localisation, vertexprop.get().getperiod(), actionid);
+				events.addAction(localisation, vertexprop.get().getPeriod(), actionid);
 				}
 			++edge_iterator;
 			}
@@ -873,7 +873,7 @@ namespace Graph
 		boost::hash_combine(hashvalue,getEdgesHash(stop,gotthewholegraph));
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::hashforconstraint", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::hashForConstraint", __LINE__, __FILE__);
 		}
 		return gotthewholegraph;
 	}
@@ -887,7 +887,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::stringforconstraint", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::stringForConstraint", __LINE__, __FILE__);
 		}
 		return gotthewholegraph;
 	}

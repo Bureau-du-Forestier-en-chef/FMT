@@ -60,11 +60,11 @@ namespace Core
 		*/
 		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& newthemes) const;
-		// DocString: FMTyieldmodelTSLA::postsolve
+		// DocString: FMTyieldmodelTSLA::postSolve
 		/**
 		Change the output and constraints mask to return to the original constraints and outputs.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> postsolve(const FMTmaskfilter& filter,
+		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& basethemes) const;
 		// DocString: FMTyieldmodelTSLAl::std::string()
 		/**

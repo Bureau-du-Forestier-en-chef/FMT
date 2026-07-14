@@ -351,7 +351,7 @@ double FMToutput::getConstantValue() const
 	catch (...)
 	{
 		_exhandler->raisefromcatch(
-			"for "+this->getname(), "FMToutput::getconstantvalue", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"for "+this->getname(), "FMToutput::getConstantValue", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return value;
 	}
@@ -426,7 +426,7 @@ void FMToutput::replaceDivision(const double& bound)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::replacedivision",
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::replaceDivision",
 			__LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 }
@@ -480,7 +480,7 @@ void FMToutput::setProportions(std::map<std::string, std::vector<std::string>>& 
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for " + this->getname(),"FMToutput::setproportions",
+		_exhandler->raisefromcatch("for " + this->getname(),"FMToutput::setProportions",
 			__LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 }
@@ -504,7 +504,7 @@ bool FMToutput::canBeNodesOnly() const
 						{
 						_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 							"for output " + std::string(*this),
-							"FMToutput::canbenodesonly", __LINE__, __FILE__);
+							"FMToutput::canBeNodesOnly", __LINE__, __FILE__);
 						}
 					return false;
 					}
@@ -515,7 +515,7 @@ bool FMToutput::canBeNodesOnly() const
 		
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::canbenodesonly",
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::canBeNodesOnly",
 			__LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return false;
@@ -548,7 +548,7 @@ bool FMToutput::isLinear() const
 	catch (...)
 	{
 		_exhandler->raisefromcatch(
-			"for " + this->getname(), "FMToutput::islinear", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"for " + this->getname(), "FMToutput::isLinear", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return true;
 	}
@@ -574,7 +574,7 @@ double FMToutput::shuntingYard(const std::vector<double>& sourcevalues,const std
 		return newexpression.shuntingYard(mapping);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for " + this->getname(),"FMToutput::shuntingyard", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raisefromcatch("for " + this->getname(),"FMToutput::shuntingYard", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return 0;
 	}
@@ -678,7 +678,7 @@ FMToutput FMToutput::boundTo(const std::vector<FMTtheme>& themes, const FMTperbo
 			}*/
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for "+this->getname(),"FMToutput::boundto", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raisefromcatch("for "+this->getname(),"FMToutput::boundTo", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
@@ -760,7 +760,7 @@ std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equatio
 						{
 							_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 								"for output " + std::string(*this),
-								"FMToutput::getnodes", __LINE__, __FILE__);
+								"FMToutput::getNodes", __LINE__, __FILE__);
 						}
 						nodes.back().factor.resetValues(ops.front(), srs.front());
 					}
@@ -789,7 +789,7 @@ std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equatio
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(
-			"","FMToutput::getnodes", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"","FMToutput::getNodes", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return nodes;
 	}
@@ -970,7 +970,7 @@ void FMToutput::changeSourcesId(const int& outid)
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("for " + this->getname(),
-			"FMToutput::changesourcesid", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"FMToutput::changeSourcesId", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 }
 
@@ -1086,7 +1086,7 @@ void FMToutput::changeSourcesId(const std::set<int>& newoutputsorigin,const std:
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::changesourcesid", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::changeSourcesId", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	}
 
@@ -1134,7 +1134,7 @@ std::vector<std::string> FMToutput::getDecomposition(const std::vector<FMTtheme>
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::getdecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::getDecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return validdecomp;
 	}
@@ -1174,7 +1174,7 @@ std::vector<std::string> FMToutput::getThemeDecomposition(const FMTtheme& theme)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::getdecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::getDecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return validdecomp;
 }
@@ -1219,7 +1219,7 @@ FMToutput FMToutput::intersectWithMask(const Core::FMTmask& mask,
 	}catch (...)
 		{
 			_exhandler->raisefromcatch(
-				"", "FMToutput::intersectwithmask", __LINE__, __FILE__, Core::FMTsection::Outputs);
+				"", "FMToutput::intersectWithMask", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
@@ -1244,7 +1244,7 @@ FMTmask FMToutput::getVariableIntersect() const
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(
-			"", "FMToutput::getvariableintersect", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"", "FMToutput::getVariableIntersect", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return mask;
 }
@@ -1316,7 +1316,7 @@ std::vector<const Core::FMTtheme*>FMToutput::getStaticThemes(const std::vector<C
 	}catch (...)
 		{
 			_exhandler->raisefromcatch(
-				"", "FMToutput::getstaticthemes", __LINE__, __FILE__, Core::FMTsection::Outputs);
+				"", "FMToutput::getStaticThemes", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return statics;
 	}

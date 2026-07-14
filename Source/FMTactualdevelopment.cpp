@@ -108,7 +108,7 @@ namespace Core
 												std::to_string(DEV_LIFESPAN)+ ". The lock "+std::to_string(LOCK)+" on the age class "+std::to_string(BASE_AGE)+
 												" will exceed the death age. If this error is set to warning, the lock will be reduce to "+
 												std::to_string(NEW_LOCK)+" to reproduce the behavior of WS.",
-													"FMTactualdevelopment::reducelocktodeath",
+													"FMTactualdevelopment::reduceLockToDeath",
 													__LINE__,
 													__FILE__);
 								newDev.setLock(NEW_LOCK);
@@ -118,7 +118,7 @@ namespace Core
 					}
 				}catch (...)
 					{
-					_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::reducelocktodeath", __LINE__, __FILE__);
+					_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::reduceLockToDeath", __LINE__, __FILE__);
 					}
 			return newDev;
 		}

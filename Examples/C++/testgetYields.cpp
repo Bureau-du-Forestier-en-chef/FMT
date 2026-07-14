@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
 		//optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getperiod());
+		optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getPeriod());
 		
 		const bool FEASIBLE = optimizationmodel.doPlanning( false, schedules);
 		/*if (FEASIBLE)

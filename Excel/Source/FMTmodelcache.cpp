@@ -170,7 +170,7 @@ namespace Wrapper
 				{
 				Parser::FMTareaparser areaparser;
 				//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-				//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+				//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeSelectionToMask", __LINE__, __FILE__);
 				const Core::FMTtheme& theme = themes.at(themeid);
 				std::map<std::string, std::string> layer_map;
 				const std::vector<std::string>& allatributes = theme.getbaseattributes();
@@ -227,7 +227,7 @@ namespace Wrapper
 			/*int period = 0;
 			for (const Core::FMTschedule& schedule : schedules)
 			{
-				period = std::max(period, schedule.getperiod());
+				period = std::max(period, schedule.getPeriod());
 			}
 			setparameter(Models::FMTintmodelparameters::LENGTH, period);*/
 			cachingswitch = true;
@@ -279,7 +279,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::setlength", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::setLength", __LINE__, __FILE__);
 		}
 
 	}
@@ -296,7 +296,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::setsolution", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::setSolution", __LINE__, __FILE__);
 		}
 	}
 
@@ -477,7 +477,7 @@ namespace Wrapper
 		}
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::themeSelectionToMask", __LINE__, __FILE__);
 			}
 		return Core::FMTmask();
 	}
@@ -508,7 +508,7 @@ namespace Wrapper
 				}
 			}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getoutput", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::getOutput", __LINE__, __FILE__);
 		}
 		return Core::FMToutput();
 	}
@@ -688,7 +688,7 @@ namespace Wrapper
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getvalue", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::getValue", __LINE__, __FILE__);
 		}
 		return value;
 	}
@@ -734,7 +734,7 @@ namespace Wrapper
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getyield", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::getYield", __LINE__, __FILE__);
 		}
 		return value;
 	}
@@ -755,7 +755,7 @@ namespace Wrapper
 				}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getattribute", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::getAttribute", __LINE__, __FILE__);
 		}
 		return attributes;
 	}
@@ -968,7 +968,7 @@ namespace Wrapper
 			
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTmodelcache::getbuildexceptions", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::getBuildExceptions", __LINE__, __FILE__);
 			}
 		return values;
 		}
@@ -991,7 +991,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getrotations", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::getRotations", __LINE__, __FILE__);
 		}
 		return series;
 	}
@@ -1049,7 +1049,7 @@ namespace Wrapper
 			stats.push_back(graphstats.output_cols);
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getgraphstats", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::getGraphStats", __LINE__, __FILE__);
 		}
 		return stats;
 	}

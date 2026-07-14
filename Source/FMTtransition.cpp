@@ -128,7 +128,7 @@ unsigned int FMTtransition::ageAfter(const std::vector<FMTdevelopment>& devs,
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::age_after", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::ageAfter", __LINE__, __FILE__, Core::FMTsection::Transition);
 		}
     return (total_age/age_count);
     }
@@ -150,7 +150,7 @@ std::vector<const FMTtheme*>FMTtransition::getStaticThemes(const std::vector<con
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::getstaticthemes", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::getStaticThemes", __LINE__, __FILE__, Core::FMTsection::Transition);
 	}
 	return staticthemes;
 	}
@@ -188,7 +188,7 @@ const FMTfork* FMTtransition::getFork(const Core::FMTdevelopment& development,co
 	const Core::FMTyieldrequest& request = development.getYieldRequest();
     for(const FMTtransition::const_iterator fork : this->findSets(development.getmask()))
        {
-		if (fork->second.allowWithoutYield(development.getperiod(), development.getAge(), development.getLock()))
+		if (fork->second.allowWithoutYield(development.getPeriod(), development.getAge(), development.getLock()))
 			{
 			const std::vector<FMTyldbounds>&bounds = fork->second.getYldBounds();
 			size_t bid = 0;
@@ -211,7 +211,7 @@ const FMTfork* FMTtransition::getFork(const Core::FMTdevelopment& development,co
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::getfork", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::getFork", __LINE__, __FILE__, Core::FMTsection::Transition);
 	}
     return nullptr;
     }
@@ -253,7 +253,7 @@ FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::main_target", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::mainTarget", __LINE__, __FILE__, Core::FMTsection::Transition);
 	}
     return bestmask;
     }
@@ -282,7 +282,7 @@ FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	 }
 	 catch (...)
 	 {
-		 _exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::attribute_targets", __LINE__, __FILE__, Core::FMTsection::Transition);
+		 _exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::attributeTargets", __LINE__, __FILE__, Core::FMTsection::Transition);
 	 }
 	 return results;
 	 }

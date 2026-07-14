@@ -34,7 +34,7 @@ namespace Graph
 
 	
 
-	void FMTvertexproperties::setconstraintID(const int& ID)
+	void FMTvertexproperties::setConstraintID(const int& ID)
 		{
 		constraintID = ID;
 		}

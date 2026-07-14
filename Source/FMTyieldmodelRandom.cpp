@@ -102,22 +102,22 @@ namespace Core
 		std::vector<double>result;
 		try {
 			double value = 0;
-			if (m_useCache && m_cache.find(p_request.getDevelopment().getperiod()) != m_cache.end())
+			if (m_useCache && m_cache.find(p_request.getDevelopment().getPeriod()) != m_cache.end())
 			{
-				value = m_cache.at(p_request.getDevelopment().getperiod());
+				value = m_cache.at(p_request.getDevelopment().getPeriod());
 			}else {
 				const std::vector<size_t>DISTRIBUTION = getNormalizedYields(modelYields, p_request);
 				value = getRandomIndex(DISTRIBUTION);		
 				if (m_useCache)
 					{
-					m_cache[p_request.getDevelopment().getperiod()] = value;
+					m_cache[p_request.getDevelopment().getPeriod()] = value;
 					}
 			}
 			result.push_back(value);
 			
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldmodelRandom::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTyieldmodelRandom::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return result;
 	}
@@ -139,7 +139,7 @@ namespace Core
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelRandom::postsolve(const FMTmaskfilter& p_filter,
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelRandom::postSolve(const FMTmaskfilter& p_filter,
 		const std::vector<FMTtheme>& p_baseThemes) const
 	{
 		return Clone();

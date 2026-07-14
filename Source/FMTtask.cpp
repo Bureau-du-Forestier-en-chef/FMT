@@ -153,7 +153,7 @@ namespace Parallel
 				numberoftasks = totalworksize;
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot split task of size "+ std::to_string(totalworksize) +" in "+std::to_string(numberoftasks)
-					,"FMTtask::splitwork", __LINE__, __FILE__);
+					,"FMTtask::splitWork", __LINE__, __FILE__);
 				}
 			const int zp = numberoftasks - (totalworksize % numberoftasks);
 			const int equaltask = totalworksize / numberoftasks;
@@ -169,7 +169,7 @@ namespace Parallel
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtask::splitwork", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTtask::splitWork", __LINE__, __FILE__);
 			}
 		return taskssize;
 		}
