@@ -545,7 +545,7 @@ namespace Wrapper
 		return result;
 	}
 
-	bool FMTForm::writetoprojectfromcache(System::String^ p_primaryLocation)
+	bool FMTForm::writetoprojectfromcache(System::String^ p_destinationDirectory)
 	{
 		bool passed = true;
 		try
@@ -554,13 +554,14 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Empty cache");
 			}
-			const std::string PRIMARY_LOCATION = msclr::interop::marshal_as<std::string>(p_primaryLocation);
-			// Le 1er model �crit devient la base (ROOT); les suivants sont �crits
-			// comme sc�narios dans Scenarios/<nom_du_model>/ par writetoproject.
+			const std::string DESTINATION_DIRECTORY = msclr::interop::marshal_as<std::string>(p_destinationDirectory);
+			std::vector<Models::FMTmodel> models;
+			models.reserve(FMTFormCache::GetInstance()->size());
 			for (size_t index = 0; index < FMTFormCache::GetInstance()->size(); ++index)
 			{
-				FMTWrapperCore::Tools::writetoproject(FMTFormCache::GetInstance()->getmodel(static_cast<int>(index)), PRIMARY_LOCATION);
+				models.push_back(FMTFormCache::GetInstance()->getmodel(static_cast<int>(index)));
 			}
+			FMTWrapperCore::Tools::writetoproject(models, DESTINATION_DIRECTORY);
 		}
 		catch (...)
 		{

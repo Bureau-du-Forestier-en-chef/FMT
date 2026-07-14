@@ -289,18 +289,18 @@ namespace Wrapper
 			System::Collections::Generic::List<int>^ p_themesNumber,
 			System::String^ cheminRasters);
 		/**
-		* @brief �crit sur le disque tous les mod�les pr�sents dans la cache.
+		* @brief �crit sur le disque tous les mod�les pr�sents dans la cache dans un dossier.
 		*
-		* Parcourt la cache et �crit chaque mod�le � la m�me localisation .pri via
-		* FMTmodelparser::writetoproject : le 1er mod�le devient la base (ROOT) du
-		* projet, les suivants sont �crits comme sc�narios dans
-		* Scenarios/<nom_du_model>/. Chaque mod�le doit donc porter un nom distinct.
+		* Rassemble la cache et la transmet à FMTWrapperCore::Tools::writetoproject :
+		* le nom du .pri est dérivé du modèle de base (1er de la cache), le dossier de
+		* destination est créé au besoin, le 1er modèle devient la base (ROOT) du projet
+		* et les suivants sont écrits comme scénarios dans Scenarios/<nom_du_model>/.
 		*
-		*@param p_primaryLocation Le path du fichier .pri de destination.
-		*@return `true` si l'�criture a r�ussi, `false` sinon.
+		*@param p_destinationDirectory Le dossier de destination.
+		*@return `true` si l'écriture a réussi, `false` sinon.
 		*/
 		bool writetoprojectfromcache(
-			System::String^ p_primaryLocation);
+			System::String^ p_destinationDirectory);
 
 	private:
 		void InscrireLigneFichierTexte(System::String^ nomFichier, System::String^ message, bool indicateurFeedback, bool nouveaufichier);
