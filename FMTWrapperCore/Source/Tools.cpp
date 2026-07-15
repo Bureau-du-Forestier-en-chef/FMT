@@ -144,7 +144,9 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	}
 	return masks;
 }
-void FMTWrapperCore::Tools::writetoproject(const std::vector<Models::FMTmodel>& p_models, const std::string& p_destinationDirectory)
+void FMTWrapperCore::Tools::writetoproject(
+	const std::vector<Models::FMTmodel>& p_models, 
+	const std::string& p_destinationDirectory)
 {
 	if (p_models.empty())
 	{
