@@ -43,6 +43,7 @@ namespace Wrapper
 		// en append) et un exception handler frais a partir de la configuration figee,
 		// pour que les operations suivantes loggent de nouveau correctement.
 		void RecoverFromCrash();
+		void CloseLogger();
 		bool Cache_EnleverModel(
 			int indexScenario);
 		System::Collections::Generic::List<System::String^>^ ObtenirListeContraintes(
@@ -289,7 +290,7 @@ namespace Wrapper
 			System::Collections::Generic::List<int>^ p_themesNumber,
 			System::String^ cheminRasters);
 		/**
-		* @brief �crit sur le disque tous les mod�les pr�sents dans la cache dans un dossier.
+		* @brief écrit sur le disque tous les modèles présents dans la cache dans un dossier.
 		*
 		* Rassemble la cache et la transmet à FMTWrapperCore::Tools::writetoproject :
 		* le nom du .pri est dérivé du modèle de base (1er de la cache), le dossier de

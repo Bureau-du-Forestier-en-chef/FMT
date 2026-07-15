@@ -25,6 +25,7 @@ namespace Wrapper
 		FMTFormLogger(const FMTFormLogger& rhs);
 		~FMTFormLogger();
 		void dokeepprint();
+		void closeFile();
 		void resetkeepprint();
 		std::string getlastprint() const;
 		FMTFormLogger(const std::string& nomFichierLogger, logfunc feed);
