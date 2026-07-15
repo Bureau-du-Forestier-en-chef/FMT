@@ -20,7 +20,7 @@ int roundobjectivevalue(const double& value)
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
     std::string primarylocation;
     std::string scenario;
 	double objvalue;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setDefaultExceptionHandler();
-	modelparser.seterrorstowarnings(errors);
+	modelparser.setErrorsToWarnings(errors);
     const std::vector<std::string>scenarios(1, scenario);
     const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
    
@@ -53,10 +53,10 @@ int main(int argc, char *argv[])
 			solverinterface = Models::FMTsolverinterface::MOSEK;
         }
 		Models::FMTlpmodel optimizationmodel(models.at(0), solverinterface);
-        optimizationmodel.setstrictlypositivesoutputsmatrix();
+        optimizationmodel.setStrictlyPositivesOutputsMatrix();
 		for (size_t period = 0; period < 20; ++period)
 		{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildPeriod();
 		}
 		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 		const Core::FMTconstraint objective = constraints.at(0);

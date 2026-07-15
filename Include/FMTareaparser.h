@@ -236,7 +236,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		*/
 		GDALDataset* ogrLayerToRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution, const bool& fittoforel) const;
 
-		void WriteForestExtended(Spatial::FMTforest& p_forest,const std::string& p_VectorFile,
+		void writeForestExtended(Spatial::FMTforest& p_forest,const std::string& p_VectorFile,
 						const std::vector<Core::FMTtheme> p_themes,
 						const std::vector<Core::FMTactualdevelopment>& p_area,
 							const std::string& p_folder) const;
@@ -418,7 +418,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			*/
 			std::vector<Heuristics::FMToperatingareacluster> getClustersFromPolygons(const std::vector<OGRPolygon*>&polygons,
 																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,const double& maximaldistance) const;
-			bool _IsMapWithSameThemes(const std::vector<Core::FMTtheme>& p_themes,
+			bool _isMapWithSameThemes(const std::vector<Core::FMTtheme>& p_themes,
 				const std::string& p_VectorsMap) const;
 		#endif
 			// DocString: FMTareaparser::getFMTforestfromlayer

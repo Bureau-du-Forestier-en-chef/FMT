@@ -42,7 +42,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch( "for comment " + m_comment,"FMTscheduleparser::getVariable", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch( "for comment " + m_comment,"FMTscheduleparser::getVariable", __LINE__, __FILE__, m_section);
 		}
 		return value;
 	}
@@ -67,7 +67,7 @@ namespace Parser {
 
 		}catch (...)
 		{
-			_exhandler->printexceptions("for primary " + p_primary_path, "FMTscheduleparser::getSchedulePath", __LINE__, __FILE__, m_section);
+			_exhandler->printExceptions("for primary " + p_primary_path, "FMTscheduleparser::getSchedulePath", __LINE__, __FILE__, m_section);
 		}
 		return thePath;
 	}
@@ -159,7 +159,7 @@ namespace Parser {
 								}
 								Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, lock, period);
 								//dev.passinobject(*this);
-								std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
+								std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTActionComparator(actionname));
 								if (act->doRespectLock())
 								{
 									variable = 0;
@@ -193,7 +193,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMTscheduleparser::read", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTscheduleparser::read", __LINE__, __FILE__, m_section);
 		}
 		return schedules;
 	}
@@ -251,7 +251,7 @@ namespace Parser {
 					if (!append) // Write header only if not exist, modify after new feature append
 					{ 
 						const std::string maskstr = std::string(
-							firstnonemptyschedule -> begin() -> second.begin() -> first.getmask());
+							firstnonemptyschedule -> begin() -> second.begin() -> first.getMask());
 						std::vector<std::string> splittedmask;
 						const std::string forstrsep = FMT_STR_SEPARATOR;
 						boost::split(splittedmask, maskstr, boost::is_any_of(forstrsep),
@@ -276,7 +276,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + location, "FMTscheduleparser::write", __LINE__, __FILE__, m_section);
+			_exhandler->printExceptions("at " + location, "FMTscheduleparser::write", __LINE__, __FILE__, m_section);
 		}
 	}
 

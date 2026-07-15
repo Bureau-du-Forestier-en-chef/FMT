@@ -77,7 +77,7 @@ namespace Core
 		return _logger.get();
 	}
 
-	Exception::FMTexceptionhandler* FMTobject::GetExceptionHandler()
+	Exception::FMTexceptionhandler* FMTobject::getExceptionHandler()
 	{
 		return _exhandler.get();
 	}
@@ -100,13 +100,13 @@ namespace Core
 			#endif
 		}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTobject::getAvailableMemory", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTobject::getAvailableMemory", __LINE__, __FILE__);
 			}
 		return available;
 	}
 
 
-	std::string  FMTobject::getruntimelocation()
+	std::string  FMTobject::getRuntimeLocation()
 	{
 		std::string strDLLpath;
 		try {
@@ -136,7 +136,7 @@ namespace Core
 			strDLLpath = boost_path.parent_path().string();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::getruntimelocation", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::getRuntimeLocation", __LINE__, __FILE__);
 			}
 		return strDLLpath;
 	}
@@ -235,7 +235,7 @@ namespace Core
 	FMTobject::FMTobject(const std::unique_ptr<Exception::FMTexceptionhandler> exhandler)
 	{
 		_exhandler = std::move(exhandler->Clone());
-		_exhandler->passinlogger(_logger);
+		_exhandler->passInLogger(_logger);
 		this->checkSignals();
 
 	}
@@ -248,35 +248,35 @@ namespace Core
 		this->checkSignals();
 		return *this;
 	}
-	void FMTobject::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTobject::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		try{
 			this->checkSignals();
 			_logger = logger->Clone();
-			_exhandler->passinlogger(_logger);
+			_exhandler->passInLogger(_logger);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::passinlogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::passInLogger", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTobject::passinexceptionhandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler)
+	void FMTobject::passInExceptionHandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler)
 		{
 		try{
 			this->checkSignals();
 			_exhandler = exhandler->Clone();
-			_exhandler->passinlogger(_logger);
+			_exhandler->passInLogger(_logger);
 			setCPLhandler();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::passinexceptionhandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::passInExceptionHandler", __LINE__, __FILE__);
 			}
 		}
 
 
 	void FMTobject::redirectLogToFile(const std::string& location)
 		{
-		_logger->redirectofile(location);
+		_logger->redirectToFile(location);
 		this->checkSignals();
 		}
 
@@ -284,10 +284,10 @@ namespace Core
 		{
 		try {
 			this->checkSignals();
-			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdefaultlogger()));
+			this->passInLogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdefaultlogger()));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::setDefaultLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setDefaultLogger", __LINE__, __FILE__);
 			}
 		}
 
@@ -295,11 +295,11 @@ namespace Core
 		{
 		try{
 			this->checkSignals();
-			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger()));
+			this->passInLogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger()));
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setQuietLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setQuietLogger", __LINE__, __FILE__);
 		}
 		}
 
@@ -307,12 +307,12 @@ namespace Core
 	{
 		try {
 			this->checkSignals();
-			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()));
+			this->passInLogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()));
 
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setTaskLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setTaskLogger", __LINE__, __FILE__);
 		}
 	}
 
@@ -320,11 +320,11 @@ namespace Core
 		{
 		try {
 			this->checkSignals();
-			this->passinlogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdebuglogger()));
+			this->passInLogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdebuglogger()));
 		}	
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setDebugLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setDebugLogger", __LINE__, __FILE__);
 		}
 		}
 
@@ -332,32 +332,32 @@ namespace Core
 		{
 		try{
 			this->checkSignals();
-			this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdefaultexceptionhandler()));
+			this->passInExceptionHandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdefaultexceptionhandler()));
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setDefaultExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setDefaultExceptionHandler", __LINE__, __FILE__);
 		}
 		}
 	void FMTobject::setQuietExceptionHandler()
 	{
 		try{
 			this->checkSignals();
-			this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTquietexceptionhandler()));
+			this->passInExceptionHandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTquietexceptionhandler()));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::setQuietExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setQuietExceptionHandler", __LINE__, __FILE__);
 			}
 	}
 	void FMTobject::setDebugExceptionHandler()
 	{
 		try{
 		this->checkSignals();
-		this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdebugexceptionhandler()));
+		this->passInExceptionHandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdebugexceptionhandler()));
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setDebugExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setDebugExceptionHandler", __LINE__, __FILE__);
 		}
 	}
 
@@ -365,11 +365,11 @@ namespace Core
 	{
 		try{
 			this->checkSignals();
-			this->passinexceptionhandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTfreeexceptionhandler()));
+			this->passInExceptionHandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTfreeexceptionhandler()));
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setFreeExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setFreeExceptionHandler", __LINE__, __FILE__);
 		}
 	}
 
@@ -380,7 +380,7 @@ namespace Core
 			_exhandler->disableNestedExceptions();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::disableNestedExceptions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::disableNestedExceptions", __LINE__, __FILE__);
 			}
 		}
 
@@ -391,29 +391,29 @@ namespace Core
 			_exhandler->enableNestedExceptions();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::enableNestedExceptions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::enableNestedExceptions", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTobject::seterrorstowarnings(const std::vector<Exception::FMTexc>& errors)
+	void FMTobject::setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors)
 	{
 		try {
-			_exhandler->seterrorstowarnings(errors);
+			_exhandler->setErrorsToWarnings(errors);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::seterrorstowarnings", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setErrorsToWarnings", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTobject::setmaxwarningsbeforesilenced(const size_t& maxwarningcount)
+	void FMTobject::setMaxWarningsBeforeSilenced(const size_t& maxwarningcount)
 	{
 		try {
-			_exhandler->setmaxwarningsbeforesilenced(maxwarningcount);
+			_exhandler->setMaxWarningsBeforeSilenced(maxwarningcount);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::setmaxwarningsbeforesilenced", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::setMaxWarningsBeforeSilenced", __LINE__, __FILE__);
 		}
 	}
 
@@ -424,7 +424,7 @@ namespace Core
 			newclock = std::chrono::high_resolution_clock::now();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::getClock", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::getClock", __LINE__, __FILE__);
 			}
 		return newclock;
 		}
@@ -440,7 +440,7 @@ namespace Core
 			result = spent.count();
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTobject::getDuration", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::getDuration", __LINE__, __FILE__);
 		}
 		return result;
 	}
@@ -458,7 +458,7 @@ namespace Core
 			value = "in "+std::to_string(dblvalue)+" seconds";
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::getDurationInSeconds", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTobject::getDurationInSeconds", __LINE__, __FILE__);
 			}
 		return value;
 	}

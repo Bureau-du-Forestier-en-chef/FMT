@@ -98,13 +98,13 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		std::vector<Models::FMTmodel>readproject(const std::string& primarym_location,
 			std::vector<std::string>scenarios = std::vector<std::string>(),
 			bool readarea = true,bool readoutputs = true, bool readoptimize = true);
-		// DocString: FMTmodelparser::writetoproject
+		// DocString: FMTmodelparser::writeToProject
 		/**
 		The function will create a primary file if it does not exist and write the model in has a root scenario.
 		If the primary file exist it will read the scenario writen and compare each section with the model and write the model has a 
 		new scenario...
 		*/
-		void writetoproject(const std::string& primarym_location,
+		void writeToProject(const std::string& primarym_location,
 			const Models::FMTmodel& model);
 		// DocString: FMTmodelparser::readschedules
 		/**
@@ -153,12 +153,12 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		void writeFeatures(OGRLayer* layer,const int& firstPeriod, const int& iteration,
 			const std::vector<Core::FMToutput>&theoutputs,
 			const std::map<std::string,std::vector<std::vector<double>>>& values, bool writeNaN = false)const;
-		// DocString: FMTmodelparser::writeresults
+		// DocString: FMTmodelparser::writeResults
 		/**
 		The function writeresults for any kind of FMTmodel (optimized or simulated), starting from the first period to the last period, for a vector of outputs.
 		Write the results down in a gdaldriver (gdaldrivername), You can also specify the iteration will be 0 by default.
 		*/
-		void writeresults(const Models::FMTmodel& model,
+		void writeResults(const Models::FMTmodel& model,
 			const std::vector<Core::FMToutput>&theoutputs,
 			const int& firstPeriod, const int& lastPeriod,
 			const std::string& location,

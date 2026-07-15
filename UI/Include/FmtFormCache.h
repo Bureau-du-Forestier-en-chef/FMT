@@ -25,10 +25,10 @@ namespace Wrapper
 	{
 		public:
 			~FMTFormCache()=default;
-			const Models::FMTmodel& getmodel(const int& index) const;
+			const Models::FMTmodel& getModel(const int& index) const;
 			FMTexceptionhandlerwarning* GetFormHandler();
 			const FMTexceptionhandlerwarning* GetFormHandler() const;
-			Exception::FMTexceptionhandler* GetExceptionHandler() const;
+			Exception::FMTexceptionhandler* getExceptionHandler() const;
 			FMTFormLogger* GetFormLogger();
 			static FMTFormCache* GetInstance();
 			bool empty() const;

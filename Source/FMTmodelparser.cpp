@@ -90,7 +90,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::createDriftLayer", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodelparser::createDriftLayer", __LINE__, __FILE__);
 		}
 		return newlayer;
 	}
@@ -133,7 +133,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::writeDrift", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodelparser::writeDrift", __LINE__, __FILE__);
 		}
 	}
 
@@ -186,7 +186,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::getIterationsValues", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodelparser::getIterationsValues", __LINE__, __FILE__);
 		}
 		return results;
 	}
@@ -216,14 +216,14 @@ namespace Parser {
 				if (newlayer->CreateField(ValidDefinition) != OGRERR_NONE) 
 					{
 					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error, 
-						"Cannote create new field " + std::string(ValidDefinition->GetNameRef()), "FMTmodelparser::writeresults", __LINE__, __FILE__, m_section);
+						"Cannote create new field " + std::string(ValidDefinition->GetNameRef()), "FMTmodelparser::writeResults", __LINE__, __FILE__, m_section);
 					}
 
 				}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::createResultsLayer", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTmodelparser::createResultsLayer", __LINE__, __FILE__, m_section);
 		}
 		return newlayer;
 	}
@@ -241,7 +241,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::fillUpInfeasibles", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTmodelparser::fillUpInfeasibles", __LINE__, __FILE__, m_section);
 		}
 
 	}
@@ -276,7 +276,7 @@ namespace Parser {
 							}
 							newfeature->SetField("Iteration", iteration);
 							newfeature->SetField("Period", period);
-							newfeature->SetField("Output", theoutputs.at(outputid).getname().c_str());
+							newfeature->SetField("Output", theoutputs.at(outputid).getName().c_str());
 							newfeature->SetField("Type", outputtype.c_str());
 							newfeature->SetField("Value", value);
 							if (layer->CreateFeature(newfeature) != OGRERR_NONE)
@@ -296,12 +296,12 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::writeFeatures", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTmodelparser::writeFeatures", __LINE__, __FILE__, m_section);
 		}
 
 	}
 
-	void FMTmodelparser::writeresults(const Models::FMTmodel& model,
+	void FMTmodelparser::writeResults(const Models::FMTmodel& model,
 		const std::vector<Core::FMToutput>& theoutputs,
 		const int& firstPeriod, const int& lastPeriod,
 		const std::string& location,
@@ -310,13 +310,13 @@ namespace Parser {
 	{
 		try {
 			GDALDataset* newdataset = createOGRDataset(location, gdaldrivername);
-			OGRLayer* newlayer = createResultsLayer(model.getname(), newdataset);
+			OGRLayer* newlayer = createResultsLayer(model.getName(), newdataset);
 			writeFeatures(newlayer, firstPeriod, 0, theoutputs, model.getOutputsFromPeriods(theoutputs, firstPeriod, lastPeriod, level));
 			GDALClose(newdataset);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, m_section);
+			_exhandler->printExceptions(" at " + location, "FMTmodelparser::writeResults", __LINE__, __FILE__, m_section);
 		}
 	}
 #endif 
@@ -356,7 +356,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writePrimary", __LINE__, __FILE__, m_section);
+			_exhandler->printExceptions(" at " + location, "FMTmodelparser::writePrimary", __LINE__, __FILE__, m_section);
 		}
 	}
 
@@ -375,17 +375,17 @@ namespace Parser {
 		if (!lanfile.empty())
 		{
 			FMTlandscapeparser landparser;
-			landparser.write(model.getthemes(), lanfile);
+			landparser.write(model.getThemes(), lanfile);
 		}
 		if (!arefile.empty()){
-			const std::vector<Core::FMTactualdevelopment>devs = model.getarea();
+			const std::vector<Core::FMTactualdevelopment>devs = model.getArea();
 			if (!devs.empty())
 			{
 				FMTareaparser areaparser;
 				double sumarea = 0;
 				for (const Core::FMTactualdevelopment& dev : devs)
 				{
-					sumarea += dev.getarea();
+					sumarea += dev.getArea();
 				}
 				const std::string header = "Total area: " + std::to_string(sumarea) + "\n";
 				areaparser.setHeader(header);
@@ -395,7 +395,7 @@ namespace Parser {
 		if (!yldfile.empty())
 		{
 			FMTyieldparser yldparser;
-			yldparser.write(model.getyields(), yldfile);
+			yldparser.write(model.getYields(), yldfile);
 		}
 
 		if (!actfile.empty())
@@ -416,7 +416,7 @@ namespace Parser {
 		}
 		if (!outfile.empty())
 		{
-			const std::vector<Core::FMToutput>outputs = model.getoutputs();
+			const std::vector<Core::FMToutput>outputs = model.getOutputs();
 			if (!outputs.empty())
 			{
 				FMToutputparser outparser;
@@ -433,7 +433,7 @@ namespace Parser {
 			}
 		}
 		std::vector<Core::FMTschedule>schedules;
-		for (int period = 1; period <= model.getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
+		for (int period = 1; period <= model.getParameter(Models::FMTintmodelparameters::LENGTH); ++period)
 		{
 			const Core::FMTschedule periodschedule = model.getSolution(period, true);
 			if (!periodschedule.empty())
@@ -458,7 +458,7 @@ namespace Parser {
 		}
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodelparser::writeModel", __LINE__, __FILE__, m_section);
+		_exhandler->printExceptions("", "FMTmodelparser::writeModel", __LINE__, __FILE__, m_section);
 	}
 }
 
@@ -469,7 +469,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 	try {
 		//Ajout de la section pri
 		//retirer les aggr�gats de BFECgcbm et �crire les contraintes sans les 
-		const std::string modelname = model.getname();
+		const std::string modelname = model.getName();
 		const std::string lanname = modelname + ".lan";
 		const std::string arename = modelname + ".are";
 		const std::string yldname = modelname + ".yld";
@@ -494,7 +494,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		
 	}catch (...)
 		{
-		_exhandler->printexceptions(" at " + folder, "FMTmodelparser::write", __LINE__, __FILE__, m_section);
+		_exhandler->printExceptions(" at " + folder, "FMTmodelparser::write", __LINE__, __FILE__, m_section);
 		}
 	}
 
@@ -510,7 +510,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::read", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTmodelparser::read", __LINE__, __FILE__, m_section);
 		}
 		return Models::FMTmodel();
 	}
@@ -530,7 +530,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("While getting constraint from " + constraintstr, "FMTmodelparser::getConstraintsFromString", __LINE__, __FILE__, m_section);
+			_exhandler->printExceptions("While getting constraint from " + constraintstr, "FMTmodelparser::getConstraintsFromString", __LINE__, __FILE__, m_section);
 		}
 		return constraints;
 	}
@@ -575,7 +575,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					if (!common_sets.empty())
 					{
 						std::sort(common_sets.begin(), common_sets.end());
-						themes = models.at(*common_sets.begin()).getthemes();
+						themes = models.at(*common_sets.begin()).getThemes();
 						if (area_it != commonm_sections.end())
 						{
 							std::vector<int>common_area(common_sets.size() + area_it->second.size());
@@ -585,7 +585,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							if (!common_area.empty())
 							{
 								std::sort(common_area.begin(), common_area.end());
-								areas = models.at(*common_area.begin()).getarea();
+								areas = models.at(*common_area.begin()).getArea();
 							}
 						}
 						if (yield_it != commonm_sections.end())
@@ -597,7 +597,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							if (!common_yield.empty())
 							{
 								std::sort(common_yield.begin(), common_yield.end());
-								yields = models.at(*common_yield.begin()).getyields();
+								yields = models.at(*common_yield.begin()).getYields();
 							}
 						}
 						if (lifespan_it != commonm_sections.end())
@@ -646,7 +646,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							if (!common_output.empty())
 							{
 								std::sort(common_output.begin(), common_output.end());
-								outputs = models.at(*common_output.begin()).getoutputs();
+								outputs = models.at(*common_output.begin()).getOutputs();
 								if (optimize_it != commonm_sections.end())
 								{
 									std::vector<int>common_optimize(common_output.size() + optimize_it->second.size());
@@ -751,7 +751,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				FMTactionparser actparser;
 				//actparser.passinobject(*this);
 				actions = actparser.read(themes, yields, constants, act);
-				if (find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
+				if (find_if(actions.begin(), actions.end(), Core::FMTActionComparator("_DEATH")) == actions.end())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction,
 						"_DEATH", "FMTmodelparser::referenceRead", __LINE__, __FILE__, Core::FMTsection::Action);
@@ -832,12 +832,12 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelparser::referenceRead", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodelparser::referenceRead", __LINE__, __FILE__);
 		}
 		return returnedmodel;
 	}
 
-		void FMTmodelparser::writetoproject(const std::string& primarym_location,
+		void FMTmodelparser::writeToProject(const std::string& primarym_location,
 			const Models::FMTmodel& model)
 		{
 			try {
@@ -847,7 +847,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				if (!boost::filesystem::is_directory(basefolder))
 					{
 					_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-						basefolder.string()+" is not a valid directory", "FMTmodelparser::writetoproject", __LINE__, __FILE__);
+						basefolder.string()+" is not a valid directory", "FMTmodelparser::writeToProject", __LINE__, __FILE__);
 					}
 				if (!boost::filesystem::is_regular_file(primpath))//create the primary file
 				{
@@ -870,11 +870,11 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					const std::string coptfile = commonlocation + coptname;
 					const std::string cliffile = commonlocation + clifname;
 					const std::string cseqfile = commonlocation + cseqname;
-					if (_logger->logwithlevel("Writing " + primarym_location + " ", 0))
+					if (_logger->logWithLevel("Writing " + primarym_location + " ", 0))
 					{
 						*_logger << "\n";
-						_logger->logstamp();
-						_logger->logtime();
+						_logger->logStamp();
+						_logger->logTime();
 					}
 					writePrimary(primarym_location,
 						clanname, carename, cyldname, cactname, ctrnname, coutname, coptname, clifname, cseqname);
@@ -885,29 +885,29 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					if (models.empty())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-							"No Root model for the primary "+ primarym_location, "FMTmodelparser::writetoproject", __LINE__, __FILE__);
+							"No Root model for the primary "+ primarym_location, "FMTmodelparser::writeToProject", __LINE__, __FILE__);
 					}
 					if (!boost::filesystem::is_directory(basefolder / "Scenarios"))
 						{
 						boost::filesystem::create_directory(basefolder / "Scenarios");
 						}
-					const boost::filesystem::path scenario = basefolder / "Scenarios" / model.getname();
+					const boost::filesystem::path scenario = basefolder / "Scenarios" / model.getName();
 					if (!boost::filesystem::is_directory(scenario))
 						{
 						boost::filesystem::create_directory(scenario);
 						}
 					std::string lanfile;
-					if (models.begin()->getthemes() != model.getthemes())
+					if (models.begin()->getThemes() != model.getThemes())
 					{
 						lanfile = boost::filesystem::path(scenario / (filename + "._lan")).string();
 					}
 					std::string arefile;
-					if (models.begin()->getarea() != model.getarea())
+					if (models.begin()->getArea() != model.getArea())
 					{
 						arefile = boost::filesystem::path(scenario / (filename + "._are")).string();
 					}
 					std::string yldfile;
-					if (models.begin()->getyields() != model.getyields())
+					if (models.begin()->getYields() != model.getYields())
 					{
 						yldfile = boost::filesystem::path(scenario / (filename + "._yld")).string();
 					}
@@ -922,7 +922,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 						trnfile = boost::filesystem::path(scenario / (filename + "._trn")).string();
 					}
 					std::string outfile;
-					if (models.begin()->getoutputs() != model.getoutputs())
+					if (models.begin()->getOutputs() != model.getOutputs())
 					{
 						outfile = boost::filesystem::path(scenario / (filename + "._out")).string();
 					}
@@ -942,7 +942,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::writetoproject", __LINE__, __FILE__);
+				_exhandler->printExceptions("at " + primarym_location, "FMTmodelparser::writeToProject", __LINE__, __FILE__);
 			}
 
 	}
@@ -960,11 +960,11 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		try {
 			std::vector<Models::FMTmodel>models;
 			std::map<std::string, std::vector<int>>commons;
-			if (_logger->logwithlevel("Reading " + primarym_location + " ", 0))
+			if (_logger->logWithLevel("Reading " + primarym_location + " ", 0))
 			{
 				*_logger << "\n";
-				_logger->logstamp();
-				//_logger->logtime();
+				_logger->logStamp();
+				//_logger->logTime();
 			}
 			readstart = getClock();
 			std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
@@ -985,7 +985,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			bool tookroot = (std::find(scenarios.begin(), scenarios.end(), "ROOT") != scenarios.end());
 			if (tookroot || (validatescenarioname && scenarios.empty())) //load the modelroot!
 			{
-				_logger->logwithlevel("Reading scenario ROOT\n", 0);
+				_logger->logWithLevel("Reading scenario ROOT\n", 0);
 				Models::FMTmodel scenario = referenceRead(commons,
 					models,
 					bases.at(Core::FMTsection::Constants),
@@ -1045,7 +1045,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							{
 								scenario_files.at(Core::FMTsection::Optimize) = "";
 							}
-							_logger->logwithlevel("Reading scenario " + model_name + "\n", 0);
+							_logger->logWithLevel("Reading scenario " + model_name + "\n", 0);
 							Models::FMTmodel scenario = referenceRead(commons,
 								models,
 								scenario_files.at(Core::FMTsection::Constants),
@@ -1108,12 +1108,12 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readFromFolder", __LINE__, __FILE__);
+			_exhandler->printExceptions("at " + primarym_location, "FMTmodelparser::readFromFolder", __LINE__, __FILE__);
 		}
 
-		if (_logger->logwithlevel("Done reading " + getDurationInSeconds(readstart) + " ", 0))
+		if (_logger->logWithLevel("Done reading " + getDurationInSeconds(readstart) + " ", 0))
 		{
-			//_logger->logtime();
+			//_logger->logTime();
 		}
 		return sortedmodels;
 
@@ -1126,7 +1126,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readtemplate", __LINE__, __FILE__);
+			_exhandler->printExceptions("at " + primarym_location, "FMTmodelparser::readtemplate", __LINE__, __FILE__);
 		}
 		return std::vector<Models::FMTmodel>();
 	}
@@ -1143,7 +1143,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
+			_exhandler->printExceptions("at " + primarym_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
 		}
 		return std::vector<Models::FMTmodel>();
 	}
@@ -1156,7 +1156,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			const boost::filesystem::path primary_path(primarym_location);
 			const std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
 			FMTscheduleparser scheduleparser;
-			scheduleparser.passinexceptionhandler(_exhandler);
+			scheduleparser.passInExceptionHandler(_exhandler);
 			std::vector<Models::FMTmodel>::const_iterator model_it = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator("ROOT"));
 			if (model_it != models.end())
 			{
@@ -1165,7 +1165,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				if (boost::filesystem::is_regular_file(root_solution))
 				{
 					const std::vector<Core::FMTaction>actions = model_it->getactions();
-					const std::vector<Core::FMTtheme>themes = model_it->getthemes();
+					const std::vector<Core::FMTtheme>themes = model_it->getThemes();
 					schedules[location] = scheduleparser.read(themes, actions, root_solution.string());
 				}
 				else {
@@ -1195,8 +1195,8 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							{
 								const size_t location = std::distance<std::vector<Models::FMTmodel>::const_iterator>(models.begin(), model_it);
 								const std::vector<Core::FMTaction>actions = model_it->getactions();
-								const std::vector<Core::FMTtheme>themes = model_it->getthemes();
-								const std::vector<Core::FMTactualdevelopment>area = model_it->getarea();
+								const std::vector<Core::FMTtheme>themes = model_it->getThemes();
+								const std::vector<Core::FMTactualdevelopment>area = model_it->getArea();
 								schedules[location] = scheduleparser.read(themes, actions, solutionpath.string());
 							}
 							else {
@@ -1215,7 +1215,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primarym_location, "FMTmodelparser::readschedules", __LINE__, __FILE__);
+			_exhandler->printExceptions("at " + primarym_location, "FMTmodelparser::readschedules", __LINE__, __FILE__);
 		}
 
 		return schedules;
@@ -1232,11 +1232,11 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			Models::FMTstrmodelparameters PARAM_TYPE = Models::FMTstrmodelparameters::LastStrModelParam;
 			if (FILE_WITHOUT_EXTENSON == "ColdStart")
 			{
-				_logger->logwithlevel("Reading ColdStart parameters " + FILE.path().filename().string() + "\n", 0);
+				_logger->logWithLevel("Reading ColdStart parameters " + FILE.path().filename().string() + "\n", 0);
 				PARAM_TYPE = Models::FMTstrmodelparameters::SOLVER_COLD_START;
 			}else if (FILE_WITHOUT_EXTENSON == "WarmStart")
 				{
-				_logger->logwithlevel("Reading WarmStart parameters " + FILE.path().filename().string() + "\n", 0);
+				_logger->logWithLevel("Reading WarmStart parameters " + FILE.path().filename().string() + "\n", 0);
 				PARAM_TYPE = Models::FMTstrmodelparameters::SOLVER_WARM_START;
 				}
 			if (PARAM_TYPE!= Models::FMTstrmodelparameters::LastStrModelParam)
@@ -1246,7 +1246,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					{
 					const std::string VALUES((std::istreambuf_iterator<char>(io)),
 												std::istreambuf_iterator<char>());
-					p_model.setparameter(PARAM_TYPE, VALUES);
+					p_model.setParameter(PARAM_TYPE, VALUES);
 					}
 				}
 			}

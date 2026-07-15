@@ -144,14 +144,14 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Get a clone of the FMTsemodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const;
-		// DocString: FMTsemodel::getarea
+		// DocString: FMTsemodel::getArea
 		/**
 		@brief Get the area of a given period based on the solution of the model.
 		@param[in] period the period selected
 		@param[in] beforegrowanddeath true if we want before the growth (true) or after (false)
 		@return the vector of actualdevelopment...
 		*/
-		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
+		virtual std::vector<Core::FMTactualdevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
 		// DocString: FMTsemodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
@@ -222,12 +222,12 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 			//ar& BOOST_SERIALIZATION_NVP(m_BestSolution);
 		}
 		virtual void swapPtr(std::unique_ptr<FMTmodel>& rhs);
-		void _BuildArea(const Spatial::FMTforest& p_Forest);
-		void _BuildGraphs(double p_cellSize);
-		void _BuildSolution(const Spatial::FMTforest& p_Forest);
-		void _CopyGraphs(const Spatial::FMTSpatialGraphs& pToCopy);
-		void _CopySolution(const Spatial::FMTSpatialSchedule& pToCopy);
-		double _GetConstraintNumerator(size_t p_constraint) const;
+		void _buildArea(const Spatial::FMTforest& p_Forest);
+		void _buildGraphs(double p_cellSize);
+		void _buildSolution(const Spatial::FMTforest& p_Forest);
+		void _copyGraphs(const Spatial::FMTSpatialGraphs& pToCopy);
+		void _copySolution(const Spatial::FMTSpatialSchedule& pToCopy);
+		double _getConstraintNumerator(size_t p_constraint) const;
 		static const double MAX_FACTOR;
 		
     };

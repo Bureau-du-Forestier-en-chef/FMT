@@ -61,11 +61,11 @@ namespace Exception
 		Constructor with logger.
 		*/
 		FMTexceptionhandler(const std::unique_ptr<Logging::FMTlogger>& logger);
-		// DocString: FMTexceptionhandler::passinlogger
+		// DocString: FMTexceptionhandler::passInLogger
 		/**
 		Pass a logger to the shared pointer of the FMTexceptionhandler class for sharing.
 		*/
-		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger);
+		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger);
 
 		// DocString: FMTexceptionhandler::getCPLdata
 		/**
@@ -85,16 +85,16 @@ namespace Exception
 		Default assignment operator for FMTexceptionhandler.
 		*/
 		FMTexceptionhandler& operator = (const FMTexceptionhandler& rhs);
-		// DocString: FMTexceptionhandler::throw_nested
+		// DocString: FMTexceptionhandler::throwNested
 		/**
 		This function is not used by FMT seems to be usefull for nested exception thrown.
 		*/
-		void throw_nested(const std::exception& texception, int& level, bool rethrow = true);
-		// DocString: FMTexceptionhandler::printexceptions
+		void throwNested(const std::exception& texception, int& level, bool rethrow = true);
+		// DocString: FMTexceptionhandler::printExceptions
 		/**
 		Print all nested exception starting with the first provided by the parameters.
 		*/
-		virtual void printexceptions(std::string text,
+		virtual void printExceptions(std::string text,
 			const std::string& method, const int& line, const std::string& fil,
 			Core::FMTsection lsection = Core::FMTsection::Empty);
 		// DocString: FMTexceptionhandler::raise
@@ -105,11 +105,11 @@ namespace Exception
 		virtual FMTexception raise(FMTexc lexception, std::string text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true);
-		// DocString: FMTexceptionhandler::raisefromcatch
+		// DocString: FMTexceptionhandler::raiseFromCatch
 		/**
 		Raise an exception from the catch body it will determine if the exception is unenhdled.
 		*/
-		virtual FMTexception raisefromcatch(std::string text,
+		virtual FMTexception raiseFromCatch(std::string text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty);
 		// DocString: FMTexceptionhandler::raiseFromThreadCatch
@@ -137,17 +137,17 @@ namespace Exception
 		Disable the nested exception throw.
 		*/
 		void disableNestedExceptions();
-		// DocString: seterrorstowarnings()
+		// DocString: setErrorsToWarnings()
 		/**
 		Very hazardous function if you want to live dangerously you can
 		set a vector of error to be cast to warnings...
 		*/
-		void seterrorstowarnings(const std::vector<Exception::FMTexc>& errors);
-		// DocString: setmaxwarningsbeforesilenced()
+		void setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors);
+		// DocString: setMaxWarningsBeforeSilenced()
 		/**
 		Settter for maxwarningsbeforesilenced.
 		*/
-		void setmaxwarningsbeforesilenced(const size_t& maxwarningcount);
+		void setMaxWarningsBeforeSilenced(const size_t& maxwarningcount);
 		// DocString: FMTexceptionhandler::Clone
 		/**
 		@brief clone the FMTexceptionhandler
@@ -198,17 +198,17 @@ namespace Exception
 		// DocString: FMTexceptionhandler::threadcrashexceptions
 		///The exception throwed by the faulty thread...
 		std::exception_ptr threadcrashexception;
-		// DocString: FMTexceptionhandler::updatestatus
+		// DocString: FMTexceptionhandler::updateStatus
 		/**
 		This functions updates the status of the handler adding up to the warning or the error counts.
 		base on the exception type (lexception).
 		*/
-		std::string updatestatus(const FMTexc lexception, const std::string message);
-		// DocString: FMTexceptionhandler::needtorethrow
+		std::string updateStatus(const FMTexc lexception, const std::string message);
+		// DocString: FMTexceptionhandler::needToRethrow
 		/**
 		If usenested exceptions and exception == function error then it will be true and the exception will be rethrown.
 		*/
-		bool needtorethrow() const;
+		bool needToRethrow() const;
 		// DocString: FMTexceptionhandler::isMainThread()
 		/**
 		Return true if we are on the main thread.

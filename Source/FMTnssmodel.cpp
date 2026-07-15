@@ -40,7 +40,7 @@ namespace Models
 		#endif
 		)
 	{
-		FMTmodel::setparameter(SEED,seed);
+		FMTmodel::setParameter(SEED,seed);
 		FMTmodel::setSeed(seed);
 	}
 
@@ -117,7 +117,7 @@ namespace Models
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::constraintsToTarget", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::constraintsToTarget", __LINE__, __FILE__);
 			}
 		return targetedoutputs;
 		}
@@ -138,7 +138,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::getActionsTargets", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::getActionsTargets", __LINE__, __FILE__);
 		}
 		return outputActions;
 	}
@@ -180,7 +180,7 @@ namespace Models
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::getFirstOperable", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::getFirstOperable", __LINE__, __FILE__);
 		}
 	return result;
 	}
@@ -199,7 +199,7 @@ namespace Models
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::gotOutputForDev", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::gotOutputForDev", __LINE__, __FILE__);
 			}
 		return false;
 	}
@@ -220,10 +220,10 @@ namespace Models
 	std::unique_ptr<FMTmodel>FMTnssmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 		{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(optionaldevelopments).get())),this->getparameter(FMTintmodelparameters::SEED)));
+			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(optionaldevelopments).get())),this->getParameter(FMTintmodelparameters::SEED)));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::presolve", __LINE__, __FILE__);
 			}
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
@@ -231,11 +231,11 @@ namespace Models
 	std::unique_ptr<FMTmodel> FMTnssmodel::getCopy(int period) const
 	{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*FMTsrmodel::getCopy(period).get(),getparameter(FMTintmodelparameters::SEED)));
+			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*FMTsrmodel::getCopy(period).get(),getParameter(FMTintmodelparameters::SEED)));
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::getCopy", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::getCopy", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}
@@ -287,7 +287,7 @@ namespace Models
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::updateOutputs", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::updateOutputs", __LINE__, __FILE__);
 		}
 		return harvestedArea;
 	}
@@ -295,7 +295,7 @@ namespace Models
 	void FMTnssmodel::simulate()
 	{
 		try {
-			m_generator = std::default_random_engine(getparameter(Models::FMTintmodelparameters::SEED));
+			m_generator = std::default_random_engine(getParameter(Models::FMTintmodelparameters::SEED));
 			//First make some noise
 			std::shuffle(area.begin(), area.end(), m_generator);
 			m_graph->setBuildType(Graph::FMTgraphbuild::schedulebuild);
@@ -312,21 +312,21 @@ namespace Models
 			if (targetedValues.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"No area to simulate at period " + std::to_string(period)+" for "+getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"No area to simulate at period " + std::to_string(period)+" for "+getName(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
 
 			if (targetedValues.size() != TARGETED_OUTPUTS.size() ||
 				actionsOutputs.size() != actions.size())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Area target not the same size has output or actions target for " + getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"Area target not the same size has output or actions target for " + getName(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
 			if (area.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Simulation model has no area to simulate for " + getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"Simulation model has no area to simulate for " + getName(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
-			setparameter(Models::FMTintmodelparameters::MATRIX_TYPE, 3);
+			setParameter(Models::FMTintmodelparameters::MATRIX_TYPE, 3);
 			bool allocatedArea = false;
 			double totalOperatedArea = 0;
 			Graph::FMTgraphstats GraphStats = getStats();
@@ -335,7 +335,7 @@ namespace Models
 			int actionId = 0;
 			for (const Core::FMTaction& ACTION : actions)
 			{
-				const bool DOES_NOT_GROW = (ACTION.getname() == "_DEATH");
+				const bool DOES_NOT_GROW = (ACTION.getName() == "_DEATH");
 				std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrow;
 				const size_t MAX_SPIN = 10; //area.size() * 2;
 				size_t visit = 0;
@@ -398,7 +398,7 @@ namespace Models
 				if (visit == MAX_SPIN)
 				{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
-						"For action "+ ACTION.getname()+" at period " + std::to_string(period) + " reached max spin ",
+						"For action "+ ACTION.getName()+" at period " + std::to_string(period) + " reached max spin ",
 						"FMTnssmodel::simulate", __LINE__, __FILE__);
 				}
 				while (!toGrow.empty())
@@ -436,7 +436,7 @@ namespace Models
 			this->boundSolution(period);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);
 		}
 	}
 
@@ -552,39 +552,39 @@ namespace Models
 			{
 				//warning
 			}
-			const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH));
+			const size_t LENGTH = static_cast<size_t>(getParameter(FMTintmodelparameters::LENGTH));
 			const size_t AREA = area.size();
 			const size_t ACTIONS = actions.size();
 			const size_t EXPO_FACTOR = 12;
 			m_graph->reserveVertices(LENGTH * AREA * ACTIONS * EXPO_FACTOR);
-			for (int period = 0; period< getparameter(FMTintmodelparameters::LENGTH);++period)
+			for (int period = 0; period< getParameter(FMTintmodelparameters::LENGTH);++period)
 			{
 				simulate();
 			}
 			simulationdone = true;
 		}catch(...)
 		{
-			_exhandler->raisefromcatch(getname(), "FMTnssmodel::build", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch(getName(), "FMTnssmodel::build", __LINE__, __FILE__);
 		}
 		return simulationdone;
 	}
 
-	bool FMTnssmodel::setparameter(const FMTboolmodelparameters& key, const bool& value)
+	bool FMTnssmodel::setParameter(const FMTboolmodelparameters& key, const bool& value)
 	{
 		try {
-			return FMTmodel::setparameter(key, value);
+			return FMTmodel::setParameter(key, value);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::setparameter", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::setParameter", __LINE__, __FILE__);
 			}
 		return false;
 	}
 
-	bool FMTnssmodel::setparameter(const FMTintmodelparameters& key, const int& value)
+	bool FMTnssmodel::setParameter(const FMTintmodelparameters& key, const int& value)
 	{
 		bool parametersetted = false;
 		try{
-			FMTmodel::setparameter(key,value);
+			FMTmodel::setParameter(key,value);
 			if(key==SEED)
 			{
 				m_generator=std::default_random_engine(value);
@@ -593,7 +593,7 @@ namespace Models
 			parametersetted=true;
 		}catch(...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::setparameter", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTnssmodel::setParameter", __LINE__, __FILE__);
 		}
 		return parametersetted;
 	}

@@ -79,7 +79,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
             }
         }
 
-    FMTdevelopmentpath FMTfork::_GetPath(const FMTtransitionmask& p_target, 
+    FMTdevelopmentpath FMTfork::_getPath(const FMTtransitionmask& p_target, 
         const Core::FMTdevelopment& p_base, const Core::FMTyields& p_yields,
         const std::vector<FMTtheme>& p_themes, bool p_AgeReset) const
     {
@@ -90,13 +90,13 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
                 {
                 _exhandler->raise(Exception::FMTexc::FMTsourcetotarget_transition,
                     "from " + std::string(p_base) + " to " + std::string(newDev) + "\n",
-                    "FMTfork::_GetPath", __LINE__, __FILE__, Core::FMTsection::Transition);
+                    "FMTfork::_getPath", __LINE__, __FILE__, Core::FMTsection::Transition);
                 newDev.setLock(newDev.getLock() + 1);
                 }
             return newPath;
         }catch (...)
             {
-            _exhandler->raisefromcatch("", "FMTfork::_GetPath", __LINE__, __FILE__,
+            _exhandler->raiseFromCatch("", "FMTfork::_getPath", __LINE__, __FILE__,
                 Core::FMTsection::Transition);
             }
         return FMTdevelopmentpath();
@@ -110,14 +110,14 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
             paths.reserve(size());
         if (size() == 1)
             {
-            paths.push_back(_GetPath(*m_transitions.begin(), base, ylds,
+            paths.push_back(_getPath(*m_transitions.begin(), base, ylds,
                 themes, reset_age));
         }else {
             boost::unordered_map<Core::FMTdevelopment, size_t>pathmap;
             size_t pathid = 0;
             for (const FMTtransitionmask& tran : m_transitions)
                 {
-                const FMTdevelopmentpath NEW_PATH = _GetPath(tran, base, ylds,
+                const FMTdevelopmentpath NEW_PATH = _getPath(tran, base, ylds,
                     themes, reset_age);
                 const FMTdevelopment& newDev = NEW_PATH.getDevelopment();
                 boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator mapit = pathmap.find(newDev);
@@ -137,7 +137,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), m_transitions()
             }
         }catch (...)
             {
-            _exhandler->raisefromcatch("", "FMTfork::getPaths",
+            _exhandler->raiseFromCatch("", "FMTfork::getPaths",
                 __LINE__, __FILE__, Core::FMTsection::Transition);
              }
         return paths;

@@ -93,7 +93,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::setEnding", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("at line " + line,"FMToptimizationparser::setEnding", __LINE__, __FILE__);
 			}
 		return false;
 		}
@@ -204,7 +204,7 @@ namespace Parser
 		
 		}catch (...)
 			{
-			_exhandler->raisefromcatch( "at line " + pm_line,
+			_exhandler->raiseFromCatch( "at line " + pm_line,
 				"FMToptimizationparser::getEquation", __LINE__, __FILE__,m_section);
 			}
         return nodes;
@@ -234,7 +234,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMToptimizationparser::getReplicateChanges", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("","FMToptimizationparser::getReplicateChanges", __LINE__, __FILE__, m_section);
 			}
 		return periodicvalues;
 		}
@@ -368,7 +368,7 @@ namespace Parser
 			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToptimizationparser::resumeOutput", __LINE__, __FILE__,m_section);
+			_exhandler->raiseFromCatch("", "FMToptimizationparser::resumeOutput", __LINE__, __FILE__,m_section);
 			}
         return final_output;
         }
@@ -464,16 +464,16 @@ namespace Parser
 			constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,upper,lower));
 			if (constrainttypestr != "_RANDOM")
 			{
-				for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(actionoraggregates).getAllAggregates(p_actions))
+				for (const Core::FMTaction* actionptr : Core::FMTActionComparator(actionoraggregates).getAllAggregates(p_actions))
 				{
-					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, actionptr->getname(), rhs, rhs));
+					constraint.addBounds(Core::FMTyldbounds(Core::FMTsection::Optimize, actionptr->getName(), rhs, rhs));
 				}
 			}
 			const std::vector<Core::FMTconstraint> returnedconstraints = getPeriodsBounds(periodstring, constraint, p_constants);
 			constraint = *returnedconstraints.begin();
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("at line " + pm_line, "FMToptimizationparser::getSpatialConstraint", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at line " + pm_line, "FMToptimizationparser::getSpatialConstraint", __LINE__, __FILE__, m_section);
 		}
 		return constraint;
 	}
@@ -600,7 +600,7 @@ namespace Parser
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line "+ pm_line,"FMToptimizationparser::getConstraints", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at line "+ pm_line,"FMToptimizationparser::getConstraints", __LINE__, __FILE__, m_section);
 			}
 		return returnedconstraints;
 		}
@@ -627,7 +627,7 @@ namespace Parser
 				}
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("","FMToptimizationparser::fillBounds", __LINE__, __FILE__, m_section);
+				_exhandler->raiseFromCatch("","FMToptimizationparser::fillBounds", __LINE__, __FILE__, m_section);
 				}
 			}
 
@@ -651,7 +651,7 @@ namespace Parser
 	
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("for " + periodstr, "FMToptimizationparser::getPeriodsBounds", __LINE__, __FILE__, m_section);
+				_exhandler->raiseFromCatch("for " + periodstr, "FMToptimizationparser::getPeriodsBounds", __LINE__, __FILE__, m_section);
 				}
 			return constraints;
 		}
@@ -755,7 +755,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line "+ pm_line,"FMToptimizationparser::getObjective", __LINE__, __FILE__,m_section);
+			_exhandler->raiseFromCatch("at line "+ pm_line,"FMToptimizationparser::getObjective", __LINE__, __FILE__,m_section);
 			}
 		return objective;
 		}
@@ -787,7 +787,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::getSection", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at line " + line,"FMToptimizationparser::getSection", __LINE__, __FILE__, m_section);
 			}
 		return section;
 		}
@@ -867,7 +867,7 @@ namespace Parser
 										//const int period_lower = getNum<int>(std::string(kmatch[7]) + std::string(kmatch[10]), constants);
 										const std::string periodstr = std::string(kmatch[5]);
 										std::vector<Core::FMTconstraint> BoundedConstraints = getPeriodsBounds(periodstr, Core::FMTconstraint(), p_constants);
-										const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getAllAggregates(p_excluded);
+										const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTActionComparator(action_name).getAllAggregates(p_excluded);
 										if (!action_ptrs.empty())
 											{
 											if (ActionPeriods.empty())
@@ -983,7 +983,7 @@ namespace Parser
 		constraints.shrink_to_fit();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMToptimizationparser::read", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMToptimizationparser::read", __LINE__, __FILE__, m_section);
 			}
 		return constraints;
 		}
@@ -1014,7 +1014,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at " + location,"FMToptimizationparser::write", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at " + location,"FMToptimizationparser::write", __LINE__, __FILE__, m_section);
 			}
 		}
 
@@ -1082,7 +1082,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::getEachLines", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at line " + line,"FMToptimizationparser::getEachLines", __LINE__, __FILE__, m_section);
 			}
 		return valuestoreplace;
 		}
@@ -1110,7 +1110,7 @@ namespace Parser
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMToptimizationparser::getOptline", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("","FMToptimizationparser::getOptline", __LINE__, __FILE__, m_section);
 			}
 		return FinalLines;
 		}

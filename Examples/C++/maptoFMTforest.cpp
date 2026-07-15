@@ -14,7 +14,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-    Logging::FMTdefaultlogger().logstamp();
+    Logging::FMTdefaultlogger().logStamp();
     std::string primarylocation;
     std::string scenario;
     int side;//196
@@ -54,14 +54,14 @@ int main(int argc, char* argv[])
     errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
     errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
     errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-    mparser.seterrorstowarnings(errors);
+    mparser.setErrorsToWarnings(errors);
     const std::vector<std::string>scenarios(1, scenario);
     const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
-    const std::vector<Core::FMTtheme> themes = models.at(0).getthemes();
+    const std::vector<Core::FMTtheme> themes = models.at(0).getThemes();
     Parser::FMTareaparser areaparser;
     //areaparser.setDefaultExceptionHandler();
     Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0,writelocation,false);
-    areaparser.write(forest.getarea(), writelocation + "area.are");
+    areaparser.write(forest.getArea(), writelocation + "area.are");
 #endif
 	return 0;
 }

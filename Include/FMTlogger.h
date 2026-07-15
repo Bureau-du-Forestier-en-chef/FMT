@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -52,11 +52,11 @@ namespace Logging
 			FMTlogger copy constructor.
 			*/
 			FMTlogger(const FMTlogger& rhs);
-			// DocString: FMTlogger::redirectofile
+			// DocString: FMTlogger::redirectToFile
 			/**
 			Redirect the log information to a file.
 			*/
-			void redirectofile(const std::string& filename, bool logstamp = true);
+			void redirectToFile(const std::string& filename, bool logStamp = true);
 			// DocString: FMTlogger::closeFileStream
 			/**
 			Close the file stream if error occured.
@@ -85,26 +85,26 @@ namespace Logging
 				*/
 				virtual FMTlogger* clone() const=0;
 			#endif
-			// DocString: FMTlogger::getlogstamp
+			// DocString: FMTlogger::getLogStamp
 			/**
 			Return the basic logstamp has a string.
 			*/
-			virtual std::string getlogstamp() const;
-			// DocString: FMTlogger::logstamp
+			virtual std::string getLogStamp() const;
+			// DocString: FMTlogger::logStamp
 			/**
 			The logstramp function log information about the version of FMT and it's buildate.
 			*/
-			virtual void logstamp();
-			// DocString: FMTlogger::logtime
+			virtual void logStamp();
+			// DocString: FMTlogger::logTime
 			/**
 			The logtime function log the actual time at which the function is called.
 			*/
-			virtual void logtime();
-			// DocString: FMTlogger::setstreamflush
+			virtual void logTime();
+			// DocString: FMTlogger::setStreamFlush
 			/**
 			Force the flushing on file stream
 			*/
-			void setstreamflush(bool flush);
+			void setStreamFlush(bool flush);
 			// DocString: FMTlogger::operator<<(const std::string& msg)
 			/**
 			This function is the main function to add up string.
@@ -145,7 +145,7 @@ namespace Logging
 			This function is the main function to add up a void pointer to get its address
 			*/
 			virtual FMTlogger& operator<<(const void*& msg);
-			// DocString: FMTlogger::logwithlevel
+			// DocString: FMTlogger::logWithLevel
 			/**
 			@brief Log a message with a given message level if message level is greater of equal to the logger level
 			then it will be printed
@@ -153,7 +153,7 @@ namespace Logging
 			@param[in] p_messageLevel message level
 			@return true if printed
 			*/
-			virtual bool logwithlevel(const std::string& p_msg, const int& p_messageLevel) const;
+			virtual bool logWithLevel(const std::string& p_msg, const int& p_messageLevel) const;
 			#ifdef FMTWITHOSI
 			// DocString: FMTlogger::getSolverLogger
 			/**
@@ -191,11 +191,11 @@ namespace Logging
 			*/
 			virtual void cout(const char* message) const;
 			#ifdef FMTWITHOSI
-			// DocString: FMTlogger::setlogginglevel
+			// DocString: FMTlogger::setLoggingLevel
 			/**
 			Set the solverlogger logging level
 			*/
-			virtual void setlogginglevel(const int& level);
+			virtual void setLoggingLevel(const int& level);
 			#endif // FMTWITHOSI
 		private:
 			friend class boost::serialization::access;

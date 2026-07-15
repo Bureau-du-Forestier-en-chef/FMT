@@ -63,7 +63,7 @@ namespace Parallel
 				#endif
 		}catch (...)
 			{
-				_exhandler->raisefromcatch("", " FMTtask::_setCrashHandlers", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", " FMTtask::_setCrashHandlers", __LINE__, __FILE__);
 			}
 	}
 
@@ -110,7 +110,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtask::split", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTtask::split", __LINE__, __FILE__);
 		}
 		return std::vector<std::unique_ptr<FMTtask>>();
 	}
@@ -123,7 +123,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtask::spawn", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTtask::spawn", __LINE__, __FILE__);
 		}
 		return std::move(std::unique_ptr<FMTtask>());
 	}
@@ -137,7 +137,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtask::clone", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTtask::clone", __LINE__, __FILE__);
 		}
 		return std::move(std::unique_ptr<FMTtask>(new FMTtask()));
 	}
@@ -169,7 +169,7 @@ namespace Parallel
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtask::splitWork", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTtask::splitWork", __LINE__, __FILE__);
 			}
 		return taskssize;
 		}

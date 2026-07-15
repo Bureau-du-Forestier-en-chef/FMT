@@ -15,7 +15,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string vals = argv[1];
@@ -39,19 +39,19 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		optimizationmodel.doPlanning(false);
-		for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+		for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 			{
-			if (output.getname() == outputname)
+			if (output.getName() == outputname)
 				{
-					const Core::FMTmask mask = output.getSources().at(0).getmask();
+					const Core::FMTmask mask = output.getSources().at(0).getMask();
 					const int size_of_no_choice = optimizationmodel.getNoChoice(mask).size();
 					if (size_of_no_choice!=no_action_size)
 						{

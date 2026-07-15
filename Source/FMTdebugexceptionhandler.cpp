@@ -30,9 +30,9 @@ namespace Exception
 		FMTexception excp;
 		if (lsection == Core::FMTsection::Empty)
 			{
-			excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);
+			excp = FMTexception(lexception, updateStatus(lexception, text), method, file, line);
 			}else {
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text),method, file,line);
+			excp = FMTexception(lexception, lsection, updateStatus(lexception, text),method, file,line);
 			}
 
 
@@ -63,7 +63,7 @@ namespace Exception
             FMTexceptionhandler::handelCPLerror(eErrClass, nError, pszErrorMsg);
         }catch(...)
             {
-            raisefromcatch("", "FMTdebugexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+            raiseFromCatch("", "FMTdebugexceptionhandler::handelCPLerror", __LINE__, __FILE__);
             }
 
 		}

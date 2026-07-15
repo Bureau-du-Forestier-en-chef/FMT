@@ -42,7 +42,7 @@ bool keepandupdate(Core::FMTspec& spec, const int& updateto)
 int main(int argc, char *argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
@@ -59,15 +59,15 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1,scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,length);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,length);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.doPlanning(true);
-		const std::vector<Core::FMTactualdevelopment>newarea = optimizationmodel.getarea(updateto);
+		const std::vector<Core::FMTactualdevelopment>newarea = optimizationmodel.getArea(updateto);
 		optimizationmodel.setArea(newarea);
 		std::vector<Core::FMTconstraint>constraints;
 		for (const Core::FMTconstraint& constraint : optimizationmodel.getconstraints())
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 				constraints.push_back(newconstraint);
 				}
 			}
-		optimizationmodel.setconstraints(constraints);
+		optimizationmodel.setConstraints(constraints);
 		std::vector<Core::FMTaction>actions;
 		for (const Core::FMTaction& action : optimizationmodel.getactions())
 			{
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 				actions.push_back(newaction);
 				}
 			}
-		optimizationmodel.setactions(actions);
+		optimizationmodel.setActions(actions);
 		std::vector<Core::FMTtransition>transitions;
 		for (const Core::FMTtransition& transition : optimizationmodel.getTransitions())
 		{
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		optimizationmodel.setTransitions(transitions);
-		Core::FMTyields yields = optimizationmodel.getyields();
+		Core::FMTyields yields = optimizationmodel.getYields();
 		for (auto& yieldlist : yields)
 		{
 			if (yieldlist.second->getType() == Core::FMTyldtype::FMTtimeyld)

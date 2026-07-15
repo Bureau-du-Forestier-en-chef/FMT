@@ -220,7 +220,7 @@ class FMTEXPORT FMTschedule : public FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTschedule::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTschedule::serialize", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTschedule::period

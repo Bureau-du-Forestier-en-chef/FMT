@@ -29,19 +29,19 @@ bool FMTForm::InitialAreaVariability(
 	try
 	{
 		FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-		*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
-		Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getmodel(scenario), static_cast<Models::FMTsolverinterface>(solver));
-		*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getname() << "\n";
+		*logger << Logging::FMTdefaultlogger().getLogStamp() << "\n";
+		Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTsolverinterface>(solver));
+		*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";
 		*logger << "FMT Event Spatialy Explicit Simulation c++ - > Intégration des contraintes sélectionnées" << "\n";
-		optimizationmodel.setconstraints(ObtenirArrayContraintesSelectionnees(optimizationmodel.getconstraints(), contraintes));
+		optimizationmodel.setConstraints(ObtenirArrayContraintesSelectionnees(optimizationmodel.getconstraints(), contraintes));
 
 		//Période
 		for (size_t per = 0; per < period; ++per)
 		{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildPeriod();
 		}
 	
-		std::vector<Core::FMTtheme> themes = optimizationmodel.getthemes();
+		std::vector<Core::FMTtheme> themes = optimizationmodel.getThemes();
 		//std::vector<Core::FMTmask> masktargets = { Core::FMTmask("? PEUPLEMENT2 ?", themes), Core::FMTmask("? PEUPLEMENT3 ?", themes) };
 		std::vector<Core::FMTmask> masktargets = {};
 		//std::vector<double> proportions{0.01, -0.1};
@@ -64,10 +64,10 @@ bool FMTForm::InitialAreaVariability(
 				masktargets.push_back(Core::FMTmask(msclr::interop::marshal_as<std::string>(mask), themes));
 			}
 
-			for (Core::FMTactualdevelopment development : optimizationmodel.getarea()) {
+			for (Core::FMTactualdevelopment development : optimizationmodel.getArea()) {
 				int count = 0;
 				for (Core::FMTmask target : masktargets) {
-					if (development.getmask().isSubsetOf(target)) {
+					if (development.getMask().isSubsetOf(target)) {
 						count += 1;
 					}
 				}
@@ -80,17 +80,17 @@ bool FMTForm::InitialAreaVariability(
 			if (outputs->Count > 0)
 			{
 				std::vector<Core::FMToutput> listeOutputs;
-				for (const Core::FMToutput& fmtOutput : optimizationmodel.getoutputs())
+				for (const Core::FMToutput& fmtOutput : optimizationmodel.getOutputs())
 				{
-					if (outputs->Contains(gcnew System::String(fmtOutput.getname().c_str())))
+					if (outputs->Contains(gcnew System::String(fmtOutput.getName().c_str())))
 					{
 						listeOutputs.push_back(fmtOutput);
 					}
 				}
 				*logger << "FMT - Démarrage de Initial Area Variability" << "\n";
 				Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
-				Modelparser.writeresults(
-					optimizationmodel.getmodelfromproportions(masktargets, proportions),
+				Modelparser.writeResults(
+					optimizationmodel.getModelFromProportions(masktargets, proportions),
 					listeOutputs,
 					etanduSortiesMin,
 					etanduSortiesMax,
@@ -120,7 +120,7 @@ bool FMTForm::InitialAreaVariability(
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::InitialAreaVariability", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::InitialAreaVariability", __LINE__, __FILE__);
 		return false;
 	}	
 

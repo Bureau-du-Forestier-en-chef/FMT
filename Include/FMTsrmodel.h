@@ -70,11 +70,11 @@ namespace Models
 		by the thead to the solver to make sure it does not work in concurrency.
 		*/
 		void setParallelLogger(Logging::FMTlogger& logger) override;
-		// DocString: FMTsrmodel::getavailablesolverinterface
+		// DocString: FMTsrmodel::getAvailableSolverInterface
 		/**
 		Return a vector of solverinterface available
 		*/
-		static std::vector<Models::FMTsolverinterface> getavailablesolverinterface();
+		static std::vector<Models::FMTsolverinterface> getAvailableSolverInterface();
 		// DocString: FMTsrmodel(const FMTmodel,FMTsolverinterface)
 		/**
 		Main constructor used to build FMTsrmodel using it's base class and to let the user choose the solvertype
@@ -216,7 +216,7 @@ namespace Models
 		*/
 		Rcpp::DataFrame getOutputsDataFrame(const std::vector<Core::FMToutput>& outputsdata, int firstPeriod, int lastPeriod) const;
 		#endif 
-		// DocString: FMTsrmodel::buildperiod
+		// DocString: FMTsrmodel::buildPeriod
 		/**
 		This function is the main function used to build the graph and the matrix.
 		A call to that function add a period within the graph and the matrix of the FMTsrmodel.
@@ -224,7 +224,7 @@ namespace Models
 		not fullbuild mode. Partialbuild will only build the graph linked to the solution. make it perfect to
 		reinterpret outputs for a given solution without rebuilding the whole graph.
 		*/
-		Graph::FMTgraphstats buildperiod(Core::FMTschedule schedule = Core::FMTschedule(),
+		Graph::FMTgraphstats buildPeriod(Core::FMTschedule schedule = Core::FMTschedule(),
 				bool forcepartialbuild = false, int compressageclassoperability = 1);
 		// DocString: FMTsrmodel::getFirstActivePeriod
 		/**
@@ -232,7 +232,7 @@ namespace Models
 		But when erasePeriod is called the first active period is going to move to 1 and so on.
 		*/
 		int getFirstActivePeriod() const;
-		// DocString: FMTsrmodel::getarea
+		// DocString: FMTsrmodel::getArea
 		/**
 		This function returns an area for a given period for a FMTsrmodel.
 		If period = 0 the area is the same has FMTmodel::getarea().
@@ -240,7 +240,7 @@ namespace Models
 		that can be (actual of futur) existing at the beginning of the period.
 		Need to have a builded graph with a solution to use this function.
 		*/
-		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const override;
+		virtual std::vector<Core::FMTactualdevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const override;
 		// DocString: FMTsrmodel::getPotentialArea
 		/**
 		* @brief Computes the potential development area for a given period.
@@ -282,11 +282,11 @@ namespace Models
 		Get a clone of the FMTsrmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const override;
-		// DocString: FMTsrmodel::passinlogger
+		// DocString: FMTsrmodel::passInLogger
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 		// DocString: FMTsrmodel::presolve
 		/**
 		Presolve a FMTsrmodel.
@@ -298,16 +298,16 @@ namespace Models
 		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
 		*/
 		bool boundSolution(int period, double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTsrmodel::setparameter(const FMTintmodelparameters, const int)
+		// DocString: FMTsrmodel::setParameter(const FMTintmodelparameters, const int)
 		/**
 		Override setter for intmodelparameters.
 		*/
-		bool setparameter(const FMTintmodelparameters& key, const int& value) override;
-		// DocString: FMTsrmodel::setparameter(const FMTboolmodelparameters, const bool)
+		bool setParameter(const FMTintmodelparameters& key, const int& value) override;
+		// DocString: FMTsrmodel::setParameter(const FMTboolmodelparameters, const bool)
 		/**
 		Override setter for boolmodelparameters.
 		*/
-		bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
+		bool setParameter(const FMTboolmodelparameters& key, const bool& value) override;
 		// DocString: FMTsrmodel::getRotations
 		/**
 		Based on a mask and an action get all the unique rotations (in period) taken to complete a serie of action. A serie can contain a subserie for an

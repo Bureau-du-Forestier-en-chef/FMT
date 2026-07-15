@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<bool>playback;
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
-	modelparser.seterrorstowarnings(errors);
+	modelparser.setErrorsToWarnings(errors);
 	std::string outputlocation = "../../tests/sumandavgtest";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
@@ -36,25 +36,25 @@ int main(int argc, char *argv[])
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{
 		Models::FMTlpmodel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
-		lpmodel.setparameter(Models::FMTintmodelparameters::LENGTH,7);
-		lpmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-		for (const Core::FMToutput& output : lpmodel.getoutputs())
+		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH,7);
+		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+		for (const Core::FMToutput& output : lpmodel.getOutputs())
 		{
-			if (output.getname() == "OSUPREC"||
-				output.getname() == "SUMOSUPREC"|| 
-				output.getname() == "AVGOSUPREC")
+			if (output.getName() == "OSUPREC"||
+				output.getName() == "SUMOSUPREC"|| 
+				output.getName() == "AVGOSUPREC")
 			{
 				selectedoutputs.push_back(output);
 			}
 		}
-		lpmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
+		lpmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
 		lpmodel.setOutputs(selectedoutputs);
 		newplanningtask.push_back(lpmodel,schedules.at(modelid));
 		}
 	Parallel::FMTtaskhandler handler(newplanningtask,1);
 	handler.setQuietLogger();
-	//handler.ondemandrun();
-	handler.conccurentrun();
+	//handler.onDemandRun();
+	handler.conccurentRun();
 	const std::vector<const Parallel::FMTplanningtask*> tasks= handler.getTasksFromDynamicCast<Parallel::FMTplanningtask>();
 	const std::vector<const Models::FMTlpmodel*> modelsresults =  tasks.at(0)->getModelsFromDynamicCast<Models::FMTlpmodel>();
 	Logging::FMTdefaultlogger() <<"OBJECTIVE "<< modelsresults.at(0)->getObjValue() << "\n";

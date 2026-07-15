@@ -262,7 +262,7 @@ namespace Spatial
 				insert(combinedevents);
 			}
 		}catch(...){
-			_exhandler->raisefromcatch("","FMTeventcontainer::pushAction", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTeventcontainer::pushAction", __LINE__, __FILE__);
 		}
 	}
 
@@ -282,7 +282,7 @@ namespace Spatial
 					}
 				}
 		}catch(...){
-			_exhandler->raisefromcatch("","FMTeventcontainer::getAroundEvents", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTeventcontainer::getAroundEvents", __LINE__, __FILE__);
 		}
 		return aroundevents;
 	}
@@ -814,7 +814,7 @@ namespace Spatial
 		int p_themeId,
 		int p_FirstPeriod, int p_LastPeriod, int p_bound) const
 	{
-		const std::vector<BoundingBox> BOXES = _GetBoundingBoxes(p_actions, p_Graphs, 
+		const std::vector<BoundingBox> BOXES = _getBoundingBoxes(p_actions, p_Graphs, 
 									p_themeId, p_FirstPeriod, p_LastPeriod);
 		double total = 0;
 		for (const BoundingBox& BOX : BOXES)
@@ -829,7 +829,7 @@ namespace Spatial
 		int p_themeId, int p_FirstPeriod,
 		int p_LastPeriod, int p_bound) const
 	{
-		const std::vector<BoundingBox> BOXES = _GetBoundingBoxes(p_RuleId, p_Graphs,
+		const std::vector<BoundingBox> BOXES = _getBoundingBoxes(p_RuleId, p_Graphs,
 			p_themeId, p_FirstPeriod, p_LastPeriod);
 		double total = 0;
 		for (const BoundingBox& BOX : BOXES)
@@ -847,7 +847,7 @@ namespace Spatial
 		int p_themeId,
 		int p_FirstPeriod, int p_LastPeriod, int p_bound) const
 	{
-		const std::vector<BoundingBox> BOXES = _GetBoundingBoxes(p_actions, p_Graphs, 
+		const std::vector<BoundingBox> BOXES = _getBoundingBoxes(p_actions, p_Graphs, 
 			p_themeId, p_FirstPeriod,p_LastPeriod);
 		std::vector<FMTeventcontainer::const_iterator> conflicts;
 		for (const BoundingBox& BOX : BOXES)
@@ -867,7 +867,7 @@ namespace Spatial
 		int p_themeId, int p_FirstPeriod,
 		int p_LastPeriod, int p_bound) const
 	{
-		const std::vector<BoundingBox> BOXES = _GetBoundingBoxes(p_RuleId, p_Graphs,
+		const std::vector<BoundingBox> BOXES = _getBoundingBoxes(p_RuleId, p_Graphs,
 			p_themeId, p_FirstPeriod, p_LastPeriod);
 		std::vector<FMTeventcontainer::const_iterator> conflicts;
 		for (const BoundingBox& BOX : BOXES)
@@ -901,7 +901,7 @@ namespace Spatial
 
 
 
-	std::vector<FMTeventcontainer::BoundingBox> FMTeventcontainer::_GetBoundingBoxes(
+	std::vector<FMTeventcontainer::BoundingBox> FMTeventcontainer::_getBoundingBoxes(
 		const std::vector<bool>& p_actions,
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId,
@@ -930,7 +930,7 @@ namespace Spatial
 		return Boxes;
 	}
 
-	std::vector<FMTeventcontainer::BoundingBox> FMTeventcontainer::_GetBoundingBoxes(int p_RuleId,
+	std::vector<FMTeventcontainer::BoundingBox> FMTeventcontainer::_getBoundingBoxes(int p_RuleId,
 		const FMTSpatialGraphs& p_Graphs, int p_themeId,
 		int p_FirstPeriod, int p_LastPeriod) const
 	{
@@ -971,11 +971,11 @@ namespace Spatial
 			const uint16_t MAX_Y = std::max(EVENT_MAX_Y, m_bottomLeft.getY());
 
 			const uint16_t EVENT_MAX_X = std::max(EVENT_BOX[1].getX(), EVENT_BOX[3].getX());
-			const uint16_t MAX_X = !_IsNull() ? std::max(EVENT_MAX_X,
+			const uint16_t MAX_X = !_isNull() ? std::max(EVENT_MAX_X,
 								uint16_t(m_bottomLeft.getX() + m_Width)) : EVENT_MAX_X;
 
 			const uint16_t EVENT_MIN_Y = std::min(EVENT_BOX[0].getY(), EVENT_BOX[1].getY());
-			const uint16_t MIN_Y = !_IsNull() ? std::min(EVENT_MIN_Y,
+			const uint16_t MIN_Y = !_isNull() ? std::min(EVENT_MIN_Y,
 								uint16_t(m_bottomLeft.getY() - m_Height)) : EVENT_MIN_Y;
 			if (EVENT_MIN_X == MIN_X)
 				{
@@ -998,7 +998,7 @@ namespace Spatial
 			m_Height = MAX_Y - MIN_Y;
 	}
 
-	bool FMTeventcontainer::BoundingBox::_IsNull() const
+	bool FMTeventcontainer::BoundingBox::_isNull() const
 		{
 		return (m_bottomLeft.getX() == std::numeric_limits< uint16_t>::max());
 		}
@@ -1006,7 +1006,7 @@ namespace Spatial
 	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::BoundingBox::getEvents() const
 		{
 		std::vector<FMTeventcontainer::const_iterator>returned;
-		if (!_IsNull())
+		if (!_isNull())
 			{
 			returned = std::vector<FMTeventcontainer::const_iterator>{m_Top, m_Right, m_Bottom, m_Left};
 			}
@@ -1017,15 +1017,15 @@ namespace Spatial
 	{
 		double value = 0.0;
 		const double BOUND = static_cast<double>(p_UpperBound);
-		if (!_IsNull() && 
-			_GetSize() > BOUND)
+		if (!_isNull() && 
+			_getSize() > BOUND)
 		{
-			value = _GetSize() - BOUND;
+			value = _getSize() - BOUND;
 		}
 		return value;
 	}
 
-	double FMTeventcontainer::BoundingBox::_GetSize() const
+	double FMTeventcontainer::BoundingBox::_getSize() const
 		{
 		return static_cast<double>(std::max(m_Width, m_Height));
 		}

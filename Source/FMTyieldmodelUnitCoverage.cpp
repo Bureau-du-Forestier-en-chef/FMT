@@ -40,7 +40,7 @@ namespace Core
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTyieldmodelUnitCoverage::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldmodelUnitCoverage::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 	return Predictions;
 	}
@@ -54,7 +54,7 @@ namespace Core
 			newPresolved.m_mask = newPresolved.m_mask.presolve(p_filter, p_newThemes);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch(getModelName(), "FMTyieldmodelUnitCoverage::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelName(), "FMTyieldmodelUnitCoverage::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(newPresolved));
 	}
@@ -89,7 +89,7 @@ namespace Core
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldmodelUnitCoverage::getOutputs", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldmodelUnitCoverage::getOutputs", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return outputs;
 	}
@@ -114,7 +114,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", " FMTyieldmodelUnitCoverage::getOutputValues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", " FMTyieldmodelUnitCoverage::getOutputValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return returnedValues;
 	}

@@ -107,11 +107,11 @@ namespace Parallel
 		Do nothing...
 		*/
 		virtual void finalize();
-		// DocString: FMTplanningtask::passinlogger
+		// DocString: FMTplanningtask::passInLogger
 		/**
 		Pass the logger
 		*/
-		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 		// DocString: FMTplanningtask::getModelsFromDynamicCast
 		/**
 		Get the models pointer casted in a given model type.

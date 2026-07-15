@@ -25,7 +25,7 @@ namespace Testing
 					constants.set("TEST2", std::vector<double>(1, 2.0));
 					const std::string TEST_STRING("test of #TEST1 is not so valid #TEST2");
 					const std::string VALID_STRING("test of 1 is not so valid 2");
-					const std::string TEST_RESULT = m_Parser._ProcessConstants(TEST_STRING, constants);
+					const std::string TEST_RESULT = m_Parser._processConstants(TEST_STRING, constants);
 					if (TEST_RESULT != VALID_STRING)
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, 
@@ -43,7 +43,7 @@ namespace Testing
 					// while an unquoted one is still converted.
 					const std::string TEST_STRING("keep '#TEST1' and \"#TEST2\" but convert #TEST1");
 					const std::string VALID_STRING("keep '#TEST1' and \"#TEST2\" but convert 1");
-					const std::string TEST_RESULT = m_Parser._ProcessConstants(TEST_STRING, constants);
+					const std::string TEST_RESULT = m_Parser._processConstants(TEST_STRING, constants);
 					if (TEST_RESULT != VALID_STRING)
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
@@ -59,7 +59,7 @@ namespace Testing
 					constants.set("TEST2", std::vector<double>(1, 2.0));
 					const std::string TEST_STRING(",#TEST1, #TEST2) (#TEST1)");
 					const std::string VALID_STRING(",1, 2) (1)");
-					const std::string TEST_RESULT = m_Parser._ProcessConstants(TEST_STRING, constants);
+					const std::string TEST_RESULT = m_Parser._processConstants(TEST_STRING, constants);
 					if (TEST_RESULT != VALID_STRING)
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
@@ -79,7 +79,7 @@ namespace Testing
 
 int main()
 {
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	Testing::UnitTestFMTParser test;
 	test.testStringToConstants();
 	test.testQuotedConstantsAreNotConverted();

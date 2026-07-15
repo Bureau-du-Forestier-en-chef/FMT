@@ -58,7 +58,7 @@ void exportSpatial()
 
 	bp::class_<Spatial::FMTforest, bp::bases<Spatial::FMTlayer<Core::FMTdevelopment>>>("FMTforest", "@DocString(FMTforest)")
         .def(bp::init<Spatial::FMTforest>())
-        .def("getarea",&Spatial::FMTforest::getarea,
+        .def("getarea",&Spatial::FMTforest::getArea,
 			"@DocString(FMTforest::getarea)")
         .def("grow",&Spatial::FMTforest::grow,
 			"@DocString(FMTforest::grow)")

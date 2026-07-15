@@ -40,10 +40,10 @@ namespace Wrapper
 		
 		std::unique_ptr<Logging::FMTlogger>logger(new Logging::FMTExcelLogger());
 		std::unique_ptr<Exception::FMTexceptionhandler>handler(new Exception::FMTExcelExceptionHandler());
-		parser->passinlogger(logger);
-		parser->passinexceptionhandler(handler);
+		parser->passInLogger(logger);
+		parser->passInExceptionHandler(handler);
 		cachelog = parser->getLogger();
-		cacheexceptionhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(parser->GetExceptionHandler());
+		cacheexceptionhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(parser->getExceptionHandler());
 		
 
 	}
@@ -122,7 +122,7 @@ namespace Wrapper
 			primaryname = base_filename.substr(0, fit);
 		}catch (...)
 		{
-			captureexception("FMTexcelcache::getPrimaryname");
+			captureexception("FMTexcelcache::getprimaryname");
 		}
 		return primaryname;
 	}
@@ -170,7 +170,7 @@ namespace Wrapper
 			const std::string mappath = getmappath(pfile);
 			for (const Models::FMTmodel& model :  allmodels)
 			{
-				const std::string name = model.getname();
+				const std::string name = model.getName();
 				if (name!="ROOT")
 				{
 					System::String^ modelname = gcnew System::String(name.c_str());
@@ -474,7 +474,7 @@ namespace Wrapper
 
 	}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getaggregates(System::String^ primaryname, System::String^ scenario, int themeid)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getAggregates(System::String^ primaryname, System::String^ scenario, int themeid)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -482,7 +482,7 @@ namespace Wrapper
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
-				for (const std::string& value : mit->second.getaggregates(themeid))
+				for (const std::string& value : mit->second.getAggregates(themeid))
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
@@ -491,7 +491,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getaggregates");
+			captureexception("FMTexcelcache::getAggregates");
 		}
 		return list;
 	}
@@ -656,7 +656,7 @@ namespace Wrapper
 		return list;
 	}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getoutputs(System::String^ primaryname, System::String^ scenario)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getOutputs(System::String^ primaryname, System::String^ scenario)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -664,7 +664,7 @@ namespace Wrapper
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
-				for (const std::string& value : mit->second.getoutputs())
+				for (const std::string& value : mit->second.getOutputs())
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
@@ -674,12 +674,12 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getoutputs");
+			captureexception("FMTexcelcache::getOutputs");
 		}
 		return list;
 	}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getyields(System::String^ primaryname, System::String^ scenario)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getYields(System::String^ primaryname, System::String^ scenario)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -687,7 +687,7 @@ namespace Wrapper
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
-				for (const std::string& value : mit->second.getyields())
+				for (const std::string& value : mit->second.getYields())
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
@@ -697,12 +697,12 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getyields");
+			captureexception("FMTexcelcache::getYields");
 		}
 		return list;
 	}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getthemes(System::String^ primaryname, System::String^ scenario)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getThemes(System::String^ primaryname, System::String^ scenario)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -710,7 +710,7 @@ namespace Wrapper
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
-				for (const std::string& value : mit->second.getthemes())
+				for (const std::string& value : mit->second.getThemes())
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
@@ -720,7 +720,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getthemes");
+			captureexception("FMTexcelcache::getThemes");
 		}
 		return list;
 	}

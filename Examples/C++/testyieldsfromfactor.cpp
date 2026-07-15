@@ -12,7 +12,7 @@
 int main()
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primarylocation = folder + "TWD_land.pri";
 	std::vector<Exception::FMTexc>errors;
@@ -24,18 +24,18 @@ int main()
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setDefaultExceptionHandler();
-	modelparser.seterrorstowarnings(errors);
+	modelparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1,"LP");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
-	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, 5);
+	optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+	optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 	Core::FMToutput out;
-	for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+	for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 		{
-			if (output.getname() == "OVOLREC")
+			if (output.getName() == "OVOLREC")
 			{
 				out = output;
 				break;
@@ -47,7 +47,7 @@ int main()
 	std::vector<std::string>yieldstochange;
 	yieldstochange.push_back("VOLUMETOTAL");
 	//Change the Yields...
-	const Core::FMTyields baseyields = optimizationmodel.getyields();
+	const Core::FMTyields baseyields = optimizationmodel.getYields();
 	const Core::FMTyields lowerboundyields = baseyields.getFromFactor(0.9, yieldstochange);//-10%
 	lowerboundmodel.setYields(lowerboundyields);
 	const Core::FMTyields upperboundyields = baseyields.getFromFactor(1.1, yieldstochange);//+10%

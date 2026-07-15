@@ -224,7 +224,7 @@ class FMTEXPORT FMTevent
 		Returns coordinate of the border of the even
 	   */
 		std::vector<std::set<FMTcoordinate>::const_iterator>getBorders() const;
-        // DocString: FMTevent::GetOutsideBorders
+        // DocString: FMTevent::getOutsideBorders
        /**
         @brief get ouside borders of the event
         @return a set of coordinates

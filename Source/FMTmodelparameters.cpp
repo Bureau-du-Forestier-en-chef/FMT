@@ -89,7 +89,7 @@ namespace Models
             }
             m_intparameters[key] = value;
         }catch(...){
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setIntParameter", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::setIntParameter", __LINE__, __FILE__);
         }
         return true;
     }
@@ -100,7 +100,7 @@ namespace Models
             if (key == LastDblModelParam) return (false) ;
                 m_dblparameters[key] = value;
         }catch(...){
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setDblParameter", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::setDblParameter", __LINE__, __FILE__);
         }
         return true;
 
@@ -112,7 +112,7 @@ namespace Models
             if (key == LastBoolModelParam) return (false) ;
                 m_boolparameters[key] = value;
         }catch(...){
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setboolparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::setboolparameters", __LINE__, __FILE__);
         }
         return true;
     }
@@ -124,7 +124,7 @@ namespace Models
             m_strparameters[p_key] = p_value;
         }
         catch (...) {
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setStrParameter", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::setStrParameter", __LINE__, __FILE__);
         }
         return true;
     }
@@ -134,7 +134,7 @@ namespace Models
         try{
             m_compresstime[period]=value;
         }catch(...){
-            _exhandler->raisefromcatch("", "FMTmodelparameters::setCompressTime", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::setCompressTime", __LINE__, __FILE__);
         }
         return true;
 
@@ -153,7 +153,7 @@ namespace Models
             value = m_intparameters[key];
         }catch(...)
         {
-            _exhandler->raisefromcatch("", "FMTmodelparameters::getintparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::getintparameters", __LINE__, __FILE__);
         }
         return value;
     }
@@ -171,7 +171,7 @@ namespace Models
             value = m_dblparameters[key];
         }catch(...)
         {
-            _exhandler->raisefromcatch("", "FMTmodelparameters::getdblparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::getdblparameters", __LINE__, __FILE__);
         }
         return value;
     }
@@ -189,7 +189,7 @@ namespace Models
             value = m_boolparameters[key];
         }catch(...)
         {
-            _exhandler->raisefromcatch("", "FMTmodelparameters::getboolparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::getboolparameters", __LINE__, __FILE__);
         }
         return value;
     }
@@ -207,7 +207,7 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raisefromcatch("", "FMTmodelparameters::getstrparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::getstrparameters", __LINE__, __FILE__);
         }
         return nullptr;
     }
@@ -219,7 +219,7 @@ namespace Models
             value = m_compresstime.at(period);
         }catch(...)
         {
-            _exhandler->raisefromcatch("", "FMTmodelparameters::getCompressTime", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodelparameters::getCompressTime", __LINE__, __FILE__);
         }
         return value;
 

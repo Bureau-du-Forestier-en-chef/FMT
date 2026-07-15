@@ -63,7 +63,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(
+			_exhandler->raiseFromCatch(
 				 "for line " + indexm_line,"FMTlandscapeparser::getIndexes", __LINE__, __FILE__,m_section);
 			}
         return indexes;
@@ -172,7 +172,7 @@ namespace Parser
 				ctx.aggregatenames.push_back(std::vector<std::string>());
 			}
 			else {
-				themes[ctx.pasttheme].push_aggregate(ctx.aggregatename);
+				themes[ctx.pasttheme].pushAggregate(ctx.aggregatename);
 			}
 		}
 	}
@@ -336,7 +336,7 @@ namespace Parser
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTlandscapeparser::readRasters", __LINE__, __FILE__,m_section);
+			_exhandler->printExceptions("", "FMTlandscapeparser::readRasters", __LINE__, __FILE__,m_section);
 		}
 			
         return themes;
@@ -381,7 +381,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-				_exhandler->printexceptions("at " + location, "FMTlandscapeparser::readVectors",
+				_exhandler->printExceptions("at " + location, "FMTlandscapeparser::readVectors",
 					__LINE__, __FILE__, m_section);
 			}
 
@@ -471,7 +471,7 @@ namespace Parser
 				}
 			}catch(...)
 				{
-				_exhandler->raisefromcatch(
+				_exhandler->raiseFromCatch(
 					"In " + m_location + " at line " + std::to_string(m_line),
 					"FMTlandscapeparser::read ", __LINE__, __FILE__,m_section);
 				}
@@ -493,7 +493,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at " + location,"FMTlandscapeparser::write", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at " + location,"FMTlandscapeparser::write", __LINE__, __FILE__, m_section);
 			}
         }
 	

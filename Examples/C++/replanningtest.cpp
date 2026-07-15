@@ -14,7 +14,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string outputlocation = "../../tests/replanningtest/replanning";
 	const std::string scheduleLocation = "../../tests/replanningtest/replanning/scenarios/replicat1/replanning._seq";
@@ -29,22 +29,22 @@ int main(int argc, char *argv[])
 	modelparser.setDefaultExceptionHandler();
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
-	global.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
-	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
+	global.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
+	global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
+	global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
-	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+	stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 	Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::CLP);
-	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
+	local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
+	local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	std::vector<Core::FMToutput>selectedoutputs;
-	for (const Core::FMToutput& output : global.getoutputs())
+	for (const Core::FMToutput& output : global.getOutputs())
 	{
 		if (
-			output.getname() == "OVOLREC" ||
-			output.getname() == "VOLINVENT" ||
-			output.getname()=="BURNEDAREA" || 
-			output.getname() == "DIVIDEZERO"
+			output.getName() == "OVOLREC" ||
+			output.getName() == "VOLINVENT" ||
+			output.getName()=="BURNEDAREA" || 
+			output.getName() == "DIVIDEZERO"
 			)
 		{
 			selectedoutputs.push_back(output);
@@ -56,11 +56,11 @@ int main(int argc, char *argv[])
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 10, 10, 0.5, Core::FMToutputlevel::standard, true));
 	Parallel::FMTtaskhandler handler(maintaskptr,10);
 	//handler.setQuietLogger();
-	//handler.ondemandrun();
-	handler.conccurentrun();
+	//handler.onDemandRun();
+	handler.conccurentRun();
 
 	//On lis les schédules
-	const std::vector<Core::FMTtheme> THEMES = models.at(0).getthemes();
+	const std::vector<Core::FMTtheme> THEMES = models.at(0).getThemes();
 	const std::vector<Core::FMTaction> ACTIONS = models.at(0).getactions();
 	scheduleParser.read(THEMES, ACTIONS, scheduleLocation);
 
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
-		if (output.getname() == "OVOLTOTREC"|| output.getname() == "OSUPFEUX" || output.getname().find("OSUPRECTOT")!=std::string::npos)
+		if (output.getName() == "OVOLTOTREC"|| output.getName() == "OSUPFEUX" || output.getName().find("OSUPRECTOT")!=std::string::npos)
 		{
 			selectedoutputs.push_back(output);
 		}

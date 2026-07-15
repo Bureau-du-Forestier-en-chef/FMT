@@ -64,22 +64,22 @@ namespace Heuristics
 			Getter returning a copy of the neighbors masks data of the operatingarea.
 			*/
 			std::vector<Core::FMTmask> getNeighbors() const;
-			// DocString: FMToperatingarea::getarea
+			// DocString: FMToperatingarea::getArea
 			/**
 				Get the area of the operating area.
 			*/
-			double getarea() const;
+			double getArea() const;
 			// DocString: FMToperatingarea::getNeighborsPerimeter
 			/**
 			Getter returning the percentage of perimeter the oprating area needs to share with a other operating area,
 			to be considered neighbor.
 			*/
 			double getNeighborsPerimeter() const;
-			// DocString: FMToperatingarea::getmask
+			// DocString: FMToperatingarea::getMask
 			/**
 			Getter returning mask of the operating area.
 			*/
-			Core::FMTmask getmask() const;
+			Core::FMTmask getMask() const;
 			// DocString: FMToperatingarea::setNeighbors
 			/**
 			Setter for the neighbors mask member data.

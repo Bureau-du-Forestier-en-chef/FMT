@@ -51,10 +51,10 @@ namespace Core
 		std::string line;
 		if (getLock() > 0)
 		{
-			line = "*A " + std::string(getmask()) + " " + std::to_string(getAge()) + " " + std::to_string(getarea()) + " _lock " + std::to_string(getLock());
+			line = "*A " + std::string(getMask()) + " " + std::to_string(getAge()) + " " + std::to_string(getArea()) + " _lock " + std::to_string(getLock());
 		}
 		else {
-			line = "*A " + std::string(getmask()) + " " + std::to_string(getAge()) + " " + std::to_string(getarea());
+			line = "*A " + std::string(getMask()) + " " + std::to_string(getAge()) + " " + std::to_string(getArea());
 		}
 		return line;
 	}
@@ -70,12 +70,12 @@ namespace Core
 		try {
 			if (!filter.emptyFlipped())
 			{
-				newDev.setMask(newDev.getmask().presolve(filter, presolvedthemes));
+				newDev.setMask(newDev.getMask().presolve(filter, presolvedthemes));
 				//newDev.mask = mask.presolve(selectedmask, presolvedthemes);
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for "+std::string(*this),"FMTactualdevelopment::presolve", __LINE__, __FILE__);
 			}
 		return newDev;
 		}
@@ -88,7 +88,7 @@ namespace Core
 					const int BASE_AGE = newDev.getAge();
 					if(LOCK >0)
 					{
-						std::vector<FMTlifespans::const_iterator> lifespanfound = lifespans.findSets(newDev.getmask());
+						std::vector<FMTlifespans::const_iterator> lifespanfound = lifespans.findSets(newDev.getMask());
 						if(!lifespanfound.empty())
 						{
 							const int DEV_LIFESPAN = lifespanfound.at(0)->second;
@@ -118,7 +118,7 @@ namespace Core
 					}
 				}catch (...)
 					{
-					_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::reduceLockToDeath", __LINE__, __FILE__);
+					_exhandler->raiseFromCatch("for "+std::string(*this),"FMTactualdevelopment::reduceLockToDeath", __LINE__, __FILE__);
 					}
 			return newDev;
 		}
@@ -127,7 +127,7 @@ namespace Core
 		{
 		return !(*this == rhs);
 		}
-	double FMTactualdevelopment::getarea() const
+	double FMTactualdevelopment::getArea() const
 		{
 		return area;
 		}

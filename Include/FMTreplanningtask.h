@@ -100,16 +100,16 @@ namespace Parallel
 			const std::string& gdaldriver,
 			const std::vector<std::string>& creationoptions,
 			Core::FMToutputlevel outputlevel);
-		// DocString: FMTreplanningtask::setreplicates
+		// DocString: FMTreplanningtask::setReplicates
 		/**
 		Set the number of replicates to use...
 		*/
-		void setreplicates(const int& replicatesnumber);
-		// DocString: FMTreplanningtask::setreplicates
+		void setReplicates(const int& replicatesnumber);
+		// DocString: FMTreplanningtask::setReplicates
 		/**
 		Set the number of replicates to use...
 		*/
-		void setreplicates(const int& replicatesnumbermin, const int& replicatesnumbermax);
+		void setReplicates(const int& replicatesnumbermin, const int& replicatesnumbermax);
 		// DocString: FMTreplanningtask::setReplanningPeriods
 		/**
 		Set the number oof replanning periods.
@@ -135,12 +135,12 @@ namespace Parallel
 		We need to take care of writing drift probabilities.
 		*/
 		virtual void finalize();
-		// DocString: FMTreplanningtask::passinlogger
+		// DocString: FMTreplanningtask::passInLogger
 		/**
 		Pass the logger
 		*/
-		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
-		// DocString: FMTreplanningtask::passinlogger
+		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTreplanningtask::passInLogger
 		/**
 		Set variable tu write replanning schedule.
 		Write schedule = write a schedule for each replicate.
@@ -198,11 +198,11 @@ namespace Parallel
 			bool getsolutionandlocal = false,
 			bool applyscheduleweight = false,
 			bool setdynamicconstraints = true);
-		// DocString: FMTreplanningtask::writeresults
+		// DocString: FMTreplanningtask::writeResults
 		/**
 		Write the results from a model pointer, if onlyfirsperiod = true will only write first period else write the whole thing.
 		*/
-		void writeresults(const std::string& modelname, const int& modellength,
+		void writeResults(const std::string& modelname, const int& modellength,
 			const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod = false);
 		// DocString: FMTreplanningtask::_writeSchedule
 		/**

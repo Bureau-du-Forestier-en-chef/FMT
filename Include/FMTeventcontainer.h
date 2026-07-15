@@ -293,8 +293,8 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
                 FMTeventcontainer::const_iterator m_Bottom;
                 FMTeventcontainer::const_iterator m_Left;
                 FMTeventcontainer::const_iterator m_Right;
-                bool _IsNull() const;
-                double _GetSize() const;
+                bool _isNull() const;
+                double _getSize() const;
             };
         friend class boost::serialization::access;
         template<class Archive>
@@ -340,11 +340,11 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 		void nthElements(std::vector<FMTeventcontainer::const_iterator>& iterators,const FMTcoordinate& coord,const size_t& nelement) const;
 
 
-        std::vector<BoundingBox> _GetBoundingBoxes(const std::vector<bool>& p_actions, 
+        std::vector<BoundingBox> _getBoundingBoxes(const std::vector<bool>& p_actions, 
                            const FMTSpatialGraphs& p_Graphs, int p_themeId,
                            int p_FirstPeriod, int p_LastPeriod) const;
 
-        std::vector<BoundingBox> _GetBoundingBoxes(int p_RuleId,
+        std::vector<BoundingBox> _getBoundingBoxes(int p_RuleId,
                         const FMTSpatialGraphs& p_Graphs, int p_themeId,
                         int p_FirstPeriod, int p_LastPeriod) const;
 

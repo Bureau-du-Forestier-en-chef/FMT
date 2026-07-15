@@ -49,14 +49,14 @@ namespace Wrapper
 			System::String^ yieldname, System::String^ themeselection, int period, int age);
 		System::Collections::Generic::List<System::String^>^ getattributes(System::String^ primaryname, System::String^ scenario,int themeid, System::String^ value, bool aggregates);
 		System::Collections::Generic::List<System::String^>^ getattributesdescription(System::String^ primaryname, System::String^ scenario, int themeid, System::String^ value);
-		System::Collections::Generic::List<System::String^>^ getaggregates(System::String^ primaryname, System::String^ scenario, int themeid);
+		System::Collections::Generic::List<System::String^>^ getAggregates(System::String^ primaryname, System::String^ scenario, int themeid);
 		System::Collections::Generic::List<System::String^>^ getprimaries();
 		System::Collections::Generic::List<System::String^>^ getscenarios(System::String^ fichierprimaire);
 		System::Collections::Generic::List<System::String^>^ getactions(System::String^ primaryname, System::String^ scenario, System::String^ filter);
 		System::Collections::Generic::List<System::String^>^ getactionaggregates(System::String^ primaryname, System::String^ scenario, System::String^ filter);
-		System::Collections::Generic::List<System::String^>^ getoutputs(System::String^ primaryname, System::String^ scenario);
-		System::Collections::Generic::List<System::String^>^ getyields(System::String^ primaryname, System::String^ scenario);
-		System::Collections::Generic::List<System::String^>^ getthemes(System::String^ primaryname, System::String^ scenario);
+		System::Collections::Generic::List<System::String^>^ getOutputs(System::String^ primaryname, System::String^ scenario);
+		System::Collections::Generic::List<System::String^>^ getYields(System::String^ primaryname, System::String^ scenario);
+		System::Collections::Generic::List<System::String^>^ getThemes(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getbuildexceptions(System::String^ primaryname, System::String^ scenario, int exception);
 		System::Collections::Generic::List<System::String^>^ getnochoice(System::String^ primaryname, System::String^ scenario, System::String^ filter);
 		System::Collections::Generic::List<System::Collections::Generic::KeyValuePair< System::String^, int>>^ getRotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate);

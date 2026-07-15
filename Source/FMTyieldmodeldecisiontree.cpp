@@ -27,13 +27,13 @@ namespace Core {
 		try {
 			if (reference && !reference->getSources().empty())
 			{
-				mask = reference->getSources().begin()->getmask();
+				mask = reference->getSources().begin()->getMask();
 
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldmodeldecisiontree::getMask", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldmodeldecisiontree::getMask", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return mask;
 	}
@@ -55,7 +55,7 @@ namespace Core {
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::getPeriodicValues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::getPeriodicValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return returned;
 	}
@@ -81,7 +81,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::buildConstraint", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::buildConstraint", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return constraint;
 	}
@@ -177,7 +177,7 @@ namespace Core {
 		
 		}catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::FMTyieldmodeldecisiontree()", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::FMTyieldmodeldecisiontree()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 
@@ -200,7 +200,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
@@ -209,12 +209,12 @@ namespace Core {
 	{
 		try {
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
-			//const Models::FMTmodel* modelptr = graphinfo->getmodel();
+			//const Models::FMTmodel* modelptr = graphinfo->getModel();
 			std::vector<Core::FMTactualdevelopment>newareas;
-			const Core::FMTmask mask = reference->getSources().begin()->getmask();
-			for (const Core::FMTactualdevelopment& development : m_modelPtr->getarea())
+			const Core::FMTmask mask = reference->getSources().begin()->getMask();
+			for (const Core::FMTactualdevelopment& development : m_modelPtr->getArea())
 				{
-				if (development.getmask().isSubsetOf(mask))
+				if (development.getMask().isSubsetOf(mask))
 					{
 					newareas.push_back(development);
 					}
@@ -223,14 +223,14 @@ namespace Core {
 			std::unique_ptr<Models::FMTmodel>naturalGrowth = m_modelPtr->getCopy(0);
 			Logging::FMTquietlogger ModelLogger;
 			naturalGrowth->setParallelLogger(ModelLogger);
-			naturalGrowth->setparameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
+			naturalGrowth->setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
 			naturalGrowth->setArea(newareas);//Will only work with lp model going to get big with semodel...
-			naturalGrowth->setName(std::string(reference->getSources().begin()->getmask()));
+			naturalGrowth->setName(std::string(reference->getSources().begin()->getMask()));
 			//std::vector<Core::FMTaction> newactions = naturalGrowth->getactions();
-			const int updatestopat = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
+			const int updatestopat = m_modelPtr->getParameter(Models::FMTintmodelparameters::UPDATE);
 			/*for (Core::FMTaction& action : newactions)
 			{
-				if (action.getname() != "_DEATH")
+				if (action.getName() != "_DEATH")
 					{
 					for (auto& element : action)
 						{
@@ -262,9 +262,9 @@ namespace Core {
 
 				++constraintid;
 			}*/
-			naturalGrowth->setconstraints(newconstraints);
-			naturalGrowth->setactions(std::vector<Core::FMTaction>());
-			//naturalGrowth->setconstraints(naturalGrowth->goalConstraints());
+			naturalGrowth->setConstraints(newconstraints);
+			naturalGrowth->setActions(std::vector<Core::FMTaction>());
+			//naturalGrowth->setConstraints(naturalGrowth->goalConstraints());
 			//naturalGrowth->setParallelLogger(Logging::FMTquietlogger());
 			if (!naturalGrowth->doPlanning(true))
 				{
@@ -274,7 +274,7 @@ namespace Core {
 			return naturalGrowth;
 		}catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::getNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::getNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return std::unique_ptr<Models::FMTmodel>(nullptr);
 	}
@@ -284,7 +284,7 @@ namespace Core {
 		size_t target = 0;
 		try {
 			const int time_lag = static_cast<int>(nodes.at(constraint_id).getYieldBound("LAG").getLower());
-			const int update_period = naturalGrowth->getparameter(Models::FMTintmodelparameters::UPDATE);
+			const int update_period = naturalGrowth->getParameter(Models::FMTintmodelparameters::UPDATE);
 			const int targeted_period = std::max(period + time_lag, update_period);
 			const double reference_value = naturalGrowth->getOutput(*reference, targeted_period, Core::FMToutputlevel::totalonly).at("Total");
 			const double value = naturalGrowth->getOutput(nodes.at(constraint_id), targeted_period, Core::FMToutputlevel::totalonly).at("Total");
@@ -301,7 +301,7 @@ namespace Core {
 			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("On constraint "+std::string(nodes.at(constraint_id)), "FMTyieldmodeldecisiontree::getADecision", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("On constraint "+std::string(nodes.at(constraint_id)), "FMTyieldmodeldecisiontree::getADecision", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return target;
 		}
@@ -310,17 +310,17 @@ namespace Core {
 	{
 		std::vector<double>returned;
 		try {
-			const int MODEL_LENGTH = m_modelPtr->getparameter(Models::FMTintmodelparameters::LENGTH);
+			const int MODEL_LENGTH = m_modelPtr->getParameter(Models::FMTintmodelparameters::LENGTH);
 			if (values.empty())
 			{
 				const int DEV_PERIOD = request.getDevelopment().getPeriod();
 				
-				const int UPDATE_PERIOD = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
+				const int UPDATE_PERIOD = m_modelPtr->getParameter(Models::FMTintmodelparameters::UPDATE);
 				if (DEV_PERIOD< UPDATE_PERIOD)
 					{
 					return default_values;
 				}else {
-					const int FIRST_PERIOD = m_modelPtr->getarea().cbegin()->getPeriod();
+					const int FIRST_PERIOD = m_modelPtr->getArea().cbegin()->getPeriod();
 					const int FILL_IN = std::max(UPDATE_PERIOD, FIRST_PERIOD+1);
 					for (size_t yieldid = 0; yieldid < default_values.size(); ++yieldid)
 						{
@@ -369,7 +369,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return returned;
 	}
@@ -388,15 +388,15 @@ namespace Core {
 					Core::FMToutputsource oldsource = *constraint.getSources().begin();
 					if (presolve)
 					{
-						oldsource.setMask(oldsource.getmask().presolve(filter, newthemes));
+						oldsource.setMask(oldsource.getMask().presolve(filter, newthemes));
 					}
 					else {
-						oldsource.setMask(oldsource.getmask().postSolve(filter, newthemes));
+						oldsource.setMask(oldsource.getMask().postSolve(filter, newthemes));
 					}
 
 					std::vector<Core::FMToutputsource>sources;
 					sources.push_back(oldsource);
-					Core::FMToutput newoutput(constraint.getname(), constraint.getDescription(), constraint.FMToutput::getGroup(), sources, std::vector<Core::FMToperator>());
+					Core::FMToutput newoutput(constraint.getName(), constraint.getDescription(), constraint.FMToutput::getGroup(), sources, std::vector<Core::FMToperator>());
 					constraint.setOutput(newoutput);
 				}
 				
@@ -404,20 +404,20 @@ namespace Core {
 			Core::FMToutputsource oldsource = *reference->getSources().begin();
 			if (presolve)
 			{
-				oldsource.setMask(oldsource.getmask().presolve(filter, newthemes));
+				oldsource.setMask(oldsource.getMask().presolve(filter, newthemes));
 			}
 			else {
-				oldsource.setMask(oldsource.getmask().postSolve(filter, newthemes));
+				oldsource.setMask(oldsource.getMask().postSolve(filter, newthemes));
 			}
 			std::vector<Core::FMToutputsource>sources;
 			sources.push_back(oldsource);
-			newdecisions.reference = std::unique_ptr<Core::FMToutput>(new Core::FMToutput(reference->getname(), reference->getDescription(), reference->getGroup(), sources, std::vector<Core::FMToperator>()));
+			newdecisions.reference = std::unique_ptr<Core::FMToutput>(new Core::FMToutput(reference->getName(), reference->getDescription(), reference->getGroup(), sources, std::vector<Core::FMToperator>()));
 			return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodeldecisiontree(newdecisions));
 
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::modify", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::modify", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
@@ -431,7 +431,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
@@ -444,7 +444,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(std::string(getMask()), "FMTyieldmodeldecisiontree::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTyieldmodeldecisiontree::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}

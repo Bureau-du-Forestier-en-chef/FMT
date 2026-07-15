@@ -26,7 +26,7 @@ FMTconstantparser::FMTconstantparser():
 	setSection(Core::FMTsection::Constants);
     }
 
-bool FMTconstantparser::_FillConstants(Core::FMTconstants& p_constants,
+bool FMTconstantparser::_fillConstants(Core::FMTconstants& p_constants,
 	const std::string& p_input, bool p_allowNonValid) const
 	{
 	try{
@@ -42,7 +42,7 @@ bool FMTconstantparser::_FillConstants(Core::FMTconstants& p_constants,
 					}
 				_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
 					" at line " + std::to_string(m_line),
-					"FMTconstantparser::_FillConstants", __LINE__, __FILE__, m_section);
+					"FMTconstantparser::_fillConstants", __LINE__, __FILE__, m_section);
 			}
 			std::string key = std::string(kmatch[4]) + std::string(kmatch[6]);
 			if (!std::string(kmatch[5]).empty())
@@ -75,15 +75,15 @@ bool FMTconstantparser::_FillConstants(Core::FMTconstants& p_constants,
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
 						"Constant redefinition ignored for " + key + " at line " + std::to_string(m_line), 
-						"FMTconstantparser::_FillConstants", __LINE__, __FILE__, m_section);
+						"FMTconstantparser::_fillConstants", __LINE__, __FILE__, m_section);
 				}
 
 			}
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),
-			"FMTconstantparser::_FillConstants", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),
+			"FMTconstantparser::_fillConstants", __LINE__, __FILE__, m_section);
 		}
 	return true;
 	}
@@ -100,12 +100,12 @@ std::queue<FMTparser::FMTLineInfo> FMTconstantparser::getCleanLinewfor(std::ifst
 			{
 			lines.push(TempQueue.front());
 			const std::string LINE = getLine(TempQueue);
-			_FillConstants(constantsCopy, LINE,true);
+			_fillConstants(constantsCopy, LINE,true);
 			}
 		lines = processForLoopsNInclude(p_themes, constantsCopy, lines);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTconstantparser::getCleanLinewfor",
+		_exhandler->raiseFromCatch("", "FMTconstantparser::getCleanLinewfor",
 			__LINE__, __FILE__, m_section);
 		}
 	return lines;
@@ -129,13 +129,13 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 				while (!Lines.empty())
 					{
 					const std::string LINE = getLine(Lines);
-					_FillConstants(constants, LINE);
+					_fillConstants(constants, LINE);
 					}
 			}
 		}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMTconstantparser::read", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTconstantparser::read", __LINE__, __FILE__, m_section);
 			}
 	//constants.passinobject(*this);
     return constants;
@@ -153,7 +153,7 @@ void FMTconstantparser::write(const Core::FMTconstants& constants,const std::str
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at "+location,"FMTconstantparser::write", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at "+location,"FMTconstantparser::write", __LINE__, __FILE__, m_section);
 		}
     }
 }

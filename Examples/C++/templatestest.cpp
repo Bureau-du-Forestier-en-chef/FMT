@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-		Logging::FMTdefaultlogger().logstamp();
+		Logging::FMTdefaultlogger().logStamp();
 		std::string primlocation;
 		std::string templatefolder;
 		int length;
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<Models::FMTmodel> models = modelparser.readTemplates(primlocation, templatefolder);
 		if (models.size() < 1)
 			{
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 				? Models::FMTsolverinterface::CLP 
 				: Models::FMTsolverinterface::MOSEK;
 			Models::FMTlpmodel test(models.at(id), solver);
-			test.setparameter(Models::FMTintmodelparameters::LENGTH, length);
+			test.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 			test.doPlanning(true);
 		}
 	#endif

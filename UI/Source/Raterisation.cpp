@@ -12,8 +12,8 @@ bool Wrapper::FMTForm::Raterisation(System::String^ fichierPri, int scenario, Sy
 {
 	try
 	{
-		const std::vector<Core::FMTtheme> THEMES = FMTFormCache::GetInstance()->getmodel(scenario).getthemes();
-		const std::vector<Core::FMTactualdevelopment> AREA = FMTFormCache::GetInstance()->getmodel(scenario).getarea();
+		const std::vector<Core::FMTtheme> THEMES = FMTFormCache::GetInstance()->getModel(scenario).getThemes();
+		const std::vector<Core::FMTactualdevelopment> AREA = FMTFormCache::GetInstance()->getModel(scenario).getArea();
 		const std::string VECTORS_PATH = msclr::interop::marshal_as<std::string>(fichierShp);
 		const std::string OUTPUT_FOLDER = msclr::interop::marshal_as<std::string>(repertoireSortie);
 		Parser::FMTareaparser areaparser;
@@ -27,11 +27,11 @@ bool Wrapper::FMTForm::Raterisation(System::String^ fichierPri, int scenario, Sy
 			0.0001,
 			msclr::interop::marshal_as<std::string>(nomChampStanlock),
 			0.0);
-		areaparser.WriteForestExtended(forest,
+		areaparser.writeForestExtended(forest,
 							VECTORS_PATH, THEMES, AREA, OUTPUT_FOLDER);
 	}catch (...)
 		{
-		raisefromcatch("", "Wrapper::FMTForm::Raterisation", __LINE__, __FILE__);
+		raiseFromCatch("", "Wrapper::FMTForm::Raterisation", __LINE__, __FILE__);
 		return false;
 		}
 	return true;

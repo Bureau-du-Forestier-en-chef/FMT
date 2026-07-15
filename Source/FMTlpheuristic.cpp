@@ -53,7 +53,7 @@ namespace Heuristics
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTlpheuristic::FMTlpheuristic", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTlpheuristic::FMTlpheuristic", __LINE__, __FILE__);
 			}
 		}
 
@@ -70,7 +70,7 @@ namespace Heuristics
 			Models::FMTlpsolver::branchAndBound();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlpheuristic::branchNBoundSolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlpheuristic::branchNBoundSolve", __LINE__, __FILE__);
 			}
 		return Models::FMTlpsolver::isProvenOptimal();
        }
@@ -81,7 +81,7 @@ namespace Heuristics
 			initialSolve();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlpheuristic::greedyPass", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlpheuristic::greedyPass", __LINE__, __FILE__);
 			}
 		return Models::FMTlpsolver::isProvenOptimal();
 	  }

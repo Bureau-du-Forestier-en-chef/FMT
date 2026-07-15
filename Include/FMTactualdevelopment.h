@@ -87,11 +87,11 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		Returns the string reprensentation of a FMTactualdevelopment like in the area section.
 		*/
 		operator std::string() const override;
-		// DocString: FMTactualdevelopment::getarea
+		// DocString: FMTactualdevelopment::getArea
 		/**
 		Returns the area of the FMTactualdevelopment.
 		*/
-		double getarea() const override;
+		double getArea() const override;
 		// DocString: FMTactualdevelopment::setArea
 		/**
 		Set the newarea has the area of the FMTactualdevelopment.
@@ -130,7 +130,7 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTactualdevelopment::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTactualdevelopment::serialize", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTactualdevelopment::area
@@ -140,11 +140,11 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 
 // DocString: FMTactualdevelopmentcomparator
 /**
-FMTactioncomparator to check if the base FMTdevelopment is the actualdev.
+FMTActionComparator to check if the base FMTdevelopment is the actualdev.
 */
 class FMTactualdevelopmentcomparator
 	{
-		// DocString: FMTactioncomparator::basedev
+		// DocString: FMTActionComparator::basedev
 		///The FMTdevelopment that we compare
 		const FMTdevelopment* basedev;
 	public:

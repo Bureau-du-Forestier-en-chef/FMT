@@ -45,7 +45,7 @@ namespace Core {
 							envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
 						}
 			#endif
-			boost::filesystem::path fmtdll(getruntimelocation());
+			boost::filesystem::path fmtdll(getRuntimeLocation());
 			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
 			boost::filesystem::path filenamepath(modelNameIt->second.data());
 			modelName = (fmtdll / filenamepath).string();
@@ -167,7 +167,7 @@ namespace Core {
 			std::string concatMYlds = mylds.str();
 			if (concatMYlds.length() > 1)
 				concatMYlds.erase(concatMYlds.end() - 2);
-			_exhandler->raisefromcatch("Expected a different amount of yield. Expected " + std::to_string(expectedNbYld) + " yields : " + concatMYlds +
+			_exhandler->raiseFromCatch("Expected a different amount of yield. Expected " + std::to_string(expectedNbYld) + " yields : " + concatMYlds +
 				". Got " + std::to_string(recievedNbYld) + " yields.",
 				"FMTyieldmodel::FMTyieldmodelpools", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
@@ -201,7 +201,7 @@ namespace Core {
 			#endif
 
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
-			const Models::FMTmodel* modelptr = graphinfo->getmodel();
+			const Models::FMTmodel* modelptr = graphinfo->getModel();
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
 
@@ -318,7 +318,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::vector<double>();
 	}

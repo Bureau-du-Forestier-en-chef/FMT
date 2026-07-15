@@ -80,11 +80,11 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		FMTdevelopmentpath. It select the path where the area proportion is the higher.
 		*/
         FMTtransition single() const;
-		// DocString: FMTtransition::getname
+		// DocString: FMTtransition::getName
 		/**
 		Getter for the FMTtransition name
 		*/
-		inline std::string getname() const
+		inline std::string getName() const
 			{
 			return name;
 			}
@@ -195,7 +195,7 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 				}
 				catch (...)
 				{
-					_exhandler->printexceptions("", "FMTtransition::serialize", __LINE__, __FILE__);
+					_exhandler->printExceptions("", "FMTtransition::serialize", __LINE__, __FILE__);
 				}
 			}
     };

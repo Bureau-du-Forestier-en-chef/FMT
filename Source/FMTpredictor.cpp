@@ -26,7 +26,7 @@ namespace Graph
 
 	}
 
-	std::vector<double>FMTpredictor::getyields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const
+	std::vector<double>FMTpredictor::getYields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const
 	{
 		std::vector<double>values;
 		values.reserve(yieldnames.size());
@@ -42,8 +42,8 @@ namespace Graph
 		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid):
 		source_vertex(&source),
 		target_vertex(&target),
-		source_yields(getyields(source, yields, yieldnames)),
-		target_yields(getyields(target, yields, yieldnames)),
+		source_yields(getYields(source, yields, yieldnames)),
+		target_yields(getYields(target, yields, yieldnames)),
 		periodgaps(gaps),
 		sourceactions()
 	{
@@ -65,7 +65,7 @@ namespace Graph
 				else {
 					if(withGCBMid)
 					{
-						sourceactions.push_back(actions.at(edgeprop->getactionID()).getGCBMactionid());
+						sourceactions.push_back(actions.at(edgeprop->getactionID()).getGCBMActionId());
 					}else{
 						sourceactions.push_back(edgeprop->getactionID());
 					}

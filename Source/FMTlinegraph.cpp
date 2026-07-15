@@ -113,7 +113,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::setAction", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::setAction", __LINE__, __FILE__);
 		}
 	}
 
@@ -132,7 +132,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::operate", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::operate", __LINE__, __FILE__);
 		}
 		return paths.size();
 	}
@@ -166,7 +166,7 @@ namespace Graph
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlinegraph::grow", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::grow", __LINE__, __FILE__);
 			}
 	}
 	FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor FMTlinegraph::getActiveVertex() const
@@ -180,7 +180,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getActiveVertex", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getActiveVertex", __LINE__, __FILE__);
 		}
 		return active;
 	}
@@ -201,18 +201,18 @@ namespace Graph
 			{
 				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph,
 						"More than in egde for development " + std::string(getDevelopment(vdesc)),
-						"FMTlinegraph::getinedgeactionid()", __LINE__, __FILE__);
+						"FMTlinegraph::getInEdgeActionId()", __LINE__, __FILE__);
 			}
 			if (ids.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph,
 						"No inedge for  " + std::string(getDevelopment(vdesc)),
-						"FMTlinegraph::getinedgeactionid()", __LINE__, __FILE__);
+						"FMTlinegraph::getInEdgeActionId()", __LINE__, __FILE__);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getinedgeactionid()", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getInEdgeActionId()", __LINE__, __FILE__);
 		}
 		return ids.at(0);
 
@@ -238,7 +238,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getPeriodPredictors", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getPeriodPredictors", __LINE__, __FILE__);
 		}
 		return allpredictors;
 	}
@@ -270,12 +270,12 @@ namespace Graph
 			}
 			if (perstcount > 1)
 			{
-				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than development at the end of period " + std::to_string(period), "FMTlinegraph::getlastactionid()", __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than development at the end of period " + std::to_string(period), "FMTlinegraph::getLastActionId()", __LINE__, __FILE__);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getLastActionId", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getLastActionId", __LINE__, __FILE__);
 		}
 		//return ids.at(0);
 		return id;
@@ -303,7 +303,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getPeriodActionIds", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getPeriodActionIds", __LINE__, __FILE__);
 		}
 		return ids;
 	}
@@ -322,7 +322,7 @@ namespace Graph
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getPeriodStartDev", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getPeriodStartDev", __LINE__, __FILE__);
 		}
 	return getDevelopment(*vertexit);
 	}
@@ -341,11 +341,11 @@ namespace Graph
 			}
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, 
 							"The period for which the developement is asked is not complete so there is no period stop developement.", 
-							"FMTlinegraph::getperiodstopdev()", __LINE__, __FILE__);
+							"FMTlinegraph::getPeriodStopDev()", __LINE__, __FILE__);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getPeriodStopDev", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getPeriodStopDev", __LINE__, __FILE__);
 		}
 		return getDevelopment(*vertexit);
 	}
@@ -378,7 +378,7 @@ namespace Graph
 				const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(model.actions.at(action_id), model.transitions.at(action_id), model.yields, model.themes);
 				std::queue<FMTvertex_descriptor>actives;
 				addAction(action_id,stats,actives,vertex, paths);
-				if (!actives.empty() && model.actions.at(action_id).getname() != "_DEATH")
+				if (!actives.empty() && model.actions.at(action_id).getName() != "_DEATH")
 					{
 					front_vertex = actives.front();
 					}
@@ -391,7 +391,7 @@ namespace Graph
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlinegraph::_randomOperate", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::_randomOperate", __LINE__, __FILE__);
 			}
 		return -1;
     }
@@ -421,7 +421,7 @@ namespace Graph
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(
+			_exhandler->raiseFromCatch(
 				"", "FMTlinegraph::getSetOperability", __LINE__, __FILE__);
 			}
 		return OpIt->second;
@@ -449,7 +449,7 @@ namespace Graph
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlinegraph::randomBuildPeriod", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::randomBuildPeriod", __LINE__, __FILE__);
 			}
         return actioned;
 	}
@@ -461,7 +461,7 @@ namespace Graph
 			return  (source.use(dev, yields));
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::isAnyVertexUsage", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::isAnyVertexUsage", __LINE__, __FILE__);
 		}
 		return false;
 
@@ -481,7 +481,7 @@ namespace Graph
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::anyUsageOf", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::anyUsageOf", __LINE__, __FILE__);
 		}
 		return periods;
 	}
@@ -496,7 +496,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::isAnyActionOfEdge", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::isAnyActionOfEdge", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -536,7 +536,7 @@ namespace Graph
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlinegraph::isMovable", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::isMovable", __LINE__, __FILE__);
 			}
 		return false;
 		}
@@ -674,12 +674,12 @@ namespace Graph
 		size_t hashvalue = 0;
 		try{
 		const Core::FMTdevelopment& development = getBaseDevelopment();
-		boost::hash_combine(hashvalue, development.getmask().getIntersect(dynamicmask));
+		boost::hash_combine(hashvalue, development.getMask().getIntersect(dynamicmask));
 		boost::hash_combine(hashvalue, development.getAge());
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getBaseHash", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getBaseHash", __LINE__, __FILE__);
 		}
 		return hashvalue;
 		}
@@ -689,12 +689,12 @@ namespace Graph
 		std::string value;
 		try{
 		const Core::FMTdevelopment& development = getBaseDevelopment();
-		value += development.getmask().getIntersect(dynamicmask).getBitsString();
+		value += development.getMask().getIntersect(dynamicmask).getBitsString();
 		value += std::to_string(development.getAge());
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getBaseStr", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getBaseStr", __LINE__, __FILE__);
 		}
 		return value;
 		}
@@ -702,7 +702,7 @@ namespace Graph
 	void FMTlinegraph::setBaseMask(Core::FMTmask& p_dynamicmask, const int& p_period) const
 		{
 		const Core::FMTdevelopment& development = getBaseDevelopment();
-		p_dynamicmask.setIntersect(development.getmask());
+		p_dynamicmask.setIntersect(development.getMask());
 		p_dynamicmask.binarizedAppend<int8_t>(development.getShortAge());
 		fillEdgesMask(p_dynamicmask, p_period);
 		}
@@ -710,7 +710,7 @@ namespace Graph
 	Core::FMTmask FMTlinegraph::getBaseMask(const Core::FMTmask& dynamicmask) const
 		{
 		const Core::FMTdevelopment& development = getBaseDevelopment();
-		Core::FMTmask mask = development.getmask().getIntersect(dynamicmask);
+		Core::FMTmask mask = development.getMask().getIntersect(dynamicmask);
 		mask.binarizedAppend<int8_t>(development.getShortAge());
 		return mask;
 		}
@@ -738,7 +738,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::fillEdgesMask", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::fillEdgesMask", __LINE__, __FILE__);
 		}
 		}
 
@@ -777,7 +777,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getEdgesStr", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getEdgesStr", __LINE__, __FILE__);
 		}
 		return hashstr;
 		}
@@ -831,7 +831,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getactions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::getactions", __LINE__, __FILE__);
 		}
 		return allactions;
 		}
@@ -873,7 +873,7 @@ namespace Graph
 		boost::hash_combine(hashvalue,getEdgesHash(stop,gotthewholegraph));
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::hashForConstraint", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::hashForConstraint", __LINE__, __FILE__);
 		}
 		return gotthewholegraph;
 	}
@@ -887,7 +887,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::stringForConstraint", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTlinegraph::stringForConstraint", __LINE__, __FILE__);
 		}
 		return gotthewholegraph;
 	}

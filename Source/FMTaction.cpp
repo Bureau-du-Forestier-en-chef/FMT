@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -26,7 +26,7 @@ namespace Core{
 				this->reset = true;
 				if (!this->partials.empty())
 					{
-					_exhandler->raise(Exception::FMTexc::FMTignore, "Losing partiel on "+getname()+" with "+OtherAction.getname(),
+					_exhandler->raise(Exception::FMTexc::FMTignore, "Losing partiel on "+getName()+" with "+OtherAction.getName(),
 						"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
 					this->partials.clear();
 					}
@@ -57,22 +57,22 @@ namespace Core{
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for action " + this->getname(),
+			_exhandler->raiseFromCatch("for action " + this->getName(),
 				"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return *this;
 		}
 
 
-FMTaction::FMTaction():FMTlist<FMTspec>(),
-				aggregates(),
-                partials(),
-				agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
-                name(""),
-                lock(false),
-                reset(false),
-				m_series(),
-				m_InSerie(false){}
+	FMTaction::FMTaction():FMTlist<FMTspec>(),
+					aggregates(),
+					partials(),
+					agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
+					name(""),
+					lock(false),
+					reset(false),
+					m_series(),
+					m_InSerie(false){}
 
     FMTaction::FMTaction(const std::string& lname): FMTlist<FMTspec>(),
 						aggregates(),
@@ -83,13 +83,19 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
                         reset(false),
 						m_series(),
 						m_InSerie(false) {}
-    FMTaction::FMTaction(const std::string& lname, const bool& lock,const bool& reset): FMTlist<FMTspec>(), aggregates(), partials(),
+
+    FMTaction::FMTaction(
+		const std::string& lname, 
+		const bool& lock,
+		const bool& reset): 
+		FMTlist<FMTspec>(), aggregates(), partials(),
 		agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
 		name(lname),lock(lock),reset(reset), m_series(), m_InSerie(false)
         {
 
         }
-	void FMTaction::push_aggregate(const std::string& aggregate)
+
+	void FMTaction::pushAggregate(const std::string& aggregate)
 		{
 		aggregates.push_back(aggregate);
 		}
@@ -178,7 +184,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for action "+this->getname(),
+			_exhandler->raiseFromCatch("for action "+this->getName(),
 				"FMTaction::setBounds", __LINE__, __FILE__,Core::FMTsection::Action);
 			}
 		}
@@ -190,13 +196,10 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			this->setBounds();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for action " + this->getname(),
+			_exhandler->raiseFromCatch("for action " + this->getName(),
 				"FMTaction::update", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		}
-
-
-	
 
 	std::vector<std::string>FMTaction::getPartials() const
         {
@@ -218,7 +221,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for action " + this->getname(),
+			_exhandler->raiseFromCatch("for action " + this->getName(),
 				"FMTaction::isAllowedInSerie", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return false;
@@ -239,7 +242,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for action " + this->getname(),
+			_exhandler->raiseFromCatch("for action " + this->getName(),
 				"FMTaction::isAllowedInSerie", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return nullptr;
@@ -250,7 +253,6 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return  m_series;
 	}
 
-
 	std::vector<std::string>FMTaction::getSeriesNames() const
 	{
 		std::vector<std::string>seriesnames;
@@ -260,13 +262,13 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 				std::string seriename = SERIE.getSerie();
 				if (!seriename.empty())
 					{
-					seriename += getname();
+					seriename += getName();
 					}
 				seriesnames.push_back(seriename);
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for action " + this->getname(),
+			_exhandler->raiseFromCatch("for action " + this->getName(),
 				"FMTaction::getSeriesNames", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return seriesnames;
@@ -286,12 +288,11 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for action " + this->getname(),
+			_exhandler->raiseFromCatch("for action " + this->getName(),
 				"FMTaction::getLargestSerieSize", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return sizeofserie;
 	}
-
 
 	void FMTaction::setSeries(std::vector<Core::FMTSerie> p_series)
 	{
@@ -300,7 +301,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			for (const FMTSerie& SERIE : p_series)
 				{
 				std::vector<std::string>  actionsname = SERIE.getActions();
-				std::vector<std::string>::iterator ait = std::find(actionsname.begin(), actionsname.end(), getname());
+				std::vector<std::string>::iterator ait = std::find(actionsname.begin(), actionsname.end(), getName());
 				if (ait!= actionsname.end())
 					{
 					if (!m_InSerie)
@@ -317,16 +318,15 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 								{
 								actionsname.erase(actionsname.begin(), ait + 1);
 								}
-						ait = std::find(actionsname.begin(), actionsname.end(), getname());
+						ait = std::find(actionsname.begin(), actionsname.end(), getName());
 						}
 					}
 				}
 		}catch (...){
-			_exhandler->raisefromcatch("for action " + this->getname(),
+			_exhandler->raiseFromCatch("for action " + this->getName(),
 				"FMTaction::setSeries", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
 	}
-
 
     FMTaction::operator std::string() const
         {
@@ -358,7 +358,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
         return line;
         }
 
-bool FMTaction::useyield(const std::string& yldname) const
+bool FMTaction::useYield(const std::string& yldname) const
 	{
 	try {
 		for (const auto& speclitit : *this)
@@ -376,13 +376,13 @@ bool FMTaction::useyield(const std::string& yldname) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for action " + this->getname(),
-			"FMTaction::useyield", __LINE__, __FILE__, Core::FMTsection::Action);
+		_exhandler->raiseFromCatch("for action " + this->getName(),
+			"FMTaction::useYield", __LINE__, __FILE__, Core::FMTsection::Action);
 	}
 	return false;
 	}
 
-std::vector<std::string>FMTaction::getaggregates() const
+std::vector<std::string>FMTaction::getAggregates() const
 	{
 	return aggregates;
 	}
@@ -416,17 +416,20 @@ bool FMTaction::partial(const std::string& yield) const
 	return (std::find(partials.begin(), partials.end(),yield)!=partials.end());
 	}
 
-FMTactioncomparator::FMTactioncomparator(std::string name, bool lcheckaggregate) : action_name(name),checkaggregate(lcheckaggregate) {}
+FMTActionComparator::FMTActionComparator(
+	std::string name, bool lcheckaggregate) : action_name(name),checkaggregate(lcheckaggregate) {}
 
-bool FMTactioncomparator::operator()(const FMTaction& action) const
+bool FMTActionComparator::operator()(const FMTaction& action) const
 	{
 	return (action.name == action_name || (checkaggregate && 
 		std::find(action.aggregates.begin(), action.aggregates.end(),action_name)!= action.aggregates.end()));
 	}
 
-std::vector<const FMTaction*>FMTactioncomparator::getAllAggregates(const std::vector<FMTaction>&actions,bool aggregateonly) const
+std::vector<const FMTaction*>FMTActionComparator::getAllAggregates(
+	const std::vector<FMTaction>&actions,
+	bool aggregateonly) const
 	{
-	std::vector<const FMTaction*>actionsptr;
+	std::vector<const FMTaction*> actionsptr;
 	std::vector<FMTaction>::const_iterator actit = actions.begin();
 	while (actit!= actions.end())
 		{
@@ -439,7 +442,9 @@ std::vector<const FMTaction*>FMTactioncomparator::getAllAggregates(const std::ve
 	return actionsptr;
 	}
 
-std::unordered_set<int>FMTactioncomparator::getAllAggregatesSet(const std::vector<FMTaction>&actions, bool aggregateonly) const
+std::unordered_set<int>FMTActionComparator::getAllAggregatesSet(
+	const std::vector<FMTaction>&actions, 
+	bool aggregateonly) const
 {
 	std::unordered_set<int>actionsptr;
 	std::vector<FMTaction>::const_iterator actit = actions.begin();
@@ -456,7 +461,7 @@ std::unordered_set<int>FMTactioncomparator::getAllAggregatesSet(const std::vecto
 	return actionsptr;
 }
 
-std::vector<std::string>FMTaction::getGCBMactiondef() const
+std::vector<std::string>FMTaction::getGCBMActionDef() const
 {
 	std::vector<std::string> allvalues;
 	try {
@@ -468,39 +473,39 @@ std::vector<std::string>FMTaction::getGCBMactiondef() const
 				return allvalues;
 			}
 		}
-		_exhandler->raise(Exception::FMTexc::FMTempty_action, "Missing GCBM action for action " + this->getname(),
-			"FMTaction::getGCBMactiondef", __LINE__, __FILE__, Core::FMTsection::Action);
+		_exhandler->raise(Exception::FMTexc::FMTempty_action, "Missing GCBM action for action " + this->getName(),
+			"FMTaction::getGCBMActionDef", __LINE__, __FILE__, Core::FMTsection::Action);
 	}
 	catch (...)
 	{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
-			"FMTaction::getGCBMactiondef", __LINE__, __FILE__, Core::FMTsection::Action);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getName(),
+			"FMTaction::getGCBMActionDef", __LINE__, __FILE__, Core::FMTsection::Action);
 	}
 	return allvalues;
 }
 
-int FMTaction::getGCBMactionid() const
+int FMTaction::getGCBMActionId() const
 {
 	try {
-		return std::atoi(getGCBMactiondef().at(1).c_str());
+		return std::atoi(getGCBMActionDef().at(1).c_str());
 	}
 	catch (...)
 	{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
-			"FMTaction::getGCBMactionid", __LINE__, __FILE__, Core::FMTsection::Action);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getName(),
+			"FMTaction::getGCBMActionId", __LINE__, __FILE__, Core::FMTsection::Action);
 	}
 	return 0;
 }
 
-std::string FMTaction::getGCBMactionname() const
+std::string FMTaction::getGCBMActionName() const
 {
 	try {
-		return getGCBMactiondef().at(2).c_str();
+		return getGCBMActionDef().at(2).c_str();
 	}
 	catch (...)
 	{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
-			"FMTaction::getGCBMactionname", __LINE__, __FILE__, Core::FMTsection::Action);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getName(),
+			"FMTaction::getGCBMActionName", __LINE__, __FILE__, Core::FMTsection::Action);
 	}
 	return std::string();
 }
@@ -531,8 +536,6 @@ bool FMTaction::isInSeries() const
 	return m_InSerie;
 	}
 
-
-
 std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p_mask,
 											const std::vector<Core::FMTtheme>& p_themes) const
 {
@@ -543,7 +546,7 @@ std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p
 			std::string NewName = std::string(MASK);
 			NewName.erase(std::remove(NewName.begin(), NewName.end(), ' '), NewName.end());
 			NewName.erase(std::remove(NewName.begin(), NewName.end(), '?'), NewName.end());
-			NewName = getname() + "_" + NewName;
+			NewName = getName() + "_" + NewName;
 			Core::FMTaction NewAction(NewName,lock,reset);
 			for (const auto& data : *this)
 				{
@@ -556,21 +559,23 @@ std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p
 					}
 				}
 			NewAction.aggregates = aggregates;
-			NewAction.aggregates.insert(NewAction.aggregates.begin(),getname());
+			NewAction.aggregates.insert(NewAction.aggregates.begin(),getName());
 			NewAction.update();
 			Splitted.push_back(NewAction);
 			}
 	}catch (...)
 		{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getName(),
 			"FMTaction::split", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
 	return Splitted;
 }
 
-void FMTaction::presolveRef(const FMTmaskfilter& p_filter,
+void FMTaction::presolveRef(
+	const FMTmaskfilter& p_filter,
 	const std::vector<FMTtheme>& p_originalthemes,
-	std::vector<FMTtheme>& p_newthemes, bool p_compressdata)
+	std::vector<FMTtheme>& p_newthemes,
+	 bool p_compressdata)
 {
 	try {
 		presolveList(p_filter, p_originalthemes, p_newthemes);
@@ -581,11 +586,10 @@ void FMTaction::presolveRef(const FMTmaskfilter& p_filter,
 		update();
 	}catch (...)
 		{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getName(),
 			"FMTaction::presolveRef", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
 }
-
 
 FMTaction FMTaction::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
@@ -596,7 +600,7 @@ FMTaction FMTaction::presolve(const FMTmaskfilter& filter,
 		newaction.presolveRef(filter, originalthemes, newthemes, compressdata);
 	}catch (...)
 		{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for action "+this->getname(),
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for action "+this->getName(),
 			"FMTaction::presolve", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
 	return newaction;

@@ -88,11 +88,11 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			{
 			return static_cast<int>(period);
 			}
-		// DocString: FMTdevelopment::getmask
+		// DocString: FMTdevelopment::getMask
 		/**
 		Get the mask of the development.
 		*/
-		inline const Core::FMTmask& getmask() const
+		inline const Core::FMTmask& getMask() const
 			{
 			return mask;
 			}
@@ -202,11 +202,11 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		Returns the string reprensentation of a FMTdevelopment like in the area section.
 		*/
         virtual operator std::string() const;
-		// DocString: FMTdevelopment::getarea
+		// DocString: FMTdevelopment::getArea
 		/**
 		Returns the area of the FMTdevelopment
 		*/
-		virtual double getarea() const;
+		virtual double getArea() const;
 		// DocString: FMTdevelopment::clearLock
 		/**
 		Returns a copy of this FMTdevelopment but set the lock level to 0.
@@ -305,7 +305,7 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 				}
 				catch (...)
 				{
-					_exhandler->printexceptions("", "FMTdevelopment::serialize", __LINE__, __FILE__);
+					_exhandler->printExceptions("", "FMTdevelopment::serialize", __LINE__, __FILE__);
 				}
 			}
 			// DocString: FMTdevelopment::mask

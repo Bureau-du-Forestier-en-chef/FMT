@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
     {   
 #ifdef FMTWITHOSI
-    Logging::FMTdefaultlogger().logstamp();
+    Logging::FMTdefaultlogger().logStamp();
     const std::string primarylocation = std::string(argv[2]);
     const std::string scenario = std::string(argv[3]);
     const std::string fichierParam = std::string(argv[1]);
@@ -25,11 +25,11 @@ int main(int argc, char *argv[])
     errors.push_back(Exception::FMTexc::FMToutofrangeyield);
     errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
     errors.push_back(Exception::FMTexc::FMTmissingyield);
-    modelparser.seterrorstowarnings(errors);
+    modelparser.setErrorsToWarnings(errors);
     std::vector<std::string>scenarios(1, scenario);
     const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
     Parser::FMTareaparser areaParser;
-    const std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, models.at(0).getthemes(), 13, 1);
+    const std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, models.at(0).getThemes(), 13, 1);
 #endif
     return 0;
 	}

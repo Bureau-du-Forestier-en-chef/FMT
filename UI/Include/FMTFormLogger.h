@@ -20,7 +20,7 @@ namespace Wrapper
 	protected:
 		void cout(const char* message) const;
 	public:
-		void logtime() override;
+		void logTime() override;
 		FMTFormLogger() = default;
 		FMTFormLogger(const FMTFormLogger& rhs);
 		~FMTFormLogger();

@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 			SCENARIO = "120_RegProv_apsp";
 			TEST = "testOutputCache";
 		}
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	Testing::UnitTestFMToutputCache test;
 	test.testModelGetValues(PRIMARY, SCENARIO, TEST);
 	#endif 

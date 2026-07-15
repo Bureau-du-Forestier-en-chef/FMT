@@ -26,7 +26,7 @@ namespace Parallel
 			alltasks.push_back(std::move(maintask.clone()));
 		}catch (...)
 			{
-			_exhandler->printexceptions("FMTtaskhandler reference constructor",
+			_exhandler->printExceptions("FMTtaskhandler reference constructor",
 				"FMTtaskhandler::FMTtaskhandler", __LINE__, __FILE__);
 			}
 		}
@@ -83,7 +83,7 @@ namespace Parallel
 			alltasks.swap(newtasks);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtaskhandler::splitTasks", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTtaskhandler::splitTasks", __LINE__, __FILE__);
 			}
 		}
 
@@ -94,7 +94,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtaskhandler::finalize", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTtaskhandler::finalize", __LINE__, __FILE__);
 		}
 
 	}
@@ -109,7 +109,7 @@ namespace Parallel
 			}
 		}
 
-	void FMTtaskhandler::conccurentrun()
+	void FMTtaskhandler::conccurentRun()
 		{
 		std::vector<boost::thread>workers;
 		try {
@@ -136,21 +136,21 @@ namespace Parallel
 				{
 				_interruptWork(worker);
 				}
-				_exhandler->printexceptions("", "FMTtaskhandler::conccurentrun", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTtaskhandler::conccurentRun", __LINE__, __FILE__);
 			}
 
 		}
 
-	void FMTtaskhandler::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTtaskhandler::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		// TODO GAB faire un warning si on passe par ici on créer un nouveau logger qui va chier en multithreads
 		for (std::unique_ptr<FMTtask>& task : alltasks)
 			{
-			task->passinlogger(logger);
+			task->passInLogger(logger);
 			}
 		}
 
-	void FMTtaskhandler::ondemandrun()
+	void FMTtaskhandler::onDemandRun()
 	{
 		std::list<FMTWorkerTask> workers;
 
@@ -162,14 +162,14 @@ namespace Parallel
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Need to have one master task for ondemandrun",
-					"FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
+					"FMTtaskhandler::onDemandRun", __LINE__, __FILE__);
 			}
 
 			if (maxnumberofthread <= 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Invalid thread count",
-					"FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
+					"FMTtaskhandler::onDemandRun", __LINE__, __FILE__);
 			}
 
 			FMTtask::setTotalThreads(static_cast<size_t>(maxnumberofthread));
@@ -214,7 +214,7 @@ namespace Parallel
 			}
 			workers.clear();
 
-			_exhandler->printexceptions("", "FMTtaskhandler::ondemandrun",
+			_exhandler->printExceptions("", "FMTtaskhandler::onDemandRun",
 				__LINE__, __FILE__);
 		}
 	}
@@ -222,11 +222,11 @@ namespace Parallel
 	void FMTtaskhandler::logTaskTime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const
 	{
 		try {
-			_logger->logwithlevel("All tasks completed " + getDurationInSeconds(startime) + "\n", 0);
+			_logger->logWithLevel("All tasks completed " + getDurationInSeconds(startime) + "\n", 0);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTtaskhandler::logTaskTime", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTtaskhandler::logTaskTime", __LINE__, __FILE__);
 		}
 	}
 

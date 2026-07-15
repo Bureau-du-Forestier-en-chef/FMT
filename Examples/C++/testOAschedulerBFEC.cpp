@@ -77,17 +77,17 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 
             for (Core::FMTaction& action : model.getactions())
             {
-                if (action.useyield("YOUVERT"))
+                if (action.useYield("YOUVERT"))
                 {
                     youvert += 1;
-                    std::vector<std::string> agg = action.getaggregates();
+                    std::vector<std::string> agg = action.getAggregates();
                     if (std::count(agg.begin(), agg.end(), Agg_name))
                     {
                         Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
-                        "testOAschedulerBFEC", __LINE__,model.getname());  
+                        "testOAschedulerBFEC", __LINE__,model.getName());  
                     }
 
-                    action.push_aggregate(Agg_name);
+                    action.pushAggregate(Agg_name);
                 }
 
                 newactions.push_back(action);
@@ -96,11 +96,11 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
             if (youvert < 1)
             {
                 Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Aucune action dans le modèle n'a de youvert",
-                        "testOAschedulerBFEC", __LINE__,model.getname()) ;
+                        "testOAschedulerBFEC", __LINE__,model.getName()) ;
             }
 
-            model.setactions(newactions);
-            const std::vector<Core::FMTtheme> themes = model.getthemes();	
+            model.setActions(newactions);
+            const std::vector<Core::FMTtheme> themes = model.getThemes();	
             std::string stringMask = "";
             for (int i = 1; i <= themes.size(); i++)
             {
@@ -121,7 +121,7 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
-            Logging::FMTdefaultlogger().logstamp();
+            Logging::FMTdefaultlogger().logStamp();
             std::string primarylocation;
             std::vector<std::string>scenarios;
             std::string fichierShp;
@@ -150,20 +150,20 @@ int main(int argc, char *argv[])
 		    errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
             errors.push_back(Exception::FMTexc::FMTEmptyOA);
             errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		    modelparser.seterrorstowarnings(errors);
+		    modelparser.setErrorsToWarnings(errors);
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
-	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	        optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
-            optimizationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+            optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,5);
+	        optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	        optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
+            optimizationmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
           
             const int startingperiod = optimizationmodel.getconstraints().at(0).getPeriodLowerBound();
             optimizationmodel.doPlanning(true);
             const double initialobjectivevalue = optimizationmodel.getObjValue();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
-            std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
+            std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getThemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
             std::vector<Heuristics::FMToperatingareascheduler> opareaheuristics = optimizationmodel.getOperatingAreaSchedulerHeuristics(opeareas, nodeofoutput);
             //opareaheuristics[0].setProportionOfSet(0.25);
 			Heuristics::FMTlpheuristicmthandler handler = Heuristics::FMTlpheuristicmthandler(opareaheuristics, initialobjectivevalue);
@@ -183,27 +183,27 @@ int main(int argc, char *argv[])
             for (const Core::FMTtimeyieldhandler& tyld : ythandler)
             {
                 std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
-                yields.push_back(newyield->getmask(), newyield);
+                yields.push_back(newyield->getMask(), newyield);
             }
             yields.update();
             Parser::FMTyieldparser yldparser;
             const std::string solutionname = "../../tests/testOAschedulerBFEC/bfecoptsol.yld";
             yldparser.write(yields, solutionname);
             //
-            Core::FMTyields myields = model.getyields();
-            myields.unShrink(model.getthemes());
+            Core::FMTyields myields = model.getYields();
+            myields.unShrink(model.getThemes());
             for(const auto& yth : ythandler)
             {   
-                myields.push_front( yth.getmask(),
+                myields.push_front( yth.getMask(),
                                     std::unique_ptr<Core::FMTyieldhandler>(new Core::FMTtimeyieldhandler(yth))
                                     );
             }
             myields.update();
             optimizationmodel = Models::FMTlpmodel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setYields(myields);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
-            optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
+            optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,5);
+            optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+            optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
             if (optimizationmodel.doPlanning(true)) 
             {
                 const double objectivevalue = optimizationmodel.getObjValue();

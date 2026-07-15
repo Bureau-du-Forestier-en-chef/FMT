@@ -28,7 +28,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(
 		std::string outputPath;
 		
 		//ATTENTION il est important d'�crire le model avant la schedule car modelParser.write va �craser le fichier de schedule
-		ModelParser.writetoproject(p_primary_path, aggregatedModel);
+		ModelParser.writeToProject(p_primary_path, aggregatedModel);
 		
 		if (!SCHEDULES.empty())
 		{
@@ -42,8 +42,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
-		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::TransformationCore::aggregateAllActions", __LINE__, __FILE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::TransformationCore::aggregateAllActions", __LINE__, __FILE__);
 	}
 	return aggregatedModel;
 
@@ -67,7 +67,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_primary_path, {p_model}).at(0);
 		//ATTENTION il est important d'ecrire le model avant la schedule car modelParser.write va ecraser le fichier de schedule
 
-		ModelParser.writetoproject(p_primary_path, SPLITTED_MODEL);
+		ModelParser.writeToProject(p_primary_path, SPLITTED_MODEL);
 		if (!SCHEDULES.empty())
 		{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
@@ -79,8 +79,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
-		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::TransformationCore::splitActions", __LINE__, __FILE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::TransformationCore::splitActions", __LINE__, __FILE__);
 	}
 	return SPLITTED_MODEL;
 }
@@ -98,7 +98,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 
 		//ATTENTION il est important d'�crire le model avant la schedule car modelParser.write va �craser le fichier de schedule
 
-		ModelParser.writetoproject(p_primaryPath, BUILDED_MODEL);
+		ModelParser.writeToProject(p_primaryPath, BUILDED_MODEL);
 
 		if (!SCHEDULES.empty())
 		{
@@ -110,8 +110,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		}
 	}
 	catch (...) {
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
-		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::TransformationCore::buildAction", __LINE__, __FILE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::TransformationCore::buildAction", __LINE__, __FILE__);
 	}
 	return BUILDED_MODEL;
 }

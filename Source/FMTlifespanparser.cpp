@@ -58,7 +58,7 @@ Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& th
 		//lifespan.passinobject(*this);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMTlifespanparser::read", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTlifespanparser::read", __LINE__, __FILE__, m_section);
 		}
     return lifespan;
     }
@@ -75,7 +75,7 @@ void FMTlifespanparser::write(const Core::FMTlifespans& lifespan,const std::stri
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at " + location,"FMTlifespanparser::write", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at " + location,"FMTlifespanparser::write", __LINE__, __FILE__, m_section);
 		}
     }
 

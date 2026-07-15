@@ -16,7 +16,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
@@ -25,7 +25,7 @@ int main()
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		for (size_t period = 0; period < 10; ++period)
 		{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildPeriod();
 		}
 		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 		const Core::FMTconstraint objective = constraints.at(0);
@@ -38,9 +38,9 @@ int main()
 		if (optimizationmodel.initialSolve())
 		{
 			std::vector<Core::FMToutput>outputtotest;
-			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 				{
-				if (output.getname()== "OSUPREC")
+				if (output.getName()== "OSUPREC")
 					{
 					outputtotest.push_back(output);
 					break;

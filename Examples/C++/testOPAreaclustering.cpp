@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	const std::vector<std::string>scenarios(1, "LP");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	std::vector<Core::FMTtheme>themes = optmodel.getthemes();
+	std::vector<Core::FMTtheme>themes = optmodel.getThemes();
 	std::vector<Heuristics::FMToperatingarea>opareas;
 	const size_t themetarget(0);
 	for (const std::string& attribute : themes.at(themetarget).getAttributes("UC"))
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 		}
 	for (size_t period = 0; period < 2; ++period)
 	{
-		optmodel.buildperiod();
+		optmodel.buildPeriod();
 	}
 	std::vector<Core::FMTconstraint>allconstraints = optmodel.getconstraints();
 	const Core::FMTconstraint objective = allconstraints.at(0);
@@ -70,13 +70,13 @@ int main(int argc, char *argv[])
 	{
 		Core::FMToutput opareaareasoutput;
 		Core::FMToutput opareastatisticsoutput;
-		for (const Core::FMToutput& output : optmodel.getoutputs())
+		for (const Core::FMToutput& output : optmodel.getOutputs())
 		{
-			if ("VOLINVENT" == output.getname())
+			if ("VOLINVENT" == output.getName())
 			{
 				opareastatisticsoutput = output;
 			}
-			else if ("TOTALAREA" == output.getname())
+			else if ("TOTALAREA" == output.getName())
 			{
 				opareaareasoutput = output;
 			}

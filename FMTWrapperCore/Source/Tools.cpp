@@ -15,7 +15,7 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 	int result = 0;
 	try
 	{
-		const Core::FMTyields YIELDS = p_model.getyields();
+		const Core::FMTyields YIELDS = p_model.getYields();
 		std::vector<const Core::FMTyieldhandler*> handler;
 		for (const auto& DATA : YIELDS)
 		{
@@ -29,8 +29,8 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
-		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getMaxAge", __LINE__, __FILE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::getMaxAge", __LINE__, __FILE__);
 	}
 	return result;
 }
@@ -44,8 +44,8 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
-		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getYield", __LINE__, __FILE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::getYield", __LINE__, __FILE__);
 	}
 	return result;
 }
@@ -91,7 +91,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	{
 		// On cr�e une copie du mod�le car on dois faire un setArea avec les donn�es du raster.
 		Models::FMTmodel modelCopy = p_model;
-		modelCopy.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, false);
+		modelCopy.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, false);
 		if (!p_rasterPath.empty())
 		{
 			modelCopy.setArea(getRasterArea(modelCopy, p_rasterPath));
@@ -99,7 +99,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 		// On va chercher tous les th�mes dans le mod�le
 		std::vector<Core::FMTtheme> themes;
 		size_t numberOfAttributes = 1;
-		const std::vector<Core::FMTtheme> THEMESMODELS = modelCopy.getthemes();
+		const std::vector<Core::FMTtheme> THEMESMODELS = modelCopy.getThemes();
 		for (const int themeNumber : p_themesNumbers)
 			{
 			themes.push_back(THEMESMODELS.at(themeNumber - 1));
@@ -108,15 +108,15 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 		if (numberOfAttributes > m_GET_ALL_MASKS_THRESHOLD)
 		{
 			
-			modelCopy.setconstraints(std::vector<Core::FMTconstraint>());
-			modelCopy.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-			//modelCopy.setparameter(Models::FMTintmodelparameters::LENGTH, 30);
+			modelCopy.setConstraints(std::vector<Core::FMTconstraint>());
+			modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
+			//modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 30);
 			/**Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
 			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
 			optModel.doPlanning(false);
 			masks = optModel.getAllMasks(themes);*/
 			//1938
-			std::vector<Core::FMTactualdevelopment> area = modelCopy.getarea();
+			std::vector<Core::FMTactualdevelopment> area = modelCopy.getArea();
 			for (int i = 1; i <= p_periods; ++i)
 			{
 				Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
@@ -138,22 +138,22 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
-		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::getAllMasks", __LINE__, __FILE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::getAllMasks", __LINE__, __FILE__);
 	}
 	return masks;
 }
-void FMTWrapperCore::Tools::writetoproject(const Models::FMTmodel& p_model, const std::string& p_primaryLocation)
+void FMTWrapperCore::Tools::writeToProject(const Models::FMTmodel& p_model, const std::string& p_primaryLocation)
 {
 	try
 	{
 		Parser::FMTmodelparser ModelParser;
-		ModelParser.writetoproject(p_primaryLocation, p_model);
+		ModelParser.writeToProject(p_primaryLocation, p_model);
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.GetExceptionHandler();
-		modelExceptionHandler->raisefromcatch("", "FMTWrapperCore::Tools::writetoproject", __LINE__, __FILE__);
+		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::writetoproject", __LINE__, __FILE__);
 	}
 }
 
@@ -177,20 +177,20 @@ std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(con
 		stanlockExists = true;
 	}
 
-	for (size_t i = 1; i <= p_model.getthemes().size(); ++i)
+	for (size_t i = 1; i <= p_model.getThemes().size(); ++i)
 	{
 		themesrast.push_back(p_rasterPath + "THEME" + std::to_string(i) + ".tif");
 	}
 	if (!stanlockExists) {
-		initialforestmap = areaparser.readRasters(p_model.getthemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001);
+		initialforestmap = areaparser.readRasters(p_model.getThemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001);
 
 	}
 	else {
-		initialforestmap = areaparser.readRasters(p_model.getthemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001, STANLOCK_RASTER_PATH);
+		initialforestmap = areaparser.readRasters(p_model.getThemes(), themesrast, AGE_RASTER_PATH, 1, 0.0001, STANLOCK_RASTER_PATH);
 
 	}
 
-	area = initialforestmap.getarea();
+	area = initialforestmap.getArea();
 
 	return area;
 }

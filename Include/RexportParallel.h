@@ -63,7 +63,7 @@ namespace R
 			std::string,
 			std::vector<std::string>,
 			Core::FMToutputlevel>("@DocString(FMTreplanningtask())")
-			.method("setreplicates", static_cast<void(Parallel::FMTreplanningtask::*)(const int&)>(&Parallel::FMTreplanningtask::setreplicates),"@DocString(FMTreplanningtask::setreplicates)")
+			.method("setreplicates", static_cast<void(Parallel::FMTreplanningtask::*)(const int&)>(&Parallel::FMTreplanningtask::setReplicates),"@DocString(FMTreplanningtask::setreplicates)")
 			.method("setreplanningperiods", &Parallel::FMTreplanningtask::setReplanningPeriods,
 				"@DocString(FMTreplanningtask::setreplanningperiods)");
 
@@ -94,9 +94,9 @@ namespace R
 			.derives<Core::FMTobject>("FMTobject")
 			.constructor("@DocString(FMTtaskhandler())")
 			.constructor<const Parallel::FMTtask&,unsigned int>("@DocString(FMTtaskhandler(const Parallel::FMTtask&,unsigned int))")
-			.method("conccurentrun", &Parallel::FMTtaskhandler::conccurentrun,
+			.method("conccurentrun", &Parallel::FMTtaskhandler::conccurentRun,
 				"@DocString(FMTtaskhandler::conccurentrun)")
-			.method("ondemandrun", &Parallel::FMTtaskhandler::ondemandrun,
+			.method("ondemandrun", &Parallel::FMTtaskhandler::onDemandRun,
 				"@DocString(FMTtaskhandler::ondemandrun)");
 
 	}

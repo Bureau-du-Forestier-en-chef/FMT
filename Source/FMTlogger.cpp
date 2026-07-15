@@ -87,15 +87,15 @@ namespace Logging
 
 		}
 
-	void FMTlogger::redirectofile(const std::string& filename, bool logstamp)
+	void FMTlogger::redirectToFile(const std::string& filename, bool logStamp)
 	{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		filepath = filename;
 		setToFile(filepath);
-		if (m_FileStream && m_FileStream->is_open() && logstamp)
+		if (m_FileStream && m_FileStream->is_open() && logStamp)
 		{
-			this->logstamp();
-			this->logtime();
+			this->logStamp();
+			this->logTime();
 		}
 	}
 
@@ -142,7 +142,7 @@ namespace Logging
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		if (m_FileStream && m_FileStream->is_open())
 			{
-			this->logtime();
+			this->logTime();
 			m_FileStream->close();
 			filepath.clear();
 			}
@@ -153,33 +153,33 @@ namespace Logging
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		if (m_FileStream && m_FileStream->is_open())
 			{
-			this->logtime();
+			this->logTime();
 			m_FileStream->close();
 			m_FileStream = std::unique_ptr<std::ofstream>(nullptr);
 			}
 		}
 
-	std::string FMTlogger::getlogstamp() const
+	std::string FMTlogger::getLogStamp() const
 	{
 		const std::string message = "FMT " + Version::FMTversion().getVersion() +
 			", build: " + Version::FMTversion().getBuildDate();
 		return message;
 	}
 
-	void FMTlogger::logstamp()
+	void FMTlogger::logStamp()
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		*this<< FMTlogger::getlogstamp() << "\n";
+		*this<< FMTlogger::getLogStamp() << "\n";
 		}
 
-	void FMTlogger::logtime()
+	void FMTlogger::logTime()
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		const std::string message = Version::FMTversion().getDatenow();
 		*this << (message);
 		}
 
-	void FMTlogger::setstreamflush(bool flush)
+	void FMTlogger::setStreamFlush(bool flush)
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		flushstream = flush;
@@ -239,7 +239,7 @@ namespace Logging
 		return *this;
 	}
 
-	bool FMTlogger::logwithlevel(const std::string& p_msg, const int& p_messageLevel) const
+	bool FMTlogger::logWithLevel(const std::string& p_msg, const int& p_messageLevel) const
 	{
 		#ifdef FMTWITHOSI
 		if (solverref->logLevel() < p_messageLevel)
@@ -338,7 +338,7 @@ namespace Logging
 			return solverref.get();
 			}
 		
-		void FMTlogger::setlogginglevel(const int& level)
+		void FMTlogger::setLoggingLevel(const int& level)
 		{
 			solverref->setLogLevel(level);
 		}

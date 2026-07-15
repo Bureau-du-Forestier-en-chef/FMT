@@ -82,7 +82,7 @@ void exportSpatial()
 		.derives<Spatial::FMTlayer<Core::FMTdevelopment>>("FMTdevelopmentlayer")
 		.constructor("@DocString(FMTforest())")
 		.constructor<Spatial::FMTforest>("@DocString(FMTforest(Spatial::FMTforest))")
-		.method("getarea",&Spatial::FMTforest::getarea,
+		.method("getarea",&Spatial::FMTforest::getArea,
 			"@DocString(FMTforest(Spatial::getarea))")
 		.method("grow",&Spatial::FMTforest::grow,
 			"@DocString(FMTforest(Spatial::grow))");

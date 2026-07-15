@@ -13,7 +13,7 @@
 int main()
 	{
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
@@ -24,7 +24,7 @@ int main()
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		for (size_t period = 0; period < 1; ++period)
 		{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildPeriod();
 		}
 		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 		const Core::FMTconstraint objective = constraints.at(0);
@@ -39,12 +39,12 @@ int main()
 		testmaps["TEST2"] = 64524.8;
 		if (optimizationmodel.initialSolve())
 			{
-			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 				{
-				if (output.getname().find("TEST")!=std::string::npos)
+				if (output.getName().find("TEST")!=std::string::npos)
 					{
 					const double value = optimizationmodel.getOutput(output, 1, Core::FMToutputlevel::totalonly).at("Total");
-					if (1<std::abs(value-testmaps.at(output.getname())))
+					if (1<std::abs(value-testmaps.at(output.getName())))
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 							"FMTleveltest", __LINE__, primarylocation);

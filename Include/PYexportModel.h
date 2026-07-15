@@ -23,7 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Python
 {
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(greedyreferencebuild_overloads, greedyReferenceBuild, 2, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildPeriod, 0, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getsolution_overloads, getSolution, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getOutput, 2, 3)
@@ -39,7 +39,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseperiod_overloads, erasePeriod,0,1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolution_overloads,setSolution, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolutionbylp_overloads,setSolutionByLp, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addscheduletoobjective_overloads, addScheduleToObjective, 1, 2)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads, getarea, 0, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads, getArea, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(doplanning_overloads,doPlanning,1,2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(showparameters_overloads,showParameters,0,1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseconstraint_overloads,eraseConstraint,1, 2)
@@ -60,7 +60,7 @@ void exportModel()
 	bp::class_<Models::FMTmodel, bp::bases<Core::FMTobject>>("FMTmodel", "@DocString(FMTmodel)")
 			.def_pickle(FMT_pickle_suite<Models::FMTmodel>())
 			.def(bp::init<Models::FMTmodel>())
-            .def("getyields",&Models::FMTmodel::getyields,
+            .def("getyields",&Models::FMTmodel::getYields,
 				"@DocString(FMTmodel::getyields)")
 			.def("setyields", &Models::FMTmodel::setYields,
 				"@DocString(FMTmodel::setyields)")
@@ -70,26 +70,26 @@ void exportModel()
 				"@DocString(FMTmodel::addyieldhandlers)")
 			.def("addtimeyieldhandlers", &Models::FMTmodel::addYieldHandlers<Core::FMTtimeyieldhandler>,
 				"@DocString(FMTmodel::addyieldhandlers)")
-			.def("getname", &Models::FMTmodel::getname,
+			.def("getname", &Models::FMTmodel::getName,
 				"@DocString(FMTmodel::getname)")
-            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period","beforegrowanddeath"), "@DocString(FMTmodel::getarea)"))
+            .def("getarea",&Models::FMTmodel::getArea, getarea_overloads(bp::args("period","beforegrowanddeath"), "@DocString(FMTmodel::getarea)"))
 			.def("setarea", &Models::FMTmodel::setArea,
 				"@DocString(FMTmodel::setarea)")
-			.def("getthemes",&Models::FMTmodel::getthemes,
+			.def("getthemes",&Models::FMTmodel::getThemes,
 				"@DocString(FMTmodel::getthemes)")
 			.def("setthemes", &Models::FMTmodel::setThemes,
 				"@DocString(FMTmodel::setthemes)")
             .def("getactions",&Models::FMTmodel::getactions,
 				"@DocString(FMTmodel::getactions)")
-			.def("setactions", &Models::FMTmodel::setactions,
+			.def("setactions", &Models::FMTmodel::setActions,
 				"@DocString(FMTmodel::setactions)")
-			.def("getoutputs", &Models::FMTmodel::getoutputs,
+			.def("getoutputs", &Models::FMTmodel::getOutputs,
 				"@DocString(FMTmodel::getoutputs)")
 			.def("setoutputs", &Models::FMTmodel::setOutputs,
 				"@DocString(FMTmodel::setoutputs)")
 			.def("getconstraints", &Models::FMTmodel::getconstraints,
 				"@DocString(FMTmodel::getconstraints)")
-			.def("setconstraints", &Models::FMTmodel::setconstraints,
+			.def("setconstraints", &Models::FMTmodel::setConstraints,
 				"@DocString(FMTmodel::setconstraints)")
             .def("gettransitions",&Models::FMTmodel::getTransitions,
 				"@DocString(FMTmodel::gettransitions)")
@@ -118,17 +118,17 @@ void exportModel()
 			.def("getpotentialschedule", &Models::FMTmodel::getPotentialSchedule,
 				getPotentialScheduleOverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
 				//The way to expose overload member functions with different args
-			.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter", &Models::FMTmodel::setparameter,
+			.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter", &Models::FMTmodel::setParameter,
 				"@DocString(FMTmodel::setparameter(const FMTintmodelparameters,const int&))")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter", &Models::FMTmodel::setparameter,
+			.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter", &Models::FMTmodel::setParameter,
 				"@DocString(FMTmodel::setparameter(const FMTdblmodelparameters,const double))")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter", &Models::FMTmodel::setparameter,
+			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter", &Models::FMTmodel::setParameter,
 				"@DocString(FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
-			.def<int (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+			.def<int (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key)const>("getparameter", &Models::FMTmodel::getParameter,
 				"@DocString(FMTmodel::getparameter(const FMTintmodelparameters))")
-			.def<double (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+			.def<double (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter", &Models::FMTmodel::getParameter,
 				"@DocString(FMTmodel::getparameter(const FMTdblmodelparameters))")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter", &Models::FMTmodel::getParameter,
 				"@DocString(FMTmodel::getparameter(const FMTboolmodelparameters))")
 			.def("setcompresstime",&Models::FMTmodel::setCompressTime,
 					"@DocString(FMTmodel::setcompresstime)")
@@ -165,7 +165,7 @@ void exportModel()
 			"@DocString(FMTsemodel::getspatialoutput)")
 		/*.def("getSolution", &Models::FMTsemodel::getSolution,
 			getsolution_overloads(bp::args("period", "withlock"),"@DocString(FMTsemodel::getSolution)"))
-		.def("getarea", &Models::FMTsemodel::getarea,
+		.def("getarea", &Models::FMTsemodel::getArea,
 			getarea_overloads(bp::args("period", "beforegrowanddeath"), "@DocString(FMTsemodel::getarea)"))
 		.def("getOutput", &Models::FMTsemodel::getOutput,
 			getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsemodel::getOutput)"))*/
@@ -244,7 +244,7 @@ void exportModel()
 
 	bp::class_<Models::FMTsrmodel, bp::bases<Models::FMTmodel>>("FMTsrmodel", "@DocString(FMTsrmodel)")
 		.def_pickle(FMT_pickle_suite<Models::FMTsrmodel>())
-		.def("buildperiod", &Models::FMTsrmodel::buildperiod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild", "compressageclass"), "@DocString(FMTsrmodel::buildperiod)"))
+		.def("buildperiod", &Models::FMTsrmodel::buildPeriod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild", "compressageclass"), "@DocString(FMTsrmodel::buildperiod)"))
 		
 		.def("setsolution", &Models::FMTsrmodel::setSolution,
 			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolution)"))
@@ -260,7 +260,7 @@ void exportModel()
 			"@DocString(FMTsrmodel::getRotations)")
 		.def("getGraphStats", &Models::FMTsrmodel::getGraphStats,
 			"@DocString(FMTsrmodel::getGraphStats)")
-		.def("getavailablesolverinterface", &Models::FMTsrmodel::getavailablesolverinterface,
+		.def("getavailablesolverinterface", &Models::FMTsrmodel::getAvailableSolverInterface,
 			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
 		.def("getscheduleproportions", &Models::FMTsrmodel::getScheduleProportions,
 			"@DocString(FMTsrmodel::getscheduleproportions)");
@@ -289,7 +289,7 @@ void exportModel()
 			"@DocString(FMTlpmodel::clearcache)")
 		.def("clearconstraintlocation", &Models::FMTlpmodel::clearConstraintLocation,
 			"@DocString(FMTlpmodel::clearconstraintlocation)")
-		.def("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setstrictlypositivesoutputsmatrix,
+		.def("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setStrictlyPositivesOutputsMatrix,
 			"@DocString(FMTlpmodel::setstrictlypositivesoutputsmatrix)")
 		.def("setconstraint", &Models::FMTlpmodel::setConstraint,
 			"@DocString(FMTlpmodel::setconstraint)")

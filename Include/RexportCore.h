@@ -183,9 +183,9 @@ void exportCore()
 			"@DocString(FMTobject::setdebuglogger)")
 		.method("redirectlogtofile", &Core::FMTobject::redirectLogToFile,
 			"@DocString(FMTobject::redirectlogtofile)")
-		.method("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
+		.method("seterrorstowarnings", &Core::FMTobject::setErrorsToWarnings,
 			"@DocString(FMTobject::seterrorstowarnings)")
-		.method("setmaxwarningsbeforesilenced", &Core::FMTobject::setmaxwarningsbeforesilenced,
+		.method("setmaxwarningsbeforesilenced", &Core::FMTobject::setMaxWarningsBeforeSilenced,
 			"@DocString(FMTobject::setmaxwarningsbeforesilenced)");
 
 		Rcpp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
@@ -285,7 +285,7 @@ void exportCore()
 				.derives<Core::FMTdevelopment>("FMTdevelopment")
 				.constructor("@DocString(FMTactualdevelopment())")
 				.constructor<Core::FMTmask,int,int,double>("@DocString(FMTactualdevelopment(const FMTmask&,const int&,const int&,const int&,const double&))")
-                .method("getarea", &Core::FMTactualdevelopment::getarea,
+                .method("getarea", &Core::FMTactualdevelopment::getArea,
 					"@DocString(FMTactualdevelopment::getarea)")
 				.method("setarea", &Core::FMTactualdevelopment::setArea,
 					"@DocString(FMTactualdevelopment::setarea)")
@@ -313,7 +313,7 @@ void exportCore()
 					"@DocString(FMTaction::operator<)")
 				.method("__str__", &Core::FMTaction::operator std::string,
 					"@DocString(FMTaction::operator std::string)")
-                .method("getname",&Core::FMTaction::getname,
+                .method("getname",&Core::FMTaction::getName,
 					"@DocString(FMTaction::getname)")
                 .method("dorespectlock",&Core::FMTaction::doRespectLock,
 					"@DocString(FMTaction::dorespectlock)")
@@ -400,7 +400,7 @@ void exportCore()
 					"@DocString(FMTtransition::operator!=)")
                 .method("lt",&Core::FMTtransition::operator <,
 					"@DocString(FMTtransition::operator<)")
-                .method("getname",&Core::FMTtransition::getname,
+                .method("getname",&Core::FMTtransition::getName,
 					"@DocString(FMTtransition::getname)");
 
 			Rcpp::class_<Core::FMToutputsource>("FMToutputsource", "@DocString(FMToutputsource)")
@@ -423,7 +423,7 @@ void exportCore()
 				.constructor<std::string,std::string,std::string,
 					std::vector<Core::FMToutputsource>,
 					std::vector<Core::FMToperator>>("@DocString(FMToutput(const std::string&,const std::string&,const int&,std::vector<FMToutputsource>&,std::vector<FMToperator>&))")
-				.method("getname",&Core::FMToutput::getname,
+				.method("getname",&Core::FMToutput::getName,
 					"@DocString(FMToutput::getname)")
 				.method("getdescription",&Core::FMToutput::getDescription,
 					"@DocString(FMToutput::getdescription)")
@@ -459,7 +459,7 @@ void exportCore()
 					"@DocString(FMTtheme::operator==)")
 				.method("getattributes", &Core::FMTtheme::getAttributes,
 					"@DocString(FMTtheme::getattributes)")
-				.method("getname", &Core::FMTtheme::getname,
+				.method("getname", &Core::FMTtheme::getName,
 					"@DocString(FMTtheme::getname)")
 				.method("getaggregatesasdataframe", &Core::FMTtheme::getAggregatesAsDataFrame,
 					"@DocString(FMTtheme::getaggregatesasdataframee)")

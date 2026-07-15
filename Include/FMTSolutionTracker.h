@@ -59,10 +59,10 @@ namespace Spatial
 			std::vector<size_t>m_Solution;
 			std::vector<std::vector<size_t>>m_ConstraintsFamilies;
 			const static size_t m_SOLUTION_RESIZE_FACTOR = 2;
-			void _ModifySolution(size_t p_family,
+			void _modifySolution(size_t p_family,
 								std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_It,
 								double p_sense);
-			void _BuildConstraintsFamilies(const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
+			void _buildConstraintsFamilies(const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
 											size_t p_NumberOfFamilies);
 		};
 }

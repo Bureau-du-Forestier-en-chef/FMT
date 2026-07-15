@@ -56,7 +56,7 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		This functions writes (constants) to a file (location).
 		*/
         void write(const Core::FMTconstants& constants, const std::string& location) const;
-		// DocString: FMTconstantparser:_FillConstants
+		// DocString: FMTconstantparser:_fillConstants
 		/**
 		This functions writes (constants) to a file (location).
 		*/
@@ -64,7 +64,7 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		// DocString: FMTparser::rxconstant
 		///Regex to capture constant.
 		const static boost::regex rxconstant;
-		// DocString: FMTconstantparser::_FillConstants
+		// DocString: FMTconstantparser::_fillConstants
 		/**
 		@brief fill the constants with the string
 		@param[out] p_constants the filleds constants
@@ -72,7 +72,7 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		@param[in] p_allowNonValid allow non valid string to enter method
 		@return true if added a constant else false
 		*/
-		bool _FillConstants(Core::FMTconstants& p_constants, 
+		bool _fillConstants(Core::FMTconstants& p_constants, 
 			const std::string& p_input, bool p_allowNonValid = false) const;
 		// DocString: FMTparser::getCleanLinewfor
 		/**

@@ -436,14 +436,14 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		*/
 		FMTSpatialSchedule presolve(const Core::FMTmaskfilter& p_filter,
 			FMTSpatialGraphs& p_Graphs,size_t p_ReserveSize) const;
-		// DocString: FMTSpatialSchedule::getarea
+		// DocString: FMTSpatialSchedule::getArea
 		/**
 		@brief Get the area of a given period based on the solution of the model.
 		@param[in] period the period selected
 		@param[in] beforegrowanddeath true if we want before the growth (true) or after (false)
 		@return the vector of actualdevelopment...
 		*/
-		std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
+		std::vector<Core::FMTactualdevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
 
 		FMTSpatialSchedule getBaseSchedule(const FMTSpatialGraphs& p_SpatialGraph) const;
 		void setSpatialGraphs(const Spatial::FMTSpatialSchedule& p_ToCopy, FMTSpatialGraphs& p_SpatialGraph);
@@ -519,11 +519,11 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		//buffer lookup for events
 		static const int m_BUFFER_LOOKUP = 1;
 		
-		// DocString: FMTSpatialSchedule::_EvaluateSpatialAdjacency
+		// DocString: FMTSpatialSchedule::_evaluateSpatialAdjacency
 		 /**
 		evaluate adjacency conflicts for each events
 		*/
-		double _EvaluateSpatialAdjacency(
+		double _evaluateSpatialAdjacency(
 			int p_period,
 			int p_greenup,
 			int p_lowerLookup,
@@ -531,7 +531,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 			bool p_testLower,
 			const std::vector<bool>& p_actions) const;
 
-		double _EvaluateSpatialGroups(
+		double _evaluateSpatialGroups(
 			const FMTSpatialGraphs& p_SpatialGraph,
 			int p_period,
 			int p_greenup,
@@ -541,7 +541,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 			bool p_testLower,
 			const std::vector<bool>& p_actions) const;
 
-		std::vector<FMTeventcontainer::const_iterator> _GetSpatialGroupsConflict(
+		std::vector<FMTeventcontainer::const_iterator> _getSpatialGroupsConflict(
 			const FMTSpatialGraphs& p_SpatialGraph,
 			int p_period,
 			int p_greenup,
@@ -551,7 +551,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 			bool p_testLower,
 			const std::vector<bool>& p_actions) const;
 
-		std::vector<FMTeventcontainer::const_iterator> _GetAdjacencyConflict(
+		std::vector<FMTeventcontainer::const_iterator> _getAdjacencyConflict(
 			int p_period,
 			int p_greenup,
 			int p_lowerLookup,
@@ -560,19 +560,19 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 			const std::vector<bool>& p_actions) const;
 
 
-		size_t _GetNonSpatialCellsCount() const;
+		size_t _getNonSpatialCellsCount() const;
 
-		static double _GetExponentialFactorization(double p_value, double p_factor);
+		static double _getExponentialFactorization(double p_value, double p_factor);
 
-		double _GetConstraintFloorValue(double p_inValue) const;
+		double _getConstraintFloorValue(double p_inValue) const;
 
-		double _GetRulesEvaluation(const std::vector<FMTPatchRules>& p_rules,
+		double _getRulesEvaluation(const std::vector<FMTPatchRules>& p_rules,
 			const FMTSpatialGraphs& p_SpatialGraph) const;
 
-		static std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>> _PutTabouInCache(
+		static std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>> _putTabouInCache(
 			const Models::FMTmodel& p_model,
 			std::map<Core::FMTdevelopment, std::vector<bool>>& p_tabou);
-		static void _SetTabouOutOfCache(
+		static void _setTabouOutOfCache(
 			std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>>& p_GoodValues);
 
 		

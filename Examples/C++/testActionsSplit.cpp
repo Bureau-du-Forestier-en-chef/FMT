@@ -17,7 +17,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
@@ -63,17 +63,17 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		errors.push_back(Exception::FMTexc::FMTempty_schedules);
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-		ModelParser.seterrorstowarnings(errors);
+		ModelParser.setErrorsToWarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
 		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
 		Models::FMTlpmodel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
-		Optimization1.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
+		Optimization1.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+		Optimization1.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		Optimization1.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
 		Optimization1.doPlanning(false, SCHEDULES);
 		const Models::FMTmodel SPLITTED_MODEL = MODELS.at(0).splitActions(SPLITTED, SPLITTED_MASK);
-		ModelParser.writetoproject(OUTPUT_DIRECTORY + SCENARIO +".pri", SPLITTED_MODEL);
+		ModelParser.writeToProject(OUTPUT_DIRECTORY + SCENARIO +".pri", SPLITTED_MODEL);
 		if (!SCHEDULES.empty())
 			{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARYm_location).parent_path();
 		const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(CARTE)).string();
 		const int SIZE = 2000;
-		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAPm_location, SIZE, Simulation.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
+		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAPm_location, SIZE, Simulation.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
 		Simulation.setInitialMapping(FOREST);
 		std::vector<Core::FMTtransition>NewTransitions;
 		for (const Core::FMTtransition& TRANSITION : Simulation.getTransitions())
@@ -96,9 +96,9 @@ int main(int argc, char* argv[])
 			NewTransitions.push_back(TRANSITION.single());
 			}
 		Simulation.setTransitions(NewTransitions);
-		Simulation.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-		Simulation.FMTmodel::setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
-		Simulation.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
+		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
+		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
 		Simulation.doPlanning(true, READSCHEDULE);
 	}else {
 		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";

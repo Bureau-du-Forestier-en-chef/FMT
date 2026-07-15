@@ -193,7 +193,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 			{
 				std::vector<double>maxelements(variablestoignore.size(), 1.0);
 				solver.addRow(static_cast<int>(variablestoignore.size()), &variablestoignore[0], &maxelements[0], 0, 0);
-				solver.setRowName("rejectednodes_" + std::string(this->getmask()), cid);
+				solver.setRowName("rejectednodes_" + std::string(this->getMask()), cid);
 				rejectednodescid = cid;
 			}
 
@@ -263,7 +263,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 				if (targetedvariables.size() > periodics->second.size())
 				{
 					solver.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], std::numeric_limits<double>::lowest(), 0);
-					solver.setRowName("schemenode_"+std::string(this->getmask())+"_P"+std::to_string(periodics->first), constraintid);
+					solver.setRowName("schemenode_"+std::string(this->getMask())+"_P"+std::to_string(periodics->first), constraintid);
 				}
 				++constraintid;
 			}
@@ -283,12 +283,12 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 			for (size_t opid = 0; opid < openingbinaries.size();++opid)
 			{
 				solver.addCol(0, nullptr, nullptr, 0, 1);
-				solver.setColName("schemebin_"+std::string(this->getmask())+"_binid_"+std::to_string(opid), openingbinaries.at(opid));
+				solver.setColName("schemebin_"+std::string(this->getMask())+"_binid_"+std::to_string(opid), openingbinaries.at(opid));
 			}
 			maximalschemesconstraint = constraintid;
 			std::vector<double>maxelements(openingbinaries.size(), 1.0);
 			solver.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
-			solver.setRowName("schemechoice_"+std::string(this->getmask()), constraintid);
+			solver.setRowName("schemechoice_"+std::string(this->getMask()), constraintid);
 		}
 	}
 
@@ -393,7 +393,7 @@ bool FMToperatingareascheme::unboundDualScheme(const double* rowactivities,std::
 		minimalopeningarea = threshold * _area;
 		}
 	size_t cid = 0;
-	//std::cout << std::string(getmask()) << " ";
+	//std::cout << std::string(getMask()) << " ";
 	for (const std::vector<int>& constraints : openingconstraints)
 		{
 		if (!constraints.empty())
@@ -698,7 +698,7 @@ FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,co
 	}
 
 
-void FMToperatingareascheme::setconstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices,
+void FMToperatingareascheme::setConstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices,
 	const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
 	const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph, Models::FMTlpsolver& solver,
 	const double* primalsolution,
@@ -973,7 +973,7 @@ std::vector<size_t> FMToperatingareascheme::getPotentialDualSchemes(
 						_exhandler->raise(Exception::FMTexc::FMTunreachable_threshold,
 							"Initial threshold of " + std::to_string(threshold) +
 							". New threshold set at " + std::to_string(tempThresholds[index]) +
-							" for " + std::string(getmask()),
+							" for " + std::string(getMask()),
 							"FMToperatingareascheme::_maxNearThresholdActivityRows",
 							__LINE__, __FILE__);
 					}
@@ -1303,7 +1303,7 @@ FMToperatingareaschemecomparator::FMToperatingareaschemecomparator(const Core::F
 	}
 bool FMToperatingareaschemecomparator::operator()(const FMToperatingareascheme& oparea) const
 	{
-	return (oparea.getmask() == mask);
+	return (oparea.getMask() == mask);
 	}
 
 

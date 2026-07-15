@@ -99,7 +99,7 @@ std::string FMTversion::getLicense(bool french)
     {
     std::string fulllicense;
     try{
-        std::string licenselocation = getruntimelocation();
+        std::string licenselocation = getRuntimeLocation();
         licenselocation += "\\LICENSES";
         if (!boost::filesystem::is_directory(boost::filesystem::path(licenselocation)))
             {
@@ -129,7 +129,7 @@ std::string FMTversion::getLicense(bool french)
         }
     }catch(...)
         {
-        _exhandler->printexceptions("", "FMTversion::getLicense", __LINE__, __FILE__);
+        _exhandler->printExceptions("", "FMTversion::getLicense", __LINE__, __FILE__);
         }
     return fulllicense;
     }

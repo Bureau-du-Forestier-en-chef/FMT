@@ -42,14 +42,14 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		// DocString: FMTactionparser::m_SERIES_MATCH
 		///This regex catchesthe series.
 		const static boost::regex m_SERIES_MATCH;
-		// DocString: FMTactionparser::_GetSerie
+		// DocString: FMTactionparser::_getSerie
 		/**
 		@brief get a serie from a line
 		@param[in] p_line parsed line
 		@param[in] p_actions the actions generated
 		@return a valid serie
 		*/
-		Core::FMTSerie _GetSerie(const std::string& p_line,
+		Core::FMTSerie _getSerie(const std::string& p_line,
 			const std::vector<Core::FMTaction>& p_actions) const;
 		// DocString: FMTactionparser::sameActionAs
 		/**

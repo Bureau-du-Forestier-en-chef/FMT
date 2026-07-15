@@ -48,7 +48,7 @@ namespace Core
 		return std::unique_ptr<FMTdevelopment>(new FMTfuturdevelopment(*this));
 		}
 
-	double FMTfuturdevelopment::getarea() const
+	double FMTfuturdevelopment::getArea() const
 		{
 		return 0;
 		}

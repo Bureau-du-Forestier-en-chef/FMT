@@ -34,7 +34,7 @@ namespace Heuristics
 
 	Core::FMToutput FMToperatingareaclusterbinary::getOutputIntersect(const Core::FMToutput& output,const std::vector<Core::FMTtheme>& themes) const
 		{
-		return output.intersectWithMask(getmask(),themes);
+		return output.intersectWithMask(getMask(),themes);
 		}
 
 	std::vector<FMToperatingareaclusterbinary> FMToperatingareaclusterbinary::filterNeighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const
@@ -50,14 +50,14 @@ namespace Heuristics
 			std::map<Core::FMTmask, std::vector<Core::FMTmask>>neighbors;
 			for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
 				{
-				neighbors[mainbinary.getmask()] = std::vector<Core::FMTmask>(1, this->getmask());
+				neighbors[mainbinary.getMask()] = std::vector<Core::FMTmask>(1, this->getMask());
 				}
 			for (std::map<Core::FMTmask, std::vector<Core::FMTmask>>::iterator dcit = neighbors.begin();
 				dcit != neighbors.end(); dcit++)
 				{
 					for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
 					{
-						if (dcit->first != mainbinary.getmask())
+						if (dcit->first != mainbinary.getMask())
 						{
 							const std::vector<Core::FMTmask> baseneighbors = mainbinary.getNeighbors();
 							dcit->second.insert(dcit->second.end(), baseneighbors.begin(), baseneighbors.end());
@@ -66,8 +66,8 @@ namespace Heuristics
 				}
 			for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
 				{
-				if (std::find(neighbors[mainbinary.getmask()].begin(), neighbors[mainbinary.getmask()].end(), mainbinary.getmask()) != neighbors[mainbinary.getmask()].end()||
-                    std::find(neighbors[mainbinary.getmask()].begin(), neighbors[mainbinary.getmask()].end(), this->getmask()) != neighbors[mainbinary.getmask()].end())
+				if (std::find(neighbors[mainbinary.getMask()].begin(), neighbors[mainbinary.getMask()].end(), mainbinary.getMask()) != neighbors[mainbinary.getMask()].end()||
+                    std::find(neighbors[mainbinary.getMask()].begin(), neighbors[mainbinary.getMask()].end(), this->getMask()) != neighbors[mainbinary.getMask()].end())
 					{
 					finalbinaries.push_back(mainbinary);
 					}

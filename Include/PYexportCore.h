@@ -110,7 +110,7 @@ void exportCore()
 			"@DocString(FMTobject::settasklogger")
 		.def("redirectlogtofile", &Core::FMTobject::redirectLogToFile,
 			"@DocString(FMTobject::redirectlogtofile)")
-		.def("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
+		.def("seterrorstowarnings", &Core::FMTobject::setErrorsToWarnings,
 			"@DocString(FMTobject::seterrorstowarnings)");
 
 		bp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)");
@@ -270,7 +270,7 @@ void exportCore()
 		bp::class_<Core::FMTactualdevelopment, bp::bases<Core::FMTdevelopment>>("FMTactualdevelopment", "@DocString(FMTactualdevelopment)")
 				.def(bp::init<const Core::FMTmask&, const int&, const int&, const double&>())
 				.def(bp::init<Core::FMTactualdevelopment>())
-			    .def("getarea", &Core::FMTactualdevelopment::getarea,
+			    .def("getarea", &Core::FMTactualdevelopment::getArea,
 					"@DocString(FMTactualdevelopment::getarea)")
 				.def("setarea", &Core::FMTactualdevelopment::setArea,
 					"@DocString(FMTactualdevelopment::setarea)")
@@ -305,15 +305,15 @@ void exportCore()
 					"@DocString(FMTaction::operator<)")
 				.def("__str__", &Core::FMTaction::operator std::string,
 					"@DocString(FMTaction::operator std::string)")
-                .def("getname",&Core::FMTaction::getname,
+                .def("getname",&Core::FMTaction::getName,
 					"@DocString(FMTaction::getname)")
                 .def("dorespectlock",&Core::FMTaction::doRespectLock,
 					"@DocString(FMTaction::dorespectlock)")
-				.def("useyield", &Core::FMTaction::useyield,
+				.def("useyield", &Core::FMTaction::useYield,
 					"@DocString(FMTaction::useyield)")
-				.def("push_aggregate", &Core::FMTaction::push_aggregate,
+				.def("push_aggregate", &Core::FMTaction::pushAggregate,
 					"@DocString(FMTaction::push_aggregate)")
-				.def("getaggregates", &Core::FMTaction::getaggregates,
+				.def("getaggregates", &Core::FMTaction::getAggregates,
 					"@DocString(FMTaction::getaggregates)")
 				.def("update", &Core::FMTaction::update,
 					"@DocString(FMTaction::update)")
@@ -374,7 +374,7 @@ void exportCore()
 					"@DocString(FMTyields::push_backagehandler)")
 				.def("push_back", &Core::FMTyields::pushBackTimeHandler,
 					"@DocString(FMTyields::push_backtimehandler)")
-				.def("getallyieldnames", &Core::FMTyields::getallyieldnames,
+				.def("getallyieldnames", &Core::FMTyields::getAllYieldNames,
 					"@DocString(FMTyields::getallyieldnames)")
 				.def("getfromfactor",&Core::FMTyields::getFromFactor,
 					"@DocString(FMTyields::getfromfactor)")
@@ -403,7 +403,7 @@ void exportCore()
 					"@DocString(FMTtransition::operator!=)")
                 .def("__lt__",&Core::FMTtransition::operator <,
 					"@DocString(FMTtransition::operator<)")
-                .def("getname",&Core::FMTtransition::getname,
+                .def("getname",&Core::FMTtransition::getName,
 					"@DocString(FMTtransition::getname)");
 
 
@@ -438,7 +438,7 @@ void exportCore()
 					const std::vector<Core::FMToutputsource>&,
 					const std::vector<Core::FMToperator>&>())
 				.def_pickle(FMT_pickle_suite<Core::FMTtransition>())
-                .def("getname",&Core::FMToutput::getname,
+                .def("getname",&Core::FMToutput::getName,
 					"@DocString(FMToutput::getname)")
                 .def("getdescription",&Core::FMToutput::getDescription,
 					"@DocString(FMToutput::getdescription)")
@@ -466,7 +466,7 @@ void exportCore()
 					"@DocString(FMTtheme::operator std::string)")
 				.def("__eq__", &Core::FMTtheme::operator ==,
 					"@DocString(FMTtheme::operator==)")
-				.def("getaggregates", &Core::FMTtheme::getaggregates,
+				.def("getaggregates", &Core::FMTtheme::getAggregates,
 					"@DocString(Core::FMTtheme::getaggregates)")
 				.def("getstart", &Core::FMTtheme::getStart,
 					bp::return_value_policy<bp::return_by_value>(),
@@ -478,7 +478,7 @@ void exportCore()
 					bp::return_value_policy<bp::return_by_value>(),
 					"@DocString(Core::FMTtheme::getattributenames)")
 				.def("getattributes", &Core::FMTtheme::getAttributes, getattributes_overloads(bp::args("value","aggregate_source"), "@DocString(FMTtheme::getattributes)"))
-				.def("getname", &Core::FMTtheme::getname,
+				.def("getname", &Core::FMTtheme::getName,
 					"@DocString(FMTtheme::getname)");
 
 			bp::class_<Core::FMTconstants>("FMTconstants","@DocString(FMTconstants)");

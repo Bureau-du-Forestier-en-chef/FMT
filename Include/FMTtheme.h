@@ -182,11 +182,11 @@ class FMTEXPORT FMTtheme : public FMTobject
 		{
 			return m_id;
 		}
-		// DocString: FMTtheme::getname
+		// DocString: FMTtheme::getName
 		/**
 		Getter for the FMTtheme name.
 		*/
-		inline std::string getname() const
+		inline std::string getName() const
 		{
 			return m_name;
 		}
@@ -204,11 +204,11 @@ class FMTEXPORT FMTtheme : public FMTobject
 		aggregate source map is used.
 		*/
 		std::vector<std::string>getAttributes(const std::string& p_value, bool p_aggregate_source = false) const;
-		// DocString: FMTtheme::getbaseattributes
+		// DocString: FMTtheme::getBaseAttributes
 		/**
 		Get a reference to the base attributes of the theme.
 		*/
-		inline const std::vector<std::string>& getbaseattributes() const
+		inline const std::vector<std::string>& getBaseAttributes() const
 		{
 			return m_attributes;
 		}
@@ -266,11 +266,11 @@ class FMTEXPORT FMTtheme : public FMTobject
 		static bool checkMask(const std::vector<Core::FMTtheme>& p_themes,
 			const std::vector<std::string>& p_values, std::string& p_mask,
 			const std::string& p_otherinformation);
-		// DocString: FMTobject::getaggregates
+		// DocString: FMTobject::getAggregates
 		/**
 		Returns the aggregates of the theme.
 		*/
-		std::vector<std::string>getaggregates() const;
+		std::vector<std::string>getAggregates() const;
 	protected:
 		// DocString: FMTtheme::id
 		/// Id is the id of the theme first theme in the landscape section is number 1.
@@ -300,7 +300,7 @@ class FMTEXPORT FMTtheme : public FMTobject
 				buildAttributeLocations();
 			}catch (...)
 				{
-				_exhandler->printexceptions("", "FMTtheme::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTtheme::serialize", __LINE__, __FILE__);
 				}
 		}
 		// DocString: FMTtheme::attributes
@@ -332,51 +332,51 @@ class FMTEXPORT FMTtheme : public FMTobject
 		Convert an attribute|aggregate|? (value) to a bitset for the entire theme size.
 		*/
 		 boost::dynamic_bitset<uint8_t> strToBits(const std::string& p_value) const;
-		// DocString: FMTtheme::_GetCount
+		// DocString: FMTtheme::_getCount
 		/**
 		@brief Get the turned on bits of the theme subset.
 		@param[in] the mask.
 		@return the count
 		*/
-		size_t _GetCount(const Core::FMTmask& p_mask) const;
-		// DocString: FMTtheme::_GetFlipCount
+		size_t _getCount(const Core::FMTmask& p_mask) const;
+		// DocString: FMTtheme::_getFlipCount
 		/**
 		@brief Get the turned off bits of the theme subset.
 		@param[in] the mask.
 		@return the count
 		*/
-		size_t _GetFlipCount(const Core::FMTmask& p_mask) const;
-		// DocString: FMTtheme::_FindFirstFlip
+		size_t _getFlipCount(const Core::FMTmask& p_mask) const;
+		// DocString: FMTtheme::_findFirstFlip
 		/**
 		@brief Get the turned off bits of the theme subset.
 		@param[in] the mask.
 		@return the count
 		*/
-		size_t _FindFirstFlip(const Core::FMTmask& p_mask) const;
-		// DocString: FMTtheme::_FindFirst
+		size_t _findFirstFlip(const Core::FMTmask& p_mask) const;
+		// DocString: FMTtheme::_findFirst
 		/**
 		@brief Get the turned on bits of the theme subset.
 		@param[in] the mask.
 		@return the count
 		*/
-		size_t _FindFirst(const Core::FMTmask& p_mask) const;
-		// DocString: FMTtheme::_IsEqual
+		size_t _findFirst(const Core::FMTmask& p_mask) const;
+		// DocString: FMTtheme::_isEqual
 		/**
 		@brief check if mask subset is equal to p_bits
 		@param[in] the mask.
 		@param[in] the bits to check.
 		@return true if equal
 		*/
-		bool _IsEqual(const Core::FMTmask& p_mask,
+		bool _isEqual(const Core::FMTmask& p_mask,
 			const boost::dynamic_bitset<uint8_t>& p_bits) const;
-		// DocString: FMTtheme::_IsFlipEqual
+		// DocString: FMTtheme::_isFlipEqual
 		/**
 		@brief check if fmask subset is equal to flipped p_bits
 		@param[in] the mask.
 		@param[in] the bits to check.
 		@return true if equal
 		*/
-		bool _IsFlipEqual(const Core::FMTmask& p_mask,
+		bool _isFlipEqual(const Core::FMTmask& p_mask,
 			const boost::dynamic_bitset<uint8_t>& p_bits) const;
 		// DocString: FMTtheme::bitsToStr
 		/**
@@ -408,12 +408,12 @@ class FMTEXPORT FMTtheme : public FMTobject
 		Fill up the aggregates vectors, vector<int> = themeid startingfrom 1, vector<std::string> = attributes, vector<std::string> = aggregates.
 		*/
 		void fillupAggregates(std::vector<int>& p_themeids, std::vector<std::string>& p_locattributes, std::vector<std::string>& p_locaggregates) const;
-		// DocString: FMTtheme::push_aggregate
+		// DocString: FMTtheme::pushAggregate
 		/**
 		Push a new aggregate.
 		*/
-		void push_aggregate(const std::string& p_aggregatename);
-		// DocString: FMTtheme::push_aggregate
+		void pushAggregate(const std::string& p_aggregatename);
+		// DocString: FMTtheme::pushAggregate
 		/**
 		Push a new aggregate value.
 		*/

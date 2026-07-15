@@ -67,7 +67,7 @@ Core::FMTmask FMTtransitionparser::getSource(std::string& line, Core::FMTspec& s
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getSource", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at line " + line,"FMTtransitionparser::getSource", __LINE__, __FILE__, m_section);
 		}
 	return Core::FMTmask();
     }
@@ -182,7 +182,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getMaskTran(const std:
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getMaskTran", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at line " + line,"FMTtransitionparser::getMaskTran", __LINE__, __FILE__, m_section);
 		}
     return alltrans;
     }
@@ -318,7 +318,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 					if (transition.isLeaking())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTleakingtransition,
-							transition.getname(),"FMTtransitionparser::read", __LINE__, __FILE__, m_section);
+							transition.getName(),"FMTtransitionparser::read", __LINE__, __FILE__, m_section);
 					}
 					else {
 						transitions.push_back(transition);
@@ -331,7 +331,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMTtransitionparser::read", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTtransitionparser::read", __LINE__, __FILE__, m_section);
 		}
     return transitions;
     }
@@ -351,7 +351,7 @@ void FMTtransitionparser::write(const std::vector<Core::FMTtransition>& transiti
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("at "+location,"FMTtransitionparser::write", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at "+location,"FMTtransitionparser::write", __LINE__, __FILE__, m_section);
 		}
     }
 
@@ -395,7 +395,7 @@ void FMTtransitionparser::writeGCBM(const std::vector<Core::FMTGCBMtransition>& 
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("at " + location, "FMTtransitionparser::writeGCBM", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at " + location, "FMTtransitionparser::writeGCBM", __LINE__, __FILE__, m_section);
 	}
 
 	}
@@ -415,7 +415,7 @@ std::vector<Core::FMTGCBMtransition>FMTtransitionparser::readGCBM(const std::str
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("at " + location, "FMTtransitionparser::readGCBM", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at " + location, "FMTtransitionparser::readGCBM", __LINE__, __FILE__, m_section);
 	}
 	return transitions;
 	}

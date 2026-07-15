@@ -15,19 +15,19 @@ void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
 {
 	const std::string agerast = rastpath + "AGE.tif";
 	std::vector<std::string> themesrast;
-	for (int i = 1; i <= model.getthemes().size(); i++)
+	for (int i = 1; i <= model.getThemes().size(); i++)
 	{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 	}
 	Parser::FMTareaparser areaparser;
-	const Spatial::FMTforest initialforestmap = areaparser.readRasters(model.getthemes(), themesrast, agerast, 1, 0.0001);
+	const Spatial::FMTforest initialforestmap = areaparser.readRasters(model.getThemes(), themesrast, agerast, 1, 0.0001);
 	model.setInitialMapping(initialforestmap);
 }
 
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	std::string modellocation;
 	std::string primarylocation;
 	std::string scenario;
@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
-	mparser.seterrorstowarnings(errors);
-	mparser.setmaxwarningsbeforesilenced(10000000);
+	mparser.setErrorsToWarnings(errors);
+	mparser.setMaxWarningsBeforeSilenced(10000000);
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
@@ -87,10 +87,10 @@ int main(int argc, char* argv[])
 	const std::string rastpath = modellocation + "rasters/";
 	setMapping(rastpath, simulationmodel);
 	//mparser.write(simulationmodel, "D:/test/");
-	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 30);
-	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+	simulationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+	simulationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 30);
+	simulationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+	simulationmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doPlanning(false, schedules.at(0));
 	simulationmodel.logConstraintsInfeasibilities();
 	const Spatial::FMTSpatialSchedule& SPATIAL_SCHEDULE = simulationmodel.getSpSchedule();
@@ -110,15 +110,15 @@ int main(int argc, char* argv[])
 		areaParser.writeForest(SPATIAL_SCHEDULE.getForestPeriod(period), simulationmodel.getthemes(), themesrast, NAME + "AGE.tif", NAME + "LOCK.tif");
 	}*/
 	Parser::FMTareaparser areaParser;
-	std::vector<Core::FMTtheme>selected(1, simulationmodel.getthemes().at(2));
+	std::vector<Core::FMTtheme>selected(1, simulationmodel.getThemes().at(2));
 	areaParser.writeDisturbances(outdir, SPATIAL_SCHEDULE, simulationmodel.getactions(), selected, length);
-	for (const Core::FMToutput& OUTOUT : simulationmodel.getoutputs())
+	for (const Core::FMToutput& OUTOUT : simulationmodel.getOutputs())
 		{
-		if (std::find(spatialOutputs.begin(), spatialOutputs.end(), OUTOUT.getname())!= spatialOutputs.end())
+		if (std::find(spatialOutputs.begin(), spatialOutputs.end(), OUTOUT.getName())!= spatialOutputs.end())
 			{
 			for (int period = 1; period <= length;++period)
 				{
-				const std::string NAME = outdir + "PERIOD_"+std::to_string(period)+"_" + OUTOUT.getname() + ".tif";
+				const std::string NAME = outdir + "PERIOD_"+std::to_string(period)+"_" + OUTOUT.getName() + ".tif";
 				const double TOTAL_VALUE = simulationmodel.getOutput(OUTOUT, period, Core::FMToutputlevel::totalonly)["Total"];
 				double FULL_VALUE = 0;
 				for (const auto& STANDARD : simulationmodel.getOutput(OUTOUT, period, Core::FMToutputlevel::standard))

@@ -15,7 +15,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		Parser::FMTmodelparser modelparser;
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		std::string primarylocation;
 		std::string scenario;
 		std::string outputname;
@@ -58,13 +58,13 @@ int main(int argc, char *argv[])
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
-		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
 		optimizationmodel.doPlanning(false, schedules);
 		bool gotovoltotrec = false;
-		for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+		for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 			{
-			if (output.getname() == outputname)
+			if (output.getName() == outputname)
 				{
 				gotovoltotrec = true;
 				const double returnedvalue = optimizationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total");

@@ -13,7 +13,7 @@
 int main()
 	{
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
@@ -50,7 +50,7 @@ int main()
 				}
 			for (size_t period = 0; period < scenariolength; ++period)
 			{
-				optimizationmodel.buildperiod();
+				optimizationmodel.buildPeriod();
 			}
 			std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 			const Core::FMTconstraint objective = constraints.at(0);

@@ -44,11 +44,11 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		Swap a FMTlpsolver.
 		*/
 		void swap(FMTlpsolver& rhs);
-		// DocString: FMTlpsolver::passinlogger
+		// DocString: FMTlpsolver::passInLogger
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 		// DocString: FMTlpsolver::unmarkHotStart
 		/**
 		Clear all cached data in osisolverinterface.
@@ -523,7 +523,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTlpsolver::save", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTlpsolver::save", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTlpsolver::load
@@ -545,7 +545,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTlpsolver::load", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTlpsolver::load", __LINE__, __FILE__);
 			}
 
 		}
@@ -564,16 +564,16 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		std::vector<std::pair<std::string, std::string>>m_WarmStartParameters;
 		
 	#ifdef FMTWITHMOSEK
-		// DocString: FMTlpsolver::_MSKOptimizeWithParameters
+		// DocString: FMTlpsolver::_mskOptimizeWithParameters
 		/**
 		@brief Function used to set the parameters of an MSK task and optimize
 		*/
-		int _MSKOptimizeWithParameters();
-		// DocString: FMTlpsolver::_MSKOptimizeWithDefaultParameters
+		int _mskOptimizeWithParameters();
+		// DocString: FMTlpsolver::_mskOptimizeWithDefaultParameters
 		/**
 		@brief Set default parameters for mosek
 		*/
-		int _MSKOptimizeWithDefaultParameters();
+		int _mskOptimizeWithDefaultParameters();
 	#endif
 		// DocString: FMTlpsolver::_setCLPOptions
 		/**

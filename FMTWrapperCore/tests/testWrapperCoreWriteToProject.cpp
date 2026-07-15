@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	ModelParser.seterrorstowarnings(errors);
+	ModelParser.setErrorsToWarnings(errors);
 
 	// On lit le projet puis on fabrique plusieurs models pour simuler une cache
 	// contenant un model de base + des sc�narios d�riv�s (noms distincts).
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	// FMTForm::writetoprojectfromcache en bouclant sur la cache.
 	for (const Models::FMTmodel& MODEL : models)
 	{
-		FMTWrapperCore::Tools::writetoproject(MODEL, OUTPUT_PRI.string());
+		FMTWrapperCore::Tools::writeToProject(MODEL, OUTPUT_PRI.string());
 	}
 
 	std::vector<std::string> extensions = { ".pri", ".lan", ".are", ".yld", ".act", ".trn" };

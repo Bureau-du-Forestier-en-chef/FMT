@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	std::string PRIMARY;
 	std::string SCENARIO;
 	std::string  OUTPUT;
@@ -53,24 +53,24 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	mparser.seterrorstowarnings(errors);
+	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>SCENARIOS(1, SCENARIO);
 	const std::vector<Models::FMTmodel> MODELS = mparser.readproject(PRIMARY, SCENARIOS);
 	Models::FMTnssmodel NssModel(MODELS.at(0),0);
-	NssModel.setparameter(Models::FMTintmodelparameters::UPDATE, 1);
+	NssModel.setParameter(Models::FMTintmodelparameters::UPDATE, 1);
 	std::vector<Core::FMTactualdevelopment>newDevs;
-	for (Core::FMTactualdevelopment dev : NssModel.getarea())
+	for (Core::FMTactualdevelopment dev : NssModel.getArea())
 		{
 		dev.setPeriod(PERIOD-1);
 		newDevs.push_back(dev);
 		}
 	NssModel.setArea(newDevs);
-	NssModel.setparameter(Models::FMTintmodelparameters::LENGTH, LENGTH);
+	NssModel.setParameter(Models::FMTintmodelparameters::LENGTH, LENGTH);
 	NssModel.doPlanning(true);
 	Core::FMToutput sumOutput;
-	for (const Core::FMToutput& output : NssModel.getoutputs())
+	for (const Core::FMToutput& output : NssModel.getOutputs())
 	{
-		if (output.getname() == OUTPUT)
+		if (output.getName() == OUTPUT)
 		{
 			sumOutput = output;
 		}

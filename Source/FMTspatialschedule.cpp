@@ -90,7 +90,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::setSpatialGraphs", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::setSpatialGraphs", __LINE__, __FILE__);
 		}
 	}
 
@@ -124,7 +124,7 @@ namespace Spatial
 			m_ConstraintsFactor.swap(rhs.m_ConstraintsFactor);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::swap", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::swap", __LINE__, __FILE__);
 			}
 		}
 
@@ -155,7 +155,7 @@ namespace Spatial
     }
 
 
-	std::vector<Core::FMTactualdevelopment>FMTSpatialSchedule::getarea(int period, bool beforegrowanddeath) const
+	std::vector<Core::FMTactualdevelopment>FMTSpatialSchedule::getArea(int period, bool beforegrowanddeath) const
 	{
 		std::vector<Core::FMTactualdevelopment>OutValues;
 		try {
@@ -194,7 +194,7 @@ namespace Spatial
 			}
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("For period " + std::to_string(period), "FMTSpatialSchedule::getarea", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("For period " + std::to_string(period), "FMTSpatialSchedule::getArea", __LINE__, __FILE__);
 				}
 			return OutValues;
 	}
@@ -222,7 +222,7 @@ namespace Spatial
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("For period "+std::to_string(period), "FMTSpatialSchedule::getForestPeriod", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("For period "+std::to_string(period), "FMTSpatialSchedule::getForestPeriod", __LINE__, __FILE__);
 			}
         return forest;
     }
@@ -261,7 +261,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::allowAction", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::allowAction", __LINE__, __FILE__);
 		}
 		return true;
 	}
@@ -341,7 +341,7 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getUpdatedScheduling", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getUpdatedScheduling", __LINE__, __FILE__);
 			}
 		return original;
 		}
@@ -365,7 +365,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::verifyspatialfeasability", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::verifyspatialfeasability", __LINE__, __FILE__);
 		}
 		return spatiallyallowable;
 	}
@@ -439,7 +439,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::buildHarvest", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::buildHarvest", __LINE__, __FILE__);
 		}
 		return cuts;
 	}
@@ -469,7 +469,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::operateEvents", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::operateEvents", __LINE__, __FILE__);
 		}
 		return operatedarea;
 	}
@@ -491,7 +491,7 @@ namespace Spatial
 			m_events.addAction(coord,actPeriod(),action_id,
 				bindingspaction, VGraph.getGraphFamily());
 		}catch(...){
-				_exhandler->printexceptions("", "FMTSpatialSchedule::operateCoord", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTSpatialSchedule::operateCoord", __LINE__, __FILE__);
 		}
 	}
 
@@ -507,7 +507,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::grow", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::grow", __LINE__, __FILE__);
 		}
 	}
 
@@ -527,12 +527,12 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTspatialschedule::getSchedules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTspatialschedule::getSchedules", __LINE__, __FILE__);
 		}
 		return Schedules;
 	}
 
-	double FMTSpatialSchedule::_EvaluateSpatialGroups(
+	double FMTSpatialSchedule::_evaluateSpatialGroups(
 		const FMTSpatialGraphs& p_SpatialGraph,
 		int p_period,
 		int p_greenup,
@@ -552,12 +552,12 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::_EvaluateSpatialGroups", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_evaluateSpatialGroups", __LINE__, __FILE__);
 			}
 		return returnvalue;
 	}
 
-	std::vector<FMTeventcontainer::const_iterator> FMTSpatialSchedule::_GetSpatialGroupsConflict(
+	std::vector<FMTeventcontainer::const_iterator> FMTSpatialSchedule::_getSpatialGroupsConflict(
 		const FMTSpatialGraphs& p_SpatialGraph,
 		int p_period,
 		int p_greenup,
@@ -577,13 +577,13 @@ namespace Spatial
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::_GetSpatialGroupsConflict", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_getSpatialGroupsConflict", __LINE__, __FILE__);
 			}
 		return conflicts;
 	}
 
 
-	double FMTSpatialSchedule::_EvaluateSpatialAdjacency(
+	double FMTSpatialSchedule::_evaluateSpatialAdjacency(
 		int p_period,
 		int p_greenup,
 		int p_lowerLookup,
@@ -655,13 +655,13 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::_EvaluateSpatialAdjacency", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_evaluateSpatialAdjacency", __LINE__, __FILE__);
 		}
 		return returnvalue;
 	}
 
 
-	std::vector<FMTeventcontainer::const_iterator> FMTSpatialSchedule::_GetAdjacencyConflict(
+	std::vector<FMTeventcontainer::const_iterator> FMTSpatialSchedule::_getAdjacencyConflict(
 		int p_period,
 		int p_greenup,
 		int p_lowerLookup,
@@ -732,7 +732,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::_GetAdjacencyConflict", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_getAdjacencyConflict", __LINE__, __FILE__);
 		}
 		return conflicts;
 	}
@@ -763,7 +763,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 						{
 						themeTarget = (static_cast<int>(THEME_BOUNDS.getLower()) - 1);
 						}
-					const std::vector<FMTeventcontainer::const_iterator> EVENT_CONFLICTS = _GetSpatialGroupsConflict(p_SpatialGraph,
+					const std::vector<FMTeventcontainer::const_iterator> EVENT_CONFLICTS = _getSpatialGroupsConflict(p_SpatialGraph,
 						period, static_cast<int>(GUP_BOUNDS.getLower()),
 						static_cast<int>(lower),
 						static_cast<int>(upper),
@@ -779,7 +779,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getGroupsConflict", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getGroupsConflict", __LINE__, __FILE__);
 			}
 		return conflict;
 	}
@@ -816,7 +816,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					case Core::FMTconstrainttype::FMTspatialadjacency:
 						{
 							const Core::FMTyldbounds& GUP_BOUNDS = p_SpatialConstraint.getYieldBound("GUP");
-							returnvalue += _EvaluateSpatialAdjacency(
+							returnvalue += _evaluateSpatialAdjacency(
 								period,
 								static_cast<int>(GUP_BOUNDS.getLower()),
 								static_cast<int>(lower),
@@ -834,7 +834,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 						{
 							themeTarget = (static_cast<int>(THEME_BOUNDS.getLower()) - 1);
 						}
-						returnvalue += _EvaluateSpatialGroups(p_SpatialGraph,
+						returnvalue += _evaluateSpatialGroups(p_SpatialGraph,
 							period, static_cast<int>(GUP_BOUNDS.getLower()),
 							static_cast<int>(lower),
 							static_cast<int>(upper),
@@ -850,13 +850,13 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTSpatialSchedule::evaluateSpatialConstraint", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::evaluateSpatialConstraint", __LINE__, __FILE__);
 		}
 	return returnvalue;
 	}
 
 
-	double FMTSpatialSchedule::_GetRulesEvaluation(const std::vector<FMTPatchRules>& p_rules,
+	double FMTSpatialSchedule::_getRulesEvaluation(const std::vector<FMTPatchRules>& p_rules,
 		const FMTSpatialGraphs& p_SpatialGraph) const
 	{
 		double cost = 0;
@@ -867,8 +867,8 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", 
-				"FMTSpatialSchedule::_GetRulesEvaluation", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", 
+				"FMTSpatialSchedule::_getRulesEvaluation", __LINE__, __FILE__);
 			}
 		return cost;
 	}
@@ -878,7 +878,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 	{
 		double value = 0;
 		try {
-			assert(isPartial() || mapping.size() == _GetNonSpatialCellsCount());
+			assert(isPartial() || mapping.size() == _getNonSpatialCellsCount());
 			const Core::FMTconstraint& CONSTRAINT = p_Graphs.getModel().constraints.at(p_ConstraintId);
 			if (!CONSTRAINT.isSpatial())
 			{
@@ -896,7 +896,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getConstraintEvaluation", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getConstraintEvaluation", __LINE__, __FILE__);
 		}
 	return value;
 	}
@@ -934,7 +934,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getWeightedFactors", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getWeightedFactors", __LINE__, __FILE__);
 		}
 		return allvalues;
 
@@ -945,7 +945,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 	{
 		std::vector<double>allvalues;
 		try {
-			assert(isPartial() || mapping.size() == _GetNonSpatialCellsCount());
+			assert(isPartial() || mapping.size() == _getNonSpatialCellsCount());
 			const std::vector<Core::FMTconstraint>& CONSTRAINTS = p_Graphs.getModel().getconstraints();
 			allvalues.push_back(this->getObjectiveValue(p_Graphs,false));
 			for (size_t ConstraintId = 1; ConstraintId < CONSTRAINTS.size(); ++ConstraintId)
@@ -954,7 +954,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getConstraintsValues", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getConstraintsValues", __LINE__, __FILE__);
 			}
 		return allvalues;
 	}
@@ -971,7 +971,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				double cntvalue = getConstraintEvaluation(p_Graphs, ID);
 				if (withfactorization && !m_ConstraintsFactor.empty())
 					{
-					cntvalue = _GetExponentialFactorization(
+					cntvalue = _getExponentialFactorization(
 						cntvalue, m_ConstraintsFactor.at(fid));
 					}
 					value += cntvalue;
@@ -980,7 +980,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getPrimalInfeasibility", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getPrimalInfeasibility", __LINE__, __FILE__);
 			}
 		return value;
 	}
@@ -994,7 +994,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getObjectiveValue", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getObjectiveValue", __LINE__, __FILE__);
 		}
 		return value;
 	}
@@ -1045,7 +1045,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::isBetterThan", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::isBetterThan", __LINE__, __FILE__);
 			}
 		return groupevaluation;
 		}
@@ -1059,10 +1059,10 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				"Cannot use a non complete schedule ",
 				"FMTSpatialSchedule::logSolutionStatus", __LINE__, __FILE__);
 		}
-		_logger->logwithlevel("Iteration "+std::to_string(iteration)+" Primal Inf(" + std::to_string(primalinfeasibility) + ") Obj(" + std::to_string(objective) + ")\n", 1);
+		_logger->logWithLevel("Iteration "+std::to_string(iteration)+" Primal Inf(" + std::to_string(primalinfeasibility) + ") Obj(" + std::to_string(objective) + ")\n", 1);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTSpatialSchedule::logSolutionStatus", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::logSolutionStatus", __LINE__, __FILE__);
 		}
 	}
 
@@ -1074,7 +1074,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			objective = this->getObjectiveValue(p_Graphs, withsense);
 			if (withfactorization&&!m_ConstraintsFactor.empty())
 				{
-				objective = _GetExponentialFactorization(
+				objective = _getExponentialFactorization(
 					objective, m_ConstraintsFactor.at(0));
 				}
 			/*constraints.erase(constraints.begin());
@@ -1100,7 +1100,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getSolutionStatus", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getSolutionStatus", __LINE__, __FILE__);
 		}
 	}
 
@@ -1114,7 +1114,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			global = (objective + infeasibilities);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getGlobalObjective", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getGlobalObjective", __LINE__, __FILE__);
 			}
 		return global;
 	}
@@ -1131,7 +1131,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			values = p_Graphs.getOutput(m_Tracker, p_output, p_period, level);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getOutput", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getOutput", __LINE__, __FILE__);
 		}
 		return values;
 		
@@ -1158,7 +1158,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getSpatialOutput", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getSpatialOutput", __LINE__, __FILE__);
 		}
 		return outputlayer;
 	}
@@ -1182,7 +1182,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getOutputByCoordinate", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getOutputByCoordinate", __LINE__, __FILE__);
 		}
 		return allvalues;
 	}
@@ -1206,14 +1206,14 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					std::vector<FMTeventcontainer::const_iterator> evsit = m_events.getEvents(period, action_id);
 					for (const auto& eventit : evsit)
 					{
-						result += std::to_string(period) + " " + actions.at(action_id).getname() + " " + eventit->getStats() + "\n";
+						result += std::to_string(period) + " " + actions.at(action_id).getName() + " " + eventit->getStats() + "\n";
 					}
 				}
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getPatchStats", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getPatchStats", __LINE__, __FILE__);
 		}
 		return result;
 	}
@@ -1233,14 +1233,14 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				const int lastactid = graphit->second.getLineGraph().getLastActionId(period);
 				if (lastactid >= 0)
 				{
-					distlayer[graphit->first] = modelactions.at(lastactid).getname();
+					distlayer[graphit->first] = modelactions.at(lastactid).getName();
 				}
 
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::lastDistLayer", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::lastDistLayer", __LINE__, __FILE__);
 		}
 		return distlayer;
 	}
@@ -1293,7 +1293,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getPredictors", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getPredictors", __LINE__, __FILE__);
 		}
 		return predictors;
 	}
@@ -1322,7 +1322,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					if (aid >= 0)
 					{
 						if (!actionsStr.empty()) actionsStr += ";";
-						actionsStr += modelactions.at(aid).getname();
+						actionsStr += modelactions.at(aid).getName();
 					}
 				}
 				if (!actionsStr.empty())
@@ -1339,9 +1339,9 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 						for (const auto& theme : classifiers)
 						{
 							std::string themename = "THEME" + std::to_string(theme.getId() + 1);
-							const std::string fclass = fdev.getmask().get(theme);
+							const std::string fclass = fdev.getMask().get(theme);
 							themeattributes[themename] = fclass;
-							const std::string sclass = sdev.getmask().get(theme);
+							const std::string sclass = sdev.getMask().get(theme);
 							stackedactions[graphit->first] += "-" + sclass;
 						}
 						std::string stackname = stackedactions.at(graphit->first);
@@ -1395,7 +1395,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getGCBMtransitions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getGCBMtransitions", __LINE__, __FILE__);
 		}
 		return GCBM;
 	}
@@ -1418,7 +1418,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::eraseLastPeriod", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::eraseLastPeriod", __LINE__, __FILE__);
 			}
 
 		}
@@ -1448,7 +1448,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getFromEvents", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getFromEvents", __LINE__, __FILE__);
 		}
 		return coordinates;
 
@@ -1501,7 +1501,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::getFromEvents", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getFromEvents", __LINE__, __FILE__);
 			}
 		return graphs;
 		}
@@ -1538,7 +1538,7 @@ std::map<std::string,double> FMTSpatialSchedule::getOutputFromGraph(const Graph:
 	}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTSpatialSchedule::getOutputFromGraph", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getOutputFromGraph", __LINE__, __FILE__);
 		}
 	return values;
 	}
@@ -1554,7 +1554,7 @@ void FMTSpatialSchedule::postSolve(const Core::FMTmaskfilter& p_Filter,
 		actionmapping.reserve(p_PresolveActions.size());
 		for (const Core::FMTaction action : p_PresolveActions)
 		{
-			const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
+			const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTActionComparator(action.getName()))));
 			actionmapping.push_back(loc);
 		}
 	
@@ -1573,7 +1573,7 @@ void FMTSpatialSchedule::postSolve(const Core::FMTmaskfilter& p_Filter,
 		m_events.swap(newevents);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTSpatialSchedule::postSolve", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::postSolve", __LINE__, __FILE__);
 		}
 	}
 
@@ -1615,7 +1615,7 @@ FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTmaskfilter& p_fil
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialSchedule::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::presolve", __LINE__, __FILE__);
 		}
 	return presolvedSchedule;
 	}
@@ -1645,7 +1645,7 @@ bool FMTSpatialSchedule::inScheduleOperabilities(const std::vector<boost::unorde
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTSpatialSchedule::inScheduleOperabilities", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::inScheduleOperabilities", __LINE__, __FILE__);
 	}
 	return false;
 }
@@ -1783,7 +1783,7 @@ std::vector<Spatial::FMTbindingspatialaction> FMTSpatialSchedule::getBindingActi
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTSpatialSchedule::getBindingActions", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getBindingActions", __LINE__, __FILE__);
 		}
 	return bindings;
 	}
@@ -1814,7 +1814,7 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 		int actionid = 0;
 		for (const Core::FMTaction& action : model.actions)
 			{
-			const double actionArea = schedule.actionArea(action.getname());
+			const double actionArea = schedule.actionArea(action.getName());
 			if (actionArea>0)
 				{
 				originaltargets[actionid]=actionArea;
@@ -1903,12 +1903,12 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 		for (const int& action_id : basetargets)
 			{
 			const double& originalvalue = originaltargets.at(action_id);
-			results[model.actions.at(action_id).getname()] = ((originalvalue - targets.at(action_id)) / originalvalue);
+			results[model.actions.at(action_id).getName()] = ((originalvalue - targets.at(action_id)) / originalvalue);
 			}
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::referenceBuild", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::referenceBuild", __LINE__, __FILE__);
 	}
 	return results;
 
@@ -2016,11 +2016,11 @@ std::map<std::string, double> FMTSpatialSchedule::greedyReferenceBuild(const Cor
 		}
 		if (log && stalcount == maxstall)
 		{
-			_logger->logwithlevel("Stalled after " + std::to_string(iteration) + " iterations Skipping\n", 1);
+			_logger->logWithLevel("Stalled after " + std::to_string(iteration) + " iterations Skipping\n", 1);
 		}
 		if (log && failediterations == randomiterations)
 		{
-			_logger->logwithlevel("Solution stuck after " + std::to_string(iteration) + " iterations Skipping\n", 1);
+			_logger->logWithLevel("Solution stuck after " + std::to_string(iteration) + " iterations Skipping\n", 1);
 		}
 		//Need the remove the incomplete stuff from the cash before going to the next step.
 		//*_logger << "lastfactor " << lastschedulefactor << "\n";
@@ -2034,7 +2034,7 @@ std::map<std::string, double> FMTSpatialSchedule::greedyReferenceBuild(const Cor
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTsesmodel::greedyReferenceBuild", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTsesmodel::greedyReferenceBuild", __LINE__, __FILE__);
 	}
 
 	return bestresults;
@@ -2045,10 +2045,10 @@ Graph::FMTgraphstats FMTSpatialSchedule::randomBuild(const Models::FMTmodel& mod
 	{
 	Graph::FMTgraphstats periodstats;
 	try {
-		assert(isPartial()||mapping.size() == _GetNonSpatialCellsCount());
+		assert(isPartial()||mapping.size() == _getNonSpatialCellsCount());
 		const int period = this->mapping.begin()->second.getLineGraph().getPeriod();
 		const std::vector<FMTbindingspatialaction> bindings = getBindingActions(model, period);
-		std::uniform_int_distribution<int> dosomethingactions(1, model.getparameter(Models::FMTintmodelparameters::LENGTH));
+		std::uniform_int_distribution<int> dosomethingactions(1, model.getParameter(Models::FMTintmodelparameters::LENGTH));
 		for (std::map<FMTcoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit !=mapping.end(); ++graphit)
 			{
 			Graph::FMTlinegraph local_graph = graphit->second.getLineGraph();
@@ -2070,11 +2070,11 @@ Graph::FMTgraphstats FMTSpatialSchedule::randomBuild(const Models::FMTmodel& mod
 			
 
 			}
-		assert(isPartial()||mapping.size() == _GetNonSpatialCellsCount());
+		assert(isPartial()||mapping.size() == _getNonSpatialCellsCount());
 
 	}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::randomBuild", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::randomBuild", __LINE__, __FILE__);
 		}
 	return periodstats;
 	}
@@ -2086,7 +2086,7 @@ void FMTSpatialSchedule::setGrow(const std::vector<FMTcoordinate>& p_coordinates
 		for (const FMTcoordinate& COORDINATE : p_coordinates)
 			{
 			auto& VirtualGraph = mapping.at(COORDINATE);
-			for (int period = 1; period <= p_model.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+			for (int period = 1; period <= p_model.getParameter(Models::FMTintmodelparameters::LENGTH);++period)
 				{
 				std::map<Core::FMTdevelopment, std::vector<bool>>tabouOperability;
 				const std::vector<std::vector<bool>>GRAPH_ACTIONS = VirtualGraph.getLineGraph().getactions(p_model, 
@@ -2101,13 +2101,13 @@ void FMTSpatialSchedule::setGrow(const std::vector<FMTcoordinate>& p_coordinates
 
 	}catch (...)
 		{
-		_exhandler->printexceptions("", 
+		_exhandler->printExceptions("", 
 			"FMTSpatialSchedule::setGrow", __LINE__, __FILE__);
 		}
 }
 
 
-std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>> FMTSpatialSchedule::_PutTabouInCache(
+std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>> FMTSpatialSchedule::_putTabouInCache(
 							const Models::FMTmodel& p_model,
 							std::map<Core::FMTdevelopment, std::vector<bool>>& p_tabou)
 	{
@@ -2134,12 +2134,12 @@ std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>> FMTSpatialSchedul
 			}
 	}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::_PutTabouInCache", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::_putTabouInCache", __LINE__, __FILE__);
 		}
 	return ToFitIncache;
 	}
 
-void FMTSpatialSchedule::_SetTabouOutOfCache(
+void FMTSpatialSchedule::_setTabouOutOfCache(
 	std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>>& p_GoodValues)
 {
 	for (const auto& CACHE_FIX : p_GoodValues)
@@ -2160,7 +2160,7 @@ void FMTSpatialSchedule::perturbGraph(const FMTcoordinate& coordinate,const int&
 		std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>>ToFitIncache;
 		if (!actions.empty())
 			{
-			ToFitIncache = _PutTabouInCache(model, tabuoperability);
+			ToFitIncache = _putTabouInCache(model, tabuoperability);
 				FMTeventcontainer newevents;
 				const FMTeventcontainer eventstoerase = m_events.getEventsToErase(period, actions,
 					coordinate, m_BUFFER_LOOKUP, newevents);
@@ -2184,10 +2184,10 @@ void FMTSpatialSchedule::perturbGraph(const FMTcoordinate& coordinate,const int&
 			++localperiod;
 		}
 		mapping[coordinate].setLineGraph(newGraph, m_Tracker);
-		_SetTabouOutOfCache(ToFitIncache);
+		_setTabouOutOfCache(ToFitIncache);
 	}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::perturbGraph", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::perturbGraph", __LINE__, __FILE__);
 		}
 	}
 
@@ -2209,7 +2209,7 @@ int FMTSpatialSchedule::getPeriodWithMaximalEvents(const std::vector<bool>& acti
 		}
 	}catch (...)
 	{
-	_exhandler->printexceptions("", "FMTSpatialSchedule::getPeriodWithMaximalEvents", __LINE__, __FILE__);
+	_exhandler->printExceptions("", "FMTSpatialSchedule::getPeriodWithMaximalEvents", __LINE__, __FILE__);
 	}
 	return period;
 }
@@ -2262,7 +2262,7 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAreaConfl
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::getAreaConflictCoordinates", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::getAreaConflictCoordinates", __LINE__, __FILE__);
 	}
 	return coordinates;
 }
@@ -2291,7 +2291,7 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAdjacency
 					return coordinates;
 				}
 				
-				const std::vector<FMTeventcontainer::const_iterator>CONFLICTS = _GetAdjacencyConflict(period, 
+				const std::vector<FMTeventcontainer::const_iterator>CONFLICTS = _getAdjacencyConflict(period, 
 												static_cast<int>(actionbind.getMinimalGreenUp()),
 											static_cast<int>(actionbind.getMinimalAdjacency()),
 											static_cast<int>(actionbind.getMaximalAdjacency()),
@@ -2310,7 +2310,7 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAdjacency
 			}
 	}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::getAdjacencyConflictCoordinates", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::getAdjacencyConflictCoordinates", __LINE__, __FILE__);
 		}
 	return coordinates;
 }
@@ -2348,7 +2348,7 @@ std::vector<Spatial::FMTcoordinate>FMTSpatialSchedule::getMovableCoordinates(con
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::getgraphs", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::getgraphs", __LINE__, __FILE__);
 	}
 	return coordinates;
 }
@@ -2386,21 +2386,21 @@ void FMTSpatialSchedule::copyFromPartial(FMTSpatialSchedule& rhs)
 		m_events.swap(rhs.m_events);
 		m_ConstraintsFactor.swap(rhs.m_ConstraintsFactor);
 		m_Tracker.swap(rhs.m_Tracker);
-		assert(mapping.size() == _GetNonSpatialCellsCount());
+		assert(mapping.size() == _getNonSpatialCellsCount());
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::copyFromPartial", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::copyFromPartial", __LINE__, __FILE__);
 	}
 
 }
 
-size_t FMTSpatialSchedule::_GetNonSpatialCellsCount() const
+size_t FMTSpatialSchedule::_getNonSpatialCellsCount() const
 	{
 	return m_Tracker.getNonSpatialCellsCount();
 	}
 
-double FMTSpatialSchedule::_GetExponentialFactorization(double p_value, double p_factor)
+double FMTSpatialSchedule::_getExponentialFactorization(double p_value, double p_factor)
 {
 	double returned = 0.0;
 	const double EXPONENTIAL_VALUE = std::exp(std::abs(p_value) *
@@ -2415,7 +2415,7 @@ double FMTSpatialSchedule::_GetExponentialFactorization(double p_value, double p
 	return returned;
 }
 
-double FMTSpatialSchedule::_GetConstraintFloorValue(double p_inValue) const
+double FMTSpatialSchedule::_getConstraintFloorValue(double p_inValue) const
 	{
 	double returned = 0;
 	if (p_inValue>FMT_DBL_TOLERANCE)
@@ -2452,7 +2452,7 @@ void FMTSpatialSchedule::setSpread(
 		m_events.addUpdate(ToAdd, ToRemove);
 	}catch (...)
 		{
-		_exhandler->printexceptions("",
+		_exhandler->printExceptions("",
 			"FMTSpatialSchedule::setSpread", __LINE__, __FILE__);
 		}
 }
@@ -2517,7 +2517,7 @@ std::vector<FMTSpatialSchedule::EventSpread> FMTSpatialSchedule::getPotentialSpr
 			}
 		}catch (...)
 			{
-			_exhandler->printexceptions("", 
+			_exhandler->printExceptions("", 
 				"FMTSpatialSchedule::getPotentialSpread", __LINE__, __FILE__);
 			}
 	return ValidSpreads;
@@ -2545,7 +2545,7 @@ bool FMTSpatialSchedule::needsRefactorization(const FMTSpatialGraphs& p_Graphs) 
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::needsrefactortorization", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::needsrefactortorization", __LINE__, __FILE__);
 	}
 return false;
 }
@@ -2581,10 +2581,10 @@ void FMTSpatialSchedule::setConstraintsFactor(const Models::FMTmodel& model,cons
 				}
 			++cntid;
 			}
-		_logger->logwithlevel("Constraints normalization Min(" + std::to_string(minimalfactor) + ") Max(" + std::to_string(maximalfactor) + ")\n", 2);
+		_logger->logWithLevel("Constraints normalization Min(" + std::to_string(minimalfactor) + ") Max(" + std::to_string(maximalfactor) + ")\n", 2);
 	}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::setConstraintsFactor", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::setConstraintsFactor", __LINE__, __FILE__);
 		}
 
 	}
@@ -2619,7 +2619,7 @@ void FMTSpatialSchedule::setStaticsMovableCoordinates(const Models::FMTmodel& p_
 			std::sort(m_Movables.begin(), m_Movables.end());
 		}catch (...)
 			{
-			_exhandler->printexceptions("", 
+			_exhandler->printExceptions("", 
 				"FMTSpatialSchedule::setStaticsMovableCoordinates", __LINE__, __FILE__);
 			}
 		}
@@ -2631,7 +2631,7 @@ void FMTSpatialSchedule::enableSolutionTracker(const FMTSpatialGraphs& p_Spatial
 		p_SpatialGraph.enableSolutionTracker(this->m_Tracker);
 	}catch (...)
 	{
-		_exhandler->printexceptions("",
+		_exhandler->printExceptions("",
 			"FMTSpatialSchedule::enableSolutionTracker", __LINE__, __FILE__);
 	}
 }
@@ -2641,7 +2641,7 @@ void FMTSpatialSchedule::disableSolutionTracker()
 		this->m_Tracker.disableTracking();
 	}catch (...)
 	{
-		_exhandler->printexceptions("",
+		_exhandler->printExceptions("",
 			"FMTSpatialSchedule::disableSolutionTracker", __LINE__, __FILE__);
 	}
 }
@@ -2672,7 +2672,7 @@ bool FMTSpatialSchedule::isBetterByGroup(const FMTSpatialSchedule& rhs, const FM
 		return (gotbetter == groupvalues.size());
 	}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTSpatialSchedule::isBetterByGroup", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSpatialSchedule::isBetterByGroup", __LINE__, __FILE__);
 		}
 	return false;
 	}

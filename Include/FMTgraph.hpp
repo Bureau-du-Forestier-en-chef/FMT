@@ -140,7 +140,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			m_reserve(rhs.m_reserve),
 			m_selectedVertices(rhs.m_allocator)
 		{
-			_GenerateDevelopments();
+			_generateDevelopments();
 		}
 
 		void swap(FMTgraph& rhs)
@@ -173,7 +173,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				m_reserve = rhs.m_reserve;
 				m_allocator = rhs.m_allocator;
 				m_selectedVertices = rhs.m_selectedVertices;
-				_GenerateDevelopments();
+				_generateDevelopments();
 			}
 			return *this;
 
@@ -199,11 +199,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				boost::copy_graph(filterdGraph, newGraph.data);
 				newGraph.stats.vertices = static_cast<int>(boost::num_vertices(newGraph.data));
 				newGraph.stats.edges = static_cast<int>(boost::num_edges(newGraph.data));
-				newGraph._GenerateDevelopments();
+				newGraph._generateDevelopments();
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::copyToPeriod", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::copyToPeriod", __LINE__, __FILE__);
 			}
 			return newGraph;
 		}
@@ -237,7 +237,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::operator==", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::operator==", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -273,7 +273,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getDevsSet", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getDevsSet", __LINE__, __FILE__);
 			}
 			return basedevs;
 		}
@@ -343,7 +343,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::initialize", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::initialize", __LINE__, __FILE__);
 			}
 			return actives;
 
@@ -383,7 +383,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						if (active_development.operable(action, model.yields, &vertexinfo) &&
 							active_development.getAge() % compressageoperability == 0)
 						{
-							DoGrow =  action.getname() == "_DEATH" ? false : true;
+							DoGrow =  action.getName() == "_DEATH" ? false : true;
 							if (GOT_SERIES && _keepForSerie(front_vertex,
 								(model.actions.cbegin() + action_id),
 								maxseriesize,
@@ -403,7 +403,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 									m_gotDeath = true;
 									_exhandler->raise(Exception::FMTexc::FMTinvalid_action,
 										std::string(front_properties.get()) +
-										" is on a serie for action " + action.getname() + " and have been already operated",
+										" is on a serie for action " + action.getName() + " and have been already operated",
 										"FMTgraph::build", __LINE__, __FILE__);
 								}
 								_setSerieOperabilityNDeath(front_vertex, maxseriesize,
@@ -426,12 +426,12 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					actives = new_actives;
 					++action_id;
 				}
-				const bool typeIIforestmodel = (model.getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
+				const bool typeIIforestmodel = (model.getParameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
 				newstats = naturalGrowth(actives, statsDiff, typeIIforestmodel, GOT_SERIES);
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::build", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::build", __LINE__, __FILE__);
 			}
 
 			return newstats;
@@ -459,7 +459,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::isNoTransfer", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::isNoTransfer", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -529,7 +529,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::naturalGrowth", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::naturalGrowth", __LINE__, __FILE__);
 			}
 			return (statsDiff - stats);
 
@@ -545,7 +545,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				for (boost::tie(vertexit, vertexend) = developments.at(getFirstPeriod()); vertexit != vertexend; ++vertexit)
 				{
 					const Core::FMTdevelopment& base_dev = data[*vertexit].get();
-					if (base_dev.getmask().isSubsetOf(baseMask))
+					if (base_dev.getMask().isSubsetOf(baseMask))
 					{
 						std::queue<FMTvertex_descriptor>tocheck;
 						FMToutedge_pair edge_pair;
@@ -582,7 +582,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::noChoice", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::noChoice", __LINE__, __FILE__);
 			}
 			return noactions;
 
@@ -613,7 +613,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							const int actionid = data[*outit].getactionID();
 							if (actionid >= 0)
 							{
-								actionname = actions.at(actionid).getname();
+								actionname = actions.at(actionid).getName();
 							}
 							colnames[variableid] = basename + actionname + vertexid;
 						}
@@ -623,7 +623,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getVariableNames", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getVariableNames", __LINE__, __FILE__);
 			}
 		}
 
@@ -689,7 +689,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getTransferRowNames", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getTransferRowNames", __LINE__, __FILE__);
 			}
 		}
 
@@ -713,7 +713,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getPeriodStopDev", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getPeriodStopDev", __LINE__, __FILE__);
 			}
 			return all_period_stop_devs;
 
@@ -757,7 +757,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						bool checkGraph = true;
 						if (output_node.source.isAction())
 						{
-							const std::vector<const Core::FMTaction*> ACTIONS = Core::FMTactioncomparator(output_node.source.getAction()).getAllAggregates(model.actions);
+							const std::vector<const Core::FMTaction*> ACTIONS = Core::FMTActionComparator(output_node.source.getAction()).getAllAggregates(model.actions);
 							std::vector<const Core::FMTaction*>::const_iterator AIt = ACTIONS.begin();
 							size_t count = 0;
 							while (AIt != ACTIONS.end())
@@ -831,7 +831,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("For output: " + std::string(output), "FMTgraph::getOutput", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("For output: " + std::string(output), "FMTgraph::getOutput", __LINE__, __FILE__);
 			}
 
 			return results;
@@ -866,7 +866,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					{
 						if (data.m_vertices.capacity() > 1)
 						{
-							_logger->logwithlevel("Reallocation occurred for (" + std::to_string(data.m_vertices.capacity()) + ") vertices\n", 1);
+							_logger->logWithLevel("Reallocation occurred for (" + std::to_string(data.m_vertices.capacity()) + ") vertices\n", 1);
 						}
 						data.m_vertices.reserve(data.m_vertices.size() * 2);
 						alldevs.clear();
@@ -891,7 +891,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::addDevelopment", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::addDevelopment", __LINE__, __FILE__);
 			}
 			return getDevelopment(futurdevelopment, alldevs);
 
@@ -908,7 +908,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::addDevelopment", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::addDevelopment", __LINE__, __FILE__);
 			}
 			return newvertex;
 		}
@@ -926,7 +926,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::hash", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::hash", __LINE__, __FILE__);
 			}
 			return seed;
 
@@ -979,7 +979,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("On action Id " + std::to_string(actionID), "FMTgraph::addAction", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("On action Id " + std::to_string(actionID), "FMTgraph::addAction", __LINE__, __FILE__);
 			}
 		}
 
@@ -1004,7 +1004,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::addAction", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::addAction", __LINE__, __FILE__);
 			}
 		}
 
@@ -1030,7 +1030,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::outArea", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::outArea", __LINE__, __FILE__);
 			}
 			return value;
 		}
@@ -1050,7 +1050,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getGrowthSource", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getGrowthSource", __LINE__, __FILE__);
 			}
 			return FMTvertex_descriptor();
 		}
@@ -1073,7 +1073,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getActionSources", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getActionSources", __LINE__, __FILE__);
 			}
 			return vsources;
 		}
@@ -1098,7 +1098,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::inArea", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::inArea", __LINE__, __FILE__);
 			}
 			return area;
 		}
@@ -1110,7 +1110,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::periodStart", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::periodStart", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -1133,7 +1133,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::onlyPeriodStart", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::onlyPeriodStart", __LINE__, __FILE__);
 			}
 			return false;
 
@@ -1155,7 +1155,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getMaximalLock", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getMaximalLock", __LINE__, __FILE__);
 			}
 			return lock;
 		}
@@ -1180,7 +1180,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::periodStop", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::periodStop", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -1198,7 +1198,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					if (edgeprop.getactionID() == actionID)
 					{
 						const FMTbasevertexproperties& vertex_target = data[target(*edge_pair.first, data)];
-						paths.push_back(Core::FMTdevelopmentpath(vertex_target.get().getmask(),
+						paths.push_back(Core::FMTdevelopmentpath(vertex_target.get().getMask(),
 							vertex_target.get().getAge(),
 							vertex_target.get().getLock(),
 							vertex_target.get().getPeriod(),
@@ -1208,7 +1208,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getPaths", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getPaths", __LINE__, __FILE__);
 			}
 			return paths;
 		}
@@ -1231,7 +1231,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::isValidOuputNode", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::isValidOuputNode", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -1246,8 +1246,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		{
 			try {
 				const Core::FMTdevelopment& p_development = data[p_vertex_descriptor].get();
-				const Core::FMTmask& DEV_MASK = p_development.getmask();
-				const Core::FMTmask& SOURCE_MASK = p_node.source.getmask();
+				const Core::FMTmask& DEV_MASK = p_development.getMask();
+				const Core::FMTmask& SOURCE_MASK = p_node.source.getMask();
 				if (DEV_MASK.isSubsetOf(SOURCE_MASK, p_blocksSubset)&&
 					p_development.is(p_node.source, p_model.yields))//node.source.use(development, model.yields))
 				{
@@ -1280,7 +1280,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::isValidGraphNode", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::isValidGraphNode", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -1297,8 +1297,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("Getting node at period "+std::to_string(period)+" for node "+
-					std::string(output_node)+" for model "+model.getname(), "FMTgraph::locateNode", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("Getting node at period "+std::to_string(period)+" for node "+
+					std::string(output_node)+" for model "+model.getName(), "FMTgraph::locateNode", __LINE__, __FILE__);
 			}
 			return std::map<int, double>();
 
@@ -1323,7 +1323,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					for (const auto& vert : vertices)
 					{
 						const Core::FMTdevelopment& dev = getDevelopment(vert);
-						const std::string value = dev.getmask().get(model.themes.at(themetarget));
+						const std::string value = dev.getMask().get(model.themes.at(themetarget));
 						if (orderedtarget.find(value) == orderedtarget.end())
 						{
 							orderedtarget[value] = std::vector<FMTvertex_descriptor>();
@@ -1339,7 +1339,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::locateNodeByTheme", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::locateNodeByTheme", __LINE__, __FILE__);
 			}
 			return variablesreturn;
 
@@ -1405,7 +1405,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						//std::vector<FMTvertex_descriptor>periodlocations(m_allocator);
 						//periodlocations.reserve(m_reserve);
 						//////////////////////////////////////////////////////////////////
-						const std::vector<size_t>NON_FULL_BLOCKS = output_node.source.getmask().getNonFullBlocks();
+						const std::vector<size_t>NON_FULL_BLOCKS = output_node.source.getMask().getNonFullBlocks();
 						for (const int& localnodeperiod : targetedperiods)
 						{
 							std::vector<FMTvertex_descriptor>staticdescriptors(m_allocator);
@@ -1467,7 +1467,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getNode", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getNode", __LINE__, __FILE__);
 			}
 			//std::sort(locations.begin(), locations.end());
 			//return locations;
@@ -1529,7 +1529,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::anyOperables", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::anyOperables", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -1548,7 +1548,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getInVariables", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getInVariables", __LINE__, __FILE__);
 			}
 			return invars;
 		}
@@ -1567,7 +1567,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getInProportions", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getInProportions", __LINE__, __FILE__);
 			}
 			return inprops;
 		}
@@ -1587,7 +1587,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getInIdsVariables", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getInIdsVariables", __LINE__, __FILE__);
 			}
 			return mapping;
 		}
@@ -1606,7 +1606,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getOutVariables", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getOutVariables", __LINE__, __FILE__);
 			}
 			return mapping;
 		}
@@ -1630,7 +1630,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getOutVariables", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getOutVariables", __LINE__, __FILE__);
 			}
 			return output;
 		}
@@ -1660,7 +1660,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getOutActions", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getOutActions", __LINE__, __FILE__);
 			}
 			return actions;
 		}
@@ -1684,7 +1684,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::selectedActions", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::selectedActions", __LINE__, __FILE__);
 			}
 			return selected;
 		}
@@ -1711,7 +1711,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::constraintLenght", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::constraintLenght", __LINE__, __FILE__);
 			}
 			return (start < static_cast<int>(developments.size()) && start <= stop);
 		}
@@ -1727,7 +1727,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				{
 					const FMTvertex_descriptor DESCRIPTOR = *vertex_iterator;
 					const FMTbasevertexproperties& VERTEX_PROPERTIES = data[DESCRIPTOR];
-					if (VERTEX_PROPERTIES.get().getmask().isSubsetOf(p_Subset))
+					if (VERTEX_PROPERTIES.get().getMask().isSubsetOf(p_Subset))
 						{
 						++SubsetStats.vertices;
 						const int OUT_EDGES = static_cast<int>(boost::out_degree(DESCRIPTOR,data));
@@ -1746,7 +1746,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				}
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("", "FMTgraph::getStats", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getStats", __LINE__, __FILE__);
 				}
 			return SubsetStats;
 		}
@@ -1756,7 +1756,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return stats;
 		}
 
-		FMTgraphstats* getstatsptr()
+		FMTgraphstats* getStatsPtr()
 		{
 			return &stats;
 		}
@@ -1797,7 +1797,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								const Graph::FMTgraphvertextoyield vertexinfo = getVertexToYieldInfo(model, front_vertex);
 								if (active_development.operable(action, model.yields, &vertexinfo))
 								{
-									if (action.getname() == "_DEATH")
+									if (action.getName() == "_DEATH")
 									{
 										death = true;
 									}
@@ -1817,9 +1817,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::buildSchedule", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::buildSchedule", __LINE__, __FILE__);
 			}
-			const bool typeIIforestmodel = (model.getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
+			const bool typeIIforestmodel = (model.getParameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
 			return naturalGrowth(actives, statsDiff, typeIIforestmodel);
 		}
 
@@ -1849,7 +1849,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getActiveVertices", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getActiveVertices", __LINE__, __FILE__);
 			}
 			return actives;
 		}
@@ -1906,7 +1906,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getInitialBounds", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getInitialBounds", __LINE__, __FILE__);
 			}
 		}
 		size_t nEdges() const
@@ -1928,7 +1928,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("For node: " + std::string(node), "FMTgraph::getSource", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("For node: " + std::string(node), "FMTgraph::getSource", __LINE__, __FILE__);
 			}
 			return std::map<std::string, double>();
 		}
@@ -1942,7 +1942,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getVertexToYieldInfo", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getVertexToYieldInfo", __LINE__, __FILE__);
 			}
 			return Graph::FMTgraphvertextoyield();
 		}
@@ -1955,7 +1955,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getVertexFromVertexInfo", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getVertexFromVertexInfo", __LINE__, __FILE__);
 			}
 			return nullptr;
 		}
@@ -1975,7 +1975,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				double accumulator=0.0;
 				if (level == Core::FMToutputlevel::standard)
 					{
-					for (const std::string& attribute : theme.getbaseattributes())
+					for (const std::string& attribute : theme.getBaseAttributes())
 						{
 						values[attribute] = 0;
 						}
@@ -1997,7 +1997,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						const Graph::FMTgraphvertextoyield vertexinfo = getVertexToYieldInfo(model, vertex);
 						if (level == Core::FMToutputlevel::standard)
 						{
-							toFill = values.find(development.getmask().getAttribute(theme));
+							toFill = values.find(development.getMask().getAttribute(theme));
 						}
 						else if (level == Core::FMToutputlevel::developpement)
 						{
@@ -2051,7 +2051,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("For node: " + std::string(node) + " on theme " + std::string(theme), "FMTgraph::getValues", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("For node: " + std::string(node) + " on theme " + std::string(theme), "FMTgraph::getValues", __LINE__, __FILE__);
 			}
 			return values;
 		}
@@ -2066,7 +2066,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getPeriod", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getPeriod", __LINE__, __FILE__);
 			}
 			return 0;
 		}
@@ -2081,7 +2081,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::rebaseCache", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::rebaseCache", __LINE__, __FILE__);
 			}
 		}
 		
@@ -2107,7 +2107,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::sameEdgesAs", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::sameEdgesAs", __LINE__, __FILE__);
 			}
 			return different;
 		}
@@ -2151,7 +2151,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getLastDisturbance", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getLastDisturbance", __LINE__, __FILE__);
 			}
 
 			return lastedge;
@@ -2193,7 +2193,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::fillUpLastActions", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::fillUpLastActions", __LINE__, __FILE__);
 			}
 
 		}
@@ -2263,7 +2263,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("for " + std::string(dev), "FMTgraph::getAmountOfPaths", __LINE__, __FILE__);
+				_exhandler->printExceptions("for " + std::string(dev), "FMTgraph::getAmountOfPaths", __LINE__, __FILE__);
 			}
 			return amount;
 		}
@@ -2294,7 +2294,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							std::vector<std::string> subSerie(actualSerie);
 							FMTvertex_descriptor subdescriptor = boost::source(*inedge_iterator, data);
 							const FMTbasevertexproperties& targetproperties = data[subdescriptor];
-							if (targetproperties.get().getmask().isSubsetOf(mask))//natural growth or action in the aggregate
+							if (targetproperties.get().getMask().isSubsetOf(mask))//natural growth or action in the aggregate
 							{
 								const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
 								const int actionid = inedgeproperties.getactionID();
@@ -2304,7 +2304,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								{
 									//if ()
 									//{
-									subSerie.insert(subSerie.begin(), actions.at(actionid).getname());
+									subSerie.insert(subSerie.begin(), actions.at(actionid).getName());
 									theseries.insert(Core::FMTSerie(subSerie, perioddiff));//Always add the subserie
 									//}else {
 									//	digMore = false;
@@ -2333,13 +2333,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							targetdescriptor = boost::source(*inedge_iterator, data);
 							const FMTbasevertexproperties& targetproperties = data[targetdescriptor];
 							//*_logger << "in for out " << std::string(targetproperties.get()) << " in degree " << inedgessize << "\n";
-							if (targetproperties.get().getmask().isSubsetOf(mask))//natural growth or action in the aggregate
+							if (targetproperties.get().getMask().isSubsetOf(mask))//natural growth or action in the aggregate
 							{
 								const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
 								const int actionid = inedgeproperties.getactionID();
 								if (/*actionid >= 0 &&*/ actionselected.find(actionid) != actionselected.end())
 								{
-									actualSerie.insert(actualSerie.begin(), actions.at(actionid).getname());
+									actualSerie.insert(actualSerie.begin(), actions.at(actionid).getName());
 									theseries.insert(Core::FMTSerie(actualSerie, startperiod - targetproperties.get().getPeriod()));//Always add the subserie
 								}
 								inedgessize = boost::in_degree(targetdescriptor, data);
@@ -2351,7 +2351,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTgraph::getAllSeries", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTgraph::getAllSeries", __LINE__, __FILE__);
 			}
 			return theseries;
 		}
@@ -2383,7 +2383,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::timeSinceLastAction", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::timeSinceLastAction", __LINE__, __FILE__);
 			}
 			return std::numeric_limits<size_t>::max();
 		}
@@ -2428,7 +2428,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getPredictors", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getPredictors", __LINE__, __FILE__);
 			}
 			return predictors;
 		}
@@ -2461,7 +2461,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					FMTbasevertexproperties& vertexprop = data[*vertex_iterator];
-					const Core::FMTmask& presolvemask = vertexprop.get().getmask();
+					const Core::FMTmask& presolvemask = vertexprop.get().getMask();
 					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = presolvetopostsolve.find(presolvemask);
 					if (mskit != presolvetopostsolve.end())
 					{
@@ -2473,11 +2473,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						vertexprop.setDevlopementMask(postsolvedmask);
 					}
 				}
-				_GenerateDevelopments();
+				_generateDevelopments();
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::postSolve", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::postSolve", __LINE__, __FILE__);
 			}
 		}
 
@@ -2510,9 +2510,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								{
 									//if (dev.getAge() == 9 
 									//	&& dev.getPeriod() == 7 
-									//	&& (actions.at(variable_iterator.first).getname() == "ATBE" 
-									//	|| actions.at(variable_iterator.first).getname() == "AFEU"
-									//	|| actions.at(variable_iterator.first).getname() == "_DEATH")
+									//	&& (actions.at(variable_iterator.first).getName() == "ATBE" 
+									//	|| actions.at(variable_iterator.first).getName() == "AFEU"
+									//	|| actions.at(variable_iterator.first).getName() == "_DEATH")
 									//	&& *(actual_solution + variable_iterator.second) >= 74.39 
 									//	&& *(actual_solution + variable_iterator.second) <= 74.41)
 									//{
@@ -2521,7 +2521,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 									//}
 									//if (dev.getAge() == 9
 									//	&& dev.getPeriod() == 7
-									//	&& (actions.at(variable_iterator.first).getname() == "_DEATH")
+									//	&& (actions.at(variable_iterator.first).getName() == "_DEATH")
 									//	&& *(actual_solution + variable_iterator.second) >= 148.79
 									//	&& *(actual_solution + variable_iterator.second) <= 148.81)
 									//{
@@ -2563,7 +2563,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("at period " + std::to_string(lperiod), "FMTgraph::getSchedule", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("at period " + std::to_string(lperiod), "FMTgraph::getSchedule", __LINE__, __FILE__);
 			}
 
 			return newSchedule;
@@ -2591,7 +2591,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				const Core::FMToutputnode baseNode(baseSource, baseFactor, 1.0);
 				const int minperiod = 1;
 				const int maxperiod = static_cast<int>(developments.size() - 2);
-				const std::unordered_set<int> actionsets = Core::FMTactioncomparator(aggregate).getAllAggregatesSet(model.actions, true);
+				const std::unordered_set<int> actionsets = Core::FMTActionComparator(aggregate).getAllAggregatesSet(model.actions, true);
 				for (int period = minperiod; period <= maxperiod; ++period)
 				{
 					Core::FMToutputnode periodNode(baseNode);
@@ -2605,7 +2605,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							if (/*actionid >= 0 &&*/ actionsets.find(actionid) != actionsets.end())
 							{
 								std::set<Core::FMTSerie>subset;
-								const std::vector<std::string>BASE_SERIE = { model.actions.at(actionid).getname() };
+								const std::vector<std::string>BASE_SERIE = { model.actions.at(actionid).getName() };
 								const std::set<Core::FMTSerie>PERIOD_SERIES = getAllSeries(targetdescriptor, BASE_SERIE, model.actions, actionsets, mask);
 								if (!PERIOD_SERIES.empty())
 								{
@@ -2624,7 +2624,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getRotations", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getRotations", __LINE__, __FILE__);
 			}
 			return theseries;
 		}
@@ -2638,7 +2638,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
-					Core::FMTmask maskObj(DEV.getmask());
+					Core::FMTmask maskObj(DEV.getMask());
 					for (const Core::FMTtheme& THEME : p_themesToIgnore) {
 						maskObj.set(THEME, "?");
 					}
@@ -2647,7 +2647,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				}
 			}
 			catch (...){
-				_exhandler->raisefromcatch("", "FMTgraph::getAllDevelopmentsMask", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getAllDevelopmentsMask", __LINE__, __FILE__);
 			}
 			return masks;
 		}
@@ -2698,7 +2698,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("at period " + std::to_string(lperiod), "FMTgraph::getOutVariablesProportions", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("at period " + std::to_string(lperiod), "FMTgraph::getOutVariablesProportions", __LINE__, __FILE__);
 			}
 
 			return newSchedule;
@@ -2712,7 +2712,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::std::string()", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::std::string()", __LINE__, __FILE__);
 			}
 			return stream.str();
 		}
@@ -2739,7 +2739,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::updateVarsMap", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::updateVarsMap", __LINE__, __FILE__);
 			}
 		}
 
@@ -2763,7 +2763,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				}
 			}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getFirstBlock", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getFirstBlock", __LINE__, __FILE__);
 			}
 			return periodit;
 		}
@@ -2788,7 +2788,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				}
 			}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getFirstConstBlock", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::getFirstConstBlock", __LINE__, __FILE__);
 			}
 			return periodit;
 		}
@@ -2820,7 +2820,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::isDependant", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::isDependant", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -2844,14 +2844,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			FMTobject::forceSave(ar, version);
 			ar& BOOST_SERIALIZATION_NVP(m_gotDeath);
 			ar& BOOST_SERIALIZATION_NVP(data);
-			_GenerateDevelopments();
+			_generateDevelopments();
 			ar& BOOST_SERIALIZATION_NVP(stats);
 			ar& BOOST_SERIALIZATION_NVP(buildtype);
 			ar& BOOST_SERIALIZATION_NVP(m_reserve);
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 
-		void _GenerateDevelopments()
+		void _generateDevelopments()
 		{
 			try {
 				nodescache.clear();
@@ -2889,7 +2889,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::_GenerateDevelopments", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTgraph::_generateDevelopments", __LINE__, __FILE__);
 			}
 		}
 		/**
@@ -2911,7 +2911,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			for (boost::tie(vertex_iterator, vertex_iterator_end) = getPeriodVertices(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
 				const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
-				p_masks.push_back(&DEV.getmask());
+				p_masks.push_back(&DEV.getMask());
 				p_descriptors.push_back(*vertex_iterator);
 			}
 			return p_descriptors;
@@ -3085,7 +3085,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						for (boost::tie(vertex_iterator, vertex_iterator_end) = getPeriodVertices(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 						{
 							const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
-							if (DEV.getmask().isSubsetOf(THE_STATIC_MASK, BLOCKS_SUBSET))//DEV.getmask().isSubsetOf(THE_STATIC_MASK))
+							if (DEV.getMask().isSubsetOf(THE_STATIC_MASK, BLOCKS_SUBSET))//DEV.getMask().isSubsetOf(THE_STATIC_MASK))
 							{
 								p_descriptors.push_back(*vertex_iterator);
 							}
@@ -3160,7 +3160,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						}
 
 					}
-					if (p_period <= p_model.getparameter(Models::FMTintmodelparameters::LENGTH))
+					if (p_period <= p_model.getParameter(Models::FMTintmodelparameters::LENGTH))
 					{
 						std::sort(p_descriptors.begin(), p_descriptors.end());
 						nodescache.at(p_period).setValidVertices(p_node, p_descriptors);//always cache everything with a mask matching!
@@ -3173,7 +3173,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					for (boost::tie(vertex_iterator, vertex_iterator_end) = getPeriodVertices(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 					{
 						const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
-						if (DEV.getmask().isSubsetOf(THE_STATIC_MASK, BLOCKS_SUBSET))//DEV.getmask().isSubsetOf(THE_STATIC_MASK))
+						if (DEV.getMask().isSubsetOf(THE_STATIC_MASK, BLOCKS_SUBSET))//DEV.getMask().isSubsetOf(THE_STATIC_MASK))
 						{
 							p_descriptors.push_back(*vertex_iterator);
 						}
@@ -3182,7 +3182,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("For node: " + std::string(p_node), "FMTgraph::getNodeByStaticMask", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("For node: " + std::string(p_node), "FMTgraph::getNodeByStaticMask", __LINE__, __FILE__);
 			}
 			return p_descriptors;
 		}
@@ -3210,7 +3210,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTgraph::_keepForSerie", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTgraph::_keepForSerie", __LINE__, __FILE__);
 			}
 			return false;
 		}
@@ -3249,7 +3249,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						const int actionid = inedgeproperties.getactionID();
 						if (actionid >= 0)
 						{
-							theserie.insert(theserie.begin(), actions.at(actionid).getname());
+							theserie.insert(theserie.begin(), actions.at(actionid).getName());
 						}
 						targetdescriptor = boost::source(*inedge_iterator, data);
 						inedgessize = boost::in_degree(targetdescriptor, data);
@@ -3258,7 +3258,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTgraph::_getActionSerie", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTgraph::_getActionSerie", __LINE__, __FILE__);
 			}
 			return theserie;
 		}
@@ -3285,7 +3285,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTgraph::_getActionOfFirstSerie", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTgraph::_getActionOfFirstSerie", __LINE__, __FILE__);
 			}
 			return p_model.actions.cend();
 		}
@@ -3296,7 +3296,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			const Models::FMTmodel& p_model) const
 		{
 			try {
-				const int MODEL_LENGTH = p_model.getparameter(Models::FMTintmodelparameters::LENGTH);
+				const int MODEL_LENGTH = p_model.getParameter(Models::FMTintmodelparameters::LENGTH);
 				Core::FMTdevelopment stand = data[p_target].get();
 				while (stand.getPeriod() <= MODEL_LENGTH)
 					{
@@ -3308,7 +3308,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}
 			}catch (...)
 				{
-				_exhandler->printexceptions("", "FMTgraph::_isValidSeriePath", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTgraph::_isValidSeriePath", __LINE__, __FILE__);
 				}
 			return false;
 		}
@@ -3327,7 +3327,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 																p_MaxSerieSize, p_model.actions);
 				const Core::FMTSerie* SERIE = p_ActionSerie->getSerie(TARGET_SERIE);
 				p_Operable = true;
-				const int MODEL_LENGTH = p_model.getparameter(Models::FMTintmodelparameters::LENGTH);
+				const int MODEL_LENGTH = p_model.getParameter(Models::FMTintmodelparameters::LENGTH);
 				Core::FMTdevelopment stand = data[p_target].get().grow();
 				if (stand.getPeriod() <= MODEL_LENGTH &&
 					stand.operable(*p_ActionSerie, p_model.yields))//Stand is still operable next period
@@ -3348,7 +3348,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 			}catch (...)
 			{
-				_exhandler->printexceptions("", "FMTgraph::_setSerieOperabilityNDeath", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTgraph::_setSerieOperabilityNDeath", __LINE__, __FILE__);
 			}
 		}
 
@@ -3438,7 +3438,7 @@ template<> inline std::map<int, int> FMTgraph<Graph::FMTvertexproperties, Graph:
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTgraph::getOutVariables", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTgraph::getOutVariables", __LINE__, __FILE__);
 		}
 		return mapping;
 	}
@@ -3456,7 +3456,7 @@ template<> inline std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTverte
 				if (edgeprop.getactionID() == actionID)
 				{
 					const FMTbasevertexproperties& vertex_target = data[target(*edge_pair.first, data)];
-					paths.push_back(Core::FMTdevelopmentpath(vertex_target.get().getmask(),
+					paths.push_back(Core::FMTdevelopmentpath(vertex_target.get().getMask(),
 						vertex_target.get().getAge(), 
 						vertex_target.get().getLock(),
 						vertex_target.get().getPeriod(),
@@ -3465,7 +3465,7 @@ template<> inline std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTverte
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTgraph::getPaths", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTgraph::getPaths", __LINE__, __FILE__);
 			}
 		return paths;
 	}
@@ -3489,7 +3489,7 @@ template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeprop
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTgraph::inArea", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTgraph::inArea", __LINE__, __FILE__);
 			}
 		return area;
 	}
@@ -3512,7 +3512,7 @@ template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeprop
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTgraph::outArea", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTgraph::outArea", __LINE__, __FILE__);
 		}
 		return value;
 	}
@@ -3584,7 +3584,7 @@ template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Gra
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTgraph::getVariables", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTgraph::getVariables", __LINE__, __FILE__);
 	}
 	return variables;
 }
@@ -3682,7 +3682,7 @@ template<> inline FMTgraphstats FMTgraph<Graph::FMTvertexproperties, Graph::FMTe
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTgraph::erasePeriod", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTgraph::erasePeriod", __LINE__, __FILE__);
 	}
 	return stats;
 }
@@ -3734,7 +3734,7 @@ template<> inline bool FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproper
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTgraph::getTransferRow", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTgraph::getTransferRow", __LINE__, __FILE__);
 	}
 	return true;
 }
@@ -3753,7 +3753,7 @@ template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeprop
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTgraph::getInProportion", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTgraph::getInProportion", __LINE__, __FILE__);
 	}
 	return 1;
 }
@@ -3826,7 +3826,7 @@ template<> inline void FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproper
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTgraph::updateMatrixIndex", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTgraph::updateMatrixIndex", __LINE__, __FILE__);
 	}
 }
 

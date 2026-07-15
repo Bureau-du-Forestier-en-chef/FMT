@@ -102,7 +102,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         */
         virtual std::unique_ptr<FMTmodel>clone() const final;
 
-        Graph::FMTgraphstats buildperiod();
+        Graph::FMTgraphstats buildPeriod();
     protected:
         // DocString: FMTsamodel::swapPtr
         /**
@@ -150,16 +150,16 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
             //If the move was Accepted
             bool Accepted;
         };
-    // DocString: FMTsamodel::TotalMoves
+    // DocString: FMTsamodel::totalMoves
     ///Total number of moves done
     size_t m_TotalMoves;
-    // DocString: FMTsamodel::CycleMoves
+    // DocString: FMTsamodel::cycleMoves
     ///The move done during the last cycle
     mutable std::vector<FMTmovestats>m_CycleMoves;
-    // DocString: FMTsamodel::CoolingSchedule
+    // DocString: FMTsamodel::coolingSchedule
     ///Cooling schedule for simulated annealing algorithm.
     std::unique_ptr<Spatial::FMTsaschedule>m_CoolingSchedule;
-    // DocString: FMTsamodel::NotAcceptedMovesCount
+    // DocString: FMTsamodel::notAcceptedMovesCount
     ///Count the number of cycle the moves gave had no acceptance
     std::array<size_t, FMTsamove::MoveCount>m_NotAcceptedMovesCount;
     // DocString: FMTsamodel::m_BestObjective
@@ -191,195 +191,195 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     Constructor for presolve use
     */
     FMTsamodel(const FMTsemodel& rhs);
-    // DocString: FMTsamodel::_DoWriteDisturbances
+    // DocString: FMTsamodel::_doWriteDisturbances
     /**
     @brief check if dirtubances writing needed
     @return true or false
     */
-    bool _DoWriteDisturbances() const;
-    // DocString: FMTsamodel::_WriteDisrturbances
+    bool _doWriteDisturbances() const;
+    // DocString: FMTsamodel::_writeDisrturbances
      /**
      @brief Write the disturbances of the best solution
      */
-    void _WriteDisrturbances() const;
-        // DocString: FMTsamodel::GetFromBindings
+    void _writeDisrturbances() const;
+        // DocString: FMTsamodel::getFromBindings
         /**
         Get the selected action from the bindings
         */
-        std::vector<bool> _GetFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions, bool adjacency = false) const;
-        // DocString: FMTsamodel::GetCycleMoves
+        std::vector<bool> _getFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions, bool adjacency = false) const;
+        // DocString: FMTsamodel::getCycleMoves
         /**
         Get the total number of moves of the last cycle
         */
-        size_t _GetCycleMoves() const;
-        // DocString: FMTsamodel::GetAcceptedCycleMoves
+        size_t _getCycleMoves() const;
+        // DocString: FMTsamodel::getAcceptedCycleMoves
         /**
         Get the number of accepted move of the last cycle
         */
-        size_t _GetAcceptedCycleMoves() const;
-        // DocString: FMTsamodel::AllowDestruction
+        size_t _getAcceptedCycleMoves() const;
+        // DocString: FMTsamodel::allowDestruction
         /**
         Returns true if the bindings allow to destroy some events
        */
-        bool _AllowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
-        // DocString: FMTsamodel::_AllowAdjacencyDestruction
+        bool _allowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
+        // DocString: FMTsamodel::_allowAdjacencyDestruction
            /**
            Returns true if the bindings allow to destroy some events
           */
-        bool _AllowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
-        // DocString: FMTsamodel::_AllowGroupDestruction
+        bool _allowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
+        // DocString: FMTsamodel::_allowGroupDestruction
         /**
         @param[in] the solution to test
         @return Returns true if allow group destruction move
         */
-        bool _AllowGroupDestruction(const Spatial::FMTSpatialSchedule& p_actual) const;
-        // DocString: FMTsamodel::_AllowEventsSpread
+        bool _allowGroupDestruction(const Spatial::FMTSpatialSchedule& p_actual) const;
+        // DocString: FMTsamodel::_allowEventsSpread
         /**
         @brief check if event can be spread
         @param[in] the solution to test
         @return Returns true allow events spread
         */
-        bool _AllowEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const;
-        // DocString: FMTsamodel::AllowMove
+        bool _allowEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const;
+        // DocString: FMTsamodel::allowMove
         /**
         Check If you can allow the move 
        */
-        bool _AllowMove(const FMTsamove& move) const;
-        // DocString: FMTsamodel::AllowAnyMove
+        bool _allowMove(const FMTsamove& move) const;
+        // DocString: FMTsamodel::allowAnyMove
         /**
         Return true if you can do a move
        */
-        bool _AllowAnyMove() const;
-        // DocString: FMTsamodel::GetAMove
+        bool _allowAnyMove() const;
+        // DocString: FMTsamodel::getAMove
         /**
         Will return coordinates that might be good candidat to disturb
         */
-        FMTsamove _GetAMove(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
+        FMTsamove _getAMove(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
 		// DocString: FMTsamodel::evaluate
 		/**
 		evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
 		the actual solution.Based on a temp.
 		*/
-		bool _IsBetter(double p_candidatObjective) const;
-        // DocString: FMTsamodel::DoLocalMove
+		bool _isBetter(double p_candidatObjective) const;
+        // DocString: FMTsamodel::doLocalMove
         /**
         Do a loval move and disturb a random number of graph at a random period
         */
-        Spatial::FMTSpatialSchedule _DoLocalMove(const Spatial::FMTSpatialSchedule& actual,
+        Spatial::FMTSpatialSchedule _doLocalMove(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
-        // DocString: FMTsamodel::DoConflictDestruction
+        // DocString: FMTsamodel::doConflictDestruction
         /**
         Destroy the conflicts for a given periods and coordinates
          */
-        Spatial::FMTSpatialSchedule _DoConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
+        Spatial::FMTSpatialSchedule _doConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings,
            std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool, const int& period) const;
-       // DocString: FMTsamodel::DoEventsAreaConflictDestrutorMove
+       // DocString: FMTsamodel::doEventsAreaConflictDestrutorMove
        /**
        Destroy events that have some area conflict
        */
-        Spatial::FMTSpatialSchedule _DoEventsAreaConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
+        Spatial::FMTSpatialSchedule _doEventsAreaConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
-        // DocString: FMTsamodel::DoEventsAdjacencyConflictDestrutorMove
+        // DocString: FMTsamodel::doEventsAdjacencyConflictDestrutorMove
       /**
       Destroy events that have adjacency conflict
       */
-        Spatial::FMTSpatialSchedule _DoEventsAdjacencyConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
+        Spatial::FMTSpatialSchedule _doEventsAdjacencyConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
-        // DocString: FMTsamodel::DoGroupsConflictDestrutorMove
+        // DocString: FMTsamodel::doGroupsConflictDestrutorMove
          /**
         @brief Destroy events that have group conflict
         @param[in] the actual solution
         @return a new solution
         */
-        Spatial::FMTSpatialSchedule _DoGroupsConflictDestrutorMove(const Spatial::FMTSpatialSchedule& p_actual) const;
-        // DocString: FMTsamodel::_DoEventsSpread
+        Spatial::FMTSpatialSchedule _doGroupsConflictDestrutorMove(const Spatial::FMTSpatialSchedule& p_actual) const;
+        // DocString: FMTsamodel::_doEventsSpread
          /**
         @brief Spread same actions to other cells
         @param[in] the actual solution
         @return a new solution
         */
-        Spatial::FMTSpatialSchedule _DoEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const;
+        Spatial::FMTSpatialSchedule _doEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const;
 
         
         // DocString: FMTsamodel::move
 		/**
 		Perturb a solution and produce a new one
 		*/
-		Spatial::FMTSpatialSchedule _Move(const Spatial::FMTSpatialSchedule& actual,
+		Spatial::FMTSpatialSchedule _move(const Spatial::FMTSpatialSchedule& actual,
 						const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
 		// DocString: FMTsamodel::warmup
 		/**
 		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
 		*/
-		double _Warmup(const Spatial::FMTSpatialSchedule& actual,
+		double _warmup(const Spatial::FMTSpatialSchedule& actual,
 			const Spatial::FMTSpatialSchedule::actionbindings& bindings);
         // DocString: FMTsamodel::initialgrow
         /**
         Do an initial grow till you reach the length of the model with the actual solution
         */
-        void _InitialGrow();
+        void _initialGrow();
         // DocString: FMTsamodel::initialbuild
         /**
         Call a random build if there's no solution
         */
-        void _RandomBuild();
+        void _randomBuild();
         // DocString: FMTsamodel::schedulesbuild
         /**
         Call schedules if there's no solution
         */
-        void _SchedulesBuild(const std::vector<Core::FMTschedule>&schedules);
+        void _schedulesBuild(const std::vector<Core::FMTschedule>&schedules);
         // DocString: FMTsamodel:GetLocalMoveSize
         /**
         Generate the size of the local move.
          */
-        size_t _GetLocalMoveSize() const;
-        // DocString: FMTsamodel:_GetMaximalMoveSize
+        size_t _getLocalMoveSize() const;
+        // DocString: FMTsamodel:_getMaximalMoveSize
         /**
         @brief get maximal move size based on temperature
         @param[in] p_maxSize
         @return max move size
          */
-        size_t _GetMaximalMoveSize(size_t p_MaxSize) const;
-        // DocString: FMTsamodel:_GetRandomMoveSize
+        size_t _getMaximalMoveSize(size_t p_MaxSize) const;
+        // DocString: FMTsamodel:_getRandomMoveSize
        /**
        @brief get random move size based on temperature
        @param[in] p_maxSize
        @return move size
         */
-        size_t _GetRandomMoveSize(size_t p_MaxSize) const;
-        // DocString: FMTsamodel::GetRebuild
+        size_t _getRandomMoveSize(size_t p_MaxSize) const;
+        // DocString: FMTsamodel::getRebuild
         /**
         Take the actual non spatial solution of the actual solution and then
         Rebuild the solution using greedyReferenceBuild
         */
-        Spatial::FMTSpatialSchedule _GetRebuild(const Spatial::FMTSpatialSchedule& actual) const;
+        Spatial::FMTSpatialSchedule _getRebuild(const Spatial::FMTSpatialSchedule& actual) const;
         // DocString: FMTsamodel::isCycleProvenOptimal
         /**
         Return true if is optimal based on the termination criteria of the actual temp level
         */
         bool _isCycleProvenOptimal() const;
-        // DocString: FMTsamodel::Dofactorization
+        // DocString: FMTsamodel::dofactorization
         /**
         Do the constraint factorization
         */
-        void _DoFactorization();
-        // DocString: FMTsamodel::LogSolutionStatus
+        void _doFactorization();
+        // DocString: FMTsamodel::logSolutionStatus
         /**
         Log the status of the best solution
         */
-        void _LogSolutionStatus() const;
-        // DocString: FMTsamodel::LogTemperatureStatus
+        void _logSolutionStatus() const;
+        // DocString: FMTsamodel::logTemperatureStatus
         /**
         Log The temperature status and other usefull informations
         */
-        void _LogCycleStatus() const;
-        // DocString: FMTsamodel::CoolDown
+        void _logCycleStatus() const;
+        // DocString: FMTsamodel::coolDown
         /**
         Cool down the annealer temp
         */
-        void _CoolDown();
-        // DocString: FMTsamodel::UpdateFailedMoveCount
+        void _coolDown();
+        // DocString: FMTsamodel::updateFailedMoveCount
         /**
         Update failed move count using NotAcceptedMovesCount and the move stats
         */
@@ -388,22 +388,22 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         std::vector<Core::FMTschedule>_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const;
 
         #ifdef FMTWITHOSI
-            Models::FMTlpmodel _GetRandomLpModel(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+            Models::FMTlpmodel _getRandomLpModel(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
         #endif
 
-        void _SetBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution,
+        void _setBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution,
                                 double p_ObjectiveValue);
 
-        void _GetConstraintsStats(const Spatial::FMTSpatialSchedule& p_NewBestSolution,double& p_Objective,
+        void _getConstraintsStats(const Spatial::FMTSpatialSchedule& p_NewBestSolution,double& p_Objective,
                                  double& p_SpatialRatio, double& p_InventoryRatio, double& p_TotalRatiom,
                                  double& p_PrimalInf) const;
 
 
-        void _ResetTabouMoves();
+        void _resetTabouMoves();
 
-        std::vector<FMTsamove> _GetNonTabouMoves() const;
+        std::vector<FMTsamove> _getNonTabouMoves() const;
 
-        bool _AllowMove(FMTsamove p_move, const Spatial::FMTSpatialSchedule& p_actual,
+        bool _allowMove(FMTsamove p_move, const Spatial::FMTSpatialSchedule& p_actual,
             const Spatial::FMTSpatialSchedule::actionbindings& p_bindings) const;
 	
 

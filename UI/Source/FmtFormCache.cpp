@@ -22,16 +22,16 @@ Parser::FMTmodelparser FMTFormCache::GetConfiguredParser() const
 		{
 			std::unique_ptr<Logging::FMTlogger> loggerClone =
 				mainLogger->Clone();
-			parser.passinlogger(loggerClone);
+			parser.passInLogger(loggerClone);
 		}
 		const FMTexceptionhandlerwarning* handler = GetFormHandler();
 		std::unique_ptr<Exception::FMTexceptionhandler> handlerClone =
 			handler->Clone();
-		parser.passinexceptionhandler(handlerClone);
+		parser.passInExceptionHandler(handlerClone);
 	}
 	catch (...)
 	{
-		GetExceptionHandler()->raisefromcatch(
+		getExceptionHandler()->raiseFromCatch(
 			"", "FMTFormCache::GetConfiguredParser", __LINE__, __FILE__);
 	}
 	return parser;
@@ -47,19 +47,19 @@ FMTFormCache* FMTFormCache::GetInstance()
 	}
 
 
-const Models::FMTmodel& FMTFormCache::getmodel(const int& index) const
+const Models::FMTmodel& FMTFormCache::getModel(const int& index) const
 	{
 	try {
 		if (static_cast<size_t>(index)>= m_Models.size())
 		{
-			GetExceptionHandler()->raise(
+			getExceptionHandler()->raise(
 				Exception::FMTexc::FMTrangeerror, "no scenario for index " + std::to_string(index) + " in cache ",
-				"FMTFormCache::getmodel", __LINE__, __FILE__);
+				"FMTFormCache::getModel", __LINE__, __FILE__);
 		}
 
 	}catch (...)
 		{
-		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::getmodel", __LINE__, __FILE__);
+		getExceptionHandler()->raiseFromCatch("", "FMTFormCache::getModel", __LINE__, __FILE__);
 		}
 	return *m_Models.at(index).get();
 	}
@@ -67,17 +67,17 @@ const Models::FMTmodel& FMTFormCache::getmodel(const int& index) const
 
 FMTexceptionhandlerwarning* FMTFormCache::GetFormHandler()
 {
-	FMTexceptionhandlerwarning* wwarptr = dynamic_cast<FMTexceptionhandlerwarning*>(GetExceptionHandler());
+	FMTexceptionhandlerwarning* wwarptr = dynamic_cast<FMTexceptionhandlerwarning*>(getExceptionHandler());
 	try {
 		if (!wwarptr)
 		{
-			GetExceptionHandler()->raise(
+			getExceptionHandler()->raise(
 				Exception::FMTexc::FMTrangeerror, "no valid FMTexceptionhandlerwarning in cache ",
 				"FMTFormCache::GetFormHandler", __LINE__, __FILE__);
 		}
 	}catch (...)
 		{
-		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::GetFormHandler", __LINE__, __FILE__);
+		getExceptionHandler()->raiseFromCatch("", "FMTFormCache::GetFormHandler", __LINE__, __FILE__);
 		}
 	return wwarptr;
 }
@@ -85,18 +85,18 @@ FMTexceptionhandlerwarning* FMTFormCache::GetFormHandler()
 const FMTexceptionhandlerwarning* FMTFormCache::GetFormHandler() const
 {
 	const FMTexceptionhandlerwarning* wwarptr =
-		dynamic_cast<const FMTexceptionhandlerwarning*>(GetExceptionHandler());
+		dynamic_cast<const FMTexceptionhandlerwarning*>(getExceptionHandler());
 	try {
 		if (!wwarptr)
 		{
-			GetExceptionHandler()->raise(
+			getExceptionHandler()->raise(
 				Exception::FMTexc::FMTrangeerror,
 				"no valid FMTexceptionhandlerwarning in cache ",
 				"FMTFormCache::GetFormHandler", __LINE__, __FILE__);
 		}
 	}
 	catch (...) {
-		GetExceptionHandler()->raisefromcatch(
+		getExceptionHandler()->raiseFromCatch(
 			"", "FMTFormCache::GetFormHandler", __LINE__, __FILE__);
 	}
 	return wwarptr;
@@ -108,13 +108,13 @@ FMTFormLogger*  FMTFormCache::GetFormLogger()
 	try{
 		if (!loggerptr)
 		{
-			GetExceptionHandler()->raise(
+			getExceptionHandler()->raise(
 				Exception::FMTexc::FMTrangeerror, "no valid FMTexceptionhandlerwarning in cache ",
 				"FMTFormCache::GetFormLogger", __LINE__, __FILE__);
 		}
 	}catch (...)
 	{
-		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::GetFormLogger", __LINE__, __FILE__);
+		getExceptionHandler()->raiseFromCatch("", "FMTFormCache::GetFormLogger", __LINE__, __FILE__);
 	}
 	return loggerptr;
 }
@@ -126,7 +126,7 @@ void FMTFormCache::push_back(const Models::FMTmodel& model)
 		m_Models.push_back(std::move(std::unique_ptr<Models::FMTmodel>(new Models::FMTmodel(model))));
 	}catch (...)
 		{
-			GetExceptionHandler()->raisefromcatch("", "FMTFormCache::push_back", __LINE__, __FILE__);
+			getExceptionHandler()->raiseFromCatch("", "FMTFormCache::push_back", __LINE__, __FILE__);
 		}
 		
 }
@@ -136,7 +136,7 @@ void FMTFormCache::erase(const int& index)
 		m_Models.erase(m_Models.begin() + index);
 }catch (...)
 	{
-		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::erase", __LINE__, __FILE__);
+		getExceptionHandler()->raiseFromCatch("", "FMTFormCache::erase", __LINE__, __FILE__);
 	}
 }
 void FMTFormCache::clear()
@@ -145,15 +145,15 @@ void FMTFormCache::clear()
 		m_Models.clear();
 	}catch (...)
 	{
-		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::clear", __LINE__, __FILE__);
+		getExceptionHandler()->raiseFromCatch("", "FMTFormCache::clear", __LINE__, __FILE__);
 	}
 }
 
 void FMTFormCache::buildExceptionHandler()
 	{
-	if (GetExceptionHandler())
+	if (getExceptionHandler())
 	{
-		FMTexceptionhandlerwarning* old = dynamic_cast<FMTexceptionhandlerwarning*>(GetExceptionHandler());
+		FMTexceptionhandlerwarning* old = dynamic_cast<FMTexceptionhandlerwarning*>(getExceptionHandler());
 		if (old)
 		{
 			old->ResetThread();
@@ -162,8 +162,8 @@ void FMTFormCache::buildExceptionHandler()
 
 	std::unique_ptr<Exception::FMTexceptionhandler> handler(new FMTexceptionhandlerwarning(m_maxwarnings));
 	Models::FMTmodel useLessModel;
-	useLessModel.passinexceptionhandler(handler);
-	useLessModel.seterrorstowarnings(m_warnings);
+	useLessModel.passInExceptionHandler(handler);
+	useLessModel.setErrorsToWarnings(m_warnings);
 	useLessModel.setTerminateStack();
 	useLessModel.setAbortStack();
 	}
@@ -178,7 +178,7 @@ void FMTFormCache::InitializeExceptionHandler(const int& maxwarnings,const std::
 	}
 	catch (...)
 		{
-		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::InitializeExceptionHandler", __LINE__, __FILE__);
+		getExceptionHandler()->raiseFromCatch("", "FMTFormCache::InitializeExceptionHandler", __LINE__, __FILE__);
 		}
 	}
 
@@ -186,7 +186,7 @@ void FMTFormCache::buildLogger()
 	{
 	std::unique_ptr<Logging::FMTlogger> logger(new FMTFormLogger(m_loggerFilename, (logfunc)m_loggerFuncPtr));
 	Models::FMTmodel useLessModel;
-	useLessModel.passinlogger(logger);
+	useLessModel.passInLogger(logger);
 	}
 
 void FMTFormCache::InitializeLogger(const std::string& filename, System::IntPtr intptrptr)
@@ -197,7 +197,7 @@ void FMTFormCache::InitializeLogger(const std::string& filename, System::IntPtr 
 		buildLogger();
 	}catch (...)
 		{
-		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::InitializeLogger", __LINE__, __FILE__);
+		getExceptionHandler()->raiseFromCatch("", "FMTFormCache::InitializeLogger", __LINE__, __FILE__);
 		}
 	}
 	
@@ -214,7 +214,7 @@ void FMTFormCache::CloseLogger()
 	}
 	catch (...)
 	{
-		GetExceptionHandler()->raisefromcatch(
+		getExceptionHandler()->raiseFromCatch(
 			"", "FMTFormCache::CloseLogger", __LINE__, __FILE__);
 	}
 }
@@ -243,13 +243,13 @@ void FMTFormCache::RecoverLoggerAndHandler(System::IntPtr intptrptr)
 		}
 	}catch (...)
 		{
-		GetExceptionHandler()->raisefromcatch("", "FMTFormCache::RecoverLoggerAndHandler", __LINE__, __FILE__);
+		getExceptionHandler()->raiseFromCatch("", "FMTFormCache::RecoverLoggerAndHandler", __LINE__, __FILE__);
 		}
 	}
 
-Exception::FMTexceptionhandler* FMTFormCache::GetExceptionHandler() const
+Exception::FMTexceptionhandler* FMTFormCache::getExceptionHandler() const
 {
-	return Models::FMTmodel::GetExceptionHandler();
+	return Models::FMTmodel::getExceptionHandler();
 }
 
 bool FMTFormCache::empty() const

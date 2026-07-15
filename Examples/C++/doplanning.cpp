@@ -15,7 +15,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		#ifdef FMTWITHMOSEK
@@ -64,25 +64,25 @@ int main(int argc, char* argv[])
 			Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		#endif
 		//modelparser.write(optimizationmodel, "D:/test/");
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 
-		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
 		//modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doPlanning(true)) {
 			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
 			//Parser::FMTareaparser arepars;
-			//arepars.write(optimizationmodel.getarea(1), "D:/test/test.are");
+			//arepars.write(optimizationmodel.getArea(1), "D:/test/test.are");
 			
 			std::vector<Core::FMToutput>outputs;
 			/*
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
-				if (output.getname() == "OVOLTOTREC")
+				if (output.getName() == "OVOLTOTREC")
 				{
 					for (int period = 1; period < 10; ++period)
 					{
@@ -101,15 +101,15 @@ int main(int argc, char* argv[])
 			{
 				for (const auto& val : solution.second)
 				{
-					std::cout << solution.first.getname() << " " << std::string(val.first) << "\n";
+					std::cout << solution.first.getName() << " " << std::string(val.first) << "\n";
 				}
 				
 			}*/
 			/*for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
-				if (output.getname()=="OYOUVERT")
+				if (output.getName()=="OYOUVERT")
 				{
-					std::cout << output.getname() << " ";
+					std::cout << output.getName() << " ";
 					std::map<std::string, std::vector<double>>alls;
 					for (int period =1 ; period <=5; ++period)
 						{
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 				}
 
 			}*/
-			//modelparser.writeresults(optimizationmodel, outputs, 10, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
+			//modelparser.writeResults(optimizationmodel, outputs, 10, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
 			//optimizationmodel.writeLP("D:/test/"+ scenario+".lp");
 		}
 		

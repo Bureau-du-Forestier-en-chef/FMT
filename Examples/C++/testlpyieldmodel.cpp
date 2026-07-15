@@ -19,16 +19,16 @@
 			const std::vector<std::string>scenarios(1, "Predictors");
 			const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 			Models::FMTlpmodel optimizationmodel(models.at(0),Models::FMTsolverinterface::CLP);
-			optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
+			optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
 			if (optimizationmodel.doPlanning(true))
 				{
-				for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+				for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 					{
-					if (output.getname().find("_") != std::string::npos)
+					if (output.getName().find("_") != std::string::npos)
 						{
 						for (int period = 1; period < 11; ++period)
 							{
-							Logging::FMTdefaultlogger() << "output value "<< output.getname() <<" " << optimizationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
+							Logging::FMTdefaultlogger() << "output value "<< output.getName() <<" " << optimizationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
 							}
 						//break;
 						}

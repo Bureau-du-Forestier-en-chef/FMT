@@ -30,12 +30,12 @@ namespace Spatial
 		m_Solution(p_solution),
 		m_ConstraintsFamilies()
 	{
-		_BuildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
+		_buildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
 	};
 
 
 
-	void FMTSolutionTracker::_ModifySolution(
+	void FMTSolutionTracker::_modifySolution(
 		size_t p_family,
 		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_It,
 		double p_sense)
@@ -57,8 +57,8 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTSolutionTracker::_ModifySolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTSolutionTracker::_modifySolution", __LINE__, __FILE__);
 			}
 	}
 
@@ -67,7 +67,7 @@ namespace Spatial
 						size_t p_NumberOfFamilies)
 		{
 		m_LastConstraintsEvaluation = p_constraintValues;
-		_BuildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
+		_buildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
 		}
 
 	void FMTSolutionTracker::disableTracking()
@@ -97,7 +97,7 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
+			_exhandler->raiseFromCatch("",
 				"FMTSolutionTracker::getNumberOfCells", __LINE__, __FILE__);
 			}
 		return numberOf;
@@ -137,11 +137,11 @@ namespace Spatial
 			++m_Solution.at(p_NewGraph->second.getGraphId());
 			if (isTrackingEnable())
 				{
-				_ModifySolution(p_family, p_NewGraph, 1.0);
+				_modifySolution(p_family, p_NewGraph, 1.0);
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
+			_exhandler->raiseFromCatch("",
 				"FMTSolutionTracker::addToSolution", __LINE__, __FILE__);
 			}
 	}
@@ -152,16 +152,16 @@ namespace Spatial
 			--m_Solution.at(p_OldGraph->second.getGraphId());
 			if (isTrackingEnable())
 				{
-				_ModifySolution( p_family, p_OldGraph, -1.0);
+				_modifySolution( p_family, p_OldGraph, -1.0);
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("",
+			_exhandler->raiseFromCatch("",
 				"FMTSolutionTracker::removeFromSolution", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTSolutionTracker::_BuildConstraintsFamilies(const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
+	void FMTSolutionTracker::_buildConstraintsFamilies(const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
 														size_t p_NumberOfFamilies)
 		{
 		m_ConstraintsFamilies.clear();

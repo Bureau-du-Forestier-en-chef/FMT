@@ -185,11 +185,11 @@ namespace Graph
 			{
 				std::vector<tvdescriptor>toRemove(*m_allocator);
 				bool gotSomething = false;
-				const Core::FMTmask& targetmask = targetnode.source.getmask();
+				const Core::FMTmask& targetmask = targetnode.source.getMask();
 				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 					sit != searchtree.rend(); sit++)
 				{
-					const Core::FMTmask& nodemask = sit->first.getmask();
+					const Core::FMTmask& nodemask = sit->first.getMask();
 					if (targetmask.isNotThemesSubset(nodemask, themes))//deal only with mask
 					{
 						if (!gotSomething)
@@ -222,14 +222,14 @@ namespace Graph
 			bool& exactnode/*, const size_t& p_reserve*/) const
 		{
 			const std::string actionname = targetnode.source.getAction();
-			const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getAllAggregates(actions, true);
+			const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTActionComparator(actionname).getAllAggregates(actions, true);
 			if (!actionname.empty() && !aggregatesptr.empty()) //so it's a aggregate!
 			{
 				std::map<std::string, std::vector< notecacheit>>potentials;
 				for (const Core::FMTaction* attributeptr : aggregatesptr)
 				{
-					potentials[attributeptr->getname()] = std::vector< notecacheit>();
-					potentials[attributeptr->getname()].reserve(m_reserve);
+					potentials[attributeptr->getName()] = std::vector< notecacheit>();
+					potentials[attributeptr->getName()].reserve(m_reserve);
 				}
 				for (notecacheit sit = searchtree.begin();
 					sit != searchtree.end(); sit++)
@@ -247,7 +247,7 @@ namespace Graph
 				}
 				for (const Core::FMTaction* attributeptr : aggregatesptr)
 				{
-					if (potentials.at(attributeptr->getname()).empty())
+					if (potentials.at(attributeptr->getName()).empty())
 					{
 						return; //not a perfect rebuilt need to be complete!!
 					}

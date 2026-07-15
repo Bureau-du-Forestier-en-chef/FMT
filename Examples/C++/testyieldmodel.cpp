@@ -17,7 +17,7 @@ int main()
 {
 #ifdef FMTWITHONNXR
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation =  modellocation + "TWD_land.pri";
 	Parser::FMTmodelparser mparser;
@@ -31,7 +31,7 @@ int main()
 	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
-	mparser.seterrorstowarnings(errors);
+	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, "Predictors");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	//mparser.write(models.at(0), "E:/Projects/BFEC_MachineLearning/test/");
@@ -53,16 +53,16 @@ int main()
 		}
 		++id;
 	}
-	simulationmodel.setconstraints(newconstraints);
+	simulationmodel.setConstraints(newconstraints);
 	Parser::FMTareaparser areaparser;
 	const std::string rastpath =  modellocation + "rasters/";
 	const std::string agerast = rastpath + "AGE.tif";
 	std::vector<std::string> themesrast;
-	for (int i = 1; i <= simulationmodel.getthemes().size(); i++)
+	for (int i = 1; i <= simulationmodel.getThemes().size(); i++)
 	{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 	}
-	Spatial::FMTforest initialforestmap = areaparser.readRasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
+	Spatial::FMTforest initialforestmap = areaparser.readRasters(simulationmodel.getThemes(), themesrast, agerast, 1, 0.0001);
 	simulationmodel.setInitialMapping(initialforestmap);
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
@@ -74,22 +74,22 @@ int main()
 		Logging::FMTdefaultlogger() << "\n";
 	}
 	std::vector<Core::FMToutput> spatialoutput;
-	for (const Core::FMToutput& output : simulationmodel.getoutputs())
+	for (const Core::FMToutput& output : simulationmodel.getOutputs())
 	{
-		if (output.getname().find("_") != std::string::npos)
+		if (output.getName().find("_") != std::string::npos)
 		{
 			spatialoutput.push_back(output);
 		}
 	}
 
-	mparser.writeresults(simulationmodel, spatialoutput, 1, 10, "../../tests/testyieldmodel/", Core::FMToutputlevel::totalonly, "CSV");
+	mparser.writeResults(simulationmodel, spatialoutput, 1, 10, "../../tests/testyieldmodel/", Core::FMToutputlevel::totalonly, "CSV");
 
 	//simulationmodel.solve();
 	for (const Core::FMToutput& output : spatialoutput)
 	{
 		for (int period = 1; period < 11; ++period)
 		{
-			Logging::FMTdefaultlogger() << "output value " << output.getname() << " " << simulationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
+			Logging::FMTdefaultlogger() << "output value " << output.getName() << " " << simulationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
 		}
 	}
 #endif

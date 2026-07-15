@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[])
 {
-		Logging::FMTdefaultlogger().logstamp();
+		Logging::FMTdefaultlogger().logStamp();
 		std::string PRIMARYm_location;
 		std::string SCENARIO;
 		std::string TARGET_YIELD;
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		errors.push_back(Exception::FMTexc::FMTempty_schedules);
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-		ModelParser.seterrorstowarnings(errors);
+		ModelParser.setErrorsToWarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
 		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 		//Add action based on first yield and transition to second yield.
 		//Create a schedule based on area detected yield age...
 		const Models::FMTmodel BUILDED_MODEL = MODELS.at(0).buildAction(ACTION_NAME, TARGET_YIELD);
-		ModelParser.writetoproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", BUILDED_MODEL);
+		ModelParser.writeToProject(OUTPUT_DIRECTORY + SCENARIO + ".pri", BUILDED_MODEL);
 		Parser::FMTscheduleparser SCHEDULE_PARSER;
 		const std::vector<Core::FMTschedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), 
 			MODELS.at(0),TARGET_YIELD, SCHEDULES);

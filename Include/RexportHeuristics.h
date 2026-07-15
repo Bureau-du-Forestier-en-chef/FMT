@@ -54,7 +54,7 @@ void exportHeuristics()
 			"@DocString(FMToperatingarea::getneighbors)")
 		.method("setneighbors", &Heuristics::FMToperatingarea::setNeighbors,
 			"@DocString(FMToperatingarea::setneighbors)")
-		.method("getmask", &Heuristics::FMToperatingarea::getmask,
+		.method("getmask", &Heuristics::FMToperatingarea::getMask,
 			"@DocString(FMToperatingarea::getmask)")
 		.method("getneihgborsperimeter", &Heuristics::FMToperatingarea::getNeighborsPerimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");

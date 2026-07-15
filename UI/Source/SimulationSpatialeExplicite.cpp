@@ -210,7 +210,7 @@ namespace Wrapper
                 }
             }
 
-            const std::string scenarioName = FMTFormCache::GetInstance()->getmodel(scenario).getname();
+            const std::string scenarioName = FMTFormCache::GetInstance()->getModel(scenario).getName();
 
             FMTWrapperCore::SESParameters params = ConvertirParametres(
                 fichierPri, cheminRasters, scenario, contraintes, periodes,
@@ -220,13 +220,13 @@ namespace Wrapper
                 indCarbon, predictoryields, growththemes,
                 scenarioName); 
 
-            Models::FMTmodel selectedModel = FMTFormCache::GetInstance()->getmodel(scenario);
+            Models::FMTmodel selectedModel = FMTFormCache::GetInstance()->getModel(scenario);
 
             const std::vector<Core::FMTschedule> schedules = ObtenirSEQ(fichierPri, scenario);
     
             if (savedLogger)
             {
-                selectedModel.passinlogger(savedLogger);
+                selectedModel.passInLogger(savedLogger);
             }
             // Re-acquérir le pointeur valide vers le logger restauré
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
@@ -255,7 +255,7 @@ namespace Wrapper
         }
         catch (...)
         {
-            raisefromcatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
+            raiseFromCatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
             return false;
         }
     }

@@ -42,7 +42,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTyieldmodelTSLA::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
@@ -79,7 +79,7 @@ namespace Core {
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTyieldmodelTSLA::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return returned;
 	}
@@ -92,7 +92,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTyieldmodelTSLA::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
@@ -105,7 +105,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(getModelType(), "FMTyieldmodelTSLA::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTyieldmodelTSLA::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}

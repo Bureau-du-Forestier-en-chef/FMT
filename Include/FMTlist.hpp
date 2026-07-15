@@ -73,7 +73,7 @@ namespace Core
 					push_back(Object.first, Object.second);
 					}
 			}catch (...) {
-				_exhandler->raisefromcatch("", "FMTlist::operator::+=", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTlist::operator::+=", __LINE__, __FILE__);
 
 			}
 			return *this;
@@ -218,7 +218,7 @@ namespace Core
 				subset = findSetsWithFiltered(NEW_KEY);
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("for mask "+std::string(p_mask), "FMTlist:: findsets", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("for mask "+std::string(p_mask), "FMTlist:: findsets", __LINE__, __FILE__);
 				}
 			return subset;
 		}
@@ -265,7 +265,7 @@ namespace Core
 				}
 			}catch (...) 
 				{
-				_exhandler->raisefromcatch("", "FMTlist::findSetsWithFiltered", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTlist::findSetsWithFiltered", __LINE__, __FILE__);
 				}
 			return allhits;
 		}
@@ -308,7 +308,7 @@ namespace Core
 			}
 			catch (...) {
 
-				_exhandler->raisefromcatch("", "FMTlist::shrink", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTlist::shrink", __LINE__, __FILE__);
 
 			}
 		}
@@ -518,7 +518,7 @@ namespace Core
 				shrink();
 			}catch (...)
 					{
-				_exhandler->raisefromcatch("", "compressMasks", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "compressMasks", __LINE__, __FILE__);
 				}
 			}
 		// DocString: FMTlist::presolveList
@@ -574,7 +574,7 @@ namespace Core
 				//data.shrink_to_fit();
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("","FMTlist::presolveList", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("","FMTlist::presolveList", __LINE__, __FILE__);
 				}
 			}
 		void copyData(const Core::FMTlist<T>& rhs)
@@ -599,7 +599,7 @@ namespace Core
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTlist::save", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTlist::save", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTlist::load

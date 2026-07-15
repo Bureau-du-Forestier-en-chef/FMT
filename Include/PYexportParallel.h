@@ -74,8 +74,8 @@ void exportParallel()
 	bp::class_<Parallel::FMTtaskhandler, bp::bases<Core::FMTobject>>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 		.def(bp::init<Parallel::FMTtaskhandler>())
 		.def(bp::init<const Parallel::FMTtask&, unsigned int>(bp::args("Task to provide to the handler", "Number of threads"), "@DocString(FMTtaskhandler::FMTtaskhandler(const Parallel::FMTtask&,unsigned int))"))
-		.def("conccurentrun", &Parallel::FMTtaskhandler::conccurentrun,"@DocString(FMTtaskhandler::conccurentrun)")
-		.def("ondemandrun", &Parallel::FMTtaskhandler::ondemandrun, "@DocString(FMTtaskhandler::ondemandrun)");
+		.def("conccurentrun", &Parallel::FMTtaskhandler::conccurentRun,"@DocString(FMTtaskhandler::conccurentrun)")
+		.def("ondemandrun", &Parallel::FMTtaskhandler::onDemandRun, "@DocString(FMTtaskhandler::ondemandrun)");
 
 	definePyList<Parallel::FMTtaskhandler>();
 

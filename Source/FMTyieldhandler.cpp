@@ -23,7 +23,7 @@ FMTyieldhandler::operator std::string() const
 				"FMTyieldhandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::std::string()", __LINE__, __FILE__,Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::std::string()", __LINE__, __FILE__,Core::FMTsection::Yield);
 			}
         return value;
         }
@@ -47,7 +47,7 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldhandler>(nullptr);
 	}
@@ -61,7 +61,7 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::pushBase", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::pushBase", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return false;
         }
@@ -72,7 +72,7 @@ FMTyieldhandler::operator std::string() const
 				"FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return false;
         }
@@ -111,7 +111,7 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::indexes", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::indexes", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::vector<std::string>();
         }
@@ -124,7 +124,7 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
         return true;
         }
@@ -136,12 +136,12 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getType", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getType", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
         return FMTyldtype::FMTageyld;
         }
 
-	FMTmask FMTyieldhandler::getmask() const
+	FMTmask FMTyieldhandler::getMask() const
 		{
 		return mask;
 		}
@@ -167,13 +167,13 @@ FMTyieldhandler::operator std::string() const
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTageyieldhandler::compare", __LINE__, __FILE__, Core::FMTsection::Yield);
+				_exhandler->raiseFromCatch("", "FMTageyieldhandler::compare", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			return same;
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::compare", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::compare", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
         return std::vector<std::string>();
         }
@@ -194,7 +194,7 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
         }
@@ -246,7 +246,7 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 		}
@@ -289,7 +289,7 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getLastValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getLastValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 		}
@@ -302,7 +302,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
@@ -327,7 +327,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getChangesFrom", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getChangesFrom", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 		}
@@ -341,7 +341,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 		}
@@ -354,7 +354,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
@@ -375,7 +375,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getMaxBase", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getMaxBase", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return maxage;
 	}
@@ -389,7 +389,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
         }
@@ -402,7 +402,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 			newhandler->mask = this->mask.presolve(filter, newthemes);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return newhandler;
 		}
@@ -428,7 +428,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 				newhandler->mask = newhandler->mask.postSolve(filter,basethemes);
 			}catch (...)
 			{
-				_exhandler->printexceptions("", "FMTyieldhandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+				_exhandler->printExceptions("", "FMTyieldhandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			return newhandler;
 			}
@@ -442,7 +442,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldhandler>(nullptr);
 		}
@@ -455,7 +455,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::empty", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::empty", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return true;
 	}
@@ -467,7 +467,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::size", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::size", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
@@ -479,7 +479,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::operator[]", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::operator[]", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		FMTdata nullData;
 		return nullData;
@@ -492,7 +492,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::at", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::at", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		FMTdata nullData;
 		return nullData;
@@ -505,7 +505,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch(yldname, "FMTyieldhandler::isNullYield", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(yldname, "FMTyieldhandler::isNullYield", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return false;
 	}
@@ -518,7 +518,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::containsYield", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::containsYield", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return false;
 		}
@@ -531,7 +531,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getYieldNames", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getYieldNames", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::vector<std::string>();
 	}
@@ -550,7 +550,7 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 			catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::map<std::string, std::vector<double>>();
 	}

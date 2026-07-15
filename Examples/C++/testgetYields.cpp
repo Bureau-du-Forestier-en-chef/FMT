@@ -15,7 +15,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
@@ -66,10 +66,10 @@ int main(int argc, char *argv[])
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		
 		const double tolerance = 0.01;
-		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
-		//optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getPeriod());
+		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		//optimizationmodel.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getPeriod());
 		
 		const bool FEASIBLE = optimizationmodel.doPlanning( false, schedules);
 		/*if (FEASIBLE)
@@ -84,10 +84,10 @@ int main(int argc, char *argv[])
 		}*/
 		
 		bool gotovoltotrec = false;
-		const Core::FMTdevelopment adev(Core::FMTmask(maskstr,optimizationmodel.getthemes()), age, 0, period);
+		const Core::FMTdevelopment adev(Core::FMTmask(maskstr,optimizationmodel.getThemes()), age, 0, period);
 		const Graph::FMTgraphvertextoyield graph_info = optimizationmodel.getGraphVertexToYield();
 		const Core::FMTyieldrequest yieldrequest = adev.getYieldRequest(&graph_info);
-		const double returnedvalue = optimizationmodel.getyields().get(yieldrequest,yieldname);
+		const double returnedvalue = optimizationmodel.getYields().get(yieldrequest,yieldname);
 		Logging::FMTdefaultlogger() << returnedvalue << "\n";
 		if ((returnedvalue < (yieldvalue - tolerance)) || (returnedvalue > (yieldvalue + tolerance)))
 			{

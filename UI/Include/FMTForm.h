@@ -313,7 +313,7 @@ namespace Wrapper
 		managedFeed^ managed;
 		System::IntPtr unmanaged;
 		void ToFeedBack(const char* message);
-		void raisefromcatch(std::string text, const std::string& method, const int& line, const std::string& fil);
+		void raiseFromCatch(std::string text, const std::string& method, const int& line, const std::string& fil);
 		std::vector<Core::FMTschedule> ObtenirSEQ(System::String^ nomFichierPri, int indexScenario);
 
 		// Méthode helper pour envoyer les résultats via RetourJson

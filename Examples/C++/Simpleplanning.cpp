@@ -12,7 +12,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
@@ -24,7 +24,7 @@ int main()
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		for (size_t period = 0; period < 10; ++period)
 		{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildPeriod();
 		}
 		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 		const Core::FMTconstraint objective = constraints.at(0);
@@ -42,7 +42,7 @@ int main()
 			{
 				optimalschedules.push_back(optimizationmodel.getSolution(period));
 			}
-			scheduleparser.write(optimalschedules, outdir + optimizationmodel.getname() + "._seq");
+			scheduleparser.write(optimalschedules, outdir + optimizationmodel.getName() + "._seq");
 		}
 	}
 	else {

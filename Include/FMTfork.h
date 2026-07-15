@@ -59,7 +59,7 @@ class FMTEXPORT FMTfork : public FMTspec, public FMTobject
             ar& m_transitions;
         }
         std::vector<FMTtransitionmask>m_transitions;
-        FMTdevelopmentpath _GetPath(const FMTtransitionmask& p_target,
+        FMTdevelopmentpath _getPath(const FMTtransitionmask& p_target,
             const Core::FMTdevelopment& p_base, const Core::FMTyields& p_yields,
             const std::vector<FMTtheme>& p_themes, bool p_AgeReset) const;
     };

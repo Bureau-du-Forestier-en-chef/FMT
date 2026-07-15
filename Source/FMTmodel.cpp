@@ -43,7 +43,7 @@ namespace Models{
         }
         catch (...)
         {
-            _exhandler->raisefromcatch("", "FMTmodel::getYieldValue", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTmodel::getYieldValue", __LINE__, __FILE__);
         }
         return result;
     }
@@ -69,7 +69,7 @@ namespace Models{
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
 			}
 		return gotIt;
 		}
@@ -87,7 +87,7 @@ namespace Models{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
 		}
 		return gotIt;
 	}
@@ -118,11 +118,11 @@ namespace Models{
 					}
 				}*/
 			const int MAX_PERIOD = std::min(p_action.getPeriodUpperBound(),
-				getparameter(Models::FMTintmodelparameters::LENGTH));
-			const std::vector<size_t>AGGREGATE_THEMES = p_BaseModel._GetAggregatesThemes(p_Targetyield);
-			//const std::string POST_ATTRIBUTE = themes.back().getbaseattributes().back();
+				getParameter(Models::FMTintmodelparameters::LENGTH));
+			const std::vector<size_t>AGGREGATE_THEMES = p_BaseModel._getAggregatesThemes(p_Targetyield);
+			//const std::string POST_ATTRIBUTE = themes.back().getBaseAttributes().back();
 			boost::unordered_map<Core::FMTdevelopment, double>ActToRemove;
-			const std::vector<size_t> AGGREGATES = p_BaseModel._GetAggregatesThemes(p_Targetyield);
+			const std::vector<size_t> AGGREGATES = p_BaseModel._getAggregatesThemes(p_Targetyield);
 			for (const Core::FMTschedule& ACT_SCHEDULE : p_schedules)
 			{
 				const int PERIOD = ACT_SCHEDULE.getPeriod();
@@ -131,15 +131,15 @@ namespace Models{
 					{
 					for (const auto& dev : ACTION.second)
 						{
-						const std::string BASE_THEME = p_BaseModel._GetYieldAttribute(dev.first.getmask(),
+						const std::string BASE_THEME = p_BaseModel._getYieldAttribute(dev.first.getMask(),
 																					p_Targetyield, AGGREGATES);
 						const std::string BEFORE_THEME = BASE_THEME +BEFORE;
 						const std::string AFTER_THEME = BASE_THEME + AFTER;
 						Core::FMTdevelopment newDev(dev.first);
-						Core::FMTmask newMask = Core::FMTmask(newDev.getmask(),themes);
+						Core::FMTmask newMask = Core::FMTmask(newDev.getMask(),themes);
 						newMask.set(themes.back(), BEFORE_THEME);
 						newDev.setMask(newMask);
-						if (//dev.first.getmask().isSubsetOf(ActionMask)&&
+						if (//dev.first.getMask().isSubsetOf(ActionMask)&&
 							!newMask.isNotThemesSubset(ActionMask,themesTest))
 							{
 							if (PERIOD > MAX_PERIOD)
@@ -187,7 +187,7 @@ namespace Models{
 					//newSchedules[period - 1].setUseLock(false);
 					if (futurDev.operable(p_action,yields))
 						{
-						double value = dev.getarea();
+						double value = dev.getArea();
 						if (ActToRemove.find(futurDev)!= ActToRemove.end())
 							{
 							value -= ActToRemove.at(futurDev);
@@ -200,7 +200,7 @@ namespace Models{
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodel::buildSchedule", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::buildSchedule", __LINE__, __FILE__);
 			}
 		return newSchedules;
 	}
@@ -215,12 +215,12 @@ namespace Models{
 				Core::FMTschedule newSchedule(SCHEDULE.getPeriod(),SCHEDULE,SCHEDULE.doUseLock());
 				for (const auto& ACTION : SCHEDULE)
 					{
-					std::vector<Core::FMTaction>::const_iterator actPtr = std::find_if(actions.begin(), actions.end(),Core::FMTactioncomparator(ACTION.first.getname()));
+					std::vector<Core::FMTaction>::const_iterator actPtr = std::find_if(actions.begin(), actions.end(),Core::FMTActionComparator(ACTION.first.getName()));
 					if (actPtr != actions.end())
 						{
 						for (const auto& dev : ACTION.second)
 							{
-							const Core::FMTdevelopment TARGET(Core::FMTmask(dev.first.getmask(), themes), dev.first.getAge(), dev.first.getLock());
+							const Core::FMTdevelopment TARGET(Core::FMTmask(dev.first.getMask(), themes), dev.first.getAge(), dev.first.getLock());
 							for (const double& VALUE : dev.second)
 								{
 								newSchedule.addEvent(TARGET, VALUE, *actPtr);
@@ -233,12 +233,12 @@ namespace Models{
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodel::extendSchedule", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::extendSchedule", __LINE__, __FILE__);
 			}
 		return newSchedules;
 	}
 
-	std::string FMTmodel::_GetAggregatesWrap(const Core::FMTmask& p_mask,
+	std::string FMTmodel::_getAggregatesWrap(const Core::FMTmask& p_mask,
 		const std::vector<size_t>& p_themes) const
 	{
 		std::string Wrap;
@@ -254,14 +254,14 @@ namespace Models{
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTmodel::_GetAggregatesWrap", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTmodel::_getAggregatesWrap", __LINE__, __FILE__);
 			}
 
 		return Wrap;
 	}
 
-	std::vector<size_t> FMTmodel::_GetAggregatesThemes(const std::string& p_yieldName) const
+	std::vector<size_t> FMTmodel::_getAggregatesThemes(const std::string& p_yieldName) const
 	{
 		std::vector<size_t> aggregateThemes;
 		try {
@@ -274,7 +274,7 @@ namespace Models{
 				{
 					for (size_t i : aggregateThemes)
 					{
-						if (themes.at(i).isAggregate(HANDLER->getmask().get(themes.at(i))))
+						if (themes.at(i).isAggregate(HANDLER->getMask().get(themes.at(i))))
 							{
 							subset.insert(i);
 							}
@@ -284,13 +284,13 @@ namespace Models{
 			aggregateThemes = std::vector<size_t>(subset.begin(), subset.end());
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("",
-				"FMTmodel::_GetAggregatesThemes", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTmodel::_getAggregatesThemes", __LINE__, __FILE__);
 		}
 		return aggregateThemes;
 	}
 
-	std::string FMTmodel::_GetYieldAttribute(const Core::FMTmask& p_devMask, 
+	std::string FMTmodel::_getYieldAttribute(const Core::FMTmask& p_devMask, 
 							const std::string& p_yieldName,
 							const std::vector<size_t>& p_AggregatedThemes) const
 	{
@@ -301,22 +301,22 @@ namespace Models{
 				if (YIELD->second->containsYield(p_yieldName)&&
 					YIELD->second->getType() == Core::FMTyldtype::FMTageyld)
 				{
-					return _GetAggregatesWrap(YIELD->second->getmask(), p_AggregatedThemes);
+					return _getAggregatesWrap(YIELD->second->getMask(), p_AggregatedThemes);
 				}
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTmodel::_GetYieldAttribute", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTmodel::_getYieldAttribute", __LINE__, __FILE__);
 			}
 		return std::string();
 	}
 
-	std::set<std::string>FMTmodel::_GetYieldsStraticAggregates(const std::string& p_yieldName) const
+	std::set<std::string>FMTmodel::_getYieldsStraticAggregates(const std::string& p_yieldName) const
 	{
 		std::set<std::string> selections;
 		try {
-			const std::vector<size_t>AGGREGATE_THEMES = _GetAggregatesThemes(p_yieldName);
+			const std::vector<size_t>AGGREGATE_THEMES = _getAggregatesThemes(p_yieldName);
 			for (const auto& HANDLER :
 				yields.getHandlerOfType(Core::FMTyldtype::FMTageyld))
 			{
@@ -324,15 +324,15 @@ namespace Models{
 					HANDLER->getType() == Core::FMTyldtype::FMTageyld)
 				{
 					selections.insert(
-						_GetAggregatesWrap(HANDLER->getmask(), AGGREGATE_THEMES));
+						_getAggregatesWrap(HANDLER->getMask(), AGGREGATE_THEMES));
 				}
 
 			}
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", 
-				"FMTmodel::_GetYieldsStraticAggregates", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", 
+				"FMTmodel::_getYieldsStraticAggregates", __LINE__, __FILE__);
 			}
 		return selections;
 	}
@@ -346,7 +346,7 @@ namespace Models{
 			std::vector<std::string>newAttributes;
 			const std::string BEFORE = "PRE";
 			const std::string AFTER = "POST";
-			for (const auto& SUB : _GetYieldsStraticAggregates(p_Targetyield))
+			for (const auto& SUB : _getYieldsStraticAggregates(p_Targetyield))
 				{
 				newAttributes.push_back(SUB+ BEFORE);
 				newAttributes.push_back(SUB + AFTER);
@@ -354,7 +354,7 @@ namespace Models{
 			newModel.pushTheme("~FMT_THEME_" + p_actionName, p_Targetyield,newAttributes);
 			Core::FMTaction newAction(p_actionName,false,false);
 			Core::FMTtransition newTransition(p_actionName);
-			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_Targetyield);
+			const std::vector<size_t> AGGREGATES = _getAggregatesThemes(p_Targetyield);
 			Core::FMTmask ActionMask;			
 			boost::unordered_map<Core::FMTmask,double>YieldMasks;
 			for (const auto& yield : yields)
@@ -366,10 +366,10 @@ namespace Models{
 					const double PEAK = AGE_HANDLER->getPeakfrom(p_Targetyield,FMT_DBL_TOLERANCE);
 					if (PEAK > 0)
 						{
-						const Core::FMTmask MASK = AGE_HANDLER->getmask();
+						const Core::FMTmask MASK = AGE_HANDLER->getMask();
 						YieldMasks[MASK] = PEAK;
 						const Core::FMTmask NEW_MASK(std::string(MASK) + " " +
-							_GetAggregatesWrap(MASK, AGGREGATES) + BEFORE, newModel.themes);
+							_getAggregatesWrap(MASK, AGGREGATES) + BEFORE, newModel.themes);
 						Core::FMTspec specification;
 						specification.setBounds(Core::FMTperbounds(Core::FMTsection::Action, PEAK, PEAK));
 						if (ActionMask.empty())
@@ -381,7 +381,7 @@ namespace Models{
 						newAction.push_back(NEW_MASK, specification);
 						Core::FMTfork fork;
 						Core::FMTmask AfterMask(std::string(MASK) + " " +
-							_GetAggregatesWrap(MASK, AGGREGATES) + AFTER, newModel.themes);
+							_getAggregatesWrap(MASK, AGGREGATES) + AFTER, newModel.themes);
 						for (size_t i = 0; i < themes.size();++i)
 							{
 							AfterMask.set(themes.at(i), "?");
@@ -396,11 +396,11 @@ namespace Models{
 			Core::FMTyields newYields;
 			for (const auto& yield : yields)
 				{
-				const Core::FMTmask YIELD_MASK = yield.second.get()->getmask();
+				const Core::FMTmask YIELD_MASK = yield.second.get()->getMask();
 				const Core::FMTmask NEW_MASK(std::string(YIELD_MASK) + " ?", newModel.themes);
 				std::unique_ptr<Core::FMTyieldhandler>newYield(yield.second->clone());
 				newYield->setMask(NEW_MASK);
-				const std::string AGGREGATE_WRAP = _GetAggregatesWrap(YIELD_MASK, AGGREGATES);
+				const std::string AGGREGATE_WRAP = _getAggregatesWrap(YIELD_MASK, AGGREGATES);
 				if (YieldMasks.find(YIELD_MASK)!= YieldMasks.end())
 					{
 					const Core::FMTmask SUB_MASK(std::string(YIELD_MASK) + " "+ AGGREGATE_WRAP +BEFORE, newModel.themes);
@@ -435,7 +435,7 @@ namespace Models{
 			newModel.transitions.insert(newModel.transitions.begin(),newTransition);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodel::buildAction", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::buildAction", __LINE__, __FILE__);
 			}
 		return newModel;
 	}
@@ -449,14 +449,14 @@ namespace Models{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme, "Missing attributes for "+ p_themeName,
 					"FMTmodel::pushTheme", __LINE__, __FILE__);
 				}
-			const std::vector<size_t> AGGREGATES = _GetAggregatesThemes(p_yieldName);
+			const std::vector<size_t> AGGREGATES = _getAggregatesThemes(p_yieldName);
 			const size_t THEME_START = themes.back().getStart() + themes.back().size();
 			std::vector<Core::FMTtheme> Oldthemes(themes);
 			themes.emplace_back(p_attributes, themes.size(), THEME_START, p_themeName);
 			for (auto& dev : area)
 				{
-				const std::string BASE_THEME = _GetYieldAttribute(dev.getmask(), p_yieldName, AGGREGATES) + "PRE";
-				dev.setMask(Core::FMTmask(std::string(dev.getmask()) + " " + BASE_THEME, themes));
+				const std::string BASE_THEME = _getYieldAttribute(dev.getMask(), p_yieldName, AGGREGATES) + "PRE";
+				dev.setMask(Core::FMTmask(std::string(dev.getMask()) + " " + BASE_THEME, themes));
 				}
 			const std::string DEFAULT_ATTRIBUTE = "?";
 			for (auto& action : actions)
@@ -478,7 +478,7 @@ namespace Models{
 					newFork.clear();
 					for (Core::FMTtransitionmask trnm : op.second.getMaskTrans())
 						{
-						trnm.setMask(Core::FMTmask(std::string(trnm.getmask()) + " "+ DEFAULT_ATTRIBUTE, themes));
+						trnm.setMask(Core::FMTmask(std::string(trnm.getMask()) + " "+ DEFAULT_ATTRIBUTE, themes));
 						newFork.add(trnm);
 						}
 					op.second = newFork;
@@ -489,7 +489,7 @@ namespace Models{
 			for (auto& yield : yields)
 			{
 				yield.first = Core::FMTmask(std::string(yield.first) + " " + DEFAULT_ATTRIBUTE, themes);
-				yield.second->setMask(Core::FMTmask(std::string(yield.second->getmask()) + " " + DEFAULT_ATTRIBUTE, themes));
+				yield.second->setMask(Core::FMTmask(std::string(yield.second->getMask()) + " " + DEFAULT_ATTRIBUTE, themes));
 			}
 			yields.update();
 			lifespan.unShrink(Oldthemes);
@@ -505,7 +505,7 @@ namespace Models{
 					{
 					if (source.isVariable())
 						{
-						source.setMask(Core::FMTmask(std::string(source.getmask()) + " " + DEFAULT_ATTRIBUTE, themes));
+						source.setMask(Core::FMTmask(std::string(source.getMask()) + " " + DEFAULT_ATTRIBUTE, themes));
 						}
 					}
 				output.setSources(sources);
@@ -517,7 +517,7 @@ namespace Models{
 				{
 					if (source.isVariable())
 					{
-						source.setMask(Core::FMTmask(std::string(source.getmask()) + " " + DEFAULT_ATTRIBUTE, themes));
+						source.setMask(Core::FMTmask(std::string(source.getMask()) + " " + DEFAULT_ATTRIBUTE, themes));
 					}
 				}
 				output.setSources(sources);
@@ -525,7 +525,7 @@ namespace Models{
 		
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodel::pushTheme", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::pushTheme", __LINE__, __FILE__);
 			}
 	}
 
@@ -539,7 +539,7 @@ namespace Models{
 				p_ActionOrdering.reserve(actions.size());
 				for (const Core::FMTaction& ACTION : actions)
 					{
-					p_ActionOrdering.push_back(ACTION.getname());
+					p_ActionOrdering.push_back(ACTION.getName());
 					}
 				}
 			const std::map<std::string, std::pair<std::string, Core::FMTmask>> Filters = newModel.aggregateActions(p_Aggregates);
@@ -559,7 +559,7 @@ namespace Models{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodel::aggregateAllActions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::aggregateAllActions", __LINE__, __FILE__);
 		}
 		return newModel;
 	}
@@ -574,14 +574,14 @@ namespace Models{
 				{
 				for (const auto& ACTION : p_schedule)
 					{
-					const std::string ACTION_NAME = ACTION.first.getname();
+					const std::string ACTION_NAME = ACTION.first.getName();
 					const double ACTION_AREA = p_schedule.actionArea(ACTION.first);
 					if (allActions.find(ACTION_NAME) == allActions.end())
 					{
 						allActions[ACTION_NAME] = 0.0;
 					}
 					allActions[ACTION_NAME] += ACTION_AREA;
-					/*const size_t ACTION_ID = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(ACTION_NAME)));
+					/*const size_t ACTION_ID = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator(ACTION_NAME)));
 					double total = ACTION_AREA;
 					for (const auto& DEV_ACTION : ACTION.second)
 						{
@@ -603,9 +603,9 @@ namespace Models{
 			}
 		for (const Core::FMTaction& ACTION : actions)
 		{
-			if (allActions.find(ACTION.getname()) == allActions.end())
+			if (allActions.find(ACTION.getName()) == allActions.end())
 			{
-				allActions[ACTION.getname()] = 0.0;
+				allActions[ACTION.getName()] = 0.0;
 			}
 
 		}
@@ -646,13 +646,13 @@ namespace Models{
 			size_t i = 0;
 			for (const Core::FMTaction& ACTION : actions)
 				{
-				if (std::find(p_Actions.begin(), p_Actions.end(), ACTION.getname())!= p_Actions.end())
+				if (std::find(p_Actions.begin(), p_Actions.end(), ACTION.getName())!= p_Actions.end())
 					{
 					const std::vector<Core::FMTaction>SPLITTED = ACTION.split(masks, themes);
 					for (const Core::FMTaction& SPLITTED_ACTION : SPLITTED)
 					{
 						Core::FMTtransition NewTransition = transitions.at(i);
-						NewTransition.setName(SPLITTED_ACTION.getname());
+						NewTransition.setName(SPLITTED_ACTION.getName());
 						NewTransitions.push_back(NewTransition);
 					}
 					NewActions.insert(NewActions.end(), SPLITTED.begin(), SPLITTED.end());
@@ -668,7 +668,7 @@ namespace Models{
 			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodel::splitActions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::splitActions", __LINE__, __FILE__);
 			}
 		return newModel;
 	}
@@ -682,13 +682,13 @@ namespace Models{
 				std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>> mapping;
 				for (const auto& ACTION_ELEMENTS : SCHEDULE)
 					{
-					const std::string GLOBAL_ACTION = ACTION_ELEMENTS.first.getname();
-					std::vector<Core::FMTaction>::const_iterator ActIt = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(GLOBAL_ACTION));
+					const std::string GLOBAL_ACTION = ACTION_ELEMENTS.first.getName();
+					std::vector<Core::FMTaction>::const_iterator ActIt = std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator(GLOBAL_ACTION));
 					if (ActIt == actions.end())//Got aggregate
 						{
 						boost::unordered_set<Core::FMTdevelopment>DevelopmentsSet;
 						
-						const std::vector<const Core::FMTaction*> ACTIONS = Core::FMTactioncomparator(GLOBAL_ACTION, true).getAllAggregates(actions,true);
+						const std::vector<const Core::FMTaction*> ACTIONS = Core::FMTActionComparator(GLOBAL_ACTION, true).getAllAggregates(actions,true);
 						if (ACTIONS.empty())
 							{
 								_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Missing aggregate " + GLOBAL_ACTION,
@@ -700,7 +700,7 @@ namespace Models{
 							const Core::FMTmask ACTION_MASK = ACTION_Prt->getUnion(themes);
 							for (const auto& DEV : ACTION_ELEMENTS.second)
 							{
-								if (DEV.first.getmask().isSubsetOf(ACTION_MASK) &&
+								if (DEV.first.getMask().isSubsetOf(ACTION_MASK) &&
 									DevelopmentsSet.find(DEV.first) == DevelopmentsSet.end())
 								{
 									NewMapping[DEV.first] = DEV.second;
@@ -722,7 +722,7 @@ namespace Models{
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodel::splitSchedules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::splitSchedules", __LINE__, __FILE__);
 			}
 		return NewSchedules;
 	}
@@ -737,14 +737,14 @@ namespace Models{
 				for (const auto& ACTION_ELEMENTS : SCHEDULE)
 					{
 					const Core::FMTaction* NewAction = nullptr;
-					const std::string ACTION_NAME = ACTION_ELEMENTS.first.getname();
-					std::vector<Core::FMTaction>::const_iterator ACTION_IT = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(ACTION_NAME));
+					const std::string ACTION_NAME = ACTION_ELEMENTS.first.getName();
+					std::vector<Core::FMTaction>::const_iterator ACTION_IT = std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator(ACTION_NAME));
 					if (ACTION_IT==actions.end())//Need to change the action!
 						{
-						const std::vector<std::string>AGGREGATES = ACTION_ELEMENTS.first.getaggregates();
+						const std::vector<std::string>AGGREGATES = ACTION_ELEMENTS.first.getAggregates();
 						for (const Core::FMTaction& action : actions)
 							{
-							if (std::find(AGGREGATES.begin(), AGGREGATES.end(),action.getname())!= AGGREGATES.end())
+							if (std::find(AGGREGATES.begin(), AGGREGATES.end(),action.getName())!= AGGREGATES.end())
 								{
 								NewAction = &action;
 								}
@@ -778,7 +778,7 @@ namespace Models{
 
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodel::aggregateSchedules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTmodel::aggregateSchedules", __LINE__, __FILE__);
 			}
 		return newSchedules;
 		}
@@ -797,11 +797,11 @@ namespace Models{
 			for (const std::string& Aggregate : p_ActionsMapping)
 				{
 				Core::FMTaction NewAction(Aggregate);
-				for (const Core::FMTaction* Action : Core::FMTactioncomparator(Aggregate, true).getAllAggregates(actions))
+				for (const Core::FMTaction* Action : Core::FMTActionComparator(Aggregate, true).getAllAggregates(actions))
 					{
 					Core::FMTaction NoCompress(*Action);
 					std::vector<std::string>aggregates;
-					for (const std::string& AGGREGATE : NoCompress.getaggregates())
+					for (const std::string& AGGREGATE : NoCompress.getAggregates())
 						{
 						if (std::find(p_ActionsMapping.begin(), p_ActionsMapping.end(), AGGREGATE)== p_ActionsMapping.end())
 							{
@@ -809,16 +809,16 @@ namespace Models{
 							}
 						}
 					NoCompress.setAggregates(aggregates);
-					if (ActionCover.find(Action->getname()) != ActionCover.end())
+					if (ActionCover.find(Action->getName()) != ActionCover.end())
 						{
-						_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Action " + Action->getname() +" already in aggregate",
+						_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Action " + Action->getName() +" already in aggregate",
 							"FMTmodel::aggregateActions", __LINE__, __FILE__);
 						}
-					ActionCover.insert(Action->getname());
+					ActionCover.insert(Action->getName());
 					NoCompress.unShrink(themes);
 					const Core::FMTmask Filter = NoCompress.getUnion(themes);
 
-					ActionFilters[Action->getname()] = std::pair<std::string, Core::FMTmask>(Aggregate, Filter);
+					ActionFilters[Action->getName()] = std::pair<std::string, Core::FMTmask>(Aggregate, Filter);
 					NewAction += NoCompress;
 					}
 				if (!NewAction.empty())
@@ -832,9 +832,9 @@ namespace Models{
 				std::string missingActions;
 				for (const Core::FMTaction Action : actions)
 					{
-					if (ActionCover.find(Action.getname())== ActionCover.end())
+					if (ActionCover.find(Action.getName())== ActionCover.end())
 						{
-						missingActions += Action.getname() + ",";
+						missingActions += Action.getName() + ",";
 						}
 					}
 				missingActions.pop_back();
@@ -845,17 +845,17 @@ namespace Models{
 			//Handle aggregate of the action
 			for (const Core::FMTaction ACTION : actions)
 			{
-				for (const std::string& AGGREGATE : ACTION.getaggregates())
+				for (const std::string& AGGREGATE : ACTION.getAggregates())
 				{
 					if (std::find(p_ActionsMapping.begin(), p_ActionsMapping.end(), AGGREGATE)== p_ActionsMapping.end())
 						{
 						if (ActionFilters.find(AGGREGATE) != ActionFilters.end())
 						{
-							ActionFilters[AGGREGATE].second = ActionFilters[AGGREGATE].second.getUnion(ActionFilters[ACTION.getname()].second);
+							ActionFilters[AGGREGATE].second = ActionFilters[AGGREGATE].second.getUnion(ActionFilters[ACTION.getName()].second);
 						}else {
-							if (ActionFilters.find(ACTION.getname()) != ActionFilters.end())
+							if (ActionFilters.find(ACTION.getName()) != ActionFilters.end())
 								{
-								ActionFilters[AGGREGATE] = std::pair<std::string, Core::FMTmask>("", ActionFilters[ACTION.getname()].second);
+								ActionFilters[AGGREGATE] = std::pair<std::string, Core::FMTmask>("", ActionFilters[ACTION.getName()].second);
 								}
 							
 							}
@@ -872,11 +872,11 @@ namespace Models{
 				Filter.second.second = addNewMask(Filter.second.second);
 				
 			}
-			//setactions(NewActions);
+			//setActions(NewActions);
 			actions = NewActions;
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodel::aggregateActions", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodel::aggregateActions", __LINE__, __FILE__);
 		}
 		return ActionFilters;
 	}
@@ -888,9 +888,9 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 		std::vector<Core::FMTtransition>NewTransitions;
 		for (const Core::FMTaction& action : actions)
 			{
-			if (action.getname() != "_DEATH")
+			if (action.getName() != "_DEATH")
 				{
-				NewTransitions.push_back(Core::FMTtransition(action.getname()));
+				NewTransitions.push_back(Core::FMTtransition(action.getName()));
 				}
 			}
 		Core::FMTtransition DEATH_TRANSITION = transitions.back();
@@ -898,14 +898,14 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 		NewTransitions.push_back(DEATH_TRANSITION);
 		for (Core::FMTtransition& transition : transitions)
 			{
-			if (p_Filters.find(transition.getname()) != p_Filters.end())
+			if (p_Filters.find(transition.getName()) != p_Filters.end())
 			{
-				Core::FMTtransition NewTransition(transition.getname());
+				Core::FMTtransition NewTransition(transition.getName());
 				//NewTransition.unShrink(themes);
 				transition.unShrink(themes);
 				for (const auto& element : transition)
 				{
-					const Core::FMTmask Intersection = p_Filters.at(transition.getname()).second.getIntersect(element.first);
+					const Core::FMTmask Intersection = p_Filters.at(transition.getName()).second.getIntersect(element.first);
 					if (!Intersection.isNotThemesSubset(element.first,themes))
 						{
 						const Core::FMTmask NEW_MASK = addNewMask(Intersection);
@@ -914,11 +914,11 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 					
 				}
 				//NewTransition.update();
-				std::vector< Core::FMTtransition>::iterator transitionIterator = std::find_if(NewTransitions.begin(), NewTransitions.end(), Core::FMTtransitioncomparator(p_Filters.at(transition.getname()).first));
+				std::vector< Core::FMTtransition>::iterator transitionIterator = std::find_if(NewTransitions.begin(), NewTransitions.end(), Core::FMTtransitioncomparator(p_Filters.at(transition.getName()).first));
 				if (transitionIterator == NewTransitions.end())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTinvalidAandT,
-						"Cannot find transition "+ transition.getname(), "FMTmodel::aggregateTransitions", __LINE__, __FILE__, Core::FMTsection::Transition);
+						"Cannot find transition "+ transition.getName(), "FMTmodel::aggregateTransitions", __LINE__, __FILE__, Core::FMTsection::Transition);
 					}
 				*transitionIterator += NewTransition;
 				}
@@ -930,7 +930,7 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 	setTransitions(NewTransitions);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::aggregateTransitions", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::aggregateTransitions", __LINE__, __FILE__);
 		}
 	}
 
@@ -951,7 +951,7 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 					!p_Filters.at(source.getAction()).first.empty())
 					{
 					
-					const Core::FMTmask& MASK = source.getmask();
+					const Core::FMTmask& MASK = source.getMask();
 					const Core::FMTmask INTERSECT_MASK = MASK.getIntersect(p_Filters.at(source.getAction()).second);
 					//Validate the MASK...
 					bool gotValidMask = true;
@@ -1036,7 +1036,7 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 				Core::FMToutputsource NewSource(source);
 				if (ValidMask[sourceId])
 					{
-						const Core::FMTmask& SOURCE_MASK = source.getmask();
+						const Core::FMTmask& SOURCE_MASK = source.getMask();
 						const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getIntersect(p_Filters.at(source.getAction()).second);
 						const std::string& ACTION = source.getAction();
 						const std::string& AGGREGATE = p_Filters.at(source.getAction()).first;
@@ -1107,7 +1107,7 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::aggregateOutputs", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::aggregateOutputs", __LINE__, __FILE__);
 		}
 
 }
@@ -1125,7 +1125,7 @@ Core::FMTmask FMTmodel::addNewMask(const Core::FMTmask& p_incompleteMask)
 		baseMask = Core::FMTmask(NewMask, themes);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::addNewMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::addNewMask", __LINE__, __FILE__);
 		}
 	return baseMask;
 }
@@ -1140,7 +1140,7 @@ void FMTmodel::setDefaultObjects()
 	{
 	try {
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
-		if (std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
+		if (std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator("_DEATH")) == actions.end())
 		{	
 			if (!QUIET_LOG)
 			{
@@ -1167,7 +1167,7 @@ void FMTmodel::setDefaultObjects()
 		statictransitionthemes = getStaticTransitionThemes();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTmodel::setDefaultObjects", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTmodel::setDefaultObjects", __LINE__, __FILE__);
 		}
 	
 	}
@@ -1195,7 +1195,7 @@ std::vector<size_t>FMTmodel::getStaticTransitionThemes() const
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::getStaticTransitionThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getStaticTransitionThemes", __LINE__, __FILE__);
 		}
 	return statics;
 	}
@@ -1253,7 +1253,7 @@ std::vector<const Core::FMTtheme*>FMTmodel::getStaticPresolveThemes() const
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::getStaticPresolveThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getStaticPresolveThemes", __LINE__, __FILE__);
 		}
 	return fullstatics;
 	}
@@ -1303,7 +1303,7 @@ void FMTmodel::_gutsOfConstructor(const std::vector<Core::FMTactualdevelopment>&
 	setArea(p_area);
 	setDefaultObjects();
 	cleanActionsNTransitions();
-	setSeed(getparameter(Models::FMTintmodelparameters::SEED));
+	setSeed(getParameter(Models::FMTintmodelparameters::SEED));
 	yields.setModel(this);
 	}
 
@@ -1348,7 +1348,7 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
 	
     return *this;
     }
-std::vector<Core::FMTactualdevelopment>FMTmodel::getarea(int period,bool beforegrowanddeath) const
+std::vector<Core::FMTactualdevelopment>FMTmodel::getArea(int period,bool beforegrowanddeath) const
     {
     return area;
     }
@@ -1370,7 +1370,7 @@ void FMTmodel::cleanActionsNTransitions()
 		{
 			if (!actions[id].empty())
 			{
-				const std::vector<Core::FMTtransition>::iterator trn_it = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(actions[id].getname()));
+				const std::vector<Core::FMTtransition>::iterator trn_it = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(actions[id].getName()));
 				if (trn_it != transitions.end() && !trn_it->empty())
 				{
 					newactions.push_back(actions[id]);
@@ -1384,7 +1384,7 @@ void FMTmodel::cleanActionsNTransitions()
 		transitions.shrink_to_fit();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTmodel::cleanActionsNTransitions", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTmodel::cleanActionsNTransitions", __LINE__, __FILE__);
 		}
 	}
 
@@ -1403,7 +1403,7 @@ bool FMTmodel::useActionSerie() const
 		}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::useactionseries", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::useactionseries", __LINE__, __FILE__);
 	}
 
 	return gotseries;
@@ -1422,7 +1422,7 @@ size_t FMTmodel::getSeriesMaxSize() const
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::getSeriesMaxSize", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getSeriesMaxSize", __LINE__, __FILE__);
 		}
 	return maxsize;
 }
@@ -1449,7 +1449,7 @@ Core::FMTaction FMTmodel::defaultDeathAction(const Core::FMTlifespans& llifespan
 			death_action.push_back(amask, specifier);
 		}
 		const std::string GCBMaggregate = "~GCBM:" + std::to_string(FMTGCBMDEATHID) + ":Stand Replacing Natural Succession";
-		death_action.push_aggregate(GCBMaggregate);
+		death_action.pushAggregate(GCBMaggregate);
 		death_action.shrink();
 	return death_action;
 	}
@@ -1479,7 +1479,7 @@ void FMTmodel::setParallelLogger(Logging::FMTlogger& logger)
 			"FMTmodel::setParallelLogger", __LINE__, __FILE__);
 	}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTmodel::setParallelLogger", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setParallelLogger", __LINE__, __FILE__);
 		}
 	}
 
@@ -1497,7 +1497,7 @@ double FMTmodel::getObjectiveValue() const
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::setParallelLogger", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setParallelLogger", __LINE__, __FILE__);
 	}
 	return 0.0;
 }
@@ -1517,7 +1517,7 @@ void FMTmodel::addOutput(const std::string& name,
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::addOutput", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::addOutput", __LINE__, __FILE__);
 	}
 
 	}
@@ -1529,25 +1529,25 @@ void FMTmodel::addYieldHandlersFromPtr(const std::vector<std::unique_ptr<Core::F
 		yields.unShrink(themes);
 		for (const std::unique_ptr<Core::FMTyieldhandler>& yldhandler : yieldhandlers)
 		{
-			yields.push_back(yldhandler->getmask(),yldhandler);
+			yields.push_back(yldhandler->getMask(),yldhandler);
 		}
 		yields.update();
 	}catch(...){
-			_exhandler->printexceptions("", "FMTmodel::addYieldHandlersFromPtr", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodel::addYieldHandlersFromPtr", __LINE__, __FILE__);
 	}
 	
 	
 }
 
 
-void FMTmodel::setconstraints(const std::vector<Core::FMTconstraint>& lconstraint)
+void FMTmodel::setConstraints(const std::vector<Core::FMTconstraint>& lconstraint)
 	{
 	try {
 		constraints = lconstraint;
 		constraints.shrink_to_fit();
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::setconstraints", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setConstraints", __LINE__, __FILE__);
 	}
 	}
 
@@ -1619,13 +1619,13 @@ void FMTmodel::setArea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 				{
 				adev = adev.reduceLockToDeath(lifespan);
 				}
-			std::pair<std::map<Core::FMTdevelopment,double>::iterator, bool> inserted = sortedArea.insert(std::pair<Core::FMTdevelopment,double>(adev,adev.getarea()));
+			std::pair<std::map<Core::FMTdevelopment,double>::iterator, bool> inserted = sortedArea.insert(std::pair<Core::FMTdevelopment,double>(adev,adev.getArea()));
 			//sortedArea.insert(adev);
 			if (!inserted.second)
 				{
 				//Core::FMTactualdevelopment* theDev = const_cast<Core::FMTactualdevelopment*>(&*inserted.first);
-				//theDev->setArea(theDev->getarea() + adev.getarea());
-				inserted.first->second += adev.getarea();
+				//theDev->setArea(theDev->getArea() + adev.getArea());
+				inserted.first->second += adev.getArea();
 				}
 		}
 		area.clear();
@@ -1656,7 +1656,7 @@ void FMTmodel::setArea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 		std::sort(area.begin(), area.end());*/
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::setArea", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setArea", __LINE__, __FILE__);
 	}
 
 
@@ -1671,19 +1671,19 @@ void FMTmodel::setThemes(const std::vector<Core::FMTtheme>& lthemes)
 		statictransitionthemes.shrink_to_fit();
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::setThemes", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setThemes", __LINE__, __FILE__);
 	}
 
 
     }
-void FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
+void FMTmodel::setActions(const std::vector<Core::FMTaction>& lactions)
     {
 	try {
 		std::vector<Core::FMTtransition>newtransitions;
 		std::vector<Core::FMTaction>newbaseactions;
 		for (const Core::FMTaction& action : lactions)
 		{
-			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(action.getname()));
+			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(action.getName()));
 			if (trn_iterator != transitions.end())
 			{
 				newtransitions.push_back(*trn_iterator);
@@ -1701,7 +1701,7 @@ void FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
 		transitions.shrink_to_fit();
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::setactions", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setActions", __LINE__, __FILE__);
 	}
 
 
@@ -1720,7 +1720,7 @@ void FMTmodel::setTransitions(const std::vector<Core::FMTtransition>& ltransitio
 		transitions.shrink_to_fit();
 	}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodel::setTransitions", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodel::setTransitions", __LINE__, __FILE__);
 		}
 
     }
@@ -1732,7 +1732,7 @@ void FMTmodel::setYields(const Core::FMTyields& lylds)
 		yields.setModel(this);
 	}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodel::setYields", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodel::setYields", __LINE__, __FILE__);
 		}
     }
 void FMTmodel::setLifespan(const Core::FMTlifespans& llifespan)
@@ -1743,7 +1743,7 @@ void FMTmodel::setLifespan(const Core::FMTlifespans& llifespan)
 		this->setDefaultObjects();
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::setLifespan", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setLifespan", __LINE__, __FILE__);
 	}
 
     }
@@ -1760,7 +1760,7 @@ void FMTmodel::setOutputs(const std::vector<Core::FMToutput>& newoutputs)
 		outputs.shrink_to_fit();
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::setOutputs", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setOutputs", __LINE__, __FILE__);
 	}
 
 	}
@@ -1780,7 +1780,7 @@ std::vector<const Core::FMTtheme*> FMTmodel::locateStaticThemes(const Core::FMTo
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTmodel::locateStaticThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTmodel::locateStaticThemes", __LINE__, __FILE__);
 		}
 	return bestthemes;
 }
@@ -1796,7 +1796,7 @@ std::vector<const Core::FMTtheme*>FMTmodel::locateStaticTransitionsThemes() cons
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::locateStaticTransitionsThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::locateStaticTransitionsThemes", __LINE__, __FILE__);
 	}
 	return bestthemes;
 
@@ -1823,7 +1823,7 @@ std::vector<const Core::FMTtheme*>FMTmodel::locateNodeStaticThemes(const Core::F
 		{
 			if (!ignoreoutputvariables)
 			{
-				statics = node.source.getmask().getStaticThemes(statics);
+				statics = node.source.getMask().getStaticThemes(statics);
 			}
 			const std::string SOURCE_YIELD_VALUE = node.source.getYield();
 			const std::string FACTOR_YIELD_VALUE = node.factor.getYield();
@@ -1861,7 +1861,7 @@ std::vector<const Core::FMTtheme*>FMTmodel::locateNodeStaticThemes(const Core::F
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::locateNodeStaticThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::locateNodeStaticThemes", __LINE__, __FILE__);
 	}
 	return statics;
 
@@ -1879,7 +1879,7 @@ std::vector<const Core::FMTtheme*> FMTmodel::locateStaticThemes(const Core::FMTo
 		
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::locateStaticThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::locateStaticThemes", __LINE__, __FILE__);
 	}
 	return statics;
 
@@ -1899,7 +1899,7 @@ std::vector<const Core::FMTtheme*> FMTmodel::locateDynamicThemes(const Core::FMT
 			}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::locateDynamicThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::locateDynamicThemes", __LINE__, __FILE__);
 	}
 	return dynamicthemes;
 }
@@ -1931,7 +1931,7 @@ Core::FMTmask FMTmodel::getDynamicMask(const Core::FMToutput& output, bool ignor
 		selection = Core::FMTmask(basename, bits);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::getDynamicMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getDynamicMask", __LINE__, __FILE__);
 		}
 	return selection;
 	}
@@ -1967,7 +1967,7 @@ Core::FMTmask FMTmodel::getDynamicMask(const Core::FMToutputnode& node, bool ign
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getDynamicMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getDynamicMask", __LINE__, __FILE__);
 	}
 	return selection;
 
@@ -1980,7 +1980,7 @@ bool FMTmodel::isStaticNode(const Core::FMToutputnode& node, double ratioofset) 
 		{
 			for (const size_t& staticid : statictransitionthemes)
 			{
-				const double nvalues = static_cast<double>(node.source.getmask().getSubsetCount(themes.at(staticid)));
+				const double nvalues = static_cast<double>(node.source.getMask().getSubsetCount(themes.at(staticid)));
 				const double themesize = static_cast<double>(themes.at(staticid).size());
 				if ((nvalues/themesize)<=ratioofset)
 				{
@@ -1991,7 +1991,7 @@ bool FMTmodel::isStaticNode(const Core::FMToutputnode& node, double ratioofset) 
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::isStaticNode", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::isStaticNode", __LINE__, __FILE__);
 		}
 	return false;
 }
@@ -2001,12 +2001,12 @@ Core::FMTmask FMTmodel::getStaticMask(const Core::FMToutputnode& node, bool igno
 	Core::FMTmask selection;
 	try {
 		const Core::FMTmask dymask =this->getDynamicMask(node, ignoreoutputvariables);
-		const Core::FMTmask intersection = node.source.getmask();
+		const Core::FMTmask intersection = node.source.getMask();
 		selection = dymask.getUnion(intersection);
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getStaticMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getStaticMask", __LINE__, __FILE__);
 	}
 	return selection;
 }
@@ -2025,7 +2025,7 @@ void FMTmodel::validateListSpec(const Core::FMTspec& specifier) const
 		}
 	}catch (...)
 		{
-			_exhandler->raisefromcatch("","FMTmodel::validateListSpec", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTmodel::validateListSpec", __LINE__, __FILE__);
 		}
 	}
 
@@ -2046,7 +2046,7 @@ bool FMTmodel::isValid()
 		//this->setSection(Core::FMTsection::Area);
 		for (const Core::FMTactualdevelopment& development : area)
 		{
-			std::string name = std::string(development.getmask());
+			std::string name = std::string(development.getMask());
 			Core::FMTtheme::validate(themes, name);
 		}
 		//this->setSection(Core::FMTsection::Yield);
@@ -2080,10 +2080,10 @@ bool FMTmodel::isValid()
 		}
 		for (size_t id = 0; id < actions.size(); ++id)
 		{
-			if (actions[id].getname() != transitions[id].getname())
+			if (actions[id].getName() != transitions[id].getName())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_action,
-					"Model: " + name + " " + actions[id].getname(),
+					"Model: " + name + " " + actions[id].getName(),
 					"FMTmodel::isValid", __LINE__, __FILE__);
 			}
 		}
@@ -2095,8 +2095,8 @@ bool FMTmodel::isValid()
 			{
 				if (source.isVariable())
 				{
-					std::string name = std::string(source.getmask());
-					Core::FMTtheme::validate(themes, name, "for output " + output.getname());
+					std::string name = std::string(source.getMask());
+					Core::FMTtheme::validate(themes, name, "for output " + output.getName());
 					const std::string actionname = source.getAction();
 					if (!actionname.empty())//need to check the targeted action!
 					{
@@ -2109,7 +2109,7 @@ bool FMTmodel::isValid()
 		//this->setSection(Core::FMTsection::Empty);
 	}catch (...)
 	{
-		_exhandler->printexceptions("", "FMTmodel::isValid", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::isValid", __LINE__, __FILE__);
 	}
 
     return true;
@@ -2145,13 +2145,13 @@ void FMTmodel::clearCache()
 
 Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
-	Core::FMTmask baseMask( boost::dynamic_bitset<uint8_t>(area.begin()->getmask().size(), false));
+	Core::FMTmask baseMask( boost::dynamic_bitset<uint8_t>(area.begin()->getMask().size(), false));
 	try {
 		optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
-		Core::FMTmask areamask( boost::dynamic_bitset<uint8_t>(area.begin()->getmask().size(), false));
+		Core::FMTmask areamask( boost::dynamic_bitset<uint8_t>(area.begin()->getMask().size(), false));
 		for (const Core::FMTactualdevelopment& development : optionaldevelopments)
 			{
-			areamask = areamask.getUnion(development.getmask());
+			areamask = areamask.getUnion(development.getMask());
 			}
 		size_t trid = 0;
 		std::vector<bool>jumptransitions;
@@ -2161,8 +2161,8 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 				actions.at(trid).size()==1&&
 				transition.begin()->second.getMaskTrans().size()==1&&
 				std::string(actions.at(trid).begin()->first)==std::string(transition.begin()->first)&&
-				std::string(transition.begin()->first)==std::string(transition.begin()->second.getMaskTrans().begin()->getmask())&&
-				!transition.begin()->second.getMaskTrans().begin()->getmask().isSubsetOf(areamask))//scrap weird thing
+				std::string(transition.begin()->first)==std::string(transition.begin()->second.getMaskTrans().begin()->getMask())&&
+				!transition.begin()->second.getMaskTrans().begin()->getMask().isSubsetOf(areamask))//scrap weird thing
 				{
 				jumptransitions.push_back(true);
 			}else {
@@ -2171,7 +2171,7 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 					const Core::FMTmask source(std::string(transitionobject.first),themes);
 					for (const Core::FMTtransitionmask& fork : transitionobject.second.getMaskTrans())
 					{
-						const Core::FMTmask maskwithoutaggregates = fork.getmask().removeAggregates(themes);
+						const Core::FMTmask maskwithoutaggregates = fork.getMask().removeAggregates(themes);
 						baseMask = baseMask.getUnion(maskwithoutaggregates);
 					}
 				}
@@ -2179,7 +2179,7 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 			}
 			++trid;
 		}
-		if (!getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
+		if (!getParameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 		{
 			baseMask = baseMask.getUnion(areamask);
 		}else {
@@ -2225,7 +2225,7 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 				{
 					if (source.isVariable())
 					{
-						baseMask = baseMask.getUnion(source.getmask().removeAggregates(themes, true));
+						baseMask = baseMask.getUnion(source.getMask().removeAggregates(themes, true));
 					}
 				}
 			}
@@ -2258,7 +2258,7 @@ Core::FMTmask FMTmodel::getBaseMask(std::vector<Core::FMTactualdevelopment> opti
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTmodel::getBaseMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTmodel::getBaseMask", __LINE__, __FILE__);
 		}
 	return baseMask;
 	}
@@ -2271,7 +2271,7 @@ Core::FMTmaskfilter FMTmodel::getPostsolveFilter(const std::vector<Core::FMTthem
 		return Core::FMTmaskfilter(presolvemask,emptythemes);
 	}catch (...)
 	{
-		_exhandler->printexceptions("for " + name, "FMTmodel::getPostsolveFilter", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTmodel::getPostsolveFilter", __LINE__, __FILE__);
 	}
 	return Core::FMTmaskfilter();
 }
@@ -2284,7 +2284,7 @@ Core::FMTmaskfilter FMTmodel::getPresolveFilter(const std::vector<Core::FMTtheme
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("for " + name, "FMTmodel::getPresolveFilter", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTmodel::getPresolveFilter", __LINE__, __FILE__);
 	}
 	return Core::FMTmaskfilter();
 }
@@ -2297,7 +2297,7 @@ Core::FMTmask FMTmodel::getSelectedMask(const std::vector<Core::FMTtheme>& origi
 		{
 		newmasksize += theme.size();
 		}
-	//const boost::dynamic_bitset<uint8_t>& basewithoutpresolve = basedevelopment.getmask().getBitsetReference();
+	//const boost::dynamic_bitset<uint8_t>& basewithoutpresolve = basedevelopment.getMask().getBitsetReference();
 	 boost::dynamic_bitset<uint8_t>selection(newmasksize, false);
 	// boost::dynamic_bitset<uint8_t> selection(basewithoutpresolve);
 	try {
@@ -2308,11 +2308,11 @@ Core::FMTmask FMTmodel::getSelectedMask(const std::vector<Core::FMTtheme>& origi
 			{
 			const Core::FMTtheme& originaltheme = originalthemes.at(themeid);
 			//const std::map<std::string, std::string> prsolvedvalues = themes.at(presolvedthemeid).getvaluenames();
-			const std::vector<std::string>& prsolvedvalues = themes.at(presolvedthemeid).getbaseattributes();
+			const std::vector<std::string>& prsolvedvalues = themes.at(presolvedthemeid).getBaseAttributes();
 			size_t foundcount = 0;
 			std::vector<bool>themebits(originaltheme.size(),false);
 			size_t bitid = 0;
-			for (const std::string& themevalues : originaltheme.getbaseattributes())
+			for (const std::string& themevalues : originaltheme.getBaseAttributes())
 				{
 				if (std::find(prsolvedvalues.begin(), prsolvedvalues.end(), themevalues)!= prsolvedvalues.end()/*prsolvedvalues.find(themevalues.first) != prsolvedvalues.end()*/)
 					{
@@ -2359,7 +2359,7 @@ Core::FMTmask FMTmodel::getSelectedMask(const std::vector<Core::FMTtheme>& origi
 
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTmodel::getSelectedMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTmodel::getSelectedMask", __LINE__, __FILE__);
 		}
 	return newmask;
 	}
@@ -2372,7 +2372,7 @@ FMTmodel FMTmodel::basePresolve() const
 
 	}catch (...)
 		{
-		_exhandler->printexceptions("for " + name, "FMTmodel::basePresolve", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTmodel::basePresolve", __LINE__, __FILE__);
 		}
 	return *mdlptr;
 }
@@ -2381,12 +2381,12 @@ FMTmodel FMTmodel::basePresolve() const
 std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 	std::unique_ptr<FMTmodel>presolvedModel(new FMTmodel());
-	int presolvepass = getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS);
+	int presolvepass = getParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS);
 	try {
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
 		if (!QUIET_LOG)
-			_logger->logwithlevel("Presolving " + getname() + "\n", 1);
-		presolvedModel->setName(getname());
+			_logger->logWithLevel("Presolving " + getName() + "\n", 1);
+		presolvedModel->setName(getName());
 		presolvedModel->parameters = parameters;
 		Core::FMTmaskfilter oldpresolvefilter(getBaseMask(optionaldevelopments));
 		presolvedModel->themes = themes;
@@ -2472,7 +2472,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				topresolve.reserve(presolvedModel->area.size());
 				for (const Core::FMTactualdevelopment& development : presolvedModel->area)
 				{
-					const Core::FMTmask& devmask = development.getmask();
+					const Core::FMTmask& devmask = development.getMask();
 					Core::FMTactualdevelopment newDev(development);
 					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = topresolve.find(devmask);
 					if (mskit != topresolve.end())
@@ -2485,12 +2485,12 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 						newDev.setMask(presolvedmask);
 					}
 					
-					if (getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
+					if (getParameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 					{
 						std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(newarea.begin(), newarea.end(), Core::FMTactualdevelopmentcomparator(&newDev));
 						if (devit != newarea.end())
 						{
-							devit->setArea(devit->getarea() + newDev.getarea());
+							devit->setArea(devit->getArea() + newDev.getArea());
 						}
 						else {
 							newarea.push_back(newDev);
@@ -2536,7 +2536,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 					std::vector<Core::FMTaction>::const_iterator actionIt = std::find_if(
 						presolvedModel->actions.begin(), 
 						presolvedModel->actions.end(), 
-						Core::FMTactioncomparator(presolvedTransition.getname()));
+						Core::FMTActionComparator(presolvedTransition.getName()));
 					const size_t ACTIONm_location = std::distance(presolvedModel->actions.cbegin(), actionIt);
 					const Core::FMTmask TESTED_MASK = presolvedTransition.getUnion(presolvedModel->themes);
 					if (actionIt != presolvedModel->actions.end() && 
@@ -2686,8 +2686,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 	//oldconstraints.shrink_to_fit();
 	if (!QUIET_LOG)
 	{ 
-		_logger->logwithlevel("Presolve stopped after " + std::to_string(getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS) - presolvepass) + " iterations\n", 1);
-		_logger->logwithlevel("Developments "+std::to_string(presolvedModel->area.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->area.size())-static_cast<int>(area.size())) + "), "
+		_logger->logWithLevel("Presolve stopped after " + std::to_string(getParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS) - presolvepass) + " iterations\n", 1);
+		_logger->logWithLevel("Developments "+std::to_string(presolvedModel->area.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->area.size())-static_cast<int>(area.size())) + "), "
 					+"Themes "+std::to_string(presolvedModel->themes.size())+"(" + std::to_string(static_cast<int>(presolvedModel->themes.size())-static_cast<int>(themes.size())) + "), "
 					+"Yields "+std::to_string(presolvedModel->yields.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->yields.size())-static_cast<int>(yields.size())) + "), "
 					+"Actions "+std::to_string(presolvedModel->actions.size()) + "(" + std::to_string(static_cast<int>(presolvedModel->actions.size())-static_cast<int>(actions.size())) + "), "
@@ -2719,7 +2719,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 	presolvedModel->_gutsOfConstructor(presolvedModel->area);
 	}catch (...)
 		{
-		_exhandler->printexceptions("for "+name+"at presolve pass "+std::to_string(presolvepass),"FMTmodel::presolve", __LINE__, __FILE__);
+		_exhandler->printExceptions("for "+name+"at presolve pass "+std::to_string(presolvepass),"FMTmodel::presolve", __LINE__, __FILE__);
 		}
 	return presolvedModel;
 	}
@@ -2730,7 +2730,7 @@ void FMTmodel::postSolve(const FMTmodel& originalbasemodel)
 		*this = FMTmodel(originalbasemodel);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::postSolve", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::postSolve", __LINE__, __FILE__);
 		}
 	}
 
@@ -2739,11 +2739,11 @@ Core::FMTschedule FMTmodel::presolveSchedule(const Core::FMTschedule& originalba
 	{
 	Core::FMTschedule newSchedule;
 	try {
-		const Core::FMTmaskfilter newfilter = getPresolveFilter(originalbasemodel.getthemes());
+		const Core::FMTmaskfilter newfilter = getPresolveFilter(originalbasemodel.getThemes());
 		newSchedule = originalbaseschedule.presolve(newfilter, this->themes, this->actions);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTmodel::presolveSchedule", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTmodel::presolveSchedule", __LINE__, __FILE__);
 		}
 	return newSchedule;
 	}
@@ -2805,7 +2805,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 				newarea.push_back(dev);
 			}
 			else {
-				actualdev->setArea(actualdev->getarea() + dev.getarea());
+				actualdev->setArea(actualdev->getArea() + dev.getArea());
 			}
 		}
 		std::vector<Core::FMTaction>finalactions = actions;
@@ -2813,7 +2813,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 		size_t id = 0;
 		for (const Core::FMTaction& action : rhs.actions)
 		{
-			std::vector<Core::FMTaction>::iterator actionitr = std::find_if(finalactions.begin(), finalactions.end(), Core::FMTactioncomparator(action.getname()));
+			std::vector<Core::FMTaction>::iterator actionitr = std::find_if(finalactions.begin(), finalactions.end(), Core::FMTActionComparator(action.getName()));
 			if (actionitr == finalactions.end())
 			{
 				finalactions.push_back(action);
@@ -2824,7 +2824,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 				actionitr->unShrink(themes);
 				rhsaction.unShrink(newthemes);
 				actionitr->push_back(rhsaction);
-				std::vector<Core::FMTtransition>::iterator transitionitr = std::find_if(finaltransitions.begin(), finaltransitions.end(), Core::FMTtransitioncomparator(action.getname()));
+				std::vector<Core::FMTtransition>::iterator transitionitr = std::find_if(finaltransitions.begin(), finaltransitions.end(), Core::FMTtransitioncomparator(action.getName()));
 				if (transitionitr != transitions.end())
 				{
 					Core::FMTtransition rhstransition(rhs.transitions.at(id));
@@ -2838,7 +2838,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 		std::vector<Core::FMToutput>finaloutputs = outputs;
 		for (const Core::FMToutput& output : rhs.outputs)
 		{
-			if (std::find_if(finaloutputs.begin(), finaloutputs.end(), Core::FMToutputcomparator(output.getname())) == finaloutputs.end())
+			if (std::find_if(finaloutputs.begin(), finaloutputs.end(), Core::FMToutputcomparator(output.getName())) == finaloutputs.end())
 			{
 				finaloutputs.push_back(output);
 			}
@@ -2850,7 +2850,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 			constraintssubset.erase(constraintssubset.begin());
 			for (const Core::FMTconstraint& constraint : constraintssubset)
 			{
-				if (std::find_if(finalconstraints.begin(), finalconstraints.end(), Core::FMToutputcomparator(constraint.getname())) == finalconstraints.end())
+				if (std::find_if(finalconstraints.begin(), finalconstraints.end(), Core::FMToutputcomparator(constraint.getName())) == finalconstraints.end())
 				{
 					finalconstraints.push_back(constraint);
 				}
@@ -2879,7 +2879,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 		}
 		}catch (...)
 			{
-				_exhandler->printexceptions("", "FMTmodel::push_back", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTmodel::push_back", __LINE__, __FILE__);
 			}
 
 
@@ -2890,7 +2890,7 @@ double FMTmodel::getInitialArea() const
 	double totalarea = 0;
 	for (const Core::FMTactualdevelopment& basedev : area)
 		{
-		totalarea += basedev.getarea();
+		totalarea += basedev.getArea();
 		}
 	return totalarea;
 	}
@@ -2946,7 +2946,7 @@ Core::FMTschedule FMTmodel::getPotentialSchedule(std::vector<Core::FMTactualdeve
 		schedule.clean();
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", " FMTmodel::getpotentialschedule", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", " FMTmodel::getpotentialschedule", __LINE__, __FILE__);
 	}
 	return schedule;
 }
@@ -2973,21 +2973,21 @@ try{
 	if (parameters.getBoolParameter(FORCE_PARTIAL_BUILD)&&gotemptyschedule)
 		{
 		_exhandler->raise(Exception::FMTexc::FMTignore,
-			"Building natural growth graph for "+getname(),
+			"Building natural growth graph for "+getName(),
 			"FMTmodel::setUpSchedulesForBuild", __LINE__, __FILE__);
 		}
 
 	if (!parameters.getBoolParameter(FORCE_PARTIAL_BUILD)&&!gotemptyschedule)
 		{
 		_exhandler->raise(Exception::FMTexc::FMTignore,
-			"FMTschedule will be ignored for " + getname(),
+			"FMTschedule will be ignored for " + getName(),
 			"FMTmodel::setUpSchedulesForBuild", __LINE__, __FILE__);
 		}
 
 
 }catch (...)
 	{
-	_exhandler->raisefromcatch("", "FMTmodel::setUpSchedulesForBuild", __LINE__, __FILE__);
+	_exhandler->raiseFromCatch("", "FMTmodel::setUpSchedulesForBuild", __LINE__, __FILE__);
 	}
 return newshedules;
 }
@@ -3008,7 +3008,7 @@ bool FMTmodel::doPlanning(const bool& solve, std::vector<Core::FMTschedule> sche
 			//Parser::FMTmodelparser mparser;
 			//mparser.write(*presolved_model,"C:/Users/admlocal/Desktop/test/");
 			if (!QUIET_LOG)
-				_logger->logwithlevel("Presolved " + getname() + " " +getDurationInSeconds(presolvestart) + "\n", 1);
+				_logger->logWithLevel("Presolved " + getName() + " " +getDurationInSeconds(presolvestart) + "\n", 1);
 		}else{
 			presolved_model = this->clone();
 		}
@@ -3027,24 +3027,24 @@ bool FMTmodel::doPlanning(const bool& solve, std::vector<Core::FMTschedule> sche
 		presolved_model->build(presolved_schedules);
 
 		if (!QUIET_LOG)
-			_logger->logwithlevel("Builded " + getname() +" "+getDurationInSeconds(buildstart)+ "\n", 1);
+			_logger->logWithLevel("Builded " + getName() +" "+getDurationInSeconds(buildstart)+ "\n", 1);
 		if (solve)
 		{
 			const std::chrono::time_point<std::chrono::high_resolution_clock> solverstart = getClock();
 			optimal_solved = presolved_model->solve();
 			if (!QUIET_LOG)
-				_logger->logwithlevel("Solved " + getname() + " " + getDurationInSeconds(solverstart) + "\n", 1);
+				_logger->logWithLevel("Solved " + getName() + " " + getDurationInSeconds(solverstart) + "\n", 1);
 		}
 		if (parameters.getBoolParameter(POSTSOLVE) && presolve_iterations > 0)
 			{
 			const std::chrono::time_point<std::chrono::high_resolution_clock>postsolvestart = getClock();
 			presolved_model->postSolve(*this);
 			if (!QUIET_LOG)
-				_logger->logwithlevel("Postsolved " + getname() + " " + getDurationInSeconds(postsolvestart) + "\n", 1);
+				_logger->logWithLevel("Postsolved " + getName() + " " + getDurationInSeconds(postsolvestart) + "\n", 1);
 			}
 		this->swapPtr(presolved_model);
 	}catch(...){
-		_exhandler->raisefromcatch(getname(), " FMTmodel::doplanning", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch(getName(), " FMTmodel::doplanning", __LINE__, __FILE__);
 	}
 	return optimal_solved;
 	}
@@ -3065,7 +3065,7 @@ std::vector<Core::FMTconstraint> FMTmodel::getReplanningConstraints(const std::s
 		}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getReplanningConstraints", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getReplanningConstraints", __LINE__, __FILE__);
 	}
 	return newconstraints;
 }
@@ -3093,7 +3093,7 @@ std::map<std::string, std::vector<std::vector<double>>>FMTmodel::getOutputsFromP
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTmodel::getOutputsFromPeriods", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getOutputsFromPeriods", __LINE__, __FILE__);
 		}
 	return outs;
 	}
@@ -3114,7 +3114,7 @@ std::map<std::string, double> FMTmodel::getOutput(const Core::FMToutput& output,
 	return std::map<std::string, double>();
 }
 
-bool FMTmodel::setparameter(const FMTintmodelparameters& key, const int& value)
+bool FMTmodel::setParameter(const FMTintmodelparameters& key, const int& value)
 {
 	try{
 		if (parameters.setIntParameter(key, value))
@@ -3122,86 +3122,86 @@ bool FMTmodel::setparameter(const FMTintmodelparameters& key, const int& value)
 			return (true);
 		}
 	}catch(...){
-		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setParameter", __LINE__, __FILE__);
 	}
 	return false;
 }
 
-bool FMTmodel::setparameter(const FMTdblmodelparameters& key, const double& value)
+bool FMTmodel::setParameter(const FMTdblmodelparameters& key, const double& value)
 {
 	try{
 		if (parameters.setDblParameter(key,value)) return (true);
 	}catch(...){
-		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setParameter", __LINE__, __FILE__);
 	}
 	return false;
 }
 
-bool FMTmodel::setparameter(const FMTboolmodelparameters& key, const bool& value)
+bool FMTmodel::setParameter(const FMTboolmodelparameters& key, const bool& value)
 {
 	try{
 		if (parameters.setBoolParameter(key,value)) return (true);
 	}catch(...){
-		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setParameter", __LINE__, __FILE__);
 	}
 	return false;
 }
 
-bool FMTmodel::setparameter(const FMTstrmodelparameters& p_key, const std::string& p_value)
+bool FMTmodel::setParameter(const FMTstrmodelparameters& p_key, const std::string& p_value)
 {
 	try {
 		if (parameters.setStrParameter(p_key, p_value)) return (true);
 	}
 	catch (...) {
-		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodel::setParameter", __LINE__, __FILE__);
 	}
 	return false;
 }
 
-int FMTmodel::getparameter(const FMTintmodelparameters& key)const
+int FMTmodel::getParameter(const FMTintmodelparameters& key)const
 {
 	int value;
 	try{
 		value = parameters.getIntParameter(key);
 	}catch(...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getParameter", __LINE__, __FILE__);
 	}
 	return value;
 }
 
-double FMTmodel::getparameter(const FMTdblmodelparameters& key)const
+double FMTmodel::getParameter(const FMTdblmodelparameters& key)const
 {
 	double value;
 	try{
 		value = parameters.getDblParameter(key);
 	}catch(...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getParameter", __LINE__, __FILE__);
 	}
 	return value;
 }
 
-bool FMTmodel::getparameter(const FMTboolmodelparameters& key) const
+bool FMTmodel::getParameter(const FMTboolmodelparameters& key) const
 {
 	bool value;
 	try{
 		value = parameters.getBoolParameter(key);
 	}catch(...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getParameter", __LINE__, __FILE__);
 	}
 	return value;
 }
 
-const std::string& FMTmodel::getparameter(const FMTstrmodelparameters& p_key) const
+const std::string& FMTmodel::getParameter(const FMTstrmodelparameters& p_key) const
 {
 	try {
 		return parameters.getStrParameter(p_key);
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getParameter", __LINE__, __FILE__);
 	}
 	return nullptr;
 }
@@ -3219,7 +3219,7 @@ bool FMTmodel::setCompressTime(const int& periodStart, const int& periodStop, co
 		}
 	}catch(...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::setCompressTime", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::setCompressTime", __LINE__, __FILE__);
 	}
 	return returnbool;
 }
@@ -3260,7 +3260,7 @@ std::vector<Core::FMTconstraint>FMTmodel::goalConstraints(double penalty) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::goalConstraints", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::goalConstraints", __LINE__, __FILE__);
 	}
 	return newconstraints;
 }
@@ -3309,7 +3309,7 @@ std::vector<Core::FMTconstraint>FMTmodel::getTacticalConstraints(double penalty,
 
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getTacticalConstraints", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTmodel::getTacticalConstraints", __LINE__, __FILE__);
 	}
 	return newconstraints;
 }
@@ -3318,7 +3318,7 @@ std::vector<Core::FMTconstraint>FMTmodel::getTacticalConstraints(double penalty,
 
 void FMTmodel::showParameters(const bool& showhelp)const
 {
-	std::string message=" - Parameters for model "+getname()+"\n";
+	std::string message=" - Parameters for model "+getName()+"\n";
 	try{
 	*_logger<<message<<"	-- Int parameters"<<"\n";
 	message="	LENGTH                   : "+std::to_string(parameters.getIntParameter(LENGTH))+"\n";
@@ -3375,7 +3375,7 @@ FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}
 
 bool FMTmodelcomparator::operator()(const FMTmodel& model) const
 	{
-	return(model_name == model.getname());
+	return(model_name == model.getName());
 	}
 
 

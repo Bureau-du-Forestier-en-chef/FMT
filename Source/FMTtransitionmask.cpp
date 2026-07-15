@@ -79,7 +79,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
     FMTdevelopmentpath FMTtransitionmask::disturb(const Core::FMTdevelopment& dev,const FMTyields& yields,
                                                 const std::vector<FMTtheme>& themes, const bool& reset_age) const
         {
-        FMTdevelopmentpath newPath(this->trans(dev.getmask(), themes),
+        FMTdevelopmentpath newPath(this->trans(dev.getMask(), themes),
                     dev.getAge(), dev.getLock(), dev.getPeriod(), proportion);
         FMTdevelopment& newDev = newPath.getDevelopmentReference();
 		bool age_change = false;
@@ -129,7 +129,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
             return proportion;
         }
 
-    FMTmask FMTtransitionmask::getmask() const
+    FMTmask FMTtransitionmask::getMask() const
         {
             return mask;
         }
@@ -146,7 +146,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         for(const FMTtheme& theme : themes)
             {
             const std::string value = mask.get(theme);
-			std::string name = theme.getname();
+			std::string name = theme.getName();
             if (name.empty())
                 {
                 name = "THEME_"+ std::to_string(id);

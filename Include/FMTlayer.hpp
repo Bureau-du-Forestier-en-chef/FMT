@@ -245,7 +245,7 @@ namespace Spatial
 					std::swap(cellsize, rhs.cellsize);
 				}catch (...)
 					{
-					_exhandler->raisefromcatch("", "FMTlayer::swap", __LINE__, __FILE__);
+					_exhandler->raiseFromCatch("", "FMTlayer::swap", __LINE__, __FILE__);
 					}
 				}
 

@@ -52,7 +52,7 @@ namespace Models
 		m_SpatialGraphs.deleteNonCompleteGraphs();
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsesmodel::greedyReferenceBuild", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTsesmodel::greedyReferenceBuild", __LINE__, __FILE__);
 			}
 	return bestresults;
 	}
@@ -68,12 +68,12 @@ namespace Models
 		try {
 			for (const Core::FMTschedule& schedule : schedules)
 			{
-				this->greedyReferenceBuild(schedule,getparameter(NUMBER_OF_ITERATIONS));
+				this->greedyReferenceBuild(schedule,getParameter(NUMBER_OF_ITERATIONS));
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::build", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTsesmodel::build", __LINE__, __FILE__);
 		}
 	return true;
 	}
@@ -89,7 +89,7 @@ namespace Models
 			return std::unique_ptr<FMTmodel>(new FMTsesmodel(*(dynamic_cast<FMTsemodel*>(FMTsemodel::presolve(optionaldevelopments).get()))));
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::presolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTsesmodel::presolve", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
@@ -101,7 +101,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::getCopy", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTsesmodel::getCopy", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}

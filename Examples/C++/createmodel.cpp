@@ -25,7 +25,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 
 	//Create Themes
 	//////////////////////////////////////////////////
@@ -143,10 +143,10 @@ int main()
 	model.setArea(area);
 	model.setLifespan(lifespan);
 	model.setTransitions(transitions);
-	model.setactions(actions);
+	model.setActions(actions);
 	model.setOutputs(outputs);
-	model.setconstraints(constraints);
-	model.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
+	model.setConstraints(constraints);
+	model.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
 	Parser::FMTmodelparser mparser;
 	//Write model
 	mparser.write(model, "../../tests/createmodel/");

@@ -44,13 +44,13 @@ namespace Parallel
 				return model.getObjValue();
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					model.getname()+" is infeasible at initialsolve",
+					model.getName()+" is infeasible at initialsolve",
 					"FMTopareaschedulertask::solveInitialModel", __LINE__, __FILE__);
 			}
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::solveInitialModel", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::solveInitialModel", __LINE__, __FILE__);
 		}
 		return 0;
 	}
@@ -62,12 +62,12 @@ namespace Parallel
 	{
 		std::vector<Heuristics::FMToperatingareascheme>newschemes;
 		try {
-			const std::vector<Core::FMTtheme>themes = model.getthemes();
-			const int model_length = model.getparameter(Models::FMTintmodelparameters::LENGTH);
+			const std::vector<Core::FMTtheme>themes = model.getThemes();
+			const int model_length = model.getParameter(Models::FMTintmodelparameters::LENGTH);
 			for (const Heuristics::FMToperatingareascheme& opscheduler : opareas)
 				{
 				double total_value = 0;
-				const Core::FMToutput local_output = output.intersectWithMask(opscheduler.getmask(), themes);
+				const Core::FMToutput local_output = output.intersectWithMask(opscheduler.getMask(), themes);
 				double non_zero = 0;
 				for (int period = 0; period < model_length; ++period)
 					{
@@ -89,7 +89,7 @@ namespace Parallel
 						UpperReturn > std::numeric_limits<short>::max())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-							"Wrong returntime value for "+ std::string(opscheduler.getmask())+" values "+
+							"Wrong returntime value for "+ std::string(opscheduler.getMask())+" values "+
 							std::to_string(LowerReturn)+","+ std::to_string(UpperReturn),
 							"FMTopareaschedulertask::getReturnTimeFromOutput", __LINE__, __FILE__);
 						}
@@ -99,7 +99,7 @@ namespace Parallel
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getReturnTimeFromOutput", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::getReturnTimeFromOutput", __LINE__, __FILE__);
 		}
 		return newschemes;
 	}
@@ -115,7 +115,7 @@ namespace Parallel
 			actualscheduler->setProportionOfSet(calculatedpropotion);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::setInitialScheduler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::setInitialScheduler", __LINE__, __FILE__);
 		}
 	}
 
@@ -130,7 +130,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getStopPoint", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::getStopPoint", __LINE__, __FILE__);
 		}
 		return then;
 	}
@@ -150,7 +150,7 @@ namespace Parallel
 		try {
 			Models::FMTlpmodel modelcopy(model);
 			//Force postSolve to keep logic with the FMToperatingareascheme
-			modelcopy.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
+			modelcopy.FMTmodel::setParameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
 			//Keep the non build modelcopy.
 			basemodel = std::move(std::unique_ptr<Models::FMTlpmodel>(new Models::FMTlpmodel(modelcopy)));
 			solveInitialModel(modelcopy);
@@ -158,7 +158,7 @@ namespace Parallel
 				{
 				const std::vector<Heuristics::FMToperatingareascheme> newschemes = getReturnTimeFromOutput(modelcopy, opareas, returntime_output);
 				Parser::FMTareaparser area_parser;
-				const std::string location = (outputlocation +"/"+returntime_output.getname() + ".csv");
+				const std::string location = (outputlocation +"/"+returntime_output.getName() + ".csv");
 				std::vector<std::string>layersoptions;
 				layersoptions.push_back("SEPARATOR=SEMICOLON");
 				layersoptions.push_back("STRING_QUOTING=IF_NEEDED");
@@ -176,7 +176,7 @@ namespace Parallel
 			outyldname = outputyieldname;
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTopareaschedulertask::FMTopareaschedulertask()", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTopareaschedulertask::FMTopareaschedulertask()", __LINE__, __FILE__);
 		}
 
 	}
@@ -210,7 +210,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::gotInitialSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::gotInitialSolution", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -222,7 +222,7 @@ namespace Parallel
 			return (iterations > 0 && getClock() < stoptime);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::goodToGo", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::goodToGo", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -248,7 +248,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::finalize", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::finalize", __LINE__, __FILE__);
 		}
 		}
 
@@ -262,19 +262,19 @@ namespace Parallel
 			basemodel->getSolverPtr()->passInMessageHandler(*tasklogger.get());
 			Models::FMTlpmodel modelcopy(*basemodel);
 			modelcopy.doPlanning(false);
-			Core::FMTyields newyields = modelcopy.getyields();
-			newyields.unShrink(modelcopy.getthemes());
+			Core::FMTyields newyields = modelcopy.getYields();
+			newyields.unShrink(modelcopy.getThemes());
 			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getSolution(outyldname))
 			{
 				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
-				newyields.push_front(newyield->getmask(), newyield);
+				newyields.push_front(newyield->getMask(), newyield);
 			}
 			newyields.update();
 			modelcopy.setYields(newyields);
 			std::vector<Core::FMTconstraint>constraints=basemodel->getconstraints();
-			std::vector<Core::FMToutput>outputs=basemodel->getoutputs();
+			std::vector<Core::FMToutput>outputs=basemodel->getOutputs();
 			getConstraintsSolution(outputs, constraints);
-			modelcopy.setconstraints(constraints);
+			modelcopy.setConstraints(constraints);
 			modelcopy.setOutputs(outputs);
 			Models::FMTlpsolver* solver = modelcopy.getSolverPtr();
 			solver->setColSolution(thesolution);
@@ -285,7 +285,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writeFinalModel", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::writeFinalModel", __LINE__, __FILE__);
 		}
 
 	}
@@ -295,7 +295,7 @@ namespace Parallel
 		try {
 			//output levels...
 			const std::string bfecoptaggregates("~BFECOPTOUTPUTYOUVERT~");
-			const int lastid = static_cast<int>(basemodel->getoutputs().size());
+			const int lastid = static_cast<int>(basemodel->getOutputs().size());
 			size_t outoriginalsize = outputs.size();
 			for (const Core::FMToutput& output : bestscheduler->getLevelSolution("OPunit", bfecoptaggregates, lastid))
 			{
@@ -306,13 +306,13 @@ namespace Parallel
 				Core::FMToutput constraintoutput(outputs.at(oid));
 				constraintoutput -= outputs.at(oid + 1);
 				Core::FMTconstraint newconstraint(Core::FMTconstrainttype::FMTstandard, constraintoutput);
-				newconstraint.setLength(1, basemodel->getparameter(Models::FMTintmodelparameters::LENGTH));
+				newconstraint.setLength(1, basemodel->getParameter(Models::FMTintmodelparameters::LENGTH));
 				newconstraint.setRhs(-std::numeric_limits<double>::max(), 0.0);
 				constraints.push_back(newconstraint);
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getConstraintsSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::getConstraintsSolution", __LINE__, __FILE__);
 			}
 		}
 
@@ -327,7 +327,7 @@ namespace Parallel
 			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getSolution(outyldname))
 				{
 				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
-				yields.push_back(newyield->getmask(),newyield);
+				yields.push_back(newyield->getMask(),newyield);
 				}
 			yields.update();
 			Parser::FMTyieldparser yldparser;
@@ -345,7 +345,7 @@ namespace Parallel
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writeSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::writeSolution", __LINE__, __FILE__);
 		}
 
 	}
@@ -391,7 +391,7 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::evaluateAndCopy", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::evaluateAndCopy", __LINE__, __FILE__);
 			}
 	}
 
@@ -418,7 +418,7 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::split", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::split", __LINE__, __FILE__);
 			}
 		return tasks;
 	}
@@ -441,23 +441,23 @@ namespace Parallel
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::spawn", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::spawn", __LINE__, __FILE__);
 			}
 	return std::unique_ptr<FMTtask>(nullptr);
 	}
 
-	void FMTopareaschedulertask::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTopareaschedulertask::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		try {
-			actualscheduler->passinlogger(logger);
+			actualscheduler->passInLogger(logger);
 			if (gotInitialSolution())
 			{
 				const boost::lock_guard<boost::mutex> lock(generalmutex);
-				bestscheduler->passinlogger(logger);
+				bestscheduler->passInLogger(logger);
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::passinlogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTopareaschedulertask::passInLogger", __LINE__, __FILE__);
 			}
 		}
 

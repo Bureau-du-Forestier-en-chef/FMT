@@ -581,19 +581,19 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		// DocString: FMTparser::m_included
 		///lines comming from an included file.
 		//std::queue<std::string>m_included;
-		// DocString: FMTparser::GDALInitialization;
+		// DocString: FMTparser::gdalInitialization;
 		///True if GDAL has been initialized.
-		static bool GDALInitialization;
+		static bool gdalInitialization;
 		// DocString: FMTparser::_safeGetline
 		///A safe get line function for Linux/Windows
 		std::istream& _safeGetline(std::istream& is, std::string& t) const;
 		#ifdef FMTWITHGDAL
-			// DocString: FMTparser::GDALInitialization
+			// DocString: FMTparser::gdalInitialization
 			/**
 			Initialize GDAL once
 			*/
 			static void _initializeGDAL();
-			// DocString: FMTparser::_QueryDatabase
+			// DocString: FMTparser::_queryDatabase
 			/**
 			@brief Get all query lines of the for loops baed on key.FIELD_NAME
 			@param[in] p_DataBaseLocation
@@ -601,7 +601,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			@param[in] p_Query
 			@return the query lines with the variable like 
 			*/
-			std::map<std::string, std::vector<std::string>>_QueryDatabase(
+			std::map<std::string, std::vector<std::string>>_queryDatabase(
 				const std::string& p_DataBaseLocation,
 				const std::string& p_VariableName,
 				const std::string& p_Query) const;
@@ -613,20 +613,20 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			@return the absolute path of the p_Path
 			*/
 			std::string _getAbsolutePath(std::string p_Path) const;
-			// DocString: FMTparser::_SetForLoopLines
+			// DocString: FMTparser::_setForLoopLines
 			/**
 			@brief concacanate lines together to form a foreach if foreach on multiline
 			@param[in] p_queue queue of lines
 			@return the front line
 			*/
-			FMTLineInfo _SetForLoopLines(std::queue<FMTLineInfo>& p_queue) const;
-			// DocString: FMTparser:: _ProcessConstants
+			FMTLineInfo _setForLoopLines(std::queue<FMTLineInfo>& p_queue) const;
+			// DocString: FMTparser:: _processConstants
 			/**
 			@brief Turn the string with constant into string with regular numbers
 			@param[in] p_input input string
 			@return a valid string without constants #
 			*/
-			std::string _ProcessConstants(std::string p_input,
+			std::string _processConstants(std::string p_input,
 				const Core::FMTconstants& p_constants) const;
     };
 

@@ -36,12 +36,12 @@ namespace Spatial
             FMTforest(const FMTforest& rhs);
             FMTforest(const FMTlayer<Core::FMTdevelopment>& rhs);
             FMTforest& operator = (const FMTforest& rhs);
-			std::vector<Core::FMTactualdevelopment>getarea() const;
+			std::vector<Core::FMTactualdevelopment>getArea() const;
 			void setLastThemeWithArea(const std::vector<Core::FMTactualdevelopment>& p_devs,
 										const std::vector<Core::FMTtheme>& p_themes);
         FMTforest getCopy(bool copyData = true) const;
         FMTforest grow() const;
-		std::vector<FMTlayer<std::string>> getthemes(const std::vector<Core::FMTtheme>& themes) const;
+		std::vector<FMTlayer<std::string>> getThemes(const std::vector<Core::FMTtheme>& themes) const;
         FMTlayer<int>getAge() const;
         FMTlayer<std::string>getLock() const;
 		void setPeriod(int period);

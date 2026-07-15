@@ -13,7 +13,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
@@ -48,15 +48,15 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
-		//optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
-		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		//optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
 		//delparser.write(optimizationmodel, "D:/test/");
 		optimizationmodel.doPlanning(false, schedules);
 		/*for (size_t period = 1; period <= 6; ++period)
@@ -71,9 +71,9 @@ int main(int argc, char *argv[])
 			{
 			bool gotovoltotrec = false;
 			std::vector<Core::FMToutput>selected;
-			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 				{
-				if (output.getname() == "OVOLTOTREC")
+				if (output.getName() == "OVOLTOTREC")
 					{
 					gotovoltotrec = true;
 					const double returnedvalue = optimizationmodel.getOutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
 					"FMTsetsolution", __LINE__, primarylocation);
 				}
-			//modelparser.writeresults(optimizationmodel, selected, 1, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
+			//modelparser.writeResults(optimizationmodel, selected, 1, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
 			}
 			//
 	}else {

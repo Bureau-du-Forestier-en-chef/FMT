@@ -13,7 +13,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-    Logging::FMTdefaultlogger().logstamp();
+    Logging::FMTdefaultlogger().logStamp();
     int side;//196
     std::string	themesLocation;
     std::string	pointsLocation;
@@ -46,14 +46,14 @@ int main(int argc, char* argv[])
     errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
     errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
     errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-    areaparser.seterrorstowarnings(errors);
+    areaparser.setErrorsToWarnings(errors);
 
     Parser::FMTlandscapeparser landScapeParse;
     const std::vector<Core::FMTtheme> THEMES = landScapeParse.read(Core::FMTconstants(), themesLocation);
    
     const Spatial::FMTforest FOREST = areaparser.vectormaptoFMTforest(pointsLocation,side, THEMES,"AGE","SUPERFICIE",
                                                                     1,0.0001, LOCK_FIELD,0.0,writeLocation,false);
-    areaparser.write(FOREST.getarea(), writeLocation + "area.are");
+    areaparser.write(FOREST.getArea(), writeLocation + "area.are");
 #endif
 	return 0;
 }

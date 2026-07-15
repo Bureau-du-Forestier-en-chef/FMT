@@ -24,9 +24,9 @@ Wrapper::FMTFormLogger::FMTFormLogger(
 	: FMTlogger(), keepprint(false), m_isMainInstance(true),
 	lastprint(), sendfeedback(feed)
 {
-	redirectofile(nomFichierLogger, false);
-	setlogginglevel(LOGLEVEL);
-	setstreamflush(true);
+	redirectToFile(nomFichierLogger, false);
+	setLoggingLevel(LOGLEVEL);
+	setStreamFlush(true);
 }
 
 Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
@@ -40,18 +40,18 @@ Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
 	//filepath.clear();
 }
 
-void Wrapper::FMTFormLogger::logtime()
+void Wrapper::FMTFormLogger::logTime()
 {
 	// No-op intentionnel : sendfeedback ne peut pas être appelé depuis un thread natif.
-	// Le fichier log est ouvert une fois dans le constructeur via redirectofile().
-	// Les timestamps sont écrits explicitement via *logger << logstamp
+	// Le fichier log est ouvert une fois dans le constructeur via redirectToFile().
+	// Les timestamps sont écrits explicitement via *logger << logStamp
 }
 
 Wrapper::FMTFormLogger::~FMTFormLogger()
 {
 	// Ferme et libere le flux fichier AVANT l'execution du destructeur de base
 	// FMTlogger::~FMTlogger(). Sinon, la répartition virtuelle pendant la destruction
-	// appelle FMTlogger::logtime() (la partie dérivée étant déjà détruite, l'override
+	// appelle FMTlogger::logTime() (la partie dérivée étant déjà détruite, l'override
 	// no-op n'est plus atteint), ce qui insère une ligne timestamp parasite
 	// "Thread(id) <date>" dans le log à chaque destruction d'un clone du logger.
 	closeFile();
@@ -104,10 +104,10 @@ void Wrapper::FMTFormLogger::cout(const char * message) const
 
 void Wrapper::FMTFormLogger::settasklogginglevel(int taskLogLevel)
 {
-	setlogginglevel(taskLogLevel);
+	setLoggingLevel(taskLogLevel);
 }
 
 void Wrapper::FMTFormLogger::setdefaultlogginglevel()
 {
-	setlogginglevel(LOGLEVEL);
+	setLoggingLevel(LOGLEVEL);
 }

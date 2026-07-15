@@ -72,7 +72,7 @@ namespace Core
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTyieldmodelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldmodelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return values;
 	}
@@ -87,7 +87,7 @@ namespace Core
 			choice = static_cast<double>(GENERATED);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldmodelRandom::getRandomIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldmodelRandom::getRandomIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return choice;
 	}
@@ -117,7 +117,7 @@ namespace Core
 			
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldmodelRandom::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyieldmodelRandom::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return result;
 	}
@@ -134,7 +134,7 @@ namespace Core
 			return Clone();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(getModelName(), "FMTyieldmodelRandom::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelName(), "FMTyieldmodelRandom::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}

@@ -58,13 +58,13 @@ namespace Graph
 											bool& exactnode) const
 		{
 		const std::string actionname = targetnode.source.getAction();
-		const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getAllAggregates(actions,true);
+		const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTActionComparator(actionname).getAllAggregates(actions,true);
 		if (!actionname.empty() && !aggregatesptr.empty()) //so it's a aggregate!
 			{
 			std::map<std::string,std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>>potentials;
 			for (const Core::FMTaction* attributeptr : aggregatesptr)
 				{
-				potentials[attributeptr->getname()] = std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>();
+				potentials[attributeptr->getName()] = std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>();
 				}
 			for (std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator sit = searchtree.begin();
 					sit != searchtree.end(); sit++) 
@@ -77,7 +77,7 @@ namespace Graph
 				}
 			for (const Core::FMTaction* attributeptr : aggregatesptr)
 				{
-				if (potentials.at(attributeptr->getname()).empty())
+				if (potentials.at(attributeptr->getName()).empty())
 					{
 					return; //not a perfect rebuilt need to be complete!!
 					}

@@ -290,10 +290,10 @@ bool FMToutputsource::isInAggregate(const FMToutputsource& rhs, const std::vecto
 	{
 	if (isAction() && rhs.isAction())
 		{
-		const std::vector<const FMTaction*>allactions = FMTactioncomparator(rhs.action).getAllAggregates(actions);
+		const std::vector<const FMTaction*>allactions = FMTActionComparator(rhs.action).getAllAggregates(actions);
 		for (const FMTaction* actptr : allactions)
 			{
-				if (actptr->getname() == action)
+				if (actptr->getName() == action)
 				{
 					return true;
 				}
@@ -347,7 +347,7 @@ double FMToutputsource::getConstantValue(const std::vector<Core::FMTactualdevelo
 		if (use(development,yields)  && operabletoactions.empty()
 			|| development.anyOperable(operabletoactions, yields))
 			{
-			double developmentvalue = development.getarea();
+			double developmentvalue = development.getArea();
 			if (!yield.empty())
 				{
 				developmentvalue*=development.getInventoryCoef(yields, yield);
@@ -428,7 +428,7 @@ std::vector<const FMTaction*>FMToutputsource::targets(const std::vector<FMTactio
 	{
 	if (target != FMTotar::level && !action.empty())
         {
-		return FMTactioncomparator(action).getAllAggregates(actions);
+		return FMTActionComparator(action).getAllAggregates(actions);
         }
 	return std::vector<const FMTaction*>();
 	}
@@ -437,7 +437,7 @@ std::unordered_set<int>FMToutputsource::targetsSet(const std::vector<FMTaction>&
 {
 	if (target != FMTotar::level && !action.empty())
 	{
-		return FMTactioncomparator(action).getAllAggregatesSet(actions);
+		return FMTActionComparator(action).getAllAggregatesSet(actions);
 	}
 	return std::unordered_set<int>();
 }
@@ -445,7 +445,7 @@ std::unordered_set<int>FMToutputsource::targetsSet(const std::vector<FMTaction>&
 bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& ylds,
 	const Graph::FMTgraphvertextoyield* graphinfo) const
 {
-	return (development.getmask().isSubsetOf(mask) && development.is(*this, ylds, graphinfo));
+	return (development.getMask().isSubsetOf(mask) && development.is(*this, ylds, graphinfo));
 }
 
 std::string FMToutputsource::trimDouble(const std::string& string_number)

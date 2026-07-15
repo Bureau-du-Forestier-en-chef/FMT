@@ -98,7 +98,7 @@ namespace Models
 		@return true if got replicate else false.
 		*/
 		bool gotReplicate(const int& p_replanningPeriod) const;
-		// DocString: FMTmodel::BuildAction
+		// DocString: FMTmodel::buildAction
 		/**
 		 * @brief Build an action based on the positive value of a yield
 		 * @param[in] p_actionName the name of the action to create
@@ -212,11 +212,11 @@ namespace Models
 		Default move assignment for FMTmodel.
 		*/
 		FMTmodel& operator =(FMTmodel&& rhs);
-		// DocString: FMTmodel::getarea
+		// DocString: FMTmodel::getArea
 		/**
 			Virtual function to get the area of a given period into actualdevelopment. If before grow = true it will returns the development before it grow and death to the next period.
 		*/
-		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
+		virtual std::vector<Core::FMTactualdevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
 		// DocString: FMTmodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
@@ -276,19 +276,19 @@ namespace Models
 		Actions and transitions are then sorted.
 		*/
 		void cleanActionsNTransitions();
-		// DocString: FMTmodel::getname
+		// DocString: FMTmodel::getName
 		/**
 		Returns the name of the FMTmodel
 		*/
-		inline std::string getname() const
+		inline std::string getName() const
 		{
 			return name;
 		}
-		// DocString: FMTmodel::getthemes
+		// DocString: FMTmodel::getThemes
 		/**
 		Getter returning a copy of the FMTthemes vector<> of the model.
 		*/
-		inline std::vector<Core::FMTtheme>getthemes() const
+		inline std::vector<Core::FMTtheme>getThemes() const
 		{
 			return themes;
 		}
@@ -308,11 +308,11 @@ namespace Models
 		{
 			return transitions;
 		}
-		// DocString: FMTmodel::getyields
+		// DocString: FMTmodel::getYields
 		/**
 		Getter returning a copy of the FMTyields data of the model.
 		*/
-		inline Core::FMTyields getyields() const
+		inline Core::FMTyields getYields() const
 		{
 			return yields;
 		}
@@ -324,11 +324,11 @@ namespace Models
 		{
 			return lifespan;
 		}
-		// DocString: FMTmodel::getoutputs
+		// DocString: FMTmodel::getOutputs
 		/**
 		Getter returning a copy of the FMToutputs vector<> of the model.
 		*/
-		inline std::vector<Core::FMToutput> getoutputs() const
+		inline std::vector<Core::FMToutput> getOutputs() const
 		{
 			return outputs;
 		}
@@ -378,12 +378,12 @@ namespace Models
 				for (const auto& yldhandler : yieldhandlers)
 				{
 					std::unique_ptr<Core::FMTyieldhandler> yldhandlerptr = yldhandler.clone();
-					yields.push_back(yldhandlerptr->getmask(), yldhandlerptr);
+					yields.push_back(yldhandlerptr->getMask(), yldhandlerptr);
 				}
 				yields.update();
 			}
 			catch (...) {
-				_exhandler->printexceptions("", "FMTmodel:::addyieldhandlers", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTmodel:::addyieldhandlers", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTmodel::addYieldHandlersFromPtr
@@ -414,21 +414,21 @@ namespace Models
 		Setter for the FMTthemes of the model will replace the originals.
 		*/
 		void setThemes(const std::vector<Core::FMTtheme>& lthemes);
-		// DocString: FMTmodel::setactions
+		// DocString: FMTmodel::setActions
 		/**
 		Setter for the FMTactions of the model will replace the originals.
 		*/
-		void setactions(const std::vector<Core::FMTaction>& lactions);
+		void setActions(const std::vector<Core::FMTaction>& lactions);
 		// DocString: FMTmodel::setTransitions
 		/**
 		Setter for the FMTtransitions of the model will replace the originals.
 		*/
 		void setTransitions(const std::vector<Core::FMTtransition>& ltransitions);
-		// DocString: FMTmodel::setconstraints
+		// DocString: FMTmodel::setConstraints
 		/**
 		Setter for the FMTconstraints of the model will replace the original.
 		*/
-		void setconstraints(const std::vector<Core::FMTconstraint>& lconstraint);
+		void setConstraints(const std::vector<Core::FMTconstraint>& lconstraint);
 		// DocString: FMTmodel::setYields
 		/**
 		Setter for the FMTyields data of the model will replace the original.
@@ -586,54 +586,54 @@ namespace Models
 		Get a clone of the FMTmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const;
-		// DocString: FMTmodel::setparameter(const FMTintmodelparameters,const int&)
-		// DocString: FMTnssmodel::setparameter
+		// DocString: FMTmodel::setParameter(const FMTintmodelparameters,const int&)
+		// DocString: FMTnssmodel::setParameter
 		/**
 		@brief set int parameters to nss model.
 		@param[in] p_key the int key to change.
 		@param[in] p_value to set to the p_key.
 		@return true if the parameter is set.
 		*/
-		virtual bool setparameter(const FMTintmodelparameters& p_key, const int& p_value);
-		// DocString: FMTmodel::setparameter(const FMTdblmodelparameters,const double)
+		virtual bool setParameter(const FMTintmodelparameters& p_key, const int& p_value);
+		// DocString: FMTmodel::setParameter(const FMTdblmodelparameters,const double)
 		/**
 		Setter for double model parameters. See FMTmodelparameters.h.
 		*/
-		virtual bool setparameter(const FMTdblmodelparameters& key, const double& value);
-		// DocString: FMTmodel::setparameter(const FMTboolmodelparameters,const bool)
+		virtual bool setParameter(const FMTdblmodelparameters& key, const double& value);
+		// DocString: FMTmodel::setParameter(const FMTboolmodelparameters,const bool)
 		/**
 		Setter for bool model parameters. See FMTmodelparameters.h.
 		*/
-		virtual bool setparameter(const FMTboolmodelparameters& key, const bool& value);
-		// DocString: FMTmodel::setparameter(const FMTboolstrparameters,const std::string)
+		virtual bool setParameter(const FMTboolmodelparameters& key, const bool& value);
+		// DocString: FMTmodel::setParameter(const FMTboolstrparameters,const std::string)
 		/**
 		@brief Setter forstr model parameters. See FMTmodelparameters.h.
 		@param[in] p_key the enum key of the parameter.
 		@param[in] p_value the value of the parameter.
 		@return true if parameter set else false.
 		*/
-		virtual bool setparameter(const FMTstrmodelparameters& p_key, const std::string& p_value);
-		// DocString: FMTmodel::getparameter(const FMTintmodelparameters)
+		virtual bool setParameter(const FMTstrmodelparameters& p_key, const std::string& p_value);
+		// DocString: FMTmodel::getParameter(const FMTintmodelparameters)
 		/**
 		Getter for int model parameters. Return the parameters value. See FMTmodelparameters.h.
 		*/
-		int getparameter(const FMTintmodelparameters& key) const;
-		// DocString: FMTmodel::getparameter(const FMTdblmodelparameters)
+		int getParameter(const FMTintmodelparameters& key) const;
+		// DocString: FMTmodel::getParameter(const FMTdblmodelparameters)
 		/**
 		Getter for double model parameters. Return the parameters value. See FMTmodelparameters.h.
 		*/
-		double getparameter(const FMTdblmodelparameters& key) const;
-		// DocString: FMTmodel::getparameter(const FMTboolmodelparameters)
+		double getParameter(const FMTdblmodelparameters& key) const;
+		// DocString: FMTmodel::getParameter(const FMTboolmodelparameters)
 		/**
 		Getter for bool model parameters. Return the parameters value. See FMTmodelparameters.h.
 		*/
-		bool getparameter(const FMTboolmodelparameters& key) const;
-		// DocString: FMTmodel::getparameter(const FMTstrmodelparameters)
+		bool getParameter(const FMTboolmodelparameters& key) const;
+		// DocString: FMTmodel::getParameter(const FMTstrmodelparameters)
 		/**
 		@brief Getter for str model parameters. Return the parameters value. See FMTmodelparameters.h.
 		@param[in] p_key the param enum key.
 		*/
-		const std::string& getparameter(const FMTstrmodelparameters& p_key) const;
+		const std::string& getParameter(const FMTstrmodelparameters& p_key) const;
 		// DocString: FMTmodel::setCompressTime
 		/**
 		Set compresstime value for a range of periods (periodStart,periodStop). See FMTmodelparameters.h.
@@ -854,7 +854,7 @@ namespace Models
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTmodel::validateListMasks", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTmodel::validateListMasks", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTmodel::validateListSpec
@@ -927,30 +927,30 @@ namespace Models
 					}
 				}
 			}
-		// DocString: FMTmodel::_GetYieldsStraticAggregates
+		// DocString: FMTmodel::_getYieldsStraticAggregates
 		/**
 		 * @brief Get potential new themes attributes for a yields
 		 * @param[in] p_yieldName the yield name
 		 * @return the static aggregates split by -
 		 */
-		std::set<std::string>_GetYieldsStraticAggregates(const std::string& p_yieldName) const;
-		// DocString: FMTmodel::_GetAggregatesWrap
+		std::set<std::string>_getYieldsStraticAggregates(const std::string& p_yieldName) const;
+		// DocString: FMTmodel::_getAggregatesWrap
 		/**
 		 * @brief Wrap aggreagates together with - seprator
 		 * @param[in] p_mask to check for aggregates
 		 * @param[in] p_themes themes to check for
 		 * @return wrapper aggregates.
 		 */
-		std::string _GetAggregatesWrap(const Core::FMTmask& p_mask,
+		std::string _getAggregatesWrap(const Core::FMTmask& p_mask,
 			const std::vector<size_t>& p_themes) const;
-		// DocString: FMTmodel::_GetAggregatesThemes
+		// DocString: FMTmodel::_getAggregatesThemes
 		/**
 		 * @brief select the yields containing p_yieldName and return the theme if of the aggregates in the mask
 		 * @param[in]p_yieldName yield ot get
 		 * @return id of the themes
 		 */
-		std::vector<size_t> _GetAggregatesThemes(const std::string& p_yieldName) const;
-		// DocString: FMTmodel::_GetYieldAttribute
+		std::vector<size_t> _getAggregatesThemes(const std::string& p_yieldName) const;
+		// DocString: FMTmodel::_getYieldAttribute
 		/**
 		 * @brief Get the yield mask for a given dev containing p_yieldName
 		 * @param[in]p_devMask
@@ -958,7 +958,7 @@ namespace Models
 		 * @param[in]p_AggregatedThemes aggregated themes
 		 * @return attribute
 		 */
-		std::string _GetYieldAttribute(const Core::FMTmask& p_devMask,
+		std::string _getYieldAttribute(const Core::FMTmask& p_devMask,
 			const std::string& p_yieldName, const std::vector<size_t>& p_AggregatedThemes) const;
     };
 // DocString: FMTmodelcomparator

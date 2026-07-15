@@ -30,7 +30,7 @@ namespace Python {
 	class FMT_pickle_suite : public boost::python::pickle_suite
 	{
 	public:
-		static const char* getname()
+		static const char* getName()
 			{
 			return typeid(T).name();
 			}
@@ -45,7 +45,7 @@ namespace Python {
 			std::stringstream os;
 				{
 				boost::archive::binary_oarchive oa(os);
-				oa << boost::serialization::make_nvp(getname(), target);
+				oa << boost::serialization::make_nvp(getName(), target);
 				}
 			std::stringstream compressed;
 			boost::iostreams::filtering_streambuf<boost::iostreams::input> out;
@@ -65,7 +65,7 @@ namespace Python {
 			boost::iostreams::copy(in, decompressed);
 				{
 				boost::archive::binary_iarchive ia(decompressed);
-				ia >> boost::serialization::make_nvp(getname(), target);
+				ia >> boost::serialization::make_nvp(getName(), target);
 				}
 		}
 	};

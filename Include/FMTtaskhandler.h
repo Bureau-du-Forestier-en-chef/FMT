@@ -78,23 +78,23 @@ namespace Parallel
 			}
 			return castedptr;
 		}
-		// DocString: FMTtaskhandler::conccurentrun
+		// DocString: FMTtaskhandler::conccurentRun
 		/**
 		Will use the split task virtual function to
 		generate all the tasks at the same time.
 		*/
-		void conccurentrun();
-		// DocString: FMTtaskhandler::ondemandrun
+		void conccurentRun();
+		// DocString: FMTtaskhandler::onDemandRun
 		/**
 		Will use the spawn task virtual function to generate task from the master task and add to a list
 		If the task is completed it will be removed from the list.
 		*/
-		void ondemandrun();
-		// DocString: FMTtaskhandler::passinlogger
+		void onDemandRun();
+		// DocString: FMTtaskhandler::passInLogger
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 	private:
 		// DocString: FMTtaskhandler::maxnumberofthread
 		///Maximal number of threads

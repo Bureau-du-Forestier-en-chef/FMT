@@ -41,12 +41,12 @@ namespace Core {
 			if (p_raiseifnotfound &&lookit== m_attributem_locations.end())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-					p_value + " at theme "+std::to_string(getId())+" "+getname(),
+					p_value + " at theme "+std::to_string(getId())+" "+getName(),
 					"FMTtheme::getAttribute", __LINE__, __FILE__);
 				}
 		}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTtheme::getAttribute", __LINE__, __FILE__, Core::FMTsection::Landscape);
+				_exhandler->raiseFromCatch("", "FMTtheme::getAttribute", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		return lookit;
 		}
@@ -114,7 +114,7 @@ namespace Core {
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtheme::buildAttributeLocations", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			_exhandler->raiseFromCatch("", "FMTtheme::buildAttributeLocations", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 
 	}
@@ -238,7 +238,7 @@ bool FMTtheme::inAggregate(const std::string& p_value, const std::string& p_aggr
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("For aggregate: " + p_aggregate + " at value " + p_value, "FMTtheme::inAggregate", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raiseFromCatch("For aggregate: " + p_aggregate + " at value " + p_value, "FMTtheme::inAggregate", __LINE__, __FILE__, Core::FMTsection::Landscape);
 	}
 	return false;
 }
@@ -250,7 +250,7 @@ bool FMTtheme::isValid(const std::string& p_value) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("For value: " + p_value, "FMTtheme::isValid", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raiseFromCatch("For value: " + p_value, "FMTtheme::isValid", __LINE__, __FILE__, Core::FMTsection::Landscape);
 	}
 	return false;
 	}
@@ -268,7 +268,7 @@ bool FMTtheme::isIndex(const std::string& p_value) const
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("For value: " + p_value, "FMTtheme::isIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raiseFromCatch("For value: " + p_value, "FMTtheme::isIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return false;
 
@@ -291,7 +291,7 @@ bool FMTtheme::isIndex(const std::string& p_attribute, const std::string& p_valu
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("For attribute: " + p_attribute+" at value "+ p_value, "FMTtheme::isIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raiseFromCatch("For attribute: " + p_attribute+" at value "+ p_value, "FMTtheme::isIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return false;
 }
@@ -321,7 +321,7 @@ bool FMTtheme::useIndex() const
 			}
 	 }catch (...)
 		{
-		 _exhandler->raisefromcatch("For attribute: " + p_attribute + " at value " + p_value, "FMTtheme::getIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		 _exhandler->raiseFromCatch("For attribute: " + p_attribute + " at value " + p_value, "FMTtheme::getIndex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return 0;
     }
@@ -375,7 +375,7 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("For value: " + p_value, "FMTtheme::strToBits", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			_exhandler->raiseFromCatch("For value: " + p_value, "FMTtheme::strToBits", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
         return bits;
         }
@@ -383,7 +383,7 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
  std::string FMTtheme::bitsToStr(const Core::FMTmask& p_mask) const
 	{
 	 try {
-		 const size_t BITS_COUNT = _GetCount(p_mask);
+		 const size_t BITS_COUNT = _getCount(p_mask);
 		 const size_t BITS_SIZE = size();
 		 if (BITS_SIZE > 1 && BITS_COUNT == BITS_SIZE)
 		 {
@@ -392,7 +392,7 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 		 else {
 			 if (BITS_COUNT == 1)
 			 {
-				 const size_t FIRST_TRUE = _FindFirst(p_mask);
+				 const size_t FIRST_TRUE = _findFirst(p_mask);
 				 if (FIRST_TRUE < m_attributes.size())
 				 {
 					 return m_attributes.at(FIRST_TRUE);
@@ -402,18 +402,18 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 				 for (const std::string& AGGREGATE : m_aggregates)
 				 {
 					 const boost::dynamic_bitset<uint8_t>TO_TEST = strToBits(AGGREGATE);
-					 if (_IsEqual(p_mask, TO_TEST))
+					 if (_isEqual(p_mask, TO_TEST))
 					 {
 						 return AGGREGATE;
 					 }
-					 else if (_IsFlipEqual(p_mask, TO_TEST))
+					 else if (_isFlipEqual(p_mask, TO_TEST))
 					 {
 						 return "!" + AGGREGATE;
 					 }
 				 }
-				 if (_GetFlipCount(p_mask) == 1)
+				 if (_getFlipCount(p_mask) == 1)
 				 {
-					 const size_t FIRST_TRUE = _FindFirstFlip(p_mask);
+					 const size_t FIRST_TRUE = _findFirstFlip(p_mask);
 					 if (FIRST_TRUE < m_attributes.size())
 					 {
 						 return "!" + m_attributes.at(FIRST_TRUE);
@@ -428,12 +428,12 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 
 	 }catch (...)
 		{
-		 _exhandler->raisefromcatch("", "FMTtheme::bitsToStr",
+		 _exhandler->raiseFromCatch("", "FMTtheme::bitsToStr",
 			 __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	}
 
- size_t FMTtheme::_GetCount(const Core::FMTmask& p_mask) const
+ size_t FMTtheme::_getCount(const Core::FMTmask& p_mask) const
 	{
 	size_t countOf = 0;
 	for (size_t i = m_start; i < (m_start + size());++i)
@@ -443,7 +443,7 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 	return countOf; 
 	}
 
- size_t FMTtheme::_GetFlipCount(const Core::FMTmask& p_mask) const
+ size_t FMTtheme::_getFlipCount(const Core::FMTmask& p_mask) const
  {
 	 size_t countOf = 0;
 	 for (size_t i = m_start; i < (m_start + size()); ++i)
@@ -453,7 +453,7 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 	 return countOf;
  }
 
- size_t FMTtheme::_FindFirstFlip(const Core::FMTmask& p_mask) const
+ size_t FMTtheme::_findFirstFlip(const Core::FMTmask& p_mask) const
  {
 	 size_t STOP = (m_start + size());
 	 size_t firstOf = STOP;
@@ -470,7 +470,7 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 	 return firstOf;
  }
 
- size_t FMTtheme::_FindFirst(const Core::FMTmask& p_mask) const
+ size_t FMTtheme::_findFirst(const Core::FMTmask& p_mask) const
 	{
 	const size_t STOP = (m_start + size());
 	size_t firstOf = STOP;
@@ -487,7 +487,7 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 	return firstOf;
 	}
 
- bool FMTtheme::_IsEqual(const Core::FMTmask& p_mask,
+ bool FMTtheme::_isEqual(const Core::FMTmask& p_mask,
 	 const boost::dynamic_bitset<uint8_t>& p_bits) const
  {
 	 size_t j= 0;
@@ -502,7 +502,7 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 	 return true;
  }
 
- bool FMTtheme::_IsFlipEqual(const Core::FMTmask& p_mask,
+ bool FMTtheme::_isFlipEqual(const Core::FMTmask& p_mask,
 	 const boost::dynamic_bitset<uint8_t>& p_bits) const
  {
 	 size_t j = 0;
@@ -581,7 +581,7 @@ std::vector<std::string>FMTtheme::getAttributes(const std::string& p_value, bool
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtheme::getAttributes", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			_exhandler->raiseFromCatch("", "FMTtheme::getAttributes", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
         return result;
         }
@@ -622,7 +622,7 @@ FMTtheme::operator std::string() const
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtheme::operator::std::string()", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			_exhandler->raiseFromCatch("", "FMTtheme::operator::std::string()", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
         return fulltheme;
         }
@@ -641,13 +641,13 @@ void FMTtheme::fillupAggregates(std::vector<int>& p_themeids, std::vector<std::s
 			}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("for theme " + std::to_string(m_id), "FMTtheme::fillupAggregates", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raiseFromCatch("for theme " + std::to_string(m_id), "FMTtheme::fillupAggregates", __LINE__, __FILE__, Core::FMTsection::Landscape);
 	}
 
 }
 
 
-void FMTtheme::push_aggregate(const std::string& p_aggregatename)
+void FMTtheme::pushAggregate(const std::string& p_aggregatename)
 	{
 	try {
 		if (isAggregate(p_aggregatename))
@@ -660,7 +660,7 @@ void FMTtheme::push_aggregate(const std::string& p_aggregatename)
 		//buildattributelocations();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTtheme::push_aggregate", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTtheme::pushAggregate", __LINE__, __FILE__);
 		}
 	}
 
@@ -674,7 +674,7 @@ void FMTtheme::pushAggregateValue(const std::string& p_aggregatename, const std:
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTtheme::pushAggregateValue", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTtheme::pushAggregateValue", __LINE__, __FILE__);
 		}
 	}
 
@@ -702,7 +702,7 @@ std::string FMTtheme::updateFromMask(const Core::FMTmask& p_globalmask)
 			int id = std::stoi(splittedFMTagg.at(1));
 			id += 1;
 			const std::string newaggregate = splittedFMTagg.at(0) + "_" + std::to_string(id);
-			push_aggregate(newaggregate);
+			pushAggregate(newaggregate);
 			std::vector<size_t>aggregateindex;
 			for (size_t bid = 0; bid < global.size();++bid)
 				{
@@ -719,12 +719,12 @@ std::string FMTtheme::updateFromMask(const Core::FMTmask& p_globalmask)
 		return bitsToStr(p_globalmask);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTtheme::updateFromMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTtheme::updateFromMask", __LINE__, __FILE__);
 		}
 	return "?";
 	}
 
-std::vector<std::string>FMTtheme::getaggregates() const
+std::vector<std::string>FMTtheme::getAggregates() const
 	{
 	return m_aggregates;
 	}
@@ -806,7 +806,7 @@ FMTtheme FMTtheme::presolve(FMTmaskfilter& p_maskfilter, size_t& p_newid, size_t
 		return newtheme;
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for theme "+std::to_string(m_id),"FMTtheme::presolve", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raiseFromCatch("for theme "+std::to_string(m_id),"FMTtheme::presolve", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return FMTtheme();
 	}
@@ -824,7 +824,7 @@ bool FMTthemecomparator::operator()(const FMTtheme& p_theme) const
 	{
 		return (p_theme == m_base_theme);
 	}else{
-		for (const std::string& attribute : p_theme.getbaseattributes())
+		for (const std::string& attribute : p_theme.getBaseAttributes())
 		{
 			if (!m_base_theme.isAttribute(attribute))
 			{
@@ -866,7 +866,7 @@ Rcpp::DataFrame FMTtheme::getAggregatesAsDataFrame() const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTtheme::getAggregatesAsDataFrame", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTtheme::getAggregatesAsDataFrame", __LINE__, __FILE__);
 	}
 	return data;
 }
@@ -901,7 +901,7 @@ Rcpp::DataFrame FMTtheme::getAttributesAsDataFrame() const
 		data.attr("class") = "data.frame";
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTtheme::getAggregatesAsDataFrame", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTtheme::getAggregatesAsDataFrame", __LINE__, __FILE__);
 	}
 	return data;
 }

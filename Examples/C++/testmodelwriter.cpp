@@ -33,12 +33,12 @@ int main(int argc, char* argv[])
 	//errors.push_back(Exception::FMTexc::FMTinvalidyield_number); // à mettre on / off
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-	//modelparser.seterrorstowarnings(errors);
+	//modelparser.setErrorsToWarnings(errors);
 
 	std::vector<Exception::FMTexc> readErrors(errors);
 	readErrors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
 	readErrors.push_back(Exception::FMTexc::FMTinvalidyield_number);
-	modelparser.seterrorstowarnings(readErrors);
+	modelparser.setErrorsToWarnings(readErrors);
 
 	
 	//const std::vector<std::string>scenarios(1, "tactique");
@@ -47,20 +47,20 @@ int main(int argc, char* argv[])
 	//const std::vector<std::string>scenarios(1, "201_UG107_feu");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH,  3);
-	optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-	optmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	optmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
+	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,  3);
+	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	optmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
 	optmodel.doPlanning(true);
 	//optmodel.writeLP("D:/FMT/build/release/tests/testmodelwriter/strategic");
 	//return 0;
 	modelparser.write(optmodel, outdir);
 	const double initobjvalue = optmodel.getObjValue();
-	const std::vector<Models::FMTmodel> rereadmodels = modelparser.readproject(outdir + optmodel.getname() + ".pri", std::vector<std::string>(1, "ROOT"));
+	const std::vector<Models::FMTmodel> rereadmodels = modelparser.readproject(outdir + optmodel.getName() + ".pri", std::vector<std::string>(1, "ROOT"));
 	optmodel = Models::FMTlpmodel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
-	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH,3);
-	optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 3);
-	optmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,3);
+	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 3);
+	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optmodel.doPlanning(true);
 	const double finalobjvalue = optmodel.getObjValue();
 	std::cout << finalobjvalue << " " << initobjvalue << std::endl;

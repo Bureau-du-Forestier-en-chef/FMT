@@ -14,7 +14,7 @@
 
 Wrapper::FMTexceptionhandlerwarning::FMTexceptionhandlerwarning(const size_t& maxnumberofwarnings) : FMTexceptionhandler()
 {
-	FMTexceptionhandler::setmaxwarningsbeforesilenced(maxnumberofwarnings);
+	FMTexceptionhandler::setMaxWarningsBeforeSilenced(maxnumberofwarnings);
 	ResetThread();
 };
 
@@ -34,7 +34,7 @@ void Wrapper::FMTexceptionhandlerwarning::tryfileopener(const std::string& fulle
 		std::string line(kmatch[9]);
 		boost::trim(line);
 		//First copy the userdefined language file
-		const std::string udlloc = Core::FMTobject::getruntimelocation() + "\\userDefineLang.xml";
+		const std::string udlloc = Core::FMTobject::getRuntimeLocation() + "\\userDefineLang.xml";
 		const std::string udlnewloc(std::string(getenv("APPDATA"))+"\\Notepad++\\userDefineLang.xml");
 		DWORD dwAttrib = GetFileAttributes(udlnewloc.c_str());
 		if (dwAttrib == INVALID_FILE_ATTRIBUTES)
@@ -64,7 +64,7 @@ std::string Wrapper::FMTexceptionhandlerwarning::geterrorstack(
 	}
 	ModifLogger->dokeepprint();
 	try {
-		Exception::FMTexceptionhandler::printexceptions(text, method, line, fil, Core::FMTsection::Empty);
+		Exception::FMTexceptionhandler::printExceptions(text, method, line, fil, Core::FMTsection::Empty);
 	}catch (...)
 		{
 		//Do nothing
@@ -74,11 +74,11 @@ std::string Wrapper::FMTexceptionhandlerwarning::geterrorstack(
 	return finalstack;
 }
 
-void Wrapper::FMTexceptionhandlerwarning::printexceptions(std::string text,
+void Wrapper::FMTexceptionhandlerwarning::printExceptions(std::string text,
 	const std::string& method, const int& line, const std::string& fil,
 	Core::FMTsection lsection)
 {
-	raisefromcatch(text, method, line, fil, lsection);
+	raiseFromCatch(text, method, line, fil, lsection);
 }
 std::unique_ptr <Exception::FMTexceptionhandler> Wrapper::FMTexceptionhandlerwarning::Clone() const
 {
@@ -88,21 +88,21 @@ std::unique_ptr <Exception::FMTexceptionhandler> Wrapper::FMTexceptionhandlerwar
 Exception::FMTexception Wrapper::FMTexceptionhandlerwarning::raise(Exception::FMTexc lexception, std::string text, const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 {
 	const Exception::FMTlev LEVEL = getLevel(lexception);
-	Exception::FMTexception excp = Exception::FMTexception(lexception, updatestatus(lexception, text));
+	Exception::FMTexception excp = Exception::FMTexception(lexception, updateStatus(lexception, text));
 	if (lsection != Core::FMTsection::Empty)
 	{
-		excp = Exception::FMTexception(lexception, lsection, updatestatus(lexception, text));
+		excp = Exception::FMTexception(lexception, lsection, updateStatus(lexception, text));
 	}
 	if (LEVEL != Exception::FMTlev::FMT_Warning)
 	{
 		if (lsection == Core::FMTsection::Empty)
 		{
-			excp = Exception::FMTexception(lexception, updatestatus(lexception, text), method, file, line);
+			excp = Exception::FMTexception(lexception, updateStatus(lexception, text), method, file, line);
 		}
 		else {
-			excp = Exception::FMTexception(lexception, lsection, updatestatus(lexception, text), method, file, line);
+			excp = Exception::FMTexception(lexception, lsection, updateStatus(lexception, text), method, file, line);
 		}
-		if (throwit && (LEVEL == Exception::FMTlev::FMT_logic || LEVEL == Exception::FMTlev::FMT_range) && !needtorethrow())
+		if (throwit && (LEVEL == Exception::FMTlev::FMT_logic || LEVEL == Exception::FMTlev::FMT_range) && !needToRethrow())
 		{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
 			std::throw_with_nested(Exception::FMTerror(excp));

@@ -69,7 +69,7 @@ namespace Graph
 
 	double FMTbasevertexproperties::getBaseRhs() const
 	{
-		return m_development->getarea();
+		return m_development->getArea();
 	}
 
 	bool FMTbasevertexproperties::operator == (const FMTbasevertexproperties& rhs) const
@@ -87,7 +87,7 @@ namespace Graph
 	}
 
 
-	void FMTbasevertexproperties::_Save(double p_area)
+	void FMTbasevertexproperties::_save(double p_area)
 		{
 		if (p_area > 0)
 			{

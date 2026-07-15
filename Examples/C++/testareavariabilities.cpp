@@ -16,7 +16,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
@@ -25,7 +25,7 @@ int main()
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		for (size_t period = 0; period < 10; ++period)
 		{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildPeriod();
 		}
 		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 		const Core::FMTconstraint objective = constraints.at(0);
@@ -38,16 +38,16 @@ int main()
 		if (optimizationmodel.initialSolve())
 		{
 			std::vector<Core::FMTmask>globalmasks;
-			const std::vector<Core::FMTtheme>themes = optimizationmodel.getthemes();
+			const std::vector<Core::FMTtheme>themes = optimizationmodel.getThemes();
 			globalmasks.emplace_back("? PEUPLEMENT2 ?",themes);
 			globalmasks.emplace_back("? PEUPLEMENT3 ?",themes);
 			std::vector<double>proportions;
 			proportions.push_back(0.01);
 			proportions.push_back(-0.10);
-			const Models::FMTlpmodel newmodel = optimizationmodel.getmodelfromproportions(globalmasks, proportions);
-			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			const Models::FMTlpmodel newmodel = optimizationmodel.getModelFromProportions(globalmasks, proportions);
+			for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 				{
-				if (output.getname()== "OVOLREC")
+				if (output.getName()== "OVOLREC")
 					{
 					for (size_t period = 1; period <= 10; ++period)
 						{

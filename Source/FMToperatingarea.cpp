@@ -20,7 +20,7 @@ FMToperatingarea& FMToperatingarea::operator += (const double& value)
 	}
 
 
-double FMToperatingarea::getarea() const
+double FMToperatingarea::getArea() const
 	{
 	return _area;
 	}
@@ -55,7 +55,7 @@ double FMToperatingarea::getNeighborsPerimeter() const
 	return neighborsperimeter;
 	}
 
-Core::FMTmask FMToperatingarea::getmask() const
+Core::FMTmask FMToperatingarea::getMask() const
 	{
 	return mask;
 	}
@@ -74,7 +74,7 @@ FMToperatingareacomparator::FMToperatingareacomparator(const Core::FMTmask& lmas
 
 	}
 
-FMToperatingareacomparator::FMToperatingareacomparator(const FMToperatingarea& oparea):mask(oparea.getmask())
+FMToperatingareacomparator::FMToperatingareacomparator(const FMToperatingarea& oparea):mask(oparea.getMask())
     {
 
     }
@@ -82,7 +82,7 @@ FMToperatingareacomparator::FMToperatingareacomparator(const FMToperatingarea& o
 
 bool FMToperatingareacomparator::operator()(const FMToperatingarea& oparea) const
 	{
-	return (oparea.getmask() == mask);
+	return (oparea.getMask() == mask);
 	}
 
 FMToperatingarea FMToperatingarea::presolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>& presolvedthemes) const

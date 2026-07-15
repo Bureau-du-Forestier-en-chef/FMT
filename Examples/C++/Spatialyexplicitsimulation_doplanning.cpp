@@ -17,7 +17,7 @@
 int main()
 {
 #ifdef FMTWITHGDAL
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string outdir = "../../tests/Spatialyexplicitsimulation_doplanning/";
@@ -33,7 +33,7 @@ int main()
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	mparser.seterrorstowarnings(errors);
+	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
@@ -46,23 +46,23 @@ int main()
 	simulationmodel.setTransitions(strans);
 	Parser::FMTareaparser areaparser;
 	const std::string shpfile = modellocation + "Carte/TWD_land.shp";
-	Spatial::FMTforest initialforestmap = areaparser.vectormaptoFMTforest(shpfile,380,simulationmodel.getthemes(),"AGE","SUPERFICIE", 1, 0.0001);
+	Spatial::FMTforest initialforestmap = areaparser.vectormaptoFMTforest(shpfile,380,simulationmodel.getThemes(),"AGE","SUPERFICIE", 1, 0.0001);
 	simulationmodel.setInitialMapping(initialforestmap);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,10);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
-	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+	simulationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,10);
+	simulationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
+	simulationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+	simulationmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doPlanning(false,schedules.at(0));
 	Core::FMToutput spatialoutput;
 	Core::FMToutput sumoutputs;
 	std::vector<Core::FMToutput>outputs;
-	for (const Core::FMToutput& output : simulationmodel.getoutputs())
+	for (const Core::FMToutput& output : simulationmodel.getOutputs())
 	{
-		if (output.getname() == "OSUPREC")
+		if (output.getName() == "OSUPREC")
 		{
 			spatialoutput = output;
 			outputs.push_back(output);
-		}else if (output.getname() =="COUPE2PEU")
+		}else if (output.getName() =="COUPE2PEU")
 		{
 			sumoutputs = output;
 		}
@@ -76,7 +76,7 @@ int main()
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);
 	}
-	mparser.writeresults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
+	mparser.writeResults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
 	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getSpSchedule();
 	const std::string stats = spatialsolution.getPatchStats(simulationmodel.getactions());
 	std::vector<std::string>results;

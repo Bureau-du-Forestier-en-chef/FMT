@@ -35,12 +35,12 @@ int main(int argc, char* argv[])
 	//errors.push_back(Exception::FMTexc::FMTinvalidyield_number); // 
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-	//modelparser.seterrorstowarnings(errors);
+	//modelparser.setErrorsToWarnings(errors);
 	
 	std::vector<Exception::FMTexc> readErrors(errors);
 	readErrors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
 	readErrors.push_back(Exception::FMTexc::FMTinvalidyield_number);
-	modelparser.seterrorstowarnings(readErrors);
+	modelparser.setErrorsToWarnings(readErrors);
 
 	
 	
@@ -49,10 +49,10 @@ int main(int argc, char* argv[])
 	{
 		Models::FMTlpmodel lpmodel(model,Models::FMTsolverinterface::CLP);
 		lpmodel.doPlanning(true);
-		modelparser.writetoproject(outdir + "test.pri", lpmodel);
+		modelparser.writeToProject(outdir + "test.pri", lpmodel);
 	}
 	scenarios.erase(scenarios.begin());
-	modelparser.seterrorstowarnings(errors);
+	modelparser.setErrorsToWarnings(errors);
 	scenarios.insert(scenarios.begin(), "ROOT");
 	const std::vector<Models::FMTmodel> newmodels = modelparser.readproject(outdir + "test.pri", scenarios);
 	

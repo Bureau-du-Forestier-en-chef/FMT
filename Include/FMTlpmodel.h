@@ -110,11 +110,11 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Default move assignment for FMTlpmodel.
 		*/
 		FMTlpmodel& operator =(FMTlpmodel&& rhs);
-		// DocString: FMTlpmodel::setstrictlypositivesoutputsmatrix
+		// DocString: FMTlpmodel::setStrictlyPositivesOutputsMatrix
 		/**
 		To set the model parameter STRICTLY_POSITIVE at true.
 		*/
-		void setstrictlypositivesoutputsmatrix();
+		void setStrictlyPositivesOutputsMatrix();
 		// DocString: FMTlpmodel::getOutput
 		/**
 		Get the output value of a output for a given period using the solution of the matrix.
@@ -177,12 +177,12 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		*/
 		std::map<std::string, std::vector<double>>getVariabilities(const std::vector<Core::FMToutput>& outputs,
 																 const int& periodStart,const int& periodStop);
-		// DocString: FMTlpmodel::getmodelfromproportions
+		// DocString: FMTlpmodel::getModelFromProportions
 		/**
 		Will returns a new FMTlpmodel with changes in the initial area based on the tolerances of each globalmasks
 		provided in the tolerances vector tolerance > 0 = increase in area, tolerance < 0 = decrease in area.
 		*/
-		FMTlpmodel getmodelfromproportions(const std::vector<Core::FMTmask>& globalmasks,
+		FMTlpmodel getModelFromProportions(const std::vector<Core::FMTmask>& globalmasks,
 											std::vector<double> tolerances) const;
 		// DocString: FMTlpmodel::getAreaVariabilities
 		/**

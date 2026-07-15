@@ -95,7 +95,7 @@ namespace Testing
 int main()
 {
 	#ifdef FMTWITHMOSEK
-		Logging::FMTdefaultlogger().logstamp();
+		Logging::FMTdefaultlogger().logStamp();
 		Testing::UnitTestFMTmodelcache test;
 		test.testThemeSelectionToMask();
 	#endif 

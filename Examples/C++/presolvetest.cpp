@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	std::string primarylocation;
 	std::string scenario;
 	int scenario_length;
@@ -39,18 +39,18 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setDefaultExceptionHandler();
-	modelparser.seterrorstowarnings(errors);
+	modelparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,scenario_length);
-	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,scenario_length);
+	optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 	optimizationmodel.doPlanning(true);
 	Models::FMTlpmodel presolvedoptimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, scenario_length);
-	presolvedoptimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
+	presolvedoptimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, scenario_length);
+	presolvedoptimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	presolvedoptimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 	presolvedoptimizationmodel.doPlanning(true);
 	const double nopresolve = optimizationmodel.getObjValue();
 	const double presolve = presolvedoptimizationmodel.getObjValue();

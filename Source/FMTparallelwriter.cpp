@@ -73,14 +73,14 @@ namespace Parallel
 			}
 			for (const Models::FMTmodel* modelptr : allmodels)
 				{
-				setLayer(modelptr->getname());
+				setLayer(modelptr->getName());
 				}
 			#ifdef FMTWITHGDAL
 			driftlayer = createDriftLayer(resultsdataset);
 			#endif
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTparallelwriter::FMTparallelwriter", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTparallelwriter::FMTparallelwriter", __LINE__, __FILE__);
 			}
 	}
 
@@ -136,7 +136,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparallelwriter::setLayer", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTparallelwriter::setLayer", __LINE__, __FILE__);
 		}
 	}
 
@@ -154,7 +154,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", " FMTparallelwriter::getresults", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", " FMTparallelwriter::getresults", __LINE__, __FILE__);
 		}
 		return results;
 	}
@@ -258,7 +258,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("On output "+outputname+" "+std::to_string(driftprob)
+			_exhandler->raiseFromCatch("On output "+outputname+" "+std::to_string(driftprob)
 				+" period id "+ std::to_string(periodof) + " on replicate " + std::to_string(iterationid + 1),
 				"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
 
@@ -300,7 +300,7 @@ namespace Parallel
 		#endif
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparallelwriter::setDriftProbability", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTparallelwriter::setDriftProbability", __LINE__, __FILE__);
 		}
 	}
 
@@ -323,7 +323,7 @@ namespace Parallel
 		#endif
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparallelwriter::write", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTparallelwriter::write", __LINE__, __FILE__);
 		}
 
 	}
@@ -334,17 +334,17 @@ namespace Parallel
 	{
 		try {
 			const int firstPeriod = outputfirstperiod;
-			const int lastPeriod = std::min(outputlastperiod, modelptr->getparameter(Models::FMTintmodelparameters::LENGTH));
+			const int lastPeriod = std::min(outputlastperiod, modelptr->getParameter(Models::FMTintmodelparameters::LENGTH));
 			boost::lock_guard<boost::recursive_mutex> lock(mtx);
 			outputstowrite = loutputs;
 			if (!outputstowrite.empty())
 			{
 				int replicateId = 0;
-				std::string writeName = modelptr->getname();
-				if (modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)&&
+				std::string writeName = modelptr->getName();
+				if (modelptr->getParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)&&
 					(!writeName.empty() && writeName.find_first_not_of("0123456789") == std::string::npos))
 					{
-					replicateId = std::stoi(modelptr->getname());
+					replicateId = std::stoi(modelptr->getName());
 					writeName = projectname;
 					}
 				write(writeName,
@@ -353,9 +353,9 @@ namespace Parallel
 					lastPeriod,
 					replicateId);
 			}
-			if (!(projectdirectory.empty()) && !(modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
+			if (!(projectdirectory.empty()) && !(modelptr->getParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
 				{
-				const std::string scenarioname = modelptr->getname();
+				const std::string scenarioname = modelptr->getName();
 				std::string schedulelocation = projectdirectory+"/Scenarios/"+scenarioname+"/"+projectname+"._seq";
 				if (scenarioname=="ROOT")
 					{
@@ -363,7 +363,7 @@ namespace Parallel
 					}
 				Parser::FMTscheduleparser parser;
 				std::vector<Core::FMTschedule>solution;
-				for (int period = 1 ; period <= modelptr->getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+				for (int period = 1 ; period <= modelptr->getParameter(Models::FMTintmodelparameters::LENGTH);++period)
 					{
 					solution.push_back(modelptr->getSolution(period,true));
 					}
@@ -371,7 +371,7 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTparallelwriter::getAndWrite", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTparallelwriter::getAndWrite", __LINE__, __FILE__);
 			}
 	}
 	void FMTparallelwriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTschedule> scheduleList, bool append) const
@@ -384,7 +384,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparallelwriter::writeSchedules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTparallelwriter::writeSchedules", __LINE__, __FILE__);
 		}
 
 	}

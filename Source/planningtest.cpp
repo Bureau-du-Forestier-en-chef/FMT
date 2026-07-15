@@ -11,7 +11,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTlogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<bool>playback;
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
-	modelparser.seterrorstowarnings(errors);
+	modelparser.setErrorsToWarnings(errors);
 	const std::string outputlocation = "tests/planning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
@@ -37,24 +37,24 @@ int main(int argc, char *argv[])
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{
 		Models::FMTlpmodel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
-		lpmodel.setparameter(Models::FMTintmodelparameters::LENGTH,7);
-		lpmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH,7);
+		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		std::vector<Core::FMToutput>selectedoutputs;
-		for (const Core::FMToutput& output : lpmodel.getoutputs())
+		for (const Core::FMToutput& output : lpmodel.getOutputs())
 		{
 			if (output.getname() == "OVOLREC")
 			{
 				selectedoutputs.push_back(output);
 			}
 		}
-		lpmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
+		lpmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
 		lpmodel.setOutputs(selectedoutputs);
 		newplanningtask.push_back(lpmodel,schedules.at(modelid));
 		}
 	Parallel::FMTtaskhandler handler(newplanningtask,3);
 	handler.setQuietLogger();
-	//handler.ondemandrun();
-	handler.conccurentrun();
+	//handler.onDemandRun();
+	handler.conccurentRun();
 	#endif
 	return 0;
 	}

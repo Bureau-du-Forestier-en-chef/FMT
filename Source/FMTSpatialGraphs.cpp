@@ -29,7 +29,7 @@ namespace Spatial
 {
 
 	
-	std::vector<double> FMTSpatialGraphs::_GetConstraintsValueFromSolution(size_t p_ConstraintId,
+	std::vector<double> FMTSpatialGraphs::_getConstraintsValueFromSolution(size_t p_ConstraintId,
 		const FMTSolutionTracker& p_solution) const
 	{
 		std::vector<double>results;
@@ -38,18 +38,18 @@ namespace Spatial
 			{
 				for (const auto& GRAPH : m_AllGraphs.at(GraphFamily))
 				{
-					_FillConstraintResults(p_ConstraintId, GRAPH.second,
+					_fillConstraintResults(p_ConstraintId, GRAPH.second,
 						results, p_solution);
 				}
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getConstraintsValues",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::getConstraintsValues",
 				__LINE__, __FILE__);
 			}
 		return results;
 	}
-	std::vector<double> FMTSpatialGraphs::_GetConstraintsValueFromTracker(size_t p_ConstraintId,
+	std::vector<double> FMTSpatialGraphs::_getConstraintsValueFromTracker(size_t p_ConstraintId,
 		const FMTSolutionTracker& p_solution) const
 	{
 		std::vector<double> results;
@@ -57,7 +57,7 @@ namespace Spatial
 			results = p_solution.getConstraintsValues(p_ConstraintId);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_GetConstraintsValueFromTracker",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_getConstraintsValueFromTracker",
 				__LINE__, __FILE__);
 			}
 		return results;
@@ -68,12 +68,12 @@ namespace Spatial
 		try {
 			if (!p_tracker.isTrackingEnable())
 				{
-				p_tracker.setConstraintValues(_GetConstraintsValues(p_tracker),
+				p_tracker.setConstraintValues(_getConstraintsValues(p_tracker),
 									m_Constraints,m_AllGraphs.size());
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::enableSolutionTracker",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::enableSolutionTracker",
 				__LINE__, __FILE__);
 			}
 		}
@@ -85,13 +85,13 @@ namespace Spatial
 	{
 		double value = 0.0;
 		try {
-			const size_t NON_SPATIAL_ID  = _GetNonSpatialId(p_ConstraintId);
+			const size_t NON_SPATIAL_ID  = _getNonSpatialId(p_ConstraintId);
 			std::vector<double>results;
 			if (p_solution.isTrackingEnable())
 			{
-			results = _GetConstraintsValueFromTracker(NON_SPATIAL_ID, p_solution);
+			results = _getConstraintsValueFromTracker(NON_SPATIAL_ID, p_solution);
 			}else {
-				results = _GetConstraintsValueFromSolution(NON_SPATIAL_ID, p_solution);
+				results = _getConstraintsValueFromSolution(NON_SPATIAL_ID, p_solution);
 				}
 			if (!results.empty())
 			{
@@ -100,7 +100,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getConstraintsValues",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::getConstraintsValues",
 				__LINE__, __FILE__);
 		}
 		return value;
@@ -111,12 +111,12 @@ namespace Spatial
 		size_t Family = 0;
 		const_iterator Iterator = m_AllGraphs.begin()->end();
 		try {
-			Family = _GetFamily(p_LineGraph);
+			Family = _getFamily(p_LineGraph);
 			Iterator = getIterator(p_LineGraph, Family);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getVirtualGraph",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::getVirtualGraph",
 				__LINE__, __FILE__);
 		}
 		return FMTVirtualLineGraph(*this, Iterator, Family);
@@ -127,12 +127,12 @@ namespace Spatial
 		size_t Family = 0;
 		const_iterator Iterator = m_AllGraphs.begin()->end();
 		try {
-			Family = _GetFamily(p_LineGraph);
+			Family = _getFamily(p_LineGraph);
 			Iterator = setIterator(p_LineGraph, Family);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::setVirtualGraph",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::setVirtualGraph",
 				__LINE__, __FILE__);
 		}
 		return FMTVirtualLineGraph(*this, Iterator, Family);
@@ -154,7 +154,7 @@ namespace Spatial
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getBaseIterator",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::getBaseIterator",
 				__LINE__, __FILE__);
 		}
 		return Iterator;
@@ -179,7 +179,7 @@ namespace Spatial
 				, "FMTSpatialGraphs::getLastPeriodIterator", __LINE__, __FILE__);*/
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getLastPeriodIterator",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::getLastPeriodIterator",
 				__LINE__, __FILE__);
 		}
 		return Iterator;
@@ -203,15 +203,15 @@ namespace Spatial
 
 	size_t FMTSpatialGraphs::getCategoryOf(int p_themeId, size_t p_family) const
 	{
-		const Core::FMTmask& MASK = m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment().getmask();
-		return std::distance(&*m_Model->themes.at(p_themeId).getbaseattributes().begin(),
+		const Core::FMTmask& MASK = m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment().getMask();
+		return std::distance(&*m_Model->themes.at(p_themeId).getBaseAttributes().begin(),
 			&MASK.getAttribute(m_Model->themes.at(p_themeId)));
 	}
 
 	void FMTSpatialGraphs::deleteNonCompleteGraphs()
 	{
-		const size_t MAX_GRAPH_LENGTH = _GetMaxGraphLength();
-		_RemoveGraphsShorterThan(MAX_GRAPH_LENGTH);
+		const size_t MAX_GRAPH_LENGTH = _getMaxGraphLength();
+		_removeGraphsShorterThan(MAX_GRAPH_LENGTH);
 	}
 
 
@@ -232,7 +232,7 @@ namespace Spatial
 	std::vector<Core::FMTschedule> FMTSpatialGraphs::getSchedules(const FMTSolutionTracker& p_Solution,
 		bool WithLock) const
 	{
-		std::vector<Core::FMTschedule> Schedules(m_Model->getparameter(Models::FMTintmodelparameters::LENGTH));
+		std::vector<Core::FMTschedule> Schedules(m_Model->getParameter(Models::FMTintmodelparameters::LENGTH));
 		try {
 			int SchedulePeriod = 1;
 			for (Core::FMTschedule& Schedule : Schedules)
@@ -244,10 +244,10 @@ namespace Spatial
 			{
 				for (const auto& GRAPH : FAMILY)
 				{
-					const double CELLS = _GetGraphCells(p_Solution, GRAPH.second);
+					const double CELLS = _getGraphCells(p_Solution, GRAPH.second);
 					if (CELLS > FMT_DBL_TOLERANCE)
 					{
-						const double GRAPH_AREA = CELLS * GRAPH.first.getBaseDevelopment().getarea();
+						const double GRAPH_AREA = CELLS * GRAPH.first.getBaseDevelopment().getArea();
 						for (int period = 1; period < GRAPH.first.getPeriod(); ++period)
 						{
 							const Core::FMTschedule SCHEDULE = GRAPH.first.getSchedule(getModel().actions,
@@ -261,7 +261,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getSchedule",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::getSchedule",
 				__LINE__, __FILE__);
 		}
 		return  Schedules;
@@ -313,14 +313,14 @@ namespace Spatial
 				std::pair<Graph::FMTlinegraph, FMTGraphInfo>(p_Graph, FMTGraphInfo(m_LastGraphId)));
 			if (inserted.second)//Calculate constraints
 			{
-				_BuildConstraintsValues(inserted.first, p_family);
+				_buildConstraintsValues(inserted.first, p_family);
 				++m_LastGraphId;
 			}
 			Iterator = inserted.first;
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::setIterator",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::setIterator",
 				__LINE__, __FILE__);
 		}
 		return Iterator;
@@ -332,10 +332,10 @@ namespace Spatial
 	{
 		const_iterator Iterator = m_AllGraphs.at(p_family).end();
 		try {
-			Iterator = _GetNaturalGrowthIterator(p_family);
+			Iterator = _getNaturalGrowthIterator(p_family);
 			if (Iterator==m_AllGraphs.at(p_family).end())
 				{
-				const int LENGTH = m_Model->getparameter(Models::FMTintmodelparameters::LENGTH);
+				const int LENGTH = m_Model->getParameter(Models::FMTintmodelparameters::LENGTH);
 				const Core::FMTactualdevelopment* BASE = dynamic_cast<const Core::FMTactualdevelopment*>(
 					&m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment());
 				Graph::FMTlinegraph NewGraph(static_cast<size_t>(LENGTH), *BASE);
@@ -344,7 +344,7 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "SetNaturalGrowthIterator",
+			_exhandler->raiseFromCatch("", "SetNaturalGrowthIterator",
 				__LINE__, __FILE__);
 			}
 		return Iterator;
@@ -370,10 +370,10 @@ namespace Spatial
 			{
 				for (const auto& GRAPH : FAMILY)
 				{
-					const double CELLS = _GetGraphCells(p_Solution, GRAPH.second);
+					const double CELLS = _getGraphCells(p_Solution, GRAPH.second);
 					if (CELLS > FMT_DBL_TOLERANCE)
 					{
-						const double GRAPH_AREA = GRAPH.first.getBaseDevelopment().getarea();
+						const double GRAPH_AREA = GRAPH.first.getBaseDevelopment().getArea();
 						const double VALUE = CELLS * GRAPH_AREA;
 						const double* SOLUTION = &VALUE;
 						for (const auto& DATA : GRAPH.first.getOutput(getModel(), p_output, p_period, SOLUTION, level))
@@ -390,7 +390,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::getOutput",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::getOutput",
 				__LINE__, __FILE__);
 		}
 		return results;
@@ -407,13 +407,13 @@ namespace Spatial
 		m_BaseSolution(),
 		m_Model(&p_model)
 	{
-		const std::vector<size_t> SOLUTION = _BuildGraphs(p_model, p_CellSize);
-		_BuildConstraintsLocator(p_model);
-		_BuildConstraintsValues(m_AllGraphs.begin(), m_AllGraphs.end());
-		_BuildTacker(SOLUTION);
+		const std::vector<size_t> SOLUTION = _buildGraphs(p_model, p_CellSize);
+		_buildConstraintsLocator(p_model);
+		_buildConstraintsValues(m_AllGraphs.begin(), m_AllGraphs.end());
+		_buildTacker(SOLUTION);
 	}
 
-	Core::FMTmask FMTSpatialGraphs::_GetUseFullBits(const Models::FMTmodel& p_model)
+	Core::FMTmask FMTSpatialGraphs::_getUseFullBits(const Models::FMTmodel& p_model)
 	{
 		Core::FMTmask usefullBits(p_model.themes);
 		try {
@@ -429,23 +429,23 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_GetUseFullBits",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_getUseFullBits",
 				__LINE__, __FILE__);
 		}
 		return usefullBits;
 	}
 
-	std::vector<size_t> FMTSpatialGraphs::_BuildGraphs(const Models::FMTmodel& p_model, double p_CellSize)
+	std::vector<size_t> FMTSpatialGraphs::_buildGraphs(const Models::FMTmodel& p_model, double p_CellSize)
 	{
 		std::vector<size_t>BaseSolution;
 		try {
-			const size_t LENGTH = static_cast<size_t>(p_model.getparameter(Models::FMTintmodelparameters::LENGTH));
-			const Core::FMTmask USEFULL_BITS = _GetUseFullBits(p_model);
-			const std::vector<Core::FMTactualdevelopment>AREAS = p_model.Models::FMTmodel::getarea();
+			const size_t LENGTH = static_cast<size_t>(p_model.getParameter(Models::FMTintmodelparameters::LENGTH));
+			const Core::FMTmask USEFULL_BITS = _getUseFullBits(p_model);
+			const std::vector<Core::FMTactualdevelopment>AREAS = p_model.Models::FMTmodel::getArea();
 			BaseSolution = std::vector<size_t>(AREAS.size());
 			for (const auto& DEV : AREAS)
 			{
-				const Core::FMTmask& DEV_MASK = DEV.getmask();
+				const Core::FMTmask& DEV_MASK = DEV.getMask();
 				Core::FMTmask SORT_MASK = DEV_MASK.getIntersect(USEFULL_BITS);
 				std::pair<boost::unordered_map<Core::FMTmask, size_t>::iterator, bool> InSertedMask =
 					m_GraphsMasks.insert(std::pair<Core::FMTmask, size_t>(SORT_MASK, m_AllGraphs.size()));
@@ -458,7 +458,7 @@ namespace Spatial
 				Graph::FMTlinegraph local_graph(LENGTH);
 				std::vector<Core::FMTactualdevelopment> NewDevs(1, DEV);
 
-				const size_t NUMBER_OF_CELLS = static_cast<size_t> (std::round(NewDevs.begin()->getarea() / p_CellSize));
+				const size_t NUMBER_OF_CELLS = static_cast<size_t> (std::round(NewDevs.begin()->getArea() / p_CellSize));
 				NewDevs.begin()->setArea(p_CellSize);
 				BaseSolution[m_LastGraphId] = NUMBER_OF_CELLS;
 				local_graph.initialize(NewDevs);
@@ -469,13 +469,13 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_BuildGraphs",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_buildGraphs",
 				__LINE__, __FILE__);
 		}
 		return BaseSolution;
 	}
 
-	std::vector<std::vector<double>> FMTSpatialGraphs::_GetConstraintsValues(const FMTSolutionTracker& p_solution) const
+	std::vector<std::vector<double>> FMTSpatialGraphs::_getConstraintsValues(const FMTSolutionTracker& p_solution) const
 	{
 		std::vector<std::vector<double>>ConstraintsValues;
 		try {
@@ -486,7 +486,7 @@ namespace Spatial
 				{
 					for (const auto& GRAPH : m_AllGraphs.at(GraphFamily))
 					{
-						_FillConstraintResults(ConstraintId,
+						_fillConstraintResults(ConstraintId,
 							GRAPH.second,
 							values,
 							p_solution);
@@ -496,28 +496,28 @@ namespace Spatial
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_GetConstraintsValues",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_getConstraintsValues",
 				__LINE__, __FILE__);
 			}
 		return ConstraintsValues;
 	}
 
-	void FMTSpatialGraphs::_BuildTacker(const std::vector<size_t>& p_solution)
+	void FMTSpatialGraphs::_buildTacker(const std::vector<size_t>& p_solution)
 	{
 		try {
 			m_BaseSolution = FMTSolutionTracker(p_solution,m_Constraints, m_AllGraphs.size());
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_BuildTacker",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_buildTacker",
 				__LINE__, __FILE__);
 			}
 	}
 
 
-	void FMTSpatialGraphs::_BuildConstraintsLocator(const Models::FMTmodel& p_model)
+	void FMTSpatialGraphs::_buildConstraintsLocator(const Models::FMTmodel& p_model)
 	{
 		try {
-			const Core::FMTmask USEFULL_BITS = _GetUseFullBits(p_model);
+			const Core::FMTmask USEFULL_BITS = _getUseFullBits(p_model);
 			m_ConstraintsId.clear();
 			size_t Id = 0;
 			for (const Core::FMTconstraint& CONSTRAINT : p_model.constraints)
@@ -543,12 +543,12 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_BuildConstraintsLocator",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_buildConstraintsLocator",
 				__LINE__, __FILE__);
 		}
 	}
 
-	void FMTSpatialGraphs::_BuildConstraintsValues(
+	void FMTSpatialGraphs::_buildConstraintsValues(
 		FMTSpatialGraphs::iterator p_Graph,
 		size_t p_family)
 	{
@@ -574,10 +574,10 @@ namespace Spatial
 							{
 								++UpperPeriod;
 							}
-							const double GRAPH_AREA = p_Graph->first.getBaseDevelopment().getarea();
+							const double GRAPH_AREA = p_Graph->first.getBaseDevelopment().getArea();
 							const double* SOLUTION = &GRAPH_AREA;
 							std::vector<double>Values((UpperPeriod - LowestPeriod) + 1, 0.0);
-							size_t i  = _FillValuesFromLastPeriod(p_family, p_Graph, ConstraintId,
+							size_t i  = _fillValuesFromLastPeriod(p_family, p_Graph, ConstraintId,
 								Values);
 							LowestPeriod += static_cast<int>(i);
 							for (int period = LowestPeriod; period <= UpperPeriod; ++period)
@@ -599,7 +599,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_BuildConstraintsValues",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_buildConstraintsValues",
 				__LINE__, __FILE__);
 		}
 	}
@@ -638,13 +638,13 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_internValues",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_internValues",
 				__LINE__, __FILE__);
 		}
 		return interned;
 	}
 
-	size_t FMTSpatialGraphs::_FillValuesFromLastPeriod(
+	size_t FMTSpatialGraphs::_fillValuesFromLastPeriod(
 		size_t p_family,
 		FMTSpatialGraphs::iterator p_Graph,
 		size_t p_ConstraintId,
@@ -668,7 +668,7 @@ namespace Spatial
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_FillValuesFromLastPeriod",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_fillValuesFromLastPeriod",
 				__LINE__, __FILE__);
 			}
 		return i;
@@ -676,7 +676,7 @@ namespace Spatial
 
 
 
-	void FMTSpatialGraphs::_BuildConstraintsValues(
+	void FMTSpatialGraphs::_buildConstraintsValues(
 		FMTSpatialGraphs::family_iterator FirstGraphFamily,
 		FMTSpatialGraphs::family_iterator GraphFamilyEnd)
 	{
@@ -687,24 +687,24 @@ namespace Spatial
 				for (iterator GraphIt = It->begin();
 					GraphIt != It->end(); ++GraphIt)
 				{
-					_BuildConstraintsValues(GraphIt, Family);
+					_buildConstraintsValues(GraphIt, Family);
 				}
 				++Family;
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_BuildConstraintsValues",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_buildConstraintsValues",
 				__LINE__, __FILE__);
 		}
 	}
 
-	size_t FMTSpatialGraphs::_GetFamily(const Graph::FMTlinegraph& p_Graph) const
+	size_t FMTSpatialGraphs::_getFamily(const Graph::FMTlinegraph& p_Graph) const
 	{
 		try {
-			const Core::FMTmask USEFULL_BITS = _GetUseFullBits(getModel());
+			const Core::FMTmask USEFULL_BITS = _getUseFullBits(getModel());
 			const Core::FMTdevelopment& DEVELOPPEMENT = p_Graph.getBaseDevelopment();
-			Core::FMTmask DEV_MASK = DEVELOPPEMENT.getmask();
+			Core::FMTmask DEV_MASK = DEVELOPPEMENT.getMask();
 			DEV_MASK = DEV_MASK.getIntersect(USEFULL_BITS);
 			for (const auto& MASK : m_GraphsMasks)
 			{
@@ -716,7 +716,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_BuildConstraintsLocator",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_buildConstraintsLocator",
 				__LINE__, __FILE__);
 		}
 		return 0;
@@ -727,26 +727,26 @@ namespace Spatial
 		return *m_Model;
 	}
 
-	size_t FMTSpatialGraphs::_GetNonSpatialId(size_t p_Constraint) const
+	size_t FMTSpatialGraphs::_getNonSpatialId(size_t p_Constraint) const
 	{
 		try {
 			p_Constraint = m_ConstraintsId.at(p_Constraint);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTSpatialGraphs::_GetNonSpatialId",
+			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_getNonSpatialId",
 				__LINE__, __FILE__);
 		}
 		return p_Constraint;
 	}
 
-	void FMTSpatialGraphs::_FillConstraintResults(size_t p_Constraint,
+	void FMTSpatialGraphs::_fillConstraintResults(size_t p_Constraint,
 		const FMTGraphInfo& p_GraphInfo,
 		std::vector<double>& p_results,
 		const FMTSolutionTracker& p_solution) const
 	{
 		try {
-			const double CELLS = _GetGraphCells(p_solution, p_GraphInfo);
+			const double CELLS = _getGraphCells(p_solution, p_GraphInfo);
 			if (CELLS > FMT_DBL_TOLERANCE)
 			{
 				if (p_results.empty())
@@ -762,15 +762,15 @@ namespace Spatial
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("For constraint Id " + std::to_string(p_Constraint),
-				"FMTSpatialGraphs::_FillConstraintResults",
+			_exhandler->raiseFromCatch("For constraint Id " + std::to_string(p_Constraint),
+				"FMTSpatialGraphs::_fillConstraintResults",
 				__LINE__, __FILE__);
 			}
 	}
 
 
 
-	size_t FMTSpatialGraphs::_GetMaxGraphLength() const
+	size_t FMTSpatialGraphs::_getMaxGraphLength() const
 	{
 		size_t maxLength = 0;
 		for (const auto& FAMILY : m_AllGraphs)
@@ -783,7 +783,7 @@ namespace Spatial
 		}
 		return maxLength;
 	}
-	size_t FMTSpatialGraphs::_GetMinGraphLength() const
+	size_t FMTSpatialGraphs::_getMinGraphLength() const
 	{
 		size_t minLength = std::numeric_limits<size_t>::max();
 		for (const auto& FAMILY : m_AllGraphs)
@@ -799,7 +799,7 @@ namespace Spatial
 
 
 
-	double FMTSpatialGraphs::_GetGraphCells(const FMTSolutionTracker& p_solution,
+	double FMTSpatialGraphs::_getGraphCells(const FMTSolutionTracker& p_solution,
 													const FMTGraphInfo& p_GraphInfo) const
 	{
 		double area = 0.0;
@@ -807,16 +807,16 @@ namespace Spatial
 			area = static_cast<double>(p_solution.getNumberOfCells(p_GraphInfo.getGraphId()));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("For Graph id "+std::to_string(p_GraphInfo.getGraphId())+
+			_exhandler->raiseFromCatch("For Graph id "+std::to_string(p_GraphInfo.getGraphId())+
 													" with solution size of "+ std::to_string(p_solution.size()) +
 													" last graph id of "+ std::to_string(m_LastGraphId),
-																	"FMTSpatialGraphs::_GetGraphCells",
+																	"FMTSpatialGraphs::_getGraphCells",
 				__LINE__, __FILE__);
 			}
 		return area;
 	}
 
-	void FMTSpatialGraphs::_RemoveGraphsShorterThan(size_t p_GraphSize)
+	void FMTSpatialGraphs::_removeGraphsShorterThan(size_t p_GraphSize)
 	{
 		for (auto& FAMILY : m_AllGraphs)
 		{
@@ -833,9 +833,9 @@ namespace Spatial
 		}
 	}
 
-	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::_GetNaturalGrowthIterator(size_t p_family) const
+	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::_getNaturalGrowthIterator(size_t p_family) const
 	{
-		const int LENGTH = m_Model->getparameter(Models::FMTintmodelparameters::LENGTH);
+		const int LENGTH = m_Model->getParameter(Models::FMTintmodelparameters::LENGTH);
 		for (const_iterator It = m_AllGraphs.at(p_family).begin();
 				It != m_AllGraphs.at(p_family).end(); ++It)
 			{

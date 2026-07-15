@@ -18,7 +18,7 @@ namespace Spatial{
 	{
 		if (p_solution.getNumberOfCells(m_Iterator->second.getGraphId())>0)
 		{
-			const double AREA = m_Iterator->first.getBaseDevelopment().getarea();
+			const double AREA = m_Iterator->first.getBaseDevelopment().getArea();
 			const double* SOLUTION = &AREA;
 			return m_Iterator->first.getOutput(p_model, p_output, p_period, SOLUTION, Core::FMToutputlevel::totalonly).at("Total");
 		}
@@ -74,7 +74,7 @@ namespace Spatial{
 	{
 		Graph::FMTlinegraph graphCopy = getLineGraph();
 		graphCopy.postSolve(p_Filter, 
-			p_Graphs.getModel().getthemes(), p_actionMapping);
+			p_Graphs.getModel().getThemes(), p_actionMapping);
 		FMTVirtualLineGraph postSolved = p_Graphs.setVirtualGraph(graphCopy);
 		postSolved._add(p_solution);
 		return postSolved;

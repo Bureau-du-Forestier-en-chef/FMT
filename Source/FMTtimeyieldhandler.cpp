@@ -42,7 +42,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTtimeyieldhandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 	}
@@ -65,7 +65,7 @@ namespace Core {
 			m_elements[yld].data.push_back(value);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTtimeyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return true;
 		//return (basePushData(elements, yld, value));
@@ -129,7 +129,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("at yield " + yld, "FMTtimeyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("at yield " + yld, "FMTtimeyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
@@ -172,7 +172,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTtimeyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return newhandler.clone();
 	}
@@ -236,7 +236,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTtimeyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return localstuff;
 	}
@@ -263,7 +263,7 @@ namespace Core {
 				this->pushData(yldname,value);
 			}
 		}catch(...){
-			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTtimeyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 

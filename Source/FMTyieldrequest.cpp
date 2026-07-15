@@ -33,7 +33,7 @@ namespace Core
 		development(&ldevelopment),
 		graphvertex()
 	{
-		if (ldevelopment.getmask()!= oldrequest.development->getmask())
+		if (ldevelopment.getMask()!= oldrequest.development->getMask())
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot create a yield request with a different developement mask ",
 				"FMTyieldrequest::FMTyieldrequest()", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -79,13 +79,13 @@ void FMTyieldrequest::_updateData(const FMTyields& yields) const
 		if (resume_mask.empty())
 		{
 			m_yields = &yields;
-			resume_mask = yields.filterMask(development->getmask());
+			resume_mask = yields.filterMask(development->getMask());
 			datas = yields.findSetsWithFiltered(resume_mask);
 		}
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyieldrequest::_updateData", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTyieldrequest::_updateData", __LINE__, __FILE__);
 	}
 
 }

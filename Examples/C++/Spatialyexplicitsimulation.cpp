@@ -15,7 +15,7 @@
 int main()
 {
 #ifdef FMTWITHGDAL
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	const std::string modellocation =  "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string outdir = "../../tests/Spatialyexplicitsimulation/";
@@ -30,7 +30,7 @@ int main()
 	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
-	mparser.seterrorstowarnings(errors);
+	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
@@ -45,11 +45,11 @@ int main()
 	const std::string rastpath = modellocation + "rasters/";
 	const std::string agerast = rastpath + "AGE.tif";
 	std::vector<std::string> themesrast;
-	for (int i = 1; i <= simulationmodel.getthemes().size(); i++)
+	for (int i = 1; i <= simulationmodel.getThemes().size(); i++)
 		{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 		}
-	Spatial::FMTforest initialforestmap = areaparser.readRasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
+	Spatial::FMTforest initialforestmap = areaparser.readRasters(simulationmodel.getThemes(), themesrast, agerast, 1, 0.0001);
 	simulationmodel.setInitialMapping(initialforestmap);
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
@@ -62,9 +62,9 @@ int main()
 		Logging::FMTdefaultlogger() << "\n";
 		}
 	Core::FMToutput spatialoutput;
-	for (const Core::FMToutput& output : simulationmodel.getoutputs())
+	for (const Core::FMToutput& output : simulationmodel.getOutputs())
 	{
-		if (output.getname() == "OSUPREC")
+		if (output.getName() == "OSUPREC")
 		{
 			spatialoutput = output;
 		}
@@ -81,7 +81,7 @@ int main()
 		Logging::FMTdefaultlogger() << std::to_string(period) << " "<<simulationmodel.getOutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total")  <<"\n";
 		}
 	const std::vector<Core::FMTaction>actions = simulationmodel.getactions();
-	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getthemes().at(1));
+	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getThemes().at(1));
 	Parser::FMTtransitionparser transitionparser;
 	for (int period = 1; period <= 10; ++period)
 		{

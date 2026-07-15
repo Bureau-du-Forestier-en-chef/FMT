@@ -205,7 +205,7 @@ void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
 		size_t toDefault = bases.size();
 		while (bases.size() != themes.size())
 		{
-			bases.push_back(*themes.at(toDefault).getbaseattributes().begin());
+			bases.push_back(*themes.at(toDefault).getBaseAttributes().begin());
 			name += " " + bases.back();
 			++toDefault;
 		}

@@ -75,7 +75,7 @@ public:
 	double getLinearValue(const std::vector<double>& dls, const int& agetarget, bool allowoutofrange) const;
 	virtual int getLastBase() const;
 	const std::vector<int>& getBases() const;
-	FMTmask getmask() const;
+	FMTmask getMask() const;
 	void setMask(const FMTmask& p_mask);
 	bool pushBase(const int& base);
 	void setBase(const std::vector<int>& allvalues);

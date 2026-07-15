@@ -13,7 +13,7 @@
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("GDAL"))
 	{
 		std::string path;
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 						testedLan = true;
 						if (baseThemes.empty())
 						{
-							AreaParser.GetExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Landscape parser failed to read " + PATH_TO_FILE,
+							AreaParser.getExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Landscape parser failed to read " + PATH_TO_FILE,
 								"ParsersTests", __LINE__, __FILE__);
 						}
 					}
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 						const std::vector<Core::FMTactualdevelopment>DEVELOPMENTS = AreaParser.read(baseThemes, baseConstants, PATH_TO_FILE);
 						if (DEVELOPMENTS.empty())
 						{
-							AreaParser.GetExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Area parser failed to read " + PATH_TO_FILE,
+							AreaParser.getExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Area parser failed to read " + PATH_TO_FILE,
 								"ParsersTests", __LINE__, __FILE__);
 						}
 						testedArea = true;
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 				}
 				catch (...)
 				{
-					AreaParser.GetExceptionHandler()->printexceptions("ParserTests Failed", "", __LINE__, __FILE__);
+					AreaParser.getExceptionHandler()->printExceptions("ParserTests Failed", "", __LINE__, __FILE__);
 				}
 
 			}

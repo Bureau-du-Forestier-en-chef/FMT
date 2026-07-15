@@ -111,11 +111,11 @@ class FMTEXPORT FMToutput: public FMTobject
 		Convert the FMToutput into a readable string like in a output section.
 		*/
 		operator std::string() const;
-		// DocString: FMToutput::getname
+		// DocString: FMToutput::getName
 		/**
 		Getter for the FMToutput name.
 		*/
-		inline std::string getname() const
+		inline std::string getName() const
 		{
 			return name;
 		}
@@ -444,7 +444,7 @@ class FMTEXPORT FMToutput: public FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMToutput::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMToutput::serialize", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMToutput::_getFormatedOutputName()

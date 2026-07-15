@@ -64,31 +64,31 @@ void exportModel()
 		.derives<Core::FMTobject>("FMTobject")
 		.constructor<Models::FMTmodel>("@DocString(FMTmodel(Models::FMTmodel))")
 		.constructor("@DocString(FMTmodel())")
-           .method("getname",&Models::FMTmodel::getname,
+           .method("getname",&Models::FMTmodel::getName,
 				"@DocString(FMTmodel::getname)")
-            .method("getyields",&Models::FMTmodel::getyields,
+            .method("getyields",&Models::FMTmodel::getYields,
 				"@DocString(FMTmodel::getyields)")
 			.method("setyields", &Models::FMTmodel::setYields,
 				"@DocString(FMTmodel::setyields)")
-            .method("getarea",&Models::FMTmodel::getarea,
+            .method("getarea",&Models::FMTmodel::getArea,
 				"@DocString(FMTmodel::getarea)")
 			.method("setarea", &Models::FMTmodel::setArea,
 				"@DocString(FMTmodel::setarea)")
-            .method("getthemes",&Models::FMTmodel::getthemes,
+            .method("getthemes",&Models::FMTmodel::getThemes,
 				"@DocString(FMTmodel::getthemes)")
 			.method("setthemes", &Models::FMTmodel::setThemes,
 				"@DocString(FMTmodel::setthemes)")
             .method("getactions",&Models::FMTmodel::getactions,
 				"@DocString(FMTmodel::getactions)")
-			.method("setactions", &Models::FMTmodel::setactions,
+			.method("setactions", &Models::FMTmodel::setActions,
 				"@DocString(FMTmodel::setactions)")
-			.method("getoutputs", &Models::FMTmodel::getoutputs, 
+			.method("getoutputs", &Models::FMTmodel::getOutputs, 
 				"@DocString(FMTmodel::getoutputs)")
 			.method("setoutputs", &Models::FMTmodel::setOutputs,
 				"@DocString(FMTmodel::setoutputs)")
 			.method("getconstraints", &Models::FMTmodel::getconstraints,
 				"@DocString(FMTmodel::getconstraints)")
-			.method("setconstraints", &Models::FMTmodel::setconstraints,
+			.method("setconstraints", &Models::FMTmodel::setConstraints,
 				"@DocString(FMTmodel::setconstraints)")
             .method("gettransitions",&Models::FMTmodel::getTransitions,
 				"@DocString(FMTmodel::gettransitions)")
@@ -113,13 +113,13 @@ void exportModel()
 			.method("GetStaticTransitionThemes", &Models::FMTmodel::getStaticTransitionThemes,
 				"@DocString(FMTmodel::GetStaticTransitionThemes)")
 			.method("setboolparameter",
-				static_cast<bool(Models::FMTmodel::*)(const Models::FMTboolmodelparameters&, const bool&)>(&Models::FMTmodel::setparameter),
+				static_cast<bool(Models::FMTmodel::*)(const Models::FMTboolmodelparameters&, const bool&)>(&Models::FMTmodel::setParameter),
 				"@DocString(Models::FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
 			.method("setintparameter",
-				static_cast<bool(Models::FMTmodel::*)(const Models::FMTintmodelparameters&, const int&)>(&Models::FMTmodel::setparameter),
+				static_cast<bool(Models::FMTmodel::*)(const Models::FMTintmodelparameters&, const int&)>(&Models::FMTmodel::setParameter),
 				"@DocString(Models::FMTmodel::setparameter(const FMTintmodelparameters,const int))")
 			.method("setdblparameter",
-				static_cast<bool(Models::FMTmodel::*)(const Models::FMTdblmodelparameters&, const double&)>(&Models::FMTmodel::setparameter),
+				static_cast<bool(Models::FMTmodel::*)(const Models::FMTdblmodelparameters&, const double&)>(&Models::FMTmodel::setParameter),
 				"@DocString(Models::FMTmodel::setparameter(const FMTdblmodelparameters,const int))")
 			.method("showparameters",&Models::FMTmodel::showParameters,
 			"@DocString(FMTmodel::showparameters)")
@@ -167,7 +167,7 @@ void exportModel()
 	Rcpp::class_<Models::FMTsrmodel>("FMTsrmodel", "@DocString(FMTsrmodel)")
 		.derives<Models::FMTmodel>("FMTmodel")
 		.constructor("@DocString(FMTsrmodel())")
-		.method("buildperiod", &Models::FMTsrmodel::buildperiod,
+		.method("buildperiod", &Models::FMTsrmodel::buildPeriod,
 			"@DocString(FMTsrmodel::buildperiod)")
 		.method("boundsolution", &Models::FMTsrmodel::boundSolution,
 			"@DocString(FMTsrmodel::boundsolution)")
@@ -222,7 +222,7 @@ void exportModel()
 			"@DocString(FMTlpmodel::getareavariabilities)")
 		.method("writeLP", &Models::FMTlpmodel::writeLP,
 			"@DocString(FMTlpmodel::writeLP)")
-		.method("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setstrictlypositivesoutputsmatrix,
+		.method("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setStrictlyPositivesOutputsMatrix,
 			"@DocString(FMTlpmodel::setstrictlypositivesoutputsmatrix)")
 		.method("getObjValue", &Models::FMTlpmodel::getObjValue,
 					"@DocString(FMTlpmodel::getObjValue)")

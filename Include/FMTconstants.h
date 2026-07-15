@@ -39,7 +39,7 @@ class FMTEXPORT FMTconstants : public FMTobject
 			ar & BOOST_SERIALIZATION_NVP(data);
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTconstants::serialize", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTconstants::serialize", __LINE__, __FILE__);
 			}
 		}
 	// DocString: FMTconstants::data

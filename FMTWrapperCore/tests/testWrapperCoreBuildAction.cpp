@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	ModelParser.seterrorstowarnings(errors);
+	ModelParser.setErrorsToWarnings(errors);
 
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
 	const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), actionName, targetYield, primary_path, output_scenario_name);

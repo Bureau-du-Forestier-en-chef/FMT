@@ -67,11 +67,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		Clear the actual actionsmapping of every yield model handlers and replace it with the new.
 		*/
 		void setActionsMappingToModelHandlers(const std::vector<int>& actionids);
-		// DocString: FMTyields::getallyieldnames
+		// DocString: FMTyields::getAllYieldNames
 		/**
 		return all yield names from the FMTlist.
 		*/
-		std::vector<std::string> getallyieldnames() const;
+		std::vector<std::string> getAllYieldNames() const;
 		// DocString: FMTyields()
 		/**
 		Default constructor for FMTyields.
@@ -251,7 +251,7 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTyields::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTyields::serialize", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTyields::m_yieldsLocations

@@ -12,7 +12,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
@@ -29,13 +29,13 @@ int main()
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		if (optimizationmodel.doPlanning(true)) {
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
 		}

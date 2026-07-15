@@ -13,7 +13,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
@@ -44,14 +44,14 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
         errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.0001;
 		for (size_t period = 1; period <= 6; ++period)
 			{
-			optimizationmodel.buildperiod(schedules.at(period-1),true);
+			optimizationmodel.buildPeriod(schedules.at(period-1),true);
 			}
 		for (size_t period = 1; period <= 6; ++period)
 			{
@@ -60,9 +60,9 @@ int main(int argc, char *argv[])
 		if (argc>3)//Got the double for validation!
 			{
 			bool gotovoltotrec = false;
-			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			for (const Core::FMToutput& output : optimizationmodel.getOutputs())
 				{
-				if (output.getname()=="OVOLTOTREC")
+				if (output.getName()=="OVOLTOTREC")
 					{
 					gotovoltotrec = true;
 					const double returnedvalue = optimizationmodel.getOutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");

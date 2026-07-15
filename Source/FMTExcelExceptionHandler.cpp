@@ -20,7 +20,7 @@ namespace Exception
 		errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		seterrorstowarnings(errors);
+		setErrorsToWarnings(errors);
 		}
 
 	std::unordered_map<int, std::vector<std::string>> FMTExcelExceptionHandler::getBuildExceptions() const
@@ -42,21 +42,21 @@ namespace Exception
 			build_exceptions[static_cast<int>(lexception)] = std::vector<std::string>();
 			}
 		build_exceptions[static_cast<int>(lexception)].push_back(text);
-		FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
+		FMTexception excp = FMTexception(lexception, updateStatus(lexception, text));
 		if (lsection != Core::FMTsection::Empty)
 		{
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
+			excp = FMTexception(lexception, lsection, updateStatus(lexception, text));
 		}
 		if (LEVEL != FMTlev::FMT_Warning)
 		{
 			if (lsection == Core::FMTsection::Empty)
 			{
-				excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);
+				excp = FMTexception(lexception, updateStatus(lexception, text), method, file, line);
 			}
 			else {
-				excp = FMTexception(lexception, lsection, updatestatus(lexception, text), method, file, line);
+				excp = FMTexception(lexception, lsection, updateStatus(lexception, text), method, file, line);
 			}
-			if (throwit && (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range) && !needtorethrow())
+			if (throwit && (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range) && !needToRethrow())
 			{
 				std::throw_with_nested(FMTerror(excp));
 			}

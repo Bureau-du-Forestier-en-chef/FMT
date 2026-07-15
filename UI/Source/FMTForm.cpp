@@ -32,7 +32,7 @@ void FMTForm::SetErrorsToWarnings(
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::SetErrorsToWarnings", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::SetErrorsToWarnings", __LINE__, __FILE__);
 	}
 }
 
@@ -57,7 +57,7 @@ void FMTForm::RecoverFromCrash()
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::RecoverFromCrash", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::RecoverFromCrash", __LINE__, __FILE__);
 	}
 }
 
@@ -72,7 +72,7 @@ void FMTForm::Cache_AssignerNomLogger(System::String^ nomFichierLogger)
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_AssignerNomLogger", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::Cache_AssignerNomLogger", __LINE__, __FILE__);
 	}
 }
 
@@ -96,7 +96,7 @@ bool FMTForm::Cache_AjouterScenarios(
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_AjouterScenarios", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::Cache_AjouterScenarios", __LINE__, __FILE__);
 	}
 
 	return false;
@@ -111,7 +111,7 @@ bool FMTForm::Cache_EnleverModel(int indexScenario)
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_EnleverModel", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::Cache_EnleverModel", __LINE__, __FILE__);
 	}
 
 	return false;
@@ -125,7 +125,7 @@ void FMTForm::Cache_Vider()
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_Vider", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::Cache_Vider", __LINE__, __FILE__);
 	}
 }
 }

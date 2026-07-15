@@ -143,7 +143,7 @@ namespace Parser
 			   }
 		   }catch (...)
 		   {
-			   _exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line), "FMToutputparser::appendToOutput", __LINE__, __FILE__, m_section);
+			   _exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line), "FMToutputparser::appendToOutput", __LINE__, __FILE__, m_section);
 		   }
 	
 	   }
@@ -453,7 +453,7 @@ namespace Parser
 														if (themediff)
 														{
 															_exhandler->raise(Exception::FMTexc::FMTthematic_output_diff,
-																				"The thematic of the output "+name+ " is different from the source "+ targetoutput.getname(),
+																				"The thematic of the output "+name+ " is different from the source "+ targetoutput.getName(),
 																				"FMToutputparser::read",
 																				__LINE__,
 																				__FILE__,
@@ -820,7 +820,7 @@ namespace Parser
 			-------------------------------------------*/
 			}catch(...)
 			{
-				_exhandler->raisefromcatch("Output "+name +" In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::readNFill", __LINE__, __FILE__,m_section);
+				_exhandler->raiseFromCatch("Output "+name +" In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::readNFill", __LINE__, __FILE__,m_section);
 			}
 		}
 
@@ -833,7 +833,7 @@ namespace Parser
 				readNFill(&outputs,themes,actions,ylds,constants,location);
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::read", __LINE__, __FILE__,m_section);
+				_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::read", __LINE__, __FILE__,m_section);
 				}
             return outputs;
             }
@@ -881,7 +881,7 @@ namespace Parser
 				}
 			}catch (...)
 				{
-				_exhandler->printexceptions("In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::addOutputs", __LINE__, __FILE__,m_section);
+				_exhandler->printExceptions("In " + m_location + " at line " + std::to_string(m_line),"FMToutputparser::addOutputs", __LINE__, __FILE__,m_section);
 				}
             return outputs;
            }
@@ -906,7 +906,7 @@ namespace Parser
 				}
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("at " + location,"FMToutputparser::write", __LINE__, __FILE__,m_section);
+				_exhandler->raiseFromCatch("at " + location,"FMToutputparser::write", __LINE__, __FILE__,m_section);
 				}
             }
 

@@ -10,7 +10,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		errors.push_back(Exception::FMTexc::FMTempty_schedules);
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-		ModelParser.seterrorstowarnings(errors);
+		ModelParser.setErrorsToWarnings(errors);
 
 		const std::vector<Models::FMTmodel> MODELS =ModelParser.readproject(primary_path, SCENARIOS);
 		Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, primary_path, output_scenario_name);

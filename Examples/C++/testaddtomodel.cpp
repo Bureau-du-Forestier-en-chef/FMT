@@ -12,7 +12,7 @@
 
 int main()
 	{
-        Logging::FMTdefaultlogger().logstamp();
+        Logging::FMTdefaultlogger().logStamp();
         const std::string folder = "../../../../Examples/Models/TWD_land/";
         const std::string primarylocation = folder+"TWD_land.pri";
         const std::string outdir = "../../tests/testaddmodel/";
@@ -20,7 +20,7 @@ int main()
         const std::vector<std::string>scenarios(1, "LP");
         const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
         Models::FMTmodel modifmodel = models.at(0);
-        const std::vector<Core::FMTtheme> themes = modifmodel.getthemes();
+        const std::vector<Core::FMTtheme> themes = modifmodel.getThemes();
         std::vector<Core::FMTageyieldhandler> newhandlers;
         const std::vector<int> bases = {0,5,10,15,20,25,30};
         std::vector<Core::FMTdevelopment> totest;
@@ -38,7 +38,7 @@ int main()
                 {  
                     newDev.setAge(age+5);
                     Core::FMTyieldrequest yldrequest = newDev.getYieldRequest();
-                    newvalues.push_back(modifmodel.getyields().get(yldrequest,"VOLUMETOTAL"));
+                    newvalues.push_back(modifmodel.getYields().get(yldrequest,"VOLUMETOTAL"));
                 }
                 Core::FMTageyieldhandler nhandler(newmask);
                 nhandler.setYieldValues("VOLUMETOTALNEXTAGE",bases,newvalues);  
@@ -46,8 +46,8 @@ int main()
             }
         }
         modifmodel.addYieldHandlers(newhandlers);
-        Core::FMTyields modifyields = modifmodel.getyields();
-        if(modifmodel.getyields().isYld("VOLUMETOTALNEXTAGE"))
+        Core::FMTyields modifyields = modifmodel.getYields();
+        if(modifmodel.getYields().isYld("VOLUMETOTALNEXTAGE"))
         {
             for(auto& dev:totest)
             {

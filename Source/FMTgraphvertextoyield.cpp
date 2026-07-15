@@ -55,7 +55,7 @@ namespace Graph
 		return nullptr;
 	}
 
-	const Models::FMTmodel* FMTgraphvertextoyield::getmodel() const
+	const Models::FMTmodel* FMTgraphvertextoyield::getModel() const
 	{
 		return modelptr;
 	}

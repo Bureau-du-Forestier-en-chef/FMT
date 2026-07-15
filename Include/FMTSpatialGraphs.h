@@ -105,37 +105,37 @@ namespace Spatial
 			// weak_ptr so distinct vectors are shared while alive and released with the graphs.
 			std::unordered_map<std::size_t, std::vector<std::weak_ptr<const FMTGraphValues>>> m_ValuesPool;
 			std::shared_ptr<const FMTGraphValues> _internValues(const std::vector<double>& p_Values);
-			void _BuildConstraintsLocator(const Models::FMTmodel& p_model);
-			std::vector<size_t> _BuildGraphs(const Models::FMTmodel& p_model, double p_CellSize);
-			void _BuildConstraintsValues( 
+			void _buildConstraintsLocator(const Models::FMTmodel& p_model);
+			std::vector<size_t> _buildGraphs(const Models::FMTmodel& p_model, double p_CellSize);
+			void _buildConstraintsValues( 
 				family_iterator FirstGraphFamily,
 				family_iterator GraphFamilyEnd);
-			void _BuildConstraintsValues(
+			void _buildConstraintsValues(
 				iterator p_Graph,
 				size_t p_family);
-			size_t _FillValuesFromLastPeriod(
+			size_t _fillValuesFromLastPeriod(
 				size_t p_family,
 				FMTSpatialGraphs::iterator p_Graph,
 				size_t p_ConstraintId,
 				std::vector<double>& p_constraintValues) const;
-			static Core::FMTmask _GetUseFullBits(const Models::FMTmodel& p_model);
-			size_t _GetFamily(const Graph::FMTlinegraph& p_Graph) const;
-			size_t _GetNonSpatialId(size_t p_Constraint) const;
-			void _FillConstraintResults(size_t p_Constraint,
+			static Core::FMTmask _getUseFullBits(const Models::FMTmodel& p_model);
+			size_t _getFamily(const Graph::FMTlinegraph& p_Graph) const;
+			size_t _getNonSpatialId(size_t p_Constraint) const;
+			void _fillConstraintResults(size_t p_Constraint,
 				const FMTGraphInfo& p_GraphInfo,
 				std::vector<double>& p_results,
 				const FMTSolutionTracker& p_solution) const;
-			double _GetGraphCells(const FMTSolutionTracker& p_solution, const FMTGraphInfo& p_GraphInfo) const;
-			size_t _GetMaxGraphLength() const;
-			size_t _GetMinGraphLength() const;
-			void _RemoveGraphsShorterThan(size_t p_GraphSize);
-			const_iterator _GetNaturalGrowthIterator(size_t p_family) const;
-			std::vector<double> _GetConstraintsValueFromSolution(size_t p_ConstraintId,
+			double _getGraphCells(const FMTSolutionTracker& p_solution, const FMTGraphInfo& p_GraphInfo) const;
+			size_t _getMaxGraphLength() const;
+			size_t _getMinGraphLength() const;
+			void _removeGraphsShorterThan(size_t p_GraphSize);
+			const_iterator _getNaturalGrowthIterator(size_t p_family) const;
+			std::vector<double> _getConstraintsValueFromSolution(size_t p_ConstraintId,
 				const FMTSolutionTracker& p_solution) const;
-			std::vector<double> _GetConstraintsValueFromTracker(size_t p_ConstraintId,
+			std::vector<double> _getConstraintsValueFromTracker(size_t p_ConstraintId,
 				const FMTSolutionTracker& p_solution) const;
-			std::vector<std::vector<double>> _GetConstraintsValues(const FMTSolutionTracker& p_solution) const;
-			void _BuildTacker(const std::vector<size_t>& p_solution);
+			std::vector<std::vector<double>> _getConstraintsValues(const FMTSolutionTracker& p_solution) const;
+			void _buildTacker(const std::vector<size_t>& p_solution);
 		};
 }
 

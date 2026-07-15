@@ -132,13 +132,13 @@ namespace Graph
 			ar& BOOST_SERIALIZATION_NVP(area);
 			if (Archive::is_saving::value)
 				{
-				_Save(area);
+				_save(area);
 				}
 			}
 		// DocString: FMTbasevertexproperties::m_development
 		///The development that hold the information about the strata.
 		std::unique_ptr<Core::FMTdevelopment> m_development;
-		void _Save(double p_area);
+		void _save(double p_area);
 	};
 }
 

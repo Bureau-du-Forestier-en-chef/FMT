@@ -66,14 +66,14 @@ namespace Models
 			Default move assignment for FMTnssmodel.
 			*/
 			FMTnssmodel& operator =(FMTnssmodel&& rhs) =default;
-			// DocString: FMTnssmodel::setparameter(const FMTintmodelparameters,const int&)
+			// DocString: FMTnssmodel::setParameter(const FMTintmodelparameters,const int&)
 			/**
 			@brief set int parameters to nss model.
 			@param[in] p_key the int key to change.
 			@param[in] p_value to set to the p_key.
 			@return true if the parameter is set.
 			*/
-			virtual bool setparameter(const FMTintmodelparameters& p_key, const int& p_value);
+			virtual bool setParameter(const FMTintmodelparameters& p_key, const int& p_value);
 			// DocString: FMTnssmodel::simulate
 			/**
 			This function do a non spatial simulation based on the area constraints in the optimize section.
@@ -103,11 +103,11 @@ namespace Models
 			{
 				return true;
 			}
-			// DocString: FMTnssmodel::setparameter(const FMTboolmodelparameters, const bool)
+			// DocString: FMTnssmodel::setParameter(const FMTboolmodelparameters, const bool)
 			/**
 			Override setter for boolmodelparameters.
 			*/
-			bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
+			bool setParameter(const FMTboolmodelparameters& key, const bool& value) override;
 			// DocString: FMTnssmodel::getCopy
 			/**
 			This function returns a copy of the FMTmodel of the selected period.

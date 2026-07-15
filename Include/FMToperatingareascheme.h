@@ -97,7 +97,7 @@ namespace Heuristics
 		// DocString: FMToperatingareascheme::rejectednodescid
 		///In schemestolp, we create a constraint for rejectednodes, this is the id.
 		int rejectednodescid;
-		// DocString: FMToperatingareascheme::getarea
+		// DocString: FMToperatingareascheme::getArea
 		/**
 			Get the area of the operating area base on a (primalsolution) 
 			for the initial (vertices) of the FMTlpmodel graph.
@@ -360,13 +360,13 @@ namespace Heuristics
 			Gets the lowerbounds of the solution for bounding the minimal harvested area.
 			*/
 			std::vector<double> getDualLowerBounds(const double* lowerbounds,const double* upperbounds) const;
-			// DocString: FMToperatingareascheme::setconstraints
+			// DocString: FMToperatingareascheme::setConstraints
 			/**
 			Main function setting up constraints and variables using a (matrixbuild) and a primal solution.
 			This function will fill-up all data member related to matrix elements (constraints and variables).
 			The user has to synchronize matrixbuild to the matrix after iterating on all operatingarea.
 			*/
-			void setconstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices,
+			void setConstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices,
 				const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
 				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph,Models::FMTlpsolver& solver,
 				const double* primalsolution,

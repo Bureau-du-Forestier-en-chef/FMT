@@ -29,7 +29,7 @@ namespace Exception
             FMTexceptionhandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
             }catch(...)
                 {
-                raisefromcatch("", "FMTfreeexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+                raiseFromCatch("", "FMTfreeexceptionhandler::handelCPLerror", __LINE__, __FILE__);
                 }
 		}
 #endif
@@ -45,15 +45,15 @@ FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
 {
 	
 	const FMTlev LEVEL = getLevel(lexception);
-	FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
+	FMTexception excp = FMTexception(lexception, updateStatus(lexception, text));
 	if (LEVEL != FMTlev::FMT_Warning)
 	{
 		if (lsection == Core::FMTsection::Empty)
 		{
-			excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);
+			excp = FMTexception(lexception, updateStatus(lexception, text), method, file, line);
 		}
 		else {
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text), method, file, line);
+			excp = FMTexception(lexception, lsection, updateStatus(lexception, text), method, file, line);
 		}
 	}
 	excp.setHold(true);
@@ -62,7 +62,7 @@ FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
 		if (LEVEL == FMTlev::FMT_Warning)
 		{
 		}
-		else if (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range && !needtorethrow())
+		else if (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range && !needToRethrow())
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		#if defined FMTWITHR

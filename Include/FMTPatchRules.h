@@ -45,25 +45,25 @@ namespace Spatial
 	private:
 		FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
 			const std::vector<Core::FMTaction>& p_actions, int p_Id);
-		void _BuildPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
+		void _buildPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
 			const std::vector<Core::FMTaction>& p_actions, int p_Id);
 		static std::vector<std::pair<std::vector<int>,
-						std::pair<int,int>>> _GetOrderedRules(const std::vector<Core::FMTconstraint>& p_constraints,
+						std::pair<int,int>>> _getOrderedRules(const std::vector<Core::FMTconstraint>& p_constraints,
 						const std::vector<Core::FMTaction>& p_actions);
 		template <typename U>
-		static void _GetBounds(double p_lower, double p_upper,
+		static void _getBounds(double p_lower, double p_upper,
 			U& p_NewLower, U& p_NewUpper);
-		bool _TooSmall(const FMTevent& p_event, size_t& p_cost) const;
-		bool _TooBig(const FMTevent& p_event, size_t& p_cost) const;
-		bool _IsTooClose(const FMTevent& p_event, const FMTeventcontainer& p_events, size_t& p_cost) const;
-		bool _IsSizeUsed() const;
-		bool _IsAdjacencyUsed() const;
-		bool _HasMinimalAdjacency() const;
-		bool _HasMaximalAdjacency() const;
-		bool _IsGroupUsed() const;
-		double _EvaluateSize(const FMTeventcontainer& p_events) const;
-		double _EvaluateAdjacency(const FMTeventcontainer& p_events) const;
-		double _EvaluateGroup(const FMTeventcontainer& p_events,
+		bool _tooSmall(const FMTevent& p_event, size_t& p_cost) const;
+		bool _tooBig(const FMTevent& p_event, size_t& p_cost) const;
+		bool _isTooClose(const FMTevent& p_event, const FMTeventcontainer& p_events, size_t& p_cost) const;
+		bool _isSizeUsed() const;
+		bool _isAdjacencyUsed() const;
+		bool _hasMinimalAdjacency() const;
+		bool _hasMaximalAdjacency() const;
+		bool _isGroupUsed() const;
+		double _evaluateSize(const FMTeventcontainer& p_events) const;
+		double _evaluateAdjacency(const FMTeventcontainer& p_events) const;
+		double _evaluateGroup(const FMTeventcontainer& p_events,
 			const FMTSpatialGraphs& p_SpatialGraphs) const;
 		
 	

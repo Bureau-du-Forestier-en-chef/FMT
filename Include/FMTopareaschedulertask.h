@@ -193,11 +193,11 @@ namespace Parallel
 		Write the solution...
 		*/
 		virtual void finalize();
-		// DocString: FMTopareaschedulertaskk::passinlogger
+		// DocString: FMTopareaschedulertaskk::passInLogger
 		/**
 		Pass the logger
 		*/
-		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 
 	};
 

@@ -78,7 +78,7 @@ namespace FMTWrapperCore
 		*@param p_model Le mod�le � �crire sur le disque.
 		*@param p_primaryLocation Le path du fichier .pri de destination.
 		*/
-		static void writetoproject(const Models::FMTmodel& p_model, const std::string& p_primaryLocation);
+		static void writeToProject(const Models::FMTmodel& p_model, const std::string& p_primaryLocation);
 
 	private:
 		/**

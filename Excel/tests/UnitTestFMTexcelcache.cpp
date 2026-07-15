@@ -137,7 +137,7 @@ namespace Testing
 int main()
 {
 	#ifdef FMTWITHMOSEK
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	Testing::UnitTestFMTexcelcache test;
 	test.testAddModel();
 	test.testRemoveModel();

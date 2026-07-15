@@ -38,30 +38,30 @@ namespace Wrapper
 		try
 		{
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
+			*logger << Logging::FMTdefaultlogger().getLogStamp() << "\n";
 			*logger << "Préparation du modèle" << "\n";
-			Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getmodel(scenario), static_cast<Models::FMTsolverinterface>(solver));
-			*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getname() << "\n";
-			optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, nombrePeriodes);
-			optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-			optimizationmodel.setparameter(Models::FMTintmodelparameters::UPDATE, periodeMiseAjour);
-			const int startingperiod = optimizationmodel.getparameter(Models::FMTintmodelparameters::UPDATE);
+			Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTsolverinterface>(solver));
+			*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";
+			optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, nombrePeriodes);
+			optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+			optimizationmodel.setParameter(Models::FMTintmodelparameters::UPDATE, periodeMiseAjour);
+			const int startingperiod = optimizationmodel.getParameter(Models::FMTintmodelparameters::UPDATE);
 			const std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
 			std::vector<Core::FMTaction> newactions;
 			int youvert = 0;
 			for (Core::FMTaction& action : optimizationmodel.getactions())
 			{
-				if (action.useyield("YOUVERT"))
+				if (action.useYield("YOUVERT"))
 				{
 					youvert += 1;
-					std::vector<std::string> agg = action.getaggregates();
+					std::vector<std::string> agg = action.getAggregates();
 					if (std::count(agg.begin(), agg.end(), Agg_name))
 					{
 						*logger << "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs." << "\n";
 						return false;
 					}
 
-					action.push_aggregate(Agg_name);
+					action.pushAggregate(Agg_name);
 				}
 
 				newactions.push_back(action);
@@ -73,8 +73,8 @@ namespace Wrapper
 				return false;
 			}
 
-			optimizationmodel.setactions(newactions);
-			const std::vector<Core::FMTtheme> themes = optimizationmodel.getthemes();
+			optimizationmodel.setActions(newactions);
+			const std::vector<Core::FMTtheme> themes = optimizationmodel.getThemes();
 			std::string stringMask = "";
 			for (int i = 1; i <= themes.size(); i++)
 			{
@@ -100,7 +100,7 @@ namespace Wrapper
 			Parser::FMTareaparser areaparser;
 			std::vector<Heuristics::FMToperatingareascheme> opeareas = areaparser.getOperatingArea(
 				msclr::interop::marshal_as<std::string>(fichierShp),
-				optimizationmodel.getthemes(), numeroTheme,
+				optimizationmodel.getThemes(), numeroTheme,
 				startingperiod, msclr::interop::marshal_as<std::string>(nomChampAge),
 				msclr::interop::marshal_as<std::string>(nomChampSuperficie),
 				msclr::interop::marshal_as<std::string>(nomChampStanlock),
@@ -114,15 +114,15 @@ namespace Wrapper
 				"YOUVERT",
 				nombreIteration,
 				tempsMaximum,
-				ObtenirOutputSelectionnee(optimizationmodel.getoutputs(),
+				ObtenirOutputSelectionnee(optimizationmodel.getOutputs(),
 					returnTimeOutput));
 			Parallel::FMTtaskhandler handler(maintask, nombreThread);
 			*logger << "Génération du calendrier de COS" << "\n";
-			handler.conccurentrun();
+			handler.conccurentRun();
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::OperatingAreaScheduling", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::OperatingAreaScheduling", __LINE__, __FILE__);
 			return false;
 		}
 

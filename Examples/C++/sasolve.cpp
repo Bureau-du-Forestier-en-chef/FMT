@@ -16,7 +16,7 @@
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 
 	if (Version::FMTversion().hasFeature("GDAL"))
 	{
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		errors.push_back(Exception::FMTexc::FMTempty_schedules);
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		
@@ -75,18 +75,18 @@ int main(int argc, char* argv[])
 			{
 			std::vector<std::string>themesName;
 			size_t i = 1;
-			for (const auto& THEME : models.at(0).getthemes())
+			for (const auto& THEME : models.at(0).getThemes())
 			{
 				themesName.push_back(RASTER_LOCATION.string() + "/THEME" + std::to_string(i)+".tif");
 				++i;
 			}
-			forest = areaparser.readRasters(models.at(0).getthemes(),
+			forest = areaparser.readRasters(models.at(0).getThemes(),
 				themesName, RASTER_LOCATION.string() + "/AGE.tif", 1.0, 0.0001, RASTER_LOCATION.string() + "/STANLOCK.tif");
 		}else {
 			boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
-			forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
+			forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getThemes(), "AGE", "SUPERFICIE", 1, 0.0001);
 			}
-		//models[0].setparameter(Models::FMTintmodelparameters::SEED, 100);
+		//models[0].setParameter(Models::FMTintmodelparameters::SEED, 100);
 		Models::FMTsamodel optimizationmodel(models.at(0));
 		optimizationmodel.setInitialMapping(forest);
 		//optimizationmodel.redirectLogToFile(outputlocation + "/SA.log");
@@ -96,18 +96,18 @@ int main(int argc, char* argv[])
 			singletransitions.push_back(transition.single());
 			}
 		optimizationmodel.setTransitions(singletransitions);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 500000);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 3000);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 5000);
-		//optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
-		//optimizationmodel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::MAX_MOVES, 500000);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 3000);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 5000);
+		//optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
+		//optimizationmodel.setParameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
 		optimizationmodel.doPlanning(true);
 		//optimizationmodel.logConstraintsInfeasibilities();
 		/*std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())
 		{
-			if (out.getname().find("OVOL")!=std::string::npos)
+			if (out.getName().find("OVOL")!=std::string::npos)
 			{
 				outputs.push_back(out);
 			}

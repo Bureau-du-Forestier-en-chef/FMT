@@ -32,7 +32,7 @@ namespace Core{
 			push_back(mask, handlerptr);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyields::push_back", __LINE__, __FILE__, FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyields::push_back", __LINE__, __FILE__, FMTsection::Yield);
 		}
 	}
 
@@ -43,7 +43,7 @@ namespace Core{
 			push_back(mask, handlerptr);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyields::push_back", __LINE__, __FILE__, FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyields::push_back", __LINE__, __FILE__, FMTsection::Yield);
 		}
 	}
 
@@ -93,7 +93,7 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), m_yieldsLoca
 			push_back(base_mask,TSLAhandler);
 		}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTyields::generateDefaultYields", __LINE__, __FILE__, FMTsection::Yield);
+				_exhandler->raiseFromCatch("", "FMTyields::generateDefaultYields", __LINE__, __FILE__, FMTsection::Yield);
 			}
 	}
 
@@ -156,7 +156,7 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), m_yieldsLoca
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyields::getStacked", __LINE__, __FILE__,FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTyields::getStacked", __LINE__, __FILE__,FMTsection::Yield);
 		}
        
         return values;
@@ -185,12 +185,12 @@ void FMTyields::_updateYieldLocations()
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::updateyieldpresence", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::updateyieldpresence", __LINE__, __FILE__, FMTsection::Yield);
 	}
 
     }
 
-std::vector<std::string> FMTyields::getallyieldnames() const
+std::vector<std::string> FMTyields::getAllYieldNames() const
 {
 	std::vector<std::string>alls;
 	try {
@@ -207,7 +207,7 @@ std::vector<std::string> FMTyields::getallyieldnames() const
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTyields::getallyieldnames", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::getAllYieldNames", __LINE__, __FILE__, FMTsection::Yield);
 		}
 	return alls;
 	}
@@ -250,7 +250,7 @@ bool FMTyields::isYld(const std::string& value, bool fromsource) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::isYld", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::isYld", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return returnvalue;
     }
@@ -274,7 +274,7 @@ void FMTyields::update()
 		_updateYieldLocations();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTyields::update", __LINE__, __FILE__, Core::FMTsection::Yield);
+		_exhandler->raiseFromCatch("","FMTyields::update", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
     }
 
@@ -305,7 +305,7 @@ FMTyields FMTyields::presolve(const FMTmaskfilter& filter,
 		newyields.update();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTyields::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+		_exhandler->raiseFromCatch("","FMTyields::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return newyields;
 	}
@@ -327,7 +327,7 @@ void FMTyields::presolveRef(const FMTmaskfilter& p_filter,
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::presolveRef", __LINE__, __FILE__, Core::FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::presolveRef", __LINE__, __FILE__, Core::FMTsection::Yield);
 	}
 }
 
@@ -355,7 +355,7 @@ FMTyields FMTyields::getFromFactor(const double& factor,
 		}
 	}catch (...)
 		{
-		_exhandler->printexceptions("for factor "+std::to_string(factor),
+		_exhandler->printExceptions("for factor "+std::to_string(factor),
 			"FMTyields::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return newyields;
@@ -391,7 +391,7 @@ double FMTyields::get(const FMTyieldrequest& request, const std::string& yld) co
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for development type " + std::string(request.getDevelopment()), "FMTyields::get", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("for development type " + std::string(request.getDevelopment()), "FMTyields::get", __LINE__, __FILE__);
 	}
 	return 0;
 }
@@ -497,7 +497,7 @@ std::vector<const FMTyieldhandler*> FMTyields::getHandlerOfType(FMTyldtype type)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::getHandlerOfType", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::getHandlerOfType", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return selectedhandlers;
 	}
@@ -538,7 +538,7 @@ std::vector<FMTyieldhandler*> FMTyields::getHandlers(FMTyldtype type)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::getHandlers", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::getHandlers", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return selectedhandlers;
 	}
@@ -550,7 +550,7 @@ bool FMTyields::gotYieldType(FMTyldtype type) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::gotYieldType", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::gotYieldType", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return false;
 }
@@ -566,7 +566,7 @@ void FMTyields::setActionsMappingToModelHandlers(const std::vector<int>& actioni
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::setActionsMappingToModelHandlers", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::setActionsMappingToModelHandlers", __LINE__, __FILE__, FMTsection::Yield);
 	}
 }
 
@@ -586,7 +586,7 @@ int FMTyields::getMaxBase(const std::vector<const FMTyieldhandler*>& handlers)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::getMaxBase", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTyields::getMaxBase", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return maxbase;
 	}
@@ -608,7 +608,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getA
 		for (const FMTyieldhandler* handler : handlers)
 		{
 			const std::map<std::string, std::vector<double>>localstuff = handler->getAllYieldsData(maxbase);
-			std::string strtarget = handler->getmask().get(target);
+			std::string strtarget = handler->getMask().get(target);
 			if (result.find(strtarget) != result.end())
 			{
 				//Validate the logic for overrided yield ? ... Maybe we should iter from end to begin ... 
@@ -620,7 +620,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getA
 		}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("","FMTyields::getAllYields", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("","FMTyields::getAllYields", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return result;
 	}
@@ -713,7 +713,7 @@ int FMTyields::getAge(const FMTyieldrequest& request,const FMTspec& spec) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for developement " + std::string(request.getDevelopment()), "FMTyield::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+		_exhandler->raiseFromCatch("for developement " + std::string(request.getDevelopment()), "FMTyield::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 	}
 	return age;
 	}

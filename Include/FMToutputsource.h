@@ -66,7 +66,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		bool isSubsetOf(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool isSubsetOf(const FMToutputsource& rhs) const;
 		bool isSameButDifferentAction(const FMToutputsource& rhs) const;
-		inline const FMTmask& getmask() const
+		inline const FMTmask& getMask() const
 			{
 			return mask;
 			}

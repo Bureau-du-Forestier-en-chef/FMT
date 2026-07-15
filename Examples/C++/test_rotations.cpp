@@ -16,7 +16,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
@@ -43,22 +43,22 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 2);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 2);
 		optimizationmodel.doPlanning(false);//No solve!
 		std::string fullmask;
-		for (size_t thid = 0; thid < optimizationmodel.getthemes().size(); ++thid)
+		for (size_t thid = 0; thid < optimizationmodel.getThemes().size(); ++thid)
 		{
 			fullmask += "? ";
 		}
 		fullmask.pop_back();
-		const Core::FMTmask mainmask(fullmask, optimizationmodel.getthemes());
+		const Core::FMTmask mainmask(fullmask, optimizationmodel.getThemes());
 		const std::set<Core::FMTSerie>rotations = optimizationmodel.getRotations(mainmask, "REGAPRE");
 			if (static_cast<int>(rotations.size()) != rotation_length)
 			{

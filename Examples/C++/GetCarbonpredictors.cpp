@@ -28,7 +28,7 @@ Example to get FMTpredictors on a FMTsesmodel
 int main()
 	{
 #if defined FMTWITHGDAL && defined FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTdefaultlogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		#ifdef FMTWITHONNXR
@@ -48,13 +48,13 @@ int main()
         std::vector<Exception::FMTexc> errors;
         errors.push_back(Exception::FMTexc::FMTmissingyield);
         errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-        modelparser.seterrorstowarnings(errors);
+        modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario_name);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		for (size_t period = 0; period < 5; ++period)
 		{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildPeriod();
 		}
 		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 		const Core::FMTconstraint objective = constraints.at(0);
@@ -75,7 +75,7 @@ int main()
 				simulationmodel.setTransitions(strans);
 				Parser::FMTareaparser areaparser;
 				//areaparser.passinobject(modelparser);
-				Spatial::FMTforest initialforestmap=areaparser.vectormaptoFMTforest(maplocation,380,optimizationmodel.getthemes(),agefield,areafield,1,0.0001,lockfield,0.0,"",false);
+				Spatial::FMTforest initialforestmap=areaparser.vectormaptoFMTforest(maplocation,380,optimizationmodel.getThemes(),agefield,areafield,1,0.0001,lockfield,0.0,"",false);
 				simulationmodel.setInitialMapping(initialforestmap);
 				for (size_t period = 1; period <= 5; ++period)
 				{

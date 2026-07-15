@@ -51,7 +51,7 @@ namespace Graph
 		std::vector<double>target_yields;
 		std::vector<int>periodgaps;
 		std::vector<int>sourceactions;
-		std::vector<double>getyields(const FMTbasevertexproperties& vertex, const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const;
+		std::vector<double>getYields(const FMTbasevertexproperties& vertex, const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const;
 	};
 }
 

@@ -158,7 +158,7 @@ namespace Models
                 }
                 catch (...)
                 {
-                    _exhandler->printexceptions("", "FMTmodelparameters::serialize", __LINE__, __FILE__);
+                    _exhandler->printExceptions("", "FMTmodelparameters::serialize", __LINE__, __FILE__);
                 }
             }
             std::array<int, LastIntModelParam> m_intparameters;

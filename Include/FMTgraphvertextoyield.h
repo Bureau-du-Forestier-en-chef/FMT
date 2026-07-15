@@ -48,7 +48,7 @@ namespace Graph
 		{
 			return vertex;
 		}
-		const Models::FMTmodel* getmodel() const;
+		const Models::FMTmodel* getModel() const;
 	};
 
 }

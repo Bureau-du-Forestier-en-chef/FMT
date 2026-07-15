@@ -41,7 +41,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getconstraintsfromstring_overloads,getCon
 
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readproject_overloads, readproject,1,5)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeresults_overloads, writeresults, 5, 7)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeresults_overloads, writeResults, 5, 7)
 
 
 void exportParser()
@@ -143,7 +143,7 @@ void exportParser()
 				.def("readschedules", &Parser::FMTmodelparser::readschedules,
 					"@DocString(FMTmodelparser::readschedules)")
 				#ifdef FMTWITHGDAL
-				.def("writeresults", &Parser::FMTmodelparser::writeresults,
+				.def("writeresults", &Parser::FMTmodelparser::writeResults,
 					writeresults_overloads(bp::args("model", "theoutputs", "firstperiod", "lastperiod", "outlocation", "outputlevel", "gdaldrivername"),
 						"@DocString(FMTmodelparser::writeresults)"))
 				#endif

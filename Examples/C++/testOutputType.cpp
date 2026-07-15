@@ -22,17 +22,17 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-	modelparser.seterrorstowarnings(errors);
+	modelparser.setErrorsToWarnings(errors);
 	//const std::vector<std::string>scenarios(1, "tactique");
 	//const std::vector<std::string>scenarios(1, "strategique");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	//optmodel.writeLP("D:/FMT/build/release/tests/testmodelwriter/strategic");
 	//return 0;
 	modelparser.write(models.at(0), outdir); // On va chercher le modèle
-	const std::vector<Models::FMTmodel> rereadmodels = modelparser.readproject(outdir + models.at(0).getname() + ".pri", std::vector<std::string>(1, "ROOT"));
+	const std::vector<Models::FMTmodel> rereadmodels = modelparser.readproject(outdir + models.at(0).getName() + ".pri", std::vector<std::string>(1, "ROOT"));
 	Models::FMTlpmodel optmodel = Models::FMTlpmodel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
 	//modelparser.write(optmodel, outdir+"other/");
-	if (optmodel.getoutputs().size() != N_OUTPUT)
+	if (optmodel.getOutputs().size() != N_OUTPUT)
 	{
 		std::cout << "ok" << std::endl;
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Mauvais output",

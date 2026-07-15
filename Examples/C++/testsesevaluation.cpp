@@ -40,11 +40,11 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	mparser.seterrorstowarnings(errors);
+	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 	if (optimizationmodel.doPlanning(true))
 	{
 		std::cout << "OBJECTIVE VALUE " << optimizationmodel.getObjValue() << "\n";
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 		}
 		simmodel.setTransitions(newtransitions);
 		Parser::FMTareaparser areaparser;
-		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
+		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
 		simmodel.setInitialMapping(forest);
 		for (int period = 1; period <= length; ++period)
 		{
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 					bindingconstraint.setRhs(lower,upper);
 					std::vector<Core::FMTconstraint>Constraints = BASE_CONSTRAINTS;
 					Constraints.push_back(bindingconstraint);
-					simmodel.setconstraints(Constraints);
+					simmodel.setConstraints(Constraints);
 					const double penalty = simmodel.getConstraintEvaluation(Constraints.size()-1);
 					if (penalty == 0)
 					{
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
 					}else {
 						std::cout << std::string(bindingconstraint)<< "Penalty of "<< penalty << "\n";
 					}
-					simmodel.setconstraints(BASE_CONSTRAINTS);
+					simmodel.setConstraints(BASE_CONSTRAINTS);
 				}
 				
 				}

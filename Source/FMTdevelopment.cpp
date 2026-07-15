@@ -48,7 +48,7 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setAge", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::setAge", __LINE__, __FILE__);
 		}
 	}
 
@@ -59,7 +59,7 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setLock", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::setLock", __LINE__, __FILE__);
 		}
 	}
 
@@ -70,7 +70,7 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setPeriod", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::setPeriod", __LINE__, __FILE__);
 		}
 	}
 
@@ -140,7 +140,7 @@ namespace Core{
 			++newDev.period;
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::grow", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::grow", __LINE__, __FILE__);
 			}
         return newDev;
         }
@@ -177,7 +177,7 @@ namespace Core{
 				}
 		 }catch (...)
 			{
-			 _exhandler->raisefromcatch("for " + std::string(*this)+" for action "+action.getname(), "FMTdevelopment::operable", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(), "FMTdevelopment::operable", __LINE__, __FILE__);
 			}
         return false;
         }
@@ -195,7 +195,7 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::anyOperable", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::anyOperable", __LINE__, __FILE__);
 		 }
 		 return false;
 		}
@@ -215,7 +215,7 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::anyWorthTestingOperability", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::anyWorthTestingOperability", __LINE__, __FILE__);
 		 }
 		 return potentials;
 		}
@@ -247,7 +247,7 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::isAnyWorthTestingOperability", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::isAnyWorthTestingOperability", __LINE__, __FILE__);
 		 }
 		 return std::vector<bool>();
 	 }
@@ -267,7 +267,7 @@ namespace Core{
 			 }
 			 else {
 				 std::string yldsStr;
-				 for (const FMTtransition::const_iterator fork : Transition.findSets(getmask()))
+				 for (const FMTtransition::const_iterator fork : Transition.findSets(getMask()))
 				 {
 					 for (const std::string& YLD_NAME : fork->second.getYlds())
 					 {
@@ -282,12 +282,12 @@ namespace Core{
 					 yldsStr.pop_back();
 					 yldsStr.insert(0, "\n");
 				 }
-				 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case,Transition.getname() + " for " + std::string(*this) + yldsStr,
+				 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case,Transition.getName() + " for " + std::string(*this) + yldsStr,
 					 "FMTdevelopment::operate",__LINE__, __FILE__);
 			 }
 		 }catch (...)
 			{
-			 _exhandler->raisefromcatch("for " + std::string(*this)+" for action "+action.getname(),"FMTdevelopment::operate", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(),"FMTdevelopment::operate", __LINE__, __FILE__);
 			}
 		 return newpaths;
 		}
@@ -331,7 +331,7 @@ namespace Core{
         line+=std::to_string(getPeriod())+" ";
         return line;
         }
-	double FMTdevelopment::getarea() const
+	double FMTdevelopment::getArea() const
 		{
 		return 0;
 		}
@@ -354,7 +354,7 @@ namespace Core{
 			value = (p_bound.out(YIELD_VALUE));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(
+			_exhandler->raiseFromCatch(
 				"for " + std::string(*this) + " on yield "+p_yield+" on bound "+ std::string(p_bound),
 				"FMTdevelopment::_isOutOfBound", __LINE__, __FILE__);
 			}
@@ -386,7 +386,7 @@ namespace Core{
 				{
 				specStr = std::string(specification);
 				}
-			_exhandler->raisefromcatch(
+			_exhandler->raiseFromCatch(
 				"for " + std::string(*this)+" with spec "+ specStr,
 				"FMTdevelopment::is",__LINE__, __FILE__);
 			}
@@ -400,7 +400,7 @@ namespace Core{
 			return ylds.get(request,target_yield);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this) , "FMTdevelopment::getInventoryCoef", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this) , "FMTdevelopment::getInventoryCoef", __LINE__, __FILE__);
 		}
 		return 0;
 		}
@@ -425,7 +425,7 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("for " + std::string(*this)+" for action "+action.getname(), "FMTdevelopment::getHarvestCoef", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(), "FMTdevelopment::getHarvestCoef", __LINE__, __FILE__);
 		}
 		return value;
 		}

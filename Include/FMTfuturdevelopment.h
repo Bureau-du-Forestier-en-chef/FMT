@@ -70,11 +70,11 @@ namespace Core
 			FMTfuturdevelopment copy assignment.
 			*/
 			std::unique_ptr<FMTdevelopment> Clone() const override;
-			// DocString: FMTfuturdevelopment::getarea
+			// DocString: FMTfuturdevelopment::getArea
 			/**
 			Return the area of the futur development 0.
 			*/
-			double getarea() const override;
+			double getArea() const override;
 		private:
 			// DocString: FMTfuturdevelopment::serialize
 			/**
@@ -89,7 +89,7 @@ namespace Core
 				}
 				catch (...)
 				{
-					_exhandler->printexceptions("", "FMTfuturdevelopment::serialize", __LINE__, __FILE__);
+					_exhandler->printExceptions("", "FMTfuturdevelopment::serialize", __LINE__, __FILE__);
 				}
 			}
 

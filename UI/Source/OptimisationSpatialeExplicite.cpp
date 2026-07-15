@@ -112,10 +112,10 @@ namespace Wrapper
         try
         {
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-            *logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
+            *logger << Logging::FMTdefaultlogger().getLogStamp() << "\n";
 
-            const Models::FMTmodel& BASE_MODEL = FMTFormCache::GetInstance()->getmodel(scenario);
-            const std::string scenarioName = BASE_MODEL.getname();
+            const Models::FMTmodel& BASE_MODEL = FMTFormCache::GetInstance()->getModel(scenario);
+            const std::string scenarioName = BASE_MODEL.getName();
 
            
 
@@ -152,7 +152,7 @@ namespace Wrapper
         }
         catch (...)
         {
-            raisefromcatch("", "FMTForm::OptimisationSpatialeExplicite", __LINE__, __FILE__);
+            raiseFromCatch("", "FMTForm::OptimisationSpatialeExplicite", __LINE__, __FILE__);
             return false;
         }
     }

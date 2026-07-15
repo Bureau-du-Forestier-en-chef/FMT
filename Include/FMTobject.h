@@ -55,17 +55,17 @@ class FMTEXPORT FMTobject
 		@return the valid FMTlogger
 		*/
 		static Logging::FMTlogger* getLogger();
-		// DocString: FMTobject::GetExceptionHandler
+		// DocString: FMTobject::getExceptionHandler
 		/**
 		@brief get a pointer to the actual exception handler.
 		@return the valid FMTexceptionhandler;
 		*/
-		static Exception::FMTexceptionhandler* GetExceptionHandler();
-		// DocString: FMTobject::getruntimelocation
+		static Exception::FMTexceptionhandler* getExceptionHandler();
+		// DocString: FMTobject::getRuntimeLocation
 		/**
 		This function return the location of the FMT shared library location.
 		*/
-		static std::string getruntimelocation();
+		static std::string getRuntimeLocation();
 		// DocString: FMTobject::getAvailableMemory
 		/**
 		Get the available memory in bytes
@@ -97,16 +97,16 @@ class FMTEXPORT FMTobject
 		FMTobject default copy assignment.
 		*/
 		FMTobject& operator = (const FMTobject& rhs);
-		// DocString: FMTobject::passinlogger
+		// DocString: FMTobject::passInLogger
 		/**
 		It's sometime usefull to pass in the logger of an other FMTobject.
 		*/
-		virtual void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger);
-		// DocString: FMTobject::passinexceptionhandler
+		virtual void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger);
+		// DocString: FMTobject::passInExceptionHandler
 		/**
 		It's sometime usefull to pass in the exception handler of an other FMTobject.
 		*/
-		void passinexceptionhandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler);
+		void passInExceptionHandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler);
 		// DocString: FMTobject::redirectLogToFile
 		/**
 		redict the log to a specific file (will append to it)
@@ -164,17 +164,17 @@ class FMTEXPORT FMTobject
 		do nested exception throw.
 		*/
 		void enableNestedExceptions();
-		// DocString: FMTobject::seterrorstowarnings
+		// DocString: FMTobject::setErrorsToWarnings
 		/**
 		Very hazardous function if you want to live dangerously you can
 		set a vector of error to be cast to warnings to the exception handler...
 		*/
-		void seterrorstowarnings(const std::vector<Exception::FMTexc>& errors);
-		// DocString: FMTobject::setmaxwarningsbeforesilenced
+		void setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors);
+		// DocString: FMTobject::setMaxWarningsBeforeSilenced
 		/**
 		Change the number of warning raise before silenced.
 		*/
-		void setmaxwarningsbeforesilenced(const size_t& maxwarningcount);
+		void setMaxWarningsBeforeSilenced(const size_t& maxwarningcount);
 		// DocString: FMTexceptionhandler::setTerminateStack
 		/**
 		@brief will write the stack in the log when terminate called and raise a function failed.

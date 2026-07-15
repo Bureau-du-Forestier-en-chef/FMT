@@ -54,7 +54,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 	}
@@ -71,7 +71,7 @@ namespace Core {
 	FMTtimeyieldhandler FMTmodelyieldhandler::toTimeHandler() const
 		{
 		try {
-			FMTtimeyieldhandler newhandler(getmask());
+			FMTtimeyieldhandler newhandler(getMask());
 			bool gotallmodel = true;
 			size_t modelid = 0;
 			for (const std::unique_ptr<FMTyieldmodel>& model : models)
@@ -106,9 +106,9 @@ namespace Core {
 		
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::toTimeHandler", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::toTimeHandler", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
-		return FMTtimeyieldhandler(getmask());
+		return FMTtimeyieldhandler(getMask());
 		}
 	
 	FMTyldtype FMTmodelyieldhandler::getType() const
@@ -165,7 +165,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::getModelsNameByIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::getModelsNameByIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return modelmapping;
 	}
@@ -196,7 +196,7 @@ namespace Core {
 			return (predictions.at(yieldid));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at yield " + yld, "FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("at yield " + yld, "FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return 0;
 	}
@@ -264,7 +264,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldhandler>(nullptr);
 	}
@@ -290,7 +290,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTyieldhandler>(nullptr);
 	}

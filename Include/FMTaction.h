@@ -33,7 +33,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-class FMTactioncomparator;
+class FMTActionComparator;
 // DocString: FMTaction
 /**
 FMTaction hold informations to check if a FMTdevelopment is operable or not to this.
@@ -43,7 +43,7 @@ a subsets of FMTdevelopments.
 */
 class FMTEXPORT FMTaction : public FMTlist<FMTspec>
     {
-	friend class FMTactioncomparator;
+	friend class FMTActionComparator;
 	public:
 		// DocString: FMTaction::operator+=
 		/**
@@ -72,11 +72,11 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Construct a empty FMTaction with a given name, respectlock? and resetage?
 		*/
 		FMTaction(const std::string& lname, const bool& lock, const bool& reset);
-		// DocString: FMTaction::push_aggregate
+		// DocString: FMTaction::pushAggregate
 		/**
 		Push back aggregate to the aggregates data member vector
 		*/
-		void push_aggregate(const std::string& aggregate);
+		void pushAggregate(const std::string& aggregate);
 		// DocString: FMTaction::pushPartials
 		/**
 		Push back a partiel yield name to the partials data member vector
@@ -159,11 +159,11 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		{
 			return boost::hash<std::string>()(name);
 		}
-		// DocString: FMTaction::getname
+		// DocString: FMTaction::getName
 		/**
 		Get action name of the FMTaction.
 		*/
-		inline std::string getname() const
+		inline std::string getName() const
 		{
 			return name;
 		}
@@ -216,7 +216,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		/**
 		Returns the series names of the action.
 		*/
-		std::vector<std::string>getSeriesNames() const;
+		std::vector<std::string> getSeriesNames() const;
 		// DocString: FMTaction::getLargestSerieSize
 		/**
 		Returns the size of the largest serie.
@@ -228,16 +228,16 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Will go across all series and check if part of it and build it if in.
 		*/
 		void setSeries(std::vector<Core::FMTSerie> p_series);
-		// DocString: FMTaction::useyield
+		// DocString: FMTaction::useYield
 		/**
 		Return true if the yield is used by the action to set operability.
 		*/
-		bool useyield(const std::string& yldname) const;
-		// DocString: FMTaction::getaggregates
+		bool useYield(const std::string& yldname) const;
+		// DocString: FMTaction::getAggregates
 		/**
 		Gets all the aggregates name of which the action is part of.
 		*/
-		std::vector<std::string>getaggregates() const;
+		std::vector<std::string> getAggregates() const;
 		// DocString: FMTaction::setAggregates
 		/**
 		@brief Set a new vector of aggregates
@@ -248,7 +248,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		/**
 		Gets all the partial yields name of the FMTaction.
 		*/
-		std::vector<std::string>getPartials() const;
+		std::vector<std::string> getPartials() const;
 		// DocString: FMTaction::operator<
 		/**
 		FMTaction less than operator (first test the action length and then the string name to place the action).
@@ -274,16 +274,16 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Check if the yield needs to be considered has partial for this action.
 		*/
 		bool partial(const std::string& yield) const;
-		// DocString: FMTaction::getGCBMactionid
+		// DocString: FMTaction::getGCBMActionId
 		/**
 		Returns the corresponding GCBM action id.
 		*/
-		int getGCBMactionid() const;
-		// DocString: FMTaction::getGCBMactionname
+		int getGCBMActionId() const;
+		// DocString: FMTaction::getGCBMActionName
 		/**
 		Returns the corresponding GCBM action name.
 		*/
-		std::string getGCBMactionname() const;
+		std::string getGCBMActionName() const;
 		// DocString: FMTaction::split
 		/**
 		@brief split action into different action using the p_mask
@@ -315,10 +315,10 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 	protected:
 		// DocString: FMTaction::aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.
-		std::vector<std::string>aggregates;
+		std::vector<std::string> aggregates;
 		// DocString: FMTaction::partials
 		///Keeps the yields name for determining the amount of wood harvested in case of partial cut.
-        std::vector<std::string>partials;
+        std::vector<std::string> partials;
 		// DocString: FMTaction::agelowerbound
 		///Those data members are for optimization only,
 		///the class determine within which bounds the aciton can take place for a given development.
@@ -334,7 +334,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		bool reset;
 		// DocString: FMTaction::m_series
 		///The action series that the action is part of
-		std::vector<FMTSerie>m_series;
+		std::vector<FMTSerie> m_series;
 		// DocString: FMTaction::m_InSerie
 		///True if the actions is in a serie
 		bool m_InSerie;
@@ -344,11 +344,11 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		agelowerbound, ageupperbound,periodlowerbound,periodupperbound and sets all member data.
 		*/
 		void setBounds();
-		// DocString: FMTaction::getGCBMactiondef
+		// DocString: FMTaction::getGCBMActionDef
 		/**
 		Returns the corresponding GCBM action definition.
 		*/
-		std::vector<std::string>getGCBMactiondef() const;
+		std::vector<std::string> getGCBMActionDef() const;
 	private:
 		// DocString: FMTaction::serialize
 		/**
@@ -372,52 +372,49 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTaction::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTaction::serialize", __LINE__, __FILE__);
 			}
 		}
     };
 
-// DocString: FMTactioncomparator
+// DocString: FMTActionComparator
 /**
-FMTactioncomparator to check if the action_name already exist in a std container.
+FMTActionComparator to check if the action_name already exist in a std container.
 It can also check for aggregates.
 */
-class FMTactioncomparator
+class FMTActionComparator
 	{
-	// DocString: FMTactioncomparator::action_name
+	// DocString: FMTActionComparator::action_name
 	///The action named that we are looking for.
 	std::string action_name;
-	// DocString: FMTactioncomparator::checkaggregate
+	// DocString: FMTActionComparator::checkaggregate
 	///If true the comparator will also check for aggregates.
 	bool checkaggregate;
 	public:
-		// DocString: FMTactioncomparator(std::string,bool)
+		// DocString: FMTActionComparator(std::string,bool)
 		/**
-		FMTactioncomparator constructor name is the name of the action we want to match
+		FMTActionComparator constructor name is the name of the action we want to match
 		if checkaggregate = true it will also return actions within the named aggregate.
 		*/
-		FMTactioncomparator(std::string name, bool lcheckaggregate = false);
-		// DocString: FMTactioncomparator::getAllAggregates
+		FMTActionComparator(std::string name, bool lcheckaggregate = false);
+		// DocString: FMTActionComparator::getAllAggregates
 		/**
 		Looking at the actions vector if aggregateonly = false it will returns actions mathching
 		the action_name if aggregateonly = true it will return only matching aggregates.
 		*/
-		std::vector<const FMTaction*>getAllAggregates(const std::vector<FMTaction>&actions,bool aggregateonly = false) const;
-		// DocString: FMTactioncomparator::getAllAggregatesSet
+		std::vector<const FMTaction*> getAllAggregates(const std::vector<FMTaction>&actions,bool aggregateonly = false) const;
+		// DocString: FMTActionComparator::getAllAggregatesSet
 		/**
 		Looking at the actions vector if aggregateonly = false it will returns actions ids mathching
 		the action_name if aggregateonly = true it will return only matching aggregates.
 		*/
-		std::unordered_set<int>getAllAggregatesSet(const std::vector<FMTaction>&actions, bool aggregateonly = false) const;
-		// DocString: FMTactioncomparator::operator()(const FMTaction&)
+		std::unordered_set<int> getAllAggregatesSet(const std::vector<FMTaction>&actions, bool aggregateonly = false) const;
+		// DocString: FMTActionComparator::operator()(const FMTaction&)
 		/**
-		Matching test operator for FMTactioncomparator.
+		Matching test operator for FMTActionComparator.
 		*/
 		bool operator()(const FMTaction& action) const;
-
 	};
-
-
 }
 
 namespace boost {

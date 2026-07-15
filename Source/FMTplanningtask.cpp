@@ -27,7 +27,7 @@ namespace Parallel
 				}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTplanningtask::copyModels", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTplanningtask::copyModels", __LINE__, __FILE__);
 		}
 		return newmodels;
 	}
@@ -77,7 +77,7 @@ namespace Parallel
 			m_ResultsWriter->setLayer(boost::filesystem::path(primaryfilelocatiron).stem().string());
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTplanningtask::FMTplanningtask", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTplanningtask::FMTplanningtask", __LINE__, __FILE__);
 			}
 	}
 
@@ -87,18 +87,18 @@ namespace Parallel
 		try {
 			m_Models.push_back(std::move(model.clone()));
 			m_Models.back()->setParallelLogger(*tasklogger.get());
-			const std::string SCENARIO_NAME = m_Models.back()->getname();
-			if (!model.getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)||
+			const std::string SCENARIO_NAME = m_Models.back()->getName();
+			if (!model.getParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)||
 				!(!SCENARIO_NAME.empty() && SCENARIO_NAME.find_first_not_of("0123456789") == std::string::npos))
 				{
-				m_ResultsWriter->setLayer(model.getname());
+				m_ResultsWriter->setLayer(model.getName());
 				}
 			m_allSchedules.push_back(schedules);
 			m_Outputs.push_back(loutputs);
 			//;
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTplanningtask::push_back", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTplanningtask::push_back", __LINE__, __FILE__);
 			}
 	}
 
@@ -137,7 +137,7 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTplanningtask::split", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTplanningtask::split", __LINE__, __FILE__);
 			}
 		return tasks;
 	}
@@ -164,21 +164,21 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTplanningtask::spawn", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTplanningtask::spawn", __LINE__, __FILE__);
 			}
 	return std::unique_ptr<FMTtask>(nullptr);
 	}
 
-	void FMTplanningtask::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTplanningtask::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		try {
 			for (std::unique_ptr<Models::FMTmodel>& model : m_Models)
 				{
-				model->passinlogger(logger);
+				model->passInLogger(logger);
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTplanningtask::passinlogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTplanningtask::passInLogger", __LINE__, __FILE__);
 			}
 		}
 
@@ -194,23 +194,23 @@ namespace Parallel
 			std::list<std::unique_ptr<Models::FMTmodel>>modelskept;
 			while (!m_Models.empty())
 			{
-				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + m_Models.front()->getname() + " started\n",0);
-				const bool SOLVE = !m_Models.front()->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD);
+				_logger->logWithLevel("Thread:" + getThreadId() + " Planning of " + m_Models.front()->getName() + " started\n",0);
+				const bool SOLVE = !m_Models.front()->getParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD);
 				const bool FEASIBLE = m_Models.front()->doPlanning(SOLVE, m_allSchedules.front());
 				if (FEASIBLE||!SOLVE)
 					{
 					if (FEASIBLE) {
-						_logger->logwithlevel("Thread:" + getThreadId() 
-							+ " scenario: " + m_Models.front()->getname()
+						_logger->logWithLevel("Thread:" + getThreadId() 
+							+ " scenario: " + m_Models.front()->getName()
 							+ " objective value of: "
 							+ std::to_string(m_Models.front()->getObjectiveValue())
 							+ "\n", 0);
 					}
 					m_ResultsWriter->getAndWrite(m_Models.front(), m_Outputs.front());
 				}else {
-					_logger->logwithlevel("Thread:" + getThreadId() + " infeasible scenario " + m_Models.front()->getname() + "\n", 0);
+					_logger->logWithLevel("Thread:" + getThreadId() + " infeasible scenario " + m_Models.front()->getName() + "\n", 0);
 					}
-				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + m_Models.front()->getname() + " done\n", 0);
+				_logger->logWithLevel("Thread:" + getThreadId() + " Planning of " + m_Models.front()->getName() + " done\n", 0);
 				if (m_keepModels)
 					{
 					modelskept.push_back(std::move(m_Models.front()));
@@ -240,7 +240,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTplanningtask::finalize", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTplanningtask::finalize", __LINE__, __FILE__);
 		}
 	}
 

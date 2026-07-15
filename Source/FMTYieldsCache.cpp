@@ -37,9 +37,9 @@ namespace Core
 			size_t toReserve = 0;
 			if (VERTEX_PTR!=nullptr)
 				{
-				const Models::FMTmodel* MODEL_Ptr = VERTEX_PTR->getmodel();
-				const size_t LENGTH = static_cast<size_t>(MODEL_Ptr->getparameter(Models::FMTintmodelparameters::LENGTH));
-				const FMTyields YIELDS = MODEL_Ptr->getyields();
+				const Models::FMTmodel* MODEL_Ptr = VERTEX_PTR->getModel();
+				const size_t LENGTH = static_cast<size_t>(MODEL_Ptr->getParameter(Models::FMTintmodelparameters::LENGTH));
+				const FMTyields YIELDS = MODEL_Ptr->getYields();
 				for (const auto& HANDLER : YIELDS)
 					{
 					if (HANDLER.second->getType()==Core::FMTyldtype::FMTcomplexyld)
@@ -63,7 +63,7 @@ namespace Core
 		return value;
 		}
 
-	void FMTYieldsCache::_ClearIfTooBig()
+	void FMTYieldsCache::_clearIfTooBig()
 		{
 		const size_t TABLE_SIZE = m_cache->size();
 		bool needToClear = false;
@@ -99,7 +99,7 @@ namespace Core
 		const FMTyieldrequest& p_request,
 		const std::string& p_yield)
 		{
-		_ClearIfTooBig();
+		_clearIfTooBig();
 		const std::pair<FMTYieldDevelopment, double> DATA(_getKey(p_request, p_yield), p_value);
 		m_cache->insert(DATA);
 		}
