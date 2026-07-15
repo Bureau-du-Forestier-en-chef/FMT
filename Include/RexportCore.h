@@ -220,7 +220,7 @@ void exportCore()
 					"@DocString(FMTdevelopment::getage)")
 				.method("getlock", &Core::FMTdevelopment::getLock,
 					"@DocString(FMTdevelopment::getlock)")
-				.method("getperiod", &Core::FMTdevelopment::getperiod,
+				.method("getperiod", &Core::FMTdevelopment::getPeriod,
 					"@DocString(FMTdevelopment::getperiod)")
 				.method("getmask", &Core::FMTdevelopment::getMaskCopy,
 					"@DocString(FMTdevelopment::getmask)")
@@ -480,7 +480,7 @@ void exportCore()
 					"@DocString(FMTschedule::operator+)")
 				.method("actionarea", &Core::FMTschedule::actionArea,
 					"@DocString(FMTschedule::actionarea)")
-				.method("getperiod", &Core::FMTschedule::getperiod,
+				.method("getperiod", &Core::FMTschedule::getPeriod,
 					"@DocString(FMTschedule::getperiod)")
 				.method("setperiod", &Core::FMTschedule::setPeriod,
 					"@DocString(FMTschedule::setperiod)")
