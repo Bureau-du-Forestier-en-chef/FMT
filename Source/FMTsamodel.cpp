@@ -1148,6 +1148,12 @@ namespace Models
             *_logger << "Generator initial state: " + std::to_string(m_generator()) << "\n";
 			const double INITIAL_TEMPERATURE = _Warmup(m_BestSolution, ACTIONS_BINDING);
             m_CoolingSchedule->SetInitialTemperature(INITIAL_TEMPERATURE);
+            if (Spatial::FMTexponentialschedule* expschedule =
+                dynamic_cast<Spatial::FMTexponentialschedule*>(m_CoolingSchedule.get()))
+                {
+                expschedule->SetAnnealingRate(
+                    getparameter(Models::FMTdblmodelparameters::ANNEALING_RATE));
+                }
 			while (!isProvenOptimal())
 				{
                 m_CycleMoves.clear();

@@ -49,7 +49,8 @@ namespace Models
         TOLERANCE = 0,/**< Double tolerance used in doplanning */
         GOALING_SCHEDULE_WEIGHT = 1,/**< Not needed ... maybe more for task ....The weight to use when trying goal a schedule from a strategic model */
         INITIAL_ACCEPTANCE_PROBABILITY = 2,
-        LastDblModelParam = 3/**< End marker, used to allocate a fixed-sized array to store double parameters. */
+        ANNEALING_RATE = 3,/**< Cooling rate used by the exponential cooling schedule in FMTsamodel */
+        LastDblModelParam = 4/**< End marker, used to allocate a fixed-sized array to store double parameters. */
     };
     //DocString: FMTboolmodelparameters
     //
@@ -96,6 +97,8 @@ namespace Models
     Default double parameters are :
         TOLERANCE = FMT_DBL_TOLERANCE
         GOALING_SCHEDULE_WEIGHT = 10000
+        INITIAL_ACCEPTANCE_PROBABILITY = 0.80
+        ANNEALING_RATE = 0.95
     Default bool parameters are :
         FORCE_PARTIAL_BUILD = false
         STRICTLY_POSITIVE = true

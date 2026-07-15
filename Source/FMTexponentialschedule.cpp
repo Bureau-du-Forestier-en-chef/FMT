@@ -17,11 +17,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
-    const double FMTexponentialschedule::m_ANNEALING_RATE = 0.95;
-
-    FMTexponentialschedule::FMTexponentialschedule(): FMTsaschedule("Exponential")
+    FMTexponentialschedule::FMTexponentialschedule(): FMTsaschedule("Exponential"), m_ANNEALING_RATE(0.95)
     {
         //Constructor
+    }
+
+    void FMTexponentialschedule::SetAnnealingRate(const double& p_annealingRate)
+    {
+        m_ANNEALING_RATE = p_annealingRate;
     }
 
     void FMTexponentialschedule::ReduceTemp()

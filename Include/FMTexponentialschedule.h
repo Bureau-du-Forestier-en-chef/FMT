@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -23,8 +23,10 @@ class FMTexponentialschedule : public FMTsaschedule
         ~FMTexponentialschedule()=default;
         void ReduceTemp();
 		std::unique_ptr<FMTsaschedule> Clone()const;
+        // Set the cooling rate used to reduce the temperature at each level.
+        void SetAnnealingRate(const double& p_annealingRate);
     private:
-        static const double m_ANNEALING_RATE;
+        double m_ANNEALING_RATE;
 
     };
 }
