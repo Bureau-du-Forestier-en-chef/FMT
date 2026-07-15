@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -165,27 +165,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::m_BestObjective
     ///The objective value of the best solution
     double m_BestObjective;
-    // DocString: FMTsamodel::WARM_UP_ITERATIONS
-    ///Number of iterations in the warm up
-    static const size_t m_WARM_UP_ITERATIONS = 1000;
-    // DocString: FMTsamodel::MINIMAL_ACCEPTED_MOVES
-    ///Number of iterations in the warm up
-    static const size_t m_MINIMAL_ACCEPTED_MOVES = 3;
-    // DocString: FMTsamodel::UPDATE_PERIOD_FACTOR
-   ///Factor multiplicator for period 1
-    static const size_t m_UPDATE_PERIOD_FACTOR = 5;
-    // DocString: FMTsamodel::SOLUTION_MERGE_ITERATIONS
-    ///Number of iterations on greedy merge
-    static const size_t m_SOLUTION_MERGE_ITERATIONS = 200;
-    // DocString: FMTsamodel::m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU
-    ///Number of iterations on greedy merge
-    static const size_t m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU = 5;
-    // DocString: FMTsamodel::m_TABOU_FLUSH
-    ///Number of iterations before flushing tabou
-    static const size_t m_TABOU_FLUSH = 100000;
-    // DocString: FMTsamodel::m_MOVE_SIZE_FACTOR
-    ///Factor to put on move size
-    static const size_t m_MOVE_SIZE_FACTOR = 20;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use

@@ -33,7 +33,14 @@ namespace Models
         MAX_MOVES = 7,/**< Maximal number of moves allowed by SA */
         MAX_ACCEPTED_CYCLE_MOVES = 8, /**< Maximal number of accepted moves per cycle */
         MAX_CYCLE_MOVES = 9, /**< Maximal number of accepted moves per cycle */
-        LastIntModelParam = 10/**< End marker, used to allocate a fixed-sized array to store int parameters. */
+        WARM_UP_ITERATIONS = 10,/**< Number of iterations in the SA warm up */
+        MINIMAL_ACCEPTED_MOVES = 11,/**< Minimal number of accepted moves per cycle before a move is allowed */
+        UPDATE_PERIOD_FACTOR = 12,/**< Multiplicator factor for period 1 */
+        SOLUTION_MERGE_ITERATIONS = 13,/**< Number of iterations on the greedy merge */
+        MAX_NON_ACCEPTED_MOVES_FOR_TABOU = 14,/**< Number of non accepted moves before a move becomes tabou */
+        TABOU_FLUSH = 15,/**< Number of iterations before flushing the tabou */
+        MOVE_SIZE_FACTOR = 16,/**< Factor applied to the move size */
+        LastIntModelParam = 17/**< End marker, used to allocate a fixed-sized array to store int parameters. */
     };
     //DocString: FMTdblmodelparameters
     //
@@ -79,7 +86,14 @@ namespace Models
         NUMBER_OF_ITERATIONS = 10000
         PRESOLVE_ITERATIONS = 10
         NUMBER_OF_THREADS = 4
-    Default double parameters are : 
+        WARM_UP_ITERATIONS = 1000
+        MINIMAL_ACCEPTED_MOVES = 3
+        UPDATE_PERIOD_FACTOR = 5
+        SOLUTION_MERGE_ITERATIONS = 200
+        MAX_NON_ACCEPTED_MOVES_FOR_TABOU = 5
+        TABOU_FLUSH = 100000
+        MOVE_SIZE_FACTOR = 20
+    Default double parameters are :
         TOLERANCE = FMT_DBL_TOLERANCE
         GOALING_SCHEDULE_WEIGHT = 10000
     Default bool parameters are :

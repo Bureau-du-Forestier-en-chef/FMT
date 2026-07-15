@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -243,7 +243,7 @@ namespace Models
             const size_t MINIMUM_MOVES = size_t(1);
             const size_t MAXIMUM_MOVES = static_cast<size_t>(
                 static_cast<double>(p_MaxSize) * MAP_RATIO);
-            sizeOfMove = std::max(MINIMUM_MOVES,MAXIMUM_MOVES / m_MOVE_SIZE_FACTOR);
+            sizeOfMove = std::max(MINIMUM_MOVES, MAXIMUM_MOVES / static_cast<size_t>(getparameter(Models::FMTintmodelparameters::MOVE_SIZE_FACTOR)));
         }catch (...)
             {
             _exhandler->raisefromcatch("", 
@@ -717,7 +717,7 @@ namespace Models
 
    void  FMTsamodel::_ResetTabouMoves()
         {
-        if (m_TotalMoves % m_TABOU_FLUSH  == 0)
+        if (m_TotalMoves % static_cast<size_t>(getparameter(Models::FMTintmodelparameters::TABOU_FLUSH))  == 0)
             {
             for (auto& MOVE : m_NotAcceptedMovesCount)
                 {
@@ -829,7 +829,7 @@ namespace Models
     bool  FMTsamodel::_AllowMove(const FMTsamove& move) const
     {
         try {
-            return  (m_NotAcceptedMovesCount.at(static_cast<int>(move) - 1) <= m_MINIMAL_ACCEPTED_MOVES);
+            return  (m_NotAcceptedMovesCount.at(static_cast<int>(move) - 1) <= static_cast<size_t>(getparameter(Models::FMTintmodelparameters::MINIMAL_ACCEPTED_MOVES)));
         }catch (...)
         {
             _exhandler->raisefromcatch("", "FMTsamodel::_AllowMove", __LINE__, __FILE__);
@@ -863,7 +863,7 @@ namespace Models
         for (int i = 1; i < static_cast<int>(FMTsamove::MoveCount);++i)
         {
             if (m_NotAcceptedMovesCount.at(i - 1)
-                <= m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU)
+                <= static_cast<size_t>(getparameter(Models::FMTintmodelparameters::MAX_NON_ACCEPTED_MOVES_FOR_TABOU)))
             {
                 potentialMoves.push_back(static_cast<FMTsamove>(i));
             }
@@ -961,8 +961,8 @@ namespace Models
         const std::vector<double>actuals = GetConstraintsValues(actual);
         std::vector<double>maximals = actuals;
         std::vector<double>deltasums(constraints.size(), 0);
-        size_t iterations = m_WARM_UP_ITERATIONS;
-        const double totalits = static_cast<double>(m_WARM_UP_ITERATIONS);
+        size_t iterations = static_cast<size_t>(getparameter(Models::FMTintmodelparameters::WARM_UP_ITERATIONS));
+        const double totalits = static_cast<double>(iterations);
         //double deltasum = 0;
         while (iterations > 0)
         {
