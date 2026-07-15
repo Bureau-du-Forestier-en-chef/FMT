@@ -511,7 +511,7 @@ bool FMTaction::notUse() const
 	for (const auto& value : *this)
 		{
 		if (!value.second.emptyperiod()&&
-			value.second.getperiodlowerbound() == 0 &&
+			value.second.getperiodlowerbound() <= 0 &&
 			value.second.getperiodupperbound() == 0)
 			{
 			++count;

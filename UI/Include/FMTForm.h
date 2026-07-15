@@ -43,6 +43,7 @@ namespace Wrapper
 		// en append) et un exception handler frais a partir de la configuration figee,
 		// pour que les operations suivantes loggent de nouveau correctement.
 		void RecoverFromCrash();
+		void CloseLogger();
 		bool Cache_EnleverModel(
 			int indexScenario);
 		System::Collections::Generic::List<System::String^>^ ObtenirListeContraintes(
@@ -289,15 +290,15 @@ namespace Wrapper
 			System::Collections::Generic::List<int>^ p_themesNumber,
 			System::String^ cheminRasters);
 		/**
-		* @brief �crit sur le disque tous les mod�les pr�sents dans la cache.
+		* @brief  crit sur le disque tous les mod les pr sents dans la cache.
 		*
-		* Parcourt la cache et �crit chaque mod�le � la m�me localisation .pri via
-		* FMTmodelparser::writetoproject : le 1er mod�le devient la base (ROOT) du
-		* projet, les suivants sont �crits comme sc�narios dans
-		* Scenarios/<nom_du_model>/. Chaque mod�le doit donc porter un nom distinct.
+		* Parcourt la cache et  crit chaque mod le   la m me localisation .pri via
+		* FMTmodelparser::writetoproject : le 1er mod le devient la base (ROOT) du
+		* projet, les suivants sont  crits comme sc narios dans
+		* Scenarios/<nom_du_model>/. Chaque mod le doit donc porter un nom distinct.
 		*
 		*@param p_primaryLocation Le path du fichier .pri de destination.
-		*@return `true` si l'�criture a r�ussi, `false` sinon.
+		*@return `true` si l' criture a r ussi, `false` sinon.
 		*/
 		bool writetoprojectfromcache(
 			System::String^ p_primaryLocation);

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -9,8 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include <vector>
+#include <memory>
 #include "FMTGraphValues.h"
-#include <boost/flyweight.hpp>
 
 namespace Spatial
 	{
@@ -25,11 +25,13 @@ namespace Spatial
 				return m_GraphId;
 				}
 			void SetValues(size_t p_ConstraintId,
-							const std::vector<double>& p_Values);
+							const std::shared_ptr<const FMTGraphValues>& p_Values);
 			void SetValuesSize(size_t p_ValuesSize);
 			bool IsEmpty() const;
 		private:
-			std::vector<boost::flyweight<FMTGraphValues>> m_Values;
+			// Interned values are shared through shared_ptr (see FMTSpatialGraphs::_InternValues),
+			// which replaces the former boost::flyweight process-wide static factory.
+			std::vector<std::shared_ptr<const FMTGraphValues>> m_Values;
 			size_t m_GraphId;
 		};
 	}

@@ -3,7 +3,6 @@
 #include "FMTexception.h"
 #include "FMTmodel.h"
 #include "FMTmodelparser.h"
-#include "FMTscheduleparser.h"
 #include "SES.h"
 #include "FMTfreeexceptionhandler.h"
 #include <filesystem>
@@ -14,26 +13,31 @@
 
 int main(int argc, char* argv[])
 {
-	FMTWrapperCore::SESParameters params;
+	FMTWrapperCore::SAParameters params;
 
-	if (argc > 1) 
+	// SAParameters ne contient pas le chemin du .pri; on le garde localement
+	// car il est requis pour readproject (mais pas pour RunOptimization).
+	std::string primaryFilePath;
+
+	if (argc > 1)
 	{
 		const std::string jsonLocation = argv[1];
 		boost::property_tree::ptree tree;
 		boost::property_tree::read_json(jsonLocation, tree);
 
-		params.primaryFilePath = tree.get<std::string>("primaryFilePath");
+		primaryFilePath = tree.get<std::string>("primaryFilePath");
 		params.rastersPath = tree.get<std::string>("rastersPath");
 		params.outputPath = tree.get<std::string>("outputPath");
 		params.scenarioName = tree.get<std::string>("scenarioName");
 		params.numberOfPeriods = tree.get<int>("numberOfPeriods");
-		params.greedySearchIterations = tree.get<int>("greedySearchIterations");
+		params.maxMoves = tree.get<int>("maxMoves");
+		params.maxAcceptedMoves = tree.get<int>("maxAcceptedMoves");
+		params.maxCycleMoves = tree.get<int>("maxCycleMoves");
 		params.useStanlock = tree.get<bool>("useStanlock");
 		params.outputLevel = tree.get<int>("outputLevel");
 		params.outputMinPeriod = tree.get<int>("outputMinPeriod");
 		params.outputMaxPeriod = tree.get<int>("outputMaxPeriod");
 		params.gdalProvider = tree.get<std::string>("gdalProvider");
-		params.carbonMode = tree.get<bool>("carbonMode");
 		params.generateEvents = tree.get<bool>("generateEvents");
 		params.generateSpatialOutputs = tree.get<bool>("generateSpatialOutputs");
 		for (const auto& item : tree.get_child("constraintNames")) {
@@ -42,34 +46,28 @@ int main(int argc, char* argv[])
 		for (const auto& item : tree.get_child("outputNames")) {
 			params.outputNames.push_back(item.second.get_value<std::string>());
 		}
-		for (const auto& item : tree.get_child("predictorYields")) {
-			params.predictorYields.push_back(item.second.get_value<std::string>());
-		}
-		for (const auto& item : tree.get_child("growthThemes")) {
-			params.growthThemes.push_back(item.second.get_value<int>());
-		}
 	}
 	else
 	{
-		params.primaryFilePath = "C:\\Users\\Admlocal\\Documents\\issues\\ses\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
-		params.rastersPath = "C:\\Users\\Admlocal\\Documents\\issues\\ses\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
-		params.outputPath = "C:\\Users\\Admlocal\\Documents\\SCRAP";
-		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
-		params.numberOfPeriods = 5;
-		params.greedySearchIterations = 5;
+		// TODO: à remplir avec un jeu de données SA valide
+		primaryFilePath = "TODO_PATH.pri";
+		params.rastersPath = "TODO_RASTERS";
+		params.outputPath = "TODO_OUTPUT";
+		params.scenarioName = "TODO_SCENARIO";
+		params.numberOfPeriods = 0;      // TODO
+		params.maxMoves = 0;             // TODO
+		params.maxAcceptedMoves = 0;     // TODO
+		params.maxCycleMoves = 0;        // TODO
 		params.useStanlock = false;
 		//outputLevel: STRATE = 3, TH�MATIQUE = 1, TOTALE = 2
 		params.outputLevel = 2;
-		params.outputMinPeriod = 1;
-		params.outputMaxPeriod = 5;
+		params.outputMinPeriod = 1;      // TODO
+		params.outputMaxPeriod = 1;      // TODO
 		params.gdalProvider = "CSV";
-		params.carbonMode = false;
 		params.generateEvents = false;
 		params.generateSpatialOutputs = false;
-		params.constraintNames = {"_MAX OVOLTOTREC_YP23 2.._LENGTH"};
-		params.outputNames = {"OVOLTOTREC"};
-		params.predictorYields = {};
-		params.growthThemes = {};
+		params.constraintNames = {};     // TODO
+		params.outputNames = {};         // TODO
 	}
 
 	Parser::FMTmodelparser modelparser;
@@ -96,11 +94,9 @@ int main(int argc, char* argv[])
 
     std::vector<std::string> scenarioName;
 	scenarioName.push_back(params.scenarioName);
-    std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenarioName);
+    std::vector<Models::FMTmodel> models = modelparser.readproject(primaryFilePath, scenarioName);
 
     Models::FMTmodel& selectedModel = models[0];
-
-	std::vector<Core::FMTschedule> schedules = modelparser.readschedules(params.primaryFilePath, models).at(0);
 
 	if (!std::filesystem::is_directory(params.outputPath))
 	{
@@ -111,16 +107,15 @@ int main(int argc, char* argv[])
 		Exception::FMTfreeexceptionhandler().raise(
 			Exception::FMTexc::FMTfunctionfailed,
 			"Not a valid raster path",
-			"testWrapperCoreSES", __LINE__, params.primaryFilePath);
+			"testWrapperCoreSA", __LINE__, primaryFilePath);
 	}
 
-	FMTWrapperCore::SESResults results;
+	FMTWrapperCore::SAResults results;
 	try
 	{
-		results = FMTWrapperCore::SES::RunSES(
-			params,        
-			selectedModel,    
-			schedules);
+		results = FMTWrapperCore::SES::RunOptimization(
+			params,
+			selectedModel);
 	}
 	catch (const std::exception& e)
 	{
@@ -153,13 +148,13 @@ int main(int argc, char* argv[])
 			{
 				if (std::abs(it->periodValues.at(itemNum) - item.second.get_value<double>()) >= 1)
 				{
-					std::cout << ("Error: " + std::to_string(it->periodValues.at(itemNum)) 
-						+ "!=" + std::to_string(item.second.get_value<double>()) 
+					std::cout << ("Error: " + std::to_string(it->periodValues.at(itemNum))
+						+ "!=" + std::to_string(item.second.get_value<double>())
 						+ "at period " + std::to_string(itemNum) + "\n");
 					Exception::FMTfreeexceptionhandler().raise(
 						Exception::FMTexc::FMTfunctionfailed,
 						results.errorMessage,
-						"testWrapperCoreSES", __LINE__, params.primaryFilePath);
+						"testWrapperCoreSA", __LINE__, primaryFilePath);
 				}
 				++itemNum;
 			}
