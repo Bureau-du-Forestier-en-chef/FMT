@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02020265\\11 fevrier\\323_TYFSansPre_avsp.pri";
-			scenario = "ROOT";
+			primarylocation = "D://CC_modele_feu//CC_V3//Mod_cc_v3.pri";
+			scenario = "stochastique_Histo_02";
 			//primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/02571/22_Phase1_Corr_Volume/24_ModeleWS/02_Travail/2026-04-13/PC_10067_U02571_2028_Corr_volume/PC_10067_U02571_2028_MODB01.pri";
 			//scenario = "160_Equi_apsp";
 			length = 20; 
