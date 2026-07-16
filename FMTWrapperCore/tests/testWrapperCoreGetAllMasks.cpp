@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
 
 	if (RESULT.size() != resultSize) {
 		std::cout << std::to_string(RESULT.size()) + "!=" + std::to_string(resultSize);
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
 	}
 

@@ -12,9 +12,9 @@
 #include "FMTobject.h"
 
 
-Wrapper::FMTexceptionhandlerwarning::FMTexceptionhandlerwarning(const size_t& maxnumberofwarnings) : FMTexceptionhandler()
+Wrapper::FMTexceptionhandlerwarning::FMTexceptionhandlerwarning(const size_t& maxnumberofwarnings) : FMTExceptionHandler()
 {
-	FMTexceptionhandler::setMaxWarningsBeforeSilenced(maxnumberofwarnings);
+	FMTExceptionHandler::setMaxWarningsBeforeSilenced(maxnumberofwarnings);
 	ResetThread();
 };
 
@@ -64,7 +64,7 @@ std::string Wrapper::FMTexceptionhandlerwarning::geterrorstack(
 	}
 	ModifLogger->dokeepprint();
 	try {
-		Exception::FMTexceptionhandler::printExceptions(text, method, line, fil, Core::FMTsection::Empty);
+		Exception::FMTExceptionHandler::printExceptions(text, method, line, fil, Core::FMTsection::Empty);
 	}catch (...)
 		{
 		//Do nothing
@@ -80,37 +80,37 @@ void Wrapper::FMTexceptionhandlerwarning::printExceptions(std::string text,
 {
 	raiseFromCatch(text, method, line, fil, lsection);
 }
-std::unique_ptr <Exception::FMTexceptionhandler> Wrapper::FMTexceptionhandlerwarning::Clone() const
+std::unique_ptr <Exception::FMTExceptionHandler> Wrapper::FMTexceptionhandlerwarning::Clone() const
 {
-	return std::unique_ptr<Exception::FMTexceptionhandler>(new FMTexceptionhandlerwarning(*this));
+	return std::unique_ptr<Exception::FMTExceptionHandler>(new FMTexceptionhandlerwarning(*this));
 }
 
-Exception::FMTexception Wrapper::FMTexceptionhandlerwarning::raise(Exception::FMTexc lexception, std::string text, const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
+Exception::FMTException Wrapper::FMTexceptionhandlerwarning::raise(Exception::FMTexc lexception, std::string text, const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 {
 	const Exception::FMTlev LEVEL = getLevel(lexception);
-	Exception::FMTexception excp = Exception::FMTexception(lexception, updateStatus(lexception, text));
+	Exception::FMTException excp = Exception::FMTException(lexception, updateStatus(lexception, text));
 	if (lsection != Core::FMTsection::Empty)
 	{
-		excp = Exception::FMTexception(lexception, lsection, updateStatus(lexception, text));
+		excp = Exception::FMTException(lexception, lsection, updateStatus(lexception, text));
 	}
 	if (LEVEL != Exception::FMTlev::FMT_Warning)
 	{
 		if (lsection == Core::FMTsection::Empty)
 		{
-			excp = Exception::FMTexception(lexception, updateStatus(lexception, text), method, file, line);
+			excp = Exception::FMTException(lexception, updateStatus(lexception, text), method, file, line);
 		}
 		else {
-			excp = Exception::FMTexception(lexception, lsection, updateStatus(lexception, text), method, file, line);
+			excp = Exception::FMTException(lexception, lsection, updateStatus(lexception, text), method, file, line);
 		}
 		if (throwit && (LEVEL == Exception::FMTlev::FMT_logic || LEVEL == Exception::FMTlev::FMT_range) && !needToRethrow())
 		{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
-			std::throw_with_nested(Exception::FMTerror(excp));
+			std::throw_with_nested(Exception::FMTError(excp));
 		}
 	}
 	else if (throwit)
 	{
-		Exception::FMTwarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
+		Exception::FMTWarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
 	}
 	return excp;
 }

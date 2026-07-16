@@ -14,23 +14,23 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Exception
 {
-	FMTerror::FMTerror() : FMTexception() {}
-	FMTerror::FMTerror(const FMTexception& rhs) : FMTexception(rhs) {}
-	FMTerror::FMTerror(const FMTexc lexception, const std::string message) : FMTexception(lexception, message) {}
-	FMTerror::FMTerror(const FMTexc lexception, const Core::FMTsection lsection, const std::string message) :
-		FMTexception(lexception, lsection, message) {}
-	FMTerror::FMTerror(const FMTexc lexception, const Core::FMTsection lsection, const std::string message,
+	FMTError::FMTError() : FMTException() {}
+	FMTError::FMTError(const FMTException& rhs) : FMTException(rhs) {}
+	FMTError::FMTError(const FMTexc lexception, const std::string message) : FMTException(lexception, message) {}
+	FMTError::FMTError(const FMTexc lexception, const Core::FMTsection lsection, const std::string message) :
+		FMTException(lexception, lsection, message) {}
+	FMTError::FMTError(const FMTexc lexception, const Core::FMTsection lsection, const std::string message,
 		const std::string& lmethod, const std::string& lfile, const int& lline) : 
-		FMTexception(lexception, lsection, message, lmethod, lfile, lline) {}
-	FMTerror::FMTerror(const FMTexc lexception, const std::string message,
+		FMTException(lexception, lsection, message, lmethod, lfile, lline) {}
+	FMTError::FMTError(const FMTexc lexception, const std::string message,
 		const std::string& lmethod, const std::string& lfile, const int& lline) :
-		FMTexception(lexception, message, lmethod, lfile, lline)
+		FMTException(lexception, message, lmethod, lfile, lline)
 		{
 
 		}
 	#if defined FMTWITHOSI
-		FMTerror::FMTerror(const CoinError& coinexception):
-			FMTexception(FMTexc::FMTcoinerror,
+		FMTError::FMTError(const CoinError& coinexception):
+			FMTException(FMTexc::FMTcoinerror,
 				"Coin Function failed: " + coinexception.message(), coinexception.className() + "::" + coinexception.methodName(),
 				coinexception.fileName(), coinexception.lineNumber())
 			{
@@ -38,8 +38,8 @@ namespace Exception
 			}
 	#endif
 
-	FMTerror::FMTerror(const boost::bad_graph& boostexception):
-		FMTexception(FMTexc::FMTboostgrapherror, "Boost Graph Function failed: "+ std::string(boostexception.what()))
+	FMTError::FMTError(const boost::bad_graph& boostexception):
+		FMTException(FMTexc::FMTboostgrapherror, "Boost Graph Function failed: "+ std::string(boostexception.what()))
 		{
 
 		}

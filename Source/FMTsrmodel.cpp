@@ -1481,7 +1481,7 @@ namespace Models
 		return &solver;
 	}
 
-	void FMTsrmodel::setParallelLogger(Logging::FMTlogger& logger)
+	void FMTsrmodel::setParallelLogger(Logging::FMTLogger& logger)
 	{
 		try {
 			solver.passInMessageHandler(logger);
@@ -1491,7 +1491,7 @@ namespace Models
 			}
 	}
 
-	void FMTsrmodel::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTsrmodel::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 	{
 		solver.passInLogger(logger);
 	}

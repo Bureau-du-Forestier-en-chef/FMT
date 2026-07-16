@@ -103,7 +103,7 @@ namespace Parallel
 		// DocString: FMTtask::tasklogger
 		///Logger for solver in parallel...coinmessagehandler does not support concurency.
 		///This logger wont print anything so dont use it in parallel.
-		std::unique_ptr<Logging::FMTlogger>tasklogger;
+		std::unique_ptr<Logging::FMTLogger>tasklogger;
 		// DocString: FMTtask::setstatus()
 		/**
 		Change the status of the task

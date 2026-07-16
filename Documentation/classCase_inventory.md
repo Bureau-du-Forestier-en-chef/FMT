@@ -90,7 +90,7 @@
 | `FMTmovestats` | `FMTMoveStats` | mécanique |  |
 | `FMTnssmodel` | `FMTNssModel` | **à confirmer** | nss = non spatial simulation |
 | `FMTobject` | `FMTObject` | mécanique |  |
-| `FMTopareaschedulertask` | `FMTOpareaSchedulerTask` | **à confirmer** | « Oparea » gardé tel quel, ou étendre en FMTOperatingAreaSchedulerTask ? |
+| `FMTopareaschedulertask` | `FMTOpAreaSchedulerTask` | **acté** | « oparea » = *operating area* → `Op` + `Area`. Tranché par Gabriel le 2026-07-16. |
 | `FMToperatingarea` | `FMTOperatingArea` | mécanique |  |
 | `FMToperatingareacluster` | `FMTOperatingAreaCluster` | mécanique |  |
 | `FMToperatingareaclusterbinary` | `FMTOperatingAreaClusterBinary` | mécanique |  |

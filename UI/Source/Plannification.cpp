@@ -36,7 +36,7 @@ namespace Wrapper
 		try
 		{
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTdefaultlogger().getLogStamp() << "\n";
+			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
 			std::vector<std::string> layersoptions;
 			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
 			{
@@ -109,7 +109,7 @@ namespace Wrapper
 		try
 		{
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTdefaultlogger().getLogStamp() << "\n";
+			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
 			Models::FMTlpmodel global(FMTFormCache::GetInstance()->getModel(indexScenStrategique), static_cast<Models::FMTsolverinterface>(solver));
 			global.setParameter(Models::FMTintmodelparameters::LENGTH, period);
 			global.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);

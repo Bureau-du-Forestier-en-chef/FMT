@@ -29,7 +29,7 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTExceptionHandler* modelExceptionHandler = p_model.getExceptionHandler();
 		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::getMaxAge", __LINE__, __FILE__);
 	}
 	return result;
@@ -44,7 +44,7 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTExceptionHandler* modelExceptionHandler = p_model.getExceptionHandler();
 		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::getYield", __LINE__, __FILE__);
 	}
 	return result;
@@ -138,7 +138,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTExceptionHandler* modelExceptionHandler = p_model.getExceptionHandler();
 		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::getAllMasks", __LINE__, __FILE__);
 	}
 	return masks;
@@ -152,7 +152,7 @@ void FMTWrapperCore::Tools::writeToProject(const Models::FMTmodel& p_model, cons
 	}
 	catch (...)
 	{
-		Exception::FMTexceptionhandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTExceptionHandler* modelExceptionHandler = p_model.getExceptionHandler();
 		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::writetoproject", __LINE__, __FILE__);
 	}
 }

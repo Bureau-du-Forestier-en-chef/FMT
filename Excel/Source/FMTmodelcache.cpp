@@ -1133,7 +1133,7 @@ namespace Wrapper
 		return log;
 		}
 
-	void FMTmodelcache::putlogger(const std::unique_ptr<Logging::FMTlogger>& log)
+	void FMTmodelcache::putlogger(const std::unique_ptr<Logging::FMTLogger>& log)
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(*mtx);
 		Core::FMTobject::passInLogger(log);

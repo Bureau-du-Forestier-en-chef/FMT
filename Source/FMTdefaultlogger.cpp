@@ -18,14 +18,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Logging
 	{
 
-	std::unique_ptr <FMTlogger> FMTdefaultlogger::Clone() const
+	std::unique_ptr <FMTLogger> FMTDefaultLogger::Clone() const
 	{
-		return std::unique_ptr <FMTlogger>(new FMTdefaultlogger(*this));
+		return std::unique_ptr <FMTLogger>(new FMTDefaultLogger(*this));
 	}
 
 
-	FMTdefaultlogger::FMTdefaultlogger():
-		FMTlogger()
+	FMTDefaultLogger::FMTDefaultLogger():
+		FMTLogger()
 		{
 		#ifdef FMTWITHOSI
 			solverref->setLogLevel(1);
@@ -33,22 +33,22 @@ namespace Logging
 		}
 
 #ifdef FMTWITHOSI
-	int FMTdefaultlogger::print()
+	int FMTDefaultLogger::print()
 		{
-		return FMTlogger::print();
+		return FMTLogger::print();
 		}
 
-	void FMTdefaultlogger::checkSeverity()
+	void FMTDefaultLogger::checkSeverity()
 		{
-		FMTlogger::checkSeverity();
+		FMTLogger::checkSeverity();
 		}
 
-	FMTlogger* FMTdefaultlogger::clone() const
+	FMTLogger* FMTDefaultLogger::clone() const
 		{
-		return new FMTdefaultlogger(*this);
+		return new FMTDefaultLogger(*this);
 		}
 #endif
 
 	}
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTdefaultlogger)
+BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTDefaultLogger)

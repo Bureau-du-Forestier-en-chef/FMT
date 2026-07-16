@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<bool>playback;
@@ -57,17 +57,17 @@ int main(int argc, char *argv[])
 	handler.conccurentRun();
 	const std::vector<const Parallel::FMTplanningtask*> tasks= handler.getTasksFromDynamicCast<Parallel::FMTplanningtask>();
 	const std::vector<const Models::FMTlpmodel*> modelsresults =  tasks.at(0)->getModelsFromDynamicCast<Models::FMTlpmodel>();
-	Logging::FMTdefaultlogger() <<"OBJECTIVE "<< modelsresults.at(0)->getObjValue() << "\n";
+	Logging::FMTDefaultLogger() <<"OBJECTIVE "<< modelsresults.at(0)->getObjValue() << "\n";
 	const double sumvalue = modelsresults.at(0)->getOutput(selectedoutputs.at(1), 5, Core::FMToutputlevel::totalonly).at("Total");
 	const double avgvalue = modelsresults.at(0)->getOutput(selectedoutputs.at(2), 5, Core::FMToutputlevel::totalonly).at("Total");
 	if (std::abs(sumvalue-1498.60684)>0.1)
 		{
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value for sum "+std::to_string(sumvalue),
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value for sum "+std::to_string(sumvalue),
 			"sumandavgtest", __LINE__,"");
 		}
 	if (std::abs(avgvalue - 299.721368) > 0.1)
 		{
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value for average " + std::to_string(avgvalue),
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value for average " + std::to_string(avgvalue),
 			"sumandavgtest", __LINE__, "");
 		}
 

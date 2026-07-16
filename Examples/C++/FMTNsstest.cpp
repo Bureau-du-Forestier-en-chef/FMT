@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	std::string PRIMARY;
 	std::string SCENARIO;
 	std::string  OUTPUT;
@@ -77,11 +77,11 @@ int main(int argc, char* argv[])
 	}
 	
 	const double RESULT = NssModel.getOutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
-	Logging::FMTdefaultlogger() << "VALUE OF "<< RESULT<<" "<< OUTPUT_VALUE << "\n";
+	Logging::FMTDefaultLogger() << "VALUE OF "<< RESULT<<" "<< OUTPUT_VALUE << "\n";
 	if (argc == 4 && std::abs(RESULT - OUTPUT_VALUE)>1)
 	{
-		Logging::FMTdefaultlogger() << "bad" << "\n";
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+		Logging::FMTDefaultLogger() << "bad" << "\n";
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"FMTNsstest", __LINE__, PRIMARY);
 	}
 	return 0;

@@ -14,7 +14,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-    Logging::FMTdefaultlogger().logStamp();
+    Logging::FMTDefaultLogger().logStamp();
     std::string primarylocation;
     std::string scenario;
     int side;//196

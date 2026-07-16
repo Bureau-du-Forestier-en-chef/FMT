@@ -129,14 +129,14 @@ enum FMTexc
 	FMTunreachable_threshold = 87
     };
 
-// DocString: FMTexception
+// DocString: FMTException
 /**
-FMTexception is the exception base class for FMT. All the informations regarding a given exception
+FMTException is the exception base class for FMT. All the informations regarding a given exception
 is kept by this class (type,section and message).
 */
-class FMTEXPORT FMTexception : public std::exception
+class FMTEXPORT FMTException : public std::exception
     {
-	// DocString: FMTexception::serialize
+	// DocString: FMTException::serialize
 	/**
 	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
@@ -144,120 +144,120 @@ class FMTEXPORT FMTexception : public std::exception
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version);
     protected:
-		// DocString: FMTexception::holdup
+		// DocString: FMTException::holdup
 		///This member is normaly set to false but for the free exception handler
 		///we want to let the exception percolate to boost::python and let the user handel the exception when holdup=true.
 		bool holdup;
-		// DocString: FMTexception::_msg
+		// DocString: FMTException::_msg
 		///Keeps the message string of the exception.
 		std::string _msg;
-		// DocString: FMTexception::exceptiontype
+		// DocString: FMTException::exceptiontype
 		///Type of the exception thrown.
 		FMTexc exceptiontype;
-		// DocString: FMTexception::section
+		// DocString: FMTException::section
 		///Section in which the exception just happened.
 		Core::FMTsection section;
-		// DocString: FMTexception::method
+		// DocString: FMTException::method
 		///Function where the exception just happened
 		std::string method;
-		// DocString: FMTexception::file
+		// DocString: FMTException::file
 		///Source file where the exception just happened
 		std::string file;
-		// DocString: FMTexception::line
+		// DocString: FMTException::line
 		///Source file line where the exception just happened
 		int line;
     public:
-	// DocString: FMTexception()
+	// DocString: FMTException()
 	/**
-	FMTexception default constructor.
+	FMTException default constructor.
 	*/
-    FMTexception();
-	// DocString: ~FMTexception()
+    FMTException();
+	// DocString: ~FMTException()
 	/**
-	FMTexception default virtual destructor.
+	FMTException default virtual destructor.
 	*/
-    virtual ~FMTexception() = default;
+    virtual ~FMTException() = default;
 
-	// DocString: FMTexception()
+	// DocString: FMTException()
 	/**
-	FMTexception with std exception
+	FMTException with std exception
 	*/
-	FMTexception(const std::exception& baseexception);
-	// DocString: FMTexception(const FMTexc,const std::string)
+	FMTException(const std::exception& baseexception);
+	// DocString: FMTException(const FMTexc,const std::string)
 	/**
-	FMTexception constructor taking a exception type and a message.
+	FMTException constructor taking a exception type and a message.
 	*/
-    FMTexception(const FMTexc lexception,const std::string message);
+    FMTException(const FMTexc lexception,const std::string message);
 
-	// DocString: FMTexception(const FMTexc,Core::FMTsection,const std::string)
+	// DocString: FMTException(const FMTexc,Core::FMTsection,const std::string)
 	/**
-	FMTexception constructor taking a exception type a section and a message.
+	FMTException constructor taking a exception type a section and a message.
 	*/
-    FMTexception(const FMTexc lexception,Core::FMTsection lsection,const std::string message);
-	// DocString: FMTexception(const FMTexc,Core::FMTsection,const std::string,const std::string&,const std::string&,const std::string&)
+    FMTException(const FMTexc lexception,Core::FMTsection lsection,const std::string message);
+	// DocString: FMTException(const FMTexc,Core::FMTsection,const std::string,const std::string&,const std::string&,const std::string&)
 	/**
-	FMTexception constructor taking a exception type a section and a message, the method, file and line
+	FMTException constructor taking a exception type a section and a message, the method, file and line
 	where the exception juste happened.
 	*/
-	FMTexception(const FMTexc lexception,Core::FMTsection lsection,const std::string message,
+	FMTException(const FMTexc lexception,Core::FMTsection lsection,const std::string message,
 		const std::string& lmethod, const std::string& lfile, const int& lline);
 
-	// DocString: FMTexception(const FMTexc,Core::FMTsection,const std::string,const std::string&)
+	// DocString: FMTException(const FMTexc,Core::FMTsection,const std::string,const std::string&)
 	/**
-	FMTexception constructor taking a exception type a section and a message, the method
+	FMTException constructor taking a exception type a section and a message, the method
 	where the exception juste happened.
 	*/
-	FMTexception(const FMTexc lexception, Core::FMTsection lsection, const std::string message,
+	FMTException(const FMTexc lexception, Core::FMTsection lsection, const std::string message,
 		const std::string& lmethod);
 
-	// DocString: FMTexception(const FMTexc, const std::string&,const std::string&,const std::string&,const int&)
+	// DocString: FMTException(const FMTexc, const std::string&,const std::string&,const std::string&,const int&)
 	/**
-	FMTexception constructor taking a exception type and a message.
+	FMTException constructor taking a exception type and a message.
 	*/
-	FMTexception(const FMTexc lexception, const std::string message,
+	FMTException(const FMTexc lexception, const std::string message,
 		const std::string& lmethod, const std::string& lfile, const int& lline);
 
-	// DocString: FMTexception(const FMTexc, const std::string&,const std::string&,)
+	// DocString: FMTException(const FMTexc, const std::string&,const std::string&,)
 	/**
-	FMTexception constructor taking a exception type and a message and method.
+	FMTException constructor taking a exception type and a message and method.
 	*/
-	FMTexception(const FMTexc lexception, const std::string message,const std::string& lmethod);
-	// DocString: FMTexception(const FMTexception&)
+	FMTException(const FMTexc lexception, const std::string message,const std::string& lmethod);
+	// DocString: FMTException(const FMTException&)
 	/**
-	FMTexception default copy constructor.
+	FMTException default copy constructor.
 	*/
-    FMTexception(const FMTexception& rhs);
-	// DocString: FMTexception::operator=
+    FMTException(const FMTException& rhs);
+	// DocString: FMTException::operator=
 	/**
-	FMTexception default copy assignment operator.
+	FMTException default copy assignment operator.
 	*/
-    FMTexception& operator = (const FMTexception& rhs);
-	// DocString: FMTexception::getType
+    FMTException& operator = (const FMTException& rhs);
+	// DocString: FMTException::getType
 	/**
-	The function returns the type of exception kept by this FMTexception.
+	The function returns the type of exception kept by this FMTException.
 	*/
 	FMTexc getType() const;
-	// DocString: FMTexception::getSection
+	// DocString: FMTException::getSection
 	/**
 	The function returns the section in which the exception occured.
 	*/
 	Core::FMTsection getSection() const;
-	// DocString: FMTexception::what
+	// DocString: FMTException::what
 	/**
 	This function override the what function of the exception base class returning the message string.
 	*/
     const char* what() const throw() override;
-	// DocString: FMTexception::hold
+	// DocString: FMTException::hold
 	/**
 	Returns the value of the holdup member.
 	*/
 	bool hold() const;
-	// DocString: FMTexception::setHold
+	// DocString: FMTException::setHold
 	/**
 	The function sets the value of holdup member.
 	*/
 	void setHold(bool side);
-	// DocString: FMTexception::getMethod
+	// DocString: FMTException::getMethod
 	/**
 	Returns the method in which the exception occured.
 	*/
@@ -265,7 +265,7 @@ class FMTEXPORT FMTexception : public std::exception
 		{
 		return method;
 		}
-	// DocString: FMTexception::getFile
+	// DocString: FMTException::getFile
 	/**
 	Returns the source file in which the exception occured.
 	*/
@@ -273,7 +273,7 @@ class FMTEXPORT FMTexception : public std::exception
 		{
 		return file;
 		}
-	// DocString: FMTexception::getLine
+	// DocString: FMTException::getLine
 	/**
 	Returns the source file line in which the exception occured.
 	*/
@@ -281,7 +281,7 @@ class FMTEXPORT FMTexception : public std::exception
 		{
 		return line;
 		}
-	// DocString: FMTexception::getSrcInfo
+	// DocString: FMTException::getSrcInfo
 	/**
 	Returns a formated string for the location of the exception.
 	*/

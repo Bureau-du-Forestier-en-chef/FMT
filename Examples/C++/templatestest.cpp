@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-		Logging::FMTdefaultlogger().logStamp();
+		Logging::FMTDefaultLogger().logStamp();
 		std::string primlocation;
 		std::string templatefolder;
 		int length;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 		const std::vector<Models::FMTmodel> models = modelparser.readTemplates(primlocation, templatefolder);
 		if (models.size() < 1)
 			{
-			Exception::FMTfreeexceptionhandler().raise(
+			Exception::FMTFreeExceptionHandler().raise(
 				Exception::FMTexc::FMTfunctionfailed, 
 				"Wrong number of models loaded from template folder","", __LINE__, "");
 			}

@@ -1849,7 +1849,7 @@ bool FMTareaparser::_isMapWithSameThemes(const std::vector<Core::FMTtheme>& p_th
 				{
 					if (op.getNeighborsPerimeter() > 0 || op.getGreenUp() > 0)
 					{
-						Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
+						Logging::FMTDefaultLogger() << "Lecture des blocs voisins." << "\n";
 						opeareas = areaParser.getSchemeNeighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1, nomChampStanlock);
 						return opeareas;
 					}

@@ -19,7 +19,7 @@ namespace Testing
 				m_cache = gcnew Wrapper::FMTexcelcache();
 				if (m_cache->size() != 0)
 					{
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
 						"UnitTestFMTexcelcache::testDefaultConstructor", __LINE__, __FILE__);
 
 					}
@@ -32,7 +32,7 @@ namespace Testing
 				m_cache->add(MODEL, SCENARIO);
 				if (m_cache->size() != 1)
 				{
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
 						"UnitTestFMTexcelcache::testAddModel", __LINE__, __FILE__);
 
 				}
@@ -45,7 +45,7 @@ namespace Testing
 				m_cache->remove(MODEL, SCENARIO);
 				if (m_cache->size() != 0)
 				{
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
 						"UnitTestFMTexcelcache::testRemoveModel", __LINE__, __FILE__);
 
 				}
@@ -81,7 +81,7 @@ namespace Testing
 			System::Collections::Generic::List<int>^ GRAPH_STATS2 = m_cache->getGraphStatsSubset(MODEL, SCENARIO,THEME_NAME2);
 			if (GRAPH_STATS1->Count==0|| GRAPH_STATS2->Count == 0)
 				{
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
 					"UnitTestFMTexcelcache::testAddModel", __LINE__, __FILE__);
 
 				}
@@ -106,7 +106,7 @@ namespace Testing
 			bool BUILDED = m_cache->addAndBuild(MODEL, SCENARIO, LENGTH);
 			if (!BUILDED)
 			{
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "non builded",
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "non builded",
 					"UnitTestFMTexcelcache::testAddAndBuild", __LINE__, __FILE__);
 
 			}
@@ -115,7 +115,7 @@ namespace Testing
 			{
 				if (*STATS == 0)
 				{
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Empty graph",
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Empty graph",
 						"UnitTestFMTexcelcache::testAddAndBuild", __LINE__, __FILE__);
 				}
 			}
@@ -137,7 +137,7 @@ namespace Testing
 int main()
 {
 	#ifdef FMTWITHMOSEK
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	Testing::UnitTestFMTexcelcache test;
 	test.testAddModel();
 	test.testRemoveModel();

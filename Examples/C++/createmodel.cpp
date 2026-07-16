@@ -25,7 +25,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 
 	//Create Themes
 	//////////////////////////////////////////////////

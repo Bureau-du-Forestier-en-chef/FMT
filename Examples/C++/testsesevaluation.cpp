@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 				if (simmodel.getConstraintEvaluation(i) > 0)
 					{
 					std::cout << std::string(constraint) << "\n";
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
 						"testsesevaluation", __LINE__, primarylocation);
 					}
 				
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 					if (penalty == 0)
 					{
 						std::cout << std::string(bindingconstraint) << "\n";
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
 							"testsesevaluation", __LINE__, primarylocation);
 					}else {
 						std::cout << std::string(bindingconstraint)<< "Penalty of "<< penalty << "\n";

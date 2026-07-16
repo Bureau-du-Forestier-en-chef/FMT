@@ -16,7 +16,7 @@
 int main()
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
@@ -78,7 +78,7 @@ int main()
 			//std::cout<<std::to_string(period)+" "+std::to_string(sum_actions)<<std::endl;
 			if(std::abs(sum_actions-values.at(period-1))>0.001)
 			{
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 					"forcesolution", __LINE__, primarylocation);
 			}
 			double parea=0;
@@ -89,12 +89,12 @@ int main()
 			if(std::abs(parea-totarea)>0.01)
 			{
 				std::cout<<"period start : "+std::to_string(parea)+" initial : "+std::to_string(totarea)<<std::endl;
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Difference in area at the period begining",
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Difference in area at the period begining",
 					"forcesolution", __LINE__, primarylocation);
 			}
 		}
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 	#endif
 	return 0;

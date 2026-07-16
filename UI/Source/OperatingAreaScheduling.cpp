@@ -38,7 +38,7 @@ namespace Wrapper
 		try
 		{
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTdefaultlogger().getLogStamp() << "\n";
+			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
 			*logger << "Préparation du modèle" << "\n";
 			Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTsolverinterface>(solver));
 			*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";

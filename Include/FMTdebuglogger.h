@@ -12,14 +12,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Logging
 {
-	// DocString: FMTdebuglogger 
+	// DocString: FMTDebugLogger 
 	/**
-	FMTdebuglogger is derived class from FMTlogger standing has the debug
-	level of log used by FMT. It's suppose to print more stuff than the FMTdefaultlogger.
+	FMTDebugLogger is derived class from FMTLogger standing has the debug
+	level of log used by FMT. It's suppose to print more stuff than the FMTDefaultLogger.
 	*/
-	class FMTEXPORT FMTdebuglogger final : public FMTlogger
+	class FMTEXPORT FMTDebugLogger final : public FMTLogger
 	{
-		// DocString: FMTdebuglogger::serialize
+		// DocString: FMTDebugLogger::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -27,58 +27,58 @@ namespace Logging
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 			{
-			ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTlogger>(*this));
+			ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTLogger>(*this));
 			}
 	public:
-		// DocString: FMTdebuglogger()
+		// DocString: FMTDebugLogger()
 		/**
-		FMTdebuglogger default constructor.
+		FMTDebugLogger default constructor.
 		*/
-		FMTdebuglogger();
-		// DocString: FMTdebuglogger::operator=
+		FMTDebugLogger();
+		// DocString: FMTDebugLogger::operator=
 		/**
-		FMTdebuglogger default copy assignment operator.
+		FMTDebugLogger default copy assignment operator.
 		*/
-		FMTdebuglogger & operator = (const FMTdebuglogger & rhs) = default;
-		// DocString: FMTdebuglogger(const FMTdebuglogger&)
+		FMTDebugLogger & operator = (const FMTDebugLogger & rhs) = default;
+		// DocString: FMTDebugLogger(const FMTDebugLogger&)
 		/**
-		FMTdebuglogger default copy constructor.
+		FMTDebugLogger default copy constructor.
 		*/
-		FMTdebuglogger(const FMTdebuglogger& rhs) = default;
+		FMTDebugLogger(const FMTDebugLogger& rhs) = default;
 		#ifdef FMTWITHOSI
-			// DocString: FMTdebuglogger::print
+			// DocString: FMTDebugLogger::print
 			/**
-			FMTdebuglogger print for osisolverinterface is the debug print level used by FMT.
-			See FMTlogger print function.
+			FMTDebugLogger print for osisolverinterface is the debug print level used by FMT.
+			See FMTLogger print function.
 			*/
 			int print() override;
-			// DocString: FMTdebuglogger::checkSeverity
+			// DocString: FMTDebugLogger::checkSeverity
 			/**
-			FMTdebuglogger checkseverity for osisolverinterface is the debug severity check used by FMT.
-			See FMTlogger checkSeverity function.
+			FMTDebugLogger checkseverity for osisolverinterface is the debug severity check used by FMT.
+			See FMTLogger checkSeverity function.
 			*/
 			void checkSeverity() override;
-			// DocString: FMTdebuglogger::clone
+			// DocString: FMTDebugLogger::clone
 			/**
-			See FMTlogger clone function.
+			See FMTLogger clone function.
 			*/
-			FMTlogger* clone() const override;
+			FMTLogger* clone() const override;
 		#endif
-		// DocString: FMTdebuglogger()
+		// DocString: FMTDebugLogger()
 		/**
-		FMTdebuglogger default destructor.
+		FMTDebugLogger default destructor.
 		*/
-		~FMTdebuglogger() = default;
-		// DocString: FMTdebuglogger::Clone
+		~FMTDebugLogger() = default;
+		// DocString: FMTDebugLogger::Clone
 		/**
-		@brief clone the FMTdebuglogger
+		@brief clone the FMTDebugLogger
 		@return a valid clonedFMTdebuglogger
 		*/
-		virtual std::unique_ptr <FMTlogger> Clone() const;
+		virtual std::unique_ptr <FMTLogger> Clone() const;
 	};
 }
 
-BOOST_CLASS_EXPORT_KEY(Logging::FMTdebuglogger)
+BOOST_CLASS_EXPORT_KEY(Logging::FMTDebugLogger)
 
 #endif
 

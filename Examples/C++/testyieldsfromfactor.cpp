@@ -12,7 +12,7 @@
 int main()
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primarylocation = folder + "TWD_land.pri";
 	std::vector<Exception::FMTexc>errors;
@@ -59,10 +59,10 @@ int main()
 	const double basevalue = optimizationmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
 	const double lowervalue = lowerboundmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
 	const double uppervalue = upperboundmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
-	Logging::FMTdefaultlogger() << "LOWER: "<< lowervalue << "BASE: "<< basevalue << "UPPER: "<< uppervalue << "\n";
+	Logging::FMTDefaultLogger() << "LOWER: "<< lowervalue << "BASE: "<< basevalue << "UPPER: "<< uppervalue << "\n";
 	if ((lowervalue>uppervalue)||(basevalue<lowervalue)||(basevalue > uppervalue))
 	{
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);
 	}
 	#endif

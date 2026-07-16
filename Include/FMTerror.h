@@ -22,15 +22,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Exception
 	{
-	// DocString: FMTerror
+	// DocString: FMTError
 	/**
-	FMTerror is derived from the FMTexception base class.
-	See FMTexception class for more information about the member data.
+	FMTError is derived from the FMTException base class.
+	See FMTException class for more information about the member data.
 	Any error should throw in FMT.
 	*/
-	class FMTEXPORT FMTerror : public FMTexception
+	class FMTEXPORT FMTError : public FMTException
 		{
-		// DocString: FMTerror::serialize
+		// DocString: FMTError::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -38,65 +38,65 @@ namespace Exception
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar &  boost::serialization::make_nvp("exception", boost::serialization::base_object<FMTexception>(*this));
+			ar &  boost::serialization::make_nvp("exception", boost::serialization::base_object<FMTException>(*this));
 		}
 		public:
-			// DocString: ~FMTerror()
+			// DocString: ~FMTError()
 			/**
-			Default destructor for FMTerror.
+			Default destructor for FMTError.
 			*/
-			~FMTerror() = default;
-			// DocString: FMTerror::operator=
+			~FMTError() = default;
+			// DocString: FMTError::operator=
 			/**
-			Default assignment operator for FMTerror.
+			Default assignment operator for FMTError.
 			*/
-			FMTerror& operator=(const FMTerror&) = default;
-			// DocString: FMTerror()
+			FMTError& operator=(const FMTError&) = default;
+			// DocString: FMTError()
 			/**
-			Default constructor for FMTerror.
+			Default constructor for FMTError.
 			*/
-			FMTerror();
-			// DocString: FMTerror(const FMTexception&)
+			FMTError();
+			// DocString: FMTError(const FMTException&)
 			/**
-			Default copy constructor for FMTerror.
+			Default copy constructor for FMTError.
 			*/
-			FMTerror(const FMTexception& rhs);
-			// DocString: FMTerror(const FMTexc,const std::string)
+			FMTError(const FMTException& rhs);
+			// DocString: FMTError(const FMTexc,const std::string)
 			/**
-			Constructor for FMTerror taking a exception type and message string as arguments.
+			Constructor for FMTError taking a exception type and message string as arguments.
 			*/
-			FMTerror(const FMTexc lexception, const std::string message);
-			// DocString: FMTerror(const FMTexc,const Core::FMTsection,const std::string)
+			FMTError(const FMTexc lexception, const std::string message);
+			// DocString: FMTError(const FMTexc,const Core::FMTsection,const std::string)
 			/**
-			Constructor for FMTerror taking a exception type, section in which the error occur and message string as arguments.
+			Constructor for FMTError taking a exception type, section in which the error occur and message string as arguments.
 			*/
-			FMTerror(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
-			// DocString: FMTerror(const FMTexc,const Core::FMTsection,const std::string,const std::string&,const std::string&,const int&)
+			FMTError(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
+			// DocString: FMTError(const FMTexc,const Core::FMTsection,const std::string,const std::string&,const std::string&,const int&)
 			/**
-			Constructor for FMTerror taking a exception type, section in which the error occur and message string as arguments and the location
+			Constructor for FMTError taking a exception type, section in which the error occur and message string as arguments and the location
 			where the exception occured (method/file/line).
 			*/
-			FMTerror(const FMTexc lexception,const Core::FMTsection lsection, const std::string message,
+			FMTError(const FMTexc lexception,const Core::FMTsection lsection, const std::string message,
 					const std::string& lmethod, const std::string& lfile, const int& lline);
-			// DocString: FMTerror(const FMTexc,const std::string,const std::string&,const std::string&,const int&)
+			// DocString: FMTError(const FMTexc,const std::string,const std::string&,const std::string&,const int&)
 			/**
-			Constructor for FMTerror taking a exception type, section in which the error occur and message string as arguments and the location
+			Constructor for FMTError taking a exception type, section in which the error occur and message string as arguments and the location
 			where the exception occured (method/file/line).
 			*/
-			FMTerror(const FMTexc lexception, const std::string message,
+			FMTError(const FMTexc lexception, const std::string message,
 				const std::string& lmethod, const std::string& lfile, const int& lline);
 			#if defined FMTWITHOSI
-				// DocString: FMTerror(const CoinError&)
+				// DocString: FMTError(const CoinError&)
 				/**
-				Constructor for FMTerror from a CoinError.
+				Constructor for FMTError from a CoinError.
 				*/
-				FMTerror(const CoinError& coinexception);
+				FMTError(const CoinError& coinexception);
 			#endif
-			// DocString: FMTerror(const boost::bad_graph&)
+			// DocString: FMTError(const boost::bad_graph&)
 			/**
-			Constructor for FMTerror from a boost::bad_graph.
+			Constructor for FMTError from a boost::bad_graph.
 			*/
-			FMTerror(const boost::bad_graph& boostexception);
+			FMTError(const boost::bad_graph& boostexception);
 
 		};
 	}

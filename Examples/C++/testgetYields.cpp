@@ -15,7 +15,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
@@ -88,14 +88,14 @@ int main(int argc, char *argv[])
 		const Graph::FMTgraphvertextoyield graph_info = optimizationmodel.getGraphVertexToYield();
 		const Core::FMTyieldrequest yieldrequest = adev.getYieldRequest(&graph_info);
 		const double returnedvalue = optimizationmodel.getYields().get(yieldrequest,yieldname);
-		Logging::FMTdefaultlogger() << returnedvalue << "\n";
+		Logging::FMTDefaultLogger() << returnedvalue << "\n";
 		if ((returnedvalue < (yieldvalue - tolerance)) || (returnedvalue > (yieldvalue + tolerance)))
 			{
-			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 				"FMTsetsolution", __LINE__, primarylocation);
 			}
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 	#endif
 	return 0;

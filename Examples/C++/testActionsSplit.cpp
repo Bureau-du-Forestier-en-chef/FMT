@@ -17,7 +17,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
 		Simulation.doPlanning(true, READSCHEDULE);
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 	}
 #endif 
 	return 0;

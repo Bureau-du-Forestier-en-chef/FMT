@@ -112,7 +112,7 @@ namespace Wrapper
         try
         {
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-            *logger << Logging::FMTdefaultlogger().getLogStamp() << "\n";
+            *logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
 
             const Models::FMTmodel& BASE_MODEL = FMTFormCache::GetInstance()->getModel(scenario);
             const std::string scenarioName = BASE_MODEL.getName();

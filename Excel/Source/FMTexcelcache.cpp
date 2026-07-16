@@ -38,8 +38,8 @@ namespace Wrapper
 		exceptionraised(false)
 	{
 		
-		std::unique_ptr<Logging::FMTlogger>logger(new Logging::FMTExcelLogger());
-		std::unique_ptr<Exception::FMTexceptionhandler>handler(new Exception::FMTExcelExceptionHandler());
+		std::unique_ptr<Logging::FMTLogger>logger(new Logging::FMTExcelLogger());
+		std::unique_ptr<Exception::FMTExceptionHandler>handler(new Exception::FMTExcelExceptionHandler());
 		parser->passInLogger(logger);
 		parser->passInExceptionHandler(handler);
 		cachelog = parser->getLogger();

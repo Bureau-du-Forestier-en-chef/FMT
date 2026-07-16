@@ -12,7 +12,7 @@
 
 int main()
 	{
-        Logging::FMTdefaultlogger().logStamp();
+        Logging::FMTDefaultLogger().logStamp();
         const std::string folder = "../../../../Examples/Models/TWD_land/";
         const std::string primarylocation = folder+"TWD_land.pri";
         const std::string outdir = "../../tests/testaddmodel/";
@@ -60,13 +60,13 @@ int main()
                     Core::FMTyieldrequest futuryldrequest = devcopy.getYieldRequest();
                     if(modifyields.get(actualyldrequest,"VOLUMETOTALNEXTAGE")!=modifyields.get(futuryldrequest,"VOLUMETOTAL"))
                     {
-                        Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "The yields were not correctly added",
+                        Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "The yields were not correctly added",
 			            "testaddtomodel", __LINE__, primarylocation); 
                     }
                 }
             }
         }else{
-            Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Did not add the yield to model",
+            Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Did not add the yield to model",
 			"testaddtomodel", __LINE__, primarylocation);
         }
         return 0;

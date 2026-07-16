@@ -18,42 +18,42 @@ namespace Exception
 {
 
 #ifdef FMTWITHGDAL
-	FMTexceptionhandler* FMTfreeexceptionhandler::getCPLdata()
+	FMTExceptionHandler* FMTFreeExceptionHandler::getCPLdata()
 		{
 		return this;
 		}
-	void FMTfreeexceptionhandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
+	void FMTFreeExceptionHandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
         try{
-            FMTexceptionhandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+            FMTExceptionHandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
             }catch(...)
                 {
-                raiseFromCatch("", "FMTfreeexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+                raiseFromCatch("", "FMTFreeExceptionHandler::handelCPLerror", __LINE__, __FILE__);
                 }
 		}
 #endif
 
-FMTfreeexceptionhandler::FMTfreeexceptionhandler()
+FMTFreeExceptionHandler::FMTFreeExceptionHandler()
 {
 	this->disableNestedExceptions();
 }
 
 
-FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
+FMTException FMTFreeExceptionHandler::raise(FMTexc lexception, std::string text,
 	const std::string& method,const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 {
 	
 	const FMTlev LEVEL = getLevel(lexception);
-	FMTexception excp = FMTexception(lexception, updateStatus(lexception, text));
+	FMTException excp = FMTException(lexception, updateStatus(lexception, text));
 	if (LEVEL != FMTlev::FMT_Warning)
 	{
 		if (lsection == Core::FMTsection::Empty)
 		{
-			excp = FMTexception(lexception, updateStatus(lexception, text), method, file, line);
+			excp = FMTException(lexception, updateStatus(lexception, text), method, file, line);
 		}
 		else {
-			excp = FMTexception(lexception, lsection, updateStatus(lexception, text), method, file, line);
+			excp = FMTException(lexception, lsection, updateStatus(lexception, text), method, file, line);
 		}
 	}
 	excp.setHold(true);
@@ -68,7 +68,7 @@ FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
 		#if defined FMTWITHR
 					throw(Rcpp::exception(excp.what()));
 		#else
-					throw FMTerror(excp);
+					throw FMTError(excp);
 		#endif
 		}
 	}
@@ -77,11 +77,11 @@ FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
 }
 
 
-std::unique_ptr <FMTexceptionhandler> FMTfreeexceptionhandler::Clone() const
+std::unique_ptr <FMTExceptionHandler> FMTFreeExceptionHandler::Clone() const
 {
-	return std::unique_ptr <FMTexceptionhandler>(new FMTfreeexceptionhandler(*this));
+	return std::unique_ptr <FMTExceptionHandler>(new FMTFreeExceptionHandler(*this));
 }
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTfreeexceptionhandler)
+BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTFreeExceptionHandler)

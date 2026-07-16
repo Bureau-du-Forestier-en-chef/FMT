@@ -33,7 +33,7 @@ namespace Exception
 {
 
 	template<class Archive>
-	void FMTexception::serialize(Archive& ar, const unsigned int version)
+	void FMTException::serialize(Archive& ar, const unsigned int version)
 	{
 		ar & boost::serialization::make_nvp("object", boost::serialization::base_object<std::exception>(*this));
 		ar & BOOST_SERIALIZATION_NVP(holdup);
@@ -42,41 +42,41 @@ namespace Exception
 		ar & BOOST_SERIALIZATION_NVP(section);
 	}
 
-    FMTexception::FMTexception():holdup(false), _msg(), exceptiontype(), section(), method(), file(), line() {}
+    FMTException::FMTException():holdup(false), _msg(), exceptiontype(), section(), method(), file(), line() {}
 
-	FMTexception::FMTexception(const std::exception& baseexception) : holdup(false), _msg(), exceptiontype(FMTexc::FMTunhandlederror), section()
+	FMTException::FMTException(const std::exception& baseexception) : holdup(false), _msg(), exceptiontype(FMTexc::FMTunhandlederror), section()
 		, method(), file(), line()
 	{
 		_msg = "FMTexc(" + std::to_string(FMTexc::FMTunhandlederror) + ")" + baseexception.what();
 
 	}
 
-    FMTexception::FMTexception(const FMTexc lexception,const std::string message): holdup(false),_msg(), exceptiontype(lexception), section()
+    FMTException::FMTException(const FMTexc lexception,const std::string message): holdup(false),_msg(), exceptiontype(lexception), section()
 		, method(), file(), line()
         {
         _msg = "FMTexc("+ std::to_string(lexception) +")" + message;
         }
-     FMTexception::FMTexception(const FMTexc lexception, Core::FMTsection lsection,const std::string message): holdup(false),_msg(),
+     FMTException::FMTException(const FMTexc lexception, Core::FMTsection lsection,const std::string message): holdup(false),_msg(),
 		 exceptiontype(lexception),section(lsection),method(), file(), line()
         {
         _msg = "FMTexc("+ std::to_string(lexception) +")"+message+" FMTsection("+ std::to_string(lsection) +")"+ Core::FMTsection_str(lsection);
         }
-    FMTexception::FMTexception(const FMTexception& rhs):
+    FMTException::FMTException(const FMTException& rhs):
 		holdup(rhs.holdup),_msg(rhs._msg), exceptiontype(rhs.exceptiontype),section(rhs.section),
 		method(rhs.method), file(rhs.file), line(rhs.line)
         {
 
         }
 
-	FMTexception::FMTexception(const FMTexc lexception, Core::FMTsection lsection, const std::string message,
+	FMTException::FMTException(const FMTexc lexception, Core::FMTsection lsection, const std::string message,
 		const std::string& lmethod, const std::string& lfile, const int& lline):
 		holdup(false), _msg(), exceptiontype(lexception), section(lsection),method(lmethod),file(lfile),line(lline)
 		{
 		_msg = "FMTexc(" + std::to_string(lexception) + ")" + message +
-			" FMTsection(" + std::to_string(lsection) + ")" + Core::FMTsection_str(lsection) + "\n" + FMTexception::getSrcInfo();
+			" FMTsection(" + std::to_string(lsection) + ")" + Core::FMTsection_str(lsection) + "\n" + FMTException::getSrcInfo();
 		}
 
-	FMTexception::FMTexception(const FMTexc lexception, Core::FMTsection lsection, const std::string message,
+	FMTException::FMTException(const FMTexc lexception, Core::FMTsection lsection, const std::string message,
 		const std::string& lmethod) :
 		holdup(false), _msg(), exceptiontype(lexception), section(lsection), method(lmethod), file(), line()
 	{
@@ -84,14 +84,14 @@ namespace Exception
 			" FMTsection(" + std::to_string(lsection) + ")" + Core::FMTsection_str(lsection)+ " " + lmethod;
 	}
 
-	FMTexception::FMTexception(const FMTexc lexception, const std::string message,
+	FMTException::FMTException(const FMTexc lexception, const std::string message,
 		const std::string& lmethod, const std::string& lfile, const int& lline) : holdup(false), _msg(), exceptiontype(lexception), section()
 		, method(lmethod), file(lfile), line(lline)
 	{
-		_msg = "FMTexc(" + std::to_string(lexception) + ")" + message+"\n"+ FMTexception::getSrcInfo();
+		_msg = "FMTexc(" + std::to_string(lexception) + ")" + message+"\n"+ FMTException::getSrcInfo();
 	}
 
-	FMTexception::FMTexception(const FMTexc lexception, const std::string message,
+	FMTException::FMTException(const FMTexc lexception, const std::string message,
 		const std::string& lmethod) : holdup(false), _msg(), exceptiontype(lexception), section()
 		, method(lmethod), file(), line()
 	{
@@ -100,7 +100,7 @@ namespace Exception
 
 
 
-    FMTexception& FMTexception::operator = (const FMTexception& rhs)
+    FMTException& FMTException::operator = (const FMTException& rhs)
         {
         if (this!=&rhs)
             {
@@ -114,32 +114,32 @@ namespace Exception
             }
         return *this;
         }
-    const char* FMTexception::what() const throw()
+    const char* FMTException::what() const throw()
         {
         return _msg.c_str();
         }
 
-	FMTexc FMTexception::getType() const
+	FMTexc FMTException::getType() const
 		{
 		return exceptiontype;
 		}
 
-	Core::FMTsection FMTexception::getSection() const
+	Core::FMTsection FMTException::getSection() const
 		{
 		return section;
 		}
 
-	bool FMTexception::hold() const
+	bool FMTException::hold() const
 		{
 		return holdup;
 		}
 
-	void FMTexception::setHold(bool side)
+	void FMTException::setHold(bool side)
 		{
 		holdup = side;
 		}
 
-	std::string FMTexception::getSrcInfo() const
+	std::string FMTException::getSrcInfo() const
 		{
 		return "In Method("+ method +") In File(" + file + ") At Line(" + std::to_string(line) + ")";
 		}

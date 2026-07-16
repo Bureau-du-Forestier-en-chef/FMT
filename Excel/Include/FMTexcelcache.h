@@ -28,7 +28,7 @@ namespace Wrapper
 	public ref class FMTexcelcache
 	{
 		Parser::FMTmodelparser* parser;
-		Logging::FMTlogger* cachelog;
+		Logging::FMTLogger* cachelog;
 		Exception::FMTExcelExceptionHandler* cacheexceptionhandler;
 		std::unordered_map<std::string, FMTmodelcache>* models;
 		bool exceptionraised;

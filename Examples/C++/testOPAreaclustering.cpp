@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 		heuristics[0].setQuietLogger();
 		if (!heuristics[0].initialSolve())
 		{
-			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,"No solution",
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed,"No solution",
 				"testOPAreaclustering", __LINE__, primarylocation);
 		}
 		//heuristics[0].branchNBoundSolve();
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	else {
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Infeasible model",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Infeasible model",
 			"testOPAreaclustering", __LINE__, primarylocation);
 	}
 	#endif

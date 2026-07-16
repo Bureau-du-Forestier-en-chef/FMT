@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[])
 {
-		Logging::FMTdefaultlogger().logStamp();
+		Logging::FMTDefaultLogger().logStamp();
 		std::string PRIMARYm_location;
 		std::string SCENARIO;
 		std::string TARGET_YIELD;

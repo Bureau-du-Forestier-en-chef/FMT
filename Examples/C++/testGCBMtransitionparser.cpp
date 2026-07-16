@@ -11,7 +11,7 @@
 
 int main()
 {
-Logging::FMTdefaultlogger().logStamp();
+Logging::FMTDefaultLogger().logStamp();
 const std::string testinput = "22 serialization::archive 17 0 0 2 0 0 0 11 0 0 1 0 0 0 6 THEME5 6 FC8332 15 ACPFAIBL-FC8332 10 1 0 6 THEME5 6 FC8202 14 ACPFORT-FC8202";
 Parser::FMTtransitionparser transitionparser;
 std::vector<Core::FMTGCBMtransition>transitions;
@@ -26,7 +26,7 @@ transitionparser.writeGCBM(transitions, outdir);
 const std::vector<Core::FMTGCBMtransition> outtr = transitionparser.readGCBM(outdir);
 if (outtr!= transitions)
     {
-    Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non equal read/write transitions",
+    Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non equal read/write transitions",
         "testGMTtransitionparser", __LINE__, outdir);
     }
 std::ifstream inputstream(outdir);
@@ -35,7 +35,7 @@ const std::string testoutput((std::istreambuf_iterator<char>(inputstream)),
 inputstream.close();
 if (testinput!= testoutput)
     {
-    Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non equal string transitions",
+    Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non equal string transitions",
         "testGMTtransitionparser", __LINE__, outdir);
     }
 

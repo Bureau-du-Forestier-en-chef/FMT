@@ -10,7 +10,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	else {
-	Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+	Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 	}
 #endif
 	return 0;

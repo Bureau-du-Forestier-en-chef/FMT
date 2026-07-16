@@ -13,13 +13,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Logging
 {
-// DocString: FMTquietlogger
+// DocString: FMTQuietLogger
 /**
-FMTquietlogger will not print any solver informations from osisolverinterface.
+FMTQuietLogger will not print any solver informations from osisolverinterface.
 */
-class FMTEXPORT FMTquietlogger final : public FMTlogger
+class FMTEXPORT FMTQuietLogger final : public FMTLogger
 	{
-	// DocString: FMTquietlogger::serialize
+	// DocString: FMTQuietLogger::serialize
 	/**
 	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
@@ -27,63 +27,63 @@ class FMTEXPORT FMTquietlogger final : public FMTlogger
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTlogger>(*this));
+		ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTLogger>(*this));
 	}
 	public:
-		// DocString: FMTquietlogger()
+		// DocString: FMTQuietLogger()
 		/**
-		FMTquietlogger default constructor.
+		FMTQuietLogger default constructor.
 		*/
-		FMTquietlogger();
-		// DocString: FMTquietlogger(const FMTquietlogger&)
+		FMTQuietLogger();
+		// DocString: FMTQuietLogger(const FMTQuietLogger&)
 		/**
-		FMTquietlogger default copy constructor.
+		FMTQuietLogger default copy constructor.
 		*/
-		FMTquietlogger(const FMTquietlogger&) = default;
-		// DocString: FMTquietlogger::operator=
+		FMTQuietLogger(const FMTQuietLogger&) = default;
+		// DocString: FMTQuietLogger::operator=
 		/**
-		FMTquietlogger default copy assignment.
+		FMTQuietLogger default copy assignment.
 		*/
-		FMTquietlogger& operator = (const FMTquietlogger&) = default;
-		// DocString: FMTquietlogger::~FMTquietlogger
+		FMTQuietLogger& operator = (const FMTQuietLogger&) = default;
+		// DocString: FMTQuietLogger::~FMTQuietLogger
 		/**
-		FMTquietlogger default destructor.
+		FMTQuietLogger default destructor.
 		*/
-		~FMTquietlogger()=default;
+		~FMTQuietLogger()=default;
 		#ifdef FMTWITHOSI
-			// DocString: FMTquietlogger::print
+			// DocString: FMTQuietLogger::print
 			/**
-			FMTquietlogger print nothing with osisolverinterface.
-			See FMTlogger print function.
+			FMTQuietLogger print nothing with osisolverinterface.
+			See FMTLogger print function.
 			*/
 			int print() override;
-			// DocString: FMTquietlogger::checkSeverity
+			// DocString: FMTQuietLogger::checkSeverity
 			/**
-			See FMTlogger checkSeverity function.
+			See FMTLogger checkSeverity function.
 			*/
 			void checkSeverity() override;
-			// DocString: FMTquietlogger::clone
+			// DocString: FMTQuietLogger::clone
 			/**
-			See FMTlogger clone function.
+			See FMTLogger clone function.
 			*/
-			FMTlogger* clone() const override;
+			FMTLogger* clone() const override;
 			#endif
-			// DocString: FMTquietlogger::cout
+			// DocString: FMTQuietLogger::cout
 			/**
-			See FMTlogger cout function that does nothing.
+			See FMTLogger cout function that does nothing.
 			*/
 			void cout(const char* message) const override;
-		// DocString: FMTquietlogger::Clone
+		// DocString: FMTQuietLogger::Clone
 		/**
-		@brief clone the FMTquietlogger
-		@return a valid cloned FMTquietlogger
+		@brief clone the FMTQuietLogger
+		@return a valid cloned FMTQuietLogger
 		*/
-		virtual std::unique_ptr <FMTlogger> Clone() const;
+		virtual std::unique_ptr <FMTLogger> Clone() const;
 
 	
 	};
 }
 
-BOOST_CLASS_EXPORT_KEY(Logging::FMTquietlogger)
+BOOST_CLASS_EXPORT_KEY(Logging::FMTQuietLogger)
 
 #endif

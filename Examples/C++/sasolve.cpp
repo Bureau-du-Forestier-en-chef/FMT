@@ -16,7 +16,7 @@
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 
 	if (Version::FMTversion().hasFeature("GDAL"))
 	{
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 		
 	}
 	else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 	}
 	return 0;
 }

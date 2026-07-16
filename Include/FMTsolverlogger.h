@@ -16,84 +16,84 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 /// Namespace for the log management, provides different log handlers.
 namespace Logging
 {
-	class FMTlogger;
-	// DocString: FMTsolverlogger
+	class FMTLogger;
+	// DocString: FMTSolverLogger
 	/**
 	Abstract class for usage in Osisolverinterface.
 	*/
-	class FMTsolverlogger: public CoinMessageHandler
+	class FMTSolverLogger: public CoinMessageHandler
 		{
-		friend class FMTlogger;
+		friend class FMTLogger;
 		public:
-			// DocString: FMTsolverlogger(const FMTlogger& baselogger)
+			// DocString: FMTSolverLogger(const FMTLogger& baselogger)
 			/**
-			Constuct a logger using an abstrsact FMTlogger.
+			Constuct a logger using an abstrsact FMTLogger.
 			*/
-			FMTsolverlogger(FMTlogger& baselogger);
-			// DocString: FMTsolverlogger()
+			FMTSolverLogger(FMTLogger& baselogger);
+			// DocString: FMTSolverLogger()
 			/**
-			FMTsolverlogger default constructor.
+			FMTSolverLogger default constructor.
 			*/
-			FMTsolverlogger();
-			// DocString: ~FMTsolverlogger()
+			FMTSolverLogger();
+			// DocString: ~FMTSolverLogger()
 			/**
 			FMTsolverlogge default destructor.
 			*/
-			virtual ~FMTsolverlogger();
-			// DocString: FMTsolverlogger(const FMTsolverlogge&)
+			virtual ~FMTSolverLogger();
+			// DocString: FMTSolverLogger(const FMTsolverlogge&)
 			/**
-			FMTsolverlogger copy constructor.
+			FMTSolverLogger copy constructor.
 			*/
-			FMTsolverlogger(const FMTsolverlogger& rhs)=default;
+			FMTSolverLogger(const FMTSolverLogger& rhs)=default;
 			
-			// DocString: FMTlogger::operator=
+			// DocString: FMTLogger::operator=
 			/**
 			FMTsolverlogge copy assignment operator.
 			*/
-			FMTsolverlogger& operator = (const FMTsolverlogger& rhs)=default;
-			// DocString: FMTsolverlogger::print
+			FMTSolverLogger& operator = (const FMTSolverLogger& rhs)=default;
+			// DocString: FMTSolverLogger::print
 			/**
 			FMTsolverlogge print function if we are using Osisolverinterface the coinmessagehandler
 			print function needs to be overloaded.
 			*/
 			int print() override;
-			// DocString: FMTsolverlogger::checkSeverity
+			// DocString: FMTSolverLogger::checkSeverity
 			/**
 			FMTsolverlogge check the severity of the message to be print by the coinmessagehandler base class.
 			*/
 			void checkSeverity() override;
-			// DocString: FMTsolverlogger::checkcoinSeverity
+			// DocString: FMTSolverLogger::checkcoinSeverity
 			/**
 			FMTsolverlogge check the severity of the coin message to be print by the coinmessagehandler base class.
 			*/
 			void checkcoinSeverity();
-			// DocString: FMTsolverlogger::clone
+			// DocString: FMTSolverLogger::clone
 			/**
 			Clone function needed for the usage of abstract coingmessagehandler class.
 			*/
 			CoinMessageHandler * clone() const override;
 		private:
-			// DocString: FMTsolverlogger::baselogger
-			///The base FMTlogger that the abstract class refer to.
-			FMTlogger* baselogger;
-			// DocString: FMTsolverlogger::ownthelogger
+			// DocString: FMTSolverLogger::baselogger
+			///The base FMTLogger that the abstract class refer to.
+			FMTLogger* baselogger;
+			// DocString: FMTSolverLogger::ownthelogger
 			///If true the logger own the baselogger and need to delete it when destructor called.
 			bool ownthelogger;
-			// DocString: FMTsolverlogger::cleanUp()
+			// DocString: FMTSolverLogger::cleanUp()
 			/**
 			Check if you can delete baselogger and delete it if so.
 			*/
 			void cleanUp();
-			// DocString: FMTsolverlogger::copy()
+			// DocString: FMTSolverLogger::copy()
 			/**
 			Safely copy from an other solverlogger
 			*/
-			void copy(const FMTsolverlogger& rhs);
-			// DocString: FMTsolverlogger::copyFrom()
+			void copy(const FMTSolverLogger& rhs);
+			// DocString: FMTSolverLogger::copyFrom()
 			/**
-			FMTsolverlogger copy constructor.
+			FMTSolverLogger copy constructor.
 			*/
-			void copyFrom(const FMTsolverlogger& rhs);
+			void copyFrom(const FMTSolverLogger& rhs);
 		};
 }
 #endif

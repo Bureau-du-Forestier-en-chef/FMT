@@ -14,54 +14,54 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Exception
 {
-	// DocString: FMTquietexceptionhandler
+	// DocString: FMTQuietExceptionHandler
 	/**
-	The FMTquietexceptionhandler is derived from the FMTexceptionhandler base class.
+	The FMTQuietExceptionHandler is derived from the FMTExceptionHandler base class.
 	This class is a silent class it does not throw any kind of logging but throw errors and no warnings.
 	*/
-	class FMTEXPORT FMTquietexceptionhandler final : public FMTexceptionhandler
+	class FMTEXPORT FMTQuietExceptionHandler final : public FMTExceptionHandler
 	{
 	public:
-		// DocString: FMTquietexceptionhandler()
+		// DocString: FMTQuietExceptionHandler()
 		/**
-		Default constructor for FMTquietexceptionhandler
+		Default constructor for FMTQuietExceptionHandler
 		*/
-		FMTquietexceptionhandler();
-		// DocString: FMTquietexceptionhandler()
+		FMTQuietExceptionHandler();
+		// DocString: FMTQuietExceptionHandler()
 		/**
-		Default destructor for FMTquietexceptionhandler
+		Default destructor for FMTQuietExceptionHandler
 		*/
-		~FMTquietexceptionhandler() = default;
-		// DocString: FMTquietexceptionhandler::raise
+		~FMTQuietExceptionHandler() = default;
+		// DocString: FMTQuietExceptionHandler::raise
 		/**
 		The function overide the base class raise function.
-		See raise function of FMTexceptionhandler class.
+		See raise function of FMTExceptionHandler class.
 		*/
-		FMTexception raise(FMTexc lexception, std::string text,
+		FMTException raise(FMTexc lexception, std::string text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true) override;
     #if defined FMTWITHGDAL
-		// DocString: FMTquietexceptionhandler::getCPLdata
+		// DocString: FMTQuietExceptionHandler::getCPLdata
 		/**
 		Used in the handelCPLerror called back by GDAL function reutnr a abstract copy of itselft.
-		See getCPLdata of FMTexceptionhandler class.
+		See getCPLdata of FMTExceptionHandler class.
 		*/
-		FMTexceptionhandler* getCPLdata() override;
-		// DocString: FMTquietexceptionhandler::handelCPLerror
+		FMTExceptionHandler* getCPLdata() override;
+		// DocString: FMTQuietExceptionHandler::handelCPLerror
 		/**
 		Used has call back in gdal.
-		See handelCPLerror of FMTexceptionhandler class.
+		See handelCPLerror of FMTExceptionHandler class.
 		*/
 		void handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg) override;
 		#endif
-		// DocString: FMTquietexceptionhandler::Clone
+		// DocString: FMTQuietExceptionHandler::Clone
 		/**
-		@brief clone the FMTquietexceptionhandler
-		@return a valid cloned FMTquietexceptionhandler
+		@brief clone the FMTQuietExceptionHandler
+		@return a valid cloned FMTQuietExceptionHandler
 		*/
-		virtual std::unique_ptr <FMTexceptionhandler> Clone() const;
+		virtual std::unique_ptr <FMTExceptionHandler> Clone() const;
 	private:
-		// DocString: FMTquietexceptionhandler::serialize
+		// DocString: FMTQuietExceptionHandler::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -69,11 +69,11 @@ namespace Exception
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTexceptionhandler", boost::serialization::base_object<FMTexceptionhandler>(*this));
+			ar& boost::serialization::make_nvp("FMTexceptionhandler", boost::serialization::base_object<FMTExceptionHandler>(*this));
 		}
 	};
 
 }
-BOOST_CLASS_EXPORT_KEY(Exception::FMTquietexceptionhandler)
+BOOST_CLASS_EXPORT_KEY(Exception::FMTQuietExceptionHandler)
 #endif
 

@@ -14,59 +14,59 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Logging
 {
-// DocString: FMTtasklogger
+// DocString: FMTTaskLogger
 /**
-FMTtasklogger will not print any solver informations from osisolverinterface and other defaultlogging
+FMTTaskLogger will not print any solver informations from osisolverinterface and other defaultlogging
 */
-class FMTEXPORT FMTtasklogger final : public FMTlogger
+class FMTEXPORT FMTTaskLogger final : public FMTLogger
 	{
 	public:
-		// DocString: FMTtasklogger()
+		// DocString: FMTTaskLogger()
 		/**
-		FMTtasklogger default constructor.
+		FMTTaskLogger default constructor.
 		*/
-		FMTtasklogger();
-		// DocString: FMTtasklogger(const FMTtasklogger&)
+		FMTTaskLogger();
+		// DocString: FMTTaskLogger(const FMTTaskLogger&)
 		/**
-		FMTtasklogger default copy constructor.
+		FMTTaskLogger default copy constructor.
 		*/
-		FMTtasklogger(const FMTtasklogger&) = default;
-		// DocString: FMTtasklogger::operator=
+		FMTTaskLogger(const FMTTaskLogger&) = default;
+		// DocString: FMTTaskLogger::operator=
 		/**
-		FMTtasklogger default copy assignment.
+		FMTTaskLogger default copy assignment.
 		*/
-		FMTtasklogger& operator = (const FMTtasklogger&) = default;
-		// DocString: FMTtasklogger::~FMTtasklogger
+		FMTTaskLogger& operator = (const FMTTaskLogger&) = default;
+		// DocString: FMTTaskLogger::~FMTTaskLogger
 		/**
-		FMTtasklogger default destructor.
+		FMTTaskLogger default destructor.
 		*/
-		~FMTtasklogger()=default;
+		~FMTTaskLogger()=default;
 		#ifdef FMTWITHOSI
-			// DocString: FMTtasklogger::print
+			// DocString: FMTTaskLogger::print
 			/**
-			FMTquietlogger print nothing with osisolverinterface.
-			See FMTlogger print function.
+			FMTQuietLogger print nothing with osisolverinterface.
+			See FMTLogger print function.
 			*/
 			int print() override;
-			// DocString: FMTtasklogger::checkSeverity
+			// DocString: FMTTaskLogger::checkSeverity
 			/**
 			@brief It will do nothing because coinMessagehandler does not support multithread access.
 			*/
 			void checkSeverity() override;
-			// DocString: FMTtasklogger::clone
+			// DocString: FMTTaskLogger::clone
 			/**
-			See FMTlogger clone function.
+			See FMTLogger clone function.
 			*/
-			FMTlogger* clone() const override;
+			FMTLogger* clone() const override;
 		#endif
-		// DocString: FMTtasklogger::Clone
+		// DocString: FMTTaskLogger::Clone
 		/**
-		@brief clone the FMTtasklogger
-		@return a valid cloned FMTtasklogger
+		@brief clone the FMTTaskLogger
+		@return a valid cloned FMTTaskLogger
 		*/
-		virtual std::unique_ptr <FMTlogger> Clone() const;
+		virtual std::unique_ptr <FMTLogger> Clone() const;
 	private:
-		// DocString: FMTtasklogger::serialize
+		// DocString: FMTTaskLogger::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -74,11 +74,11 @@ class FMTEXPORT FMTtasklogger final : public FMTlogger
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTlogger>(*this));
+			ar& boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTLogger>(*this));
 		}
 	};
 }
 
-BOOST_CLASS_EXPORT_KEY(Logging::FMTtasklogger)
+BOOST_CLASS_EXPORT_KEY(Logging::FMTTaskLogger)
 
 #endif

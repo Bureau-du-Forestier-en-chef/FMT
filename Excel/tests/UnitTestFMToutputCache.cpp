@@ -19,7 +19,7 @@ namespace Testing
 				m_cache = gcnew Wrapper::FMTexcelcache();
 				if (m_cache->size() != 0)
 					{
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
 						"UnitTestFMToutputCache::testDefaultConstructor", __LINE__, __FILE__);
 
 					}
@@ -45,7 +45,7 @@ namespace Testing
 						if (OUTPUTVALUE != values[i])
 						{
 							std::cout << OUTPUTVALUE << " != " << values[i] << std::endl;
-							Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, 
+							Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, 
 								"Bad values returned at testOutputCache",
 								"UnitTestFMToutputCache::testModelGetValues", __LINE__, __FILE__);
 						}
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 			SCENARIO = "120_RegProv_apsp";
 			TEST = "testOutputCache";
 		}
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	Testing::UnitTestFMToutputCache test;
 	test.testModelGetValues(PRIMARY, SCENARIO, TEST);
 	#endif 

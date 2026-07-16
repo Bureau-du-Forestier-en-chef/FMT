@@ -19,14 +19,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 /// Namespace for exceptions and exceptions handling (warnings and errors) thrown by FMT and all exceptions handlers available.
 namespace Exception
     {
-    class FMTseException : public std::logic_error
+    class FMTSeException : public std::logic_error
         {
         public:
-            FMTseException() noexcept;
-            FMTseException(unsigned int p_n) noexcept;
+            FMTSeException() noexcept;
+            FMTSeException(unsigned int p_n) noexcept;
             unsigned int getSeNumber() const noexcept;
-            FMTseException(const FMTseException& p_rhs) = default;
-            FMTseException& operator = (const FMTseException& p_rhs) = default;
+            FMTSeException(const FMTSeException& p_rhs) = default;
+            FMTSeException& operator = (const FMTSeException& p_rhs) = default;
         private:
             unsigned int m_nSE;
 

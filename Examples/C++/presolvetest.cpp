@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	std::string primarylocation;
 	std::string scenario;
 	int scenario_length;
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	if (std::abs(nopresolve - presolve) >= 0.1)
 	{
 		
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);
 	}
 	#endif

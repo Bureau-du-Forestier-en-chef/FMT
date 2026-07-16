@@ -31,19 +31,19 @@ void exportException()
     "   :synopsis: Module used to handel exceptions.\n"
     "\n";
 
-	//bp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler", "@DocString(FMTexceptionhandler)");
+	//bp::class_<Exception::FMTExceptionHandler>("FMTexceptionhandler", "@DocString(FMTExceptionHandler)");
 
-	bp::class_<Exception::FMTdefaultexceptionhandler/*, bp::bases<Exception::FMTexceptionhandler>*/>("FMTdefaultexceptionhandler", "@DocString(FMTdefaultexceptionhandler)")
-        .def("raise",&Exception::FMTdefaultexceptionhandler::raise,
-			"@DocString(FMTdefaultexceptionhandler::raise)");
+	bp::class_<Exception::FMTDefaultExceptionHandler/*, bp::bases<Exception::FMTExceptionHandler>*/>("FMTdefaultexceptionhandler", "@DocString(FMTDefaultExceptionHandler)")
+        .def("raise",&Exception::FMTDefaultExceptionHandler::raise,
+			"@DocString(FMTDefaultExceptionHandler::raise)");
 
-	bp::class_<Exception::FMTquietexceptionhandler/*, bp::bases<Exception::FMTexceptionhandler >*/>("FMTquietexceptionhandler", "@DocString(FMTquietexceptionhandler)")
-        .def("raise",&Exception::FMTquietexceptionhandler::raise,
-			"@DocString(FMTquietexceptionhandler::raise)");
+	bp::class_<Exception::FMTQuietExceptionHandler/*, bp::bases<Exception::FMTExceptionHandler >*/>("FMTquietexceptionhandler", "@DocString(FMTQuietExceptionHandler)")
+        .def("raise",&Exception::FMTQuietExceptionHandler::raise,
+			"@DocString(FMTQuietExceptionHandler::raise)");
 
-	bp::class_<Exception::FMTdebugexceptionhandler/*, bp::bases<Exception::FMTexceptionhandler >*/>("FMTdebugexceptionhandler", "@DocString(FMTdebugexceptionhandler)")
-		.def("raise", &Exception::FMTdebugexceptionhandler::raise,
-			"@DocString(FMTdebugexceptionhandler::raise)");
+	bp::class_<Exception::FMTDebugExceptionHandler/*, bp::bases<Exception::FMTExceptionHandler >*/>("FMTdebugexceptionhandler", "@DocString(FMTDebugExceptionHandler)")
+		.def("raise", &Exception::FMTDebugExceptionHandler::raise,
+			"@DocString(FMTDebugExceptionHandler::raise)");
 
 
 	bp::enum_<Exception::FMTexc>("FMTexc")
@@ -69,20 +69,20 @@ void exportException()
 
 	definePyList<Exception::FMTexc>();
 
-	bp::class_<Exception::FMTexception>Exceptionclass("FMTexception", "@DocString(FMTexception)");
-	Exceptionclass.def("gettype", &Exception::FMTexception::getType,
-		"@DocString(FMTexception::gettype)");
-	Exceptionclass.def("getsection", &Exception::FMTexception::getSection,
-		"@DocString(FMTexception::getsection)");
-	Exceptionclass.def("what", &Exception::FMTexception::what,
-		"@DocString(FMTexception::what)");
+	bp::class_<Exception::FMTException>Exceptionclass("FMTexception", "@DocString(FMTException)");
+	Exceptionclass.def("gettype", &Exception::FMTException::getType,
+		"@DocString(FMTException::gettype)");
+	Exceptionclass.def("getsection", &Exception::FMTException::getSection,
+		"@DocString(FMTException::getsection)");
+	Exceptionclass.def("what", &Exception::FMTException::what,
+		"@DocString(FMTException::what)");
 
-	bp::class_<Exception::FMTerror, bp::bases<Exception::FMTexception>>Errorclass("FMTerror", "@DocString(FMTerror)");
-	bp::class_<Exception::FMTwarning, bp::bases<Exception::FMTexception>>("FMTwarning", "@DocString(FMTwarning)");
+	bp::class_<Exception::FMTError, bp::bases<Exception::FMTException>>Errorclass("FMTerror", "@DocString(FMTError)");
+	bp::class_<Exception::FMTWarning, bp::bases<Exception::FMTException>>("FMTwarning", "@DocString(FMTWarning)");
 
-	bp::register_exception_translator<Exception::FMTwarning>(&FMTtranslate_warning);
+	bp::register_exception_translator<Exception::FMTWarning>(&FMTtranslate_warning);
 	FMTexceptiontype = Errorclass.ptr();
-	bp::register_exception_translator<Exception::FMTerror>(&FMTtranslate_error);
+	bp::register_exception_translator<Exception::FMTError>(&FMTtranslate_error);
 
 	}
 

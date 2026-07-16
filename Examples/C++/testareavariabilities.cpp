@@ -16,7 +16,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
@@ -51,7 +51,7 @@ int main()
 					{
 					for (size_t period = 1; period <= 10; ++period)
 						{
-						Logging::FMTdefaultlogger() <<"At period "<<period<< " OLD value is " << newmodel.getOutput(output, 5, Core::FMToutputlevel::totalonly).at("Total") <<
+						Logging::FMTDefaultLogger() <<"At period "<<period<< " OLD value is " << newmodel.getOutput(output, 5, Core::FMToutputlevel::totalonly).at("Total") <<
 							"NEW value is " << optimizationmodel.getOutput(output,period, Core::FMToutputlevel::totalonly).at("Total") << "\n";
 						}
 					break;

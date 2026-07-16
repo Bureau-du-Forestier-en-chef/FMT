@@ -63,7 +63,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         if (spatialconstraints)
         {
             Parser::FMTareaparser areaParser;
-            Logging::FMTdefaultlogger()<<"Lecture des blocs voisins."<<"\n";
+            Logging::FMTDefaultLogger()<<"Lecture des blocs voisins."<<"\n";
             opeareas = areaParser.getSchemeNeighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1,nomChampStanlock);
         }
         return opeareas;
@@ -83,7 +83,7 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
                     std::vector<std::string> agg = action.getAggregates();
                     if (std::count(agg.begin(), agg.end(), Agg_name))
                     {
-                        Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
+                        Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
                         "testOAschedulerBFEC", __LINE__,model.getName());  
                     }
 
@@ -95,7 +95,7 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 
             if (youvert < 1)
             {
-                Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Aucune action dans le modèle n'a de youvert",
+                Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Aucune action dans le modèle n'a de youvert",
                         "testOAschedulerBFEC", __LINE__,model.getName()) ;
             }
 
@@ -121,7 +121,7 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
-            Logging::FMTdefaultlogger().logStamp();
+            Logging::FMTDefaultLogger().logStamp();
             std::string primarylocation;
             std::vector<std::string>scenarios;
             std::string fichierShp;
@@ -211,12 +211,12 @@ int main(int argc, char *argv[])
                 std::cout << objectivevalue << " " << bfecoptvalue << std::endl;
                 if ((objectivevalue < (bfecoptvalue - 1)) || (objectivevalue > (bfecoptvalue + 1)))
                 {
-                    Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+                    Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
                         "testOAschedulerBFEC", __LINE__, primarylocation);
                 }
             }
             else {
-                Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve model with solution",
+                Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve model with solution",
                     "testOAschedulerBFEC", __LINE__, primarylocation);
             }
            

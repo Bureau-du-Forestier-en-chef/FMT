@@ -11,16 +11,16 @@
 
 namespace Logging
 {
-	class FMTExcelLogger : public Logging::FMTlogger
+	class FMTExcelLogger : public Logging::FMTLogger
 	{
 	public:
 		FMTExcelLogger();
 		std::string getPrintOut() const;
 		void clearOut();
 	#ifdef FMTWITHOSI
-		virtual FMTlogger* clone() const;
+		virtual FMTLogger* clone() const;
 	#endif
-	virtual std::unique_ptr <FMTlogger> Clone() const;
+	virtual std::unique_ptr <FMTLogger> Clone() const;
 	protected:
 		void cout(const char* message) const override;
 	private:

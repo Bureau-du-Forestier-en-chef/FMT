@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
     {   
 #ifdef FMTWITHOSI
-    Logging::FMTdefaultlogger().logStamp();
+    Logging::FMTDefaultLogger().logStamp();
     const std::string primarylocation = std::string(argv[2]);
     const std::string scenario = std::string(argv[3]);
     const std::string fichierParam = std::string(argv[1]);

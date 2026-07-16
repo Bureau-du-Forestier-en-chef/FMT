@@ -16,23 +16,23 @@ namespace Exception
 {
 
 
-	FMTdebugexceptionhandler::FMTdebugexceptionhandler()
+	FMTDebugExceptionHandler::FMTDebugExceptionHandler()
 	{
 
 	}
 
 
-	FMTexception FMTdebugexceptionhandler::raise(FMTexc lexception, std::string text,
+	FMTException FMTDebugExceptionHandler::raise(FMTexc lexception, std::string text,
 		const std::string& method,const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
 		
 		const FMTlev LEVEL = getLevel(lexception);
-		FMTexception excp;
+		FMTException excp;
 		if (lsection == Core::FMTsection::Empty)
 			{
-			excp = FMTexception(lexception, updateStatus(lexception, text), method, file, line);
+			excp = FMTException(lexception, updateStatus(lexception, text), method, file, line);
 			}else {
-			excp = FMTexception(lexception, lsection, updateStatus(lexception, text),method, file,line);
+			excp = FMTException(lexception, lsection, updateStatus(lexception, text),method, file,line);
 			}
 
 
@@ -40,11 +40,11 @@ namespace Exception
 			{
 			if (LEVEL == FMTlev::FMT_Warning || LEVEL == FMTlev::FMT_Debug)
 				{
-				FMTwarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
+				FMTWarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
 				}else if(LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range)
 				{
 					boost::lock_guard<boost::recursive_mutex> guard(mtx);
-					std::throw_with_nested(FMTerror(excp));
+					std::throw_with_nested(FMTError(excp));
 				}
 
 			}
@@ -52,28 +52,28 @@ namespace Exception
 	}
 #ifdef FMTWITHGDAL
 
-	FMTexceptionhandler* FMTdebugexceptionhandler::getCPLdata()
+	FMTExceptionHandler* FMTDebugExceptionHandler::getCPLdata()
 		{
 		return this;
 		}
-	void FMTdebugexceptionhandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
+	void FMTDebugExceptionHandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
         try{
-            FMTexceptionhandler::handelCPLerror(eErrClass, nError, pszErrorMsg);
+            FMTExceptionHandler::handelCPLerror(eErrClass, nError, pszErrorMsg);
         }catch(...)
             {
-            raiseFromCatch("", "FMTdebugexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+            raiseFromCatch("", "FMTDebugExceptionHandler::handelCPLerror", __LINE__, __FILE__);
             }
 
 		}
 #endif
 
-	std::unique_ptr <FMTexceptionhandler> FMTdebugexceptionhandler::Clone() const
+	std::unique_ptr <FMTExceptionHandler> FMTDebugExceptionHandler::Clone() const
 	{
-		return std::unique_ptr <FMTexceptionhandler>(new FMTdebugexceptionhandler(*this));
+		return std::unique_ptr <FMTExceptionHandler>(new FMTDebugExceptionHandler(*this));
 	}
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTdebugexceptionhandler)
+BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTDebugExceptionHandler)

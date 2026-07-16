@@ -12,7 +12,7 @@ namespace Logging
 		printout += std::string(message);
 		}
 	FMTExcelLogger::FMTExcelLogger():
-		Logging::FMTlogger()
+		Logging::FMTLogger()
 	{
 	
 
@@ -28,14 +28,14 @@ namespace Logging
 		}
 
 #ifdef FMTWITHOSI
-	FMTlogger* FMTExcelLogger::clone() const
+	FMTLogger* FMTExcelLogger::clone() const
 	{
 		return new FMTExcelLogger(*this);
 	}
 #endif
-	std::unique_ptr <FMTlogger> FMTExcelLogger::Clone() const
+	std::unique_ptr <FMTLogger> FMTExcelLogger::Clone() const
 	{
-		return std::unique_ptr <FMTlogger>(new FMTExcelLogger(*this));
+		return std::unique_ptr <FMTLogger>(new FMTExcelLogger(*this));
 	}
 
 

@@ -15,71 +15,71 @@ namespace Exception
 
 {
 
-	FMTexceptionhandler* FMTdefaultexceptionhandler::getCPLdata()
+	FMTExceptionHandler* FMTDefaultExceptionHandler::getCPLdata()
 		{
 		return this;
 		}
 
 #if defined FMTWITHGDAL
-	void FMTdefaultexceptionhandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
+	void FMTDefaultExceptionHandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
         try{
-            FMTexceptionhandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+            FMTExceptionHandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
         }catch(...)
             {
-            raiseFromCatch("", "FMTdefaultexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+            raiseFromCatch("", "FMTDefaultExceptionHandler::handelCPLerror", __LINE__, __FILE__);
             }
 		}
 #endif
 
-	FMTdefaultexceptionhandler::FMTdefaultexceptionhandler() :FMTexceptionhandler() {}
+	FMTDefaultExceptionHandler::FMTDefaultExceptionHandler() :FMTExceptionHandler() {}
 
-	FMTdefaultexceptionhandler::FMTdefaultexceptionhandler(const std::unique_ptr<Logging::FMTlogger>& logger):
-		FMTexceptionhandler(logger)
+	FMTDefaultExceptionHandler::FMTDefaultExceptionHandler(const std::unique_ptr<Logging::FMTLogger>& logger):
+		FMTExceptionHandler(logger)
 	{
 	#if defined  FMTWITHGDAL
-		Exception::FMTexceptionhandler* handler = reinterpret_cast<Exception::FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
+		Exception::FMTExceptionHandler* handler = reinterpret_cast<Exception::FMTExceptionHandler*>(CPLGetErrorHandlerUserData());
 		CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, this->getCPLdata());
 	#endif
 	}
 
-	FMTexception FMTdefaultexceptionhandler::raise(FMTexc lexception, std::string text,
+	FMTException FMTDefaultExceptionHandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 	{
 		const FMTlev LEVEL = getLevel(lexception);
-		FMTexception excp = FMTexception(lexception, updateStatus(lexception, text));
+		FMTException excp = FMTException(lexception, updateStatus(lexception, text));
 		if (lsection != Core::FMTsection::Empty)
 		{
-			excp = FMTexception(lexception, lsection, updateStatus(lexception, text));
+			excp = FMTException(lexception, lsection, updateStatus(lexception, text));
 		}
 		if (LEVEL != FMTlev::FMT_Warning)
 		{
 			if (lsection == Core::FMTsection::Empty)
 			{
-				excp = FMTexception(lexception, updateStatus(lexception, text), method,file,line);
+				excp = FMTException(lexception, updateStatus(lexception, text), method,file,line);
 			}
 			else {
-				excp = FMTexception(lexception, lsection, updateStatus(lexception, text), method, file, line);
+				excp = FMTException(lexception, lsection, updateStatus(lexception, text), method, file, line);
 			}
 			if (throwit && (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range) && !needToRethrow())
 				{
 				boost::lock_guard<boost::recursive_mutex> guard(mtx);
-				std::throw_with_nested(FMTerror(excp));
+				std::throw_with_nested(FMTError(excp));
 				}
 		}else if(throwit)
 			{
-			FMTwarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
+			FMTWarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
 			}
 		return excp;
 	}
 
 
-	std::unique_ptr <FMTexceptionhandler> FMTdefaultexceptionhandler::Clone() const
+	std::unique_ptr <FMTExceptionHandler> FMTDefaultExceptionHandler::Clone() const
 	{
-		return std::unique_ptr<FMTexceptionhandler>(new FMTdefaultexceptionhandler(*this));
+		return std::unique_ptr<FMTExceptionHandler>(new FMTDefaultExceptionHandler(*this));
 	}
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTdefaultexceptionhandler)
+BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTDefaultExceptionHandler)

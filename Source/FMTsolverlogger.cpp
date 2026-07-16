@@ -13,7 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Logging
 {
 
-FMTsolverlogger::FMTsolverlogger(FMTlogger& baselogger):
+FMTSolverLogger::FMTSolverLogger(FMTLogger& baselogger):
 	baselogger(&baselogger),
 	ownthelogger(false)
 	{
@@ -21,14 +21,14 @@ FMTsolverlogger::FMTsolverlogger(FMTlogger& baselogger):
 
 	}
 	
-FMTsolverlogger::FMTsolverlogger():
+FMTSolverLogger::FMTSolverLogger():
 	baselogger(nullptr),
 	ownthelogger(true)
 	{
 
 	}
 
-void FMTsolverlogger::cleanUp()
+void FMTSolverLogger::cleanUp()
 {
 	if (baselogger && ownthelogger)
 	{
@@ -37,33 +37,33 @@ void FMTsolverlogger::cleanUp()
 }
 
 
-void FMTsolverlogger::copy(const FMTsolverlogger& rhs)
+void FMTSolverLogger::copy(const FMTSolverLogger& rhs)
 {
 	cleanUp();
 	baselogger = rhs.baselogger->clone();
 	ownthelogger = true;
 }
 
-FMTsolverlogger::~FMTsolverlogger()
+FMTSolverLogger::~FMTSolverLogger()
 	{
 	cleanUp();
 	}
 
-/*FMTsolverlogger::FMTsolverlogger(const FMTsolverlogger& rhs) :
+/*FMTSolverLogger::FMTSolverLogger(const FMTSolverLogger& rhs) :
 	baselogger(nullptr),
 	ownthelogger(true)
 	{
 	copy(rhs);
 	}*/
 
-void FMTsolverlogger::copyFrom(const FMTsolverlogger& rhs)
+void FMTSolverLogger::copyFrom(const FMTSolverLogger& rhs)
 {
 	baselogger = nullptr;
 	ownthelogger = true;
 	copy(rhs);
 }
 
-/*FMTsolverlogger& FMTsolverlogger::operator = (const FMTsolverlogger& rhs)
+/*FMTSolverLogger& FMTSolverLogger::operator = (const FMTSolverLogger& rhs)
 	{
 	if (this!=&rhs)
 		{
@@ -72,24 +72,24 @@ void FMTsolverlogger::copyFrom(const FMTsolverlogger& rhs)
 	return *this;
 	}*/
 
-int FMTsolverlogger::print()
+int FMTSolverLogger::print()
 	{
 	return baselogger->print();
 	}
 
-void FMTsolverlogger::checkSeverity()
+void FMTSolverLogger::checkSeverity()
 	{
 	baselogger->checkSeverity();
 	}
 
-void FMTsolverlogger::checkcoinSeverity()
+void FMTSolverLogger::checkcoinSeverity()
 	{
 	CoinMessageHandler::checkSeverity();
 	}
 
-CoinMessageHandler* FMTsolverlogger::clone() const
+CoinMessageHandler* FMTSolverLogger::clone() const
 	{
-	FMTsolverlogger* solverLogger = new FMTsolverlogger();
+	FMTSolverLogger* solverLogger = new FMTSolverLogger();
 	solverLogger->copyFrom(*this);
 	return solverLogger;
 	}

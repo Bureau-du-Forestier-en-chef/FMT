@@ -20,7 +20,7 @@ int roundobjectivevalue(const double& value)
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
     std::string primarylocation;
     std::string scenario;
 	double objvalue;
@@ -72,13 +72,13 @@ int main(int argc, char *argv[])
                 if(roundobjectivevalue(objvalue) != roundobjectivevalue(modelobjvalue)) 
                 {
                     std::string message = "Optimizing the model gave a different goal value than expected : \n\tResult : "+std::to_string(roundobjectivevalue(modelobjvalue))+"\n\tExpected : "+std::to_string(roundobjectivevalue(objvalue));
-                    //Logging::FMTlogger()<< message <<"\n";
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, message,
+                    //Logging::FMTLogger()<< message <<"\n";
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, message,
 						"TestSimpleplanning20p", 48, primarylocation);
                 }
 			}else{
 			std::string message = "The model is unsolvable.";
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, message,
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, message,
 					"TestSimpleplanning20p", 46, primarylocation);
             }
 	#endif

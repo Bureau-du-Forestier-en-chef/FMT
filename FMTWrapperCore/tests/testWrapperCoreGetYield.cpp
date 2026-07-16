@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 
 	// on fait des v�rifications sur le nombre renvoyer
 	if (yield != result) {
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de yield n'est pas égal au résultat attendu",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de yield n'est pas égal au résultat attendu",
 			"TestWrapperCoreGetYield", __LINE__, __FILE__);
 	}
 

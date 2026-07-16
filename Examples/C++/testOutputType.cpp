@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	if (optmodel.getOutputs().size() != N_OUTPUT)
 	{
 		std::cout << "ok" << std::endl;
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Mauvais output",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Mauvais output",
 			"FMTsetsolution", __LINE__, primarylocation);
 	}
 #endif

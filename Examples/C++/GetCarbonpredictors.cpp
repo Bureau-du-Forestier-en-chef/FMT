@@ -28,7 +28,7 @@ Example to get FMTpredictors on a FMTsesmodel
 int main()
 	{
 #if defined FMTWITHGDAL && defined FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		#ifdef FMTWITHONNXR
@@ -81,9 +81,9 @@ int main()
 				{
 					for (const auto& t : simulationmodel.greedyReferenceBuild(optimizationmodel.getSolution(period),10))
 					{
-						Logging::FMTdefaultlogger() << t.first << " " << t.second << " ";
+						Logging::FMTDefaultLogger() << t.first << " " << t.second << " ";
 					}
-					Logging::FMTdefaultlogger() << "\n";
+					Logging::FMTDefaultLogger() << "\n";
 				}
 				Spatial::FMTSpatialSchedule spatialschedule = simulationmodel.getSpSchedule();	
 				std::vector<std::vector<std::vector<std::pair<std::string,double>>>> allpredictors;
@@ -118,7 +118,7 @@ int main()
 					{
 						for(const auto& pred : graphpred)
 						{
-							Logging::FMTdefaultlogger() << "ID: " << id << " Period: " << period << " " << pred.first.c_str() << " " << pred.second << "\n";
+							Logging::FMTDefaultLogger() << "ID: " << id << " Period: " << period << " " << pred.first.c_str() << " " << pred.second << "\n";
 						}
 						++id;
 					}
@@ -126,7 +126,7 @@ int main()
 				}
 			}
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 #endif 
 	return 0;

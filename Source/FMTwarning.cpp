@@ -13,16 +13,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Exception
 {
-FMTwarning::FMTwarning() : FMTexception() {}
-FMTwarning::FMTwarning(const FMTexception& rhs) : FMTexception(rhs) {}
-FMTwarning::FMTwarning(const FMTexc lexception, const std::string message) : FMTexception(lexception, message) {}
-FMTwarning::FMTwarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message) : FMTexception(lexception, lsection, message) {}
+FMTWarning::FMTWarning() : FMTException() {}
+FMTWarning::FMTWarning(const FMTException& rhs) : FMTException(rhs) {}
+FMTWarning::FMTWarning(const FMTexc lexception, const std::string message) : FMTException(lexception, message) {}
+FMTWarning::FMTWarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message) : FMTException(lexception, lsection, message) {}
 
-FMTwarning::FMTwarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message,
+FMTWarning::FMTWarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message,
 	const std::string& lmethod, const std::string& lfile, const int& lline):
-	FMTexception(lexception, lsection, message, lmethod, lfile, lline) {}
+	FMTException(lexception, lsection, message, lmethod, lfile, lline) {}
 
-void FMTwarning::warn(Logging::FMTlogger& logger,std::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const
+void FMTWarning::warn(Logging::FMTLogger& logger,std::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const
 	{
 		std::unordered_map<int,size_t>::iterator spwit = specificwarningcount.find(exceptiontype);
 		if(spwit!=specificwarningcount.end())

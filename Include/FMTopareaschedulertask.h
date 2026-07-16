@@ -197,7 +197,7 @@ namespace Parallel
 		/**
 		Pass the logger
 		*/
-		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
 
 	};
 

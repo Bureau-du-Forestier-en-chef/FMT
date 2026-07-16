@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	{
 	
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const bool writeschedule = true;
 	std::string primlocation;
 	int length;

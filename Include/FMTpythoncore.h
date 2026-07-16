@@ -275,14 +275,14 @@ namespace Python
 	};
 
 
-	void FMTtranslate_warning(Exception::FMTwarning const& e)
+	void FMTtranslate_warning(Exception::FMTWarning const& e)
 	{
 		PyErr_SetString(PyExc_UserWarning, e.what());
 	}
 
 	PyObject* FMTexceptiontype = NULL;
 
-	void FMTtranslate_error(Exception::FMTerror const& error) //should be implemented more like https://stackoverflow.com/questions/9620268/boost-python-custom-exception-class
+	void FMTtranslate_error(Exception::FMTError const& error) //should be implemented more like https://stackoverflow.com/questions/9620268/boost-python-custom-exception-class
 	{
 		if (error.hold())
 		{

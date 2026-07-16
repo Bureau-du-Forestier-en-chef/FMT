@@ -2,7 +2,13 @@
 """Propose the FMTlowercase -> FMTCamelCase class mapping.
 
 Usage: python .rename_tools/propose_classes.py
-  writes .rename_tools/classmap.json and Documentation/classCase_inventory.md
+  writes .rename_tools/classmap.json
+
+WARNING -- run this ONCE, before the first batch. It derives the map by scanning the tree,
+so re-running it after a batch has landed silently DROPS every class already renamed (the
+old spelling is gone from the tree). classmap.json must stay complete: batch 6 needs it to
+rename the files. To change one entry after the fact, patch classmap.json directly instead
+of regenerating.
 
 Splitting is longest-match left-to-right over an ATOMIC word list, and any name whose
 remainder is not fully covered is a HARD FAILURE reported for manual handling. A greedy
@@ -33,12 +39,15 @@ transition version warning yields request decision tree pools""".split()
 # Acronyms: Pascal-cased per the documented rule, except FMT/GCBM which stay uppercase.
 ACRONYMS = {
     'lp': 'Lp', 'sa': 'Sa', 'se': 'Se', 'ses': 'Ses', 'sr': 'Sr', 'nss': 'Nss',
-    'nn': 'Nn', 'nep': 'Nep', 'mt': 'Mt', 'oparea': 'Oparea', 'yld': 'Yld',
-    'gcbm': 'GCBM',
+    'nn': 'Nn', 'nep': 'Nep', 'mt': 'Mt', 'yld': 'Yld', 'gcbm': 'GCBM',
 }
 
 # Names the automaton cannot resolve, or where the automaton is wrong. Each is a decision.
 OVERRIDE = {
+    # 'oparea' reads as "operating area" -> Op + Area. Kept as an override rather than
+    # adding 'op' to the atomic table, which would sit under operator/operating/optimization
+    # and only fire as a last resort -- not worth the collateral risk for a single class.
+    'FMTopareaschedulertask': 'FMTOpAreaSchedulerTask',
     # 'se' here is Structured Exception (SEH, <eh.h>), NOT the 'se' of FMTsemodel.
     'FMTseException': 'FMTSeException',
     # Typo kept on purpose: the camelCase pass fixed typos in methods only, never classes.

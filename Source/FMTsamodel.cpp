@@ -774,7 +774,7 @@ namespace Models
         try {
                 #ifdef FMTWITHOSI
                      Models::FMTlpmodel newLp = _getRandomLpModel(p_SpatialSchedule);
-                     Logging::FMTquietlogger TEMP_LOGGER;
+                     Logging::FMTQuietLogger TEMP_LOGGER;
                      newLp.setParallelLogger(TEMP_LOGGER);
                     if (newLp.doPlanning(true))
                         {

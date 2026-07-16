@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	{
 	
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	std::vector<bool> playback;
 	std::vector<std::string> allscenarios;
 	std::string primlocation;

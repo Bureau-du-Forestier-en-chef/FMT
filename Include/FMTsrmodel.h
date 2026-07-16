@@ -69,7 +69,7 @@ namespace Models
 		Solver's logger cannot work in parallel so you need to pass a logger owned
 		by the thead to the solver to make sure it does not work in concurrency.
 		*/
-		void setParallelLogger(Logging::FMTlogger& logger) override;
+		void setParallelLogger(Logging::FMTLogger& logger) override;
 		// DocString: FMTsrmodel::getAvailableSolverInterface
 		/**
 		Return a vector of solverinterface available
@@ -286,7 +286,7 @@ namespace Models
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
 		// DocString: FMTsrmodel::presolve
 		/**
 		Presolve a FMTsrmodel.

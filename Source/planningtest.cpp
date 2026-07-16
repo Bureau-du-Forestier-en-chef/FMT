@@ -11,7 +11,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTlogger().logStamp();
+	Logging::FMTLogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<bool>playback;

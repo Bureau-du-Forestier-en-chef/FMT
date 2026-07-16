@@ -17,7 +17,7 @@
 int main()
 {
 #ifdef FMTWITHGDAL
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string outdir = "../../tests/Spatialyexplicitsimulation_doplanning/";
@@ -69,11 +69,11 @@ int main()
 	}
 	const double thevalue = simulationmodel.getOutput(sumoutputs,1, Core::FMToutputlevel::totalonly).at("Total");
 	const double globalvalue = simulationmodel.getOutput(spatialoutput, 1, Core::FMToutputlevel::totalonly).at("Total");
-	Logging::FMTdefaultlogger() << "outvalues " << thevalue << "\n";
-	Logging::FMTdefaultlogger() << "outglobalvalues " << globalvalue << "\n";
+	Logging::FMTDefaultLogger() << "outvalues " << thevalue << "\n";
+	Logging::FMTDefaultLogger() << "outglobalvalues " << globalvalue << "\n";
 	if (thevalue < globalvalue)
 	{
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);
 	}
 	mparser.writeResults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
@@ -87,18 +87,18 @@ int main()
 		boost::split(spresults, stats, boost::is_any_of(" "));
 		if (spresults.at(1)=="COUPETOTALE" && spresults.at(1) !="2")
 			{
-			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong Patch size",
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong Patch size",
 				"", __LINE__, primarylocation);
 			}
 	}
 
-	Logging::FMTdefaultlogger() <<"xsize : "<< spatialsolution.getXSize() << "\n";
-	Logging::FMTdefaultlogger() << "ysize : " << spatialsolution.getYSize() << "\n";
+	Logging::FMTDefaultLogger() <<"xsize : "<< spatialsolution.getXSize() << "\n";
+	Logging::FMTDefaultLogger() << "ysize : " << spatialsolution.getYSize() << "\n";
 	for (int period = 1; period <= 10; ++period)
 		{
 		for (const std::pair<Spatial::FMTcoordinate,double>& value : spatialsolution.getOutputByCoordinate(simulationmodel, spatialoutput, period))
 				{
-				Logging::FMTdefaultlogger() << "period: " << period << " X: " << value.first.getX() << " Y: " << value.first.getY() << " value: " << value.second << "\n";
+				Logging::FMTDefaultLogger() << "period: " << period << " X: " << value.first.getX() << " Y: " << value.first.getY() << " value: " << value.second << "\n";
 				}
 		}
 	

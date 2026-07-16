@@ -13,7 +13,7 @@
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("GDAL"))
 	{
 		std::string path;

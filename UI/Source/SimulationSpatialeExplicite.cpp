@@ -201,7 +201,7 @@ namespace Wrapper
     {
         try
         {
-            std::unique_ptr<Logging::FMTlogger> savedLogger;
+            std::unique_ptr<Logging::FMTLogger> savedLogger;
             {
                 FMTFormLogger* mainLogger = FMTFormCache::GetInstance()->GetFormLogger();
                 if (mainLogger)

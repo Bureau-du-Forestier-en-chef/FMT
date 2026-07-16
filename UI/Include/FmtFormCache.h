@@ -13,7 +13,7 @@ namespace Models
 
 namespace Exception
 {
-	class FMTexceptionhandler;
+	class FMTExceptionHandler;
 }
 
 namespace Wrapper
@@ -27,7 +27,7 @@ namespace Wrapper
 			const Models::FMTmodel& getModel(const int& index) const;
 			FMTexceptionhandlerwarning* GetFormHandler();
 			const FMTexceptionhandlerwarning* GetFormHandler() const;
-			Exception::FMTexceptionhandler* getExceptionHandler() const;
+			Exception::FMTExceptionHandler* getExceptionHandler() const;
 			FMTFormLogger* GetFormLogger();
 			static FMTFormCache* GetInstance();
 			bool empty() const;

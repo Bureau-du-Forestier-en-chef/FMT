@@ -69,15 +69,15 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 namespace Core
 {
 
-	std::unique_ptr<Logging::FMTlogger> FMTobject::_logger = std::move(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdefaultlogger()));
-	std::unique_ptr<Exception::FMTexceptionhandler> FMTobject::_exhandler = std::move(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdefaultexceptionhandler(_logger)));
+	std::unique_ptr<Logging::FMTLogger> FMTobject::_logger = std::move(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTDefaultLogger()));
+	std::unique_ptr<Exception::FMTExceptionHandler> FMTobject::_exhandler = std::move(std::unique_ptr<Exception::FMTExceptionHandler>(new Exception::FMTDefaultExceptionHandler(_logger)));
 
-	Logging::FMTlogger* FMTobject::getLogger()
+	Logging::FMTLogger* FMTobject::getLogger()
 	{
 		return _logger.get();
 	}
 
-	Exception::FMTexceptionhandler* FMTobject::getExceptionHandler()
+	Exception::FMTExceptionHandler* FMTobject::getExceptionHandler()
 	{
 		return _exhandler.get();
 	}
@@ -155,7 +155,7 @@ namespace Core
 			#if defined  FMTWITHGDAL
 				if (_exhandler)
 					{
-					Exception::FMTexceptionhandler* handler = reinterpret_cast<Exception::FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
+					Exception::FMTExceptionHandler* handler = reinterpret_cast<Exception::FMTExceptionHandler*>(CPLGetErrorHandlerUserData());
 					if (handler)
 						{
 						CPLPopErrorHandler();
@@ -232,7 +232,7 @@ namespace Core
 	}
 
 
-	FMTobject::FMTobject(const std::unique_ptr<Exception::FMTexceptionhandler> exhandler)
+	FMTobject::FMTobject(const std::unique_ptr<Exception::FMTExceptionHandler> exhandler)
 	{
 		_exhandler = std::move(exhandler->Clone());
 		_exhandler->passInLogger(_logger);
@@ -248,7 +248,7 @@ namespace Core
 		this->checkSignals();
 		return *this;
 	}
-	void FMTobject::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTobject::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 		{
 		try{
 			this->checkSignals();
@@ -260,7 +260,7 @@ namespace Core
 			}
 		}
 
-	void FMTobject::passInExceptionHandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler)
+	void FMTobject::passInExceptionHandler(const std::unique_ptr<Exception::FMTExceptionHandler>& exhandler)
 		{
 		try{
 			this->checkSignals();
@@ -284,7 +284,7 @@ namespace Core
 		{
 		try {
 			this->checkSignals();
-			this->passInLogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdefaultlogger()));
+			this->passInLogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTDefaultLogger()));
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTobject::setDefaultLogger", __LINE__, __FILE__);
@@ -295,7 +295,7 @@ namespace Core
 		{
 		try{
 			this->checkSignals();
-			this->passInLogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger()));
+			this->passInLogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTQuietLogger()));
 		}
 		catch (...)
 		{
@@ -307,7 +307,7 @@ namespace Core
 	{
 		try {
 			this->checkSignals();
-			this->passInLogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()));
+			this->passInLogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()));
 
 		}
 		catch (...)
@@ -320,7 +320,7 @@ namespace Core
 		{
 		try {
 			this->checkSignals();
-			this->passInLogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTdebuglogger()));
+			this->passInLogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTDebugLogger()));
 		}	
 		catch (...)
 		{
@@ -332,7 +332,7 @@ namespace Core
 		{
 		try{
 			this->checkSignals();
-			this->passInExceptionHandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdefaultexceptionhandler()));
+			this->passInExceptionHandler(std::unique_ptr<Exception::FMTExceptionHandler>(new Exception::FMTDefaultExceptionHandler()));
 		}
 		catch (...)
 		{
@@ -343,7 +343,7 @@ namespace Core
 	{
 		try{
 			this->checkSignals();
-			this->passInExceptionHandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTquietexceptionhandler()));
+			this->passInExceptionHandler(std::unique_ptr<Exception::FMTExceptionHandler>(new Exception::FMTQuietExceptionHandler()));
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTobject::setQuietExceptionHandler", __LINE__, __FILE__);
@@ -353,7 +353,7 @@ namespace Core
 	{
 		try{
 		this->checkSignals();
-		this->passInExceptionHandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdebugexceptionhandler()));
+		this->passInExceptionHandler(std::unique_ptr<Exception::FMTExceptionHandler>(new Exception::FMTDebugExceptionHandler()));
 		}
 		catch (...)
 		{
@@ -365,7 +365,7 @@ namespace Core
 	{
 		try{
 			this->checkSignals();
-			this->passInExceptionHandler(std::unique_ptr<Exception::FMTexceptionhandler>(new Exception::FMTfreeexceptionhandler()));
+			this->passInExceptionHandler(std::unique_ptr<Exception::FMTExceptionHandler>(new Exception::FMTFreeExceptionHandler()));
 		}
 		catch (...)
 		{

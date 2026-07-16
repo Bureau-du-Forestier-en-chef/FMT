@@ -14,44 +14,44 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Logging
 {
 
-std::unique_ptr <FMTlogger> FMTquietlogger::Clone() const
+std::unique_ptr <FMTLogger> FMTQuietLogger::Clone() const
 	{
-	return std::unique_ptr <FMTlogger>(new FMTquietlogger(*this));
+	return std::unique_ptr <FMTLogger>(new FMTQuietLogger(*this));
 	}
 
-void FMTquietlogger::cout(const char* message) const
+void FMTQuietLogger::cout(const char* message) const
 	{
 
 	}
 
-FMTquietlogger::FMTquietlogger():
-	FMTlogger()
+FMTQuietLogger::FMTQuietLogger():
+	FMTLogger()
 	{
 	#ifdef FMTWITHOSI
 		solverref->setLogLevel(0);
 	#endif
 	}
 #ifdef FMTWITHOSI
-int FMTquietlogger::print()
+int FMTQuietLogger::print()
 	{
 	//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	//return FMTlogger::print();
+	//return FMTLogger::print();
 	return 0;
 	}
 
-void FMTquietlogger::checkSeverity()
+void FMTQuietLogger::checkSeverity()
 	{
 	//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	FMTlogger::checkSeverity();
+	FMTLogger::checkSeverity();
 	}
 
-FMTlogger * FMTquietlogger::clone() const
+FMTLogger * FMTQuietLogger::clone() const
 	{
 	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	return new FMTquietlogger(*this);
+	return new FMTQuietLogger(*this);
 	}
 #endif
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTquietlogger)
+BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTQuietLogger)
 

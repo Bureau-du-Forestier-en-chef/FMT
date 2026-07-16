@@ -28,7 +28,7 @@ namespace Testing
 					const std::string TEST_RESULT = m_Parser._processConstants(TEST_STRING, constants);
 					if (TEST_RESULT != VALID_STRING)
 						{
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, 
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, 
 								"Non valid constant conversion",
 							"UnitTestFMTexcelcache::testStringToConstants", __LINE__, __FILE__);
 						}
@@ -46,7 +46,7 @@ namespace Testing
 					const std::string TEST_RESULT = m_Parser._processConstants(TEST_STRING, constants);
 					if (TEST_RESULT != VALID_STRING)
 						{
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed,
 								"Quoted constant should not be converted",
 							"UnitTestFMTParser::testQuotedConstantsAreNotConverted", __LINE__, __FILE__);
 						}
@@ -62,7 +62,7 @@ namespace Testing
 					const std::string TEST_RESULT = m_Parser._processConstants(TEST_STRING, constants);
 					if (TEST_RESULT != VALID_STRING)
 						{
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed,
 								"Constant delimited by punctuation should be converted",
 							"UnitTestFMTParser::testConstantsWithPunctuationDelimiters", __LINE__, __FILE__);
 						}
@@ -79,7 +79,7 @@ namespace Testing
 
 int main()
 {
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	Testing::UnitTestFMTParser test;
 	test.testStringToConstants();
 	test.testQuotedConstantsAreNotConverted();

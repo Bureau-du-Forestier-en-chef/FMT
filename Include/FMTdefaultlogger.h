@@ -12,14 +12,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Logging
 {
-	// DocString: FMTdefaultlogger 
+	// DocString: FMTDefaultLogger 
 	/**
-	FMTdefaultlogger is derived class from FMTlogger standing has the default
+	FMTDefaultLogger is derived class from FMTLogger standing has the default
 	level of log used by FMT.
 	*/
-	class FMTEXPORT FMTdefaultlogger final: public FMTlogger
+	class FMTEXPORT FMTDefaultLogger final: public FMTLogger
 	{
-		// DocString: FMTdefaultlogger::serialize
+		// DocString: FMTDefaultLogger::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -27,58 +27,58 @@ namespace Logging
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTlogger>(*this));
+			ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTLogger>(*this));
 		}
 	public:
-		// DocString: FMTdefaultlogger()
+		// DocString: FMTDefaultLogger()
 		/**
-		FMTdefaultlogger default constructor.
+		FMTDefaultLogger default constructor.
 		*/
-		FMTdefaultlogger();
-		// DocString: ~FMTdefaultlogger()
+		FMTDefaultLogger();
+		// DocString: ~FMTDefaultLogger()
 		/**
-		FMTdefaultlogger default destructor.
+		FMTDefaultLogger default destructor.
 		*/
-		~FMTdefaultlogger() = default;
-		// DocString: FMTdefaultlogger::operator=
+		~FMTDefaultLogger() = default;
+		// DocString: FMTDefaultLogger::operator=
 		/**
-		FMTdefaultlogger default copy assignment operator.
+		FMTDefaultLogger default copy assignment operator.
 		*/
-		FMTdefaultlogger & operator = (const FMTdefaultlogger & rhs) = default;
-		// DocString: FMTdefaultlogger(const FMTdefaultlogger&)
+		FMTDefaultLogger & operator = (const FMTDefaultLogger & rhs) = default;
+		// DocString: FMTDefaultLogger(const FMTDefaultLogger&)
 		/**
-		FMTdefaultlogger default copy constructor.
+		FMTDefaultLogger default copy constructor.
 		*/
-		FMTdefaultlogger(const FMTdefaultlogger& rhs) = default;
+		FMTDefaultLogger(const FMTDefaultLogger& rhs) = default;
 		#ifdef FMTWITHOSI
-			// DocString: FMTdefaultlogger::print
+			// DocString: FMTDefaultLogger::print
 			/**
-			FMTdefaultlogger print for osisolverinterface is the default print level used by FMT.
-			See FMTlogger print function.
+			FMTDefaultLogger print for osisolverinterface is the default print level used by FMT.
+			See FMTLogger print function.
 			*/
 			int print() override;
-			// DocString: FMTdefaultlogger::checkSeverity
+			// DocString: FMTDefaultLogger::checkSeverity
 			/**
-			FMTdefaultlogger checkseverity for osisolverinterface is the default severity check used by FMT.
-			See FMTlogger checkSeverity function.
+			FMTDefaultLogger checkseverity for osisolverinterface is the default severity check used by FMT.
+			See FMTLogger checkSeverity function.
 			*/
 			void checkSeverity() override;
-			// DocString: FMTdefaultlogger::clone
+			// DocString: FMTDefaultLogger::clone
 			/**
-			See FMTlogger clone function.
+			See FMTLogger clone function.
 			*/
-			FMTlogger* clone() const override;
+			FMTLogger* clone() const override;
 		#endif
-		// DocString: FMTdefaultlogger::Clone
+		// DocString: FMTDefaultLogger::Clone
 		/**
-		@brief clone the FMTdefaultlogger
-		@return a valid cloned FMTdefaultlogger
+		@brief clone the FMTDefaultLogger
+		@return a valid cloned FMTDefaultLogger
 		*/
-		virtual std::unique_ptr <FMTlogger> Clone() const;
+		virtual std::unique_ptr <FMTLogger> Clone() const;
 	};
 
 }
 
-BOOST_CLASS_EXPORT_KEY(Logging::FMTdefaultlogger)
+BOOST_CLASS_EXPORT_KEY(Logging::FMTDefaultLogger)
 
 #endif

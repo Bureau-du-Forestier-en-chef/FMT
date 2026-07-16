@@ -13,7 +13,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-    Logging::FMTdefaultlogger().logStamp();
+    Logging::FMTDefaultLogger().logStamp();
     int side;//196
     std::string	themesLocation;
     std::string	pointsLocation;

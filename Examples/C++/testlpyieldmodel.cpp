@@ -28,7 +28,7 @@
 						{
 						for (int period = 1; period < 11; ++period)
 							{
-							Logging::FMTdefaultlogger() << "output value "<< output.getName() <<" " << optimizationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
+							Logging::FMTDefaultLogger() << "output value "<< output.getName() <<" " << optimizationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
 							}
 						//break;
 						}

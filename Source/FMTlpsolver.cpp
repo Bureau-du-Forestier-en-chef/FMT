@@ -515,7 +515,7 @@ namespace Models
 		return solverinterface->isProvenOptimal();
 		}
 
-	void FMTlpsolver::passInMessageHandler(Logging::FMTlogger& logger)
+	void FMTlpsolver::passInMessageHandler(Logging::FMTLogger& logger)
 		{
 		try{
 		solverinterface->passInMessageHandler(dynamic_cast<CoinMessageHandler*>(logger.getSolverLogger()));
@@ -972,7 +972,7 @@ namespace Models
 		return nullptr;
 		}
 
-	void FMTlpsolver::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTlpsolver::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 	{
 		try {
 			Core::FMTobject::passInLogger(logger);
@@ -1329,7 +1329,7 @@ namespace Models
 			return static_cast<int>(indices.size());
 		}
 		else {
-			Exception::FMTdefaultexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+			Exception::FMTDefaultExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed,
 				"for column id " + std::to_string(whichCol), "FMTlpsolver::getCol", __LINE__, __FILE__);
 		}
 		}

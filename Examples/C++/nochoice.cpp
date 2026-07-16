@@ -15,7 +15,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 	{
 		const std::string vals = argv[1];
@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 					const int size_of_no_choice = optimizationmodel.getNoChoice(mask).size();
 					if (size_of_no_choice!=no_action_size)
 						{
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 							"FMTsetsolution", __LINE__, primarylocation);
 						}
 				break;

@@ -94,7 +94,7 @@ namespace Parallel
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
 	private:
 		// DocString: FMTtaskhandler::maxnumberofthread
 		///Maximal number of threads

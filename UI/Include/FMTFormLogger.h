@@ -10,7 +10,7 @@ namespace Wrapper
 	typedef void(__stdcall* logfunc)(const char* sts);
 
 	class __declspec(dllexport) FMTFormLogger final :
-		public Logging::FMTlogger
+		public Logging::FMTLogger
 	{
 	private:
 		bool keepprint;
@@ -31,9 +31,9 @@ namespace Wrapper
 		FMTFormLogger(const std::string& nomFichierLogger, logfunc feed);
 		void settasklogginglevel(int taskLogLevel);
 		void setdefaultlogginglevel();
-		virtual std::unique_ptr <FMTlogger> Clone() const;
+		virtual std::unique_ptr <FMTLogger> Clone() const;
 		#ifdef FMTWITHOSI
-			virtual FMTlogger* clone() const;
+			virtual FMTLogger* clone() const;
 		#endif
 	};
 }

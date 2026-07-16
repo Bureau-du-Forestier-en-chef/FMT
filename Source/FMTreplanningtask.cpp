@@ -354,7 +354,7 @@ namespace Parallel
 		return replicateids.front();
 		}
 
-	void FMTreplanningtask::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTreplanningtask::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 		{
 		global->passInLogger(logger);
 		stochastic->passInLogger(logger);

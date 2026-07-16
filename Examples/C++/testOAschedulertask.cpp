@@ -36,7 +36,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
         {
             if (op.getNeighborsPerimeter() > 0 || op.getGreenUp() > 0)
             {
-                Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
+                Logging::FMTDefaultLogger() << "Lecture des blocs voisins." << "\n";
                 opeareas = areaParser.getSchemeNeighbors(
                     opeareas, 
                     themes, 
@@ -66,7 +66,7 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
                     std::vector<std::string> agg = action.getAggregates();
                     if (std::count(agg.begin(), agg.end(), Agg_name))
                     {
-                        Exception::FMTfreeexceptionhandler().raise(
+                        Exception::FMTFreeExceptionHandler().raise(
                             Exception::FMTexc::FMTfunctionfailed, 
                             "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
                             "testOAschedulerBFEC", __LINE__,model.getName());  
@@ -80,7 +80,7 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 
             if (youvert < 1)
             {
-                Exception::FMTfreeexceptionhandler().raise(
+                Exception::FMTFreeExceptionHandler().raise(
                     Exception::FMTexc::FMTfunctionfailed, 
                     "Aucune action dans le modèle n'a de youvert",
                     "testOAschedulerBFEC", __LINE__,model.getName()) ;
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
     {   
 
         #ifdef FMTWITHOSI
-            Logging::FMTdefaultlogger().logStamp();
+            Logging::FMTDefaultLogger().logStamp();
             std::string primarylocation;
             std::vector<std::string> results;
             std::vector<std::string> scenarios;

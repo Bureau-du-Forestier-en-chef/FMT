@@ -13,7 +13,7 @@
 int main()
 	{
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
@@ -46,7 +46,7 @@ int main()
 					const double value = optimizationmodel.getOutput(output, 1, Core::FMToutputlevel::totalonly).at("Total");
 					if (1<std::abs(value-testmaps.at(output.getName())))
 						{
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 							"FMTleveltest", __LINE__, primarylocation);
 						}
 
@@ -57,7 +57,7 @@ int main()
 
 			}
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 #endif 
 	return 0;

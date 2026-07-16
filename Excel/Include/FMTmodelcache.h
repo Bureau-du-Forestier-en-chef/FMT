@@ -65,7 +65,7 @@ namespace Wrapper
 		std::vector<int> getGraphStats() const;
 		int getperiods() const;
 		Logging::FMTExcelLogger* getlogger();
-		void putlogger(const std::unique_ptr<Logging::FMTlogger>& log);
+		void putlogger(const std::unique_ptr<Logging::FMTLogger>& log);
 		std::vector<double> Juxtaposition(const std::vector<std::string>& themeselection, const std::string& yieldname, const std::string& output, const double& ratio, const double& perimeters) const;
 	private:
 		friend class Testing::UnitTestFMTmodelcache;

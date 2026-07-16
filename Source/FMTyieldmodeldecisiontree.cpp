@@ -221,7 +221,7 @@ namespace Core {
 				}
 			
 			std::unique_ptr<Models::FMTmodel>naturalGrowth = m_modelPtr->getCopy(0);
-			Logging::FMTquietlogger ModelLogger;
+			Logging::FMTQuietLogger ModelLogger;
 			naturalGrowth->setParallelLogger(ModelLogger);
 			naturalGrowth->setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
 			naturalGrowth->setArea(newareas);//Will only work with lp model going to get big with semodel...
@@ -265,7 +265,7 @@ namespace Core {
 			naturalGrowth->setConstraints(newconstraints);
 			naturalGrowth->setActions(std::vector<Core::FMTaction>());
 			//naturalGrowth->setConstraints(naturalGrowth->goalConstraints());
-			//naturalGrowth->setParallelLogger(Logging::FMTquietlogger());
+			//naturalGrowth->setParallelLogger(Logging::FMTQuietLogger());
 			if (!naturalGrowth->doPlanning(true))
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,

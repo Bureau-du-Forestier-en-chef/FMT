@@ -28,12 +28,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Exception
 {
-	class FMTexceptionhandler;
+	class FMTExceptionHandler;
 }
 
 namespace Logging
 {
-	class FMTlogger;
+	class FMTLogger;
 }
 
 
@@ -52,15 +52,15 @@ class FMTEXPORT FMTobject
 		// DocString: FMTobject::getLogger
 		/**
 		@brief get a pointer to the actual logger.
-		@return the valid FMTlogger
+		@return the valid FMTLogger
 		*/
-		static Logging::FMTlogger* getLogger();
+		static Logging::FMTLogger* getLogger();
 		// DocString: FMTobject::getExceptionHandler
 		/**
 		@brief get a pointer to the actual exception handler.
-		@return the valid FMTexceptionhandler;
+		@return the valid FMTExceptionHandler;
 		*/
-		static Exception::FMTexceptionhandler* getExceptionHandler();
+		static Exception::FMTExceptionHandler* getExceptionHandler();
 		// DocString: FMTobject::getRuntimeLocation
 		/**
 		This function return the location of the FMT shared library location.
@@ -81,12 +81,12 @@ class FMTEXPORT FMTobject
 		FMTobject default virutal destructor.
 		*/
 		virtual ~FMTobject();
-		// DocString: FMTobject(const std::unique_ptr<Exception::FMTexceptionhandler>)
+		// DocString: FMTobject(const std::unique_ptr<Exception::FMTExceptionHandler>)
 		/**
 		When constructing a new FMTobject it's sometime usefull to passin the exception handler of an
 		other FMTobject.
 		*/
-		FMTobject(const std::unique_ptr<Exception::FMTexceptionhandler> exhandler);
+		FMTobject(const std::unique_ptr<Exception::FMTExceptionHandler> exhandler);
 		// DocString: FMTobject(const FMTobject&)
 		/**
 		FMTobject default copy constructor.
@@ -101,12 +101,12 @@ class FMTEXPORT FMTobject
 		/**
 		It's sometime usefull to pass in the logger of an other FMTobject.
 		*/
-		virtual void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger);
+		virtual void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger);
 		// DocString: FMTobject::passInExceptionHandler
 		/**
 		It's sometime usefull to pass in the exception handler of an other FMTobject.
 		*/
-		void passInExceptionHandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler);
+		void passInExceptionHandler(const std::unique_ptr<Exception::FMTExceptionHandler>& exhandler);
 		// DocString: FMTobject::redirectLogToFile
 		/**
 		redict the log to a specific file (will append to it)
@@ -175,12 +175,12 @@ class FMTEXPORT FMTobject
 		Change the number of warning raise before silenced.
 		*/
 		void setMaxWarningsBeforeSilenced(const size_t& maxwarningcount);
-		// DocString: FMTexceptionhandler::setTerminateStack
+		// DocString: FMTExceptionHandler::setTerminateStack
 		/**
 		@brief will write the stack in the log when terminate called and raise a function failed.
 		*/
 		static void setTerminateStack();
-		// DocString: FMTexceptionhandler::setAbortStack
+		// DocString: FMTExceptionHandler::setAbortStack
 		/**
 		@brief will write the stack in the log when abort called with SIGABRT and raise a function failed.
 		*/
@@ -200,10 +200,10 @@ class FMTEXPORT FMTobject
 	protected:
 		// DocString: FMTobject::_exhandler
 		///A shared pointer to the exception handler.
-		static std::unique_ptr<Exception::FMTexceptionhandler> _exhandler;
+		static std::unique_ptr<Exception::FMTExceptionHandler> _exhandler;
 		// DocString: FMTobject::_logger
 		///A shared pointer to the logger.
-		static std::unique_ptr<Logging::FMTlogger> _logger;
+		static std::unique_ptr<Logging::FMTLogger> _logger;
 		// DocString: FMTobject:: forceSave
 		/**
 		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
@@ -254,17 +254,17 @@ class FMTEXPORT FMTobject
 		With the clock time calculate time spent in second and return a string.
 		*/
 		static std::string getDurationInSeconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-		// DocString: FMTexceptionhandler::_logStack
+		// DocString: FMTExceptionHandler::_logStack
 		/**
 		@brief Log the stack trace...
 		*/
 		static void _logStack();
-		// DocString: FMTexceptionhandler::_terminate
+		// DocString: FMTExceptionHandler::_terminate
 		/**
 		@brief Raise an error with the boost stacktrace.
 		*/
 		static void _terminate();
-		// DocString: FMTexceptionhandler::_abort
+		// DocString: FMTExceptionHandler::_abort
 		/**
 		@brief Raise an error with the boost stacktrace.
 		@param[in] the signal for abort

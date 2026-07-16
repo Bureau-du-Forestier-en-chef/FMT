@@ -9,7 +9,7 @@
 int main(int argc, char* argv[])
 {
 	#ifdef FMTWITHGDAL
-		Logging::FMTdefaultlogger().logStamp();
+		Logging::FMTDefaultLogger().logStamp();
 		const std::string DriverType =  argv[1];
 		const std::string DriverName =  argv[2];
 		const std::string DriverExtension =  argv[3];
@@ -40,12 +40,12 @@ int main(int argc, char* argv[])
 			}
 		if (std::find(Drivers.begin(),Drivers.end(),DriverName)==Drivers.end())
 			{
-			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cant find driver "+DriverName,
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cant find driver "+DriverName,
 				"testgdaldrivers", __LINE__,__FILE__);
 			}
 		if (std::find(Extensions.begin(), Extensions.end(), DriverExtension) == Extensions.end())
 			{
-			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cant find driver extension " + DriverExtension,
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cant find driver extension " + DriverExtension,
 				"testgdaldrivers", __LINE__, __FILE__);
 			}
 

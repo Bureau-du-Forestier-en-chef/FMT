@@ -111,7 +111,7 @@ namespace Parallel
 		/**
 		Pass the logger
 		*/
-		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
 		// DocString: FMTplanningtask::getModelsFromDynamicCast
 		/**
 		Get the models pointer casted in a given model type.

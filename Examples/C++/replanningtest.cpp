@@ -14,7 +14,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string outputlocation = "../../tests/replanningtest/replanning";
 	const std::string scheduleLocation = "../../tests/replanningtest/replanning/scenarios/replicat1/replanning._seq";
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
 	#endif
 	/*#ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTLogger().logstamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = "D:/08762/PC_9429_U08762_4_Vg1_2023_vSSP03.pri";
 	std::vector<std::string>allscenarios;

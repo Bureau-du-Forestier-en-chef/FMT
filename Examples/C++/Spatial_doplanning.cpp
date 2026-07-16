@@ -27,7 +27,7 @@ void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	std::string modellocation;
 	std::string primarylocation;
 	std::string scenario;
@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
 				std::cout <<"NON SPATIAL TOTAL "<< TOTAL_VALUE<<" NON SPATIAL THEMATIC "<< FULL_VALUE << " SPATIAL " << spatialResult << "\n";
 				if (std::abs(spatialResult - FULL_VALUE)>1)
 					{
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed,
 						"On output "+ NAME+" "+std::to_string(FULL_VALUE)+" vs "+ std::to_string(spatialResult),
 						"Spatial_doplanning", __LINE__, primarylocation);
 					}

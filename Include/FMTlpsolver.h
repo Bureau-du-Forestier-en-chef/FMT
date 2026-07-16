@@ -48,7 +48,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
 		// DocString: FMTlpsolver::unmarkHotStart
 		/**
 		Clear all cached data in osisolverinterface.
@@ -165,9 +165,9 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		void passInSolver(const FMTlpsolver& solver);
 		// DocString: FMTlpsolver::passInMessageHandler
 		/**
-		This will pass the FMTlogger to the solverinterface.
+		This will pass the FMTLogger to the solverinterface.
 		*/
-		void passInMessageHandler(Logging::FMTlogger& logger);
+		void passInMessageHandler(Logging::FMTLogger& logger);
 		// DocString: FMTlpsolver::setSolverType
 		/**
 		Setter of the solvertype of the serializable matrix.

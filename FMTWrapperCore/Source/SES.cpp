@@ -324,11 +324,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::generateInfeasibilityReport", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::generateInfeasibilityReport", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::generateInfeasibilityReport", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::generateInfeasibilityReport", __LINE__, __FILE__);
         }
 
         return messages;
@@ -500,11 +500,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::generateCarbonReport", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::generateCarbonReport", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::generateCarbonReport", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::generateCarbonReport", __LINE__, __FILE__);
         }
 
         return reportData;
@@ -547,11 +547,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::writeDisturbances", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::writeDisturbances", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("", "SES::writeDisturbances", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("", "SES::writeDisturbances", __LINE__, __FILE__);
         }
 
         return transitionFiles;
@@ -570,12 +570,12 @@ namespace FMTWrapperCore
         catch (std::exception& e)
         {
             eventsData.statistics = "";
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::generateEventsData", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::generateEventsData", __LINE__, __FILE__);
         }
         catch (...)
         {
             eventsData.statistics = "";
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::generateEventsData", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::generateEventsData", __LINE__, __FILE__);
         }
 
         return eventsData;
@@ -618,11 +618,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::calculateOutputs", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::calculateOutputs", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::calculateOutputs", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::calculateOutputs", __LINE__, __FILE__);
         }
 
         return outputsData;
@@ -657,11 +657,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::writeSpatialOutputs", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::writeSpatialOutputs", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::writeSpatialOutputs", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::writeSpatialOutputs", __LINE__, __FILE__);
         }
 
         return rasterFiles;
@@ -714,11 +714,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::calculatePredictors", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::calculatePredictors", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::calculatePredictors", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::calculatePredictors", __LINE__, __FILE__);
         }
 
         return predictorsData;
@@ -742,12 +742,12 @@ namespace FMTWrapperCore
         catch (std::exception& e)
         {
             schedulePath = "";
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::writeSchedule", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::writeSchedule", __LINE__, __FILE__);
         }
         catch (...)
         {
             schedulePath = "";
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::writeSchedule", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::writeSchedule", __LINE__, __FILE__);
         }
 
         return schedulePath;
@@ -774,11 +774,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::writeUpdatedForest", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::writeUpdatedForest", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::writeUpdatedForest", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::writeUpdatedForest", __LINE__, __FILE__);
         }
     }
 
@@ -817,11 +817,11 @@ namespace FMTWrapperCore
         }
         catch (std::exception& e)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch(e.what(), "SES::exportResults", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch(e.what(), "SES::exportResults", __LINE__, __FILE__);
         }
         catch (...)
         {
-            Exception::FMTfreeexceptionhandler().raiseFromCatch("Unknown error", "SES::exportResults", __LINE__, __FILE__);
+            Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::exportResults", __LINE__, __FILE__);
         }
     }
 }

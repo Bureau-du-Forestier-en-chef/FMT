@@ -13,7 +13,7 @@
 int main()
 	{
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
@@ -25,7 +25,7 @@ int main()
 		Models::FMTlpmodel lpmodel(models.at(0),Models::FMTsolverinterface::CLP);
 		lpmodel.doPlanning(true);
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 #endif 
 	return 0;

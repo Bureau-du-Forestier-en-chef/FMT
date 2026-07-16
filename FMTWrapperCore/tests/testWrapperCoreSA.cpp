@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
 	}
 	if (!std::filesystem::is_directory(params.rastersPath))
 	{
-		Exception::FMTfreeexceptionhandler().raise(
+		Exception::FMTFreeExceptionHandler().raise(
 			Exception::FMTexc::FMTfunctionfailed,
 			"Not a valid raster path",
 			"testWrapperCoreSA", __LINE__, primaryFilePath);
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 						std::cout << ("Warning: " + std::to_string(it->periodValues.at(itemNum))
 							+ "!=" + std::to_string(item.second.get_value<double>())
 							+ " (> 5%) at period " + std::to_string(itemNum) + "\n");
-						//Exception::FMTfreeexceptionhandler().raise(
+						//Exception::FMTFreeExceptionHandler().raise(
 						//	Exception::FMTexc::FMTfunctionfailed,
 						//	results.errorMessage,
 						//	"testWrapperCoreSA", __LINE__, primaryFilePath);
@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
 		}
 		catch (const std::exception& e)
 		{
-			// La comparaison a levé une FMTexception (valeurs différentes). On la capture ICI
+			// La comparaison a levé une FMTException (valeurs différentes). On la capture ICI
 			// pour faire échouer le test proprement (return != 0) au lieu de la laisser sortir
 			// de main : sinon std::terminate déclenche le dump de pile de FMTobject::_terminate.
 			std::cerr << e.what() << std::endl;

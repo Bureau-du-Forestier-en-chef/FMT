@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 	}
 	if (!std::filesystem::is_directory(params.rastersPath))
 	{
-		Exception::FMTfreeexceptionhandler().raise(
+		Exception::FMTFreeExceptionHandler().raise(
 			Exception::FMTexc::FMTfunctionfailed,
 			"Not a valid raster path",
 			"testWrapperCoreSES", __LINE__, params.primaryFilePath);
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 						std::cout << ("Warning: " + std::to_string(it->periodValues.at(itemNum))
 							+ "!=" + std::to_string(item.second.get_value<double>())
 							+ " (> 5%) at period " + std::to_string(itemNum) + "\n");
-						//Exception::FMTfreeexceptionhandler().raise(
+						//Exception::FMTFreeExceptionHandler().raise(
 						//	Exception::FMTexc::FMTfunctionfailed,
 						//	results.errorMessage,
 						//	"testWrapperCoreSES", __LINE__, params.primaryFilePath);

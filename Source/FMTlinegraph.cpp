@@ -362,7 +362,7 @@ namespace Graph
 			if (!operables.empty())
 			{
 				const int size_op = static_cast<int>(operables.size()) - 1;
-				//Logging::FMTlogger() << "size of op " << size_op<<" "<< operables.at(0) << "\n";
+				//Logging::FMTLogger() << "size of op " << size_op<<" "<< operables.at(0) << "\n";
 				int noaction = -(size_op);
 				if (!operables.empty() && dontchoosegrow)
 				{

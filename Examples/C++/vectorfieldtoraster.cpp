@@ -9,7 +9,7 @@
 int main()
 {
     #ifdef FMTWITHGDAL
-        Logging::FMTdefaultlogger().logStamp();
+        Logging::FMTDefaultLogger().logStamp();
         const std::string modellocation = "../../../../Examples/Models/TWD_land/";
         const std::string	maplocation = modellocation + "/Carte/TWD_land.shp";
         const std::string	writelocation = "../../tests/vectorfieldtoraster/";

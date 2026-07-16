@@ -17,7 +17,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
@@ -51,29 +51,29 @@ int main()
 			for (const Core::FMToutput& output : outputtotest)
 			{
 			const double returnedvalue = optimizationmodel.getOutput(output,1,Core::FMToutputlevel::totalonly).at("Total");
-			Logging::FMTdefaultlogger() << "Base value of " + output.getName() << " " << returnedvalue << " ";
+			Logging::FMTDefaultLogger() << "Base value of " + output.getName() << " " << returnedvalue << " ";
 			}
-		Logging::FMTdefaultlogger() << "\n";
-		Logging::FMTdefaultlogger() << "BASE ROWS OF " << BASE_STATS.rows << "\n";
+		Logging::FMTDefaultLogger() << "\n";
+		Logging::FMTDefaultLogger() << "BASE ROWS OF " << BASE_STATS.rows << "\n";
 		for (const Core::FMTconstraint& constraint : constraints)
 			{
 			const Graph::FMTgraphstats STATS = optimizationmodel.eraseConstraint(constraint);
-			Logging::FMTdefaultlogger() << "ROWS Of "<< STATS.rows <<" "<< std::string(constraint) << "\n";
+			Logging::FMTDefaultLogger() << "ROWS Of "<< STATS.rows <<" "<< std::string(constraint) << "\n";
 			if (!optimizationmodel.resolve())
 				{
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve when erasing "+ constraint.getName(),
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve when erasing "+ constraint.getName(),
 					"testoutputsshadowcost", __LINE__, primarylocation);
 				}
 			for (const Core::FMToutput& output : outputtotest)
 				{
 				const double returnedvalue = optimizationmodel.getOutput(output, 1, Core::FMToutputlevel::totalonly).at("Total");
-				Logging::FMTdefaultlogger() << std::string(constraint) + " value of " + output.getName() << " " << returnedvalue << " ";
+				Logging::FMTDefaultLogger() << std::string(constraint) + " value of " + output.getName() << " " << returnedvalue << " ";
 				}
-			Logging::FMTdefaultlogger() << "\n";
+			Logging::FMTDefaultLogger() << "\n";
 			optimizationmodel.setConstraint(constraint);
 			if (!optimizationmodel.resolve())
 				{
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve when setting " + constraint.getName(),
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve when setting " + constraint.getName(),
 					"testoutputsshadowcost", __LINE__, primarylocation);
 				}
 			}

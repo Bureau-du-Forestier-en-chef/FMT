@@ -55,14 +55,19 @@ def main():
         rc = 1
 
     existing = existing_types()
-    # A new name may legitimately equal its own old name's spelling only if unmapped.
-    clash = sorted(set(mapping.values()) & (existing - set(mapping)))
+    # An already-applied rename looks like a collision (old name gone, new name present).
+    # Separate the two so the check stays re-runnable after a batch has landed.
+    applied = {k: v for k, v in mapping.items() if k not in existing and v in existing}
+    pending = {k: v for k, v in mapping.items() if k not in applied}
+
+    clash = sorted(set(pending.values()) & (existing - set(pending)))
     if clash:
         print('FAIL: new names already taken by an existing type: %s' % clash)
         rc = 1
 
     if rc == 0:
-        print('precheck OK: %d renames, no collision' % len(mapping))
+        print('precheck OK: %d pending, %d already applied, no collision'
+              % (len(pending), len(applied)))
     return rc
 
 

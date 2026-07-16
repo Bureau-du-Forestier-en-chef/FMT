@@ -176,7 +176,7 @@ namespace Models
 		Solver's logger cannot work in parallel so you need to pass a logger owned
 		by the thead to the solver to make sure it does not work in concurrency.
 		*/
-		virtual void setParallelLogger(Logging::FMTlogger& logger);
+		virtual void setParallelLogger(Logging::FMTLogger& logger);
 		// DocString: FMTmodel::clearCache
 		/**
 		Clear caching element to reduce memory usage.

@@ -141,7 +141,7 @@ namespace Parallel
 
 		}
 
-	void FMTtaskhandler::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTtaskhandler::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 		{
 		// TODO GAB faire un warning si on passe par ici on créer un nouveau logger qui va chier en multithreads
 		for (std::unique_ptr<FMTtask>& task : alltasks)

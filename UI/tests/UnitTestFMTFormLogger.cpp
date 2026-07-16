@@ -28,13 +28,13 @@ void out(const char* data) {
 					// const std::string outFile = m_OutLocation+"/FMTFormLoggertest.log";
 					const std::string outFile = "FMTFormLoggertest.log";
 					// (Wrapper::logfunc)(void*)intptrptr=&std::cout;
-					// std::unique_ptr<Logging::FMTlogger> logger(new Wrapper::FMTFormLogger(filename, (logfunc)(void*)intptrptr));
+					// std::unique_ptr<Logging::FMTLogger> logger(new Wrapper::FMTFormLogger(filename, (logfunc)(void*)intptrptr));
 					m_logger = Wrapper::FMTFormLogger(outFile, (Wrapper::logfunc)(void*)&out);
 					m_logger.settasklogginglevel(1);
 					}
 				void testReplanning()
 				{
-					Logging::FMTdefaultlogger().logStamp();
+					Logging::FMTDefaultLogger().logStamp();
 					const std::string folder = "../../../../Examples/Models/TWD_land/";
 					const std::string primlocation = folder + "TWD_land.pri";
 					std::vector<std::string>allscenarios;
@@ -42,7 +42,7 @@ void out(const char* data) {
 					allscenarios.push_back("Globalfire");
 					allscenarios.push_back("Localreplanning");
 					Parser::FMTmodelparser modelparser;
-					std::unique_ptr<Logging::FMTlogger> logger(new Wrapper::FMTFormLogger(m_logger));
+					std::unique_ptr<Logging::FMTLogger> logger(new Wrapper::FMTFormLogger(m_logger));
 					Parser::FMTmodelparser Modelparser;
 					Modelparser.passInLogger(logger);
 					std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);

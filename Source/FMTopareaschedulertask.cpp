@@ -446,7 +446,7 @@ namespace Parallel
 	return std::unique_ptr<FMTtask>(nullptr);
 	}
 
-	void FMTopareaschedulertask::passInLogger(const std::unique_ptr<Logging::FMTlogger>& logger)
+	void FMTopareaschedulertask::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 		{
 		try {
 			actualscheduler->passInLogger(logger);

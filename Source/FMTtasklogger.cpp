@@ -11,39 +11,39 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Logging
 {
-	std::unique_ptr <FMTlogger> FMTtasklogger::Clone() const
+	std::unique_ptr <FMTLogger> FMTTaskLogger::Clone() const
 	{
-		return std::unique_ptr <FMTlogger>(new FMTtasklogger(*this));
+		return std::unique_ptr <FMTLogger>(new FMTTaskLogger(*this));
 	}
 
 
-	FMTtasklogger::FMTtasklogger()
+	FMTTaskLogger::FMTTaskLogger()
 	{
 #ifdef FMTWITHOSI
 		solverref->setLogLevel(0);
 #endif
 	}
 #ifdef FMTWITHOSI
-	int FMTtasklogger::print()
+	int FMTTaskLogger::print()
 	{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		//return FMTlogger::print();
+		//return FMTLogger::print();
 		return 0;
 	}
 
-	void FMTtasklogger::checkSeverity()
+	void FMTTaskLogger::checkSeverity()
 	{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		//FMTlogger::checkSeverity();
+		//FMTLogger::checkSeverity();
 	}
 
-	FMTlogger* FMTtasklogger::clone() const
+	FMTLogger* FMTTaskLogger::clone() const
 	{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		return new FMTtasklogger(*this);
+		return new FMTTaskLogger(*this);
 	}
 #endif
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTtasklogger)
+BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTTaskLogger)
 

@@ -17,7 +17,7 @@ int main()
 {
 #ifdef FMTWITHONNXR
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation =  modellocation + "TWD_land.pri";
 	Parser::FMTmodelparser mparser;
@@ -69,9 +69,9 @@ int main()
 	{
 		for (const auto& t : simulationmodel.greedyReferenceBuild(schedules.at(0).at(period), greedysearch))
 		{
-			Logging::FMTdefaultlogger() << t.first << " " << t.second << " ";
+			Logging::FMTDefaultLogger() << t.first << " " << t.second << " ";
 		}
-		Logging::FMTdefaultlogger() << "\n";
+		Logging::FMTDefaultLogger() << "\n";
 	}
 	std::vector<Core::FMToutput> spatialoutput;
 	for (const Core::FMToutput& output : simulationmodel.getOutputs())
@@ -89,7 +89,7 @@ int main()
 	{
 		for (int period = 1; period < 11; ++period)
 		{
-			Logging::FMTdefaultlogger() << "output value " << output.getName() << " " << simulationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
+			Logging::FMTDefaultLogger() << "output value " << output.getName() << " " << simulationmodel.getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
 		}
 	}
 #endif

@@ -20,12 +20,12 @@ Parser::FMTmodelparser FMTFormCache::GetConfiguredParser() const
 			dynamic_cast<FMTFormLogger*>(Models::FMTmodel::getLogger());
 		if (mainLogger)
 		{
-			std::unique_ptr<Logging::FMTlogger> loggerClone =
+			std::unique_ptr<Logging::FMTLogger> loggerClone =
 				mainLogger->Clone();
 			parser.passInLogger(loggerClone);
 		}
 		const FMTexceptionhandlerwarning* handler = GetFormHandler();
-		std::unique_ptr<Exception::FMTexceptionhandler> handlerClone =
+		std::unique_ptr<Exception::FMTExceptionHandler> handlerClone =
 			handler->Clone();
 		parser.passInExceptionHandler(handlerClone);
 	}
@@ -160,7 +160,7 @@ void FMTFormCache::buildExceptionHandler()
 		}
 	}
 
-	std::unique_ptr<Exception::FMTexceptionhandler> handler(new FMTexceptionhandlerwarning(m_maxwarnings));
+	std::unique_ptr<Exception::FMTExceptionHandler> handler(new FMTexceptionhandlerwarning(m_maxwarnings));
 	Models::FMTmodel useLessModel;
 	useLessModel.passInExceptionHandler(handler);
 	useLessModel.setErrorsToWarnings(m_warnings);
@@ -184,7 +184,7 @@ void FMTFormCache::InitializeExceptionHandler(const int& maxwarnings,const std::
 
 void FMTFormCache::buildLogger()
 	{
-	std::unique_ptr<Logging::FMTlogger> logger(new FMTFormLogger(m_loggerFilename, (logfunc)m_loggerFuncPtr));
+	std::unique_ptr<Logging::FMTLogger> logger(new FMTFormLogger(m_loggerFilename, (logfunc)m_loggerFuncPtr));
 	Models::FMTmodel useLessModel;
 	useLessModel.passInLogger(logger);
 	}
@@ -247,7 +247,7 @@ void FMTFormCache::RecoverLoggerAndHandler(System::IntPtr intptrptr)
 		}
 	}
 
-Exception::FMTexceptionhandler* FMTFormCache::getExceptionHandler() const
+Exception::FMTExceptionHandler* FMTFormCache::getExceptionHandler() const
 {
 	return Models::FMTmodel::getExceptionHandler();
 }

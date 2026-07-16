@@ -11,17 +11,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Exception
 {
 
-	FMTseException::FMTseException() noexcept :std::logic_error("Se exception"), m_nSE(0)
+	FMTSeException::FMTSeException() noexcept :std::logic_error("Se exception"), m_nSE(0)
 		{
 	
 		}
 
-	FMTseException::FMTseException(unsigned int p_n) noexcept :std::logic_error(
+	FMTSeException::FMTSeException(unsigned int p_n) noexcept :std::logic_error(
 		std::string("WIN32 Se exception number "+std::to_string(p_n)).c_str()), m_nSE(p_n)
 		{
 	
 		}
-	unsigned int FMTseException::getSeNumber() const noexcept
+	unsigned int FMTSeException::getSeNumber() const noexcept
 		{ 
 		return m_nSE; 
 		}

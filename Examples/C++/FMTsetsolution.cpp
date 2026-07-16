@@ -13,7 +13,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 					std::cout << "OVOLTOTREC " +std::to_string(returnedvalue) << "\n";
 					if ((returnedvalue < (ovoltotrecvalue - tolerance)) || (returnedvalue >(ovoltotrecvalue + tolerance)))
 						{
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 							"FMTsetsolution", __LINE__, primarylocation);
 						}
 					break;
@@ -88,14 +88,14 @@ int main(int argc, char *argv[])
 				}
 			if (!gotovoltotrec)
 				{
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
 					"FMTsetsolution", __LINE__, primarylocation);
 				}
 			//modelparser.writeResults(optimizationmodel, selected, 1, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
 			}
 			//
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 	#endif
 	return 0;

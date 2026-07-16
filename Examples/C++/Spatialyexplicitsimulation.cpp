@@ -15,7 +15,7 @@
 int main()
 {
 #ifdef FMTWITHGDAL
-	Logging::FMTdefaultlogger().logStamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const std::string modellocation =  "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string outdir = "../../tests/Spatialyexplicitsimulation/";
@@ -57,9 +57,9 @@ int main()
 		Core::FMTschedule sche = schedules.at(0).at(period);
 		for (const auto& t : simulationmodel.greedyReferenceBuild(sche, greedysearch))
 			{
-			Logging::FMTdefaultlogger()<< t.first << " " << t.second << " ";
+			Logging::FMTDefaultLogger()<< t.first << " " << t.second << " ";
 			}
-		Logging::FMTdefaultlogger() << "\n";
+		Logging::FMTDefaultLogger() << "\n";
 		}
 	Core::FMToutput spatialoutput;
 	for (const Core::FMToutput& output : simulationmodel.getOutputs())
@@ -70,15 +70,15 @@ int main()
 		}
 	}
 	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getSpSchedule();
-	Logging::FMTdefaultlogger() << "xsize : " << spatialsolution.getXSize() << "\n";
-	Logging::FMTdefaultlogger() << "ysize : " << spatialsolution.getYSize() << "\n";
+	Logging::FMTDefaultLogger() << "xsize : " << spatialsolution.getXSize() << "\n";
+	Logging::FMTDefaultLogger() << "ysize : " << spatialsolution.getYSize() << "\n";
 	for (int period = 1; period <=30; ++period)
 		{
 		for (const std::pair<Spatial::FMTcoordinate, double>& value : spatialsolution.getOutputByCoordinate(simulationmodel, spatialoutput, period))
 				{
-				Logging::FMTdefaultlogger() << "period: " << period << " X: " << value.first.getX() << " Y: " << value.first.getY() << " value: " << value.second << "\n";
+				Logging::FMTDefaultLogger() << "period: " << period << " X: " << value.first.getX() << " Y: " << value.first.getY() << " value: " << value.second << "\n";
 				}
-		Logging::FMTdefaultlogger() << std::to_string(period) << " "<<simulationmodel.getOutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total")  <<"\n";
+		Logging::FMTDefaultLogger() << std::to_string(period) << " "<<simulationmodel.getOutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total")  <<"\n";
 		}
 	const std::vector<Core::FMTaction>actions = simulationmodel.getactions();
 	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getThemes().at(1));

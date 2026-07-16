@@ -32,7 +32,7 @@ namespace Logging
 {
 
 	template<class Archive>
-	void FMTlogger::save(Archive& ar, const unsigned int version) const
+	void FMTLogger::save(Archive& ar, const unsigned int version) const
 	{
 	#ifdef FMTWITHOSI
 		const int logl = solverref->logLevel();
@@ -42,7 +42,7 @@ namespace Logging
 	}
 
 	template<class Archive>
-	void FMTlogger::load(Archive& ar, const unsigned int version)
+	void FMTLogger::load(Archive& ar, const unsigned int version)
 	{
 		#ifdef FMTWITHOSI
 		int coinloglevel = 0;
@@ -57,14 +57,14 @@ namespace Logging
 	}
 
 	template<class Archive>
-	void FMTlogger::serialize(Archive &ar, const unsigned int file_version)
+	void FMTLogger::serialize(Archive &ar, const unsigned int file_version)
 	{
 		boost::serialization::split_member(ar, *this, file_version);
 	}
 
 
 
-	void FMTlogger::setToFile(const std::string& filename) const
+	void FMTLogger::setToFile(const std::string& filename) const
 		{
 		if (m_FileStream !=nullptr)
 			{
@@ -77,9 +77,9 @@ namespace Logging
 		
 		}
 
-	FMTlogger::FMTlogger() : 
+	FMTLogger::FMTLogger() : 
 #if defined FMTWITHOSI
-		solverref(new FMTsolverlogger(*this)),
+		solverref(new FMTSolverLogger(*this)),
 #endif
 		filepath(), m_FileStream(), mtx(),flushstream(false)
 		{
@@ -87,7 +87,7 @@ namespace Logging
 
 		}
 
-	void FMTlogger::redirectToFile(const std::string& filename, bool logStamp)
+	void FMTLogger::redirectToFile(const std::string& filename, bool logStamp)
 	{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		filepath = filename;
@@ -99,14 +99,14 @@ namespace Logging
 		}
 	}
 
-	FMTlogger::FMTlogger(const FMTlogger& rhs):filepath(), m_FileStream(), mtx(), flushstream(false)
+	FMTLogger::FMTLogger(const FMTLogger& rhs):filepath(), m_FileStream(), mtx(), flushstream(false)
 		{
 		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
 		filepath=rhs.filepath;
 		setToFile(filepath);
 		flushstream=rhs.flushstream;
 		#if defined FMTWITHOSI
-			solverref.reset(new FMTsolverlogger(*this));
+			solverref.reset(new FMTSolverLogger(*this));
 			if (rhs.solverref)
 				{
 				solverref->setLogLevel(rhs.solverref->logLevel());
@@ -115,7 +115,7 @@ namespace Logging
 		#endif
 		}
 
-	FMTlogger& FMTlogger::operator = (const FMTlogger& rhs)
+	FMTLogger& FMTLogger::operator = (const FMTLogger& rhs)
 		{
 		if (this!=&rhs)
 			{
@@ -124,7 +124,7 @@ namespace Logging
 			boost::lock_guard<boost::recursive_mutex> self_lock(mtx,boost::adopt_lock /*std::adopt_lock*/);
 			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.mtx,boost::adopt_lock /*std::adopt_lock*/);
 			#if defined FMTWITHOSI
-				solverref.reset(new FMTsolverlogger(*rhs.solverref));
+				solverref.reset(new FMTSolverLogger(*rhs.solverref));
 				if (rhs.solverref)
 					{
 					solverref->setLogLevel(rhs.solverref->logLevel());
@@ -137,7 +137,7 @@ namespace Logging
 		return *this;
 		}
 
-	void FMTlogger::closeFileStream()
+	void FMTLogger::closeFileStream()
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		if (m_FileStream && m_FileStream->is_open())
@@ -148,7 +148,7 @@ namespace Logging
 			}
 		}
 
-	FMTlogger::~FMTlogger()
+	FMTLogger::~FMTLogger()
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		if (m_FileStream && m_FileStream->is_open())
@@ -159,78 +159,78 @@ namespace Logging
 			}
 		}
 
-	std::string FMTlogger::getLogStamp() const
+	std::string FMTLogger::getLogStamp() const
 	{
 		const std::string message = "FMT " + Version::FMTversion().getVersion() +
 			", build: " + Version::FMTversion().getBuildDate();
 		return message;
 	}
 
-	void FMTlogger::logStamp()
+	void FMTLogger::logStamp()
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		*this<< FMTlogger::getLogStamp() << "\n";
+		*this<< FMTLogger::getLogStamp() << "\n";
 		}
 
-	void FMTlogger::logTime()
+	void FMTLogger::logTime()
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		const std::string message = Version::FMTversion().getDatenow();
 		*this << (message);
 		}
 
-	void FMTlogger::setStreamFlush(bool flush)
+	void FMTLogger::setStreamFlush(bool flush)
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		flushstream = flush;
 		}
 
 
-	FMTlogger& FMTlogger::operator<<(const std::string& msg)
+	FMTLogger& FMTLogger::operator<<(const std::string& msg)
 		{
 		this->cout(msg.c_str());
 		return *this;
 		}
 
-	FMTlogger& FMTlogger::operator<<(const int& msg)
+	FMTLogger& FMTLogger::operator<<(const int& msg)
 	{
 		const std::string value = std::to_string(msg);
 		this->cout(value.c_str());
 		return *this;
 	}
 
-	FMTlogger& FMTlogger::operator<<(const double& msg)
+	FMTLogger& FMTLogger::operator<<(const double& msg)
 	{
 		const std::string value = std::to_string(msg);
 		this->cout(value.c_str());
 		return *this;
 	}
-	FMTlogger& FMTlogger::operator<<(const float& msg)
+	FMTLogger& FMTLogger::operator<<(const float& msg)
 	{
 		const std::string value = std::to_string(msg);
 		this->cout(value.c_str());
 		return *this;
 	}
-	FMTlogger& FMTlogger::operator<<(const std::time_t& msg)
+	FMTLogger& FMTLogger::operator<<(const std::time_t& msg)
 	{
 		const std::string value = std::to_string(msg);
 		this->cout(value.c_str());
 		return *this;
 	}
-	FMTlogger& FMTlogger::operator<<(const size_t& msg)
+	FMTLogger& FMTLogger::operator<<(const size_t& msg)
 	{
 		const std::string value = std::to_string(msg);
 		this->cout(value.c_str());
 		return *this;
 	}
-	FMTlogger& FMTlogger::operator<<(const unsigned int& msg)
+	FMTLogger& FMTLogger::operator<<(const unsigned int& msg)
 	{
 		const std::string value = std::to_string(msg);
 		this->cout(value.c_str());
 		return *this;
 	}
 
-	FMTlogger& FMTlogger::operator<<(const void*& msg)
+	FMTLogger& FMTLogger::operator<<(const void*& msg)
 	{
 		std::ostringstream ons;
 		ons << std::hex << msg;
@@ -239,7 +239,7 @@ namespace Logging
 		return *this;
 	}
 
-	bool FMTlogger::logWithLevel(const std::string& p_msg, const int& p_messageLevel) const
+	bool FMTLogger::logWithLevel(const std::string& p_msg, const int& p_messageLevel) const
 	{
 		#ifdef FMTWITHOSI
 		if (solverref->logLevel() < p_messageLevel)
@@ -254,7 +254,7 @@ namespace Logging
 
 
 	#ifdef FMTWITHOSI
-		void FMTlogger::checkSeverity()
+		void FMTLogger::checkSeverity()
 			{
 			#ifdef FMTWITHOSI
 			if (solverref->logLevel() == 0)//
@@ -266,15 +266,15 @@ namespace Logging
 			solverref->checkcoinSeverity();
 			}
 	
-		/*FMTlogger* FMTlogger::clone() const
+		/*FMTLogger* FMTLogger::clone() const
 			{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
-			return new FMTlogger(*this);
+			return new FMTLogger(*this);
 			}*/
 
 	#endif
 
-	void FMTlogger::cout(const char* message) const
+	void FMTLogger::cout(const char* message) const
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		std::string thread = "Thread("+Parallel::FMTtask::getThreadId()+") ";
@@ -306,7 +306,7 @@ namespace Logging
 			}
 		}
 	#ifdef FMTWITHOSI
-		int FMTlogger::print()
+		int FMTLogger::print()
 			{
 			#ifdef FMTWITHOSI
 			if (solverref->logLevel()  == 0)//
@@ -325,20 +325,20 @@ namespace Logging
 					fprintf(solverref->filePointer(), "Stopping due to previous errors.\n");
 					//Should do walkback
 					//abort();
-					std::throw_with_nested(Exception::FMTerror(
-						Exception::FMTexception(Exception::FMTexc::FMTcoinerror,Core::FMTsection::Empty,
-									"Stopping due to previous errors.\n","FMTlogger::print",__FILE__, __LINE__)));
+					std::throw_with_nested(Exception::FMTError(
+						Exception::FMTException(Exception::FMTexc::FMTcoinerror,Core::FMTsection::Empty,
+									"Stopping due to previous errors.\n","FMTLogger::print",__FILE__, __LINE__)));
 					}
 				}
 			return 0;
 			}
 
-		FMTsolverlogger* FMTlogger::getSolverLogger()
+		FMTSolverLogger* FMTLogger::getSolverLogger()
 			{
 			return solverref.get();
 			}
 		
-		void FMTlogger::setLoggingLevel(const int& level)
+		void FMTLogger::setLoggingLevel(const int& level)
 		{
 			solverref->setLogLevel(level);
 		}
@@ -348,6 +348,6 @@ namespace Logging
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTlogger)
+BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTLogger)
 
 

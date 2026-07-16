@@ -13,26 +13,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Exception
 {
 
-	FMTquietexceptionhandler::FMTquietexceptionhandler() :FMTexceptionhandler() {}
+	FMTQuietExceptionHandler::FMTQuietExceptionHandler() :FMTExceptionHandler() {}
 
-	FMTexception FMTquietexceptionhandler::raise(FMTexc lexception, std::string text,
+	FMTException FMTQuietExceptionHandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
 		
 		const FMTlev LEVEL = getLevel(lexception);
-		FMTexception excp = FMTexception(lexception, updateStatus(lexception, text));
+		FMTException excp = FMTException(lexception, updateStatus(lexception, text));
 		if (lsection != Core::FMTsection::Empty)
 		{
-			excp = FMTexception(lexception, lsection, updateStatus(lexception, text));
+			excp = FMTException(lexception, lsection, updateStatus(lexception, text));
 		}
 		if (LEVEL != FMTlev::FMT_Warning)
 		{
 			if (lsection == Core::FMTsection::Empty)
 			{
-				excp = FMTexception(lexception, updateStatus(lexception, text), method, file, line);
+				excp = FMTException(lexception, updateStatus(lexception, text), method, file, line);
 			}
 			else {
-				excp = FMTexception(lexception, lsection, updateStatus(lexception, text), method, file, line);
+				excp = FMTException(lexception, lsection, updateStatus(lexception, text), method, file, line);
 			}
 		}
 		if (throwit)
@@ -41,7 +41,7 @@ namespace Exception
 			{
 				boost::lock_guard<boost::recursive_mutex> guard(mtx);
 				if (!needToRethrow()) {
-					std::throw_with_nested(FMTerror(excp));
+					std::throw_with_nested(FMTError(excp));
 				}
 			}
 		}
@@ -49,27 +49,27 @@ namespace Exception
 	}
 	#ifdef FMTWITHGDAL
 
-		FMTexceptionhandler* FMTquietexceptionhandler::getCPLdata()
+		FMTExceptionHandler* FMTQuietExceptionHandler::getCPLdata()
 			{
 			return this;
 			}
-		void FMTquietexceptionhandler::handelCPLerror(int eErrClass,int nError, const char * pszErrorMsg)
+		void FMTQuietExceptionHandler::handelCPLerror(int eErrClass,int nError, const char * pszErrorMsg)
 			{
 			//boost::lock_guard<boost::recursive_mutex> guard(mtx);
             try{
-                FMTexceptionhandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+                FMTExceptionHandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
             }catch(...)
                 {
-                raiseFromCatch("", "FMTquietexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+                raiseFromCatch("", "FMTQuietExceptionHandler::handelCPLerror", __LINE__, __FILE__);
                 }
 			}
 	#endif
 
-	std::unique_ptr <FMTexceptionhandler>  FMTquietexceptionhandler::Clone() const
+	std::unique_ptr <FMTExceptionHandler>  FMTQuietExceptionHandler::Clone() const
 		{
-			return std::unique_ptr<FMTexceptionhandler>(new FMTquietexceptionhandler(*this));
+			return std::unique_ptr<FMTExceptionHandler>(new FMTQuietExceptionHandler(*this));
 		}
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTquietexceptionhandler)
+BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTQuietExceptionHandler)

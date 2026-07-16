@@ -152,7 +152,7 @@ namespace Models
 			}
 			}catch (...)
 			{
-				Exception::FMTdefaultexceptionhandler().raiseFromCatch("", "FMTmatrixbuild::synchronize", __LINE__, __FILE__);
+				Exception::FMTDefaultExceptionHandler().raiseFromCatch("", "FMTmatrixbuild::synchronize", __LINE__, __FILE__);
 			}
 
 
