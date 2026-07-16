@@ -27,9 +27,9 @@ namespace Models
 
 namespace Core
 {
-	class FMToutput;
-	class FMTtheme;
-	class FMTmaskfilter;
+	class FMTOutput;
+	class FMTTheme;
+	class FMTMaskFilter;
 }
 
 
@@ -57,12 +57,12 @@ namespace Spatial
 							FMTSolutionTracker& p_solution);
 			double getOutput(const Models::FMTmodel& p_model,
 				const FMTSolutionTracker& p_solution,
-				const Core::FMToutput& p_output, int p_period) const;
+				const Core::FMTOutput& p_output, int p_period) const;
 			size_t getGraphFamily() const;
 			void setBaseGraph(FMTSolutionTracker& p_solution);
 			void setLastPeriod(FMTSolutionTracker& p_solution);
 			void setNaturalGrowth(FMTSolutionTracker& p_solution);
-			FMTVirtualLineGraph postSolve(const Core::FMTmaskfilter& p_Filter,
+			FMTVirtualLineGraph postSolve(const Core::FMTMaskFilter& p_Filter,
 					const std::vector<int>& p_actionMapping,
 					FMTSpatialGraphs& p_Graphs,
 				FMTSolutionTracker& p_solution) const;

@@ -13,12 +13,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-void FMTtransitionmask::build(const std::string& lmask, const std::vector<FMTtheme>& themes )
+void FMTTransitionMask::build(const std::string& lmask, const std::vector<FMTTheme>& themes )
     {
     int id = 0;
 	std::vector<std::string>bases;
     boost::split(bases,lmask,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-    for(const FMTtheme& theme : themes)
+    for(const FMTTheme& theme : themes)
         {
         if (theme.isAttribute(bases[id]))
             {
@@ -31,57 +31,57 @@ void FMTtransitionmask::build(const std::string& lmask, const std::vector<FMTthe
     selection = (flippedselection ^ mask.getBitsetReference());
     }
 
-FMTtransitionmask::FMTtransitionmask():FMTmaskfilter(),FMTspec(),mask(),proportion()
+FMTTransitionMask::FMTTransitionMask():FMTMaskFilter(),FMTSpec(),mask(),proportion()
     {
 
     }
-FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<FMTtheme>& themes,const double& lproportion):FMTmaskfilter(),FMTspec(),
+FMTTransitionMask::FMTTransitionMask(const std::string& lmask,const std::vector<FMTTheme>& themes,const double& lproportion):FMTMaskFilter(),FMTSpec(),
         mask(lmask,themes),proportion(lproportion)
         {
         this->build(lmask,themes);
         }
-    FMTmask FMTtransitionmask::trans(const FMTmask& p_baseMask,
-                            const std::vector<FMTtheme>& p_themes) const
+    FMTMask FMTTransitionMask::trans(const FMTMask& p_baseMask,
+                            const std::vector<FMTTheme>& p_themes) const
         {
-        FMTmask newMask(((flippedselection & p_baseMask.getBitsetReference()) | selection));
+        FMTMask newMask(((flippedselection & p_baseMask.getBitsetReference()) | selection));
         if (!p_themes.empty())
             {
             newMask.update(p_themes);
             }
         return newMask;
         }
-    FMTtransitionmask::FMTtransitionmask(const FMTtransitionmask& rhs) :FMTmaskfilter(rhs),FMTspec(rhs) , mask(rhs.mask),proportion(rhs.proportion)
+    FMTTransitionMask::FMTTransitionMask(const FMTTransitionMask& rhs) :FMTMaskFilter(rhs),FMTSpec(rhs) , mask(rhs.mask),proportion(rhs.proportion)
         {
 
         }
-    FMTtransitionmask::FMTtransitionmask(const FMTtransitionmask& rhs,const FMTmask& lmask,const std::vector<FMTtheme>& themes):FMTmaskfilter(),
-                FMTspec(rhs),mask(lmask),proportion(rhs.proportion)
+    FMTTransitionMask::FMTTransitionMask(const FMTTransitionMask& rhs,const FMTMask& lmask,const std::vector<FMTTheme>& themes):FMTMaskFilter(),
+                FMTSpec(rhs),mask(lmask),proportion(rhs.proportion)
         {
         this->build(std::string(lmask),themes);
         }
-    FMTtransitionmask& FMTtransitionmask::operator = (const FMTtransitionmask& rhs)
+    FMTTransitionMask& FMTTransitionMask::operator = (const FMTTransitionMask& rhs)
         {
         if (this!=&rhs)
             {
             proportion = rhs.proportion;
             mask = rhs.mask;
-            FMTspec::operator = (rhs);
-            FMTmaskfilter::operator = (rhs);
+            FMTSpec::operator = (rhs);
+            FMTMaskFilter::operator = (rhs);
             }
         return *this;
         }
-    FMTtransitionmask::operator std::string() const
+    FMTTransitionMask::operator std::string() const
         {
 		std::string line;
-        line += "*TARGET " + std::string(mask) + " " + std::to_string(proportion) + " " + FMTspec::operator std::string();
+        line += "*TARGET " + std::string(mask) + " " + std::to_string(proportion) + " " + FMTSpec::operator std::string();
         return line;
         }
-    FMTdevelopmentpath FMTtransitionmask::disturb(const Core::FMTdevelopment& dev,const FMTyields& yields,
-                                                const std::vector<FMTtheme>& themes, const bool& reset_age) const
+    FMTDevelopmentPath FMTTransitionMask::disturb(const Core::FMTDevelopment& dev,const FMTYields& yields,
+                                                const std::vector<FMTTheme>& themes, const bool& reset_age) const
         {
-        FMTdevelopmentpath newPath(this->trans(dev.getMask(), themes),
+        FMTDevelopmentPath newPath(this->trans(dev.getMask(), themes),
                     dev.getAge(), dev.getLock(), dev.getPeriod(), proportion);
-        FMTdevelopment& newDev = newPath.getDevelopmentReference();
+        FMTDevelopment& newDev = newPath.getDevelopmentReference();
 		bool age_change = false;
         if (!lock.empty())
             {
@@ -94,7 +94,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
 			age_change = true;
             }else if(!yieldnames.empty())
                 {
-				const FMTyieldrequest newrequest = newDev.getYieldRequest();
+				const FMTYieldRequest newrequest = newDev.getYieldRequest();
                 newDev.setAge(yields.getAge(newrequest, *this));
 				age_change = true;
                 }
@@ -105,45 +105,45 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         return newPath;
         }
 
-    void FMTtransitionmask::setProportion(double newproportion)
+    void FMTTransitionMask::setProportion(double newproportion)
         {
         proportion  = std::min(newproportion,100.00);
         }
 
-	FMTtransitionmask FMTtransitionmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
+	FMTTransitionMask FMTTransitionMask::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const
 		{
-		FMTtransitionmask newtransitionmask(*this);
+		FMTTransitionMask newtransitionmask(*this);
         newtransitionmask.presolveRef(filter, presolvedthemes);
 		return newtransitionmask;
 		}
 
-    void FMTtransitionmask::presolveRef(const FMTmaskfilter& filter, const std::vector<FMTtheme>& presolvedthemes)
+    void FMTTransitionMask::presolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes)
         {
         mask.presolveRef(filter, presolvedthemes, false);
         flippedselection.clear();
         build(mask, presolvedthemes);
         }
 
-    double FMTtransitionmask::getProportion() const
+    double FMTTransitionMask::getProportion() const
         {
             return proportion;
         }
 
-    FMTmask FMTtransitionmask::getMask() const
+    FMTMask FMTTransitionMask::getMask() const
         {
             return mask;
         }
 
-    void FMTtransitionmask::setMask(const Core::FMTmask& mtmask)
+    void FMTTransitionMask::setMask(const Core::FMTMask& mtmask)
         {
         mask = mtmask;
         }
 
-	std::map<std::string, std::string>FMTtransitionmask::get(const std::vector<FMTtheme>& themes) const
+	std::map<std::string, std::string>FMTTransitionMask::get(const std::vector<FMTTheme>& themes) const
         {
 		std::map<std::string, std::string>mapping;
         int id = 1;
-        for(const FMTtheme& theme : themes)
+        for(const FMTTheme& theme : themes)
             {
             const std::string value = mask.get(theme);
 			std::string name = theme.getName();
@@ -157,9 +157,9 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         return mapping;
         }
 
-	bool FMTtransitionmask::operator == (const FMTtransitionmask& rhs) const
+	bool FMTTransitionMask::operator == (const FMTTransitionMask& rhs) const
 		{
-		return (FMTspec::operator== (rhs) &&
+		return (FMTSpec::operator== (rhs) &&
 			mask == rhs.mask &&
 			proportion == rhs.proportion);
 		}

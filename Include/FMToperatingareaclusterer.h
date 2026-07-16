@@ -56,7 +56,7 @@ class FMTEXPORT FMToperatingareaclusterer : public FMTlpheuristic
 		/**
 		Returns all the binary decicions contained in the clusters data member, mapped by the mask.
 		*/
-        std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>getAllBinaries() const;
+        std::map<Core::FMTMask,std::vector<FMToperatingareaclusterbinary>>getAllBinaries() const;
 		// DocString: FMToperatingareaclusterer::getTotalArea()
 		/**
 		Get total area.

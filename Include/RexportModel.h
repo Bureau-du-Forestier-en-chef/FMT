@@ -61,7 +61,7 @@ namespace R
 void exportModel()
 {
 	Rcpp::class_<Models::FMTmodel>("FMTmodel", "@DocString(FMTmodel)")
-		.derives<Core::FMTobject>("FMTobject")
+		.derives<Core::FMTObject>("FMTobject")
 		.constructor<Models::FMTmodel>("@DocString(FMTmodel(Models::FMTmodel))")
 		.constructor("@DocString(FMTmodel())")
            .method("getname",&Models::FMTmodel::getName,

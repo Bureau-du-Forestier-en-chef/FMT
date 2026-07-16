@@ -69,21 +69,21 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 namespace Core
 {
 
-	std::unique_ptr<Logging::FMTLogger> FMTobject::_logger = std::move(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTDefaultLogger()));
-	std::unique_ptr<Exception::FMTExceptionHandler> FMTobject::_exhandler = std::move(std::unique_ptr<Exception::FMTExceptionHandler>(new Exception::FMTDefaultExceptionHandler(_logger)));
+	std::unique_ptr<Logging::FMTLogger> FMTObject::_logger = std::move(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTDefaultLogger()));
+	std::unique_ptr<Exception::FMTExceptionHandler> FMTObject::_exhandler = std::move(std::unique_ptr<Exception::FMTExceptionHandler>(new Exception::FMTDefaultExceptionHandler(_logger)));
 
-	Logging::FMTLogger* FMTobject::getLogger()
+	Logging::FMTLogger* FMTObject::getLogger()
 	{
 		return _logger.get();
 	}
 
-	Exception::FMTExceptionHandler* FMTobject::getExceptionHandler()
+	Exception::FMTExceptionHandler* FMTObject::getExceptionHandler()
 	{
 		return _exhandler.get();
 	}
 
 
-	unsigned long long FMTobject::getAvailableMemory()
+	unsigned long long FMTObject::getAvailableMemory()
 	{
 		unsigned long long available = 0;
 		try {
@@ -100,13 +100,13 @@ namespace Core
 			#endif
 		}catch (...)
 			{
-				_exhandler->raiseFromCatch("", "FMTobject::getAvailableMemory", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTObject::getAvailableMemory", __LINE__, __FILE__);
 			}
 		return available;
 	}
 
 
-	std::string  FMTobject::getRuntimeLocation()
+	std::string  FMTObject::getRuntimeLocation()
 	{
 		std::string strDLLpath;
 		try {
@@ -136,12 +136,12 @@ namespace Core
 			strDLLpath = boost_path.parent_path().string();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::getRuntimeLocation", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::getRuntimeLocation", __LINE__, __FILE__);
 			}
 		return strDLLpath;
 	}
 
-	void FMTobject::checkSignals() const
+	void FMTObject::checkSignals() const
 	{
 		if (_exhandler)
 		{
@@ -150,7 +150,7 @@ namespace Core
 		}
 	}
 
-		void FMTobject::setCPLhandler()
+		void FMTObject::setCPLhandler()
 			{
 			#if defined  FMTWITHGDAL
 				if (_exhandler)
@@ -166,23 +166,23 @@ namespace Core
 			}
 
 
-	FMTobject::FMTobject()
+	FMTObject::FMTObject()
 	{
 		this->checkSignals();
 	}
 
-	FMTobject::~FMTobject()
+	FMTObject::~FMTObject()
 	{
 		//this->checkSignals();
 
 	}
 
-	void FMTobject::setTerminateStack()
+	void FMTObject::setTerminateStack()
 		{
-		std::set_terminate(&FMTobject::_terminate);
+		std::set_terminate(&FMTObject::_terminate);
 		}
 
-	void FMTobject::_logStack()
+	void FMTObject::_logStack()
 		{
 		std::string baseLine;
 		std::vector<std::string>Splitted;
@@ -200,55 +200,55 @@ namespace Core
 			}
 		}
 
-	void FMTobject::_abort(int p_signal)
+	void FMTObject::_abort(int p_signal)
 		{
 		*_logger << "Aborted due to error " << "\n";
 		_logStack();
 		//std::_Exit(EXIT_FAILURE);
 		_exhandler->raise(Exception::FMTexc::FMTunhandlederror,
 			"Abort called",
-			"FMTobject::_abort", __LINE__, __FILE__);
+			"FMTObject::_abort", __LINE__, __FILE__);
 		}
 
-	void FMTobject::setAbortStack()
+	void FMTObject::setAbortStack()
 		{
-		if (std::signal(SIGABRT, &FMTobject::_abort) == SIG_ERR)
+		if (std::signal(SIGABRT, &FMTObject::_abort) == SIG_ERR)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 				"Cannot set Abort signal",
-				"FMTobject::setAbortStack", __LINE__, __FILE__);
+				"FMTObject::setAbortStack", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTobject::_terminate()
+	void FMTObject::_terminate()
 	{
 		*_logger << "Terminated due to error" << "\n";
 		_logStack();
 		//std::_Exit(EXIT_FAILURE);
 		_exhandler->raise(Exception::FMTexc::FMTunhandlederror,
 			"Terminate called",
-			"FMTobject::_terminate", __LINE__, __FILE__);
+			"FMTObject::_terminate", __LINE__, __FILE__);
 		
 	}
 
 
-	FMTobject::FMTobject(const std::unique_ptr<Exception::FMTExceptionHandler> exhandler)
+	FMTObject::FMTObject(const std::unique_ptr<Exception::FMTExceptionHandler> exhandler)
 	{
 		_exhandler = std::move(exhandler->Clone());
 		_exhandler->passInLogger(_logger);
 		this->checkSignals();
 
 	}
-	FMTobject::FMTobject(const FMTobject& rhs)
+	FMTObject::FMTObject(const FMTObject& rhs)
 	{
 		this->checkSignals();
 	}
-	FMTobject& FMTobject::operator = (const FMTobject& rhs)
+	FMTObject& FMTObject::operator = (const FMTObject& rhs)
 	{
 		this->checkSignals();
 		return *this;
 	}
-	void FMTobject::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
+	void FMTObject::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 		{
 		try{
 			this->checkSignals();
@@ -256,11 +256,11 @@ namespace Core
 			_exhandler->passInLogger(_logger);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::passInLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::passInLogger", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTobject::passInExceptionHandler(const std::unique_ptr<Exception::FMTExceptionHandler>& exhandler)
+	void FMTObject::passInExceptionHandler(const std::unique_ptr<Exception::FMTExceptionHandler>& exhandler)
 		{
 		try{
 			this->checkSignals();
@@ -269,29 +269,29 @@ namespace Core
 			setCPLhandler();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::passInExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::passInExceptionHandler", __LINE__, __FILE__);
 			}
 		}
 
 
-	void FMTobject::redirectLogToFile(const std::string& location)
+	void FMTObject::redirectLogToFile(const std::string& location)
 		{
 		_logger->redirectToFile(location);
 		this->checkSignals();
 		}
 
-	void FMTobject::setDefaultLogger()
+	void FMTObject::setDefaultLogger()
 		{
 		try {
 			this->checkSignals();
 			this->passInLogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTDefaultLogger()));
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::setDefaultLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setDefaultLogger", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTobject::setQuietLogger()
+	void FMTObject::setQuietLogger()
 		{
 		try{
 			this->checkSignals();
@@ -299,11 +299,11 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::setQuietLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setQuietLogger", __LINE__, __FILE__);
 		}
 		}
 
-	void FMTobject::setTaskLogger()
+	void FMTObject::setTaskLogger()
 	{
 		try {
 			this->checkSignals();
@@ -312,11 +312,11 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::setTaskLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setTaskLogger", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTobject::setDebugLogger()
+	void FMTObject::setDebugLogger()
 		{
 		try {
 			this->checkSignals();
@@ -324,11 +324,11 @@ namespace Core
 		}	
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::setDebugLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setDebugLogger", __LINE__, __FILE__);
 		}
 		}
 
-	void FMTobject::setDefaultExceptionHandler()
+	void FMTObject::setDefaultExceptionHandler()
 		{
 		try{
 			this->checkSignals();
@@ -336,20 +336,20 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::setDefaultExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setDefaultExceptionHandler", __LINE__, __FILE__);
 		}
 		}
-	void FMTobject::setQuietExceptionHandler()
+	void FMTObject::setQuietExceptionHandler()
 	{
 		try{
 			this->checkSignals();
 			this->passInExceptionHandler(std::unique_ptr<Exception::FMTExceptionHandler>(new Exception::FMTQuietExceptionHandler()));
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::setQuietExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setQuietExceptionHandler", __LINE__, __FILE__);
 			}
 	}
-	void FMTobject::setDebugExceptionHandler()
+	void FMTObject::setDebugExceptionHandler()
 	{
 		try{
 		this->checkSignals();
@@ -357,11 +357,11 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::setDebugExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setDebugExceptionHandler", __LINE__, __FILE__);
 		}
 	}
 
-	void  FMTobject::setFreeExceptionHandler()
+	void  FMTObject::setFreeExceptionHandler()
 	{
 		try{
 			this->checkSignals();
@@ -369,69 +369,69 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::setFreeExceptionHandler", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setFreeExceptionHandler", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTobject::disableNestedExceptions()
+	void FMTObject::disableNestedExceptions()
 		{
 		try {
 			this->checkSignals();
 			_exhandler->disableNestedExceptions();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::disableNestedExceptions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::disableNestedExceptions", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTobject::enableNestedExceptions()
+	void FMTObject::enableNestedExceptions()
 		{
 		try{
 			this->checkSignals();
 			_exhandler->enableNestedExceptions();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::enableNestedExceptions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::enableNestedExceptions", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTobject::setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors)
+	void FMTObject::setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors)
 	{
 		try {
 			_exhandler->setErrorsToWarnings(errors);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::setErrorsToWarnings", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setErrorsToWarnings", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTobject::setMaxWarningsBeforeSilenced(const size_t& maxwarningcount)
+	void FMTObject::setMaxWarningsBeforeSilenced(const size_t& maxwarningcount)
 	{
 		try {
 			_exhandler->setMaxWarningsBeforeSilenced(maxwarningcount);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::setMaxWarningsBeforeSilenced", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::setMaxWarningsBeforeSilenced", __LINE__, __FILE__);
 		}
 	}
 
-	std::chrono::time_point<std::chrono::high_resolution_clock> FMTobject::getClock()
+	std::chrono::time_point<std::chrono::high_resolution_clock> FMTObject::getClock()
 		{
 		std::chrono::time_point<std::chrono::high_resolution_clock> newclock;
 		try {
 			newclock = std::chrono::high_resolution_clock::now();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::getClock", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::getClock", __LINE__, __FILE__);
 			}
 		return newclock;
 		}
 
 
 	template<class chrono>
-	double FMTobject::getDuration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
+	double FMTObject::getDuration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
 	{
 		double result = 0;
 		try {
@@ -440,17 +440,17 @@ namespace Core
 			result = spent.count();
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTobject::getDuration", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::getDuration", __LINE__, __FILE__);
 		}
 		return result;
 	}
 
-	template double FMTobject::getDuration<std::chrono::milliseconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-	template double FMTobject::getDuration<std::chrono::seconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-	template double FMTobject::getDuration<std::chrono::minutes::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-	template double FMTobject::getDuration<std::chrono::hours::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTObject::getDuration<std::chrono::milliseconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTObject::getDuration<std::chrono::seconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTObject::getDuration<std::chrono::minutes::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTObject::getDuration<std::chrono::hours::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 
-	std::string FMTobject::getDurationInSeconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
+	std::string FMTObject::getDurationInSeconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
 	{
 		std::string value;
 		try {
@@ -458,7 +458,7 @@ namespace Core
 			value = "in "+std::to_string(dblvalue)+" seconds";
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTobject::getDurationInSeconds", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTObject::getDurationInSeconds", __LINE__, __FILE__);
 			}
 		return value;
 	}
@@ -466,4 +466,4 @@ namespace Core
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTobject)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTObject)

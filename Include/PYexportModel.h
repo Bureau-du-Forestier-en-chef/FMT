@@ -57,7 +57,7 @@ void exportModel()
     "\n";
 
 
-	bp::class_<Models::FMTmodel, bp::bases<Core::FMTobject>>("FMTmodel", "@DocString(FMTmodel)")
+	bp::class_<Models::FMTmodel, bp::bases<Core::FMTObject>>("FMTmodel", "@DocString(FMTmodel)")
 			.def_pickle(FMT_pickle_suite<Models::FMTmodel>())
 			.def(bp::init<Models::FMTmodel>())
             .def("getyields",&Models::FMTmodel::getYields,
@@ -66,9 +66,9 @@ void exportModel()
 				"@DocString(FMTmodel::setyields)")
 			.def("setlifespan", &Models::FMTmodel::setLifespan,
 				"@DocString(FMTmodel::setlifespan)")
-			.def("addageyieldhandlers", &Models::FMTmodel::addYieldHandlers<Core::FMTageyieldhandler>,
+			.def("addageyieldhandlers", &Models::FMTmodel::addYieldHandlers<Core::FMTAgeYieldHandler>,
 				"@DocString(FMTmodel::addyieldhandlers)")
-			.def("addtimeyieldhandlers", &Models::FMTmodel::addYieldHandlers<Core::FMTtimeyieldhandler>,
+			.def("addtimeyieldhandlers", &Models::FMTmodel::addYieldHandlers<Core::FMTTimeYieldHandler>,
 				"@DocString(FMTmodel::addyieldhandlers)")
 			.def("getname", &Models::FMTmodel::getName,
 				"@DocString(FMTmodel::getname)")

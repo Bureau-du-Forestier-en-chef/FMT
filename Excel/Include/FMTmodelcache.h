@@ -43,7 +43,7 @@ namespace Wrapper
 		virtual ~FMTmodelcache();
 		FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation);
 		void setLength(const int& period);
-		void setSolution(const std::vector<Core::FMTschedule>& schedules);
+		void setSolution(const std::vector<Core::FMTSchedule>& schedules);
 		bool buildnsolve(bool solve = true);
 		double getValue(const std::string& outputname, const std::string& themeselection, const int& period) const;
 		double getYield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const;
@@ -73,13 +73,13 @@ namespace Wrapper
 		std::unique_ptr<boost::recursive_mutex>mtx;
 		std::unordered_map<std::string,size_t>outputsmap;//output name as key
 		std::unordered_map<std::string,size_t>themesmap;//Themes name as key
-		mutable std::unordered_map<std::string,Core::FMTmask>maskcache;
-		mutable std::unordered_map<std::string,Core::FMToutput>outputcache;
+		mutable std::unordered_map<std::string,Core::FMTMask>maskcache;
+		mutable std::unordered_map<std::string,Core::FMTOutput>outputcache;
 		std::string maplocation;
 		mutable std::unique_ptr<Spatial::FMTforest>map;
 		mutable std::unordered_map<std::string,double>generalcache;
 		mutable std::unordered_map<std::string,std::set<Core::FMTSerie>>SerieCache;
-		Core::FMTmask globalmask;
+		Core::FMTMask globalmask;
 		std::unique_ptr<boost::recursive_mutex>maskcachemtx;
 		std::unique_ptr<boost::recursive_mutex>outputcachemtx;
 		std::unique_ptr<boost::recursive_mutex>generalcachemtx;
@@ -88,14 +88,14 @@ namespace Wrapper
 		std::unordered_map<int,std::vector<std::string>>all_exceptions;
 		// DocString: FMTmodelcache::themeSelectionToMask
 		/** 
-		* @brief from a selection string like theme1=GS32;theme14=COS4 or theme1={GS405,GS3223};theme14=COS4 return a FMTmask
+		* @brief from a selection string like theme1=GS32;theme14=COS4 or theme1={GS405,GS3223};theme14=COS4 return a FMTMask
 		* of use the one in cache.
 		* @param[in] valid p_themeSelection in string value
-		* @return a valid FMTmask representing the selection.
+		* @return a valid FMTMask representing the selection.
 		* @throw invalid mask.
 		* */
-		Core::FMTmask themeSelectionToMask(const std::string& p_themeSelection) const;
-		Core::FMToutput getOutput(const std::string& outputname, const Core::FMTmask& subset) const;
+		Core::FMTMask themeSelectionToMask(const std::string& p_themeSelection) const;
+		Core::FMTOutput getOutput(const std::string& outputname, const Core::FMTMask& subset) const;
 		void loadmap() const;
 		std::string getcachekey(const std::string& type,
 			const std::string& outputname, const std::string& themeselection,
@@ -104,12 +104,12 @@ namespace Wrapper
 		bool getSeriesFromCache(std::set<Core::FMTSerie>& value, const std::string& cachekey) const;
 		void setSeriesToCache(const std::string& cachekey, const std::set<Core::FMTSerie>& value) const;
 		void settocache(const std::string& cachekey, const double& value) const;
-		bool getfrommaskcache(const std::string& cachekey,Core::FMTmask& mask) const;
-		void writetomaskcache(const std::string& cachekey,const Core::FMTmask& mask) const;
-		bool getfromoutputcache(const std::string& cachekey, Core::FMToutput& output) const;
-		void writetooutputcache(const std::string& cachekey, const Core::FMToutput& output) const;
-		double getvaluefrommodel(const Core::FMToutput& output, const int& period) const;
-		double getyieldfrommodel(const Core::FMTyieldrequest& request, const std::string& yieldname) const;
+		bool getfrommaskcache(const std::string& cachekey,Core::FMTMask& mask) const;
+		void writetomaskcache(const std::string& cachekey,const Core::FMTMask& mask) const;
+		bool getfromoutputcache(const std::string& cachekey, Core::FMTOutput& output) const;
+		void writetooutputcache(const std::string& cachekey, const Core::FMTOutput& output) const;
+		double getvaluefrommodel(const Core::FMTOutput& output, const int& period) const;
+		double getyieldfrommodel(const Core::FMTYieldRequest& request, const std::string& yieldname) const;
 		void allocateressource();
 		void setbaseressources();
 	};

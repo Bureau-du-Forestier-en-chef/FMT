@@ -126,7 +126,7 @@
  "FMTyieldhandler": "FMTYieldHandler",
  "FMTyieldmodel": "FMTYieldModel",
  "FMTyieldmodelRandom": "FMTYieldModelRandom",
- "FMTyieldmodelTSLA": "FMTYieldModelTSLA",
+ "FMTyieldmodelTSLA": "FMTYieldModelTsla",
  "FMTyieldmodelUnitCoverage": "FMTYieldModelUnitCoverage",
  "FMTyieldmodeldecisiontree": "FMTYieldModelDecisionTree",
  "FMTyieldmodelnep": "FMTYieldModelNep",

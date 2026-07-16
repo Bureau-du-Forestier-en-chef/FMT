@@ -15,38 +15,38 @@ namespace Core
 
 {
 
-	FMTactualdevelopment::FMTactualdevelopment(FMTactualdevelopment&& rhs):
-		FMTdevelopment(std::move(rhs)),area(std::move(rhs.area))
+	FMTActualDevelopment::FMTActualDevelopment(FMTActualDevelopment&& rhs):
+		FMTDevelopment(std::move(rhs)),area(std::move(rhs.area))
 	{
 
 	}
 
-	FMTactualdevelopment& FMTactualdevelopment::operator=(FMTactualdevelopment&& rhs)
+	FMTActualDevelopment& FMTActualDevelopment::operator=(FMTActualDevelopment&& rhs)
 	{
-		FMTdevelopment::operator=(std::move(rhs));
+		FMTDevelopment::operator=(std::move(rhs));
 		area = std::move(rhs.area);
 		return *this;
 	}
 
 
-	FMTactualdevelopment::FMTactualdevelopment() :FMTdevelopment(), area() {}
-	FMTactualdevelopment::FMTactualdevelopment(const FMTmask& mask,const int& age, const int& lock, const double& area) : FMTdevelopment(mask, age, lock), area(area) {}
-	FMTactualdevelopment::FMTactualdevelopment(const FMTactualdevelopment& rhs) : FMTdevelopment(rhs), area(rhs.area) {}
-	FMTactualdevelopment& FMTactualdevelopment::operator = (const FMTactualdevelopment& rhs)
+	FMTActualDevelopment::FMTActualDevelopment() :FMTDevelopment(), area() {}
+	FMTActualDevelopment::FMTActualDevelopment(const FMTMask& mask,const int& age, const int& lock, const double& area) : FMTDevelopment(mask, age, lock), area(area) {}
+	FMTActualDevelopment::FMTActualDevelopment(const FMTActualDevelopment& rhs) : FMTDevelopment(rhs), area(rhs.area) {}
+	FMTActualDevelopment& FMTActualDevelopment::operator = (const FMTActualDevelopment& rhs)
 	{
 		if (this != &rhs)
 		{
-			FMTdevelopment::operator=(rhs);
+			FMTDevelopment::operator=(rhs);
 			area = rhs.area;
 		}
 		return *this;
 	}
-	bool FMTactualdevelopment::operator == (const FMTactualdevelopment& rhs) const
+	bool FMTActualDevelopment::operator == (const FMTActualDevelopment& rhs) const
 	{
-		return FMTdevelopment::operator==(rhs) && area == rhs.area;
+		return FMTDevelopment::operator==(rhs) && area == rhs.area;
 	}
 
-	FMTactualdevelopment::operator std::string() const
+	FMTActualDevelopment::operator std::string() const
 	{
 		std::string line;
 		if (getLock() > 0)
@@ -59,14 +59,14 @@ namespace Core
 		return line;
 	}
 
-	FMTactualdevelopment::FMTactualdevelopment(const FMTdevelopment& rhs, double larea) : FMTdevelopment(rhs), area(larea)
+	FMTActualDevelopment::FMTActualDevelopment(const FMTDevelopment& rhs, double larea) : FMTDevelopment(rhs), area(larea)
 		{
 
 		}
 
-	FMTactualdevelopment FMTactualdevelopment::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
+	FMTActualDevelopment FMTActualDevelopment::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const
 		{
-		FMTactualdevelopment newDev(*this);
+		FMTActualDevelopment newDev(*this);
 		try {
 			if (!filter.emptyFlipped())
 			{
@@ -75,20 +75,20 @@ namespace Core
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("for "+std::string(*this),"FMTactualdevelopment::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for "+std::string(*this),"FMTActualDevelopment::presolve", __LINE__, __FILE__);
 			}
 		return newDev;
 		}
 	
-	FMTactualdevelopment FMTactualdevelopment::reduceLockToDeath(const FMTlifespans& lifespans) const
+	FMTActualDevelopment FMTActualDevelopment::reduceLockToDeath(const FMTLifespans& lifespans) const
 		{
-			FMTactualdevelopment newDev(*this);
+			FMTActualDevelopment newDev(*this);
 			try {
 					const int LOCK = newDev.getLock();
 					const int BASE_AGE = newDev.getAge();
 					if(LOCK >0)
 					{
-						std::vector<FMTlifespans::const_iterator> lifespanfound = lifespans.findSets(newDev.getMask());
+						std::vector<FMTLifespans::const_iterator> lifespanfound = lifespans.findSets(newDev.getMask());
 						if(!lifespanfound.empty())
 						{
 							const int DEV_LIFESPAN = lifespanfound.at(0)->second;
@@ -108,7 +108,7 @@ namespace Core
 												std::to_string(DEV_LIFESPAN)+ ". The lock "+std::to_string(LOCK)+" on the age class "+std::to_string(BASE_AGE)+
 												" will exceed the death age. If this error is set to warning, the lock will be reduce to "+
 												std::to_string(NEW_LOCK)+" to reproduce the behavior of WS.",
-													"FMTactualdevelopment::reduceLockToDeath",
+													"FMTActualDevelopment::reduceLockToDeath",
 													__LINE__,
 													__FILE__);
 								newDev.setLock(NEW_LOCK);
@@ -118,44 +118,44 @@ namespace Core
 					}
 				}catch (...)
 					{
-					_exhandler->raiseFromCatch("for "+std::string(*this),"FMTactualdevelopment::reduceLockToDeath", __LINE__, __FILE__);
+					_exhandler->raiseFromCatch("for "+std::string(*this),"FMTActualDevelopment::reduceLockToDeath", __LINE__, __FILE__);
 					}
 			return newDev;
 		}
 
-	bool FMTactualdevelopment::operator != (const FMTactualdevelopment& rhs) const
+	bool FMTActualDevelopment::operator != (const FMTActualDevelopment& rhs) const
 		{
 		return !(*this == rhs);
 		}
-	double FMTactualdevelopment::getArea() const
+	double FMTActualDevelopment::getArea() const
 		{
 		return area;
 		}
 
-	void FMTactualdevelopment::setArea(const double& newarea)
+	void FMTActualDevelopment::setArea(const double& newarea)
 		{
 		area = newarea;
 		}
 
-	std::unique_ptr<FMTdevelopment> FMTactualdevelopment::Clone() const
+	std::unique_ptr<FMTDevelopment> FMTActualDevelopment::Clone() const
 		{
-		return std::unique_ptr<FMTdevelopment>(new FMTactualdevelopment(*this));
+		return std::unique_ptr<FMTDevelopment>(new FMTActualDevelopment(*this));
 		}
 
-	bool FMTactualdevelopment::operator < (const FMTactualdevelopment& rhs) const
+	bool FMTActualDevelopment::operator < (const FMTActualDevelopment& rhs) const
 		{
-		return (FMTdevelopment::operator < (rhs) && area < rhs.area);
+		return (FMTDevelopment::operator < (rhs) && area < rhs.area);
 		}
 
-	FMTActualDevelopmentComparator::FMTActualDevelopmentComparator(const FMTdevelopment* base) : basedev(base)
+	FMTActualDevelopmentComparator::FMTActualDevelopmentComparator(const FMTDevelopment* base) : basedev(base)
 		{
 
 		}
-	bool FMTActualDevelopmentComparator::operator()(const FMTactualdevelopment& actualdev) const
+	bool FMTActualDevelopmentComparator::operator()(const FMTActualDevelopment& actualdev) const
 		{
 		return (*basedev == actualdev);
 		}
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTactualdevelopment)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTActualDevelopment)

@@ -4,11 +4,11 @@
 #include "FMTmodel.h"
 
 namespace Core { 
-    class FMTschedule;
-    class FMTconstraint;
-    class FMToutput;
-	class FMTtheme;
-	class FMTmask;
+    class FMTSchedule;
+    class FMTConstraint;
+    class FMTOutput;
+	class FMTTheme;
+	class FMTMask;
 }
 
 namespace Models
@@ -82,18 +82,18 @@ namespace FMTWrapperCore
 
 	private:
 		/**
-		* @brief Retourne un vecteur de FMTactualdevelopment selon le raster d'aire.
+		* @brief Retourne un vecteur de FMTActualDevelopment selon le raster d'aire.
 		*
 		*@param p_model le Modele a utiliser.
 		*@param p_rasterPath Le path du raster d'aire.
-		*@return Un vecteur de FMTactualdevelopment.
+		*@return Un vecteur de FMTActualDevelopment.
 		*/
-		static std::vector<Core::FMTactualdevelopment> getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath);
+		static std::vector<Core::FMTActualDevelopment> getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath);
 		static const size_t m_GET_ALL_MASKS_THRESHOLD = 1000000;
-		static Core::FMTmask _GetFullMask(const std::vector<Core::FMTtheme>& p_themes);
+		static Core::FMTMask _GetFullMask(const std::vector<Core::FMTTheme>& p_themes);
 		static std::set<std::string> _GetThemesDecomposition(
-					const Core::FMTmask& p_mask,
-					const std::vector<Core::FMTtheme>& p_themes);
+					const Core::FMTMask& p_mask,
+					const std::vector<Core::FMTTheme>& p_themes);
 		
 	
 	};

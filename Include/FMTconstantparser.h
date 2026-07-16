@@ -13,7 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTconstants;
+	class FMTConstants;
 }
 
 namespace Parser
@@ -50,12 +50,12 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		/**
 		This functions reads a constants file based on a given file (location).
 		*/
-        Core::FMTconstants read(const std::string& location);
+        Core::FMTConstants read(const std::string& location);
 		// DocString: FMTconstantparser::write
 		/**
 		This functions writes (constants) to a file (location).
 		*/
-        void write(const Core::FMTconstants& constants, const std::string& location) const;
+        void write(const Core::FMTConstants& constants, const std::string& location) const;
 		// DocString: FMTconstantparser:_fillConstants
 		/**
 		This functions writes (constants) to a file (location).
@@ -72,7 +72,7 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		@param[in] p_allowNonValid allow non valid string to enter method
 		@return true if added a constant else false
 		*/
-		bool _fillConstants(Core::FMTconstants& p_constants, 
+		bool _fillConstants(Core::FMTConstants& p_constants, 
 			const std::string& p_input, bool p_allowNonValid = false) const;
 		// DocString: FMTparser::getCleanLinewfor
 		/**
@@ -83,8 +83,8 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		@return a queue of lines to process
 		*/
 		std::queue<FMTLineInfo> getCleanLinewfor(std::ifstream& p_stream, 
-			const std::vector<Core::FMTtheme>& p_themes,
-			const Core::FMTconstants& p_cons) const override;
+			const std::vector<Core::FMTTheme>& p_themes,
+			const Core::FMTConstants& p_cons) const override;
 
     };
 }

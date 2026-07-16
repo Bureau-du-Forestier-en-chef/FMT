@@ -15,13 +15,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTSolutionTracker.h"
 
 namespace Core {
-	class FMTGCBMtransition;
-	class FMToutput;
+	class FMTGCBMTransition;
+	class FMTOutput;
 	class FMTmodel;
-	class FMTconstraint;
-	class FMTyields;
-	class FMTaction;
-	class FMTdevelopment;
+	class FMTConstraint;
+	class FMTYields;
+	class FMTAction;
+	class FMTDevelopment;
 }
 
 namespace Models{
@@ -131,8 +131,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 	   std::vector<std::set<Spatial::FMTcoordinate>>getUpdatedScheduling(
 											const Models::FMTmodel& model,	
 											 const std::vector<int>& actiontargets,
-											boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cachedaction,
-										  const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
+											boost::unordered_map<Core::FMTDevelopment, std::vector<bool>>& cachedaction,
+										  const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
 										   bool schedule_only = true,
 										   std::vector<std::set<Spatial::FMTcoordinate>> original= std::vector<std::set<Spatial::FMTcoordinate>>(),
 											std::vector<FMTcoordinate> updatedcoordinate= std::vector<FMTcoordinate>()) const;
@@ -141,7 +141,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Return the constraint evaluation value of a spatial constraint. If the subset is not a nullptr the 
 		*/
-	   double evaluateSpatialConstraint(const Core::FMTconstraint& p_SpatialConstraint,
+	   double evaluateSpatialConstraint(const Core::FMTConstraint& p_SpatialConstraint,
 					const FMTSpatialGraphs& p_SpatialGraph) const;
 	   // DocString: FMTSpatialSchedule::evaluateDistance
 		/**
@@ -171,14 +171,14 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 
 		*/
-		double operateEvents(const FMTeventcontainer& cuts,const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& Transition,
-					 const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
+		double operateEvents(const FMTeventcontainer& cuts,const Core::FMTAction& action, const int& action_id, const Core::FMTTransition& Transition,
+					 const Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes);
 		// DocString: FMTSpatialSchedule::operateCoord
 		/**
 		 Operate a coordinate and add it to the events ... That's why the FMTbindingspatialaction is needed
 		*/
-		void operateCoord(const FMTcoordinate& coord,const Core::FMTaction& action, const int& action_id, const FMTbindingspatialaction& bindingspaction, const Core::FMTtransition& Transition,
-					 const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
+		void operateCoord(const FMTcoordinate& coord,const Core::FMTAction& action, const int& action_id, const FMTbindingspatialaction& bindingspaction, const Core::FMTTransition& Transition,
+					 const Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes);
 		// DocString: FMTSpatialSchedule::grow
 		/**
 
@@ -193,7 +193,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Return operated schedules from linegraph. 
 		*/
-		std::vector<Core::FMTschedule> getSchedules(const FMTSpatialGraphs p_Graphs,bool withlock=false) const;
+		std::vector<Core::FMTSchedule> getSchedules(const FMTSpatialGraphs p_Graphs,bool withlock=false) const;
 		// DocString: FMTSpatialSchedule::isBetterThan
 		/**
 			Compare two spatialschedule and return a vector of bool with true if the constraint group has a better value then the
@@ -220,7 +220,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 			Returns dual infeasibility of a set of constraints.
 		*/
-		double getPrimalInfeasibility(const std::vector<const Core::FMTconstraint*>& constraints,
+		double getPrimalInfeasibility(const std::vector<const Core::FMTConstraint*>& constraints,
 			const Spatial::FMTSpatialGraphs& p_Graphs, bool withfactorization = false) const;
 		// DocString: FMTSpatialSchedule::logSolutionStatus
 		/**
@@ -250,17 +250,17 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 			
 		*/
-		std::string getPatchStats(const std::vector<Core::FMTaction>& actions) const;
+		std::string getPatchStats(const std::vector<Core::FMTAction>& actions) const;
 		// DocString: FMTSpatialSchedule::lastDistLayer
 		/**
 			Return sum of all graphs outputs related to constraint.
 		*/
-		FMTlayer<std::string> lastDistLayer(const std::vector<Core::FMTaction>& modelactions, const int& period) const;
+		FMTlayer<std::string> lastDistLayer(const std::vector<Core::FMTAction>& modelactions, const int& period) const;
 		// DocString: FMTSpatialSchedule::getGCBMtransitions
 		/**
 		
 		*/
-		std::vector<Core::FMTGCBMtransition> getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTaction>& modelactions, const std::vector<Core::FMTtheme>& classifiers, const int& period) const;
+		std::vector<Core::FMTGCBMTransition> getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTAction>& modelactions, const std::vector<Core::FMTTheme>& classifiers, const int& period) const;
 		// DocString: FMTSpatialSchedule::getPredictors
 		/**
 			Get the predictors for the whole solution and write down the predictorsids into a layer.
@@ -290,8 +290,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		even if the area harvested target for that action is not reach. The user can also set the seed
 		to get different solutions from the simulator.
 		*/
-		std::map<std::string, double> referenceBuild(const Core::FMTschedule& schedule, const Models::FMTmodel& model,
-										const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
+		std::map<std::string, double> referenceBuild(const Core::FMTSchedule& schedule, const Models::FMTmodel& model,
+										const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
 										std::default_random_engine& p_randomEngine,
 										bool schedule_only = true,
 										bool scheduleatfirstpass = true);
@@ -304,7 +304,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		even if the area harvested target for that action is not reach. The user can also set the seed
 		to get different solutions from the simulator.
 		*/
-		std::map<std::string, double> greedyReferenceBuild(const Core::FMTschedule& schedule, const FMTSpatialGraphs& p_Graphs,
+		std::map<std::string, double> greedyReferenceBuild(const Core::FMTSchedule& schedule, const FMTSpatialGraphs& p_Graphs,
 										const size_t& randomiterations,
 										unsigned int seed = 0,
 										double tolerance = FMT_DBL_TOLERANCE,
@@ -402,20 +402,20 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or development name if level == FMToutputlevel::developpement
 		*/
-		std::map<std::string,double> getOutput(const FMTSpatialGraphs& p_Graphs, const Core::FMToutput& p_output,
+		std::map<std::string,double> getOutput(const FMTSpatialGraphs& p_Graphs, const Core::FMTOutput& p_output,
 			int p_period,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 		// DocString: FMTSpatialSchedule::getSpatialOutput
 		/**
 		Get the output value for the whole layer for a given period and output.
 		*/
 		FMTlayer<double> getSpatialOutput(const Models::FMTmodel& model,
-						const Core::FMToutput& output,const int& period) const;
+						const Core::FMTOutput& output,const int& period) const;
 		// DocString: FMTSpatialSchedule::getOutputByCoordinate
 		/**
 		Return the output value by coordinate for a given output/model/period.
 		*/
 		std::vector<std::pair<FMTcoordinate, double>>getOutputByCoordinate(const Models::FMTmodel & model,
-			const Core::FMToutput& output, const int& period) const;
+			const Core::FMTOutput& output, const int& period) const;
 		// DocString: FMTSpatialSchedule::postSolve
 		/**
 		@brief postSolve the spatial solution.
@@ -423,8 +423,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		@param[in] p_PresolveActions the vector of presolved actions
 		@param[in] p_OriginalBaseModel the original model.
 		*/
-		void postSolve(const Core::FMTmaskfilter&  p_Filter,
-			const std::vector<Core::FMTaction>& p_PresolveActions,
+		void postSolve(const Core::FMTMaskFilter&  p_Filter,
+			const std::vector<Core::FMTAction>& p_PresolveActions,
 			Spatial::FMTSpatialGraphs& p_Graphs);
 		// DocString: FMTSpatialSchedule::presolve
 		/**
@@ -434,7 +434,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		@param[in] the number of vertices to reserve per linegraph
 		@return A presolved FMTSpatialSchedule.
 		*/
-		FMTSpatialSchedule presolve(const Core::FMTmaskfilter& p_filter,
+		FMTSpatialSchedule presolve(const Core::FMTMaskFilter& p_filter,
 			FMTSpatialGraphs& p_Graphs,size_t p_ReserveSize) const;
 		// DocString: FMTSpatialSchedule::getArea
 		/**
@@ -443,11 +443,11 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		@param[in] beforegrowanddeath true if we want before the growth (true) or after (false)
 		@return the vector of actualdevelopment...
 		*/
-		std::vector<Core::FMTactualdevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
+		std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
 
 		FMTSpatialSchedule getBaseSchedule(const FMTSpatialGraphs& p_SpatialGraph) const;
 		void setSpatialGraphs(const Spatial::FMTSpatialSchedule& p_ToCopy, FMTSpatialGraphs& p_SpatialGraph);
-		std::vector<FMTcoordinate> getGroupsConflict(const Core::FMTconstraint& p_SpatialConstraint,
+		std::vector<FMTcoordinate> getGroupsConflict(const Core::FMTConstraint& p_SpatialConstraint,
 			const FMTSpatialGraphs& p_SpatialGraph) const;
 		struct EventSpread
 			{
@@ -467,23 +467,23 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		void enableSolutionTracker(const FMTSpatialGraphs& p_SpatialGraph);
 		void disableSolutionTracker();
 	protected:
-		// DocString: FMTSpatialSchedule::getFromEvents(const Core::FMTconstraint&, const std::vector<Core::FMTaction>&, const int&, const int&)
+		// DocString: FMTSpatialSchedule::getFromEvents(const Core::FMTConstraint&, const std::vector<Core::FMTAction>&, const int&, const int&)
 		 /**
 		 Get theline graph using the eventcontainer
 		 */
-		std::vector<const Graph::FMTlinegraph*>getFromEvents(const Core::FMTconstraint& constraint, const std::vector<Core::FMTaction>& actions, const int& start, const int& stop) const;
-		// DocString: FMTSpatialSchedule::getFromEvents(const Core::FMToutputnode&, const std::vector<Core::FMTaction>&, const int&)
+		std::vector<const Graph::FMTlinegraph*>getFromEvents(const Core::FMTConstraint& constraint, const std::vector<Core::FMTAction>& actions, const int& start, const int& stop) const;
+		// DocString: FMTSpatialSchedule::getFromEvents(const Core::FMTOutputNode&, const std::vector<Core::FMTAction>&, const int&)
 		 /**
 		 Get the coordinate presents in the events for the outputnode, the action and the period asked.
 		 */
-		std::vector<FMTcoordinate>getFromEvents(const Core::FMToutputnode& node, const std::vector<Core::FMTaction>& actions, const int& period) const;
+		std::vector<FMTcoordinate>getFromEvents(const Core::FMTOutputNode& node, const std::vector<Core::FMTAction>& actions, const int& period) const;
 		// DocString: FMTSpatialSchedule::getOutputFromGraph
 		 /**
 		 Get the output requested from a given linegraph into periods_values
 		 */
 		std::map<std::string,double> getOutputFromGraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
-			const Core::FMToutputnode& node, const double* solution,const int&period, const Core::FMTmask& nodemask,
-			boost::unordered_map<Core::FMTmask, double>& nodecache, const Core::FMTtheme*  p_theme,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
+			const Core::FMTOutputNode& node, const double* solution,const int&period, const Core::FMTMask& nodemask,
+			boost::unordered_map<Core::FMTMask, double>& nodecache, const Core::FMTTheme*  p_theme,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 		// DocString: FMTSpatialSchedule::getmaximalpatchsizes
 		 /**
 		 Return the maximal patch size of a vector of spatialactions.
@@ -493,8 +493,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		 /**
 		
 		 */
-		bool inScheduleOperabilities(const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
-			Core::FMTdevelopment const* dev,const int& actionid, const Core::FMTaction& action) const;
+		bool inScheduleOperabilities(const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
+			Core::FMTDevelopment const* dev,const int& actionid, const Core::FMTAction& action) const;
     private:
 		// DocString: FMTSpatialSchedule::m_scheduleType
 		//Schedule type complete or partial
@@ -510,7 +510,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		FMTSolutionTracker m_Tracker;
 		//DocString: FMTSpatialSchedule::m_OperabilityCache
 		//Operability cache
-		static boost::unordered_map<Core::FMTdevelopment,
+		static boost::unordered_map<Core::FMTDevelopment,
 			std::vector<int>>m_OperabilityCache;
 		//DocString: FMTSpatialSchedule::m_Movables
 		//Coordinates where you can actualy operate something.
@@ -569,11 +569,11 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		double _getRulesEvaluation(const std::vector<FMTPatchRules>& p_rules,
 			const FMTSpatialGraphs& p_SpatialGraph) const;
 
-		static std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>> _putTabouInCache(
+		static std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>> _putTabouInCache(
 			const Models::FMTmodel& p_model,
-			std::map<Core::FMTdevelopment, std::vector<bool>>& p_tabou);
+			std::map<Core::FMTDevelopment, std::vector<bool>>& p_tabou);
 		static void _setTabouOutOfCache(
-			std::vector<std::pair<Core::FMTdevelopment, std::vector<int>>>& p_GoodValues);
+			std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>>& p_GoodValues);
 
 		
 

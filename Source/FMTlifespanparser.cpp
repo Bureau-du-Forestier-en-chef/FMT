@@ -31,9 +31,9 @@ FMTlifespanparser& FMTlifespanparser::operator = (const FMTlifespanparser& rhs)
     return *this;
     }
 
-Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants,const std::string& location)
+Core::FMTLifespans FMTlifespanparser::read(const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& constants,const std::string& location)
     {
-    Core::FMTlifespans lifespan;
+    Core::FMTLifespans lifespan;
 	try {
 		std::ifstream LIFstream(location);
 		if (FMTparser::tryOpening(LIFstream, location))
@@ -49,8 +49,8 @@ Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& th
 					const int age = getNum<int>(page, constants);
 					splited.pop_back();
 					std::string mask = boost::algorithm::join(splited, " ");
-					if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
-					lifespan.push_back(Core::FMTmask(mask, themes), age);
+					if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
+					lifespan.push_back(Core::FMTMask(mask, themes), age);
 				}
 			}
 		}
@@ -63,7 +63,7 @@ Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& th
     return lifespan;
     }
 
-void FMTlifespanparser::write(const Core::FMTlifespans& lifespan,const std::string& location) const
+void FMTlifespanparser::write(const Core::FMTLifespans& lifespan,const std::string& location) const
     {
 	try {
 		std::ofstream lifespanstream;

@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         const std::vector<std::string>scenarios(1, scenario);
         const std::vector<Models::FMTmodel> MODELS = mparser.readproject(primarylocation, scenarios);
         const Models::FMTmodel BUILDED_MODEL = MODELS.at(0).buildAction(ACTION_NAME, TARGET_YIELD);
-        const std::vector<Core::FMTtheme> themes = BUILDED_MODEL.getThemes();
+        const std::vector<Core::FMTTheme> themes = BUILDED_MODEL.getThemes();
         Parser::FMTareaparser areaparser;
         //areaparser.setDefaultExceptionHandler();
         Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(MAPm_location,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0);

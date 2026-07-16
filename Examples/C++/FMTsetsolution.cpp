@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
+		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
 		//optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
 		if (argc>3)//Got the double for validation!
 			{
 			bool gotovoltotrec = false;
-			std::vector<Core::FMToutput>selected;
-			for (const Core::FMToutput& output : optimizationmodel.getOutputs())
+			std::vector<Core::FMTOutput>selected;
+			for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
 				{
 				if (output.getName() == "OVOLTOTREC")
 					{

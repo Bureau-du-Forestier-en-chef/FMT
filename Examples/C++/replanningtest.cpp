@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 	Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::CLP);
 	local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<Core::FMToutput>selectedoutputs;
-	for (const Core::FMToutput& output : global.getOutputs())
+	std::vector<Core::FMTOutput>selectedoutputs;
+	for (const Core::FMTOutput& output : global.getOutputs())
 	{
 		if (
 			output.getName() == "OVOLREC" ||
@@ -60,8 +60,8 @@ int main(int argc, char *argv[])
 	handler.conccurentRun();
 
 	//On lis les schédules
-	const std::vector<Core::FMTtheme> THEMES = models.at(0).getThemes();
-	const std::vector<Core::FMTaction> ACTIONS = models.at(0).getactions();
+	const std::vector<Core::FMTTheme> THEMES = models.at(0).getThemes();
+	const std::vector<Core::FMTAction> ACTIONS = models.at(0).getactions();
 	scheduleParser.read(THEMES, ACTIONS, scheduleLocation);
 
 	#endif
@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
 	Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::MOSEK);
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,2);
-	std::vector<Core::FMToutput>selectedoutputs;
-	for (const Core::FMToutput& output : global.getoutputs())
+	std::vector<Core::FMTOutput>selectedoutputs;
+	for (const Core::FMTOutput& output : global.getoutputs())
 	{
 		if (output.getName() == "OVOLTOTREC"|| output.getName() == "OSUPFEUX" || output.getName().find("OSUPRECTOT")!=std::string::npos)
 		{

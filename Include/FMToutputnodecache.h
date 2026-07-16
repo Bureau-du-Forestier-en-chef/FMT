@@ -57,12 +57,12 @@ namespace Graph
 				}
 
 		}
-		void eraseNode(const Core::FMToutputnode& node)
+		void eraseNode(const Core::FMTOutputNode& node)
 			{
 			searchtree.erase(node.source);
 			}
 
-		bool contains(const Core::FMToutputnode& node) const
+		bool contains(const Core::FMTOutputNode& node) const
 			{
 			return searchtree.find(node.source) != searchtree.end();
 			}
@@ -72,7 +72,7 @@ namespace Graph
 			size_t largestsize = 0;
 			unsigned long long  removedmemory = 0;
 			notecacheit largestiterator = searchtree.end();
-			for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::iterator mapit = searchtree.begin(); mapit != searchtree.end(); mapit++)
+			for (typename std::map<Core::FMTOutputSource, std::vector<tvdescriptor>>::iterator mapit = searchtree.begin(); mapit != searchtree.end(); mapit++)
 			{
 				size_t sizeofvec = mapit->second.size();
 				if (sizeofvec > largestsize)
@@ -89,12 +89,12 @@ namespace Graph
 			}
 			return removedmemory;
 		}
-		const std::vector<tvdescriptor>& getVertices(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
-			const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
+		const std::vector<tvdescriptor>& getVertices(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions,
+			const std::vector<Core::FMTTheme>&themes, bool& exactvecticies) const
 			{
 			return this->getCleanDescriptors(targetnode, actions, themes, exactvecticies);
 			}
-		void setValidVertices(const Core::FMToutputnode& targetnode,const std::vector<tvdescriptor>& vertices) const
+		void setValidVertices(const Core::FMTOutputNode& targetnode,const std::vector<tvdescriptor>& vertices) const
 			{
 			searchtree[targetnode.source] = vertices;
 			searchtree[targetnode.source].shrink_to_fit();
@@ -154,17 +154,17 @@ namespace Graph
 		std::vector<tvdescriptor>inmemorynodes;
 		titerator const * beginit;
 		titerator const * endit;
-		mutable std::map<Core::FMToutputsource,std::vector<tvdescriptor>>searchtree;
+		mutable std::map<Core::FMTOutputSource,std::vector<tvdescriptor>>searchtree;
 		std::allocator<tvdescriptor>* m_allocator;
 		size_t m_reserve;
-        typedef typename std::map<Core::FMToutputsource,std::vector<tvdescriptor>>::const_iterator notecacheit;
+        typedef typename std::map<Core::FMTOutputSource,std::vector<tvdescriptor>>::const_iterator notecacheit;
 		
-		const std::vector<tvdescriptor>& getCleanDescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
-										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
+		const std::vector<tvdescriptor>& getCleanDescriptors(const Core::FMTOutputNode& targetnode,const std::vector<Core::FMTAction>& actions,
+										const std::vector<Core::FMTTheme>&themes, bool& exactnode) const
 		{
 			exactnode = false;
 			bool foundSubset = false;
-			typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_iterator parent = this->_getParentNode(targetnode,
+			typename std::map<Core::FMTOutputSource, std::vector<tvdescriptor>>::const_iterator parent = this->_getParentNode(targetnode,
 																						actions, exactnode, foundSubset);
 			if (exactnode)
 			{
@@ -185,11 +185,11 @@ namespace Graph
 			{
 				std::vector<tvdescriptor>toRemove(*m_allocator);
 				bool gotSomething = false;
-				const Core::FMTmask& targetmask = targetnode.source.getMask();
-				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
+				const Core::FMTMask& targetmask = targetnode.source.getMask();
+				for (typename std::map<Core::FMTOutputSource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 					sit != searchtree.rend(); sit++)
 				{
-					const Core::FMTmask& nodemask = sit->first.getMask();
+					const Core::FMTMask& nodemask = sit->first.getMask();
 					if (targetmask.isNotThemesSubset(nodemask, themes))//deal only with mask
 					{
 						if (!gotSomething)
@@ -212,21 +212,21 @@ namespace Graph
 				}
 			}
 			//std::pair<notecacheit, bool> returniterator;
-			//returniterator = searchtree.insert(std::pair<Core::FMToutputsource, std::vector<tvdescriptor>>(targetnode.source, cleaned));
+			//returniterator = searchtree.insert(std::pair<Core::FMTOutputSource, std::vector<tvdescriptor>>(targetnode.source, cleaned));
 			//return (returniterator.first)->second;
 			return cleaned;
 		}
-		void getActionRebuild(const Core::FMToutputnode& targetnode,
-			const std::vector<Core::FMTaction>& actions,
+		void getActionRebuild(const Core::FMTOutputNode& targetnode,
+			const std::vector<Core::FMTAction>& actions,
 			std::vector<tvdescriptor>& cleaned,
 			bool& exactnode/*, const size_t& p_reserve*/) const
 		{
 			const std::string actionname = targetnode.source.getAction();
-			const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTActionComparator(actionname).getAllAggregates(actions, true);
+			const std::vector<const Core::FMTAction*>aggregatesptr = Core::FMTActionComparator(actionname).getAllAggregates(actions, true);
 			if (!actionname.empty() && !aggregatesptr.empty()) //so it's a aggregate!
 			{
 				std::map<std::string, std::vector< notecacheit>>potentials;
-				for (const Core::FMTaction* attributeptr : aggregatesptr)
+				for (const Core::FMTAction* attributeptr : aggregatesptr)
 				{
 					potentials[attributeptr->getName()] = std::vector< notecacheit>();
 					potentials[attributeptr->getName()].reserve(m_reserve);
@@ -245,7 +245,7 @@ namespace Graph
 						potentials[nodeaction].push_back(sit);
 					}
 				}
-				for (const Core::FMTaction* attributeptr : aggregatesptr)
+				for (const Core::FMTAction* attributeptr : aggregatesptr)
 				{
 					if (potentials.at(attributeptr->getName()).empty())
 					{
@@ -299,8 +299,8 @@ namespace Graph
 
 			}
 		}
-		notecacheit _getParentNode(const Core::FMToutputnode& m_targetNode,
-							const std::vector<Core::FMTaction>& m_actions,
+		notecacheit _getParentNode(const Core::FMTOutputNode& m_targetNode,
+							const std::vector<Core::FMTAction>& m_actions,
 						bool& m_exactNode, bool m_foundSubset) const
 			{
 				notecacheit parentit = searchtree.find(m_targetNode.source);

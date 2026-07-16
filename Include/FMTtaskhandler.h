@@ -23,7 +23,7 @@ namespace Parallel
 	Main class for running concurrent tasks at the same time.
 	It uses the virtual function split() from FMTtask to split the task in multiple task and can run it concurrently
 	*/
-	class FMTEXPORT FMTtaskhandler : public Core::FMTobject
+	class FMTEXPORT FMTtaskhandler : public Core::FMTObject
 	{
 	
 	public:

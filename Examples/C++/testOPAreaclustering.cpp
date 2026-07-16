@@ -24,22 +24,22 @@ int main(int argc, char *argv[])
 	const std::vector<std::string>scenarios(1, "LP");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	std::vector<Core::FMTtheme>themes = optmodel.getThemes();
+	std::vector<Core::FMTTheme>themes = optmodel.getThemes();
 	std::vector<Heuristics::FMToperatingarea>opareas;
 	const size_t themetarget(0);
 	for (const std::string& attribute : themes.at(themetarget).getAttributes("UC"))
 	{
 		std::vector<std::string> mask;
-		for (const Core::FMTtheme& theme : themes)
+		for (const Core::FMTTheme& theme : themes)
 		{
 			mask.push_back("?");
 		}
 		mask[themetarget] = attribute;
-		opareas.push_back(Heuristics::FMToperatingarea(Core::FMTmask(mask, themes), 0.01));
+		opareas.push_back(Heuristics::FMToperatingarea(Core::FMTMask(mask, themes), 0.01));
 	}
 	std::vector<std::string>themesfields;
 	size_t thid = 1;
-	for (const Core::FMTtheme& theme : themes)
+	for (const Core::FMTTheme& theme : themes)
 	{
 		themesfields.push_back(std::to_string(thid));
 		++thid;
@@ -58,19 +58,19 @@ int main(int argc, char *argv[])
 	{
 		optmodel.buildPeriod();
 	}
-	std::vector<Core::FMTconstraint>allconstraints = optmodel.getconstraints();
-	const Core::FMTconstraint objective = allconstraints.at(0);
+	std::vector<Core::FMTConstraint>allconstraints = optmodel.getconstraints();
+	const Core::FMTConstraint objective = allconstraints.at(0);
 	allconstraints.erase(allconstraints.begin());
-	for (const Core::FMTconstraint& constraint : allconstraints)
+	for (const Core::FMTConstraint& constraint : allconstraints)
 	{
 		optmodel.setConstraint(constraint);
 	}
 	optmodel.setObjective(objective);
 	if (optmodel.initialSolve())
 	{
-		Core::FMToutput opareaareasoutput;
-		Core::FMToutput opareastatisticsoutput;
-		for (const Core::FMToutput& output : optmodel.getOutputs())
+		Core::FMTOutput opareaareasoutput;
+		Core::FMTOutput opareastatisticsoutput;
+		for (const Core::FMTOutput& output : optmodel.getOutputs())
 		{
 			if ("VOLINVENT" == output.getName())
 			{
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 		//heuristics[0].branchNBoundSolve();
 		for (const Heuristics::FMToperatingareacluster& cluster : heuristics.at(0).getSolution())
 		{
-			for (const Core::FMTmask& mask : cluster.getAllMasks())
+			for (const Core::FMTMask& mask : cluster.getAllMasks())
 			{
 				std::cout << std::string(mask) << " ";
 			}

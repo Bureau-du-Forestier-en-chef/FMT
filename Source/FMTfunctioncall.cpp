@@ -12,11 +12,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 
-FMTfunctioncall::FMTfunctioncall():key()
+FMTFunctionCall::FMTFunctionCall():key()
 {
 }
 
-FMTfunctioncall::FMTfunctioncall(const std::string& base)
+FMTFunctionCall::FMTFunctionCall(const std::string& base)
 	{
 	key = FMTfkey::notvalid;
 	if (base == "EXP")
@@ -27,7 +27,7 @@ FMTfunctioncall::FMTfunctioncall(const std::string& base)
 		key = FMTfkey::ln;
 		}
 	}
-double FMTfunctioncall::call(const double& rhs) const
+double FMTFunctionCall::call(const double& rhs) const
 	{
 	double result = 0;
 	if (FMTfkey::expo == key)
@@ -41,16 +41,16 @@ double FMTfunctioncall::call(const double& rhs) const
 	result = std::round(result * 100000000) / 100000000;
 	return result;
 	}
-FMTfunctioncall::FMTfunctioncall(const FMTfunctioncall& rhs) : key(rhs.key)
+FMTFunctionCall::FMTFunctionCall(const FMTFunctionCall& rhs) : key(rhs.key)
 	{
 	
 	}
 
-bool FMTfunctioncall::valid() const
+bool FMTFunctionCall::valid() const
 	{
 	return (key != FMTfkey::notvalid);
 	}
-FMTfunctioncall& FMTfunctioncall::	operator = (const FMTfunctioncall& rhs)
+FMTFunctionCall& FMTFunctionCall::	operator = (const FMTFunctionCall& rhs)
 	{
 	if (this!=&rhs)
 		{

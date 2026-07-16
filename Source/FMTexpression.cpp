@@ -12,17 +12,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-FMTexpression::FMTexpression():infix()
+FMTExpression::FMTExpression():infix()
 	{
 
 	}
 
-FMTexpression::FMTexpression(const FMTexpression& rhs) : infix(rhs.infix)
+FMTExpression::FMTExpression(const FMTExpression& rhs) : infix(rhs.infix)
 	{
 
 	}
 
-FMTexpression& FMTexpression::operator = (const FMTexpression& rhs)
+FMTExpression& FMTExpression::operator = (const FMTExpression& rhs)
 	{
 	if (this!=&rhs)
 		{
@@ -31,7 +31,7 @@ FMTexpression& FMTexpression::operator = (const FMTexpression& rhs)
 	return *this;
 	}
 
-FMTexpression::operator std::string() const
+FMTExpression::operator std::string() const
     {
 	std::string exx = "";
     for (const std::string& value : infix)
@@ -43,7 +43,7 @@ FMTexpression::operator std::string() const
     }
 
 
-std::vector<std::string> FMTexpression::getPostFix(const std::vector<std::string>& localinfix) const
+std::vector<std::string> FMTExpression::getPostFix(const std::vector<std::string>& localinfix) const
 	{
 	std::stack<std::string> values;
 	std::stack<bool>function_parenthesis;
@@ -54,15 +54,15 @@ std::vector<std::string> FMTexpression::getPostFix(const std::vector<std::string
 	//http://interactivepython.org/runestone/static/pythonds/BasicDS/InfixPrefixandPostfixExpressions.html
 	for (const std::string& invalue : infixes)
 		{
-		const FMToperator op(invalue);
-		const FMTfunctioncall fcall(invalue);
+		const FMTOperator op(invalue);
+		const FMTFunctionCall fcall(invalue);
 		if (fcall.valid())
 			{
 			function_start = true;
 			values.push(invalue);
 			}else if (op.valid())
 				{
-				while (!values.empty() && ((FMToperator(values.top()).precedence() >= op.precedence() ) || FMTfunctioncall(values.top()).valid()) && values.top() != "(")
+				while (!values.empty() && ((FMTOperator(values.top()).precedence() >= op.precedence() ) || FMTFunctionCall(values.top()).valid()) && values.top() != "(")
 					{
 					postfix.push_back(values.top());
 					values.pop();
@@ -111,19 +111,19 @@ std::vector<std::string> FMTexpression::getPostFix(const std::vector<std::string
 	}
 
 
-bool FMTexpression::isNumber(const std::string& s) const
+bool FMTExpression::isNumber(const std::string& s) const
     {
 	std::string::const_iterator it = s.begin();
     while (it != s.end() && (isdigit(*it) || (*it)=='.')) ++it;
     return !s.empty() && it == s.end();
     }
 
-std::vector<std::string>FMTexpression::getVariables() const
+std::vector<std::string>FMTExpression::getVariables() const
     {
 	std::vector<std::string>variables;
     for (const std::string& value : infix)
         {
-        if(!isNumber(value) && !FMToperator(value).valid() && !FMTfunctioncall(value).valid()) //assign 0 to all variables!
+        if(!isNumber(value) && !FMTOperator(value).valid() && !FMTFunctionCall(value).valid()) //assign 0 to all variables!
             {
             variables.push_back(value);
             }
@@ -131,12 +131,12 @@ std::vector<std::string>FMTexpression::getVariables() const
     return variables;
     }
 
-FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) const
+FMTExpression FMTExpression::simplify(std::map<std::string,double>& values) const
     {
 	std::map<std::string,double>shuntvalues;
     for (const std::string& value : infix)
         {
-        if(!isNumber(value) && !FMToperator(value).valid() && !value.empty()) //assign 0 to all variables!
+        if(!isNumber(value) && !FMTOperator(value).valid() && !value.empty()) //assign 0 to all variables!
             {
             shuntvalues[value] = 0;
 			
@@ -184,16 +184,16 @@ FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) cons
             new_expression.push_back(std::to_string(abs(rest)));
             }
         }
-    return FMTexpression(new_expression);
+    return FMTExpression(new_expression);
     }
 
 
-FMTexpression::FMTexpression(const std::vector<std::string>& lsources) :infix(lsources)
+FMTExpression::FMTExpression(const std::vector<std::string>& lsources) :infix(lsources)
 	{
 
 	}
 
-std::vector<std::string> FMTexpression::replaceVariables(const std::map<std::string, double>& mapping) const
+std::vector<std::string> FMTExpression::replaceVariables(const std::map<std::string, double>& mapping) const
 	{
 	if (!mapping.empty())
 		{
@@ -213,13 +213,13 @@ std::vector<std::string> FMTexpression::replaceVariables(const std::map<std::str
 	return infix;
 	}
 
-double FMTexpression::evaluatePostFix(const std::vector<std::string>& postfix) const
+double FMTExpression::evaluatePostFix(const std::vector<std::string>& postfix) const
 	{
 	std::stack<double>values;
 	for (const std::string& post : postfix)
 		{
-		const FMToperator op(post);
-		const FMTfunctioncall fcall(post);
+		const FMTOperator op(post);
+		const FMTFunctionCall fcall(post);
 		if (!op.valid() && !fcall.valid())
 			{
 			values.push(std::stod(post));
@@ -246,12 +246,12 @@ double FMTexpression::evaluatePostFix(const std::vector<std::string>& postfix) c
 
 
 
-std::vector<std::string>FMTexpression::getInFix() const
+std::vector<std::string>FMTExpression::getInFix() const
     {
     return infix;
     }
 
-double FMTexpression::shuntingYard(const std::map<std::string, double>& mapping) const
+double FMTExpression::shuntingYard(const std::map<std::string, double>& mapping) const
 	{
 	double result = 0;
 	if (!infix.empty())

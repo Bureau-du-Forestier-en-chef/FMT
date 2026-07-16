@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-FMToutputsource::FMToutputsource() : FMTspec(), mask(),
+FMTOutputSource::FMTOutputSource() : FMTSpec(), mask(),
 		target(FMTotar::val),
 		action(),
 		yield(),
@@ -30,8 +30,8 @@ FMToutputsource::FMToutputsource() : FMTspec(), mask(),
 	}
 
 
-FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::string lyield,
-	std::string laction,int origin,int ttarget) : FMTspec(),mask(),
+FMTOutputSource::FMTOutputSource(const FMTotar ltarget,double lvalue, std::string lyield,
+	std::string laction,int origin,int ttarget) : FMTSpec(),mask(),
     target(ltarget),
     action(laction),
     yield(lyield),
@@ -50,7 +50,7 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::strin
     }
 
 
-FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalues, int origin, int ttarget, std::string llevelname): FMTspec(),mask(),
+FMTOutputSource::FMTOutputSource(const FMTotar ltarget,std::vector<double>lvalues, int origin, int ttarget, std::string llevelname): FMTSpec(),mask(),
     target(ltarget),
     action(),
     yield(),
@@ -66,18 +66,18 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalue
 
     }
 
-FMToutputsource::FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
+FMTOutputSource::FMTOutputSource(const FMTSpec& spec,const FMTMask& lmask,
                const FMTotar ltarget,std::string lyield,
 			std::string laction, int origin,int ttarget) :
-                FMTspec(spec),mask(lmask),
+                FMTSpec(spec),mask(lmask),
                 target(ltarget),action(laction),yield(lyield), levelname(), values(), average(), sum(), outputorigin(origin), themetarget(ttarget)
     {
 
 
     }
 
-FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : 
-	FMTspec(rhs),mask(rhs.mask),target(rhs.target),
+FMTOutputSource::FMTOutputSource(const FMTOutputSource& rhs) : 
+	FMTSpec(rhs),mask(rhs.mask),target(rhs.target),
     action(rhs.action),yield(rhs.yield), levelname(rhs.levelname),
 	values(rhs.values), average(rhs.average),
 	sum(rhs.sum), outputorigin(rhs.outputorigin), themetarget(rhs.themetarget)
@@ -85,7 +85,7 @@ FMToutputsource::FMToutputsource(const FMToutputsource& rhs) :
 
     }
 
-FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
+FMTOutputSource& FMTOutputSource::operator = (const FMTOutputSource& rhs)
     {
     if(this!=&rhs)
         {
@@ -94,7 +94,7 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
         action = rhs.action;
         yield = rhs.yield;
 		levelname = rhs.levelname;
-        FMTspec::operator=(rhs);
+        FMTSpec::operator=(rhs);
         mask = rhs.mask;
 		average = rhs.average;
 		sum = rhs.sum;
@@ -104,7 +104,7 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
     return *this;
     }
 
-void FMToutputsource::fillHashMask(Core::FMTmask& baseMask) const
+void FMTOutputSource::fillHashMask(Core::FMTMask& baseMask) const
 	{
 		//baseMask.append(mask.getBitsetReference());
 		baseMask.binarizedAppend<std::string>(std::string(mask));
@@ -117,37 +117,37 @@ void FMToutputsource::fillHashMask(Core::FMTmask& baseMask) const
 		baseMask.binarizedAppend<std::string>(action);
 	}
 
-bool FMToutputsource::isEqualByValue(const FMToutputsource& rhs) const
+bool FMTOutputSource::isEqualByValue(const FMTOutputSource& rhs) const
 	{
-	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
+	return (FMTSpec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
 		yield == rhs.yield && action == rhs.action && values == rhs.values &&
 		levelname == rhs.levelname && average == rhs.average && sum == rhs.sum);
 	}
 
 
-void FMToutputsource::fillHashSpec(Core::FMTmask& baseMask) const
+void FMTOutputSource::fillHashSpec(Core::FMTMask& baseMask) const
 	{
-	baseMask.binarizedAppend<std::string>(FMTspec::operator std::string());
+	baseMask.binarizedAppend<std::string>(FMTSpec::operator std::string());
 	}
 
 
-FMToutputsource::operator std::string() const
+FMTOutputSource::operator std::string() const
     {
 	std::string line = "";
 	if (!mask.empty())
 		{
 		line += std::string(mask)+" ";
 		}
-	if (!FMTspec::empty())
+	if (!FMTSpec::empty())
 		{
-		line += FMTspec::operator std::string() + " ";
+		line += FMTSpec::operator std::string() + " ";
 		}
     switch (target)
         {
         case FMTotar::val:
             for (const double lvalue : values)
                 {
-                line += FMToutputsource::trimDouble(std::to_string(lvalue))  + " ";
+                line += FMTOutputSource::trimDouble(std::to_string(lvalue))  + " ";
                 }
             if (!values.empty())
                 {
@@ -211,7 +211,7 @@ FMToutputsource::operator std::string() const
     return line;
     }
 
-bool FMToutputsource::operator < (const FMToutputsource& rhs) const
+bool FMTOutputSource::operator < (const FMTOutputSource& rhs) const
 	{
 	if (mask < rhs.mask)
 		return true;
@@ -225,31 +225,31 @@ bool FMToutputsource::operator < (const FMToutputsource& rhs) const
 		return true;
 	if (rhs.action < action)
 		return false;
-	if (FMTspec::operator < (rhs))
+	if (FMTSpec::operator < (rhs))
 		return true;
 	return false;
 	}
 
-bool FMToutputsource::operator == (const FMToutputsource& rhs) const
+bool FMTOutputSource::operator == (const FMTOutputSource& rhs) const
 	{
-	return (FMTspec::operator == (rhs) && target == rhs.target && mask==rhs.mask  && action == rhs.action);
+	return (FMTSpec::operator == (rhs) && target == rhs.target && mask==rhs.mask  && action == rhs.action);
 	}
 
-bool FMToutputsource::operator != (const FMToutputsource& rhs) const
+bool FMTOutputSource::operator != (const FMTOutputSource& rhs) const
 	{
 	return (!(*this==rhs));
 	}
 
-void FMToutputsource::setThemeTarget(const int& newttarget)
+void FMTOutputSource::setThemeTarget(const int& newttarget)
 	{
 		themetarget=newttarget;
 	}
-void FMToutputsource::setOutputOrigin(const int& neworigin)
+void FMTOutputSource::setOutputOrigin(const int& neworigin)
 	{
 		outputorigin=neworigin;
 	}
 
-void FMToutputsource::resetValues(const FMToperator& op,const FMToutputsource& other)
+void FMTOutputSource::resetValues(const FMTOperator& op,const FMTOutputSource& other)
 	{
 	std::vector<double>newvalues(std::max(other.values.size(), values.size()),0);
 	for (int period = 1; period < static_cast<int>(newvalues.size()+1);++period)
@@ -265,10 +265,10 @@ void FMToutputsource::resetValues(const FMToperator& op,const FMToutputsource& o
 		}
 	}
 
-bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs) const
+bool FMTOutputSource::isSubsetOf(const FMTOutputSource& rhs) const
 	{
 	if ((this->isVariable() && rhs.isVariable() &&
-		target == rhs.target && FMTspec::isSubsetOf(rhs) &&
+		target == rhs.target && FMTSpec::isSubsetOf(rhs) &&
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) &&
 		(mask.isSubsetOf(rhs.mask) &&
 		((action.empty() && rhs.action.empty()) ||
@@ -280,18 +280,18 @@ bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs) const
 	return false;
 	}
 
-bool FMToutputsource::isSameButDifferentAction(const FMToutputsource& rhs) const
+bool FMTOutputSource::isSameButDifferentAction(const FMTOutputSource& rhs) const
 	{
-	return (FMTspec::operator == (rhs) && target == rhs.target && mask == rhs.mask && action != rhs.action);
+	return (FMTSpec::operator == (rhs) && target == rhs.target && mask == rhs.mask && action != rhs.action);
 	}
 
 
-bool FMToutputsource::isInAggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const
+bool FMTOutputSource::isInAggregate(const FMTOutputSource& rhs, const std::vector<Core::FMTAction>& actions) const
 	{
 	if (isAction() && rhs.isAction())
 		{
-		const std::vector<const FMTaction*>allactions = FMTActionComparator(rhs.action).getAllAggregates(actions);
-		for (const FMTaction* actptr : allactions)
+		const std::vector<const FMTAction*>allactions = FMTActionComparator(rhs.action).getAllAggregates(actions);
+		for (const FMTAction* actptr : allactions)
 			{
 				if (actptr->getName() == action)
 				{
@@ -303,12 +303,12 @@ bool FMToutputsource::isInAggregate(const FMToutputsource& rhs, const std::vecto
 	}
 	
 
-bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs,
-	const std::vector<Core::FMTaction>& actions) const
+bool FMTOutputSource::isSubsetOf(const FMTOutputSource& rhs,
+	const std::vector<Core::FMTAction>& actions) const
 	{
 	
 	if ((this->isVariable() && rhs.isVariable() && 
-		target == rhs.target && FMTspec::isSubsetOf(rhs) && 
+		target == rhs.target && FMTSpec::isSubsetOf(rhs) && 
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) && 
 		(mask.isSubsetOf(rhs.mask) &&
 		((action.empty() && rhs.action.empty()) || 
@@ -320,9 +320,9 @@ bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs,
 	return false;
 	}
 
-FMToutputsource FMToutputsource::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const
+FMTOutputSource FMTOutputSource::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
 	{
-	FMToutputsource newsource(*this);
+	FMTOutputSource newsource(*this);
 	if (newsource.isVariable())
 		{
 		newsource.mask = newsource.mask.presolve(filter, newthemes);
@@ -330,19 +330,19 @@ FMToutputsource FMToutputsource::presolve(const FMTmaskfilter& filter, const std
 	return newsource;
 	}
 
-bool FMToutputsource::canBeDeducedToConstant() const
+bool FMTOutputSource::canBeDeducedToConstant() const
 	{
 	return (isVariable() && isInventory() &&
 		!emptyPeriod() && getPeriodLowerBound() == 0 &&
 		getPeriodUpperBound() == 0);
 	}
 
-double FMToutputsource::getConstantValue(const std::vector<Core::FMTactualdevelopment>& area,
-	const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const
+double FMTOutputSource::getConstantValue(const std::vector<Core::FMTActualDevelopment>& area,
+	const std::vector<Core::FMTAction>&actions, const FMTYields& yields) const
 	{
-	std::vector<const FMTaction*> operabletoactions = this->targets(actions);
+	std::vector<const FMTAction*> operabletoactions = this->targets(actions);
 	double value = 0;
-	for (const Core::FMTactualdevelopment& development : area)
+	for (const Core::FMTActualDevelopment& development : area)
 		{
 		if (use(development,yields)  && operabletoactions.empty()
 			|| development.anyOperable(operabletoactions, yields))
@@ -359,18 +359,18 @@ double FMToutputsource::getConstantValue(const std::vector<Core::FMTactualdevelo
 	}
 
 
-void FMToutputsource::setAverage()
+void FMTOutputSource::setAverage()
 	{
 	average = true;
 	}
 
 
-void FMToutputsource::setSum()
+void FMTOutputSource::setSum()
 {
 	sum = true;
 }
 
-bool FMToutputsource::isNull(const FMTyields& ylds) const
+bool FMTOutputSource::isNull(const FMTYields& ylds) const
 	{
 	if (!yield.empty())
 		{
@@ -383,12 +383,12 @@ bool FMToutputsource::isNull(const FMTyields& ylds) const
 	return false;
 	}
 
-void  FMToutputsource::pushValues(const std::vector<double>& newvalues)
+void  FMTOutputSource::pushValues(const std::vector<double>& newvalues)
 	{
 	values.insert(values.end(),newvalues.begin(), newvalues.end());
 	}
 
-double FMToutputsource::getValue(int period) const
+double FMTOutputSource::getValue(int period) const
 	{
 	double returnvalue = 0;
 	if (target == FMTotar::timeyld&&
@@ -409,31 +409,31 @@ double FMToutputsource::getValue(int period) const
 	return returnvalue;
 	}
 
-void FMToutputsource::setMask(const FMTmask& newmask)
+void FMTOutputSource::setMask(const FMTMask& newmask)
 	{
 	mask = newmask;
 	}
 
-void FMToutputsource::setAction(const std::string& actionname)
+void FMTOutputSource::setAction(const std::string& actionname)
 	{
 	action = actionname;
 	}
 
-void FMToutputsource::setTarget(const FMTotar& newtype)
+void FMTOutputSource::setTarget(const FMTotar& newtype)
 	{
 	target = newtype;
 	}
 
-std::vector<const FMTaction*>FMToutputsource::targets(const std::vector<FMTaction>& actions) const
+std::vector<const FMTAction*>FMTOutputSource::targets(const std::vector<FMTAction>& actions) const
 	{
 	if (target != FMTotar::level && !action.empty())
         {
 		return FMTActionComparator(action).getAllAggregates(actions);
         }
-	return std::vector<const FMTaction*>();
+	return std::vector<const FMTAction*>();
 	}
 
-std::unordered_set<int>FMToutputsource::targetsSet(const std::vector<FMTaction>& actions) const
+std::unordered_set<int>FMTOutputSource::targetsSet(const std::vector<FMTAction>& actions) const
 {
 	if (target != FMTotar::level && !action.empty())
 	{
@@ -442,13 +442,13 @@ std::unordered_set<int>FMToutputsource::targetsSet(const std::vector<FMTaction>&
 	return std::unordered_set<int>();
 }
 
-bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& ylds,
+bool FMTOutputSource::use(const FMTDevelopment& development, const FMTYields& ylds,
 	const Graph::FMTgraphvertextoyield* graphinfo) const
 {
 	return (development.getMask().isSubsetOf(mask) && development.is(*this, ylds, graphinfo));
 }
 
-std::string FMToutputsource::trimDouble(const std::string& string_number)
+std::string FMTOutputSource::trimDouble(const std::string& string_number)
 {
 	std::string trimmed = string_number;
 	for (int i = static_cast<int>(string_number.size())-1; i > 0; i--)
@@ -470,16 +470,16 @@ std::string FMToutputsource::trimDouble(const std::string& string_number)
 	return trimmed;
 }
 
-void FMToutputsource::setYield(const std::string& p_Yield)
+void FMTOutputSource::setYield(const std::string& p_Yield)
 	{
 	yield = p_Yield;
 	}
 
-double FMToutputsource::getCoef(const FMTdevelopment& development,
-	const FMTyields& yields,
+double FMTOutputSource::getCoef(const FMTDevelopment& development,
+	const FMTYields& yields,
 	const Graph::FMTgraphvertextoyield* graphinfo,
-	std::vector<FMTdevelopmentpath> const * paths,
-	FMTaction const * modelaction) const
+	std::vector<FMTDevelopmentPath> const * paths,
+	FMTAction const * modelaction) const
 	{
 	double coef = 1;
 	if (isVariable())
@@ -507,7 +507,7 @@ double FMToutputsource::getCoef(const FMTdevelopment& development,
 	return coef;
 	}
 
-size_t FMToutputsource::hash(int period, bool withyield) const
+size_t FMTOutputSource::hash(int period, bool withyield) const
 	{
 	size_t seed = 0;
 	boost::hash_combine(seed,mask.hash());
@@ -517,7 +517,7 @@ size_t FMToutputsource::hash(int period, bool withyield) const
         {
         boost::hash_combine(seed,lvalue);
         }
-	boost::hash_combine(seed,FMTspec::hash());
+	boost::hash_combine(seed,FMTSpec::hash());
 	if (period >= 0)
 		{
 		boost::hash_combine(seed, period);
@@ -532,7 +532,7 @@ size_t FMToutputsource::hash(int period, bool withyield) const
 
 FMTOutputSourceComparator::FMTOutputSourceComparator(bool lvariable) : variable(lvariable) {}
 
-bool FMTOutputSourceComparator::operator()(const FMToutputsource& source) const
+bool FMTOutputSourceComparator::operator()(const FMTOutputSource& source) const
 	{
 	if (variable)
 		{

@@ -58,10 +58,10 @@ int main(int argc, char *argv[])
 		{
 			optimizationmodel.buildPeriod();
 		}
-		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
-		const Core::FMTconstraint objective = constraints.at(0);
+		std::vector<Core::FMTConstraint>constraints = optimizationmodel.getconstraints();
+		const Core::FMTConstraint objective = constraints.at(0);
 		constraints.erase(constraints.begin());
-		for (const Core::FMTconstraint& constraint : constraints)
+		for (const Core::FMTConstraint& constraint : constraints)
 		{
 			optimizationmodel.setConstraint(constraint);
 		}

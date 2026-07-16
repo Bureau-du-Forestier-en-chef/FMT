@@ -14,15 +14,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 namespace Core
 {
-// DocString: FMTlifespans
+// DocString: FMTLifespans
 /**
-FMTlifespans class keeps the information about the maximum age of an aggregate of FMTdevelopments.
-It's derived from FMTlist<int> each element of the FMTlist is a maximum age given for a FMTmask.
+FMTLifespans class keeps the information about the maximum age of an aggregate of FMTdevelopments.
+It's derived from FMTList<int> each element of the FMTList is a maximum age given for a FMTMask.
 The class is used by the FMTparser but also into the when generating the default _DEATH action and transition.
 */
-class FMTEXPORT FMTlifespans : public FMTlist<int>
+class FMTEXPORT FMTLifespans : public FMTList<int>
     {
-	// DocString: FMTlifespans::serialize
+	// DocString: FMTLifespans::serialize
 	/**
 	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
@@ -30,66 +30,66 @@ class FMTEXPORT FMTlifespans : public FMTlist<int>
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("data", boost::serialization::base_object<FMTlist<int>>(*this));
+		ar & boost::serialization::make_nvp("data", boost::serialization::base_object<FMTList<int>>(*this));
 	}
     public:
 		// DocString: swap
 		/**
-		swap FMTlifespans
+		swap FMTLifespans
 		*/
-		void swap(FMTlifespans& rhs);
-		// DocString: FMTlifespans()
+		void swap(FMTLifespans& rhs);
+		// DocString: FMTLifespans()
 		/**
-		Default constructor for FMTlifespans.
+		Default constructor for FMTLifespans.
 		*/
-        FMTlifespans();
-		// DocString: ~FMTlifespans()
+        FMTLifespans();
+		// DocString: ~FMTLifespans()
 		/**
-		Default destructor for FMTlifespans.
+		Default destructor for FMTLifespans.
 		*/
-		~FMTlifespans()=default;
-		// DocString: FMTlifespans(const FMTlifespans&)
+		~FMTLifespans()=default;
+		// DocString: FMTLifespans(const FMTLifespans&)
 		/**
-		Default copy constructor for FMTlifespans.
+		Default copy constructor for FMTLifespans.
 		*/
-        FMTlifespans(const FMTlifespans& rhs);
-		// DocString: FMTlifespans::operator=
+        FMTLifespans(const FMTLifespans& rhs);
+		// DocString: FMTLifespans::operator=
 		/**
-		Default copy assignment for FMTlifespans.
+		Default copy assignment for FMTLifespans.
 		*/
-        FMTlifespans& operator = (const FMTlifespans& rhs);
-		// DocString: FMTlifespans::operator==
+        FMTLifespans& operator = (const FMTLifespans& rhs);
+		// DocString: FMTLifespans::operator==
 		/**
-		Comparison operator of FMTlifespans.
+		Comparison operator of FMTLifespans.
 		*/
-		bool operator == (const FMTlifespans& rhs) const;
-		// DocString: FMTlifespans::operator!=
+		bool operator == (const FMTLifespans& rhs) const;
+		// DocString: FMTLifespans::operator!=
 		/**
-		Comparison !operator of FMTlifespans.
+		Comparison !operator of FMTLifespans.
 		*/
-		bool operator != (const FMTlifespans& rhs) const;
-		// DocString: FMTlifespans::operator std::string
+		bool operator != (const FMTLifespans& rhs) const;
+		// DocString: FMTLifespans::operator std::string
 		/**
-		Returns a string representation of FMTlifespans section (.lif).
+		Returns a string representation of FMTLifespans section (.lif).
 		*/
         operator std::string() const;
-		// DocString: FMTlifespans::update
+		// DocString: FMTLifespans::update
 		/**
-		Override the FMTlist update function.
-		It needs to be called if any changes is done to the FMTlist.
+		Override the FMTList update function.
+		It needs to be called if any changes is done to the FMTList.
 		*/
 		void update() override;
-		// DocString: FMTlifespans::presolve
+		// DocString: FMTLifespans::presolve
 		/**
-		Eliminate FMTlist elements and presolve all masks based on a baseMask a preolved mask
+		Eliminate FMTList elements and presolve all masks based on a baseMask a preolved mask
 		and presolved themes.
 		*/
-		FMTlifespans presolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& originalthemes,
-			std::vector<FMTtheme>& newthemes,bool compressdata=false) const;
+		FMTLifespans presolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& originalthemes,
+			std::vector<FMTTheme>& newthemes,bool compressdata=false) const;
     };
 
 }
-BOOST_CLASS_EXPORT_KEY(Core::FMTlifespans)
+BOOST_CLASS_EXPORT_KEY(Core::FMTLifespans)
 
 #endif // FMTLIF_Hm_included

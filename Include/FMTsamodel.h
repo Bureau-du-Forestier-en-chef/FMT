@@ -62,10 +62,10 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         bool initialSolve();
         // DocString: FMTsamodel::build
         /**
-        This function TRY to build the solution FMTschedule to spatialschedule if there's a schedule if not it will
+        This function TRY to build the solution FMTSchedule to spatialschedule if there's a schedule if not it will
         randomly build the model to be ready to solve.
         */
-        virtual bool build(std::vector<Core::FMTschedule> schedules = std::vector<Core::FMTschedule>());
+        virtual bool build(std::vector<Core::FMTSchedule> schedules = std::vector<Core::FMTSchedule>());
         // DocString: FMTsamodel::solve
         /**
         This function call initialSolve on the solver.
@@ -76,7 +76,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTmodel.
         The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
         */
-        virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+        virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
         // DocString: FMTsamodel::getCopy
         /**
         This function returns a copy of the FMTmodel of the selected period.
@@ -328,7 +328,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         /**
         Call schedules if there's no solution
         */
-        void _schedulesBuild(const std::vector<Core::FMTschedule>&schedules);
+        void _schedulesBuild(const std::vector<Core::FMTSchedule>&schedules);
         // DocString: FMTsamodel:GetLocalMoveSize
         /**
         Generate the size of the local move.
@@ -385,7 +385,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         */
         void _UpdateFailedMoveCount();
 
-        std::vector<Core::FMTschedule>_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const;
+        std::vector<Core::FMTSchedule>_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const;
 
         #ifdef FMTWITHOSI
             Models::FMTlpmodel _getRandomLpModel(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;

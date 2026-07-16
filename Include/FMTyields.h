@@ -32,258 +32,258 @@ namespace Models
 
 namespace Core
 {
-class FMTdevelopment;
-class FMTageyieldhandler;
-class FMTtimeyieldhandler;
-// DocString: FMTyields
+class FMTDevelopment;
+class FMTAgeYieldHandler;
+class FMTTimeYieldHandler;
+// DocString: FMTYields
 /**
-FMTyields is one FMTlist containing multiple yieldhandlers has seen in the yield section.
-FMTyields hold all the information related to the forest productivity this class is sometime super large.
-FMTyields is a class used to check if a given FMTdevelopment can be operable to an action, calculate outputs,
-constraints and disturb a forest stand in a FMTtransition.
+FMTYields is one FMTList containing multiple yieldhandlers has seen in the yield section.
+FMTYields hold all the information related to the forest productivity this class is sometime super large.
+FMTYields is a class used to check if a given FMTDevelopment can be operable to an action, calculate outputs,
+constraints and disturb a forest stand in a FMTTransition.
 */
-class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
+class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
     {
 	friend class Models::FMTmodel;
 	friend class Models::FMTnssmodel;
     public:
-		// DocString: FMTyields::generateDefaultYields
+		// DocString: FMTYields::generateDefaultYields
 		/**
 		Generate the default yields like _TSLA in the yield class.
 		*/
-		void generateDefaultYields(const std::vector<Core::FMTtheme>& themes);
-		// DocString: FMTyields::swap
+		void generateDefaultYields(const std::vector<Core::FMTTheme>& themes);
+		// DocString: FMTYields::swap
 		/**
 		Swap FMTyield.
 		*/
-		void swap(FMTyields& rhs);
-		// DocString: FMTyields::gotYieldType
+		void swap(FMTYields& rhs);
+		// DocString: FMTYields::gotYieldType
 		/**
 		Returns true if the yield section has a given yield type.
 		*/
 		bool gotYieldType(FMTyldtype type) const;
-		// DocString: FMTyields::setActionsMappingToModelHandlers
+		// DocString: FMTYields::setActionsMappingToModelHandlers
 		/**
 		Clear the actual actionsmapping of every yield model handlers and replace it with the new.
 		*/
 		void setActionsMappingToModelHandlers(const std::vector<int>& actionids);
-		// DocString: FMTyields::getAllYieldNames
+		// DocString: FMTYields::getAllYieldNames
 		/**
-		return all yield names from the FMTlist.
+		return all yield names from the FMTList.
 		*/
 		std::vector<std::string> getAllYieldNames() const;
-		// DocString: FMTyields()
+		// DocString: FMTYields()
 		/**
-		Default constructor for FMTyields.
+		Default constructor for FMTYields.
 		*/
-        FMTyields();
-		// DocString: ~FMTyields()
+        FMTYields();
+		// DocString: ~FMTYields()
 		/**
-		Default destructor for FMTyields.
+		Default destructor for FMTYields.
 		*/
-		~FMTyields()=default;
-		// DocString: FMTyields(const FMTyields&)
+		~FMTYields()=default;
+		// DocString: FMTYields(const FMTYields&)
 		/**
-		Default copy constructor for FMTyields.
+		Default copy constructor for FMTYields.
 		*/
-        FMTyields(const FMTyields& rhs);
-		// DocString: FMTyields::operator=
+        FMTYields(const FMTYields& rhs);
+		// DocString: FMTYields::operator=
 		/**
-		Default copy assignment for FMTyields.
+		Default copy assignment for FMTYields.
 		*/
-        FMTyields& operator = (const FMTyields& rhs);
-		// DocString: FMTyields::clearCache
+        FMTYields& operator = (const FMTYields& rhs);
+		// DocString: FMTYields::clearCache
 		/**
-		Clear caching from all FMTdata.
+		Clear caching from all FMTData.
 		*/
 		void clearCache() final;
-		// DocString: FMTyields::clearRandomYieldsCache
+		// DocString: FMTYields::clearRandomYieldsCache
 		/**
 		@brief clear the cache of all random yield model.
 		*/
 		void clearRandomYieldsCache();
-		// DocString: FMTyields::isYld
+		// DocString: FMTYields::isYld
 		/**
-		This function returns true if the FMTyields section contains a given (value) non null yield.
+		This function returns true if the FMTYields section contains a given (value) non null yield.
 		*/
         bool isYld(const std::string& value,bool fromsource = false) const;
-		// DocString: FMTyields::isNullYld
+		// DocString: FMTYields::isNullYld
 		/**
-		This function returns true if the FMTyields section contains a given (value) null yield.
+		This function returns true if the FMTYields section contains a given (value) null yield.
 		*/
 		bool isNullYld(const std::string& value) const;
-		// DocString: FMTyields::get
+		// DocString: FMTYields::get
 		/**
-		This function is the main function used to get the yields value (targets) for a given FMTdevelopment (dev),
+		This function is the main function used to get the yields value (targets) for a given FMTDevelopment (dev),
 		looking at age,period,lock,mask etc... it returns a map of yield name (keys) and there vlues(items).
 		*/
-		//std::vector<double>get(std::vector<FMTyieldrequest>& requests) const;
-		// DocString: FMTyields::getsingle
+		//std::vector<double>get(std::vector<FMTYieldRequest>& requests) const;
+		// DocString: FMTYields::getsingle
 		/**
-		This function is the main function used to get the yield value (target) for a given FMTdevelopment (dev),
+		This function is the main function used to get the yield value (target) for a given FMTDevelopment (dev),
 		looking at age,period,lock,mask etc... it returns  the yield value.
 		*/
-		//double getsingle(const FMTdevelopment& dev,const std::string& target) const;
-		//std::map<std::string,double>getYlds(const FMTdevelopment& dev,const FMTspec& spec) const;
-		// DocString: FMTyields::getYlds
+		//double getsingle(const FMTDevelopment& dev,const std::string& target) const;
+		//std::map<std::string,double>getYlds(const FMTDevelopment& dev,const FMTSpec& spec) const;
+		// DocString: FMTYields::getYlds
 		/**
 		This function gets the yields used and its values (map) by a given specification (spec) for a given development (dev).
 		*/
-		//std::vector<double>getYlds(const FMTdevelopment& dev, const FMTspec& spec) const;
-		// DocString: FMTyields::getAge
+		//std::vector<double>getYlds(const FMTDevelopment& dev, const FMTSpec& spec) const;
+		// DocString: FMTYields::getAge
 		/**
-		This function is used to get the new age of a FMTdevelopment (dev) 
-		when disturbed by a given FMTtransition specification (sepc).
+		This function is used to get the new age of a FMTDevelopment (dev) 
+		when disturbed by a given FMTTransition specification (sepc).
 		*/
-        int getAge(const FMTyieldrequest& request,const FMTspec& spec) const;
-		// DocString: FMTyields::getAllYields
+        int getAge(const FMTYieldRequest& request,const FMTSpec& spec) const;
+		// DocString: FMTYields::getAllYields
 		/**
-		This function returns a map with mask has key (with only one FMTtheme) for only given FMTyieldhandler type (type).
+		This function returns a map with mask has key (with only one FMTTheme) for only given FMTYieldHandler type (type).
 		The map contains all the yield values for each yield name (map key). This function is used for generating a text file 
 		containing all the yields values for GCBM (might be only usefull for Forestier en chef) .
 		*/
-		std::map<std::string, std::map<std::string, std::vector<double>>>getAllYields(const FMTtheme& target,FMTyldtype type) const;
-		// DocString: FMTyields::operator==
+		std::map<std::string, std::map<std::string, std::vector<double>>>getAllYields(const FMTTheme& target,FMTyldtype type) const;
+		// DocString: FMTYields::operator==
 		/**
-		FMTyields equality operator check if FMTyields are the same.
+		FMTYields equality operator check if FMTYields are the same.
 		*/
-		bool operator == (const FMTyields& rhs) const;
-		// DocString: FMTyields::operator!=
+		bool operator == (const FMTYields& rhs) const;
+		// DocString: FMTYields::operator!=
 		/**
-		FMTyields non equality operator check if FMTyields are the same.
+		FMTYields non equality operator check if FMTYields are the same.
 		*/
-		bool operator != (const FMTyields& rhs) const;
-		// DocString: FMTyields::update
+		bool operator != (const FMTYields& rhs) const;
+		// DocString: FMTYields::update
 		/**
-		FMTyields being an FMTlist an update function needs to be implemented to update 
+		FMTYields being an FMTList an update function needs to be implemented to update 
 		the yieldnames and nullyieldsname caching.
 		*/
         void update() override;
-		// DocString: FMTyields::reserve
+		// DocString: FMTYields::reserve
 		/**
-		@brief reserve memory based on a other FMTyields
+		@brief reserve memory based on a other FMTYields
 		@param[in] p_other the other yields.
 		*/
-		void reserve(const FMTyields& p_other);
-		// DocString: FMTyields::presolve
+		void reserve(const FMTYields& p_other);
+		// DocString: FMTYields::presolve
 		/**
-		Presolving might be realy usefull for FMTyields because this class tend to get realy large and contains
-		sometime useless stuff. So using the same presolved information it returns a presolved FMTyields section.
+		Presolving might be realy usefull for FMTYields because this class tend to get realy large and contains
+		sometime useless stuff. So using the same presolved information it returns a presolved FMTYields section.
 		*/
-		FMTyields presolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& originalthemes,
-			const std::vector<FMTtheme>& newthemes) const;
-		// DocString: FMTyields::presolveRef
+		FMTYields presolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& originalthemes,
+			const std::vector<FMTTheme>& newthemes) const;
+		// DocString: FMTYields::presolveRef
 		/**
-		@brief Presolving might be realy usefull for FMTyields because this class tend to get realy large and contains
-		sometime useless stuff. So using the same presolved information it returns a presolved FMTyields section.
+		@brief Presolving might be realy usefull for FMTYields because this class tend to get realy large and contains
+		sometime useless stuff. So using the same presolved information it returns a presolved FMTYields section.
 		@param[in] p_filter
 		@param[in] p_originalThemes
 		@param[in] p_newThemes
 		*/
-		void presolveRef(const FMTmaskfilter& p_filter,
-			const std::vector<FMTtheme>& p_originalThemes,
-			const std::vector<FMTtheme>& p_newThemes);
-		// DocString: FMTyields::getStacked
+		void presolveRef(const FMTMaskFilter& p_filter,
+			const std::vector<FMTTheme>& p_originalThemes,
+			const std::vector<FMTTheme>& p_newThemes);
+		// DocString: FMTYields::getStacked
 		/**
-		This function returns the FMTyields has a string in a vector.
+		This function returns the FMTYields has a string in a vector.
 		*/
 		std::vector<std::string>getStacked() const;
-		// DocString: FMTyields::getFromFactor
+		// DocString: FMTYields::getFromFactor
 		/**
 		This function multiply yields section with a factor and returns a new yields function.
 		If vector of yieldnames is given by the user then only the data within this names list is going
 		to be multiplied by the factor.
 		*/
-		FMTyields getFromFactor(const double& factor,
+		FMTYields getFromFactor(const double& factor,
 			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
-		// DocString: FMTyields::get
+		// DocString: FMTYields::get
 		/**
-		This function is the main function used to get the yields value (targets) for a given FMTdevelopment (dev),
+		This function is the main function used to get the yields value (targets) for a given FMTDevelopment (dev),
 		looking at age,period,lock,mask etc... it returns a map of yield name (keys) and there vlues(items).
 		*/
-		double get(const FMTyieldrequest& request,const std::string& yld) const;
-		// DocString: FMTyields::pushBackAgeHandler
+		double get(const FMTYieldRequest& request,const std::string& yld) const;
+		// DocString: FMTYields::pushBackAgeHandler
 		/**
 		Push back ageyield for R
 		*/
-		void pushBackAgeHandler(const FMTmask& mask, const FMTageyieldhandler& value);
-		// DocString: FMTyields::pushBackTimeHandler
+		void pushBackAgeHandler(const FMTMask& mask, const FMTAgeYieldHandler& value);
+		// DocString: FMTYields::pushBackTimeHandler
 		/**
 		Push back timeyield for R
 		*/
-		void pushBackTimeHandler(const FMTmask& mask, const FMTtimeyieldhandler& value);
-		// DocString: FMTyields::getNullYield
+		void pushBackTimeHandler(const FMTMask& mask, const FMTTimeYieldHandler& value);
+		// DocString: FMTYields::getNullYield
 		/*
 		* @brief get a nullyield
 		* @return null yield value.
 		*/
 		static const std::string& getNullYield();
-		// DocString: FMTyields::getMaxBase
+		// DocString: FMTYields::getMaxBase
 		/**
 		 * @brief Returns the maximum age seen in the yield handlers.
 		 *
 		 * Each yield can have different sizes in a yield section. This function looks at all yield handlers
 		 * and returns the maximum age observed among them.
 		 *
-		 * @param handlers A vector of pointers to FMTyieldhandler objects.
+		 * @param handlers A vector of pointers to FMTYieldHandler objects.
 		 * @return The maximum age observed among the yield handlers.
 		 */
-		static int getMaxBase(const std::vector<const FMTyieldhandler*>& handlers);
-		// DocString: FMTyields::clear
+		static int getMaxBase(const std::vector<const FMTYieldHandler*>& handlers);
+		// DocString: FMTYields::clear
 		/**
 		 * @brief clear all yield data.
 		 */
 		void clear();
 	private:
-		// DocString: FMTyields::serialize
+		// DocString: FMTYields::serialize
 		/**
 		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
 		friend class boost::serialization::access;
-		friend class FMTyieldrequest;
+		friend class FMTYieldRequest;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			try {
-				ar& boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTlist<std::unique_ptr<FMTyieldhandler>>>(*this));
+				ar& boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTList<std::unique_ptr<FMTYieldHandler>>>(*this));
 				_updateYieldLocations();
 			}
 			catch (...)
 			{
-				_exhandler->printExceptions("", "FMTyields::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTYields::serialize", __LINE__, __FILE__);
 			}
 		}
-		// DocString: FMTyields::m_yieldsLocations
+		// DocString: FMTYields::m_yieldsLocations
 		///If size_t < size then presence else not
 		std::unordered_map<std::string,size_t>m_yieldsLocations;
-		// DocString: FMTyields::nullYield
+		// DocString: FMTYields::nullYield
 		///the null yields.
 		static const std::string m_nullYield;
-		// DocString: FMTyields::getHandlerOfType
+		// DocString: FMTYields::getHandlerOfType
 		/**
 		The function returns a vector of pointer to all yieldhandler of a given (type).
 		(Can returns all handler related to time/age/complex ...)
 		*/
-		std::vector<const FMTyieldhandler*> getHandlerOfType(FMTyldtype type) const;
-		// DocString: FMTyields::getHandlerOfType
+		std::vector<const FMTYieldHandler*> getHandlerOfType(FMTyldtype type) const;
+		// DocString: FMTYields::getHandlerOfType
 		/**
 		The function returns a vector of pointer to all yieldhandler of a given (type).
 		(Can returns all handler related to time/age/complex ...)
 		*/
-		std::vector<FMTyieldhandler*> getHandlers(FMTyldtype type);
-		// DocString: FMTyields::_updateYieldLocations
+		std::vector<FMTYieldHandler*> getHandlers(FMTyldtype type);
+		// DocString: FMTYields::_updateYieldLocations
 		/**
 		@brief Update the yields presence true or false.
 		*/
 		void _updateYieldLocations();
-		// DocString: FMTyields::setModel
+		// DocString: FMTYields::setModel
 		/**
 		@brief set the model to the FMTyieldmodelhandler.
 		@param[in] the model that we want to link to the yieldhandler.
 		*/
 		void setModel(Models::FMTmodel* p_modelPtr);
-		// DocString: FMTyields::_getFirstSeen
+		// DocString: FMTYields::_getFirstSeen
 		/**
 		@brief get the first location of yield with this name,if out gonna be size()
 		@param[in] p_yield name.
@@ -292,5 +292,5 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		const_iterator _getFirstSeen(const std::string& p_yield) const;
     };
 }
-BOOST_CLASS_EXPORT_KEY(Core::FMTyields)
+BOOST_CLASS_EXPORT_KEY(Core::FMTYields)
 #endif // FMTYLD_Hm_included

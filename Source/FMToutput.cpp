@@ -23,9 +23,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 
-FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,const std::string& lgroup,
-	const std::vector<FMToutputsource>& lsources, const std::vector<FMToperator>& loperators):
-	FMTobject(),
+FMTOutput::FMTOutput(const std::string& lname,const std::string& ldescription,const std::string& lgroup,
+	const std::vector<FMTOutputSource>& lsources, const std::vector<FMTOperator>& loperators):
+	FMTObject(),
     sources(lsources),
     operators(loperators),
     name(lname),
@@ -34,17 +34,17 @@ FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,co
     {
 
     }
-FMToutput::FMToutput(const std::string& lname) :FMTobject(), sources(),operators(),name(lname),description(),group()
+FMTOutput::FMTOutput(const std::string& lname) :FMTObject(), sources(),operators(),name(lname),description(),group()
     {
 
     }
-FMToutput::FMToutput() : FMTobject(),sources(),operators(),name(),description(),group()
+FMTOutput::FMTOutput() : FMTObject(),sources(),operators(),name(),description(),group()
     {
 
     }
 
-FMToutput::FMToutput(const FMToutput& rhs) :
-	FMTobject(rhs),
+FMTOutput::FMTOutput(const FMTOutput& rhs) :
+	FMTObject(rhs),
     sources(rhs.sources),
     operators(rhs.operators),
     name(rhs.name),
@@ -53,11 +53,11 @@ FMToutput::FMToutput(const FMToutput& rhs) :
     {
 
     }
-FMToutput& FMToutput::operator = (const FMToutput& rhs)
+FMTOutput& FMTOutput::operator = (const FMTOutput& rhs)
     {
     if (this!=&rhs)
         {
-		FMTobject::operator=(rhs);
+		FMTObject::operator=(rhs);
         name = rhs.name;
         sources = rhs.sources;
         operators = rhs.operators;
@@ -65,7 +65,7 @@ FMToutput& FMToutput::operator = (const FMToutput& rhs)
         }
     return *this;
     }
-FMToutput& FMToutput::operator +=(const FMToutput& rhs)
+FMTOutput& FMTOutput::operator +=(const FMTOutput& rhs)
 	{
 	try {
 		if (!this->name.empty())
@@ -81,7 +81,7 @@ FMToutput& FMToutput::operator +=(const FMToutput& rhs)
 		}
 		if (!this->sources.empty())
 		{
-			this->operators.push_back(FMToperator("+"));
+			this->operators.push_back(FMTOperator("+"));
 		}
 		this->sources.insert(this->sources.end(), rhs.sources.begin(), rhs.sources.end());
 
@@ -93,11 +93,11 @@ FMToutput& FMToutput::operator +=(const FMToutput& rhs)
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch(
-			"", "FMToutput::operator+=", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"", "FMTOutput::operator+=", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return *this;
 	}
-FMToutput& FMToutput::operator -=(const FMToutput& rhs)
+FMTOutput& FMTOutput::operator -=(const FMTOutput& rhs)
 	{
 	try{
 	if (!this->name.empty())
@@ -112,7 +112,7 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 		}
     if (!this->sources.empty())
 		{
-		this->operators.push_back(FMToperator("-"));
+		this->operators.push_back(FMTOperator("-"));
 		}
 	this->sources.insert(this->sources.end(), rhs.sources.begin(), rhs.sources.end());
 
@@ -120,7 +120,7 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 		{
 		this->theme_target = -1;
 		}*/
-	for (const FMToperator& rhsop : rhs.operators)
+	for (const FMTOperator& rhsop : rhs.operators)
 		{
 		operators.push_back(rhsop.reverse());
 		}
@@ -128,12 +128,12 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 	catch (...)
 	{
 		_exhandler->raiseFromCatch(
-			"", "FMToutput::operator-=", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"", "FMTOutput::operator-=", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return *this;
 	}
 
-FMToutput& FMToutput::operator  *= (const FMToutputsource& p_source)
+FMTOutput& FMTOutput::operator  *= (const FMTOutputSource& p_source)
 	{
 	try {
 		if (!this->name.empty() && (!p_source.isConstant() || p_source.getValue() != 1.0))
@@ -150,18 +150,18 @@ FMToutput& FMToutput::operator  *= (const FMToutputsource& p_source)
 		}
 		if (!sources.empty())
 		{
-			FMToutputsource LocalSource(p_source);
-			std::vector<FMToutputsource>new_sources;
-			std::vector<FMToperator>new_operators;
+			FMTOutputSource LocalSource(p_source);
+			std::vector<FMTOutputSource>new_sources;
+			std::vector<FMTOperator>new_operators;
 			size_t location = 0;
-			for (const FMToutputsource& source : sources)
+			for (const FMTOutputSource& source : sources)
 			{
 				new_sources.push_back(source);
 				if (source.isVariable() || source.isLevel())
 				{
 					LocalSource.setThemeTarget(source.getThemeTarget());
 					LocalSource.setOutputOrigin(source.getOutputOrigin());
-					new_operators.push_back(FMToperator("*"));
+					new_operators.push_back(FMTOperator("*"));
 					new_sources.push_back(LocalSource);
 				}
 				if (location < operators.size())
@@ -178,12 +178,12 @@ FMToutput& FMToutput::operator  *= (const FMToutputsource& p_source)
 	catch (...)
 	{
 		_exhandler->raiseFromCatch(
-			"", "FMToutput::operator *=", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"", "FMTOutput::operator *=", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return *this;
 	}
 
-FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
+FMTOutput& FMTOutput::operator /=(const FMTOutputSource& p_source)
 	{
 	try{
 	if (!this->name.empty() && (!p_source.isConstant() || p_source.getValue() != 1.0))
@@ -194,11 +194,11 @@ FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
 		}
 	if (!sources.empty())
 	{
-		FMToutputsource LocalSource(p_source);
-		std::vector<FMToutputsource>new_sources;
-		std::vector<FMToperator>new_operators;
+		FMTOutputSource LocalSource(p_source);
+		std::vector<FMTOutputSource>new_sources;
+		std::vector<FMTOperator>new_operators;
 		size_t location = 0;
-		for (const FMToutputsource& source : sources)
+		for (const FMTOutputSource& source : sources)
 		{
 			new_sources.push_back(source);
 			if (location < operators.size())
@@ -210,7 +210,7 @@ FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
 				LocalSource.setThemeTarget(source.getThemeTarget());
 				LocalSource.setOutputOrigin(source.getOutputOrigin());
 				new_sources.push_back(LocalSource);
-				new_operators.push_back(FMToperator("/"));
+				new_operators.push_back(FMTOperator("/"));
 			}
 			++location;
 		}
@@ -221,12 +221,12 @@ FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
 	catch (...)
 	{
 		_exhandler->raiseFromCatch(
-			"", "FMToutput::operator/=", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"", "FMTOutput::operator/=", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return *this;
 	}
 
-FMToutput::operator std::string() const
+FMTOutput::operator std::string() const
     {
 		std::string line;
 	try{
@@ -246,7 +246,7 @@ FMToutput::operator std::string() const
 				for (const double& value : sources.begin()->getValues())
 				{
 
-					line += FMToutputsource::trimDouble(std::to_string(value)) + " ";
+					line += FMTOutputSource::trimDouble(std::to_string(value)) + " ";
 				}
 				line.pop_back();
 				line += "\n";
@@ -270,7 +270,7 @@ FMToutput::operator std::string() const
 	catch (...)
 	{
 		_exhandler->raiseFromCatch(
-			"", "FMToutput::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"", "FMTOutput::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	
 	if (_sourceCounter(line))
@@ -281,13 +281,13 @@ FMToutput::operator std::string() const
 	return std::string();
     
     }
-bool FMToutput::empty() const
+bool FMTOutput::empty() const
 	{
 	return sources.empty();
 	}
-bool FMToutput::isLevel() const
+bool FMTOutput::isLevel() const
 	{
-	for (const FMToutputsource& src : sources)
+	for (const FMTOutputSource& src : sources)
 		{
 		if (src.getTarget() == FMTotar::level)
 			{
@@ -297,9 +297,9 @@ bool FMToutput::isLevel() const
     return false;
 	}
 
-bool FMToutput::isConstantLevel() const
+bool FMTOutput::isConstantLevel() const
 {
-	for (const FMToutputsource& src : sources)
+	for (const FMTOutputSource& src : sources)
 	{
 		if (src.getTarget() != FMTotar::level || src.isVariableLevel())
 		{
@@ -309,9 +309,9 @@ bool FMToutput::isConstantLevel() const
 	return true;
 }
 
-bool FMToutput::isOnlyLevel() const
+bool FMTOutput::isOnlyLevel() const
 	{
-	for (const FMToutputsource& src : sources)
+	for (const FMTOutputSource& src : sources)
 		{
 		if (src.getTarget() != FMTotar::level)
 			{
@@ -322,9 +322,9 @@ bool FMToutput::isOnlyLevel() const
 	}
 
 
-bool FMToutput::isConstant() const
+bool FMTOutput::isConstant() const
 	{
-	for (const FMToutputsource& src : sources)
+	for (const FMTOutputSource& src : sources)
 		{
 		if (src.getTarget() != FMTotar::val)
 			{
@@ -334,14 +334,14 @@ bool FMToutput::isConstant() const
 	return true;
 	}
 
-double FMToutput::getConstantValue() const
+double FMTOutput::getConstantValue() const
 	{
 	double value = 0;
 	try{
 	std::vector<double>values;
 	if (isConstant())
 		{
-		for (const FMToutputsource& src : sources)
+		for (const FMTOutputSource& src : sources)
 			{
 			values.push_back(src.getValue());
 			}
@@ -351,15 +351,15 @@ double FMToutput::getConstantValue() const
 	catch (...)
 	{
 		_exhandler->raiseFromCatch(
-			"for "+this->getName(), "FMToutput::getConstantValue", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"for "+this->getName(), "FMTOutput::getConstantValue", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return value;
 	}
 
 
-bool FMToutput::containsLevel() const
+bool FMTOutput::containsLevel() const
 	{
-	for (const FMToutputsource& src : sources)
+	for (const FMTOutputSource& src : sources)
 		{
 		if (src.isLevel())
 			{
@@ -369,9 +369,9 @@ bool FMToutput::containsLevel() const
 	return false;
 	}
 
-bool FMToutput::isDivision() const
+bool FMTOutput::isDivision() const
 {
-	for (const FMToperator& opr : operators)
+	for (const FMTOperator& opr : operators)
 	{
 		if (opr.isDivide())
 		{
@@ -381,21 +381,21 @@ bool FMToutput::isDivision() const
 	return false;
 }
 
-void FMToutput::replaceDivision(const double& bound)
+void FMTOutput::replaceDivision(const double& bound)
 {
 	try {
-	std::vector<Core::FMToperator>baseoperators(operators);
-	baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
+	std::vector<Core::FMTOperator>baseoperators(operators);
+	baseoperators.insert(baseoperators.begin(), Core::FMTOperator("+"));
 	size_t opid = 0;
 	bool denominator = false;
 	bool gotonefactor = false;
 	operators.clear();
-	for (FMToutputsource& source : sources)
+	for (FMTOutputSource& source : sources)
 	{
 		if (baseoperators.at(opid).isDivide())
 		{
 			denominator = true;
-			operators.push_back(Core::FMToperator("+"));
+			operators.push_back(Core::FMTOperator("+"));
 		}
 		else {
 			operators.push_back(baseoperators.at(opid));
@@ -411,7 +411,7 @@ void FMToutput::replaceDivision(const double& bound)
 					{
 						value *= -bound;
 					}
-					source = FMToutputsource(source.getTarget(), allvalues, source.getOutputOrigin(), source.getThemeTarget());
+					source = FMTOutputSource(source.getTarget(), allvalues, source.getOutputOrigin(), source.getThemeTarget());
 				}
 				gotonefactor = true;
 			}
@@ -426,13 +426,13 @@ void FMToutput::replaceDivision(const double& bound)
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("for " + this->getName(), "FMToutput::replaceDivision",
+		_exhandler->raiseFromCatch("for " + this->getName(), "FMTOutput::replaceDivision",
 			__LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 }
 
-bool FMToutput::isValidAction(const std::string& p_actionOrAggregate,
-	const std::vector<FMTaction>& p_actions,
+bool FMTOutput::isValidAction(const std::string& p_actionOrAggregate,
+	const std::vector<FMTAction>& p_actions,
 	const std::vector<bool>& p_validActions)
 {
 	bool isValid = false;
@@ -448,7 +448,7 @@ bool FMToutput::isValidAction(const std::string& p_actionOrAggregate,
 	return isValid;
 }
 
-void FMToutput::setProportions(std::map<std::string, std::vector<std::string>>& allequations,const std::vector<std::string>& baseequation) const
+void FMTOutput::setProportions(std::map<std::string, std::vector<std::string>>& allequations,const std::vector<std::string>& baseequation) const
 {
 	try {
 		const double totalentry = static_cast<double>(allequations.size());
@@ -458,7 +458,7 @@ void FMToutput::setProportions(std::map<std::string, std::vector<std::string>>& 
 		for (const std::string& equation : baseequation)
 			{
 			if ((*equation.begin())!='O'&&//Got numerical
-				!FMToperator(equation).valid()&&
+				!FMTOperator(equation).valid()&&
 				(*equation.begin()) != '('&&
 				(*equation.begin()) != ')')
 				{
@@ -480,20 +480,20 @@ void FMToutput::setProportions(std::map<std::string, std::vector<std::string>>& 
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for " + this->getName(),"FMToutput::setProportions",
+		_exhandler->raiseFromCatch("for " + this->getName(),"FMTOutput::setProportions",
 			__LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 }
 
-bool FMToutput::canBeNodesOnly() const
+bool FMTOutput::canBeNodesOnly() const
 	{
 	try {
 		if (isLinear()&& !isDivision())
 		{
-			std::vector<Core::FMToperator>baseoperators(operators);
-			baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
+			std::vector<Core::FMTOperator>baseoperators(operators);
+			baseoperators.insert(baseoperators.begin(), Core::FMTOperator("+"));
 			size_t opid = 0;
-			for (const FMToutputsource& source : sources)
+			for (const FMTOutputSource& source : sources)
 				{
 				if (((source.isLevel()&&!source.isVariableLevel())||
 					source.isTimeYield()||
@@ -504,7 +504,7 @@ bool FMToutput::canBeNodesOnly() const
 						{
 						_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 							"for output " + std::string(*this),
-							"FMToutput::canBeNodesOnly", __LINE__, __FILE__);
+							"FMTOutput::canBeNodesOnly", __LINE__, __FILE__);
 						}
 					return false;
 					}
@@ -515,28 +515,28 @@ bool FMToutput::canBeNodesOnly() const
 		
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("for " + this->getName(), "FMToutput::canBeNodesOnly",
+		_exhandler->raiseFromCatch("for " + this->getName(), "FMTOutput::canBeNodesOnly",
 			__LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return false;
 	}
 
-bool FMToutput::isLinear() const
+bool FMTOutput::isLinear() const
 	{
 	try{
-	if (sources.size() > 1 && (find(operators.begin(), operators.end(), FMToperator("*")) != operators.end() ||
-		find(operators.begin(), operators.end(), FMToperator("/")) != operators.end()))
+	if (sources.size() > 1 && (find(operators.begin(), operators.end(), FMTOperator("*")) != operators.end() ||
+		find(operators.begin(), operators.end(), FMTOperator("/")) != operators.end()))
 		{
 		int location = 0;
 		int lastnonlinear = -1;
-		for (const FMToutputsource& source : sources)
+		for (const FMTOutputSource& source : sources)
 			{
 			if (source.isVariable() && lastnonlinear!=-1 && location == (lastnonlinear+1))
 				{
 				return false;
 				}
 			if (source.isVariable() && location < static_cast<int>(operators.size()) &&
-				(operators[location] == FMToperator("*") || operators[location] == FMToperator("/")))
+				(operators[location] == FMTOperator("*") || operators[location] == FMTOperator("/")))
 				{
 				lastnonlinear = location;
 				}
@@ -548,11 +548,11 @@ bool FMToutput::isLinear() const
 	catch (...)
 	{
 		_exhandler->raiseFromCatch(
-			"for " + this->getName(), "FMToutput::isLinear", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"for " + this->getName(), "FMTOutput::isLinear", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return true;
 	}
-double FMToutput::shuntingYard(const std::vector<double>& sourcevalues,const std::vector<FMToperator>& simple_operators) const
+double FMTOutput::shuntingYard(const std::vector<double>& sourcevalues,const std::vector<FMTOperator>& simple_operators) const
 	{
 	try {
 		std::map<std::string, double>mapping;
@@ -570,18 +570,18 @@ double FMToutput::shuntingYard(const std::vector<double>& sourcevalues,const std
 			}
 			++id;
 		}
-		const FMTexpression newexpression(expression_inputs);
+		const FMTExpression newexpression(expression_inputs);
 		return newexpression.shuntingYard(mapping);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for " + this->getName(),"FMToutput::shuntingYard", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raiseFromCatch("for " + this->getName(),"FMTOutput::shuntingYard", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return 0;
 	}
 
-FMToutput FMToutput::boundTo(const std::vector<FMTtheme>& themes, const FMTperbounds& bound,const std::string& specialbound, std::string attribute) const
+FMTOutput FMTOutput::boundTo(const std::vector<FMTTheme>& themes, const FMTPerBounds& bound,const std::string& specialbound, std::string attribute) const
 	{
-	FMToutput newoutput(*this);
+	FMTOutput newoutput(*this);
 	try {
 		if (!attribute.empty())
 		{
@@ -622,14 +622,14 @@ FMToutput FMToutput::boundTo(const std::vector<FMTtheme>& themes, const FMTperbo
 		}
 		//if (!newoutput.isLevel())
 		//{
-			for (FMToutputsource& source : newoutput.sources)
+			for (FMTOutputSource& source : newoutput.sources)
 			{
 				
 				if (source.isVariable()||source.isVariableLevel())
 				{
 					/*if (source.isVariableLevel())
 					{
-						source = Core::FMToutputsource(Core::FMTotar::level, 0, "",
+						source = Core::FMTOutputSource(Core::FMTotar::level, 0, "",
 							newoutput.name, source.getOutputOrigin(), source.getThemeTarget());
 					}*/
 					if (!bound.empty())
@@ -642,7 +642,7 @@ FMToutput FMToutput::boundTo(const std::vector<FMTtheme>& themes, const FMTperbo
 						{
 							source.setAction(source.getAction() + "("+ attribute +")");
 						}else {
-							FMTmask oldmask = FMTmask(source.getMask());
+							FMTMask oldmask = FMTMask(source.getMask());
 							oldmask.set(themes.at(targetThemeId()), attribute);
 							source.setMask(oldmask);
 							}
@@ -662,51 +662,51 @@ FMToutput FMToutput::boundTo(const std::vector<FMTtheme>& themes, const FMTperbo
 					
 				}/*else if (source.isVariableLevel())
 					{
-					source = Core::FMToutputsource(Core::FMTotar::level,0, "",
+					source = Core::FMTOutputSource(Core::FMTotar::level,0, "",
 						newoutput.name, source.getOutputOrigin(), source.getThemeTarget());
 					}*/
 			}
 		/*}else if(newoutput.isLevel())
 			{
-			std::vector<FMToutputsource>levelsources;
-			for (const FMToutputsource& source : newoutput.sources)
+			std::vector<FMTOutputSource>levelsources;
+			for (const FMTOutputSource& source : newoutput.sources)
 				{
-				levelsources.push_back(Core::FMToutputsource(Core::FMTotar::level,source.getValue(),"",
+				levelsources.push_back(Core::FMTOutputSource(Core::FMTotar::level,source.getValue(),"",
 										newoutput.name, source.getOutputOrigin(),source.getThemeTarget()));
 				}
 			newoutput.sources = levelsources;
 			}*/
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for "+this->getName(),"FMToutput::boundTo", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raiseFromCatch("for "+this->getName(),"FMTOutput::boundTo", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
 
-std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equation,double multiplier,bool orderbyoutputid,int period) const
+std::vector<FMTOutputNode> FMTOutput::getNodes(std::vector<std::string>& equation,double multiplier,bool orderbyoutputid,int period) const
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
-	std::vector<FMToutputnode>nodes;
+	std::vector<FMTOutputNode>nodes;
 	try {
 		if (!empty())
 		{
 			size_t nodeid = 0;
 			size_t sourceid = 0;
 			equation.clear();
-			//std::queue<FMToperator>ops;
-			//ops.push(FMToperator("+"));
-			std::deque<FMToperator>ops(operators.begin(), operators.end());
+			//std::queue<FMTOperator>ops;
+			//ops.push(FMTOperator("+"));
+			std::deque<FMTOperator>ops(operators.begin(), operators.end());
 			//if (ops.empty() || ops.front().isFactor())
 			//{
-			ops.push_front(FMToperator("+"));
+			ops.push_front(FMTOperator("+"));
 			//}
 
-			/*for (const FMToperator& op : operators)
+			/*for (const FMTOperator& op : operators)
 				{
 				ops.push(op);
 				}*/
-			std::deque<FMToutputsource>srs(sources.begin(), sources.end());
-			/*for (const FMToutputsource& sr : sources)
+			std::deque<FMTOutputSource>srs(sources.begin(), sources.end());
+			/*for (const FMTOutputSource& sr : sources)
 				{
 				srs.push(sr);
 				}*/
@@ -717,7 +717,7 @@ std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equatio
 				if (srs.front().isVariable() || srs.front().isVariableLevel())
 				{
 					double constant = 1;
-					//Its now handle in FMToutputnode setToGraph
+					//Its now handle in FMTOutputNode setToGraph
 					/*if (srs.front().isAverage())
 						{
 						constant *= multiplier;
@@ -744,7 +744,7 @@ std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equatio
 					equation.push_back("O" + std::to_string(nodes.size()));
 					ops.pop_front();
 					nodes.emplace_back(srs.front(),
-						FMToutputsource(FMTotar::val, 1, "", "", srs.front().getOutputOrigin()), constant);
+						FMTOutputSource(FMTotar::val, 1, "", "", srs.front().getOutputOrigin()), constant);
 					pushednode = true;
 					pushedfactor = false;
 				}
@@ -760,7 +760,7 @@ std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equatio
 						{
 							_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 								"for output " + std::string(*this),
-								"FMToutput::getNodes", __LINE__, __FILE__);
+								"FMTOutput::getNodes", __LINE__, __FILE__);
 						}
 						nodes.back().factor.resetValues(ops.front(), srs.front());
 					}
@@ -789,14 +789,14 @@ std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equatio
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch(
-			"","FMToutput::getNodes", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"","FMTOutput::getNodes", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return nodes;
 	}
 
-bool FMToutput::isSinglePeriod() const
+bool FMTOutput::isSinglePeriod() const
 	{
-	for (const FMToutputsource& source : this->sources)
+	for (const FMTOutputSource& source : this->sources)
 		{
 		if (source.emptyPeriod() || (source.getPeriodLowerBound() != source.getPeriodUpperBound()))
 			{
@@ -806,12 +806,12 @@ bool FMToutput::isSinglePeriod() const
 	return true;
 	}
 
-bool FMToutput::hasAverage() const
+bool FMTOutput::hasAverage() const
 {
 return (name.find("_AVG") != std::string::npos);
 }
 
-int FMToutput::getTargetPeriod() const
+int FMTOutput::getTargetPeriod() const
 	{
 	int target = -1;
 	if (isSinglePeriod())
@@ -821,14 +821,14 @@ int FMToutput::getTargetPeriod() const
 	return target;
 	}
 
-size_t FMToutput::hash() const
+size_t FMTOutput::hash() const
 	{
 	size_t seed = 0;
-	for (const FMToperator& op : operators)
+	for (const FMTOperator& op : operators)
 		{
 		boost::hash_combine(seed,op.hash());
 		}
-	for (const FMToutputsource& src : sources)
+	for (const FMTOutputSource& src : sources)
 		{
 		boost::hash_combine(seed, src.hash());
 		boost::hash_combine(seed, src.getYield());
@@ -837,7 +837,7 @@ size_t FMToutput::hash() const
 	}
 
 
-bool FMToutput::operator == (const FMToutput& rhs) const
+bool FMTOutput::operator == (const FMTOutput& rhs) const
     {
 	// TODO gab mettre un bool sexy
 	bool is_valid = false;
@@ -857,30 +857,30 @@ bool FMToutput::operator == (const FMToutput& rhs) const
 	return true;
     }
 
-bool FMToutput::operator != (const FMToutput& rhs) const
+bool FMTOutput::operator != (const FMTOutput& rhs) const
     {
     return !(*this== rhs);
     }
 
-size_t FMToutput::size() const
+size_t FMTOutput::size() const
 	{
 	return sources.size();
 	}
 
 
-FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
-	const std::vector<FMTtheme>& originalthemes,
-	const std::vector<const FMTtheme*>& selectedthemes,
-	const std::vector<FMTtheme>& newthemes,
-	const std::vector<FMTaction>& actions,
+FMTOutput FMTOutput::presolve(const FMTMaskFilter& filter,
+	const std::vector<FMTTheme>& originalthemes,
+	const std::vector<const FMTTheme*>& selectedthemes,
+	const std::vector<FMTTheme>& newthemes,
+	const std::vector<FMTAction>& actions,
 	const std::vector<bool>& p_valideActions,
-	const FMTyields& yields) const
+	const FMTYields& yields) const
 	{
-	FMToutput newoutput(*this);
+	FMTOutput newoutput(*this);
 	try {
-		std::vector<FMToutputsource>newsources;
+		std::vector<FMTOutputSource>newsources;
 		newsources.reserve(sources.size());
-		std::vector<FMToperator>newoperators;
+		std::vector<FMTOperator>newoperators;
 		newoperators.reserve(operators.size());
 		size_t operatorid = 0;
 		bool pushfactor = true;
@@ -917,7 +917,7 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 				pushedsource = true;
 				if (turntonegative)
 				{
-					newsources.push_back(FMToutputsource(sources.at(sourceid).getTarget(),
+					newsources.push_back(FMTOutputSource(sources.at(sourceid).getTarget(),
 						sources.at(sourceid).getValue()*-1,
 						sources.at(sourceid).getYield(),
 						sources.at(sourceid).getAction(),
@@ -955,36 +955,36 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 		newoutput.operators.swap(newoperators);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for "+this->getName(),"FMToutput::presolve", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raiseFromCatch("for "+this->getName(),"FMTOutput::presolve", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
 
-void FMToutput::changeSourcesId(const int& outid)
+void FMTOutput::changeSourcesId(const int& outid)
 {
 	try {
-		for (Core::FMToutputsource& source : sources)
+		for (Core::FMTOutputSource& source : sources)
 			{
 			source.setOutputOrigin(outid);
 			}
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch("for " + this->getName(),
-			"FMToutput::changeSourcesId", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"FMTOutput::changeSourcesId", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 }
 
-Core::FMToutput FMToutput::removeRHSvalue() const
+Core::FMTOutput FMTOutput::removeRHSvalue() const
 	{
-	Core::FMToutput newoutput(*this);
+	Core::FMTOutput newoutput(*this);
 	double outrhs = 1;
 	try {
-		std::vector<Core::FMToperator>baseoperators(operators);
-		baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
+		std::vector<Core::FMTOperator>baseoperators(operators);
+		baseoperators.insert(baseoperators.begin(), Core::FMTOperator("+"));
 		size_t opid = 0;
-		std::vector<FMToutputsource>newsources;
-		std::vector<Core::FMToperator>newoperators;
-		for (const FMToutputsource& source : sources)
+		std::vector<FMTOutputSource>newsources;
+		std::vector<Core::FMTOperator>newoperators;
+		for (const FMTOutputSource& source : sources)
 		{
 			if (((source.isLevel() && !source.isVariableLevel()) ||
 				source.isConstant()) &&
@@ -1010,12 +1010,12 @@ Core::FMToutput FMToutput::removeRHSvalue() const
 	return newoutput;
 	}
 
-void FMToutput::getRHSvalue(const int& period, double& lower, double& upper) const
+void FMTOutput::getRHSvalue(const int& period, double& lower, double& upper) const
 {
 	
 	try {
 		std::vector<double>toshunt;
-		for (const FMToutputsource& source : sources)
+		for (const FMTOutputSource& source : sources)
 		{
 
 			if (((source.isLevel() && !source.isVariableLevel()) ||
@@ -1053,10 +1053,10 @@ void FMToutput::getRHSvalue(const int& period, double& lower, double& upper) con
 }
 
 
-void FMToutput::changeSourcesId(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid)
+void FMTOutput::changeSourcesId(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid)
 	{
 	try{
-		for (Core::FMToutputsource& source : sources)
+		for (Core::FMTOutputSource& source : sources)
 		{
 			const int oldorigin = source.getOutputOrigin();
 			std::set<int>::const_iterator koit = newoutputsorigin.find(oldorigin);
@@ -1064,7 +1064,7 @@ void FMToutput::changeSourcesId(const std::set<int>& newoutputsorigin,const std:
 			if (koit==newoutputsorigin.end() && !(source.getMask().empty()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,"The outputorigin "+std::to_string(oldorigin)+" for the mask "+std::string(source.getMask())+" is not in the newsoutputorigin after presolve",
-							"FMToutput::changeoutputsorigin", __LINE__, __FILE__);
+							"FMTOutput::changeoutputsorigin", __LINE__, __FILE__);
 			}else if(oldorigin!=neworigin)
 			{
 				source.setOutputOrigin(neworigin);
@@ -1086,21 +1086,21 @@ void FMToutput::changeSourcesId(const std::set<int>& newoutputsorigin,const std:
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for " + this->getName(), "FMToutput::changeSourcesId", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raiseFromCatch("for " + this->getName(), "FMTOutput::changeSourcesId", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	}
 
-void FMToutput::setSources(const std::vector<FMToutputsource>& p_sources)
+void FMTOutput::setSources(const std::vector<FMTOutputSource>& p_sources)
 	{
 	sources = p_sources;
 	}
 
-void FMToutput::setOperators(const std::vector<FMToperator>& p_operators)
+void FMTOutput::setOperators(const std::vector<FMTOperator>& p_operators)
 	{
 	operators = p_operators;
 	}
 
-std::vector<std::string> FMToutput::getDecomposition(const std::vector<FMTtheme>& themes) const
+std::vector<std::string> FMTOutput::getDecomposition(const std::vector<FMTTheme>& themes) const
 	{
 	std::vector<std::string>validdecomp;
 	try{
@@ -1108,13 +1108,13 @@ std::vector<std::string> FMToutput::getDecomposition(const std::vector<FMTtheme>
 		{
 		return getThemeDecomposition(themes[targetThemeId()]);
 		/*int srcid = 0;
-		for (const FMToutputsource& source : sources)
+		for (const FMTOutputSource& source : sources)
 			{
 			if (source.isVariable())
 				{
-				const FMTmask srcmask = source.getmask();
+				const FMTMask srcmask = source.getmask();
 				std::vector<std::string>unique_selection;
-				for (const FMTmask& decmask : srcmask.decompose(themes[targetThemeId()]))
+				for (const FMTMask& decmask : srcmask.decompose(themes[targetThemeId()]))
 					{
 					unique_selection.push_back(decmask.get(themes[targetThemeId()]));
 					}
@@ -1134,22 +1134,22 @@ std::vector<std::string> FMToutput::getDecomposition(const std::vector<FMTtheme>
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("for " + this->getName(), "FMToutput::getDecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raiseFromCatch("for " + this->getName(), "FMTOutput::getDecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return validdecomp;
 	}
 
-std::vector<std::string> FMToutput::getThemeDecomposition(const FMTtheme& theme) const
+std::vector<std::string> FMTOutput::getThemeDecomposition(const FMTTheme& theme) const
 {
 	std::vector<std::string>validdecomp;
 	try {
 		int srcid = 0;
-		for (const FMToutputsource& source : sources)
+		for (const FMTOutputSource& source : sources)
 		{
 			if (source.isVariable())
 			{
-				const FMTmask srcmask = source.getMask();
-				const std::vector<FMTmask> ALL_MASKS = srcmask.decompose(theme);
+				const FMTMask srcmask = source.getMask();
+				const std::vector<FMTMask> ALL_MASKS = srcmask.decompose(theme);
 				std::vector<std::string>unique_selection(ALL_MASKS.size());
 				for (size_t Id = 0; Id < ALL_MASKS.size();++Id)
 				{
@@ -1174,23 +1174,23 @@ std::vector<std::string> FMToutput::getThemeDecomposition(const FMTtheme& theme)
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("for " + this->getName(), "FMToutput::getDecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raiseFromCatch("for " + this->getName(), "FMTOutput::getDecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return validdecomp;
 }
 
-FMToutput FMToutput::intersectWithMask(const Core::FMTmask& mask,
-	const std::vector<Core::FMTtheme>& themes) const
+FMTOutput FMTOutput::intersectWithMask(const Core::FMTMask& mask,
+	const std::vector<Core::FMTTheme>& themes) const
 	{
-	FMToutput newoutput(*this);
+	FMTOutput newoutput(*this);
 	try{
-		for (FMToutputsource& source : newoutput.sources)
+		for (FMTOutputSource& source : newoutput.sources)
 		{
 			if (source.isVariable())
 			{
-				Core::FMTmask newmask = source.getMask().getIntersect(mask);
+				Core::FMTMask newmask = source.getMask().getIntersect(mask);
 				bool outmask = false;
-				for (const Core::FMTtheme& theme : themes)
+				for (const Core::FMTTheme& theme : themes)
 					{
 					if (newmask.getSubsetCount(theme)==0)
 						{
@@ -1204,7 +1204,7 @@ FMToutput FMToutput::intersectWithMask(const Core::FMTmask& mask,
 					source.setMask(newmask);
 				}else {
 					//if the intersect gives mask with only 0 in one theme, change source for level = 0 
-					source = Core::FMToutputsource(Core::FMTotar::val,
+					source = Core::FMTOutputSource(Core::FMTotar::val,
 						std::vector<double>(3,0),
 						source.getOutputOrigin(), source.getThemeTarget());//constant level!
 				}
@@ -1214,21 +1214,21 @@ FMToutput FMToutput::intersectWithMask(const Core::FMTmask& mask,
 		//{
 			//_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 			//	"for output " + std::string(newoutput),
-			//	"FMToutput::canBeNodesOnly", __LINE__, __FILE__);
+			//	"FMTOutput::canBeNodesOnly", __LINE__, __FILE__);
 		//}
 	}catch (...)
 		{
 			_exhandler->raiseFromCatch(
-				"", "FMToutput::intersectWithMask", __LINE__, __FILE__, Core::FMTsection::Outputs);
+				"", "FMTOutput::intersectWithMask", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
 
-FMTmask FMToutput::getVariableIntersect() const
+FMTMask FMTOutput::getVariableIntersect() const
 {
-	FMTmask mask;
+	FMTMask mask;
 	try{
-		for (const FMToutputsource& source :sources)
+		for (const FMTOutputSource& source :sources)
 		{
 			if (source.isVariable())
 			{
@@ -1244,15 +1244,15 @@ FMTmask FMToutput::getVariableIntersect() const
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch(
-			"", "FMToutput::getVariableIntersect", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"", "FMTOutput::getVariableIntersect", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return mask;
 }
 
-FMTmask FMToutput::getMasksUnion() const
+FMTMask FMTOutput::getMasksUnion() const
 	{
-	FMTmask mask;
-	for (const FMToutputsource& source : sources)
+	FMTMask mask;
+	for (const FMTOutputSource& source : sources)
 		{
 		if (source.isVariable())
 			{
@@ -1269,12 +1269,12 @@ FMTmask FMToutput::getMasksUnion() const
 	return mask;
 	}
 
-std::vector<const Core::FMTtheme*>FMToutput::getStaticThemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables) const
+std::vector<const Core::FMTTheme*>FMTOutput::getStaticThemes(const std::vector<Core::FMTTheme>& themes, const Core::FMTYields& yields, bool ignoreoutputvariables) const
 {
-	std::vector<const Core::FMTtheme*>statics;
+	std::vector<const Core::FMTTheme*>statics;
 	try {
 		std::vector<std::string>yieldstolookat;
-		for (const FMToutputsource& source : sources)
+		for (const FMTOutputSource& source : sources)
 		{
 			if (source.isVariable())
 			{
@@ -1296,7 +1296,7 @@ std::vector<const Core::FMTtheme*>FMToutput::getStaticThemes(const std::vector<C
 					}
 			}
 		}
-		std::vector< std::pair<FMTmask, std::unique_ptr<FMTyieldhandler>>>::const_iterator handlerit = yields.begin();
+		std::vector< std::pair<FMTMask, std::unique_ptr<FMTYieldHandler>>>::const_iterator handlerit = yields.begin();
 		while (handlerit!=yields.end()&&!yieldstolookat.empty())
 			{
 			std::vector<std::string>::const_iterator yieldit = yieldstolookat.begin();
@@ -1306,8 +1306,8 @@ std::vector<const Core::FMTtheme*>FMToutput::getStaticThemes(const std::vector<C
 				}
 			if (yieldit != yieldstolookat.end())
 				{
-				const Core::FMTmask maskof(std::string(handlerit->first), themes);
-				const std::vector<const Core::FMTtheme*>newstatic = maskof.getStaticThemes(statics);
+				const Core::FMTMask maskof(std::string(handlerit->first), themes);
+				const std::vector<const Core::FMTTheme*>newstatic = maskof.getStaticThemes(statics);
 				statics = newstatic;
 				yieldstolookat.erase(yieldit);
 				}
@@ -1316,23 +1316,23 @@ std::vector<const Core::FMTtheme*>FMToutput::getStaticThemes(const std::vector<C
 	}catch (...)
 		{
 			_exhandler->raiseFromCatch(
-				"", "FMToutput::getStaticThemes", __LINE__, __FILE__, Core::FMTsection::Outputs);
+				"", "FMTOutput::getStaticThemes", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return statics;
 	}
 
 
-void FMToutput::setPeriod(const int& newperiod)
+void FMTOutput::setPeriod(const int& newperiod)
 	{
-	for (FMToutputsource& source : sources)
+	for (FMTOutputSource& source : sources)
 		{
-		source.setBounds(FMTperbounds(FMTsection::Outputs, newperiod, newperiod));
+		source.setBounds(FMTPerBounds(FMTsection::Outputs, newperiod, newperiod));
 		}
 	}
 
-bool FMToutput::isActionbased() const
+bool FMTOutput::isActionbased() const
 	{
-	for (const FMToutputsource& source : sources)
+	for (const FMTOutputSource& source : sources)
 		{
 		if (!source.getAction().empty())
 			{
@@ -1342,9 +1342,9 @@ bool FMToutput::isActionbased() const
 	return false;
 	}
 
-bool FMToutput::isVariableSizeOf(const size_t& masksize) const
+bool FMTOutput::isVariableSizeOf(const size_t& masksize) const
 	{
-	for (const FMToutputsource& source : sources)
+	for (const FMTOutputSource& source : sources)
 		{
 			if (source.isVariable())
 			{
@@ -1355,9 +1355,9 @@ bool FMToutput::isVariableSizeOf(const size_t& masksize) const
 	}
 
 
-bool FMToutput::isInventory() const
+bool FMTOutput::isInventory() const
 	{
-	for (const FMToutputsource& source : sources)
+	for (const FMTOutputSource& source : sources)
 	{
 		if (source.isInventory())
 		{
@@ -1367,9 +1367,9 @@ bool FMToutput::isInventory() const
 	return false;
 	}
 
-void FMToutput::fillFromShuntingYard(const std::vector<std::string>baseeq,
+void FMTOutput::fillFromShuntingYard(const std::vector<std::string>baseeq,
 						std::map<std::string, double>& results,
-						const std::vector<Core::FMToutputnode>& nodes,
+						const std::vector<Core::FMTOutputNode>& nodes,
 						std::map<std::string,std::vector<std::string>>& allequations) const
 	{
 	try {
@@ -1378,32 +1378,32 @@ void FMToutput::fillFromShuntingYard(const std::vector<std::string>baseeq,
 		{
 			size_t oid = 0;
 			std::vector<std::string> equation(outit->second);
-			for (const Core::FMToutputnode& output_node : nodes)
+			for (const Core::FMTOutputNode& output_node : nodes)
 				{
 				const std::string oldvalue = "O" + std::to_string(oid);
 				const std::string newvalue("0");
 				std::replace(equation.begin(), equation.end(),oldvalue, newvalue);
 				++oid;
 				}
-			Core::FMTexpression expression(equation);
+			Core::FMTExpression expression(equation);
 			std::map<std::string, double>vals;
 			results[outit->first] = expression.shuntingYard(vals);
 		}
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch(
-			"", "FMToutput::getfromshuntingyard", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"", "FMTOutput::getfromshuntingyard", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	}
 
 
-FMTtheme FMToutput::targetTheme(const std::vector<FMTtheme>& themes) const
+FMTTheme FMTOutput::targetTheme(const std::vector<FMTTheme>& themes) const
 	{
 	if (targetThemeId()>=0)
 		{
 		return themes[targetThemeId()];
 		}
-	return FMTtheme();
+	return FMTTheme();
 	}
 
 
@@ -1412,12 +1412,12 @@ FMTOutputComparator::FMTOutputComparator(std::string name) : output_name(name)
 
 	}
 
-bool FMTOutputComparator::operator()(const FMToutput& output) const
+bool FMTOutputComparator::operator()(const FMTOutput& output) const
 	{
 	return output_name == output.getName();
 	}
 
-bool FMToutput::_sourceCounter(const std::string& p_source) const
+bool FMTOutput::_sourceCounter(const std::string& p_source) const
 {
 	bool passed = true;
 	//const int MAXSIZE = 256;
@@ -1437,7 +1437,7 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 				{
 					const std::string ERRORMESSAGE = "Le nombre de caratères par ligne est trop grand. Nombre de caractères : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-						 ERRORMESSAGE, "FMToutput::splitSource" ,__LINE__, __FILE__);
+						 ERRORMESSAGE, "FMTOutput::splitSource" ,__LINE__, __FILE__);
 					passed = false;
 				}*/
 
@@ -1446,7 +1446,7 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 		catch (...)
 		{
 			_exhandler->raiseFromCatch("",
-				"FMToutput::splitSource",
+				"FMTOutput::splitSource",
 				__LINE__, __FILE__);
 		}
 	}
@@ -1454,7 +1454,7 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 
 }
 
-bool FMToutput::_verifyOperatorOrder() const
+bool FMTOutput::_verifyOperatorOrder() const
 {
 	bool need_change = false;
 	int count = 0;
@@ -1475,10 +1475,10 @@ bool FMToutput::_verifyOperatorOrder() const
 	return need_change;
 }
 
-std::string FMToutput::_operatorFormat() const
+std::string FMTOutput::_operatorFormat() const
 {
 	// setup
-	Core::FMToutput newOutput(*this);
+	Core::FMTOutput newOutput(*this);
 	std::string tilde = "~";
 	std::string modified = "";
 	std::string newLine;
@@ -1569,7 +1569,7 @@ std::string FMToutput::_operatorFormat() const
 	return newLine;
 }
 
-std::string FMToutput::_getFormatedOutputName() const
+std::string FMTOutput::_getFormatedOutputName() const
 {
 	std::string result("*OUTPUT ");
 	if (isOnlyLevel())
@@ -1585,14 +1585,14 @@ std::string FMToutput::_getFormatedOutputName() const
 	return result;
 }
 
-bool FMToutput::_needWsFormat() const
+bool FMTOutput::_needWsFormat() const
 {
 	bool needit = false;
 	if (!isConstant())
 	{
 		bool useInEdges = false;
 		bool useOutEdges = false;
-		for (const FMToutputsource& SOURCE : sources)
+		for (const FMTOutputSource& SOURCE : sources)
 		{
 			if (SOURCE.useInEdges())
 			{
@@ -1608,18 +1608,18 @@ bool FMToutput::_needWsFormat() const
 	return needit;
 }
 
-std::string FMToutput::_toWsFormat() const
+std::string FMTOutput::_toWsFormat() const
 	{
 	std::string result;
-	std::vector<Core::FMToperator>tempOperators;
-	std::vector<Core::FMToutputsource>tempSources;
+	std::vector<Core::FMTOperator>tempOperators;
+	std::vector<Core::FMTOutputSource>tempSources;
 	std::string tempName;
 	bool isInEdge = sources.begin()->useInEdges();
 	size_t outputId = 0;
 	size_t operatorId = 0;
 	std::string SumOutput(_getFormatedOutputName() +"*SOURCE ");
 	std::array<std::string,2>outTypes{"OUT","IN"};
-	for (const FMToutputsource& SOURCE : sources)
+	for (const FMTOutputSource& SOURCE : sources)
 		{
 		const bool SOURCE_TYPE = SOURCE.useInEdges();
 		bool packNGo = false;
@@ -1637,13 +1637,13 @@ std::string FMToutput::_toWsFormat() const
 				}
 		if (packNGo)
 			{
-			Core::FMToperator outputOperator;
+			Core::FMTOperator outputOperator;
 			//if (operatorId < operators.size())
 			//	{
 					outputOperator = tempOperators.back();
 					tempOperators.pop_back();
 			//	}
-			const Core::FMToutput NEW_OUTPUT(tempName, "", getGroup(), tempSources, tempOperators);
+			const Core::FMTOutput NEW_OUTPUT(tempName, "", getGroup(), tempSources, tempOperators);
 			result += std::string(NEW_OUTPUT) + "\n";
 			SumOutput += tempName +" " + std::string(outputOperator)+ " ";
 			tempOperators.clear();
@@ -1667,7 +1667,7 @@ std::string FMToutput::_toWsFormat() const
 				tempSources.push_back(SOURCE);
 				}
 			tempName = "~" + getName() + std::to_string(outputId) + outTypes.at(static_cast<size_t>(isInEdge));
-			const Core::FMToutput NEW_OUTPUT(tempName, "", getGroup(), tempSources, tempOperators);
+			const Core::FMTOutput NEW_OUTPUT(tempName, "", getGroup(), tempSources, tempOperators);
 			result += std::string(NEW_OUTPUT) + "\n";
 			SumOutput += tempName + "\n";
 			}
@@ -1686,4 +1686,4 @@ std::string FMToutput::_toWsFormat() const
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMToutput)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTOutput)

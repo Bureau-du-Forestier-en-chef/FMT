@@ -18,8 +18,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTtheme;
-	class FMTconstants;
+	class FMTTheme;
+	class FMTConstants;
 }
 
 
@@ -28,7 +28,7 @@ namespace Parser
 // DocString: FMTlandscapeparser
 /**
 The landscape parser have some read write capabilities for the landscape section.
-It can also get a landscape section from a vector or raster files (generating FMTtheme).
+It can also get a landscape section from a vector or raster files (generating FMTTheme).
 If FMT is compiled without the compile proprocessor FMTWITHGDAL then some funcionalities of the FMTlandscapeparser wont be
 available to the user. This class is also used by the FMTmodelparser.
 */
@@ -54,7 +54,7 @@ available to the user. This class is also used by the FMTmodelparser.
 		the returned map hold the parameters name (key) and value (item). It uses the complete string line (indexm_line) of
 		the landscape section and (constants).
 		*/
-		std::map<std::string, double> getIndexes(std::string indexm_line, const Core::FMTconstants& constants);
+		std::map<std::string, double> getIndexes(std::string indexm_line, const Core::FMTConstants& constants);
 		// DocString: FMTlandscapeparser::ParseState
 		enum class ParseState {NORMAL = 0, IN_PRE_DECLARATION = 1};
 		// DocString: FMTlandscapeparser::PreDeclarationContext
@@ -69,7 +69,7 @@ available to the user. This class is also used by the FMTmodelparser.
 		//DocString: FMTlandscapeparser::processPreDeclarationLine
 		bool processPreDeclarationLine(const std::string& line,
 			PreDeclarationContext& context,
-			const Core::FMTconstants& constants);
+			const Core::FMTConstants& constants);
 		// DocString: FMTlandscapeparser::ThemeParsingContext
 		struct ThemeParsingContext {
 			std::vector<std::string> attributes;
@@ -92,22 +92,22 @@ available to the user. This class is also used by the FMTmodelparser.
 		void processThemeLine(const boost::smatch& kmatch,
 			ThemeParsingContext& ctx,
 			PreDeclarationContext& preContext,
-			std::vector<Core::FMTtheme>& themes,
-			const Core::FMTconstants& constants,
+			std::vector<Core::FMTTheme>& themes,
+			const Core::FMTConstants& constants,
 			size_t& unknownID);
 		// DocString: FMTlandscapeparser::processAggregateLine
 		void processAggregateLine(const boost::smatch& kmatch,
 			ThemeParsingContext& ctx,
-			std::vector<Core::FMTtheme>& themes,
-			const Core::FMTconstants& constants);
+			std::vector<Core::FMTTheme>& themes,
+			const Core::FMTConstants& constants);
 		// DocString: FMTlandscapeparser::processAggregateValueLine
 		void processAggregateValueLine(const std::string& line,
 			ThemeParsingContext& ctx,
-			std::vector<Core::FMTtheme>& themes);
+			std::vector<Core::FMTTheme>& themes);
 		// DocString: FMTlandscapeparser::processAttributeLine
 		void processAttributeLine(const std::string& line,
 			ThemeParsingContext& ctx,
-			const Core::FMTconstants& constants);
+			const Core::FMTConstants& constants);
     public:
 		// DocString: FMTlandscapeparser::FMTlandscapeparser()
 		/**
@@ -134,26 +134,26 @@ available to the user. This class is also used by the FMTmodelparser.
 		Using the (location) of the landscape section and some (constants) this function will read the landscape section
 		and returns a vector of themes present in the landscape section.
 		*/
-        std::vector<Core::FMTtheme>read(const Core::FMTconstants& constants,const std::string& location);
+        std::vector<Core::FMTTheme>read(const Core::FMTConstants& constants,const std::string& location);
 		#ifdef FMTWITHGDAL
 			// DocString: FMTlandscapeparser::readVectors
 			/**
 			Using the (location) of a spatial vector file like a shapefile, this function will
 			return a vector of themes present in the spatial vector file.
 			*/
-			std::vector<Core::FMTtheme>readVectors(const  std::string& location);
+			std::vector<Core::FMTTheme>readVectors(const  std::string& location);
 			// DocString: FMTlandscapeparser::readRasters
 			/**
 			Using the vector of (locations) of raster files, this funtion will return a vector
 			of themes present in the rasters. Each raster represent a theme in the location vector.
 			*/
-			std::vector<Core::FMTtheme>readRasters(const  std::vector< std::string>& locations);
+			std::vector<Core::FMTTheme>readRasters(const  std::vector< std::string>& locations);
 		#endif
 		// DocString: FMTlandscapeparser::write
 		/**
 		With a file (location) and a vector of (themes) this function will fill up a landscape section.
 		*/
-        void write(const  std::vector<Core::FMTtheme>& themes,const std::string& location) const;
+        void write(const  std::vector<Core::FMTTheme>& themes,const std::string& location) const;
     };
 }
 

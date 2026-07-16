@@ -18,7 +18,7 @@ namespace Graph
 		return 0;
 		}
 
-	const Core::FMTdevelopment& FMTbasevertexproperties::get() const
+	const Core::FMTDevelopment& FMTbasevertexproperties::get() const
 		{
 		return *m_development;
 		}
@@ -51,18 +51,18 @@ namespace Graph
 		return *this;
 	}
 	
-	FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTfuturdevelopment& p_development) :
-		m_development( new Core::FMTfuturdevelopment(p_development))
+	FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTFuturDevelopment& p_development) :
+		m_development( new Core::FMTFuturDevelopment(p_development))
 		{
 
 		}
-	FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTactualdevelopment& p_development) :
-		m_development(new Core::FMTactualdevelopment(p_development))
+	FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTActualDevelopment& p_development) :
+		m_development(new Core::FMTActualDevelopment(p_development))
 		{
 
 		}
 
-	void FMTbasevertexproperties::setDevlopementMask(const Core::FMTmask& p_newmask)
+	void FMTbasevertexproperties::setDevlopementMask(const Core::FMTMask& p_newmask)
 	{
 		m_development->setMask(p_newmask);
 	}
@@ -91,9 +91,9 @@ namespace Graph
 		{
 		if (p_area > 0)
 			{
-				m_development = std::unique_ptr<Core::FMTdevelopment>(new Core::FMTactualdevelopment(*m_development, p_area));
+				m_development = std::unique_ptr<Core::FMTDevelopment>(new Core::FMTActualDevelopment(*m_development, p_area));
 			}else {
-				m_development = std::unique_ptr<Core::FMTdevelopment>(new Core::FMTfuturdevelopment(*m_development));
+				m_development = std::unique_ptr<Core::FMTDevelopment>(new Core::FMTFuturDevelopment(*m_development));
 				}
 		}
 

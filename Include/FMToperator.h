@@ -32,7 +32,7 @@ namespace Core
 		notvalid = 7
 	};
 
-class FMTEXPORT FMToperator
+class FMTEXPORT FMTOperator
 {
     FMTokey key;
 	friend class boost::serialization::access;
@@ -42,18 +42,18 @@ class FMTEXPORT FMToperator
 		ar & BOOST_SERIALIZATION_NVP(key);
 	}
 public:
-	FMToperator();
-	~FMToperator() = default;
-    FMToperator(FMTokey lkey);
-    FMToperator(std::string strkey);
-	bool operator == (const FMToperator& rhs) const;
-	bool operator != (const FMToperator& rhs) const;
+	FMTOperator();
+	~FMTOperator() = default;
+    FMTOperator(FMTokey lkey);
+    FMTOperator(std::string strkey);
+	bool operator == (const FMTOperator& rhs) const;
+	bool operator != (const FMTOperator& rhs) const;
     double call(const double& rhs1, const double& rhs2) const;
-    FMToperator(const FMToperator& rhs);
-    FMToperator& operator = (const FMToperator& rhs);
+    FMTOperator(const FMTOperator& rhs);
+    FMTOperator& operator = (const FMTOperator& rhs);
 	int precedence() const;
 	std::string associativity() const;
-	FMToperator reverse() const;
+	FMTOperator reverse() const;
 	bool valid() const;
 	size_t hash() const;
 	bool isFactor() const;

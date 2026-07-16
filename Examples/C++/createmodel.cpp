@@ -52,12 +52,12 @@ int main()
 	std::vector<std::string>attributenames;
 	std::vector<std::map<std::string, double>>indexes;
 	/////////////////////////////////////////////////
-	std::vector<Core::FMTtheme>themes;
+	std::vector<Core::FMTTheme>themes;
 	size_t fullsize = 0;
 	for (size_t themeid = 0; themeid< attributes.size();++themeid)
 	{
 		themes.push_back(
-			Core::FMTtheme(attributes.at(themeid),
+			Core::FMTTheme(attributes.at(themeid),
 				attributenames,
 				aggregates.at(themeid),
 				aggregatenames.at(themeid),
@@ -68,16 +68,16 @@ int main()
 	}
 	///////////////////////////////////////////////////////////
 	//Create Area
-	std::vector<Core::FMTactualdevelopment>area;
-	area.push_back(Core::FMTactualdevelopment(Core::FMTmask("GS1 FC6 COS30", themes),5,0,1200.00));
-	area.push_back(Core::FMTactualdevelopment(Core::FMTmask("GS2 FC4 COS20", themes),10,0,1456.00));
-	area.push_back(Core::FMTactualdevelopment(Core::FMTmask("GS3 FC6 COS60", themes),20,1,2352.00));
-	area.push_back(Core::FMTactualdevelopment(Core::FMTmask("GS1 FC4 COS30", themes),25,0,5454.00));
+	std::vector<Core::FMTActualDevelopment>area;
+	area.push_back(Core::FMTActualDevelopment(Core::FMTMask("GS1 FC6 COS30", themes),5,0,1200.00));
+	area.push_back(Core::FMTActualDevelopment(Core::FMTMask("GS2 FC4 COS20", themes),10,0,1456.00));
+	area.push_back(Core::FMTActualDevelopment(Core::FMTMask("GS3 FC6 COS60", themes),20,1,2352.00));
+	area.push_back(Core::FMTActualDevelopment(Core::FMTMask("GS1 FC4 COS30", themes),25,0,5454.00));
 	///////////////////////////////////////////////////////////
 	//Create Yields
-	Core::FMTyields yields;
-	Core::FMTageyieldhandler fc6yield(Core::FMTmask("? FC6 ?",themes));
-	Core::FMTageyieldhandler fc4yield(Core::FMTmask("? FC4 ?",themes));
+	Core::FMTYields yields;
+	Core::FMTAgeYieldHandler fc6yield(Core::FMTMask("? FC6 ?",themes));
+	Core::FMTAgeYieldHandler fc4yield(Core::FMTMask("? FC4 ?",themes));
 	double fc6j = 0;
 	double fc4j = 0;
 	for (size_t age = 1 ; age < 50; ++age)
@@ -89,49 +89,49 @@ int main()
 		fc6j += 10;
 		fc4j += 5;
 		}
-	yields.push_back(Core::FMTmask("? FC6 ?",themes), std::unique_ptr<Core::FMTyieldhandler>(new Core::FMTageyieldhandler(fc6yield)));
-	yields.push_back(Core::FMTmask("? FC4 ?",themes), std::unique_ptr<Core::FMTyieldhandler>(new Core::FMTageyieldhandler(fc4yield)));
+	yields.push_back(Core::FMTMask("? FC6 ?",themes), std::unique_ptr<Core::FMTYieldHandler>(new Core::FMTAgeYieldHandler(fc6yield)));
+	yields.push_back(Core::FMTMask("? FC4 ?",themes), std::unique_ptr<Core::FMTYieldHandler>(new Core::FMTAgeYieldHandler(fc4yield)));
 	yields.update();
 	///////////////////////////////////////////////////////////
 	//Create Action
-	std::vector<Core::FMTaction>actions;
-	actions.push_back(Core::FMTaction("ACT", true, true));
-	Core::FMTspec actionspec;
-	actionspec.addBounds(Core::FMTagebounds(Core::FMTsection::Action,100,3));
-	actions[0].push_back(Core::FMTmask("? ? ?",themes), actionspec);
+	std::vector<Core::FMTAction>actions;
+	actions.push_back(Core::FMTAction("ACT", true, true));
+	Core::FMTSpec actionspec;
+	actionspec.addBounds(Core::FMTAgeBounds(Core::FMTsection::Action,100,3));
+	actions[0].push_back(Core::FMTMask("? ? ?",themes), actionspec);
 	actions[0].update();
 	//////////////////////////////////////////////////////////
 	//Create Transition
-	std::vector<Core::FMTtransition>transitions;
-	transitions.push_back(Core::FMTtransition("ACT"));
-	Core::FMTfork fork;
-	fork.add(Core::FMTtransitionmask("? ? ?", themes, 100.0));
-	transitions[0].push_back(Core::FMTmask("? ? ?", themes),fork);
+	std::vector<Core::FMTTransition>transitions;
+	transitions.push_back(Core::FMTTransition("ACT"));
+	Core::FMTFork fork;
+	fork.add(Core::FMTTransitionMask("? ? ?", themes, 100.0));
+	transitions[0].push_back(Core::FMTMask("? ? ?", themes),fork);
 	transitions[0].update();
 	//////////////////////////////////////////////////////////
 	//Create lifespan
-	Core::FMTlifespans lifespan;
-	lifespan.push_back(Core::FMTmask("? ? ?", themes),80);
+	Core::FMTLifespans lifespan;
+	lifespan.push_back(Core::FMTMask("? ? ?", themes),80);
 	lifespan.update();
 	//////////////////////////////////////////////////////////
 	//Create Output
-	std::vector<Core::FMToutput>outputs;
-	std::vector<Core::FMToutputsource>sources;
-	std::vector<Core::FMToperator>oeprators;
-	sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask("? ? ?", themes), Core::FMTotar::actual
+	std::vector<Core::FMTOutput>outputs;
+	std::vector<Core::FMTOutputSource>sources;
+	std::vector<Core::FMTOperator>oeprators;
+	sources.push_back(Core::FMTOutputSource(Core::FMTSpec(), Core::FMTMask("? ? ?", themes), Core::FMTotar::actual
 		, "YVTOT", "ACT", 0, -1));
-	outputs.push_back(Core::FMToutput("OVOLTOTREC","VOLUME RECOLTE","VOLUME",
+	outputs.push_back(Core::FMTOutput("OVOLTOTREC","VOLUME RECOLTE","VOLUME",
 						sources,
 						oeprators));
 	//////////////////////////////////////////////////////////
 	//Create Constraint
-	std::vector<Core::FMTconstraint>constraints;
+	std::vector<Core::FMTConstraint>constraints;
 	//objective
-	Core::FMTconstraint objective(Core::FMTconstrainttype::FMTMAXMINobjective,outputs.at(0));
+	Core::FMTConstraint objective(Core::FMTconstrainttype::FMTMAXMINobjective,outputs.at(0));
 	objective.setLength(1);
 	constraints.push_back(objective);
 	//even flow
-	Core::FMTconstraint evenflow(Core::FMTconstrainttype::FMTevenflow, outputs.at(0));
+	Core::FMTConstraint evenflow(Core::FMTconstrainttype::FMTevenflow, outputs.at(0));
 	evenflow.setLength(1);
 	constraints.push_back(evenflow);
 	///////////////////////////////////////////////////////////

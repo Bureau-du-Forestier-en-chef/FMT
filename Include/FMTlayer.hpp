@@ -25,17 +25,17 @@ namespace Spatial
 	It is mostly generated using the FMTareaparser.
 	*/
     template <typename T>
-    class FMTlayer : public Core::FMTobject
+    class FMTlayer : public Core::FMTObject
         {
 		friend class boost::serialization::access;
-		// DocString: FMTlifespans::serialize
+		// DocString: FMTLifespans::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
 			ar & BOOST_SERIALIZATION_NVP(geotransform);
 			ar & BOOST_SERIALIZATION_NVP(maxx);
 			ar & BOOST_SERIALIZATION_NVP(maxy);
@@ -70,7 +70,7 @@ namespace Spatial
 			///Iterator typedef of the FMTlayer
 			typedef typename std::map<FMTcoordinate,T>::iterator iterator;
 			// DocString: FMTlayer::const_iterator
-			///Const_Iterator typedef of the FMTlist
+			///Const_Iterator typedef of the FMTList
 			typedef typename std::map<FMTcoordinate,T>::const_iterator const_iterator;
 			// DocString: FMTlayer::operator[]
 			/**
@@ -148,7 +148,7 @@ namespace Spatial
 			/**
 			Default constructor for FMTlayer.
 			*/
-            FMTlayer():Core::FMTobject(),geotransform(),maxx(),maxy(),SRS_WKT(),cellsize(),mapping(){}
+            FMTlayer():Core::FMTObject(),geotransform(),maxx(),maxy(),SRS_WKT(),cellsize(),mapping(){}
 			// DocString: ~FMTlayer()
 			/**
 			Default destructor for FMTlayer.
@@ -159,7 +159,7 @@ namespace Spatial
 			Default move constructor for FMTlayer.
 			*/
 			FMTlayer(FMTlayer&& rhs) noexcept :
-				Core::FMTobject(std::move(rhs)),
+				Core::FMTObject(std::move(rhs)),
 				geotransform(std::move(rhs.geotransform)),
 				maxx(std::move(rhs.maxx)),
 				maxy(std::move(rhs.maxy)),
@@ -177,7 +177,7 @@ namespace Spatial
                      const unsigned int& lmaxx,
                      const unsigned int& lmaxy,
                      const std::string& lSRS_WKT,
-                     const double& lcellsize):Core::FMTobject(),
+                     const double& lcellsize):Core::FMTObject(),
                      geotransform(lgeotransform),
                      maxx(lmaxx),
                      maxy(lmaxy),
@@ -194,7 +194,7 @@ namespace Spatial
                      const unsigned int& lmaxy,
                      const std::string& lSRS_WKT,
                      const double& lcellsize):
-                         Core::FMTobject(),
+                         Core::FMTObject(),
                 geotransform(lgeotransform),
                              maxx(lmaxx),
                              maxy(lmaxy),
@@ -205,7 +205,7 @@ namespace Spatial
 			/**
 			Default copy constructor for FMTlayer.
 			*/
-            FMTlayer(const FMTlayer& rhs):Core::FMTobject(rhs),
+            FMTlayer(const FMTlayer& rhs):Core::FMTObject(rhs),
                 geotransform(rhs.geotransform),
                 maxx(rhs.maxx),
                 maxy(rhs.maxy),
@@ -220,7 +220,7 @@ namespace Spatial
                 {
                 if(this!=&rhs)
                     {
-                    Core::FMTobject::operator = (rhs);
+                    Core::FMTObject::operator = (rhs);
                     mapping = (rhs.mapping);
                     geotransform = rhs.geotransform;
                     maxx = rhs.maxx;

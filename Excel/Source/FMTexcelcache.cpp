@@ -244,10 +244,10 @@ namespace Wrapper
 				const std::string sfile = context.marshal_as<std::string>(scenario);
 				std::vector<std::string>scenarios(1, sfile);
 				const std::vector<Models::FMTmodel> allmodels = parser->readproject(pfile, scenarios);
-				const std::vector<std::vector<Core::FMTschedule>>allschedule = parser->readschedules(pfile, allmodels);
+				const std::vector<std::vector<Core::FMTSchedule>>allschedule = parser->readschedules(pfile, allmodels);
 				const std::string mappath = getmappath(pfile);
 				int period = 0;
-				for (const Core::FMTschedule& schedule : allschedule.at(0))
+				for (const Core::FMTSchedule& schedule : allschedule.at(0))
 				{
 					period = std::max(period, schedule.getPeriod());
 				}

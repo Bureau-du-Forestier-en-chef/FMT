@@ -17,50 +17,50 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 	
-	class FMTEXPORT FMTtimeyieldhandler final : public FMTyieldhandler
+	class FMTEXPORT FMTTimeYieldHandler final : public FMTYieldHandler
 	{
 	public:
-		virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
+		virtual double get(const std::string& yld, const FMTYieldRequest& request) const;
 		virtual  operator std::string() const;
-		~FMTtimeyieldhandler() = default;
-		FMTtimeyieldhandler() = default;
-		FMTtimeyieldhandler(const FMTtimeyieldhandler& rhs) = default;
-		FMTtimeyieldhandler& operator = (const FMTtimeyieldhandler& rhs) = default;
-		// DocString: FMTtimeyieldhandler(const FMTmask&)
+		~FMTTimeYieldHandler() = default;
+		FMTTimeYieldHandler() = default;
+		FMTTimeYieldHandler(const FMTTimeYieldHandler& rhs) = default;
+		FMTTimeYieldHandler& operator = (const FMTTimeYieldHandler& rhs) = default;
+		// DocString: FMTTimeYieldHandler(const FMTMask&)
 		/**
-		Constructor for FMTtimeyieldhandler with a FMTmask
+		Constructor for FMTTimeYieldHandler with a FMTMask
 		*/		
-		FMTtimeyieldhandler(const FMTmask& mask);
-		// DocString: FMTtimeyieldhandler::setYieldValues
+		FMTTimeYieldHandler(const FMTMask& mask);
+		// DocString: FMTTimeYieldHandler::setYieldValues
 		/**
 		Set the values for given yield name. 
 		*/
 		virtual void setYieldValues(const std::string& yldname,const int& startingperiod,const std::vector<double>& values);	
 		virtual double getLastValue(const std::string yld) const;
 		virtual bool pushData(const std::string& yld, const double& value);
-		virtual bool pushData(const std::string& yld, const FMTdata& data);
-		virtual std::unique_ptr<FMTyieldhandler>clone() const;
-		virtual bool operator == (const FMTtimeyieldhandler& rhs) const;
+		virtual bool pushData(const std::string& yld, const FMTData& data);
+		virtual std::unique_ptr<FMTYieldHandler>clone() const;
+		virtual bool operator == (const FMTTimeYieldHandler& rhs) const;
 		virtual bool empty() const;
 		virtual size_t size() const;
 		virtual FMTyldtype getType() const;
-		virtual FMTdata& operator[](const std::string& yldname);
-		virtual const FMTdata& at(const std::string& yldname) const;
+		virtual FMTData& operator[](const std::string& yldname);
+		virtual const FMTData& at(const std::string& yldname) const;
 		virtual bool containsYield(const std::string& yldname) const;
 		virtual std::vector<std::string>getYieldNames() const;
 		virtual void clearCache();
 		virtual std::map<std::string, std::vector<double>>getAllYieldsData(const int& maxbase)const;
-		virtual std::unique_ptr<FMTyieldhandler> getFromFactor(const double& factor,
+		virtual std::unique_ptr<FMTYieldHandler> getFromFactor(const double& factor,
 			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
 	private:
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
+			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
 			ar& BOOST_SERIALIZATION_NVP(m_elements);
 		}
-		std::map<std::string, FMTdata, cmpYieldString>m_elements;
+		std::map<std::string, FMTData, cmpYieldString>m_elements;
 	};
 
 }

@@ -23,7 +23,7 @@ namespace Parallel
 	Task for parallel jobs needs to implement a clone / work / split functions for your task
 	to used it in the taskhandler.
 	*/
-	class FMTEXPORT FMTtask : public Core::FMTobject
+	class FMTEXPORT FMTtask : public Core::FMTObject
 	{
 	public:
 		// DocString: FMTtask::FMTtask()

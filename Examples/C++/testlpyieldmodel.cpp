@@ -22,7 +22,7 @@
 			optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
 			if (optimizationmodel.doPlanning(true))
 				{
-				for (const Core::FMToutput& output : optimizationmodel.getOutputs())
+				for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
 					{
 					if (output.getName().find("_") != std::string::npos)
 						{

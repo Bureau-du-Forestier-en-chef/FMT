@@ -35,9 +35,9 @@ FMTactionparser::FMTactionparser() : FMTparser()
 
 	std::string FMTactionparser::getBounds(
 		std::string& line, 
-		Core::FMTspec& spec,
-		const Core::FMTconstants& constants, 
-		const Core::FMTyields& ylds)
+		Core::FMTSpec& spec,
+		const Core::FMTConstants& constants, 
+		const Core::FMTYields& ylds)
         {
 		std::string mask = "";
 		try {
@@ -54,15 +54,15 @@ FMTactionparser::FMTactionparser() : FMTparser()
 					const std::string  yield = elements[loc - 1];
 					if (yield == "_AGE")
 					{
-						spec.addBounds(Core::FMTagebounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
+						spec.addBounds(Core::FMTAgeBounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
 					}
 					else if (yield == "_CP")
 					{
-						spec.setBounds(Core::FMTperbounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
+						spec.setBounds(Core::FMTPerBounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
 					}
 					else {
 						yields.push_back(yield);
-						spec.addBounds(Core::FMTyldbounds(yield, bounds<double>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
+						spec.addBounds(Core::FMTYldBounds(yield, bounds<double>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
 					}
 					if (maskloc == 0)
 					{
@@ -95,7 +95,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
         }
 
 	std::map<std::string, std::vector<std::string>>FMTactionparser::valAgg(
-		std::vector<Core::FMTaction>& actions, 
+		std::vector<Core::FMTAction>& actions, 
 		std::map<std::string, std::vector<std::string>>& aggregates)
         {
 		std::map<std::string, std::vector<std::string>>aggs;
@@ -116,13 +116,13 @@ FMTactionparser::FMTactionparser() : FMTparser()
         return aggs;
         }
 
-    std::vector<Core::FMTaction>FMTactionparser::read(
-		const std::vector<Core::FMTtheme>& themes,
-		const Core::FMTyields& yields,
-		const Core::FMTconstants& constants,
+    std::vector<Core::FMTAction>FMTactionparser::read(
+		const std::vector<Core::FMTTheme>& themes,
+		const Core::FMTYields& yields,
+		const Core::FMTConstants& constants,
 		const std::string& location)
         {
-		std::vector<Core::FMTaction> cleanedactions;
+		std::vector<Core::FMTAction> cleanedactions;
 		try {
 			std::ifstream actionstream(location);
 			std::string line;
@@ -130,9 +130,9 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			std::string aggregatename;
 			std::string partialname;
 			bool inseries = false;
-			std::vector<Core::FMTaction> actions;
+			std::vector<Core::FMTAction> actions;
 			std::map<std::string, std::vector<std::string>> aggregates;
-			Core::FMTaction* theaction = nullptr;
+			Core::FMTAction* theaction = nullptr;
 			std::vector<Core::FMTSerie> allseries;
 			if (FMTparser::tryOpening(actionstream, location))
 			{
@@ -164,7 +164,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 							const std::string capage = std::string(kmatch[5]) + std::string(kmatch[12]);
 							const bool resetage = (capage == "Y") ? true : false;
 							const bool respectlock = (locking.empty()) ? true : false;
-							actions.push_back(Core::FMTaction(actionname, respectlock, resetage));
+							actions.push_back(Core::FMTAction(actionname, respectlock, resetage));
 						}
 						else if (!operable.empty())
 						{
@@ -177,14 +177,14 @@ FMTactionparser::FMTactionparser() : FMTparser()
 							if (operablename == "_DEATH" &&
 								std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator("_DEATH"))== actions.end())
 								{
-								actions.push_back(Core::FMTaction("_DEATH", false, true));
+								actions.push_back(Core::FMTAction("_DEATH", false, true));
 								}
-							const std::vector<Core::FMTaction*>pactions = sameActionAs(operablename, actions);
+							const std::vector<Core::FMTAction*>pactions = sameActionAs(operablename, actions);
 							theaction = pactions.at(0);
 							operablename = theaction->getName();
 							if (pactions.size() > 1)
 							{
-								std::vector<std::pair<Core::FMTmask, Core::FMTspec>>::const_iterator dataof = pactions.at(1)->begin();
+								std::vector<std::pair<Core::FMTMask, Core::FMTSpec>>::const_iterator dataof = pactions.at(1)->begin();
 								for (size_t id = 0; id < pactions.at(1)->size(); ++id)
 								{
 									theaction->push_back(dataof->first,dataof->second);
@@ -207,7 +207,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						{
 							
 							partialname = kmatch[21];
-							const std::vector<Core::FMTaction*>pactions = sameActionAs(partialname, actions);
+							const std::vector<Core::FMTAction*>pactions = sameActionAs(partialname, actions);
 							operablename.clear();
 							aggregatename.clear();
 							inseries = false;
@@ -231,11 +231,11 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						}
 						else if (!operablename.empty())
 						{
-							Core::FMTspec spec;
+							Core::FMTSpec spec;
 							std::string mask = getBounds(line, spec, constants, yields);
 							
-							if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
-							const Core::FMTmask newmask(mask, themes);
+							if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
+							const Core::FMTMask newmask(mask, themes);
 							const size_t loc = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator(operablename)));
 							actions[loc].push_back(newmask, spec);
 						}
@@ -277,7 +277,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						}
 					}
 				}
-				for (Core::FMTaction& action : actions)
+				for (Core::FMTAction& action : actions)
 				{
 					if (!action.empty())
 					{
@@ -295,7 +295,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			}
 			for (const auto& aggobj : aggregates)
 			{
-				for (Core::FMTaction& action : cleanedactions)
+				for (Core::FMTAction& action : cleanedactions)
 				{
 					if (std::find(aggobj.second.begin(), aggobj.second.end(), action.getName()) != aggobj.second.end())
 					{
@@ -316,7 +316,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 
 		Core::FMTSerie FMTactionparser::_getSerie(
 			const std::string& p_line,
-			const std::vector<Core::FMTaction>& p_actions) const
+			const std::vector<Core::FMTAction>& p_actions) const
 		{
 			Core::FMTSerie returnedSerie;
 			try {
@@ -364,9 +364,9 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			return returnedSerie;
 		}
 
-		std::vector<Core::FMTaction>FMTactionparser::getGCBMactionsaggregate(const std::vector<Core::FMTaction>& actions) const
+		std::vector<Core::FMTAction>FMTactionparser::getGCBMactionsaggregate(const std::vector<Core::FMTAction>& actions) const
 		{
-			std::vector<Core::FMTaction>actionswithgcbmaggregate(actions);
+			std::vector<Core::FMTAction>actionswithgcbmaggregate(actions);
 			std::string onaction;
 			std::string location;
 			try {
@@ -377,7 +377,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 				{
 					boost::property_tree::ptree root;
 					boost::property_tree::read_json(jsonstream, root);
-					for (Core::FMTaction& action : actionswithgcbmaggregate)
+					for (Core::FMTAction& action : actionswithgcbmaggregate)
 						{
 						onaction = action.getName();
 						if (root.find(action.getName())==root.not_found()||
@@ -411,7 +411,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 
 
     void FMTactionparser::write(
-		const std::vector<Core::FMTaction>& actions,
+		const std::vector<Core::FMTAction>& actions,
 		const std::string& location,
 		bool withgcbmagg) const
         {
@@ -422,7 +422,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			if (tryOpening(actionstream, location))
 			{
 				std::vector<Core::FMTSerie>series;
-				for (const Core::FMTaction& act : actions)
+				for (const Core::FMTAction& act : actions)
 				{
 					actionstream << std::string(act) << "\n";
 					for (const std::string& aggregate : act.getAggregates())
@@ -472,11 +472,11 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			}
         }
 
-    std::vector<Core::FMTaction*> FMTactionparser::sameActionAs(
+    std::vector<Core::FMTAction*> FMTactionparser::sameActionAs(
 		const std::string& all_set, 
-		std::vector<Core::FMTaction>& actions) const
+		std::vector<Core::FMTAction>& actions) const
         {
-		std::vector<Core::FMTaction*>all_pointers;
+		std::vector<Core::FMTAction*>all_pointers;
 		try {
 			const std::vector<std::string>response = sameAs(all_set);
 			for(const std::string& actname : response)

@@ -8,37 +8,37 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTlookup_Hm_included
 #define FMTlookup_Hm_included
 
-//#include "FMTdevelopment.h"
+//#include "FMTDevelopment.h"
 #include <boost/functional/hash.hpp>
 
 namespace Core
 {
 	template<class inmemory,class pointer>
-	class FMTlookup
+	class FMTLookup
 	{
 	public:
 		inmemory memoryobject;
 		const pointer* pointerobject;
-		FMTlookup() = default;
-		~FMTlookup() = default;
+		FMTLookup() = default;
+		~FMTLookup() = default;
 		//For looking
-		FMTlookup(const pointer& ptr) :
+		FMTLookup(const pointer& ptr) :
 			memoryobject(), pointerobject(&ptr)
 		{
 
 		}
 		//For keeping
-		FMTlookup(const inmemory& des, const pointer& dev) :
+		FMTLookup(const inmemory& des, const pointer& dev) :
 			memoryobject(des), pointerobject(&dev)
 		{
 
 		}
-		FMTlookup(const FMTlookup& rhs) :
+		FMTLookup(const FMTLookup& rhs) :
 			memoryobject(rhs.memoryobject), pointerobject(rhs.pointerobject)
 		{
 
 		}
-		FMTlookup& operator = (const FMTlookup& rhs)
+		FMTLookup& operator = (const FMTLookup& rhs)
 		{
 			if (this != &rhs)
 			{
@@ -47,7 +47,7 @@ namespace Core
 			}
 			return *this;
 		}
-		bool operator < (const FMTlookup& rhs) const
+		bool operator < (const FMTLookup& rhs) const
 		{
 			//strict ordering
 			if (pointerobject == nullptr)
@@ -61,7 +61,7 @@ namespace Core
 			return false;
 		}
 		
-		bool operator == (const FMTlookup& rhs) const
+		bool operator == (const FMTLookup& rhs) const
 		{
 			return  (pointerobject != nullptr && rhs.pointerobject != nullptr && (*pointerobject) == (*rhs.pointerobject));
 		}
@@ -73,15 +73,15 @@ namespace boost
 {
 
 	template<class inmemory, class pointer>
-	struct hash<Core::FMTlookup<inmemory,pointer>>
+	struct hash<Core::FMTLookup<inmemory,pointer>>
 	{
-		std::size_t operator()(const Core::FMTlookup<inmemory, pointer>& lookup) const
+		std::size_t operator()(const Core::FMTLookup<inmemory, pointer>& lookup) const
 		{
 			return lookup.pointerobject->hash();
 		}
 	};
 
-	template<> inline std::size_t hash<Core::FMTlookup<std::vector<size_t>, std::string>>::operator()(const Core::FMTlookup<std::vector<size_t>, std::string>& lookup) const
+	template<> inline std::size_t hash<Core::FMTLookup<std::vector<size_t>, std::string>>::operator()(const Core::FMTLookup<std::vector<size_t>, std::string>& lookup) const
 		{
 		return boost::hash<std::string>()(*lookup.pointerobject);
 		}
@@ -97,17 +97,17 @@ namespace Graph
 	{
 	public:
 		tdescriptor descriptor;
-		const Core::FMTdevelopment* development;
+		const Core::FMTDevelopment* development;
 		FMTvertexlookup() = default;
 		~FMTvertexlookup() = default;
 		//For looking
-		FMTvertexlookup(const Core::FMTdevelopment& dev) :
+		FMTvertexlookup(const Core::FMTDevelopment& dev) :
 			descriptor(), development(&dev)
 			{
 
 			}
 		//For keeping
-		FMTvertexlookup(const tdescriptor& des, const Core::FMTdevelopment& dev) :
+		FMTvertexlookup(const tdescriptor& des, const Core::FMTDevelopment& dev) :
 			descriptor(des), development(&dev)
 			{
 

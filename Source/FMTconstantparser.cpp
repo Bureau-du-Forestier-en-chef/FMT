@@ -26,7 +26,7 @@ FMTconstantparser::FMTconstantparser():
 	setSection(Core::FMTsection::Constants);
     }
 
-bool FMTconstantparser::_fillConstants(Core::FMTconstants& p_constants,
+bool FMTconstantparser::_fillConstants(Core::FMTConstants& p_constants,
 	const std::string& p_input, bool p_allowNonValid) const
 	{
 	try{
@@ -89,13 +89,13 @@ bool FMTconstantparser::_fillConstants(Core::FMTconstants& p_constants,
 	}
 
 std::queue<FMTparser::FMTLineInfo> FMTconstantparser::getCleanLinewfor(std::ifstream& p_stream,
-	const std::vector<Core::FMTtheme>& p_themes,
-	const Core::FMTconstants& p_cons) const
+	const std::vector<Core::FMTTheme>& p_themes,
+	const Core::FMTConstants& p_cons) const
 {
 	std::queue<FMTLineInfo> lines;
 	try {
 		std::queue<FMTLineInfo> TempQueue = getAllLines(p_stream);
-		Core::FMTconstants constantsCopy(p_cons);
+		Core::FMTConstants constantsCopy(p_cons);
 		while (!TempQueue.empty())
 			{
 			lines.push(TempQueue.front());
@@ -113,15 +113,15 @@ std::queue<FMTparser::FMTLineInfo> FMTconstantparser::getCleanLinewfor(std::ifst
 
 
 
-Core::FMTconstants FMTconstantparser::read(const std::string& location)
+Core::FMTConstants FMTconstantparser::read(const std::string& location)
     {
-	Core::FMTconstants constants;
+	Core::FMTConstants constants;
 	try {
 		boost::filesystem::path pathtoconstants(location);
 		if (boost::filesystem::is_regular_file(pathtoconstants))//Constants is not a needed component
 		{
 			std::ifstream CONstream(location);
-			std::vector<Core::FMTtheme>themes;
+			std::vector<Core::FMTTheme>themes;
 			if (FMTparser::tryOpening(CONstream, location))
 			{
 				std::queue<FMTparser::FMTLineInfo>Lines = getCleanLinewfor(CONstream, 
@@ -141,7 +141,7 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
     return constants;
     }
 
-void FMTconstantparser::write(const Core::FMTconstants& constants,const std::string& location) const
+void FMTconstantparser::write(const Core::FMTConstants& constants,const std::string& location) const
     {
 	try {
 		std::ofstream constantstream;

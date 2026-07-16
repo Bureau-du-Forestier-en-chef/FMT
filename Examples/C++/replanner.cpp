@@ -127,8 +127,8 @@ int main(int argc, char *argv[])
 		"OSUPADM_RECUP_FEU_M3HA_SEPM_100_124","OSUPADM_RECUP_FEU_M3HA_SEPM_125_999","SUPERFICIE_RECUP_TBE","SUPERFICIE_ADM_RECUP_TBE",
 		"OVOLTOTRECARECUP","OVOLTOTREC_RECUP","OSUPREALPL","OVOLSABPIEDINC","OVOLGEPXPIEDINC","OVOLGFIPIEDINC","OVOLGFTPIEDINC",
 		"ORISQUE","ORISQUE_FEU","ORISQUE_TBE","OVOLGRPIEDINC","OSUPINC","OSUPECHEC"*/};
-	std::vector<Core::FMToutput> selectedoutputs;
-	for (const Core::FMToutput& output : global.getOutputs())
+	std::vector<Core::FMTOutput> selectedoutputs;
+	for (const Core::FMTOutput& output : global.getOutputs())
 	{
 		if (std::find(OutputtoLookFor.begin(), OutputtoLookFor.end(), output.getName()) != OutputtoLookFor.end())
 		{

@@ -5,9 +5,9 @@
 #include <string>
 
 namespace Core {
-	class FMTschedule;
-	class FMTconstraint;
-	class FMToutput;
+	class FMTSchedule;
+	class FMTConstraint;
+	class FMTOutput;
 }
 
 namespace Models {
@@ -305,16 +305,16 @@ namespace Wrapper
 
 	private:
 		void InscrireLigneFichierTexte(System::String^ nomFichier, System::String^ message, bool indicateurFeedback, bool nouveaufichier);
-		std::vector<Core::FMTconstraint> ObtenirArrayContraintes(int indexScenario);
-		std::vector<Core::FMTconstraint> ObtenirArrayContraintesSelectionnees(std::vector<Core::FMTconstraint> contraitesBase, System::Collections::Generic::List<System::String^>^ contraintesSelection);
-		Core::FMToutput ObtenirOutputSelectionnee(std::vector<Core::FMToutput> outputsBase, System::String^ outputSelection);
-		std::vector<Core::FMToutput> ObtenirArrayOutputsSelectionnees(std::vector<Core::FMToutput> outputsBase, System::Collections::Generic::List<System::String^>^ outputsSelection);
+		std::vector<Core::FMTConstraint> ObtenirArrayContraintes(int indexScenario);
+		std::vector<Core::FMTConstraint> ObtenirArrayContraintesSelectionnees(std::vector<Core::FMTConstraint> contraitesBase, System::Collections::Generic::List<System::String^>^ contraintesSelection);
+		Core::FMTOutput ObtenirOutputSelectionnee(std::vector<Core::FMTOutput> outputsBase, System::String^ outputSelection);
+		std::vector<Core::FMTOutput> ObtenirArrayOutputsSelectionnees(std::vector<Core::FMTOutput> outputsBase, System::Collections::Generic::List<System::String^>^ outputsSelection);
 		delegate void managedFeed(const char*);
 		managedFeed^ managed;
 		System::IntPtr unmanaged;
 		void ToFeedBack(const char* message);
 		void raiseFromCatch(std::string text, const std::string& method, const int& line, const std::string& fil);
-		std::vector<Core::FMTschedule> ObtenirSEQ(System::String^ nomFichierPri, int indexScenario);
+		std::vector<Core::FMTSchedule> ObtenirSEQ(System::String^ nomFichierPri, int indexScenario);
 
 		// Méthode helper pour envoyer les résultats via RetourJson
 		void EnvoyerResultatsInterface(const FMTWrapperCore::SESResults& results, bool indCarbon);
@@ -326,11 +326,11 @@ namespace Wrapper
 		// est maintenant dans FMTWrapperCore::SES :
 		// 
 		// void RapportdeBris(const Models::FMTsemodel& semodel);
-		// void RapportdeCarboneSpatial(const Models::FMTsemodel& semodel, const int& nombredeperiodes, const std::vector<Core::FMTschedule>& schedules);
+		// void RapportdeCarboneSpatial(const Models::FMTsemodel& semodel, const int& nombredeperiodes, const std::vector<Core::FMTSchedule>& schedules);
 		// void EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, System::Collections::Generic::List<int>^ growththemes, const bool& incarbon);
 		// void EcritureDesEvenements(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, const bool& incarbon);
-		// std::vector<Core::FMToutput> EcritureDesOutputs(const Models::FMTsemodel& semodel, System::Collections::Generic::List<System::String^>^ outputs, const int& nombredeperiodes, const bool& incarbon);
-		// void EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semodel, const std::vector<Core::FMToutput>& outputs, const int& sortiemin, const int& sortiemax, System::String^ localisation);
+		// std::vector<Core::FMTOutput> EcritureDesOutputs(const Models::FMTsemodel& semodel, System::Collections::Generic::List<System::String^>^ outputs, const int& nombredeperiodes, const bool& incarbon);
+		// void EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semodel, const std::vector<Core::FMTOutput>& outputs, const int& sortiemin, const int& sortiemax, System::String^ localisation);
 		// void EcritureDesPredicteurs(const Models::FMTsemodel& semodel, const std::string& rastpath, const int& periodes, System::Collections::Generic::List<System::String^>^ predictoryields);
 		//
 		// Toute la logique est maintenant orchestrée par SES::RunSES()

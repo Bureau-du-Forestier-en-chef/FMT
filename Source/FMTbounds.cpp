@@ -10,157 +10,157 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-	FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
+	FMTYldBounds::FMTYldBounds():FMTBounds<double>(),yield(){}
 
 
-	FMTyldbounds::FMTyldbounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower) : FMTbounds<double>(lsection, lupper, llower), yield(lyield)
+	FMTYldBounds::FMTYldBounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower) : FMTBounds<double>(lsection, lupper, llower), yield(lyield)
 		{
 
 		}
 
-    FMTyldbounds::FMTyldbounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper, const double& llower):FMTbounds<double>(lsection,key,lupper,llower),yield(lyield)
+    FMTYldBounds::FMTYldBounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper, const double& llower):FMTBounds<double>(lsection,key,lupper,llower),yield(lyield)
         {
 
         }
 
-        FMTyldbounds::FMTyldbounds(const FMTyldbounds& rhs) : FMTbounds<double>(rhs), yield(rhs.yield)
+        FMTYldBounds::FMTYldBounds(const FMTYldBounds& rhs) : FMTBounds<double>(rhs), yield(rhs.yield)
             {
 
             }
 
-        FMTyldbounds::FMTyldbounds(const std::string& lyield,const FMTbounds<double>& rhs) : FMTbounds(rhs) , yield(lyield)
+        FMTYldBounds::FMTYldBounds(const std::string& lyield,const FMTBounds<double>& rhs) : FMTBounds(rhs) , yield(lyield)
             {
 
             }
-        FMTyldbounds& FMTyldbounds::operator = (const FMTyldbounds& rhs)
+        FMTYldBounds& FMTYldBounds::operator = (const FMTYldBounds& rhs)
             {
             if (this!=&rhs)
                 {
-                FMTbounds::operator=(rhs);
+                FMTBounds::operator=(rhs);
                 yield = rhs.yield;
                 }
             return *this;
             }
 
-		bool FMTyldbounds::operator == (const FMTyldbounds& rhs) const
+		bool FMTYldBounds::operator == (const FMTYldBounds& rhs) const
 			{
-			return (FMTbounds::operator==(rhs) &&
+			return (FMTBounds::operator==(rhs) &&
 					yield == rhs.yield);
 			}
-        FMTyldbounds::operator std::string() const
+        FMTYldBounds::operator std::string() const
             {
-            return FMTbounds::toString(yield);
+            return FMTBounds::toString(yield);
             }
 
 
 
-    FMTagebounds::FMTagebounds():FMTbounds<int>(){}
-    FMTagebounds::FMTagebounds(const FMTsection lsection,const int& lupper, const int& llower):FMTbounds<int>(lsection,lupper,llower)
+    FMTAgeBounds::FMTAgeBounds():FMTBounds<int>(){}
+    FMTAgeBounds::FMTAgeBounds(const FMTsection lsection,const int& lupper, const int& llower):FMTBounds<int>(lsection,lupper,llower)
         {
 
         }
-   FMTagebounds::FMTagebounds(const FMTsection lsection, const FMTkwor key, const int& lupper, const int& llower):FMTbounds<int>(lsection,key,lupper,llower)
+   FMTAgeBounds::FMTAgeBounds(const FMTsection lsection, const FMTkwor key, const int& lupper, const int& llower):FMTBounds<int>(lsection,key,lupper,llower)
         {
 
         }
-    FMTagebounds::FMTagebounds(const FMTagebounds& rhs) : FMTbounds(rhs)
+    FMTAgeBounds::FMTAgeBounds(const FMTAgeBounds& rhs) : FMTBounds(rhs)
         {
 
         }
-    FMTagebounds::FMTagebounds(const FMTbounds<int>& rhs) : FMTbounds(rhs)
+    FMTAgeBounds::FMTAgeBounds(const FMTBounds<int>& rhs) : FMTBounds(rhs)
         {
 
         }
-    FMTagebounds& FMTagebounds::operator = (const FMTagebounds& rhs)
+    FMTAgeBounds& FMTAgeBounds::operator = (const FMTAgeBounds& rhs)
         {
         if (this!=&rhs)
             {
-            FMTbounds::operator=(rhs);
+            FMTBounds::operator=(rhs);
             }
         return *this;
         }
-    FMTagebounds::operator std::string() const
+    FMTAgeBounds::operator std::string() const
         {
-        return FMTbounds::toString("_AGE");
+        return FMTBounds::toString("_AGE");
         }
-	bool  FMTagebounds::operator == (const FMTagebounds& rhs) const
+	bool  FMTAgeBounds::operator == (const FMTAgeBounds& rhs) const
 		{
-		return (FMTbounds::operator==(rhs));
+		return (FMTBounds::operator==(rhs));
 		}
 
-    FMTperbounds::FMTperbounds():FMTbounds<int>(){}
-    FMTperbounds::FMTperbounds(const FMTsection lsection, const int& lupper, const int& llower):FMTbounds<int>(lsection,lupper,llower)
+    FMTPerBounds::FMTPerBounds():FMTBounds<int>(){}
+    FMTPerBounds::FMTPerBounds(const FMTsection lsection, const int& lupper, const int& llower):FMTBounds<int>(lsection,lupper,llower)
         {
 
         }
  
-    FMTperbounds::FMTperbounds(const FMTperbounds& rhs) : FMTbounds(rhs)
+    FMTPerBounds::FMTPerBounds(const FMTPerBounds& rhs) : FMTBounds(rhs)
         {
 
         }
-	FMTperbounds::FMTperbounds(const FMTbounds<int>& rhs) : FMTbounds(rhs)
+	FMTPerBounds::FMTPerBounds(const FMTBounds<int>& rhs) : FMTBounds(rhs)
 		{
 
 		}
-    FMTperbounds& FMTperbounds::operator = (const FMTperbounds& rhs)
+    FMTPerBounds& FMTPerBounds::operator = (const FMTPerBounds& rhs)
         {
         if (this!=&rhs)
             {
-            FMTbounds::operator=(rhs);
+            FMTBounds::operator=(rhs);
             }
         return *this;
         }
-    FMTperbounds::operator std::string() const
+    FMTPerBounds::operator std::string() const
         {
-        return FMTbounds::toString("_CP");
+        return FMTBounds::toString("_CP");
         }
-	bool FMTperbounds::operator == (const FMTperbounds& rhs) const
+	bool FMTPerBounds::operator == (const FMTPerBounds& rhs) const
 		{
-		return (FMTbounds::operator==(rhs));
+		return (FMTBounds::operator==(rhs));
 		}
 
-FMTlockbounds::FMTlockbounds():FMTbounds<int>(){}
+FMTLockBounds::FMTLockBounds():FMTBounds<int>(){}
 
-FMTlockbounds::FMTlockbounds(const FMTsection lsection, const int& lupper, const int& llower) : FMTbounds<int>(lsection,lupper, llower)
+FMTLockBounds::FMTLockBounds(const FMTsection lsection, const int& lupper, const int& llower) : FMTBounds<int>(lsection,lupper, llower)
 {
 
 }
 
-FMTlockbounds::FMTlockbounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower):FMTbounds<int>(lsection,key,lupper,llower)
+FMTLockBounds::FMTLockBounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower):FMTBounds<int>(lsection,key,lupper,llower)
     {
 
     }
-FMTlockbounds::FMTlockbounds(const FMTlockbounds& rhs):FMTbounds<int>(rhs)
+FMTLockBounds::FMTLockBounds(const FMTLockBounds& rhs):FMTBounds<int>(rhs)
     {
 
     }
-FMTlockbounds& FMTlockbounds::operator = (const FMTlockbounds& rhs)
+FMTLockBounds& FMTLockBounds::operator = (const FMTLockBounds& rhs)
     {
      if (this!=&rhs)
         {
-        FMTbounds::operator=(rhs);
+        FMTBounds::operator=(rhs);
         }
     return *this;
     }
-FMTlockbounds::operator std::string() const
+FMTLockBounds::operator std::string() const
     {
-    return FMTbounds::toString("_LOCK");
+    return FMTBounds::toString("_LOCK");
     }
 
-bool FMTlockbounds::operator == (const FMTlockbounds& rhs) const
+bool FMTLockBounds::operator == (const FMTLockBounds& rhs) const
 	{
-	return FMTbounds<int>::operator==(rhs);
+	return FMTBounds<int>::operator==(rhs);
 	}
 
 
-FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
-    FMTspec::FMTspec(const FMTspec& rhs):per(rhs.per),age(rhs.age),
+FMTSpec::FMTSpec():per(),age(),lock(), yieldnames(), yieldbounds(){}
+    FMTSpec::FMTSpec(const FMTSpec& rhs):per(rhs.per),age(rhs.age),
                                         lock(rhs.lock),
 									yieldnames(rhs.yieldnames), yieldbounds(rhs.yieldbounds)
         {
 
         }
-    FMTspec& FMTspec::operator = (const FMTspec& rhs)
+    FMTSpec& FMTSpec::operator = (const FMTSpec& rhs)
         {
         if (this!=&rhs)
             {
@@ -172,7 +172,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
             }
         return *this;
         }
-    bool FMTspec::add(const FMTspec& rhs)
+    bool FMTSpec::add(const FMTSpec& rhs)
         {
         if (!rhs.per.empty())
             {
@@ -193,21 +193,21 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 				yieldnames.push_back(*nameit);
 				}
 			}
-        /*for(std::map<std::string,FMTyldbounds>::const_iterator it = rhs.ylds.begin(); it != rhs.ylds.end() ; it++)
+        /*for(std::map<std::string,FMTYldBounds>::const_iterator it = rhs.ylds.begin(); it != rhs.ylds.end() ; it++)
             {
             ylds[it->first] = it->second;
             }*/
         return true;
         }
-    bool FMTspec::setBounds(const FMTperbounds& bound)
+    bool FMTSpec::setBounds(const FMTPerBounds& bound)
         {
         return per.add(bound);
         }
-    bool FMTspec::addBounds(const FMTagebounds& bound)
+    bool FMTSpec::addBounds(const FMTAgeBounds& bound)
         {
         return age.add(bound);
         }
-    bool FMTspec::addBounds(const FMTyldbounds& bound)
+    bool FMTSpec::addBounds(const FMTYldBounds& bound)
         {
 		std::vector<std::string>::const_iterator nameit = std::find(yieldnames.begin(), yieldnames.end(), bound.yield);
 		if (nameit != yieldnames.end())
@@ -226,11 +226,11 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
             }*/
         return true;
         }
-    bool FMTspec::addBounds(const FMTlockbounds& bound)
+    bool FMTSpec::addBounds(const FMTLockBounds& bound)
         {
         return lock.add(bound);
         }
-    FMTspec::operator std::string() const
+    FMTSpec::operator std::string() const
         {
 		std::string line;
         bool andstuff = false;
@@ -267,7 +267,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 				++nyld;
 				}
             /*size_t nyld = 1;
-            for(std::map<std::string,FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end() ; it++)
+            for(std::map<std::string,FMTYldBounds>::const_iterator it = ylds.begin(); it != ylds.end() ; it++)
                 {
                 if (nyld!=ylds.size())
                     {
@@ -286,7 +286,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
         }
 
 
-	bool FMTspec::operator == (const FMTspec& rhs) const
+	bool FMTSpec::operator == (const FMTSpec& rhs) const
 		{
 		return (per == rhs.per &&
 			age == rhs.age &&
@@ -295,7 +295,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 			yieldbounds == rhs.yieldbounds);
 		}
 
-	bool FMTspec::operator < (const FMTspec& rhs) const
+	bool FMTSpec::operator < (const FMTSpec& rhs) const
 		{
 		//strict ordering
 		if (per < rhs.per)
@@ -321,31 +321,31 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 		return false;
 		}
 
-	/*std::vector<std::string>FMTspec::getYlds() const
+	/*std::vector<std::string>FMTSpec::getYlds() const
         {
 		std::vector<std::string>values;
         if(!ylds.empty())
             {
             values.reserve(ylds.size());
-            for(std::map<std::string,FMTyldbounds>::const_iterator it = ylds.begin();it!= ylds.end();++it)
+            for(std::map<std::string,FMTYldBounds>::const_iterator it = ylds.begin();it!= ylds.end();++it)
                 {
                 values.push_back(it->first);
                 }
             }
         return values;
         }
-	std::map<std::string, FMTyldbounds>FMTspec::getYldsBounds() const
+	std::map<std::string, FMTYldBounds>FMTSpec::getYldsBounds() const
 		{
 		return ylds;
 		}*/
 
 
-    bool FMTspec::empty() const
+    bool FMTSpec::empty() const
         {
         return (per.empty() && age.empty() && yieldnames.empty() && lock.empty());
         }
 
-	size_t FMTspec::hash() const
+	size_t FMTSpec::hash() const
 		{
 		std::size_t seed = 0;
 		boost::hash_combine(seed, std::hash<int>()(per.getLower()));
@@ -362,7 +362,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 		}
 		/*if (!ylds.empty())
 			{
-			for (std::map<std::string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
+			for (std::map<std::string, FMTYldBounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
 				{
 				boost::hash_combine(seed, std::hash<double>()(it->second.getLower()));
 				boost::hash_combine(seed, std::hash<double>()(it->second.getUpper()));
@@ -371,54 +371,54 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 		return seed;
 		}
 
-	bool FMTspec::emptyLock() const
+	bool FMTSpec::emptyLock() const
 		{
 		return lock.empty();
 		}
 
-	bool FMTspec::emptyAge() const
+	bool FMTSpec::emptyAge() const
 		{
 		return age.empty();
 		}
-	bool FMTspec::emptyYlds() const
+	bool FMTSpec::emptyYlds() const
 		{
 		return yieldnames.empty();
 		}
 
-	bool FMTspec::emptyPeriod() const
+	bool FMTSpec::emptyPeriod() const
 		{
 		return per.empty();
 		}
-	int FMTspec::getPeriodUpperBound() const
+	int FMTSpec::getPeriodUpperBound() const
 	{
 		return per.upper;
 	}
-	int FMTspec::getPeriodLowerBound() const
+	int FMTSpec::getPeriodLowerBound() const
 	{
 		return per.lower;
 	}
-	int FMTspec::getLockUpperBound() const
+	int FMTSpec::getLockUpperBound() const
 	{
 		return lock.upper;
 	}
 
-	int FMTspec::getLockLowerBound() const
+	int FMTSpec::getLockLowerBound() const
 	{
 		return lock.lower;
 	}
 
 
 
-	int FMTspec::getAgeUpperBound() const
+	int FMTSpec::getAgeUpperBound() const
 		{
 		return age.upper;
 		}
-	int FMTspec::getAgeLowerBound() const
+	int FMTSpec::getAgeLowerBound() const
 		{
 		return age.lower;
 		}
 
-	bool FMTspec::isSubsetOf(const FMTspec& rhs) const
+	bool FMTSpec::isSubsetOf(const FMTSpec& rhs) const
 		{
 		bool persubset = true;
 		if (!per.empty() && !rhs.per.empty())
@@ -453,7 +453,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 					yldssubset = (rhs.yieldbounds.at(location).getLower() >= yieldbounds.at(ylid).getLower()) && (yieldbounds.at(ylid).getUpper() <= rhs.yieldbounds.at(location).getUpper());
 				}
 			}
-		/*for (std::map<std::string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
+		/*for (std::map<std::string, FMTYldBounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
 			{
 			if (rhs.ylds.find(it->first)== rhs.ylds.end())
 				{

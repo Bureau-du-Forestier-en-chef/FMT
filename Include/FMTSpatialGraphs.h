@@ -32,18 +32,18 @@ namespace Models
 
 namespace Core
 {
-	class FMTconstraint;
-	class FMToutputnode;
-	class FMTschedule;
-	class FMToutput;
-	class FMTschedule;
+	class FMTConstraint;
+	class FMTOutputNode;
+	class FMTSchedule;
+	class FMTOutput;
+	class FMTSchedule;
 }
 
 
 namespace Spatial
 	{
 	class FMTVirtualLineGraph;
-	class FMTSpatialGraphs: public Core::FMTobject
+	class FMTSpatialGraphs: public Core::FMTObject
 		{
 		public:
 			using const_iterator = std::map<Graph::FMTlinegraph, 
@@ -67,7 +67,7 @@ namespace Spatial
 			const Models::FMTmodel& getModel() const;
 			std::map<std::string, double> getOutput(
 				const FMTSolutionTracker& p_Solution,
-				const Core::FMToutput& p_output,
+				const Core::FMTOutput& p_output,
 				int p_period, Core::FMToutputlevel level) const;
 			void setModel(const Models::FMTmodel& p_model);
 			void addToSolution(FMTSolutionTracker& p_solution,
@@ -78,7 +78,7 @@ namespace Spatial
 				const_iterator p_iterator);
 			bool isNotNull(size_t p_family,
 				const_iterator p_iterator) const;
-			std::vector<Core::FMTschedule> getSchedules(const FMTSolutionTracker& p_Solution,
+			std::vector<Core::FMTSchedule> getSchedules(const FMTSolutionTracker& p_Solution,
 											bool WithLock = false) const;
 			const_iterator getBaseIterator(size_t p_family) const;
 			const_iterator getLastPeriodIterator(
@@ -96,7 +96,7 @@ namespace Spatial
 			std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>m_AllGraphs;
 			size_t m_LastGraphId;
 			std::vector<std::vector<size_t>>m_Constraints;
-			boost::unordered_map<Core::FMTmask, size_t>m_GraphsMasks;
+			boost::unordered_map<Core::FMTMask, size_t>m_GraphsMasks;
 			FMTSolutionTracker m_BaseSolution;
 			std::vector<size_t>m_ConstraintsId;
 			Models::FMTmodel const * m_Model;
@@ -118,7 +118,7 @@ namespace Spatial
 				FMTSpatialGraphs::iterator p_Graph,
 				size_t p_ConstraintId,
 				std::vector<double>& p_constraintValues) const;
-			static Core::FMTmask _getUseFullBits(const Models::FMTmodel& p_model);
+			static Core::FMTMask _getUseFullBits(const Models::FMTmodel& p_model);
 			size_t _getFamily(const Graph::FMTlinegraph& p_Graph) const;
 			size_t _getNonSpatialId(size_t p_Constraint) const;
 			void _fillConstraintResults(size_t p_Constraint,

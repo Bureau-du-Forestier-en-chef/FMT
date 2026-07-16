@@ -19,10 +19,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 namespace Core {
-	class FMTactualdevelopment;
-	class FMTfuturdevelopment;
-	class FMTmask;
-	class FMTdevelopment;
+	class FMTActualDevelopment;
+	class FMTFuturDevelopment;
+	class FMTMask;
+	class FMTDevelopment;
 }
 
 
@@ -55,25 +55,25 @@ namespace Graph
 		@return a reference to the vertexproperties.
 		*/
 		FMTbasevertexproperties& operator = (const FMTbasevertexproperties& rhs);
-		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTfuturdevelopment&)
+		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTFuturDevelopment&)
 		/**
 		@brief constructor based on futur development.
 		@param[in] futur development.
 		*/
-		FMTbasevertexproperties(const Core::FMTfuturdevelopment& p_development);
-		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTactualdevelopment&)
+		FMTbasevertexproperties(const Core::FMTFuturDevelopment& p_development);
+		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTActualDevelopment&)
 		/**
 		@brief constructor based on actual development.
 		@param[in] actual development.
 		*/
-		FMTbasevertexproperties(const Core::FMTactualdevelopment& p_development);
-		//FMTbasevertexproperties(const Core::FMTdevelopment& p_development);
+		FMTbasevertexproperties(const Core::FMTActualDevelopment& p_development);
+		//FMTbasevertexproperties(const Core::FMTDevelopment& p_development);
 		// DocString: FMTbasevertexproperties::setDevlopementMask
 		/**
 		@brief set the development mask of the vertex.
 		@param[in] the mask of the FMTdevlopement.
 		*/
-		void setDevlopementMask(const Core::FMTmask& p_newMask);
+		void setDevlopementMask(const Core::FMTMask& p_newMask);
 		// DocString: FMTbasevertexproperties::getBaseRhs
 		/**
 		@brief get the rhs of the constraint of the vertex.
@@ -91,7 +91,7 @@ namespace Graph
 		@brief get a const reference to the development
 		@return a reference to the development.
 		*/
-		const Core::FMTdevelopment& get() const;
+		const Core::FMTDevelopment& get() const;
 		// DocString: FMTbasevertexproperties::hash
 		/**
 		@brief hash the development of the vertex.
@@ -137,7 +137,7 @@ namespace Graph
 			}
 		// DocString: FMTbasevertexproperties::m_development
 		///The development that hold the information about the strata.
-		std::unique_ptr<Core::FMTdevelopment> m_development;
+		std::unique_ptr<Core::FMTDevelopment> m_development;
 		void _save(double p_area);
 	};
 }

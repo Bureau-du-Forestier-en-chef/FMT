@@ -17,8 +17,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTyields;
-	class FMTaction;
+	class FMTYields;
+	class FMTAction;
 }
 
 namespace Graph
@@ -30,7 +30,7 @@ namespace Graph
 	public:
 		FMTpredictor();
 		~FMTpredictor() = default;
-		FMTpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
+		FMTpredictor(const std::vector<Core::FMTAction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTYields& yields,
 			const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid = true);
 		FMTpredictor(const FMTpredictor& rhs);
 		FMTpredictor& operator = (const FMTpredictor& rhs);
@@ -51,7 +51,7 @@ namespace Graph
 		std::vector<double>target_yields;
 		std::vector<int>periodgaps;
 		std::vector<int>sourceactions;
-		std::vector<double>getYields(const FMTbasevertexproperties& vertex, const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const;
+		std::vector<double>getYields(const FMTbasevertexproperties& vertex, const Core::FMTYields& yields, const std::vector<std::string>& yieldnames) const;
 	};
 }
 

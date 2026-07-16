@@ -13,7 +13,7 @@
 	#include "FMTbounds.hpp"
 	#include <boost/algorithm/string.hpp>
 
-bool keepandupdate(Core::FMTspec& spec, const int& updateto)
+bool keepandupdate(Core::FMTSpec& spec, const int& updateto)
 {
 	if (spec.emptyPeriod())
 	{
@@ -29,7 +29,7 @@ bool keepandupdate(Core::FMTspec& spec, const int& updateto)
 		{
 			lastPeriod -= updateto;
 		}
-		spec.setBounds(Core::FMTperbounds(Core::FMTsection::Optimize, lastPeriod, firstPeriod));
+		spec.setBounds(Core::FMTPerBounds(Core::FMTsection::Optimize, lastPeriod, firstPeriod));
 		return true;
 	}
 	return false;
@@ -67,22 +67,22 @@ int main(int argc, char *argv[])
 		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.doPlanning(true);
-		const std::vector<Core::FMTactualdevelopment>newarea = optimizationmodel.getArea(updateto);
+		const std::vector<Core::FMTActualDevelopment>newarea = optimizationmodel.getArea(updateto);
 		optimizationmodel.setArea(newarea);
-		std::vector<Core::FMTconstraint>constraints;
-		for (const Core::FMTconstraint& constraint : optimizationmodel.getconstraints())
+		std::vector<Core::FMTConstraint>constraints;
+		for (const Core::FMTConstraint& constraint : optimizationmodel.getconstraints())
 			{
-			Core::FMTconstraint newconstraint(constraint);
+			Core::FMTConstraint newconstraint(constraint);
 			if (keepandupdate(newconstraint, updateto))
 				{
 				constraints.push_back(newconstraint);
 				}
 			}
 		optimizationmodel.setConstraints(constraints);
-		std::vector<Core::FMTaction>actions;
-		for (const Core::FMTaction& action : optimizationmodel.getactions())
+		std::vector<Core::FMTAction>actions;
+		for (const Core::FMTAction& action : optimizationmodel.getactions())
 			{
-			Core::FMTaction newaction(action);
+			Core::FMTAction newaction(action);
 			bool gotone = false;
 			for (auto& actl : newaction)
 				{
@@ -98,10 +98,10 @@ int main(int argc, char *argv[])
 				}
 			}
 		optimizationmodel.setActions(actions);
-		std::vector<Core::FMTtransition>transitions;
-		for (const Core::FMTtransition& transition : optimizationmodel.getTransitions())
+		std::vector<Core::FMTTransition>transitions;
+		for (const Core::FMTTransition& transition : optimizationmodel.getTransitions())
 		{
-			Core::FMTtransition newtransition(transition);
+			Core::FMTTransition newtransition(transition);
 			bool gotone = false;
 			for (auto& actl : newtransition)
 			{
@@ -117,18 +117,18 @@ int main(int argc, char *argv[])
 			}
 		}
 		optimizationmodel.setTransitions(transitions);
-		Core::FMTyields yields = optimizationmodel.getYields();
+		Core::FMTYields yields = optimizationmodel.getYields();
 		for (auto& yieldlist : yields)
 		{
 			if (yieldlist.second->getType() == Core::FMTyldtype::FMTtimeyld)
 			{
-				Core::FMTtimeyieldhandler* timeyield = dynamic_cast<Core::FMTtimeyieldhandler*>(yieldlist.second.get());
+				Core::FMTTimeYieldHandler* timeyield = dynamic_cast<Core::FMTTimeYieldHandler*>(yieldlist.second.get());
 				const int firstbase = *(timeyield->getBases().begin());
 				int newbase = std::max(0, firstbase - updateto);
 				std::vector<int>bases(1, newbase);
 				for (const std::string& yield : timeyield->getYieldNames())
 				{
-					Core::FMTdata& values = (*timeyield)[yield];
+					Core::FMTData& values = (*timeyield)[yield];
 					if (firstbase <= updateto)
 					{
 						int keepfirst = 0;

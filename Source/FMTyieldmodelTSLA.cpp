@@ -47,7 +47,7 @@ namespace Core {
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
-	const std::vector<double>FMTyieldmodelTSLA::predict(const Core::FMTyieldrequest& request) const
+	const std::vector<double>FMTyieldmodelTSLA::predict(const Core::FMTYieldRequest& request) const
 	{
 		std::vector<double>returned(1, std::numeric_limits<double>::max());
 		try {
@@ -84,8 +84,8 @@ namespace Core {
 		return returned;
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelTSLA::presolve(const FMTmaskfilter& filter,
-		const std::vector<FMTtheme>& newthemes) const
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelTSLA::presolve(const FMTMaskFilter& filter,
+		const std::vector<FMTTheme>& newthemes) const
 	{
 		try {
 			return Clone();
@@ -97,8 +97,8 @@ namespace Core {
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelTSLA::postSolve(const FMTmaskfilter& filter,
-		const std::vector<FMTtheme>& basethemes) const
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelTSLA::postSolve(const FMTMaskFilter& filter,
+		const std::vector<FMTTheme>& basethemes) const
 	{
 		try {
 			return Clone();

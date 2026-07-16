@@ -36,7 +36,7 @@ reduce the overhead caused by the addrow / addcol osisolverinterface during recu
 All calls related to add/remove columns or rows checking for primal or dual solution getting the number of
 rows or columns dont need synchronization with the cache. So those calls are going to be faster when usecache = true.
 */
-class FMTEXPORT FMTlpsolver: public Core::FMTobject
+class FMTEXPORT FMTlpsolver: public Core::FMTObject
 	{
 	public:
 		// DocString: FMTlpsolver::swap
@@ -514,7 +514,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		void save(Archive& ar, const unsigned int version) const
 		{
 			try {
-				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTobject>(*this));
+				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTObject>(*this));
 				ar& BOOST_SERIALIZATION_NVP(usecache);
 				matrixcache.synchronize(solverinterface);
 				const FMTserializablematrix matrix(solverinterface);
@@ -534,7 +534,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		void load(Archive& ar, const unsigned int version)
 		{
 			try {
-				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
 				ar& BOOST_SERIALIZATION_NVP(usecache);
 				matrixcache.synchronize(solverinterface);
 				FMTserializablematrix matrix;

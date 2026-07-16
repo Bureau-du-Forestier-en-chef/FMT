@@ -11,7 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 
 {
-	const FMToperatingareaclusterbinary& FMToperatingareacluster::getBinary(const Core::FMTmask& mask) const
+	const FMToperatingareaclusterbinary& FMToperatingareacluster::getBinary(const Core::FMTMask& mask) const
 			{
 			return *std::find_if(binaries.begin(), binaries.end(), FMTOperatingAreaComparator(mask));
 			}
@@ -100,7 +100,7 @@ namespace Heuristics
         return (getTotalPotentialArea() >= minimalarea && maximalarea >= minimalarea);
         }
 
-    FMToperatingareacluster FMToperatingareacluster::getFilteredCluster(const Core::FMTmask& filterMask) const
+    FMToperatingareacluster FMToperatingareacluster::getFilteredCluster(const Core::FMTMask& filterMask) const
         {
         FMToperatingareacluster newcluster(*this);
         if (centroid.getMask().isSubsetOf(filterMask))
@@ -111,8 +111,8 @@ namespace Heuristics
                 if (binary.getMask().isSubsetOf(filterMask))
                     {
                     FMToperatingareaclusterbinary newbinary(binary);
-                    std::vector<Core::FMTmask>newneighbors;
-                    for (const Core::FMTmask& link : binary.getNeighbors())
+                    std::vector<Core::FMTMask>newneighbors;
+                    for (const Core::FMTMask& link : binary.getNeighbors())
                         {
                         if (link.isSubsetOf(filterMask))
                             {
@@ -130,9 +130,9 @@ namespace Heuristics
         return newcluster;
         }
 
-    std::vector<Core::FMTmask>FMToperatingareacluster::getAllMasks() const
+    std::vector<Core::FMTMask>FMToperatingareacluster::getAllMasks() const
         {
-        std::vector<Core::FMTmask>allmasks;
+        std::vector<Core::FMTMask>allmasks;
         allmasks.push_back(centroid.getMask());
         for (const FMToperatingareaclusterbinary& binary : binaries)
             {

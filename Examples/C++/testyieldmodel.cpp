@@ -36,16 +36,16 @@ int main()
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	//mparser.write(models.at(0), "E:/Projects/BFEC_MachineLearning/test/");
 	Models::FMTsesmodel simulationmodel(models.at(0));
-	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
-	std::vector<Core::FMTtransition> strans;
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
+	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
 	{
 		strans.push_back(tran.single());
 	}
 	simulationmodel.setTransitions(strans);
-	std::vector<Core::FMTconstraint>newconstraints;
+	std::vector<Core::FMTConstraint>newconstraints;
 	size_t id = 0;
-	for (const Core::FMTconstraint& cnt : simulationmodel.getconstraints())
+	for (const Core::FMTConstraint& cnt : simulationmodel.getconstraints())
 	{
 		if (id<2)
 		{
@@ -73,8 +73,8 @@ int main()
 		}
 		Logging::FMTDefaultLogger() << "\n";
 	}
-	std::vector<Core::FMToutput> spatialoutput;
-	for (const Core::FMToutput& output : simulationmodel.getOutputs())
+	std::vector<Core::FMTOutput> spatialoutput;
+	for (const Core::FMTOutput& output : simulationmodel.getOutputs())
 	{
 		if (output.getName().find("_") != std::string::npos)
 		{
@@ -85,7 +85,7 @@ int main()
 	mparser.writeResults(simulationmodel, spatialoutput, 1, 10, "../../tests/testyieldmodel/", Core::FMToutputlevel::totalonly, "CSV");
 
 	//simulationmodel.solve();
-	for (const Core::FMToutput& output : spatialoutput)
+	for (const Core::FMTOutput& output : spatialoutput)
 	{
 		for (int period = 1; period < 11; ++period)
 		{

@@ -90,8 +90,8 @@ int main(int argc, char* argv[])
 		Models::FMTsamodel optimizationmodel(models.at(0));
 		optimizationmodel.setInitialMapping(forest);
 		//optimizationmodel.redirectLogToFile(outputlocation + "/SA.log");
-		std::vector<Core::FMTtransition>singletransitions;
-		for (const Core::FMTtransition transition : optimizationmodel.getTransitions())
+		std::vector<Core::FMTTransition>singletransitions;
+		for (const Core::FMTTransition transition : optimizationmodel.getTransitions())
 			{
 			singletransitions.push_back(transition.single());
 			}
@@ -104,8 +104,8 @@ int main(int argc, char* argv[])
 		//optimizationmodel.setParameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
 		optimizationmodel.doPlanning(true);
 		//optimizationmodel.logConstraintsInfeasibilities();
-		/*std::vector<Core::FMToutput>outputs;
-		for (const Core::FMToutput& out : optimizationmodel.getoutputs())
+		/*std::vector<Core::FMTOutput>outputs;
+		for (const Core::FMTOutput& out : optimizationmodel.getoutputs())
 		{
 			if (out.getName().find("OVOL")!=std::string::npos)
 			{

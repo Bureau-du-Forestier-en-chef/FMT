@@ -24,15 +24,15 @@
 
 namespace FMTWrapperCore
 {
-    std::vector<Core::FMToutput> SES::filterOutputs(
-        const std::vector<Core::FMToutput>& allOutputs,
+    std::vector<Core::FMTOutput> SES::filterOutputs(
+        const std::vector<Core::FMTOutput>& allOutputs,
         const std::vector<std::string>& selectedNames)
     {
-        std::vector<Core::FMToutput> filtered;
+        std::vector<Core::FMTOutput> filtered;
 
         for (const std::string& name : selectedNames)
         {
-            for (const Core::FMToutput& output : allOutputs)
+            for (const Core::FMTOutput& output : allOutputs)
             {
                 if (output.getName() == name)
                 {
@@ -45,11 +45,11 @@ namespace FMTWrapperCore
         return filtered;
     }
 
-    std::vector<Core::FMTtheme> SES::buildGrowthThemes(
-        const std::vector<Core::FMTtheme>& allThemes,
+    std::vector<Core::FMTTheme> SES::buildGrowthThemes(
+        const std::vector<Core::FMTTheme>& allThemes,
         const std::vector<int>& themeIndices)
     {
-        std::vector<Core::FMTtheme> growthThemes;
+        std::vector<Core::FMTTheme> growthThemes;
 
         if (!themeIndices.empty())
         {
@@ -66,15 +66,15 @@ namespace FMTWrapperCore
         return growthThemes;
     }
 
-    std::vector<Core::FMTconstraint> SES::filterConstraints(
-        const std::vector<Core::FMTconstraint>& allConstraints,
+    std::vector<Core::FMTConstraint> SES::filterConstraints(
+        const std::vector<Core::FMTConstraint>& allConstraints,
         const std::vector<std::string>& selectedNames)
     {
-        std::vector<Core::FMTconstraint> selectedConstraints;
+        std::vector<Core::FMTConstraint> selectedConstraints;
 
         for (const std::string& name : selectedNames)
         {
-            for (const Core::FMTconstraint& constraint : allConstraints)
+            for (const Core::FMTConstraint& constraint : allConstraints)
             {
                 if (std::string(constraint) == name)
                 {
@@ -89,8 +89,8 @@ namespace FMTWrapperCore
 
     void SES::applySingleTransitions(Models::FMTmodel& model)
     {
-        std::vector<Core::FMTtransition> singleTransitions;
-        for (const Core::FMTtransition& transition : model.getTransitions())
+        std::vector<Core::FMTTransition> singleTransitions;
+        for (const Core::FMTTransition& transition : model.getTransitions())
         {
             singleTransitions.push_back(transition.single());
         }
@@ -157,7 +157,7 @@ namespace FMTWrapperCore
     SESResults SES::RunSES(
         const SESParameters& params,
         const Models::FMTmodel& baseModel,
-        const std::vector<Core::FMTschedule>& schedules)
+        const std::vector<Core::FMTSchedule>& schedules)
     {
         SESResults results;
         
@@ -286,7 +286,7 @@ namespace FMTWrapperCore
             // les mêmes messages pour les retourner à l'appelant.
             semodel.logConstraintsInfeasibilities();
 
-            const std::vector<Core::FMTconstraint> constraints = semodel.getconstraints();
+            const std::vector<Core::FMTConstraint> constraints = semodel.getconstraints();
             double brokenup = 0;
             double total = 0;
 
@@ -297,7 +297,7 @@ namespace FMTWrapperCore
                 double value = semodel.getConstraintEvaluation(cid);
                 if (value > 0)
                 {
-                    const Core::FMTconstraint& constraint = constraints.at(cid);
+                    const Core::FMTConstraint& constraint = constraints.at(cid);
                     if (constraint.isGoal())
                     {
                         double goalValue = 0;
@@ -419,7 +419,7 @@ namespace FMTWrapperCore
     CarbonReportData SES::generateCarbonReport(
         const Models::FMTsemodel& semodel,
         const int numberOfPeriods,
-        const std::vector<Core::FMTschedule>& schedules)
+        const std::vector<Core::FMTSchedule>& schedules)
     {
         CarbonReportData reportData;
 
@@ -427,7 +427,7 @@ namespace FMTWrapperCore
         {
             Models::FMTsemodel localmodel(semodel);
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTschedule> newSchedule = semodel.getSchedules(schedule, false);
+            const std::vector<Core::FMTSchedule> newSchedule = semodel.getSchedules(schedule, false);
             size_t scid = 0;
 
             for (int period = 1; period <= numberOfPeriods; ++period)
@@ -435,8 +435,8 @@ namespace FMTWrapperCore
                 CarbonReportData::PeriodData periodData;
                 periodData.period = period;
 
-                std::vector<Core::FMTconstraint> periodicconstraints = semodel.getconstraints();
-                for (Core::FMTconstraint& periodconstraint : periodicconstraints)
+                std::vector<Core::FMTConstraint> periodicconstraints = semodel.getconstraints();
+                for (Core::FMTConstraint& periodconstraint : periodicconstraints)
                 {
                     const int lowerperiod = periodconstraint.getPeriodLowerBound();
                     const int upperperiod = std::min(period, periodconstraint.getPeriodUpperBound());
@@ -454,7 +454,7 @@ namespace FMTWrapperCore
                 double newtotal = 0;
 
                 size_t oriloc = 0;
-                for (const Core::FMTschedule& schedule : schedules)
+                for (const Core::FMTSchedule& schedule : schedules)
                 {
                     if (schedule.getPeriod() == period)
                     {
@@ -464,7 +464,7 @@ namespace FMTWrapperCore
                 }
 
                 size_t newloc = 0;
-                for (const Core::FMTschedule& schedule : newSchedule)
+                for (const Core::FMTSchedule& schedule : newSchedule)
                 {
                     if (schedule.getPeriod() == period)
                     {
@@ -520,18 +520,18 @@ namespace FMTWrapperCore
 
         try
         {
-            const std::vector<Core::FMTtheme> growthThemes = buildGrowthThemes(
+            const std::vector<Core::FMTTheme> growthThemes = buildGrowthThemes(
                 semodel.getThemes(),
                 growthThemeIndices);
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTaction> actions = semodel.getactions();
+            const std::vector<Core::FMTAction> actions = semodel.getactions();
 
             Parser::FMTtransitionparser transitionparser;
             Parser::FMTareaparser areaparser;
 
             for (int period = 1; period <= numberOfPeriods; ++period)
             {
-                const std::vector<Core::FMTGCBMtransition> transitions =
+                const std::vector<Core::FMTGCBMTransition> transitions =
                     areaparser.writeDisturbances(
                         outputBasePath,
                         schedule,
@@ -564,7 +564,7 @@ namespace FMTWrapperCore
         try
         {
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTaction> actions = semodel.getactions();
+            const std::vector<Core::FMTAction> actions = semodel.getactions();
             eventsData.statistics = schedule.getPatchStats(actions);
         }
         catch (std::exception& e)
@@ -590,12 +590,12 @@ namespace FMTWrapperCore
 
         try
         {
-            const std::vector<Core::FMToutput> allOutputs = semodel.getOutputs();
-            std::vector<Core::FMToutput> selectedOutputs = filterOutputs(allOutputs, outputNames);
+            const std::vector<Core::FMTOutput> allOutputs = semodel.getOutputs();
+            std::vector<Core::FMTOutput> selectedOutputs = filterOutputs(allOutputs, outputNames);
 
             outputsData.outputObjects = selectedOutputs;
 
-            for (const Core::FMToutput& output : selectedOutputs)
+            for (const Core::FMTOutput& output : selectedOutputs)
             {
                 OutputsData::OutputResult result;
                 result.outputName = output.getName();
@@ -630,7 +630,7 @@ namespace FMTWrapperCore
 
     std::vector<std::string> SES::writeSpatialOutputs(
         const Models::FMTsemodel& semodel,
-        const std::vector<Core::FMToutput>& outputs,
+        const std::vector<Core::FMTOutput>& outputs,
         const int minPeriod,
         const int maxPeriod,
         const std::string& outputPath)
@@ -643,7 +643,7 @@ namespace FMTWrapperCore
 
             for (int period = minPeriod; period <= maxPeriod; ++period)
             {
-                for (const Core::FMToutput& output : outputs)
+                for (const Core::FMTOutput& output : outputs)
                 {
                     const std::string outputname = output.getName() + "_" + std::to_string(period) + ".tif";
                     const std::string outputrasterpath = outputPath + outputname;
@@ -734,7 +734,7 @@ namespace FMTWrapperCore
         {
             Parser::FMTscheduleparser scheduparser;
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTschedule> schedules = semodel.getSchedules(schedule);
+            const std::vector<Core::FMTSchedule> schedules = semodel.getSchedules(schedule);
 
             schedulePath = outputPath + semodel.getName() + "._seq";
             scheduparser.write(schedules, schedulePath);
@@ -784,7 +784,7 @@ namespace FMTWrapperCore
 
     void SES::exportResults(
         const Models::FMTsemodel& semodel,
-        const std::vector<Core::FMToutput>& outputs,
+        const std::vector<Core::FMTOutput>& outputs,
         const int minPeriod,
         const int maxPeriod,
         const std::string& outputPath,

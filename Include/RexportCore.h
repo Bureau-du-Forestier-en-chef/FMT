@@ -35,114 +35,114 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <Rcpp.h>
 
-RCPP_EXPOSED_WRAP(Core::FMTobject);
-RCPP_EXPOSED_AS(Core::FMTobject);
-RCPP_EXPOSED_WRAP(Core::FMTmask);
-RCPP_EXPOSED_AS(Core::FMTmask);
-RCPP_DEFINEVECTOR(Core::FMTmask);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTdevelopment);
-RCPP_EXPOSED_AS(Core::FMTdevelopment);
-RCPP_EXPOSED_WRAP(Core::FMTdevelopmentpath);
-RCPP_EXPOSED_AS(Core::FMTdevelopmentpath);
-RCPP_DEFINEVECTOR(Core::FMTdevelopmentpath);//For vector
-RCPP_DEFINEVECTOR(Core::FMTdevelopment);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTspec);
-RCPP_EXPOSED_AS(Core::FMTspec);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTspec);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTspec);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTperbounds);
-RCPP_EXPOSED_AS(Core::FMTperbounds);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTperbounds);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTperbounds);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTagebounds);
-RCPP_EXPOSED_AS(Core::FMTagebounds);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTagebounds);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTagebounds);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTyldbounds);
-RCPP_EXPOSED_AS(Core::FMTyldbounds);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTyldbounds);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTyldbounds);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTlockbounds);
-RCPP_EXPOSED_AS(Core::FMTlockbounds);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTlockbounds);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTlockbounds);//For vector
-RCPP_EXPOSED_WRAP(Core::FMToutputsource);
-RCPP_EXPOSED_AS(Core::FMToutputsource);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMToutputsource);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMToutputsource);//For vector
-RCPP_EXPOSED_WRAP(Core::FMToperator);
-RCPP_EXPOSED_AS(Core::FMToperator);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMToperator);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMToperator);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTtransitionmask);
-RCPP_EXPOSED_AS(Core::FMTtransitionmask);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTtransitionmask);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTtransitionmask);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTObject);
+RCPP_EXPOSED_AS(Core::FMTObject);
+RCPP_EXPOSED_WRAP(Core::FMTMask);
+RCPP_EXPOSED_AS(Core::FMTMask);
+RCPP_DEFINEVECTOR(Core::FMTMask);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTDevelopment);
+RCPP_EXPOSED_AS(Core::FMTDevelopment);
+RCPP_EXPOSED_WRAP(Core::FMTDevelopmentPath);
+RCPP_EXPOSED_AS(Core::FMTDevelopmentPath);
+RCPP_DEFINEVECTOR(Core::FMTDevelopmentPath);//For vector
+RCPP_DEFINEVECTOR(Core::FMTDevelopment);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTSpec);
+RCPP_EXPOSED_AS(Core::FMTSpec);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTSpec);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTSpec);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTPerBounds);
+RCPP_EXPOSED_AS(Core::FMTPerBounds);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTPerBounds);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTPerBounds);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTAgeBounds);
+RCPP_EXPOSED_AS(Core::FMTAgeBounds);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTAgeBounds);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTAgeBounds);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTYldBounds);
+RCPP_EXPOSED_AS(Core::FMTYldBounds);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTYldBounds);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTYldBounds);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTLockBounds);
+RCPP_EXPOSED_AS(Core::FMTLockBounds);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTLockBounds);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTLockBounds);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTOutputSource);
+RCPP_EXPOSED_AS(Core::FMTOutputSource);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTOutputSource);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTOutputSource);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTOperator);
+RCPP_EXPOSED_AS(Core::FMTOperator);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTOperator);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTOperator);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTTransitionMask);
+RCPP_EXPOSED_AS(Core::FMTTransitionMask);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTTransitionMask);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTTransitionMask);//For vector
 
 
 
-RCPP_EXPOSED_WRAP(Core::FMTmaskfilter);
-RCPP_EXPOSED_AS(Core::FMTmaskfilter);
-RCPP_DEFINEVECTOR(Core::FMTmaskfilter);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTactualdevelopment);
-RCPP_EXPOSED_AS(Core::FMTactualdevelopment);
-RCPP_DEFINEVECTOR(Core::FMTactualdevelopment);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTfuturdevelopment);
-RCPP_EXPOSED_AS(Core::FMTfuturdevelopment);
-RCPP_DEFINEVECTOR(Core::FMTfuturdevelopment);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTaction);
-RCPP_EXPOSED_AS(Core::FMTaction);
-RCPP_DEFINEVECTOR(Core::FMTaction);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTlifespans);
-RCPP_EXPOSED_AS(Core::FMTlifespans);
-RCPP_DEFINEPAIR(Core::FMTmask, int);//pair for FMTlist
+RCPP_EXPOSED_WRAP(Core::FMTMaskFilter);
+RCPP_EXPOSED_AS(Core::FMTMaskFilter);
+RCPP_DEFINEVECTOR(Core::FMTMaskFilter);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTActualDevelopment);
+RCPP_EXPOSED_AS(Core::FMTActualDevelopment);
+RCPP_DEFINEVECTOR(Core::FMTActualDevelopment);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTFuturDevelopment);
+RCPP_EXPOSED_AS(Core::FMTFuturDevelopment);
+RCPP_DEFINEVECTOR(Core::FMTFuturDevelopment);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTAction);
+RCPP_EXPOSED_AS(Core::FMTAction);
+RCPP_DEFINEVECTOR(Core::FMTAction);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTLifespans);
+RCPP_EXPOSED_AS(Core::FMTLifespans);
+RCPP_DEFINEPAIR(Core::FMTMask, int);//pair for FMTList
 RCPP_EXPOSED_ENUM_NODECL(Core::FMTyldtype);
-RCPP_EXPOSED_WRAP(Core::FMTyieldhandler);
-RCPP_EXPOSED_AS(Core::FMTyieldhandler);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTyieldhandler);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTyieldhandler);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTtimeyieldhandler);
-RCPP_EXPOSED_AS(Core::FMTtimeyieldhandler);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTtimeyieldhandler);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTtimeyieldhandler);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTageyieldhandler);
-RCPP_EXPOSED_AS(Core::FMTageyieldhandler);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTageyieldhandler);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTageyieldhandler);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTyields);
-RCPP_EXPOSED_AS(Core::FMTyields);
-RCPP_EXPOSED_WRAP(Core::FMTfork);
-RCPP_EXPOSED_AS(Core::FMTfork);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTfork);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTfork);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTtransition);
-RCPP_EXPOSED_AS(Core::FMTtransition);
-RCPP_DEFINEVECTOR(Core::FMTtransition);//For vector
-RCPP_EXPOSED_WRAP(Core::FMToutputnode);
-RCPP_EXPOSED_AS(Core::FMToutputnode);
-RCPP_DEFINEVECTOR(Core::FMToutputnode);//For vector
-RCPP_EXPOSED_WRAP(Core::FMToutput);
-RCPP_EXPOSED_AS(Core::FMToutput);
-RCPP_DEFINEVECTOR(Core::FMToutput);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTtheme);
-RCPP_EXPOSED_AS(Core::FMTtheme);
-RCPP_DEFINEVECTOR(Core::FMTtheme);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTconstants);
-RCPP_EXPOSED_AS(Core::FMTconstants);
-RCPP_EXPOSED_WRAP(Core::FMTschedule);
-RCPP_EXPOSED_AS(Core::FMTschedule);
-RCPP_DEFINEVECTOR(Core::FMTschedule);//For vector
-RCPP_DEFINELIST(std::vector<Core::FMTschedule>)//For vector of vector
-RCPP_EXPOSED_WRAP(Core::FMTGCBMtransition);
-RCPP_EXPOSED_AS(Core::FMTGCBMtransition);
-RCPP_DEFINEVECTOR(Core::FMTGCBMtransition);//For vector
-RCPP_EXPOSED_WRAP(Core::FMTconstraint);
-RCPP_EXPOSED_AS(Core::FMTconstraint);
-RCPP_DEFINEVECTOR(Core::FMTconstraint);//For vector
-RCPP_DEFINEMAP(Core::FMTdevelopment, std::vector<double>);//For dev of doubles
+RCPP_EXPOSED_WRAP(Core::FMTYieldHandler);
+RCPP_EXPOSED_AS(Core::FMTYieldHandler);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTYieldHandler);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTYieldHandler);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTTimeYieldHandler);
+RCPP_EXPOSED_AS(Core::FMTTimeYieldHandler);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTTimeYieldHandler);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTTimeYieldHandler);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTAgeYieldHandler);
+RCPP_EXPOSED_AS(Core::FMTAgeYieldHandler);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTAgeYieldHandler);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTAgeYieldHandler);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTYields);
+RCPP_EXPOSED_AS(Core::FMTYields);
+RCPP_EXPOSED_WRAP(Core::FMTFork);
+RCPP_EXPOSED_AS(Core::FMTFork);
+RCPP_DEFINEPAIR(Core::FMTMask, Core::FMTFork);//pair for FMTList
+RCPP_DEFINEVECTOR(Core::FMTFork);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTTransition);
+RCPP_EXPOSED_AS(Core::FMTTransition);
+RCPP_DEFINEVECTOR(Core::FMTTransition);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTOutputNode);
+RCPP_EXPOSED_AS(Core::FMTOutputNode);
+RCPP_DEFINEVECTOR(Core::FMTOutputNode);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTOutput);
+RCPP_EXPOSED_AS(Core::FMTOutput);
+RCPP_DEFINEVECTOR(Core::FMTOutput);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTTheme);
+RCPP_EXPOSED_AS(Core::FMTTheme);
+RCPP_DEFINEVECTOR(Core::FMTTheme);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTConstants);
+RCPP_EXPOSED_AS(Core::FMTConstants);
+RCPP_EXPOSED_WRAP(Core::FMTSchedule);
+RCPP_EXPOSED_AS(Core::FMTSchedule);
+RCPP_DEFINEVECTOR(Core::FMTSchedule);//For vector
+RCPP_DEFINELIST(std::vector<Core::FMTSchedule>)//For vector of vector
+RCPP_EXPOSED_WRAP(Core::FMTGCBMTransition);
+RCPP_EXPOSED_AS(Core::FMTGCBMTransition);
+RCPP_DEFINEVECTOR(Core::FMTGCBMTransition);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTConstraint);
+RCPP_EXPOSED_AS(Core::FMTConstraint);
+RCPP_DEFINEVECTOR(Core::FMTConstraint);//For vector
+RCPP_DEFINEMAP(Core::FMTDevelopment, std::vector<double>);//For dev of doubles
 RCPP_DEFINEMAP(std::string, std::vector<double>);//For string of double map
-RCPP_DEFINEMAP(std::string, std::vector<Core::FMTdevelopment>);//For string of vector of developments
-RCPP_DEFINEMAP(Core::FMTaction , std::map<Core::FMTdevelopment RCPP_COMMA std::vector<double>>);//For action of ...
+RCPP_DEFINEMAP(std::string, std::vector<Core::FMTDevelopment>);//For string of vector of developments
+RCPP_DEFINEMAP(Core::FMTAction , std::map<Core::FMTDevelopment RCPP_COMMA std::vector<double>>);//For action of ...
 RCPP_DEFINEMAP(std::string , std::map<std::string RCPP_COMMA std::vector<double>>);//For string of ...
 RCPP_DEFINEMAP(std::string, std::string);//map of string definition
 RCPP_EXPOSED_ENUM_NODECL(Core::FMTconstrainttype);
@@ -154,362 +154,362 @@ namespace R
 
 void exportCore()
     {
-	define_FMTlist<Core::FMTspec>("FMTspeclist");
+	define_FMTlist<Core::FMTSpec>("FMTspeclist");
 	define_FMTlist<int>("FMTintlist");
-	//define_FMTlist<Core::FMTyieldhandler>("FMTyieldhandlerlist");
-	define_FMTlist<Core::FMTfork>("FMTforklist");
+	//define_FMTlist<Core::FMTYieldHandler>("FMTyieldhandlerlist");
+	define_FMTlist<Core::FMTFork>("FMTforklist");
 
-	Rcpp::class_<Core::FMTobject>("FMTobject", "@DocString(FMTobject)")
-		.constructor("@DocString(FMTobject())")
-		.method("setdefaultexceptionhandler", &Core::FMTobject::setDefaultExceptionHandler,
-			"@DocString(FMTobject::setdefaultexceptionhandler)")
-		.method("setquietexceptionhandler", &Core::FMTobject::setQuietExceptionHandler,
-			"@DocString(FMTobject::setquietexceptionhandler)")
-		.method("setdebugexceptionhandler", &Core::FMTobject::setDebugExceptionHandler,
-			"@DocString(FMTobject::setdebugexceptionhandler)")
-		.method("setfreeexceptionhandler", &Core::FMTobject::setFreeExceptionHandler,
-			"@DocString(FMTobject::setfreeexceptionhandler)")
-		.method("disablenestedexceptions", &Core::FMTobject::disableNestedExceptions,
-			"@DocString(FMTobject::disablenestedexceptions)")
-		.method("enablenestedexceptions", &Core::FMTobject::enableNestedExceptions,
-			"@DocString(FMTobject::enablenestedexceptions)")
-		.method("setquietlogger", &Core::FMTobject::setQuietLogger,
-			"@DocString(FMTobject::setquietlogger)")
-		.method("settasklogger", &Core::FMTobject::setTaskLogger,
-			"@DocString(FMTobject::settasklogger)")
-		.method("setdefaultlogger", &Core::FMTobject::setDefaultLogger,
-			"@DocString(FMTobject::setdefaultlogger)")
-		.method("setdebuglogger", &Core::FMTobject::setDebugLogger,
-			"@DocString(FMTobject::setdebuglogger)")
-		.method("redirectlogtofile", &Core::FMTobject::redirectLogToFile,
-			"@DocString(FMTobject::redirectlogtofile)")
-		.method("seterrorstowarnings", &Core::FMTobject::setErrorsToWarnings,
-			"@DocString(FMTobject::seterrorstowarnings)")
-		.method("setmaxwarningsbeforesilenced", &Core::FMTobject::setMaxWarningsBeforeSilenced,
-			"@DocString(FMTobject::setmaxwarningsbeforesilenced)");
+	Rcpp::class_<Core::FMTObject>("FMTobject", "@DocString(FMTObject)")
+		.constructor("@DocString(FMTObject())")
+		.method("setdefaultexceptionhandler", &Core::FMTObject::setDefaultExceptionHandler,
+			"@DocString(FMTObject::setdefaultexceptionhandler)")
+		.method("setquietexceptionhandler", &Core::FMTObject::setQuietExceptionHandler,
+			"@DocString(FMTObject::setquietexceptionhandler)")
+		.method("setdebugexceptionhandler", &Core::FMTObject::setDebugExceptionHandler,
+			"@DocString(FMTObject::setdebugexceptionhandler)")
+		.method("setfreeexceptionhandler", &Core::FMTObject::setFreeExceptionHandler,
+			"@DocString(FMTObject::setfreeexceptionhandler)")
+		.method("disablenestedexceptions", &Core::FMTObject::disableNestedExceptions,
+			"@DocString(FMTObject::disablenestedexceptions)")
+		.method("enablenestedexceptions", &Core::FMTObject::enableNestedExceptions,
+			"@DocString(FMTObject::enablenestedexceptions)")
+		.method("setquietlogger", &Core::FMTObject::setQuietLogger,
+			"@DocString(FMTObject::setquietlogger)")
+		.method("settasklogger", &Core::FMTObject::setTaskLogger,
+			"@DocString(FMTObject::settasklogger)")
+		.method("setdefaultlogger", &Core::FMTObject::setDefaultLogger,
+			"@DocString(FMTObject::setdefaultlogger)")
+		.method("setdebuglogger", &Core::FMTObject::setDebugLogger,
+			"@DocString(FMTObject::setdebuglogger)")
+		.method("redirectlogtofile", &Core::FMTObject::redirectLogToFile,
+			"@DocString(FMTObject::redirectlogtofile)")
+		.method("seterrorstowarnings", &Core::FMTObject::setErrorsToWarnings,
+			"@DocString(FMTObject::seterrorstowarnings)")
+		.method("setmaxwarningsbeforesilenced", &Core::FMTObject::setMaxWarningsBeforeSilenced,
+			"@DocString(FMTObject::setmaxwarningsbeforesilenced)");
 
-		Rcpp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
-				.constructor("@DocString(FMTmask())")
-				.constructor<std::vector<std::string>,std::vector<Core::FMTtheme>>(
-					"@DocString(FMTmask(const std::vector<std::string>&,const std::vector<Core::FMTtheme>&))")
-			.constructor<std::string, std::vector<Core::FMTtheme>>(
-				"@DocString(FMTmask(const std::string&,const std::vector<Core::FMTtheme>&))")
-				.method("len", &Core::FMTmask::operator bool,
-					"@DocString(FMTmask::operator bool)")
-                .method("str",&Core::FMTmask::operator std::string,
-					"@DocString(FMTmask::operator std::string)")
-				.method("eq", &Core::FMTmask::operator ==,
-					"@DocString(FMTmask::operator==)")
-				.method("ne", &Core::FMTmask::operator !=,
-					"@DocString(FMTmask::operator!=)")
-				.method("lt", &Core::FMTmask::operator <,
-					"@DocString(FMTmask::operator<)");
+		Rcpp::class_<Core::FMTMask>("FMTmask", "@DocString(FMTMask)")
+				.constructor("@DocString(FMTMask())")
+				.constructor<std::vector<std::string>,std::vector<Core::FMTTheme>>(
+					"@DocString(FMTMask(const std::vector<std::string>&,const std::vector<Core::FMTTheme>&))")
+			.constructor<std::string, std::vector<Core::FMTTheme>>(
+				"@DocString(FMTMask(const std::string&,const std::vector<Core::FMTTheme>&))")
+				.method("len", &Core::FMTMask::operator bool,
+					"@DocString(FMTMask::operator bool)")
+                .method("str",&Core::FMTMask::operator std::string,
+					"@DocString(FMTMask::operator std::string)")
+				.method("eq", &Core::FMTMask::operator ==,
+					"@DocString(FMTMask::operator==)")
+				.method("ne", &Core::FMTMask::operator !=,
+					"@DocString(FMTMask::operator!=)")
+				.method("lt", &Core::FMTMask::operator <,
+					"@DocString(FMTMask::operator<)");
 
-		Rcpp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)")
-			.constructor("@DocString(FMTmaskfilter())");
+		Rcpp::class_<Core::FMTMaskFilter>("FMTmaskfilter", "@DocString(FMTMaskFilter)")
+			.constructor("@DocString(FMTMaskFilter())");
 
 		
 
-		Rcpp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)")
-			.constructor("@DocString(FMTmaskfilter())");
+		Rcpp::class_<Core::FMTMaskFilter>("FMTmaskfilter", "@DocString(FMTMaskFilter)")
+			.constructor("@DocString(FMTMaskFilter())");
 
 
-		Rcpp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
-				.constructor("@DocString(FMTdevelopment())")
-				.method("getage", &Core::FMTdevelopment::getAge,
-					"@DocString(FMTdevelopment::getage)")
-				.method("getlock", &Core::FMTdevelopment::getLock,
-					"@DocString(FMTdevelopment::getlock)")
-				.method("getperiod", &Core::FMTdevelopment::getPeriod,
-					"@DocString(FMTdevelopment::getperiod)")
-				.method("getmask", &Core::FMTdevelopment::getMaskCopy,
-					"@DocString(FMTdevelopment::getmask)")
-				.method("setage", &Core::FMTdevelopment::setAge,
-					"@DocString(FMTdevelopment::setage)")
-				.method("setlock", &Core::FMTdevelopment::setLock,
-					"@DocString(FMTdevelopment::setlock)")
-				.method("setperiod", &Core::FMTdevelopment::setPeriod,
-					"@DocString(FMTdevelopment::setperiod)")
-				.method("setmask", &Core::FMTdevelopment::setMask,
-					"@DocString(FMTdevelopment::setmask)")
-				.method("eq", &Core::FMTdevelopment::operator ==,
-					"@DocString(FMTdevelopment::operator==)")
-				.method("ne", &Core::FMTdevelopment::operator !=,
-					"@DocString(FMTdevelopment::operator!=)")
-                .method("lt",&Core::FMTdevelopment::operator <,
-					"@DocString(FMTdevelopment::operator<)")
-                .method("grow",&Core::FMTdevelopment::grow,
-					"@DocString(FMTdevelopment::grow)")
-                //.method("operable",&Core::FMTdevelopment::operable,
-				//	"@DocString(FMTdevelopment::operable)")
-                //.method("operate",&Core::FMTdevelopment::operate,
-				//	"@DocString(FMTdevelopment::operate)")
-				.method("str", &Core::FMTdevelopment::operator std::string,
-					"@DocString(FMTdevelopment::operate std::string)");
+		Rcpp::class_<Core::FMTDevelopment>("FMTdevelopment", "@DocString(FMTDevelopment)")
+				.constructor("@DocString(FMTDevelopment())")
+				.method("getage", &Core::FMTDevelopment::getAge,
+					"@DocString(FMTDevelopment::getage)")
+				.method("getlock", &Core::FMTDevelopment::getLock,
+					"@DocString(FMTDevelopment::getlock)")
+				.method("getperiod", &Core::FMTDevelopment::getPeriod,
+					"@DocString(FMTDevelopment::getperiod)")
+				.method("getmask", &Core::FMTDevelopment::getMaskCopy,
+					"@DocString(FMTDevelopment::getmask)")
+				.method("setage", &Core::FMTDevelopment::setAge,
+					"@DocString(FMTDevelopment::setage)")
+				.method("setlock", &Core::FMTDevelopment::setLock,
+					"@DocString(FMTDevelopment::setlock)")
+				.method("setperiod", &Core::FMTDevelopment::setPeriod,
+					"@DocString(FMTDevelopment::setperiod)")
+				.method("setmask", &Core::FMTDevelopment::setMask,
+					"@DocString(FMTDevelopment::setmask)")
+				.method("eq", &Core::FMTDevelopment::operator ==,
+					"@DocString(FMTDevelopment::operator==)")
+				.method("ne", &Core::FMTDevelopment::operator !=,
+					"@DocString(FMTDevelopment::operator!=)")
+                .method("lt",&Core::FMTDevelopment::operator <,
+					"@DocString(FMTDevelopment::operator<)")
+                .method("grow",&Core::FMTDevelopment::grow,
+					"@DocString(FMTDevelopment::grow)")
+                //.method("operable",&Core::FMTDevelopment::operable,
+				//	"@DocString(FMTDevelopment::operable)")
+                //.method("operate",&Core::FMTDevelopment::operate,
+				//	"@DocString(FMTDevelopment::operate)")
+				.method("str", &Core::FMTDevelopment::operator std::string,
+					"@DocString(FMTDevelopment::operate std::string)");
 
 
-		Rcpp::class_<Core::FMTagebounds>("FMTagebounds", "@DocString(FMTagebounds)")
-			.constructor("@DocString(FMTagebounds())")
-			.constructor<Core::FMTsection,int,int>("@DocString(FMTagebounds(FMTsection,const int&,const int&))");
+		Rcpp::class_<Core::FMTAgeBounds>("FMTagebounds", "@DocString(FMTAgeBounds)")
+			.constructor("@DocString(FMTAgeBounds())")
+			.constructor<Core::FMTsection,int,int>("@DocString(FMTAgeBounds(FMTsection,const int&,const int&))");
 
-		Rcpp::class_<Core::FMTperbounds>("FMTperbounds", "@DocString(FMTperbounds)")
-			.constructor("@DocString(FMTperbounds())")
-			.constructor<Core::FMTsection, int, int>("@DocString(FMTperbounds(FMTsection,const int&,const int&))");
+		Rcpp::class_<Core::FMTPerBounds>("FMTperbounds", "@DocString(FMTPerBounds)")
+			.constructor("@DocString(FMTPerBounds())")
+			.constructor<Core::FMTsection, int, int>("@DocString(FMTPerBounds(FMTsection,const int&,const int&))");
 
-		Rcpp::class_<Core::FMTyldbounds>("FMTyldbounds", "@DocString(FMTyldbounds)")
-			.constructor("@DocString(FMTyldbounds())")
+		Rcpp::class_<Core::FMTYldBounds>("FMTyldbounds", "@DocString(FMTYldBounds)")
+			.constructor("@DocString(FMTYldBounds())")
 			.constructor<Core::FMTsection,std::string,double,double>("@DocString(FMTperiodbounds(FMTsection,const std::string&,const double&,const double&))");
 
-		Rcpp::class_<Core::FMTlockbounds>("FMTlockbounds", "@DocString(FMTlockbounds)")
-			.constructor("@DocString(FMTlockbounds())")
-			.constructor<Core::FMTsection, int, int>("@DocString(FMTlockbounds(FMTsection,const int&,const int&))");
+		Rcpp::class_<Core::FMTLockBounds>("FMTlockbounds", "@DocString(FMTLockBounds)")
+			.constructor("@DocString(FMTLockBounds())")
+			.constructor<Core::FMTsection, int, int>("@DocString(FMTLockBounds(FMTsection,const int&,const int&))");
 
 		
 
 
-		Rcpp::class_<Core::FMTspec>("FMTspec", "@DocString(FMTspec)")
-			.constructor("@DocString(FMTspec())")
-			.method("setbounds",&Core::FMTspec::setBounds,"@DocString(Core::FMTspec::setbounds())")
+		Rcpp::class_<Core::FMTSpec>("FMTspec", "@DocString(FMTSpec)")
+			.constructor("@DocString(FMTSpec())")
+			.method("setbounds",&Core::FMTSpec::setBounds,"@DocString(Core::FMTSpec::setbounds())")
 			.method("addbounds",
-				static_cast<bool(Core::FMTspec::*)(const Core::FMTagebounds&)>(&Core::FMTspec::addBounds),
-				"@DocString(Core::FMTspec::addbounds(const FMTagebounds&))")
+				static_cast<bool(Core::FMTSpec::*)(const Core::FMTAgeBounds&)>(&Core::FMTSpec::addBounds),
+				"@DocString(Core::FMTSpec::addbounds(const FMTAgeBounds&))")
 			.method("addbounds",
-				static_cast<bool(Core::FMTspec::*)(const Core::FMTyldbounds&)>(&Core::FMTspec::addBounds),
-				"@DocString(Core::FMTspec::addbounds(const FMTyldbounds&))")
+				static_cast<bool(Core::FMTSpec::*)(const Core::FMTYldBounds&)>(&Core::FMTSpec::addBounds),
+				"@DocString(Core::FMTSpec::addbounds(const FMTYldBounds&))")
 			.method("addbounds",
-				static_cast<bool(Core::FMTspec::*)(const Core::FMTlockbounds&)>(&Core::FMTspec::addBounds),
-				"@DocString(Core::FMTspec::addbounds(const FMTlockbounds&))");
+				static_cast<bool(Core::FMTSpec::*)(const Core::FMTLockBounds&)>(&Core::FMTSpec::addBounds),
+				"@DocString(Core::FMTSpec::addbounds(const FMTLockBounds&))");
 		
 
-		Rcpp::class_<Core::FMTactualdevelopment>("FMTactualdevelopment", "@DocString(FMTactualdevelopment)")
-				.derives<Core::FMTdevelopment>("FMTdevelopment")
-				.constructor("@DocString(FMTactualdevelopment())")
-				.constructor<Core::FMTmask,int,int,double>("@DocString(FMTactualdevelopment(const FMTmask&,const int&,const int&,const int&,const double&))")
-                .method("getarea", &Core::FMTactualdevelopment::getArea,
-					"@DocString(FMTactualdevelopment::getarea)")
-				.method("setarea", &Core::FMTactualdevelopment::setArea,
-					"@DocString(FMTactualdevelopment::setarea)")
-				.method("eq", &Core::FMTactualdevelopment::operator ==,
-					"@DocString(FMTactualdevelopment::operator==)")
-				.method("ne", &Core::FMTactualdevelopment::operator !=,
-					"@DocString(FMTactualdevelopment::operator!=)")
-				.method("lt", &Core::FMTactualdevelopment::operator <,
-					"@DocString(FMTactualdevelopment::operator<)");
+		Rcpp::class_<Core::FMTActualDevelopment>("FMTactualdevelopment", "@DocString(FMTActualDevelopment)")
+				.derives<Core::FMTDevelopment>("FMTdevelopment")
+				.constructor("@DocString(FMTActualDevelopment())")
+				.constructor<Core::FMTMask,int,int,double>("@DocString(FMTActualDevelopment(const FMTMask&,const int&,const int&,const int&,const double&))")
+                .method("getarea", &Core::FMTActualDevelopment::getArea,
+					"@DocString(FMTActualDevelopment::getarea)")
+				.method("setarea", &Core::FMTActualDevelopment::setArea,
+					"@DocString(FMTActualDevelopment::setarea)")
+				.method("eq", &Core::FMTActualDevelopment::operator ==,
+					"@DocString(FMTActualDevelopment::operator==)")
+				.method("ne", &Core::FMTActualDevelopment::operator !=,
+					"@DocString(FMTActualDevelopment::operator!=)")
+				.method("lt", &Core::FMTActualDevelopment::operator <,
+					"@DocString(FMTActualDevelopment::operator<)");
 
-		Rcpp::class_<Core::FMTfuturdevelopment>("FMTfuturdevelopment", "@DocString(FMTfuturdevelopment)")
-			.derives<Core::FMTdevelopment>("FMTdevelopment")
-			.constructor("@DocString(FMTfuturdevelopment())");
+		Rcpp::class_<Core::FMTFuturDevelopment>("FMTfuturdevelopment", "@DocString(FMTFuturDevelopment)")
+			.derives<Core::FMTDevelopment>("FMTdevelopment")
+			.constructor("@DocString(FMTFuturDevelopment())");
 
 
-		Rcpp::class_<Core::FMTaction>("FMTaction","@DocString(FMTaction)")
-				.constructor("@DocString(FMTaction())")
-				.constructor<std::string,bool,bool>("@DocString(FMTaction(const std::string&,const bool&,const bool&))")
-				.derives<Core::FMTlist<Core::FMTspec>>("FMTspeclist")
-                .method("__eq__",&Core::FMTaction::operator ==,
-					"@DocString(FMTaction::operator==)")
-                .method("__ne__",&Core::FMTaction::operator !=,
-					"@DocString(FMTaction::operator!=)")
-                .method("__lt__",&Core::FMTaction::operator <,
-					"@DocString(FMTaction::operator<)")
-				.method("__str__", &Core::FMTaction::operator std::string,
-					"@DocString(FMTaction::operator std::string)")
-                .method("getname",&Core::FMTaction::getName,
-					"@DocString(FMTaction::getname)")
-                .method("dorespectlock",&Core::FMTaction::doRespectLock,
-					"@DocString(FMTaction::dorespectlock)")
-                .method("isresetage",&Core::FMTaction::isResetAge,
-					"@DocString(FMTaction::isresetage)");
-
-			
-
-			Rcpp::class_<Core::FMTlifespans>("FMTlifespans", "@DocString(FMTlifespans)")
-				.derives<Core::FMTlist<int>>("FMTintlist")
-				.constructor("@DocString(FMTlifespans())");
+		Rcpp::class_<Core::FMTAction>("FMTaction","@DocString(FMTAction)")
+				.constructor("@DocString(FMTAction())")
+				.constructor<std::string,bool,bool>("@DocString(FMTAction(const std::string&,const bool&,const bool&))")
+				.derives<Core::FMTList<Core::FMTSpec>>("FMTspeclist")
+                .method("__eq__",&Core::FMTAction::operator ==,
+					"@DocString(FMTAction::operator==)")
+                .method("__ne__",&Core::FMTAction::operator !=,
+					"@DocString(FMTAction::operator!=)")
+                .method("__lt__",&Core::FMTAction::operator <,
+					"@DocString(FMTAction::operator<)")
+				.method("__str__", &Core::FMTAction::operator std::string,
+					"@DocString(FMTAction::operator std::string)")
+                .method("getname",&Core::FMTAction::getName,
+					"@DocString(FMTAction::getname)")
+                .method("dorespectlock",&Core::FMTAction::doRespectLock,
+					"@DocString(FMTAction::dorespectlock)")
+                .method("isresetage",&Core::FMTAction::isResetAge,
+					"@DocString(FMTAction::isresetage)");
 
 			
 
-			Rcpp::class_<Core::FMTtransitionmask>("FMTtransitionmask", "@DocString(FMTtransitionmask)")
-				.constructor<std::string,std::vector<Core::FMTtheme>,double>("@DocString(FMTtransitionmask(const std::string&,const std::vector<FMTtheme>&,const double&))")
-				.constructor("@DocString(FMTtransitionmask())");
-			
-			Rcpp::class_<Core::FMTfork>("FMTfork", "@DocString(FMTfork)")
-				.derives<Core::FMTlist<Core::FMTspec>>("FMTspeclist")
-				.method("add", &Core::FMTfork::add,
-					"@DocString(FMTfork::add)")
-				.constructor("@DocString(FMTfork())");
+			Rcpp::class_<Core::FMTLifespans>("FMTlifespans", "@DocString(FMTLifespans)")
+				.derives<Core::FMTList<int>>("FMTintlist")
+				.constructor("@DocString(FMTLifespans())");
 
-			Rcpp::class_<Core::FMTyieldhandler>("FMTyieldhandler", "@DocString(FMTyieldhandler)")
-				.constructor("@DocString(FMTyieldhandler())")
+			
+
+			Rcpp::class_<Core::FMTTransitionMask>("FMTtransitionmask", "@DocString(FMTTransitionMask)")
+				.constructor<std::string,std::vector<Core::FMTTheme>,double>("@DocString(FMTTransitionMask(const std::string&,const std::vector<FMTTheme>&,const double&))")
+				.constructor("@DocString(FMTTransitionMask())");
+			
+			Rcpp::class_<Core::FMTFork>("FMTfork", "@DocString(FMTFork)")
+				.derives<Core::FMTList<Core::FMTSpec>>("FMTspeclist")
+				.method("add", &Core::FMTFork::add,
+					"@DocString(FMTFork::add)")
+				.constructor("@DocString(FMTFork())");
+
+			Rcpp::class_<Core::FMTYieldHandler>("FMTyieldhandler", "@DocString(FMTYieldHandler)")
+				.constructor("@DocString(FMTYieldHandler())")
 				.method("push_data",
-					static_cast<bool (Core::FMTyieldhandler::*)(const std::string&,const double&)>(&Core::FMTyieldhandler::pushData),
-					"@DocString(FMTyieldhandler::push_data(const std::string&,const double&))")
-				.method("push_base", &Core::FMTyieldhandler::pushBase,
-					"@DocString(FMTyieldhandler::push_base)");
+					static_cast<bool (Core::FMTYieldHandler::*)(const std::string&,const double&)>(&Core::FMTYieldHandler::pushData),
+					"@DocString(FMTYieldHandler::push_data(const std::string&,const double&))")
+				.method("push_base", &Core::FMTYieldHandler::pushBase,
+					"@DocString(FMTYieldHandler::push_base)");
 
-			Rcpp::class_<Core::FMTageyieldhandler>("FMTageyieldhandler", "@DocString(FMTageyieldhandler)")
-				.derives<Core::FMTyieldhandler>("FMTyieldhandler")
-				.constructor("@DocString(FMTageyieldhandler())")
-				.constructor<Core::FMTmask>("@DocString(FMTageyieldhandler(const FMTmask&))")
-				.method("str", &Core::FMTageyieldhandler::operator std::string,
-					"@DocString(FMTageyieldhandler::operator std::string)");
+			Rcpp::class_<Core::FMTAgeYieldHandler>("FMTageyieldhandler", "@DocString(FMTAgeYieldHandler)")
+				.derives<Core::FMTYieldHandler>("FMTyieldhandler")
+				.constructor("@DocString(FMTAgeYieldHandler())")
+				.constructor<Core::FMTMask>("@DocString(FMTAgeYieldHandler(const FMTMask&))")
+				.method("str", &Core::FMTAgeYieldHandler::operator std::string,
+					"@DocString(FMTAgeYieldHandler::operator std::string)");
 	
-			Rcpp::class_<Core::FMTtimeyieldhandler>("FMTtimeyieldhandler", "@DocString(FMTtimeyieldhandler)")
-				.derives<Core::FMTyieldhandler>("FMTyieldhandler")
-				.constructor("@DocString(FMTtimeyieldhandler())")
-				.constructor<Core::FMTmask>("@DocString(FMTtimeyieldhandler(const FMTmask&))")
-				.method("str", &Core::FMTtimeyieldhandler::operator std::string,
-					"@DocString(FMTtimeyieldhandler::operator std::string)");
+			Rcpp::class_<Core::FMTTimeYieldHandler>("FMTtimeyieldhandler", "@DocString(FMTTimeYieldHandler)")
+				.derives<Core::FMTYieldHandler>("FMTyieldhandler")
+				.constructor("@DocString(FMTTimeYieldHandler())")
+				.constructor<Core::FMTMask>("@DocString(FMTTimeYieldHandler(const FMTMask&))")
+				.method("str", &Core::FMTTimeYieldHandler::operator std::string,
+					"@DocString(FMTTimeYieldHandler::operator std::string)");
 
 
 			
 
-			Rcpp::class_<Core::FMTyields>("FMTyields", "@DocString(FMTyields)")
-				//.derives<Core::FMTlist<Core::FMTyieldhandler>>("FMTyieldhandlerlist")
-				.constructor("@DocString(FMTyields())")
-				.method("getallyields", &Core::FMTyields::getAllYields,
-					"@DocString(FMTyields::getallyields)")
-				.method("getfromfactor", &Core::FMTyields::getFromFactor,
-					"@DocString(FMTyields::getfromfactor)")
-				.method("update", &Core::FMTyields::update,
-					"@DocString(FMTyields::update)")
-				.method("push_back",Core::FMTyields::pushBackAgeHandler,
-					"@DocString(Core::FMTyields::push_backagehandler")
-				.method("push_back", Core::FMTyields::pushBackTimeHandler,
-					"@DocString(Core::FMTyields::push_backtimehandler");
+			Rcpp::class_<Core::FMTYields>("FMTyields", "@DocString(FMTYields)")
+				//.derives<Core::FMTList<Core::FMTYieldHandler>>("FMTyieldhandlerlist")
+				.constructor("@DocString(FMTYields())")
+				.method("getallyields", &Core::FMTYields::getAllYields,
+					"@DocString(FMTYields::getallyields)")
+				.method("getfromfactor", &Core::FMTYields::getFromFactor,
+					"@DocString(FMTYields::getfromfactor)")
+				.method("update", &Core::FMTYields::update,
+					"@DocString(FMTYields::update)")
+				.method("push_back",Core::FMTYields::pushBackAgeHandler,
+					"@DocString(Core::FMTYields::push_backagehandler")
+				.method("push_back", Core::FMTYields::pushBackTimeHandler,
+					"@DocString(Core::FMTYields::push_backtimehandler");
 
 			
 			
 
-			Rcpp::class_<Core::FMTtransition>("FMTtransition", "@DocString(FMTtransition)")
-				.derives<Core::FMTlist<Core::FMTfork>>("FMTforklist")
-				.constructor("@DocString(FMTtransition())")
-				.constructor<std::string>("@DocString(FMTtransition(const std::string&))")
-                .method("single",&Core::FMTtransition::single,
-					"@DocString(FMTtransition::single)")
-				.method("main_target", &Core::FMTtransition::mainTarget,
-					"@DocString(FMTtransition::main_target)")
-				.method("age_after", &Core::FMTtransition::ageAfter,
-					"@DocString(FMTtransition::age_after)")
-				.method("attribute_targets", &Core::FMTtransition::attributeTargets,
-					"@DocString(FMTtransition::attribute_targets)")
-				.method("str", &Core::FMTtransition::operator std::string,
-					"@DocString(FMTtransition::operator std::string)")
-                .method("eq",&Core::FMTtransition::operator ==,
-					"@DocString(FMTtransition::operator==)")
-                .method("ne",&Core::FMTtransition::operator !=,
-					"@DocString(FMTtransition::operator!=)")
-                .method("lt",&Core::FMTtransition::operator <,
-					"@DocString(FMTtransition::operator<)")
-                .method("getname",&Core::FMTtransition::getName,
-					"@DocString(FMTtransition::getname)");
+			Rcpp::class_<Core::FMTTransition>("FMTtransition", "@DocString(FMTTransition)")
+				.derives<Core::FMTList<Core::FMTFork>>("FMTforklist")
+				.constructor("@DocString(FMTTransition())")
+				.constructor<std::string>("@DocString(FMTTransition(const std::string&))")
+                .method("single",&Core::FMTTransition::single,
+					"@DocString(FMTTransition::single)")
+				.method("main_target", &Core::FMTTransition::mainTarget,
+					"@DocString(FMTTransition::main_target)")
+				.method("age_after", &Core::FMTTransition::ageAfter,
+					"@DocString(FMTTransition::age_after)")
+				.method("attribute_targets", &Core::FMTTransition::attributeTargets,
+					"@DocString(FMTTransition::attribute_targets)")
+				.method("str", &Core::FMTTransition::operator std::string,
+					"@DocString(FMTTransition::operator std::string)")
+                .method("eq",&Core::FMTTransition::operator ==,
+					"@DocString(FMTTransition::operator==)")
+                .method("ne",&Core::FMTTransition::operator !=,
+					"@DocString(FMTTransition::operator!=)")
+                .method("lt",&Core::FMTTransition::operator <,
+					"@DocString(FMTTransition::operator<)")
+                .method("getname",&Core::FMTTransition::getName,
+					"@DocString(FMTTransition::getname)");
 
-			Rcpp::class_<Core::FMToutputsource>("FMToutputsource", "@DocString(FMToutputsource)")
-				.constructor<Core::FMTspec, Core::FMTmask,
+			Rcpp::class_<Core::FMTOutputSource>("FMToutputsource", "@DocString(FMTOutputSource)")
+				.constructor<Core::FMTSpec, Core::FMTMask,
 				Core::FMTotar, std::string,
-				std::string, int, int>("@DocString(FMToutputsource())")
-				.constructor("@DocString(FMToutputsource())");
+				std::string, int, int>("@DocString(FMTOutputSource())")
+				.constructor("@DocString(FMTOutputSource())");
 
-			Rcpp::class_<Core::FMToperator>("FMToperator", "@DocString(FMToperator)")
-				.constructor("@DocString(FMToperator())");
+			Rcpp::class_<Core::FMTOperator>("FMToperator", "@DocString(FMTOperator)")
+				.constructor("@DocString(FMTOperator())");
 
-			Rcpp::class_<Core::FMToutputnode>("FMToutputnode", "@DocString(FMToutputnode)")
-				.constructor("@DocString(FMToutputnode())")
-				.method("str", &Core::FMToutputnode::operator std::string,
-					"@DocString(FMToutputnode::operator std::string)");
+			Rcpp::class_<Core::FMTOutputNode>("FMToutputnode", "@DocString(FMTOutputNode)")
+				.constructor("@DocString(FMTOutputNode())")
+				.method("str", &Core::FMTOutputNode::operator std::string,
+					"@DocString(FMTOutputNode::operator std::string)");
 
 
-			Rcpp::class_<Core::FMToutput>("FMToutput", "@DocString(FMToutput)")
-				.constructor("@DocString(FMToutput())")
+			Rcpp::class_<Core::FMTOutput>("FMToutput", "@DocString(FMTOutput)")
+				.constructor("@DocString(FMTOutput())")
 				.constructor<std::string,std::string,std::string,
-					std::vector<Core::FMToutputsource>,
-					std::vector<Core::FMToperator>>("@DocString(FMToutput(const std::string&,const std::string&,const int&,std::vector<FMToutputsource>&,std::vector<FMToperator>&))")
-				.method("getname",&Core::FMToutput::getName,
-					"@DocString(FMToutput::getname)")
-				.method("getdescription",&Core::FMToutput::getDescription,
-					"@DocString(FMToutput::getdescription)")
-				.method("empty", &Core::FMToutput::empty,
-					"@DocString(FMToutput::empty)")
-				.method("containslevel",&Core::FMToutput::containsLevel,
-					"@DocString(FMToutput::containslevel)")
-				.method("islevel", &Core::FMToutput::isLevel,
-					"@DocString(FMToutput::islevel)")
-				.method("isonlylevel", &Core::FMToutput::isOnlyLevel,
-					"@DocString(FMToutput::isonlylevel)")
-				//.method("getNodes",&Core::FMToutput::getNodes,
-				//	"@DocString(FMToutput::getNodes)")
-				.method("str", &Core::FMToutput::operator std::string,
-					"@DocString(FMToutput::operator std::string)")
-				.method("eq",&Core::FMToutput::operator ==,
-					"@DocString(FMToutput::operator==)")
-				.method("ne",&Core::FMToutput::operator !=,
-					"@DocString(FMToutput::operator!=)");
+					std::vector<Core::FMTOutputSource>,
+					std::vector<Core::FMTOperator>>("@DocString(FMTOutput(const std::string&,const std::string&,const int&,std::vector<FMTOutputSource>&,std::vector<FMTOperator>&))")
+				.method("getname",&Core::FMTOutput::getName,
+					"@DocString(FMTOutput::getname)")
+				.method("getdescription",&Core::FMTOutput::getDescription,
+					"@DocString(FMTOutput::getdescription)")
+				.method("empty", &Core::FMTOutput::empty,
+					"@DocString(FMTOutput::empty)")
+				.method("containslevel",&Core::FMTOutput::containsLevel,
+					"@DocString(FMTOutput::containslevel)")
+				.method("islevel", &Core::FMTOutput::isLevel,
+					"@DocString(FMTOutput::islevel)")
+				.method("isonlylevel", &Core::FMTOutput::isOnlyLevel,
+					"@DocString(FMTOutput::isonlylevel)")
+				//.method("getNodes",&Core::FMTOutput::getNodes,
+				//	"@DocString(FMTOutput::getNodes)")
+				.method("str", &Core::FMTOutput::operator std::string,
+					"@DocString(FMTOutput::operator std::string)")
+				.method("eq",&Core::FMTOutput::operator ==,
+					"@DocString(FMTOutput::operator==)")
+				.method("ne",&Core::FMTOutput::operator !=,
+					"@DocString(FMTOutput::operator!=)");
 
 
-			Rcpp::class_<Core::FMTtheme>("FMTtheme", "@DocString(FMTtheme)")
-				.constructor("@DocString(FMTtheme())")
+			Rcpp::class_<Core::FMTTheme>("FMTtheme", "@DocString(FMTTheme)")
+				.constructor("@DocString(FMTTheme())")
 				.constructor<std::vector<std::string>,
 				std::vector<std::string>,
 				std::vector<std::string>,
 				std::vector<std::vector<std::string>>,
 				size_t,size_t,std::string>(
 					"@DocString(const std::vector<std::string>&,const std::vector<std::string>&,const std::vector<std::vector<std::string>>,const std::vector<std::map<std::string, double>>&,const size_t&, const size_t&, const std::string&)")
-				.method("str", &Core::FMTtheme::operator std::string,
-					"@DocString(FMTtheme::operator std::string)")
-				.method("eq", &Core::FMTtheme::operator ==,
-					"@DocString(FMTtheme::operator==)")
-				.method("getattributes", &Core::FMTtheme::getAttributes,
-					"@DocString(FMTtheme::getattributes)")
-				.method("getname", &Core::FMTtheme::getName,
-					"@DocString(FMTtheme::getname)")
-				.method("getaggregatesasdataframe", &Core::FMTtheme::getAggregatesAsDataFrame,
-					"@DocString(FMTtheme::getaggregatesasdataframee)")
-				.method("getattributesasdataframe", &Core::FMTtheme::getAttributesAsDataFrame,
-					"@DocString(FMTtheme::getattributesasdataframe)");
+				.method("str", &Core::FMTTheme::operator std::string,
+					"@DocString(FMTTheme::operator std::string)")
+				.method("eq", &Core::FMTTheme::operator ==,
+					"@DocString(FMTTheme::operator==)")
+				.method("getattributes", &Core::FMTTheme::getAttributes,
+					"@DocString(FMTTheme::getattributes)")
+				.method("getname", &Core::FMTTheme::getName,
+					"@DocString(FMTTheme::getname)")
+				.method("getaggregatesasdataframe", &Core::FMTTheme::getAggregatesAsDataFrame,
+					"@DocString(FMTTheme::getaggregatesasdataframee)")
+				.method("getattributesasdataframe", &Core::FMTTheme::getAttributesAsDataFrame,
+					"@DocString(FMTTheme::getattributesasdataframe)");
 
 
-			Rcpp::class_<Core::FMTconstants>("FMTconstants", "@DocString(FMTconstants)")
-				.constructor("@DocString(FMTconstants())");
+			Rcpp::class_<Core::FMTConstants>("FMTconstants", "@DocString(FMTConstants)")
+				.constructor("@DocString(FMTConstants())");
 
-			Rcpp::class_<Core::FMTschedule>("FMTschedule", "@DocString(FMTschedule)")
-				.constructor("@DocString(FMTschedule())")
-				.constructor<int, std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>>(
-					"@DocString(FMTschedule(int,std::map<Core::FMTaction,std::map<Core::FMTdevelopment,std::vector<double>>>))")
-				.method("str", &Core::FMTschedule::operator std::string,
-					"@DocString(FMTschedule::operator std::string)")
-				.method("add", &Core::FMTschedule::operator +,
-					"@DocString(FMTschedule::operator+)")
-				.method("actionarea", &Core::FMTschedule::actionArea,
-					"@DocString(FMTschedule::actionarea)")
-				.method("getperiod", &Core::FMTschedule::getPeriod,
-					"@DocString(FMTschedule::getperiod)")
-				.method("setperiod", &Core::FMTschedule::setPeriod,
-					"@DocString(FMTschedule::setperiod)")
-				.method("eq", &Core::FMTschedule::operator ==,
-					"@DocString(FMTschedule::operator==)")
-				.method("ne", &Core::FMTschedule::operator !=,
-					"@DocString(FMTschedule::operator!=)")
-				.method("empty",&Core::FMTschedule::empty,
-					"@DocString(FMTschedule::empty)");
+			Rcpp::class_<Core::FMTSchedule>("FMTschedule", "@DocString(FMTSchedule)")
+				.constructor("@DocString(FMTSchedule())")
+				.constructor<int, std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::vector<double>>>>(
+					"@DocString(FMTSchedule(int,std::map<Core::FMTAction,std::map<Core::FMTDevelopment,std::vector<double>>>))")
+				.method("str", &Core::FMTSchedule::operator std::string,
+					"@DocString(FMTSchedule::operator std::string)")
+				.method("add", &Core::FMTSchedule::operator +,
+					"@DocString(FMTSchedule::operator+)")
+				.method("actionarea", &Core::FMTSchedule::actionArea,
+					"@DocString(FMTSchedule::actionarea)")
+				.method("getperiod", &Core::FMTSchedule::getPeriod,
+					"@DocString(FMTSchedule::getperiod)")
+				.method("setperiod", &Core::FMTSchedule::setPeriod,
+					"@DocString(FMTSchedule::setperiod)")
+				.method("eq", &Core::FMTSchedule::operator ==,
+					"@DocString(FMTSchedule::operator==)")
+				.method("ne", &Core::FMTSchedule::operator !=,
+					"@DocString(FMTSchedule::operator!=)")
+				.method("empty",&Core::FMTSchedule::empty,
+					"@DocString(FMTSchedule::empty)");
 
-			Rcpp::class_<Core::FMTGCBMtransition>("FMTGCBMtransition", "@DocString(FMTGCBMtransition)")
-				.constructor("@DocString(FMTGCBMtransition())")
-				.field("name", &Core::FMTGCBMtransition::name,
-					"@DocString(FMTGCBMtransition::name)")
-				.field("ageafter", &Core::FMTGCBMtransition::ageafter,
-					"@DocString(FMTGCBMtransition::ageafter)")
-				.field("themes",&Core::FMTGCBMtransition::themes,
-					"@DocString(FMTGCBMtransition::themes)");
+			Rcpp::class_<Core::FMTGCBMTransition>("FMTGCBMtransition", "@DocString(FMTGCBMTransition)")
+				.constructor("@DocString(FMTGCBMTransition())")
+				.field("name", &Core::FMTGCBMTransition::name,
+					"@DocString(FMTGCBMTransition::name)")
+				.field("ageafter", &Core::FMTGCBMTransition::ageafter,
+					"@DocString(FMTGCBMTransition::ageafter)")
+				.field("themes",&Core::FMTGCBMTransition::themes,
+					"@DocString(FMTGCBMTransition::themes)");
 
-			Rcpp::class_<Core::FMTconstraint>("FMTconstraint", "@DocString(FMTconstraint)")
-				.derives<Core::FMToutput>("FMToutput")
-				.constructor("@DocString(FMTconstraint())")
-				.constructor<Core::FMTconstrainttype,Core::FMToutput>("@DocString(FMTconstraint(FMTconstrainttype,const FMToutput&))")
-				.method("setlength", &Core::FMTconstraint::setLength,
-					"@DocString(FMTconstraint::setlength)")
-				.method("realconstraintstring", &Core::FMTconstraint::operator std::string,
-					"@DocString(FMTconstraint::operator std::string)")
-				.method("eq", &Core::FMTconstraint::operator ==,
-					"@DocString(FMTconstraint::operator==)");
+			Rcpp::class_<Core::FMTConstraint>("FMTconstraint", "@DocString(FMTConstraint)")
+				.derives<Core::FMTOutput>("FMToutput")
+				.constructor("@DocString(FMTConstraint())")
+				.constructor<Core::FMTconstrainttype,Core::FMTOutput>("@DocString(FMTConstraint(FMTconstrainttype,const FMTOutput&))")
+				.method("setlength", &Core::FMTConstraint::setLength,
+					"@DocString(FMTConstraint::setlength)")
+				.method("realconstraintstring", &Core::FMTConstraint::operator std::string,
+					"@DocString(FMTConstraint::operator std::string)")
+				.method("eq", &Core::FMTConstraint::operator ==,
+					"@DocString(FMTConstraint::operator==)");
 
     }
 }

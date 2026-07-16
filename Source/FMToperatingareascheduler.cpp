@@ -552,7 +552,7 @@ namespace Heuristics
 						newcolsolution[binary] = 0.0;
 					}
 				}
-				for (std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>::const_iterator adid = adjacencyconstraints.begin(); adid != adjacencyconstraints.end(); adid++)
+				for (std::map<std::pair<Core::FMTMask, Core::FMTMask>, std::vector<int>>::const_iterator adid = adjacencyconstraints.begin(); adid != adjacencyconstraints.end(); adid++)
 				{
 					for (const int& constraintindex : adid->second)
 					{
@@ -573,22 +573,22 @@ namespace Heuristics
 
 	void FMToperatingareascheduler::setOperatingAreasConstraints(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 																const Models::FMTmodel& model,
-																const Core::FMToutputnode& target)
+																const Core::FMTOutputNode& target)
 		{
 		try {
-			Core::FMToutputnode specifictarget(target);
-			const std::vector<Core::FMTaction>modelactions = model.getactions();
+			Core::FMTOutputNode specifictarget(target);
+			const std::vector<Core::FMTAction>modelactions = model.getactions();
 			//const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> basedescriptors = maingraph.getPeriodVertices(maingraph.getFirstActivePeriod());
-			Core::FMToutputnode areatarget(specifictarget);
-			Core::FMTmask areamask = areatarget.source.getMask();
-			for (const Core::FMTtheme& theme : model.getThemes())
+			Core::FMTOutputNode areatarget(specifictarget);
+			Core::FMTMask areamask = areatarget.source.getMask();
+			for (const Core::FMTTheme& theme : model.getThemes())
 			{
 				areamask.set(theme, "?");
 			}
-			areatarget.source = Core::FMToutputsource(Core::FMTspec(), areamask, Core::FMTotar::inventory);
-			const std::vector<const Core::FMTaction*>actions = specifictarget.source.targets(modelactions);
+			areatarget.source = Core::FMTOutputSource(Core::FMTSpec(), areamask, Core::FMTotar::inventory);
+			const std::vector<const Core::FMTAction*>actions = specifictarget.source.targets(modelactions);
 			std::vector<int>actionids;
-			for (const Core::FMTaction* actptr : actions)
+			for (const Core::FMTAction* actptr : actions)
 			{
 				actionids.push_back(static_cast<int>(std::distance(&modelactions[0], actptr)));
 			}
@@ -682,11 +682,11 @@ namespace Heuristics
 		for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 			{
-			const std::vector<Core::FMTmask>neighbors = operatingareait->getNeighbors();
-			for (const Core::FMTmask& neighbor : neighbors)
+			const std::vector<Core::FMTMask>neighbors = operatingareait->getNeighbors();
+			for (const Core::FMTMask& neighbor : neighbors)
 				{
-				std::pair<Core::FMTmask, Core::FMTmask>simple(operatingareait->getMask(), neighbor);
-				std::pair<Core::FMTmask, Core::FMTmask>reverse(neighbor, operatingareait->getMask());
+				std::pair<Core::FMTMask, Core::FMTMask>simple(operatingareait->getMask(), neighbor);
+				std::pair<Core::FMTMask, Core::FMTMask>reverse(neighbor, operatingareait->getMask());
 				if (adjacencyconstraints.find(simple)== adjacencyconstraints.end() &&
 					adjacencyconstraints.find(reverse) == adjacencyconstraints.end())
 					{
@@ -768,7 +768,7 @@ namespace Heuristics
                 {
                     operatingareait->getRessourcesToDelete(columnstodelete, rowstodelete);
                 }
-                for (std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>::const_iterator it = adjacencyconstraints.begin(); it != adjacencyconstraints.end(); it++)
+                for (std::map<std::pair<Core::FMTMask, Core::FMTMask>, std::vector<int>>::const_iterator it = adjacencyconstraints.begin(); it != adjacencyconstraints.end(); it++)
                 {
                     rowstodelete.insert(rowstodelete.end(), it->second.begin(), it->second.end());
                 }
@@ -981,7 +981,7 @@ namespace Heuristics
 			for (std::vector<FMToperatingareascheme>::const_iterator opit : tobound)
 			{
 				std::vector<FMToperatingareascheme>allneighbors;
-				for (const Core::FMTmask& neighbormask : opit->getNeighbors())
+				for (const Core::FMTMask& neighbormask : opit->getNeighbors())
 				{
 					std::vector<FMToperatingareascheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMTOperatingAreaSchemeComparator(neighbormask));
 					if (opneighbor != operatingareas.end())
@@ -1074,9 +1074,9 @@ namespace Heuristics
 			return gotschedule;
 			}
 
-	std::vector<Core::FMTtimeyieldhandler> FMToperatingareascheduler::getSolution(const std::string& yldname) const
+	std::vector<Core::FMTTimeYieldHandler> FMToperatingareascheduler::getSolution(const std::string& yldname) const
 		{
-		std::vector<Core::FMTtimeyieldhandler>allhandlers;
+		std::vector<Core::FMTTimeYieldHandler>allhandlers;
 		try {
             const double* primalsolution = this->getColSolution();
             const double* rowupperbound = this->getRowUpper();
@@ -1099,8 +1099,8 @@ namespace Heuristics
 						}
                     }
                 std::vector<std::string>source;
-				Core::FMTtimeyieldhandler handler(operatingareait->getMask());
-                handler.pushData(yldname,Core::FMTdata(data, Core::FMTyieldparserop::FMTnone, source));
+				Core::FMTTimeYieldHandler handler(operatingareait->getMask());
+                handler.pushData(yldname,Core::FMTData(data, Core::FMTyieldparserop::FMTnone, source));
 				handler.pushBase(0);
 				allhandlers.push_back(handler);
                 }
@@ -1111,9 +1111,9 @@ namespace Heuristics
 		return allhandlers;
 		}
 
-	std::vector<Core::FMToutput>FMToperatingareascheduler::getLevelSolution(const std::string& outputname, const std::string& aggregate,int outputid) const
+	std::vector<Core::FMTOutput>FMToperatingareascheduler::getLevelSolution(const std::string& outputname, const std::string& aggregate,int outputid) const
 	{
-		std::vector<Core::FMToutput>alloutputs;
+		std::vector<Core::FMTOutput>alloutputs;
 		try {
 			const double* rowlowerbound = this->getRowLower();
 			const double* rowupperbound = this->getRowUpper();
@@ -1126,16 +1126,16 @@ namespace Heuristics
 					{
 					data = operatingareait->getDualLowerBounds(rowlowerbound, rowupperbound);
 					}
-				std::vector<Core::FMToutputsource>sources;
-				std::vector<Core::FMToperator>operators;
-				sources.push_back(Core::FMToutputsource(Core::FMTspec(), operatingareait->getMask(), Core::FMTotar::actual, "", aggregate, outputid));
+				std::vector<Core::FMTOutputSource>sources;
+				std::vector<Core::FMTOperator>operators;
+				sources.push_back(Core::FMTOutputSource(Core::FMTSpec(), operatingareait->getMask(), Core::FMTotar::actual, "", aggregate, outputid));
 				++outputid;
-				const Core::FMToutput variableoutput(outputname + std::to_string(cid), "OPAREA " + std::to_string(cid), "BFECOPT",sources,operators);
+				const Core::FMTOutput variableoutput(outputname + std::to_string(cid), "OPAREA " + std::to_string(cid), "BFECOPT",sources,operators);
 				sources.clear();
 				const std::string levelname = outputname + "bound" + std::to_string(cid);
-				sources.push_back(Core::FMToutputsource(Core::FMTotar::level, data, outputid,-1, levelname));
+				sources.push_back(Core::FMTOutputSource(Core::FMTotar::level, data, outputid,-1, levelname));
 				++outputid;
-				const Core::FMToutput leveloutput(levelname, "OPAREABOUND" + std::to_string(cid), "BFECOPT", sources, operators);
+				const Core::FMTOutput leveloutput(levelname, "OPAREABOUND" + std::to_string(cid), "BFECOPT", sources, operators);
 				alloutputs.push_back(variableoutput);
 				alloutputs.push_back(leveloutput);
 				++cid;
@@ -1153,7 +1153,7 @@ namespace Heuristics
 	FMToperatingareascheduler::FMToperatingareascheduler(const std::vector<FMToperatingareascheme>& loperatingareas,
 		const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 		const Models::FMTmodel& model,
-		const Core::FMToutputnode& target,
+		const Core::FMTOutputNode& target,
 		Models::FMTlpsolver& basesolve, size_t lseed,
 		double proportionofset, bool userandomness, bool copysolver):
 		FMTlpheuristic(basesolve,lseed,copysolver),operatingareas(loperatingareas),adjacencyconstraints(), proportionofset(proportionofset),

@@ -58,8 +58,8 @@ int main(int argc, char* argv[])
 	const std::vector<Models::FMTmodel> MODELS = mparser.readproject(PRIMARY, SCENARIOS);
 	Models::FMTnssmodel NssModel(MODELS.at(0),0);
 	NssModel.setParameter(Models::FMTintmodelparameters::UPDATE, 1);
-	std::vector<Core::FMTactualdevelopment>newDevs;
-	for (Core::FMTactualdevelopment dev : NssModel.getArea())
+	std::vector<Core::FMTActualDevelopment>newDevs;
+	for (Core::FMTActualDevelopment dev : NssModel.getArea())
 		{
 		dev.setPeriod(PERIOD-1);
 		newDevs.push_back(dev);
@@ -67,8 +67,8 @@ int main(int argc, char* argv[])
 	NssModel.setArea(newDevs);
 	NssModel.setParameter(Models::FMTintmodelparameters::LENGTH, LENGTH);
 	NssModel.doPlanning(true);
-	Core::FMToutput sumOutput;
-	for (const Core::FMToutput& output : NssModel.getOutputs())
+	Core::FMTOutput sumOutput;
+	for (const Core::FMTOutput& output : NssModel.getOutputs())
 	{
 		if (output.getName() == OUTPUT)
 		{

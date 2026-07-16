@@ -21,12 +21,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMToutput;
-	class FMTconstraint;
-	class FMTtheme;
-	class FMTconstants;
-	class FMTperbounds;
-	class FMTyields;
+	class FMTOutput;
+	class FMTConstraint;
+	class FMTTheme;
+	class FMTConstants;
+	class FMTPerBounds;
+	class FMTYields;
 }
 
 
@@ -59,12 +59,12 @@ namespace Parser
 		* @param[in] pm_location the location of the file.
 		* @return Valid constraints.
 		*/
-		std::vector<Core::FMTconstraint> read(const std::vector<Core::FMTtheme>& p_themes,
-				  const std::vector<Core::FMTaction>& p_actions,
-				  const Core::FMTconstants& p_constants,
-				  const std::vector<Core::FMToutput>& p_outputs,
-			      const Core::FMTyields& p_yields,
-				  std::vector<Core::FMTaction>& p_excluded,
+		std::vector<Core::FMTConstraint> read(const std::vector<Core::FMTTheme>& p_themes,
+				  const std::vector<Core::FMTAction>& p_actions,
+				  const Core::FMTConstants& p_constants,
+				  const std::vector<Core::FMTOutput>& p_outputs,
+			      const Core::FMTYields& p_yields,
+				  std::vector<Core::FMTAction>& p_excluded,
 				  const std::string& pm_location);
 		// DocString: FMToptimizationparser::getConstraints
 		/*
@@ -77,18 +77,18 @@ namespace Parser
 		* @param[in] p_actions the model actions.
 		* @return A valid constraint.
 		*/
-		std::vector<Core::FMTconstraint> getConstraints(const std::string& pm_line,
-			const Core::FMTconstants& p_constants, const Core::FMTyields& p_yields,
-			const std::vector<Core::FMToutput>& p_outputs,
-			const std::vector<Core::FMTtheme>& p_themes,
-			const std::vector<Core::FMTaction>& p_actions);
+		std::vector<Core::FMTConstraint> getConstraints(const std::string& pm_line,
+			const Core::FMTConstants& p_constants, const Core::FMTYields& p_yields,
+			const std::vector<Core::FMTOutput>& p_outputs,
+			const std::vector<Core::FMTTheme>& p_themes,
+			const std::vector<Core::FMTAction>& p_actions);
 		// DocString: FMToptimizationparser::write
 		/*
 		* @brief Write down the constraints into an optimization file.
 		* @param[in] p_ constraints the constraints to write in a file.
 		* @param[in] pm_location the location at which we want to write the constraints.
 		*/
-		void write(const std::vector<Core::FMTconstraint>& p_constraints,
+		void write(const std::vector<Core::FMTConstraint>& p_constraints,
 			const std::string& pm_location) const;
 		~FMToptimizationparser()=default;
 	private:
@@ -115,20 +115,20 @@ namespace Parser
 		* @param[in] p_themes the model themes.
 		* @return A valid objective.
 		*/
-		Core::FMTconstraint getObjective(const std::string& pm_line,
-			const Core::FMTconstants& p_constants,
-			const Core::FMTyields& p_yields,
-			const std::vector<Core::FMToutput>& p_outputs,
-			const std::vector<Core::FMTtheme>& p_themes);
+		Core::FMTConstraint getObjective(const std::string& pm_line,
+			const Core::FMTConstants& p_constants,
+			const Core::FMTYields& p_yields,
+			const std::vector<Core::FMTOutput>& p_outputs,
+			const std::vector<Core::FMTTheme>& p_themes);
 		FMToptimizationsection getSection(const std::string& line) const;
-		bool setEnding(Core::FMTconstraint& constraint, std::string& line, const Core::FMTconstants& constants);
-		Core::FMToutput resumeOutput(const std::map<std::string, double>& nodes,
-			const std::vector<Core::FMToutput>& outputs,
-			const std::vector<Core::FMTtheme>& themes,
-			const Core::FMTconstants& constants);
-		std::queue<FMTparser::FMTLineInfo>getOptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
-								const Core::FMTconstants& cons, const std::vector<Core::FMToutput>& outputs);
-		std::queue<std::string> getEachLines(const std::string& line, const Core::FMTconstants& constants, const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const;
+		bool setEnding(Core::FMTConstraint& constraint, std::string& line, const Core::FMTConstants& constants);
+		Core::FMTOutput resumeOutput(const std::map<std::string, double>& nodes,
+			const std::vector<Core::FMTOutput>& outputs,
+			const std::vector<Core::FMTTheme>& themes,
+			const Core::FMTConstants& constants);
+		std::queue<FMTparser::FMTLineInfo>getOptline(std::ifstream& stream, const std::vector<Core::FMTTheme>& themes,
+								const Core::FMTConstants& cons, const std::vector<Core::FMTOutput>& outputs);
+		std::queue<std::string> getEachLines(const std::string& line, const Core::FMTConstants& constants, const std::vector<Core::FMTOutput>& outputs, const std::vector<Core::FMTTheme>& themes) const;
 		// DocString: FMToptimizationparser::getEquation
 		/*
 		* @brief Take the orgiginal line of the contraint and try to simplify the equation before formating it for an output
@@ -139,10 +139,10 @@ namespace Parser
 		* @param[in] p_lhssize the size of the RHS.
 		* @return valid outputs nodes simplified.
 		*/
-		std::map<std::string, double>getEquation(const std::string& pm_line, const Core::FMTconstants& p_constants,
-			const Core::FMTyields& p_yields, const std::vector<Core::FMToutput>& p_outputs,
+		std::map<std::string, double>getEquation(const std::string& pm_line, const Core::FMTConstants& p_constants,
+			const Core::FMTYields& p_yields, const std::vector<Core::FMTOutput>& p_outputs,
 			size_t p_lhssize = std::numeric_limits<size_t>::max());
-		std::vector<Core::FMTconstraint> getPeriodsBounds(std::string periodstr, const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const;
+		std::vector<Core::FMTConstraint> getPeriodsBounds(std::string periodstr, const Core::FMTConstraint& constraint, const Core::FMTConstants& constants) const;
 		void fillBounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const;
 		// DocString: FMToptimizationparser::getSpatialConstraint
 		/*
@@ -157,13 +157,13 @@ namespace Parser
 		* @param[in]  p_themes the themes.
 		* @return valid spatial constraint.
 		*/
-		Core::FMTconstraint getSpatialConstraint(const Core::FMTconstraint& p_baseconstraint,
+		Core::FMTConstraint getSpatialConstraint(const Core::FMTConstraint& p_baseconstraint,
 			const boost::smatch& p_match, const std::string& pm_line,
-			const Core::FMTconstants& p_constants,
-			const Core::FMTyields& p_yields,
-			const std::vector<Core::FMTaction>& p_actions,
-			const std::vector<Core::FMToutput>& p_outputs,
-			const std::vector<Core::FMTtheme>& p_themes);
+			const Core::FMTConstants& p_constants,
+			const Core::FMTYields& p_yields,
+			const std::vector<Core::FMTAction>& p_actions,
+			const std::vector<Core::FMTOutput>& p_outputs,
+			const std::vector<Core::FMTTheme>& p_themes);
 		std::vector<std::vector<double>>getReplicateChanges(const std::string& replicateargument);
 	};
 }

@@ -21,24 +21,24 @@ namespace Models
 
 namespace Core
 {
-	class FMTdata;
+	class FMTData;
 	class FMTyieldmodel;
-	class FMTtimeyieldhandler;
-	class FMTEXPORT FMTmodelyieldhandler final : public FMTyieldhandler
+	class FMTTimeYieldHandler;
+	class FMTEXPORT FMTModelYieldHandler final : public FMTYieldHandler
 	{
 	public:
-		virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
+		virtual double get(const std::string& yld, const FMTYieldRequest& request) const;
 		virtual  operator std::string() const;
-		~FMTmodelyieldhandler() = default;
-		FMTmodelyieldhandler();
-		FMTmodelyieldhandler(const FMTmodelyieldhandler& rhs);
-		FMTmodelyieldhandler& operator = (const FMTmodelyieldhandler& rhs);
-		FMTmodelyieldhandler(const FMTmask& mask);
+		~FMTModelYieldHandler() = default;
+		FMTModelYieldHandler();
+		FMTModelYieldHandler(const FMTModelYieldHandler& rhs);
+		FMTModelYieldHandler& operator = (const FMTModelYieldHandler& rhs);
+		FMTModelYieldHandler(const FMTMask& mask);
 		std::map<std::string, size_t>getModelsNameByIndex() const;
 		void pushBackModel(const std::unique_ptr<FMTyieldmodel>& model);
 		void setYield(const size_t& modelid,const size_t& yieldid,const std::string& yldname);
-		virtual std::unique_ptr<FMTyieldhandler>clone() const;
-		virtual bool operator == (const FMTmodelyieldhandler& rhs) const;
+		virtual std::unique_ptr<FMTYieldHandler>clone() const;
+		virtual bool operator == (const FMTModelYieldHandler& rhs) const;
 		virtual bool empty() const;
 		virtual size_t size() const;
 		virtual FMTyldtype getType() const;
@@ -46,19 +46,19 @@ namespace Core
 		virtual bool isNullYield(const std::string& yldname) const;
 		virtual std::vector<std::string>getYieldNames() const;
 		virtual void clearCache();
-		virtual std::unique_ptr<FMTyieldhandler> presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const;
-		virtual std::unique_ptr<FMTyieldhandler> postSolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const;
-		// DocString: FMTmodelyieldhandler::clearRandomYieldsCache
+		virtual std::unique_ptr<FMTYieldHandler> presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const;
+		virtual std::unique_ptr<FMTYieldHandler> postSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& basethemes) const;
+		// DocString: FMTModelYieldHandler::clearRandomYieldsCache
 		/**
 		@brief clear the cache of all random yield model.
 		*/
 		void clearRandomYieldsCache();
-		// DocString: FMTmodelyieldhandler::toTimeHandler
+		// DocString: FMTModelYieldHandler::toTimeHandler
 		/**
 		If you can turn all your yieldmodel to time then you can return a timeyieldhandler.
 		*/
-		FMTtimeyieldhandler toTimeHandler() const;
-		// DocString: FMTmodelyieldhandler::setModel
+		FMTTimeYieldHandler toTimeHandler() const;
+		// DocString: FMTModelYieldHandler::setModel
 		/**
 		@brief set The model to the yielmodel.
 		@param[in] p_modelPtr the pointer to the actual model. This can be cast to different type of model...
@@ -69,7 +69,7 @@ namespace Core
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
+			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
 			ar& m_yldnames;
 		}
 		std::vector<std::unique_ptr<FMTyieldmodel>>models;

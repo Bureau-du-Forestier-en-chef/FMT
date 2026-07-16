@@ -28,7 +28,7 @@ namespace Exception
 	/**
 	The FMTExceptionHandler is a base class used to handel error thrown in FMT. It keeps count of the
 	number of warning thrown and error thrown it also has a shared pointer to an abstract FMTLogger.
-	This class is used in the FMTobject class.
+	This class is used in the FMTObject class.
 	*/
 	class FMTEXPORT FMTExceptionHandler
 	{

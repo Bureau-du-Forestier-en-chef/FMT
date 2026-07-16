@@ -65,7 +65,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
         FMTsemodel& operator = (const FMTsemodel& rhs);
 		// DocString: FMTsemodel::getMapping
 		/**
-		Getter returning a copy the actual spatial forest stades of each FMTdevelopment (map).
+		Getter returning a copy the actual spatial forest stades of each FMTDevelopment (map).
 		*/
 		Spatial::FMTforest getMapping() const;
 		// DocString: FMTsemodel::getSpSchedule
@@ -87,10 +87,10 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		The operated schedule can differ from the potential schedule provided by the user in the function
 		greedyreferencedbuild(). Which we call spatialisation impact.
 		*/
-		std::vector<Core::FMTschedule> getSchedule(bool withlock=false) const;
+		std::vector<Core::FMTSchedule> getSchedule(bool withlock=false) const;
 		// DocString: FMTsemodel::setInitialMapping
 		/**
-		Setter of the initial forest state (spatial map of FMTdevelopment)
+		Setter of the initial forest state (spatial map of FMTDevelopment)
 		Has to be set before greedyreferencedbuild() is called.
 		*/
         bool setInitialMapping(const Spatial::FMTforest& forest);
@@ -110,7 +110,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		FMTforest map and the spatial acitons.
 		*/
 		virtual std::unique_ptr<FMTmodel>presolve(
-			std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+			std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTsemodel::postSolve
 		/**
 		Using the original FMTmodel it postSolve the actual ses model to turn it back into a complete model with all themes,
@@ -124,19 +124,19 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or development name if level == FMToutputlevel::developpement
 		*/
-		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
+		virtual std::map<std::string, double> getOutput(const Core::FMTOutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		// DocString: FMTsemodel::getOutput
 		/**
 		Get the spatial output value based on the spatial solution.
 		*/
-		virtual Spatial::FMTlayer<double> getSpatialOutput(const Core::FMToutput& output,int period) const;
+		virtual Spatial::FMTlayer<double> getSpatialOutput(const Core::FMTOutput& output,int period) const;
 		// DocString: FMTsemodel::getSolution
 		/**
-		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
+		Get the standard solution for a given period (FMTSchedule dont have natural growth solution included).
 		If with lock is true then the schedule will contain locked development.
 		*/
-		virtual Core::FMTschedule getSolution(int period, bool withlock = false) const;
+		virtual Core::FMTSchedule getSolution(int period, bool withlock = false) const;
 
 		
 		// DocString: FMTsemodel::clone
@@ -151,7 +151,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		@param[in] beforegrowanddeath true if we want before the growth (true) or after (false)
 		@return the vector of actualdevelopment...
 		*/
-		virtual std::vector<Core::FMTactualdevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
+		virtual std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
 		// DocString: FMTsemodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
@@ -170,7 +170,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		@param[in] withlock lock in schedule
 		@return the vector of schedules
 		*/
-		std::vector<Core::FMTschedule> getSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+		std::vector<Core::FMTSchedule> getSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
 			bool withlock = false) const;
 		// DocString: FMTsemodel::getSolutionStatus
 		/**
@@ -202,7 +202,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Spatial::FMTSpatialSchedule getNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
 		std::map<std::string, double> greedyReferenceBuild(
 			Spatial::FMTSpatialSchedule& p_SpatialSchedule,
-			const Core::FMTschedule& schedule,
+			const Core::FMTSchedule& schedule,
 			const size_t& randomiterations,
 			unsigned int seed = 0,
 			double tolerance = FMT_DBL_TOLERANCE,

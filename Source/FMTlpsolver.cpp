@@ -101,7 +101,7 @@ namespace Models
 		return newsolverinterface;
 	}
 
-	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) :Core::FMTobject(rhs), solverinterface(), 
+	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) :Core::FMTObject(rhs), solverinterface(), 
 		matrixcache(rhs.matrixcache),solvertype(rhs.solvertype), usecache(rhs.usecache),
 		m_ColdStartParameters(rhs.m_ColdStartParameters),m_WarmStartParameters(rhs.m_WarmStartParameters)
 		{
@@ -128,7 +128,7 @@ namespace Models
 		{
 		if (this!=&rhs)
 			{
-			Core::FMTobject::operator = (rhs);
+			Core::FMTObject::operator = (rhs);
 			matrixcache = rhs.matrixcache;
 			usecache = rhs.usecache;
 			solvertype = rhs.solvertype;
@@ -147,7 +147,7 @@ namespace Models
 		const std::string& p_ColdStartParameters,
 		const std::string& p_WarmStartParameters,
 		const std::string& p_problemName):
-		Core::FMTobject(),solverinterface(),matrixcache(), solvertype(lsolvertype), usecache(true),
+		Core::FMTObject(),solverinterface(),matrixcache(), solvertype(lsolvertype), usecache(true),
 		m_ColdStartParameters(strtoParams(p_ColdStartParameters)),
 		m_WarmStartParameters(strtoParams(p_WarmStartParameters))
 		{
@@ -829,7 +829,7 @@ namespace Models
 	void FMTlpsolver::passInSolver(const FMTlpsolver& solver)
 		{
 		try{
-		Core::FMTobject::operator=(solver);
+		Core::FMTObject::operator=(solver);
 		usecache = solver.usecache;
 		matrixcache = solver.matrixcache;
 		solvertype = solver.solvertype;
@@ -975,7 +975,7 @@ namespace Models
 	void FMTlpsolver::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 	{
 		try {
-			Core::FMTobject::passInLogger(logger);
+			Core::FMTObject::passInLogger(logger);
 			passInMessageHandler(*getLogger());
 		}
 		catch (...)

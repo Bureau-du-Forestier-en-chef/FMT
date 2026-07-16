@@ -98,7 +98,7 @@ namespace Heuristics
 		/**
 		Returns the corresponding binary const reference of the cluster corresponding to the given (mask).
 		*/
-		const FMToperatingareaclusterbinary& getBinary(const Core::FMTmask& mask) const;
+		const FMToperatingareaclusterbinary& getBinary(const Core::FMTMask& mask) const;
 		// DocString: FMToperatingareacluster::getCentroid
 		/**
 		Getter for cluster centroid binary.
@@ -202,12 +202,12 @@ namespace Heuristics
 		Base on a given mask the function is going to remove any binary that does not fell in the mask definition.
 		It can reduce the size of the binaries.
 		*/
-		FMToperatingareacluster getFilteredCluster(const Core::FMTmask& filterMask) const;
+		FMToperatingareacluster getFilteredCluster(const Core::FMTMask& filterMask) const;
 		// DocString: FMToperatingareacluster::getAllMasks
 		/**
 		Returns all the mask contained by the cluster including the operating area centroid.
 		*/
-		std::vector<Core::FMTmask>getAllMasks() const;
+		std::vector<Core::FMTMask>getAllMasks() const;
 	};
 }
 

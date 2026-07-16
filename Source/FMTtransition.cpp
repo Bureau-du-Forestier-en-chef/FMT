@@ -17,19 +17,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtransitionmask.h"
 
 namespace Core{
-FMTtransition::FMTtransition():name(){}
+FMTTransition::FMTTransition():name(){}
 
-FMTtransition::FMTtransition(const std::string& lname) : FMTlist<FMTfork>(), name(lname)
+FMTTransition::FMTTransition(const std::string& lname) : FMTList<FMTFork>(), name(lname)
 	{
 
 	}
 
-void FMTtransition::setName(const std::string& p_name)
+void FMTTransition::setName(const std::string& p_name)
 	{
 	name = p_name;
 	}
 
-bool FMTtransition::isLeaking() const
+bool FMTTransition::isLeaking() const
 	{
 	for (const auto& forkobj : *this)
 		{
@@ -42,35 +42,35 @@ bool FMTtransition::isLeaking() const
 	return false;
 	}
 
-FMTtransition& FMTtransition::operator+=(const FMTtransition& OtherTransition)
+FMTTransition& FMTTransition::operator+=(const FMTTransition& OtherTransition)
 {
 	try {
-		FMTlist<FMTfork>::operator+=(OtherTransition);
+		FMTList<FMTFork>::operator+=(OtherTransition);
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTtransition::operator+=", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::operator+=", __LINE__, __FILE__, Core::FMTsection::Transition);
 	}
 return *this;
 }
 
 
-FMTtransition::FMTtransition(const FMTtransition& rhs) : FMTlist<FMTfork>(rhs),name(rhs.name)
+FMTTransition::FMTTransition(const FMTTransition& rhs) : FMTList<FMTFork>(rhs),name(rhs.name)
     {
 
     }
-FMTtransition& FMTtransition::operator = (const FMTtransition& rhs)
+FMTTransition& FMTTransition::operator = (const FMTTransition& rhs)
     {
     if (this!=&rhs)
         {
         name = rhs.name;
-        FMTlist<FMTfork>::operator = (rhs);
+        FMTList<FMTFork>::operator = (rhs);
         }
     return *this;
     }
 
-FMTtransition FMTtransition::single() const
+FMTTransition FMTTransition::single() const
     {
-    FMTtransition newtra(*this);
+    FMTTransition newtra(*this);
 	for (auto& forkobj : newtra)
 		{
 		forkobj.second = forkobj.second.single();
@@ -78,11 +78,11 @@ FMTtransition FMTtransition::single() const
     return newtra;
     }
 
-bool FMTtransition::operator < (const FMTtransition& rhs) const
+bool FMTTransition::operator < (const FMTTransition& rhs) const
     {
     return name < rhs.name;
     }
-FMTtransition::operator std::string() const
+FMTTransition::operator std::string() const
     {
 	std::string line = "*CASE "+name+"\n";
     for (const auto& forkobj:*this)
@@ -92,30 +92,30 @@ FMTtransition::operator std::string() const
         }
     return line;
     }
-bool FMTtransition::operator == (const FMTtransition& rhs) const
+bool FMTTransition::operator == (const FMTTransition& rhs) const
     {
     return(name == rhs.name &&
-		FMTlist<FMTfork>::operator==(rhs));
+		FMTList<FMTFork>::operator==(rhs));
     }
-bool FMTtransition::operator != (const FMTtransition& rhs) const
+bool FMTTransition::operator != (const FMTTransition& rhs) const
     {
     return !(*this==rhs);
     }
 
-unsigned int FMTtransition::ageAfter(const std::vector<FMTdevelopment>& devs,
-                               const FMTaction& action,
-                               const FMTyields& ylds,
-                               const std::vector<FMTtheme>& themes) const
+unsigned int FMTTransition::ageAfter(const std::vector<FMTDevelopment>& devs,
+                               const FMTAction& action,
+                               const FMTYields& ylds,
+                               const std::vector<FMTTheme>& themes) const
     {
     unsigned int total_age = 0;
     unsigned int age_count = 0;
 	try {
-		for (const FMTdevelopment& dev : devs)
+		for (const FMTDevelopment& dev : devs)
 		{
 			if (dev.operable(action, ylds))
 			{
-				const std::vector<FMTdevelopmentpath>newpaths = dev.operate(action, *this, ylds, themes);
-				for (const FMTdevelopmentpath& path : newpaths)
+				const std::vector<FMTDevelopmentPath>newpaths = dev.operate(action, *this, ylds, themes);
+				for (const FMTDevelopmentPath& path : newpaths)
 				{
 					total_age += path.getDevelopment().getAge();
 					++age_count;
@@ -128,21 +128,21 @@ unsigned int FMTtransition::ageAfter(const std::vector<FMTdevelopment>& devs,
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for transition "+this->getName(),"FMTtransition::ageAfter", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raiseFromCatch("for transition "+this->getName(),"FMTTransition::ageAfter", __LINE__, __FILE__, Core::FMTsection::Transition);
 		}
     return (total_age/age_count);
     }
 
-std::vector<const FMTtheme*>FMTtransition::getStaticThemes(const std::vector<const FMTtheme*>& themes) const
+std::vector<const FMTTheme*>FMTTransition::getStaticThemes(const std::vector<const FMTTheme*>& themes) const
 	{
-	std::vector<const FMTtheme*>staticthemes = themes;
+	std::vector<const FMTTheme*>staticthemes = themes;
 	try {
-		std::vector<std::pair<FMTmask, FMTfork>>::const_iterator fork_it = this->begin();
+		std::vector<std::pair<FMTMask, FMTFork>>::const_iterator fork_it = this->begin();
 		while (fork_it != this->end() && !staticthemes.empty())
 		{
-			for (const FMTtransitionmask& trnmask : fork_it->second.getMaskTrans())
+			for (const FMTTransitionMask& trnmask : fork_it->second.getMaskTrans())
 			{
-				const FMTmask msk = trnmask.getMask();
+				const FMTMask msk = trnmask.getMask();
 				staticthemes = msk.getStaticThemes(staticthemes);
 			}
 			++fork_it;
@@ -150,22 +150,22 @@ std::vector<const FMTtheme*>FMTtransition::getStaticThemes(const std::vector<con
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTtransition::getStaticThemes", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::getStaticThemes", __LINE__, __FILE__, Core::FMTsection::Transition);
 	}
 	return staticthemes;
 	}
 
-std::vector<Core::FMTmask> FMTtransition::canProduce(const Core::FMTmask& testmask,const std::vector<Core::FMTtheme>& themes) const
+std::vector<Core::FMTMask> FMTTransition::canProduce(const Core::FMTMask& testmask,const std::vector<Core::FMTTheme>& themes) const
 	{
-		std::vector<Core::FMTmask> possiblesourcesfortransitions;
+		std::vector<Core::FMTMask> possiblesourcesfortransitions;
 		try {
 			for(const auto& forkobj : *this)
 			{
-				const Core::FMTmask unshrinkedsourcemask(std::string(forkobj.first), themes);
-				for (const FMTtransitionmask& transmask : forkobj.second.getMaskTrans())
+				const Core::FMTMask unshrinkedsourcemask(std::string(forkobj.first), themes);
+				for (const FMTTransitionMask& transmask : forkobj.second.getMaskTrans())
 				{
-					Core::FMTmask refinedmask = transmask.getMask().refine(unshrinkedsourcemask,themes);
-					const Core::FMTmask intersect = refinedmask.getIntersect(testmask);
+					Core::FMTMask refinedmask = transmask.getMask().refine(unshrinkedsourcemask,themes);
+					const Core::FMTMask intersect = refinedmask.getIntersect(testmask);
 					if(!testmask.isNotThemesSubset(intersect,themes))
 					{
 						possiblesourcesfortransitions.push_back(unshrinkedsourcemask.refine(testmask, themes));
@@ -176,21 +176,21 @@ std::vector<Core::FMTmask> FMTtransition::canProduce(const Core::FMTmask& testma
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTtransition::getallpossibletransitionsmasks", __LINE__, __FILE__, Core::FMTsection::Transition);
+			_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::getallpossibletransitionsmasks", __LINE__, __FILE__, Core::FMTsection::Transition);
 		}
 		return possiblesourcesfortransitions;	
 
 	}
 
-const FMTfork* FMTtransition::getFork(const Core::FMTdevelopment& development,const FMTyields& ylds) const
+const FMTFork* FMTTransition::getFork(const Core::FMTDevelopment& development,const FMTYields& ylds) const
     {
 	try{
-	const Core::FMTyieldrequest& request = development.getYieldRequest();
-    for(const FMTtransition::const_iterator fork : this->findSets(development.getMask()))
+	const Core::FMTYieldRequest& request = development.getYieldRequest();
+    for(const FMTTransition::const_iterator fork : this->findSets(development.getMask()))
        {
 		if (fork->second.allowWithoutYield(development.getPeriod(), development.getAge(), development.getLock()))
 			{
-			const std::vector<FMTyldbounds>&bounds = fork->second.getYldBounds();
+			const std::vector<FMTYldBounds>&bounds = fork->second.getYldBounds();
 			size_t bid = 0;
 			bool usefork = true;
 			for (const std::string& yldname : fork->second.getYlds())
@@ -211,25 +211,25 @@ const FMTfork* FMTtransition::getFork(const Core::FMTdevelopment& development,co
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTtransition::getFork", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::getFork", __LINE__, __FILE__, Core::FMTsection::Transition);
 	}
     return nullptr;
     }
 
-FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
-	const FMTyields& ylds) const
+FMTMask FMTTransition::mainTarget(const std::vector<FMTDevelopment>& devs,
+	const FMTYields& ylds) const
 {
-	FMTmask bestmask;
+	FMTMask bestmask;
 	try{
-		std::map<FMTmask, unsigned int>hits;
-	for (const FMTdevelopment& dev : devs)
+		std::map<FMTMask, unsigned int>hits;
+	for (const FMTDevelopment& dev : devs)
 	{
-		const FMTfork* fork = this->getFork(dev,ylds);
+		const FMTFork* fork = this->getFork(dev,ylds);
 		if (fork)
 		{
-			for (const FMTtransitionmask& target : fork->getMaskTrans())
+			for (const FMTTransitionMask& target : fork->getMaskTrans())
 			{
-				const FMTmask msktarget = target.getMask();
+				const FMTMask msktarget = target.getMask();
 				if (hits.find(msktarget) == hits.end())
 				{
 					hits[msktarget] = 1;
@@ -242,7 +242,7 @@ FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	}
 
 	unsigned int besthit = 0;
-	for (std::map<FMTmask, unsigned int>::const_iterator it = hits.begin(); it != hits.end(); it++)
+	for (std::map<FMTMask, unsigned int>::const_iterator it = hits.begin(); it != hits.end(); it++)
 	{
 		if (it->second > besthit)
 		{
@@ -253,28 +253,28 @@ FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTtransition::mainTarget", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::mainTarget", __LINE__, __FILE__, Core::FMTsection::Transition);
 	}
     return bestmask;
     }
- std::map<std::string, std::vector<FMTdevelopment>> FMTtransition::attributeTargets(const std::vector<FMTdevelopment>& devs,
-	 const FMTyields& ylds, const std::vector<FMTtheme>& themes) const
+ std::map<std::string, std::vector<FMTDevelopment>> FMTTransition::attributeTargets(const std::vector<FMTDevelopment>& devs,
+	 const FMTYields& ylds, const std::vector<FMTTheme>& themes) const
 	{
-	 std::map<std::string, std::vector<FMTdevelopment>>results;
+	 std::map<std::string, std::vector<FMTDevelopment>>results;
 	 try {
-		 for (const FMTdevelopment& dev : devs)
+		 for (const FMTDevelopment& dev : devs)
 		 {
-			 const FMTfork* fork = this->getFork(dev,ylds);
+			 const FMTFork* fork = this->getFork(dev,ylds);
 			 if (fork)
 			 {
 				 std::string key = this->name;
-				 for (const FMTtheme& theme : themes)
+				 for (const FMTTheme& theme : themes)
 				 {
 					 key += ("-" + dev.getMask().getAttribute(theme));
 				 }
 				 if (results.find(key) == results.end())
 				 {
-					 results[key] = std::vector<FMTdevelopment>();
+					 results[key] = std::vector<FMTDevelopment>();
 				 }
 				 results[key].push_back(dev);
 			 }
@@ -282,34 +282,34 @@ FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	 }
 	 catch (...)
 	 {
-		 _exhandler->raiseFromCatch("for transition " + this->getName(), "FMTtransition::attributeTargets", __LINE__, __FILE__, Core::FMTsection::Transition);
+		 _exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::attributeTargets", __LINE__, __FILE__, Core::FMTsection::Transition);
 	 }
 	 return results;
 	 }
 
  FMTTransitionComparator::FMTTransitionComparator(std::string name) :transition_name(name) {}
- bool FMTTransitionComparator::operator()(const FMTtransition& transition) const
+ bool FMTTransitionComparator::operator()(const FMTTransition& transition) const
 	{
 	return (transition.getName()  == transition_name);
 	}
 
- FMTtransition FMTtransition::presolve(const FMTmaskfilter& filter,
-	 const std::vector<FMTtheme>& originalthemes,
-	 std::vector<FMTtheme>& newthemes,bool compressdata) const
+ FMTTransition FMTTransition::presolve(const FMTMaskFilter& filter,
+	 const std::vector<FMTTheme>& originalthemes,
+	 std::vector<FMTTheme>& newthemes,bool compressdata) const
 	{
-	FMTtransition newtransition(*this);
+	FMTTransition newtransition(*this);
 	try {
 		newtransition.presolveRef(filter, originalthemes, newthemes, compressdata);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTtransition::presolve", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::presolve", __LINE__, __FILE__, Core::FMTsection::Transition);
 		}
 	return newtransition;
 	}
 
- void FMTtransition::presolveRef(const FMTmaskfilter& p_filter,
-	 const std::vector<FMTtheme>& p_originalThemes,
-	 std::vector<FMTtheme>& p_newthemes, bool p_compressdata)
+ void FMTTransition::presolveRef(const FMTMaskFilter& p_filter,
+	 const std::vector<FMTTheme>& p_originalThemes,
+	 std::vector<FMTTheme>& p_newthemes, bool p_compressdata)
  {
 	 try {
 		presolveList(p_filter, p_originalThemes, p_newthemes);
@@ -328,11 +328,11 @@ FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	 }
 	 catch (...)
 	 {
-		 _exhandler->raiseFromCatch("for transition " + this->getName(), "FMTtransition::presolveRef", __LINE__, __FILE__, Core::FMTsection::Transition);
+		 _exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::presolveRef", __LINE__, __FILE__, Core::FMTsection::Transition);
 	 }
  }
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTtransition)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTTransition)
 

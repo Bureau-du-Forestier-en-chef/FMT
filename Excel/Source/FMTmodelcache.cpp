@@ -68,7 +68,7 @@ namespace Wrapper
 			boost::lock(*mtx, *rhs.mtx);
 			boost::lock_guard<boost::recursive_mutex> self_lock(*mtx, boost::adopt_lock);
 			boost::lock_guard<boost::recursive_mutex> other_lock(*rhs.mtx, boost::adopt_lock);
-			Core::FMTobject::operator = (rhs);
+			Core::FMTObject::operator = (rhs);
 			outputsmap = rhs.outputsmap;
 			themesmap = rhs.themesmap;
 			maskcache = rhs.maskcache;
@@ -131,7 +131,7 @@ namespace Wrapper
 				{
 				const size_t nperiods = static_cast<size_t>(getperiods());
 				size_t maxsizet = 0;
-				for (const Core::FMTtheme& theme : themes)
+				for (const Core::FMTTheme& theme : themes)
 					{
 					maxsizet = std::max(maxsizet, theme.size());
 					}
@@ -171,7 +171,7 @@ namespace Wrapper
 				Parser::FMTareaparser areaparser;
 				//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
 				//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeSelectionToMask", __LINE__, __FILE__);
-				const Core::FMTtheme& theme = themes.at(themeid);
+				const Core::FMTTheme& theme = themes.at(themeid);
 				std::map<std::string, std::string> layer_map;
 				const std::vector<std::string>& allatributes = theme.getBaseAttributes();
 				size_t attributeid = 0;
@@ -204,13 +204,13 @@ namespace Wrapper
 	{
 		try {
 			size_t outid = 0;
-			for (const Core::FMToutput& output : outputs)
+			for (const Core::FMTOutput& output : outputs)
 			{
 				outputsmap[output.getName()] = outid;
 				++outid;
 			}
 			size_t theid = 0;
-			for (const Core::FMTtheme& theme : themes)
+			for (const Core::FMTTheme& theme : themes)
 			{
 				themesmap[theme.getName()] = theid;
 				++theid;
@@ -221,11 +221,11 @@ namespace Wrapper
 				mask += "? ";
 			}
 			mask.pop_back();
-			globalmask = Core::FMTmask(mask, themes);
+			globalmask = Core::FMTMask(mask, themes);
 			//setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 			Models::FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
 			/*int period = 0;
-			for (const Core::FMTschedule& schedule : schedules)
+			for (const Core::FMTSchedule& schedule : schedules)
 			{
 				period = std::max(period, schedule.getPeriod());
 			}
@@ -285,7 +285,7 @@ namespace Wrapper
 	}
 
 
-	void FMTmodelcache::setSolution(const std::vector<Core::FMTschedule>& schedules) 
+	void FMTmodelcache::setSolution(const std::vector<Core::FMTSchedule>& schedules) 
 	{
 		try {
 			setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
@@ -322,13 +322,13 @@ namespace Wrapper
 		return getParameter(Models::FMTintmodelparameters::LENGTH);
 	}
 
-	bool FMTmodelcache::getfrommaskcache(const std::string& cachekey, Core::FMTmask& mask) const
+	bool FMTmodelcache::getfrommaskcache(const std::string& cachekey, Core::FMTMask& mask) const
 	{
 		try {
 			if (cachingswitch)
 				{
 					boost::lock_guard<boost::recursive_mutex> guard1(*maskcachemtx);
-					std::unordered_map<std::string, Core::FMTmask>::iterator mskit = maskcache.find(cachekey);
+					std::unordered_map<std::string, Core::FMTMask>::iterator mskit = maskcache.find(cachekey);
 					if (mskit != maskcache.end())
 					{
 						mask = mskit->second;
@@ -343,7 +343,7 @@ namespace Wrapper
 		mask= globalmask;
 		return false;
 	}
-	void FMTmodelcache::writetomaskcache(const std::string& cachekey,const Core::FMTmask& mask) const
+	void FMTmodelcache::writetomaskcache(const std::string& cachekey,const Core::FMTMask& mask) const
 	{
 		try {
 			if (cachingswitch)
@@ -359,10 +359,10 @@ namespace Wrapper
 	}
 
 
-	Core::FMTmask FMTmodelcache::themeSelectionToMask(const std::string& p_themeSelection) const
+	Core::FMTMask FMTmodelcache::themeSelectionToMask(const std::string& p_themeSelection) const
 	{
 		try {
-		Core::FMTmask subset;
+		Core::FMTMask subset;
 		if (getfrommaskcache(p_themeSelection, subset))
 			{
 			return subset;
@@ -374,13 +374,13 @@ namespace Wrapper
 			boost::split(results, p_themeSelection, boost::is_any_of(";"));
 			std::string emptyMask;
 			std::vector<std::string>composition;
-			for (const Core::FMTtheme& theme : themes)
+			for (const Core::FMTTheme& theme : themes)
 			{
 				emptyMask += "? ";
 				composition.push_back("?");
 			}
 			emptyMask.pop_back();
-			subset = Core::FMTmask(emptyMask, themes);
+			subset = Core::FMTMask(emptyMask, themes);
 			
 			for (std::string& value : results)
 			{ 
@@ -389,20 +389,20 @@ namespace Wrapper
 				if (stfind != std::string::npos)//need to subsettheme!
 				{
 					const std::string themename = value.substr(0, stfind);
-					Core::FMTtheme const* localtheme = nullptr;
+					Core::FMTTheme const* localtheme = nullptr;
 					if (themename.find("THEME") != std::string::npos)
 					{
 						const size_t themeid = static_cast<size_t>(std::stoi(themename.substr(themename.find("THEME") + 5)) - 1);
 						if (!(themeid < themes.size()))
 						{
-							return Core::FMTmask();
+							return Core::FMTMask();
 						}
 						localtheme = &themes.at(themeid);
 					}
 					else {
 						if (themesmap.find(themename) == themesmap.end())
 						{
-							return Core::FMTmask();
+							return Core::FMTMask();
 						}
 						localtheme = &themes.at(themesmap.at(themename));
 					}
@@ -424,7 +424,7 @@ namespace Wrapper
 					for (std::string& attribute : attributes)
 					{
 						boost::trim(attribute);
-						Core::FMTmask localMask(subset);
+						Core::FMTMask localMask(subset);
 						
 						if (localtheme)
 						{
@@ -440,7 +440,7 @@ namespace Wrapper
 								std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
 								if (ait == attributenames.end())//raise
 								{
-									return Core::FMTmask();
+									return Core::FMTMask();
 								}
 								else {
 									const std::string attname = localtheme->getBaseAttributes().at(std::distance(attributenames.begin(), ait));
@@ -449,7 +449,7 @@ namespace Wrapper
 								}
 							}
 							else {
-								return Core::FMTmask();
+								return Core::FMTMask();
 							}
 						}
 					if (attributes.size()==1 ||
@@ -464,7 +464,7 @@ namespace Wrapper
 							final_value += VAL + " ";
 							}
 						final_value.pop_back();
-						subset = Core::FMTmask(final_value, subset.getBitsetReference());
+						subset = Core::FMTMask(final_value, subset.getBitsetReference());
 						}
 					
 					}
@@ -479,13 +479,13 @@ namespace Wrapper
 			{
 			_exhandler->printExceptions("", "FMTmodelcache::themeSelectionToMask", __LINE__, __FILE__);
 			}
-		return Core::FMTmask();
+		return Core::FMTMask();
 	}
 
 	
 
 
-	Core::FMToutput FMTmodelcache::getOutput(const std::string& outputname, const Core::FMTmask& subset) const
+	Core::FMTOutput FMTmodelcache::getOutput(const std::string& outputname, const Core::FMTMask& subset) const
 	{
 		try {
 			std::unordered_map<std::string,size_t>::const_iterator outit = outputsmap.find(outputname);
@@ -496,7 +496,7 @@ namespace Wrapper
 					{
 					return  outputs.at(outit->second);
 					}else {
-					Core::FMToutput output;
+					Core::FMTOutput output;
 					const std::string cachekey = outputname +"_"+ std::string(subset);
 					if (!getfromoutputcache(cachekey, output))
 						{
@@ -510,9 +510,9 @@ namespace Wrapper
 		{
 			_exhandler->printExceptions("", "FMTmodelcache::getOutput", __LINE__, __FILE__);
 		}
-		return Core::FMToutput();
+		return Core::FMTOutput();
 	}
-	double FMTmodelcache::getvaluefrommodel(const Core::FMToutput& output, const int& period) const
+	double FMTmodelcache::getvaluefrommodel(const Core::FMTOutput& output, const int& period) const
 	{
 		double value = 0;
 		try {
@@ -531,14 +531,14 @@ namespace Wrapper
 
 
 
-	bool FMTmodelcache::getfromoutputcache(const std::string& cachekey, Core::FMToutput& output) const
+	bool FMTmodelcache::getfromoutputcache(const std::string& cachekey, Core::FMTOutput& output) const
 	{
 		bool incache = false;
 		try {
 			if (cachingswitch)
 			{
 				boost::lock_guard<boost::recursive_mutex> guard(*outputcachemtx);
-				std::unordered_map<std::string, Core::FMToutput>::iterator outit = outputcache.find(cachekey);
+				std::unordered_map<std::string, Core::FMTOutput>::iterator outit = outputcache.find(cachekey);
 				if (outit != outputcache.end())
 				{
 					incache = true;
@@ -552,7 +552,7 @@ namespace Wrapper
 		return incache;
 	}
 
-	void FMTmodelcache::writetooutputcache(const std::string& cachekey, const Core::FMToutput& output) const
+	void FMTmodelcache::writetooutputcache(const std::string& cachekey, const Core::FMTOutput& output) const
 	{
 		try {
 			if (cachingswitch)
@@ -572,10 +572,10 @@ namespace Wrapper
 	{
 		std::vector<std::string>masks;
 		try {
-			const Core::FMTmask mask_filter = themeSelectionToMask(filter);
+			const Core::FMTMask mask_filter = themeSelectionToMask(filter);
 			if (!mask_filter.empty())
 				{
-				for (const Core::FMTdevelopment* dev : this->getNoChoice(mask_filter))
+				for (const Core::FMTDevelopment* dev : this->getNoChoice(mask_filter))
 					{
 					masks.push_back(std::string(*dev));
 					}
@@ -595,12 +595,12 @@ namespace Wrapper
 		{
 			std::vector<Heuristics::FMToperatingareascheme>allscheme;
 			std::vector<size_t>allmasks;
-			boost::unordered_map<Core::FMTmask, size_t>masklocation;
+			boost::unordered_map<Core::FMTMask, size_t>masklocation;
 			size_t idofit = 0;
 			std::vector<std::string>selected;
 			for (const std::string& thselection : themeselection)
 			{
-				const Core::FMTmask subset = themeSelectionToMask(thselection);
+				const Core::FMTMask subset = themeSelectionToMask(thselection);
 				if (!subset.empty())
 				{
 					std::vector<Heuristics::FMToperatingarea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMTOperatingAreaComparator(subset));
@@ -639,7 +639,7 @@ namespace Wrapper
 					{
 					if (getYield(yieldname, thselection, 0, period)>0)
 					{
-						for (const Core::FMTmask& neighbor : OAcache->at(allmasks.at(oaid)).getNeighbors())
+						for (const Core::FMTMask& neighbor : OAcache->at(allmasks.at(oaid)).getNeighbors())
 						{
 							if (masklocation.find(neighbor)!= masklocation.end())
 							{
@@ -675,8 +675,8 @@ namespace Wrapper
 			const bool incache = fillfromcache(value, cachekey);
 			if (!incache)
 			{
-				const Core::FMTmask subset = themeSelectionToMask(themeselection);
-				const Core::FMToutput theoutput = getOutput(outputname, subset);
+				const Core::FMTMask subset = themeSelectionToMask(themeselection);
+				const Core::FMTOutput theoutput = getOutput(outputname, subset);
 				if (!outputs.empty() &&
 					outputsmap.find(outputname) != outputsmap.end() &&
 					!theoutput.empty())
@@ -693,7 +693,7 @@ namespace Wrapper
 		return value;
 	}
 
-	double  FMTmodelcache::getyieldfrommodel(const Core::FMTyieldrequest& request, const std::string& yieldname) const
+	double  FMTmodelcache::getyieldfrommodel(const Core::FMTYieldRequest& request, const std::string& yieldname) const
 	{
 		double value = 0;
 		try {
@@ -718,15 +718,15 @@ namespace Wrapper
 			const bool incache = fillfromcache(value, cachekey);
 			if (!incache)
 			{
-				//const Core::FMTyields& yields = model->getYields();
-				const Core::FMTmask subset = themeSelectionToMask(themeselection);
+				//const Core::FMTYields& yields = model->getYields();
+				const Core::FMTMask subset = themeSelectionToMask(themeselection);
 				if (!yields.empty() &&
 					yields.isYld(yieldname) &&
 					!(subset.empty() && !themeselection.empty()))
 				{
-					const Core::FMTdevelopment adev(subset, age, 0, period);
+					const Core::FMTDevelopment adev(subset, age, 0, period);
 					const Graph::FMTgraphvertextoyield graph_info = getGraphVertexToYield();
-					const Core::FMTyieldrequest yieldrequest = adev.getYieldRequest(&graph_info);
+					const Core::FMTYieldRequest yieldrequest = adev.getYieldRequest(&graph_info);
 					value = getyieldfrommodel(yieldrequest, yieldname);
 				}
 				settocache(cachekey, value);
@@ -899,7 +899,7 @@ namespace Wrapper
 	std::vector<std::string> FMTmodelcache::getactionaggregates(const std::string& filter) const
 	{
 		try {
-			for (const Core::FMTaction& action : actions)
+			for (const Core::FMTAction& action : actions)
 			{
 				if (action.getName()==filter)
 				{
@@ -921,7 +921,7 @@ namespace Wrapper
 		std::vector<std::string>actionsname;
 		actionsname.reserve(actions.size());
 		try {
-			for (const Core::FMTaction& action : actions)
+			for (const Core::FMTAction& action : actions)
 				{
 				const std::vector<std::string> aggregates = action.getAggregates();
 				if (filter=="?" || std::find(aggregates.begin(), aggregates.end(), filter) != aggregates.end())
@@ -941,7 +941,7 @@ namespace Wrapper
 		std::vector<std::string>constraintsname;
 		constraintsname.reserve(constraints.size());
 		try {
-			for (const Core::FMTconstraint& constraint : constraints)
+			for (const Core::FMTConstraint& constraint : constraints)
 			{
 				const std::string value = std::string(constraint);
 				if (value.find(output)!=std::string::npos)
@@ -981,7 +981,7 @@ namespace Wrapper
 			const bool gotSeries = getSeriesFromCache(series, CacheKey);
 			if (!gotSeries)
 			{
-				const Core::FMTmask subset = themeSelectionToMask(themeselection);
+				const Core::FMTMask subset = themeSelectionToMask(themeselection);
 				if (!aggregate.empty() && !subset.empty())
 				{
 					series = FMTsrmodel::getRotations(subset, aggregate);
@@ -1000,7 +1000,7 @@ namespace Wrapper
 	{
 		bool gotIt = false;
 		try {
-			const Core::FMTmask subset = themeSelectionToMask(themeselection);
+			const Core::FMTMask subset = themeSelectionToMask(themeselection);
 			if (!aggregate.empty() && !subset.empty())
 			{
 				const std::string CacheKey = getcachekey("SERIE", aggregate, themeselection, 0, 0);
@@ -1058,7 +1058,7 @@ namespace Wrapper
 	{
 		std::vector<int>stats;
 		try {
-			const Core::FMTmask SUBSET = themeSelectionToMask(p_ThemeSelection);
+			const Core::FMTMask SUBSET = themeSelectionToMask(p_ThemeSelection);
 			Graph::FMTgraphstats graphstats = FMTsrmodel::getGraphStats(SUBSET);
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
@@ -1080,7 +1080,7 @@ namespace Wrapper
 		std::vector<std::string>outputsname;
 		outputsname.reserve(outputs.size());
 		try {
-			for (const Core::FMToutput& output : outputs)
+			for (const Core::FMTOutput& output : outputs)
 			{
 				outputsname.push_back(output.getName());
 			}
@@ -1111,7 +1111,7 @@ namespace Wrapper
 		std::vector<std::string>themenames;
 		themenames.reserve(themes.size());
 		try {
-			for (const Core::FMTtheme& theme : themes)
+			for (const Core::FMTTheme& theme : themes)
 			{
 				themenames.push_back(theme.getName());
 			}
@@ -1136,7 +1136,7 @@ namespace Wrapper
 	void FMTmodelcache::putlogger(const std::unique_ptr<Logging::FMTLogger>& log)
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-		Core::FMTobject::passInLogger(log);
+		Core::FMTObject::passInLogger(log);
 		//this->passInLogger(log);
 		}
 

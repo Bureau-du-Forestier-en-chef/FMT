@@ -38,14 +38,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 namespace Core {
-	class FMTtheme;
-	class FMTaction;
-	class FMTyields;
-	class FMTspec;
-	class FMTperbounds;
-	class FMTconstants;
+	class FMTTheme;
+	class FMTAction;
+	class FMTYields;
+	class FMTSpec;
+	class FMTPerBounds;
+	class FMTConstants;
 	template<typename T>
-	class FMTbounds;
+	class FMTBounds;
 }
 
 namespace Spatial
@@ -68,7 +68,7 @@ namespace Parser
 The FMTparser is the main parent class of all the other FMTparser available in FMT.
 It has alot of usefull function common to all parser for validation and error throw when turning a std::string to something usefull in FMT.
 */
-class FMTEXPORT FMTparser: public Core::FMTobject
+class FMTEXPORT FMTparser: public Core::FMTObject
     {
     public:
 		// DocString: FMTparser()
@@ -227,7 +227,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		mutable std::time_t m_MostRecentFile;
 		// DocString: FMTparser::setSection
 		/**
-		It sets the section member of the FMTobject.
+		It sets the section member of the FMTObject.
 		*/
 		void setSection(const Core::FMTsection& section) const;
 	#ifdef FMTWITHGDAL
@@ -354,7 +354,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_ForOut is the output of for loops unrol
 		@return a queue of lines to process.
 		*/
-		virtual std::queue<FMTLineInfo> tryInclude(const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
+		virtual std::queue<FMTLineInfo> tryInclude(const std::vector<Core::FMTTheme>& p_themes, const Core::FMTConstants& p_cons,
 															std::queue<FMTLineInfo>p_ForOut) const;
 
 		// DocString: FMTparser::getCleanLinewfor
@@ -365,8 +365,8 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_const the model constants
 		@return a queue of lines to process
 		*/
-		virtual std::queue<FMTLineInfo> getCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTtheme>& p_themes,
-																const Core::FMTconstants& p_cons) const;
+		virtual std::queue<FMTLineInfo> getCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTTheme>& p_themes,
+																const Core::FMTConstants& p_cons) const;
 		// DocString: FMTparser::getAllLines
 		/**
 		@brief Get all lines of a file
@@ -383,8 +383,8 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@return a queue of lines to process.
 		*/
 		std::queue<FMTLineInfo> processForLoopsNInclude(
-			const std::vector<Core::FMTtheme>& p_themes,
-			const Core::FMTconstants& p_cons,
+			const std::vector<Core::FMTTheme>& p_themes,
+			const Core::FMTConstants& p_cons,
 			std::queue<FMTLineInfo>p_AllLines) const;
 		// DocString: FMTparser::isNum
 		/**
@@ -395,13 +395,13 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Return true if the value is a number else it will raise (if throwerror = true) being non valid number.
 		*/
-		bool isNum(const std::string& value, const Core::FMTconstants& constant, bool throwerror = true) const;
+		bool isNum(const std::string& value, const Core::FMTConstants& constant, bool throwerror = true) const;
 		// DocString: FMTparser::getNum
 		/**
 		Template function to get a numeric value from a string (value) based on constant and period.
 		*/
 		template<typename T>
-		T getNum(const std::string& value, const Core::FMTconstants& constant, int period = 0) const;
+		T getNum(const std::string& value, const Core::FMTConstants& constant, int period = 0) const;
 		// DocString: FMTparser::getNum
 		/**
 		Template function to get a numeric value from a string (value).
@@ -413,13 +413,13 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Try to get a number from a string (value) return false if failed.
 		*/
 		template<typename T>
-		bool tryFillNumber(T& number, const std::string& value, const Core::FMTconstants& constant, int period = 0) const;
+		bool tryFillNumber(T& number, const std::string& value, const Core::FMTConstants& constant, int period = 0) const;
 		// DocString: FMTparser::bounds
 		/**
-		Templated function to get a FMTbounds from a (value) base on constants and a (section).
+		Templated function to get a FMTBounds from a (value) base on constants and a (section).
 		*/
 		template<typename T>
-		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
+		Core::FMTBounds<T>bounds(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
 		// DocString: FMTparser::getBaseOperators
 		/**
 		Gives a vector of operators normaly found in the different sections.
@@ -444,23 +444,23 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_trhowError if true will throw if it is not a yield.
 		@return true if it is a yield.
 		*/
-		bool isYld(const Core::FMTyields& p_ylds, const std::string& p_value,
+		bool isYld(const Core::FMTYields& p_ylds, const std::string& p_value,
 			Core::FMTsection pm_section, bool p_throwError = true) const;
 		// DocString: FMTparser::isAct
 		/**
 		Test if a value (action) is actualy an action.
 		*/
-		bool isAct(Core::FMTsection section, const std::vector<Core::FMTaction>& actions, std::string action) const;
+		bool isAct(Core::FMTsection section, const std::vector<Core::FMTAction>& actions, std::string action) const;
 		// DocString: FMTparser::setSpecs
 		/**
 		Set the specifications of a given or multiple (specs) and return the rest of line.
 		*/
-		std::string setSpecs(Core::FMTsection section, Core::FMTkwor key, const Core::FMTyields& ylds, const Core::FMTconstants& constants, std::vector<Core::FMTspec>& specs, const std::string& line);
+		std::string setSpecs(Core::FMTsection section, Core::FMTkwor key, const Core::FMTYields& ylds, const Core::FMTConstants& constants, std::vector<Core::FMTSpec>& specs, const std::string& line);
 		// DocString: FMTparser::setSpec
 		/**
 		Set the specifications of a given (spec) and return the rest of line.
 		*/
-		std::string setSpec(Core::FMTsection section, Core::FMTkwor key, const Core::FMTyields& ylds, const Core::FMTconstants& constants, Core::FMTspec& spec, const std::string& line);
+		std::string setSpec(Core::FMTsection section, Core::FMTkwor key, const Core::FMTYields& ylds, const Core::FMTConstants& constants, Core::FMTSpec& spec, const std::string& line);
 		// DocString: FMTparser::readCsv
 		/**
 		Read a csv file from a (location) using a (separator) and returns a vector of vector of lines.
@@ -474,9 +474,9 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_constants constants
 		@return a filled up bound.
 		*/
-		Core::FMTperbounds getPerBound(const std::string& p_lower,
+		Core::FMTPerBounds getPerBound(const std::string& p_lower,
 			const std::string& p_upper,
-			const Core::FMTconstants& p_constants) const;
+			const Core::FMTConstants& p_constants) const;
 		// DocString: FMTparser::setPeriodWithBounds
 		/**
 		@brief set periods to a spec.
@@ -486,10 +486,10 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] the constants
 		@return true if set else false.
 		*/
-		void setPeriodWithBounds(Core::FMTspec& p_spec,
+		void setPeriodWithBounds(Core::FMTSpec& p_spec,
 			const std::string& p_lower,
 			const std::string& p_upper,
-			const Core::FMTconstants& p_constants) const;
+			const Core::FMTConstants& p_constants) const;
 		// DocString: FMTparser::setPeriods
 		/**
 		@brief set periods to a spec.
@@ -498,9 +498,9 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] the constants
 		@return true if set else false.
 		*/
-		bool setPeriods(Core::FMTspec& p_spec,
+		bool setPeriods(Core::FMTSpec& p_spec,
 			const std::string& p_periods,
-			const Core::FMTconstants& p_constants) const;
+			const Core::FMTConstants& p_constants) const;
 		// DocString: FMTparser::getForLoops
 		/**
 		@brief Fill up the for loops queue p_allValues with targeted variables
@@ -510,8 +510,8 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@return the for loops values with target has key
 		*/
 		std::map<std::string, std::vector<std::string>> getForLoops(const std::string& p_line,
-			const std::vector<Core::FMTtheme>& p_themes,
-			const Core::FMTconstants& p_cons) const;
+			const std::vector<Core::FMTTheme>& p_themes,
+			const Core::FMTConstants& p_cons) const;
 		// DocString: FMTparser::getForLoops
 		/**
 		@brief Unrol for loops in the queue and set the results in the queues.
@@ -519,8 +519,8 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		@param[in] p_constants model constant
 		@param[out] p_queue the resulting queue of lines
 		*/
-		void processForLoops(const std::vector<Core::FMTtheme>& p_themes,
-			const Core::FMTconstants& p_constants,
+		void processForLoops(const std::vector<Core::FMTTheme>& p_themes,
+			const Core::FMTConstants& p_constants,
 			std::queue<FMTLineInfo>& p_queue) const;
 		// DocString: FMTparser::isForLoops
 		/**
@@ -627,7 +627,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			@return a valid string without constants #
 			*/
 			std::string _processConstants(std::string p_input,
-				const Core::FMTconstants& p_constants) const;
+				const Core::FMTConstants& p_constants) const;
     };
 
 }

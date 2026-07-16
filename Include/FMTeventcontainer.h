@@ -32,7 +32,7 @@ One container can hold all events for a model. They are sorted by
 period, centroid, action_id and finally by size.
 You can  remove FMTcoordinate and add FMTcoordinate by period and action.
 */
-class FMTEXPORT FMTeventcontainer : public Core::FMTobject
+class FMTEXPORT FMTeventcontainer : public Core::FMTObject
 {
     public:
         typedef typename std::set<FMTevent>::value_type value_type;
@@ -300,7 +300,7 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         template<class Archive>
         void serialize(Archive& ar, const unsigned int version)
             {
-             ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+             ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
              ar& BOOST_SERIALIZATION_NVP(m_events);
             }
         ///Set containing the events

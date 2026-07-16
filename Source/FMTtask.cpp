@@ -69,7 +69,7 @@ namespace Parallel
 
 
 	FMTtask::FMTtask() :
-		Core::FMTobject(),
+		Core::FMTObject(),
 		done(false),
 		tasklogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()))
 		#if defined _MSC_VER
@@ -80,7 +80,7 @@ namespace Parallel
 	}
 
 	FMTtask::FMTtask(const FMTtask& rhs) :
-		Core::FMTobject(rhs),
+		Core::FMTObject(rhs),
 		done(false),
 		tasklogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()))
 		#if defined _MSC_VER
@@ -94,7 +94,7 @@ namespace Parallel
 	{
 		if (this!=&rhs)
 		{
-			Core::FMTobject::operator=(rhs);
+			Core::FMTObject::operator=(rhs);
 			done = rhs.done;
 			tasklogger = std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger());
 

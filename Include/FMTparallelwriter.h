@@ -46,13 +46,13 @@ namespace Parallel
 		Default copy assignement for FMTparallelwriter.
 		*/
 		FMTparallelwriter& operator = (const FMTparallelwriter& rhs) = default;
-		// DocString: FMTparallelwriter::FMTparallelwriter(const std::string&,const std::string&,const std::vector<Core::FMToutput>&,const Models::FMTmodel&)
+		// DocString: FMTparallelwriter::FMTparallelwriter(const std::string&,const std::string&,const std::vector<Core::FMTOutput>&,const Models::FMTmodel&)
 		/**
 		Constructor with the location and the driver of the outputs and the base model that we want to write.
 		*/
 		FMTparallelwriter(const std::string& location,
 			const std::string& driver,
-			const std::vector<Core::FMToutput>& outputs,
+			const std::vector<Core::FMTOutput>& outputs,
 			const std::vector<Models::FMTmodel*>& allmodels,
 			std::vector<std::string>layersoptions = std::vector<std::string>(),
 			double minimaldrift = 0.5,
@@ -85,7 +85,7 @@ namespace Parallel
 		/**
 		Write a schedules.
 		*/
-		void writeSchedules(const std::string seqName, const std::vector<Core::FMTschedule> scheduleList, bool append) const;
+		void writeSchedules(const std::string seqName, const std::vector<Core::FMTSchedule> scheduleList, bool append) const;
 		// DocString: FMTparallelwriter::getResults()
 		/**
 		Get the results of a model.
@@ -100,7 +100,7 @@ namespace Parallel
 		/**
 		Get the results of a model. and write it down.
 		*/
-		void getAndWrite(const std::unique_ptr<Models::FMTmodel>& modelptr, const std::vector<Core::FMToutput>& loutputs);
+		void getAndWrite(const std::unique_ptr<Models::FMTmodel>& modelptr, const std::vector<Core::FMTOutput>& loutputs);
 		// DocString: FMTparallelwriter::close()
 		/**
 		Close the dataset and destroy the layers after this it wont be usable
@@ -118,7 +118,7 @@ namespace Parallel
 		private:
 			// DocString: FMTparallelwriter::outputstowrite
 			///Outputs that the writer will write for different models.
-			std::vector<Core::FMToutput>outputstowrite;
+			std::vector<Core::FMTOutput>outputstowrite;
 			#ifdef FMTWITHGDAL
 					// DocString: FMTparallelwriter::resultsdataset
 					///The dataset of the results.

@@ -37,8 +37,8 @@ int main()
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
-	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
-	std::vector<Core::FMTtransition> strans;
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
+	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
 		{
 			strans.push_back(tran.single());
@@ -53,10 +53,10 @@ int main()
 	simulationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doPlanning(false,schedules.at(0));
-	Core::FMToutput spatialoutput;
-	Core::FMToutput sumoutputs;
-	std::vector<Core::FMToutput>outputs;
-	for (const Core::FMToutput& output : simulationmodel.getOutputs())
+	Core::FMTOutput spatialoutput;
+	Core::FMTOutput sumoutputs;
+	std::vector<Core::FMTOutput>outputs;
+	for (const Core::FMTOutput& output : simulationmodel.getOutputs())
 	{
 		if (output.getName() == "OSUPREC")
 		{

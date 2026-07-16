@@ -11,16 +11,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 
-FMTconstants::FMTconstants():FMTobject(),data(){}
-FMTconstants::FMTconstants(const FMTconstants& rhs) : FMTobject(rhs),data(rhs.data)
+FMTConstants::FMTConstants():FMTObject(),data(){}
+FMTConstants::FMTConstants(const FMTConstants& rhs) : FMTObject(rhs),data(rhs.data)
     {
 
     }
-void FMTconstants::set(const std::string& key, std::vector<double>values)
+void FMTConstants::set(const std::string& key, std::vector<double>values)
     {
     data[key] = values;
     }
-bool FMTconstants::isConstant(std::string value) const
+bool FMTConstants::isConstant(std::string value) const
     {
     if (value.find("#")!= std::string::npos)
         {
@@ -32,7 +32,7 @@ bool FMTconstants::isConstant(std::string value) const
 
 
 template<typename T>
-T FMTconstants::get(std::string key, int period) const
+T FMTConstants::get(std::string key, int period) const
 {
 	try {
 		if (key.find("#") != std::string::npos)
@@ -42,7 +42,7 @@ T FMTconstants::get(std::string key, int period) const
 		boost::unordered_map<std::string, std::vector<double>>::const_iterator it = data.find(key);
 		if (it == data.end())
 		{
-			_exhandler->raise(Exception::FMTexc::FMTundefined_constant, key + " at period " + std::to_string(period), "FMTconstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
+			_exhandler->raise(Exception::FMTexc::FMTundefined_constant, key + " at period " + std::to_string(period), "FMTConstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
 		}
 		std::vector<double> const* location = &it->second;
 		if (period >= static_cast<int>(location->size()))
@@ -53,17 +53,17 @@ T FMTconstants::get(std::string key, int period) const
 	}
 	catch (...)
 	{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for " + key + " at period " + std::to_string(period), "FMTconstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for " + key + " at period " + std::to_string(period), "FMTConstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
 	}
 	return T();
 }
 
-template double FMTconstants::get<double>(std::string key, int period) const;
-template int FMTconstants::get<int>(std::string key, int period) const;
-template size_t FMTconstants::get<size_t>(std::string key, int period) const;
+template double FMTConstants::get<double>(std::string key, int period) const;
+template int FMTConstants::get<int>(std::string key, int period) const;
+template size_t FMTConstants::get<size_t>(std::string key, int period) const;
 
 template<typename T>
-std::vector<T>FMTconstants::getAll(std::string key) const
+std::vector<T>FMTConstants::getAll(std::string key) const
 {
 	std::vector<T>values;
 	try {
@@ -74,26 +74,26 @@ std::vector<T>FMTconstants::getAll(std::string key) const
 	}
 	catch (...)
 	{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for " + key, "FMTconstants::getAll", __LINE__, __FILE__, Core::FMTsection::Constants);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for " + key, "FMTConstants::getAll", __LINE__, __FILE__, Core::FMTsection::Constants);
 	}
 	return values;
 }
 
-template std::vector<double>FMTconstants::getAll<double>(std::string key) const;
-template std::vector<int>FMTconstants::getAll<int>(std::string key) const;
-template std::vector<size_t> FMTconstants::getAll<size_t>(std::string key) const;
+template std::vector<double>FMTConstants::getAll<double>(std::string key) const;
+template std::vector<int>FMTConstants::getAll<int>(std::string key) const;
+template std::vector<size_t> FMTConstants::getAll<size_t>(std::string key) const;
 
 
-FMTconstants& FMTconstants::operator = (const FMTconstants& rhs)
+FMTConstants& FMTConstants::operator = (const FMTConstants& rhs)
     {
     if (this!=&rhs)
         {
-		FMTobject::operator=(rhs);
+		FMTObject::operator=(rhs);
         data=rhs.data;
         }
     return *this;
     }
-FMTconstants::operator std::string() const
+FMTConstants::operator std::string() const
     {
 	std::string line;
     for (auto it : data)
@@ -108,7 +108,7 @@ FMTconstants::operator std::string() const
     return line;
     }
 
-size_t FMTconstants::length(std::string value) const
+size_t FMTConstants::length(std::string value) const
     {
     if (value.find("#")!= std::string::npos)
         {
@@ -125,4 +125,4 @@ size_t FMTconstants::length(std::string value) const
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTconstants)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTConstants)

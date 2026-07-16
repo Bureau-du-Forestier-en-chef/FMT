@@ -14,7 +14,7 @@ namespace Spatial{
 
 	double FMTVirtualLineGraph::getOutput(const Models::FMTmodel& p_model, 
 		const FMTSolutionTracker& p_solution,
-		const Core::FMToutput& p_output, int p_period) const
+		const Core::FMTOutput& p_output, int p_period) const
 	{
 		if (p_solution.getNumberOfCells(m_Iterator->second.getGraphId())>0)
 		{
@@ -67,7 +67,7 @@ namespace Spatial{
 		_add(p_solution);
 		}
 
-	FMTVirtualLineGraph FMTVirtualLineGraph::postSolve(const Core::FMTmaskfilter& p_Filter,
+	FMTVirtualLineGraph FMTVirtualLineGraph::postSolve(const Core::FMTMaskFilter& p_Filter,
 		const std::vector<int>& p_actionMapping,
 		FMTSpatialGraphs& p_Graphs,
 		FMTSolutionTracker& p_solution) const

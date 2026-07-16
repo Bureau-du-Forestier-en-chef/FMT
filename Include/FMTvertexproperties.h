@@ -17,8 +17,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTfuturdevelopment;
-	class FMTactualdevelopment;
+	class FMTFuturDevelopment;
+	class FMTActualDevelopment;
 }
 
 
@@ -40,11 +40,11 @@ namespace Graph
 			FMTvertexproperties() = default;
 			FMTvertexproperties(const FMTvertexproperties& rhs);
 			FMTvertexproperties& operator = (const FMTvertexproperties& rhs) = default;
-			FMTvertexproperties(const Core::FMTfuturdevelopment& ldevelopment,
+			FMTvertexproperties(const Core::FMTFuturDevelopment& ldevelopment,
 				const int& lconstraintID);
-			FMTvertexproperties(const Core::FMTactualdevelopment& ldevelopment,
+			FMTvertexproperties(const Core::FMTActualDevelopment& ldevelopment,
 				const int& lconstraintID);
-            FMTvertexproperties(const Core::FMTdevelopment& ldevelopment,
+            FMTvertexproperties(const Core::FMTDevelopment& ldevelopment,
                 const int& lconstraintID);
 			std::string constraintName() const;
 			inline int getConstraintId() const override

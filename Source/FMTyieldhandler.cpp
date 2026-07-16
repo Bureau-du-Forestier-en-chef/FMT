@@ -15,22 +15,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-FMTyieldhandler::operator std::string() const
+FMTYieldHandler::operator std::string() const
         {
 		std::string value = "";
 		try{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::std::string()", __LINE__, __FILE__,Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::std::string()", __LINE__, __FILE__,Core::FMTsection::Yield);
 			}
         return value;
         }
 
 
-    FMTyieldhandler::FMTyieldhandler(const FMTmask& lmask) :
-		FMTobject(),
+    FMTYieldHandler::FMTYieldHandler(const FMTMask& lmask) :
+		FMTObject(),
 		mask(lmask),
 		bases(),
 		lookat()
@@ -39,120 +39,120 @@ FMTyieldhandler::operator std::string() const
 	}
 
 
-	std::unique_ptr<FMTyieldhandler>FMTyieldhandler::clone() const
+	std::unique_ptr<FMTYieldHandler>FMTYieldHandler::clone() const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldhandler>(nullptr);
+		return std::unique_ptr<FMTYieldHandler>(nullptr);
 	}
 
 
 
-    bool FMTyieldhandler::pushBase(const int& base)
+    bool FMTYieldHandler::pushBase(const int& base)
         {
 		try {
 			bases.push_back(base);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::pushBase", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::pushBase", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return false;
         }
-    bool FMTyieldhandler::pushData(const std::string& yld,const double& value)
+    bool FMTYieldHandler::pushData(const std::string& yld,const double& value)
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return false;
         }
 
-	bool FMTyieldhandler::basePushData(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const double& value)
+	bool FMTYieldHandler::basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const double& value)
 	{
 		if (elements.find(yld) == elements.end())
 		{
-			elements[yld] = FMTdata();
+			elements[yld] = FMTData();
 		}
 		elements[yld].data.push_back(value);
 		return true;
 	}
-	bool FMTyieldhandler::basePushData(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const FMTdata& data)
+	bool FMTYieldHandler::basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const FMTData& data)
 	{
-		elements[yld] = FMTdata(data);
+		elements[yld] = FMTData(data);
 		return true;
 	}
 
-	void FMTyieldhandler::setBase(const std::vector<int>& allvalues)
+	void FMTYieldHandler::setBase(const std::vector<int>& allvalues)
 		{
 		bases = allvalues;
 		}
 
-	bool FMTyieldhandler::inLookAt(const std::string& yld) const
+	bool FMTYieldHandler::inLookAt(const std::string& yld) const
 	{
 		return (lookat.find(yld) != lookat.end());
 	}
 
-	std::vector<std::string> FMTyieldhandler::indexes(const std::vector<std::string>& names) const
+	std::vector<std::string> FMTYieldHandler::indexes(const std::vector<std::string>& names) const
         {
 		try {
 			return std::vector<std::string>();
 			//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-			//	"FMTyieldhandler::indexes", __LINE__, __FILE__, Core::FMTsection::Yield);
+			//	"FMTYieldHandler::indexes", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::indexes", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::indexes", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::vector<std::string>();
         }
 
-    bool FMTyieldhandler::pushData(const std::string& yld,const FMTdata& data)
+    bool FMTYieldHandler::pushData(const std::string& yld,const FMTData& data)
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::pushData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
         return true;
         }
-    FMTyldtype FMTyieldhandler::getType() const
+    FMTyldtype FMTYieldHandler::getType() const
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getType", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getType", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getType", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getType", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
         return FMTyldtype::FMTageyld;
         }
 
-	FMTmask FMTyieldhandler::getMask() const
+	FMTMask FMTYieldHandler::getMask() const
 		{
 		return mask;
 		}
 
-	void FMTyieldhandler::setMask(const FMTmask& p_mask)
+	void FMTYieldHandler::setMask(const FMTMask& p_mask)
 		{
 		mask = p_mask;
 		}
 
 
-	std::vector<std::string> FMTyieldhandler::compare(const std::vector<std::string>& keys) const
+	std::vector<std::string> FMTYieldHandler::compare(const std::vector<std::string>& keys) const
         {
 		try {
 			std::vector<std::string>same;
@@ -167,41 +167,41 @@ FMTyieldhandler::operator std::string() const
 			}
 			catch (...)
 			{
-				_exhandler->raiseFromCatch("", "FMTageyieldhandler::compare", __LINE__, __FILE__, Core::FMTsection::Yield);
+				_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::compare", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			return same;
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::compare", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::compare", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
         return std::vector<std::string>();
         }
 
 
-	 bool FMTyieldhandler::operator == (const FMTyieldhandler& rhs) const
+	 bool FMTYieldHandler::operator == (const FMTYieldHandler& rhs) const
 	 {
 		 return (mask == rhs.mask &&
 			 bases == rhs.bases);
 	 }
 
 
-    double FMTyieldhandler::get(const std::string& yld,const FMTyieldrequest& request) const
+    double FMTYieldHandler::get(const std::string& yld,const FMTYieldRequest& request) const
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
         }
 
 	
 
-	double FMTyieldhandler::getLinearValue(const std::vector<double>& dls, const int& agetarget,bool allowoutofrange) const
+	double FMTYieldHandler::getLinearValue(const std::vector<double>& dls, const int& agetarget,bool allowoutofrange) const
 		{
 		double value = 0;
 		try{
@@ -211,7 +211,7 @@ FMTyieldhandler::operator std::string() const
 			if (!allowoutofrange && agetarget > bases.back())
 			{
 				_exhandler->raise(Exception::FMTexc::FMToutofrangeyield, " at age "+std::to_string(agetarget)+" for max age of "+ std::to_string(bases.back())+" "+std::string(mask)+"\n",
-					"FMTyieldhandler::getLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+					"FMTYieldHandler::getLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 				return 0;
 			}
 		}else if(agetarget < bases.front())
@@ -246,12 +246,12 @@ FMTyieldhandler::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 		}
 
-	int FMTyieldhandler::getLastBase() const
+	int FMTYieldHandler::getLastBase() const
 		{
 		int basevalue = 0;
 		if (!bases.empty())
@@ -261,53 +261,53 @@ FMTyieldhandler::operator std::string() const
 		return basevalue;
 		}
 
-	size_t FMTyieldhandler::getOverrideIndex() const
+	size_t FMTYieldHandler::getOverrideIndex() const
 		{
 		return 0;
 		}
 
-	std::vector<size_t> FMTyieldhandler::getTabous() const
+	std::vector<size_t> FMTYieldHandler::getTabous() const
 	{
 		return std::vector<size_t>();
 	}
 
-	void FMTyieldhandler::setOverrideIndex(const size_t& newindex)
+	void FMTYieldHandler::setOverrideIndex(const size_t& newindex)
 		{
 		
 		}
 
-	const std::vector<int>& FMTyieldhandler::getBases() const
+	const std::vector<int>& FMTYieldHandler::getBases() const
 		{
 		return bases;
 		}
 
-	double FMTyieldhandler::getLastValue(const std::string yld) const
+	double FMTYieldHandler::getLastValue(const std::string yld) const
 		{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getLastValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getLastValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getLastValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getLastValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 		}
 
-double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMTyieldrequest& request,bool allowoutofrange) const
+double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMTYieldRequest& request,bool allowoutofrange) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
 
-	double FMTyieldhandler::getChangesFrom(const int& targetage, const int& peakstep) const
+	double FMTYieldHandler::getChangesFrom(const int& targetage, const int& peakstep) const
 		{
 		double value = 0;
 		try{
@@ -327,39 +327,39 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getChangesFrom", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getChangesFrom", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 		}
 
 
-	int FMTyieldhandler::getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
+	int FMTYieldHandler::getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
 		{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 		}
 
-	int FMTyieldhandler::getAge(const FMTyieldrequest& request, const FMTspec& spec) const
+	int FMTYieldHandler::getAge(const FMTYieldRequest& request, const FMTSpec& spec) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
 
-	int FMTyieldhandler::getMaxBase(const FMTyieldrequest& request) const
+	int FMTYieldHandler::getMaxBase(const FMTYieldRequest& request) const
 	{
 		int maxage = 0;
 		try {
@@ -375,182 +375,182 @@ double FMTyieldhandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getMaxBase", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getMaxBase", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return maxage;
 	}
 
 
-    double FMTyieldhandler::getPeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const
+    double FMTYieldHandler::getPeak(const FMTYieldRequest& request,const std::string& yld, const int& targetage) const
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
         }
 
 
-	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const
+	std::unique_ptr<FMTYieldHandler> FMTYieldHandler::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
 		{
-		std::unique_ptr<FMTyieldhandler> newhandler = this->clone();
+		std::unique_ptr<FMTYieldHandler> newhandler = this->clone();
 		try {
 			newhandler->mask = this->mask.presolve(filter, newthemes);
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return newhandler;
 		}
 
-	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::postSolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const
+	std::unique_ptr<FMTYieldHandler> FMTYieldHandler::postSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& basethemes) const
 			{
-			std::unique_ptr<FMTyieldhandler> newhandler = this->clone();
+			std::unique_ptr<FMTYieldHandler> newhandler = this->clone();
 			try {
 				std::vector<std::string> values;
 				const std::string maskname(std::string(newhandler->mask));
 				boost::split(values, maskname,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
 				for (const std::string& value : values)
 				{
-					for (const FMTtheme& bt : basethemes)
+					for (const FMTTheme& bt : basethemes)
 					{
 						if(bt.isAggregate(value))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot postSolve mask with aggregates " + std::string(newhandler->mask),
-														"FMTyieldhandler::postSolve", __LINE__, __FILE__);
+														"FMTYieldHandler::postSolve", __LINE__, __FILE__);
 						}
 					}
 				}
 				newhandler->mask = newhandler->mask.postSolve(filter,basethemes);
 			}catch (...)
 			{
-				_exhandler->printExceptions("", "FMTyieldhandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+				_exhandler->printExceptions("", "FMTYieldHandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			return newhandler;
 			}
 
-	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::getFromFactor(const double& factor,
+	std::unique_ptr<FMTYieldHandler> FMTYieldHandler::getFromFactor(const double& factor,
 		std::vector<std::string>yieldnames) const
 		{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldhandler>(nullptr);
+		return std::unique_ptr<FMTYieldHandler>(nullptr);
 		}
 
-	bool FMTyieldhandler::empty() const
+	bool FMTYieldHandler::empty() const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::empty", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::empty", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::empty", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::empty", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return true;
 	}
-	size_t FMTyieldhandler::size() const
+	size_t FMTYieldHandler::size() const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::size", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::size", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::size", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::size", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
-	FMTdata& FMTyieldhandler::operator[](const std::string& yldname)
+	FMTData& FMTYieldHandler::operator[](const std::string& yldname)
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::operator[]", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::operator[]", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::operator[]", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::operator[]", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		FMTdata nullData;
+		FMTData nullData;
 		return nullData;
 	}
-	const FMTdata& FMTyieldhandler::at(const std::string& yldname) const
+	const FMTData& FMTYieldHandler::at(const std::string& yldname) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::at", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::at", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::at", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::at", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		FMTdata nullData;
+		FMTData nullData;
 		return nullData;
 	}
 
-	bool FMTyieldhandler::isNullYield(const std::string& yldname) const
+	bool FMTYieldHandler::isNullYield(const std::string& yldname) const
 	{
 		try {
 			return at(yldname).nullData();
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(yldname, "FMTyieldhandler::isNullYield", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(yldname, "FMTYieldHandler::isNullYield", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return false;
 	}
 
-	bool FMTyieldhandler::containsYield(const std::string& yldname) const
+	bool FMTYieldHandler::containsYield(const std::string& yldname) const
 		{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::containsYield", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::containsYield", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::containsYield", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::containsYield", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return false;
 		}
 
-	std::vector<std::string>FMTyieldhandler::getYieldNames() const
+	std::vector<std::string>FMTYieldHandler::getYieldNames() const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getYieldNames", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getYieldNames", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getYieldNames", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getYieldNames", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::vector<std::string>();
 	}
 
-	void FMTyieldhandler::clearCache()
+	void FMTYieldHandler::clearCache()
 	{
 		
 	}
 
 
-	std::map<std::string, std::vector<double>>FMTyieldhandler::getAllYieldsData(const int& maxbase)const
+	std::map<std::string, std::vector<double>>FMTYieldHandler::getAllYieldsData(const int& maxbase)const
 	{
 		try{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldHandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 			catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::map<std::string, std::vector<double>>();
 	}

@@ -23,7 +23,7 @@ namespace Core
 
 
 template<typename T>
-class FMTbounds
+class FMTBounds
     {
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -44,19 +44,19 @@ class FMTbounds
         T upper;
         T lower;
     public:
-        FMTbounds() : andbound(true),use(false),section(),keytype(),upper(),lower()
+        FMTBounds() : andbound(true),use(false),section(),keytype(),upper(),lower()
             {
 
             }
-        FMTbounds(const FMTsection lsection, const T& lupper, const T& llower):andbound(true),use(true),section(lsection),keytype(),upper(lupper),lower(llower)
+        FMTBounds(const FMTsection lsection, const T& lupper, const T& llower):andbound(true),use(true),section(lsection),keytype(),upper(lupper),lower(llower)
             {
 
             }
-        FMTbounds(const FMTsection lsection,const FMTkwor key, const T& lupper,const T& llower):andbound(true),use(true),section(lsection),keytype(key),upper(lupper),lower(llower)
+        FMTBounds(const FMTsection lsection,const FMTkwor key, const T& lupper,const T& llower):andbound(true),use(true),section(lsection),keytype(key),upper(lupper),lower(llower)
             {
 
             }
-		virtual ~FMTbounds() = default;
+		virtual ~FMTBounds() = default;
         void setOrBound()
             {
             andbound = false;
@@ -77,7 +77,7 @@ class FMTbounds
 			{
 			 return (empty() || (value <= upper && value >= lower));
 			}
-        FMTbounds(const FMTbounds<T>& rhs) :
+        FMTBounds(const FMTBounds<T>& rhs) :
             andbound(rhs.andbound),
             use(rhs.use),
             section(rhs.section),
@@ -87,7 +87,7 @@ class FMTbounds
             {
 
             }
-		bool operator == (const FMTbounds<T>& rhs) const
+		bool operator == (const FMTBounds<T>& rhs) const
 			{
 			return (andbound == rhs.andbound &&
 				use == rhs.use &&
@@ -97,7 +97,7 @@ class FMTbounds
 				lower == rhs.lower);
 			}
 
-		bool operator < (const FMTbounds<T>& rhs) const
+		bool operator < (const FMTBounds<T>& rhs) const
 			{
 			//strict ordering
 			if (andbound < rhs.andbound)
@@ -127,7 +127,7 @@ class FMTbounds
 			return false;
 			}
 
-        FMTbounds<T>& operator = (const FMTbounds<T>& rhs)
+        FMTBounds<T>& operator = (const FMTBounds<T>& rhs)
             {
             if (this!=&rhs)
                 {
@@ -144,7 +144,7 @@ class FMTbounds
             {
             return !use;
             }
-        bool add(const FMTbounds<T>& rhs)
+        bool add(const FMTBounds<T>& rhs)
             {
             if (!this->empty())
                 {
@@ -245,106 +245,106 @@ class FMTbounds
         }
     };
 
-class FMTEXPORT FMTyldbounds: public FMTbounds<double>
+class FMTEXPORT FMTYldBounds: public FMTBounds<double>
     {
-    friend class FMTspec;
+    friend class FMTSpec;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("bounds",boost::serialization::base_object<FMTbounds<double>>(*this));
+		ar & boost::serialization::make_nvp("bounds",boost::serialization::base_object<FMTBounds<double>>(*this));
 		ar & BOOST_SERIALIZATION_NVP(yield);
 	}
     std::string yield;
     public:
-	FMTyldbounds();
-	~FMTyldbounds() = default;
-	FMTyldbounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower);
-    FMTyldbounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper,const double& llower);
-    FMTyldbounds(const std::string& lyield,const FMTbounds<double>& rhs);
-	FMTyldbounds(const FMTyldbounds& rhs);
-    FMTyldbounds& operator = (const FMTyldbounds& rhs);
-	bool operator == (const FMTyldbounds& rhs) const;
+	FMTYldBounds();
+	~FMTYldBounds() = default;
+	FMTYldBounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower);
+    FMTYldBounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper,const double& llower);
+    FMTYldBounds(const std::string& lyield,const FMTBounds<double>& rhs);
+	FMTYldBounds(const FMTYldBounds& rhs);
+    FMTYldBounds& operator = (const FMTYldBounds& rhs);
+	bool operator == (const FMTYldBounds& rhs) const;
     operator std::string() const;
     };
 
-class FMTEXPORT FMTagebounds: public FMTbounds<int>
+class FMTEXPORT FMTAgeBounds: public FMTBounds<int>
     {
-    friend class FMTspec;
+    friend class FMTSpec;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTbounds<int>>(*this));
+		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTBounds<int>>(*this));
 	}
     public:
-    FMTagebounds();
-	~FMTagebounds() = default;
-    FMTagebounds(FMTsection lsection,const int& lupper, const int& llower);
-    FMTagebounds(FMTsection lsection,FMTkwor key, const int& lupper, const int& llower);
-    FMTagebounds(const FMTagebounds& rhs);
-    FMTagebounds(const FMTbounds<int>& rhs);
-    FMTagebounds& operator = (const FMTagebounds& rhs);
-	bool operator == (const FMTagebounds& rhs) const;
+    FMTAgeBounds();
+	~FMTAgeBounds() = default;
+    FMTAgeBounds(FMTsection lsection,const int& lupper, const int& llower);
+    FMTAgeBounds(FMTsection lsection,FMTkwor key, const int& lupper, const int& llower);
+    FMTAgeBounds(const FMTAgeBounds& rhs);
+    FMTAgeBounds(const FMTBounds<int>& rhs);
+    FMTAgeBounds& operator = (const FMTAgeBounds& rhs);
+	bool operator == (const FMTAgeBounds& rhs) const;
     operator std::string() const;
     };
 
-class FMTEXPORT FMTperbounds: public FMTbounds<int>
+class FMTEXPORT FMTPerBounds: public FMTBounds<int>
     {
-    friend class FMTspec;
+    friend class FMTSpec;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTbounds<int>>(*this));
+		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTBounds<int>>(*this));
 	}
     public:
-    FMTperbounds();
-	~FMTperbounds() = default;
-    FMTperbounds(const FMTsection lsection,const int& lupper,const int& llower);
-    FMTperbounds(const FMTperbounds& rhs);
-	FMTperbounds(const FMTbounds<int>& rhs);
-    FMTperbounds& operator = (const FMTperbounds& rhs);
-	bool operator == (const FMTperbounds& rhs) const;
+    FMTPerBounds();
+	~FMTPerBounds() = default;
+    FMTPerBounds(const FMTsection lsection,const int& lupper,const int& llower);
+    FMTPerBounds(const FMTPerBounds& rhs);
+	FMTPerBounds(const FMTBounds<int>& rhs);
+    FMTPerBounds& operator = (const FMTPerBounds& rhs);
+	bool operator == (const FMTPerBounds& rhs) const;
     operator std::string() const;
     };
 
 
-class FMTEXPORT FMTlockbounds : public FMTbounds<int>
+class FMTEXPORT FMTLockBounds : public FMTBounds<int>
     {
-    friend class FMTspec;
+    friend class FMTSpec;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 		{
-		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTbounds<int>>(*this));
+		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTBounds<int>>(*this));
 		}
     public:
-    FMTlockbounds();
-	~FMTlockbounds() = default;
-    FMTlockbounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower);
-	FMTlockbounds(const FMTsection lsection, const int& lupper, const int& llower);
-    FMTlockbounds(const FMTlockbounds& rhs);
-    FMTlockbounds& operator = (const FMTlockbounds& rhs);
-	bool operator == (const FMTlockbounds& rhs) const;
+    FMTLockBounds();
+	~FMTLockBounds() = default;
+    FMTLockBounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower);
+	FMTLockBounds(const FMTsection lsection, const int& lupper, const int& llower);
+    FMTLockBounds(const FMTLockBounds& rhs);
+    FMTLockBounds& operator = (const FMTLockBounds& rhs);
+	bool operator == (const FMTLockBounds& rhs) const;
     operator std::string() const;
     };
 
-class FMTyields;
-// DocString: FMTspec
+class FMTYields;
+// DocString: FMTSpec
 /**
-FMTspec represent the specifications of a group of FMTdevelopment. You can characterize a
-FMTdevelopment by it's period (FMTperbounds), it's age (FMTagebounds), it's lock (FMTlockbounds) and 
+FMTSpec represent the specifications of a group of FMTDevelopment. You can characterize a
+FMTDevelopment by it's period (FMTPerBounds), it's age (FMTAgeBounds), it's lock (FMTLockBounds) and 
 it's yields (yieldbounds). Bounds are "bounds" lower and upper bounds:
 Example: 1>=age<=10, 5>=period<=20, 0>=lock<=10 and 145<=yield<=700
 */
-class FMTEXPORT FMTspec
+class FMTEXPORT FMTSpec
     {
-	// DocString: FMTspec::serialize
+	// DocString: FMTSpec::serialize
 	/**
 	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
-	friend class Core::FMTyields;
+	friend class Core::FMTYields;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -356,68 +356,68 @@ class FMTEXPORT FMTspec
 		ar & BOOST_SERIALIZATION_NVP(yieldbounds);
 	}
 protected:
-	// DocString: FMTperbounds::per
+	// DocString: FMTPerBounds::per
 	///Period bounds so lower >= period <= upper 
-    FMTperbounds per;
-	// DocString: FMTperbounds::age
+    FMTPerBounds per;
+	// DocString: FMTPerBounds::age
 	///Age bounds so lower >= age <= upper 
-    FMTagebounds age;
-	// DocString: FMTlockbounds::lock
+    FMTAgeBounds age;
+	// DocString: FMTLockBounds::lock
 	///Lock bounds so lower >= lock <= upper 
-    FMTlockbounds lock;
-	// DocString: FMTlockbounds::yieldnames
+    FMTLockBounds lock;
+	// DocString: FMTLockBounds::yieldnames
 	///The names of each yield in the vector of yieldbounds
 	std::vector<std::string>yieldnames;
-	// DocString: FMTlockbounds::yieldbounds
+	// DocString: FMTLockBounds::yieldbounds
 	///the yields bounds vector lower>=y1<=upper,lower>=y2<=upper
-	std::vector<FMTyldbounds>yieldbounds;
+	std::vector<FMTYldBounds>yieldbounds;
 public:
-	// DocString: FMTspec()
+	// DocString: FMTSpec()
 	/**
-	Default constructor for FMTspec
+	Default constructor for FMTSpec
 	*/
-    FMTspec();
-	// DocString: ~FMTspec()
+    FMTSpec();
+	// DocString: ~FMTSpec()
 	/**
-	Destructor for FMTspec
+	Destructor for FMTSpec
 	*/
-    virtual ~FMTspec()=default;
-	// DocString: FMTspec(const FMTspec&)
+    virtual ~FMTSpec()=default;
+	// DocString: FMTSpec(const FMTSpec&)
 	/**
-	FMTspec copy constructor.
+	FMTSpec copy constructor.
 	*/
-    FMTspec(const FMTspec& rhs);
-	// DocString: FMTspec::operator=
+    FMTSpec(const FMTSpec& rhs);
+	// DocString: FMTSpec::operator=
 	/**
-	Copy assignement of FMTspec
+	Copy assignement of FMTSpec
 	*/
-    FMTspec& operator = (const FMTspec& rhs);
-	// DocString: FMTspec::add
+    FMTSpec& operator = (const FMTSpec& rhs);
+	// DocString: FMTSpec::add
 	/**
 	Add yields spec or age, period or lock spec from an other spec.
 	*/
-    bool add(const FMTspec& rhs);
-	// DocString: FMTspec::setBounds
+    bool add(const FMTSpec& rhs);
+	// DocString: FMTSpec::setBounds
 	/**
 	Set period bounds
 	*/
-    bool setBounds(const FMTperbounds& bound);
-	// DocString: FMTspec::setBounds
+    bool setBounds(const FMTPerBounds& bound);
+	// DocString: FMTSpec::setBounds
 	/**
 	Set age bounds
 	*/
-    bool addBounds(const FMTagebounds& bound);
-	// DocString: FMTspec::setyldbounds
+    bool addBounds(const FMTAgeBounds& bound);
+	// DocString: FMTSpec::setyldbounds
 	/**
 	Set yield bounds
 	*/
-    bool addBounds(const FMTyldbounds& bound);
-	// DocString: FMTspec::setlockbounds
+    bool addBounds(const FMTYldBounds& bound);
+	// DocString: FMTSpec::setlockbounds
 	/**
 	Set lock bounds
 	*/
-    bool addBounds(const FMTlockbounds& bound);
-	// DocString: FMTspec::allowWithoutYield
+    bool addBounds(const FMTLockBounds& bound);
+	// DocString: FMTSpec::allowWithoutYield
 	/**
 	return true if the given period, age and lock respect the age,period and lock bounds.
 	*/
@@ -427,15 +427,15 @@ public:
 			age.in(tage) &&
 			(lock.empty() || (tlock >= lock.lower)));
 		}
-	// DocString: FMTspec::getYieldBound
+	// DocString: FMTSpec::getYieldBound
 	/**
-	return the reference of a given FMTyldbounds using the name of the FMTyldbounds.
+	return the reference of a given FMTYldBounds using the name of the FMTYldBounds.
 	*/
-	inline const FMTyldbounds& getYieldBound(const std::string& name) const
+	inline const FMTYldBounds& getYieldBound(const std::string& name) const
 		{
 		return yieldbounds.at(std::distance(yieldnames.begin(), std::find(yieldnames.begin(), yieldnames.end(), name)));
 		}
-	// DocString: FMTspec::allowYields
+	// DocString: FMTSpec::allowYields
 	/**
 	Return true if all the yields (values) are within the yield bounds.
 	*/
@@ -451,7 +451,7 @@ public:
 
 		return true;
 	}
-	// DocString: FMTspec::allow
+	// DocString: FMTSpec::allow
 	/**
 	Return true if all age,period and lock are within the bounds and when the yields (values) are within the yield bounds
 	*/
@@ -466,7 +466,7 @@ public:
 		}
 		return (allowWithoutYield(tperiod,tage,tlock));
 		}
-	// DocString: FMTspec::getYlds
+	// DocString: FMTSpec::getYlds
 	/**
 	Return the yields names of the yield bounds.
 	*/
@@ -474,94 +474,94 @@ public:
 		{
 		return yieldnames;
 		}
-	// DocString: FMTspec::getYldBounds
+	// DocString: FMTSpec::getYldBounds
 	/**
 	Return tthe yields bounds of the spec.
 	*/
-	inline const std::vector<FMTyldbounds>& getYldBounds() const
+	inline const std::vector<FMTYldBounds>& getYldBounds() const
 		{
 		return yieldbounds;
 		}
-	// DocString: FMTspec::operator std::string
+	// DocString: FMTSpec::operator std::string
 	/**
-	Returns the string reprensentation of the FMTspec like _age >= lower and _Age <= upper and ....
+	Returns the string reprensentation of the FMTSpec like _age >= lower and _Age <= upper and ....
 	*/
     virtual operator std::string() const;
-	// DocString: FMTspec::operator==
+	// DocString: FMTSpec::operator==
 	/**
-	FMTspec equality operator.
+	FMTSpec equality operator.
 	*/
-	bool operator == (const FMTspec& rhs) const;
-	// DocString: FMTspec::operator<
+	bool operator == (const FMTSpec& rhs) const;
+	// DocString: FMTSpec::operator<
 	/**
-	FMTspec less than operator.
+	FMTSpec less than operator.
 	*/
-	bool operator < (const FMTspec& rhs) const;
-	// DocString: FMTspec::hash
+	bool operator < (const FMTSpec& rhs) const;
+	// DocString: FMTSpec::hash
 	/**
-	Return the hashed value of FMTspec.
+	Return the hashed value of FMTSpec.
 	*/
 	size_t hash() const;
-	// DocString: FMTspec::empty
+	// DocString: FMTSpec::empty
 	/**
 	Return true if all bounds are empty.
 	*/
     bool empty() const;
-	// DocString: FMTspec::emptyAge
+	// DocString: FMTSpec::emptyAge
 	/**
 	Return true if age bound is empty.
 	*/
 	bool emptyAge() const;
-	// DocString: FMTspec::emptyYlds
+	// DocString: FMTSpec::emptyYlds
 	/**
 	Return true if yields bounds are empty.
 	*/
 	bool emptyYlds() const;
-	// DocString: FMTspec::emptyPeriod
+	// DocString: FMTSpec::emptyPeriod
 	/**
 	Return true if period bounds is empty.
 	*/
 	bool emptyPeriod() const;
-	// DocString: FMTspec::emptyLock
+	// DocString: FMTSpec::emptyLock
 	/**
 	Return true if lock bounds is empty.
 	*/
 	bool emptyLock() const;
-	// DocString: FMTspec::getAgeUpperBound
+	// DocString: FMTSpec::getAgeUpperBound
 	/**
 	Get the upper bounds of the age bounds.
 	*/
 	int getAgeUpperBound() const;
-	// DocString: FMTspec::getAgeLowerBound
+	// DocString: FMTSpec::getAgeLowerBound
 	/**
 	Get the lower bound of the age bounds.
 	*/
 	int getAgeLowerBound() const;
-	// DocString: FMTspec::getPeriodUpperBound
+	// DocString: FMTSpec::getPeriodUpperBound
 	/**
 	Get the upper bound of the period bounds.
 	*/
 	int getPeriodUpperBound() const;
-	// DocString: FMTspec::getPeriodLowerBound
+	// DocString: FMTSpec::getPeriodLowerBound
 	/**
 	Get the lower bound of the period bounds.
 	*/
 	int getPeriodLowerBound() const;
-	// DocString: FMTspec::getLockUpperBound
+	// DocString: FMTSpec::getLockUpperBound
 	/**
 	Get the upper bounds of the age bounds.
 	*/
 	int getLockUpperBound() const;
-	// DocString: FMTspec::getLockLowerBound
+	// DocString: FMTSpec::getLockLowerBound
 	/**
 	Get the lower bound of the age bounds.
 	*/
 	int getLockLowerBound() const;
-	// DocString: FMTspec::isSubsetOf
+	// DocString: FMTSpec::isSubsetOf
 	/**
 	return true if this spec is the subset of the rhs spec.
 	*/
-	bool isSubsetOf(const FMTspec& rhs) const;
+	bool isSubsetOf(const FMTSpec& rhs) const;
     };
 
 }
@@ -569,9 +569,9 @@ public:
 namespace boost {
 
 	template <>
-	struct hash<Core::FMTspec>
+	struct hash<Core::FMTSpec>
 	{
-		std::size_t operator()(const Core::FMTspec& spec) const
+		std::size_t operator()(const Core::FMTSpec& spec) const
 		{
 			return spec.hash();
 		}

@@ -82,13 +82,13 @@ namespace R
 	template <class T>
 	void define_FMTlist(const char* name)
 		{
-		Rcpp::class_< Core::FMTlist<T> >(name, "@DocString(FMTlist)")
-			.constructor("@DocString(FMTlist())")
-			.method("update", &Core::FMTlist<T>::update,
-				"@DocString(FMTlist::update)")
+		Rcpp::class_< Core::FMTList<T> >(name, "@DocString(FMTList)")
+			.constructor("@DocString(FMTList())")
+			.method("update", &Core::FMTList<T>::update,
+				"@DocString(FMTList::update)")
 			.method("push_back",
-				Core::FMTlist<T>::apiPushBack,
-				"@DocString(FMTyieldhandler::APIpush_back)");
+				Core::FMTList<T>::apiPushBack,
+				"@DocString(FMTYieldHandler::APIpush_back)");
 
 		}
 

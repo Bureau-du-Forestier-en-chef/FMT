@@ -58,16 +58,16 @@ namespace Parallel
 	std::vector<Heuristics::FMToperatingareascheme> FMTopareaschedulertask::getReturnTimeFromOutput(
 		Models::FMTlpmodel& model,
 		const std::vector<Heuristics::FMToperatingareascheme>& opareas,
-		const Core::FMToutput& output) const
+		const Core::FMTOutput& output) const
 	{
 		std::vector<Heuristics::FMToperatingareascheme>newschemes;
 		try {
-			const std::vector<Core::FMTtheme>themes = model.getThemes();
+			const std::vector<Core::FMTTheme>themes = model.getThemes();
 			const int model_length = model.getParameter(Models::FMTintmodelparameters::LENGTH);
 			for (const Heuristics::FMToperatingareascheme& opscheduler : opareas)
 				{
 				double total_value = 0;
-				const Core::FMToutput local_output = output.intersectWithMask(opscheduler.getMask(), themes);
+				const Core::FMTOutput local_output = output.intersectWithMask(opscheduler.getMask(), themes);
 				double non_zero = 0;
 				for (int period = 0; period < model_length; ++period)
 					{
@@ -105,7 +105,7 @@ namespace Parallel
 	}
 
 	void FMTopareaschedulertask::setInitialScheduler(Models::FMTlpmodel& model,
-		const std::vector<Heuristics::FMToperatingareascheme>& opareas, const Core::FMToutputnode& node)
+		const std::vector<Heuristics::FMToperatingareascheme>& opareas, const Core::FMTOutputNode& node)
 	{
 		try {
 			const std::vector<Heuristics::FMToperatingareascheduler>heuristics = model.getOperatingAreaSchedulerHeuristics(opareas, node);
@@ -137,12 +137,12 @@ namespace Parallel
 
 	FMTopareaschedulertask::FMTopareaschedulertask(const Models::FMTlpmodel& model,
 		const std::vector<Heuristics::FMToperatingareascheme>& opareas,
-		const Core::FMToutputnode& node,
+		const Core::FMTOutputNode& node,
 		const std::string& outputlocation,
 		const std::string& outputyieldname,
 		const unsigned int& maxiterations,
 		const int& maxtime,
-		Core::FMToutput returntime_output):
+		Core::FMTOutput returntime_output):
 		bestscheduler(new Heuristics::FMToperatingareascheduler()),
 		actualscheduler(),
 		lastspawned(0)
@@ -262,17 +262,17 @@ namespace Parallel
 			basemodel->getSolverPtr()->passInMessageHandler(*tasklogger.get());
 			Models::FMTlpmodel modelcopy(*basemodel);
 			modelcopy.doPlanning(false);
-			Core::FMTyields newyields = modelcopy.getYields();
+			Core::FMTYields newyields = modelcopy.getYields();
 			newyields.unShrink(modelcopy.getThemes());
-			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getSolution(outyldname))
+			for (const Core::FMTTimeYieldHandler& tyld : bestscheduler->getSolution(outyldname))
 			{
-				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
+				std::unique_ptr<Core::FMTYieldHandler>newyield(new Core::FMTTimeYieldHandler(tyld));
 				newyields.push_front(newyield->getMask(), newyield);
 			}
 			newyields.update();
 			modelcopy.setYields(newyields);
-			std::vector<Core::FMTconstraint>constraints=basemodel->getconstraints();
-			std::vector<Core::FMToutput>outputs=basemodel->getOutputs();
+			std::vector<Core::FMTConstraint>constraints=basemodel->getconstraints();
+			std::vector<Core::FMTOutput>outputs=basemodel->getOutputs();
 			getConstraintsSolution(outputs, constraints);
 			modelcopy.setConstraints(constraints);
 			modelcopy.setOutputs(outputs);
@@ -290,22 +290,22 @@ namespace Parallel
 
 	}
 
-	void FMTopareaschedulertask::getConstraintsSolution(std::vector<Core::FMToutput>& outputs, std::vector<Core::FMTconstraint>& constraints) const
+	void FMTopareaschedulertask::getConstraintsSolution(std::vector<Core::FMTOutput>& outputs, std::vector<Core::FMTConstraint>& constraints) const
 		{
 		try {
 			//output levels...
 			const std::string bfecoptaggregates("~BFECOPTOUTPUTYOUVERT~");
 			const int lastid = static_cast<int>(basemodel->getOutputs().size());
 			size_t outoriginalsize = outputs.size();
-			for (const Core::FMToutput& output : bestscheduler->getLevelSolution("OPunit", bfecoptaggregates, lastid))
+			for (const Core::FMTOutput& output : bestscheduler->getLevelSolution("OPunit", bfecoptaggregates, lastid))
 			{
 				outputs.push_back(output);
 			}
 			for (size_t oid = outoriginalsize; oid < outputs.size();oid+=2)
 				{
-				Core::FMToutput constraintoutput(outputs.at(oid));
+				Core::FMTOutput constraintoutput(outputs.at(oid));
 				constraintoutput -= outputs.at(oid + 1);
-				Core::FMTconstraint newconstraint(Core::FMTconstrainttype::FMTstandard, constraintoutput);
+				Core::FMTConstraint newconstraint(Core::FMTconstrainttype::FMTstandard, constraintoutput);
 				newconstraint.setLength(1, basemodel->getParameter(Models::FMTintmodelparameters::LENGTH));
 				newconstraint.setRhs(-std::numeric_limits<double>::max(), 0.0);
 				constraints.push_back(newconstraint);
@@ -323,18 +323,18 @@ namespace Parallel
 			const double bestobjvalue = bestscheduler->getObjValue();
 			const std::string relativevalue = std::to_string(static_cast<int>(std::abs(relax_objective - bestobjvalue) * 100 / relax_objective));
 			*_logger << "Best solution found objective: "+std::to_string(bestobjvalue) +" ("+relativevalue+"%)" << "\n";
-			Core::FMTyields yields;
-			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getSolution(outyldname))
+			Core::FMTYields yields;
+			for (const Core::FMTTimeYieldHandler& tyld : bestscheduler->getSolution(outyldname))
 				{
-				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
+				std::unique_ptr<Core::FMTYieldHandler>newyield(new Core::FMTTimeYieldHandler(tyld));
 				yields.push_back(newyield->getMask(),newyield);
 				}
 			yields.update();
 			Parser::FMTyieldparser yldparser;
 			const std::string solutionname = solutionlocation +"_"+ std::to_string(bestobjvalue) + "_" + relativevalue + ".yld";
 			yldparser.write(yields, solutionname);
-			std::vector<Core::FMTconstraint>constraints;
-			std::vector<Core::FMToutput>outputs;
+			std::vector<Core::FMTConstraint>constraints;
+			std::vector<Core::FMTOutput>outputs;
 			getConstraintsSolution(outputs, constraints);
 			const std::string outputname = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".out";
 			const std::string constraintName = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".opt";

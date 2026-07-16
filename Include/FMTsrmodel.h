@@ -134,7 +134,7 @@ namespace Models
 		bool unboundSolution(int period);
 		// DocString: FMTsrmodel::isPeriodBounded
 		/**
-		Check if FMTdevelopment area are bounded on there primal variables for a given period.
+		Check if FMTDevelopment area are bounded on there primal variables for a given period.
 		*/
 		bool isPeriodBounded(int period) const;
 		// DocString: FMTsrmodel::clearGraphDevelopments
@@ -152,32 +152,32 @@ namespace Models
 		If the user wants to set a solution for a given period for warmstarting the model or prepare to
 		bound the model to that solution.
 		*/
-		bool setSolution(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
+		bool setSolution(int period, const Core::FMTSchedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTsrmodel::setSolutionByLp
 		/**
 		In some cases if you avec a lot of _lockexcempt actions comming from a Ws model it might be easier to
 		use the setSolutionByLp to set the solution on a partial graph. This function will change the objective function,
 		constraints and variables bounds so juste use it in a "Get results" context ( only valid for partial graph).
 		*/
-		bool setSolutionByLp(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
+		bool setSolutionByLp(int period, const Core::FMTSchedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTsrmodel::forceSolution
 		/**
 		Force a solution by using a schedule based on proportions instead of area. So if there is modifications to the model, it will
 		place only the parts of the solution that are possible considering the modifications. 
 		The schedule must be with lock indicators if locks are used in the model. 
 		*/
-		bool forceSolution(int period, const Core::FMTschedule& proportionschedulewithlock);
+		bool forceSolution(int period, const Core::FMTSchedule& proportionschedulewithlock);
 		// DocString: FMTsrmodel::getSolution
 		/**
-		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
+		Get the standard solution for a given period (FMTSchedule dont have natural growth solution included).
 		If with lock is true then the schedule will contain locked development.
 		*/
-		Core::FMTschedule getSolution(int period, bool withlock = false) const final;
+		Core::FMTSchedule getSolution(int period, bool withlock = false) const final;
 		// DocString: FMTsrmodel::getScheduleProportions
 		/**
 		Same as getSolution but the schedule area represent the percentage of area of the development.
 		*/
-		Core::FMTschedule getScheduleProportions(int period, bool withlock) const;
+		Core::FMTSchedule getScheduleProportions(int period, bool withlock) const;
 		// DocString: FMTsrmodel::getStats
 		/**
 		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/vertices...)
@@ -190,7 +190,7 @@ namespace Models
 		@param[in] p_Subset the mask subset
 		@return the graph stats for the graph.
 		*/
-		Graph::FMTgraphstats getGraphStats(const Core::FMTmask& p_Subset) const;
+		Graph::FMTgraphstats getGraphStats(const Core::FMTMask& p_Subset) const;
 		// DocString: FMTsrmodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
@@ -206,7 +206,7 @@ namespace Models
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or development name if level == FMToutputlevel::developpement
 		*/
-		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
+		virtual std::map<std::string, double> getOutput(const Core::FMTOutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		#if defined FMTWITHR
 		// DocString: FMTsrmodel::getOutputsDataFrame
@@ -214,7 +214,7 @@ namespace Models
 		Returns a dataframe filled up with outputs from first period to last period at the development level.
 		For multiple outputs.
 		*/
-		Rcpp::DataFrame getOutputsDataFrame(const std::vector<Core::FMToutput>& outputsdata, int firstPeriod, int lastPeriod) const;
+		Rcpp::DataFrame getOutputsDataFrame(const std::vector<Core::FMTOutput>& outputsdata, int firstPeriod, int lastPeriod) const;
 		#endif 
 		// DocString: FMTsrmodel::buildPeriod
 		/**
@@ -224,7 +224,7 @@ namespace Models
 		not fullbuild mode. Partialbuild will only build the graph linked to the solution. make it perfect to
 		reinterpret outputs for a given solution without rebuilding the whole graph.
 		*/
-		Graph::FMTgraphstats buildPeriod(Core::FMTschedule schedule = Core::FMTschedule(),
+		Graph::FMTgraphstats buildPeriod(Core::FMTSchedule schedule = Core::FMTSchedule(),
 				bool forcepartialbuild = false, int compressageclassoperability = 1);
 		// DocString: FMTsrmodel::getFirstActivePeriod
 		/**
@@ -236,11 +236,11 @@ namespace Models
 		/**
 		This function returns an area for a given period for a FMTsrmodel.
 		If period = 0 the area is the same has FMTmodel::getarea().
-		For period > 0 the area returned is the FMTdevelopment of the graph
+		For period > 0 the area returned is the FMTDevelopment of the graph
 		that can be (actual of futur) existing at the beginning of the period.
 		Need to have a builded graph with a solution to use this function.
 		*/
-		virtual std::vector<Core::FMTactualdevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const override;
+		virtual std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const override;
 		// DocString: FMTsrmodel::getPotentialArea
 		/**
 		* @brief Computes the potential development area for a given period.
@@ -257,14 +257,14 @@ namespace Models
 		* @param p_BeforeGrowAndDeath If true, computes the area before growth and mortality
 		* processes are applied; otherwise, computes it after these processes.
 		*
-		* @return A vector of Core::FMTactualdevelopment representing the potential
+		* @return A vector of Core::FMTActualDevelopment representing the potential
 		* development area for the specified period.
 		*
 		* @note This function does not modify the current model instance.
 		* @note In case of an exception, the error is handled internally and an empty
 		* vector may be returned.
 		*/
-		std::vector<Core::FMTactualdevelopment>getPotentialArea(int p_Period = 0, bool p_BeforeGrowAndDeath = false) const;
+		std::vector<Core::FMTActualDevelopment>getPotentialArea(int p_Period = 0, bool p_BeforeGrowAndDeath = false) const;
 		
 		
 		// DocString: FMTsrmodel::getSolverPtr()
@@ -291,7 +291,7 @@ namespace Models
 		/**
 		Presolve a FMTsrmodel.
 		*/
-		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const override;
+		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
 		// DocString: FMTsrmodel::boundSolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for
@@ -313,11 +313,11 @@ namespace Models
 		Based on a mask and an action get all the unique rotations (in period) taken to complete a serie of action. A serie can contain a subserie for an
 		aggregate of actions. It will only keep series that actions are part of the aggregate.
 		Args:
-			mask : the FMTmask of the rotations
+			mask : the FMTMask of the rotations
 			aggregate : std::string on which the last action is considered to be in
 		Returns: Unique FMTSerie (where the serie is in string action1-action2-action3... string is the serie and int is the number of periods taken to complete the serie.
 		*/
-		std::set<Core::FMTSerie>getRotations(const Core::FMTmask& mask, const std::string& aggregate) const;
+		std::set<Core::FMTSerie>getRotations(const Core::FMTMask& mask, const std::string& aggregate) const;
 		// DocString: FMTsrmodel::isOptimal
 		/**
 		Return true if the solver consider the solution optimal.
@@ -333,14 +333,14 @@ namespace Models
 		Giving a base_mask returns period 0 developpements that have no actions assigned for the whole planning horizon.
 		The developpements mask have to be a subset of the base_mask.
 		*/
-		std::vector<const Core::FMTdevelopment*> getNoChoice(const Core::FMTmask& base_mask) const;
+		std::vector<const Core::FMTDevelopment*> getNoChoice(const Core::FMTMask& base_mask) const;
 		// DocString: FMTsrmodel::getAllMasks
 		/*
 		@brief Get all masks in string format for a complete grapoh only for selected themes
 		@param[in] p_selectedThemes
 		@return a set of masks
 		*/
-		std::set<std::string> getAllMasks(const std::vector<Core::FMTtheme>& p_selectedThemes) const;
+		std::set<std::string> getAllMasks(const std::vector<Core::FMTTheme>& p_selectedThemes) const;
 	protected:
 		// DocString: FMTsrmodel::graph
 		///graph holding the FMTdevelopments for all the periods.

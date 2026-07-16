@@ -15,14 +15,14 @@
 
 ## Colonne « Statut »
 
-- **à confirmer** : décision non mécanique, mérite un avis humain.
+- **acté** : décision non mécanique, validée par Gabriel le 2026-07-16.
 - mécanique : découpage non ambigu.
 
 ## Classes (137)
 
 | Ancien | Nouveau | Statut | Note |
 |---|---|---|---|
-| `FMTGCBMtransition` | `FMTGCBMTransition` | **à confirmer** | GCBM reste en majuscules (règle actée) |
+| `FMTGCBMtransition` | `FMTGCBMTransition` | **acté** | GCBM reste en majuscules (règle actée) |
 | `FMTaction` | `FMTAction` | mécanique |  |
 | `FMTactionparser` | `FMTActionParser` | mécanique |  |
 | `FMTactualdevelopment` | `FMTActualDevelopment` | mécanique |  |
@@ -60,7 +60,7 @@
 | `FMTfork` | `FMTFork` | mécanique |  |
 | `FMTfreeexceptionhandler` | `FMTFreeExceptionHandler` | mécanique |  |
 | `FMTfunctioncall` | `FMTFunctionCall` | mécanique |  |
-| `FMTfuturdevelopment` | `FMTFuturDevelopment` | **à confirmer** | **coquille conservée** (« futur »). Les corrections orthographiques excluaient explicitement les classes. Futur→Future = ticket séparé |
+| `FMTfuturdevelopment` | `FMTFuturDevelopment` | **acté** | **coquille conservée** (« futur »). Les corrections orthographiques excluaient explicitement les classes. Futur→Future = ticket séparé |
 | `FMTgraph` | `FMTGraph` | mécanique |  |
 | `FMTgraphstats` | `FMTGraphStats` | mécanique |  |
 | `FMTgraphvertextoyield` | `FMTGraphVertexToYield` | mécanique |  |
@@ -74,8 +74,8 @@
 | `FMTlogger` | `FMTLogger` | mécanique |  |
 | `FMTlookup` | `FMTLookup` | mécanique |  |
 | `FMTlpheuristic` | `FMTLpHeuristic` | mécanique |  |
-| `FMTlpheuristicmthandler` | `FMTLpHeuristicMtHandler` | **à confirmer** | mt = multi-thread |
-| `FMTlpmodel` | `FMTLpModel` | **à confirmer** | acronyme en Pascal (règle actée) → Lp, et non LP |
+| `FMTlpheuristicmthandler` | `FMTLpHeuristicMtHandler` | **acté** | mt = multi-thread |
+| `FMTlpmodel` | `FMTLpModel` | **acté** | acronyme en Pascal (règle actée) → Lp, et non LP |
 | `FMTlpsolver` | `FMTLpSolver` | mécanique |  |
 | `FMTmask` | `FMTMask` | mécanique |  |
 | `FMTmaskcomparator` | `FMTMaskComparator` | mécanique |  |
@@ -88,7 +88,7 @@
 | `FMTmodelstats` | `FMTModelStats` | mécanique |  |
 | `FMTmodelyieldhandler` | `FMTModelYieldHandler` | mécanique |  |
 | `FMTmovestats` | `FMTMoveStats` | mécanique |  |
-| `FMTnssmodel` | `FMTNssModel` | **à confirmer** | nss = non spatial simulation |
+| `FMTnssmodel` | `FMTNssModel` | **acté** | nss = non spatial simulation |
 | `FMTobject` | `FMTObject` | mécanique |  |
 | `FMTopareaschedulertask` | `FMTOpAreaSchedulerTask` | **acté** | « oparea » = *operating area* → `Op` + `Area`. Tranché par Gabriel le 2026-07-16. |
 | `FMToperatingarea` | `FMTOperatingArea` | mécanique |  |
@@ -119,19 +119,19 @@
 | `FMTquietexceptionhandler` | `FMTQuietExceptionHandler` | mécanique |  |
 | `FMTquietlogger` | `FMTQuietLogger` | mécanique |  |
 | `FMTreplanningtask` | `FMTReplanningTask` | mécanique |  |
-| `FMTsamodel` | `FMTSaModel` | **à confirmer** | sa = simulated annealing |
+| `FMTsamodel` | `FMTSaModel` | **acté** | sa = simulated annealing |
 | `FMTsaschedule` | `FMTSaSchedule` | mécanique |  |
 | `FMTsasolution` | `FMTSaSolution` | mécanique |  |
 | `FMTschedule` | `FMTSchedule` | mécanique |  |
 | `FMTscheduleparser` | `FMTScheduleParser` | mécanique |  |
-| `FMTseException` | `FMTSeException` | **à confirmer** | le « se » est *Structured Exception* (SEH, <eh.h>), pas le « se » de FMTsemodel ; cohérent avec FMTScopedSeTranslator / getSeNumber |
-| `FMTsemodel` | `FMTSeModel` | **à confirmer** | se = spatially explicit |
+| `FMTseException` | `FMTSeException` | **acté** | le « se » est *Structured Exception* (SEH, <eh.h>), pas le « se » de FMTsemodel ; cohérent avec FMTScopedSeTranslator / getSeNumber |
+| `FMTsemodel` | `FMTSeModel` | **acté** | se = spatially explicit |
 | `FMTserializablematrix` | `FMTSerializableMatrix` | mécanique |  |
-| `FMTsesmodel` | `FMTSesModel` | **à confirmer** | ses = spatially explicit simulation |
+| `FMTsesmodel` | `FMTSesModel` | **acté** | ses = spatially explicit simulation |
 | `FMTsolverlogger` | `FMTSolverLogger` | mécanique |  |
 | `FMTspatialnodescache` | `FMTSpatialNodesCache` | mécanique |  |
 | `FMTspec` | `FMTSpec` | mécanique |  |
-| `FMTsrmodel` | `FMTSrModel` | **à confirmer** | sr = spatially referenced |
+| `FMTsrmodel` | `FMTSrModel` | **acté** | sr = spatially referenced |
 | `FMTtask` | `FMTTask` | mécanique |  |
 | `FMTtaskhandler` | `FMTTaskHandler` | mécanique |  |
 | `FMTtasklogger` | `FMTTaskLogger` | mécanique |  |
@@ -149,16 +149,16 @@
 | `FMTyieldhandler` | `FMTYieldHandler` | mécanique |  |
 | `FMTyieldmodel` | `FMTYieldModel` | mécanique |  |
 | `FMTyieldmodelRandom` | `FMTYieldModelRandom` | mécanique |  |
-| `FMTyieldmodelTSLA` | `FMTYieldModelTSLA` | **à confirmer** | TSLA laissé en majuscules (écrit ainsi par l auteur). La règle « acronymes en Pascal sauf FMT/GCBM » donnerait strictement FMTYieldModelTsla |
+| `FMTyieldmodelTSLA` | `FMTYieldModelTsla` | **acté** | applique la règle : acronymes en Pascal, seuls `FMT` et `GCBM` restent en majuscules. Tranché par Gabriel le 2026-07-16. |
 | `FMTyieldmodelUnitCoverage` | `FMTYieldModelUnitCoverage` | mécanique |  |
 | `FMTyieldmodeldecisiontree` | `FMTYieldModelDecisionTree` | mécanique |  |
-| `FMTyieldmodelnep` | `FMTYieldModelNep` | **à confirmer** | nep = net ecosystem production |
-| `FMTyieldmodelnn` | `FMTYieldModelNn` | **à confirmer** | nn = neural network |
+| `FMTyieldmodelnep` | `FMTYieldModelNep` | **acté** | nep = net ecosystem production |
+| `FMTyieldmodelnn` | `FMTYieldModelNn` | **acté** | nn = neural network |
 | `FMTyieldmodelpools` | `FMTYieldModelPools` | mécanique |  |
 | `FMTyieldparser` | `FMTYieldParser` | mécanique |  |
 | `FMTyieldrequest` | `FMTYieldRequest` | mécanique |  |
 | `FMTyields` | `FMTYields` | mécanique |  |
-| `FMTyldbounds` | `FMTYldBounds` | **à confirmer** | « Yld » conservé : précédent getYldsBounds (lot 3 des méthodes) ; fratrie FMTAgeBounds / FMTPerBounds / FMTLockBounds |
+| `FMTyldbounds` | `FMTYldBounds` | **acté** | « Yld » conservé : précédent getYldsBounds (lot 3 des méthodes) ; fratrie FMTAgeBounds / FMTPerBounds / FMTLockBounds |
 
 ## Hors périmètre
 

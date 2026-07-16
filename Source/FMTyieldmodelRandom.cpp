@@ -35,7 +35,7 @@ namespace Core
 			}
 		}
 
-	std::vector<size_t> FMTyieldmodelRandom::getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTyieldrequest& p_request) const
+	std::vector<size_t> FMTyieldmodelRandom::getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTYieldRequest& p_request) const
 	{
 		std::vector<size_t> values(p_yields.size());
 		try {
@@ -45,7 +45,7 @@ namespace Core
 			for (const std::string& yieldName : p_yields)
 			{
 				bool gotYield = false;
-				for (const FMTyieldrequest::const_iterator yield : p_request.getDatas())
+				for (const FMTYieldRequest::const_iterator yield : p_request.getDatas())
 				{
 					if ((yield->second)->containsYield(yieldName))
 					{
@@ -97,7 +97,7 @@ namespace Core
 		FMTyieldmodel::setModel(p_modelPtr);
 	}
 
-	const std::vector<double>FMTyieldmodelRandom::predict(const Core::FMTyieldrequest& p_request) const
+	const std::vector<double>FMTyieldmodelRandom::predict(const Core::FMTYieldRequest& p_request) const
 	{
 		std::vector<double>result;
 		try {
@@ -127,8 +127,8 @@ namespace Core
 		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelRandom(*this));
 		}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelRandom::presolve(const FMTmaskfilter& p_filter,
-										const std::vector<FMTtheme>& p_newThemes) const
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelRandom::presolve(const FMTMaskFilter& p_filter,
+										const std::vector<FMTTheme>& p_newThemes) const
 	{
 		try {
 			return Clone();
@@ -139,8 +139,8 @@ namespace Core
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelRandom::postSolve(const FMTmaskfilter& p_filter,
-		const std::vector<FMTtheme>& p_baseThemes) const
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelRandom::postSolve(const FMTMaskFilter& p_filter,
+		const std::vector<FMTTheme>& p_baseThemes) const
 	{
 		return Clone();
 	}

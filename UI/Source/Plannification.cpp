@@ -52,7 +52,7 @@ namespace Wrapper
 			{
 				Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getModel(scen), static_cast<Models::FMTsolverinterface>(solver));
 				*logger << "FMT -> Préparation pour le scénario : " + optimizationmodel.getName() << "\n";
-				std::vector<Core::FMTschedule> cedule;
+				std::vector<Core::FMTSchedule> cedule;
 				bool playbackscen = playback[scenarios->IndexOf(scen)];
 				if (playbackscen)
 				{
@@ -69,7 +69,7 @@ namespace Wrapper
 
 				optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, valeur_NUMBER_OF_THREADS);
 				optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-				std::vector<Core::FMToutput> selectedoutputs = ObtenirArrayOutputsSelectionnees(optimizationmodel.getOutputs(), outputs);
+				std::vector<Core::FMTOutput> selectedoutputs = ObtenirArrayOutputsSelectionnees(optimizationmodel.getOutputs(), outputs);
 				optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playbackscen);
 				newplanningtask.push_back(optimizationmodel, cedule, selectedoutputs);
 				*logger << "FMT -> Scénario : " + optimizationmodel.getName() + " prêt a être lancer." << "\n";
@@ -122,7 +122,7 @@ namespace Wrapper
 			local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 			local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 			local.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			std::vector<Core::FMToutput> listeOutputs = ObtenirArrayOutputsSelectionnees(global.getOutputs(), outputs);
+			std::vector<Core::FMTOutput> listeOutputs = ObtenirArrayOutputsSelectionnees(global.getOutputs(), outputs);
 
 			std::vector<std::string>layersoptions;
 			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")

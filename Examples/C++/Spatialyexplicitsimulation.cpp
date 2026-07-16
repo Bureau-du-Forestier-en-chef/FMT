@@ -34,8 +34,8 @@ int main()
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
-	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
-	std::vector<Core::FMTtransition> strans;
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
+	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
 		{
 			strans.push_back(tran.single());
@@ -54,15 +54,15 @@ int main()
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
 		{
-		Core::FMTschedule sche = schedules.at(0).at(period);
+		Core::FMTSchedule sche = schedules.at(0).at(period);
 		for (const auto& t : simulationmodel.greedyReferenceBuild(sche, greedysearch))
 			{
 			Logging::FMTDefaultLogger()<< t.first << " " << t.second << " ";
 			}
 		Logging::FMTDefaultLogger() << "\n";
 		}
-	Core::FMToutput spatialoutput;
-	for (const Core::FMToutput& output : simulationmodel.getOutputs())
+	Core::FMTOutput spatialoutput;
+	for (const Core::FMTOutput& output : simulationmodel.getOutputs())
 	{
 		if (output.getName() == "OSUPREC")
 		{
@@ -80,12 +80,12 @@ int main()
 				}
 		Logging::FMTDefaultLogger() << std::to_string(period) << " "<<simulationmodel.getOutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total")  <<"\n";
 		}
-	const std::vector<Core::FMTaction>actions = simulationmodel.getactions();
-	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getThemes().at(1));
+	const std::vector<Core::FMTAction>actions = simulationmodel.getactions();
+	const std::vector<Core::FMTTheme>growththeme(1,simulationmodel.getThemes().at(1));
 	Parser::FMTtransitionparser transitionparser;
 	for (int period = 1; period <= 10; ++period)
 		{
-		const std::vector<Core::FMTGCBMtransition>transitions = areaparser.writeDisturbances(outdir,
+		const std::vector<Core::FMTGCBMTransition>transitions = areaparser.writeDisturbances(outdir,
 			spatialsolution,
 			actions,
 			growththeme, period);

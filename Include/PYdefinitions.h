@@ -30,15 +30,15 @@ void definePySet()
 template <class T>
 void define_FMTlist()
     {
-	 py_pair<Core::FMTmask, T>();
-	 py_pair<Core::FMTmask const, T>();
-	 boost::python::class_<Core::FMTlist<T>>("FMTlist", "@DocString(FMTlist)")
-		 .def("__iter__", boost::python::iterator<Core::FMTlist<T>>())
-         .def("update", &Core::FMTlist<T>::update,
-             "@DocString(FMTlist::update)")
+	 py_pair<Core::FMTMask, T>();
+	 py_pair<Core::FMTMask const, T>();
+	 boost::python::class_<Core::FMTList<T>>("FMTlist", "@DocString(FMTList)")
+		 .def("__iter__", boost::python::iterator<Core::FMTList<T>>())
+         .def("update", &Core::FMTList<T>::update,
+             "@DocString(FMTList::update)")
          .def("push_back",
-             &Core::FMTlist<T>::apiPushBack,
-             "@DocString(FMTyieldhandler::APIpush_back)");
+             &Core::FMTList<T>::apiPushBack,
+             "@DocString(FMTYieldHandler::APIpush_back)");
 	definePyList<T>();
     }
 

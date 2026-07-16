@@ -45,7 +45,7 @@ void exportHeuristics()
 					"@DocString(FMTlpheuristicmthandler::greedySolve)");*/
 
 	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
-		.def(bp::init<const Core::FMTmask&, const double&>())
+		.def(bp::init<const Core::FMTMask&, const double&>())
 		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingarea>())
 		.def("getneighbors", &Heuristics::FMToperatingarea::getNeighbors,
 			"@DocString(FMToperatingarea::getneighbors)")
@@ -85,7 +85,7 @@ void exportHeuristics()
 
 	definePyList<Heuristics::FMToperatingareacluster>();
 
-	bp::class_<Heuristics::FMTlpheuristic, bp::bases<Core::FMTobject, Models::FMTlpsolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTlpheuristic)");
+	bp::class_<Heuristics::FMTlpheuristic, bp::bases<Core::FMTObject, Models::FMTlpsolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTlpheuristic)");
 
     bp::class_<Heuristics::FMToperatingareaclusterer, bp::bases<Heuristics::FMTlpheuristic>>("Heuristics::FMToperatingareaclusterer", "@DocString(FMToperatingareaclusterer)")
 		.def("initialsolve", &Heuristics::FMToperatingareaclusterer::initialSolve,

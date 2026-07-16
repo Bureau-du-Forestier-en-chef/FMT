@@ -78,7 +78,7 @@ enum class FMTgraphbuild
 
 
 template <class tvertexproperties,class tedgeproperties>
-class FMTEXPORT FMTgraph : public Core::FMTobject
+class FMTEXPORT FMTgraph : public Core::FMTObject
     {
 	public:
 		typedef boost::adjacency_list<boost::vecS,
@@ -98,7 +98,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		typedef typename std::pair<FMTinedge_iterator, FMTinedge_iterator> FMTinedge_pair;
 		typedef typename std::pair<FMTvertex_iterator, FMTvertex_iterator> FMTvertex_pair;
 		FMTgraph() :
-			Core::FMTobject(),
+			Core::FMTObject(),
 			data(),
 			m_gotDeath(),
 			buildtype(FMTgraphbuild::nobuild),
@@ -114,7 +114,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		virtual ~FMTgraph() = default;
 
 		FMTgraph(const FMTgraphbuild lbuildtype) :
-			Core::FMTobject(),
+			Core::FMTObject(),
 			data(),
 			m_gotDeath(),
 			buildtype(lbuildtype),
@@ -129,7 +129,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		FMTgraph(const FMTgraph& rhs) :
-			Core::FMTobject(rhs),
+			Core::FMTObject(rhs),
 			data(rhs.data),
 			m_gotDeath(rhs.m_gotDeath),
 			buildtype(rhs.buildtype),
@@ -164,7 +164,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		{
 			if (this != &rhs)
 			{
-				Core::FMTobject::operator=(rhs);
+				Core::FMTObject::operator=(rhs);
 				m_gotDeath = rhs.m_gotDeath;
 				buildtype = rhs.buildtype;
 				nodescache = rhs.nodescache;
@@ -261,14 +261,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		{
 			buildtype = build;
 		}
-		boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>getDevsSet(const int& period) const
+		boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>>getDevsSet(const int& period) const
 		{
-			boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> basedevs;
+			boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>> basedevs;
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = developments.at(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					basedevs.insert(Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>(*vertex_iterator, data[*vertex_iterator].get()));
+					basedevs.insert(Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>(*vertex_iterator, data[*vertex_iterator].get()));
 				}
 			}
 			catch (...)
@@ -279,14 +279,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		bool containsDevelopment(
-			const Core::FMTdevelopment& development,
-			const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, 
-			Core::FMTdevelopment>>& alldevs) const
+			const Core::FMTDevelopment& development,
+			const boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, 
+			Core::FMTDevelopment>>& alldevs) const
 		{
-			return (alldevs.find(Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>(development)) != alldevs.end());
+			return (alldevs.find(Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>(development)) != alldevs.end());
 		}
 
-		std::queue<FMTvertex_descriptor> initialize(const std::vector<Core::FMTactualdevelopment>& actdevelopments)
+		std::queue<FMTvertex_descriptor> initialize(const std::vector<Core::FMTActualDevelopment>& actdevelopments)
 		{
 			std::queue<FMTvertex_descriptor>actives;
 			try {
@@ -307,7 +307,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				stats.vertices = 0;
 				std::vector<FMTvertex_descriptor>P0descriptors;
 				P0descriptors.reserve(actdevelopments.size());
-				for (const Core::FMTactualdevelopment& development : actdevelopments)
+				for (const Core::FMTActualDevelopment& development : actdevelopments)
 				{
 					const FMTvertexproperties properties(development, constraint_id);
 					const FMTvertex_descriptor newvertex = boost::add_vertex(properties, data);
@@ -316,11 +316,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					++stats.vertices;
 				}
 				size_t poid = 0;
-				boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> devsets;
-				for (const Core::FMTactualdevelopment& development : actdevelopments)
+				boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>> devsets;
+				for (const Core::FMTActualDevelopment& development : actdevelopments)
 				{
 					//P1
-					Core::FMTfuturdevelopment p1dev(development);
+					Core::FMTFuturDevelopment p1dev(development);
 					p1dev.setPeriod(actualperiod);
 					const FMTvertex_descriptor tovertex = addDevelopment(p1dev, devsets);
 					actives.push(tovertex);
@@ -334,7 +334,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				FMTvertex_iterator lastone;
 				boost::tie(firstp0, vertex_iterator_end) = boost::vertices(data);
 				lastone = firstp0;
-				for (const Core::FMTactualdevelopment& development : actdevelopments)
+				for (const Core::FMTActualDevelopment& development : actdevelopments)
 				{
 					++lastone;
 				}
@@ -365,9 +365,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				const int actualperiod = getPeriod();
 				const bool GOT_SERIES = model.useActionSerie();
 				const size_t maxseriesize = model.getSeriesMaxSize();
-				boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> actualdevs = getDevsSet(actualperiod);
+				boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>> actualdevs = getDevsSet(actualperiod);
 				int action_id = 0;
-				for (const Core::FMTaction& action : model.actions)
+				for (const Core::FMTAction& action : model.actions)
 				{
 					std::queue<FMTvertex_descriptor> new_actives;
 					while (!actives.empty())
@@ -376,7 +376,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						actives.pop();
 						const Graph::FMTgraphvertextoyield vertexinfo = getVertexToYieldInfo(model, front_vertex);
 						const FMTbasevertexproperties& front_properties = data[front_vertex];
-						const Core::FMTdevelopment& active_development = front_properties.get();
+						const Core::FMTDevelopment& active_development = front_properties.get();
 						bool DoGrow = true;
 						bool standOnASerie = false;
 						bool operateStand = true;
@@ -412,7 +412,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							}
 							if (operateStand)
 								{
-								const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
+								const std::vector<Core::FMTDevelopmentPath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
 								addAction(action_id, statsDiff, new_actives, front_vertex,
 									paths, actualdevs, action.isInSeries());
 								}
@@ -478,7 +478,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			bool splitgrowth = false)
 		{
 			try {
-				boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> nextperiods;
+				boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>> nextperiods;
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end, lastoperated;
 				boost::tie(vertex_iterator, vertex_iterator_end) = developments.back();
 				if (!std::is_pointer<FMTvertex_descriptor>::value)
@@ -497,8 +497,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					const FMTvertex_descriptor front_vertex = actives.front();
 					actives.pop();
 					FMTbasevertexproperties front_properties = data[front_vertex];
-					const Core::FMTdevelopment active_development = front_properties.get();
-					const Core::FMTfuturdevelopment grown_up = active_development.grow();
+					const Core::FMTDevelopment active_development = front_properties.get();
+					const Core::FMTFuturDevelopment grown_up = active_development.grow();
 					FMTvertex_descriptor next_period = this->addDevelopment(grown_up, nextperiods, splitgrowth); //getset
 					int variableindex = statsDiff.cols;
 					double proportion = 100;
@@ -535,16 +535,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		}
 
-		std::vector<const Core::FMTdevelopment*> noChoice(
-			const Core::FMTmask& baseMask, 
+		std::vector<const Core::FMTDevelopment*> noChoice(
+			const Core::FMTMask& baseMask, 
 			const int& death_id) const
 		{
-			std::vector<const Core::FMTdevelopment*>noactions;
+			std::vector<const Core::FMTDevelopment*>noactions;
 			try {
 				FMTvertex_iterator vertexit, vertexend;
 				for (boost::tie(vertexit, vertexend) = developments.at(getFirstPeriod()); vertexit != vertexend; ++vertexit)
 				{
-					const Core::FMTdevelopment& base_dev = data[*vertexit].get();
+					const Core::FMTDevelopment& base_dev = data[*vertexit].get();
 					if (base_dev.getMask().isSubsetOf(baseMask))
 					{
 						std::queue<FMTvertex_descriptor>tocheck;
@@ -591,7 +591,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 
 		void getVariableNames(
-			const std::vector<Core::FMTaction>& actions,
+			const std::vector<Core::FMTAction>& actions,
 			std::vector<std::string>& colnames) const
 		{
 			try {
@@ -600,7 +600,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				size_t vertices_id = 0;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					std::string basename = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+					std::string basename = std::string(Core::FMTDevelopment(data[*vertex_iterator].get()));
 					const std::string vertexid = "_V" + std::to_string(vertices_id);
 					boost::remove_erase_if(basename, boost::is_any_of(toRemove));
 					FMToutedge_iterator outit, outend;
@@ -639,7 +639,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}
 					if (potsize>= minbytes)
 					{
-						unsigned long long avmemory = FMTobject::getAvailableMemory();
+						unsigned long long avmemory = FMTObject::getAvailableMemory();
 						if (avmemory < minbytes)
 						{
 							unsigned long long rest = (minbytes - avmemory);
@@ -680,7 +680,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					if (rowid >= 0)
 					{
 						const std::string vertexid = "_V" + std::to_string(vertices_id);
-						std::string name = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+						std::string name = std::string(Core::FMTDevelopment(data[*vertex_iterator].get()));
 						boost::remove_erase_if(name, boost::is_any_of(toRemove));
 						rownames[rowid] = name + vertexid;
 					}
@@ -694,11 +694,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 
-		std::vector<Core::FMTactualdevelopment> getPeriodStopDev(
+		std::vector<Core::FMTActualDevelopment> getPeriodStopDev(
 			const int location, 
 			const double* actual_solution) const
 		{
-			std::vector<Core::FMTactualdevelopment>all_period_stop_devs;
+			std::vector<Core::FMTActualDevelopment>all_period_stop_devs;
 			try {
 				FMTvertex_iterator vertexit, vertexend;
 				for (boost::tie(vertexit, vertexend) = developments.at(location); vertexit != vertexend; ++vertexit)
@@ -707,7 +707,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					{
 						const double area = inArea(*vertexit, actual_solution);
 						const FMTbasevertexproperties& vetexprop = data[*vertexit];
-						all_period_stop_devs.push_back(Core::FMTactualdevelopment(vetexprop.get(), area));
+						all_period_stop_devs.push_back(Core::FMTActualDevelopment(vetexprop.get(), area));
 					}
 				}
 			}
@@ -720,12 +720,12 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 		std::map<std::string, double> getOutput(
 			const Models::FMTmodel& model, 
-			const Core::FMToutput& output,
+			const Core::FMTOutput& output,
 			int period, 
 			const double* solution, 
 			Core::FMToutputlevel level = Core::FMToutputlevel::standard) const
 		{
-			Core::FMTtheme targetTheme;
+			Core::FMTTheme targetTheme;
 			std::vector<std::string> target_attributes;
 			std::map<std::string, double> results;
 			try {
@@ -752,13 +752,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				std::vector<std::string> equation;
 				if (output.canBeNodesOnly())
 				{
-					for (const Core::FMToutputnode& output_node : output.getNodes(equation))
+					for (const Core::FMTOutputNode& output_node : output.getNodes(equation))
 					{
 						bool checkGraph = true;
 						if (output_node.source.isAction())
 						{
-							const std::vector<const Core::FMTaction*> ACTIONS = Core::FMTActionComparator(output_node.source.getAction()).getAllAggregates(model.actions);
-							std::vector<const Core::FMTaction*>::const_iterator AIt = ACTIONS.begin();
+							const std::vector<const Core::FMTAction*> ACTIONS = Core::FMTActionComparator(output_node.source.getAction()).getAllAggregates(model.actions);
+							std::vector<const Core::FMTAction*>::const_iterator AIt = ACTIONS.begin();
 							size_t count = 0;
 							while (AIt != ACTIONS.end())
 							{
@@ -802,7 +802,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				}
 				else {
 					std::map<std::string, std::vector<std::string>> allequations;
-					const std::vector<Core::FMToutputnode> allnodes = output.getNodes(equation, 1, false, period);
+					const std::vector<Core::FMTOutputNode> allnodes = output.getNodes(equation, 1, false, period);
 
 
 					if (allnodes.empty())
@@ -818,7 +818,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}
 					else {
 						size_t outid = 0;
-						for (const Core::FMToutputnode& output_node : allnodes)
+						for (const Core::FMTOutputNode& output_node : allnodes)
 						{
 							const std::map<std::string, double> srcvalues = getSource(model, output_node, period, targetTheme, solution, level);
 							output_node.fillUpEquation(allequations, srcvalues, equation, outid);
@@ -839,22 +839,22 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		FMTvertex_descriptor getDevelopment(
-			const Core::FMTdevelopment& development,
-			const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, 
-			Core::FMTdevelopment>>& alldevs) const
+			const Core::FMTDevelopment& development,
+			const boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, 
+			Core::FMTDevelopment>>& alldevs) const
 		{
-			const Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment> tofind(development);
+			const Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment> tofind(development);
 			return alldevs.find(tofind)->memoryobject;
 		}
 
-		const Core::FMTdevelopment& getDevelopment(const FMTvertex_descriptor& descriptor) const
+		const Core::FMTDevelopment& getDevelopment(const FMTvertex_descriptor& descriptor) const
 		{
 			return data[descriptor].get();
 		}
 
 		FMTvertex_descriptor addDevelopment(
-			const Core::FMTfuturdevelopment& futurdevelopment,
-			boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>& alldevs, 
+			const Core::FMTFuturDevelopment& futurdevelopment,
+			boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>>& alldevs, 
 			bool forcenewone = false)
 		{
 			try {
@@ -874,17 +874,17 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						boost::tie(base_iterator, base_iterator_end) = boost::vertices(data);
 						while (base_iterator != base_iterator_end)
 						{
-							const Core::FMTdevelopment& DEV = getDevelopment(*base_iterator);
+							const Core::FMTDevelopment& DEV = getDevelopment(*base_iterator);
 							if (DEV.getPeriod() == futurdevelopment.getPeriod())
 							{
-								alldevs.insert(Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>(*base_iterator, data[*base_iterator].get()));
+								alldevs.insert(Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>(*base_iterator, data[*base_iterator].get()));
 							}
 							++base_iterator;
 						}
 
 					}
 					FMTvertex_descriptor newvertex = boost::add_vertex(properties, data);
-					alldevs.insert(Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>(newvertex, data[newvertex].get()));
+					alldevs.insert(Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>(newvertex, data[newvertex].get()));
 					++stats.vertices;
 					return newvertex;
 				}
@@ -897,7 +897,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		}
 
-		FMTvertex_descriptor addDevelopment(const Core::FMTfuturdevelopment& futurdevelopment)
+		FMTvertex_descriptor addDevelopment(const Core::FMTFuturDevelopment& futurdevelopment)
 		{
 			FMTvertex_descriptor newvertex = data.null_vertex();
 			try {
@@ -916,7 +916,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		size_t hash(size_t seed = 0) const
 		{
 			try {
-				boost::hash_combine(seed, boost::hash<Core::FMTdevelopment>()(data[*developments.at(0).first].get()));
+				boost::hash_combine(seed, boost::hash<Core::FMTDevelopment>()(data[*developments.at(0).first].get()));
 				FMTedge_iterator edge_iterator, edge_iterator_end;
 				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
 				{
@@ -935,8 +935,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			FMTgraphstats& statsDiff,
 			std::queue<FMTvertex_descriptor>& actives,
 			const FMTvertex_descriptor& out_vertex,
-			const std::vector<Core::FMTdevelopmentpath>& paths,
-			boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>& devsets,
+			const std::vector<Core::FMTDevelopmentPath>& paths,
+			boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>>& devsets,
 			bool inserie = false)
 		{
 			try {
@@ -944,7 +944,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				//++statsDiff.cols;
 				//std::vector<FMTvertex_descriptor>active_vertex;
 				bool newchoice = false;
-				for (const Core::FMTdevelopmentpath& devpath : paths)
+				for (const Core::FMTDevelopmentPath& devpath : paths)
 				{
 					FMTvertex_descriptor tovertex;
 					bool newEdge = true;
@@ -987,13 +987,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			FMTgraphstats& statsDiff,
 			std::queue<FMTvertex_descriptor>& actives,
 			const FMTvertex_descriptor& out_vertex,
-			const std::vector<Core::FMTdevelopmentpath>& paths)
+			const std::vector<Core::FMTDevelopmentPath>& paths)
 		{
 			try {
 				int variable_id = statsDiff.cols;
 				++statsDiff.cols;
 				std::vector<FMTvertex_descriptor>active_vertex;
-				for (const Core::FMTdevelopmentpath& devpath : paths)
+				for (const Core::FMTDevelopmentPath& devpath : paths)
 				{
 					const FMTedgeproperties newEdge(actionID, variable_id, devpath.getProportion());
 					const FMTvertex_descriptor tovertex = this->addDevelopment(devpath.getDevelopment());
@@ -1146,7 +1146,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				FMTvertex_iterator vertexit, vertexend;
 				for (boost::tie(vertexit, vertexend) = developments.at(period); vertexit != vertexend; ++vertexit)
 				{
-					const Core::FMTdevelopment& dev = data[*vertexit].get();
+					const Core::FMTDevelopment& dev = data[*vertexit].get();
 					if (dev.getLock() > lock)
 					{
 						lock = dev.getLock();
@@ -1185,11 +1185,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return false;
 		}
 
-		std::vector<Core::FMTdevelopmentpath> getPaths(
+		std::vector<Core::FMTDevelopmentPath> getPaths(
 			const FMTvertex_descriptor& out_vertex,
 			const int& actionID) const
 		{
-			std::vector<Core::FMTdevelopmentpath>paths;
+			std::vector<Core::FMTDevelopmentPath>paths;
 			try {
 				paths.reserve(boost::out_degree(out_vertex, data));
 				for (FMToutedge_pair edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
@@ -1198,7 +1198,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					if (edgeprop.getactionID() == actionID)
 					{
 						const FMTbasevertexproperties& vertex_target = data[target(*edge_pair.first, data)];
-						paths.push_back(Core::FMTdevelopmentpath(vertex_target.get().getMask(),
+						paths.push_back(Core::FMTDevelopmentPath(vertex_target.get().getMask(),
 							vertex_target.get().getAge(),
 							vertex_target.get().getLock(),
 							vertex_target.get().getPeriod(),
@@ -1215,8 +1215,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		bool isValidOuputNode(
 			const Models::FMTmodel& model, 
-			const Core::FMToutputnode& node, 
-			std::vector<const Core::FMTaction*>& action_IDS, 
+			const Core::FMTOutputNode& node, 
+			std::vector<const Core::FMTAction*>& action_IDS, 
 			int period) const
 		{
 			try {
@@ -1240,14 +1240,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		bool isValidGraphNode(
 			const Models::FMTmodel& p_model, 
 			const FMTvertex_descriptor& p_vertex_descriptor,
-			const Core::FMToutputnode& p_node, 
-			const std::vector<const Core::FMTaction*>& p_selected, 
+			const Core::FMTOutputNode& p_node, 
+			const std::vector<const Core::FMTAction*>& p_selected, 
 			const std::vector<size_t>& p_blocksSubset) const
 		{
 			try {
-				const Core::FMTdevelopment& p_development = data[p_vertex_descriptor].get();
-				const Core::FMTmask& DEV_MASK = p_development.getMask();
-				const Core::FMTmask& SOURCE_MASK = p_node.source.getMask();
+				const Core::FMTDevelopment& p_development = data[p_vertex_descriptor].get();
+				const Core::FMTMask& DEV_MASK = p_development.getMask();
+				const Core::FMTMask& SOURCE_MASK = p_node.source.getMask();
 				if (DEV_MASK.isSubsetOf(SOURCE_MASK, p_blocksSubset)&&
 					p_development.is(p_node.source, p_model.yields))//node.source.use(development, model.yields))
 				{
@@ -1287,11 +1287,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		std::map<int, double> locateNode(
 			const Models::FMTmodel& model,
-			Core::FMToutputnode output_node,
+			Core::FMTOutputNode output_node,
 			int period) const
 		{
 			try {
-				Core::FMToutputnode tempNode(output_node);
+				Core::FMTOutputNode tempNode(output_node);
 				const std::vector<FMTvertex_descriptor>& vertices = getNode(model, tempNode, period);
 				return getVariables(model, tempNode, vertices);
 			}
@@ -1305,7 +1305,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 		std::map<std::string, std::map<int, double>> locateNodeByTheme(
 			const Models::FMTmodel& model, 
-			Core::FMToutputnode output_node, 
+			Core::FMTOutputNode output_node, 
 			int period) const
 		{
 			std::map<std::string, std::map<int, double>> variablesreturn;
@@ -1322,7 +1322,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					std::map<std::string, std::vector<FMTvertex_descriptor>> orderedtarget;
 					for (const auto& vert : vertices)
 					{
-						const Core::FMTdevelopment& dev = getDevelopment(vert);
+						const Core::FMTDevelopment& dev = getDevelopment(vert);
 						const std::string value = dev.getMask().get(model.themes.at(themetarget));
 						if (orderedtarget.find(value) == orderedtarget.end())
 						{
@@ -1354,7 +1354,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		std::vector<FMTvertex_descriptor> getNode(
 			const Models::FMTmodel& model, 
-			Core::FMToutputnode& output_node, 
+			Core::FMTOutputNode& output_node, 
 			int period) const
 		{
 			//std::vector<FMTvertex_descriptor>locations(m_allocator);
@@ -1376,7 +1376,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				if (!output_node.source.isVariableLevel())
 				{
 					//constexpr size_t minimalcachedrop = 25;//10 %
-					std::vector<const Core::FMTaction*> selected(m_allocator);
+					std::vector<const Core::FMTAction*> selected(m_allocator);
 					selected.reserve(model.actions.size());
 					bool useCache = true;
 					//const size_t TO_RESERVE = model.area.size() * node_period * node_period * 100;
@@ -1477,7 +1477,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		std::map<int, double> getVariables(
 			const Models::FMTmodel& model, 
-			const Core::FMToutputnode& output_node, 
+			const Core::FMTOutputNode& output_node, 
 			const std::vector<FMTvertex_descriptor>& vertices) const
 		{
 			return std::map<int, double>();
@@ -1665,11 +1665,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return actions;
 		}
 
-		std::vector<const Core::FMTaction*> selectedActions(
+		std::vector<const Core::FMTAction*> selectedActions(
 			const Models::FMTmodel& model, 
 			const std::vector<int>& action_IDS) const
 		{
-			std::vector<const Core::FMTaction*>selected;
+			std::vector<const Core::FMTAction*>selected;
 			try {
 				if (!action_IDS.empty())
 				{
@@ -1690,7 +1690,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		bool constraintLenght(
-			const Core::FMTconstraint& constraint, 
+			const Core::FMTConstraint& constraint, 
 			int& start, 
 			int& stop) const
 		{
@@ -1716,7 +1716,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return (start < static_cast<int>(developments.size()) && start <= stop);
 		}
 
-		FMTgraphstats getStats(const Core::FMTmask& p_Subset)
+		FMTgraphstats getStats(const Core::FMTMask& p_Subset)
 		{
 			FMTgraphstats SubsetStats;
 			try {
@@ -1769,16 +1769,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		FMTgraphstats buildSchedule(
 			const Models::FMTmodel& model,
 			std::queue<FMTvertex_descriptor> actives,
-			const Core::FMTschedule& schedule)
+			const Core::FMTSchedule& schedule)
 		{
 			FMTgraphstats statsDiff(stats);
 			try {
-				//developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>());
+				//developments.push_back(boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>>());
 				//developments.back().reserve(actives.size());
 				const int actualperiod = getPeriod();
-				boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> actualdevs = getDevsSet(actualperiod);
+				boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>> actualdevs = getDevsSet(actualperiod);
 				int action_id = 0;
-				for (const Core::FMTaction& action : model.actions)
+				for (const Core::FMTAction& action : model.actions)
 				{
 					if (schedule.find(action) != schedule.end())
 					{
@@ -1788,7 +1788,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							const FMTvertex_descriptor front_vertex = actives.front();
 							actives.pop();
 							FMTbasevertexproperties front_properties = data[front_vertex];
-							const Core::FMTdevelopment& active_development = front_properties.get();
+							const Core::FMTDevelopment& active_development = front_properties.get();
 							bool death = false;
 							if ((((schedule.at(action)).find(active_development) != (schedule.at(action)).end()) ||
 								(!action.doRespectLock() && active_development.getLock() != 0 &&
@@ -1801,7 +1801,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 									{
 										death = true;
 									}
-									const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
+									const std::vector<Core::FMTDevelopmentPath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
 									addAction(action_id, statsDiff, new_actives, front_vertex, paths, actualdevs);
 								}
 							}
@@ -1916,13 +1916,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		std::map<std::string, double> getSource(
 			const Models::FMTmodel& model,
-			const Core::FMToutputnode& node,
-			int period, const Core::FMTtheme& theme,
+			const Core::FMTOutputNode& node,
+			int period, const Core::FMTTheme& theme,
 			const double* solution, 
 			Core::FMToutputlevel level = Core::FMToutputlevel::standard) const
 		{
 			try {
-				Core::FMToutputnode tempNode(node);
+				Core::FMTOutputNode tempNode(node);
 				const std::vector<FMTvertex_descriptor>& vertices = getNode(model, tempNode, period);
 				return getValues(model, vertices, tempNode, theme, solution, level);
 			}
@@ -1963,8 +1963,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		std::map<std::string, double> getValues(
 			const Models::FMTmodel& model, 
 			const std::vector<FMTvertex_descriptor>& vertices,
-			const Core::FMToutputnode& node, 
-			const Core::FMTtheme& theme,
+			const Core::FMTOutputNode& node, 
+			const Core::FMTTheme& theme,
 			const double* solution, 
 			Core::FMToutputlevel level) const
 		{
@@ -1988,12 +1988,12 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}
 				if (!vertices.empty())
 				{
-					const std::vector<const Core::FMTaction*> selected = node.source.targets(model.actions);
+					const std::vector<const Core::FMTAction*> selected = node.source.targets(model.actions);
 
-					//Core::FMTaction optimization_action;
+					//Core::FMTAction optimization_action;
 					for (const FMTvertex_descriptor& vertex : vertices)
 					{
-						const Core::FMTdevelopment& development = data[vertex].get();
+						const Core::FMTDevelopment& development = data[vertex].get();
 						const Graph::FMTgraphvertextoyield vertexinfo = getVertexToYieldInfo(model, vertex);
 						if (level == Core::FMToutputlevel::standard)
 						{
@@ -2004,17 +2004,17 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							std::string value;
 							if (node.source.isNextPeriod())//If it looks at next period make sure to show the right dev...
 							{
-								value = std::string(Core::FMTdevelopment(data[getGrowthSource(vertex)].get()));
+								value = std::string(Core::FMTDevelopment(data[getGrowthSource(vertex)].get()));
 							}
 							else {
-								value = std::string(Core::FMTdevelopment(development));
+								value = std::string(Core::FMTDevelopment(development));
 							}
 							std::pair<std::map<std::string, double>::iterator, bool> target = values.insert(std::pair<std::string, double>(value, 0));
 							toFill = target.first;
 						}
 						if (node.source.useInEdges())
 						{
-							Core::FMTdevelopment newDev(development);
+							Core::FMTDevelopment newDev(development);
 							newDev.setPeriod(newDev.getPeriod() - 1);
 							const double coef = node.source.getCoef(newDev, model.yields, &vertexinfo) * node.factor.getCoef(newDev, model.yields, &vertexinfo) * node.constant;
 							double area = 0;
@@ -2030,11 +2030,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							toFill->second += VALUE;
 						}
 						else {
-							for (const Core::FMTaction* act : selected)
+							for (const Core::FMTAction* act : selected)
 							{
 								double action_value = 0;
 								const int actionID = static_cast<int>(std::distance(&(*model.actions.begin()), act));
-								const std::vector<Core::FMTdevelopmentpath>paths = getPaths(vertex, actionID);
+								const std::vector<Core::FMTDevelopmentPath>paths = getPaths(vertex, actionID);
 								const double action_coef = node.source.getCoef(development, model.yields, &vertexinfo, &paths, act) * node.factor.getCoef(development, model.yields, &vertexinfo, &paths, act) * node.constant;
 								action_value = action_coef * (outArea(vertex, actionID, solution));
 								toFill->second += action_value;
@@ -2199,18 +2199,18 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		size_t getAmountOfPaths(
-			const Core::FMTdevelopment& dev, 
+			const Core::FMTDevelopment& dev, 
 			const int& actionid,
 			const Models::FMTmodel& model,
-			const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, 
-			Core::FMTdevelopment>>& actualperioddevs) const
+			const boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, 
+			Core::FMTDevelopment>>& actualperioddevs) const
 		{
 			size_t amount = 0;
 			try {
 				std::vector<FMTvertex_descriptor>paths;
 				if (actionid >= 0)
 				{
-					for (const Core::FMTdevelopmentpath& path : dev.operate(model.actions.at(actionid), model.transitions.at(actionid), model.yields, model.themes))
+					for (const Core::FMTDevelopmentPath& path : dev.operate(model.actions.at(actionid), model.transitions.at(actionid), model.yields, model.themes))
 					{
 						if (containsDevelopment(path.getDevelopment(), actualperioddevs))
 						{
@@ -2271,9 +2271,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		std::set<Core::FMTSerie> getAllSeries(
 			FMTvertex_descriptor targetdescriptor, 
 			const std::vector<std::string>& p_series,
-			const std::vector<Core::FMTaction>& actions, 
+			const std::vector<Core::FMTAction>& actions, 
 			const std::unordered_set<int>& actionselected, 
-			const Core::FMTmask& mask) const
+			const Core::FMTMask& mask) const
 		{
 			std::set<Core::FMTSerie>theseries;
 			try {
@@ -2439,8 +2439,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		void postSolve(
-			const Core::FMTmaskfilter& filter,
-			const std::vector<Core::FMTtheme>& originalbasethemes,
+			const Core::FMTMaskFilter& filter,
+			const std::vector<Core::FMTTheme>& originalbasethemes,
 			const std::vector<int>& actionmapconnection)
 		{
 			try {
@@ -2456,19 +2456,19 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
 					}
 				}
-				boost::unordered_map<Core::FMTmask, Core::FMTmask>presolvetopostsolve;
+				boost::unordered_map<Core::FMTMask, Core::FMTMask>presolvetopostsolve;
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					FMTbasevertexproperties& vertexprop = data[*vertex_iterator];
-					const Core::FMTmask& presolvemask = vertexprop.get().getMask();
-					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = presolvetopostsolve.find(presolvemask);
+					const Core::FMTMask& presolvemask = vertexprop.get().getMask();
+					boost::unordered_map<Core::FMTMask, Core::FMTMask>::const_iterator mskit = presolvetopostsolve.find(presolvemask);
 					if (mskit != presolvetopostsolve.end())
 					{
 						vertexprop.setDevlopementMask(mskit->second);
 					}
 					else {
-						const Core::FMTmask postsolvedmask = presolvemask.postSolve(filter, originalbasethemes);
+						const Core::FMTMask postsolvedmask = presolvemask.postSolve(filter, originalbasethemes);
 						presolvetopostsolve[presolvemask] = postsolvedmask;
 						vertexprop.setDevlopementMask(postsolvedmask);
 					}
@@ -2481,18 +2481,18 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 		}
 
-		Core::FMTschedule getSchedule(
-			const std::vector<Core::FMTaction>& actions,
+		Core::FMTSchedule getSchedule(
+			const std::vector<Core::FMTAction>& actions,
 			const double* actual_solution, 
 			const int& lperiod, 
 			bool withlock = false) const
 		{
-			Core::FMTschedule newSchedule(lperiod, *this, withlock);
+			Core::FMTSchedule newSchedule(lperiod, *this, withlock);
 			try {
 				if (static_cast<int>(size()) > lperiod && lperiod > 0)
 				{
 					//newSchedule.setPeriod(lperiod);
-					//std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
+					//std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::map<int, double>>>schedule_solution;
 					//const double* actual_solution = this->getColSolution();
 					FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 					for (boost::tie(vertex_iterator, vertex_iterator_end) = getPeriodVertices(lperiod); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
@@ -2502,7 +2502,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						variables.erase(-1);
 						if (!variables.empty())
 						{
-							const Core::FMTdevelopment& dev = data[*vertex_iterator].get();
+							const Core::FMTDevelopment& dev = data[*vertex_iterator].get();
 							for (const auto variable_iterator : variables)
 							{
 								
@@ -2530,11 +2530,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 									//}
 									/*if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())
 									{
-										schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();
+										schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTDevelopment, std::map<int, double>>();
 									}
-									const Core::FMTdevelopment& basedev = getDevelopment(deviterator.memoryobject);*/
+									const Core::FMTDevelopment& basedev = getDevelopment(deviterator.memoryobject);*/
 									newSchedule.addEvent(dev, *(actual_solution + variable_iterator.second), actions.at(variable_iterator.first));
-									/*Core::FMTdevelopment lockout = basedev.clearLock();
+									/*Core::FMTDevelopment lockout = basedev.clearLock();
 									int leveltarget = basedev.lock;
 									if (withlock)
 										{
@@ -2552,7 +2552,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						}
 					}
 					newSchedule.clean();
-					/*Core::FMTschedule newSchedule(lperiod, schedule_solution);
+					/*Core::FMTSchedule newSchedule(lperiod, schedule_solution);
 					newSchedule.passinobject(*this);
 					if (withlock)
 						{
@@ -2574,27 +2574,27 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		aggregate of actions.
 		Args:
 			model FMTmodel: the model
-			mask : the FMTmask of the rotations
+			mask : the FMTMask of the rotations
 			aggregate : std::string on which the last action is considered to be in
 		Returns: Distribution of rotation period taken per series (where the serie is in string action1-action2-action3... string is the serie and int is the number of periods taken
 		*/
 		std::set<Core::FMTSerie> getRotations(
 			const Models::FMTmodel& model, 
-			const Core::FMTmask& mask, 
+			const Core::FMTMask& mask, 
 			const std::string& aggregate) const
 		{
 			std::set<Core::FMTSerie>theseries;
 			try {
-				const Core::FMToutputsource baseSource(Core::FMTspec(), mask,
+				const Core::FMTOutputSource baseSource(Core::FMTSpec(), mask,
 					Core::FMTotar::actual, "", aggregate);
-				const Core::FMToutputsource baseFactor(Core::FMTotar::val, 1.0);
-				const Core::FMToutputnode baseNode(baseSource, baseFactor, 1.0);
+				const Core::FMTOutputSource baseFactor(Core::FMTotar::val, 1.0);
+				const Core::FMTOutputNode baseNode(baseSource, baseFactor, 1.0);
 				const int minperiod = 1;
 				const int maxperiod = static_cast<int>(developments.size() - 2);
 				const std::unordered_set<int> actionsets = Core::FMTActionComparator(aggregate).getAllAggregatesSet(model.actions, true);
 				for (int period = minperiod; period <= maxperiod; ++period)
 				{
-					Core::FMToutputnode periodNode(baseNode);
+					Core::FMTOutputNode periodNode(baseNode);
 					for (const FMTvertex_descriptor& targetdescriptor : getNode(model, periodNode, period))
 					{
 						FMToutedge_pair edge_pair;
@@ -2630,16 +2630,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		std::set<std::string> getAllDevelopmentsMask(
-			const std::vector<Core::FMTtheme>& p_themesToIgnore) const 
+			const std::vector<Core::FMTTheme>& p_themesToIgnore) const 
 		{
 			std::set<std::string> masks;
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
-					Core::FMTmask maskObj(DEV.getMask());
-					for (const Core::FMTtheme& THEME : p_themesToIgnore) {
+					const Core::FMTDevelopment& DEV = data[*vertex_iterator].get();
+					Core::FMTMask maskObj(DEV.getMask());
+					for (const Core::FMTTheme& THEME : p_themesToIgnore) {
 						maskObj.set(THEME, "?");
 					}
 					masks.insert(std::string(maskObj));
@@ -2652,13 +2652,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return masks;
 		}
 
-		Core::FMTschedule getOutVariablesProportions(
-			const std::vector<Core::FMTaction>& actions, 
+		Core::FMTSchedule getOutVariablesProportions(
+			const std::vector<Core::FMTAction>& actions, 
 			const double* actual_solution, 
 			const int& lperiod, 
 			bool withlock = false) const
 		{
-			Core::FMTschedule newSchedule(lperiod, *this, withlock);
+			Core::FMTSchedule newSchedule(lperiod, *this, withlock);
 			try {
 				if (static_cast<int>(size()) > lperiod && lperiod > 0)
 				{
@@ -2667,7 +2667,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					{
 						const FMTvertex_descriptor vertex = *vertex_iterator;
 						std::map<int, int>variables = getOutVariables(vertex);
-						const Core::FMTdevelopment& dev = data[*vertex_iterator].get();
+						const Core::FMTDevelopment& dev = data[*vertex_iterator].get();
 						double outarea = 0;
 						std::map<int, double>variablesarea;
 						for (const auto variable_iterator : variables)
@@ -2829,8 +2829,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		template<class Archive>
 		void save(Archive& ar, unsigned int version) const
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			FMTobject::forceSave(ar, version);
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
+			FMTObject::forceSave(ar, version);
 			ar& BOOST_SERIALIZATION_NVP(m_gotDeath);
 			ar& BOOST_SERIALIZATION_NVP(data);
 			ar& BOOST_SERIALIZATION_NVP(stats);
@@ -2840,8 +2840,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		template<class Archive>
 		void load(Archive& ar, unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			FMTobject::forceSave(ar, version);
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
+			FMTObject::forceSave(ar, version);
 			ar& BOOST_SERIALIZATION_NVP(m_gotDeath);
 			ar& BOOST_SERIALIZATION_NVP(data);
 			_generateDevelopments();
@@ -2869,7 +2869,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					for (boost::tie(vertex, vend) = boost::vertices(data); vertex != vend; ++vertex)
 					{
 						const FMTbasevertexproperties& properties = data[*vertex];
-						const Core::FMTdevelopment& dev = properties.get();
+						const Core::FMTDevelopment& dev = properties.get();
 						const size_t periodm_location = (dev.getPeriod());
 						if (vertexid == 0)
 						{
@@ -2901,7 +2901,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		 */
 		std::vector<FMTvertex_descriptor> getDescriptors(
 			const int& p_period,
-			std::vector<const Core::FMTmask*>& p_masks, 
+			std::vector<const Core::FMTMask*>& p_masks, 
 			const size_t& p_reserve) const
 		{
 			std::vector<FMTvertex_descriptor> p_descriptors;
@@ -2910,7 +2910,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 			for (boost::tie(vertex_iterator, vertex_iterator_end) = getPeriodVertices(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
-				const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
+				const Core::FMTDevelopment& DEV = data[*vertex_iterator].get();
 				p_masks.push_back(&DEV.getMask());
 				p_descriptors.push_back(*vertex_iterator);
 			}
@@ -2922,8 +2922,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		 * @param[in] p_reserve
 		 */
 		void getSubset(
-			const Core::FMTmask& p_staticMask,
-			std::vector<const Core::FMTmask*>& p_masks,
+			const Core::FMTMask& p_staticMask,
+			std::vector<const Core::FMTMask*>& p_masks,
 			std::vector<bool>& p_results,
 			size_t p_start, size_t p_stop) const
 		{
@@ -2943,13 +2943,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		 * @param[in] p_reserve
 		 */
 		std::vector<FMTvertex_descriptor> threadedStaticSearch(
-			const Core::FMToutputnode& p_node,
+			const Core::FMTOutputNode& p_node,
 			const Models::FMTmodel& p_model,
 			const int& p_period, 
 			const size_t& p_reserve) const
 		{
-			const Core::FMTmask theStaticMask = p_model.getStaticMask(p_node, true);
-			std::vector<const Core::FMTmask*>masks;
+			const Core::FMTMask theStaticMask = p_model.getStaticMask(p_node, true);
+			std::vector<const Core::FMTMask*>masks;
 			const std::vector<FMTvertex_descriptor>BASE_DESCRIPTORS = getDescriptors(p_period, masks, p_reserve);
 			std::vector<bool>results(BASE_DESCRIPTORS.size());
 			const size_t NUMBER_THREADS = 10;
@@ -3056,7 +3056,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		 */
 		std::vector<FMTvertex_descriptor> setNodeByStaticMask(
 			const Models::FMTmodel& p_model,
-			const Core::FMToutputnode& p_node, 
+			const Core::FMTOutputNode& p_node, 
 			int p_period, 
 			bool useCache) const
 		{
@@ -3079,12 +3079,12 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					if (!contains)
 					{
 						//p_descriptors = threadedStaticSearch(p_node,p_model, p_period, p_reserve);
-						const Core::FMTmask THE_STATIC_MASK = p_model.getStaticMask(p_node, true);
+						const Core::FMTMask THE_STATIC_MASK = p_model.getStaticMask(p_node, true);
 						const std::vector<size_t> BLOCKS_SUBSET = THE_STATIC_MASK.getNonFullBlocks();
 						FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 						for (boost::tie(vertex_iterator, vertex_iterator_end) = getPeriodVertices(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 						{
-							const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
+							const Core::FMTDevelopment& DEV = data[*vertex_iterator].get();
 							if (DEV.getMask().isSubsetOf(THE_STATIC_MASK, BLOCKS_SUBSET))//DEV.getMask().isSubsetOf(THE_STATIC_MASK))
 							{
 								p_descriptors.push_back(*vertex_iterator);
@@ -3167,12 +3167,12 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}
 				}
 				else {
-					const Core::FMTmask THE_STATIC_MASK = p_model.getStaticMask(p_node, true);
+					const Core::FMTMask THE_STATIC_MASK = p_model.getStaticMask(p_node, true);
 					const std::vector<size_t> BLOCKS_SUBSET = THE_STATIC_MASK.getNonFullBlocks();
 					FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 					for (boost::tie(vertex_iterator, vertex_iterator_end) = getPeriodVertices(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 					{
-						const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
+						const Core::FMTDevelopment& DEV = data[*vertex_iterator].get();
 						if (DEV.getMask().isSubsetOf(THE_STATIC_MASK, BLOCKS_SUBSET))//DEV.getMask().isSubsetOf(THE_STATIC_MASK))
 						{
 							p_descriptors.push_back(*vertex_iterator);
@@ -3189,13 +3189,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		bool _keepForSerie(
 			const FMTvertex_descriptor& targetdescriptor,
-			std::vector<Core::FMTaction>::const_iterator theaction,
+			std::vector<Core::FMTAction>::const_iterator theaction,
 			const size_t& seriemaxsize,
 			const Models::FMTmodel& p_model,
 			bool& onserie) const
 		{
 			try {
-				std::vector<Core::FMTaction>::const_iterator acit = _getActionOfFirstSerie(targetdescriptor, 
+				std::vector<Core::FMTAction>::const_iterator acit = _getActionOfFirstSerie(targetdescriptor, 
 																			seriemaxsize, p_model);
 				if (acit == p_model.actions.end())
 				{
@@ -3218,7 +3218,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		std::vector<std::string> _getActionSerie(
 			FMTvertex_descriptor targetdescriptor,
 			const size_t& maxactions, 
-			const std::vector<Core::FMTaction>& actions) const
+			const std::vector<Core::FMTAction>& actions) const
 
 		{
 			std::vector<std::string>theserie;
@@ -3263,7 +3263,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return theserie;
 		}
 
-		std::vector<Core::FMTaction>::const_iterator _getActionOfFirstSerie(
+		std::vector<Core::FMTAction>::const_iterator _getActionOfFirstSerie(
 			const FMTvertex_descriptor& p_target,
 			size_t p_SerieMaxSize, 
 			const Models::FMTmodel& p_model) const
@@ -3273,7 +3273,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 																		p_SerieMaxSize, p_model.actions);
 				if (!TARGET_SERIE.empty())
 				{
-					for (std::vector<Core::FMTaction>::const_iterator acit = p_model.actions.cbegin();
+					for (std::vector<Core::FMTAction>::const_iterator acit = p_model.actions.cbegin();
 						acit != p_model.actions.cend(); ++acit)
 					{
 						if (acit->isPartOfASerie() && acit->isAllowedInSerie(TARGET_SERIE))
@@ -3292,12 +3292,12 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		bool _isValidSeriePath(
 			const FMTvertex_descriptor& p_target,
-			std::vector<Core::FMTaction>::const_iterator p_ActionSerie,
+			std::vector<Core::FMTAction>::const_iterator p_ActionSerie,
 			const Models::FMTmodel& p_model) const
 		{
 			try {
 				const int MODEL_LENGTH = p_model.getParameter(Models::FMTintmodelparameters::LENGTH);
-				Core::FMTdevelopment stand = data[p_target].get();
+				Core::FMTDevelopment stand = data[p_target].get();
 				while (stand.getPeriod() <= MODEL_LENGTH)
 					{
 					if (stand.operable(*p_ActionSerie,p_model.yields))
@@ -3316,7 +3316,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		void _setSerieOperabilityNDeath(
 			const FMTvertex_descriptor& p_target,
 			const size_t& p_MaxSerieSize,
-			std::vector<Core::FMTaction>::const_iterator p_ActionSerie,
+			std::vector<Core::FMTAction>::const_iterator p_ActionSerie,
 			const Models::FMTmodel& p_model,
 			bool& p_grow,
 			bool& p_Operable) const
@@ -3328,7 +3328,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				const Core::FMTSerie* SERIE = p_ActionSerie->getSerie(TARGET_SERIE);
 				p_Operable = true;
 				const int MODEL_LENGTH = p_model.getParameter(Models::FMTintmodelparameters::LENGTH);
-				Core::FMTdevelopment stand = data[p_target].get().grow();
+				Core::FMTDevelopment stand = data[p_target].get().grow();
 				if (stand.getPeriod() <= MODEL_LENGTH &&
 					stand.operable(*p_ActionSerie, p_model.yields))//Stand is still operable next period
 					{
@@ -3443,11 +3443,11 @@ template<> inline std::map<int, int> FMTgraph<Graph::FMTvertexproperties, Graph:
 		return mapping;
 	}
 
-template<> inline std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getPaths(
+template<> inline std::vector<Core::FMTDevelopmentPath> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getPaths(
 	const FMTvertex_descriptor& out_vertex, 
 	const int& actionID) const
 	{
-		std::vector<Core::FMTdevelopmentpath>paths;
+		std::vector<Core::FMTDevelopmentPath>paths;
 		paths.reserve(boost::out_degree(out_vertex,data));
 		try {
 			for (FMToutedge_pair edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
@@ -3456,7 +3456,7 @@ template<> inline std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTverte
 				if (edgeprop.getactionID() == actionID)
 				{
 					const FMTbasevertexproperties& vertex_target = data[target(*edge_pair.first, data)];
-					paths.push_back(Core::FMTdevelopmentpath(vertex_target.get().getMask(),
+					paths.push_back(Core::FMTDevelopmentPath(vertex_target.get().getMask(),
 						vertex_target.get().getAge(), 
 						vertex_target.get().getLock(),
 						vertex_target.get().getPeriod(),
@@ -3519,24 +3519,24 @@ template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeprop
 
 template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getVariables(
 	const Models::FMTmodel& model, 
-	const Core::FMToutputnode& output_node, 
+	const Core::FMTOutputNode& output_node, 
 	const std::vector<FMTvertex_descriptor>& vertices) const
 {
 	std::map<int, double>variables;
 	try {
 		if (!vertices.empty())
 		{
-			//std::vector<Core::FMTdevelopmentpath>paths;
-			//Core::FMTaction optimization_action;
-			const std::vector<const Core::FMTaction*> selected = output_node.source.targets(model.actions);
+			//std::vector<Core::FMTDevelopmentPath>paths;
+			//Core::FMTAction optimization_action;
+			const std::vector<const Core::FMTAction*> selected = output_node.source.targets(model.actions);
 			for (const FMTvertex_descriptor& vertex : vertices)
 			{
-				const Core::FMTdevelopment& development = data[vertex].get();
+				const Core::FMTDevelopment& development = data[vertex].get();
 				const Graph::FMTgraphvertextoyield vertexinfo = getVertexToYieldInfo(model,vertex);
 				if (output_node.source.useInEdges())
 				{
 					
-					Core::FMTdevelopment newDev(development);
+					Core::FMTDevelopment newDev(development);
 					newDev.setPeriod(newDev.getPeriod() - 1);
 					const double coef = output_node.source.getCoef(newDev, model.yields, &vertexinfo) * output_node.factor.getCoef(newDev, model.yields, &vertexinfo) * output_node.constant;
 					
@@ -3568,12 +3568,12 @@ template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Gra
 				else {
 					//const std::map<int, int>outvars = getOutVariables(vertex);
 					const std::vector<const FMTbaseedgeproperties*> ACTION_EDGES = getActionEdges(vertex, model.actions.size());
-					for (const Core::FMTaction* act : selected)
+					for (const Core::FMTAction* act : selected)
 					{
 						const int actionID = static_cast<int>(std::distance(&(*model.actions.begin()), act));
 						if (ACTION_EDGES.at(actionID))
 						{
-							const std::vector<Core::FMTdevelopmentpath>paths = getPaths(vertex, actionID);
+							const std::vector<Core::FMTDevelopmentPath>paths = getPaths(vertex, actionID);
 							const double action_coef = output_node.source.getCoef(development, model.yields, &vertexinfo, &paths, act) * output_node.factor.getCoef(development, model.yields, &vertexinfo, &paths, act) * output_node.constant;
 							updateVarsMap(variables, ACTION_EDGES.at(actionID)->getvariableID(), action_coef);
 						}
@@ -3727,7 +3727,7 @@ template<> inline bool FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproper
 		}
 		if (!gotin)
 		{
-			const Core::FMTdevelopment& dev = vertex_property.get();
+			const Core::FMTDevelopment& dev = vertex_property.get();
 			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"No in variables for development "+std::string(dev), "FMTgraph::getTransferRow", __LINE__, __FILE__);
 		}

@@ -21,8 +21,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-	FMTdevelopment::FMTdevelopment(FMTdevelopment&& rhs) :
-		FMTobject(std::move(rhs)),
+	FMTDevelopment::FMTDevelopment(FMTDevelopment&& rhs) :
+		FMTObject(std::move(rhs)),
 		mask(std::move(rhs.mask)),
 		age(std::move(rhs.age)),
 		lock(std::move(rhs.lock)),
@@ -31,9 +31,9 @@ namespace Core{
 
 	}
 
-	FMTdevelopment& FMTdevelopment::operator=(FMTdevelopment&& rhs)
+	FMTDevelopment& FMTDevelopment::operator=(FMTDevelopment&& rhs)
 	{
-		FMTobject::operator=(std::move(rhs));
+		FMTObject::operator=(std::move(rhs));
 		mask = std::move(rhs.mask);
 		age = std::move(rhs.age);
 		lock = std::move(rhs.lock);
@@ -41,45 +41,45 @@ namespace Core{
 		return *this;
 	}
 
-	void FMTdevelopment::setAge(const int& lage)
+	void FMTDevelopment::setAge(const int& lage)
 	{
 		try {
 			age = static_cast<uint8_t>(lage);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::setAge", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTDevelopment::setAge", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTdevelopment::setLock(const int& llock)
+	void FMTDevelopment::setLock(const int& llock)
 	{
 		try{
 		lock = static_cast<uint8_t>(llock);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::setLock", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTDevelopment::setLock", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTdevelopment::setPeriod(const int& lperiod)
+	void FMTDevelopment::setPeriod(const int& lperiod)
 	{
 		try{
 		period = static_cast<uint8_t>(lperiod);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::setPeriod", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTDevelopment::setPeriod", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTdevelopment::setMask(const Core::FMTmask& lmask)
+	void FMTDevelopment::setMask(const Core::FMTMask& lmask)
 	{
 		mask = lmask;
 	}
 
-  FMTdevelopment::FMTdevelopment():FMTobject(), mask(),age(),lock(),period(0)
+  FMTDevelopment::FMTDevelopment():FMTObject(), mask(),age(),lock(),period(0)
   {
 
 
@@ -87,7 +87,7 @@ namespace Core{
 
 
 
-  FMTdevelopment::FMTdevelopment(const FMTmask& lmask,const int& lage,const int& llock) : FMTobject(),
+  FMTDevelopment::FMTDevelopment(const FMTMask& lmask,const int& lage,const int& llock) : FMTObject(),
 	  mask(lmask),
 	  age(static_cast<uint8_t>(lage)),
 	  lock(static_cast<uint8_t>(llock)),
@@ -95,8 +95,8 @@ namespace Core{
         {
 
         }
-  FMTdevelopment::FMTdevelopment(const FMTmask&  lmask,const int& lage,const int& llock,const int& lperiod): 
-	  FMTobject(),
+  FMTDevelopment::FMTDevelopment(const FMTMask&  lmask,const int& lage,const int& llock,const int& lperiod): 
+	  FMTObject(),
 	  mask(lmask),
 	  age(static_cast<uint8_t>(lage)),
 	  lock(static_cast<uint8_t>(llock)),
@@ -105,8 +105,8 @@ namespace Core{
 
         }
   
-    FMTdevelopment::FMTdevelopment(const FMTdevelopment& rhs) :
-		FMTobject(rhs),
+    FMTDevelopment::FMTDevelopment(const FMTDevelopment& rhs) :
+		FMTObject(rhs),
         mask(rhs.mask),
         age(rhs.age),
         lock(rhs.lock),
@@ -116,11 +116,11 @@ namespace Core{
 
         }
 
-     FMTdevelopment& FMTdevelopment::operator = (const FMTdevelopment& rhs)
+     FMTDevelopment& FMTDevelopment::operator = (const FMTDevelopment& rhs)
         {
         if (this!=&rhs)
             {
-			FMTobject::operator=(rhs);
+			FMTObject::operator=(rhs);
             mask = rhs.mask;
             age = rhs.age;
             lock = rhs.lock;
@@ -128,9 +128,9 @@ namespace Core{
             }
         return *this;
         }
-    FMTfuturdevelopment FMTdevelopment::grow() const
+    FMTFuturDevelopment FMTDevelopment::grow() const
         {
-        FMTfuturdevelopment newDev(*this);
+        FMTFuturDevelopment newDev(*this);
 		try {
 			++newDev.age;
 			if (newDev.lock > 0)
@@ -140,34 +140,34 @@ namespace Core{
 			++newDev.period;
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::grow", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTDevelopment::grow", __LINE__, __FILE__);
 			}
         return newDev;
         }
 
-	bool FMTdevelopment::worthTestingOperability(const FMTaction& action) const
+	bool FMTDevelopment::worthTestingOperability(const FMTAction& action) const
 		{
 		return (((action.doRespectLock() && lock == 0) || !action.doRespectLock()) &&
 			action.getAgeLowerBound() <= getAge() && getAge() <= action.getAgeUpperBound() &&
 			action.getPeriodLowerBound() <= getPeriod() && getPeriod() <= action.getPeriodUpperBound());
 		}
 
-	FMTyieldrequest FMTdevelopment::getYieldRequest(const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+	FMTYieldRequest FMTDevelopment::getYieldRequest(const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 			if (graphyieldrequest != nullptr)
 			{
-				return FMTyieldrequest(*this,*graphyieldrequest);
+				return FMTYieldRequest(*this,*graphyieldrequest);
 				
 			}
-			return FMTyieldrequest(*this);
+			return FMTYieldRequest(*this);
 		}
 
-     bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds, const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+     bool FMTDevelopment::operable(const FMTAction& action,const FMTYields& ylds, const Graph::FMTgraphvertextoyield* graphyieldrequest) const
         {
 		 try{
 			if (worthTestingOperability(action))
 				{
-				for (const FMTaction::const_iterator spec: action.findSets(mask))
+				for (const FMTAction::const_iterator spec: action.findSets(mask))
 					{
 					if (is(spec->second, ylds,graphyieldrequest))
 						{
@@ -177,15 +177,15 @@ namespace Core{
 				}
 		 }catch (...)
 			{
-			 _exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(), "FMTdevelopment::operable", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(), "FMTDevelopment::operable", __LINE__, __FILE__);
 			}
         return false;
         }
-	 bool FMTdevelopment::anyOperable(const std::vector<const FMTaction*>& actions, const FMTyields& ylds,
+	 bool FMTDevelopment::anyOperable(const std::vector<const FMTAction*>& actions, const FMTYields& ylds,
 		 const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 		 try{
-		 for (const FMTaction* action : actions)
+		 for (const FMTAction* action : actions)
 			{
 			 if (this->operable(*action,ylds,graphyieldrequest))
 				{
@@ -195,16 +195,16 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::anyOperable", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTDevelopment::anyOperable", __LINE__, __FILE__);
 		 }
 		 return false;
 		}
 
-	 std::vector<int> FMTdevelopment::anyWorthTestingOperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const
+	 std::vector<int> FMTDevelopment::anyWorthTestingOperability(const std::vector<const FMTAction*>& actions, const FMTAction& firstaction) const
 		{
 		 std::vector<int>potentials;
 		 try{
-			for (const FMTaction* action : actions)
+			for (const FMTAction* action : actions)
 				{
 				 if (this->worthTestingOperability(*action))
 					{
@@ -215,19 +215,19 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::anyWorthTestingOperability", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTDevelopment::anyWorthTestingOperability", __LINE__, __FILE__);
 		 }
 		 return potentials;
 		}
 
-	 std::vector<bool> FMTdevelopment::isAnyWorthTestingOperability(const std::vector<const FMTaction*>& actions,
-		 const std::vector<FMTaction>& allactions) const noexcept
+	 std::vector<bool> FMTDevelopment::isAnyWorthTestingOperability(const std::vector<const FMTAction*>& actions,
+		 const std::vector<FMTAction>& allactions) const noexcept
 	 {
 		 try {
-			 const FMTaction* firstaction = &(*allactions.begin());
+			 const FMTAction* firstaction = &(*allactions.begin());
 			 std::vector<int8_t>worth;
 			 worth.reserve(actions.size());
-			 for (const FMTaction* action : actions)
+			 for (const FMTAction* action : actions)
 			 {
 				 if (this->worthTestingOperability(*action))
 				 {
@@ -247,19 +247,19 @@ namespace Core{
 		 }
 		 catch (...)
 		 {
-			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTdevelopment::isAnyWorthTestingOperability", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this), "FMTDevelopment::isAnyWorthTestingOperability", __LINE__, __FILE__);
 		 }
 		 return std::vector<bool>();
 	 }
 
-	 std::vector<FMTdevelopmentpath> FMTdevelopment::operate(const FMTaction& action,
-		 const FMTtransition& Transition,
-		 const FMTyields& ylds,
-		 const std::vector<FMTtheme>& themes) const
+	 std::vector<FMTDevelopmentPath> FMTDevelopment::operate(const FMTAction& action,
+		 const FMTTransition& Transition,
+		 const FMTYields& ylds,
+		 const std::vector<FMTTheme>& themes) const
 		{
-		 std::vector<FMTdevelopmentpath>newpaths;
+		 std::vector<FMTDevelopmentPath>newpaths;
 		 try {
-			 const FMTfork* fork = Transition.getFork(*this,ylds);
+			 const FMTFork* fork = Transition.getFork(*this,ylds);
 			 if (fork)
 			 {
 				 newpaths = fork->getPaths(*this, ylds, themes, action.isResetAge());
@@ -267,7 +267,7 @@ namespace Core{
 			 }
 			 else {
 				 std::string yldsStr;
-				 for (const FMTtransition::const_iterator fork : Transition.findSets(getMask()))
+				 for (const FMTTransition::const_iterator fork : Transition.findSets(getMask()))
 				 {
 					 for (const std::string& YLD_NAME : fork->second.getYlds())
 					 {
@@ -283,25 +283,25 @@ namespace Core{
 					 yldsStr.insert(0, "\n");
 				 }
 				 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case,Transition.getName() + " for " + std::string(*this) + yldsStr,
-					 "FMTdevelopment::operate",__LINE__, __FILE__);
+					 "FMTDevelopment::operate",__LINE__, __FILE__);
 			 }
 		 }catch (...)
 			{
-			 _exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(),"FMTdevelopment::operate", __LINE__, __FILE__);
+			 _exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(),"FMTDevelopment::operate", __LINE__, __FILE__);
 			}
 		 return newpaths;
 		}
 
 
-    bool FMTdevelopment::operator == (const FMTdevelopment& rhs) const
+    bool FMTDevelopment::operator == (const FMTDevelopment& rhs) const
         {
         return (age == rhs.age && lock == rhs.lock && period == rhs.period && mask == rhs.mask);
         }
-    bool FMTdevelopment::operator != (const FMTdevelopment& rhs) const
+    bool FMTDevelopment::operator != (const FMTDevelopment& rhs) const
         {
         return !(*this==rhs);
         }
-     bool FMTdevelopment::operator < (const FMTdevelopment& rhs) const
+     bool FMTDevelopment::operator < (const FMTDevelopment& rhs) const
         {
 		 //strict ordering
 		 if (mask < rhs.mask)
@@ -322,7 +322,7 @@ namespace Core{
 			 return false;
 		 return false;
         }
-    FMTdevelopment::operator std::string() const
+    FMTDevelopment::operator std::string() const
         {
 		std::string line = "";
         line+=std::string(mask)+" ";
@@ -331,21 +331,21 @@ namespace Core{
         line+=std::to_string(getPeriod())+" ";
         return line;
         }
-	double FMTdevelopment::getArea() const
+	double FMTDevelopment::getArea() const
 		{
 		return 0;
 		}
 
-	FMTdevelopment FMTdevelopment::clearLock() const
+	FMTDevelopment FMTDevelopment::clearLock() const
 		{
-		FMTdevelopment nolock(*this);
+		FMTDevelopment nolock(*this);
 		nolock.lock = 0;
 		return nolock;
 		}
 
-	bool FMTdevelopment::_isOutOfBound(const FMTyieldrequest& p_request,
-									const FMTyields& p_yields,
-									const Core::FMTyldbounds& p_bound,
+	bool FMTDevelopment::_isOutOfBound(const FMTYieldRequest& p_request,
+									const FMTYields& p_yields,
+									const Core::FMTYldBounds& p_bound,
 									const std::string& p_yield) const
 		{
 		bool value = false;
@@ -356,12 +356,12 @@ namespace Core{
 			{
 			_exhandler->raiseFromCatch(
 				"for " + std::string(*this) + " on yield "+p_yield+" on bound "+ std::string(p_bound),
-				"FMTdevelopment::_isOutOfBound", __LINE__, __FILE__);
+				"FMTDevelopment::_isOutOfBound", __LINE__, __FILE__);
 			}
 		return value;
 		}
 
-	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds,
+	bool FMTDevelopment::is(const FMTSpec& specification, const FMTYields& ylds,
 		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 		bool allow = false;
@@ -369,8 +369,8 @@ namespace Core{
 			allow = specification.allowWithoutYield(getPeriod(), getAge(), getLock());
 			if (allow && !specification.emptyYlds())
 				{
-				const FMTyieldrequest REQUEST = getYieldRequest(graphyieldrequest);
-				const std::vector<Core::FMTyldbounds>& BOUNDS= specification.getYldBounds();
+				const FMTYieldRequest REQUEST = getYieldRequest(graphyieldrequest);
+				const std::vector<Core::FMTYldBounds>& BOUNDS= specification.getYldBounds();
 				const std::vector<std::string>& YLD_NAMES = specification.getYlds();
 				size_t boundId = 0;
 				while (allow && boundId < BOUNDS.size())
@@ -388,24 +388,24 @@ namespace Core{
 				}
 			_exhandler->raiseFromCatch(
 				"for " + std::string(*this)+" with spec "+ specStr,
-				"FMTdevelopment::is",__LINE__, __FILE__);
+				"FMTDevelopment::is",__LINE__, __FILE__);
 			}
 		return allow;
 		}
-	double FMTdevelopment::getInventoryCoef(const FMTyields& ylds, const std::string& target_yield,
+	double FMTDevelopment::getInventoryCoef(const FMTYields& ylds, const std::string& target_yield,
 		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 	{
 		try {
-			const FMTyieldrequest request = getYieldRequest(graphyieldrequest);
+			const FMTYieldRequest request = getYieldRequest(graphyieldrequest);
 			return ylds.get(request,target_yield);
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("for " + std::string(*this) , "FMTdevelopment::getInventoryCoef", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this) , "FMTDevelopment::getInventoryCoef", __LINE__, __FILE__);
 		}
 		return 0;
 		}
-	double FMTdevelopment::getHarvestCoef(const std::vector<FMTdevelopmentpath>& topaths,
-			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield,
+	double FMTDevelopment::getHarvestCoef(const std::vector<FMTDevelopmentPath>& topaths,
+			const FMTAction& action,const FMTYields& ylds,const std::string& target_yield,
 		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 		double value = 0;
@@ -413,7 +413,7 @@ namespace Core{
 			const double actual_value = this->getInventoryCoef(ylds, target_yield, graphyieldrequest);
 			if (action.partial(target_yield))
 			{
-				for (const FMTdevelopmentpath& path : topaths)
+				for (const FMTDevelopmentPath& path : topaths)
 				{
 					const double dif_value = (actual_value - path.getDevelopment().getInventoryCoef(ylds, target_yield, graphyieldrequest));
 					value += (dif_value * (path.getProportion() / 100));
@@ -425,17 +425,17 @@ namespace Core{
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(), "FMTdevelopment::getHarvestCoef", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for " + std::string(*this)+" for action "+action.getName(), "FMTDevelopment::getHarvestCoef", __LINE__, __FILE__);
 		}
 		return value;
 		}
 
-	std::unique_ptr<FMTdevelopment> FMTdevelopment::Clone() const
+	std::unique_ptr<FMTDevelopment> FMTDevelopment::Clone() const
 		{
-		return std::unique_ptr<FMTdevelopment>(new FMTdevelopment(*this));
+		return std::unique_ptr<FMTDevelopment>(new FMTDevelopment(*this));
 		}
     
     
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTdevelopment)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTDevelopment)

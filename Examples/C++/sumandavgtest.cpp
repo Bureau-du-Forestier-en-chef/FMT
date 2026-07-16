@@ -31,14 +31,14 @@ int main(int argc, char *argv[])
 	Parallel::FMTplanningtask newplanningtask(1,10, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
 	newplanningtask.setKeepModels();
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
-	const std::vector<std::vector<Core::FMTschedule>> schedules = modelparser.readschedules(primlocation, models);
-	std::vector<Core::FMToutput>selectedoutputs;
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readschedules(primlocation, models);
+	std::vector<Core::FMTOutput>selectedoutputs;
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{
 		Models::FMTlpmodel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
 		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH,7);
 		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-		for (const Core::FMToutput& output : lpmodel.getOutputs())
+		for (const Core::FMTOutput& output : lpmodel.getOutputs())
 		{
 			if (output.getName() == "OSUPREC"||
 				output.getName() == "SUMOSUPREC"|| 

@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 			fullmask += "? ";
 		}
 		fullmask.pop_back();
-		const Core::FMTmask mainmask(fullmask, optimizationmodel.getThemes());
+		const Core::FMTMask mainmask(fullmask, optimizationmodel.getThemes());
 		const std::set<Core::FMTSerie>rotations = optimizationmodel.getRotations(mainmask, "REGAPRE");
 			if (static_cast<int>(rotations.size()) != rotation_length)
 			{

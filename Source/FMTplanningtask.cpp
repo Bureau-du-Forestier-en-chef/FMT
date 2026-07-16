@@ -82,7 +82,7 @@ namespace Parallel
 	}
 
 	void FMTplanningtask::push_back(const Models::FMTmodel& model,
-		std::vector<Core::FMTschedule>schedules, std::vector<Core::FMToutput>loutputs)
+		std::vector<Core::FMTSchedule>schedules, std::vector<Core::FMTOutput>loutputs)
 	{
 		try {
 			m_Models.push_back(std::move(model.clone()));
@@ -113,14 +113,14 @@ namespace Parallel
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
 			std::list<std::unique_ptr<Models::FMTmodel>>allmodels=copyModels(m_Models);
-			std::list<std::vector<Core::FMTschedule>>modelschedules(m_allSchedules);
-			std::list<std::vector<Core::FMToutput>>modeloutputs(m_Outputs);
+			std::list<std::vector<Core::FMTSchedule>>modelschedules(m_allSchedules);
+			std::list<std::vector<Core::FMTOutput>>modeloutputs(m_Outputs);
 			for (const size_t tasksize : splitWork(numberoftasks, static_cast<int>(m_Models.size())))
 				{
 				FMTplanningtask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTmodel>>modelsoftask;
-				std::list<std::vector<Core::FMTschedule>>schedulesoftask;
-				std::list<std::vector<Core::FMToutput>>outputsoftask;
+				std::list<std::vector<Core::FMTSchedule>>schedulesoftask;
+				std::list<std::vector<Core::FMTOutput>>outputsoftask;
 				for (int model = 0; model < tasksize; ++model)
 					{
 					modelsoftask.push_back(std::move(allmodels.front()->clone()));
@@ -149,8 +149,8 @@ namespace Parallel
 				{
 				FMTplanningtask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTmodel>>singlemodel;
-				std::list<std::vector<Core::FMTschedule>>singleschedule;
-				std::list<std::vector<Core::FMToutput>>singleoutputs;
+				std::list<std::vector<Core::FMTSchedule>>singleschedule;
+				std::list<std::vector<Core::FMTOutput>>singleoutputs;
 				singlemodel.push_back(std::move(m_Models.front()->clone()));
 				singleschedule.push_back(m_allSchedules.front());
 				singleoutputs.push_back(m_Outputs.front());

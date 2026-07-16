@@ -40,9 +40,9 @@ namespace Models
 
 namespace Core
 {
-	class FMToutputnode;
-	class FMTtimeyieldhandler;
-	class FMToutput;
+	class FMTOutputNode;
+	class FMTTimeYieldHandler;
+	class FMTOutput;
 }
 
 
@@ -81,7 +81,7 @@ namespace Heuristics
 		std::vector<FMToperatingareascheme>operatingareas;
 		// DocString: FMToperatingareascheduler::adjacencyconstraints
 		///Adjacency constraints indexes of all operating area the pair is used to not duplicate neighboring constraints
-		std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>adjacencyconstraints;
+		std::map<std::pair<Core::FMTMask, Core::FMTMask>, std::vector<int>>adjacencyconstraints;
 		// DocString: FMToperatingareascheduler::proportionofset
 		///This data member gives the information about the proportion of operating area status change allowed before resolving the problem
 		double proportionofset;
@@ -99,7 +99,7 @@ namespace Heuristics
 		*/
 		void setOperatingAreasConstraints(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 			const Models::FMTmodel& model,
-			const Core::FMToutputnode& target);
+			const Core::FMTOutputNode& target);
 		// DocString: FMToperatingareascheduler::setAdjacencyConstraints
 		/**
 		The function fills up the adjacencyconstraints data member and add these constraints to the solverinterface.
@@ -288,20 +288,20 @@ namespace Heuristics
 		void setProportionOfSet(const double& proportion);
 		// DocString: FMToperatingareascheduler::getSolution
 		/**
-		Gets the actual solution into a FMTyieldhandler format (time yield)
+		Gets the actual solution into a FMTYieldHandler format (time yield)
 		The user can decide the (yldname) to use. Each operating area will have its own
 		yieldhandler. If (selectedmask) and (basethemes) are given, the yieldhandler return
 		will be postSolve. To get (selectedmask), you must call the function FMTmodel::getSelectedMask()
 		after presolving the model. (basethemes) are the themes of the original model. 
 		*/
-		std::vector<Core::FMTtimeyieldhandler> getSolution(	const std::string& yldname) const;
+		std::vector<Core::FMTTimeYieldHandler> getSolution(	const std::string& yldname) const;
 		// DocString: FMToperatingareascheduler::getLevelSolution
 		/**
 		Gets the lower bounds of the solution for each operating area get 2 outputs:
 		the first one is the level and the second one is the varaible outputs that needs to be bound to.
 		*/
-		std::vector<Core::FMToutput>getLevelSolution(const std::string& outputname,const std::string& aggregate,int outputid) const;
-		// DocString: FMToperatingareascheduler(const std::vector<FMToperatingarea>,const Graph::FMTgraph,const Models::FMTmodel,const Core::FMToutputnode,std::shared_ptr<OsiSolverInterface>,const Models::FMTsolverinterface,size_t lseed,double proportionofset,bool userandomness,bool copysolver)
+		std::vector<Core::FMTOutput>getLevelSolution(const std::string& outputname,const std::string& aggregate,int outputid) const;
+		// DocString: FMToperatingareascheduler(const std::vector<FMToperatingarea>,const Graph::FMTgraph,const Models::FMTmodel,const Core::FMTOutputNode,std::shared_ptr<OsiSolverInterface>,const Models::FMTsolverinterface,size_t lseed,double proportionofset,bool userandomness,bool copysolver)
 		/**
 		Main constructor used to initialize a FMToperatingareaheuristic, the constructor needs
 		alot of information comming from a FMTlpmodel. Also constructing a FMToperatingareaheuristic is
@@ -312,7 +312,7 @@ namespace Heuristics
 		FMToperatingareascheduler(const std::vector<FMToperatingareascheme>& loperatingareas,
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 			const Models::FMTmodel& model,
-			const Core::FMToutputnode& target,
+			const Core::FMTOutputNode& target,
 			Models::FMTlpsolver& basesolve, size_t lseed = 0,
 			double proportionofset = 0.25, bool userandomness = false, bool copysolver = true);
 		// DocString: FMToperatingareascheduler()

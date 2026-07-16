@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMToutput;
+	class FMTOutput;
 }
 
 namespace Heuristics
@@ -86,8 +86,8 @@ statistic and finaly the statistic varlue of the binary used to calculate the ob
         Using an (output) this function is going to intersect the mask of the output with the mask of the operating area and it will result
         of an output targeting only the operating area.
 		*/
-		Core::FMToutput getOutputIntersect(const Core::FMToutput& output,
-			const std::vector<Core::FMTtheme>& themes) const;
+		Core::FMTOutput getOutputIntersect(const Core::FMTOutput& output,
+			const std::vector<Core::FMTTheme>& themes) const;
 		// DocString: FMToperatingareaclusterbinary::setStatistic
 		/**
         Setter for the statistic of the clusterbinary that is going to be used in the global objective for minimizing heterogenity.

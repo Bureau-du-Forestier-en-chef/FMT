@@ -179,7 +179,7 @@ namespace Heuristics
 						std::vector<FMToperatingareaclusterbinary>updatedoutcluster;
 						for (const FMToperatingareaclusterbinary& outbinary : outcluster)
 							{
-							const std::vector<Core::FMTmask>neighbors = outbinary.getNeighbors();
+							const std::vector<Core::FMTMask>neighbors = outbinary.getNeighbors();
 							if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTMaskComparator(selected.getMask()))!=neighbors.end())
 								{
 									int fullsize = static_cast<int>(neighbors.size());
@@ -464,13 +464,13 @@ namespace Heuristics
 		return totalarea;
 	}
 
-    std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>FMToperatingareaclusterer::getAllBinaries() const
+    std::map<Core::FMTMask,std::vector<FMToperatingareaclusterbinary>>FMToperatingareaclusterer::getAllBinaries() const
         {
-        std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>allbinaries;
+        std::map<Core::FMTMask,std::vector<FMToperatingareaclusterbinary>>allbinaries;
         try {
             for (const FMToperatingareacluster& cluster : clusters)
                 {
-				const Core::FMTmask centroidmask = cluster.getCentroid().getMask();
+				const Core::FMTMask centroidmask = cluster.getCentroid().getMask();
                 if (allbinaries.find(centroidmask)!=allbinaries.end())
                     {
                     allbinaries[centroidmask].push_back(cluster.getCentroid());
@@ -479,7 +479,7 @@ namespace Heuristics
                     }
                 for (const FMToperatingareaclusterbinary& binary : cluster.getBinaries())
                     {
-					const Core::FMTmask binarymask = binary.getMask();
+					const Core::FMTMask binarymask = binary.getMask();
                     if (allbinaries.find(binarymask)!=allbinaries.end())
                         {
                         allbinaries[binarymask].push_back(binary);
@@ -498,7 +498,7 @@ namespace Heuristics
 	void FMToperatingareaclusterer::addObjective()
 		{
 		try {
-		    std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>choices = this->getAllBinaries();
+		    std::map<Core::FMTMask,std::vector<FMToperatingareaclusterbinary>>choices = this->getAllBinaries();
 			int clusterid = 0;
 			for (FMToperatingareacluster& cluster : clusters)
                 {
@@ -561,7 +561,7 @@ namespace Heuristics
                     linkindex.push_back(binary.getVariable());
                     linkvalues.push_back(1.0);
                     linkindex.push_back(cluster.getCentroid().getVariable());
-                    for (const Core::FMTmask& neighbor : binary.getNeighbors())
+                    for (const Core::FMTMask& neighbor : binary.getNeighbors())
                         {
                         std::vector<FMToperatingareaclusterbinary>::const_iterator neighborit = std::find_if(clusterbinaries.begin(),clusterbinaries.end(),FMTOperatingAreaComparator(neighbor));
                         linkvalues.push_back(1.0);
@@ -617,8 +617,8 @@ namespace Heuristics
     void FMToperatingareaclusterer::addForcingRows()
         {
         try {
-		    std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>choices = this->getAllBinaries();
-		    for (std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>::const_iterator binit = choices.begin();binit!=choices.end();binit++)
+		    std::map<Core::FMTMask,std::vector<FMToperatingareaclusterbinary>>choices = this->getAllBinaries();
+		    for (std::map<Core::FMTMask,std::vector<FMToperatingareaclusterbinary>>::const_iterator binit = choices.begin();binit!=choices.end();binit++)
                 {
                 std::vector<double>values;
                 std::vector<int>indexes;

@@ -12,7 +12,7 @@ namespace Models
 {
 
 
-    FMTmodelparameters::FMTmodelparameters():Core::FMTobject()
+    FMTmodelparameters::FMTmodelparameters():Core::FMTObject()
     {
         const unsigned int processor_count = boost::thread::hardware_concurrency();
         //INTparameters
@@ -45,7 +45,7 @@ namespace Models
     }
     
     FMTmodelparameters::FMTmodelparameters(const FMTmodelparameters& rhs):
-        Core::FMTobject(rhs),
+        Core::FMTObject(rhs),
         m_intparameters(rhs.m_intparameters),
         m_dblparameters(rhs.m_dblparameters),
         m_boolparameters(rhs.m_boolparameters),
@@ -59,7 +59,7 @@ namespace Models
     {
         if (this!=&rhs)
             {
-                Core::FMTobject::operator = (rhs);
+                Core::FMTObject::operator = (rhs);
                 m_intparameters=rhs.m_intparameters;
                 m_dblparameters=rhs.m_dblparameters;
                 m_boolparameters=rhs.m_boolparameters;

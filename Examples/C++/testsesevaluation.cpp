@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
 	{
 		std::cout << "OBJECTIVE VALUE " << optimizationmodel.getObjValue() << "\n";
 		Models::FMTsesmodel simmodel(optimizationmodel);
-		std::vector<Core::FMTtransition>newtransitions;
-		for (const Core::FMTtransition& transition : simmodel.getTransitions())
+		std::vector<Core::FMTTransition>newtransitions;
+		for (const Core::FMTTransition& transition : simmodel.getTransitions())
 		{
 			newtransitions.push_back(transition.single());
 		}
@@ -64,9 +64,9 @@ int main(int argc, char* argv[])
 				100,
 				0,
 				0.1);
-			const std::vector<Core::FMTconstraint>BASE_CONSTRAINTS = simmodel.getconstraints();
+			const std::vector<Core::FMTConstraint>BASE_CONSTRAINTS = simmodel.getconstraints();
 			size_t i = 0;
-			for (const Core::FMTconstraint& constraint : BASE_CONSTRAINTS)
+			for (const Core::FMTConstraint& constraint : BASE_CONSTRAINTS)
 			{
 				if (constraint.isSpatial())
 				{
@@ -82,10 +82,10 @@ int main(int argc, char* argv[])
 				constraint.getBounds(lower, upper);
 				if (lower>0 && lower < std::numeric_limits<double>::max())
 				{
-					Core::FMTconstraint bindingconstraint(constraint);
+					Core::FMTConstraint bindingconstraint(constraint);
 					lower += 10000000000;
 					bindingconstraint.setRhs(lower,upper);
-					std::vector<Core::FMTconstraint>Constraints = BASE_CONSTRAINTS;
+					std::vector<Core::FMTConstraint>Constraints = BASE_CONSTRAINTS;
 					Constraints.push_back(bindingconstraint);
 					simmodel.setConstraints(Constraints);
 					const double penalty = simmodel.getConstraintEvaluation(Constraints.size()-1);

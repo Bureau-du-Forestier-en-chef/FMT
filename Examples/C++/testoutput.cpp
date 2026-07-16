@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
+		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
 		optimizationmodel.doPlanning(false, schedules);
 		bool gotovoltotrec = false;
-		for (const Core::FMToutput& output : optimizationmodel.getOutputs())
+		for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
 			{
 			if (output.getName() == outputname)
 				{

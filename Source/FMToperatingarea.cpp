@@ -26,12 +26,12 @@ double FMToperatingarea::getArea() const
 	}
 
 
-std::vector<Core::FMTmask>FMToperatingarea::getNeighbors() const
+std::vector<Core::FMTMask>FMToperatingarea::getNeighbors() const
 	{
 	return neighbors;
 	}
 
-FMToperatingarea::FMToperatingarea(const Core::FMTmask& lmask,const double& lneighborsperimeter):
+FMToperatingarea::FMToperatingarea(const Core::FMTMask& lmask,const double& lneighborsperimeter):
 	mask(lmask),
 	neighbors(),
 	neighborsperimeter(lneighborsperimeter),
@@ -45,7 +45,7 @@ void FMToperatingarea::setArea(const double& newarea)
     _area = newarea;
     }
 
-void FMToperatingarea::setNeighbors(const std::vector<Core::FMTmask>& lneighbors)
+void FMToperatingarea::setNeighbors(const std::vector<Core::FMTMask>& lneighbors)
 	{
 	neighbors = lneighbors;
 	}
@@ -55,7 +55,7 @@ double FMToperatingarea::getNeighborsPerimeter() const
 	return neighborsperimeter;
 	}
 
-Core::FMTmask FMToperatingarea::getMask() const
+Core::FMTMask FMToperatingarea::getMask() const
 	{
 	return mask;
 	}
@@ -69,7 +69,7 @@ bool FMToperatingarea::operator != (const FMToperatingarea& rhs) const
 	return !(*this == rhs);
 	}
 
-FMTOperatingAreaComparator::FMTOperatingAreaComparator(const Core::FMTmask& lmask):mask(lmask)
+FMTOperatingAreaComparator::FMTOperatingAreaComparator(const Core::FMTMask& lmask):mask(lmask)
 	{
 
 	}
@@ -85,7 +85,7 @@ bool FMTOperatingAreaComparator::operator()(const FMToperatingarea& oparea) cons
 	return (oparea.getMask() == mask);
 	}
 
-FMToperatingarea FMToperatingarea::presolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>& presolvedthemes) const
+FMToperatingarea FMToperatingarea::presolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>& presolvedthemes) const
 {
 	FMToperatingarea presolvedoparea(*this);
 	presolvedoparea.mask = this->mask.presolve(filter, presolvedthemes);
@@ -96,7 +96,7 @@ FMToperatingarea FMToperatingarea::presolveOperatingArea(const Core::FMTmaskfilt
 	return presolvedoparea;
 }
 
-FMToperatingarea FMToperatingarea::postsolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&basethemes) const
+FMToperatingarea FMToperatingarea::postsolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const
 {
 	FMToperatingarea postsolvedoparea(*this);
 	postsolvedoparea.mask = postsolvedoparea.mask.postSolve(filter,basethemes);

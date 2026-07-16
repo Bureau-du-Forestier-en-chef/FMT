@@ -21,46 +21,46 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-class FMTdevelopment;
-class FMTdevelopmentpath;
-class FMTyields;
-class FMTyieldrequest;
-class FMTtheme;
+class FMTDevelopment;
+class FMTDevelopmentPath;
+class FMTYields;
+class FMTYieldRequest;
+class FMTTheme;
 
-class FMTEXPORT FMTtransitionmask : public FMTmaskfilter,public FMTspec
+class FMTEXPORT FMTTransitionMask : public FMTMaskFilter,public FMTSpec
     {
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("maskfilter", boost::serialization::base_object<FMTmaskfilter>(*this));
-		ar & boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
+		ar & boost::serialization::make_nvp("maskfilter", boost::serialization::base_object<FMTMaskFilter>(*this));
+		ar & boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTSpec>(*this));
 		ar & BOOST_SERIALIZATION_NVP(mask);
 		ar & BOOST_SERIALIZATION_NVP(proportion);
 	}
-    FMTmask mask;
+    FMTMask mask;
     double proportion;
-        void build(const std::string& lmask,const std::vector<FMTtheme>& themes);
+        void build(const std::string& lmask,const std::vector<FMTTheme>& themes);
     public:
-        FMTtransitionmask();
-		~FMTtransitionmask()=default;
-        FMTtransitionmask(const std::string& lmask,const std::vector<FMTtheme>& themes,
+        FMTTransitionMask();
+		~FMTTransitionMask()=default;
+        FMTTransitionMask(const std::string& lmask,const std::vector<FMTTheme>& themes,
 						const double& lproportion);
-        FMTmask trans(const FMTmask& p_baseMask,
-                        const std::vector<FMTtheme>& p_themes) const;
-        FMTtransitionmask(const FMTtransitionmask& rhs);
-        FMTtransitionmask(const FMTtransitionmask& rhs,const FMTmask& lmask,const std::vector<FMTtheme>& themes);
-        FMTtransitionmask& operator = (const FMTtransitionmask& rhs);
-        FMTdevelopmentpath disturb(const Core::FMTdevelopment& dev, const FMTyields& yields,
-			const std::vector<FMTtheme>& themes,const bool& reset_age) const;
-		std::map<std::string, std::string>get(const std::vector<FMTtheme>& themes) const;
-		bool operator == (const FMTtransitionmask& rhs) const;
+        FMTMask trans(const FMTMask& p_baseMask,
+                        const std::vector<FMTTheme>& p_themes) const;
+        FMTTransitionMask(const FMTTransitionMask& rhs);
+        FMTTransitionMask(const FMTTransitionMask& rhs,const FMTMask& lmask,const std::vector<FMTTheme>& themes);
+        FMTTransitionMask& operator = (const FMTTransitionMask& rhs);
+        FMTDevelopmentPath disturb(const Core::FMTDevelopment& dev, const FMTYields& yields,
+			const std::vector<FMTTheme>& themes,const bool& reset_age) const;
+		std::map<std::string, std::string>get(const std::vector<FMTTheme>& themes) const;
+		bool operator == (const FMTTransitionMask& rhs) const;
         double getProportion() const;
-        FMTmask getMask() const;
-        void setMask(const Core::FMTmask& mtmask);
+        FMTMask getMask() const;
+        void setMask(const Core::FMTMask& mtmask);
         void setProportion(double newproportion);
-		FMTtransitionmask presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
-        void presolveRef(const FMTmaskfilter& filter, const std::vector<FMTtheme>& presolvedthemes);
+		FMTTransitionMask presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const;
+        void presolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes);
         operator std::string() const override;
     };
 

@@ -14,9 +14,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 
 namespace Core {
-	class FMTtheme;
-	class FMTaction;
-	class FMTschedule;
+	class FMTTheme;
+	class FMTAction;
+	class FMTSchedule;
 }
 
 namespace Parser
@@ -56,17 +56,17 @@ class FMTEXPORT FMTscheduleparser: public FMTparser
         FMTscheduleparser& operator = (const FMTscheduleparser& rhs);
 		// DocString: FMTscheduleparser::read
 		/**
-		This function reads a schedule section at a given (location) and turns it into a vector of FMTschedule,
-		using a complete vector of FMTtheme (themes), a vector of FMTaction (action), and a optional (tolerance).
+		This function reads a schedule section at a given (location) and turns it into a vector of FMTSchedule,
+		using a complete vector of FMTTheme (themes), a vector of FMTAction (action), and a optional (tolerance).
 		If area harvested for a given development is <= to tolerance parameter then it wont be selected. 
 		*/
-        std::vector<Core::FMTschedule>read(const std::vector<Core::FMTtheme>& themes,
-			const  std::vector<Core::FMTaction>& actions,const std::string& location,double tolerance = FMT_DBL_TOLERANCE);
+        std::vector<Core::FMTSchedule>read(const std::vector<Core::FMTTheme>& themes,
+			const  std::vector<Core::FMTAction>& actions,const std::string& location,double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTscheduleparser::write
 		/**
 		This function write a vector of FMTschedules (schedules) into a (location) schedule file.
 		*/
-        void write(const std::vector<Core::FMTschedule>& schedules, const std::string& location, bool append = false) const;
+        void write(const std::vector<Core::FMTSchedule>& schedules, const std::string& location, bool append = false) const;
 
 	private:
 		// DocString: FMTscheduleparser::getVariable
@@ -79,12 +79,12 @@ class FMTEXPORT FMTscheduleparser: public FMTparser
 		/**
 
 		*/
-		static void _writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTschedule>& p_schedules);
+		static void _writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTSchedule>& p_schedules);
 		// DocString: FMTscheduleparser::
 		/**
 
 		*/
-		static std::vector<Core::FMTschedule>::const_iterator _getFirstEmptySchedule(const std::vector<Core::FMTschedule>& p_schedules);
+		static std::vector<Core::FMTSchedule>::const_iterator _getFirstEmptySchedule(const std::vector<Core::FMTSchedule>& p_schedules);
 
     };
 }

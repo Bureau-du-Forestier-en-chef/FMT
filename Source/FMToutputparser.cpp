@@ -34,8 +34,8 @@ namespace Parser
 		   const size_t& lastoutput,
 		   std::string& lastoperator,
 		   std::vector<std::string>& stroperators,
-		   std::vector<Core::FMToutputsource>& sources,
-		   std::vector<Core::FMToperator>& operators) const
+		   std::vector<Core::FMTOutputSource>& sources,
+		   std::vector<Core::FMTOperator>& operators) const
 	   {
 		   try {
 			   double value = 0;
@@ -47,7 +47,7 @@ namespace Parser
 				   value = std::stod(strvalue);
 				   isNumber = true;
 				   targetof = Core::FMTotar::val;
-				   Core::FMToperator lastopof(lastoperator);
+				   Core::FMTOperator lastopof(lastoperator);
 				   if (lastopof.isFactor())
 						{
 					    for (size_t factorId = 0; factorId < operators.size() - 1; ++factorId)
@@ -71,8 +71,8 @@ namespace Parser
 			   }
 			   if (!lastoperator.empty())
 			   {
-				   std::vector<Core::FMToutputsource>newsources;
-				   std::vector<Core::FMToperator>newoperators;
+				   std::vector<Core::FMTOutputSource>newsources;
+				   std::vector<Core::FMTOperator>newoperators;
 				   size_t lastop = 0;
 				   size_t id = 0;
 				   for (; id < lastoutput; ++id)
@@ -99,12 +99,12 @@ namespace Parser
 							   //{
 								   if (sources.at(id).isConstant()&&isNumber)
 								   {
-									   srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getValue());
+									   srcvalue = Core::FMTOperator(operators.at(lastop)).call(srcvalue, sources.at(id).getValue());
 								   }
 								   else{
-									   newoperators.push_back(Core::FMToperator(lastoperator));
+									   newoperators.push_back(Core::FMTOperator(lastoperator));
 								   }
-								newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getOutputOrigin(), sources.at(id).getThemeTarget()));
+								newsources.push_back(Core::FMTOutputSource(targetof, srcvalue, yldtarget, "", sources.at(id).getOutputOrigin(), sources.at(id).getThemeTarget()));
 							   //}
 							   
 						   }
@@ -122,9 +122,9 @@ namespace Parser
 				   }
 				   if (newsources.back().isVariable() || newsources.back().isLevel() /* || !isNumber*/)
 				   {
-					   newsources.push_back(Core::FMToutputsource(targetof, value, yldtarget, "", newsources.back().getOutputOrigin(), newsources.back().getThemeTarget()));
+					   newsources.push_back(Core::FMTOutputSource(targetof, value, yldtarget, "", newsources.back().getOutputOrigin(), newsources.back().getThemeTarget()));
 
-					   newoperators.push_back(Core::FMToperator(lastoperator));
+					   newoperators.push_back(Core::FMTOperator(lastoperator));
 				   }
 
 				   operators = newoperators;
@@ -132,13 +132,13 @@ namespace Parser
 				   lastoperator.clear();
 				   if (!stroperators.empty())
 				   {
-					   operators.push_back(Core::FMToperator(stroperators.front()));
+					   operators.push_back(Core::FMTOperator(stroperators.front()));
 					   lastoperator = stroperators.front();
 					   stroperators.erase(stroperators.begin());
 				   }
 			   }
 			   else {
-				   sources.push_back(Core::FMToutputsource(targetof, value, yldtarget, "", outputid, themetarget));
+				   sources.push_back(Core::FMTOutputSource(targetof, value, yldtarget, "", outputid, themetarget));
 
 			   }
 		   }catch (...)
@@ -149,10 +149,10 @@ namespace Parser
 	   }
 
 
-		void FMToutputparser::readNFill(std::vector<Core::FMToutput>* outputs, 
-					const std::vector<Core::FMTtheme>& themes,
-					const std::vector<Core::FMTaction>& actions,
-					const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+		void FMToutputparser::readNFill(std::vector<Core::FMTOutput>* outputs, 
+					const std::vector<Core::FMTTheme>& themes,
+					const std::vector<Core::FMTAction>& actions,
+					const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 					const std::string& location)
 		{
 			std::string name, description;
@@ -160,8 +160,8 @@ namespace Parser
 				if (!location.empty())
 				{
 					std::ifstream outputstream(location);
-					std::vector<Core::FMToutputsource>sources;
-					std::vector<Core::FMToperator>operators;
+					std::vector<Core::FMTOutputSource>sources;
+					std::vector<Core::FMTOperator>operators;
 					bool insource = false;
 					bool processing_level = false;
 					int themetarget = -1;
@@ -190,7 +190,7 @@ namespace Parser
 									{
 										if (processing_level && sources.empty())
 										{
-											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
+											sources.push_back(Core::FMTOutputSource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 										}
 										if (!processing_level)
 										{
@@ -210,7 +210,7 @@ namespace Parser
 																	name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, m_section);
 											}
 										}
-										outputs->push_back(Core::FMToutput(name, description, lastgroup, sources, operators));
+										outputs->push_back(Core::FMTOutput(name, description, lastgroup, sources, operators));
 										
 										/**_logger<<name<<"\n";
 										int id = 0;
@@ -405,7 +405,7 @@ namespace Parser
 												{
 												sources.back().pushValues(values);
 											}else {
-												sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values, outputid, themetarget,name));//constant level!
+												sources.push_back(Core::FMTOutputSource(Core::FMTotar::level, values, outputid, themetarget,name));//constant level!
 												}
 
 											
@@ -416,17 +416,17 @@ namespace Parser
 											if (values.size() == 1)
 											{
 												//need to use get equation to simplify output!!!
-												std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs->begin(), outputs->end(), Core::FMTOutputComparator(strsrc));
+												std::vector<Core::FMTOutput>::const_iterator it = std::find_if(outputs->begin(), outputs->end(), Core::FMTOutputComparator(strsrc));
 												if (it != outputs->end()||boost::regex_search(strsrc, constantmatch, rxoutputconstant))
 												{
 													lastoutput = sources.size() + 1;
-													Core::FMToutput targetoutput;
+													Core::FMTOutput targetoutput;
 													if (it==outputs->end())
 														{
 														const std::string outputname = constantmatch[1];
 														const int inttarget_period = getNum<int>(std::string(constantmatch[3]), constants);
 														targetoutput = *std::find_if(outputs->begin(), outputs->end(), Core::FMTOutputComparator(outputname));
-														Core::FMTperbounds bounding(Core::FMTsection::Optimize, inttarget_period, inttarget_period);
+														Core::FMTPerBounds bounding(Core::FMTsection::Optimize, inttarget_period, inttarget_period);
 														targetoutput = targetoutput.boundTo(themes, bounding, "");
 													}else {
 														targetoutput = *it;
@@ -436,12 +436,12 @@ namespace Parser
 													{
 														//lastoutput = sources.size();
 														bool themediff=false;
-														for (const Core::FMToutputsource& src : targetoutput.getSources())
+														for (const Core::FMTOutputSource& src : targetoutput.getSources())
 														{
 															if(src.getThemeTarget()!=themetarget)
 															{
 																//warning
-																Core::FMToutputsource newsource = src;
+																Core::FMTOutputSource newsource = src;
 																newsource.setThemeTarget(themetarget);
 																sources.push_back(newsource);
 																themediff=true;
@@ -466,7 +466,7 @@ namespace Parser
 															
 															convertoperator = true;
 														}
-														for (const Core::FMToperator& src : targetoutput.getOpes())
+														for (const Core::FMTOperator& src : targetoutput.getOpes())
 														{
 															if (convertoperator)
 															{
@@ -479,11 +479,11 @@ namespace Parser
 														}
 													}
 													else {
-														sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, strsrc,"",outputid,themetarget));
+														sources.push_back(Core::FMTOutputSource(Core::FMTotar::level, 0, strsrc,"",outputid,themetarget));
 													}
 													if (!stroperators.empty())
 													{
-														operators.push_back(Core::FMToperator(stroperators.front()));
+														operators.push_back(Core::FMTOperator(stroperators.front()));
 														lastoperator = stroperators.front();
 														stroperators.erase(stroperators.begin());
 													}
@@ -494,7 +494,7 @@ namespace Parser
 												}
 												else if (ylds.isYld(strsrc))//isYld(ylds,strsrc,m_section))
 												{
-													//sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc,"",outputid,themetarget));
+													//sources.push_back(Core::FMTOutputSource(Core::FMTotar::timeyld, 0, strsrc,"",outputid,themetarget));
 													appendToOutput(
 														strsrc,
 														outputid,
@@ -544,8 +544,8 @@ namespace Parser
 													
 													}
 												mask = mask.substr(0, mask.size() - 1);
-												if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
-												std::vector<Core::FMTspec> specs; 
+												if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
+												std::vector<Core::FMTSpec> specs; 
 												const std::string inds = setSpecs(Core::FMTsection::Outputs, Core::FMTkwor::Source, ylds, constants, specs, rest);
 												if (!specs.empty())
 												{
@@ -556,15 +556,15 @@ namespace Parser
 													}*/
 													rest = inds;
 												}
-												Core::FMToperator opspecs;
+												Core::FMTOperator opspecs;
 												if(operators.empty())
 												{
-													opspecs = Core::FMToperator("+");
+													opspecs = Core::FMTOperator("+");
 												}else
 												{	
 													opspecs = operators.back();
 												}
-												/*Core::FMTspec spec;
+												/*Core::FMTSpec spec;
 												const std::string inds = setSpec(Core::FMTsection::Outputs, Core::FMTkwor::Source, ylds, constants, spec, rest);
 												if (!spec.empty())
 												{
@@ -600,16 +600,16 @@ namespace Parser
 															//Create outputsources with specs
 															if (specs.empty())
 															{
-																sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask(mask, themes),
+																sources.push_back(Core::FMTOutputSource(Core::FMTSpec(), Core::FMTMask(mask, themes),
 																Core::FMTotar::actual, yld, action,outputid,themetarget));	
 															}
 															else if (specs.size()>1)
 															{
 																bool addoperator = false;
 																//only add operators after setting the first source, the number of operators  must be the size of the sources -1
-																for(Core::FMTspec spec : specs)
+																for(Core::FMTSpec spec : specs)
 																{
-																	sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
+																	sources.push_back(Core::FMTOutputSource(spec, Core::FMTMask(mask, themes),
 																		Core::FMTotar::actual, yld, action,outputid,themetarget));
 																	if(addoperator)
 																	{
@@ -618,7 +618,7 @@ namespace Parser
 																	addoperator = true;
 																}
 															}else{
-																sources.push_back(Core::FMToutputsource(specs.at(0), Core::FMTmask(mask, themes),
+																sources.push_back(Core::FMTOutputSource(specs.at(0), Core::FMTMask(mask, themes),
 																Core::FMTotar::actual, yld, action,outputid,themetarget));
 															}
 														}
@@ -643,31 +643,31 @@ namespace Parser
 															//Create outputsources with specs
 															if (specs.empty())
 															{
-																Core::FMTspec spec;
+																Core::FMTSpec spec;
 																if (!lockinv.empty())
 																{
 																	const int lower = 1;
 																	constexpr int upper = std::numeric_limits<int>::max();
-																	spec.addBounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
+																	spec.addBounds(Core::FMTLockBounds(Core::FMTsection::Outputs,
 																							Core::FMTkwor::Source, upper, lower));
 																}
-																sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
+																sources.push_back(Core::FMTOutputSource(spec, Core::FMTMask(mask, themes),
 																					Core::FMTotar::inventory, yld,"",outputid,themetarget));	
 															}
 															else if (specs.size()>1)
 															{
 																bool addoperator = false;
 																//only add operators after setting the first source, the number of operators  must be the size of the sources -1
-																for(Core::FMTspec spec : specs)
+																for(Core::FMTSpec spec : specs)
 																{
 																	if (!lockinv.empty())
 																	{
 																		const int lower = 1;
 																		constexpr int upper = std::numeric_limits<int>::max();
-																		spec.addBounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
+																		spec.addBounds(Core::FMTLockBounds(Core::FMTsection::Outputs,
 																								Core::FMTkwor::Source, upper, lower));
 																	}
-																	sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
+																	sources.push_back(Core::FMTOutputSource(spec, Core::FMTMask(mask, themes),
 																					Core::FMTotar::inventory, yld,"",outputid,themetarget));
 																	if(addoperator)
 																	{
@@ -682,11 +682,11 @@ namespace Parser
 																{
 																	const int lower = 1;
 																	constexpr int upper = std::numeric_limits<int>::max();
-																	specs.at(0).addBounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
+																	specs.at(0).addBounds(Core::FMTLockBounds(Core::FMTsection::Outputs,
 																							Core::FMTkwor::Source, upper, lower));
 																}
 
-																sources.push_back(Core::FMToutputsource(specs.at(0), Core::FMTmask(mask, themes),
+																sources.push_back(Core::FMTOutputSource(specs.at(0), Core::FMTMask(mask, themes),
 																					Core::FMTotar::inventory, yld,"",outputid,themetarget));
 															}
 														}
@@ -712,16 +712,16 @@ namespace Parser
 															//Create outputsources with specs
 															if (specs.empty())
 															{
-																sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask(mask, themes),
+																sources.push_back(Core::FMTOutputSource(Core::FMTSpec(), Core::FMTMask(mask, themes),
 																					Core::FMTotar::inventory, yld, action,outputid,themetarget));	
 															}
 															else if (specs.size()>1)
 															{
 																bool addoperator = false;
 																//only add operators after setting the first source, the number of operators  must be the size of the sources -1
-																for(Core::FMTspec spec : specs)
+																for(Core::FMTSpec spec : specs)
 																{
-																	sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
+																	sources.push_back(Core::FMTOutputSource(spec, Core::FMTMask(mask, themes),
 																						Core::FMTotar::inventory, yld, action,outputid,themetarget));
 																	if(addoperator)
 																	{
@@ -731,7 +731,7 @@ namespace Parser
 																}
 
 															}else{
-																sources.push_back(Core::FMToutputsource(specs.at(0), Core::FMTmask(mask, themes),
+																sources.push_back(Core::FMTOutputSource(specs.at(0), Core::FMTMask(mask, themes),
 																					Core::FMTotar::inventory, yld, action,outputid,themetarget));
 																}
 
@@ -739,7 +739,7 @@ namespace Parser
 														if (!stroperators.empty())
 														{
 															lastoutput = sources.size();
-															operators.push_back(Core::FMToperator(stroperators.front()));
+															operators.push_back(Core::FMTOperator(stroperators.front()));
 															lastoperator = stroperators.front();
 															stroperators.erase(stroperators.begin());
 														}
@@ -758,7 +758,7 @@ namespace Parser
 
 									for (const std::string& strope : stroperators)
 									{
-										operators.push_back(Core::FMToperator(strope));
+										operators.push_back(Core::FMTOperator(strope));
 									}
 									insource = true;
 
@@ -769,7 +769,7 @@ namespace Parser
 						{
 							if (processing_level && sources.empty())
 							{
-								sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
+								sources.push_back(Core::FMTOutputSource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 							}
 							if (!processing_level)
 							{
@@ -790,7 +790,7 @@ namespace Parser
 								}
 							}
 							
-							outputs->push_back(Core::FMToutput(name, description, lastgroup, sources, operators));
+							outputs->push_back(Core::FMTOutput(name, description, lastgroup, sources, operators));
 							/**_logger<<name<<"\n";
 							int id = 0;
 							for(const auto& s:sources)
@@ -810,7 +810,7 @@ namespace Parser
 			-----------Fix for outputorigin------------
 			-------------------------------------------*/
 			int index = 0; 
-			for (Core::FMToutput& output : *outputs)
+			for (Core::FMTOutput& output : *outputs)
 				{
 				output.changeSourcesId(index);
 				++index;
@@ -825,10 +825,10 @@ namespace Parser
 		}
 
 
-		std::vector<Core::FMToutput> FMToutputparser::read(const std::vector<Core::FMTtheme>& themes,const std::vector<Core::FMTaction>& actions,
-			const Core::FMTyields& ylds,const Core::FMTconstants& constants, const std::string& location)
+		std::vector<Core::FMTOutput> FMToutputparser::read(const std::vector<Core::FMTTheme>& themes,const std::vector<Core::FMTAction>& actions,
+			const Core::FMTYields& ylds,const Core::FMTConstants& constants, const std::string& location)
             {
-			std::vector<Core::FMToutput>outputs;
+			std::vector<Core::FMTOutput>outputs;
 			try {
 				readNFill(&outputs,themes,actions,ylds,constants,location);
 			}catch (...)
@@ -837,20 +837,20 @@ namespace Parser
 				}
             return outputs;
             }
-		std::vector<Core::FMToutput> FMToutputparser::addOutputs(const std::vector<Core::FMToutput> oldoutputs, 
-																	const std::vector<Core::FMTtheme>& themes,
-																	const std::vector<Core::FMTaction>& actions,
-																	const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+		std::vector<Core::FMTOutput> FMToutputparser::addOutputs(const std::vector<Core::FMTOutput> oldoutputs, 
+																	const std::vector<Core::FMTTheme>& themes,
+																	const std::vector<Core::FMTAction>& actions,
+																	const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 																	const std::string& location,
 																	std::vector<std::string> outputsnames)
 		{
-			std::vector<Core::FMToutput>outputs = oldoutputs;
+			std::vector<Core::FMTOutput>outputs = oldoutputs;
 			try {
 				readNFill(&outputs,themes,actions,ylds,constants,location);
 				//This part remove all outputs parsed from file that are not in outputsname
 				if (!outputsnames.empty())
 				{
-					std::vector<Core::FMToutput>returnoutputs = oldoutputs;
+					std::vector<Core::FMTOutput>returnoutputs = oldoutputs;
 					std::set<int> themeids;
 					for(int themeid=0;themeid<themes.size();++themeid)
 					{
@@ -864,7 +864,7 @@ namespace Parser
 					}
 					for(const std::string& outputname : outputsnames)
 					{
-						std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs.begin()+oldoutputs.size(), outputs.end(), Core::FMTOutputComparator(outputname));
+						std::vector<Core::FMTOutput>::const_iterator it = std::find_if(outputs.begin()+oldoutputs.size(), outputs.end(), Core::FMTOutputComparator(outputname));
 						if(it==outputs.end())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTundefined_output,
@@ -873,7 +873,7 @@ namespace Parser
 						returnoutputs.push_back(*it);
 						outputkeptid.insert(static_cast<int>(std::distance(outputs.cbegin(),it)));
 					}
-					for(Core::FMToutput& output : returnoutputs)
+					for(Core::FMTOutput& output : returnoutputs)
 					{
 						output.changeSourcesId(outputkeptid,themeids);
 					}
@@ -885,7 +885,7 @@ namespace Parser
 				}
             return outputs;
            }
-        void FMToutputparser::write(const std::vector<Core::FMToutput>& outputs, const std::string& location) const
+        void FMToutputparser::write(const std::vector<Core::FMTOutput>& outputs, const std::string& location) const
             {
 			try {
 				std::ofstream outputstream;
@@ -893,7 +893,7 @@ namespace Parser
 				std::string lastgroup;
 				if (tryOpening(outputstream, location))
 				{
-					for (const Core::FMToutput& out : outputs)
+					for (const Core::FMTOutput& out : outputs)
 					{
 						if (lastgroup != out.getGroup())
 							{

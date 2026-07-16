@@ -34,7 +34,7 @@ void Wrapper::FMTexceptionhandlerwarning::tryfileopener(const std::string& fulle
 		std::string line(kmatch[9]);
 		boost::trim(line);
 		//First copy the userdefined language file
-		const std::string udlloc = Core::FMTobject::getRuntimeLocation() + "\\userDefineLang.xml";
+		const std::string udlloc = Core::FMTObject::getRuntimeLocation() + "\\userDefineLang.xml";
 		const std::string udlnewloc(std::string(getenv("APPDATA"))+"\\Notepad++\\userDefineLang.xml");
 		DWORD dwAttrib = GetFileAttributes(udlnewloc.c_str());
 		if (dwAttrib == INVALID_FILE_ATTRIBUTES)

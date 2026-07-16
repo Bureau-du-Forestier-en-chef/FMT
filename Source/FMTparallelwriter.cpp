@@ -39,7 +39,7 @@ namespace Parallel
 
 	FMTparallelwriter::FMTparallelwriter(const std::string& location,
 		const std::string& driver,
-		const std::vector<Core::FMToutput>& outputs,
+		const std::vector<Core::FMTOutput>& outputs,
 		const std::vector<Models::FMTmodel*>& allmodels,
 		std::vector<std::string>layersoptions,
 		double minimaldrift,
@@ -330,7 +330,7 @@ namespace Parallel
 
 	void FMTparallelwriter::getAndWrite(
 		const std::unique_ptr<Models::FMTmodel>& modelptr, 
-		const std::vector<Core::FMToutput>& loutputs)
+		const std::vector<Core::FMTOutput>& loutputs)
 	{
 		try {
 			const int firstPeriod = outputfirstperiod;
@@ -362,7 +362,7 @@ namespace Parallel
 					schedulelocation = projectdirectory + "/" + projectname + ".seq";
 					}
 				Parser::FMTscheduleparser parser;
-				std::vector<Core::FMTschedule>solution;
+				std::vector<Core::FMTSchedule>solution;
 				for (int period = 1 ; period <= modelptr->getParameter(Models::FMTintmodelparameters::LENGTH);++period)
 					{
 					solution.push_back(modelptr->getSolution(period,true));
@@ -374,7 +374,7 @@ namespace Parallel
 			_exhandler->raiseFromCatch("","FMTparallelwriter::getAndWrite", __LINE__, __FILE__);
 			}
 	}
-	void FMTparallelwriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTschedule> scheduleList, bool append) const
+	void FMTparallelwriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTSchedule> scheduleList, bool append) const
 	{
 		try
 		{

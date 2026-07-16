@@ -19,14 +19,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	// DocString: FMTGCBMtransition
+	// DocString: FMTGCBMTransition
 	/**
-	FMTGCBMtransition is a class that act like a simple container for a GCBM transition.
+	FMTGCBMTransition is a class that act like a simple container for a GCBM transition.
 	It is only usefull when working with GCBM.
 	*/
-	class FMTEXPORT FMTGCBMtransition
+	class FMTEXPORT FMTGCBMTransition
 	{
-		// DocString: FMTGCBMtransition::serialize
+		// DocString: FMTGCBMTransition::serialize
 	/**
 	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
@@ -39,50 +39,50 @@ namespace Core
 		ar & BOOST_SERIALIZATION_NVP(name);
 		}
 	public:
-		// DocString: FMTGCBMtransition::ageafter
+		// DocString: FMTGCBMTransition::ageafter
 		/// Describe the age set on the strata after the disturbance.
 		int ageafter;
-		// DocString: FMTGCBMtransition::themes
+		// DocString: FMTGCBMTransition::themes
 		/// Map where's the key is the theme name and the element is the new attribute set after the transition.
 		std::map<std::string, std::string>themes;
-		// DocString: FMTGCBMtransition::name
+		// DocString: FMTGCBMTransition::name
 		///The name of the GCBM transition.
 		std::string name;
-		// DocString: FMTGCBMtransition()
+		// DocString: FMTGCBMTransition()
 		/**
-		Default constructor for FMTGCBMtransition
+		Default constructor for FMTGCBMTransition
 		*/
-		FMTGCBMtransition();
-		// DocString: FMTGCBMtransition(const int&,const std::map<std::string, std::string>&,const std::string&)
+		FMTGCBMTransition();
+		// DocString: FMTGCBMTransition(const int&,const std::map<std::string, std::string>&,const std::string&)
 		/**
-		Constructor for FMTGCBMtransition for ageafter,themes and name of the transition.
+		Constructor for FMTGCBMTransition for ageafter,themes and name of the transition.
 		*/
-		FMTGCBMtransition(const int& lageafter, const std::map<std::string, std::string>& lthemes, const std::string& lname);
-		// DocString: FMTGCBMtransition(const FMTGCBMtransition&)
+		FMTGCBMTransition(const int& lageafter, const std::map<std::string, std::string>& lthemes, const std::string& lname);
+		// DocString: FMTGCBMTransition(const FMTGCBMTransition&)
 		/**
-		FMTGCBMtransition copy constructor.
+		FMTGCBMTransition copy constructor.
 		*/
-		FMTGCBMtransition(const FMTGCBMtransition& rhs);
-		// DocString: FMTGCBMtransition::operator=
+		FMTGCBMTransition(const FMTGCBMTransition& rhs);
+		// DocString: FMTGCBMTransition::operator=
 		/**
-		FMTGCBMtransition assignment operator.
+		FMTGCBMTransition assignment operator.
 		*/
-		FMTGCBMtransition& operator = (const FMTGCBMtransition& rhs);
-		// DocString: FMTGCBMtransition::operator==
+		FMTGCBMTransition& operator = (const FMTGCBMTransition& rhs);
+		// DocString: FMTGCBMTransition::operator==
 		/**
-		FMTGCBMtransition equality operator.
+		FMTGCBMTransition equality operator.
 		*/
-		bool operator == (const FMTGCBMtransition& rhs) const;
-		// DocString: FMTGCBMtransition::operator!=
+		bool operator == (const FMTGCBMTransition& rhs) const;
+		// DocString: FMTGCBMTransition::operator!=
 		/**
-		FMTGCBMtransition equality operator.
+		FMTGCBMTransition equality operator.
 		*/
-		bool operator != (const FMTGCBMtransition& rhs) const;
-		// DocString: ~FMTGCBMtransition()
+		bool operator != (const FMTGCBMTransition& rhs) const;
+		// DocString: ~FMTGCBMTransition()
 		/**
-		Default destructor for FMTGCBMtransition
+		Default destructor for FMTGCBMTransition
 		*/
-		~FMTGCBMtransition()=default;
+		~FMTGCBMTransition()=default;
 	};
 }
 #endif

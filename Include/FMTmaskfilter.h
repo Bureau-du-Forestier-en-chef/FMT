@@ -19,15 +19,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTmask;
-	class FMTtheme;
+	class FMTMask;
+	class FMTTheme;
 
 
-class FMTEXPORT FMTmaskfilter
+class FMTEXPORT FMTMaskFilter
     {
 	friend class boost::serialization::access;
-	friend class FMTtheme;
-	friend class FMTmask;
+	friend class FMTTheme;
+	friend class FMTMask;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 		{
@@ -42,19 +42,19 @@ class FMTEXPORT FMTmaskfilter
         boost::dynamic_bitset<uint8_t> flippedselection;
 		//std::vector<size_t>index;
     public:
-        FMTmaskfilter();
-        virtual ~FMTmaskfilter()=default;
-        FMTmaskfilter(const FMTmaskfilter& rhs);
-        FMTmaskfilter& operator = (const FMTmaskfilter& rhs);
-		FMTmaskfilter(const FMTmask& presolveselection, const FMTmask& buffermask);
-		FMTmaskfilter(const FMTmask& presolveselection);
-        FMTmaskfilter(std::vector<FMTmask>& masks);
-        FMTmaskfilter(std::vector<FMTmask>& masks,const std::vector<FMTtheme>& themes);
-        FMTmask filter(const FMTmask& devmask) const;
-		void swap(FMTmaskfilter& rhs);
-		FMTmaskfilter presolve(const std::vector<FMTtheme>& themes) const;
-		bool canPresolve(const FMTmask& mask, const std::vector<const Core::FMTtheme*>& themes) const;
-		std::vector<const Core::FMTtheme*> getSelectedThemes(const std::vector<Core::FMTtheme>& themes) const;
+        FMTMaskFilter();
+        virtual ~FMTMaskFilter()=default;
+        FMTMaskFilter(const FMTMaskFilter& rhs);
+        FMTMaskFilter& operator = (const FMTMaskFilter& rhs);
+		FMTMaskFilter(const FMTMask& presolveselection, const FMTMask& buffermask);
+		FMTMaskFilter(const FMTMask& presolveselection);
+        FMTMaskFilter(std::vector<FMTMask>& masks);
+        FMTMaskFilter(std::vector<FMTMask>& masks,const std::vector<FMTTheme>& themes);
+        FMTMask filter(const FMTMask& devmask) const;
+		void swap(FMTMaskFilter& rhs);
+		FMTMaskFilter presolve(const std::vector<FMTTheme>& themes) const;
+		bool canPresolve(const FMTMask& mask, const std::vector<const Core::FMTTheme*>& themes) const;
+		std::vector<const Core::FMTTheme*> getSelectedThemes(const std::vector<Core::FMTTheme>& themes) const;
 		inline bool emptyFlipped() const
 			{
 			return flippedselection.empty();
@@ -76,9 +76,9 @@ class FMTEXPORT FMTmaskfilter
 namespace boost {
 
 	template <>
-	struct hash<Core::FMTmaskfilter>
+	struct hash<Core::FMTMaskFilter>
 	{
-		std::size_t operator()(const Core::FMTmaskfilter& filter) const
+		std::size_t operator()(const Core::FMTMaskFilter& filter) const
 		{
 
 			return (filter.hash());

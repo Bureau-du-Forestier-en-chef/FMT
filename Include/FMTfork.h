@@ -22,50 +22,50 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-class FMTdevelopment;
-class FMTdevelopmentpath;
-class FMTyieldrequest;
-class FMTyields;
-class FMTtheme;
-class FMTmaskfilter;
+class FMTDevelopment;
+class FMTDevelopmentPath;
+class FMTYieldRequest;
+class FMTYields;
+class FMTTheme;
+class FMTMaskFilter;
 
 
-class FMTEXPORT FMTfork : public FMTspec, public FMTobject
+class FMTEXPORT FMTFork : public FMTSpec, public FMTObject
     {
     public:
-        FMTfork();
-        FMTfork(const FMTfork& rhs)=default;
-		~FMTfork();
-        FMTfork& operator = (const FMTfork& rhs)=default;
-        void add(const FMTtransitionmask& transition);
+        FMTFork();
+        FMTFork(const FMTFork& rhs)=default;
+		~FMTFork();
+        FMTFork& operator = (const FMTFork& rhs)=default;
+        void add(const FMTTransitionMask& transition);
         void clear();
-		std::vector<FMTdevelopmentpath> getPaths(const Core::FMTdevelopment& base, const Core::FMTyields& ylds,
-				const std::vector<FMTtheme>& themes,const bool& reset_age) const;
-        FMTdevelopment getMax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes, const bool& reset_age) const;
-		std::vector<FMTtransitionmask> getMaskTrans() const;
-		bool operator == (const FMTfork& rhs) const;
-        FMTfork single() const;
+		std::vector<FMTDevelopmentPath> getPaths(const Core::FMTDevelopment& base, const Core::FMTYields& ylds,
+				const std::vector<FMTTheme>& themes,const bool& reset_age) const;
+        FMTDevelopment getMax(const FMTDevelopment& base,const FMTYields& ylds,const std::vector<FMTTheme>& themes, const bool& reset_age) const;
+		std::vector<FMTTransitionMask> getMaskTrans() const;
+		bool operator == (const FMTFork& rhs) const;
+        FMTFork single() const;
         double sumProp() const;
         size_t size() const;
-		FMTfork presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
-        void presolveRef(const FMTmaskfilter& filter, const std::vector<FMTtheme>& presolvedthemes);
+		FMTFork presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const;
+        void presolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes);
         operator std::string() const override;
     private:
         friend class boost::serialization::access;
         template<class Archive>
         void serialize(Archive& ar, const unsigned int version)
         {
-            ar& boost::serialization::make_nvp("specifications", boost::serialization::base_object<FMTspec>(*this));
+            ar& boost::serialization::make_nvp("specifications", boost::serialization::base_object<FMTSpec>(*this));
             ar& m_transitions;
         }
-        std::vector<FMTtransitionmask>m_transitions;
-        FMTdevelopmentpath _getPath(const FMTtransitionmask& p_target,
-            const Core::FMTdevelopment& p_base, const Core::FMTyields& p_yields,
-            const std::vector<FMTtheme>& p_themes, bool p_AgeReset) const;
+        std::vector<FMTTransitionMask>m_transitions;
+        FMTDevelopmentPath _getPath(const FMTTransitionMask& p_target,
+            const Core::FMTDevelopment& p_base, const Core::FMTYields& p_yields,
+            const std::vector<FMTTheme>& p_themes, bool p_AgeReset) const;
     };
 
 }
 
-BOOST_CLASS_EXPORT_KEY(Core::FMTfork)
+BOOST_CLASS_EXPORT_KEY(Core::FMTFork)
 
 #endif // FMTFORK_Hm_included

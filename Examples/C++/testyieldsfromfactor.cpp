@@ -32,8 +32,8 @@ int main()
 	optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-	Core::FMToutput out;
-	for (const Core::FMToutput& output : optimizationmodel.getOutputs())
+	Core::FMTOutput out;
+	for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
 		{
 			if (output.getName() == "OVOLREC")
 			{
@@ -47,10 +47,10 @@ int main()
 	std::vector<std::string>yieldstochange;
 	yieldstochange.push_back("VOLUMETOTAL");
 	//Change the Yields...
-	const Core::FMTyields baseyields = optimizationmodel.getYields();
-	const Core::FMTyields lowerboundyields = baseyields.getFromFactor(0.9, yieldstochange);//-10%
+	const Core::FMTYields baseyields = optimizationmodel.getYields();
+	const Core::FMTYields lowerboundyields = baseyields.getFromFactor(0.9, yieldstochange);//-10%
 	lowerboundmodel.setYields(lowerboundyields);
-	const Core::FMTyields upperboundyields = baseyields.getFromFactor(1.1, yieldstochange);//+10%
+	const Core::FMTYields upperboundyields = baseyields.getFromFactor(1.1, yieldstochange);//+10%
 	upperboundmodel.setYields(upperboundyields);
 	//Solve all models
 	lowerboundmodel.doPlanning(true);

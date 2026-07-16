@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
+		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		
 		const double tolerance = 0.01;
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 		const bool FEASIBLE = optimizationmodel.doPlanning( false, schedules);
 		/*if (FEASIBLE)
 		{
-			std::vector<Core::FMTschedule>OutSchedules;
+			std::vector<Core::FMTSchedule>OutSchedules;
 			for (int period = 1; period <= 10; ++period)
 			{
 				OutSchedules.push_back(optimizationmodel.getSolution(period));
@@ -84,9 +84,9 @@ int main(int argc, char *argv[])
 		}*/
 		
 		bool gotovoltotrec = false;
-		const Core::FMTdevelopment adev(Core::FMTmask(maskstr,optimizationmodel.getThemes()), age, 0, period);
+		const Core::FMTDevelopment adev(Core::FMTMask(maskstr,optimizationmodel.getThemes()), age, 0, period);
 		const Graph::FMTgraphvertextoyield graph_info = optimizationmodel.getGraphVertexToYield();
-		const Core::FMTyieldrequest yieldrequest = adev.getYieldRequest(&graph_info);
+		const Core::FMTYieldRequest yieldrequest = adev.getYieldRequest(&graph_info);
 		const double returnedvalue = optimizationmodel.getYields().get(yieldrequest,yieldname);
 		Logging::FMTDefaultLogger() << returnedvalue << "\n";
 		if ((returnedvalue < (yieldvalue - tolerance)) || (returnedvalue > (yieldvalue + tolerance)))

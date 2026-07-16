@@ -17,16 +17,16 @@ namespace Graph
 
 	}
 
-	FMTvertexproperties::FMTvertexproperties(const Core::FMTfuturdevelopment& ldevelopment,
+	FMTvertexproperties::FMTvertexproperties(const Core::FMTFuturDevelopment& ldevelopment,
 		const int& lconstraintID):FMTbasevertexproperties(ldevelopment),constraintID(lconstraintID)
 		{
 		}
-	FMTvertexproperties::FMTvertexproperties(const Core::FMTactualdevelopment& ldevelopment,
+	FMTvertexproperties::FMTvertexproperties(const Core::FMTActualDevelopment& ldevelopment,
 		const int& lconstraintID): FMTbasevertexproperties(ldevelopment), constraintID(lconstraintID)
 		{
 
 		}
-    FMTvertexproperties::FMTvertexproperties(const Core::FMTdevelopment& ldevelopment, const int& lconstraintID):
+    FMTvertexproperties::FMTvertexproperties(const Core::FMTDevelopment& ldevelopment, const int& lconstraintID):
 		FMTbasevertexproperties(ldevelopment), constraintID(lconstraintID)
 		{
 

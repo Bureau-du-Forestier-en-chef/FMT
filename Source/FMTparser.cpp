@@ -247,7 +247,7 @@ std::vector<std::vector<std::string>>FMTparser::getGDALRasterDriverExtensions(bo
 #endif
 
 
-FMTparser::FMTparser() : Core::FMTobject(),
+FMTparser::FMTparser() : Core::FMTObject(),
         m_inComment(false),
         //m_ForValues(),
 		//m_included(),
@@ -265,7 +265,7 @@ FMTparser::FMTparser() : Core::FMTobject(),
         }
 
 FMTparser::FMTparser(const FMTparser& rhs):
-		Core::FMTobject(rhs),
+		Core::FMTObject(rhs),
          m_inComment(rhs.m_inComment),
         //m_ForValues(rhs.m_ForValues),
 		//m_included(rhs.m_included),
@@ -287,7 +287,7 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
 			boost::lock(m_MTX, rhs.m_MTX);
 			boost::lock_guard<boost::recursive_mutex> self_lock(m_MTX, boost::adopt_lock);
 			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.m_MTX, boost::adopt_lock);
-			Core::FMTobject::operator = (rhs);
+			Core::FMTObject::operator = (rhs);
             m_inComment = rhs.m_inComment;
             //m_ForValues = rhs.m_ForValues;
 			//m_included = rhs.m_included;
@@ -313,7 +313,7 @@ void FMTparser::setSection(const Core::FMTsection& section) const
 
 
 template<typename T>
-T FMTparser::getNum(const std::string& value, const Core::FMTconstants& constant, int period) const
+T FMTparser::getNum(const std::string& value, const Core::FMTConstants& constant, int period) const
 {
 	T nvalue = 0;
 	try {
@@ -343,9 +343,9 @@ T FMTparser::getNum(const std::string& value, const Core::FMTconstants& constant
 	return nvalue;
 }
 
-template int FMTparser::getNum<int>(const std::string& value, const Core::FMTconstants& constant, int period) const;
-template double FMTparser::getNum<double>(const std::string& value, const Core::FMTconstants& constant, int period) const;
-template size_t FMTparser::getNum<size_t>(const std::string& value, const Core::FMTconstants& constant, int period) const;
+template int FMTparser::getNum<int>(const std::string& value, const Core::FMTConstants& constant, int period) const;
+template double FMTparser::getNum<double>(const std::string& value, const Core::FMTConstants& constant, int period) const;
+template size_t FMTparser::getNum<size_t>(const std::string& value, const Core::FMTConstants& constant, int period) const;
 
 template<typename T>
 T FMTparser::getNum(const std::string& value, bool omitnumtest) const
@@ -375,7 +375,7 @@ template double FMTparser::getNum<double>(const std::string& value, bool omitnum
 template size_t FMTparser::getNum<size_t>(const std::string& value, bool omitnumtest) const;
 
 template<typename T>
-bool FMTparser::tryFillNumber(T& number, const std::string& value, const Core::FMTconstants& constant, int period) const
+bool FMTparser::tryFillNumber(T& number, const std::string& value, const Core::FMTConstants& constant, int period) const
 {
 	bool gotit = true;
 	try {
@@ -387,11 +387,11 @@ bool FMTparser::tryFillNumber(T& number, const std::string& value, const Core::F
 	}
 	return gotit;
 }
-template bool FMTparser::tryFillNumber<int>(int& number, const std::string& value, const Core::FMTconstants& constant, int period) const;
-template bool FMTparser::tryFillNumber<double>(double& number, const std::string& value, const Core::FMTconstants& constant, int period) const;
+template bool FMTparser::tryFillNumber<int>(int& number, const std::string& value, const Core::FMTConstants& constant, int period) const;
+template bool FMTparser::tryFillNumber<double>(double& number, const std::string& value, const Core::FMTConstants& constant, int period) const;
 
 template<typename T>
-Core::FMTbounds<T> FMTparser::bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
+Core::FMTBounds<T> FMTparser::bounds(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
 {
 	T lupper = std::numeric_limits<T>::max();
 	T llower = std::numeric_limits<T>::lowest();
@@ -427,11 +427,11 @@ Core::FMTbounds<T> FMTparser::bounds(const Core::FMTconstants& constants, const 
 	{
 		_exhandler->raiseFromCatch("", "FMTparser::bounds", __LINE__, __FILE__, m_section);
 	}
-	return Core::FMTbounds<T>(section, lupper, llower);
+	return Core::FMTBounds<T>(section, lupper, llower);
 }
 
-template Core::FMTbounds<double> FMTparser::bounds<double>(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
-template Core::FMTbounds<int> FMTparser::bounds<int>(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
+template Core::FMTBounds<double> FMTparser::bounds<double>(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
+template Core::FMTBounds<int> FMTparser::bounds<int>(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
 
 
 
@@ -847,7 +847,7 @@ void FMTparser::getWSFields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 
 #endif
 
-std::string FMTparser::setSpecs(Core::FMTsection section, Core::FMTkwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,std::vector<Core::FMTspec>& specs, const std::string& line)
+std::string FMTparser::setSpecs(Core::FMTsection section, Core::FMTkwor key,const Core::FMTYields& ylds,const Core::FMTConstants& constants,std::vector<Core::FMTSpec>& specs, const std::string& line)
     {
 	std::string rest = "";
 	try {
@@ -898,14 +898,14 @@ std::string FMTparser::setSpecs(Core::FMTsection section, Core::FMTkwor key,cons
 				}
 				for(boost::icl::interval_set<double>::reverse_iterator rit = bounds.rbegin(); rit != bounds.rend(); ++rit)
 				{
-					Core::FMTspec newspec;
+					Core::FMTSpec newspec;
 					if (pushaagebound)
 					{
 						const int intupper = (rit->upper() == std::numeric_limits<double>::max()) ? std::numeric_limits<int>::max() : static_cast<int>(rit->upper());
 						const int intlower = (rit->lower() == std::numeric_limits<double>::min()) ? std::numeric_limits<int>::min() : static_cast<int>(rit->lower());
-						newspec.addBounds(Core::FMTagebounds(section, key, intupper, intlower));
+						newspec.addBounds(Core::FMTAgeBounds(section, key, intupper, intlower));
 					}else {
-						newspec.addBounds(Core::FMTyldbounds(section, key, yld, rit->upper(), rit->lower()));
+						newspec.addBounds(Core::FMTYldBounds(section, key, yld, rit->upper(), rit->lower()));
 						}
 					specs.push_back(newspec);
 				}
@@ -924,9 +924,9 @@ std::string FMTparser::setSpecs(Core::FMTsection section, Core::FMTkwor key,cons
 std::string FMTparser::setSpec(
 	Core::FMTsection section, 
 	Core::FMTkwor key,
-	const Core::FMTyields& ylds,
-	const Core::FMTconstants& constants,
-	Core::FMTspec& spec, 
+	const Core::FMTYields& ylds,
+	const Core::FMTConstants& constants,
+	Core::FMTSpec& spec, 
 	const std::string& line)
     {
 	std::string rest = "";
@@ -967,9 +967,9 @@ std::string FMTparser::setSpec(
 				
 				if (pushaagebound)
 					{
-					spec.addBounds(Core::FMTagebounds(section, key, static_cast<int>(upperbound), static_cast<int>(lowerbound)));
+					spec.addBounds(Core::FMTAgeBounds(section, key, static_cast<int>(upperbound), static_cast<int>(lowerbound)));
 				}else {
-					spec.addBounds(Core::FMTyldbounds(section, key, yld, upperbound, lowerbound));
+					spec.addBounds(Core::FMTYldBounds(section, key, yld, upperbound, lowerbound));
 					}
 				
 				rest = " " + std::string(kmatch[1]) + std::string(kmatch[16]) + std::string(kmatch[28]);
@@ -997,7 +997,7 @@ std::string FMTparser::setSpec(
 					lowerbound = getNum<int>(singlebound, constants);
 					upperbound = lowerbound;
 				}
-				spec.addBounds(Core::FMTagebounds(section, key, upperbound, lowerbound));
+				spec.addBounds(Core::FMTAgeBounds(section, key, upperbound, lowerbound));
 				rest = " " + std::string(kmatch[1]) + std::string(kmatch[15]) + std::string(kmatch[16]) + std::string(kmatch[24]);
 			}
 		}catch (...)
@@ -1008,7 +1008,7 @@ std::string FMTparser::setSpec(
     return rest;
     }
 
-bool FMTparser::isAct(Core::FMTsection section,const std::vector<Core::FMTaction>& actions, std::string action) const
+bool FMTparser::isAct(Core::FMTsection section,const std::vector<Core::FMTAction>& actions, std::string action) const
     {
 	try{
     if (std::find_if(actions.begin(),actions.end(), Core::FMTActionComparator(action,true))==actions.end())
@@ -1029,7 +1029,7 @@ bool FMTparser::isAct(Core::FMTsection section,const std::vector<Core::FMTaction
 
 
 
-bool FMTparser::isYld(const Core::FMTyields& p_ylds,
+bool FMTparser::isYld(const Core::FMTYields& p_ylds,
 				const std::string& p_value, Core::FMTsection pm_section,
 				bool p_throwError) const
     {
@@ -1149,11 +1149,11 @@ bool FMTparser::isNum(std::string value) const
     }
 
 
-Core::FMTperbounds FMTparser::getPerBound(const std::string& p_lower,
+Core::FMTPerBounds FMTparser::getPerBound(const std::string& p_lower,
 	const std::string& p_upper,
-	const Core::FMTconstants& p_constants) const
+	const Core::FMTConstants& p_constants) const
 {
-	Core::FMTperbounds bound;
+	Core::FMTPerBounds bound;
 	try {
 
 		int startPeriod = std::numeric_limits<int>::max();
@@ -1170,7 +1170,7 @@ Core::FMTperbounds FMTparser::getPerBound(const std::string& p_lower,
 		{
 			stopPeriod = std::numeric_limits<int>::max();
 		}
-		bound = Core::FMTperbounds(Core::FMTsection::Optimize, stopPeriod, startPeriod);
+		bound = Core::FMTPerBounds(Core::FMTsection::Optimize, stopPeriod, startPeriod);
 	}
 	catch (...)
 	{
@@ -1180,18 +1180,18 @@ Core::FMTperbounds FMTparser::getPerBound(const std::string& p_lower,
 	return bound;
 }
 
-void FMTparser::setPeriodWithBounds(Core::FMTspec& p_spec,
+void FMTparser::setPeriodWithBounds(Core::FMTSpec& p_spec,
 	const std::string& p_lower,
 	const std::string& p_upper,
-	const Core::FMTconstants& p_constants) const
+	const Core::FMTConstants& p_constants) const
 {
-	const Core::FMTperbounds PERIOD_BOUND = getPerBound(p_lower, p_upper, p_constants);
+	const Core::FMTPerBounds PERIOD_BOUND = getPerBound(p_lower, p_upper, p_constants);
 	p_spec.setBounds(PERIOD_BOUND);
 }
 
-bool FMTparser::setPeriods(Core::FMTspec& p_spec,
+bool FMTparser::setPeriods(Core::FMTSpec& p_spec,
 	const std::string& p_periods,
-	const Core::FMTconstants& p_constants) const
+	const Core::FMTConstants& p_constants) const
 {
 	bool isSet = false;
 	try {
@@ -1212,7 +1212,7 @@ bool FMTparser::setPeriods(Core::FMTspec& p_spec,
 	return isSet;
 }
 
-bool FMTparser::isNum(const std::string& value, const Core::FMTconstants& constant, bool throwerror) const
+bool FMTparser::isNum(const std::string& value, const Core::FMTConstants& constant, bool throwerror) const
 {
 	try {
 		if (!(isNum(value) || constant.isConstant(value)))
@@ -1402,8 +1402,8 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		}
 
 std::map<std::string, std::vector<std::string>>  FMTparser::getForLoops(const std::string& p_line,
-	const std::vector<Core::FMTtheme>& p_themes,
-	const Core::FMTconstants& p_cons) const
+	const std::vector<Core::FMTTheme>& p_themes,
+	const Core::FMTConstants& p_cons) const
 	{
 	std::map<std::string, std::vector<std::string>> allValues;
 	try{
@@ -1623,7 +1623,7 @@ std::string FMTparser::_getAbsolutePath(std::string p_Path) const
 	}
 
 std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
-	const std::vector<Core::FMTtheme>& p_themes, const Core::FMTconstants& p_cons,
+	const std::vector<Core::FMTTheme>& p_themes, const Core::FMTConstants& p_cons,
 	std::queue<FMTLineInfo>p_ForOut) const
 	{
 	std::queue<FMTLineInfo>includedm_lines;
@@ -1762,7 +1762,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 	}
 
 	std::string FMTparser::_processConstants(std::string p_input,
-		const Core::FMTconstants& p_constants) const
+		const Core::FMTConstants& p_constants) const
 	{
 		try {
 			// The constant token stops at whitespace, tabs, quotes, commas and
@@ -1804,8 +1804,8 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 	}
 
 
-	void FMTparser::processForLoops(const std::vector<Core::FMTtheme>& p_themes,
-		const Core::FMTconstants& p_constants,
+	void FMTparser::processForLoops(const std::vector<Core::FMTTheme>& p_themes,
+		const Core::FMTConstants& p_constants,
 		std::queue<FMTLineInfo>& p_queue) const
 	{
 		std::queue<FMTLineInfo>FinalQueue;
@@ -1939,8 +1939,8 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 	}
 
 	std::queue<FMTparser::FMTLineInfo> FMTparser::processForLoopsNInclude(
-		const std::vector<Core::FMTtheme>& p_themes,
-		const Core::FMTconstants& p_cons,
+		const std::vector<Core::FMTTheme>& p_themes,
+		const Core::FMTConstants& p_cons,
 		std::queue<FMTLineInfo>p_AllLines) const
 	{
 		try {
@@ -1958,8 +1958,8 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 	}
 
 	std::queue<FMTparser::FMTLineInfo> FMTparser::getCleanLinewfor(std::ifstream& p_stream,
-																		const std::vector<Core::FMTtheme>& p_themes,
-																		const Core::FMTconstants& p_cons) const
+																		const std::vector<Core::FMTTheme>& p_themes,
+																		const Core::FMTConstants& p_cons) const
 	{
 		std::queue<FMTLineInfo> lines;
 		try {
@@ -1972,7 +1972,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 		return lines;
 	}
 /*
-std::string FMTparser::getCleanLinewfor(std::ifstream& stream,const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& cons)
+std::string FMTparser::getCleanLinewfor(std::ifstream& stream,const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& cons)
     {
 	boost::smatch kmatch;
 	std::string line;

@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTaction;
+	class FMTAction;
 }
 
 namespace Graph
@@ -59,8 +59,8 @@ namespace Graph
 			return action;
 			}
 		void setactionID(const int& newid);
-		bool isAction(const std::vector<Core::FMTaction>& actions,
-			const Core::FMTaction& rhsaction) const;
+		bool isAction(const std::vector<Core::FMTAction>& actions,
+			const Core::FMTAction& rhsaction) const;
 		/*virtual*/ bool operator == (const FMTbaseedgeproperties & rhs) const;
 		/*virtual*/ bool operator != (const FMTbaseedgeproperties& rhs) const;
 		bool operator < (const FMTbaseedgeproperties& rhs) const;

@@ -18,7 +18,7 @@ namespace Core
 {
 
 	FMTyieldmodelUnitCoverage::FMTyieldmodelUnitCoverage(const boost::property_tree::ptree& p_jsonProps,
-		const std::vector<std::string>& p_yields, const Core::FMTmask& p_mask):
+		const std::vector<std::string>& p_yields, const Core::FMTMask& p_mask):
 		m_cache(), m_mask(p_mask)
 	{
 		boost::property_tree::ptree::const_assoc_iterator modelNameIt = p_jsonProps.find(JSON_PROP_MODEL_NAME);
@@ -26,13 +26,13 @@ namespace Core
 		modelYields = p_yields;
 	}
 
-	const std::vector<double>FMTyieldmodelUnitCoverage::predict(const Core::FMTyieldrequest& p_request) const
+	const std::vector<double>FMTyieldmodelUnitCoverage::predict(const Core::FMTYieldRequest& p_request) const
 	{
 		std::vector<double> Predictions;
 		try {
 			if (m_cache.empty())
 				{
-				const std::vector<FMToutput> OUTPUTS = getOutputs();
+				const std::vector<FMTOutput> OUTPUTS = getOutputs();
 				Predictions = getOutputValues(OUTPUTS);
 				m_cache = Predictions;
 			}else {
@@ -46,8 +46,8 @@ namespace Core
 	}
 
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelUnitCoverage::presolve(const FMTmaskfilter& p_filter,
-		const std::vector<FMTtheme>& p_newThemes) const
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelUnitCoverage::presolve(const FMTMaskFilter& p_filter,
+		const std::vector<FMTTheme>& p_newThemes) const
 	{
 		FMTyieldmodelUnitCoverage newPresolved(*this);
 		try {
@@ -59,8 +59,8 @@ namespace Core
 		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(newPresolved));
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelUnitCoverage::postSolve(const FMTmaskfilter& p_filter,
-		const std::vector<FMTtheme>& p_baseThemes) const
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodelUnitCoverage::postSolve(const FMTMaskFilter& p_filter,
+		const std::vector<FMTTheme>& p_baseThemes) const
 	{
 		FMTyieldmodelUnitCoverage newPostsolved(*this);
 		newPostsolved.m_mask.postSolve(p_filter, p_baseThemes);
@@ -77,15 +77,15 @@ namespace Core
 		return "UNIT_COVERAGE";
 	}
 
-	std::vector<FMToutput> FMTyieldmodelUnitCoverage::getOutputs() const
+	std::vector<FMTOutput> FMTyieldmodelUnitCoverage::getOutputs() const
 	{
-		std::vector<FMToutput>outputs;
+		std::vector<FMTOutput>outputs;
 		try {
 			for (const std::string& yld : modelYields)
 				{
-				std::vector<Core::FMToutputsource>sources;
-				sources.push_back(Core::FMToutputsource(Core::FMTspec(), m_mask, Core::FMTotar::inventory, yld));
-				outputs.push_back(Core::FMToutput(yld, yld, yld, sources, std::vector<Core::FMToperator>()));
+				std::vector<Core::FMTOutputSource>sources;
+				sources.push_back(Core::FMTOutputSource(Core::FMTSpec(), m_mask, Core::FMTotar::inventory, yld));
+				outputs.push_back(Core::FMTOutput(yld, yld, yld, sources, std::vector<Core::FMTOperator>()));
 				}
 		}catch (...)
 		{
@@ -94,7 +94,7 @@ namespace Core
 		return outputs;
 	}
 
-	std::vector<double> FMTyieldmodelUnitCoverage::getOutputValues(const std::vector<FMToutput>& p_outputs) const
+	std::vector<double> FMTyieldmodelUnitCoverage::getOutputValues(const std::vector<FMTOutput>& p_outputs) const
 	{
 		std::vector<double>returnedValues(p_outputs.size());
 		try {
@@ -106,7 +106,7 @@ namespace Core
 			}
 			size_t outId = 0;
 			const int PERIOD_TARGET = m_modelPtr->getAreaPeriod();
-			for (const FMToutput& OUTPUT : p_outputs)
+			for (const FMTOutput& OUTPUT : p_outputs)
 			{
 				returnedValues[outId] = m_modelPtr->getOutput(OUTPUT, PERIOD_TARGET, Core::FMToutputlevel::totalonly).at("Total");
 				outId += 1;

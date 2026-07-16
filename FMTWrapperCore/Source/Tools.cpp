@@ -15,8 +15,8 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 	int result = 0;
 	try
 	{
-		const Core::FMTyields YIELDS = p_model.getYields();
-		std::vector<const Core::FMTyieldhandler*> handler;
+		const Core::FMTYields YIELDS = p_model.getYields();
+		std::vector<const Core::FMTYieldHandler*> handler;
 		for (const auto& DATA : YIELDS)
 		{
             if (DATA.second->getType() == Core::FMTyldtype::FMTageyld){
@@ -51,28 +51,28 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 }
 
 
-Core::FMTmask FMTWrapperCore::Tools::_GetFullMask(const std::vector<Core::FMTtheme>& p_themes)
+Core::FMTMask FMTWrapperCore::Tools::_GetFullMask(const std::vector<Core::FMTTheme>& p_themes)
 {
 	std::string mask;
-	for (const Core::FMTtheme& THEME: p_themes)
+	for (const Core::FMTTheme& THEME: p_themes)
 		{
 		mask += "? ";
 		}
 	mask.pop_back();
-	return Core::FMTmask(mask, p_themes);
+	return Core::FMTMask(mask, p_themes);
 }
 std::set<std::string> FMTWrapperCore::Tools::_GetThemesDecomposition(
-	const Core::FMTmask& p_mask,
-	const std::vector<Core::FMTtheme>& p_themes)
+	const Core::FMTMask& p_mask,
+	const std::vector<Core::FMTTheme>& p_themes)
 {
-	std::vector<Core::FMTmask>Allmasks;
+	std::vector<Core::FMTMask>Allmasks;
 	Allmasks.push_back(p_mask);
-	for (const Core::FMTtheme& THEME : p_themes)
+	for (const Core::FMTTheme& THEME : p_themes)
 	{
-		std::vector<Core::FMTmask>NewMasks;
-		for (const Core::FMTmask& MASK : Allmasks)
+		std::vector<Core::FMTMask>NewMasks;
+		for (const Core::FMTMask& MASK : Allmasks)
 			{
-			const std::vector<Core::FMTmask> NEW = MASK.decompose(THEME);
+			const std::vector<Core::FMTMask> NEW = MASK.decompose(THEME);
 			NewMasks.insert(NewMasks.end(), NEW.begin(), NEW.end());
 			}
 		Allmasks.swap(NewMasks);
@@ -97,9 +97,9 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			modelCopy.setArea(getRasterArea(modelCopy, p_rasterPath));
 		}
 		// On va chercher tous les th�mes dans le mod�le
-		std::vector<Core::FMTtheme> themes;
+		std::vector<Core::FMTTheme> themes;
 		size_t numberOfAttributes = 1;
-		const std::vector<Core::FMTtheme> THEMESMODELS = modelCopy.getThemes();
+		const std::vector<Core::FMTTheme> THEMESMODELS = modelCopy.getThemes();
 		for (const int themeNumber : p_themesNumbers)
 			{
 			themes.push_back(THEMESMODELS.at(themeNumber - 1));
@@ -108,7 +108,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 		if (numberOfAttributes > m_GET_ALL_MASKS_THRESHOLD)
 		{
 			
-			modelCopy.setConstraints(std::vector<Core::FMTconstraint>());
+			modelCopy.setConstraints(std::vector<Core::FMTConstraint>());
 			modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 			//modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 30);
 			/**Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
@@ -116,7 +116,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			optModel.doPlanning(false);
 			masks = optModel.getAllMasks(themes);*/
 			//1938
-			std::vector<Core::FMTactualdevelopment> area = modelCopy.getArea();
+			std::vector<Core::FMTActualDevelopment> area = modelCopy.getArea();
 			for (int i = 1; i <= p_periods; ++i)
 			{
 				Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
@@ -131,7 +131,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 				area = optModel.getPotentialArea(i + 1);
 			}
 		}else {
-			const Core::FMTmask PLAIN_MASK = _GetFullMask(THEMESMODELS);
+			const Core::FMTMask PLAIN_MASK = _GetFullMask(THEMESMODELS);
 			masks = _GetThemesDecomposition(PLAIN_MASK, themes);
 			}
 		
@@ -157,7 +157,7 @@ void FMTWrapperCore::Tools::writeToProject(const Models::FMTmodel& p_model, cons
 	}
 }
 
-std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath)
+std::vector<Core::FMTActualDevelopment> FMTWrapperCore::Tools::getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath)
 {
 	std::vector<std::string> themesrast;
 	// Assurez-vous que le chemin se termine par un s�parateur pour une construction propre
@@ -169,7 +169,7 @@ std::vector<Core::FMTactualdevelopment> FMTWrapperCore::Tools::getRasterArea(con
 	bool stanlockExists = false;
 	Parser::FMTareaparser areaparser;
 	Spatial::FMTforest initialforestmap;
-	std::vector<Core::FMTactualdevelopment> area;
+	std::vector<Core::FMTActualDevelopment> area;
 
 	// On vérifie si le fichier standlock est présent
 	std::ifstream file(STANLOCK_RASTER_PATH);

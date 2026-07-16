@@ -84,7 +84,7 @@ namespace Models
 			This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTmodel.
 			The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 			*/
-			virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+			virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 			// DocString: FMTnssmodel::clone
 			/**
 			Get a clone of the FMTnssmodel
@@ -94,7 +94,7 @@ namespace Models
 			/**
 			This function will use the function simulate over the number of period set as LENGTH in model parameters.
 			*/
-			virtual bool build(std::vector<Core::FMTschedule> schedules=std::vector<Core::FMTschedule>());
+			virtual bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>());
 			// DocString: FMTmodel::solve
 			/**
 			There is no solve since it's only a simulation. The build phase simulate over the LENGTH given in model parameters. 
@@ -146,7 +146,7 @@ namespace Models
 			@param[in] p_period the targeted period
 			@return a vector of output pointers.
 			*/
-			std::vector<const Core::FMToutput*> constraintsToTarget(std::vector<double>& p_targets, const int& p_period);
+			std::vector<const Core::FMTOutput*> constraintsToTarget(std::vector<double>& p_targets, const int& p_period);
 			// DocString: FMTnssmodel::gotOutputForDev
 			/**
 			@brief Return true if a output is found for the development
@@ -155,8 +155,8 @@ namespace Models
 			@param[in] p_outputIds the output ids that we can test 
 			@return true if found else false.
 			*/
-			bool gotOutputForDev(const Core::FMTdevelopment& p_development,
-								const std::vector<const Core::FMToutput*>& p_outputs,
+			bool gotOutputForDev(const Core::FMTDevelopment& p_development,
+								const std::vector<const Core::FMTOutput*>& p_outputs,
 								const std::set<size_t>& p_outputIds) const;
 			// DocString: FMTnssmodel::getFirstOperable
 			/**
@@ -166,9 +166,9 @@ namespace Models
 			@param[in] the outputs values.
 			@return a pair with output index and pointer to action nullptr returned if no operables.
 			*/
-			std::pair<size_t, const Core::FMTaction*> getFirstOperable(const Core::FMTdevelopment& development,
-				std::vector<std::vector<const Core::FMTaction*>> targets,
-				const std::vector<const Core::FMToutput*>& alloutputs) const;
+			std::pair<size_t, const Core::FMTAction*> getFirstOperable(const Core::FMTDevelopment& development,
+				std::vector<std::vector<const Core::FMTAction*>> targets,
+				const std::vector<const Core::FMTOutput*>& alloutputs) const;
 			// DocString: FMTnssmodel::getActionsTargets
 			/**
 			@brief takea vector of pointer to outputs and buildup a vector of actions length containing nullptr and pointer to outputs.
@@ -176,7 +176,7 @@ namespace Models
 			@param[in] vectors of outputs ptr
 			@return a vector of pair of action / outputs.
 			*/
-			std::vector<std::set<size_t>> getActionsTargets(const std::vector<const Core::FMToutput*>& p_allOutputs) const;
+			std::vector<std::set<size_t>> getActionsTargets(const std::vector<const Core::FMTOutput*>& p_allOutputs) const;
 			// DocString: FMTnssmodel::updateOutputs
 			/**
 			@brief Update the targeted output value and the outputs index remove the p_index from p_actionsoutputs and remove dev 
@@ -190,11 +190,11 @@ namespace Models
 			@param[in] p_allOutputs the outputs to update.
 			@return the harvested area of the dev.
 			*/
-			double updateOutputs(const Core::FMTdevelopment& p_development,
-								const std::vector<Core::FMTdevelopmentpath>& p_paths,
+			double updateOutputs(const Core::FMTDevelopment& p_development,
+								const std::vector<Core::FMTDevelopmentPath>& p_paths,
 								const int& p_action, const double& p_devArea,
 								std::vector<double>& p_targets, std::vector<std::set<size_t>>& p_actionsoutputs,
-								const std::vector<const Core::FMToutput*>& p_allOutput) const;
+								const std::vector<const Core::FMTOutput*>& p_allOutput) const;
 			// DocString: FMTnssmodel(const FMTsrmodel&,unsigned int)
 			/**
 			Constructor for FMTnssmodel taking a FMTsrmodel and a seed to initialize the random number generator.

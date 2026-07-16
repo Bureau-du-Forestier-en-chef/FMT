@@ -18,7 +18,7 @@
 
 std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
     const std::string& fichierShp,
-    const std::vector<Core::FMTtheme>& themes,
+    const std::vector<Core::FMTTheme>& themes,
     const int& numeroTheme,
     const int& startingperiod,
     const std::string& nomChampAge,
@@ -52,13 +52,13 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
         return opeareas;
 }
 
-Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)   
+Core::FMTOutputNode createBFECoptaggregate(Models::FMTmodel& model)   
     {
         std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
-            std::vector<Core::FMTaction> newactions;
+            std::vector<Core::FMTAction> newactions;
             int youvert = 0;
 
-            for (Core::FMTaction& action : model.getactions())
+            for (Core::FMTAction& action : model.getactions())
             {
                 if (action.useYield("YOUVERT"))
                 {
@@ -87,7 +87,7 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
             }
 
             model.setActions(newactions);
-            const std::vector<Core::FMTtheme> themes = model.getThemes();	
+            const std::vector<Core::FMTTheme> themes = model.getThemes();	
             std::string stringMask = "";
             for (int i = 1; i <= themes.size(); i++)
             {
@@ -101,8 +101,8 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
                 }
             }
 
-            Core::FMTmask fmtMask = Core::FMTmask(stringMask, themes);
-            return Core::FMToutputnode(fmtMask, Agg_name);
+            Core::FMTMask fmtMask = Core::FMTMask(stringMask, themes);
+            return Core::FMTOutputNode(fmtMask, Agg_name);
     }
 #endif
 int main(int argc, char *argv[])
@@ -173,9 +173,9 @@ int main(int argc, char *argv[])
             // pour gérer les variables négatives
             //const int startingperiod = optimizationmodel.getconstraints().at(0).getPeriodLowerBound();
             const int startingperiod = optimizationmodel.getParameter(Models::FMTintmodelparameters::UPDATE);
-            const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
-            Core::FMToutput adm7m;
-            for (const Core::FMToutput& output : optimizationmodel.getOutputs())
+            const Core::FMTOutputNode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
+            Core::FMTOutput adm7m;
+            for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
                 {
                 if (output.getName() == "OATTEINTE7M")
                     {
@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
             noptimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
             noptimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             noptimizationmodel.Models::FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-            const std::vector<Core::FMTschedule> schedules = modelparser.readschedules(
+            const std::vector<Core::FMTSchedule> schedules = modelparser.readschedules(
                 "../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
             // On regarde si on est capable de relire ce qu'on vient de créer
             noptimizationmodel.doPlanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 

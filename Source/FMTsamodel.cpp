@@ -345,7 +345,7 @@ namespace Models
    Spatial::FMTSpatialSchedule  FMTsamodel::_doGroupsConflictDestrutorMove(const Spatial::FMTSpatialSchedule& p_actual) const
    {
        try {
-           std::vector<Core::FMTconstraint>::const_iterator ConstraintIt = constraints.begin();
+           std::vector<Core::FMTConstraint>::const_iterator ConstraintIt = constraints.begin();
            std::vector<Spatial::FMTcoordinate>allCoordinates;
            while (ConstraintIt != constraints.end())
            {
@@ -416,7 +416,7 @@ namespace Models
        try {
            if (!p_actual.emptyEvents())
            {
-               std::vector<Core::FMTconstraint>::const_iterator ConstraintIt = constraints.begin();
+               std::vector<Core::FMTConstraint>::const_iterator ConstraintIt = constraints.begin();
                while (!allowed && ConstraintIt != constraints.end())
                {
                    if (ConstraintIt->getConstraintType() == Core::FMTconstrainttype::FMTSpatialGroup)
@@ -666,10 +666,10 @@ namespace Models
             {
             Models::FMTlpmodel newLp;
             try {
-                    std::vector<Core::FMTconstraint> shuffledConstraints;
+                    std::vector<Core::FMTConstraint> shuffledConstraints;
                     const std::vector<double> FACTORS = p_SpatialSchedule.getConstraintsFactor();
                     size_t constraintId = 0;
-                    for (const Core::FMTconstraint& CONSTRAINT : constraints)
+                    for (const Core::FMTConstraint& CONSTRAINT : constraints)
                         {
                         if (!CONSTRAINT.isSpatial())
                             {
@@ -686,14 +686,14 @@ namespace Models
                             }
                         ++constraintId;
                         }
-                    std::vector<Core::FMTconstraint>::iterator firstToShuffle = shuffledConstraints.begin();
+                    std::vector<Core::FMTConstraint>::iterator firstToShuffle = shuffledConstraints.begin();
                     if (!constraints.empty() &&
                         constraints.at(0).isObjective())
                         {
                         ++firstToShuffle;
                         }
                     std::shuffle(firstToShuffle, shuffledConstraints.end(), m_generator);
-                    std::vector<Core::FMTactualdevelopment>shuffledArea(area);
+                    std::vector<Core::FMTActualDevelopment>shuffledArea(area);
                     std::shuffle(shuffledArea.begin(), shuffledArea.end(), m_generator);
                     FMTsolverinterface SolverInterface = FMTsolverinterface::CLP;
                     if (Version::FMTversion::hasFeature("MOSEK"))
@@ -768,9 +768,9 @@ namespace Models
    }
 
 
-    std::vector<Core::FMTschedule>FMTsamodel::_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const
+    std::vector<Core::FMTSchedule>FMTsamodel::_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const
     {
-        std::vector<Core::FMTschedule>newSchedules;
+        std::vector<Core::FMTSchedule>newSchedules;
         try {
                 #ifdef FMTWITHOSI
                      Models::FMTlpmodel newLp = _getRandomLpModel(p_SpatialSchedule);
@@ -800,7 +800,7 @@ namespace Models
     {
         Spatial::FMTSpatialSchedule newsolution;
         try {
-            const std::vector<Core::FMTschedule>nonspatialschedules = _GetSchedules(actual,true);
+            const std::vector<Core::FMTSchedule>nonspatialschedules = _GetSchedules(actual,true);
             if (nonspatialschedules.empty())
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -813,7 +813,7 @@ namespace Models
             {
                 newsolution.setConstraintsFactor(*this, FACTORS);
             }
-            for (const Core::FMTschedule& schedule : nonspatialschedules)
+            for (const Core::FMTSchedule& schedule : nonspatialschedules)
                 {
                 greedyReferenceBuild(newsolution, schedule,
                     getParameter(NUMBER_OF_ITERATIONS),
@@ -935,11 +935,11 @@ namespace Models
     }
 
 
-    void FMTsamodel::_schedulesBuild(const std::vector<Core::FMTschedule>& schedules)
+    void FMTsamodel::_schedulesBuild(const std::vector<Core::FMTSchedule>& schedules)
     {
         try {
             const size_t alliterations = static_cast<size_t>(getParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS));
-            for (const Core::FMTschedule& schedule : schedules)
+            for (const Core::FMTSchedule& schedule : schedules)
                 {
                 greedyReferenceBuild(m_BestSolution, schedule, alliterations);
                 }
@@ -1194,7 +1194,7 @@ namespace Models
         m_BestObjective = p_ObjectiveValue;
     }
 
-    bool FMTsamodel::build(std::vector<Core::FMTschedule> schedules)
+    bool FMTsamodel::build(std::vector<Core::FMTSchedule> schedules)
     {
         try {
             if (schedules.empty()||
@@ -1223,7 +1223,7 @@ namespace Models
         return false;
     }
 
-    std::unique_ptr<FMTmodel>FMTsamodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+    std::unique_ptr<FMTmodel>FMTsamodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
     {
         try {
             std::unique_ptr<FMTmodel>BASE_PRESOLVE = FMTsemodel::presolve(optionaldevelopments);

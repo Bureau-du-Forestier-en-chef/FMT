@@ -70,7 +70,7 @@ namespace Wrapper
 		try
 		{
 			//FeedBack("FMT Event Spatialy Explicit Simulation c++ - > ObtientListeContraintes", gcnew System::EventArgs());
-			for (const Core::FMTconstraint& constraint : ObtenirArrayContraintes(indexScenario))
+			for (const Core::FMTConstraint& constraint : ObtenirArrayContraintes(indexScenario))
 			{
 				retour->Add(gcnew System::String(std::string(constraint).c_str()));
 			}
@@ -84,10 +84,10 @@ namespace Wrapper
 		return retour;
 	}
 
-	std::vector<Core::FMTconstraint> FMTForm::ObtenirArrayContraintes(
+	std::vector<Core::FMTConstraint> FMTForm::ObtenirArrayContraintes(
 		int indexScenario)
 	{
-		std::vector<Core::FMTconstraint> retour;
+		std::vector<Core::FMTConstraint> retour;
 		try
 		{
 			//FeedBack("FMT Event Spatialy Explicit Simulation c++ - > ObtenirArrayContraintes", gcnew System::EventArgs());
@@ -101,15 +101,15 @@ namespace Wrapper
 		return retour;
 	}
 
-	std::vector<Core::FMTconstraint> FMTForm::ObtenirArrayContraintesSelectionnees(
-		std::vector<Core::FMTconstraint> contraitesBase,
+	std::vector<Core::FMTConstraint> FMTForm::ObtenirArrayContraintesSelectionnees(
+		std::vector<Core::FMTConstraint> contraitesBase,
 		System::Collections::Generic::List<System::String^>^ contraintesSelection)
 	{
-		std::vector<Core::FMTconstraint> retour;
+		std::vector<Core::FMTConstraint> retour;
 		try
 		{
 			//FeedBack("FMT Event Spatialy Explicit Simulation c++ - > ObtenirArrayContraintesSelectionnees", gcnew System::EventArgs());
-			for (const Core::FMTconstraint& contrainte : contraitesBase)
+			for (const Core::FMTConstraint& contrainte : contraitesBase)
 			{
 				for each (System::String ^ selection in contraintesSelection)
 				{
@@ -137,12 +137,12 @@ namespace Wrapper
 		return retour;
 	}
 
-	std::vector<Core::FMToutput> FMTForm::ObtenirArrayOutputsSelectionnees(std::vector<Core::FMToutput> outputsBase, System::Collections::Generic::List<System::String^>^ outputsSelection)
+	std::vector<Core::FMTOutput> FMTForm::ObtenirArrayOutputsSelectionnees(std::vector<Core::FMTOutput> outputsBase, System::Collections::Generic::List<System::String^>^ outputsSelection)
 	{
-		std::vector<Core::FMToutput> retour;
+		std::vector<Core::FMTOutput> retour;
 		try
 		{
-			for (const Core::FMToutput& fmtOutput : outputsBase)
+			for (const Core::FMTOutput& fmtOutput : outputsBase)
 			{
 				if (outputsSelection->Contains(gcnew System::String(fmtOutput.getName().c_str())))
 				{
@@ -159,12 +159,12 @@ namespace Wrapper
 
 	}
 
-	Core::FMToutput FMTForm::ObtenirOutputSelectionnee(std::vector<Core::FMToutput> outputsBase, System::String^ outputSelection)
+	Core::FMTOutput FMTForm::ObtenirOutputSelectionnee(std::vector<Core::FMTOutput> outputsBase, System::String^ outputSelection)
 	{
-		Core::FMToutput retour;
+		Core::FMTOutput retour;
 		try
 		{
-			for (const Core::FMToutput& fmtOutput : outputsBase)
+			for (const Core::FMTOutput& fmtOutput : outputsBase)
 			{
 				if (outputSelection == gcnew System::String(fmtOutput.getName().c_str()))
 				{
@@ -274,7 +274,7 @@ namespace Wrapper
 		{
 			if (!FMTFormCache::GetInstance()->empty())
 			{
-				for (const Core::FMToutput& output : FMTFormCache::GetInstance()->getModel(indexScenario).getOutputs())
+				for (const Core::FMTOutput& output : FMTFormCache::GetInstance()->getModel(indexScenario).getOutputs())
 				{
 					retour->Add(gcnew System::String(std::string(output.getName()).c_str()));
 				}
@@ -324,18 +324,18 @@ namespace Wrapper
 		return retour;
 	}
 
-	std::vector<Core::FMTschedule> FMTForm::ObtenirSEQ(
+	std::vector<Core::FMTSchedule> FMTForm::ObtenirSEQ(
 		System::String^ nomFichierPri,
 		int indexScenario)
 	{
-		std::vector<Core::FMTschedule> retour;
+		std::vector<Core::FMTSchedule> retour;
 		try
 		{
 			Parser::FMTscheduleparser schedulerparser;
 			Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
 			std::vector<Models::FMTmodel> models;
 			models.push_back(FMTFormCache::GetInstance()->getModel(indexScenario));
-			std::vector<Core::FMTschedule> liste = Modelparser.readschedules(msclr::interop::marshal_as<std::string>(nomFichierPri), models).at(0);
+			std::vector<Core::FMTSchedule> liste = Modelparser.readschedules(msclr::interop::marshal_as<std::string>(nomFichierPri), models).at(0);
 			if (liste.size() > 0)
 			{
 				retour = liste;
@@ -359,7 +359,7 @@ namespace Wrapper
 				throw std::out_of_range("Invalid model index");
 			}
 			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getModel(p_index);
-			const std::vector<Core::FMTaction> ACTIONS = MODEL.getactions();
+			const std::vector<Core::FMTAction> ACTIONS = MODEL.getactions();
 			// On it�re sur les actions pour obbtenir leurs noms
 			for (int i = 0; i < ACTIONS.size(); ++i)
 			{
@@ -383,7 +383,7 @@ namespace Wrapper
 				throw std::out_of_range("Invalid model index");
 			}
 			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
-			const std::vector<Core::FMTaction> ACTIONS = MODEL.getactions();
+			const std::vector<Core::FMTAction> ACTIONS = MODEL.getactions();
 			std::set<std::string> uniqueAggregates;
 
 			for (int i = 0; i < ACTIONS.size(); ++i)
@@ -418,7 +418,7 @@ namespace Wrapper
 			}
 			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getModel(p_index);
 
-			const Core::FMTyields YIELDS = MODEL.getYields();
+			const Core::FMTYields YIELDS = MODEL.getYields();
 
 			std::vector<std::string> yieldsNames = YIELDS.getAllYieldNames();
 
@@ -503,9 +503,9 @@ namespace Wrapper
 			// On va chercher le mod�le
 			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 			// On va chercher tous les th�mes dans le mod�le
-			const std::vector<Core::FMTtheme> THEMES = MODEL.getThemes();
+			const std::vector<Core::FMTTheme> THEMES = MODEL.getThemes();
 			// On call validate
-			result = Core::FMTtheme::validate(THEMES, MASK);
+			result = Core::FMTTheme::validate(THEMES, MASK);
 		}
 
 		catch (...)

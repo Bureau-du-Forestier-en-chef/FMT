@@ -10,49 +10,49 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-	FMTfuturdevelopment::FMTfuturdevelopment(FMTfuturdevelopment&& rhs) :
-		FMTdevelopment(std::move(rhs))
+	FMTFuturDevelopment::FMTFuturDevelopment(FMTFuturDevelopment&& rhs) :
+		FMTDevelopment(std::move(rhs))
 	{
 
 	}
 
-	FMTfuturdevelopment& FMTfuturdevelopment::operator=(FMTfuturdevelopment&& rhs)
+	FMTFuturDevelopment& FMTFuturDevelopment::operator=(FMTFuturDevelopment&& rhs)
 	{
-		FMTdevelopment::operator=(std::move(rhs));
+		FMTDevelopment::operator=(std::move(rhs));
 		return *this;
 	}
 
-	FMTfuturdevelopment::FMTfuturdevelopment() :FMTdevelopment() {}
+	FMTFuturDevelopment::FMTFuturDevelopment() :FMTDevelopment() {}
 
-	FMTfuturdevelopment::FMTfuturdevelopment(const FMTfuturdevelopment& rhs) : FMTdevelopment(rhs)
+	FMTFuturDevelopment::FMTFuturDevelopment(const FMTFuturDevelopment& rhs) : FMTDevelopment(rhs)
 	{
 
 	}
-	FMTfuturdevelopment::FMTfuturdevelopment(const FMTdevelopment& dev) : FMTdevelopment(dev) {}
+	FMTFuturDevelopment::FMTFuturDevelopment(const FMTDevelopment& dev) : FMTDevelopment(dev) {}
 
-	FMTfuturdevelopment& FMTfuturdevelopment::operator = (const FMTfuturdevelopment& rhs)
+	FMTFuturDevelopment& FMTFuturDevelopment::operator = (const FMTFuturDevelopment& rhs)
 	{
 		if (this != &rhs)
 		{
-			FMTdevelopment::operator=(rhs);
+			FMTDevelopment::operator=(rhs);
 		}
 		return *this;
 	}
-	bool FMTfuturdevelopment::operator == (const FMTfuturdevelopment& rhs) const
+	bool FMTFuturDevelopment::operator == (const FMTFuturDevelopment& rhs) const
 	{
-		return FMTdevelopment::operator==(rhs);
+		return FMTDevelopment::operator==(rhs);
 	}
 
-	std::unique_ptr<FMTdevelopment> FMTfuturdevelopment::Clone() const
+	std::unique_ptr<FMTDevelopment> FMTFuturDevelopment::Clone() const
 		{
-		return std::unique_ptr<FMTdevelopment>(new FMTfuturdevelopment(*this));
+		return std::unique_ptr<FMTDevelopment>(new FMTFuturDevelopment(*this));
 		}
 
-	double FMTfuturdevelopment::getArea() const
+	double FMTFuturDevelopment::getArea() const
 		{
 		return 0;
 		}
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTfuturdevelopment)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTFuturDevelopment)

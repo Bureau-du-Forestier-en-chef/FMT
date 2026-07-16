@@ -58,7 +58,7 @@ namespace Models
 	generate the problem based on LP/SA or to simply simulate the FMTmodel.
 	*/
 
-	class FMTEXPORT FMTmodel : public Core::FMTobject
+	class FMTEXPORT FMTmodel : public Core::FMTObject
     {
 		template<class T1,class T2>
 		friend class Graph::FMTgraph;
@@ -116,10 +116,10 @@ namespace Models
 		 * @param[in] p_schedules the non extended schedule we want to build on.
 		 * @return a complete schedule of length of the model with actual dev
 		 */
-		std::vector<Core::FMTschedule> buildSchedule(const Core::FMTaction& p_action,
+		std::vector<Core::FMTSchedule> buildSchedule(const Core::FMTAction& p_action,
 													const FMTmodel& p_BaseModel,
 													const std::string& p_Targetyield,
-													const std::vector<Core::FMTschedule>& p_schedules) const;
+													const std::vector<Core::FMTSchedule>& p_schedules) const;
 		
 		// DocString: FMTmodel::pushTheme
 		/**
@@ -151,26 +151,26 @@ namespace Models
 		 */
 		Models::FMTmodel splitActions(const std::vector<std::string>& p_Actions,
 										const std::vector<std::string>& p_masks) const;
-		// DocString: FMTschedule::getPriorities
+		// DocString: FMTSchedule::getPriorities
 		/**
 		@brief return the actions name in priority of area scheduled.
 		@return a vector of action names.
 		*/
-		std::vector<std::string>getSchedulesPriorities(const std::vector<Core::FMTschedule>& p_schedules) const;
+		std::vector<std::string>getSchedulesPriorities(const std::vector<Core::FMTSchedule>& p_schedules) const;
 		// DocString: FMTmodel::aggregateSchedules
 		/**
 		 * @brief Build new schedule based on p_schedules with the corresponding aggregated actions
 		 * @param[in] p_schedules the schedules of the original model.
 		 * @return newly created schedules with aggregated actions.
 		 */
-		std::vector<Core::FMTschedule> aggregateSchedules(const std::vector<Core::FMTschedule>& p_schedules) const;
+		std::vector<Core::FMTSchedule> aggregateSchedules(const std::vector<Core::FMTSchedule>& p_schedules) const;
 		// DocString: FMTmodel::splitSchedules
 		/**
 		 * @brief Using the actions of the model change the actions of the schedule
 		 * @param[in] p_schedules the schedules of the original model.
 		 * @return newly created schedules with splitted actions.
 		 */
-		std::vector<Core::FMTschedule> splitSchedules(const std::vector<Core::FMTschedule>& p_schedules) const;
+		std::vector<Core::FMTSchedule> splitSchedules(const std::vector<Core::FMTSchedule>& p_schedules) const;
 		// DocString: FMTmodel::setParallelLogger
 		/**
 		Solver's logger cannot work in parallel so you need to pass a logger owned
@@ -182,15 +182,15 @@ namespace Models
 		Clear caching element to reduce memory usage.
 		*/
 		virtual void clearCache();
-		// DocString: FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>, const std::vector<Core::FMTaction>, const std::vector<Core::FMTtransition>, const Core::FMTyields, const Core::FMTlifespans, const std::string, const std::vector<Core::FMToutput>, std::vector<Core::FMTconstraint>,FMTmodelparameters)
+		// DocString: FMTmodel(const std::vector<Core::FMTActualDevelopment>& larea, const std::vector<Core::FMTTheme>, const std::vector<Core::FMTAction>, const std::vector<Core::FMTTransition>, const Core::FMTYields, const Core::FMTLifespans, const std::string, const std::vector<Core::FMTOutput>, std::vector<Core::FMTConstraint>,FMTmodelparameters)
 		/**
 		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints and parameters are optional.
 		For the FMTsesmodel no constraints are needed.
 		*/
-		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
-			const std::vector<Core::FMTaction>& lactions,
-			const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
-			const std::string& lname, const std::vector<Core::FMToutput>& loutputs, std::vector<Core::FMTconstraint> lconstraints = std::vector<Core::FMTconstraint>(),
+		FMTmodel(const std::vector<Core::FMTActualDevelopment>& larea, const std::vector<Core::FMTTheme>& lthemes,
+			const std::vector<Core::FMTAction>& lactions,
+			const std::vector<Core::FMTTransition>& ltransitions, const Core::FMTYields& lyields, const Core::FMTLifespans& llifespan,
+			const std::string& lname, const std::vector<Core::FMTOutput>& loutputs, std::vector<Core::FMTConstraint> lconstraints = std::vector<Core::FMTConstraint>(),
 			FMTmodelparameters lparameters = FMTmodelparameters());
 		// DocString: FMTmodel()
 		/**
@@ -216,7 +216,7 @@ namespace Models
 		/**
 			Virtual function to get the area of a given period into actualdevelopment. If before grow = true it will returns the development before it grow and death to the next period.
 		*/
-		virtual std::vector<Core::FMTactualdevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
+		virtual std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
 		// DocString: FMTmodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
@@ -234,25 +234,25 @@ namespace Models
 		/**
 		Get the presolve filter.
 		*/
-		Core::FMTmaskfilter getPresolveFilter(const std::vector<Core::FMTtheme>& originalthemes) const;
+		Core::FMTMaskFilter getPresolveFilter(const std::vector<Core::FMTTheme>& originalthemes) const;
 		// DocString: FMTmodel::getPostsolveFilter
 		/**
 		Get the postSolve filter used by the presolve (in case you want to turn presolved mask into postSolve mask).
 		*/
-		Core::FMTmaskfilter getPostsolveFilter(const std::vector<Core::FMTtheme>& originalthemes, const Core::FMTmask& devmask) const;
+		Core::FMTMaskFilter getPostsolveFilter(const std::vector<Core::FMTTheme>& originalthemes, const Core::FMTMask& devmask) const;
 		// DocString: FMTmodel::getSelectedMask
 		/**
 		If the model is presolved you can call this function to get the selection mask that you need
-		to use to presolve a FMTmask.
+		to use to presolve a FMTMask.
 		*/
-		Core::FMTmask getSelectedMask(const std::vector<Core::FMTtheme>& originalthemes) const;
+		Core::FMTMask getSelectedMask(const std::vector<Core::FMTTheme>& originalthemes) const;
 		// DocString: FMTmodel::presolve
 		/**
 		This function use a vector of developments and the actual transitions of the model and return new presolved FMTmodel.
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data
 		if the model is badly formulated.
 		*/
-		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTmodel::postSolve
 		/*
 		This function is for postsolving the presolved model into the original model.
@@ -263,7 +263,7 @@ namespace Models
 		Using the original schedule (not presolved) and the original model (not presolved) it returns a new schedule with
 		presolved FMTdevelopments masks and actions.
 		*/
-		Core::FMTschedule presolveSchedule(const Core::FMTschedule& originalbaseschedule,
+		Core::FMTSchedule presolveSchedule(const Core::FMTSchedule& originalbaseschedule,
 			const FMTmodel& originalbasemodel) const;
 		// DocString: FMTmodel::getModelStats
 		/**
@@ -288,7 +288,7 @@ namespace Models
 		/**
 		Getter returning a copy of the FMTthemes vector<> of the model.
 		*/
-		inline std::vector<Core::FMTtheme>getThemes() const
+		inline std::vector<Core::FMTTheme>getThemes() const
 		{
 			return themes;
 		}
@@ -296,7 +296,7 @@ namespace Models
 		/**
 		Getter returning a copy of the FMTactions vector<> of the model.
 		*/
-		inline std::vector<Core::FMTaction>getactions() const
+		inline std::vector<Core::FMTAction>getactions() const
 		{
 			return actions;
 		}
@@ -304,15 +304,15 @@ namespace Models
 		/**
 		Getter returning a copy of the FMTtransitions vector<> of the model.
 		*/
-		inline std::vector<Core::FMTtransition>getTransitions() const
+		inline std::vector<Core::FMTTransition>getTransitions() const
 		{
 			return transitions;
 		}
 		// DocString: FMTmodel::getYields
 		/**
-		Getter returning a copy of the FMTyields data of the model.
+		Getter returning a copy of the FMTYields data of the model.
 		*/
-		inline Core::FMTyields getYields() const
+		inline Core::FMTYields getYields() const
 		{
 			return yields;
 		}
@@ -320,7 +320,7 @@ namespace Models
 		/**
 		Getter returning a copy of the FMTlifespan data of the model.
 		*/
-		inline Core::FMTlifespans getLifespan() const
+		inline Core::FMTLifespans getLifespan() const
 		{
 			return lifespan;
 		}
@@ -328,7 +328,7 @@ namespace Models
 		/**
 		Getter returning a copy of the FMToutputs vector<> of the model.
 		*/
-		inline std::vector<Core::FMToutput> getOutputs() const
+		inline std::vector<Core::FMTOutput> getOutputs() const
 		{
 			return outputs;
 		}
@@ -336,7 +336,7 @@ namespace Models
 		/**
 		Getter returning a copy of the FMTconstraints vector<> of the model.
 		*/
-		inline std::vector<Core::FMTconstraint>getconstraints() const
+		inline std::vector<Core::FMTConstraint>getconstraints() const
 		{
 			return constraints;
 		}
@@ -344,14 +344,14 @@ namespace Models
 		/**
 		Returns the default death action when not specified by the user, base on specific lifespan and themes.
 		*/
-		static Core::FMTaction defaultDeathAction(const Core::FMTlifespans& llifespan,
-			const std::vector<Core::FMTtheme>& lthemes);
+		static Core::FMTAction defaultDeathAction(const Core::FMTLifespans& llifespan,
+			const std::vector<Core::FMTTheme>& lthemes);
 		// DocString: FMTmodel::defaultDeathTransition
 		/**
 		Returns the default death transition when not specified by the user, base on specific lifespan and themes.
 		*/
-		static Core::FMTtransition defaultDeathTransition(const Core::FMTlifespans& llifespan,
-			const std::vector<Core::FMTtheme>& lthemes);
+		static Core::FMTTransition defaultDeathTransition(const Core::FMTLifespans& llifespan,
+			const std::vector<Core::FMTTheme>& lthemes);
 		// DocString: FMTmodel::addOutput
 		/**
 		Change the function to accept a FMTouptut********
@@ -367,8 +367,8 @@ namespace Models
 			std::string action = std::string(), std::string yield = std::string(), std::string description = std::string(), int targetTheme = -1);
 		// DocString: FMTmodel::addYieldHandlers
 		/**
-		Add FMTyieldhandler from vector (yieldhandlers) to yields. Can only be use for FMTageyieldhandler and FMTtimeyieldhandler. If you want
-		to add FMTmodelyieldhandler or FMTcomplexyieldhander it must be added in the .yld file to parse with the model.
+		Add FMTYieldHandler from vector (yieldhandlers) to yields. Can only be use for FMTAgeYieldHandler and FMTTimeYieldHandler. If you want
+		to add FMTModelYieldHandler or FMTcomplexyieldhander it must be added in the .yld file to parse with the model.
 		*/
 		template<typename T>
 		void addYieldHandlers(const std::vector<T>& yieldhandlers)
@@ -377,7 +377,7 @@ namespace Models
 				yields.unShrink(themes);
 				for (const auto& yldhandler : yieldhandlers)
 				{
-					std::unique_ptr<Core::FMTyieldhandler> yldhandlerptr = yldhandler.clone();
+					std::unique_ptr<Core::FMTYieldHandler> yldhandlerptr = yldhandler.clone();
 					yields.push_back(yldhandlerptr->getMask(), yldhandlerptr);
 				}
 				yields.update();
@@ -388,9 +388,9 @@ namespace Models
 		}
 		// DocString: FMTmodel::addYieldHandlersFromPtr
 		/**
-		Add unique pointer of FMTyieldhandler from vector (yieldhandlers) to yields.
+		Add unique pointer of FMTYieldHandler from vector (yieldhandlers) to yields.
 		*/
-		void addYieldHandlersFromPtr(const std::vector<std::unique_ptr<Core::FMTyieldhandler>>& yieldhandlers);
+		void addYieldHandlersFromPtr(const std::vector<std::unique_ptr<Core::FMTYieldHandler>>& yieldhandlers);
 		// DocString: FMTmodel::operator==
 		/**
 		Comparison operator of FMTlpmodel
@@ -403,42 +403,42 @@ namespace Models
 		bool operator < (const FMTmodel& rhs) const;
 		// DocString: FMTmodel::setArea
 		/**
-		Setter for initial FMTactualdevelopment (area section) will replace the originals.
+		Setter for initial FMTActualDevelopment (area section) will replace the originals.
 		This function also check if the actualdevelopment lifespan is shorter than the lock.
 		If not so, it raise the error FMTdeathwithlock and if the error is set to warning,
 		the locks of the FMTactualdevelpement will be reduced accordingly.
 		*/
-		void setArea(const std::vector<Core::FMTactualdevelopment>& ldevs);
+		void setArea(const std::vector<Core::FMTActualDevelopment>& ldevs);
 		// DocString: FMTmodel::setThemes
 		/**
 		Setter for the FMTthemes of the model will replace the originals.
 		*/
-		void setThemes(const std::vector<Core::FMTtheme>& lthemes);
+		void setThemes(const std::vector<Core::FMTTheme>& lthemes);
 		// DocString: FMTmodel::setActions
 		/**
 		Setter for the FMTactions of the model will replace the originals.
 		*/
-		void setActions(const std::vector<Core::FMTaction>& lactions);
+		void setActions(const std::vector<Core::FMTAction>& lactions);
 		// DocString: FMTmodel::setTransitions
 		/**
 		Setter for the FMTtransitions of the model will replace the originals.
 		*/
-		void setTransitions(const std::vector<Core::FMTtransition>& ltransitions);
+		void setTransitions(const std::vector<Core::FMTTransition>& ltransitions);
 		// DocString: FMTmodel::setConstraints
 		/**
 		Setter for the FMTconstraints of the model will replace the original.
 		*/
-		void setConstraints(const std::vector<Core::FMTconstraint>& lconstraint);
+		void setConstraints(const std::vector<Core::FMTConstraint>& lconstraint);
 		// DocString: FMTmodel::setYields
 		/**
-		Setter for the FMTyields data of the model will replace the original.
+		Setter for the FMTYields data of the model will replace the original.
 		*/
-		void setYields(const Core::FMTyields& lylds);
+		void setYields(const Core::FMTYields& lylds);
 		// DocString: FMTmodel::setLifespan
 		/**
-		Setter for the FMTlifespans data of the model will replace the original.
+		Setter for the FMTLifespans data of the model will replace the original.
 		*/
-		void setLifespan(const Core::FMTlifespans& llifespan);
+		void setLifespan(const Core::FMTLifespans& llifespan);
 		// DocString: FMTmodel::setName
 		/**
 		Set the names of the FMTmodel
@@ -448,64 +448,64 @@ namespace Models
 		/**
 		Setter for the model's outputs.
 		*/
-		void setOutputs(const std::vector<Core::FMToutput>& newoutputs);
+		void setOutputs(const std::vector<Core::FMTOutput>& newoutputs);
 		// DocString: FMTmodel::isValid
 		/**
 		This function validate all the FMTmodel
-		FMTtheme ->FMTactualdevelopments-> FMTyields -> FMTaction -> FMTtransition -> FMToutput -> FMTconstraint
+		FMTTheme ->FMTactualdevelopments-> FMTYields -> FMTAction -> FMTTransition -> FMTOutput -> FMTConstraint
 		return true if the model is valid.
 		*/
 		bool isValid();
-		// DocString: FMTmodel::locateStaticThemes(const Core::FMToutput, bool ignoreoutputvariables)
+		// DocString: FMTmodel::locateStaticThemes(const Core::FMTOutput, bool ignoreoutputvariables)
 		/**
 		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes
 		that are not used into the transition and in a given output (staticthemes)... will return themes based on spatial units.
 		*/
-		std::vector<const Core::FMTtheme*> locateStaticThemes(const Core::FMToutput& output, bool ignoreoutputvariables = false) const;
-		// DocString: FMTmodel::locateStaticThemes(const Core::FMToutputnode, bool ignoreoutputvariables)
+		std::vector<const Core::FMTTheme*> locateStaticThemes(const Core::FMTOutput& output, bool ignoreoutputvariables = false) const;
+		// DocString: FMTmodel::locateStaticThemes(const Core::FMTOutputNode, bool ignoreoutputvariables)
 		/**
 		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes
 		that are not used into the transition and in a given output node (staticthemes)... will return themes based on spatial units.
 		*/
-		std::vector<const Core::FMTtheme*> locateStaticThemes(const Core::FMToutputnode& output, bool ignoreoutputvariables = false) const;
+		std::vector<const Core::FMTTheme*> locateStaticThemes(const Core::FMTOutputNode& output, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::locateDynamicThemes
 		/**
 		Returns themes used in the transition scheme.
 		*/
-		std::vector<const Core::FMTtheme*> locateDynamicThemes(const Core::FMToutput& outpu, bool ignoreoutputvariables = false) const;
-		// DocString: FMTmodel::getDynamicMask(const Core::FMToutput, bool ignoreoutputvariables)
+		std::vector<const Core::FMTTheme*> locateDynamicThemes(const Core::FMTOutput& outpu, bool ignoreoutputvariables = false) const;
+		// DocString: FMTmodel::getDynamicMask(const Core::FMTOutput, bool ignoreoutputvariables)
 		/**
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
 		*/
-		Core::FMTmask getDynamicMask(const Core::FMToutput& output, bool ignoreoutputvariables = false) const;
-		// DocString: FMTmodel::getDynamicMask(const Core::FMToutputnode, bool ignoreoutputvariables)
+		Core::FMTMask getDynamicMask(const Core::FMTOutput& output, bool ignoreoutputvariables = false) const;
+		// DocString: FMTmodel::getDynamicMask(const Core::FMTOutputNode, bool ignoreoutputvariables)
 		/**
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
 		*/
-		Core::FMTmask getDynamicMask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
+		Core::FMTMask getDynamicMask(const Core::FMTOutputNode& node, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::getStaticMask
 		/**
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 1 and dynamic value a value of 0.
 		*/
-		virtual Core::FMTmask getStaticMask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
+		virtual Core::FMTMask getStaticMask(const Core::FMTOutputNode& node, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::isStaticNode
 		/**
 		Based on static and dynamic themes will return true if the node can be used in staticmask fonctions.
 		More that ratio of set is high the more you will get true from this fonction.
 		*/
-		bool isStaticNode(const Core::FMToutputnode& node, double ratioofset = 0.1) const;
+		bool isStaticNode(const Core::FMTOutputNode& node, double ratioofset = 0.1) const;
 		// DocString: FMTmodel::locateStaticTransitionsThemes
 		/**
 		Returns the static themes based on model transitions.
 		*/
-		std::vector<const Core::FMTtheme*>locateStaticTransitionsThemes() const;
+		std::vector<const Core::FMTTheme*>locateStaticTransitionsThemes() const;
 		// DocString: FMTmodel::locatenotestaticthemes
 		/**
 		Returns the static themes based on model transitions.
 		*/
-		std::vector<const Core::FMTtheme*>locateNodeStaticThemes(const Core::FMToutputnode& node,
+		std::vector<const Core::FMTTheme*>locateNodeStaticThemes(const Core::FMTOutputNode& node,
 			bool ignoreoutputvariables = false,
-			std::vector<const Core::FMTtheme*> basethemes = std::vector<const Core::FMTtheme*>()) const;
+			std::vector<const Core::FMTTheme*> basethemes = std::vector<const Core::FMTTheme*>()) const;
 		// DocString: FMTmodel(FMTmodel)
 		/**
 		Copy constructor of FMTmodel
@@ -548,18 +548,18 @@ namespace Models
 		The function will remove (toRemove) developments from a selected vector (selection). Test operability of the
 		difference and return a schedule containing an area of 1.0 if the development is operable to this actions.
 		*/
-		Core::FMTschedule getPotentialSchedule(std::vector<Core::FMTactualdevelopment> toRemove,
-			std::vector<Core::FMTactualdevelopment> selection, bool withlock = true) const;
+		Core::FMTSchedule getPotentialSchedule(std::vector<Core::FMTActualDevelopment> toRemove,
+			std::vector<Core::FMTActualDevelopment> selection, bool withlock = true) const;
 		// DocString: FMTmodel::getReplanningConstraints
 		/**
 		Ajust constraints that need to be set to a value (getOutput) of the global or local model and return all constraint.
 		*/
-		virtual std::vector<Core::FMTconstraint> getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
+		virtual std::vector<Core::FMTConstraint> getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTConstraint>& localconstraints, const int& period) const;
 		// DocString: FMTmodel::doPlanning
 		/**
 		Build the model and do the initialSolve or simulate. This function use the build and solve overrided functions of the differents model type.
 		*/
-		virtual bool doPlanning(const bool& solve, std::vector<Core::FMTschedule> schedules = std::vector<Core::FMTschedule>());
+		virtual bool doPlanning(const bool& solve, std::vector<Core::FMTSchedule> schedules = std::vector<Core::FMTSchedule>());
 		// DocString: FMTmodel::getOutput
 		/**
 		Get the output value of a output for a given period using the spatial solution.
@@ -567,19 +567,19 @@ namespace Models
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or development name if level == FMToutputlevel::developpement
 		*/
-		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
+		virtual std::map<std::string, double> getOutput(const Core::FMTOutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		// DocString: FMTmodel::getSolution
 		/**
-		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
+		Get the standard solution for a given period (FMTSchedule dont have natural growth solution included).
 		If with lock is true then the schedule will contain locked development.
 		*/
-		virtual Core::FMTschedule getSolution(int period, bool withlock = false) const;
+		virtual Core::FMTSchedule getSolution(int period, bool withlock = false) const;
 		// DocString: FMTmodel::getOutputsFromPeriods
 		/**
 		For each output get a vector of outputs values starting for first period to last period.
 		*/
-		virtual std::map<std::string, std::vector<std::vector<double>>>getOutputsFromPeriods(const std::vector<Core::FMToutput>& theoutputs,
+		virtual std::map<std::string, std::vector<std::vector<double>>>getOutputsFromPeriods(const std::vector<Core::FMTOutput>& theoutputs,
 			const int& firstPeriod, const int& lastPeriod, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		// DocString: FMTmodel::clone
 		/**
@@ -648,12 +648,12 @@ namespace Models
 		/**
 		Return all constraints and objective with goals and penalty
 		*/
-		std::vector<Core::FMTconstraint>goalConstraints(double penalty = 999999) const;
+		std::vector<Core::FMTConstraint>goalConstraints(double penalty = 999999) const;
 		// DocString: FMTmodel::getTacticalConstraints
 		/**
 		Get the constraints adapted for a tactical model.
 		*/
-		std::vector<Core::FMTconstraint>getTacticalConstraints(double penalty = 999999, double scheduleweight = 999999, double objective = 0, double objectivefactor = 1.0) const;
+		std::vector<Core::FMTConstraint>getTacticalConstraints(double penalty = 999999, double scheduleweight = 999999, double objective = 0, double objectivefactor = 1.0) const;
 		// DocString: FMTmodel::showParameters
 		/**
 		Show parameters values. If (showhelp) a brief description of each parameters will appear.
@@ -663,7 +663,7 @@ namespace Models
 		/**
 		Virtual function overrided all type of models. In child class, this function is use to build the elements needed to solve the model.
 		*/
-		virtual bool build(std::vector<Core::FMTschedule> schedules = std::vector<Core::FMTschedule>())
+		virtual bool build(std::vector<Core::FMTSchedule> schedules = std::vector<Core::FMTSchedule>())
 		{
 			//Mettre message warning
 			return false;
@@ -708,28 +708,28 @@ namespace Models
 		FMTmodelparameters parameters;
 		// DocString: FMTmodel::area
 		///Actualdevelopments for period 0, seen in the area section or the shapefile/raster
-		std::vector<Core::FMTactualdevelopment>area;
+		std::vector<Core::FMTActualDevelopment>area;
 		// DocString: FMTmodel::themes
 		///Model themes of the landscape section file.
-		std::vector<Core::FMTtheme>themes;
+		std::vector<Core::FMTTheme>themes;
 		// DocString: FMTmodel::actions
 		///Model actions from the action file and also the _death action
-		std::vector<Core::FMTaction>actions;
+		std::vector<Core::FMTAction>actions;
 		// DocString: FMTmodel::transitions
 		///Model transitions from the transition file and also the _death transition
-		std::vector<Core::FMTtransition>transitions;
+		std::vector<Core::FMTTransition>transitions;
 		// DocString: FMTmodel::yields
 		///Yields data comming from the yield file
-		Core::FMTyields yields;
+		Core::FMTYields yields;
 		// DocString: FMTmodel::lifespan
 		///lifespan data comming from the lifespan file
-		Core::FMTlifespans lifespan;
+		Core::FMTLifespans lifespan;
 		// DocString: FMTmodel::outputs
 		///Outputs comming from the ouput file
-		std::vector<Core::FMToutput> outputs;
+		std::vector<Core::FMTOutput> outputs;
 		// DocString: FMTmodel::constraints
 		///Outputs comming from the optimization file
-		std::vector<Core::FMTconstraint>constraints;
+		std::vector<Core::FMTConstraint>constraints;
 		// DocString: FMTmodel::name
 		///The name of the Model (name of the .pri file without extension)
 		std::string name;
@@ -752,14 +752,14 @@ namespace Models
 		/**
 		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopments.
 		*/
-		Core::FMTmask getBaseMask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const;
+		Core::FMTMask getBaseMask(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const;
 		
 		// DocString: FMTmodel::getStaticPresolveThemes
 		/**
 		Using the transition themes look at constraints and actions or yields actions to return
 		only themes that are not part of the model.
 		*/
-		std::vector<const Core::FMTtheme*>getStaticPresolveThemes() const;
+		std::vector<const Core::FMTTheme*>getStaticPresolveThemes() const;
 		void clearActionsCache();
 		void clearYieldCache();
 		void clearTransitionCache();
@@ -774,7 +774,7 @@ namespace Models
 		Will make sure that the length is covered with a schedule or an empty one.
 		It will always return a filled vector.
 		*/
-		std::vector<Core::FMTschedule>setUpSchedulesForBuild(const std::vector<Core::FMTschedule>& schedules) const;
+		std::vector<Core::FMTSchedule>setUpSchedulesForBuild(const std::vector<Core::FMTSchedule>& schedules) const;
 		// DocString: FMTmodel::useActionSerie
 		/**
 		Returns true if the model make use of action series.
@@ -795,8 +795,8 @@ namespace Models
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			FMTobject::forceSave(ar, version);
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
+			FMTObject::forceSave(ar, version);
 			std::stringstream basegenerator;
 			basegenerator << m_generator;
 			const std::string baseGeneratorString(basegenerator.str());
@@ -819,8 +819,8 @@ namespace Models
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			FMTobject::forceLoad(ar, version);//get the object information for the global object
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
+			FMTObject::forceLoad(ar, version);//get the object information for the global object
 			std::string baseGeneratorString;
 			ar& BOOST_SERIALIZATION_NVP(baseGeneratorString);
 			std::stringstream(baseGeneratorString) >> m_generator;
@@ -839,17 +839,17 @@ namespace Models
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 			// DocString: FMTmodel::validateListMasks
 			/**
-			Function used to validate FMTmask in a FMTlist element like FMTaction, FMTtransition etc...
-			Will throw exception if the FMTmask string does not match the FMTthemes.
+			Function used to validate FMTMask in a FMTList element like FMTAction, FMTTransition etc...
+			Will throw exception if the FMTMask string does not match the FMTthemes.
 			*/
 			template<class T>
-		void validateListMasks(const Core::FMTlist<T>& container) const
+		void validateListMasks(const Core::FMTList<T>& container) const
 		{
 			try {
 				for (const auto& listobject : container)
 				{
 					std::string name = std::string(listobject.first);
-					Core::FMTtheme::validate(themes, name);
+					Core::FMTTheme::validate(themes, name);
 				}
 			}
 			catch (...)
@@ -860,23 +860,23 @@ namespace Models
 		// DocString: FMTmodel::validateListSpec
 		/**
 		Function used to validate specifications (check for yields used)
-		Will throw excetion if the yield used in the specificaiton is not defined in FMTyields.
+		Will throw excetion if the yield used in the specificaiton is not defined in FMTYields.
 		*/
-		void validateListSpec(const Core::FMTspec& specifier) const;
+		void validateListSpec(const Core::FMTSpec& specifier) const;
 		// DocString: FMTmodel::aggregateActions
 		/**
 		 * @brief Aggregate actions together and on this model (will call setactions)
 		 * @param p_ActionsMapping the action aggregates you want to put together.
 		 * @return Return the mask filter map to apply to any output with old action name as key
-		 *		the tuple values are string for new action name and FMTmask for filter.
+		 *		the tuple values are string for new action name and FMTMask for filter.
 		 */
-		std::map<std::string, std::pair<std::string,Core::FMTmask>> aggregateActions(std::vector<std::string> p_ActionsMapping);
+		std::map<std::string, std::pair<std::string,Core::FMTMask>> aggregateActions(std::vector<std::string> p_ActionsMapping);
 		// DocString: FMTmodel::aggregateTransitions
 		/**
 		 * @brief Aggregate transitions together and on this model (will call setTransitions)
 		 * @param p_Filters the filter of the actions.
 		 */
-		void aggregateTransitions(const std::map<std::string, std::pair<std::string, Core::FMTmask>>& p_Filters);
+		void aggregateTransitions(const std::map<std::string, std::pair<std::string, Core::FMTMask>>& p_Filters);
 		// DocString: FMTmodel::aggregateOutputs
 		/**
 		 * @brief Change outputs by applying a filter to mask output that use aggregated actions.
@@ -885,29 +885,29 @@ namespace Models
 		 * @param[in] p_Outputs pointers to the outputs to modify.
 		 * @param[in] p_ActionOrdering the hierarchy of the actions.
 		 */
-		void aggregateOutputs(const std::map<std::string, std::pair<std::string, Core::FMTmask>>& p_Filters,
-			std::vector<Core::FMToutput*>& p_Outputs, const std::vector<std::string>& p_ActionOrdering);
+		void aggregateOutputs(const std::map<std::string, std::pair<std::string, Core::FMTMask>>& p_Filters,
+			std::vector<Core::FMTOutput*>& p_Outputs, const std::vector<std::string>& p_ActionOrdering);
 		// DocString: FMTmodel::addNewMask
 		/**
-		 * @brief This function takes a non string mapped FMTmask and add all the aggregates needed
-		 * in the themes to produce a valid FMTmask with complete name.
+		 * @brief This function takes a non string mapped FMTMask and add all the aggregates needed
+		 * in the themes to produce a valid FMTMask with complete name.
 		 * @param p_incompleteMask the mask that doest not have a complete name just bits.
 		 * @return A valid mask with the right name with the newly created aggregates.
 		 */
-		Core::FMTmask addNewMask(const Core::FMTmask& p_incompleteMask);
+		Core::FMTMask addNewMask(const Core::FMTMask& p_incompleteMask);
 		// DocString: FMTmodel::extendSchedule
 		/**
 		 * @brief extend the schedule dev with the actual model which use more themes.
 		 * @param[in] p_schedules schedules we want to extend.
 		 * @return a complete schedule that fits the model.
 		 */
-		std::vector<Core::FMTschedule> extendSchedule(const std::vector<Core::FMTschedule>& p_schedules) const;
+		std::vector<Core::FMTSchedule> extendSchedule(const std::vector<Core::FMTSchedule>& p_schedules) const;
 		// DocString: FMTmodel::_gutsOfConstructor
 		/**
 		 * @brief the guts of the base constructor.
 		 * @param[in] p_area the base area.
 		 */
-		void _gutsOfConstructor(const std::vector<Core::FMTactualdevelopment>& p_area);
+		void _gutsOfConstructor(const std::vector<Core::FMTActualDevelopment>& p_area);
 		// DocString: FMTmodel::_cleanVector
 		/**
 		 * @brief Clean a vector by the back to the front
@@ -941,7 +941,7 @@ namespace Models
 		 * @param[in] p_themes themes to check for
 		 * @return wrapper aggregates.
 		 */
-		std::string _getAggregatesWrap(const Core::FMTmask& p_mask,
+		std::string _getAggregatesWrap(const Core::FMTMask& p_mask,
 			const std::vector<size_t>& p_themes) const;
 		// DocString: FMTmodel::_getAggregatesThemes
 		/**
@@ -958,7 +958,7 @@ namespace Models
 		 * @param[in]p_AggregatedThemes aggregated themes
 		 * @return attribute
 		 */
-		std::string _getYieldAttribute(const Core::FMTmask& p_devMask,
+		std::string _getYieldAttribute(const Core::FMTMask& p_devMask,
 			const std::string& p_yieldName, const std::vector<size_t>& p_AggregatedThemes) const;
     };
 // DocString: FMTModelComparator

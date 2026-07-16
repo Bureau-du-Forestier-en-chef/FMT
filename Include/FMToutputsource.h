@@ -31,29 +31,29 @@ namespace Parser
 
 namespace Core
 {
-	class FMTaction;
-	class FMTyields;
-	class FMTactualdevelopment;
-	class FMTdevelopmentpath;
-	class FMToperator;
-class FMTEXPORT FMToutputsource : public FMTspec
+	class FMTAction;
+	class FMTYields;
+	class FMTActualDevelopment;
+	class FMTDevelopmentPath;
+	class FMTOperator;
+class FMTEXPORT FMTOutputSource : public FMTSpec
     {
     public:
-		FMToutputsource();
-		~FMToutputsource() = default;
-        FMToutputsource(const FMTotar ltarget,double lvalue = 0,
+		FMTOutputSource();
+		~FMTOutputSource() = default;
+        FMTOutputSource(const FMTotar ltarget,double lvalue = 0,
 			std::string lyield= "", std::string laction = "",int origin=-1, int ttarget=-1);
-        FMToutputsource(const FMTotar ltarget,
+        FMTOutputSource(const FMTotar ltarget,
 			std::vector<double>lvalues, int origin = -1, int ttarget=-1, std::string llevelname = "");
-        FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
+        FMTOutputSource(const FMTSpec& spec,const FMTMask& lmask,
                const FMTotar ltarget, std::string lyield= "",
                std::string laction = "", int origin = -1, int ttarget=-1);
-        FMToutputsource(const FMToutputsource& rhs);
-        FMToutputsource& operator = (const FMToutputsource& rhs);
+        FMTOutputSource(const FMTOutputSource& rhs);
+        FMTOutputSource& operator = (const FMTOutputSource& rhs);
         operator std::string() const override;
-		bool operator == (const FMToutputsource& rhs) const;
-		bool operator != (const FMToutputsource& rhs) const;
-		bool operator < (const FMToutputsource& rhs) const;
+		bool operator == (const FMTOutputSource& rhs) const;
+		bool operator != (const FMTOutputSource& rhs) const;
+		bool operator < (const FMTOutputSource& rhs) const;
 		inline int getOutputOrigin() const
 			{
 			return outputorigin;
@@ -62,20 +62,20 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			{
 			return themetarget;
 			}
-		bool isInAggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
-		bool isSubsetOf(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
-		bool isSubsetOf(const FMToutputsource& rhs) const;
-		bool isSameButDifferentAction(const FMToutputsource& rhs) const;
-		inline const FMTmask& getMask() const
+		bool isInAggregate(const FMTOutputSource& rhs, const std::vector<Core::FMTAction>& actions) const;
+		bool isSubsetOf(const FMTOutputSource& rhs, const std::vector<Core::FMTAction>& actions) const;
+		bool isSubsetOf(const FMTOutputSource& rhs) const;
+		bool isSameButDifferentAction(const FMTOutputSource& rhs) const;
+		inline const FMTMask& getMask() const
 			{
 			return mask;
 			}
-		void setMask(const FMTmask& newmask);
+		void setMask(const FMTMask& newmask);
 		void setAction(const std::string& actionname);
 		void setTarget(const FMTotar& newtype);
 		void setThemeTarget(const int& newttarget);
 		void setOutputOrigin(const int& neworigin);
-		void resetValues(const FMToperator& op,const FMToutputsource& other);
+		void resetValues(const FMTOperator& op,const FMTOutputSource& other);
 		inline const std::string& getAction() const
 			{
 			return action;
@@ -113,13 +113,13 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		{
 			return values;
 		}
-		bool isNull(const FMTyields& ylds) const;
+		bool isNull(const FMTYields& ylds) const;
 		inline bool isTimeYield() const
 			{
 			return (target == FMTotar::timeyld);
 			}
-		std::vector<const FMTaction*>targets(const std::vector<FMTaction>& actions) const;
-		std::unordered_set<int>targetsSet(const std::vector<FMTaction>& actions) const;
+		std::vector<const FMTAction*>targets(const std::vector<FMTAction>& actions) const;
+		std::unordered_set<int>targetsSet(const std::vector<FMTAction>& actions) const;
 		inline bool isInventory() const
 			{
 			return (target == FMTotar::inventory);
@@ -136,14 +136,14 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			{
 			return (target == FMTotar::actual);
 			}
-		double getCoef(const FMTdevelopment& development,
-			const FMTyields& yields,
+		double getCoef(const FMTDevelopment& development,
+			const FMTYields& yields,
 			const Graph::FMTgraphvertextoyield* graphinfo =nullptr,
-			std::vector<FMTdevelopmentpath> const * paths=nullptr,
-			 FMTaction const * action=nullptr) const;
-		bool use(const FMTdevelopment& development, const FMTyields& ylds,
+			std::vector<FMTDevelopmentPath> const * paths=nullptr,
+			 FMTAction const * action=nullptr) const;
+		bool use(const FMTDevelopment& development, const FMTYields& ylds,
 			const Graph::FMTgraphvertextoyield* graphinfo = nullptr) const;
-		FMToutputsource presolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>& newthemes) const;
+		FMTOutputSource presolve(const FMTMaskFilter& filter,const std::vector<FMTTheme>& newthemes) const;
 		void setAverage();
 		inline bool isAverage() const
 			{
@@ -155,17 +155,17 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			return sum;
 		}
 		bool canBeDeducedToConstant() const;
-		double getConstantValue(const std::vector<Core::FMTactualdevelopment>& area,
-								const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const;
+		double getConstantValue(const std::vector<Core::FMTActualDevelopment>& area,
+								const std::vector<Core::FMTAction>&actions, const FMTYields& yields) const;
 		size_t hash(int period = -1,bool withyield = false) const;
-		void fillHashMask(Core::FMTmask& baseMask) const;
-		void fillHashSpec(Core::FMTmask& baseMask) const;
-		bool isEqualByValue(const FMToutputsource& rhs) const;
+		void fillHashMask(Core::FMTMask& baseMask) const;
+		void fillHashSpec(Core::FMTMask& baseMask) const;
+		bool isEqualByValue(const FMTOutputSource& rhs) const;
 		inline bool isAction() const
 			{
 			return !action.empty();
 			}
-		// DocString: FMToutputsource::trimDouble
+		// DocString: FMTOutputSource::trimDouble
 		/**
 		* @brief Trim en string les nombres a virgule.
 		*
@@ -176,7 +176,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		* @return Retourne la valeur trimmé en std::string
 		*/
 		static std::string trimDouble(const std::string& string_number);
-		// DocString: FMToutputsource::setYield
+		// DocString: FMTOutputSource::setYield
 		/**
 		@brief set Yield to the output source.
 		@param[in] p_Yield the yield we want to set.
@@ -188,7 +188,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
+			ar& boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTSpec>(*this));
 			ar& BOOST_SERIALIZATION_NVP(mask);
 			ar& BOOST_SERIALIZATION_NVP(target);
 			ar& BOOST_SERIALIZATION_NVP(action);
@@ -196,7 +196,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			ar& BOOST_SERIALIZATION_NVP(values);
 			ar& BOOST_SERIALIZATION_NVP(themetarget);
 		}
-		FMTmask mask;
+		FMTMask mask;
 		FMTotar target;
 		std::string action, yield, levelname;//levelname is only for constant level...(for parsing)
 		std::vector<double>values;
@@ -213,19 +213,19 @@ class FMTOutputSourceComparator
 		bool variable;
 	public:
 		FMTOutputSourceComparator(bool lvariable);
-		bool operator()(const FMToutputsource& source) const;
+		bool operator()(const FMTOutputSource& source) const;
 
 	};
 }
 
 namespace boost {
 	/**
-	boost hash function for FMToutputsource
+	boost hash function for FMTOutputSource
 	*/
 	template <>
-	struct hash<Core::FMToutputsource>
+	struct hash<Core::FMTOutputSource>
 	{
-		std::size_t operator()(const Core::FMToutputsource& p_source) const
+		std::size_t operator()(const Core::FMTOutputSource& p_source) const
 		{
 			return p_source.hash(-1, true);
 		}

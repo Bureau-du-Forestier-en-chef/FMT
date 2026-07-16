@@ -85,202 +85,202 @@ namespace boost {
 namespace Core
 {
 
-class FMTtheme;
-class FMTmaskfilter;
-// DocString: FMTmask
+class FMTTheme;
+class FMTMaskFilter;
+// DocString: FMTMask
 /**
-FMTmask class is one of the most important class in FMT. Alot of classes are bases on FMTmask.
+FMTMask class is one of the most important class in FMT. Alot of classes are bases on FMTMask.
 data is boost:dynamic_bitset where if a bit is set that means that the attribute of a given theme
-is part of the FMTmask. the data member size == the sum of the FMTthemes size.
-The name data member hold the attribute value as a string. Sometime when the FMTmask is used for union
-the name might not be set. Also if multiple bits are set for a given FMTtheme it means that the mask
+is part of the FMTMask. the data member size == the sum of the FMTthemes size.
+The name data member hold the attribute value as a string. Sometime when the FMTMask is used for union
+the name might not be set. Also if multiple bits are set for a given FMTTheme it means that the mask
 contains a aggregate or a ?.
 */
-class FMTEXPORT FMTmask
+class FMTEXPORT FMTMask
     {
 
     public:
-		// DocString: FMTmask::(FMTmask&& rhs)
+		// DocString: FMTMask::(FMTMask&& rhs)
 		/**
 		@brief Move copy constructor
 		@param[in] rhs development to swap
 		*/
-		FMTmask(FMTmask&& rhs) noexcept;
-		// DocString: FMTmask::operator=(FMTmask&& rhs)
+		FMTMask(FMTMask&& rhs) noexcept;
+		// DocString: FMTMask::operator=(FMTMask&& rhs)
 		/**
 		@brief Move copy assignement
 		@param[in] rhs development to swap
 		*/
-		FMTmask& operator=(FMTmask&& rhs) noexcept;
+		FMTMask& operator=(FMTMask&& rhs) noexcept;
 		// DocString: swap()
 		/**
-		Swap for FMTmask.
+		Swap for FMTMask.
 		*/
-		void swap(FMTmask& rhs);
-		// DocString: FMTmask()
+		void swap(FMTMask& rhs);
+		// DocString: FMTMask()
 		/**
-		Default constructor for FMTmask.
+		Default constructor for FMTMask.
 		*/
-        FMTmask();
-		// DocString: FMTmask(const FMTmask&)
+        FMTMask();
+		// DocString: FMTMask(const FMTMask&)
 		/**
-		FMTmask copy constructor.
+		FMTMask copy constructor.
 		*/
-		FMTmask(const FMTmask& rhs);
-		// DocString: ~FMTmask()
+		FMTMask(const FMTMask& rhs);
+		// DocString: ~FMTMask()
 		/**
-		Default destructor for FMTmask.
+		Default destructor for FMTMask.
 		*/
-        virtual ~FMTmask()=default;
-		// DocString: FMTmask(const boost::dynamic_bitset<uint8_t>&)
+        virtual ~FMTMask()=default;
+		// DocString: FMTMask(const boost::dynamic_bitset<uint8_t>&)
 		/**
-		Simple constructor for FMTmask that only sets the bitsets data member.
+		Simple constructor for FMTMask that only sets the bitsets data member.
 		*/
-        FMTmask(const boost::dynamic_bitset<uint8_t>& bits);
-		// DocString: FMTmask::operator bool
+        FMTMask(const boost::dynamic_bitset<uint8_t>& bits);
+		// DocString: FMTMask::operator bool
 		/**
-		Returns true if the FMTmask is not empty by looking at the data bitset.
+		Returns true if the FMTMask is not empty by looking at the data bitset.
 		*/
 		explicit operator bool() const;
-		// DocString: FMTmask(const std::string&,const boost::dynamic_bitset<uint8_t>&)
+		// DocString: FMTMask(const std::string&,const boost::dynamic_bitset<uint8_t>&)
 		/**
-		FMTmask constructor using a already sets bitset (bits) and a string mask to set as name.
+		FMTMask constructor using a already sets bitset (bits) and a string mask to set as name.
 		*/
-        FMTmask(const std::string& mask,const boost::dynamic_bitset<uint8_t>& bits);
-		// DocString: FMTmask(const std::string&,const std::vector<FMTtheme>&)
+        FMTMask(const std::string& mask,const boost::dynamic_bitset<uint8_t>& bits);
+		// DocString: FMTMask(const std::string&,const std::vector<FMTTheme>&)
 		/**
-		FMTmask constructor using a string (mask) and sorted themes to generate a complete FMTmask.
+		FMTMask constructor using a string (mask) and sorted themes to generate a complete FMTMask.
 		*/
-        FMTmask(const std::string& mask,const std::vector<FMTtheme>& themes);
-		// DocString: FMTmask(const std::vector<std::string>&,const std::vector<FMTtheme>&)
+        FMTMask(const std::string& mask,const std::vector<FMTTheme>& themes);
+		// DocString: FMTMask(const std::vector<std::string>&,const std::vector<FMTTheme>&)
 		/**
-		FMTmask constructor using a vector of string for the attributes and a vector of sorted themes
-		to generate a FMTmask.
+		FMTMask constructor using a vector of string for the attributes and a vector of sorted themes
+		to generate a FMTMask.
 		*/
-        FMTmask(const std::vector<std::string>& values,const std::vector<FMTtheme>& themes);
-		// DocString: FMTmask(const std::vector<FMTtheme>&,const std::vector<FMTtheme>&)
+        FMTMask(const std::vector<std::string>& values,const std::vector<FMTTheme>& themes);
+		// DocString: FMTMask(const std::vector<FMTTheme>&,const std::vector<FMTTheme>&)
 		/**
-		FMTmask constructor using a vector of string for the attributes and a vector of sorted themes
-		to generate a FMTmask.
+		FMTMask constructor using a vector of string for the attributes and a vector of sorted themes
+		to generate a FMTMask.
 		*/
-		FMTmask(const std::vector<FMTtheme>& themes);
-		// DocString: FMTmask::clear
+		FMTMask(const std::vector<FMTTheme>& themes);
+		// DocString: FMTMask::clear
 		/**
 		Clear the data and name members.
 		*/
 		void clear();
-		// DocString: FMTmask::size
+		// DocString: FMTMask::size
 		/**
 		Returns the size of the bitsets data member.
 		*/
 		size_t size() const;
-		// DocString: FMTmask::count
+		// DocString: FMTMask::count
 		/**
 		Get the number of bits set.
 		*/
 		size_t count() const;
-		// DocString: FMTmask::get
+		// DocString: FMTMask::get
 		/**
-		Gets the string mask name of the FMTmask based on the bitset data and the sorted themes.
+		Gets the string mask name of the FMTMask based on the bitset data and the sorted themes.
 		*/
-        std::string get(const std::vector<FMTtheme>& themes) const;
-		// DocString: FMTmask::get
+        std::string get(const std::vector<FMTTheme>& themes) const;
+		// DocString: FMTMask::get
 		/**
-		Get the corresponding attribute of the FMTmask for a given FMTtheme.
+		Get the corresponding attribute of the FMTMask for a given FMTTheme.
 		*/
-		std::string get(const FMTtheme& theme) const;
-		// DocString: FMTmask::getAttribute
+		std::string get(const FMTTheme& theme) const;
+		// DocString: FMTMask::getAttribute
 		/**
-		@brief When you deal with FMTdevelopment you can directly call this to get a reference to the attribute string
+		@brief When you deal with FMTDevelopment you can directly call this to get a reference to the attribute string
 		@param[in] p_theme the theme we target
 		@return a const reference to the attribute.
 		*/
-		const std::string& getAttribute(const FMTtheme& p_theme) const;
-		// DocString: FMTmask::getSubsetCount
+		const std::string& getAttribute(const FMTTheme& p_theme) const;
+		// DocString: FMTMask::getSubsetCount
 		/**
 		Get the number of bits set for the given theme subset.
 		*/
-		size_t getSubsetCount(const FMTtheme& theme) const;
-		// DocString: FMTmask::set
+		size_t getSubsetCount(const FMTTheme& theme) const;
+		// DocString: FMTMask::set
 		/**
 		Set the bitset data for some FMTthemes (themes) for a mask string (value).
 		*/
-        void set(const std::vector<FMTtheme>& themes,const std::string& value);
-		// DocString: FMTmask::setExclusiveBits
+        void set(const std::vector<FMTTheme>& themes,const std::string& value);
+		// DocString: FMTMask::setExclusiveBits
 		/**
 		@brief flip only the theme subset and clean the mask of the intersect with p_mask.
 		@param[in] p_mask
 		@param[in] p_theme
 		*/
-		void setExclusiveBits(const FMTmask& p_mask,const FMTtheme& p_theme);
-		// DocString: FMTmask::getNonFullBlocks
+		void setExclusiveBits(const FMTMask& p_mask,const FMTTheme& p_theme);
+		// DocString: FMTMask::getNonFullBlocks
 		/**
 		@brief flip only the theme subset and clean the mask of the intersect with p_mask.
 		@return a vector of index of blocks that avec 0 in it.
 		*/
 		std::vector<size_t>getNonFullBlocks() const;
-		// DocString: FMTmask::isSubsetOf
+		// DocString: FMTMask::isSubsetOf
 		/**
 		@brief Check if this is subset of p_mask by locking at block subset.
 		@param[in] p_subset Block Subset.
 		@param[in] p_mask the oter mask
 		@return true if all blocks are subset of this.
 		*/
-		bool isSubsetOf(const FMTmask& p_mask,const std::vector<size_t>& p_subset) const;
-		// DocString: FMTmask::set
+		bool isSubsetOf(const FMTMask& p_mask,const std::vector<size_t>& p_subset) const;
+		// DocString: FMTMask::set
 		/**
-		Set the bitset data for a given FMTtheme (theme) for a attribute (value).
+		Set the bitset data for a given FMTTheme (theme) for a attribute (value).
 		*/
-		void set(const FMTtheme& theme, const std::string& value);
-		// DocString: FMTmask::getStaticThemes
+		void set(const FMTTheme& theme, const std::string& value);
+		// DocString: FMTMask::getStaticThemes
 		/**
-		Filter FMTtheme from themes that are only using aggregates or ? for the FMTmask.
+		Filter FMTTheme from themes that are only using aggregates or ? for the FMTMask.
 		*/
-		std::vector<const Core::FMTtheme*>getStaticThemes(const std::vector<const Core::FMTtheme*>& themes) const;
-		// DocString: FMTmask::getSelectedThemes
+		std::vector<const Core::FMTTheme*>getStaticThemes(const std::vector<const Core::FMTTheme*>& themes) const;
+		// DocString: FMTMask::getSelectedThemes
 		/**
-		Takes vector of FMTtheme and return a vector of FMTtheme from which theme have any true bits.
+		Takes vector of FMTTheme and return a vector of FMTTheme from which theme have any true bits.
 		*/
-		std::vector<const Core::FMTtheme*> getSelectedThemes(const  std::vector<Core::FMTtheme>& themes) const;
-		// DocString: FMTmask::isNotThemesSubset
+		std::vector<const Core::FMTTheme*> getSelectedThemes(const  std::vector<Core::FMTTheme>& themes) const;
+		// DocString: FMTMask::isNotThemesSubset
 		/**
-		By looking at each FMTtheme in the FMTmask return true if *this is not part of rhs base on sorted FMTtheme (themes).
+		By looking at each FMTTheme in the FMTMask return true if *this is not part of rhs base on sorted FMTTheme (themes).
 		*/
-		bool isNotThemesSubset(const FMTmask& rhs, const  std::vector<const Core::FMTtheme*>& themes) const;
-		// DocString: FMTmask::isNotThemesSubset
+		bool isNotThemesSubset(const FMTMask& rhs, const  std::vector<const Core::FMTTheme*>& themes) const;
+		// DocString: FMTMask::isNotThemesSubset
 		/**
-		By looking at each FMTtheme in the FMTmask return true if *this is not part of rhs base on sorted FMTtheme (themes).
+		By looking at each FMTTheme in the FMTMask return true if *this is not part of rhs base on sorted FMTTheme (themes).
 		*/
-		bool isNotThemesSubset(const FMTmask& rhs, const  std::vector<Core::FMTtheme>& themes) const;
-		// DocString: FMTmask::removeAggregates
+		bool isNotThemesSubset(const FMTMask& rhs, const  std::vector<Core::FMTTheme>& themes) const;
+		// DocString: FMTMask::removeAggregates
 		/**
-		For each FMTtheme in (themes) if the attribute is an aggregate or ? will unset all
-		bits of the given aggregate or ? and return a new FMTmask.
+		For each FMTTheme in (themes) if the attribute is an aggregate or ? will unset all
+		bits of the given aggregate or ? and return a new FMTMask.
 		*/
-		FMTmask removeAggregates(const std::vector<FMTtheme>& themes,bool questionmarkonly=false) const;
-		// DocString: FMTmask::empty
+		FMTMask removeAggregates(const std::vector<FMTTheme>& themes,bool questionmarkonly=false) const;
+		// DocString: FMTMask::empty
 		/**
 		Returns true if the data member is empty.
 		*/
 		bool empty() const;
-		// DocString: FMTmask::update
+		// DocString: FMTMask::update
 		/**
-		Update the name data member bass on the dynamic bitset data member with a sorted list of FMTtheme (themes).
+		Update the name data member bass on the dynamic bitset data member with a sorted list of FMTTheme (themes).
 		*/
-        void update(const std::vector<FMTtheme>& themes);
-		// DocString: FMTmask::decompose
+        void update(const std::vector<FMTTheme>& themes);
+		// DocString: FMTMask::decompose
 		/**
-		Using a given (theme) this function desaggregate the attribute/aggregate/? of a theme from the FMTmask
+		Using a given (theme) this function desaggregate the attribute/aggregate/? of a theme from the FMTMask
 		and returns a vector of each possible attribute as multiple masks.
 		*/
-		std::vector<FMTmask>decompose(const FMTtheme &theme) const;
-		// DocString: FMTmask::append
+		std::vector<FMTMask>decompose(const FMTTheme &theme) const;
+		// DocString: FMTMask::append
 		/**
-		Append a bitsets to the bitset data member of the FMTmask.
+		Append a bitsets to the bitset data member of the FMTMask.
 		*/
         void append(const boost::dynamic_bitset<uint8_t> &bits);
 
-		// DocString: FMTmask::binarizedAppend
+		// DocString: FMTMask::binarizedAppend
 		/**
 		Binarize any class and append it to the mask.
 		*/
@@ -300,87 +300,87 @@ class FMTEXPORT FMTmask
 				}
 			}
 		}
-		// DocString: FMTmask::getUnion
+		// DocString: FMTMask::getUnion
 		/**
-		Do a union operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
+		Do a union operation on the dynamic bitset of the FMTMask and the given FMTMask (rhs).
 		*/
-		FMTmask getUnion(const FMTmask& rhs) const;
-		// DocString: FMTmask::getIntersect
+		FMTMask getUnion(const FMTMask& rhs) const;
+		// DocString: FMTMask::getIntersect
 		/**
-		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
+		Do a intersection operation on the dynamic bitset of the FMTMask and the given FMTMask (rhs).
 		*/
-		FMTmask getIntersect(const FMTmask& rhs) const;
-		// DocString: FMTmask::setIntersect
+		FMTMask getIntersect(const FMTMask& rhs) const;
+		// DocString: FMTMask::setIntersect
 		/**
 		@brief set the intersect with this mask using rhs mask.
 		@param[in] rhs the mask we intersect with.
 		*/
-		void setIntersect(const FMTmask& rhs);
-		// DocString: FMTmask::getBitsetIntersect
+		void setIntersect(const FMTMask& rhs);
+		// DocString: FMTMask::getBitsetIntersect
 		/**
-		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs)
+		Do a intersection operation on the dynamic bitset of the FMTMask and the given FMTMask (rhs)
 		but return the bitset.
 		*/
-		boost::dynamic_bitset<uint8_t> getBitsetIntersect(const FMTmask& rhs) const;
-		// DocString: FMTmask::operator=
+		boost::dynamic_bitset<uint8_t> getBitsetIntersect(const FMTMask& rhs) const;
+		// DocString: FMTMask::operator=
 		/**
-		FMTmask copy assignment operator.
+		FMTMask copy assignment operator.
 		 */
-        FMTmask& operator = (const FMTmask& rhs);
-		// DocString: FMTmask::operator!=
+        FMTMask& operator = (const FMTMask& rhs);
+		// DocString: FMTMask::operator!=
 		/**
-		FMTmask nonequality operator.
+		FMTMask nonequality operator.
 		*/
-        bool operator != (const FMTmask& rhs) const;
-		// DocString: FMTmask::operator==
+        bool operator != (const FMTMask& rhs) const;
+		// DocString: FMTMask::operator==
 		/**
-		Comparison operator of FMTmask.
+		Comparison operator of FMTMask.
 		*/
-        bool operator == (const FMTmask& rhs) const;
-		// DocString: FMTmask::operator<
+        bool operator == (const FMTMask& rhs) const;
+		// DocString: FMTMask::operator<
 		/**
-		Less than operator of FMTmask.
+		Less than operator of FMTMask.
 		*/
-        bool operator < (const FMTmask& rhs) const;
-		// DocString: FMTmask::resume
+        bool operator < (const FMTMask& rhs) const;
+		// DocString: FMTMask::resume
 		/**
-		Using a mask (rhs) fix the corresponding resulting FMTmask with the selected name and data.
+		Using a mask (rhs) fix the corresponding resulting FMTMask with the selected name and data.
 		*/
-		FMTmask resume(const boost::dynamic_bitset<uint8_t>& rhs) const;
-		// DocString: FMTmask::resume
+		FMTMask resume(const boost::dynamic_bitset<uint8_t>& rhs) const;
+		// DocString: FMTMask::resume
 		/**
-		Using a mask indexes (indexes) fix the corresponding resulting FMTmask with the selected name and data.
+		Using a mask indexes (indexes) fix the corresponding resulting FMTMask with the selected name and data.
 		*/
-		FMTmask resume(const std::vector<size_t>& indexes) const;
-		// DocString: FMTmask::hash
+		FMTMask resume(const std::vector<size_t>& indexes) const;
+		// DocString: FMTMask::hash
 		/**
-		Hash function for the FMTmask class.
+		Hash function for the FMTMask class.
 		*/
 		inline size_t hash() const
 			{
 			return boost::hash<boost::dynamic_bitset<uint8_t>>()(data);
 			}
-		// DocString: FMTmask::getBitsString
+		// DocString: FMTMask::getBitsString
 		/**
 		Returns the binary representation of the dynamic bitset in a simple string.
 		*/
         std::string getBitsString() const;
-		// DocString: FMTmask::operator std::string
+		// DocString: FMTMask::operator std::string
 		/**
-		Returns the name of the FMTmask.
+		Returns the name of the FMTMask.
 		*/
 		inline operator std::string() const
 			{
 			return name;
 			}
-		// DocString: FMTmask::isSubsetOf
+		// DocString: FMTMask::isSubsetOf
 		/**
-		@brief Check if the FMTmask is a subset of a FMTmask (rhs).
+		@brief Check if the FMTMask is a subset of a FMTMask (rhs).
 		@param[in] rhs the model to check if subset
 		@return true if subset or false.
 		*/
-		bool isSubsetOf(const FMTmask& p_rhs) const;
-		// DocString: FMTmask::getBitsetReference
+		bool isSubsetOf(const FMTMask& p_rhs) const;
+		// DocString: FMTMask::getBitsetReference
 		/**
 		Get a const referencer ot the boost::dynamic_bitset data member.
 		*/
@@ -388,7 +388,7 @@ class FMTEXPORT FMTmask
 			{
 			return data;
 			}
-		// DocString: FMTmask::getStringReference
+		// DocString: FMTMask::getStringReference
 		/**
 		Get a const referencer ot the std::string data member.
 		*/
@@ -396,55 +396,55 @@ class FMTEXPORT FMTmask
 		{
 			return name;
 		}
-		// DocString: FMTmask::reserve
+		// DocString: FMTMask::reserve
 		/**
 		@brief reserve memory for the boost dynamicbitset.
 		@param[in] p_size number of bits to reserve.
 		*/
 		void reserve(size_t p_size);
-		// DocString: FMTmask::refine
+		// DocString: FMTMask::refine
 		/**
-		It will return a new FMTmask where the ? are completed with the attribute for the theme from (mask).
+		It will return a new FMTMask where the ? are completed with the attribute for the theme from (mask).
 		If the attribute is not ? for this mask, the attribute will not change. 
 		*/
-		FMTmask refine(const FMTmask& mask, const std::vector<FMTtheme>& themes) const;
-		// DocString: FMTmask::getPostsolveMask
+		FMTMask refine(const FMTMask& mask, const std::vector<FMTTheme>& themes) const;
+		// DocString: FMTMask::getPostsolveMask
 		/**
 		If this is a base postSolve mask it uses mask to turn off bits for themes that are still active.
 		*/
-		FMTmask getPostsolveMask(const FMTmask& mask,const std::vector<FMTtheme>& themes) const;
-		// DocString: FMTmask::presolve
+		FMTMask getPostsolveMask(const FMTMask& mask,const std::vector<FMTTheme>& themes) const;
+		// DocString: FMTMask::presolve
 		/**
-		Using a FMTmaskfilter (filter) and a subset of the original FMTthemes used to construct the FMTmask,
-		it returns a presolved FMTmask with potentialy less data.
+		Using a FMTMaskFilter (filter) and a subset of the original FMTthemes used to construct the FMTMask,
+		it returns a presolved FMTMask with potentialy less data.
 		*/
-		FMTmask presolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>&presolvedthemes) const;
-		// DocString: FMTmask::presolveRef
+		FMTMask presolve(const FMTMaskFilter& filter,const std::vector<FMTTheme>&presolvedthemes) const;
+		// DocString: FMTMask::presolveRef
 		/**
-		@brief Using a FMTmaskfilter (filter) and a subset of the original FMTthemes used to construct the FMTmask,
-		it returns a presolved FMTmask with potentialy less data.
+		@brief Using a FMTMaskFilter (filter) and a subset of the original FMTthemes used to construct the FMTMask,
+		it returns a presolved FMTMask with potentialy less data.
 		@param[in] p_filter
 		@param[in] p_presolvedThemes
 		@param[in] p_allowReallocation
 		*/
-		void presolveRef(const FMTmaskfilter& p_filter, const std::vector<FMTtheme>& p_presolvedThemes,bool p_allowReallocation = true);
+		void presolveRef(const FMTMaskFilter& p_filter, const std::vector<FMTTheme>& p_presolvedThemes,bool p_allowReallocation = true);
 
-		// DocString: FMTmask::canPresolve
+		// DocString: FMTMask::canPresolve
 		/**
 		@brief Check if the mask can be presolved
 		@param[in] p_filter
 		@param[in] p_presolvedThemes
 		@return true if you can presolve
 		*/
-		bool canPresolve(const FMTmaskfilter& p_filter, const std::vector<FMTtheme>& p_presolvedThemes) const;
-		// DocString: FMTmask::postSolve
+		bool canPresolve(const FMTMaskFilter& p_filter, const std::vector<FMTTheme>& p_presolvedThemes) const;
+		// DocString: FMTMask::postSolve
 		/**
-		Using aFMTmaskfilter (filter) and the original FMTthemes it returns a postsolved FMTmask.
+		Using aFMTmaskfilter (filter) and the original FMTthemes it returns a postsolved FMTMask.
 		*/
-		FMTmask postSolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&basethemes) const;
+		FMTMask postSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&basethemes) const;
 	private:
-		friend class FMTtheme;
-		// DocString: FMTmask::serialize
+		friend class FMTTheme;
+		// DocString: FMTMask::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -455,58 +455,58 @@ class FMTEXPORT FMTmask
 			ar& BOOST_SERIALIZATION_NVP(data);
 			ar& BOOST_SERIALIZATION_NVP(name);
 		}
-		// DocString: FMTmask::subset
+		// DocString: FMTMask::subset
 		/**
 		Get the data subset bits for a given (theme) on the mask.
-		The subset is the length of the FMTtheme.
+		The subset is the length of the FMTTheme.
 		*/
-		boost::dynamic_bitset<uint8_t> subset(const FMTtheme& theme) const;
-		// DocString: FMTmask::operator []
+		boost::dynamic_bitset<uint8_t> subset(const FMTTheme& theme) const;
+		// DocString: FMTMask::operator []
 		/**
 		@brief get bit value at i position.
 		@param[in] i position
 		@return true if on false if off
 		*/
 		bool operator [](int i) const;
-		// DocString: FMTmask::_anyIntersect
+		// DocString: FMTMask::_anyIntersect
 		/**
 		@brief check if two subset of mask intersect each other.
 		@param[in] p_MASK the mask we check with
 		@param[in] p_THEME the theme we subset on
 		@return true if intersect else false.
 		*/
-		bool _anyIntersect(const FMTmask& p_MASK, const FMTtheme& p_THEME) const;
-		// DocString: FMTmask::_countTheme
+		bool _anyIntersect(const FMTMask& p_MASK, const FMTTheme& p_THEME) const;
+		// DocString: FMTMask::_countTheme
 		/**
 		@brief count number of bit set in the theme subset.
 		@param[in] p_THEME the theme we subset on
 		@return number of time the bits are on
 		*/
-		size_t _countTheme(const FMTtheme& p_Theme) const;
-		// DocString: FMTmask::_getPresolveMas
+		size_t _countTheme(const FMTTheme& p_Theme) const;
+		// DocString: FMTMask::_getPresolveMas
 		/**
 		@brief Get a presolve mask
 		@param[in] filter
 		@param[in] p_presolvedThemes
 		@return mask to presolve
 		*/
-		boost::dynamic_bitset<uint8_t> _getPresolveMask(const FMTmaskfilter& p_filter,
-								const std::vector<FMTtheme>& p_presolvedThemes) const;
-		// DocString: FMTmask::setSubset
+		boost::dynamic_bitset<uint8_t> _getPresolveMask(const FMTMaskFilter& p_filter,
+								const std::vector<FMTTheme>& p_presolvedThemes) const;
+		// DocString: FMTMask::setSubset
 		/**
-		Set a given (subset) (theme size) for the FMTtheme (theme) to the mask
+		Set a given (subset) (theme size) for the FMTTheme (theme) to the mask
 		*/
-		void setSubset(const FMTtheme& theme, const boost::dynamic_bitset<uint8_t>& subset);
-		// DocString: FMTmask::name
-		///name of the FMTmask attributes or aggregates splitted by a space
+		void setSubset(const FMTTheme& theme, const boost::dynamic_bitset<uint8_t>& subset);
+		// DocString: FMTMask::name
+		///name of the FMTMask attributes or aggregates splitted by a space
 		std::string name;
-		// DocString: FMTmask::data
+		// DocString: FMTMask::data
 		///dynamic bitset holding the attributes information member.
 		boost::dynamic_bitset<uint8_t> data;
     };
 
 
-template<> inline void FMTmask::binarizedAppend<std::string>(const std::string& element)
+template<> inline void FMTMask::binarizedAppend<std::string>(const std::string& element)
 	{
 		size_t  location = data.size();
 		data.resize(data.size() + (element.size() * 8));
@@ -522,7 +522,7 @@ template<> inline void FMTmask::binarizedAppend<std::string>(const std::string& 
 		}
 	}
 
-template<> inline void FMTmask::binarizedAppend<double>(const double& element)
+template<> inline void FMTMask::binarizedAppend<double>(const double& element)
 {
 	size_t  location = data.size();
 	const int corrected = static_cast<int>(element*(1 / FMT_DBL_TOLERANCE));
@@ -547,18 +547,18 @@ class FMTMaskComparator
 	{
 	// DocString: FMTMaskComparator::base_mask
 	///The mask that we are looking for
-	FMTmask base_mask;
+	FMTMask base_mask;
 	public:
-		// DocString: FMTMaskComparator:(const FMTmask&)
+		// DocString: FMTMaskComparator:(const FMTMask&)
 		/**
 		FMTMaskComparator constructor lbase_mask is the mask of that we want to match.
 		*/
-		FMTMaskComparator(const FMTmask& lbase_mask);
-		// DocString: FMTMaskComparator::operator()(const FMTaction&)
+		FMTMaskComparator(const FMTMask& lbase_mask);
+		// DocString: FMTMaskComparator::operator()(const FMTAction&)
 		/**
 		Matching test operator for FMTMaskComparator.
 		*/
-		bool operator()(const FMTmask& mask) const;
+		bool operator()(const FMTMask& mask) const;
 
 	};
 
@@ -566,12 +566,12 @@ class FMTMaskComparator
 
 namespace boost {
 /**
-boost hash for FMTmask
+boost hash for FMTMask
 */
   template <>
-  struct hash<Core::FMTmask>
+  struct hash<Core::FMTMask>
   {
-    std::size_t operator()(const Core::FMTmask& mask) const
+    std::size_t operator()(const Core::FMTMask& mask) const
     {
       return (mask.hash());
     }
@@ -579,6 +579,6 @@ boost hash for FMTmask
 
 }
 
-BOOST_CLASS_EXPORT_KEY(Core::FMTmask)
+BOOST_CLASS_EXPORT_KEY(Core::FMTMask)
 
 #endif // FMTMASK_Hm_included

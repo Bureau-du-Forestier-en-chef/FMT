@@ -16,43 +16,43 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-class FMTmask;
+class FMTMask;
 
-class FMTEXPORT FMTdevelopmentpath
+class FMTEXPORT FMTDevelopmentPath
 	{
 	public:
-		FMTdevelopmentpath();
-		FMTdevelopmentpath& operator = (const FMTdevelopmentpath& rhs)=default;
-		FMTdevelopmentpath(const FMTdevelopmentpath& rhs) = default;
-		~FMTdevelopmentpath() = default;
-		// DocString: FMTdevelopmentpath::getDevelopment
+		FMTDevelopmentPath();
+		FMTDevelopmentPath& operator = (const FMTDevelopmentPath& rhs)=default;
+		FMTDevelopmentPath(const FMTDevelopmentPath& rhs) = default;
+		~FMTDevelopmentPath() = default;
+		// DocString: FMTDevelopmentPath::getDevelopment
 		/**
 		@brief Get the new development
 		@return a newly generated development
 		*/
-		const FMTdevelopment& getDevelopment() const;
-		// DocString: FMTdevelopmentpath::getDevelopmentReference
+		const FMTDevelopment& getDevelopment() const;
+		// DocString: FMTDevelopmentPath::getDevelopmentReference
 		/**
 		@brief Get the new development
 		@return a newly generated development
 		*/
-		FMTdevelopment& getDevelopmentReference();
-		// DocString: FMTdevelopmentpath::getProportion
+		FMTDevelopment& getDevelopmentReference();
+		// DocString: FMTDevelopmentPath::getProportion
 		/**
 		@brief Get the proportion of area going to this dev
 		@return the proportion
 		*/
 		double getProportion() const;
-		// DocString: FMTdevelopmentpath::setProportion
+		// DocString: FMTDevelopmentPath::setProportion
 		/**
 		@brief Set the proportion of area going to this dev
 		@param[in] the proportion
 		*/
 		void setProportion(double p_proportion);
-		FMTdevelopmentpath(const FMTmask& p_mask, 
+		FMTDevelopmentPath(const FMTMask& p_mask, 
 			int p_age, int p_lock, int p_period,double p_proportion);
 	private:
-		FMTdevelopment m_development;
+		FMTDevelopment m_development;
 		double m_proportion;
 	};
 }

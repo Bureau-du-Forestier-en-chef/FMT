@@ -52,9 +52,10 @@ OVERRIDE = {
     'FMTseException': 'FMTSeException',
     # Typo kept on purpose: the camelCase pass fixed typos in methods only, never classes.
     'FMTfuturdevelopment': 'FMTFuturDevelopment',
-    # Author already capitalized these; keep them.
+    # Half-camel subclasses of FMTyieldmodel. TSLA follows the documented acronym rule
+    # (Pascal, only FMT and GCBM stay uppercase) even though the author wrote it caps.
     'FMTyieldmodelRandom': 'FMTYieldModelRandom',
-    'FMTyieldmodelTSLA': 'FMTYieldModelTSLA',
+    'FMTyieldmodelTSLA': 'FMTYieldModelTsla',
     'FMTyieldmodelUnitCoverage': 'FMTYieldModelUnitCoverage',
     'FMTGCBMtransition': 'FMTGCBMTransition',
 }

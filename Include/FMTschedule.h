@@ -19,83 +19,83 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-class FMTconstraint;
-// DocString: FMTschedule
+class FMTConstraint;
+// DocString: FMTSchedule
 /**
-FMTschedule is the representation of a spatially referenced schedule. It can be used by the FMTlpmodel and the FMTsesmodel.
-It describes the area of a given developments for which an FMTaction can be operated (key).
+FMTSchedule is the representation of a spatially referenced schedule. It can be used by the FMTlpmodel and the FMTsesmodel.
+It describes the area of a given developments for which an FMTAction can be operated (key).
 The vector is a reprensentation of lock level at position 0 in the vector the lock level = 0 (if lock level 0 exist in the graph
 , at position 1 lock level = 1.
 */
-class FMTEXPORT FMTschedule : public FMTobject
+class FMTEXPORT FMTSchedule : public FMTObject
     {
     public:
-		// DocString: FMTschedule(const int&)
+		// DocString: FMTSchedule(const int&)
 		/**
-		FMTschedule constructor for an empty schedule at given period
+		FMTSchedule constructor for an empty schedule at given period
 		*/
-		FMTschedule(const int& lperiod, const FMTobject& obj, const bool& luselock);
-		// DocString: FMTschedule(const int&,std::vector<FMTschedule>&)
+		FMTSchedule(const int& lperiod, const FMTObject& obj, const bool& luselock);
+		// DocString: FMTSchedule(const int&,std::vector<FMTSchedule>&)
 		/**
-		FMTschedule constructor for a complete construction of FMTschedule with multiple FMTschedule
+		FMTSchedule constructor for a complete construction of FMTSchedule with multiple FMTSchedule
 		*/
-		FMTschedule(const int& lperiod, std::vector<FMTschedule>& schedules);
-		// DocString: FMTschedule(int,std::map<FMTaction,std::map<FMTdevelopment,std::vector<double>>>)
+		FMTSchedule(const int& lperiod, std::vector<FMTSchedule>& schedules);
+		// DocString: FMTSchedule(int,std::map<FMTAction,std::map<FMTDevelopment,std::vector<double>>>)
 		/**
-		FMTschedule constructor for a complete construction of FMTschedule
+		FMTSchedule constructor for a complete construction of FMTSchedule
 		*/
-        FMTschedule(int lperiod, std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> mapping);
-		// DocString: FMTschedule(int,const std::map<FMTaction,std::map<FMTdevelopment,std::map<int,double>>>&)
+        FMTSchedule(int lperiod, std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> mapping);
+		// DocString: FMTSchedule(int,const std::map<FMTAction,std::map<FMTDevelopment,std::map<int,double>>>&)
 		/**
-		FMTschedule constructor _lock based mapping (When a schedule is parsed).
+		FMTSchedule constructor _lock based mapping (When a schedule is parsed).
 		*/
-		FMTschedule(int lperiod, const std::map<FMTaction, std::map<FMTdevelopment, std::map<int,double>>>& mapping);
-		// DocString: FMTschedule()
+		FMTSchedule(int lperiod, const std::map<FMTAction, std::map<FMTDevelopment, std::map<int,double>>>& mapping);
+		// DocString: FMTSchedule()
 		/**
-		Default FMTschedule constructor.
+		Default FMTSchedule constructor.
 		*/
-        FMTschedule();
-		// DocString: ~FMTschedule()
+        FMTSchedule();
+		// DocString: ~FMTSchedule()
 		/**
-		Default ~FMTschedule constructor.
+		Default ~FMTSchedule constructor.
 		*/
-		~FMTschedule() = default;
-		// DocString: FMTschedule(const FMTschedule&)
+		~FMTSchedule() = default;
+		// DocString: FMTSchedule(const FMTSchedule&)
 		/**
-		Default FMTschedule copy constructor.
+		Default FMTSchedule copy constructor.
 		*/
-        FMTschedule(const FMTschedule& rhs);
-		// DocString: FMTschedule::operator=
+        FMTSchedule(const FMTSchedule& rhs);
+		// DocString: FMTSchedule::operator=
 		/**
-		Default FMTschedule copy assignment.
+		Default FMTSchedule copy assignment.
 		*/
-        FMTschedule& operator = (const FMTschedule& rhs);
-		// DocString: FMTschedule::operator==
+        FMTSchedule& operator = (const FMTSchedule& rhs);
+		// DocString: FMTSchedule::operator==
 		/**
-		FMTschedule equality operator.
+		FMTSchedule equality operator.
 		*/
-		bool operator == (const FMTschedule& rhs) const;
-		// DocString: FMTschedule::operator!=
+		bool operator == (const FMTSchedule& rhs) const;
+		// DocString: FMTSchedule::operator!=
 		/**
-		FMTschedule nonequality operator.
+		FMTSchedule nonequality operator.
 		*/
-		bool operator != (const FMTschedule& rhs) const;
-		// DocString: FMTschedule::operator+=
+		bool operator != (const FMTSchedule& rhs) const;
+		// DocString: FMTSchedule::operator+=
 		/**
-		This function append an FMTschedule to an other FMTschedule.
+		This function append an FMTSchedule to an other FMTSchedule.
 		*/
-		FMTschedule& operator += (const FMTschedule& rhs);
-		// DocString: FMTschedule::operator+
+		FMTSchedule& operator += (const FMTSchedule& rhs);
+		// DocString: FMTSchedule::operator+
 		/**
-		This function append an FMTschedule to an other FMTschedule and return a new one.
+		This function append an FMTSchedule to an other FMTSchedule and return a new one.
 		*/
-		FMTschedule operator + (const FMTschedule& rhs) const;
-		// DocString: FMTschedule::operator std::string
+		FMTSchedule operator + (const FMTSchedule& rhs) const;
+		// DocString: FMTSchedule::operator std::string
 		/**
-		Convert the FMTschedule to a string like seen in a regular scedule file.
+		Convert the FMTSchedule to a string like seen in a regular scedule file.
 		*/
         operator std::string() const;
-		// DocString: FMTschedule::getPeriod
+		// DocString: FMTSchedule::getPeriod
 		/**
 		Getter for the schedule period.
 		*/
@@ -103,7 +103,7 @@ class FMTEXPORT FMTschedule : public FMTobject
 			{
 			return period;
 			}
-		// DocString: FMTschedule::doUseLock
+		// DocString: FMTSchedule::doUseLock
 		/**
 		Return true if the schedule can contains locked development.
 		*/
@@ -111,101 +111,101 @@ class FMTEXPORT FMTschedule : public FMTobject
 		{
 			return uselock;
 		}
-		// DocString: FMTschedule::setUseLock
+		// DocString: FMTSchedule::setUseLock
 		/**
 		Mark the schedule has can contains locked development.
 		*/
 		void setUseLock(const bool& lock);
-		// DocString: FMTschedule::actionArea
+		// DocString: FMTSchedule::actionArea
 		/**
-		Return the total harvested area of a FMTaction present in the FMTschedule.
+		Return the total harvested area of a FMTAction present in the FMTSchedule.
 		*/
-        double actionArea(const FMTaction& action) const;
-		// DocString: FMTschedule::addEvent
+        double actionArea(const FMTAction& action) const;
+		// DocString: FMTSchedule::addEvent
 		/**
 		Add a new event to the shedule based on the development,action and area. See clean function also.
 		*/
-		void addEvent(const Core::FMTdevelopment& dev, const double& area, const Core::FMTaction& action);
-		// DocString: FMTschedule::clean
+		void addEvent(const Core::FMTDevelopment& dev, const double& area, const Core::FMTAction& action);
+		// DocString: FMTSchedule::clean
 		/**
 		After calling multiple time addEvent the schedule will end up with empty area if uselock == false.
 		So you need to call this function to clean the schedule before using it.
 		*/
 		void clean();
-		// DocString: FMTschedule::area
+		// DocString: FMTSchedule::area
 		/**
 		Return the total area of the schedule operated by all schedule actions.
 		*/
         double area() const;
-		// DocString: FMTschedule::operated
+		// DocString: FMTSchedule::operated
 		/**
-		Check if a given FMTdevelopment has been actioned for the this FMTschedule.
+		Check if a given FMTDevelopment has been actioned for the this FMTSchedule.
 		*/
-		bool operated(const FMTaction& action,
-			const FMTdevelopment& development) const;
-		// DocString: FMTschedule::getOperabilities
+		bool operated(const FMTAction& action,
+			const FMTDevelopment& development) const;
+		// DocString: FMTSchedule::getOperabilities
 		/**
 		Get all operabilities of the schedules in an hash table.
 		*/
-		std::vector<boost::unordered_set<FMTdevelopment>> getOperabilities(const std::vector<FMTaction>& actions) const;
-		// DocString: FMTschedule::sort
+		std::vector<boost::unordered_set<FMTDevelopment>> getOperabilities(const std::vector<FMTAction>& actions) const;
+		// DocString: FMTSchedule::sort
 		/**
-		Sort the vector of double of the lock level per area for the FMTschedule.
+		Sort the vector of double of the lock level per area for the FMTSchedule.
 		*/
 		void sort();
-		// DocString: FMTschedule::empty
+		// DocString: FMTSchedule::empty
 		/**
-		Return true is the FMTschedule is not empty.
+		Return true is the FMTSchedule is not empty.
 		*/
 		bool empty() const;
-		// DocString: FMTschedule::size
+		// DocString: FMTSchedule::size
 		/**
-		Return the size of the FMTschedule.
+		Return the size of the FMTSchedule.
 		*/
 		size_t size() const;
-		// DocString: FMTschedule::presolve
+		// DocString: FMTSchedule::presolve
 		/**
 		Presolve all masks base on a baseMask a preolved mask
 		and presolved themes and presolved actions list. The returned schedule can also be empty.
 		*/
-		FMTschedule presolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& newthemes, const std::vector<FMTaction>&presolvedaction) const;
-		// DocString: FMTschedule::postSolve
+		FMTSchedule presolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& newthemes, const std::vector<FMTAction>&presolvedaction) const;
+		// DocString: FMTSchedule::postSolve
 		/**
 		Postsolve all masks base on a baseMask and the original themes and actions.
 		*/
-		FMTschedule postSolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const;
+		FMTSchedule postSolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& originalbasethemes, const std::vector<FMTAction>&originalbasebaseactions) const;
 		/**
 		Setter for the period of the Schedule and the period developments of the schedule.
 		*/
 		void setPeriod(const int& newperiod);
-		// DocString: FMTschedule::getNewSchedule
+		// DocString: FMTSchedule::getNewSchedule
 		/**
 		Multiply this schedule with a factor and return it
 		*/
-		FMTschedule getNewSchedule(const double& factor) const;
-		// DocString: FMTschedule::isFuturConstraints
+		FMTSchedule getNewSchedule(const double& factor) const;
+		// DocString: FMTSchedule::isFuturConstraints
 		/**
 		Check if the schedule period will be bounded by new constraints.
 		*/
-		bool isFuturConstraints(const std::vector<Core::FMTconstraint>& constraints) const;
+		bool isFuturConstraints(const std::vector<Core::FMTConstraint>& constraints) const;
 		/**
-		Functions that make sure the FMTschedule acts like a std c++ container
+		Functions that make sure the FMTSchedule acts like a std c++ container
 		*/
-		typedef typename std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::value_type value_type;
-		typedef typename std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::iterator iterator;
-		typedef typename std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator const_iterator;
-		std::map<FMTdevelopment, std::vector<double>>& operator[](const FMTaction& action);
-		const std::map<FMTdevelopment, std::vector<double>>& at(const FMTaction& action) const;
-		iterator find(const FMTaction& actionkey);
-		const_iterator find(const FMTaction& actionkey) const;
+		typedef typename std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::value_type value_type;
+		typedef typename std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator iterator;
+		typedef typename std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator const_iterator;
+		std::map<FMTDevelopment, std::vector<double>>& operator[](const FMTAction& action);
+		const std::map<FMTDevelopment, std::vector<double>>& at(const FMTAction& action) const;
+		iterator find(const FMTAction& actionkey);
+		const_iterator find(const FMTAction& actionkey) const;
 		iterator begin();
 		const_iterator begin() const;
 		iterator  end();
 		const_iterator end() const;
 	private:
-		// DocString: FMTschedule::serialize
+		// DocString: FMTSchedule::serialize
 		/**
 		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -214,33 +214,33 @@ class FMTEXPORT FMTschedule : public FMTobject
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			try {
-				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
 				ar& BOOST_SERIALIZATION_NVP(period);
 				ar& BOOST_SERIALIZATION_NVP(elements);
 			}
 			catch (...)
 			{
-				_exhandler->printExceptions("", "FMTschedule::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTSchedule::serialize", __LINE__, __FILE__);
 			}
 		}
-		// DocString: FMTschedule::period
+		// DocString: FMTSchedule::period
 		///The period at which the schedule needs to be applied
 		int period;
-		// DocString: FMTschedule::uselock
+		// DocString: FMTSchedule::uselock
 		///If true the schedule contains locked development by default it is False.
 		bool uselock;
-		// DocString: FMTschedule::elements
-		///Main FMTschedule elements action has key, followed by a map of FMTdevelopment and a vector of double
+		// DocString: FMTSchedule::elements
+		///Main FMTSchedule elements action has key, followed by a map of FMTDevelopment and a vector of double
 		///The vector of double represent the _lock level.
-		std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> elements;
-		// DocString: FMTschedule::sameElements
+		std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> elements;
+		// DocString: FMTSchedule::sameElements
 		/**
-		Return true if the FMTschedule contains the same elements.
+		Return true if the FMTSchedule contains the same elements.
 		*/
-		bool sameElements(const FMTschedule& rhs) const;
+		bool sameElements(const FMTSchedule& rhs) const;
     };
 
 
 }
-BOOST_CLASS_EXPORT_KEY(Core::FMTschedule)
+BOOST_CLASS_EXPORT_KEY(Core::FMTSchedule)
 #endif // FMTschedule_Hm_included

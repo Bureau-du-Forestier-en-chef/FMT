@@ -15,13 +15,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTtheme;
-	class FMTaction;
-	class FMTyields;
-	class FMTconstants;
-	class FMToutput;
-	class FMToutputsource;
-	class FMToperator;
+	class FMTTheme;
+	class FMTAction;
+	class FMTYields;
+	class FMTConstants;
+	class FMTOutput;
+	class FMTOutputSource;
+	class FMTOperator;
 }
 
 namespace Parser
@@ -29,7 +29,7 @@ namespace Parser
 {
 // DocString: FMToutputparser
 /**
-The FMToutputparser is made to read and write a vector of FMToutput from or into a given file.
+The FMToutputparser is made to read and write a vector of FMTOutput from or into a given file.
 */
 class FMTEXPORT FMToutputparser : public FMTparser
     {
@@ -52,10 +52,10 @@ class FMTEXPORT FMToutputparser : public FMTparser
 	/**
 	Main function used by read and addOutputs to parse a file and fill a vector of outputs
 	*/
-	void readNFill(std::vector<Core::FMToutput>* outputs, 
-					const std::vector<Core::FMTtheme>& themes,
-					const std::vector<Core::FMTaction>& actions,
-					const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+	void readNFill(std::vector<Core::FMTOutput>* outputs, 
+					const std::vector<Core::FMTTheme>& themes,
+					const std::vector<Core::FMTAction>& actions,
+					const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 					const std::string& location);
 	// DocString: FMToutputparser::appendToOutput
 	/**
@@ -68,8 +68,8 @@ class FMTEXPORT FMToutputparser : public FMTparser
 		const size_t& lastoutput,
 		std::string& lastoperator,
 		std::vector<std::string>& stroperators,
-		std::vector<Core::FMToutputsource>& sources,
-		std::vector<Core::FMToperator>& operators) const;
+		std::vector<Core::FMTOutputSource>& sources,
+		std::vector<Core::FMTOperator>& operators) const;
 
     public:
 		// DocString: FMToutputparser()
@@ -94,29 +94,29 @@ class FMTEXPORT FMToutputparser : public FMTparser
         FMToutputparser& operator = (const FMToutputparser& rhs)=default;
 		// DocString: FMToutputparser::read
 		/**
-		This function read a output file (location) based on (themes),(actions),(yields),(constants) and returns a vector of FMToutput.
+		This function read a output file (location) based on (themes),(actions),(yields),(constants) and returns a vector of FMTOutput.
 		*/
-		std::vector<Core::FMToutput> read(const std::vector<Core::FMTtheme>& themes,
-                            const std::vector<Core::FMTaction>& actions,
-                            const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+		std::vector<Core::FMTOutput> read(const std::vector<Core::FMTTheme>& themes,
+                            const std::vector<Core::FMTAction>& actions,
+                            const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 							const std::string& location);
 		// DocString: FMToutputparser::addOutputs
 		/**
 		This function read a output file and add the desired outputs(outputsnames) found in the output file(location) to the vector of outputs(oldoutputs) 
-		based on (themes),(actions),(yields),(constants) and returns a vector of FMToutput. If outputsnames is empty, all the outputs in the file will
+		based on (themes),(actions),(yields),(constants) and returns a vector of FMTOutput. If outputsnames is empty, all the outputs in the file will
 		be add to the vector of outputs.
 		*/
-		std::vector<Core::FMToutput> addOutputs(const std::vector<Core::FMToutput> oldoutputs, 
-							const std::vector<Core::FMTtheme>& themes,
-                            const std::vector<Core::FMTaction>& actions,
-                            const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+		std::vector<Core::FMTOutput> addOutputs(const std::vector<Core::FMTOutput> oldoutputs, 
+							const std::vector<Core::FMTTheme>& themes,
+                            const std::vector<Core::FMTAction>& actions,
+                            const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 							const std::string& location,
 							std::vector<std::string> outputsnames = std::vector<std::string>());
 		// DocString: FMToutputparser::write
 		/**
-		This function write a vector of FMToutput to a file at a given (location).
+		This function write a vector of FMTOutput to a file at a given (location).
 		*/
-        void write(const std::vector<Core::FMToutput>& outputs,const std::string& location) const;
+        void write(const std::vector<Core::FMTOutput>& outputs,const std::string& location) const;
     };
 
 }

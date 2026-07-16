@@ -77,10 +77,10 @@ namespace Models
 			std::hash<int>()(m_type);
 		}
 
-	std::vector<Core::FMTconstraint>::const_iterator FMTlpmodel::_getConstraintIndex(const Core::FMTconstraint& p_constraint) const
+	std::vector<Core::FMTConstraint>::const_iterator FMTlpmodel::_getConstraintIndex(const Core::FMTConstraint& p_constraint) const
 		{
-		std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
-		for (const Core::FMTconstraint& CONSTRAINT : constraints)
+		std::vector<Core::FMTConstraint>::const_iterator it = constraints.begin();
+		for (const Core::FMTConstraint& CONSTRAINT : constraints)
 			{
 			if (p_constraint==CONSTRAINT)
 				{
@@ -91,9 +91,9 @@ namespace Models
 		return constraints.end();
 		}
 
-	std::vector<Core::FMTconstraint>::const_iterator FMTlpmodel::_getsetConstraintIndex(const Core::FMTconstraint& p_constraint)
+	std::vector<Core::FMTConstraint>::const_iterator FMTlpmodel::_getsetConstraintIndex(const Core::FMTConstraint& p_constraint)
 		{
-		std::vector<Core::FMTconstraint>::const_iterator it = _getConstraintIndex(p_constraint);
+		std::vector<Core::FMTConstraint>::const_iterator it = _getConstraintIndex(p_constraint);
 		if (it == constraints.end())
 			{
 			constraints.push_back(p_constraint);
@@ -102,7 +102,7 @@ namespace Models
 		return it;
 		}
 
-	int FMTlpmodel::_getIndex(const std::vector<Core::FMTconstraint>::const_iterator& p_it) const
+	int FMTlpmodel::_getIndex(const std::vector<Core::FMTConstraint>::const_iterator& p_it) const
 		{
 		return static_cast<int>(std::distance(constraints.begin(), p_it));
 		}
@@ -142,7 +142,7 @@ namespace Models
 		const size_t TO_RESERVE = (VARIABLES / THE_LENGTH) / FACTOR;
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
 		int id = 0;
-		for (const Core::FMTconstraint CONSTRAINT : constraints)
+		for (const Core::FMTConstraint CONSTRAINT : constraints)
 		{
 			for (int period = 0; period <= getParameter(FMTintmodelparameters::LENGTH); ++period)
 			{
@@ -169,8 +169,8 @@ namespace Models
 
 	Heuristics::FMToperatingareaclusterer FMTlpmodel::getClusterer(
 		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
-		const Core::FMToutput& areaoutput,
-		const Core::FMToutput& statisticoutput,
+		const Core::FMTOutput& areaoutput,
+		const Core::FMTOutput& statisticoutput,
 		const int& period, int minimalnumberofclusters, int maximalnumberofclusters) const
 	{
 		Heuristics::FMToperatingareaclusterer newclusterer;
@@ -179,12 +179,12 @@ namespace Models
 			double minimalstatistic, minimalarea = std::numeric_limits<double>::max();
 			double maximalstatistic, maximalarea = 0;
 			const double minimalstatisticvalue = FMT_DBL_TOLERANCE*10000;
-			std::map<Core::FMTmask,std::pair<double,double>>outputcaching;
+			std::map<Core::FMTMask,std::pair<double,double>>outputcaching;
 			for (const Heuristics::FMToperatingareacluster& originalcluster : initialcluster)
 				{
 				Heuristics::FMToperatingareaclusterbinary centroid = originalcluster.getCentroid();
 				std::vector<Heuristics::FMToperatingareaclusterbinary>allbinaries = originalcluster.getBinaries();
-				const Core::FMTmask centroidmask = centroid.getMask();
+				const Core::FMTMask centroidmask = centroid.getMask();
 				double cstatistic = 0;
 				double carea = 0;
 				if (outputcaching.find(centroidmask)!= outputcaching.end())
@@ -193,8 +193,8 @@ namespace Models
 					carea = outputcaching.at(centroidmask).second;
 				}
 				else {
-					const Core::FMToutput centroidoutput = centroid.getOutputIntersect(statisticoutput, themes);
-					const Core::FMToutput centroidareaoutput = centroid.getOutputIntersect(areaoutput, themes);
+					const Core::FMTOutput centroidoutput = centroid.getOutputIntersect(statisticoutput, themes);
+					const Core::FMTOutput centroidareaoutput = centroid.getOutputIntersect(areaoutput, themes);
 					const std::map<std::string, double> centroidvalue = this->getOutput(centroidoutput, period, Core::FMToutputlevel::totalonly);
 					const std::map<std::string, double> centroidarea = this->getOutput(centroidareaoutput, period, Core::FMToutputlevel::totalonly);
 					cstatistic = centroidvalue.at("Total");
@@ -218,7 +218,7 @@ namespace Models
 				centroid.setArea(carea);
 				for (Heuristics::FMToperatingareaclusterbinary& binary : allbinaries)
 					{
-					const Core::FMTmask binarymask = binary.getMask();
+					const Core::FMTMask binarymask = binary.getMask();
 					double statistic = 0;
 					double area = 0;
 					if (outputcaching.find(binarymask) != outputcaching.end())
@@ -227,8 +227,8 @@ namespace Models
 						area = outputcaching.at(binarymask).second;
 					}
 					else {
-						const Core::FMToutput binaryoutput = binary.getOutputIntersect(statisticoutput, themes);
-						const Core::FMToutput binaryareaoutput = binary.getOutputIntersect(areaoutput, themes);
+						const Core::FMTOutput binaryoutput = binary.getOutputIntersect(statisticoutput, themes);
+						const Core::FMTOutput binaryareaoutput = binary.getOutputIntersect(areaoutput, themes);
 						const std::map<std::string, double> binaryvalue = this->getOutput(binaryoutput, period, Core::FMToutputlevel::totalonly);
 						const std::map<std::string, double> binaryarea = this->getOutput(binaryareaoutput, period, Core::FMToutputlevel::totalonly);
 						statistic = binaryvalue.at("Total");
@@ -275,7 +275,7 @@ namespace Models
 	}
 
 
-	std::vector<Core::FMTconstraint> FMTlpmodel::getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
+	std::vector<Core::FMTConstraint> FMTlpmodel::getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTConstraint>& localconstraints, const int& period) const
 	{
 		try
 		{
@@ -290,10 +290,10 @@ namespace Models
 		{
 			_exhandler->printExceptions("", "FMTlpmodel::getReplanningConstraints", __LINE__, __FILE__);
 		}
-		return std::vector<Core::FMTconstraint>();
+		return std::vector<Core::FMTConstraint>();
 	}
 
-	std::map<std::string, double> FMTlpmodel::getOutput(const Core::FMToutput& output,
+	std::map<std::string, double> FMTlpmodel::getOutput(const Core::FMTOutput& output,
 		int period, Core::FMToutputlevel level) const
 	{
 		try {
@@ -307,7 +307,7 @@ namespace Models
 						" FMTlpmodel::getoutputs", __LINE__, __FILE__);
 				}
 				const double* solution = solver.getColSolution();
-				for (const Core::FMTconstraint& constraint : constraints)
+				for (const Core::FMTConstraint& constraint : constraints)
 				{
 					const std::vector<std::string>level_names = constraint.getVariableLevels();
 					std::vector<std::string>::const_iterator lit = std::find(level_names.begin(), level_names.end(), output.getName());
@@ -331,7 +331,7 @@ namespace Models
 
 	}
 
-	void FMTlpmodel::addScheduleToObjective(const Core::FMTschedule& schedule, double weight)
+	void FMTlpmodel::addScheduleToObjective(const Core::FMTSchedule& schedule, double weight)
 	{
 		try
 		{
@@ -437,7 +437,7 @@ namespace Models
 		return *this;
 	}
 
-std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Core::FMToutputnode>& nodes, int period,
+std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Core::FMTOutputNode>& nodes, int period,
 	std::map<int, double>& variables, double multiplier) const
 	{
 	std::vector<std::map<int, double>> strictlypositivesoutputs;
@@ -445,7 +445,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 	const bool strictlypositivesoutputsmatrix = getParameter(STRICTLY_POSITIVE);
 	try {
 		std::unordered_set<int> output_negvar;
-		for (const Core::FMToutputnode& node : nodes)
+		for (const Core::FMTOutputNode& node : nodes)
 			{
 			const std::map<int, double>node_map = m_graph->locateNode(*this, node, period);
 			for (std::map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
@@ -476,7 +476,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					bool _area = false;
 					std::map<std::string,std::map<int,double>> node_map_theme_id;
 					std::vector<std::string>equation;
-					for (const Core::FMToutputnode& node : outputs.at(onid).getNodes(equation,1,true))
+					for (const Core::FMTOutputNode& node : outputs.at(onid).getNodes(equation,1,true))
 					{
 						
 						const int id = node.getOutputId();
@@ -561,7 +561,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 	return strictlypositivesoutputs;
 	}
 
-	bool FMTlpmodel::setPositiveOutputsInMatrix(const std::vector<Core::FMTconstraint>::const_iterator& p_it,
+	bool FMTlpmodel::setPositiveOutputsInMatrix(const std::vector<Core::FMTConstraint>::const_iterator& p_it,
 		const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period)
 	{
 		try
@@ -593,7 +593,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		m_indexes.clear();
 	}
 
-	Graph::FMTgraphstats FMTlpmodel::setConstraint(const Core::FMTconstraint& constraint)
+	Graph::FMTgraphstats FMTlpmodel::setConstraint(const Core::FMTConstraint& constraint)
 		{
 		try {
 			/*if (getName() == "tactique_AllEnrqc_CC")
@@ -602,7 +602,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			}*/
 			if (!constraint.isObjective()&&!constraint.isSpatial())
 			{
-				const std::vector<Core::FMTconstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
+				const std::vector<Core::FMTConstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
 				if (!constraint.isLinear())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
@@ -616,7 +616,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					Core::FMTconstrainttype constraint_type = constraint.getConstraintType();
 					std::vector<std::string>equation;
 					///////////////////////////////////////////////////
-					const std::vector<Core::FMToutputnode>all_nodes = constraint.getNodes(equation, 1);
+					const std::vector<Core::FMTOutputNode>all_nodes = constraint.getNodes(equation, 1);
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -842,7 +842,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		return bounding;
 		}
 
-	FMTlpmodel FMTlpmodel::getModelFromProportions(const std::vector<Core::FMTmask>& globalmasks,
+	FMTlpmodel FMTlpmodel::getModelFromProportions(const std::vector<Core::FMTMask>& globalmasks,
 		std::vector<double> tolerances) const
 	{
 		FMTlpmodel modelwithproportion(*this);
@@ -852,7 +852,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"Global masks and tolerances are not the same length", "FMTlpmodel::getAreaVariabilities", __LINE__, __FILE__);
 			}
-			//const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTdevelopment>>& initialperiod = m_graph->getPeriodVertices(0);
+			//const boost::unordered_set<Core::FMTLookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTDevelopment>>& initialperiod = m_graph->getPeriodVertices(0);
 			std::vector<int>colstarget;
 			std::vector<double>originalbounds;
 			std::vector<double>newbounds;
@@ -865,8 +865,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			{
 				size_t maskid = 0;
 				size_t gotvariables = 0;
-				const Core::FMTdevelopment& dev = m_graph->getDevelopment(*vertex_iterator);
-				for (const Core::FMTmask& globalmask : globalmasks)
+				const Core::FMTDevelopment& dev = m_graph->getDevelopment(*vertex_iterator);
+				for (const Core::FMTMask& globalmask : globalmasks)
 				{
 					if (dev.getMask().isSubsetOf(globalmask))
 					{
@@ -923,8 +923,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		return modelwithproportion;
 	}
 
-	std::map<std::string, std::vector<double>>FMTlpmodel::getAreaVariabilities(const std::vector<Core::FMToutput>& localoutputs,
-		const std::vector<Core::FMTmask>& globalmasks,
+	std::map<std::string, std::vector<double>>FMTlpmodel::getAreaVariabilities(const std::vector<Core::FMTOutput>& localoutputs,
+		const std::vector<Core::FMTMask>& globalmasks,
 		std::vector<double> tolerances) const
 	{
 		std::map<std::string, std::vector<double>>uppernlower;
@@ -935,7 +935,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				}
 			if (solver.isProvenOptimal())
 			{
-				for (const Core::FMToutput& output : localoutputs)
+				for (const Core::FMTOutput& output : localoutputs)
 				{
 					std::vector<double>outputvalues;
 					for (int period = 0; period <= static_cast<int>(m_graph->size() - 2); ++period)
@@ -946,7 +946,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				}
 			}
 			const FMTlpmodel newmodelwithproportion = getModelFromProportions(globalmasks, tolerances);
-			for (const Core::FMToutput& output : localoutputs)
+			for (const Core::FMTOutput& output : localoutputs)
 			{
 				std::vector<double>outputvalues;
 				for (int period = 0; period <= static_cast<int>(m_graph->size() - 2); ++period)
@@ -962,7 +962,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 	return uppernlower;
 	}
 
-	std::map<std::string, std::vector<double>>FMTlpmodel::getVariabilities(const std::vector<Core::FMToutput>& outputs, const int& periodStart,const int& periodStop)
+	std::map<std::string, std::vector<double>>FMTlpmodel::getVariabilities(const std::vector<Core::FMTOutput>& outputs, const int& periodStart,const int& periodStop)
 		{
 		std::map<std::string, std::vector<double>>uppernlower;
 		try {
@@ -970,8 +970,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			const std::vector<double>originalcoefficients(originalcoef, (originalcoef + solver.getNumCols()));
 			const double originalsense = solver.getObjSense();
 			const std::vector<int>objectivebounds = setObjectiveBounds(true, true, parameters.getDblParameter(FMTdblmodelparameters::TOLERANCE));
-			Core::FMToutput outtest;
-			for (const Core::FMToutput& output : outputs)
+			Core::FMTOutput outtest;
+			for (const Core::FMTOutput& output : outputs)
 			{
 				std::vector<double>medianvalues;
 				for (int period = periodStart; period <= periodStop; ++period)
@@ -979,9 +979,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					medianvalues.push_back(this->getOutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["M" + output.getName()] = medianvalues;
-				Core::FMTconstraint maxconstraint(Core::FMTconstrainttype::FMTMAXobjective, output);
+				Core::FMTConstraint maxconstraint(Core::FMTconstrainttype::FMTMAXobjective, output);
 				std::vector<double>uppervalues;
-				Core::FMTconstraint minconstraint(Core::FMTconstrainttype::FMTMINobjective, output);
+				Core::FMTConstraint minconstraint(Core::FMTconstrainttype::FMTMINobjective, output);
 				std::vector<double>lowervalues;
 				for (int period = periodStart ; period <= periodStop ; ++period )
 				{
@@ -1021,10 +1021,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		return uppernlower;
 		}
 	
-	Graph::FMTgraphstats FMTlpmodel::eraseConstraint(const Core::FMTconstraint& constraint, int period)
+	Graph::FMTgraphstats FMTlpmodel::eraseConstraint(const Core::FMTConstraint& constraint, int period)
 		{
 		try {
-		const std::vector<Core::FMTconstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
+		const std::vector<Core::FMTConstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
 		if (period==-1)
 			{
 				int first_period = 0;
@@ -1061,7 +1061,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 						bool removeconstraint = true;
 						for (int locator = (period + 1); locator < LENGTH + 1; ++locator)
 						{
-							for (std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
+							for (std::vector<Core::FMTConstraint>::const_iterator it = constraints.begin();
 								it != constraints.end();++it)
 							{
 								const std::vector<int> CONSTRAINT_ELEMENTS = getMatrixElement(it, locator, elementtype);
@@ -1110,7 +1110,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					{
 					for (int locator = (period+1); locator < LENGTH+1;++locator)
 						{
-						for (std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
+						for (std::vector<Core::FMTConstraint>::const_iterator it = constraints.begin();
 							it != constraints.end(); ++it)
 						{
 							const std::vector<int> LEVEL_ELEMENTS = getMatrixElement(it, locator, FMTmatrixelement::levelvariable);
@@ -1155,7 +1155,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				const int LENGTH = getParameter(Models::FMTintmodelparameters::LENGTH);
 				for (int period = 0; period < LENGTH + 1; ++period)
 				{
-					for (std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
+					for (std::vector<Core::FMTConstraint>::const_iterator it = constraints.begin();
 						it != constraints.end(); ++it)
 					{
 
@@ -1254,7 +1254,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					}
 					++firstPeriod;
 					
-					for (const Core::FMTconstraint& constraint : constraints)
+					for (const Core::FMTConstraint& constraint : constraints)
 					{
 						this->eraseConstraint(constraint, firstPeriod);
 					}
@@ -1285,14 +1285,14 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		 return m_graph->getStats();
 		 }
 	
-     void FMTlpmodel::locateLevels(const std::vector<Core::FMToutputnode>& nodes,int period,
-		 std::map<int,double>& variables, const std::vector<Core::FMTconstraint>::const_iterator& p_it, double multiplier)
+     void FMTlpmodel::locateLevels(const std::vector<Core::FMTOutputNode>& nodes,int period,
+		 std::map<int,double>& variables, const std::vector<Core::FMTConstraint>::const_iterator& p_it, double multiplier)
             {
 			try {
 				std::vector<std::string>level_names = p_it->getVariableLevels();
 				if (!level_names.empty())
 					{
-					for (const Core::FMToutputnode& node : nodes)
+					for (const Core::FMTOutputNode& node : nodes)
 						{
 						if (node.source.isVariableLevel())
 							{
@@ -1314,11 +1314,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
             }
 
 	 int FMTlpmodel::getLevelFromLevelName(const std::string& variable_level,
-		 int period, const std::vector<Core::FMTconstraint>::const_iterator& p_it) const
+		 int period, const std::vector<Core::FMTConstraint>::const_iterator& p_it) const
 	 {
 		 try {
-			 std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
-			 for (const Core::FMTconstraint& model_constraint : constraints)
+			 std::vector<Core::FMTConstraint>::const_iterator it = constraints.begin();
+			 for (const Core::FMTConstraint& model_constraint : constraints)
 			 {
 				 if (p_it==constraints.end() || model_constraint != *p_it)
 				 {
@@ -1356,10 +1356,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 	 }
 
 
-    int FMTlpmodel::getSetLevel(const std::vector<Core::FMTconstraint>::const_iterator& p_it,
+    int FMTlpmodel::getSetLevel(const std::vector<Core::FMTConstraint>::const_iterator& p_it,
 								const std::string& variable_level,int period)
         {
-		/*for (const Core::FMTconstraint& model_constraint : constraints)
+		/*for (const Core::FMTConstraint& model_constraint : constraints)
 		{
 			if (model_constraint != constraint)
 			{
@@ -1396,7 +1396,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		return index;
         }
 
-	bool FMTlpmodel::isMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId,
+	bool FMTlpmodel::isMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId,
 		const FMTmatrixelement& p_element_type, int p_period) const
 		{
 		if (p_period == -1)
@@ -1412,7 +1412,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			!elements.at(period).at(std::string(constraint)).at(element_type).empty()));*/
 		}
 
-	bool FMTlpmodel::containsMatrixElements(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId, 
+	bool FMTlpmodel::containsMatrixElements(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId, 
 											int p_period) const
 		{
 		for (int typeId = FMTmatrixelement::goalvariable; typeId != FMTmatrixelement::nr_items; typeId++)
@@ -1468,7 +1468,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		return true;
 		}
 
-	Graph::FMTgraphstats FMTlpmodel::setObjective(const Core::FMTconstraint& objective)
+	Graph::FMTgraphstats FMTlpmodel::setObjective(const Core::FMTConstraint& objective)
 		{
 		try {
 			/*if (!objective.canBeNodesOnly())
@@ -1483,19 +1483,19 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					"The objective output " + std::string(objective) + " cannot be deduct to output nodes",
 					"FMTlpmodel::setObjective", __LINE__, __FILE__);
 			}
-			const std::vector<Core::FMTconstraint>::const_iterator OBJECTIVE_IT = _getsetConstraintIndex(objective);
+			const std::vector<Core::FMTConstraint>::const_iterator OBJECTIVE_IT = _getsetConstraintIndex(objective);
 			const bool strictlypositivesoutputsmatrix = getParameter(STRICTLY_POSITIVE);
 			int first_period = 0;
 			int last_period = 0;
 			m_graph->constraintLenght(objective, first_period, last_period);
-			//Its now handle in FMToutputnode setToGraph
+			//Its now handle in FMTOutputNode setToGraph
 			/*double averagefactor = 1;
 			if (last_period != first_period)
 			{
 				averagefactor = (1 / (last_period - first_period));
 			}*/
 			std::vector<std::string>equation;
-			const std::vector<Core::FMToutputnode>all_nodes = objective.getNodes(equation,1,strictlypositivesoutputsmatrix);
+			const std::vector<Core::FMTOutputNode>all_nodes = objective.getNodes(equation,1,strictlypositivesoutputsmatrix);
 			std::map<int, double>all_variables;
 			if (!objective.extraVariables())
 			{
@@ -1615,8 +1615,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
         {
         bool found_something = false;
 		try {
-			std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
-			for (const Core::FMTconstraint& constraint : constraints)
+			std::vector<Core::FMTConstraint>::const_iterator it = constraints.begin();
+			for (const Core::FMTConstraint& constraint : constraints)
 			{
 				if (!constraint.isObjective() && constraint.isGoal())
 				{
@@ -1657,7 +1657,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
         return found_something;
         }
 
-    int FMTlpmodel::getsetMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId,
+    int FMTlpmodel::getsetMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId,
                      const FMTmatrixelement& element_type,const std::map<int,double>& indexes,
                      int period,double lowerbound,double upperbound)
         {
@@ -1811,7 +1811,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		return element_id;
         }
 
-		const std::vector<int> FMTlpmodel::getMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& it,
+		const std::vector<int> FMTlpmodel::getMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& it,
 			int p_period,
 			FMTmatrixelement p_element) const
         {
@@ -1825,7 +1825,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			return result;
         }
 
-		std::vector<int>& FMTlpmodel::getMatrixElementRef(const std::vector<Core::FMTconstraint>::const_iterator& it,
+		std::vector<int>& FMTlpmodel::getMatrixElementRef(const std::vector<Core::FMTConstraint>::const_iterator& it,
 			int p_period,
 			FMTmatrixelement p_element)
 		{
@@ -1836,7 +1836,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}
 
 	std::vector<Heuristics::FMToperatingareascheduler>FMTlpmodel::getOperatingAreaSchedulerHeuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
-																						const Core::FMToutputnode& node,
+																						const Core::FMTOutputNode& node,
 																						size_t numberofheuristics,
 																						bool copysolver)		
 		{
@@ -1848,10 +1848,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			updateMatrixNaming();
 			for(int i = 0 ; i < static_cast<int>(opareas.size()) ; ++i)
 			{
-				const Core::FMTmask m1 = opareas.at(i).getMask();
+				const Core::FMTMask m1 = opareas.at(i).getMask();
 				for(int ii = i+1 ; ii < static_cast<int>(opareas.size()) ; ++ii)
 				{
-					const Core::FMTmask m2 = opareas.at(ii).getMask();
+					const Core::FMTMask m2 = opareas.at(ii).getMask();
 					if(!(m1.isNotThemesSubset(m2,themes)))
 					{
 						_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
@@ -1879,8 +1879,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}
 
     std::vector<Heuristics::FMToperatingareaclusterer>FMTlpmodel::getOperatingAreaClustererHeuristics(const std::vector<Heuristics::FMToperatingareacluster>& clusters,
-																				const Core::FMToutput& statisticoutput,
-                                                                                const Core::FMToutput& areaoutput,
+																				const Core::FMTOutput& statisticoutput,
+                                                                                const Core::FMTOutput& areaoutput,
                                                                                 const int& period,
 																				size_t numberofheuristics,
 																				int minimalnumberofclusters,
@@ -1929,7 +1929,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		{
 		if (!localmodel.empty())
 			{
-			//localmodel.setArea(std::vector<Core::FMTactualdevelopment>());
+			//localmodel.setArea(std::vector<Core::FMTActualDevelopment>());
 			//localmodel.push_back(FMTlpmodel::getCopy(period));
 			localmodel.setArea(FMTlpmodel::getArea(period));
 			}
@@ -1984,8 +1984,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 	{
 		try {
 			int constraintid = 0;
-			std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
-			for (const Core::FMTconstraint& constraint : constraints)
+			std::vector<Core::FMTConstraint>::const_iterator it = constraints.begin();
+			for (const Core::FMTConstraint& constraint : constraints)
 				{
 				int first_period = 0;
 				int last_period = 0;
@@ -2181,7 +2181,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 	}
 
 
-	std::unique_ptr<FMTmodel> FMTlpmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTmodel> FMTlpmodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 	{
 		try{
 			return std::unique_ptr<FMTmodel>(new FMTlpmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(optionaldevelopments).get()))));
@@ -2221,7 +2221,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}
 	}
 
-	bool FMTlpmodel::build(std::vector<Core::FMTschedule> schedules)
+	bool FMTlpmodel::build(std::vector<Core::FMTSchedule> schedules)
 	{
 		try{
 			const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
@@ -2266,7 +2266,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 												"FMTlpmodel::build",__LINE__,__FILE__);
 						}
 					}else{
-						const Graph::FMTgraphstats PERIOD = buildPeriod(Core::FMTschedule(), false, parameters.getPeriodCompressTime(period));
+						const Graph::FMTgraphstats PERIOD = buildPeriod(Core::FMTSchedule(), false, parameters.getPeriodCompressTime(period));
 						if (!QUIET_LOG)
 						{
 							_logger->logWithLevel(std::string(PERIOD) + "\n", 3);
@@ -2338,13 +2338,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 	}
 
 
-	bool FMTlpmodel::trySetSolution(const std::vector<Core::FMTschedule>& schedules)
+	bool FMTlpmodel::trySetSolution(const std::vector<Core::FMTSchedule>& schedules)
 	{
 		try
 		{
 			int period = 1;
 			setParameter(Models::FMTboolmodelparameters::SETSOLUTION_THROW, false);
-			for (const Core::FMTschedule& schedule: schedules)
+			for (const Core::FMTSchedule& schedule: schedules)
 			{
 				const bool SOLUTION_FOUND = setSolution(period, schedule,parameters.getDblParameter(FMTdblmodelparameters::TOLERANCE));
 				if (!SOLUTION_FOUND)

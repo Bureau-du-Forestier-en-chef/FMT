@@ -23,9 +23,9 @@ namespace Models {
 
 
 namespace Core {
-	class FMTschedule;
-	class FMTconstraint;
-	class FMToutput;
+	class FMTSchedule;
+	class FMTConstraint;
+	class FMTOutput;
 }
 
 
@@ -109,18 +109,18 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		// DocString: FMTmodelparser::readschedules
 		/**
 		The readschedules function read the schedule files of the specified (models) based on a primary file
-		(primarym_location). It returns a vector of vector of FMTschedule ordered the same way as the models.
+		(primarym_location). It returns a vector of vector of FMTSchedule ordered the same way as the models.
 		If validate file date is true then it will validate that the parser most recent file is older than the
 		schedule parser most recent file, if it is not it will return a empty schedule.
 		*/
-		std::vector<std::vector<Core::FMTschedule>>readschedules(const std::string& primarym_location,
+		std::vector<std::vector<Core::FMTSchedule>>readschedules(const std::string& primarym_location,
 			const std::vector<Models::FMTmodel>& models);
 		// DocString: FMTmodelparser::getConstraintsFromString
 		/**
 		Get constraints from string.
 		*/
-		std::vector<Core::FMTconstraint>getConstraintsFromString(std::string constraintstr,
-			const Models::FMTmodel& model,Core::FMTconstants constants = Core::FMTconstants());
+		std::vector<Core::FMTConstraint>getConstraintsFromString(std::string constraintstr,
+			const Models::FMTmodel& model,Core::FMTConstants constants = Core::FMTConstants());
 		// DocString: FMTmodelparser::write
 		/**
 		The write function write a FMTmodel (model) in to a folder (folder) all the files are going to be named
@@ -144,14 +144,14 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		Fill up the OGRlayer of infeasible values.
 		*/
 		void fillUpInfeasibles(OGRLayer* layer,
-			const std::vector<Core::FMToutput>&theoutputs,
+			const std::vector<Core::FMTOutput>&theoutputs,
 			const int& iteration,const int& firstPeriod, const int&lastPeriod) const;
 		// DocString: FMTmodelparser::writeFeatures
 		/**
 		Write multiple features (outputs)
 		*/
 		void writeFeatures(OGRLayer* layer,const int& firstPeriod, const int& iteration,
-			const std::vector<Core::FMToutput>&theoutputs,
+			const std::vector<Core::FMTOutput>&theoutputs,
 			const std::map<std::string,std::vector<std::vector<double>>>& values, bool writeNaN = false)const;
 		// DocString: FMTmodelparser::writeResults
 		/**
@@ -159,7 +159,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		Write the results down in a gdaldriver (gdaldrivername), You can also specify the iteration will be 0 by default.
 		*/
 		void writeResults(const Models::FMTmodel& model,
-			const std::vector<Core::FMToutput>&theoutputs,
+			const std::vector<Core::FMTOutput>&theoutputs,
 			const int& firstPeriod, const int& lastPeriod,
 			const std::string& location,
 			Core::FMToutputlevel level = Core::FMToutputlevel::standard,

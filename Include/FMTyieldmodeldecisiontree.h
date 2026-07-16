@@ -16,9 +16,9 @@ namespace Models
 
 namespace Core
 {
-	class FMTmask;
-	class FMTconstraint;
-	class FMToutput;
+	class FMTMask;
+	class FMTConstraint;
+	class FMTOutput;
 	// DocString: FMTyieldmodeldecisiontree
 	/**
 	FMTyieldmodeldecisiontree use a decision tree based on outputs of the model (growth only) to get yield values.
@@ -34,10 +34,10 @@ namespace Core
 	mutable std::map<size_t,std::vector<double>>values;
 	// DocString: FMTyieldmodeldecisiontree::reference
 	///The reference output for the ratio
-	std::unique_ptr<FMToutput> reference;
+	std::unique_ptr<FMTOutput> reference;
 	// DocString: FMTyieldmodeldecisiontree::nodes
 	///The decision nodes constraints are used for bounds
-	std::vector<FMTconstraint>nodes;
+	std::vector<FMTConstraint>nodes;
 	// DocString: FMTyieldmodeldecisiontree::default_values
 	///Yields default values if update period
 	std::vector<double>default_values;
@@ -57,7 +57,7 @@ namespace Core
 	/**
 	Get the mask of the actual decision tree. Will return a valid mask of the reference output
 	*/
-	Core::FMTmask getMask() const;
+	Core::FMTMask getMask() const;
 	// DocString: FMTyieldmodeldecisiontree::buildconstraint
 	/**
 	Take the yield, the main mask lowerbound and upperbound and build up a constraint on the form of:
@@ -67,7 +67,7 @@ namespace Core
 	constraint >= lowerbound
 	lag is the amount of period added or removed when getting constraint output values.
 	*/
-	Core::FMTconstraint buildConstraint(const std::string& name, const std::string& yld, const Core::FMTmask& mask, const double& lowerbound, const double& upperbound,const int& lag) const;
+	Core::FMTConstraint buildConstraint(const std::string& name, const std::string& yld, const Core::FMTMask& mask, const double& lowerbound, const double& upperbound,const int& lag) const;
 	// DocString: FMTyieldmodeldecisiontree::getadecision
 	/**
 	From de constraint id return a new constraint id based on the naturalGrowth and the period with the decision tree
@@ -78,13 +78,13 @@ namespace Core
 	Build the natural growth model with a request (original model) to be able to call getadecision on the growthmodel
 	this function has to be thread safe. Only build a small model dedicated to the reference output 
 	*/
-	std::unique_ptr<Models::FMTmodel> getNaturalGrowth(const Core::FMTyieldrequest& request) const;
+	std::unique_ptr<Models::FMTmodel> getNaturalGrowth(const Core::FMTYieldRequest& request) const;
 	// DocString: FMTyieldmodeldecisiontree::modify
 	/**
 	This will modify the class if presolve = true will do presolve, if not will do postSolve.
 	*/
-	std::unique_ptr<FMTyieldmodel> modify(const FMTmaskfilter& filter,
-		const std::vector<FMTtheme>& newthemes,bool presolve = true) const;
+	std::unique_ptr<FMTyieldmodel> modify(const FMTMaskFilter& filter,
+		const std::vector<FMTTheme>& newthemes,bool presolve = true) const;
 	public:
 		// DocString: FMTyieldmodeldecisiontree::FMTyieldmodeldecisiontree()
 		/**
@@ -110,7 +110,7 @@ namespace Core
 		/**
 		Construct a FMTyieldmodeldecisiontree based on a JSON file and an input yield name list and also on the global mask
 		*/
-		FMTyieldmodeldecisiontree(const boost::property_tree::ptree& jsonProps,const std::vector<std::string>& inputYields,const Core::FMTmask& mainmask);
+		FMTyieldmodeldecisiontree(const boost::property_tree::ptree& jsonProps,const std::vector<std::string>& inputYields,const Core::FMTMask& mainmask);
 		// DocString: FMTyieldmodeldecisiontree::Clone()
 		/**
 		Implements FMTyieldmodel::Clone().
@@ -121,7 +121,7 @@ namespace Core
 		Runs the decision tree so if the values are not set build a naturalGrowth model and run the decision tree and get the decision for all
 		periods. Finaly return the predictions.
 		*/
-		const std::vector<double>predict(const Core::FMTyieldrequest& request) const;
+		const std::vector<double>predict(const Core::FMTYieldRequest& request) const;
 		// DocString: FMTyieldmodeldecisiontree::getModelType()
 		/**
 		Return the modeltype of the FMTyieldmodel.
@@ -131,14 +131,14 @@ namespace Core
 		/**
 		Return a presolved FMTyieldmodeldecisiontree
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& newthemes) const;
+		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& newthemes) const;
 		// DocString: FMTyieldmodeldecisiontree::postSolve
 		/**
 		Change the output and constraints mask to return to the original constraints and outputs.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& basethemes) const;
+		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& basethemes) const;
 		// DocString: FMTyieldmodeldecisiontreel::getPeriodicValues
 		/**
 		Try to turn the FMTyieldmodel into periodic constant values. if returns an non empty vector then

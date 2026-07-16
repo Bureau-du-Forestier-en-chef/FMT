@@ -77,8 +77,8 @@ int main(int argc, char* argv[])
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
-	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
-	std::vector<Core::FMTtransition> strans;
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
+	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
 	{
 		strans.push_back(tran.single());
@@ -110,9 +110,9 @@ int main(int argc, char* argv[])
 		areaParser.writeForest(SPATIAL_SCHEDULE.getForestPeriod(period), simulationmodel.getthemes(), themesrast, NAME + "AGE.tif", NAME + "LOCK.tif");
 	}*/
 	Parser::FMTareaparser areaParser;
-	std::vector<Core::FMTtheme>selected(1, simulationmodel.getThemes().at(2));
+	std::vector<Core::FMTTheme>selected(1, simulationmodel.getThemes().at(2));
 	areaParser.writeDisturbances(outdir, SPATIAL_SCHEDULE, simulationmodel.getactions(), selected, length);
-	for (const Core::FMToutput& OUTOUT : simulationmodel.getOutputs())
+	for (const Core::FMTOutput& OUTOUT : simulationmodel.getOutputs())
 		{
 		if (std::find(spatialOutputs.begin(), spatialOutputs.end(), OUTOUT.getName())!= spatialOutputs.end())
 			{

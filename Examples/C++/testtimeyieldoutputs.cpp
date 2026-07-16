@@ -26,10 +26,10 @@ int main()
 		{
 			optimizationmodel.buildPeriod();
 		}
-		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
-		const Core::FMTconstraint objective = constraints.at(0);
+		std::vector<Core::FMTConstraint>constraints = optimizationmodel.getconstraints();
+		const Core::FMTConstraint objective = constraints.at(0);
 		constraints.erase(constraints.begin());
-		for (const Core::FMTconstraint& constraint : constraints)
+		for (const Core::FMTConstraint& constraint : constraints)
 		{
 			optimizationmodel.setConstraint(constraint);
 		}
@@ -39,7 +39,7 @@ int main()
 		testmaps["TEST2"] = 64524.8;
 		if (optimizationmodel.initialSolve())
 			{
-			for (const Core::FMToutput& output : optimizationmodel.getOutputs())
+			for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
 				{
 				if (output.getName().find("TEST")!=std::string::npos)
 					{

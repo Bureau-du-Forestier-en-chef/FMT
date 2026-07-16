@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
 	Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::CLP);
 	local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<Core::FMToutput>selectedoutputs;
-	for (const Core::FMToutput& output : global.getOutputs())
+	std::vector<Core::FMTOutput>selectedoutputs;
+	for (const Core::FMTOutput& output : global.getOutputs())
 	{
 		if (output.getName() == "OVOLREC"|| output.getName() == "VOLINVENT" || output.getName()=="BURNEDAREA")
 		{

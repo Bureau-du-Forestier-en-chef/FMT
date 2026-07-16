@@ -112,7 +112,7 @@ namespace Wrapper {
 			// On va chercher le mod�le avec tous les th�mes
 			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 			// On va chercher tous les th�mes dans le mod�le et le theme qui nous int�resse
-			const Core::FMTtheme THEME = MODEL.getThemes().at(p_themeIndex);
+			const Core::FMTTheme THEME = MODEL.getThemes().at(p_themeIndex);
 			// On sort tous les attributes du th�me
 			const std::vector<std::string>& ATTRIBUTES = THEME.getBaseAttributes();
 

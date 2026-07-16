@@ -174,7 +174,7 @@ namespace Core {
 	}
 
 
-	const std::vector<double>FMTyieldmodelnn::predict(const Core::FMTyieldrequest& request) const
+	const std::vector<double>FMTyieldmodelnn::predict(const Core::FMTYieldRequest& request) const
 	{
 		try {
 			const std::string mdlName = getModelName();

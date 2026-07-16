@@ -16,11 +16,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 
 
-	FMTmodelyieldhandler::operator std::string() const
+	FMTModelYieldHandler::operator std::string() const
 	{
 		std::string value;
 		try {
-			FMTtimeyieldhandler potentialtime = toTimeHandler();
+			FMTTimeYieldHandler potentialtime = toTimeHandler();
 			if (!potentialtime.empty())
 				{
 				return std::string(potentialtime);
@@ -54,12 +54,12 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTModelYieldHandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 	}
 
-	void FMTmodelyieldhandler::setModel(Models::FMTmodel* p_modelPtr)
+	void FMTModelYieldHandler::setModel(Models::FMTmodel* p_modelPtr)
 	{
 		for (const std::unique_ptr<FMTyieldmodel>& model : models)
 		{
@@ -68,10 +68,10 @@ namespace Core {
 	}
 
 
-	FMTtimeyieldhandler FMTmodelyieldhandler::toTimeHandler() const
+	FMTTimeYieldHandler FMTModelYieldHandler::toTimeHandler() const
 		{
 		try {
-			FMTtimeyieldhandler newhandler(getMask());
+			FMTTimeYieldHandler newhandler(getMask());
 			bool gotallmodel = true;
 			size_t modelid = 0;
 			for (const std::unique_ptr<FMTyieldmodel>& model : models)
@@ -106,29 +106,29 @@ namespace Core {
 		
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::toTimeHandler", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTModelYieldHandler::toTimeHandler", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
-		return FMTtimeyieldhandler(getMask());
+		return FMTTimeYieldHandler(getMask());
 		}
 	
-	FMTyldtype FMTmodelyieldhandler::getType() const
+	FMTyldtype FMTModelYieldHandler::getType() const
 	{
 		return FMTyldtype::FMTmodelyld;
 	}
 
-	FMTmodelyieldhandler::FMTmodelyieldhandler(const FMTmask& mask) :
-		FMTyieldhandler(mask),models(),m_yldnames()
+	FMTModelYieldHandler::FMTModelYieldHandler(const FMTMask& mask) :
+		FMTYieldHandler(mask),models(),m_yldnames()
 	{
 
 	}
 
-	FMTmodelyieldhandler::FMTmodelyieldhandler() :
-		FMTyieldhandler(), models(), m_yldnames()
+	FMTModelYieldHandler::FMTModelYieldHandler() :
+		FMTYieldHandler(), models(), m_yldnames()
 	{
 
 	}
-	FMTmodelyieldhandler::FMTmodelyieldhandler(const FMTmodelyieldhandler& rhs) :
-		FMTyieldhandler(rhs), models(), m_yldnames(rhs.m_yldnames)
+	FMTModelYieldHandler::FMTModelYieldHandler(const FMTModelYieldHandler& rhs) :
+		FMTYieldHandler(rhs), models(), m_yldnames(rhs.m_yldnames)
 	{
 		for (const std::unique_ptr<FMTyieldmodel>& model : rhs.models)
 		{
@@ -136,11 +136,11 @@ namespace Core {
 		}
 	}
 
-	FMTmodelyieldhandler& FMTmodelyieldhandler::operator = (const FMTmodelyieldhandler& rhs)
+	FMTModelYieldHandler& FMTModelYieldHandler::operator = (const FMTModelYieldHandler& rhs)
 	{
 		if (this!=&rhs)
 		{
-			FMTyieldhandler::operator=(rhs);
+			FMTYieldHandler::operator=(rhs);
 			for (const std::unique_ptr<FMTyieldmodel>& model : rhs.models)
 				{
 				models.push_back(std::move(model->Clone()));
@@ -152,7 +152,7 @@ namespace Core {
 	}
 
 
-	std::map<std::string, size_t>FMTmodelyieldhandler::getModelsNameByIndex() const
+	std::map<std::string, size_t>FMTModelYieldHandler::getModelsNameByIndex() const
 	{
 		std::map<std::string, size_t>modelmapping;
 		try {
@@ -165,19 +165,19 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::getModelsNameByIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTModelYieldHandler::getModelsNameByIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return modelmapping;
 	}
 
 
-	bool FMTmodelyieldhandler::operator == (const FMTmodelyieldhandler& rhs) const
+	bool FMTModelYieldHandler::operator == (const FMTModelYieldHandler& rhs) const
 	{
-		return (FMTyieldhandler::operator==(rhs));
+		return (FMTYieldHandler::operator==(rhs));
 	}
 
 
-	double FMTmodelyieldhandler::get(const std::string& yld, const FMTyieldrequest& request) const
+	double FMTModelYieldHandler::get(const std::string& yld, const FMTYieldRequest& request) const
 	{
 		try {
 			const size_t modelid = m_yldnames.at(yld).first;
@@ -190,46 +190,46 @@ namespace Core {
 			}
 			else {
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
-					"FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+					"FMTModelYieldHandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}*/
 			const std::vector<double>predictions = model->predict(request);
 			return (predictions.at(yieldid));
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at yield " + yld, "FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("at yield " + yld, "FMTModelYieldHandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return 0;
 	}
 
-	bool FMTmodelyieldhandler::empty() const
+	bool FMTModelYieldHandler::empty() const
 	{
 		return models.empty();
 	}
-	size_t FMTmodelyieldhandler::size() const
+	size_t FMTModelYieldHandler::size() const
 	{
 		return m_yldnames.size();
 	}
 
-	void FMTmodelyieldhandler::pushBackModel(const std::unique_ptr<FMTyieldmodel>& model)
+	void FMTModelYieldHandler::pushBackModel(const std::unique_ptr<FMTyieldmodel>& model)
 	{
 		models.push_back(std::move(model->Clone()));
 	}
-	void FMTmodelyieldhandler::setYield(const size_t& modelid, const size_t& yieldid, const std::string& yldname)
+	void FMTModelYieldHandler::setYield(const size_t& modelid, const size_t& yieldid, const std::string& yldname)
 	{
 		m_yldnames[yldname] = std::pair<size_t,size_t>(modelid,yieldid);
 	}
 	
-	bool FMTmodelyieldhandler::containsYield(const std::string& yldname) const
+	bool FMTModelYieldHandler::containsYield(const std::string& yldname) const
 	{
 		return (m_yldnames.find(yldname) != m_yldnames.end());
 	}
 
-	bool FMTmodelyieldhandler::isNullYield(const std::string& yldname) const
+	bool FMTModelYieldHandler::isNullYield(const std::string& yldname) const
 	{
 		return false;
 	}
 
-	std::vector<std::string>FMTmodelyieldhandler::getYieldNames() const
+	std::vector<std::string>FMTModelYieldHandler::getYieldNames() const
 	{
 		std::vector<std::string>results;
 		results.reserve(m_yldnames.size());
@@ -240,35 +240,35 @@ namespace Core {
 		return results;
 	}
 
-	void FMTmodelyieldhandler::clearCache()
+	void FMTModelYieldHandler::clearCache()
 	{
 		
 	}
 
-	std::unique_ptr<FMTyieldhandler>FMTmodelyieldhandler::clone() const
+	std::unique_ptr<FMTYieldHandler>FMTModelYieldHandler::clone() const
 	{
-		return std::unique_ptr<FMTyieldhandler>(new FMTmodelyieldhandler(*this));
+		return std::unique_ptr<FMTYieldHandler>(new FMTModelYieldHandler(*this));
 	}
 
 
-	std::unique_ptr<FMTyieldhandler> FMTmodelyieldhandler::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const
+	std::unique_ptr<FMTYieldHandler> FMTModelYieldHandler::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
 	{
 		try {
-			FMTmodelyieldhandler newhandler(*this);
+			FMTModelYieldHandler newhandler(*this);
 			newhandler.models.clear();
 			for (const std::unique_ptr<FMTyieldmodel>& yieldmodelptr : models)
 				{
 				newhandler.models.push_back(yieldmodelptr->presolve(filter, newthemes));
 				}
-			return std::unique_ptr<FMTyieldhandler>(new FMTmodelyieldhandler(newhandler));
+			return std::unique_ptr<FMTYieldHandler>(new FMTModelYieldHandler(newhandler));
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTModelYieldHandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldhandler>(nullptr);
+		return std::unique_ptr<FMTYieldHandler>(nullptr);
 	}
-	void FMTmodelyieldhandler::clearRandomYieldsCache()
+	void FMTModelYieldHandler::clearRandomYieldsCache()
 	{
 		for (std::unique_ptr<FMTyieldmodel>& yieldModelPtr : models)
 			{
@@ -277,22 +277,22 @@ namespace Core {
 	}
 
 
-	std::unique_ptr<FMTyieldhandler> FMTmodelyieldhandler::postSolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const
+	std::unique_ptr<FMTYieldHandler> FMTModelYieldHandler::postSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& basethemes) const
 	{
 		try {
-			FMTmodelyieldhandler newhandler(*this);
+			FMTModelYieldHandler newhandler(*this);
 			newhandler.models.clear();
 			for (const std::unique_ptr<FMTyieldmodel>& yieldmodelptr : models)
 			{
 				newhandler.models.push_back(yieldmodelptr->postSolve(filter, basethemes));
 			}
-			return newhandler.FMTyieldhandler::postSolve(filter, basethemes);
+			return newhandler.FMTYieldHandler::postSolve(filter, basethemes);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTmodelyieldhandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTModelYieldHandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldhandler>(nullptr);
+		return std::unique_ptr<FMTYieldHandler>(nullptr);
 	}
 
 

@@ -43,10 +43,10 @@ namespace Heuristics
 		protected:
 		// DocString: FMToperatingarea::mask
 		///The mask describing the operating area
-		Core::FMTmask mask;
+		Core::FMTMask mask;
 		// DocString: FMToperatingarea::neighbors
 		///Neighbors mask of the operating area
-		std::vector<Core::FMTmask>neighbors;
+		std::vector<Core::FMTMask>neighbors;
 		// DocString: FMToperatingarea::neighborsperimeter
 		///neighborsperimeter is the ratio a operatingarea needs to share to a other operatingarea to be considered neighbor.
 		double neighborsperimeter;
@@ -63,7 +63,7 @@ namespace Heuristics
 			/**
 			Getter returning a copy of the neighbors masks data of the operatingarea.
 			*/
-			std::vector<Core::FMTmask> getNeighbors() const;
+			std::vector<Core::FMTMask> getNeighbors() const;
 			// DocString: FMToperatingarea::getArea
 			/**
 				Get the area of the operating area.
@@ -79,18 +79,18 @@ namespace Heuristics
 			/**
 			Getter returning mask of the operating area.
 			*/
-			Core::FMTmask getMask() const;
+			Core::FMTMask getMask() const;
 			// DocString: FMToperatingarea::setNeighbors
 			/**
 			Setter for the neighbors mask member data.
 			*/
-			void setNeighbors(const std::vector<Core::FMTmask>& lneighbors);
-			// DocString: FMToperatingarea(const Core::FMTmask,const double)
+			void setNeighbors(const std::vector<Core::FMTMask>& lneighbors);
+			// DocString: FMToperatingarea(const Core::FMTMask,const double)
 			/**
 			Main FMToperatingarea constructor targeting the user. Before synchronizing everything to the solverinterface,
 			the user has to provide to the heuristics all the green-up, returntime etc.... for each operating area.
 			*/
-			FMToperatingarea(const Core::FMTmask& lmask,const double& lneighborsperimeter);
+			FMToperatingarea(const Core::FMTMask& lmask,const double& lneighborsperimeter);
 			// DocString: FMToperatingarea::setArea
 			/**
 			Set the area of the operating area.
@@ -129,15 +129,15 @@ namespace Heuristics
 			virtual ~FMToperatingarea()=default;
 			// DocString: FMToperatingarea::presolve
 			/**
-			Using a FMTmask (selectedmask) and a subset of the original FMTthemes used to construct the FMTmask,
-			it returns a presolved FMTmask with potentialy less data.
+			Using a FMTMask (selectedmask) and a subset of the original FMTthemes used to construct the FMTMask,
+			it returns a presolved FMTMask with potentialy less data.
 			*/
-			FMToperatingarea presolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const;
+			FMToperatingarea presolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const;
 			// DocString: FMToperatingarea::postSolve
 			/**
-			Using a FMTmask (selectedmask) and the original FMTthemes it returns a postsolved FMTmask.
+			Using a FMTMask (selectedmask) and the original FMTthemes it returns a postsolved FMTMask.
 			*/
-			FMToperatingarea postsolveOperatingArea(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&basethemes) const;
+			FMToperatingarea postsolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const;
 
 		};
 
@@ -148,14 +148,14 @@ namespace Heuristics
 	class FMTEXPORT FMTOperatingAreaComparator
 		{
 			// DocString: FMTOperatingAreaComparator::mask
-			///FMTmask of the operating area we wish to find.
-			Core::FMTmask mask;
+			///FMTMask of the operating area we wish to find.
+			Core::FMTMask mask;
 		public:
-			// DocString: FMTOperatingAreaComparator(const Core::FMTmask)
+			// DocString: FMTOperatingAreaComparator(const Core::FMTMask)
 			/**
-			Constructor of the comparator using the FMTmask as reference.
+			Constructor of the comparator using the FMTMask as reference.
 			*/
-			FMTOperatingAreaComparator(const Core::FMTmask& lmask);
+			FMTOperatingAreaComparator(const Core::FMTMask& lmask);
 			// DocString: FMTOperatingAreaComparator(const FMToperatingarea& oparea)
 			/**
 			Constructor of the comparator using the operating area.

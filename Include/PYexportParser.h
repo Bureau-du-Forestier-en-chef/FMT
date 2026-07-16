@@ -56,14 +56,14 @@ void exportParser()
     "   :synopsis: Module used to import Woodstock models.\n"
     "\n";
 
-	bp::class_<Parser::FMTparser, bp::bases<Core::FMTobject>>("FMTparser", "@DocString(FMTparser)");
+	bp::class_<Parser::FMTparser, bp::bases<Core::FMTObject>>("FMTparser", "@DocString(FMTparser)");
 
 	definePyDict<std::string,std::string>();
 
 	// writeForest est surchargé (worker chemins explicites vs. version dossier) : on fixe la surcharge
 	// à exposer (le worker à 6 args) via un pointeur typé, sinon &FMTareaparser::writeForest est ambigu.
 	bool (Parser::FMTareaparser::*writeForestPtr)(
-		const Spatial::FMTforest&, const std::vector<Core::FMTtheme>&,
+		const Spatial::FMTforest&, const std::vector<Core::FMTTheme>&,
 		const std::vector<std::string>&, const std::string&, const std::string&,
 		std::vector<std::map<std::string, std::string>>) const = &Parser::FMTareaparser::writeForest;
 

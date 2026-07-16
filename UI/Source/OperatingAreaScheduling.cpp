@@ -47,9 +47,9 @@ namespace Wrapper
 			optimizationmodel.setParameter(Models::FMTintmodelparameters::UPDATE, periodeMiseAjour);
 			const int startingperiod = optimizationmodel.getParameter(Models::FMTintmodelparameters::UPDATE);
 			const std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
-			std::vector<Core::FMTaction> newactions;
+			std::vector<Core::FMTAction> newactions;
 			int youvert = 0;
-			for (Core::FMTaction& action : optimizationmodel.getactions())
+			for (Core::FMTAction& action : optimizationmodel.getactions())
 			{
 				if (action.useYield("YOUVERT"))
 				{
@@ -74,7 +74,7 @@ namespace Wrapper
 			}
 
 			optimizationmodel.setActions(newactions);
-			const std::vector<Core::FMTtheme> themes = optimizationmodel.getThemes();
+			const std::vector<Core::FMTTheme> themes = optimizationmodel.getThemes();
 			std::string stringMask = "";
 			for (int i = 1; i <= themes.size(); i++)
 			{
@@ -88,8 +88,8 @@ namespace Wrapper
 				}
 			}
 
-			Core::FMTmask fmtMask = Core::FMTmask(stringMask, themes);
-			Core::FMToutputnode nodeofoutput = Core::FMToutputnode(fmtMask, Agg_name);
+			Core::FMTMask fmtMask = Core::FMTMask(stringMask, themes);
+			Core::FMTOutputNode nodeofoutput = Core::FMTOutputNode(fmtMask, Agg_name);
 			//Fin createBFECoptaggregate
 			/*Besoin de change la signature de fonction, les arguments suivants ne sont plus nécessaire :
 			selectedmask

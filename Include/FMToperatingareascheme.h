@@ -22,7 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTmask;
+	class FMTMask;
 }
 
 namespace Models
@@ -40,7 +40,7 @@ namespace Heuristics
 	FMToperatingscheme area have to be based on static themes (not used within transitions).
 	Multiple potential schedules will be generated for the FMToperatingarea formulated as a heuristic and/or MIP.
 	*/
-	class FMTEXPORT FMToperatingareascheme: public FMToperatingarea, public Core::FMTobject
+	class FMTEXPORT FMToperatingareascheme: public FMToperatingarea, public Core::FMTObject
 		{
 		// DocString: FMToperatingareascheme::serialize
 		/**
@@ -417,10 +417,10 @@ namespace Heuristics
 			~FMToperatingareascheme()=default;
 			// DocString: FMToperatingareascheme::presolve
 			/**
-			Using a FMTmask (selectedmask) and a subset of the original FMTthemes used to construct the FMTmask,
-			it returns a presolved FMTmask with potentialy less data.
+			Using a FMTMask (selectedmask) and a subset of the original FMTthemes used to construct the FMTMask,
+			it returns a presolved FMTMask with potentialy less data.
 			*/
-			FMToperatingareascheme presolve(const Core::FMTmask& selectedmask,const std::vector<Core::FMTtheme>&presolvedthemes) const;
+			FMToperatingareascheme presolve(const Core::FMTMask& selectedmask,const std::vector<Core::FMTTheme>&presolvedthemes) const;
 			// DocString: FMToperatingareascheme::getNumberofscheme
 			/**
 			Return the number of scheme for the OA. Can only be used if schemestoLP has been set called...
@@ -483,14 +483,14 @@ namespace Heuristics
 	class FMTOperatingAreaSchemeComparator
 		{
 			// DocString: FMTOperatingAreaSchemeComparator::mask
-			///FMTmask of the operating area we wish to find.
-			Core::FMTmask mask;
+			///FMTMask of the operating area we wish to find.
+			Core::FMTMask mask;
 		public:
-			// DocString: FMTOperatingAreaSchemeComparator(const Core::FMTmask)
+			// DocString: FMTOperatingAreaSchemeComparator(const Core::FMTMask)
 			/**
-			Constructor of the comparator using the FMTmask as reference.
+			Constructor of the comparator using the FMTMask as reference.
 			*/
-			FMTOperatingAreaSchemeComparator(const Core::FMTmask& lmask);
+			FMTOperatingAreaSchemeComparator(const Core::FMTMask& lmask);
 			// DocString: FMTOperatingAreaSchemeComparator::operator()
 			/**
 			Comparator for FMToperatingareascheme area.

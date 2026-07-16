@@ -24,8 +24,8 @@ int main(int argc, char* argv[])
 			path = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\Pour_Bruno";
 		}
 		const boost::filesystem::path FOLDER_PATH(path);
-		Core::FMTconstants baseConstants;
-		std::vector<Core::FMTtheme>baseThemes;
+		Core::FMTConstants baseConstants;
+		std::vector<Core::FMTTheme>baseThemes;
 		Parser::FMTareaparser AreaParser;
 		bool testedArea = false;
 		bool testedLan = false;
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 					}
 					if (SECTION == Core::FMTsection::Area && testedLan)
 					{
-						const std::vector<Core::FMTactualdevelopment>DEVELOPMENTS = AreaParser.read(baseThemes, baseConstants, PATH_TO_FILE);
+						const std::vector<Core::FMTActualDevelopment>DEVELOPMENTS = AreaParser.read(baseThemes, baseConstants, PATH_TO_FILE);
 						if (DEVELOPMENTS.empty())
 						{
 							AreaParser.getExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Area parser failed to read " + PATH_TO_FILE,

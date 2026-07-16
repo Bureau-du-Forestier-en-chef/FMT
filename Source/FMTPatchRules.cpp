@@ -16,8 +16,8 @@ namespace Spatial
 {
 
 	std::vector<FMTPatchRules> FMTPatchRules::getRules(
-		const std::vector<Core::FMTconstraint>& p_constraints,
-		const std::vector<Core::FMTaction>& p_actions)
+		const std::vector<Core::FMTConstraint>& p_constraints,
+		const std::vector<Core::FMTAction>& p_actions)
 	{
 		std::vector<FMTPatchRules> Rules;
 		try {
@@ -287,8 +287,8 @@ namespace Spatial
 	}
 
 
-	FMTPatchRules::FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
-		const std::vector<Core::FMTaction>& p_actions, int p_Id):
+	FMTPatchRules::FMTPatchRules(const std::vector<Core::FMTConstraint>& p_constraints,
+		const std::vector<Core::FMTAction>& p_actions, int p_Id):
 		m_GreenUp(),
 		m_MinimalAdjacency(),
 		m_MaximalAdjacency(),
@@ -309,12 +309,12 @@ namespace Spatial
 
 std::vector<std::pair<std::vector<int>,
 	std::pair<int, int>>>  FMTPatchRules::_getOrderedRules(
-		const std::vector<Core::FMTconstraint>& p_constraints,
-		const std::vector<Core::FMTaction>& p_actions)
+		const std::vector<Core::FMTConstraint>& p_constraints,
+		const std::vector<Core::FMTAction>& p_actions)
 	{
 	std::vector<std::pair<std::vector<int>,
 		std::pair<int, int>>> Rules;
-		for (const Core::FMTconstraint& CONSTRAINT : p_constraints)
+		for (const Core::FMTConstraint& CONSTRAINT : p_constraints)
 			{
 				if (CONSTRAINT.isSpatial())
 				{
@@ -356,13 +356,13 @@ std::vector<std::pair<std::vector<int>,
 
 
 	void FMTPatchRules::_buildPatchRules(
-		const std::vector<Core::FMTconstraint>& p_constraints,
-		const std::vector<Core::FMTaction>& p_actions, int p_Id)
+		const std::vector<Core::FMTConstraint>& p_constraints,
+		const std::vector<Core::FMTAction>& p_actions, int p_Id)
 	{
 		try {
 			const std::vector<std::pair<std::vector<int>,
 				std::pair<int, int>>> RULES = _getOrderedRules(p_constraints, p_actions);
-			for (const Core::FMTconstraint& CONSTRAINT : p_constraints)
+			for (const Core::FMTConstraint& CONSTRAINT : p_constraints)
 			{
 				if (CONSTRAINT.isSpatial())
 				{
@@ -383,7 +383,7 @@ std::vector<std::pair<std::vector<int>,
 						if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTspatialsize)
 							{
-							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getYieldBound("NSIZE");
+							const Core::FMTYldBounds& BOUNDS = CONSTRAINT.getYieldBound("NSIZE");
 							m_NeighborSize = static_cast<size_t>(BOUNDS.getLower());
 							double lowerSIZE = 0;
 							double upperSIZE = 0;
@@ -393,7 +393,7 @@ std::vector<std::pair<std::vector<int>,
 						}else if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTspatialadjacency)
 							{
-							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getYieldBound("GUP");
+							const Core::FMTYldBounds& BOUNDS = CONSTRAINT.getYieldBound("GUP");
 							m_GreenUp = static_cast<size_t>(BOUNDS.getLower());
 							size_t minimalGreenUp = 0;
 							size_t maximalGreenUp = 0;
@@ -406,7 +406,7 @@ std::vector<std::pair<std::vector<int>,
 							Core::FMTconstrainttype::FMTSpatialGroup)
 							{
 							m_GroupGreenUp = static_cast<int>(CONSTRAINT.getYieldBound("GUP").getLower());
-							const Core::FMTyldbounds& THEME_BOUNDS = CONSTRAINT.getYieldBound("THEME");
+							const Core::FMTYldBounds& THEME_BOUNDS = CONSTRAINT.getYieldBound("THEME");
 							int themeTarget = -1;
 							if (THEME_BOUNDS.getLower() >= 0.0)
 								{

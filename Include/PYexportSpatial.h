@@ -47,16 +47,16 @@ void exportSpatial()
 			"@DocString(FMTcoordinate::getSpatialCoordinate)")
         .setattr("__hash__",&boost::pyHash<Spatial::FMTcoordinate>);
 
-    define_FMTlayer<Core::FMTdevelopment>();
+    define_FMTlayer<Core::FMTDevelopment>();
     //Mainly to iter over FMTforest
-    definePyPair<Spatial::FMTcoordinate,Core::FMTdevelopment>();
-    definePyPair<Spatial::FMTcoordinate const,Core::FMTdevelopment>();
+    definePyPair<Spatial::FMTcoordinate,Core::FMTDevelopment>();
+    definePyPair<Spatial::FMTcoordinate const,Core::FMTDevelopment>();
     definePyPair<Spatial::FMTcoordinate,Graph::FMTlinegraph>();
     definePyPair<Spatial::FMTcoordinate const,Graph::FMTlinegraph>();
 
 
 
-	bp::class_<Spatial::FMTforest, bp::bases<Spatial::FMTlayer<Core::FMTdevelopment>>>("FMTforest", "@DocString(FMTforest)")
+	bp::class_<Spatial::FMTforest, bp::bases<Spatial::FMTlayer<Core::FMTDevelopment>>>("FMTforest", "@DocString(FMTforest)")
         .def(bp::init<Spatial::FMTforest>())
         .def("getarea",&Spatial::FMTforest::getArea,
 			"@DocString(FMTforest::getarea)")
@@ -76,8 +76,8 @@ void exportSpatial()
 	definePyList<Spatial::FMTeventcontainer>();
 
     /*
-	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTaction>>("FMTspatialaction", "@DocString(FMTspatialaction)")
-        .def(bp::init<Core::FMTaction>())
+	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTAction>>("FMTspatialaction", "@DocString(FMTspatialaction)")
+        .def(bp::init<Core::FMTAction>())
         .add_property("neighbors", bp::make_getter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()),
                      make_setter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()))
         .def_readwrite("green_up",&Spatial::FMTspatialaction::green_up,

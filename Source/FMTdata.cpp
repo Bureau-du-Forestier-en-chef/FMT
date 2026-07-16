@@ -21,34 +21,34 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 
-void FMTdata::allocateCache() const
+void FMTData::allocateCache() const
 	{
 	if (ops != FMTyieldparserop::FMTnone &&
 		_cache == nullptr)
 		{
-		_cache = std::move(std::unique_ptr<std::map<FMTdevelopment, double>>(new std::map<FMTdevelopment, double>()));
+		_cache = std::move(std::unique_ptr<std::map<FMTDevelopment, double>>(new std::map<FMTDevelopment, double>()));
 		}
 	}
 
-void FMTdata::deAllocateCache() const
+void FMTData::deAllocateCache() const
 	{
 	if (_cache != nullptr)
 		{
-		_cache = std::move(std::unique_ptr<std::map<FMTdevelopment, double>>(nullptr));
+		_cache = std::move(std::unique_ptr<std::map<FMTDevelopment, double>>(nullptr));
 		}
 	}
 
-FMTdata::FMTdata():ops(FMTyieldparserop::FMTnone), data(),source(),stacking(), _cache(nullptr), _agebase(false)
+FMTData::FMTData():ops(FMTyieldparserop::FMTnone), data(),source(),stacking(), _cache(nullptr), _agebase(false)
 		{
-			//_cache = new boost::unordered_map<FMTdevelopment,double>();
+			//_cache = new boost::unordered_map<FMTDevelopment,double>();
 		}
 
-FMTdata::FMTdata(const FMTdata& rhs) :data(rhs.data),ops(rhs.ops),source(rhs.source), stacking(rhs.stacking), _cache(nullptr), _agebase(rhs._agebase)
+FMTData::FMTData(const FMTData& rhs) :data(rhs.data),ops(rhs.ops),source(rhs.source), stacking(rhs.stacking), _cache(nullptr), _agebase(rhs._agebase)
 	{
-	//_cache = new boost::unordered_map<FMTdevelopment,double>(*rhs._cache);
+	//_cache = new boost::unordered_map<FMTDevelopment,double>(*rhs._cache);
 	}
 
-FMTdata& FMTdata::operator = (const FMTdata& rhs)
+FMTData& FMTData::operator = (const FMTData& rhs)
     {
     if(this!=&rhs)
         {
@@ -62,21 +62,21 @@ FMTdata& FMTdata::operator = (const FMTdata& rhs)
     return *this;
     }
 
-FMTyieldparserop FMTdata::getOp() const
+FMTyieldparserop FMTData::getOp() const
     {
     return ops;
     }
 
-void FMTdata::clearCache()
+void FMTData::clearCache()
 	{
-		//_cache = std::unique_ptr<boost::unordered_map<FMTdevelopment,double>>(new boost::unordered_map<FMTdevelopment,double>());
+		//_cache = std::unique_ptr<boost::unordered_map<FMTDevelopment,double>>(new boost::unordered_map<FMTDevelopment,double>());
 		//delete _cache;
-		//_cache = new boost::unordered_map<FMTdevelopment,double>();
+		//_cache = new boost::unordered_map<FMTDevelopment,double>();
 		deAllocateCache();
 		allocateCache();
 	}
 
-bool FMTdata::constant() const
+bool FMTData::constant() const
 	{
 	if (ops == FMTyieldparserop::FMTnone)
 		{
@@ -88,7 +88,7 @@ bool FMTdata::constant() const
 	return false;
 	}
 
-bool FMTdata::nullData() const
+bool FMTData::nullData() const
 	{
 	if (ops == FMTyieldparserop::FMTnone)
 		{
@@ -104,10 +104,10 @@ bool FMTdata::nullData() const
 	return false;
 	}
 
-/*size_t FMTdata::hashdata(const int& period, const int& age, const FMTmask& mask) const
+/*size_t FMTData::hashdata(const int& period, const int& age, const FMTMask& mask) const
 	{
 	std::size_t seed = 0;
-	boost::hash_combine(seed, boost::hash<Core::FMTmask>()(mask));
+	boost::hash_combine(seed, boost::hash<Core::FMTMask>()(mask));
 	boost::hash_combine(seed, boost::hash<int>()(age));
 	if (ops != FMTyieldparserop::FMTcai && ops != FMTyieldparserop::FMTmai && ops!= FMTyieldparserop::FMTytp && ops != FMTyieldparserop::FMTrange)
 		{
@@ -119,9 +119,9 @@ bool FMTdata::nullData() const
 	return seed;
 	}*/
 
-FMTdevelopment FMTdata::getSummaryDevelopment(const FMTyieldrequest& request) const
+FMTDevelopment FMTData::getSummaryDevelopment(const FMTYieldRequest& request) const
 	{
-	const Core::FMTdevelopment& refdev = request.getDevelopment();
+	const Core::FMTDevelopment& refdev = request.getDevelopment();
 	int lperiod = refdev.getPeriod();
 	if (ops != FMTyieldparserop::FMTcai && ops != FMTyieldparserop::FMTmai && ops!= FMTyieldparserop::FMTytp && ops != FMTyieldparserop::FMTrange)
 		{
@@ -130,27 +130,27 @@ FMTdevelopment FMTdata::getSummaryDevelopment(const FMTyieldrequest& request) co
 			lperiod=0;
 			}
 		}
-	return FMTdevelopment(request.getResumeMask(), refdev.getAge(),0, refdev.getPeriod());
+	return FMTDevelopment(request.getResumeMask(), refdev.getAge(),0, refdev.getPeriod());
 	}
 
-bool FMTdata::cacheValue(const FMTyieldrequest& request) const
+bool FMTData::cacheValue(const FMTYieldRequest& request) const
 	{
 	allocateCache();
 	return _cache->find(this->getSummaryDevelopment(request)) != _cache->end();
 	}
-double FMTdata::get(const FMTyieldrequest& request) const
+double FMTData::get(const FMTYieldRequest& request) const
 	{
 	allocateCache();
 	return _cache->at(this->getSummaryDevelopment(request));
 	}
-void FMTdata::set(const double& value, const FMTyieldrequest& request,const bool& age_only) const
+void FMTData::set(const double& value, const FMTYieldRequest& request,const bool& age_only) const
 	{
 	allocateCache();
 	_agebase = age_only;
 	_cache->operator[](this->getSummaryDevelopment(request)) = value;
 	}
 
-std::vector<const std::string*> FMTdata::getSources() const
+std::vector<const std::string*> FMTData::getSources() const
 	{
 	std::vector<const std::string*>outSources;
 	if (ops == FMTyieldparserop::FMTequation)
@@ -158,7 +158,7 @@ std::vector<const std::string*> FMTdata::getSources() const
 		outSources.reserve(source.size());
 		for (const std::string& val : source)
 		{
-			if (!FMTfunctioncall(val).valid() && !FMToperator(val).valid() &&
+			if (!FMTFunctionCall(val).valid() && !FMTOperator(val).valid() &&
 				!(val.size() == 1 && (val.at(0) == '(' || val.at(0) == ')')))
 			{
 				outSources.push_back(&val);
@@ -178,7 +178,7 @@ std::vector<const std::string*> FMTdata::getSources() const
 	return outSources;
 	}
 
-std::vector<std::string> FMTdata::getSourcesCopy() const
+std::vector<std::string> FMTData::getSourcesCopy() const
 {
 	const std::vector<const std::string*> SOURCES = getSources();
 	std::vector<std::string>result(SOURCES.size());
@@ -192,14 +192,14 @@ std::vector<std::string> FMTdata::getSourcesCopy() const
 }
 
 /*
-std::vector<std::string> FMTdata::getSource() const
+std::vector<std::string> FMTData::getSource() const
     {
 	if (ops == FMTyieldparserop::FMTequation)
 		{
 		std::vector<std::string>nsources;
 		for (const std::string& val : source)
 			{
-			if (!FMTfunctioncall(val).valid() && !FMToperator(val).valid() && 
+			if (!FMTFunctionCall(val).valid() && !FMTOperator(val).valid() && 
 				!(val.size() == 1 && (val.at(0) == '(' || val.at(0) == ')')))
 				{
 				nsources.push_back(val);
@@ -213,7 +213,7 @@ std::vector<std::string> FMTdata::getSource() const
     return source;
     }
 */
-FMTdata::operator std::string() const
+FMTData::operator std::string() const
     {
 	std::string value = "";
     switch (ops)
@@ -303,7 +303,7 @@ FMTdata::operator std::string() const
     return value;
     }
 
-std::vector<const double*>FMTdata::getValues() const
+std::vector<const double*>FMTData::getValues() const
 {
 	std::vector<const double*>values(stacking.size(),nullptr);
 	size_t numid = 0;
@@ -322,7 +322,7 @@ std::vector<const double*>FMTdata::getValues() const
 }
 
 /*
-std::vector<double>FMTdata::tovalues(const std::map<std::string, double>& sources) const
+std::vector<double>FMTData::tovalues(const std::map<std::string, double>& sources) const
 	{
 	std::vector<double>values(stacking.size(),0.0);
 	
@@ -345,7 +345,7 @@ std::vector<double>FMTdata::tovalues(const std::map<std::string, double>& source
 	}
 */
 
-FMTexpression FMTdata::toExpression() const
+FMTExpression FMTData::toExpression() const
 	{
 	std::vector<std::string>vals(source.size());
 	int loc = 0;
@@ -359,11 +359,11 @@ FMTexpression FMTdata::toExpression() const
 			}
 		++loc;
 		}
-	return FMTexpression(vals);
+	return FMTExpression(vals);
 	}
 
 
-bool FMTdata::operator == (const FMTdata& rhs) const
+bool FMTData::operator == (const FMTData& rhs) const
 	{
 	return(ops == rhs.ops &&
 		source == rhs.source &&
@@ -371,26 +371,26 @@ bool FMTdata::operator == (const FMTdata& rhs) const
 		data == rhs.data);
 	}
 
-FMTdata::FMTdata(const std::vector<double>& lvalues,
+FMTData::FMTData(const std::vector<double>& lvalues,
 	const FMTyieldparserop& lops,
 	const std::vector<std::string>& lsource): ops(lops), source(lsource), stacking(), _cache(nullptr), _agebase(),data(lvalues)
 	{
-		//_cache = std::unique_ptr<boost::unordered_map<FMTdevelopment,double>>(new boost::unordered_map<FMTdevelopment,double>());
-		//_cache = new boost::unordered_map<FMTdevelopment,double>();
+		//_cache = std::unique_ptr<boost::unordered_map<FMTDevelopment,double>>(new boost::unordered_map<FMTDevelopment,double>());
+		//_cache = new boost::unordered_map<FMTDevelopment,double>();
 	}
 
-FMTdata::FMTdata(const std::vector<double>& lvalues,
+FMTData::FMTData(const std::vector<double>& lvalues,
                 const FMTyieldparserop& lops,
                 const std::vector<std::string>& lsource,
 				const std::vector<bool>& varstack):ops(lops),source(lsource),stacking(varstack), _cache(nullptr), _agebase(),data(lvalues)
 	{
-		//_cache = std::unique_ptr<boost::unordered_map<FMTdevelopment,double>>(new boost::unordered_map<FMTdevelopment,double>());
-		//_cache = new boost::unordered_map<FMTdevelopment,double>();
+		//_cache = std::unique_ptr<boost::unordered_map<FMTDevelopment,double>>(new boost::unordered_map<FMTDevelopment,double>());
+		//_cache = new boost::unordered_map<FMTDevelopment,double>();
 	}
 
-FMTdata FMTdata::operator * (const double& factor) const
+FMTData FMTData::operator * (const double& factor) const
 	{
-	FMTdata newData(*this);
+	FMTData newData(*this);
 	for (double& value : newData.data)
 		{
 		value *= factor;
@@ -400,4 +400,4 @@ FMTdata FMTdata::operator * (const double& factor) const
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTdata)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTData)

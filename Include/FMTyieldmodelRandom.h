@@ -42,10 +42,10 @@ namespace Core
 		// DocString: FMTyieldmodelRandom::predict
 		/**
 		@brief predict the yields values using this class.
-		@param[in] p_request a valid FMTyieldrequest.
+		@param[in] p_request a valid FMTYieldRequest.
 		@return Predicted random values ranging from the distribution lower to upper bound.
 		*/
-		const std::vector<double>predict(const Core::FMTyieldrequest& p_request) const;
+		const std::vector<double>predict(const Core::FMTYieldRequest& p_request) const;
 		// DocString: FMTyieldmodelRandom::presolve
 		/**
 		@brief If the FMTyieldmodelRandom contains Core classes it also need to be presolved when presolved is called on the FMTmodel.
@@ -54,8 +54,8 @@ namespace Core
 		@param[in] p_newThemes the new themes of the presolved model.
 		@return a pointer to a presolved FMTyieldmodel.
 		*/
-		 std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& p_filter,
-			const std::vector<FMTtheme>& p_newThemes) const;
+		 std::unique_ptr<FMTyieldmodel> presolve(const FMTMaskFilter& p_filter,
+			const std::vector<FMTTheme>& p_newThemes) const;
 		// DocString: FMTyieldmodelRandom::postSolve
 		/**
 		@brief Postsolve the yieldmodel by default it will return a clone.
@@ -63,8 +63,8 @@ namespace Core
 		@param[in] p_baseThemes the non presolved themes.
 		@return a pointer to a postsolved FMTyieldmodel.
 		*/
-		std::unique_ptr<FMTyieldmodel> postSolve(const FMTmaskfilter& p_filter,
-			const std::vector<FMTtheme>& p_baseThemes) const;
+		std::unique_ptr<FMTyieldmodel> postSolve(const FMTMaskFilter& p_filter,
+			const std::vector<FMTTheme>& p_baseThemes) const;
 		// DocString: FMTyieldmodelRandom::Clone
 		/**
 		@brief Clone this FMTyieldmodel
@@ -91,7 +91,7 @@ namespace Core
 		@param[in] p_request, a valid request from the model.
 		@return Yields normalized yield values based on total value multiply by 100.
 		*/
-		std::vector<size_t> getNormalizedYields(const std::vector<std::string>& p_yields,const Core::FMTyieldrequest& p_request) const;
+		std::vector<size_t> getNormalizedYields(const std::vector<std::string>& p_yields,const Core::FMTYieldRequest& p_request) const;
 		// DocString: FMTyieldmodelRandom::getYield
 		/**
 		@brief REturn a randomly selected index
@@ -104,7 +104,7 @@ namespace Core
 		@brief If the seed of the FMTmodel parameters changed from the last call then update the m_seed and the m_generator.
 		@param[in] p_request a valid request.
 		*/
-		void updateGeneratorAndSeed(const Core::FMTyieldrequest& p_request) const;
+		void updateGeneratorAndSeed(const Core::FMTYieldRequest& p_request) const;
 		// DocString: FMTyieldmodelRandom::m_cache
 		///the cache value of the random number 
 		mutable std::unordered_map<int,double>m_cache;

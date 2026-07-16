@@ -203,7 +203,7 @@ namespace Spatial
 
 	size_t FMTSpatialGraphs::getCategoryOf(int p_themeId, size_t p_family) const
 	{
-		const Core::FMTmask& MASK = m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment().getMask();
+		const Core::FMTMask& MASK = m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment().getMask();
 		return std::distance(&*m_Model->themes.at(p_themeId).getBaseAttributes().begin(),
 			&MASK.getAttribute(m_Model->themes.at(p_themeId)));
 	}
@@ -229,13 +229,13 @@ namespace Spatial
 		return (p_iterator != m_AllGraphs.at(p_family).end());
 	}
 
-	std::vector<Core::FMTschedule> FMTSpatialGraphs::getSchedules(const FMTSolutionTracker& p_Solution,
+	std::vector<Core::FMTSchedule> FMTSpatialGraphs::getSchedules(const FMTSolutionTracker& p_Solution,
 		bool WithLock) const
 	{
-		std::vector<Core::FMTschedule> Schedules(m_Model->getParameter(Models::FMTintmodelparameters::LENGTH));
+		std::vector<Core::FMTSchedule> Schedules(m_Model->getParameter(Models::FMTintmodelparameters::LENGTH));
 		try {
 			int SchedulePeriod = 1;
-			for (Core::FMTschedule& Schedule : Schedules)
+			for (Core::FMTSchedule& Schedule : Schedules)
 			{
 				Schedule.setPeriod(SchedulePeriod);
 				++SchedulePeriod;
@@ -250,7 +250,7 @@ namespace Spatial
 						const double GRAPH_AREA = CELLS * GRAPH.first.getBaseDevelopment().getArea();
 						for (int period = 1; period < GRAPH.first.getPeriod(); ++period)
 						{
-							const Core::FMTschedule SCHEDULE = GRAPH.first.getSchedule(getModel().actions,
+							const Core::FMTSchedule SCHEDULE = GRAPH.first.getSchedule(getModel().actions,
 								&GRAPH_AREA, period, WithLock);
 							Schedules[period - 1] += SCHEDULE;
 							
@@ -336,7 +336,7 @@ namespace Spatial
 			if (Iterator==m_AllGraphs.at(p_family).end())
 				{
 				const int LENGTH = m_Model->getParameter(Models::FMTintmodelparameters::LENGTH);
-				const Core::FMTactualdevelopment* BASE = dynamic_cast<const Core::FMTactualdevelopment*>(
+				const Core::FMTActualDevelopment* BASE = dynamic_cast<const Core::FMTActualDevelopment*>(
 					&m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment());
 				Graph::FMTlinegraph NewGraph(static_cast<size_t>(LENGTH), *BASE);
 				NewGraph.grow(LENGTH);
@@ -361,7 +361,7 @@ namespace Spatial
 
 	std::map<std::string, double> FMTSpatialGraphs::getOutput(
 		const FMTSolutionTracker& p_Solution,
-		const Core::FMToutput& p_output,
+		const Core::FMTOutput& p_output,
 		int p_period, Core::FMToutputlevel level) const
 	{
 		std::map<std::string, double> results;
@@ -413,12 +413,12 @@ namespace Spatial
 		_buildTacker(SOLUTION);
 	}
 
-	Core::FMTmask FMTSpatialGraphs::_getUseFullBits(const Models::FMTmodel& p_model)
+	Core::FMTMask FMTSpatialGraphs::_getUseFullBits(const Models::FMTmodel& p_model)
 	{
-		Core::FMTmask usefullBits(p_model.themes);
+		Core::FMTMask usefullBits(p_model.themes);
 		try {
-			const std::vector<const Core::FMTtheme*> STATIC_THEMES = p_model.locateStaticTransitionsThemes();
-			for (const Core::FMTtheme& THEME : p_model.themes)
+			const std::vector<const Core::FMTTheme*> STATIC_THEMES = p_model.locateStaticTransitionsThemes();
+			for (const Core::FMTTheme& THEME : p_model.themes)
 			{
 				if (std::find(STATIC_THEMES.begin(),
 					STATIC_THEMES.end(), &THEME) != STATIC_THEMES.end())
@@ -440,15 +440,15 @@ namespace Spatial
 		std::vector<size_t>BaseSolution;
 		try {
 			const size_t LENGTH = static_cast<size_t>(p_model.getParameter(Models::FMTintmodelparameters::LENGTH));
-			const Core::FMTmask USEFULL_BITS = _getUseFullBits(p_model);
-			const std::vector<Core::FMTactualdevelopment>AREAS = p_model.Models::FMTmodel::getArea();
+			const Core::FMTMask USEFULL_BITS = _getUseFullBits(p_model);
+			const std::vector<Core::FMTActualDevelopment>AREAS = p_model.Models::FMTmodel::getArea();
 			BaseSolution = std::vector<size_t>(AREAS.size());
 			for (const auto& DEV : AREAS)
 			{
-				const Core::FMTmask& DEV_MASK = DEV.getMask();
-				Core::FMTmask SORT_MASK = DEV_MASK.getIntersect(USEFULL_BITS);
-				std::pair<boost::unordered_map<Core::FMTmask, size_t>::iterator, bool> InSertedMask =
-					m_GraphsMasks.insert(std::pair<Core::FMTmask, size_t>(SORT_MASK, m_AllGraphs.size()));
+				const Core::FMTMask& DEV_MASK = DEV.getMask();
+				Core::FMTMask SORT_MASK = DEV_MASK.getIntersect(USEFULL_BITS);
+				std::pair<boost::unordered_map<Core::FMTMask, size_t>::iterator, bool> InSertedMask =
+					m_GraphsMasks.insert(std::pair<Core::FMTMask, size_t>(SORT_MASK, m_AllGraphs.size()));
 				const size_t GRAPHS_LOCATION = InSertedMask.first->second;
 				if (GRAPHS_LOCATION == m_AllGraphs.size())
 				{
@@ -456,7 +456,7 @@ namespace Spatial
 											FMTGraphInfo>());
 				}
 				Graph::FMTlinegraph local_graph(LENGTH);
-				std::vector<Core::FMTactualdevelopment> NewDevs(1, DEV);
+				std::vector<Core::FMTActualDevelopment> NewDevs(1, DEV);
 
 				const size_t NUMBER_OF_CELLS = static_cast<size_t> (std::round(NewDevs.begin()->getArea() / p_CellSize));
 				NewDevs.begin()->setArea(p_CellSize);
@@ -517,17 +517,17 @@ namespace Spatial
 	void FMTSpatialGraphs::_buildConstraintsLocator(const Models::FMTmodel& p_model)
 	{
 		try {
-			const Core::FMTmask USEFULL_BITS = _getUseFullBits(p_model);
+			const Core::FMTMask USEFULL_BITS = _getUseFullBits(p_model);
 			m_ConstraintsId.clear();
 			size_t Id = 0;
-			for (const Core::FMTconstraint& CONSTRAINT : p_model.constraints)
+			for (const Core::FMTConstraint& CONSTRAINT : p_model.constraints)
 			{
 				m_ConstraintsId.push_back(Id);
 				if (!CONSTRAINT.isSpatial())
 				{
 					std::vector<size_t>selectedGraphs;
-					const Core::FMTmask UNION_MASK = CONSTRAINT.getMasksUnion();
-					Core::FMTmask Intersect = UNION_MASK.getIntersect(UNION_MASK);
+					const Core::FMTMask UNION_MASK = CONSTRAINT.getMasksUnion();
+					Core::FMTMask Intersect = UNION_MASK.getIntersect(UNION_MASK);
 					for (const auto& MASKS : m_GraphsMasks)
 					{
 						if (MASKS.first.isSubsetOf(Intersect))
@@ -554,7 +554,7 @@ namespace Spatial
 	{
 		try {
 			size_t ConstraintId = 0;
-			for (const Core::FMTconstraint& CONSTRAINT : getModel().constraints)
+			for (const Core::FMTConstraint& CONSTRAINT : getModel().constraints)
 			{
 				if (!CONSTRAINT.isSpatial())
 				{
@@ -702,9 +702,9 @@ namespace Spatial
 	size_t FMTSpatialGraphs::_getFamily(const Graph::FMTlinegraph& p_Graph) const
 	{
 		try {
-			const Core::FMTmask USEFULL_BITS = _getUseFullBits(getModel());
-			const Core::FMTdevelopment& DEVELOPPEMENT = p_Graph.getBaseDevelopment();
-			Core::FMTmask DEV_MASK = DEVELOPPEMENT.getMask();
+			const Core::FMTMask USEFULL_BITS = _getUseFullBits(getModel());
+			const Core::FMTDevelopment& DEVELOPPEMENT = p_Graph.getBaseDevelopment();
+			Core::FMTMask DEV_MASK = DEVELOPPEMENT.getMask();
 			DEV_MASK = DEV_MASK.getIntersect(USEFULL_BITS);
 			for (const auto& MASK : m_GraphsMasks)
 			{

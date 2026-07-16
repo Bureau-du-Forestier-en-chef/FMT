@@ -14,7 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 { 
-	FMTyieldrequest::FMTyieldrequest(const Core::FMTdevelopment& ldevelopment,
+	FMTYieldRequest::FMTYieldRequest(const Core::FMTDevelopment& ldevelopment,
 		const Graph::FMTgraphvertextoyield& lgraphvertex) :
 		datas(),
 		resume_mask(),
@@ -25,8 +25,8 @@ namespace Core
 
 	}
 
-	FMTyieldrequest::FMTyieldrequest(const FMTdevelopment& ldevelopment,
-		const FMTyieldrequest& oldrequest):
+	FMTYieldRequest::FMTYieldRequest(const FMTDevelopment& ldevelopment,
+		const FMTYieldRequest& oldrequest):
 		datas(oldrequest.datas),
 		resume_mask(oldrequest.resume_mask),
 		m_yields(oldrequest.m_yields),
@@ -36,11 +36,11 @@ namespace Core
 		if (ldevelopment.getMask()!= oldrequest.development->getMask())
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot create a yield request with a different developement mask ",
-				"FMTyieldrequest::FMTyieldrequest()", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldRequest::FMTYieldRequest()", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 	}
 
-	FMTyieldrequest::FMTyieldrequest(const Core::FMTdevelopment& ldevelopment):
+	FMTYieldRequest::FMTYieldRequest(const Core::FMTDevelopment& ldevelopment):
 		datas(),
 		resume_mask(),
 		m_yields(),
@@ -50,30 +50,30 @@ namespace Core
 
 	}
 
-	const FMTdevelopment& FMTyieldrequest::getDevelopment() const
+	const FMTDevelopment& FMTYieldRequest::getDevelopment() const
 	{
 		return *development;
 	}
-	const std::vector<FMTyieldrequest::const_iterator>&FMTyieldrequest::getDatas() const
+	const std::vector<FMTYieldRequest::const_iterator>&FMTYieldRequest::getDatas() const
 	{
 		return datas;
 	}
-	const Core::FMTmask& FMTyieldrequest::getResumeMask() const
+	const Core::FMTMask& FMTYieldRequest::getResumeMask() const
 	{
 		return resume_mask;
 	}
-	const Graph::FMTgraphvertextoyield* FMTyieldrequest::getVertexGraphInfo() const
+	const Graph::FMTgraphvertextoyield* FMTYieldRequest::getVertexGraphInfo() const
 	{
 		return graphvertex;
 	}
 
-	FMTyieldrequest::const_iterator FMTyieldrequest::getFirstSeen(const std::string& p_yield) const
+	FMTYieldRequest::const_iterator FMTYieldRequest::getFirstSeen(const std::string& p_yield) const
 		{
 		return  m_yields->_getFirstSeen(p_yield);
 		}
 
 
-void FMTyieldrequest::_updateData(const FMTyields& yields) const
+void FMTYieldRequest::_updateData(const FMTYields& yields) const
 {
 	try {
 		if (resume_mask.empty())
@@ -85,7 +85,7 @@ void FMTyieldrequest::_updateData(const FMTyields& yields) const
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTyieldrequest::_updateData", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTYieldRequest::_updateData", __LINE__, __FILE__);
 	}
 
 }

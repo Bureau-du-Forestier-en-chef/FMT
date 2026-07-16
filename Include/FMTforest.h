@@ -15,38 +15,38 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <numeric>
 
 namespace Core {
-	class FMTtheme;
-	class FMTactualdevelopment;
-	class FMTfuturdevelopment;
+	class FMTTheme;
+	class FMTActualDevelopment;
+	class FMTFuturDevelopment;
 }
 
 
 namespace Spatial
     {
-    class FMTEXPORT FMTforest: public FMTlayer<Core::FMTdevelopment>
+    class FMTEXPORT FMTforest: public FMTlayer<Core::FMTDevelopment>
         {
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 			{
-			ar & boost::serialization::make_nvp("layer", boost::serialization::base_object<FMTlayer<Core::FMTdevelopment>>(*this));
+			ar & boost::serialization::make_nvp("layer", boost::serialization::base_object<FMTlayer<Core::FMTDevelopment>>(*this));
 			}
         public:
             FMTforest();
             FMTforest(const FMTforest& rhs);
-            FMTforest(const FMTlayer<Core::FMTdevelopment>& rhs);
+            FMTforest(const FMTlayer<Core::FMTDevelopment>& rhs);
             FMTforest& operator = (const FMTforest& rhs);
-			std::vector<Core::FMTactualdevelopment>getArea() const;
-			void setLastThemeWithArea(const std::vector<Core::FMTactualdevelopment>& p_devs,
-										const std::vector<Core::FMTtheme>& p_themes);
+			std::vector<Core::FMTActualDevelopment>getArea() const;
+			void setLastThemeWithArea(const std::vector<Core::FMTActualDevelopment>& p_devs,
+										const std::vector<Core::FMTTheme>& p_themes);
         FMTforest getCopy(bool copyData = true) const;
         FMTforest grow() const;
-		std::vector<FMTlayer<std::string>> getThemes(const std::vector<Core::FMTtheme>& themes) const;
+		std::vector<FMTlayer<std::string>> getThemes(const std::vector<Core::FMTTheme>& themes) const;
         FMTlayer<int>getAge() const;
         FMTlayer<std::string>getLock() const;
 		void setPeriod(int period);
-		FMTforest presolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const;
-		FMTforest postSolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&originalbasethemes) const;
+		FMTforest presolve(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const;
+		FMTforest postSolve(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&originalbasethemes) const;
         };
     }
 #endif // FMTFOREST_Hm_included

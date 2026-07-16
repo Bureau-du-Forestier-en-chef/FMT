@@ -123,19 +123,19 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		or development name if level == FMToutputlevel::developpement, this function can also return the value of
 		a variable output.
 		*/
-		virtual std::map<std::string, double> getOutput(const Core::FMToutput& output,
+		virtual std::map<std::string, double> getOutput(const Core::FMTOutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		// DocString: FMTlpmodel::getReplanningConstraints
 		/**
 		During replaning some local/global constraints need to be ajusted to the global model.
 		The function will take a vector of local/global constraint and ajust the bounds using the solution of this global/local model.
 		*/
-		virtual std::vector<Core::FMTconstraint> getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
+		virtual std::vector<Core::FMTConstraint> getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTConstraint>& localconstraints, const int& period) const;
 		// DocString: FMTlpmodel::addScheduleToObjective
 		/**
 		This function will addup weight to the objective function for a given schedule.
 		*/
-		void addScheduleToObjective(const Core::FMTschedule& schedule,double weight = 1000);
+		void addScheduleToObjective(const Core::FMTSchedule& schedule,double weight = 1000);
 		// DocString: FMTlpmodel::operator==
 		/**
 		Comparison operator of FMTlpmodel
@@ -152,20 +152,20 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Note that the objective function is always the firts constraint in the constraints vector of a
 		FMTmodel. If a objective was already set before it will replace it when calling this function.
 		*/
-		Graph::FMTgraphstats setObjective(const Core::FMTconstraint& objective);
+		Graph::FMTgraphstats setObjective(const Core::FMTConstraint& objective);
 		// DocString: FMTlpmodel::setConstraint
 		/**
 		This function set a constraint in the matrix for the whole planning horizon (graph length).
 		If the function is recalled if the constraint already exist in the matrix in wont be replaced.
 		Can be called after calling builperiod in replanning.
 		*/
-		Graph::FMTgraphstats setConstraint(const Core::FMTconstraint& constraint);
+		Graph::FMTgraphstats setConstraint(const Core::FMTConstraint& constraint);
 		// DocString: FMTlpmodel::eraseConstraint
 		/**
 		Erase a constraint for a given period in the matrix and in the model elements. If period == -1 then it will erase
 		the constraint for the whole horizon else it will only erase the constraint for the specified period.
 		*/
-		Graph::FMTgraphstats eraseConstraint(const Core::FMTconstraint& constraint,int period=-1);
+		Graph::FMTgraphstats eraseConstraint(const Core::FMTConstraint& constraint,int period=-1);
 		// DocString: FMTlpmodel::getVariabilities
 		/**
 		Get the variability of multiple outputs for a given tolerance(see modelparameters) for each period between (periodStart) and (periodStop).
@@ -175,14 +175,14 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		the returned map key are the name of the output plus UB for upper bound (maximization) and
 		LB for lower bound (minimization). This function  do a lot of resolve.
 		*/
-		std::map<std::string, std::vector<double>>getVariabilities(const std::vector<Core::FMToutput>& outputs,
+		std::map<std::string, std::vector<double>>getVariabilities(const std::vector<Core::FMTOutput>& outputs,
 																 const int& periodStart,const int& periodStop);
 		// DocString: FMTlpmodel::getModelFromProportions
 		/**
 		Will returns a new FMTlpmodel with changes in the initial area based on the tolerances of each globalmasks
 		provided in the tolerances vector tolerance > 0 = increase in area, tolerance < 0 = decrease in area.
 		*/
-		FMTlpmodel getModelFromProportions(const std::vector<Core::FMTmask>& globalmasks,
+		FMTlpmodel getModelFromProportions(const std::vector<Core::FMTMask>& globalmasks,
 											std::vector<double> tolerances) const;
 		// DocString: FMTlpmodel::getAreaVariabilities
 		/**
@@ -190,8 +190,8 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		of the area of the model for a given global mask. This function uses the globalmasks has target and returns
 		the change in outputs resulting from a variation > 0 or < 0, will generate no map key if infeasible.
 		*/
-		std::map<std::string, std::vector<double>>getAreaVariabilities(const std::vector<Core::FMToutput>& localoutputs,
-				const std::vector<Core::FMTmask>& globalmasks,
+		std::map<std::string, std::vector<double>>getAreaVariabilities(const std::vector<Core::FMTOutput>& localoutputs,
+				const std::vector<Core::FMTMask>& globalmasks,
 				std::vector<double> tolerances = std::vector<double>()) const;
 		// DocString: FMTlpmodel::erasePeriod
 		/**
@@ -208,7 +208,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		some parameters of heuristics that are in the vectors.
 		*/
 		std::vector<Heuristics::FMToperatingareascheduler>getOperatingAreaSchedulerHeuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
-																				const Core::FMToutputnode& node,
+																				const Core::FMTOutputNode& node,
 																				size_t numberofheuristics=1,
 																				bool copysolver=true);
         // DocString: FMTlpmodel::getOperatingAreaClustererHeuristics
@@ -218,8 +218,8 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
         the value of the (output) of a given (period) has a statistic to perform clustering.
 		*/
 		std::vector<Heuristics::FMToperatingareaclusterer>getOperatingAreaClustererHeuristics(const std::vector<Heuristics::FMToperatingareacluster>& clusters,
-																				const Core::FMToutput& statisticoutput,
-                                                                                const Core::FMToutput& areaoutput,
+																				const Core::FMTOutput& statisticoutput,
+                                                                                const Core::FMTOutput& areaoutput,
                                                                                 const int& period,
 																				size_t numberofheuristics=1,
 																				int minimalnumberofclusters = -1,
@@ -275,7 +275,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTmodel.
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 		*/
-		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTmodel::build
 		/**
 		This function build the graph and setSolution if (schedules) are passed to the function. If FORCE_PARTIAL_BUILD is set at true 
@@ -283,7 +283,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 
 		It will be possible in the futur to have a mix in fullgraph and schedulegraph, but now its not implemented
 		*/
-		virtual bool build(std::vector<Core::FMTschedule> schedules=std::vector<Core::FMTschedule>());
+		virtual bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>());
 		// DocString: FMTmodel::solve
 		/**
 		This function call initialSolve on the solver.
@@ -332,21 +332,21 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		@param[in] p_constraint the constraint we want the iterator.
 		@return the const iterator of the constraint.
 		*/
-		std::vector<Core::FMTconstraint>::const_iterator _getConstraintIndex(const Core::FMTconstraint& p_constraint) const;
+		std::vector<Core::FMTConstraint>::const_iterator _getConstraintIndex(const Core::FMTConstraint& p_constraint) const;
 		// DocString: FMTlpmodel::_getsetConstraintIndex
 		/**
 		@brief Get or set a constraint and get it's iterator
 		@param[in] p_constraint the constraint to getset
 		@return the const iterator of the constraint.
 		*/
-		std::vector<Core::FMTconstraint>::const_iterator _getsetConstraintIndex(const Core::FMTconstraint& p_constraint);
+		std::vector<Core::FMTConstraint>::const_iterator _getsetConstraintIndex(const Core::FMTConstraint& p_constraint);
 		// DocString: FMTlpmodel::_getIndex
 		/**
 		@brief get the index of a const iterator of constraint
 		@param[in] p_it the constraint iterator.
 		@return the index of the constraint.
 		*/
-		int _getIndex(const std::vector<Core::FMTconstraint>::const_iterator& p_it) const;
+		int _getIndex(const std::vector<Core::FMTConstraint>::const_iterator& p_it) const;
 		// DocString: FMTlpmodel::_setGraphCache
 		/**
 		@brief reserve memory for vertices in the graph.
@@ -386,16 +386,16 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		*/
 		Heuristics::FMToperatingareaclusterer getClusterer(
 			const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
-			const Core::FMToutput& areaoutput,
-			const Core::FMToutput& statisticoutput,
+			const Core::FMTOutput& areaoutput,
+			const Core::FMTOutput& statisticoutput,
 			const int& period, int minimalnumberofclusters = -1, int maximalnumberofclusters = -1) const;
 		// DocString: FMTlpmodel::getsetMatrixElement
 		/**
 		When the user add constraints using the setConstraint function or the setObjective function the model needs to had
-		variables and/or constraints to the matrix to satisfy the FMTconstraint. Each type a variable or constraint need to be added
+		variables and/or constraints to the matrix to satisfy the FMTConstraint. Each type a variable or constraint need to be added
 		to the matrix the function is called and return the index of the element if it exists (already in matrix) or not (new element).
 		*/
-		int getsetMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId,
+		int getsetMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId,
 			const FMTmatrixelement& element_type, const std::map<int, double>& indexes,
 			int period = -1,
 			double lowerbound = std::numeric_limits<double>::min(),
@@ -411,31 +411,31 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Will return the level index if non empty constraint it wont check for this constraint.
 		*/
 		int getLevelFromLevelName(const std::string& variable_level, int period,
-			const std::vector<Core::FMTconstraint>::const_iterator& p_it) const;
+			const std::vector<Core::FMTConstraint>::const_iterator& p_it) const;
 		// DocString: FMTlpmodel::getSetLevel
 		/**
 		Will check if the level (variable_level) already exist within the matrix for other constraints than the (constraint)
 		for a given period.
 		*/
-		int getSetLevel(const std::vector<Core::FMTconstraint>::const_iterator& p_it,
+		int getSetLevel(const std::vector<Core::FMTConstraint>::const_iterator& p_it,
 						const std::string& variable_level, int period);
 		// DocString: FMTlpmodel::getMatrixElement
 		/**
 		Return all the elements (level / constraint / variable) related to a given (constraint) for a period
 		for a given period.
 		*/
-		const std::vector<int> getMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& it,
+		const std::vector<int> getMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& it,
 												int p_period,
 												FMTmatrixelement p_element) const;
-		std::vector<int>& getMatrixElementRef(const std::vector<Core::FMTconstraint>::const_iterator& it,
+		std::vector<int>& getMatrixElementRef(const std::vector<Core::FMTConstraint>::const_iterator& it,
 			int p_period,
 			FMTmatrixelement p_element);
 		// DocString: FMTlpmodel::locateLevels
 		/**
 		For a given period lookup in the graph to fill the variables map (variables) for a given level (nodes).
 		*/
-		void locateLevels(const std::vector<Core::FMToutputnode>& nodes, int period,
-			std::map<int, double>& variables, const std::vector<Core::FMTconstraint>::const_iterator& p_it,
+		void locateLevels(const std::vector<Core::FMTOutputNode>& nodes, int period,
+			std::map<int, double>& variables, const std::vector<Core::FMTConstraint>::const_iterator& p_it,
 			double multiplier = 1);
 		// DocString: FMTlpmodel::locateNodes
 		/**
@@ -443,7 +443,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Also apply the multiplier to coefficiants of the map the map<variableindex,coefficiants>. If there is some outputs with negative coef,
 		return a vector containing a map (variables for each outputs) if the model parameter STRICTLY_POSITIVE is true.
 		*/
-		std::vector<std::map<int, double>> locateNodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables, double multiplier = 1) const;
+		std::vector<std::map<int, double>> locateNodes(const std::vector<Core::FMTOutputNode>& nodes, int period, std::map<int, double>& variables, double multiplier = 1) const;
 		// DocString: FMTlpmodel::updateMatrixElements
 		/**
 		When the erasePeriod function is called the matrix size is shrinked and the variables/constraints indexes have
@@ -461,7 +461,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		When the erasePeriod function is called the matrix size is shrinked and the variables/constraints indexes have
 		to be updated. This function update the indexes of all the FMTconstraints of the elements
-		and also the FMTdevelopment constraints and variables of in the graph and delete those variables and constraints
+		and also the FMTDevelopment constraints and variables of in the graph and delete those variables and constraints
 		from the solverinterface matrix.
 		*/
 		bool updateMatrixNGraph(bool updategraph = true);
@@ -469,18 +469,18 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		Get the number of possible paths if an action is commited on a development.
 		*/
-		//size_t getAmountOfPaths(const Core::FMTdevelopment& dev, const int& actionid) const;
+		//size_t getAmountOfPaths(const Core::FMTDevelopment& dev, const int& actionid) const;
 		// DocString: FMTlpmodel::isMatrixElement
 		/**
-		Check if the FMTconstraint had a element of (element_type) located in the matrix for a given period.
+		Check if the FMTConstraint had a element of (element_type) located in the matrix for a given period.
 		*/
-		bool isMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId,
+		bool isMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId,
 			const FMTmatrixelement& element_type, int period) const;
 		// DocString: FMTlpmodel::containsMatrixElements
 		/**
-		Check if the FMTconstraint have elements related to it.
+		Check if the FMTConstraint have elements related to it.
 		*/
-		bool containsMatrixElements(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId, int period) const;
+		bool containsMatrixElements(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId, int period) const;
 		// DocString: FMTlpmodel::isSameMatrixElement
 		/**
 		Check if the requested matrix element (matrixindex) is the same as the found one (LB/UB + variables).
@@ -508,7 +508,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		Set the variables in the map (strictlypositivesoutputs) to be >=0 int the matrix.
 		*/
-		bool setPositiveOutputsInMatrix(const std::vector<Core::FMTconstraint>::const_iterator& p_it,
+		bool setPositiveOutputsInMatrix(const std::vector<Core::FMTConstraint>::const_iterator& p_it,
 			const std::vector<std::map<int, double>>& strictlypositivesoutputs, int period);
 		virtual void swapPtr(std::unique_ptr<FMTmodel>& rhs);
 		// DocString: FMTlpmodel::FMTlpmodel(const FMTsrmodel&)
@@ -516,11 +516,11 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Constructor to presolve FMTlpmodel.
 		*/
 		FMTlpmodel(const FMTsrmodel& rhs);
-		// DocString: FMTlpmodel::trySetSolution(const std::vector<Core::FMTschedule>&)
+		// DocString: FMTlpmodel::trySetSolution(const std::vector<Core::FMTSchedule>&)
 		/**
 		Try to setSolution, if not possible try setSolutionByLp
 		*/
-		bool trySetSolution(const std::vector<Core::FMTschedule>& schedules);
+		bool trySetSolution(const std::vector<Core::FMTSchedule>& schedules);
 		
 	};
 

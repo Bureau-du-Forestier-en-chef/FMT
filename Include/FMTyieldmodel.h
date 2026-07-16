@@ -34,14 +34,14 @@ namespace boost
 
 namespace Core 
 {
-	class FMTyieldrequest;
-	class FMTtheme;
-	class FMTmaskfilter;
+	class FMTYieldRequest;
+	class FMTTheme;
+	class FMTMaskFilter;
 	// DocString: FMTyieldmodel
 	/**
 	FMTyieldmodel is an abstract class to be implemented as a machine learning model.
 	*/
-	class FMTyieldmodel : public FMTobject
+	class FMTyieldmodel : public FMTObject
 	{
 	public:
 		// DocString: FMTyieldmodel::setModel
@@ -89,20 +89,20 @@ namespace Core
 		/**
 		predict the yield
 		*/
-		virtual const std::vector<double>predict(const Core::FMTyieldrequest& request) const = 0;
+		virtual const std::vector<double>predict(const Core::FMTYieldRequest& request) const = 0;
 		// DocString: FMTyieldmodel::presolve
 		/**
 		If the FMTyieldmodel contains Core classes it also need to be presolved when presolved is called on the FMTmodel.
 		By default it will return the same FMTyieldmodel.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& filter,
-				const std::vector<FMTtheme>& newthemes) const;
+		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTMaskFilter& filter,
+				const std::vector<FMTTheme>& newthemes) const;
 		// DocString: FMTyieldmodel::postSolve
 		/**
 		Postsolve the yieldmodel by default it will return a clone.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& basethemes) const;
+		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& basethemes) const;
 		// DocString: FMTyieldmodel::std::string()
 		/**
 		When it comes to write down in a string the yield model.
@@ -129,7 +129,7 @@ namespace Core
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
 		}
 	};
 }

@@ -10,7 +10,7 @@
 
 namespace Core
 {
-	class FMTtheme;
+	class FMTTheme;
 	// DocString: FMTyieldmodelTSLA
 	/**
 	FMTyieldmodelTSLA to get the time since last disturbance. This model is never written but always added by default by the yieldparser.
@@ -48,7 +48,7 @@ namespace Core
 		/**
 		Will give the value of time since last action.
 		*/
-		const std::vector<double>predict(const Core::FMTyieldrequest& request) const;
+		const std::vector<double>predict(const Core::FMTYieldRequest& request) const;
 		// DocString: FMTyieldmodelTSLA::getModelType()
 		/**
 		Return the modeltype of the FMTyieldmodel.
@@ -58,14 +58,14 @@ namespace Core
 		/**
 		Return a presolved FMTyieldmodelTSLA
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& newthemes) const;
+		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& newthemes) const;
 		// DocString: FMTyieldmodelTSLA::postSolve
 		/**
 		Change the output and constraints mask to return to the original constraints and outputs.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTmaskfilter& filter,
-			const std::vector<FMTtheme>& basethemes) const;
+		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& basethemes) const;
 		// DocString: FMTyieldmodelTSLAl::std::string()
 		/**
 		When it comes to write down in a string the yield model.

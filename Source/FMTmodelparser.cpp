@@ -229,7 +229,7 @@ namespace Parser {
 	}
 
 	void FMTmodelparser::fillUpInfeasibles(OGRLayer* layer,
-		const std::vector<Core::FMToutput>& theoutputs,
+		const std::vector<Core::FMTOutput>& theoutputs,
 		const int& iteration, const int& firstPeriod, const int& lastPeriod) const
 	{
 		try {
@@ -247,7 +247,7 @@ namespace Parser {
 	}
 
 	void FMTmodelparser::writeFeatures(OGRLayer* layer, const int& firstPeriod, const int& iteration,
-		const std::vector<Core::FMToutput>& theoutputs,
+		const std::vector<Core::FMTOutput>& theoutputs,
 		const std::map<std::string, std::vector<std::vector<double>>>& values, bool writeNaN)const
 	{
 		try {
@@ -302,7 +302,7 @@ namespace Parser {
 	}
 
 	void FMTmodelparser::writeResults(const Models::FMTmodel& model,
-		const std::vector<Core::FMToutput>& theoutputs,
+		const std::vector<Core::FMTOutput>& theoutputs,
 		const int& firstPeriod, const int& lastPeriod,
 		const std::string& location,
 		Core::FMToutputlevel level,
@@ -378,12 +378,12 @@ namespace Parser {
 			landparser.write(model.getThemes(), lanfile);
 		}
 		if (!arefile.empty()){
-			const std::vector<Core::FMTactualdevelopment>devs = model.getArea();
+			const std::vector<Core::FMTActualDevelopment>devs = model.getArea();
 			if (!devs.empty())
 			{
 				FMTareaparser areaparser;
 				double sumarea = 0;
-				for (const Core::FMTactualdevelopment& dev : devs)
+				for (const Core::FMTActualDevelopment& dev : devs)
 				{
 					sumarea += dev.getArea();
 				}
@@ -416,7 +416,7 @@ namespace Parser {
 		}
 		if (!outfile.empty())
 		{
-			const std::vector<Core::FMToutput>outputs = model.getOutputs();
+			const std::vector<Core::FMTOutput>outputs = model.getOutputs();
 			if (!outputs.empty())
 			{
 				FMToutputparser outparser;
@@ -425,17 +425,17 @@ namespace Parser {
 		}
 		if (!optfile.empty())
 		{
-			const std::vector<Core::FMTconstraint>constraints = model.getconstraints();
+			const std::vector<Core::FMTConstraint>constraints = model.getconstraints();
 			if (!constraints.empty())
 			{
 				FMToptimizationparser optparser;
 				optparser.write(constraints, optfile);
 			}
 		}
-		std::vector<Core::FMTschedule>schedules;
+		std::vector<Core::FMTSchedule>schedules;
 		for (int period = 1; period <= model.getParameter(Models::FMTintmodelparameters::LENGTH); ++period)
 		{
-			const Core::FMTschedule periodschedule = model.getSolution(period, true);
+			const Core::FMTSchedule periodschedule = model.getSolution(period, true);
 			if (!periodschedule.empty())
 			{
 				schedules.push_back(periodschedule);
@@ -515,13 +515,13 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		return Models::FMTmodel();
 	}
 
-	std::vector<Core::FMTconstraint>FMTmodelparser::getConstraintsFromString(std::string constraintstr, const Models::FMTmodel& model, Core::FMTconstants constants)
+	std::vector<Core::FMTConstraint>FMTmodelparser::getConstraintsFromString(std::string constraintstr, const Models::FMTmodel& model, Core::FMTConstants constants)
 	{
-		std::vector<Core::FMTconstraint>constraints;
+		std::vector<Core::FMTConstraint>constraints;
 		try {
 			FMToptimizationparser optparser;
 			boost::to_upper(constraintstr);
-			for (Core::FMTconstraint constraint : optparser.getConstraints(constraintstr, constants,model.yields,
+			for (Core::FMTConstraint constraint : optparser.getConstraints(constraintstr, constants,model.yields,
 																			model.outputs, model.themes, model.actions))
 			{
 				//constraint.passinobject(model);
@@ -545,15 +545,15 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 	{
 		Models::FMTmodel returnedmodel;
 		try {
-			Core::FMTconstants constants;
-			std::vector<Core::FMTtheme>themes;
-			std::vector<Core::FMTactualdevelopment>areas;
-			Core::FMTyields yields;
-			Core::FMTlifespans lifespan;
-			std::vector<Core::FMTaction>actions;
-			std::vector<Core::FMTtransition>transitions;
-			std::vector<Core::FMToutput>outputs;
-			std::vector<Core::FMTconstraint>constraints;
+			Core::FMTConstants constants;
+			std::vector<Core::FMTTheme>themes;
+			std::vector<Core::FMTActualDevelopment>areas;
+			Core::FMTYields yields;
+			Core::FMTLifespans lifespan;
+			std::vector<Core::FMTAction>actions;
+			std::vector<Core::FMTTransition>transitions;
+			std::vector<Core::FMTOutput>outputs;
+			std::vector<Core::FMTConstraint>constraints;
 			if (allow_mapping)
 			{
 				std::map<std::string, std::vector<int>>::const_iterator constants_it = commonm_sections.find(con);
@@ -784,7 +784,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			{
 
 				FMToptimizationparser optzparser;
-				std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
+				std::vector<Core::FMTAction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
 				//optzparser.passinobject(*this);
 				constraints = optzparser.read(themes, actions, constants, outputs,yields, excluded, opt);
 				m_MostRecentFile = std::max(optzparser.getMostRecentFiletime(), m_MostRecentFile);
@@ -792,7 +792,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				if (!shouldcrapreference)
 				{
 					size_t location = 0;
-					for (const Core::FMTaction& action : actions)
+					for (const Core::FMTAction& action : actions)
 					{
 						if (action != excluded.at(location))
 						{
@@ -1148,10 +1148,10 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		return std::vector<Models::FMTmodel>();
 	}
 
-	std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const std::string& primarym_location,
+	std::vector<std::vector<Core::FMTSchedule>>FMTmodelparser::readschedules(const std::string& primarym_location,
 		const std::vector<Models::FMTmodel>& models)
 	{
-		std::vector<std::vector<Core::FMTschedule>>schedules(models.size());
+		std::vector<std::vector<Core::FMTSchedule>>schedules(models.size());
 		try {
 			const boost::filesystem::path primary_path(primarym_location);
 			const std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
@@ -1164,8 +1164,8 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				const boost::filesystem::path root_solution(bases.at(Core::FMTsection::Schedule));
 				if (boost::filesystem::is_regular_file(root_solution))
 				{
-					const std::vector<Core::FMTaction>actions = model_it->getactions();
-					const std::vector<Core::FMTtheme>themes = model_it->getThemes();
+					const std::vector<Core::FMTAction>actions = model_it->getactions();
+					const std::vector<Core::FMTTheme>themes = model_it->getThemes();
 					schedules[location] = scheduleparser.read(themes, actions, root_solution.string());
 				}
 				else {
@@ -1194,9 +1194,9 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 							if (boost::filesystem::is_regular_file(solutionpath))
 							{
 								const size_t location = std::distance<std::vector<Models::FMTmodel>::const_iterator>(models.begin(), model_it);
-								const std::vector<Core::FMTaction>actions = model_it->getactions();
-								const std::vector<Core::FMTtheme>themes = model_it->getThemes();
-								const std::vector<Core::FMTactualdevelopment>area = model_it->getArea();
+								const std::vector<Core::FMTAction>actions = model_it->getactions();
+								const std::vector<Core::FMTTheme>themes = model_it->getThemes();
+								const std::vector<Core::FMTActualDevelopment>area = model_it->getArea();
 								schedules[location] = scheduleparser.read(themes, actions, solutionpath.string());
 							}
 							else {

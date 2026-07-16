@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
 		{
 			// La comparaison a levé une FMTException (valeurs différentes). On la capture ICI
 			// pour faire échouer le test proprement (return != 0) au lieu de la laisser sortir
-			// de main : sinon std::terminate déclenche le dump de pile de FMTobject::_terminate.
+			// de main : sinon std::terminate déclenche le dump de pile de FMTObject::_terminate.
 			std::cerr << e.what() << std::endl;
 			return 1;
 		}

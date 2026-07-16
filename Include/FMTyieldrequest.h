@@ -25,40 +25,40 @@ namespace Graph
 
 namespace Core
 {
-	class FMTdevelopment;
-	class FMTyieldhandler;
-	class FMTyields;
-	// DocString: FMTyieldrequest
+	class FMTDevelopment;
+	class FMTYieldHandler;
+	class FMTYields;
+	// DocString: FMTYieldRequest
 	/**
-	Using a pointer to a given graph and a FMTdevelopment you can create thise class to request yield values.
-	The yield will be calculated using the FMTyields class but also using the FMTgraph so the location of the 
-	actual state of the FMTdevelopment.You can also build a yield request without anyreference to a graph for calculatin yield values.
+	Using a pointer to a given graph and a FMTDevelopment you can create thise class to request yield values.
+	The yield will be calculated using the FMTYields class but also using the FMTgraph so the location of the 
+	actual state of the FMTDevelopment.You can also build a yield request without anyreference to a graph for calculatin yield values.
 	*/
-	class FMTyieldrequest final : public FMTobject
+	class FMTYieldRequest final : public FMTObject
 	{
 	public:
-		typedef typename std::vector<std::pair<FMTmask, std::unique_ptr<FMTyieldhandler>>>::const_iterator const_iterator;
-		FMTyieldrequest(const FMTdevelopment& ldevelopment,
+		typedef typename std::vector<std::pair<FMTMask, std::unique_ptr<FMTYieldHandler>>>::const_iterator const_iterator;
+		FMTYieldRequest(const FMTDevelopment& ldevelopment,
 			const Graph::FMTgraphvertextoyield& lgraphvertex);
-		FMTyieldrequest(const FMTdevelopment& ldevelopment,
-			const FMTyieldrequest& oldrequest);
-		FMTyieldrequest(const FMTdevelopment& ldevelopment);
-		FMTyieldrequest() = default;
-		FMTyieldrequest(const FMTyieldrequest& rhs) = default;
-		FMTyieldrequest& operator = (const FMTyieldrequest& rhs)=default;
-		const FMTdevelopment& getDevelopment() const;
+		FMTYieldRequest(const FMTDevelopment& ldevelopment,
+			const FMTYieldRequest& oldrequest);
+		FMTYieldRequest(const FMTDevelopment& ldevelopment);
+		FMTYieldRequest() = default;
+		FMTYieldRequest(const FMTYieldRequest& rhs) = default;
+		FMTYieldRequest& operator = (const FMTYieldRequest& rhs)=default;
+		const FMTDevelopment& getDevelopment() const;
 		const std::vector<const_iterator>&getDatas() const;
-		const Core::FMTmask& getResumeMask() const;
+		const Core::FMTMask& getResumeMask() const;
 		const Graph::FMTgraphvertextoyield* getVertexGraphInfo() const;
 		const_iterator getFirstSeen(const std::string& p_yield) const;
 	private:
-		friend class FMTyields;
+		friend class FMTYields;
 		mutable std::vector<const_iterator>datas;
-		mutable FMTmask resume_mask;
-		mutable FMTyields const* m_yields;
-		FMTdevelopment const* development;
+		mutable FMTMask resume_mask;
+		mutable FMTYields const* m_yields;
+		FMTDevelopment const* development;
 		Graph::FMTgraphvertextoyield const* graphvertex;
-		void _updateData(const FMTyields& yields) const;
+		void _updateData(const FMTYields& yields) const;
 	};
 	
 

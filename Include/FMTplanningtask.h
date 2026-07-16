@@ -21,8 +21,8 @@ namespace Models
 
 namespace Core
 {
-	class FMToutput;
-	class FMTschedule;
+	class FMTOutput;
+	class FMTSchedule;
 }
 
 
@@ -71,11 +71,11 @@ namespace Parallel
 		// DocString: FMTplanningtask::push_back
 		/**
 		Push a new FMTmodel in the task queue with optional schedule.
-		Dont forget to just keep FMToutput that you want to get values in the FMTmodel.
+		Dont forget to just keep FMTOutput that you want to get values in the FMTmodel.
 		*/
 		void push_back(const Models::FMTmodel& model,
-			std::vector<Core::FMTschedule>schedules = std::vector<Core::FMTschedule>(),
-			std::vector<Core::FMToutput>louputs = std::vector<Core::FMToutput>());
+			std::vector<Core::FMTSchedule>schedules = std::vector<Core::FMTSchedule>(),
+			std::vector<Core::FMTOutput>louputs = std::vector<Core::FMTOutput>());
 		// DocString: FMTplanningtask::FMTplanningtask(...)
 		/**
 		You need to initialize the task mainly with the output parser parameters.
@@ -135,10 +135,10 @@ namespace Parallel
 		std::list<std::unique_ptr<Models::FMTmodel>>m_Models;
 		// DocString: FMTplanningtask::m_allSchedules
 		///All schedules of FMTmodel if we only want to do playback
-		std::list<std::vector<Core::FMTschedule>>m_allSchedules;
+		std::list<std::vector<Core::FMTSchedule>>m_allSchedules;
 		// DocString: FMTplanningtask::m_Outputs
 		///Abstracts outputs that the results need to be write by the task.
-		std::list<std::vector<Core::FMToutput>>m_Outputs;
+		std::list<std::vector<Core::FMTOutput>>m_Outputs;
 		// DocString: FMTplanningtask::m_keepModels
 		///If keep models is true the models will be kept after work
 		bool m_keepModels;

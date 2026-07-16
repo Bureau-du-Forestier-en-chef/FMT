@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 		ModelParser.setErrorsToWarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
 		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
-		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
+		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
 		Models::FMTlpmodel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
 		Optimization1.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
 		Optimization1.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
@@ -77,12 +77,12 @@ int main(int argc, char* argv[])
 		if (!SCHEDULES.empty())
 			{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
-			const std::vector<Core::FMTschedule>NEWSCHEDULE = SPLITTED_MODEL.splitSchedules(SCHEDULES);
+			const std::vector<Core::FMTSchedule>NEWSCHEDULE = SPLITTED_MODEL.splitSchedules(SCHEDULES);
 			SCHEDULE_PARSER.write(NEWSCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq");
 			}
 		const std::vector<std::string>ROOT(1,"ROOT");
 		const std::vector<Models::FMTmodel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
-		const std::vector<Core::FMTschedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0);
+		const std::vector<Core::FMTSchedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0);
 		Models::FMTsesmodel Simulation(READMODELS.at(0));
 		Parser::FMTareaparser areaParser;
 		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARYm_location).parent_path();
@@ -90,8 +90,8 @@ int main(int argc, char* argv[])
 		const int SIZE = 2000;
 		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAPm_location, SIZE, Simulation.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
 		Simulation.setInitialMapping(FOREST);
-		std::vector<Core::FMTtransition>NewTransitions;
-		for (const Core::FMTtransition& TRANSITION : Simulation.getTransitions())
+		std::vector<Core::FMTTransition>NewTransitions;
+		for (const Core::FMTTransition& TRANSITION : Simulation.getTransitions())
 			{
 			NewTransitions.push_back(TRANSITION.single());
 			}

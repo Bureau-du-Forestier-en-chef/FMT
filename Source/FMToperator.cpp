@@ -12,17 +12,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-FMToperator::FMToperator() :key()
+FMTOperator::FMTOperator() :key()
 	{
 
 	}
 
-FMToperator::FMToperator(FMTokey lkey): key(lkey)
+FMTOperator::FMTOperator(FMTokey lkey): key(lkey)
     {
 
     }
 
-FMToperator::FMToperator(std::string strkey): key()
+FMTOperator::FMTOperator(std::string strkey): key()
     {
 	const std::vector<std::string>values = {"*","/","+","-",",","^"};
 	key = FMTokey::notvalid;
@@ -34,17 +34,17 @@ FMToperator::FMToperator(std::string strkey): key()
 		}
     }
 
-bool FMToperator::operator == (const FMToperator& rhs) const
+bool FMTOperator::operator == (const FMTOperator& rhs) const
 	{
 	return key == rhs.key;
 	}
 
-bool FMToperator::operator != (const FMToperator& rhs) const
+bool FMTOperator::operator != (const FMTOperator& rhs) const
 	{
 	return !(key == rhs.key);
 	}
 
-double FMToperator::call(const double& rhs1, const double& rhs2) const
+double FMTOperator::call(const double& rhs1, const double& rhs2) const
     {
 	double returnval = 0;
 	switch (key)
@@ -81,11 +81,11 @@ double FMToperator::call(const double& rhs1, const double& rhs2) const
         };
 	return returnval;
     }
-FMToperator::FMToperator(const FMToperator& rhs) : key(rhs.key)
+FMTOperator::FMTOperator(const FMTOperator& rhs) : key(rhs.key)
     {
 
     }
-FMToperator& FMToperator::operator = (const FMToperator& rhs)
+FMTOperator& FMTOperator::operator = (const FMTOperator& rhs)
     {
     if (this!=&rhs)
         {
@@ -93,7 +93,7 @@ FMToperator& FMToperator::operator = (const FMToperator& rhs)
         }
     return *this;
     }
-FMToperator::operator std::string() const
+FMTOperator::operator std::string() const
     {
     switch (key)
         {
@@ -121,35 +121,35 @@ FMToperator::operator std::string() const
         };
 
     }
-bool FMToperator::valid() const
+bool FMTOperator::valid() const
 	{
 	return (FMTokey::notvalid != key);
 	}
 
-size_t FMToperator::hash() const
+size_t FMTOperator::hash() const
 	{
 	size_t seed = 0;
 	boost::hash_combine(seed, key);
 	return seed;
 	}
 
-bool FMToperator::isFactor() const
+bool FMTOperator::isFactor() const
 	{
 	return (key == FMTokey::divide || key == FMTokey::multiply);
 	}
 
-bool FMToperator::isDivide() const
+bool FMTOperator::isDivide() const
 	{
 	return key == FMTokey::divide;
 	}
 
 
-FMTokey FMToperator::getKey() const
+FMTokey FMTOperator::getKey() const
 	{
 	return key;
 	}
 
-std::string FMToperator::associativity() const
+std::string FMTOperator::associativity() const
 	{
 	std::string asso = "RIGHT";
 	if (key==FMTokey::comma || key == FMTokey::add || key == FMTokey::multiply || key == FMTokey::pow)
@@ -159,9 +159,9 @@ std::string FMToperator::associativity() const
 	return asso;
 	}
 
-FMToperator FMToperator::reverse() const
+FMTOperator FMTOperator::reverse() const
 	{
-	FMToperator newop(*this);
+	FMTOperator newop(*this);
 	if (key ==  FMTokey::add)
 		{
 		newop.key = FMTokey::sub;
@@ -172,7 +172,7 @@ FMToperator FMToperator::reverse() const
 	return newop;
 	}
 
-int FMToperator::precedence() const
+int FMTOperator::precedence() const
 	{
 	int result = -1;
 	if (key == FMTokey::multiply||key == FMTokey::divide ||key == FMTokey::pow)

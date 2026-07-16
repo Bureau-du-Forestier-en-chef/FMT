@@ -21,14 +21,14 @@ namespace Graph
 
 namespace Core
 {
-	class FMTconstraint;
+	class FMTConstraint;
 }
 
 
 namespace Spatial
 	{
 	class FMTGraphInfo;
-	class FMTSolutionTracker: public Core::FMTobject
+	class FMTSolutionTracker: public Core::FMTObject
 		{
 		public:
 			FMTSolutionTracker(const std::vector<size_t>& p_solution,

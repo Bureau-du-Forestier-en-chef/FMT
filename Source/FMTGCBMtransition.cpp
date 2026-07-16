@@ -9,22 +9,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-FMTGCBMtransition::FMTGCBMtransition():ageafter(), themes(),name()
+FMTGCBMTransition::FMTGCBMTransition():ageafter(), themes(),name()
 	{
 
 	}
 
-FMTGCBMtransition::FMTGCBMtransition(const int& lageafter, const std::map<std::string, std::string>& lthemes, const std::string& lname) :
+FMTGCBMTransition::FMTGCBMTransition(const int& lageafter, const std::map<std::string, std::string>& lthemes, const std::string& lname) :
 	ageafter(lageafter), themes(lthemes), name(lname)
 	{
 
 	}
 
-FMTGCBMtransition::FMTGCBMtransition(const FMTGCBMtransition& rhs):ageafter(rhs.ageafter), themes(rhs.themes), name(rhs.name)
+FMTGCBMTransition::FMTGCBMTransition(const FMTGCBMTransition& rhs):ageafter(rhs.ageafter), themes(rhs.themes), name(rhs.name)
 	{
 
 	}
-FMTGCBMtransition& FMTGCBMtransition::operator = (const FMTGCBMtransition& rhs)
+FMTGCBMTransition& FMTGCBMTransition::operator = (const FMTGCBMTransition& rhs)
 	{
 	if (this != &rhs)
 		{
@@ -36,12 +36,12 @@ FMTGCBMtransition& FMTGCBMtransition::operator = (const FMTGCBMtransition& rhs)
 	}
 
 
-bool FMTGCBMtransition::operator == (const FMTGCBMtransition& rhs) const
+bool FMTGCBMTransition::operator == (const FMTGCBMTransition& rhs) const
 {
 	return (ageafter == rhs.ageafter && name == rhs.name && themes == rhs.themes);
 }
 
-bool FMTGCBMtransition::operator != (const FMTGCBMtransition& rhs) const
+bool FMTGCBMTransition::operator != (const FMTGCBMTransition& rhs) const
 {
 	return !(*this == rhs);
 

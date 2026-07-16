@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 
     Models::FMTmodel& selectedModel = models[0];
 
-	std::vector<Core::FMTschedule> schedules = modelparser.readschedules(params.primaryFilePath, models).at(0);
+	std::vector<Core::FMTSchedule> schedules = modelparser.readschedules(params.primaryFilePath, models).at(0);
 
 	if (!std::filesystem::is_directory(params.outputPath))
 	{

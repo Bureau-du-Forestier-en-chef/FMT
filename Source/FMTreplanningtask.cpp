@@ -62,7 +62,7 @@ namespace Parallel
 		const Models::FMTmodel& globalm,
 		const Models::FMTmodel& stochasticm,
 		const Models::FMTmodel& localm,
-		const std::vector<Core::FMToutput>& outputs,
+		const std::vector<Core::FMTOutput>& outputs,
 		const std::string& outputlocation,
 		const std::string& gdaldriver,
 		const std::vector<std::string>& creationoptions,
@@ -133,7 +133,7 @@ namespace Parallel
 			const std::string OBJ_VALUE = std::to_string(modelcpy->getObjectiveValue());
 			_logger->logWithLevel("Initial planning Obj("+ OBJ_VALUE +") done\n", 0);
 			replicateids.pop();
-			baseschedule = std::shared_ptr<Core::FMTschedule>(new Core::FMTschedule(modelcpy->getSolution(1, true)));
+			baseschedule = std::shared_ptr<Core::FMTSchedule>(new Core::FMTSchedule(modelcpy->getSolution(1, true)));
 			iterationglobalschedule = *baseschedule;
 			dynamicconstraints = modelcpy->getReplanningConstraints("GLOBAL",local->getconstraints(), 1);
 			for (int replicateid = 1; replicateid < (replicates+1); ++replicateid)
@@ -274,7 +274,7 @@ namespace Parallel
 					appendExistingSchedule = false;
 				}
 			}
-			std::vector<Core::FMTschedule> scheduleList;
+			std::vector<Core::FMTSchedule> scheduleList;
 			if (p_model->getName() == stochastic->getName()||
 				p_model->getName() == local->getName())
 			{
@@ -366,10 +366,10 @@ namespace Parallel
 		try {
 			if(modelcpy->gotReIgnore(replanningperiod))
 			{
-				std::vector<Core::FMTconstraint>newconstraints;
-				const std::vector<Core::FMTconstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
+				std::vector<Core::FMTConstraint>newconstraints;
+				const std::vector<Core::FMTConstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
 				newconstraints.reserve(MODEL_CONSTRAINTS.size());
-				for (const Core::FMTconstraint& constraint : MODEL_CONSTRAINTS)
+				for (const Core::FMTConstraint& constraint : MODEL_CONSTRAINTS)
 				{
 					if (!constraint.isReIgnore(replanningperiod))
 					{
@@ -392,10 +392,10 @@ namespace Parallel
 			if (modelcpy->gotReplicate(replanningperiod))
 			{
 				modelcpy->setReplicate(getIteration(), replanningperiod);
-				/*std::vector<Core::FMTconstraint>newconstraints;
-				const std::vector<Core::FMTconstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
+				/*std::vector<Core::FMTConstraint>newconstraints;
+				const std::vector<Core::FMTConstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
 				newconstraints.reserve(MODEL_CONSTRAINTS.size());
-				for (const Core::FMTconstraint& basenssconstraint : MODEL_CONSTRAINTS)
+				for (const Core::FMTConstraint& basenssconstraint : MODEL_CONSTRAINTS)
 				{
 					newconstraints.push_back(basenssconstraint.getFromReplicate(getIteration(), replanningperiod));
 				}
@@ -412,7 +412,7 @@ namespace Parallel
 	void FMTreplanningtask::work()
 	{
 		try {
-			const std::vector<Core::FMTconstraint>baselocalconstraints(dynamicconstraints);
+			const std::vector<Core::FMTConstraint>baselocalconstraints(dynamicconstraints);
 			while (!replicateids.empty())
 			{
 				_logger->logWithLevel("Replanning on replicate " + std::to_string(getIteration()) + " started\n",0);
@@ -445,7 +445,7 @@ namespace Parallel
 					
 					const std::unique_ptr<Models::FMTmodel> stochasticcopy = std::move(doModelPlanning(stochastic,replanningperiod,false,false,false));
 					dynamicarea = stochasticcopy->getArea(replanningperiod + 1,true);
-					for (Core::FMTactualdevelopment& development : dynamicarea)
+					for (Core::FMTActualDevelopment& development : dynamicarea)
 						{
 						development.setPeriod(replanningperiod - 1);
 						}
@@ -462,7 +462,7 @@ namespace Parallel
 						}
 					//dynamicarea = localcopy->getArea(localcopy->getParameter(Models::FMTintmodelparameters::LENGTH)+1);
 					dynamicarea = localcopy->getArea(localcopy->getParameter(Models::FMTintmodelparameters::LENGTH) + replanningperiod);
-					for (Core::FMTactualdevelopment& development : dynamicarea)
+					for (Core::FMTActualDevelopment& development : dynamicarea)
 					{
 						development.setPeriod(replanningperiod);
 					}

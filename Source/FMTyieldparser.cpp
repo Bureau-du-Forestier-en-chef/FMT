@@ -80,29 +80,29 @@ Core::FMTyldtype FMTyieldparser::getYldType(const std::string& value) const
     return Core::FMTyldtype::FMTageyld;
     }
 
-std::unique_ptr<Core::FMTyieldhandler> FMTyieldparser::getHandler(const Core::FMTmask& mask,const Core::FMTyldtype& yldtype) const
+std::unique_ptr<Core::FMTYieldHandler> FMTyieldparser::getHandler(const Core::FMTMask& mask,const Core::FMTyldtype& yldtype) const
 {
 	try {
 		switch (yldtype)
 		{
 		case Core::FMTyldtype::FMTageyld:
 		{
-			return std::unique_ptr<Core::FMTyieldhandler>(new Core::FMTageyieldhandler(mask));
+			return std::unique_ptr<Core::FMTYieldHandler>(new Core::FMTAgeYieldHandler(mask));
 			break;
 		}
 		case Core::FMTyldtype::FMTtimeyld:
 		{
-			return std::unique_ptr<Core::FMTyieldhandler>(new Core::FMTtimeyieldhandler(mask));
+			return std::unique_ptr<Core::FMTYieldHandler>(new Core::FMTTimeYieldHandler(mask));
 			break;
 		}
 		case Core::FMTyldtype::FMTcomplexyld:
 		{
-			return std::unique_ptr<Core::FMTyieldhandler>(new Core::FMTcomplexyieldhandler(mask));
+			return std::unique_ptr<Core::FMTYieldHandler>(new Core::FMTComplexYieldHandler(mask));
 			break;
 		}
 		case Core::FMTyldtype::FMTmodelyld:
 		{
-			return std::unique_ptr<Core::FMTyieldhandler>(new Core::FMTmodelyieldhandler(mask));
+			return std::unique_ptr<Core::FMTYieldHandler>(new Core::FMTModelYieldHandler(mask));
 			break;
 		}
 		
@@ -114,7 +114,7 @@ std::unique_ptr<Core::FMTyieldhandler> FMTyieldparser::getHandler(const Core::FM
 	{
 		_exhandler->raiseFromCatch("", "FMTyieldparser::getYldType", __LINE__, __FILE__, m_section);
 	}
-	return std::unique_ptr<Core::FMTyieldhandler>();
+	return std::unique_ptr<Core::FMTYieldHandler>();
 }
 
 Core::FMTyieldparserop FMTyieldparser::getYldCtype(const std::string& value) const
@@ -184,13 +184,13 @@ Core::FMTyieldparserop FMTyieldparser::getYldCtype(const std::string& value) con
 		}
 	return Core::FMTyieldparserop::FMTnone;
     }
-void FMTyieldparser::setOveridedYlds(Core::FMTyields& yielddata,
-	std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,
+void FMTyieldparser::setOveridedYlds(Core::FMTYields& yielddata,
+	std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
 	const std::string& yld) const
 {
 	try {
-		std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator it = yielddata.begin();
-		const Core::FMTmask& actual_msk = actualyield->first;//(yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
+		std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator it = yielddata.begin();
+		const Core::FMTMask& actual_msk = actualyield->first;//(yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
 		++it;//because this overided yield is the first on the list..
 		size_t location = 1;
 		while (it != yielddata.end())
@@ -201,8 +201,8 @@ void FMTyieldparser::setOveridedYlds(Core::FMTyields& yielddata,
 			{
 				if (it->second->getType()==Core::FMTyldtype::FMTcomplexyld)
 				{
-					Core::FMTcomplexyieldhandler* yldptr = dynamic_cast<Core::FMTcomplexyieldhandler*>(it->second.get());
-					const Core::FMTcomplexyieldhandler* actptr = dynamic_cast<const Core::FMTcomplexyieldhandler*>(actualyield->second.get());
+					Core::FMTComplexYieldHandler* yldptr = dynamic_cast<Core::FMTComplexYieldHandler*>(it->second.get());
+					const Core::FMTComplexYieldHandler* actptr = dynamic_cast<const Core::FMTComplexYieldHandler*>(actualyield->second.get());
 					if (!yldptr->compareSources(yld, *actptr))
 					{
 						_exhandler->raise(Exception::FMTexc::FMToveridedyield, "For overrided yield " + yld
@@ -228,15 +228,15 @@ void FMTyieldparser::setOveridedYlds(Core::FMTyields& yielddata,
 }
 
 
-std::vector<std::string> FMTyieldparser::getYldUse(Core::FMTyields& yielddata,
-	std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,
+std::vector<std::string> FMTyieldparser::getYldUse(Core::FMTYields& yielddata,
+	std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
                                    const std::vector<std::string>& values) const
     {
 	std::vector<std::string>dump;
 	
 	try {
-		std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::const_iterator it = yielddata.begin();
-		const Core::FMTmask& actual_msk = actualyield->first;//(yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
+		std::vector<std::pair<Core::FMTMask,std::unique_ptr<Core::FMTYieldHandler>>>::const_iterator it = yielddata.begin();
+		const Core::FMTMask& actual_msk = actualyield->first;//(yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
 		while (it != actualyield)
 		{
 			if (it->first.isSubsetOf(actual_msk) ||
@@ -275,7 +275,7 @@ void FMTyieldparser::checkPreexisting(const std::vector<std::string>& preexists)
         }
     }
 
-double FMTyieldparser::getNumwithproportion(const std::string& value,const Core::FMTconstants& constants,
+double FMTyieldparser::getNumwithproportion(const std::string& value,const Core::FMTConstants& constants,
 	const std::vector<double>& proportions, const int& location)
 	{
 	try {
@@ -308,9 +308,9 @@ bool FMTyieldparser::isFunction(const std::string& strfunction) const
 	return false;
 	}
 
-Core::FMTdata FMTyieldparser::getEq(const std::string& basestr,
-	const Core::FMTconstants& constants, const Core::FMTyields& ylds,
-	const std::vector<Core::FMTtheme>& themes)
+Core::FMTData FMTyieldparser::getEq(const std::string& basestr,
+	const Core::FMTConstants& constants, const Core::FMTYields& ylds,
+	const std::vector<Core::FMTTheme>& themes)
 	{
 		std::vector<std::string> valuesnoperators;
 		std::vector<double>numbers;
@@ -329,12 +329,12 @@ Core::FMTdata FMTyieldparser::getEq(const std::string& basestr,
 					{
 						number = getNum<double>(token, constants);
 					}
-					else if (!Core::FMToperator(token).valid() && !Core::FMTfunctioncall(token).valid() && token != "(" && token != ")")
+					else if (!Core::FMTOperator(token).valid() && !Core::FMTFunctionCall(token).valid() && token != "(" && token != ")")
 					{
 						if (!ylds.isYld(token, true))
 						{
 							bool should_throw = true;
-							for (const Core::FMTtheme& theme : themes)
+							for (const Core::FMTTheme& theme : themes)
 							{
 								if (theme.isIndex(token))
 								{
@@ -365,10 +365,10 @@ Core::FMTdata FMTyieldparser::getEq(const std::string& basestr,
 			{
 			_exhandler->raiseFromCatch("for "+ basestr,"FMTyieldparser::getEq", __LINE__, __FILE__,m_section);
 			}
-		return Core::FMTdata(numbers, Core::FMTyieldparserop::FMTequation,valuesnoperators);
+		return Core::FMTData(numbers, Core::FMTyieldparserop::FMTequation,valuesnoperators);
 	}
 
-void FMTyieldparser::cleanAll(Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants) const
+void FMTyieldparser::cleanAll(Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const
 {
 	try{
 		ylds.generateDefaultYields(themes);
@@ -382,7 +382,7 @@ void FMTyieldparser::cleanAll(Core::FMTyields& ylds, const std::vector<Core::FMT
 }
 
 
-std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::string& modelname, std::vector<std::string>& inputYields, const Core::FMTmask& mainmask) const
+std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::string& modelname, std::vector<std::string>& inputYields, const Core::FMTMask& mainmask) const
 {
 	try {
 		const boost::filesystem::path modeldirectory = boost::filesystem::path(getRuntimeLocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path(modelname);
@@ -455,18 +455,18 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readYieldModel(const std::st
 	return std::unique_ptr<Core::FMTyieldmodel>(nullptr);
 }
 
-Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants,const std::string& location)
+Core::FMTYields FMTyieldparser::read(const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& constants,const std::string& location)
     {
-	Core::FMTyields yields;
+	Core::FMTYields yields;
 	std::string lineerror;
 	try {
 		std::ifstream yieldstream(location);
 		std::vector<std::string>yldsnames;
 		std::vector<std::string>dump;
-		std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield;
+		std::vector<std::pair<Core::FMTMask,std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield;
 		std::vector<size_t>indexed_yields;
-		std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator datait = yields.end();
-		Core::FMTmask tmask;
+		std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator datait = yields.end();
+		Core::FMTMask tmask;
 		bool sided = false;
 		bool multipledef = false;
 		bool overyld = false;
@@ -495,10 +495,10 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							overyld = true;
 						}
 
-						if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
+						if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
 						Core::FMTyldtype yldtype = getYldType(yieldtype);
-						tmask = Core::FMTmask(mask, themes);
-						std::unique_ptr<Core::FMTyieldhandler>newyield = getHandler(tmask, yldtype);
+						tmask = Core::FMTMask(mask, themes);
+						std::unique_ptr<Core::FMTYieldHandler>newyield = getHandler(tmask, yldtype);
 						if (!overyld)
 						{
 							yields.push_back(tmask, newyield);
@@ -691,7 +691,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 										stacking.push_back(false);
 										sources.push_back(boost::trim_copy(std::string(discountmatch[9])));
 										stacking.push_back(true);
-										actualyield->second->pushData(yldname, Core::FMTdata(yielddata, Core::FMTyieldparserop::FMTdiscountfactor, sources, stacking));
+										actualyield->second->pushData(yldname, Core::FMTData(yielddata, Core::FMTyieldparserop::FMTdiscountfactor, sources, stacking));
 									}
 									else {
 										if (!isNum(values.at(0), constants))
@@ -785,7 +785,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 											csource.push_back(values[id]);
 										}
 									}
-									actualyield->second->pushData(yldname, Core::FMTdata(cvalues, complextype, csource, stacking));
+									actualyield->second->pushData(yldname, Core::FMTData(cvalues, complextype, csource, stacking));
 								}
 								dump = getYldUse(yields, actualyield, theylds);
 								checkPreexisting(dump);
@@ -832,7 +832,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									}
 								}
 								
-								Core::FMTmodelyieldhandler* handlerptr = dynamic_cast<Core::FMTmodelyieldhandler*>(actualyield->second.get());
+								Core::FMTModelYieldHandler* handlerptr = dynamic_cast<Core::FMTModelYieldHandler*>(actualyield->second.get());
 								const std::map<std::string, size_t>handlermodels = handlerptr->getModelsNameByIndex();
 								size_t modelid = 0;
 								if (handlermodels.find(modelname)!= handlermodels.end())
@@ -876,15 +876,15 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
     return yields;
     }
 
-	std::map<std::string, double>FMTyieldparser::getIndexValues(const Core::FMTmask& mask,
-		const std::vector<Core::FMTtheme>& themes,const std::vector<std::string>&indexvalues, const Core::FMTconstants& constants) const
+	std::map<std::string, double>FMTyieldparser::getIndexValues(const Core::FMTMask& mask,
+		const std::vector<Core::FMTTheme>& themes,const std::vector<std::string>&indexvalues, const Core::FMTConstants& constants) const
 	{
 		std::map<std::string, double>handler_values;
 		std::string indexerror;
 		size_t themeid;
 		try {
 			
-			for (const Core::FMTtheme& theme : themes)
+			for (const Core::FMTTheme& theme : themes)
 			{
 				const std::string attribute = mask.get(theme);
 				themeid = theme.getId()+1;
@@ -915,15 +915,15 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 	return handler_values;
 	}
 
-void FMTyieldparser::cleanUp(Core::FMTyields& yields,const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants) const
+void FMTyieldparser::cleanUp(Core::FMTYields& yields,const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const
 	{
 	try {
 		//iterate on all yieldhandler if equation with index then take the handler
 			//delete the handler at it's yields location
 			//decompose and insert all new handlers
-			//std::vector<Core::FMTyieldhandler>::iterator handler_it = yields.databegin();
+			//std::vector<Core::FMTYieldHandler>::iterator handler_it = yields.databegin();
 		yields.unShrink(themes);
-		std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::iterator handler_it = yields.begin();
+		std::vector<std::pair<Core::FMTMask,std::unique_ptr<Core::FMTYieldHandler>>>::iterator handler_it = yields.begin();
 		const std::vector<std::string>yldnames = yields.getAllYieldNames();
 		while (handler_it != yields.end())
 		{
@@ -931,13 +931,13 @@ void FMTyieldparser::cleanUp(Core::FMTyields& yields,const std::vector<Core::FMT
 			if (!indexvalues.empty())
 			{
 				size_t location = std::distance(yields.begin(), handler_it);
-				const Core::FMTmask oldmask = (yields.begin() + location)->first;
-				const std::unique_ptr<Core::FMTyieldhandler> oldhandler = handler_it->second->clone();
+				const Core::FMTMask oldmask = (yields.begin() + location)->first;
+				const std::unique_ptr<Core::FMTYieldHandler> oldhandler = handler_it->second->clone();
 				yields.erase(location);
-				std::vector<Core::FMTmask>todecompose;
+				std::vector<Core::FMTMask>todecompose;
 				todecompose.push_back(oldmask);
-				std::vector<Core::FMTtheme>themes_windex;
-				for (const Core::FMTtheme& theme : themes)
+				std::vector<Core::FMTTheme>themes_windex;
+				for (const Core::FMTTheme& theme : themes)
 				{
 					
 					if (theme.useIndex())
@@ -946,10 +946,10 @@ void FMTyieldparser::cleanUp(Core::FMTyields& yields,const std::vector<Core::FMT
 						{
 							if (theme.isIndex(index))
 							{
-								std::vector<Core::FMTmask>newdecomposer;
+								std::vector<Core::FMTMask>newdecomposer;
 								while (!todecompose.empty())
 								{
-									const std::vector<Core::FMTmask>allmasks = (todecompose.front()).decompose(theme);
+									const std::vector<Core::FMTMask>allmasks = (todecompose.front()).decompose(theme);
 									todecompose.erase(todecompose.begin());
 									newdecomposer.insert(newdecomposer.end(), allmasks.begin(), allmasks.end());
 								}
@@ -960,17 +960,17 @@ void FMTyieldparser::cleanUp(Core::FMTyields& yields,const std::vector<Core::FMT
 						}
 					}
 				}
-				for (const Core::FMTmask& newmask : todecompose)
+				for (const Core::FMTMask& newmask : todecompose)
 				{
-					std::unique_ptr<Core::FMTyieldhandler>newhandler = getHandler(newmask, Core::FMTyldtype::FMTcomplexyld);
+					std::unique_ptr<Core::FMTYieldHandler>newhandler = getHandler(newmask, Core::FMTyldtype::FMTcomplexyld);
 					std::map<std::string, double>handler_values = getIndexValues(newmask, themes_windex, indexvalues,constants);
-					const Core::FMTcomplexyieldhandler* oldhandlerptr = dynamic_cast<const Core::FMTcomplexyieldhandler*>(oldhandler.get());
-					Core::FMTcomplexyieldhandler* newhandlerptr = dynamic_cast<Core::FMTcomplexyieldhandler*>(newhandler.get());
+					const Core::FMTComplexYieldHandler* oldhandlerptr = dynamic_cast<const Core::FMTComplexYieldHandler*>(oldhandler.get());
+					Core::FMTComplexYieldHandler* newhandlerptr = dynamic_cast<Core::FMTComplexYieldHandler*>(newhandler.get());
 					newhandlerptr->setTabou(*oldhandlerptr);
-					const std::map<std::string, Core::FMTdata,Core::cmpYieldString>& alladata = oldhandlerptr->getDataElements();
-					for (std::map<std::string, Core::FMTdata, Core::cmpYieldString>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
+					const std::map<std::string, Core::FMTData,Core::cmpYieldString>& alladata = oldhandlerptr->getDataElements();
+					for (std::map<std::string, Core::FMTData, Core::cmpYieldString>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
 					{
-						const Core::FMTexpression expression = datait->second.toExpression();
+						const Core::FMTExpression expression = datait->second.toExpression();
 						const std::vector<std::string>allvalues = expression.getInFix();
 						std::vector<double>numbers(allvalues.size(), 0);
 						std::vector<std::string>valuesnoperators(allvalues.size());
@@ -990,7 +990,7 @@ void FMTyieldparser::cleanUp(Core::FMTyields& yields,const std::vector<Core::FMT
 							}
 							++data_loc;
 						}
-						newhandler->pushData(datait->first, Core::FMTdata(numbers, Core::FMTyieldparserop::FMTequation, valuesnoperators));
+						newhandler->pushData(datait->first, Core::FMTData(numbers, Core::FMTyieldparserop::FMTequation, valuesnoperators));
 					}
 					yields.insert(location, newmask, newhandler);
 					++location;
@@ -1010,7 +1010,7 @@ void FMTyieldparser::cleanUp(Core::FMTyields& yields,const std::vector<Core::FMT
 		}
 	}
 
-void FMTyieldparser::write(const Core::FMTyields& yields,const std::string& location) const
+void FMTyieldparser::write(const Core::FMTYields& yields,const std::string& location) const
     {
 	try {
 		std::ofstream yieldstream;

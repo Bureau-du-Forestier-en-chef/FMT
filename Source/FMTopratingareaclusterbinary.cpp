@@ -32,7 +32,7 @@ namespace Heuristics
 		}
 
 
-	Core::FMToutput FMToperatingareaclusterbinary::getOutputIntersect(const Core::FMToutput& output,const std::vector<Core::FMTtheme>& themes) const
+	Core::FMTOutput FMToperatingareaclusterbinary::getOutputIntersect(const Core::FMTOutput& output,const std::vector<Core::FMTTheme>& themes) const
 		{
 		return output.intersectWithMask(getMask(),themes);
 		}
@@ -47,19 +47,19 @@ namespace Heuristics
 				potentiallink = finalbinaries;
 				finalbinaries.clear();
 				}
-			std::map<Core::FMTmask, std::vector<Core::FMTmask>>neighbors;
+			std::map<Core::FMTMask, std::vector<Core::FMTMask>>neighbors;
 			for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
 				{
-				neighbors[mainbinary.getMask()] = std::vector<Core::FMTmask>(1, this->getMask());
+				neighbors[mainbinary.getMask()] = std::vector<Core::FMTMask>(1, this->getMask());
 				}
-			for (std::map<Core::FMTmask, std::vector<Core::FMTmask>>::iterator dcit = neighbors.begin();
+			for (std::map<Core::FMTMask, std::vector<Core::FMTMask>>::iterator dcit = neighbors.begin();
 				dcit != neighbors.end(); dcit++)
 				{
 					for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
 					{
 						if (dcit->first != mainbinary.getMask())
 						{
-							const std::vector<Core::FMTmask> baseneighbors = mainbinary.getNeighbors();
+							const std::vector<Core::FMTMask> baseneighbors = mainbinary.getNeighbors();
 							dcit->second.insert(dcit->second.end(), baseneighbors.begin(), baseneighbors.end());
 						}
 					}

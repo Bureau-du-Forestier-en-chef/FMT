@@ -89,7 +89,7 @@ namespace Models
         SHOW_LOCK_IN_SCHEDULES = false
     Default str parameters are:
     */
-    class FMTEXPORT FMTmodelparameters : public Core::FMTobject
+    class FMTEXPORT FMTmodelparameters : public Core::FMTObject
     {
         public:
             // DocString: FMTmodelparameters()
@@ -150,7 +150,7 @@ namespace Models
             void serialize(Archive& ar, const unsigned int version)
             {
                 try {
-                    ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+                    ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
                     ar& BOOST_SERIALIZATION_NVP(m_intparameters);
                     ar& BOOST_SERIALIZATION_NVP(m_dblparameters);
                     ar& BOOST_SERIALIZATION_NVP(m_boolparameters);

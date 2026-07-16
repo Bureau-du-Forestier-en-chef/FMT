@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTexpression
+	class FMTExpression
 	{
 		std::vector<std::string>infix;
 		std::vector<std::string> getPostFix(const std::vector<std::string>& localinfix) const;
@@ -23,16 +23,16 @@ namespace Core
 		double evaluatePostFix(const std::vector<std::string>& postfix) const;
 		bool isNumber(const std::string& s) const;
 	public:
-		FMTexpression();
-		FMTexpression(const std::vector<std::string>& lsources);
-		FMTexpression(const FMTexpression& rhs);
-        FMTexpression simplify(std::map<std::string,double>& values) const;
+		FMTExpression();
+		FMTExpression(const std::vector<std::string>& lsources);
+		FMTExpression(const FMTExpression& rhs);
+        FMTExpression simplify(std::map<std::string,double>& values) const;
 		std::vector<std::string>getVariables() const;
 		double shuntingYard(const std::map<std::string, double>& mapping) const;
 		std::vector<std::string>getInFix() const;
         operator std::string() const;
-		FMTexpression& operator = (const FMTexpression& rhs);
-		~FMTexpression() = default;
+		FMTExpression& operator = (const FMTExpression& rhs);
+		~FMTExpression() = default;
 
 	};
 }

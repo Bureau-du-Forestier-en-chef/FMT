@@ -40,137 +40,137 @@ namespace Logging
 
 namespace Core
 {
-// DocString: FMTobject
+// DocString: FMTObject
 /**
-FMTobject is the base class of multiple class it hold a shared exception handler pointer and logger.
-FMTobject plays a big role into exception handling and for ctrl-c signals for boost python.
+FMTObject is the base class of multiple class it hold a shared exception handler pointer and logger.
+FMTObject plays a big role into exception handling and for ctrl-c signals for boost python.
 It also contains some usefull functions for mask validation and runtimelocation etc...
 */
-class FMTEXPORT FMTobject
+class FMTEXPORT FMTObject
 	{
 	public:
-		// DocString: FMTobject::getLogger
+		// DocString: FMTObject::getLogger
 		/**
 		@brief get a pointer to the actual logger.
 		@return the valid FMTLogger
 		*/
 		static Logging::FMTLogger* getLogger();
-		// DocString: FMTobject::getExceptionHandler
+		// DocString: FMTObject::getExceptionHandler
 		/**
 		@brief get a pointer to the actual exception handler.
 		@return the valid FMTExceptionHandler;
 		*/
 		static Exception::FMTExceptionHandler* getExceptionHandler();
-		// DocString: FMTobject::getRuntimeLocation
+		// DocString: FMTObject::getRuntimeLocation
 		/**
 		This function return the location of the FMT shared library location.
 		*/
 		static std::string getRuntimeLocation();
-		// DocString: FMTobject::getAvailableMemory
+		// DocString: FMTObject::getAvailableMemory
 		/**
 		Get the available memory in bytes
 		*/
 		static unsigned long long getAvailableMemory();
-		// DocString: FMTobject()
+		// DocString: FMTObject()
 		/**
-		FMTobject default constructor.
+		FMTObject default constructor.
 		*/
-		FMTobject();
-		// DocString: ~FMTobject()
+		FMTObject();
+		// DocString: ~FMTObject()
 		/**
-		FMTobject default virutal destructor.
+		FMTObject default virutal destructor.
 		*/
-		virtual ~FMTobject();
-		// DocString: FMTobject(const std::unique_ptr<Exception::FMTExceptionHandler>)
+		virtual ~FMTObject();
+		// DocString: FMTObject(const std::unique_ptr<Exception::FMTExceptionHandler>)
 		/**
-		When constructing a new FMTobject it's sometime usefull to passin the exception handler of an
-		other FMTobject.
+		When constructing a new FMTObject it's sometime usefull to passin the exception handler of an
+		other FMTObject.
 		*/
-		FMTobject(const std::unique_ptr<Exception::FMTExceptionHandler> exhandler);
-		// DocString: FMTobject(const FMTobject&)
+		FMTObject(const std::unique_ptr<Exception::FMTExceptionHandler> exhandler);
+		// DocString: FMTObject(const FMTObject&)
 		/**
-		FMTobject default copy constructor.
+		FMTObject default copy constructor.
 		*/
-		FMTobject(const FMTobject& rhs);
-		// DocString: FMTobject::operator=
+		FMTObject(const FMTObject& rhs);
+		// DocString: FMTObject::operator=
 		/**
-		FMTobject default copy assignment.
+		FMTObject default copy assignment.
 		*/
-		FMTobject& operator = (const FMTobject& rhs);
-		// DocString: FMTobject::passInLogger
+		FMTObject& operator = (const FMTObject& rhs);
+		// DocString: FMTObject::passInLogger
 		/**
-		It's sometime usefull to pass in the logger of an other FMTobject.
+		It's sometime usefull to pass in the logger of an other FMTObject.
 		*/
 		virtual void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger);
-		// DocString: FMTobject::passInExceptionHandler
+		// DocString: FMTObject::passInExceptionHandler
 		/**
-		It's sometime usefull to pass in the exception handler of an other FMTobject.
+		It's sometime usefull to pass in the exception handler of an other FMTObject.
 		*/
 		void passInExceptionHandler(const std::unique_ptr<Exception::FMTExceptionHandler>& exhandler);
-		// DocString: FMTobject::redirectLogToFile
+		// DocString: FMTObject::redirectLogToFile
 		/**
 		redict the log to a specific file (will append to it)
 		*/
 		void redirectLogToFile(const std::string& location);
-		// DocString: FMTobject::setDefaultLogger
+		// DocString: FMTObject::setDefaultLogger
 		/**
-		Create and set a default logger to the FMTobject.
+		Create and set a default logger to the FMTObject.
 		*/
 		virtual void setDefaultLogger();
-		// DocString: FMTobject::setQuietLogger
+		// DocString: FMTObject::setQuietLogger
 		/**
-		Create and set a quiet logger to the FMTobject.
+		Create and set a quiet logger to the FMTObject.
 		*/
 		virtual void setQuietLogger();
-		// DocString: FMTobject::setTaskLogger
+		// DocString: FMTObject::setTaskLogger
 		/**
-		Create and set a quiet logger to the FMTobject.
+		Create and set a quiet logger to the FMTObject.
 		*/
 		virtual void setTaskLogger();
-		// DocString: FMTobject::setDebugLogger
+		// DocString: FMTObject::setDebugLogger
 		/**
-		Create and set a debug logger to the FMTobject.
+		Create and set a debug logger to the FMTObject.
 		*/
 		virtual void setDebugLogger();
-		// DocString: FMTobject::setDefaultExceptionHandler
+		// DocString: FMTObject::setDefaultExceptionHandler
 		/**
-		Create and set a default exception handler to the FMTobject.
+		Create and set a default exception handler to the FMTObject.
 		*/
 		void setDefaultExceptionHandler();
-		// DocString: FMTobject::setQuietExceptionHandler
+		// DocString: FMTObject::setQuietExceptionHandler
 		/**
-		Create and set a quiet exception handler to the FMTobject.
+		Create and set a quiet exception handler to the FMTObject.
 		*/
 		void setQuietExceptionHandler();
-		// DocString: FMTobject::setDebugExceptionHandler
+		// DocString: FMTObject::setDebugExceptionHandler
 		/**
-		Create and set a debug exception handler to the FMTobject.
+		Create and set a debug exception handler to the FMTObject.
 		*/
 		void setDebugExceptionHandler();
-		// DocString: FMTobject::setFreeExceptionHandler
+		// DocString: FMTObject::setFreeExceptionHandler
 		/**
-		Create and set a free exception handler to the FMTobject.
+		Create and set a free exception handler to the FMTObject.
 		*/
 		void setFreeExceptionHandler();
-		// DocString: FMTobject::disableNestedExceptions
+		// DocString: FMTObject::disableNestedExceptions
 		/**
 		Disable nested exception throw of the Exceptionhandler by default all handlers
 		do nested exception throw.
 		*/
 		void disableNestedExceptions();
-		// DocString: FMTobject::enableNestedExceptions
+		// DocString: FMTObject::enableNestedExceptions
 		/**
 		Enable nested exception throw of the Exceptionhandler by default all handlers
 		do nested exception throw.
 		*/
 		void enableNestedExceptions();
-		// DocString: FMTobject::setErrorsToWarnings
+		// DocString: FMTObject::setErrorsToWarnings
 		/**
 		Very hazardous function if you want to live dangerously you can
 		set a vector of error to be cast to warnings to the exception handler...
 		*/
 		void setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors);
-		// DocString: FMTobject::setMaxWarningsBeforeSilenced
+		// DocString: FMTObject::setMaxWarningsBeforeSilenced
 		/**
 		Change the number of warning raise before silenced.
 		*/
@@ -185,7 +185,7 @@ class FMTEXPORT FMTobject
 		@brief will write the stack in the log when abort called with SIGABRT and raise a function failed.
 		*/
 		static void setAbortStack();
-		// DocString: FMTobject::serialize
+		// DocString: FMTObject::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -198,15 +198,15 @@ class FMTEXPORT FMTobject
 			//ar & BOOST_SERIALIZATION_NVP(m_section);
 		}
 	protected:
-		// DocString: FMTobject::_exhandler
+		// DocString: FMTObject::_exhandler
 		///A shared pointer to the exception handler.
 		static std::unique_ptr<Exception::FMTExceptionHandler> _exhandler;
-		// DocString: FMTobject::_logger
+		// DocString: FMTObject::_logger
 		///A shared pointer to the logger.
 		static std::unique_ptr<Logging::FMTLogger> _logger;
-		// DocString: FMTobject:: forceSave
+		// DocString: FMTObject:: forceSave
 		/**
-		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
+		By Default the serialization of a FMTObject does nothing if you want to get some usefull information use this function.
 		*/
 		template<class Archive>
 		void forceSave(Archive& ar, const unsigned int version) const
@@ -215,9 +215,9 @@ class FMTEXPORT FMTobject
 			//ar & BOOST_SERIALIZATION_NVP(_logger);
 			//ar & BOOST_SERIALIZATION_NVP(m_section);
 		}
-		// DocString: FMTobject:: forceLoad
+		// DocString: FMTObject:: forceLoad
 		/**
-		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
+		By Default the serialization of a FMTObject does nothing if you want to get some usefull information use this function.
 		*/
 		template<class Archive>
 		void forceLoad(Archive& ar, const unsigned int version)
@@ -228,28 +228,28 @@ class FMTEXPORT FMTobject
 			setDefaultExceptionHandler();
 			//ar & BOOST_SERIALIZATION_NVP(m_section);
 		}
-		// DocString: FMTobject::checkSignals
+		// DocString: FMTObject::checkSignals
 		/**
 		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
 		*/
 		void checkSignals() const;
-		// DocString: FMTobject::setCPLhandler
+		// DocString: FMTObject::setCPLhandler
 		/**
 		This function is for gdal only it pass the FMT exception handler to gdal exception handler.
 		*/
 		void setCPLhandler();
-		// DocString: FMTobject::getClock
+		// DocString: FMTObject::getClock
 		/**
 		Will return a clock of "now" time.
 		*/
 		static std::chrono::time_point<std::chrono::high_resolution_clock> getClock();
-		// DocString: FMTobject::getDuration
+		// DocString: FMTObject::getDuration
 		/**
 		With the high resolution clock you can get the time it took has a double.
 		*/
 		template<class chrono>
 		static double getDuration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-		// DocString: FMTobject::getDurationInSeconds
+		// DocString: FMTObject::getDurationInSeconds
 		/**
 		With the clock time calculate time spent in second and return a string.
 		*/
@@ -274,9 +274,9 @@ class FMTEXPORT FMTobject
 
 	};
 }
-BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTobject)
-BOOST_CLASS_TRACKING(Core::FMTobject, boost::serialization::track_always)
-BOOST_CLASS_EXPORT_KEY(Core::FMTobject)
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTObject)
+BOOST_CLASS_TRACKING(Core::FMTObject, boost::serialization::track_always)
+BOOST_CLASS_EXPORT_KEY(Core::FMTObject)
 
 #endif
 

@@ -1241,7 +1241,7 @@ bool FMToperatingareascheme::isDualBounded(const double* upperbounds) const
 	}
 
 
-FMToperatingareascheme FMToperatingareascheme::presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>& presolvedthemes) const
+FMToperatingareascheme FMToperatingareascheme::presolve(const Core::FMTMask& selectedmask, const std::vector<Core::FMTTheme>& presolvedthemes) const
 {
 	const FMToperatingarea presolveoparea = FMToperatingarea::presolveOperatingArea(selectedmask,presolvedthemes);
 	return FMToperatingareascheme(presolveoparea,this->openingtime, this->returntime,this->maxreturntime,this->repetition,this->greenup,this->startingperiod);
@@ -1297,7 +1297,7 @@ const int& FMToperatingareascheme::getMaximalSchemesConstraint() const
 }
 
 
-FMTOperatingAreaSchemeComparator::FMTOperatingAreaSchemeComparator(const Core::FMTmask& lmask):mask(lmask)
+FMTOperatingAreaSchemeComparator::FMTOperatingAreaSchemeComparator(const Core::FMTMask& lmask):mask(lmask)
 	{
 
 	}

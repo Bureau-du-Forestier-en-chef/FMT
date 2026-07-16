@@ -13,32 +13,32 @@ namespace Core
 
 {
 
-	FMToutputnode::FMToutputnode():source(),factor(),constant()
+	FMTOutputNode::FMTOutputNode():source(),factor(),constant()
 		{
 
 		}
 
-	bool FMToutputnode::allowCashdeduction() const
+	bool FMTOutputNode::allowCashdeduction() const
 		{
 		return (!factor.isTimeYield());
 		}
 
-	bool FMToutputnode::singlePeriod() const
+	bool FMTOutputNode::singlePeriod() const
 		{
 		return (!source.emptyPeriod() && source.getPeriodLowerBound() == source.getPeriodUpperBound());
 		}
 
-	bool FMToutputnode::multiPeriod() const
+	bool FMTOutputNode::multiPeriod() const
 		{
 		return (!source.emptyPeriod() && source.getPeriodLowerBound() != source.getPeriodUpperBound());
 		}
 
-	bool FMToutputnode::isNull() const
+	bool FMTOutputNode::isNull() const
 		{
 		return ((factor.isConstant() && factor.getValue() == 0) || constant == 0);
 		}
 
-    bool FMToutputnode::isPastPeriod() const
+    bool FMTOutputNode::isPastPeriod() const
 		{
 		if (singlePeriod())
 			{
@@ -51,48 +51,48 @@ namespace Core
 		return false;
 		}
 
-	FMToutputnode::operator std::string() const
+	FMTOutputNode::operator std::string() const
 		{
 		return (std::string(source) + " " + std::string(factor) + " *" + std::to_string(constant));
 		}
 
 
-    FMToutputnode FMToutputnode::setPeriod(int period) const
+    FMTOutputNode FMTOutputNode::setPeriod(int period) const
         {
-        FMToutputnode newnode(*this);
-        newnode.source.setBounds(FMTperbounds(FMTsection::Optimize,period,period));
-        newnode.factor.setBounds(FMTperbounds(FMTsection::Optimize,period,period));
+        FMTOutputNode newnode(*this);
+        newnode.source.setBounds(FMTPerBounds(FMTsection::Optimize,period,period));
+        newnode.factor.setBounds(FMTPerBounds(FMTsection::Optimize,period,period));
         return newnode;
         }
 
-	FMToutputnode::FMToutputnode(const FMToutputsource& lsource, const FMToutputsource& lfactor, const double& lconstant) :
+	FMTOutputNode::FMTOutputNode(const FMTOutputSource& lsource, const FMTOutputSource& lfactor, const double& lconstant) :
 		source(lsource), factor(lfactor), constant(lconstant)
 		{
 		
 		}
 
-	FMToutputnode::FMToutputnode(const Core::FMTmask& generalmask, const std::string& actionaggregate):
-		source(FMTspec(), generalmask, Core::FMTotar::actual, "", actionaggregate),
+	FMTOutputNode::FMTOutputNode(const Core::FMTMask& generalmask, const std::string& actionaggregate):
+		source(FMTSpec(), generalmask, Core::FMTotar::actual, "", actionaggregate),
 		factor(FMTotar::val, 1),
 		constant(1.0)
 	{
 		
 	}
 
-	FMToutputnode::FMToutputnode(const FMToutputnode& rhs) :
+	FMTOutputNode::FMTOutputNode(const FMTOutputNode& rhs) :
 		source(rhs.source), factor(rhs.factor), constant(rhs.constant)
 		{
 
 		}
 
-	size_t FMToutputnode::hash() const
+	size_t FMTOutputNode::hash() const
 		{
 		size_t seed = 0;
 		boost::hash_combine(seed, source.hash());
 		return seed;
 		}
 
-	size_t FMToutputnode::hashForValue() const
+	size_t FMTOutputNode::hashForValue() const
 		{
 		size_t seed = 0;
 		boost::hash_combine(seed, source.hash(-1,true));
@@ -101,38 +101,38 @@ namespace Core
 		return seed;
 		}
 
-	bool FMToutputnode::operator < (const FMToutputnode& rhs) const
+	bool FMTOutputNode::operator < (const FMTOutputNode& rhs) const
 		{
 		return (source<rhs.source);
 		}
 
-	bool FMToutputnode::operator == (const FMToutputnode& rhs) const
+	bool FMTOutputNode::operator == (const FMTOutputNode& rhs) const
 		{
 		return (source == rhs.source);
 		}
 
-	bool FMToutputnode::isSubsetOf(const FMToutputnode& rhs) const
+	bool FMTOutputNode::isSubsetOf(const FMTOutputNode& rhs) const
 		{
 		return source.isSubsetOf(rhs.source);
 		}
 
-	bool FMToutputnode::isSubsetOf(const FMToutputnode& rhs, const std::vector<Core::FMTaction>& actions) const
+	bool FMTOutputNode::isSubsetOf(const FMTOutputNode& rhs, const std::vector<Core::FMTAction>& actions) const
 		{
 		return source.isSubsetOf(rhs.source,actions);
 		}
 
-	bool FMToutputnode::isSameButDifferentAction(const FMToutputnode& rhs) const
+	bool FMTOutputNode::isSameButDifferentAction(const FMTOutputNode& rhs) const
 		{
 		return source.isSameButDifferentAction(rhs.source);
 		}
 
-	bool FMToutputnode::isSameValues(const FMToutputnode& rhs) const
+	bool FMTOutputNode::isSameValues(const FMTOutputNode& rhs) const
 		{
 		return (constant == rhs.constant &&  factor.isEqualByValue(rhs.factor) && source.isEqualByValue(rhs.source));
 		}
 
 
-	FMToutputnode& FMToutputnode::operator = (const FMToutputnode& rhs)
+	FMTOutputNode& FMTOutputNode::operator = (const FMTOutputNode& rhs)
 		{
 		if (this!=&rhs)
 			{
@@ -143,7 +143,7 @@ namespace Core
 		return *this;
 		}
 
-	int FMToutputnode::setToGraph(std::vector<int>& targetedperiods, int period, int max_period)
+	int FMTOutputNode::setToGraph(std::vector<int>& targetedperiods, int period, int max_period)
 		{
 		int node_period = period;
 		if (this->source.isNextPeriod())
@@ -158,7 +158,7 @@ namespace Core
 				if ((this->source.getPeriodLowerBound() + node_period) >= 0)
 				{
 					node_period = (this->source.getPeriodLowerBound() + node_period);
-					const FMTperbounds perbound(FMTsection::Optimize, node_period, node_period);
+					const FMTPerBounds perbound(FMTsection::Optimize, node_period, node_period);
 					this->source.setBounds(perbound);
 					this->factor.setBounds(perbound);
 				}
@@ -171,7 +171,7 @@ namespace Core
 				if (this->source.isNextPeriod())
 				{
 					++node_period;
-					const FMTperbounds perbound(FMTsection::Optimize, node_period, node_period);
+					const FMTPerBounds perbound(FMTsection::Optimize, node_period, node_period);
 					this->source.setBounds(perbound);
 					this->factor.setBounds(perbound);
 				}
@@ -215,26 +215,26 @@ namespace Core
 		return node_period;
 		}
 
-	std::string FMToutputnode::getHashString() const
+	std::string FMTOutputNode::getHashString() const
 	{
 		/*std::string value(static_cast<const char*>(static_cast<const void*>(&source)));
 		value += std::string(static_cast<const char*>(static_cast<const void*>(&factor)));
 		value += std::string(static_cast<const char*>(static_cast<const void*>(&constant)));
 		return value;*/
-		//return FMTbinarizer().binarize<FMToutputnode>(*this);
+		//return FMTbinarizer().binarize<FMTOutputNode>(*this);
 		return std::string(*this);
 	}
 
-	Core::FMTmask FMToutputnode::getHashMask() const
+	Core::FMTMask FMTOutputNode::getHashMask() const
 	{
-		Core::FMTmask baseMask;
+		Core::FMTMask baseMask;
 		source.fillHashMask(baseMask);
 		factor.fillHashMask(baseMask);
 		baseMask.binarizedAppend<double>(constant);
 		return baseMask;
 	}
 
-	void FMToutputnode::fillHashMaskSpec(Core::FMTmask& baseMask) const
+	void FMTOutputNode::fillHashMaskSpec(Core::FMTMask& baseMask) const
 	{
 		source.fillHashSpec(baseMask);
 		factor.fillHashSpec(baseMask);
@@ -243,23 +243,23 @@ namespace Core
 	
 
 
-	bool FMTOutputNodeValueComparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
+	bool FMTOutputNodeValueComparator::operator()(const FMTOutputNode& node1, const FMTOutputNode& node2) const
 		{
 		return node1.isSameValues(node2);
 		}
 
-	bool FMTOutputNodeOriginComparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
+	bool FMTOutputNodeOriginComparator::operator()(const FMTOutputNode& node1, const FMTOutputNode& node2) const
 		{
 		return (node1.getOutputId()<node2.getOutputId());
 		}
 
 
-	size_t FMTOutputNodeHasher::operator()(const FMToutputnode & node) const
+	size_t FMTOutputNodeHasher::operator()(const FMTOutputNode & node) const
 		{
 		return node.hashForValue();
 		}
 
-	void FMToutputnode::fillUpEquation(std::map<std::string,std::vector<std::string>>& allequations,
+	void FMTOutputNode::fillUpEquation(std::map<std::string,std::vector<std::string>>& allequations,
 		const std::map<std::string, double>& graphvalues,
 		const std::vector<std::string>& equation, const size_t& nodeid) const
 		{
@@ -281,4 +281,4 @@ namespace Core
 	
 
 }
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMToutputnode)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTOutputNode)

@@ -36,14 +36,14 @@ void exportParallel()
     "\n";
 
 
-	bp::class_<Parallel::FMTtask, bp::bases<Core::FMTobject>>("FMTtask", "@DocString(FMTtask)")
+	bp::class_<Parallel::FMTtask, bp::bases<Core::FMTObject>>("FMTtask", "@DocString(FMTtask)")
 			.def(bp::init<Parallel::FMTtask>());
 
 	definePyList<Parallel::FMTtask>();
 
 	bp::class_<Parallel::FMTreplanningtask, bp::bases<Parallel::FMTtask>>("FMTreplanningtask", "@DocString(FMTreplanningtask)")
 			.def(bp::init<Parallel::FMTreplanningtask>())
-			.def(bp::init<const Models::FMTmodel&, const Models::FMTmodel&, const Models::FMTmodel&,const std::vector<Core::FMToutput>&,
+			.def(bp::init<const Models::FMTmodel&, const Models::FMTmodel&, const Models::FMTmodel&,const std::vector<Core::FMTOutput>&,
 				const std::string&, const std::string&,const std::vector<std::string>&,
 				const int&,const int&,double,Core::FMToutputlevel,const bool>(
 					bp::args("Strategic model", "stochastic model","tactic model","selected outputs","Output folder","GDAL driver name","GDAL driver creation options","Number of replicates","Number of replanning periods","minimaldrift","output level","Write schedule"), "@DocString(FMTreplanningtask::FMTreplanningtask(const Models::FMTmodel&,const Models::FMTmodel&,const Models::FMTmodel&))"));
@@ -63,15 +63,15 @@ void exportParallel()
 	bp::class_<Parallel::FMTopareaschedulertask, bp::bases<Parallel::FMTtask>>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask")
 		.def(bp::init<Parallel::FMTopareaschedulertask>())
 		.def(bp::init<const Models::FMTlpmodel&,const std::vector<Heuristics::FMToperatingareascheme>&,
-			const Core::FMToutputnode&,const std::string&,
+			const Core::FMTOutputNode&,const std::string&,
 			const std::string&,const unsigned int&,
-			const double&,Core::FMToutput>(
+			const double&,Core::FMTOutput>(
 				bp::args("model", "operating areas", "node", "output location", "output yield name", "maxiterations","maxtime","returntime_output"), "@DocString(FMTopareaschedulertask::FMTopareaschedulertask(...))"));
 
 	definePyList<Parallel::FMTopareaschedulertask>();
 
 
-	bp::class_<Parallel::FMTtaskhandler, bp::bases<Core::FMTobject>>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
+	bp::class_<Parallel::FMTtaskhandler, bp::bases<Core::FMTObject>>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 		.def(bp::init<Parallel::FMTtaskhandler>())
 		.def(bp::init<const Parallel::FMTtask&, unsigned int>(bp::args("Task to provide to the handler", "Number of threads"), "@DocString(FMTtaskhandler::FMTtaskhandler(const Parallel::FMTtask&,unsigned int))"))
 		.def("conccurentrun", &Parallel::FMTtaskhandler::conccurentRun,"@DocString(FMTtaskhandler::conccurentrun)")

@@ -6,11 +6,11 @@
 #include <map>
 
 namespace Core {
-    class FMTschedule;
-    class FMTconstraint;
-    class FMToutput;
-    class FMTtheme;
-    class FMTaction;
+    class FMTSchedule;
+    class FMTConstraint;
+    class FMTOutput;
+    class FMTTheme;
+    class FMTAction;
 }
 
 namespace Models {
@@ -64,7 +64,7 @@ namespace FMTWrapperCore
         };
 
         std::vector<OutputResult> results;
-        std::vector<Core::FMToutput> outputObjects; // Pour usage ultérieur
+        std::vector<Core::FMTOutput> outputObjects; // Pour usage ultérieur
     };
 
     /**
@@ -202,7 +202,7 @@ namespace FMTWrapperCore
         static SESResults RunSES(
             const SESParameters& params,
             const Models::FMTmodel& baseModel,
-            const std::vector<Core::FMTschedule>& schedules);
+            const std::vector<Core::FMTSchedule>& schedules);
 
         /**
          * @brief Exécute une optimisation spatiale (Simulated Annealing)
@@ -224,8 +224,8 @@ namespace FMTWrapperCore
          * @param selectedNames Noms des contraintes sélectionnées
          * @return Vecteur des contraintes filtrées
          */
-        static std::vector<Core::FMTconstraint> filterConstraints(
-            const std::vector<Core::FMTconstraint>& allConstraints,
+        static std::vector<Core::FMTConstraint> filterConstraints(
+            const std::vector<Core::FMTConstraint>& allConstraints,
             const std::vector<std::string>& selectedNames);
 
         /**
@@ -234,8 +234,8 @@ namespace FMTWrapperCore
          * @param selectedNames Noms des outputs sélectionnés
          * @return Vecteur des outputs filtrés
          */
-        static std::vector<Core::FMToutput> filterOutputs(
-            const std::vector<Core::FMToutput>& allOutputs,
+        static std::vector<Core::FMTOutput> filterOutputs(
+            const std::vector<Core::FMTOutput>& allOutputs,
             const std::vector<std::string>& selectedNames);
 
         /**
@@ -244,8 +244,8 @@ namespace FMTWrapperCore
          * @param themeIndices Indices des thèmes (1-based)
          * @return Vecteur des thèmes sélectionnés
          */
-        static std::vector<Core::FMTtheme> buildGrowthThemes(
-            const std::vector<Core::FMTtheme>& allThemes,
+        static std::vector<Core::FMTTheme> buildGrowthThemes(
+            const std::vector<Core::FMTTheme>& allThemes,
             const std::vector<int>& themeIndices);
 
         /**
@@ -288,7 +288,7 @@ namespace FMTWrapperCore
         static CarbonReportData generateCarbonReport(
             const Models::FMTsemodel& semodel,
             const int numberOfPeriods,
-            const std::vector<Core::FMTschedule>& schedules);
+            const std::vector<Core::FMTSchedule>& schedules);
 
         /**
          * @brief Écrit les perturbations (transitions GCBM)
@@ -344,7 +344,7 @@ namespace FMTWrapperCore
          */
         static std::vector<std::string> writeSpatialOutputs(
             const Models::FMTsemodel& semodel,
-            const std::vector<Core::FMToutput>& outputs,
+            const std::vector<Core::FMTOutput>& outputs,
             const int minPeriod,
             const int maxPeriod,
             const std::string& outputPath);
@@ -400,7 +400,7 @@ namespace FMTWrapperCore
          */
         static void exportResults(
             const Models::FMTsemodel& semodel,
-            const std::vector<Core::FMToutput>& outputs,
+            const std::vector<Core::FMTOutput>& outputs,
             const int minPeriod,
             const int maxPeriod,
             const std::string& outputPath,

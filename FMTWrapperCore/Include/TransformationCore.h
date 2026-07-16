@@ -2,9 +2,9 @@
 #include <vector>
 
 namespace Core { 
-    class FMTschedule;
-    class FMTconstraint;
-    class FMToutput;
+    class FMTSchedule;
+    class FMTConstraint;
+    class FMTOutput;
 }
 
 namespace Models

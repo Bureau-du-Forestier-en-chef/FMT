@@ -14,7 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 
 
-	FMTageyieldhandler::operator std::string() const
+	FMTAgeYieldHandler::operator std::string() const
 	{
 		std::string value;
 		try {
@@ -42,76 +42,76 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 	}
 
 
-	bool FMTageyieldhandler::pushData(const std::string& yld, const double& value)
+	bool FMTAgeYieldHandler::pushData(const std::string& yld, const double& value)
 	{
 		return (basePushData(m_elements, yld, value));
 	}
 
-	bool FMTageyieldhandler::pushData(const std::string& yld, const FMTdata& data)
+	bool FMTAgeYieldHandler::pushData(const std::string& yld, const FMTData& data)
 	{
 		return (basePushData(m_elements, yld,data));
 	}
 
-	FMTageyieldhandler::FMTageyieldhandler(const FMTmask& mask) :
-		FMTyieldhandler(mask)
+	FMTAgeYieldHandler::FMTAgeYieldHandler(const FMTMask& mask) :
+		FMTYieldHandler(mask)
 	{
 
 	}
 
 	
-	bool FMTageyieldhandler::operator == (const FMTageyieldhandler& rhs) const
+	bool FMTAgeYieldHandler::operator == (const FMTAgeYieldHandler& rhs) const
 	{
-		return (FMTyieldhandler::operator==(rhs)&&
+		return (FMTYieldHandler::operator==(rhs)&&
 			m_elements==rhs.m_elements);
 	}
 
-	double FMTageyieldhandler::get(const std::string& yld, const FMTyieldrequest& request) const
+	double FMTAgeYieldHandler::get(const std::string& yld, const FMTYieldRequest& request) const
 	{
 		try {
 				try {
 					const int target = request.getDevelopment().getAge();
-					std::map<std::string, Core::FMTdata, cmpYieldString>::const_iterator data0it = m_elements.find(yld);
+					std::map<std::string, Core::FMTData, cmpYieldString>::const_iterator data0it = m_elements.find(yld);
 					if (data0it != m_elements.end())
 						{
 						return getLinearValue(data0it->second.data, target,true);
 						}
 				}catch (...)
 					{
-					_exhandler->raiseFromCatch("Getting age yield", "FMTageyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+					_exhandler->raiseFromCatch("Getting age yield", "FMTAgeYieldHandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 					}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at yield " + yld, "FMTageyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("at yield " + yld, "FMTAgeYieldHandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 	return 0;
 	}
 
-	FMTageyieldhandler::FMTageyieldhandler(const FMTyieldhandler& rhs):
-		FMTyieldhandler(rhs)
+	FMTAgeYieldHandler::FMTAgeYieldHandler(const FMTYieldHandler& rhs):
+		FMTYieldHandler(rhs)
 		{
 	
 		}
 
 
-	double FMTageyieldhandler::getLastValue(const std::string yld) const
+	double FMTAgeYieldHandler::getLastValue(const std::string yld) const
 	{
-		std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
+		std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		return it->second.data.back();
 	}
-	int FMTageyieldhandler::getAge(const std::string yld, const double& value, const int& starting_age) const
+	int FMTAgeYieldHandler::getAge(const std::string yld, const double& value, const int& starting_age) const
 	{
 		int age = 0;
 		try {
-			std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
+			std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.find(yld);
 			if (it != m_elements.end())
 			{
-				const FMTdata* ldata = &it->second;
+				const FMTData* ldata = &it->second;
 				//std::vector<double>::const_iterator dit = ldata->data.begin();
 				double minimal_gap = std::numeric_limits<double>::infinity();
 				size_t minimal_gap_index = 0;
@@ -130,35 +130,35 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return age;
 	}
 
-	double FMTageyieldhandler::getYieldLinearValue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange) const
+	double FMTAgeYieldHandler::getYieldLinearValue(const std::string&yldname, const FMTYieldRequest& request, bool allowoutofrange) const
 	{
 		try {
-			const FMTdata& lvalues = this->at(yldname);
+			const FMTData& lvalues = this->at(yldname);
 			return getLinearValue(lvalues.data, request.getDevelopment().getAge(),allowoutofrange);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getYieldLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
 
-	int FMTageyieldhandler::getAge(const FMTyieldrequest& request, const FMTspec& spec) const
+	int FMTAgeYieldHandler::getAge(const FMTYieldRequest& request, const FMTSpec& spec) const
 	{
 		try {
 			const std::vector<std::string>&yieldnames = spec.getYlds();
-			const std::vector<FMTyldbounds>&yieldbounds = spec.getYldBounds();
+			const std::vector<FMTYldBounds>&yieldbounds = spec.getYldBounds();
 			int age = request.getDevelopment().getAge();
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
 				if (containsYield(yieldnames.at(id)))
 				{
-					const FMTyldbounds* bound = &yieldbounds.at(id);
+					const FMTYldBounds* bound = &yieldbounds.at(id);
 					const int new_age = getAge(yieldnames.at(id), bound->getLower(), request.getDevelopment().getAge());
 					if (new_age < age)
 					{
@@ -170,20 +170,20 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return 0;
 	}
 
-	std::unique_ptr<FMTyieldhandler> FMTageyieldhandler::getFromFactor(const double& factor,
+	std::unique_ptr<FMTYieldHandler> FMTAgeYieldHandler::getFromFactor(const double& factor,
 		std::vector<std::string>yieldnames) const
 	{
-		FMTageyieldhandler newhandler(*this);
+		FMTAgeYieldHandler newhandler(*this);
 		try {
-				std::vector<std::map<std::string, FMTdata, cmpYieldString>::iterator>iterators;
+				std::vector<std::map<std::string, FMTData, cmpYieldString>::iterator>iterators;
 				if (yieldnames.empty())
 				{
-					for (std::map<std::string, FMTdata, cmpYieldString>::iterator it = newhandler.m_elements.begin();
+					for (std::map<std::string, FMTData, cmpYieldString>::iterator it = newhandler.m_elements.begin();
 						it != newhandler.m_elements.end(); it++)
 					{
 						iterators.push_back(it);
@@ -192,48 +192,48 @@ namespace Core {
 				else {
 					for (const std::string& yldname : yieldnames)
 					{
-						std::map<std::string, FMTdata, cmpYieldString>::iterator it = newhandler.m_elements.find(yldname);
+						std::map<std::string, FMTData, cmpYieldString>::iterator it = newhandler.m_elements.find(yldname);
 						if (it != newhandler.m_elements.end())
 						{
 							iterators.push_back(it);
 						}
 					}
 				}
-				for (std::map<std::string, FMTdata, cmpYieldString>::iterator datait : iterators)
+				for (std::map<std::string, FMTData, cmpYieldString>::iterator datait : iterators)
 				{
 					datait->second = ((datait->second)*factor);
 				}
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getFromFactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return newhandler.clone();
 	}
 
-	bool FMTageyieldhandler::empty() const
+	bool FMTAgeYieldHandler::empty() const
 	{
 		return m_elements.empty();
 	}
-	size_t FMTageyieldhandler::size() const
+	size_t FMTAgeYieldHandler::size() const
 	{
 		return m_elements.size();
 	}
-	FMTdata& FMTageyieldhandler::operator[](const std::string& yldname)
+	FMTData& FMTAgeYieldHandler::operator[](const std::string& yldname)
 	{
 		return m_elements[yldname];
 	}
-	const FMTdata& FMTageyieldhandler::at(const std::string& yldname) const
+	const FMTData& FMTAgeYieldHandler::at(const std::string& yldname) const
 	{
 		return m_elements.at(yldname);
 	}
-	bool FMTageyieldhandler::containsYield(const std::string& yldname) const
+	bool FMTAgeYieldHandler::containsYield(const std::string& yldname) const
 	{
 		return (m_elements.find(yldname) != m_elements.end());
 	}
 
 
-	std::vector<std::string>FMTageyieldhandler::getYieldNames() const
+	std::vector<std::string>FMTAgeYieldHandler::getYieldNames() const
 	{
 		std::vector<std::string>results;
 		results.reserve(m_elements.size());
@@ -245,28 +245,28 @@ namespace Core {
 		return results;
 	}
 
-	void FMTageyieldhandler::clearCache()
+	void FMTAgeYieldHandler::clearCache()
 	{
 		
 	}
 
-	std::unique_ptr<FMTyieldhandler>FMTageyieldhandler::clone() const
+	std::unique_ptr<FMTYieldHandler>FMTAgeYieldHandler::clone() const
 		{
-		return std::unique_ptr<FMTyieldhandler>(new FMTageyieldhandler(*this));
+		return std::unique_ptr<FMTYieldHandler>(new FMTAgeYieldHandler(*this));
 		}
 
-	FMTyldtype FMTageyieldhandler::getType() const
+	FMTyldtype FMTAgeYieldHandler::getType() const
 		{
 		return FMTyldtype::FMTageyld;
 		}
 
-	std::map<std::string, std::vector<double>>FMTageyieldhandler::getAllYieldsData(const int& maxbase)const
+	std::map<std::string, std::vector<double>>FMTAgeYieldHandler::getAllYieldsData(const int& maxbase)const
 	{
 		std::map<std::string, std::vector<double>>localstuff;
 		try {
 			const int lastbase = getLastBase();
 			std::vector<int>bases = getBases();
-			for (std::map<std::string, FMTdata, cmpYieldString>::const_iterator cit = m_elements.begin(); cit != m_elements.end(); cit++)
+			for (std::map<std::string, FMTData, cmpYieldString>::const_iterator cit = m_elements.begin(); cit != m_elements.end(); cit++)
 			{
 				localstuff[cit->first] = std::vector<double>();
 				for (int base = 0; base <= maxbase; ++base)
@@ -288,16 +288,16 @@ namespace Core {
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getAllYieldsData", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return localstuff;
 	}
 
-	int FMTageyieldhandler::getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
+	int FMTAgeYieldHandler::getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
 	{
 		size_t locid = 0;
 		try {
-				std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
+				std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.find(yld);
 				std::vector<double>::const_iterator location;
 				if (value < bound)
 				{
@@ -314,12 +314,12 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getEndPoint", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return static_cast<int>(locid);
 	}
 
-	double FMTageyieldhandler::getPeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const
+	double FMTAgeYieldHandler::getPeak(const FMTYieldRequest& request,const std::string& yld, const int& targetage) const
 	{
 		double value = 0;
 		try {
@@ -327,16 +327,16 @@ namespace Core {
 			value = getChangesFrom(targetage, peak);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return value;
 	}
 
 
 
-	double FMTageyieldhandler::getPeakfrom(const std::string& yld, double maxvalue) const
+	double FMTAgeYieldHandler::getPeakfrom(const std::string& yld, double maxvalue) const
 	{
-		std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
+		std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		int location = 0;
 		int peak = -1;
 		try {
@@ -354,19 +354,19 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::getPeakfrom", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getPeakfrom", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return peak;
 	}
 
-	void FMTageyieldhandler::setYieldValues(const std::string& yldname,const std::vector<int>& baseages,const std::vector<double>& values)
+	void FMTAgeYieldHandler::setYieldValues(const std::string& yldname,const std::vector<int>& baseages,const std::vector<double>& values)
 	{
 		try{
 			if(values.size()!=baseages.size())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Vector of baseages and values are not the same size.",
-				"FMTageyieldhandler::setValues", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTAgeYieldHandler::setValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			if(this->getBases().empty())
 			{
@@ -375,14 +375,14 @@ namespace Core {
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Vector of baseages and values of bases already set are different. \nYou must create a new FMTageyieldhandler for those values",
-				"FMTageyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTAgeYieldHandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			for(const double& value : values)
 			{
 				this->pushData(yldname,value);
 			}
 		}catch(...){
-			_exhandler->raiseFromCatch("", "FMTageyieldhandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::setYieldValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 

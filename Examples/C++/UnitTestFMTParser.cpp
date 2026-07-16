@@ -20,7 +20,7 @@ namespace Testing
 				}
 			void testStringToConstants()
 				{
-					Core::FMTconstants constants;
+					Core::FMTConstants constants;
 					constants.set("TEST1", std::vector<double>(1,1.0));
 					constants.set("TEST2", std::vector<double>(1, 2.0));
 					const std::string TEST_STRING("test of #TEST1 is not so valid #TEST2");
@@ -36,7 +36,7 @@ namespace Testing
 				}
 			void testQuotedConstantsAreNotConverted()
 				{
-					Core::FMTconstants constants;
+					Core::FMTConstants constants;
 					constants.set("TEST1", std::vector<double>(1, 1.0));
 					constants.set("TEST2", std::vector<double>(1, 2.0));
 					// A constant wrapped in single or double quotes must be left untouched,
@@ -54,7 +54,7 @@ namespace Testing
 				}
 			void testConstantsWithPunctuationDelimiters()
 				{
-					Core::FMTconstants constants;
+					Core::FMTConstants constants;
 					constants.set("TEST1", std::vector<double>(1, 1.0));
 					constants.set("TEST2", std::vector<double>(1, 2.0));
 					const std::string TEST_STRING(",#TEST1, #TEST2) (#TEST1)");

@@ -23,6 +23,8 @@ ROOTS = ['Include', 'Source', 'FMTWrapperCore', 'UI', 'Modules', 'Templates', 'E
 ALLOWED = {
     ('Include/PYexportExceptions.h', 'FMTexceptionhandler'),
     ('Include/RexportExceptions.h', 'FMTexceptionhandler'),
+    # commented-out binding block for the ghost class FMTspatialaction
+    ('Include/RexportSpatial.h', 'FMTaction'),
 }
 
 

@@ -47,11 +47,11 @@ int main(int argc, char* argv[])
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		optimizationmodel.doPlanning(false);
-		for (const Core::FMToutput& output : optimizationmodel.getOutputs())
+		for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
 			{
 			if (output.getName() == outputname)
 				{
-					const Core::FMTmask mask = output.getSources().at(0).getMask();
+					const Core::FMTMask mask = output.getSources().at(0).getMask();
 					const int size_of_no_choice = optimizationmodel.getNoChoice(mask).size();
 					if (size_of_no_choice!=no_action_size)
 						{

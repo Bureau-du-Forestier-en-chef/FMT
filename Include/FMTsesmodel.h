@@ -21,7 +21,7 @@ namespace Models
 This model is a spatially explicit simulation (ses) model.
 It uses simple cellular automaton to spatially simulate FMTactions on
 a raster stack for a given planning horizon following an harvest schedule.
-The FMTaction ordering is realy important because the simulator will
+The FMTAction ordering is realy important because the simulator will
 attend to place the first action of the list on the map and so on.
 */
 class FMTEXPORT FMTsesmodel final: public FMTsemodel
@@ -95,7 +95,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		spatially explicit forest.  The user can also set the seed to get different solutions from the simulator.
 		*/
 		std::map<std::string, double> greedyReferenceBuild(
-			const Core::FMTschedule& p_schedule,
+			const Core::FMTSchedule& p_schedule,
 			size_t p_randomIterations,
 			int p_seed = 0,
 			double p_tolerance = FMT_DBL_TOLERANCE);
@@ -108,7 +108,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		/**
 		This function will use the function greedyReferenceBuild over the number of period set as LENGTH in model parameters.
 		*/
-		virtual bool build(std::vector<Core::FMTschedule> schedules=std::vector<Core::FMTschedule>());
+		virtual bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>());
 		// DocString: FMTsesmodel::solve
 		/**
 		There is no solve since it's only a simulation. The build phase simulate over the LENGTH given in model parameters. 
@@ -122,7 +122,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTmodel.
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 		*/
-		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTsesmodel::getCopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.

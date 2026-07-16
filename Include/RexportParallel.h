@@ -50,7 +50,7 @@ namespace R
 	{
 
 		Rcpp::class_<Parallel::FMTtask>("FMTtask", "@DocString(FMTtask)")
-			.derives<Core::FMTobject>("FMTobject")
+			.derives<Core::FMTObject>("FMTobject")
 			.constructor("@DocString(FMTtask())");
 
 		Rcpp::class_<Parallel::FMTreplanningtask>("FMTreplanningtask", "@DocString(FMTreplanningtask)")
@@ -86,12 +86,12 @@ namespace R
 			.constructor("@DocString(FMTopareaschedulertask::FMTopareaschedulertask())")
 			.constructor<Models::FMTlpmodel,
 			std::vector<Heuristics::FMToperatingareascheme>,
-			Core::FMToutputnode,std::string,
+			Core::FMTOutputNode,std::string,
 			std::string,unsigned int,double>("@DocString(FMTopareaschedulertask::FMTopareaschedulertask(...))");
 #endif
 
 		Rcpp::class_<Parallel::FMTtaskhandler>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
-			.derives<Core::FMTobject>("FMTobject")
+			.derives<Core::FMTObject>("FMTobject")
 			.constructor("@DocString(FMTtaskhandler())")
 			.constructor<const Parallel::FMTtask&,unsigned int>("@DocString(FMTtaskhandler(const Parallel::FMTtask&,unsigned int))")
 			.method("conccurentrun", &Parallel::FMTtaskhandler::conccurentRun,

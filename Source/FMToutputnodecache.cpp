@@ -31,9 +31,9 @@ namespace Graph
 		this->setinitialcache(initialgraph);
 		}
 
-	std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator FMToutputnodecache::getparentnode(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions, bool& exactnode) const
+	std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator FMToutputnodecache::getparentnode(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions, bool& exactnode) const
 		{
-		std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator parentit = searchtree.find(targetnode);
+		std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator parentit = searchtree.find(targetnode);
 		if (parentit!=searchtree.end())
 			{
 			exactnode = true;
@@ -52,21 +52,21 @@ namespace Graph
 		return searchtree.end();
 		}
 
-	void FMToutputnodecache::getActionRebuild(const Core::FMToutputnode& targetnode,
-											const std::vector<Core::FMTaction>& actions,
+	void FMToutputnodecache::getActionRebuild(const Core::FMTOutputNode& targetnode,
+											const std::vector<Core::FMTAction>& actions,
 											std::vector<FMTvertex_descriptor>& cleaned,
 											bool& exactnode) const
 		{
 		const std::string actionname = targetnode.source.getAction();
-		const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTActionComparator(actionname).getAllAggregates(actions,true);
+		const std::vector<const Core::FMTAction*>aggregatesptr = Core::FMTActionComparator(actionname).getAllAggregates(actions,true);
 		if (!actionname.empty() && !aggregatesptr.empty()) //so it's a aggregate!
 			{
-			std::map<std::string,std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>>potentials;
-			for (const Core::FMTaction* attributeptr : aggregatesptr)
+			std::map<std::string,std::vector< std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator>>potentials;
+			for (const Core::FMTAction* attributeptr : aggregatesptr)
 				{
-				potentials[attributeptr->getName()] = std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>();
+				potentials[attributeptr->getName()] = std::vector< std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator>();
 				}
-			for (std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator sit = searchtree.begin();
+			for (std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator sit = searchtree.begin();
 					sit != searchtree.end(); sit++) 
 				{
 				if (sit->first.isSubsetOf(targetnode,actions))
@@ -75,14 +75,14 @@ namespace Graph
 					potentials[nodeaction].push_back(sit);
 					}
 				}
-			for (const Core::FMTaction* attributeptr : aggregatesptr)
+			for (const Core::FMTAction* attributeptr : aggregatesptr)
 				{
 				if (potentials.at(attributeptr->getName()).empty())
 					{
 					return; //not a perfect rebuilt need to be complete!!
 					}
 				}
-			std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>::const_iterator testting = potentials.begin()->second.begin();
+			std::vector< std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator>::const_iterator testting = potentials.begin()->second.begin();
 			while (testting!= potentials.begin()->second.end())
 				{
 				size_t attid = 0;
@@ -92,7 +92,7 @@ namespace Graph
 					{
 					if (attid!=0)
 						{
-						for (std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator it : potentials.at(attribute.first))
+						for (std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator it : potentials.at(attribute.first))
 							{
 							if ((*testting)->first.isSameButDifferentAction(it->first))
 								{
@@ -127,13 +127,13 @@ namespace Graph
 			}
 		}
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getCleanDescriptors(const Core::FMToutputnode& targetnode,
-																					const std::vector<Core::FMTaction>& actions,
-																					const std::vector<Core::FMTtheme>&themes,
+	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getCleanDescriptors(const Core::FMTOutputNode& targetnode,
+																					const std::vector<Core::FMTAction>& actions,
+																					const std::vector<Core::FMTTheme>&themes,
 																					bool& exactnode) const
 		{
 		bool exact = false;
-		std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator parent = this->getparentnode(targetnode,actions, exact);
+		std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator parent = this->getparentnode(targetnode,actions, exact);
 		if (exact)
 			{
 			return parent->second;
@@ -147,7 +147,7 @@ namespace Graph
 		if (!exact)
 			{
 			std::vector<FMTvertex_descriptor>toRemove;
-			for (std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_reverse_iterator sit = searchtree.rbegin();
+			for (std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 				sit != searchtree.rend(); sit++) 
 				{
 					
@@ -165,8 +165,8 @@ namespace Graph
 				cleaned = difference;
 				}
 			}
-		std::pair<std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator, bool> returniterator;
-		returniterator = searchtree.insert(std::pair<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>(targetnode, cleaned));
+		std::pair<std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator, bool> returniterator;
+		returniterator = searchtree.insert(std::pair<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>(targetnode, cleaned));
 		return (returniterator.first)->second;
 		}
 
@@ -192,13 +192,13 @@ namespace Graph
 		}
 
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getVertices(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
-																const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
+	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getVertices(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions,
+																const std::vector<Core::FMTTheme>&themes, bool& exactvecticies) const
 		{
 		return this->getCleanDescriptors(targetnode,actions,themes, exactvecticies);
 		}
 
-	void FMToutputnodecache::setValidVertices(const Core::FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& vertices) const
+	void FMToutputnodecache::setValidVertices(const Core::FMTOutputNode& targetnode,const std::vector<FMTvertex_descriptor>& vertices) const
 		{
 		searchtree[targetnode] = vertices;
 		}

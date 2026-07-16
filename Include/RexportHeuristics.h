@@ -49,7 +49,7 @@ void exportHeuristics()
 
 	Rcpp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
 		.constructor("@DocString(FMToperatingarea())")
-		.constructor<Core::FMTmask,double>("@DocString(FMToperatingarea(const Core::FMTmask&,const double&))")
+		.constructor<Core::FMTMask,double>("@DocString(FMToperatingarea(const Core::FMTMask&,const double&))")
 		.method("getneighbors", &Heuristics::FMToperatingarea::getNeighbors,
 			"@DocString(FMToperatingarea::getneighbors)")
 		.method("setneighbors", &Heuristics::FMToperatingarea::setNeighbors,
@@ -77,7 +77,7 @@ void exportHeuristics()
 		.constructor<Heuristics::FMToperatingarea,size_t,size_t,size_t,size_t,size_t,size_t>("@DocString(FMToperatingareascheme(const Heuristics::FMToperatingarea&,const size_t&,const size_t&,const size_t&, const size_t&, const size_t&,double,bool))");
 
 	Rcpp::class_<Heuristics::FMTlpheuristic>("FMTlpheuristic", "@DocString(FMTlpheuristic)")
-		.derives<Core::FMTobject>("FMTobject")
+		.derives<Core::FMTObject>("FMTobject")
 		.constructor("@DocString(FMTlpheuristic())");
 
 	Rcpp::class_<Heuristics::FMToperatingareascheduler>("FMToperatingareascheduler","@DocString(FMToperatingareascheduler)")

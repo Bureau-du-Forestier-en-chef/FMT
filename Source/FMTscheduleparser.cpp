@@ -81,18 +81,18 @@ namespace Parser {
 		}
 		return *this;
 	}
-	std::vector<Core::FMTschedule> FMTscheduleparser::read(
-		const std::vector<Core::FMTtheme>& themes,
-		const std::vector<Core::FMTaction>& actions, 
+	std::vector<Core::FMTSchedule> FMTscheduleparser::read(
+		const std::vector<Core::FMTTheme>& themes,
+		const std::vector<Core::FMTAction>& actions, 
 		const std::string& location, 
 		double tolerance)
 	{
-		std::vector<Core::FMTschedule>schedules;
+		std::vector<Core::FMTSchedule>schedules;
 		try {
 			std::ifstream schedulestream(location);
 			if (FMTparser::tryOpening(schedulestream, location))
 			{
-				std::vector<std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>>data;
+				std::vector<std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::map<int, double>>>>data;
 				bool uselock = false;
 				bool firstline = true;
 				while (schedulestream.is_open())
@@ -122,7 +122,7 @@ namespace Parser {
 								mask += values[id] + " ";
 							}
 							mask.pop_back();
-							if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
+							if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
 							const int age = getNum<int>(values[id]);
 							++id;
 							const double area = getNum<double>(values[id]);
@@ -146,20 +146,20 @@ namespace Parser {
 								const int period = getNum<int>(values[id]);
 								if (static_cast<size_t>(period) - 1 == data.size())
 								{
-									data.push_back(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>());
+									data.push_back(std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::map<int, double>>>());
 								}
 								else if (static_cast<size_t>(period) - 1 > data.size())
 								{
 									int gap = (period - 1) - static_cast<int>(data.size());
 									while (gap >= 0)
 									{
-										data.push_back(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>());
+										data.push_back(std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::map<int, double>>>());
 										--gap;
 									}
 								}
-								Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, lock, period);
+								Core::FMTDevelopment dev(Core::FMTMask(mask, themes), age, lock, period);
 								//dev.passinobject(*this);
-								std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTActionComparator(actionname));
+								std::vector<Core::FMTAction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTActionComparator(actionname));
 								if (act->doRespectLock())
 								{
 									variable = 0;
@@ -167,7 +167,7 @@ namespace Parser {
 								const int periodloc = period - 1;
 								if (data[periodloc].find(*act) == data[periodloc].end())
 								{
-									data[periodloc][*act] = std::map<Core::FMTdevelopment, std::map<int, double>>();
+									data[periodloc][*act] = std::map<Core::FMTDevelopment, std::map<int, double>>();
 								}
 								if (data[periodloc][*act][dev].find(variable) != data[periodloc][*act][dev].end())
 								{
@@ -182,7 +182,7 @@ namespace Parser {
 				}
 
 				int period = 1;
-				for (const std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>& inschedule : data)
+				for (const std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::map<int, double>>>& inschedule : data)
 				{
 					schedules.emplace_back(period, inschedule);
 					//schedules.back().passinobject(*this);
@@ -198,9 +198,9 @@ namespace Parser {
 		return schedules;
 	}
 
-	void FMTscheduleparser::_writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTschedule>& p_schedules)
+	void FMTscheduleparser::_writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTSchedule>& p_schedules)
 	{
-		for (const Core::FMTschedule& sch : p_schedules)
+		for (const Core::FMTSchedule& sch : p_schedules)
 		{
 			if (!sch.empty())
 			{
@@ -209,15 +209,15 @@ namespace Parser {
 		}
 	}
 
-	std::vector<Core::FMTschedule>::const_iterator FMTscheduleparser::_getFirstEmptySchedule(const std::vector<Core::FMTschedule>& p_schedules)
+	std::vector<Core::FMTSchedule>::const_iterator FMTscheduleparser::_getFirstEmptySchedule(const std::vector<Core::FMTSchedule>& p_schedules)
 	{
-		std::vector<Core::FMTschedule>::const_iterator firstnonemptyschedule = p_schedules.begin();
+		std::vector<Core::FMTSchedule>::const_iterator firstnonemptyschedule = p_schedules.begin();
 		while (firstnonemptyschedule != p_schedules.end() && firstnonemptyschedule->empty())
 		{
 			++firstnonemptyschedule;
 		}
 
-		std::vector<Core::FMTschedule>::const_iterator result = p_schedules.end();
+		std::vector<Core::FMTSchedule>::const_iterator result = p_schedules.end();
 
 		if (!p_schedules.empty() && firstnonemptyschedule != p_schedules.cend() &&
 			(!firstnonemptyschedule	-> empty()) &&
@@ -229,7 +229,7 @@ namespace Parser {
 		return result;
 	}
 
-	void FMTscheduleparser::write(const std::vector<Core::FMTschedule>& schedules,
+	void FMTscheduleparser::write(const std::vector<Core::FMTSchedule>& schedules,
 		const std::string& location, bool append) const
 	{
 		try {

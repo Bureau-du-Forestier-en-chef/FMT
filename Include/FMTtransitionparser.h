@@ -15,14 +15,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 namespace Core {
-	class FMTmask;
-	class FMTyields;
-	class FMTtransition;
-	class FMTaction;
-	class FMTtheme;
-	class FMTconstants;
-	class FMTtransitionmask;
-	class FMTGCBMtransition;
+	class FMTMask;
+	class FMTYields;
+	class FMTTransition;
+	class FMTAction;
+	class FMTTheme;
+	class FMTConstants;
+	class FMTTransitionMask;
+	class FMTGCBMTransition;
 }
 
 namespace Parser
@@ -30,7 +30,7 @@ namespace Parser
 // DocString: FMTtransitionparser
 /**
 The transition parser can read and write a transitions sections and transform the information into
-an std::vector<Core::FMTtransition> object.
+an std::vector<Core::FMTTransition> object.
 */
 class FMTEXPORT FMTtransitionparser : public FMTparser
     {
@@ -74,39 +74,39 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
 		/**
 		Returns a mask for the transition mask and fill up the spec of the transition mask.
 		*/
-		Core::FMTmask getSource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,
-							Core::FMTsection section,const Core::FMTconstants& constant,
-                          const Core::FMTyields& ylds);
+		Core::FMTMask getSource(std::string& line, Core::FMTSpec& spec,const std::vector<Core::FMTTheme>& themes,
+							Core::FMTsection section,const Core::FMTConstants& constant,
+                          const Core::FMTYields& ylds);
 		// DocString: FMTtransitionparser::getMaskTran
 		/**
 		Get a vector of transition masks based on a single transition line mask of the transition file.
 		*/
-        std::vector<Core::FMTtransitionmask> getMaskTran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
-                                        const Core::FMTconstants& constants, const Core::FMTyields& ylds,
-                                        const Core::FMTmask& sourcemask, int& replaced);
+        std::vector<Core::FMTTransitionMask> getMaskTran(const std::string& line,const std::vector<Core::FMTTheme>& themes,
+                                        const Core::FMTConstants& constants, const Core::FMTYields& ylds,
+                                        const Core::FMTMask& sourcemask, int& replaced);
 		// DocString: FMTtransitionparser::read
 		/**
-		Get a vector of FMTtransition objects based on (themes), (actions),(yields),(constants) and finaly the location of the file.
+		Get a vector of FMTTransition objects based on (themes), (actions),(yields),(constants) and finaly the location of the file.
 		*/
-        std::vector<Core::FMTtransition>read(const std::vector<Core::FMTtheme>& themes,
-                           const std::vector<Core::FMTaction>& actions,
-                           const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+        std::vector<Core::FMTTransition>read(const std::vector<Core::FMTTheme>& themes,
+                           const std::vector<Core::FMTAction>& actions,
+                           const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 						   const std::string& location);
 		// DocString: FMTtransitionparser::write
 		/**
 		Write a vector of FMTtransitions into a file location.
 		*/
-        void write(const std::vector<Core::FMTtransition>& transitions,const std::string& location) const;
+        void write(const std::vector<Core::FMTTransition>& transitions,const std::string& location) const;
 		// DocString: FMTtransitionparser::writeGCBM
 		/**
 		Write a vector of FMTGCBMtransitions into a text file at (location).
 		*/
-		void writeGCBM(const std::vector<Core::FMTGCBMtransition>& transitions, const std::string& location) const;
+		void writeGCBM(const std::vector<Core::FMTGCBMTransition>& transitions, const std::string& location) const;
 		// DocString: FMTtransitionparser::readGCBM
 		/**
 		From a text file (location) readGCBM transitions
 		*/
-		std::vector<Core::FMTGCBMtransition>readGCBM(const std::string& location) const;
+		std::vector<Core::FMTGCBMTransition>readGCBM(const std::string& location) const;
     };
 }
 #endif // FMTtransitionparser_Hm_included

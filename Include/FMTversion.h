@@ -38,7 +38,7 @@ It also informs the user about which features are avalaible in FMT.
 
 
 
-class FMTEXPORT FMTversion : public Core::FMTobject
+class FMTEXPORT FMTversion : public Core::FMTObject
 	{
 	public:
 		// DocString: FMTversion()

@@ -25,7 +25,7 @@ namespace Models
 
 namespace Core
 {
-	class FMToutput;
+	class FMTOutput;
 }
 
 
@@ -78,7 +78,7 @@ namespace Parallel
 		FMTreplanningtask(const Models::FMTmodel& globalm,
 						const Models::FMTmodel& stochasticm,
 						const Models::FMTmodel& localm,
-						const std::vector<Core::FMToutput>& outputs,
+						const std::vector<Core::FMTOutput>& outputs,
 						const std::string& outputlocation,
 						const std::string& gdaldriver,
 						const std::vector<std::string>& creationoptions,
@@ -152,7 +152,7 @@ namespace Parallel
 		std::shared_ptr<FMTparallelwriter>resultswriter;
 		// DocString: FMTreplanningtask::baseschedule
 		///This is the schedule of the solved global model at period 1.
-		std::shared_ptr<Core::FMTschedule>baseschedule;
+		std::shared_ptr<Core::FMTSchedule>baseschedule;
 		// DocString: FMTreplanningtask::global
 		///The shared global model between each task
 		std::shared_ptr<Models::FMTmodel>global;//base area is in here.
@@ -167,13 +167,13 @@ namespace Parallel
 		std::queue<int>replicateids;
 		// DocString: FMTreplanningtask::dynamicarea
 		///This is the dynamic area that changes at each replanning step
-		std::vector<Core::FMTactualdevelopment>dynamicarea;
+		std::vector<Core::FMTActualDevelopment>dynamicarea;
 		// DocString: FMTreplanningtask::iterationglobalschedule
 		///This is the schedule that the global model generates after a call to doPlanning
-		Core::FMTschedule iterationglobalschedule;
+		Core::FMTSchedule iterationglobalschedule;
 		// DocString: FMTreplanningtask::dynamicconstraints
 		///Local constraints set using the results obtained in the global or local model.
-		std::vector<Core::FMTconstraint>dynamicconstraints;
+		std::vector<Core::FMTConstraint>dynamicconstraints;
 		// DocString: FMTreplanningtask::replanningperiods
 		///The number of replanning periods the task needs to do.
 		int replanningperiods;

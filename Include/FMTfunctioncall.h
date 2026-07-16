@@ -21,17 +21,17 @@ namespace Core
 		notvalid = 3
 		};
 
-	class FMTfunctioncall
+	class FMTFunctionCall
 	{
 		FMTfkey key;
 	public:
-		FMTfunctioncall();
-		FMTfunctioncall(const std::string& base);
+		FMTFunctionCall();
+		FMTFunctionCall(const std::string& base);
 		double call(const double& rhs) const;
-		FMTfunctioncall(const FMTfunctioncall& rhs);
-		FMTfunctioncall& operator = (const FMTfunctioncall& rhs);
+		FMTFunctionCall(const FMTFunctionCall& rhs);
+		FMTFunctionCall& operator = (const FMTFunctionCall& rhs);
 		bool valid() const;
-		~FMTfunctioncall() = default;
+		~FMTFunctionCall() = default;
 	};
 }
 

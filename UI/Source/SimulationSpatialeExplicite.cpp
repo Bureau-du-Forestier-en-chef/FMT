@@ -222,7 +222,7 @@ namespace Wrapper
 
             Models::FMTmodel selectedModel = FMTFormCache::GetInstance()->getModel(scenario);
 
-            const std::vector<Core::FMTschedule> schedules = ObtenirSEQ(fichierPri, scenario);
+            const std::vector<Core::FMTSchedule> schedules = ObtenirSEQ(fichierPri, scenario);
     
             if (savedLogger)
             {

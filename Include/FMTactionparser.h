@@ -15,10 +15,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core 
 {
-	class FMTconstants;
-	class FMTtheme;
-	class FMTaction;
-	class FMTyields;
+	class FMTConstants;
+	class FMTTheme;
+	class FMTAction;
+	class FMTYields;
 	class FMTSerie;
 }
 
@@ -50,23 +50,23 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		@return a valid serie
 		*/
 		Core::FMTSerie _getSerie(const std::string& p_line,
-			const std::vector<Core::FMTaction>& p_actions) const;
+			const std::vector<Core::FMTAction>& p_actions) const;
 		// DocString: FMTactionparser::sameActionAs
 		/**
 		Using a string containing potential action names (all_set) and a vector of (actions) this function
 		returns a vector of pointer to the corresponding action present in the all_set string.
 		*/
-		std::vector<Core::FMTaction*> sameActionAs(const std::string& all_set, std::vector<Core::FMTaction>& actions) const;
+		std::vector<Core::FMTAction*> sameActionAs(const std::string& all_set, std::vector<Core::FMTAction>& actions) const;
 		// DocString: FMTactionparser::getBounds
 		/**
 		This function fill up some specification (spec) usiing a string line of the area section.
 		*/
-		std::string getBounds(std::string& line, Core::FMTspec& spec, const Core::FMTconstants& constants, const Core::FMTyields& ylds);
+		std::string getBounds(std::string& line, Core::FMTSpec& spec, const Core::FMTConstants& constants, const Core::FMTYields& ylds);
 		// DocString: FMTactionparser::valAgg
 		/**
 		This functions turns aggregates of aggregates into simple aggregates of action map.
 		*/
-		std::map<std::string, std::vector<std::string>>valAgg(std::vector<Core::FMTaction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
+		std::map<std::string, std::vector<std::string>>valAgg(std::vector<Core::FMTAction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
 	public:
 		// DocString: FMTactionparser()
 		/**
@@ -93,21 +93,21 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		The read function will read actions from a (location) action file using a complete vector of (themes),
 		a (yields) section, some and some (constants) and will returns a vector of FMTactions.
 		*/
-		std::vector<Core::FMTaction>read(const std::vector<Core::FMTtheme>& themes,
-			const Core::FMTyields& yields,const Core::FMTconstants& constants,
+		std::vector<Core::FMTAction>read(const std::vector<Core::FMTTheme>& themes,
+			const Core::FMTYields& yields,const Core::FMTConstants& constants,
 			const std::string& location);
 		// DocString: FMTactionparser::write
 		/**
 		Using the (location) of the action section to fill this function will write a vector of (actions)
 		to the given location.
 		*/
-        void write(const std::vector<Core::FMTaction>& actions,
+        void write(const std::vector<Core::FMTAction>& actions,
 			const std::string& location,bool withgcbmagg = false) const;
 		// DocString: FMTactionparser::getactionsidsofmodelyields
 		/**
 		Returns the corresponding actions ids of the vector of actions read from the .json file in YieldPredModels.
 		*/
-		std::vector<Core::FMTaction>getGCBMactionsaggregate(const std::vector<Core::FMTaction>& actions) const;
+		std::vector<Core::FMTAction>getGCBMactionsaggregate(const std::vector<Core::FMTAction>& actions) const;
     };
 
 }

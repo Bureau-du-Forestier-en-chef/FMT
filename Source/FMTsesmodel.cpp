@@ -35,7 +35,7 @@ namespace Models
 
 
 	std::map<std::string, double> FMTsesmodel::greedyReferenceBuild(
-		const Core::FMTschedule& p_schedule,
+		const Core::FMTSchedule& p_schedule,
 		size_t p_randomIterations,
 		int p_seed,
 		double p_tolerance)
@@ -63,10 +63,10 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(new FMTsesmodel(*this));
 		}
 	
-	bool FMTsesmodel::build(std::vector<Core::FMTschedule> schedules)
+	bool FMTsesmodel::build(std::vector<Core::FMTSchedule> schedules)
 	{
 		try {
-			for (const Core::FMTschedule& schedule : schedules)
+			for (const Core::FMTSchedule& schedule : schedules)
 			{
 				this->greedyReferenceBuild(schedule,getParameter(NUMBER_OF_ITERATIONS));
 			}
@@ -83,7 +83,7 @@ namespace Models
 		*this = std::move(*dynamic_cast<FMTsesmodel*>(rhs.get()));
 	}
 
-	std::unique_ptr<FMTmodel>FMTsesmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTmodel>FMTsesmodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 		{
 		try {
 			return std::unique_ptr<FMTmodel>(new FMTsesmodel(*(dynamic_cast<FMTsemodel*>(FMTsemodel::presolve(optionaldevelopments).get()))));

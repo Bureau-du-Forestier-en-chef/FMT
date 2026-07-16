@@ -40,15 +40,15 @@ namespace Core {
 		return modelName;
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::presolve(const FMTmaskfilter& filter,
-		const std::vector<FMTtheme>& newthemes) const
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::presolve(const FMTMaskFilter& filter,
+		const std::vector<FMTTheme>& newthemes) const
 	{
 	
 		return Clone();
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::postSolve(const FMTmaskfilter& filter,
-		const std::vector<FMTtheme>& basethemes) const
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::postSolve(const FMTMaskFilter& filter,
+		const std::vector<FMTTheme>& basethemes) const
 	{
 		return Clone();
 	}

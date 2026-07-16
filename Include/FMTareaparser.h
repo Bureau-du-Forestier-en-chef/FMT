@@ -23,12 +23,12 @@ class OGRFeature;
 
 namespace Core
 {
-	class FMTdevelopment;
-	class FMTactualdevelopment;
-	class FMTGCBMtransition;
-	class FMTmask;
+	class FMTDevelopment;
+	class FMTActualDevelopment;
+	class FMTGCBMTransition;
+	class FMTMask;
 	template<typename T>
-	class FMTlist;
+	class FMTList;
 }
 namespace Graph
 {
@@ -73,7 +73,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		(agefactor=1.0),(areafactor=0.0001) to multiply with the actualdevelopment age and area and a optional (lock) raster file.
 		The function generates a FMTforest layer from those rasters files.
 		*/
-		Spatial::FMTforest readRasters(const std::vector<Core::FMTtheme>& themes, const std::vector<std::string>& data_rasters,
+		Spatial::FMTforest readRasters(const std::vector<Core::FMTTheme>& themes, const std::vector<std::string>& data_rasters,
 			const std::string& age, double agefactor = 1.0, double areafactor = 0.0001, std::string lock = "") const;
 		// DocString: FMTareaparser::writeLayer
 		/**
@@ -96,7 +96,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		mapping vector each element of the vector represent a corresponging key to write in the categorical dataset of the raster.
 		*/
 		bool writeForest(const Spatial::FMTforest& for_layer,
-			const std::vector<Core::FMTtheme>& themes,
+			const std::vector<Core::FMTTheme>& themes,
 			const std::vector<std::string>& data_rasters,
 			const std::string& age,
 			const std::string& lock,
@@ -106,7 +106,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		Write FMT forest in a folder.
 		*/
 		bool writeForest(const Spatial::FMTforest& p_for_layer,
-			const std::vector<Core::FMTtheme>& p_themes,
+			const std::vector<Core::FMTTheme>& p_themes,
 			const std::string& p_folder,
 			std::vector<std::map<std::string, std::string>> p_mapping = std::vector<std::map<std::string, std::string>>()) const;
 		// DocString: FMTareaparser::writeForestTheme
@@ -115,7 +115,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		*/
 		bool writeForestTheme(
 			const Spatial::FMTforest& for_layer,
-			const Core::FMTtheme& theme,
+			const Core::FMTTheme& theme,
 			const std::string& location,
 			const std::map<std::string, std::string>& mapping,
 			std::string format = "GTiff") const;
@@ -126,10 +126,10 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		The function will write all the disturbances in the locaiton .tif file and it will also returns the corresponding GCBMtransition for
 		this planning period.
 		*/
-		std::vector<Core::FMTGCBMtransition> writeDisturbances(const std::string& location,
+		std::vector<Core::FMTGCBMTransition> writeDisturbances(const std::string& location,
 			const Spatial::FMTSpatialSchedule& disturbances,
-			const std::vector<Core::FMTaction>& actions,
-			const std::vector<Core::FMTtheme>& themes,
+			const std::vector<Core::FMTAction>& actions,
+			const std::vector<Core::FMTTheme>& themes,
 			const int& period) const;
 		// DocString: FMTareaparser::writePredictors()
 		/**
@@ -151,44 +151,44 @@ class FMTEXPORT FMTareaparser : public FMTparser
 	   */
 	   /*bool writesasolution(const std::string location,
 						   const Spatial::FMTsasolution& solution,
-						   const std::vector<Core::FMTtheme>& themes,
-						   const std::vector<Core::FMTaction>& actions,
+						   const std::vector<Core::FMTTheme>& themes,
+						   const std::vector<Core::FMTAction>& actions,
 						   const bool& writeevents = true,
 						   int periodStart=-1,
 						   int periodStop=-1) const;*/
 	#ifdef FMTWITHOSI
 						   // DocString: FMTareaparser::getSchemeNeighbors
 						   /**
-						   Using a vector of operating area (operatingareaparameters), a complete vector of FMTtheme (themes), a vector file (data_vectors),
+						   Using a vector of operating area (operatingareaparameters), a complete vector of FMTTheme (themes), a vector file (data_vectors),
 						   the name of the age field name (agefield) an area field name (areafield), an (gefactor), an (areafactor), an optional (lockfield) name,
 						   a (minimal_area) : the minimal area parameters indicate that if a feature has an area lower than the minimal area it wont be selected.
 						   For (buffersize) see getNeighborsFromPolygons function. The returned operating area will have theirs neighboors vector filled.
 						   */
 		std::vector<Heuristics::FMToperatingareascheme> getSchemeNeighbors(std::vector<Heuristics::FMToperatingareascheme> operatingareaparameters,
-			const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
+			const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 			const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 			double areafactor = 1, std::string lockfield = "",
 			double minimal_area = 0.0, double buffersize = 100) const;
 		// DocString: FMTareaparser::getClusters
 		/**
-		Using a vector of operating area (operatingareaparameters), a complete vector of FMTtheme (themes), a vector file (data_vectors),
+		Using a vector of operating area (operatingareaparameters), a complete vector of FMTTheme (themes), a vector file (data_vectors),
 		the name of the age field name (agefield) an area field name (areafield), an (gefactor), an (areafactor), an optional (lockfield) name,
 		a (minimal_area) : the minimal area parameters indicate that if a feature has an area lower than the minimal area it wont be selected.
 		For (buffersize) see getNeighborsFromPolygons function. The returned operating area clusters with their linker mask.
 		*/
 		std::vector<Heuristics::FMToperatingareacluster> getClusters(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
-			const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
+			const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 			const std::string& agefield, const std::string& areafield, const double& maximaldistance,
 			double agefactor = 1.0, double areafactor = 1, std::string lockfield = "",
 			double minimal_area = 0.0, double buffersize = 100) const;
-		std::vector<Heuristics::FMToperatingareascheme> getOperatingArea(const std::string& fichierShp, const std::vector<Core::FMTtheme>& themes, const int& numeroTheme, const int& startingperiod, const std::string& nomChampAge, const std::string& nomChampSuperficie, const std::string& nomChampStanlock, const std::string& fichierParam) const;
+		std::vector<Heuristics::FMToperatingareascheme> getOperatingArea(const std::string& fichierShp, const std::vector<Core::FMTTheme>& themes, const int& numeroTheme, const int& startingperiod, const std::string& nomChampAge, const std::string& nomChampSuperficie, const std::string& nomChampStanlock, const std::string& fichierParam) const;
 		// DocString: FMTareaparser::readOAschedulerparameters
 		/**
 		Using the location for parameters file (must contain headers "OA","OPT","RET","MAXRET","REP","OPR"), the modelthemes,
 		the themetarget corresponding to the themeid where the OA in parameters is in, and the startingperiod it return a vector
 		of operatingareascheme, to use in operatingareascheduler.
 		*/
-		std::vector<Heuristics::FMToperatingareascheme> readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTtheme>& modelthemes, const int& themetarget, const int& startingperiod) const;
+		std::vector<Heuristics::FMToperatingareascheme> readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTTheme>& modelthemes, const int& themetarget, const int& startingperiod) const;
 		// DocString: FMTareaparser::writeOAschedulerparameters
 		/**
 		Write down a parameters files on the form ("OA","OPT","RET","MAXRET","REP","OPR") but the column OA is gona contains the full mask not just the
@@ -203,7 +203,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		an age field name (agefield), and area field name (areafield), an age factor (agefactor), and areafactor (areafactor), an optional
 		lock field name (lockfield) and an (minimal_area) which is this minimal size a feature needs to have to be selected.
 		*/
-		std::vector<Core::FMTactualdevelopment>readVectors(const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
+		std::vector<Core::FMTActualDevelopment>readVectors(const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 			const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 			double areafactor = 1, std::string lockfield = "",
 			double minimalarea = 0.0) const;
@@ -212,7 +212,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 
 		*/
 		Spatial::FMTforest vectormaptoFMTforest(const std::string& data_vectors,
-			const int& resolution, const std::vector<Core::FMTtheme>& themes,
+			const int& resolution, const std::vector<Core::FMTTheme>& themes,
 			const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 			double areafactor = 1, std::string lockfield = "",
 			double minimalarea = 0.0, const std::string& writeforestfolder = "",
@@ -237,8 +237,8 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		GDALDataset* ogrLayerToRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution, const bool& fittoforel) const;
 
 		void writeForestExtended(Spatial::FMTforest& p_forest,const std::string& p_VectorFile,
-						const std::vector<Core::FMTtheme> p_themes,
-						const std::vector<Core::FMTactualdevelopment>& p_area,
+						const std::vector<Core::FMTTheme> p_themes,
+						const std::vector<Core::FMTActualDevelopment>& p_area,
 							const std::string& p_folder) const;
 
 #endif
@@ -267,13 +267,13 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		The read function will read a regular area section (location) with a complete vector of (themes) and some (constants).
 		It will return a vector of actualdevelopment present in the area file.
 		*/
-		std::vector<Core::FMTactualdevelopment>read(const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants, const std::string& location);
+		std::vector<Core::FMTActualDevelopment>read(const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants, const std::string& location);
 		// DocString: FMTareaparser::write
 		/**
 		Giving a vector of actual development (areas) and a file (location) for the area section this function
 		is going to write a new area section usging the areas developments.
 		*/
-		void write(const std::vector<Core::FMTactualdevelopment>& areas, const std::string& location) const;
+		void write(const std::vector<Core::FMTActualDevelopment>& areas, const std::string& location) const;
     private:
 		// DocString: FMTareaparser::rxcleanarea
 		///This regex is used to capture the information kept in the .are section.
@@ -306,22 +306,22 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		@param[in] the excluded line
 		@return a mask and spec.
 		*/
-		std::pair<Core::FMTmask, Core::FMTspec> _getExcludedSpec(const std::vector<Core::FMTtheme>& p_themes,
-																const Core::FMTconstants& p_constants,
+		std::pair<Core::FMTMask, Core::FMTSpec> _getExcludedSpec(const std::vector<Core::FMTTheme>& p_themes,
+																const Core::FMTConstants& p_constants,
 																const std::string& p_value) const;
 		// DocString: FMTareaparser::_gotNewExclude
 		/**
-		@brief get a mask n spec of the excluded line and add it to the FMTlist
+		@brief get a mask n spec of the excluded line and add it to the FMTList
 		@param[in] the themes
 		@param[in] the constants
 		@param[in] the excluded line
-		@param[out] an FMTlist of spec...
+		@param[out] an FMTList of spec...
 		@return true if added a new one or got an exclude seciton
 		*/
-		bool _gotNewExclude(const std::vector<Core::FMTtheme>& p_themes,
-			const Core::FMTconstants& p_constants,
+		bool _gotNewExclude(const std::vector<Core::FMTTheme>& p_themes,
+			const Core::FMTConstants& p_constants,
 			const std::string& p_value,
-			Core::FMTlist<Core::FMTspec>& p_list) const;
+			Core::FMTList<Core::FMTSpec>& p_list) const;
 		// DocString: FMTareaparser::getPeriodPathName
 		/**
 		Giving a folder (location) and a (period) and a (name)
@@ -334,10 +334,10 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		last ages of the area generated by the FMTsesmodel, the new generated FMTforest by FMTsesmodel and the themes of the
 		FMTmodel.
 		*/
-		std::vector<Core::FMTGCBMtransition> getGCBMtransitions(const Spatial::FMTlayer<std::string>& stacked_actions,
+		std::vector<Core::FMTGCBMTransition> getGCBMtransitions(const Spatial::FMTlayer<std::string>& stacked_actions,
 													const Spatial::FMTlayer<int>& ages,
 													const Spatial::FMTforest& newfor,
-													const std::vector<Core::FMTtheme>& themes) const;
+													const std::vector<Core::FMTTheme>& themes) const;
 		#ifdef FMTWITHGDAL
 			// DocString: FMTareaparser::writeBand
 			/**
@@ -363,8 +363,8 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			vector of (themes), the index of each age,lock and area field and finaly the factor to use with those
 			fields.
 			*/
-			Core::FMTactualdevelopment getFeatureToDevelopment(const OGRFeature* feature,
-															const std::vector<Core::FMTtheme>& themes,
+			Core::FMTActualDevelopment getFeatureToDevelopment(const OGRFeature* feature,
+															const std::vector<Core::FMTTheme>& themes,
 															const std::map<int, int>& themes_fields,
 															const int& age_field,
 															const int& lock_field,
@@ -387,7 +387,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			*/
 			GDALDataset* openVectorFile(std::map<int, int>&themes_fields, int& age_field, int& lock_field, int& area_field,
 				const std::string& data_vectors, const std::string& agefield, const std::string& areafield, const std::string& lockfield,
-				const std::vector<Core::FMTtheme>& themes) const;
+				const std::vector<Core::FMTTheme>& themes) const;
 			#ifdef FMTWITHOSI
 			// DocString: FMTareaparser::getMultipolygons
 			/**
@@ -396,7 +396,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			unit (the returned vector is ordered as the operatingareas vector).
 			*/
 			std::vector<OGRMultiPolygon>getMultipolygons(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
-											  const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
+											  const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 											  const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 											  double areafactor = 1, std::string lockfield = "",
 											  double minimal_area = 0.0) const;
@@ -418,7 +418,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			*/
 			std::vector<Heuristics::FMToperatingareacluster> getClustersFromPolygons(const std::vector<OGRPolygon*>&polygons,
 																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,const double& maximaldistance) const;
-			bool _isMapWithSameThemes(const std::vector<Core::FMTtheme>& p_themes,
+			bool _isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_themes,
 				const std::string& p_VectorsMap) const;
 		#endif
 			// DocString: FMTareaparser::getFMTforestfromlayer
@@ -428,14 +428,14 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			the developments correspondant to the value in the field containing the development id(devidfield).
 			If (fittoforel), the layer must be projected in ESPG32198 and will align with the Quebec FOREL rasters.
 			*/
-			Spatial::FMTforest getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTactualdevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
+			Spatial::FMTforest getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
 			// DocString: FMTareaparser::subsetLayer
 			/**
 			Sometime vector files can be realy large with empty value in the age/area fields or themes fields.
 			This function subset the element that are not null from a (layer) using a complete (themes) vector,
 			an (agefield) and an (areafield). It returns a OGRlayer with only the non null features.
 			*/
-			OGRLayer* subsetLayer(OGRLayer*layer, const std::vector<Core::FMTtheme>& themes,
+			OGRLayer* subsetLayer(OGRLayer*layer, const std::vector<Core::FMTTheme>& themes,
 								const std::string& agefield, const std::string& areafield) const;
 	#endif
 			

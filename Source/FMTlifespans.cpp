@@ -9,38 +9,38 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-FMTlifespans::FMTlifespans() : FMTlist<int>(){}
-FMTlifespans::FMTlifespans(const FMTlifespans& rhs) : FMTlist<int>(rhs){}
-FMTlifespans& FMTlifespans::operator = (const FMTlifespans& rhs)
+FMTLifespans::FMTLifespans() : FMTList<int>(){}
+FMTLifespans::FMTLifespans(const FMTLifespans& rhs) : FMTList<int>(rhs){}
+FMTLifespans& FMTLifespans::operator = (const FMTLifespans& rhs)
     {
     if (this!=&rhs)
         {
-		FMTlist<int>::operator = (rhs);
+		FMTList<int>::operator = (rhs);
         }
     return *this;
     }
 
-void FMTlifespans::swap(FMTlifespans& rhs)
+void FMTLifespans::swap(FMTLifespans& rhs)
 	{
-	FMTlist<int>::swap(rhs);
+	FMTList<int>::swap(rhs);
 	}
 
-void FMTlifespans::update()
+void FMTLifespans::update()
 	{
 	try {
-		FMTlist<int>::update();
+		FMTList<int>::update();
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch(
-			"","FMTlifespans::update", __LINE__, __FILE__, Core::FMTsection::Lifespan);
+			"","FMTLifespans::update", __LINE__, __FILE__, Core::FMTsection::Lifespan);
 		}
 	}
 
-FMTlifespans FMTlifespans::presolve(const FMTmaskfilter& filter,
-	const std::vector<FMTtheme>& originalthemes,
-	std::vector<FMTtheme>& newthemes,bool compressdata) const
+FMTLifespans FMTLifespans::presolve(const FMTMaskFilter& filter,
+	const std::vector<FMTTheme>& originalthemes,
+	std::vector<FMTTheme>& newthemes,bool compressdata) const
 	{
-	FMTlifespans newlifespans(*this);
+	FMTLifespans newlifespans(*this);
 	try {
 		if (!empty())
 		{
@@ -53,22 +53,22 @@ FMTlifespans FMTlifespans::presolve(const FMTmaskfilter& filter,
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTlifespans::presolve", __LINE__, __FILE__, Core::FMTsection::Lifespan);
+		_exhandler->raiseFromCatch("","FMTLifespans::presolve", __LINE__, __FILE__, Core::FMTsection::Lifespan);
 		}
 	return newlifespans;
 	}
 
-bool FMTlifespans::operator == (const FMTlifespans& rhs) const
+bool FMTLifespans::operator == (const FMTLifespans& rhs) const
 	{
-	return (FMTlist<int>::operator ==(rhs));
+	return (FMTList<int>::operator ==(rhs));
 	}
 
-bool FMTlifespans::operator != (const FMTlifespans& rhs) const
+bool FMTLifespans::operator != (const FMTLifespans& rhs) const
 {
 	return !(*this == rhs);
 }
 
-FMTlifespans::operator std::string() const
+FMTLifespans::operator std::string() const
     {
 	std::string line;
     for(const auto& lfobject : *this)
@@ -81,4 +81,4 @@ FMTlifespans::operator std::string() const
     }
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTlifespans)
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTLifespans)

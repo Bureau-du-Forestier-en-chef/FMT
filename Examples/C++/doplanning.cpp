@@ -78,9 +78,9 @@ int main(int argc, char* argv[])
 			//Parser::FMTareaparser arepars;
 			//arepars.write(optimizationmodel.getArea(1), "D:/test/test.are");
 			
-			std::vector<Core::FMToutput>outputs;
+			std::vector<Core::FMTOutput>outputs;
 			/*
-			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			for (const Core::FMTOutput& output : optimizationmodel.getoutputs())
 			{
 				if (output.getName() == "OVOLTOTREC")
 				{
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 				}
 				
 			}*/
-			/*for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			/*for (const Core::FMTOutput& output : optimizationmodel.getoutputs())
 			{
 				if (output.getName()=="OYOUVERT")
 				{
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 		
 		
 		/*Parser::FMTscheduleparser schparser;
-		std::vector<Core::FMTschedule>returnschedule;
+		std::vector<Core::FMTSchedule>returnschedule;
 		for (int id = 0; id < length+1;++id)
 		{
 			returnschedule.push_back(optimizationmodel.getSolution(id+1, true));

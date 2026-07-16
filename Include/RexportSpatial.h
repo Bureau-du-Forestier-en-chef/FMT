@@ -26,9 +26,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 RCPP_EXPOSED_WRAP(Spatial::FMTcoordinate);
 RCPP_EXPOSED_AS(Spatial::FMTcoordinate);
 
-RCPP_DEFINEMAP(Spatial::FMTcoordinate,Core::FMTdevelopment);//for FMTlayer
-RCPP_EXPOSED_WRAP(Spatial::FMTlayer<Core::FMTdevelopment>);
-RCPP_EXPOSED_AS(Spatial::FMTlayer<Core::FMTdevelopment>);
+RCPP_DEFINEMAP(Spatial::FMTcoordinate,Core::FMTDevelopment);//for FMTlayer
+RCPP_EXPOSED_WRAP(Spatial::FMTlayer<Core::FMTDevelopment>);
+RCPP_EXPOSED_AS(Spatial::FMTlayer<Core::FMTDevelopment>);
 
 RCPP_EXPOSED_WRAP(Spatial::FMTforest);
 RCPP_EXPOSED_AS(Spatial::FMTforest);
@@ -75,11 +75,11 @@ void exportSpatial()
 			"@DocString(FMTcoordinate::gety)");
 
 
-	define_FMTlayer<Core::FMTdevelopment>("FMTdevelopmentlayer");
+	define_FMTlayer<Core::FMTDevelopment>("FMTdevelopmentlayer");
 
 
 	Rcpp::class_<Spatial::FMTforest>("FMTforest", "@DocString(FMTforest)")
-		.derives<Spatial::FMTlayer<Core::FMTdevelopment>>("FMTdevelopmentlayer")
+		.derives<Spatial::FMTlayer<Core::FMTDevelopment>>("FMTdevelopmentlayer")
 		.constructor("@DocString(FMTforest())")
 		.constructor<Spatial::FMTforest>("@DocString(FMTforest(Spatial::FMTforest))")
 		.method("getarea",&Spatial::FMTforest::getArea,
@@ -94,8 +94,8 @@ void exportSpatial()
 	/*
 	Rcpp::class_<Spatial::FMTspatialaction>("FMTspatialaction", "@DocString(FMTspatialaction)")
 		.constructor("@DocString(FMTspatialaction())")
-		.derives<Core::FMTaction> ("FMTaction")
-		.constructor<Core::FMTaction>("@DocString(FMTspatialaction(FMTaction))")
+		.derives<Core::FMTAction> ("FMTaction")
+		.constructor<Core::FMTAction>("@DocString(FMTspatialaction(FMTAction))")
         .field("neighbors",&Spatial::FMTspatialaction::neighbors,
 			"@DocString(FMTspatialaction(FMTspatialaction::neighbors))")
         .field("green_up",&Spatial::FMTspatialaction::green_up,

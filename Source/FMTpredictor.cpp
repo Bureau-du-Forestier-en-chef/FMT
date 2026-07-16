@@ -26,11 +26,11 @@ namespace Graph
 
 	}
 
-	std::vector<double>FMTpredictor::getYields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const
+	std::vector<double>FMTpredictor::getYields(const FMTbasevertexproperties& vertex,const Core::FMTYields& yields, const std::vector<std::string>& yieldnames) const
 	{
 		std::vector<double>values;
 		values.reserve(yieldnames.size());
-		const Core::FMTyieldrequest request = vertex.get().getYieldRequest();
+		const Core::FMTYieldRequest request = vertex.get().getYieldRequest();
 		for (const std::string& yldname : yieldnames)
 		{
 			values.push_back(yields.get(request, yldname));
@@ -38,7 +38,7 @@ namespace Graph
 		return values;
 	}
 
-	FMTpredictor::FMTpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
+	FMTpredictor::FMTpredictor(const std::vector<Core::FMTAction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTYields& yields,
 		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid):
 		source_vertex(&source),
 		target_vertex(&target),

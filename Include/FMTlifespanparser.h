@@ -13,9 +13,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 
 namespace Core {
-	class FMTlifespans;
-	class FMTtheme;
-	class FMTconstants;
+	class FMTLifespans;
+	class FMTTheme;
+	class FMTConstants;
 }
 
 namespace Parser
@@ -53,12 +53,12 @@ class FMTEXPORT FMTlifespanparser : public FMTparser
 		/**
 		Read function for the lifespan section, needs (themes), (constants) and finaly the (location) of the lifespansection.
 		*/
-        Core::FMTlifespans read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants,const std::string& location);
+        Core::FMTLifespans read(const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& constants,const std::string& location);
 		// DocString: FMTlifespanparser::write
 		/**
 		Write function for the lifespan section, needs (lifespan) and  the (location) of the new lifespansection.
 		*/
-        void write(const Core::FMTlifespans& lifespan,const std::string& location) const;
+        void write(const Core::FMTLifespans& lifespan,const std::string& location) const;
     };
 
 }

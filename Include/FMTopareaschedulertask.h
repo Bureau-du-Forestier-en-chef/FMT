@@ -19,8 +19,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMToutputnode;
-	class FMTconstraint;
+	class FMTOutputNode;
+	class FMTConstraint;
 }
 
 
@@ -86,7 +86,7 @@ namespace Parallel
 		Set the initialscheduler from the lpmodel using the operating areas and the output node.
 		*/
 		void setInitialScheduler(Models::FMTlpmodel& model,
-			const std::vector<Heuristics::FMToperatingareascheme>& opareas,const Core::FMToutputnode& node);
+			const std::vector<Heuristics::FMToperatingareascheme>& opareas,const Core::FMTOutputNode& node);
 		// DocString: FMTopareaschedulertask::getStopPoint
 		/**
 		Get the time at which the solving should stop.
@@ -96,7 +96,7 @@ namespace Parallel
 		/**
 		Get the outputs and constraints solution of the best scheduler and fill constraints and outputs.
 		*/
-		void getConstraintsSolution(std::vector<Core::FMToutput>& outputs,std::vector<Core::FMTconstraint>& constraints) const;
+		void getConstraintsSolution(std::vector<Core::FMTOutput>& outputs,std::vector<Core::FMTConstraint>& constraints) const;
 		// DocString: FMTopareaschedulertask::writeFinalModel
 		/**
 		Using the solution of the best heuristic just rebuild the base model without anyconstraint and apply the solution found.
@@ -131,7 +131,7 @@ namespace Parallel
 		*/
 		std::vector<Heuristics::FMToperatingareascheme> getReturnTimeFromOutput(Models::FMTlpmodel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,
-			const Core::FMToutput& output) const;
+			const Core::FMTOutput& output) const;
 	public:
 		// DocString: FMTopareaschedulertask::FMTopareaschedulertask()
 		/**
@@ -167,12 +167,12 @@ namespace Parallel
 		*/
 		FMTopareaschedulertask(const Models::FMTlpmodel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,
-			const Core::FMToutputnode& node,
+			const Core::FMTOutputNode& node,
 			const std::string& outputlocation,
 			const std::string& outputyieldname,
 			const unsigned int& maxiterations,
 			const int& maxtime,
-			Core::FMToutput returntime_output = Core::FMToutput());
+			Core::FMTOutput returntime_output = Core::FMTOutput());
 		// DocString: FMTopareaschedulertask::split
 		/**
 		The split fonction that split the main task into multiple tasks of operating area scheduler.

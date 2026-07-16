@@ -12,8 +12,8 @@ bool Wrapper::FMTForm::Raterisation(System::String^ fichierPri, int scenario, Sy
 {
 	try
 	{
-		const std::vector<Core::FMTtheme> THEMES = FMTFormCache::GetInstance()->getModel(scenario).getThemes();
-		const std::vector<Core::FMTactualdevelopment> AREA = FMTFormCache::GetInstance()->getModel(scenario).getArea();
+		const std::vector<Core::FMTTheme> THEMES = FMTFormCache::GetInstance()->getModel(scenario).getThemes();
+		const std::vector<Core::FMTActualDevelopment> AREA = FMTFormCache::GetInstance()->getModel(scenario).getArea();
 		const std::string VECTORS_PATH = msclr::interop::marshal_as<std::string>(fichierShp);
 		const std::string OUTPUT_FOLDER = msclr::interop::marshal_as<std::string>(repertoireSortie);
 		Parser::FMTareaparser areaparser;

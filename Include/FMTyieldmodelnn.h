@@ -120,7 +120,7 @@ namespace Core
 		/**
 		Runs the machine learning model to predict its outputs.
 		*/
-		const std::vector<double>predict(const Core::FMTyieldrequest& request) const;
+		const std::vector<double>predict(const Core::FMTYieldRequest& request) const;
 	};
 }
 
