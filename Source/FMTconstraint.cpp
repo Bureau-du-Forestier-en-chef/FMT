@@ -899,7 +899,7 @@ namespace Core
 						const size_t BASE_ID = static_cast<size_t>(ThemeId) - 1;
 						std::vector<FMTtheme>::const_iterator SelectedIt =
 							std::find_if(p_newThemes.begin(), p_newThemes.end(), 
-								Core::FMTthemecomparator(p_originalThemes.at(BASE_ID),true));
+								Core::FMTThemeComparator(p_originalThemes.at(BASE_ID),true));
 						if (SelectedIt!= p_newThemes.end())
 							{
 							ThemeId = static_cast<double>(std::distance(p_newThemes.begin(), SelectedIt)) + 1.0;

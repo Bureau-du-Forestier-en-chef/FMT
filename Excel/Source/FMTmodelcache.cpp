@@ -603,7 +603,7 @@ namespace Wrapper
 				const Core::FMTmask subset = themeSelectionToMask(thselection);
 				if (!subset.empty())
 				{
-					std::vector<Heuristics::FMToperatingarea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMToperatingareacomparator(subset));
+					std::vector<Heuristics::FMToperatingarea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMTOperatingAreaComparator(subset));
 					if (itof == OAcache->end())
 						{
 						allscheme.push_back(Heuristics::FMToperatingareascheme(Heuristics::FMToperatingarea(subset, perimeters), 2, 6, 6, 1, 1, 1));

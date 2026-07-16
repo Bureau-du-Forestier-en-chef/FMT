@@ -490,24 +490,24 @@ class FMTEXPORT FMToutput: public FMTobject
 		*/
 		std::string _operatorFormat() const;
     };
-// DocString: FMToutputcomparator
+// DocString: FMTOutputComparator
 /**
- FMToutputcomparator to check if the output_name already exist in a std container.
+ FMTOutputComparator to check if the output_name already exist in a std container.
 */
-class FMTEXPORT FMToutputcomparator
+class FMTEXPORT FMTOutputComparator
 {
-	// DocString: FMToutputcomparator::output_name
+	// DocString: FMTOutputComparator::output_name
 	///The name of the FMToutput we are looking for.
 	std::string output_name;
 public:
-	// DocString: FMToutputcomparator()
+	// DocString: FMTOutputComparator()
 	/**
-	 FMToutputcomparator constructor that takes the name the output we want to find in a std container.
+	 FMTOutputComparator constructor that takes the name the output we want to find in a std container.
 	*/
-	FMToutputcomparator(std::string name);
-	// DocString: FMToutputcomparator::operator()(const FMToutput&)
+	FMTOutputComparator(std::string name);
+	// DocString: FMTOutputComparator::operator()(const FMToutput&)
 	/**
-	Matching test operator for FMToutputcomparator.
+	Matching test operator for FMTOutputComparator.
 	*/
 	bool operator()(const FMToutput& output) const;
 

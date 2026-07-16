@@ -287,11 +287,11 @@ namespace Spatial
 		return aroundevents;
 	}
 
-	FMTeventcontainer::FMTeventiteratorsorter::FMTeventiteratorsorter(const FMTcoordinate& coordinate) : basecoordinate(coordinate)
+	FMTeventcontainer::FMTEventIteratorSorter::FMTEventIteratorSorter(const FMTcoordinate& coordinate) : basecoordinate(coordinate)
 		{
 
 		}
-	bool FMTeventcontainer::FMTeventiteratorsorter::operator() (const FMTeventcontainer::const_iterator& eventit1, const FMTeventcontainer::const_iterator& eventit2) const
+	bool FMTeventcontainer::FMTEventIteratorSorter::operator() (const FMTeventcontainer::const_iterator& eventit1, const FMTeventcontainer::const_iterator& eventit2) const
 		{
 		double approx1 = 0;
 		basecoordinate.closest(eventit1->getBorders(), approx1);
@@ -302,8 +302,8 @@ namespace Spatial
 
 	void FMTeventcontainer::nthElements(std::vector<FMTeventcontainer::const_iterator>& iterators, const FMTcoordinate& coord, const size_t& nelement) const
 		{
-		std::nth_element(iterators.begin(),iterators.begin()+ nelement, iterators.end(), FMTeventiteratorsorter(coord));
-		//std::sort(iterators.begin(), iterators.end(), FMTeventiteratorsorter(coord));
+		std::nth_element(iterators.begin(),iterators.begin()+ nelement, iterators.end(), FMTEventIteratorSorter(coord));
+		//std::sort(iterators.begin(), iterators.end(), FMTEventIteratorSorter(coord));
 		}
 
 

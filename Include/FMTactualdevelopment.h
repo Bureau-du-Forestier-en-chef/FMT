@@ -138,24 +138,24 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		double area;
 	};
 
-// DocString: FMTactualdevelopmentcomparator
+// DocString: FMTActualDevelopmentComparator
 /**
 FMTActionComparator to check if the base FMTdevelopment is the actualdev.
 */
-class FMTactualdevelopmentcomparator
+class FMTActualDevelopmentComparator
 	{
 		// DocString: FMTActionComparator::basedev
 		///The FMTdevelopment that we compare
 		const FMTdevelopment* basedev;
 	public:
-		// DocString: FMTactualdevelopmentcomparator(const FMTdevelopment*)
+		// DocString: FMTActualDevelopmentComparator(const FMTdevelopment*)
 		/**
 		FMTactualdevelopment constructor with the base FMTdevelopment.
 		*/
-		FMTactualdevelopmentcomparator(const FMTdevelopment* base);
-		// DocString: FMTactualdevelopmentcomparator::operator()(const FMTactualdevelopment&)
+		FMTActualDevelopmentComparator(const FMTdevelopment* base);
+		// DocString: FMTActualDevelopmentComparator::operator()(const FMTactualdevelopment&)
 		/**
-		Matching test operator for FMTactualdevelopmentcomparator.
+		Matching test operator for FMTActualDevelopmentComparator.
 		*/
 		bool operator()(const FMTactualdevelopment& actualdev) const;
 

@@ -287,8 +287,8 @@ FMTmask FMTtransition::mainTarget(const std::vector<FMTdevelopment>& devs,
 	 return results;
 	 }
 
- FMTtransitioncomparator::FMTtransitioncomparator(std::string name) :transition_name(name) {}
- bool FMTtransitioncomparator::operator()(const FMTtransition& transition) const
+ FMTTransitionComparator::FMTTransitionComparator(std::string name) :transition_name(name) {}
+ bool FMTTransitionComparator::operator()(const FMTtransition& transition) const
 	{
 	return (transition.getName()  == transition_name);
 	}

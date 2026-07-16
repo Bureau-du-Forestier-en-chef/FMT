@@ -690,7 +690,7 @@ namespace Heuristics
 				if (adjacencyconstraints.find(simple)== adjacencyconstraints.end() &&
 					adjacencyconstraints.find(reverse) == adjacencyconstraints.end())
 					{
-					std::vector<FMToperatingareascheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMToperatingareaschemecomparator(neighbor));
+					std::vector<FMToperatingareascheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMTOperatingAreaSchemeComparator(neighbor));
 					std::map<int, std::vector<int>> neighborsbin;
 					if (opneighbor!= operatingareas.end())
 						{
@@ -983,7 +983,7 @@ namespace Heuristics
 				std::vector<FMToperatingareascheme>allneighbors;
 				for (const Core::FMTmask& neighbormask : opit->getNeighbors())
 				{
-					std::vector<FMToperatingareascheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMToperatingareaschemecomparator(neighbormask));
+					std::vector<FMToperatingareascheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMTOperatingAreaSchemeComparator(neighbormask));
 					if (opneighbor != operatingareas.end())
 					{
 						allneighbors.push_back(*opneighbor);

@@ -765,7 +765,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				FMTtransitionparser trnparser;
 				//trnparser.passinobject(*this);
 				transitions = trnparser.read(themes, actions, yields, constants, tr);
-				if (find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
+				if (find_if(transitions.begin(), transitions.end(), Core::FMTTransitionComparator("_DEATH")) == transitions.end())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition,
 						"_DEATH", "FMTmodelparser::referenceRead", __LINE__, __FILE__, Core::FMTsection::Transition);
@@ -1077,7 +1077,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			else {
 				for (const std::string& scenario : scenarios)
 				{
-					std::vector<Models::FMTmodel>::iterator modelit = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator(scenario));
+					std::vector<Models::FMTmodel>::iterator modelit = std::find_if(models.begin(), models.end(), Models::FMTModelComparator(scenario));
 					if (modelit != models.end())
 					{
 						modelit->cleanActionsNTransitions();
@@ -1095,7 +1095,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				else {
 					for (const std::string& scenario : scenarios)
 					{
-						std::vector<Models::FMTmodel>::iterator modelit = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator(scenario));
+						std::vector<Models::FMTmodel>::iterator modelit = std::find_if(models.begin(), models.end(), Models::FMTModelComparator(scenario));
 						if (modelit == models.end())
 						{
 							missing_scenarios.push_back(scenario);
@@ -1157,7 +1157,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			const std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
 			FMTscheduleparser scheduleparser;
 			scheduleparser.passInExceptionHandler(_exhandler);
-			std::vector<Models::FMTmodel>::const_iterator model_it = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator("ROOT"));
+			std::vector<Models::FMTmodel>::const_iterator model_it = std::find_if(models.begin(), models.end(), Models::FMTModelComparator("ROOT"));
 			if (model_it != models.end())
 			{
 				const size_t location = std::distance<std::vector<Models::FMTmodel>::const_iterator>(models.begin(), model_it);
@@ -1187,7 +1187,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					if (boost::filesystem::is_directory(itr->path()))
 					{
 						model_name = itr->path().stem().string();
-						model_it = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator(model_name));
+						model_it = std::find_if(models.begin(), models.end(), Models::FMTModelComparator(model_name));
 						if (model_it != models.end())
 						{
 							boost::filesystem::path solutionpath = (itr->path() / file_name);

@@ -228,7 +228,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 						last_transition = --temp_transitions.end();
 						if (ptransitionname.size() > 1)
 						{
-							std::vector<Core::FMTtransition>::const_iterator same_tr = find_if(temp_transitions.begin(), temp_transitions.end(), Core::FMTtransitioncomparator(ptransitionname.at(1)));
+							std::vector<Core::FMTtransition>::const_iterator same_tr = find_if(temp_transitions.begin(), temp_transitions.end(), Core::FMTTransitionComparator(ptransitionname.at(1)));
 							for (const auto& forkobj : *same_tr)
 							{
 								last_transition->push_back(forkobj.first,forkobj.second);

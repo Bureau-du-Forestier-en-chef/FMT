@@ -243,18 +243,18 @@ namespace Core
 	
 
 
-	bool FMToutputnodevaluecomparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
+	bool FMTOutputNodeValueComparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
 		{
 		return node1.isSameValues(node2);
 		}
 
-	bool FMToutputnodeorigincomparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
+	bool FMTOutputNodeOriginComparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
 		{
 		return (node1.getOutputId()<node2.getOutputId());
 		}
 
 
-	size_t FMToutputnodehasher::operator()(const FMToutputnode & node) const
+	size_t FMTOutputNodeHasher::operator()(const FMToutputnode & node) const
 		{
 		return node.hashForValue();
 		}

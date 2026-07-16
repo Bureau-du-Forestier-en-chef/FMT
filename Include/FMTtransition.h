@@ -200,24 +200,24 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 			}
     };
 
-// DocString: FMTtransitioncomparator
+// DocString: FMTTransitionComparator
 /**
 This class is made to compare FMTtransition using the std::find_if() function when FMTtransitions are in a std container.
 */
-class FMTtransitioncomparator
+class FMTTransitionComparator
 {
-	// DocString: FMTtransitioncomparator::transition_name
+	// DocString: FMTTransitionComparator::transition_name
 	///transition name that we are looking for in the std
 	std::string transition_name;
 public:
-	// DocString: FMTtransitioncomparator(std::string)
+	// DocString: FMTTransitionComparator(std::string)
 	/**
-	FMTtransitioncomparator constructor for testing if we can find a transition with the same (name).
+	FMTTransitionComparator constructor for testing if we can find a transition with the same (name).
 	*/
-	FMTtransitioncomparator(std::string name);
-	// DocString: FMTtransitioncomparator(const FMTtransition&)
+	FMTTransitionComparator(std::string name);
+	// DocString: FMTTransitionComparator(const FMTtransition&)
 	/**
-	Matching test operator for FMTtransitioncomparator.
+	Matching test operator for FMTTransitionComparator.
 	*/
 	bool operator()(const FMTtransition& transition) const;
 

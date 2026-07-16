@@ -141,27 +141,27 @@ namespace Heuristics
 
 		};
 
-	// DocString: FMToperatingareacomparator
+	// DocString: FMTOperatingAreaComparator
 	/**
 	This class is made to compare FMToperatingarea using the std::find_if() function when FMToperatingarea are in a stl container.
 	*/
-	class FMTEXPORT FMToperatingareacomparator
+	class FMTEXPORT FMTOperatingAreaComparator
 		{
-			// DocString: FMToperatingareacomparator::mask
+			// DocString: FMTOperatingAreaComparator::mask
 			///FMTmask of the operating area we wish to find.
 			Core::FMTmask mask;
 		public:
-			// DocString: FMToperatingareacomparator(const Core::FMTmask)
+			// DocString: FMTOperatingAreaComparator(const Core::FMTmask)
 			/**
 			Constructor of the comparator using the FMTmask as reference.
 			*/
-			FMToperatingareacomparator(const Core::FMTmask& lmask);
-			// DocString: FMToperatingareacomparator(const FMToperatingarea& oparea)
+			FMTOperatingAreaComparator(const Core::FMTmask& lmask);
+			// DocString: FMTOperatingAreaComparator(const FMToperatingarea& oparea)
 			/**
 			Constructor of the comparator using the operating area.
 			*/
-			FMToperatingareacomparator(const FMToperatingarea& oparea);
-			// DocString: FMToperatingareacomparator::operator()
+			FMTOperatingAreaComparator(const FMToperatingarea& oparea);
+			// DocString: FMTOperatingAreaComparator::operator()
 			/**
 			Comparator for FMToperating area.
 			*/

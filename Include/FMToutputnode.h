@@ -66,21 +66,21 @@ class FMTEXPORT FMToutputnode
 			const std::vector<std::string>& equation, const size_t& nodeid) const;
 	};
 
-class FMToutputnodevaluecomparator
+class FMTOutputNodeValueComparator
 	{
 	public:
 		bool operator()(const FMToutputnode& node1, const FMToutputnode& node2) const;
 
 	};
 
-class FMToutputnodeorigincomparator
+class FMTOutputNodeOriginComparator
 {
 public:
 	bool operator()(const FMToutputnode& node1, const FMToutputnode& node2) const;
 
 };
 
-class FMToutputnodehasher 
+class FMTOutputNodeHasher 
 	{
 	public:
 		size_t operator()(const FMToutputnode & node) const;

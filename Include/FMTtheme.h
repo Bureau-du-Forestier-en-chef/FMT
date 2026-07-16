@@ -422,28 +422,28 @@ class FMTEXPORT FMTtheme : public FMTobject
 	
     };
 
-	// DocString: FMTthemecomparator
+	// DocString: FMTThemeComparator
 	/**
-	FMTthemecomparator to check two themes are the same.
+	FMTThemeComparator to check two themes are the same.
 	*/
-	class FMTthemecomparator
+	class FMTThemeComparator
 	{
 	public:
-		// DocString: FMTthemecomparator(const FMTtheme&,const bool&)
+		// DocString: FMTThemeComparator(const FMTtheme&,const bool&)
 		/**
-		FMTthemecomparator constructor ltheme_mask is the theme of that we want to match.
+		FMTThemeComparator constructor ltheme_mask is the theme of that we want to match.
 		*/
-		FMTthemecomparator(const FMTtheme& p_lbase_theme,const bool& p_lcomparedwithpresolved=false);
+		FMTThemeComparator(const FMTtheme& p_lbase_theme,const bool& p_lcomparedwithpresolved=false);
 		// DocString: FMTthemecomparatorr::operator()(const FMTtheme&)
 		/**
-		Matching test operator for FMTthemecomparator.
+		Matching test operator for FMTThemeComparator.
 		*/
 		bool operator()(const FMTtheme& p_theme) const;
 	private:
-		// DocString: FMTthemecomparator::base_theme
+		// DocString: FMTThemeComparator::base_theme
 		///The theme that we are looking for
 		FMTtheme m_base_theme;
-		// DocString: FMTthemecomparator::comparedwithpresolved
+		// DocString: FMTThemeComparator::comparedwithpresolved
 		///If true, the comparator is different
 		bool m_comparedwithpresolved;
 

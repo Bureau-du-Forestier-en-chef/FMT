@@ -69,18 +69,18 @@ bool FMToperatingarea::operator != (const FMToperatingarea& rhs) const
 	return !(*this == rhs);
 	}
 
-FMToperatingareacomparator::FMToperatingareacomparator(const Core::FMTmask& lmask):mask(lmask)
+FMTOperatingAreaComparator::FMTOperatingAreaComparator(const Core::FMTmask& lmask):mask(lmask)
 	{
 
 	}
 
-FMToperatingareacomparator::FMToperatingareacomparator(const FMToperatingarea& oparea):mask(oparea.getMask())
+FMTOperatingAreaComparator::FMTOperatingAreaComparator(const FMToperatingarea& oparea):mask(oparea.getMask())
     {
 
     }
 
 
-bool FMToperatingareacomparator::operator()(const FMToperatingarea& oparea) const
+bool FMTOperatingAreaComparator::operator()(const FMToperatingarea& oparea) const
 	{
 	return (oparea.getMask() == mask);
 	}

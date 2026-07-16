@@ -13,7 +13,7 @@ namespace Heuristics
 {
 	const FMToperatingareaclusterbinary& FMToperatingareacluster::getBinary(const Core::FMTmask& mask) const
 			{
-			return *std::find_if(binaries.begin(), binaries.end(), FMToperatingareacomparator(mask));
+			return *std::find_if(binaries.begin(), binaries.end(), FMTOperatingAreaComparator(mask));
 			}
 
 	FMToperatingareacluster::FMToperatingareacluster(const FMToperatingareaclusterbinary& localcentroid,

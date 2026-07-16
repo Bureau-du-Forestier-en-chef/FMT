@@ -53,7 +53,7 @@ std::vector<Core::FMTactualdevelopment>FMTforest::getArea() const
             for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
                 {
                 const Core::FMTactualdevelopment newadev(it->second,cellsize);
-				std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(devs.begin(),devs.end(), Core::FMTactualdevelopmentcomparator(&newadev));
+				std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(devs.begin(),devs.end(), Core::FMTActualDevelopmentComparator(&newadev));
                 if (devit==devs.end())
                     {
                     devs.push_back(newadev);

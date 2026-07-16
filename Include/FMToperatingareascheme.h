@@ -476,22 +476,22 @@ namespace Heuristics
 			static bool _checkDoubleIncludes(const std::vector<std::vector<int>>& openingconstraints);
 		};
 
-	// DocString: FMToperatingareaschemecomparator
+	// DocString: FMTOperatingAreaSchemeComparator
 	/**
 	This class is made to compare FMToperatingareascheme using the std::find_if() function when FMToperatingarea are in a stl container.
 	*/
-	class FMToperatingareaschemecomparator
+	class FMTOperatingAreaSchemeComparator
 		{
-			// DocString: FMToperatingareaschemecomparator::mask
+			// DocString: FMTOperatingAreaSchemeComparator::mask
 			///FMTmask of the operating area we wish to find.
 			Core::FMTmask mask;
 		public:
-			// DocString: FMToperatingareaschemecomparator(const Core::FMTmask)
+			// DocString: FMTOperatingAreaSchemeComparator(const Core::FMTmask)
 			/**
 			Constructor of the comparator using the FMTmask as reference.
 			*/
-			FMToperatingareaschemecomparator(const Core::FMTmask& lmask);
-			// DocString: FMToperatingareaschemecomparator::operator()
+			FMTOperatingAreaSchemeComparator(const Core::FMTmask& lmask);
+			// DocString: FMTOperatingAreaSchemeComparator::operator()
 			/**
 			Comparator for FMToperatingareascheme area.
 			*/

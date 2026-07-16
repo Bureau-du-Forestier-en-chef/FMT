@@ -626,12 +626,12 @@ FMTmask FMTmask::postSolve(const FMTmaskfilter& filter,
 	return newmask;
 	}
 
-FMTmaskcomparator::FMTmaskcomparator(const FMTmask& lbase_mask) : base_mask(lbase_mask)
+FMTMaskComparator::FMTMaskComparator(const FMTmask& lbase_mask) : base_mask(lbase_mask)
     {
 
     }
 
-bool FMTmaskcomparator::operator()(const FMTmask& mask) const
+bool FMTMaskComparator::operator()(const FMTmask& mask) const
     {
     return (base_mask == mask);
     }

@@ -961,22 +961,22 @@ namespace Models
 		std::string _getYieldAttribute(const Core::FMTmask& p_devMask,
 			const std::string& p_yieldName, const std::vector<size_t>& p_AggregatedThemes) const;
     };
-// DocString: FMTmodelcomparator
+// DocString: FMTModelComparator
 /**
 This class is made to compare FMTmodel using the std::find_if() function when FMTmodels are in a stl container.
 */
-class FMTmodelcomparator
+class FMTModelComparator
 {
-	// DocString: FMTmodelcomparator::model_name
+	// DocString: FMTModelComparator::model_name
 	///name of the FMTmodel (name membmer of FMTmodel)
 	std::string model_name;
 public:
-	// DocString: FMTmodelcomparator(std::string)
+	// DocString: FMTModelComparator(std::string)
 	/**
 	Copy constructor class, (name) is the name of the model that we wish to check if it's in the stl container.
 	*/
-	FMTmodelcomparator(std::string name);
-	// DocString: FMTmodelcomparator::operator()
+	FMTModelComparator(std::string name);
+	// DocString: FMTModelComparator::operator()
 	bool operator()(const FMTmodel& model) const;
 
 };

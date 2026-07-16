@@ -783,7 +783,7 @@ std::vector<FMToutputnode> FMToutput::getNodes(std::vector<std::string>& equatio
 			equation.push_back(")");
 			if (orderbyoutputid)
 			{
-				std::sort(nodes.begin(), nodes.end(), FMToutputnodeorigincomparator());
+				std::sort(nodes.begin(), nodes.end(), FMTOutputNodeOriginComparator());
 			}
 		}
 	}catch (...)
@@ -1407,12 +1407,12 @@ FMTtheme FMToutput::targetTheme(const std::vector<FMTtheme>& themes) const
 	}
 
 
-FMToutputcomparator::FMToutputcomparator(std::string name) : output_name(name)
+FMTOutputComparator::FMTOutputComparator(std::string name) : output_name(name)
 	{
 
 	}
 
-bool FMToutputcomparator::operator()(const FMToutput& output) const
+bool FMTOutputComparator::operator()(const FMToutput& output) const
 	{
 	return output_name == output.getName();
 	}

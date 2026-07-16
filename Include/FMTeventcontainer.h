@@ -348,11 +348,11 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
                         const FMTSpatialGraphs& p_Graphs, int p_themeId,
                         int p_FirstPeriod, int p_LastPeriod) const;
 
-		class FMTeventiteratorsorter
+		class FMTEventIteratorSorter
 		{
 		FMTcoordinate	basecoordinate;
 		public:
-			FMTeventiteratorsorter(const FMTcoordinate& coordinate);
+			FMTEventIteratorSorter(const FMTcoordinate& coordinate);
 			bool operator() (const FMTeventcontainer::const_iterator& eventit1, const FMTeventcontainer::const_iterator& eventit2) const;
 		};
 

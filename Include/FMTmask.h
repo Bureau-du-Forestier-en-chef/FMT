@@ -539,24 +539,24 @@ template<> inline void FMTmask::binarizedAppend<double>(const double& element)
 	}
 }
 
-// DocString: FMTmaskcomparator
+// DocString: FMTMaskComparator
 /**
-FMTmaskcomparator to check if the mask data already exist in a std container.
+FMTMaskComparator to check if the mask data already exist in a std container.
 */
-class FMTmaskcomparator
+class FMTMaskComparator
 	{
-	// DocString: FMTmaskcomparator::base_mask
+	// DocString: FMTMaskComparator::base_mask
 	///The mask that we are looking for
 	FMTmask base_mask;
 	public:
-		// DocString: FMTmaskcomparator:(const FMTmask&)
+		// DocString: FMTMaskComparator:(const FMTmask&)
 		/**
-		FMTmaskcomparator constructor lbase_mask is the mask of that we want to match.
+		FMTMaskComparator constructor lbase_mask is the mask of that we want to match.
 		*/
-		FMTmaskcomparator(const FMTmask& lbase_mask);
-		// DocString: FMTmaskcomparator::operator()(const FMTaction&)
+		FMTMaskComparator(const FMTmask& lbase_mask);
+		// DocString: FMTMaskComparator::operator()(const FMTaction&)
 		/**
-		Matching test operator for FMTmaskcomparator.
+		Matching test operator for FMTMaskComparator.
 		*/
 		bool operator()(const FMTmask& mask) const;
 

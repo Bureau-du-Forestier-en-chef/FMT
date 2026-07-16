@@ -137,7 +137,7 @@ namespace Parser
 								}
 							simple_value = std::to_string(getNum<double>(simple_value, p_constants));
 						}else if (isYld(p_yields, simple_value, Core::FMTsection::Optimize,false) &&
-							std::find_if(p_outputs.begin(), p_outputs.end(), Core::FMToutputcomparator(simple_value))== p_outputs.end())
+							std::find_if(p_outputs.begin(), p_outputs.end(), Core::FMTOutputComparator(simple_value))== p_outputs.end())
 						{
 							specialCases[simplificaiton.at(simplificaiton.size() - 2)] =
 								" " + simplificaiton.at(simplificaiton.size() - 1) + " " + simple_value;
@@ -185,7 +185,7 @@ namespace Parser
 				}
 				simple_value = std::to_string(getNum<double>(simple_value, p_constants));
 			}else if(isYld(p_yields, simple_value,Core::FMTsection::Optimize,false)&&
-				std::find_if(p_outputs.begin(), p_outputs.end(), Core::FMToutputcomparator(simple_value)) == p_outputs.end())
+				std::find_if(p_outputs.begin(), p_outputs.end(), Core::FMTOutputComparator(simple_value)) == p_outputs.end())
 				{
 				specialCases[simplificaiton.at(simplificaiton.size() - 2)] =
 					" "+simplificaiton.at(simplificaiton.size() - 1) + " " + simple_value;
@@ -304,7 +304,7 @@ namespace Parser
 						}
 						boost::erase_all(output_name, " ");
 					}
-					std::vector<Core::FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(output_name));
+					std::vector<Core::FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), Core::FMTOutputComparator(output_name));
 					if (target_out == outputs.end())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTundefined_output,
@@ -1055,7 +1055,7 @@ namespace Parser
 
 				}
 				else {
-					target_out = find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(output_name));
+					target_out = find_if(outputs.begin(), outputs.end(), Core::FMTOutputComparator(output_name));
 					if (target_out == outputs.end())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTundefined_output,

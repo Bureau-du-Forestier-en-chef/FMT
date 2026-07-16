@@ -914,7 +914,7 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 					
 				}
 				//NewTransition.update();
-				std::vector< Core::FMTtransition>::iterator transitionIterator = std::find_if(NewTransitions.begin(), NewTransitions.end(), Core::FMTtransitioncomparator(p_Filters.at(transition.getName()).first));
+				std::vector< Core::FMTtransition>::iterator transitionIterator = std::find_if(NewTransitions.begin(), NewTransitions.end(), Core::FMTTransitionComparator(p_Filters.at(transition.getName()).first));
 				if (transitionIterator == NewTransitions.end())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTinvalidAandT,
@@ -1150,7 +1150,7 @@ void FMTmodel::setDefaultObjects()
 			actions.push_back(defaultDeathAction(lifespan, themes));
 			//actions.back().passinobject(*this);
 		}
-		if (std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
+		if (std::find_if(transitions.begin(), transitions.end(), Core::FMTTransitionComparator("_DEATH")) == transitions.end())
 		{
 			if (!QUIET_LOG)
 			{
@@ -1370,7 +1370,7 @@ void FMTmodel::cleanActionsNTransitions()
 		{
 			if (!actions[id].empty())
 			{
-				const std::vector<Core::FMTtransition>::iterator trn_it = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(actions[id].getName()));
+				const std::vector<Core::FMTtransition>::iterator trn_it = std::find_if(transitions.begin(), transitions.end(), Core::FMTTransitionComparator(actions[id].getName()));
 				if (trn_it != transitions.end() && !trn_it->empty())
 				{
 					newactions.push_back(actions[id]);
@@ -1645,7 +1645,7 @@ void FMTmodel::setArea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 				{
 				adev = adev.reduceLockToDeath(lifespan);
 				}
-			std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(area.begin(), area.end(), Core::FMTactualdevelopmentcomparator(&adev));
+			std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(area.begin(), area.end(), Core::FMTActualDevelopmentComparator(&adev));
 			if(devit != area.end())
 			{
 				devit->setArea(devit->getarea()+adev.getarea());
@@ -1683,7 +1683,7 @@ void FMTmodel::setActions(const std::vector<Core::FMTaction>& lactions)
 		std::vector<Core::FMTaction>newbaseactions;
 		for (const Core::FMTaction& action : lactions)
 		{
-			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(action.getName()));
+			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTTransitionComparator(action.getName()));
 			if (trn_iterator != transitions.end())
 			{
 				newtransitions.push_back(*trn_iterator);
@@ -2487,7 +2487,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 					
 					if (getParameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 					{
-						std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(newarea.begin(), newarea.end(), Core::FMTactualdevelopmentcomparator(&newDev));
+						std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(newarea.begin(), newarea.end(), Core::FMTActualDevelopmentComparator(&newDev));
 						if (devit != newarea.end())
 						{
 							devit->setArea(devit->getArea() + newDev.getArea());
@@ -2799,7 +2799,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 		std::vector<Core::FMTactualdevelopment>newarea = area;
 		for (const Core::FMTactualdevelopment& dev : rhs.area)//Need to check presence of!
 		{
-			std::vector<Core::FMTactualdevelopment>::iterator actualdev = std::find_if(newarea.begin(), newarea.end(), Core::FMTactualdevelopmentcomparator(&dev));
+			std::vector<Core::FMTactualdevelopment>::iterator actualdev = std::find_if(newarea.begin(), newarea.end(), Core::FMTActualDevelopmentComparator(&dev));
 			if (actualdev == newarea.end())
 			{
 				newarea.push_back(dev);
@@ -2824,7 +2824,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 				actionitr->unShrink(themes);
 				rhsaction.unShrink(newthemes);
 				actionitr->push_back(rhsaction);
-				std::vector<Core::FMTtransition>::iterator transitionitr = std::find_if(finaltransitions.begin(), finaltransitions.end(), Core::FMTtransitioncomparator(action.getName()));
+				std::vector<Core::FMTtransition>::iterator transitionitr = std::find_if(finaltransitions.begin(), finaltransitions.end(), Core::FMTTransitionComparator(action.getName()));
 				if (transitionitr != transitions.end())
 				{
 					Core::FMTtransition rhstransition(rhs.transitions.at(id));
@@ -2838,7 +2838,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 		std::vector<Core::FMToutput>finaloutputs = outputs;
 		for (const Core::FMToutput& output : rhs.outputs)
 		{
-			if (std::find_if(finaloutputs.begin(), finaloutputs.end(), Core::FMToutputcomparator(output.getName())) == finaloutputs.end())
+			if (std::find_if(finaloutputs.begin(), finaloutputs.end(), Core::FMTOutputComparator(output.getName())) == finaloutputs.end())
 			{
 				finaloutputs.push_back(output);
 			}
@@ -2850,7 +2850,7 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 			constraintssubset.erase(constraintssubset.begin());
 			for (const Core::FMTconstraint& constraint : constraintssubset)
 			{
-				if (std::find_if(finalconstraints.begin(), finalconstraints.end(), Core::FMToutputcomparator(constraint.getName())) == finalconstraints.end())
+				if (std::find_if(finalconstraints.begin(), finalconstraints.end(), Core::FMTOutputComparator(constraint.getName())) == finalconstraints.end())
 				{
 					finalconstraints.push_back(constraint);
 				}
@@ -3371,9 +3371,9 @@ void FMTmodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
 }
 
 
-FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}
+FMTModelComparator::FMTModelComparator(std::string name) :model_name(name) {}
 
-bool FMTmodelcomparator::operator()(const FMTmodel& model) const
+bool FMTModelComparator::operator()(const FMTmodel& model) const
 	{
 	return(model_name == model.getName());
 	}

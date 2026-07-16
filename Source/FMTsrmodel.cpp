@@ -796,7 +796,7 @@ namespace Models
 		try {
 			std::vector<Core::FMTtheme> toIgnore;
 			for (const Core::FMTtheme& THEME : themes) {
-				if (std::find_if(p_selectedThemes.begin(), p_selectedThemes.end(), Core::FMTthemecomparator(THEME)) == p_selectedThemes.end()) {
+				if (std::find_if(p_selectedThemes.begin(), p_selectedThemes.end(), Core::FMTThemeComparator(THEME)) == p_selectedThemes.end()) {
 					toIgnore.push_back(THEME);
 				}
 			}

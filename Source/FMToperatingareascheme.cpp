@@ -1297,11 +1297,11 @@ const int& FMToperatingareascheme::getMaximalSchemesConstraint() const
 }
 
 
-FMToperatingareaschemecomparator::FMToperatingareaschemecomparator(const Core::FMTmask& lmask):mask(lmask)
+FMTOperatingAreaSchemeComparator::FMTOperatingAreaSchemeComparator(const Core::FMTmask& lmask):mask(lmask)
 	{
 
 	}
-bool FMToperatingareaschemecomparator::operator()(const FMToperatingareascheme& oparea) const
+bool FMTOperatingAreaSchemeComparator::operator()(const FMToperatingareascheme& oparea) const
 	{
 	return (oparea.getMask() == mask);
 	}

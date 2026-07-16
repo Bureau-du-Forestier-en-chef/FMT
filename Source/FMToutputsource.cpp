@@ -530,9 +530,9 @@ size_t FMToutputsource::hash(int period, bool withyield) const
 	}
 
 
-FMToutputsourcecomparator::FMToutputsourcecomparator(bool lvariable) : variable(lvariable) {}
+FMTOutputSourceComparator::FMTOutputSourceComparator(bool lvariable) : variable(lvariable) {}
 
-bool FMToutputsourcecomparator::operator()(const FMToutputsource& source) const
+bool FMTOutputSourceComparator::operator()(const FMToutputsource& source) const
 	{
 	if (variable)
 		{

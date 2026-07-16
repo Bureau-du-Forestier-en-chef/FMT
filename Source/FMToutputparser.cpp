@@ -365,7 +365,7 @@ namespace Parser
 												(stroperators.at(0) == "+" || stroperators.at(0) == "-")) ||*/
 												(!lastoperator.empty() &&
 												(lastoperator == "+" || lastoperator == "-"))) &&
-													(std::find_if(sources.begin(), sources.end(), Core::FMToutputsourcecomparator(true)) == sources.end()))
+													(std::find_if(sources.begin(), sources.end(), Core::FMTOutputSourceComparator(true)) == sources.end()))
 											{
 												
 												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
@@ -416,7 +416,7 @@ namespace Parser
 											if (values.size() == 1)
 											{
 												//need to use get equation to simplify output!!!
-												std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs->begin(), outputs->end(), Core::FMToutputcomparator(strsrc));
+												std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs->begin(), outputs->end(), Core::FMTOutputComparator(strsrc));
 												if (it != outputs->end()||boost::regex_search(strsrc, constantmatch, rxoutputconstant))
 												{
 													lastoutput = sources.size() + 1;
@@ -425,7 +425,7 @@ namespace Parser
 														{
 														const std::string outputname = constantmatch[1];
 														const int inttarget_period = getNum<int>(std::string(constantmatch[3]), constants);
-														targetoutput = *std::find_if(outputs->begin(), outputs->end(), Core::FMToutputcomparator(outputname));
+														targetoutput = *std::find_if(outputs->begin(), outputs->end(), Core::FMTOutputComparator(outputname));
 														Core::FMTperbounds bounding(Core::FMTsection::Optimize, inttarget_period, inttarget_period);
 														targetoutput = targetoutput.boundTo(themes, bounding, "");
 													}else {
@@ -864,7 +864,7 @@ namespace Parser
 					}
 					for(const std::string& outputname : outputsnames)
 					{
-						std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs.begin()+oldoutputs.size(), outputs.end(), Core::FMToutputcomparator(outputname));
+						std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs.begin()+oldoutputs.size(), outputs.end(), Core::FMTOutputComparator(outputname));
 						if(it==outputs.end())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTundefined_output,

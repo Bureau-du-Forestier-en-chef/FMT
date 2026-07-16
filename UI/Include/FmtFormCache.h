@@ -14,7 +14,6 @@ namespace Models
 namespace Exception
 {
 	class FMTexceptionhandler;
-	class FMTLogger;
 }
 
 namespace Wrapper

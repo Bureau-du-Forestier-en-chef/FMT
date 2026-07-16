@@ -208,11 +208,11 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		void pushValues(const std::vector<double>& newvalues);
     };
 
-class FMToutputsourcecomparator
+class FMTOutputSourceComparator
 	{
 		bool variable;
 	public:
-		FMToutputsourcecomparator(bool lvariable);
+		FMTOutputSourceComparator(bool lvariable);
 		bool operator()(const FMToutputsource& source) const;
 
 	};

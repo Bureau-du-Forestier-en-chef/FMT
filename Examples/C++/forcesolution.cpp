@@ -70,7 +70,7 @@ int main()
 		}
 		areaparser.write(aream,testfolderout+"forcemodif._area");
 		const std::vector<Core::FMToutput> outputs = optimizationmodel.getOutputs();
-		const std::vector<Core::FMToutput>::const_iterator out_it = find_if(outputs.begin(),outputs.end(),Core::FMToutputcomparator("AREAACTIONS"));
+		const std::vector<Core::FMToutput>::const_iterator out_it = find_if(outputs.begin(),outputs.end(),Core::FMTOutputComparator("AREAACTIONS"));
 		const std::vector<double> values = {1533.167187, 1710.335763, 1520.664235,1807.036679, 1319.965304, 667.893761};
 		for (size_t period = 1; period <= static_cast<size_t>(lenght); ++period)
 		{

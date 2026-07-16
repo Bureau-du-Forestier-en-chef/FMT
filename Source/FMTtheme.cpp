@@ -812,13 +812,13 @@ FMTtheme FMTtheme::presolve(FMTmaskfilter& p_maskfilter, size_t& p_newid, size_t
 	}
 
 
-FMTthemecomparator::FMTthemecomparator(const FMTtheme& p_lbase_theme, const bool& p_lcomparedwithpresolved): 
+FMTThemeComparator::FMTThemeComparator(const FMTtheme& p_lbase_theme, const bool& p_lcomparedwithpresolved): 
 	m_base_theme(p_lbase_theme),m_comparedwithpresolved(p_lcomparedwithpresolved)
 	{
 
 	}
 
-bool FMTthemecomparator::operator()(const FMTtheme& p_theme) const
+bool FMTThemeComparator::operator()(const FMTtheme& p_theme) const
 	{
 	if (!m_comparedwithpresolved)
 	{

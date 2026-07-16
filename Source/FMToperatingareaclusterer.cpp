@@ -129,7 +129,7 @@ namespace Heuristics
     bool FMToperatingareaclusterer::spread(const FMToperatingareacluster& ignition,std::vector<FMToperatingareaclusterbinary>& assigned)
         {
         try{
-			if (std::find_if(assigned.begin(), assigned.end(), FMToperatingareacomparator(ignition.getCentroid())) != assigned.end())
+			if (std::find_if(assigned.begin(), assigned.end(), FMTOperatingAreaComparator(ignition.getCentroid())) != assigned.end())
 				{
 				return true;
 				}
@@ -140,7 +140,7 @@ namespace Heuristics
 			
             for (const FMToperatingareaclusterbinary& binary : ignition.getBinaries())
                 {
-                if (std::find_if(assigned.begin(),assigned.end(),FMToperatingareacomparator(binary))==assigned.end())
+                if (std::find_if(assigned.begin(),assigned.end(),FMTOperatingAreaComparator(binary))==assigned.end())
                     {
                     if (binary.getNeighbors().empty())
                         {
@@ -180,12 +180,12 @@ namespace Heuristics
 						for (const FMToperatingareaclusterbinary& outbinary : outcluster)
 							{
 							const std::vector<Core::FMTmask>neighbors = outbinary.getNeighbors();
-							if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTmaskcomparator(selected.getMask()))!=neighbors.end())
+							if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTMaskComparator(selected.getMask()))!=neighbors.end())
 								{
 									int fullsize = static_cast<int>(neighbors.size());
 									for (const FMToperatingareaclusterbinary& inbinary : incluster)
 										{
-										if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTmaskcomparator(inbinary.getMask()))!=neighbors.end())
+										if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTMaskComparator(inbinary.getMask()))!=neighbors.end())
 											{
 											--fullsize;
 											}
@@ -563,7 +563,7 @@ namespace Heuristics
                     linkindex.push_back(cluster.getCentroid().getVariable());
                     for (const Core::FMTmask& neighbor : binary.getNeighbors())
                         {
-                        std::vector<FMToperatingareaclusterbinary>::const_iterator neighborit = std::find_if(clusterbinaries.begin(),clusterbinaries.end(),FMToperatingareacomparator(neighbor));
+                        std::vector<FMToperatingareaclusterbinary>::const_iterator neighborit = std::find_if(clusterbinaries.begin(),clusterbinaries.end(),FMTOperatingAreaComparator(neighbor));
                         linkvalues.push_back(1.0);
                         linkindex.push_back(neighborit->getVariable());
                         }
