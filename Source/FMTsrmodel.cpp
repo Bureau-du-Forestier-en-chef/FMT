@@ -1586,7 +1586,7 @@ namespace Models
 					devdata.pop_back();
 					const int agevalue = std::stoi(devdata.back());
 					devdata.pop_back();
-					const std::string scenarioname = getname();
+					const std::string scenarioname = getName();
 					size_t outid = 0;
 					for (const Core::FMToutput& output : outputsdata)
 					{
@@ -1601,7 +1601,7 @@ namespace Models
 						period[totalid] = periodvalue;
 						scenario[totalid] = scenarioname;
 						outputsvalues[totalid] = it->second.at(outid);
-						outputsvariables[totalid] = output.getname();
+						outputsvariables[totalid] = output.getName();
 						++outid;
 						++totalid;
 					}

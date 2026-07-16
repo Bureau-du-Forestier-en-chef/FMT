@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 		std::vector<Core::FMToutput>selectedoutputs;
 		for (const Core::FMToutput& output : lpmodel.getOutputs())
 		{
-			if (output.getname() == "OVOLREC")
+			if (output.getName() == "OVOLREC")
 			{
 				selectedoutputs.push_back(output);
 			}
