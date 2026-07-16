@@ -15,7 +15,7 @@ namespace Models
     
     //Docstring: FMTsolverinterface
     /**
-    *Enumerator used to specify the solver to use when solving the FMTlpmodel
+    *Enumerator used to specify the solver to use when solving the FMTLpModel
     */
 	enum class FMTsolverinterface
 	{

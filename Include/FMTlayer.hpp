@@ -22,7 +22,7 @@ namespace Spatial
 	/**
 	FMTlayer is a simple template class made to be used like a single raster file.
 	It hold the coordinates of each pixel using a map, it also have information about the projection of the raster.
-	It is mostly generated using the FMTareaparser.
+	It is mostly generated using the FMTAreaParser.
 	*/
     template <typename T>
     class FMTlayer : public Core::FMTObject

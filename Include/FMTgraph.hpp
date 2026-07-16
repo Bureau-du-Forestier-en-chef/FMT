@@ -348,14 +348,14 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 			return actives;
 
 		}
-		// DocString: FMTgraph::build(const Models::FMTmodel&,std::queue<FMTvertex_descriptor>)
+		// DocString: FMTgraph::build(const Models::FMTModel&,std::queue<FMTvertex_descriptor>)
 		/**
 		This function build one period at the end of the graph. Like in Woodstock, future developments of a given action
 		can not be operate by an action that is before in the section action. The actions in the model must be
 		ordered to take that in account.
 		*/
 		FMTgraphstats build(
-			const Models::FMTmodel& model,
+			const Models::FMTModel& model,
 			std::queue<FMTvertex_descriptor> actives,
 			int compressageoperability = 1)
 		{
@@ -719,7 +719,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 
 		}
 		std::map<std::string, double> getOutput(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			const Core::FMTOutput& output,
 			int period, 
 			const double* solution, 
@@ -1214,7 +1214,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		bool isValidOuputNode(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			const Core::FMTOutputNode& node, 
 			std::vector<const Core::FMTAction*>& action_IDS, 
 			int period) const
@@ -1238,7 +1238,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 
 
 		bool isValidGraphNode(
-			const Models::FMTmodel& p_model, 
+			const Models::FMTModel& p_model, 
 			const FMTvertex_descriptor& p_vertex_descriptor,
 			const Core::FMTOutputNode& p_node, 
 			const std::vector<const Core::FMTAction*>& p_selected, 
@@ -1286,7 +1286,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		std::map<int, double> locateNode(
-			const Models::FMTmodel& model,
+			const Models::FMTModel& model,
 			Core::FMTOutputNode output_node,
 			int period) const
 		{
@@ -1304,7 +1304,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 
 		}
 		std::map<std::string, std::map<int, double>> locateNodeByTheme(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			Core::FMTOutputNode output_node, 
 			int period) const
 		{
@@ -1353,7 +1353,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		std::vector<FMTvertex_descriptor> getNode(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			Core::FMTOutputNode& output_node, 
 			int period) const
 		{
@@ -1476,7 +1476,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		std::map<int, double> getVariables(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			const Core::FMTOutputNode& output_node, 
 			const std::vector<FMTvertex_descriptor>& vertices) const
 		{
@@ -1666,7 +1666,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		std::vector<const Core::FMTAction*> selectedActions(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			const std::vector<int>& action_IDS) const
 		{
 			std::vector<const Core::FMTAction*>selected;
@@ -1767,7 +1767,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		FMTgraphstats buildSchedule(
-			const Models::FMTmodel& model,
+			const Models::FMTModel& model,
 			std::queue<FMTvertex_descriptor> actives,
 			const Core::FMTSchedule& schedule)
 		{
@@ -1915,7 +1915,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		std::map<std::string, double> getSource(
-			const Models::FMTmodel& model,
+			const Models::FMTModel& model,
 			const Core::FMTOutputNode& node,
 			int period, const Core::FMTTheme& theme,
 			const double* solution, 
@@ -1934,7 +1934,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		Graph::FMTgraphvertextoyield getVertexToYieldInfo(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			const FMTvertex_descriptor& descriptor) const
 		{
 			try {
@@ -1961,7 +1961,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		}
 
 		std::map<std::string, double> getValues(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			const std::vector<FMTvertex_descriptor>& vertices,
 			const Core::FMTOutputNode& node, 
 			const Core::FMTTheme& theme,
@@ -2201,7 +2201,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		size_t getAmountOfPaths(
 			const Core::FMTDevelopment& dev, 
 			const int& actionid,
-			const Models::FMTmodel& model,
+			const Models::FMTModel& model,
 			const boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, 
 			Core::FMTDevelopment>>& actualperioddevs) const
 		{
@@ -2390,7 +2390,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 
 		std::vector<FMTpredictor> getPredictors(
 			const FMTvertex_descriptor& targetdescriptor, 
-			const Models::FMTmodel& model,
+			const Models::FMTModel& model,
 			const std::vector<std::string>& yieldnames,
 			const size_t& depth, 
 			bool periodonevalues = false, 
@@ -2573,13 +2573,13 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		Based on a mask and an action get the distribution of the rotations (in period) taken to complete a serie of action. A serie can contain a subserie for an
 		aggregate of actions.
 		Args:
-			model FMTmodel: the model
+			model FMTModel: the model
 			mask : the FMTMask of the rotations
 			aggregate : std::string on which the last action is considered to be in
 		Returns: Distribution of rotation period taken per series (where the serie is in string action1-action2-action3... string is the serie and int is the number of periods taken
 		*/
 		std::set<Core::FMTSerie> getRotations(
-			const Models::FMTmodel& model, 
+			const Models::FMTModel& model, 
 			const Core::FMTMask& mask, 
 			const std::string& aggregate) const
 		{
@@ -2944,7 +2944,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		 */
 		std::vector<FMTvertex_descriptor> threadedStaticSearch(
 			const Core::FMTOutputNode& p_node,
-			const Models::FMTmodel& p_model,
+			const Models::FMTModel& p_model,
 			const int& p_period, 
 			const size_t& p_reserve) const
 		{
@@ -3055,7 +3055,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		 * @return vector of cached vertices
 		 */
 		std::vector<FMTvertex_descriptor> setNodeByStaticMask(
-			const Models::FMTmodel& p_model,
+			const Models::FMTModel& p_model,
 			const Core::FMTOutputNode& p_node, 
 			int p_period, 
 			bool useCache) const
@@ -3191,7 +3191,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 			const FMTvertex_descriptor& targetdescriptor,
 			std::vector<Core::FMTAction>::const_iterator theaction,
 			const size_t& seriemaxsize,
-			const Models::FMTmodel& p_model,
+			const Models::FMTModel& p_model,
 			bool& onserie) const
 		{
 			try {
@@ -3266,7 +3266,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		std::vector<Core::FMTAction>::const_iterator _getActionOfFirstSerie(
 			const FMTvertex_descriptor& p_target,
 			size_t p_SerieMaxSize, 
-			const Models::FMTmodel& p_model) const
+			const Models::FMTModel& p_model) const
 		{
 			try {
 				const std::vector<std::string> TARGET_SERIE = _getActionSerie(p_target,
@@ -3293,7 +3293,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 		bool _isValidSeriePath(
 			const FMTvertex_descriptor& p_target,
 			std::vector<Core::FMTAction>::const_iterator p_ActionSerie,
-			const Models::FMTmodel& p_model) const
+			const Models::FMTModel& p_model) const
 		{
 			try {
 				const int MODEL_LENGTH = p_model.getParameter(Models::FMTintmodelparameters::LENGTH);
@@ -3317,7 +3317,7 @@ class FMTEXPORT FMTgraph : public Core::FMTObject
 			const FMTvertex_descriptor& p_target,
 			const size_t& p_MaxSerieSize,
 			std::vector<Core::FMTAction>::const_iterator p_ActionSerie,
-			const Models::FMTmodel& p_model,
+			const Models::FMTModel& p_model,
 			bool& p_grow,
 			bool& p_Operable) const
 		{
@@ -3518,7 +3518,7 @@ template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeprop
 	}
 
 template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getVariables(
-	const Models::FMTmodel& model, 
+	const Models::FMTModel& model, 
 	const Core::FMTOutputNode& output_node, 
 	const std::vector<FMTvertex_descriptor>& vertices) const
 {

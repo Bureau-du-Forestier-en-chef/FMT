@@ -24,9 +24,9 @@ namespace Models
     enum FMTintmodelparameters
     {
         LENGTH = 0,/**< The number of period to optimize or simulate */
-        SEED = 1, /**< The seed used for stochastique process in FMTsamodel, FMTnssmodel and FMTsesmodel */
-        NUMBER_OF_ITERATIONS = 2,/**< The number of iterations to do in FMTsesmodel::greedyReferenceBuild  */
-        PRESOLVE_ITERATIONS = 3,/**< The number of iterations to do in FMTmodel::presolve */
+        SEED = 1, /**< The seed used for stochastique process in FMTSaModel, FMTNssModel and FMTSesModel */
+        NUMBER_OF_ITERATIONS = 2,/**< The number of iterations to do in FMTSesModel::greedyReferenceBuild  */
+        PRESOLVE_ITERATIONS = 3,/**< The number of iterations to do in FMTModel::presolve */
         NUMBER_OF_THREADS = 4,/**< Number of thread use by solver for optimisation */
 		MATRIX_TYPE = 5,/**< matrix forest model TYPE I,II,III (1,2,3) */
         UPDATE = 6,/**< At which period the model update period stop (excluded) if stops at 2 (2 is part of optimization) but 1 in update */
@@ -49,7 +49,7 @@ namespace Models
     enum FMTboolmodelparameters
     {
         FORCE_PARTIAL_BUILD = 0,/**< Force partial build of the graph if schedules are passed to doPlanning */
-        STRICTLY_POSITIVE = 1,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective if coefficient is negative and it contains a yield for FMTlpmodel */
+        STRICTLY_POSITIVE = 1,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective if coefficient is negative and it contains a yield for FMTLpModel */
         POSTSOLVE = 2,/**< Return a postsolved model for the doPlanning */
         SHOW_LOCK_IN_SCHEDULES = 3,//Not needed or change parameters in fonctions ... maybe more for task
 		PRESOLVE_CAN_REMOVE_STATIC_THEMES =4,//The presolve will allow the removing of static themes even in use (it can alter the area section).
@@ -69,10 +69,10 @@ namespace Models
     };
 
 
-    // DocString: FMTmodelparameters
+    // DocString: FMTModelParameters
     /**
-    FMTmodelparameters is a class which contains all the informations 
-    a model need to be solve by the different types of FMTmodel.
+    FMTModelParameters is a class which contains all the informations 
+    a model need to be solve by the different types of FMTModel.
     Default int parameters are : 
         LENGTH = 30
         SEED = 25
@@ -89,44 +89,44 @@ namespace Models
         SHOW_LOCK_IN_SCHEDULES = false
     Default str parameters are:
     */
-    class FMTEXPORT FMTmodelparameters : public Core::FMTObject
+    class FMTEXPORT FMTModelParameters : public Core::FMTObject
     {
         public:
-            // DocString: FMTmodelparameters()
+            // DocString: FMTModelParameters()
             /**
             Default constructor
             */
-            FMTmodelparameters();
-            // DocString: FMTmodelparameters(const FMTmodelparameters&)
+            FMTModelParameters();
+            // DocString: FMTModelParameters(const FMTModelParameters&)
             /**
             Copy constructor
             */
-            FMTmodelparameters(const FMTmodelparameters& rhs);
-            // DocString: FMTmodelparameters::operator=(const FMTmodelparameters&)
+            FMTModelParameters(const FMTModelParameters& rhs);
+            // DocString: FMTModelParameters::operator=(const FMTModelParameters&)
             /**
             Copy assignment
             */
-            FMTmodelparameters& operator = (const FMTmodelparameters& rhs); 
-            // DocString: ~FMTmodelparameters
+            FMTModelParameters& operator = (const FMTModelParameters& rhs); 
+            // DocString: ~FMTModelParameters
             /**
-                Default desctructor of FMTmodelparameters.
+                Default desctructor of FMTModelParameters.
 		    */
-            ~FMTmodelparameters()=default;
-            // DocString: FMTmodelparameters(FMTmodelparameters&&)
+            ~FMTModelParameters()=default;
+            // DocString: FMTModelParameters(FMTModelParameters&&)
             /**
-            Default move constructor for FMTmodelparameters.
+            Default move constructor for FMTModelParameters.
             */
-            FMTmodelparameters(FMTmodelparameters&& rhs)=default;
-            // DocString: FMTmodelparameters::operator=(FMTmodelparameters&& rhs) 
+            FMTModelParameters(FMTModelParameters&& rhs)=default;
+            // DocString: FMTModelParameters::operator=(FMTModelParameters&& rhs) 
             /**
-            Default move assignment for FMTmodelparameters.
+            Default move assignment for FMTModelParameters.
             */
-            FMTmodelparameters& operator =(FMTmodelparameters&& rhs) =default;
-            // DocString: FMTmodelparameters::swap(FMTmodelparameters& rhs)
+            FMTModelParameters& operator =(FMTModelParameters&& rhs) =default;
+            // DocString: FMTModelParameters::swap(FMTModelParameters& rhs)
             /**
-            Default move assignment for FMTmodelparameters.
+            Default move assignment for FMTModelParameters.
             */
-            void swap(FMTmodelparameters& rhs);
+            void swap(FMTModelParameters& rhs);
             //###Setter
             bool setIntParameter(FMTintmodelparameters key,const int& value);
             bool setDblParameter(FMTdblmodelparameters key,const double& value);
@@ -142,7 +142,7 @@ namespace Models
             std::vector<int> getCompressTime() const;
         private:
             friend class boost::serialization::access;
-            // DocString: FMTmodelparameters::serialize
+            // DocString: FMTModelParameters::serialize
            /**
            Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
            */
@@ -158,7 +158,7 @@ namespace Models
                 }
                 catch (...)
                 {
-                    _exhandler->printExceptions("", "FMTmodelparameters::serialize", __LINE__, __FILE__);
+                    _exhandler->printExceptions("", "FMTModelParameters::serialize", __LINE__, __FILE__);
                 }
             }
             std::array<int, LastIntModelParam> m_intparameters;
@@ -168,5 +168,5 @@ namespace Models
             std::vector<int> m_compresstime;
     };
 }
-BOOST_CLASS_EXPORT_KEY(Models::FMTmodelparameters)
+BOOST_CLASS_EXPORT_KEY(Models::FMTModelParameters)
 #endif // FMTmodelparameters_Hm_included

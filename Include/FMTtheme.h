@@ -28,7 +28,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser
 {
-	class FMTlandscapeparser;
+	class FMTLandscapeParser;
 }
 
 
@@ -47,7 +47,7 @@ FMTTheme is realy close to FMTMask class.
 class FMTEXPORT FMTTheme : public FMTObject
     {
     friend class FMTMask;
-	friend class Parser::FMTlandscapeparser;
+	friend class Parser::FMTLandscapeParser;
 	public:
 		// DocString: FMTTheme()
 		/**

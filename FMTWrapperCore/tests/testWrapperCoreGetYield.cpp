@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	Parser::FMTmodelparser ModelParser;
+	Parser::FMTModelParser ModelParser;
 	std::vector<Exception::FMTexc>errors;
 	//errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 	ModelParser.setErrorsToWarnings(errors);
 
 
-	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
+	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 
 	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
 	std::cout << "Yield: " << yield << std::endl;

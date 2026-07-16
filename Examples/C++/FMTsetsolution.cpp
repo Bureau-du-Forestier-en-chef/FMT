@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 		}
 
 
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		modelparser.setDefaultExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -49,14 +49,14 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		modelparser.setErrorsToWarnings(errors);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		//Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
 		//optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
 		//delparser.write(optimizationmodel, "D:/test/");
 		optimizationmodel.doPlanning(false, schedules);
 		/*for (size_t period = 1; period <= 6; ++period)

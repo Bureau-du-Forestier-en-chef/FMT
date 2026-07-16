@@ -12,39 +12,39 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-FMTlifespanparser::FMTlifespanparser():FMTparser()
+FMTLifespanParser::FMTLifespanParser():FMTParser()
     {
 	setSection(Core::FMTsection::Lifespan);
     }
 
-FMTlifespanparser::FMTlifespanparser(const FMTlifespanparser& rhs):FMTparser(rhs)
+FMTLifespanParser::FMTLifespanParser(const FMTLifespanParser& rhs):FMTParser(rhs)
     {
 	setSection(Core::FMTsection::Lifespan);
     }
-FMTlifespanparser& FMTlifespanparser::operator = (const FMTlifespanparser& rhs)
+FMTLifespanParser& FMTLifespanParser::operator = (const FMTLifespanParser& rhs)
     {
     if (this!=&rhs)
         {
-        FMTparser::operator=(rhs);
+        FMTParser::operator=(rhs);
 		setSection(Core::FMTsection::Lifespan);
         }
     return *this;
     }
 
-Core::FMTLifespans FMTlifespanparser::read(const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& constants,const std::string& location)
+Core::FMTLifespans FMTLifespanParser::read(const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& constants,const std::string& location)
     {
     Core::FMTLifespans lifespan;
 	try {
 		std::ifstream LIFstream(location);
-		if (FMTparser::tryOpening(LIFstream, location))
+		if (FMTParser::tryOpening(LIFstream, location))
 		{
-			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(LIFstream, themes, constants);
+			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(LIFstream, themes, constants);
 			while (!Lines.empty())
 			{
 				const std::string line = getLine(Lines);
 				if (!line.empty())
 				{
-					std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
+					std::vector<std::string>splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 					std::string page = splited[splited.size() - 1];
 					const int age = getNum<int>(page, constants);
 					splited.pop_back();
@@ -58,12 +58,12 @@ Core::FMTLifespans FMTlifespanparser::read(const std::vector<Core::FMTTheme>& th
 		//lifespan.passinobject(*this);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTlifespanparser::read", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTLifespanParser::read", __LINE__, __FILE__, m_section);
 		}
     return lifespan;
     }
 
-void FMTlifespanparser::write(const Core::FMTLifespans& lifespan,const std::string& location) const
+void FMTLifespanParser::write(const Core::FMTLifespans& lifespan,const std::string& location) const
     {
 	try {
 		std::ofstream lifespanstream;
@@ -75,7 +75,7 @@ void FMTlifespanparser::write(const Core::FMTLifespans& lifespan,const std::stri
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("at " + location,"FMTlifespanparser::write", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at " + location,"FMTLifespanParser::write", __LINE__, __FILE__, m_section);
 		}
     }
 

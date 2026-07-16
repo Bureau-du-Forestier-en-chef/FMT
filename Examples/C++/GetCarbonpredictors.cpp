@@ -1,5 +1,5 @@
 /*
-Example to get FMTpredictors on a FMTsesmodel
+Example to get FMTpredictors on a FMTSesModel
 */
 
 #if defined FMTWITHGDAL && defined FMTWITHOSI
@@ -44,14 +44,14 @@ int main()
 		const std::string scenario_name = "LP";
 		const std::string outdir = "../../tests/GetCarbonpredictors/";
 		const std::vector<std::string> yieldsforpredictors(1,"VOLUMETOTAL");
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
         std::vector<Exception::FMTexc> errors;
         errors.push_back(Exception::FMTexc::FMTmissingyield);
         errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
         modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario_name);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		for (size_t period = 0; period < 5; ++period)
 		{
 			optimizationmodel.buildPeriod();
@@ -66,14 +66,14 @@ int main()
 		optimizationmodel.setObjective(objective);
 		if (optimizationmodel.initialSolve())
 			{
-				Models::FMTsesmodel simulationmodel(optimizationmodel);
+				Models::FMTSesModel simulationmodel(optimizationmodel);
 				std::vector<Core::FMTTransition> strans;
 				for (const auto& tran : simulationmodel.getTransitions())
 					{
 						strans.push_back(tran.single());
 					}
 				simulationmodel.setTransitions(strans);
-				Parser::FMTareaparser areaparser;
+				Parser::FMTAreaParser areaparser;
 				//areaparser.passinobject(modelparser);
 				Spatial::FMTforest initialforestmap=areaparser.vectormaptoFMTforest(maplocation,380,optimizationmodel.getThemes(),agefield,areafield,1,0.0001,lockfield,0.0,"",false);
 				simulationmodel.setInitialMapping(initialforestmap);

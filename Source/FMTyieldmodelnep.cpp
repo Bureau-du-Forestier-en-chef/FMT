@@ -6,26 +6,26 @@
 
 namespace Core {
 
-	FMTyieldmodelnep::FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields):
-		FMTyieldmodelnn(jsonProps, inputYields)
+	FMTYieldModelNep::FMTYieldModelNep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields):
+		FMTYieldModelNn(jsonProps, inputYields)
 	{
 		
 	}
 
 
-	std::unique_ptr<FMTyieldmodel>FMTyieldmodelnep::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelNep::Clone() const
 	{
 		try {
-			return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelnep(*this));
+			return std::unique_ptr<FMTYieldModel>(new FMTYieldModelNep(*this));
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldmodelnep::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelNep::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldmodel>(nullptr);
+		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
 
-	std::string FMTyieldmodelnep::getModelType()
+	std::string FMTYieldModelNep::getModelType()
 	{
 		return "NEP";
 	}
@@ -33,7 +33,7 @@ namespace Core {
 
 	
 
-	const std::vector<double> FMTyieldmodelnep::getInputValues(const Graph::FMTpredictor& predictor) const
+	const std::vector<double> FMTYieldModelNep::getInputValues(const Graph::FMTpredictor& predictor) const
 	{
 		std::vector<double> values;
 		std::vector<double> sourceYields = predictor.getSourceYields();

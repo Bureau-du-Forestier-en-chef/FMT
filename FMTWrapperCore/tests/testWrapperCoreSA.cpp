@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 		params.outputNames = {};         // TODO
 	}
 
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	modelparser.setDefaultLogger();
 	modelparser.setTerminateStack();
@@ -94,9 +94,9 @@ int main(int argc, char* argv[])
 
     std::vector<std::string> scenarioName;
 	scenarioName.push_back(params.scenarioName);
-    std::vector<Models::FMTmodel> models = modelparser.readproject(primaryFilePath, scenarioName);
+    std::vector<Models::FMTModel> models = modelparser.readproject(primaryFilePath, scenarioName);
 
-    Models::FMTmodel& selectedModel = models[0];
+    Models::FMTModel& selectedModel = models[0];
 
 	if (!std::filesystem::is_directory(params.outputPath))
 	{

@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-	FMTmodelstats& FMTmodelstats::operator += (const FMTmodelstats& rhs)
+	FMTModelStats& FMTModelStats::operator += (const FMTModelStats& rhs)
 		{
 		themes += rhs.themes;
 		themesdata += rhs.themesdata;
@@ -25,7 +25,7 @@ namespace Models
 		constraintsdata += rhs.constraintsdata;
 		return *this;
 		}
-	FMTmodelstats& FMTmodelstats::operator -= (const FMTmodelstats& rhs)
+	FMTModelStats& FMTModelStats::operator -= (const FMTModelStats& rhs)
 		{
 		themes -= rhs.themes;
 		themesdata -= rhs.themesdata;
@@ -41,9 +41,9 @@ namespace Models
 		constraintsdata -= rhs.constraintsdata;
 		return *this;
 		}
-	FMTmodelstats FMTmodelstats::operator + (const FMTmodelstats& rhs)
+	FMTModelStats FMTModelStats::operator + (const FMTModelStats& rhs)
 		{
-		FMTmodelstats newstats(*this);
+		FMTModelStats newstats(*this);
 		newstats.themes += rhs.themes;
 		newstats.themesdata += rhs.themesdata;
 		newstats.actions += rhs.actions;
@@ -58,9 +58,9 @@ namespace Models
 		newstats.constraintsdata += rhs.constraintsdata;
 		return newstats;
 		}
-	FMTmodelstats FMTmodelstats::operator - (const FMTmodelstats& rhs)
+	FMTModelStats FMTModelStats::operator - (const FMTModelStats& rhs)
 		{
-		FMTmodelstats newstats(*this);
+		FMTModelStats newstats(*this);
 		newstats.themes -= rhs.themes;
 		newstats.themesdata -= rhs.themesdata;
 		newstats.actions -= rhs.actions;
@@ -75,7 +75,7 @@ namespace Models
 		newstats.constraintsdata -= rhs.constraintsdata;
 		return newstats;
 		}
-	bool FMTmodelstats::operator == (const FMTmodelstats& rhs) const
+	bool FMTModelStats::operator == (const FMTModelStats& rhs) const
 		{
 		return (themes == rhs.themes&&
 		themesdata == rhs.themesdata&&
@@ -90,11 +90,11 @@ namespace Models
 		constraints == rhs.constraints&&
 		constraintsdata == rhs.constraintsdata);
 		}
-	bool FMTmodelstats::operator != (const FMTmodelstats& rhs) const
+	bool FMTModelStats::operator != (const FMTModelStats& rhs) const
 		{
 		return (!(*this==rhs));
 		}
-	FMTmodelstats::FMTmodelstats(const size_t& lthemes, const size_t& lthemesdata, const size_t& lactions, const size_t& lactionsdata,
+	FMTModelStats::FMTModelStats(const size_t& lthemes, const size_t& lthemesdata, const size_t& lactions, const size_t& lactionsdata,
 		const size_t& ltransitions, const size_t& ltransitionsdata, const size_t& lyieldsdata, const size_t& llifespansdata,
 		const size_t& loutputs, const size_t& loutputsdata, const size_t& lconstraints, const size_t& lconstraintsdata) :
 		themes(static_cast<int>(lthemes)),
@@ -116,7 +116,7 @@ namespace Models
 
 
 
-	FMTmodelstats::operator std::string() const
+	FMTModelStats::operator std::string() const
 		{
 		std::string values = "";
 		values += "Themes: " + std::to_string(themes);

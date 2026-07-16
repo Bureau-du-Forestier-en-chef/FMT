@@ -20,10 +20,10 @@ int main(int argc, char *argv[])
 	#ifdef FMTWITHOSI
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primarylocation = folder + "TWD_land.pri";
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	const std::vector<std::string>scenarios(1, "LP");
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optmodel(models.at(0), Models::FMTsolverinterface::CLP);
 	std::vector<Core::FMTTheme>themes = optmodel.getThemes();
 	std::vector<Heuristics::FMToperatingarea>opareas;
 	const size_t themetarget(0);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	const std::string agefield("AGE");
 	const std::string areafield("SUPERFICIE");
 	std::vector<Heuristics::FMToperatingareacluster>opareasclusterswithbounds;
-	Parser::FMTareaparser areaparser;
+	Parser::FMTAreaParser areaparser;
 	const std::string maplocation = folder + "/Carte/TWD_land.shp";
 	for (const Heuristics::FMToperatingareacluster& oparea : areaparser.getClusters(opareas, themes, maplocation, agefield, areafield, 20000))
 		{

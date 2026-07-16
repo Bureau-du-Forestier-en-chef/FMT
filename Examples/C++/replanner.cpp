@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	}
 	int repSize = length;
 	//int repSize = 20;
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	//modelparser.setTaskLogger();
 	modelparser.setDefaultLogger();
@@ -69,17 +69,17 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	modelparser.setErrorsToWarnings(errors);
-	//std::vector<Models::FMTmodel> tests = modelparser.readproject(primlocation, allscenarios);
+	//std::vector<Models::FMTModel> tests = modelparser.readproject(primlocation, allscenarios);
 	//tests[0].presolve();
-	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
+	std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
 	std::cout << models.at(0).getName() << std::endl;
 	//modelparser.write(models.at(0), "D:/test/");
 
 
 	#ifdef FMTWITHMOSEK
-		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
+		Models::FMTLpModel global(models.at(0), Models::FMTsolverinterface::MOSEK);
 	#else
-		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel global(models.at(0), Models::FMTsolverinterface::CLP);
 	#endif
 	global.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 	/*global.setCompressTime(10, 12, 2);
@@ -88,12 +88,12 @@ int main(int argc, char *argv[])
 	global.setCompressTime(16, 30, 5);*/
 	global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 	global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
-	Models::FMTnssmodel stochastic(models.at(1), 0);
+	Models::FMTNssModel stochastic(models.at(1), 0);
 	stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 	#ifdef FMTWITHMOSEK
-		Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::MOSEK);
+		Models::FMTLpModel local(models.at(2), Models::FMTsolverinterface::MOSEK);
 	#else
-		Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel local(models.at(2), Models::FMTsolverinterface::CLP);
 	#endif
 	local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);

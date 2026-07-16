@@ -17,16 +17,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-const boost::regex FMTconstantparser::rxconstant = boost::regex("^([\\s\\t]*)((([^\\)]*)(\\)))|([^\\s^\\t]*))([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTConstantParser::rxconstant = boost::regex("^([\\s\\t]*)((([^\\)]*)(\\)))|([^\\s^\\t]*))([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 
-FMTconstantparser::FMTconstantparser():
-	FMTparser()
+FMTConstantParser::FMTConstantParser():
+	FMTParser()
     {
 	setSection(Core::FMTsection::Constants);
     }
 
-bool FMTconstantparser::_fillConstants(Core::FMTConstants& p_constants,
+bool FMTConstantParser::_fillConstants(Core::FMTConstants& p_constants,
 	const std::string& p_input, bool p_allowNonValid) const
 	{
 	try{
@@ -42,7 +42,7 @@ bool FMTconstantparser::_fillConstants(Core::FMTConstants& p_constants,
 					}
 				_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
 					" at line " + std::to_string(m_line),
-					"FMTconstantparser::_fillConstants", __LINE__, __FILE__, m_section);
+					"FMTConstantParser::_fillConstants", __LINE__, __FILE__, m_section);
 			}
 			std::string key = std::string(kmatch[4]) + std::string(kmatch[6]);
 			if (!std::string(kmatch[5]).empty())
@@ -50,7 +50,7 @@ bool FMTconstantparser::_fillConstants(Core::FMTConstants& p_constants,
 				key += ")";
 			}
 			key.erase(boost::remove_if(key, boost::is_any_of(FMT_STR_SEPARATOR)), key.end());
-			const std::vector<std::string>splited = FMTparser::spliter(std::string(kmatch[8]), FMTparser::m_SEPARATOR);
+			const std::vector<std::string>splited = FMTParser::spliter(std::string(kmatch[8]), FMTParser::m_SEPARATOR);
 			std::vector<double>values;
 			for (size_t id = 0; id < splited.size(); ++id)
 			{
@@ -75,7 +75,7 @@ bool FMTconstantparser::_fillConstants(Core::FMTConstants& p_constants,
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
 						"Constant redefinition ignored for " + key + " at line " + std::to_string(m_line), 
-						"FMTconstantparser::_fillConstants", __LINE__, __FILE__, m_section);
+						"FMTConstantParser::_fillConstants", __LINE__, __FILE__, m_section);
 				}
 
 			}
@@ -83,12 +83,12 @@ bool FMTconstantparser::_fillConstants(Core::FMTConstants& p_constants,
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),
-			"FMTconstantparser::_fillConstants", __LINE__, __FILE__, m_section);
+			"FMTConstantParser::_fillConstants", __LINE__, __FILE__, m_section);
 		}
 	return true;
 	}
 
-std::queue<FMTparser::FMTLineInfo> FMTconstantparser::getCleanLinewfor(std::ifstream& p_stream,
+std::queue<FMTParser::FMTLineInfo> FMTConstantParser::getCleanLinewfor(std::ifstream& p_stream,
 	const std::vector<Core::FMTTheme>& p_themes,
 	const Core::FMTConstants& p_cons) const
 {
@@ -105,7 +105,7 @@ std::queue<FMTparser::FMTLineInfo> FMTconstantparser::getCleanLinewfor(std::ifst
 		lines = processForLoopsNInclude(p_themes, constantsCopy, lines);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTconstantparser::getCleanLinewfor",
+		_exhandler->raiseFromCatch("", "FMTConstantParser::getCleanLinewfor",
 			__LINE__, __FILE__, m_section);
 		}
 	return lines;
@@ -113,7 +113,7 @@ std::queue<FMTparser::FMTLineInfo> FMTconstantparser::getCleanLinewfor(std::ifst
 
 
 
-Core::FMTConstants FMTconstantparser::read(const std::string& location)
+Core::FMTConstants FMTConstantParser::read(const std::string& location)
     {
 	Core::FMTConstants constants;
 	try {
@@ -122,9 +122,9 @@ Core::FMTConstants FMTconstantparser::read(const std::string& location)
 		{
 			std::ifstream CONstream(location);
 			std::vector<Core::FMTTheme>themes;
-			if (FMTparser::tryOpening(CONstream, location))
+			if (FMTParser::tryOpening(CONstream, location))
 			{
-				std::queue<FMTparser::FMTLineInfo>Lines = getCleanLinewfor(CONstream, 
+				std::queue<FMTParser::FMTLineInfo>Lines = getCleanLinewfor(CONstream, 
 										themes, constants);
 				while (!Lines.empty())
 					{
@@ -135,13 +135,13 @@ Core::FMTConstants FMTconstantparser::read(const std::string& location)
 		}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTconstantparser::read", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTConstantParser::read", __LINE__, __FILE__, m_section);
 			}
 	//constants.passinobject(*this);
     return constants;
     }
 
-void FMTconstantparser::write(const Core::FMTConstants& constants,const std::string& location) const
+void FMTConstantParser::write(const Core::FMTConstants& constants,const std::string& location) const
     {
 	try {
 		std::ofstream constantstream;
@@ -153,7 +153,7 @@ void FMTconstantparser::write(const Core::FMTConstants& constants,const std::str
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("at "+location,"FMTconstantparser::write", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at "+location,"FMTConstantParser::write", __LINE__, __FILE__, m_section);
 		}
     }
 }

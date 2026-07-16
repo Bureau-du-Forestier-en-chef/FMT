@@ -27,7 +27,7 @@ namespace Models
 
 {
 
-    std::string FMTsamodel::getMovesName(FMTsamove p_move)
+    std::string FMTSaModel::getMovesName(FMTsamove p_move)
     {
         switch (p_move)
             {
@@ -67,21 +67,21 @@ namespace Models
         return "";
     }
 
-    void FMTsamodel::_coolDown()
+    void FMTSaModel::_coolDown()
     {
         try {
             m_CoolingSchedule->reduceTemp();
         }catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_coolDown", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_coolDown", __LINE__, __FILE__);
         }
     }
 
-    void FMTsamodel::_UpdateFailedMoveCount()
+    void FMTSaModel::_UpdateFailedMoveCount()
     {
         try {
             std::vector<bool>increment(FMTsamove::MoveCount,true);
-            for (const FMTmovestats& stat : m_CycleMoves)
+            for (const FMTMoveStats& stat : m_CycleMoves)
                 {
                 if (stat.Accepted)
                     {
@@ -103,13 +103,13 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_UpdateFailedMoveCount", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_UpdateFailedMoveCount", __LINE__, __FILE__);
         }
     }
 
 
-    FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
-        FMTsemodel(rhs),
+    FMTSaModel::FMTSaModel(const FMTSaModel& rhs):
+        FMTSeModel(rhs),
         m_TotalMoves(rhs.m_TotalMoves),
         m_CycleMoves(rhs.m_CycleMoves),
         m_CoolingSchedule(rhs.m_CoolingSchedule->Clone()),
@@ -119,8 +119,8 @@ namespace Models
 
     }
 
-    FMTsamodel::FMTsamodel(const FMTmodel& rhs):
-        FMTsemodel(rhs),
+    FMTSaModel::FMTSaModel(const FMTModel& rhs):
+        FMTSeModel(rhs),
         m_TotalMoves(),
         m_CycleMoves(),
         m_CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
@@ -130,8 +130,8 @@ namespace Models
 
     }
 
-    FMTsamodel::FMTsamodel(const FMTmodel& rhs, const Spatial::FMTforest& forest):
-        FMTsemodel(rhs,forest),
+    FMTSaModel::FMTSaModel(const FMTModel& rhs, const Spatial::FMTforest& forest):
+        FMTSeModel(rhs,forest),
         m_TotalMoves(),
         m_CycleMoves(),
         m_CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
@@ -141,8 +141,8 @@ namespace Models
 
     }
 
-    FMTsamodel::FMTsamodel(const FMTsemodel& rhs):
-        FMTsemodel(rhs),
+    FMTSaModel::FMTSaModel(const FMTSeModel& rhs):
+        FMTSeModel(rhs),
         m_TotalMoves(),
         m_CycleMoves(),
         m_CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
@@ -153,11 +153,11 @@ namespace Models
     }
 
 
-    FMTsamodel& FMTsamodel::operator = (const FMTsamodel& rhs)
+    FMTSaModel& FMTSaModel::operator = (const FMTSaModel& rhs)
     {
         if (this!=&rhs)
             {
-            FMTsemodel::operator = (rhs);
+            FMTSeModel::operator = (rhs);
             m_TotalMoves = rhs.m_TotalMoves;
             m_CycleMoves = rhs.m_CycleMoves;
             m_CoolingSchedule = std::move(m_CoolingSchedule->Clone());
@@ -166,33 +166,33 @@ namespace Models
         return *this;
     }
 
-    void FMTsamodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
+    void FMTSaModel::swapPtr(std::unique_ptr<FMTModel>& rhs)
     {
-        *this = std::move(*dynamic_cast<FMTsamodel*>(rhs.get()));
+        *this = std::move(*dynamic_cast<FMTSaModel*>(rhs.get()));
     }
 
-	std::unique_ptr<FMTmodel>FMTsamodel::clone() const
+	std::unique_ptr<FMTModel>FMTSaModel::clone() const
 		{
-		return std::unique_ptr<FMTmodel>(new FMTsamodel(*this));
+		return std::unique_ptr<FMTModel>(new FMTSaModel(*this));
 		}
 
 
-    Graph::FMTgraphstats FMTsamodel::buildPeriod()
+    Graph::FMTgraphstats FMTSaModel::buildPeriod()
     {
 		return m_BestSolution.randomBuild(*this,m_generator);
     }
 
-    bool FMTsamodel::_doWriteDisturbances() const
+    bool FMTSaModel::_doWriteDisturbances() const
     {
         return !getParameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY).empty();
     }
 
-    void FMTsamodel::_writeDisrturbances() const
+    void FMTSaModel::_writeDisrturbances() const
     {
         try {
             if (_doWriteDisturbances())
             {
-                Parser::FMTareaparser AreaParser;
+                Parser::FMTAreaParser AreaParser;
                 const int LENGTH = getParameter(Models::FMTintmodelparameters::LENGTH);
                 const std::string COOLING_LEVEL = "Level" + std::to_string(m_CoolingSchedule->getLevel());
                 const std::string DIRECTORY = AreaParser.createSubDirectory(
@@ -207,12 +207,12 @@ namespace Models
            
         }catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_writeDisrturbances", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_writeDisrturbances", __LINE__, __FILE__);
         }
     }
 
 
-	bool FMTsamodel::_isBetter(double p_candidatObjective) const
+	bool FMTSaModel::_isBetter(double p_candidatObjective) const
 		{
 		try {
             const double temp = m_CoolingSchedule->getTemp();
@@ -229,12 +229,12 @@ namespace Models
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("For move type "+std::to_string(m_CycleMoves.back().MoveType),
-                "FMTsamodel::_isBetter", __LINE__, __FILE__);
+                "FMTSaModel::_isBetter", __LINE__, __FILE__);
 		}
 		return false;
 		}
 
-    size_t FMTsamodel::_getMaximalMoveSize(size_t p_MaxSize) const
+    size_t FMTSaModel::_getMaximalMoveSize(size_t p_MaxSize) const
     {
         size_t sizeOfMove = 0;
         try {
@@ -247,12 +247,12 @@ namespace Models
         }catch (...)
             {
             _exhandler->raiseFromCatch("", 
-                "FMTsamodel::_getMaximalMoveSize", __LINE__, __FILE__);
+                "FMTSaModel::_getMaximalMoveSize", __LINE__, __FILE__);
             }
         return sizeOfMove;
     }
 
-    size_t FMTsamodel::_getRandomMoveSize(size_t p_MaxSize) const
+    size_t FMTSaModel::_getRandomMoveSize(size_t p_MaxSize) const
     {
         size_t sizeOfMove = 0;
         try {
@@ -262,12 +262,12 @@ namespace Models
         }catch (...)
             {
             _exhandler->raiseFromCatch("",
-                "FMTsamodel::_getRandomMoveSize", __LINE__, __FILE__);
+                "FMTSaModel::_getRandomMoveSize", __LINE__, __FILE__);
             }
         return sizeOfMove;
     }
 
-   size_t FMTsamodel::_getLocalMoveSize() const
+   size_t FMTSaModel::_getLocalMoveSize() const
     {
        size_t sizeOfMove = 0;
        try {
@@ -275,17 +275,17 @@ namespace Models
            if (sizeOfMove >= m_BestSolution.size())
                 {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
-                   "Move Too Large ", "FMTsamodel::_getLocalMoveSize", __LINE__, __FILE__);
+                   "Move Too Large ", "FMTSaModel::_getLocalMoveSize", __LINE__, __FILE__);
                 }
            m_CycleMoves.back().MoveSize = sizeOfMove;
        } catch (...)
             {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_getLocalMoveSize", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_getLocalMoveSize", __LINE__, __FILE__);
             }
        return sizeOfMove;
     }
 
-   Spatial::FMTSpatialSchedule FMTsamodel::_doConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
+   Spatial::FMTSpatialSchedule FMTSaModel::_doConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
        const Spatial::FMTSpatialSchedule::actionbindings& bindings,
        std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool, const int& period) const
    {
@@ -294,7 +294,7 @@ namespace Models
            if (selectionpool.empty())
            {
                _exhandler->raise(Exception::FMTexc::FMTrangeerror,
-                   "Empty solution ", "FMTsamodel::_move()", __LINE__, __FILE__);
+                   "Empty solution ", "FMTSaModel::_move()", __LINE__, __FILE__);
            }
            std::shuffle(selectionpool.begin(), selectionpool.end(),m_generator);
            size_t totalsize = 0;
@@ -322,12 +322,12 @@ namespace Models
        }
        catch (...)
        {
-           _exhandler->raiseFromCatch("", "FMTsamodel::_doConflictDestruction", __LINE__, __FILE__);
+           _exhandler->raiseFromCatch("", "FMTSaModel::_doConflictDestruction", __LINE__, __FILE__);
        }
        return actual;
    }
 
-   Spatial::FMTSpatialSchedule FMTsamodel::_doEventsAdjacencyConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
+   Spatial::FMTSpatialSchedule FMTSaModel::_doEventsAdjacencyConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
        const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
@@ -337,12 +337,12 @@ namespace Models
            return _doConflictDestruction(actual, bindings, selectionpool, period);
        }catch (...)
             {
-           _exhandler->raiseFromCatch("", "FMTsamodel::_doEventsAdjacencyConflictDestrutorMove", __LINE__, __FILE__);
+           _exhandler->raiseFromCatch("", "FMTSaModel::_doEventsAdjacencyConflictDestrutorMove", __LINE__, __FILE__);
             }
        return actual;
    }
 
-   Spatial::FMTSpatialSchedule  FMTsamodel::_doGroupsConflictDestrutorMove(const Spatial::FMTSpatialSchedule& p_actual) const
+   Spatial::FMTSpatialSchedule  FMTSaModel::_doGroupsConflictDestrutorMove(const Spatial::FMTSpatialSchedule& p_actual) const
    {
        try {
            std::vector<Core::FMTConstraint>::const_iterator ConstraintIt = constraints.begin();
@@ -366,12 +366,12 @@ namespace Models
            return newSolution;
        }catch (...)
             {
-           _exhandler->raiseFromCatch("", "FMTsamodel::_doGroupsConflictDestrutorMove", __LINE__, __FILE__);
+           _exhandler->raiseFromCatch("", "FMTSaModel::_doGroupsConflictDestrutorMove", __LINE__, __FILE__);
             }
        return p_actual;
    }
 
-   bool FMTsamodel::_allowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
+   bool FMTSaModel::_allowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
            if (!actual.emptyEvents())
@@ -386,12 +386,12 @@ namespace Models
        }
        catch (...)
        {
-           _exhandler->raiseFromCatch("", "FMTsamodel::FMTsamodel::_AllowAreaDestruction", __LINE__, __FILE__);
+           _exhandler->raiseFromCatch("", "FMTSaModel::FMTSaModel::_AllowAreaDestruction", __LINE__, __FILE__);
        }
        return false;
    }
 
-   bool FMTsamodel::_allowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
+   bool FMTSaModel::_allowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
    {
        try {
            if (!actual.emptyEvents())
@@ -405,12 +405,12 @@ namespace Models
        }
        catch (...)
        {
-           _exhandler->raiseFromCatch("", "FMTsamodel::_allowAdjacencyDestruction", __LINE__, __FILE__);
+           _exhandler->raiseFromCatch("", "FMTSaModel::_allowAdjacencyDestruction", __LINE__, __FILE__);
        }
        return false;
    }
 
-   bool FMTsamodel::_allowGroupDestruction(const Spatial::FMTSpatialSchedule& p_actual) const
+   bool FMTSaModel::_allowGroupDestruction(const Spatial::FMTSpatialSchedule& p_actual) const
    {
        bool allowed = false;
        try {
@@ -430,12 +430,12 @@ namespace Models
          
        }catch (...)
             {
-           _exhandler->raiseFromCatch("", "FMTsamodel::_allowGroupDestruction", __LINE__, __FILE__);
+           _exhandler->raiseFromCatch("", "FMTSaModel::_allowGroupDestruction", __LINE__, __FILE__);
             }
        return  allowed;
    }
 
-   bool FMTsamodel::_allowEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const
+   bool FMTSaModel::_allowEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const
    {
        bool allowed = false;
        try {
@@ -451,12 +451,12 @@ namespace Models
        }catch (...)
             {
            _exhandler->raiseFromCatch("", 
-               "FMTsamodel::_allowEventsSpread", __LINE__, __FILE__);
+               "FMTSaModel::_allowEventsSpread", __LINE__, __FILE__);
             }
        return  allowed;
    }
 
-   Spatial::FMTSpatialSchedule FMTsamodel::_doEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const
+   Spatial::FMTSpatialSchedule FMTSaModel::_doEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const
    {
        Spatial::FMTSpatialSchedule newSolution(p_actual);
        try {
@@ -482,13 +482,13 @@ namespace Models
        }catch (...)
             {
            _exhandler->raiseFromCatch("",
-               "FMTsamodel::_doEventsSpread", __LINE__, __FILE__);
+               "FMTSaModel::_doEventsSpread", __LINE__, __FILE__);
             }
        return newSolution;
    }
 
 
-   std::vector<bool> FMTsamodel::_getFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions,
+   std::vector<bool> FMTSaModel::_getFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions,
                                                             bool adjacency) const
    {
        std::vector<bool>selectedActions(actions.size(), false);
@@ -517,14 +517,14 @@ namespace Models
            }
        }catch (...)
        {
-           _exhandler->raiseFromCatch("", "FMTsamodel::_getFromBindings", __LINE__, __FILE__);
+           _exhandler->raiseFromCatch("", "FMTSaModel::_getFromBindings", __LINE__, __FILE__);
        }
        return selectedActions;
    }
 
   
 
-    Spatial::FMTSpatialSchedule FMTsamodel::_doEventsAreaConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
+    Spatial::FMTSpatialSchedule FMTSaModel::_doEventsAreaConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
         const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
     {
         try {
@@ -535,12 +535,12 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_doEventsAreaConflictDestrutorMove", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_doEventsAreaConflictDestrutorMove", __LINE__, __FILE__);
         }
         return actual;
     }
 
-    Spatial::FMTSpatialSchedule FMTsamodel::_doLocalMove(const Spatial::FMTSpatialSchedule& actual,
+    Spatial::FMTSpatialSchedule FMTSaModel::_doLocalMove(const Spatial::FMTSpatialSchedule& actual,
         const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
     {
         try {
@@ -556,7 +556,7 @@ namespace Models
             if (selectionPool.empty())
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
-                    "Empty solution ", "FMTsamodel::move()", __LINE__, __FILE__);
+                    "Empty solution ", "FMTSaModel::move()", __LINE__, __FILE__);
             }
             std::shuffle(selectionPool.begin(), selectionPool.end(), m_generator);
             std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = selectionPool.begin();
@@ -575,17 +575,17 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_doLocalMove", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_doLocalMove", __LINE__, __FILE__);
         }
         return actual;
     }
 
-	Spatial::FMTSpatialSchedule FMTsamodel::_move(const Spatial::FMTSpatialSchedule& actual,
+	Spatial::FMTSpatialSchedule FMTSaModel::_move(const Spatial::FMTSpatialSchedule& actual,
 										const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
 		{
 		try {
             const FMTsamove MOVE = _getAMove(actual,bindings);
-            m_CycleMoves.push_back(FMTmovestats());
+            m_CycleMoves.push_back(FMTMoveStats());
             m_CycleMoves.back().MoveType = MOVE;
             switch (MOVE)
             {
@@ -624,13 +624,13 @@ namespace Models
             }
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTsamodel::_move", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSaModel::_move", __LINE__, __FILE__);
 			}
 		//return newsolution;
 		return actual;
 		}
 
-    void FMTsamodel::_initialGrow()
+    void FMTSaModel::_initialGrow()
     {
         try {
             int modellength = getParameter(Models::FMTintmodelparameters::LENGTH);
@@ -641,11 +641,11 @@ namespace Models
                 }
         }catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_initialGrow", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_initialGrow", __LINE__, __FILE__);
         }
     }
 
-    void FMTsamodel::_randomBuild()
+    void FMTSaModel::_randomBuild()
     {
         try {
             int modellength = getParameter(Models::FMTintmodelparameters::LENGTH);
@@ -657,14 +657,14 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_randomBuild", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_randomBuild", __LINE__, __FILE__);
         }
     }
 
     #ifdef FMTWITHOSI
-        Models::FMTlpmodel FMTsamodel::_getRandomLpModel(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
+        Models::FMTLpModel FMTSaModel::_getRandomLpModel(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
             {
-            Models::FMTlpmodel newLp;
+            Models::FMTLpModel newLp;
             try {
                     std::vector<Core::FMTConstraint> shuffledConstraints;
                     const std::vector<double> FACTORS = p_SpatialSchedule.getConstraintsFactor();
@@ -700,13 +700,13 @@ namespace Models
                         {
                        SolverInterface = FMTsolverinterface::MOSEK;
                         }
-                    newLp = Models::FMTlpmodel(*this, SolverInterface);
+                    newLp = Models::FMTLpModel(*this, SolverInterface);
                     newLp.setArea(shuffledArea);
                     newLp.setConstraints(shuffledConstraints);
                     newLp.setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
             }catch (...)
                 {
-                _exhandler->raiseFromCatch("", "FMTsamodel::_getRandomLpModel", __LINE__, __FILE__);
+                _exhandler->raiseFromCatch("", "FMTSaModel::_getRandomLpModel", __LINE__, __FILE__);
                 }
             return  newLp;
             }
@@ -715,7 +715,7 @@ namespace Models
 
   
 
-   void  FMTsamodel::_resetTabouMoves()
+   void  FMTSaModel::_resetTabouMoves()
         {
         if (m_TotalMoves % m_TABOU_FLUSH  == 0)
             {
@@ -729,7 +729,7 @@ namespace Models
  
 
 
-   void  FMTsamodel::_getConstraintsStats(const Spatial::FMTSpatialSchedule& p_NewBestSolution,
+   void  FMTSaModel::_getConstraintsStats(const Spatial::FMTSpatialSchedule& p_NewBestSolution,
        double& p_Objective, double& p_SpatialRatio, double& p_InventoryRatio, double& p_TotalRatio,
        double& p_PrimalInf) const
    {
@@ -768,12 +768,12 @@ namespace Models
    }
 
 
-    std::vector<Core::FMTSchedule>FMTsamodel::_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const
+    std::vector<Core::FMTSchedule>FMTSaModel::_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const
     {
         std::vector<Core::FMTSchedule>newSchedules;
         try {
                 #ifdef FMTWITHOSI
-                     Models::FMTlpmodel newLp = _getRandomLpModel(p_SpatialSchedule);
+                     Models::FMTLpModel newLp = _getRandomLpModel(p_SpatialSchedule);
                      Logging::FMTQuietLogger TEMP_LOGGER;
                      newLp.setParallelLogger(TEMP_LOGGER);
                     if (newLp.doPlanning(true))
@@ -790,13 +790,13 @@ namespace Models
                 #endif
         }catch (...)
             {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_GetSchedules", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_GetSchedules", __LINE__, __FILE__);
             }
         return newSchedules;
     }
 
 
-    Spatial::FMTSpatialSchedule FMTsamodel::_getRebuild(const Spatial::FMTSpatialSchedule& actual) const
+    Spatial::FMTSpatialSchedule FMTSaModel::_getRebuild(const Spatial::FMTSpatialSchedule& actual) const
     {
         Spatial::FMTSpatialSchedule newsolution;
         try {
@@ -804,7 +804,7 @@ namespace Models
             if (nonspatialschedules.empty())
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
-                    "Cannot rebuild empty solution", "FMTsamodel::_getRebuild", __LINE__, __FILE__);
+                    "Cannot rebuild empty solution", "FMTSaModel::_getRebuild", __LINE__, __FILE__);
             }
             newsolution = getNewSolution(actual);
 
@@ -821,23 +821,23 @@ namespace Models
                 }
         }catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_getRebuild", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_getRebuild", __LINE__, __FILE__);
         }
         return newsolution;
     }
 
-    bool  FMTsamodel::_allowMove(const FMTsamove& move) const
+    bool  FMTSaModel::_allowMove(const FMTsamove& move) const
     {
         try {
             return  (m_NotAcceptedMovesCount.at(static_cast<int>(move) - 1) <= m_MINIMAL_ACCEPTED_MOVES);
         }catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_allowMove", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_allowMove", __LINE__, __FILE__);
         }
         return false;
     }
 
-    bool FMTsamodel::_allowAnyMove() const
+    bool FMTSaModel::_allowAnyMove() const
     {
         try {
             for (int enumid = 1; enumid < FMTsamove::MoveCount; ++enumid)
@@ -850,12 +850,12 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_allowAnyMove", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_allowAnyMove", __LINE__, __FILE__);
         }
     return false;
     }
 
-    std::vector<FMTsamodel::FMTsamove> FMTsamodel::_getNonTabouMoves() const
+    std::vector<FMTSaModel::FMTsamove> FMTSaModel::_getNonTabouMoves() const
     {
         std::vector<FMTsamove>potentialMoves;
         potentialMoves.reserve(
@@ -871,7 +871,7 @@ namespace Models
         return potentialMoves;
     }
 
-    bool FMTsamodel::_allowMove(FMTsamove p_move, const Spatial::FMTSpatialSchedule& p_actual,
+    bool FMTSaModel::_allowMove(FMTsamove p_move, const Spatial::FMTSpatialSchedule& p_actual,
         const Spatial::FMTSpatialSchedule::actionbindings& p_bindings) const
     {
         bool useMove = false;
@@ -906,7 +906,7 @@ namespace Models
 
 
 
-    FMTsamodel::FMTsamove FMTsamodel::_getAMove(const Spatial::FMTSpatialSchedule& actual,
+    FMTSaModel::FMTsamove FMTSaModel::_getAMove(const Spatial::FMTSpatialSchedule& actual,
                             const Spatial::FMTSpatialSchedule::actionbindings& bindings) const
     {
         FMTsamove returned =  FMTsamove::Local;
@@ -929,13 +929,13 @@ namespace Models
            
         }catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_getAMove", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_getAMove", __LINE__, __FILE__);
         }
         return returned;
     }
 
 
-    void FMTsamodel::_schedulesBuild(const std::vector<Core::FMTSchedule>& schedules)
+    void FMTSaModel::_schedulesBuild(const std::vector<Core::FMTSchedule>& schedules)
     {
         try {
             const size_t alliterations = static_cast<size_t>(getParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS));
@@ -946,14 +946,14 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_schedulesBuild", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_schedulesBuild", __LINE__, __FILE__);
         }
 
     }
 
 
 
-	double FMTsamodel::_warmup(const Spatial::FMTSpatialSchedule& actual,
+	double FMTSaModel::_warmup(const Spatial::FMTSpatialSchedule& actual,
 		const Spatial::FMTSpatialSchedule::actionbindings& bindings)
 		{
 		double temperature = 0;
@@ -1003,12 +1003,12 @@ namespace Models
         m_BestObjective = getGlobalObjective(m_BestSolution);
         }catch (...)
             {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_warmup", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_warmup", __LINE__, __FILE__);
             }
         return temperature;
         }
 
-        bool FMTsamodel::isProvenOptimal() const
+        bool FMTSaModel::isProvenOptimal() const
         {
             try {
                
@@ -1017,20 +1017,20 @@ namespace Models
             }
             catch (...)
             {
-                _exhandler->raiseFromCatch("", "FMTsamodel::isProvenOptimal", __LINE__, __FILE__);
+                _exhandler->raiseFromCatch("", "FMTSaModel::isProvenOptimal", __LINE__, __FILE__);
             }
             return false;
         }
 
-        size_t FMTsamodel::_getCycleMoves() const
+        size_t FMTSaModel::_getCycleMoves() const
         {
             return m_CycleMoves.size();
         }
 
-        size_t FMTsamodel::_getAcceptedCycleMoves() const
+        size_t FMTSaModel::_getAcceptedCycleMoves() const
         {
             size_t count = 0;
-            for (const FMTsamodel::FMTmovestats& stats : m_CycleMoves)
+            for (const FMTSaModel::FMTMoveStats& stats : m_CycleMoves)
             {
                 if (stats.Accepted)
                     {
@@ -1040,7 +1040,7 @@ namespace Models
             return count;
         }
 
-        bool FMTsamodel::_isCycleProvenOptimal() const
+        bool FMTSaModel::_isCycleProvenOptimal() const
         {
             try {
                 return (!((_getCycleMoves() - _getAcceptedCycleMoves()) < getParameter(FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES) && 
@@ -1049,12 +1049,12 @@ namespace Models
             }
             catch (...)
             {
-                _exhandler->raiseFromCatch("", "FMTsamodel::_isCycleProvenOptimal", __LINE__, __FILE__);
+                _exhandler->raiseFromCatch("", "FMTSaModel::_isCycleProvenOptimal", __LINE__, __FILE__);
             }
             return false;
         }
 
-        void FMTsamodel::_doFactorization()
+        void FMTSaModel::_doFactorization()
         {
             try {
                 if (m_TotalMoves % 100 == 0)
@@ -1064,11 +1064,11 @@ namespace Models
             }
             catch (...)
             {
-                _exhandler->raiseFromCatch("", "FMTsamodel::_doFactorization", __LINE__, __FILE__);
+                _exhandler->raiseFromCatch("", "FMTSaModel::_doFactorization", __LINE__, __FILE__);
             }
         }
 
-        void FMTsamodel::_logSolutionStatus() const
+        void FMTSaModel::_logSolutionStatus() const
         {
             try {
                 if (m_TotalMoves % 100 == 0)
@@ -1083,11 +1083,11 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_logSolutionStatus", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_logSolutionStatus", __LINE__, __FILE__);
         }
     }
 
-    void FMTsamodel::logMovesReport() const
+    void FMTSaModel::logMovesReport() const
         {
         try {
             *_logger << "Moves report" << "\n";
@@ -1095,7 +1095,7 @@ namespace Models
                 std::map<FMTsamove, size_t>Numberofdone;
                 std::map<FMTsamove, double>TotalGain;
                 std::map<double, size_t>acceptedpersize;
-                for (const FMTsamodel::FMTmovestats& stats : m_CycleMoves)
+                for (const FMTSaModel::FMTMoveStats& stats : m_CycleMoves)
                 {
                     if (stats.Accepted)
                     {
@@ -1118,11 +1118,11 @@ namespace Models
            *_logger << "Moves report done" << "\n";
         }catch (...)
             {
-            _exhandler->raiseFromCatch("", "FMTsamodel::logMovesReport", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::logMovesReport", __LINE__, __FILE__);
             }
         }
 
-    void FMTsamodel::_logCycleStatus() const
+    void FMTSaModel::_logCycleStatus() const
     {
         try {
              const double acceptanceratio = (static_cast<double>(_getAcceptedCycleMoves()) / static_cast<double>(_getCycleMoves())) * 100;
@@ -1134,12 +1134,12 @@ namespace Models
              
         }catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTsamodel::_logCycleStatus", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_logCycleStatus", __LINE__, __FILE__);
         }
     }
 
 
-	bool FMTsamodel::initialSolve()
+	bool FMTSaModel::initialSolve()
 		{
 		try {
 			const Spatial::FMTSpatialSchedule::actionbindings ACTIONS_BINDING = 
@@ -1176,12 +1176,12 @@ namespace Models
             *_logger << "Generator final state: " << m_generator() << "\n";
 		}catch (...)
 			{
-			_exhandler->printExceptions("", "FMTsamodel::initialSolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSaModel::initialSolve", __LINE__, __FILE__);
 			}
         return true;
 		}
 
-    void FMTsamodel::_setBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution,
+    void FMTSaModel::_setBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution,
                                         double p_ObjectiveValue)
     {
         if (p_NewBestSolution.isPartial())
@@ -1194,7 +1194,7 @@ namespace Models
         m_BestObjective = p_ObjectiveValue;
     }
 
-    bool FMTsamodel::build(std::vector<Core::FMTSchedule> schedules)
+    bool FMTSaModel::build(std::vector<Core::FMTSchedule> schedules)
     {
         try {
             if (schedules.empty()||
@@ -1206,56 +1206,56 @@ namespace Models
                 }
         }catch (...)
         {
-            _exhandler->printExceptions("", "FMTsamodel::build", __LINE__, __FILE__);
+            _exhandler->printExceptions("", "FMTSaModel::build", __LINE__, __FILE__);
         }
         return true;
     }
 
  
-    bool FMTsamodel::solve()
+    bool FMTSaModel::solve()
     {
         try {
             return initialSolve();
         }catch (...)
         {
-            _exhandler->printExceptions("", "FMTsamodel::solve", __LINE__, __FILE__);
+            _exhandler->printExceptions("", "FMTSaModel::solve", __LINE__, __FILE__);
         }
         return false;
     }
 
-    std::unique_ptr<FMTmodel>FMTsamodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+    std::unique_ptr<FMTModel>FMTSaModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
     {
         try {
-            std::unique_ptr<FMTmodel>BASE_PRESOLVE = FMTsemodel::presolve(optionaldevelopments);
-            std::unique_ptr<FMTmodel>PRESOLVED = std::unique_ptr<FMTmodel>(
-                                new FMTsamodel(
-                                    *(dynamic_cast<FMTsemodel*>(BASE_PRESOLVE.get()))));
-            FMTsamodel* SA = dynamic_cast<FMTsamodel*>(PRESOLVED.get());
+            std::unique_ptr<FMTModel>BASE_PRESOLVE = FMTSeModel::presolve(optionaldevelopments);
+            std::unique_ptr<FMTModel>PRESOLVED = std::unique_ptr<FMTModel>(
+                                new FMTSaModel(
+                                    *(dynamic_cast<FMTSeModel*>(BASE_PRESOLVE.get()))));
+            FMTSaModel* SA = dynamic_cast<FMTSaModel*>(PRESOLVED.get());
             return PRESOLVED;
         }
         catch (...)
         {
-            _exhandler->printExceptions("", "FMTsamodel::presolve", __LINE__, __FILE__);
+            _exhandler->printExceptions("", "FMTSaModel::presolve", __LINE__, __FILE__);
         }
-        return std::unique_ptr<FMTmodel>(nullptr);
+        return std::unique_ptr<FMTModel>(nullptr);
     }
 
-    std::unique_ptr<FMTmodel>FMTsamodel::getCopy(int period) const
+    std::unique_ptr<FMTModel>FMTSaModel::getCopy(int period) const
     {
         try {
-            return std::unique_ptr<FMTmodel>(new FMTsamodel(*dynamic_cast<FMTsemodel*>(FMTsemodel::getCopy(period).get())));
+            return std::unique_ptr<FMTModel>(new FMTSaModel(*dynamic_cast<FMTSeModel*>(FMTSeModel::getCopy(period).get())));
         }
         catch (...)
         {
-            _exhandler->printExceptions("", "FMTsamodel::getCopy", __LINE__, __FILE__);
+            _exhandler->printExceptions("", "FMTSaModel::getCopy", __LINE__, __FILE__);
         }
-        return std::unique_ptr<FMTmodel>(nullptr);
+        return std::unique_ptr<FMTModel>(nullptr);
     }
 
-    FMTsamodel::~FMTsamodel() = default;
+    FMTSaModel::~FMTSaModel() = default;
 
 
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTsamodel)
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTSaModel)

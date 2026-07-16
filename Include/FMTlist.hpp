@@ -295,7 +295,7 @@ namespace Core
 					}
 					if (filteredmasks.empty())
 					{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, "Empty mask", "FMTactionparser::shrink", __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, "Empty mask", "FMTActionParser::shrink", __LINE__, __FILE__);
 					}
 					filter = Core::FMTMaskFilter(filteredmasks);
 					for (std::pair<FMTMask, T>& object : data)

@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 														"? ? ? ? ? ? ? ? ? ? ? ? ? !UTA11 ? ? ? ? ? ?" };*/
 		//const std::string OUTPUT_DIRECTORY = "outputs/";
 		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsSplit/";
-		Parser::FMTmodelparser ModelParser;
+		Parser::FMTModelParser ModelParser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -65,26 +65,26 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		ModelParser.setErrorsToWarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
-		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
+		const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
 		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
-		Models::FMTlpmodel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
-		Optimization1.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-		Optimization1.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-		Optimization1.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
+		Models::FMTLpModel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
+		Optimization1.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+		Optimization1.FMTModel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		Optimization1.FMTModel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
 		Optimization1.doPlanning(false, SCHEDULES);
-		const Models::FMTmodel SPLITTED_MODEL = MODELS.at(0).splitActions(SPLITTED, SPLITTED_MASK);
+		const Models::FMTModel SPLITTED_MODEL = MODELS.at(0).splitActions(SPLITTED, SPLITTED_MASK);
 		ModelParser.writeToProject(OUTPUT_DIRECTORY + SCENARIO +".pri", SPLITTED_MODEL);
 		if (!SCHEDULES.empty())
 			{
-			Parser::FMTscheduleparser SCHEDULE_PARSER;
+			Parser::FMTScheduleParser SCHEDULE_PARSER;
 			const std::vector<Core::FMTSchedule>NEWSCHEDULE = SPLITTED_MODEL.splitSchedules(SCHEDULES);
 			SCHEDULE_PARSER.write(NEWSCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq");
 			}
 		const std::vector<std::string>ROOT(1,"ROOT");
-		const std::vector<Models::FMTmodel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
+		const std::vector<Models::FMTModel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
 		const std::vector<Core::FMTSchedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0);
-		Models::FMTsesmodel Simulation(READMODELS.at(0));
-		Parser::FMTareaparser areaParser;
+		Models::FMTSesModel Simulation(READMODELS.at(0));
+		Parser::FMTAreaParser areaParser;
 		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARYm_location).parent_path();
 		const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(CARTE)).string();
 		const int SIZE = 2000;
@@ -96,9 +96,9 @@ int main(int argc, char* argv[])
 			NewTransitions.push_back(TRANSITION.single());
 			}
 		Simulation.setTransitions(NewTransitions);
-		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
-		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
+		Simulation.FMTModel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		Simulation.FMTModel::setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
+		Simulation.FMTModel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
 		Simulation.doPlanning(true, READSCHEDULE);
 	}else {
 		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";

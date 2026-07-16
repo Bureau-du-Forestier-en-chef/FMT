@@ -18,7 +18,7 @@ namespace Core
 /**
 FMTLifespans class keeps the information about the maximum age of an aggregate of FMTdevelopments.
 It's derived from FMTList<int> each element of the FMTList is a maximum age given for a FMTMask.
-The class is used by the FMTparser but also into the when generating the default _DEATH action and transition.
+The class is used by the FMTParser but also into the when generating the default _DEATH action and transition.
 */
 class FMTEXPORT FMTLifespans : public FMTList<int>
     {

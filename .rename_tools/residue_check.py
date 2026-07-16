@@ -25,6 +25,8 @@ ALLOWED = {
     ('Include/RexportExceptions.h', 'FMTexceptionhandler'),
     # commented-out binding block for the ghost class FMTspatialaction
     ('Include/RexportSpatial.h', 'FMTaction'),
+    # commented-out .derives<> line
+    ('Include/RexportHeuristics.h', 'FMTlpsolver'),
 }
 
 

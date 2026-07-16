@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 			//OUTPUT_DIRECTORY = "../outputs/";
 
 		}
-		Parser::FMTmodelparser ModelParser;
+		Parser::FMTModelParser ModelParser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -52,9 +52,9 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		ModelParser.setErrorsToWarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
-		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
+		const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
 		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
-		//Models::FMTlpmodel optModel1(MODELS.at(0), Models::FMTsolverinterface::MOSEK);
+		//Models::FMTLpModel optModel1(MODELS.at(0), Models::FMTsolverinterface::MOSEK);
 		//optModel1.doPlanning(false, SCHEDULES);
 		//Create a addTheme function that add a theme and update all mask taking a vector of string and a default value
 		//Detect Yields
@@ -63,16 +63,16 @@ int main(int argc, char* argv[])
 		//Next mask for second yield
 		//Add action based on first yield and transition to second yield.
 		//Create a schedule based on area detected yield age...
-		const Models::FMTmodel BUILDED_MODEL = MODELS.at(0).buildAction(ACTION_NAME, TARGET_YIELD);
+		const Models::FMTModel BUILDED_MODEL = MODELS.at(0).buildAction(ACTION_NAME, TARGET_YIELD);
 		ModelParser.writeToProject(OUTPUT_DIRECTORY + SCENARIO + ".pri", BUILDED_MODEL);
-		Parser::FMTscheduleparser SCHEDULE_PARSER;
+		Parser::FMTScheduleParser SCHEDULE_PARSER;
 		const std::vector<Core::FMTSchedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), 
 			MODELS.at(0),TARGET_YIELD, SCHEDULES);
 		SCHEDULE_PARSER.write(NEW_SCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq");
 		const std::vector<std::string>ROOT(1, "ROOT");
-		const std::vector<Models::FMTmodel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
+		const std::vector<Models::FMTModel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
 		const std::vector<Core::FMTSchedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0);
-		//Models::FMTlpmodel optModel(READMODELS.at(0), Models::FMTsolverinterface::MOSEK);
+		//Models::FMTLpModel optModel(READMODELS.at(0), Models::FMTsolverinterface::MOSEK);
 		//optModel.doPlanning(true);
 	return 0;
 }

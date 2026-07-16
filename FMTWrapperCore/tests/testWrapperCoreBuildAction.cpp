@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	std::string output_scenario_name = scenarioName + "_test2";
 
 
-	Parser::FMTmodelparser ModelParser;
+	Parser::FMTModelParser ModelParser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -50,8 +50,8 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	ModelParser.setErrorsToWarnings(errors);
 
-	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
-	const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), actionName, targetYield, primary_path, output_scenario_name);
+	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
+	const Models::FMTModel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), actionName, targetYield, primary_path, output_scenario_name);
 
 	// on fait des v�rifications sur le model construit
 	if (MODELS.at(0) == BUILDED_MODEL)

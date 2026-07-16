@@ -19,7 +19,7 @@ int main()
 		const std::string scenario = "landaggregates";
 		const int length = 5;
 		const double objectivevalue = 43140.504922;
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -31,10 +31,10 @@ int main()
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+		optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		if (optimizationmodel.doPlanning(true)) {
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;

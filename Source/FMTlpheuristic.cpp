@@ -17,7 +17,7 @@ namespace Heuristics
 {
 
 	FMTlpheuristic::FMTlpheuristic(const FMTlpheuristic& rhs) :
-		Models::FMTlpsolver(rhs),
+		Models::FMTLpSolver(rhs),
 		generator(rhs.generator),seed(rhs.seed),usingsolvercopy(true)
 		{
 
@@ -26,7 +26,7 @@ namespace Heuristics
 		{
 		if (this!=&rhs)
 			{
-			FMTlpsolver::operator = (rhs);
+			FMTLpSolver::operator = (rhs);
 			generator=rhs.generator;
 			seed = rhs.seed;
 			usingsolvercopy = true;
@@ -35,21 +35,21 @@ namespace Heuristics
 		}
 
     FMTlpheuristic::FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
-       Models::FMTlpsolver(interfacetype,std::string(), std::string(),"LpHeuristic_"+std::to_string(lseed)),
+       Models::FMTLpSolver(interfacetype,std::string(), std::string(),"LpHeuristic_"+std::to_string(lseed)),
 		generator(static_cast<unsigned int>(lseed)), seed(lseed), usingsolvercopy(true/*false*/)
         {
         //this->buildSolverInterface(interfacetype);
         }
 
-	FMTlpheuristic::FMTlpheuristic(Models::FMTlpsolver& basesolve, size_t lseed,bool copysolver):
-		Models::FMTlpsolver(),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(copysolver)
+	FMTlpheuristic::FMTlpheuristic(Models::FMTLpSolver& basesolve, size_t lseed,bool copysolver):
+		Models::FMTLpSolver(),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(copysolver)
 		{
 		try {
 			if (copysolver)
 				{
-				FMTlpsolver::operator=(basesolve);
+				FMTLpSolver::operator=(basesolve);
 			}else {
-				FMTlpsolver::passInSolver(basesolve);
+				FMTLpSolver::passInSolver(basesolve);
 				}
 		}catch (...)
 			{
@@ -67,12 +67,12 @@ namespace Heuristics
 	bool FMTlpheuristic::branchNBoundSolve()
 		{
 		try {
-			Models::FMTlpsolver::branchAndBound();
+			Models::FMTLpSolver::branchAndBound();
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTlpheuristic::branchNBoundSolve", __LINE__, __FILE__);
 			}
-		return Models::FMTlpsolver::isProvenOptimal();
+		return Models::FMTLpSolver::isProvenOptimal();
        }
 	bool FMTlpheuristic::greedyPass(const double& initsol,const unsigned int& iteration)
 	{
@@ -83,7 +83,7 @@ namespace Heuristics
 			{
 			_exhandler->raiseFromCatch("", "FMTlpheuristic::greedyPass", __LINE__, __FILE__);
 			}
-		return Models::FMTlpsolver::isProvenOptimal();
+		return Models::FMTLpSolver::isProvenOptimal();
 	  }
 
 	void FMTlpheuristic::parallelOptimize(const double& initbestsolution, const unsigned int& iterations,const double& maxtime, const std::chrono::steady_clock::time_point& Starttime)

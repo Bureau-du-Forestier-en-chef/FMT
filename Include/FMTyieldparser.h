@@ -23,7 +23,7 @@ namespace Core
 	class FMTConstants;
 	class FMTTheme;
 	class FMTData;
-	class FMTyieldmodel;
+	class FMTYieldModel;
 	class FMTYieldHandler;
 	class FMTMask;
 }
@@ -31,78 +31,78 @@ namespace Core
 
 namespace Parser
 {
-// DocString: FMTyieldparser
+// DocString: FMTYieldParser
 /**
 The yield parser can read and write a yield sections and transform the information into
 an FMTYields object.
 */
-class FMTEXPORT FMTyieldparser : public FMTparser
+class FMTEXPORT FMTYieldParser : public FMTParser
     {
      private:
-		// DocString: FMTyieldparser::rxyieldtype
+		// DocString: FMTYieldParser::rxyieldtype
 		///Regex to capture the yield type.
 		const static boost::regex rxyieldtype;
-		// DocString: FMTyieldparser::rxcomplex
+		// DocString: FMTYieldParser::rxcomplex
 		///Regex to capture the complex yields.
 		const static boost::regex rxcomplex;
-		// DocString: FMTyieldparser::rxeqs
+		// DocString: FMTYieldParser::rxeqs
 		///Regex to capture complex yields equations.
 		const static boost::regex rxeqs;
-		// DocString: FMTyieldparser::rxdiscount
+		// DocString: FMTYieldParser::rxdiscount
 		///regex to capturediscount factors.
 		const static boost::regex rxdiscount;
-		// DocString: FMTyieldparser::rxpredictor
+		// DocString: FMTYieldParser::rxpredictor
 		///regex to capture _pred keyword.
 		const static boost::regex rxpredictor;
 		///regex to capture two keyword for a solo yield declaration.
 		const static boost::regex rxyieldsolo;
-		// DocString: FMTyieldparser::getYldType
+		// DocString: FMTYieldParser::getYldType
 		/**
 		Returns the yield type based on the string of the yield type.
 		*/
 		Core::FMTyldtype getYldType(const std::string& value) const;
-		// DocString: FMTyieldparser::getHandler
+		// DocString: FMTYieldParser::getHandler
 		/**
 		Returns the yield handler based on the type.
 		*/
 		std::unique_ptr<Core::FMTYieldHandler> getHandler(const Core::FMTMask& mask, const Core::FMTyldtype& yldtype) const;
-		// DocString: FMTyieldparser::getYldCtype
+		// DocString: FMTYieldParser::getYldCtype
 		/**
 		Returns an operator based on a string value.
 		*/
 		Core::FMTyieldparserop getYldCtype(const std::string& value) const;
-		// DocString: FMTyieldparser::getYldUse
+		// DocString: FMTYieldParser::getYldUse
 		/**
 		This function returns yield names already defined in the yielddata based on (values).
 		*/
 		std::vector<std::string> getYldUse(Core::FMTYields& yielddata,
 			std::vector<std::pair<Core::FMTMask,std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
                                    const std::vector<std::string>& values) const;
-		// DocString: FMTyieldparser::setOveridedYlds
+		// DocString: FMTYieldParser::setOveridedYlds
 		/**
 		modify the yiedldata based on the actualyield handler.
 		*/
 		void setOveridedYlds(Core::FMTYields& yielddata,
 			std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
 			const std::string& yld) const;
-		// DocString: FMTyieldparser::checkPreexisting
+		// DocString: FMTYieldParser::checkPreexisting
 		/**
 		This function checks precxisting yields and throw warning if it already exist.
 		*/
         void checkPreexisting(const std::vector<std::string>& preexists) const;
-		// DocString: FMTyieldparser::isFunction
+		// DocString: FMTYieldParser::isFunction
 		/**
 		Return true if the string is considered a complex yield function.
 		*/
 		bool isFunction(const std::string& strfunction) const;
-		// DocString: FMTyieldparser::getNumwithproportion
+		// DocString: FMTYieldParser::getNumwithproportion
 		/**
 		Using a string value (double or constant), a constants section and a temporal based proportions, and the actual period,
 		it will return the value has a double.
 		*/
 		double getNumwithproportion(const std::string& value,const Core::FMTConstants& constants,
 			const std::vector<double>& proportions, const int& location);
-		// DocString: FMTyieldparser::getEq
+		// DocString: FMTYieldParser::getEq
 		/**
 		The function is only used to generate FMTData of complexe yield.
 		*/
@@ -110,55 +110,55 @@ class FMTEXPORT FMTyieldparser : public FMTparser
                 const Core::FMTConstants& constants,
                 const Core::FMTYields& ylds,
                 const std::vector<Core::FMTTheme>& themes);
-		// DocString: FMTyieldparser::cleanUp
+		// DocString: FMTYieldParser::cleanUp
 		/**
 		Clean up yields from index by replacing values present in the themes.
 		*/
 		void cleanUp(Core::FMTYields& yields, const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const;
-		// DocString: FMTyieldparser::getIndexValues
+		// DocString: FMTYieldParser::getIndexValues
 		/**
 		This functions returns the value of themes indexes based on a mask, and for the indexvalues we are looking for.
 		*/
 		std::map<std::string, double>getIndexValues(const Core::FMTMask& mask,
 			const std::vector<Core::FMTTheme>& themes,
 			const std::vector<std::string>&indexvalues, const Core::FMTConstants& constants) const;
-		// DocString: FMTyieldparser::readYieldModel
+		// DocString: FMTYieldParser::readYieldModel
 		/**
 		Given a modelname read a yield model in the YieldPredModels folder.
 		*/
-		std::unique_ptr<Core::FMTyieldmodel>readYieldModel(const std::string& modelname, std::vector<std::string>& modelYields,const Core::FMTMask& mainmask) const;
-		// DocString: FMTyieldparser::cleanAll
+		std::unique_ptr<Core::FMTYieldModel>readYieldModel(const std::string& modelname, std::vector<std::string>& modelYields,const Core::FMTMask& mainmask) const;
+		// DocString: FMTYieldParser::cleanAll
 		/**
 		Update ans clean the yields
 		*/
 		void cleanAll(Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const;
     public:
-		// DocString: FMTyieldparser()
+		// DocString: FMTYieldParser()
 		/**
-		Default constructor for FMTyieldparser
+		Default constructor for FMTYieldParser
 		*/
-        FMTyieldparser();
-		// DocString: ~FMTyieldparser()
+        FMTYieldParser();
+		// DocString: ~FMTYieldParser()
 		/**
-		Default destructor for FMTyieldparser.
+		Default destructor for FMTYieldParser.
 		*/
-		~FMTyieldparser() = default;
-		// DocString: FMTyieldparser(const FMTyieldparser&)
+		~FMTYieldParser() = default;
+		// DocString: FMTYieldParser(const FMTYieldParser&)
 		/**
-		Copy constructor for FMTyieldparser.
+		Copy constructor for FMTYieldParser.
 		*/
-        FMTyieldparser(const FMTyieldparser& rhs)=default;
-		// DocString: FMTyieldparser::FMTyieldparser=
+        FMTYieldParser(const FMTYieldParser& rhs)=default;
+		// DocString: FMTYieldParser::FMTYieldParser=
 		/**
-		Copy assignment for FMTyieldparser.
+		Copy assignment for FMTYieldParser.
 		*/
-        FMTyieldparser& operator = (const FMTyieldparser& rhs)=default;
-		// DocString: FMTyieldparser::read
+        FMTYieldParser& operator = (const FMTYieldParser& rhs)=default;
+		// DocString: FMTYieldParser::read
 		/**
 		The read function will turn a yield file into an FMTYields objectf based on (themes), (constants) and the location of the file.
 		*/
         Core::FMTYields read(const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& constants,const std::string& location);
-		// DocString: FMTyieldparser::write
+		// DocString: FMTYieldParser::write
 		/**
 		The write function will write a FMTYields object to a location.
 		*/

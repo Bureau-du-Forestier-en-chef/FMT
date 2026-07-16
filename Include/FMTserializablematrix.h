@@ -20,41 +20,41 @@ class CoinPackedMatrix;
 
 namespace Models
 {
-// DocString: FMTserializablematrix
+// DocString: FMTSerializableMatrix
 /**
-The FMTserializablematrix is made for the serialization of osisolverinterface matrix.
+The FMTSerializableMatrix is made for the serialization of osisolverinterface matrix.
 Osisolverinterface matrix is a abstract class pointing on multiple solvertype.
 The goal of that class is to get the informations from osisolverinterface class into multiple
 vectors (solutions,bounds,etc...) to permit the synchronization.
 Also this class is usefull when copying osisolverinterface with the FMTsolverinterface type.
 */
-class FMTEXPORT FMTserializablematrix
+class FMTEXPORT FMTSerializableMatrix
 	{
-	// DocString: FMTserializablematrix::matrix
+	// DocString: FMTSerializableMatrix::matrix
 	///The matrix pointer
 	std::unique_ptr<CoinPackedMatrix> matrix;
-	// DocString: FMTserializablematrix::collb
+	// DocString: FMTSerializableMatrix::collb
 	///columns lower bound of the matrix
 	std::vector<double>collb;
-	// DocString: FMTserializablematrix::colub
+	// DocString: FMTSerializableMatrix::colub
 	///columns upper bound of the matrix
 	std::vector<double>colub;
-	// DocString: FMTserializablematrix::obj
+	// DocString: FMTSerializableMatrix::obj
 	///Objective coefficients for each column
 	std::vector<double>obj;
-	// DocString: FMTserializablematrix::rowlb
+	// DocString: FMTSerializableMatrix::rowlb
 	///Rows lower bound of the marix
 	std::vector<double>rowlb;
-	// DocString: FMTserializablematrix::rowub
+	// DocString: FMTSerializableMatrix::rowub
 	///Rows upper bound of the marix
 	std::vector<double>rowub;
-	// DocString: FMTserializablematrix::colsolution
+	// DocString: FMTSerializableMatrix::colsolution
 	///primal solution of the matrix
 	std::vector<double>colsolution;
-	// DocString: FMTserializablematrix::rowprice
+	// DocString: FMTSerializableMatrix::rowprice
 	///dual solution of the matrix
 	std::vector<double>rowprice;
-	// DocString: FMTserializablematrix::serialize
+	// DocString: FMTSerializableMatrix::serialize
 	/**
 	Save and load functions are for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
@@ -176,52 +176,52 @@ class FMTEXPORT FMTserializablematrix
 		std::vector<double>&lcolsolution,
 		std::vector<double>&lrowprice);
 	public:
-		// DocString: FMTserializablematrix()
+		// DocString: FMTSerializableMatrix()
 		/**
-		Default constructor of FMTserializablematrix
+		Default constructor of FMTSerializableMatrix
 		*/
-		FMTserializablematrix();
-		// DocString: FMTserializablematrix(const FMTserializablematrix)
+		FMTSerializableMatrix();
+		// DocString: FMTSerializableMatrix(const FMTSerializableMatrix)
 		/**
-		Copy constructor of FMTserializablematrix
+		Copy constructor of FMTSerializableMatrix
 		*/
-		FMTserializablematrix(const FMTserializablematrix& rhs);
-		// DocString: FMTserializablematrix::operator=
+		FMTSerializableMatrix(const FMTSerializableMatrix& rhs);
+		// DocString: FMTSerializableMatrix::operator=
 		/**
-		Copy assignment of FMTserializablematrix
+		Copy assignment of FMTSerializableMatrix
 		*/
-		FMTserializablematrix& operator = (const FMTserializablematrix& rhs);
-		// DocString: FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>,const FMTsolverinterface)
+		FMTSerializableMatrix& operator = (const FMTSerializableMatrix& rhs);
+		// DocString: FMTSerializableMatrix(const std::shared_ptr<OsiSolverInterface>,const FMTsolverinterface)
 		/**
-		Constructor of FMTserializablematrix with the solverinterface and the solvertype used.
+		Constructor of FMTSerializableMatrix with the solverinterface and the solvertype used.
 		Normaly used during the saving part of serialization.
 		*/
-		FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface);
-		// DocString: FMTserializablematrix::setSolverType
+		FMTSerializableMatrix(const std::shared_ptr<OsiSolverInterface>& solverinterface);
+		// DocString: FMTSerializableMatrix::setSolverType
 		/**
 		Setter of the solvertype of the serializable matrix.
 		*/
 		//void setSolverType(FMTsolverinterface& lsolvertype) const;
-		// DocString: FMTserializablematrix::setMatrix
+		// DocString: FMTSerializableMatrix::setMatrix
 		/**
 		This function will set it's contain to a solverinterface matrix, used during the loading part of serialization.
 		*/
 		void setMatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const;
-		// DocString: FMTserializablematrix::buildSolverInterface
+		// DocString: FMTSerializableMatrix::buildSolverInterface
 		/**
 		Function used to build a shared pointer of a solverinterface passing the message handler to the pointer.
 		*/
 		//std::shared_ptr<OsiSolverInterface> buildSolverInterface(const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
-		// DocString: FMTserializablematrix::copySolverInterface
+		// DocString: FMTSerializableMatrix::copySolverInterface
 		/**
 		Function used to copy a shared pointer of a solverinterface passing the message handler to the pointer to a other shared pointer.
 		*/
 		//std::shared_ptr<OsiSolverInterface> copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
-		// DocString: ~FMTserializablematrix()
+		// DocString: ~FMTSerializableMatrix()
 		/**
-		Default destructor of FMTserializablematrix
+		Default destructor of FMTSerializableMatrix
 		*/
-		~FMTserializablematrix();
+		~FMTSerializableMatrix();
 	};
 
 }

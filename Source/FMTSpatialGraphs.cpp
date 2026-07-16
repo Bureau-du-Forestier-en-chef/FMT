@@ -353,7 +353,7 @@ namespace Spatial
 
 
 
-	void FMTSpatialGraphs::setModel(const Models::FMTmodel& p_model)
+	void FMTSpatialGraphs::setModel(const Models::FMTModel& p_model)
 	{
 		m_Model = &p_model;
 	}
@@ -399,7 +399,7 @@ namespace Spatial
 
 
 
-	FMTSpatialGraphs::FMTSpatialGraphs(const Models::FMTmodel& p_model, double p_CellSize) :
+	FMTSpatialGraphs::FMTSpatialGraphs(const Models::FMTModel& p_model, double p_CellSize) :
 		m_AllGraphs(),
 		m_LastGraphId(0),
 		m_Constraints(),
@@ -413,7 +413,7 @@ namespace Spatial
 		_buildTacker(SOLUTION);
 	}
 
-	Core::FMTMask FMTSpatialGraphs::_getUseFullBits(const Models::FMTmodel& p_model)
+	Core::FMTMask FMTSpatialGraphs::_getUseFullBits(const Models::FMTModel& p_model)
 	{
 		Core::FMTMask usefullBits(p_model.themes);
 		try {
@@ -435,13 +435,13 @@ namespace Spatial
 		return usefullBits;
 	}
 
-	std::vector<size_t> FMTSpatialGraphs::_buildGraphs(const Models::FMTmodel& p_model, double p_CellSize)
+	std::vector<size_t> FMTSpatialGraphs::_buildGraphs(const Models::FMTModel& p_model, double p_CellSize)
 	{
 		std::vector<size_t>BaseSolution;
 		try {
 			const size_t LENGTH = static_cast<size_t>(p_model.getParameter(Models::FMTintmodelparameters::LENGTH));
 			const Core::FMTMask USEFULL_BITS = _getUseFullBits(p_model);
-			const std::vector<Core::FMTActualDevelopment>AREAS = p_model.Models::FMTmodel::getArea();
+			const std::vector<Core::FMTActualDevelopment>AREAS = p_model.Models::FMTModel::getArea();
 			BaseSolution = std::vector<size_t>(AREAS.size());
 			for (const auto& DEV : AREAS)
 			{
@@ -514,7 +514,7 @@ namespace Spatial
 	}
 
 
-	void FMTSpatialGraphs::_buildConstraintsLocator(const Models::FMTmodel& p_model)
+	void FMTSpatialGraphs::_buildConstraintsLocator(const Models::FMTModel& p_model)
 	{
 		try {
 			const Core::FMTMask USEFULL_BITS = _getUseFullBits(p_model);
@@ -722,7 +722,7 @@ namespace Spatial
 		return 0;
 	}
 
-	const Models::FMTmodel& FMTSpatialGraphs::getModel() const
+	const Models::FMTModel& FMTSpatialGraphs::getModel() const
 	{
 		return *m_Model;
 	}

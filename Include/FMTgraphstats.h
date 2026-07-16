@@ -22,7 +22,7 @@ namespace Graph
 {
 // DocString: FMTgraphstats
 /**
-Graph stats gives you information about the FMTgraph and the FMTlpsolver. About there size, elements and type of elements.
+Graph stats gives you information about the FMTgraph and the FMTLpSolver. About there size, elements and type of elements.
 */
 class FMTEXPORT FMTgraphstats
 	{
@@ -44,10 +44,10 @@ class FMTEXPORT FMTgraphstats
 	}
 	public:
 		// DocString: FMTgraphstats::cols
-		///Number of columns in the matrix of FMTlpsolver.
+		///Number of columns in the matrix of FMTLpSolver.
 		int cols;
 		// DocString: FMTgraphstats::rows
-		///Number of rows in the matrix of FMTlpsolver.
+		///Number of rows in the matrix of FMTLpSolver.
 		int rows;
 		// DocString: FMTgraphstats::vertices
 		///Number of vertices in the FMTgraph.
@@ -56,13 +56,13 @@ class FMTEXPORT FMTgraphstats
 		///Number of edges in the FMTgraph.
 		int edges;
 		// DocString: FMTgraphstats::transfer_rows
-		///Number of area transfer rows in the FMTlpsolver.
+		///Number of area transfer rows in the FMTLpSolver.
 		int transfer_rows;
 		// DocString: FMTgraphstats::output_rows
-		///Number of output rows in the FMTlpsolver.
+		///Number of output rows in the FMTLpSolver.
 		int output_rows;
 		// DocString: FMTgraphstats::output_cols
-		///Number of output cols in the FMTlpsolver.
+		///Number of output cols in the FMTLpSolver.
 		int output_cols;
 		// DocString: FMTgraphstats()
 		/**

@@ -37,7 +37,7 @@ namespace Core
 			size_t toReserve = 0;
 			if (VERTEX_PTR!=nullptr)
 				{
-				const Models::FMTmodel* MODEL_Ptr = VERTEX_PTR->getModel();
+				const Models::FMTModel* MODEL_Ptr = VERTEX_PTR->getModel();
 				const size_t LENGTH = static_cast<size_t>(MODEL_Ptr->getParameter(Models::FMTintmodelparameters::LENGTH));
 				const FMTYields YIELDS = MODEL_Ptr->getYields();
 				for (const auto& HANDLER : YIELDS)

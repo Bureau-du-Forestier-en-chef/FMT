@@ -32,8 +32,8 @@ namespace Wrapper {
 			const std::string OUTPOURPATH = msclr::interop::marshal_as<std::string>(p_outputDirPath);
 			const std::string PRINAME = msclr::interop::marshal_as<std::string>(p_pri_name);
 			const std::vector<std::string> SCENARIOS(1, SCENARIO_NAME);
-			const Models::FMTmodel MODEL = { FMTFormCache::GetInstance()->getModel(p_modelIndex) };
-			const Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODEL, aggregates, order, PRIMARYLOCATION, SCENARIO_NAME);
+			const Models::FMTModel MODEL = { FMTFormCache::GetInstance()->getModel(p_modelIndex) };
+			const Models::FMTModel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODEL, aggregates, order, PRIMARYLOCATION, SCENARIO_NAME);
 
 			FMTFormCache::GetInstance()->push_back(aggregatedModel);
 			return true;
@@ -79,9 +79,9 @@ namespace Wrapper {
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
+			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 
-			Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(
+			Models::FMTModel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(
 				MODEL, 
 				PRIMARYLOCATION, 
 				splitted, 
@@ -110,7 +110,7 @@ namespace Wrapper {
 			}
 
 			// On va chercher le mod�le avec tous les th�mes
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 			// On va chercher tous les th�mes dans le mod�le et le theme qui nous int�resse
 			const Core::FMTTheme THEME = MODEL.getThemes().at(p_themeIndex);
 			// On sort tous les attributes du th�me
@@ -140,16 +140,16 @@ namespace Wrapper {
 				passed = false;
 				throw std::out_of_range("Invalid model index");
 			}
-			Parser::FMTmodelparser ModelParser = FMTFormCache::GetInstance()->GetConfiguredParser();
+			Parser::FMTModelParser ModelParser = FMTFormCache::GetInstance()->GetConfiguredParser();
 			const std::string ACTION_NAME = msclr::interop::marshal_as<std::string>(p_actionName);
 			const std::string TARGET_YIELD = msclr::interop::marshal_as<std::string>(p_targetYield);
 			const std::string SCHEDULE_PRIMARYm_location = msclr::interop::marshal_as<std::string>(p_schedulePri);
 			const std::string OUTPUT_DIRECTORY = msclr::interop::marshal_as<std::string>(p_outputDirPath);
 			const std::string SCENARIO_NAME = msclr::interop::marshal_as<std::string>(p_scenario_name);
 			const std::string PRI_NAME = msclr::interop::marshal_as<std::string>(p_pri_name);
-			const std::vector<Models::FMTmodel> MODELS = { FMTFormCache::GetInstance()->getModel(p_modelIndex) };
+			const std::vector<Models::FMTModel> MODELS = { FMTFormCache::GetInstance()->getModel(p_modelIndex) };
 
-			const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), ACTION_NAME, TARGET_YIELD, SCHEDULE_PRIMARYm_location, SCENARIO_NAME);
+			const Models::FMTModel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), ACTION_NAME, TARGET_YIELD, SCHEDULE_PRIMARYm_location, SCENARIO_NAME);
 
 			FMTFormCache::GetInstance()->push_back(BUILDED_MODEL);
 		}

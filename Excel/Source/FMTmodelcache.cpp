@@ -34,7 +34,7 @@ namespace Wrapper
 
 
 	FMTmodelcache::FMTmodelcache():
-		Models::FMTlpmodel(),
+		Models::FMTLpModel(),
 		cachingswitch(false),
 		mtx(new boost::recursive_mutex()),
 		outputsmap(),
@@ -76,7 +76,7 @@ namespace Wrapper
 			maplocation = rhs.maplocation;
 			generalcache = rhs.generalcache;
 			SerieCache = rhs.SerieCache;
-			Models::FMTlpmodel::operator=(rhs);
+			Models::FMTLpModel::operator=(rhs);
 			globalmask = rhs.globalmask;
 			OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
 			all_exceptions = rhs.all_exceptions;
@@ -90,7 +90,7 @@ namespace Wrapper
 	}
 
 	FMTmodelcache::FMTmodelcache(const FMTmodelcache& rhs):
-		Models::FMTlpmodel(rhs),
+		Models::FMTLpModel(rhs),
 		cachingswitch(rhs.cachingswitch),
 		mtx(new boost::recursive_mutex()),
 		outputsmap(rhs.outputsmap),
@@ -153,7 +153,7 @@ namespace Wrapper
 			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
 			if (!map && !maplocation.empty())
 				{
-				Parser::FMTareaparser areaparser;
+				Parser::FMTAreaParser areaparser;
 				map = std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(areaparser.vectormaptoFMTforest(maplocation,250,themes,"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
 				}
 		}catch (...)
@@ -168,7 +168,7 @@ namespace Wrapper
 			loadmap();
 			if (map)
 				{
-				Parser::FMTareaparser areaparser;
+				Parser::FMTAreaParser areaparser;
 				//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
 				//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeSelectionToMask", __LINE__, __FILE__);
 				const Core::FMTTheme& theme = themes.at(themeid);
@@ -223,7 +223,7 @@ namespace Wrapper
 			mask.pop_back();
 			globalmask = Core::FMTMask(mask, themes);
 			//setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-			Models::FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
+			Models::FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
 			/*int period = 0;
 			for (const Core::FMTSchedule& schedule : schedules)
 			{
@@ -240,8 +240,8 @@ namespace Wrapper
 	}
 
 
-	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation):
-		Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::MOSEK),
+	FMTmodelcache::FMTmodelcache(const Models::FMTModel& lmodel, const std::string& lmaplocation):
+		Models::FMTLpModel(lmodel, Models::FMTsolverinterface::MOSEK),
 		cachingswitch(false),
 		mtx(new boost::recursive_mutex()),
 		outputsmap(),
@@ -517,7 +517,7 @@ namespace Wrapper
 		double value = 0;
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard(*mtx); // guard pour le multi thread
-			value = Models::FMTlpmodel::getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
+			value = Models::FMTLpModel::getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
 
 			// 1-faire des prints de calcul pour voir lorsqu'il rentre versus lorsqu'il sort? Voir si des threads se pile sur les pieds
 			// 2-à chaque fois qu'il y a un appel  de getOutput, detruire et reconstruire le model pour empêcher que la cache suit
@@ -619,7 +619,7 @@ namespace Wrapper
 			}
 			if (!allscheme.empty())
 				{
-				Parser::FMTareaparser areaparser;
+				Parser::FMTAreaParser areaparser;
 				const std::vector<Heuristics::FMToperatingareascheme> Ioop = areaparser.getSchemeNeighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
 				for (const Heuristics::FMToperatingareascheme& scheme : Ioop)
 					{
@@ -984,7 +984,7 @@ namespace Wrapper
 				const Core::FMTMask subset = themeSelectionToMask(themeselection);
 				if (!aggregate.empty() && !subset.empty())
 				{
-					series = FMTsrmodel::getRotations(subset, aggregate);
+					series = FMTSrModel::getRotations(subset, aggregate);
 				}
 				setSeriesToCache(CacheKey, series);
 			}
@@ -1008,7 +1008,7 @@ namespace Wrapper
 				const bool gotSeries = getSeriesFromCache(AllSeries, CacheKey);
 				if (!gotSeries)
 				{
-					AllSeries = FMTsrmodel::getRotations(subset, aggregate);
+					AllSeries = FMTSrModel::getRotations(subset, aggregate);
 					setSeriesToCache(CacheKey, AllSeries);
 				}
 				const int length = getParameter(Models::FMTintmodelparameters::LENGTH);
@@ -1039,7 +1039,7 @@ namespace Wrapper
 	{
 		std::vector<int>stats;
 		try {
-			Graph::FMTgraphstats graphstats = FMTsrmodel::getStats();
+			Graph::FMTgraphstats graphstats = FMTSrModel::getStats();
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
 			stats.push_back(graphstats.vertices);
@@ -1059,7 +1059,7 @@ namespace Wrapper
 		std::vector<int>stats;
 		try {
 			const Core::FMTMask SUBSET = themeSelectionToMask(p_ThemeSelection);
-			Graph::FMTgraphstats graphstats = FMTsrmodel::getGraphStats(SUBSET);
+			Graph::FMTgraphstats graphstats = FMTSrModel::getGraphStats(SUBSET);
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
 			stats.push_back(graphstats.vertices);

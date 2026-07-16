@@ -13,7 +13,7 @@ int main()
 {
 Logging::FMTDefaultLogger().logStamp();
 const std::string testinput = "22 serialization::archive 17 0 0 2 0 0 0 11 0 0 1 0 0 0 6 THEME5 6 FC8332 15 ACPFAIBL-FC8332 10 1 0 6 THEME5 6 FC8202 14 ACPFORT-FC8202";
-Parser::FMTtransitionparser transitionparser;
+Parser::FMTTransitionParser transitionparser;
 std::vector<Core::FMTGCBMTransition>transitions;
 std::map<std::string, std::string>m1;
 m1["THEME5"] = "FC8332";

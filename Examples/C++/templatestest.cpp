@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 			templatefolder = "T:\\Donnees\\Usagers\\FILDO1\\Modele_pour_Remsoft\\01272\\Scenarios";
 			length = 30;
 		}
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc> errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.setErrorsToWarnings(errors);
-		const std::vector<Models::FMTmodel> models = modelparser.readTemplates(primlocation, templatefolder);
+		const std::vector<Models::FMTModel> models = modelparser.readTemplates(primlocation, templatefolder);
 		if (models.size() < 1)
 			{
 			Exception::FMTFreeExceptionHandler().raise(
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 			Models::FMTsolverinterface solver = (argc > 1)
 				? Models::FMTsolverinterface::CLP 
 				: Models::FMTsolverinterface::MOSEK;
-			Models::FMTlpmodel test(models.at(id), solver);
+			Models::FMTLpModel test(models.at(id), solver);
 			test.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 			test.doPlanning(true);
 		}

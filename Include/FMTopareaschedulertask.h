@@ -26,7 +26,7 @@ namespace Core
 
 namespace Models
 {
-	class FMTlpmodel;
+	class FMTLpModel;
 }
 
 namespace Heuristics
@@ -40,7 +40,7 @@ namespace Parallel
 {
 	// DocString: FMTopareaschedulertask
 	/**
-	The opareascheduler is a task used to find suboptimal schedule for operating area for a Models::FMTlpmodel.
+	The opareascheduler is a task used to find suboptimal schedule for operating area for a Models::FMTLpModel.
 	It keeps the best scheduler in memory and try to modify is actual schedule to get a better objective value.
 	It will generate time yields for the operating area.
 	*/
@@ -72,7 +72,7 @@ namespace Parallel
 		static std::string outyldname;
 		// DocString: FMTopareaschedulertask::basemodel
 		///The non build base lpmodel copy (only use for writing the solution).
-		static std::unique_ptr<Models::FMTlpmodel>basemodel;
+		static std::unique_ptr<Models::FMTLpModel>basemodel;
 		// DocString: FMTopareaschedulertask::lastspawned
 		///Last thread id and seed used by the spawner.
 		int lastspawned;
@@ -80,12 +80,12 @@ namespace Parallel
 		/**
 		Solve the initial model and return the objective value.
 		*/
-		double solveInitialModel(Models::FMTlpmodel& model) const;
+		double solveInitialModel(Models::FMTLpModel& model) const;
 		// DocString: FMTopareaschedulertask::setInitialScheduler
 		/**
 		Set the initialscheduler from the lpmodel using the operating areas and the output node.
 		*/
-		void setInitialScheduler(Models::FMTlpmodel& model,
+		void setInitialScheduler(Models::FMTLpModel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,const Core::FMTOutputNode& node);
 		// DocString: FMTopareaschedulertask::getStopPoint
 		/**
@@ -129,7 +129,7 @@ namespace Parallel
 		Will return a new vector of FMToperatingareascheme with new return_time value based on the output calculed
 		in the model for each operaging area.
 		*/
-		std::vector<Heuristics::FMToperatingareascheme> getReturnTimeFromOutput(Models::FMTlpmodel& model,
+		std::vector<Heuristics::FMToperatingareascheme> getReturnTimeFromOutput(Models::FMTLpModel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 			const Core::FMTOutput& output) const;
 	public:
@@ -162,10 +162,10 @@ namespace Parallel
 		/**
 		Using a model the constructor will call doPlanning of the model.
 		So you have to set the length and other parameters before. Then the task will obtain the operatingareascheme
-		from the FMTlpmodel and setup everything else. If the returntime_output is non empty then it will use it to get the result
+		from the FMTLpModel and setup everything else. If the returntime_output is non empty then it will use it to get the result
 		for each FMToperatingareascheme and set the value to the returntime using the initial solution.
 		*/
-		FMTopareaschedulertask(const Models::FMTlpmodel& model,
+		FMTopareaschedulertask(const Models::FMTLpModel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 			const Core::FMTOutputNode& node,
 			const std::string& outputlocation,

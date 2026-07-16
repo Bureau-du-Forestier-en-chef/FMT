@@ -28,96 +28,96 @@ class CoinPackedMatrix;
 namespace Models
 {
 
-// DocString: FMTlpsolver
+// DocString: FMTLpSolver
 /**
 This class is an abstract class to make the usage of osisolverinterface more easy in FMT.
-Usefull stuff if dealing with linear programming model. the FMTlpsolver class was needed to
+Usefull stuff if dealing with linear programming model. the FMTLpSolver class was needed to
 reduce the overhead caused by the addrow / addcol osisolverinterface during recurrent calls.
 All calls related to add/remove columns or rows checking for primal or dual solution getting the number of
 rows or columns dont need synchronization with the cache. So those calls are going to be faster when usecache = true.
 */
-class FMTEXPORT FMTlpsolver: public Core::FMTObject
+class FMTEXPORT FMTLpSolver: public Core::FMTObject
 	{
 	public:
-		// DocString: FMTlpsolver::swap
+		// DocString: FMTLpSolver::swap
 		/**
-		Swap a FMTlpsolver.
+		Swap a FMTLpSolver.
 		*/
-		void swap(FMTlpsolver& rhs);
-		// DocString: FMTlpsolver::passInLogger
+		void swap(FMTLpSolver& rhs);
+		// DocString: FMTLpSolver::passInLogger
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
-		// DocString: FMTlpsolver::unmarkHotStart
+		// DocString: FMTLpSolver::unmarkHotStart
 		/**
 		Clear all cached data in osisolverinterface.
 		*/
 		void unmarkHotStart();
-		// DocString: FMTlpsolver::stockResolve
+		// DocString: FMTLpSolver::stockResolve
 		/**
 		Returns true if the solving result in a optimal solution. It calls the plain old osisolverinterface->resolve().
 		A synchronization will be done when calling this function.
 		*/
 		bool stockResolve();
-		// DocString: FMTlpsolver()
+		// DocString: FMTLpSolver()
 		/**
-		Default constructor for FMTlpsolver.
+		Default constructor for FMTLpSolver.
 		*/
-		FMTlpsolver();
-		// DocString: ~FMTlpsolver()
+		FMTLpSolver();
+		// DocString: ~FMTLpSolver()
 		/**
-		Default virtual destructor for FMTlpsolver.
+		Default virtual destructor for FMTLpSolver.
 		*/
-		virtual ~FMTlpsolver() = default;
-		// DocString: FMTlpsolver(const FMTlpsolver&)
+		virtual ~FMTLpSolver() = default;
+		// DocString: FMTLpSolver(const FMTLpSolver&)
 		/**
-		Default copy constructor for FMTlpsolver.
+		Default copy constructor for FMTLpSolver.
 		*/
-		FMTlpsolver(const FMTlpsolver& rhs);
-		// DocString: FMTlpsolver(FMTlpsolver&&)
+		FMTLpSolver(const FMTLpSolver& rhs);
+		// DocString: FMTLpSolver(FMTLpSolver&&)
 		/**
-		Default move constructor for FMTlpsolver.
+		Default move constructor for FMTLpSolver.
 		*/
-		FMTlpsolver(FMTlpsolver&& rhs)=default;
-		// DocString: FMTlpsolver::operator=
+		FMTLpSolver(FMTLpSolver&& rhs)=default;
+		// DocString: FMTLpSolver::operator=
 		/**
-		Default copy assignment for FMTlpsolver.
+		Default copy assignment for FMTLpSolver.
 		*/
-		FMTlpsolver& operator =(const FMTlpsolver& rhs);
-		// DocString: FMTlpsolver::operator=
+		FMTLpSolver& operator =(const FMTLpSolver& rhs);
+		// DocString: FMTLpSolver::operator=
 		/**
-		Default move assignment for FMTlpsolver.
+		Default move assignment for FMTLpSolver.
 		*/
-		FMTlpsolver& operator =(FMTlpsolver&& rhs) =default;
-		// DocString: FMTlpsolver(FMTsolverinterface,const std::string,const std::string)
+		FMTLpSolver& operator =(FMTLpSolver&& rhs) =default;
+		// DocString: FMTLpSolver(FMTsolverinterface,const std::string,const std::string)
 		/**
-		@brief Constructor for FMTlpsolver with a (lsolvertype) and a (logger). It's the main constructor used.
+		@brief Constructor for FMTLpSolver with a (lsolvertype) and a (logger). It's the main constructor used.
 		@param[in] p_ColdStartParameters the cold starts parameters on the form: param_name param_value /n
 		@param[in] p_WarmStartParameterss the warm starts parameters on the form: param_name param_value /n
 		@param[in] p_problemName the name of the problem.
 		*/
-		FMTlpsolver(FMTsolverinterface lsolvertype,
+		FMTLpSolver(FMTsolverinterface lsolvertype,
 			const std::string& p_ColdStartParameters,
 			const std::string& p_WarmStartParameters,
 			const std::string& p_problemName);
-		// DocString: FMTlpsolver::operator==
+		// DocString: FMTLpSolver::operator==
 		/**
-		Comparison operator of FMTlpsolver
+		Comparison operator of FMTLpSolver
 		*/
-		bool operator == (const FMTlpsolver& rhs) const;
-		// DocString: FMTlpsolver::operator==
+		bool operator == (const FMTLpSolver& rhs) const;
+		// DocString: FMTLpSolver::operator==
 		/**
-		FMTlpsolver nonequality operator.
+		FMTLpSolver nonequality operator.
 		*/
-		bool operator != (const FMTlpsolver& rhs) const;
-		// DocString: FMTlpsolver::resolve
+		bool operator != (const FMTLpSolver& rhs) const;
+		// DocString: FMTLpSolver::resolve
 		/**
 		By default call solverinterface->resolve() when some changes are done to the model.
 		The user dont necessery need the call initialSolve every time the matrix has changed a call to resolve maybe enought.
 		*/
 		virtual bool resolve();
-		// DocString: FMTlpsolver::initialSolve
+		// DocString: FMTLpSolver::initialSolve
 		/**
 		Cold start of the LPsolve of a simple LP model.
 		By default initialSolve will call solverinterface->initialSolve() but using the FMTsolverinterface enum
@@ -125,120 +125,120 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		For all solvers interior point is considered the best algorith.
 		*/
 		virtual bool initialSolve();
-		// DocString: FMTlpsolver::setNumberOfThreads
+		// DocString: FMTLpSolver::setNumberOfThreads
 		/**
 		set the maximum number of threads to be used by the solver.
 		Not all solver can have numberof threads sets.
 		*/
 		void setNumberOfThreads(const size_t& nthread);
-		// DocString: FMTlpsolver::setMIPgaptolerance
+		// DocString: FMTLpSolver::setMIPgaptolerance
 		/**
 		set The tolerance between the relaxed optimal and the integer optimal.
 		Default it 1.0-4...might be better to use a larger gap like 0.01 (1%) or even 5%...
 		Not all solver can have the MIPgap set...
 		*/
 		void setMIPgaptolerance(const double& gap);
-		// DocString: FMTlpsolver::setoptimizerMAXtime
+		// DocString: FMTLpSolver::setoptimizerMAXtime
 		/**
 		Maximum amount of time the optimizer is allowed to spent on the optimization. A negative number means infinity.
 		*/
 		void setoptimizerMAXtime(const double& time);
-		// DocString: FMTlpsolver::setFeasiblePumpImprovSol
+		// DocString: FMTLpSolver::setFeasiblePumpImprovSol
 		/**
 		Controls the way the Feasibility Pump heuristic is employed by the mixed-integer optimizer.The Feasibility Pump is enabled with an effort to improve solution quality. And others
 		*/
 		void mipParameters();
-		// DocString: FMTlpsolver::getObjValue
+		// DocString: FMTLpSolver::getObjValue
 		/**
 		Get the objective value of the solved matrix.
 		*/
 		double getObjValue() const;
-		// DocString: FMTlpsolver::getIterationCount
+		// DocString: FMTLpSolver::getIterationCount
 		/**
 		Get the number of iterations done by the solver.
 		*/
 		int getIterationCount() const;
-		// DocString: FMTlpsolver::passInSolver
+		// DocString: FMTLpSolver::passInSolver
 		/**
 		This will share the solverinterface pointer of (solver).
 		*/
-		void passInSolver(const FMTlpsolver& solver);
-		// DocString: FMTlpsolver::passInMessageHandler
+		void passInSolver(const FMTLpSolver& solver);
+		// DocString: FMTLpSolver::passInMessageHandler
 		/**
 		This will pass the FMTLogger to the solverinterface.
 		*/
 		void passInMessageHandler(Logging::FMTLogger& logger);
-		// DocString: FMTlpsolver::setSolverType
+		// DocString: FMTLpSolver::setSolverType
 		/**
 		Setter of the solvertype of the serializable matrix.
 		*/
 		void setSolverType(FMTsolverinterface& lsolvertype) const;
-		// DocString: FMTlpsolver::gotLicense
+		// DocString: FMTLpSolver::gotLicense
 		/**
 		Returns true if the license of the solver is available.
 		*/
 		bool gotLicense() const;
-		// DocString: FMTlpsolver::getSolverName
+		// DocString: FMTLpSolver::getSolverName
 		/**
 		Returns the name of the solver used.
 		*/
 		std::string getSolverName() const;
-		// DocString: FMTlpsolver::getNumCols
+		// DocString: FMTLpSolver::getNumCols
 		/**
 		Returns the number of columns by looking in the solverinterface and in the cache.
 		*/
 		int getNumCols() const;
-		// DocString: FMTlpsolver::getNumRows
+		// DocString: FMTLpSolver::getNumRows
 		/**
 		Returns the number of rows by looking in the solverinterface and in the cache.
 		*/
 		int getNumRows() const;
-		// DocString: FMTlpsolver::getObjCoefficients
+		// DocString: FMTLpSolver::getObjCoefficients
 		/**
 		Returns the objective coefficients of the matrix. The function will synchronize the solverinterface with the
 		matrix cache before getting the coefficients.
 		*/
 		const double* getObjCoefficients() const;
-		// DocString: FMTlpsolver::getColLower
+		// DocString: FMTLpSolver::getColLower
 		/**
 		Returns columns lower bounds of the matrix. The function will synchronize the solverinterface with the
 		matrix cache before getting the bounds.
 		*/
 		const double* getColLower() const;
-		// DocString: FMTlpsolver::getColUpper
+		// DocString: FMTLpSolver::getColUpper
 		/**
 		Returns columns upper bounds of the matrix. The function will synchronize the solverinterface with the
 		matrix cache before getting the bounds.
 		*/
 		const double* getColUpper() const;
-		// DocString: FMTlpsolver::getColSolution
+		// DocString: FMTLpSolver::getColSolution
 		/**
 		Returns the columns solution of the solverinterface. The function wont synchronize the solverinterface with the cache.
 		*/
 		const double* getColSolution() const;
-		// DocString: FMTlpsolver::getRowPrice
+		// DocString: FMTLpSolver::getRowPrice
 		/**
 		Returns the rows solution of the solverinterface. The function wont synchronize the solverinterface with the cache.
 		*/
 		const double* getRowPrice() const;
-		// DocString: FMTlpsolver::getRowActivity
+		// DocString: FMTLpSolver::getRowActivity
 		/**
 		Returns the rows solution of the solverinterface. The function wont synchronize the solverinterface with the cache.
 		*/
 		const double* getRowActivity() const;
-		// DocString: FMTlpsolver::getRowUpper
+		// DocString: FMTLpSolver::getRowUpper
 		/**
 		Returns rows upper bounds of the solverinterface. The function will synchronize the solverinterface with the
 		matrix cache before getting the bounds.
 		*/
 		const double* getRowUpper() const;
-		// DocString: FMTlpsolver::getRowLower
+		// DocString: FMTLpSolver::getRowLower
 		/**
 		Returns rows lower bounds of the solverinterface. The function will synchronize the solverinterface with the
 		matrix cache before getting the bounds.
 		*/
 		const double* getRowLower() const;
-		// DocString: FMTlpsolver::getRow
+		// DocString: FMTLpSolver::getRow
 		/**
 		Given a g row (whichRow) the function will fill up the row lower bound (rowLower), the row upper bound (rowUpper),
 		the row's (indicies) and the row's elements. The function will try to not synchronize the matrix has much has possible.
@@ -246,7 +246,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		*/
 		int getRow(int whichRow, double &rowLower, double &rowUpper,
 			std::vector<int>& indices, std::vector<double>&elements) const;
-		// DocString: FMTlpsolver::getCol
+		// DocString: FMTLpSolver::getCol
 		/**
 		Given a col (whichCol) the function will fill up the column lower bound (colLower), the column upper bound (colUpper),
 		the column's objective (objectiveValue), the column's (indicies) and the column's elements.
@@ -254,23 +254,23 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		*/
 		int getCol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
 			std::vector<int>& indices, std::vector<double>&elements) const;
-		// DocString: FMTlpsolver::getObjSense
+		// DocString: FMTLpSolver::getObjSense
 		/**
 		The function returns the objective sense of the solverinterface.The function will synchronize the solverinterface with the
 		matrix cache before getting the objective sense.
 		*/
 		double getObjSense() const;
-		// DocString: FMTlpsolver::setObjective
+		// DocString: FMTLpSolver::setObjective
 		/**
 		Sets the objective values of the columns of the matrix.
 		*/
 		void setObjective(const double* objectivevalues);
-		// DocString: FMTlpsolver::setObjSense
+		// DocString: FMTLpSolver::setObjSense
 		/**
 		Sets the objective sense (newsense) of the solverinterface.
 		*/
 		void setObjSense(const double& newsense);
-		// DocString: FMTlpsolver::addRow
+		// DocString: FMTLpSolver::addRow
 		/**
 		Add a row, with a number of columns (numberInRow),with columns indexes (columns), with (elements) with a given lower bound (rowLower),
 		and a given row upper bound (rowUpper).If usecache is true then it will be only added to the matrix cache else it will
@@ -278,7 +278,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		*/
 		void addRow(int numberInRow, const int * columns, const double * elements,
 			double rowLower = -std::numeric_limits<double>::max(), double rowUpper = std::numeric_limits<double>::max());
-		// DocString: FMTlpsolver::addCol
+		// DocString: FMTLpSolver::addCol
 		/**
 		Add a col, with a number of rows (numberInColumn),with rows indexes (rows), with (elements) with a given lower bound (colLower),
 		and a given column upper bound (colUpper) and an objective value (objectiveValue).If usecache is true then it will be only added to the matrix cache else it will
@@ -286,123 +286,123 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		*/
 		void addCol(int numberInColumn, const int * rows, const double * elements, double columnLower = 0.0,
 			double columnUpper = std::numeric_limits<double>::max(), double objectiveValue = 0.0);
-		// DocString: FMTlpsolver::addRows
+		// DocString: FMTLpSolver::addRows
 		/**
 		Add multiple rows directly to the matrix but first will synchronize the matrix with the matrix cache.
 		*/
 		void addRows(const int numrows, const int* rowStarts, const int* columns,
 			const double* elements, const double* rowlb, const double* rowub);
-		// DocString: FMTlpsolver::addCols
+		// DocString: FMTLpSolver::addCols
 		/**
 		Add multiple columns directly to the matrix but first will synchronize the matrix with the matrix cache.
 		*/
 		void addCols(const int numcols, const int* columnStarts, const int* rows,
 			const double* elements, const double* collb, const double* colub, const double* obj);
-		// DocString: FMTlpsolver::isProvenOptimal
+		// DocString: FMTLpSolver::isProvenOptimal
 		/**
 		Returns true if the program is optimal but first will synchronize the matrix with the matrix cache.
 		*/
 		bool isProvenOptimal() const;
-		// DocString: FMTlpsolver::deleteRow
+		// DocString: FMTLpSolver::deleteRow
 		/**
 		Delete's a given row (rowindex), if usecache is true then it will only delete it from the cache.
 		*/
 		void deleteRow(const int& rowindex);
-		// DocString: FMTlpsolver::deleteRow
+		// DocString: FMTLpSolver::deleteRow
 		/**
 		Delete's a given column (colindex), if usecache is true then it will only delete it from the cache.
 		*/
 		void deleteCol(const int& colindex);
-		// DocString: FMTlpsolver::deleteRows
+		// DocString: FMTLpSolver::deleteRows
 		/**
 		Delete's multiple Rows, if usecache is true then it will synchronize first the matrix befores deleting the rows.
 		*/
 		void deleteRows(int numberofrows,const int* rowindexes);
-		// DocString: FMTlpsolver::deleteCols
+		// DocString: FMTLpSolver::deleteCols
 		/**
 		Delete's multiple Cols, if usecache is true then it will synchronize first the matrix befores deleting the columns.
 		*/
 		void deleteCols(int numberofcols, const int* colindexes);
-		// DocString: FMTlpsolver::setColSolution
+		// DocString: FMTLpSolver::setColSolution
 		/**
 		The function will set a solution for all columns of the solverinterface,
 		it will synchronize the matrix before setting the new column solution.
 		*/
 		void setColSolution(const double* newsolution);
-		// DocString: FMTlpsolver::setRowPrice
+		// DocString: FMTLpSolver::setRowPrice
 		/**
 		The function will set a solution for all rows of the solverinterface,
 		it will synchronize the matrix before setting the new row solution.
 		*/
 		void setRowPrice(const double* rowprice);
-		// DocString: FMTlpsolver::setColSetBounds
+		// DocString: FMTLpSolver::setColSetBounds
 		/**
 		It synchronize the matrix and then
 		set the columns index (indexFirst) to (indexlast) lower and upper bounds (boundlist)
 		*/
 		void setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist);
-		// DocString: FMTlpsolver::setRowSetBoundss
+		// DocString: FMTLpSolver::setRowSetBoundss
 		/**
 		It synchronize the matrix and then
 		set the rows index (indexFirst) to (indexlast) lower and upper bounds (boundlist)
 		*/
 		void setRowSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist);
-		// DocString: FMTlpsolver::setInteger
+		// DocString: FMTLpSolver::setInteger
 		/**
 		It synchronize the matrix and then
 		sets a given column (colindex) integer.
 		*/
 		void setInteger(const int& colindex);
-		// DocString: FMTlpsolver::setInteger
+		// DocString: FMTLpSolver::setInteger
 		/**
 		It synchronize the matrix and then
 		sets multiple columns (indices) with a given size (len) integer variable.
 		*/
 		void setInteger(const int* indices,int len);
-		// DocString: FMTlpsolver::updateMatrixNaming
+		// DocString: FMTLpSolver::updateMatrixNaming
 		/**
 		Update constraints and variables names.
 		*/
 		//void updateMatrixNaming(const std::unordered_map<int, std::string>& colsnames,
 		//	const std::unordered_map<int, std::string>& rownames);
-		// DocString: FMTlpsolver::setColName
+		// DocString: FMTLpSolver::setColName
 		/**
 		set column name.
 		*/
 		void setColName(const std::string& name, const int& columnid) const;
-		// DocString: FMTlpsolver::setRowName
+		// DocString: FMTLpSolver::setRowName
 		/**
 		set row name.
 		*/
 		void setRowName(const std::string& name, const int& rowid) const;
-		// DocString: FMTlpsolver::writeLP
+		// DocString: FMTLpSolver::writeLP
 		/**
 		Write the solverinterface matrix to a file (location) using the lp formulation.
 		*/
 		void writeLP(const std::string& location) const;
-		// DocString: FMTlpsolver::writeMPS
+		// DocString: FMTLpSolver::writeMPS
 		/**
 		Write the solverinterface matrix to a file (location) using the MPS formulation.
 		*/
 		void writeMPS(const std::string& location) const;
-		// DocString: FMTlpsolver::branchAndBound
+		// DocString: FMTLpSolver::branchAndBound
 		/**
 		Synchronize the matrix cache and then calls the branch and bound MIP enumeration solver.
 		*/
 		void branchAndBound();
-		// DocString: FMTlpsolver::enableMatrixCaching
+		// DocString: FMTLpSolver::enableMatrixCaching
 		/**
 		Enable the rows and columns caching when adding or deleting a variable to the solverinterface.
 		It reduces the number of calls made to the osisolverinterface.
 		*/
 		void enableMatrixCaching();
-		// DocString: FMTlpsolver::disableMatrixCaching
+		// DocString: FMTLpSolver::disableMatrixCaching
 		/**
 		First it will synchronize the matrix cache with the solverinterface and then
 		turn off the matrix caching, the number of calls made to osisolverinterface will be greater.
 		*/
 		void disableMatrixCaching();
-		// DocString: FMTlpsolver::getSolverType()
+		// DocString: FMTLpSolver::getSolverType()
 		/**
 		Return the solver type of the solver.
 		*/
@@ -410,18 +410,18 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		{
 			return solvertype;
 		}
-		// DocString: FMTlpsolver::synchronize
+		// DocString: FMTLpSolver::synchronize
 		/**
 		If the users as added or deleted constraints or variables this function is going to update the
 		Osisolverinterface using the cachedmatrix informations (new or deleted rows and columns).
 		*/
 		void synchronize();
-		// DocString: FMTlpsolver::sortDeletedCache
+		// DocString: FMTLpSolver::sortDeletedCache
 		/**
 		Sorts and remove replicates present in the rows and columns to delete matrix cache.
 		*/
 		void sortDeletedCache();
-		// DocString: FMTlpsolver::getCacheDeletedConstraints
+		// DocString: FMTLpSolver::getCacheDeletedConstraints
 		/**
 		It will returns rows ids that are in the cache and marked as deleted.
 		*/
@@ -429,7 +429,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		{
 			return matrixcache.getDeletedConstraints();
 		}
-		// DocString: FMTlpsolver::getcachedeletedvariable
+		// DocString: FMTLpSolver::getcachedeletedvariable
 		/**
 		It will returns the cols ids that are in the cache and marked as deleted.
 		*/
@@ -437,68 +437,68 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		{
 			return matrixcache.getDeletedVariables();
 		}
-		// DocString: FMTlpsolver::lowerNUpperToStr
+		// DocString: FMTLpSolver::lowerNUpperToStr
 		/**
 		Function to convert double bounds to string bounds (-inf,inf).
 		*/
 		std::string lowerNUpperToStr(const double& lower, const double& upper) const;
-		// DocString: FMTlpsolver::getCacheElements
+		// DocString: FMTLpSolver::getCacheElements
 		/**
 		This function is for debugging it returns the constraints and variables to add to the solverinterface
 		sitting in the matrixcache.
 		*/
 		std::string getCacheElements() const;
-		// DocString: FMTlpsolver::updateRowsAndColsNames
+		// DocString: FMTLpSolver::updateRowsAndColsNames
 		/**
 		Update the rows and columns names
 		*/
 		void updateRowsAndColsNames(bool shortformat = true);
 		#ifdef FMTWITHMOSEK
-			// DocString: FMTlpsolver::getMskErrorDesc
+			// DocString: FMTLpSolver::getMskErrorDesc
 			/**
 			Return description of error code from Mosek.
 			*/
 			std::string getMskErrorDesc(int error) const;
 		#endif
 	protected:
-		// DocString: FMTlpsolver::matrixcache
+		// DocString: FMTLpSolver::matrixcache
 		///The matrix cache follow the constraints or variables that need to be added or removed to the problem.
-		mutable FMTmatrixbuild matrixcache;
-		// DocString: FMTlpsolver::solvertype
+		mutable FMTMatrixBuild matrixcache;
+		// DocString: FMTLpSolver::solvertype
 		///Solver type used maybe usefull for initialSolve or resolve to know what solver we are using to speed-up the process.
 		FMTsolverinterface solvertype;
-		// DocString: FMTlpsolver::canUpdateSource
+		// DocString: FMTLpSolver::canUpdateSource
 		/**
 
 		*/
 		bool canUpdateSource() const;
-		// DocString: FMTlpsolver::buildSolverInterface
+		// DocString: FMTLpSolver::buildSolverInterface
 		/**
 		Function used to build a shared pointer of a solverinterface passing the message handler to the pointer.
 		*/
 		std::shared_ptr<OsiSolverInterface> buildSolverInterface(const FMTsolverinterface& lsolvertype) const;
-		// DocString: FMTlpsolver::copySolverInterface
+		// DocString: FMTLpSolver::copySolverInterface
 		/**
 		Function used to copy a shared pointer of a solverinterface passing the message handler to the pointer to a other shared pointer.
 		*/
 		std::shared_ptr<OsiSolverInterface> copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype) const;
-		// DocString: FMTlpsolver::clearRowCache
+		// DocString: FMTLpSolver::clearRowCache
 			/**
 			Clears the row caching of the osisolverinterface if Mosek is used.
 			*/
 		void clearRowCache();
-		// DocString: FMTlpsolver::getMatrixByRow
+		// DocString: FMTLpSolver::getMatrixByRow
 		/**
 		Returns a Coinpackedmatrix by row of the problem. A synchronization will be done when calling this function.
 		*/
 		const CoinPackedMatrix* getMatrixByRow() const;
-		// DocString: FMTlpsolver::getMatrixByCol
+		// DocString: FMTLpSolver::getMatrixByCol
 		/**
 		Returns a Coinpackedmatrix by column of the problem. A synchronization will be done when calling this function.
 		*/
 		const CoinPackedMatrix* getMatrixByCol() const;
 	private:
-		// DocString: FMTlpsolver::strtoParams
+		// DocString: FMTLpSolver::strtoParams
 		/**
 		@brief transform a string to a vector of parameters.
 		@param[in] the parameters in string
@@ -506,7 +506,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		*/
 		static std::vector<std::pair<std::string, std::string>>strtoParams(const std::string& p_params);
 		friend class boost::serialization::access;
-		// DocString: FMTlpsolver::save
+		// DocString: FMTLpSolver::save
 		/**
 		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -517,16 +517,16 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTObject>(*this));
 				ar& BOOST_SERIALIZATION_NVP(usecache);
 				matrixcache.synchronize(solverinterface);
-				const FMTserializablematrix matrix(solverinterface);
+				const FMTSerializableMatrix matrix(solverinterface);
 				ar& BOOST_SERIALIZATION_NVP(solvertype);
 				ar& BOOST_SERIALIZATION_NVP(matrix);
 			}
 			catch (...)
 			{
-				_exhandler->raiseFromCatch("", "FMTlpsolver::save", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTLpSolver::save", __LINE__, __FILE__);
 			}
 		}
-		// DocString: FMTlpsolver::load
+		// DocString: FMTLpSolver::load
 		/**
 		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -537,7 +537,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
 				ar& BOOST_SERIALIZATION_NVP(usecache);
 				matrixcache.synchronize(solverinterface);
-				FMTserializablematrix matrix;
+				FMTSerializableMatrix matrix;
 				ar& BOOST_SERIALIZATION_NVP(solvertype);
 				ar& BOOST_SERIALIZATION_NVP(matrix);
 				solverinterface = this->buildSolverInterface(solvertype);
@@ -545,37 +545,37 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 			}
 			catch (...)
 			{
-				_exhandler->raiseFromCatch("", "FMTlpsolver::load", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTLpSolver::load", __LINE__, __FILE__);
 			}
 
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
-		// DocString: FMTlpsolver::solverinterface
+		// DocString: FMTLpSolver::solverinterface
 		///The osisolverinterface Abstract class (constraints/objectives/matrix ....LP) can be shared with an heuristic!
 		std::shared_ptr<OsiSolverInterface>solverinterface;
-		// DocString: FMTlpsolver::usecache
-		///If usecache is true then the matrix cache will be used by the FMTlpsolver to reduce the number of calls made to the solver.
+		// DocString: FMTLpSolver::usecache
+		///If usecache is true then the matrix cache will be used by the FMTLpSolver to reduce the number of calls made to the solver.
 		bool usecache;
-		// DocString: FMTlpsolver::>m_ColdStartParameters
+		// DocString: FMTLpSolver::>m_ColdStartParameters
 		///Parameters used by the linear programming solver. First = parameter, Seconde = parameter values.
 		std::vector<std::pair<std::string, std::string>>m_ColdStartParameters;
-		// DocString: FMTlpsolver::>m_WarmStartParameters
+		// DocString: FMTLpSolver::>m_WarmStartParameters
 		///Parameters used by the linear programming solver. First = parameter, Seconde = parameter values.
 		std::vector<std::pair<std::string, std::string>>m_WarmStartParameters;
 		
 	#ifdef FMTWITHMOSEK
-		// DocString: FMTlpsolver::_mskOptimizeWithParameters
+		// DocString: FMTLpSolver::_mskOptimizeWithParameters
 		/**
 		@brief Function used to set the parameters of an MSK task and optimize
 		*/
 		int _mskOptimizeWithParameters();
-		// DocString: FMTlpsolver::_mskOptimizeWithDefaultParameters
+		// DocString: FMTLpSolver::_mskOptimizeWithDefaultParameters
 		/**
 		@brief Set default parameters for mosek
 		*/
 		int _mskOptimizeWithDefaultParameters();
 	#endif
-		// DocString: FMTlpsolver::_setCLPOptions
+		// DocString: FMTLpSolver::_setCLPOptions
 		/**
 		Function used to set the options of an CLP solver before optimization
 		*/
@@ -583,6 +583,6 @@ class FMTEXPORT FMTlpsolver: public Core::FMTObject
 		
 	};
 }
-BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)
+BOOST_CLASS_EXPORT_KEY(Models::FMTLpSolver)
 #endif
 #endif

@@ -62,14 +62,14 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         }
         if (spatialconstraints)
         {
-            Parser::FMTareaparser areaParser;
+            Parser::FMTAreaParser areaParser;
             Logging::FMTDefaultLogger()<<"Lecture des blocs voisins."<<"\n";
             opeareas = areaParser.getSchemeNeighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1,nomChampStanlock);
         }
         return opeareas;
 }
 
-Core::FMTOutputNode createBFECoptaggregate(Models::FMTmodel& model)   
+Core::FMTOutputNode createBFECoptaggregate(Models::FMTModel& model)   
     {
         std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
             std::vector<Core::FMTAction> newactions;
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
                 scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
                 fichierShp = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/Carte/PC_9949_UA_U08251.shp";
             }
-            Parser::FMTmodelparser modelparser;
+            Parser::FMTModelParser modelparser;
             modelparser.setDefaultExceptionHandler(); 
             modelparser.setTaskLogger();
             std::vector<Exception::FMTexc>errors;
@@ -151,9 +151,9 @@ int main(int argc, char *argv[])
             errors.push_back(Exception::FMTexc::FMTEmptyOA);
             errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		    modelparser.setErrorsToWarnings(errors);
-            const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-            Models::FMTmodel model = models.at(0);
-            Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
+            const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+            Models::FMTModel model = models.at(0);
+            Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,5);
 	        optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	        optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
                 yields.push_back(newyield->getMask(), newyield);
             }
             yields.update();
-            Parser::FMTyieldparser yldparser;
+            Parser::FMTYieldParser yldparser;
             const std::string solutionname = "../../tests/testOAschedulerBFEC/bfecoptsol.yld";
             yldparser.write(yields, solutionname);
             //
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
                                     );
             }
             myields.update();
-            optimizationmodel = Models::FMTlpmodel(model, Models::FMTsolverinterface::MOSEK);
+            optimizationmodel = Models::FMTLpModel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setYields(myields);
             optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,5);
             optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);

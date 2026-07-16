@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	Parser::FMTmodelparser ModelParser;
+	Parser::FMTModelParser ModelParser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -46,15 +46,15 @@ int main(int argc, char* argv[])
 
 	// On lit le projet puis on fabrique plusieurs models pour simuler une cache
 	// contenant un model de base + des sc�narios d�riv�s (noms distincts).
-	const Models::FMTmodel BASE_MODEL = ModelParser.readproject(primary_path, { scenarioName }).at(0);
+	const Models::FMTModel BASE_MODEL = ModelParser.readproject(primary_path, { scenarioName }).at(0);
 	const std::string SCENARIO_A = "writetoproject_test_A";
 	const std::string SCENARIO_B = "writetoproject_test_B";
-	Models::FMTmodel scenarioModelA = BASE_MODEL;
+	Models::FMTModel scenarioModelA = BASE_MODEL;
 	scenarioModelA.setName(SCENARIO_A);
-	Models::FMTmodel scenarioModelB = BASE_MODEL;
+	Models::FMTModel scenarioModelB = BASE_MODEL;
 	scenarioModelB.setName(SCENARIO_B);
 
-	std::vector<Models::FMTmodel> models;
+	std::vector<Models::FMTModel> models;
 	models.push_back(BASE_MODEL);
 	models.push_back(scenarioModelA);
 	models.push_back(scenarioModelB);
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	const boost::filesystem::path OUTPUT_PRI = boost::filesystem::path(output_directory) / boost::filesystem::path("writetoproject_test.pri");
 
 	// FMTForm::writetoprojectfromcache en bouclant sur la cache.
-	for (const Models::FMTmodel& MODEL : models)
+	for (const Models::FMTModel& MODEL : models)
 	{
 		FMTWrapperCore::Tools::writeToProject(MODEL, OUTPUT_PRI.string());
 	}

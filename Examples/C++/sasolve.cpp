@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 			objectivevalue = 1000;*/
 			}
 		const std::string outputlocation = "../../tests/sasolve";
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -64,13 +64,13 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
-		std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
+		std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 		
 		boost::filesystem::path pripath(primarylocation);
 		boost::filesystem::path basefolder = pripath.parent_path();
 		const boost::filesystem::path RASTER_LOCATION = basefolder / boost::filesystem::path("rasters");
 		Spatial::FMTforest forest;
-		Parser::FMTareaparser areaparser;
+		Parser::FMTAreaParser areaparser;
 		if (boost::filesystem::is_directory(RASTER_LOCATION))
 			{
 			std::vector<std::string>themesName;
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 			forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getThemes(), "AGE", "SUPERFICIE", 1, 0.0001);
 			}
 		//models[0].setParameter(Models::FMTintmodelparameters::SEED, 100);
-		Models::FMTsamodel optimizationmodel(models.at(0));
+		Models::FMTSaModel optimizationmodel(models.at(0));
 		optimizationmodel.setInitialMapping(forest);
 		//optimizationmodel.redirectLogToFile(outputlocation + "/SA.log");
 		std::vector<Core::FMTTransition>singletransitions;

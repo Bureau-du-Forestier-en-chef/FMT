@@ -43,10 +43,10 @@ void exportParallel()
 
 	bp::class_<Parallel::FMTreplanningtask, bp::bases<Parallel::FMTtask>>("FMTreplanningtask", "@DocString(FMTreplanningtask)")
 			.def(bp::init<Parallel::FMTreplanningtask>())
-			.def(bp::init<const Models::FMTmodel&, const Models::FMTmodel&, const Models::FMTmodel&,const std::vector<Core::FMTOutput>&,
+			.def(bp::init<const Models::FMTModel&, const Models::FMTModel&, const Models::FMTModel&,const std::vector<Core::FMTOutput>&,
 				const std::string&, const std::string&,const std::vector<std::string>&,
 				const int&,const int&,double,Core::FMToutputlevel,const bool>(
-					bp::args("Strategic model", "stochastic model","tactic model","selected outputs","Output folder","GDAL driver name","GDAL driver creation options","Number of replicates","Number of replanning periods","minimaldrift","output level","Write schedule"), "@DocString(FMTreplanningtask::FMTreplanningtask(const Models::FMTmodel&,const Models::FMTmodel&,const Models::FMTmodel&))"));
+					bp::args("Strategic model", "stochastic model","tactic model","selected outputs","Output folder","GDAL driver name","GDAL driver creation options","Number of replicates","Number of replanning periods","minimaldrift","output level","Write schedule"), "@DocString(FMTreplanningtask::FMTreplanningtask(const Models::FMTModel&,const Models::FMTModel&,const Models::FMTModel&))"));
 
 	definePyList<Parallel::FMTreplanningtask>();
 
@@ -62,7 +62,7 @@ void exportParallel()
 
 	bp::class_<Parallel::FMTopareaschedulertask, bp::bases<Parallel::FMTtask>>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask")
 		.def(bp::init<Parallel::FMTopareaschedulertask>())
-		.def(bp::init<const Models::FMTlpmodel&,const std::vector<Heuristics::FMToperatingareascheme>&,
+		.def(bp::init<const Models::FMTLpModel&,const std::vector<Heuristics::FMToperatingareascheme>&,
 			const Core::FMTOutputNode&,const std::string&,
 			const std::string&,const unsigned int&,
 			const double&,Core::FMTOutput>(

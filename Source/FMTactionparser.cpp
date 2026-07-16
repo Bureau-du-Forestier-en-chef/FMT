@@ -21,19 +21,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-	const boost::regex FMTactionparser::rxsection = boost::regex("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)|(\\*ACTIONSERIES)", 
+	const boost::regex FMTActionParser::rxsection = boost::regex("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)|(\\*ACTIONSERIES)", 
 							boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTactionparser::rxoperator = boost::regex("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)",
+	const boost::regex FMTActionParser::rxoperator = boost::regex("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)",
 								boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTactionparser::m_SERIES_MATCH = boost::regex("(.+)([\\s\\t]*)((_ASAP)|(_ALAP))|(.+)",
+	const boost::regex FMTActionParser::m_SERIES_MATCH = boost::regex("(.+)([\\s\\t]*)((_ASAP)|(_ALAP))|(.+)",
 															boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
-FMTactionparser::FMTactionparser() : FMTparser()
+FMTActionParser::FMTActionParser() : FMTParser()
     {
 	setSection(Core::FMTsection::Action);
 	}
 
-	std::string FMTactionparser::getBounds(
+	std::string FMTActionParser::getBounds(
 		std::string& line, 
 		Core::FMTSpec& spec,
 		const Core::FMTConstants& constants, 
@@ -41,7 +41,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
         {
 		std::string mask = "";
 		try {
-			const std::vector<std::string>elements = spliter(line, FMTparser::m_SEPARATOR);
+			const std::vector<std::string>elements = spliter(line, FMTParser::m_SEPARATOR);
 			const std::array<std::string, 5> baseoperators = this->getBaseOperators();
 			size_t loc = 0;
 			int maskloc = 0;
@@ -89,12 +89,12 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				"for "+line,"FMTactionparser::getBounds", __LINE__, __FILE__, m_section);
+				"for "+line,"FMTActionParser::getBounds", __LINE__, __FILE__, m_section);
 			}
         return mask;
         }
 
-	std::map<std::string, std::vector<std::string>>FMTactionparser::valAgg(
+	std::map<std::string, std::vector<std::string>>FMTActionParser::valAgg(
 		std::vector<Core::FMTAction>& actions, 
 		std::map<std::string, std::vector<std::string>>& aggregates)
         {
@@ -111,12 +111,12 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				"","FMTactionparser::valAgg", __LINE__, __FILE__, m_section);
+				"","FMTActionParser::valAgg", __LINE__, __FILE__, m_section);
 			}
         return aggs;
         }
 
-    std::vector<Core::FMTAction>FMTactionparser::read(
+    std::vector<Core::FMTAction>FMTActionParser::read(
 		const std::vector<Core::FMTTheme>& themes,
 		const Core::FMTYields& yields,
 		const Core::FMTConstants& constants,
@@ -134,9 +134,9 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			std::map<std::string, std::vector<std::string>> aggregates;
 			Core::FMTAction* theaction = nullptr;
 			std::vector<Core::FMTSerie> allseries;
-			if (FMTparser::tryOpening(actionstream, location))
+			if (FMTParser::tryOpening(actionstream, location))
 			{
-				std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(actionstream, themes, constants);
+				std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(actionstream, themes, constants);
 				while (!Lines.empty())
 				{
 					std::string line = getLine(Lines);
@@ -144,7 +144,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 					{
 						boost::smatch kmatch;
 						
-						if (!boost::regex_search(line, kmatch, FMTactionparser::rxsection))
+						if (!boost::regex_search(line, kmatch, FMTActionParser::rxsection))
 						{
 							//crash here
 						}
@@ -172,7 +172,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 							if (operablename.empty())
 								{
 								_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"Empty operable for "+actions.back().getName() + " at line " + std::to_string(m_line),
-														"FMTactionparser::read", __LINE__, __FILE__, m_section);
+														"FMTActionParser::read", __LINE__, __FILE__, m_section);
 								}
 							if (operablename == "_DEATH" &&
 								std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator("_DEATH"))== actions.end())
@@ -241,7 +241,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						}
 						else if (!aggregatename.empty())
 						{
-							const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
+							const std::vector<std::string>splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 							for (const std::string& val : splited)
 							{
 								if (std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator(val)) != actions.end())
@@ -250,7 +250,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 								}
 								else {
 									_exhandler->raise(Exception::FMTexc::FMTundefined_aggregate_value,
-										val + " at line " + std::to_string(m_line),"FMTactionparser::read", __LINE__, __FILE__, m_section);
+										val + " at line " + std::to_string(m_line),"FMTActionParser::read", __LINE__, __FILE__, m_section);
 								}
 							}
 						}
@@ -259,9 +259,9 @@ FMTactionparser::FMTactionparser() : FMTparser()
 							if (theaction && theaction->isResetAge())
 							{
 								_exhandler->raise(Exception::FMTexc::FMTwrong_partial, partialname + " at line " + std::to_string(m_line),
-									"FMTactionparser::read", __LINE__, __FILE__, m_section);
+									"FMTActionParser::read", __LINE__, __FILE__, m_section);
 							}
-							const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
+							const std::vector<std::string>splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 							for (const std::string& val : splited)
 							{
 								theaction->pushPartials(val);
@@ -287,7 +287,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 					}
 					else {
 						_exhandler->raise(Exception::FMTexc::FMTempty_action, 
-							action.getName(),"FMTactionparser::read", __LINE__, __FILE__, m_section);
+							action.getName(),"FMTActionParser::read", __LINE__, __FILE__, m_section);
 					}
 				}
 				std::map<std::string, std::vector<std::string>>cleanedag = valAgg(actions, aggregates);
@@ -309,23 +309,23 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				"In "+m_location+" at line "+std::to_string(m_line),"FMTactionparser::read", __LINE__, __FILE__, m_section);
+				"In "+m_location+" at line "+std::to_string(m_line),"FMTActionParser::read", __LINE__, __FILE__, m_section);
 			}
         return cleanedactions;
         }
 
-		Core::FMTSerie FMTactionparser::_getSerie(
+		Core::FMTSerie FMTActionParser::_getSerie(
 			const std::string& p_line,
 			const std::vector<Core::FMTAction>& p_actions) const
 		{
 			Core::FMTSerie returnedSerie;
 			try {
 				boost::smatch kmatch;
-				if (!boost::regex_search(p_line, kmatch, FMTactionparser::m_SERIES_MATCH))
+				if (!boost::regex_search(p_line, kmatch, FMTActionParser::m_SERIES_MATCH))
 					{
 					_exhandler->raise(Exception::FMTexc::FMTundefined_action,
 						"Not a valid Serie on "+ p_line + std::to_string(m_line),
-						"FMTactionparser::_getSerie", __LINE__, __FILE__, m_section);
+						"FMTActionParser::_getSerie", __LINE__, __FILE__, m_section);
 					}
 				const std::string BASE_SERIES = std::string(kmatch[1]) + std::string(kmatch[6]);
 				const bool isASAP = !std::string(kmatch[4]).empty();
@@ -347,7 +347,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						else {
 							_exhandler->raise(Exception::FMTexc::FMTundefined_action,
 								action + " at line " + std::to_string(m_line), 
-								"FMTactionparser::_getSerie", __LINE__, __FILE__, m_section);
+								"FMTActionParser::_getSerie", __LINE__, __FILE__, m_section);
 						}
 
 					}
@@ -359,12 +359,12 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			}catch (...)
 			{
 				_exhandler->raiseFromCatch(
-					"", "FMTactionparser::FMTactionparser::_GetSerie", __LINE__, __FILE__, m_section);
+					"", "FMTActionParser::FMTActionParser::_GetSerie", __LINE__, __FILE__, m_section);
 			}
 			return returnedSerie;
 		}
 
-		std::vector<Core::FMTAction>FMTactionparser::getGCBMactionsaggregate(const std::vector<Core::FMTAction>& actions) const
+		std::vector<Core::FMTAction>FMTActionParser::getGCBMactionsaggregate(const std::vector<Core::FMTAction>& actions) const
 		{
 			std::vector<Core::FMTAction>actionswithgcbmaggregate(actions);
 			std::string onaction;
@@ -373,7 +373,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 				const boost::filesystem::path filelocation = boost::filesystem::path(getRuntimeLocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path("actionsmapping.json");
 				std::ifstream jsonstream(filelocation.string());
 				location = filelocation.string();
-				if (FMTparser::tryOpening(jsonstream, filelocation.string()))
+				if (FMTParser::tryOpening(jsonstream, filelocation.string()))
 				{
 					boost::property_tree::ptree root;
 					boost::property_tree::read_json(jsonstream, root);
@@ -385,14 +385,14 @@ FMTactionparser::FMTactionparser() : FMTparser()
 							root.get_child(action.getName()).find("name") == root.get_child(action.getName()).not_found())
 							{
 							_exhandler->raise(Exception::FMTexc::FMTignore, "GCBM mapping for "+action.getName() + " at line " + std::to_string(m_line),
-								"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, Core::FMTsection::Action);
+								"FMTActionParser::getactionsidsofmodelyields", __LINE__, __FILE__, Core::FMTsection::Action);
 						}else {
 							//test to int!
 							const int idofaction = getNum<int>(root.get<std::string>(action.getName() + ".id"));
 							if (idofaction== FMTGCBMGROWTHID || idofaction == FMTGCBMUNKNOWNID) //|| idofaction == FMTGCBMDEATHID)
 								{
 								_exhandler->raise(Exception::FMTinvalid_number,"cannot use GCBM actions id "+std::to_string(FMTGCBMGROWTHID)+" or "+ std::to_string(FMTGCBMUNKNOWNID) + " or " + std::to_string(FMTGCBMDEATHID) + " at line " + std::to_string(m_line),
-									"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, Core::FMTsection::Action);
+									"FMTActionParser::getactionsidsofmodelyields", __LINE__, __FILE__, Core::FMTsection::Action);
 								}
 							const std::string GCBMaggregate = "~GCBM:" + root.get<std::string>(action.getName() + ".id") + ":" + root.get<std::string>(action.getName() + ".name");
 							action.pushAggregate(GCBMaggregate);
@@ -404,13 +404,13 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			catch (...)
 			{
 				_exhandler->raiseFromCatch(
-					"In "+ location +" On action "+ onaction, "FMTactionparser::getGCBMactionsaggregates", __LINE__, __FILE__, m_section);
+					"In "+ location +" On action "+ onaction, "FMTActionParser::getGCBMactionsaggregates", __LINE__, __FILE__, m_section);
 			}
 			return actionswithgcbmaggregate;
 		}
 
 
-    void FMTactionparser::write(
+    void FMTActionParser::write(
 		const std::vector<Core::FMTAction>& actions,
 		const std::string& location,
 		bool withgcbmagg) const
@@ -468,11 +468,11 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				"","FMTactionparser::write", __LINE__, __FILE__, m_section);
+				"","FMTActionParser::write", __LINE__, __FILE__, m_section);
 			}
         }
 
-    std::vector<Core::FMTAction*> FMTactionparser::sameActionAs(
+    std::vector<Core::FMTAction*> FMTActionParser::sameActionAs(
 		const std::string& all_set, 
 		std::vector<Core::FMTAction>& actions) const
         {
@@ -486,7 +486,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				"","FMTactionparser::sameActionAs", __LINE__, __FILE__, m_section);
+				"","FMTActionParser::sameActionAs", __LINE__, __FILE__, m_section);
 			}
         return all_pointers;
         }

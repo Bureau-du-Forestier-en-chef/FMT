@@ -13,7 +13,7 @@ namespace Core {
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace FMTWrapperCore
@@ -27,7 +27,7 @@ namespace FMTWrapperCore
 		*@param p_model Le modèle à utiliser.
 		* @return int l'age max du model.
 		*/
-		static int getMaxAge(const Models::FMTmodel& p_model);
+		static int getMaxAge(const Models::FMTModel& p_model);
 
 		/**
 		* @brief retourne une listes des noms d'actions du mod�le.
@@ -61,7 +61,7 @@ namespace FMTWrapperCore
 		*@param p_age
 		* @return Un double du yield
 		*/
-		static double getYield(const Models::FMTmodel& p_model, const std::string& p_mask,const std::string& p_yield, int p_age);
+		static double getYield(const Models::FMTModel& p_model, const std::string& p_mask,const std::string& p_yield, int p_age);
 
 		/**
 		* @brief retourne un set de tous les masks utiles du modèle selon les thèmes sélectionné.
@@ -70,15 +70,15 @@ namespace FMTWrapperCore
 		*@param un vector de themes a vérifier.
 		*@return Un set des masks.
 		*/
-		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath);
+		static std::set<std::string> getAllMasks(const Models::FMTModel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath);
 
 		/**
-		* @brief �crit un model sur le disque en appelant FMTmodelparser::writetoproject.
+		* @brief �crit un model sur le disque en appelant FMTModelParser::writetoproject.
 		*
 		*@param p_model Le mod�le � �crire sur le disque.
 		*@param p_primaryLocation Le path du fichier .pri de destination.
 		*/
-		static void writeToProject(const Models::FMTmodel& p_model, const std::string& p_primaryLocation);
+		static void writeToProject(const Models::FMTModel& p_model, const std::string& p_primaryLocation);
 
 	private:
 		/**
@@ -88,7 +88,7 @@ namespace FMTWrapperCore
 		*@param p_rasterPath Le path du raster d'aire.
 		*@return Un vecteur de FMTActualDevelopment.
 		*/
-		static std::vector<Core::FMTActualDevelopment> getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath);
+		static std::vector<Core::FMTActualDevelopment> getRasterArea(const Models::FMTModel& p_model, const std::string& p_rasterPath);
 		static const size_t m_GET_ALL_MASKS_THRESHOLD = 1000000;
 		static Core::FMTMask _GetFullMask(const std::vector<Core::FMTTheme>& p_themes);
 		static std::set<std::string> _GetThemesDecomposition(

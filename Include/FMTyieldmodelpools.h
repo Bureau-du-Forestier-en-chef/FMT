@@ -6,51 +6,51 @@
 
 namespace Core
 {
-	// DocString: FMTyieldmodelpools
+	// DocString: FMTYieldModelPools
 	/**
-	FMTyieldmodelpools is a machine learning model to predict carbon pools.
+	FMTYieldModelPools is a machine learning model to predict carbon pools.
 	*/
-	class FMTyieldmodelpools : public FMTyieldmodelnn
+	class FMTYieldModelPools : public FMTYieldModelNn
 	{
 	public:
-		// DocString: FMTyieldmodelpools::FMTyieldmodelpools()
+		// DocString: FMTYieldModelPools::FMTYieldModelPools()
 		/**
 		Default constructor.
 		*/
-		FMTyieldmodelpools() = default;
-		// DocString: FMTyieldmodelpools::FMTyieldmodelpools(const FMTyieldmodelpools& rhs)
+		FMTYieldModelPools() = default;
+		// DocString: FMTYieldModelPools::FMTYieldModelPools(const FMTYieldModelPools& rhs)
 		/**
 		Copy constructor.
 		*/
-		FMTyieldmodelpools(const FMTyieldmodelpools& rhs)=default;
-		// DocString: FMTyieldmodelpools:: operator = (const FMTyieldmodelpools& rhs)
+		FMTYieldModelPools(const FMTYieldModelPools& rhs)=default;
+		// DocString: FMTYieldModelPools:: operator = (const FMTYieldModelPools& rhs)
 		/**
 		Default equality operator.
 		*/
-		FMTyieldmodelpools& operator = (const FMTyieldmodelpools& rhs) = default;
-		// DocString: FMTyieldmodelpools::~FMTyieldmodelpools()
+		FMTYieldModelPools& operator = (const FMTYieldModelPools& rhs) = default;
+		// DocString: FMTYieldModelPools::~FMTYieldModelPools()
 		/**
 		Default destructor.
 		*/
-		~FMTyieldmodelpools()=default;
-		// DocString: FMTyieldmodelpools::FMTyieldmodelpools(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
+		~FMTYieldModelPools()=default;
+		// DocString: FMTYieldModelPools::FMTYieldModelPools(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 		/**
-		Construct a FMTyieldmodelpools based on a JSON file and an input yield name list.
+		Construct a FMTYieldModelPools based on a JSON file and an input yield name list.
 		*/
-		FMTyieldmodelpools(const boost::property_tree::ptree & jsonProps,std::vector<std::string>& inputYields);
-		// DocString: FMTyieldmodelpools::Clone()
+		FMTYieldModelPools(const boost::property_tree::ptree & jsonProps,std::vector<std::string>& inputYields);
+		// DocString: FMTYieldModelPools::Clone()
 		/**
-		Implements FMTyieldmodel::Clone().
+		Implements FMTYieldModel::Clone().
 		*/
-		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodelpools::getInputValues()
+		std::unique_ptr<FMTYieldModel>Clone() const;
+		// DocString: FMTYieldModelPools::getInputValues()
 		/**
-		Implements FMTyieldmodel::getInputValues().
+		Implements FMTYieldModel::getInputValues().
 		*/
 		const std::vector<double> getInputValues(const Graph::FMTpredictor& predictor) const;
-		// DocString: FMTyieldmodelpools::getModelType()
+		// DocString: FMTYieldModelPools::getModelType()
 		/**
-		Return the modeltype of the FMTyieldmodel.
+		Return the modeltype of the FMTYieldModel.
 		*/
 		static std::string getModelType();
 	};

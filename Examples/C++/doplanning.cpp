@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 			length = 20; 
 			objectivevalue = 14406932.651803;
 		}
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		//modelparser.setDebugExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -57,25 +57,25 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 		#ifdef FMTWITHMOSEK
-			Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+			Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 		#else
-			Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+			Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		#endif
 		//modelparser.write(optimizationmodel, "D:/test/");
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
+		optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 
-		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
+		optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
 		//modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doPlanning(true)) {
 			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
-			//Parser::FMTareaparser arepars;
+			//Parser::FMTAreaParser arepars;
 			//arepars.write(optimizationmodel.getArea(1), "D:/test/test.are");
 			
 			std::vector<Core::FMTOutput>outputs;
@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
 		}
 		
 		
-		/*Parser::FMTscheduleparser schparser;
+		/*Parser::FMTScheduleParser schparser;
 		std::vector<Core::FMTSchedule>returnschedule;
 		for (int id = 0; id < length+1;++id)
 		{

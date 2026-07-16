@@ -30,7 +30,7 @@ bool FMTForm::InitialAreaVariability(
 	{
 		FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 		*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-		Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTsolverinterface>(solver));
+		Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTsolverinterface>(solver));
 		*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";
 		*logger << "FMT Event Spatialy Explicit Simulation c++ - > Intégration des contraintes sélectionnées" << "\n";
 		optimizationmodel.setConstraints(ObtenirArrayContraintesSelectionnees(optimizationmodel.getconstraints(), contraintes));
@@ -88,7 +88,7 @@ bool FMTForm::InitialAreaVariability(
 					}
 				}
 				*logger << "FMT - Démarrage de Initial Area Variability" << "\n";
-				Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
+				Parser::FMTModelParser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
 				Modelparser.writeResults(
 					optimizationmodel.getModelFromProportions(masktargets, proportions),
 					listeOutputs,

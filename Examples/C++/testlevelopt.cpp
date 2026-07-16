@@ -18,7 +18,7 @@ int main()
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<std::string>scenarios;
 		scenarios.push_back("levelopt1");
 		scenarios.push_back("levelopt2");
@@ -39,10 +39,10 @@ int main()
 		objectivevalues.push_back(856.88);
 		objectivevalues.push_back(1814.76);
 		objectivevalues.push_back(907.38);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 		for (size_t scnid = 0 ; scnid < models.size();++scnid)
 		{
-			Models::FMTlpmodel optimizationmodel(models.at(scnid), Models::FMTsolverinterface::CLP);
+			Models::FMTLpModel optimizationmodel(models.at(scnid), Models::FMTsolverinterface::CLP);
 			size_t scenariolength = 1;
 			if (scnid>=4)
 				{

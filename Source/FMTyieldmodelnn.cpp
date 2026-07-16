@@ -27,13 +27,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 
 	#ifdef FMTWITHONNXR
-		std::unique_ptr<Ort::Env> FMTyieldmodelnn::envPtr = std::unique_ptr<Ort::Env>(nullptr);
+		std::unique_ptr<Ort::Env> FMTYieldModelNn::envPtr = std::unique_ptr<Ort::Env>(nullptr);
 	#endif	
 
-		const float FMTyieldmodelnn::UNKNOWN_DISTURBANCE_CODE = 17;
+		const float FMTYieldModelNn::UNKNOWN_DISTURBANCE_CODE = 17;
 
 
-	FMTyieldmodelnn::FMTyieldmodelnn(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
+	FMTYieldModelNn::FMTYieldModelNn(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 	#ifdef FMTWITHONNXR
 			:sessionPtr()
 	#endif	
@@ -95,15 +95,15 @@ namespace Core {
 		catch (...)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "",
-				"FMTyieldmodelnn::FMTyieldmodelnn", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldModelNn::FMTYieldModelNn", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 
 
 
 
-	FMTyieldmodelnn::FMTyieldmodelnn(const FMTyieldmodelnn& rhs):
-		FMTyieldmodel(rhs),
+	FMTYieldModelNn::FMTYieldModelNn(const FMTYieldModelNn& rhs):
+		FMTYieldModel(rhs),
 		modelType(rhs.getModelType()),
 		standardParamMeans(rhs.getStandardParamMeans()),
 		standardParamVars(rhs.getStandardParamVars()),
@@ -115,7 +115,7 @@ namespace Core {
 	#endif
 	}
 
-	FMTyieldmodelnn::~FMTyieldmodelnn()
+	FMTYieldModelNn::~FMTYieldModelNn()
 	{
 	#ifdef FMTWITHONNXR
 			sessionPtr->release();
@@ -123,7 +123,7 @@ namespace Core {
 	}
 
 
-	const std::vector<std::string> FMTyieldmodelnn::getNextLineAndSplitIntoTokens(std::istream& str)
+	const std::vector<std::string> FMTYieldModelNn::getNextLineAndSplitIntoTokens(std::istream& str)
 	{
 		std::vector<std::string>   result;
 		std::string                line;
@@ -145,7 +145,7 @@ namespace Core {
 		return result;
 	}
 
-	const std::vector<float> FMTyieldmodelnn::standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars)
+	const std::vector<float> FMTYieldModelNn::standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars)
 	{
 		std::vector<float> output(input.size());
 		for (size_t i = 0; i < input.size(); i++)
@@ -156,7 +156,7 @@ namespace Core {
 		return std::vector<float>(output.begin(), output.end());
 	}
 	
-	void FMTyieldmodelnn::validateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const
+	void FMTYieldModelNn::validateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const
 	{
 		size_t expectedNbYld = expectedYields.size();
 		size_t recievedNbYld = inputYields.size();
@@ -169,12 +169,12 @@ namespace Core {
 				concatMYlds.erase(concatMYlds.end() - 2);
 			_exhandler->raiseFromCatch("Expected a different amount of yield. Expected " + std::to_string(expectedNbYld) + " yields : " + concatMYlds +
 				". Got " + std::to_string(recievedNbYld) + " yields.",
-				"FMTyieldmodel::FMTyieldmodelpools", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldModel::FMTYieldModelPools", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 
 
-	const std::vector<double>FMTyieldmodelnn::predict(const Core::FMTYieldRequest& request) const
+	const std::vector<double>FMTYieldModelNn::predict(const Core::FMTYieldRequest& request) const
 	{
 		try {
 			const std::string mdlName = getModelName();
@@ -201,7 +201,7 @@ namespace Core {
 			#endif
 
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
-			const Models::FMTmodel* modelptr = graphinfo->getModel();
+			const Models::FMTModel* modelptr = graphinfo->getModel();
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
 
@@ -213,7 +213,7 @@ namespace Core {
 				if (predictors.empty())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
-						"FMTyieldmodel::predict", __LINE__, __FILE__);
+						"FMTYieldModel::predict", __LINE__, __FILE__);
 
 				}
 				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
@@ -237,12 +237,12 @@ namespace Core {
 				if (predictors.empty())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
-						"FMTyieldmodel::predict", __LINE__, __FILE__);
+						"FMTYieldModel::predict", __LINE__, __FILE__);
 					}
 				//Dans un fullgraph il existe plusieurs predicteurs pour chaque noeud predictors.size() >= 1 <= a beaucoup
 				//On peut faire du blackmagic pour aller chercher la solution existante de chaque predictor...
-				const Models::FMTsrmodel* srmodelptr = dynamic_cast<const Models::FMTsrmodel*>(modelptr); //cast to a srmodel
-				const Models::FMTlpsolver* solverptr = srmodelptr->getConstSolverPtr(); //getsolver
+				const Models::FMTSrModel* srmodelptr = dynamic_cast<const Models::FMTSrModel*>(modelptr); //cast to a srmodel
+				const Models::FMTLpSolver* solverptr = srmodelptr->getConstSolverPtr(); //getsolver
 				bool withoutsolution = false;
 				if ((fullgraph->getBuildType() == Graph::FMTgraphbuild::fullbuild) &&
 					(!solverptr->isProvenOptimal()))
@@ -253,7 +253,7 @@ namespace Core {
 					withoutsolution = true;
 					//Pour l'instant on va mettre un message d'erreur
 					//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " without solution",
-					//	"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+					//	"FMTYieldModel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 				const double* solution = solverptr->getColSolution();
 				const std::vector<int>invariables = fullgraph->getInVariables(*vertex);
@@ -271,7 +271,7 @@ namespace Core {
 					{
 						_exhandler->raise(Exception::FMTexc::FMTyieldmodelprediction,"using "+ mdlName+
 							" Multiple in edges for "+ std::string(request.getDevelopment()) ,
-								"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+								"FMTYieldModel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 					}
 					totalarea = static_cast<double>(invariables.size()); // we consider a solution of 1 everywhere
 					}
@@ -307,43 +307,43 @@ namespace Core {
 			}
 			else {//Im nothing
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " yield model without graph info",
-					"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+					"FMTYieldModel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 
 			return result;
 		#endif
 
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Something went wrong in " + mdlName,
-				"FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+				"FMTYieldModel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldmodel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModel::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::vector<double>();
 	}
 
-	const std::string& FMTyieldmodelnn::getModelType() const
+	const std::string& FMTYieldModelNn::getModelType() const
 	{
 		return modelType;
 	}
 
-	const std::vector<float>& FMTyieldmodelnn::getStandardParamMeans() const
+	const std::vector<float>& FMTYieldModelNn::getStandardParamMeans() const
 	{
 		return standardParamMeans;
 	}
 
-	const std::vector<float>& FMTyieldmodelnn::getStandardParamVars() const
+	const std::vector<float>& FMTYieldModelNn::getStandardParamVars() const
 	{
 		return standardParamVars;
 	}
 
-	const std::vector<std::string>& FMTyieldmodelnn::getModelOutputNames() const
+	const std::vector<std::string>& FMTYieldModelNn::getModelOutputNames() const
 	{
 		return modelOutputs;
 	}
 
-	const void FMTyieldmodelnn::removeNans(std::vector<float>& input) const
+	const void FMTYieldModelNn::removeNans(std::vector<float>& input) const
 	{
 		for (int i = 0; i < input.size(); i++)
 		{
@@ -352,7 +352,7 @@ namespace Core {
 				if (i == 0 || i == 2 || i == 4)
 					input[i] = 0;
 				if (i == 1 || i == 3 || i == 5)
-					input[i] = FMTyieldmodelnn::UNKNOWN_DISTURBANCE_CODE;
+					input[i] = FMTYieldModelNn::UNKNOWN_DISTURBANCE_CODE;
 			}
 		}
 	}

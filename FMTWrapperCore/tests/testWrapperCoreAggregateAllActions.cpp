@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 		}
 
 		const std::vector<std::string>SCENARIOS(1, scenarioName);
-		Parser::FMTmodelparser ModelParser;
+		Parser::FMTModelParser ModelParser;
 
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -58,8 +58,8 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		ModelParser.setErrorsToWarnings(errors);
 
-		const std::vector<Models::FMTmodel> MODELS =ModelParser.readproject(primary_path, SCENARIOS);
-		Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, primary_path, output_scenario_name);
+		const std::vector<Models::FMTModel> MODELS =ModelParser.readproject(primary_path, SCENARIOS);
+		Models::FMTModel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, primary_path, output_scenario_name);
 
 		// On v�rifie si on a moins d'action que dans le nouveau
 		std::vector<Core::FMTAction> actions = MODELS.at(0).getactions();

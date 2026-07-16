@@ -23,17 +23,17 @@ namespace Ort
 
 namespace Core 
 {
-	// DocString: FMTyieldmodelnn
+	// DocString: FMTYieldModelNn
 	/**
-	FMTyieldmodelnn is an abstract class to be implemented as a machine learning model.
+	FMTYieldModelNn is an abstract class to be implemented as a machine learning model.
 	*/
-	class FMTyieldmodelnn : public FMTyieldmodel
+	class FMTYieldModelNn : public FMTYieldModel
 	{
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("FMTyieldmodel", boost::serialization::base_object<FMTyieldmodel>(*this));
+			ar & boost::serialization::make_nvp("FMTyieldmodel", boost::serialization::base_object<FMTYieldModel>(*this));
 		}
 	protected:
 	#ifdef FMTWITHONNXR
@@ -49,74 +49,74 @@ namespace Core
 		std::vector<float> standardParamMeans = {};
 		std::vector<float> standardParamVars = {};
 		std::vector<std::string> modelOutputs = {};
-		// DocString: FMTyieldmodelnn::getNextLineAndSplitIntoTokens
+		// DocString: FMTYieldModelNn::getNextLineAndSplitIntoTokens
 		/**
 		Utility function used to read a csv file line by line.
 		*/
 		static const std::vector<std::string> getNextLineAndSplitIntoTokens(std::istream& str);
-		// DocString: FMTyieldmodelnn::standardize
+		// DocString: FMTYieldModelNn::standardize
 		/**
 		Utility function that applies the standardization formula, a feature scaling technique, on the inputs of a machine learning model.
 		*/
 		static const std::vector<float> standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars);
 		
-		// DocString: FMTyieldmodelnn::validateInputYields
+		// DocString: FMTYieldModelNn::validateInputYields
 		/**
 		Validates that there is the expected number of inputs in the model.
 		*/
 		void validateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const;
-		// DocString: FMTyieldmodelnn::getModelType()
+		// DocString: FMTYieldModelNn::getModelType()
 		/**
 		Returns the model type.
 		*/
 		const std::string& getModelType() const;
-		// DocString: FMTyieldmodelnn::getStandardParamMeans()
+		// DocString: FMTYieldModelNn::getStandardParamMeans()
 		/**
 		Returns input variables' means used in the standartization process when predicting.
 		*/
 		const std::vector<float>& getStandardParamMeans() const;
-		// DocString: FMTyieldmodelnn::getStandardParamVars()
+		// DocString: FMTYieldModelNn::getStandardParamVars()
 		/**
 		Returns input variables' variances used in the standartization process when predicting.
 		*/
 		const std::vector<float>& getStandardParamVars() const;
-		// DocString: FMTyieldmodelnn::getModelOutputNames()
+		// DocString: FMTYieldModelNn::getModelOutputNames()
 		/**
 		Return model outputs' names.
 		*/
 		const std::vector<std::string>& getModelOutputNames() const;
-		// DocString: FMTyieldmodelnn::getInputValues()
+		// DocString: FMTYieldModelNn::getInputValues()
 		/**
 		Returns inputs values based on a predictor passed as parameter.
 		*/
 		virtual const std::vector<double> getInputValues(const Graph::FMTpredictor& predictor) const = 0;
-		// DocString: FMTyieldmodelnn::removeNans
+		// DocString: FMTYieldModelNn::removeNans
 		/**
 		Replaces nan values with default values.
 		*/
 		const void removeNans(std::vector<float>& input) const;
-		// DocString: FMTyieldmodelnn::FMTyieldmodelpools(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
+		// DocString: FMTYieldModelNn::FMTYieldModelPools(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 		/**
-		Construct a FMTyieldmodelnn based on a JSON file and an input yield name list.
+		Construct a FMTYieldModelNn based on a JSON file and an input yield name list.
 		*/
-		FMTyieldmodelnn(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields);
+		FMTYieldModelNn(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields);
 	public:
-		// DocString: FMTyieldmodelnn::~FMTyieldmodel()
+		// DocString: FMTYieldModelNn::~FMTYieldModel()
 		/**
-		Destructor for FMTyieldmodelnn.
+		Destructor for FMTYieldModelNn.
 		*/
-		virtual ~FMTyieldmodelnn();
-		// DocString: FMTyieldmodelnn::FMTyieldmodelnn()
+		virtual ~FMTYieldModelNn();
+		// DocString: FMTYieldModelNn::FMTYieldModelNn()
 		/**
-		Constructor for FMTyieldmodelnn.
+		Constructor for FMTYieldModelNn.
 		*/
-		FMTyieldmodelnn()=default;
-		// DocString: FMTyieldmodelnn::FMTyieldmodelnn()
+		FMTYieldModelNn()=default;
+		// DocString: FMTYieldModelNn::FMTYieldModelNn()
 		/**
-		Copy constructor for FMTyieldmodelnn.
+		Copy constructor for FMTYieldModelNn.
 		*/
-		FMTyieldmodelnn(const FMTyieldmodelnn& rhs);
-		// DocString: FMTyieldmodelnn::predict
+		FMTYieldModelNn(const FMTYieldModelNn& rhs);
+		// DocString: FMTYieldModelNn::predict
 		/**
 		Runs the machine learning model to predict its outputs.
 		*/

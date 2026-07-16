@@ -257,7 +257,7 @@ class FMTEXPORT FMTevent
         }
         // DocString: FMTevent::m_actionId
         /**
-        Action id from the FMTmodel.
+        Action id from the FMTModel.
         */
         int m_actionId;
         // DocString: FMTevent::m_period

@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	//const std::string primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02751/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Feux_2023_ouest/feux_2023_ouest_V01.pri";
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	const std::string outdir = "../../tests/testmodelwriter/";
 
@@ -45,8 +45,8 @@ int main(int argc, char* argv[])
 	//const std::vector<std::string>scenarios(1, "strategique");
 	//const std::vector<std::string>scenarios(1, "14_Sc5_Determin_apsp_02751_tmw");
 	//const std::vector<std::string>scenarios(1, "201_UG107_feu");
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,  3);
 	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
 	//return 0;
 	modelparser.write(optmodel, outdir);
 	const double initobjvalue = optmodel.getObjValue();
-	const std::vector<Models::FMTmodel> rereadmodels = modelparser.readproject(outdir + optmodel.getName() + ".pri", std::vector<std::string>(1, "ROOT"));
-	optmodel = Models::FMTlpmodel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
+	const std::vector<Models::FMTModel> rereadmodels = modelparser.readproject(outdir + optmodel.getName() + ".pri", std::vector<std::string>(1, "ROOT"));
+	optmodel = Models::FMTLpModel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,3);
 	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 3);
 	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);

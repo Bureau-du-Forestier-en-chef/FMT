@@ -22,18 +22,18 @@ int main()
 		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
         const std::string	primarylocation = modellocation + "TWD_land.pri";
 		const std::string testfolderout = "../../tests/forcesolution/";
-		Parser::FMTmodelparser modelparser;
-		Parser::FMTareaparser areaparser;
-		Parser::FMTscheduleparser scheparser;
+		Parser::FMTModelParser modelparser;
+		Parser::FMTAreaParser areaparser;
+		Parser::FMTScheduleParser scheparser;
 		const std::vector<std::string>scenarios(1,"Forcesolutiontest");
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTmodel initialmodel = models.at(0);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTModel initialmodel = models.at(0);
 		const int lenght = 6;
 		initialmodel.setParameter(Models::FMTintmodelparameters::LENGTH, lenght);
 		initialmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
 		initialmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		initialmodel.setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
-		Models::FMTlpmodel optimizationmodel(initialmodel, Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel optimizationmodel(initialmodel, Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		optimizationmodel.doPlanning(false,schedules);
         std::vector<Core::FMTSchedule> lockedproportionscheduled;
@@ -41,7 +41,7 @@ int main()
 		{
 			lockedproportionscheduled.push_back(optimizationmodel.getScheduleProportions(period,true));
 		}
-		optimizationmodel = Models::FMTlpmodel(initialmodel, Models::FMTsolverinterface::CLP);
+		optimizationmodel = Models::FMTLpModel(initialmodel, Models::FMTsolverinterface::CLP);
 		// ici on vient changer la section area 
 		#ifdef FMTWITHGDAL
 		const std::vector<Core::FMTActualDevelopment> newarea = areaparser.readVectors(	optimizationmodel.getThemes(),

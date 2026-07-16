@@ -21,52 +21,52 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-	// DocString: FMTnssmodel
+	// DocString: FMTNssModel
 	/**
-	FMTnssmodel stands for non spatial simulation model. This model is mainly used to simulate
+	FMTNssModel stands for non spatial simulation model. This model is mainly used to simulate
 	stochastics actions during the local replanning phase. Before using any kind of spatially explicit model
 	sometime using a simple non spatial model can help to understand the basic idea of simulation.
 	*/
-	class FMTEXPORT FMTnssmodel : public FMTsrmodel
+	class FMTEXPORT FMTNssModel : public FMTSrModel
 	{
 		public:
-			// DocString: FMTnssmodel()
+			// DocString: FMTNssModel()
 			/**
-			Default constructor of FMTnssmodel.
+			Default constructor of FMTNssModel.
 			*/
-			FMTnssmodel();
-			// DocString: ~FMTnssmodel()
+			FMTNssModel();
+			// DocString: ~FMTNssModel()
 			/**
-			Default destructor of FMTnssmodel.
+			Default destructor of FMTNssModel.
 			*/
-			~FMTnssmodel()=default;
-			// DocString: FMTnssmodel(const FMTnssmodel&)
+			~FMTNssModel()=default;
+			// DocString: FMTNssModel(const FMTNssModel&)
 			/**
-			Default copy constructor of FMTnssmodel.
+			Default copy constructor of FMTNssModel.
 			*/
-			FMTnssmodel(const FMTnssmodel& rhs);
-			// DocString: FMTnssmodel::operator=
+			FMTNssModel(const FMTNssModel& rhs);
+			// DocString: FMTNssModel::operator=
 			/**
 			Default copy assignment of MTnssmodel.
 			*/
-			FMTnssmodel& operator=(const FMTnssmodel& rhs) = default;
-			// DocString: FMTnssmodel(const FMTmodel&,unsigned int)
+			FMTNssModel& operator=(const FMTNssModel& rhs) = default;
+			// DocString: FMTNssModel(const FMTModel&,unsigned int)
 			/**
-			Constructor for FMTnssmodel taking a FMTmodel and a seed to initialize the random number generator.
+			Constructor for FMTNssModel taking a FMTModel and a seed to initialize the random number generator.
 			*/
-			FMTnssmodel(const FMTmodel& rhs, unsigned int seed);
+			FMTNssModel(const FMTModel& rhs, unsigned int seed);
 			
-			// DocString: FMTnssmodel(FMTnssmodel&&)
+			// DocString: FMTNssModel(FMTNssModel&&)
 			/**
-			Default move constructor for FMTnssmodel.
+			Default move constructor for FMTNssModel.
 			*/
-			FMTnssmodel(FMTnssmodel&& rhs)=default;
-			// DocString: FMTnssmodel::operator=(FMTnssmodel&& rhs) 
+			FMTNssModel(FMTNssModel&& rhs)=default;
+			// DocString: FMTNssModel::operator=(FMTNssModel&& rhs) 
 			/**
-			Default move assignment for FMTnssmodel.
+			Default move assignment for FMTNssModel.
 			*/
-			FMTnssmodel& operator =(FMTnssmodel&& rhs) =default;
-			// DocString: FMTnssmodel::setParameter(const FMTintmodelparameters,const int&)
+			FMTNssModel& operator =(FMTNssModel&& rhs) =default;
+			// DocString: FMTNssModel::setParameter(const FMTintmodelparameters,const int&)
 			/**
 			@brief set int parameters to nss model.
 			@param[in] p_key the int key to change.
@@ -74,28 +74,28 @@ namespace Models
 			@return true if the parameter is set.
 			*/
 			virtual bool setParameter(const FMTintmodelparameters& p_key, const int& p_value);
-			// DocString: FMTnssmodel::simulate
+			// DocString: FMTNssModel::simulate
 			/**
 			This function do a non spatial simulation based on the area constraints in the optimize section.
 			*/
 			void simulate();
-			// DocString: FMTnssmodel::presolve
+			// DocString: FMTNssModel::presolve
 			/**
-			This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTmodel.
+			This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTModel.
 			The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 			*/
-			virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
-			// DocString: FMTnssmodel::clone
+			virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+			// DocString: FMTNssModel::clone
 			/**
-			Get a clone of the FMTnssmodel
+			Get a clone of the FMTNssModel
 			*/
-			virtual std::unique_ptr<FMTmodel>clone() const;
-			// DocString: FMTmodel::build
+			virtual std::unique_ptr<FMTModel>clone() const;
+			// DocString: FMTModel::build
 			/**
 			This function will use the function simulate over the number of period set as LENGTH in model parameters.
 			*/
 			virtual bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>());
-			// DocString: FMTmodel::solve
+			// DocString: FMTModel::solve
 			/**
 			There is no solve since it's only a simulation. The build phase simulate over the LENGTH given in model parameters. 
 			*/
@@ -103,21 +103,21 @@ namespace Models
 			{
 				return true;
 			}
-			// DocString: FMTnssmodel::setParameter(const FMTboolmodelparameters, const bool)
+			// DocString: FMTNssModel::setParameter(const FMTboolmodelparameters, const bool)
 			/**
 			Override setter for boolmodelparameters.
 			*/
 			bool setParameter(const FMTboolmodelparameters& key, const bool& value) override;
-			// DocString: FMTnssmodel::getCopy
+			// DocString: FMTNssModel::getCopy
 			/**
-			This function returns a copy of the FMTmodel of the selected period.
-			If period = 0 it returns the FMTmodel::getCopy if period > 0 then it returns
-			a copy of the FMTmodel based on the developments of the FMTgraph of the FMTlpmodel.
+			This function returns a copy of the FMTModel of the selected period.
+			If period = 0 it returns the FMTModel::getCopy if period > 0 then it returns
+			a copy of the FMTModel based on the developments of the FMTgraph of the FMTLpModel.
 			Need to have a builded graph with a solution to use this function.
 			*/
-			virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
+			virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
 		private:
-			// DocString: FMTnssmodel::save
+			// DocString: FMTNssModel::save
 			/**
 			Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 			*/
@@ -125,21 +125,21 @@ namespace Models
 			template<class Archive>
 			void save(Archive& ar, const unsigned int version) const
 			{
-				ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+				ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTSrModel>(*this));
 
 			}
-			// DocString: FMTnssmodel::load
+			// DocString: FMTNssModel::load
 			/**
 			Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 			*/
 			template<class Archive>
 			void load(Archive& ar, const unsigned int version)
 			{
-				ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+				ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTSrModel>(*this));
 
 			}
 			BOOST_SERIALIZATION_SPLIT_MEMBER()
-			// DocString: FMTnssmodel::constraintsToTarget
+			// DocString: FMTNssModel::constraintsToTarget
 			/**
 			@brief Using the constraints generate random level or determinist level of output values in targets
 			@param[out] p_targets the targeted values 1 per outputs.
@@ -147,7 +147,7 @@ namespace Models
 			@return a vector of output pointers.
 			*/
 			std::vector<const Core::FMTOutput*> constraintsToTarget(std::vector<double>& p_targets, const int& p_period);
-			// DocString: FMTnssmodel::gotOutputForDev
+			// DocString: FMTNssModel::gotOutputForDev
 			/**
 			@brief Return true if a output is found for the development
 			@param[in] p_development the development from which we want to find an output.
@@ -158,7 +158,7 @@ namespace Models
 			bool gotOutputForDev(const Core::FMTDevelopment& p_development,
 								const std::vector<const Core::FMTOutput*>& p_outputs,
 								const std::set<size_t>& p_outputIds) const;
-			// DocString: FMTnssmodel::getFirstOperable
+			// DocString: FMTNssModel::getFirstOperable
 			/**
 			@brief Get the first operable action for the development
 			@param[in] development the development to test operability
@@ -169,7 +169,7 @@ namespace Models
 			std::pair<size_t, const Core::FMTAction*> getFirstOperable(const Core::FMTDevelopment& development,
 				std::vector<std::vector<const Core::FMTAction*>> targets,
 				const std::vector<const Core::FMTOutput*>& alloutputs) const;
-			// DocString: FMTnssmodel::getActionsTargets
+			// DocString: FMTNssModel::getActionsTargets
 			/**
 			@brief takea vector of pointer to outputs and buildup a vector of actions length containing nullptr and pointer to outputs.
 			to action related to each outputs.
@@ -177,7 +177,7 @@ namespace Models
 			@return a vector of pair of action / outputs.
 			*/
 			std::vector<std::set<size_t>> getActionsTargets(const std::vector<const Core::FMTOutput*>& p_allOutputs) const;
-			// DocString: FMTnssmodel::updateOutputs
+			// DocString: FMTNssModel::updateOutputs
 			/**
 			@brief Update the targeted output value and the outputs index remove the p_index from p_actionsoutputs and remove dev 
 			valculated value from p_targets
@@ -195,22 +195,22 @@ namespace Models
 								const int& p_action, const double& p_devArea,
 								std::vector<double>& p_targets, std::vector<std::set<size_t>>& p_actionsoutputs,
 								const std::vector<const Core::FMTOutput*>& p_allOutput) const;
-			// DocString: FMTnssmodel(const FMTsrmodel&,unsigned int)
+			// DocString: FMTNssModel(const FMTSrModel&,unsigned int)
 			/**
-			Constructor for FMTnssmodel taking a FMTsrmodel and a seed to initialize the random number generator.
+			Constructor for FMTNssModel taking a FMTSrModel and a seed to initialize the random number generator.
 			*/
-			FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed);
-			// DocString: FMTnssmodel::swapPtr
+			FMTNssModel(const FMTSrModel& rhs, unsigned int seed);
+			// DocString: FMTNssModel::swapPtr
 			/**
 			@brief swap from unique_ptr of model
-			@param[in] a unique pointer to a FMTmodel.
+			@param[in] a unique pointer to a FMTModel.
 			*/
-			virtual void swapPtr(std::unique_ptr<FMTmodel>& rhs);
+			virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
 
 	};
 }
 
-BOOST_CLASS_EXPORT_KEY(Models::FMTnssmodel)
+BOOST_CLASS_EXPORT_KEY(Models::FMTNssModel)
 #endif 
 #endif
 

@@ -19,9 +19,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 
 {
-	FMTmatrixbuild::~FMTmatrixbuild() = default;
+	FMTMatrixBuild::~FMTMatrixBuild() = default;
 
-	std::string FMTmatrixbuild::formatForMatrixName(std::string name,bool shortformat) const
+	std::string FMTMatrixBuild::formatForMatrixName(std::string name,bool shortformat) const
 	{
 		std::string to = "_";
 		if (shortformat)
@@ -32,19 +32,19 @@ namespace Models
 		return name;
 	}
 
-	void FMTmatrixbuild::sortElementsAndClean(std::vector<int>& elements) const
+	void FMTMatrixBuild::sortElementsAndClean(std::vector<int>& elements) const
 		{
 		std::sort(elements.begin(), elements.end());
 		elements.erase(std::unique(elements.begin(), elements.end()), elements.end());
 		}
 
-	void FMTmatrixbuild::sortAndCleanDeleted()
+	void FMTMatrixBuild::sortAndCleanDeleted()
 		{
 		sortElementsAndClean(deletedconstraints);
 		sortElementsAndClean(deletedvariables);
 		}
 
-	int FMTmatrixbuild::getRow(int whichRow, double &rowLower, double &rowUpper,
+	int FMTMatrixBuild::getRow(int whichRow, double &rowLower, double &rowUpper,
 		std::vector<int>& indices, std::vector<double>&elements) const 
 		{
 		const int * indicesarray;
@@ -58,7 +58,7 @@ namespace Models
 		return sizeofrow;
 		}
 
-	int FMTmatrixbuild::getCol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
+	int FMTMatrixBuild::getCol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
 		std::vector<int>& indices, std::vector<double>&elements) const
 		{
 		const int * indicesarray;
@@ -72,7 +72,7 @@ namespace Models
 		return sizeofcol;
 		}
 
-	void FMTmatrixbuild::formatAllNames(bool shortformat)
+	void FMTMatrixBuild::formatAllNames(bool shortformat)
 		{
 		int colid = 0;
 		for (std::string& colname : columnnames)
@@ -98,7 +98,7 @@ namespace Models
 		}
 
 
-	void FMTmatrixbuild::setColName(const std::string& name, const int& columnid)
+	void FMTMatrixBuild::setColName(const std::string& name, const int& columnid)
 		{
 		const size_t sizeofcontainer = static_cast<size_t>(columnid + 1);
 		if (sizeofcontainer>columnnames.size())
@@ -109,7 +109,7 @@ namespace Models
 		}
 
 
-	void FMTmatrixbuild::setRowName(const std::string& name, const int& rowid)
+	void FMTMatrixBuild::setRowName(const std::string& name, const int& rowid)
 		{
 		const size_t sizeofcontainer = static_cast<size_t>(rowid + 1);
 		if (sizeofcontainer > rownames.size())
@@ -122,7 +122,7 @@ namespace Models
 
 
 
-	void FMTmatrixbuild::synchronize(std::shared_ptr<OsiSolverInterface> solver)
+	void FMTMatrixBuild::synchronize(std::shared_ptr<OsiSolverInterface> solver)
 		{
 		try {
 			
@@ -152,35 +152,35 @@ namespace Models
 			}
 			}catch (...)
 			{
-				Exception::FMTDefaultExceptionHandler().raiseFromCatch("", "FMTmatrixbuild::synchronize", __LINE__, __FILE__);
+				Exception::FMTDefaultExceptionHandler().raiseFromCatch("", "FMTMatrixBuild::synchronize", __LINE__, __FILE__);
 			}
 
 
 		}
 
-	void FMTmatrixbuild::deleteRow(const int& rowindex)
+	void FMTMatrixBuild::deleteRow(const int& rowindex)
 		{
 		deletedconstraints.push_back(rowindex);
 		}
-	void FMTmatrixbuild::deleteCol(const int& colindex)
+	void FMTMatrixBuild::deleteCol(const int& colindex)
 		{
 		deletedvariables.push_back(colindex);
 		}
 
 
-	FMTmatrixbuild::FMTmatrixbuild() : colscount(0), rowscount(0), colsbuild( new CoinBuild(1)),
+	FMTMatrixBuild::FMTMatrixBuild() : colscount(0), rowscount(0), colsbuild( new CoinBuild(1)),
 		rowsbuild(new CoinBuild(0)), deletedconstraints(),deletedvariables()
 		{
 
 		}
 
-	FMTmatrixbuild::FMTmatrixbuild(const FMTmatrixbuild& rhs) : colscount(rhs.colscount), rowscount(rhs.rowscount), colsbuild(new CoinBuild(*rhs.colsbuild)),
+	FMTMatrixBuild::FMTMatrixBuild(const FMTMatrixBuild& rhs) : colscount(rhs.colscount), rowscount(rhs.rowscount), colsbuild(new CoinBuild(*rhs.colsbuild)),
 		rowsbuild(new CoinBuild(*rhs.rowsbuild)), deletedconstraints(rhs.deletedconstraints), deletedvariables(rhs.deletedvariables)
 		{
 
 		}
 
-	void FMTmatrixbuild::swap(FMTmatrixbuild& rhs)
+	void FMTMatrixBuild::swap(FMTMatrixBuild& rhs)
 	{
 		colscount=rhs.colscount;
 		rowscount = rhs.rowscount;
@@ -193,7 +193,7 @@ namespace Models
 	}
 
 
-	FMTmatrixbuild& FMTmatrixbuild::operator = (const FMTmatrixbuild& rhs)
+	FMTMatrixBuild& FMTMatrixBuild::operator = (const FMTMatrixBuild& rhs)
 		{
 		if (this!=&rhs)
 			{
@@ -209,7 +209,7 @@ namespace Models
 		return *this;
 		}
 
-	std::string FMTmatrixbuild::getRowsToSynchronize() const
+	std::string FMTMatrixBuild::getRowsToSynchronize() const
 		{
 		std::string rows;
 		for (int irow =0; irow< rowsbuild->numberRows();++irow)
@@ -252,7 +252,7 @@ namespace Models
 		rows += "\n";
 		return rows;
 		}
-	std::string FMTmatrixbuild::getColsToSynchronize() const
+	std::string FMTMatrixBuild::getColsToSynchronize() const
 		{
 		std::string cols;
 		for (int icol = 0; icol < colsbuild->numberColumns(); ++icol)
@@ -300,7 +300,7 @@ namespace Models
 		return cols;
 		}
 
-	void FMTmatrixbuild::addCol(int numberInColumn, const int * rows, const double * elements, double columnLower,
+	void FMTMatrixBuild::addCol(int numberInColumn, const int * rows, const double * elements, double columnLower,
 		double columnUpper, double objectiveValue)
 	{
 		colsbuild->addCol(numberInColumn, rows, elements, columnLower,
@@ -308,7 +308,7 @@ namespace Models
 		++colscount;
 	}
 
-	void FMTmatrixbuild::addRow(int numberInRow, const int * columns, const double * elements, double rowLower, double rowUpper)
+	void FMTMatrixBuild::addRow(int numberInRow, const int * columns, const double * elements, double rowLower, double rowUpper)
 	{
 		rowsbuild->addRow(numberInRow, columns, elements, rowLower, rowUpper);
 		++rowscount;

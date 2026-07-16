@@ -13,7 +13,7 @@ class OGRLayer;
 #endif
 
 namespace Models {
-	class FMTmodel;
+	class FMTModel;
 }
 
 
@@ -23,7 +23,7 @@ namespace Parallel
 	/**
 	Writer to use in concurrency when you want to write multiple results in the same layer.
 	*/
-	class FMTEXPORT FMTparallelwriter : public Parser::FMTmodelparser
+	class FMTEXPORT FMTparallelwriter : public Parser::FMTModelParser
 	{
 	public:
 		// DocString: FMTparallelwriter::FMTparallelwriter()
@@ -46,14 +46,14 @@ namespace Parallel
 		Default copy assignement for FMTparallelwriter.
 		*/
 		FMTparallelwriter& operator = (const FMTparallelwriter& rhs) = default;
-		// DocString: FMTparallelwriter::FMTparallelwriter(const std::string&,const std::string&,const std::vector<Core::FMTOutput>&,const Models::FMTmodel&)
+		// DocString: FMTparallelwriter::FMTparallelwriter(const std::string&,const std::string&,const std::vector<Core::FMTOutput>&,const Models::FMTModel&)
 		/**
 		Constructor with the location and the driver of the outputs and the base model that we want to write.
 		*/
 		FMTparallelwriter(const std::string& location,
 			const std::string& driver,
 			const std::vector<Core::FMTOutput>& outputs,
-			const std::vector<Models::FMTmodel*>& allmodels,
+			const std::vector<Models::FMTModel*>& allmodels,
 			std::vector<std::string>layersoptions = std::vector<std::string>(),
 			double minimaldrift = 0.5,
 			Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly);
@@ -90,7 +90,7 @@ namespace Parallel
 		/**
 		Get the results of a model.
 		*/
-		std::map<std::string, std::vector<std::vector<double>>> getResults(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstPeriod, const int& lastPeriod) const;
+		std::map<std::string, std::vector<std::vector<double>>> getResults(const std::unique_ptr<Models::FMTModel>& modelptr, const int& firstPeriod, const int& lastPeriod) const;
 		// DocString: FMTparallelwriter::setDriftProbability()
 		/**
 		Get the results of a model With the global model and the localmodel starting from a minimum drift proportion.
@@ -100,7 +100,7 @@ namespace Parallel
 		/**
 		Get the results of a model. and write it down.
 		*/
-		void getAndWrite(const std::unique_ptr<Models::FMTmodel>& modelptr, const std::vector<Core::FMTOutput>& loutputs);
+		void getAndWrite(const std::unique_ptr<Models::FMTModel>& modelptr, const std::vector<Core::FMTOutput>& loutputs);
 		// DocString: FMTparallelwriter::close()
 		/**
 		Close the dataset and destroy the layers after this it wont be usable

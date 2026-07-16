@@ -6,28 +6,28 @@
 namespace Core {
 	const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
 
-	FMTyieldmodelpools::FMTyieldmodelpools(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields):
-		FMTyieldmodelnn(jsonProps, inputYields)
+	FMTYieldModelPools::FMTYieldModelPools(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields):
+		FMTYieldModelNn(jsonProps, inputYields)
 	{
 
 	}
 
 	
-	std::unique_ptr<FMTyieldmodel>FMTyieldmodelpools::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelPools::Clone() const
 	{
 		try {
-			return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelpools(*this));
+			return std::unique_ptr<FMTYieldModel>(new FMTYieldModelPools(*this));
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldmodelpools::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelPools::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldmodel>(nullptr);
+		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
 
 	
 
-	const std::vector<double> FMTyieldmodelpools::getInputValues(const Graph::FMTpredictor& predictor) const
+	const std::vector<double> FMTYieldModelPools::getInputValues(const Graph::FMTpredictor& predictor) const
 	{
 		std::vector<double> values;
 		std::vector<double> sourceYields = predictor.getSourceYields();
@@ -47,7 +47,7 @@ namespace Core {
 		return values;
 	}
 
-	std::string FMTyieldmodelpools::getModelType()
+	std::string FMTYieldModelPools::getModelType()
 	{
 		return "POOLS";
 	}

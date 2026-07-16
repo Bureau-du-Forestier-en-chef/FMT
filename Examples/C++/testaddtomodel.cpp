@@ -16,10 +16,10 @@ int main()
         const std::string folder = "../../../../Examples/Models/TWD_land/";
         const std::string primarylocation = folder+"TWD_land.pri";
         const std::string outdir = "../../tests/testaddmodel/";
-        Parser::FMTmodelparser modelparser;
+        Parser::FMTModelParser modelparser;
         const std::vector<std::string>scenarios(1, "LP");
-        const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-        Models::FMTmodel modifmodel = models.at(0);
+        const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+        Models::FMTModel modifmodel = models.at(0);
         const std::vector<Core::FMTTheme> themes = modifmodel.getThemes();
         std::vector<Core::FMTAgeYieldHandler> newhandlers;
         const std::vector<int> bases = {0,5,10,15,20,25,30};

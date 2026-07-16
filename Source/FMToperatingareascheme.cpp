@@ -152,7 +152,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 	void FMToperatingareascheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
 		const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodictargetednodes,
 		const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
-		Models::FMTlpsolver& solver,
+		Models::FMTLpSolver& solver,
 		const double* primalsolution,
 		const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<int>& actionIDS)
 	{
@@ -700,7 +700,7 @@ FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,co
 
 void FMToperatingareascheme::setConstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices,
 	const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
-	const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph, Models::FMTlpsolver& solver,
+	const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph, Models::FMTLpSolver& solver,
 	const double* primalsolution,
 	const std::vector<int>& actionIDS)
 	{

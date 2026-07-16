@@ -50,7 +50,7 @@ namespace Wrapper
 				msclr::interop::marshal_as<std::string>(fichierPri));
 			for each (int scen in scenarios)
 			{
-				Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getModel(scen), static_cast<Models::FMTsolverinterface>(solver));
+				Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scen), static_cast<Models::FMTsolverinterface>(solver));
 				*logger << "FMT -> Préparation pour le scénario : " + optimizationmodel.getName() << "\n";
 				std::vector<Core::FMTSchedule> cedule;
 				bool playbackscen = playback[scenarios->IndexOf(scen)];
@@ -68,7 +68,7 @@ namespace Wrapper
 				}
 
 				optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, valeur_NUMBER_OF_THREADS);
-				optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+				optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
 				std::vector<Core::FMTOutput> selectedoutputs = ObtenirArrayOutputsSelectionnees(optimizationmodel.getOutputs(), outputs);
 				optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playbackscen);
 				newplanningtask.push_back(optimizationmodel, cedule, selectedoutputs);
@@ -110,15 +110,15 @@ namespace Wrapper
 		{
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-			Models::FMTlpmodel global(FMTFormCache::GetInstance()->getModel(indexScenStrategique), static_cast<Models::FMTsolverinterface>(solver));
+			Models::FMTLpModel global(FMTFormCache::GetInstance()->getModel(indexScenStrategique), static_cast<Models::FMTsolverinterface>(solver));
 			global.setParameter(Models::FMTintmodelparameters::LENGTH, period);
 			global.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
 			global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 			global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
-			Models::FMTnssmodel stochastic(FMTFormCache::GetInstance()->getModel(indexScenStochastique), 0);
+			Models::FMTNssModel stochastic(FMTFormCache::GetInstance()->getModel(indexScenStochastique), 0);
 			stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 			stochastic.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			Models::FMTlpmodel local(FMTFormCache::GetInstance()->getModel(indexScenTactique), static_cast<Models::FMTsolverinterface>(solver));
+			Models::FMTLpModel local(FMTFormCache::GetInstance()->getModel(indexScenTactique), static_cast<Models::FMTsolverinterface>(solver));
 			local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 			local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 			local.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);

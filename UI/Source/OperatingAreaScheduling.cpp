@@ -40,7 +40,7 @@ namespace Wrapper
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
 			*logger << "Préparation du modèle" << "\n";
-			Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTsolverinterface>(solver));
+			Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTsolverinterface>(solver));
 			*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";
 			optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, nombrePeriodes);
 			optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
@@ -97,7 +97,7 @@ namespace Wrapper
 			renommer postsolvedtheme par model themes car peut porter a confusion, mais les themes du modèles sont nécessaire.
 			*/
 
-			Parser::FMTareaparser areaparser;
+			Parser::FMTAreaParser areaparser;
 			std::vector<Heuristics::FMToperatingareascheme> opeareas = areaparser.getOperatingArea(
 				msclr::interop::marshal_as<std::string>(fichierShp),
 				optimizationmodel.getThemes(), numeroTheme,

@@ -24,51 +24,51 @@ namespace Spatial
 
 namespace Models
 {
-// DocString: FMTsemodel
+// DocString: FMTSeModel
 /**
-This model is an abstract class for spatially explicit model. It's the parent of FMTsesmodel and FMTsamodel.
+This model is an abstract class for spatially explicit model. It's the parent of FMTSesModel and FMTSaModel.
 It contains a spatialschedule (the best solution) in case of optimization or the latest solution in term of
 simulation.
 */
-class FMTEXPORT FMTsemodel : public FMTmodel
+class FMTEXPORT FMTSeModel : public FMTModel
     {
     public:
-		// DocString: FMTsemodel()
+		// DocString: FMTSeModel()
 		/**
-		Default constructor of FMTsemodel
+		Default constructor of FMTSeModel
 		*/
-        FMTsemodel();
-		// DocString: ~FMTsemodel()
+        FMTSeModel();
+		// DocString: ~FMTSeModel()
 		/**
-		Default destructor of FMTsemodel
+		Default destructor of FMTSeModel
 		*/
-		virtual ~FMTsemodel() = default;
-		// DocString: FMTsemodel(const FMTsemodel)
+		virtual ~FMTSeModel() = default;
+		// DocString: FMTSeModel(const FMTSeModel)
 		/**
-		Copy constructor of FMTsemodel
+		Copy constructor of FMTSeModel
 		*/
-        FMTsemodel(const FMTsemodel& rhs);
-		// DocString: FMTsemodel(const FMTmodel, const FMTforest)
+        FMTSeModel(const FMTSeModel& rhs);
+		// DocString: FMTSeModel(const FMTModel, const FMTforest)
 		/**
-		Parent constructor for FMTsemodel (easiest way to get information from a FMTmodel) and with an FMTforest.
+		Parent constructor for FMTSeModel (easiest way to get information from a FMTModel) and with an FMTforest.
 		*/
-        FMTsemodel(const FMTmodel& rhs,const Spatial::FMTforest& forest);
-		// DocString: FMTsemodel(const FMTmodel, const FMTforest)
+        FMTSeModel(const FMTModel& rhs,const Spatial::FMTforest& forest);
+		// DocString: FMTSeModel(const FMTModel, const FMTforest)
 		/**
-		Parent constructor for FMTsemodel (easiest way to get information from a FMTmodel)
+		Parent constructor for FMTSeModel (easiest way to get information from a FMTModel)
 		*/
-		FMTsemodel(const FMTmodel& rhs);
-		// DocString: FMTsemodel::operator=
+		FMTSeModel(const FMTModel& rhs);
+		// DocString: FMTSeModel::operator=
 		/**
-		Copy assignment of FMTsemodel
+		Copy assignment of FMTSeModel
 		*/
-        FMTsemodel& operator = (const FMTsemodel& rhs);
-		// DocString: FMTsemodel::getMapping
+        FMTSeModel& operator = (const FMTSeModel& rhs);
+		// DocString: FMTSeModel::getMapping
 		/**
 		Getter returning a copy the actual spatial forest stades of each FMTDevelopment (map).
 		*/
 		Spatial::FMTforest getMapping() const;
-		// DocString: FMTsemodel::getSpSchedule
+		// DocString: FMTSeModel::getSpSchedule
 		/**
 		Getter returning a copy of the spatially explicit solution.
 		*/
@@ -76,48 +76,48 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		{
 			return m_BestSolution;
 		}
-		// DocString: FMTsemodel::getDisturbanceStats
+		// DocString: FMTSeModel::getDisturbanceStats
 		/**
 		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
 		*/
 		std::string getDisturbanceStats() const;
-		// DocString: FMTsemodel::getSchedule
+		// DocString: FMTSeModel::getSchedule
 		/**
-		Getter returning a copy of the operated schedules of the FMTsemodel.
+		Getter returning a copy of the operated schedules of the FMTSeModel.
 		The operated schedule can differ from the potential schedule provided by the user in the function
 		greedyreferencedbuild(). Which we call spatialisation impact.
 		*/
 		std::vector<Core::FMTSchedule> getSchedule(bool withlock=false) const;
-		// DocString: FMTsemodel::setInitialMapping
+		// DocString: FMTSeModel::setInitialMapping
 		/**
 		Setter of the initial forest state (spatial map of FMTDevelopment)
 		Has to be set before greedyreferencedbuild() is called.
 		*/
         bool setInitialMapping(const Spatial::FMTforest& forest);
-		// DocString: FMTsemodel::logConstraintsInfeasibilities
+		// DocString: FMTSeModel::logConstraintsInfeasibilities
 		/**
 		Log the constraints infeasibilities spatial or not spatial
 		*/
 		void logConstraintsInfeasibilities() const;
-		// DocString: FMTsemodel::logConstraintsFactors
+		// DocString: FMTSeModel::logConstraintsFactors
 		/**
 		Log the constraints factors
 		*/
 		void logConstraintsFactors() const;
-		// DocString: FMTsemodel::presolve
+		// DocString: FMTSeModel::presolve
 		/**
 		Presolve the semodel to get a more simple model call original presolve() and presolve the
 		FMTforest map and the spatial acitons.
 		*/
-		virtual std::unique_ptr<FMTmodel>presolve(
+		virtual std::unique_ptr<FMTModel>presolve(
 			std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
-		// DocString: FMTsemodel::postSolve
+		// DocString: FMTSeModel::postSolve
 		/**
-		Using the original FMTmodel it postSolve the actual ses model to turn it back into a complete model with all themes,
+		Using the original FMTModel it postSolve the actual ses model to turn it back into a complete model with all themes,
 		actions and outputs of the original not presolved model.
 		*/
-		virtual void postSolve(const FMTmodel& originalbasemodel);
-		// DocString: FMTsemodel::getOutput
+		virtual void postSolve(const FMTModel& originalbasemodel);
+		// DocString: FMTSeModel::getOutput
 		/**
 		Get the output value of a output for a given period using the spatial solution.
 		the map key returned consist of output name
@@ -126,12 +126,12 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		*/
 		virtual std::map<std::string, double> getOutput(const Core::FMTOutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
-		// DocString: FMTsemodel::getOutput
+		// DocString: FMTSeModel::getOutput
 		/**
 		Get the spatial output value based on the spatial solution.
 		*/
 		virtual Spatial::FMTlayer<double> getSpatialOutput(const Core::FMTOutput& output,int period) const;
-		// DocString: FMTsemodel::getSolution
+		// DocString: FMTSeModel::getSolution
 		/**
 		Get the standard solution for a given period (FMTSchedule dont have natural growth solution included).
 		If with lock is true then the schedule will contain locked development.
@@ -139,12 +139,12 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		virtual Core::FMTSchedule getSolution(int period, bool withlock = false) const;
 
 		
-		// DocString: FMTsemodel::clone
+		// DocString: FMTSeModel::clone
 		/**
-		Get a clone of the FMTsemodel
+		Get a clone of the FMTSeModel
 		*/
-		virtual std::unique_ptr<FMTmodel>clone() const;
-		// DocString: FMTsemodel::getArea
+		virtual std::unique_ptr<FMTModel>clone() const;
+		// DocString: FMTSeModel::getArea
 		/**
 		@brief Get the area of a given period based on the solution of the model.
 		@param[in] period the period selected
@@ -152,18 +152,18 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		@return the vector of actualdevelopment...
 		*/
 		virtual std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
-		// DocString: FMTsemodel::getCopy
+		// DocString: FMTSeModel::getCopy
 		/**
-		This function returns a copy of the FMTmodel of the selected period.
+		This function returns a copy of the FMTModel of the selected period.
 		The function is going to clean the FMTconstraints and keep the objective.
 		*/
-		virtual std::unique_ptr<FMTmodel> getCopy(int period = 0) const;
-		// DocString: FMTmodel::getObjectiveValue
+		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
+		// DocString: FMTModel::getObjectiveValue
 		/**
 		Return the value of the globalobjective of the actual solution
 		*/
 		virtual double getObjectiveValue() const;
-		// DocString: FMTsemodel::getSchedules
+		// DocString: FMTSeModel::getSchedules
 		/**
 		@brief Get the schedules of the spatial solution
 		@param[in] p_SpatialSchedule spatial schedule
@@ -172,14 +172,14 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		*/
 		std::vector<Core::FMTSchedule> getSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
 			bool withlock = false) const;
-		// DocString: FMTsemodel::getSolutionStatus
+		// DocString: FMTSeModel::getSolutionStatus
 		/**
 		@brief Get the solution status
 		*/
 		void getSolutionStatus(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
 			double& p_Objective, double& p_PrimalInFeasibility,
 			bool withsense = true, bool withfactorization = false, bool withspatial = true) const;
-		// DocString: FMTsemodel::getConstraintEvaluation
+		// DocString: FMTSeModel::getConstraintEvaluation
 		/**
 		@brief evaluate the constraint with the actual solution
 		@return the evaluation value.
@@ -187,10 +187,10 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		double getConstraintEvaluation(size_t p_Constraint) const;
 		
 	protected:
-		// DocString: FMTsemodel::spschedule
+		// DocString: FMTSeModel::spschedule
 		///Contains the builded spatialsolution latest or best one.
 		Spatial::FMTSpatialSchedule m_BestSolution;
-		// DocString: FMTsemodel::FMTSpatialGraphs
+		// DocString: FMTSeModel::FMTSpatialGraphs
 		///Contains all the SpatialGraphs
 		Spatial::FMTSpatialGraphs m_SpatialGraphs;
 
@@ -210,7 +210,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		double getConstraintFactor(size_t p_constraint, double p_GrossValue) const;
 		bool isValidFactor(double p_GrossValue)const;
 	private:
-		// DocString: FMTsemodel::Serialize
+		// DocString: FMTSeModel::Serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
@@ -218,10 +218,10 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
+			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTModel>(*this));
 			//ar& BOOST_SERIALIZATION_NVP(m_BestSolution);
 		}
-		virtual void swapPtr(std::unique_ptr<FMTmodel>& rhs);
+		virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
 		void _buildArea(const Spatial::FMTforest& p_Forest);
 		void _buildGraphs(double p_cellSize);
 		void _buildSolution(const Spatial::FMTforest& p_Forest);
@@ -234,6 +234,6 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 
 }
 
-BOOST_CLASS_EXPORT_KEY(Models::FMTsemodel)
+BOOST_CLASS_EXPORT_KEY(Models::FMTSeModel)
 
 #endif // FMTSEM_Hm_included

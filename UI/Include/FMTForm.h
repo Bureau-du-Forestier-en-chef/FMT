@@ -11,7 +11,7 @@ namespace Core {
 }
 
 namespace Models {
-	class FMTsemodel;
+	class FMTSeModel;
 }
 namespace FMTWrapperCore {
 	struct SESResults;
@@ -293,7 +293,7 @@ namespace Wrapper
 		* @brief  crit sur le disque tous les mod les pr sents dans la cache.
 		*
 		* Parcourt la cache et  crit chaque mod le   la m me localisation .pri via
-		* FMTmodelparser::writetoproject : le 1er mod le devient la base (ROOT) du
+		* FMTModelParser::writetoproject : le 1er mod le devient la base (ROOT) du
 		* projet, les suivants sont  crits comme sc narios dans
 		* Scenarios/<nom_du_model>/. Chaque mod le doit donc porter un nom distinct.
 		*
@@ -325,13 +325,13 @@ namespace Wrapper
 		// Les méthodes suivantes ont été supprimées car leur logique
 		// est maintenant dans FMTWrapperCore::SES :
 		// 
-		// void RapportdeBris(const Models::FMTsemodel& semodel);
-		// void RapportdeCarboneSpatial(const Models::FMTsemodel& semodel, const int& nombredeperiodes, const std::vector<Core::FMTSchedule>& schedules);
-		// void EcrituredesPerturbations(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, System::Collections::Generic::List<int>^ growththemes, const bool& incarbon);
-		// void EcritureDesEvenements(const Models::FMTsemodel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, const bool& incarbon);
-		// std::vector<Core::FMTOutput> EcritureDesOutputs(const Models::FMTsemodel& semodel, System::Collections::Generic::List<System::String^>^ outputs, const int& nombredeperiodes, const bool& incarbon);
-		// void EcrituredesOutputsSpatiaux(const Models::FMTsemodel& semodel, const std::vector<Core::FMTOutput>& outputs, const int& sortiemin, const int& sortiemax, System::String^ localisation);
-		// void EcritureDesPredicteurs(const Models::FMTsemodel& semodel, const std::string& rastpath, const int& periodes, System::Collections::Generic::List<System::String^>^ predictoryields);
+		// void RapportdeBris(const Models::FMTSeModel& semodel);
+		// void RapportdeCarboneSpatial(const Models::FMTSeModel& semodel, const int& nombredeperiodes, const std::vector<Core::FMTSchedule>& schedules);
+		// void EcrituredesPerturbations(const Models::FMTSeModel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, System::Collections::Generic::List<int>^ growththemes, const bool& incarbon);
+		// void EcritureDesEvenements(const Models::FMTSeModel& semodel, System::String^ cheminsorties, const int& nombredeperiodes, const bool& incarbon);
+		// std::vector<Core::FMTOutput> EcritureDesOutputs(const Models::FMTSeModel& semodel, System::Collections::Generic::List<System::String^>^ outputs, const int& nombredeperiodes, const bool& incarbon);
+		// void EcrituredesOutputsSpatiaux(const Models::FMTSeModel& semodel, const std::vector<Core::FMTOutput>& outputs, const int& sortiemin, const int& sortiemax, System::String^ localisation);
+		// void EcritureDesPredicteurs(const Models::FMTSeModel& semodel, const std::string& rastpath, const int& periodes, System::Collections::Generic::List<System::String^>^ predictoryields);
 		//
 		// Toute la logique est maintenant orchestrée par SES::RunSES()
 		// ===================================================================

@@ -10,7 +10,7 @@
 
 
 
-int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
+int FMTWrapperCore::Tools::getMaxAge(const Models::FMTModel& p_model)
 {
 	int result = 0;
 	try
@@ -35,7 +35,7 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 	return result;
 }
 
-double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const std::string& p_mask, const std::string& p_yield, int p_age)
+double FMTWrapperCore::Tools::getYield(const Models::FMTModel& p_model, const std::string& p_mask, const std::string& p_yield, int p_age)
 {
 	double result = 0;
 	try
@@ -81,7 +81,7 @@ return std::set<std::string>(Allmasks.begin(), Allmasks.end());
 }
 
 std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
-	const Models::FMTmodel& p_model, 
+	const Models::FMTModel& p_model, 
 	const int p_periods, 
 	const std::vector<int>& p_themesNumbers, 
 	const std::string& p_rasterPath) 
@@ -90,7 +90,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	try
 	{
 		// On cr�e une copie du mod�le car on dois faire un setArea avec les donn�es du raster.
-		Models::FMTmodel modelCopy = p_model;
+		Models::FMTModel modelCopy = p_model;
 		modelCopy.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, false);
 		if (!p_rasterPath.empty())
 		{
@@ -111,7 +111,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			modelCopy.setConstraints(std::vector<Core::FMTConstraint>());
 			modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 			//modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 30);
-			/**Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+			/**Models::FMTLpModel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
 			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
 			optModel.doPlanning(false);
 			masks = optModel.getAllMasks(themes);*/
@@ -119,7 +119,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			std::vector<Core::FMTActualDevelopment> area = modelCopy.getArea();
 			for (int i = 1; i <= p_periods; ++i)
 			{
-				Models::FMTlpmodel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+				Models::FMTLpModel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
 				for (auto& dev : area)
 					{
 					dev.setPeriod(i-1);
@@ -143,11 +143,11 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	}
 	return masks;
 }
-void FMTWrapperCore::Tools::writeToProject(const Models::FMTmodel& p_model, const std::string& p_primaryLocation)
+void FMTWrapperCore::Tools::writeToProject(const Models::FMTModel& p_model, const std::string& p_primaryLocation)
 {
 	try
 	{
-		Parser::FMTmodelparser ModelParser;
+		Parser::FMTModelParser ModelParser;
 		ModelParser.writeToProject(p_primaryLocation, p_model);
 	}
 	catch (...)
@@ -157,7 +157,7 @@ void FMTWrapperCore::Tools::writeToProject(const Models::FMTmodel& p_model, cons
 	}
 }
 
-std::vector<Core::FMTActualDevelopment> FMTWrapperCore::Tools::getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath)
+std::vector<Core::FMTActualDevelopment> FMTWrapperCore::Tools::getRasterArea(const Models::FMTModel& p_model, const std::string& p_rasterPath)
 {
 	std::vector<std::string> themesrast;
 	// Assurez-vous que le chemin se termine par un s�parateur pour une construction propre
@@ -167,7 +167,7 @@ std::vector<Core::FMTActualDevelopment> FMTWrapperCore::Tools::getRasterArea(con
 	
 	// On vérifie si le fichier Standlock est présent
 	bool stanlockExists = false;
-	Parser::FMTareaparser areaparser;
+	Parser::FMTAreaParser areaparser;
 	Spatial::FMTforest initialforestmap;
 	std::vector<Core::FMTActualDevelopment> area;
 

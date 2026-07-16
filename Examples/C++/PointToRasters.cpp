@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     }
     const std::string LOCK_FIELD = "STANLOCK";
 
-    Parser::FMTareaparser areaparser;
+    Parser::FMTAreaParser areaparser;
     std::vector<Exception::FMTexc>errors;
     errors.push_back(Exception::FMTexc::FMTmissingyield);
     errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
     areaparser.setErrorsToWarnings(errors);
 
-    Parser::FMTlandscapeparser landScapeParse;
+    Parser::FMTLandscapeParser landScapeParse;
     const std::vector<Core::FMTTheme> THEMES = landScapeParse.read(Core::FMTConstants(), themesLocation);
    
     const Spatial::FMTforest FOREST = areaparser.vectormaptoFMTforest(pointsLocation,side, THEMES,"AGE","SUPERFICIE",

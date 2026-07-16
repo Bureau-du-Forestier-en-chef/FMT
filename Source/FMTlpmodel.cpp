@@ -27,7 +27,7 @@ namespace Models
 {
 
 
-	FMTlpmodel::ConstraintIndex::ConstraintIndex(int p_constraintId, int p_period, FMTmatrixelement p_type):
+	FMTLpModel::ConstraintIndex::ConstraintIndex(int p_constraintId, int p_period, FMTmatrixelement p_type):
 		m_constraintId(p_constraintId),
 		m_period(p_period),
 		m_type(p_type)/*,
@@ -36,7 +36,7 @@ namespace Models
 
 	}
 
-	/*FMTlpmodel::ConstraintIndex::ConstraintIndex(int p_constraintId, int p_period,
+	/*FMTLpModel::ConstraintIndex::ConstraintIndex(int p_constraintId, int p_period,
 		FMTmatrixelement p_type, std::allocator<int>& p_allocator, size_t p_allocation):
 			m_constraintId(p_constraintId),
 			m_period(p_period),
@@ -45,39 +45,39 @@ namespace Models
 			{
 			m_rows.reserve(p_allocation);
 			}*/
-	bool FMTlpmodel::ConstraintIndex::operator < (const ConstraintIndex& p_rhs) const
+	bool FMTLpModel::ConstraintIndex::operator < (const ConstraintIndex& p_rhs) const
 		{
 		return std::tie(m_constraintId, m_period, m_type) <
 			std::tie(p_rhs.m_constraintId, p_rhs.m_period, p_rhs.m_type);
 		}
-	bool FMTlpmodel::ConstraintIndex::operator == (const ConstraintIndex& p_rhs) const
+	bool FMTLpModel::ConstraintIndex::operator == (const ConstraintIndex& p_rhs) const
 		{
 		return (m_constraintId == p_rhs.m_constraintId &&
 			m_period == p_rhs.m_period &&
 			m_type == p_rhs.m_type);
 		}
-	/*const std::vector<int>& FMTlpmodel::ConstraintIndex::getRows() const
+	/*const std::vector<int>& FMTLpModel::ConstraintIndex::getRows() const
 		{
 		return m_rows;
 		}
-	std::vector<int>& FMTlpmodel::ConstraintIndex::getRowsRef()
+	std::vector<int>& FMTLpModel::ConstraintIndex::getRowsRef()
 		{
 		return m_rows;
 		}*/
 
-	/*void FMTlpmodel::ConstraintIndex::push_back(const int& p_row)
+	/*void FMTLpModel::ConstraintIndex::push_back(const int& p_row)
 		{
 		m_rows.push_back(p_row);
 		}*/
 	
-	size_t FMTlpmodel::ConstraintIndex::getHash() const
+	size_t FMTLpModel::ConstraintIndex::getHash() const
 		{
 		return std::hash<int>()(m_constraintId) ^
 			std::hash<int>()(m_period) ^
 			std::hash<int>()(m_type);
 		}
 
-	std::vector<Core::FMTConstraint>::const_iterator FMTlpmodel::_getConstraintIndex(const Core::FMTConstraint& p_constraint) const
+	std::vector<Core::FMTConstraint>::const_iterator FMTLpModel::_getConstraintIndex(const Core::FMTConstraint& p_constraint) const
 		{
 		std::vector<Core::FMTConstraint>::const_iterator it = constraints.begin();
 		for (const Core::FMTConstraint& CONSTRAINT : constraints)
@@ -91,7 +91,7 @@ namespace Models
 		return constraints.end();
 		}
 
-	std::vector<Core::FMTConstraint>::const_iterator FMTlpmodel::_getsetConstraintIndex(const Core::FMTConstraint& p_constraint)
+	std::vector<Core::FMTConstraint>::const_iterator FMTLpModel::_getsetConstraintIndex(const Core::FMTConstraint& p_constraint)
 		{
 		std::vector<Core::FMTConstraint>::const_iterator it = _getConstraintIndex(p_constraint);
 		if (it == constraints.end())
@@ -102,12 +102,12 @@ namespace Models
 		return it;
 		}
 
-	int FMTlpmodel::_getIndex(const std::vector<Core::FMTConstraint>::const_iterator& p_it) const
+	int FMTLpModel::_getIndex(const std::vector<Core::FMTConstraint>::const_iterator& p_it) const
 		{
 		return static_cast<int>(std::distance(constraints.begin(), p_it));
 		}
 
-	void FMTlpmodel::_setGraphCache(bool p_noLength)
+	void FMTLpModel::_setGraphCache(bool p_noLength)
 	{
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
 		size_t length = 5;
@@ -130,11 +130,11 @@ namespace Models
 			{
 			_exhandler->raise(Exception::FMTexc::FMTWIN32Error,
 				"Unsufficient RAM",
-				"FMTlpmodel::_setGraphCache", __LINE__, __FILE__);
+				"FMTLpModel::_setGraphCache", __LINE__, __FILE__);
 			}
 	}
 
-	void FMTlpmodel::_setConstraintsCache()
+	void FMTLpModel::_setConstraintsCache()
 	{
 		const size_t FACTOR = 100; //higher is less memory
 		const size_t VARIABLES = static_cast<size_t>(m_graph->getStats().cols);
@@ -167,7 +167,7 @@ namespace Models
 		}
 	}
 
-	Heuristics::FMToperatingareaclusterer FMTlpmodel::getClusterer(
+	Heuristics::FMToperatingareaclusterer FMTLpModel::getClusterer(
 		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
 		const Core::FMTOutput& areaoutput,
 		const Core::FMTOutput& statisticoutput,
@@ -205,7 +205,7 @@ namespace Models
 						_exhandler->raise(Exception::FMTexc::FMTignore,
 							"Negative stats value rounded to " + std::to_string(minimalstatisticvalue) +
 							" for " + std::string(centroidmask),
-							"FMTlpmodel::getClusterer", __LINE__, __FILE__);
+							"FMTLpModel::getClusterer", __LINE__, __FILE__);
 					}
 					
 				}
@@ -240,7 +240,7 @@ namespace Models
 							_exhandler->raise(Exception::FMTexc::FMTignore,
 								"Negative stats value rounded to " + std::to_string(minimalstatisticvalue) +
 								" for " + std::string(binarymask),
-								"FMTlpmodel::getClusterer", __LINE__, __FILE__);
+								"FMTLpModel::getClusterer", __LINE__, __FILE__);
 						}
 					}
 					statistic = std::max(minimalstatisticvalue, statistic);
@@ -258,7 +258,7 @@ namespace Models
                     {
                     _exhandler->raise(Exception::FMTexc::FMTignore,
 									"Operating area cluster "+std::string(centroid.getMask())+" wont reach its minimal size",
-									"FMTlpmodel::getClusterer",__LINE__, __FILE__);
+									"FMTLpModel::getClusterer",__LINE__, __FILE__);
                     }
 				newclusters.push_back(newopcluster);
 				
@@ -269,13 +269,13 @@ namespace Models
 			newclusterer.buildProblem();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::getClusterer", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::getClusterer", __LINE__, __FILE__);
 			}
 		return newclusterer;
 	}
 
 
-	std::vector<Core::FMTConstraint> FMTlpmodel::getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTConstraint>& localconstraints, const int& period) const
+	std::vector<Core::FMTConstraint> FMTLpModel::getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTConstraint>& localconstraints, const int& period) const
 	{
 		try
 		{
@@ -283,17 +283,17 @@ namespace Models
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot getlocalconstraints from a non optimal global",
-					"FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
+					"FMTLpModel::getlocalconstraints", __LINE__, __FILE__);
 				}
-			return FMTmodel::getReplanningConstraints(modeltype,localconstraints,period);
+			return FMTModel::getReplanningConstraints(modeltype,localconstraints,period);
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTlpmodel::getReplanningConstraints", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTLpModel::getReplanningConstraints", __LINE__, __FILE__);
 		}
 		return std::vector<Core::FMTConstraint>();
 	}
 
-	std::map<std::string, double> FMTlpmodel::getOutput(const Core::FMTOutput& output,
+	std::map<std::string, double> FMTLpModel::getOutput(const Core::FMTOutput& output,
 		int period, Core::FMToutputlevel level) const
 	{
 		try {
@@ -320,18 +320,18 @@ namespace Models
 						}
 				}
 			}else {
-				return FMTsrmodel::getOutput(output, period, level);
+				return FMTSrModel::getOutput(output, period, level);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTlpmodel::getOutput", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTLpModel::getOutput", __LINE__, __FILE__);
 		}
 		return std::map<std::string, double>();
 
 	}
 
-	void FMTlpmodel::addScheduleToObjective(const Core::FMTSchedule& schedule, double weight)
+	void FMTLpModel::addScheduleToObjective(const Core::FMTSchedule& schedule, double weight)
 	{
 		try
 		{
@@ -363,12 +363,12 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTlpmodel::addScheduleToObjective", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTLpModel::addScheduleToObjective", __LINE__, __FILE__);
 		}
 	}
 
-	FMTlpmodel::FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype) :
-		FMTsrmodel(base,lsolvertype),
+	FMTLpModel::FMTLpModel(const FMTModel& base, FMTsolverinterface lsolvertype) :
+		FMTSrModel(base,lsolvertype),
 		m_rowsAllocator(),
 		m_indexAllocator(),
 		m_indexes(m_indexAllocator)
@@ -377,9 +377,9 @@ namespace Models
 		solver.setNumberOfThreads(getParameter(NUMBER_OF_THREADS));	
 	}
 	/*
-	FMTlpmodel::FMTlpmodel(	const FMTmodel& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
-							const FMTlpsolver& lsolver,const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>& lelements) :
-	FMTsrmodel(base,lgraph,lsolver),
+	FMTLpModel::FMTLpModel(	const FMTModel& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
+							const FMTLpSolver& lsolver,const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>& lelements) :
+	FMTSrModel(base,lgraph,lsolver),
 	m_indexes(m_indexAllocator),
 	elements(lelements)
 	{
@@ -387,8 +387,8 @@ namespace Models
 		solver.setNumberOfThreads(getparameter(NUMBER_OF_THREADS));	
 	}
 	*/
-	FMTlpmodel::FMTlpmodel() :
-		FMTsrmodel(),
+	FMTLpModel::FMTLpModel() :
+		FMTSrModel(),
 		m_rowsAllocator(),
 		m_indexAllocator(),
 		m_indexes(m_indexAllocator)
@@ -397,8 +397,8 @@ namespace Models
 		
 	}
 
-	FMTlpmodel::FMTlpmodel(const FMTlpmodel& rhs) :
-		FMTsrmodel(rhs),
+	FMTLpModel::FMTLpModel(const FMTLpModel& rhs) :
+		FMTSrModel(rhs),
 		m_rowsAllocator(rhs.m_rowsAllocator),
 		m_indexAllocator(rhs.m_indexAllocator),
 		m_indexes(rhs.m_indexes)
@@ -407,28 +407,28 @@ namespace Models
 
 	}
 
-	bool FMTlpmodel::operator == (const FMTlpmodel& rhs) const
+	bool FMTLpModel::operator == (const FMTLpModel& rhs) const
 	{
-		return (FMTsrmodel::operator == (rhs) &&
+		return (FMTSrModel::operator == (rhs) &&
 			m_indexes == rhs.m_indexes /* &&
 			elements == rhs.elements*/);
 	}
 
-	bool FMTlpmodel::operator != (const FMTlpmodel& rhs) const
+	bool FMTLpModel::operator != (const FMTLpModel& rhs) const
 	{
 		return !(*this == rhs);
 	}
 
-	void FMTlpmodel::setStrictlyPositivesOutputsMatrix()
+	void FMTLpModel::setStrictlyPositivesOutputsMatrix()
 	{
-		FMTmodel::setParameter(STRICTLY_POSITIVE,true);
+		FMTModel::setParameter(STRICTLY_POSITIVE,true);
 	}
 
-	FMTlpmodel& FMTlpmodel::operator = (const FMTlpmodel& rhs)
+	FMTLpModel& FMTLpModel::operator = (const FMTLpModel& rhs)
 	{
 		if (this != &rhs)
 		{
-			FMTsrmodel::operator = (rhs);
+			FMTSrModel::operator = (rhs);
 			m_rowsAllocator = rhs.m_rowsAllocator;
 			m_indexAllocator = rhs.m_indexAllocator;
 			m_indexes = rhs.m_indexes;
@@ -437,7 +437,7 @@ namespace Models
 		return *this;
 	}
 
-std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Core::FMTOutputNode>& nodes, int period,
+std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Core::FMTOutputNode>& nodes, int period,
 	std::map<int, double>& variables, double multiplier) const
 	{
 	std::vector<std::map<int, double>> strictlypositivesoutputs;
@@ -485,7 +485,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 							if(_area)
 							{
 								_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-													"Output id from node :"+std::string(node)+" contain different type of output", "FMTlpmodel::locateNodes", __LINE__, __FILE__);
+													"Output id from node :"+std::string(node)+" contain different type of output", "FMTLpModel::locateNodes", __LINE__, __FILE__);
 							}
 							const std::map<std::string,std::map<int,double>> node_map_theme = m_graph->locateNodeByTheme(*this, node, period);
 							if (!node_map_theme.empty())
@@ -493,7 +493,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 								if (id==-1)
 								{
 									_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-														"Invalid output id from node :"+std::string(node), "FMTlpmodel::locateNodes", __LINE__, __FILE__);
+														"Invalid output id from node :"+std::string(node), "FMTLpModel::locateNodes", __LINE__, __FILE__);
 								}
 							}
 							if (outputid!=id)
@@ -514,7 +514,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 										if(counttheme>1 && foundna)
 										{
 											_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-																"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locateNodes", __LINE__, __FILE__);
+																"Differences in thematics of certains outputs and there sources", "FMTLpModel::locateNodes", __LINE__, __FILE__);
 										}
 									}
 									node_map_theme_id.clear();
@@ -549,19 +549,19 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 						if(counttheme>1 && foundna)
 						{
 							_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-												"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locateNodes", __LINE__, __FILE__);
+												"Differences in thematics of certains outputs and there sources", "FMTLpModel::locateNodes", __LINE__, __FILE__);
 						}
 					}
 				}
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at period "+std::to_string(period), "FMTlpmodel::locateNodes", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("at period "+std::to_string(period), "FMTLpModel::locateNodes", __LINE__, __FILE__);
 			}
 	return strictlypositivesoutputs;
 	}
 
-	bool FMTlpmodel::setPositiveOutputsInMatrix(const std::vector<Core::FMTConstraint>::const_iterator& p_it,
+	bool FMTLpModel::setPositiveOutputsInMatrix(const std::vector<Core::FMTConstraint>::const_iterator& p_it,
 		const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period)
 	{
 		try
@@ -576,24 +576,24 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			}
 		}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTlpmodel::setPositiveOutputsInMatrix", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTLpModel::setPositiveOutputsInMatrix", __LINE__, __FILE__);
 		}
 		return false;
 	}
 
-	void FMTlpmodel::clearCache()
+	void FMTLpModel::clearCache()
 	{
-		FMTmodel::clearCache();
+		FMTModel::clearCache();
 		clearGraphCache();
 	}
 
-	void FMTlpmodel::clearConstraintLocation()
+	void FMTLpModel::clearConstraintLocation()
 	{
 		//std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>().swap(elements);
 		m_indexes.clear();
 	}
 
-	Graph::FMTgraphstats FMTlpmodel::setConstraint(const Core::FMTConstraint& constraint)
+	Graph::FMTgraphstats FMTLpModel::setConstraint(const Core::FMTConstraint& constraint)
 		{
 		try {
 			/*if (getName() == "tactique_AllEnrqc_CC")
@@ -607,7 +607,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				{
 					_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 						"The constraint output " + std::string(constraint) + " cannot be deduct to output nodes",
-						"FMTlpmodel::setConstraint", __LINE__, __FILE__);
+						"FMTLpModel::setConstraint", __LINE__, __FILE__);
 				}
 				int first_period = 0;
 				int last_period = 0;
@@ -799,12 +799,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				{
 				constraintName.pop_back();
 				}
-			_exhandler->printExceptions("for " + constraintName, "FMTlpmodel::setConstraint", __LINE__, __FILE__);
+			_exhandler->printExceptions("for " + constraintName, "FMTLpModel::setConstraint", __LINE__, __FILE__);
 			}
 		return m_graph->getStats();
 		}
 
-	std::vector<int>FMTlpmodel::setObjectiveBounds(bool dolower, bool doupper, double tolerance)
+	std::vector<int>FMTLpModel::setObjectiveBounds(bool dolower, bool doupper, double tolerance)
 		{
 		std::vector<int>bounding;
 		try {
@@ -837,20 +837,20 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::setObjectiveBounds", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::setObjectiveBounds", __LINE__, __FILE__);
 			}
 		return bounding;
 		}
 
-	FMTlpmodel FMTlpmodel::getModelFromProportions(const std::vector<Core::FMTMask>& globalmasks,
+	FMTLpModel FMTLpModel::getModelFromProportions(const std::vector<Core::FMTMask>& globalmasks,
 		std::vector<double> tolerances) const
 	{
-		FMTlpmodel modelwithproportion(*this);
+		FMTLpModel modelwithproportion(*this);
 		try {
 			if (tolerances.size() != globalmasks.size())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-					"Global masks and tolerances are not the same length", "FMTlpmodel::getAreaVariabilities", __LINE__, __FILE__);
+					"Global masks and tolerances are not the same length", "FMTLpModel::getAreaVariabilities", __LINE__, __FILE__);
 			}
 			//const boost::unordered_set<Core::FMTLookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTDevelopment>>& initialperiod = m_graph->getPeriodVertices(0);
 			std::vector<int>colstarget;
@@ -875,7 +875,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 						{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 								"Changing a bound on a non initial variable for developmenets" + std::string(dev),
-								"FMTlpmodel::getAreaVariabilities", __LINE__, __FILE__);
+								"FMTLpModel::getAreaVariabilities", __LINE__, __FILE__);
 						}
 						colstarget.push_back(varindex);
 						const double originallowerboundvalue = *(collowerbounds + varindex);
@@ -895,7 +895,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				{
 					_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
 						"Got more than one global mask for " + std::string(dev.getMask()),
-						"FMTlpmodel::getAreaVariabilities", __LINE__, __FILE__);
+						"FMTLpModel::getAreaVariabilities", __LINE__, __FILE__);
 				}
 			}
 			size_t mskid = 0;
@@ -905,7 +905,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				{
 					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 						"No corresponding development found for " + std::string(globalmasks.at(mskid)),
-						"FMTlpmodel::getAreaVariabilities", __LINE__, __FILE__);
+						"FMTLpModel::getAreaVariabilities", __LINE__, __FILE__);
 				}
 				++mskid;
 			}
@@ -914,16 +914,16 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot regenerate initial optimal solution",
-					"FMTlpmodel::getAreaVariabilities", __LINE__, __FILE__);
+					"FMTLpModel::getAreaVariabilities", __LINE__, __FILE__);
 			}
 		}catch (...)
 		{
-			_exhandler->printExceptions("for " + name, "FMTlpmodel::getModelFromProportions", __LINE__, __FILE__);
+			_exhandler->printExceptions("for " + name, "FMTLpModel::getModelFromProportions", __LINE__, __FILE__);
 		}
 		return modelwithproportion;
 	}
 
-	std::map<std::string, std::vector<double>>FMTlpmodel::getAreaVariabilities(const std::vector<Core::FMTOutput>& localoutputs,
+	std::map<std::string, std::vector<double>>FMTLpModel::getAreaVariabilities(const std::vector<Core::FMTOutput>& localoutputs,
 		const std::vector<Core::FMTMask>& globalmasks,
 		std::vector<double> tolerances) const
 	{
@@ -945,7 +945,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					uppernlower["OLD_" + output.getName()] = outputvalues;
 				}
 			}
-			const FMTlpmodel newmodelwithproportion = getModelFromProportions(globalmasks, tolerances);
+			const FMTLpModel newmodelwithproportion = getModelFromProportions(globalmasks, tolerances);
 			for (const Core::FMTOutput& output : localoutputs)
 			{
 				std::vector<double>outputvalues;
@@ -957,12 +957,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			}
 		}catch (...)
 			{
-			_exhandler->printExceptions("for " + name, "FMTlpmodel::getAreaVariabilities", __LINE__, __FILE__);
+			_exhandler->printExceptions("for " + name, "FMTLpModel::getAreaVariabilities", __LINE__, __FILE__);
 			}
 	return uppernlower;
 	}
 
-	std::map<std::string, std::vector<double>>FMTlpmodel::getVariabilities(const std::vector<Core::FMTOutput>& outputs, const int& periodStart,const int& periodStop)
+	std::map<std::string, std::vector<double>>FMTLpModel::getVariabilities(const std::vector<Core::FMTOutput>& outputs, const int& periodStart,const int& periodStop)
 		{
 		std::map<std::string, std::vector<double>>uppernlower;
 		try {
@@ -990,7 +990,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					if(!this->initialSolve())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-							"Upper objectif unfeasable at period "+std::to_string(period),"FMTlpmodel::getVariabilities", __LINE__, __FILE__);
+							"Upper objectif unfeasable at period "+std::to_string(period),"FMTLpModel::getVariabilities", __LINE__, __FILE__);
 					}
 					uppervalues.push_back(this->getOutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 					minconstraint.setLength(period,period);
@@ -998,7 +998,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					if (!this->initialSolve())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-							"Lower objectif unfeasable at period "+std::to_string(period),"FMTlpmodel::getVariabilities", __LINE__, __FILE__);
+							"Lower objectif unfeasable at period "+std::to_string(period),"FMTLpModel::getVariabilities", __LINE__, __FILE__);
 					}
 					lowervalues.push_back(this->getOutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
@@ -1011,17 +1011,17 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			if(!solver.initialSolve())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-						"Cannot resolve to reset initial state","FMTlpmodel::getVariabilities", __LINE__, __FILE__);
+						"Cannot resolve to reset initial state","FMTLpModel::getVariabilities", __LINE__, __FILE__);
 			}
 		}catch (...)
 			{
 			_exhandler->printExceptions("for "+name,
-										"FMTlpmodel::getVariabilities", __LINE__, __FILE__);
+										"FMTLpModel::getVariabilities", __LINE__, __FILE__);
 			}
 		return uppernlower;
 		}
 	
-	Graph::FMTgraphstats FMTlpmodel::eraseConstraint(const Core::FMTConstraint& constraint, int period)
+	Graph::FMTgraphstats FMTLpModel::eraseConstraint(const Core::FMTConstraint& constraint, int period)
 		{
 		try {
 		const std::vector<Core::FMTConstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
@@ -1141,13 +1141,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}
 			catch (...)
 				{
-				_exhandler->raiseFromCatch("for "+std::string(constraint),"FMTlpmodel::eraseConstraint", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("for "+std::string(constraint),"FMTLpModel::eraseConstraint", __LINE__, __FILE__);
 				}
 		return m_graph->getStats();
 		}
 	
 	
-	void FMTlpmodel::updateConstraintsMapping(const std::vector<int>& Dvariables, const std::vector<int>& Dconstraints)
+	void FMTLpModel::updateConstraintsMapping(const std::vector<int>& Dvariables, const std::vector<int>& Dconstraints)
 		{
 		try {
 			if (!Dvariables.empty() || !Dconstraints.empty())
@@ -1190,12 +1190,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::updateConstraintsMapping", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::updateConstraintsMapping", __LINE__, __FILE__);
 			}
 		}
 	
 
-	void FMTlpmodel::updateMatrixElements(std::vector<int>& matrixelements, const std::vector<int>& deletedelements) const
+	void FMTLpModel::updateMatrixElements(std::vector<int>& matrixelements, const std::vector<int>& deletedelements) const
 		{
 		try {
 			for (int& elementvalue : matrixelements)
@@ -1211,11 +1211,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::updateMatrixElements", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::updateMatrixElements", __LINE__, __FILE__);
 			}
 		}
 	
-	bool FMTlpmodel::updateMatrixNGraph(bool updategraph)
+	bool FMTLpModel::updateMatrixNGraph(bool updategraph)
 		{
 		solver.sortDeletedCache();
 		const std::vector<int>& deletedconstraints = solver.getCacheDeletedConstraints();
@@ -1231,18 +1231,18 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				solver.synchronize();
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch("", "FMTlpmodel::updateMatrixNGraph", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTLpModel::updateMatrixNGraph", __LINE__, __FILE__);
 				}
 			return true;
 			}
 		return false;
 		}
 
-	Graph::FMTgraphstats FMTlpmodel::erasePeriod(bool constraintsonly)
+	Graph::FMTgraphstats FMTLpModel::erasePeriod(bool constraintsonly)
 	{
 		try{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				"This function is need to be rewrite because updatematrixngraph is now in eraseconstraint. This function is nowhere used in FMT normally.", "FMTlpmodel::erasePeriod", __LINE__, __FILE__);
+				"This function is need to be rewrite because updatematrixngraph is now in eraseconstraint. This function is nowhere used in FMT normally.", "FMTLpModel::erasePeriod", __LINE__, __FILE__);
 			int firstPeriod = m_graph->getFirstActivePeriod();
 			if (isPeriodBounded(firstPeriod))
 				{
@@ -1274,18 +1274,18 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				}else {
 					const int badperiod = std::max(firstPeriod, 1);
 					_exhandler->raise(Exception::FMTexc::FMTunboundedperiod,
-						std::to_string(badperiod),"FMTlpmodel::erasePeriod", __LINE__, __FILE__);
+						std::to_string(badperiod),"FMTLpModel::erasePeriod", __LINE__, __FILE__);
 					}
 
 		}catch (...)
 			{
-				_exhandler->printExceptions("", "FMTlpmodel::erasePeriod", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTLpModel::erasePeriod", __LINE__, __FILE__);
 			}
 
 		 return m_graph->getStats();
 		 }
 	
-     void FMTlpmodel::locateLevels(const std::vector<Core::FMTOutputNode>& nodes,int period,
+     void FMTLpModel::locateLevels(const std::vector<Core::FMTOutputNode>& nodes,int period,
 		 std::map<int,double>& variables, const std::vector<Core::FMTConstraint>::const_iterator& p_it, double multiplier)
             {
 			try {
@@ -1309,11 +1309,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					}
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch(std::string(*p_it),"FMTlpmodel::locateLevels", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch(std::string(*p_it),"FMTLpModel::locateLevels", __LINE__, __FILE__);
 				}
             }
 
-	 int FMTlpmodel::getLevelFromLevelName(const std::string& variable_level,
+	 int FMTLpModel::getLevelFromLevelName(const std::string& variable_level,
 		 int period, const std::vector<Core::FMTConstraint>::const_iterator& p_it) const
 	 {
 		 try {
@@ -1350,13 +1350,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		 }catch (...)
 		 {
 			 _exhandler->raiseFromCatch("for " + std::string(*p_it),
-				 "FMTlpmodel::getLevelFromLevelName", __LINE__, __FILE__);
+				 "FMTLpModel::getLevelFromLevelName", __LINE__, __FILE__);
 		 }
 		 return -1;
 	 }
 
 
-    int FMTlpmodel::getSetLevel(const std::vector<Core::FMTConstraint>::const_iterator& p_it,
+    int FMTLpModel::getSetLevel(const std::vector<Core::FMTConstraint>::const_iterator& p_it,
 								const std::string& variable_level,int period)
         {
 		/*for (const Core::FMTConstraint& model_constraint : constraints)
@@ -1391,12 +1391,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("for " + std::string(*p_it),
-				"FMTlpmodel::getSetLevel", __LINE__, __FILE__);
+				"FMTLpModel::getSetLevel", __LINE__, __FILE__);
 			}
 		return index;
         }
 
-	bool FMTlpmodel::isMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId,
+	bool FMTLpModel::isMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId,
 		const FMTmatrixelement& p_element_type, int p_period) const
 		{
 		if (p_period == -1)
@@ -1412,7 +1412,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			!elements.at(period).at(std::string(constraint)).at(element_type).empty()));*/
 		}
 
-	bool FMTlpmodel::containsMatrixElements(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId, 
+	bool FMTLpModel::containsMatrixElements(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId, 
 											int p_period) const
 		{
 		for (int typeId = FMTmatrixelement::goalvariable; typeId != FMTmatrixelement::nr_items; typeId++)
@@ -1428,7 +1428,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			(elements.at(period).find(std::string(constraint)) != elements.at(period).end()));*/
 		}
 
-	bool FMTlpmodel::isSameMatrixElement(const int& matrixindex, const FMTmatrixelement& element_type,
+	bool FMTLpModel::isSameMatrixElement(const int& matrixindex, const FMTmatrixelement& element_type,
 		const double& lowerb, const double& upperb, const std::map<int, double>& variables) const
 		{
 		try {
@@ -1463,25 +1463,25 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			{
 			_exhandler->raiseFromCatch("for " + std::to_string(matrixindex)+
 				solver.lowerNUpperToStr(lowerb,upperb)+
-				std::to_string(element_type),"FMTlpmodel::isSameMatrixElement", __LINE__, __FILE__);
+				std::to_string(element_type),"FMTLpModel::isSameMatrixElement", __LINE__, __FILE__);
 			}
 		return true;
 		}
 
-	Graph::FMTgraphstats FMTlpmodel::setObjective(const Core::FMTConstraint& objective)
+	Graph::FMTgraphstats FMTLpModel::setObjective(const Core::FMTConstraint& objective)
 		{
 		try {
 			/*if (!objective.canBeNodesOnly())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 					"The objective output "+std::string(objective)+" cannot be deduct to output nodes",
-					"FMTlpmodel::setObjective", __LINE__, __FILE__);
+					"FMTLpModel::setObjective", __LINE__, __FILE__);
 				}*/
 			if (!objective.isLinear())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 					"The objective output " + std::string(objective) + " cannot be deduct to output nodes",
-					"FMTlpmodel::setObjective", __LINE__, __FILE__);
+					"FMTLpModel::setObjective", __LINE__, __FILE__);
 			}
 			const std::vector<Core::FMTConstraint>::const_iterator OBJECTIVE_IT = _getsetConstraintIndex(objective);
 			const bool strictlypositivesoutputsmatrix = getParameter(STRICTLY_POSITIVE);
@@ -1503,7 +1503,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"The objective value " + std::string(objective) + " will be different than the output value",
-						"FMTlpmodel::setObjective", __LINE__, __FILE__);
+						"FMTLpModel::setObjective", __LINE__, __FILE__);
 					}
 				for (int period = first_period; period <= last_period; ++period)
 				{
@@ -1542,7 +1542,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					}else{
 						_exhandler->raise(Exception::FMTexc::FMTunsupported_objective,
 											"The value of the output in the objective for period "+std::to_string(period)+" is equal to zero, so the solution of your model is zero",
-											"FMTlpmodel::setObjective", __LINE__, __FILE__);
+											"FMTLpModel::setObjective", __LINE__, __FILE__);
 					}
 				}
 				if (gotvariables)
@@ -1558,7 +1558,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				{
 					//No goals set...
 					_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint,
-						"No goals detected", "FMTlpmodel::setObjective", __LINE__, __FILE__);
+						"No goals detected", "FMTLpModel::setObjective", __LINE__, __FILE__);
 				}
 			}
 			std::vector<double>finalobj(static_cast<size_t>(solver.getNumCols()), 0.0);
@@ -1574,25 +1574,25 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				solver.setObjective(&finalobj[0]);
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch("","FMTlpmodel::setObjective", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("","FMTLpModel::setObjective", __LINE__, __FILE__);
 				}
 			if (all_variables.empty())
 				{
 				std::string cname = std::string(objective);
 				cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
 				_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint,
-					std::string(cname),"FMTlpmodel::setObjective", __LINE__, __FILE__);
+					std::string(cname),"FMTLpModel::setObjective", __LINE__, __FILE__);
 				}
 			solver.setObjSense(objective.sense());
 			}catch (...)
 			{
-				_exhandler->printExceptions(std::string(objective), "FMTlpmodel::setObjective", __LINE__, __FILE__);
+				_exhandler->printExceptions(std::string(objective), "FMTLpModel::setObjective", __LINE__, __FILE__);
 			}
 
 		return m_graph->getStats();
 		}
 
-     bool FMTlpmodel::resolve()
+     bool FMTLpModel::resolve()
         {
 		 try 
 		 {
@@ -1604,14 +1604,14 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			 {
 				 writeLP((boost::filesystem::path(getRuntimeLocation()) += boost::filesystem::path::preferred_separator).string());
 			 }
-			 _exhandler->printExceptions("", "FMTlpmodel::resolve", __LINE__, __FILE__);
+			 _exhandler->printExceptions("", "FMTLpModel::resolve", __LINE__, __FILE__);
 		 }
 
 		 return false;
         }
 
 
-     bool FMTlpmodel::getGoals(const std::vector<std::string>& goalsnames, std::map<int, double>& index,const double& sense)const
+     bool FMTLpModel::getGoals(const std::vector<std::string>& goalsnames, std::map<int, double>& index,const double& sense)const
         {
         bool found_something = false;
 		try {
@@ -1652,12 +1652,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMTlpmodel::getGoals", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTLpModel::getGoals", __LINE__, __FILE__);
 			}
         return found_something;
         }
 
-    int FMTlpmodel::getsetMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId,
+    int FMTLpModel::getsetMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& p_constraintId,
                      const FMTmatrixelement& element_type,const std::map<int,double>& indexes,
                      int period,double lowerbound,double upperbound)
         {
@@ -1696,13 +1696,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
 					_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
 						std::string(cname) + " at period " + std::to_string(period),
-						"FMTlpmodel::getsetMatrixElement", __LINE__, __FILE__);
+						"FMTLpModel::getsetMatrixElement", __LINE__, __FILE__);
 				}else {
 					std::string cname = std::string(*p_constraintId);
 					cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
 					_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint,
 						std::string(cname) + " at period " + std::to_string(period),
-						"FMTlpmodel::getsetMatrixElement", __LINE__, __FILE__);
+						"FMTLpModel::getsetMatrixElement", __LINE__, __FILE__);
 					}
 				return -1;
 			}
@@ -1806,12 +1806,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			{
 			_logger->logWithLevel(solver.getCacheElements(), 4);
 			_exhandler->raiseFromCatch(std::string(*p_constraintId)+" at period "+std::to_string(period)+
-				solver.lowerNUpperToStr(lowerbound,upperbound),"FMTlpmodel::getsetMatrixElement", __LINE__, __FILE__);
+				solver.lowerNUpperToStr(lowerbound,upperbound),"FMTLpModel::getsetMatrixElement", __LINE__, __FILE__);
 			}
 		return element_id;
         }
 
-		const std::vector<int> FMTlpmodel::getMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& it,
+		const std::vector<int> FMTLpModel::getMatrixElement(const std::vector<Core::FMTConstraint>::const_iterator& it,
 			int p_period,
 			FMTmatrixelement p_element) const
         {
@@ -1825,7 +1825,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			return result;
         }
 
-		std::vector<int>& FMTlpmodel::getMatrixElementRef(const std::vector<Core::FMTConstraint>::const_iterator& it,
+		std::vector<int>& FMTLpModel::getMatrixElementRef(const std::vector<Core::FMTConstraint>::const_iterator& it,
 			int p_period,
 			FMTmatrixelement p_element)
 		{
@@ -1835,7 +1835,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			return indexIt->second;
 		}
 
-	std::vector<Heuristics::FMToperatingareascheduler>FMTlpmodel::getOperatingAreaSchedulerHeuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
+	std::vector<Heuristics::FMToperatingareascheduler>FMTLpModel::getOperatingAreaSchedulerHeuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 																						const Core::FMTOutputNode& node,
 																						size_t numberofheuristics,
 																						bool copysolver)		
@@ -1856,7 +1856,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 					{
 						_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
 											"The masks of operating area intersects each other : \n"+std::string(m1)+"\n"+std::string(m2),
-											"FMTlpmodel::getObjValue",
+											"FMTLpModel::getObjValue",
 											__LINE__, __FILE__);
 					}
 				}
@@ -1873,12 +1873,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				}
 		}catch (...)
 			{
-				_exhandler->printExceptions("", "FMTlpmodel::getOperatingAreaSchedulerHeuristics", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTLpModel::getOperatingAreaSchedulerHeuristics", __LINE__, __FILE__);
 			}
 		return allheuristics;
 		}
 
-    std::vector<Heuristics::FMToperatingareaclusterer>FMTlpmodel::getOperatingAreaClustererHeuristics(const std::vector<Heuristics::FMToperatingareacluster>& clusters,
+    std::vector<Heuristics::FMToperatingareaclusterer>FMTLpModel::getOperatingAreaClustererHeuristics(const std::vector<Heuristics::FMToperatingareacluster>& clusters,
 																				const Core::FMTOutput& statisticoutput,
                                                                                 const Core::FMTOutput& areaoutput,
                                                                                 const int& period,
@@ -1900,14 +1900,14 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
                 }
         }catch(...)
             {
-            _exhandler->printExceptions("", "FMTlpmodel::getOperatingAreaClustererHeuristics", __LINE__, __FILE__);
+            _exhandler->printExceptions("", "FMTLpModel::getOperatingAreaClustererHeuristics", __LINE__, __FILE__);
             }
         return allheuristics;
         }
 
 
 
-	bool FMTlpmodel::initialSolve()
+	bool FMTLpModel::initialSolve()
 		{
 		try {
 			return solver.initialSolve();
@@ -1918,38 +1918,38 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				*_logger << "Writing matrix here " + boost::filesystem::path(getRuntimeLocation()).string() << "\n";
 				writeLP((boost::filesystem::path(getRuntimeLocation()) += boost::filesystem::path::preferred_separator).string());
 			}
-			_exhandler->printExceptions(getName(), "FMTlpmodel::initialSolve", __LINE__, __FILE__);
+			_exhandler->printExceptions(getName(), "FMTLpModel::initialSolve", __LINE__, __FILE__);
 		}
 
 		return false;
 		}
 
 
-	FMTlpmodel FMTlpmodel::getLocalModel(FMTmodel localmodel, int period) const
+	FMTLpModel FMTLpModel::getLocalModel(FMTModel localmodel, int period) const
 		{
 		if (!localmodel.empty())
 			{
 			//localmodel.setArea(std::vector<Core::FMTActualDevelopment>());
-			//localmodel.push_back(FMTlpmodel::getCopy(period));
-			localmodel.setArea(FMTlpmodel::getArea(period));
+			//localmodel.push_back(FMTLpModel::getCopy(period));
+			localmodel.setArea(FMTLpModel::getArea(period));
 			}
 		//Need to add a constraint over the global objective
-		return FMTlpmodel (localmodel, solver.getSolverType());
+		return FMTLpModel (localmodel, solver.getSolverType());
 		}
 
-	double FMTlpmodel::getObjValue() const
+	double FMTLpModel::getObjValue() const
 		{
 		if (solver.isProvenOptimal())
 			{
 			return solver.getObjValue();
 			}else{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"Can not get objective value because model is NOT PROVEN OPTIMAL","FMTlpmodel::getObjValue",__LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"Can not get objective value because model is NOT PROVEN OPTIMAL","FMTLpModel::getObjValue",__LINE__, __FILE__);
 				return 0;
 			}
 		}
 
 
-	void FMTlpmodel::writeLP(const std::string& location)
+	void FMTLpModel::writeLP(const std::string& location)
 	{
 		try {
 			updateMatrixNaming();
@@ -1962,12 +1962,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::writeLP", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::writeLP", __LINE__, __FILE__);
 		}
 	}
 
 
-	void FMTlpmodel::writeMPS(const std::string& location)
+	void FMTLpModel::writeMPS(const std::string& location)
 	{
 		try {
 			updateMatrixNaming();
@@ -1975,11 +1975,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::writeMPS", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::writeMPS", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTlpmodel::updateGeneralConstraintsNaming(std::vector<std::string>& colnames,
+	void FMTLpModel::updateGeneralConstraintsNaming(std::vector<std::string>& colnames,
 													std::vector<std::string>& rownames) const
 	{
 		try {
@@ -2139,18 +2139,18 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::updateGeneralConstraintsNaming", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::updateGeneralConstraintsNaming", __LINE__, __FILE__);
 		}
 
 	}
 
-	std::unique_ptr<FMTmodel>FMTlpmodel::clone() const
+	std::unique_ptr<FMTModel>FMTLpModel::clone() const
 		{
-		return std::unique_ptr<FMTmodel>(new FMTlpmodel(*this));
+		return std::unique_ptr<FMTModel>(new FMTLpModel(*this));
 		}
 
-	FMTlpmodel::FMTlpmodel(const FMTsrmodel& rhs) :
-		FMTsrmodel(rhs),
+	FMTLpModel::FMTLpModel(const FMTSrModel& rhs) :
+		FMTSrModel(rhs),
 		m_rowsAllocator(),
 		m_indexAllocator(),
 		m_indexes(m_indexAllocator)
@@ -2158,8 +2158,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 
 	}
 
-	FMTlpmodel::FMTlpmodel(FMTlpmodel&& rhs):
-		FMTsrmodel(),
+	FMTLpModel::FMTLpModel(FMTLpModel&& rhs):
+		FMTSrModel(),
 		m_rowsAllocator(),
 		m_indexAllocator(),
 		m_indexes(m_indexAllocator)
@@ -2168,11 +2168,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 
 	}
 	
-	FMTlpmodel& FMTlpmodel::operator =(FMTlpmodel&& rhs)
+	FMTLpModel& FMTLpModel::operator =(FMTLpModel&& rhs)
 	{
 		if (this!=&rhs) 
 			{
-			FMTsrmodel::operator=(std::move(rhs));
+			FMTSrModel::operator=(std::move(rhs));
 			m_rowsAllocator = rhs.m_rowsAllocator;
 			m_indexAllocator = rhs.m_indexAllocator;
 			m_indexes.swap(rhs.m_indexes);
@@ -2181,18 +2181,18 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 	}
 
 
-	std::unique_ptr<FMTmodel> FMTlpmodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTModel> FMTLpModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 	{
 		try{
-			return std::unique_ptr<FMTmodel>(new FMTlpmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(optionaldevelopments).get()))));
+			return std::unique_ptr<FMTModel>(new FMTLpModel(*(dynamic_cast<FMTSrModel*>(FMTSrModel::presolve(optionaldevelopments).get()))));
 		}catch(...)
 		{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::presolve", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTmodel>(nullptr);
+		return std::unique_ptr<FMTModel>(nullptr);
 	}
 
-	void FMTlpmodel::updateMatrixNaming()
+	void FMTLpModel::updateMatrixNaming()
 	{
 		try {
 			std::vector<std::string>colnames(solver.getNumCols());
@@ -2217,11 +2217,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::updateMatrixNaming", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::updateMatrixNaming", __LINE__, __FILE__);
 		}
 	}
 
-	bool FMTlpmodel::build(std::vector<Core::FMTSchedule> schedules)
+	bool FMTLpModel::build(std::vector<Core::FMTSchedule> schedules)
 	{
 		try{
 			const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
@@ -2263,7 +2263,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 						else{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 												"The lenght to build the graph is bigger than the number of schedule passed to the function. Cannot have mix schedulebuild and fullbuild for now",
-												"FMTlpmodel::build",__LINE__,__FILE__);
+												"FMTLpModel::build",__LINE__,__FILE__);
 						}
 					}else{
 						const Graph::FMTgraphstats PERIOD = buildPeriod(Core::FMTSchedule(), false, parameters.getPeriodCompressTime(period));
@@ -2299,7 +2299,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"No objective to set",
-						"FMTlpmodel::build", __LINE__, __FILE__);
+						"FMTLpModel::build", __LINE__, __FILE__);
 				}
 				}
 			if(!allempty)
@@ -2308,37 +2308,37 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			}
 		}catch(...)
 		{
-			_exhandler->raiseFromCatch(getName(), "FMTlpmodel::build", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch(getName(), "FMTLpModel::build", __LINE__, __FILE__);
 		}
 		return true;
 	}
 
-	bool FMTlpmodel::solve()
+	bool FMTLpModel::solve()
 	{
 		bool optimal = false;
 		try{
 			optimal = this->initialSolve();
 		}catch(...)
 		{
-			_exhandler->raiseFromCatch(getName(), "FMTlpmodel::solve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch(getName(), "FMTLpModel::solve", __LINE__, __FILE__);
 		}
 		return optimal;
 	}
 
-	std::unique_ptr<FMTmodel> FMTlpmodel::getCopy(int period) const
+	std::unique_ptr<FMTModel> FMTLpModel::getCopy(int period) const
 	{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTlpmodel(*dynamic_cast<FMTsrmodel*>(FMTsrmodel::getCopy(period).get())));
+			return std::unique_ptr<FMTModel>(new FMTLpModel(*dynamic_cast<FMTSrModel*>(FMTSrModel::getCopy(period).get())));
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTlpmodel::getCopy", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::getCopy", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTmodel>(nullptr);
+		return std::unique_ptr<FMTModel>(nullptr);
 	}
 
 
-	bool FMTlpmodel::trySetSolution(const std::vector<Core::FMTSchedule>& schedules)
+	bool FMTLpModel::trySetSolution(const std::vector<Core::FMTSchedule>& schedules)
 	{
 		try
 		{
@@ -2357,16 +2357,16 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 			setParameter(Models::FMTboolmodelparameters::SETSOLUTION_THROW, true);
 		}catch(...){
 			setParameter(Models::FMTboolmodelparameters::SETSOLUTION_THROW, true);
-			_exhandler->raiseFromCatch("", "FMTlpmodel::trySetSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::trySetSolution", __LINE__, __FILE__);
 		}
 		return true;
 	}
 
 	
 
-	void FMTlpmodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
+	void FMTLpModel::swapPtr(std::unique_ptr<FMTModel>& rhs)
 	{
-		FMTlpmodel* ptrToModel = dynamic_cast<FMTlpmodel*>(rhs.get());
+		FMTLpModel* ptrToModel = dynamic_cast<FMTLpModel*>(rhs.get());
 		*this = std::move(*ptrToModel);
 	}
 
@@ -2374,5 +2374,5 @@ std::vector<std::map<int, double>> FMTlpmodel::locateNodes(const std::vector<Cor
 
 
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpmodel)
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTLpModel)
 #endif

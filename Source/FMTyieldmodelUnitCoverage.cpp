@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-	FMTyieldmodelUnitCoverage::FMTyieldmodelUnitCoverage(const boost::property_tree::ptree& p_jsonProps,
+	FMTYieldModelUnitCoverage::FMTYieldModelUnitCoverage(const boost::property_tree::ptree& p_jsonProps,
 		const std::vector<std::string>& p_yields, const Core::FMTMask& p_mask):
 		m_cache(), m_mask(p_mask)
 	{
@@ -26,7 +26,7 @@ namespace Core
 		modelYields = p_yields;
 	}
 
-	const std::vector<double>FMTyieldmodelUnitCoverage::predict(const Core::FMTYieldRequest& p_request) const
+	const std::vector<double>FMTYieldModelUnitCoverage::predict(const Core::FMTYieldRequest& p_request) const
 	{
 		std::vector<double> Predictions;
 		try {
@@ -40,44 +40,44 @@ namespace Core
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTyieldmodelUnitCoverage::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelUnitCoverage::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 	return Predictions;
 	}
 
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelUnitCoverage::presolve(const FMTMaskFilter& p_filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelUnitCoverage::presolve(const FMTMaskFilter& p_filter,
 		const std::vector<FMTTheme>& p_newThemes) const
 	{
-		FMTyieldmodelUnitCoverage newPresolved(*this);
+		FMTYieldModelUnitCoverage newPresolved(*this);
 		try {
 			newPresolved.m_mask = newPresolved.m_mask.presolve(p_filter, p_newThemes);
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch(getModelName(), "FMTyieldmodelUnitCoverage::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelName(), "FMTYieldModelUnitCoverage::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(newPresolved));
+		return std::unique_ptr<FMTYieldModel>(new FMTYieldModelUnitCoverage(newPresolved));
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelUnitCoverage::postSolve(const FMTMaskFilter& p_filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelUnitCoverage::postSolve(const FMTMaskFilter& p_filter,
 		const std::vector<FMTTheme>& p_baseThemes) const
 	{
-		FMTyieldmodelUnitCoverage newPostsolved(*this);
+		FMTYieldModelUnitCoverage newPostsolved(*this);
 		newPostsolved.m_mask.postSolve(p_filter, p_baseThemes);
-		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(newPostsolved));
+		return std::unique_ptr<FMTYieldModel>(new FMTYieldModelUnitCoverage(newPostsolved));
 	}
 
-	std::unique_ptr<FMTyieldmodel>FMTyieldmodelUnitCoverage::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelUnitCoverage::Clone() const
 	{
-		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(*this));
+		return std::unique_ptr<FMTYieldModel>(new FMTYieldModelUnitCoverage(*this));
 	}
 
-	std::string FMTyieldmodelUnitCoverage::getModelType()
+	std::string FMTYieldModelUnitCoverage::getModelType()
 	{
 		return "UNIT_COVERAGE";
 	}
 
-	std::vector<FMTOutput> FMTyieldmodelUnitCoverage::getOutputs() const
+	std::vector<FMTOutput> FMTYieldModelUnitCoverage::getOutputs() const
 	{
 		std::vector<FMTOutput>outputs;
 		try {
@@ -89,12 +89,12 @@ namespace Core
 				}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldmodelUnitCoverage::getOutputs", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelUnitCoverage::getOutputs", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return outputs;
 	}
 
-	std::vector<double> FMTyieldmodelUnitCoverage::getOutputValues(const std::vector<FMTOutput>& p_outputs) const
+	std::vector<double> FMTYieldModelUnitCoverage::getOutputValues(const std::vector<FMTOutput>& p_outputs) const
 	{
 		std::vector<double>returnedValues(p_outputs.size());
 		try {
@@ -102,7 +102,7 @@ namespace Core
 			{
 				_exhandler->raise(Exception::FMTfunctionfailed,
 					"No available model",
-					"FMTyieldmodelUnitCoverage::getOutputValues", __LINE__, __FILE__);
+					"FMTYieldModelUnitCoverage::getOutputValues", __LINE__, __FILE__);
 			}
 			size_t outId = 0;
 			const int PERIOD_TARGET = m_modelPtr->getAreaPeriod();

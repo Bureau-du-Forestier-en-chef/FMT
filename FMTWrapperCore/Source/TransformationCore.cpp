@@ -9,17 +9,17 @@
 
 
 
-Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(
-	const Models::FMTmodel& p_model, 
+Models::FMTModel FMTWrapperCore::Transformation::aggregateAllActions(
+	const Models::FMTModel& p_model, 
 	const std::vector<std::string>& p_aggregates, 
 	const std::vector<std::string>& p_order, 
 	const std::string& p_primary_path, 
 	const std::string& p_output_scenario_name)
 {
-	Models::FMTmodel aggregatedModel;
+	Models::FMTModel aggregatedModel;
 	try
 	{
-		Parser::FMTmodelparser ModelParser;
+		Parser::FMTModelParser ModelParser;
 		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(p_primary_path, { p_model }).at(0);
 		std::vector<std::string> scheduleOrder = p_model.getSchedulesPriorities(SCHEDULES);
 
@@ -33,7 +33,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(
 		if (!SCHEDULES.empty())
 		{
 			
-			Parser::FMTscheduleparser SCHEDULE_PARSER;
+			Parser::FMTScheduleParser SCHEDULE_PARSER;
 			const std::vector<Core::FMTSchedule>NEWSCHEDULE = aggregatedModel.aggregateSchedules(SCHEDULES);
 			std::string schedule_path = SCHEDULE_PARSER.getSchedulePath(p_primary_path, p_output_scenario_name);
 			SCHEDULE_PARSER.write(NEWSCHEDULE, schedule_path);
@@ -49,15 +49,15 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(
 
 }
 
-Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTmodel& p_model, const std::string& p_primary_path, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_scenario_name)
+Models::FMTModel FMTWrapperCore::Transformation::splitActions(const Models::FMTModel& p_model, const std::string& p_primary_path, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_scenario_name)
 {
-	Models::FMTmodel SPLITTED_MODEL;
+	Models::FMTModel SPLITTED_MODEL;
 	try
 	{
 		if (p_splitted.empty() || p_splitted_mask.empty()) {
 			throw Exception::FMTexc::FMTempty_action;
 		}
-		Parser::FMTmodelparser ModelParser;
+		Parser::FMTModelParser ModelParser;
 
 		SPLITTED_MODEL = p_model.splitActions(p_splitted, p_splitted_mask);
 		SPLITTED_MODEL.setName(p_scenario_name);
@@ -70,7 +70,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 		ModelParser.writeToProject(p_primary_path, SPLITTED_MODEL);
 		if (!SCHEDULES.empty())
 		{
-			Parser::FMTscheduleparser SCHEDULE_PARSER;
+			Parser::FMTScheduleParser SCHEDULE_PARSER;
 			const std::vector<Core::FMTSchedule>NEWSCHEDULE = SPLITTED_MODEL.splitSchedules(SCHEDULES);
 			std::string schedule_path = SCHEDULE_PARSER.getSchedulePath(p_primary_path, p_scenario_name);
 			SCHEDULE_PARSER.write(NEWSCHEDULE, schedule_path);
@@ -85,12 +85,12 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 	return SPLITTED_MODEL;
 }
 
-Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmodel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_primaryPath, const std::string& p_scenario_name)
+Models::FMTModel FMTWrapperCore::Transformation::buildAction(const Models::FMTModel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_primaryPath, const std::string& p_scenario_name)
 {
-	Models::FMTmodel BUILDED_MODEL;
+	Models::FMTModel BUILDED_MODEL;
 	try
 	{
-		Parser::FMTmodelparser ModelParser;
+		Parser::FMTModelParser ModelParser;
 		std::string outputPath;
 		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(p_primaryPath, { p_model }).at(0);
 		BUILDED_MODEL = p_model.buildAction(p_actionName, p_targetYield);
@@ -102,7 +102,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 
 		if (!SCHEDULES.empty())
 		{
-			Parser::FMTscheduleparser SCHEDULE_PARSER;
+			Parser::FMTScheduleParser SCHEDULE_PARSER;
 			const std::vector<Core::FMTSchedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), 
 				p_model,p_targetYield, SCHEDULES);
 			std::string schedule_path = SCHEDULE_PARSER.getSchedulePath(p_primaryPath, p_scenario_name);

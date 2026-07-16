@@ -265,7 +265,7 @@ namespace Heuristics
         try{
             double passleft =  numberofsimulationpass;
 			bool gotonesolution = false;
-            if (Models::FMTlpsolver::initialSolve())
+            if (Models::FMTLpSolver::initialSolve())
                 {
                 double bestobjectivevalue = 0;
                 std::vector<double>bestcolsbound;
@@ -275,7 +275,7 @@ namespace Heuristics
                     {
                     this->unboundAll();
                     std::vector<FMToperatingareaclusterbinary>assigned;
-                    if (Models::FMTlpsolver::resolve())
+                    if (Models::FMTLpSolver::resolve())
                         {
                         std::vector<FMToperatingareacluster>clustertospread=clusters;
                         std::shuffle(clustertospread.begin(),clustertospread.end(),generator);
@@ -289,12 +289,12 @@ namespace Heuristics
                                 }
                             ++iterationdone;
                             }
-                        if (clustertospread.empty() && Models::FMTlpsolver::resolve() &&
-                            (!gotonesolution||(Models::FMTlpsolver::getObjValue() < bestobjectivevalue)))
+                        if (clustertospread.empty() && Models::FMTLpSolver::resolve() &&
+                            (!gotonesolution||(Models::FMTLpSolver::getObjValue() < bestobjectivevalue)))
                             {
                             bestcolsbound.clear();
-                            const double* upperbound = Models::FMTlpsolver::getColUpper();
-                            const double* lowerbound = Models::FMTlpsolver::getColLower();
+                            const double* upperbound = Models::FMTLpSolver::getColUpper();
+                            const double* lowerbound = Models::FMTLpSolver::getColLower();
                             for (const FMToperatingareacluster& cluster : clusters)
                                 {
                                 const int centroidvar = cluster.getCentroid().getVariable();
@@ -308,7 +308,7 @@ namespace Heuristics
 									
                                     }
                                 }
-                            bestobjectivevalue = Models::FMTlpsolver::getObjValue();
+                            bestobjectivevalue = Models::FMTLpSolver::getObjValue();
 							if (!gotonesolution)
 								{
 								_logger->logWithLevel("Feasible solution found\n", 0);
@@ -328,7 +328,7 @@ namespace Heuristics
                     }else{
                         this->setColSetBounds(&varindexes[0],&varindexes.back() + 1,&bestcolsbound[0]);
 					
-					return Models::FMTlpsolver::resolve();
+					return Models::FMTLpSolver::resolve();
                     }
                 }
             }catch(...)
@@ -342,7 +342,7 @@ namespace Heuristics
         {
         std::vector<FMToperatingareacluster>solution;
         try{
-            const double* primalsolution = Models::FMTlpsolver::getColSolution();
+            const double* primalsolution = Models::FMTLpSolver::getColSolution();
             for (const FMToperatingareacluster& cluster : clusters)
                 {
                 if (*(primalsolution+cluster.getCentroid().getVariable())>0.5)//active cluster

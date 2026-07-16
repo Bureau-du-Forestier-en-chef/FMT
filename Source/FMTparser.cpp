@@ -41,51 +41,51 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser
 {
 
-	FMTparser::FMTLineInfo::FMTLineInfo(const std::string p_line, int p_number, const std::string& p_file):
+	FMTParser::FMTLineInfo::FMTLineInfo(const std::string p_line, int p_number, const std::string& p_file):
 		m_lineValue(p_line),m_lineNumber(p_number),m_file(p_file)
 		{
 
 		}
 
-	const boost::regex Parser::FMTparser::m_VECTOR_THEME = boost::regex("^(THEME)([\\d]*)$");
-	const boost::regex Parser::FMTparser::m_NUMBER = boost::regex("-?[\\d.,]+(?:E-?[\\d.,]+)?", boost::regex_constants::icase);
-	const boost::regex Parser::FMTparser::m_REMOVE_COMMENT = boost::regex("^(.*?)([;]+.*)");
-	const boost::regex Parser::FMTparser::m_VALID = boost::regex("^(?!\\s*$).+");
-	const boost::regex Parser::FMTparser::m_INCLUDE = boost::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
+	const boost::regex Parser::FMTParser::m_VECTOR_THEME = boost::regex("^(THEME)([\\d]*)$");
+	const boost::regex Parser::FMTParser::m_NUMBER = boost::regex("-?[\\d.,]+(?:E-?[\\d.,]+)?", boost::regex_constants::icase);
+	const boost::regex Parser::FMTParser::m_REMOVE_COMMENT = boost::regex("^(.*?)([;]+.*)");
+	const boost::regex Parser::FMTParser::m_VALID = boost::regex("^(?!\\s*$).+");
+	const boost::regex Parser::FMTParser::m_INCLUDE = boost::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
 	// regex de foreeach ici?
-	const boost::regex Parser::FMTparser::m_FOR = boost::regex(
+	const boost::regex Parser::FMTParser::m_FOR = boost::regex(
 		"^(FOREACH)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(IN)([\\s\\t]*)((\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*\\)[\\s\\t]*\\))|"//thematic for each
 		"(\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\))|(\\()(\\d*)(\\.\\.)(\\d*)(\\))|(\\()([^\\)]*)(\\)))|(\\bFOR\\b)([\\s\\t]*)([^\\:\\=]*)([\\:\\=\\s\\t]*)(\\d*)([\\s\\t]*)(TO)([\\s\\t]*)(\\d*)|"//regular for loops
 		"(FOREACH)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(IN)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\bQUERY\\b)([\\s\\t]*)(\\()(.*)(\\))"//query for loops match 35 indicate we got a query, 41 is the path to the file, 46 is the query
 		,boost::regex_constants::ECMAScript | boost::regex_constants::icase | boost::regex_constants::match_not_dot_newline);
-	const boost::regex Parser::FMTparser::m_END = boost::regex("^(ENDFOR)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex Parser::FMTparser::m_AYLD = boost::regex("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|"
+	const boost::regex Parser::FMTParser::m_END = boost::regex("^(ENDFOR)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex Parser::FMTParser::m_AYLD = boost::regex("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|"
 		"([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|"
 		"(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|"
 		"([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex Parser::FMTparser::m_AAGE = boost::regex("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|"
+	const boost::regex Parser::FMTParser::m_AAGE = boost::regex("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|"
 		"(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|"
 		"(. + )(\\@AGE[\\s\\t] * \\()([\\s\\t] *)((#[^ \\.] *) | (\\d*) | (\\d * .\\d*))(\\))(. + )",
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex Parser::FMTparser::m_AYLD_AGE = boost::regex(
+	const boost::regex Parser::FMTParser::m_AYLD_AGE = boost::regex(
 		"^(.+)(\\@YLD[\\s\\t]*\\()([^,]*)([,])([^\\)]*)(\\))(.+)|"
 		"^(.+)(\\@AGE[\\s\\t]*\\()([^\\)]*)(\\))(.+)",
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex Parser::FMTparser::m_BOUNDS = boost::regex("^(.+)(\\.\\.)(.+)|(.+)");
-	const boost::regex Parser::FMTparser::m_OPERATORS = boost::regex("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", boost::regex_constants::icase);
-	const boost::regex Parser::FMTparser::m_PRIMARY = boost::regex("^([^\\[]*)(\\[)([^\\]]*)(.+)");
-	const boost::regex Parser::FMTparser::m_SEPARATOR = boost::regex("([\\s\\t]*)([^\\s\\t]*)");
-	const boost::regex Parser::FMTparser::m_PERIODS = boost::regex(
+	const boost::regex Parser::FMTParser::m_BOUNDS = boost::regex("^(.+)(\\.\\.)(.+)|(.+)");
+	const boost::regex Parser::FMTParser::m_OPERATORS = boost::regex("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", boost::regex_constants::icase);
+	const boost::regex Parser::FMTParser::m_PRIMARY = boost::regex("^([^\\[]*)(\\[)([^\\]]*)(.+)");
+	const boost::regex Parser::FMTParser::m_SEPARATOR = boost::regex("([\\s\\t]*)([^\\s\\t]*)");
+	const boost::regex Parser::FMTParser::m_PERIODS = boost::regex(
 		"^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))",
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 
 
-	std::map<Core::FMTsection, std::string>FMTparser::primarym_sections = std::map<Core::FMTsection, std::string>();
+	std::map<Core::FMTsection, std::string>FMTParser::primarym_sections = std::map<Core::FMTsection, std::string>();
 
-bool FMTparser::gdalInitialization = false;
+bool FMTParser::gdalInitialization = false;
 
-Core::FMTsection FMTparser::fromExtension(const std::string& ext)
+Core::FMTsection FMTParser::fromExtension(const std::string& ext)
     {
 	try {
 		const std::array<std::string, 21>BASE_EXTENSIONS = { ".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
@@ -121,12 +121,12 @@ Core::FMTsection FMTparser::fromExtension(const std::string& ext)
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::fromExtension", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTParser::fromExtension", __LINE__, __FILE__);
 	}
 	return Core::FMTsection::Empty;
     }
 
-std::string FMTparser::createSubDirectory(const std::string& p_Directory,
+std::string FMTParser::createSubDirectory(const std::string& p_Directory,
 										const std::string& p_SubDirectory)
 {
 	std::string fullPath;
@@ -135,7 +135,7 @@ std::string FMTparser::createSubDirectory(const std::string& p_Directory,
 		if (!boost::filesystem::is_directory(BASE))
 			{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-				p_Directory, "FMTparser::createSubDirectory", __LINE__, __FILE__);
+				p_Directory, "FMTParser::createSubDirectory", __LINE__, __FILE__);
 			}
 		const boost::filesystem::path SUB(p_SubDirectory);
 		const boost::filesystem::path FINAL = BASE / SUB;
@@ -146,13 +146,13 @@ std::string FMTparser::createSubDirectory(const std::string& p_Directory,
 		fullPath = FINAL.string();
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::createSubDirectory", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTParser::createSubDirectory", __LINE__, __FILE__);
 		}
 	return fullPath;
 }
 
 #if defined FMTWITHGDAL
-void FMTparser::_initializeGDAL()
+void FMTParser::_initializeGDAL()
 	{
 	if (!gdalInitialization)
 		{
@@ -161,7 +161,7 @@ void FMTparser::_initializeGDAL()
 		if (!boost::filesystem::is_directory(boost::filesystem::path(runtimelocation)))
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-				"Can not find GDAL_DATA at " + runtimelocation, "FMTparser::FMTparser()", __LINE__, __FILE__);
+				"Can not find GDAL_DATA at " + runtimelocation, "FMTParser::FMTParser()", __LINE__, __FILE__);
 		}
 		CPLSetConfigOption("GDAL_DATA", runtimelocation.c_str());
 		//No need of drivers from shared library see : https://gdal.org/api/gdaldriver_cpp.html ; https://gdal.org/api/cpl.html ; https://trac.osgeo.org/gdal/wiki/ConfigOptions
@@ -177,7 +177,7 @@ void FMTparser::_initializeGDAL()
 		gdalInitialization = true;
 		}
 	}
-std::vector<GDALDriver*> FMTparser::getAllGDALDrivers(const char* spatialtype,bool testcreation) const
+std::vector<GDALDriver*> FMTParser::getAllGDALDrivers(const char* spatialtype,bool testcreation) const
 {
 	GDALDriverManager* manager = GetGDALDriverManager();
 	std::vector<GDALDriver*>drivers;
@@ -196,7 +196,7 @@ std::vector<GDALDriver*> FMTparser::getAllGDALDrivers(const char* spatialtype,bo
 	return drivers;
 }
 
-std::vector< std::vector<std::string>>FMTparser::getGDALExtensions(const char* spatialtype, bool testcreation) const
+std::vector< std::vector<std::string>>FMTParser::getGDALExtensions(const char* spatialtype, bool testcreation) const
 {
 	std::vector< std::vector<std::string>>driversExtensions;
 	for (GDALDriver* driver : getAllGDALDrivers(spatialtype, testcreation))
@@ -215,7 +215,7 @@ std::vector< std::vector<std::string>>FMTparser::getGDALExtensions(const char* s
 	return driversExtensions;
 }
 
-std::vector<std::string>FMTparser::getGDALVectorDriverNames(bool testcreation) const
+std::vector<std::string>FMTParser::getGDALVectorDriverNames(bool testcreation) const
 {
 	std::vector<std::string>names;
 	for (GDALDriver* driver : getAllGDALDrivers(GDAL_DCAP_VECTOR, testcreation))
@@ -225,7 +225,7 @@ std::vector<std::string>FMTparser::getGDALVectorDriverNames(bool testcreation) c
 	return names;
 }
 
-std::vector<std::string>FMTparser::getGDALRasterDriverNames(bool testcreation) const
+std::vector<std::string>FMTParser::getGDALRasterDriverNames(bool testcreation) const
 {
 	std::vector<std::string>names;
 	for (GDALDriver* driver : getAllGDALDrivers(GDAL_DCAP_RASTER, testcreation))
@@ -234,12 +234,12 @@ std::vector<std::string>FMTparser::getGDALRasterDriverNames(bool testcreation) c
 	}
 	return names;
 }
-std::vector<std::vector<std::string>>FMTparser::getGDALVectorDriverExtensions(bool testcreation) const
+std::vector<std::vector<std::string>>FMTParser::getGDALVectorDriverExtensions(bool testcreation) const
 {
 	return getGDALExtensions(GDAL_DCAP_VECTOR, testcreation);
 }
 
-std::vector<std::vector<std::string>>FMTparser::getGDALRasterDriverExtensions(bool testcreation) const
+std::vector<std::vector<std::string>>FMTParser::getGDALRasterDriverExtensions(bool testcreation) const
 {
 	return getGDALExtensions(GDAL_DCAP_RASTER, testcreation);
 }
@@ -247,7 +247,7 @@ std::vector<std::vector<std::string>>FMTparser::getGDALRasterDriverExtensions(bo
 #endif
 
 
-FMTparser::FMTparser() : Core::FMTObject(),
+FMTParser::FMTParser() : Core::FMTObject(),
         m_inComment(false),
         //m_ForValues(),
 		//m_included(),
@@ -264,7 +264,7 @@ FMTparser::FMTparser() : Core::FMTObject(),
 		#endif
         }
 
-FMTparser::FMTparser(const FMTparser& rhs):
+FMTParser::FMTParser(const FMTParser& rhs):
 		Core::FMTObject(rhs),
          m_inComment(rhs.m_inComment),
         //m_ForValues(rhs.m_ForValues),
@@ -280,7 +280,7 @@ FMTparser::FMTparser(const FMTparser& rhs):
 		boost::lock(m_MTX, rhs.m_MTX);
     }
 
-FMTparser& FMTparser::operator = (const FMTparser& rhs)
+FMTParser& FMTParser::operator = (const FMTParser& rhs)
     {
         if (this!=&rhs)
             {
@@ -301,19 +301,19 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
     return *this;
     }
 
-void FMTparser::setHeader(const std::string& header)
+void FMTParser::setHeader(const std::string& header)
 {
 	m_comment = header;
 }
 
-void FMTparser::setSection(const Core::FMTsection& section) const
+void FMTParser::setSection(const Core::FMTsection& section) const
 {
 	m_section = section;
 }
 
 
 template<typename T>
-T FMTparser::getNum(const std::string& value, const Core::FMTConstants& constant, int period) const
+T FMTParser::getNum(const std::string& value, const Core::FMTConstants& constant, int period) const
 {
 	T nvalue = 0;
 	try {
@@ -327,28 +327,28 @@ T FMTparser::getNum(const std::string& value, const Core::FMTConstants& constant
 			nvalue = constant.get<T>(value/*newvalue*/, period);
 			_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
 				value + " at line " + std::to_string(m_line) + " in " + m_location,
-				"FMTparser::getNum", __LINE__, __FILE__, m_section);
+				"FMTParser::getNum", __LINE__, __FILE__, m_section);
 			++m_constrePlacement;
 		}
 		else {
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 				value + " at line " + std::to_string(m_line) + " in " + m_location,
-				"FMTparser::getNum", __LINE__, __FILE__, m_section);
+				"FMTParser::getNum", __LINE__, __FILE__, m_section);
 		}
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::getNum", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::getNum", __LINE__, __FILE__, m_section);
 	}
 	return nvalue;
 }
 
-template int FMTparser::getNum<int>(const std::string& value, const Core::FMTConstants& constant, int period) const;
-template double FMTparser::getNum<double>(const std::string& value, const Core::FMTConstants& constant, int period) const;
-template size_t FMTparser::getNum<size_t>(const std::string& value, const Core::FMTConstants& constant, int period) const;
+template int FMTParser::getNum<int>(const std::string& value, const Core::FMTConstants& constant, int period) const;
+template double FMTParser::getNum<double>(const std::string& value, const Core::FMTConstants& constant, int period) const;
+template size_t FMTParser::getNum<size_t>(const std::string& value, const Core::FMTConstants& constant, int period) const;
 
 template<typename T>
-T FMTparser::getNum(const std::string& value, bool omitnumtest) const
+T FMTParser::getNum(const std::string& value, bool omitnumtest) const
 {
 	T nvalue = 0;
 	try {
@@ -360,22 +360,22 @@ T FMTparser::getNum(const std::string& value, bool omitnumtest) const
 		else {
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 				value + " at line " + std::to_string(m_line) + " in " + m_location,
-				"FMTparser::getNum", __LINE__, __FILE__, m_section);
+				"FMTParser::getNum", __LINE__, __FILE__, m_section);
 		}
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::getNum", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::getNum", __LINE__, __FILE__, m_section);
 	}
 	return nvalue;
 }
 
-template int FMTparser::getNum<int>(const std::string& value, bool omitnumtest) const;
-template double FMTparser::getNum<double>(const std::string& value, bool omitnumtest) const;
-template size_t FMTparser::getNum<size_t>(const std::string& value, bool omitnumtest) const;
+template int FMTParser::getNum<int>(const std::string& value, bool omitnumtest) const;
+template double FMTParser::getNum<double>(const std::string& value, bool omitnumtest) const;
+template size_t FMTParser::getNum<size_t>(const std::string& value, bool omitnumtest) const;
 
 template<typename T>
-bool FMTparser::tryFillNumber(T& number, const std::string& value, const Core::FMTConstants& constant, int period) const
+bool FMTParser::tryFillNumber(T& number, const std::string& value, const Core::FMTConstants& constant, int period) const
 {
 	bool gotit = true;
 	try {
@@ -387,11 +387,11 @@ bool FMTparser::tryFillNumber(T& number, const std::string& value, const Core::F
 	}
 	return gotit;
 }
-template bool FMTparser::tryFillNumber<int>(int& number, const std::string& value, const Core::FMTConstants& constant, int period) const;
-template bool FMTparser::tryFillNumber<double>(double& number, const std::string& value, const Core::FMTConstants& constant, int period) const;
+template bool FMTParser::tryFillNumber<int>(int& number, const std::string& value, const Core::FMTConstants& constant, int period) const;
+template bool FMTParser::tryFillNumber<double>(double& number, const std::string& value, const Core::FMTConstants& constant, int period) const;
 
 template<typename T>
-Core::FMTBounds<T> FMTparser::bounds(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
+Core::FMTBounds<T> FMTParser::bounds(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
 {
 	T lupper = std::numeric_limits<T>::max();
 	T llower = std::numeric_limits<T>::lowest();
@@ -420,24 +420,24 @@ Core::FMTBounds<T> FMTparser::bounds(const Core::FMTConstants& constants, const 
 		catch (...)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				"for value " + value, "FMTparser::bounds", __LINE__, __FILE__, m_section);
+				"for value " + value, "FMTParser::bounds", __LINE__, __FILE__, m_section);
 		}
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::bounds", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::bounds", __LINE__, __FILE__, m_section);
 	}
 	return Core::FMTBounds<T>(section, lupper, llower);
 }
 
-template Core::FMTBounds<double> FMTparser::bounds<double>(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
-template Core::FMTBounds<int> FMTparser::bounds<int>(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
+template Core::FMTBounds<double> FMTParser::bounds<double>(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
+template Core::FMTBounds<int> FMTParser::bounds<int>(const Core::FMTConstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
 
 
 
 #ifdef FMTWITHGDAL
 
-std::unique_ptr<OGRSpatialReference> FMTparser::getFORELSpatialRef() const
+std::unique_ptr<OGRSpatialReference> FMTParser::getFORELSpatialRef() const
 {
 	std::unique_ptr<OGRSpatialReference>ptr(new OGRSpatialReference());
 	ptr->importFromEPSG(32198);
@@ -446,7 +446,7 @@ std::unique_ptr<OGRSpatialReference> FMTparser::getFORELSpatialRef() const
 
 
 template<typename T>
-GDALDataset* FMTparser::createDataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid, std::string format) const
+GDALDataset* FMTParser::createDataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid, std::string format) const
 {
 	GDALDataType datatype = static_cast<GDALDataType>(datatypeid);
 	const char* pszFormat = format.c_str();
@@ -457,7 +457,7 @@ GDALDataset* FMTparser::createDataset(const std::string& location, const Spatial
 		if (poDriver == nullptr)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
-				std::string(pszFormat), "FMTparser::createDataset", __LINE__, __FILE__, m_section);
+				std::string(pszFormat), "FMTParser::createDataset", __LINE__, __FILE__, m_section);
 		}
 		char **papszOptions = NULL;
 		if (format== "GTiff")
@@ -476,7 +476,7 @@ GDALDataset* FMTparser::createDataset(const std::string& location, const Spatial
 		if (poDstDS == nullptr)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset
-				, poDstDS->GetDescription(), "FMTparser::createDataset", __LINE__, __FILE__, m_section);
+				, poDstDS->GetDescription(), "FMTParser::createDataset", __LINE__, __FILE__, m_section);
 		}
 		std::vector<double>geotrans = layer.getGeoTransform();
 		const std::string projection = layer.getProjection();
@@ -487,19 +487,19 @@ GDALDataset* FMTparser::createDataset(const std::string& location, const Spatial
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::createDataset", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTParser::createDataset", __LINE__, __FILE__);
 	}
 	return poDstDS;
 }
 
-template GDALDataset* FMTparser::createDataset<int>(const std::string& location, const Spatial::FMTlayer<int>& layer, const int datatypeid,std::string format) const;
-template GDALDataset* FMTparser::createDataset<std::string>(const std::string& location, const Spatial::FMTlayer<std::string>& layer, const int datatypeid, std::string format) const;
-template GDALDataset* FMTparser::createDataset<double>(const std::string& location, const Spatial::FMTlayer<double>& layer, const int datatypeid, std::string format) const;
+template GDALDataset* FMTParser::createDataset<int>(const std::string& location, const Spatial::FMTlayer<int>& layer, const int datatypeid,std::string format) const;
+template GDALDataset* FMTParser::createDataset<std::string>(const std::string& location, const Spatial::FMTlayer<std::string>& layer, const int datatypeid, std::string format) const;
+template GDALDataset* FMTParser::createDataset<double>(const std::string& location, const Spatial::FMTlayer<double>& layer, const int datatypeid, std::string format) const;
 
 
 
 
-GDALDataset* FMTparser::getDataset(const std::string& location) const
+GDALDataset* FMTParser::getDataset(const std::string& location) const
     {
 	GDALDataset* data = nullptr;
 	try{
@@ -509,18 +509,18 @@ GDALDataset* FMTparser::getDataset(const std::string& location) const
 		if (data == nullptr)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
-				data->GetDescription(),"FMTparser::getDataset", __LINE__, __FILE__,m_section);
+				data->GetDescription(),"FMTParser::getDataset", __LINE__, __FILE__,m_section);
 			}
 		}
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::getDataset", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::getDataset", __LINE__, __FILE__, m_section);
 	}
     return data;
     }
 
-GDALRasterBand* FMTparser::getBand(GDALDataset* dataset,int bandid) const
+GDALRasterBand* FMTParser::getBand(GDALDataset* dataset,int bandid) const
     {
 	GDALRasterBand* band = nullptr;
 	try{
@@ -528,16 +528,16 @@ GDALRasterBand* FMTparser::getBand(GDALDataset* dataset,int bandid) const
 		if (band == nullptr)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTinvalidband,
-				dataset->GetDescription(),"FMTparser::getBand", __LINE__, __FILE__, m_section);
+				dataset->GetDescription(),"FMTParser::getBand", __LINE__, __FILE__, m_section);
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::getBand", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::getBand", __LINE__, __FILE__, m_section);
 		}
     return band;
     }
 
-void FMTparser::setCategories(GDALRasterBand* band,const std::vector<std::string>& categories) const
+void FMTParser::setCategories(GDALRasterBand* band,const std::vector<std::string>& categories) const
 	{
 	try {
 		if (!categories.empty())
@@ -551,12 +551,12 @@ void FMTparser::setCategories(GDALRasterBand* band,const std::vector<std::string
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::setCategories", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::setCategories", __LINE__, __FILE__, m_section);
 		}
 
 	}
 
-GDALRasterBand* FMTparser::createBand(GDALDataset* dataset,const std::vector<std::string>& categories,int bandid) const
+GDALRasterBand* FMTParser::createBand(GDALDataset* dataset,const std::vector<std::string>& categories,int bandid) const
     {
     GDALRasterBand* band = getBand(dataset,bandid);
 	try {
@@ -571,12 +571,12 @@ GDALRasterBand* FMTparser::createBand(GDALDataset* dataset,const std::vector<std
 		band->FlushCache();
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTparser::createBand", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("","FMTParser::createBand", __LINE__, __FILE__, m_section);
 		}
     return band;
     }
 
-std::vector<std::string>FMTparser::getCat(GDALDataset* dataset,int bandid) const
+std::vector<std::string>FMTParser::getCat(GDALDataset* dataset,int bandid) const
     {
 	std::vector<std::string>values;
 	try {
@@ -592,12 +592,12 @@ std::vector<std::string>FMTparser::getCat(GDALDataset* dataset,int bandid) const
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTparser::getCat", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("","FMTParser::getCat", __LINE__, __FILE__, m_section);
 		}
     return values;
     }
 
-GDALRasterBand* FMTparser::getOverview(GDALRasterBand* band,int view) const
+GDALRasterBand* FMTParser::getOverview(GDALRasterBand* band,int view) const
     {
 	GDALRasterBand* overview=nullptr;
 	try{
@@ -605,16 +605,16 @@ GDALRasterBand* FMTparser::getOverview(GDALRasterBand* band,int view) const
     if (overview == nullptr)
         {
         _exhandler->raise(Exception::FMTexc::FMTinvalidoverview,band->GetDataset()->GetDescription(),
-			"FMTparser::getOverview",__LINE__, __FILE__, m_section);
+			"FMTParser::getOverview",__LINE__, __FILE__, m_section);
         }
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::getOverview", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTParser::getOverview", __LINE__, __FILE__);
 		}
     return overview;
     }
 
-GDALDataset* FMTparser::getVectorDataset(const std::string& location) const
+GDALDataset* FMTParser::getVectorDataset(const std::string& location) const
     {
 	GDALDataset* dataset = nullptr;
 	try {
@@ -624,17 +624,17 @@ GDALDataset* FMTparser::getVectorDataset(const std::string& location) const
 			if (dataset == nullptr)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
-					dataset->GetDescription(),"FMTparser::getVectorDataset", __LINE__, __FILE__, m_section);
+					dataset->GetDescription(),"FMTParser::getVectorDataset", __LINE__, __FILE__, m_section);
 			}
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTparser::getVectorDataset", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("","FMTParser::getVectorDataset", __LINE__, __FILE__, m_section);
 		}
     return dataset;
     }
 
-GDALDataset* FMTparser::createVectorMemoryDs() const
+GDALDataset* FMTParser::createVectorMemoryDs() const
 	{
 	GDALDataset* dataset = nullptr;
 	try{
@@ -642,12 +642,12 @@ GDALDataset* FMTparser::createVectorMemoryDs() const
 		}
 		catch (...)
 			{
-				_exhandler->raiseFromCatch("","FMTparser::getemptymemoryds", __LINE__, __FILE__, m_section);
+				_exhandler->raiseFromCatch("","FMTParser::getemptymemoryds", __LINE__, __FILE__, m_section);
 			}
 	return dataset;
 	}
 
-OGRCoordinateTransformation* FMTparser::getProjTransform(OGRLayer* baselayer, bool fittoforel) const
+OGRCoordinateTransformation* FMTParser::getProjTransform(OGRLayer* baselayer, bool fittoforel) const
 	{
 	OGRCoordinateTransformation* coordtransf = nullptr;
 	try {
@@ -661,12 +661,12 @@ OGRCoordinateTransformation* FMTparser::getProjTransform(OGRLayer* baselayer, bo
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::getProjTransform", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::getProjTransform", __LINE__, __FILE__, m_section);
 		}
 	return coordtransf;
 	}
 
-GDALDataset* FMTparser::getTransFormMemLayerCopy(OGRLayer* baselayer, const OGRSpatialReference* newreference, const std::string& fieldname) const
+GDALDataset* FMTParser::getTransFormMemLayerCopy(OGRLayer* baselayer, const OGRSpatialReference* newreference, const std::string& fieldname) const
 	{
 	GDALDataset* memds = nullptr;
 	try {
@@ -675,7 +675,7 @@ GDALDataset* FMTparser::getTransFormMemLayerCopy(OGRLayer* baselayer, const OGRS
 			{
 			_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
 				"Geometry type from layer is not valid, must be wkbMultiPolygon or wkbPolygon : " + std::to_string(lgeomtype),
-				"FMTparser::getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
+				"FMTParser::getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
 			}
 		memds = createVectorMemoryDs();
 		std::unique_ptr<OGRSpatialReference>nonconstreference(new OGRSpatialReference(*newreference));
@@ -683,22 +683,22 @@ GDALDataset* FMTparser::getTransFormMemLayerCopy(OGRLayer* baselayer, const OGRS
 		if (memlayer == NULL)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-				"Layer in memory", "FMTparser::getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
+				"Layer in memory", "FMTParser::getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
 			}
 		OGRFieldDefn oField(fieldname.c_str(), OFTInteger);
 		if (memlayer->CreateField(&oField) != OGRERR_NONE)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-				"Field definition", "FMTparser::getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
+				"Field definition", "FMTParser::getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
 		}
 	return memds;
 	}
 
-GDALDataset* FMTparser::createOGRDataset(
+GDALDataset* FMTParser::createOGRDataset(
 	std::string location,
 	std::string gdaldrivername) const
 {
@@ -709,7 +709,7 @@ GDALDataset* FMTparser::createOGRDataset(
 		if (newdriver == NULL)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
-				gdaldrivername, "FMTparser::createOGRDataset", __LINE__, __FILE__, m_section);
+				gdaldrivername, "FMTParser::createOGRDataset", __LINE__, __FILE__, m_section);
 			}
 		const boost::filesystem::path pathObj(location);
 		if (boost::filesystem::exists(pathObj))
@@ -717,23 +717,23 @@ GDALDataset* FMTparser::createOGRDataset(
 			if (newdriver->Delete(location.c_str()) != 0)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
-					"Cannot delete " + location, "FMTparser::createOGRDataset", __LINE__, __FILE__, m_section);
+					"Cannot delete " + location, "FMTParser::createOGRDataset", __LINE__, __FILE__, m_section);
 				}
 			}
 		newdataset = newdriver->Create(location.c_str(), 0, 0, 0, GDT_Unknown,NULL);
 		if (newdataset == NULL)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
-				"Can not create new dataset at " + location, "FMTparser::createOGRDataset", __LINE__, __FILE__, m_section);
+				"Can not create new dataset at " + location, "FMTParser::createOGRDataset", __LINE__, __FILE__, m_section);
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::createOGRDataset", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::createOGRDataset", __LINE__, __FILE__, m_section);
 		}
 	return newdataset;
 }
 
-OGRLayer* FMTparser::createLayer(GDALDataset* dataset,
+OGRLayer* FMTParser::createLayer(GDALDataset* dataset,
 	const std::string& name, std::vector<std::string> creationoptions) const
 {
 	OGRLayer* newlayer = nullptr;
@@ -750,19 +750,19 @@ OGRLayer* FMTparser::createLayer(GDALDataset* dataset,
 		if (newlayer == NULL)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-				"Cannote create new layer FMTresults for " + name, "FMTparser::createLayer", __LINE__, __FILE__, m_section);
+				"Cannote create new layer FMTresults for " + name, "FMTParser::createLayer", __LINE__, __FILE__, m_section);
 			//Non Valid Layer
 		}
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::createLayer", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTParser::createLayer", __LINE__, __FILE__);
 	}
 	return newlayer;
 }
 
 
-OGRLayer* FMTparser::getLayer(GDALDataset* dataset,int id) const
+OGRLayer* FMTParser::getLayer(GDALDataset* dataset,int id) const
     {
 	OGRLayer * layer = nullptr;
 	try{
@@ -770,17 +770,17 @@ OGRLayer* FMTparser::getLayer(GDALDataset* dataset,int id) const
     if( layer == nullptr )
         {
         _exhandler->raise(Exception::FMTexc::FMTinvalidlayer,dataset->GetDescription(),
-			"FMTparser::getLayer",__LINE__, __FILE__, m_section);
+			"FMTParser::getLayer",__LINE__, __FILE__, m_section);
         }
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::getLayer", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::getLayer", __LINE__, __FILE__, m_section);
 	}
     return layer;
     }
 
-void FMTparser::getWSFields(OGRLayer* layer, std::map<int, int>& themes, int& age, int& area, int& lock, std::string agefield, std::string areafield, std::string lockfield) const
+void FMTParser::getWSFields(OGRLayer* layer, std::map<int, int>& themes, int& age, int& area, int& lock, std::string agefield, std::string areafield, std::string lockfield) const
 {
 	try {
 			OGRFeatureDefn *fdef = layer->GetLayerDefn();
@@ -822,32 +822,32 @@ void FMTparser::getWSFields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 			if (themes.size() == 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-					layer->GetDescription(),"FMTparser::getWSFields", __LINE__, __FILE__, m_section);
+					layer->GetDescription(),"FMTParser::getWSFields", __LINE__, __FILE__, m_section);
 			}
 			if (age == -1 && !agefield.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTmissingfield, agefield + " " + layer->GetDescription(),
-					"FMTparser::getWSFields",__LINE__, __FILE__, m_section);
+					"FMTParser::getWSFields",__LINE__, __FILE__, m_section);
 			}
 			if (area == -1 && !areafield.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTmissingfield, areafield + " " + layer->GetDescription(),
-					"FMTparser::getWSFields", __LINE__, __FILE__, m_section);
+					"FMTParser::getWSFields", __LINE__, __FILE__, m_section);
 			}
 			if (lock == -1 && !lockfield.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTmissingfield, lockfield + " " + layer->GetDescription(),
-					"FMTparser::getWSFields", __LINE__, __FILE__, m_section);
+					"FMTParser::getWSFields", __LINE__, __FILE__, m_section);
 			}
 	}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMTparser::getWSFields", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("","FMTParser::getWSFields", __LINE__, __FILE__, m_section);
 			}
 }
 
 #endif
 
-std::string FMTparser::setSpecs(Core::FMTsection section, Core::FMTkwor key,const Core::FMTYields& ylds,const Core::FMTConstants& constants,std::vector<Core::FMTSpec>& specs, const std::string& line)
+std::string FMTParser::setSpecs(Core::FMTsection section, Core::FMTkwor key,const Core::FMTYields& ylds,const Core::FMTConstants& constants,std::vector<Core::FMTSpec>& specs, const std::string& line)
     {
 	std::string rest = "";
 	try {
@@ -916,12 +916,12 @@ std::string FMTparser::setSpecs(Core::FMTsection section, Core::FMTkwor key,cons
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("",
-				"FMTparser::setSpec", __LINE__, __FILE__, m_section);
+				"FMTParser::setSpec", __LINE__, __FILE__, m_section);
 			}
     return rest;
     }
 
-std::string FMTparser::setSpec(
+std::string FMTParser::setSpec(
 	Core::FMTsection section, 
 	Core::FMTkwor key,
 	const Core::FMTYields& ylds,
@@ -933,7 +933,7 @@ std::string FMTparser::setSpec(
 	try {
 			boost::smatch kmatch;
 			
-			if (boost::regex_search(line, kmatch, FMTparser::m_AYLD))
+			if (boost::regex_search(line, kmatch, FMTParser::m_AYLD))
 			{
 				std::string yld = std::string(kmatch[4]) + std::string(kmatch[20]);
 				boost::trim(yld);
@@ -978,7 +978,7 @@ std::string FMTparser::setSpec(
 				rest = line;
 			}
 
-			if (boost::regex_search(rest, kmatch, FMTparser::m_AAGE))
+			if (boost::regex_search(rest, kmatch, FMTParser::m_AAGE))
 			{
 				std::string singlebound = std::string(kmatch[20]) + std::string(kmatch[21]) + std::string(kmatch[22]);
 				int upperbound = std::numeric_limits<int>::max();
@@ -1003,17 +1003,17 @@ std::string FMTparser::setSpec(
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("",
-				"FMTparser::setSpec", __LINE__, __FILE__, m_section);
+				"FMTParser::setSpec", __LINE__, __FILE__, m_section);
 			}
     return rest;
     }
 
-bool FMTparser::isAct(Core::FMTsection section,const std::vector<Core::FMTAction>& actions, std::string action) const
+bool FMTParser::isAct(Core::FMTsection section,const std::vector<Core::FMTAction>& actions, std::string action) const
     {
 	try{
     if (std::find_if(actions.begin(),actions.end(), Core::FMTActionComparator(action,true))==actions.end())
         {
-			_exhandler->raise(Exception::FMTexc::FMTignore, "No action named " + action + " at line " + std::to_string(m_line), "FMTparser::isAct", __LINE__, __FILE__, section);
+			_exhandler->raise(Exception::FMTexc::FMTignore, "No action named " + action + " at line " + std::to_string(m_line), "FMTParser::isAct", __LINE__, __FILE__, section);
         return false;
         }else
 		{
@@ -1022,14 +1022,14 @@ bool FMTparser::isAct(Core::FMTsection section,const std::vector<Core::FMTAction
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::isAct", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::isAct", __LINE__, __FILE__, m_section);
 	}
 	return false;
     }
 
 
 
-bool FMTparser::isYld(const Core::FMTYields& p_ylds,
+bool FMTParser::isYld(const Core::FMTYields& p_ylds,
 				const std::string& p_value, Core::FMTsection pm_section,
 				bool p_throwError) const
     {
@@ -1041,17 +1041,17 @@ bool FMTparser::isYld(const Core::FMTYields& p_ylds,
 	if (p_throwError)
 		{
 		_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, p_value + " at line " + std::to_string(m_line),
-			"FMTparser::isYld", __LINE__, __FILE__, pm_section);
+			"FMTParser::isYld", __LINE__, __FILE__, pm_section);
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::isYld", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::isYld", __LINE__, __FILE__, m_section);
 		}
      return false;
     }
 
 
-std::time_t FMTparser::getMostRecentFiletime() const
+std::time_t FMTParser::getMostRecentFiletime() const
 	{
 	return m_MostRecentFile;
 	}
@@ -1059,7 +1059,7 @@ std::time_t FMTparser::getMostRecentFiletime() const
 
 
 
-bool FMTparser::tryOpening(const std::ifstream& stream, const std::string& location) const
+bool FMTParser::tryOpening(const std::ifstream& stream, const std::string& location) const
         {
 		try{
         m_location = location;
@@ -1072,13 +1072,13 @@ bool FMTparser::tryOpening(const std::ifstream& stream, const std::string& locat
         if (!stream.is_open())
             {
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,location,
-				"FMTparser::tryOpening", __LINE__, __FILE__, m_section);
+				"FMTParser::tryOpening", __LINE__, __FILE__, m_section);
             return false;
             }
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparser::tryOpening", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::tryOpening", __LINE__, __FILE__, m_section);
 		}
 		boost::filesystem::path pathtofile(location);
 		const std::time_t temp = boost::filesystem::last_write_time(pathtofile);
@@ -1089,14 +1089,14 @@ bool FMTparser::tryOpening(const std::ifstream& stream, const std::string& locat
         return true;
         }
 
-bool FMTparser::tryOpening(std::ofstream& stream, const std::string& location) const
+bool FMTParser::tryOpening(std::ofstream& stream, const std::string& location) const
         {
 		try{
         m_location = location;
         if (!stream.is_open())
             {
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,location,
-				"FMTparser::tryOpening", __LINE__, __FILE__, m_section);
+				"FMTParser::tryOpening", __LINE__, __FILE__, m_section);
             return false;
             }
 		if (!m_comment.empty())//If you find an header write it down
@@ -1118,12 +1118,12 @@ bool FMTparser::tryOpening(std::ofstream& stream, const std::string& location) c
 		
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTparser::tryOpening", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::tryOpening", __LINE__, __FILE__, m_section);
 			}
         return true;
         }
 
-bool FMTparser::isValidFile(const std::string& location) const
+bool FMTParser::isValidFile(const std::string& location) const
 	{
 	try {
 		const boost::filesystem::path pathObj(location);
@@ -1132,24 +1132,24 @@ bool FMTparser::isValidFile(const std::string& location) const
 		if (!boost::filesystem::exists(pathObj) || !boost::filesystem::is_regular_file(pathObj))
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path, location,
-				"FMTparser::isValidFile", __LINE__, __FILE__, m_section);
+				"FMTParser::isValidFile", __LINE__, __FILE__, m_section);
 			return false;
 		}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparser::isValidFile", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::isValidFile", __LINE__, __FILE__, m_section);
 		}
 	return true;
 	}
 
-bool FMTparser::isNum(std::string value) const
+bool FMTParser::isNum(std::string value) const
     {
 	//boost::erase_all(value, ",");
 	return boost::regex_match(value,m_NUMBER);
     }
 
 
-Core::FMTPerBounds FMTparser::getPerBound(const std::string& p_lower,
+Core::FMTPerBounds FMTParser::getPerBound(const std::string& p_lower,
 	const std::string& p_upper,
 	const Core::FMTConstants& p_constants) const
 {
@@ -1175,12 +1175,12 @@ Core::FMTPerBounds FMTparser::getPerBound(const std::string& p_lower,
 	catch (...)
 	{
 		_exhandler->raiseFromCatch("",
-			"FMTparser::getPerBound", __LINE__, __FILE__, m_section);
+			"FMTParser::getPerBound", __LINE__, __FILE__, m_section);
 	}
 	return bound;
 }
 
-void FMTparser::setPeriodWithBounds(Core::FMTSpec& p_spec,
+void FMTParser::setPeriodWithBounds(Core::FMTSpec& p_spec,
 	const std::string& p_lower,
 	const std::string& p_upper,
 	const Core::FMTConstants& p_constants) const
@@ -1189,7 +1189,7 @@ void FMTparser::setPeriodWithBounds(Core::FMTSpec& p_spec,
 	p_spec.setBounds(PERIOD_BOUND);
 }
 
-bool FMTparser::setPeriods(Core::FMTSpec& p_spec,
+bool FMTParser::setPeriods(Core::FMTSpec& p_spec,
 	const std::string& p_periods,
 	const Core::FMTConstants& p_constants) const
 {
@@ -1207,12 +1207,12 @@ bool FMTparser::setPeriods(Core::FMTSpec& p_spec,
 	}catch (...)
 	{
 		_exhandler->raiseFromCatch("for spec " + std::string(p_spec),
-			"FMTparser::setPeriods", __LINE__, __FILE__, m_section);
+			"FMTParser::setPeriods", __LINE__, __FILE__, m_section);
 	}
 	return isSet;
 }
 
-bool FMTparser::isNum(const std::string& value, const Core::FMTConstants& constant, bool throwerror) const
+bool FMTParser::isNum(const std::string& value, const Core::FMTConstants& constant, bool throwerror) const
 {
 	try {
 		if (!(isNum(value) || constant.isConstant(value)))
@@ -1220,7 +1220,7 @@ bool FMTparser::isNum(const std::string& value, const Core::FMTConstants& consta
 			if (throwerror)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalidyield_number, value,
-					"FMTparser::isNum", __LINE__, __FILE__, m_section);
+					"FMTParser::isNum", __LINE__, __FILE__, m_section);
 				}
 		}
 		else {
@@ -1229,14 +1229,14 @@ bool FMTparser::isNum(const std::string& value, const Core::FMTConstants& consta
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::isNum", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::isNum", __LINE__, __FILE__, m_section);
 	}
 	return false;
 }
 
 
 
-std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::string& str) const
+std::vector<std::string>FMTParser::regexLoop(const boost::regex& cutregex, std::string& str) const
         {
 		std::vector<std::string>result;
 		try{
@@ -1251,15 +1251,15 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparser::regexLoop", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::regexLoop", __LINE__, __FILE__, m_section);
 		}
         return result;
         }
-    bool FMTparser::isValid(const std::string& line) const
+    bool FMTParser::isValid(const std::string& line) const
         {
         return boost::regex_match(line,m_VALID);
         }
-    void FMTparser::clearComments(std::string& line) const
+    void FMTParser::clearComments(std::string& line) const
         {
 		try {
 			if (line.find(";")!=std::string::npos)
@@ -1274,10 +1274,10 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 				}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparser::clearComments", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::clearComments", __LINE__, __FILE__, m_section);
 		}
         }
-	std::string FMTparser::upper(const std::string& lowercases) const
+	std::string FMTParser::upper(const std::string& lowercases) const
         {
 		std::locale loc;
 		std::string uppercases;
@@ -1289,11 +1289,11 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparser::upper", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::upper", __LINE__, __FILE__, m_section);
 		}
         return uppercases;
         }
-	std::vector<std::string>FMTparser::spliter(std::string strmask,const boost::regex& xspliter) const
+	std::vector<std::string>FMTParser::spliter(std::string strmask,const boost::regex& xspliter) const
         {
 		boost::smatch kmatch;
 		std::string value;
@@ -1314,12 +1314,12 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparser::spliter", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::spliter", __LINE__, __FILE__, m_section);
 		}
         return vecmask;
         }
 
-	std::string FMTparser::getCleanLine(const std::string& p_input) const
+	std::string FMTParser::getCleanLine(const std::string& p_input) const
 	{
 		std::string out;
 		try {
@@ -1327,13 +1327,13 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 			out = getCleanLine(inputStream);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTparser::getCleanLine", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::getCleanLine", __LINE__, __FILE__, m_section);
 			}
 		return out;
 	}
 
 
-	std::string FMTparser::getCleanLine(std::istream& stream) const
+	std::string FMTParser::getCleanLine(std::istream& stream) const
         {
         ++m_line;
 		std::string newline;
@@ -1387,12 +1387,12 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTparser::getCleanLine", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::getCleanLine", __LINE__, __FILE__, m_section);
 			}
         return newline;
         }
 
-	std::string FMTparser::getLine(std::queue<FMTLineInfo>& p_Lines) const
+	std::string FMTParser::getLine(std::queue<FMTLineInfo>& p_Lines) const
 		{
 		std::string returnedValue = p_Lines.front().m_lineValue;
 		m_line = p_Lines.front().m_lineNumber;
@@ -1401,7 +1401,7 @@ std::vector<std::string>FMTparser::regexLoop(const boost::regex& cutregex, std::
 		return returnedValue;
 		}
 
-std::map<std::string, std::vector<std::string>>  FMTparser::getForLoops(const std::string& p_line,
+std::map<std::string, std::vector<std::string>>  FMTParser::getForLoops(const std::string& p_line,
 	const std::vector<Core::FMTTheme>& p_themes,
 	const Core::FMTConstants& p_cons) const
 	{
@@ -1487,18 +1487,18 @@ std::map<std::string, std::vector<std::string>>  FMTparser::getForLoops(const st
 			#else
 			_exhandler->raise(Exception::FMTexc::FMTGDALerror,
 				"The following Query is not supported " + QUERY,
-				"FMTparser::getForLoops", __LINE__, __FILE__);
+				"FMTParser::getForLoops", __LINE__, __FILE__);
 			#endif
 		}
 	}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::getForLoops", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::getForLoops", __LINE__, __FILE__, m_section);
 		}
 	return allValues;
 	}
 
-bool FMTparser::isForLoops(const std::string& p_line) const
+bool FMTParser::isForLoops(const std::string& p_line) const
 	{
 	bool IsValid = false;
 		try {
@@ -1510,12 +1510,12 @@ bool FMTparser::isForLoops(const std::string& p_line) const
 			//IsValid = (boost::regex_match(p_line, m_FOR));
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparser::isForLoops", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::isForLoops", __LINE__, __FILE__, m_section);
 		}
 		return IsValid;
 	}
 
-bool FMTparser::isForLoopsEnd(const std::string& p_line) const
+bool FMTParser::isForLoopsEnd(const std::string& p_line) const
 {
 	bool IsValid = false;
 	try {
@@ -1523,13 +1523,13 @@ bool FMTparser::isForLoopsEnd(const std::string& p_line) const
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::isForLoopsEnd", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::isForLoopsEnd", __LINE__, __FILE__, m_section);
 	}
 	return IsValid;
 }
 
 
-std::string FMTparser::_getAbsolutePath(std::string p_Path) const
+std::string FMTParser::_getAbsolutePath(std::string p_Path) const
 	{
 	try {
 		boost::filesystem::path includedpath(p_Path);
@@ -1617,12 +1617,12 @@ std::string FMTparser::_getAbsolutePath(std::string p_Path) const
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTparser::_getAbsolutePath", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::_getAbsolutePath", __LINE__, __FILE__, m_section);
 		}
 	return p_Path;
 	}
 
-std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
+std::queue<FMTParser::FMTLineInfo> FMTParser::tryInclude(
 	const std::vector<Core::FMTTheme>& p_themes, const Core::FMTConstants& p_cons,
 	std::queue<FMTLineInfo>p_ForOut) const
 	{
@@ -1632,11 +1632,11 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 		{
 			boost::smatch kmatch;
 			const FMTLineInfo& ELEMENT = p_ForOut.front();
-			if (boost::regex_match(ELEMENT.m_lineValue, FMTparser::m_INCLUDE) &&
-				boost::regex_search(ELEMENT.m_lineValue, kmatch, FMTparser::m_INCLUDE))
+			if (boost::regex_match(ELEMENT.m_lineValue, FMTParser::m_INCLUDE) &&
+				boost::regex_search(ELEMENT.m_lineValue, kmatch, FMTParser::m_INCLUDE))
 			{
 				const std::string LOCATION = _getAbsolutePath(kmatch[3]);
-				FMTparser newparser;
+				FMTParser newparser;
 				std::ifstream newstream(LOCATION);
 				if (newparser.tryOpening(newstream, LOCATION))
 				{
@@ -1664,13 +1664,13 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::tryInclude", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::tryInclude", __LINE__, __FILE__, m_section);
 	}
 	return includedm_lines;
 	}
 
 #ifdef FMTWITHGDAL
-	std::map<std::string, std::vector<std::string>>FMTparser::_queryDatabase(
+	std::map<std::string, std::vector<std::string>>FMTParser::_queryDatabase(
 		const std::string& p_DataBaseLocation,
 		const std::string& p_VariableName,
 		const std::string& p_Query) const
@@ -1690,7 +1690,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
 					"Invalid Query " + ABSOLUTE_DATABASE_PATH + " with this query \n" + p_Query + " at line " +
-					std::to_string(m_line), "FMTparser::_queryDatabase", __LINE__, __FILE__, m_section);
+					std::to_string(m_line), "FMTParser::_queryDatabase", __LINE__, __FILE__, m_section);
 				}
 			OGRFeatureDefn* FIELD_DEFINITIONS = SUBSET_LAYER->GetLayerDefn();
 			const size_t FEATURE_COUNT = static_cast<size_t>(SUBSET_LAYER->GetFeatureCount());
@@ -1698,14 +1698,14 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"No lines generated for this database " + ABSOLUTE_DATABASE_PATH + " with this query \n" + p_Query + " at line " +
-					std::to_string(m_line), "FMTparser::_queryDatabase", __LINE__, __FILE__, m_section);
+					std::to_string(m_line), "FMTParser::_queryDatabase", __LINE__, __FILE__, m_section);
 				}
 			const size_t FIELD_COUNT = static_cast<size_t>(FIELD_DEFINITIONS->GetFieldCount());
 			if (FIELD_COUNT == 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"No columns generated for this database " + ABSOLUTE_DATABASE_PATH + " with this query \n" + p_Query + " at line " +
-					std::to_string(m_line), "FMTparser::_queryDatabase", __LINE__, __FILE__, m_section);
+					std::to_string(m_line), "FMTParser::_queryDatabase", __LINE__, __FILE__, m_section);
 			}
 			std::vector<std::vector<std::string>>Data(FIELD_COUNT, std::vector<std::string>(FEATURE_COUNT));
 			OGRFeature* feature;
@@ -1733,13 +1733,13 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("Failed at line "+ std::to_string(m_line) +" in "+ m_location,
-				"FMTparser::_queryDatabase", __LINE__, __FILE__, m_section);
+				"FMTParser::_queryDatabase", __LINE__, __FILE__, m_section);
 			}
 		return fieldsData;
 	}
 #endif
 
-	FMTparser::FMTLineInfo FMTparser::_setForLoopLines(std::queue<FMTLineInfo>& p_queue) const
+	FMTParser::FMTLineInfo FMTParser::_setForLoopLines(std::queue<FMTLineInfo>& p_queue) const
 	{
 		const FMTLineInfo FULL_LINE = p_queue.front();
 		p_queue.pop();
@@ -1761,7 +1761,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 		return FMTLineInfo(Line, FULL_LINE.m_lineNumber, FULL_LINE.m_file);
 	}
 
-	std::string FMTparser::_processConstants(std::string p_input,
+	std::string FMTParser::_processConstants(std::string p_input,
 		const Core::FMTConstants& p_constants) const
 	{
 		try {
@@ -1798,13 +1798,13 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("Failed to constants " + std::to_string(m_line) + " in " + m_location,
-				"FMTparser::_processConstants", __LINE__, __FILE__, m_section);
+				"FMTParser::_processConstants", __LINE__, __FILE__, m_section);
 			}
 		return p_input;
 	}
 
 
-	void FMTparser::processForLoops(const std::vector<Core::FMTTheme>& p_themes,
+	void FMTParser::processForLoops(const std::vector<Core::FMTTheme>& p_themes,
 		const Core::FMTConstants& p_constants,
 		std::queue<FMTLineInfo>& p_queue) const
 	{
@@ -1891,7 +1891,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 			if (OpenedForLoops > 0)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTunclosedforloop,
-					"Missing EndFor after line " + std::to_string(m_line), "FMTparser::getCleanLinewfor", __LINE__, __FILE__, m_section);
+					"Missing EndFor after line " + std::to_string(m_line), "FMTParser::getCleanLinewfor", __LINE__, __FILE__, m_section);
 				}
 			//Fill up the queue with loops variables...
 			for (const std::vector<FMTLineInfo>& UNROLED : ForloopQueues)
@@ -1919,7 +1919,7 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 			p_queue = FinalQueue;
 	}
 
-	std::queue<FMTparser::FMTLineInfo> FMTparser::getAllLines(std::ifstream& p_stream) const
+	std::queue<FMTParser::FMTLineInfo> FMTParser::getAllLines(std::ifstream& p_stream) const
 	{
 		std::queue<FMTLineInfo> lines;
 		try {
@@ -1933,12 +1933,12 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTparser::getAllLines", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::getAllLines", __LINE__, __FILE__, m_section);
 			}
 		return lines;
 	}
 
-	std::queue<FMTparser::FMTLineInfo> FMTparser::processForLoopsNInclude(
+	std::queue<FMTParser::FMTLineInfo> FMTParser::processForLoopsNInclude(
 		const std::vector<Core::FMTTheme>& p_themes,
 		const Core::FMTConstants& p_cons,
 		std::queue<FMTLineInfo>p_AllLines) const
@@ -1951,13 +1951,13 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTparser::processForLoopsNInclude",
+			_exhandler->raiseFromCatch("", "FMTParser::processForLoopsNInclude",
 								__LINE__, __FILE__, m_section);
 			}
 		return p_AllLines;
 	}
 
-	std::queue<FMTparser::FMTLineInfo> FMTparser::getCleanLinewfor(std::ifstream& p_stream,
+	std::queue<FMTParser::FMTLineInfo> FMTParser::getCleanLinewfor(std::ifstream& p_stream,
 																		const std::vector<Core::FMTTheme>& p_themes,
 																		const Core::FMTConstants& p_cons) const
 	{
@@ -1967,12 +1967,12 @@ std::queue<FMTparser::FMTLineInfo> FMTparser::tryInclude(
 			lines = processForLoopsNInclude(p_themes,p_cons, lines);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTparser::getCleanLinewfor", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::getCleanLinewfor", __LINE__, __FILE__, m_section);
 			}
 		return lines;
 	}
 /*
-std::string FMTparser::getCleanLinewfor(std::ifstream& stream,const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& cons)
+std::string FMTParser::getCleanLinewfor(std::ifstream& stream,const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& cons)
     {
 	boost::smatch kmatch;
 	std::string line;
@@ -2025,7 +2025,7 @@ std::string FMTparser::getCleanLinewfor(std::ifstream& stream,const std::vector<
 				{
 					return returnInclude(line, themes, cons);
 				}
-				else if (boost::regex_search(line, kmatch, FMTparser::m_END))
+				else if (boost::regex_search(line, kmatch, FMTParser::m_END))
 				{
 					std::string endfor = keys.top();
 					keys.pop();
@@ -2038,7 +2038,7 @@ std::string FMTparser::getCleanLinewfor(std::ifstream& stream,const std::vector<
 				}else if (!stream.is_open() && !keys.empty())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTunclosedforloop,
-							"Missing EndFor after line " + std::to_string(m_line), "FMTparser::getCleanLinewfor", __LINE__, __FILE__, m_section);
+							"Missing EndFor after line " + std::to_string(m_line), "FMTParser::getCleanLinewfor", __LINE__, __FILE__, m_section);
 						keys = std::stack<std::string>();
 					}
 			} while (!keys.empty());
@@ -2089,20 +2089,20 @@ std::string FMTparser::getCleanLinewfor(std::ifstream& stream,const std::vector<
 	return returnInclude(line, themes, cons);
 	}catch (...)
 	 {
-		 _exhandler->raisefromcatch("", "FMTparser::getCleanLinewfor", __LINE__, __FILE__, m_section);
+		 _exhandler->raisefromcatch("", "FMTParser::getCleanLinewfor", __LINE__, __FILE__, m_section);
 	 }
 	return std::string();
     }
 */
 
-std::map<Core::FMTsection, std::string> FMTparser::getPrimary(const std::string& primarylocation)
+std::map<Core::FMTsection, std::string> FMTParser::getPrimary(const std::string& primarylocation)
 	{
 		
 		std::map<Core::FMTsection, std::string>targets;
 		try {
 			std::ifstream primarystream(primarylocation);
 			const boost::filesystem::path primary_path(primarylocation);
-			if (FMTparser::tryOpening(primarystream, primarylocation))
+			if (FMTParser::tryOpening(primarystream, primarylocation))
 			{
 				while (primarystream.is_open())
 				{
@@ -2129,17 +2129,17 @@ std::map<Core::FMTsection, std::string> FMTparser::getPrimary(const std::string&
 		primarym_sections = targets;
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at "+ primarylocation,"FMTparser::getPrimary", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at "+ primarylocation,"FMTParser::getPrimary", __LINE__, __FILE__, m_section);
 			}
 		return targets;
 	}
 
-std::array<std::string, 5>FMTparser::getBaseOperators() const
+std::array<std::string, 5>FMTParser::getBaseOperators() const
 	{
 	return std::array<std::string, 5>({ "=", "<=", ">=", "<", ">" });
 	}
 
-std::vector<std::string> FMTparser::sameAs(const std::string& allset) const
+std::vector<std::string> FMTParser::sameAs(const std::string& allset) const
         {
 		std::vector<std::string>all_elements;
 		try{
@@ -2151,7 +2151,7 @@ std::vector<std::string> FMTparser::sameAs(const std::string& allset) const
 			if (realname.empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Empty target "+allset, "FMTparser::sameAs", __LINE__, __FILE__, m_section);
+					"Empty target "+allset, "FMTParser::sameAs", __LINE__, __FILE__, m_section);
 				}
             all_elements.push_back(realname);
 			std::string sameAsstr = allset.substr(allset.find(separator)+separator.size());
@@ -2165,12 +2165,12 @@ std::vector<std::string> FMTparser::sameAs(const std::string& allset) const
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparser::sameAs", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("", "FMTParser::sameAs", __LINE__, __FILE__, m_section);
 		}
         return all_elements;
         }
 
-std::vector<std::vector<std::string>>FMTparser::readCsv(const std::string& location,const char& separator)
+std::vector<std::vector<std::string>>FMTParser::readCsv(const std::string& location,const char& separator)
 	{
 	std::vector<std::vector<std::string>>lines;
 	try {
@@ -2182,7 +2182,7 @@ std::vector<std::vector<std::string>>FMTparser::readCsv(const std::string& locat
 				std::string line;
 				std::vector<std::string>splitted;
 				bool gotsomething = true;
-				Parser::FMTparser newParser;
+				Parser::FMTParser newParser;
 				if (newParser.tryOpening(csvstream, location))
 					{
 					//bool inactualdevs = false;
@@ -2204,7 +2204,7 @@ std::vector<std::vector<std::string>>FMTparser::readCsv(const std::string& locat
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("at " + location ,"FMTparser::readCsv", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("at " + location ,"FMTParser::readCsv", __LINE__, __FILE__, m_section);
 		}
 	return lines;
 	}
@@ -2212,7 +2212,7 @@ std::vector<std::vector<std::string>>FMTparser::readCsv(const std::string& locat
 
 
 
-std::istream& FMTparser::_safeGetline(std::istream& is, std::string& t) const
+std::istream& FMTParser::_safeGetline(std::istream& is, std::string& t) const
 	{
 	t.clear();
 	std::istream::sentry se(is, true);
@@ -2237,7 +2237,7 @@ std::istream& FMTparser::_safeGetline(std::istream& is, std::string& t) const
 	}
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTparser::_safeGetline", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTParser::_safeGetline", __LINE__, __FILE__, m_section);
 	}
 	return is;
 	}

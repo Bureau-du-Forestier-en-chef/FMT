@@ -22,7 +22,7 @@ namespace Core
 class FMTConstraint;
 // DocString: FMTSchedule
 /**
-FMTSchedule is the representation of a spatially referenced schedule. It can be used by the FMTlpmodel and the FMTsesmodel.
+FMTSchedule is the representation of a spatially referenced schedule. It can be used by the FMTLpModel and the FMTSesModel.
 It describes the area of a given developments for which an FMTAction can be operated (key).
 The vector is a reprensentation of lock level at position 0 in the vector the lock level = 0 (if lock level 0 exist in the graph
 , at position 1 lock level = 1.

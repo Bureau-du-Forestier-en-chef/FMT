@@ -23,7 +23,7 @@ namespace Graph
 FMTlinegraph is a simple graph  where edges - vertices -1. Each actions occuring in the graph
 generate only one new vertex like that 0----0----0----0. This graph is used with FMTlayer to
 simulate the preocess of growth and havest of a single forest stand where each action produce only
-one new stade. This class is heavely used in the FMTsesmodel and FMTsamodel and is normaly used with
+one new stade. This class is heavely used in the FMTSesModel and FMTSaModel and is normaly used with
 spatially explicit models.
 */
 class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>
@@ -113,7 +113,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Returns a vector of predictors for a given (period), (actionsmap), (yieldnames) and yields.
 		*/
-		std::vector<FMTpredictor>getPeriodPredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues =false,bool withGCBMid = true) const;
+		std::vector<FMTpredictor>getPeriodPredictors(const int& period, const Models::FMTModel& model, const std::vector<std::string>& yieldnames,bool periodonevalues =false,bool withGCBMid = true) const;
 		// DocString: FMTlinegraph::getInEdgeActionId
 		/**
 		Get the in edge action id of a vertex.
@@ -134,7 +134,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Randomly operate the active vertex to completybuild the active period of the graph.
 		Returns the action id of the new edges generated.
 		*/
-		std::vector<int> randomBuildPeriod(const Models::FMTmodel& model,std::default_random_engine& generator,
+		std::vector<int> randomBuildPeriod(const Models::FMTModel& model,std::default_random_engine& generator,
 									boost::unordered_map<Core::FMTDevelopment, std::vector<int>>& operability,
 									bool dontchoosegrow=false);
 		// DocString: FMTlinegraph::getactions
@@ -142,7 +142,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Starting (fromperiod) the function will return the a vector of of vector of bool if true the action is operable
 		at the specified period of the vector.
 		*/
-		std::vector<std::vector<bool>>getactions(const Models::FMTmodel& model,const int& fromperiod,
+		std::vector<std::vector<bool>>getactions(const Models::FMTModel& model,const int& fromperiod,
 			std::map<Core::FMTDevelopment, std::vector<bool>>& operability) const;
 		// DocString: FMTlinegraph::getBaseDevelopment
 		/**
@@ -205,12 +205,12 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Add actions (edges) + (vertices) to the graph based an event.
 		*/
-		//void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;
+		//void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTModel& model, Spatial::FMTeventcontainer& events) const;
 		// DocString: FMTlinegraph::ismovable
 		/**
 		Returns true if the graph can be modified at (period) and operated by different action or can be turned into natural grow.
 		*/
-		bool isMovable(const Models::FMTmodel& p_model, const int& period,
+		bool isMovable(const Models::FMTModel& p_model, const int& period,
 			boost::unordered_map<Core::FMTDevelopment, std::vector<int>>&p_operability) const;
 		// DocString:  FMTlinegraph::operator==
 		/**
@@ -251,10 +251,10 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Returns the period at which the vertex fall within the outputnode description. 
 		*/
-		std::vector<int> anyUsageOf(Core::FMTOutputNode output_node, const Models::FMTmodel& model, const int& startingperiod) const;
+		std::vector<int> anyUsageOf(Core::FMTOutputNode output_node, const Models::FMTModel& model, const int& startingperiod) const;
 		static const std::vector<int>& getSetOperability(
 			const Core::FMTDevelopment& p_development,
-			const Models::FMTmodel& p_model,
+			const Models::FMTModel& p_model,
 			boost::unordered_map<Core::FMTDevelopment, std::vector<int>>& p_Cache);
 		private:
 			friend class boost::serialization::access;
@@ -278,7 +278,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 			/**
 			Randomly operate an (active _development) (front_vertex) and returns the action id.
 			*/
-			int _randomOperate(const std::vector<int>& operables, const Models::FMTmodel& model,
+			int _randomOperate(const std::vector<int>& operables, const Models::FMTModel& model,
 				FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
 				const Core::FMTDevelopment& active_development, bool dontchoosegrow = false);
 			

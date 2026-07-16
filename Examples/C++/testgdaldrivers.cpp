@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 		const std::string DriverType =  argv[1];
 		const std::string DriverName =  argv[2];
 		const std::string DriverExtension =  argv[3];
-		Parser::FMTareaparser AreaParser;
+		Parser::FMTAreaParser AreaParser;
 		std::vector<std::string>Drivers;
 		std::vector<std::string>Extensions;
 		if (DriverType == "vector")

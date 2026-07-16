@@ -17,37 +17,37 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 
 
-	FMTyieldmodelTSLA::operator std::string() const
+	FMTYieldModelTsla::operator std::string() const
 	{
 		return "";
 	}
 
-	FMTyieldmodelTSLA::FMTyieldmodelTSLA() :FMTyieldmodel() 
+	FMTYieldModelTsla::FMTYieldModelTsla() :FMTYieldModel() 
 	{
-		modelName = FMTyieldmodelTSLA::getModelType();
+		modelName = FMTYieldModelTsla::getModelType();
 	}
 
 
-	std::string FMTyieldmodelTSLA::getModelType()
+	std::string FMTYieldModelTsla::getModelType()
 	{
 		return "_TSLA";
 	}
 
 
 
-	std::unique_ptr<FMTyieldmodel>FMTyieldmodelTSLA::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelTsla::Clone() const
 	{
 		try {
-			return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelTSLA());
+			return std::unique_ptr<FMTYieldModel>(new FMTYieldModelTsla());
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(getModelType(), "FMTyieldmodelTSLA::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTYieldModelTsla::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldmodel>(nullptr);
+		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
 
-	const std::vector<double>FMTyieldmodelTSLA::predict(const Core::FMTYieldRequest& request) const
+	const std::vector<double>FMTYieldModelTsla::predict(const Core::FMTYieldRequest& request) const
 	{
 		std::vector<double>returned(1, std::numeric_limits<double>::max());
 		try {
@@ -55,7 +55,7 @@ namespace Core {
 			if (!graphinfo)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty graph info info for " + getModelType(),
-					"FMTyieldmodelTSLA::predict", __LINE__, __FILE__);
+					"FMTYieldModelTsla::predict", __LINE__, __FILE__);
 				}
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
@@ -70,7 +70,7 @@ namespace Core {
 				tsla = fullgraph->timeSinceLastAction(*vertex);
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "No graph in graph info " + getModelType(),
-					"FMTyieldmodelTSLA::predict", __LINE__, __FILE__);
+					"FMTYieldModelTsla::predict", __LINE__, __FILE__);
 			}
 			if (tsla != std::numeric_limits<size_t>::max())
 				{
@@ -79,12 +79,12 @@ namespace Core {
 
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch(getModelType(), "FMTyieldmodelTSLA::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTYieldModelTsla::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return returned;
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelTSLA::presolve(const FMTMaskFilter& filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelTsla::presolve(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& newthemes) const
 	{
 		try {
@@ -92,12 +92,12 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(getModelType(), "FMTyieldmodelTSLA::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTYieldModelTsla::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldmodel>(nullptr);
+		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelTSLA::postSolve(const FMTMaskFilter& filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelTsla::postSolve(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& basethemes) const
 	{
 		try {
@@ -105,9 +105,9 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(getModelType(), "FMTyieldmodelTSLA::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTYieldModelTsla::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldmodel>(nullptr);
+		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
 
 

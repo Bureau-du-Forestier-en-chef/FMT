@@ -56,9 +56,9 @@ namespace R
 		Rcpp::class_<Parallel::FMTreplanningtask>("FMTreplanningtask", "@DocString(FMTreplanningtask)")
 			.derives<Parallel::FMTtask>("FMTtask")
 			.constructor("@DocString(FMTreplanningtask::FMTreplanningtask(...))")
-			.constructor<const Models::FMTmodel&,
-			const Models::FMTmodel&,
-			const Models::FMTmodel&,
+			.constructor<const Models::FMTModel&,
+			const Models::FMTModel&,
+			const Models::FMTModel&,
 			std::string,
 			std::string,
 			std::vector<std::string>,
@@ -84,7 +84,7 @@ namespace R
 		Rcpp::class_<Parallel::FMTopareaschedulertask>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask)")
 			.derives<Parallel::FMTtask>("FMTtask")
 			.constructor("@DocString(FMTopareaschedulertask::FMTopareaschedulertask())")
-			.constructor<Models::FMTlpmodel,
+			.constructor<Models::FMTLpModel,
 			std::vector<Heuristics::FMToperatingareascheme>,
 			Core::FMTOutputNode,std::string,
 			std::string,unsigned int,double>("@DocString(FMTopareaschedulertask::FMTopareaschedulertask(...))");

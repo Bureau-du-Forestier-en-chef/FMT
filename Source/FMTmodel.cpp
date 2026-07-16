@@ -31,7 +31,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models{
 
-    double FMTmodel::getYieldValue(const std::string& p_mask, const std::string& p_yield, int p_age, int p_period) const 
+    double FMTModel::getYieldValue(const std::string& p_mask, const std::string& p_yield, int p_age, int p_period) const 
     {
 	    double result = 0;
         try
@@ -43,13 +43,13 @@ namespace Models{
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTmodel::getYieldValue", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModel::getYieldValue", __LINE__, __FILE__);
         }
         return result;
     }
 
 
-	void FMTmodel::setReplicate(size_t p_replicate, int p_ReplanningPeriod)
+	void FMTModel::setReplicate(size_t p_replicate, int p_ReplanningPeriod)
 		{
 		for (Core::FMTConstraint& modelConstraint : constraints)
 			{
@@ -57,7 +57,7 @@ namespace Models{
 			}
 		}
 
-	bool  FMTmodel::gotReIgnore(const int& p_replanningPeriod) const
+	bool  FMTModel::gotReIgnore(const int& p_replanningPeriod) const
 		{
 		bool gotIt = false;
 		try {
@@ -69,12 +69,12 @@ namespace Models{
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::gotReIgnore", __LINE__, __FILE__);
 			}
 		return gotIt;
 		}
 
-	bool FMTmodel::gotReplicate(const int& p_replanningPeriod) const
+	bool FMTModel::gotReplicate(const int& p_replanningPeriod) const
 	{
 		bool gotIt = false;
 		try {
@@ -87,13 +87,13 @@ namespace Models{
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::gotReIgnore", __LINE__, __FILE__);
 		}
 		return gotIt;
 	}
 
-	std::vector<Core::FMTSchedule>FMTmodel::buildSchedule(const Core::FMTAction& p_action,
-															const FMTmodel& p_BaseModel,
+	std::vector<Core::FMTSchedule>FMTModel::buildSchedule(const Core::FMTAction& p_action,
+															const FMTModel& p_BaseModel,
 															const std::string& p_Targetyield,
 															const std::vector<Core::FMTSchedule>& p_schedules) const
 	{
@@ -200,12 +200,12 @@ namespace Models{
 
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodel::buildSchedule", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::buildSchedule", __LINE__, __FILE__);
 			}
 		return newSchedules;
 	}
 
-	std::vector<Core::FMTSchedule>FMTmodel::extendSchedule(const std::vector<Core::FMTSchedule>& p_schedules) const
+	std::vector<Core::FMTSchedule>FMTModel::extendSchedule(const std::vector<Core::FMTSchedule>& p_schedules) const
 	{
 		std::vector<Core::FMTSchedule>newSchedules;
 		try {
@@ -233,12 +233,12 @@ namespace Models{
 
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodel::extendSchedule", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::extendSchedule", __LINE__, __FILE__);
 			}
 		return newSchedules;
 	}
 
-	std::string FMTmodel::_getAggregatesWrap(const Core::FMTMask& p_mask,
+	std::string FMTModel::_getAggregatesWrap(const Core::FMTMask& p_mask,
 		const std::vector<size_t>& p_themes) const
 	{
 		std::string Wrap;
@@ -255,13 +255,13 @@ namespace Models{
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("",
-				"FMTmodel::_getAggregatesWrap", __LINE__, __FILE__);
+				"FMTModel::_getAggregatesWrap", __LINE__, __FILE__);
 			}
 
 		return Wrap;
 	}
 
-	std::vector<size_t> FMTmodel::_getAggregatesThemes(const std::string& p_yieldName) const
+	std::vector<size_t> FMTModel::_getAggregatesThemes(const std::string& p_yieldName) const
 	{
 		std::vector<size_t> aggregateThemes;
 		try {
@@ -285,12 +285,12 @@ namespace Models{
 		}catch (...)
 		{
 			_exhandler->raiseFromCatch("",
-				"FMTmodel::_getAggregatesThemes", __LINE__, __FILE__);
+				"FMTModel::_getAggregatesThemes", __LINE__, __FILE__);
 		}
 		return aggregateThemes;
 	}
 
-	std::string FMTmodel::_getYieldAttribute(const Core::FMTMask& p_devMask, 
+	std::string FMTModel::_getYieldAttribute(const Core::FMTMask& p_devMask, 
 							const std::string& p_yieldName,
 							const std::vector<size_t>& p_AggregatedThemes) const
 	{
@@ -307,12 +307,12 @@ namespace Models{
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("",
-				"FMTmodel::_getYieldAttribute", __LINE__, __FILE__);
+				"FMTModel::_getYieldAttribute", __LINE__, __FILE__);
 			}
 		return std::string();
 	}
 
-	std::set<std::string>FMTmodel::_getYieldsStraticAggregates(const std::string& p_yieldName) const
+	std::set<std::string>FMTModel::_getYieldsStraticAggregates(const std::string& p_yieldName) const
 	{
 		std::set<std::string> selections;
 		try {
@@ -332,16 +332,16 @@ namespace Models{
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", 
-				"FMTmodel::_getYieldsStraticAggregates", __LINE__, __FILE__);
+				"FMTModel::_getYieldsStraticAggregates", __LINE__, __FILE__);
 			}
 		return selections;
 	}
 
 
-	FMTmodel FMTmodel::buildAction(const std::string& p_actionName,
+	FMTModel FMTModel::buildAction(const std::string& p_actionName,
 		const std::string& p_Targetyield) const
 	{
-		FMTmodel newModel(*this);
+		FMTModel newModel(*this);
 		try {
 			std::vector<std::string>newAttributes;
 			const std::string BEFORE = "PRE";
@@ -435,19 +435,19 @@ namespace Models{
 			newModel.transitions.insert(newModel.transitions.begin(),newTransition);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodel::buildAction", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::buildAction", __LINE__, __FILE__);
 			}
 		return newModel;
 	}
 
-	void FMTmodel::pushTheme(const std::string& p_themeName,const std::string& p_yieldName,
+	void FMTModel::pushTheme(const std::string& p_themeName,const std::string& p_yieldName,
 		const std::vector<std::string>& p_attributes)
 	{
 		try {
 			if (p_attributes.empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme, "Missing attributes for "+ p_themeName,
-					"FMTmodel::pushTheme", __LINE__, __FILE__);
+					"FMTModel::pushTheme", __LINE__, __FILE__);
 				}
 			const std::vector<size_t> AGGREGATES = _getAggregatesThemes(p_yieldName);
 			const size_t THEME_START = themes.back().getStart() + themes.back().size();
@@ -525,14 +525,14 @@ namespace Models{
 		
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodel::pushTheme", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::pushTheme", __LINE__, __FILE__);
 			}
 	}
 
-	Models::FMTmodel FMTmodel::aggregateAllActions(const std::vector<std::string>& p_Aggregates,
+	Models::FMTModel FMTModel::aggregateAllActions(const std::vector<std::string>& p_Aggregates,
 		std::vector<std::string> p_ActionOrdering) const
 	{
-		Models::FMTmodel newModel(*this);
+		Models::FMTModel newModel(*this);
 		try {
 			if (p_ActionOrdering.empty())
 				{
@@ -559,12 +559,12 @@ namespace Models{
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTmodel::aggregateAllActions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::aggregateAllActions", __LINE__, __FILE__);
 		}
 		return newModel;
 	}
 
-	std::vector<std::string>FMTmodel::getSchedulesPriorities(const std::vector<Core::FMTSchedule>& p_schedules) const
+	std::vector<std::string>FMTModel::getSchedulesPriorities(const std::vector<Core::FMTSchedule>& p_schedules) const
 		{
 		std::map<std::string, double>allActions;
 		const int MAX_PERIOD = 10;
@@ -631,10 +631,10 @@ namespace Models{
 		}
 
 
-	Models::FMTmodel FMTmodel::splitActions(const std::vector<std::string>& p_Actions,
+	Models::FMTModel FMTModel::splitActions(const std::vector<std::string>& p_Actions,
 									const std::vector<std::string>& p_masks) const
 	{
-		Models::FMTmodel newModel(*this);
+		Models::FMTModel newModel(*this);
 		try {
 			std::vector<Core::FMTMask> masks;
 			for (const std::string& mask : p_masks)
@@ -668,12 +668,12 @@ namespace Models{
 			
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodel::splitActions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::splitActions", __LINE__, __FILE__);
 			}
 		return newModel;
 	}
 
-	std::vector<Core::FMTSchedule> FMTmodel::splitSchedules(const std::vector<Core::FMTSchedule>& p_schedules) const
+	std::vector<Core::FMTSchedule> FMTModel::splitSchedules(const std::vector<Core::FMTSchedule>& p_schedules) const
 	{
 		std::vector<Core::FMTSchedule>NewSchedules;
 		try {
@@ -692,7 +692,7 @@ namespace Models{
 						if (ACTIONS.empty())
 							{
 								_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Missing aggregate " + GLOBAL_ACTION,
-									"FMTmodel::splitSchedules", __LINE__, __FILE__);
+									"FMTModel::splitSchedules", __LINE__, __FILE__);
 							}
 						std::map<Core::FMTDevelopment, std::vector<double>>NewMapping;
 						for (const Core::FMTAction* ACTION_Prt : ACTIONS)
@@ -722,12 +722,12 @@ namespace Models{
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodel::splitSchedules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::splitSchedules", __LINE__, __FILE__);
 			}
 		return NewSchedules;
 	}
 
-	std::vector<Core::FMTSchedule> FMTmodel::aggregateSchedules(const std::vector<Core::FMTSchedule>& p_schedules) const
+	std::vector<Core::FMTSchedule> FMTModel::aggregateSchedules(const std::vector<Core::FMTSchedule>& p_schedules) const
 		{
 		std::vector<Core::FMTSchedule>newSchedules;
 		try {
@@ -755,7 +755,7 @@ namespace Models{
 					if (!NewAction)
 						{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Cant find aggregate for action "+ ACTION_NAME,
-							"FMTmodel::aggregateSchedules", __LINE__, __FILE__);
+							"FMTModel::aggregateSchedules", __LINE__, __FILE__);
 						}
 					if (mapping.find(*NewAction)==mapping.end())
 						{
@@ -778,13 +778,13 @@ namespace Models{
 
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTmodel::aggregateSchedules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTModel::aggregateSchedules", __LINE__, __FILE__);
 			}
 		return newSchedules;
 		}
 
 
-	std::map<std::string, std::pair<std::string, Core::FMTMask>> FMTmodel::aggregateActions(std::vector<std::string> p_ActionsMapping)
+	std::map<std::string, std::pair<std::string, Core::FMTMask>> FMTModel::aggregateActions(std::vector<std::string> p_ActionsMapping)
 	{
 		std::map<std::string, std::pair<std::string, Core::FMTMask>>ActionFilters;
 		try {
@@ -812,7 +812,7 @@ namespace Models{
 					if (ActionCover.find(Action->getName()) != ActionCover.end())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Action " + Action->getName() +" already in aggregate",
-							"FMTmodel::aggregateActions", __LINE__, __FILE__);
+							"FMTModel::aggregateActions", __LINE__, __FILE__);
 						}
 					ActionCover.insert(Action->getName());
 					NoCompress.unShrink(themes);
@@ -839,7 +839,7 @@ namespace Models{
 					}
 				missingActions.pop_back();
 				_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Missing aggregate for actions "+ missingActions,
-					"FMTmodel::aggregateActions", __LINE__, __FILE__);
+					"FMTModel::aggregateActions", __LINE__, __FILE__);
 				}
 
 			//Handle aggregate of the action
@@ -876,12 +876,12 @@ namespace Models{
 			actions = NewActions;
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTmodel::aggregateActions", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTModel::aggregateActions", __LINE__, __FILE__);
 		}
 		return ActionFilters;
 	}
 
-void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::string, Core::FMTMask>>& p_Filters)
+void FMTModel::aggregateTransitions(const std::map<std::string, std::pair<std::string, Core::FMTMask>>& p_Filters)
 	{
 	
 	try {
@@ -918,7 +918,7 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 				if (transitionIterator == NewTransitions.end())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTinvalidAandT,
-						"Cannot find transition "+ transition.getName(), "FMTmodel::aggregateTransitions", __LINE__, __FILE__, Core::FMTsection::Transition);
+						"Cannot find transition "+ transition.getName(), "FMTModel::aggregateTransitions", __LINE__, __FILE__, Core::FMTsection::Transition);
 					}
 				*transitionIterator += NewTransition;
 				}
@@ -930,11 +930,11 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 	setTransitions(NewTransitions);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::aggregateTransitions", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::aggregateTransitions", __LINE__, __FILE__);
 		}
 	}
 
-void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::string, Core::FMTMask>>& p_Filters,
+void FMTModel::aggregateOutputs(const std::map<std::string, std::pair<std::string, Core::FMTMask>>& p_Filters,
 	std::vector<Core::FMTOutput*>& p_Outputs, const std::vector<std::string>& p_ActionOrdering)
 {
 	try {
@@ -1107,12 +1107,12 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::aggregateOutputs", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::aggregateOutputs", __LINE__, __FILE__);
 		}
 
 }
 
-Core::FMTMask FMTmodel::addNewMask(const Core::FMTMask& p_incompleteMask)
+Core::FMTMask FMTModel::addNewMask(const Core::FMTMask& p_incompleteMask)
 {
 	Core::FMTMask baseMask;
 	try {
@@ -1125,18 +1125,18 @@ Core::FMTMask FMTmodel::addNewMask(const Core::FMTMask& p_incompleteMask)
 		baseMask = Core::FMTMask(NewMask, themes);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::addNewMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::addNewMask", __LINE__, __FILE__);
 		}
 	return baseMask;
 }
 
-std::default_random_engine* FMTmodel::getGeneratorPtr() const
+std::default_random_engine* FMTModel::getGeneratorPtr() const
 	{
 	return &m_generator;
 	}
 
 
-void FMTmodel::setDefaultObjects()
+void FMTModel::setDefaultObjects()
 	{
 	try {
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
@@ -1145,7 +1145,7 @@ void FMTmodel::setDefaultObjects()
 			if (!QUIET_LOG)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction,
-				"_DEATH","FMTmodel::setDefaultObjects", __LINE__, __FILE__, Core::FMTsection::Action);
+				"_DEATH","FMTModel::setDefaultObjects", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 			actions.push_back(defaultDeathAction(lifespan, themes));
 			//actions.back().passinobject(*this);
@@ -1155,7 +1155,7 @@ void FMTmodel::setDefaultObjects()
 			if (!QUIET_LOG)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition,
-					"_DEATH", "FMTmodel::setDefaultObjects", __LINE__, __FILE__, Core::FMTsection::Transition);
+					"_DEATH", "FMTModel::setDefaultObjects", __LINE__, __FILE__, Core::FMTsection::Transition);
 			}
 			transitions.push_back(defaultDeathTransition(lifespan, themes));
 			//transitions.back().passinobject(*this);
@@ -1167,12 +1167,12 @@ void FMTmodel::setDefaultObjects()
 		statictransitionthemes = getStaticTransitionThemes();
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTmodel::setDefaultObjects", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTModel::setDefaultObjects", __LINE__, __FILE__);
 		}
 	
 	}
 
-std::vector<size_t>FMTmodel::getStaticTransitionThemes() const
+std::vector<size_t>FMTModel::getStaticTransitionThemes() const
 	{
 	std::vector<size_t>statics;
 	try {
@@ -1195,12 +1195,12 @@ std::vector<size_t>FMTmodel::getStaticTransitionThemes() const
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::getStaticTransitionThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getStaticTransitionThemes", __LINE__, __FILE__);
 		}
 	return statics;
 	}
 
-std::vector<const Core::FMTTheme*>FMTmodel::getStaticPresolveThemes() const
+std::vector<const Core::FMTTheme*>FMTModel::getStaticPresolveThemes() const
 	{
 	std::vector<const Core::FMTTheme*>fullstatics;
 	for (const Core::FMTTheme& theme : themes)
@@ -1253,24 +1253,24 @@ std::vector<const Core::FMTTheme*>FMTmodel::getStaticPresolveThemes() const
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::getStaticPresolveThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getStaticPresolveThemes", __LINE__, __FILE__);
 		}
 	return fullstatics;
 	}
 
 
-FMTmodel::FMTmodel() : Core::FMTObject(), m_generator(),parameters(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
+FMTModel::FMTModel() : Core::FMTObject(), m_generator(),parameters(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
 {
 	
 }
 
 
-FMTmodel::FMTmodel(FMTmodel&& rhs) : Core::FMTObject(), m_generator(), parameters(), area(), themes(), actions(), transitions(), yields(), lifespan(), outputs(), constraints(), name(), statictransitionthemes()
+FMTModel::FMTModel(FMTModel&& rhs) : Core::FMTObject(), m_generator(), parameters(), area(), themes(), actions(), transitions(), yields(), lifespan(), outputs(), constraints(), name(), statictransitionthemes()
 {
 	*this = std::move(rhs);
 }
 
-FMTmodel& FMTmodel::operator =(FMTmodel&& rhs)
+FMTModel& FMTModel::operator =(FMTModel&& rhs)
 {
 	if (this != &rhs)
 	{
@@ -1293,12 +1293,12 @@ FMTmodel& FMTmodel::operator =(FMTmodel&& rhs)
 	return *this;
 }
 
-void FMTmodel::setSeed(const int& p_seed)
+void FMTModel::setSeed(const int& p_seed)
 	{
 	m_generator = std::default_random_engine(p_seed);
 	}
 
-void FMTmodel::_gutsOfConstructor(const std::vector<Core::FMTActualDevelopment>& p_area)
+void FMTModel::_gutsOfConstructor(const std::vector<Core::FMTActualDevelopment>& p_area)
 	{
 	setArea(p_area);
 	setDefaultObjects();
@@ -1308,17 +1308,17 @@ void FMTmodel::_gutsOfConstructor(const std::vector<Core::FMTActualDevelopment>&
 	}
 
 
-FMTmodel::FMTmodel(const std::vector<Core::FMTActualDevelopment>& larea, const std::vector<Core::FMTTheme>& lthemes,
+FMTModel::FMTModel(const std::vector<Core::FMTActualDevelopment>& larea, const std::vector<Core::FMTTheme>& lthemes,
 	const std::vector<Core::FMTAction>& lactions,
 	const std::vector<Core::FMTTransition>& ltransitions, const Core::FMTYields& lyields, const Core::FMTLifespans& llifespan,
-	const std::string& lname, const std::vector<Core::FMTOutput>& loutputs,std::vector<Core::FMTConstraint> lconstraints,FMTmodelparameters lparameters) :
+	const std::string& lname, const std::vector<Core::FMTOutput>& loutputs,std::vector<Core::FMTConstraint> lconstraints,FMTModelParameters lparameters) :
 	Core::FMTObject(), m_generator(), parameters(lparameters),area(), themes(lthemes), actions(lactions), transitions(ltransitions),
 	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname), statictransitionthemes()
 	{
 	_gutsOfConstructor(larea);
 	}
 
-FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTObject(rhs), m_generator(rhs.m_generator),parameters(rhs.parameters),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
+FMTModel::FMTModel(const FMTModel& rhs):Core::FMTObject(rhs), m_generator(rhs.m_generator),parameters(rhs.parameters),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
 		 transitions(rhs.transitions),yields(rhs.yields),lifespan(rhs.lifespan), outputs(rhs.outputs), constraints(rhs.constraints),name(rhs.name),
 		statictransitionthemes(rhs.statictransitionthemes)
 
@@ -1326,7 +1326,7 @@ FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTObject(rhs), m_generator(rhs.m_
 	yields.setModel(this);
 	}
 
-FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
+FMTModel& FMTModel::operator = (const FMTModel& rhs)
     {
     if (this!=&rhs)
         {
@@ -1348,17 +1348,17 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
 	
     return *this;
     }
-std::vector<Core::FMTActualDevelopment>FMTmodel::getArea(int period,bool beforegrowanddeath) const
+std::vector<Core::FMTActualDevelopment>FMTModel::getArea(int period,bool beforegrowanddeath) const
     {
     return area;
     }
 
-std::unique_ptr<FMTmodel> FMTmodel::getCopy(int period) const
+std::unique_ptr<FMTModel> FMTModel::getCopy(int period) const
 	{
-	return std::unique_ptr<FMTmodel>(new FMTmodel(*this));
+	return std::unique_ptr<FMTModel>(new FMTModel(*this));
 	}
 
-void FMTmodel::cleanActionsNTransitions()
+void FMTModel::cleanActionsNTransitions()
 	{
 	try {
 		std::vector<Core::FMTAction>newactions;
@@ -1384,12 +1384,12 @@ void FMTmodel::cleanActionsNTransitions()
 		transitions.shrink_to_fit();
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTmodel::cleanActionsNTransitions", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTModel::cleanActionsNTransitions", __LINE__, __FILE__);
 		}
 	}
 
 
-bool FMTmodel::useActionSerie() const
+bool FMTModel::useActionSerie() const
 {
 	bool gotseries = false;
 	try {
@@ -1403,13 +1403,13 @@ bool FMTmodel::useActionSerie() const
 		}
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::useactionseries", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::useactionseries", __LINE__, __FILE__);
 	}
 
 	return gotseries;
 }
 
-size_t FMTmodel::getSeriesMaxSize() const
+size_t FMTModel::getSeriesMaxSize() const
 {
 	size_t maxsize = 0;
 	try {
@@ -1422,7 +1422,7 @@ size_t FMTmodel::getSeriesMaxSize() const
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::getSeriesMaxSize", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getSeriesMaxSize", __LINE__, __FILE__);
 		}
 	return maxsize;
 }
@@ -1433,7 +1433,7 @@ size_t FMTmodel::getSeriesMaxSize() const
 
 
 
-Core::FMTAction FMTmodel::defaultDeathAction(const Core::FMTLifespans& llifespan,
+Core::FMTAction FMTModel::defaultDeathAction(const Core::FMTLifespans& llifespan,
 										const std::vector<Core::FMTTheme>& lthemes)
 	{
 		const std::string actionname = "_DEATH";
@@ -1453,7 +1453,7 @@ Core::FMTAction FMTmodel::defaultDeathAction(const Core::FMTLifespans& llifespan
 		death_action.shrink();
 	return death_action;
 	}
-Core::FMTTransition FMTmodel::defaultDeathTransition(const Core::FMTLifespans& llifespan,
+Core::FMTTransition FMTModel::defaultDeathTransition(const Core::FMTLifespans& llifespan,
 											const std::vector<Core::FMTTheme>& lthemes)
 	{
 	const std::string transitionname = "_DEATH";
@@ -1472,39 +1472,39 @@ Core::FMTTransition FMTmodel::defaultDeathTransition(const Core::FMTLifespans& l
 	return death_Transition;
 	}
 
-void FMTmodel::setParallelLogger(Logging::FMTLogger& logger)
+void FMTModel::setParallelLogger(Logging::FMTLogger& logger)
 	{
 	try {
 		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-			"FMTmodel::setParallelLogger", __LINE__, __FILE__);
+			"FMTModel::setParallelLogger", __LINE__, __FILE__);
 	}catch (...)
 		{
-		_exhandler->printExceptions("", "FMTmodel::setParallelLogger", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setParallelLogger", __LINE__, __FILE__);
 		}
 	}
 
 
-bool FMTmodel::isOptimal() const
+bool FMTModel::isOptimal() const
 {
 	return false;
 }
 
-double FMTmodel::getObjectiveValue() const
+double FMTModel::getObjectiveValue() const
 {
 	try {
 		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-			"FMTmodel::getObjectiveValue", __LINE__, __FILE__);
+			"FMTModel::getObjectiveValue", __LINE__, __FILE__);
 	}
 	catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::setParallelLogger", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setParallelLogger", __LINE__, __FILE__);
 	}
 	return 0.0;
 }
 
 
 
-void FMTmodel::addOutput(const std::string& name,
+void FMTModel::addOutput(const std::string& name,
 	const std::string& maskstring, Core::FMTotar outputtarget,
 	std::string action, std::string yield, std::string description, int targetTheme)
 	{
@@ -1517,13 +1517,13 @@ void FMTmodel::addOutput(const std::string& name,
 	}
 	catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::addOutput", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::addOutput", __LINE__, __FILE__);
 	}
 
 	}
 
 
-void FMTmodel::addYieldHandlersFromPtr(const std::vector<std::unique_ptr<Core::FMTYieldHandler>>& yieldhandlers)
+void FMTModel::addYieldHandlersFromPtr(const std::vector<std::unique_ptr<Core::FMTYieldHandler>>& yieldhandlers)
 {
 	try {
 		yields.unShrink(themes);
@@ -1533,25 +1533,25 @@ void FMTmodel::addYieldHandlersFromPtr(const std::vector<std::unique_ptr<Core::F
 		}
 		yields.update();
 	}catch(...){
-			_exhandler->printExceptions("", "FMTmodel::addYieldHandlersFromPtr", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTModel::addYieldHandlersFromPtr", __LINE__, __FILE__);
 	}
 	
 	
 }
 
 
-void FMTmodel::setConstraints(const std::vector<Core::FMTConstraint>& lconstraint)
+void FMTModel::setConstraints(const std::vector<Core::FMTConstraint>& lconstraint)
 	{
 	try {
 		constraints = lconstraint;
 		constraints.shrink_to_fit();
 	}catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::setConstraints", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setConstraints", __LINE__, __FILE__);
 	}
 	}
 
-bool  FMTmodel::operator == (const FMTmodel& rhs) const
+bool  FMTModel::operator == (const FMTModel& rhs) const
 	{
 	return (name == rhs.name &&
 		area == rhs.area &&
@@ -1564,7 +1564,7 @@ bool  FMTmodel::operator == (const FMTmodel& rhs) const
 		constraints == rhs.constraints);
 	}
 
-bool FMTmodel::operator < (const FMTmodel& rhs) const
+bool FMTModel::operator < (const FMTModel& rhs) const
 	{
 	//strict ordering
 	if (name < rhs.name)
@@ -1609,7 +1609,7 @@ bool FMTmodel::operator < (const FMTmodel& rhs) const
 
 
 
-void FMTmodel::setArea(const std::vector<Core::FMTActualDevelopment>& ldevs)
+void FMTModel::setArea(const std::vector<Core::FMTActualDevelopment>& ldevs)
     {
 	try {
 		std::map<Core::FMTDevelopment,double,std::less<Core::FMTDevelopment>>sortedArea;
@@ -1656,12 +1656,12 @@ void FMTmodel::setArea(const std::vector<Core::FMTActualDevelopment>& ldevs)
 		std::sort(area.begin(), area.end());*/
 	}catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::setArea", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setArea", __LINE__, __FILE__);
 	}
 
 
     }
-void FMTmodel::setThemes(const std::vector<Core::FMTTheme>& lthemes)
+void FMTModel::setThemes(const std::vector<Core::FMTTheme>& lthemes)
     {
 	try {
 		themes = lthemes;
@@ -1671,12 +1671,12 @@ void FMTmodel::setThemes(const std::vector<Core::FMTTheme>& lthemes)
 		statictransitionthemes.shrink_to_fit();
 	}catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::setThemes", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setThemes", __LINE__, __FILE__);
 	}
 
 
     }
-void FMTmodel::setActions(const std::vector<Core::FMTAction>& lactions)
+void FMTModel::setActions(const std::vector<Core::FMTAction>& lactions)
     {
 	try {
 		std::vector<Core::FMTTransition>newtransitions;
@@ -1701,12 +1701,12 @@ void FMTmodel::setActions(const std::vector<Core::FMTAction>& lactions)
 		transitions.shrink_to_fit();
 	}catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::setActions", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setActions", __LINE__, __FILE__);
 	}
 
 
     }
-void FMTmodel::setTransitions(const std::vector<Core::FMTTransition>& ltransitions)
+void FMTModel::setTransitions(const std::vector<Core::FMTTransition>& ltransitions)
     {
 	try {
 		transitions = ltransitions;
@@ -1720,11 +1720,11 @@ void FMTmodel::setTransitions(const std::vector<Core::FMTTransition>& ltransitio
 		transitions.shrink_to_fit();
 	}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTmodel::setTransitions", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTModel::setTransitions", __LINE__, __FILE__);
 		}
 
     }
-void FMTmodel::setYields(const Core::FMTYields& lylds)
+void FMTModel::setYields(const Core::FMTYields& lylds)
     {
 	try {
 		yields = lylds;
@@ -1732,10 +1732,10 @@ void FMTmodel::setYields(const Core::FMTYields& lylds)
 		yields.setModel(this);
 	}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTmodel::setYields", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTModel::setYields", __LINE__, __FILE__);
 		}
     }
-void FMTmodel::setLifespan(const Core::FMTLifespans& llifespan)
+void FMTModel::setLifespan(const Core::FMTLifespans& llifespan)
     {
 	try {
 		lifespan = llifespan;
@@ -1743,30 +1743,30 @@ void FMTmodel::setLifespan(const Core::FMTLifespans& llifespan)
 		this->setDefaultObjects();
 	}catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::setLifespan", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setLifespan", __LINE__, __FILE__);
 	}
 
     }
 
-void FMTmodel::setName(const std::string& newname)
+void FMTModel::setName(const std::string& newname)
 	{
 	name = newname;
 	}
 
-void FMTmodel::setOutputs(const std::vector<Core::FMTOutput>& newoutputs)
+void FMTModel::setOutputs(const std::vector<Core::FMTOutput>& newoutputs)
 	{
 	try {
 		outputs = newoutputs;
 		outputs.shrink_to_fit();
 	}catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::setOutputs", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setOutputs", __LINE__, __FILE__);
 	}
 
 	}
 
 
-std::vector<const Core::FMTTheme*> FMTmodel::locateStaticThemes(const Core::FMTOutput& output, bool ignoreoutputvariables) const
+std::vector<const Core::FMTTheme*> FMTModel::locateStaticThemes(const Core::FMTOutput& output, bool ignoreoutputvariables) const
 {
 	std::vector<const Core::FMTTheme*> bestthemes;
 	try {
@@ -1780,12 +1780,12 @@ std::vector<const Core::FMTTheme*> FMTmodel::locateStaticThemes(const Core::FMTO
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTmodel::locateStaticThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTModel::locateStaticThemes", __LINE__, __FILE__);
 		}
 	return bestthemes;
 }
 
-std::vector<const Core::FMTTheme*>FMTmodel::locateStaticTransitionsThemes() const
+std::vector<const Core::FMTTheme*>FMTModel::locateStaticTransitionsThemes() const
 {
 	std::vector<const Core::FMTTheme*>bestthemes;
 	try {
@@ -1796,13 +1796,13 @@ std::vector<const Core::FMTTheme*>FMTmodel::locateStaticTransitionsThemes() cons
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::locateStaticTransitionsThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::locateStaticTransitionsThemes", __LINE__, __FILE__);
 	}
 	return bestthemes;
 
 }
 
-std::vector<const Core::FMTTheme*>FMTmodel::locateNodeStaticThemes(const Core::FMTOutputNode& node,
+std::vector<const Core::FMTTheme*>FMTModel::locateNodeStaticThemes(const Core::FMTOutputNode& node,
 	bool ignoreoutputvariables,
 	std::vector<const Core::FMTTheme* > basethemes) const
 {
@@ -1861,7 +1861,7 @@ std::vector<const Core::FMTTheme*>FMTmodel::locateNodeStaticThemes(const Core::F
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::locateNodeStaticThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::locateNodeStaticThemes", __LINE__, __FILE__);
 	}
 	return statics;
 
@@ -1870,7 +1870,7 @@ std::vector<const Core::FMTTheme*>FMTmodel::locateNodeStaticThemes(const Core::F
 
 
 
-std::vector<const Core::FMTTheme*> FMTmodel::locateStaticThemes(const Core::FMTOutputNode& node, bool ignoreoutputvariables) const
+std::vector<const Core::FMTTheme*> FMTModel::locateStaticThemes(const Core::FMTOutputNode& node, bool ignoreoutputvariables) const
 {
 	std::vector<const Core::FMTTheme*>statics;
 	try {
@@ -1879,13 +1879,13 @@ std::vector<const Core::FMTTheme*> FMTmodel::locateStaticThemes(const Core::FMTO
 		
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::locateStaticThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::locateStaticThemes", __LINE__, __FILE__);
 	}
 	return statics;
 
 }
 
-std::vector<const Core::FMTTheme*> FMTmodel::locateDynamicThemes(const Core::FMTOutput& output, bool ignoreoutputvariables) const
+std::vector<const Core::FMTTheme*> FMTModel::locateDynamicThemes(const Core::FMTOutput& output, bool ignoreoutputvariables) const
 {
 	std::vector<const Core::FMTTheme*>dynamicthemes;
 	try {
@@ -1899,13 +1899,13 @@ std::vector<const Core::FMTTheme*> FMTmodel::locateDynamicThemes(const Core::FMT
 			}
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::locateDynamicThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::locateDynamicThemes", __LINE__, __FILE__);
 	}
 	return dynamicthemes;
 }
 
 
-Core::FMTMask FMTmodel::getDynamicMask(const Core::FMTOutput& output, bool ignoreoutputvariables) const
+Core::FMTMask FMTModel::getDynamicMask(const Core::FMTOutput& output, bool ignoreoutputvariables) const
 	{
 	Core::FMTMask selection;
 	try {
@@ -1931,12 +1931,12 @@ Core::FMTMask FMTmodel::getDynamicMask(const Core::FMTOutput& output, bool ignor
 		selection = Core::FMTMask(basename, bits);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::getDynamicMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getDynamicMask", __LINE__, __FILE__);
 		}
 	return selection;
 	}
 
-Core::FMTMask FMTmodel::getDynamicMask(const Core::FMTOutputNode& node, bool ignoreoutputvariables) const
+Core::FMTMask FMTModel::getDynamicMask(const Core::FMTOutputNode& node, bool ignoreoutputvariables) const
 {
 	Core::FMTMask selection;
 	try {
@@ -1967,13 +1967,13 @@ Core::FMTMask FMTmodel::getDynamicMask(const Core::FMTOutputNode& node, bool ign
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::getDynamicMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getDynamicMask", __LINE__, __FILE__);
 	}
 	return selection;
 
 }
 
-bool FMTmodel::isStaticNode(const Core::FMTOutputNode& node, double ratioofset) const
+bool FMTModel::isStaticNode(const Core::FMTOutputNode& node, double ratioofset) const
 {
 	try {
 		if (node.source.isInventory()&&!node.source.isAction())
@@ -1991,12 +1991,12 @@ bool FMTmodel::isStaticNode(const Core::FMTOutputNode& node, double ratioofset) 
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::isStaticNode", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::isStaticNode", __LINE__, __FILE__);
 		}
 	return false;
 }
 
-Core::FMTMask FMTmodel::getStaticMask(const Core::FMTOutputNode& node, bool ignoreoutputvariables) const
+Core::FMTMask FMTModel::getStaticMask(const Core::FMTOutputNode& node, bool ignoreoutputvariables) const
 {
 	Core::FMTMask selection;
 	try {
@@ -2006,13 +2006,13 @@ Core::FMTMask FMTmodel::getStaticMask(const Core::FMTOutputNode& node, bool igno
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::getStaticMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getStaticMask", __LINE__, __FILE__);
 	}
 	return selection;
 }
 
 
-void FMTmodel::validateListSpec(const Core::FMTSpec& specifier) const
+void FMTModel::validateListSpec(const Core::FMTSpec& specifier) const
 	{
 	try {
 		for (const std::string& yldname : specifier.getYlds())
@@ -2020,17 +2020,17 @@ void FMTmodel::validateListSpec(const Core::FMTSpec& specifier) const
 			if (!yields.isYld(yldname))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,yldname,
-					"FMTmodel::validateListSpec", __LINE__, __FILE__);
+					"FMTModel::validateListSpec", __LINE__, __FILE__);
 			}
 		}
 	}catch (...)
 		{
-			_exhandler->raiseFromCatch("","FMTmodel::validateListSpec", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTModel::validateListSpec", __LINE__, __FILE__);
 		}
 	}
 
 
-bool FMTmodel::isValid()
+bool FMTModel::isValid()
     {
 	try {
 		//this->setSection(Core::FMTsection::Landscape);
@@ -2040,7 +2040,7 @@ bool FMTmodel::isValid()
 			{
 				_exhandler->raise(Exception::FMTexc::FMTempty_theme,
 					"for theme id: " + std::to_string(theme.getId()),
-					"FMTmodel::isValid", __LINE__, __FILE__, Core::FMTsection::Landscape);
+					"FMTModel::isValid", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		}
 		//this->setSection(Core::FMTsection::Area);
@@ -2076,7 +2076,7 @@ bool FMTmodel::isValid()
 		if (actions.size() != transitions.size())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Model: " + name,
-				"FMTmodel::isValid",__LINE__, __FILE__);
+				"FMTModel::isValid",__LINE__, __FILE__);
 		}
 		for (size_t id = 0; id < actions.size(); ++id)
 		{
@@ -2084,7 +2084,7 @@ bool FMTmodel::isValid()
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_action,
 					"Model: " + name + " " + actions[id].getName(),
-					"FMTmodel::isValid", __LINE__, __FILE__);
+					"FMTModel::isValid", __LINE__, __FILE__);
 			}
 		}
 		//this->setSection(Core::FMTsection::Outputs);
@@ -2109,13 +2109,13 @@ bool FMTmodel::isValid()
 		//this->setSection(Core::FMTsection::Empty);
 	}catch (...)
 	{
-		_exhandler->printExceptions("", "FMTmodel::isValid", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::isValid", __LINE__, __FILE__);
 	}
 
     return true;
     }
 
-void  FMTmodel::clearActionsCache()
+void  FMTModel::clearActionsCache()
 	{
 		for (auto& action:actions)
 		{
@@ -2123,12 +2123,12 @@ void  FMTmodel::clearActionsCache()
 		}
 	}
 
-void  FMTmodel::clearYieldCache()
+void  FMTModel::clearYieldCache()
 	{
 		yields.clearCache();
 	}
 
-void  FMTmodel::clearTransitionCache()
+void  FMTModel::clearTransitionCache()
 	{
 		for (auto& transition:transitions)
 		{
@@ -2136,14 +2136,14 @@ void  FMTmodel::clearTransitionCache()
 		}
 	}
 
-void FMTmodel::clearCache()
+void FMTModel::clearCache()
 	{
 		clearTransitionCache();
 		clearYieldCache();
 		clearActionsCache();
 	}
 
-Core::FMTMask FMTmodel::getBaseMask(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+Core::FMTMask FMTModel::getBaseMask(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 	{
 	Core::FMTMask baseMask( boost::dynamic_bitset<uint8_t>(area.begin()->getMask().size(), false));
 	try {
@@ -2258,12 +2258,12 @@ Core::FMTMask FMTmodel::getBaseMask(std::vector<Core::FMTActualDevelopment> opti
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTmodel::getBaseMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTModel::getBaseMask", __LINE__, __FILE__);
 		}
 	return baseMask;
 	}
 
-Core::FMTMaskFilter FMTmodel::getPostsolveFilter(const std::vector<Core::FMTTheme>& originalthemes,const Core::FMTMask& devmask) const
+Core::FMTMaskFilter FMTModel::getPostsolveFilter(const std::vector<Core::FMTTheme>& originalthemes,const Core::FMTMask& devmask) const
 {
 	try {
 		const Core::FMTMask presolvemask = getSelectedMask(originalthemes);
@@ -2271,12 +2271,12 @@ Core::FMTMaskFilter FMTmodel::getPostsolveFilter(const std::vector<Core::FMTThem
 		return Core::FMTMaskFilter(presolvemask,emptythemes);
 	}catch (...)
 	{
-		_exhandler->printExceptions("for " + name, "FMTmodel::getPostsolveFilter", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTModel::getPostsolveFilter", __LINE__, __FILE__);
 	}
 	return Core::FMTMaskFilter();
 }
 
-Core::FMTMaskFilter FMTmodel::getPresolveFilter(const std::vector<Core::FMTTheme>& originalthemes) const
+Core::FMTMaskFilter FMTModel::getPresolveFilter(const std::vector<Core::FMTTheme>& originalthemes) const
 {
 	try {
 		const Core::FMTMask presolvemask = getSelectedMask(originalthemes);
@@ -2284,12 +2284,12 @@ Core::FMTMaskFilter FMTmodel::getPresolveFilter(const std::vector<Core::FMTTheme
 	}
 	catch (...)
 	{
-		_exhandler->printExceptions("for " + name, "FMTmodel::getPresolveFilter", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTModel::getPresolveFilter", __LINE__, __FILE__);
 	}
 	return Core::FMTMaskFilter();
 }
 
-Core::FMTMask FMTmodel::getSelectedMask(const std::vector<Core::FMTTheme>& originalthemes) const
+Core::FMTMask FMTModel::getSelectedMask(const std::vector<Core::FMTTheme>& originalthemes) const
 	{
 	Core::FMTMask newmask;
 	size_t newmasksize = 0;
@@ -2352,35 +2352,35 @@ Core::FMTMask FMTmodel::getSelectedMask(const std::vector<Core::FMTTheme>& origi
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
 					"Non valid base presolve mask for model: " + name + " for theme id: " + std::to_string(theme.getId()),
-					"FMTmodel::getSelectedMask", __LINE__, __FILE__);
+					"FMTModel::getSelectedMask", __LINE__, __FILE__);
 			}
 		}*/
 
 
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTmodel::getSelectedMask", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTModel::getSelectedMask", __LINE__, __FILE__);
 		}
 	return newmask;
 	}
 
-FMTmodel FMTmodel::basePresolve() const
+FMTModel FMTModel::basePresolve() const
 {
-	std::unique_ptr<FMTmodel>mdlptr;
+	std::unique_ptr<FMTModel>mdlptr;
 	try {
 		mdlptr = presolve(area);
 
 	}catch (...)
 		{
-		_exhandler->printExceptions("for " + name, "FMTmodel::basePresolve", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTModel::basePresolve", __LINE__, __FILE__);
 		}
 	return *mdlptr;
 }
 
 
-std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 	{
-	std::unique_ptr<FMTmodel>presolvedModel(new FMTmodel());
+	std::unique_ptr<FMTModel>presolvedModel(new FMTModel());
 	int presolvepass = getParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS);
 	try {
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
@@ -2710,32 +2710,32 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTActualDevelopm
 		{
 			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Empty section: " + section + " after presolve",
-				"FMTmodel::presolve", __LINE__, __FILE__);
+				"FMTModel::presolve", __LINE__, __FILE__);
 		}
 		++sectionid;
 	}
 	
-	//presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, presolvedConstraints,parameters));
+	//presolvedmodel = std::unique_ptr<FMTModel>(new FMTModel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, presolvedConstraints,parameters));
 	presolvedModel->_gutsOfConstructor(presolvedModel->area);
 	}catch (...)
 		{
-		_exhandler->printExceptions("for "+name+"at presolve pass "+std::to_string(presolvepass),"FMTmodel::presolve", __LINE__, __FILE__);
+		_exhandler->printExceptions("for "+name+"at presolve pass "+std::to_string(presolvepass),"FMTModel::presolve", __LINE__, __FILE__);
 		}
 	return presolvedModel;
 	}
 
-void FMTmodel::postSolve(const FMTmodel& originalbasemodel)
+void FMTModel::postSolve(const FMTModel& originalbasemodel)
 	{
 	try{
-		*this = FMTmodel(originalbasemodel);
+		*this = FMTModel(originalbasemodel);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::postSolve", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::postSolve", __LINE__, __FILE__);
 		}
 	}
 
-Core::FMTSchedule FMTmodel::presolveSchedule(const Core::FMTSchedule& originalbaseschedule,
-	const FMTmodel& originalbasemodel) const
+Core::FMTSchedule FMTModel::presolveSchedule(const Core::FMTSchedule& originalbaseschedule,
+	const FMTModel& originalbasemodel) const
 	{
 	Core::FMTSchedule newSchedule;
 	try {
@@ -2743,13 +2743,13 @@ Core::FMTSchedule FMTmodel::presolveSchedule(const Core::FMTSchedule& originalba
 		newSchedule = originalbaseschedule.presolve(newfilter, this->themes, this->actions);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTmodel::presolveSchedule", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTModel::presolveSchedule", __LINE__, __FILE__);
 		}
 	return newSchedule;
 	}
 
 
-FMTmodelstats FMTmodel::getModelStats() const
+FMTModelStats FMTModel::getModelStats() const
 	{
 	size_t themesdatasize = 0;
 	for (const Core::FMTTheme& theme : themes)
@@ -2776,22 +2776,22 @@ FMTmodelstats FMTmodel::getModelStats() const
 		{
 		constraintsdatasize += constraint.size();
 		}
-	return FMTmodelstats(themes.size(), themesdatasize, actions.size(), actionsdatasize, transitions.size(), transitionsdatasize,
+	return FMTModelStats(themes.size(), themesdatasize, actions.size(), actionsdatasize, transitions.size(), transitionsdatasize,
 		yields.size(), lifespan.size(), outputs.size(), outputssdatasize, constraints.size(), constraintsdatasize);
 	}
 
-bool FMTmodel::empty() const
+bool FMTModel::empty() const
 	{
 	return (area.empty() && actions.empty() && transitions.empty() &&
 		yields.empty() && outputs.empty() && constraints.empty() && lifespan.empty());
 	}
 
-void FMTmodel::push_back(const FMTmodel& rhs)
+void FMTModel::push_back(const FMTModel& rhs)
 	{
 	try{
 	//Need to check if the model have the same stats!
-	const FMTmodelstats basestats = this->getModelStats();
-	const FMTmodelstats rhsstats = rhs.getModelStats();
+	const FMTModelStats basestats = this->getModelStats();
+	const FMTModelStats rhsstats = rhs.getModelStats();
 	if (basestats.themes == rhsstats.themes && basestats.themesdata == rhsstats.themesdata)
 	{
 		std::vector<Core::FMTTheme>newthemes = themes;//Need to concat themes!
@@ -2879,13 +2879,13 @@ void FMTmodel::push_back(const FMTmodel& rhs)
 		}
 		}catch (...)
 			{
-				_exhandler->printExceptions("", "FMTmodel::push_back", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTModel::push_back", __LINE__, __FILE__);
 			}
 
 
 	}
 
-double FMTmodel::getInitialArea() const
+double FMTModel::getInitialArea() const
 	{
 	double totalarea = 0;
 	for (const Core::FMTActualDevelopment& basedev : area)
@@ -2895,7 +2895,7 @@ double FMTmodel::getInitialArea() const
 	return totalarea;
 	}
 
-void FMTmodel::setAreaPeriod(const int& period)
+void FMTModel::setAreaPeriod(const int& period)
 	{
 	for (Core::FMTActualDevelopment& basedev : area)
 		{
@@ -2903,7 +2903,7 @@ void FMTmodel::setAreaPeriod(const int& period)
 		}
 	}
 
-int FMTmodel::getAreaPeriod() const
+int FMTModel::getAreaPeriod() const
 	{
 	int period = 0;
 	if (!area.empty())
@@ -2913,7 +2913,7 @@ int FMTmodel::getAreaPeriod() const
 	return period;
 	}
 
-Core::FMTSchedule FMTmodel::getPotentialSchedule(std::vector<Core::FMTActualDevelopment> toRemove,
+Core::FMTSchedule FMTModel::getPotentialSchedule(std::vector<Core::FMTActualDevelopment> toRemove,
 	std::vector<Core::FMTActualDevelopment> selection, bool withlock) const
 {
 	int period = 1;
@@ -2951,7 +2951,7 @@ Core::FMTSchedule FMTmodel::getPotentialSchedule(std::vector<Core::FMTActualDeve
 	return schedule;
 }
 
-std::vector<Core::FMTSchedule>FMTmodel::setUpSchedulesForBuild(const std::vector<Core::FMTSchedule>& schedules) const
+std::vector<Core::FMTSchedule>FMTModel::setUpSchedulesForBuild(const std::vector<Core::FMTSchedule>& schedules) const
 {
 	std::vector<Core::FMTSchedule>newshedules;
 try{
@@ -2974,38 +2974,38 @@ try{
 		{
 		_exhandler->raise(Exception::FMTexc::FMTignore,
 			"Building natural growth graph for "+getName(),
-			"FMTmodel::setUpSchedulesForBuild", __LINE__, __FILE__);
+			"FMTModel::setUpSchedulesForBuild", __LINE__, __FILE__);
 		}
 
 	if (!parameters.getBoolParameter(FORCE_PARTIAL_BUILD)&&!gotemptyschedule)
 		{
 		_exhandler->raise(Exception::FMTexc::FMTignore,
 			"FMTschedule will be ignored for " + getName(),
-			"FMTmodel::setUpSchedulesForBuild", __LINE__, __FILE__);
+			"FMTModel::setUpSchedulesForBuild", __LINE__, __FILE__);
 		}
 
 
 }catch (...)
 	{
-	_exhandler->raiseFromCatch("", "FMTmodel::setUpSchedulesForBuild", __LINE__, __FILE__);
+	_exhandler->raiseFromCatch("", "FMTModel::setUpSchedulesForBuild", __LINE__, __FILE__);
 	}
 return newshedules;
 }
 
 
 
-bool FMTmodel::doPlanning(const bool& solve, std::vector<Core::FMTSchedule> schedules)
+bool FMTModel::doPlanning(const bool& solve, std::vector<Core::FMTSchedule> schedules)
 	{
 	bool optimal_solved = false;
 	try{
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
 		const int presolve_iterations = parameters.getIntParameter(PRESOLVE_ITERATIONS);
-		std::unique_ptr<FMTmodel> presolved_model;
+		std::unique_ptr<FMTModel> presolved_model;
 		if(presolve_iterations>0)
 		{
 			const std::chrono::time_point<std::chrono::high_resolution_clock>presolvestart = getClock();
 			presolved_model = this->presolve(area);
-			//Parser::FMTmodelparser mparser;
+			//Parser::FMTModelParser mparser;
 			//mparser.write(*presolved_model,"C:/Users/admlocal/Desktop/test/");
 			if (!QUIET_LOG)
 				_logger->logWithLevel("Presolved " + getName() + " " +getDurationInSeconds(presolvestart) + "\n", 1);
@@ -3049,7 +3049,7 @@ bool FMTmodel::doPlanning(const bool& solve, std::vector<Core::FMTSchedule> sche
 	return optimal_solved;
 	}
 
-std::vector<Core::FMTConstraint> FMTmodel::getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTConstraint>& localconstraints, const int& period) const
+std::vector<Core::FMTConstraint> FMTModel::getReplanningConstraints(const std::string& modeltype, const std::vector<Core::FMTConstraint>& localconstraints, const int& period) const
 {
 	std::vector<Core::FMTConstraint>newconstraints(localconstraints.begin(), localconstraints.end());
 	try {
@@ -3065,11 +3065,11 @@ std::vector<Core::FMTConstraint> FMTmodel::getReplanningConstraints(const std::s
 		}
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::getReplanningConstraints", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getReplanningConstraints", __LINE__, __FILE__);
 	}
 	return newconstraints;
 }
-std::map<std::string, std::vector<std::vector<double>>>FMTmodel::getOutputsFromPeriods(const std::vector<Core::FMTOutput>& theoutputs,
+std::map<std::string, std::vector<std::vector<double>>>FMTModel::getOutputsFromPeriods(const std::vector<Core::FMTOutput>& theoutputs,
 	const int& firstPeriod, const int& lastPeriod, Core::FMToutputlevel level) const
 	{
 	std::map<std::string, std::vector<std::vector<double>>>outs;
@@ -3093,28 +3093,28 @@ std::map<std::string, std::vector<std::vector<double>>>FMTmodel::getOutputsFromP
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTmodel::getOutputsFromPeriods", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getOutputsFromPeriods", __LINE__, __FILE__);
 		}
 	return outs;
 	}
 
-std::unique_ptr<FMTmodel> FMTmodel::clone() const
+std::unique_ptr<FMTModel> FMTModel::clone() const
 	{
-	return std::unique_ptr<FMTmodel>(new FMTmodel(*this));
+	return std::unique_ptr<FMTModel>(new FMTModel(*this));
 	}
 
-Core::FMTSchedule FMTmodel::getSolution(int period, bool withlock) const
+Core::FMTSchedule FMTModel::getSolution(int period, bool withlock) const
 	{
 	return Core::FMTSchedule();
 	}
 
-std::map<std::string, double> FMTmodel::getOutput(const Core::FMTOutput& output,
+std::map<std::string, double> FMTModel::getOutput(const Core::FMTOutput& output,
 	int period, Core::FMToutputlevel level) const
 {
 	return std::map<std::string, double>();
 }
 
-bool FMTmodel::setParameter(const FMTintmodelparameters& key, const int& value)
+bool FMTModel::setParameter(const FMTintmodelparameters& key, const int& value)
 {
 	try{
 		if (parameters.setIntParameter(key, value))
@@ -3122,91 +3122,91 @@ bool FMTmodel::setParameter(const FMTintmodelparameters& key, const int& value)
 			return (true);
 		}
 	}catch(...){
-		_exhandler->printExceptions("", "FMTmodel::setParameter", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setParameter", __LINE__, __FILE__);
 	}
 	return false;
 }
 
-bool FMTmodel::setParameter(const FMTdblmodelparameters& key, const double& value)
+bool FMTModel::setParameter(const FMTdblmodelparameters& key, const double& value)
 {
 	try{
 		if (parameters.setDblParameter(key,value)) return (true);
 	}catch(...){
-		_exhandler->printExceptions("", "FMTmodel::setParameter", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setParameter", __LINE__, __FILE__);
 	}
 	return false;
 }
 
-bool FMTmodel::setParameter(const FMTboolmodelparameters& key, const bool& value)
+bool FMTModel::setParameter(const FMTboolmodelparameters& key, const bool& value)
 {
 	try{
 		if (parameters.setBoolParameter(key,value)) return (true);
 	}catch(...){
-		_exhandler->printExceptions("", "FMTmodel::setParameter", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setParameter", __LINE__, __FILE__);
 	}
 	return false;
 }
 
-bool FMTmodel::setParameter(const FMTstrmodelparameters& p_key, const std::string& p_value)
+bool FMTModel::setParameter(const FMTstrmodelparameters& p_key, const std::string& p_value)
 {
 	try {
 		if (parameters.setStrParameter(p_key, p_value)) return (true);
 	}
 	catch (...) {
-		_exhandler->printExceptions("", "FMTmodel::setParameter", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTModel::setParameter", __LINE__, __FILE__);
 	}
 	return false;
 }
 
-int FMTmodel::getParameter(const FMTintmodelparameters& key)const
+int FMTModel::getParameter(const FMTintmodelparameters& key)const
 {
 	int value;
 	try{
 		value = parameters.getIntParameter(key);
 	}catch(...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::getParameter", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getParameter", __LINE__, __FILE__);
 	}
 	return value;
 }
 
-double FMTmodel::getParameter(const FMTdblmodelparameters& key)const
+double FMTModel::getParameter(const FMTdblmodelparameters& key)const
 {
 	double value;
 	try{
 		value = parameters.getDblParameter(key);
 	}catch(...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::getParameter", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getParameter", __LINE__, __FILE__);
 	}
 	return value;
 }
 
-bool FMTmodel::getParameter(const FMTboolmodelparameters& key) const
+bool FMTModel::getParameter(const FMTboolmodelparameters& key) const
 {
 	bool value;
 	try{
 		value = parameters.getBoolParameter(key);
 	}catch(...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::getParameter", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getParameter", __LINE__, __FILE__);
 	}
 	return value;
 }
 
-const std::string& FMTmodel::getParameter(const FMTstrmodelparameters& p_key) const
+const std::string& FMTModel::getParameter(const FMTstrmodelparameters& p_key) const
 {
 	try {
 		return parameters.getStrParameter(p_key);
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::getParameter", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getParameter", __LINE__, __FILE__);
 	}
 	return nullptr;
 }
 
-bool FMTmodel::setCompressTime(const int& periodStart, const int& periodStop, const int& value)
+bool FMTModel::setCompressTime(const int& periodStart, const int& periodStop, const int& value)
 {
 	bool returnbool = true;
 	try{
@@ -3219,17 +3219,17 @@ bool FMTmodel::setCompressTime(const int& periodStart, const int& periodStop, co
 		}
 	}catch(...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::setCompressTime", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::setCompressTime", __LINE__, __FILE__);
 	}
 	return returnbool;
 }
 
-std::vector<int> FMTmodel::getCompressTime() const
+std::vector<int> FMTModel::getCompressTime() const
 {
 	return parameters.getCompressTime();
 }
 
-std::vector<Core::FMTConstraint>FMTmodel::goalConstraints(double penalty) const
+std::vector<Core::FMTConstraint>FMTModel::goalConstraints(double penalty) const
 {
 	std::vector<Core::FMTConstraint>newconstraints;
 	try {
@@ -3260,12 +3260,12 @@ std::vector<Core::FMTConstraint>FMTmodel::goalConstraints(double penalty) const
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::goalConstraints", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::goalConstraints", __LINE__, __FILE__);
 	}
 	return newconstraints;
 }
 
-std::vector<Core::FMTConstraint>FMTmodel::getTacticalConstraints(double penalty,double scheduleweight,double objective, double objectivefactor) const
+std::vector<Core::FMTConstraint>FMTModel::getTacticalConstraints(double penalty,double scheduleweight,double objective, double objectivefactor) const
 {
 	std::vector<Core::FMTConstraint>newconstraints;
 	try {
@@ -3309,14 +3309,14 @@ std::vector<Core::FMTConstraint>FMTmodel::getTacticalConstraints(double penalty,
 
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTmodel::getTacticalConstraints", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getTacticalConstraints", __LINE__, __FILE__);
 	}
 	return newconstraints;
 }
 
 
 
-void FMTmodel::showParameters(const bool& showhelp)const
+void FMTModel::showParameters(const bool& showhelp)const
 {
 	std::string message=" - Parameters for model "+getName()+"\n";
 	try{
@@ -3365,7 +3365,7 @@ void FMTmodel::showParameters(const bool& showhelp)const
 	}
 }
 
-void FMTmodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
+void FMTModel::swapPtr(std::unique_ptr<FMTModel>& rhs)
 {
 	*this = std::move(*rhs); 
 }
@@ -3373,7 +3373,7 @@ void FMTmodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
 
 FMTModelComparator::FMTModelComparator(std::string name) :model_name(name) {}
 
-bool FMTModelComparator::operator()(const FMTmodel& model) const
+bool FMTModelComparator::operator()(const FMTModel& model) const
 	{
 	return(model_name == model.getName());
 	}
@@ -3387,4 +3387,4 @@ bool FMTModelComparator::operator()(const FMTmodel& model) const
 
 
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTmodel)
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTModel)

@@ -12,7 +12,7 @@ namespace Models
 {
 
 
-    FMTmodelparameters::FMTmodelparameters():Core::FMTObject()
+    FMTModelParameters::FMTModelParameters():Core::FMTObject()
     {
         const unsigned int processor_count = boost::thread::hardware_concurrency();
         //INTparameters
@@ -44,7 +44,7 @@ namespace Models
         m_compresstime = std::vector<int>(30,1);
     }
     
-    FMTmodelparameters::FMTmodelparameters(const FMTmodelparameters& rhs):
+    FMTModelParameters::FMTModelParameters(const FMTModelParameters& rhs):
         Core::FMTObject(rhs),
         m_intparameters(rhs.m_intparameters),
         m_dblparameters(rhs.m_dblparameters),
@@ -55,7 +55,7 @@ namespace Models
         
     }
 
-    FMTmodelparameters& FMTmodelparameters::operator = (const FMTmodelparameters& rhs)
+    FMTModelParameters& FMTModelParameters::operator = (const FMTModelParameters& rhs)
     {
         if (this!=&rhs)
             {
@@ -70,7 +70,7 @@ namespace Models
     }
 
     //###Setter
-    bool FMTmodelparameters::setIntParameter(FMTintmodelparameters key,const int& value)
+    bool FMTModelParameters::setIntParameter(FMTintmodelparameters key,const int& value)
     {
         try{
             if (key == LastIntModelParam) return (false) ;
@@ -89,58 +89,58 @@ namespace Models
             }
             m_intparameters[key] = value;
         }catch(...){
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::setIntParameter", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::setIntParameter", __LINE__, __FILE__);
         }
         return true;
     }
 
-    bool FMTmodelparameters::setDblParameter(FMTdblmodelparameters key,const double& value)
+    bool FMTModelParameters::setDblParameter(FMTdblmodelparameters key,const double& value)
     {
         try{
             if (key == LastDblModelParam) return (false) ;
                 m_dblparameters[key] = value;
         }catch(...){
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::setDblParameter", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::setDblParameter", __LINE__, __FILE__);
         }
         return true;
 
     }
 
-    bool FMTmodelparameters::setBoolParameter(FMTboolmodelparameters key,const bool& value)
+    bool FMTModelParameters::setBoolParameter(FMTboolmodelparameters key,const bool& value)
     {
         try{
             if (key == LastBoolModelParam) return (false) ;
                 m_boolparameters[key] = value;
         }catch(...){
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::setboolparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::setboolparameters", __LINE__, __FILE__);
         }
         return true;
     }
 
-    bool FMTmodelparameters::setStrParameter(FMTstrmodelparameters p_key, const std::string& p_value)
+    bool FMTModelParameters::setStrParameter(FMTstrmodelparameters p_key, const std::string& p_value)
     {
         try {
             if (p_key == LastStrModelParam) return (false);
             m_strparameters[p_key] = p_value;
         }
         catch (...) {
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::setStrParameter", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::setStrParameter", __LINE__, __FILE__);
         }
         return true;
     }
 
-    bool FMTmodelparameters::setPeriodCompressTime(const int& period, const int& value)
+    bool FMTModelParameters::setPeriodCompressTime(const int& period, const int& value)
     {
         try{
             m_compresstime[period]=value;
         }catch(...){
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::setCompressTime", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::setCompressTime", __LINE__, __FILE__);
         }
         return true;
 
     }
     //###Getter
-    int FMTmodelparameters::getIntParameter(FMTintmodelparameters key) const
+    int FMTModelParameters::getIntParameter(FMTintmodelparameters key) const
     {
         int value;
         try{
@@ -148,17 +148,17 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"LastIntModelParam is not a parameter",
-							"FMTmodelparameters::getIntParameter", __LINE__, __FILE__);
+							"FMTModelParameters::getIntParameter", __LINE__, __FILE__);
             }
             value = m_intparameters[key];
         }catch(...)
         {
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::getintparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::getintparameters", __LINE__, __FILE__);
         }
         return value;
     }
 
-    double FMTmodelparameters::getDblParameter(FMTdblmodelparameters key) const
+    double FMTModelParameters::getDblParameter(FMTdblmodelparameters key) const
     {
         double value;
         try{
@@ -166,17 +166,17 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"LastDblModelParam is not a parameter",
-							"FMTmodelparameters::getDblParameter", __LINE__, __FILE__);
+							"FMTModelParameters::getDblParameter", __LINE__, __FILE__);
             }
             value = m_dblparameters[key];
         }catch(...)
         {
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::getdblparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::getdblparameters", __LINE__, __FILE__);
         }
         return value;
     }
 
-    bool FMTmodelparameters::getBoolParameter(FMTboolmodelparameters key) const
+    bool FMTModelParameters::getBoolParameter(FMTboolmodelparameters key) const
     {
         bool value;
         try{
@@ -184,53 +184,53 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"LastBoolModelParam is not a parameter",
-							"FMTmodelparameters::getBoolParameter", __LINE__, __FILE__);
+							"FMTModelParameters::getBoolParameter", __LINE__, __FILE__);
             }
             value = m_boolparameters[key];
         }catch(...)
         {
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::getboolparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::getboolparameters", __LINE__, __FILE__);
         }
         return value;
     }
 
-    const std::string& FMTmodelparameters::getStrParameter(FMTstrmodelparameters p_key) const
+    const std::string& FMTModelParameters::getStrParameter(FMTstrmodelparameters p_key) const
     {
         try {
             if (p_key == LastStrModelParam)
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                     "LastStrModelParam is not a parameter",
-                    "FMTmodelparameters::getStrParameter", __LINE__, __FILE__);
+                    "FMTModelParameters::getStrParameter", __LINE__, __FILE__);
             }
             return m_strparameters[p_key];
         }
         catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::getstrparameters", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::getstrparameters", __LINE__, __FILE__);
         }
         return nullptr;
     }
 
-    int FMTmodelparameters::getPeriodCompressTime(const int& period) const
+    int FMTModelParameters::getPeriodCompressTime(const int& period) const
     {
         int value;
         try{
             value = m_compresstime.at(period);
         }catch(...)
         {
-            _exhandler->raiseFromCatch("", "FMTmodelparameters::getCompressTime", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTModelParameters::getCompressTime", __LINE__, __FILE__);
         }
         return value;
 
     }
 
-    std::vector<int> FMTmodelparameters::getCompressTime() const
+    std::vector<int> FMTModelParameters::getCompressTime() const
     {
         return m_compresstime;
     }
 
-    void FMTmodelparameters::swap(FMTmodelparameters& rhs)
+    void FMTModelParameters::swap(FMTModelParameters& rhs)
     {
         m_intparameters.swap(rhs.m_intparameters);
         m_dblparameters.swap(rhs.m_dblparameters);
@@ -242,4 +242,4 @@ namespace Models
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTmodelparameters)
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTModelParameters)

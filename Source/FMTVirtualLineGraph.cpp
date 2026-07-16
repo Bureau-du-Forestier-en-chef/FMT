@@ -12,7 +12,7 @@
 namespace Spatial{
 
 
-	double FMTVirtualLineGraph::getOutput(const Models::FMTmodel& p_model, 
+	double FMTVirtualLineGraph::getOutput(const Models::FMTModel& p_model, 
 		const FMTSolutionTracker& p_solution,
 		const Core::FMTOutput& p_output, int p_period) const
 	{

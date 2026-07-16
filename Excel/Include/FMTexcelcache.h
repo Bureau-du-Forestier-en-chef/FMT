@@ -13,7 +13,7 @@ namespace Logging
 
 namespace Parser
 {
-	class FMTmodelparser;
+	class FMTModelParser;
 }
 
 namespace Exception
@@ -27,7 +27,7 @@ namespace Wrapper
 
 	public ref class FMTexcelcache
 	{
-		Parser::FMTmodelparser* parser;
+		Parser::FMTModelParser* parser;
 		Logging::FMTLogger* cachelog;
 		Exception::FMTExcelExceptionHandler* cacheexceptionhandler;
 		std::unordered_map<std::string, FMTmodelcache>* models;

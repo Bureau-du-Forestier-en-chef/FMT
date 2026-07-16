@@ -13,8 +13,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-	FMTnssmodel::FMTnssmodel():
-		FMTsrmodel(FMTmodel(),
+	FMTNssModel::FMTNssModel():
+		FMTSrModel(FMTModel(),
 		#ifdef FMTWITHMOSEK
 				Models::FMTsolverinterface::MOSEK
 		#else
@@ -25,14 +25,14 @@ namespace Models
 	
 	}
 
-	FMTnssmodel::FMTnssmodel(const FMTnssmodel& rhs) :
-		FMTsrmodel(rhs)
+	FMTNssModel::FMTNssModel(const FMTNssModel& rhs) :
+		FMTSrModel(rhs)
 	{
 
 	}
 
-	FMTnssmodel::FMTnssmodel(const FMTmodel& rhs, unsigned int seed):
-		FMTsrmodel(rhs,
+	FMTNssModel::FMTNssModel(const FMTModel& rhs, unsigned int seed):
+		FMTSrModel(rhs,
 		#ifdef FMTWITHMOSEK
 					Models::FMTsolverinterface::MOSEK
 		#else
@@ -40,11 +40,11 @@ namespace Models
 		#endif
 		)
 	{
-		FMTmodel::setParameter(SEED,seed);
-		FMTmodel::setSeed(seed);
+		FMTModel::setParameter(SEED,seed);
+		FMTModel::setSeed(seed);
 	}
 
-	std::vector<const Core::FMTOutput*> FMTnssmodel::constraintsToTarget(std::vector<double>& p_targets, const int& p_period)
+	std::vector<const Core::FMTOutput*> FMTNssModel::constraintsToTarget(std::vector<double>& p_targets, const int& p_period)
 		{
 		std::vector<const Core::FMTOutput*>targetedoutputs;
 		try {
@@ -61,7 +61,7 @@ namespace Models
 					if (!constraint.doSupportRandom())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-							"Constraint "+std::string(constraint)+" does not support _RANDOM keyword", "FMTnssmodel::constraintsToTarget", __LINE__, __FILE__);
+							"Constraint "+std::string(constraint)+" does not support _RANDOM keyword", "FMTNssModel::constraintsToTarget", __LINE__, __FILE__);
 						}
 					
 					double lower = 0;
@@ -117,12 +117,12 @@ namespace Models
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::constraintsToTarget", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::constraintsToTarget", __LINE__, __FILE__);
 			}
 		return targetedoutputs;
 		}
 
-	std::vector<std::set<size_t>> FMTnssmodel::getActionsTargets(const std::vector<const Core::FMTOutput*>& p_allOutputs) const
+	std::vector<std::set<size_t>> FMTNssModel::getActionsTargets(const std::vector<const Core::FMTOutput*>& p_allOutputs) const
 		{
 		std::vector<std::set<size_t>>outputActions(actions.size());
 		try {
@@ -138,13 +138,13 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::getActionsTargets", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::getActionsTargets", __LINE__, __FILE__);
 		}
 		return outputActions;
 	}
 
 
-	std::pair<size_t, const Core::FMTAction*> FMTnssmodel::getFirstOperable(const Core::FMTDevelopment& development,
+	std::pair<size_t, const Core::FMTAction*> FMTNssModel::getFirstOperable(const Core::FMTDevelopment& development,
 		std::vector<std::vector<const Core::FMTAction*>> targets,
 		const std::vector<const Core::FMTOutput*>& alloutputs) const
 	{
@@ -180,12 +180,12 @@ namespace Models
 				}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::getFirstOperable", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::getFirstOperable", __LINE__, __FILE__);
 		}
 	return result;
 	}
 
-	bool FMTnssmodel::gotOutputForDev(const Core::FMTDevelopment& p_development,
+	bool FMTNssModel::gotOutputForDev(const Core::FMTDevelopment& p_development,
 		const std::vector<const Core::FMTOutput*>& p_outputs,
 		const std::set<size_t>& p_outputIds) const
 	{
@@ -199,48 +199,48 @@ namespace Models
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::gotOutputForDev", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::gotOutputForDev", __LINE__, __FILE__);
 			}
 		return false;
 	}
 
 
-	std::unique_ptr<FMTmodel>FMTnssmodel::clone() const
+	std::unique_ptr<FMTModel>FMTNssModel::clone() const
 		{
-		return std::unique_ptr<FMTmodel>(new FMTnssmodel(*this));
+		return std::unique_ptr<FMTModel>(new FMTNssModel(*this));
 		}
 
-	FMTnssmodel::FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed) :
-		FMTsrmodel(rhs)
+	FMTNssModel::FMTNssModel(const FMTSrModel& rhs, unsigned int seed) :
+		FMTSrModel(rhs)
 	{
-		FMTmodel::setSeed(seed);
+		FMTModel::setSeed(seed);
 	}
 
 
-	std::unique_ptr<FMTmodel>FMTnssmodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTModel>FMTNssModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 		{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(optionaldevelopments).get())),this->getParameter(FMTintmodelparameters::SEED)));
+			return std::unique_ptr<FMTModel>(new FMTNssModel(*(dynamic_cast<FMTSrModel*>(FMTSrModel::presolve(optionaldevelopments).get())),this->getParameter(FMTintmodelparameters::SEED)));
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::presolve", __LINE__, __FILE__);
 			}
-		return std::unique_ptr<FMTmodel>(nullptr);
+		return std::unique_ptr<FMTModel>(nullptr);
 		}
 
-	std::unique_ptr<FMTmodel> FMTnssmodel::getCopy(int period) const
+	std::unique_ptr<FMTModel> FMTNssModel::getCopy(int period) const
 	{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*FMTsrmodel::getCopy(period).get(),getParameter(FMTintmodelparameters::SEED)));
+			return std::unique_ptr<FMTModel>(new FMTNssModel(*FMTSrModel::getCopy(period).get(),getParameter(FMTintmodelparameters::SEED)));
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::getCopy", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::getCopy", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTmodel>(nullptr);
+		return std::unique_ptr<FMTModel>(nullptr);
 	}
 
-	double FMTnssmodel::updateOutputs(const Core::FMTDevelopment& p_development, 
+	double FMTNssModel::updateOutputs(const Core::FMTDevelopment& p_development, 
 								    const std::vector<Core::FMTDevelopmentPath>& p_paths,
 									const int& p_action, const double& p_devArea,
 									std::vector<double>& p_targets, std::vector<std::set<size_t>>& p_actionsoutputs,
@@ -287,12 +287,12 @@ namespace Models
 				}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::updateOutputs", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::updateOutputs", __LINE__, __FILE__);
 		}
 		return harvestedArea;
 	}
 
-	void FMTnssmodel::simulate()
+	void FMTNssModel::simulate()
 	{
 		try {
 			m_generator = std::default_random_engine(getParameter(Models::FMTintmodelparameters::SEED));
@@ -312,19 +312,19 @@ namespace Models
 			if (targetedValues.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"No area to simulate at period " + std::to_string(period)+" for "+getName(), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"No area to simulate at period " + std::to_string(period)+" for "+getName(), "FMTNssModel::simulate", __LINE__, __FILE__);
 			}
 
 			if (targetedValues.size() != TARGETED_OUTPUTS.size() ||
 				actionsOutputs.size() != actions.size())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Area target not the same size has output or actions target for " + getName(), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"Area target not the same size has output or actions target for " + getName(), "FMTNssModel::simulate", __LINE__, __FILE__);
 			}
 			if (area.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Simulation model has no area to simulate for " + getName(), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"Simulation model has no area to simulate for " + getName(), "FMTNssModel::simulate", __LINE__, __FILE__);
 			}
 			setParameter(Models::FMTintmodelparameters::MATRIX_TYPE, 3);
 			bool allocatedArea = false;
@@ -399,7 +399,7 @@ namespace Models
 				{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"For action "+ ACTION.getName()+" at period " + std::to_string(period) + " reached max spin ",
-						"FMTnssmodel::simulate", __LINE__, __FILE__);
+						"FMTNssModel::simulate", __LINE__, __FILE__);
 				}
 				while (!toGrow.empty())
 					{
@@ -429,19 +429,19 @@ namespace Models
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Solver cols of " + std::to_string(solver.getNumCols()) +
 					" vs Solution cols of " + std::to_string(newSolution.size()),
-					"FMTnssmodel::simulate", __LINE__, __FILE__);
+					"FMTNssModel::simulate", __LINE__, __FILE__);
 			}
 			m_graph->setStats(newStats);
 			solver.setColSolution(&newSolution[0]);
 			this->boundSolution(period);
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::simulate", __LINE__, __FILE__);
 		}
 	}
 
 
-	/*void FMTnssmodel::simulate()
+	/*void FMTNssModel::simulate()
 	{
 		try {
 			//generator.seed(getparameter(Models::FMTintmodelparameters::SEED));
@@ -473,19 +473,19 @@ namespace Models
 			if (targetedarea.empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"No area to simulate at period "+std::to_string(simulatedperiod), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"No area to simulate at period "+std::to_string(simulatedperiod), "FMTNssModel::simulate", __LINE__, __FILE__);
 			}
 
 			if (targetedarea.size()!= targetedoutputs.size() ||
 				targetedactions.size()!= targetedarea.size())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Area target not the same size has output or actions target", "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"Area target not the same size has output or actions target", "FMTNssModel::simulate", __LINE__, __FILE__);
 				}
 			if (actualarea.empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Simulation model has no area to simulate", "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"Simulation model has no area to simulate", "FMTNssModel::simulate", __LINE__, __FILE__);
 				}
 			//Shuffle the area...
 			//std::shuffle(actualarea.begin(), actualarea.end(), generator);
@@ -530,7 +530,7 @@ namespace Models
 			if (!anyallocation)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"No area simulated at period " + std::to_string(simulatedperiod), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"No area simulated at period " + std::to_string(simulatedperiod), "FMTNssModel::simulate", __LINE__, __FILE__);
 				}
 			schedule.clean();
 			this->buildperiod(schedule, true);
@@ -540,11 +540,11 @@ namespace Models
 			std::vector<double>newSolution2(ColSolution2, ColSolution2 + solver.getNumCols());
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTNssModel::simulate", __LINE__, __FILE__);
 		}
 	}*/
 
-	bool FMTnssmodel::build(std::vector<Core::FMTSchedule> schedules)
+	bool FMTNssModel::build(std::vector<Core::FMTSchedule> schedules)
 	{
 		bool simulationdone = false;
 		try{
@@ -564,27 +564,27 @@ namespace Models
 			simulationdone = true;
 		}catch(...)
 		{
-			_exhandler->raiseFromCatch(getName(), "FMTnssmodel::build", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch(getName(), "FMTNssModel::build", __LINE__, __FILE__);
 		}
 		return simulationdone;
 	}
 
-	bool FMTnssmodel::setParameter(const FMTboolmodelparameters& key, const bool& value)
+	bool FMTNssModel::setParameter(const FMTboolmodelparameters& key, const bool& value)
 	{
 		try {
-			return FMTmodel::setParameter(key, value);
+			return FMTModel::setParameter(key, value);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::setParameter", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::setParameter", __LINE__, __FILE__);
 			}
 		return false;
 	}
 
-	bool FMTnssmodel::setParameter(const FMTintmodelparameters& key, const int& value)
+	bool FMTNssModel::setParameter(const FMTintmodelparameters& key, const int& value)
 	{
 		bool parametersetted = false;
 		try{
-			FMTmodel::setParameter(key,value);
+			FMTModel::setParameter(key,value);
 			if(key==SEED)
 			{
 				m_generator=std::default_random_engine(value);
@@ -593,17 +593,17 @@ namespace Models
 			parametersetted=true;
 		}catch(...)
 		{
-			_exhandler->raiseFromCatch("", "FMTnssmodel::setParameter", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTNssModel::setParameter", __LINE__, __FILE__);
 		}
 		return parametersetted;
 	}
 
-	void FMTnssmodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
+	void FMTNssModel::swapPtr(std::unique_ptr<FMTModel>& rhs)
 	{
-		*this = std::move(*dynamic_cast<FMTnssmodel*>(rhs.get()));
+		*this = std::move(*dynamic_cast<FMTNssModel*>(rhs.get()));
 	}
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTnssmodel)
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTNssModel)
 
 #endif

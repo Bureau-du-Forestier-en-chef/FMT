@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 		rastpath = "";
 	}
 
-	Parser::FMTmodelparser ModelParser;
+	Parser::FMTModelParser ModelParser;
 	std::vector<Exception::FMTexc>errors;
 	//errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	ModelParser.setErrorsToWarnings(errors);
 
-	Models::FMTmodel model = ModelParser.readproject(pathPri, { scenarioName }).at(0);
+	Models::FMTModel model = ModelParser.readproject(pathPri, { scenarioName }).at(0);
 
 	std::cout << pathPri << "\n";
 	std::cout << scenarioName << "\n";

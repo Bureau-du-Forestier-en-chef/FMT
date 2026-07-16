@@ -18,11 +18,11 @@ int main()
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<std::string>scenarios;
 		scenarios.push_back("stdconstraints");
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel lpmodel(models.at(0),Models::FMTsolverinterface::CLP);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel lpmodel(models.at(0),Models::FMTsolverinterface::CLP);
 		lpmodel.doPlanning(true);
 	}else {
 		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";

@@ -19,7 +19,7 @@ namespace Graph
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace boost
@@ -37,84 +37,84 @@ namespace Core
 	class FMTYieldRequest;
 	class FMTTheme;
 	class FMTMaskFilter;
-	// DocString: FMTyieldmodel
+	// DocString: FMTYieldModel
 	/**
-	FMTyieldmodel is an abstract class to be implemented as a machine learning model.
+	FMTYieldModel is an abstract class to be implemented as a machine learning model.
 	*/
-	class FMTyieldmodel : public FMTObject
+	class FMTYieldModel : public FMTObject
 	{
 	public:
-		// DocString: FMTyieldmodel::setModel
+		// DocString: FMTYieldModel::setModel
 		/**
 		@brief set The model to the yielmodel.
 		@param[in] p_modelPtr the pointer to the actual model. This can be cast to different type of model...
 		*/
-		virtual void setModel(Models::FMTmodel* p_modelPtr);
-		// DocString: FMTyieldmodel::~FMTyieldmodel()
+		virtual void setModel(Models::FMTModel* p_modelPtr);
+		// DocString: FMTYieldModel::~FMTYieldModel()
 		/**
-		Destructor for FMTyieldmodel.
+		Destructor for FMTYieldModel.
 		*/
-		virtual ~FMTyieldmodel();
-		// DocString: FMTyieldmodel::FMTyieldmodel()
+		virtual ~FMTYieldModel();
+		// DocString: FMTYieldModel::FMTYieldModel()
 		/**
-		Constructor for FMTyieldmodel.
+		Constructor for FMTYieldModel.
 		*/
-		FMTyieldmodel();
-		// DocString: FMTyieldmodel::FMTyieldmodel()
+		FMTYieldModel();
+		// DocString: FMTYieldModel::FMTYieldModel()
 		/**
-		Copy constructor for FMTyieldmodel.
+		Copy constructor for FMTYieldModel.
 		*/
-		FMTyieldmodel(const FMTyieldmodel& rhs)=default;
-		// DocString: FMTyieldmodel::operator = (const FMTyieldmodel& rhs)
+		FMTYieldModel(const FMTYieldModel& rhs)=default;
+		// DocString: FMTYieldModel::operator = (const FMTYieldModel& rhs)
 		/**
 		Default equality operator.
 		*/
-		FMTyieldmodel& operator = (const FMTyieldmodel& rhs)=default;
-		// DocString: FMTyieldmodel::getModelName()
+		FMTYieldModel& operator = (const FMTYieldModel& rhs)=default;
+		// DocString: FMTYieldModel::getModelName()
 		/**
 		Returns the model name.
 		*/
 		const std::string& getModelName() const;
-		// DocString: FMTyieldmodelnn::getModelYields()
+		// DocString: FMTYieldModelNn::getModelYields()
 		/**
 		Return model yields' names.
 		*/
 		const std::vector<std::string>& getModelYields() const;
-		// DocString: FMTyieldmodel::Clone()
+		// DocString: FMTYieldModel::Clone()
 		/**
-		Implements FMTyieldmodel::Clone().
+		Implements FMTYieldModel::Clone().
 		*/
-		virtual std::unique_ptr<FMTyieldmodel>Clone() const = 0;
-		// DocString: FMTyieldmodel::predict
+		virtual std::unique_ptr<FMTYieldModel>Clone() const = 0;
+		// DocString: FMTYieldModel::predict
 		/**
 		predict the yield
 		*/
 		virtual const std::vector<double>predict(const Core::FMTYieldRequest& request) const = 0;
-		// DocString: FMTyieldmodel::presolve
+		// DocString: FMTYieldModel::presolve
 		/**
-		If the FMTyieldmodel contains Core classes it also need to be presolved when presolved is called on the FMTmodel.
-		By default it will return the same FMTyieldmodel.
+		If the FMTYieldModel contains Core classes it also need to be presolved when presolved is called on the FMTModel.
+		By default it will return the same FMTYieldModel.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTMaskFilter& filter,
+		virtual std::unique_ptr<FMTYieldModel> presolve(const FMTMaskFilter& filter,
 				const std::vector<FMTTheme>& newthemes) const;
-		// DocString: FMTyieldmodel::postSolve
+		// DocString: FMTYieldModel::postSolve
 		/**
 		Postsolve the yieldmodel by default it will return a clone.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTMaskFilter& filter,
+		virtual std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& basethemes) const;
-		// DocString: FMTyieldmodel::std::string()
+		// DocString: FMTYieldModel::std::string()
 		/**
 		When it comes to write down in a string the yield model.
 		*/
 		virtual  operator std::string() const;
-		// DocString: FMTyieldmodel::getPeriodicValues
+		// DocString: FMTYieldModel::getPeriodicValues
 		/**
-		Try to turn the FMTyieldmodel into periodic constant values. if returns an non empty vector then
+		Try to turn the FMTYieldModel into periodic constant values. if returns an non empty vector then
 		each first dimension is the yield id and each second dimension are the periodic value calculated by the yield.
 		*/
 		virtual std::vector<std::vector<double>>getPeriodicValues() const;
-		// DocString: FMTyieldmodel::clearRandomYieldsCache
+		// DocString: FMTYieldModel::clearRandomYieldsCache
 		/**
 		@brief clear the cache of all random yield model.
 		*/
@@ -123,7 +123,7 @@ namespace Core
 		std::string modelName;
 		std::vector<std::string> modelYields = {};
 		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
-		Models::FMTmodel* m_modelPtr=nullptr;
+		Models::FMTModel* m_modelPtr=nullptr;
 	private:
 		friend class boost::serialization::access;
 		template<class Archive>

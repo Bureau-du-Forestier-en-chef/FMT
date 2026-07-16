@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 	class FMTGCBMTransition;
 	class FMTOutput;
-	class FMTmodel;
+	class FMTModel;
 	class FMTConstraint;
 	class FMTYields;
 	class FMTAction;
@@ -25,7 +25,7 @@ namespace Core {
 }
 
 namespace Models{
-	class FMTsemodel;
+	class FMTSeModel;
 }
 
 
@@ -129,7 +129,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		Return for all actions the FMTcoordinate with operable developments at the end of the graph.
 		*/
 	   std::vector<std::set<Spatial::FMTcoordinate>>getUpdatedScheduling(
-											const Models::FMTmodel& model,	
+											const Models::FMTModel& model,	
 											 const std::vector<int>& actiontargets,
 											boost::unordered_map<Core::FMTDevelopment, std::vector<bool>>& cachedaction,
 										  const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
@@ -265,7 +265,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 			Get the predictors for the whole solution and write down the predictorsids into a layer.
 		*/
-		std::vector<std::vector<Graph::FMTpredictor>> getPredictors(FMTlayer<int>& predictorids, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues = false,bool withGCBMid = true) const;
+		std::vector<std::vector<Graph::FMTpredictor>> getPredictors(FMTlayer<int>& predictorids, const Models::FMTModel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues = false,bool withGCBMid = true) const;
 		
 		// DocString: FMTSpatialSchedule::eraseLastPeriod
 		 /**
@@ -276,12 +276,12 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		 /**
 		 Get the binding actions based on model constraints.
 		 */
-		std::vector<Spatial::FMTbindingspatialaction> getBindingActions(const Models::FMTmodel& model, const int& period) const;
+		std::vector<Spatial::FMTbindingspatialaction> getBindingActions(const Models::FMTModel& model, const int& period) const;
 		// DocString: FMTSpatialSchedule::getBindingActionsByPeriod
 		 /**
 		 Get the binding actions based on model constraints in a vector by period.
 		 */
-		actionbindings getBindingActionsByPeriod(const Models::FMTmodel& model) const;
+		actionbindings getBindingActionsByPeriod(const Models::FMTModel& model) const;
 		// DocString: FMTSpatialSchedule::referenceBuild
 		/**
 		This is the main function to simulate a schedule of actions (schedule) on the actual
@@ -290,7 +290,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		even if the area harvested target for that action is not reach. The user can also set the seed
 		to get different solutions from the simulator.
 		*/
-		std::map<std::string, double> referenceBuild(const Core::FMTSchedule& schedule, const Models::FMTmodel& model,
+		std::map<std::string, double> referenceBuild(const Core::FMTSchedule& schedule, const Models::FMTModel& model,
 										const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
 										std::default_random_engine& p_randomEngine,
 										bool schedule_only = true,
@@ -313,7 +313,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		With a generator randomly create a solution for one period.
 		*/
-		Graph::FMTgraphstats randomBuild(const Models::FMTmodel& model, std::default_random_engine& generator);
+		Graph::FMTgraphstats randomBuild(const Models::FMTModel& model, std::default_random_engine& generator);
 		// DocString: FMTSpatialSchedule::setGrow
 		/**
 		@brief set natural growth on coordinates (remove every actions)
@@ -321,13 +321,13 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		@param[in] p_model the model to use
 		*/
 		void setGrow(const std::vector<FMTcoordinate>& p_coordinates,
-									const Models::FMTmodel& p_model);
+									const Models::FMTModel& p_model);
 		// DocString: FMTSpatialSchedule::perturbGraph
 		/**
 		Change one graph in the solution remove it's contribution to objective and add contribution to the newly generated to the objective.
 		*/
 		void perturbGraph(const FMTcoordinate& coordinate,const int& period,
-			const Models::FMTmodel& model, std::default_random_engine& generator,
+			const Models::FMTModel& model, std::default_random_engine& generator,
 			const actionbindings& bindings);
 		// DocString: FMTSpatialSchedule::isBetterByGroup
 		/**
@@ -343,7 +343,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		
 		*/
-		std::vector<Spatial::FMTcoordinate>getMovableCoordinates(const Models::FMTmodel& model,const int& period) const;
+		std::vector<Spatial::FMTcoordinate>getMovableCoordinates(const Models::FMTModel& model,const int& period) const;
 
 		// DocString: FMTSpatialSchedule::getPeriodWithMaximalEvents
 		/**
@@ -384,7 +384,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Set the constraints factors for nomalization
 		*/
-		void setConstraintsFactor(const Models::FMTmodel& model,const std::vector<double>&factors);
+		void setConstraintsFactor(const Models::FMTModel& model,const std::vector<double>&factors);
 		// DocString: FMTSpatialSchedule::needsRefactorization
 		/**
 		Return true if the solution looks unscaled and need new factors
@@ -408,13 +408,13 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		/**
 		Get the output value for the whole layer for a given period and output.
 		*/
-		FMTlayer<double> getSpatialOutput(const Models::FMTmodel& model,
+		FMTlayer<double> getSpatialOutput(const Models::FMTModel& model,
 						const Core::FMTOutput& output,const int& period) const;
 		// DocString: FMTSpatialSchedule::getOutputByCoordinate
 		/**
 		Return the output value by coordinate for a given output/model/period.
 		*/
-		std::vector<std::pair<FMTcoordinate, double>>getOutputByCoordinate(const Models::FMTmodel & model,
+		std::vector<std::pair<FMTcoordinate, double>>getOutputByCoordinate(const Models::FMTModel & model,
 			const Core::FMTOutput& output, const int& period) const;
 		// DocString: FMTSpatialSchedule::postSolve
 		/**
@@ -463,7 +463,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		void setSpread(
 			std::vector<EventSpread>::const_iterator p_first,
 			std::vector<EventSpread>::const_iterator p_end);
-		void setStaticsMovableCoordinates(const Models::FMTmodel& p_model);
+		void setStaticsMovableCoordinates(const Models::FMTModel& p_model);
 		void enableSolutionTracker(const FMTSpatialGraphs& p_SpatialGraph);
 		void disableSolutionTracker();
 	protected:
@@ -481,7 +481,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 		 /**
 		 Get the output requested from a given linegraph into periods_values
 		 */
-		std::map<std::string,double> getOutputFromGraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
+		std::map<std::string,double> getOutputFromGraph(const Graph::FMTlinegraph& linegraph, const Models::FMTModel & model,
 			const Core::FMTOutputNode& node, const double* solution,const int&period, const Core::FMTMask& nodemask,
 			boost::unordered_map<Core::FMTMask, double>& nodecache, const Core::FMTTheme*  p_theme,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 		// DocString: FMTSpatialSchedule::getmaximalpatchsizes
@@ -570,7 +570,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTlayer<FMTVirtualLineGraph>
 			const FMTSpatialGraphs& p_SpatialGraph) const;
 
 		static std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>> _putTabouInCache(
-			const Models::FMTmodel& p_model,
+			const Models::FMTModel& p_model,
 			std::map<Core::FMTDevelopment, std::vector<bool>>& p_tabou);
 		static void _setTabouOutOfCache(
 			std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>>& p_GoodValues);

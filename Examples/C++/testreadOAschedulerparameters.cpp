@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     const std::string primarylocation = std::string(argv[2]);
     const std::string scenario = std::string(argv[3]);
     const std::string fichierParam = std::string(argv[1]);
-    Parser::FMTmodelparser modelparser;
+    Parser::FMTModelParser modelparser;
     modelparser.setDefaultExceptionHandler();
     std::vector<Exception::FMTexc>errors;
     errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
     errors.push_back(Exception::FMTexc::FMTmissingyield);
     modelparser.setErrorsToWarnings(errors);
     std::vector<std::string>scenarios(1, scenario);
-    const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-    Parser::FMTareaparser areaParser;
+    const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+    Parser::FMTAreaParser areaParser;
     const std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, models.at(0).getThemes(), 13, 1);
 #endif
     return 0;

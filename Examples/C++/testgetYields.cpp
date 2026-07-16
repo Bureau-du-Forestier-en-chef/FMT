@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 			period = 17;
 
 		}
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		modelparser.setDefaultExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -61,15 +61,15 @@ int main(int argc, char *argv[])
 		modelparser.setErrorsToWarnings(errors);
 
 		const std::vector<std::string>scenarios(1, scenario);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		
 		const double tolerance = 0.01;
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
-		//optimizationmodel.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
-		optimizationmodel.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getPeriod());
+		optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		//optimizationmodel.FMTModel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+		optimizationmodel.FMTModel::setParameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getPeriod());
 		
 		const bool FEASIBLE = optimizationmodel.doPlanning( false, schedules);
 		/*if (FEASIBLE)
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 			{
 				OutSchedules.push_back(optimizationmodel.getSolution(period));
 			}
-			Parser::FMTscheduleparser scparser;
+			Parser::FMTScheduleParser scparser;
 			scparser.write(OutSchedules, "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CahierCOS_SPAT_P10_IT1_V/test.seq");
 		}*/
 		

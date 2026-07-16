@@ -86,7 +86,7 @@ FMTYields::FMTYields():FMTList<std::unique_ptr<FMTYieldHandler>>(), m_yieldsLoca
 			general_mask.pop_back();
 			const Core::FMTMask base_mask(general_mask, themes);
 			FMTModelYieldHandler newhandler(base_mask);
-			const std::unique_ptr<Core::FMTyieldmodel>TSLA(new FMTyieldmodelTSLA());
+			const std::unique_ptr<Core::FMTYieldModel>TSLA(new FMTYieldModelTsla());
 			newhandler.pushBackModel(TSLA);
 			newhandler.setYield(0, 0, TSLA->getModelName());
 			const std::unique_ptr<Core::FMTYieldHandler>TSLAhandler(new FMTModelYieldHandler(newhandler));
@@ -502,7 +502,7 @@ std::vector<const FMTYieldHandler*> FMTYields::getHandlerOfType(FMTyldtype type)
 	return selectedhandlers;
 	}
 
-void FMTYields::setModel(Models::FMTmodel* p_modelPtr)
+void FMTYields::setModel(Models::FMTModel* p_modelPtr)
 {
 	const std::vector<FMTYieldHandler*> HANDLERS = getHandlers(FMTyldtype::FMTmodelyld);
 	for (FMTYieldHandler* handler : HANDLERS)

@@ -19,10 +19,10 @@ int main()
 	Logging::FMTDefaultLogger().logStamp();
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		const std::vector<std::string>scenarios(1, "LP");
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		for (size_t period = 0; period < 10; ++period)
 		{
 			optimizationmodel.buildPeriod();

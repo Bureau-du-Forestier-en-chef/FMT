@@ -27,7 +27,7 @@ namespace Graph
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace Core
@@ -51,7 +51,7 @@ namespace Spatial
 			FMTSpatialGraphs() = default;
 			FMTSpatialGraphs(const FMTSpatialGraphs&)=default;
 			FMTSpatialGraphs& operator = (const FMTSpatialGraphs&)=default;
-			FMTSpatialGraphs(const Models::FMTmodel& p_model, double p_CellSize);
+			FMTSpatialGraphs(const Models::FMTModel& p_model, double p_CellSize);
 			double getConstraintsValue(size_t NonSpatialConstraintId,
 											const FMTSolutionTracker& p_solution) const;
 			FMTVirtualLineGraph getVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
@@ -64,12 +64,12 @@ namespace Spatial
 								const Graph::FMTlinegraph& p_Graph,
 								size_t p_family);
 			const_iterator setNaturalGrowthIterator(size_t p_family);
-			const Models::FMTmodel& getModel() const;
+			const Models::FMTModel& getModel() const;
 			std::map<std::string, double> getOutput(
 				const FMTSolutionTracker& p_Solution,
 				const Core::FMTOutput& p_output,
 				int p_period, Core::FMToutputlevel level) const;
-			void setModel(const Models::FMTmodel& p_model);
+			void setModel(const Models::FMTModel& p_model);
 			void addToSolution(FMTSolutionTracker& p_solution,
 				size_t p_family,
 				const_iterator p_iterator);
@@ -99,14 +99,14 @@ namespace Spatial
 			boost::unordered_map<Core::FMTMask, size_t>m_GraphsMasks;
 			FMTSolutionTracker m_BaseSolution;
 			std::vector<size_t>m_ConstraintsId;
-			Models::FMTmodel const * m_Model;
+			Models::FMTModel const * m_Model;
 			// Run-scoped deduplication pool for graph constraint values (replaces the former
 			// process-wide boost::flyweight static factory). Keyed by value-vector hash, holding
 			// weak_ptr so distinct vectors are shared while alive and released with the graphs.
 			std::unordered_map<std::size_t, std::vector<std::weak_ptr<const FMTGraphValues>>> m_ValuesPool;
 			std::shared_ptr<const FMTGraphValues> _internValues(const std::vector<double>& p_Values);
-			void _buildConstraintsLocator(const Models::FMTmodel& p_model);
-			std::vector<size_t> _buildGraphs(const Models::FMTmodel& p_model, double p_CellSize);
+			void _buildConstraintsLocator(const Models::FMTModel& p_model);
+			std::vector<size_t> _buildGraphs(const Models::FMTModel& p_model, double p_CellSize);
 			void _buildConstraintsValues( 
 				family_iterator FirstGraphFamily,
 				family_iterator GraphFamilyEnd);
@@ -118,7 +118,7 @@ namespace Spatial
 				FMTSpatialGraphs::iterator p_Graph,
 				size_t p_ConstraintId,
 				std::vector<double>& p_constraintValues) const;
-			static Core::FMTMask _getUseFullBits(const Models::FMTmodel& p_model);
+			static Core::FMTMask _getUseFullBits(const Models::FMTModel& p_model);
 			size_t _getFamily(const Graph::FMTlinegraph& p_Graph) const;
 			size_t _getNonSpatialId(size_t p_Constraint) const;
 			void _fillConstraintResults(size_t p_Constraint,

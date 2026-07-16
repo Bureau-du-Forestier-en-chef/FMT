@@ -25,28 +25,28 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser
 {
 
-	const boost::regex FMToptimizationparser::m_rxsections = boost::regex("^(\\*)([^\\s^\\t]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxobjectives = boost::regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxexclude = boost::regex("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxconstraints = boost::regex("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	//const boost::regex FMToptimizationparser::rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)", boost::regex_constants::ECMAScript);
-	const boost::regex FMToptimizationparser::m_rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?=[^,])[\\s\\t](?=\\d)(.+)", boost::regex_constants::ECMAScript);
-	const boost::regex FMToptimizationparser::m_m_ENDing = boost::regex("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxoutput = boost::regex("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxpenalty = boost::regex("^(_PENALTY)(\\()([^\\)]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxspecialoutput = boost::regex("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxspatial = boost::regex("^(_SIZE|_ADJACENCY|_RANDOM|_GROUP)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxspecialobjective = boost::regex("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMToptimizationparser::m_rxstartwithoperator = boost::regex("([\\s\\t]*)([-+])(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxsections = boost::regex("^(\\*)([^\\s^\\t]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxobjectives = boost::regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxexclude = boost::regex("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxconstraints = boost::regex("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	//const boost::regex FMTOptimizationParser::rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)", boost::regex_constants::ECMAScript);
+	const boost::regex FMTOptimizationParser::m_rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?=[^,])[\\s\\t](?=\\d)(.+)", boost::regex_constants::ECMAScript);
+	const boost::regex FMTOptimizationParser::m_m_ENDing = boost::regex("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxoutput = boost::regex("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxpenalty = boost::regex("^(_PENALTY)(\\()([^\\)]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxspecialoutput = boost::regex("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxspatial = boost::regex("^(_SIZE|_ADJACENCY|_RANDOM|_GROUP)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxspecialobjective = boost::regex("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOptimizationParser::m_rxstartwithoperator = boost::regex("([\\s\\t]*)([-+])(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	
-	FMToptimizationparser::FMToptimizationparser() :
-		FMTparser()/*,
+	FMTOptimizationParser::FMTOptimizationParser() :
+		FMTParser()/*,
 		m_ineach()*/
 		{
 		setSection(Core::FMTsection::Optimize);
 		}
 
-	bool FMToptimizationparser::setEnding(Core::FMTConstraint& constraint,std::string& line, const Core::FMTConstants& constants)
+	bool FMTOptimizationParser::setEnding(Core::FMTConstraint& constraint,std::string& line, const Core::FMTConstants& constants)
 		{
 		boost::smatch kmatch;
 		try{
@@ -93,13 +93,13 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at line " + line,"FMToptimizationparser::setEnding", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("at line " + line,"FMTOptimizationParser::setEnding", __LINE__, __FILE__);
 			}
 		return false;
 		}
 
 
-	std::map<std::string,double>FMToptimizationparser::getEquation(const std::string& pm_line, const Core::FMTConstants& p_constants,
+	std::map<std::string,double>FMTOptimizationParser::getEquation(const std::string& pm_line, const Core::FMTConstants& p_constants,
 												const Core::FMTYields& p_yields, const std::vector<Core::FMTOutput>& p_outputs,size_t p_lhssize)
         {
 		std::map<std::string, double>nodes;
@@ -133,7 +133,7 @@ namespace Parser
 								{
 								_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
 									"Periodic based not supported "+ simple_value + " at line " + std::to_string(m_line),
-									"FMToptimizationparser::getEquation", __LINE__, __FILE__, m_section);
+									"FMTOptimizationParser::getEquation", __LINE__, __FILE__, m_section);
 								}
 							simple_value = std::to_string(getNum<double>(simple_value, p_constants));
 						}else if (isYld(p_yields, simple_value, Core::FMTsection::Optimize,false) &&
@@ -181,7 +181,7 @@ namespace Parser
 				{
 					_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
 						"Periodic based not supported " + simple_value + " at line " + std::to_string(m_line),
-						"FMToptimizationparser::getEquation", __LINE__, __FILE__, m_section);
+						"FMTOptimizationParser::getEquation", __LINE__, __FILE__, m_section);
 				}
 				simple_value = std::to_string(getNum<double>(simple_value, p_constants));
 			}else if(isYld(p_yields, simple_value,Core::FMTsection::Optimize,false)&&
@@ -205,12 +205,12 @@ namespace Parser
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch( "at line " + pm_line,
-				"FMToptimizationparser::getEquation", __LINE__, __FILE__,m_section);
+				"FMTOptimizationParser::getEquation", __LINE__, __FILE__,m_section);
 			}
         return nodes;
         }
 
-	std::vector<std::vector<double>>FMToptimizationparser::getReplicateChanges(const std::string& replicateargument)
+	std::vector<std::vector<double>>FMTOptimizationParser::getReplicateChanges(const std::string& replicateargument)
 		{
 		std::vector<std::vector<double>>periodicvalues;
 		//_REPPLICATES(filename.txt) keyword?
@@ -230,17 +230,17 @@ namespace Parser
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
 					FILEm_location.string() + " at line " + std::to_string(m_line)+" in "+m_location,
-					"FMToptimizationparser::getReplicateChanges", __LINE__, __FILE__, m_section);
+					"FMTOptimizationParser::getReplicateChanges", __LINE__, __FILE__, m_section);
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMToptimizationparser::getReplicateChanges", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("","FMTOptimizationParser::getReplicateChanges", __LINE__, __FILE__, m_section);
 			}
 		return periodicvalues;
 		}
 
 
-    Core::FMTOutput FMToptimizationparser::resumeOutput(const std::map<std::string,double>& nodes,
+    Core::FMTOutput FMTOptimizationParser::resumeOutput(const std::map<std::string,double>& nodes,
                                                    const std::vector<Core::FMTOutput>& outputs,
                                                    const std::vector<Core::FMTTheme>& themes,
                                                    const Core::FMTConstants& constants)
@@ -293,7 +293,7 @@ namespace Parser
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 								output_name + " at line " + std::to_string(m_line),
-								"FMToptimizationparser::resumeOutput", __LINE__, __FILE__, m_section);
+								"FMTOptimizationParser::resumeOutput", __LINE__, __FILE__, m_section);
 						}
 						else {
 							const std::string BACKUP(output_name);
@@ -309,7 +309,7 @@ namespace Parser
 					{
 						_exhandler->raise(Exception::FMTexc::FMTundefined_output,
 							 output_name + " at line " + std::to_string(m_line),
-							"FMToptimizationparser::resumeOutput", __LINE__, __FILE__, m_section);
+							"FMTOptimizationParser::resumeOutput", __LINE__, __FILE__, m_section);
 					}
 					if (target_attribute.empty())
 						{
@@ -327,7 +327,7 @@ namespace Parser
 						{
 							_exhandler->raise(Exception::FMTexc::FMTundefinedoutput_attribute,
 								target_attribute + " at line " + std::to_string(m_line),
-								"FMToptimizationparser::resumeOutput", __LINE__, __FILE__, m_section);
+								"FMTOptimizationParser::resumeOutput", __LINE__, __FILE__, m_section);
 							target_attribute.clear();
 						}
 					}
@@ -362,18 +362,18 @@ namespace Parser
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 						output_it->first + " at line " + std::to_string(m_line),
-						"FMToptimizationparser::resumeOutput", __LINE__, __FILE__, m_section);
+						"FMTOptimizationParser::resumeOutput", __LINE__, __FILE__, m_section);
 				}
 			}
 			
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMToptimizationparser::resumeOutput", __LINE__, __FILE__,m_section);
+			_exhandler->raiseFromCatch("", "FMTOptimizationParser::resumeOutput", __LINE__, __FILE__,m_section);
 			}
         return final_output;
         }
 
-	Core::FMTConstraint FMToptimizationparser::getSpatialConstraint(const Core::FMTConstraint& p_baseconstraint,
+	Core::FMTConstraint FMTOptimizationParser::getSpatialConstraint(const Core::FMTConstraint& p_baseconstraint,
 		const boost::smatch& p_match,const std::string& pm_line,
 		const Core::FMTConstants& p_constants, const Core::FMTYields& p_yields,
 		const std::vector<Core::FMTAction>& p_actions,const std::vector<Core::FMTOutput>& p_outputs, const std::vector<Core::FMTTheme>& p_themes)
@@ -473,13 +473,13 @@ namespace Parser
 			constraint = *returnedconstraints.begin();
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("at line " + pm_line, "FMToptimizationparser::getSpatialConstraint", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at line " + pm_line, "FMTOptimizationParser::getSpatialConstraint", __LINE__, __FILE__, m_section);
 		}
 		return constraint;
 	}
 
 
-	std::vector<Core::FMTConstraint> FMToptimizationparser::getConstraints(const std::string& pm_line,
+	std::vector<Core::FMTConstraint> FMTOptimizationParser::getConstraints(const std::string& pm_line,
 												const Core::FMTConstants& p_constants, const Core::FMTYields& p_yields,
 												const std::vector<Core::FMTOutput>& p_outputs, const std::vector<Core::FMTTheme>& p_themes,
 												const std::vector<Core::FMTAction>& p_actions)
@@ -596,16 +596,16 @@ namespace Parser
 			}else{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 					pm_line+"  at line " + std::to_string(m_line),
-					"FMToptimizationparser::getConstraints", __LINE__, __FILE__, m_section);
+					"FMTOptimizationParser::getConstraints", __LINE__, __FILE__, m_section);
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at line "+ pm_line,"FMToptimizationparser::getConstraints", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at line "+ pm_line,"FMTOptimizationParser::getConstraints", __LINE__, __FILE__, m_section);
 			}
 		return returnedconstraints;
 		}
 
-		void FMToptimizationparser::fillBounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const
+		void FMTOptimizationParser::fillBounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const
 			{
 			try {
 				lower = 0;
@@ -627,11 +627,11 @@ namespace Parser
 				}
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch("","FMToptimizationparser::fillBounds", __LINE__, __FILE__, m_section);
+				_exhandler->raiseFromCatch("","FMTOptimizationParser::fillBounds", __LINE__, __FILE__, m_section);
 				}
 			}
 
-		std::vector<Core::FMTConstraint> FMToptimizationparser::getPeriodsBounds(std::string periodstr, const Core::FMTConstraint& constraint, const Core::FMTConstants& constants) const
+		std::vector<Core::FMTConstraint> FMTOptimizationParser::getPeriodsBounds(std::string periodstr, const Core::FMTConstraint& constraint, const Core::FMTConstants& constants) const
 		{
 			std::vector<Core::FMTConstraint>constraints;
 			try {
@@ -644,20 +644,20 @@ namespace Parser
 						{
 						_exhandler->raise(Exception::FMTexc::FMTemptybound,
 							" for " + value,
-							"FMToptimizationparser::getPeriodsBounds", __LINE__, __FILE__, m_section);
+							"FMTOptimizationParser::getPeriodsBounds", __LINE__, __FILE__, m_section);
 						}
 					constraints.push_back(newconstraint);
 					}
 	
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch("for " + periodstr, "FMToptimizationparser::getPeriodsBounds", __LINE__, __FILE__, m_section);
+				_exhandler->raiseFromCatch("for " + periodstr, "FMTOptimizationParser::getPeriodsBounds", __LINE__, __FILE__, m_section);
 				}
 			return constraints;
 		}
 
 
-	Core::FMTConstraint FMToptimizationparser::getObjective(const std::string& pm_line,
+	Core::FMTConstraint FMTOptimizationParser::getObjective(const std::string& pm_line,
 		const Core::FMTConstants& p_constants,
 		const Core::FMTYields& p_yields,
 		const std::vector<Core::FMTOutput>& p_outputs,
@@ -755,12 +755,12 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at line "+ pm_line,"FMToptimizationparser::getObjective", __LINE__, __FILE__,m_section);
+			_exhandler->raiseFromCatch("at line "+ pm_line,"FMTOptimizationParser::getObjective", __LINE__, __FILE__,m_section);
 			}
 		return objective;
 		}
 
-	FMToptimizationsection FMToptimizationparser::getSection(const std::string& line) const
+	FMToptimizationsection FMTOptimizationParser::getSection(const std::string& line) const
 		{
 		FMToptimizationsection section = FMToptimizationsection::none;
 		try {
@@ -787,12 +787,12 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at line " + line,"FMToptimizationparser::getSection", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at line " + line,"FMTOptimizationParser::getSection", __LINE__, __FILE__, m_section);
 			}
 		return section;
 		}
 
-	std::vector<Core::FMTConstraint> FMToptimizationparser::read(const std::vector<Core::FMTTheme>& p_themes,
+	std::vector<Core::FMTConstraint> FMTOptimizationParser::read(const std::vector<Core::FMTTheme>& p_themes,
 									const std::vector<Core::FMTAction>& p_actions,
 									const Core::FMTConstants& p_constants,
 									const std::vector<Core::FMTOutput>& p_outputs,
@@ -807,10 +807,10 @@ namespace Parser
 				std::vector<boost::icl::interval_set<int>>ActionPeriods;
 				const boost::icl::discrete_interval<int> IntervalReference = boost::icl::discrete_interval<int>::closed(-1, std::numeric_limits<int>::max());
 				std::ifstream optimizestream(pm_location);
-				if (FMTparser::tryOpening(optimizestream, pm_location))
+				if (FMTParser::tryOpening(optimizestream, pm_location))
 				{
 					FMToptimizationsection section = FMToptimizationsection::none;
-					std::queue<FMTparser::FMTLineInfo>Lines  = getOptline(optimizestream, p_themes, p_constants, p_outputs);
+					std::queue<FMTParser::FMTLineInfo>Lines  = getOptline(optimizestream, p_themes, p_constants, p_outputs);
 					while (!Lines.empty())
 					{
 						std::string line = getLine(Lines);
@@ -838,7 +838,7 @@ namespace Parser
 									{
 										_exhandler->raise(Exception::FMTexc::FMTmissingobjective,
 											" at line " + std::to_string(m_line),
-											"FMToptimizationparser::read", __LINE__, __FILE__, m_section);
+											"FMTOptimizationParser::read", __LINE__, __FILE__, m_section);
 									}
 									constraints.push_back(objective);
 									break;
@@ -897,7 +897,7 @@ namespace Parser
 														{
 															_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 																"excluded with invalid lower bound at line " + std::to_string(m_line),
-																"FMToptimizationparser::read", __LINE__, __FILE__, m_section);
+																"FMTOptimizationParser::read", __LINE__, __FILE__, m_section);
 														}
 
 													}
@@ -983,12 +983,12 @@ namespace Parser
 		constraints.shrink_to_fit();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMToptimizationparser::read", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTOptimizationParser::read", __LINE__, __FILE__, m_section);
 			}
 		return constraints;
 		}
 
-	void FMToptimizationparser::write(const std::vector<Core::FMTConstraint>& constraints,const std::string& location) const
+	void FMTOptimizationParser::write(const std::vector<Core::FMTConstraint>& constraints,const std::string& location) const
 		{
 		try {
 			std::ofstream optimizestream;
@@ -1014,11 +1014,11 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at " + location,"FMToptimizationparser::write", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at " + location,"FMTOptimizationParser::write", __LINE__, __FILE__, m_section);
 			}
 		}
 
-	std::queue<std::string> FMToptimizationparser::getEachLines(const std::string& line, const Core::FMTConstants& constants,const std::vector<Core::FMTOutput>& outputs, const std::vector<Core::FMTTheme>& themes) const
+	std::queue<std::string> FMTOptimizationParser::getEachLines(const std::string& line, const Core::FMTConstants& constants,const std::vector<Core::FMTOutput>& outputs, const std::vector<Core::FMTTheme>& themes) const
 		{
 		std::queue<std::string>valuestoreplace;
 		try {
@@ -1060,7 +1060,7 @@ namespace Parser
 					{
 						_exhandler->raise(Exception::FMTexc::FMTundefined_output,
 							output_name + " at line " + std::to_string(m_line),
-							"FMToptimizationparser::getEachLines",__LINE__, __FILE__, m_section);
+							"FMTOptimizationParser::getEachLines",__LINE__, __FILE__, m_section);
 					}
 					if (themeid >= 0)
 					{
@@ -1068,7 +1068,7 @@ namespace Parser
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 								"Non matching _EACH outputs attributes at line " + std::to_string(m_line),
-								"FMToptimizationparser::getEachLines",__LINE__, __FILE__, m_section);
+								"FMTOptimizationParser::getEachLines",__LINE__, __FILE__, m_section);
 						}
 					}
 
@@ -1082,17 +1082,17 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at line " + line,"FMToptimizationparser::getEachLines", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at line " + line,"FMTOptimizationParser::getEachLines", __LINE__, __FILE__, m_section);
 			}
 		return valuestoreplace;
 		}
 
-	std::queue<FMTparser::FMTLineInfo> FMToptimizationparser::getOptline(std::ifstream& stream, const std::vector<Core::FMTTheme>& themes,
+	std::queue<FMTParser::FMTLineInfo> FMTOptimizationParser::getOptline(std::ifstream& stream, const std::vector<Core::FMTTheme>& themes,
 		const Core::FMTConstants& cons, const std::vector<Core::FMTOutput>& outputs)
 		{
 		std::queue<FMTLineInfo>FinalLines;
 		try {
-			std::queue<FMTparser::FMTLineInfo>Lines = FMTparser::getCleanLinewfor(stream, themes, cons);
+			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(stream, themes, cons);
 			while (!Lines.empty())
 				{
 				const std::string line = getLine(Lines);
@@ -1110,7 +1110,7 @@ namespace Parser
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMToptimizationparser::getOptline", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("","FMTOptimizationParser::getOptline", __LINE__, __FILE__, m_section);
 			}
 		return FinalLines;
 		}

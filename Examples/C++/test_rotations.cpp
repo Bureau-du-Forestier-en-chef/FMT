@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 		const std::string scenario = "test";
 		const int length = 20;
 		const int rotation_length = 100;*/
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -45,10 +45,10 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+		optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 2);
 		optimizationmodel.doPlanning(false);//No solve!

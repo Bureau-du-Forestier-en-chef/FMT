@@ -57,131 +57,131 @@ void exportModel()
     "\n";
 
 
-	bp::class_<Models::FMTmodel, bp::bases<Core::FMTObject>>("FMTmodel", "@DocString(FMTmodel)")
-			.def_pickle(FMT_pickle_suite<Models::FMTmodel>())
-			.def(bp::init<Models::FMTmodel>())
-            .def("getyields",&Models::FMTmodel::getYields,
-				"@DocString(FMTmodel::getyields)")
-			.def("setyields", &Models::FMTmodel::setYields,
-				"@DocString(FMTmodel::setyields)")
-			.def("setlifespan", &Models::FMTmodel::setLifespan,
-				"@DocString(FMTmodel::setlifespan)")
-			.def("addageyieldhandlers", &Models::FMTmodel::addYieldHandlers<Core::FMTAgeYieldHandler>,
-				"@DocString(FMTmodel::addyieldhandlers)")
-			.def("addtimeyieldhandlers", &Models::FMTmodel::addYieldHandlers<Core::FMTTimeYieldHandler>,
-				"@DocString(FMTmodel::addyieldhandlers)")
-			.def("getname", &Models::FMTmodel::getName,
-				"@DocString(FMTmodel::getname)")
-            .def("getarea",&Models::FMTmodel::getArea, getarea_overloads(bp::args("period","beforegrowanddeath"), "@DocString(FMTmodel::getarea)"))
-			.def("setarea", &Models::FMTmodel::setArea,
-				"@DocString(FMTmodel::setarea)")
-			.def("getthemes",&Models::FMTmodel::getThemes,
-				"@DocString(FMTmodel::getthemes)")
-			.def("setthemes", &Models::FMTmodel::setThemes,
-				"@DocString(FMTmodel::setthemes)")
-            .def("getactions",&Models::FMTmodel::getactions,
-				"@DocString(FMTmodel::getactions)")
-			.def("setactions", &Models::FMTmodel::setActions,
-				"@DocString(FMTmodel::setactions)")
-			.def("getoutputs", &Models::FMTmodel::getOutputs,
-				"@DocString(FMTmodel::getoutputs)")
-			.def("setoutputs", &Models::FMTmodel::setOutputs,
-				"@DocString(FMTmodel::setoutputs)")
-			.def("getconstraints", &Models::FMTmodel::getconstraints,
-				"@DocString(FMTmodel::getconstraints)")
-			.def("setconstraints", &Models::FMTmodel::setConstraints,
-				"@DocString(FMTmodel::setconstraints)")
-            .def("gettransitions",&Models::FMTmodel::getTransitions,
-				"@DocString(FMTmodel::gettransitions)")
-            .def("settransitions",&Models::FMTmodel::setTransitions,
-				"@DocString(FMTmodel::settransitions)")
-			.def("setname", &Models::FMTmodel::setName,
-				"@DocString(FMTmodel::setname)")
-			.def("setareaperiod", &Models::FMTmodel::setAreaPeriod,
-				"@DocString(FMTmodel::setareaperiod)")
-            .def("getlifespan",&Models::FMTmodel::getLifespan,
-				"@DocString(FMTmodel::getlifespan)")
-            .def("isValid",&Models::FMTmodel::isValid,
-				"@DocString(FMTmodel::isValid)")
-			.def("clearcache",&Models::FMTmodel::clearCache,
-				"@DocString(FMTmodel::clearcache)")
-			.def("getselectedmask",&Models::FMTmodel::getSelectedMask,
-				"@DocString(FMTmodel::getselectedmask)")
-			.def("getpostsolvefilter",&Models::FMTmodel::getPostsolveFilter,
-				"@DocString(FMTmodel::getpostsolvefilter)")
-			.def("basepresolve",&Models::FMTmodel::basePresolve,
-				"@DocString(FMTmodel::basepresolve)")
-			.def("isoptimal", &Models::FMTmodel::isOptimal,
-				"@DocString(FMTmodel::isoptimal)")
-			.def("getobjectivevalue", &Models::FMTmodel::getObjectiveValue,
-				"@DocString(FMTmodel::getobjectivevalue)")
-			.def("getpotentialschedule", &Models::FMTmodel::getPotentialSchedule,
-				getPotentialScheduleOverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
+	bp::class_<Models::FMTModel, bp::bases<Core::FMTObject>>("FMTmodel", "@DocString(FMTModel)")
+			.def_pickle(FMT_pickle_suite<Models::FMTModel>())
+			.def(bp::init<Models::FMTModel>())
+            .def("getyields",&Models::FMTModel::getYields,
+				"@DocString(FMTModel::getyields)")
+			.def("setyields", &Models::FMTModel::setYields,
+				"@DocString(FMTModel::setyields)")
+			.def("setlifespan", &Models::FMTModel::setLifespan,
+				"@DocString(FMTModel::setlifespan)")
+			.def("addageyieldhandlers", &Models::FMTModel::addYieldHandlers<Core::FMTAgeYieldHandler>,
+				"@DocString(FMTModel::addyieldhandlers)")
+			.def("addtimeyieldhandlers", &Models::FMTModel::addYieldHandlers<Core::FMTTimeYieldHandler>,
+				"@DocString(FMTModel::addyieldhandlers)")
+			.def("getname", &Models::FMTModel::getName,
+				"@DocString(FMTModel::getname)")
+            .def("getarea",&Models::FMTModel::getArea, getarea_overloads(bp::args("period","beforegrowanddeath"), "@DocString(FMTModel::getarea)"))
+			.def("setarea", &Models::FMTModel::setArea,
+				"@DocString(FMTModel::setarea)")
+			.def("getthemes",&Models::FMTModel::getThemes,
+				"@DocString(FMTModel::getthemes)")
+			.def("setthemes", &Models::FMTModel::setThemes,
+				"@DocString(FMTModel::setthemes)")
+            .def("getactions",&Models::FMTModel::getactions,
+				"@DocString(FMTModel::getactions)")
+			.def("setactions", &Models::FMTModel::setActions,
+				"@DocString(FMTModel::setactions)")
+			.def("getoutputs", &Models::FMTModel::getOutputs,
+				"@DocString(FMTModel::getoutputs)")
+			.def("setoutputs", &Models::FMTModel::setOutputs,
+				"@DocString(FMTModel::setoutputs)")
+			.def("getconstraints", &Models::FMTModel::getconstraints,
+				"@DocString(FMTModel::getconstraints)")
+			.def("setconstraints", &Models::FMTModel::setConstraints,
+				"@DocString(FMTModel::setconstraints)")
+            .def("gettransitions",&Models::FMTModel::getTransitions,
+				"@DocString(FMTModel::gettransitions)")
+            .def("settransitions",&Models::FMTModel::setTransitions,
+				"@DocString(FMTModel::settransitions)")
+			.def("setname", &Models::FMTModel::setName,
+				"@DocString(FMTModel::setname)")
+			.def("setareaperiod", &Models::FMTModel::setAreaPeriod,
+				"@DocString(FMTModel::setareaperiod)")
+            .def("getlifespan",&Models::FMTModel::getLifespan,
+				"@DocString(FMTModel::getlifespan)")
+            .def("isValid",&Models::FMTModel::isValid,
+				"@DocString(FMTModel::isValid)")
+			.def("clearcache",&Models::FMTModel::clearCache,
+				"@DocString(FMTModel::clearcache)")
+			.def("getselectedmask",&Models::FMTModel::getSelectedMask,
+				"@DocString(FMTModel::getselectedmask)")
+			.def("getpostsolvefilter",&Models::FMTModel::getPostsolveFilter,
+				"@DocString(FMTModel::getpostsolvefilter)")
+			.def("basepresolve",&Models::FMTModel::basePresolve,
+				"@DocString(FMTModel::basepresolve)")
+			.def("isoptimal", &Models::FMTModel::isOptimal,
+				"@DocString(FMTModel::isoptimal)")
+			.def("getobjectivevalue", &Models::FMTModel::getObjectiveValue,
+				"@DocString(FMTModel::getobjectivevalue)")
+			.def("getpotentialschedule", &Models::FMTModel::getPotentialSchedule,
+				getPotentialScheduleOverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTModel::getpotentialschedule)"))
 				//The way to expose overload member functions with different args
-			.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter", &Models::FMTmodel::setParameter,
-				"@DocString(FMTmodel::setparameter(const FMTintmodelparameters,const int&))")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter", &Models::FMTmodel::setParameter,
-				"@DocString(FMTmodel::setparameter(const FMTdblmodelparameters,const double))")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter", &Models::FMTmodel::setParameter,
-				"@DocString(FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
-			.def<int (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key)const>("getparameter", &Models::FMTmodel::getParameter,
-				"@DocString(FMTmodel::getparameter(const FMTintmodelparameters))")
-			.def<double (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter", &Models::FMTmodel::getParameter,
-				"@DocString(FMTmodel::getparameter(const FMTdblmodelparameters))")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter", &Models::FMTmodel::getParameter,
-				"@DocString(FMTmodel::getparameter(const FMTboolmodelparameters))")
-			.def("setcompresstime",&Models::FMTmodel::setCompressTime,
-					"@DocString(FMTmodel::setcompresstime)")
-			.def("getcompresstime",&Models::FMTmodel::getCompressTime,
-					"@DocString(FMTmodel::getcompresstime)")
-			.def("showparameters",&Models::FMTmodel::showParameters,
-					showparameters_overloads(bp::args("showhelp"),"@DocString(FMTmodel::showparameters)"))
-			.def("doplanning",&Models::FMTmodel::doPlanning,
-					doplanning_overloads(bp::args("solve"),"@DocString(FMTmodel::doplanning)"))
-			.def("getsolution", &Models::FMTmodel::getSolution,
-				getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTmodel::getsolution)"))
-			.def("getoutput", &Models::FMTmodel::getOutput,
-				getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsemodel::getoutput)"));
+			.def<bool (Models::FMTModel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter", &Models::FMTModel::setParameter,
+				"@DocString(FMTModel::setparameter(const FMTintmodelparameters,const int&))")
+			.def<bool (Models::FMTModel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter", &Models::FMTModel::setParameter,
+				"@DocString(FMTModel::setparameter(const FMTdblmodelparameters,const double))")
+			.def<bool (Models::FMTModel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter", &Models::FMTModel::setParameter,
+				"@DocString(FMTModel::setparameter(const FMTboolmodelparameters,const bool))")
+			.def<int (Models::FMTModel::*)(const Models::FMTintmodelparameters& key)const>("getparameter", &Models::FMTModel::getParameter,
+				"@DocString(FMTModel::getparameter(const FMTintmodelparameters))")
+			.def<double (Models::FMTModel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter", &Models::FMTModel::getParameter,
+				"@DocString(FMTModel::getparameter(const FMTdblmodelparameters))")
+			.def<bool (Models::FMTModel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter", &Models::FMTModel::getParameter,
+				"@DocString(FMTModel::getparameter(const FMTboolmodelparameters))")
+			.def("setcompresstime",&Models::FMTModel::setCompressTime,
+					"@DocString(FMTModel::setcompresstime)")
+			.def("getcompresstime",&Models::FMTModel::getCompressTime,
+					"@DocString(FMTModel::getcompresstime)")
+			.def("showparameters",&Models::FMTModel::showParameters,
+					showparameters_overloads(bp::args("showhelp"),"@DocString(FMTModel::showparameters)"))
+			.def("doplanning",&Models::FMTModel::doPlanning,
+					doplanning_overloads(bp::args("solve"),"@DocString(FMTModel::doplanning)"))
+			.def("getsolution", &Models::FMTModel::getSolution,
+				getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTModel::getsolution)"))
+			.def("getoutput", &Models::FMTModel::getOutput,
+				getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTSeModel::getoutput)"));
 
-    definePyList<Models::FMTmodel>();
+    definePyList<Models::FMTModel>();
 
 
 
 	bp::to_python_converter<std::map<std::string, double>, MapToDict<std::string, double>>();
 	
 
-	bp::class_<Models::FMTsemodel, bp::bases<Models::FMTmodel>>("FMTsemodel", "@DocString(FMTsemodel)")
-		.def(bp::init<Models::FMTmodel>())
-		.def_pickle(FMT_pickle_suite<Models::FMTsemodel>())
-		.def("getmapping", &Models::FMTsemodel::getMapping,
-			"@DocString(FMTsemodel::getmapping)")
-		.def("setinitialmapping", &Models::FMTsemodel::setInitialMapping,
-			"@DocString(FMTsemodel::setinitialmapping)")
-		.def("getschedule", &Models::FMTsemodel::getSchedule,
-			getSchedulesOverloads(bp::args("withlock"), "@DocString(FMTsemodel::getschedule)"))
-		.def("getdisturbancestats", &Models::FMTsemodel::getDisturbanceStats,
-			"@DocString(FMTsemodel::getdisturbancestats)")
-		.def("getspatialoutput", &Models::FMTsemodel::getSpatialOutput,
-			"@DocString(FMTsemodel::getspatialoutput)")
-		/*.def("getSolution", &Models::FMTsemodel::getSolution,
-			getsolution_overloads(bp::args("period", "withlock"),"@DocString(FMTsemodel::getSolution)"))
-		.def("getarea", &Models::FMTsemodel::getArea,
-			getarea_overloads(bp::args("period", "beforegrowanddeath"), "@DocString(FMTsemodel::getarea)"))
-		.def("getOutput", &Models::FMTsemodel::getOutput,
-			getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsemodel::getOutput)"))*/
-		.def("getspschedule", &Models::FMTsemodel::getSpSchedule,
-			"@DocString(FMTsemodel::getspschedule)");
+	bp::class_<Models::FMTSeModel, bp::bases<Models::FMTModel>>("FMTsemodel", "@DocString(FMTSeModel)")
+		.def(bp::init<Models::FMTModel>())
+		.def_pickle(FMT_pickle_suite<Models::FMTSeModel>())
+		.def("getmapping", &Models::FMTSeModel::getMapping,
+			"@DocString(FMTSeModel::getmapping)")
+		.def("setinitialmapping", &Models::FMTSeModel::setInitialMapping,
+			"@DocString(FMTSeModel::setinitialmapping)")
+		.def("getschedule", &Models::FMTSeModel::getSchedule,
+			getSchedulesOverloads(bp::args("withlock"), "@DocString(FMTSeModel::getschedule)"))
+		.def("getdisturbancestats", &Models::FMTSeModel::getDisturbanceStats,
+			"@DocString(FMTSeModel::getdisturbancestats)")
+		.def("getspatialoutput", &Models::FMTSeModel::getSpatialOutput,
+			"@DocString(FMTSeModel::getspatialoutput)")
+		/*.def("getSolution", &Models::FMTSeModel::getSolution,
+			getsolution_overloads(bp::args("period", "withlock"),"@DocString(FMTSeModel::getSolution)"))
+		.def("getarea", &Models::FMTSeModel::getArea,
+			getarea_overloads(bp::args("period", "beforegrowanddeath"), "@DocString(FMTSeModel::getarea)"))
+		.def("getOutput", &Models::FMTSeModel::getOutput,
+			getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTSeModel::getOutput)"))*/
+		.def("getspschedule", &Models::FMTSeModel::getSpSchedule,
+			"@DocString(FMTSeModel::getspschedule)");
 
-	definePyList<Models::FMTsemodel>();
+	definePyList<Models::FMTSeModel>();
 
 
-	bp::class_<Models::FMTsesmodel, bp::bases<Models::FMTsemodel>>("FMTsesmodel", "@DocString(FMTsesmodel)")
-		.def(bp::init<Models::FMTmodel>())
-		.def_pickle(FMT_pickle_suite<Models::FMTsesmodel>())
-		.def("greedyreferencebuild", &Models::FMTsesmodel::greedyReferenceBuild,
-			greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::GreedyReferenceBuild)"));
+	bp::class_<Models::FMTSesModel, bp::bases<Models::FMTSeModel>>("FMTsesmodel", "@DocString(FMTSesModel)")
+		.def(bp::init<Models::FMTModel>())
+		.def_pickle(FMT_pickle_suite<Models::FMTSesModel>())
+		.def("greedyreferencebuild", &Models::FMTSesModel::greedyReferenceBuild,
+			greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTSesModel::GreedyReferenceBuild)"));
 
-    definePyList<Models::FMTsesmodel>();
+    definePyList<Models::FMTSesModel>();
 
 	bp::enum_<Models::FMTintmodelparameters>("FMTintmodelparameters")
 		.value("LENGTH", Models::FMTintmodelparameters::LENGTH)
@@ -223,118 +223,118 @@ void exportModel()
 		
 	definePyList<Models::FMTsolverinterface>();
 
-	bp::class_<Models::FMTlpsolver>("FMTlpolver", "@DocString(FMTlpsolver)")
+	bp::class_<Models::FMTLpSolver>("FMTlpolver", "@DocString(FMTLpSolver)")
 		//.def(bp::init<Models::FMTsolverinterface>())
-		.def("isProvenOptimal", &Models::FMTlpsolver::isProvenOptimal,
-			"@DocString(FMTlpsolver::isProvenOptimal)")
-		.def("getObjValue", &Models::FMTlpsolver::getObjValue,
-			"@DocString(FMTlpsolver::getObjValue)")
-		.def("getObjSense", &Models::FMTlpsolver::getObjSense,
-			"@DocString(FMTlpsolver::getObjSense)")
-		.def("setnumberofthreads", &Models::FMTlpsolver::setNumberOfThreads,
-			"@DocString(FMTlpsolver::setnumberofthreads)")
-		.def("setMIPgaptolerance", &Models::FMTlpsolver::setMIPgaptolerance,
-			"@DocString(FMTlpsolver::setMIPgaptolerance)")
-		.def("setoptimizerMAXtime", &Models::FMTlpsolver::setoptimizerMAXtime,
-			"@DocString(FMTlpsolver::setoptimizerMAXtime)")
-		.def("writeLP", &Models::FMTlpsolver::writeLP,
-			"@DocString(FMTlpsolver::writeLP)")
-		.def("writeMPS", &Models::FMTlpsolver::writeMPS,
-			"@DocString(FMTlpsolver::writeMPS)");
+		.def("isProvenOptimal", &Models::FMTLpSolver::isProvenOptimal,
+			"@DocString(FMTLpSolver::isProvenOptimal)")
+		.def("getObjValue", &Models::FMTLpSolver::getObjValue,
+			"@DocString(FMTLpSolver::getObjValue)")
+		.def("getObjSense", &Models::FMTLpSolver::getObjSense,
+			"@DocString(FMTLpSolver::getObjSense)")
+		.def("setnumberofthreads", &Models::FMTLpSolver::setNumberOfThreads,
+			"@DocString(FMTLpSolver::setnumberofthreads)")
+		.def("setMIPgaptolerance", &Models::FMTLpSolver::setMIPgaptolerance,
+			"@DocString(FMTLpSolver::setMIPgaptolerance)")
+		.def("setoptimizerMAXtime", &Models::FMTLpSolver::setoptimizerMAXtime,
+			"@DocString(FMTLpSolver::setoptimizerMAXtime)")
+		.def("writeLP", &Models::FMTLpSolver::writeLP,
+			"@DocString(FMTLpSolver::writeLP)")
+		.def("writeMPS", &Models::FMTLpSolver::writeMPS,
+			"@DocString(FMTLpSolver::writeMPS)");
 
-	bp::class_<Models::FMTsrmodel, bp::bases<Models::FMTmodel>>("FMTsrmodel", "@DocString(FMTsrmodel)")
-		.def_pickle(FMT_pickle_suite<Models::FMTsrmodel>())
-		.def("buildperiod", &Models::FMTsrmodel::buildPeriod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild", "compressageclass"), "@DocString(FMTsrmodel::buildperiod)"))
+	bp::class_<Models::FMTSrModel, bp::bases<Models::FMTModel>>("FMTsrmodel", "@DocString(FMTSrModel)")
+		.def_pickle(FMT_pickle_suite<Models::FMTSrModel>())
+		.def("buildperiod", &Models::FMTSrModel::buildPeriod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild", "compressageclass"), "@DocString(FMTSrModel::buildperiod)"))
 		
-		.def("setsolution", &Models::FMTsrmodel::setSolution,
-			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolution)"))
-		.def("forcesolution", &Models::FMTsrmodel::forceSolution, "@DocString(FMTsrmodel::forcesolution)")
-		.def("setsolutionbylp", &Models::FMTsrmodel::setSolutionByLp,
-			setsolutionbylp_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolutionbylp)"))
-		//.def("getOutput", &Models::FMTsrmodel::getOutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsrmodel::getOutput)"))
-		.def("cleargraphdevelopements", &Models::FMTsrmodel::clearGraphDevelopments,
-			"@DocString(FMTsrmodel::cleargraphdevelopements)")
-		.def("getstats", &Models::FMTsrmodel::getStats,
-			"@DocString(FMTsrmodel::getstats)")
-		.def("getRotations", &Models::FMTsrmodel::getRotations,
-			"@DocString(FMTsrmodel::getRotations)")
-		.def("getGraphStats", &Models::FMTsrmodel::getGraphStats,
-			"@DocString(FMTsrmodel::getGraphStats)")
-		.def("getavailablesolverinterface", &Models::FMTsrmodel::getAvailableSolverInterface,
-			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
-		.def("getscheduleproportions", &Models::FMTsrmodel::getScheduleProportions,
-			"@DocString(FMTsrmodel::getscheduleproportions)");
+		.def("setsolution", &Models::FMTSrModel::setSolution,
+			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTSrModel::setsolution)"))
+		.def("forcesolution", &Models::FMTSrModel::forceSolution, "@DocString(FMTSrModel::forcesolution)")
+		.def("setsolutionbylp", &Models::FMTSrModel::setSolutionByLp,
+			setsolutionbylp_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTSrModel::setsolutionbylp)"))
+		//.def("getOutput", &Models::FMTSrModel::getOutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTSrModel::getOutput)"))
+		.def("cleargraphdevelopements", &Models::FMTSrModel::clearGraphDevelopments,
+			"@DocString(FMTSrModel::cleargraphdevelopements)")
+		.def("getstats", &Models::FMTSrModel::getStats,
+			"@DocString(FMTSrModel::getstats)")
+		.def("getRotations", &Models::FMTSrModel::getRotations,
+			"@DocString(FMTSrModel::getRotations)")
+		.def("getGraphStats", &Models::FMTSrModel::getGraphStats,
+			"@DocString(FMTSrModel::getGraphStats)")
+		.def("getavailablesolverinterface", &Models::FMTSrModel::getAvailableSolverInterface,
+			"@DocString(FMTSrModel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
+		.def("getscheduleproportions", &Models::FMTSrModel::getScheduleProportions,
+			"@DocString(FMTSrModel::getscheduleproportions)");
 
-	definePyList<Models::FMTsrmodel>();
+	definePyList<Models::FMTSrModel>();
 	
-	bp::class_<Models::FMTnssmodel, bp::bases<Models::FMTsrmodel>>("FMTnssmodel", "@DocString(FMTnssmodel)")
-		.def(bp::init<Models::FMTmodel, unsigned int>())
-		.def(bp::init<Models::FMTnssmodel>())
-		.def_pickle(FMT_pickle_suite<Models::FMTnssmodel>())
-		.def("simulate", &Models::FMTnssmodel::simulate);
+	bp::class_<Models::FMTNssModel, bp::bases<Models::FMTSrModel>>("FMTnssmodel", "@DocString(FMTNssModel)")
+		.def(bp::init<Models::FMTModel, unsigned int>())
+		.def(bp::init<Models::FMTNssModel>())
+		.def_pickle(FMT_pickle_suite<Models::FMTNssModel>())
+		.def("simulate", &Models::FMTNssModel::simulate);
 
-	definePyList<Models::FMTnssmodel>();
+	definePyList<Models::FMTNssModel>();
 
 
-	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTsrmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
-		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
-		.def(bp::init<Models::FMTlpmodel>())
-		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
-		//.def("boundSolution", &Models::FMTlpmodel::boundSolution,
+	bp::class_<Models::FMTLpModel, bp::bases<Models::FMTSrModel>>("FMTlpmodel", "@DocString(FMTLpModel)")
+		.def(bp::init<Models::FMTModel, Models::FMTsolverinterface>())
+		.def(bp::init<Models::FMTLpModel>())
+		.def_pickle(FMT_pickle_suite<Models::FMTLpModel>())
+		//.def("boundSolution", &Models::FMTLpModel::boundSolution,
 		//	boundsolution_overloads(bp::args("period", "tolerance"),
-		//		"@DocString(FMTlpmodel::boundSolution)"))
-		.def("setobjective", &Models::FMTlpmodel::setObjective,
-			"@DocString(FMTlpmodel::setobjective)")
-		.def("clearcache", &Models::FMTlpmodel::clearCache,
-			"@DocString(FMTlpmodel::clearcache)")
-		.def("clearconstraintlocation", &Models::FMTlpmodel::clearConstraintLocation,
-			"@DocString(FMTlpmodel::clearconstraintlocation)")
-		.def("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setStrictlyPositivesOutputsMatrix,
-			"@DocString(FMTlpmodel::setstrictlypositivesoutputsmatrix)")
-		.def("setconstraint", &Models::FMTlpmodel::setConstraint,
-			"@DocString(FMTlpmodel::setconstraint)")
-		.def("eraseconstraint", &Models::FMTlpmodel::eraseConstraint,
-			eraseconstraint_overloads(bp::args("constraint","period"),"@DocString(FMTlpmodel::eraseconstraint)"))
-		.def("eraseperiod", &Models::FMTlpmodel::erasePeriod,
-			eraseperiod_overloads(bp::args("constraintsonly"), "@DocString(FMTlpmodel::eraseperiod)"))
-		.def("resolve", &Models::FMTlpmodel::resolve,
-			"@DocString(FMTlpmodel::resolve)")
-		.def("initialsolve", &Models::FMTlpmodel::initialSolve,
-			"@DocString(FMTlpmodel::initialsolve)")
-		.def("__eq__", &Models::FMTlpmodel::operator ==,
-			"@DocString(FMTlpmodel::operator==)")
-		.def("__ne__", &Models::FMTlpmodel::operator !=,
-			"@DocString(FMTlpmodel::operator!=)")
+		//		"@DocString(FMTLpModel::boundSolution)"))
+		.def("setobjective", &Models::FMTLpModel::setObjective,
+			"@DocString(FMTLpModel::setobjective)")
+		.def("clearcache", &Models::FMTLpModel::clearCache,
+			"@DocString(FMTLpModel::clearcache)")
+		.def("clearconstraintlocation", &Models::FMTLpModel::clearConstraintLocation,
+			"@DocString(FMTLpModel::clearconstraintlocation)")
+		.def("setstrictlypositivesoutputsmatrix", &Models::FMTLpModel::setStrictlyPositivesOutputsMatrix,
+			"@DocString(FMTLpModel::setstrictlypositivesoutputsmatrix)")
+		.def("setconstraint", &Models::FMTLpModel::setConstraint,
+			"@DocString(FMTLpModel::setconstraint)")
+		.def("eraseconstraint", &Models::FMTLpModel::eraseConstraint,
+			eraseconstraint_overloads(bp::args("constraint","period"),"@DocString(FMTLpModel::eraseconstraint)"))
+		.def("eraseperiod", &Models::FMTLpModel::erasePeriod,
+			eraseperiod_overloads(bp::args("constraintsonly"), "@DocString(FMTLpModel::eraseperiod)"))
+		.def("resolve", &Models::FMTLpModel::resolve,
+			"@DocString(FMTLpModel::resolve)")
+		.def("initialsolve", &Models::FMTLpModel::initialSolve,
+			"@DocString(FMTLpModel::initialsolve)")
+		.def("__eq__", &Models::FMTLpModel::operator ==,
+			"@DocString(FMTLpModel::operator==)")
+		.def("__ne__", &Models::FMTLpModel::operator !=,
+			"@DocString(FMTLpModel::operator!=)")
 		
-		.def("getObjValue", &Models::FMTlpmodel::getObjValue,
-					"@DocString(FMTlpmodel::getObjValue)")
+		.def("getObjValue", &Models::FMTLpModel::getObjValue,
+					"@DocString(FMTLpModel::getObjValue)")
 		.def("getlocalconstraints",
-			&Models::FMTlpmodel::getReplanningConstraints,
-			"@DocString(FMTlpmodel::getreplanningconstraints)")
+			&Models::FMTLpModel::getReplanningConstraints,
+			"@DocString(FMTLpModel::getreplanningconstraints)")
 		.def("writeLP",
-			&Models::FMTlpmodel::writeLP,
-			"@DocString(FMTlpmodel::writeLP)")
-		.def("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getOperatingAreaSchedulerHeuristics, getoperatingareaschedulerheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver","updatematrixname"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
-		.def("getoperatingareaclustererheuristics", &Models::FMTlpmodel::getOperatingAreaClustererHeuristics, getoperatingareaclustererheuristics_overloads(bp::args("opareas", "statisticoutput", "areaoutput", "period", "numberofheuristics"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
-		.def("getvariabilities", &Models::FMTlpmodel::getVariabilities, "@DocString(FMTlpmodel::getvariabilities)")
-		.def("getareavariabilities", &Models::FMTlpmodel::getAreaVariabilities, getareavariabilities_overloads(bp::args("outputs", "globalmask", "tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"))
-		.def("addscheduletoobjective", &Models::FMTlpmodel::addScheduleToObjective, addscheduletoobjective_overloads(bp::args("schedule", "weight"),"@DocString(FMTlpmodel::addscheduletoobjective)"));
-		//.def("doPlanning", &Models::FMTlpmodel::doPlanning, doplanning_overloads(bp::args("solve", "schedules"),"@DocString(FMTlpmodel::doPlanning)"));
+			&Models::FMTLpModel::writeLP,
+			"@DocString(FMTLpModel::writeLP)")
+		.def("getoperatingareaschedulerheuristics", &Models::FMTLpModel::getOperatingAreaSchedulerHeuristics, getoperatingareaschedulerheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver","updatematrixname"), "@DocString(FMTLpModel::getoperatingareaschedulerheuristics)"))
+		.def("getoperatingareaclustererheuristics", &Models::FMTLpModel::getOperatingAreaClustererHeuristics, getoperatingareaclustererheuristics_overloads(bp::args("opareas", "statisticoutput", "areaoutput", "period", "numberofheuristics"), "@DocString(FMTLpModel::getoperatingareaschedulerheuristics)"))
+		.def("getvariabilities", &Models::FMTLpModel::getVariabilities, "@DocString(FMTLpModel::getvariabilities)")
+		.def("getareavariabilities", &Models::FMTLpModel::getAreaVariabilities, getareavariabilities_overloads(bp::args("outputs", "globalmask", "tolerance"), "@DocString(FMTLpModel::getareavariabilities)"))
+		.def("addscheduletoobjective", &Models::FMTLpModel::addScheduleToObjective, addscheduletoobjective_overloads(bp::args("schedule", "weight"),"@DocString(FMTLpModel::addscheduletoobjective)"));
+		//.def("doPlanning", &Models::FMTLpModel::doPlanning, doplanning_overloads(bp::args("solve", "schedules"),"@DocString(FMTLpModel::doPlanning)"));
 		
 
-	definePyList<Models::FMTlpmodel>();
+	definePyList<Models::FMTLpModel>();
 	#endif
 
 
 
 
-	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTsemodel>>("FMTsamodel", "@DocString(FMTsamodel)")
-		.def(bp::init<Models::FMTmodel>())
-		.def(bp::init<Models::FMTsamodel>())
-		.def("initialsolve", &Models::FMTsamodel::initialSolve,
-			"@DocString(FMTsamodel::initialsolve)");
+	bp::class_<Models::FMTSaModel, bp::bases<Models::FMTSeModel>>("FMTsamodel", "@DocString(FMTSaModel)")
+		.def(bp::init<Models::FMTModel>())
+		.def(bp::init<Models::FMTSaModel>())
+		.def("initialsolve", &Models::FMTSaModel::initialSolve,
+			"@DocString(FMTSaModel::initialsolve)");
 
-    definePyList<Models::FMTsamodel>();
+    definePyList<Models::FMTSaModel>();
 
     }
 }

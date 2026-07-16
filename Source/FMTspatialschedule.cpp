@@ -269,7 +269,7 @@ namespace Spatial
 
 	std::vector<std::set<Spatial::FMTcoordinate>> FMTSpatialSchedule::getUpdatedScheduling(
 																	//const std::vector<Core::FMTAction>& actions,
-																	const Models::FMTmodel& model,
+																	const Models::FMTModel& model,
 																	const std::vector<int>& actiontargets,
 																	//const Core::FMTSchedule& selection,
 																	boost::unordered_map<Core::FMTDevelopment, std::vector<bool>>& cachedactions,
@@ -1142,7 +1142,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 	
 
 
-	FMTlayer<double> FMTSpatialSchedule::getSpatialOutput(const Models::FMTmodel& model, const Core::FMTOutput& output, const int& period) const
+	FMTlayer<double> FMTSpatialSchedule::getSpatialOutput(const Models::FMTModel& model, const Core::FMTOutput& output, const int& period) const
 	{
 		FMTlayer<double>outputlayer = copyExtent<double>();
 		try {
@@ -1165,7 +1165,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 	
 
 
-	std::vector<std::pair<FMTcoordinate, double>>FMTSpatialSchedule::getOutputByCoordinate(const Models::FMTmodel & model, 
+	std::vector<std::pair<FMTcoordinate, double>>FMTSpatialSchedule::getOutputByCoordinate(const Models::FMTModel & model, 
 														const Core::FMTOutput& output, const int& period) const
 	{
 		std::vector<std::pair<FMTcoordinate, double>>allvalues;
@@ -1245,7 +1245,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		return distlayer;
 	}
 
-	std::vector<std::vector<Graph::FMTpredictor>>FMTSpatialSchedule::getPredictors(FMTlayer<int>& predictorids, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues, bool withGCBMid) const
+	std::vector<std::vector<Graph::FMTpredictor>>FMTSpatialSchedule::getPredictors(FMTlayer<int>& predictorids, const Models::FMTModel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues, bool withGCBMid) const
 	{
 		std::vector<std::vector<Graph::FMTpredictor>>predictors;
 		try {
@@ -1506,7 +1506,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		return graphs;
 		}
 
-std::map<std::string,double> FMTSpatialSchedule::getOutputFromGraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
+std::map<std::string,double> FMTSpatialSchedule::getOutputFromGraph(const Graph::FMTlinegraph& linegraph, const Models::FMTModel & model,
 											 const Core::FMTOutputNode& node, const double* solution, const int&period,
 											const Core::FMTMask& nodemask,
 											boost::unordered_map<Core::FMTMask, double>& nodecache,
@@ -1650,7 +1650,7 @@ bool FMTSpatialSchedule::inScheduleOperabilities(const std::vector<boost::unorde
 	return false;
 }
 
-FMTSpatialSchedule::actionbindings FMTSpatialSchedule::getBindingActionsByPeriod(const Models::FMTmodel& model) const
+FMTSpatialSchedule::actionbindings FMTSpatialSchedule::getBindingActionsByPeriod(const Models::FMTModel& model) const
 {
 	std::vector<std::vector<Spatial::FMTbindingspatialaction>>allbindings;
 	for (int period = 1 ; period < mapping.begin()->second.getLineGraph().getPeriod(); ++period)
@@ -1661,7 +1661,7 @@ FMTSpatialSchedule::actionbindings FMTSpatialSchedule::getBindingActionsByPeriod
 }
 
 
-std::vector<Spatial::FMTbindingspatialaction> FMTSpatialSchedule::getBindingActions(const Models::FMTmodel& model, const int& period) const
+std::vector<Spatial::FMTbindingspatialaction> FMTSpatialSchedule::getBindingActions(const Models::FMTModel& model, const int& period) const
 	{
 	const size_t nactions = model.actions.size();
 	std::vector<double>minimalsizes(nactions,0);
@@ -1790,7 +1790,7 @@ std::vector<Spatial::FMTbindingspatialaction> FMTSpatialSchedule::getBindingActi
 
 
 std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMTSchedule& schedule,
-	const Models::FMTmodel& model,
+	const Models::FMTModel& model,
 	const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
 	std::default_random_engine& p_randomEngine,
 	bool schedule_only,
@@ -2034,13 +2034,13 @@ std::map<std::string, double> FMTSpatialSchedule::greedyReferenceBuild(const Cor
 	}
 	catch (...)
 	{
-		_exhandler->printExceptions("", "FMTsesmodel::greedyReferenceBuild", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTSesModel::greedyReferenceBuild", __LINE__, __FILE__);
 	}
 
 	return bestresults;
 }
 
-Graph::FMTgraphstats FMTSpatialSchedule::randomBuild(const Models::FMTmodel& model,
+Graph::FMTgraphstats FMTSpatialSchedule::randomBuild(const Models::FMTModel& model,
 														std::default_random_engine& generator)
 	{
 	Graph::FMTgraphstats periodstats;
@@ -2080,7 +2080,7 @@ Graph::FMTgraphstats FMTSpatialSchedule::randomBuild(const Models::FMTmodel& mod
 	}
 
 void FMTSpatialSchedule::setGrow(const std::vector<FMTcoordinate>& p_coordinates,
-	const Models::FMTmodel& p_model)
+	const Models::FMTModel& p_model)
 {
 	try {
 		for (const FMTcoordinate& COORDINATE : p_coordinates)
@@ -2108,7 +2108,7 @@ void FMTSpatialSchedule::setGrow(const std::vector<FMTcoordinate>& p_coordinates
 
 
 std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>> FMTSpatialSchedule::_putTabouInCache(
-							const Models::FMTmodel& p_model,
+							const Models::FMTModel& p_model,
 							std::map<Core::FMTDevelopment, std::vector<bool>>& p_tabou)
 	{
 	std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>>ToFitIncache;
@@ -2148,7 +2148,7 @@ void FMTSpatialSchedule::_setTabouOutOfCache(
 	}
 }
 
-void FMTSpatialSchedule::perturbGraph(const FMTcoordinate& coordinate,const int&period,const Models::FMTmodel& model,
+void FMTSpatialSchedule::perturbGraph(const FMTcoordinate& coordinate,const int&period,const Models::FMTModel& model,
 	std::default_random_engine& generator, const actionbindings& bindings)
 	{
 	try {
@@ -2317,7 +2317,7 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAdjacency
 
 
 
-std::vector<Spatial::FMTcoordinate>FMTSpatialSchedule::getMovableCoordinates(const Models::FMTmodel& model, const int& period) const
+std::vector<Spatial::FMTcoordinate>FMTSpatialSchedule::getMovableCoordinates(const Models::FMTModel& model, const int& period) const
 {
 	std::vector<Spatial::FMTcoordinate>coordinates;
 	try {
@@ -2550,7 +2550,7 @@ bool FMTSpatialSchedule::needsRefactorization(const FMTSpatialGraphs& p_Graphs) 
 return false;
 }
 
-void FMTSpatialSchedule::setConstraintsFactor(const Models::FMTmodel& model,const std::vector<double>&factors)
+void FMTSpatialSchedule::setConstraintsFactor(const Models::FMTModel& model,const std::vector<double>&factors)
 	{
 	try {
 		if (model.constraints.size()!=factors.size())
@@ -2598,7 +2598,7 @@ const std::vector<double>& FMTSpatialSchedule::getConstraintsFactor() const
 
 
 
-void FMTSpatialSchedule::setStaticsMovableCoordinates(const Models::FMTmodel& p_model)
+void FMTSpatialSchedule::setStaticsMovableCoordinates(const Models::FMTModel& p_model)
 	{
 	if (m_Movables.empty())
 		{

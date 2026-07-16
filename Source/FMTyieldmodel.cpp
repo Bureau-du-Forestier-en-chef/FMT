@@ -20,55 +20,55 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core {
 
-	FMTyieldmodel::~FMTyieldmodel() = default;
+	FMTYieldModel::~FMTYieldModel() = default;
 
 
 
-	FMTyieldmodel::FMTyieldmodel() : modelName(), modelYields(), m_modelPtr()
+	FMTYieldModel::FMTYieldModel() : modelName(), modelYields(), m_modelPtr()
 	{
 
 	}
 
 
-	const std::vector<std::string>& FMTyieldmodel::getModelYields() const
+	const std::vector<std::string>& FMTYieldModel::getModelYields() const
 	{
 		return modelYields;
 	}
 
-	const std::string& FMTyieldmodel::getModelName() const
+	const std::string& FMTYieldModel::getModelName() const
 	{
 		return modelName;
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::presolve(const FMTMaskFilter& filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModel::presolve(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& newthemes) const
 	{
 	
 		return Clone();
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::postSolve(const FMTMaskFilter& filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModel::postSolve(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& basethemes) const
 	{
 		return Clone();
 	}
 
-	std::vector<std::vector<double>>FMTyieldmodel::getPeriodicValues() const
+	std::vector<std::vector<double>>FMTYieldModel::getPeriodicValues() const
 	{
 		return  std::vector<std::vector<double>>();
 	}
 
-	void FMTyieldmodel::clearRandomYieldsCache()
+	void FMTYieldModel::clearRandomYieldsCache()
 	{
 
 	}
 
-	void FMTyieldmodel::setModel(Models::FMTmodel* p_modelPtr)
+	void FMTYieldModel::setModel(Models::FMTModel* p_modelPtr)
 	{
 		m_modelPtr = p_modelPtr;
 	}
 
-	FMTyieldmodel::operator std::string() const
+	FMTYieldModel::operator std::string() const
 	{
 		std::string value = "";
 		try {
@@ -85,7 +85,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldmodel::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModel::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 	}

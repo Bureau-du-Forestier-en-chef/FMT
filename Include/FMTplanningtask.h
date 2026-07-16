@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace Core
@@ -33,7 +33,7 @@ namespace Parallel
 	class FMTparallelwriter;
 	// DocString: FMTplanningtask
 	/**
-	This task make it easier to carry multiple parallel optimization of different FMTmodel using the doPlanning function.
+	This task make it easier to carry multiple parallel optimization of different FMTModel using the doPlanning function.
 	*/
 	class FMTEXPORT FMTplanningtask : public FMTtask
 	{
@@ -70,10 +70,10 @@ namespace Parallel
 		void setKeepModels();
 		// DocString: FMTplanningtask::push_back
 		/**
-		Push a new FMTmodel in the task queue with optional schedule.
-		Dont forget to just keep FMTOutput that you want to get values in the FMTmodel.
+		Push a new FMTModel in the task queue with optional schedule.
+		Dont forget to just keep FMTOutput that you want to get values in the FMTModel.
 		*/
-		void push_back(const Models::FMTmodel& model,
+		void push_back(const Models::FMTModel& model,
 			std::vector<Core::FMTSchedule>schedules = std::vector<Core::FMTSchedule>(),
 			std::vector<Core::FMTOutput>louputs = std::vector<Core::FMTOutput>());
 		// DocString: FMTplanningtask::FMTplanningtask(...)
@@ -120,7 +120,7 @@ namespace Parallel
 		const std::vector<const ptrtype*> getModelsFromDynamicCast() const
 		{
 			std::vector<const ptrtype*>castedptr;
-			for (const std::unique_ptr<Models::FMTmodel>& model : m_Models)
+			for (const std::unique_ptr<Models::FMTModel>& model : m_Models)
 			{
 				castedptr.push_back(dynamic_cast<const ptrtype*>(model.get()));
 			}
@@ -132,9 +132,9 @@ namespace Parallel
 		std::shared_ptr<FMTparallelwriter>m_ResultsWriter;
 		// DocString: FMTplanningtask::m_Models
 		///Abstracts models that need to be build and solve by the task.
-		std::list<std::unique_ptr<Models::FMTmodel>>m_Models;
+		std::list<std::unique_ptr<Models::FMTModel>>m_Models;
 		// DocString: FMTplanningtask::m_allSchedules
-		///All schedules of FMTmodel if we only want to do playback
+		///All schedules of FMTModel if we only want to do playback
 		std::list<std::vector<Core::FMTSchedule>>m_allSchedules;
 		// DocString: FMTplanningtask::m_Outputs
 		///Abstracts outputs that the results need to be write by the task.
@@ -146,7 +146,7 @@ namespace Parallel
 		/**
 		Copy models for unique model...
 		*/
-		std::list<std::unique_ptr<Models::FMTmodel>>copyModels(const std::list<std::unique_ptr<Models::FMTmodel>>& tocopy) const;
+		std::list<std::unique_ptr<Models::FMTModel>>copyModels(const std::list<std::unique_ptr<Models::FMTModel>>& tocopy) const;
 
 	};
 

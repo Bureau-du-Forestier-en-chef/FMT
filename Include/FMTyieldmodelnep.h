@@ -6,51 +6,51 @@
 
 namespace Core
 {
-	// DocString: FMTyieldmodelpools
+	// DocString: FMTYieldModelPools
 	/**
-	FMTyieldmodelpools is a machine learning model to predict carbon NEP.
+	FMTYieldModelPools is a machine learning model to predict carbon NEP.
 	*/
-	class FMTyieldmodelnep : public FMTyieldmodelnn
+	class FMTYieldModelNep : public FMTYieldModelNn
 	{
 	public:
-		// DocString: FMTyieldmodelnep::FMTyieldmodelnep()
+		// DocString: FMTYieldModelNep::FMTYieldModelNep()
 		/**
 		Default constructor.
 		*/
-		FMTyieldmodelnep() = default;
-		// DocString: FMTyieldmodelnep::FMTyieldmodelnep(const FMTyieldmodelnep& rhs)
+		FMTYieldModelNep() = default;
+		// DocString: FMTYieldModelNep::FMTYieldModelNep(const FMTYieldModelNep& rhs)
 		/**
 		Copy constructor.
 		*/
-		FMTyieldmodelnep(const FMTyieldmodelnep& rhs)=default;
-		// DocString: FMTyieldmodelnep::operator = (const FMTyieldmodelnep& rhs)
+		FMTYieldModelNep(const FMTYieldModelNep& rhs)=default;
+		// DocString: FMTYieldModelNep::operator = (const FMTYieldModelNep& rhs)
 		/**
 		Default equality operator.
 		*/
-		FMTyieldmodelnep& operator = (const FMTyieldmodelnep& rhs) = default;
-		// DocString: FMTyieldmodelnep::~FMTyieldmodelnep()
+		FMTYieldModelNep& operator = (const FMTYieldModelNep& rhs) = default;
+		// DocString: FMTYieldModelNep::~FMTYieldModelNep()
 		/**
 		Default destructor.
 		*/
-		~FMTyieldmodelnep()=default;
-		// DocString: FMTyieldmodelnep::FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
+		~FMTYieldModelNep()=default;
+		// DocString: FMTYieldModelNep::FMTYieldModelNep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 		/**
-		Construct a FMTyieldmodelnep based on a JSON file and an input yield name list.
+		Construct a FMTYieldModelNep based on a JSON file and an input yield name list.
 		*/
-		FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields);
-		// DocString: FMTyieldmodelnep::Clone()
+		FMTYieldModelNep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields);
+		// DocString: FMTYieldModelNep::Clone()
 		/**
-		Implements FMTyieldmodel::Clone().
+		Implements FMTYieldModel::Clone().
 		*/
-		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodelnep::getModelOutputNames()
+		std::unique_ptr<FMTYieldModel>Clone() const;
+		// DocString: FMTYieldModelNep::getModelOutputNames()
 		/**
-		Implements FMTyieldmodel::getInputValues(const Graph::FMTpredictor& predictor).
+		Implements FMTYieldModel::getInputValues(const Graph::FMTpredictor& predictor).
 		*/
 		const std::vector<double> getInputValues(const Graph::FMTpredictor& predictor) const;
-		// DocString: FMTyieldmodelnep::getModelType()
+		// DocString: FMTYieldModelNep::getModelType()
 		/**
-		Return the modeltype of the FMTyieldmodel.
+		Return the modeltype of the FMTYieldModel.
 		*/
 		static std::string getModelType();
 	};

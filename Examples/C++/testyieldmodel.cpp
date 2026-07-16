@@ -20,7 +20,7 @@ int main()
 	Logging::FMTDefaultLogger().logStamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation =  modellocation + "TWD_land.pri";
-	Parser::FMTmodelparser mparser;
+	Parser::FMTModelParser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -33,9 +33,9 @@ int main()
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, "Predictors");
-	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
+	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
 	//mparser.write(models.at(0), "E:/Projects/BFEC_MachineLearning/test/");
-	Models::FMTsesmodel simulationmodel(models.at(0));
+	Models::FMTSesModel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
 	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
@@ -54,7 +54,7 @@ int main()
 		++id;
 	}
 	simulationmodel.setConstraints(newconstraints);
-	Parser::FMTareaparser areaparser;
+	Parser::FMTAreaParser areaparser;
 	const std::string rastpath =  modellocation + "rasters/";
 	const std::string agerast = rastpath + "AGE.tif";
 	std::vector<std::string> themesrast;

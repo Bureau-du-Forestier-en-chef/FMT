@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 			argc = 4;
 		}
 
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		modelparser.setDefaultExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
         errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.setErrorsToWarnings(errors);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.0001;
 		for (size_t period = 1; period <= 6; ++period)

@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareascheduler.h"
 #include <algorithm>
 #include <random>
-//#include "FMTmatrixbuild.h"
+//#include "FMTMatrixBuild.h"
 #include "FMTtimeyieldhandler.h"
 #include "FMTdata.h"
 #include "FMTgraph.hpp"
@@ -26,7 +26,7 @@ namespace Heuristics
 		{
 		if (!useprimal)
 			{
-			FMTlpsolver::clearRowCache();
+			FMTLpSolver::clearRowCache();
 			}
 		}
 
@@ -161,7 +161,7 @@ namespace Heuristics
 		try {
 			if (!useprimal || solvertype != Models::FMTsolverinterface::CLP)
 			{
-				FMTlpsolver::resolve();
+				FMTLpSolver::resolve();
 			}
 			else {
 				this->stockResolve();
@@ -170,7 +170,7 @@ namespace Heuristics
 			{
 			_exhandler->raiseFromCatch("","FMToperatingareascheduler::resolveModel", __LINE__, __FILE__);
 			}
-		return FMTlpsolver::getIterationCount();
+		return FMTLpSolver::getIterationCount();
 		}
 
 	bool FMToperatingareascheduler::empty() const
@@ -572,7 +572,7 @@ namespace Heuristics
 
 
 	void FMToperatingareascheduler::setOperatingAreasConstraints(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
-																const Models::FMTmodel& model,
+																const Models::FMTModel& model,
 																const Core::FMTOutputNode& target)
 		{
 		try {
@@ -675,7 +675,7 @@ namespace Heuristics
 		{
 		bool rowadded = false;
 		try {
-		//Models::FMTmatrixbuild matrixbuild;
+		//Models::FMTMatrixBuild matrixbuild;
 		const std::vector<double>elements(2, 1.0);
 		std::vector<int>columns(2, 0);
 		int constraintsid = this->getNumRows();
@@ -760,7 +760,7 @@ namespace Heuristics
 		try {
 		    if (!usingsolvercopy&&canUpdateSource())
                 {
-                  //Will need a clean matrix to fit with FMTlpmodel!
+                  //Will need a clean matrix to fit with FMTLpModel!
                 std::vector<int>rowstodelete;
                 std::vector<int>columnstodelete;
                 for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
@@ -1152,9 +1152,9 @@ namespace Heuristics
 
 	FMToperatingareascheduler::FMToperatingareascheduler(const std::vector<FMToperatingareascheme>& loperatingareas,
 		const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
-		const Models::FMTmodel& model,
+		const Models::FMTModel& model,
 		const Core::FMTOutputNode& target,
-		Models::FMTlpsolver& basesolve, size_t lseed,
+		Models::FMTLpSolver& basesolve, size_t lseed,
 		double proportionofset, bool userandomness, bool copysolver):
 		FMTlpheuristic(basesolve,lseed,copysolver),operatingareas(loperatingareas),adjacencyconstraints(), proportionofset(proportionofset),
 		userandomness(userandomness), useprimal(false)
@@ -1163,9 +1163,9 @@ namespace Heuristics
 			/*if (copysolver)
 				{
 				*_logger<<"copy"<<"\n";
-				FMTlpsolver::operator=(basesolve);
+				FMTLpSolver::operator=(basesolve);
 			}else {
-				FMTlpsolver::passInSolver(basesolve);
+				FMTLpSolver::passInSolver(basesolve);
 				}*/
 			updateRowsAndColsNames();
 			const double baseobj = this->getObjValue();
@@ -1191,7 +1191,7 @@ namespace Heuristics
 			{
 				this->stockResolve();
 				/*}else if(gotRejectedNodes()) {
-				FMTlpsolver::initialSolve();*/
+				FMTLpSolver::initialSolve();*/
 			}else {
 				this->resolveModel();//else just do an initialSolve...
 			}

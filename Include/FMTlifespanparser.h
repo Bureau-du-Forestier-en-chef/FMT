@@ -21,40 +21,40 @@ namespace Core {
 namespace Parser
 
 {
-// DocString: FMTlifespanparser
+// DocString: FMTLifespanParser
 /**
 The lifespan parser is used to read the lifespan part of the model.The class is made to
 read and write lifespan section.
 */
-class FMTEXPORT FMTlifespanparser : public FMTparser
+class FMTEXPORT FMTLifespanParser : public FMTParser
     {
     public:
-		// DocString: FMTlifespanparser()
+		// DocString: FMTLifespanParser()
 		/**
-		Default constructor for FMTlifespanparser.
+		Default constructor for FMTLifespanParser.
 		*/
-        FMTlifespanparser();
-		// DocString: ~FMTlifespanparser()
+        FMTLifespanParser();
+		// DocString: ~FMTLifespanParser()
 		/**
-		Default destructor for FMTlifespanparser.
+		Default destructor for FMTLifespanParser.
 		*/
-		~FMTlifespanparser() = default;
-		// DocString: FMTlifespanparser(const FMTlifespanparser&)
+		~FMTLifespanParser() = default;
+		// DocString: FMTLifespanParser(const FMTLifespanParser&)
 		/**
-		Default copy constructor for FMTlifespanparser.
+		Default copy constructor for FMTLifespanParser.
 		*/
-        FMTlifespanparser(const FMTlifespanparser& rhs);
-		// DocString: FMTlifespanparser::operator=
+        FMTLifespanParser(const FMTLifespanParser& rhs);
+		// DocString: FMTLifespanParser::operator=
 		/**
-		Default copy assignment for FMTlifespanparser.
+		Default copy assignment for FMTLifespanParser.
 		*/
-        FMTlifespanparser& operator = (const FMTlifespanparser& rhs);
-		// DocString: FMTlifespanparser::read
+        FMTLifespanParser& operator = (const FMTLifespanParser& rhs);
+		// DocString: FMTLifespanParser::read
 		/**
 		Read function for the lifespan section, needs (themes), (constants) and finaly the (location) of the lifespansection.
 		*/
         Core::FMTLifespans read(const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& constants,const std::string& location);
-		// DocString: FMTlifespanparser::write
+		// DocString: FMTLifespanParser::write
 		/**
 		Write function for the lifespan section, needs (lifespan) and  the (location) of the new lifespansection.
 		*/

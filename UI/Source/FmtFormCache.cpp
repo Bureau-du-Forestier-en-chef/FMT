@@ -11,13 +11,13 @@ namespace Wrapper
 {
 std::unique_ptr<FMTFormCache> FMTFormCache::m_Instance = std::unique_ptr<FMTFormCache>(nullptr);
 
-Parser::FMTmodelparser FMTFormCache::GetConfiguredParser() const
+Parser::FMTModelParser FMTFormCache::GetConfiguredParser() const
 {
-	Parser::FMTmodelparser parser;
+	Parser::FMTModelParser parser;
 	try
 	{
 		FMTFormLogger* mainLogger =
-			dynamic_cast<FMTFormLogger*>(Models::FMTmodel::getLogger());
+			dynamic_cast<FMTFormLogger*>(Models::FMTModel::getLogger());
 		if (mainLogger)
 		{
 			std::unique_ptr<Logging::FMTLogger> loggerClone =
@@ -47,7 +47,7 @@ FMTFormCache* FMTFormCache::GetInstance()
 	}
 
 
-const Models::FMTmodel& FMTFormCache::getModel(const int& index) const
+const Models::FMTModel& FMTFormCache::getModel(const int& index) const
 	{
 	try {
 		if (static_cast<size_t>(index)>= m_Models.size())
@@ -104,7 +104,7 @@ const FMTexceptionhandlerwarning* FMTFormCache::GetFormHandler() const
 
 FMTFormLogger*  FMTFormCache::GetFormLogger()
 {
-	FMTFormLogger* loggerptr = dynamic_cast<FMTFormLogger*>(Models::FMTmodel::getLogger());
+	FMTFormLogger* loggerptr = dynamic_cast<FMTFormLogger*>(Models::FMTModel::getLogger());
 	try{
 		if (!loggerptr)
 		{
@@ -120,10 +120,10 @@ FMTFormLogger*  FMTFormCache::GetFormLogger()
 }
 
 
-void FMTFormCache::push_back(const Models::FMTmodel& model)
+void FMTFormCache::push_back(const Models::FMTModel& model)
 {
 	try {
-		m_Models.push_back(std::move(std::unique_ptr<Models::FMTmodel>(new Models::FMTmodel(model))));
+		m_Models.push_back(std::move(std::unique_ptr<Models::FMTModel>(new Models::FMTModel(model))));
 	}catch (...)
 		{
 			getExceptionHandler()->raiseFromCatch("", "FMTFormCache::push_back", __LINE__, __FILE__);
@@ -161,7 +161,7 @@ void FMTFormCache::buildExceptionHandler()
 	}
 
 	std::unique_ptr<Exception::FMTExceptionHandler> handler(new FMTexceptionhandlerwarning(m_maxwarnings));
-	Models::FMTmodel useLessModel;
+	Models::FMTModel useLessModel;
 	useLessModel.passInExceptionHandler(handler);
 	useLessModel.setErrorsToWarnings(m_warnings);
 	useLessModel.setTerminateStack();
@@ -185,7 +185,7 @@ void FMTFormCache::InitializeExceptionHandler(const int& maxwarnings,const std::
 void FMTFormCache::buildLogger()
 	{
 	std::unique_ptr<Logging::FMTLogger> logger(new FMTFormLogger(m_loggerFilename, (logfunc)m_loggerFuncPtr));
-	Models::FMTmodel useLessModel;
+	Models::FMTModel useLessModel;
 	useLessModel.passInLogger(logger);
 	}
 
@@ -249,7 +249,7 @@ void FMTFormCache::RecoverLoggerAndHandler(System::IntPtr intptrptr)
 
 Exception::FMTExceptionHandler* FMTFormCache::getExceptionHandler() const
 {
-	return Models::FMTmodel::getExceptionHandler();
+	return Models::FMTModel::getExceptionHandler();
 }
 
 bool FMTFormCache::empty() const

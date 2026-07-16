@@ -111,7 +111,7 @@ class FMTEXPORT FMTActualDevelopment : public FMTDevelopment
 		/**
 		This function check if the actualdevelopment lifespan is shorter than the lock present in area section. If not so, it raise the 
 		error FMTdeathwithlock and if the error is set to warning, it returns a FMTActualDevelopment with the lock reduced accordingly.
-		If the lifespan is shorter than the lock, it returns a copy of itself. This is mainly use in FMTmodel::setArea.  
+		If the lifespan is shorter than the lock, it returns a copy of itself. This is mainly use in FMTModel::setArea.  
 		*/
 		FMTActualDevelopment reduceLockToDeath(const FMTLifespans& lifespans) const;
 	private:

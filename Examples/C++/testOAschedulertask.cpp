@@ -26,7 +26,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
     const std::string& nomChampStanlock,
     const std::string& fichierParam)
     {
-        Parser::FMTareaparser areaParser;
+        Parser::FMTAreaParser areaParser;
         std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(
             fichierParam,
             themes,
@@ -52,7 +52,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
         return opeareas;
 }
 
-Core::FMTOutputNode createBFECoptaggregate(Models::FMTmodel& model)   
+Core::FMTOutputNode createBFECoptaggregate(Models::FMTModel& model)   
     {
         std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
             std::vector<Core::FMTAction> newactions;
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
-            Parser::FMTmodelparser modelparser;
+            Parser::FMTModelParser modelparser;
             modelparser.setDefaultExceptionHandler();
             std::vector<Exception::FMTexc> errors;
             errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -163,10 +163,10 @@ int main(int argc, char *argv[])
             errors.push_back(Exception::FMTexc::FMTEmptyOA);
             errors.push_back(Exception::FMTexc::FMTdeathwithlock);
             modelparser.setErrorsToWarnings(errors);
-            const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-            Models::FMTmodel model = models.at(0);
-            //Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::CLP);
-            Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
+            const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+            Models::FMTModel model = models.at(0);
+            //Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::CLP);
+            Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
             optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 	        optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); 
@@ -208,13 +208,13 @@ int main(int argc, char *argv[])
                 maintaskptr->finalize(); // écrit ici le meilleur modèle sur le disque
             }
             // On relit ici le nouveau "root" qui est le meilleur modèle écrit précédement 
-            const std::vector<Models::FMTmodel> nmodels = modelparser.readproject(
+            const std::vector<Models::FMTModel> nmodels = modelparser.readproject(
                 "../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string> (1, "ROOT"));
-            Models::FMTmodel readmodel = nmodels.at(0);
-            Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
+            Models::FMTModel readmodel = nmodels.at(0);
+            Models::FMTLpModel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
             noptimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
             noptimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-            noptimizationmodel.Models::FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+            noptimizationmodel.Models::FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
             const std::vector<Core::FMTSchedule> schedules = modelparser.readschedules(
                 "../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
             // On regarde si on est capable de relire ce qu'on vient de créer

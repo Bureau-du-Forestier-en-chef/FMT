@@ -218,7 +218,7 @@ namespace Graph
 
 	}
 
-	std::vector<FMTpredictor>FMTlinegraph::getPeriodPredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues, bool withGCBMid) const
+	std::vector<FMTpredictor>FMTlinegraph::getPeriodPredictors(const int& period, const Models::FMTModel& model, const std::vector<std::string>& yieldnames,bool periodonevalues, bool withGCBMid) const
 	{
 		std::vector<FMTpredictor>allpredictors;
 		try {
@@ -351,7 +351,7 @@ namespace Graph
 	}
 
 
-    int FMTlinegraph::_randomOperate(const std::vector<int>& operables, const Models::FMTmodel& model,
+    int FMTlinegraph::_randomOperate(const std::vector<int>& operables, const Models::FMTModel& model,
                                             FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
                                             const Core::FMTDevelopment& active_development, bool dontchoosegrow)
     {
@@ -398,7 +398,7 @@ namespace Graph
 
 	const std::vector<int>& FMTlinegraph::getSetOperability(
 		const Core::FMTDevelopment& p_development,
-		const Models::FMTmodel& p_model,
+		const Models::FMTModel& p_model,
 		boost::unordered_map<Core::FMTDevelopment, std::vector<int>>& p_Cache)
 	{
 		boost::unordered_map<Core::FMTDevelopment, std::vector<int>>::iterator OpIt = p_Cache.end();
@@ -427,7 +427,7 @@ namespace Graph
 		return OpIt->second;
 	}
 
-    std::vector<int> FMTlinegraph::randomBuildPeriod(const Models::FMTmodel& model, std::default_random_engine& generator,
+    std::vector<int> FMTlinegraph::randomBuildPeriod(const Models::FMTModel& model, std::default_random_engine& generator,
 											boost::unordered_map<Core::FMTDevelopment, std::vector<int>>& operability,bool dontchoosegrow)
 	{
 		std::vector<int>actioned;
@@ -467,7 +467,7 @@ namespace Graph
 
 	}
 
-	std::vector<int> FMTlinegraph::anyUsageOf(Core::FMTOutputNode output_node, const Models::FMTmodel& model,const int& startingperiod) const
+	std::vector<int> FMTlinegraph::anyUsageOf(Core::FMTOutputNode output_node, const Models::FMTModel& model,const int& startingperiod) const
 	{
 		std::vector<int>periods;
 		try {
@@ -522,7 +522,7 @@ namespace Graph
 		nodescache.clear();
 		}
 
-	bool FMTlinegraph::isMovable(const Models::FMTmodel& p_model, const int& period,
+	bool FMTlinegraph::isMovable(const Models::FMTModel& p_model, const int& period,
 		boost::unordered_map<Core::FMTDevelopment, std::vector<int>>& p_operability) const
 		{
 		try{
@@ -782,7 +782,7 @@ namespace Graph
 		return hashstr;
 		}
 
-	std::vector<std::vector<bool>>FMTlinegraph::getactions(const Models::FMTmodel& model, const int& fromperiod,
+	std::vector<std::vector<bool>>FMTlinegraph::getactions(const Models::FMTModel& model, const int& fromperiod,
 		std::map<Core::FMTDevelopment, std::vector<bool>>& operability) const
 		{
 		std::vector<std::vector<bool>>allactions;
@@ -841,7 +841,7 @@ namespace Graph
 		return boost::hash<std::string>{}(getEdgesStr(maximalperiod, gotthewhole));
 		}
 
-	/*void FMTlinegraph::addfromevents(const Spatial::FMTcoordinate& localisation, const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const
+	/*void FMTlinegraph::addfromevents(const Spatial::FMTcoordinate& localisation, const Models::FMTModel& model, Spatial::FMTeventcontainer& events) const
 		{
 		try{
 		FMTedge_iterator edge_iterator,edge_iterator_end;

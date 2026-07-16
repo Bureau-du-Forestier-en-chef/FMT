@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 		//primarylocation = "C:/Users/Admlocal/Documents/issues/290/01_Valide/PC_9967_U06271_2028_MODB01.pri";
 	}
 	//std::string primarylocation = std::string("../../../../Examples/Models/TWD_land/TWD_land.pri"); // changer ici pour pointer sur un modèle avec le bug
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	const std::string outdir = "../../tests/testreadwriteproject/";
 	//const std::string outdir = "D:/FMT/build/release/tests/testreadwriteproject/";
@@ -44,17 +44,17 @@ int main(int argc, char* argv[])
 
 	
 	
-	const std::vector<Models::FMTmodel> READ_MODELS = modelparser.readproject(primarylocation, scenarios);
-	for (const Models::FMTmodel& model: READ_MODELS)
+	const std::vector<Models::FMTModel> READ_MODELS = modelparser.readproject(primarylocation, scenarios);
+	for (const Models::FMTModel& model: READ_MODELS)
 	{
-		Models::FMTlpmodel lpmodel(model,Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel lpmodel(model,Models::FMTsolverinterface::CLP);
 		lpmodel.doPlanning(true);
 		modelparser.writeToProject(outdir + "test.pri", lpmodel);
 	}
 	scenarios.erase(scenarios.begin());
 	modelparser.setErrorsToWarnings(errors);
 	scenarios.insert(scenarios.begin(), "ROOT");
-	const std::vector<Models::FMTmodel> newmodels = modelparser.readproject(outdir + "test.pri", scenarios);
+	const std::vector<Models::FMTModel> newmodels = modelparser.readproject(outdir + "test.pri", scenarios);
 	
 #endif
 	return 0;

@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 		scenario = "spatial";
 	}
 
-	Parser::FMTmodelparser mparser;
+	Parser::FMTModelParser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -42,20 +42,20 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, scenario);
-	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
-	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 	if (optimizationmodel.doPlanning(true))
 	{
 		std::cout << "OBJECTIVE VALUE " << optimizationmodel.getObjValue() << "\n";
-		Models::FMTsesmodel simmodel(optimizationmodel);
+		Models::FMTSesModel simmodel(optimizationmodel);
 		std::vector<Core::FMTTransition>newtransitions;
 		for (const Core::FMTTransition& transition : simmodel.getTransitions())
 		{
 			newtransitions.push_back(transition.single());
 		}
 		simmodel.setTransitions(newtransitions);
-		Parser::FMTareaparser areaparser;
+		Parser::FMTAreaParser areaparser;
 		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
 		simmodel.setInitialMapping(forest);
 		for (int period = 1; period <= length; ++period)

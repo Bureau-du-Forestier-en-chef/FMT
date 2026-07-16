@@ -34,14 +34,14 @@ namespace Testing
 namespace Wrapper
 {
 
-	class __declspec(dllexport) FMTmodelcache: private Models::FMTlpmodel
+	class __declspec(dllexport) FMTmodelcache: private Models::FMTLpModel
 	{
 	public:
 		FMTmodelcache();
 		FMTmodelcache(const FMTmodelcache& rhs);
 		FMTmodelcache& operator = (const FMTmodelcache& rhs);
 		virtual ~FMTmodelcache();
-		FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation);
+		FMTmodelcache(const Models::FMTModel& lmodel, const std::string& lmaplocation);
 		void setLength(const int& period);
 		void setSolution(const std::vector<Core::FMTSchedule>& schedules);
 		bool buildnsolve(bool solve = true);

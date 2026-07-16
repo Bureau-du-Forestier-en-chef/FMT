@@ -16,13 +16,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 };
 
 namespace Core
 {
 	class FMTData;
-	class FMTyieldmodel;
+	class FMTYieldModel;
 	class FMTTimeYieldHandler;
 	class FMTEXPORT FMTModelYieldHandler final : public FMTYieldHandler
 	{
@@ -35,7 +35,7 @@ namespace Core
 		FMTModelYieldHandler& operator = (const FMTModelYieldHandler& rhs);
 		FMTModelYieldHandler(const FMTMask& mask);
 		std::map<std::string, size_t>getModelsNameByIndex() const;
-		void pushBackModel(const std::unique_ptr<FMTyieldmodel>& model);
+		void pushBackModel(const std::unique_ptr<FMTYieldModel>& model);
 		void setYield(const size_t& modelid,const size_t& yieldid,const std::string& yldname);
 		virtual std::unique_ptr<FMTYieldHandler>clone() const;
 		virtual bool operator == (const FMTModelYieldHandler& rhs) const;
@@ -63,7 +63,7 @@ namespace Core
 		@brief set The model to the yielmodel.
 		@param[in] p_modelPtr the pointer to the actual model. This can be cast to different type of model...
 		*/
-		void setModel(Models::FMTmodel* p_modelPtr);
+		void setModel(Models::FMTModel* p_modelPtr);
 	private:
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -72,7 +72,7 @@ namespace Core
 			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
 			ar& m_yldnames;
 		}
-		std::vector<std::unique_ptr<FMTyieldmodel>>models;
+		std::vector<std::unique_ptr<FMTYieldModel>>models;
 		std::map<std::string, std::pair<size_t, size_t>, cmpYieldString>m_yldnames;
 	};
 

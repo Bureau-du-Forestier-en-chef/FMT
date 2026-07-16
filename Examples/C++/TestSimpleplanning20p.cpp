@@ -41,18 +41,18 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	modelparser.setErrorsToWarnings(errors);
     const std::vector<std::string>scenarios(1, scenario);
-    const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
+    const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
    
 		Models::FMTsolverinterface solverinterface = Models::FMTsolverinterface::CLP;
         if(Version::FMTversion::hasFeature("MOSEK"))
         {
 			solverinterface = Models::FMTsolverinterface::MOSEK;
         }
-		Models::FMTlpmodel optimizationmodel(models.at(0), solverinterface);
+		Models::FMTLpModel optimizationmodel(models.at(0), solverinterface);
         optimizationmodel.setStrictlyPositivesOutputsMatrix();
 		for (size_t period = 0; period < 20; ++period)
 		{

@@ -27,7 +27,7 @@ namespace Core
 
 namespace Models
 {
-	class FMTlpsolver;
+	class FMTLpSolver;
 }
 
 
@@ -100,7 +100,7 @@ namespace Heuristics
 		// DocString: FMToperatingareascheme::getArea
 		/**
 			Get the area of the operating area base on a (primalsolution) 
-			for the initial (vertices) of the FMTlpmodel graph.
+			for the initial (vertices) of the FMTLpModel graph.
 		*/
 		double getPrimalArea(const double* primalsolution, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& vertices) const;
 		// DocString: FMToperatingareascheme::getBestSchemeId
@@ -129,7 +129,7 @@ namespace Heuristics
 		void schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
 			const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodictargetednodes,
 			const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
-			Models::FMTlpsolver& solver,
+			Models::FMTLpSolver& solver,
 			const double* primalsolution,
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<int>& actionIDS);
 
@@ -368,7 +368,7 @@ namespace Heuristics
 			*/
 			void setConstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices,
 				const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
-				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph,Models::FMTlpsolver& solver,
+				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph,Models::FMTLpSolver& solver,
 				const double* primalsolution,
 				const std::vector<int>& actionIDS);
 			// DocString: FMToperatingareascheme(const FMToperatingarea,const size_t, const size_t,const size_t,const size_t,const size_t)

@@ -18,16 +18,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser {
 
-	FMTscheduleparser::FMTscheduleparser() :FMTparser()
+	FMTScheduleParser::FMTScheduleParser() :FMTParser()
 	{
 		setSection(Core::FMTsection::Schedule);
 	}
-	FMTscheduleparser::FMTscheduleparser(const FMTscheduleparser& rhs) : FMTparser(rhs)
+	FMTScheduleParser::FMTScheduleParser(const FMTScheduleParser& rhs) : FMTParser(rhs)
 	{
 		setSection(Core::FMTsection::Schedule);
 	}
 
-	int FMTscheduleparser::getVariable() const
+	int FMTScheduleParser::getVariable() const
 	{
 		int value = 0;
 		try {
@@ -42,12 +42,12 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch( "for comment " + m_comment,"FMTscheduleparser::getVariable", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch( "for comment " + m_comment,"FMTScheduleParser::getVariable", __LINE__, __FILE__, m_section);
 		}
 		return value;
 	}
 
-	std::string FMTscheduleparser::getSchedulePath(const std::string& p_primary_path, const std::string& p_output_scenario_name) 
+	std::string FMTScheduleParser::getSchedulePath(const std::string& p_primary_path, const std::string& p_output_scenario_name) 
 	{
 		std::string thePath;
 		try {
@@ -67,21 +67,21 @@ namespace Parser {
 
 		}catch (...)
 		{
-			_exhandler->printExceptions("for primary " + p_primary_path, "FMTscheduleparser::getSchedulePath", __LINE__, __FILE__, m_section);
+			_exhandler->printExceptions("for primary " + p_primary_path, "FMTScheduleParser::getSchedulePath", __LINE__, __FILE__, m_section);
 		}
 		return thePath;
 	}
 
-	FMTscheduleparser& FMTscheduleparser::operator = (const FMTscheduleparser& rhs)
+	FMTScheduleParser& FMTScheduleParser::operator = (const FMTScheduleParser& rhs)
 	{
 		if (this != &rhs)
 		{
-			FMTparser::operator=(rhs);
+			FMTParser::operator=(rhs);
 			setSection(Core::FMTsection::Schedule);
 		}
 		return *this;
 	}
-	std::vector<Core::FMTSchedule> FMTscheduleparser::read(
+	std::vector<Core::FMTSchedule> FMTScheduleParser::read(
 		const std::vector<Core::FMTTheme>& themes,
 		const std::vector<Core::FMTAction>& actions, 
 		const std::string& location, 
@@ -90,14 +90,14 @@ namespace Parser {
 		std::vector<Core::FMTSchedule>schedules;
 		try {
 			std::ifstream schedulestream(location);
-			if (FMTparser::tryOpening(schedulestream, location))
+			if (FMTParser::tryOpening(schedulestream, location))
 			{
 				std::vector<std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::map<int, double>>>>data;
 				bool uselock = false;
 				bool firstline = true;
 				while (schedulestream.is_open())
 				{
-					std::string line = FMTparser::getCleanLine(schedulestream);
+					std::string line = FMTParser::getCleanLine(schedulestream);
 					if (!line.empty())
 					{
 						std::vector<std::string>values;
@@ -140,7 +140,7 @@ namespace Parser {
 								{
 									_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, 
 									"The schedule must specify an action existing in the model for each developement. No action named " + actionname + " at line " + std::to_string(m_line),
-									"FMTscheduleparser::read", __LINE__, __FILE__);
+									"FMTScheduleParser::read", __LINE__, __FILE__);
 								}
 								++id;
 								const int period = getNum<int>(values[id]);
@@ -193,12 +193,12 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTscheduleparser::read", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTScheduleParser::read", __LINE__, __FILE__, m_section);
 		}
 		return schedules;
 	}
 
-	void FMTscheduleparser::_writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTSchedule>& p_schedules)
+	void FMTScheduleParser::_writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTSchedule>& p_schedules)
 	{
 		for (const Core::FMTSchedule& sch : p_schedules)
 		{
@@ -209,7 +209,7 @@ namespace Parser {
 		}
 	}
 
-	std::vector<Core::FMTSchedule>::const_iterator FMTscheduleparser::_getFirstEmptySchedule(const std::vector<Core::FMTSchedule>& p_schedules)
+	std::vector<Core::FMTSchedule>::const_iterator FMTScheduleParser::_getFirstEmptySchedule(const std::vector<Core::FMTSchedule>& p_schedules)
 	{
 		std::vector<Core::FMTSchedule>::const_iterator firstnonemptyschedule = p_schedules.begin();
 		while (firstnonemptyschedule != p_schedules.end() && firstnonemptyschedule->empty())
@@ -229,7 +229,7 @@ namespace Parser {
 		return result;
 	}
 
-	void FMTscheduleparser::write(const std::vector<Core::FMTSchedule>& schedules,
+	void FMTScheduleParser::write(const std::vector<Core::FMTSchedule>& schedules,
 		const std::string& location, bool append) const
 	{
 		try {
@@ -276,7 +276,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("at " + location, "FMTscheduleparser::write", __LINE__, __FILE__, m_section);
+			_exhandler->printExceptions("at " + location, "FMTScheduleParser::write", __LINE__, __FILE__, m_section);
 		}
 	}
 

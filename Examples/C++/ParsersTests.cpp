@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 		const boost::filesystem::path FOLDER_PATH(path);
 		Core::FMTConstants baseConstants;
 		std::vector<Core::FMTTheme>baseThemes;
-		Parser::FMTareaparser AreaParser;
+		Parser::FMTAreaParser AreaParser;
 		bool testedArea = false;
 		bool testedLan = false;
 		while (!(testedArea && testedLan))
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 				try {
 					if (!testedLan && SECTION == Core::FMTsection::Landscape)
 					{
-						Parser::FMTlandscapeparser LandscapeParser;
+						Parser::FMTLandscapeParser LandscapeParser;
 						baseThemes = LandscapeParser.read(baseConstants, PATH_TO_FILE);
 						testedLan = true;
 						if (baseThemes.empty())

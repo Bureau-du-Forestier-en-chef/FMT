@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	std::vector<std::string>allscenarios;
 	playback.push_back(false);
 	allscenarios.push_back("sumavg");
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
@@ -30,12 +30,12 @@ int main(int argc, char *argv[])
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
 	Parallel::FMTplanningtask newplanningtask(1,10, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
 	newplanningtask.setKeepModels();
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readschedules(primlocation, models);
 	std::vector<Core::FMTOutput>selectedoutputs;
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{
-		Models::FMTlpmodel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
 		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH,7);
 		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		for (const Core::FMTOutput& output : lpmodel.getOutputs())
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	//handler.onDemandRun();
 	handler.conccurentRun();
 	const std::vector<const Parallel::FMTplanningtask*> tasks= handler.getTasksFromDynamicCast<Parallel::FMTplanningtask>();
-	const std::vector<const Models::FMTlpmodel*> modelsresults =  tasks.at(0)->getModelsFromDynamicCast<Models::FMTlpmodel>();
+	const std::vector<const Models::FMTLpModel*> modelsresults =  tasks.at(0)->getModelsFromDynamicCast<Models::FMTLpModel>();
 	Logging::FMTDefaultLogger() <<"OBJECTIVE "<< modelsresults.at(0)->getObjValue() << "\n";
 	const double sumvalue = modelsresults.at(0)->getOutput(selectedoutputs.at(1), 5, Core::FMToutputlevel::totalonly).at("Total");
 	const double avgvalue = modelsresults.at(0)->getOutput(selectedoutputs.at(2), 5, Core::FMToutputlevel::totalonly).at("Total");

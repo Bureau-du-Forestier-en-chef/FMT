@@ -188,7 +188,7 @@ namespace Wrapper
 
 		try
 		{
-			Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
+			Parser::FMTModelParser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
 			const std::vector<std::vector<std::string>> listeExtensions = Modelparser.getGDALVectorDriverExtensions();
 			const std::vector<std::string> listeDrivers = Modelparser.getGDALVectorDriverNames();
 
@@ -215,7 +215,7 @@ namespace Wrapper
 
 		try
 		{
-			for (Models::FMTsolverinterface solver : Models::FMTsrmodel::getAvailableSolverInterface())
+			for (Models::FMTsolverinterface solver : Models::FMTSrModel::getAvailableSolverInterface())
 			{
 				retour->Add(static_cast<int>(solver));
 			}
@@ -331,9 +331,9 @@ namespace Wrapper
 		std::vector<Core::FMTSchedule> retour;
 		try
 		{
-			Parser::FMTscheduleparser schedulerparser;
-			Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
-			std::vector<Models::FMTmodel> models;
+			Parser::FMTScheduleParser schedulerparser;
+			Parser::FMTModelParser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
+			std::vector<Models::FMTModel> models;
 			models.push_back(FMTFormCache::GetInstance()->getModel(indexScenario));
 			std::vector<Core::FMTSchedule> liste = Modelparser.readschedules(msclr::interop::marshal_as<std::string>(nomFichierPri), models).at(0);
 			if (liste.size() > 0)
@@ -358,7 +358,7 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getModel(p_index);
+			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_index);
 			const std::vector<Core::FMTAction> ACTIONS = MODEL.getactions();
 			// On it�re sur les actions pour obbtenir leurs noms
 			for (int i = 0; i < ACTIONS.size(); ++i)
@@ -382,7 +382,7 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
+			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 			const std::vector<Core::FMTAction> ACTIONS = MODEL.getactions();
 			std::set<std::string> uniqueAggregates;
 
@@ -416,7 +416,7 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getModel(p_index);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_index);
 
 			const Core::FMTYields YIELDS = MODEL.getYields();
 
@@ -446,7 +446,7 @@ namespace Wrapper
 			}
 			const std::string CONVERTEDSTRING = msclr::interop::marshal_as<std::string>(p_mask);
 			const std::string CONVERTEDYIELD = msclr::interop::marshal_as<std::string>(p_yield);
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 
 			result = FMTWrapperCore::Tools::getYield(MODEL, CONVERTEDSTRING, CONVERTEDYIELD, p_age);
 		}
@@ -466,7 +466,7 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
+			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 
 			result = static_cast<double>(FMTWrapperCore::Tools::getMaxAge(MODEL));
 
@@ -501,7 +501,7 @@ namespace Wrapper
 			// changer le str de C# en str applicable dans C++
 			std::string MASK = msclr::interop::marshal_as<std::string>(p_mask);
 			// On va chercher le mod�le
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 			// On va chercher tous les th�mes dans le mod�le
 			const std::vector<Core::FMTTheme> THEMES = MODEL.getThemes();
 			// On call validate
@@ -523,7 +523,7 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 			std::vector<int> themes;
 			for each (int theme in p_themesNumbers)
 			{

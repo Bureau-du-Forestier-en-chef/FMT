@@ -25,25 +25,25 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 
-	void FMTsrmodel::setNodeCacheSize(const size_t& p_size)
+	void FMTSrModel::setNodeCacheSize(const size_t& p_size)
 	{
 		_logger->logWithLevel("Node Cache size for " + getName() + " of " + std::to_string(p_size) + "\n", 1);
 		m_graph->setNodeSize(p_size);
 	}
 
-	Graph::FMTgraphvertextoyield FMTsrmodel::getGraphVertexToYield() const
+	Graph::FMTgraphvertextoyield FMTSrModel::getGraphVertexToYield() const
 	{
 		try {
 			return Graph::FMTgraphvertextoyield(*this,*m_graph,nullptr);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTsrmodel::getGraphVertexToYield", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSrModel::getGraphVertexToYield", __LINE__, __FILE__);
 			}
 		return Graph::FMTgraphvertextoyield();
 	}
 
 
-	Graph::FMTgraphstats FMTsrmodel::initializeMatrix()
+	Graph::FMTgraphstats FMTSrModel::initializeMatrix()
 	{
 		Graph::FMTgraphstats stats;
 		try {
@@ -63,12 +63,12 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTsrmodel::initializeMatrix", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSrModel::initializeMatrix", __LINE__, __FILE__);
 		}
 		return stats;
 	}
 
-	bool FMTsrmodel::isPeriodBounded(int period) const
+	bool FMTSrModel::isPeriodBounded(int period) const
 	{
 		try {
 			if (static_cast<int>(m_graph->size()) > period)
@@ -100,12 +100,12 @@ namespace Models
 		catch (...)
 		{
 			_exhandler->raiseFromCatch("at period " + std::to_string(period),
-				"FMTsrmodel::isPeriodBounded", __LINE__, __FILE__);
+				"FMTSrModel::isPeriodBounded", __LINE__, __FILE__);
 		}
 		return false;
 	}
 
-	bool FMTsrmodel::unboundSolution(int period)
+	bool FMTSrModel::unboundSolution(int period)
 	{
 		try {
 			if (static_cast<int>(m_graph->size()) > period && period > 0)//period >0 to not select actual developments!
@@ -133,27 +133,27 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("at period " + std::to_string(period), "FMTsrmodel::unboundSolution", __LINE__, __FILE__);
+			_exhandler->printExceptions("at period " + std::to_string(period), "FMTSrModel::unboundSolution", __LINE__, __FILE__);
 		}
 
 
 		return false;
 	}
 
-	std::unique_ptr<FMTmodel>FMTsrmodel::getCopy(int period) const
+	std::unique_ptr<FMTModel>FMTSrModel::getCopy(int period) const
 	{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTsrmodel(*this, solver.getSolverType()));
+			return std::unique_ptr<FMTModel>(new FMTSrModel(*this, solver.getSolverType()));
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::getCopy", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getCopy", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTmodel>(nullptr);
+		return std::unique_ptr<FMTModel>(nullptr);
 	}
 
 
-	bool FMTsrmodel::forceSolution(int period, const Core::FMTSchedule& proportionschedulewithlock)
+	bool FMTSrModel::forceSolution(int period, const Core::FMTSchedule& proportionschedulewithlock)
 	{
 		try
 		{
@@ -162,7 +162,7 @@ namespace Models
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 												"This function can only be used with schedules using lock", 
-												"FMTsrmodel::forceSolution", __LINE__, __FILE__);
+												"FMTSrModel::forceSolution", __LINE__, __FILE__);
 			}
 			if (static_cast<int>(m_graph->size()) > period && period > 0)
 			{
@@ -215,7 +215,7 @@ namespace Models
 									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 												"Developement " + std::string(devit.first) + " is not operable "
 												" for action " + actionit->first.getName(), 
-												"FMTsrmodel::forceSolution", __LINE__, __FILE__);
+												"FMTSrModel::forceSolution", __LINE__, __FILE__);
 								}
 								//std::cout<<std::string(devit.first)<<" "+std::to_string(devit.second.at(0))<<" "+std::to_string(actionid)<<std::endl;//" "+this->getactions().at(actionid).getName()<<std::endl;
 								varproportions.emplace(varit->second,devit.second.at(0));
@@ -239,7 +239,7 @@ namespace Models
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 									"Developement "+std::string(m_graph->getDevelopment(vdescriptor_props.first))+" cannot grow or die ...", 
-									"FMTsrmodel::forceSolution", __LINE__, __FILE__);
+									"FMTSrModel::forceSolution", __LINE__, __FILE__);
 						}
 					}
 					//Pas besoin de setter de growth ou death a 0%
@@ -328,7 +328,7 @@ namespace Models
 										"Negative growth solution for " +
 										std::string(m_graph->getDevelopment(*vertex_iterator)) +" in area of " + std::to_string(inArea) + 
 										" and out area of " + std::to_string(outarea) ,
-										"FMTsrmodel::forceSolution", __LINE__, __FILE__);
+										"FMTSrModel::forceSolution", __LINE__, __FILE__);
 								}
 								if (inArea + tolerance < outarea )
 								{
@@ -336,7 +336,7 @@ namespace Models
 										"Positive growth solution for " +
 										std::string(m_graph->getDevelopment(*vertex_iterator)) +" in area of " + std::to_string(inArea) + 
 										" and out area of " + std::to_string(outarea) ,
-										"FMTsrmodel::forceSolution", __LINE__, __FILE__);
+										"FMTSrModel::forceSolution", __LINE__, __FILE__);
 								}
 							}
 						}
@@ -421,7 +421,7 @@ namespace Models
 								"Negative growth solution for " +
 								std::string(m_graph->getDevelopment(first)) +" in area of " + std::to_string(inArea) +
 								" and out area of " + std::to_string(outarea) ,
-								"FMTsrmodel::forceSolution", __LINE__, __FILE__);
+								"FMTSrModel::forceSolution", __LINE__, __FILE__);
 						}
 						if (inArea + tolerance < outarea )
 						{
@@ -429,7 +429,7 @@ namespace Models
 								"Positive growth solution for " +
 								std::string(m_graph->getDevelopment(first)) +" in area of " + std::to_string(inArea) +
 								" and out area of " + std::to_string(outarea) ,
-								"FMTsrmodel::forceSolution", __LINE__, __FILE__);
+								"FMTSrModel::forceSolution", __LINE__, __FILE__);
 						}
 						descriptors.pop();
 					}else{
@@ -438,7 +438,7 @@ namespace Models
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 								"Wrong variable",
-								"FMTsrmodel::forceSolution", __LINE__, __FILE__);
+								"FMTSrModel::forceSolution", __LINE__, __FILE__);
 						}
 						descriptors.pop();
 						descriptors.push(first);
@@ -449,14 +449,14 @@ namespace Models
 
 			}
 		}catch(...){
-			_exhandler->printExceptions("at period " + std::to_string(period), "FMTsrmodel::forceSolution", __LINE__, __FILE__);
+			_exhandler->printExceptions("at period " + std::to_string(period), "FMTSrModel::forceSolution", __LINE__, __FILE__);
 		}
 		return true;
 
 	}
 
 
-	bool FMTsrmodel::setSolution(int period, const Core::FMTSchedule& schedule, double tolerance)
+	bool FMTSrModel::setSolution(int period, const Core::FMTSchedule& schedule, double tolerance)
 	{
 		try {
 			const bool WILL_THROW = parameters.getBoolParameter(FMTboolmodelparameters::SETSOLUTION_THROW);
@@ -506,7 +506,7 @@ namespace Models
 									_exhandler->raise(EXCEPTION,
 										"Developement " + std::string(devit.first) + " is not operable "
 										" for action " + actionit->first.getName(),
-										"FMTsrmodel::setSolution", __LINE__, __FILE__);
+										"FMTSrModel::setSolution", __LINE__, __FILE__);
 									return false;
 								}
 								const int variable = varit->second;
@@ -607,7 +607,7 @@ namespace Models
 												_exhandler->raise(EXCEPTION,
 													"Developement " + std::string(devit.first) + " is not operable "
 													" for action " + actionit->first.getName(),
-													"FMTsrmodel::setSolution", __LINE__, __FILE__);
+													"FMTSrModel::setSolution", __LINE__, __FILE__);
 												return false;
 											}
 											const int variable = varit->second;
@@ -629,7 +629,7 @@ namespace Models
 											const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
 											_exhandler->raise(EXCEPTION,
 												"Cannot allocate area of " + std::to_string(areatoput) + " to " +
-												std::string(devit.first) + " for action " + actionit->first.getName(), "FMTsrmodel::setSolution", __LINE__, __FILE__);
+												std::string(devit.first) + " for action " + actionit->first.getName(), "FMTSrModel::setSolution", __LINE__, __FILE__);
 											return false;
 										}
 										else {
@@ -649,7 +649,7 @@ namespace Models
 							}
 							else {
 								_exhandler->raise(Exception::FMTexc::FMTmissingdevelopment, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit->first.getName(),
-									"FMTsrmodel::setSolution", __LINE__, __FILE__);
+									"FMTSrModel::setSolution", __LINE__, __FILE__);
 								return false;
 							}
 						}
@@ -724,7 +724,7 @@ namespace Models
 							_exhandler->raise(EXCEPTION,
 								std::to_string(rest) + " negative growth solution for " +
 								std::string(dev) + " operated by " + actionnames + locking + " in area " + std::to_string(inArea),
-								"FMTsrmodel::setSolution", __LINE__, __FILE__);
+								"FMTSrModel::setSolution", __LINE__, __FILE__);
 							return false;
 						}
 						if ((targetaction < 0) && setrest)//Ajust only natural growth and not _DEATH
@@ -770,7 +770,7 @@ namespace Models
 						_exhandler->raise(EXCEPTION,
 							std::to_string(rest) + " negative growth solution for " +
 							std::string(m_graph->getDevelopment(first)),
-							"FMTsrmodel::setSolution", __LINE__, __FILE__);
+							"FMTSrModel::setSolution", __LINE__, __FILE__);
 						return false;
 					}
 					const bool setrest = !(typeII&&m_graph->isNoTransfer(first, 1));
@@ -786,12 +786,12 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("at period " + std::to_string(period), "FMTsrmodel::setSolution", __LINE__, __FILE__);
+			_exhandler->printExceptions("at period " + std::to_string(period), "FMTSrModel::setSolution", __LINE__, __FILE__);
 		}
 		return true;
 	}
 
-	std::set<std::string> FMTsrmodel::getAllMasks(const std::vector<Core::FMTTheme>& p_selectedThemes) const {
+	std::set<std::string> FMTSrModel::getAllMasks(const std::vector<Core::FMTTheme>& p_selectedThemes) const {
 		std::set<std::string> masks;
 		try {
 			std::vector<Core::FMTTheme> toIgnore;
@@ -804,19 +804,19 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::getAllMasks", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getAllMasks", __LINE__, __FILE__);
 		}
 		return masks;
 	}
 
-	bool FMTsrmodel::setSolutionByLp(int period, const Core::FMTSchedule& schedule, double tolerance)
+	bool FMTSrModel::setSolutionByLp(int period, const Core::FMTSchedule& schedule, double tolerance)
 	{
 		try {
 			if (Graph::FMTgraphbuild::schedulebuild != m_graph->getBuildType())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot set solution by lp on a non partial graph",
-					"FMTsrmodel::setSolutionByLp", __LINE__, __FILE__);
+					"FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 			}
 			if (static_cast<int>(m_graph->size()) > period && period > 0)
 			{
@@ -857,7 +857,7 @@ namespace Models
 									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 												"Developement " + std::string(devit.first) + " is not operable "
 												" for action " + actionit->first.getName(), 
-												"FMTsrmodel::setSolutionByLp", __LINE__, __FILE__);
+												"FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 								}
 								const int variable = varit->second;
 								double devarea = devit.second.at(0);
@@ -904,7 +904,7 @@ namespace Models
 											_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 														"Developement " + std::string(devit.first) + " is not operable "
 														" for action " + actionit->first.getName(), 
-														"FMTsrmodel::setSolutionByLp", __LINE__, __FILE__);
+														"FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 										}
 										const int variable = varit->second;
 										gotsomething = true;
@@ -924,12 +924,12 @@ namespace Models
 									_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 										"Cannot allocate any developements for action " + std::string(actionit->first.getName()) +
 										" at period " + std::to_string(period),
-										"FMTsrmodel::setSolutionByLp", __LINE__, __FILE__);
+										"FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 								}
 							}
 							else {
 								_exhandler->raise(Exception::FMTexc::FMTmissingdevelopment, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit->first.getName(),
-									"FMTsrmodel::setSolutionByLp", __LINE__, __FILE__);
+									"FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 								return false;
 							}
 						}
@@ -972,7 +972,7 @@ namespace Models
 					}*/
 					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 						"Infeasible schedule at period " + std::to_string(period),
-						"FMTsrmodel::setSolutionByLp", __LINE__, __FILE__);
+						"FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 				}
 				const double* solution = solver.getColSolution();
 				double scheduleobjective = 0;
@@ -996,16 +996,16 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("at period " + std::to_string(period), "FMTsrmodel::setSolutionByLp", __LINE__, __FILE__);
+			_exhandler->printExceptions("at period " + std::to_string(period), "FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 		}
 
 
 		return true;
 	}
 
-	FMTsrmodel::FMTsrmodel(FMTmodel&& base, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& lgraph,
-		const FMTlpsolver& lsolver) :
-		FMTmodel(base),
+	FMTSrModel::FMTSrModel(FMTModel&& base, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& lgraph,
+		const FMTLpSolver& lsolver) :
+		FMTModel(base),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(lgraph)),
 		solver(lsolver)
 	{
@@ -1013,19 +1013,19 @@ namespace Models
 		//m_graph->passinobject(base);
 	}
 
-	FMTsrmodel::FMTsrmodel(FMTsrmodel&& rhs) noexcept :
-		FMTmodel(),
+	FMTSrModel::FMTSrModel(FMTSrModel&& rhs) noexcept :
+		FMTModel(),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>()),
 		solver()
 	{
 		*this = std::move(rhs);
 	}
 
-	FMTsrmodel& FMTsrmodel::operator = (const FMTsrmodel& rhs)
+	FMTSrModel& FMTSrModel::operator = (const FMTSrModel& rhs)
 	{
 		if (this != &rhs)
 		{
-			FMTmodel::operator=(rhs);
+			FMTModel::operator=(rhs);
 			m_graph = std::move(std::unique_ptr<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>>(new 
 								Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(*rhs.m_graph)));
 			solver=rhs.solver;
@@ -1033,11 +1033,11 @@ namespace Models
 		return *this;
 	}
 
-	FMTsrmodel& FMTsrmodel::operator =(FMTsrmodel&& rhs) noexcept
+	FMTSrModel& FMTSrModel::operator =(FMTSrModel&& rhs) noexcept
 	{
 		if (this!=&rhs)
 		{
-			FMTmodel::operator=(std::move(rhs));
+			FMTModel::operator=(std::move(rhs));
 			//graph=rhs.graph;//Boost graph does not provide real swap so...
 			m_graph.swap(rhs.m_graph);
 			solver.swap(rhs.solver);
@@ -1046,19 +1046,19 @@ namespace Models
 	}
 
 
-	void FMTsrmodel::postSolve(const FMTmodel& originalbasemodel)
+	void FMTSrModel::postSolve(const FMTModel& originalbasemodel)
 	{
 		try {
 			postsolveGraph(originalbasemodel);
-			FMTmodel::postSolve(originalbasemodel);
+			FMTModel::postSolve(originalbasemodel);
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::postSolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::postSolve", __LINE__, __FILE__);
 		}
 
 	}
 
-	bool FMTsrmodel::isOptimal() const
+	bool FMTSrModel::isOptimal() const
 	{
 		try {
 			if (m_graph->getBuildType() == Graph::FMTgraphbuild::fullbuild)//Only global Graph
@@ -1068,44 +1068,44 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::isOptimal", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::isOptimal", __LINE__, __FILE__);
 		}
 		return false;
 	}
 	
-	double FMTsrmodel::getObjectiveValue() const
+	double FMTSrModel::getObjectiveValue() const
 	{
 		double value = std::numeric_limits<double>::quiet_NaN();
 		try {
 			value = solver.getObjValue();
 		}catch (...)
 			{
-			_exhandler->printExceptions("", "FMTsrmodel::getObjectiveValue", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getObjectiveValue", __LINE__, __FILE__);
 			}
 		return value;
 	}
 
 
 
-	std::unique_ptr<FMTmodel>FMTsrmodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTModel>FMTSrModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 	{
 		try{
 			if (!m_graph->empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"Cannot presolve a srmodel with period(s) builded in m_graph->",
-					"FMTsrmodel::presolve", __LINE__, __FILE__);
+					"FMTSrModel::presolve", __LINE__, __FILE__);
 				}
-			return std::unique_ptr<FMTmodel>(new FMTsrmodel(std::move(*FMTmodel::presolve(optionaldevelopments)),*m_graph,solver));
+			return std::unique_ptr<FMTModel>(new FMTSrModel(std::move(*FMTModel::presolve(optionaldevelopments)),*m_graph,solver));
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::presolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::presolve", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTmodel>(nullptr);
+		return std::unique_ptr<FMTModel>(nullptr);
 	}
 
 
-	Core::FMTSchedule FMTsrmodel::getSolution(int period, bool withlock) const
+	Core::FMTSchedule FMTSrModel::getSolution(int period, bool withlock) const
 	{
 		Core::FMTSchedule newSchedule;
 		try
@@ -1117,12 +1117,12 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("at period " + std::to_string(period), "FMTsrmodel::getSolution", __LINE__, __FILE__);
+			_exhandler->printExceptions("at period " + std::to_string(period), "FMTSrModel::getSolution", __LINE__, __FILE__);
 		}
 		return newSchedule;
 	}
 
-	Core::FMTSchedule FMTsrmodel::getScheduleProportions(int period, bool withlock) const
+	Core::FMTSchedule FMTSrModel::getScheduleProportions(int period, bool withlock) const
 	{
 		Core::FMTSchedule newSchedule;
 		try
@@ -1132,12 +1132,12 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("at period " + std::to_string(period), "FMTsrmodel::getScheduleProportions", __LINE__, __FILE__);
+			_exhandler->printExceptions("at period " + std::to_string(period), "FMTSrModel::getScheduleProportions", __LINE__, __FILE__);
 		}
 		return newSchedule;
 	}
 
-	Graph::FMTgraphstats FMTsrmodel::updateMatrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
+	Graph::FMTgraphstats FMTSrModel::updateMatrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
 		const Graph::FMTgraphstats& newstats)
 	{
 
@@ -1198,14 +1198,14 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTsrmodel::updateMatrix", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSrModel::updateMatrix", __LINE__, __FILE__);
 		}
 		return this->getStats();
 	}
 
 
-	FMTsrmodel::FMTsrmodel(const FMTmodel& base, FMTsolverinterface lsolvertype) :
-		FMTmodel(base),
+	FMTSrModel::FMTSrModel(const FMTModel& base, FMTsolverinterface lsolvertype) :
+		FMTModel(base),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(Graph::FMTgraphbuild::nobuild)),
 		solver(lsolvertype,
 			base.getParameter(FMTstrmodelparameters::SOLVER_COLD_START),
@@ -1217,8 +1217,8 @@ namespace Models
 
 	}
 
-	FMTsrmodel::FMTsrmodel(const FMTsrmodel& rhs):
-		FMTmodel(rhs),
+	FMTSrModel::FMTSrModel(const FMTSrModel& rhs):
+		FMTModel(rhs),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(*rhs.m_graph)),
 		solver(rhs.solver)
 	{
@@ -1226,8 +1226,8 @@ namespace Models
 		//m_graph->passinobject(rhs);
 	}
 
-	FMTsrmodel::FMTsrmodel() :
-		FMTmodel(),
+	FMTSrModel::FMTSrModel() :
+		FMTModel(),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(Graph::FMTgraphbuild::nobuild)),
 		solver()
 	{
@@ -1236,19 +1236,19 @@ namespace Models
 
 
 
-	bool FMTsrmodel::operator == (const FMTsrmodel& rhs) const
+	bool FMTSrModel::operator == (const FMTSrModel& rhs) const
 	{
-		return (FMTmodel::operator == (rhs) &&
+		return (FMTModel::operator == (rhs) &&
 			solver == (rhs.solver) &&
 			*m_graph == *rhs.m_graph);
 	}
 
-	bool FMTsrmodel::operator != (const FMTsrmodel& rhs) const
+	bool FMTSrModel::operator != (const FMTSrModel& rhs) const
 	{
 		return !(*this == rhs);
 	}
 
-	std::map<std::string, double> FMTsrmodel::getOutput(const Core::FMTOutput& output, int period, Core::FMToutputlevel level) const
+	std::map<std::string, double> FMTSrModel::getOutput(const Core::FMTOutput& output, int period, Core::FMToutputlevel level) const
 	{
 		try {
 			const double* solution = solver.getColSolution();
@@ -1256,19 +1256,19 @@ namespace Models
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
 					"For output " + std::string(output.getName()),
-					"FMTsrmodel::getOutput", __LINE__, __FILE__);
+					"FMTSrModel::getOutput", __LINE__, __FILE__);
 				}
 			return m_graph->getOutput(*this, output, period, solution, level);
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::getOutput", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getOutput", __LINE__, __FILE__);
 		}
 
 		return std::map<std::string, double>();
 	}
 
-	std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> FMTsrmodel::getActives()
+	std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> FMTSrModel::getActives()
 	{
 		std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives;
 		try {
@@ -1283,14 +1283,14 @@ namespace Models
 			}
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::getActives", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getActives", __LINE__, __FILE__);
 		}
 		return actives;
 	}
 
 
 
-	Graph::FMTgraphstats FMTsrmodel::buildPeriod(Core::FMTSchedule schedule, bool forcepartialbuild, int compressageclassoperability)
+	Graph::FMTgraphstats FMTSrModel::buildPeriod(Core::FMTSchedule schedule, bool forcepartialbuild, int compressageclassoperability)
 	{
 		try {
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives = getActives();
@@ -1312,7 +1312,7 @@ namespace Models
 		{
 			const int PERIOD = static_cast<int>(m_graph->size() - 3);
 			_exhandler->printExceptions("At Period "+std::to_string(PERIOD), 
-								"FMTsrmodel::buildPeriod", __LINE__, __FILE__);
+								"FMTSrModel::buildPeriod", __LINE__, __FILE__);
 		}
 
 		return m_graph->getStats();
@@ -1320,22 +1320,22 @@ namespace Models
 
 
 
-	size_t FMTsrmodel::getGraphSize() const
+	size_t FMTSrModel::getGraphSize() const
 	{
 		return m_graph->size();
 	}
 
-	void FMTsrmodel::clearGraphDevelopments()
+	void FMTSrModel::clearGraphDevelopments()
 	{
 		m_graph->clearDevelopments();
 	}
-	void FMTsrmodel::clearGraphCache()
+	void FMTSrModel::clearGraphCache()
 	{
 		m_graph->clearCache();
 	}
 
 
-	bool FMTsrmodel::summarize(const std::map<int, double>& variables,
+	bool FMTSrModel::summarize(const std::map<int, double>& variables,
 		std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const
 	{
 		if (!variables.empty())
@@ -1358,33 +1358,33 @@ namespace Models
 	}
 
 
-	Graph::FMTgraphstats FMTsrmodel::getStats() const
+	Graph::FMTgraphstats FMTSrModel::getStats() const
 	{
 		return m_graph->getStats();
 	}
 
-	Graph::FMTgraphstats FMTsrmodel::getGraphStats(const Core::FMTMask& p_Subset) const
+	Graph::FMTgraphstats FMTSrModel::getGraphStats(const Core::FMTMask& p_Subset) const
 	{
 		Graph::FMTgraphstats TheStats;
 		try {
 			TheStats = m_graph->getStats(p_Subset);
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::getGraphStats", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getGraphStats", __LINE__, __FILE__);
 		}
 		return TheStats;
 	}
 
-	int FMTsrmodel::getFirstActivePeriod() const
+	int FMTSrModel::getFirstActivePeriod() const
 	{
 		return m_graph->getFirstActivePeriod();
 	}
 
-	void FMTsrmodel::postsolveGraph(const FMTmodel& originalbasemodel)
+	void FMTSrModel::postsolveGraph(const FMTModel& originalbasemodel)
 	{
 		try {
-			const std::vector<Core::FMTTheme>& postsolvethemes = dynamic_cast<const FMTsrmodel*>(&originalbasemodel)->themes;
-			const std::vector<Core::FMTAction>& postsolveactions = dynamic_cast<const FMTsrmodel*>(&originalbasemodel)->actions;
+			const std::vector<Core::FMTTheme>& postsolvethemes = dynamic_cast<const FMTSrModel*>(&originalbasemodel)->themes;
+			const std::vector<Core::FMTAction>& postsolveactions = dynamic_cast<const FMTSrModel*>(&originalbasemodel)->actions;
 			const Core::FMTMaskFilter postsolvefilter = this->getPostsolveFilter(originalbasemodel.getThemes(),originalbasemodel.getArea().begin()->getMask());
 			const std::vector<Core::FMTAction>& presolveactions = this->actions;
 			std::vector<int>actionmapping;
@@ -1398,20 +1398,20 @@ namespace Models
 			
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::postsolveGraph", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::postsolveGraph", __LINE__, __FILE__);
 		}
 	}
 
 
 
-	std::vector<Core::FMTActualDevelopment>FMTsrmodel::getArea(int period, bool beforegrowanddeath) const
+	std::vector<Core::FMTActualDevelopment>FMTSrModel::getArea(int period, bool beforegrowanddeath) const
 	{
 		std::vector<Core::FMTActualDevelopment>returnedarea;
 		try {
 			returnedarea.reserve(area.size());//Reserve at least the size of the initial area.
 			if (period == 0)
 			{
-				return FMTmodel::getArea();
+				return FMTModel::getArea();
 			};
 			const double* modelsolution = solver.getColSolution();
 			const int deathactionid = static_cast<int>(actions.size()-1);
@@ -1448,55 +1448,55 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::getArea", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getArea", __LINE__, __FILE__);
 		}
 
 		return returnedarea;
 	}
 
 
-	std::vector<Core::FMTActualDevelopment> FMTsrmodel::getPotentialArea(int p_Period, bool p_BeforeGrowAndDeath) const
+	std::vector<Core::FMTActualDevelopment> FMTSrModel::getPotentialArea(int p_Period, bool p_BeforeGrowAndDeath) const
 	{
 		std::vector<Core::FMTActualDevelopment> devArea;
 		try {
 			const std::vector<double> POTENTIAL_SOLUTION(solver.getNumCols(), 1.0);
-			FMTsrmodel newModel(*this);
+			FMTSrModel newModel(*this);
 			newModel.solver.setColSolution(&*POTENTIAL_SOLUTION.cbegin());
 			devArea = newModel.getArea(p_Period, p_BeforeGrowAndDeath);
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::getPotentialArea", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getPotentialArea", __LINE__, __FILE__);
 		}
 		return devArea;
 	}
 
-	FMTlpsolver* FMTsrmodel::getSolverPtr()
+	FMTLpSolver* FMTSrModel::getSolverPtr()
 	{
 		return &solver;
 	}
 
-	const FMTlpsolver* FMTsrmodel::getConstSolverPtr() const
+	const FMTLpSolver* FMTSrModel::getConstSolverPtr() const
 	{
 		return &solver;
 	}
 
-	void FMTsrmodel::setParallelLogger(Logging::FMTLogger& logger)
+	void FMTSrModel::setParallelLogger(Logging::FMTLogger& logger)
 	{
 		try {
 			solver.passInMessageHandler(logger);
 		}catch (...)
 			{
-			_exhandler->printExceptions("", "FMTsrmodel::setParallelLogger", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::setParallelLogger", __LINE__, __FILE__);
 			}
 	}
 
-	void FMTsrmodel::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
+	void FMTSrModel::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 	{
 		solver.passInLogger(logger);
 	}
 
-	bool FMTsrmodel::boundSolution(int period, double tolerance)
+	bool FMTSrModel::boundSolution(int period, double tolerance)
 	{
 		try {
 			if (static_cast<int>(m_graph->size()) > period)
@@ -1528,7 +1528,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("at period " + std::to_string(period), "FMTlpmodel::boundSolution", __LINE__, __FILE__);
+			_exhandler->printExceptions("at period " + std::to_string(period), "FMTLpModel::boundSolution", __LINE__, __FILE__);
 		}
 
 		return false;
@@ -1536,7 +1536,7 @@ namespace Models
 
 
 #if defined FMTWITHR
-	Rcpp::DataFrame FMTsrmodel::getOutputsDataFrame(const std::vector<Core::FMTOutput>& outputsdata, int firstPeriod, int lastPeriod) const
+	Rcpp::DataFrame FMTSrModel::getOutputsDataFrame(const std::vector<Core::FMTOutput>& outputsdata, int firstPeriod, int lastPeriod) const
 	{
 		Rcpp::DataFrame data = Rcpp::DataFrame();
 		try {
@@ -1629,19 +1629,19 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsrmodel::getOutputsDataFrame", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::getOutputsDataFrame", __LINE__, __FILE__);
 		}
 		return data;
 	}
 
 #endif 
 
-	std::unique_ptr<FMTmodel>FMTsrmodel::clone() const
+	std::unique_ptr<FMTModel>FMTSrModel::clone() const
 	{
-		return std::unique_ptr<FMTmodel>(new FMTsrmodel(*this));
+		return std::unique_ptr<FMTModel>(new FMTSrModel(*this));
 	}
 
-	std::vector<Models::FMTsolverinterface> FMTsrmodel::getAvailableSolverInterface()
+	std::vector<Models::FMTsolverinterface> FMTSrModel::getAvailableSolverInterface()
 	{
 		std::vector<Models::FMTsolverinterface> interfaces;
 		interfaces.push_back(Models::FMTsolverinterface::CLP);
@@ -1651,22 +1651,22 @@ namespace Models
 		return interfaces;
 	}
 
-	bool FMTsrmodel::setParameter(const FMTboolmodelparameters& key, const bool& value)
+	bool FMTSrModel::setParameter(const FMTboolmodelparameters& key, const bool& value)
 	{
 		try {
-			FMTmodel::setParameter(key, value);
+			FMTModel::setParameter(key, value);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTsrmodel::setParameter", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSrModel::setParameter", __LINE__, __FILE__);
 		}
 		return true;
 	}
 
-	bool FMTsrmodel::setParameter(const FMTintmodelparameters& key, const int& value)
+	bool FMTSrModel::setParameter(const FMTintmodelparameters& key, const int& value)
 	{
 		try {
-			FMTmodel::setParameter(key, value);
+			FMTModel::setParameter(key, value);
 			if (key == NUMBER_OF_THREADS)
 			{
 				solver.setNumberOfThreads(parameters.getIntParameter(NUMBER_OF_THREADS));
@@ -1674,12 +1674,12 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTsrmodel::setParameter", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSrModel::setParameter", __LINE__, __FILE__);
 		}
 		return true;
 	}
 
-	std::set<Core::FMTSerie>FMTsrmodel::getRotations(const Core::FMTMask& mask, const std::string& aggregate) const
+	std::set<Core::FMTSerie>FMTSrModel::getRotations(const Core::FMTMask& mask, const std::string& aggregate) const
 	{
 		std::set<Core::FMTSerie>rotations;
 		try {
@@ -1687,12 +1687,12 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTsrmodel::getRotations", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSrModel::getRotations", __LINE__, __FILE__);
 		}
 		return rotations;
 	}
 
-	std::vector<const Core::FMTDevelopment*> FMTsrmodel::getNoChoice(const Core::FMTMask& base_mask) const
+	std::vector<const Core::FMTDevelopment*> FMTSrModel::getNoChoice(const Core::FMTMask& base_mask) const
 	{
 		std::vector<const Core::FMTDevelopment*>devs;
 		try {
@@ -1700,7 +1700,7 @@ namespace Models
 			devs = m_graph->noChoice(base_mask, death_id);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTsrmodel::getNoChoice", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSrModel::getNoChoice", __LINE__, __FILE__);
 			}
 		return devs;
 	}
@@ -1710,5 +1710,5 @@ namespace Models
 
 
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTsrmodel)
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTSrModel)
 #endif

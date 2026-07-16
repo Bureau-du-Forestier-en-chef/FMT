@@ -40,7 +40,7 @@ namespace Parallel
 	FMTparallelwriter::FMTparallelwriter(const std::string& location,
 		const std::string& driver,
 		const std::vector<Core::FMTOutput>& outputs,
-		const std::vector<Models::FMTmodel*>& allmodels,
+		const std::vector<Models::FMTModel*>& allmodels,
 		std::vector<std::string>layersoptions,
 		double minimaldrift,
 		Core::FMToutputlevel outputlevel) :
@@ -71,7 +71,7 @@ namespace Parallel
 					"No outputs to write",
 					"FMTparallelwriter::FMTparallelwriter()", __LINE__, __FILE__);
 			}
-			for (const Models::FMTmodel* modelptr : allmodels)
+			for (const Models::FMTModel* modelptr : allmodels)
 				{
 				setLayer(modelptr->getName());
 				}
@@ -141,7 +141,7 @@ namespace Parallel
 	}
 
 	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getResults(
-		const std::unique_ptr<Models::FMTmodel>& modelptr,
+		const std::unique_ptr<Models::FMTModel>& modelptr,
 		const int& firstPeriod,
 		const int& lastPeriod) const
 	{
@@ -329,7 +329,7 @@ namespace Parallel
 	}
 
 	void FMTparallelwriter::getAndWrite(
-		const std::unique_ptr<Models::FMTmodel>& modelptr, 
+		const std::unique_ptr<Models::FMTModel>& modelptr, 
 		const std::vector<Core::FMTOutput>& loutputs)
 	{
 		try {
@@ -361,7 +361,7 @@ namespace Parallel
 					{
 					schedulelocation = projectdirectory + "/" + projectname + ".seq";
 					}
-				Parser::FMTscheduleparser parser;
+				Parser::FMTScheduleParser parser;
 				std::vector<Core::FMTSchedule>solution;
 				for (int period = 1 ; period <= modelptr->getParameter(Models::FMTintmodelparameters::LENGTH);++period)
 					{
@@ -378,7 +378,7 @@ namespace Parallel
 	{
 		try
 		{
-			Parser::FMTscheduleparser parser;
+			Parser::FMTScheduleParser parser;
 			boost::lock_guard<boost::recursive_mutex> lock(mtx);
 			parser.write(scheduleList, schedulePath, append);
 		}

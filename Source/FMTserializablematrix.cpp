@@ -18,9 +18,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 
-FMTserializablematrix::~FMTserializablematrix() = default;
+FMTSerializableMatrix::~FMTSerializableMatrix() = default;
 
-FMTserializablematrix::FMTserializablematrix():
+FMTSerializableMatrix::FMTSerializableMatrix():
 		matrix(new CoinPackedMatrix()),
 		collb(),
 		colub(),
@@ -33,7 +33,7 @@ FMTserializablematrix::FMTserializablematrix():
 
 	}
 
-FMTserializablematrix::FMTserializablematrix(const FMTserializablematrix& rhs): 
+FMTSerializableMatrix::FMTSerializableMatrix(const FMTSerializableMatrix& rhs): 
 	matrix(new CoinPackedMatrix(*rhs.matrix)),
 	collb(rhs.collb),
 	colub(rhs.colub),
@@ -45,7 +45,7 @@ FMTserializablematrix::FMTserializablematrix(const FMTserializablematrix& rhs):
 	{
 
 	}
-FMTserializablematrix& FMTserializablematrix::operator = (const FMTserializablematrix& rhs)
+FMTSerializableMatrix& FMTSerializableMatrix::operator = (const FMTSerializableMatrix& rhs)
 	{
 	if (this!=&rhs)
 		{
@@ -61,7 +61,7 @@ FMTserializablematrix& FMTserializablematrix::operator = (const FMTserializablem
 	return *this;
 	}
 
-FMTserializablematrix::FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface):
+FMTSerializableMatrix::FMTSerializableMatrix(const std::shared_ptr<OsiSolverInterface>& solverinterface):
 	matrix(new CoinPackedMatrix()),
 	collb(),
 	colub(),
@@ -108,7 +108,7 @@ FMTserializablematrix::FMTserializablematrix(const std::shared_ptr<OsiSolverInte
 	}
 
 
-void FMTserializablematrix::setMatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const
+void FMTSerializableMatrix::setMatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const
 	{
 	if (!collb.empty())
 		{
@@ -119,7 +119,7 @@ void FMTserializablematrix::setMatrix(std::shared_ptr<OsiSolverInterface>& solve
 	
 	}
 
-void FMTserializablematrix::getSetMatrixElements(bool loading,
+void FMTSerializableMatrix::getSetMatrixElements(bool loading,
 	bool& order,
 	double& extragap,
 	double& extramajor,
@@ -187,7 +187,7 @@ void FMTserializablematrix::getSetMatrixElements(bool loading,
 }
 
 
-void FMTserializablematrix::getSetMemberElements(bool loading,
+void FMTSerializableMatrix::getSetMemberElements(bool loading,
 	std::vector<double>& lcollb,
 	std::vector<double>& lcolub,
 	std::vector<double>& lobj,

@@ -25,8 +25,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-	class FMTmodel;
-	class FMTnssmodel;
+	class FMTModel;
+	class FMTNssModel;
 }
 
 
@@ -44,8 +44,8 @@ constraints and disturb a forest stand in a FMTTransition.
 */
 class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
     {
-	friend class Models::FMTmodel;
-	friend class Models::FMTnssmodel;
+	friend class Models::FMTModel;
+	friend class Models::FMTNssModel;
     public:
 		// DocString: FMTYields::generateDefaultYields
 		/**
@@ -282,7 +282,7 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		@brief set the model to the FMTyieldmodelhandler.
 		@param[in] the model that we want to link to the yieldhandler.
 		*/
-		void setModel(Models::FMTmodel* p_modelPtr);
+		void setModel(Models::FMTModel* p_modelPtr);
 		// DocString: FMTYields::_getFirstSeen
 		/**
 		@brief get the first location of yield with this name,if out gonna be size()

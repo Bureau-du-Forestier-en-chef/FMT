@@ -11,7 +11,7 @@
 	#include "FMTscheduleparser.h"
 #endif
 
-void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
+void setMapping(const std::string& rastpath, Models::FMTSesModel& model)
 {
 	const std::string agerast = rastpath + "AGE.tif";
 	std::vector<std::string> themesrast;
@@ -19,7 +19,7 @@ void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
 	{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 	}
-	Parser::FMTareaparser areaparser;
+	Parser::FMTAreaParser areaparser;
 	const Spatial::FMTforest initialforestmap = areaparser.readRasters(model.getThemes(), themesrast, agerast, 1, 0.0001);
 	model.setInitialMapping(initialforestmap);
 }
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 		spatialOutputs = { "OVOLTOTREC" };*/
 	}
 	const std::string outdir = "../../tests/Spatial_doplanning/";
-	Parser::FMTmodelparser mparser;
+	Parser::FMTModelParser mparser;
 	mparser.setDebugLogger();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -75,8 +75,8 @@ int main(int argc, char* argv[])
 	mparser.setErrorsToWarnings(errors);
 	mparser.setMaxWarningsBeforeSilenced(10000000);
 	const std::vector<std::string>scenarios(1, scenario);
-	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
-	Models::FMTsesmodel simulationmodel(models.at(0));
+	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
+	Models::FMTSesModel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
 	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
@@ -95,10 +95,10 @@ int main(int argc, char* argv[])
 	simulationmodel.logConstraintsInfeasibilities();
 	const Spatial::FMTSpatialSchedule& SPATIAL_SCHEDULE = simulationmodel.getSpSchedule();
 	const auto test = simulationmodel.getSchedule(false);
-	Parser::FMTscheduleparser scheduleParser;
+	Parser::FMTScheduleParser scheduleParser;
 	scheduleParser.write(test, outdir + "schedules.seq");
 
-	/*Parser::FMTareaparser areaParser;
+	/*Parser::FMTAreaParser areaParser;
 	for (int period = 1; period <= length; ++period)
 	{
 		const std::string NAME = outdir + "PERIOD_" + std::to_string(period) + "_";
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 		}
 		areaParser.writeForest(SPATIAL_SCHEDULE.getForestPeriod(period), simulationmodel.getthemes(), themesrast, NAME + "AGE.tif", NAME + "LOCK.tif");
 	}*/
-	Parser::FMTareaparser areaParser;
+	Parser::FMTAreaParser areaParser;
 	std::vector<Core::FMTTheme>selected(1, simulationmodel.getThemes().at(2));
 	areaParser.writeDisturbances(outdir, SPATIAL_SCHEDULE, simulationmodel.getactions(), selected, length);
 	for (const Core::FMTOutput& OUTOUT : simulationmodel.getOutputs())

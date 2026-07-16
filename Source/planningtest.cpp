@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("LP4");
 	playback.push_back(false);
 	allscenarios.push_back("LP5");
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
@@ -32,11 +32,11 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
 	Parallel::FMTplanningtask newplanningtask(1,7, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly/*, primlocation*/);
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readschedules(primlocation, models);
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{
-		Models::FMTlpmodel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
 		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH,7);
 		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		std::vector<Core::FMTOutput>selectedoutputs;

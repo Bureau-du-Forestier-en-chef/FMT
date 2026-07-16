@@ -8,7 +8,7 @@
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace Exception
@@ -24,7 +24,7 @@ namespace Wrapper
 	{
 		public:
 			~FMTFormCache()=default;
-			const Models::FMTmodel& getModel(const int& index) const;
+			const Models::FMTModel& getModel(const int& index) const;
 			FMTexceptionhandlerwarning* GetFormHandler();
 			const FMTexceptionhandlerwarning* GetFormHandler() const;
 			Exception::FMTExceptionHandler* getExceptionHandler() const;
@@ -32,7 +32,7 @@ namespace Wrapper
 			static FMTFormCache* GetInstance();
 			bool empty() const;
 			size_t size() const;
-			void push_back(const Models::FMTmodel& model);
+			void push_back(const Models::FMTModel& model);
 			void erase(const int& index);
 			void clear();
 			void InitializeExceptionHandler(const int& maxwarnings, const std::vector<Exception::FMTexc>& warning);
@@ -48,12 +48,12 @@ namespace Wrapper
 			// Permet d'ecrire directement dans le log en dernier recours, sans
 			// dependre de l'objet logger (qui peut etre invalide apres un crash).
 			const std::string& GetLoggerFilename() const;
-			Parser::FMTmodelparser GetConfiguredParser() const;
+			Parser::FMTModelParser GetConfiguredParser() const;
 			FMTFormCache(const FMTFormCache& rhs) = delete;
 			FMTFormCache& operator =(const FMTFormCache& rhs) = delete;
 		private:
 			FMTFormCache()=default;
-			std::vector<std::unique_ptr<Models::FMTmodel>> m_Models;
+			std::vector<std::unique_ptr<Models::FMTModel>> m_Models;
 			static std::unique_ptr<FMTFormCache> m_Instance;
 
 			// Configuration du logger figee a la premiere initialisation : la location

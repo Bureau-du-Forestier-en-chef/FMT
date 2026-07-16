@@ -86,9 +86,9 @@ bool FMTForm::Cache_AjouterScenarios(
 		std::vector<std::string>scenarios;
 		std::string scenario = msclr::interop::marshal_as<std::string>(scenarioSystem);
 		scenarios.push_back(scenario);
-		Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
-		const std::vector<Models::FMTmodel> models = Modelparser.readproject(fichierPri, scenarios);
-		for (const Models::FMTmodel& model : models)
+		Parser::FMTModelParser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
+		const std::vector<Models::FMTModel> models = Modelparser.readproject(fichierPri, scenarios);
+		for (const Models::FMTModel& model : models)
 		{
 			FMTFormCache::GetInstance()->push_back(model);
 		}

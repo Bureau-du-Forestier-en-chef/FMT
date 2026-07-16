@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -82,7 +82,7 @@ void exportHeuristics()
 
 	Rcpp::class_<Heuristics::FMToperatingareascheduler>("FMToperatingareascheduler","@DocString(FMToperatingareascheduler)")
 		.derives<Heuristics::FMTlpheuristic>("FMTlpheuristic")
-		//.derives<Models::FMTlpsolver>("FMTlpsolver")
+		//.derives<Models::FMTLpSolver>("FMTlpsolver")
 		.constructor("@DocString(FMToperatingareascheduler())")
 		.method("initialsolve", &Heuristics::FMToperatingareascheduler::initialSolve,
 			"@DocString(FMToperatingareascheduler::initialsolve)")

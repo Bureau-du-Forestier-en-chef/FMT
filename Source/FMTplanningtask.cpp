@@ -17,11 +17,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parallel
 {
 
-	std::list<std::unique_ptr<Models::FMTmodel>>FMTplanningtask::copyModels(const std::list<std::unique_ptr<Models::FMTmodel>>& tocopy) const
+	std::list<std::unique_ptr<Models::FMTModel>>FMTplanningtask::copyModels(const std::list<std::unique_ptr<Models::FMTModel>>& tocopy) const
 	{
-		std::list<std::unique_ptr<Models::FMTmodel>>newmodels;
+		std::list<std::unique_ptr<Models::FMTModel>>newmodels;
 		try {
-			for (const std::unique_ptr<Models::FMTmodel>& model : tocopy)
+			for (const std::unique_ptr<Models::FMTModel>& model : tocopy)
 				{
 				newmodels.push_back(std::move(model->clone()));
 				}
@@ -81,7 +81,7 @@ namespace Parallel
 			}
 	}
 
-	void FMTplanningtask::push_back(const Models::FMTmodel& model,
+	void FMTplanningtask::push_back(const Models::FMTModel& model,
 		std::vector<Core::FMTSchedule>schedules, std::vector<Core::FMTOutput>loutputs)
 	{
 		try {
@@ -112,13 +112,13 @@ namespace Parallel
 	{
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
-			std::list<std::unique_ptr<Models::FMTmodel>>allmodels=copyModels(m_Models);
+			std::list<std::unique_ptr<Models::FMTModel>>allmodels=copyModels(m_Models);
 			std::list<std::vector<Core::FMTSchedule>>modelschedules(m_allSchedules);
 			std::list<std::vector<Core::FMTOutput>>modeloutputs(m_Outputs);
 			for (const size_t tasksize : splitWork(numberoftasks, static_cast<int>(m_Models.size())))
 				{
 				FMTplanningtask newtask(*this);
-				std::list<std::unique_ptr<Models::FMTmodel>>modelsoftask;
+				std::list<std::unique_ptr<Models::FMTModel>>modelsoftask;
 				std::list<std::vector<Core::FMTSchedule>>schedulesoftask;
 				std::list<std::vector<Core::FMTOutput>>outputsoftask;
 				for (int model = 0; model < tasksize; ++model)
@@ -148,7 +148,7 @@ namespace Parallel
 			if (!m_Models.empty())
 				{
 				FMTplanningtask newtask(*this);
-				std::list<std::unique_ptr<Models::FMTmodel>>singlemodel;
+				std::list<std::unique_ptr<Models::FMTModel>>singlemodel;
 				std::list<std::vector<Core::FMTSchedule>>singleschedule;
 				std::list<std::vector<Core::FMTOutput>>singleoutputs;
 				singlemodel.push_back(std::move(m_Models.front()->clone()));
@@ -172,7 +172,7 @@ namespace Parallel
 	void FMTplanningtask::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 		{
 		try {
-			for (std::unique_ptr<Models::FMTmodel>& model : m_Models)
+			for (std::unique_ptr<Models::FMTModel>& model : m_Models)
 				{
 				model->passInLogger(logger);
 				}
@@ -191,7 +191,7 @@ namespace Parallel
 	void FMTplanningtask::work()
 	{
 		try {
-			std::list<std::unique_ptr<Models::FMTmodel>>modelskept;
+			std::list<std::unique_ptr<Models::FMTModel>>modelskept;
 			while (!m_Models.empty())
 			{
 				_logger->logWithLevel("Thread:" + getThreadId() + " Planning of " + m_Models.front()->getName() + " started\n",0);
@@ -221,7 +221,7 @@ namespace Parallel
 			}
 			if (!modelskept.empty())
 			{
-				for (std::unique_ptr<Models::FMTmodel>& model : modelskept)
+				for (std::unique_ptr<Models::FMTModel>& model : modelskept)
 				{
 					m_Models.push_back(std::move(model));
 				}

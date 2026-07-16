@@ -25,7 +25,7 @@ namespace Graph
 
 namespace Parser
 {
-	class FMToutputparser;
+	class FMTOutputParser;
 }
 
 
@@ -184,7 +184,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		void setYield(const std::string& p_Yield);
 	private:
 		friend class boost::serialization::access;
-		friend class Parser::FMToutputparser;
+		friend class Parser::FMTOutputParser;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{

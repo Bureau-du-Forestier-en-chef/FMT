@@ -220,7 +220,7 @@ namespace Wrapper
                 indCarbon, predictoryields, growththemes,
                 scenarioName); 
 
-            Models::FMTmodel selectedModel = FMTFormCache::GetInstance()->getModel(scenario);
+            Models::FMTModel selectedModel = FMTFormCache::GetInstance()->getModel(scenario);
 
             const std::vector<Core::FMTSchedule> schedules = ObtenirSEQ(fichierPri, scenario);
     

@@ -85,7 +85,7 @@ void exportHeuristics()
 
 	definePyList<Heuristics::FMToperatingareacluster>();
 
-	bp::class_<Heuristics::FMTlpheuristic, bp::bases<Core::FMTObject, Models::FMTlpsolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTlpheuristic)");
+	bp::class_<Heuristics::FMTlpheuristic, bp::bases<Core::FMTObject, Models::FMTLpSolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTlpheuristic)");
 
     bp::class_<Heuristics::FMToperatingareaclusterer, bp::bases<Heuristics::FMTlpheuristic>>("Heuristics::FMToperatingareaclusterer", "@DocString(FMToperatingareaclusterer)")
 		.def("initialsolve", &Heuristics::FMToperatingareaclusterer::initialSolve,

@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 		params.growthThemes = {};
 	}
 
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	modelparser.setDefaultLogger();
 	modelparser.setTerminateStack();
@@ -96,9 +96,9 @@ int main(int argc, char* argv[])
 
     std::vector<std::string> scenarioName;
 	scenarioName.push_back(params.scenarioName);
-    std::vector<Models::FMTmodel> models = modelparser.readproject(params.primaryFilePath, scenarioName);
+    std::vector<Models::FMTModel> models = modelparser.readproject(params.primaryFilePath, scenarioName);
 
-    Models::FMTmodel& selectedModel = models[0];
+    Models::FMTModel& selectedModel = models[0];
 
 	std::vector<Core::FMTSchedule> schedules = modelparser.readschedules(params.primaryFilePath, models).at(0);
 

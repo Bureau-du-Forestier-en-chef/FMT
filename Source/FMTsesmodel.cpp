@@ -13,28 +13,28 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
     {
 
-    FMTsesmodel::FMTsesmodel(const FMTmodel& rhs):
-		FMTsemodel(rhs)
+    FMTSesModel::FMTSesModel(const FMTModel& rhs):
+		FMTSeModel(rhs)
         {
 		
         }
 
-	FMTsesmodel::FMTsesmodel(const FMTsemodel& rhs):
-		FMTsemodel(rhs)
+	FMTSesModel::FMTSesModel(const FMTSeModel& rhs):
+		FMTSeModel(rhs)
 	{
 
 	}
 
 
-	FMTsesmodel::FMTsesmodel(const FMTmodel& rhs, const Spatial::FMTforest& forest) :
-		FMTsemodel(rhs, forest)
+	FMTSesModel::FMTSesModel(const FMTModel& rhs, const Spatial::FMTforest& forest) :
+		FMTSeModel(rhs, forest)
 	{
 		
 	}
 
 
 
-	std::map<std::string, double> FMTsesmodel::greedyReferenceBuild(
+	std::map<std::string, double> FMTSesModel::greedyReferenceBuild(
 		const Core::FMTSchedule& p_schedule,
 		size_t p_randomIterations,
 		int p_seed,
@@ -43,7 +43,7 @@ namespace Models
 	std::map<std::string, double> bestresults;
 	try {
 		
-		bestresults = FMTsemodel::greedyReferenceBuild(
+		bestresults = FMTSeModel::greedyReferenceBuild(
 			m_BestSolution, 
 			p_schedule, 
 			p_randomIterations, 
@@ -52,18 +52,18 @@ namespace Models
 		m_SpatialGraphs.deleteNonCompleteGraphs();
 		}catch (...)
 			{
-			_exhandler->printExceptions("", "FMTsesmodel::greedyReferenceBuild", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSesModel::greedyReferenceBuild", __LINE__, __FILE__);
 			}
 	return bestresults;
 	}
 
 
-	std::unique_ptr<FMTmodel>FMTsesmodel::clone() const
+	std::unique_ptr<FMTModel>FMTSesModel::clone() const
 		{
-		return std::unique_ptr<FMTmodel>(new FMTsesmodel(*this));
+		return std::unique_ptr<FMTModel>(new FMTSesModel(*this));
 		}
 	
-	bool FMTsesmodel::build(std::vector<Core::FMTSchedule> schedules)
+	bool FMTSesModel::build(std::vector<Core::FMTSchedule> schedules)
 	{
 		try {
 			for (const Core::FMTSchedule& schedule : schedules)
@@ -73,40 +73,40 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsesmodel::build", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSesModel::build", __LINE__, __FILE__);
 		}
 	return true;
 	}
 
-	void FMTsesmodel::swapPtr(std::unique_ptr<FMTmodel>& rhs)
+	void FMTSesModel::swapPtr(std::unique_ptr<FMTModel>& rhs)
 	{
-		*this = std::move(*dynamic_cast<FMTsesmodel*>(rhs.get()));
+		*this = std::move(*dynamic_cast<FMTSesModel*>(rhs.get()));
 	}
 
-	std::unique_ptr<FMTmodel>FMTsesmodel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTModel>FMTSesModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 		{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTsesmodel(*(dynamic_cast<FMTsemodel*>(FMTsemodel::presolve(optionaldevelopments).get()))));
+			return std::unique_ptr<FMTModel>(new FMTSesModel(*(dynamic_cast<FMTSeModel*>(FMTSeModel::presolve(optionaldevelopments).get()))));
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsesmodel::presolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSesModel::presolve", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTmodel>(nullptr);
+		return std::unique_ptr<FMTModel>(nullptr);
 		}
 
-	std::unique_ptr<FMTmodel>FMTsesmodel::getCopy(int period) const
+	std::unique_ptr<FMTModel>FMTSesModel::getCopy(int period) const
 	{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTsesmodel(*dynamic_cast<FMTsemodel*>(FMTsemodel::getCopy(period).get())));
+			return std::unique_ptr<FMTModel>(new FMTSesModel(*dynamic_cast<FMTSeModel*>(FMTSeModel::getCopy(period).get())));
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTsesmodel::getCopy", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSesModel::getCopy", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTmodel>(nullptr);
+		return std::unique_ptr<FMTModel>(nullptr);
 	}
 
 
     }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTsesmodel)
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTSesModel)

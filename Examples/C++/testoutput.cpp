@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	Logging::FMTDefaultLogger().logStamp();
 	if (Version::FMTversion().hasFeature("OSI"))
 		{
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		modelparser.setDefaultExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -54,12 +54,12 @@ int main(int argc, char *argv[])
 			period = 14;
 		}
 		const std::vector<std::string>scenarios(1, scenario);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		optimizationmodel.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
 		optimizationmodel.doPlanning(false, schedules);
 		bool gotovoltotrec = false;
 		for (const Core::FMTOutput& output : optimizationmodel.getOutputs())

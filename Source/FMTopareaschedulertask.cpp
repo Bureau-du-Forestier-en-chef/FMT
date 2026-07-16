@@ -33,10 +33,10 @@ namespace Parallel
 	std::chrono::time_point<std::chrono::high_resolution_clock> FMTopareaschedulertask::stoptime = std::chrono::time_point<std::chrono::high_resolution_clock>();
 	double FMTopareaschedulertask::relax_objective = 0.0;
 	std::string FMTopareaschedulertask::outyldname = std::string();
-	std::unique_ptr<Models::FMTlpmodel> FMTopareaschedulertask::basemodel(nullptr);
+	std::unique_ptr<Models::FMTLpModel> FMTopareaschedulertask::basemodel(nullptr);
 
 
-	double FMTopareaschedulertask::solveInitialModel(Models::FMTlpmodel& model) const
+	double FMTopareaschedulertask::solveInitialModel(Models::FMTLpModel& model) const
 	{
 		try {
 			if (model.doPlanning(true))
@@ -56,7 +56,7 @@ namespace Parallel
 	}
 
 	std::vector<Heuristics::FMToperatingareascheme> FMTopareaschedulertask::getReturnTimeFromOutput(
-		Models::FMTlpmodel& model,
+		Models::FMTLpModel& model,
 		const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 		const Core::FMTOutput& output) const
 	{
@@ -104,7 +104,7 @@ namespace Parallel
 		return newschemes;
 	}
 
-	void FMTopareaschedulertask::setInitialScheduler(Models::FMTlpmodel& model,
+	void FMTopareaschedulertask::setInitialScheduler(Models::FMTLpModel& model,
 		const std::vector<Heuristics::FMToperatingareascheme>& opareas, const Core::FMTOutputNode& node)
 	{
 		try {
@@ -135,7 +135,7 @@ namespace Parallel
 		return then;
 	}
 
-	FMTopareaschedulertask::FMTopareaschedulertask(const Models::FMTlpmodel& model,
+	FMTopareaschedulertask::FMTopareaschedulertask(const Models::FMTLpModel& model,
 		const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 		const Core::FMTOutputNode& node,
 		const std::string& outputlocation,
@@ -148,16 +148,16 @@ namespace Parallel
 		lastspawned(0)
 	{
 		try {
-			Models::FMTlpmodel modelcopy(model);
+			Models::FMTLpModel modelcopy(model);
 			//Force postSolve to keep logic with the FMToperatingareascheme
-			modelcopy.FMTmodel::setParameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
+			modelcopy.FMTModel::setParameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
 			//Keep the non build modelcopy.
-			basemodel = std::move(std::unique_ptr<Models::FMTlpmodel>(new Models::FMTlpmodel(modelcopy)));
+			basemodel = std::move(std::unique_ptr<Models::FMTLpModel>(new Models::FMTLpModel(modelcopy)));
 			solveInitialModel(modelcopy);
 			if (!returntime_output.empty())
 				{
 				const std::vector<Heuristics::FMToperatingareascheme> newschemes = getReturnTimeFromOutput(modelcopy, opareas, returntime_output);
-				Parser::FMTareaparser area_parser;
+				Parser::FMTAreaParser area_parser;
 				const std::string location = (outputlocation +"/"+returntime_output.getName() + ".csv");
 				std::vector<std::string>layersoptions;
 				layersoptions.push_back("SEPARATOR=SEMICOLON");
@@ -260,7 +260,7 @@ namespace Parallel
 			
 			const double* thesolution = bestscheduler->getColSolution();
 			basemodel->getSolverPtr()->passInMessageHandler(*tasklogger.get());
-			Models::FMTlpmodel modelcopy(*basemodel);
+			Models::FMTLpModel modelcopy(*basemodel);
 			modelcopy.doPlanning(false);
 			Core::FMTYields newyields = modelcopy.getYields();
 			newyields.unShrink(modelcopy.getThemes());
@@ -276,9 +276,9 @@ namespace Parallel
 			getConstraintsSolution(outputs, constraints);
 			modelcopy.setConstraints(constraints);
 			modelcopy.setOutputs(outputs);
-			Models::FMTlpsolver* solver = modelcopy.getSolverPtr();
+			Models::FMTLpSolver* solver = modelcopy.getSolverPtr();
 			solver->setColSolution(thesolution);
-			Parser::FMTmodelparser modelparser;
+			Parser::FMTModelParser modelparser;
 			const boost::filesystem::path filepath(solutionlocation + ".txt");
 			const boost::filesystem::path folderpath = filepath.parent_path();
 			modelparser.write(modelcopy, folderpath.string() + "/");
@@ -330,7 +330,7 @@ namespace Parallel
 				yields.push_back(newyield->getMask(),newyield);
 				}
 			yields.update();
-			Parser::FMTyieldparser yldparser;
+			Parser::FMTYieldParser yldparser;
 			const std::string solutionname = solutionlocation +"_"+ std::to_string(bestobjvalue) + "_" + relativevalue + ".yld";
 			yldparser.write(yields, solutionname);
 			std::vector<Core::FMTConstraint>constraints;
@@ -338,9 +338,9 @@ namespace Parallel
 			getConstraintsSolution(outputs, constraints);
 			const std::string outputname = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".out";
 			const std::string constraintName = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".opt";
-			Parser::FMToutputparser outparser;
+			Parser::FMTOutputParser outparser;
 			outparser.write(outputs, outputname);
-			Parser::FMToptimizationparser optparser;
+			Parser::FMTOptimizationParser optparser;
 			optparser.write(constraints, constraintName);
 
 		}catch (...)

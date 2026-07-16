@@ -136,7 +136,7 @@ int main()
 	constraints.push_back(evenflow);
 	///////////////////////////////////////////////////////////
 	//Create Model
-	Models::FMTlpmodel model(Models::FMTmodel(),Models::FMTsolverinterface::MOSEK);
+	Models::FMTLpModel model(Models::FMTModel(),Models::FMTsolverinterface::MOSEK);
 	model.setName("TEST");
 	model.setThemes(themes);
 	model.setYields(yields);
@@ -147,7 +147,7 @@ int main()
 	model.setOutputs(outputs);
 	model.setConstraints(constraints);
 	model.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
-	Parser::FMTmodelparser mparser;
+	Parser::FMTModelParser mparser;
 	//Write model
 	mparser.write(model, "../../tests/createmodel/");
 	//Solve model

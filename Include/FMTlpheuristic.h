@@ -36,7 +36,7 @@ namespace Heuristics
 	the matrix. It's up to the user to decide to just generate a good initialsolution or
 	generate a good initialsolution and then try to find the optimaly using a BnB solver.
 	*/
-	class FMTEXPORT FMTlpheuristic : public Models::FMTlpsolver
+	class FMTEXPORT FMTlpheuristic : public Models::FMTLpSolver
 	{
 		// DocString: FMTlpheuristic::save
 		/**
@@ -46,7 +46,7 @@ namespace Heuristics
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 		{
-			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
+			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTLpSolver>(*this));
 			ar & BOOST_SERIALIZATION_NVP(seed);
 			ar & BOOST_SERIALIZATION_NVP(usingsolvercopy);
 		}
@@ -57,7 +57,7 @@ namespace Heuristics
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
+			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTLpSolver>(*this));
 			this->passInMessageHandler(*this->_logger);
 			ar & BOOST_SERIALIZATION_NVP(seed);
 			this->setGeneratorSeed(seed);
@@ -72,7 +72,7 @@ namespace Heuristics
 		///The random engine seed need to be a data member when serializing the class
 		size_t seed;
 		// DocString: FMTlpheuristic::usingsolvercopy
-		///If true the heuristic will work from it's own copy of solverinterface, else it's going to work on the FMTlpmodel solverinterface.
+		///If true the heuristic will work from it's own copy of solverinterface, else it's going to work on the FMTLpModel solverinterface.
 		bool usingsolvercopy;
 	public:
 		// DocString: FMTlpheuristic::setGeneratorSeed
@@ -80,15 +80,15 @@ namespace Heuristics
 		Setter for the seed data member
 		*/
 		void setGeneratorSeed(const size_t& lseed);
-		// DocString: FMTlpheuristic(Models::FMTlpsolver&,size_t lseed,bool copysolver)
+		// DocString: FMTlpheuristic(Models::FMTLpSolver&,size_t lseed,bool copysolver)
 		/**
 		Main constructor used to initialize a FMToperatingareaheuristic, the constructor needs
-		alot of information comming from a FMTlpmodel. Also constructing a FMToperatingareaheuristic is
-		not a small task if copysolver = true because the solverinterface beging the FMTlpmodel needs
+		alot of information comming from a FMTLpModel. Also constructing a FMToperatingareaheuristic is
+		not a small task if copysolver = true because the solverinterface beging the FMTLpModel needs
 		to be copied. After constructing the object the operatingareaheuristic doesn't need any information
-		about the FMTlpmodel.
+		about the FMTLpModel.
 		*/
-		FMTlpheuristic(Models::FMTlpsolver& basesolve, size_t lseed = 0,bool copysolver = true);
+		FMTlpheuristic(Models::FMTLpSolver& basesolve, size_t lseed = 0,bool copysolver = true);
 		// DocString: FMTlpheuristic()
 		/**
 		Constructor based on a simple solver type and seed.

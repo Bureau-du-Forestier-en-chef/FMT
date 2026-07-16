@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 													"APLLI","AEC3","APLCC","ACJ","ACPJ","ACPROG","ACA","ACA2","ACP"};*/
 		//const std::string OUTPUT_DIRECTORY = "outputs/";
 		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsAggregations/";
-		Parser::FMTmodelparser ModelParser;
+		Parser::FMTModelParser ModelParser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -85,35 +85,35 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		ModelParser.setErrorsToWarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
-		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
+		const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
 		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
-		Models::FMTlpmodel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
 
 		//ModelParser.writeToProject(OUTPUT_DIRECTORY + "test.pri", Optimization1);
 
 
-		Optimization1.FMTmodel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-		Optimization1.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-		Optimization1.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
+		Optimization1.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+		Optimization1.FMTModel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		Optimization1.FMTModel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
 		Optimization1.doPlanning(false, SCHEDULES);
 
 		if (ORDERING.empty())
 			{
 			ORDERING = MODELS.at(0).getSchedulesPriorities(SCHEDULES);
 			}
-		const Models::FMTmodel AGGREGATED_MODEL = MODELS.at(0).aggregateAllActions(AGGREGATES, ORDERING);
+		const Models::FMTModel AGGREGATED_MODEL = MODELS.at(0).aggregateAllActions(AGGREGATES, ORDERING);
 		ModelParser.writeToProject(OUTPUT_DIRECTORY + SCENARIO +".pri", AGGREGATED_MODEL);
 		if (!SCHEDULES.empty())
 			{
-			Parser::FMTscheduleparser SCHEDULE_PARSER;
+			Parser::FMTScheduleParser SCHEDULE_PARSER;
 			const std::vector<Core::FMTSchedule>NEWSCHEDULE = AGGREGATED_MODEL.aggregateSchedules(SCHEDULES); // agg 2
 			SCHEDULE_PARSER.write(NEWSCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq"); // write 3
 			}
 		const std::vector<std::string>ROOT(1,"ROOT");
-		const std::vector<Models::FMTmodel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
+		const std::vector<Models::FMTModel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
 		const std::vector<Core::FMTSchedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0); //read 1
-		Models::FMTsesmodel Simulation(READMODELS.at(0));
-		Parser::FMTareaparser areaParser;
+		Models::FMTSesModel Simulation(READMODELS.at(0));
+		Parser::FMTAreaParser areaParser;
 		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARYm_location).parent_path();
 		const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(CARTE)).string();
 		const int SIZE = 2000;
@@ -125,9 +125,9 @@ int main(int argc, char* argv[])
 			NewTransitions.push_back(TRANSITION.single());
 			}
 		Simulation.setTransitions(NewTransitions);
-		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
-		Simulation.FMTmodel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
+		Simulation.FMTModel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		Simulation.FMTModel::setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
+		Simulation.FMTModel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
 		Simulation.doPlanning(true, READSCHEDULE);
 		areaParser.writeDisturbances(OUTPUT_DIRECTORY, Simulation.getSpSchedule(),
 			Simulation.getactions(), Simulation.getThemes(), 1);

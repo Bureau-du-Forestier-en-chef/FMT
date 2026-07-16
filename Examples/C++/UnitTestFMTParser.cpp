@@ -69,7 +69,7 @@ namespace Testing
 					std::cout << "UnitTestFMTParser::testConstantsWithPunctuationDelimiters passed" << std::endl;
 				}
 		private:
-			Parser::FMTparser m_Parser;
+			Parser::FMTParser m_Parser;
 
 		};
 

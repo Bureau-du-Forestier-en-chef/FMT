@@ -14,11 +14,11 @@ namespace Core {
 }
 
 namespace Models {
-    class FMTmodel;  // Forward declaration corrigée
+    class FMTModel;  // Forward declaration corrigée
 }
 
 namespace Models {
-    class FMTsemodel;
+    class FMTSeModel;
 }
 
 namespace Spatial {
@@ -201,7 +201,7 @@ namespace FMTWrapperCore
          */
         static SESResults RunSES(
             const SESParameters& params,
-            const Models::FMTmodel& baseModel,
+            const Models::FMTModel& baseModel,
             const std::vector<Core::FMTSchedule>& schedules);
 
         /**
@@ -215,7 +215,7 @@ namespace FMTWrapperCore
          */
         static SAResults RunOptimization(
             const SAParameters& params,
-            const Models::FMTmodel& baseModel);
+            const Models::FMTModel& baseModel);
 
     private:
         /**
@@ -252,7 +252,7 @@ namespace FMTWrapperCore
          * @brief Convertit toutes les transitions du modèle en transitions "single"
          * @param model Le modèle dont les transitions sont modifiées en place
          */
-        static void applySingleTransitions(Models::FMTmodel& model);
+        static void applySingleTransitions(Models::FMTModel& model);
 
         /**
          * @brief Construit les chemins des rasters, lit la forêt initiale et
@@ -264,7 +264,7 @@ namespace FMTWrapperCore
          * @param[out] themeRasterPaths Chemins des rasters de thèmes construits
          */
         static void prepareInitialForest(
-            Models::FMTsemodel& model,
+            Models::FMTSeModel& model,
             const std::string& rastersPath,
             bool useStanlock,
             std::string& ageRasterPath,
@@ -276,7 +276,7 @@ namespace FMTWrapperCore
          * @return Vecteur de messages d'infaisabilité (un par contrainte brisée,
          *         suivi du pourcentage global de contraintes infaisables)
          */
-        static std::vector<std::string> generateInfeasibilityReport(const Models::FMTsemodel& semodel);
+        static std::vector<std::string> generateInfeasibilityReport(const Models::FMTSeModel& semodel);
 
         /**
          * @brief Génère le rapport de carbone spatial
@@ -286,7 +286,7 @@ namespace FMTWrapperCore
          * @return Structure contenant les données du rapport
          */
         static CarbonReportData generateCarbonReport(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const int numberOfPeriods,
             const std::vector<Core::FMTSchedule>& schedules);
 
@@ -299,7 +299,7 @@ namespace FMTWrapperCore
          * @return Vecteur des chemins de fichiers de transition créés
          */
         static std::vector<std::string> writeDisturbances(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const std::string& outputBasePath,
             const int numberOfPeriods,
             const std::vector<int>& growthThemeIndices);
@@ -309,7 +309,7 @@ namespace FMTWrapperCore
          * @param semodel Le modèle SES
          * @return Structure contenant les statistiques d'événements
          */
-        static EventsData generateEventsData(const Models::FMTsemodel& semodel);
+        static EventsData generateEventsData(const Models::FMTSeModel& semodel);
 
         /**
          * @brief Génère les données d'événements et les écrit dans un fichier
@@ -318,7 +318,7 @@ namespace FMTWrapperCore
          * @return Structure contenant les statistiques d'événements
          */
         static EventsData writeEventsFile(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const std::string& eventsFilePath);
 
         /**
@@ -329,7 +329,7 @@ namespace FMTWrapperCore
          * @return Structure contenant les résultats des outputs
          */
         static OutputsData calculateOutputs(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const std::vector<std::string>& outputNames,
             const int numberOfPeriods);
 
@@ -343,7 +343,7 @@ namespace FMTWrapperCore
          * @return Vecteur des chemins de fichiers raster créés
          */
         static std::vector<std::string> writeSpatialOutputs(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const std::vector<Core::FMTOutput>& outputs,
             const int minPeriod,
             const int maxPeriod,
@@ -358,7 +358,7 @@ namespace FMTWrapperCore
          * @return Structure contenant les données des prédicteurs
          */
         static PredictorsData calculatePredictors(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const std::string& rasterPath,
             const int numberOfPeriods,
             const std::vector<std::string>& predictorYields);
@@ -370,7 +370,7 @@ namespace FMTWrapperCore
          * @return Chemin complet du fichier créé
          */
         static std::string writeSchedule(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const std::string& outputPath);
 
         /**
@@ -382,7 +382,7 @@ namespace FMTWrapperCore
          * @param stanlockRasterPath Chemin du raster stanlock
          */
         static void writeUpdatedForest(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const std::string& rasterPath,
             const std::vector<std::string>& themeRasterPaths,
             const std::string& ageRasterPath,
@@ -399,7 +399,7 @@ namespace FMTWrapperCore
          * @param gdalProvider Provider GDAL à utiliser
          */
         static void exportResults(
-            const Models::FMTsemodel& semodel,
+            const Models::FMTSeModel& semodel,
             const std::vector<Core::FMTOutput>& outputs,
             const int minPeriod,
             const int maxPeriod,

@@ -22,7 +22,7 @@ namespace Graph
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace Core
@@ -55,7 +55,7 @@ namespace Spatial
 			const Graph::FMTlinegraph& getLineGraph() const;
 			void setLineGraph(const Graph::FMTlinegraph& p_LineGraph,
 							FMTSolutionTracker& p_solution);
-			double getOutput(const Models::FMTmodel& p_model,
+			double getOutput(const Models::FMTModel& p_model,
 				const FMTSolutionTracker& p_solution,
 				const Core::FMTOutput& p_output, int p_period) const;
 			size_t getGraphFamily() const;

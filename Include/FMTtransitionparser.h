@@ -27,64 +27,64 @@ namespace Core {
 
 namespace Parser
 {
-// DocString: FMTtransitionparser
+// DocString: FMTTransitionParser
 /**
 The transition parser can read and write a transitions sections and transform the information into
 an std::vector<Core::FMTTransition> object.
 */
-class FMTEXPORT FMTtransitionparser : public FMTparser
+class FMTEXPORT FMTTransitionParser : public FMTParser
     {
-		// DocString: FMTtransitionparser::rxsection
+		// DocString: FMTTransitionParser::rxsection
 		///Regex to capture the transition section.
 		const static boost::regex rxsection;
-		// DocString: FMTtransitionparser::rxlock
+		// DocString: FMTTransitionParser::rxlock
 		///Regex to capture the lock level of the transition mask.
 		const static boost::regex rxlock;
-		// DocString: FMTtransitionparser::rxage
+		// DocString: FMTTransitionParser::rxage
 		///Regex to capture the age level of the transition mask.
 		const static boost::regex rxage;
-		// DocString: FMTtransitionparser::rxreplace
+		// DocString: FMTTransitionParser::rxreplace
 		///Regex to capture the age level of the transition mask.
 		const static boost::regex rxreplace;
-		// DocString: FMTtransitionparser::rxtyld
+		// DocString: FMTTransitionParser::rxtyld
 		///Regex to capture yield bounds of the transition mask.
 		const static boost::regex rxtyld;
     public:
-		// DocString: FMTtransitionparser()
+		// DocString: FMTTransitionParser()
 		/**
-		Default constructor for FMTtransitionparser
+		Default constructor for FMTTransitionParser
 		*/
-        FMTtransitionparser();
-		// DocString: ~FMTtransitionparser()
+        FMTTransitionParser();
+		// DocString: ~FMTTransitionParser()
 		/**
-		Default destructor for FMTtransitionparser.
+		Default destructor for FMTTransitionParser.
 		*/
-		~FMTtransitionparser() = default;
-		// DocString: FMTtransitionparser(const FMTtransitionparser&)
+		~FMTTransitionParser() = default;
+		// DocString: FMTTransitionParser(const FMTTransitionParser&)
 		/**
-		Copy constructor for FMTtransitionparser.
+		Copy constructor for FMTTransitionParser.
 		*/
-        FMTtransitionparser(const FMTtransitionparser& rhs)=default;
-		// DocString: FMTtransitionparser::FMTtransitionparser=
+        FMTTransitionParser(const FMTTransitionParser& rhs)=default;
+		// DocString: FMTTransitionParser::FMTTransitionParser=
 		/**
-		Copy assignment for FMTtransitionparser.
+		Copy assignment for FMTTransitionParser.
 		*/
-        FMTtransitionparser& operator = (const FMTtransitionparser& rhs)=default;
-		// DocString: FMTtransitionparser::getSource
+        FMTTransitionParser& operator = (const FMTTransitionParser& rhs)=default;
+		// DocString: FMTTransitionParser::getSource
 		/**
 		Returns a mask for the transition mask and fill up the spec of the transition mask.
 		*/
 		Core::FMTMask getSource(std::string& line, Core::FMTSpec& spec,const std::vector<Core::FMTTheme>& themes,
 							Core::FMTsection section,const Core::FMTConstants& constant,
                           const Core::FMTYields& ylds);
-		// DocString: FMTtransitionparser::getMaskTran
+		// DocString: FMTTransitionParser::getMaskTran
 		/**
 		Get a vector of transition masks based on a single transition line mask of the transition file.
 		*/
         std::vector<Core::FMTTransitionMask> getMaskTran(const std::string& line,const std::vector<Core::FMTTheme>& themes,
                                         const Core::FMTConstants& constants, const Core::FMTYields& ylds,
                                         const Core::FMTMask& sourcemask, int& replaced);
-		// DocString: FMTtransitionparser::read
+		// DocString: FMTTransitionParser::read
 		/**
 		Get a vector of FMTTransition objects based on (themes), (actions),(yields),(constants) and finaly the location of the file.
 		*/
@@ -92,17 +92,17 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
                            const std::vector<Core::FMTAction>& actions,
                            const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 						   const std::string& location);
-		// DocString: FMTtransitionparser::write
+		// DocString: FMTTransitionParser::write
 		/**
 		Write a vector of FMTtransitions into a file location.
 		*/
         void write(const std::vector<Core::FMTTransition>& transitions,const std::string& location) const;
-		// DocString: FMTtransitionparser::writeGCBM
+		// DocString: FMTTransitionParser::writeGCBM
 		/**
 		Write a vector of FMTGCBMtransitions into a text file at (location).
 		*/
 		void writeGCBM(const std::vector<Core::FMTGCBMTransition>& transitions, const std::string& location) const;
-		// DocString: FMTtransitionparser::readGCBM
+		// DocString: FMTTransitionParser::readGCBM
 		/**
 		From a text file (location) readGCBM transitions
 		*/

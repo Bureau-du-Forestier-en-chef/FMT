@@ -31,7 +31,7 @@ namespace Wrapper
 
 
 	FMTexcelcache::FMTexcelcache():
-		parser(new Parser::FMTmodelparser()),
+		parser(new Parser::FMTModelParser()),
 		cachelog(),
 		cacheexceptionhandler(),
 		models(new std::unordered_map<std::string, FMTmodelcache>()),
@@ -166,9 +166,9 @@ namespace Wrapper
 			msclr::interop::marshal_context context;
 			const std::string pfile = context.marshal_as<std::string>(primarylocation);
 			const std::string sfile = context.marshal_as<std::string>(templatefolder);
-			const std::vector<Models::FMTmodel> allmodels = parser->readTemplates(pfile, sfile);
+			const std::vector<Models::FMTModel> allmodels = parser->readTemplates(pfile, sfile);
 			const std::string mappath = getmappath(pfile);
-			for (const Models::FMTmodel& model :  allmodels)
+			for (const Models::FMTModel& model :  allmodels)
 			{
 				const std::string name = model.getName();
 				if (name!="ROOT")
@@ -206,7 +206,7 @@ namespace Wrapper
 				const std::string pfile = context.marshal_as<std::string>(primarylocation);
 				const std::string sfile = context.marshal_as<std::string>(scenario);
 				std::vector<std::string>scenarios(1, sfile);
-				const std::vector<Models::FMTmodel> allmodels = parser->readproject(pfile, scenarios);
+				const std::vector<Models::FMTModel> allmodels = parser->readproject(pfile, scenarios);
 				const std::string mappath = getmappath(pfile);
 				(*models)[naming] = FMTmodelcache(allmodels.at(0), mappath);
 				(*models)[naming].setLength(length);
@@ -243,7 +243,7 @@ namespace Wrapper
 				const std::string pfile = context.marshal_as<std::string>(primarylocation);
 				const std::string sfile = context.marshal_as<std::string>(scenario);
 				std::vector<std::string>scenarios(1, sfile);
-				const std::vector<Models::FMTmodel> allmodels = parser->readproject(pfile, scenarios);
+				const std::vector<Models::FMTModel> allmodels = parser->readproject(pfile, scenarios);
 				const std::vector<std::vector<Core::FMTSchedule>>allschedule = parser->readschedules(pfile, allmodels);
 				const std::string mappath = getmappath(pfile);
 				int period = 0;

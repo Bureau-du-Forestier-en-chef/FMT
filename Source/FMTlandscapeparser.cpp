@@ -18,42 +18,42 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser
 {
-	const boost::regex FMTlandscapeparser::rxPreAttributes = boost::regex(
+	const boost::regex FMTLandscapeParser::rxPreAttributes = boost::regex(
 		"^(\\*ATTRIBUTES)([\\s\\t]*)\\(([\\s\\t]*)_TH(\\d+)([\\s\\t]*)\\)",
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTlandscapeparser::rxPreAggregate = boost::regex(
+	const boost::regex FMTLandscapeParser::rxPreAggregate = boost::regex(
 		"^(\\*AGGREGATE)([\\s\\t]*)\\(([\\s\\t]*)_(\\w+)([\\s\\t]*)\\)",
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTlandscapeparser::rxcleanlans = boost::regex(
+	const boost::regex FMTLandscapeParser::rxcleanlans = boost::regex(
 		"^(\\*THEME)([\\s\\t]*)(([0-9]*$)|([0-9]*)([\\s\\t]*)(.+))|(\\*AGGREGATE)([\\s\\t]*)(\\()([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*)(\\))([\\s\\t]*)(.+)|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", 
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTlandscapeparser::rxindex = boost::regex(
+	const boost::regex FMTLandscapeParser::rxindex = boost::regex(
 		"^(_INDEX)(\\()([^\\)]*)(\\))", 
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTlandscapeparser::rxparameter = boost::regex(
+	const boost::regex FMTLandscapeParser::rxparameter = boost::regex(
 		"^([^=]*)(=)(#.+|[-\\s\\t\\d.]*)", 
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
-	FMTlandscapeparser::FMTlandscapeparser() :
-    FMTparser()
+	FMTLandscapeParser::FMTLandscapeParser() :
+    FMTParser()
         {
 		setSection(Core::FMTsection::Landscape);
         }
 
-    std::map<std::string,double>FMTlandscapeparser::getIndexes(std::string indexm_line,const Core::FMTConstants& constants)
+    std::map<std::string,double>FMTLandscapeParser::getIndexes(std::string indexm_line,const Core::FMTConstants& constants)
         {
 		std::map<std::string,double>indexes;
 		try {
 			boost::trim(indexm_line);
 			boost::smatch kmatch;
-			if (boost::regex_search(indexm_line, kmatch, FMTlandscapeparser::rxindex))
+			if (boost::regex_search(indexm_line, kmatch, FMTLandscapeParser::rxindex))
 			{
 				std::vector<std::string>parameters;
 				const std::string values = kmatch[3];
 				boost::split(parameters, values, boost::is_any_of(","), boost::token_compress_on);
 				for (const std::string& parameter : parameters)
 				{
-					if (boost::regex_search(parameter, kmatch, FMTlandscapeparser::rxparameter))
+					if (boost::regex_search(parameter, kmatch, FMTLandscapeParser::rxparameter))
 					{
 						std::string index_value = std::string(kmatch[3]);
 						boost::trim(index_value);
@@ -64,12 +64,12 @@ namespace Parser
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				 "for line " + indexm_line,"FMTlandscapeparser::getIndexes", __LINE__, __FILE__,m_section);
+				 "for line " + indexm_line,"FMTLandscapeParser::getIndexes", __LINE__, __FILE__,m_section);
 			}
         return indexes;
         }
 
-	void FMTlandscapeparser::processThemeLine(
+	void FMTLandscapeParser::processThemeLine(
 		const boost::smatch& kmatch, 
 		ThemeParsingContext& ctx, 
 		PreDeclarationContext& preContext, 
@@ -113,7 +113,7 @@ namespace Parser
 			{
 				_exhandler->raise(Exception::FMTexc::FMTempty_theme,
 					"Theme " + std::to_string(ctx.id + 1),
-					"FMTlandscapeparser::read", __LINE__, __FILE__,
+					"FMTLandscapeParser::read", __LINE__, __FILE__,
 					m_section);
 			}
 
@@ -129,7 +129,7 @@ namespace Parser
 		ctx.themename = themename_match;
 	}
 
-	void FMTlandscapeparser::processAggregateLine(
+	void FMTLandscapeParser::processAggregateLine(
 		const boost::smatch& kmatch, 
 		ThemeParsingContext& ctx, 
 		std::vector<Core::FMTTheme>& themes, 
@@ -161,7 +161,7 @@ namespace Parser
 			_exhandler->raise(Exception::FMTexc::FMTaggregate_redefinition,
 				ctx.aggregatename + " at line " + std::to_string(m_line) + " in " + m_location +
 				". The latest definition will be ignored.",
-				"FMTlandscapeparser::read", __LINE__, __FILE__, m_section);
+				"FMTLandscapeParser::read", __LINE__, __FILE__, m_section);
 		}
 
 		if (!ctx.aggregate_redefinition)
@@ -177,9 +177,9 @@ namespace Parser
 		}
 	}
 
-	void FMTlandscapeparser::processAggregateValueLine(const std::string& line, ThemeParsingContext& ctx, std::vector<Core::FMTTheme>& themes)
+	void FMTLandscapeParser::processAggregateValueLine(const std::string& line, ThemeParsingContext& ctx, std::vector<Core::FMTTheme>& themes)
 	{
-		const std::vector<std::string> splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
+		const std::vector<std::string> splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 
 		for (const std::string& val : splited)
 		{
@@ -194,7 +194,7 @@ namespace Parser
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
 					val + " at line " + std::to_string(m_line) + " in " + m_location,
-					"FMTlandscapeparser::read", __LINE__, __FILE__, m_section);
+					"FMTLandscapeParser::read", __LINE__, __FILE__, m_section);
 			}
 			else if (ctx.pasttheme >= 0)
 			{
@@ -214,19 +214,19 @@ namespace Parser
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
 					ctx.aggregatename + " empty at line " + std::to_string(m_line) + " in " + m_location,
-					"FMTlandscapeparser::read", __LINE__, __FILE__, m_section);
+					"FMTLandscapeParser::read", __LINE__, __FILE__, m_section);
 			}
 		}
 	}
 
-	void FMTlandscapeparser::processAttributeLine(
+	void FMTLandscapeParser::processAttributeLine(
 		const std::string& line, 
 		ThemeParsingContext& ctx, 
 		const Core::FMTConstants& constants)
 	{
 		ctx.pasttheme = -1;
 
-		std::vector<std::string> splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
+		std::vector<std::string> splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 		std::string name = "";
 		const std::string ltheme = splited[0];
 
@@ -250,7 +250,7 @@ namespace Parser
 		{
 			_exhandler->raise(Exception::FMTexc::FMTattribute_redefinition,
 				ltheme + " at line " + std::to_string(m_line) + " in " + m_location,
-				"FMTlandscapeparser::read", __LINE__, __FILE__, m_section);
+				"FMTLandscapeParser::read", __LINE__, __FILE__, m_section);
 		}
 		else {
 			ctx.attributes.push_back(ltheme);
@@ -262,9 +262,9 @@ namespace Parser
 		}
 	}
 
-	FMTlandscapeparser::ThemeParsingContext::ThemeParsingContext() : id(0), start(0), stop(0), pasttheme(-1), aggregate_redefinition(false)
+	FMTLandscapeParser::ThemeParsingContext::ThemeParsingContext() : id(0), start(0), stop(0), pasttheme(-1), aggregate_redefinition(false)
 	{}
-	void FMTlandscapeparser::ThemeParsingContext::clear()
+	void FMTLandscapeParser::ThemeParsingContext::clear()
 	{
 		attributes.clear();
 		attributenames.clear();
@@ -275,20 +275,20 @@ namespace Parser
 		indexes_values.clear();
 	}
 
-	FMTlandscapeparser::PreDeclarationContext::PreDeclarationContext() : state(ParseState::NORMAL), currentKey("")
+	FMTLandscapeParser::PreDeclarationContext::PreDeclarationContext() : state(ParseState::NORMAL), currentKey("")
 	{}
-	void FMTlandscapeparser::PreDeclarationContext::clearTheme(std::string nameID)
+	void FMTLandscapeParser::PreDeclarationContext::clearTheme(std::string nameID)
 	{
 		declarations.erase(nameID);
 	}
 
-	bool FMTlandscapeparser::processPreDeclarationLine(
+	bool FMTLandscapeParser::processPreDeclarationLine(
 		const std::string& line,
 		PreDeclarationContext& context, 
 		const Core::FMTConstants& constants)
 	{
 		boost::smatch preDeclaredMatch;
-		if (boost::regex_search(line, preDeclaredMatch, FMTlandscapeparser::rxPreAttributes)) {
+		if (boost::regex_search(line, preDeclaredMatch, FMTLandscapeParser::rxPreAttributes)) {
 			context.state = ParseState::IN_PRE_DECLARATION;
 			int themeID = getNum<int>(std::string(preDeclaredMatch[4]), constants);
 			context.currentKey = std::to_string(themeID);
@@ -305,7 +305,7 @@ namespace Parser
 			return false;
 		}
 
-		std::vector<std::string> splited = FMTparser::spliter(line, FMTparser::m_SEPARATOR);
+		std::vector<std::string> splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 		if (context.state != ParseState::NORMAL)
 		{
 			context.declarations[context.currentKey].first.push_back(splited[0]);
@@ -317,7 +317,7 @@ namespace Parser
 	}
 
 #ifdef FMTWITHGDAL
-	std::vector<Core::FMTTheme>FMTlandscapeparser::readRasters(const std::vector<std::string>& locations)
+	std::vector<Core::FMTTheme>FMTLandscapeParser::readRasters(const std::vector<std::string>& locations)
         {
 		std::vector<Core::FMTTheme>themes;
 		try {
@@ -336,13 +336,13 @@ namespace Parser
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTlandscapeparser::readRasters", __LINE__, __FILE__,m_section);
+			_exhandler->printExceptions("", "FMTLandscapeParser::readRasters", __LINE__, __FILE__,m_section);
 		}
 			
         return themes;
         }
 
-    std::vector<Core::FMTTheme>FMTlandscapeparser::readVectors(const std::string& location)
+    std::vector<Core::FMTTheme>FMTLandscapeParser::readVectors(const std::string& location)
         {
 		std::vector<Core::FMTTheme>themes;
 		try {
@@ -381,7 +381,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-				_exhandler->printExceptions("at " + location, "FMTlandscapeparser::readVectors",
+				_exhandler->printExceptions("at " + location, "FMTLandscapeParser::readVectors",
 					__LINE__, __FILE__, m_section);
 			}
 
@@ -389,7 +389,7 @@ namespace Parser
         }
 #endif
 
-	std::vector<Core::FMTTheme>FMTlandscapeparser::read(
+	std::vector<Core::FMTTheme>FMTLandscapeParser::read(
 		const Core::FMTConstants& constants,
 		const std::string& location)
         {
@@ -400,9 +400,9 @@ namespace Parser
 			PreDeclarationContext preContext;
 			size_t unknownID = 1;
 	
-			if (FMTparser::tryOpening(landstream, location))
+			if (FMTParser::tryOpening(landstream, location))
 			{
-				std::queue<FMTparser::FMTLineInfo> Lines = FMTparser::getCleanLinewfor(landstream, themes, constants);
+				std::queue<FMTParser::FMTLineInfo> Lines = FMTParser::getCleanLinewfor(landstream, themes, constants);
 				while (!Lines.empty())
 				{
 					const std::string line = getLine(Lines);
@@ -413,7 +413,7 @@ namespace Parser
 						}
 
 						boost::smatch kmatch;
-						boost::regex_search(line, kmatch, FMTlandscapeparser::rxcleanlans);
+						boost::regex_search(line, kmatch, FMTLandscapeParser::rxcleanlans);
 						const std::string potentialtheme = std::string(kmatch[4]) + std::string(kmatch[5]) + std::string(kmatch[7]);
 						const std::string aggregate = std::string(kmatch[8]) + std::string(kmatch[18]);
 			
@@ -439,7 +439,7 @@ namespace Parser
 				{
 					_exhandler->raise(
 						Exception::FMTexc::FMTempty_theme, "Theme " + std::to_string(ctx.id + 1),
-						"FMTlandscapeparser::read",__LINE__, __FILE__,m_section);
+						"FMTLandscapeParser::read",__LINE__, __FILE__,m_section);
 				}
 				
 				if (!preContext.declarations.empty())
@@ -473,12 +473,12 @@ namespace Parser
 				{
 				_exhandler->raiseFromCatch(
 					"In " + m_location + " at line " + std::to_string(m_line),
-					"FMTlandscapeparser::read ", __LINE__, __FILE__,m_section);
+					"FMTLandscapeParser::read ", __LINE__, __FILE__,m_section);
 				}
         return themes;
         }
 
-    void FMTlandscapeparser::write(const std::vector<Core::FMTTheme>& themes,const std::string& location) const
+    void FMTLandscapeParser::write(const std::vector<Core::FMTTheme>& themes,const std::string& location) const
         {
 		try {
 			std::ofstream landscapestream;
@@ -493,7 +493,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("at " + location,"FMTlandscapeparser::write", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at " + location,"FMTLandscapeParser::write", __LINE__, __FILE__, m_section);
 			}
         }
 	

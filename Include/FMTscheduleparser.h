@@ -21,40 +21,40 @@ namespace Core {
 
 namespace Parser
 {
-// DocString: FMTscheduleparser
+// DocString: FMTScheduleParser
 /**
-FMTscheduleparser implement the reading and writing of a vector of FMTschedules.
-This parser is also used by the FMTmodelparser.
+FMTScheduleParser implement the reading and writing of a vector of FMTschedules.
+This parser is also used by the FMTModelParser.
 */
-class FMTEXPORT FMTscheduleparser: public FMTparser
+class FMTEXPORT FMTScheduleParser: public FMTParser
     {
 	public:
-		// DocString: FMTscheduleparser()
+		// DocString: FMTScheduleParser()
 		/**
-		Default constructor for FMTscheduleparser
+		Default constructor for FMTScheduleParser
 		*/
-        FMTscheduleparser();
-		// DocString: ~FMTscheduleparser()
+        FMTScheduleParser();
+		// DocString: ~FMTScheduleParser()
 		/**
-		Default destructor for FMTscheduleparser
+		Default destructor for FMTScheduleParser
 		*/
-		~FMTscheduleparser() = default;
-		// DocString: FMTscheduleparser(const FMTscheduleparser&)
+		~FMTScheduleParser() = default;
+		// DocString: FMTScheduleParser(const FMTScheduleParser&)
 		/**
-		Default copy constructor for FMTscheduleparser
+		Default copy constructor for FMTScheduleParser
 		*/
-        FMTscheduleparser(const FMTscheduleparser& rhs);
-		// DocString: FMTscheduleparser::getSchedulePath
+        FMTScheduleParser(const FMTScheduleParser& rhs);
+		// DocString: FMTScheduleParser::getSchedulePath
 		/**
 		Take a primary path and a scenario name and return the path to the schedule file (in Scenario or in root).
 		*/
 		std::string getSchedulePath(const std::string& p_primary_path, const std::string& p_output_scenario_name);
-		// DocString: FMTscheduleparser::operator=
+		// DocString: FMTScheduleParser::operator=
 		/**
-		Default copy assignment operator for FMTscheduleparser
+		Default copy assignment operator for FMTScheduleParser
 		*/
-        FMTscheduleparser& operator = (const FMTscheduleparser& rhs);
-		// DocString: FMTscheduleparser::read
+        FMTScheduleParser& operator = (const FMTScheduleParser& rhs);
+		// DocString: FMTScheduleParser::read
 		/**
 		This function reads a schedule section at a given (location) and turns it into a vector of FMTSchedule,
 		using a complete vector of FMTTheme (themes), a vector of FMTAction (action), and a optional (tolerance).
@@ -62,25 +62,25 @@ class FMTEXPORT FMTscheduleparser: public FMTparser
 		*/
         std::vector<Core::FMTSchedule>read(const std::vector<Core::FMTTheme>& themes,
 			const  std::vector<Core::FMTAction>& actions,const std::string& location,double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTscheduleparser::write
+		// DocString: FMTScheduleParser::write
 		/**
 		This function write a vector of FMTschedules (schedules) into a (location) schedule file.
 		*/
         void write(const std::vector<Core::FMTSchedule>& schedules, const std::string& location, bool append = false) const;
 
 	private:
-		// DocString: FMTscheduleparser::getVariable
+		// DocString: FMTScheduleParser::getVariable
 		/**
 		This function uses the comment present in the schedule section representing the
 		variable index of the scheduled area to harvest and return it has a int value.
 		*/
 		int getVariable() const;
-		// DocString: FMTscheduleparser::
+		// DocString: FMTScheduleParser::
 		/**
 
 		*/
 		static void _writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTSchedule>& p_schedules);
-		// DocString: FMTscheduleparser::
+		// DocString: FMTScheduleParser::
 		/**
 
 		*/

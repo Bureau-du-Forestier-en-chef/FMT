@@ -41,13 +41,13 @@ namespace Parser
 		none = 5
 		};
 
-	class FMTEXPORT FMToptimizationparser : public FMTparser
+	class FMTEXPORT FMTOptimizationParser : public FMTParser
 	{
 	public:
-		FMToptimizationparser();
-		FMToptimizationparser(const FMToptimizationparser& rhs)=default;
-		FMToptimizationparser& operator = (const FMToptimizationparser& rhs)=default;
-		// DocString: FMToptimizationparser::read
+		FMTOptimizationParser();
+		FMTOptimizationParser(const FMTOptimizationParser& rhs)=default;
+		FMTOptimizationParser& operator = (const FMTOptimizationParser& rhs)=default;
+		// DocString: FMTOptimizationParser::read
 		/*
 		* @brief Read a optimization file from a given pm_location
 		* @param[in]  p_themes the themes used.
@@ -66,7 +66,7 @@ namespace Parser
 			      const Core::FMTYields& p_yields,
 				  std::vector<Core::FMTAction>& p_excluded,
 				  const std::string& pm_location);
-		// DocString: FMToptimizationparser::getConstraints
+		// DocString: FMTOptimizationParser::getConstraints
 		/*
 		* @brief Read a line and get a constraint
 		* @param[in] pm_line the line read.
@@ -82,7 +82,7 @@ namespace Parser
 			const std::vector<Core::FMTOutput>& p_outputs,
 			const std::vector<Core::FMTTheme>& p_themes,
 			const std::vector<Core::FMTAction>& p_actions);
-		// DocString: FMToptimizationparser::write
+		// DocString: FMTOptimizationParser::write
 		/*
 		* @brief Write down the constraints into an optimization file.
 		* @param[in] p_ constraints the constraints to write in a file.
@@ -90,7 +90,7 @@ namespace Parser
 		*/
 		void write(const std::vector<Core::FMTConstraint>& p_constraints,
 			const std::string& pm_location) const;
-		~FMToptimizationparser()=default;
+		~FMTOptimizationParser()=default;
 	private:
 		const static boost::regex m_rxsections;
 		const static boost::regex m_rxobjectives;
@@ -105,7 +105,7 @@ namespace Parser
 		const static boost::regex m_rxspecialobjective;
 		const static boost::regex m_rxstartwithoperator;
 		//std::queue<std::string>m_ineach;
-		// DocString: FMToptimizationparser::getObjective
+		// DocString: FMTOptimizationParser::getObjective
 		/*
 		* @brief Based on a line in the optimization section return an objective.
 		* @param[in]  pm_line the line read.
@@ -126,10 +126,10 @@ namespace Parser
 			const std::vector<Core::FMTOutput>& outputs,
 			const std::vector<Core::FMTTheme>& themes,
 			const Core::FMTConstants& constants);
-		std::queue<FMTparser::FMTLineInfo>getOptline(std::ifstream& stream, const std::vector<Core::FMTTheme>& themes,
+		std::queue<FMTParser::FMTLineInfo>getOptline(std::ifstream& stream, const std::vector<Core::FMTTheme>& themes,
 								const Core::FMTConstants& cons, const std::vector<Core::FMTOutput>& outputs);
 		std::queue<std::string> getEachLines(const std::string& line, const Core::FMTConstants& constants, const std::vector<Core::FMTOutput>& outputs, const std::vector<Core::FMTTheme>& themes) const;
-		// DocString: FMToptimizationparser::getEquation
+		// DocString: FMTOptimizationParser::getEquation
 		/*
 		* @brief Take the orgiginal line of the contraint and try to simplify the equation before formating it for an output
 		* @param[in]  pm_line the line read by the parser.
@@ -144,7 +144,7 @@ namespace Parser
 			size_t p_lhssize = std::numeric_limits<size_t>::max());
 		std::vector<Core::FMTConstraint> getPeriodsBounds(std::string periodstr, const Core::FMTConstraint& constraint, const Core::FMTConstants& constants) const;
 		void fillBounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const;
-		// DocString: FMToptimizationparser::getSpatialConstraint
+		// DocString: FMTOptimizationParser::getSpatialConstraint
 		/*
 		* @brief From a base contraint turn it into spatial constraint based on the pm_line.
 		* @param[in]  p_baseconstraint the base constraint.

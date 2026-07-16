@@ -117,7 +117,7 @@ std::string FMTversion::getLicense(bool french)
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
                 "Cannot find "+licenselocation,"FMTversion::getLicense",__LINE__,__FILE__);
             }
-    Parser::FMTparser newparser;
+    Parser::FMTParser newparser;
     std::ifstream licensestream(licenselocation);
     if (newparser.tryOpening(licensestream,licenselocation))
         {

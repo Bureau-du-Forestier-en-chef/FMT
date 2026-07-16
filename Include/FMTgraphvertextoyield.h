@@ -11,7 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-class FMTmodel;
+class FMTModel;
 }
 
 namespace Graph
@@ -35,10 +35,10 @@ namespace Graph
 		void const* graph;
 		void const* vertex;
 		FMTgraphrequest graphtype;
-		Models::FMTmodel const* modelptr;
+		Models::FMTModel const* modelptr;
 	public:
-		FMTgraphvertextoyield(const Models::FMTmodel& model,const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& linegraph,const void* lvertex);
-		FMTgraphvertextoyield(const Models::FMTmodel& model,const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex);
+		FMTgraphvertextoyield(const Models::FMTModel& model,const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& linegraph,const void* lvertex);
+		FMTgraphvertextoyield(const Models::FMTModel& model,const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex);
 		FMTgraphvertextoyield();
 		FMTgraphvertextoyield(const FMTgraphvertextoyield& rhs) = default;
 		FMTgraphvertextoyield& operator=(const FMTgraphvertextoyield& rhs) = default;
@@ -48,7 +48,7 @@ namespace Graph
 		{
 			return vertex;
 		}
-		const Models::FMTmodel* getModel() const;
+		const Models::FMTModel* getModel() const;
 	};
 
 }

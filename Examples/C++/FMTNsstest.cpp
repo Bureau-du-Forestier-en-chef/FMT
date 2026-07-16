@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 		OUTPUT_VALUE = 60;
 		PERIOD = 5;
 	}
-	Parser::FMTmodelparser mparser;
+	Parser::FMTModelParser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -55,8 +55,8 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>SCENARIOS(1, SCENARIO);
-	const std::vector<Models::FMTmodel> MODELS = mparser.readproject(PRIMARY, SCENARIOS);
-	Models::FMTnssmodel NssModel(MODELS.at(0),0);
+	const std::vector<Models::FMTModel> MODELS = mparser.readproject(PRIMARY, SCENARIOS);
+	Models::FMTNssModel NssModel(MODELS.at(0),0);
 	NssModel.setParameter(Models::FMTintmodelparameters::UPDATE, 1);
 	std::vector<Core::FMTActualDevelopment>newDevs;
 	for (Core::FMTActualDevelopment dev : NssModel.getArea())

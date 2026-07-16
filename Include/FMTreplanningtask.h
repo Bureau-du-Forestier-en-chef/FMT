@@ -20,7 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace Core
@@ -75,9 +75,9 @@ namespace Parallel
 		gdaldriver of the output file, the number of replicates, the number of replanning period and the weight of the global schedule applied 
 		to the localschedule.
 		*/
-		FMTreplanningtask(const Models::FMTmodel& globalm,
-						const Models::FMTmodel& stochasticm,
-						const Models::FMTmodel& localm,
+		FMTreplanningtask(const Models::FMTModel& globalm,
+						const Models::FMTModel& stochasticm,
+						const Models::FMTModel& localm,
 						const std::vector<Core::FMTOutput>& outputs,
 						const std::string& outputlocation,
 						const std::string& gdaldriver,
@@ -87,15 +87,15 @@ namespace Parallel
 						const double& minimaldrift,
 						Core::FMToutputlevel outputlevel,
 						const bool writeSchedule = false);
-		// DocString: FMTreplanningtask::FMTreplanningtask(const Models::FMTmodel&,const Models::FMTmodel&,const Models::FMTmodel&)
+		// DocString: FMTreplanningtask::FMTreplanningtask(const Models::FMTModel&,const Models::FMTModel&,const Models::FMTModel&)
 		/**
 		Short constructor for replanning task will use the output of globalmodel as outputs.
 		0.5 as minimal drift...
 		You then need to set the number of replanning periods,globalweight, and the number of replicates.
 		*/
-		FMTreplanningtask(const Models::FMTmodel& globalm,
-			const Models::FMTmodel& stochasticm,
-			const Models::FMTmodel& localm,
+		FMTreplanningtask(const Models::FMTModel& globalm,
+			const Models::FMTModel& stochasticm,
+			const Models::FMTModel& localm,
 			const std::string& outputlocation,
 			const std::string& gdaldriver,
 			const std::vector<std::string>& creationoptions,
@@ -155,13 +155,13 @@ namespace Parallel
 		std::shared_ptr<Core::FMTSchedule>baseschedule;
 		// DocString: FMTreplanningtask::global
 		///The shared global model between each task
-		std::shared_ptr<Models::FMTmodel>global;//base area is in here.
+		std::shared_ptr<Models::FMTModel>global;//base area is in here.
 		// DocString: FMTreplanningtask::stochastic
 		///The stochastic model used in replanning
-		std::shared_ptr<Models::FMTmodel>stochastic;
+		std::shared_ptr<Models::FMTModel>stochastic;
 		// DocString: FMTreplanningtask::local
 		///The local model used by the replanning
-		std::shared_ptr<Models::FMTmodel>local;
+		std::shared_ptr<Models::FMTModel>local;
 		// DocString: FMTreplanningtask::replicateids
 		///The replicates queue that the task needs to do
 		std::queue<int>replicateids;
@@ -186,14 +186,14 @@ namespace Parallel
 		Solver logger make it not save to clone a solver with a common logger.
 		So we need to lock this function to make sure that there's no racing between threads.
 		*/
-		std::unique_ptr<Models::FMTmodel>copySharedModel(const std::shared_ptr<Models::FMTmodel>model);
+		std::unique_ptr<Models::FMTModel>copySharedModel(const std::shared_ptr<Models::FMTModel>model);
 		// DocString: FMTreplanningtask::doModelPlanning
 		/**
 		The main do planning function that call doPlanning on model for a given replanning period and will keep solution and constraints
 		id getsolutionandlocal = true and will apply the schedule weight if applyscheduleweight = true.
 		*/
-		std::unique_ptr<Models::FMTmodel>doModelPlanning(
-			const std::shared_ptr<Models::FMTmodel>model,
+		std::unique_ptr<Models::FMTModel>doModelPlanning(
+			const std::shared_ptr<Models::FMTModel>model,
 			const int& replanningperiod,
 			bool getsolutionandlocal = false,
 			bool applyscheduleweight = false,
@@ -203,7 +203,7 @@ namespace Parallel
 		Write the results from a model pointer, if onlyfirsperiod = true will only write first period else write the whole thing.
 		*/
 		void writeResults(const std::string& modelname, const int& modellength,
-			const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod = false);
+			const std::unique_ptr<Models::FMTModel>& modelptr, const int& replanningperiod, bool onlyfirstperiod = false);
 		// DocString: FMTreplanningtask::_writeSchedule
 		/**
 		@biref write down the schedule for the stochastic and tactic
@@ -211,7 +211,7 @@ namespace Parallel
 		@param[in] p_ReportingPeriod
 		@param[in] p_ModelPeriod the models period
 		*/
-		void _writeSchedule(const std::unique_ptr<Models::FMTmodel>& p_model,
+		void _writeSchedule(const std::unique_ptr<Models::FMTModel>& p_model,
 							int p_ReportingPeriod, int p_ModelPeriod) const;
 		// DocString: FMTreplanningtask::getIteration
 		/**
@@ -222,12 +222,12 @@ namespace Parallel
 		/**
 		Remove reignore constraints based on the replanning period.
 		*/
-		void setReIgnore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
+		void setReIgnore(std::unique_ptr<Models::FMTModel>& modelcpy, const int& replanningperiod) const;
 		// DocString: FMTreplanningtask::setReplicate
 		/**
 		Ajuste constraints based on the replicate keyword
 		*/
-		void setReplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
+		void setReplicate(std::unique_ptr<Models::FMTModel>& modelcpy, const int& replanningperiod) const;
 		// DocString: FMTreplanningtask::setReplicate
 		/**
 		Primary name extracted to the path.

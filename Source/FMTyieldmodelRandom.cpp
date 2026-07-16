@@ -17,8 +17,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-	FMTyieldmodelRandom::FMTyieldmodelRandom(const boost::property_tree::ptree& p_jsonProps, const std::vector<std::string>& p_distribution):
-		FMTyieldmodel(), m_cache(), m_useCache(false)
+	FMTYieldModelRandom::FMTYieldModelRandom(const boost::property_tree::ptree& p_jsonProps, const std::vector<std::string>& p_distribution):
+		FMTYieldModel(), m_cache(), m_useCache(false)
 		{
 		boost::property_tree::ptree::const_assoc_iterator modelNameIt = p_jsonProps.find(JSON_PROP_MODEL_NAME);
 		modelName = modelNameIt->second.data();
@@ -27,7 +27,7 @@ namespace Core
 		modelYields = p_distribution;
 		}
 
-	void FMTyieldmodelRandom::clearRandomYieldsCache()
+	void FMTYieldModelRandom::clearRandomYieldsCache()
 		{
 		if (m_useCache)
 			{
@@ -35,7 +35,7 @@ namespace Core
 			}
 		}
 
-	std::vector<size_t> FMTyieldmodelRandom::getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTYieldRequest& p_request) const
+	std::vector<size_t> FMTYieldModelRandom::getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTYieldRequest& p_request) const
 	{
 		std::vector<size_t> values(p_yields.size());
 		try {
@@ -60,7 +60,7 @@ namespace Core
 				{
 					_exhandler->raise(Exception::FMTexc::FMTmissingyield,
 						yieldName + " for developement " + std::string(p_request.getDevelopment()),
-						"FMTyieldmodelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
+						"FMTYieldModelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 				++nameId;
 			}
@@ -72,13 +72,13 @@ namespace Core
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTyieldmodelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return values;
 	}
 
 
-	double FMTyieldmodelRandom::getRandomIndex(const std::vector<size_t>& p_distribution) const
+	double FMTYieldModelRandom::getRandomIndex(const std::vector<size_t>& p_distribution) const
 	{
 		double choice = 0;
 		try {
@@ -87,17 +87,17 @@ namespace Core
 			choice = static_cast<double>(GENERATED);
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldmodelRandom::getRandomIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelRandom::getRandomIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return choice;
 	}
 
-	void FMTyieldmodelRandom::setModel(Models::FMTmodel* p_modelPtr)
+	void FMTYieldModelRandom::setModel(Models::FMTModel* p_modelPtr)
 	{
-		FMTyieldmodel::setModel(p_modelPtr);
+		FMTYieldModel::setModel(p_modelPtr);
 	}
 
-	const std::vector<double>FMTyieldmodelRandom::predict(const Core::FMTYieldRequest& p_request) const
+	const std::vector<double>FMTYieldModelRandom::predict(const Core::FMTYieldRequest& p_request) const
 	{
 		std::vector<double>result;
 		try {
@@ -117,34 +117,34 @@ namespace Core
 			
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTyieldmodelRandom::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelRandom::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return result;
 	}
 
-	std::unique_ptr<FMTyieldmodel>FMTyieldmodelRandom::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelRandom::Clone() const
 		{
-		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelRandom(*this));
+		return std::unique_ptr<FMTYieldModel>(new FMTYieldModelRandom(*this));
 		}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelRandom::presolve(const FMTMaskFilter& p_filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelRandom::presolve(const FMTMaskFilter& p_filter,
 										const std::vector<FMTTheme>& p_newThemes) const
 	{
 		try {
 			return Clone();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch(getModelName(), "FMTyieldmodelRandom::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelName(), "FMTYieldModelRandom::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
-		return std::unique_ptr<FMTyieldmodel>(nullptr);
+		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
 
-	std::unique_ptr<FMTyieldmodel> FMTyieldmodelRandom::postSolve(const FMTMaskFilter& p_filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelRandom::postSolve(const FMTMaskFilter& p_filter,
 		const std::vector<FMTTheme>& p_baseThemes) const
 	{
 		return Clone();
 	}
-	std::string FMTyieldmodelRandom::getModelType()
+	std::string FMTYieldModelRandom::getModelType()
 	{
 		return "RANDOM";
 	}

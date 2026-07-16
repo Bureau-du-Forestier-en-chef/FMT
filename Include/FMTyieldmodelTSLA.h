@@ -11,60 +11,60 @@
 namespace Core
 {
 	class FMTTheme;
-	// DocString: FMTyieldmodelTSLA
+	// DocString: FMTYieldModelTsla
 	/**
-	FMTyieldmodelTSLA to get the time since last disturbance. This model is never written but always added by default by the yieldparser.
+	FMTYieldModelTsla to get the time since last disturbance. This model is never written but always added by default by the yieldparser.
 	*/
-	class FMTyieldmodelTSLA : public FMTyieldmodel
+	class FMTYieldModelTsla : public FMTYieldModel
 	{
 	
 	public:
-		// DocString: FMTyieldmodelTSLA::FMTyieldmodelTSLA()
+		// DocString: FMTYieldModelTsla::FMTYieldModelTsla()
 		/**
 		Default constructor.
 		*/
-		FMTyieldmodelTSLA();
-		// DocString: FMTyieldmodelTSLA::FMTyieldmodelTSLA(const FMTyieldmodelTSLA& rhs)
+		FMTYieldModelTsla();
+		// DocString: FMTYieldModelTsla::FMTYieldModelTsla(const FMTYieldModelTsla& rhs)
 		/**
 		Copy constructor.
 		*/
-		FMTyieldmodelTSLA(const FMTyieldmodelTSLA& rhs)=default;
-		// DocString: FMTyieldmodelTSLA::operator = (const FMTyieldmodelTSLA& rhs)
+		FMTYieldModelTsla(const FMTYieldModelTsla& rhs)=default;
+		// DocString: FMTYieldModelTsla::operator = (const FMTYieldModelTsla& rhs)
 		/**
 		Default equality operator.
 		*/
-		FMTyieldmodelTSLA& operator = (const FMTyieldmodelTSLA& rhs)=default;
-		// DocString: FMTyieldmodelTSLA::~FMTyieldmodelTSLA()
+		FMTYieldModelTsla& operator = (const FMTYieldModelTsla& rhs)=default;
+		// DocString: FMTYieldModelTsla::~FMTYieldModelTsla()
 		/**
 		Default destructor.
 		*/
-		~FMTyieldmodelTSLA()=default;
-		// DocString: FMTyieldmodelTSLA::Clone()
+		~FMTYieldModelTsla()=default;
+		// DocString: FMTYieldModelTsla::Clone()
 		/**
-		Implements FMTyieldmodel::Clone().
+		Implements FMTYieldModel::Clone().
 		*/
-		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodelTSLA::predict
+		std::unique_ptr<FMTYieldModel>Clone() const;
+		// DocString: FMTYieldModelTsla::predict
 		/**
 		Will give the value of time since last action.
 		*/
 		const std::vector<double>predict(const Core::FMTYieldRequest& request) const;
-		// DocString: FMTyieldmodelTSLA::getModelType()
+		// DocString: FMTYieldModelTsla::getModelType()
 		/**
-		Return the modeltype of the FMTyieldmodel.
+		Return the modeltype of the FMTYieldModel.
 		*/
 		static std::string getModelType();
-		// DocString: FMTyieldmodelTSLA::presolve
+		// DocString: FMTYieldModelTsla::presolve
 		/**
-		Return a presolved FMTyieldmodelTSLA
+		Return a presolved FMTYieldModelTsla
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTMaskFilter& filter,
+		virtual std::unique_ptr<FMTYieldModel> presolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& newthemes) const;
-		// DocString: FMTyieldmodelTSLA::postSolve
+		// DocString: FMTYieldModelTsla::postSolve
 		/**
 		Change the output and constraints mask to return to the original constraints and outputs.
 		*/
-		virtual std::unique_ptr<FMTyieldmodel> postSolve(const FMTMaskFilter& filter,
+		virtual std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& basethemes) const;
 		// DocString: FMTyieldmodelTSLAl::std::string()
 		/**

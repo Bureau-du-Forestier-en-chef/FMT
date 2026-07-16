@@ -22,15 +22,15 @@ int main()
 	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
 	modelparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1,"LP");
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, 5);
-	optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-	optimizationmodel.FMTmodel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+	optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 	Core::FMTOutput out;
 	for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
@@ -41,7 +41,7 @@ int main()
 				break;
 			}
 		}
-	Models::FMTlpmodel lowerboundmodel, upperboundmodel;
+	Models::FMTLpModel lowerboundmodel, upperboundmodel;
 	lowerboundmodel = upperboundmodel = optimizationmodel;
 	//Select the yields to change.
 	std::vector<std::string>yieldstochange;
