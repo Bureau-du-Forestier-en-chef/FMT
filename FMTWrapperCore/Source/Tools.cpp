@@ -7,6 +7,7 @@
 #include "FMTForest.h"
 #include <vector>
 #include <string>
+#include <boost/filesystem.hpp>
 
 
 
@@ -143,16 +144,31 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 	}
 	return masks;
 }
-void FMTWrapperCore::Tools::writeToProject(const Models::FMTModel& p_model, const std::string& p_primaryLocation)
+void FMTWrapperCore::Tools::writeToProject(
+	const std::vector<Models::FMTModel>& p_models, 
+	const std::string& p_destinationDirectory)
 {
+	if (p_models.empty())
+	{
+		return;
+	}
 	try
 	{
+		const std::string BASENAME = p_models.front().getname();
+		if (!boost::filesystem::is_directory(p_destinationDirectory))
+		{
+			boost::filesystem::create_directories(p_destinationDirectory);
+		}
+		const boost::filesystem::path PRIMARY_PATH = boost::filesystem::path(p_destinationDirectory) / (BASENAME + ".pri");
 		Parser::FMTModelParser ModelParser;
-		ModelParser.writeToProject(p_primaryLocation, p_model);
+		for (const Models::FMTmodel& MODEL : p_models)
+		{
+			ModelParser.writeToProject(PRIMARY_PATH.string(), MODEL);
+		}
 	}
 	catch (...)
 	{
-		Exception::FMTExceptionHandler* modelExceptionHandler = p_model.getExceptionHandler();
+		Exception::FMTExceptionHandler* modelExceptionHandler = p_models.front().getExceptionHandler();
 		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::writetoproject", __LINE__, __FILE__);
 	}
 }

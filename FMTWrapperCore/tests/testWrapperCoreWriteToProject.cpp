@@ -59,29 +59,22 @@ int main(int argc, char* argv[])
 	models.push_back(scenarioModelA);
 	models.push_back(scenarioModelB);
 
-	if (!boost::filesystem::is_directory(output_directory))
-	{
-		boost::filesystem::create_directories(output_directory);
-	}
-	const boost::filesystem::path OUTPUT_PRI = boost::filesystem::path(output_directory) / boost::filesystem::path("writetoproject_test.pri");
+	FMTWrapperCore::Tools::writeToProject(models, output_directory);
 
-	// FMTForm::writetoprojectfromcache en bouclant sur la cache.
-	for (const Models::FMTModel& MODEL : models)
-	{
-		FMTWrapperCore::Tools::writeToProject(MODEL, OUTPUT_PRI.string());
-	}
+	const std::string BASENAME = models.front().getName();
+	const boost::filesystem::path OUTPUT_DIR = boost::filesystem::path(output_directory);
 
 	std::vector<std::string> extensions = { ".pri", ".lan", ".are", ".yld", ".act", ".trn" };
 	for (const std::string& EXT : extensions)
 	{
-		const boost::filesystem::path SECTION_PATH = OUTPUT_PRI.parent_path() / boost::filesystem::path(OUTPUT_PRI.stem().string() + EXT);
+		const boost::filesystem::path SECTION_PATH = OUTPUT_DIR / boost::filesystem::path(BASENAME + EXT);
 		if (!boost::filesystem::is_regular_file(SECTION_PATH))
 		{
 			throw Exception::FMTexc::FMTinvalid_path;
 		}
 	}
 
-	const boost::filesystem::path SCENARIOS_DIR = OUTPUT_PRI.parent_path() / boost::filesystem::path("Scenarios");
+	const boost::filesystem::path SCENARIOS_DIR = OUTPUT_DIR / boost::filesystem::path("Scenarios");
 	for (const std::string& SCENARIO : { SCENARIO_A, SCENARIO_B })
 	{
 		if (!boost::filesystem::is_directory(SCENARIOS_DIR / boost::filesystem::path(SCENARIO)))
