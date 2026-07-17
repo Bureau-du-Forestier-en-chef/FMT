@@ -1,11 +1,11 @@
 
 #include "FMTVirtualLineGraph.h"
-#include "FMTlayer.hpp"
-#include "FMTlinegraph.h"
+#include "FMTLayer.hpp"
+#include "FMTLineGraph.h"
 #include "FMTSpatialGraphs.h"
 #include "FMTGraphInfo.h"
-#include "FMTmodel.h"
-#include "FMToutput.h"
+#include "FMTModel.h"
+#include "FMTOutput.h"
 #include "FMTSolutionTracker.h"
 
 

@@ -1,14 +1,14 @@
 #include <vector>
 #include <string>
 #ifdef FMTWITHOSI
-	#include "FMTtaskhandler.h"
-	#include "FMTreplanningtask.h"
-	#include "FMTlpmodel.h"
-	#include "FMTnssmodel.h"
-	#include "FMTfreeexceptionhandler.h"
-	#include "FMTmodelparser.h"
+	#include "FMTTaskHandler.h"
+	#include "FMTReplanningTask.h"
+	#include "FMTLpModel.h"
+	#include "FMTNssModel.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTModelParser.h"
 #endif
-	#include "FMTdefaultlogger.h"
+	#include "FMTDefaultLogger.h"
 #include <boost/filesystem.hpp>
 
 

@@ -1,13 +1,13 @@
 #include <vector>
-#include "FMTareaparser.h"
-#include "FMTlandscapeparser.h"
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTversion.h"
+#include "FMTAreaParser.h"
+#include "FMTLandscapeParser.h"
+#include "FMTConstants.h"
+#include "FMTTheme.h"
+#include "FMTVersion.h"
 #include "FMTutility.h"
-#include "FMTdefaultexceptionhandler.h"
-#include "FMTdefaultlogger.h"
-#include "FMTactualdevelopment.h"
+#include "FMTDefaultExceptionHandler.h"
+#include "FMTDefaultLogger.h"
+#include "FMTActualDevelopment.h"
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 

@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include "FMTSolutionTracker.h"
 #include "FMTGraphInfo.h"
-#include "FMTlinegraph.h"
+#include "FMTLineGraph.h"
 
 
 namespace Spatial

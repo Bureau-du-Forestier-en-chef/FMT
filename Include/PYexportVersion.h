@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <boost/python/docstring_options.hpp>
 #include <boost/python/args.hpp>
-#include "FMTversion.h"
+#include "FMTVersion.h"
 #include "boost/python.hpp"
 
 

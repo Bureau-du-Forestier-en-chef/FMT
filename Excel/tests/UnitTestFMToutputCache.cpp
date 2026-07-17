@@ -1,8 +1,8 @@
 #ifdef FMTWITHMOSEK
 //#include "FMTexcelcache.h"
-#include "FMTdefaultlogger.h"
-#include "FMTfreeexceptionhandler.h"
-#include "FMTversion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTFreeExceptionHandler.h"
+#include "FMTVersion.h"
 #include <msclr\marshal_cppstd.h>
 #include <iostream>
 

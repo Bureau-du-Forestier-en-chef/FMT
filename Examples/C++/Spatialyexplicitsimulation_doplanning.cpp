@@ -1,16 +1,16 @@
 #include <vector>
 #ifdef FMTWITHGDAL
-#include "FMTsesmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTareaparser.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTforest.h"
-#include "FMTspatialschedule.h"
-#include "FMTtransitionparser.h"
-#include "FMTGCBMtransition.h"
-#include "FMTfreeexceptionhandler.h"
-#include "FMToutput.h"
+#include "FMTSesModel.h"
+#include "FMTModelParser.h"
+#include "FMTAreaParser.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTForest.h"
+#include "FMTSpatialSchedule.h"
+#include "FMTTransitionParser.h"
+#include "FMTGCBMTransition.h"
+#include "FMTFreeExceptionHandler.h"
+#include "FMTOutput.h"
 
 #endif
 

@@ -2,8 +2,8 @@
 #include "stdafx.h"
 
 #include "FMTExcelExceptionHandler.h"
-#include "FMTwarning.h"
-#include "FMTerror.h"
+#include "FMTWarning.h"
+#include "FMTError.h"
 #include <boost/thread.hpp>
 
 namespace Exception

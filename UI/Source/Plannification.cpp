@@ -1,20 +1,20 @@
 #include "stdafx.h"
 #include <sstream>
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTscheduleparser.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
+#include "FMTScheduleParser.h"
 #include "FMTutility.h"
-#include "FMTnssmodel.h"
-#include "FMTtaskhandler.h"
-#include "FMTreplanningtask.h"
+#include "FMTNssModel.h"
+#include "FMTTaskHandler.h"
+#include "FMTReplanningTask.h"
 #include <msclr\marshal_cppstd.h>
 #include <string>
 #include <iostream>
 #include "FMTFormLogger.h"
 #include "FMTForm.h"
 #include "FMTFormCache.h"
-#include "FMTplanningtask.h"
-#include "FMTdefaultlogger.h"
+#include "FMTPlanningTask.h"
+#include "FMTDefaultLogger.h"
 
 namespace Wrapper
 {

@@ -13,8 +13,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <Rcpp.h>
 #include <vector>
 #include <map>
-#include "FMTlist.hpp"
-#include "FMTlayer.hpp"
+#include "FMTList.hpp"
+#include "FMTLayer.hpp"
 
 
 

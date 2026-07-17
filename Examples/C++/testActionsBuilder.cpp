@@ -1,11 +1,11 @@
 #include <vector>
-#include "FMTmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTscheduleparser.h"
+#include "FMTModel.h"
+#include "FMTModelParser.h"
+#include "FMTScheduleParser.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include "FMTdefaultlogger.h"
-#include "FMTlpmodel.h"
+#include "FMTDefaultLogger.h"
+#include "FMTLpModel.h"
 
 
 int main(int argc, char* argv[])

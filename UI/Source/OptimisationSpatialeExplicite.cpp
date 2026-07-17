@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include <sstream>
-#include "FMTforest.h"
-#include "FMTmodelparser.h"
-#include "FMTsamodel.h"
-#include "FMTareaparser.h"
-#include "FMTscheduleparser.h"
+#include "FMTForest.h"
+#include "FMTModelParser.h"
+#include "FMTSaModel.h"
+#include "FMTAreaParser.h"
+#include "FMTScheduleParser.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTFormLogger.h"
 #include "FMTForm.h"
-#include "FMTmodel.h"
+#include "FMTModel.h"
 #include "FMTFormCache.h"
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 #include "SES.h"
 
 namespace Wrapper

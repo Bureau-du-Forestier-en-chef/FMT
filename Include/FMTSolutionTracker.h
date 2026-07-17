@@ -12,7 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <string>
 #include <memory>
-#include "FMTobject.h"
+#include "FMTObject.h"
 
 namespace Graph
 {

@@ -1,8 +1,8 @@
 #include <string>
 #include <vector>
-#include "FMTexception.h"
-#include "FMTmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTException.h"
+#include "FMTModel.h"
+#include "FMTModelParser.h"
 #include "TransformationCore.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>

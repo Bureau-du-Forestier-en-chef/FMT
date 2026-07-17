@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTFormLogger.h"
-#include "FMTlogger.h"
+#include "FMTLogger.h"
 #include <memory>
 
 #define LOGLEVEL 1

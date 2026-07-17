@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <vector>
 #include <set>
-#include "FMTobject.h"
+#include "FMTObject.h"
 
 namespace Core {
 	class FMTConstraint;

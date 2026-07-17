@@ -1,10 +1,10 @@
 #include  "Tools.h"
-#include "FMTmodel.h"
-#include "FMTlpmodel.h"
-#include "FMTerror.h"
-#include "FMTmodelparser.h"
-#include "FMTareaparser.h"
-#include "FMTforest.h"
+#include "FMTModel.h"
+#include "FMTLpModel.h"
+#include "FMTError.h"
+#include "FMTModelParser.h"
+#include "FMTAreaParser.h"
+#include "FMTForest.h"
 #include <vector>
 #include <string>
 

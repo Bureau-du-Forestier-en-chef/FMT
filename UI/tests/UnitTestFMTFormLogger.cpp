@@ -4,15 +4,15 @@
 #include <memory>
 
 #ifdef FMTWITHMOSEK
-	#include "FMTmodelparser.h"
-	#include "FMTversion.h"
+	#include "FMTModelParser.h"
+	#include "FMTVersion.h"
 	#include "FMTFormLogger.h"
-	#include "FMTfreeexceptionhandler.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTlpmodel.h"
-	#include "FMTnssmodel.h"
-	#include "FMTtaskhandler.h"
-	#include "FMTreplanningtask.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTLpModel.h"
+	#include "FMTNssModel.h"
+	#include "FMTTaskHandler.h"
+	#include "FMTReplanningTask.h"
 void out(const char* data) {
 	std::cout << data;
 	}

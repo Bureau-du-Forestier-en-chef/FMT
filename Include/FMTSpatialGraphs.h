@@ -15,9 +15,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <unordered_map>
 #include <boost/unordered_map.hpp>
-#include "FMTobject.h"
+#include "FMTObject.h"
 #include "FMTGraphInfo.h"
-#include "FMTmask.h"
+#include "FMTMask.h"
 #include "FMTSolutionTracker.h"
 
 namespace Graph

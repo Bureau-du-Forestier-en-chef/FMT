@@ -1,7 +1,7 @@
 #ifndef FMTEXCELEXCEPTIONHANDLER_Hm_included
 #define FMTEXCELEXCEPTIONHANDLER_Hm_included
 
-#include "FMTexceptionhandler.h"
+#include "FMTExceptionHandler.h"
 #include <unordered_map>
 #include <vector>
 #include <string>

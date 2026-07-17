@@ -1,11 +1,11 @@
 #include <string>
 #include <vector>
-#include "FMTexception.h"
-#include "FMTmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTscheduleparser.h"
+#include "FMTException.h"
+#include "FMTModel.h"
+#include "FMTModelParser.h"
+#include "FMTScheduleParser.h"
 #include "SES.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTFreeExceptionHandler.h"
 #include <filesystem>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>

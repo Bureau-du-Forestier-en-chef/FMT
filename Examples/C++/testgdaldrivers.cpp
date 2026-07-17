@@ -1,10 +1,10 @@
 #include <vector>
 #include <algorithm>
 #ifdef FMTWITHGDAL
-	#include "FMTareaparser.h"
-	#include "FMTfreeexceptionhandler.h"
+	#include "FMTAreaParser.h"
+	#include "FMTFreeExceptionHandler.h"
 #endif
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 
 int main(int argc, char* argv[])
 {

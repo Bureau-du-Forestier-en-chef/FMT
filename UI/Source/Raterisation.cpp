@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "FMTmodelparser.h"
-#include "FMTforest.h"
-#include "FMTareaparser.h"
+#include "FMTModelParser.h"
+#include "FMTForest.h"
+#include "FMTAreaParser.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTForm.h"
-#include "FMTmodel.h"
+#include "FMTModel.h"
 #include "FMTFormCache.h"
 #include "FMTFormLogger.h"
 

@@ -1,16 +1,16 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTlpmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTconstraint.h"
-	#include "FMTfreeexceptionhandler.h"
-	#include "FMTactualdevelopment.h"
-	#include "FMTtimeyieldhandler.h"
-	#include "FMTdata.h"
-	#include "FMTconstraint.h"
-	#include "FMTbounds.hpp"
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTConstraint.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTActualDevelopment.h"
+	#include "FMTTimeYieldHandler.h"
+	#include "FMTData.h"
+	#include "FMTConstraint.h"
+	#include "FMTBounds.hpp"
 	#include <boost/algorithm/string.hpp>
 
 bool keepandupdate(Core::FMTSpec& spec, const int& updateto)

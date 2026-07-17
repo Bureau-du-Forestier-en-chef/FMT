@@ -1,11 +1,11 @@
 #include <vector>
 #include <cmath>
-#include "FMTnssmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTfreeexceptionhandler.h"
-#include "FMToutput.h"
+#include "FMTNssModel.h"
+#include "FMTModelParser.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTFreeExceptionHandler.h"
+#include "FMTOutput.h"
 	
 
 int main(int argc, char* argv[])

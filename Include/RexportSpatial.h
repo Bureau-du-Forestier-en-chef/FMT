@@ -9,17 +9,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define REXPORTSPATIAL_H_INCLUDED
 
 #include <Rcpp.h>
-#include "FMTcoordinate.h"
-#include "FMTforest.h"
+#include "FMTCoordinate.h"
+#include "FMTForest.h"
 #include "FMTSpatialSchedule.h"
 //#include "FMTspatialaction.h"
-#include "FMTsaschedule.h"
-#include "FMTgraph.hpp"
-#include "FMTlinegraph.h"
+#include "FMTSaSchedule.h"
+#include "FMTGraph.hpp"
+#include "FMTLineGraph.h"
 //#include "FMTSaSolution.h"
 #include "Rdefinitions.h"
-#include "FMTevent.h"
-#include "FMTdevelopment.h"
+#include "FMTEvent.h"
+#include "FMTDevelopment.h"
 
 //RCPP_EXPOSED_ENUM_NODECL(Spatial::FMTsamovetype);
 

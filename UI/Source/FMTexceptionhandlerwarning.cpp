@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "FMTexceptionhandlerwarning.h"
-#include "FMTerror.h"
-#include "FMTwarning.h"
+#include "FMTError.h"
+#include "FMTWarning.h"
 #include "FMTFormLogger.h"
-#include "FMTexceptionhandler.h"
+#include "FMTExceptionHandler.h"
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string.hpp>
 #include <regex>
-#include "FMTconstraint.h"
+#include "FMTConstraint.h"
 #include "windows.h"
-#include "FMTobject.h"
+#include "FMTObject.h"
 
 
 Wrapper::FMTexceptionhandlerwarning::FMTexceptionhandlerwarning(const size_t& maxnumberofwarnings) : FMTExceptionHandler()

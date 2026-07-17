@@ -8,15 +8,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef PYEXPORTMODEL_H_INCLUDED
 #define PYEXPORTMODEL_H_INCLUDED
 
-#include "FMTmodel.h"
-#include "FMTsrmodel.h"
-#include "FMTlpmodel.h"
-#include "FMTsemodel.h"
-#include "FMTsesmodel.h"
-#include "FMTnssmodel.h"
-#include "FMTsamodel.h"
-#include "FMTlpsolver.h"
-#include "FMTsaschedule.h"
+#include "FMTModel.h"
+#include "FMTSrModel.h"
+#include "FMTLpModel.h"
+#include "FMTSeModel.h"
+#include "FMTSesModel.h"
+#include "FMTNssModel.h"
+#include "FMTSaModel.h"
+#include "FMTLpSolver.h"
+#include "FMTSaSchedule.h"
 
 #include "boost/python.hpp"
 

@@ -8,13 +8,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef PYEXPORTSPATIAL_H_INCLUDED
 #define PYEXPORTSPATIAL_H_INCLUDED
 
-#include "FMTcoordinate.h"
-#include "FMTforest.h"
+#include "FMTCoordinate.h"
+#include "FMTForest.h"
 #include "FMTSpatialSchedule.h"
 //#include "FMTspatialaction.h"
-#include "FMTeventcontainer.h"
+#include "FMTEventContainer.h"
 //#include "FMTSaSchedule.h"
-#include "FMTgraph.hpp"
+#include "FMTGraph.hpp"
 //#include "FMTSaSolution.h"
 #include "boost/python.hpp"
 

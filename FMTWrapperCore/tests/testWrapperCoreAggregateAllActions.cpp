@@ -1,9 +1,9 @@
 #ifdef FMTWITHOSI
-	#include "FMTmodelparser.h"
-	#include "FMTmodel.h"
-	#include "FMTversion.h"
+	#include "FMTModelParser.h"
+	#include "FMTModel.h"
+	#include "FMTVersion.h"
 #endif
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 #include "TransformationCore.h"
 #include <boost/filesystem.hpp>
 

@@ -8,15 +8,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef REXPORTPARALLEL_H_INCLUDED
 #define REXPORTPARALLEL_H_INCLUDED
 
-#include "FMTtask.h"
-#include "FMTtaskhandler.h"
-#include "FMTreplanningtask.h"
-#include "FMTplanningtask.h"
+#include "FMTTask.h"
+#include "FMTTaskHandler.h"
+#include "FMTReplanningTask.h"
+#include "FMTPlanningTask.h"
 #if defined FMTWITHOSI
-	#include "FMTopareaschedulertask.h"
+	#include "FMTOpAreaSchedulerTask.h"
 #endif
-#include "FMTmodel.h"
-#include "FMToutput.h"
+#include "FMTModel.h"
+#include "FMTOutput.h"
 #include "FMTutility.h"
 #include <Rcpp.h>
 #include <vector>

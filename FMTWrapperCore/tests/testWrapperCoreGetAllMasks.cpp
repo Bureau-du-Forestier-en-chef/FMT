@@ -1,11 +1,11 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include "FMTmodel.h"
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTModel.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
 #include "Tools.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTFreeExceptionHandler.h"
 #include <set>
 
 int main(int argc, char* argv[])

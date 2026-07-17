@@ -1,9 +1,9 @@
 #include <vector>
 #ifdef FMTWITHONNXR
 	#ifdef FMTWITHGDAL
-		#include "FMTlpmodel.h"
-		#include "FMTmodelparser.h"
-		#include "FMTversion.h"
+		#include "FMTLpModel.h"
+		#include "FMTModelParser.h"
+		#include "FMTVersion.h"
 	#endif
 #endif
 

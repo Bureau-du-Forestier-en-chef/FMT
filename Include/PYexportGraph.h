@@ -9,8 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define PYEXPORTGRAPH_H_INCLUDED
 
 #include "Rdefinitions.h"
-#include "FMTgraphstats.h"
-#include "FMTgraph.hpp"
+#include "FMTGraphStats.h"
+#include "FMTGraph.hpp"
 #include "boost/python.hpp"
 
 namespace Python 

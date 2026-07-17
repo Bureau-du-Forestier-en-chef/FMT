@@ -1,9 +1,9 @@
-#include "FMTareaparser.h"
-#include "FMTmodelparser.h"
-#include "FMTmodel.h"
-#include "FMTdefaultlogger.h"
+#include "FMTAreaParser.h"
+#include "FMTModelParser.h"
+#include "FMTModel.h"
+#include "FMTDefaultLogger.h"
 #ifdef FMTWITHOSI
-    #include "FMToperatingareascheme.h"
+    #include "FMTOperatingAreaScheme.h"
 #endif
 
 int main(int argc, char *argv[])

@@ -8,18 +8,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef PYEXPORTParser_H_INCLUDED
 #define PYEXPORTParser_H_INCLUDED
 
-#include "FMTlandscapeparser.h"
-#include "FMTconstantparser.h"
-#include "FMTyieldparser.h"
-#include "FMTareaparser.h"
-#include "FMTactionparser.h"
-#include "FMTtransitionparser.h"
-#include "FMToutputparser.h"
-#include "FMToptimizationparser.h"
-#include "FMTscheduleparser.h"
-#include "FMTmodelparser.h"
+#include "FMTLandscapeParser.h"
+#include "FMTConstantParser.h"
+#include "FMTYieldParser.h"
+#include "FMTAreaParser.h"
+#include "FMTActionParser.h"
+#include "FMTTransitionParser.h"
+#include "FMTOutputParser.h"
+#include "FMTOptimizationParser.h"
+#include "FMTScheduleParser.h"
+#include "FMTModelParser.h"
 #include "boost/python.hpp"
-#include "FMTlifespanparser.h"
+#include "FMTLifespanParser.h"
 
 namespace Python
 {

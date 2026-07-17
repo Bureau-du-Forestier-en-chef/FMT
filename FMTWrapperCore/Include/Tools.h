@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <set>
-#include "FMTmodel.h"
+#include "FMTModel.h"
 
 namespace Core { 
     class FMTSchedule;

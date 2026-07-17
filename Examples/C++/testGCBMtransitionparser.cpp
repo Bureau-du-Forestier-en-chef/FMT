@@ -1,8 +1,8 @@
 ﻿
-#include "FMTtransitionparser.h"
-#include "FMTGCBMtransition.h"
-#include "FMTfreeexceptionhandler.h"
-#include "FMTdefaultlogger.h"
+#include "FMTTransitionParser.h"
+#include "FMTGCBMTransition.h"
+#include "FMTFreeExceptionHandler.h"
+#include "FMTDefaultLogger.h"
 #include <string>
 #include <vector>
 #include <fstream>

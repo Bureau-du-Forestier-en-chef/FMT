@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
-#include "FMTmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTModel.h"
+#include "FMTModelParser.h"
 #include "Tools.h"
 
 int main(int argc, char* argv[])

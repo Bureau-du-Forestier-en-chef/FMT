@@ -8,15 +8,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef REXPORTEXCEPTIONS_H_INCLUDED
 #define REXPORTEXCEPTIONS_H_INCLUDED
 
-#include "FMTdefaultexceptionhandler.h"
-#include "FMTdebugexceptionhandler.h"
-#include "FMTquietexceptionhandler.h"
-#include "FMTexceptionhandler.h"
+#include "FMTDefaultExceptionHandler.h"
+#include "FMTDebugExceptionHandler.h"
+#include "FMTQuietExceptionHandler.h"
+#include "FMTExceptionHandler.h"
 #include <Rcpp.h>
 #include "Rdefinitions.h"
-#include "FMTerror.h"
-#include "FMTwarning.h"
-#include "FMTexception.h"
+#include "FMTError.h"
+#include "FMTWarning.h"
+#include "FMTException.h"
 
 /*
 RCPP_EXPOSED_WRAP(Exception::FMTExceptionHandler);

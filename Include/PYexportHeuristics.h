@@ -9,13 +9,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define PYEXPORTHEURISTICS_H_INCLUDED
 
 
-#include "FMToperatingarea.h"
-#include "FMToperatingareascheduler.h"
-#include "FMToperatingareaclusterer.h"
-#include "FMToperatingareascheme.h"
-#include "FMToperatingareacluster.h"
+#include "FMTOperatingArea.h"
+#include "FMTOperatingAreaScheduler.h"
+#include "FMTOperatingAreaClusterer.h"
+#include "FMTOperatingAreaScheme.h"
+#include "FMTOperatingAreaCluster.h"
 //#include "FMTLpHeuristicMtHandler.h"
-#include "FMTlpsolver.h"
+#include "FMTLpSolver.h"
 #include "PYdefinitions.h"
 #include "boost/python.hpp"
 #include "FMTpythonpickle.h"

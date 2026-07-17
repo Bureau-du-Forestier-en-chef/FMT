@@ -1,14 +1,14 @@
 #include <vector>
 #ifdef FMTWITHGDAL
-    #include "FMTforest.h"
-    #include "FMTmodelparser.h"
-    #include "FMTareaparser.h"
-    #include "FMTversion.h"
-    #include "FMTdefaultlogger.h"
-    #include "FMTareaparser.h"
-    #include "FMTforest.h"
-    #include "FMTmodel.h"
-    #include "FMTtheme.h"
+    #include "FMTForest.h"
+    #include "FMTModelParser.h"
+    #include "FMTAreaParser.h"
+    #include "FMTVersion.h"
+    #include "FMTDefaultLogger.h"
+    #include "FMTAreaParser.h"
+    #include "FMTForest.h"
+    #include "FMTModel.h"
+    #include "FMTTheme.h"
     #include <boost/filesystem.hpp>
 #endif
 

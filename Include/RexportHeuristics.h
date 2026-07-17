@@ -9,13 +9,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define REXPORTHEURISTICS_H_INCLUDED
 
 
-#include "FMToperatingarea.h"
-#include "FMToperatingareaclusterbinary.h"
-#include "FMToperatingareacluster.h"
-#include "FMToperatingareaclusterer.h"
-#include "FMToperatingareascheduler.h"
-#include "FMToperatingareascheme.h"
-#include "FMTlpsolver.h"
+#include "FMTOperatingArea.h"
+#include "FMTOperatingAreaClusterBinary.h"
+#include "FMTOperatingAreaCluster.h"
+#include "FMTOperatingAreaClusterer.h"
+#include "FMTOperatingAreaScheduler.h"
+#include "FMTOperatingAreaScheme.h"
+#include "FMTLpSolver.h"
 #include "Rdefinitions.h"
 #include <Rcpp.h>
 

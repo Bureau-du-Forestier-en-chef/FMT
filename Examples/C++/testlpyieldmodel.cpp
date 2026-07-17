@@ -1,13 +1,13 @@
 #include <vector>
 #ifdef FMTWITHONNXR
 	#ifdef FMTWITHGDAL
-		#include "FMTlpmodel.h"
-		#include "FMTmodelparser.h"
-		#include "FMTversion.h"
-		#include "FMToutput.h"
+		#include "FMTLpModel.h"
+		#include "FMTModelParser.h"
+		#include "FMTVersion.h"
+		#include "FMTOutput.h"
 	#endif
 #endif
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 
 	int main()
 	{

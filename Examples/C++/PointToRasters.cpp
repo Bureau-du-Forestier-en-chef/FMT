@@ -1,13 +1,13 @@
 #include <vector>
 #ifdef FMTWITHGDAL
-#include "FMTactualdevelopment.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTareaparser.h"
-#include "FMTlandscapeparser.h"
-#include "FMTforest.h"
-#include "FMTtheme.h"
-#include "FMTconstants.h"
+#include "FMTActualDevelopment.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTAreaParser.h"
+#include "FMTLandscapeParser.h"
+#include "FMTForest.h"
+#include "FMTTheme.h"
+#include "FMTConstants.h"
 #endif
 
 int main(int argc, char* argv[])

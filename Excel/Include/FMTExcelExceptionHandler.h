@@ -3,7 +3,7 @@
 #ifndef FMTEXCELEXCEPTIONHANDLER_H_INCLUDED
 #define FMTEXCELEXCEPTIONHANDLER_H_INCLUDED
 
-#include "FMTexceptionhandler.h"
+#include "FMTExceptionHandler.h"
 #include <unordered_map>
 #include <vector>
 #include <string>

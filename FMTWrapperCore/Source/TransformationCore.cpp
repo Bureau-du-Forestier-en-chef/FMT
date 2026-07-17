@@ -1,10 +1,10 @@
 #include "TransformationCore.h"
-#include "FMTmodel.h"
-#include "FMTschedule.h"
-#include "FMTmodelparser.h"
-#include "FMTscheduleparser.h"
-#include "FMTerror.h"
-#include "FMTexceptionhandler.h"
+#include "FMTModel.h"
+#include "FMTSchedule.h"
+#include "FMTModelParser.h"
+#include "FMTScheduleParser.h"
+#include "FMTError.h"
+#include "FMTExceptionHandler.h"
 #include <boost/filesystem.hpp>
 
 

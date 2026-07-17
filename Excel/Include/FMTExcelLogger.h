@@ -5,8 +5,8 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
-#include "FMTobject.h"
-#include "FMTlogger.h"
+#include "FMTObject.h"
+#include "FMTLogger.h"
 
 
 namespace Logging

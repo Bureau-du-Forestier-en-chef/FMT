@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define REXPORTGRAPH_H_INCLUDED
 
 #include "Rdefinitions.h"
-#include "FMTgraphstats.h"
+#include "FMTGraphStats.h"
 //#include "FMTGraph.hpp"
 #include <Rcpp.h>
 

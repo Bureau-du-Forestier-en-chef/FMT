@@ -6,9 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTPatchRules.h"
-#include "FMTconstraint.h"
-#include "FMTaction.h"
-#include "FMTeventcontainer.h"
+#include "FMTConstraint.h"
+#include "FMTAction.h"
+#include "FMTEventContainer.h"
 #include "FMTSpatialGraphs.h"
 #include <limits>
 

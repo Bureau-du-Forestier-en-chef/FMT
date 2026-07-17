@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FMTlogger.h"
+#include "FMTLogger.h"
 #include <fstream>
 #include <iostream>
 #include <memory>

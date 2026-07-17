@@ -1,7 +1,7 @@
-﻿#include "FMTmodelparser.h"
-#include "FMTfreeexceptionhandler.h"
+﻿#include "FMTModelParser.h"
+#include "FMTFreeExceptionHandler.h"
 #ifdef FMTWITHOSI
-#include "FMTlpmodel.h"
+#include "FMTLpModel.h"
 #endif
 
 int main(int argc, char* argv[])

@@ -1,16 +1,16 @@
 #include <vector>
 #ifdef FMTWITHOSI
-#include "FMTsamodel.h"
-#include "FMTmodelparser.h"
-#include "FMTareaparser.h"
-#include "FMTforest.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTconstraint.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTSaModel.h"
+#include "FMTModelParser.h"
+#include "FMTAreaParser.h"
+#include "FMTForest.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTConstraint.h"
+#include "FMTFreeExceptionHandler.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include "FMTGCBMtransition.h"
+#include "FMTGCBMTransition.h"
 #endif
 
 

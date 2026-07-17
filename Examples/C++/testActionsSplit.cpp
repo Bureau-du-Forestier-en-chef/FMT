@@ -1,17 +1,17 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTmodel.h"
-	#include "FMTlpmodel.h"
-	#include "FMTsesmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTareaparser.h"
-	#include "FMTscheduleparser.h"
+	#include "FMTModel.h"
+	#include "FMTLpModel.h"
+	#include "FMTSesModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTAreaParser.h"
+	#include "FMTScheduleParser.h"
 	#include <boost/algorithm/string.hpp>
-	#include "FMTversion.h"
+	#include "FMTVersion.h"
 	#include <boost/filesystem.hpp>
-	#include "FMTforest.h"
+	#include "FMTForest.h"
 #endif
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 
 
 int main(int argc, char* argv[])

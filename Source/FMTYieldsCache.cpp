@@ -6,12 +6,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTYieldsCache.h"
-#include "FMTdevelopment.h"
-#include "FMTyieldrequest.h"
-#include "FMTgraphvertextoyield.h"
-#include "FMTyields.h"
-#include "FMTmodel.h"
-#include "FMTyieldhandler.h"
+#include "FMTDevelopment.h"
+#include "FMTYieldRequest.h"
+#include "FMTGraphVertexToYield.h"
+#include "FMTYields.h"
+#include "FMTModel.h"
+#include "FMTYieldHandler.h"
 #include "FMTYieldDevelopment.h"
 #include <boost/dynamic_bitset.hpp>
 #include <boost/flyweight.hpp>

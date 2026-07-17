@@ -1,6 +1,6 @@
 #include "FMTWorkerTask.h"
-#include "FMTlogger.h"
-#include "FMTtask.h"
+#include "FMTLogger.h"
+#include "FMTTask.h"
 
 namespace Parallel
 {

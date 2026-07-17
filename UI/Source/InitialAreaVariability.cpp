@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include <string>
 #include <sstream>
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTmask.h"
+#include "FMTMask.h"
 #include "FMTFormLogger.h"
 #include "FMTForm.h"
 #include "FMTFormCache.h"
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 
 namespace Wrapper{
 

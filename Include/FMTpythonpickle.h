@@ -13,10 +13,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include <boost/iostreams/filtering_streambuf.hpp>
 	#include <boost/iostreams/filter/zlib.hpp>
 	#include <boost/iostreams/copy.hpp>
-	#include "FMTmodel.h"
-	#include "FMTlpmodel.h"
-	#include "FMTsesmodel.h"
-	#include "FMToperatingareascheduler.h"
+	#include "FMTModel.h"
+	#include "FMTLpModel.h"
+	#include "FMTSesModel.h"
+	#include "FMTOperatingAreaScheduler.h"
 	#include <typeinfo>
 
 #if defined FMTWITHPYTHON

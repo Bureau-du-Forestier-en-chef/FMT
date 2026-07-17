@@ -8,12 +8,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef PYEXPORTEXCEPTIONS_H_INCLUDED
 #define PYEXPORTEXCEPTIONS_H_INCLUDED
 
-#include "FMTdefaultexceptionhandler.h"
-#include "FMTdebugexceptionhandler.h"
-#include "FMTquietexceptionhandler.h"
-#include "FMTerror.h"
-#include "FMTwarning.h"
-#include "FMTexception.h"
+#include "FMTDefaultExceptionHandler.h"
+#include "FMTDebugExceptionHandler.h"
+#include "FMTQuietExceptionHandler.h"
+#include "FMTError.h"
+#include "FMTWarning.h"
+#include "FMTException.h"
 #include "boost/python.hpp"
 
 namespace Python

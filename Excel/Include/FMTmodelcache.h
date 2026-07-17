@@ -3,8 +3,8 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "FMTlpmodel.h"
-#include "FMTlogger.h"
+#include "FMTLpModel.h"
+#include "FMTLogger.h"
 
 namespace boost
 {

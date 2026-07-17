@@ -8,13 +8,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef PYEXPORTParallel_H_INCLUDED
 #define PYEXPORTParallel_H_INCLUDED
 
-#include "FMTtask.h"
-#include "FMTtaskhandler.h"
-#include "FMTreplanningtask.h"
-#include "FMTplanningtask.h"
-#include "FMTopareaschedulertask.h"
-#include "FMTmodel.h"
-#include "FMToutput.h"
+#include "FMTTask.h"
+#include "FMTTaskHandler.h"
+#include "FMTReplanningTask.h"
+#include "FMTPlanningTask.h"
+#include "FMTOpAreaSchedulerTask.h"
+#include "FMTModel.h"
+#include "FMTOutput.h"
 #include "FMTutility.h"
 #include <string>
 #include "boost/python.hpp"

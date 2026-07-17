@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "FMTForm.h"
-#include "FMTmodelparser.h"
+#include "FMTModelParser.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTscheduleparser.h"
+#include "FMTScheduleParser.h"
 #include "FMTFormCache.h"
-#include "FMTmodel.h"
-#include "FMTtheme.h"
+#include "FMTModel.h"
+#include "FMTTheme.h"
 
 namespace Wrapper
 { 

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "FMTForm.h"
-#include "FMTmodelparser.h"
+#include "FMTModelParser.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTFormCache.h"
-#include "FMTmodel.h"
+#include "FMTModel.h"
 #include "TransformationCore.h"
 
 namespace Wrapper {

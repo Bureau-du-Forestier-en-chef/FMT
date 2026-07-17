@@ -2,12 +2,12 @@
 #include <string>
 
 #ifdef FMTWITHMOSEK
-#include "FMTmodelparser.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTModelParser.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTFreeExceptionHandler.h"
 #include "FMTmodelcache.h"
-#include "FMtmask.h"
+#include "FMTMask.h"
 
 namespace Testing
 {

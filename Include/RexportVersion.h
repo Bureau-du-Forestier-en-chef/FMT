@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define REXPORTVERSION_H_INCLUDED
 
 #include <Rcpp.h>
-#include "FMTversion.h"
+#include "FMTVersion.h"
 #include "Rdefinitions.h"
 #include <string>
 
