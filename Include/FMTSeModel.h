@@ -1,0 +1,239 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#ifndef FMTSEM_Hm_included
+#define FMTSEM_Hm_included
+
+#include "FMTModel.h"
+#include "FMTSpatialSchedule.h"
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
+#include "FMTSpatialGraphs.h"
+
+namespace Spatial
+{
+	template <typename T>
+	class FMTLayer;
+}
+
+namespace Models
+{
+// DocString: FMTSeModel
+/**
+This model is an abstract class for spatially explicit model. It's the parent of FMTSesModel and FMTSaModel.
+It contains a spatialschedule (the best solution) in case of optimization or the latest solution in term of
+simulation.
+*/
+class FMTEXPORT FMTSeModel : public FMTModel
+    {
+    public:
+		// DocString: FMTSeModel()
+		/**
+		Default constructor of FMTSeModel
+		*/
+        FMTSeModel();
+		// DocString: ~FMTSeModel()
+		/**
+		Default destructor of FMTSeModel
+		*/
+		virtual ~FMTSeModel() = default;
+		// DocString: FMTSeModel(const FMTSeModel)
+		/**
+		Copy constructor of FMTSeModel
+		*/
+        FMTSeModel(const FMTSeModel& rhs);
+		// DocString: FMTSeModel(const FMTModel, const FMTForest)
+		/**
+		Parent constructor for FMTSeModel (easiest way to get information from a FMTModel) and with an FMTForest.
+		*/
+        FMTSeModel(const FMTModel& rhs,const Spatial::FMTForest& forest);
+		// DocString: FMTSeModel(const FMTModel, const FMTForest)
+		/**
+		Parent constructor for FMTSeModel (easiest way to get information from a FMTModel)
+		*/
+		FMTSeModel(const FMTModel& rhs);
+		// DocString: FMTSeModel::operator=
+		/**
+		Copy assignment of FMTSeModel
+		*/
+        FMTSeModel& operator = (const FMTSeModel& rhs);
+		// DocString: FMTSeModel::getMapping
+		/**
+		Getter returning a copy the actual spatial forest stades of each FMTDevelopment (map).
+		*/
+		Spatial::FMTForest getMapping() const;
+		// DocString: FMTSeModel::getSpSchedule
+		/**
+		Getter returning a copy of the spatially explicit solution.
+		*/
+		inline Spatial::FMTSpatialSchedule getSpSchedule() const
+		{
+			return m_BestSolution;
+		}
+		// DocString: FMTSeModel::getDisturbanceStats
+		/**
+		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
+		*/
+		std::string getDisturbanceStats() const;
+		// DocString: FMTSeModel::getSchedule
+		/**
+		Getter returning a copy of the operated schedules of the FMTSeModel.
+		The operated schedule can differ from the potential schedule provided by the user in the function
+		greedyreferencedbuild(). Which we call spatialisation impact.
+		*/
+		std::vector<Core::FMTSchedule> getSchedule(bool withlock=false) const;
+		// DocString: FMTSeModel::setInitialMapping
+		/**
+		Setter of the initial forest state (spatial map of FMTDevelopment)
+		Has to be set before greedyreferencedbuild() is called.
+		*/
+        bool setInitialMapping(const Spatial::FMTForest& forest);
+		// DocString: FMTSeModel::logConstraintsInfeasibilities
+		/**
+		Log the constraints infeasibilities spatial or not spatial
+		*/
+		void logConstraintsInfeasibilities() const;
+		// DocString: FMTSeModel::logConstraintsFactors
+		/**
+		Log the constraints factors
+		*/
+		void logConstraintsFactors() const;
+		// DocString: FMTSeModel::presolve
+		/**
+		Presolve the semodel to get a more simple model call original presolve() and presolve the
+		FMTForest map and the spatial acitons.
+		*/
+		virtual std::unique_ptr<FMTModel>presolve(
+			std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+		// DocString: FMTSeModel::postSolve
+		/**
+		Using the original FMTModel it postSolve the actual ses model to turn it back into a complete model with all themes,
+		actions and outputs of the original not presolved model.
+		*/
+		virtual void postSolve(const FMTModel& originalbasemodel);
+		// DocString: FMTSeModel::getOutput
+		/**
+		Get the output value of a output for a given period using the spatial solution.
+		the map key returned consist of output name
+		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
+		or development name if level == FMToutputlevel::developpement
+		*/
+		virtual std::map<std::string, double> getOutput(const Core::FMTOutput& output,
+			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
+		// DocString: FMTSeModel::getOutput
+		/**
+		Get the spatial output value based on the spatial solution.
+		*/
+		virtual Spatial::FMTLayer<double> getSpatialOutput(const Core::FMTOutput& output,int period) const;
+		// DocString: FMTSeModel::getSolution
+		/**
+		Get the standard solution for a given period (FMTSchedule dont have natural growth solution included).
+		If with lock is true then the schedule will contain locked development.
+		*/
+		virtual Core::FMTSchedule getSolution(int period, bool withlock = false) const;
+
+		
+		// DocString: FMTSeModel::clone
+		/**
+		Get a clone of the FMTSeModel
+		*/
+		virtual std::unique_ptr<FMTModel>clone() const;
+		// DocString: FMTSeModel::getArea
+		/**
+		@brief Get the area of a given period based on the solution of the model.
+		@param[in] period the period selected
+		@param[in] beforegrowanddeath true if we want before the growth (true) or after (false)
+		@return the vector of actualdevelopment...
+		*/
+		virtual std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
+		// DocString: FMTSeModel::getCopy
+		/**
+		This function returns a copy of the FMTModel of the selected period.
+		The function is going to clean the FMTconstraints and keep the objective.
+		*/
+		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
+		// DocString: FMTModel::getObjectiveValue
+		/**
+		Return the value of the globalobjective of the actual solution
+		*/
+		virtual double getObjectiveValue() const;
+		// DocString: FMTSeModel::getSchedules
+		/**
+		@brief Get the schedules of the spatial solution
+		@param[in] p_SpatialSchedule spatial schedule
+		@param[in] withlock lock in schedule
+		@return the vector of schedules
+		*/
+		std::vector<Core::FMTSchedule> getSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+			bool withlock = false) const;
+		// DocString: FMTSeModel::getSolutionStatus
+		/**
+		@brief Get the solution status
+		*/
+		void getSolutionStatus(const Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+			double& p_Objective, double& p_PrimalInFeasibility,
+			bool withsense = true, bool withfactorization = false, bool withspatial = true) const;
+		// DocString: FMTSeModel::getConstraintEvaluation
+		/**
+		@brief evaluate the constraint with the actual solution
+		@return the evaluation value.
+		*/
+		double getConstraintEvaluation(size_t p_Constraint) const;
+		
+	protected:
+		// DocString: FMTSeModel::spschedule
+		///Contains the builded spatialsolution latest or best one.
+		Spatial::FMTSpatialSchedule m_BestSolution;
+		// DocString: FMTSeModel::FMTSpatialGraphs
+		///Contains all the SpatialGraphs
+		Spatial::FMTSpatialGraphs m_SpatialGraphs;
+
+		double getGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const;
+
+		std::vector<double> getConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+
+		void doRefactorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+		Spatial::FMTSpatialSchedule getNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
+		std::map<std::string, double> greedyReferenceBuild(
+			Spatial::FMTSpatialSchedule& p_SpatialSchedule,
+			const Core::FMTSchedule& schedule,
+			const size_t& randomiterations,
+			unsigned int seed = 0,
+			double tolerance = FMT_DBL_TOLERANCE,
+			bool log = true) const;
+		double getConstraintFactor(size_t p_constraint, double p_GrossValue) const;
+		bool isValidFactor(double p_GrossValue)const;
+	private:
+		// DocString: FMTSeModel::Serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTModel>(*this));
+			//ar& BOOST_SERIALIZATION_NVP(m_BestSolution);
+		}
+		virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
+		void _buildArea(const Spatial::FMTForest& p_Forest);
+		void _buildGraphs(double p_cellSize);
+		void _buildSolution(const Spatial::FMTForest& p_Forest);
+		void _copyGraphs(const Spatial::FMTSpatialGraphs& pToCopy);
+		void _copySolution(const Spatial::FMTSpatialSchedule& pToCopy);
+		double _getConstraintNumerator(size_t p_constraint) const;
+		static const double MAX_FACTOR;
+		
+    };
+
+}
+
+BOOST_CLASS_EXPORT_KEY(Models::FMTSeModel)
+
+#endif // FMTSEM_Hm_included

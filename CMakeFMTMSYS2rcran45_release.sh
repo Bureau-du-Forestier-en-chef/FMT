@@ -15,7 +15,7 @@
 
 cd /home/FMT
 
-cmake CMakeLists.txt -B build/release -G "MSYS Makefiles" -DPYTHON_DIR=C:/Logiciels/Anaconda3/ -DR_DIR=C:/Logiciels/R-4.5.0/ -DCMAKE_BUILD_TYPE=Release -DPARALLEL_TESTS=8 -DGENERATE_RELEASE_PACKAGE=true -DENV_PREFIX="x86_64-w64-mingw32.static.posix" -DWITHOUT_TESTS=true
+cmake CMakeLists.txt -B build/release -G "MSYS Makefiles" -DPYTHON_DIR=C:/Logiciels/Anaconda3/ -DR_DIR=C:/Logiciels/R-4.5.0/ -DCMAKE_BUILD_TYPE=Release -DPARALLEL_TESTS=4 -DGENERATE_RELEASE_PACKAGE=true -DENV_PREFIX="x86_64-w64-mingw32.static.posix" -DWITHOUT_TESTS=true
 
 #in release
 cmake CMakeLists.txt \

@@ -1,0 +1,55 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#include "FMTBindingSpatialAction.h"
+
+namespace Spatial
+{
+	FMTBindingSpatialAction::FMTBindingSpatialAction(const std::vector<int>& lneighbors,
+		const size_t& mingreenup, const size_t& maxgreenup,
+		const size_t& minadjacency, const size_t& maxadjacency,
+		const size_t& minsize, const size_t& maxsize,
+		const size_t& minnsize, const size_t& maxnsize):
+		neighbors(lneighbors),
+		minimal_green_up(mingreenup),
+		maximal_green_up(maxgreenup),
+		minimal_adjacency(minadjacency),
+		maximal_adjacency(maxadjacency),
+		minimal_size(minsize),
+		maximal_size(maxsize),
+		minimal_neighbors_size(minnsize),
+		maximal_neighbors_size(maxnsize)
+	{
+
+	}
+	bool FMTBindingSpatialAction::isSpatiallyBinding() const
+	{
+		return (isSpatiallyAdjacencyBinding()|| isSpatiallyAreaBinding());
+	}
+
+	bool FMTBindingSpatialAction::isSpatiallyAdjacencyBinding() const
+	{
+		return (!neighbors.empty() && (minimal_adjacency > 0 ||
+			maximal_adjacency != std::numeric_limits<size_t>::max()));
+	}
+
+	bool FMTBindingSpatialAction::isSpatiallyAreaBinding() const
+		{
+		return (!neighbors.empty() && (minimal_size > 0 ||
+				maximal_size != std::numeric_limits<size_t>::max()));
+		}
+
+	bool FMTBindingSpatialAction::testMinimalAdjacency() const
+	{
+		return (!neighbors.empty() &&  minimal_adjacency > 0);
+	}
+	bool FMTBindingSpatialAction::testMaximalAdjacency() const
+	{
+		return (!neighbors.empty() &&  maximal_adjacency != std::numeric_limits<size_t>::max());
+	}
+
+}

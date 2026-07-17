@@ -1,13 +1,13 @@
 #include <vector>
 #ifdef FMTWITHGDAL
-#include "FMTlpmodel.h"
-#include "FMTsesmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTareaparser.h"
-#include "FMTforest.h"
-#include "FMTversion.h"
-#include "FMToutput.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTLpModel.h"
+#include "FMTSesModel.h"
+#include "FMTModelParser.h"
+#include "FMTAreaParser.h"
+#include "FMTForest.h"
+#include "FMTVersion.h"
+#include "FMTOutput.h"
+#include "FMTFreeExceptionHandler.h"
 #endif
 
 int main(int argc, char* argv[])
@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 		scenario = "spatial";
 	}
 
-	Parser::FMTmodelparser mparser;
+	Parser::FMTModelParser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -40,64 +40,64 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	mparser.seterrorstowarnings(errors);
+	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, scenario);
-	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
-	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	if (optimizationmodel.doplanning(true))
+	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+	if (optimizationmodel.doPlanning(true))
 	{
 		std::cout << "OBJECTIVE VALUE " << optimizationmodel.getObjValue() << "\n";
-		Models::FMTsesmodel simmodel(optimizationmodel);
-		std::vector<Core::FMTtransition>newtransitions;
-		for (const Core::FMTtransition& transition : simmodel.gettransitions())
+		Models::FMTSesModel simmodel(optimizationmodel);
+		std::vector<Core::FMTTransition>newtransitions;
+		for (const Core::FMTTransition& transition : simmodel.getTransitions())
 		{
 			newtransitions.push_back(transition.single());
 		}
-		simmodel.settransitions(newtransitions);
-		Parser::FMTareaparser areaparser;
-		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
-		simmodel.setinitialmapping(forest);
+		simmodel.setTransitions(newtransitions);
+		Parser::FMTAreaParser areaparser;
+		const Spatial::FMTForest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
+		simmodel.setInitialMapping(forest);
 		for (int period = 1; period <= length; ++period)
 		{
-			simmodel.GreedyReferenceBuild(optimizationmodel.getsolution(period),
+			simmodel.greedyReferenceBuild(optimizationmodel.getSolution(period),
 				100,
 				0,
 				0.1);
-			const std::vector<Core::FMTconstraint>BASE_CONSTRAINTS = simmodel.getconstraints();
+			const std::vector<Core::FMTConstraint>BASE_CONSTRAINTS = simmodel.getconstraints();
 			size_t i = 0;
-			for (const Core::FMTconstraint& constraint : BASE_CONSTRAINTS)
+			for (const Core::FMTConstraint& constraint : BASE_CONSTRAINTS)
 			{
-				if (constraint.isspatial())
+				if (constraint.isSpatial())
 				{
-				if (simmodel.GetConstraintEvaluation(i) > 0)
+				if (simmodel.getConstraintEvaluation(i) > 0)
 					{
 					std::cout << std::string(constraint) << "\n";
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
 						"testsesevaluation", __LINE__, primarylocation);
 					}
 				
 				double lower = 0;
 				double upper = 0;
-				constraint.getbounds(lower, upper);
+				constraint.getBounds(lower, upper);
 				if (lower>0 && lower < std::numeric_limits<double>::max())
 				{
-					Core::FMTconstraint bindingconstraint(constraint);
+					Core::FMTConstraint bindingconstraint(constraint);
 					lower += 10000000000;
-					bindingconstraint.setrhs(lower,upper);
-					std::vector<Core::FMTconstraint>Constraints = BASE_CONSTRAINTS;
+					bindingconstraint.setRhs(lower,upper);
+					std::vector<Core::FMTConstraint>Constraints = BASE_CONSTRAINTS;
 					Constraints.push_back(bindingconstraint);
-					simmodel.setconstraints(Constraints);
-					const double penalty = simmodel.GetConstraintEvaluation(Constraints.size()-1);
+					simmodel.setConstraints(Constraints);
+					const double penalty = simmodel.getConstraintEvaluation(Constraints.size()-1);
 					if (penalty == 0)
 					{
 						std::cout << std::string(bindingconstraint) << "\n";
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
 							"testsesevaluation", __LINE__, primarylocation);
 					}else {
 						std::cout << std::string(bindingconstraint)<< "Penalty of "<< penalty << "\n";
 					}
-					simmodel.setconstraints(BASE_CONSTRAINTS);
+					simmodel.setConstraints(BASE_CONSTRAINTS);
 				}
 				
 				}

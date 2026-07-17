@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qu�bec
+Copyright (c) 2019 Gouvernement du Qu�bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -13,10 +13,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include <boost/iostreams/filtering_streambuf.hpp>
 	#include <boost/iostreams/filter/zlib.hpp>
 	#include <boost/iostreams/copy.hpp>
-	#include "FMTmodel.h"
-	#include "FMTlpmodel.h"
-	#include "FMTsesmodel.h"
-	#include "FMToperatingareascheduler.h"
+	#include "FMTModel.h"
+	#include "FMTLpModel.h"
+	#include "FMTSesModel.h"
+	#include "FMTOperatingAreaScheduler.h"
 	#include <typeinfo>
 
 #if defined FMTWITHPYTHON
@@ -30,10 +30,12 @@ namespace Python {
 	class FMT_pickle_suite : public boost::python::pickle_suite
 	{
 	public:
-		static const char* getname()
+		static const char* getName()
 			{
 			return typeid(T).name();
 			}
+		// Noms imposés par Boost.Python (protocole pickle) : NE PAS passer en camelCase,
+		// sinon boost::python::pickle_suite ne les détecte plus (voir pickle_support.hpp).
 		static boost::python::tuple getinitargs(const T&)
 		{
 			return(boost::python::make_tuple());
@@ -43,7 +45,7 @@ namespace Python {
 			std::stringstream os;
 				{
 				boost::archive::binary_oarchive oa(os);
-				oa << boost::serialization::make_nvp(getname(), target);
+				oa << boost::serialization::make_nvp(getName(), target);
 				}
 			std::stringstream compressed;
 			boost::iostreams::filtering_streambuf<boost::iostreams::input> out;
@@ -63,7 +65,7 @@ namespace Python {
 			boost::iostreams::copy(in, decompressed);
 				{
 				boost::archive::binary_iarchive ia(decompressed);
-				ia >> boost::serialization::make_nvp(getname(), target);
+				ia >> boost::serialization::make_nvp(getName(), target);
 				}
 		}
 	};
@@ -71,20 +73,20 @@ namespace Python {
 	#endif
 
 
-	/*BOOST_CLASS_EXPORT(FMTmask)
-	BOOST_CLASS_EXPORT(FMTtheme)
-	BOOST_CLASS_EXPORT(FMTdevelopment)
-	BOOST_CLASS_EXPORT(FMTactualdevelopment)
-	BOOST_CLASS_EXPORT(FMTfuturdevelopment)
-	BOOST_CLASS_EXPORT(FMTaction)
-	BOOST_CLASS_EXPORT(FMTtransition)
-	BOOST_CLASS_EXPORT(FMTyields)
-	BOOST_CLASS_EXPORT(FMToutput)
-	BOOST_CLASS_EXPORT(FMTconstraint)
-	BOOST_CLASS_EXPORT(FMTschedule)
-	BOOST_CLASS_EXPORT(FMTmodel)
-	BOOST_CLASS_EXPORT(FMTlpmodel)
-	BOOST_CLASS_EXPORT(FMTsesmodel)*/
+	/*BOOST_CLASS_EXPORT(FMTMask)
+	BOOST_CLASS_EXPORT(FMTTheme)
+	BOOST_CLASS_EXPORT(FMTDevelopment)
+	BOOST_CLASS_EXPORT(FMTActualDevelopment)
+	BOOST_CLASS_EXPORT(FMTFuturDevelopment)
+	BOOST_CLASS_EXPORT(FMTAction)
+	BOOST_CLASS_EXPORT(FMTTransition)
+	BOOST_CLASS_EXPORT(FMTYields)
+	BOOST_CLASS_EXPORT(FMTOutput)
+	BOOST_CLASS_EXPORT(FMTConstraint)
+	BOOST_CLASS_EXPORT(FMTSchedule)
+	BOOST_CLASS_EXPORT(FMTModel)
+	BOOST_CLASS_EXPORT(FMTLpModel)
+	BOOST_CLASS_EXPORT(FMTSesModel)*/
 
 }
 

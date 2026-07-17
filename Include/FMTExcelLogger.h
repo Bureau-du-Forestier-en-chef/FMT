@@ -5,22 +5,22 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
-#include "FMTobject.h"
-#include "FMTlogger.h"
+#include "FMTObject.h"
+#include "FMTLogger.h"
 
 
 namespace Logging
 {
-	class FMTEXPORT FMTExcelLogger : public Logging::FMTlogger
+	class FMTEXPORT FMTExcelLogger : public Logging::FMTLogger
 	{
 	public:
 		FMTExcelLogger();
-		std::string getprintout() const;
-		void clearout();
+		std::string getPrintOut() const;
+		void clearOut();
 	#ifdef FMTWITHOSI
-		virtual FMTlogger* clone() const;
+		virtual FMTLogger* clone() const;
 	#endif
-	virtual std::unique_ptr <FMTlogger> Clone() const;
+	virtual std::unique_ptr <FMTLogger> Clone() const;
 	protected:
 		void cout(const char* message) const override;
 	private:

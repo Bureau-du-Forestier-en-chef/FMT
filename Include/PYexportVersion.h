@@ -10,13 +10,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <boost/python/docstring_options.hpp>
 #include <boost/python/args.hpp>
-#include "FMTversion.h"
+#include "FMTVersion.h"
 #include "boost/python.hpp"
 
 
 namespace Python
 {
-BOOST_PYTHON_FUNCTION_OVERLOADS(getlicense_overloads, Version::FMTversion::getlicense, 0, 1)
+BOOST_PYTHON_FUNCTION_OVERLOADS(getlicense_overloads, Version::FMTVersion::getLicense, 0, 1)
 
 void exportVersion()
 {
@@ -31,21 +31,21 @@ void exportVersion()
 		"\n";
 
 
-	boost::python::class_<Version::FMTversion>("FMTversion", "@DocString(FMTversion)")
-		.def("getmajor", &Version::FMTversion::getmajor,
-			"@DocString(FMTversion::getmajor)").staticmethod("getmajor")
-		.def("getminor",&Version::FMTversion::getminor,
-			"@DocString(FMTversion::getminor)").staticmethod("getminor")
-		.def("getpatch", &Version::FMTversion::getpatch,
-			"@DocString(FMTversion::getpatch)").staticmethod("getpatch")
-		.def("getversion", &Version::FMTversion::getversion,
-			"@DocString(FMTversion::getversion)").staticmethod("getversion")
-		.def("isatleast", &Version::FMTversion::isatleast,
-			"@DocString(FMTversion::isatleast)").staticmethod("isatleast")
-		.def("hasfeature", &Version::FMTversion::hasfeature,
-			"@DocString(FMTversion::hasfeature)").staticmethod("hasfeature")
-        .def("getlicense",&Version::FMTversion::getlicense,
-			getlicense_overloads(bp::args("french"),"@DocString(FMTversion::getlicense)")).staticmethod("getlicense");
+	boost::python::class_<Version::FMTVersion>("FMTversion", "@DocString(FMTVersion)")
+		.def("getmajor", &Version::FMTVersion::getMajor,
+			"@DocString(FMTVersion::getmajor)").staticmethod("getmajor")
+		.def("getminor",&Version::FMTVersion::getMinor,
+			"@DocString(FMTVersion::getminor)").staticmethod("getminor")
+		.def("getpatch", &Version::FMTVersion::getPatch,
+			"@DocString(FMTVersion::getpatch)").staticmethod("getpatch")
+		.def("getversion", &Version::FMTVersion::getVersion,
+			"@DocString(FMTVersion::getversion)").staticmethod("getversion")
+		.def("isatleast", &Version::FMTVersion::isAtLeast,
+			"@DocString(FMTVersion::isatleast)").staticmethod("isatleast")
+		.def("hasfeature", &Version::FMTVersion::hasFeature,
+			"@DocString(FMTVersion::hasfeature)").staticmethod("hasfeature")
+        .def("getlicense",&Version::FMTVersion::getLicense,
+			getlicense_overloads(bp::args("french"),"@DocString(FMTVersion::getlicense)")).staticmethod("getlicense");
 	}
 }
 

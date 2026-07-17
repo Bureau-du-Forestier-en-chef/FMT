@@ -15,127 +15,127 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <unordered_map>
 #include <boost/unordered_map.hpp>
-#include "FMTobject.h"
+#include "FMTObject.h"
 #include "FMTGraphInfo.h"
-#include "FMTmask.h"
+#include "FMTMask.h"
 #include "FMTSolutionTracker.h"
 
 namespace Graph
 {
-	class FMTlinegraph;
+	class FMTLineGraph;
 }
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace Core
 {
-	class FMTconstraint;
-	class FMToutputnode;
-	class FMTschedule;
-	class FMToutput;
-	class FMTschedule;
+	class FMTConstraint;
+	class FMTOutputNode;
+	class FMTSchedule;
+	class FMTOutput;
+	class FMTSchedule;
 }
 
 
 namespace Spatial
 	{
 	class FMTVirtualLineGraph;
-	class FMTSpatialGraphs: public Core::FMTobject
+	class FMTSpatialGraphs: public Core::FMTObject
 		{
 		public:
-			using const_iterator = std::map<Graph::FMTlinegraph, 
+			using const_iterator = std::map<Graph::FMTLineGraph, 
 				FMTGraphInfo>::const_iterator;
 			FMTSpatialGraphs() = default;
 			FMTSpatialGraphs(const FMTSpatialGraphs&)=default;
 			FMTSpatialGraphs& operator = (const FMTSpatialGraphs&)=default;
-			FMTSpatialGraphs(const Models::FMTmodel& p_model, double p_CellSize);
-			double GetConstraintsValue(size_t NonSpatialConstraintId,
+			FMTSpatialGraphs(const Models::FMTModel& p_model, double p_CellSize);
+			double getConstraintsValue(size_t NonSpatialConstraintId,
 											const FMTSolutionTracker& p_solution) const;
-			FMTVirtualLineGraph GetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
-			FMTVirtualLineGraph SetVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
-			FMTSolutionTracker GetBaseSolution() const;
-			const_iterator GetIterator(
-												const Graph::FMTlinegraph& p_Graph,
+			FMTVirtualLineGraph getVirtualGraph(const Graph::FMTLineGraph& p_LineGraph);
+			FMTVirtualLineGraph setVirtualGraph(const Graph::FMTLineGraph& p_LineGraph);
+			FMTSolutionTracker getBaseSolution() const;
+			const_iterator getIterator(
+												const Graph::FMTLineGraph& p_Graph,
 															size_t p_family) const;
-			const_iterator SetIterator(
-								const Graph::FMTlinegraph& p_Graph,
+			const_iterator setIterator(
+								const Graph::FMTLineGraph& p_Graph,
 								size_t p_family);
-			const_iterator SetNaturalGrowthIterator(size_t p_family);
-			const Models::FMTmodel& GetModel() const;
-			std::map<std::string, double> GetOutput(
+			const_iterator setNaturalGrowthIterator(size_t p_family);
+			const Models::FMTModel& getModel() const;
+			std::map<std::string, double> getOutput(
 				const FMTSolutionTracker& p_Solution,
-				const Core::FMToutput& p_output,
+				const Core::FMTOutput& p_output,
 				int p_period, Core::FMToutputlevel level) const;
-			void SetModel(const Models::FMTmodel& p_model);
-			void AddToSolution(FMTSolutionTracker& p_solution,
+			void setModel(const Models::FMTModel& p_model);
+			void addToSolution(FMTSolutionTracker& p_solution,
 				size_t p_family,
 				const_iterator p_iterator);
-			void RemoveToSolution(FMTSolutionTracker& p_solution,
+			void removeToSolution(FMTSolutionTracker& p_solution,
 				size_t p_family,
 				const_iterator p_iterator);
-			bool IsNotNull(size_t p_family,
+			bool isNotNull(size_t p_family,
 				const_iterator p_iterator) const;
-			std::vector<Core::FMTschedule> GetSchedules(const FMTSolutionTracker& p_Solution,
+			std::vector<Core::FMTSchedule> getSchedules(const FMTSolutionTracker& p_Solution,
 											bool WithLock = false) const;
-			const_iterator GetBaseIterator(size_t p_family) const;
-			const_iterator GetLastPeriodIterator(
+			const_iterator getBaseIterator(size_t p_family) const;
+			const_iterator getLastPeriodIterator(
 				size_t p_family,
 				const_iterator p_iterator) const;
 			void swap(FMTSpatialGraphs& p_Other);
-			size_t GetNumberOfCategories(int p_themeId) const;
-			size_t GetCategoryOf(int p_themeId, size_t p_family) const;
-			void DeleteNonCompleteGraphs();
-			void EnableSolutionTracker(FMTSolutionTracker& p_tracker) const;
+			size_t getNumberOfCategories(int p_themeId) const;
+			size_t getCategoryOf(int p_themeId, size_t p_family) const;
+			void deleteNonCompleteGraphs();
+			void enableSolutionTracker(FMTSolutionTracker& p_tracker) const;
 		private:
-			using iterator = std::map<Graph::FMTlinegraph,
+			using iterator = std::map<Graph::FMTLineGraph,
 				FMTGraphInfo>::iterator;
-			using family_iterator = std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>::iterator;
-			std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>m_AllGraphs;
+			using family_iterator = std::vector<std::map<Graph::FMTLineGraph, FMTGraphInfo>>::iterator;
+			std::vector<std::map<Graph::FMTLineGraph, FMTGraphInfo>>m_AllGraphs;
 			size_t m_LastGraphId;
 			std::vector<std::vector<size_t>>m_Constraints;
-			boost::unordered_map<Core::FMTmask, size_t>m_GraphsMasks;
+			boost::unordered_map<Core::FMTMask, size_t>m_GraphsMasks;
 			FMTSolutionTracker m_BaseSolution;
 			std::vector<size_t>m_ConstraintsId;
-			Models::FMTmodel const * m_Model;
+			Models::FMTModel const * m_Model;
 			// Run-scoped deduplication pool for graph constraint values (replaces the former
 			// process-wide boost::flyweight static factory). Keyed by value-vector hash, holding
 			// weak_ptr so distinct vectors are shared while alive and released with the graphs.
 			std::unordered_map<std::size_t, std::vector<std::weak_ptr<const FMTGraphValues>>> m_ValuesPool;
-			std::shared_ptr<const FMTGraphValues> _InternValues(const std::vector<double>& p_Values);
-			void _BuildConstraintsLocator(const Models::FMTmodel& p_model);
-			std::vector<size_t> _BuildGraphs(const Models::FMTmodel& p_model, double p_CellSize);
-			void _BuildConstraintsValues( 
+			std::shared_ptr<const FMTGraphValues> _internValues(const std::vector<double>& p_Values);
+			void _buildConstraintsLocator(const Models::FMTModel& p_model);
+			std::vector<size_t> _buildGraphs(const Models::FMTModel& p_model, double p_CellSize);
+			void _buildConstraintsValues( 
 				family_iterator FirstGraphFamily,
 				family_iterator GraphFamilyEnd);
-			void _BuildConstraintsValues(
+			void _buildConstraintsValues(
 				iterator p_Graph,
 				size_t p_family);
-			size_t _FillValuesFromLastPeriod(
+			size_t _fillValuesFromLastPeriod(
 				size_t p_family,
 				FMTSpatialGraphs::iterator p_Graph,
 				size_t p_ConstraintId,
 				std::vector<double>& p_constraintValues) const;
-			static Core::FMTmask _GetUseFullBits(const Models::FMTmodel& p_model);
-			size_t _GetFamily(const Graph::FMTlinegraph& p_Graph) const;
-			size_t _GetNonSpatialId(size_t p_Constraint) const;
-			void _FillConstraintResults(size_t p_Constraint,
+			static Core::FMTMask _getUseFullBits(const Models::FMTModel& p_model);
+			size_t _getFamily(const Graph::FMTLineGraph& p_Graph) const;
+			size_t _getNonSpatialId(size_t p_Constraint) const;
+			void _fillConstraintResults(size_t p_Constraint,
 				const FMTGraphInfo& p_GraphInfo,
 				std::vector<double>& p_results,
 				const FMTSolutionTracker& p_solution) const;
-			double _GetGraphCells(const FMTSolutionTracker& p_solution, const FMTGraphInfo& p_GraphInfo) const;
-			size_t _GetMaxGraphLength() const;
-			size_t _GetMinGraphLength() const;
-			void _RemoveGraphsShorterThan(size_t p_GraphSize);
-			const_iterator _GetNaturalGrowthIterator(size_t p_family) const;
-			std::vector<double> _GetConstraintsValueFromSolution(size_t p_ConstraintId,
+			double _getGraphCells(const FMTSolutionTracker& p_solution, const FMTGraphInfo& p_GraphInfo) const;
+			size_t _getMaxGraphLength() const;
+			size_t _getMinGraphLength() const;
+			void _removeGraphsShorterThan(size_t p_GraphSize);
+			const_iterator _getNaturalGrowthIterator(size_t p_family) const;
+			std::vector<double> _getConstraintsValueFromSolution(size_t p_ConstraintId,
 				const FMTSolutionTracker& p_solution) const;
-			std::vector<double> _GetConstraintsValueFromTracker(size_t p_ConstraintId,
+			std::vector<double> _getConstraintsValueFromTracker(size_t p_ConstraintId,
 				const FMTSolutionTracker& p_solution) const;
-			std::vector<std::vector<double>> _GetConstraintsValues(const FMTSolutionTracker& p_solution) const;
-			void _BuildTacker(const std::vector<size_t>& p_solution);
+			std::vector<std::vector<double>> _getConstraintsValues(const FMTSolutionTracker& p_solution) const;
+			void _buildTacker(const std::vector<size_t>& p_solution);
 		};
 }
 

@@ -6,19 +6,19 @@
 #include <map>
 
 namespace Core {
-    class FMTschedule;
-    class FMTconstraint;
-    class FMToutput;
-    class FMTtheme;
-    class FMTaction;
+    class FMTSchedule;
+    class FMTConstraint;
+    class FMTOutput;
+    class FMTTheme;
+    class FMTAction;
 }
 
 namespace Models {
-    class FMTmodel;  // Forward declaration corrigée
+    class FMTModel;  // Forward declaration corrigée
 }
 
 namespace Models {
-    class FMTsemodel;
+    class FMTSeModel;
 }
 
 namespace Spatial {
@@ -64,7 +64,7 @@ namespace FMTWrapperCore
         };
 
         std::vector<OutputResult> results;
-        std::vector<Core::FMToutput> outputObjects; // Pour usage ultérieur
+        std::vector<Core::FMTOutput> outputObjects; // Pour usage ultérieur
     };
 
     /**
@@ -201,8 +201,8 @@ namespace FMTWrapperCore
          */
         static SESResults RunSES(
             const SESParameters& params,
-            const Models::FMTmodel& baseModel,
-            const std::vector<Core::FMTschedule>& schedules);
+            const Models::FMTModel& baseModel,
+            const std::vector<Core::FMTSchedule>& schedules);
 
         /**
          * @brief Exécute une optimisation spatiale (Simulated Annealing)
@@ -215,7 +215,7 @@ namespace FMTWrapperCore
          */
         static SAResults RunOptimization(
             const SAParameters& params,
-            const Models::FMTmodel& baseModel);
+            const Models::FMTModel& baseModel);
 
     private:
         /**
@@ -224,8 +224,8 @@ namespace FMTWrapperCore
          * @param selectedNames Noms des contraintes sélectionnées
          * @return Vecteur des contraintes filtrées
          */
-        static std::vector<Core::FMTconstraint> FilterConstraints(
-            const std::vector<Core::FMTconstraint>& allConstraints,
+        static std::vector<Core::FMTConstraint> filterConstraints(
+            const std::vector<Core::FMTConstraint>& allConstraints,
             const std::vector<std::string>& selectedNames);
 
         /**
@@ -234,8 +234,8 @@ namespace FMTWrapperCore
          * @param selectedNames Noms des outputs sélectionnés
          * @return Vecteur des outputs filtrés
          */
-        static std::vector<Core::FMToutput> FilterOutputs(
-            const std::vector<Core::FMToutput>& allOutputs,
+        static std::vector<Core::FMTOutput> filterOutputs(
+            const std::vector<Core::FMTOutput>& allOutputs,
             const std::vector<std::string>& selectedNames);
 
         /**
@@ -244,15 +244,15 @@ namespace FMTWrapperCore
          * @param themeIndices Indices des thèmes (1-based)
          * @return Vecteur des thèmes sélectionnés
          */
-        static std::vector<Core::FMTtheme> BuildGrowthThemes(
-            const std::vector<Core::FMTtheme>& allThemes,
+        static std::vector<Core::FMTTheme> buildGrowthThemes(
+            const std::vector<Core::FMTTheme>& allThemes,
             const std::vector<int>& themeIndices);
 
         /**
          * @brief Convertit toutes les transitions du modèle en transitions "single"
          * @param model Le modèle dont les transitions sont modifiées en place
          */
-        static void ApplySingleTransitions(Models::FMTmodel& model);
+        static void applySingleTransitions(Models::FMTModel& model);
 
         /**
          * @brief Construit les chemins des rasters, lit la forêt initiale et
@@ -263,8 +263,8 @@ namespace FMTWrapperCore
          * @param[out] ageRasterPath Chemin du raster d'âge construit
          * @param[out] themeRasterPaths Chemins des rasters de thèmes construits
          */
-        static void PrepareInitialForest(
-            Models::FMTsemodel& model,
+        static void prepareInitialForest(
+            Models::FMTSeModel& model,
             const std::string& rastersPath,
             bool useStanlock,
             std::string& ageRasterPath,
@@ -276,7 +276,7 @@ namespace FMTWrapperCore
          * @return Vecteur de messages d'infaisabilité (un par contrainte brisée,
          *         suivi du pourcentage global de contraintes infaisables)
          */
-        static std::vector<std::string> GenerateInfeasibilityReport(const Models::FMTsemodel& semodel);
+        static std::vector<std::string> generateInfeasibilityReport(const Models::FMTSeModel& semodel);
 
         /**
          * @brief Génère le rapport de carbone spatial
@@ -285,10 +285,10 @@ namespace FMTWrapperCore
          * @param schedules Vecteur des schedules originaux
          * @return Structure contenant les données du rapport
          */
-        static CarbonReportData GenerateCarbonReport(
-            const Models::FMTsemodel& semodel,
+        static CarbonReportData generateCarbonReport(
+            const Models::FMTSeModel& semodel,
             const int numberOfPeriods,
-            const std::vector<Core::FMTschedule>& schedules);
+            const std::vector<Core::FMTSchedule>& schedules);
 
         /**
          * @brief Écrit les perturbations (transitions GCBM)
@@ -298,8 +298,8 @@ namespace FMTWrapperCore
          * @param growthThemeIndices Indices des thèmes de croissance (1-based)
          * @return Vecteur des chemins de fichiers de transition créés
          */
-        static std::vector<std::string> WriteDisturbances(
-            const Models::FMTsemodel& semodel,
+        static std::vector<std::string> writeDisturbances(
+            const Models::FMTSeModel& semodel,
             const std::string& outputBasePath,
             const int numberOfPeriods,
             const std::vector<int>& growthThemeIndices);
@@ -309,7 +309,7 @@ namespace FMTWrapperCore
          * @param semodel Le modèle SES
          * @return Structure contenant les statistiques d'événements
          */
-        static EventsData GenerateEventsData(const Models::FMTsemodel& semodel);
+        static EventsData generateEventsData(const Models::FMTSeModel& semodel);
 
         /**
          * @brief Génère les données d'événements et les écrit dans un fichier
@@ -317,8 +317,8 @@ namespace FMTWrapperCore
          * @param eventsFilePath Chemin complet du fichier d'événements à écrire
          * @return Structure contenant les statistiques d'événements
          */
-        static EventsData WriteEventsFile(
-            const Models::FMTsemodel& semodel,
+        static EventsData writeEventsFile(
+            const Models::FMTSeModel& semodel,
             const std::string& eventsFilePath);
 
         /**
@@ -328,8 +328,8 @@ namespace FMTWrapperCore
          * @param numberOfPeriods Nombre de périodes
          * @return Structure contenant les résultats des outputs
          */
-        static OutputsData CalculateOutputs(
-            const Models::FMTsemodel& semodel,
+        static OutputsData calculateOutputs(
+            const Models::FMTSeModel& semodel,
             const std::vector<std::string>& outputNames,
             const int numberOfPeriods);
 
@@ -342,9 +342,9 @@ namespace FMTWrapperCore
          * @param outputPath Chemin de sortie
          * @return Vecteur des chemins de fichiers raster créés
          */
-        static std::vector<std::string> WriteSpatialOutputs(
-            const Models::FMTsemodel& semodel,
-            const std::vector<Core::FMToutput>& outputs,
+        static std::vector<std::string> writeSpatialOutputs(
+            const Models::FMTSeModel& semodel,
+            const std::vector<Core::FMTOutput>& outputs,
             const int minPeriod,
             const int maxPeriod,
             const std::string& outputPath);
@@ -357,8 +357,8 @@ namespace FMTWrapperCore
          * @param predictorYields Noms des yields pour les prédicteurs
          * @return Structure contenant les données des prédicteurs
          */
-        static PredictorsData CalculatePredictors(
-            const Models::FMTsemodel& semodel,
+        static PredictorsData calculatePredictors(
+            const Models::FMTSeModel& semodel,
             const std::string& rasterPath,
             const int numberOfPeriods,
             const std::vector<std::string>& predictorYields);
@@ -369,8 +369,8 @@ namespace FMTWrapperCore
          * @param outputPath Chemin du fichier de sortie
          * @return Chemin complet du fichier créé
          */
-        static std::string WriteSchedule(
-            const Models::FMTsemodel& semodel,
+        static std::string writeSchedule(
+            const Models::FMTSeModel& semodel,
             const std::string& outputPath);
 
         /**
@@ -381,8 +381,8 @@ namespace FMTWrapperCore
          * @param ageRasterPath Chemin du raster d'âge
          * @param stanlockRasterPath Chemin du raster stanlock
          */
-        static void WriteUpdatedForest(
-            const Models::FMTsemodel& semodel,
+        static void writeUpdatedForest(
+            const Models::FMTSeModel& semodel,
             const std::string& rasterPath,
             const std::vector<std::string>& themeRasterPaths,
             const std::string& ageRasterPath,
@@ -398,9 +398,9 @@ namespace FMTWrapperCore
          * @param outputLevel Niveau de détail des outputs
          * @param gdalProvider Provider GDAL à utiliser
          */
-        static void ExportResults(
-            const Models::FMTsemodel& semodel,
-            const std::vector<Core::FMToutput>& outputs,
+        static void exportResults(
+            const Models::FMTSeModel& semodel,
+            const std::vector<Core::FMTOutput>& outputs,
             const int minPeriod,
             const int maxPeriod,
             const std::string& outputPath,

@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTcplhandler.h"
-#include "FMTexceptionhandler.h"
+#include "FMTExceptionHandler.h"
 
 namespace Exception
 {
@@ -18,7 +18,7 @@ namespace Exception
 	void CPL_STDCALL FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 	{
 		//CPLErr eErrClass, CPLErrorNum nError,
-		FMTexceptionhandler* handler = reinterpret_cast<FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
+		FMTExceptionHandler* handler = reinterpret_cast<FMTExceptionHandler*>(CPLGetErrorHandlerUserData());
 		if (handler)
 		{
 			handler->handelCPLerror(eErrClass, nError, pszErrorMsg);

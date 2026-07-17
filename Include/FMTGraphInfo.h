@@ -19,15 +19,15 @@ namespace Spatial
 		public:
 			FMTGraphInfo() = default;
 			FMTGraphInfo(size_t Id);
-			const std::vector<double>& GetValues(size_t p_ConstraintId) const;
-			inline size_t GetGraphId() const
+			const std::vector<double>& getValues(size_t p_ConstraintId) const;
+			inline size_t getGraphId() const
 				{
 				return m_GraphId;
 				}
-			void SetValues(size_t p_ConstraintId,
+			void setValues(size_t p_ConstraintId,
 							const std::shared_ptr<const FMTGraphValues>& p_Values);
-			void SetValuesSize(size_t p_ValuesSize);
-			bool IsEmpty() const;
+			void setValuesSize(size_t p_ValuesSize);
+			bool isEmpty() const;
 		private:
 			// Interned values are shared through shared_ptr (see FMTSpatialGraphs::_InternValues),
 			// which replaces the former boost::flyweight process-wide static factory.

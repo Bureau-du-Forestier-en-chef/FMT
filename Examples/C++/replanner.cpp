@@ -1,14 +1,14 @@
 #include <vector>
 #include <string>
 #ifdef FMTWITHOSI
-	#include "FMTtaskhandler.h"
-	#include "FMTreplanningtask.h"
-	#include "FMTlpmodel.h"
-	#include "FMTnssmodel.h"
-	#include "FMTfreeexceptionhandler.h"
-	#include "FMTmodelparser.h"
+	#include "FMTTaskHandler.h"
+	#include "FMTReplanningTask.h"
+	#include "FMTLpModel.h"
+	#include "FMTNssModel.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTModelParser.h"
 #endif
-	#include "FMTdefaultlogger.h"
+	#include "FMTDefaultLogger.h"
 #include <boost/filesystem.hpp>
 
 
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	{
 	
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const bool writeschedule = true;
 	std::string primlocation;
 	int length;
@@ -54,10 +54,10 @@ int main(int argc, char *argv[])
 	}
 	int repSize = length;
 	//int repSize = 20;
-	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
-	//modelparser.settasklogger();
-	modelparser.setdefaultlogger();
+	Parser::FMTModelParser modelparser;
+	modelparser.setDefaultExceptionHandler();
+	//modelparser.setTaskLogger();
+	modelparser.setDefaultLogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack(); 
 	std::vector<Exception::FMTexc> errors;
@@ -68,35 +68,35 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-	modelparser.seterrorstowarnings(errors);
-	//std::vector<Models::FMTmodel> tests = modelparser.readproject(primlocation, allscenarios);
+	modelparser.setErrorsToWarnings(errors);
+	//std::vector<Models::FMTModel> tests = modelparser.readproject(primlocation, allscenarios);
 	//tests[0].presolve();
-	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
-	std::cout << models.at(0).getname() << std::endl;
+	std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
+	std::cout << models.at(0).getName() << std::endl;
 	//modelparser.write(models.at(0), "D:/test/");
 
 
 	#ifdef FMTWITHMOSEK
-		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
+		Models::FMTLpModel global(models.at(0), Models::FMTsolverinterface::MOSEK);
 	#else
-		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel global(models.at(0), Models::FMTsolverinterface::CLP);
 	#endif
-	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	/*global.setcompresstime(10, 12, 2);
-	global.setcompresstime(12, 14, 3);
-	global.setcompresstime(14, 16, 4);
-	global.setcompresstime(16, 30, 5);*/
-	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
-	Models::FMTnssmodel stochastic(models.at(1), 0);
-	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+	global.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+	/*global.setCompressTime(10, 12, 2);
+	global.setCompressTime(12, 14, 3);
+	global.setCompressTime(14, 16, 4);
+	global.setCompressTime(16, 30, 5);*/
+	global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+	global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
+	Models::FMTNssModel stochastic(models.at(1), 0);
+	stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 	#ifdef FMTWITHMOSEK
-		Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::MOSEK);
+		Models::FMTLpModel local(models.at(2), Models::FMTsolverinterface::MOSEK);
 	#else
-		Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel local(models.at(2), Models::FMTsolverinterface::CLP);
 	#endif
-	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
+	local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
+	local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	std::vector<std::string> OutputtoLookFor = { 
 		"OVOLTOTREC", "OVOLGSEPMREC", "OVOLGRREC", "OVOLGFIREC", "OVOLGFTREC", "OVOLBOJREC", "OVOLGBPREC", "OVOLGPEUREC", "OVOLERSREC",
 		"OVOLTOTRECARECUP", "OVOLTOTREC_RECUP", "OSUPREALREGAREG", "OSUPREALPL_BR", "OSUPREALREGAREG_TOT", "OSUPREALREGAEDU_TOT",
@@ -127,10 +127,10 @@ int main(int argc, char *argv[])
 		"OSUPADM_RECUP_FEU_M3HA_SEPM_100_124","OSUPADM_RECUP_FEU_M3HA_SEPM_125_999","SUPERFICIE_RECUP_TBE","SUPERFICIE_ADM_RECUP_TBE",
 		"OVOLTOTRECARECUP","OVOLTOTREC_RECUP","OSUPREALPL","OVOLSABPIEDINC","OVOLGEPXPIEDINC","OVOLGFIPIEDINC","OVOLGFTPIEDINC",
 		"ORISQUE","ORISQUE_FEU","ORISQUE_TBE","OVOLGRPIEDINC","OSUPINC","OSUPECHEC"*/};
-	std::vector<Core::FMToutput> selectedoutputs;
-	for (const Core::FMToutput& output : global.getoutputs())
+	std::vector<Core::FMTOutput> selectedoutputs;
+	for (const Core::FMTOutput& output : global.getOutputs())
 	{
-		if (std::find(OutputtoLookFor.begin(), OutputtoLookFor.end(), output.getname()) != OutputtoLookFor.end())
+		if (std::find(OutputtoLookFor.begin(), OutputtoLookFor.end(), output.getName()) != OutputtoLookFor.end())
 		{
 			selectedoutputs.push_back(output);
 		}
@@ -141,14 +141,14 @@ int main(int argc, char *argv[])
 
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
+	std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTReplanningTask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
 		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule));
-	Parallel::FMTtaskhandler handler(maintaskptr, n_threads);
-	//handler.setquietlogger();
+	Parallel::FMTTaskHandler handler(maintaskptr, n_threads);
+	//handler.setQuietLogger();
 
-	handler.ondemandrun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
-	//handler.conccurentrun();
+	handler.onDemandRun(); // Pareil à ce qui est dans plannification.cpp pour Lorena
+	//handler.conccurentRun();
 	#endif
 	return 0;
 	}

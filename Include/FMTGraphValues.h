@@ -20,7 +20,7 @@ namespace Spatial
 			FMTGraphValues() = default;
 			FMTGraphValues(const std::vector<double>& p_values);
 			bool operator == (const FMTGraphValues& p_Other) const;
-			const std::vector<double>& GetValues() const;
+			const std::vector<double>& getValues() const;
 			size_t hash() const;
 		};
 	}

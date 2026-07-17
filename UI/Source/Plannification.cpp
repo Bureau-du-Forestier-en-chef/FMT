@@ -1,20 +1,20 @@
 #include "stdafx.h"
 #include <sstream>
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTscheduleparser.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
+#include "FMTScheduleParser.h"
 #include "FMTutility.h"
-#include "FMTnssmodel.h"
-#include "FMTtaskhandler.h"
-#include "FMTreplanningtask.h"
+#include "FMTNssModel.h"
+#include "FMTTaskHandler.h"
+#include "FMTReplanningTask.h"
 #include <msclr\marshal_cppstd.h>
 #include <string>
 #include <iostream>
 #include "FMTFormLogger.h"
 #include "FMTForm.h"
 #include "FMTFormCache.h"
-#include "FMTplanningtask.h"
-#include "FMTdefaultlogger.h"
+#include "FMTPlanningTask.h"
+#include "FMTDefaultLogger.h"
 
 namespace Wrapper
 {
@@ -36,51 +36,51 @@ namespace Wrapper
 		try
 		{
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
+			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
 			std::vector<std::string> layersoptions;
 			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
 			{
 				layersoptions.push_back("SEPARATOR=SEMICOLON");
 			}
 
-			Parallel::FMTplanningtask newplanningtask(etanduSortiesMin, etanduSortiesMax,
+			Parallel::FMTPlanningTask newplanningtask(etanduSortiesMin, etanduSortiesMax,
 				msclr::interop::marshal_as<std::string>(cheminSorties),
 				msclr::interop::marshal_as<std::string>(providerGdal),
 				layersoptions, static_cast<Core::FMToutputlevel>(outputLevel),
 				msclr::interop::marshal_as<std::string>(fichierPri));
 			for each (int scen in scenarios)
 			{
-				Models::FMTlpmodel optimizationmodel(FMTFormCache::GetInstance()->getmodel(scen), static_cast<Models::FMTsolverinterface>(solver));
-				*logger << "FMT -> Préparation pour le scénario : " + optimizationmodel.getname() << "\n";
-				std::vector<Core::FMTschedule> cedule;
+				Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scen), static_cast<Models::FMTsolverinterface>(solver));
+				*logger << "FMT -> Préparation pour le scénario : " + optimizationmodel.getName() << "\n";
+				std::vector<Core::FMTSchedule> cedule;
 				bool playbackscen = playback[scenarios->IndexOf(scen)];
 				if (playbackscen)
 				{
-					*logger << "FMT -> Lecture de cédule pour le scénario : " + optimizationmodel.getname() << "\n";
+					*logger << "FMT -> Lecture de cédule pour le scénario : " + optimizationmodel.getName() << "\n";
 					cedule = ObtenirSEQ(fichierPri, scen);
 				}
-				optimizationmodel.setstrictlypositivesoutputsmatrix();
-				optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, period);
+				optimizationmodel.setStrictlyPositivesOutputsMatrix();
+				optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, period);
 				int valeur_NUMBER_OF_THREADS = 1;
 				if (scenarios->Count <= nbreProcessus)
 				{
 					valeur_NUMBER_OF_THREADS = nbreProcessus / scenarios->Count;
 				}
 
-				optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, valeur_NUMBER_OF_THREADS);
-				optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-				std::vector<Core::FMToutput> selectedoutputs = ObtenirArrayOutputsSelectionnees(optimizationmodel.getoutputs(), outputs);
-				optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playbackscen);
+				optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, valeur_NUMBER_OF_THREADS);
+				optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+				std::vector<Core::FMTOutput> selectedoutputs = ObtenirArrayOutputsSelectionnees(optimizationmodel.getOutputs(), outputs);
+				optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playbackscen);
 				newplanningtask.push_back(optimizationmodel, cedule, selectedoutputs);
-				*logger << "FMT -> Scénario : " + optimizationmodel.getname() + " prêt a être lancer." << "\n";
+				*logger << "FMT -> Scénario : " + optimizationmodel.getName() + " prêt a être lancer." << "\n";
 			}
 
-			Parallel::FMTtaskhandler handler(newplanningtask, nbreProcessus);
-			handler.conccurentrun();
+			Parallel::FMTTaskHandler handler(newplanningtask, nbreProcessus);
+			handler.conccurentRun();
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::Plannification", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::Plannification", __LINE__, __FILE__);
 			return false;
 		}
 
@@ -109,20 +109,20 @@ namespace Wrapper
 		try
 		{
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
-			Models::FMTlpmodel global(FMTFormCache::GetInstance()->getmodel(indexScenStrategique), static_cast<Models::FMTsolverinterface>(solver));
-			global.setparameter(Models::FMTintmodelparameters::LENGTH, period);
-			global.setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-			global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
-			Models::FMTnssmodel stochastic(FMTFormCache::GetInstance()->getmodel(indexScenStochastique), 0);
-			stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-			stochastic.setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			Models::FMTlpmodel local(FMTFormCache::GetInstance()->getmodel(indexScenTactique), static_cast<Models::FMTsolverinterface>(solver));
-			local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-			local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-			local.setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			std::vector<Core::FMToutput> listeOutputs = ObtenirArrayOutputsSelectionnees(global.getoutputs(), outputs);
+			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
+			Models::FMTLpModel global(FMTFormCache::GetInstance()->getModel(indexScenStrategique), static_cast<Models::FMTsolverinterface>(solver));
+			global.setParameter(Models::FMTintmodelparameters::LENGTH, period);
+			global.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
+			global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+			global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
+			Models::FMTNssModel stochastic(FMTFormCache::GetInstance()->getModel(indexScenStochastique), 0);
+			stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
+			stochastic.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
+			Models::FMTLpModel local(FMTFormCache::GetInstance()->getModel(indexScenTactique), static_cast<Models::FMTsolverinterface>(solver));
+			local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
+			local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+			local.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
+			std::vector<Core::FMTOutput> listeOutputs = ObtenirArrayOutputsSelectionnees(global.getOutputs(), outputs);
 
 			std::vector<std::string>layersoptions;
 			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
@@ -130,8 +130,8 @@ namespace Wrapper
 				layersoptions.push_back("SEPARATOR=SEMICOLON");
 			}
 			*logger << "FMT -> Préparation de la replanification " << "\n";
-			logger->logtime();
-			Parallel::FMTreplanningtask* task = new Parallel::FMTreplanningtask(
+			logger->logTime();
+			Parallel::FMTReplanningTask* task = new Parallel::FMTReplanningTask(
 				global,
 				stochastic,
 				local,
@@ -144,19 +144,19 @@ namespace Wrapper
 				variabilite,
 				static_cast<Core::FMToutputlevel>(outputLevel),
 				indProduireSolution);
-			task->setreplicates(nombreReplicasMin, nombreReplicasMax);
-			std::unique_ptr<Parallel::FMTtask> maintaskptr(task);
+			task->setReplicates(nombreReplicasMin, nombreReplicasMax);
+			std::unique_ptr<Parallel::FMTTask> maintaskptr(task);
 			*logger << "FMT -> Préparation de la replanification terminée" << "\n";
-			Parallel::FMTtaskhandler handler(maintaskptr, nbreProcessus);
+			Parallel::FMTTaskHandler handler(maintaskptr, nbreProcessus);
 			logger->settasklogginglevel(taskLogLevel);
-			handler.ondemandrun();
-			//handler.conccurentrun();
-			logger->logtime();
+			handler.onDemandRun();
+			//handler.conccurentRun();
+			logger->logTime();
 			logger->setdefaultlogginglevel();
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::Replanification", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::Replanification", __LINE__, __FILE__);
 			return false;
 		}
 

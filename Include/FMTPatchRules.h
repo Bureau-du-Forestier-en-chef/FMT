@@ -10,60 +10,60 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <vector>
 #include <set>
-#include "FMTobject.h"
+#include "FMTObject.h"
 
 namespace Core {
-	class FMTconstraint;
-	class FMTaction;
+	class FMTConstraint;
+	class FMTAction;
 }
 
 
 namespace Spatial
 
 {
-	class FMTeventcontainer;
-	class FMTevent;
+	class FMTEventContainer;
+	class FMTEvent;
 	class FMTSpatialGraphs;
-	class FMTPatchRules : public Core::FMTobject
+	class FMTPatchRules : public Core::FMTObject
 	{
 	public:
 		FMTPatchRules()=default;
 		FMTPatchRules(const FMTPatchRules& rhs) = default;
 		FMTPatchRules& operator = (const FMTPatchRules& rhs)=default;
 		static std::vector<FMTPatchRules> 
-			GetRules(const std::vector<Core::FMTconstraint>& p_constraints,
-					const std::vector<Core::FMTaction>& p_actions);
-		double Evaluate(const FMTeventcontainer& p_events, 
+			getRules(const std::vector<Core::FMTConstraint>& p_constraints,
+					const std::vector<Core::FMTAction>& p_actions);
+		double evaluate(const FMTEventContainer& p_events, 
 				const FMTSpatialGraphs& p_SpatialGraphs) const;
-		void FillTooSmallEvents(
-			std::vector<std::set<FMTevent>::iterator>& p_SmallEvents,
-			FMTeventcontainer& p_events) const;
-		void FillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
-			FMTeventcontainer& p_events) const;
-		void FillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
-					FMTeventcontainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const;
+		void fillTooSmallEvents(
+			std::vector<std::set<FMTEvent>::iterator>& p_SmallEvents,
+			FMTEventContainer& p_events) const;
+		void fillTooBigEvents(std::vector<std::set<FMTEvent>::iterator>& p_BigEvents,
+			FMTEventContainer& p_events) const;
+		void fillDispersionEvents(std::vector<std::set<FMTEvent>::iterator>& p_Dispersion,
+					FMTEventContainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const;
 	private:
-		FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
-			const std::vector<Core::FMTaction>& p_actions, int p_Id);
-		void _BuildPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
-			const std::vector<Core::FMTaction>& p_actions, int p_Id);
+		FMTPatchRules(const std::vector<Core::FMTConstraint>& p_constraints,
+			const std::vector<Core::FMTAction>& p_actions, int p_Id);
+		void _buildPatchRules(const std::vector<Core::FMTConstraint>& p_constraints,
+			const std::vector<Core::FMTAction>& p_actions, int p_Id);
 		static std::vector<std::pair<std::vector<int>,
-						std::pair<int,int>>> _GetOrderedRules(const std::vector<Core::FMTconstraint>& p_constraints,
-						const std::vector<Core::FMTaction>& p_actions);
+						std::pair<int,int>>> _getOrderedRules(const std::vector<Core::FMTConstraint>& p_constraints,
+						const std::vector<Core::FMTAction>& p_actions);
 		template <typename U>
-		static void _GetBounds(double p_lower, double p_upper,
+		static void _getBounds(double p_lower, double p_upper,
 			U& p_NewLower, U& p_NewUpper);
-		bool _TooSmall(const FMTevent& p_event, size_t& p_cost) const;
-		bool _TooBig(const FMTevent& p_event, size_t& p_cost) const;
-		bool _IsTooClose(const FMTevent& p_event, const FMTeventcontainer& p_events, size_t& p_cost) const;
-		bool _IsSizeUsed() const;
-		bool _IsAdjacencyUsed() const;
-		bool _HasMinimalAdjacency() const;
-		bool _HasMaximalAdjacency() const;
-		bool _IsGroupUsed() const;
-		double _EvaluateSize(const FMTeventcontainer& p_events) const;
-		double _EvaluateAdjacency(const FMTeventcontainer& p_events) const;
-		double _EvaluateGroup(const FMTeventcontainer& p_events,
+		bool _tooSmall(const FMTEvent& p_event, size_t& p_cost) const;
+		bool _tooBig(const FMTEvent& p_event, size_t& p_cost) const;
+		bool _isTooClose(const FMTEvent& p_event, const FMTEventContainer& p_events, size_t& p_cost) const;
+		bool _isSizeUsed() const;
+		bool _isAdjacencyUsed() const;
+		bool _hasMinimalAdjacency() const;
+		bool _hasMaximalAdjacency() const;
+		bool _isGroupUsed() const;
+		double _evaluateSize(const FMTEventContainer& p_events) const;
+		double _evaluateAdjacency(const FMTEventContainer& p_events) const;
+		double _evaluateGroup(const FMTEventContainer& p_events,
 			const FMTSpatialGraphs& p_SpatialGraphs) const;
 		
 	

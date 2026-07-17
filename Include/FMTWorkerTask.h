@@ -5,11 +5,11 @@
 
 namespace Parallel
 {
-	class FMTtask;
+	class FMTTask;
 	class FMTWorkerTask
 	{
 	public:
-		FMTWorkerTask(std::unique_ptr<FMTtask> t);
+		FMTWorkerTask(std::unique_ptr<FMTTask> t);
 		FMTWorkerTask(const FMTWorkerTask&) = delete;
 		FMTWorkerTask& operator=(const FMTWorkerTask&) = delete;
 		FMTWorkerTask(FMTWorkerTask&&) = delete;
@@ -18,7 +18,7 @@ namespace Parallel
 		bool isDone() const;
 		boost::thread& getThread();
 	private:
-		std::unique_ptr<FMTtask> m_task;
+		std::unique_ptr<FMTTask> m_task;
 		boost::thread m_worker;
 		std::atomic<bool> m_done;
 	};

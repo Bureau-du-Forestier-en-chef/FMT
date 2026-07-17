@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "FMTForm.h"
-#include "FMTmodelparser.h"
+#include "FMTModelParser.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTscheduleparser.h"
+#include "FMTScheduleParser.h"
 #include "FMTFormCache.h"
-#include "FMTmodel.h"
-#include "FMTtheme.h"
+#include "FMTModel.h"
+#include "FMTTheme.h"
 
 namespace Wrapper
 { 
@@ -32,7 +32,7 @@ void FMTForm::SetErrorsToWarnings(
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::SetErrorsToWarnings", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::SetErrorsToWarnings", __LINE__, __FILE__);
 	}
 }
 
@@ -57,7 +57,7 @@ void FMTForm::RecoverFromCrash()
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::RecoverFromCrash", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::RecoverFromCrash", __LINE__, __FILE__);
 	}
 }
 
@@ -72,7 +72,7 @@ void FMTForm::Cache_AssignerNomLogger(System::String^ nomFichierLogger)
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_AssignerNomLogger", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::Cache_AssignerNomLogger", __LINE__, __FILE__);
 	}
 }
 
@@ -86,9 +86,9 @@ bool FMTForm::Cache_AjouterScenarios(
 		std::vector<std::string>scenarios;
 		std::string scenario = msclr::interop::marshal_as<std::string>(scenarioSystem);
 		scenarios.push_back(scenario);
-		Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
-		const std::vector<Models::FMTmodel> models = Modelparser.readproject(fichierPri, scenarios);
-		for (const Models::FMTmodel& model : models)
+		Parser::FMTModelParser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
+		const std::vector<Models::FMTModel> models = Modelparser.readproject(fichierPri, scenarios);
+		for (const Models::FMTModel& model : models)
 		{
 			FMTFormCache::GetInstance()->push_back(model);
 		}
@@ -96,7 +96,7 @@ bool FMTForm::Cache_AjouterScenarios(
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_AjouterScenarios", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::Cache_AjouterScenarios", __LINE__, __FILE__);
 	}
 
 	return false;
@@ -111,7 +111,7 @@ bool FMTForm::Cache_EnleverModel(int indexScenario)
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_EnleverModel", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::Cache_EnleverModel", __LINE__, __FILE__);
 	}
 
 	return false;
@@ -125,7 +125,7 @@ void FMTForm::Cache_Vider()
 	}
 	catch (...)
 	{
-		raisefromcatch("", "FMTForm::Cache_Vider", __LINE__, __FILE__);
+		raiseFromCatch("", "FMTForm::Cache_Vider", __LINE__, __FILE__);
 	}
 }
 }

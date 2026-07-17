@@ -1,13 +1,13 @@
 #include <vector>
 #include <cmath>
 #ifdef FMTWITHOSI
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTmodelparser.h"
-    #include "FMTlpmodel.h"
-    #include "FMTconstraint.h"
-    #include "FMTfreeexceptionhandler.h"
-    #include "FMTexception.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTModelParser.h"
+    #include "FMTLpModel.h"
+    #include "FMTConstraint.h"
+    #include "FMTFreeExceptionHandler.h"
+    #include "FMTException.h"
 #endif
 
 
@@ -20,7 +20,7 @@ int roundobjectivevalue(const double& value)
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTDefaultLogger().logStamp();
     std::string primarylocation;
     std::string scenario;
 	double objvalue;
@@ -41,44 +41,44 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
-	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
-	modelparser.seterrorstowarnings(errors);
+	Parser::FMTModelParser modelparser;
+	modelparser.setDefaultExceptionHandler();
+	modelparser.setErrorsToWarnings(errors);
     const std::vector<std::string>scenarios(1, scenario);
-    const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
+    const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
    
 		Models::FMTsolverinterface solverinterface = Models::FMTsolverinterface::CLP;
-        if(Version::FMTversion::hasfeature("MOSEK"))
+        if(Version::FMTVersion::hasFeature("MOSEK"))
         {
 			solverinterface = Models::FMTsolverinterface::MOSEK;
         }
-		Models::FMTlpmodel optimizationmodel(models.at(0), solverinterface);
-        optimizationmodel.setstrictlypositivesoutputsmatrix();
+		Models::FMTLpModel optimizationmodel(models.at(0), solverinterface);
+        optimizationmodel.setStrictlyPositivesOutputsMatrix();
 		for (size_t period = 0; period < 20; ++period)
 		{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildPeriod();
 		}
-		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
-		const Core::FMTconstraint objective = constraints.at(0);
+		std::vector<Core::FMTConstraint>constraints = optimizationmodel.getconstraints();
+		const Core::FMTConstraint objective = constraints.at(0);
 		constraints.erase(constraints.begin());
-		for (const Core::FMTconstraint& constraint : constraints)
+		for (const Core::FMTConstraint& constraint : constraints)
 		{
-			optimizationmodel.setconstraint(constraint);
+			optimizationmodel.setConstraint(constraint);
 		}
-		optimizationmodel.setobjective(objective);
-		if (optimizationmodel.initialsolve())
+		optimizationmodel.setObjective(objective);
+		if (optimizationmodel.initialSolve())
 			{
                 const double modelobjvalue = optimizationmodel.getObjValue();
                 if(roundobjectivevalue(objvalue) != roundobjectivevalue(modelobjvalue)) 
                 {
                     std::string message = "Optimizing the model gave a different goal value than expected : \n\tResult : "+std::to_string(roundobjectivevalue(modelobjvalue))+"\n\tExpected : "+std::to_string(roundobjectivevalue(objvalue));
-                    //Logging::FMTlogger()<< message <<"\n";
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, message,
+                    //Logging::FMTLogger()<< message <<"\n";
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, message,
 						"TestSimpleplanning20p", 48, primarylocation);
                 }
 			}else{
 			std::string message = "The model is unsolvable.";
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, message,
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, message,
 					"TestSimpleplanning20p", 46, primarylocation);
             }
 	#endif

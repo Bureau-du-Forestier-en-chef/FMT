@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Qu�bec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -8,48 +8,48 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef REXPORTParser_H_INCLUDED
 #define REXPORTParser_H_INCLUDED
 
-#include "FMTobject.h"
-#include "FMTparser.h"
-#include "FMTlandscapeparser.h"
-#include "FMTconstantparser.h"
-#include "FMTlifespanparser.h"
-#include "FMTyieldparser.h"
-#include "FMTareaparser.h"
-#include "FMTactionparser.h"
-#include "FMTtransitionparser.h"
-#include "FMToutputparser.h"
-#include "FMTscheduleparser.h"
-#include "FMToptimizationparser.h"
-#include "FMTmodelparser.h"
+#include "FMTObject.h"
+#include "FMTParser.h"
+#include "FMTLandscapeParser.h"
+#include "FMTConstantParser.h"
+#include "FMTLifespanParser.h"
+#include "FMTYieldParser.h"
+#include "FMTAreaParser.h"
+#include "FMTActionParser.h"
+#include "FMTTransitionParser.h"
+#include "FMTOutputParser.h"
+#include "FMTScheduleParser.h"
+#include "FMTOptimizationParser.h"
+#include "FMTModelParser.h"
 #include <Rcpp.h>
 #include <string>
 #include "Rdefinitions.h"
 
-RCPP_EXPOSED_WRAP(Parser::FMTparser);
-RCPP_EXPOSED_AS(Parser::FMTparser);
-RCPP_EXPOSED_WRAP(Parser::FMTareaparser);
-RCPP_EXPOSED_AS(Parser::FMTareaparser);
+RCPP_EXPOSED_WRAP(Parser::FMTParser);
+RCPP_EXPOSED_AS(Parser::FMTParser);
+RCPP_EXPOSED_WRAP(Parser::FMTAreaParser);
+RCPP_EXPOSED_AS(Parser::FMTAreaParser);
 //RCPP_DEFINEMAP(std::string, std::string); //map of string definition
-RCPP_EXPOSED_WRAP(Parser::FMTlandscapeparser);
-RCPP_EXPOSED_AS(Parser::FMTlandscapeparser);
-RCPP_EXPOSED_WRAP(Parser::FMTactionparser);
-RCPP_EXPOSED_AS(Parser::FMTactionparser);
-RCPP_EXPOSED_WRAP(Parser::FMTtransitionparser);
-RCPP_EXPOSED_AS(Parser::FMTtransitionparser);
-RCPP_EXPOSED_WRAP(Parser::FMTconstantparser);
-RCPP_EXPOSED_AS(Parser::FMTconstantparser);
-RCPP_EXPOSED_WRAP(Parser::FMTlifespanparser);
-RCPP_EXPOSED_AS(Parser::FMTlifespanparser);
-RCPP_EXPOSED_WRAP(Parser::FMTyieldparser);
-RCPP_EXPOSED_AS(Parser::FMTyieldparser);
-RCPP_EXPOSED_WRAP(Parser::FMToutputparser);
-RCPP_EXPOSED_AS(Parser::FMToutputparser);
-RCPP_EXPOSED_WRAP(Parser::FMToptimizationparser);
-RCPP_EXPOSED_AS(Parser::FMToptimizationparser);
-RCPP_EXPOSED_WRAP(Parser::FMTscheduleparser);
-RCPP_EXPOSED_AS(Parser::FMTscheduleparser);
-RCPP_EXPOSED_WRAP(Parser::FMTmodelparser);
-RCPP_EXPOSED_AS(Parser::FMTmodelparser);
+RCPP_EXPOSED_WRAP(Parser::FMTLandscapeParser);
+RCPP_EXPOSED_AS(Parser::FMTLandscapeParser);
+RCPP_EXPOSED_WRAP(Parser::FMTActionParser);
+RCPP_EXPOSED_AS(Parser::FMTActionParser);
+RCPP_EXPOSED_WRAP(Parser::FMTTransitionParser);
+RCPP_EXPOSED_AS(Parser::FMTTransitionParser);
+RCPP_EXPOSED_WRAP(Parser::FMTConstantParser);
+RCPP_EXPOSED_AS(Parser::FMTConstantParser);
+RCPP_EXPOSED_WRAP(Parser::FMTLifespanParser);
+RCPP_EXPOSED_AS(Parser::FMTLifespanParser);
+RCPP_EXPOSED_WRAP(Parser::FMTYieldParser);
+RCPP_EXPOSED_AS(Parser::FMTYieldParser);
+RCPP_EXPOSED_WRAP(Parser::FMTOutputParser);
+RCPP_EXPOSED_AS(Parser::FMTOutputParser);
+RCPP_EXPOSED_WRAP(Parser::FMTOptimizationParser);
+RCPP_EXPOSED_AS(Parser::FMTOptimizationParser);
+RCPP_EXPOSED_WRAP(Parser::FMTScheduleParser);
+RCPP_EXPOSED_AS(Parser::FMTScheduleParser);
+RCPP_EXPOSED_WRAP(Parser::FMTModelParser);
+RCPP_EXPOSED_AS(Parser::FMTModelParser);
 
 
 
@@ -57,118 +57,125 @@ namespace R
 {
 void exportParser()
     {
-	Rcpp::class_<Parser::FMTparser>("FMTparser", "@DocString(FMTparser)")
-		.derives<Core::FMTobject>("FMTobject")
-		.constructor("@DocString(FMTparser())");
-	Rcpp::class_<Parser::FMTareaparser>("FMTareaparser", "@DocString(FMTareaparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTareaparser())")
-                .method("read", &Parser::FMTareaparser::read,
-					"@DocString(FMTareaparser::read)")
+	// writeForest est surchargé (worker chemins explicites vs. version dossier) : on fixe la surcharge
+	// à exposer (le worker à 6 args) via un pointeur typé, sinon &FMTAreaParser::writeForest est ambigu.
+	bool (Parser::FMTAreaParser::*writeForestPtr)(
+		const Spatial::FMTForest&, const std::vector<Core::FMTTheme>&,
+		const std::vector<std::string>&, const std::string&, const std::string&,
+		std::vector<std::map<std::string, std::string>>) const = &Parser::FMTAreaParser::writeForest;
+
+	Rcpp::class_<Parser::FMTParser>("FMTparser", "@DocString(FMTParser)")
+		.derives<Core::FMTObject>("FMTobject")
+		.constructor("@DocString(FMTParser())");
+	Rcpp::class_<Parser::FMTAreaParser>("FMTareaparser", "@DocString(FMTAreaParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTAreaParser())")
+                .method("read", &Parser::FMTAreaParser::read,
+					"@DocString(FMTAreaParser::read)")
 				#ifdef FMTWITHGDAL
-					.method("readvectors", &Parser::FMTareaparser::readvectors,
-						"@DocString(FMTareaparser::readvectors)")
-					.method("readrasters", &Parser::FMTareaparser::readrasters,
-						"@DocString(FMTareaparser::readrasters)")
-					.method("vectormaptoFMTforest", &Parser::FMTareaparser::vectormaptoFMTforest,
-						"@DocString(FMTareaparser::vectormaptoFMTforest)")
-					.method("vectorfieldtoraster", &Parser::FMTareaparser::vectorfieldtoraster,
-						"@DocString(FMTareaparser::vectorfieldtoraster)")
-					.method("writeforest",&Parser::FMTareaparser::writeforest,
-						"@DocString(FMTareaparser::writeforest)")
-					.method("writedisturbances",&Parser::FMTareaparser::writedisturbances,
-						"@DocString(FMTareaparser::writedisturbances)")
+					.method("readvectors", &Parser::FMTAreaParser::readVectors,
+						"@DocString(FMTAreaParser::readvectors)")
+					.method("readrasters", &Parser::FMTAreaParser::readRasters,
+						"@DocString(FMTAreaParser::readrasters)")
+					.method("vectormaptoFMTforest", &Parser::FMTAreaParser::vectormaptoFMTforest,
+						"@DocString(FMTAreaParser::vectormaptoFMTforest)")
+					.method("vectorfieldtoraster", &Parser::FMTAreaParser::vectorFieldToRaster,
+						"@DocString(FMTAreaParser::vectorfieldtoraster)")
+					.method("writeforest",writeForestPtr,
+						"@DocString(FMTAreaParser::writeforest)")
+					.method("writedisturbances",&Parser::FMTAreaParser::writeDisturbances,
+						"@DocString(FMTAreaParser::writedisturbances)")
 					#ifdef FMTWITHOSI
-						.method("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors,
-							"@DocString(FMTareaparser::getschemeneighbors)")
-                        .method("getclusters",&Parser::FMTareaparser::getclusters,
-                             "@DocString(FMTareaparser::getclusters)")
+						.method("getschemeneighbors",&Parser::FMTAreaParser::getSchemeNeighbors,
+							"@DocString(FMTAreaParser::getschemeneighbors)")
+                        .method("getclusters",&Parser::FMTAreaParser::getClusters,
+                             "@DocString(FMTAreaParser::getclusters)")
 					#endif
 				#endif
-				.method("write", &Parser::FMTareaparser::write,
-					"@DocString(FMTareaparser::write)");
-	Rcpp::class_<Parser::FMTlandscapeparser>("FMTlandscapeparser","@DocString(FMTlandscapeparser)")
-				.constructor("@DocString(FMTlandscapeparser())")
-				.derives<Parser::FMTparser>("FMTparser")
-                .method("read",&Parser::FMTlandscapeparser::read,
-					"@DocString(FMTlandscapeparser::read)")
+				.method("write", &Parser::FMTAreaParser::write,
+					"@DocString(FMTAreaParser::write)");
+	Rcpp::class_<Parser::FMTLandscapeParser>("FMTlandscapeparser","@DocString(FMTLandscapeParser)")
+				.constructor("@DocString(FMTLandscapeParser())")
+				.derives<Parser::FMTParser>("FMTparser")
+                .method("read",&Parser::FMTLandscapeParser::read,
+					"@DocString(FMTLandscapeParser::read)")
 				#ifdef FMTWITHGDAL
-					.method("readvectors", &Parser::FMTlandscapeparser::readvectors,
-						"@DocString(FMTlandscapeparser::readvectors)")
-					.method("readrasters",&Parser::FMTlandscapeparser::readrasters,
-						"@DocString(FMTlandscapeparser::readrasters)")
+					.method("readvectors", &Parser::FMTLandscapeParser::readVectors,
+						"@DocString(FMTLandscapeParser::readvectors)")
+					.method("readrasters",&Parser::FMTLandscapeParser::readRasters,
+						"@DocString(FMTLandscapeParser::readrasters)")
 				#endif
-                .method("write",&Parser::FMTlandscapeparser::write,
-					"@DocString(FMTlandscapeparser::write)");
-	Rcpp::class_<Parser::FMTactionparser>("FMTactionparser", "@DocString(FMTactionparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTactionparser())")
-                .method("read",&Parser::FMTactionparser::read,
-					"@DocString(FMTactionparser::read)")
-                .method("write",&Parser::FMTactionparser::write,
-					"@DocString(FMTactionparser::write)");
-	Rcpp::class_<Parser::FMTtransitionparser>("FMTtransitionparser", "@DocString(FMTtransitionparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTtransitionparser())")
-                .method("read",&Parser::FMTtransitionparser::read,
-					"@DocString(FMTtransitionparser::read)")
-                .method("write",&Parser::FMTtransitionparser::write,
-					"@DocString(FMTtransitionparser::write)");
-	Rcpp::class_<Parser::FMTconstantparser>("FMTconstantparser", "@DocString(FMTconstantparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTconstantparser())")
-                .method("read",&Parser::FMTconstantparser::read,
-					"@DocString(FMTconstantparser::read)")
-                .method("write",&Parser::FMTconstantparser::write,
-					"@DocString(FMTconstantparser::write)");
-	Rcpp::class_<Parser::FMTlifespanparser>("FMTlifespanparser", "@DocString(FMTlifespanparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTlifespanparser())")
-                .method("read",&Parser::FMTlifespanparser::read,
-					"@DocString(FMTlifespanparser::read)")
-                .method("write",&Parser::FMTlifespanparser::write,
-					"@DocString(FMTlifespanparser::write)");
-	Rcpp::class_<Parser::FMTyieldparser>("FMTyieldparser", "@DocString(FMTyieldparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTyieldparser())")
-                .method("read",&Parser::FMTyieldparser::read,
-					"@DocString(FMTyieldparser::read)")
-                .method("write",&Parser::FMTyieldparser::write,
-					"@DocString(FMTyieldparser::write)");
-	Rcpp::class_<Parser::FMToutputparser>("FMToutputparser", "@DocString(FMToutputparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMToutputparser())")
-                .method("read",&Parser::FMToutputparser::read,
-					"@DocString(FMToutputparser::read)")
-				.method("addoutputs",&Parser::FMToutputparser::addoutputs,
-					"@DocString(FMToutputparser::addoutputs)")
-                .method("write",&Parser::FMToutputparser::write,
-					"@DocString(FMToutputparser::write)");
-	Rcpp::class_<Parser::FMToptimizationparser>("FMToptimizationparser", "@DocString(FMToptimizationparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMToptimizationparser())")
-				.method("read", &Parser::FMToptimizationparser::read,
-					"@DocString(FMToptimizationparser::read)")
-				.method("write", &Parser::FMToptimizationparser::write,
-					"@DocString(FMToptimizationparser::write)");
-	Rcpp::class_<Parser::FMTmodelparser>("FMTmodelparser", "@DocString(FMTmodelparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTmodelparser())")
-                .method("read",&Parser::FMTmodelparser::read,
-					"@DocString(FMTmodelparser::read)")
-				.method("readproject", &Parser::FMTmodelparser::readproject,
-					"@DocString(FMTmodelparser::readproject)")
-				.method("readschedules", &Parser::FMTmodelparser::readschedules,
-					"@DocString(FMTmodelparser::readschedules)")
-                .method("write",&Parser::FMTmodelparser::write,
-					"@DocString(FMTmodelparser::write)");
-	Rcpp::class_<Parser::FMTscheduleparser>("FMTscheduleparser", "@DocString(FMTscheduleparser)")
-				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTscheduleparser())")
-                .method("read",&Parser::FMTscheduleparser::read,
-					"@DocString(FMTscheduleparser::read)")
-                .method("write",&Parser::FMTscheduleparser::write,
-					"@DocString(FMTscheduleparser::write)");
+                .method("write",&Parser::FMTLandscapeParser::write,
+					"@DocString(FMTLandscapeParser::write)");
+	Rcpp::class_<Parser::FMTActionParser>("FMTactionparser", "@DocString(FMTActionParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTActionParser())")
+                .method("read",&Parser::FMTActionParser::read,
+					"@DocString(FMTActionParser::read)")
+                .method("write",&Parser::FMTActionParser::write,
+					"@DocString(FMTActionParser::write)");
+	Rcpp::class_<Parser::FMTTransitionParser>("FMTtransitionparser", "@DocString(FMTTransitionParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTTransitionParser())")
+                .method("read",&Parser::FMTTransitionParser::read,
+					"@DocString(FMTTransitionParser::read)")
+                .method("write",&Parser::FMTTransitionParser::write,
+					"@DocString(FMTTransitionParser::write)");
+	Rcpp::class_<Parser::FMTConstantParser>("FMTconstantparser", "@DocString(FMTConstantParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTConstantParser())")
+                .method("read",&Parser::FMTConstantParser::read,
+					"@DocString(FMTConstantParser::read)")
+                .method("write",&Parser::FMTConstantParser::write,
+					"@DocString(FMTConstantParser::write)");
+	Rcpp::class_<Parser::FMTLifespanParser>("FMTlifespanparser", "@DocString(FMTLifespanParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTLifespanParser())")
+                .method("read",&Parser::FMTLifespanParser::read,
+					"@DocString(FMTLifespanParser::read)")
+                .method("write",&Parser::FMTLifespanParser::write,
+					"@DocString(FMTLifespanParser::write)");
+	Rcpp::class_<Parser::FMTYieldParser>("FMTyieldparser", "@DocString(FMTYieldParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTYieldParser())")
+                .method("read",&Parser::FMTYieldParser::read,
+					"@DocString(FMTYieldParser::read)")
+                .method("write",&Parser::FMTYieldParser::write,
+					"@DocString(FMTYieldParser::write)");
+	Rcpp::class_<Parser::FMTOutputParser>("FMToutputparser", "@DocString(FMTOutputParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTOutputParser())")
+                .method("read",&Parser::FMTOutputParser::read,
+					"@DocString(FMTOutputParser::read)")
+				.method("addoutputs",&Parser::FMTOutputParser::addOutputs,
+					"@DocString(FMTOutputParser::addoutputs)")
+                .method("write",&Parser::FMTOutputParser::write,
+					"@DocString(FMTOutputParser::write)");
+	Rcpp::class_<Parser::FMTOptimizationParser>("FMToptimizationparser", "@DocString(FMTOptimizationParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTOptimizationParser())")
+				.method("read", &Parser::FMTOptimizationParser::read,
+					"@DocString(FMTOptimizationParser::read)")
+				.method("write", &Parser::FMTOptimizationParser::write,
+					"@DocString(FMTOptimizationParser::write)");
+	Rcpp::class_<Parser::FMTModelParser>("FMTmodelparser", "@DocString(FMTModelParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTModelParser())")
+                .method("read",&Parser::FMTModelParser::read,
+					"@DocString(FMTModelParser::read)")
+				.method("readproject", &Parser::FMTModelParser::readproject,
+					"@DocString(FMTModelParser::readproject)")
+				.method("readschedules", &Parser::FMTModelParser::readschedules,
+					"@DocString(FMTModelParser::readschedules)")
+                .method("write",&Parser::FMTModelParser::write,
+					"@DocString(FMTModelParser::write)");
+	Rcpp::class_<Parser::FMTScheduleParser>("FMTscheduleparser", "@DocString(FMTScheduleParser)")
+				.derives<Parser::FMTParser>("FMTparser")
+				.constructor("@DocString(FMTScheduleParser())")
+                .method("read",&Parser::FMTScheduleParser::read,
+					"@DocString(FMTScheduleParser::read)")
+                .method("write",&Parser::FMTScheduleParser::write,
+					"@DocString(FMTScheduleParser::write)");
     }
 
 }

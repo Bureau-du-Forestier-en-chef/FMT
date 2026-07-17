@@ -31,7 +31,7 @@ namespace Spatial
 		return hash;
 	}
 
-	const std::vector<double>& FMTGraphValues::GetValues() const
+	const std::vector<double>& FMTGraphValues::getValues() const
 	{
 		return m_Values;
 	}

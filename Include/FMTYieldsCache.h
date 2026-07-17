@@ -17,9 +17,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 	{
-	class FMTdevelopment;
+	class FMTDevelopment;
 	class FMTYieldDevelopment;
-	class FMTyieldrequest;
+	class FMTYieldRequest;
 	class FMTYieldsCache
 		{
 		public:
@@ -27,19 +27,19 @@ namespace Core
 			FMTYieldsCache(const FMTYieldsCache& rhs)=default;
 			FMTYieldsCache& operator = (const FMTYieldsCache& rhs)=default;
 			~FMTYieldsCache() = default;
-			bool inCache(const FMTyieldrequest& p_request,
+			bool inCache(const FMTYieldRequest& p_request,
 							const std::string& p_yield) const;
-			double get(const FMTyieldrequest& p_request,
+			double get(const FMTYieldRequest& p_request,
 				const std::string& p_yield) const;
 			void set(double p_value,
-				const FMTyieldrequest& p_request,
+				const FMTYieldRequest& p_request,
 				const std::string& p_yield);
-			void reserve(const FMTyieldrequest& p_request);
+			void reserve(const FMTYieldRequest& p_request);
 		private:
 			static std::unique_ptr<boost::concurrent_flat_map<FMTYieldDevelopment,double>> m_cache;
-			FMTYieldDevelopment _getKey(const FMTyieldrequest& p_request,
+			FMTYieldDevelopment _getKey(const FMTYieldRequest& p_request,
 										const std::string& p_yield) const;
-			void _ClearIfTooBig();
+			void _clearIfTooBig();
 		};
 	}
 

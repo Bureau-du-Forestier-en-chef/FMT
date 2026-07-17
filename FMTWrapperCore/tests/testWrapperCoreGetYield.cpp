@@ -1,10 +1,10 @@
 #include <vector>
 #include <string>
-#include "FMTmodel.h"
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTModel.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
 #include "Tools.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTFreeExceptionHandler.h"
 
 int main(int argc, char* argv[])
 {
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	Parser::FMTmodelparser ModelParser;
+	Parser::FMTModelParser ModelParser;
 	std::vector<Exception::FMTexc>errors;
 	//errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -58,17 +58,17 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	ModelParser.seterrorstowarnings(errors);
+	ModelParser.setErrorsToWarnings(errors);
 
 
-	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
+	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 
 	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
 	std::cout << "Yield: " << yield << std::endl;
 
 	// on fait des v�rifications sur le nombre renvoyer
 	if (yield != result) {
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de yield n'est pas égal au résultat attendu",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de yield n'est pas égal au résultat attendu",
 			"TestWrapperCoreGetYield", __LINE__, __FILE__);
 	}
 

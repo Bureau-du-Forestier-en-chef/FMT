@@ -1,18 +1,18 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTtaskhandler.h"
-	#include "FMTplanningtask.h"
-	#include "FMTlpmodel.h"
-	#include "FMTnssmodel.h"
-	#include "FMTfreeexceptionhandler.h"
-	#include "FMTmodelparser.h"
+	#include "FMTTaskHandler.h"
+	#include "FMTPlanningTask.h"
+	#include "FMTLpModel.h"
+	#include "FMTNssModel.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTModelParser.h"
 #endif
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-		Logging::FMTdefaultlogger().logstamp();
+		Logging::FMTDefaultLogger().logStamp();
 		std::string primlocation;
 		std::string templatefolder;
 		int length;
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 			templatefolder = "T:\\Donnees\\Usagers\\FILDO1\\Modele_pour_Remsoft\\01272\\Scenarios";
 			length = 30;
 		}
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc> errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		modelparser.seterrorstowarnings(errors);
-		const std::vector<Models::FMTmodel> models = modelparser.readtemplates(primlocation, templatefolder);
+		modelparser.setErrorsToWarnings(errors);
+		const std::vector<Models::FMTModel> models = modelparser.readTemplates(primlocation, templatefolder);
 		if (models.size() < 1)
 			{
-			Exception::FMTfreeexceptionhandler().raise(
+			Exception::FMTFreeExceptionHandler().raise(
 				Exception::FMTexc::FMTfunctionfailed, 
 				"Wrong number of models loaded from template folder","", __LINE__, "");
 			}
@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
 			Models::FMTsolverinterface solver = (argc > 1)
 				? Models::FMTsolverinterface::CLP 
 				: Models::FMTsolverinterface::MOSEK;
-			Models::FMTlpmodel test(models.at(id), solver);
-			test.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-			test.doplanning(true);
+			Models::FMTLpModel test(models.at(id), solver);
+			test.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+			test.doPlanning(true);
 		}
 	#endif
 	return 0;

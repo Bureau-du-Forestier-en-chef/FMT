@@ -28,16 +28,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <set>
 #include <boost/dynamic_bitset.hpp>
 #include <boost/unordered_map.hpp>
-#include "FMTexception.h"
-#include "FMTerror.h"
-#include "FMTwarning.h"
+#include "FMTException.h"
+#include "FMTError.h"
+#include "FMTWarning.h"
 
 
 
 namespace boost{
 
 template<class T>
-static size_t pyhash(const T& value)
+static size_t pyHash(const T& value)
     {
     return boost::hash<T>()(value);
     }
@@ -262,10 +262,10 @@ namespace Python
 			boost::python::list keys = mapping.keys();
 			for (int i = 0; i < boost::python::len(keys); ++i)
 			{
-				boost::python::extract<k> extracted_key(keys[i]);
-				k newkey = extracted_key;
-				boost::python::extract<e> extracted_val(mapping[newkey]);
-				e value = extracted_val;
+				boost::python::extract<k> extractedKey(keys[i]);
+				k newkey = extractedKey;
+				boost::python::extract<e> extractedVal(mapping[newkey]);
+				e value = extractedVal;
 				v[newkey] = value;
 			}
 
@@ -275,14 +275,14 @@ namespace Python
 	};
 
 
-	void FMTtranslate_warning(Exception::FMTwarning const& e)
+	void FMTtranslate_warning(Exception::FMTWarning const& e)
 	{
 		PyErr_SetString(PyExc_UserWarning, e.what());
 	}
 
 	PyObject* FMTexceptiontype = NULL;
 
-	void FMTtranslate_error(Exception::FMTerror const& error) //should be implemented more like https://stackoverflow.com/questions/9620268/boost-python-custom-exception-class
+	void FMTtranslate_error(Exception::FMTError const& error) //should be implemented more like https://stackoverflow.com/questions/9620268/boost-python-custom-exception-class
 	{
 		if (error.hold())
 		{

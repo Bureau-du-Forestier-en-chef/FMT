@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include "FMTSolutionTracker.h"
 #include "FMTGraphInfo.h"
-#include "FMTlinegraph.h"
+#include "FMTLineGraph.h"
 
 
 namespace Spatial
@@ -30,20 +30,20 @@ namespace Spatial
 		m_Solution(p_solution),
 		m_ConstraintsFamilies()
 	{
-		_BuildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
+		_buildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
 	};
 
 
 
-	void FMTSolutionTracker::_ModifySolution(
+	void FMTSolutionTracker::_modifySolution(
 		size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_It,
+		std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_It,
 		double p_sense)
 	{
 		try {
 			for (const size_t CONSTRAINT_Id : m_ConstraintsFamilies.at(p_family))
 				{
-					const std::vector<double>& VALUES = p_It->second.GetValues(CONSTRAINT_Id);
+					const std::vector<double>& VALUES = p_It->second.getValues(CONSTRAINT_Id);
 					for (size_t j = 0; j < VALUES.size(); ++j)
 					{
 						if (j == m_LastConstraintsEvaluation.at(CONSTRAINT_Id).size())
@@ -57,37 +57,37 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTSolutionTracker::_ModifySolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTSolutionTracker::_modifySolution", __LINE__, __FILE__);
 			}
 	}
 
-	void  FMTSolutionTracker::SetConstraintValues(const std::vector<std::vector<double>>& p_constraintValues,
+	void  FMTSolutionTracker::setConstraintValues(const std::vector<std::vector<double>>& p_constraintValues,
 						const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
 						size_t p_NumberOfFamilies)
 		{
 		m_LastConstraintsEvaluation = p_constraintValues;
-		_BuildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
+		_buildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
 		}
 
-	void FMTSolutionTracker::DisableTracking()
+	void FMTSolutionTracker::disableTracking()
 	{
 		m_LastConstraintsEvaluation.clear();
 	}
 
-	bool FMTSolutionTracker::IsTrackingEnable() const
+	bool FMTSolutionTracker::isTrackingEnable() const
 		{
 		return !m_LastConstraintsEvaluation.empty();
 		}	
 
 
-	const std::vector<double>& FMTSolutionTracker::GetConstraintsValues(size_t p_Constraint)const
+	const std::vector<double>& FMTSolutionTracker::getConstraintsValues(size_t p_Constraint)const
 		{
 		return m_LastConstraintsEvaluation.at(p_Constraint);
 		}
 
 
-	size_t FMTSolutionTracker::GetNumberOfCells(size_t p_GraphId) const
+	size_t FMTSolutionTracker::getNumberOfCells(size_t p_GraphId) const
 		{
 		size_t numberOf = 0;
 		try {
@@ -97,8 +97,8 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTSolutionTracker::GetNumberOfCells", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTSolutionTracker::getNumberOfCells", __LINE__, __FILE__);
 			}
 		return numberOf;
 		}
@@ -115,7 +115,7 @@ namespace Spatial
 		m_ConstraintsFamilies.swap(p_tracker.m_ConstraintsFamilies);
 		}
 
-	size_t FMTSolutionTracker::GetNonSpatialCellsCount() const
+	size_t FMTSolutionTracker::getNonSpatialCellsCount() const
 	{
 		size_t totalCount = 0;
 		for (size_t CELLS : m_Solution)
@@ -125,8 +125,8 @@ namespace Spatial
 		return totalCount;
 	}
 
-	void FMTSolutionTracker::AddToSolution(size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_NewGraph,
+	void FMTSolutionTracker::addToSolution(size_t p_family,
+		std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_NewGraph,
 		size_t p_LastGraphId)
 	{
 		try {
@@ -134,34 +134,34 @@ namespace Spatial
 				{
 				m_Solution.resize(p_LastGraphId * m_SOLUTION_RESIZE_FACTOR, 0);
 				}
-			++m_Solution.at(p_NewGraph->second.GetGraphId());
-			if (IsTrackingEnable())
+			++m_Solution.at(p_NewGraph->second.getGraphId());
+			if (isTrackingEnable())
 				{
-				_ModifySolution(p_family, p_NewGraph, 1.0);
+				_modifySolution(p_family, p_NewGraph, 1.0);
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTSolutionTracker::AddToSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTSolutionTracker::addToSolution", __LINE__, __FILE__);
 			}
 	}
-	void FMTSolutionTracker::RemoveFromSolution(size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_OldGraph)
+	void FMTSolutionTracker::removeFromSolution(size_t p_family,
+		std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_OldGraph)
 	{
 		try {
-			--m_Solution.at(p_OldGraph->second.GetGraphId());
-			if (IsTrackingEnable())
+			--m_Solution.at(p_OldGraph->second.getGraphId());
+			if (isTrackingEnable())
 				{
-				_ModifySolution( p_family, p_OldGraph, -1.0);
+				_modifySolution( p_family, p_OldGraph, -1.0);
 				}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("",
-				"FMTSolutionTracker::RemoveFromSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTSolutionTracker::removeFromSolution", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTSolutionTracker::_BuildConstraintsFamilies(const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
+	void FMTSolutionTracker::_buildConstraintsFamilies(const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
 														size_t p_NumberOfFamilies)
 		{
 		m_ConstraintsFamilies.clear();

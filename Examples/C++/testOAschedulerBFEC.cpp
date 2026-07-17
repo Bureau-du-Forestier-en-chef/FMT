@@ -1,27 +1,27 @@
 #ifdef FMTWITHOSI
-    #include "FMTareaparser.h"
-    #include "FMTyieldparser.h"
-	#include "FMTlpmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTconstraint.h"
-    #include "FMToutputnode.h"
-    #include "FMTmask.h"
-    #include "FMTlpheuristicmthandler.h"
-    #include "FMToperatingareascheduler.h"
-    #include "FMTtimeyieldhandler.h"
-    #include "FMTfreeexceptionhandler.h"
+    #include "FMTAreaParser.h"
+    #include "FMTYieldParser.h"
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTConstraint.h"
+    #include "FMTOutputNode.h"
+    #include "FMTMask.h"
+    #include "FMTLpHeuristicMtHandler.h"
+    #include "FMTOperatingAreaScheduler.h"
+    #include "FMTTimeYieldHandler.h"
+    #include "FMTFreeExceptionHandler.h"
 #endif
 #ifdef FMTWITHOSI
-std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const std::string& fichierShp,const std::vector<Core::FMTtheme>& themes, const int& numeroTheme,const int& startingperiod,
+std::vector<Heuristics::FMTOperatingAreaScheme> ObtenirOperatingArea(   const std::string& fichierShp,const std::vector<Core::FMTTheme>& themes, const int& numeroTheme,const int& startingperiod,
                                                                         const std::string& nomChampAge,const std::string& nomChampSuperficie,const std::string& nomChampStanlock
                                                                     )
     {
 	
-	    std::vector<Heuristics::FMToperatingareascheme> opeareas;
+	    std::vector<Heuristics::FMTOperatingAreaScheme> opeareas;
 	    bool spatialconstraints = false;
-        std::vector<std::string>operatingareasname = themes.at(numeroTheme-1).getattributes("?",false);
+        std::vector<std::string>operatingareasname = themes.at(numeroTheme-1).getAttributes("?",false);
         for (const auto& OA : operatingareasname)
         {
             if (OA != "NA")
@@ -44,9 +44,9 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                         mask += "? ";
                     }
                 }
-                const Core::FMTmask FMTmask = Core::FMTmask(mask, themes);
-                opeareas.push_back(Heuristics::FMToperatingareascheme(
-                    Heuristics::FMToperatingarea(FMTmask, NPE),
+                const Core::FMTMask FMTMask = Core::FMTMask(mask, themes);
+                opeareas.push_back(Heuristics::FMTOperatingAreaScheme(
+                    Heuristics::FMTOperatingArea(FMTMask, NPE),
                     OPT,
                     RET,
                     MAXRET,
@@ -62,32 +62,32 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         }
         if (spatialconstraints)
         {
-            Parser::FMTareaparser areaParser;
-            Logging::FMTdefaultlogger()<<"Lecture des blocs voisins."<<"\n";
-            opeareas = areaParser.getschemeneighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1,nomChampStanlock);
+            Parser::FMTAreaParser areaParser;
+            Logging::FMTDefaultLogger()<<"Lecture des blocs voisins."<<"\n";
+            opeareas = areaParser.getSchemeNeighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1,nomChampStanlock);
         }
         return opeareas;
 }
 
-Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)   
+Core::FMTOutputNode createBFECoptaggregate(Models::FMTModel& model)   
     {
         std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
-            std::vector<Core::FMTaction> newactions;
+            std::vector<Core::FMTAction> newactions;
             int youvert = 0;
 
-            for (Core::FMTaction& action : model.getactions())
+            for (Core::FMTAction& action : model.getactions())
             {
-                if (action.useyield("YOUVERT"))
+                if (action.useYield("YOUVERT"))
                 {
                     youvert += 1;
-                    std::vector<std::string> agg = action.getaggregates();
+                    std::vector<std::string> agg = action.getAggregates();
                     if (std::count(agg.begin(), agg.end(), Agg_name))
                     {
-                        Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
-                        "testOAschedulerBFEC", __LINE__,model.getname());  
+                        Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
+                        "testOAschedulerBFEC", __LINE__,model.getName());  
                     }
 
-                    action.push_aggregate(Agg_name);
+                    action.pushAggregate(Agg_name);
                 }
 
                 newactions.push_back(action);
@@ -95,12 +95,12 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 
             if (youvert < 1)
             {
-                Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Aucune action dans le modèle n'a de youvert",
-                        "testOAschedulerBFEC", __LINE__,model.getname()) ;
+                Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Aucune action dans le modèle n'a de youvert",
+                        "testOAschedulerBFEC", __LINE__,model.getName()) ;
             }
 
-            model.setactions(newactions);
-            const std::vector<Core::FMTtheme> themes = model.getthemes();	
+            model.setActions(newactions);
+            const std::vector<Core::FMTTheme> themes = model.getThemes();	
             std::string stringMask = "";
             for (int i = 1; i <= themes.size(); i++)
             {
@@ -114,14 +114,14 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
                 }
             }
 
-            Core::FMTmask fmtMask = Core::FMTmask(stringMask, themes);
-            return Core::FMToutputnode(fmtMask, Agg_name);
+            Core::FMTMask fmtMask = Core::FMTMask(stringMask, themes);
+            return Core::FMTOutputNode(fmtMask, Agg_name);
     }
 #endif
 int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
-            Logging::FMTdefaultlogger().logstamp();
+            Logging::FMTDefaultLogger().logStamp();
             std::string primarylocation;
             std::vector<std::string>scenarios;
             std::string fichierShp;
@@ -136,9 +136,9 @@ int main(int argc, char *argv[])
                 scenarios = std::vector<std::string>(1, "120_RegProv_apsp");
                 fichierShp = "C:/Users/Admlocal/Documents/issues/280/08251_test/02_Travail/Carte/PC_9949_UA_U08251.shp";
             }
-            Parser::FMTmodelparser modelparser;
-            modelparser.setdefaultexceptionhandler(); 
-            modelparser.settasklogger();
+            Parser::FMTModelParser modelparser;
+            modelparser.setDefaultExceptionHandler(); 
+            modelparser.setTaskLogger();
             std::vector<Exception::FMTexc>errors;
 		    errors.push_back(Exception::FMTexc::FMTmissingyield);
 		    errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -150,73 +150,73 @@ int main(int argc, char *argv[])
 		    errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
             errors.push_back(Exception::FMTexc::FMTEmptyOA);
             errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		    modelparser.seterrorstowarnings(errors);
-            const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-            Models::FMTmodel model = models.at(0);
-            Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
-	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	        optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
-            optimizationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+		    modelparser.setErrorsToWarnings(errors);
+            const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+            Models::FMTModel model = models.at(0);
+            Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
+            optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,5);
+	        optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	        optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
+            optimizationmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
           
-            const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
-            optimizationmodel.doplanning(true);
+            const int startingperiod = optimizationmodel.getconstraints().at(0).getPeriodLowerBound();
+            optimizationmodel.doPlanning(true);
             const double initialobjectivevalue = optimizationmodel.getObjValue();
-            const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
-            std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
-            std::vector<Heuristics::FMToperatingareascheduler> opareaheuristics = optimizationmodel.getoperatingareaschedulerheuristics(opeareas, nodeofoutput);
-            //opareaheuristics[0].setproportionofset(0.25);
-			Heuristics::FMTlpheuristicmthandler handler = Heuristics::FMTlpheuristicmthandler(opareaheuristics, initialobjectivevalue);
-            const double calculatedpropotion = opareaheuristics[0].generateinitialproportionofset();
+            const Core::FMTOutputNode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
+            std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getThemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
+            std::vector<Heuristics::FMTOperatingAreaScheduler> opareaheuristics = optimizationmodel.getOperatingAreaSchedulerHeuristics(opeareas, nodeofoutput);
+            //opareaheuristics[0].setProportionOfSet(0.25);
+			Heuristics::FMTLpHeuristicMtHandler handler = Heuristics::FMTLpHeuristicMtHandler(opareaheuristics, initialobjectivevalue);
+            const double calculatedpropotion = opareaheuristics[0].generateInitialProportionOfSet();
             std::cout<< "Initial proportion of set of : " + std::to_string(calculatedpropotion) << "\n";
-            opareaheuristics[0].setproportionofset(calculatedpropotion);
-			size_t bestpos = handler.initialsolve();
-            bestpos = handler.greedysolve(5,10000000);
-			const Heuristics::FMToperatingareascheduler bestsolve = opareaheuristics[bestpos];
-            const std::vector<Core::FMTtimeyieldhandler> ythandler = bestsolve.getsolution("YOUVERT");
-            /*for (const auto& out : bestsolve.getlevelsolution("COS", "BFECOPTtata", model.getoutputs().size()))
+            opareaheuristics[0].setProportionOfSet(calculatedpropotion);
+			size_t bestpos = handler.initialSolve();
+            bestpos = handler.greedySolve(5,10000000);
+			const Heuristics::FMTOperatingAreaScheduler bestsolve = opareaheuristics[bestpos];
+            const std::vector<Core::FMTTimeYieldHandler> ythandler = bestsolve.getSolution("YOUVERT");
+            /*for (const auto& out : bestsolve.getLevelSolution("COS", "BFECOPTtata", model.getoutputs().size()))
                 {
                 std::cout << std::string(out) << "\n";
                 }*/
             //write solution
-            Core::FMTyields yields;
-            for (const Core::FMTtimeyieldhandler& tyld : ythandler)
+            Core::FMTYields yields;
+            for (const Core::FMTTimeYieldHandler& tyld : ythandler)
             {
-                std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
-                yields.push_back(newyield->getmask(), newyield);
+                std::unique_ptr<Core::FMTYieldHandler>newyield(new Core::FMTTimeYieldHandler(tyld));
+                yields.push_back(newyield->getMask(), newyield);
             }
             yields.update();
-            Parser::FMTyieldparser yldparser;
+            Parser::FMTYieldParser yldparser;
             const std::string solutionname = "../../tests/testOAschedulerBFEC/bfecoptsol.yld";
             yldparser.write(yields, solutionname);
             //
-            Core::FMTyields myields = model.getyields();
-            myields.unshrink(model.getthemes());
+            Core::FMTYields myields = model.getYields();
+            myields.unShrink(model.getThemes());
             for(const auto& yth : ythandler)
             {   
-                myields.push_front( yth.getmask(),
-                                    std::unique_ptr<Core::FMTyieldhandler>(new Core::FMTtimeyieldhandler(yth))
+                myields.push_front( yth.getMask(),
+                                    std::unique_ptr<Core::FMTYieldHandler>(new Core::FMTTimeYieldHandler(yth))
                                     );
             }
             myields.update();
-            optimizationmodel = Models::FMTlpmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setyields(myields);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
-            optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
-            if (optimizationmodel.doplanning(true)) 
+            optimizationmodel = Models::FMTLpModel(model, Models::FMTsolverinterface::MOSEK);
+            optimizationmodel.setYields(myields);
+            optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,5);
+            optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+            optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
+            if (optimizationmodel.doPlanning(true)) 
             {
                 const double objectivevalue = optimizationmodel.getObjValue();
                 const double bfecoptvalue = bestsolve.getObjValue();
                 std::cout << objectivevalue << " " << bfecoptvalue << std::endl;
                 if ((objectivevalue < (bfecoptvalue - 1)) || (objectivevalue > (bfecoptvalue + 1)))
                 {
-                    Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+                    Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
                         "testOAschedulerBFEC", __LINE__, primarylocation);
                 }
             }
             else {
-                Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve model with solution",
+                Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve model with solution",
                     "testOAschedulerBFEC", __LINE__, primarylocation);
             }
            

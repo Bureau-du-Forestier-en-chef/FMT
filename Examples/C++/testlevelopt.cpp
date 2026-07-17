@@ -1,24 +1,24 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTlpmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTconstraint.h"
-	#include "FMTscheduleparser.h"
-	#include "FMTfreeexceptionhandler.h"
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTConstraint.h"
+	#include "FMTScheduleParser.h"
+	#include "FMTFreeExceptionHandler.h"
 #endif
 
 
 int main()
 	{
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	Logging::FMTDefaultLogger().logStamp();
+	if (Version::FMTVersion().hasFeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<std::string>scenarios;
 		scenarios.push_back("levelopt1");
 		scenarios.push_back("levelopt2");
@@ -39,10 +39,10 @@ int main()
 		objectivevalues.push_back(856.88);
 		objectivevalues.push_back(1814.76);
 		objectivevalues.push_back(907.38);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 		for (size_t scnid = 0 ; scnid < models.size();++scnid)
 		{
-			Models::FMTlpmodel optimizationmodel(models.at(scnid), Models::FMTsolverinterface::CLP);
+			Models::FMTLpModel optimizationmodel(models.at(scnid), Models::FMTsolverinterface::CLP);
 			size_t scenariolength = 1;
 			if (scnid>=4)
 				{
@@ -50,31 +50,31 @@ int main()
 				}
 			for (size_t period = 0; period < scenariolength; ++period)
 			{
-				optimizationmodel.buildperiod();
+				optimizationmodel.buildPeriod();
 			}
-			std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
-			const Core::FMTconstraint objective = constraints.at(0);
+			std::vector<Core::FMTConstraint>constraints = optimizationmodel.getconstraints();
+			const Core::FMTConstraint objective = constraints.at(0);
 			constraints.erase(constraints.begin());
-			for (const Core::FMTconstraint& constraint : constraints)
+			for (const Core::FMTConstraint& constraint : constraints)
 			{
 				const std::string cval = std::string(constraint);
-				optimizationmodel.setconstraint(constraint);
+				optimizationmodel.setConstraint(constraint);
 			}
-			optimizationmodel.setobjective(objective);
-			if (optimizationmodel.initialsolve())
+			optimizationmodel.setObjective(objective);
+			if (optimizationmodel.initialSolve())
 			{
 				const double value = optimizationmodel.getObjValue();
 				if (1 < std::abs(value - objectivevalues.at(scnid)))
 				{
 					
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value "+std::to_string(std::abs(value - objectivevalues.at(scnid))),
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value "+std::to_string(std::abs(value - objectivevalues.at(scnid))),
 						"FMTleveltest", __LINE__, primarylocation);
 				}
 			}
 		}
 		
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 #endif 
 	return 0;
