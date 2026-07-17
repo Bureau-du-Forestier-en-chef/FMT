@@ -3203,7 +3203,10 @@ const std::string& FMTModel::getParameter(const FMTstrmodelparameters& p_key) co
 	{
 		_exhandler->raiseFromCatch("", "FMTModel::getParameter", __LINE__, __FILE__);
 	}
-	return nullptr;
+	// Sentinelle atteinte seulement si le handler retrograde le raise ci-dessus :
+	// une reference statique reste valide (return nullptr construisait std::string(nullptr), UB).
+	static const std::string empty;
+	return empty;
 }
 
 bool FMTModel::setCompressTime(const int& periodStart, const int& periodStop, const int& value)

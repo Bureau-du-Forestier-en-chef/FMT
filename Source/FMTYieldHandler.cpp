@@ -481,7 +481,9 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		{
 			_exhandler->raiseFromCatch("", "FMTYieldHandler::operator[]", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		FMTData nullData;
+		// Stub de fonction virtuelle pure : atteint seulement si le handler retrograde
+		// le raise. Sentinelle statique -> la reference reste valide (le local etait detruit).
+		static FMTData nullData;
 		return nullData;
 	}
 	const FMTData& FMTYieldHandler::at(const std::string& yldname) const
@@ -494,7 +496,9 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		{
 			_exhandler->raiseFromCatch("", "FMTYieldHandler::at", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		FMTData nullData;
+		// Stub de fonction virtuelle pure : atteint seulement si le handler retrograde
+		// le raise. Sentinelle statique -> la reference reste valide (le local etait detruit).
+		static FMTData nullData;
 		return nullData;
 	}
 

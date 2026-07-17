@@ -416,16 +416,11 @@
 | `_GetUseFullBits` | `_getUseFullBits` | à convertir | helper privé non documenté (scan direct) |
 | `_RemoveGraphsShorterThan` | `_removeGraphsShorterThan` | à convertir | helper privé non documenté (scan direct) |
 
-### `FMTSpatialSchedule`  — `Include/FMTspatialschedule.h`
+### `FMTSpatialSchedule`  — `Include/FMTSpatialSchedule.h`
 
 | Méthode actuelle | Renommage proposé | Statut | Note |
 |---|---|---|---|
 | `_EvaluateSpatialAdjacency` | `_evaluateSpatialAdjacency` | à convertir |  |
-
-### `FMTspatialschedule`  — `Include/FMTspatialschedule.h`
-
-| Méthode actuelle | Renommage proposé | Statut | Note |
-|---|---|---|---|
 | `_EvaluateSpatialGroups` | `_evaluateSpatialGroups` | à convertir | helper privé non documenté (scan direct) |
 | `_GetAdjacencyConflict` | `_getAdjacencyConflict` | à convertir | helper privé non documenté (scan direct) |
 | `_GetConstraintFloorValue` | `_getConstraintFloorValue` | à convertir | helper privé non documenté (scan direct) |

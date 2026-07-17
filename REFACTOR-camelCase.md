@@ -137,3 +137,97 @@ Les fins de ligne **CRLF** sont également préservées.
 - La compilation MSVC (`FMTlib` + `FMTExcelWrapper`) a servi de validation finale et
   a permis de cibler les derniers correctifs (dossiers `Excel/`/`Examples/` oubliés,
   homonymes STL/GDAL/OGR, add-in Excel).
+
+---
+
+# Refactorisation des noms de classes en CamelCase
+
+Suite du chantier ci-dessus : passage de l'ensemble des **classes** FMT de
+`FMTminuscule` à `FMTCamelCase`, le préfixe `FMT` restant en majuscules
+(`FMTareaparser` → `FMTAreaParser`, `FMTlpmodel` → `FMTLpModel`). Le renommage des
+méthodes avait explicitement laissé les classes de côté ; ce lot les traite.
+
+## Portée
+
+Les **137 classes** déclarées dans `Include/`, `Source/` et `FMTWrapperCore/`
+(namespaces `Core`, `Spatial`, `Graph`, `Models`, `Parser`, `Heuristics`,
+`Exception`, `Logging`, `Parallel`). Les classes déclarées dans `UI/` et `Excel/`
+(`FMTexcelcache`, `FMTmodelcache`, `FMTFormCache`, `FMTFormLogger`,
+`FMTexceptionhandlerwarning`) sont **hors périmètre** — `FMTexcelcache` est résolue
+par réflexion C# (`Excel/FMTExcel/FMTExcel/FMTcache.cs`). Les **sites d'appel** ont
+en revanche été mis à jour partout, y compris dans `UI/`, `Excel/` et `Examples/`.
+
+## Lots réalisés
+
+| Lot | Description | Classes | Occurrences |
+|-----|-------------|--------:|------------:|
+| 1 | Comparateurs / foncteurs (feuilles non exposées) | 13 | 143 |
+| 2 | Exceptions + loggers | 15 | 1 414 |
+| 3 | Cœur (`FMTObject`, `FMTMask`, `FMTAction`, `FMTOutput`, `FMTSpec`…) | 39 | 9 713 |
+| 4 | Parsers + modèles + modèles de rendement | 33 | 5 606 |
+| 5 | Graph + Spatial + Heuristics + Parallel + Version | 37 | 5 106 |
+| 6 | Renommage des 234 fichiers + 1 574 `#include` | — | — |
+
+**Total : 137 classes distinctes renommées.**
+
+## Règle sur les acronymes
+
+Acronymes en Pascal, **sauf `FMT` et `GCBM` en majuscules** — même règle que pour les
+méthodes. Donc `FMTLpModel`, `FMTSaModel`, `FMTSeModel`, `FMTSesModel`, `FMTSrModel`,
+`FMTNssModel`, `FMTYieldModelNn`, `FMTGCBMTransition`. Les acronymes que l'auteur
+avait laissés en majuscules (`FMTyieldmodelTSLA`) ont été ramenés à la règle
+(`FMTYieldModelTsla`). Cas particuliers actés : `FMTSeException` (ici `Se` =
+*Structured Exception*, pas *spatially explicit*), `FMTYldBounds` (précédent
+`getYldsBounds`), `FMTOpAreaSchedulerTask` (`oparea` = *operating area*),
+`FMTFuturDevelopment` (coquille « futur » **conservée** — les corrections
+orthographiques ne visaient que les méthodes).
+
+## Noms d'interface R/Python — **gelés**
+
+Les classes sont exposées à R/Python par leur nom en **chaîne** dans
+`Include/Rexport*.h` / `PYexport*.h` (`Rcpp::class_<Core::FMTAction>("FMTaction", …)`,
+`.derives<Core::FMTDevelopment>("FMTdevelopment")`). **Ces chaînes n'ont pas été
+renommées** : le type C++ passe en CamelCase, mais le nom vu depuis R/Python reste en
+minuscules, pour ne casser aucun script client. En revanche le token
+`"@DocString(X)"` — clé d'appariement du générateur `commentsPythonandR.py`, et non
+une API — a **suivi** le renommage. Exception assumée : `FMTSpatialSchedule` (renommée
+avant ce chantier) reste exposée en CamelCase côté R/Python.
+
+## Sérialisation boost — **rupture assumée**
+
+Les `BOOST_CLASS_EXPORT_KEY(Core::FMTaction)` sont du code : ils deviennent
+`(Core::FMTAction)`, donc la clé écrite dans les archives boost change. Les archives /
+pickles produits par une version antérieure **ne sont plus relisibles**. Décision
+prise en connaissance de cause : ces archives sont d'usage transitoire (multiprocessing),
+non persistées longue durée. Les tags `make_nvp("FMTobject", …)` restent gelés (ce
+sont des chaînes).
+
+## Fichiers alignés sur les classes
+
+Les 234 fichiers `FMT*.h/.cpp/.hpp` dont le nom correspondait à une classe renommée
+ont été renommés via `git mv` (pivot en deux temps à cause de `core.ignorecase=true`),
+et les 1 574 `#include` correspondants mis à jour. Effets de bord positifs :
+
+- Les **5 `#include "FMTSpatialSchedule.h"`** hérités du renommage partiel de décembre
+  pointaient vers un fichier inexistant (ils ne compilaient que par l'insensibilité à
+  la casse de NTFS) — désormais corrects.
+- Coquilles de noms de fichiers corrigées : `FMtVirtualLineGraph.h` → `FMTVirtualLineGraph.h`,
+  `FMTopratingareaclusterbinary.cpp` → `FMTOperatingAreaClusterBinary.cpp`,
+  `FmtFormCache.{h,cpp}` → `FMTFormCache.{h,cpp}`.
+- 12 `#include` à la casse incorrecte (préexistants, masqués par NTFS) corrigés.
+
+Note Windows : après récupération de ce commit, un `git checkout` sur un clone
+existant peut conserver l'ancienne casse sur disque. Remède : `git rm -r --cached . &&
+git checkout .`, ou re-cloner.
+
+## Outillage et vérification
+
+L'outillage vit dans `.rename_tools/` : `rename.py` (renommage sûr, gel des chaînes,
+latin-1 + CRLF préservés), `propose_classes.py` (mapping), et une batterie de
+contrôles rejouée à chaque lot — `precheck.py` (collisions), `freeze_check.py` (gel
+R/Python), `residue_check.py` (aucun ancien nom en code), `docs_check.py` (appariement
+`@DocString`), `include_resolve_check.py` (résolution des `#include` à la casse
+exacte), `diff_check.py` (le commit ne contient que le renommage, octet pour octet).
+Les encodages cp1252 et les fins de ligne CRLF ont été préservés à chaque lot. La
+compilation R (rtools45) et l'exécution de scripts `Examples/R`/`Examples/Python`
+**sans modification** ont validé le gel de l'API.

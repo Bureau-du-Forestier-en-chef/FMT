@@ -521,13 +521,13 @@ namespace Spatial
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot use a non complete schedule ",
-					"FMTspatialschedule::getSchedules", __LINE__, __FILE__);
+					"FMTSpatialSchedule::getSchedules", __LINE__, __FILE__);
 			}
 			Schedules = p_Graphs.getSchedules(m_Tracker, withlock);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTspatialschedule::getSchedules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getSchedules", __LINE__, __FILE__);
 		}
 		return Schedules;
 	}

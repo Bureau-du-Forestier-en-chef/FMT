@@ -209,7 +209,10 @@ namespace Models
         {
             _exhandler->raiseFromCatch("", "FMTModelParameters::getstrparameters", __LINE__, __FILE__);
         }
-        return nullptr;
+        // Sentinelle atteinte seulement si le handler retrograde le raise : une reference
+        // statique reste valide (return nullptr construisait std::string(nullptr), UB).
+        static const std::string empty;
+        return empty;
     }
 
     int FMTModelParameters::getPeriodCompressTime(const int& period) const

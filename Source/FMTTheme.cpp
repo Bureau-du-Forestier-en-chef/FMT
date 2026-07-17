@@ -431,6 +431,9 @@ bool FMTTheme::operator == (const FMTTheme& p_rhs) const
 		 _exhandler->raiseFromCatch("", "FMTTheme::bitsToStr",
 			 __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
+	 // Atteint seulement si le handler retrograde un raise ci-dessus (sinon chaine
+	 // vide plutot qu'une valeur de retour indeterminee).
+	 return std::string();
 	}
 
  size_t FMTTheme::_getCount(const Core::FMTMask& p_mask) const

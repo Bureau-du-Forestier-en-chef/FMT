@@ -90,7 +90,7 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 		std::string getDisturbanceStats() const;
 		// DocString: FMTSesModel::greedyReferenceBuild
 		/**
-		This function call multiple time the function FMTspatialschedule::referenceBuild function to 
+		This function call multiple time the function FMTSpatialSchedule::referenceBuild function to 
 		find the best possible spatialisation for a given schedule using random draw. It uses a schedule of actions (schedule) on the actual
 		spatially explicit forest.  The user can also set the seed to get different solutions from the simulator.
 		*/

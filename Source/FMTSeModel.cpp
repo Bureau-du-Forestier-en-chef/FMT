@@ -316,7 +316,7 @@ namespace Models
 				Core::FMTMaskFilter presolveFilter = presolvedses->getPresolveFilter(themes);
 				const Core::FMTMask baseMask = this->getBaseMask(optionaldevelopments);
 				const boost::dynamic_bitset<uint8_t>&bitsets = baseMask.getBitsetReference();
-				//presolvedses->solution = Spatial::FMTspatialschedule(solution.getForestPeriod(0).presolve(presolvefilter, presolvedses->themes));
+				//presolvedses->solution = Spatial::FMTSpatialSchedule(solution.getForestPeriod(0).presolve(presolvefilter, presolvedses->themes));
 				const size_t LENGTH = static_cast<size_t>(getParameter(FMTintmodelparameters::LENGTH) + 2);
 				presolvedses->m_SpatialGraphs = Spatial::FMTSpatialGraphs(*presolvedses, m_BestSolution.getCellSize());
 				Spatial::FMTSpatialSchedule presolvedSolution = m_BestSolution.presolve(presolveFilter, presolvedses->m_SpatialGraphs, LENGTH);

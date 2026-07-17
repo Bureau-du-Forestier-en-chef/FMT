@@ -135,21 +135,21 @@ optimizationmodel$initialsolve()
 + En utilisant C++
 ``` C++
 #include <vector>
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
 
-Parser::FMTmodelparser modelparser;
+Parser::FMTModelParser modelparser;
 const std::vector<std::string>scenarios(1, "scenariox");
-const std::vector<Models::FMTmodel> models = modelparser.readproject("pathtoprimaryfile", scenarios);
-Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+const std::vector<Models::FMTModel> models = modelparser.readproject("pathtoprimaryfile", scenarios);
+Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 for (size_t period = 0; period < 10; ++period)
   {
   optimizationmodel.buildperiod();
   }
-std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
-const Core::FMTconstraint objective = constraints.at(0);
+std::vector<Core::FMTConstraint>constraints = optimizationmodel.getconstraints();
+const Core::FMTConstraint objective = constraints.at(0);
 constraints.erase(constraints.begin());
-for (const Core::FMTconstraint& constraint : constraints)
+for (const Core::FMTConstraint& constraint : constraints)
   {
   optimizationmodel.setconstraint(constraint);
   }
@@ -170,4 +170,4 @@ MSVC ![](https://img.shields.io/badge/coverage-0%25-red)
 
 ## 💻 Build
 GNU ![](https://img.shields.io/badge/build-pass-brightgreen)
-MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)n)n)
+MSVC ![](https://img.shields.io/badge/build-broken-red)n-red)n)n)n)
