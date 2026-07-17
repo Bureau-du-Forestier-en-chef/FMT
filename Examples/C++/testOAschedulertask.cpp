@@ -137,14 +137,14 @@ int main(int argc, char *argv[])
                 //fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02020265\\02_Travail_Realisme\\Carte\\PC_9943_UA_U08651.shp";
                 //results = std::vector<std::string> (1, "323_TYFSansPre_avsp");
                 //length = 20;
-                primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02031521\\PC_10067_U02571_2028_Corr_Vol_Phase2\\PC_10067_U02571_2028_MODB01.pri";
-                scenarios = std::vector<std::string> (1, "200_StratReg_apsp");
+                primarylocation = "D:/02_Travail_Realisme/02_Travail_Realisme/PC_9943_U08651_2028_MODB01.pri";
+                scenarios = std::vector<std::string> (1, "323_TYFSansPre_avsp");
                 boost::filesystem::path primpath(primarylocation);
                 const boost::filesystem::path basefolder = primpath.parent_path();
-                lfichierParam = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02031521\\02571_parametres_RP1_1.csv";
-                fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02031521\\PC_10067_U02571_2028_Corr_Vol_Phase2\\Carte\\PC_10067_UA_U02571_TIF_UTA.shp";
-                results = std::vector<std::string> (1, "200_StratReg_apsp");
-                length = 20;
+                lfichierParam = "D:/02_Travail_Realisme/02_Travail_Realisme/Parametres_Bfecopt.csv";
+                fichierShp = "D:/02_Travail_Realisme/02_Travail_Realisme/Carte/PC_9943_UA_U08651.shp";
+                results = std::vector<std::string> (1, "323_TYFSansPre_avsp");
+                length = 5;
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
