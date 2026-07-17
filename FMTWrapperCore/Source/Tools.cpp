@@ -168,7 +168,7 @@ std::vector<Core::FMTActualDevelopment> FMTWrapperCore::Tools::getRasterArea(con
 	// On vérifie si le fichier Standlock est présent
 	bool stanlockExists = false;
 	Parser::FMTAreaParser areaparser;
-	Spatial::FMTforest initialforestmap;
+	Spatial::FMTForest initialforestmap;
 	std::vector<Core::FMTActualDevelopment> area;
 
 	// On vérifie si le fichier standlock est présent

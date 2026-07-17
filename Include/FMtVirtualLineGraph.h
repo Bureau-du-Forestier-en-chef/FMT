@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTlinegraph;
+	class FMTLineGraph;
 }
 
 namespace Models
@@ -36,7 +36,7 @@ namespace Core
 namespace Spatial
 	{
 	template <typename T>
-	class FMTlayer;
+	class FMTLayer;
 	class FMTSolutionTracker;
 	class FMTEXPORT FMTVirtualLineGraph
 		{
@@ -52,8 +52,8 @@ namespace Spatial
 			bool operator == (const  FMTVirtualLineGraph& p_Element) const;
 			bool operator < (const  FMTVirtualLineGraph& p_Element) const;
 			size_t hash() const;
-			const Graph::FMTlinegraph& getLineGraph() const;
-			void setLineGraph(const Graph::FMTlinegraph& p_LineGraph,
+			const Graph::FMTLineGraph& getLineGraph() const;
+			void setLineGraph(const Graph::FMTLineGraph& p_LineGraph,
 							FMTSolutionTracker& p_solution);
 			double getOutput(const Models::FMTModel& p_model,
 				const FMTSolutionTracker& p_solution,
@@ -70,7 +70,7 @@ namespace Spatial
 			FMTSpatialGraphs::const_iterator m_Iterator;
 			size_t m_GraphFamily;
 			FMTSpatialGraphs* m_Graphs;
-			void _insertInto(const Graph::FMTlinegraph& p_LineGraph,
+			void _insertInto(const Graph::FMTLineGraph& p_LineGraph,
 					FMTSolutionTracker& p_solution);
 			void _add(FMTSolutionTracker& p_solution);
 			void _remove(FMTSolutionTracker& p_solution);

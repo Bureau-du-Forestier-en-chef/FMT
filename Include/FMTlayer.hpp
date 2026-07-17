@@ -18,14 +18,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 /// The spatial namespace provides classes for spatially explicit simulation/optimization based on raster files.
 namespace Spatial
     {
-	// DocString: FMTlayer
+	// DocString: FMTLayer
 	/**
-	FMTlayer is a simple template class made to be used like a single raster file.
+	FMTLayer is a simple template class made to be used like a single raster file.
 	It hold the coordinates of each pixel using a map, it also have information about the projection of the raster.
 	It is mostly generated using the FMTAreaParser.
 	*/
     template <typename T>
-    class FMTlayer : public Core::FMTObject
+    class FMTLayer : public Core::FMTObject
         {
 		friend class boost::serialization::access;
 		// DocString: FMTLifespans::serialize
@@ -44,121 +44,121 @@ namespace Spatial
 			ar & BOOST_SERIALIZATION_NVP(mapping);
 		}
         protected:
-		// DocString: FMTlayer::geotransform
+		// DocString: FMTLayer::geotransform
 		///Geotransform of the map (see GDAL for more information about Geotransform)
 		std::vector<double>geotransform;
-		// DocString: FMTlayer::maxx
+		// DocString: FMTLayer::maxx
 		///Maximal x value in the map
         unsigned int maxx;
-		// DocString: FMTlayer::maxy
+		// DocString: FMTLayer::maxy
 		///Maximal y value in the map
 		unsigned int maxy;
-		// DocString: FMTlayer::SRS_WKT
+		// DocString: FMTLayer::SRS_WKT
 		///Projection string of the raster (see GDAL for more information about Geotransform)
 		std::string SRS_WKT;
-		// DocString: FMTlayer::cellsize
+		// DocString: FMTLayer::cellsize
 		///Size of the pixel in the unit used by the map (SRS_WKT)
         double cellsize;
-		// DocString: FMTlayer::mapping
+		// DocString: FMTLayer::mapping
 		///std::map keeping the information of each pixel.
-		std::map<FMTcoordinate, T>mapping;
+		std::map<FMTCoordinate, T>mapping;
         public:
-			// DocString: FMTlayer::value_type
-			///Value typedef of the FMTlayer
-			typedef typename std::map<FMTcoordinate,T>::value_type value_type;
-			// DocString: FMTlayer::iterator
-			///Iterator typedef of the FMTlayer
-			typedef typename std::map<FMTcoordinate,T>::iterator iterator;
-			// DocString: FMTlayer::const_iterator
+			// DocString: FMTLayer::value_type
+			///Value typedef of the FMTLayer
+			typedef typename std::map<FMTCoordinate,T>::value_type value_type;
+			// DocString: FMTLayer::iterator
+			///Iterator typedef of the FMTLayer
+			typedef typename std::map<FMTCoordinate,T>::iterator iterator;
+			// DocString: FMTLayer::const_iterator
 			///Const_Iterator typedef of the FMTList
-			typedef typename std::map<FMTcoordinate,T>::const_iterator const_iterator;
-			// DocString: FMTlayer::operator[]
+			typedef typename std::map<FMTCoordinate,T>::const_iterator const_iterator;
+			// DocString: FMTLayer::operator[]
 			/**
-			Operator [] for FMTlayer accessing std::map (mapping).
+			Operator [] for FMTLayer accessing std::map (mapping).
 			*/
-			T& operator [](const FMTcoordinate& coordinate)
+			T& operator [](const FMTCoordinate& coordinate)
 				{
 				return mapping[coordinate];
 				}
-			// DocString: FMTlayer::at
+			// DocString: FMTLayer::at
 			/**
-			At for FMTlayer accessing std::map (mapping).
+			At for FMTLayer accessing std::map (mapping).
 			*/
-			const T& at(const FMTcoordinate& coordinate) const
+			const T& at(const FMTCoordinate& coordinate) const
 			{
 				return mapping.at(coordinate);
 			}
-			// DocString: FMTlayer::empty
+			// DocString: FMTLayer::empty
 			/**
-			Check if the FMTlayer is empty.
+			Check if the FMTLayer is empty.
 			*/
 			inline bool empty() const
 			{
 				return mapping.empty();
 			}
-			// DocString: FMTlayer::begin
+			// DocString: FMTLayer::begin
 			/**
-			Returns an iterator at the beginning of the FMTlayer.
+			Returns an iterator at the beginning of the FMTLayer.
 			*/
 			iterator begin()
 			{
 				return mapping.begin();
 			}
-			// DocString: FMTlayer::begin
+			// DocString: FMTLayer::begin
 			/**
-			Returns an const iterator at the beginning of the FMTlayer.
+			Returns an const iterator at the beginning of the FMTLayer.
 			*/
 			const_iterator begin() const
 			{
 				return mapping.begin();
 			}
-			// DocString: FMTlayer::end
+			// DocString: FMTLayer::end
 			/**
-			Returns an iterator at the end of the FMTlayer.
+			Returns an iterator at the end of the FMTLayer.
 			*/
 			iterator  end()
 			{
 				return mapping.end();
 			}
-			// DocString: FMTlayer::end
+			// DocString: FMTLayer::end
 			/**
-			Returns an const iterator at the end of the FMTlayer.
+			Returns an const iterator at the end of the FMTLayer.
 			*/
 			const_iterator end() const
 			{
 				return mapping.end();
 			}
-			// DocString: FMTlayer::find
+			// DocString: FMTLayer::find
 			/**
 			Find the layer element at a given coordinate.
 			*/
-			const_iterator find(const FMTcoordinate& coordinate) const
+			const_iterator find(const FMTCoordinate& coordinate) const
 			{
 				return mapping.find(coordinate);
 			}
-			// DocString: FMTlayer::find
+			// DocString: FMTLayer::find
 			/**
 			Find the layer element at a given coordinate.
 			*/
-			iterator find(const FMTcoordinate& coordinate)
+			iterator find(const FMTCoordinate& coordinate)
 			{
 				return mapping.find(coordinate);
 			}
-			// DocString: FMTlayer()
+			// DocString: FMTLayer()
 			/**
-			Default constructor for FMTlayer.
+			Default constructor for FMTLayer.
 			*/
-            FMTlayer():Core::FMTObject(),geotransform(),maxx(),maxy(),SRS_WKT(),cellsize(),mapping(){}
-			// DocString: ~FMTlayer()
+            FMTLayer():Core::FMTObject(),geotransform(),maxx(),maxy(),SRS_WKT(),cellsize(),mapping(){}
+			// DocString: ~FMTLayer()
 			/**
-			Default destructor for FMTlayer.
+			Default destructor for FMTLayer.
 			*/
-            virtual~FMTlayer()=default;
-			// DocString: FMTlayer(FMTlayer&&)
+            virtual~FMTLayer()=default;
+			// DocString: FMTLayer(FMTLayer&&)
 			/**
-			Default move constructor for FMTlayer.
+			Default move constructor for FMTLayer.
 			*/
-			FMTlayer(FMTlayer&& rhs) noexcept :
+			FMTLayer(FMTLayer&& rhs) noexcept :
 				Core::FMTObject(std::move(rhs)),
 				geotransform(std::move(rhs.geotransform)),
 				maxx(std::move(rhs.maxx)),
@@ -169,11 +169,11 @@ namespace Spatial
 					{
 			
 					}
-			// DocString: FMTlayer(const std::vector<double>&,const unsigned int&,const unsigned int&,const std::string&,const double&)
+			// DocString: FMTLayer(const std::vector<double>&,const unsigned int&,const unsigned int&,const std::string&,const double&)
 			/**
-			Constructor for the FMTlayer taking a geotransform, max x, max y, projection string and cell size.
+			Constructor for the FMTLayer taking a geotransform, max x, max y, projection string and cell size.
 			*/
-            FMTlayer(const std::vector<double>& lgeotransform,
+            FMTLayer(const std::vector<double>& lgeotransform,
                      const unsigned int& lmaxx,
                      const unsigned int& lmaxy,
                      const std::string& lSRS_WKT,
@@ -184,11 +184,11 @@ namespace Spatial
                      SRS_WKT(lSRS_WKT),
                      cellsize(lcellsize),
                      mapping(){}
-			// DocString: FMTlayer(const std::map<FMTcoordinate,T>&,const std::vector<double>&,const unsigned int&,const unsigned int&,const std::string&,const double&)
+			// DocString: FMTLayer(const std::map<FMTCoordinate,T>&,const std::vector<double>&,const unsigned int&,const unsigned int&,const std::string&,const double&)
 			/**
-			Constructor for the FMTlayer used to copy information from an other layer.
+			Constructor for the FMTLayer used to copy information from an other layer.
 			*/
-            FMTlayer(const std::map<FMTcoordinate,T>& lmapping,
+            FMTLayer(const std::map<FMTCoordinate,T>& lmapping,
                      const std::vector<double>& lgeotransform,
                      const unsigned int& lmaxx,
                      const unsigned int& lmaxy,
@@ -201,22 +201,22 @@ namespace Spatial
                              SRS_WKT(lSRS_WKT),
                              cellsize(lcellsize),
                              mapping(lmapping){}
-			// DocString: FMTlayer(const FMTlayer&)
+			// DocString: FMTLayer(const FMTLayer&)
 			/**
-			Default copy constructor for FMTlayer.
+			Default copy constructor for FMTLayer.
 			*/
-            FMTlayer(const FMTlayer& rhs):Core::FMTObject(rhs),
+            FMTLayer(const FMTLayer& rhs):Core::FMTObject(rhs),
                 geotransform(rhs.geotransform),
                 maxx(rhs.maxx),
                 maxy(rhs.maxy),
                 SRS_WKT(rhs.SRS_WKT),
                 cellsize(rhs.cellsize),
                 mapping(rhs.mapping){}
-			// DocString: FMTlayer::operator=
+			// DocString: FMTLayer::operator=
 			/**
-			Default copy assignment for FMTlayer.
+			Default copy assignment for FMTLayer.
 			*/
-            FMTlayer<T>& operator = (const FMTlayer<T>& rhs)
+            FMTLayer<T>& operator = (const FMTLayer<T>& rhs)
                 {
                 if(this!=&rhs)
                     {
@@ -230,11 +230,11 @@ namespace Spatial
                     }
                 return *this;
                 }
-			// DocString: FMTlayer::swap
+			// DocString: FMTLayer::swap
 			/**
-			Swap operator for FMTlayer.
+			Swap operator for FMTLayer.
 			*/
-			void swap(FMTlayer<T>& rhs)
+			void swap(FMTLayer<T>& rhs)
 				{
 				try {
 					mapping.swap(rhs.mapping);
@@ -245,15 +245,15 @@ namespace Spatial
 					std::swap(cellsize, rhs.cellsize);
 				}catch (...)
 					{
-					_exhandler->raiseFromCatch("", "FMTlayer::swap", __LINE__, __FILE__);
+					_exhandler->raiseFromCatch("", "FMTLayer::swap", __LINE__, __FILE__);
 					}
 				}
 
-			// DocString: FMTlayer::setExtentFrom
+			// DocString: FMTLayer::setExtentFrom
 			/**
 			Using an other layer (rhs) it's going to set the informations (other than the main map) to this.
 			*/
-			void setExtentFrom(const FMTlayer<T>& rhs)
+			void setExtentFrom(const FMTLayer<T>& rhs)
 				{
 				this->geotransform = rhs.geotransform;
 				this->maxx = rhs.maxx;
@@ -261,46 +261,46 @@ namespace Spatial
 				this->SRS_WKT = rhs.SRS_WKT;
 				this->cellsize = rhs.cellsize;
 				}
-			// DocString: FMTlayer::copyExtent
+			// DocString: FMTLayer::copyExtent
 			/**
-			Create a new FMTlayer by copying informations (other than the main map) to a new FMTlayer from this.
+			Create a new FMTLayer by copying informations (other than the main map) to a new FMTLayer from this.
 			*/
             template<typename newtype>
-            FMTlayer<newtype>copyExtent() const
+            FMTLayer<newtype>copyExtent() const
 
                 {
-                return FMTlayer<newtype>(std::map<FMTcoordinate,newtype>(),
+                return FMTLayer<newtype>(std::map<FMTCoordinate,newtype>(),
                                          this->geotransform,
                                          this->maxx,
                                          this->maxy,
                                          this->SRS_WKT,
                                          this->cellsize);
                 }
-			// DocString: FMTlayer::general
+			// DocString: FMTLayer::general
 			/**
 			Template specification for adding strings from a layer to a string layer using std::string operator+=.
 			*/
-			FMTlayer<T>& operator+= (const FMTlayer<T>& rhs)
+			FMTLayer<T>& operator+= (const FMTLayer<T>& rhs)
 			{
 				return *this;
 			}
-			// DocString: FMTlayer::getXSize
+			// DocString: FMTLayer::getXSize
 			/**
-			Returns the maximal x value of the FMTlayer.
+			Returns the maximal x value of the FMTLayer.
 			*/
             unsigned int getXSize() const
                 {
                 return maxx;
                 }
-			// DocString: FMTlayer::getYSize
+			// DocString: FMTLayer::getYSize
 			/**
-			Returns the maximal y value of the FMTlayer.
+			Returns the maximal y value of the FMTLayer.
 			*/
             unsigned int getYSize() const
                 {
                 return maxy;
                 }
-			// DocString: FMTlayer::getGeoTransform
+			// DocString: FMTLayer::getGeoTransform
 			/**
 			Returns the geotransform of the layer.
 			*/
@@ -308,31 +308,31 @@ namespace Spatial
                 {
                 return geotransform;
                 }
-			// DocString: FMTlayer::getProjection
+			// DocString: FMTLayer::getProjection
 			/**
-			Returns the projection of the FMTlayer.
+			Returns the projection of the FMTLayer.
 			*/
 			std::string getProjection() const
                 {
                 return SRS_WKT;
                 }
-			// DocString: FMTlayer::getMapping
+			// DocString: FMTLayer::getMapping
 			/**
-			Returns the underlying map of the FMTlayer.
+			Returns the underlying map of the FMTLayer.
 			*/
-			std::map<FMTcoordinate,T>getMapping() const
+			std::map<FMTCoordinate,T>getMapping() const
                 {
                 return mapping;
                 }
-			// DocString: FMTlayer::area
+			// DocString: FMTLayer::area
 			/**
-			Returns the whole area of the FMTlayer using the size of a pixel.
+			Returns the whole area of the FMTLayer using the size of a pixel.
 			*/
             double area() const
                 {
                 return (cellsize * static_cast<double>(mapping.size()));
                 }
-			// DocString: FMTlayer::getCellSize
+			// DocString: FMTLayer::getCellSize
 			/**
 			Get the cell size for a single coordinate of the map.
 			*/
@@ -340,14 +340,14 @@ namespace Spatial
 				{
 				return cellsize;
 				}
-			// DocString: FMTlayer::getAttributes
+			// DocString: FMTLayer::getAttributes
 			/**
-			Returns a vector of unique attributes present in the FMTlayer.
+			Returns a vector of unique attributes present in the FMTLayer.
 			*/
             std::vector<T>getAttributes() const
                 {
 				std::vector<T>unique_attributes;
-                for(typename std::map<FMTcoordinate,T>::const_iterator it = mapping.begin();it != mapping.end(); it++)
+                for(typename std::map<FMTCoordinate,T>::const_iterator it = mapping.begin();it != mapping.end(); it++)
                     {
                     if (std::find(unique_attributes.begin(),unique_attributes.end(),it->second)==unique_attributes.end())
                         {
@@ -356,23 +356,23 @@ namespace Spatial
                     }
                 return unique_attributes;
                 }
-			// DocString: FMTlayer::size
+			// DocString: FMTLayer::size
 			/**
-			Returns the size of the FMTlayer.
+			Returns the size of the FMTLayer.
 			*/
             size_t size() const
                 {
                 return mapping.size();
                 }
-			// DocString: FMTlayer::size
+			// DocString: FMTLayer::size
 			/**
-			Replaces values of a layer using iterators coming from an other FMTlayer.
+			Replaces values of a layer using iterators coming from an other FMTLayer.
 			*/
-            void replace(typename std::map<FMTcoordinate,T>::const_iterator first,typename std::map<FMTcoordinate,T>::const_iterator last)
+            void replace(typename std::map<FMTCoordinate,T>::const_iterator first,typename std::map<FMTCoordinate,T>::const_iterator last)
                 {
                 while (first!=last)
                     {
-                    typename std::map<FMTcoordinate,T>::iterator it = mapping.find(first->first);
+                    typename std::map<FMTCoordinate,T>::iterator it = mapping.find(first->first);
                     if (it != last)
                         {
                         it->second = first->second;
@@ -382,12 +382,12 @@ namespace Spatial
                 }
         };
 
-		template<> inline FMTlayer<std::string>& FMTlayer<std::string>::operator += (const FMTlayer<std::string>& rhs)
+		template<> inline FMTLayer<std::string>& FMTLayer<std::string>::operator += (const FMTLayer<std::string>& rhs)
 		{
-			std::map<FMTcoordinate, std::string>new_mapping;
-			for (std::map<FMTcoordinate, std::string>::const_iterator mit = mapping.begin(); mit != mapping.end(); mit++)
+			std::map<FMTCoordinate, std::string>new_mapping;
+			for (std::map<FMTCoordinate, std::string>::const_iterator mit = mapping.begin(); mit != mapping.end(); mit++)
 			{
-				std::map<FMTcoordinate, std::string>::const_iterator rhsit = rhs.mapping.find(mit->first);
+				std::map<FMTCoordinate, std::string>::const_iterator rhsit = rhs.mapping.find(mit->first);
 				if (rhsit != rhs.mapping.end())
 				{
 					new_mapping[mit->first] = (mit->second + "-" + rhsit->second);

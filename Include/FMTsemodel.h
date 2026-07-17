@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 	template <typename T>
-	class FMTlayer;
+	class FMTLayer;
 }
 
 namespace Models
@@ -48,12 +48,12 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		Copy constructor of FMTSeModel
 		*/
         FMTSeModel(const FMTSeModel& rhs);
-		// DocString: FMTSeModel(const FMTModel, const FMTforest)
+		// DocString: FMTSeModel(const FMTModel, const FMTForest)
 		/**
-		Parent constructor for FMTSeModel (easiest way to get information from a FMTModel) and with an FMTforest.
+		Parent constructor for FMTSeModel (easiest way to get information from a FMTModel) and with an FMTForest.
 		*/
-        FMTSeModel(const FMTModel& rhs,const Spatial::FMTforest& forest);
-		// DocString: FMTSeModel(const FMTModel, const FMTforest)
+        FMTSeModel(const FMTModel& rhs,const Spatial::FMTForest& forest);
+		// DocString: FMTSeModel(const FMTModel, const FMTForest)
 		/**
 		Parent constructor for FMTSeModel (easiest way to get information from a FMTModel)
 		*/
@@ -67,7 +67,7 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		/**
 		Getter returning a copy the actual spatial forest stades of each FMTDevelopment (map).
 		*/
-		Spatial::FMTforest getMapping() const;
+		Spatial::FMTForest getMapping() const;
 		// DocString: FMTSeModel::getSpSchedule
 		/**
 		Getter returning a copy of the spatially explicit solution.
@@ -93,7 +93,7 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		Setter of the initial forest state (spatial map of FMTDevelopment)
 		Has to be set before greedyreferencedbuild() is called.
 		*/
-        bool setInitialMapping(const Spatial::FMTforest& forest);
+        bool setInitialMapping(const Spatial::FMTForest& forest);
 		// DocString: FMTSeModel::logConstraintsInfeasibilities
 		/**
 		Log the constraints infeasibilities spatial or not spatial
@@ -107,7 +107,7 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		// DocString: FMTSeModel::presolve
 		/**
 		Presolve the semodel to get a more simple model call original presolve() and presolve the
-		FMTforest map and the spatial acitons.
+		FMTForest map and the spatial acitons.
 		*/
 		virtual std::unique_ptr<FMTModel>presolve(
 			std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
@@ -130,7 +130,7 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		/**
 		Get the spatial output value based on the spatial solution.
 		*/
-		virtual Spatial::FMTlayer<double> getSpatialOutput(const Core::FMTOutput& output,int period) const;
+		virtual Spatial::FMTLayer<double> getSpatialOutput(const Core::FMTOutput& output,int period) const;
 		// DocString: FMTSeModel::getSolution
 		/**
 		Get the standard solution for a given period (FMTSchedule dont have natural growth solution included).
@@ -222,9 +222,9 @@ class FMTEXPORT FMTSeModel : public FMTModel
 			//ar& BOOST_SERIALIZATION_NVP(m_BestSolution);
 		}
 		virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
-		void _buildArea(const Spatial::FMTforest& p_Forest);
+		void _buildArea(const Spatial::FMTForest& p_Forest);
 		void _buildGraphs(double p_cellSize);
-		void _buildSolution(const Spatial::FMTforest& p_Forest);
+		void _buildSolution(const Spatial::FMTForest& p_Forest);
 		void _copyGraphs(const Spatial::FMTSpatialGraphs& pToCopy);
 		void _copySolution(const Spatial::FMTSpatialSchedule& pToCopy);
 		double _getConstraintNumerator(size_t p_constraint) const;

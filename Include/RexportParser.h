@@ -60,7 +60,7 @@ void exportParser()
 	// writeForest est surchargé (worker chemins explicites vs. version dossier) : on fixe la surcharge
 	// à exposer (le worker à 6 args) via un pointeur typé, sinon &FMTAreaParser::writeForest est ambigu.
 	bool (Parser::FMTAreaParser::*writeForestPtr)(
-		const Spatial::FMTforest&, const std::vector<Core::FMTTheme>&,
+		const Spatial::FMTForest&, const std::vector<Core::FMTTheme>&,
 		const std::vector<std::string>&, const std::string&, const std::string&,
 		std::vector<std::map<std::string, std::string>>) const = &Parser::FMTAreaParser::writeForest;
 

@@ -10,20 +10,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 	{
-	FMTeventrelation::FMTeventrelation(const Spatial::FMTevent& fromevent, const Spatial::FMTevent& toevent) :
+	FMTEventRelation::FMTEventRelation(const Spatial::FMTEvent& fromevent, const Spatial::FMTEvent& toevent) :
 		fromaction(fromevent.getActionId()), toaction(toevent.getActionId()),
 		fromperiod(fromevent.getPeriod()), toperiod(toevent.getPeriod()),
 		fromcoord(*fromevent.midPosition()),tocoord(*toevent.midPosition())
 		{
 
 		}
-	bool FMTeventrelation::operator == (const FMTeventrelation& rhs) const
+	bool FMTEventRelation::operator == (const FMTEventRelation& rhs) const
 		{
 		return (fromaction == rhs.fromaction && toaction == rhs.toaction&&
 			fromperiod == rhs.fromperiod && toperiod == rhs.toperiod &&
 			fromcoord == rhs.tocoord);
 		}
-	size_t FMTeventrelation::hash() const
+	size_t FMTEventRelation::hash() const
 		{
 		size_t hash = 0;
 		boost::hash_combine(hash,fromaction);

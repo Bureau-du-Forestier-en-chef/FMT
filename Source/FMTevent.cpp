@@ -13,7 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 
-	FMTevent::FMTevent(const FMTcoordinate& p_location,
+	FMTEvent::FMTEvent(const FMTCoordinate& p_location,
                     int p_actionId,
                     int p_period,
                     size_t p_centroidGraphFamily):
@@ -27,9 +27,9 @@ namespace Spatial
 	}
 
 
-    std::set<FMTcoordinate>::const_iterator FMTevent::midPosition() const
+    std::set<FMTCoordinate>::const_iterator FMTEvent::midPosition() const
     {
-        std::set<FMTcoordinate>::const_iterator it = m_elements.begin();
+        std::set<FMTCoordinate>::const_iterator it = m_elements.begin();
         if (m_elements.size() > 1)
         {
             const size_t midlocation = (m_elements.size() / 2);
@@ -38,33 +38,33 @@ namespace Spatial
         return it;
     }
 
-    bool FMTevent::empty() const { return m_elements.empty(); }
+    bool FMTEvent::empty() const { return m_elements.empty(); }
 
 
-    size_t FMTevent::size() const { return m_elements.size(); }
+    size_t FMTEvent::size() const { return m_elements.size(); }
 
 
-    const int& FMTevent::getActionId() const { return m_actionId; }
+    const int& FMTEvent::getActionId() const { return m_actionId; }
 
-    const int& FMTevent::getPeriod() const { return m_period; }
+    const int& FMTEvent::getPeriod() const { return m_period; }
 
-    const size_t& FMTevent::getGraphFamily() const { return m_centroidGraphFamily; }
+    const size_t& FMTEvent::getGraphFamily() const { return m_centroidGraphFamily; }
 
-    const std::set<FMTcoordinate>& FMTevent::getElements() const
+    const std::set<FMTCoordinate>& FMTEvent::getElements() const
     {
         return m_elements;
     }
 
 
-    void FMTevent::setActionId(const int& laction_id) { m_actionId = laction_id; }
+    void FMTEvent::setActionId(const int& laction_id) { m_actionId = laction_id; }
 
 
 
 
-	bool FMTevent::operator == (const FMTevent& rhs) const
+	bool FMTEvent::operator == (const FMTEvent& rhs) const
     {
-        FMTcoordinate centroid = averageCentroid();
-        FMTcoordinate rhscentroid = rhs.averageCentroid();
+        FMTCoordinate centroid = averageCentroid();
+        FMTCoordinate rhscentroid = rhs.averageCentroid();
         if (m_period == rhs.m_period && 
             m_actionId == rhs.m_actionId && 
             centroid == rhscentroid)
@@ -72,7 +72,7 @@ namespace Spatial
                 //return true;
             if (size() == rhs.size() && getEnveloppe() == rhs.getEnveloppe())
                 {
-                for (std::set<FMTcoordinate>::const_iterator it = m_elements.begin(); it!= m_elements.end();it++)
+                for (std::set<FMTCoordinate>::const_iterator it = m_elements.begin(); it!= m_elements.end();it++)
                     {
                     if (rhs.m_elements.find(*it)==rhs.m_elements.end())
                         {
@@ -85,12 +85,12 @@ namespace Spatial
         return false;
     }
 
-	bool FMTevent::operator != (const FMTevent& rhs) const
+	bool FMTEvent::operator != (const FMTEvent& rhs) const
     {
     return (!(*this==rhs));
     }
 
-    bool FMTevent::operator<(const FMTevent& rhs) const
+    bool FMTEvent::operator<(const FMTEvent& rhs) const
     {
         //strict ordering
 		 if (m_period < rhs.m_period)
@@ -102,8 +102,8 @@ namespace Spatial
         {
             return false;
         }
-		 const std::set<FMTcoordinate>::const_iterator centroidit = midPosition();
-		 const std::set<FMTcoordinate>::const_iterator rhscentroidit = rhs.midPosition();
+		 const std::set<FMTCoordinate>::const_iterator centroidit = midPosition();
+		 const std::set<FMTCoordinate>::const_iterator rhscentroidit = rhs.midPosition();
          if (*centroidit < *rhscentroidit)
          {
             return true;
@@ -128,14 +128,14 @@ namespace Spatial
 
 	//https://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf
 	//metrics
-	size_t FMTevent::perimeter() const //gives perimeter
+	size_t FMTEvent::perimeter() const //gives perimeter
     {
     size_t total = 0;
-    for (std::set<FMTcoordinate>::const_iterator it = m_elements.begin(); it != m_elements.end(); it++)
+    for (std::set<FMTCoordinate>::const_iterator it = m_elements.begin(); it != m_elements.end(); it++)
         {
         for (int id = 0; id < 4; ++id)
             {
-            const FMTcoordinate neighbor= it->at(id);
+            const FMTCoordinate neighbor= it->at(id);
             if (m_elements.find(neighbor)== m_elements.end())
                 {
                 ++total;
@@ -146,41 +146,41 @@ namespace Spatial
     return total;
     }
 
-	size_t FMTevent::hash() const
+	size_t FMTEvent::hash() const
 		{
-		size_t hashs = boost::hash<Spatial::FMTcoordinate>()(*midPosition());
+		size_t hashs = boost::hash<Spatial::FMTCoordinate>()(*midPosition());
 		boost::hash_combine(hashs, m_actionId);
 		boost::hash_combine(hashs, m_period);
 		return hashs;
 		}
 
-	FMTeventrelation FMTevent::getRelation(const FMTevent& rhs) const
+	FMTEventRelation FMTEvent::getRelation(const FMTEvent& rhs) const
 	{
-		return FMTeventrelation(*this, rhs);
+		return FMTEventRelation(*this, rhs);
 	}
 
-	size_t FMTevent::height() const
+	size_t FMTEvent::height() const
     {
-    return FMTcoordinate::getHeight(getEnveloppe());
+    return FMTCoordinate::getHeight(getEnveloppe());
     }
 
-	size_t FMTevent::width() const
+	size_t FMTEvent::width() const
     {
-     return FMTcoordinate::getWidth(getEnveloppe());
+     return FMTCoordinate::getWidth(getEnveloppe());
     }
 
-	FMTcoordinate FMTevent::averageCentroid() const
+	FMTCoordinate FMTEvent::averageCentroid() const
     {
-    return FMTcoordinate::getAverageCentroid(getEnveloppe());
+    return FMTCoordinate::getAverageCentroid(getEnveloppe());
     }
 
-    std::string FMTevent::getStatsHeader()
+    std::string FMTEvent::getStatsHeader()
     {
         return "Size Perimeter Height Width";
     }
 
 
-	std::string FMTevent::getStats() const
+	std::string FMTEvent::getStats() const
     {
     return (std::to_string(size()) +" "+
         std::to_string(perimeter()) +" "+
@@ -188,7 +188,7 @@ namespace Spatial
         std::to_string(width()));
     }
 
-	void FMTevent::erase(const FMTcoordinate& newlocation)
+	void FMTEvent::erase(const FMTCoordinate& newlocation)
     {
     if (m_elements.find(newlocation)!= m_elements.end())
         {
@@ -196,22 +196,22 @@ namespace Spatial
         }
     }
 
-     void FMTevent::merge(const FMTevent& event)
+     void FMTEvent::merge(const FMTEvent& event)
      {
          m_elements.insert(event.m_elements.begin(),event.m_elements.end());
      }
 
-	void FMTevent::insert(const FMTcoordinate& newlocation)
+	void FMTEvent::insert(const FMTCoordinate& newlocation)
         {
-        m_elements.insert(Spatial::FMTcoordinate(newlocation));
+        m_elements.insert(Spatial::FMTCoordinate(newlocation));
         }
 
-	std::vector<std::set<FMTcoordinate>::const_iterator> FMTevent::ignit(const size_t& eventmaximalsize,
-		const std::set<FMTcoordinate>::const_iterator& ignit,
+	std::vector<std::set<FMTCoordinate>::const_iterator> FMTEvent::ignit(const size_t& eventmaximalsize,
+		const std::set<FMTCoordinate>::const_iterator& ignit,
         int p_actionId, int p_period, size_t p_centroidGraphFamily)
         {
         //add set period and set action id
-		std::vector<std::set<FMTcoordinate>::const_iterator>actives;
+		std::vector<std::set<FMTCoordinate>::const_iterator>actives;
         if ((1 <= eventmaximalsize))
             {
             //ignition = ignit;
@@ -225,17 +225,17 @@ namespace Spatial
 		return actives;
         }
 
-	bool FMTevent::spread(const size_t& eventminimalsize, const size_t& eventmaximalsize,
-		const size_t& neighboringsize, const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active)
+	bool FMTEvent::spread(const size_t& eventminimalsize, const size_t& eventmaximalsize,
+		const size_t& neighboringsize, const std::set<FMTCoordinate>& territory, std::vector<std::set<FMTCoordinate>::const_iterator> active)
         {
             while((m_elements.size() < eventmaximalsize) && (!active.empty()))
                 {
-                std::vector<std::set<FMTcoordinate>::const_iterator>::iterator coordit;
+                std::vector<std::set<FMTCoordinate>::const_iterator>::iterator coordit;
                 for(size_t id = 0; id < neighboringsize; ++id)
                     {
 					coordit = active.begin();
-                    const FMTcoordinate spread_coord = (*coordit)->at(static_cast<int>(id));
-					const std::set<FMTcoordinate>::const_iterator spreadit = territory.find(spread_coord);
+                    const FMTCoordinate spread_coord = (*coordit)->at(static_cast<int>(id));
+					const std::set<FMTCoordinate>::const_iterator spreadit = territory.find(spread_coord);
                     if(spreadit != territory.end() && m_elements.find(spread_coord) == m_elements.end())
                         {
                         if(std::find(active.begin(),active.end(), spreadit)==active.end())
@@ -260,20 +260,20 @@ namespace Spatial
         }
 
 
-    std::vector<std::pair<FMTcoordinate, FMTcoordinate>>FMTevent::getOutsideBordersPair() const
+    std::vector<std::pair<FMTCoordinate, FMTCoordinate>>FMTEvent::getOutsideBordersPair() const
     {
-        std::vector<std::pair<FMTcoordinate, FMTcoordinate>>Borders;
-        std::set<FMTcoordinate>OutsideCoordinates;
+        std::vector<std::pair<FMTCoordinate, FMTCoordinate>>Borders;
+        std::set<FMTCoordinate>OutsideCoordinates;
         for (const auto& IN_COORD : m_elements)
             {
             for (int i = 0; i < 4; ++i)
                 {
-                const FMTcoordinate LOOK_UP = IN_COORD.at(i);
+                const FMTCoordinate LOOK_UP = IN_COORD.at(i);
                 if (m_elements.find(LOOK_UP)==m_elements.end()&&
                     OutsideCoordinates.insert(LOOK_UP).second)
                     {
                     Borders.push_back(
-                        std::pair<FMTcoordinate, FMTcoordinate>(IN_COORD, LOOK_UP));
+                        std::pair<FMTCoordinate, FMTCoordinate>(IN_COORD, LOOK_UP));
 
                     }
                 }
@@ -281,14 +281,14 @@ namespace Spatial
         return Borders;
        }
 
-	std::vector<std::set<FMTcoordinate>::const_iterator>FMTevent::getBorders() const
+	std::vector<std::set<FMTCoordinate>::const_iterator>FMTEvent::getBorders() const
 	{
-		std::vector<std::set<FMTcoordinate>::const_iterator>borders;
-		for (std::set<FMTcoordinate>::const_iterator elemit = m_elements.begin(); elemit != m_elements.end(); elemit++)
+		std::vector<std::set<FMTCoordinate>::const_iterator>borders;
+		for (std::set<FMTCoordinate>::const_iterator elemit = m_elements.begin(); elemit != m_elements.end(); elemit++)
 		{
 			for (int id = 0; id < 4; ++id)
 			{
-				const FMTcoordinate neighbor = elemit->at(id);
+				const FMTCoordinate neighbor = elemit->at(id);
 				if (m_elements.find(neighbor) == m_elements.end())//Ok its borderelement
 				{
 					borders.push_back(elemit);
@@ -299,13 +299,13 @@ namespace Spatial
 		return borders;
 	}
 
-    std::array<FMTcoordinate, 4>FMTevent::getEnveloppe() const
+    std::array<FMTCoordinate, 4>FMTEvent::getEnveloppe() const
 		{
             
-        std::array<FMTcoordinate, 4>enveloppe{*m_elements.begin(),*m_elements.begin(),
+        std::array<FMTCoordinate, 4>enveloppe{*m_elements.begin(),*m_elements.begin(),
                                             *m_elements.begin(),*m_elements.begin()};
             
-		for (std::set<FMTcoordinate>::const_iterator border : getBorders())
+		for (std::set<FMTCoordinate>::const_iterator border : getBorders())
 			{
 			border->upEnveloppe(enveloppe);
 			}
@@ -313,16 +313,16 @@ namespace Spatial
 		}
 
 
-	void FMTevent::getClosesCoordinates(const FMTevent& rhs,
-		std::set<FMTcoordinate>::const_iterator& thiscoordinate,
-		std::set<FMTcoordinate>::const_iterator& rhscoordinate) const
+	void FMTEvent::getClosesCoordinates(const FMTEvent& rhs,
+		std::set<FMTCoordinate>::const_iterator& thiscoordinate,
+		std::set<FMTCoordinate>::const_iterator& rhscoordinate) const
 	{
-		const std::vector<std::set<FMTcoordinate>::const_iterator>rhsborders = rhs.getBorders();
+		const std::vector<std::set<FMTCoordinate>::const_iterator>rhsborders = rhs.getBorders();
 		double bestapproximation = std::numeric_limits<double>::infinity();
-		for (const std::set<FMTcoordinate>::const_iterator& coord : getBorders())
+		for (const std::set<FMTCoordinate>::const_iterator& coord : getBorders())
 		{
 			double approx = std::numeric_limits<double>::infinity();
-			std::set<FMTcoordinate>::const_iterator rhscoord = coord->closest(rhsborders, approx);
+			std::set<FMTCoordinate>::const_iterator rhscoord = coord->closest(rhsborders, approx);
 			if (approx < bestapproximation)
 			{
 				bestapproximation = approx;
@@ -333,31 +333,31 @@ namespace Spatial
 	}
 
 
-    double FMTevent::distance(const FMTevent& rhs) const
+    double FMTEvent::distance(const FMTEvent& rhs) const
 		{
-		std::set<FMTcoordinate>::const_iterator thiscoordinate;
-		std::set<FMTcoordinate>::const_iterator rhscoordinate;
+		std::set<FMTCoordinate>::const_iterator thiscoordinate;
+		std::set<FMTCoordinate>::const_iterator rhscoordinate;
 		getClosesCoordinates(rhs, thiscoordinate, rhscoordinate);
 		return thiscoordinate->distance(*rhscoordinate);
 		}
     
     template<typename T>
-	bool FMTevent::within(const T& dist, const FMTevent& rhs) const
+	bool FMTEvent::within(const T& dist, const FMTEvent& rhs) const
 	{
         if(dist<0)
         {
             //raise
         }
-		const std::set<FMTcoordinate>::const_iterator center = midPosition();
-		const std::set<FMTcoordinate>::const_iterator rhscenter = rhs.midPosition();
+		const std::set<FMTCoordinate>::const_iterator center = midPosition();
+		const std::set<FMTCoordinate>::const_iterator rhscenter = rhs.midPosition();
 		if (center->within<T>(dist, *rhscenter))
 		{
 			return true;
 		}else
 			{
-			for (std::set<FMTcoordinate>::const_iterator coord = m_elements.begin();coord!= m_elements.end();++coord)
+			for (std::set<FMTCoordinate>::const_iterator coord = m_elements.begin();coord!= m_elements.end();++coord)
 			{
-				for (std::set<FMTcoordinate>::const_iterator rhscoord = rhs.m_elements.begin(); rhscoord != rhs.m_elements.end(); ++rhscoord)
+				for (std::set<FMTCoordinate>::const_iterator rhscoord = rhs.m_elements.begin(); rhscoord != rhs.m_elements.end(); ++rhscoord)
 				{
 					if (coord->within<T>(dist, *rhscoord))
 					{
@@ -368,24 +368,24 @@ namespace Spatial
 			}
 			return false;
 		}
-    template bool FMTevent::within<size_t>(const size_t& dist, const FMTevent& rhs) const;
-    template bool FMTevent::within<unsigned int>(const unsigned int& dist, const FMTevent& rhs) const;
-    template bool FMTevent::within<double>(const double& dist, const FMTevent& rhs) const;
-    template bool FMTevent::within<uint16_t>(const uint16_t& dist, const FMTevent& rhs) const;
+    template bool FMTEvent::within<size_t>(const size_t& dist, const FMTEvent& rhs) const;
+    template bool FMTEvent::within<unsigned int>(const unsigned int& dist, const FMTEvent& rhs) const;
+    template bool FMTEvent::within<double>(const double& dist, const FMTEvent& rhs) const;
+    template bool FMTEvent::within<uint16_t>(const uint16_t& dist, const FMTEvent& rhs) const;
 
     template<typename T>
-    bool FMTevent::within(const T& dist, const FMTcoordinate& location) const
+    bool FMTEvent::within(const T& dist, const FMTCoordinate& location) const
     {
         if(dist<0)
         {
             //raise
         }
-        const std::set<FMTcoordinate>::const_iterator center = midPosition();
+        const std::set<FMTCoordinate>::const_iterator center = midPosition();
         if(center->within(dist,location))
             {
             return true;
         }else{
-            for (std::set<FMTcoordinate>::const_iterator elemit = m_elements.begin(); elemit != m_elements.end(); elemit++)
+            for (std::set<FMTCoordinate>::const_iterator elemit = m_elements.begin(); elemit != m_elements.end(); elemit++)
                 {
                 if (elemit->within(dist, location))
                     {
@@ -395,24 +395,24 @@ namespace Spatial
             }
         return false;
     }
-    template bool FMTevent::within<unsigned int>(const unsigned int& dist, const FMTcoordinate& location) const;
-    template bool FMTevent::within<double>(const double& dist, const FMTcoordinate& location) const;
-    template bool FMTevent::within<uint16_t>(const uint16_t& dist, const FMTcoordinate& location) const;
+    template bool FMTEvent::within<unsigned int>(const unsigned int& dist, const FMTCoordinate& location) const;
+    template bool FMTEvent::within<double>(const double& dist, const FMTCoordinate& location) const;
+    template bool FMTEvent::within<uint16_t>(const uint16_t& dist, const FMTCoordinate& location) const;
 
-    bool FMTevent::contain(const FMTcoordinate& coord)const
+    bool FMTEvent::contain(const FMTCoordinate& coord)const
     {
         return (m_elements.find(coord) != m_elements.end());
     }
 
 
-    bool FMTevent::willSplitEvent(const FMTcoordinate& p_coordinate) const
+    bool FMTEvent::willSplitEvent(const FMTCoordinate& p_coordinate) const
         {
         bool returned = false;
         if (size()>2)
             {
-            FMTevent subEvent(*this);
+            FMTEvent subEvent(*this);
             subEvent.erase(p_coordinate);
-            std::queue<FMTcoordinate>activeCoordinates;
+            std::queue<FMTCoordinate>activeCoordinates;
             activeCoordinates.push(*subEvent.m_elements.begin());
             subEvent.erase(*subEvent.m_elements.begin());
             while (!subEvent.m_elements.empty() &&
@@ -420,7 +420,7 @@ namespace Spatial
                 {
                 for (int i = 0; i < 8; ++i)
                     {
-                    FMTcoordinate iCoord = activeCoordinates.front().at(i);
+                    FMTCoordinate iCoord = activeCoordinates.front().at(i);
                     if (subEvent.contain(iCoord))
                         {
                         activeCoordinates.push(iCoord);
@@ -434,32 +434,32 @@ namespace Spatial
         return returned;
         }
 
-	std::set<FMTcoordinate>FMTevent::getTerritory(const size_t& distance) const
+	std::set<FMTCoordinate>FMTEvent::getTerritory(const size_t& distance) const
 	{
-        return FMTcoordinate::getTerritory(getEnveloppe(), distance);
+        return FMTCoordinate::getTerritory(getEnveloppe(), distance);
 	}
 
-    bool FMTevent::splitEvent(std::vector<FMTevent>& splittedevents) const
+    bool FMTEvent::splitEvent(std::vector<FMTEvent>& splittedevents) const
     {
-        std::queue<FMTcoordinate> active;
-        std::set<FMTcoordinate> coordinates = m_elements;
+        std::queue<FMTCoordinate> active;
+        std::set<FMTCoordinate> coordinates = m_elements;
         active.push(*coordinates.begin());
-        boost::unordered_set<FMTcoordinate>ActivesSeen;
+        boost::unordered_set<FMTCoordinate>ActivesSeen;
         while(!coordinates.empty())
         {
-            FMTevent newevent(active.front(), m_actionId,
+            FMTEvent newevent(active.front(), m_actionId,
                 m_period,m_centroidGraphFamily);
             while(!active.empty())
             {
                 //Kind of a spread to create new event
-                const FMTcoordinate& COORDINATE = active.front();
+                const FMTCoordinate& COORDINATE = active.front();
                 coordinates.erase(COORDINATE);
                 newevent.insert(COORDINATE);
                 if (!coordinates.empty())
                 {
                     for (unsigned int i = 0; i < 8u; ++i)
                     {
-                        const FMTcoordinate NEIGHBOR = COORDINATE.at(i);
+                        const FMTCoordinate NEIGHBOR = COORDINATE.at(i);
                         if (ActivesSeen.find(NEIGHBOR) == ActivesSeen.end() &&
                             coordinates.find(NEIGHBOR) != coordinates.end())
                         {
@@ -475,7 +475,7 @@ namespace Spatial
             }
             //If there is no more actives put the event in the vector and find the next coord not in an event
             splittedevents.push_back(newevent);
-            for (std::set<FMTcoordinate>::const_iterator ait=coordinates.begin();ait!=coordinates.end();++ait)
+            for (std::set<FMTCoordinate>::const_iterator ait=coordinates.begin();ait!=coordinates.end();++ait)
             {
                 if (coordinates.find(*ait)!=coordinates.end())
                 {

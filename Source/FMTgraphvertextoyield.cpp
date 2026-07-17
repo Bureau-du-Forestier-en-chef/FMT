@@ -12,7 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 
-	FMTgraphvertextoyield::FMTgraphvertextoyield(const Models::FMTModel& model,const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>& linegraph,const void* lvertex) :
+	FMTGraphVertexToYield::FMTGraphVertexToYield(const Models::FMTModel& model,const FMTGraph<FMTBaseVertexProperties,FMTBaseEdgeProperties>& linegraph,const void* lvertex) :
 		graph(reinterpret_cast<const void* const>(&linegraph)),
 		vertex(lvertex),
 		graphtype(FMTgraphrequest::linegraph),
@@ -20,7 +20,7 @@ namespace Graph
 	{
 		
 	}
-	FMTgraphvertextoyield::FMTgraphvertextoyield():
+	FMTGraphVertexToYield::FMTGraphVertexToYield():
 		graph(nullptr),
 		vertex(nullptr),
 		graphtype(FMTgraphrequest::nograph),
@@ -29,7 +29,7 @@ namespace Graph
 
 	}
 
-	FMTgraphvertextoyield::FMTgraphvertextoyield(const Models::FMTModel& model,const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex) :
+	FMTGraphVertexToYield::FMTGraphVertexToYield(const Models::FMTModel& model,const FMTGraph<FMTVertexProperties, FMTEdgeProperties>& fullgraph,const void* lvertex) :
 		graph(reinterpret_cast<const void* const>(&fullgraph)),
 		vertex(lvertex),
 		graphtype(FMTgraphrequest::fullgraph),
@@ -38,24 +38,24 @@ namespace Graph
 		 
 	}
 
-	const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>* const FMTgraphvertextoyield::getLineGraph() const
+	const FMTGraph<FMTBaseVertexProperties,FMTBaseEdgeProperties>* const FMTGraphVertexToYield::getLineGraph() const
 	{
 		if (graphtype == FMTgraphrequest::linegraph)
 		{
-			return reinterpret_cast<const Graph::FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>* const>(graph);
+			return reinterpret_cast<const Graph::FMTGraph<FMTBaseVertexProperties,FMTBaseEdgeProperties>* const>(graph);
 		}
 		return nullptr;
 	}
-	const FMTgraph<FMTvertexproperties,FMTedgeproperties>* const FMTgraphvertextoyield::getFullGraph() const
+	const FMTGraph<FMTVertexProperties,FMTEdgeProperties>* const FMTGraphVertexToYield::getFullGraph() const
 	{
 		if (graphtype == FMTgraphrequest::fullgraph)
 		{
-			return reinterpret_cast<const FMTgraph<FMTvertexproperties,FMTedgeproperties>* const>(graph);
+			return reinterpret_cast<const FMTGraph<FMTVertexProperties,FMTEdgeProperties>* const>(graph);
 		}
 		return nullptr;
 	}
 
-	const Models::FMTModel* FMTgraphvertextoyield::getModel() const
+	const Models::FMTModel* FMTGraphVertexToYield::getModel() const
 	{
 		return modelptr;
 	}

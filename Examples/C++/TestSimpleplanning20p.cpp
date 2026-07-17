@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
    
 		Models::FMTsolverinterface solverinterface = Models::FMTsolverinterface::CLP;
-        if(Version::FMTversion::hasFeature("MOSEK"))
+        if(Version::FMTVersion::hasFeature("MOSEK"))
         {
 			solverinterface = Models::FMTsolverinterface::MOSEK;
         }

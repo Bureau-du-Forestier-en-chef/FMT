@@ -20,7 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTgraphvertextoyield;
+	class FMTGraphVertexToYield;
 }
 
 
@@ -182,21 +182,21 @@ class FMTEXPORT FMTDevelopment : public FMTObject
         FMTFuturDevelopment grow() const;
 		// DocString: FMTDevelopment::getYieldRequest
 		/**
-		Get a yieldrequest without any reference to a FMTgraph for a given (ylds) and this FMTDevelopment.
+		Get a yieldrequest without any reference to a FMTGraph for a given (ylds) and this FMTDevelopment.
 		*/
-		FMTYieldRequest getYieldRequest(const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
+		FMTYieldRequest getYieldRequest(const Graph::FMTGraphVertexToYield* graphyieldrequest = nullptr) const;
 		// DocString: FMTDevelopment::operable
 		/**
 		Check if this FMTDevelopment is operable to an FMTAction (action) based on multiple yields (yields).
 		*/
         bool operable(const FMTAction& action,const Core::FMTYields& ylds,
-			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
+			const Graph::FMTGraphVertexToYield* graphyieldrequest = nullptr) const;
 		// DocString: FMTDevelopment::anyOperable
 		/**
 		Check if this FMTDevelopment is operable to any of FMTAction in the (actions) vector based on multiple yields (yields).
 		*/
 		bool anyOperable(const std::vector<const FMTAction*>& actions, const Core::FMTYields& ylds,
-			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
+			const Graph::FMTGraphVertexToYield* graphyieldrequest = nullptr) const;
 		// DocString: FMTDevelopment::operator std::string
 		/**
 		Returns the string reprensentation of a FMTDevelopment like in the area section.
@@ -227,7 +227,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		The amount of (yield) do this FMTDevelopment has.
 		*/
 		double getInventoryCoef(const Core::FMTYields& ylds,const std::string& target_yield,
-			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
+			const Graph::FMTGraphVertexToYield* graphyieldrequest = nullptr) const;
 		// DocString: FMTDevelopment::getHarvestCoef
 		/**
 		Returns the harvest coefficiant of the FMTDevelopment for a given yield (target_yield) if it follows
@@ -236,13 +236,13 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		*/
 		double getHarvestCoef(const std::vector<FMTDevelopmentPath>& topaths,
 			const FMTAction& action,const Core::FMTYields& ylds,const std::string& target_yield,
-			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
+			const Graph::FMTGraphVertexToYield* graphyieldrequest = nullptr) const;
 		// DocString: FMTDevelopment::is
 		/**
 		Check if this FMTDevelopment respects some specifications based on multiple yields.
 		*/
 		bool is(const FMTSpec& specification, const Core::FMTYields& ylds,
-			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
+			const Graph::FMTGraphVertexToYield* graphyieldrequest = nullptr) const;
 		// DocString: FMTDevelopment::worthTestingOperability
 		/**
 		This function returns true if the function worth testing for operability for the action.

@@ -19,218 +19,218 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
-class FMTeventrelation;
-// DocString: FMTevent
+class FMTEventRelation;
+// DocString: FMTEvent
 /**
-This is the base class use to create FMTsaevent or FMTsesevent. It is a set of FMTcoordinate (elements)
+This is the base class use to create FMTsaevent or FMTsesevent. It is a set of FMTCoordinate (elements)
 corresponding to the FMTcoordinates presents in the event.
 */
-class FMTEXPORT FMTevent
+class FMTEXPORT FMTEvent
     {
     public:
-		// DocString: FMTevent::midPosition()
+		// DocString: FMTEvent::midPosition()
 		/**
 		Get mid point of elements.
 		*/
-        std::set<FMTcoordinate>::const_iterator midPosition() const;
-        // DocString: ~FMTevent()
+        std::set<FMTCoordinate>::const_iterator midPosition() const;
+        // DocString: ~FMTEvent()
         /**
         Destructor
         */
-        ~FMTevent() = default;
-        // DocString: FMTevent(const FMTevent&)
+        ~FMTEvent() = default;
+        // DocString: FMTEvent(const FMTEvent&)
         /**
         Copy constructor
         */
-        FMTevent(const FMTevent& rhs) = default;
-        // DocString: FMTevent::operator=
+        FMTEvent(const FMTEvent& rhs) = default;
+        // DocString: FMTEvent::operator=
         /**
         Copy assignment operator
         */
-        FMTevent& operator=(const FMTevent& rhs) = default;
-        // DocString: FMTevent()
+        FMTEvent& operator=(const FMTEvent& rhs) = default;
+        // DocString: FMTEvent()
         /**
         Constructor
         */
-        FMTevent() = default;
-		// DocString: FMTsaevent(const FMTcoordinate&,const int&,const int&)
+        FMTEvent() = default;
+		// DocString: FMTsaevent(const FMTCoordinate&,const int&,const int&)
         /**
         Constructor with coordinate, action_id and period
         */
-        FMTevent(const FMTcoordinate& p_location,
+        FMTEvent(const FMTCoordinate& p_location,
             int p_actionId,
             int p_period,
             size_t p_centroidGraphFamily);
-        // DocString: FMTevent::empty()
+        // DocString: FMTEvent::empty()
         /**
         Test whether event is empty
         */
         bool empty() const;
-        // DocString: FMTevent::size()
+        // DocString: FMTEvent::size()
         /**
         Return event size
         */
         size_t size() const;
-        // DocString: FMTevent::hash()
+        // DocString: FMTEvent::hash()
         /**
 
         */
 		size_t hash() const;
-		// DocString: FMTevent::getRelation(const FMTevent&)
+		// DocString: FMTEvent::getRelation(const FMTEvent&)
 		/**
 
 		*/
-		FMTeventrelation getRelation(const FMTevent& rhs) const;
-        // DocString: FMTevent::operator==(const FMTevent&)
+		FMTEventRelation getRelation(const FMTEvent& rhs) const;
+        // DocString: FMTEvent::operator==(const FMTEvent&)
         /**
         Comparison operator equal to
         */
-        bool operator==(const FMTevent& rhs) const;
-        // DocString: FMTevent::operator!=(const FMTevent&)
+        bool operator==(const FMTEvent& rhs) const;
+        // DocString: FMTEvent::operator!=(const FMTEvent&)
         /**
         Comparison operator different than
         */
-        bool operator!=(const FMTevent& rhs) const;
-        // DocString: FMTevent::operator<(const FMTevent&)
+        bool operator!=(const FMTEvent& rhs) const;
+        // DocString: FMTEvent::operator<(const FMTEvent&)
         /**
         Comparison operator less than
         */
-        bool operator<(const FMTevent& rhs) const;
-        // DocString: FMTevent::perimeter()
+        bool operator<(const FMTEvent& rhs) const;
+        // DocString: FMTEvent::perimeter()
         /**
         The perimeter of the event, including any internal holes in the
         event.
         */
         size_t perimeter() const;
-        // DocString: FMTevent::height()
+        // DocString: FMTEvent::height()
         /**
         Return height of the event
         */
         size_t height() const;
-        // DocString: FMTevent::width()
+        // DocString: FMTEvent::width()
         /**
         Return width of the event
         */
         size_t width() const;
-        // DocString: FMTevent::averageCentroid()
+        // DocString: FMTEvent::averageCentroid()
         /**
         Return centroid based on the envelope of the event
         */
-        FMTcoordinate averageCentroid() const;
-        // DocString: FMTevent::getStatsHeader()
+        FMTCoordinate averageCentroid() const;
+        // DocString: FMTEvent::getStatsHeader()
         /**
         Return the header of the patch stats (size, perimeter, height and width)
         */
         static std::string getStatsHeader();
-        // DocString: FMTevent::getStats()
+        // DocString: FMTEvent::getStats()
         /**
         Return string containing size, perimeter, height and width
         */
         std::string getStats() const;
-        // DocString: FMTevent::erase(const FMTcoordinate&)
+        // DocString: FMTEvent::erase(const FMTCoordinate&)
         /**
         Erase coordinate from event
         */
-        virtual void erase(const FMTcoordinate& newlocation);
-        // DocString: FMTevent::merge(const FMTevent& event)
+        virtual void erase(const FMTCoordinate& newlocation);
+        // DocString: FMTEvent::merge(const FMTEvent& event)
         /**
         Merge two events
         */
-        virtual void merge(const FMTevent& event);
-        // DocString: FMTevent::insert(const FMTcoordinate&)
+        virtual void merge(const FMTEvent& event);
+        // DocString: FMTEvent::insert(const FMTCoordinate&)
         /**
         Insert coordinate in the event
         */
-        virtual void insert(const FMTcoordinate& newlocation);
-        // DocString: FMTevent::setActionId(const int&)
+        virtual void insert(const FMTCoordinate& newlocation);
+        // DocString: FMTEvent::setActionId(const int&)
         /**
         Setter for action id
         */
         void setActionId(const int& laction_id);
-        // DocString: FMTevent::getActionId()
+        // DocString: FMTEvent::getActionId()
         /**
         Getter of the action id
         */
         const int& getActionId() const;
-        // DocString: FMTevent::getPeriod()
+        // DocString: FMTEvent::getPeriod()
         /**
         Getter of the period
         */
         const int& getPeriod() const;
-        // DocString: FMTevent::getGraphFamily()
+        // DocString: FMTEvent::getGraphFamily()
         /**
         Getter for the graph family
         */
         const size_t& getGraphFamily() const;
-        // DocString: FMTevent::getElements
+        // DocString: FMTEvent::getElements
         /**
         @brief Getter of the period
         @return The event elements
         */
-        const std::set<FMTcoordinate>& getElements() const;
-        // DocString: FMTevent::ignit(const FMTspatialaction&, const FMTcoordinate&, const int&, const int&)
+        const std::set<FMTCoordinate>& getElements() const;
+        // DocString: FMTEvent::ignit(const FMTspatialaction&, const FMTCoordinate&, const int&, const int&)
         /**
 
         */
-        virtual std::vector<std::set<FMTcoordinate>::const_iterator> ignit(const size_t& eventmaximalsize,
-            const std::set<FMTcoordinate>::const_iterator& ignit, int p_actionId, int p_period, size_t p_GraphFamily);
-        // DocString: FMTevent::spread(const size_t& eventminimalsize,const size_t& eventmaximalsize,const size_t& neighboringsize,const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active)
+        virtual std::vector<std::set<FMTCoordinate>::const_iterator> ignit(const size_t& eventmaximalsize,
+            const std::set<FMTCoordinate>::const_iterator& ignit, int p_actionId, int p_period, size_t p_GraphFamily);
+        // DocString: FMTEvent::spread(const size_t& eventminimalsize,const size_t& eventmaximalsize,const size_t& neighboringsize,const std::set<FMTCoordinate>& territory, std::vector<std::set<FMTCoordinate>::const_iterator> active)
         /**
 
         */
         virtual bool spread(const size_t& eventminimalsize,const size_t& eventmaximalsize,
-			const size_t& neighboringsize,const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active);
-        // DocString: FMTevent::distance(const FMTevent&)
+			const size_t& neighboringsize,const std::set<FMTCoordinate>& territory, std::vector<std::set<FMTCoordinate>::const_iterator> active);
+        // DocString: FMTEvent::distance(const FMTEvent&)
         /**
         Return the distance between this event and the event pass as argument
         */
-        double distance(const FMTevent& rhs) const;
-        // DocString: FMTevent::within(unsigned int, const FMTevent&)
+        double distance(const FMTEvent& rhs) const;
+        // DocString: FMTEvent::within(unsigned int, const FMTEvent&)
         /**
         Return true if the event is within specified distance of the envelope
         */
         template<typename T>
-        bool within(const T& dist, const FMTevent& rhs) const;
-        // DocString: FMTevent::withinc(unsigned int, const FMTcoordinate&)
+        bool within(const T& dist, const FMTEvent& rhs) const;
+        // DocString: FMTEvent::withinc(unsigned int, const FMTCoordinate&)
         /**
         Return true if coordinate is within specified distance of the coordinates
         */
         template<typename T>
-        bool within(const T& dist, const FMTcoordinate& location) const;
-        // DocString: FMTevent::contain(const FMTcoordinate&)
+        bool within(const T& dist, const FMTCoordinate& location) const;
+        // DocString: FMTEvent::contain(const FMTCoordinate&)
         /**
         Return true if coordinate is in elements
         */
-        bool contain(const FMTcoordinate& coord)const;
-        // DocString: FMTevent::willSplitEvent(const FMTcoordinate&)
+        bool contain(const FMTCoordinate& coord)const;
+        // DocString: FMTEvent::willSplitEvent(const FMTCoordinate&)
         /**
         @param[in] p_coordinate the coordinate that will be removed
         @return true if it will split the event
         */
-        bool willSplitEvent(const FMTcoordinate& p_coordinate) const;
-        // DocString: FMTevent::splitEvent(const unsigned int&, std::vector<FMTsaevent>&)
+        bool willSplitEvent(const FMTCoordinate& p_coordinate) const;
+        // DocString: FMTEvent::splitEvent(const unsigned int&, std::vector<FMTsaevent>&)
         /**
         Check if events are split and fill vector of split events
         Remove all elements from the current event and put it in the events in splittedevents
         */
-        bool splitEvent(std::vector<FMTevent>& splittedevents) const;
-		// DocString: FMTevent::getTerritory
+        bool splitEvent(std::vector<FMTEvent>& splittedevents) const;
+		// DocString: FMTEvent::getTerritory
 	   /**
 		Returns the adjacent territory of the event base on a distance.
 	   */
-		std::set<FMTcoordinate>getTerritory(const size_t& distance) const;
-		// DocString: FMTevent::getBorders
+		std::set<FMTCoordinate>getTerritory(const size_t& distance) const;
+		// DocString: FMTEvent::getBorders
 	   /**
 		Returns coordinate of the border of the even
 	   */
-		std::vector<std::set<FMTcoordinate>::const_iterator>getBorders() const;
-        // DocString: FMTevent::getOutsideBorders
+		std::vector<std::set<FMTCoordinate>::const_iterator>getBorders() const;
+        // DocString: FMTEvent::getOutsideBorders
        /**
         @brief get ouside borders of the event
         @return a set of coordinates
        */
-        std::vector<std::pair<FMTcoordinate,FMTcoordinate>>getOutsideBordersPair() const;
-		// DocString: FMTevent::getenveloppe
+        std::vector<std::pair<FMTCoordinate,FMTCoordinate>>getOutsideBordersPair() const;
+		// DocString: FMTEvent::getenveloppe
 		/**
 		Coordinates that create the envelope of the event
 		//0//-//1//
@@ -238,14 +238,14 @@ class FMTEXPORT FMTevent
 		//2//-//3//
 		Returns coordinate of the enveloppe
 		*/
-		std::array<FMTcoordinate,4>getEnveloppe() const;
-		// DocString: FMTevent::getclosescoordinate
+		std::array<FMTCoordinate,4>getEnveloppe() const;
+		// DocString: FMTEvent::getclosescoordinate
 		/**
-		Return the closes coordinate between two FMTevent
+		Return the closes coordinate between two FMTEvent
 		*/
-		void getClosesCoordinates(const FMTevent& rhs,
-			std::set<FMTcoordinate>::const_iterator& thiscoordinate,
-			std::set<FMTcoordinate>::const_iterator& rhscoordinate) const;
+		void getClosesCoordinates(const FMTEvent& rhs,
+			std::set<FMTCoordinate>::const_iterator& thiscoordinate,
+			std::set<FMTCoordinate>::const_iterator& rhscoordinate) const;
     private:
         friend class boost::serialization::access;
         template<class Archive>
@@ -255,26 +255,26 @@ class FMTEXPORT FMTevent
             ar& BOOST_SERIALIZATION_NVP(m_period);
             ar& BOOST_SERIALIZATION_NVP(m_elements);
         }
-        // DocString: FMTevent::m_actionId
+        // DocString: FMTEvent::m_actionId
         /**
         Action id from the FMTModel.
         */
         int m_actionId;
-        // DocString: FMTevent::m_period
+        // DocString: FMTEvent::m_period
         /**
         Period at which the event take place
         */
         int m_period;
-        // DocString: FMTevent::m_centroidGraphFamily
+        // DocString: FMTEvent::m_centroidGraphFamily
         /**
         The graph family of the centroid
         */
         size_t m_centroidGraphFamily;
-        // DocString: FMTevent::m_elements
+        // DocString: FMTEvent::m_elements
         /**
         Coordinates presents in the event
        */
-        std::set<FMTcoordinate>m_elements;
+        std::set<FMTCoordinate>m_elements;
     };
 
 }
@@ -282,9 +282,9 @@ class FMTEXPORT FMTevent
 namespace boost {
 
     template <>
-    struct hash<Spatial::FMTevent>
+    struct hash<Spatial::FMTEvent>
     {
-    std::size_t operator()(const Spatial::FMTevent& event) const
+    std::size_t operator()(const Spatial::FMTEvent& event) const
 		 {
        return (event.hash());
 		}

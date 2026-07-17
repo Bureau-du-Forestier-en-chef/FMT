@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTgraphvertextoyield;
+	class FMTGraphVertexToYield;
 }
 
 
@@ -31,7 +31,7 @@ namespace Core
 	// DocString: FMTYieldRequest
 	/**
 	Using a pointer to a given graph and a FMTDevelopment you can create thise class to request yield values.
-	The yield will be calculated using the FMTYields class but also using the FMTgraph so the location of the 
+	The yield will be calculated using the FMTYields class but also using the FMTGraph so the location of the 
 	actual state of the FMTDevelopment.You can also build a yield request without anyreference to a graph for calculatin yield values.
 	*/
 	class FMTYieldRequest final : public FMTObject
@@ -39,7 +39,7 @@ namespace Core
 	public:
 		typedef typename std::vector<std::pair<FMTMask, std::unique_ptr<FMTYieldHandler>>>::const_iterator const_iterator;
 		FMTYieldRequest(const FMTDevelopment& ldevelopment,
-			const Graph::FMTgraphvertextoyield& lgraphvertex);
+			const Graph::FMTGraphVertexToYield& lgraphvertex);
 		FMTYieldRequest(const FMTDevelopment& ldevelopment,
 			const FMTYieldRequest& oldrequest);
 		FMTYieldRequest(const FMTDevelopment& ldevelopment);
@@ -49,7 +49,7 @@ namespace Core
 		const FMTDevelopment& getDevelopment() const;
 		const std::vector<const_iterator>&getDatas() const;
 		const Core::FMTMask& getResumeMask() const;
-		const Graph::FMTgraphvertextoyield* getVertexGraphInfo() const;
+		const Graph::FMTGraphVertexToYield* getVertexGraphInfo() const;
 		const_iterator getFirstSeen(const std::string& p_yield) const;
 	private:
 		friend class FMTYields;
@@ -57,7 +57,7 @@ namespace Core
 		mutable FMTMask resume_mask;
 		mutable FMTYields const* m_yields;
 		FMTDevelopment const* development;
-		Graph::FMTgraphvertextoyield const* graphvertex;
+		Graph::FMTGraphVertexToYield const* graphvertex;
 		void _updateData(const FMTYields& yields) const;
 	};
 	

@@ -16,18 +16,12 @@ import rename  # noqa: E402
 ROOT = os.path.dirname(HERE)
 ROOTS = ['Include', 'Source', 'FMTWrapperCore', 'UI', 'Modules', 'Templates', 'Excel', 'Examples']
 
-# (file, old name) pairs that must KEEP the old spelling. Inside a comment there is no way
-# to tell an exposed-name string from a code token -- rename.py treats the whole comment as
-# editable prose -- so these commented-out bindings were restored by hand: if anyone ever
-# uncomments them, the exposed R/Python name must still be the frozen lowercase one.
-ALLOWED = {
-    ('Include/PYexportExceptions.h', 'FMTexceptionhandler'),
-    ('Include/RexportExceptions.h', 'FMTexceptionhandler'),
-    # commented-out binding block for the ghost class FMTspatialaction
-    ('Include/RexportSpatial.h', 'FMTaction'),
-    # commented-out .derives<> line
-    ('Include/RexportHeuristics.h', 'FMTlpsolver'),
-}
+# An exposed R/Python name legitimately KEEPS the old spelling -- that is the whole point of
+# the freeze. In live code it sits in a string literal and is skipped anyway, but inside a
+# commented-out binding rename.py sees editable prose, so restore_exposed.py puts the old
+# name back there too. Blank those positions out before scanning, otherwise every frozen
+# name reads as a residue.
+EXPOSED = re.compile(r'((?:class_<|derives<)[^)]*>\s*\(\s*")(FMT[A-Za-z0-9_]+)(")')
 
 
 def main():
@@ -48,13 +42,12 @@ def main():
                     continue
                 p = os.path.join(dp, f)
                 t = open(p, encoding='latin-1', newline='').read()
+                t = EXPOSED.sub(lambda m: m.group(1) + '_' * len(m.group(2)) + m.group(3), t)
+                rel = os.path.relpath(p, ROOT).replace(os.sep, '/')
                 for seg, editable in rename.split_code_strings(t):
                     if not editable and not rename.string_is_editable(seg):
                         continue
-                    rel = os.path.relpath(p, ROOT).replace(os.sep, '/')
                     for m in pat.finditer(seg):
-                        if (rel, m.group(1)) in ALLOWED:
-                            continue
                         hits.append('%s  %s' % (rel, m.group(1)))
     if hits:
         print('FAIL: old names still present as code (%d):' % len(hits))

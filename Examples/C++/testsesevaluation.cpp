@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 		}
 		simmodel.setTransitions(newtransitions);
 		Parser::FMTAreaParser areaparser;
-		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
+		const Spatial::FMTForest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
 		simmodel.setInitialMapping(forest);
 		for (int period = 1; period <= length; ++period)
 		{

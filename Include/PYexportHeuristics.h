@@ -14,7 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareaclusterer.h"
 #include "FMToperatingareascheme.h"
 #include "FMToperatingareacluster.h"
-//#include "FMTlpheuristicmthandler.h"
+//#include "FMTLpHeuristicMtHandler.h"
 #include "FMTlpsolver.h"
 #include "PYdefinitions.h"
 #include "boost/python.hpp"
@@ -35,83 +35,83 @@ void exportHeuristics()
 		"\n";
 	#ifdef FMTWITHOSI
 
-	/*bp::class_<Heuristics::FMTlpheuristicmthandler>("FMTlpheuristicmthandler", "@DocString(FMTlpheuristicmthandler)")
-		//.def(bp::init<std::vector<Heuristics::FMToperatingareascheduler>&>())
-		//.def(bp::init<std::vector<Heuristics::FMToperatingareaclusterer>&>())
+	/*bp::class_<Heuristics::FMTLpHeuristicMtHandler>("FMTlpheuristicmthandler", "@DocString(FMTLpHeuristicMtHandler)")
+		//.def(bp::init<std::vector<Heuristics::FMTOperatingAreaScheduler>&>())
+		//.def(bp::init<std::vector<Heuristics::FMTOperatingAreaClusterer>&>())
 		.def(bp::init<boost::python::list&,const double&>())
-		.def("initialSolve", &Heuristics::FMTlpheuristicmthandler::initialSolve,
-					"@DocString(FMTlpheuristicmthandler::initialSolve)")
-		.def("greedySolve", &Heuristics::FMTlpheuristicmthandler::greedySolve,
-					"@DocString(FMTlpheuristicmthandler::greedySolve)");*/
+		.def("initialSolve", &Heuristics::FMTLpHeuristicMtHandler::initialSolve,
+					"@DocString(FMTLpHeuristicMtHandler::initialSolve)")
+		.def("greedySolve", &Heuristics::FMTLpHeuristicMtHandler::greedySolve,
+					"@DocString(FMTLpHeuristicMtHandler::greedySolve)");*/
 
-	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
+	bp::class_<Heuristics::FMTOperatingArea>("FMToperatingarea", "@DocString(FMTOperatingArea)")
 		.def(bp::init<const Core::FMTMask&, const double&>())
-		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingarea>())
-		.def("getneighbors", &Heuristics::FMToperatingarea::getNeighbors,
-			"@DocString(FMToperatingarea::getneighbors)")
-		.def("setneighbors", &Heuristics::FMToperatingarea::setNeighbors,
-			"@DocString(FMToperatingarea::setneighbors)")
-		.def("getmask", &Heuristics::FMToperatingarea::getMask,
-			"@DocString(FMToperatingarea::getmask)")
-		.def("getneihgborsperimeter", &Heuristics::FMToperatingarea::getNeighborsPerimeter,
-			"@DocString(FMToperatingarea::getneihgborsperimeter)");
+		.def_pickle(FMT_pickle_suite<Heuristics::FMTOperatingArea>())
+		.def("getneighbors", &Heuristics::FMTOperatingArea::getNeighbors,
+			"@DocString(FMTOperatingArea::getneighbors)")
+		.def("setneighbors", &Heuristics::FMTOperatingArea::setNeighbors,
+			"@DocString(FMTOperatingArea::setneighbors)")
+		.def("getmask", &Heuristics::FMTOperatingArea::getMask,
+			"@DocString(FMTOperatingArea::getmask)")
+		.def("getneihgborsperimeter", &Heuristics::FMTOperatingArea::getNeighborsPerimeter,
+			"@DocString(FMTOperatingArea::getneihgborsperimeter)");
 
-	definePyList<Heuristics::FMToperatingarea>();
+	definePyList<Heuristics::FMTOperatingArea>();
 
-	bp::class_<Heuristics::FMToperatingareascheme,bp::bases<Heuristics::FMToperatingarea>>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
-		.def(bp::init<const Heuristics::FMToperatingarea&,const size_t&,const size_t&,
+	bp::class_<Heuristics::FMTOperatingAreaScheme,bp::bases<Heuristics::FMTOperatingArea>>("FMToperatingareascheme", "@DocString(FMTOperatingAreaScheme)")
+		.def(bp::init<const Heuristics::FMTOperatingArea&,const size_t&,const size_t&,
 			const size_t&, const size_t&, const size_t&, const size_t&, double>())
-		.def("presolve", &Heuristics::FMToperatingareascheme::presolve,
-			"@DocString(FMToperatingareascheme::presolve)");
+		.def("presolve", &Heuristics::FMTOperatingAreaScheme::presolve,
+			"@DocString(FMTOperatingAreaScheme::presolve)");
 
-	definePyList<Heuristics::FMToperatingareascheme>();
+	definePyList<Heuristics::FMTOperatingAreaScheme>();
 
-	bp::class_<Heuristics::FMToperatingareaclusterbinary,bp::bases<Heuristics::FMToperatingarea>>("FMToperatingareaclusterbinary", "@DocString(FMToperatingareaclusterbinary)");
+	bp::class_<Heuristics::FMTOperatingAreaClusterBinary,bp::bases<Heuristics::FMTOperatingArea>>("FMToperatingareaclusterbinary", "@DocString(FMTOperatingAreaClusterBinary)");
 
-	definePyList<Heuristics::FMToperatingareaclusterbinary>();
+	definePyList<Heuristics::FMTOperatingAreaClusterBinary>();
 
-	bp::class_<Heuristics::FMToperatingareacluster>("FMToperatingareacluster", "@DocString(FMToperatingareacluster)")
-        .def(bp::init<const Heuristics::FMToperatingareacluster&,const double&, const double&>())
-        .def("getfilteredcluster",&Heuristics::FMToperatingareacluster::getFilteredCluster,
-             "@DocString(FMToperatingareacluster::getfilteredcluster)")
-        .def("getallmasks",&Heuristics::FMToperatingareacluster::getAllMasks,
-             "@DocString(FMToperatingareacluster::getallmasks)")
-		.def("getcentroid", &Heuristics::FMToperatingareacluster::getCentroid,
-			"@DocString(FMToperatingareacluster::getcentroid)")
-        .def("setminimalarea",&Heuristics::FMToperatingareacluster::setMinimalArea,
-             "@DocString(FMToperatingareacluster::setminimalarea)")
-        .def("setmaximalarea",&Heuristics::FMToperatingareacluster::setMaximalArea,
-             "@DocString(FMToperatingareacluster::setmaximalarea)");
+	bp::class_<Heuristics::FMTOperatingAreaCluster>("FMToperatingareacluster", "@DocString(FMTOperatingAreaCluster)")
+        .def(bp::init<const Heuristics::FMTOperatingAreaCluster&,const double&, const double&>())
+        .def("getfilteredcluster",&Heuristics::FMTOperatingAreaCluster::getFilteredCluster,
+             "@DocString(FMTOperatingAreaCluster::getfilteredcluster)")
+        .def("getallmasks",&Heuristics::FMTOperatingAreaCluster::getAllMasks,
+             "@DocString(FMTOperatingAreaCluster::getallmasks)")
+		.def("getcentroid", &Heuristics::FMTOperatingAreaCluster::getCentroid,
+			"@DocString(FMTOperatingAreaCluster::getcentroid)")
+        .def("setminimalarea",&Heuristics::FMTOperatingAreaCluster::setMinimalArea,
+             "@DocString(FMTOperatingAreaCluster::setminimalarea)")
+        .def("setmaximalarea",&Heuristics::FMTOperatingAreaCluster::setMaximalArea,
+             "@DocString(FMTOperatingAreaCluster::setmaximalarea)");
 
-	definePyList<Heuristics::FMToperatingareacluster>();
+	definePyList<Heuristics::FMTOperatingAreaCluster>();
 
-	bp::class_<Heuristics::FMTlpheuristic, bp::bases<Core::FMTObject, Models::FMTLpSolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTlpheuristic)");
+	bp::class_<Heuristics::FMTLpHeuristic, bp::bases<Core::FMTObject, Models::FMTLpSolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTLpHeuristic)");
 
-    bp::class_<Heuristics::FMToperatingareaclusterer, bp::bases<Heuristics::FMTlpheuristic>>("Heuristics::FMToperatingareaclusterer", "@DocString(FMToperatingareaclusterer)")
-		.def("initialsolve", &Heuristics::FMToperatingareaclusterer::initialSolve,
-			"@DocString(FMToperatingareaclusterer::initialsolve)")
-		.def("branchnboundsolve", &Heuristics::FMToperatingareaclusterer::branchNBoundSolve,
-			"@DocString(FMToperatingareaclusterer::branchnboundsolve)")
-		.def("setnumberofsimulationpass", &Heuristics::FMToperatingareaclusterer::setNumberOfSimulationPass,
-			"@DocString(FMToperatingareaclusterer::setnumberofsimulationpass)")
-		.def("getsolution", &Heuristics::FMToperatingareaclusterer::getSolution,
-			"@DocString(FMToperatingareaclusterer::getsolution)");
+    bp::class_<Heuristics::FMTOperatingAreaClusterer, bp::bases<Heuristics::FMTLpHeuristic>>("Heuristics::FMToperatingareaclusterer", "@DocString(FMTOperatingAreaClusterer)")
+		.def("initialsolve", &Heuristics::FMTOperatingAreaClusterer::initialSolve,
+			"@DocString(FMTOperatingAreaClusterer::initialsolve)")
+		.def("branchnboundsolve", &Heuristics::FMTOperatingAreaClusterer::branchNBoundSolve,
+			"@DocString(FMTOperatingAreaClusterer::branchnboundsolve)")
+		.def("setnumberofsimulationpass", &Heuristics::FMTOperatingAreaClusterer::setNumberOfSimulationPass,
+			"@DocString(FMTOperatingAreaClusterer::setnumberofsimulationpass)")
+		.def("getsolution", &Heuristics::FMTOperatingAreaClusterer::getSolution,
+			"@DocString(FMTOperatingAreaClusterer::getsolution)");
 
-	definePyList<Heuristics::FMToperatingareaclusterer>();
+	definePyList<Heuristics::FMTOperatingAreaClusterer>();
 
-	bp::class_<Heuristics::FMToperatingareascheduler, bp::bases<Heuristics::FMTlpheuristic>>("Heuristics::FMToperatingareascheduler", "@DocString(FMToperatingareascheduler)")
-		.def("initialsolve", &Heuristics::FMToperatingareascheduler::initialSolve,
-			"@DocString(FMToperatingareascheduler::initialsolve)")
-		.def("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchNBoundSolve,
-			"@DocString(FMToperatingareascheduler::branchnboundsolve)")
-		.def("getsolution", &Heuristics::FMToperatingareascheduler::getSolution,
+	bp::class_<Heuristics::FMTOperatingAreaScheduler, bp::bases<Heuristics::FMTLpHeuristic>>("Heuristics::FMToperatingareascheduler", "@DocString(FMTOperatingAreaScheduler)")
+		.def("initialsolve", &Heuristics::FMTOperatingAreaScheduler::initialSolve,
+			"@DocString(FMTOperatingAreaScheduler::initialsolve)")
+		.def("branchnboundsolve", &Heuristics::FMTOperatingAreaScheduler::branchNBoundSolve,
+			"@DocString(FMTOperatingAreaScheduler::branchnboundsolve)")
+		.def("getsolution", &Heuristics::FMTOperatingAreaScheduler::getSolution,
 			"@DocString(FMToperatingareaheuristic::getsolution)")
-		.def("setasprimal", &Heuristics::FMToperatingareascheduler::setAsPrimal,
-			"@DocString(FMToperatingareascheduler::setasprimal)")
-		.def("setproportionofset", &Heuristics::FMToperatingareascheduler::setProportionOfSet,
-			"@DocString(FMToperatingareascheduler::setproportionofset)");
+		.def("setasprimal", &Heuristics::FMTOperatingAreaScheduler::setAsPrimal,
+			"@DocString(FMTOperatingAreaScheduler::setasprimal)")
+		.def("setproportionofset", &Heuristics::FMTOperatingAreaScheduler::setProportionOfSet,
+			"@DocString(FMTOperatingAreaScheduler::setproportionofset)");
 
-	definePyList<Heuristics::FMToperatingareascheduler>();
+	definePyList<Heuristics::FMTOperatingAreaScheduler>();
 	#endif
 	}
 }

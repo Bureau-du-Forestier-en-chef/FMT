@@ -32,21 +32,21 @@ namespace Core
 }
 namespace Graph
 {
-	class FMTpredictor;
+	class FMTPredictor;
 }
 
 namespace Spatial
 {
-	class FMTforest;
+	class FMTForest;
 	class FMTSpatialSchedule;
-	class FMTsasolution;
+	class FMTSaSolution;
 }
 
 namespace Heuristics
 {
-	class FMToperatingareascheme;
-	class FMToperatingareacluster;
-	class FMToperatingarea;
+	class FMTOperatingAreaScheme;
+	class FMTOperatingAreaCluster;
+	class FMTOperatingArea;
 }
 
 namespace Models
@@ -71,9 +71,9 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		/**
 		Using a complete vector of (themes), a vector of raster files path (data_rasters) each raster represent a theme, an (age) raster file and some optional parameters
 		(agefactor=1.0),(areafactor=0.0001) to multiply with the actualdevelopment age and area and a optional (lock) raster file.
-		The function generates a FMTforest layer from those rasters files.
+		The function generates a FMTForest layer from those rasters files.
 		*/
-		Spatial::FMTforest readRasters(const std::vector<Core::FMTTheme>& themes, const std::vector<std::string>& data_rasters,
+		Spatial::FMTForest readRasters(const std::vector<Core::FMTTheme>& themes, const std::vector<std::string>& data_rasters,
 			const std::string& age, double agefactor = 1.0, double areafactor = 0.0001, std::string lock = "") const;
 		// DocString: FMTAreaParser::writeLayer
 		/**
@@ -81,21 +81,21 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		a table to the raster file when dealing with categorical variables
 		*/
 		template<typename T>
-		bool writeLayer(const Spatial::FMTlayer<T>& layer, std::string location, const std::map<T, std::string>& mapping, std::string format = "GTiff") const;
+		bool writeLayer(const Spatial::FMTLayer<T>& layer, std::string location, const std::map<T, std::string>& mapping, std::string format = "GTiff") const;
 		// DocString: FMTAreaParser::writeLayer
 		/**
 		Using a layer of a given type double the function will write this (layer) into a raster file (location). the mapping add
 		a table to the raster file when dealing with categorical variables
 		*/
-		bool writeLayer(const Spatial::FMTlayer<double>& layer, std::string location, std::string format = "GTiff") const;
+		bool writeLayer(const Spatial::FMTLayer<double>& layer, std::string location, std::string format = "GTiff") const;
 		// DocString: FMTAreaParser::writeForest
 		/**
-		The function will write a complete FMTforest (for_layer) using a complete vector of (themes), in multiple (data_rasters) file paths
+		The function will write a complete FMTForest (for_layer) using a complete vector of (themes), in multiple (data_rasters) file paths
 		number of paths should be equal to number of themes an (age) file path and (lock) file path.
 		The generated .tiff files can have categorical values but it needs to be specified in the
 		mapping vector each element of the vector represent a corresponging key to write in the categorical dataset of the raster.
 		*/
-		bool writeForest(const Spatial::FMTforest& for_layer,
+		bool writeForest(const Spatial::FMTForest& for_layer,
 			const std::vector<Core::FMTTheme>& themes,
 			const std::vector<std::string>& data_rasters,
 			const std::string& age,
@@ -105,16 +105,16 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		/**
 		Write FMT forest in a folder.
 		*/
-		bool writeForest(const Spatial::FMTforest& p_for_layer,
+		bool writeForest(const Spatial::FMTForest& p_for_layer,
 			const std::vector<Core::FMTTheme>& p_themes,
 			const std::string& p_folder,
 			std::vector<std::map<std::string, std::string>> p_mapping = std::vector<std::map<std::string, std::string>>()) const;
 		// DocString: FMTAreaParser::writeForestTheme
 		/**
-		Write a forest theme based on a mapping for a FMTforest with a given file format in raster file.
+		Write a forest theme based on a mapping for a FMTForest with a given file format in raster file.
 		*/
 		bool writeForestTheme(
-			const Spatial::FMTforest& for_layer,
+			const Spatial::FMTForest& for_layer,
 			const Core::FMTTheme& theme,
 			const std::string& location,
 			const std::map<std::string, std::string>& mapping,
@@ -138,7 +138,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		The function will write all the predictor id in the location .tif file and it will also returns the corresponding predictors for
 		this planning period.
 		*/
-		std::vector<std::vector<Graph::FMTpredictor>> writePredictors(const std::string& location,
+		std::vector<std::vector<Graph::FMTPredictor>> writePredictors(const std::string& location,
 			const Spatial::FMTSpatialSchedule& spatialsolution,
 			const std::vector<std::string>& yieldnames,
 			const Models::FMTModel& model,
@@ -150,7 +150,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 
 	   */
 	   /*bool writesasolution(const std::string location,
-						   const Spatial::FMTsasolution& solution,
+						   const Spatial::FMTSaSolution& solution,
 						   const std::vector<Core::FMTTheme>& themes,
 						   const std::vector<Core::FMTAction>& actions,
 						   const bool& writeevents = true,
@@ -164,7 +164,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 						   a (minimal_area) : the minimal area parameters indicate that if a feature has an area lower than the minimal area it wont be selected.
 						   For (buffersize) see getNeighborsFromPolygons function. The returned operating area will have theirs neighboors vector filled.
 						   */
-		std::vector<Heuristics::FMToperatingareascheme> getSchemeNeighbors(std::vector<Heuristics::FMToperatingareascheme> operatingareaparameters,
+		std::vector<Heuristics::FMTOperatingAreaScheme> getSchemeNeighbors(std::vector<Heuristics::FMTOperatingAreaScheme> operatingareaparameters,
 			const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 			const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 			double areafactor = 1, std::string lockfield = "",
@@ -176,25 +176,25 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		a (minimal_area) : the minimal area parameters indicate that if a feature has an area lower than the minimal area it wont be selected.
 		For (buffersize) see getNeighborsFromPolygons function. The returned operating area clusters with their linker mask.
 		*/
-		std::vector<Heuristics::FMToperatingareacluster> getClusters(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
+		std::vector<Heuristics::FMTOperatingAreaCluster> getClusters(const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 			const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 			const std::string& agefield, const std::string& areafield, const double& maximaldistance,
 			double agefactor = 1.0, double areafactor = 1, std::string lockfield = "",
 			double minimal_area = 0.0, double buffersize = 100) const;
-		std::vector<Heuristics::FMToperatingareascheme> getOperatingArea(const std::string& fichierShp, const std::vector<Core::FMTTheme>& themes, const int& numeroTheme, const int& startingperiod, const std::string& nomChampAge, const std::string& nomChampSuperficie, const std::string& nomChampStanlock, const std::string& fichierParam) const;
+		std::vector<Heuristics::FMTOperatingAreaScheme> getOperatingArea(const std::string& fichierShp, const std::vector<Core::FMTTheme>& themes, const int& numeroTheme, const int& startingperiod, const std::string& nomChampAge, const std::string& nomChampSuperficie, const std::string& nomChampStanlock, const std::string& fichierParam) const;
 		// DocString: FMTAreaParser::readOAschedulerparameters
 		/**
 		Using the location for parameters file (must contain headers "OA","OPT","RET","MAXRET","REP","OPR"), the modelthemes,
 		the themetarget corresponding to the themeid where the OA in parameters is in, and the startingperiod it return a vector
 		of operatingareascheme, to use in operatingareascheduler.
 		*/
-		std::vector<Heuristics::FMToperatingareascheme> readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTTheme>& modelthemes, const int& themetarget, const int& startingperiod) const;
+		std::vector<Heuristics::FMTOperatingAreaScheme> readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTTheme>& modelthemes, const int& themetarget, const int& startingperiod) const;
 		// DocString: FMTAreaParser::writeOAschedulerparameters
 		/**
 		Write down a parameters files on the form ("OA","OPT","RET","MAXRET","REP","OPR") but the column OA is gona contains the full mask not just the
 		selected theme into a regular csv files.
 		*/
-		void writeOAschedulerparameters(const std::string& location, const std::vector<Heuristics::FMToperatingareascheme>& OAschemes,
+		void writeOAschedulerparameters(const std::string& location, const std::vector<Heuristics::FMTOperatingAreaScheme>& OAschemes,
 			std::vector<std::string> creationoptions = std::vector<std::string>()) const;
 #endif
 		// DocString: FMTAreaParser::readVectors
@@ -211,7 +211,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		/**
 
 		*/
-		Spatial::FMTforest vectormaptoFMTforest(const std::string& data_vectors,
+		Spatial::FMTForest vectormaptoFMTforest(const std::string& data_vectors,
 			const int& resolution, const std::vector<Core::FMTTheme>& themes,
 			const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 			double areafactor = 1, std::string lockfield = "",
@@ -236,7 +236,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		*/
 		GDALDataset* ogrLayerToRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution, const bool& fittoforel) const;
 
-		void writeForestExtended(Spatial::FMTforest& p_forest,const std::string& p_VectorFile,
+		void writeForestExtended(Spatial::FMTForest& p_forest,const std::string& p_VectorFile,
 						const std::vector<Core::FMTTheme> p_themes,
 						const std::vector<Core::FMTActualDevelopment>& p_area,
 							const std::string& p_folder) const;
@@ -331,20 +331,20 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		// DocString: FMTAreaParser::getGCBMtransitions
 		/**
 		This function is only usefull whe using GCBM. Using the FMTSesModel elements disturbances (stacked_actions),
-		last ages of the area generated by the FMTSesModel, the new generated FMTforest by FMTSesModel and the themes of the
+		last ages of the area generated by the FMTSesModel, the new generated FMTForest by FMTSesModel and the themes of the
 		FMTModel.
 		*/
-		std::vector<Core::FMTGCBMTransition> getGCBMtransitions(const Spatial::FMTlayer<std::string>& stacked_actions,
-													const Spatial::FMTlayer<int>& ages,
-													const Spatial::FMTforest& newfor,
+		std::vector<Core::FMTGCBMTransition> getGCBMtransitions(const Spatial::FMTLayer<std::string>& stacked_actions,
+													const Spatial::FMTLayer<int>& ages,
+													const Spatial::FMTForest& newfor,
 													const std::vector<Core::FMTTheme>& themes) const;
 		#ifdef FMTWITHGDAL
 			// DocString: FMTAreaParser::writeBand
 			/**
-			Write the FMTlayer in a band.
+			Write the FMTLayer in a band.
 			*/
 			template<typename T,typename outT>
-			bool writeBand(const Spatial::FMTlayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const;
+			bool writeBand(const Spatial::FMTLayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const;
 			// DocString: FMTAreaParser::getUnion
 				/**
 				Simply call a union cascaded on all multipartpolygons to create single polygon for each multipart.
@@ -392,23 +392,23 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			// DocString: FMTAreaParser::getMultipolygons
 			/**
 			This function uses a  vector of operating area and a vector file (data_vectors), age and area field name, an age,area,lock factor to
-			aggregates all polygons of a vector file into a vector of OGRMultipolygon. Each Multipolygon is a spatial representation of a FMToperatingarea
+			aggregates all polygons of a vector file into a vector of OGRMultipolygon. Each Multipolygon is a spatial representation of a FMTOperatingArea
 			unit (the returned vector is ordered as the operatingareas vector).
 			*/
-			std::vector<OGRMultiPolygon>getMultipolygons(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
+			std::vector<OGRMultiPolygon>getMultipolygons(const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 											  const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 											  const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 											  double areafactor = 1, std::string lockfield = "",
 											  double minimal_area = 0.0) const;
 			// DocString: FMTAreaParser::getNeighborsFromPolygons
 			/**
-			This function uses a vector of Multipolygons representing each FMToperatingarea (multipolygon),
+			This function uses a vector of Multipolygons representing each FMTOperatingArea (multipolygon),
 			a vector of operating area (operatingareas) and a (buffersize) to calculate the neighbors of each operating area.
-			It returns a vector of FMToperatingarea but with theirs neighbors data member filled.
+			It returns a vector of FMTOperatingArea but with theirs neighbors data member filled.
 			The buffersize is the width of the buffer used to determine the amount of perimeter shared between each operating area.
 			*/
-			std::vector<Heuristics::FMToperatingarea> getNeighborsFromPolygons(const std::vector<OGRPolygon*>&polygons,
-																			std::vector<Heuristics::FMToperatingarea> operatingareas,
+			std::vector<Heuristics::FMTOperatingArea> getNeighborsFromPolygons(const std::vector<OGRPolygon*>&polygons,
+																			std::vector<Heuristics::FMTOperatingArea> operatingareas,
 																	const double& buffersize) const;
 
 			// DocString: FMTAreaParser::getClustersFromPolygons
@@ -416,19 +416,19 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			Base on a list of polygons and a list of corresponding operatingareas it returns a list of potential cluster of those
 			FMToperating area based on a maximal clustering distance.
 			*/
-			std::vector<Heuristics::FMToperatingareacluster> getClustersFromPolygons(const std::vector<OGRPolygon*>&polygons,
-																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,const double& maximaldistance) const;
+			std::vector<Heuristics::FMTOperatingAreaCluster> getClustersFromPolygons(const std::vector<OGRPolygon*>&polygons,
+																		const std::vector<Heuristics::FMTOperatingArea>& operatingareas,const double& maximaldistance) const;
 			bool _isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_themes,
 				const std::string& p_VectorsMap) const;
 		#endif
 			// DocString: FMTAreaParser::getFMTforestfromlayer
 			/**
 			This function first rasterize the layer to a resolution of 20x20 in memory using gdal virtual file system
-			and reproject it to the desired resolution. Finally, it return and FMTforest based on the raster and 
+			and reproject it to the desired resolution. Finally, it return and FMTForest based on the raster and 
 			the developments correspondant to the value in the field containing the development id(devidfield).
 			If (fittoforel), the layer must be projected in ESPG32198 and will align with the Quebec FOREL rasters.
 			*/
-			Spatial::FMTforest getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
+			Spatial::FMTForest getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
 			// DocString: FMTAreaParser::subsetLayer
 			/**
 			Sometime vector files can be realy large with empty value in the age/area fields or themes fields.

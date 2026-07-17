@@ -13,26 +13,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
-	class FMTevent;
+	class FMTEvent;
 }
 
 namespace Spatial
 {
-	class FMTeventrelation
+	class FMTEventRelation
 	{
 		int fromaction;
 		int toaction;
 		int fromperiod;
 		int toperiod;
-		FMTcoordinate fromcoord;
-		FMTcoordinate tocoord;
+		FMTCoordinate fromcoord;
+		FMTCoordinate tocoord;
 	public:
-		FMTeventrelation(const Spatial::FMTevent& fromevent, const Spatial::FMTevent& toevent);
-		bool operator == (const FMTeventrelation& rhs) const;
+		FMTEventRelation(const Spatial::FMTEvent& fromevent, const Spatial::FMTEvent& toevent);
+		bool operator == (const FMTEventRelation& rhs) const;
 		size_t hash() const;
-		FMTeventrelation(const FMTeventrelation& rhs) = default;
-		FMTeventrelation& operator = (const FMTeventrelation& rhs) = default;
-		~FMTeventrelation() = default;
+		FMTEventRelation(const FMTEventRelation& rhs) = default;
+		FMTEventRelation& operator = (const FMTEventRelation& rhs) = default;
+		~FMTEventRelation() = default;
 	};
 
 }
@@ -40,9 +40,9 @@ namespace Spatial
 namespace boost 
 	{
 	template <>
-	struct hash<Spatial::FMTeventrelation>
+	struct hash<Spatial::FMTEventRelation>
 		{
-			std::size_t operator()(const Spatial::FMTeventrelation& relation) const
+			std::size_t operator()(const Spatial::FMTEventRelation& relation) const
 			{
 				return relation.hash();
 			}

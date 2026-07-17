@@ -20,7 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTgraphvertextoyield;
+	class FMTGraphVertexToYield;
 }
 
 namespace Parser
@@ -138,11 +138,11 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 			}
 		double getCoef(const FMTDevelopment& development,
 			const FMTYields& yields,
-			const Graph::FMTgraphvertextoyield* graphinfo =nullptr,
+			const Graph::FMTGraphVertexToYield* graphinfo =nullptr,
 			std::vector<FMTDevelopmentPath> const * paths=nullptr,
 			 FMTAction const * action=nullptr) const;
 		bool use(const FMTDevelopment& development, const FMTYields& ylds,
-			const Graph::FMTgraphvertextoyield* graphinfo = nullptr) const;
+			const Graph::FMTGraphVertexToYield* graphinfo = nullptr) const;
 		FMTOutputSource presolve(const FMTMaskFilter& filter,const std::vector<FMTTheme>& newthemes) const;
 		void setAverage();
 		inline bool isAverage() const

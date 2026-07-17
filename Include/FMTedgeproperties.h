@@ -16,23 +16,23 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTedgeproperties : public FMTbaseedgeproperties
+	class FMTEdgeProperties : public FMTBaseEdgeProperties
 	{
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTbaseedgeproperties", boost::serialization::base_object<FMTbaseedgeproperties>(*this));
+			ar& boost::serialization::make_nvp("FMTbaseedgeproperties", boost::serialization::base_object<FMTBaseEdgeProperties>(*this));
 			ar& BOOST_SERIALIZATION_NVP(variableID);
 			ar& BOOST_SERIALIZATION_NVP(proportion);
 		}
 		int variableID;
 		float proportion;
 	public:
-		~FMTedgeproperties() = default;
-		FMTedgeproperties() = default;
-		FMTedgeproperties(const FMTedgeproperties& rhs) = default;
-		FMTedgeproperties& operator = (const FMTedgeproperties& rhs) = default;
+		~FMTEdgeProperties() = default;
+		FMTEdgeProperties() = default;
+		FMTEdgeProperties(const FMTEdgeProperties& rhs) = default;
+		FMTEdgeProperties& operator = (const FMTEdgeProperties& rhs) = default;
 		inline int	getvariableID() const override
 		{
 			return variableID;
@@ -42,11 +42,11 @@ namespace Graph
 		{
 			return static_cast<double>(proportion);
 		}
-		FMTedgeproperties(const int& laction,
+		FMTEdgeProperties(const int& laction,
 			const int& lvariableID,
 			const double& lproportion);
-		bool operator == (const FMTedgeproperties& rhs) const;
-		bool operator != (const FMTedgeproperties& rhs) const;
+		bool operator == (const FMTEdgeProperties& rhs) const;
+		bool operator != (const FMTEdgeProperties& rhs) const;
 		inline std::string variableName() const;
 		inline const int* getVariablePtr() const
 		{
@@ -56,6 +56,6 @@ namespace Graph
 	};
 }
 
-BOOST_CLASS_EXPORT_KEY(Graph::FMTedgeproperties)
+BOOST_CLASS_EXPORT_KEY(Graph::FMTEdgeProperties)
 
 #endif

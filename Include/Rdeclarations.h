@@ -18,9 +18,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopmentpath.h"
 #include "FMTforest.h"
 //#include "FMTspatialaction.h"
-//#include "FMTgraph.hpp"
+//#include "FMTGraph.hpp"
 #include "FMTlinegraph.h"
-//#include "FMTsasolution.h"
+//#include "FMTSaSolution.h"
 #include "FMTmodel.h"
 #include "FMTsemodel.h"
 #include "FMTsrmodel.h"
@@ -31,7 +31,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 #include "FMTsesmodel.h"
 #include "FMTsaschedule.h"
-//#include "FMTexponentialschedule.h" // Comment Gab 2026-02-09
+//#include "FMTExponentialSchedule.h" // Comment Gab 2026-02-09
 #include "FMTsamodel.h"
 #include "FMToperatingarea.h"
 #include "FMToperatingareascheduler.h"
@@ -99,14 +99,14 @@ RCPP_DECLAREVECTOR(Exception::FMTexc);//For vector
 RCPP_DECLAREMAP(std::string, std::string); //map of string definition
 
 //Spatial
-RCPP_DECLAREMAP(Spatial::FMTcoordinate,Core::FMTDevelopment);//for FMTlayer
-RCPP_DECLAREVECTOR(Spatial::FMTforest);// For vector
+RCPP_DECLAREMAP(Spatial::FMTCoordinate,Core::FMTDevelopment);//for FMTLayer
+RCPP_DECLAREVECTOR(Spatial::FMTForest);// For vector
 //RCPP_DECLAREVECTOR(Spatial::FMTspatialaction);//For vector
-//RCPP_DECLAREMAP(Spatial::FMTcoordinate,Graph::FMTgraph);//For FMTlayer
-RCPP_DECLAREMAP(Spatial::FMTcoordinate, Graph::FMTlinegraph);
+//RCPP_DECLAREMAP(Spatial::FMTCoordinate,Graph::FMTGraph);//For FMTLayer
+RCPP_DECLAREMAP(Spatial::FMTCoordinate, Graph::FMTLineGraph);
 RCPP_DECLAREVECTOR(Models::FMTSesModel);//For vector
 RCPP_DECLAREVECTOR(Models::FMTSeModel);//For vector
-//RCPP_DECLAREVECTOR(Spatial::FMTsasolution);//For vector
+//RCPP_DECLAREVECTOR(Spatial::FMTSaSolution);//For vector
 //Models
 RCPP_DECLAREVECTOR(Models::FMTModel);//For vector
 RCPP_DECLAREMAP(std::string, double);//For map<string,double>
@@ -116,12 +116,12 @@ RCPP_DECLAREVECTOR(Models::FMTboolmodelparameters);
 
 
 //Parallel
-RCPP_DECLAREVECTOR(Parallel::FMTtask);//For vector
-RCPP_DECLAREVECTOR(Parallel::FMTtaskhandler);//For vector
-RCPP_DECLAREVECTOR(Parallel::FMTreplanningtask);//For vector
-RCPP_DECLAREVECTOR(Parallel::FMTplanningtask);//For vector
+RCPP_DECLAREVECTOR(Parallel::FMTTask);//For vector
+RCPP_DECLAREVECTOR(Parallel::FMTTaskHandler);//For vector
+RCPP_DECLAREVECTOR(Parallel::FMTReplanningTask);//For vector
+RCPP_DECLAREVECTOR(Parallel::FMTPlanningTask);//For vector
 #ifdef FMTWITHOSI
-	RCPP_DECLAREVECTOR(Parallel::FMTopareaschedulertask);//For vector
+	RCPP_DECLAREVECTOR(Parallel::FMTOpAreaSchedulerTask);//For vector
 	RCPP_DECLAREVECTOR(Models::FMTLpSolver);//For vector
 	RCPP_DECLAREVECTOR(Models::FMTSrModel);//For vector
 	RCPP_DECLAREVECTOR(Models::FMTLpModel);//For vector
@@ -130,12 +130,12 @@ RCPP_DECLAREVECTOR(Parallel::FMTplanningtask);//For vector
 RCPP_DECLAREVECTOR(Models::FMTSaModel);//For vector
 //Heuristics
 #ifdef FMTWITHOSI
-	RCPP_DECLAREVECTOR(Heuristics::FMToperatingarea);//For vector
-	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareascheme);//For vector
-	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareascheduler);//For vector
-	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareaclusterbinary);//For vector
-    RCPP_DECLAREVECTOR(Heuristics::FMToperatingareacluster);//For vector
-    RCPP_DECLAREVECTOR(Heuristics::FMToperatingareaclusterer);//For vector
+	RCPP_DECLAREVECTOR(Heuristics::FMTOperatingArea);//For vector
+	RCPP_DECLAREVECTOR(Heuristics::FMTOperatingAreaScheme);//For vector
+	RCPP_DECLAREVECTOR(Heuristics::FMTOperatingAreaScheduler);//For vector
+	RCPP_DECLAREVECTOR(Heuristics::FMTOperatingAreaClusterBinary);//For vector
+    RCPP_DECLAREVECTOR(Heuristics::FMTOperatingAreaCluster);//For vector
+    RCPP_DECLAREVECTOR(Heuristics::FMTOperatingAreaClusterer);//For vector
 #endif
 //Core
 RCPP_DECLAREVECTOR(Core::FMTMask);//For vector

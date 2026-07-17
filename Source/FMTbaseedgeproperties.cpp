@@ -12,7 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 
-	bool FMTbaseedgeproperties::isAction(const std::vector<Core::FMTAction>& actions,
+	bool FMTBaseEdgeProperties::isAction(const std::vector<Core::FMTAction>& actions,
 		const Core::FMTAction& rhsaction) const
 	{
 		if (actions[action] == rhsaction)
@@ -22,7 +22,7 @@ namespace Graph
 		return false;
 	}
 
-	FMTbaseedgeproperties::FMTbaseedgeproperties(const int& laction,
+	FMTBaseEdgeProperties::FMTBaseEdgeProperties(const int& laction,
 		const int& lvariableID,
 		const double& lproportion) :action()
 	{
@@ -30,21 +30,21 @@ namespace Graph
 
 	}
 
-	void FMTbaseedgeproperties::setactionID(const int& newid)
+	void FMTBaseEdgeProperties::setactionID(const int& newid)
 	{
 		action = static_cast<int8_t>(newid);
 	}
 
-	bool FMTbaseedgeproperties::operator < (const FMTbaseedgeproperties& rhs) const
+	bool FMTBaseEdgeProperties::operator < (const FMTBaseEdgeProperties& rhs) const
 	{
 		return (action < rhs.action);
 	}
 
-	bool FMTbaseedgeproperties::operator == (const FMTbaseedgeproperties& rhs) const
+	bool FMTBaseEdgeProperties::operator == (const FMTBaseEdgeProperties& rhs) const
 	{
 		return (action == rhs.action);
 	}
-	bool FMTbaseedgeproperties::operator != (const FMTbaseedgeproperties& rhs) const
+	bool FMTBaseEdgeProperties::operator != (const FMTBaseEdgeProperties& rhs) const
 	{
 		return (!(*this == rhs));
 	}
@@ -52,4 +52,4 @@ namespace Graph
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTbaseedgeproperties)
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTBaseEdgeProperties)

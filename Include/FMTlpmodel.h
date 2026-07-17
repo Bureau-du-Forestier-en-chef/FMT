@@ -21,10 +21,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Heuristics
 {
-	class FMToperatingareascheduler;
-	class FMToperatingareaclusterer;
-	class FMToperatingareacluster;
-	class FMToperatingareascheme;
+	class FMTOperatingAreaScheduler;
+	class FMTOperatingAreaClusterer;
+	class FMTOperatingAreaCluster;
+	class FMTOperatingAreaScheme;
 }
 
 namespace Models
@@ -49,8 +49,8 @@ enum FMTmatrixelement
 /**
 This model is a type III LP forest planning model. The graph
 is divided per period. This model is made for replanning and simple
-forest planning LP optimization. It makes heavy use of FMTgraph
-for building the matrix. FMTgraph being based on a list structure
+forest planning LP optimization. It makes heavy use of FMTGraph
+for building the matrix. FMTGraph being based on a list structure
 FMTLpModel can easely be extended (by the back) using the function buildperiod() or
 shrinked (by the front) using the function erasePeriod.
 The matrix is held within the solverinterface pointer.
@@ -81,11 +81,11 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		Default constructor of FMTLpModel
 		*/
 		FMTLpModel();
-		// DocString: FMTLpModel(const FMTModel, const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>, const FMTLpSolver, const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>)
+		// DocString: FMTLpModel(const FMTModel, const Graph::FMTGraph<Graph::FMTVertexProperties,Graph::FMTEdgeProperties>, const FMTLpSolver, const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>)
 		/**
 		Constructor of FMTLpModel mainly use in postSolve to pass each attributes of the class.
 		*/
-		/*FMTLpModel(const FMTModel& base, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& lgraph,
+		/*FMTLpModel(const FMTModel& base, const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>& lgraph,
 					const FMTLpSolver& lsolver,const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>& lelements);*/
 		// DocString: FMTLpModel(const FMTLpModel)
 		/**
@@ -152,20 +152,20 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		Note that the objective function is always the firts constraint in the constraints vector of a
 		FMTModel. If a objective was already set before it will replace it when calling this function.
 		*/
-		Graph::FMTgraphstats setObjective(const Core::FMTConstraint& objective);
+		Graph::FMTGraphStats setObjective(const Core::FMTConstraint& objective);
 		// DocString: FMTLpModel::setConstraint
 		/**
 		This function set a constraint in the matrix for the whole planning horizon (graph length).
 		If the function is recalled if the constraint already exist in the matrix in wont be replaced.
 		Can be called after calling builperiod in replanning.
 		*/
-		Graph::FMTgraphstats setConstraint(const Core::FMTConstraint& constraint);
+		Graph::FMTGraphStats setConstraint(const Core::FMTConstraint& constraint);
 		// DocString: FMTLpModel::eraseConstraint
 		/**
 		Erase a constraint for a given period in the matrix and in the model elements. If period == -1 then it will erase
 		the constraint for the whole horizon else it will only erase the constraint for the specified period.
 		*/
-		Graph::FMTgraphstats eraseConstraint(const Core::FMTConstraint& constraint,int period=-1);
+		Graph::FMTGraphStats eraseConstraint(const Core::FMTConstraint& constraint,int period=-1);
 		// DocString: FMTLpModel::getVariabilities
 		/**
 		Get the variability of multiple outputs for a given tolerance(see modelparameters) for each period between (periodStart) and (periodStop).
@@ -199,7 +199,7 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		of the graph and the matrix to get a FMTModel - first period. The planning length will be shrinked to
 		originalsize - 1.
 		*/
-		Graph::FMTgraphstats erasePeriod(bool constraintsonly = false);
+		Graph::FMTGraphStats erasePeriod(bool constraintsonly = false);
 		// DocString: FMTLpModel::getOperatingAreaSchedulerHeuristics
 		/**
 		Using multiple operating areas and a simple output node a MIP formulation (using the BFECopt heuristic) is done using the matrix of
@@ -207,7 +207,7 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		of the FMTLpModel (if numberofheuristics == 1 and copysolver == true). The user can than decide to change
 		some parameters of heuristics that are in the vectors.
 		*/
-		std::vector<Heuristics::FMToperatingareascheduler>getOperatingAreaSchedulerHeuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
+		std::vector<Heuristics::FMTOperatingAreaScheduler>getOperatingAreaSchedulerHeuristics(const std::vector<Heuristics::FMTOperatingAreaScheme>& opareas,
 																				const Core::FMTOutputNode& node,
 																				size_t numberofheuristics=1,
 																				bool copysolver=true);
@@ -217,7 +217,7 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
         The user can decide to change some parameters of heuristics that are in the vectors.The FMTLpModel has to be solved so the heuristic can use
         the value of the (output) of a given (period) has a statistic to perform clustering.
 		*/
-		std::vector<Heuristics::FMToperatingareaclusterer>getOperatingAreaClustererHeuristics(const std::vector<Heuristics::FMToperatingareacluster>& clusters,
+		std::vector<Heuristics::FMTOperatingAreaClusterer>getOperatingAreaClustererHeuristics(const std::vector<Heuristics::FMTOperatingAreaCluster>& clusters,
 																				const Core::FMTOutput& statisticoutput,
                                                                                 const Core::FMTOutput& areaoutput,
                                                                                 const int& period,
@@ -293,7 +293,7 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		/**
 		This function returns a copy of the FMTModel of the selected period.
 		If period = 0 it returns the FMTModel::getCopy if period > 0 then it returns
-		a copy of the FMTModel based on the developments of the FMTgraph of the FMTLpModel.
+		a copy of the FMTModel based on the developments of the FMTGraph of the FMTLpModel.
 		Need to have a builded graph with a solution to use this function.
 		*/
 		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
@@ -384,8 +384,8 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		Using an inventory output (areaoutput) and an (statisticoutput) at (period) this function returns
 		operating area cluster filled with statistic double comming from the output for a given period.
 		*/
-		Heuristics::FMToperatingareaclusterer getClusterer(
-			const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
+		Heuristics::FMTOperatingAreaClusterer getClusterer(
+			const std::vector<Heuristics::FMTOperatingAreaCluster>& initialcluster,
 			const Core::FMTOutput& areaoutput,
 			const Core::FMTOutput& statisticoutput,
 			const int& period, int minimalnumberofclusters = -1, int maximalnumberofclusters = -1) const;

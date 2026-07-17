@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 
 {
-	class FMTbindingspatialaction
+	class FMTBindingSpatialAction
 	{
 		std::vector<int>neighbors;
 		size_t minimal_green_up;
@@ -27,10 +27,10 @@ namespace Spatial
 		size_t minimal_neighbors_size;
 		size_t maximal_neighbors_size;
 	public:
-		FMTbindingspatialaction()=default;
-		FMTbindingspatialaction(const FMTbindingspatialaction& rhs) = default;
-		FMTbindingspatialaction& operator = (const FMTbindingspatialaction& rhs)=default;
-		FMTbindingspatialaction(const std::vector<int>& lneighbors,
+		FMTBindingSpatialAction()=default;
+		FMTBindingSpatialAction(const FMTBindingSpatialAction& rhs) = default;
+		FMTBindingSpatialAction& operator = (const FMTBindingSpatialAction& rhs)=default;
+		FMTBindingSpatialAction(const std::vector<int>& lneighbors,
 			const size_t& mingreenup, const size_t& maxgreenup,
 			const size_t& minadjacency, const size_t& maxadjacency,
 			const size_t& minsize, const size_t& maxsize,

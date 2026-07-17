@@ -9,32 +9,32 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 /*
 namespace Spatial
     {
-    FMTcoordinate::FMTcoordinate():x(),y(){}
-    FMTcoordinate::FMTcoordinate(unsigned int lx, unsigned int ly):x(lx),y(ly){}
-    FMTcoordinate::FMTcoordinate(const FMTcoordinate& rhs):x(rhs.x),y(rhs.y){}
-    FMTcoordinate FMTcoordinate::at(unsigned int id) const
+    FMTCoordinate::FMTCoordinate():x(),y(){}
+    FMTCoordinate::FMTCoordinate(unsigned int lx, unsigned int ly):x(lx),y(ly){}
+    FMTCoordinate::FMTCoordinate(const FMTCoordinate& rhs):x(rhs.x),y(rhs.y){}
+    FMTCoordinate FMTCoordinate::at(unsigned int id) const
         {
-        vector<FMTcoordinate>neighs;
-        neighs.push_back(FMTcoordinate(x,y+1));
-        neighs.push_back(FMTcoordinate(x+1,y));
-        neighs.push_back(FMTcoordinate(x,y-1));
-        neighs.push_back(FMTcoordinate(x-1,y));
+        vector<FMTCoordinate>neighs;
+        neighs.push_back(FMTCoordinate(x,y+1));
+        neighs.push_back(FMTCoordinate(x+1,y));
+        neighs.push_back(FMTCoordinate(x,y-1));
+        neighs.push_back(FMTCoordinate(x-1,y));
         return neighs[id];
         }
-    double FMTcoordinate::distance(const FMTcoordinate& coord) const
+    double FMTCoordinate::distance(const FMTCoordinate& coord) const
         {
 
         return 0;
         }
-    unsigned int FMTcoordinate::getX() const
+    unsigned int FMTCoordinate::getX() const
         {
         return x;
         }
-    unsigned int FMTcoordinate::getY() const
+    unsigned int FMTCoordinate::getY() const
         {
         return y;
         }
-    FMTcoordinate& FMTcoordinate::operator = (const FMTcoordinate& rhs)
+    FMTCoordinate& FMTCoordinate::operator = (const FMTCoordinate& rhs)
         {
         if(this!=&rhs)
             {
@@ -43,11 +43,11 @@ namespace Spatial
             }
         return *this;
         }
-    bool FMTcoordinate::operator == (const FMTcoordinate& rhs) const
+    bool FMTCoordinate::operator == (const FMTCoordinate& rhs) const
         {
         return (x == rhs.x && y == rhs.y);
         }
-     bool FMTcoordinate::operator < (const FMTcoordinate& rhs) const
+     bool FMTCoordinate::operator < (const FMTCoordinate& rhs) const
         {
         return (y<rhs.y||x<rhs.x);
         }

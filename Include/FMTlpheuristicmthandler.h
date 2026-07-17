@@ -22,27 +22,27 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Heuristics
 {
-	class FMToperatingareascheduler;
-	class FMToperatingareaclusterer;
-	class FMTlpheuristic;
+	class FMTOperatingAreaScheduler;
+	class FMTOperatingAreaClusterer;
+	class FMTLpHeuristic;
 
-	class FMTEXPORT FMTlpheuristicmthandler
+	class FMTEXPORT FMTLpHeuristicMtHandler
 		{
 		double initialsolution;
-		std::vector<FMTlpheuristic*> heuristics;
+		std::vector<FMTLpHeuristic*> heuristics;
 		size_t bestHeuristic() const;
 		void resetNumberOfThreads(const unsigned int& ncpu) const;
 		public:
-		FMTlpheuristicmthandler();
-		FMTlpheuristicmthandler(std::vector<FMToperatingareascheduler>& lheuristics, const double& linitialsolution);
-		FMTlpheuristicmthandler(std::vector<FMToperatingareaclusterer>& lheuristics, const double& linitialsolution);
+		FMTLpHeuristicMtHandler();
+		FMTLpHeuristicMtHandler(std::vector<FMTOperatingAreaScheduler>& lheuristics, const double& linitialsolution);
+		FMTLpHeuristicMtHandler(std::vector<FMTOperatingAreaClusterer>& lheuristics, const double& linitialsolution);
 		#if defined FMTWITHPYTHON
-			FMTlpheuristicmthandler(boost::python::list& lheuristics, const double& linitialsolution);
+			FMTLpHeuristicMtHandler(boost::python::list& lheuristics, const double& linitialsolution);
 		#endif
 		size_t initialSolve() const;
 		size_t greedySolve(const unsigned int& iterations, const double& maxtime) const;
 	    };
 }
-//BOOST_CLASS_EXPORT_KEY(Heuristics::FMTlpheuristicmthandler)
+//BOOST_CLASS_EXPORT_KEY(Heuristics::FMTLpHeuristicMtHandler)
 #endif
 #endif

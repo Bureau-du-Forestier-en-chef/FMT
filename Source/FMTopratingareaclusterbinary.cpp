@@ -15,31 +15,31 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 {
 
-	FMToperatingareaclusterbinary::FMToperatingareaclusterbinary(const FMToperatingarea& oparea) :
-		FMToperatingarea(oparea), statistic()
+	FMTOperatingAreaClusterBinary::FMTOperatingAreaClusterBinary(const FMTOperatingArea& oparea) :
+		FMTOperatingArea(oparea), statistic()
 		{
 
 		}
 
-	void FMToperatingareaclusterbinary::setStatistic(const double& statvalue)
+	void FMTOperatingAreaClusterBinary::setStatistic(const double& statvalue)
 		{
 		statistic = statvalue;
 		}
 
-	void FMToperatingareaclusterbinary::setVariable(const int& lvariable)
+	void FMTOperatingAreaClusterBinary::setVariable(const int& lvariable)
 		{
 		variable = lvariable;
 		}
 
 
-	Core::FMTOutput FMToperatingareaclusterbinary::getOutputIntersect(const Core::FMTOutput& output,const std::vector<Core::FMTTheme>& themes) const
+	Core::FMTOutput FMTOperatingAreaClusterBinary::getOutputIntersect(const Core::FMTOutput& output,const std::vector<Core::FMTTheme>& themes) const
 		{
 		return output.intersectWithMask(getMask(),themes);
 		}
 
-	std::vector<FMToperatingareaclusterbinary> FMToperatingareaclusterbinary::filterNeighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const
+	std::vector<FMTOperatingAreaClusterBinary> FMTOperatingAreaClusterBinary::filterNeighbors(std::vector<FMTOperatingAreaClusterBinary> potentiallink) const
 		{
-		std::vector<FMToperatingareaclusterbinary>finalbinaries;
+		std::vector<FMTOperatingAreaClusterBinary>finalbinaries;
 		while (finalbinaries.size()!= potentiallink.size())
 			{
 			if (!finalbinaries.empty())
@@ -48,14 +48,14 @@ namespace Heuristics
 				finalbinaries.clear();
 				}
 			std::map<Core::FMTMask, std::vector<Core::FMTMask>>neighbors;
-			for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
+			for (const FMTOperatingAreaClusterBinary& mainbinary : potentiallink)
 				{
 				neighbors[mainbinary.getMask()] = std::vector<Core::FMTMask>(1, this->getMask());
 				}
 			for (std::map<Core::FMTMask, std::vector<Core::FMTMask>>::iterator dcit = neighbors.begin();
 				dcit != neighbors.end(); dcit++)
 				{
-					for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
+					for (const FMTOperatingAreaClusterBinary& mainbinary : potentiallink)
 					{
 						if (dcit->first != mainbinary.getMask())
 						{
@@ -64,7 +64,7 @@ namespace Heuristics
 						}
 					}
 				}
-			for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
+			for (const FMTOperatingAreaClusterBinary& mainbinary : potentiallink)
 				{
 				if (std::find(neighbors[mainbinary.getMask()].begin(), neighbors[mainbinary.getMask()].end(), mainbinary.getMask()) != neighbors[mainbinary.getMask()].end()||
                     std::find(neighbors[mainbinary.getMask()].begin(), neighbors[mainbinary.getMask()].end(), this->getMask()) != neighbors[mainbinary.getMask()].end())

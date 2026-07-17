@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parallel
 {
 
-	void FMTparallelwriter::close() noexcept
+	void FMTParallelWriter::close() noexcept
 	{
 	#ifdef FMTWITHGDAL
 		if (!resultslayer.empty())
@@ -32,12 +32,12 @@ namespace Parallel
 	}
 
 
-	FMTparallelwriter::~FMTparallelwriter()
+	FMTParallelWriter::~FMTParallelWriter()
 		{
 		close();
 		}
 
-	FMTparallelwriter::FMTparallelwriter(const std::string& location,
+	FMTParallelWriter::FMTParallelWriter(const std::string& location,
 		const std::string& driver,
 		const std::vector<Core::FMTOutput>& outputs,
 		const std::vector<Models::FMTModel*>& allmodels,
@@ -69,7 +69,7 @@ namespace Parallel
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"No outputs to write",
-					"FMTparallelwriter::FMTparallelwriter()", __LINE__, __FILE__);
+					"FMTParallelWriter::FMTParallelWriter()", __LINE__, __FILE__);
 			}
 			for (const Models::FMTModel* modelptr : allmodels)
 				{
@@ -80,11 +80,11 @@ namespace Parallel
 			#endif
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTparallelwriter::FMTparallelwriter", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTParallelWriter::FMTParallelWriter", __LINE__, __FILE__);
 			}
 	}
 
-	FMTparallelwriter::FMTparallelwriter(const std::string& location,
+	FMTParallelWriter::FMTParallelWriter(const std::string& location,
 		const std::string& driver,
 		Core::FMToutputlevel outputlevel,
 		std::vector<std::string>layersoptions,
@@ -113,13 +113,13 @@ namespace Parallel
 			if (!boost::filesystem::is_regular_file(boost::filesystem::path(primaryfilelocation)))
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-					primaryfilelocation + " is not a valid primary file", "FMTparallelwriter::FMTparallelwriter(...)", __LINE__, __FILE__);
+					primaryfilelocation + " is not a valid primary file", "FMTParallelWriter::FMTParallelWriter(...)", __LINE__, __FILE__);
 				}
 			const boost::filesystem::path boutdirectory = (boost::filesystem::path(primaryfilelocation).parent_path()).string();
 			if (!boost::filesystem::is_directory(boutdirectory))
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-					boutdirectory.string() + " is not a valid scenarios directory", "FMTparallelwriter::FMTparallelwriter(...)", __LINE__, __FILE__);
+					boutdirectory.string() + " is not a valid scenarios directory", "FMTParallelWriter::FMTParallelWriter(...)", __LINE__, __FILE__);
 				}
 			projectdirectory = boutdirectory.string();
 			projectname = boost::filesystem::path(primaryfilelocation).stem().string();
@@ -127,7 +127,7 @@ namespace Parallel
 		
 	}
 
-	void FMTparallelwriter::setLayer(const std::string& p_name)
+	void FMTParallelWriter::setLayer(const std::string& p_name)
 	{
 		try {
 			#ifdef FMTWITHGDAL
@@ -136,11 +136,11 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparallelwriter::setLayer", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTParallelWriter::setLayer", __LINE__, __FILE__);
 		}
 	}
 
-	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getResults(
+	std::map<std::string, std::vector<std::vector<double>>> FMTParallelWriter::getResults(
 		const std::unique_ptr<Models::FMTModel>& modelptr,
 		const int& firstPeriod,
 		const int& lastPeriod) const
@@ -159,7 +159,7 @@ namespace Parallel
 		return results;
 	}
 
-	const std::map<std::string, std::map<double, std::vector<double>>>FMTparallelwriter::getDriftProbability(
+	const std::map<std::string, std::map<double, std::vector<double>>>FMTParallelWriter::getDriftProbability(
 		const std::map<std::string, std::vector<std::vector<double>>>& globalvalues,
 		const std::map<std::string, std::vector<std::vector<double>>>& localvalues,
 		const bool lower) const
@@ -181,7 +181,7 @@ namespace Parallel
 				{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"No drift calculated for missing values in " + globaloutput.first,
-						"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
+						"FMTParallelWriter::getDriftProbability", __LINE__, __FILE__);
 					continue;
 				}
 
@@ -192,7 +192,7 @@ namespace Parallel
 					{
 						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"No output "+ globaloutput.first +" in local",
-							"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
+							"FMTParallelWriter::getDriftProbability", __LINE__, __FILE__);
 					}
 					// TODO regarder si les length sont les mêmes entre les période (pas juste la première) donc un max()
 					std::size_t max_size = 0;
@@ -219,7 +219,7 @@ namespace Parallel
 						{
 							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 								"No iteration " + std::to_string(periodid) + " in global",
-								"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
+								"FMTParallelWriter::getDriftProbability", __LINE__, __FILE__);
 							return drifts;
 						}
 						const double globalvalue = globaloutput.second.at(periodid).at(0);
@@ -260,7 +260,7 @@ namespace Parallel
 		{
 			_exhandler->raiseFromCatch("On output "+outputname+" "+std::to_string(driftprob)
 				+" period id "+ std::to_string(periodof) + " on replicate " + std::to_string(iterationid + 1),
-				"FMTparallelwriter::getDriftProbability", __LINE__, __FILE__);
+				"FMTParallelWriter::getDriftProbability", __LINE__, __FILE__);
 
 		}
 		return drifts;
@@ -268,7 +268,7 @@ namespace Parallel
 
 
 
-	void FMTparallelwriter::setDriftProbability(const std::string& globalmodel, const std::string& localmodel) const
+	void FMTParallelWriter::setDriftProbability(const std::string& globalmodel, const std::string& localmodel) const
 	{
 		boost::lock_guard<boost::recursive_mutex> lock(mtx);
 		try {
@@ -289,25 +289,25 @@ namespace Parallel
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"Empty result layers, no drift probability generated",
-						"FMTparallelwriter::setDriftProbability", __LINE__, __FILE__);
+						"FMTParallelWriter::setDriftProbability", __LINE__, __FILE__);
 				}
 			}
 			else {
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"No layers to get",
-					"FMTparallelwriter::setDriftProbability", __LINE__, __FILE__);
+					"FMTParallelWriter::setDriftProbability", __LINE__, __FILE__);
 			}
 		#endif
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparallelwriter::setDriftProbability", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTParallelWriter::setDriftProbability", __LINE__, __FILE__);
 		}
 	}
 
 
 
 
-	void FMTparallelwriter::write(const std::string& modelname,
+	void FMTParallelWriter::write(const std::string& modelname,
 		const std::map<std::string, std::vector<std::vector<double>>>& results,
 		const int& firstPeriod, const int& lastPeriod, const int& iteration) const
 	{
@@ -323,12 +323,12 @@ namespace Parallel
 		#endif
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparallelwriter::write", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTParallelWriter::write", __LINE__, __FILE__);
 		}
 
 	}
 
-	void FMTparallelwriter::getAndWrite(
+	void FMTParallelWriter::getAndWrite(
 		const std::unique_ptr<Models::FMTModel>& modelptr, 
 		const std::vector<Core::FMTOutput>& loutputs)
 	{
@@ -371,10 +371,10 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMTparallelwriter::getAndWrite", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTParallelWriter::getAndWrite", __LINE__, __FILE__);
 			}
 	}
-	void FMTparallelwriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTSchedule> scheduleList, bool append) const
+	void FMTParallelWriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTSchedule> scheduleList, bool append) const
 	{
 		try
 		{
@@ -384,7 +384,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTparallelwriter::writeSchedules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTParallelWriter::writeSchedules", __LINE__, __FILE__);
 		}
 
 	}

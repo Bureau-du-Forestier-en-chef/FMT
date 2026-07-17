@@ -33,7 +33,7 @@ namespace Core
 		if (m_cache->empty())
 			{
 			const size_t NUMBER_OF_ATTRIBUTS = p_request.getResumeMask().size();
-			const Graph::FMTgraphvertextoyield* VERTEX_PTR = p_request.getVertexGraphInfo();
+			const Graph::FMTGraphVertexToYield* VERTEX_PTR = p_request.getVertexGraphInfo();
 			size_t toReserve = 0;
 			if (VERTEX_PTR!=nullptr)
 				{

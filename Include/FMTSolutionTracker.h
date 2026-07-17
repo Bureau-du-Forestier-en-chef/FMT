@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTlinegraph;
+	class FMTLineGraph;
 }
 
 namespace Core
@@ -39,10 +39,10 @@ namespace Spatial
 			FMTSolutionTracker& operator=(const FMTSolutionTracker& p_rhs) = default;
 			~FMTSolutionTracker() = default;
 			void addToSolution(size_t p_family,
-				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_NewGraph,
+				std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_NewGraph,
 				size_t p_LastGraphId);
 			void removeFromSolution(size_t p_family,
-				std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_OldGraph);
+				std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_OldGraph);
 			const std::vector<double>& getConstraintsValues(size_t p_Constraint)const;
 			size_t getNumberOfCells(size_t p_GraphId) const;
 			size_t size() const;
@@ -60,7 +60,7 @@ namespace Spatial
 			std::vector<std::vector<size_t>>m_ConstraintsFamilies;
 			const static size_t m_SOLUTION_RESIZE_FACTOR = 2;
 			void _modifySolution(size_t p_family,
-								std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_It,
+								std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_It,
 								double p_sense);
 			void _buildConstraintsFamilies(const std::vector<std::vector<size_t>>& p_ConstraintsFamilies,
 											size_t p_NumberOfFamilies);

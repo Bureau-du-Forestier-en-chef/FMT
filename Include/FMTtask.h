@@ -18,133 +18,133 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 /// Namespace for parallel tasking may include multithreading / multiprocessing
 namespace Parallel
 {
-	// DocString: FMTtask
+	// DocString: FMTTask
 	/**
 	Task for parallel jobs needs to implement a clone / work / split functions for your task
 	to used it in the taskhandler.
 	*/
-	class FMTEXPORT FMTtask : public Core::FMTObject
+	class FMTEXPORT FMTTask : public Core::FMTObject
 	{
 	public:
-		// DocString: FMTtask::FMTtask()
+		// DocString: FMTTask::FMTTask()
 		/**
-		Default constructor for FMTtask
+		Default constructor for FMTTask
 		*/
-		FMTtask();
-		// DocString: ~FMTtask()
+		FMTTask();
+		// DocString: ~FMTTask()
 		/**
-		FMTtask default virutal destructor.
+		FMTTask default virutal destructor.
 		*/
-		virtual ~FMTtask() = default;
-		// DocString: FMTtask::FMTtask(const FMTtask&)
+		virtual ~FMTTask() = default;
+		// DocString: FMTTask::FMTTask(const FMTTask&)
 		/**
-		Default copy constructor for FMTtask
+		Default copy constructor for FMTTask
 		*/
-		FMTtask(const FMTtask& rhs);
-		// DocString: FMTtask::operator=(const FMTtask&)
+		FMTTask(const FMTTask& rhs);
+		// DocString: FMTTask::operator=(const FMTTask&)
 		/**
-		Default copy constructor for FMTtask
+		Default copy constructor for FMTTask
 		*/
-		FMTtask& operator = (const FMTtask& rhs);
-		// DocString: FMTtask::clone()
+		FMTTask& operator = (const FMTTask& rhs);
+		// DocString: FMTTask::clone()
 		/**
-		Clone function for FMTtask.
+		Clone function for FMTTask.
 		*/
-		virtual std::unique_ptr<FMTtask>clone() const;
-		// DocString: FMTtask::split()
+		virtual std::unique_ptr<FMTTask>clone() const;
+		// DocString: FMTTask::split()
 		/**
 		Function to split the actual task in multiple tasks.
 		*/
-		virtual std::vector<std::unique_ptr<FMTtask>>split(const unsigned int& numberoftasks) const;
-		// DocString: FMTtask::spawn()
+		virtual std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const;
+		// DocString: FMTTask::spawn()
 		/**
 		Will spawn a minimal task from the master task
 		*/
-		virtual std::unique_ptr<FMTtask>spawn();
-		// DocString: FMTtask::work
+		virtual std::unique_ptr<FMTTask>spawn();
+		// DocString: FMTTask::work
 		/**
 		This function is the main job executed by the thread.
 		*/
 		virtual void work();
-		// DocString: FMTtask::run
+		// DocString: FMTTask::run
 		/**
 		@brief setup the crash handler and call work
 		*/
 		virtual void run();
-		// DocString: FMTtask::finalize
+		// DocString: FMTTask::finalize
 		/**
 		If this function is overrided it will be called right after the last task
 		is done
 		*/
 		virtual void finalize();
-		// DocString: FMTtask::isdone()
+		// DocString: FMTTask::isdone()
 		/**
 		Returns true if the job is all done.
 		*/
 		//bool isdone() const;
-		// DocString: FMTtask::getThreadId()
+		// DocString: FMTTask::getThreadId()
 		/**
 		@brief Get the thread id of the task.
 		*/
 		static std::string getThreadId();
-		// DocString: FMTtask::setTotalThreads()
+		// DocString: FMTTask::setTotalThreads()
 		/**
 		@brief set the total amount of threads
 		@param[in] the number of threads.
 		*/
 		static void setTotalThreads(const size_t& p_threads);
-		// DocString: FMTtaskhandler::done
+		// DocString: FMTTaskHandler::done
 		///If the task is done true else false
 		bool done;
 	protected:
-		// DocString: FMTtask::mutex
+		// DocString: FMTTask::mutex
 		///Recursive mutex for the task
 		static boost::recursive_mutex taskmutex;
-		// DocString: FMTtask::tasklogger
+		// DocString: FMTTask::tasklogger
 		///Logger for solver in parallel...coinmessagehandler does not support concurency.
 		///This logger wont print anything so dont use it in parallel.
 		std::unique_ptr<Logging::FMTLogger>tasklogger;
-		// DocString: FMTtask::setstatus()
+		// DocString: FMTTask::setstatus()
 		/**
 		Change the status of the task
 		*/
 		//void setstatus(bool status);
-		// DocString: FMTtask::split()
+		// DocString: FMTTask::split()
 		/**
 		Split the totalworksize in much possible equal buckets.
 		*/
 		std::vector<size_t>splitWork(int numberoftasks,const int& totalworksize) const;
-		// DocString: FMTtask::decrementWorkingThread()
+		// DocString: FMTTask::decrementWorkingThread()
 		/**
 		@brief decrement the number of thread working.
 		*/
 		void decrementWorkingThread();
-		// DocString: FMTtask::checkpoint()
+		// DocString: FMTTask::checkpoint()
 		/**
 		@brief wait for other thread to finish there jobs, if there job is done then continue.
 		*/
 		void checkpoint();
-		// DocString: FMTtask::_setCrashHandlers
+		// DocString: FMTTask::_setCrashHandlers
 		/**
 		@brief set the terminate and abort handler before running global function in thread
 		also set the se_translator on windows.
 		*/
 		void _setCrashHandlers();
 	private:
-		// DocString: FMTtask::m_workingThreads
+		// DocString: FMTTask::m_workingThreads
 		///The number of threads that are working
 		static size_t m_workingThreads;
-		// DocString: FMTtask::m_allThreads
+		// DocString: FMTTask::m_allThreads
 		///The total number of threads.
 		static size_t m_allThreads;
-		// DocString: FMTtask::m_checkpoint
+		// DocString: FMTTask::m_checkpoint
 		///The checkpoint condition variable.
 		static boost::condition_variable m_checkpoint;
-		// DocString: FMTtask::m_checkpointMutex
+		// DocString: FMTTask::m_checkpointMutex
 		///Mutex checkpoint
 		static boost::mutex m_checkpointMutex;
 		#if defined _MSC_VER
-		// DocString: FMTtask::m_SeTranslator
+		// DocString: FMTTask::m_SeTranslator
 		///Translator for windows error
 		Exception::FMTScopedSeTranslator m_SeTranslator;
 		#endif

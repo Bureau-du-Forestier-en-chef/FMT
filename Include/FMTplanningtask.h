@@ -30,45 +30,45 @@ namespace Core
 /// Namespace for parallel tasking may include multithreading / multiprocessing
 namespace Parallel
 {
-	class FMTparallelwriter;
-	// DocString: FMTplanningtask
+	class FMTParallelWriter;
+	// DocString: FMTPlanningTask
 	/**
 	This task make it easier to carry multiple parallel optimization of different FMTModel using the doPlanning function.
 	*/
-	class FMTEXPORT FMTplanningtask : public FMTtask
+	class FMTEXPORT FMTPlanningTask : public FMTTask
 	{
 	public:
-		// DocString: FMTplanningtask::FMTreplanningtask()
+		// DocString: FMTPlanningTask::FMTReplanningTask()
 		/**
-		Default constructor for FMTplanningtask
+		Default constructor for FMTPlanningTask
 		*/
-		FMTplanningtask() = default;
-		// DocString: FMTplanningtask::FMTplanningtask(const FMTplanningtask&)
+		FMTPlanningTask() = default;
+		// DocString: FMTPlanningTask::FMTPlanningTask(const FMTPlanningTask&)
 		/**
-		Default copy constructor for FMTplanningtask
+		Default copy constructor for FMTPlanningTask
 		*/
-		FMTplanningtask(const FMTplanningtask& rhs);
-		// DocString: FMTplanningtask::operator=(const FMTplanningtask&)
+		FMTPlanningTask(const FMTPlanningTask& rhs);
+		// DocString: FMTPlanningTask::operator=(const FMTPlanningTask&)
 		/**
-		Default copy assignement for FMTplanningtask
+		Default copy assignement for FMTPlanningTask
 		*/
-		FMTplanningtask& operator = (const FMTplanningtask& rhs);
-		// DocString: FMTplanningtask::~FMTplanningtask()
+		FMTPlanningTask& operator = (const FMTPlanningTask& rhs);
+		// DocString: FMTPlanningTask::~FMTPlanningTask()
 		/**
 		We need to define a destructor to take care of writing drift probabilities.
 		*/
-		virtual ~FMTplanningtask()=default;
-		// DocString: FMTplanningtask::clone
+		virtual ~FMTPlanningTask()=default;
+		// DocString: FMTPlanningTask::clone
 		/**
-		Clone function for FMTplanningtask
+		Clone function for FMTPlanningTask
 		*/
-		std::unique_ptr<FMTtask>clone() const;
-		// DocString: FMTplanningtask::setKeepModels
+		std::unique_ptr<FMTTask>clone() const;
+		// DocString: FMTPlanningTask::setKeepModels
 		/**
 		This function will force the task to keep the models... may consume memory.
 		*/
 		void setKeepModels();
-		// DocString: FMTplanningtask::push_back
+		// DocString: FMTPlanningTask::push_back
 		/**
 		Push a new FMTModel in the task queue with optional schedule.
 		Dont forget to just keep FMTOutput that you want to get values in the FMTModel.
@@ -76,43 +76,43 @@ namespace Parallel
 		void push_back(const Models::FMTModel& model,
 			std::vector<Core::FMTSchedule>schedules = std::vector<Core::FMTSchedule>(),
 			std::vector<Core::FMTOutput>louputs = std::vector<Core::FMTOutput>());
-		// DocString: FMTplanningtask::FMTplanningtask(...)
+		// DocString: FMTPlanningTask::FMTPlanningTask(...)
 		/**
 		You need to initialize the task mainly with the output parser parameters.
 		*/
-		FMTplanningtask(const int& minoutputperiod,
+		FMTPlanningTask(const int& minoutputperiod,
 					const int& maxoutputperiod,
 					const std::string& outputlocation,
 					std::string gdaldriver = "CSV",
 					std::vector<std::string>creationoptions= std::vector<std::string>(),
 					Core::FMToutputlevel outputlevel = Core::FMToutputlevel::standard,
 					std::string primaryfilelocation = std::string());
-		// DocString: FMTplanningtask::split
+		// DocString: FMTPlanningTask::split
 		/**
 		The split fonction that split the main task into multiple tasks of planning.
 		*/
-		virtual std::vector<std::unique_ptr<FMTtask>>split(const unsigned int& numberoftasks) const;
-		// DocString: FMTplanningtask::spawn
+		virtual std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const;
+		// DocString: FMTPlanningTask::spawn
 		/**
 		Will spawn a minimal task from the master task
 		*/
-		virtual std::unique_ptr<FMTtask>spawn();
-		// DocString: FMTplanningtask::work
+		virtual std::unique_ptr<FMTTask>spawn();
+		// DocString: FMTPlanningTask::work
 		/**
 		Main function that do the planning task
 		*/
 		virtual void work();
-		// DocString: FMTplanningtask::finalize
+		// DocString: FMTPlanningTask::finalize
 		/**
 		Do nothing...
 		*/
 		virtual void finalize();
-		// DocString: FMTplanningtask::passInLogger
+		// DocString: FMTPlanningTask::passInLogger
 		/**
 		Pass the logger
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
-		// DocString: FMTplanningtask::getModelsFromDynamicCast
+		// DocString: FMTPlanningTask::getModelsFromDynamicCast
 		/**
 		Get the models pointer casted in a given model type.
 		*/
@@ -127,22 +127,22 @@ namespace Parallel
 			return castedptr;
 		}
 	private:
-		// DocString: FMTplanningtask::m_ResultsWriter
+		// DocString: FMTPlanningTask::m_ResultsWriter
 		///Concurrent results writer who writes the results of each abstract model after each call to doPlanning
-		std::shared_ptr<FMTparallelwriter>m_ResultsWriter;
-		// DocString: FMTplanningtask::m_Models
+		std::shared_ptr<FMTParallelWriter>m_ResultsWriter;
+		// DocString: FMTPlanningTask::m_Models
 		///Abstracts models that need to be build and solve by the task.
 		std::list<std::unique_ptr<Models::FMTModel>>m_Models;
-		// DocString: FMTplanningtask::m_allSchedules
+		// DocString: FMTPlanningTask::m_allSchedules
 		///All schedules of FMTModel if we only want to do playback
 		std::list<std::vector<Core::FMTSchedule>>m_allSchedules;
-		// DocString: FMTplanningtask::m_Outputs
+		// DocString: FMTPlanningTask::m_Outputs
 		///Abstracts outputs that the results need to be write by the task.
 		std::list<std::vector<Core::FMTOutput>>m_Outputs;
-		// DocString: FMTplanningtask::m_keepModels
+		// DocString: FMTPlanningTask::m_keepModels
 		///If keep models is true the models will be kept after work
 		bool m_keepModels;
-		// DocString: FMTplanningtask::copyModels
+		// DocString: FMTPlanningTask::copyModels
 		/**
 		Copy models for unique model...
 		*/

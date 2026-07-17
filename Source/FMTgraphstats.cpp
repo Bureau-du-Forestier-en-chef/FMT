@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph {
 
-	FMTgraphstats::FMTgraphstats():
+	FMTGraphStats::FMTGraphStats():
 		cols(0),
 		rows(0),
 		vertices(0),
@@ -22,8 +22,8 @@ namespace Graph {
 
 		}
 	/*#ifdef FMTWITHOSI
-		FMTgraphstats::FMTgraphstats(const std::unique_ptr<OsiSolverInterface>& solverinterface,
-			const FMTgraph<FMTvertexproperties, FMTedgeproperties>::FMTadjacency_list& graph, int ltransfer_rows, int loutput_rows, int loutput_cols):
+		FMTGraphStats::FMTGraphStats(const std::unique_ptr<OsiSolverInterface>& solverinterface,
+			const FMTGraph<FMTVertexProperties, FMTEdgeProperties>::FMTadjacency_list& graph, int ltransfer_rows, int loutput_rows, int loutput_cols):
 			cols(solverinterface->getNumCols()),
 			rows(solverinterface->getNumRows()),
 			vertices(boost::num_vertices(graph)),
@@ -36,7 +36,7 @@ namespace Graph {
 			}
 	#endif*/
 
-	FMTgraphstats& FMTgraphstats::operator += (const FMTgraphstats& rhs)
+	FMTGraphStats& FMTGraphStats::operator += (const FMTGraphStats& rhs)
 		{
 		cols += rhs.cols;
 		rows += rhs.rows;
@@ -47,7 +47,7 @@ namespace Graph {
 		output_cols += rhs.output_cols;
 		return *this;
 		}
-	FMTgraphstats& FMTgraphstats::operator -= (const FMTgraphstats& rhs)
+	FMTGraphStats& FMTGraphStats::operator -= (const FMTGraphStats& rhs)
 	{
 		cols -= rhs.cols;
 		rows -= rhs.rows;
@@ -58,19 +58,19 @@ namespace Graph {
 		output_cols -= rhs.output_cols;
 		return *this;
 	}
-	FMTgraphstats FMTgraphstats::operator + (const FMTgraphstats& rhs)
+	FMTGraphStats FMTGraphStats::operator + (const FMTGraphStats& rhs)
 		{
 		*this += rhs;
 		return *this;
 		}
 
-	FMTgraphstats FMTgraphstats::operator - (const FMTgraphstats& rhs)
+	FMTGraphStats FMTGraphStats::operator - (const FMTGraphStats& rhs)
 		{
 		*this -= rhs;
 		return *this;
 		}
 
-	FMTgraphstats::operator std::string() const
+	FMTGraphStats::operator std::string() const
 		{
 		std::string values = "";
 		values += "Columns: " + std::to_string(cols);
@@ -83,18 +83,18 @@ namespace Graph {
 		return values;
 		}
 
-	bool FMTgraphstats::operator == (const FMTgraphstats& rhs) const
+	bool FMTGraphStats::operator == (const FMTGraphStats& rhs) const
 		{
 		return (cols == rhs.cols && rows == rhs.rows &&
 			vertices == rhs.vertices && edges == rhs.edges &&
 			transfer_rows == rhs.transfer_rows && output_rows == rhs.output_rows &&
 			output_cols == rhs.output_cols);
 		}
-	bool FMTgraphstats::operator != (const FMTgraphstats& rhs) const
+	bool FMTGraphStats::operator != (const FMTGraphStats& rhs) const
 		{
 		return (!(*this == rhs));
 		}
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTgraphstats)
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTGraphStats)

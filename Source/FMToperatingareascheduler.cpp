@@ -22,7 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Heuristics
 {
-	void FMToperatingareascheduler::clearRowCache()
+	void FMTOperatingAreaScheduler::clearRowCache()
 		{
 		if (!useprimal)
 			{
@@ -31,13 +31,13 @@ namespace Heuristics
 		}
 
 
-	void FMToperatingareascheduler::unboundAll(bool atprimal)
+	void FMTOperatingAreaScheduler::unboundAll(bool atprimal)
 		{
 		try {
 			this->clearRowCache();
 			std::vector<int>targeteditems;
 			std::vector<double>bounds;
-			for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+			for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
 				operatingareait != operatingareas.end(); ++operatingareait)
 				{
 				if (useprimal || atprimal)
@@ -58,17 +58,17 @@ namespace Heuristics
 					}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::unboundAll", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::unboundAll", __LINE__, __FILE__);
 			}
 		}
 
-	void FMToperatingareascheduler::unbound(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tounbound, bool atprimal)
+	void FMTOperatingAreaScheduler::unbound(const std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>& tounbound, bool atprimal)
 		{
 		try {
 			this->clearRowCache();
 			std::vector<int>targeteditems;
 			std::vector<double>bounds;
-			for (std::vector<FMToperatingareascheme>::const_iterator operatingareait : tounbound)
+			for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait : tounbound)
 				{
 				if (useprimal || atprimal)
 					{
@@ -88,17 +88,17 @@ namespace Heuristics
 					}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::unbound",__LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::unbound",__LINE__, __FILE__);
 			}
 		}
 
 
-	void FMToperatingareascheduler::closePrimalBounds()
+	void FMTOperatingAreaScheduler::closePrimalBounds()
 		{
         try{
             std::vector<int>variables;
             std::vector<double>bounds;
-            for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+            for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
                 operatingareait != operatingareas.end(); ++operatingareait)
                     {
                     operatingareait->boundAllPrimalSchemes(variables,bounds,0);
@@ -106,11 +106,11 @@ namespace Heuristics
             this->setColSetBounds(&variables[0], &variables.back() + 1, &bounds[0]);
         }catch (...)
             {
-			_exhandler->printExceptions("", "FMToperatingareascheduler::closeprimalbound",__LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTOperatingAreaScheduler::closeprimalbound",__LINE__, __FILE__);
             }
 		}
 
-	void FMToperatingareascheduler::setAllInteger()
+	void FMTOperatingAreaScheduler::setAllInteger()
 		{
         try{
 		if (!useprimal)//need to turn back the formulation to primal to make it work ith MIP
@@ -121,7 +121,7 @@ namespace Heuristics
 				std::vector<double>rowsbounds;
 				std::vector<int>colsitems;
 				std::vector<double>colsbounds;
-				for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+				for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
 					operatingareait != operatingareas.end(); ++operatingareait)
 					{
 					size_t selected = 0;
@@ -144,7 +144,7 @@ namespace Heuristics
 				this->stockResolve();
 			}
 		std::vector<int>integervariables;
-		for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+		for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 				{
 				operatingareait->pushBinaries(integervariables);
@@ -152,11 +152,11 @@ namespace Heuristics
 		this->setInteger(&integervariables[0], static_cast<int>(integervariables.size()));
         }catch(...)
             {
-            _exhandler->raiseFromCatch("","FMToperatingareascheduler::setAllInteger",__LINE__, __FILE__);
+            _exhandler->raiseFromCatch("","FMTOperatingAreaScheduler::setAllInteger",__LINE__, __FILE__);
             }
 		}
 
-	int FMToperatingareascheduler::resolveModel()
+	int FMTOperatingAreaScheduler::resolveModel()
 		{
 		try {
 			if (!useprimal || solvertype != Models::FMTsolverinterface::CLP)
@@ -168,17 +168,17 @@ namespace Heuristics
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMToperatingareascheduler::resolveModel", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTOperatingAreaScheduler::resolveModel", __LINE__, __FILE__);
 			}
 		return FMTLpSolver::getIterationCount();
 		}
 
-	bool FMToperatingareascheduler::empty() const
+	bool FMTOperatingAreaScheduler::empty() const
 		{
 		return operatingareas.empty();
 		}
 
-	void FMToperatingareascheduler::setForDualInitialSolve()
+	void FMTOperatingAreaScheduler::setForDualInitialSolve()
 	{
 		try {
 			this->unboundAll(); //Make sure rhs are right need to be released
@@ -186,13 +186,13 @@ namespace Heuristics
 			this->resolveModel();
 		}catch (...)
 			{
-			_exhandler->printExceptions("Thread : " + getThreadId() + " ", "FMToperatingareascheduler::setForDualInitialSolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("Thread : " + getThreadId() + " ", "FMTOperatingAreaScheduler::setForDualInitialSolve", __LINE__, __FILE__);
 			}
 
 	}
 
 
-	int FMToperatingareascheduler::initialMoveSolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected)
+	int FMTOperatingAreaScheduler::initialMoveSolution(const std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>& selected)
 	{
 		int iterations = 0;
 		try {
@@ -200,12 +200,12 @@ namespace Heuristics
 			iterations = this->resolveModel();
 		}catch (...)
 		{
-			_exhandler->printExceptions("Thread : " + getThreadId() + " ", "FMToperatingareascheduler::initialMoveSolution", __LINE__, __FILE__);
+			_exhandler->printExceptions("Thread : " + getThreadId() + " ", "FMTOperatingAreaScheduler::initialMoveSolution", __LINE__, __FILE__);
 		}
 		return iterations;
 	}
 
-	void FMToperatingareascheduler::resetBaseInitialSolution()
+	void FMTOperatingAreaScheduler::resetBaseInitialSolution()
 	{
 		try {
 			this->unboundAll(); //release everything
@@ -217,12 +217,12 @@ namespace Heuristics
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("Thread : " + getThreadId() + " ", "FMToperatingareascheduler::resetBaseInitialSolution", __LINE__, __FILE__);
+			_exhandler->printExceptions("Thread : " + getThreadId() + " ", "FMTOperatingAreaScheduler::resetBaseInitialSolution", __LINE__, __FILE__);
 		}
 
 	}
 
-	bool FMToperatingareascheduler::initialSolve()
+	bool FMTOperatingAreaScheduler::initialSolve()
 		{
 		bool foundsolution = false;
 		try {
@@ -236,7 +236,7 @@ namespace Heuristics
 					setForDualInitialSolve();
 					problemsolved = "dual";
 				}
-				std::vector<std::vector<FMToperatingareascheme>::const_iterator> selected;
+				std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator> selected;
 				do {
 					this->clearRowCache();
 					selected = this->setDraw();
@@ -261,14 +261,14 @@ namespace Heuristics
 					{
 						_exhandler->raise(Exception::FMTexc::FMTschemefailed,
 							"Thread : " + getThreadId() + " FMToperatingareascheduler failed initialsolve switching to random for next try.",
-							"FMToperatingareascheduler::initialSolve", __LINE__, __FILE__);
+							"FMTOperatingAreaScheduler::initialSolve", __LINE__, __FILE__);
 						userandomness = true; //Switch to random now
 
 					}
 					else {
 						_exhandler->raise(Exception::FMTexc::FMTschemefailed,
 							"Thread : " + getThreadId() + " FMToperatingareascheduler initialsolve at random failed, trying another scheme.",
-							"FMToperatingareascheduler::initialSolve", __LINE__, __FILE__);
+							"FMTOperatingAreaScheduler::initialSolve", __LINE__, __FILE__);
 					}
 					resetBaseInitialSolution();
 				}
@@ -276,18 +276,18 @@ namespace Heuristics
 				{
 					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 						"Thread : " + getThreadId() + " Model is not optimal at the beginning of initialsolve",
-														"FMToperatingareascheduler::initialSolve", __LINE__, __FILE__);
+														"FMTOperatingAreaScheduler::initialSolve", __LINE__, __FILE__);
 
 				}
 			}
 		}catch (...)
 		{
-			_exhandler->printExceptions("Thread : " + getThreadId()+" ", "FMToperatingareascheduler::initialSolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("Thread : " + getThreadId()+" ", "FMTOperatingAreaScheduler::initialSolve", __LINE__, __FILE__);
 		}
 		return foundsolution;
 		}
 
-	bool FMToperatingareascheduler::branchNBoundSolve()
+	bool FMTOperatingAreaScheduler::branchNBoundSolve()
 		{
         try{
 			if (this->isProvenOptimal())
@@ -301,13 +301,13 @@ namespace Heuristics
 			this->branchAndBound();
         	}catch(...)
             	{
-        		_exhandler->printExceptions("", "FMToperatingareascheduler::branchNBoundSolve", __LINE__, __FILE__);
+        		_exhandler->printExceptions("", "FMTOperatingAreaScheduler::branchNBoundSolve", __LINE__, __FILE__);
             	}
         useprimal=true;
 		return this->isProvenOptimal();
 		}
 
-	void FMToperatingareascheduler::resetBaseGreedySolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected,
+	void FMTOperatingAreaScheduler::resetBaseGreedySolution(const std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>& selected,
 															const std::vector<int>& oldschemeid,
 															const std::vector<int>& oldconstraints,
 															const std::vector<double>& oldbounds)
@@ -351,13 +351,13 @@ namespace Heuristics
 				" Selected size of " + std::to_string(selected.size()) +
 				" tabou size of " + std::to_string(oldschemeid.size()) +
 				" Constraints size of " + std::to_string(oldconstraints.size()) +
-				" bounds size of " + std::to_string(oldbounds.size()), "FMToperatingareascheduler::resetBaseGreedySolution", __LINE__, __FILE__);
+				" bounds size of " + std::to_string(oldbounds.size()), "FMTOperatingAreaScheduler::resetBaseGreedySolution", __LINE__, __FILE__);
 		}
 
 	}
 
 
-	bool FMToperatingareascheduler::releaseGreedySolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected,
+	bool FMTOperatingAreaScheduler::releaseGreedySolution(const std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>& selected,
 		std::vector<int>& oldconstraints,
 		std::vector<double>& oldbounds)
 	{
@@ -367,7 +367,7 @@ namespace Heuristics
 			{
 				const double* rowlowers = this->getRowLower();
 				const double* rowuppers = this->getRowUpper();
-				for (const std::vector<FMToperatingareascheme>::const_iterator& cit : selected)
+				for (const std::vector<FMTOperatingAreaScheme>::const_iterator& cit : selected)
 				{
 					cit->fillBoundsNVariables(rowlowers, rowuppers, oldconstraints, oldbounds);
 				}
@@ -381,12 +381,12 @@ namespace Heuristics
 			_exhandler->printExceptions("Thread : " + getThreadId() +
 				" Selected size of "+ std::to_string(selected.size())+
 				" Constraints size of "+ std::to_string(oldconstraints.size()) +
-				" bounds size of " + std::to_string(oldbounds.size()) , "FMToperatingareascheduler::releaseGreedySolution", __LINE__, __FILE__);
+				" bounds size of " + std::to_string(oldbounds.size()) , "FMTOperatingAreaScheduler::releaseGreedySolution", __LINE__, __FILE__);
 		}
 		return optimalsolution;
 	}
 
-	bool FMToperatingareascheduler::greedyMoveSolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected,
+	bool FMTOperatingAreaScheduler::greedyMoveSolution(const std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>& selected,
 		const std::vector<int>& oldschemeid)
 	{
 		bool optimalsolution = false;
@@ -398,12 +398,12 @@ namespace Heuristics
 			{
 			_exhandler->printExceptions("Thread : " + getThreadId() +
 				" Selected size of " + std::to_string(selected.size()) +
-				" tabou size of " + std::to_string(oldschemeid.size()), "FMToperatingareascheduler::greedyMoveSolution", __LINE__, __FILE__);
+				" tabou size of " + std::to_string(oldschemeid.size()), "FMTOperatingAreaScheduler::greedyMoveSolution", __LINE__, __FILE__);
 			}
 		return optimalsolution;
 	}
 
-	bool FMToperatingareascheduler::greedyPass(const double& initsol, const unsigned int& iteration)
+	bool FMTOperatingAreaScheduler::greedyPass(const double& initsol, const unsigned int& iteration)
 	{
 		try{
 			if (this->isProvenOptimal())
@@ -416,9 +416,9 @@ namespace Heuristics
 					problemsolved = "dual";
 					this->closePrimalBounds();
 				}
-				std::vector<std::vector<FMToperatingareascheme>::const_iterator> opareas;
+				std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator> opareas;
 				opareas.reserve(operatingareas.size());
-				for (std::vector<FMToperatingareascheme>::const_iterator areait = operatingareas.begin() ; areait != operatingareas.end() ; ++areait)
+				for (std::vector<FMTOperatingAreaScheme>::const_iterator areait = operatingareas.begin() ; areait != operatingareas.end() ; ++areait)
 				{
 					opareas.push_back(areait);
 				}
@@ -428,7 +428,7 @@ namespace Heuristics
 					//Switch to random for next draw
 					userandomness = true;
 				}
-				const std::vector<std::vector<FMToperatingareascheme>::const_iterator> selected = draw(opareas);
+				const std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator> selected = draw(opareas);
 				const std::vector<int> oldschemeid = getSolutionIndexes(selected);
 				std::vector<int>oldconstraints;
 				std::vector<double>oldbounds;
@@ -454,12 +454,12 @@ namespace Heuristics
 			}
 		}catch (...)
 		{
-			_exhandler->printExceptions("Thread : " + getThreadId(), "FMToperatingareascheduler::greedyPass", __LINE__, __FILE__);
+			_exhandler->printExceptions("Thread : " + getThreadId(), "FMTOperatingAreaScheduler::greedyPass", __LINE__, __FILE__);
 		}
 		return this->isProvenOptimal();
 	}
 
-	std::vector<int> FMToperatingareascheduler::getSolutionIndexes(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& opareaits) const
+	std::vector<int> FMTOperatingAreaScheduler::getSolutionIndexes(const std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>& opareaits) const
 	{
 	std::vector<int> indexes;
 	try
@@ -493,15 +493,15 @@ namespace Heuristics
 			}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("","FMToperatingareascheduler::getSolutionIndexes", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTOperatingAreaScheduler::getSolutionIndexes", __LINE__, __FILE__);
 		}
 		return indexes;
 	}
 
-	bool FMToperatingareascheduler::gotRejectedNodes() const
+	bool FMTOperatingAreaScheduler::gotRejectedNodes() const
 	{
 		try {
-			for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+			for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
 				operatingareait != operatingareas.end(); ++operatingareait)
 			{
 				if (operatingareait->getRejectedNodesCid() > 0)
@@ -512,12 +512,12 @@ namespace Heuristics
 
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::gotRejectedNodes", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::gotRejectedNodes", __LINE__, __FILE__);
 		}
 		return false;
 	}
 
-	bool FMToperatingareascheduler::completeInitialSolution()
+	bool FMTOperatingAreaScheduler::completeInitialSolution()
 	{
 		try{
 			if (!useprimal)//set it in the right form remove it from initialSolve....
@@ -528,7 +528,7 @@ namespace Heuristics
 				const double* initialrowsolution = getRowPrice();
 				std::vector<double>newcolsolution(initialcolsolution, initialcolsolution + getNumCols() + 1);
 				std::vector<double>newrowsolution(initialrowsolution, initialrowsolution + getNumRows() + 1);
-				for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+				for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
 					operatingareait != operatingareas.end(); ++operatingareait)
 				{
 					if (operatingareait->getRejectedNodesCid()>0)
@@ -565,20 +565,20 @@ namespace Heuristics
 			}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::completeInitialSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::completeInitialSolution", __LINE__, __FILE__);
 		}
 		return false;
 	}
 
 
-	void FMToperatingareascheduler::setOperatingAreasConstraints(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
+	void FMTOperatingAreaScheduler::setOperatingAreasConstraints(const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>& maingraph,
 																const Models::FMTModel& model,
 																const Core::FMTOutputNode& target)
 		{
 		try {
 			Core::FMTOutputNode specifictarget(target);
 			const std::vector<Core::FMTAction>modelactions = model.getactions();
-			//const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> basedescriptors = maingraph.getPeriodVertices(maingraph.getFirstActivePeriod());
+			//const std::unordered_map<size_t, Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> basedescriptors = maingraph.getPeriodVertices(maingraph.getFirstActivePeriod());
 			Core::FMTOutputNode areatarget(specifictarget);
 			Core::FMTMask areamask = areatarget.source.getMask();
 			for (const Core::FMTTheme& theme : model.getThemes())
@@ -593,20 +593,20 @@ namespace Heuristics
 				actionids.push_back(static_cast<int>(std::distance(&modelactions[0], actptr)));
 			}
 			const double* primalsolution = this->getColSolution();
-			for (std::vector<FMToperatingareascheme>::iterator operatingareait = operatingareas.begin();
+			for (std::vector<FMTOperatingAreaScheme>::iterator operatingareait = operatingareas.begin();
 				operatingareait != operatingareas.end(); ++operatingareait)
 			{
 				specifictarget.source.setMask(operatingareait->getMask());
 				areatarget.source.setMask(operatingareait->getMask());
-				std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>descriptors;
-				std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>totalareadescriptors;
+				std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>descriptors;
+				std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>totalareadescriptors;
 				for (int period = static_cast<int>((maingraph.getFirstActivePeriod() + operatingareait->getStartingPeriod())); period < static_cast<int>((maingraph.size() - 1)); ++period)
 				{
 					if (descriptors.empty())
 					{
 						totalareadescriptors = maingraph.getNode(model, areatarget, period);
 					}
-					std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> perioddescriptors;
+					std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> perioddescriptors;
 					if (!totalareadescriptors.empty())
 					{
 						perioddescriptors = maingraph.getNode(model, specifictarget, period);
@@ -636,42 +636,42 @@ namespace Heuristics
 						_exhandler->raise(Exception::FMTexc::FMTEmptyOA,
 							"No actions found in graph for " +
 							std::string(operatingareait->getMask()),
-							"FMToperatingareascheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
+							"FMTOperatingAreaScheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
 						}
 					operatingareait->setConstraints(descriptors, totalareadescriptors, maingraph, *this, primalsolution, actionids);
 				}else{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 											"No nodes found in graph for "+
 											std::string(operatingareait->getMask()),
-											"FMToperatingareascheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
+											"FMTOperatingAreaScheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
 				}
 				if (operatingareait->getArea()==0)
 					{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"area of operating area "+
 						std::string(operatingareait->getMask())+" is null",
-						"FMToperatingareascheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
+						"FMTOperatingAreaScheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
 					}else if (operatingareait->getOpeningBinaries().empty())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTignore,
 							std::string(operatingareait->getMask()) + " not operable",
-							"FMToperatingareascheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
+							"FMTOperatingAreaScheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
 						}
 			}
 			this->synchronize();
 			/*if (!this->stockResolve()){
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 													"Infeasible model",
-													"FMToperatingareascheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
+													"FMTOperatingAreaScheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
 
 					}*/
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::setOperatingAreasConstraints", __LINE__, __FILE__);
 			}
 		}
 
-	bool FMToperatingareascheduler::setAdjacencyConstraints()
+	bool FMTOperatingAreaScheduler::setAdjacencyConstraints()
 		{
 		bool rowadded = false;
 		try {
@@ -679,7 +679,7 @@ namespace Heuristics
 		const std::vector<double>elements(2, 1.0);
 		std::vector<int>columns(2, 0);
 		int constraintsid = this->getNumRows();
-		for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+		for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 			{
 			const std::vector<Core::FMTMask>neighbors = operatingareait->getNeighbors();
@@ -690,7 +690,7 @@ namespace Heuristics
 				if (adjacencyconstraints.find(simple)== adjacencyconstraints.end() &&
 					adjacencyconstraints.find(reverse) == adjacencyconstraints.end())
 					{
-					std::vector<FMToperatingareascheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMTOperatingAreaSchemeComparator(neighbor));
+					std::vector<FMTOperatingAreaScheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMTOperatingAreaSchemeComparator(neighbor));
 					std::map<int, std::vector<int>> neighborsbin;
 					if (opneighbor!= operatingareas.end())
 						{
@@ -723,18 +723,18 @@ namespace Heuristics
 		/*if (!this->stockResolve()){
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 										"Infeasible model",
-										"FMToperatingareascheduler::setAdjacencyConstraints", __LINE__, __FILE__);
+										"FMTOperatingAreaScheduler::setAdjacencyConstraints", __LINE__, __FILE__);
 
 		}*/
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::setAdjacencyConstraints", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::setAdjacencyConstraints", __LINE__, __FILE__);
 			}
 		return rowadded;
 		}
 
-	FMToperatingareascheduler::FMToperatingareascheduler(const FMToperatingareascheduler& rhs) :
-		FMTlpheuristic(rhs),operatingareas(rhs.operatingareas), adjacencyconstraints(rhs.adjacencyconstraints),
+	FMTOperatingAreaScheduler::FMTOperatingAreaScheduler(const FMTOperatingAreaScheduler& rhs) :
+		FMTLpHeuristic(rhs),operatingareas(rhs.operatingareas), adjacencyconstraints(rhs.adjacencyconstraints),
 		proportionofset(rhs.proportionofset),
 		userandomness(rhs.userandomness),useprimal(rhs.useprimal)
 		{
@@ -742,11 +742,11 @@ namespace Heuristics
 		
 		}
 
-	FMToperatingareascheduler& FMToperatingareascheduler::operator = (const FMToperatingareascheduler& rhs)
+	FMTOperatingAreaScheduler& FMTOperatingAreaScheduler::operator = (const FMTOperatingAreaScheduler& rhs)
 		{
 		if (this!=&rhs)
 			{
-			FMTlpheuristic::operator=(rhs);
+			FMTLpHeuristic::operator=(rhs);
 			operatingareas=rhs.operatingareas;
 			adjacencyconstraints=rhs.adjacencyconstraints;
 			proportionofset = rhs.proportionofset;
@@ -755,7 +755,7 @@ namespace Heuristics
 			}
 		return *this;
 		}
-	FMToperatingareascheduler::~FMToperatingareascheduler()
+	FMTOperatingAreaScheduler::~FMTOperatingAreaScheduler()
 		{
 		try {
 		    if (!usingsolvercopy&&canUpdateSource())
@@ -763,7 +763,7 @@ namespace Heuristics
                   //Will need a clean matrix to fit with FMTLpModel!
                 std::vector<int>rowstodelete;
                 std::vector<int>columnstodelete;
-                for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+                for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
                     operatingareait != operatingareas.end(); ++operatingareait)
                 {
                     operatingareait->getRessourcesToDelete(columnstodelete, rowstodelete);
@@ -789,22 +789,22 @@ namespace Heuristics
                 }
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMToperatingareascheduler::~", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTOperatingAreaScheduler::~", __LINE__, __FILE__);
 			}
 		}
 
-	std::vector<std::vector<FMToperatingareascheme>::const_iterator> FMToperatingareascheduler::setDraw()
+	std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator> FMTOperatingAreaScheduler::setDraw()
 		{
-        std::vector<std::vector<FMToperatingareascheme>::const_iterator>selected;
+        std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>selected;
         try{
-            std::vector<std::vector<FMToperatingareascheme>::const_iterator>potentials;
+            std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>potentials;
 			std::vector<double>potentialValues;
             const double* upperbounds = this->getColUpper();
             const double* lowerbounds = this->getColLower();
             const double* primalsolution = this->getColSolution();
             const double* dualsolution = this->getRowActivity();
             const double* rhsupper = this->getRowUpper();
-            std::vector<FMToperatingareascheme>::const_iterator areait = operatingareas.begin();
+            std::vector<FMTOperatingAreaScheme>::const_iterator areait = operatingareas.begin();
             while (areait != operatingareas.end())
                 {
                 if (!areait->empty() 
@@ -827,7 +827,7 @@ namespace Heuristics
 					potentialValues.push_back(value);
 					/*if (!potentials.empty() && !userandomness)
                         {
-                        std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator vit = potentials.begin();
+                        std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>::iterator vit = potentials.begin();
 						size_t oldsize = potentials.size();
                         while (potentials.size() == oldsize)
                             {
@@ -861,7 +861,7 @@ namespace Heuristics
 					[&](int A, int B) -> bool {
 					return potentialValues[A]>potentialValues[B];
 				});
-				std::vector<std::vector<FMToperatingareascheme>::const_iterator>sortedPotentials;
+				std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>sortedPotentials;
 				sortedPotentials.reserve(potentials.size());
 				for (const int& INDEX : indices)
 					{
@@ -872,7 +872,7 @@ namespace Heuristics
 			}
             if (proportionofset==0)
                 {
-                _exhandler->raise(Exception::FMTexc::FMTrangeerror,"Proportion of selected operating area equal 0","FMToperatingareascheduler::setDraw",__LINE__,__FILE__);
+                _exhandler->raise(Exception::FMTexc::FMTrangeerror,"Proportion of selected operating area equal 0","FMTOperatingAreaScheduler::setDraw",__LINE__,__FILE__);
                 }
             selected = draw(potentials);
             /*const size_t maxareatopick = static_cast<size_t>(std::ceil(static_cast<double>(operatingareas.size()) * proportionofset));
@@ -880,7 +880,7 @@ namespace Heuristics
                 {
                 std::shuffle(potentials.begin(), potentials.end(), this->generator);
                 }
-			std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator randomit = potentials.begin();
+			std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>::iterator randomit = potentials.begin();
 			while ((selected.size() < maxareatopick) && randomit != potentials.end())
 				{
 				selected.push_back(*randomit);
@@ -888,14 +888,14 @@ namespace Heuristics
 				}*/
         }catch(...)
             {
-                _exhandler->raiseFromCatch("","FMToperatingareascheduler::setDraw", __LINE__, __FILE__);
+                _exhandler->raiseFromCatch("","FMTOperatingAreaScheduler::setDraw", __LINE__, __FILE__);
             }
 		return selected;
 		}
 
-	std::vector<std::vector<FMToperatingareascheme>::const_iterator> FMToperatingareascheduler::draw(std::vector<std::vector<FMToperatingareascheme>::const_iterator>& oparea)
+	std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator> FMTOperatingAreaScheduler::draw(std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>& oparea)
 	{
-		std::vector<std::vector<FMToperatingareascheme>::const_iterator> selected;
+		std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator> selected;
 		try{
 			//Calculate the number of operating areas to pick base on the proportion of set... 5% of 50 operating areas == 3 because of the ceil
 			const size_t maxopareatopick = static_cast<size_t>(std::ceil(static_cast<double>(operatingareas.size()) * proportionofset));
@@ -903,7 +903,7 @@ namespace Heuristics
 				{
 				std::shuffle(oparea.begin(), oparea.end(), this->generator);
 				}
-			std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator randomit = oparea.begin();
+			std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>::iterator randomit = oparea.begin();
 			while ((selected.size() < maxopareatopick) && randomit != oparea.end())
 				{
 				selected.push_back(*randomit);
@@ -911,12 +911,12 @@ namespace Heuristics
 				}
 		}catch(...)
 			{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::draw", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::draw", __LINE__, __FILE__);
 			}
 		return selected;
 	}
 
-	size_t FMToperatingareascheduler::selectScheme(std::vector<size_t>& potentialschemes, const int& schemetoskip) const
+	size_t FMTOperatingAreaScheduler::selectScheme(std::vector<size_t>& potentialschemes, const int& schemetoskip) const
 	{
 		try{
 			for (const size_t& potentialscheme : potentialschemes)
@@ -928,13 +928,13 @@ namespace Heuristics
 			}
 		}catch(...)
 		{
-			_exhandler->raiseFromCatch("","FMToperatingareascheduler::selectScheme", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTOperatingAreaScheduler::selectScheme", __LINE__, __FILE__);
 		}
 		//Return the first in the case that there is only one scheme and its the same as the one to skip
 		return *potentialschemes.begin();
 	}
 
-	bool FMToperatingareascheduler::getBounds(const std::vector<FMToperatingareascheme>::const_iterator& operatingareaiterator,std::vector<int>& targeteditems,std::vector<double>& bounds, const bool& boundall, const size_t& schemeid, bool keeploose) const
+	bool FMTOperatingAreaScheduler::getBounds(const std::vector<FMTOperatingAreaScheme>::const_iterator& operatingareaiterator,std::vector<int>& targeteditems,std::vector<double>& bounds, const bool& boundall, const size_t& schemeid, bool keeploose) const
 	{
 		try{
 			if (!boundall)
@@ -961,12 +961,12 @@ namespace Heuristics
 			}
 		}catch(...)
 			{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::getBounds", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::getBounds", __LINE__, __FILE__);
 			}
 		return false;
 	}
 
-	size_t FMToperatingareascheduler::setBounds(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tobound,const std::vector<int>& schemestoskip,bool keeploose)
+	size_t FMTOperatingAreaScheduler::setBounds(const std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>& tobound,const std::vector<int>& schemestoskip,bool keeploose)
 		{
 			size_t gotschedule = 0;
 			try{
@@ -978,12 +978,12 @@ namespace Heuristics
 			std::vector<int>ltargeteditems;
 			std::vector<double>lbounds;
 			size_t opat = 0;
-			for (std::vector<FMToperatingareascheme>::const_iterator opit : tobound)
+			for (std::vector<FMTOperatingAreaScheme>::const_iterator opit : tobound)
 			{
-				std::vector<FMToperatingareascheme>allneighbors;
+				std::vector<FMTOperatingAreaScheme>allneighbors;
 				for (const Core::FMTMask& neighbormask : opit->getNeighbors())
 				{
-					std::vector<FMToperatingareascheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMTOperatingAreaSchemeComparator(neighbormask));
+					std::vector<FMTOperatingAreaScheme>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMTOperatingAreaSchemeComparator(neighbormask));
 					if (opneighbor != operatingareas.end())
 					{
 						allneighbors.push_back(*opneighbor);
@@ -1023,7 +1023,7 @@ namespace Heuristics
 				{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"No schedule found for Operating area " + std::string(opit->getMask()),
-						"FMToperatingareascheduler::setBounds", __LINE__, __FILE__);
+						"FMTOperatingAreaScheduler::setBounds", __LINE__, __FILE__);
 				}
 				gotschedule += opgotschedule;
 				/*if (!potentialschemes.empty())
@@ -1044,7 +1044,7 @@ namespace Heuristics
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"No schedule found for Operating area "+std::s__LINE__opit->getmask()),
-						"FMToperatingareascheduler::setBounds",__LINE__, __FILE__);
+						"FMTOperatingAreaScheduler::setBounds",__LINE__, __FILE__);
 					if (useprimal)
 					{
 						opit->boundAllPrimalSchemes(targeteditems, bounds);
@@ -1069,19 +1069,19 @@ namespace Heuristics
 			
 			}catch(...)
 	            {
-	           _exhandler->raiseFromCatch("", "FMToperatingareascheduler::setBounds", __LINE__, __FILE__);
+	           _exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::setBounds", __LINE__, __FILE__);
 	            }
 			return gotschedule;
 			}
 
-	std::vector<Core::FMTTimeYieldHandler> FMToperatingareascheduler::getSolution(const std::string& yldname) const
+	std::vector<Core::FMTTimeYieldHandler> FMTOperatingAreaScheduler::getSolution(const std::string& yldname) const
 		{
 		std::vector<Core::FMTTimeYieldHandler>allhandlers;
 		try {
             const double* primalsolution = this->getColSolution();
             const double* rowupperbound = this->getRowUpper();
 			const double* rowsolution = this->getRowActivity();
-            for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+            for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
                 operatingareait != operatingareas.end(); ++operatingareait)
                 {
                 std::vector<double>data;
@@ -1095,7 +1095,7 @@ namespace Heuristics
 						{
 						_exhandler->raise(Exception::FMTexc::FMTignore,
 							"Extending solution past last period can breaks neighboring constraints on "+std::string(operatingareait->getMask()),
-							"FMToperatingareascheduler::getSolution", __LINE__, __FILE__);
+							"FMTOperatingAreaScheduler::getSolution", __LINE__, __FILE__);
 						}
                     }
                 std::vector<std::string>source;
@@ -1106,19 +1106,19 @@ namespace Heuristics
                 }
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMToperatingareascheduler::getSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTOperatingAreaScheduler::getSolution", __LINE__, __FILE__);
 			}
 		return allhandlers;
 		}
 
-	std::vector<Core::FMTOutput>FMToperatingareascheduler::getLevelSolution(const std::string& outputname, const std::string& aggregate,int outputid) const
+	std::vector<Core::FMTOutput>FMTOperatingAreaScheduler::getLevelSolution(const std::string& outputname, const std::string& aggregate,int outputid) const
 	{
 		std::vector<Core::FMTOutput>alloutputs;
 		try {
 			const double* rowlowerbound = this->getRowLower();
 			const double* rowupperbound = this->getRowUpper();
 			size_t cid = 0;
-			for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+			for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait = operatingareas.begin();
 				operatingareait != operatingareas.end(); ++operatingareait)
 			{
 				std::vector<double>data;
@@ -1143,20 +1143,20 @@ namespace Heuristics
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::getLevelSolution", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::getLevelSolution", __LINE__, __FILE__);
 		}
 		return alloutputs;
 
 	}
 
 
-	FMToperatingareascheduler::FMToperatingareascheduler(const std::vector<FMToperatingareascheme>& loperatingareas,
-		const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
+	FMTOperatingAreaScheduler::FMTOperatingAreaScheduler(const std::vector<FMTOperatingAreaScheme>& loperatingareas,
+		const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>& maingraph,
 		const Models::FMTModel& model,
 		const Core::FMTOutputNode& target,
 		Models::FMTLpSolver& basesolve, size_t lseed,
 		double proportionofset, bool userandomness, bool copysolver):
-		FMTlpheuristic(basesolve,lseed,copysolver),operatingareas(loperatingareas),adjacencyconstraints(), proportionofset(proportionofset),
+		FMTLpHeuristic(basesolve,lseed,copysolver),operatingareas(loperatingareas),adjacencyconstraints(), proportionofset(proportionofset),
 		userandomness(userandomness), useprimal(false)
 		{
 		try {
@@ -1201,7 +1201,7 @@ namespace Heuristics
 				{
 					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 												"Difference in objvalue after setting operating areaconstraints with new objective "+std::to_string(this->getObjValue()-baseobj),
-												"FMToperatingareascheduler::FMToperatingareascheduler", __LINE__, __FILE__);
+												"FMTOperatingAreaScheduler::FMTOperatingAreaScheduler", __LINE__, __FILE__);
 
 				}
 			}
@@ -1209,38 +1209,38 @@ namespace Heuristics
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 													"Infeasible model",
-													"FMToperatingareascheduler::FMToperatingareascheduler", __LINE__, __FILE__);
+													"FMTOperatingAreaScheduler::FMTOperatingAreaScheduler", __LINE__, __FILE__);
 
 			}
 			//_logger->logWithLevel("Solved wamrstart in  " + getDurationInSeconds(teststart) + "\n", 1);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMToperatingareascheduler::FMToperatingareaheuristic", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTOperatingAreaScheduler::FMToperatingareaheuristic", __LINE__, __FILE__);
 			}
 		}
 
-	void FMToperatingareascheduler::setAsRandom()
+	void FMTOperatingAreaScheduler::setAsRandom()
 		{
 		userandomness = true;
 		}
 
-	void FMToperatingareascheduler::setAsPrimal()
+	void FMTOperatingAreaScheduler::setAsPrimal()
 		{
 		useprimal = true;
 		}
 
-	void FMToperatingareascheduler::setProportionOfSet(const double& proportion)
+	void FMTOperatingAreaScheduler::setProportionOfSet(const double& proportion)
 		{
 		proportionofset=proportion;
 		}
 
-	double FMToperatingareascheduler::generateInitialProportionOfSet() const
+	double FMTOperatingAreaScheduler::generateInitialProportionOfSet() const
 	{
 		double calculatedproportion = 0.25;
 		try {
 			size_t complexity = 0;
 			size_t basecomplexity = 0;
-			for (const Heuristics::FMToperatingareascheme& oparea : operatingareas)
+			for (const Heuristics::FMTOperatingAreaScheme& oparea : operatingareas)
 			{
 				complexity += oparea.getNumberofscheme();
 				basecomplexity += oparea.getNumberofsimplescheme();
@@ -1254,18 +1254,18 @@ namespace Heuristics
 				}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMToperatingareascheduler::generateInitialProportionOfSet", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTOperatingAreaScheduler::generateInitialProportionOfSet", __LINE__, __FILE__);
 		}
 		return calculatedproportion;
 	}
 
 
-	std::string FMToperatingareascheduler::getThreadId() const
+	std::string FMTOperatingAreaScheduler::getThreadId() const
 	{
 		return boost::lexical_cast<std::string>(boost::this_thread::get_id());
 	}
 
 
 }
-BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMToperatingareascheduler)
+BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTOperatingAreaScheduler)
 #endif

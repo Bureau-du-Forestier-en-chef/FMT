@@ -26,7 +26,7 @@ namespace Models
 	}
 
 
-	FMTSesModel::FMTSesModel(const FMTModel& rhs, const Spatial::FMTforest& forest) :
+	FMTSesModel::FMTSesModel(const FMTModel& rhs, const Spatial::FMTForest& forest) :
 		FMTSeModel(rhs, forest)
 	{
 		

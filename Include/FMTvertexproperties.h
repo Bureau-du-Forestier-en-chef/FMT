@@ -25,26 +25,26 @@ namespace Core
 
 namespace Graph
 {
-	class FMTEXPORT FMTvertexproperties : public FMTbasevertexproperties
+	class FMTEXPORT FMTVertexProperties : public FMTBaseVertexProperties
 		{
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 			{
-			ar & boost::serialization::make_nvp("FMTbasevertexproperties", boost::serialization::base_object<FMTbasevertexproperties>(*this));
+			ar & boost::serialization::make_nvp("FMTbasevertexproperties", boost::serialization::base_object<FMTBaseVertexProperties>(*this));
 			ar & BOOST_SERIALIZATION_NVP(constraintID);
 			}
 			int constraintID;
 		public:
-			~FMTvertexproperties() = default;
-			FMTvertexproperties() = default;
-			FMTvertexproperties(const FMTvertexproperties& rhs);
-			FMTvertexproperties& operator = (const FMTvertexproperties& rhs) = default;
-			FMTvertexproperties(const Core::FMTFuturDevelopment& ldevelopment,
+			~FMTVertexProperties() = default;
+			FMTVertexProperties() = default;
+			FMTVertexProperties(const FMTVertexProperties& rhs);
+			FMTVertexProperties& operator = (const FMTVertexProperties& rhs) = default;
+			FMTVertexProperties(const Core::FMTFuturDevelopment& ldevelopment,
 				const int& lconstraintID);
-			FMTvertexproperties(const Core::FMTActualDevelopment& ldevelopment,
+			FMTVertexProperties(const Core::FMTActualDevelopment& ldevelopment,
 				const int& lconstraintID);
-            FMTvertexproperties(const Core::FMTDevelopment& ldevelopment,
+            FMTVertexProperties(const Core::FMTDevelopment& ldevelopment,
                 const int& lconstraintID);
 			std::string constraintName() const;
 			inline int getConstraintId() const override
@@ -55,14 +55,14 @@ namespace Graph
 		};
 }
 
-BOOST_CLASS_EXPORT_KEY(Graph::FMTvertexproperties)
+BOOST_CLASS_EXPORT_KEY(Graph::FMTVertexProperties)
 
 namespace boost {
 
 	template <>
-	struct hash<Graph::FMTvertexproperties>
+	struct hash<Graph::FMTVertexProperties>
 	{
-		std::size_t operator()(const Graph::FMTvertexproperties& vertex_properties) const
+		std::size_t operator()(const Graph::FMTVertexProperties& vertex_properties) const
 		{
 			return vertex_properties.hash();
 		}

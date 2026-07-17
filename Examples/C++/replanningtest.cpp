@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
 	}
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
+	std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTReplanningTask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 10, 10, 0.5, Core::FMToutputlevel::standard, true));
-	Parallel::FMTtaskhandler handler(maintaskptr,10);
+	Parallel::FMTTaskHandler handler(maintaskptr,10);
 	//handler.setQuietLogger();
 	//handler.onDemandRun();
 	handler.conccurentRun();
@@ -106,8 +106,8 @@ int main(int argc, char *argv[])
 	const std::string outputlocation = "../../tests/replanningtest/replanning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly));
-	Parallel::FMTtaskhandler handler(maintaskptr,2);
+	std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTReplanningTask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly));
+	Parallel::FMTTaskHandler handler(maintaskptr,2);
 	//handler.setQuietLogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();

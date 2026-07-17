@@ -93,31 +93,31 @@ namespace boost
 namespace Graph
 {
 	template<class tdescriptor>
-	class FMTvertexlookup
+	class FMTVertexLookup
 	{
 	public:
 		tdescriptor descriptor;
 		const Core::FMTDevelopment* development;
-		FMTvertexlookup() = default;
-		~FMTvertexlookup() = default;
+		FMTVertexLookup() = default;
+		~FMTVertexLookup() = default;
 		//For looking
-		FMTvertexlookup(const Core::FMTDevelopment& dev) :
+		FMTVertexLookup(const Core::FMTDevelopment& dev) :
 			descriptor(), development(&dev)
 			{
 
 			}
 		//For keeping
-		FMTvertexlookup(const tdescriptor& des, const Core::FMTDevelopment& dev) :
+		FMTVertexLookup(const tdescriptor& des, const Core::FMTDevelopment& dev) :
 			descriptor(des), development(&dev)
 			{
 
 			}
-		FMTvertexlookup(const FMTvertexlookup& rhs) :
+		FMTVertexLookup(const FMTVertexLookup& rhs) :
 			descriptor(rhs.descriptor), development(rhs.development)
 			{
 
 			}
-		FMTvertexlookup& operator = (const FMTvertexlookup& rhs)
+		FMTVertexLookup& operator = (const FMTVertexLookup& rhs)
 			{
 			if (*this!=&rhs)
 				{
@@ -126,7 +126,7 @@ namespace Graph
 				}
 			return *this;
 			}
-		bool operator == (const FMTvertexlookup& rhs) const
+		bool operator == (const FMTVertexLookup& rhs) const
 			{
 			return  (development != nullptr && rhs.development != nullptr  && (*development) == (*rhs.development));
 			}
@@ -138,9 +138,9 @@ namespace boost
 {
 
 	template<class tdescriptor>
-	struct hash<Graph::FMTvertexlookup<tdescriptor>>
+	struct hash<Graph::FMTVertexLookup<tdescriptor>>
 	{
-		std::size_t operator()(const Graph::FMTvertexlookup<tdescriptor>& lookup) const
+		std::size_t operator()(const Graph::FMTVertexLookup<tdescriptor>& lookup) const
 		{
 			return lookup.development->hash();
 		}

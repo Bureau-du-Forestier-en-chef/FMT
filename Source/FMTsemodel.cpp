@@ -16,7 +16,7 @@ namespace Models
 
 	const double FMTSeModel::MAX_FACTOR = 1.0;
 
-	void FMTSeModel::_buildArea(const Spatial::FMTforest& p_Forest)
+	void FMTSeModel::_buildArea(const Spatial::FMTForest& p_Forest)
 		{
 		try{
 			
@@ -39,7 +39,7 @@ namespace Models
 			}
 		}
 
-	void FMTSeModel::_buildSolution(const Spatial::FMTforest& p_Forest)
+	void FMTSeModel::_buildSolution(const Spatial::FMTForest& p_Forest)
 	{
 		try {
 			m_BestSolution = Spatial::FMTSpatialSchedule(p_Forest,
@@ -124,7 +124,7 @@ namespace Models
 		_copySolution(rhs.m_BestSolution);
         }
 
-	FMTSeModel::FMTSeModel(const FMTModel& rhs, const Spatial::FMTforest& forest) :
+	FMTSeModel::FMTSeModel(const FMTModel& rhs, const Spatial::FMTForest& forest) :
 		FMTModel(rhs), m_BestSolution(),
 		m_SpatialGraphs()
 	{
@@ -164,7 +164,7 @@ namespace Models
 		}
 		return std::vector<Core::FMTSchedule>();
 	}
-	bool FMTSeModel::setInitialMapping(const Spatial::FMTforest& forest)
+	bool FMTSeModel::setInitialMapping(const Spatial::FMTForest& forest)
         {
 		try {
 			_buildArea(forest);
@@ -262,7 +262,7 @@ namespace Models
 	}
 
 
-	Spatial::FMTlayer<double> FMTSeModel::getSpatialOutput(const Core::FMTOutput& output, int period) const
+	Spatial::FMTLayer<double> FMTSeModel::getSpatialOutput(const Core::FMTOutput& output, int period) const
 	{
 		try {
 			return m_BestSolution.getSpatialOutput(*this, output, period);
@@ -270,7 +270,7 @@ namespace Models
 		{
 			_exhandler->printExceptions("", "FMTSeModel::getOutput", __LINE__, __FILE__);
 		}
-		return Spatial::FMTlayer<double>();
+		return Spatial::FMTLayer<double>();
 	}
 
 
@@ -348,7 +348,7 @@ namespace Models
 			}
 		}
 
-	Spatial::FMTforest FMTSeModel::getMapping() const
+	Spatial::FMTForest FMTSeModel::getMapping() const
 		{
 		try {
 			return m_BestSolution.getForestPeriod(m_BestSolution.actPeriod()-1);
@@ -357,7 +357,7 @@ namespace Models
 			{
 			_exhandler->printExceptions("", "FMTSeModel::getMapping", __LINE__, __FILE__);
 			}
-		return Spatial::FMTforest();
+		return Spatial::FMTForest();
 		}
 
 	std::unique_ptr<FMTModel>FMTSeModel::clone() const

@@ -11,20 +11,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 
 {
-	const FMToperatingareaclusterbinary& FMToperatingareacluster::getBinary(const Core::FMTMask& mask) const
+	const FMTOperatingAreaClusterBinary& FMTOperatingAreaCluster::getBinary(const Core::FMTMask& mask) const
 			{
 			return *std::find_if(binaries.begin(), binaries.end(), FMTOperatingAreaComparator(mask));
 			}
 
-	FMToperatingareacluster::FMToperatingareacluster(const FMToperatingareaclusterbinary& localcentroid,
-		const std::vector<FMToperatingareaclusterbinary>& neighborsbinaries) :
+	FMTOperatingAreaCluster::FMTOperatingAreaCluster(const FMTOperatingAreaClusterBinary& localcentroid,
+		const std::vector<FMTOperatingAreaClusterBinary>& neighborsbinaries) :
         binaries(neighborsbinaries),centroid(localcentroid),minimalarea(-1.0),maximalarea(-1.0)
 	{
 
 	}
 
 
-    FMToperatingareacluster::FMToperatingareacluster(const FMToperatingareacluster& basecluster,
+    FMTOperatingAreaCluster::FMTOperatingAreaCluster(const FMTOperatingAreaCluster& basecluster,
                                                 const double& lminimalarea,
 								const double& lmaximalarea): binaries(basecluster.binaries),centroid(basecluster.centroid),
                                                         minimalarea(lminimalarea),maximalarea(lmaximalarea)
@@ -32,31 +32,31 @@ namespace Heuristics
 
     }
 
-	double FMToperatingareacluster::getTotalPotentialArea() const
+	double FMTOperatingAreaCluster::getTotalPotentialArea() const
         {
         double total = 0;
         total+=centroid.getArea();
-        for (const FMToperatingareaclusterbinary& binary : binaries)
+        for (const FMTOperatingAreaClusterBinary& binary : binaries)
             {
             total+=binary.getArea();
             }
         return total;
         }
 
-	double FMToperatingareacluster::getMinimalArea() const
+	double FMTOperatingAreaCluster::getMinimalArea() const
         {
         return std::max(centroid.getArea(),minimalarea);
         }
 
-    double FMToperatingareacluster::getMaximalArea() const
+    double FMTOperatingAreaCluster::getMaximalArea() const
         {
         return std::min(maximalarea,getTotalPotentialArea());
         }
 
-	double FMToperatingareacluster::getMaximalStats() const
+	double FMTOperatingAreaCluster::getMaximalStats() const
 		{
 		double maxincluster = 0;
-		for (const FMToperatingareaclusterbinary& binary : getBinaries())
+		for (const FMTOperatingAreaClusterBinary& binary : getBinaries())
 			{
 				if (binary.getStatistic() > maxincluster)
 				{
@@ -70,47 +70,47 @@ namespace Heuristics
 		return maxincluster;
 		}
 
-    bool FMToperatingareacluster::isValidarea(const double& area) const
+    bool FMTOperatingAreaCluster::isValidarea(const double& area) const
         {
         return (area >= getMinimalArea() && area <= getMaximalArea());
         }
 
 
-	void FMToperatingareacluster::setMaximalObjectiveVariable(const int& lmaxvar)
+	void FMTOperatingAreaCluster::setMaximalObjectiveVariable(const int& lmaxvar)
 		{
 		maxvar = lmaxvar;
 		}
-	void FMToperatingareacluster::setMinimalObjectiveVariable(const int& lminvar)
+	void FMTOperatingAreaCluster::setMinimalObjectiveVariable(const int& lminvar)
 		{
 		minvar = lminvar;
 		}
 
-    void FMToperatingareacluster::setMinimalArea(const double& newminimalarea)
+    void FMTOperatingAreaCluster::setMinimalArea(const double& newminimalarea)
         {
         minimalarea = newminimalarea;
         }
 
-    void FMToperatingareacluster::setMaximalArea(const double& newmaximalarea)
+    void FMTOperatingAreaCluster::setMaximalArea(const double& newmaximalarea)
         {
         maximalarea = newmaximalarea;
         }
 
-    bool FMToperatingareacluster::isValidareabounds() const
+    bool FMTOperatingAreaCluster::isValidareabounds() const
         {
         return (getTotalPotentialArea() >= minimalarea && maximalarea >= minimalarea);
         }
 
-    FMToperatingareacluster FMToperatingareacluster::getFilteredCluster(const Core::FMTMask& filterMask) const
+    FMTOperatingAreaCluster FMTOperatingAreaCluster::getFilteredCluster(const Core::FMTMask& filterMask) const
         {
-        FMToperatingareacluster newcluster(*this);
+        FMTOperatingAreaCluster newcluster(*this);
         if (centroid.getMask().isSubsetOf(filterMask))
             {
-            std::vector<FMToperatingareaclusterbinary>newbinaries;
-            for (const FMToperatingareaclusterbinary& binary : binaries)
+            std::vector<FMTOperatingAreaClusterBinary>newbinaries;
+            for (const FMTOperatingAreaClusterBinary& binary : binaries)
                 {
                 if (binary.getMask().isSubsetOf(filterMask))
                     {
-                    FMToperatingareaclusterbinary newbinary(binary);
+                    FMTOperatingAreaClusterBinary newbinary(binary);
                     std::vector<Core::FMTMask>newneighbors;
                     for (const Core::FMTMask& link : binary.getNeighbors())
                         {
@@ -130,11 +130,11 @@ namespace Heuristics
         return newcluster;
         }
 
-    std::vector<Core::FMTMask>FMToperatingareacluster::getAllMasks() const
+    std::vector<Core::FMTMask>FMTOperatingAreaCluster::getAllMasks() const
         {
         std::vector<Core::FMTMask>allmasks;
         allmasks.push_back(centroid.getMask());
-        for (const FMToperatingareaclusterbinary& binary : binaries)
+        for (const FMTOperatingAreaClusterBinary& binary : binaries)
             {
             allmasks.push_back(binary.getMask());
             }

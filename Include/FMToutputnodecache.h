@@ -24,21 +24,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 	template <class tvdescriptor,class titerator>
-	class FMToutputnodecache
+	class FMTOutputNodeCache
 	{
 		
 	public:
-		FMToutputnodecache()=default;
-		FMToutputnodecache(const FMToutputnodecache& rhs) = default;
-		FMToutputnodecache& operator = (const FMToutputnodecache& rhs) = default;
-		~FMToutputnodecache() = default;
-		FMToutputnodecache(const std::vector<tvdescriptor>& initialnodes) :
+		FMTOutputNodeCache()=default;
+		FMTOutputNodeCache(const FMTOutputNodeCache& rhs) = default;
+		FMTOutputNodeCache& operator = (const FMTOutputNodeCache& rhs) = default;
+		~FMTOutputNodeCache() = default;
+		FMTOutputNodeCache(const std::vector<tvdescriptor>& initialnodes) :
 			inmemorynodes(initialnodes), beginit(nullptr), endit(nullptr), searchtree(), m_allocator(), m_reserve()
 		{
 			inmemorynodes.shrink_to_fit();
 			std::sort(inmemorynodes.begin(),inmemorynodes.end());
 		}
-		FMToutputnodecache(const titerator& first, const titerator& last,std::allocator<tvdescriptor>& p_allocator,const size_t& p_reserve) :
+		FMTOutputNodeCache(const titerator& first, const titerator& last,std::allocator<tvdescriptor>& p_allocator,const size_t& p_reserve) :
 			inmemorynodes(), beginit(&first), endit(&last), searchtree(),m_allocator(&p_allocator), m_reserve(p_reserve)
 		{
 			if (m_reserve>0)
@@ -111,7 +111,7 @@ namespace Graph
 			beginit = &beginofdevs;
 			endit = &endofdevs;
 			}
-		void insert(const FMToutputnodecache& rhs)
+		void insert(const FMTOutputNodeCache& rhs)
 			{
 			if (beginit==nullptr)
 			{

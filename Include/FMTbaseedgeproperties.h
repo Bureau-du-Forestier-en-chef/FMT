@@ -23,7 +23,7 @@ namespace Core
 
 namespace Graph
 {
-	class FMTbaseedgeproperties
+	class FMTBaseEdgeProperties
 	{
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -34,14 +34,14 @@ namespace Graph
 	protected:
 		int8_t action;
 	public:
-		virtual ~FMTbaseedgeproperties() = default;
-		FMTbaseedgeproperties()=default;
-		FMTbaseedgeproperties(const FMTbaseedgeproperties& rhs)=default;
-		FMTbaseedgeproperties& operator = (const FMTbaseedgeproperties& rhs)=default;
-		FMTbaseedgeproperties(const int& laction,
+		virtual ~FMTBaseEdgeProperties() = default;
+		FMTBaseEdgeProperties()=default;
+		FMTBaseEdgeProperties(const FMTBaseEdgeProperties& rhs)=default;
+		FMTBaseEdgeProperties& operator = (const FMTBaseEdgeProperties& rhs)=default;
+		FMTBaseEdgeProperties(const int& laction,
 						const int& lvariableID,
 						const double& lproportion);
-		constexpr FMTbaseedgeproperties(const int& laction) : action(static_cast<int8_t>(laction)) {}
+		constexpr FMTBaseEdgeProperties(const int& laction) : action(static_cast<int8_t>(laction)) {}
 		virtual inline int	getvariableID() const
 			{
 			return 0;
@@ -61,9 +61,9 @@ namespace Graph
 		void setactionID(const int& newid);
 		bool isAction(const std::vector<Core::FMTAction>& actions,
 			const Core::FMTAction& rhsaction) const;
-		/*virtual*/ bool operator == (const FMTbaseedgeproperties & rhs) const;
-		/*virtual*/ bool operator != (const FMTbaseedgeproperties& rhs) const;
-		bool operator < (const FMTbaseedgeproperties& rhs) const;
+		/*virtual*/ bool operator == (const FMTBaseEdgeProperties & rhs) const;
+		/*virtual*/ bool operator != (const FMTBaseEdgeProperties& rhs) const;
+		bool operator < (const FMTBaseEdgeProperties& rhs) const;
 		/*inline const short int* getactionptr() const
 			{
 			return &action;
@@ -72,6 +72,6 @@ namespace Graph
 	};
 }
 
-BOOST_CLASS_EXPORT_KEY(Graph::FMTbaseedgeproperties)
+BOOST_CLASS_EXPORT_KEY(Graph::FMTBaseEdgeProperties)
 
 #endif

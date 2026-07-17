@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     Parser::FMTLandscapeParser landScapeParse;
     const std::vector<Core::FMTTheme> THEMES = landScapeParse.read(Core::FMTConstants(), themesLocation);
    
-    const Spatial::FMTforest FOREST = areaparser.vectormaptoFMTforest(pointsLocation,side, THEMES,"AGE","SUPERFICIE",
+    const Spatial::FMTForest FOREST = areaparser.vectormaptoFMTforest(pointsLocation,side, THEMES,"AGE","SUPERFICIE",
                                                                     1,0.0001, LOCK_FIELD,0.0,writeLocation,false);
     areaparser.write(FOREST.getArea(), writeLocation + "area.are");
 #endif

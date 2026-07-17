@@ -161,8 +161,8 @@ namespace Logging
 
 	std::string FMTLogger::getLogStamp() const
 	{
-		const std::string message = "FMT " + Version::FMTversion().getVersion() +
-			", build: " + Version::FMTversion().getBuildDate();
+		const std::string message = "FMT " + Version::FMTVersion().getVersion() +
+			", build: " + Version::FMTVersion().getBuildDate();
 		return message;
 	}
 
@@ -175,7 +175,7 @@ namespace Logging
 	void FMTLogger::logTime()
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		const std::string message = Version::FMTversion().getDatenow();
+		const std::string message = Version::FMTVersion().getDatenow();
 		*this << (message);
 		}
 
@@ -277,7 +277,7 @@ namespace Logging
 	void FMTLogger::cout(const char* message) const
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		std::string thread = "Thread("+Parallel::FMTtask::getThreadId()+") ";
+		std::string thread = "Thread("+Parallel::FMTTask::getThreadId()+") ";
 		if (message && message[0]=='\n')
 			{
 			thread.clear();

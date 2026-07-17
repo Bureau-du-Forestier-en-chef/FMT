@@ -23,19 +23,19 @@ namespace Core
 
 namespace Graph
 {
-	class FMTbasevertexproperties;
-	class FMTbaseedgeproperties;
-	class FMTEXPORT FMTpredictor
+	class FMTBaseVertexProperties;
+	class FMTBaseEdgeProperties;
+	class FMTEXPORT FMTPredictor
 	{
 	public:
-		FMTpredictor();
-		~FMTpredictor() = default;
-		FMTpredictor(const std::vector<Core::FMTAction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTYields& yields,
-			const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid = true);
-		FMTpredictor(const FMTpredictor& rhs);
-		FMTpredictor& operator = (const FMTpredictor& rhs);
-		bool operator==(const FMTpredictor& rhs) const;
-		bool operator<(const FMTpredictor& rhs) const;
+		FMTPredictor();
+		~FMTPredictor() = default;
+		FMTPredictor(const std::vector<Core::FMTAction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTYields& yields,
+			const FMTBaseVertexProperties& source, const FMTBaseVertexProperties& target, const std::vector<const FMTBaseEdgeProperties*>& edges, const std::vector<int>& gaps,bool withGCBMid = true);
+		FMTPredictor(const FMTPredictor& rhs);
+		FMTPredictor& operator = (const FMTPredictor& rhs);
+		bool operator==(const FMTPredictor& rhs) const;
+		bool operator<(const FMTPredictor& rhs) const;
 		std::vector<double>getPredictors() const;
 		double getDistance(size_t actId) const;
 		double getDisturbance(size_t actId) const;
@@ -45,13 +45,13 @@ namespace Graph
 		std::vector<double> getTargetYields() const;
 		std::vector<std::string>getPredictorNames(const std::vector<std::string>& yieldnames)const;
 	private:
-		const FMTbasevertexproperties* source_vertex;
-		const FMTbasevertexproperties* target_vertex;
+		const FMTBaseVertexProperties* source_vertex;
+		const FMTBaseVertexProperties* target_vertex;
 		std::vector<double>source_yields;
 		std::vector<double>target_yields;
 		std::vector<int>periodgaps;
 		std::vector<int>sourceactions;
-		std::vector<double>getYields(const FMTbasevertexproperties& vertex, const Core::FMTYields& yields, const std::vector<std::string>& yieldnames) const;
+		std::vector<double>getYields(const FMTBaseVertexProperties& vertex, const Core::FMTYields& yields, const std::vector<std::string>& yieldnames) const;
 	};
 }
 

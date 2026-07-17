@@ -446,7 +446,7 @@ std::unique_ptr<OGRSpatialReference> FMTParser::getFORELSpatialRef() const
 
 
 template<typename T>
-GDALDataset* FMTParser::createDataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid, std::string format) const
+GDALDataset* FMTParser::createDataset(const std::string& location, const Spatial::FMTLayer<T>& layer, const int datatypeid, std::string format) const
 {
 	GDALDataType datatype = static_cast<GDALDataType>(datatypeid);
 	const char* pszFormat = format.c_str();
@@ -492,9 +492,9 @@ GDALDataset* FMTParser::createDataset(const std::string& location, const Spatial
 	return poDstDS;
 }
 
-template GDALDataset* FMTParser::createDataset<int>(const std::string& location, const Spatial::FMTlayer<int>& layer, const int datatypeid,std::string format) const;
-template GDALDataset* FMTParser::createDataset<std::string>(const std::string& location, const Spatial::FMTlayer<std::string>& layer, const int datatypeid, std::string format) const;
-template GDALDataset* FMTParser::createDataset<double>(const std::string& location, const Spatial::FMTlayer<double>& layer, const int datatypeid, std::string format) const;
+template GDALDataset* FMTParser::createDataset<int>(const std::string& location, const Spatial::FMTLayer<int>& layer, const int datatypeid,std::string format) const;
+template GDALDataset* FMTParser::createDataset<std::string>(const std::string& location, const Spatial::FMTLayer<std::string>& layer, const int datatypeid, std::string format) const;
+template GDALDataset* FMTParser::createDataset<double>(const std::string& location, const Spatial::FMTLayer<double>& layer, const int datatypeid, std::string format) const;
 
 
 

@@ -17,7 +17,7 @@ bool Wrapper::FMTForm::Raterisation(System::String^ fichierPri, int scenario, Sy
 		const std::string VECTORS_PATH = msclr::interop::marshal_as<std::string>(fichierShp);
 		const std::string OUTPUT_FOLDER = msclr::interop::marshal_as<std::string>(repertoireSortie);
 		Parser::FMTAreaParser areaparser;
-		Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(
+		Spatial::FMTForest forest = areaparser.vectormaptoFMTforest(
 			VECTORS_PATH,
 			resolution,
 			THEMES,

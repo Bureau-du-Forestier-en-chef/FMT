@@ -152,7 +152,7 @@ namespace Core{
 			action.getPeriodLowerBound() <= getPeriod() && getPeriod() <= action.getPeriodUpperBound());
 		}
 
-	FMTYieldRequest FMTDevelopment::getYieldRequest(const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+	FMTYieldRequest FMTDevelopment::getYieldRequest(const Graph::FMTGraphVertexToYield* graphyieldrequest) const
 		{
 			if (graphyieldrequest != nullptr)
 			{
@@ -162,7 +162,7 @@ namespace Core{
 			return FMTYieldRequest(*this);
 		}
 
-     bool FMTDevelopment::operable(const FMTAction& action,const FMTYields& ylds, const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+     bool FMTDevelopment::operable(const FMTAction& action,const FMTYields& ylds, const Graph::FMTGraphVertexToYield* graphyieldrequest) const
         {
 		 try{
 			if (worthTestingOperability(action))
@@ -182,7 +182,7 @@ namespace Core{
         return false;
         }
 	 bool FMTDevelopment::anyOperable(const std::vector<const FMTAction*>& actions, const FMTYields& ylds,
-		 const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+		 const Graph::FMTGraphVertexToYield* graphyieldrequest) const
 		{
 		 try{
 		 for (const FMTAction* action : actions)
@@ -362,7 +362,7 @@ namespace Core{
 		}
 
 	bool FMTDevelopment::is(const FMTSpec& specification, const FMTYields& ylds,
-		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+		const Graph::FMTGraphVertexToYield* graphyieldrequest) const
 		{
 		bool allow = false;
 		try {
@@ -393,7 +393,7 @@ namespace Core{
 		return allow;
 		}
 	double FMTDevelopment::getInventoryCoef(const FMTYields& ylds, const std::string& target_yield,
-		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+		const Graph::FMTGraphVertexToYield* graphyieldrequest) const
 	{
 		try {
 			const FMTYieldRequest request = getYieldRequest(graphyieldrequest);
@@ -406,7 +406,7 @@ namespace Core{
 		}
 	double FMTDevelopment::getHarvestCoef(const std::vector<FMTDevelopmentPath>& topaths,
 			const FMTAction& action,const FMTYields& ylds,const std::string& target_yield,
-		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+		const Graph::FMTGraphVertexToYield* graphyieldrequest) const
 		{
 		double value = 0;
 		try {

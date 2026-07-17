@@ -12,17 +12,17 @@
 namespace Parallel
 {
 
-	boost::recursive_mutex FMTtask::taskmutex;
+	boost::recursive_mutex FMTTask::taskmutex;
 
-	boost::mutex FMTtask::m_checkpointMutex;
+	boost::mutex FMTTask::m_checkpointMutex;
 
-	size_t FMTtask::m_workingThreads = 0;
+	size_t FMTTask::m_workingThreads = 0;
 
-	size_t FMTtask::m_allThreads = 0;
+	size_t FMTTask::m_allThreads = 0;
 
-	boost::condition_variable FMTtask::m_checkpoint;
+	boost::condition_variable FMTTask::m_checkpoint;
 
-	void FMTtask::setTotalThreads(const size_t& p_threads)
+	void FMTTask::setTotalThreads(const size_t& p_threads)
 	{
 		boost::mutex::scoped_lock guard(m_checkpointMutex);
 		m_allThreads = p_threads;
@@ -30,13 +30,13 @@ namespace Parallel
 	}
 
 
-	void FMTtask::decrementWorkingThread()
+	void FMTTask::decrementWorkingThread()
 	{
 		boost::mutex::scoped_lock guard(m_checkpointMutex);
 		--m_workingThreads;
 	}
 
-	void FMTtask::checkpoint()
+	void FMTTask::checkpoint()
 	{
 		decrementWorkingThread();
 		if (m_workingThreads == 0)
@@ -53,7 +53,7 @@ namespace Parallel
 	
 
 
-	void FMTtask::_setCrashHandlers()
+	void FMTTask::_setCrashHandlers()
 	{
 		try {
 				setTerminateStack();
@@ -68,7 +68,7 @@ namespace Parallel
 	}
 
 
-	FMTtask::FMTtask() :
+	FMTTask::FMTTask() :
 		Core::FMTObject(),
 		done(false),
 		tasklogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()))
@@ -79,7 +79,7 @@ namespace Parallel
 		
 	}
 
-	FMTtask::FMTtask(const FMTtask& rhs) :
+	FMTTask::FMTTask(const FMTTask& rhs) :
 		Core::FMTObject(rhs),
 		done(false),
 		tasklogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()))
@@ -90,7 +90,7 @@ namespace Parallel
 		
 	}
 
-	FMTtask& FMTtask::operator = (const FMTtask& rhs)
+	FMTTask& FMTTask::operator = (const FMTTask& rhs)
 	{
 		if (this!=&rhs)
 		{
@@ -102,47 +102,47 @@ namespace Parallel
 		return *this;
 	}
 
-	std::vector<std::unique_ptr<FMTtask>>FMTtask::split(const unsigned int& numberoftasks) const
+	std::vector<std::unique_ptr<FMTTask>>FMTTask::split(const unsigned int& numberoftasks) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTtask::split", __LINE__, __FILE__);
+				"FMTTask::split", __LINE__, __FILE__);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTtask::split", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTTask::split", __LINE__, __FILE__);
 		}
-		return std::vector<std::unique_ptr<FMTtask>>();
+		return std::vector<std::unique_ptr<FMTTask>>();
 	}
 
-	std::unique_ptr<FMTtask>FMTtask::spawn()
+	std::unique_ptr<FMTTask>FMTTask::spawn()
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTtask::spawn", __LINE__, __FILE__);
+				"FMTTask::spawn", __LINE__, __FILE__);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTtask::spawn", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTTask::spawn", __LINE__, __FILE__);
 		}
-		return std::move(std::unique_ptr<FMTtask>());
+		return std::move(std::unique_ptr<FMTTask>());
 	}
 
 
-	std::unique_ptr<FMTtask>FMTtask::clone() const
+	std::unique_ptr<FMTTask>FMTTask::clone() const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTtask::clone", __LINE__, __FILE__);
+				"FMTTask::clone", __LINE__, __FILE__);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTtask::clone", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTTask::clone", __LINE__, __FILE__);
 		}
-		return std::move(std::unique_ptr<FMTtask>(new FMTtask()));
+		return std::move(std::unique_ptr<FMTTask>(new FMTTask()));
 	}
 
-	std::vector<size_t>FMTtask::splitWork(int numberoftasks, const int& totalworksize) const
+	std::vector<size_t>FMTTask::splitWork(int numberoftasks, const int& totalworksize) const
 		{
 		std::vector<size_t>taskssize;
 		try {
@@ -153,7 +153,7 @@ namespace Parallel
 				numberoftasks = totalworksize;
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot split task of size "+ std::to_string(totalworksize) +" in "+std::to_string(numberoftasks)
-					,"FMTtask::splitWork", __LINE__, __FILE__);
+					,"FMTTask::splitWork", __LINE__, __FILE__);
 				}
 			const int zp = numberoftasks - (totalworksize % numberoftasks);
 			const int equaltask = totalworksize / numberoftasks;
@@ -169,54 +169,54 @@ namespace Parallel
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTtask::splitWork", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTTask::splitWork", __LINE__, __FILE__);
 			}
 		return taskssize;
 		}
 
-	void FMTtask::run()
+	void FMTTask::run()
 		{
 		try {
 			_setCrashHandlers();
 			work();
 		}catch (...)
 			{
-			_exhandler->raiseFromThreadCatch("", "FMTtask::run", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("", "FMTTask::run", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTtask::work()
+	void FMTTask::work()
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTtask::work", __LINE__, __FILE__);
+				"FMTTask::work", __LINE__, __FILE__);
 		}catch (...)
 		{
-			_exhandler->raiseFromThreadCatch("", "FMTtask::work", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("", "FMTTask::work", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTtask::finalize()
+	void FMTTask::finalize()
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTtask::finalize", __LINE__, __FILE__);
+				"FMTTask::finalize", __LINE__, __FILE__);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromThreadCatch("", "FMTtask::finalize", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("", "FMTTask::finalize", __LINE__, __FILE__);
 		}
 	}
 	
 	/*
-	void FMTtask::setstatus(bool status)
+	void FMTTask::setstatus(bool status)
 	{
 		checkSignals();
 		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
 		done = status;
 	}
 
-	bool FMTtask::isdone() const
+	bool FMTTask::isdone() const
 	{
 		checkSignals();
 		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
@@ -226,7 +226,7 @@ namespace Parallel
 	*/
 
 
-	std::string FMTtask::getThreadId()
+	std::string FMTTask::getThreadId()
 	{
 	#if defined (_MSC_VER)
 		DWORD threadWIN32 = GetThreadId(GetCurrentThread());

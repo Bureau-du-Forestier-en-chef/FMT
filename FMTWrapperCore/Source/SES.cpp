@@ -113,7 +113,7 @@ namespace FMTWrapperCore
         }
 
         Parser::FMTAreaParser areaparser;
-        Spatial::FMTforest initialForest;
+        Spatial::FMTForest initialForest;
         if (!useStanlock)
         {
             initialForest = areaparser.readRasters(
@@ -648,7 +648,7 @@ namespace FMTWrapperCore
                     const std::string outputname = output.getName() + "_" + std::to_string(period) + ".tif";
                     const std::string outputrasterpath = outputPath + outputname;
 
-                    const Spatial::FMTlayer<double> outputlayer = semodel.getSpatialOutput(output, period);
+                    const Spatial::FMTLayer<double> outputlayer = semodel.getSpatialOutput(output, period);
                     areaparser.writeLayer(outputlayer, outputrasterpath);
 
                     rasterFiles.push_back(outputrasterpath);
@@ -682,7 +682,7 @@ namespace FMTWrapperCore
 
             for (size_t period = 1; period <= static_cast<size_t>(numberOfPeriods); ++period)
             {
-                std::vector<std::vector<Graph::FMTpredictor>> predictors =
+                std::vector<std::vector<Graph::FMTPredictor>> predictors =
                     areaparser.writePredictors(
                         rasterPath,
                         schedule,

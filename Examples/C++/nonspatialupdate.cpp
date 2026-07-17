@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
 	
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 	{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";

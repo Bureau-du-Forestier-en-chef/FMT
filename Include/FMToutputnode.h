@@ -26,7 +26,7 @@ class FMTEXPORT FMTOutputNode
 		FMTOutputNode();
 		FMTOutputNode(const FMTOutputSource& lsource, const FMTOutputSource& lfactor, const double& lconstant);
 		FMTOutputNode(const FMTOutputNode& rhs);
-		// DocString: FMTlpheuristic::FMTOutputNode
+		// DocString: FMTLpHeuristic::FMTOutputNode
 		/**
 		This constructor will create a  general node targeting an action name or actions aggregate.
 		It meant to be used with the scheduler heuristic.

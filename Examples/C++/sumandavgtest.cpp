@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
-	Parallel::FMTplanningtask newplanningtask(1,10, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
+	Parallel::FMTPlanningTask newplanningtask(1,10, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
 	newplanningtask.setKeepModels();
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readschedules(primlocation, models);
@@ -51,11 +51,11 @@ int main(int argc, char *argv[])
 		lpmodel.setOutputs(selectedoutputs);
 		newplanningtask.push_back(lpmodel,schedules.at(modelid));
 		}
-	Parallel::FMTtaskhandler handler(newplanningtask,1);
+	Parallel::FMTTaskHandler handler(newplanningtask,1);
 	handler.setQuietLogger();
 	//handler.onDemandRun();
 	handler.conccurentRun();
-	const std::vector<const Parallel::FMTplanningtask*> tasks= handler.getTasksFromDynamicCast<Parallel::FMTplanningtask>();
+	const std::vector<const Parallel::FMTPlanningTask*> tasks= handler.getTasksFromDynamicCast<Parallel::FMTPlanningTask>();
 	const std::vector<const Models::FMTLpModel*> modelsresults =  tasks.at(0)->getModelsFromDynamicCast<Models::FMTLpModel>();
 	Logging::FMTDefaultLogger() <<"OBJECTIVE "<< modelsresults.at(0)->getObjValue() << "\n";
 	const double sumvalue = modelsresults.at(0)->getOutput(selectedoutputs.at(1), 5, Core::FMToutputlevel::totalonly).at("Total");

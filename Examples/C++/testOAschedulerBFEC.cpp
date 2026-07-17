@@ -14,12 +14,12 @@
     #include "FMTfreeexceptionhandler.h"
 #endif
 #ifdef FMTWITHOSI
-std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const std::string& fichierShp,const std::vector<Core::FMTTheme>& themes, const int& numeroTheme,const int& startingperiod,
+std::vector<Heuristics::FMTOperatingAreaScheme> ObtenirOperatingArea(   const std::string& fichierShp,const std::vector<Core::FMTTheme>& themes, const int& numeroTheme,const int& startingperiod,
                                                                         const std::string& nomChampAge,const std::string& nomChampSuperficie,const std::string& nomChampStanlock
                                                                     )
     {
 	
-	    std::vector<Heuristics::FMToperatingareascheme> opeareas;
+	    std::vector<Heuristics::FMTOperatingAreaScheme> opeareas;
 	    bool spatialconstraints = false;
         std::vector<std::string>operatingareasname = themes.at(numeroTheme-1).getAttributes("?",false);
         for (const auto& OA : operatingareasname)
@@ -45,8 +45,8 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                     }
                 }
                 const Core::FMTMask FMTMask = Core::FMTMask(mask, themes);
-                opeareas.push_back(Heuristics::FMToperatingareascheme(
-                    Heuristics::FMToperatingarea(FMTMask, NPE),
+                opeareas.push_back(Heuristics::FMTOperatingAreaScheme(
+                    Heuristics::FMTOperatingArea(FMTMask, NPE),
                     OPT,
                     RET,
                     MAXRET,
@@ -163,16 +163,16 @@ int main(int argc, char *argv[])
             optimizationmodel.doPlanning(true);
             const double initialobjectivevalue = optimizationmodel.getObjValue();
             const Core::FMTOutputNode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
-            std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getThemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
-            std::vector<Heuristics::FMToperatingareascheduler> opareaheuristics = optimizationmodel.getOperatingAreaSchedulerHeuristics(opeareas, nodeofoutput);
+            std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getThemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
+            std::vector<Heuristics::FMTOperatingAreaScheduler> opareaheuristics = optimizationmodel.getOperatingAreaSchedulerHeuristics(opeareas, nodeofoutput);
             //opareaheuristics[0].setProportionOfSet(0.25);
-			Heuristics::FMTlpheuristicmthandler handler = Heuristics::FMTlpheuristicmthandler(opareaheuristics, initialobjectivevalue);
+			Heuristics::FMTLpHeuristicMtHandler handler = Heuristics::FMTLpHeuristicMtHandler(opareaheuristics, initialobjectivevalue);
             const double calculatedpropotion = opareaheuristics[0].generateInitialProportionOfSet();
             std::cout<< "Initial proportion of set of : " + std::to_string(calculatedpropotion) << "\n";
             opareaheuristics[0].setProportionOfSet(calculatedpropotion);
 			size_t bestpos = handler.initialSolve();
             bestpos = handler.greedySolve(5,10000000);
-			const Heuristics::FMToperatingareascheduler bestsolve = opareaheuristics[bestpos];
+			const Heuristics::FMTOperatingAreaScheduler bestsolve = opareaheuristics[bestpos];
             const std::vector<Core::FMTTimeYieldHandler> ythandler = bestsolve.getSolution("YOUVERT");
             /*for (const auto& out : bestsolve.getLevelSolution("COS", "BFECOPTtata", model.getoutputs().size()))
                 {

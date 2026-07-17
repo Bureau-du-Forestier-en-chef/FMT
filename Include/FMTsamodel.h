@@ -19,9 +19,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
-	class FMTforest;
-    class FMTsaschedule;
-    class FMTexponentialschedule;
+	class FMTForest;
+    class FMTSaSchedule;
+    class FMTExponentialSchedule;
 }
 
 
@@ -38,7 +38,7 @@ those constraints. Only the functions needed to build a simulated annealing
 algorithm are implemented in this class, the algorithm must be written by the
 user using the functions exposed in this class.
 
-An FMTforest is needed to set the initial map. An FMTsaschedule is needed as
+An FMTForest is needed to set the initial map. An FMTSaSchedule is needed as
 cooling schedule and FMTspatialaction must be set for the model.
 */
 
@@ -81,7 +81,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         /**
         This function returns a copy of the FMTModel of the selected period.
         If period = 0 it returns the FMTModel::getCopy if period > 0 then it returns
-        a copy of the FMTModel based on the developments of the FMTgraph of the FMTLpModel.
+        a copy of the FMTModel based on the developments of the FMTGraph of the FMTLpModel.
         Need to have a builded graph with a solution to use this function.
         */
         virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
@@ -93,7 +93,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         ///Copy constructor to use parent as argument in constructor
         FMTSaModel(const FMTModel& rhs);
         ///Copy constructor to use parent as argument in constructor
-        FMTSaModel(const FMTModel& rhs, const Spatial::FMTforest& forest);
+        FMTSaModel(const FMTModel& rhs, const Spatial::FMTForest& forest);
         ///Copy assignment operator
         FMTSaModel& operator = (const FMTSaModel& rhs);
         // DocString: FMTSaModel::clone
@@ -102,7 +102,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         */
         virtual std::unique_ptr<FMTModel>clone() const final;
 
-        Graph::FMTgraphstats buildPeriod();
+        Graph::FMTGraphStats buildPeriod();
     protected:
         // DocString: FMTSaModel::swapPtr
         /**
@@ -158,7 +158,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
     mutable std::vector<FMTMoveStats>m_CycleMoves;
     // DocString: FMTSaModel::coolingSchedule
     ///Cooling schedule for simulated annealing algorithm.
-    std::unique_ptr<Spatial::FMTsaschedule>m_CoolingSchedule;
+    std::unique_ptr<Spatial::FMTSaSchedule>m_CoolingSchedule;
     // DocString: FMTSaModel::notAcceptedMovesCount
     ///Count the number of cycle the moves gave had no acceptance
     std::array<size_t, FMTsamove::MoveCount>m_NotAcceptedMovesCount;
@@ -273,7 +273,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
          */
         Spatial::FMTSpatialSchedule _doConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings,
-           std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool, const int& period) const;
+           std::vector<std::vector<Spatial::FMTCoordinate>> selectionpool, const int& period) const;
        // DocString: FMTSaModel::doEventsAreaConflictDestrutorMove
        /**
        Destroy events that have some area conflict

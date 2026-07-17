@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
 		std::string scenario;
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 		
 		bool gotovoltotrec = false;
 		const Core::FMTDevelopment adev(Core::FMTMask(maskstr,optimizationmodel.getThemes()), age, 0, period);
-		const Graph::FMTgraphvertextoyield graph_info = optimizationmodel.getGraphVertexToYield();
+		const Graph::FMTGraphVertexToYield graph_info = optimizationmodel.getGraphVertexToYield();
 		const Core::FMTYieldRequest yieldrequest = adev.getYieldRequest(&graph_info);
 		const double returnedvalue = optimizationmodel.getYields().get(yieldrequest,yieldname);
 		Logging::FMTDefaultLogger() << returnedvalue << "\n";

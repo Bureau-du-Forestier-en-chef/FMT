@@ -13,12 +13,12 @@ namespace boost
 
 namespace Spatial
 {
-	class FMTforest;
+	class FMTForest;
 }
 
 namespace Heuristics
 {
-	class FMToperatingarea;
+	class FMTOperatingArea;
 }
 
 namespace Logging
@@ -76,7 +76,7 @@ namespace Wrapper
 		mutable std::unordered_map<std::string,Core::FMTMask>maskcache;
 		mutable std::unordered_map<std::string,Core::FMTOutput>outputcache;
 		std::string maplocation;
-		mutable std::unique_ptr<Spatial::FMTforest>map;
+		mutable std::unique_ptr<Spatial::FMTForest>map;
 		mutable std::unordered_map<std::string,double>generalcache;
 		mutable std::unordered_map<std::string,std::set<Core::FMTSerie>>SerieCache;
 		Core::FMTMask globalmask;
@@ -84,7 +84,7 @@ namespace Wrapper
 		std::unique_ptr<boost::recursive_mutex>outputcachemtx;
 		std::unique_ptr<boost::recursive_mutex>generalcachemtx;
 		std::unique_ptr<boost::recursive_mutex>SerieCachemtx;
-		std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>OAcache;
+		std::unique_ptr<std::vector<Heuristics::FMTOperatingArea>>OAcache;
 		std::unordered_map<int,std::vector<std::string>>all_exceptions;
 		// DocString: FMTmodelcache::themeSelectionToMask
 		/** 

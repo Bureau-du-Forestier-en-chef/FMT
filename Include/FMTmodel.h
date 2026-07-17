@@ -30,9 +30,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 	template<class T1, class T2>
-	class FMTgraph;
-	class FMTlinegraph;
-	class FMTgraphvertextoyield;
+	class FMTGraph;
+	class FMTLineGraph;
+	class FMTGraphVertexToYield;
 }
 
 namespace Parser
@@ -43,7 +43,7 @@ namespace Parser
 namespace Spatial
 {
 	class FMTSpatialSchedule;
-	class FMTspatialnodescache;
+	class FMTSpatialNodesCache;
 	class FMTSpatialGraphs;
 }
 /// Namespace containing all enumerator and classes used to construct or manipulate the different type of model in FMT.
@@ -61,13 +61,13 @@ namespace Models
 	class FMTEXPORT FMTModel : public Core::FMTObject
     {
 		template<class T1,class T2>
-		friend class Graph::FMTgraph;
-		friend class Graph::FMTlinegraph;
+		friend class Graph::FMTGraph;
+		friend class Graph::FMTLineGraph;
 		friend class Spatial::FMTSpatialSchedule;
-		friend class Spatial::FMTspatialnodescache;
+		friend class Spatial::FMTSpatialNodesCache;
 		friend class Spatial::FMTSpatialGraphs;
 		friend class Parser::FMTModelParser;
-		friend class Graph::FMTgraphvertextoyield;
+		friend class Graph::FMTGraphVertexToYield;
 	public:
         // DocString: FMTModel::getYieldValue
 		/**

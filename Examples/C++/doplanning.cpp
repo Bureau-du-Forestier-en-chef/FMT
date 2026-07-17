@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
 
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 	{
 		std::string primarylocation;
 		std::string scenario;

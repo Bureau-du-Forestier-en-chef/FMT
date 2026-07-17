@@ -9,29 +9,29 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	void FMTedgeproperties::setvariableID(const int& newvariableID)
+	void FMTEdgeProperties::setvariableID(const int& newvariableID)
 		{
 		variableID = newvariableID;
 		}
 
 
-	bool FMTedgeproperties::operator == (const FMTedgeproperties& rhs) const
+	bool FMTEdgeProperties::operator == (const FMTEdgeProperties& rhs) const
 		{
 		return (action == rhs.action &&
 			variableID == rhs.variableID &&
 			proportion == rhs.proportion);
 		}
-	bool FMTedgeproperties::operator != (const FMTedgeproperties& rhs) const
+	bool FMTEdgeProperties::operator != (const FMTEdgeProperties& rhs) const
 		{
 		return (!(*this==rhs));
 		}
 
-	FMTedgeproperties::FMTedgeproperties(const int& laction,
-		const int& lvariableID,const double& lproportion):FMTbaseedgeproperties(laction), variableID(lvariableID),proportion(static_cast<float>(lproportion))
+	FMTEdgeProperties::FMTEdgeProperties(const int& laction,
+		const int& lvariableID,const double& lproportion):FMTBaseEdgeProperties(laction), variableID(lvariableID),proportion(static_cast<float>(lproportion))
 		{
 	
 		}
-	std::string FMTedgeproperties::variableName() const
+	std::string FMTEdgeProperties::variableName() const
 		{
 		std::string stype = "";
 		if (action >= 0)
@@ -45,4 +45,4 @@ namespace Graph
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTedgeproperties)
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTEdgeProperties)

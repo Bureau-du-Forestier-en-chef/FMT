@@ -16,23 +16,23 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTsaschedule.h"
 #include "FMTgraph.hpp"
 #include "FMTlinegraph.h"
-//#include "FMTsasolution.h"
+//#include "FMTSaSolution.h"
 #include "Rdefinitions.h"
 #include "FMTevent.h"
 #include "FMTdevelopment.h"
 
 //RCPP_EXPOSED_ENUM_NODECL(Spatial::FMTsamovetype);
 
-RCPP_EXPOSED_WRAP(Spatial::FMTcoordinate);
-RCPP_EXPOSED_AS(Spatial::FMTcoordinate);
+RCPP_EXPOSED_WRAP(Spatial::FMTCoordinate);
+RCPP_EXPOSED_AS(Spatial::FMTCoordinate);
 
-RCPP_DEFINEMAP(Spatial::FMTcoordinate,Core::FMTDevelopment);//for FMTlayer
-RCPP_EXPOSED_WRAP(Spatial::FMTlayer<Core::FMTDevelopment>);
-RCPP_EXPOSED_AS(Spatial::FMTlayer<Core::FMTDevelopment>);
+RCPP_DEFINEMAP(Spatial::FMTCoordinate,Core::FMTDevelopment);//for FMTLayer
+RCPP_EXPOSED_WRAP(Spatial::FMTLayer<Core::FMTDevelopment>);
+RCPP_EXPOSED_AS(Spatial::FMTLayer<Core::FMTDevelopment>);
 
-RCPP_EXPOSED_WRAP(Spatial::FMTforest);
-RCPP_EXPOSED_AS(Spatial::FMTforest);
-RCPP_DEFINEVECTOR(Spatial::FMTforest);// For vector
+RCPP_EXPOSED_WRAP(Spatial::FMTForest);
+RCPP_EXPOSED_AS(Spatial::FMTForest);
+RCPP_DEFINEVECTOR(Spatial::FMTForest);// For vector
 
 RCPP_EXPOSED_WRAP(Spatial::FMTSpatialSchedule);
 RCPP_EXPOSED_AS(Spatial::FMTSpatialSchedule);
@@ -41,20 +41,20 @@ RCPP_EXPOSED_WRAP(Spatial::FMTspatialaction);
 RCPP_EXPOSED_AS(Spatial::FMTspatialaction);
 RCPP_DEFINEVECTOR(Spatial::FMTspatialaction);//For vector
 */
-RCPP_EXPOSED_WRAP(Graph::FMTlinegraph);
-RCPP_EXPOSED_AS(Graph::FMTlinegraph);
-RCPP_DEFINEMAP(Spatial::FMTcoordinate,Graph::FMTlinegraph);//For FMTlayer
+RCPP_EXPOSED_WRAP(Graph::FMTLineGraph);
+RCPP_EXPOSED_AS(Graph::FMTLineGraph);
+RCPP_DEFINEMAP(Spatial::FMTCoordinate,Graph::FMTLineGraph);//For FMTLayer
 
 
-//RCPP_EXPOSED_WRAP(Spatial::FMTexponentialschedule); / Comment Gab 2026-02-09
-// RCPP_EXPOSED_AS(Spatial::FMTexponentialschedule); / Comment Gab 2026-02-09
+//RCPP_EXPOSED_WRAP(Spatial::FMTExponentialSchedule); / Comment Gab 2026-02-09
+// RCPP_EXPOSED_AS(Spatial::FMTExponentialSchedule); / Comment Gab 2026-02-09
 /*
-RCPP_EXPOSED_WRAP(Spatial::FMTsasolution);
-RCPP_EXPOSED_AS(Spatial::FMTsasolution);
-RCPP_DEFINEVECTOR(Spatial::FMTsasolution);//For vector
+RCPP_EXPOSED_WRAP(Spatial::FMTSaSolution);
+RCPP_EXPOSED_AS(Spatial::FMTSaSolution);
+RCPP_DEFINEVECTOR(Spatial::FMTSaSolution);//For vector
 */
-RCPP_EXPOSED_WRAP(Spatial::FMTevent);
-RCPP_EXPOSED_AS(Spatial::FMTevent);
+RCPP_EXPOSED_WRAP(Spatial::FMTEvent);
+RCPP_EXPOSED_AS(Spatial::FMTEvent);
 
 
 namespace R 
@@ -64,28 +64,28 @@ void exportSpatial()
     {
 
 
-	Rcpp::class_<Spatial::FMTcoordinate>("FMTcoordinate","@DocString(FMTcoordinate)")
-		.constructor("@DocString(FMTcoordinate())")
-        .constructor<unsigned int,unsigned int>("@DocString(FMTcoordinate(unsigned int,unsigned int))")
-        .method("lt",&Spatial::FMTcoordinate::operator <,
-			"@DocString(FMTcoordinate::operator<)")
-		.method("getx",&Spatial::FMTcoordinate::getX,
-			"@DocString(FMTcoordinate::getx)")
-		.method("gety",&Spatial::FMTcoordinate::getY,
-			"@DocString(FMTcoordinate::gety)");
+	Rcpp::class_<Spatial::FMTCoordinate>("FMTcoordinate","@DocString(FMTCoordinate)")
+		.constructor("@DocString(FMTCoordinate())")
+        .constructor<unsigned int,unsigned int>("@DocString(FMTCoordinate(unsigned int,unsigned int))")
+        .method("lt",&Spatial::FMTCoordinate::operator <,
+			"@DocString(FMTCoordinate::operator<)")
+		.method("getx",&Spatial::FMTCoordinate::getX,
+			"@DocString(FMTCoordinate::getx)")
+		.method("gety",&Spatial::FMTCoordinate::getY,
+			"@DocString(FMTCoordinate::gety)");
 
 
 	define_FMTlayer<Core::FMTDevelopment>("FMTdevelopmentlayer");
 
 
-	Rcpp::class_<Spatial::FMTforest>("FMTforest", "@DocString(FMTforest)")
-		.derives<Spatial::FMTlayer<Core::FMTDevelopment>>("FMTdevelopmentlayer")
-		.constructor("@DocString(FMTforest())")
-		.constructor<Spatial::FMTforest>("@DocString(FMTforest(Spatial::FMTforest))")
-		.method("getarea",&Spatial::FMTforest::getArea,
-			"@DocString(FMTforest(Spatial::getarea))")
-		.method("grow",&Spatial::FMTforest::grow,
-			"@DocString(FMTforest(Spatial::grow))");
+	Rcpp::class_<Spatial::FMTForest>("FMTforest", "@DocString(FMTForest)")
+		.derives<Spatial::FMTLayer<Core::FMTDevelopment>>("FMTdevelopmentlayer")
+		.constructor("@DocString(FMTForest())")
+		.constructor<Spatial::FMTForest>("@DocString(FMTForest(Spatial::FMTForest))")
+		.method("getarea",&Spatial::FMTForest::getArea,
+			"@DocString(FMTForest(Spatial::getarea))")
+		.method("grow",&Spatial::FMTForest::grow,
+			"@DocString(FMTForest(Spatial::grow))");
 
 
 	Rcpp::class_<Spatial::FMTSpatialSchedule>("FMTSpatialSchedule", "@DocString(FMTSpatialSchedule)")
@@ -116,23 +116,23 @@ void exportSpatial()
 		*/
 
 // comment Gab 2026-02-09
-//	Rcpp::class_<Spatial::FMTexponentialschedule>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
-//		.constructor("@DocString(FMTexponentialschedule())")
-//       .constructor<double>("@DocString(FMTexponentialschedule(double))");
+//	Rcpp::class_<Spatial::FMTExponentialSchedule>("FMTexponentialschedule", "@DocString(FMTExponentialSchedule)")
+//		.constructor("@DocString(FMTExponentialSchedule())")
+//       .constructor<double>("@DocString(FMTExponentialSchedule(double))");
 		
 
-	define_FMTlayer<Graph::FMTlinegraph>("FMTgraphlayer");
+	define_FMTlayer<Graph::FMTLineGraph>("FMTgraphlayer");
 
 	/*
-    Rcpp::class_<Spatial::FMTsasolution>("FMTsasolution", "@DocString(FMTsasolution)")
-		.constructor("@DocString(FMTsasolution())")
-		.derives<Spatial::FMTlayer<Graph::FMTlinegraph>>("FMTgraphlayer")
-        .method("get_stats",&Spatial::FMTsasolution::getsolution_stats,
-			"@DocString(FMTsasolution::getsolution_stats)")
-        .method("getobjfvalue",&Spatial::FMTsasolution::getobjfvalue,
-			"@DocString(FMTsasolution::getobjfvalue)")
-        .method("get_forest_at_period",&Spatial::FMTsasolution::getForestPeriod,
-			"@DocString(FMTsasolution::getForestPeriod)");
+    Rcpp::class_<Spatial::FMTSaSolution>("FMTsasolution", "@DocString(FMTSaSolution)")
+		.constructor("@DocString(FMTSaSolution())")
+		.derives<Spatial::FMTLayer<Graph::FMTLineGraph>>("FMTgraphlayer")
+        .method("get_stats",&Spatial::FMTSaSolution::getsolution_stats,
+			"@DocString(FMTSaSolution::getsolution_stats)")
+        .method("getobjfvalue",&Spatial::FMTSaSolution::getobjfvalue,
+			"@DocString(FMTSaSolution::getobjfvalue)")
+        .method("get_forest_at_period",&Spatial::FMTSaSolution::getForestPeriod,
+			"@DocString(FMTSaSolution::getForestPeriod)");
 	*/
     }
 }

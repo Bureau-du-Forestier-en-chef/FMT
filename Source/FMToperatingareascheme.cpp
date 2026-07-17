@@ -18,10 +18,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 {
 
-double FMToperatingareascheme::getPrimalArea(const double* primalsolution, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& vertices) const//Get the area of the operating area base on a solution
+double FMTOperatingAreaScheme::getPrimalArea(const double* primalsolution, const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>& maingraph, const std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>& vertices) const//Get the area of the operating area base on a solution
 	{
 	double area = 0;
-	for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : vertices)
+	for (const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor& descriptor : vertices)
 		{
 		if (maingraph.periodStart(descriptor))
 			{
@@ -31,7 +31,7 @@ double FMToperatingareascheme::getPrimalArea(const double* primalsolution, const
 	return area;
 	}
 
-size_t FMToperatingareascheme::getBestSchemeId(const double* primalsolution) const//Get the best possible scheme looking at the primal solution
+size_t FMTOperatingAreaScheme::getBestSchemeId(const double* primalsolution) const//Get the best possible scheme looking at the primal solution
 	{
 	size_t bestid = 0;
 	double bestvalue = 0;
@@ -48,10 +48,10 @@ size_t FMToperatingareascheme::getBestSchemeId(const double* primalsolution) con
 
 
 
-std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> FMToperatingareascheme::generateSchemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices)// Generate unique schemes base on parameters
+std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>> FMTOperatingAreaScheme::generateSchemes(const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& vertices)// Generate unique schemes base on parameters
 {
-	std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>schemes;
-		std::map<std::pair<size_t, size_t>, std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>nodes;
+	std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>>schemes;
+		std::map<std::pair<size_t, size_t>, std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>nodes;
 		std::vector<size_t>returntimeof;
 		for (size_t returnid = returntime; returnid <= maxreturntime; ++returnid)
 			{
@@ -63,7 +63,7 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 			for (size_t id = 0; id < vertices.size(); ++id)
 			{
 				size_t returntimeid = 0;
-				std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>> newscheme;
+				std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>> newscheme;
 				std::unordered_set<std::string>enumdone;
 				size_t localid = id;
 				bool validscheme = true;
@@ -105,7 +105,7 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 	return schemes;
 	}
 
-int FMToperatingareascheme::getMaxPeriod() const
+int FMTOperatingAreaScheme::getMaxPeriod() const
 {
 	int maxperiod = 0;
 	for (const std::vector<int>& periods : schemesperiods)
@@ -121,11 +121,11 @@ int FMToperatingareascheme::getMaxPeriod() const
 	return maxperiod;
 }
 
-std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> FMToperatingareascheme::getIgnoredVertices(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
-	const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targetedperiodsvertices) const
+std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> FMTOperatingAreaScheme::getIgnoredVertices(const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>>& schemes,
+	const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& targetedperiodsvertices) const
 	{
-		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> ignored;
-		std::unordered_set<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> schemesvertices;
+		std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> ignored;
+		std::unordered_set<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> schemesvertices;
 		for (const auto& scheme : schemes)
 		{
 			for (const auto& periodv : scheme)
@@ -149,12 +149,12 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 		return ignored;
 	}
 
-	void FMToperatingareascheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
-		const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodictargetednodes,
-		const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
+	void FMTOperatingAreaScheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>>& schemes,
+		const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& periodictargetednodes,
+		const std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>& totalareavertices,
 		Models::FMTLpSolver& solver,
 		const double* primalsolution,
-		const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<int>& actionIDS)
+		const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>& maingraph, const std::vector<int>& actionIDS)
 	{
 		int binaryid = solver.getNumCols();
 		_area = 0;
@@ -172,12 +172,12 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 		size_t schemeid = 0;
 		//To block activity in dev that are not in schemes and fit with the targeted nodes
 		//They are remove in generateSchemes because we dont keep unfinished pattern
-		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> ignoredvert = getIgnoredVertices(schemes, periodictargetednodes);
+		std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> ignoredvert = getIgnoredVertices(schemes, periodictargetednodes);
 		if (!ignoredvert.empty())
 		{
 			const int cid = solver.getNumRows();
 			std::vector<int> variablestoignore;
-			for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : ignoredvert)
+			for (const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor& descriptor : ignoredvert)
 			{
 				const std::map<int, int>actions = maingraph.getOutVariables(descriptor);
 				for (const int& action : actionIDS)
@@ -199,10 +199,10 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 
 		}
 		//Iter over schemes to fill periodblocksvariables and get binary id and schemesid
-		for (const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& scheme : schemes)
+		for (const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& scheme : schemes)
 		{
 			size_t blockid = 0;
-			for (const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& localblock : scheme)
+			for (const std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>& localblock : scheme)
 			{
 				if (!localblock.empty())
 				{
@@ -211,7 +211,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 					{
 						periodicsblocksvariables[period] = std::vector<int>();
 					}
-					for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : localblock)
+					for (const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor& descriptor : localblock)
 					{
 						const std::map<int, int>actions = maingraph.getOutVariables(descriptor);
 						for (const int& action : actionIDS)
@@ -295,7 +295,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 
 
 
-void FMToperatingareascheme::getRessourcesToDelete(std::vector<int>& colstodelete, std::vector<int>& rowstodelete) const
+void FMTOperatingAreaScheme::getRessourcesToDelete(std::vector<int>& colstodelete, std::vector<int>& rowstodelete) const
 	{
 	for (const int& binary : openingbinaries)
 		{
@@ -320,11 +320,11 @@ void FMToperatingareascheme::getRessourcesToDelete(std::vector<int>& colstodelet
 		}
 	}
 
-void FMToperatingareascheme::pushBinaries(std::vector<int>& targets) const
+void FMTOperatingAreaScheme::pushBinaries(std::vector<int>& targets) const
 	{
 	targets.insert(targets.end(), openingbinaries.begin(), openingbinaries.end());
 	}
-size_t FMToperatingareascheme::unboundAllPrimalSchemes(std::vector<int>& targets, std::vector<double>& bounds) const //Unbound all binaries to 0<=B<=1
+size_t FMTOperatingAreaScheme::unboundAllPrimalSchemes(std::vector<int>& targets, std::vector<double>& bounds) const //Unbound all binaries to 0<=B<=1
 	{
 	for (const int& bintounbound : openingbinaries)
 		{
@@ -335,7 +335,7 @@ size_t FMToperatingareascheme::unboundAllPrimalSchemes(std::vector<int>& targets
 	return !openingbinaries.empty();
 	}
 
-void FMToperatingareascheme::fillBoundsNVariables(const double* lowerb, const double* upperb, std::vector<int>& constraintstargets, std::vector<double>& bounds) const
+void FMTOperatingAreaScheme::fillBoundsNVariables(const double* lowerb, const double* upperb, std::vector<int>& constraintstargets, std::vector<double>& bounds) const
 {
 	for (const std::vector<int>& constraints : openingconstraints)
 	{
@@ -354,7 +354,7 @@ void FMToperatingareascheme::fillBoundsNVariables(const double* lowerb, const do
 	}
 }
 
-size_t FMToperatingareascheme::unboundAllDualSchemes(std::vector<int>& targets, std::vector<double>& bounds) const
+size_t FMTOperatingAreaScheme::unboundAllDualSchemes(std::vector<int>& targets, std::vector<double>& bounds) const
 	{
 	int processed = 0;
 	for (const std::vector<int>& constraints : openingconstraints)
@@ -376,7 +376,7 @@ size_t FMToperatingareascheme::unboundAllDualSchemes(std::vector<int>& targets, 
 	return processed;
 	}
 
-bool FMToperatingareascheme::boundPrimalScheme(std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid) const //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
+bool FMTOperatingAreaScheme::boundPrimalScheme(std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid) const //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
 	{
 	targets.push_back(openingbinaries.at(schemeid));
 	bounds.push_back(1.0);
@@ -384,7 +384,7 @@ bool FMToperatingareascheme::boundPrimalScheme(std::vector<int>& targets, std::v
 	return !openingbinaries.empty();
 	}
 
-bool FMToperatingareascheme::unboundDualScheme(const double* rowactivities,std::vector<int>& targets,
+bool FMTOperatingAreaScheme::unboundDualScheme(const double* rowactivities,std::vector<int>& targets,
 	std::vector<double>& bounds, const size_t& schemeid, bool looseset) const //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
 {
 	double minimalopeningarea = std::numeric_limits<double>::lowest();
@@ -449,7 +449,7 @@ bool FMToperatingareascheme::unboundDualScheme(const double* rowactivities,std::
 	return !openingconstraints.empty();
 }
 
-std::vector<double>FMToperatingareascheme::fillPattern(const std::vector<double>& pattern, const int& startat) const
+std::vector<double>FMTOperatingAreaScheme::fillPattern(const std::vector<double>& pattern, const int& startat) const
 	{
 	std::vector<double>values;
 	for (size_t repid = 0; repid < repetition; ++repid)
@@ -480,7 +480,7 @@ std::vector<double>FMToperatingareascheme::fillPattern(const std::vector<double>
 	return values;
 	}
 
-void FMToperatingareascheme::closeNoActivity(std::vector<double>& filleduppattern, const size_t& selected, const double* dualsolution) const
+void FMTOperatingAreaScheme::closeNoActivity(std::vector<double>& filleduppattern, const size_t& selected, const double* dualsolution) const
 	{
 	size_t constraintid = 0;
 	for (const int& period : schemesperiods.at(selected))
@@ -493,7 +493,7 @@ void FMToperatingareascheme::closeNoActivity(std::vector<double>& filleduppatter
 		}
 	}
 
-std::vector<double> FMToperatingareascheme::getDualSolution(const double* upperbounds, const double* dualsolution,bool& canbreakneighboring) const
+std::vector<double> FMTOperatingAreaScheme::getDualSolution(const double* upperbounds, const double* dualsolution,bool& canbreakneighboring) const
 	{
 	std::vector<double>filledpattern;
 	const size_t patternsize = (this->openingtime + this->returntime);
@@ -580,7 +580,7 @@ std::vector<double> FMToperatingareascheme::getDualSolution(const double* upperb
 	return filledpattern;
 	}
 
-std::vector<double> FMToperatingareascheme::getDualLowerBounds(const double* lowerbounds, const double* upperbounds) const
+std::vector<double> FMTOperatingAreaScheme::getDualLowerBounds(const double* lowerbounds, const double* upperbounds) const
 {
 	const size_t patternsize = (this->openingtime + this->returntime);
 	size_t solutionid = 0;
@@ -598,7 +598,7 @@ std::vector<double> FMToperatingareascheme::getDualLowerBounds(const double* low
 	return filledpattern;
 }
 
-std::vector<double>FMToperatingareascheme::getPrimalSolution(const double* primalsolution) const //Get the solution into yield
+std::vector<double>FMTOperatingAreaScheme::getPrimalSolution(const double* primalsolution) const //Get the solution into yield
 	{
 	std::vector<std::string>sources;
 	std::vector<double>pattern(openingtime+returntime,0);
@@ -619,14 +619,14 @@ std::vector<double>FMToperatingareascheme::getPrimalSolution(const double* prima
 	return this->fillPattern(pattern, startingat);
 	}
 
-std::vector<std::vector<int>> FMToperatingareascheme::schemesToPeriods(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
-														const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& maingraph) const
+std::vector<std::vector<int>> FMTOperatingAreaScheme::schemesToPeriods(const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>>& schemes,
+														const Graph::FMTGraph<Graph::FMTVertexProperties,Graph::FMTEdgeProperties>& maingraph) const
 	{
 	std::vector<std::vector<int>>periods;
-	for (const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>> scheme : schemes)
+	for (const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>> scheme : schemes)
 		{
 		std::vector<int>periodids;
-		for (const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& block : scheme)
+		for (const std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>& block : scheme)
 			{
 			if (!block.empty())
 				{
@@ -642,51 +642,51 @@ std::vector<std::vector<int>> FMToperatingareascheme::schemesToPeriods(const std
 	return periods;
 	}
 
-void  FMToperatingareascheme::setReturnTime(const size_t& minimalreturntime, const size_t& maximalreturntime)
+void  FMTOperatingAreaScheme::setReturnTime(const size_t& minimalreturntime, const size_t& maximalreturntime)
 	{
 	returntime = minimalreturntime;
 	maxreturntime = maximalreturntime;
 	}
 
-size_t FMToperatingareascheme::getOpeningTime() const
+size_t FMTOperatingAreaScheme::getOpeningTime() const
 	{
 	return openingtime;
 	}
 
-size_t FMToperatingareascheme::getMinimalReturnTime() const
+size_t FMTOperatingAreaScheme::getMinimalReturnTime() const
 	{
 	return returntime;
 	}
 
-size_t FMToperatingareascheme::getMaximalReturnTime() const
+size_t FMTOperatingAreaScheme::getMaximalReturnTime() const
 	{
 	return maxreturntime;
 	}
 
-size_t FMToperatingareascheme::getRepetition() const
+size_t FMTOperatingAreaScheme::getRepetition() const
 	{
 	return repetition;
 	}
 
-double FMToperatingareascheme::getThreshold() const
+double FMTOperatingAreaScheme::getThreshold() const
 	{
 	return threshold;
 	}
 
 
 	
-bool FMToperatingareascheme::empty() const
+bool FMTOperatingAreaScheme::empty() const
 	{
 	return (schemesperiods.empty() || openingbinaries.empty() || openingconstraints.empty());
 	}
 
-const std::vector<int>& FMToperatingareascheme::getOpeningBinaries() const
+const std::vector<int>& FMTOperatingAreaScheme::getOpeningBinaries() const
 	{
 	return openingbinaries;
 	}
 
-FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,const size_t& lopeningtime, const size_t& lreturntime, const size_t& lmaxreturntime,
-	const size_t& lrepetition,const size_t& lgreenup, const size_t& lstartingperiod, double minimalarearatio):FMToperatingarea(oparea),
+FMTOperatingAreaScheme::FMTOperatingAreaScheme(const FMTOperatingArea& oparea,const size_t& lopeningtime, const size_t& lreturntime, const size_t& lmaxreturntime,
+	const size_t& lrepetition,const size_t& lgreenup, const size_t& lstartingperiod, double minimalarearatio):FMTOperatingArea(oparea),
 	openingconstraints(),
 	openingbinaries(),
 	maximalschemesconstraint(),
@@ -698,19 +698,19 @@ FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,co
 	}
 
 
-void FMToperatingareascheme::setConstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& vertices,
-	const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareavertices,
-	const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph, Models::FMTLpSolver& solver,
+void FMTOperatingAreaScheme::setConstraints(const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& vertices,
+	const std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>& totalareavertices,
+	const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>& graph, Models::FMTLpSolver& solver,
 	const double* primalsolution,
 	const std::vector<int>& actionIDS)
 	{
-	const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> schemes = this->generateSchemes(vertices);
+	const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>> schemes = this->generateSchemes(vertices);
 	schemesperiods = schemesToPeriods(schemes, graph);
 	schemestoLP(schemes, vertices, totalareavertices, solver, primalsolution, graph, actionIDS);
 	}
 
 
-std::map<int, std::vector<int>>FMToperatingareascheme::getCommonBinaries(const FMToperatingareascheme& neighbor) const
+std::map<int, std::vector<int>>FMTOperatingAreaScheme::getCommonBinaries(const FMTOperatingAreaScheme& neighbor) const
 	{
 	std::map<int, std::vector<int>>neighboringscheme;
 	const int greenupuse = static_cast<int>(std::max(greenup,neighbor.greenup));
@@ -745,7 +745,7 @@ std::map<int, std::vector<int>>FMToperatingareascheme::getCommonBinaries(const F
 	return neighboringscheme;
 	}
 
-size_t FMToperatingareascheme::getPrimalSolutionIndex(const double* primalsolution) const
+size_t FMTOperatingAreaScheme::getPrimalSolutionIndex(const double* primalsolution) const
 	{
 	size_t id = 0;
 	for (const int& binary : openingbinaries)
@@ -759,7 +759,7 @@ size_t FMToperatingareascheme::getPrimalSolutionIndex(const double* primalsoluti
 	return 0;
 	}
 
-bool FMToperatingareascheme::getDualSolutionIndex(const double* upperbound, size_t& locid) const
+bool FMTOperatingAreaScheme::getDualSolutionIndex(const double* upperbound, size_t& locid) const
 	{
 	std::unordered_set<int>allopenedconstraintids;
 	for (const std::vector<int>& constraints : openingconstraints)
@@ -821,7 +821,7 @@ bool FMToperatingareascheme::getDualSolutionIndex(const double* upperbound, size
 	return false;*/
 	}
 
-bool FMToperatingareascheme::havePotentialSolution(const double* primalsolution) const
+bool FMTOperatingAreaScheme::havePotentialSolution(const double* primalsolution) const
 	{
 	for (const int& binary : openingbinaries)
 		{
@@ -833,7 +833,7 @@ bool FMToperatingareascheme::havePotentialSolution(const double* primalsolution)
 	return false;
 	}
 
-bool FMToperatingareascheme::haveActivitySolution(const double* dualsolution) const
+bool FMTOperatingAreaScheme::haveActivitySolution(const double* dualsolution) const
 {
 	for (const std::vector<int>& constraints : openingconstraints)
 	{
@@ -850,13 +850,13 @@ bool FMToperatingareascheme::haveActivitySolution(const double* dualsolution) co
 
 
 
-std::vector<size_t>FMToperatingareascheme::getPotentialPrimalSchemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds, const std::vector<FMToperatingareascheme>& neighbors) const
+std::vector<size_t>FMTOperatingAreaScheme::getPotentialPrimalSchemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds, const std::vector<FMTOperatingAreaScheme>& neighbors) const
 	{
 	std::vector<size_t>potentialindexes;
 	if (havePotentialSolution(primalsolution))//Got something more than zero...
 		{
 		std::vector<int>potentials = this->openingbinaries;
-		for (const FMToperatingareascheme& neighbor : neighbors)
+		for (const FMTOperatingAreaScheme& neighbor : neighbors)
 			{
 			if (neighbor.isPrimalBounded(lowerbounds, upperbounds))
 				{
@@ -897,7 +897,7 @@ std::vector<size_t>FMToperatingareascheme::getPotentialPrimalSchemes(const doubl
 	return potentialindexes;
 	}
 
-double FMToperatingareascheme::getRowsActivitySum(const std::vector<int>& rows, const double* dualsolution) const
+double FMTOperatingAreaScheme::getRowsActivitySum(const std::vector<int>& rows, const double* dualsolution) const
 	{
 	double value = 0;
 	for (const int& constid : rows)
@@ -907,16 +907,16 @@ double FMToperatingareascheme::getRowsActivitySum(const std::vector<int>& rows, 
 	return value;
 	}
 
-std::vector<size_t> FMToperatingareascheme::getPotentialDualSchemes(
+std::vector<size_t> FMTOperatingAreaScheme::getPotentialDualSchemes(
 	const double* dualsolution, 
 	const double* upperbound, 
-	const std::vector<FMToperatingareascheme>& neighbors) const
+	const std::vector<FMTOperatingAreaScheme>& neighbors) const
 	{
 	std::vector<size_t> potentialIndexes;
 	if (haveActivitySolution(dualsolution))//Got something more than zero...
 		{
 			std::vector<int> potentials = this->openingbinaries;
-			for (const FMToperatingareascheme& neighbor : neighbors)
+			for (const FMTOperatingAreaScheme& neighbor : neighbors)
 			{
 				if (neighbor.isDualBounded(upperbound))
 				{
@@ -974,7 +974,7 @@ std::vector<size_t> FMToperatingareascheme::getPotentialDualSchemes(
 							"Initial threshold of " + std::to_string(threshold) +
 							". New threshold set at " + std::to_string(tempThresholds[index]) +
 							" for " + std::string(getMask()),
-							"FMToperatingareascheme::_maxNearThresholdActivityRows",
+							"FMTOperatingAreaScheme::_maxNearThresholdActivityRows",
 							__LINE__, __FILE__);
 					}
 				}
@@ -1001,7 +1001,7 @@ std::vector<size_t> FMToperatingareascheme::getPotentialDualSchemes(
 	}
 
 
-size_t FMToperatingareascheme::boundAllPrimalSchemes(std::vector<int>& targets, std::vector<double>& bounds, double boundvalue) const
+size_t FMTOperatingAreaScheme::boundAllPrimalSchemes(std::vector<int>& targets, std::vector<double>& bounds, double boundvalue) const
 {
 	if (!openingbinaries.empty())
 	{
@@ -1015,7 +1015,7 @@ size_t FMToperatingareascheme::boundAllPrimalSchemes(std::vector<int>& targets, 
 	return openingbinaries.size();
 }
 
-size_t FMToperatingareascheme::boundAllDualSchemes(std::vector<int>& targets, std::vector<double>& bounds) const
+size_t FMTOperatingAreaScheme::boundAllDualSchemes(std::vector<int>& targets, std::vector<double>& bounds) const
 {
 	size_t unbounded = 0;
 	for (const std::vector<int>& constraints : openingconstraints)
@@ -1037,7 +1037,7 @@ size_t FMToperatingareascheme::boundAllDualSchemes(std::vector<int>& targets, st
 	return unbounded;
 }
 
-bool FMToperatingareascheme::isAllPrimalBounded(const double* lowerbounds, const double* upperbounds) const
+bool FMTOperatingAreaScheme::isAllPrimalBounded(const double* lowerbounds, const double* upperbounds) const
 {
 	for (const int& binary : openingbinaries)
 	{
@@ -1049,7 +1049,7 @@ bool FMToperatingareascheme::isAllPrimalBounded(const double* lowerbounds, const
 	return true;
 }
 
-bool FMToperatingareascheme::isAllDualBounded(const double* upperbounds) const
+bool FMTOperatingAreaScheme::isAllDualBounded(const double* upperbounds) const
 {
 	for (const std::vector<int>& constraint : openingconstraints)
 	{
@@ -1064,7 +1064,7 @@ bool FMToperatingareascheme::isAllDualBounded(const double* upperbounds) const
 	return true;
 }
 
-double FMToperatingareascheme::getBinariesSum(const double* primalsolution) const
+double FMTOperatingAreaScheme::getBinariesSum(const double* primalsolution) const
 {
 	double total = 0;
 	for (const int& binary : openingbinaries)
@@ -1074,7 +1074,7 @@ double FMToperatingareascheme::getBinariesSum(const double* primalsolution) cons
 	return total;
 }
 
-double FMToperatingareascheme::getActivitySum(const double* dualsolution) const
+double FMTOperatingAreaScheme::getActivitySum(const double* dualsolution) const
 {
 	double total = 0;
 	std::vector<int>counted;
@@ -1092,7 +1092,7 @@ double FMToperatingareascheme::getActivitySum(const double* dualsolution) const
 	return total;
 }
 
-double FMToperatingareascheme::_maxNearThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution) const
+double FMTOperatingAreaScheme::_maxNearThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution) const
 {
 	double maxValue = 0;
 	size_t idWithMaxValue = 0;
@@ -1113,7 +1113,7 @@ double FMToperatingareascheme::_maxNearThresholdActivityRows(const std::vector<i
 	return newThreshold;
 }
 
-size_t FMToperatingareascheme::_findIndexLocation(int binary) const
+size_t FMTOperatingAreaScheme::_findIndexLocation(int binary) const
 {
 	std::vector<int>::const_iterator binit = std::find(this->openingbinaries.begin(),
 		this->openingbinaries.end(),
@@ -1121,7 +1121,7 @@ size_t FMToperatingareascheme::_findIndexLocation(int binary) const
 	return std::distance(this->openingbinaries.begin(), binit);
 }
 
-void FMToperatingareascheme::_addPotentialResults(
+void FMTOperatingAreaScheme::_addPotentialResults(
 	size_t indexlocation, 
 	std::vector<size_t>& potentialindexes, 
 	std::vector<double>& potentialValues,
@@ -1135,7 +1135,7 @@ void FMToperatingareascheme::_addPotentialResults(
 	}
 }
 
-bool FMToperatingareascheme::_checkDoubleIncludes(const std::vector<std::vector<int>>& p_openingconstraints)
+bool FMTOperatingAreaScheme::_checkDoubleIncludes(const std::vector<std::vector<int>>& p_openingconstraints)
 {
 	for (const auto& OP_CONSTRAINT : p_openingconstraints)
 	{
@@ -1163,7 +1163,7 @@ bool FMToperatingareascheme::_checkDoubleIncludes(const std::vector<std::vector<
 	return false;
 }
 
-bool FMToperatingareascheme::isThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution, double tempThreshold) const
+bool FMTOperatingAreaScheme::isThresholdActivityRows(const std::vector<int>& rows, const double* dualsolution, double tempThreshold) const
 {
 	/*for (const int& constraint : rows)
 	{
@@ -1189,7 +1189,7 @@ bool FMToperatingareascheme::isThresholdActivityRows(const std::vector<int>& row
 	return true;
 }
 
-bool FMToperatingareascheme::isThresholdActivity(const double* dualsolution) const
+bool FMTOperatingAreaScheme::isThresholdActivity(const double* dualsolution) const
 {
 	for (const std::vector<int>& constraints : openingconstraints)
 	{
@@ -1202,7 +1202,7 @@ bool FMToperatingareascheme::isThresholdActivity(const double* dualsolution) con
 }
 
 
-bool FMToperatingareascheme::isPrimalBounded(const double* lowerbounds, const double* upperbounds) const
+bool FMTOperatingAreaScheme::isPrimalBounded(const double* lowerbounds, const double* upperbounds) const
 	{
 	for (const int& binary : openingbinaries)
 		{
@@ -1214,7 +1214,7 @@ bool FMToperatingareascheme::isPrimalBounded(const double* lowerbounds, const do
 	return false;
 	}
 
-bool FMToperatingareascheme::isDualBounded(const double* upperbounds) const
+bool FMTOperatingAreaScheme::isDualBounded(const double* upperbounds) const
 	{
 	if (openingconstraints.size()==1)//need to considered it selected because theirs only one choice!
 		{
@@ -1241,34 +1241,34 @@ bool FMToperatingareascheme::isDualBounded(const double* upperbounds) const
 	}
 
 
-FMToperatingareascheme FMToperatingareascheme::presolve(const Core::FMTMask& selectedmask, const std::vector<Core::FMTTheme>& presolvedthemes) const
+FMTOperatingAreaScheme FMTOperatingAreaScheme::presolve(const Core::FMTMask& selectedmask, const std::vector<Core::FMTTheme>& presolvedthemes) const
 {
-	const FMToperatingarea presolveoparea = FMToperatingarea::presolveOperatingArea(selectedmask,presolvedthemes);
-	return FMToperatingareascheme(presolveoparea,this->openingtime, this->returntime,this->maxreturntime,this->repetition,this->greenup,this->startingperiod);
+	const FMTOperatingArea presolveoparea = FMTOperatingArea::presolveOperatingArea(selectedmask,presolvedthemes);
+	return FMTOperatingAreaScheme(presolveoparea,this->openingtime, this->returntime,this->maxreturntime,this->repetition,this->greenup,this->startingperiod);
 }
 
 
-size_t FMToperatingareascheme::getStartingPeriod() const
+size_t FMTOperatingAreaScheme::getStartingPeriod() const
 	{
 	return startingperiod;
 	}
 
 
-bool FMToperatingareascheme::operator == (const FMToperatingareascheme& rhs) const
+bool FMTOperatingAreaScheme::operator == (const FMTOperatingAreaScheme& rhs) const
 	{
 	return (mask == rhs.mask);
 	}
-bool FMToperatingareascheme::operator != (const FMToperatingareascheme& rhs) const
+bool FMTOperatingAreaScheme::operator != (const FMTOperatingAreaScheme& rhs) const
 	{
 	return (!(*this == rhs));
 	}
 
-size_t FMToperatingareascheme::getNumberofscheme() const
+size_t FMTOperatingAreaScheme::getNumberofscheme() const
 	{
 		return schemesperiods.size();
 	}
 
-size_t FMToperatingareascheme::getNumberofsimplescheme() const
+size_t FMTOperatingAreaScheme::getNumberofsimplescheme() const
 	{
 	std::unordered_set<int>allperiods;
 	for (const std::vector<int>& schemeperiod : schemesperiods)
@@ -1281,17 +1281,17 @@ size_t FMToperatingareascheme::getNumberofsimplescheme() const
 	return allperiods.size() - (openingtime - 1);
 	}
 
-const int& FMToperatingareascheme::getRejectedNodesCid() const
+const int& FMTOperatingAreaScheme::getRejectedNodesCid() const
 {
 	return rejectednodescid;
 }
 
-const std::vector<std::vector<int>>& FMToperatingareascheme::getOpeningConstraints() const
+const std::vector<std::vector<int>>& FMTOperatingAreaScheme::getOpeningConstraints() const
 {
 	return openingconstraints;
 }
 
-const int& FMToperatingareascheme::getMaximalSchemesConstraint() const 
+const int& FMTOperatingAreaScheme::getMaximalSchemesConstraint() const 
 {
 	return maximalschemesconstraint;
 }
@@ -1301,12 +1301,12 @@ FMTOperatingAreaSchemeComparator::FMTOperatingAreaSchemeComparator(const Core::F
 	{
 
 	}
-bool FMTOperatingAreaSchemeComparator::operator()(const FMToperatingareascheme& oparea) const
+bool FMTOperatingAreaSchemeComparator::operator()(const FMTOperatingAreaScheme& oparea) const
 	{
 	return (oparea.getMask() == mask);
 	}
 
 
 }
-BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMToperatingareascheme)
+BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTOperatingAreaScheme)
 #endif

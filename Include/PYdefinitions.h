@@ -46,27 +46,27 @@ template <class T>
 void define_FMTlayer()
     {
 
-	boost::python::class_<Spatial::FMTlayer<T>>("FMTlayer", "@DocString(FMTlayer)")
-        .def("getXSize",&Spatial::FMTlayer<T>::getXSize,
-			"@DocString(FMTlayer::GetXSize)")
-        .def("getYSize",&Spatial::FMTlayer<T>::getYSize,
-			"@DocString(FMTlayer::GetYSize)")
-        .def("getgeotransform",&Spatial::FMTlayer<T>::getGeoTransform,
-			"@DocString(FMTlayer::getgeotransform)")
-        .def("getprojection",&Spatial::FMTlayer<T>::getProjection,
-			"@DocString(FMTlayer::getprojection)")
-        .def("getmapping",&Spatial::FMTlayer<T>::getMapping,
-			"@DocString(FMTlayer::getmapping)")
-        .def("area",&Spatial::FMTlayer<T>::area,
-			"@DocString(FMTlayer::area)")
-        .def("getcellsize",&Spatial::FMTlayer<T>::getCellSize,
-			"@DocString(FMTlayer::getcellsize)")
-        .def("__len__",&Spatial::FMTlayer<T>::size,
-			"@DocString(FMTlayer::size)")
+	boost::python::class_<Spatial::FMTLayer<T>>("FMTlayer", "@DocString(FMTLayer)")
+        .def("getXSize",&Spatial::FMTLayer<T>::getXSize,
+			"@DocString(FMTLayer::GetXSize)")
+        .def("getYSize",&Spatial::FMTLayer<T>::getYSize,
+			"@DocString(FMTLayer::GetYSize)")
+        .def("getgeotransform",&Spatial::FMTLayer<T>::getGeoTransform,
+			"@DocString(FMTLayer::getgeotransform)")
+        .def("getprojection",&Spatial::FMTLayer<T>::getProjection,
+			"@DocString(FMTLayer::getprojection)")
+        .def("getmapping",&Spatial::FMTLayer<T>::getMapping,
+			"@DocString(FMTLayer::getmapping)")
+        .def("area",&Spatial::FMTLayer<T>::area,
+			"@DocString(FMTLayer::area)")
+        .def("getcellsize",&Spatial::FMTLayer<T>::getCellSize,
+			"@DocString(FMTLayer::getcellsize)")
+        .def("__len__",&Spatial::FMTLayer<T>::size,
+			"@DocString(FMTLayer::size)")
         //const because begin and end return const iterator
-        .def("itercell", boost::python::iterator<Spatial::FMTlayer<T>>())
-        .def("__getitem__",&Spatial::FMTlayer<T>::at,boost::python::return_internal_reference<>(),"@DocString(FMTlayer::at)");
-    boost::python::to_python_converter<std::map<Spatial::FMTcoordinate,T>,MapToDict<Spatial::FMTcoordinate,T>>();
+        .def("itercell", boost::python::iterator<Spatial::FMTLayer<T>>())
+        .def("__getitem__",&Spatial::FMTLayer<T>::at,boost::python::return_internal_reference<>(),"@DocString(FMTLayer::at)");
+    boost::python::to_python_converter<std::map<Spatial::FMTCoordinate,T>,MapToDict<Spatial::FMTCoordinate,T>>();
     }
 
 template<class k,class v>

@@ -16,13 +16,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 {
 
-	FMTlpheuristic::FMTlpheuristic(const FMTlpheuristic& rhs) :
+	FMTLpHeuristic::FMTLpHeuristic(const FMTLpHeuristic& rhs) :
 		Models::FMTLpSolver(rhs),
 		generator(rhs.generator),seed(rhs.seed),usingsolvercopy(true)
 		{
 
 		}
-	FMTlpheuristic& FMTlpheuristic::operator = (const FMTlpheuristic& rhs)
+	FMTLpHeuristic& FMTLpHeuristic::operator = (const FMTLpHeuristic& rhs)
 		{
 		if (this!=&rhs)
 			{
@@ -34,14 +34,14 @@ namespace Heuristics
 		return *this;
 		}
 
-    FMTlpheuristic::FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
+    FMTLpHeuristic::FMTLpHeuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
        Models::FMTLpSolver(interfacetype,std::string(), std::string(),"LpHeuristic_"+std::to_string(lseed)),
 		generator(static_cast<unsigned int>(lseed)), seed(lseed), usingsolvercopy(true/*false*/)
         {
         //this->buildSolverInterface(interfacetype);
         }
 
-	FMTlpheuristic::FMTlpheuristic(Models::FMTLpSolver& basesolve, size_t lseed,bool copysolver):
+	FMTLpHeuristic::FMTLpHeuristic(Models::FMTLpSolver& basesolve, size_t lseed,bool copysolver):
 		Models::FMTLpSolver(),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(copysolver)
 		{
 		try {
@@ -53,40 +53,40 @@ namespace Heuristics
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMTlpheuristic::FMTlpheuristic", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTLpHeuristic::FMTLpHeuristic", __LINE__, __FILE__);
 			}
 		}
 
 
-	void FMTlpheuristic::setGeneratorSeed(const size_t& lseed)
+	void FMTLpHeuristic::setGeneratorSeed(const size_t& lseed)
 		{
 		seed = lseed;
 		generator.seed(static_cast<unsigned int>(lseed));
 		}
 
-	bool FMTlpheuristic::branchNBoundSolve()
+	bool FMTLpHeuristic::branchNBoundSolve()
 		{
 		try {
 			Models::FMTLpSolver::branchAndBound();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTlpheuristic::branchNBoundSolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpHeuristic::branchNBoundSolve", __LINE__, __FILE__);
 			}
 		return Models::FMTLpSolver::isProvenOptimal();
        }
-	bool FMTlpheuristic::greedyPass(const double& initsol,const unsigned int& iteration)
+	bool FMTLpHeuristic::greedyPass(const double& initsol,const unsigned int& iteration)
 	{
 		///Need to be implemented
 		try {
 			initialSolve();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTlpheuristic::greedyPass", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpHeuristic::greedyPass", __LINE__, __FILE__);
 			}
 		return Models::FMTLpSolver::isProvenOptimal();
 	  }
 
-	void FMTlpheuristic::parallelOptimize(const double& initbestsolution, const unsigned int& iterations,const double& maxtime, const std::chrono::steady_clock::time_point& Starttime)
+	void FMTLpHeuristic::parallelOptimize(const double& initbestsolution, const unsigned int& iterations,const double& maxtime, const std::chrono::steady_clock::time_point& Starttime)
 		{
 			unsigned int pass = 0;
 			bool mxtreach = false;
@@ -111,5 +111,5 @@ namespace Heuristics
 		}
 
 }
-BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristic)
+BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTLpHeuristic)
 #endif

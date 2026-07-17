@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 {
 	Logging::FMTDefaultLogger().logStamp();
 
-	if (Version::FMTversion().hasFeature("GDAL"))
+	if (Version::FMTVersion().hasFeature("GDAL"))
 	{
 		std::string primarylocation;
 		std::string scenario;
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 		boost::filesystem::path pripath(primarylocation);
 		boost::filesystem::path basefolder = pripath.parent_path();
 		const boost::filesystem::path RASTER_LOCATION = basefolder / boost::filesystem::path("rasters");
-		Spatial::FMTforest forest;
+		Spatial::FMTForest forest;
 		Parser::FMTAreaParser areaparser;
 		if (boost::filesystem::is_directory(RASTER_LOCATION))
 			{

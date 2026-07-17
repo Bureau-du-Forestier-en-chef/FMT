@@ -17,7 +17,7 @@ int main()
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 		{
 		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
         const std::string	primarylocation = modellocation + "TWD_land.pri";

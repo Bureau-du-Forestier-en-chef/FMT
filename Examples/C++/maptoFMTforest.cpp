@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
     const std::vector<Core::FMTTheme> themes = models.at(0).getThemes();
     Parser::FMTAreaParser areaparser;
     //areaparser.setDefaultExceptionHandler();
-    Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0,writelocation,false);
+    Spatial::FMTForest forest = areaparser.vectormaptoFMTforest(maplocation,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0,writelocation,false);
     areaparser.write(forest.getArea(), writelocation + "area.are");
 #endif
 	return 0;

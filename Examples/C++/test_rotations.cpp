@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
 
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 	{
 		const std::string vals = argv[1];
 		std::vector<std::string>results;

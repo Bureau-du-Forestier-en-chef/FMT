@@ -21,30 +21,30 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
     {
-    class FMTEXPORT FMTcoordinate
+    class FMTEXPORT FMTCoordinate
         {
         public:
-            FMTcoordinate();
-            ~FMTcoordinate() = default;
-            FMTcoordinate(uint16_t p_x, uint16_t p_y);
-            FMTcoordinate(const FMTcoordinate& rhs);
-            FMTcoordinate at(unsigned int id) const;
-            double distance(const FMTcoordinate& coord) const;
+            FMTCoordinate();
+            ~FMTCoordinate() = default;
+            FMTCoordinate(uint16_t p_x, uint16_t p_y);
+            FMTCoordinate(const FMTCoordinate& rhs);
+            FMTCoordinate at(unsigned int id) const;
+            double distance(const FMTCoordinate& coord) const;
             template<typename T>
-            bool within(const T& ldistance, const FMTcoordinate& coord) const;
-            void upEnveloppe(std::array<FMTcoordinate, 4>& enveloppe) const;
+            bool within(const T& ldistance, const FMTCoordinate& coord) const;
+            void upEnveloppe(std::array<FMTCoordinate, 4>& enveloppe) const;
             size_t hash() const;
-            FMTcoordinate& operator = (const FMTcoordinate& rhs);
+            FMTCoordinate& operator = (const FMTCoordinate& rhs);
             const std::vector<double> getSpatialCoordinate(std::vector<double> geoTransform) const;
-            bool operator == (const FMTcoordinate& rhs) const;
-            bool operator < (const FMTcoordinate& rhs) const;
-            std::set<FMTcoordinate>::const_iterator closest(const std::vector<std::set<FMTcoordinate>::const_iterator>& coordinates, double& approximation) const;
+            bool operator == (const FMTCoordinate& rhs) const;
+            bool operator < (const FMTCoordinate& rhs) const;
+            std::set<FMTCoordinate>::const_iterator closest(const std::vector<std::set<FMTCoordinate>::const_iterator>& coordinates, double& approximation) const;
             operator std::string() const;
-            std::set<FMTcoordinate> getNeighbors(const uint16_t& nsize, const bool& circle = false) const;
-            static FMTcoordinate getAverageCentroid(const std::array<FMTcoordinate, 4>& p_enveloppe);
-            static std::set<FMTcoordinate> getTerritory(const std::array<FMTcoordinate, 4>& p_enveloppe, const size_t& p_distance);
-            static size_t getHeight(const std::array<FMTcoordinate, 4>& p_enveloppe);
-            static size_t getWidth(const std::array<FMTcoordinate, 4>& p_enveloppe);
+            std::set<FMTCoordinate> getNeighbors(const uint16_t& nsize, const bool& circle = false) const;
+            static FMTCoordinate getAverageCentroid(const std::array<FMTCoordinate, 4>& p_enveloppe);
+            static std::set<FMTCoordinate> getTerritory(const std::array<FMTCoordinate, 4>& p_enveloppe, const size_t& p_distance);
+            static size_t getHeight(const std::array<FMTCoordinate, 4>& p_enveloppe);
+            static size_t getWidth(const std::array<FMTCoordinate, 4>& p_enveloppe);
             uint16_t getX() const;
             uint16_t getY() const;
         private:
@@ -58,8 +58,8 @@ namespace Spatial
             //unsigned int x,y;
             uint16_t m_x;
             uint16_t m_y;
-		    void getXyGap(const FMTcoordinate& rhs, int& xgap, int& y_gap) const;
-            double distanceApproximation(const FMTcoordinate& coord) const;
+		    void getXyGap(const FMTCoordinate& rhs, int& xgap, int& y_gap) const;
+            double distanceApproximation(const FMTCoordinate& coord) const;
  
         };
     }
@@ -67,9 +67,9 @@ namespace Spatial
 namespace boost {
 
   template <>
-  struct hash<Spatial::FMTcoordinate>
+  struct hash<Spatial::FMTCoordinate>
   {
-    std::size_t operator()(const Spatial::FMTcoordinate& p_coord) const
+    std::size_t operator()(const Spatial::FMTCoordinate& p_coord) const
         {
         //unsigned int x = coord.getX();
         //unsigned int y = coord.getY();

@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
         const std::vector<Core::FMTTheme> themes = BUILDED_MODEL.getThemes();
         Parser::FMTAreaParser areaparser;
         //areaparser.setDefaultExceptionHandler();
-        Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(MAPm_location,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0);
+        Spatial::FMTForest forest = areaparser.vectormaptoFMTforest(MAPm_location,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0);
         areaparser.writeForestExtended(forest,
             MAPm_location, themes, BUILDED_MODEL.getArea(), writelocation);
 

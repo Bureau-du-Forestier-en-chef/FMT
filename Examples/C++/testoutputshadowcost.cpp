@@ -45,7 +45,7 @@ int main()
 		{
 			optimizationmodel.setConstraint(constraint);
 		}
-		const Graph::FMTgraphstats BASE_STATS = optimizationmodel.setObjective(objective);
+		const Graph::FMTGraphStats BASE_STATS = optimizationmodel.setObjective(objective);
 		if (optimizationmodel.initialSolve())
 		{
 			for (const Core::FMTOutput& output : outputtotest)
@@ -57,7 +57,7 @@ int main()
 		Logging::FMTDefaultLogger() << "BASE ROWS OF " << BASE_STATS.rows << "\n";
 		for (const Core::FMTConstraint& constraint : constraints)
 			{
-			const Graph::FMTgraphstats STATS = optimizationmodel.eraseConstraint(constraint);
+			const Graph::FMTGraphStats STATS = optimizationmodel.eraseConstraint(constraint);
 			Logging::FMTDefaultLogger() << "ROWS Of "<< STATS.rows <<" "<< std::string(constraint) << "\n";
 			if (!optimizationmodel.resolve())
 				{

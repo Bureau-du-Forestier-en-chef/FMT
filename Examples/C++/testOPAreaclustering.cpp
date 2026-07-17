@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTLpModel optmodel(models.at(0), Models::FMTsolverinterface::CLP);
 	std::vector<Core::FMTTheme>themes = optmodel.getThemes();
-	std::vector<Heuristics::FMToperatingarea>opareas;
+	std::vector<Heuristics::FMTOperatingArea>opareas;
 	const size_t themetarget(0);
 	for (const std::string& attribute : themes.at(themetarget).getAttributes("UC"))
 	{
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 			mask.push_back("?");
 		}
 		mask[themetarget] = attribute;
-		opareas.push_back(Heuristics::FMToperatingarea(Core::FMTMask(mask, themes), 0.01));
+		opareas.push_back(Heuristics::FMTOperatingArea(Core::FMTMask(mask, themes), 0.01));
 	}
 	std::vector<std::string>themesfields;
 	size_t thid = 1;
@@ -46,12 +46,12 @@ int main(int argc, char *argv[])
 	}
 	const std::string agefield("AGE");
 	const std::string areafield("SUPERFICIE");
-	std::vector<Heuristics::FMToperatingareacluster>opareasclusterswithbounds;
+	std::vector<Heuristics::FMTOperatingAreaCluster>opareasclusterswithbounds;
 	Parser::FMTAreaParser areaparser;
 	const std::string maplocation = folder + "/Carte/TWD_land.shp";
-	for (const Heuristics::FMToperatingareacluster& oparea : areaparser.getClusters(opareas, themes, maplocation, agefield, areafield, 20000))
+	for (const Heuristics::FMTOperatingAreaCluster& oparea : areaparser.getClusters(opareas, themes, maplocation, agefield, areafield, 20000))
 		{
-		Heuristics::FMToperatingareacluster newoparea(oparea,400,10000000000);
+		Heuristics::FMTOperatingAreaCluster newoparea(oparea,400,10000000000);
 		opareasclusterswithbounds.push_back(newoparea);
 		}
 	for (size_t period = 0; period < 2; ++period)
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 				opareaareasoutput = output;
 			}
 		}
-		std::vector<Heuristics::FMToperatingareaclusterer>heuristics = optmodel.getOperatingAreaClustererHeuristics(opareasclusterswithbounds, opareastatisticsoutput, opareaareasoutput, 1, 1);
+		std::vector<Heuristics::FMTOperatingAreaClusterer>heuristics = optmodel.getOperatingAreaClustererHeuristics(opareasclusterswithbounds, opareastatisticsoutput, opareaareasoutput, 1, 1);
 		heuristics[0].setNumberOfSimulationPass(25);
 		heuristics[0].setQuietLogger();
 		if (!heuristics[0].initialSolve())
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 				"testOPAreaclustering", __LINE__, primarylocation);
 		}
 		//heuristics[0].branchNBoundSolve();
-		for (const Heuristics::FMToperatingareacluster& cluster : heuristics.at(0).getSolution())
+		for (const Heuristics::FMTOperatingAreaCluster& cluster : heuristics.at(0).getSolution())
 		{
 			for (const Core::FMTMask& mask : cluster.getAllMasks())
 			{

@@ -14,12 +14,12 @@ namespace Spatial
     //Implementation for Rcpp .. Normally should be static member
 	constexpr std::array<int,8> x_n = { 0,1,0,-1,1,1,-1,-1 };
 	constexpr std::array<int,8> y_n = { -1,0,1,0,-1,1,1,-1 };
-    FMTcoordinate::FMTcoordinate():m_x(), m_y(){}
-    FMTcoordinate::FMTcoordinate(uint16_t p_x, uint16_t p_y):
+    FMTCoordinate::FMTCoordinate():m_x(), m_y(){}
+    FMTCoordinate::FMTCoordinate(uint16_t p_x, uint16_t p_y):
         m_x(p_x),m_y(p_y){}
-    FMTcoordinate::FMTcoordinate(const FMTcoordinate& rhs):m_x(rhs.m_x), m_y(rhs.m_y){}
+    FMTCoordinate::FMTCoordinate(const FMTCoordinate& rhs):m_x(rhs.m_x), m_y(rhs.m_y){}
 
-    FMTcoordinate FMTcoordinate::at(unsigned int id) const
+    FMTCoordinate FMTCoordinate::at(unsigned int id) const
         {
         //7//0//4//
         //3// //1//
@@ -27,21 +27,21 @@ namespace Spatial
         /// Factor is a floor
         const int factor = ((id / 8) + 1);
         id = (id - (factor-1) * 8);
-        return FMTcoordinate(m_x+(x_n[id]*factor), m_y+(y_n[id]*factor));
+        return FMTCoordinate(m_x+(x_n[id]*factor), m_y+(y_n[id]*factor));
         }
 
-	void FMTcoordinate::getXyGap(const FMTcoordinate& rhs, int& xgap, int& y_gap) const
+	void FMTCoordinate::getXyGap(const FMTCoordinate& rhs, int& xgap, int& y_gap) const
 		{
 		xgap = (static_cast<int>(m_x) - static_cast<int>(rhs.m_x));
 		y_gap = (static_cast<int>(m_y) - static_cast<int>(rhs.m_y));
 		}
 
-    double FMTcoordinate::distance(const FMTcoordinate& coord) const
+    double FMTCoordinate::distance(const FMTCoordinate& coord) const
         {
         return std::sqrt(distanceApproximation(coord));
         }
 
-	double FMTcoordinate::distanceApproximation(const FMTcoordinate& coord) const
+	double FMTCoordinate::distanceApproximation(const FMTCoordinate& coord) const
 		{
 		int distancex = 0;
 		int distancey = 0;
@@ -49,11 +49,11 @@ namespace Spatial
 		return static_cast<double>(distancex * distancex + distancey * distancey);
 		}
 
-	std::set<FMTcoordinate>::const_iterator FMTcoordinate::closest(const std::vector<std::set<FMTcoordinate>::const_iterator>& coordinates, double& approximation) const
+	std::set<FMTCoordinate>::const_iterator FMTCoordinate::closest(const std::vector<std::set<FMTCoordinate>::const_iterator>& coordinates, double& approximation) const
 		{
 		approximation = std::numeric_limits<double>::infinity();
-		std::set<FMTcoordinate>::const_iterator bestcoordinate;
-		for (const std::set<FMTcoordinate>::const_iterator& coordinate : coordinates)
+		std::set<FMTCoordinate>::const_iterator bestcoordinate;
+		for (const std::set<FMTCoordinate>::const_iterator& coordinate : coordinates)
 			{
 			const double value = distanceApproximation(*coordinate);
 			if (value < approximation)
@@ -66,7 +66,7 @@ namespace Spatial
 		}
 
     template<class T>
-    bool FMTcoordinate::within(const T& ldistance,const FMTcoordinate& coord) const
+    bool FMTCoordinate::within(const T& ldistance,const FMTCoordinate& coord) const
         {
             if(ldistance<0)
             {
@@ -78,35 +78,35 @@ namespace Spatial
             return (static_cast<decltype(ldistance)>(std::abs(distancex)) <= ldistance && static_cast<decltype(ldistance)>(std::abs(distancey)) <= ldistance &&
                 std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
         }
-    template bool FMTcoordinate::within<size_t>(const size_t& ldistance, const FMTcoordinate& coord) const;
-    template bool FMTcoordinate::within<unsigned int>(const unsigned int& ldistance, const FMTcoordinate& coord) const;
-    template bool FMTcoordinate::within<double>(const double& ldistance,const FMTcoordinate& coord) const;
-    template bool FMTcoordinate::within<uint16_t>(const uint16_t& ldistance, const FMTcoordinate& coord) const;
+    template bool FMTCoordinate::within<size_t>(const size_t& ldistance, const FMTCoordinate& coord) const;
+    template bool FMTCoordinate::within<unsigned int>(const unsigned int& ldistance, const FMTCoordinate& coord) const;
+    template bool FMTCoordinate::within<double>(const double& ldistance,const FMTCoordinate& coord) const;
+    template bool FMTCoordinate::within<uint16_t>(const uint16_t& ldistance, const FMTCoordinate& coord) const;
 
 
 
-    FMTcoordinate FMTcoordinate::getAverageCentroid(const std::array<FMTcoordinate, 4>& p_enveloppe)
+    FMTCoordinate FMTCoordinate::getAverageCentroid(const std::array<FMTCoordinate, 4>& p_enveloppe)
     {
         const uint16_t startx = p_enveloppe.at(0).m_x;
         const uint16_t starty = p_enveloppe.at(0).m_y;
         const uint16_t plusx = ((p_enveloppe.at(1).m_x) - startx) / 2;
         const uint16_t plusy = ((p_enveloppe.at(2).m_y) - starty) / 2;
-        return FMTcoordinate(startx + plusx, starty + plusy);
+        return FMTCoordinate(startx + plusx, starty + plusy);
     }
 
-    std::set<FMTcoordinate> FMTcoordinate::getTerritory(const std::array<FMTcoordinate, 4>& p_enveloppe, const size_t& p_distance)
+    std::set<FMTCoordinate> FMTCoordinate::getTerritory(const std::array<FMTCoordinate, 4>& p_enveloppe, const size_t& p_distance)
     {
-        std::set<FMTcoordinate>territory;
+        std::set<FMTCoordinate>territory;
         const int distanceof = static_cast<int>(p_distance);
         const int zeroof = 0;
-        territory.insert(FMTcoordinate(std::max(static_cast<int>(p_enveloppe.at(0).m_x) - distanceof, zeroof), std::max(static_cast<int>(p_enveloppe.at(0).m_y) - distanceof, zeroof)));
-        territory.insert(FMTcoordinate(static_cast<int>(p_enveloppe.at(1).m_x) + distanceof, std::max(static_cast<int>(p_enveloppe.at(1).m_y) - distanceof, zeroof)));
-        territory.insert(FMTcoordinate(std::max(static_cast<int>(p_enveloppe.at(2).m_x) - distanceof, zeroof), static_cast<int>(p_enveloppe.at(2).m_y) + distanceof));
-        territory.insert(FMTcoordinate(static_cast<int>(p_enveloppe.at(3).m_x) + distanceof, static_cast<int>(p_enveloppe.at(3).m_y) + distanceof));
+        territory.insert(FMTCoordinate(std::max(static_cast<int>(p_enveloppe.at(0).m_x) - distanceof, zeroof), std::max(static_cast<int>(p_enveloppe.at(0).m_y) - distanceof, zeroof)));
+        territory.insert(FMTCoordinate(static_cast<int>(p_enveloppe.at(1).m_x) + distanceof, std::max(static_cast<int>(p_enveloppe.at(1).m_y) - distanceof, zeroof)));
+        territory.insert(FMTCoordinate(std::max(static_cast<int>(p_enveloppe.at(2).m_x) - distanceof, zeroof), static_cast<int>(p_enveloppe.at(2).m_y) + distanceof));
+        territory.insert(FMTCoordinate(static_cast<int>(p_enveloppe.at(3).m_x) + distanceof, static_cast<int>(p_enveloppe.at(3).m_y) + distanceof));
         return territory;
     }
 
-    size_t FMTcoordinate::getHeight(const std::array<FMTcoordinate, 4>& p_enveloppe)
+    size_t FMTCoordinate::getHeight(const std::array<FMTCoordinate, 4>& p_enveloppe)
     {
         size_t height = 0;
         if (p_enveloppe.at(0).m_y > p_enveloppe.at(2).m_y)
@@ -120,9 +120,9 @@ namespace Spatial
 
     }
 
-    size_t FMTcoordinate::getWidth(const std::array<FMTcoordinate, 4>& p_enveloppe)
+    size_t FMTCoordinate::getWidth(const std::array<FMTCoordinate, 4>& p_enveloppe)
     {
-        //const std::vector<FMTcoordinate>enveloppe = getenveloppe();
+        //const std::vector<FMTCoordinate>enveloppe = getenveloppe();
         //return static_cast<size_t>(enveloppe.at(1).getXDistance(enveloppe.at(0))) + 1;
         size_t width = 0;
         if (p_enveloppe.at(0).m_x > p_enveloppe.at(1).m_x)
@@ -137,16 +137,16 @@ namespace Spatial
     }
 
 
-    /*unsigned int FMTcoordinate::getX() const
+    /*unsigned int FMTCoordinate::getX() const
         {
         return x;
         }
-    unsigned int FMTcoordinate::getY() const
+    unsigned int FMTCoordinate::getY() const
         {
         return y;
         }*/
 
-    const std::vector<double> FMTcoordinate::getSpatialCoordinate(std::vector<double> geoTransform) const
+    const std::vector<double> FMTCoordinate::getSpatialCoordinate(std::vector<double> geoTransform) const
     {
         double xGeo = geoTransform[0] + (m_x + 0.5) * geoTransform[1] + (m_y + 0.5) * geoTransform[2];
         double yGeo = geoTransform[3] + (m_x + 0.5) * geoTransform[4] + (m_y + 0.5) * geoTransform[5];
@@ -154,7 +154,7 @@ namespace Spatial
         return std::vector<double>({ xGeo, yGeo });
     }
 
-    FMTcoordinate& FMTcoordinate::operator = (const FMTcoordinate& rhs)
+    FMTCoordinate& FMTCoordinate::operator = (const FMTCoordinate& rhs)
         {
         if(this!=&rhs)
             {
@@ -163,16 +163,16 @@ namespace Spatial
             }
         return *this;
         }
-    bool FMTcoordinate::operator == (const FMTcoordinate& rhs) const
+    bool FMTCoordinate::operator == (const FMTCoordinate& rhs) const
         {
         return (m_x == rhs.m_x && m_y == rhs.m_y);
         }
-     bool FMTcoordinate::operator < (const FMTcoordinate& rhs) const
+     bool FMTCoordinate::operator < (const FMTCoordinate& rhs) const
         {
         return ((m_y<rhs.m_y)||((m_y==rhs.m_y)&&(m_x<rhs.m_x)));
         }
 
-	 size_t FMTcoordinate::hash() const
+	 size_t FMTCoordinate::hash() const
 		{
 		 size_t hash = 0;
 		 boost::hash_combine(hash, m_x);
@@ -180,7 +180,7 @@ namespace Spatial
 		 return hash;
 		}
 
-    void FMTcoordinate::upEnveloppe(std::array<FMTcoordinate, 4>& enveloppe) const
+    void FMTCoordinate::upEnveloppe(std::array<FMTCoordinate, 4>& enveloppe) const
         {
 		//0//-//1//
 		//-//-//-//
@@ -198,24 +198,24 @@ namespace Spatial
 		enveloppe[3].m_x = maxx;
 		enveloppe[3].m_y = maxy;
         }
-    FMTcoordinate::operator std::string() const
+    FMTCoordinate::operator std::string() const
         {
 		return "X"+std::to_string(m_x)+" Y"+std::to_string(m_y);
         }
 
-    uint16_t FMTcoordinate::getX() const
+    uint16_t FMTCoordinate::getX() const
     {
         return m_x;
     }
-    uint16_t FMTcoordinate::getY() const
+    uint16_t FMTCoordinate::getY() const
     {
         return m_y;
     }
 
-    std::set<FMTcoordinate> FMTcoordinate::getNeighbors(const uint16_t& nsize,const bool& circle) const
+    std::set<FMTCoordinate> FMTCoordinate::getNeighbors(const uint16_t& nsize,const bool& circle) const
         {   ///nsize must be odd number
             ///https://grass.osgeo.org/grass78/manuals/r.neighbors.html
-            std::set<FMTcoordinate> n;
+            std::set<FMTCoordinate> n;
             if (circle)
             {
                 const int radius = (static_cast<int>(nsize)-1)/2;

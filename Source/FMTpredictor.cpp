@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 
-	FMTpredictor::FMTpredictor():
+	FMTPredictor::FMTPredictor():
 		source_vertex(nullptr),
 		target_vertex(nullptr),
 		source_yields(),
@@ -26,7 +26,7 @@ namespace Graph
 
 	}
 
-	std::vector<double>FMTpredictor::getYields(const FMTbasevertexproperties& vertex,const Core::FMTYields& yields, const std::vector<std::string>& yieldnames) const
+	std::vector<double>FMTPredictor::getYields(const FMTBaseVertexProperties& vertex,const Core::FMTYields& yields, const std::vector<std::string>& yieldnames) const
 	{
 		std::vector<double>values;
 		values.reserve(yieldnames.size());
@@ -38,8 +38,8 @@ namespace Graph
 		return values;
 	}
 
-	FMTpredictor::FMTpredictor(const std::vector<Core::FMTAction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTYields& yields,
-		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid):
+	FMTPredictor::FMTPredictor(const std::vector<Core::FMTAction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTYields& yields,
+		const FMTBaseVertexProperties& source, const FMTBaseVertexProperties& target, const std::vector<const FMTBaseEdgeProperties*>& edges, const std::vector<int>& gaps,bool withGCBMid):
 		source_vertex(&source),
 		target_vertex(&target),
 		source_yields(getYields(source, yields, yieldnames)),
@@ -49,7 +49,7 @@ namespace Graph
 	{
 		size_t location = 0;
 		//bool lastnotedone = true;
-		for (const FMTbaseedgeproperties* edgeprop : edges)
+		for (const FMTBaseEdgeProperties* edgeprop : edges)
 		{
 			if (edgeprop != nullptr)
 			{
@@ -86,7 +86,7 @@ namespace Graph
 	}
 
 
-	FMTpredictor::FMTpredictor(const FMTpredictor& rhs) :
+	FMTPredictor::FMTPredictor(const FMTPredictor& rhs) :
 		source_vertex(rhs.source_vertex),
 		target_vertex(rhs.target_vertex),
 		source_yields(rhs.source_yields),
@@ -96,7 +96,7 @@ namespace Graph
 	{
 
 	}
-	FMTpredictor& FMTpredictor::operator = (const FMTpredictor& rhs)
+	FMTPredictor& FMTPredictor::operator = (const FMTPredictor& rhs)
 	{
 		if (this!=&rhs)
 		{
@@ -111,11 +111,11 @@ namespace Graph
 	}
 
 
-	bool FMTpredictor::operator==(const FMTpredictor& rhs) const
+	bool FMTPredictor::operator==(const FMTPredictor& rhs) const
 		{
 		return (getPredictors() == rhs.getPredictors());
 		}
-	bool FMTpredictor::operator<(const FMTpredictor& rhs) const
+	bool FMTPredictor::operator<(const FMTPredictor& rhs) const
 	{
 		//strict ordering
 		if (getPredictors() < rhs.getPredictors())
@@ -124,7 +124,7 @@ namespace Graph
 			return false;
 		return false;
 	}
-	std::vector<double>FMTpredictor::getPredictors() const
+	std::vector<double>FMTPredictor::getPredictors() const
 	{
 		std::vector<double>returned;
 		for (size_t actid = 1; actid < sourceactions.size();++actid)
@@ -155,7 +155,7 @@ namespace Graph
 		return returned;
 	}
 
-	double FMTpredictor::getDistance(size_t actId) const
+	double FMTPredictor::getDistance(size_t actId) const
 	{
 		double gap = periodgaps.at(actId);
 		if (actId == 0)
@@ -169,7 +169,7 @@ namespace Graph
 		return gap;
 	}
 
-	double FMTpredictor::getDisturbance(size_t actId) const
+	double FMTPredictor::getDisturbance(size_t actId) const
 	{
 		double dist = sourceactions.at(actId);
 		if(actId > 0 && periodgaps.at(actId) < 0)
@@ -180,27 +180,27 @@ namespace Graph
 		return dist;
 	}
 
-	double FMTpredictor::getSourceAge() const
+	double FMTPredictor::getSourceAge() const
 	{
 		return static_cast<double>(source_vertex->get().getAge());
 	}
 
-	std::vector<double> FMTpredictor::getSourceYields() const
+	std::vector<double> FMTPredictor::getSourceYields() const
 	{
 		return source_yields;
 	}
 
-	double FMTpredictor::getTargetAge() const
+	double FMTPredictor::getTargetAge() const
 	{
 		return static_cast<double>(target_vertex->get().getAge());
 	}
 
-	std::vector<double> FMTpredictor::getTargetYields() const
+	std::vector<double> FMTPredictor::getTargetYields() const
 	{
 		return target_yields;
 	}
 
-	std::vector<std::string>FMTpredictor::getPredictorNames(const std::vector<std::string>& yieldnames)const
+	std::vector<std::string>FMTPredictor::getPredictorNames(const std::vector<std::string>& yieldnames)const
 	{
 		std::vector<std::string>predictornames;
 		const std::vector<std::string>devpredictornames = { "disturbance","age","period" };

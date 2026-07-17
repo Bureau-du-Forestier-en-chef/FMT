@@ -5,13 +5,13 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 /*
-#include "FMToutputnodecache.h"
+#include "FMTOutputNodeCache.h"
 #include <algorithm>
 
 namespace Graph
 {
 
-	void FMToutputnodecache::setinitialcache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph)
+	void FMTOutputNodeCache::setinitialcache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph)
 			{
 			searchtree.clear();
 			baseNode.resize(initialgraph.size());
@@ -25,13 +25,13 @@ namespace Graph
 			std::sort(baseNode.begin(), baseNode.end());
 			}
 
-	FMToutputnodecache::FMToutputnodecache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph):
+	FMTOutputNodeCache::FMTOutputNodeCache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph):
 		baseNode(), searchtree()
 		{
 		this->setinitialcache(initialgraph);
 		}
 
-	std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator FMToutputnodecache::getparentnode(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions, bool& exactnode) const
+	std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator FMTOutputNodeCache::getparentnode(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions, bool& exactnode) const
 		{
 		std::map<Core::FMTOutputNode, std::vector<FMTvertex_descriptor>>::const_iterator parentit = searchtree.find(targetnode);
 		if (parentit!=searchtree.end())
@@ -52,7 +52,7 @@ namespace Graph
 		return searchtree.end();
 		}
 
-	void FMToutputnodecache::getActionRebuild(const Core::FMTOutputNode& targetnode,
+	void FMTOutputNodeCache::getActionRebuild(const Core::FMTOutputNode& targetnode,
 											const std::vector<Core::FMTAction>& actions,
 											std::vector<FMTvertex_descriptor>& cleaned,
 											bool& exactnode) const
@@ -127,7 +127,7 @@ namespace Graph
 			}
 		}
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getCleanDescriptors(const Core::FMTOutputNode& targetnode,
+	const std::vector<FMTvertex_descriptor>& FMTOutputNodeCache::getCleanDescriptors(const Core::FMTOutputNode& targetnode,
 																					const std::vector<Core::FMTAction>& actions,
 																					const std::vector<Core::FMTTheme>&themes,
 																					bool& exactnode) const
@@ -170,18 +170,18 @@ namespace Graph
 		return (returniterator.first)->second;
 		}
 
-	FMToutputnodecache::FMToutputnodecache() : baseNode(), searchtree()
+	FMTOutputNodeCache::FMTOutputNodeCache() : baseNode(), searchtree()
 		{
 
 		}
 
 
-	FMToutputnodecache::FMToutputnodecache(const FMToutputnodecache& rhs) : baseNode(rhs.baseNode),searchtree(rhs.searchtree)
+	FMTOutputNodeCache::FMTOutputNodeCache(const FMTOutputNodeCache& rhs) : baseNode(rhs.baseNode),searchtree(rhs.searchtree)
 		{
 
 		}
 
-	FMToutputnodecache& FMToutputnodecache::operator = (const FMToutputnodecache& rhs)
+	FMTOutputNodeCache& FMTOutputNodeCache::operator = (const FMTOutputNodeCache& rhs)
 		{
 		if (this!=&rhs)
 			{
@@ -192,18 +192,18 @@ namespace Graph
 		}
 
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getVertices(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions,
+	const std::vector<FMTvertex_descriptor>& FMTOutputNodeCache::getVertices(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions,
 																const std::vector<Core::FMTTheme>&themes, bool& exactvecticies) const
 		{
 		return this->getCleanDescriptors(targetnode,actions,themes, exactvecticies);
 		}
 
-	void FMToutputnodecache::setValidVertices(const Core::FMTOutputNode& targetnode,const std::vector<FMTvertex_descriptor>& vertices) const
+	void FMTOutputNodeCache::setValidVertices(const Core::FMTOutputNode& targetnode,const std::vector<FMTvertex_descriptor>& vertices) const
 		{
 		searchtree[targetnode] = vertices;
 		}
 
-	void FMToutputnodecache::clear()
+	void FMTOutputNodeCache::clear()
 		{
 		baseNode.clear();
 		searchtree.clear();

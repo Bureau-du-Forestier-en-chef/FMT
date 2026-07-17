@@ -66,8 +66,8 @@ void out(const char* data) {
 				
 					std::vector<std::string>layersoptions;
 					layersoptions.push_back("SEPARATOR=SEMICOLON");
-					std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, m_OutLocation, "CSV", layersoptions, 10, 10, 0.5, Core::FMToutputlevel::totalonly));
-					Parallel::FMTtaskhandler handler(maintaskptr, 2);
+					std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTReplanningTask(global, stochastic, local, selectedoutputs, m_OutLocation, "CSV", layersoptions, 10, 10, 0.5, Core::FMToutputlevel::totalonly));
+					Parallel::FMTTaskHandler handler(maintaskptr, 2);
 				}
 			private:
 				Wrapper::FMTFormLogger m_logger;

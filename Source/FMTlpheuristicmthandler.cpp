@@ -17,37 +17,37 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareaclusterer.h"
 namespace Heuristics
 {
-		FMTlpheuristicmthandler::FMTlpheuristicmthandler():heuristics()
+		FMTLpHeuristicMtHandler::FMTLpHeuristicMtHandler():heuristics()
 		{
 
 		}
 
-		FMTlpheuristicmthandler::FMTlpheuristicmthandler(std::vector<FMToperatingareascheduler>& lheuristics, const double& linitialsolution):heuristics(),initialsolution(linitialsolution)
+		FMTLpHeuristicMtHandler::FMTLpHeuristicMtHandler(std::vector<FMTOperatingAreaScheduler>& lheuristics, const double& linitialsolution):heuristics(),initialsolution(linitialsolution)
 		{
-			for (FMToperatingareascheduler& heur : lheuristics)
+			for (FMTOperatingAreaScheduler& heur : lheuristics)
 			{
 				heuristics.push_back(&heur);
 			}
 		}
-		FMTlpheuristicmthandler::FMTlpheuristicmthandler(std::vector<FMToperatingareaclusterer>& lheuristics, const double& linitialsolution):heuristics(),initialsolution(linitialsolution)
+		FMTLpHeuristicMtHandler::FMTLpHeuristicMtHandler(std::vector<FMTOperatingAreaClusterer>& lheuristics, const double& linitialsolution):heuristics(),initialsolution(linitialsolution)
 		{
-			for (FMToperatingareaclusterer& heur : lheuristics)
+			for (FMTOperatingAreaClusterer& heur : lheuristics)
 			{
 				heuristics.push_back(&heur);
 			}
 		}
 
 		#if defined FMTWITHPYTHON
-		FMTlpheuristicmthandler::FMTlpheuristicmthandler(boost::python::list& lheuristics, const double& linitialsolution):heuristics(),initialsolution(linitialsolution)
+		FMTLpHeuristicMtHandler::FMTLpHeuristicMtHandler(boost::python::list& lheuristics, const double& linitialsolution):heuristics(),initialsolution(linitialsolution)
 		{
 			for (int i = 0; i < len(lheuristics); ++i)
 			{
-				heuristics.push_back(boost::python::extract<FMTlpheuristic*>(lheuristics[i]));
+				heuristics.push_back(boost::python::extract<FMTLpHeuristic*>(lheuristics[i]));
 			}
 		}
 		#endif
 
-		size_t FMTlpheuristicmthandler::bestHeuristic() const
+		size_t FMTLpHeuristicMtHandler::bestHeuristic() const
 		{
 			double sol=heuristics[0]->getObjValue();
 			size_t bestsol=0;
@@ -65,7 +65,7 @@ namespace Heuristics
 
 		}
 
-		void FMTlpheuristicmthandler::resetNumberOfThreads(const unsigned int& ncpu) const
+		void FMTLpHeuristicMtHandler::resetNumberOfThreads(const unsigned int& ncpu) const
 		{
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
 			{
@@ -74,7 +74,7 @@ namespace Heuristics
 
 		}
 
-		size_t FMTlpheuristicmthandler::initialSolve() const
+		size_t FMTLpHeuristicMtHandler::initialSolve() const
 		{
 			const unsigned int processor_count = boost::thread::hardware_concurrency();
 			int mosek_process = static_cast<int>(processor_count/heuristics.size());
@@ -82,9 +82,9 @@ namespace Heuristics
 			std::vector<boost::thread>threads;
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
 			{
-				FMTlpheuristic* heuristic = heuristics[i];
+				FMTLpHeuristic* heuristic = heuristics[i];
 				heuristic->setNumberOfThreads(static_cast<size_t>(mosek_process));
-				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::initialSolve, heuristic)));
+				threads.push_back(boost::thread(std::bind(&FMTLpHeuristic::initialSolve, heuristic)));
 			}
 			for(boost::thread& thr : threads)
 			{
@@ -94,7 +94,7 @@ namespace Heuristics
 			return bestHeuristic();
 		}
 
-		size_t FMTlpheuristicmthandler::greedySolve(const unsigned int& iterations, const double& maxtime) const
+		size_t FMTLpHeuristicMtHandler::greedySolve(const unsigned int& iterations, const double& maxtime) const
 		{
 			const unsigned int processor_count = boost::thread::hardware_concurrency();
 			int mosek_process = static_cast<int>(processor_count/heuristics.size());
@@ -103,9 +103,9 @@ namespace Heuristics
 			const std::chrono::steady_clock::time_point Start = std::chrono::steady_clock::now();
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
 			{
-				FMTlpheuristic* heuristic = heuristics[i];
+				FMTLpHeuristic* heuristic = heuristics[i];
 				heuristic->setNumberOfThreads(static_cast<size_t>(mosek_process));
-				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::parallelOptimize, heuristic, initialsolution,iterations,maxtime,Start)));
+				threads.push_back(boost::thread(std::bind(&FMTLpHeuristic::parallelOptimize, heuristic, initialsolution,iterations,maxtime,Start)));
 			}
 			for(boost::thread& thr : threads)
 			{
@@ -115,5 +115,5 @@ namespace Heuristics
 			return bestHeuristic();
 		}
 }
-//BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristicmthandler)
+//BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTLpHeuristicMtHandler)
 #endif

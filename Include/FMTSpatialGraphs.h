@@ -22,7 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTlinegraph;
+	class FMTLineGraph;
 }
 
 namespace Models
@@ -46,7 +46,7 @@ namespace Spatial
 	class FMTSpatialGraphs: public Core::FMTObject
 		{
 		public:
-			using const_iterator = std::map<Graph::FMTlinegraph, 
+			using const_iterator = std::map<Graph::FMTLineGraph, 
 				FMTGraphInfo>::const_iterator;
 			FMTSpatialGraphs() = default;
 			FMTSpatialGraphs(const FMTSpatialGraphs&)=default;
@@ -54,14 +54,14 @@ namespace Spatial
 			FMTSpatialGraphs(const Models::FMTModel& p_model, double p_CellSize);
 			double getConstraintsValue(size_t NonSpatialConstraintId,
 											const FMTSolutionTracker& p_solution) const;
-			FMTVirtualLineGraph getVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
-			FMTVirtualLineGraph setVirtualGraph(const Graph::FMTlinegraph& p_LineGraph);
+			FMTVirtualLineGraph getVirtualGraph(const Graph::FMTLineGraph& p_LineGraph);
+			FMTVirtualLineGraph setVirtualGraph(const Graph::FMTLineGraph& p_LineGraph);
 			FMTSolutionTracker getBaseSolution() const;
 			const_iterator getIterator(
-												const Graph::FMTlinegraph& p_Graph,
+												const Graph::FMTLineGraph& p_Graph,
 															size_t p_family) const;
 			const_iterator setIterator(
-								const Graph::FMTlinegraph& p_Graph,
+								const Graph::FMTLineGraph& p_Graph,
 								size_t p_family);
 			const_iterator setNaturalGrowthIterator(size_t p_family);
 			const Models::FMTModel& getModel() const;
@@ -90,10 +90,10 @@ namespace Spatial
 			void deleteNonCompleteGraphs();
 			void enableSolutionTracker(FMTSolutionTracker& p_tracker) const;
 		private:
-			using iterator = std::map<Graph::FMTlinegraph,
+			using iterator = std::map<Graph::FMTLineGraph,
 				FMTGraphInfo>::iterator;
-			using family_iterator = std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>::iterator;
-			std::vector<std::map<Graph::FMTlinegraph, FMTGraphInfo>>m_AllGraphs;
+			using family_iterator = std::vector<std::map<Graph::FMTLineGraph, FMTGraphInfo>>::iterator;
+			std::vector<std::map<Graph::FMTLineGraph, FMTGraphInfo>>m_AllGraphs;
 			size_t m_LastGraphId;
 			std::vector<std::vector<size_t>>m_Constraints;
 			boost::unordered_map<Core::FMTMask, size_t>m_GraphsMasks;
@@ -119,7 +119,7 @@ namespace Spatial
 				size_t p_ConstraintId,
 				std::vector<double>& p_constraintValues) const;
 			static Core::FMTMask _getUseFullBits(const Models::FMTModel& p_model);
-			size_t _getFamily(const Graph::FMTlinegraph& p_Graph) const;
+			size_t _getFamily(const Graph::FMTLineGraph& p_Graph) const;
 			size_t _getNonSpatialId(size_t p_Constraint) const;
 			void _fillConstraintResults(size_t p_Constraint,
 				const FMTGraphInfo& p_GraphInfo,

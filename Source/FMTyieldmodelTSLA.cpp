@@ -51,22 +51,22 @@ namespace Core {
 	{
 		std::vector<double>returned(1, std::numeric_limits<double>::max());
 		try {
-			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
+			const Graph::FMTGraphVertexToYield* graphinfo = request.getVertexGraphInfo();
 			if (!graphinfo)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty graph info info for " + getModelType(),
 					"FMTYieldModelTsla::predict", __LINE__, __FILE__);
 				}
-			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
-			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
+			const Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>* linegraph = graphinfo->getLineGraph();
+			const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>* fullgraph = graphinfo->getFullGraph();
 			size_t tsla = std::numeric_limits<size_t>::max();
 			if (linegraph)
 			{
-				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getVertexFromVertexInfo(graphinfo);
+				const Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>::FMTvertex_descriptor* vertex = linegraph->getVertexFromVertexInfo(graphinfo);
 				tsla = linegraph->timeSinceLastAction(*vertex);
 			}else if (fullgraph)
 			{
-				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getVertexFromVertexInfo(graphinfo);
+				const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor* vertex = fullgraph->getVertexFromVertexInfo(graphinfo);
 				tsla = fullgraph->timeSinceLastAction(*vertex);
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, "No graph in graph info " + getModelType(),

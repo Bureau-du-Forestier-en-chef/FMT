@@ -20,7 +20,7 @@ void setMapping(const std::string& rastpath, Models::FMTSesModel& model)
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 	}
 	Parser::FMTAreaParser areaparser;
-	const Spatial::FMTforest initialforestmap = areaparser.readRasters(model.getThemes(), themesrast, agerast, 1, 0.0001);
+	const Spatial::FMTForest initialforestmap = areaparser.readRasters(model.getThemes(), themesrast, agerast, 1, 0.0001);
 	model.setInitialMapping(initialforestmap);
 }
 
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
 					}
 				}
 				
-				const Spatial::FMTlayer<double> RESULT = simulationmodel.getSpatialOutput(OUTOUT, period);
+				const Spatial::FMTLayer<double> RESULT = simulationmodel.getSpatialOutput(OUTOUT, period);
 				double spatialResult = 0;
 				for (const auto& CELL : RESULT)
 					{

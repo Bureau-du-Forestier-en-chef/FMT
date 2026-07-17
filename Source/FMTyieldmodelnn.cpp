@@ -200,23 +200,23 @@ namespace Core {
 			outputNames.push_back(outputNodeNameAllocatedStrings.back().get());
 			#endif
 
-			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
+			const Graph::FMTGraphVertexToYield* graphinfo = request.getVertexGraphInfo();
 			const Models::FMTModel* modelptr = graphinfo->getModel();
-			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getLineGraph();
-			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getFullGraph();
+			const Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>* linegraph = graphinfo->getLineGraph();
+			const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>* fullgraph = graphinfo->getFullGraph();
 
 			std::vector<double> result(getModelOutputNames().size(), 0.0);
 			if (linegraph != nullptr)//Im a linegraph
 			{
-				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getVertexFromVertexInfo(graphinfo);
-				const std::vector<Graph::FMTpredictor>predictors = linegraph->getPredictors(*vertex, *modelptr, modelYields, 3);
+				const Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>::FMTvertex_descriptor* vertex = linegraph->getVertexFromVertexInfo(graphinfo);
+				const std::vector<Graph::FMTPredictor>predictors = linegraph->getPredictors(*vertex, *modelptr, modelYields, 3);
 				if (predictors.empty())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
 						"FMTYieldModel::predict", __LINE__, __FILE__);
 
 				}
-				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
+				const Graph::FMTPredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
 				std::vector<double> inputsDbl = getInputValues(predictor);
 				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
 				removeNans(inputs);
@@ -232,8 +232,8 @@ namespace Core {
 			}
 			else if (fullgraph != nullptr)//Im a full graph
 			{
-				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getVertexFromVertexInfo(graphinfo);
-				const std::vector<Graph::FMTpredictor>predictors = fullgraph->getPredictors(*vertex, *modelptr, modelYields, 3);
+				const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor* vertex = fullgraph->getVertexFromVertexInfo(graphinfo);
+				const std::vector<Graph::FMTPredictor>predictors = fullgraph->getPredictors(*vertex, *modelptr, modelYields, 3);
 				if (predictors.empty())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
@@ -280,7 +280,7 @@ namespace Core {
 				{
 					for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
 					{
-						const Graph::FMTpredictor& predictor = predictors.at(inedgeid);
+						const Graph::FMTPredictor& predictor = predictors.at(inedgeid);
 						std::vector<double> inputsDbl = getInputValues(predictor);
 						std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
 						removeNans(inputs);

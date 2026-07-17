@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 		{
 		Parser::FMTModelParser modelparser;
 		modelparser.setDefaultExceptionHandler();

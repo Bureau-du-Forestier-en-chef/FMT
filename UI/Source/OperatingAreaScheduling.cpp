@@ -98,7 +98,7 @@ namespace Wrapper
 			*/
 
 			Parser::FMTAreaParser areaparser;
-			std::vector<Heuristics::FMToperatingareascheme> opeareas = areaparser.getOperatingArea(
+			std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaparser.getOperatingArea(
 				msclr::interop::marshal_as<std::string>(fichierShp),
 				optimizationmodel.getThemes(), numeroTheme,
 				startingperiod, msclr::interop::marshal_as<std::string>(nomChampAge),
@@ -106,7 +106,7 @@ namespace Wrapper
 				msclr::interop::marshal_as<std::string>(nomChampStanlock),
 				msclr::interop::marshal_as<std::string>(cheminParametres));
 			*logger << "Résolution du modèle" << "\n";
-			Parallel::FMTopareaschedulertask maintask(
+			Parallel::FMTOpAreaSchedulerTask maintask(
 				optimizationmodel,
 				opeareas,
 				nodeofoutput,
@@ -116,7 +116,7 @@ namespace Wrapper
 				tempsMaximum,
 				ObtenirOutputSelectionnee(optimizationmodel.getOutputs(),
 					returnTimeOutput));
-			Parallel::FMTtaskhandler handler(maintask, nombreThread);
+			Parallel::FMTTaskHandler handler(maintask, nombreThread);
 			*logger << "Génération du calendrier de COS" << "\n";
 			handler.conccurentRun();
 		}

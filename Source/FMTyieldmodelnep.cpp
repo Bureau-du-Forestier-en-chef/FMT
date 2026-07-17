@@ -33,7 +33,7 @@ namespace Core {
 
 	
 
-	const std::vector<double> FMTYieldModelNep::getInputValues(const Graph::FMTpredictor& predictor) const
+	const std::vector<double> FMTYieldModelNep::getInputValues(const Graph::FMTPredictor& predictor) const
 	{
 		std::vector<double> values;
 		std::vector<double> sourceYields = predictor.getSourceYields();

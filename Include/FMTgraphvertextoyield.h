@@ -17,13 +17,13 @@ class FMTModel;
 namespace Graph
 {
 	template<class T1, class T2>
-	class FMTgraph;
-	class FMTbasevertexproperties;
-	class FMTbaseedgeproperties;
-	class FMTvertexproperties;
-	class FMTedgeproperties;
+	class FMTGraph;
+	class FMTBaseVertexProperties;
+	class FMTBaseEdgeProperties;
+	class FMTVertexProperties;
+	class FMTEdgeProperties;
 
-	class FMTgraphvertextoyield
+	class FMTGraphVertexToYield
 	{
 		enum FMTgraphrequest
 		{
@@ -37,13 +37,13 @@ namespace Graph
 		FMTgraphrequest graphtype;
 		Models::FMTModel const* modelptr;
 	public:
-		FMTgraphvertextoyield(const Models::FMTModel& model,const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& linegraph,const void* lvertex);
-		FMTgraphvertextoyield(const Models::FMTModel& model,const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex);
-		FMTgraphvertextoyield();
-		FMTgraphvertextoyield(const FMTgraphvertextoyield& rhs) = default;
-		FMTgraphvertextoyield& operator=(const FMTgraphvertextoyield& rhs) = default;
-		const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>* const getLineGraph() const;
-		const FMTgraph<FMTvertexproperties, FMTedgeproperties>* const getFullGraph() const;
+		FMTGraphVertexToYield(const Models::FMTModel& model,const FMTGraph<FMTBaseVertexProperties, FMTBaseEdgeProperties>& linegraph,const void* lvertex);
+		FMTGraphVertexToYield(const Models::FMTModel& model,const FMTGraph<FMTVertexProperties, FMTEdgeProperties>& fullgraph,const void* lvertex);
+		FMTGraphVertexToYield();
+		FMTGraphVertexToYield(const FMTGraphVertexToYield& rhs) = default;
+		FMTGraphVertexToYield& operator=(const FMTGraphVertexToYield& rhs) = default;
+		const FMTGraph<FMTBaseVertexProperties, FMTBaseEdgeProperties>* const getLineGraph() const;
+		const FMTGraph<FMTVertexProperties, FMTEdgeProperties>* const getFullGraph() const;
 		inline const void* getVertexPtr() const
 		{
 			return vertex;

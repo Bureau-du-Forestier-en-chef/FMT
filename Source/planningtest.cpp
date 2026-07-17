@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
-	Parallel::FMTplanningtask newplanningtask(1,7, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly/*, primlocation*/);
+	Parallel::FMTPlanningTask newplanningtask(1,7, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly/*, primlocation*/);
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readschedules(primlocation, models);
 	for (size_t modelid = 0;modelid<models.size();++modelid)
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 		lpmodel.setOutputs(selectedoutputs);
 		newplanningtask.push_back(lpmodel,schedules.at(modelid));
 		}
-	Parallel::FMTtaskhandler handler(newplanningtask,3);
+	Parallel::FMTTaskHandler handler(newplanningtask,3);
 	handler.setQuietLogger();
 	//handler.onDemandRun();
 	handler.conccurentRun();

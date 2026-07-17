@@ -106,7 +106,7 @@ namespace Spatial
 		return value;
 	}
 
-	FMTVirtualLineGraph FMTSpatialGraphs::getVirtualGraph(const Graph::FMTlinegraph& p_LineGraph)
+	FMTVirtualLineGraph FMTSpatialGraphs::getVirtualGraph(const Graph::FMTLineGraph& p_LineGraph)
 	{
 		size_t Family = 0;
 		const_iterator Iterator = m_AllGraphs.begin()->end();
@@ -122,7 +122,7 @@ namespace Spatial
 		return FMTVirtualLineGraph(*this, Iterator, Family);
 	}
 
-	FMTVirtualLineGraph FMTSpatialGraphs::setVirtualGraph(const Graph::FMTlinegraph& p_LineGraph)
+	FMTVirtualLineGraph FMTSpatialGraphs::setVirtualGraph(const Graph::FMTLineGraph& p_LineGraph)
 	{
 		size_t Family = 0;
 		const_iterator Iterator = m_AllGraphs.begin()->end();
@@ -289,7 +289,7 @@ namespace Spatial
 	}
 
 	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::getIterator(
-		const Graph::FMTlinegraph& p_Graph,
+		const Graph::FMTLineGraph& p_Graph,
 		size_t p_family) const
 	{
 		FMTSpatialGraphs::const_iterator It = m_AllGraphs.at(p_family).find(p_Graph);
@@ -304,13 +304,13 @@ namespace Spatial
 	}
 
 	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::setIterator(
-		const Graph::FMTlinegraph& p_Graph,
+		const Graph::FMTLineGraph& p_Graph,
 		size_t p_family)
 	{
 		const_iterator Iterator = m_AllGraphs.at(p_family).end();
 		try {
 			std::pair<FMTSpatialGraphs::iterator, bool> inserted = m_AllGraphs.at(p_family).insert(
-				std::pair<Graph::FMTlinegraph, FMTGraphInfo>(p_Graph, FMTGraphInfo(m_LastGraphId)));
+				std::pair<Graph::FMTLineGraph, FMTGraphInfo>(p_Graph, FMTGraphInfo(m_LastGraphId)));
 			if (inserted.second)//Calculate constraints
 			{
 				_buildConstraintsValues(inserted.first, p_family);
@@ -338,7 +338,7 @@ namespace Spatial
 				const int LENGTH = m_Model->getParameter(Models::FMTintmodelparameters::LENGTH);
 				const Core::FMTActualDevelopment* BASE = dynamic_cast<const Core::FMTActualDevelopment*>(
 					&m_AllGraphs.at(p_family).begin()->first.getBaseDevelopment());
-				Graph::FMTlinegraph NewGraph(static_cast<size_t>(LENGTH), *BASE);
+				Graph::FMTLineGraph NewGraph(static_cast<size_t>(LENGTH), *BASE);
 				NewGraph.grow(LENGTH);
 				Iterator = setIterator(NewGraph, p_family);
 				}
@@ -452,10 +452,10 @@ namespace Spatial
 				const size_t GRAPHS_LOCATION = InSertedMask.first->second;
 				if (GRAPHS_LOCATION == m_AllGraphs.size())
 				{
-					m_AllGraphs.push_back(std::map<Graph::FMTlinegraph,
+					m_AllGraphs.push_back(std::map<Graph::FMTLineGraph,
 											FMTGraphInfo>());
 				}
-				Graph::FMTlinegraph local_graph(LENGTH);
+				Graph::FMTLineGraph local_graph(LENGTH);
 				std::vector<Core::FMTActualDevelopment> NewDevs(1, DEV);
 
 				const size_t NUMBER_OF_CELLS = static_cast<size_t> (std::round(NewDevs.begin()->getArea() / p_CellSize));
@@ -699,7 +699,7 @@ namespace Spatial
 		}
 	}
 
-	size_t FMTSpatialGraphs::_getFamily(const Graph::FMTlinegraph& p_Graph) const
+	size_t FMTSpatialGraphs::_getFamily(const Graph::FMTLineGraph& p_Graph) const
 	{
 		try {
 			const Core::FMTMask USEFULL_BITS = _getUseFullBits(getModel());

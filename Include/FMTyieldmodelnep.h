@@ -45,9 +45,9 @@ namespace Core
 		std::unique_ptr<FMTYieldModel>Clone() const;
 		// DocString: FMTYieldModelNep::getModelOutputNames()
 		/**
-		Implements FMTYieldModel::getInputValues(const Graph::FMTpredictor& predictor).
+		Implements FMTYieldModel::getInputValues(const Graph::FMTPredictor& predictor).
 		*/
-		const std::vector<double> getInputValues(const Graph::FMTpredictor& predictor) const;
+		const std::vector<double> getInputValues(const Graph::FMTPredictor& predictor) const;
 		// DocString: FMTYieldModelNep::getModelType()
 		/**
 		Return the modeltype of the FMTYieldModel.

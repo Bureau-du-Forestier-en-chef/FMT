@@ -17,23 +17,23 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
-    const double FMTexponentialschedule::m_ANNEALING_RATE = 0.95;
+    const double FMTExponentialSchedule::m_ANNEALING_RATE = 0.95;
 
-    FMTexponentialschedule::FMTexponentialschedule(): FMTsaschedule("Exponential")
+    FMTExponentialSchedule::FMTExponentialSchedule(): FMTSaSchedule("Exponential")
     {
         //Constructor
     }
 
-    void FMTexponentialschedule::reduceTemp()
+    void FMTExponentialSchedule::reduceTemp()
     {
         const double exponant = std::max(static_cast<double>(m_Level), 1.0);
         ++m_Level;
         m_Temperature = m_Temperature * pow(m_ANNEALING_RATE, exponant);
     }
 
-	std::unique_ptr<FMTsaschedule> FMTexponentialschedule::Clone()const
+	std::unique_ptr<FMTSaSchedule> FMTExponentialSchedule::Clone()const
     {
-        return std::unique_ptr<FMTsaschedule>(new FMTexponentialschedule(*this));
+        return std::unique_ptr<FMTSaSchedule>(new FMTExponentialSchedule(*this));
     }
 
 }

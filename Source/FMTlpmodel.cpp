@@ -167,23 +167,23 @@ namespace Models
 		}
 	}
 
-	Heuristics::FMToperatingareaclusterer FMTLpModel::getClusterer(
-		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
+	Heuristics::FMTOperatingAreaClusterer FMTLpModel::getClusterer(
+		const std::vector<Heuristics::FMTOperatingAreaCluster>& initialcluster,
 		const Core::FMTOutput& areaoutput,
 		const Core::FMTOutput& statisticoutput,
 		const int& period, int minimalnumberofclusters, int maximalnumberofclusters) const
 	{
-		Heuristics::FMToperatingareaclusterer newclusterer;
+		Heuristics::FMTOperatingAreaClusterer newclusterer;
 		try {
-			std::vector<Heuristics::FMToperatingareacluster>newclusters;
+			std::vector<Heuristics::FMTOperatingAreaCluster>newclusters;
 			double minimalstatistic, minimalarea = std::numeric_limits<double>::max();
 			double maximalstatistic, maximalarea = 0;
 			const double minimalstatisticvalue = FMT_DBL_TOLERANCE*10000;
 			std::map<Core::FMTMask,std::pair<double,double>>outputcaching;
-			for (const Heuristics::FMToperatingareacluster& originalcluster : initialcluster)
+			for (const Heuristics::FMTOperatingAreaCluster& originalcluster : initialcluster)
 				{
-				Heuristics::FMToperatingareaclusterbinary centroid = originalcluster.getCentroid();
-				std::vector<Heuristics::FMToperatingareaclusterbinary>allbinaries = originalcluster.getBinaries();
+				Heuristics::FMTOperatingAreaClusterBinary centroid = originalcluster.getCentroid();
+				std::vector<Heuristics::FMTOperatingAreaClusterBinary>allbinaries = originalcluster.getBinaries();
 				const Core::FMTMask centroidmask = centroid.getMask();
 				double cstatistic = 0;
 				double carea = 0;
@@ -216,7 +216,7 @@ namespace Models
 				maximalarea = std::max(maximalarea, carea);
 				centroid.setStatistic(cstatistic);
 				centroid.setArea(carea);
-				for (Heuristics::FMToperatingareaclusterbinary& binary : allbinaries)
+				for (Heuristics::FMTOperatingAreaClusterBinary& binary : allbinaries)
 					{
 					const Core::FMTMask binarymask = binary.getMask();
 					double statistic = 0;
@@ -253,7 +253,7 @@ namespace Models
 					binary.setArea(area);
 					}
 				
-                const Heuristics::FMToperatingareacluster newopcluster(Heuristics::FMToperatingareacluster(centroid,allbinaries),originalcluster.getRealMinimalArea(),originalcluster.getRealMaximalArea());
+                const Heuristics::FMTOperatingAreaCluster newopcluster(Heuristics::FMTOperatingAreaCluster(centroid,allbinaries),originalcluster.getRealMinimalArea(),originalcluster.getRealMaximalArea());
                 if (!newopcluster.isValidareabounds())
                     {
                     _exhandler->raise(Exception::FMTexc::FMTignore,
@@ -263,7 +263,7 @@ namespace Models
 				newclusters.push_back(newopcluster);
 				
 				}
-			newclusterer = Heuristics::FMToperatingareaclusterer(solver.getSolverType(),0,newclusters,minimalnumberofclusters,maximalnumberofclusters);
+			newclusterer = Heuristics::FMTOperatingAreaClusterer(solver.getSolverType(),0,newclusters,minimalnumberofclusters,maximalnumberofclusters);
 			_logger->logWithLevel("Units: ("+std::to_string(newclusterer.getBinariesCount() )+")\nStats: min(" + std::to_string(minimalstatistic) + ")" +
 				" max(" + std::to_string(maximalstatistic) + ") \nArea: min(" + std::to_string(minimalarea) + ") max(" + std::to_string(maximalarea) + ")\n", 0);
 			newclusterer.buildProblem();
@@ -344,7 +344,7 @@ namespace Models
 				newobjective[colid] = *(actualobjective + colid);
 				}
 		
-			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+			Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getPeriodVertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
 				std::map<int, int>variables = m_graph->getOutVariables(*vertex_iterator);
@@ -377,7 +377,7 @@ namespace Models
 		solver.setNumberOfThreads(getParameter(NUMBER_OF_THREADS));	
 	}
 	/*
-	FMTLpModel::FMTLpModel(	const FMTModel& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
+	FMTLpModel::FMTLpModel(	const FMTModel& base,const Graph::FMTGraph<Graph::FMTVertexProperties,Graph::FMTEdgeProperties>& lgraph,
 							const FMTLpSolver& lsolver,const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>& lelements) :
 	FMTSrModel(base,lgraph,lsolver),
 	m_indexes(m_indexAllocator),
@@ -593,7 +593,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 		m_indexes.clear();
 	}
 
-	Graph::FMTgraphstats FMTLpModel::setConstraint(const Core::FMTConstraint& constraint)
+	Graph::FMTGraphStats FMTLpModel::setConstraint(const Core::FMTConstraint& constraint)
 		{
 		try {
 			/*if (getName() == "tactique_AllEnrqc_CC")
@@ -852,7 +852,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"Global masks and tolerances are not the same length", "FMTLpModel::getAreaVariabilities", __LINE__, __FILE__);
 			}
-			//const boost::unordered_set<Core::FMTLookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTDevelopment>>& initialperiod = m_graph->getPeriodVertices(0);
+			//const boost::unordered_set<Core::FMTLookup<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor,Core::FMTDevelopment>>& initialperiod = m_graph->getPeriodVertices(0);
 			std::vector<int>colstarget;
 			std::vector<double>originalbounds;
 			std::vector<double>newbounds;
@@ -860,7 +860,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 			const double* colupperbounds = solver.getColUpper();
 			std::vector<bool>foundcorresponding(globalmasks.size(), false);
 			//const int firstfutrecolumn = static_cast<int>(initialperiod.size());
-			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+			Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getPeriodVertices(0); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
 				size_t maskid = 0;
@@ -1021,7 +1021,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 		return uppernlower;
 		}
 	
-	Graph::FMTgraphstats FMTLpModel::eraseConstraint(const Core::FMTConstraint& constraint, int period)
+	Graph::FMTGraphStats FMTLpModel::eraseConstraint(const Core::FMTConstraint& constraint, int period)
 		{
 		try {
 		const std::vector<Core::FMTConstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
@@ -1238,7 +1238,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 		return false;
 		}
 
-	Graph::FMTgraphstats FMTLpModel::erasePeriod(bool constraintsonly)
+	Graph::FMTGraphStats FMTLpModel::erasePeriod(bool constraintsonly)
 	{
 		try{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -1468,7 +1468,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 		return true;
 		}
 
-	Graph::FMTgraphstats FMTLpModel::setObjective(const Core::FMTConstraint& objective)
+	Graph::FMTGraphStats FMTLpModel::setObjective(const Core::FMTConstraint& objective)
 		{
 		try {
 			/*if (!objective.canBeNodesOnly())
@@ -1707,7 +1707,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 				return -1;
 			}
 			//*_logger << "getsetStage " + std::to_string(5) + "\n";
-			Graph::FMTgraphstats* stats = m_graph->getStatsPtr();
+			Graph::FMTGraphStats* stats = m_graph->getStatsPtr();
 			if (element_type == FMTmatrixelement::constraint || element_type == FMTmatrixelement::strictlypositive)
 			{
 				//*_logger << "getsetStage " + std::to_string(6) + "\n";
@@ -1835,7 +1835,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 			return indexIt->second;
 		}
 
-	std::vector<Heuristics::FMToperatingareascheduler>FMTLpModel::getOperatingAreaSchedulerHeuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
+	std::vector<Heuristics::FMTOperatingAreaScheduler>FMTLpModel::getOperatingAreaSchedulerHeuristics(const std::vector<Heuristics::FMTOperatingAreaScheme>& opareas,
 																						const Core::FMTOutputNode& node,
 																						size_t numberofheuristics,
 																						bool copysolver)		
@@ -1843,7 +1843,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 		const bool userandomness = false;
 		size_t seedof = 1;
 		const double proportionofset = 0.25;
-		std::vector<Heuristics::FMToperatingareascheduler>allheuristics;
+		std::vector<Heuristics::FMTOperatingAreaScheduler>allheuristics;
 		try {
 			updateMatrixNaming();
 			for(int i = 0 ; i < static_cast<int>(opareas.size()) ; ++i)
@@ -1878,7 +1878,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 		return allheuristics;
 		}
 
-    std::vector<Heuristics::FMToperatingareaclusterer>FMTLpModel::getOperatingAreaClustererHeuristics(const std::vector<Heuristics::FMToperatingareacluster>& clusters,
+    std::vector<Heuristics::FMTOperatingAreaClusterer>FMTLpModel::getOperatingAreaClustererHeuristics(const std::vector<Heuristics::FMTOperatingAreaCluster>& clusters,
 																				const Core::FMTOutput& statisticoutput,
                                                                                 const Core::FMTOutput& areaoutput,
                                                                                 const int& period,
@@ -1887,9 +1887,9 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 																				int maximalnumberofclusters) const
         {
         size_t seedof = 0;
-        std::vector<Heuristics::FMToperatingareaclusterer>allheuristics;
+        std::vector<Heuristics::FMTOperatingAreaClusterer>allheuristics;
 		try {
-			Heuristics::FMToperatingareaclusterer baseclusterer=this->getClusterer(clusters,areaoutput,statisticoutput,period,
+			Heuristics::FMTOperatingAreaClusterer baseclusterer=this->getClusterer(clusters,areaoutput,statisticoutput,period,
 				minimalnumberofclusters, maximalnumberofclusters);
             for (size_t heuristicid = 0 ; heuristicid < numberofheuristics; ++heuristicid)
                 {
@@ -2254,7 +2254,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 					{
 						if(period<schedules.size())
 						{
-							const Graph::FMTgraphstats PERIOD = buildPeriod(schedules.at(period), forcepartialbuild, parameters.getPeriodCompressTime(period));
+							const Graph::FMTGraphStats PERIOD = buildPeriod(schedules.at(period), forcepartialbuild, parameters.getPeriodCompressTime(period));
 							if (!QUIET_LOG)
 							{
 								_logger->logWithLevel(std::string(PERIOD)+"\n",3);
@@ -2266,7 +2266,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 												"FMTLpModel::build",__LINE__,__FILE__);
 						}
 					}else{
-						const Graph::FMTgraphstats PERIOD = buildPeriod(Core::FMTSchedule(), false, parameters.getPeriodCompressTime(period));
+						const Graph::FMTGraphStats PERIOD = buildPeriod(Core::FMTSchedule(), false, parameters.getPeriodCompressTime(period));
 						if (!QUIET_LOG)
 						{
 							_logger->logWithLevel(std::string(PERIOD) + "\n", 3);
@@ -2290,7 +2290,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 					}
 				if (!constraints.empty())
 				{
-					const Graph::FMTgraphstats OBJECTIVE = setObjective(constraints.at(0));
+					const Graph::FMTGraphStats OBJECTIVE = setObjective(constraints.at(0));
 					if (!QUIET_LOG)
 					{
 						_logger->logWithLevel("*Graph stats with all constraints : \n" + std::string(OBJECTIVE) + "\n", 1);

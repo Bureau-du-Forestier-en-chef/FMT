@@ -37,7 +37,7 @@ namespace Spatial
 
 	void FMTSolutionTracker::_modifySolution(
 		size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_It,
+		std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_It,
 		double p_sense)
 	{
 		try {
@@ -126,7 +126,7 @@ namespace Spatial
 	}
 
 	void FMTSolutionTracker::addToSolution(size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_NewGraph,
+		std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_NewGraph,
 		size_t p_LastGraphId)
 	{
 		try {
@@ -146,7 +146,7 @@ namespace Spatial
 			}
 	}
 	void FMTSolutionTracker::removeFromSolution(size_t p_family,
-		std::map<Graph::FMTlinegraph, FMTGraphInfo>::const_iterator p_OldGraph)
+		std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_OldGraph)
 	{
 		try {
 			--m_Solution.at(p_OldGraph->second.getGraphId());

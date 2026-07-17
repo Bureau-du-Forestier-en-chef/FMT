@@ -112,7 +112,7 @@ namespace Models
 			/**
 			This function returns a copy of the FMTModel of the selected period.
 			If period = 0 it returns the FMTModel::getCopy if period > 0 then it returns
-			a copy of the FMTModel based on the developments of the FMTgraph of the FMTLpModel.
+			a copy of the FMTModel based on the developments of the FMTGraph of the FMTLpModel.
 			Need to have a builded graph with a solution to use this function.
 			*/
 			virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;

@@ -16,7 +16,7 @@
 #endif
 #ifdef FMTWITHOSI
 
-std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
+std::vector<Heuristics::FMTOperatingAreaScheme> ObtenirOperatingArea(
     const std::string& fichierShp,
     const std::vector<Core::FMTTheme>& themes,
     const int& numeroTheme,
@@ -27,7 +27,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
     const std::string& fichierParam)
     {
         Parser::FMTAreaParser areaParser;
-        std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(
+        std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOAschedulerparameters(
             fichierParam,
             themes,
             numeroTheme - 1,
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
                     break;
                     }
                 }
-            const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(
+            const std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = ObtenirOperatingArea(
                 fichierShp,
                 optimizationmodel.getThemes(),
                 14, 
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
                 "STANLOCK", 
                 lfichierParam);
             {
-                std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(
+                std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTOpAreaSchedulerTask(
                     optimizationmodel, 
                     opeareas, 
                     nodeofoutput, 
@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
                     10, 
                     9000, 
                     adm7m));//120));
-                Parallel::FMTtaskhandler handler(maintaskptr, 1);
+                Parallel::FMTTaskHandler handler(maintaskptr, 1);
                 handler.setTaskLogger();
                 handler.conccurentRun();
                 maintaskptr->finalize(); // écrit ici le meilleur modèle sur le disque

@@ -43,7 +43,7 @@ namespace Wrapper
 				layersoptions.push_back("SEPARATOR=SEMICOLON");
 			}
 
-			Parallel::FMTplanningtask newplanningtask(etanduSortiesMin, etanduSortiesMax,
+			Parallel::FMTPlanningTask newplanningtask(etanduSortiesMin, etanduSortiesMax,
 				msclr::interop::marshal_as<std::string>(cheminSorties),
 				msclr::interop::marshal_as<std::string>(providerGdal),
 				layersoptions, static_cast<Core::FMToutputlevel>(outputLevel),
@@ -75,7 +75,7 @@ namespace Wrapper
 				*logger << "FMT -> Scénario : " + optimizationmodel.getName() + " prêt a être lancer." << "\n";
 			}
 
-			Parallel::FMTtaskhandler handler(newplanningtask, nbreProcessus);
+			Parallel::FMTTaskHandler handler(newplanningtask, nbreProcessus);
 			handler.conccurentRun();
 		}
 		catch (...)
@@ -131,7 +131,7 @@ namespace Wrapper
 			}
 			*logger << "FMT -> Préparation de la replanification " << "\n";
 			logger->logTime();
-			Parallel::FMTreplanningtask* task = new Parallel::FMTreplanningtask(
+			Parallel::FMTReplanningTask* task = new Parallel::FMTReplanningTask(
 				global,
 				stochastic,
 				local,
@@ -145,9 +145,9 @@ namespace Wrapper
 				static_cast<Core::FMToutputlevel>(outputLevel),
 				indProduireSolution);
 			task->setReplicates(nombreReplicasMin, nombreReplicasMax);
-			std::unique_ptr<Parallel::FMTtask> maintaskptr(task);
+			std::unique_ptr<Parallel::FMTTask> maintaskptr(task);
 			*logger << "FMT -> Préparation de la replanification terminée" << "\n";
-			Parallel::FMTtaskhandler handler(maintaskptr, nbreProcessus);
+			Parallel::FMTTaskHandler handler(maintaskptr, nbreProcessus);
 			logger->settasklogginglevel(taskLogLevel);
 			handler.onDemandRun();
 			//handler.conccurentRun();

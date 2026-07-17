@@ -299,7 +299,7 @@ namespace Models
 			//First make some noise
 			std::shuffle(area.begin(), area.end(), m_generator);
 			m_graph->setBuildType(Graph::FMTgraphbuild::schedulebuild);
-			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives = getActives();
+			std::queue<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> actives = getActives();
 			const int GRAPH_SIZE = static_cast<int>(getGraphSize());
 			int period = static_cast<int>(GRAPH_SIZE -1);
 			if (GRAPH_SIZE == 0)
@@ -329,22 +329,22 @@ namespace Models
 			setParameter(Models::FMTintmodelparameters::MATRIX_TYPE, 3);
 			bool allocatedArea = false;
 			double totalOperatedArea = 0;
-			Graph::FMTgraphstats GraphStats = getStats();
+			Graph::FMTGraphStats GraphStats = getStats();
 			const double* ColSolution = solver.getColSolution();
 			std::vector<double>newSolution(ColSolution, ColSolution+solver.getNumCols());
 			int actionId = 0;
 			for (const Core::FMTAction& ACTION : actions)
 			{
 				const bool DOES_NOT_GROW = (ACTION.getName() == "_DEATH");
-				std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrow;
+				std::queue< Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>toGrow;
 				const size_t MAX_SPIN = 10; //area.size() * 2;
 				size_t visit = 0;
 				while (!actionsOutputs.at(actionId).empty() && visit < MAX_SPIN)//Keep on spinning if you havent reach the target?
 				{
-					std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>revisitedActives;
+					std::queue< Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>revisitedActives;
 					while (!actives.empty())
 					{
-						Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& frontVertex = actives.front();
+						Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor& frontVertex = actives.front();
 						bool inOutput = false;
 						if (!actionsOutputs.at(actionId).empty())
 						{
@@ -408,11 +408,11 @@ namespace Models
 					}
 				++actionId;
 			}
-			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrowWithSolution(actives);
+			std::queue<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>toGrowWithSolution(actives);
 			GraphStats = m_graph->naturalGrowth(actives, GraphStats, false);
 			while (!toGrowWithSolution.empty())
 			{
-				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& GrowVertex = toGrowWithSolution.front();
+				Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor& GrowVertex = toGrowWithSolution.front();
 				const double* actualSolution = &newSolution[0];
 				double DEV_AREA = m_graph->inArea(GrowVertex, actualSolution);
 				for (const int& Id : m_graph->getOutActions(GrowVertex))
@@ -423,7 +423,7 @@ namespace Models
 				toGrowWithSolution.pop();
 			}
 			const int location = static_cast<int>(m_graph->size() - 2);
-			const Graph::FMTgraphstats newStats = this->updateMatrix(m_graph->getPeriodVertices(location), GraphStats);
+			const Graph::FMTGraphStats newStats = this->updateMatrix(m_graph->getPeriodVertices(location), GraphStats);
 			if (solver.getNumCols() != static_cast<int>(newSolution.size()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,

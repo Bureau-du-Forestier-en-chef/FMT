@@ -31,28 +31,28 @@ namespace Spatial
 	boost::unordered_map<Core::FMTDevelopment,std::vector<int>>
 		FMTSpatialSchedule::m_OperabilityCache = boost::unordered_map<Core::FMTDevelopment,std::vector<int>>();
 
-	std::vector<Spatial::FMTcoordinate>FMTSpatialSchedule::m_Movables = 
-								std::vector<Spatial::FMTcoordinate>();
+	std::vector<Spatial::FMTCoordinate>FMTSpatialSchedule::m_Movables = 
+								std::vector<Spatial::FMTCoordinate>();
 
 
-    FMTSpatialSchedule::FMTSpatialSchedule(const FMTforest& p_InitialMap, 
+    FMTSpatialSchedule::FMTSpatialSchedule(const FMTForest& p_InitialMap, 
 										size_t p_LengthReserve,
 										FMTSpatialGraphs& p_SpatialGraph) :
-		FMTlayer<FMTVirtualLineGraph>(), m_scheduleType(FMTSpatialScheduletype::FMTcomplete),
+		FMTLayer<FMTVirtualLineGraph>(), m_scheduleType(FMTSpatialScheduletype::FMTcomplete),
 		m_ConstraintsFactor(), m_events(), m_Tracker()
     {
-        FMTlayer<FMTVirtualLineGraph>::operator = (p_InitialMap.copyExtent<FMTVirtualLineGraph>());//Setting layer information
+        FMTLayer<FMTVirtualLineGraph>::operator = (p_InitialMap.copyExtent<FMTVirtualLineGraph>());//Setting layer information
 		m_Tracker = p_SpatialGraph.getBaseSolution();
-		boost::unordered_map<Core::FMTDevelopment, FMTcoordinate>cacheGraph;
+		boost::unordered_map<Core::FMTDevelopment, FMTCoordinate>cacheGraph;
 		size_t id = 0;
-        for(FMTlayer<Core::FMTDevelopment>::const_iterator devit = p_InitialMap.begin(); devit != p_InitialMap.end(); ++devit)
+        for(FMTLayer<Core::FMTDevelopment>::const_iterator devit = p_InitialMap.begin(); devit != p_InitialMap.end(); ++devit)
         {
 			if (cacheGraph.find(devit->second)==cacheGraph.end())
 				{
 				std::vector<Core::FMTActualDevelopment> actdevelopment(1, Core::FMTActualDevelopment(devit->second, p_InitialMap.getCellSize()));
 				actdevelopment[0] = actdevelopment.at(0).reduceLockToDeath(p_SpatialGraph.getModel().lifespan);
-				Graph::FMTlinegraph local_graph(p_LengthReserve);
-				std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
+				Graph::FMTLineGraph local_graph(p_LengthReserve);
+				std::queue<Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
 				mapping[devit->first] = p_SpatialGraph.getVirtualGraph(local_graph);
 				cacheGraph[devit->second] = devit->first;
 			}else {
@@ -78,7 +78,7 @@ namespace Spatial
 	{
 		try {
 			mapping.clear();
-			FMTlayer<FMTVirtualLineGraph>::operator=(p_ToCopy.copyExtent<FMTVirtualLineGraph>());
+			FMTLayer<FMTVirtualLineGraph>::operator=(p_ToCopy.copyExtent<FMTVirtualLineGraph>());
 			for (const auto& DATA : p_ToCopy)
 				{
 				mapping[DATA.first] =  FMTVirtualLineGraph(DATA.second, p_SpatialGraph);
@@ -97,16 +97,16 @@ namespace Spatial
 
 
 	FMTSpatialSchedule::FMTSpatialSchedule(const FMTSpatialSchedule& other,
-		const std::vector<FMTcoordinate>::const_iterator& firstcoord,
-		const std::vector<FMTcoordinate>::const_iterator& endcoord):
-		FMTlayer<FMTVirtualLineGraph>(),
+		const std::vector<FMTCoordinate>::const_iterator& firstcoord,
+		const std::vector<FMTCoordinate>::const_iterator& endcoord):
+		FMTLayer<FMTVirtualLineGraph>(),
 		m_scheduleType(FMTSpatialScheduletype::FMTpartial),
 		m_ConstraintsFactor(other.m_ConstraintsFactor),
 		m_events(other.m_events),
 		m_Tracker(other.m_Tracker)
 	{
-		FMTlayer<FMTVirtualLineGraph>::operator=(other.copyExtent<FMTVirtualLineGraph>());
-		std::vector<FMTcoordinate>::const_iterator it = firstcoord;
+		FMTLayer<FMTVirtualLineGraph>::operator=(other.copyExtent<FMTVirtualLineGraph>());
+		std::vector<FMTCoordinate>::const_iterator it = firstcoord;
 		while (it!= endcoord)
 			{
 			mapping[*it] = other.mapping.at(*it);
@@ -117,7 +117,7 @@ namespace Spatial
 	void FMTSpatialSchedule::swap(FMTSpatialSchedule& rhs)
 		{
 		try {
-			FMTlayer<FMTVirtualLineGraph>::swap(rhs);
+			FMTLayer<FMTVirtualLineGraph>::swap(rhs);
 			std::swap(m_scheduleType, rhs.m_scheduleType);
 			m_events.swap(rhs.m_events);
 			m_Tracker.swap(rhs.m_Tracker);
@@ -132,7 +132,7 @@ namespace Spatial
     bool FMTSpatialSchedule::operator == (const FMTSpatialSchedule& rhs)const
     {
         if (!(m_events==rhs.m_events)) return false;
-        for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator coordit = this->mapping.begin();
+        for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator coordit = this->mapping.begin();
                                                                          coordit!= this->mapping.end(); ++coordit)
         {
             if (coordit->second.getLineGraph() != rhs.mapping.at(coordit->first).getLineGraph())
@@ -150,7 +150,7 @@ namespace Spatial
 
     int FMTSpatialSchedule::actPeriod() const
     {
-        //Graph::FMTlinegraph flgraph = mapping.begin()->second;
+        //Graph::FMTLineGraph flgraph = mapping.begin()->second;
         return mapping.begin()->second.getLineGraph().getPeriod();
     }
 
@@ -167,9 +167,9 @@ namespace Spatial
 				}
 			const double CELL_SIZE = getCellSize();
 			std::map<Core::FMTDevelopment, double>outArea;
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
-				const Graph::FMTlinegraph& local_graph = graphit->second.getLineGraph();
+				const Graph::FMTLineGraph& local_graph = graphit->second.getLineGraph();
 				const std::vector<double> solutions(1, this->getCellSize());
 				Core::FMTDevelopment graphDev;
 				if (beforegrowanddeath)
@@ -199,9 +199,9 @@ namespace Spatial
 			return OutValues;
 	}
 
-    FMTforest FMTSpatialSchedule::getForestPeriod(const int& period,bool periodStart) const
+    FMTForest FMTSpatialSchedule::getForestPeriod(const int& period,bool periodStart) const
     {
-        FMTforest forest(this->copyExtent<Core::FMTDevelopment>());//Setting layer information
+        FMTForest forest(this->copyExtent<Core::FMTDevelopment>());//Setting layer information
 		try {
 			if (m_scheduleType!=FMTSpatialScheduletype::FMTcomplete)
 				{
@@ -210,9 +210,9 @@ namespace Spatial
 					"FMTSpatialSchedule::getForestPeriod", __LINE__, __FILE__);
 				}
 			const std::vector<double> solutions(1, this->getCellSize());
-			for(std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			for(std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
-				const Graph::FMTlinegraph& local_graph = graphit->second.getLineGraph();
+				const Graph::FMTLineGraph& local_graph = graphit->second.getLineGraph();
 				if(periodStart)
 				{
 					forest[graphit->first] = local_graph.getPeriodStartDev(period);	
@@ -228,7 +228,7 @@ namespace Spatial
     }
 
 
-	bool FMTSpatialSchedule::allowAction(const int& targetaction, const std::vector<Spatial::FMTbindingspatialaction>&bindingactions, const FMTcoordinate& location, const int& period) const
+	bool FMTSpatialSchedule::allowAction(const int& targetaction, const std::vector<Spatial::FMTBindingSpatialAction>&bindingactions, const FMTCoordinate& location, const int& period) const
 	{
 		try
 		{
@@ -245,9 +245,9 @@ namespace Spatial
 							const uint16_t miny = distance > location.getY() ? 0 : location.getY() - distance;
 							const uint16_t maxofx = (distance + location.getX()) > maxx ? maxx : (distance + location.getX());
 							const uint16_t maxofy = (distance + location.getY()) > maxy ? maxy : (distance + location.getY());
-							const FMTcoordinate minimallocation(minx, miny);
-							const FMTcoordinate maximallocation(maxofx, maxofy);
-							for (const FMTeventcontainer::const_iterator eventit : m_events.getEvents(green_up, mact, minimallocation, maximallocation))
+							const FMTCoordinate minimallocation(minx, miny);
+							const FMTCoordinate maximallocation(maxofx, maxofy);
+							for (const FMTEventContainer::const_iterator eventit : m_events.getEvents(green_up, mact, minimallocation, maximallocation))
 								{
 								if (eventit->within(loweradjacencyof, location))
 									{
@@ -267,7 +267,7 @@ namespace Spatial
 	}
 
 
-	std::vector<std::set<Spatial::FMTcoordinate>> FMTSpatialSchedule::getUpdatedScheduling(
+	std::vector<std::set<Spatial::FMTCoordinate>> FMTSpatialSchedule::getUpdatedScheduling(
 																	//const std::vector<Core::FMTAction>& actions,
 																	const Models::FMTModel& model,
 																	const std::vector<int>& actiontargets,
@@ -276,15 +276,15 @@ namespace Spatial
 																	const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
 																	//const Core::FMTYields& yields,
 																	bool schedule_only,
-																	std::vector<std::set<Spatial::FMTcoordinate>> original,
-																	std::vector<FMTcoordinate> updatedcoordinate) const
+																	std::vector<std::set<Spatial::FMTCoordinate>> original,
+																	std::vector<FMTCoordinate> updatedcoordinate) const
 		{
 		try {
 			if (original.empty())
 				{
 				original.resize(model.actions.size());
 				updatedcoordinate.reserve(mapping.size());
-				for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator itc = mapping.begin(); itc != mapping.end(); ++itc)
+				for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator itc = mapping.begin(); itc != mapping.end(); ++itc)
 					{
 					updatedcoordinate.push_back(itc->first);
 					}
@@ -292,10 +292,10 @@ namespace Spatial
 			//boost::unordered_map<Core::FMTDevelopment,std::vector<bool>>cachedactions;
 			//cachedactions.reserve(updatedcoordinate.size());
 			const int8_t DEATH_ID = static_cast<int8_t>(model.actions.size())-1;
-			for (const FMTcoordinate& updated : updatedcoordinate)
+			for (const FMTCoordinate& updated : updatedcoordinate)
 				{
-				const Graph::FMTlinegraph& lg = mapping.at(updated).getLineGraph();
-				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor& active = lg.getActiveVertex();
+				const Graph::FMTLineGraph& lg = mapping.at(updated).getLineGraph();
+				const Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>::FMTvertex_descriptor& active = lg.getActiveVertex();
 				
 				boost::unordered_map<Core::FMTDevelopment, std::vector<bool>>::iterator cacheit = cachedactions.end();
 				const Core::FMTDevelopment& test = lg.getDevelopment(active);
@@ -327,7 +327,7 @@ namespace Spatial
 
 						for (const int& actionid : actiontargets)
 						{
-							std::set<Spatial::FMTcoordinate>& settochange = original[actionid];
+							std::set<Spatial::FMTCoordinate>& settochange = original[actionid];
 							if (cacheit!=cachedactions.end() &&
 								cacheit->second.at(actionid))
 							{
@@ -348,14 +348,14 @@ namespace Spatial
 
 
 
-	std::set<FMTcoordinate> FMTSpatialSchedule::verifySpatialFeasibility(const int& targetaction,
-		const std::vector<Spatial::FMTbindingspatialaction>& bindingactions,
-		const int& period, const std::set<FMTcoordinate>& operables) const
+	std::set<FMTCoordinate> FMTSpatialSchedule::verifySpatialFeasibility(const int& targetaction,
+		const std::vector<Spatial::FMTBindingSpatialAction>& bindingactions,
+		const int& period, const std::set<FMTCoordinate>& operables) const
 	{
-		std::set<FMTcoordinate> spatiallyallowable;
+		std::set<FMTCoordinate> spatiallyallowable;
 		try
 		{
-			for (std::set<FMTcoordinate>::const_iterator itc = operables.begin(); itc != operables.end(); ++itc)
+			for (std::set<FMTCoordinate>::const_iterator itc = operables.begin(); itc != operables.end(); ++itc)
 			{
 				if (allowAction(targetaction, bindingactions,*itc, period))
 				{
@@ -372,13 +372,13 @@ namespace Spatial
 
 
 
-	FMTeventcontainer FMTSpatialSchedule::buildHarvest(const double & target, const Spatial::FMTbindingspatialaction& targetaction,
-		std::default_random_engine & generator, std::set<FMTcoordinate> mapping_pass,
-		const int& period, const int& actionid, std::vector<FMTcoordinate>& operated) const
+	FMTEventContainer FMTSpatialSchedule::buildHarvest(const double & target, const Spatial::FMTBindingSpatialAction& targetaction,
+		std::default_random_engine & generator, std::set<FMTCoordinate> mapping_pass,
+		const int& period, const int& actionid, std::vector<FMTCoordinate>& operated) const
 	{
 		//To gain efficiency, maybe tracking cell that have been ignit actually, we are suposing that we are trying every cell, but its not true because of the random generator
 		double harvested_area = 0;
-		FMTeventcontainer cuts;
+		FMTEventContainer cuts;
 		try {
 			size_t count = mapping_pass.size();
 			int tooclosecall = 0;
@@ -387,7 +387,7 @@ namespace Spatial
 			const bool check_adjacency = (std::find(targetaction.getNeighbors().begin(), targetaction.getNeighbors().end(), actionid) != targetaction.getNeighbors().end());
 			if (!mapping_pass.empty())
 			{
-				std::set<FMTcoordinate>::const_iterator randomit;
+				std::set<FMTCoordinate>::const_iterator randomit;
 				while (harvested_area < target && count > 0 && !mapping_pass.empty())
 				{
 					std::uniform_int_distribution<int> celldistribution(0, static_cast<int>(mapping_pass.size()) - 1);
@@ -395,8 +395,8 @@ namespace Spatial
 					randomit = mapping_pass.begin();
 					std::advance(randomit, cell);
 					const size_t FAMILY = find(*randomit)->second.getGraphFamily();
-					FMTevent newcut;
-					std::vector<std::set<FMTcoordinate>::const_iterator>actives = newcut.ignit(targetaction.getMaximalSize(),randomit, actionid, period, FAMILY);
+					FMTEvent newcut;
+					std::vector<std::set<FMTCoordinate>::const_iterator>actives = newcut.ignit(targetaction.getMaximalSize(),randomit, actionid, period, FAMILY);
 					if (!actives.empty())
 					{
 						++initdone;
@@ -409,7 +409,7 @@ namespace Spatial
 								const size_t adjacency = targetaction.getMinimalAdjacency();
 								const size_t maximaldistance = adjacency + targetaction.getMaximalSize();
 								const unsigned int adjacencyof = static_cast<unsigned int>(adjacency);
-								for (const std::set<FMTevent>::const_iterator cutit : cuts.getEvents(period, newcut.getTerritory(maximaldistance)))
+								for (const std::set<FMTEvent>::const_iterator cutit : cuts.getEvents(period, newcut.getTerritory(maximaldistance)))
 								{
 									if (cutit->within(adjacencyof, newcut))
 									{
@@ -423,7 +423,7 @@ namespace Spatial
 							{
 								cuts.insert(newcut);
 								operated.reserve(newcut.getElements().size());
-								for (const FMTcoordinate& toRemove : newcut.getElements())
+								for (const FMTCoordinate& toRemove : newcut.getElements())
 								{
 									operated.push_back(toRemove);
 									mapping_pass.erase(toRemove);
@@ -445,16 +445,16 @@ namespace Spatial
 	}
 
 
-	double FMTSpatialSchedule::operateEvents(const FMTeventcontainer& cuts, const Core::FMTAction& action, const int& action_id, const Core::FMTTransition& Transition,
+	double FMTSpatialSchedule::operateEvents(const FMTEventContainer& cuts, const Core::FMTAction& action, const int& action_id, const Core::FMTTransition& Transition,
 									 const Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes)
 	{
 		double operatedarea = 0;
 		try {
-			for (const FMTevent& cut : cuts)
+			for (const FMTEvent& cut : cuts)
 			{
-				for (std::set<FMTcoordinate>::const_iterator coordit = cut.getElements().begin(); coordit != cut.getElements().end(); coordit++)
+				for (std::set<FMTCoordinate>::const_iterator coordit = cut.getElements().begin(); coordit != cut.getElements().end(); coordit++)
 				{
-					Graph::FMTlinegraph lg = mapping.at(*coordit).getLineGraph();
+					Graph::FMTLineGraph lg = mapping.at(*coordit).getLineGraph();
 					const size_t pathssize = lg.operate(action, action_id, Transition, ylds, themes);
 					mapping.at(*coordit).setLineGraph(lg, m_Tracker);
 					if (pathssize > 1)
@@ -474,12 +474,12 @@ namespace Spatial
 		return operatedarea;
 	}
 
-	void FMTSpatialSchedule::operateCoord(const FMTcoordinate& coord,const Core::FMTAction& action, const int& action_id, const FMTbindingspatialaction& bindingspaction, const Core::FMTTransition& Transition,
+	void FMTSpatialSchedule::operateCoord(const FMTCoordinate& coord,const Core::FMTAction& action, const int& action_id, const FMTBindingSpatialAction& bindingspaction, const Core::FMTTransition& Transition,
 					 const Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes)
 	{
 		try
 		{
-			Graph::FMTlinegraph lg = mapping.at(coord).getLineGraph();
+			Graph::FMTLineGraph lg = mapping.at(coord).getLineGraph();
 			const size_t pathssize = lg.operate(action, action_id, Transition, ylds, themes);
 			auto& VGraph = mapping.at(coord);
 			VGraph.setLineGraph(lg, m_Tracker);
@@ -498,9 +498,9 @@ namespace Spatial
 	void FMTSpatialSchedule::grow()
 	{
 		try {
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
-				Graph::FMTlinegraph local_graph = graphit->second.getLineGraph();
+				Graph::FMTLineGraph local_graph = graphit->second.getLineGraph();
 				local_graph.grow();
 				graphit->second.setLineGraph(local_graph, m_Tracker);
 			}
@@ -557,7 +557,7 @@ namespace Spatial
 		return returnvalue;
 	}
 
-	std::vector<FMTeventcontainer::const_iterator> FMTSpatialSchedule::_getSpatialGroupsConflict(
+	std::vector<FMTEventContainer::const_iterator> FMTSpatialSchedule::_getSpatialGroupsConflict(
 		const FMTSpatialGraphs& p_SpatialGraph,
 		int p_period,
 		int p_greenup,
@@ -567,7 +567,7 @@ namespace Spatial
 		bool p_testLower,
 		const std::vector<bool>& p_actions) const
 	{
-		std::vector<FMTeventcontainer::const_iterator>conflicts;
+		std::vector<FMTEventContainer::const_iterator>conflicts;
 		try {
 			if (!p_testLower)
 			{
@@ -607,30 +607,30 @@ namespace Spatial
 			}
 
 
-			for (const FMTeventcontainer::const_iterator eventit : m_events.getEvents(p_period, p_actions))
+			for (const FMTEventContainer::const_iterator eventit : m_events.getEvents(p_period, p_actions))
 			{
 				const uint16_t containerlookup = static_cast<uint16_t>(baselookup + eventit->size());
 
 				//0//-//1//
 				//-//-//-//
 				//2//-//3//
-				const std::array<FMTcoordinate,4> enveloppe = eventit->getEnveloppe();
+				const std::array<FMTCoordinate,4> enveloppe = eventit->getEnveloppe();
 				const uint16_t minimalx = containerlookup < enveloppe.at(0).getX() ? enveloppe.at(0).getX() - containerlookup : 0;
 				const uint16_t minimaly = containerlookup < enveloppe.at(0).getY() ? enveloppe.at(0).getY() - containerlookup : 0;
 				const uint16_t maximalx = enveloppe.at(3).getX() + containerlookup;
 				const uint16_t maximaly = enveloppe.at(3).getY() + containerlookup;
-				const FMTcoordinate minimalcoord(minimalx, minimaly);
-				const FMTcoordinate maximalcoord(maximalx, maximaly);
+				const FMTCoordinate minimalcoord(minimalx, minimaly);
+				const FMTCoordinate maximalcoord(maximalx, maximaly);
 				double totalwithincount = 0;
 				for (int gupperiod = std::max(1, p_period - p_greenup); gupperiod <= p_period; ++gupperiod)
 				{
 					const double periodfactor = static_cast<double>((p_greenup - (p_period - gupperiod))) + 1;
-					for (const FMTeventcontainer::const_iterator eventof : m_events.getEvents(gupperiod, p_actions, minimalcoord, maximalcoord))
+					for (const FMTEventContainer::const_iterator eventof : m_events.getEvents(gupperiod, p_actions, minimalcoord, maximalcoord))
 					{
 						if (eventit != eventof)//They will have the same address if it's the same event!
 						{
-							/*const FMTeventrelation ofrelation = eventof->getRelation(*eventit);
-							const FMTeventrelation itrelation = eventit->getRelation(*eventof);
+							/*const FMTEventRelation ofrelation = eventof->getRelation(*eventit);
+							const FMTEventRelation itrelation = eventit->getRelation(*eventof);
 							if (relations.find(ofrelation) == relations.end() &&
 								relations.find(itrelation) == relations.end())
 							{*/
@@ -661,7 +661,7 @@ namespace Spatial
 	}
 
 
-	std::vector<FMTeventcontainer::const_iterator> FMTSpatialSchedule::_getAdjacencyConflict(
+	std::vector<FMTEventContainer::const_iterator> FMTSpatialSchedule::_getAdjacencyConflict(
 		int p_period,
 		int p_greenup,
 		int p_lowerLookup,
@@ -669,7 +669,7 @@ namespace Spatial
 		bool p_testLower,
 		const std::vector<bool>& p_actions) const
 	{
-		std::vector<FMTeventcontainer::const_iterator> conflicts;
+		std::vector<FMTEventContainer::const_iterator> conflicts;
 		try {
 			int baselookup = 0;
 			double lower = 0.0;
@@ -686,30 +686,30 @@ namespace Spatial
 			}
 
 
-			for (const FMTeventcontainer::const_iterator eventit : m_events.getEvents(p_period, p_actions))
+			for (const FMTEventContainer::const_iterator eventit : m_events.getEvents(p_period, p_actions))
 			{
 				const uint16_t containerlookup = static_cast<uint16_t>(baselookup + eventit->size());
 
 				//0//-//1//
 				//-//-//-//
 				//2//-//3//
-				const std::array<FMTcoordinate, 4> enveloppe = eventit->getEnveloppe();
+				const std::array<FMTCoordinate, 4> enveloppe = eventit->getEnveloppe();
 				const uint16_t minimalx = containerlookup < enveloppe.at(0).getX() ? enveloppe.at(0).getX() - containerlookup : 0;
 				const uint16_t minimaly = containerlookup < enveloppe.at(0).getY() ? enveloppe.at(0).getY() - containerlookup : 0;
 				const uint16_t maximalx = enveloppe.at(3).getX() + containerlookup;
 				const uint16_t maximaly = enveloppe.at(3).getY() + containerlookup;
-				const FMTcoordinate minimalcoord(minimalx, minimaly);
-				const FMTcoordinate maximalcoord(maximalx, maximaly);
+				const FMTCoordinate minimalcoord(minimalx, minimaly);
+				const FMTCoordinate maximalcoord(maximalx, maximaly);
 				double totalwithincount = 0;
 				for (int gupperiod = std::max(1, p_period - p_greenup); gupperiod <= p_period; ++gupperiod)
 				{
 					const double periodfactor = static_cast<double>((p_greenup - (p_period - gupperiod))) + 1;
-					for (const FMTeventcontainer::const_iterator eventof : m_events.getEvents(gupperiod, p_actions, minimalcoord, maximalcoord))
+					for (const FMTEventContainer::const_iterator eventof : m_events.getEvents(gupperiod, p_actions, minimalcoord, maximalcoord))
 					{
 						if (eventit != eventof)//They will have the same address if it's the same event!
 						{
-							/*const FMTeventrelation ofrelation = eventof->getRelation(*eventit);
-							const FMTeventrelation itrelation = eventit->getRelation(*eventof);
+							/*const FMTEventRelation ofrelation = eventof->getRelation(*eventit);
+							const FMTEventRelation itrelation = eventit->getRelation(*eventof);
 							if (relations.find(ofrelation) == relations.end() &&
 								relations.find(itrelation) == relations.end())
 							{*/
@@ -738,16 +738,16 @@ namespace Spatial
 	}
 
 
-std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMTConstraint& p_SpatialConstraint,
+std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMTConstraint& p_SpatialConstraint,
 		const FMTSpatialGraphs& p_SpatialGraph) const
 	{
-		std::vector<FMTcoordinate>conflict;
+		std::vector<FMTCoordinate>conflict;
 		try {
 			int periodStart = 0;
 			int periodStop = 0;
 			if (mapping.begin()->second.getLineGraph().constraintLenght(p_SpatialConstraint, periodStart, periodStop))
 				{
-				std::set<FMTcoordinate>allCoordinates;
+				std::set<FMTCoordinate>allCoordinates;
 				const std::vector<bool>ACTION_USED = p_SpatialConstraint.isActionsused(p_SpatialGraph.getModel().actions);
 				const Core::FMTconstrainttype SPATIAL_CONSTRAINT_TYPE = p_SpatialConstraint.getConstraintType();
 				for (int period = periodStart; period <= periodStop; ++period)
@@ -763,19 +763,19 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 						{
 						themeTarget = (static_cast<int>(THEME_BOUNDS.getLower()) - 1);
 						}
-					const std::vector<FMTeventcontainer::const_iterator> EVENT_CONFLICTS = _getSpatialGroupsConflict(p_SpatialGraph,
+					const std::vector<FMTEventContainer::const_iterator> EVENT_CONFLICTS = _getSpatialGroupsConflict(p_SpatialGraph,
 						period, static_cast<int>(GUP_BOUNDS.getLower()),
 						static_cast<int>(lower),
 						static_cast<int>(upper),
 						themeTarget,
 						TEST_LOWER_BOUND, ACTION_USED);
-					for (FMTeventcontainer::const_iterator EventIt : EVENT_CONFLICTS)
+					for (FMTEventContainer::const_iterator EventIt : EVENT_CONFLICTS)
 						{
-						const  std::set<FMTcoordinate> EVENT = EventIt->getElements();
+						const  std::set<FMTCoordinate> EVENT = EventIt->getElements();
 						allCoordinates.insert(EVENT.begin(), EVENT.end());
 						}
 					}
-				conflict = std::vector<FMTcoordinate>(allCoordinates.begin(), allCoordinates.end());
+				conflict = std::vector<FMTCoordinate>(allCoordinates.begin(), allCoordinates.end());
 				}
 		}catch (...)
 			{
@@ -1142,11 +1142,11 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 	
 
 
-	FMTlayer<double> FMTSpatialSchedule::getSpatialOutput(const Models::FMTModel& model, const Core::FMTOutput& output, const int& period) const
+	FMTLayer<double> FMTSpatialSchedule::getSpatialOutput(const Models::FMTModel& model, const Core::FMTOutput& output, const int& period) const
 	{
-		FMTlayer<double>outputlayer = copyExtent<double>();
+		FMTLayer<double>outputlayer = copyExtent<double>();
 		try {
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
 				const double GRAPH_VALUE = graphit->second.getOutput(model,
 					m_Tracker, output, period);
@@ -1165,18 +1165,18 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 	
 
 
-	std::vector<std::pair<FMTcoordinate, double>>FMTSpatialSchedule::getOutputByCoordinate(const Models::FMTModel & model, 
+	std::vector<std::pair<FMTCoordinate, double>>FMTSpatialSchedule::getOutputByCoordinate(const Models::FMTModel & model, 
 														const Core::FMTOutput& output, const int& period) const
 	{
-		std::vector<std::pair<FMTcoordinate, double>>allvalues;
+		std::vector<std::pair<FMTCoordinate, double>>allvalues;
 		try {
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 			{
 				const double GRAPH_VALUE = graphit->second.getOutput(model,
 					m_Tracker, output, period);
 				if ((std::abs(GRAPH_VALUE)-FMT_DBL_TOLERANCE)>0)
 					{
-					allvalues.push_back(std::pair<FMTcoordinate, double>(graphit->first, GRAPH_VALUE));
+					allvalues.push_back(std::pair<FMTCoordinate, double>(graphit->first, GRAPH_VALUE));
 					}
 			}
 		}
@@ -1198,12 +1198,12 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					"Cannot use a non complete schedule ",
 					"FMTSpatialSchedule::getPatchStats", __LINE__, __FILE__);
 			}
-			result += "Period Action "+FMTevent::getStatsHeader()+"\n";
+			result += "Period Action "+FMTEvent::getStatsHeader()+"\n";
 			for (int period =m_events.firstPeriod(); period <= m_events.lastPeriod(); ++period)
 			{
 				for (int action_id = 0; action_id < actions.size(); ++action_id)
 				{
-					std::vector<FMTeventcontainer::const_iterator> evsit = m_events.getEvents(period, action_id);
+					std::vector<FMTEventContainer::const_iterator> evsit = m_events.getEvents(period, action_id);
 					for (const auto& eventit : evsit)
 					{
 						result += std::to_string(period) + " " + actions.at(action_id).getName() + " " + eventit->getStats() + "\n";
@@ -1218,9 +1218,9 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		return result;
 	}
 
-	FMTlayer<std::string> FMTSpatialSchedule::lastDistLayer(const std::vector<Core::FMTAction>& modelactions, const int& period) const
+	FMTLayer<std::string> FMTSpatialSchedule::lastDistLayer(const std::vector<Core::FMTAction>& modelactions, const int& period) const
 	{
-		FMTlayer<std::string> distlayer(this->copyExtent<std::string>());
+		FMTLayer<std::string> distlayer(this->copyExtent<std::string>());
 		try {
 			if (m_scheduleType != FMTSpatialScheduletype::FMTcomplete)
 				{
@@ -1228,7 +1228,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					"Cannot use a non complete schedule ",
 					"FMTSpatialSchedule::lastDistLayer", __LINE__, __FILE__);
 				}
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 			{
 				const int lastactid = graphit->second.getLineGraph().getLastActionId(period);
 				if (lastactid >= 0)
@@ -1245,9 +1245,9 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		return distlayer;
 	}
 
-	std::vector<std::vector<Graph::FMTpredictor>>FMTSpatialSchedule::getPredictors(FMTlayer<int>& predictorids, const Models::FMTModel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues, bool withGCBMid) const
+	std::vector<std::vector<Graph::FMTPredictor>>FMTSpatialSchedule::getPredictors(FMTLayer<int>& predictorids, const Models::FMTModel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues, bool withGCBMid) const
 	{
-		std::vector<std::vector<Graph::FMTpredictor>>predictors;
+		std::vector<std::vector<Graph::FMTPredictor>>predictors;
 		try {
 			if (m_scheduleType != FMTSpatialScheduletype::FMTcomplete)
 			{
@@ -1255,19 +1255,19 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					"Cannot use a non complete schedule ",
 					"FMTSpatialSchedule::getPredictors", __LINE__, __FILE__);
 			}
-			std::set<std::vector<Graph::FMTpredictor>>predictorsset;
-			std::vector<std::set<std::vector<Graph::FMTpredictor>>::iterator>predictorlocalisations;
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph >::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
+			std::set<std::vector<Graph::FMTPredictor>>predictorsset;
+			std::vector<std::set<std::vector<Graph::FMTPredictor>>::iterator>predictorlocalisations;
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph >::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 			{
-				const std::vector<Graph::FMTpredictor> graphpredictors = graphit->second.getLineGraph().getPeriodPredictors(period,model, yieldnames,periodonevalues,withGCBMid);
-				std::set<std::vector<Graph::FMTpredictor>>::iterator setit = predictorsset.end();
+				const std::vector<Graph::FMTPredictor> graphpredictors = graphit->second.getLineGraph().getPeriodPredictors(period,model, yieldnames,periodonevalues,withGCBMid);
+				std::set<std::vector<Graph::FMTPredictor>>::iterator setit = predictorsset.end();
 				bool pushed=false;
 				if (!graphpredictors.empty())
 				{
 					setit = predictorsset.find(graphpredictors);
 					if (setit == predictorsset.end())
 					{
-						const std::pair<std::set<std::vector<Graph::FMTpredictor>>::iterator, bool> ret = predictorsset.insert(graphpredictors);
+						const std::pair<std::set<std::vector<Graph::FMTPredictor>>::iterator, bool> ret = predictorsset.insert(graphpredictors);
 						predictorlocalisations.push_back(ret.first);
 						pushed = true;
 					}
@@ -1279,7 +1279,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			}
 			predictors.insert(predictors.end(), predictorsset.begin(), predictorsset.end());
 			size_t graphid = 0;
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->begin(); graphit != this->end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->begin(); graphit != this->end(); ++graphit)
 				{
 				if (predictorlocalisations.at(graphid)!= predictorsset.end())
 					{
@@ -1298,7 +1298,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		return predictors;
 	}
 
-	std::vector<Core::FMTGCBMTransition>FMTSpatialSchedule::getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTAction>& modelactions, const std::vector<Core::FMTTheme>& classifiers, const int& period) const
+	std::vector<Core::FMTGCBMTransition>FMTSpatialSchedule::getGCBMtransitions(FMTLayer<std::string>& stackedactions, const std::vector<Core::FMTAction>& modelactions, const std::vector<Core::FMTTheme>& classifiers, const int& period) const
 	{
 		std::vector<Core::FMTGCBMTransition>GCBM;
 		try {
@@ -1311,7 +1311,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			std::map<std::string, std::vector<int>> ageaftercontainer;
 			std::map<std::string, std::map<std::string, std::map<std::string, int>>> finalattributes;
 			//Iter through spatialschedule
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 			{
 				// lastaction id = -1 no action in period
 				const std::vector<int> periodactionids = graphit->second.getLineGraph().getPeriodActionIds(period, false);
@@ -1404,14 +1404,14 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		{
 		try {
 			const int lastPeriod = this->mapping.begin()->second.getLineGraph().getPeriod() - 1;
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 				{
-				//Graph::FMTlinegraph copied = graphit->second.getLineGraph();
+				//Graph::FMTLineGraph copied = graphit->second.getLineGraph();
 				//copied.clearfromperiod(lastPeriod, true);
 				//graphit->second.setLineGraph(copied,m_NonSpatialSolution);
 				graphit->second.setLastPeriod(m_Tracker);
 				}
-			std::set<FMTevent>::const_iterator periodit = m_events.getBounds(lastPeriod).first;
+			std::set<FMTEvent>::const_iterator periodit = m_events.getBounds(lastPeriod).first;
 			while (periodit!=m_events.end())
 				{
 				periodit = m_events.erase(periodit);
@@ -1424,10 +1424,10 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		}
 
 
-	std::vector<FMTcoordinate>FMTSpatialSchedule::getFromEvents(const Core::FMTOutputNode& node, const std::vector<Core::FMTAction>& actions, const int& period) const
+	std::vector<FMTCoordinate>FMTSpatialSchedule::getFromEvents(const Core::FMTOutputNode& node, const std::vector<Core::FMTAction>& actions, const int& period) const
 	{
-		//std::vector<const Graph::FMTlinegraph*>graphs;
-		std::vector<FMTcoordinate>coordinates;
+		//std::vector<const Graph::FMTLineGraph*>graphs;
+		std::vector<FMTCoordinate>coordinates;
 		try {
 			if (node.isActionbased()&& node.source.isVariable())
 			{
@@ -1436,9 +1436,9 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					{
 					targetedactions[std::distance(&(*actions.cbegin()), actionptr)] = true;
 					}
-				for (std::set<FMTevent>::const_iterator eventit : m_events.getEvents(period, targetedactions))
+				for (std::set<FMTEvent>::const_iterator eventit : m_events.getEvents(period, targetedactions))
 					{
-						for (const FMTcoordinate& coordinate : eventit->getElements())
+						for (const FMTCoordinate& coordinate : eventit->getElements())
 						{
 							coordinates.push_back(coordinate);
 						}
@@ -1454,9 +1454,9 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 
 	}
 
-	std::vector<const Graph::FMTlinegraph*>FMTSpatialSchedule::getFromEvents(const Core::FMTConstraint& constraint, const std::vector<Core::FMTAction>& actions, const int& start,const int& stop) const
+	std::vector<const Graph::FMTLineGraph*>FMTSpatialSchedule::getFromEvents(const Core::FMTConstraint& constraint, const std::vector<Core::FMTAction>& actions, const int& start,const int& stop) const
 		{
-		std::vector<const Graph::FMTlinegraph*>graphs;
+		std::vector<const Graph::FMTLineGraph*>graphs;
 
 		try {
 		if (constraint.isActionbased())
@@ -1478,14 +1478,14 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					}
 				}
 			std::sort(targetedactions.begin(), targetedactions.end());
-			std::set<FMTcoordinate>collected;
+			std::set<FMTCoordinate>collected;
 			for (int period = start; period <=stop; ++period)
 				{
-				for (std::set<FMTevent>::const_iterator eventit : m_events.getEvents(period, targetedactions))
+				for (std::set<FMTEvent>::const_iterator eventit : m_events.getEvents(period, targetedactions))
 					{
-					for (const FMTcoordinate& coordinate : eventit->getElements())
+					for (const FMTCoordinate& coordinate : eventit->getElements())
 						{
-						const Graph::FMTlinegraph* graphptr = &(mapping.find(coordinate)->second.getLineGraph());
+						const Graph::FMTLineGraph* graphptr = &(mapping.find(coordinate)->second.getLineGraph());
 						if (collected.find(coordinate)==collected.end())
 							{
 							collected.insert(coordinate);
@@ -1506,7 +1506,7 @@ std::vector<FMTcoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		return graphs;
 		}
 
-std::map<std::string,double> FMTSpatialSchedule::getOutputFromGraph(const Graph::FMTlinegraph& linegraph, const Models::FMTModel & model,
+std::map<std::string,double> FMTSpatialSchedule::getOutputFromGraph(const Graph::FMTLineGraph& linegraph, const Models::FMTModel & model,
 											 const Core::FMTOutputNode& node, const double* solution, const int&period,
 											const Core::FMTMask& nodemask,
 											boost::unordered_map<Core::FMTMask, double>& nodecache,
@@ -1558,15 +1558,15 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 			actionmapping.push_back(loc);
 		}
 	
-		for (std::map<FMTcoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
+		for (std::map<FMTCoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 			{
 			graphit->second = graphit->second.postSolve(p_Filter, actionmapping,
 								p_Graphs, m_Tracker);
 			}
-		FMTeventcontainer newevents;
-		for (FMTeventcontainer::iterator eventit= m_events.begin(); eventit!=m_events.end();eventit++)
+		FMTEventContainer newevents;
+		for (FMTEventContainer::iterator eventit= m_events.begin(); eventit!=m_events.end();eventit++)
 			{
-			FMTevent newevent(*eventit);
+			FMTEvent newevent(*eventit);
 			newevent.setActionId(actionmapping.at(eventit->getActionId()));
 			newevents.insert(newevent);
 			}
@@ -1589,22 +1589,22 @@ FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTMaskFilter& p_fil
 				"FMTSpatialSchedule::presolve", __LINE__, __FILE__);
 			}
 		presolvedSchedule.m_scheduleType = FMTSpatialScheduletype::FMTcomplete;
-		presolvedSchedule.FMTlayer<FMTVirtualLineGraph>::operator = (copyExtent<FMTVirtualLineGraph>());
-		boost::unordered_map<Core::FMTDevelopment, FMTcoordinate>cacheGraph;
-		std::vector<FMTcoordinate>coordinates(mapping.size());
+		presolvedSchedule.FMTLayer<FMTVirtualLineGraph>::operator = (copyExtent<FMTVirtualLineGraph>());
+		boost::unordered_map<Core::FMTDevelopment, FMTCoordinate>cacheGraph;
+		std::vector<FMTCoordinate>coordinates(mapping.size());
 		presolvedSchedule.m_Tracker = p_Graphs.getBaseSolution();
 		size_t id = 0;
-		for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphIt = mapping.begin(); graphIt != mapping.end(); ++graphIt)
+		for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphIt = mapping.begin(); graphIt != mapping.end(); ++graphIt)
 			{
-			//std::queue<Graph::FMTlinegraph::FMTvertex_descriptor> allDescriptors = graphIt->second.getLineGraph().getActiveVertices();
+			//std::queue<Graph::FMTLineGraph::FMTvertex_descriptor> allDescriptors = graphIt->second.getLineGraph().getActiveVertices();
 			const Core::FMTDevelopment& NON_PRESOLVED = graphIt->second.getLineGraph().getPeriodStopDev(0);
 			const Core::FMTActualDevelopment PRESOLVED_DEV = Core::FMTActualDevelopment(NON_PRESOLVED, getCellSize()).presolve(p_filter, p_Graphs.getModel().themes);
 			if (cacheGraph.find(PRESOLVED_DEV) == cacheGraph.end())
 			{
 				std::vector<Core::FMTActualDevelopment> actDevelopment;
 				actDevelopment.push_back(PRESOLVED_DEV);
-				Graph::FMTlinegraph local_graph(p_ReserveSize);
-				std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actDevelopment);
+				Graph::FMTLineGraph local_graph(p_ReserveSize);
+				std::queue<Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>::FMTvertex_descriptor> actives = local_graph.initialize(actDevelopment);
 				presolvedSchedule.mapping[graphIt->first] = p_Graphs.getVirtualGraph(local_graph);
 				cacheGraph[PRESOLVED_DEV] = graphIt->first;
 			}else {
@@ -1652,7 +1652,7 @@ bool FMTSpatialSchedule::inScheduleOperabilities(const std::vector<boost::unorde
 
 FMTSpatialSchedule::actionbindings FMTSpatialSchedule::getBindingActionsByPeriod(const Models::FMTModel& model) const
 {
-	std::vector<std::vector<Spatial::FMTbindingspatialaction>>allbindings;
+	std::vector<std::vector<Spatial::FMTBindingSpatialAction>>allbindings;
 	for (int period = 1 ; period < mapping.begin()->second.getLineGraph().getPeriod(); ++period)
 		{
 		allbindings.push_back(getBindingActions(model,period));
@@ -1661,7 +1661,7 @@ FMTSpatialSchedule::actionbindings FMTSpatialSchedule::getBindingActionsByPeriod
 }
 
 
-std::vector<Spatial::FMTbindingspatialaction> FMTSpatialSchedule::getBindingActions(const Models::FMTModel& model, const int& period) const
+std::vector<Spatial::FMTBindingSpatialAction> FMTSpatialSchedule::getBindingActions(const Models::FMTModel& model, const int& period) const
 	{
 	const size_t nactions = model.actions.size();
 	std::vector<double>minimalsizes(nactions,0);
@@ -1673,7 +1673,7 @@ std::vector<Spatial::FMTbindingspatialaction> FMTSpatialSchedule::getBindingActi
 	std::vector<double>minimaladjacencys(nactions, 0);
 	std::vector<double>maximaladjacencys(nactions, std::numeric_limits<double>::max());
 	std::vector<std::vector<int>>neighboring(nactions, std::vector<int>());
-	std::vector<Spatial::FMTbindingspatialaction>bindings;
+	std::vector<Spatial::FMTBindingSpatialAction>bindings;
 	try {
 		bindings.reserve(nactions);
 		for (const Core::FMTConstraint& constraint : model.constraints)
@@ -1826,7 +1826,7 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 			}
 		std::vector<int>basetargets(actiontargets);
 		double allocated_area = 0;
-		const std::vector<Spatial::FMTbindingspatialaction>bindingactions = this->getBindingActions(model, period);
+		const std::vector<Spatial::FMTBindingSpatialAction>bindingactions = this->getBindingActions(model, period);
 		if (!schedule.empty() || !schedule_only)
 		{
 			double pass_allocated_area = 0;
@@ -1834,7 +1834,7 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 			bool schedulechange = false;
 			int pass = 0;
 			boost::unordered_map<Core::FMTDevelopment, std::vector<bool>>cachedactions;
-			std::vector<std::set<Spatial::FMTcoordinate>>actions_operabilities = this->getUpdatedScheduling(model, actiontargets, cachedactions, scheduleoperabilities, schedulepass);
+			std::vector<std::set<Spatial::FMTCoordinate>>actions_operabilities = this->getUpdatedScheduling(model, actiontargets, cachedactions, scheduleoperabilities, schedulepass);
 			do {
 				pass_allocated_area = 0;
 				int action_id = 0;
@@ -1848,14 +1848,14 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 				for (const int& action_id : actiontargets)
 				{
 					const double& action_area = targets.at(action_id);
-					const std::set<Spatial::FMTcoordinate>& allowable_coordinates = actions_operabilities.at(action_id);
+					const std::set<Spatial::FMTCoordinate>& allowable_coordinates = actions_operabilities.at(action_id);
 					if (!allowable_coordinates.empty() && action_area > 0)
 					{
-						const std::set<Spatial::FMTcoordinate> spatially_allowable = this->verifySpatialFeasibility(action_id, bindingactions, period, allowable_coordinates);
+						const std::set<Spatial::FMTCoordinate> spatially_allowable = this->verifySpatialFeasibility(action_id, bindingactions, period, allowable_coordinates);
 						if (!spatially_allowable.empty())
 						{
-							std::vector<Spatial::FMTcoordinate> updatedcells;
-							const Spatial::FMTeventcontainer harvest = this->buildHarvest(action_area, bindingactions.at(action_id), p_randomEngine, spatially_allowable, period, action_id, updatedcells);
+							std::vector<Spatial::FMTCoordinate> updatedcells;
+							const Spatial::FMTEventContainer harvest = this->buildHarvest(action_area, bindingactions.at(action_id), p_randomEngine, spatially_allowable, period, action_id, updatedcells);
 							if (harvest.size() > 0)
 							{
 								const double operatedarea = this->operateEvents(harvest,model.actions.at(action_id), action_id, model.transitions[action_id], model.yields, model.themes);
@@ -2040,18 +2040,18 @@ std::map<std::string, double> FMTSpatialSchedule::greedyReferenceBuild(const Cor
 	return bestresults;
 }
 
-Graph::FMTgraphstats FMTSpatialSchedule::randomBuild(const Models::FMTModel& model,
+Graph::FMTGraphStats FMTSpatialSchedule::randomBuild(const Models::FMTModel& model,
 														std::default_random_engine& generator)
 	{
-	Graph::FMTgraphstats periodstats;
+	Graph::FMTGraphStats periodstats;
 	try {
 		assert(isPartial()||mapping.size() == _getNonSpatialCellsCount());
 		const int period = this->mapping.begin()->second.getLineGraph().getPeriod();
-		const std::vector<FMTbindingspatialaction> bindings = getBindingActions(model, period);
+		const std::vector<FMTBindingSpatialAction> bindings = getBindingActions(model, period);
 		std::uniform_int_distribution<int> dosomethingactions(1, model.getParameter(Models::FMTintmodelparameters::LENGTH));
-		for (std::map<FMTcoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit !=mapping.end(); ++graphit)
+		for (std::map<FMTCoordinate, FMTVirtualLineGraph>::iterator graphit = mapping.begin(); graphit !=mapping.end(); ++graphit)
 			{
-			Graph::FMTlinegraph local_graph = graphit->second.getLineGraph();
+			Graph::FMTLineGraph local_graph = graphit->second.getLineGraph();
 			if (dosomethingactions(generator) == 1)//Do something with 1 chance on length of model!
 			{
 				const std::vector<int> actionids = local_graph.randomBuildPeriod(model, generator,
@@ -2079,11 +2079,11 @@ Graph::FMTgraphstats FMTSpatialSchedule::randomBuild(const Models::FMTModel& mod
 	return periodstats;
 	}
 
-void FMTSpatialSchedule::setGrow(const std::vector<FMTcoordinate>& p_coordinates,
+void FMTSpatialSchedule::setGrow(const std::vector<FMTCoordinate>& p_coordinates,
 	const Models::FMTModel& p_model)
 {
 	try {
-		for (const FMTcoordinate& COORDINATE : p_coordinates)
+		for (const FMTCoordinate& COORDINATE : p_coordinates)
 			{
 			auto& VirtualGraph = mapping.at(COORDINATE);
 			for (int period = 1; period <= p_model.getParameter(Models::FMTintmodelparameters::LENGTH);++period)
@@ -2091,8 +2091,8 @@ void FMTSpatialSchedule::setGrow(const std::vector<FMTcoordinate>& p_coordinates
 				std::map<Core::FMTDevelopment, std::vector<bool>>tabouOperability;
 				const std::vector<std::vector<bool>>GRAPH_ACTIONS = VirtualGraph.getLineGraph().getactions(p_model, 
 																					period, tabouOperability);
-				FMTeventcontainer newEvents;
-				const FMTeventcontainer EVENTS_TO_ERASE = m_events.getEventsToErase(period, GRAPH_ACTIONS,
+				FMTEventContainer newEvents;
+				const FMTEventContainer EVENTS_TO_ERASE = m_events.getEventsToErase(period, GRAPH_ACTIONS,
 																COORDINATE, m_BUFFER_LOOKUP, newEvents);
 				m_events.addUpdate(newEvents, EVENTS_TO_ERASE);
 				}
@@ -2115,7 +2115,7 @@ std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>> FMTSpatialSchedul
 	try {
 		for (std::map<Core::FMTDevelopment, std::vector<bool>>::const_iterator it = p_tabou.begin(); it != p_tabou.end(); it++)
 			{
-				const std::vector<int>& DEV_OP = Graph::FMTlinegraph::getSetOperability(it->first,
+				const std::vector<int>& DEV_OP = Graph::FMTLineGraph::getSetOperability(it->first,
 					p_model, m_OperabilityCache);
 				std::vector<int>nonTabou;
 				nonTabou.reserve(DEV_OP.size());
@@ -2148,7 +2148,7 @@ void FMTSpatialSchedule::_setTabouOutOfCache(
 	}
 }
 
-void FMTSpatialSchedule::perturbGraph(const FMTcoordinate& coordinate,const int&period,const Models::FMTModel& model,
+void FMTSpatialSchedule::perturbGraph(const FMTCoordinate& coordinate,const int&period,const Models::FMTModel& model,
 	std::default_random_engine& generator, const actionbindings& bindings)
 	{
 	try {
@@ -2161,15 +2161,15 @@ void FMTSpatialSchedule::perturbGraph(const FMTcoordinate& coordinate,const int&
 		if (!actions.empty())
 			{
 			ToFitIncache = _putTabouInCache(model, tabuoperability);
-				FMTeventcontainer newevents;
-				const FMTeventcontainer eventstoerase = m_events.getEventsToErase(period, actions,
+				FMTEventContainer newevents;
+				const FMTEventContainer eventstoerase = m_events.getEventsToErase(period, actions,
 					coordinate, m_BUFFER_LOOKUP, newevents);
 				newevents = m_events.addUpdate(newevents, eventstoerase);
 
 			}else {
 			dontbuildgrowth = true;
 			}
-		Graph::FMTlinegraph newGraph = Vgraph.getLineGraph().copyToPeriod(period);
+		Graph::FMTLineGraph newGraph = Vgraph.getLineGraph().copyToPeriod(period);
 		int localperiod = period;
 		while (graphsize != newGraph.size())
 		{
@@ -2215,28 +2215,28 @@ int FMTSpatialSchedule::getPeriodWithMaximalEvents(const std::vector<bool>& acti
 }
 
 
-std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAreaConflictCoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly) const
+std::vector<std::vector<Spatial::FMTCoordinate>>FMTSpatialSchedule::getAreaConflictCoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly) const
 {
-	std::vector<std::vector<Spatial::FMTcoordinate>>coordinates;
+	std::vector<std::vector<Spatial::FMTCoordinate>>coordinates;
 	try {
 		int actionid = 0;
-		for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period-1))
+		for (const Spatial::FMTBindingSpatialAction& actionbind : bindingactions.at(period-1))
 		{
 			if (actionbind.isSpatiallyAreaBinding()||!conflictonly)
 			{
-				for (const FMTeventcontainer::const_iterator eventit : m_events.getEvents(period, actionid))
+				for (const FMTEventContainer::const_iterator eventit : m_events.getEvents(period, actionid))
 				{
 					size_t eventsize = eventit->size();
-					std::vector<Spatial::FMTcoordinate>eventcoordinates;
+					std::vector<Spatial::FMTCoordinate>eventcoordinates;
 					if (eventsize < actionbind.getMinimalSize()||!conflictonly)
 					{
-						for (const Spatial::FMTcoordinate& coordinate : eventit->getElements())
+						for (const Spatial::FMTCoordinate& coordinate : eventit->getElements())
 						{
 							eventcoordinates.push_back(coordinate);
 						}
 					}else if (eventsize > actionbind.getMaximalSize())
 						{
-						std::vector<std::set<FMTcoordinate>::const_iterator>borders = eventit->getBorders();
+						std::vector<std::set<FMTCoordinate>::const_iterator>borders = eventit->getBorders();
 						while (eventsize> actionbind.getMaximalSize()&&
 							!borders.empty())
 							{
@@ -2267,12 +2267,12 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAreaConfl
 	return coordinates;
 }
 
-std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAdjacencyConflictCoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly) const
+std::vector<std::vector<Spatial::FMTCoordinate>>FMTSpatialSchedule::getAdjacencyConflictCoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly) const
 {
-	std::vector<std::vector<Spatial::FMTcoordinate>>coordinates;
+	std::vector<std::vector<Spatial::FMTCoordinate>>coordinates;
 	try {
-			boost::unordered_set<FMTeventrelation> relations;
-			for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period - 1))
+			boost::unordered_set<FMTEventRelation> relations;
+			for (const Spatial::FMTBindingSpatialAction& actionbind : bindingactions.at(period - 1))
 			{
 			if (actionbind.isSpatiallyAdjacencyBinding())
 				{
@@ -2283,23 +2283,23 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAdjacency
 					}
 				if (!conflictonly)
 				{
-					for (FMTeventcontainer::const_iterator cit : m_events.getEvents(period, actionids))
+					for (FMTEventContainer::const_iterator cit : m_events.getEvents(period, actionids))
 					{
-						const std::vector<Spatial::FMTcoordinate>eventscoords(cit->getElements().begin(), cit->getElements().end());
+						const std::vector<Spatial::FMTCoordinate>eventscoords(cit->getElements().begin(), cit->getElements().end());
 						coordinates.push_back(eventscoords);
 					}
 					return coordinates;
 				}
 				
-				const std::vector<FMTeventcontainer::const_iterator>CONFLICTS = _getAdjacencyConflict(period, 
+				const std::vector<FMTEventContainer::const_iterator>CONFLICTS = _getAdjacencyConflict(period, 
 												static_cast<int>(actionbind.getMinimalGreenUp()),
 											static_cast<int>(actionbind.getMinimalAdjacency()),
 											static_cast<int>(actionbind.getMaximalAdjacency()),
 												actionbind.testMinimalAdjacency(),actionids);
 
-				for (FMTeventcontainer::const_iterator cit : CONFLICTS)
+				for (FMTEventContainer::const_iterator cit : CONFLICTS)
 					{
-					const std::vector<Spatial::FMTcoordinate>eventscoords(cit->getElements().begin(), cit->getElements().end());
+					const std::vector<Spatial::FMTCoordinate>eventscoords(cit->getElements().begin(), cit->getElements().end());
 					coordinates.push_back(eventscoords);
 					}
 				}
@@ -2317,23 +2317,23 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTSpatialSchedule::getAdjacency
 
 
 
-std::vector<Spatial::FMTcoordinate>FMTSpatialSchedule::getMovableCoordinates(const Models::FMTModel& model, const int& period) const
+std::vector<Spatial::FMTCoordinate>FMTSpatialSchedule::getMovableCoordinates(const Models::FMTModel& model, const int& period) const
 {
-	std::vector<Spatial::FMTcoordinate>coordinates;
+	std::vector<Spatial::FMTCoordinate>coordinates;
 	try {
 		coordinates.reserve(this->mapping.size());
 		//if (statics!=nullptr)
 		//{
-		for (const Spatial::FMTcoordinate& coordinate : m_Movables)
+		for (const Spatial::FMTCoordinate& coordinate : m_Movables)
 			{
-			std::map<Spatial::FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.find(coordinate);
+			std::map<Spatial::FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.find(coordinate);
 			if (graphit->second.getLineGraph().isMovable(model, period,m_OperabilityCache))
 				{
 				coordinates.push_back(coordinate);
 				}
 			}
 		/* } else {
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = mapping.begin(); graphit != mapping.end(); ++graphit)
 			{
 				if (graphit->second.getLineGraph().ismovable(actions, model.yields, period,operability))
 				{
@@ -2379,7 +2379,7 @@ void FMTSpatialSchedule::copyFromPartial(FMTSpatialSchedule& rhs)
 				"FMTSpatialSchedule::copyFromPartial", __LINE__, __FILE__);
 		}
 		//m_Graphs.clear();
-		for (std::map<FMTcoordinate, FMTVirtualLineGraph>::iterator graphit = rhs.mapping.begin(); graphit != rhs.mapping.end(); ++graphit)
+		for (std::map<FMTCoordinate, FMTVirtualLineGraph>::iterator graphit = rhs.mapping.begin(); graphit != rhs.mapping.end(); ++graphit)
 		{
 			mapping[graphit->first].setLineGraph(graphit->second.getLineGraph(), m_Tracker);
 		}
@@ -2430,10 +2430,10 @@ void FMTSpatialSchedule::setSpread(
 	std::vector<FMTSpatialSchedule::EventSpread>::const_iterator p_end)
 {
 	try {
-		std::map<const FMTevent*, FMTevent>ToChange;
+		std::map<const FMTEvent*, FMTEvent>ToChange;
 		for (std::vector<FMTSpatialSchedule::EventSpread>::const_iterator It = p_first; It != p_end; ++It)
 			{
-			ToChange.insert(std::pair<const FMTevent*, FMTevent>(&(*(It->m_Event)), *It->m_Event));
+			ToChange.insert(std::pair<const FMTEvent*, FMTEvent>(&(*(It->m_Event)), *It->m_Event));
 			}
 		for (std::vector<FMTSpatialSchedule::EventSpread>::const_iterator It = p_first; It != p_end; ++It)
 			{
@@ -2442,8 +2442,8 @@ void FMTSpatialSchedule::setSpread(
 				m_Tracker);
 			ToChange[&(*It->m_Event)].insert(It->m_OutEvent->first);
 			}
-		FMTeventcontainer ToRemove;
-		FMTeventcontainer ToAdd;
+		FMTEventContainer ToRemove;
+		FMTEventContainer ToAdd;
 		for (const auto& NEW_EVENT : ToChange)
 			{
 			ToRemove.insert(*NEW_EVENT.first);
@@ -2460,20 +2460,20 @@ void FMTSpatialSchedule::setSpread(
 bool FMTSpatialSchedule::canDoEventSpread(int p_period) const
 	{
 	bool canDoIt = false;
-	std::pair<FMTeventcontainer::const_iterator,
-		FMTeventcontainer::const_iterator> BOUNDS = m_events.getBounds(p_period);
-	FMTeventcontainer::iterator it = BOUNDS.first;
-	FMTeventcontainer::iterator last = BOUNDS.second;
+	std::pair<FMTEventContainer::const_iterator,
+		FMTEventContainer::const_iterator> BOUNDS = m_events.getBounds(p_period);
+	FMTEventContainer::iterator it = BOUNDS.first;
+	FMTEventContainer::iterator last = BOUNDS.second;
 	while (it != last && !canDoIt)
 		{
 			for (const auto& COORDINATE : it->getOutsideBordersPair())
 			{
-				FMTlayer::const_iterator CANDIDATE_IT = find(COORDINATE.second);
+				FMTLayer::const_iterator CANDIDATE_IT = find(COORDINATE.second);
 				if (CANDIDATE_IT != end()) // InMap
 				{
-					FMTlayer::const_iterator BASE_IT = find(COORDINATE.first);
-					const Graph::FMTlinegraph& CANDIDATE = CANDIDATE_IT->second.getLineGraph();
-					const Graph::FMTlinegraph& BASE = BASE_IT->second.getLineGraph();
+					FMTLayer::const_iterator BASE_IT = find(COORDINATE.first);
+					const Graph::FMTLineGraph& CANDIDATE = CANDIDATE_IT->second.getLineGraph();
+					const Graph::FMTLineGraph& BASE = BASE_IT->second.getLineGraph();
 					if (CANDIDATE.isOnlyGrow() &&
 						BASE.isSameBase(CANDIDATE))
 					{
@@ -2491,21 +2491,21 @@ std::vector<FMTSpatialSchedule::EventSpread> FMTSpatialSchedule::getPotentialSpr
 {
 	std::vector<FMTSpatialSchedule::EventSpread>ValidSpreads;
 	try {
-		std::pair<FMTeventcontainer::const_iterator,
-			FMTeventcontainer::const_iterator> BOUNDS = m_events.getBounds(p_period);
-		FMTeventcontainer::iterator it = BOUNDS.first;
-		FMTeventcontainer::iterator last = BOUNDS.second;
-		std::set<FMTcoordinate>selected;
+		std::pair<FMTEventContainer::const_iterator,
+			FMTEventContainer::const_iterator> BOUNDS = m_events.getBounds(p_period);
+		FMTEventContainer::iterator it = BOUNDS.first;
+		FMTEventContainer::iterator last = BOUNDS.second;
+		std::set<FMTCoordinate>selected;
 		for (;it!=last;++it)
 			{
 			for (const auto& COORDINATE : it->getOutsideBordersPair())
 				{
-				FMTlayer::iterator CANDIDATE_IT = find(COORDINATE.second);
+				FMTLayer::iterator CANDIDATE_IT = find(COORDINATE.second);
 				if (CANDIDATE_IT!=end()) // InMap
 					{
-					FMTlayer::const_iterator BASE_IT = find(COORDINATE.first);
-					const Graph::FMTlinegraph& CANDIDATE = CANDIDATE_IT->second.getLineGraph();
-					const Graph::FMTlinegraph& BASE = BASE_IT->second.getLineGraph();
+					FMTLayer::const_iterator BASE_IT = find(COORDINATE.first);
+					const Graph::FMTLineGraph& CANDIDATE = CANDIDATE_IT->second.getLineGraph();
+					const Graph::FMTLineGraph& BASE = BASE_IT->second.getLineGraph();
 					if (CANDIDATE.isOnlyGrow() &&
 						BASE.isSameBase(CANDIDATE)&&
 						selected.insert(CANDIDATE_IT->first).second)
@@ -2605,7 +2605,7 @@ void FMTSpatialSchedule::setStaticsMovableCoordinates(const Models::FMTModel& p_
 		try {
 			m_Movables.reserve(this->mapping.size());
 			const int lastPeriod = this->mapping.begin()->second.getLineGraph().getPeriod() - 1;
-			for (std::map<FMTcoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			for (std::map<FMTCoordinate, FMTVirtualLineGraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
 				for (int period = 1; period <= lastPeriod; ++period)
 				{

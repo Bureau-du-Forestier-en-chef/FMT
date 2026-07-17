@@ -95,24 +95,24 @@ namespace R
 	template <class T>
 	void define_FMTlayer(const char* name)
 		{
-		Rcpp::class_<Spatial::FMTlayer<T>>(name, "@DocString(FMTlayer)")
-				.constructor("@DocString(FMTlayer())")
-				.method("getXSize", &Spatial::FMTlayer<T>::getXSize,
-					"@DocString(FMTlayer::GetXSize)")
-				.method("getYSize", &Spatial::FMTlayer<T>::getYSize,
-					"@DocString(FMTlayer::GetYSize)")
-				.method("getgeotransform", &Spatial::FMTlayer<T>::getGeoTransform,
-					"@DocString(FMTlayer::getgeotransform)")
-				.method("getprojection", &Spatial::FMTlayer<T>::getProjection,
-					"@DocString(FMTlayer::getprojection)")
-				.method("getmapping", &Spatial::FMTlayer<T>::getMapping,
-					"@DocString(FMTlayer::getmapping)")
-				.method("area", &Spatial::FMTlayer<T>::area,
-					"@DocString(FMTlayer::area)")
-				.method("getcellsize", &Spatial::FMTlayer<T>::getCellSize,
-					"@DocString(FMTlayer::getcellsize)")
-				.method("size", &Spatial::FMTlayer<T>::size,
-					"@DocString(FMTlayer::size)");
+		Rcpp::class_<Spatial::FMTLayer<T>>(name, "@DocString(FMTLayer)")
+				.constructor("@DocString(FMTLayer())")
+				.method("getXSize", &Spatial::FMTLayer<T>::getXSize,
+					"@DocString(FMTLayer::GetXSize)")
+				.method("getYSize", &Spatial::FMTLayer<T>::getYSize,
+					"@DocString(FMTLayer::GetYSize)")
+				.method("getgeotransform", &Spatial::FMTLayer<T>::getGeoTransform,
+					"@DocString(FMTLayer::getgeotransform)")
+				.method("getprojection", &Spatial::FMTLayer<T>::getProjection,
+					"@DocString(FMTLayer::getprojection)")
+				.method("getmapping", &Spatial::FMTLayer<T>::getMapping,
+					"@DocString(FMTLayer::getmapping)")
+				.method("area", &Spatial::FMTLayer<T>::area,
+					"@DocString(FMTLayer::area)")
+				.method("getcellsize", &Spatial::FMTLayer<T>::getCellSize,
+					"@DocString(FMTLayer::getcellsize)")
+				.method("size", &Spatial::FMTLayer<T>::size,
+					"@DocString(FMTLayer::size)");
 		}
 }
 

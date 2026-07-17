@@ -16,21 +16,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 
-class FMTsaschedule
+class FMTSaSchedule
 //Abstract class for cooling schedule
     {
     public:
-        FMTsaschedule(const std::string& typesc);//Constructor
-        FMTsaschedule()=default;//Constructor
+        FMTSaSchedule(const std::string& typesc);//Constructor
+        FMTSaSchedule()=default;//Constructor
         std::string getScheduleType()const;
         size_t getLevel()const;
         void setInitialTemperature(const double& Temp);
-        virtual~FMTsaschedule();//Destructor
+        virtual~FMTSaSchedule();//Destructor
         virtual void reduceTemp();//
         double getTemp() const;//
         void setTemp( double p_Temp);
         double getInitialTemp() const;//
-        virtual std::unique_ptr<FMTsaschedule> Clone()const;
+        virtual std::unique_ptr<FMTSaSchedule> Clone()const;
     protected:
         std::string m_ScheduleType;
         size_t m_Level;

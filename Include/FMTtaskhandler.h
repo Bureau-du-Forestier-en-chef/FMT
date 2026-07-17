@@ -17,54 +17,54 @@ namespace boost
 /// Namespace for parallel tasking may include multithreading / multiprocessing
 namespace Parallel
 {
-	class FMTtask;
-	// DocString: FMTtaskhandler
+	class FMTTask;
+	// DocString: FMTTaskHandler
 	/**
 	Main class for running concurrent tasks at the same time.
-	It uses the virtual function split() from FMTtask to split the task in multiple task and can run it concurrently
+	It uses the virtual function split() from FMTTask to split the task in multiple task and can run it concurrently
 	*/
-	class FMTEXPORT FMTtaskhandler : public Core::FMTObject
+	class FMTEXPORT FMTTaskHandler : public Core::FMTObject
 	{
 	
 	public:
-		// DocString: FMTtaskhandler::FMTtaskhandler(const std::unique_ptr<FMTtask>&,unsigned int)
+		// DocString: FMTTaskHandler::FMTTaskHandler(const std::unique_ptr<FMTTask>&,unsigned int)
 		/**
 		Construct the handler with the number of threads you want.
 		*/
-		FMTtaskhandler(const std::unique_ptr<FMTtask>& maintask,
+		FMTTaskHandler(const std::unique_ptr<FMTTask>& maintask,
 						unsigned int maxthread = 0);
-		// DocString: ~FMTtaskhandler()
+		// DocString: ~FMTTaskHandler()
 		/**
-		Default destructor for FMTtaskhandler.
+		Default destructor for FMTTaskHandler.
 		*/
-		~FMTtaskhandler()=default;
-		// DocString: FMTtaskhandler::FMTtaskhandler(const Parallel::FMTtask&,unsigned int)
+		~FMTTaskHandler()=default;
+		// DocString: FMTTaskHandler::FMTTaskHandler(const Parallel::FMTTask&,unsigned int)
 		/**
-		Abstract constructor for Python and R...you need to pass a FMTtask to this constructor.
+		Abstract constructor for Python and R...you need to pass a FMTTask to this constructor.
 		*/
-		FMTtaskhandler(const FMTtask& maintask,
+		FMTTaskHandler(const FMTTask& maintask,
 			unsigned int maxthread = 0);
-		// DocString: FMTtaskhandler::FMTtaskhandler()
+		// DocString: FMTTaskHandler::FMTTaskHandler()
 		/**
-		Default constructor for FMTtaskhandler
+		Default constructor for FMTTaskHandler
 		*/
-		FMTtaskhandler() = default;
-		// DocString: FMTtaskhandler::FMTtaskhandler(const FMTtaskhandler)
+		FMTTaskHandler() = default;
+		// DocString: FMTTaskHandler::FMTTaskHandler(const FMTTaskHandler)
 		/**
-		Default copy constructor for FMTtaskhandler
+		Default copy constructor for FMTTaskHandler
 		*/
-		FMTtaskhandler(const FMTtaskhandler& rhs);
-		// DocString: FMTtaskhandler::operator=
+		FMTTaskHandler(const FMTTaskHandler& rhs);
+		// DocString: FMTTaskHandler::operator=
 		/**
-		Default copy assignement for FMTtaskhandler
+		Default copy assignement for FMTTaskHandler
 		*/
-		FMTtaskhandler& operator =(const FMTtaskhandler& rhs);
-		// DocString: FMTtaskhandler::getTasks
+		FMTTaskHandler& operator =(const FMTTaskHandler& rhs);
+		// DocString: FMTTaskHandler::getTasks
 		/**
 		Return reference to the task handled by the task handler.
 		*/
-		const std::vector<std::unique_ptr<FMTtask>>& getTasks() const;
-		// DocString: FMTtaskhandler::getTasksFromDynamicCast
+		const std::vector<std::unique_ptr<FMTTask>>& getTasks() const;
+		// DocString: FMTTaskHandler::getTasksFromDynamicCast
 		/**
 		Return reference to the task already in the ptrype.
 		*/
@@ -72,52 +72,52 @@ namespace Parallel
 		const std::vector<const ptrtype*> getTasksFromDynamicCast() const
 		{
 			std::vector<const ptrtype*>castedptr;
-			for (const std::unique_ptr<FMTtask>& task : alltasks)
+			for (const std::unique_ptr<FMTTask>& task : alltasks)
 			{
 				castedptr.push_back(dynamic_cast<const ptrtype*>(task.get()));
 			}
 			return castedptr;
 		}
-		// DocString: FMTtaskhandler::conccurentRun
+		// DocString: FMTTaskHandler::conccurentRun
 		/**
 		Will use the split task virtual function to
 		generate all the tasks at the same time.
 		*/
 		void conccurentRun();
-		// DocString: FMTtaskhandler::onDemandRun
+		// DocString: FMTTaskHandler::onDemandRun
 		/**
 		Will use the spawn task virtual function to generate task from the master task and add to a list
 		If the task is completed it will be removed from the list.
 		*/
 		void onDemandRun();
-		// DocString: FMTtaskhandler::passInLogger
+		// DocString: FMTTaskHandler::passInLogger
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
 	private:
-		// DocString: FMTtaskhandler::maxnumberofthread
+		// DocString: FMTTaskHandler::maxnumberofthread
 		///Maximal number of threads
 		unsigned int maxnumberofthread;
-		// DocString: FMTtaskhandler::alltasks
+		// DocString: FMTTaskHandler::alltasks
 		///All the tasks that are running
-		std::vector<std::unique_ptr<FMTtask>>alltasks;
-		// DocString: FMTtaskhandler::splitTasks
+		std::vector<std::unique_ptr<FMTTask>>alltasks;
+		// DocString: FMTTaskHandler::splitTasks
 		/**
 		Will split all task in alltasks and replace it with new splitted tasks
 		*/
 		void splitTasks();
-		// DocString: FMTtaskhandler::finalize
+		// DocString: FMTTaskHandler::finalize
 		/**
-		This function will call the FMTtask::finalize function when the last task is done.
+		This function will call the FMTTask::finalize function when the last task is done.
 		*/
-		void finalize(std::unique_ptr<FMTtask>& lasttask);
-		// DocString: FMTtaskhandler::logTaskTime
+		void finalize(std::unique_ptr<FMTTask>& lasttask);
+		// DocString: FMTTaskHandler::logTaskTime
 		/**
 		Juste write down all the time it took to run all tasks
 		*/
 		void logTaskTime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const;
-		// DocString: FMTtaskhandler::_interruptWork
+		// DocString: FMTTaskHandler::_interruptWork
 		/**
 		@brief interupt the work of a thread in case on a exception to make sure to dont get a std::terminate if joinable.
 		@p_threads the threads to interrupt

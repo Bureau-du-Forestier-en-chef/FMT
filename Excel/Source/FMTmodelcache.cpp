@@ -50,7 +50,7 @@ namespace Wrapper
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
 		SerieCachemtx(new boost::recursive_mutex()),
-		OAcache(new std::vector<Heuristics::FMToperatingarea>()),
+		OAcache(new std::vector<Heuristics::FMTOperatingArea>()),
 		all_exceptions()
 
 	{
@@ -78,11 +78,11 @@ namespace Wrapper
 			SerieCache = rhs.SerieCache;
 			Models::FMTLpModel::operator=(rhs);
 			globalmask = rhs.globalmask;
-			OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
+			OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMTOperatingArea>>(new std::vector<Heuristics::FMTOperatingArea>(*rhs.OAcache)));
 			all_exceptions = rhs.all_exceptions;
 			if (rhs.map)
 				{
-				map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
+				map = std::move(std::unique_ptr<Spatial::FMTForest>(new Spatial::FMTForest(*rhs.map)));
 				}
 			//allocateressource();
 		}
@@ -113,9 +113,9 @@ namespace Wrapper
 		boost::lock_guard<boost::recursive_mutex> guard2(*rhs.mtx);
 		if (rhs.map)
 		{
-			map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
+			map = std::move(std::unique_ptr<Spatial::FMTForest>(new Spatial::FMTForest(*rhs.map)));
 		}
-		OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
+		OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMTOperatingArea>>(new std::vector<Heuristics::FMTOperatingArea>(*rhs.OAcache)));
 		//allocateressource();
 	}
 
@@ -154,7 +154,7 @@ namespace Wrapper
 			if (!map && !maplocation.empty())
 				{
 				Parser::FMTAreaParser areaparser;
-				map = std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(areaparser.vectormaptoFMTforest(maplocation,250,themes,"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
+				map = std::unique_ptr<Spatial::FMTForest>(new Spatial::FMTForest(areaparser.vectormaptoFMTforest(maplocation,250,themes,"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
 				}
 		}catch (...)
 		{
@@ -257,7 +257,7 @@ namespace Wrapper
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
 		SerieCachemtx(new boost::recursive_mutex()),
-		OAcache(new std::vector<Heuristics::FMToperatingarea>()),
+		OAcache(new std::vector<Heuristics::FMTOperatingArea>()),
 		all_exceptions()
 	{
 		try {
@@ -593,7 +593,7 @@ namespace Wrapper
 	try{
 		if (!maplocation.empty())
 		{
-			std::vector<Heuristics::FMToperatingareascheme>allscheme;
+			std::vector<Heuristics::FMTOperatingAreaScheme>allscheme;
 			std::vector<size_t>allmasks;
 			boost::unordered_map<Core::FMTMask, size_t>masklocation;
 			size_t idofit = 0;
@@ -603,10 +603,10 @@ namespace Wrapper
 				const Core::FMTMask subset = themeSelectionToMask(thselection);
 				if (!subset.empty())
 				{
-					std::vector<Heuristics::FMToperatingarea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMTOperatingAreaComparator(subset));
+					std::vector<Heuristics::FMTOperatingArea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMTOperatingAreaComparator(subset));
 					if (itof == OAcache->end())
 						{
-						allscheme.push_back(Heuristics::FMToperatingareascheme(Heuristics::FMToperatingarea(subset, perimeters), 2, 6, 6, 1, 1, 1));
+						allscheme.push_back(Heuristics::FMTOperatingAreaScheme(Heuristics::FMTOperatingArea(subset, perimeters), 2, 6, 6, 1, 1, 1));
 					}else {
 						const size_t location = std::distance(OAcache->cbegin(), itof);
 						allmasks.push_back(location);
@@ -620,8 +620,8 @@ namespace Wrapper
 			if (!allscheme.empty())
 				{
 				Parser::FMTAreaParser areaparser;
-				const std::vector<Heuristics::FMToperatingareascheme> Ioop = areaparser.getSchemeNeighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
-				for (const Heuristics::FMToperatingareascheme& scheme : Ioop)
+				const std::vector<Heuristics::FMTOperatingAreaScheme> Ioop = areaparser.getSchemeNeighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
+				for (const Heuristics::FMTOperatingAreaScheme& scheme : Ioop)
 					{
 					allmasks.push_back(OAcache->size());
 					masklocation[scheme.getMask()] = OAcache->size();
@@ -725,7 +725,7 @@ namespace Wrapper
 					!(subset.empty() && !themeselection.empty()))
 				{
 					const Core::FMTDevelopment adev(subset, age, 0, period);
-					const Graph::FMTgraphvertextoyield graph_info = getGraphVertexToYield();
+					const Graph::FMTGraphVertexToYield graph_info = getGraphVertexToYield();
 					const Core::FMTYieldRequest yieldrequest = adev.getYieldRequest(&graph_info);
 					value = getyieldfrommodel(yieldrequest, yieldname);
 				}
@@ -1039,7 +1039,7 @@ namespace Wrapper
 	{
 		std::vector<int>stats;
 		try {
-			Graph::FMTgraphstats graphstats = FMTSrModel::getStats();
+			Graph::FMTGraphStats graphstats = FMTSrModel::getStats();
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
 			stats.push_back(graphstats.vertices);
@@ -1059,7 +1059,7 @@ namespace Wrapper
 		std::vector<int>stats;
 		try {
 			const Core::FMTMask SUBSET = themeSelectionToMask(p_ThemeSelection);
-			Graph::FMTgraphstats graphstats = FMTSrModel::getGraphStats(SUBSET);
+			Graph::FMTGraphStats graphstats = FMTSrModel::getGraphStats(SUBSET);
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
 			stats.push_back(graphstats.vertices);

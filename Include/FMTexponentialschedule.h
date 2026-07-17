@@ -16,13 +16,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 
-class FMTexponentialschedule : public FMTsaschedule
+class FMTExponentialSchedule : public FMTSaSchedule
     {
     public:
-        FMTexponentialschedule();
-        ~FMTexponentialschedule()=default;
+        FMTExponentialSchedule();
+        ~FMTExponentialSchedule()=default;
         void reduceTemp();
-		std::unique_ptr<FMTsaschedule> Clone()const;
+		std::unique_ptr<FMTSaSchedule> Clone()const;
     private:
         static const double m_ANNEALING_RATE;
 

@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 #ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
 
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 	{
 		std::string PRIMARYm_location;
 		std::string CARTE;
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
 		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARYm_location).parent_path();
 		const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(CARTE)).string();
 		const int SIZE = 2000;
-		const Spatial::FMTforest FOREST = areaParser.vectormaptoFMTforest(MAPm_location, SIZE, Simulation.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
+		const Spatial::FMTForest FOREST = areaParser.vectormaptoFMTforest(MAPm_location, SIZE, Simulation.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "STANLOCK");
 		Simulation.setInitialMapping(FOREST);
 		std::vector<Core::FMTTransition>NewTransitions;
 		for (const Core::FMTTransition& TRANSITION : Simulation.getTransitions())

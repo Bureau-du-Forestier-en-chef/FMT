@@ -37,7 +37,7 @@ namespace Spatial
 		return Rules;
 	}
 
-	double FMTPatchRules::evaluate(const FMTeventcontainer& p_events,
+	double FMTPatchRules::evaluate(const FMTEventContainer& p_events,
 		const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
 		double cost = 0;
@@ -62,7 +62,7 @@ namespace Spatial
 		return cost;
 	}
 
-	bool FMTPatchRules::_tooSmall(const FMTevent& p_event, size_t& p_cost) const
+	bool FMTPatchRules::_tooSmall(const FMTEvent& p_event, size_t& p_cost) const
 	{
 		bool use = false;
 		const size_t EVENT_SIZE = p_event.size();
@@ -73,7 +73,7 @@ namespace Spatial
 		}
 		return use;
 	}
-	bool FMTPatchRules::_tooBig(const FMTevent& p_event, size_t& p_cost) const
+	bool FMTPatchRules::_tooBig(const FMTEvent& p_event, size_t& p_cost) const
 	{
 		bool use = false;
 		const size_t EVENT_SIZE = p_event.size();
@@ -87,8 +87,8 @@ namespace Spatial
 	}
 
 
-	void  FMTPatchRules::fillTooSmallEvents(std::vector<std::set<FMTevent>::iterator>& p_SmallEvents,
-		FMTeventcontainer& p_events) const
+	void  FMTPatchRules::fillTooSmallEvents(std::vector<std::set<FMTEvent>::iterator>& p_SmallEvents,
+		FMTEventContainer& p_events) const
 	{
 		if (_isSizeUsed())
 			{
@@ -103,8 +103,8 @@ namespace Spatial
 			}
 			}
 	}
-	void  FMTPatchRules::fillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
-		FMTeventcontainer& p_events) const
+	void  FMTPatchRules::fillTooBigEvents(std::vector<std::set<FMTEvent>::iterator>& p_BigEvents,
+		FMTEventContainer& p_events) const
 	{
 		if (_isSizeUsed())
 		{
@@ -120,14 +120,14 @@ namespace Spatial
 		}
 	}
 
-	void FMTPatchRules::fillDispersionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispersion,
-		FMTeventcontainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const
+	void FMTPatchRules::fillDispersionEvents(std::vector<std::set<FMTEvent>::iterator>& p_Dispersion,
+		FMTEventContainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
 		if (_isGroupUsed())
 			{
 			for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 				{
-				const std::vector < std::set<FMTevent>::iterator > CONFLICTS =
+				const std::vector < std::set<FMTEvent>::iterator > CONFLICTS =
 					p_events.getDispersionConflicts(m_RulesId, p_SpatialGraphs,
 						m_GroupTheme, period,
 						period + m_GroupGreenUp, m_MaximalGroupDistance);
@@ -137,7 +137,7 @@ namespace Spatial
 	}
 
 
-	double FMTPatchRules::_evaluateSize(const FMTeventcontainer& p_events) const
+	double FMTPatchRules::_evaluateSize(const FMTEventContainer& p_events) const
 	{
 		double cost = 0;
 		try {
@@ -162,14 +162,14 @@ namespace Spatial
 		return cost;
 	}
 
-	bool FMTPatchRules::_isTooClose(const FMTevent& p_event, const FMTeventcontainer& p_events, size_t& p_cost) const
+	bool FMTPatchRules::_isTooClose(const FMTEvent& p_event, const FMTEventContainer& p_events, size_t& p_cost) const
 		{
 		bool TooClose = false;
 		if (_hasMinimalAdjacency())
 			{
 			for (int period = p_event.getPeriod(); period <= p_event.getPeriod() + m_GreenUp; ++period)
 				{
-				for (const FMTeventcontainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
+				for (const FMTEventContainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
 					{
 					if (*eventIt != p_event &&
 						p_event.within(m_MinimalAdjacency, *eventIt))
@@ -184,7 +184,7 @@ namespace Spatial
 		}
 
 
-	double FMTPatchRules::_evaluateAdjacency(const FMTeventcontainer& p_events) const
+	double FMTPatchRules::_evaluateAdjacency(const FMTEventContainer& p_events) const
 	{
 		double cost = 0;
 		try {
@@ -192,7 +192,7 @@ namespace Spatial
 				{
 				for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 					{
-					for (const FMTeventcontainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
+					for (const FMTEventContainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
 						{
 						
 						}
@@ -217,25 +217,25 @@ namespace Spatial
 				}
 
 
-				for (const FMTeventcontainer::const_iterator eventit : m_events.getEvents(p_period, p_actions))
+				for (const FMTEventContainer::const_iterator eventit : m_events.getEvents(p_period, p_actions))
 				{
 					const uint16_t containerlookup = static_cast<uint16_t>(baselookup + eventit->size());
 
 					//0//-//1//
 					//-//-//-//
 					//2//-//3//
-					const std::array<FMTcoordinate, 4> enveloppe = eventit->getEnveloppe();
+					const std::array<FMTCoordinate, 4> enveloppe = eventit->getEnveloppe();
 					const uint16_t minimalx = containerlookup < enveloppe.at(0).getX() ? enveloppe.at(0).getX() - containerlookup : 0;
 					const uint16_t minimaly = containerlookup < enveloppe.at(0).getY() ? enveloppe.at(0).getY() - containerlookup : 0;
 					const uint16_t maximalx = enveloppe.at(3).getX() + containerlookup;
 					const uint16_t maximaly = enveloppe.at(3).getY() + containerlookup;
-					const FMTcoordinate minimalcoord(minimalx, minimaly);
-					const FMTcoordinate maximalcoord(maximalx, maximaly);
+					const FMTCoordinate minimalcoord(minimalx, minimaly);
+					const FMTCoordinate maximalcoord(maximalx, maximaly);
 					double totalwithincount = 0;
 					for (int gupperiod = std::max(1, p_period - p_greenup); gupperiod <= p_period; ++gupperiod)
 					{
 						const double periodfactor = static_cast<double>((p_greenup - (p_period - gupperiod))) + 1;
-						for (const FMTeventcontainer::const_iterator eventof : m_events.getEvents(gupperiod, p_actions, minimalcoord, maximalcoord))
+						for (const FMTEventContainer::const_iterator eventof : m_events.getEvents(gupperiod, p_actions, minimalcoord, maximalcoord))
 						{
 							if (eventit != eventof)//They will have the same address if it's the same event!
 							{
@@ -263,7 +263,7 @@ namespace Spatial
 			}
 		return cost;
 	}
-	double FMTPatchRules::_evaluateGroup(const FMTeventcontainer& p_events,
+	double FMTPatchRules::_evaluateGroup(const FMTEventContainer& p_events,
 		const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
 		double cost = 0;

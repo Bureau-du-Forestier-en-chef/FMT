@@ -19,19 +19,19 @@ namespace Spatial
    
 
 
-    bool FMTeventcontainer::operator==(const FMTeventcontainer& rhs) const
+    bool FMTEventContainer::operator==(const FMTEventContainer& rhs) const
     {
         return m_events==rhs.m_events;
     }
 
-    void FMTeventcontainer::swap(FMTeventcontainer& rhs)
+    void FMTEventContainer::swap(FMTEventContainer& rhs)
     {
 		m_events.swap(rhs.m_events);
     }
 
-	FMTeventcontainer::const_iterator FMTeventcontainer::find(const int & period, const FMTcoordinate & coord) const
+	FMTEventContainer::const_iterator FMTEventContainer::find(const int & period, const FMTCoordinate & coord) const
 	{
-		std::vector<FMTeventcontainer::const_iterator> eventsfound = getEvents(period, coord);
+		std::vector<FMTEventContainer::const_iterator> eventsfound = getEvents(period, coord);
 		if (eventsfound.size() > 1)
 		{
 			return eventsfound.at(0);
@@ -42,56 +42,56 @@ namespace Spatial
 		}
 	}
 
-	void FMTeventcontainer::merge(const FMTeventcontainer & levents)
+	void FMTEventContainer::merge(const FMTEventContainer & levents)
 	{
 		m_events.insert(levents.begin(), levents.end());
 	}
 
-	void FMTeventcontainer::erase(const FMTevent& event)
+	void FMTEventContainer::erase(const FMTEvent& event)
     {
 		m_events.erase(event);
     }
 
-	void FMTeventcontainer::clear()
+	void FMTEventContainer::clear()
 	{
 		m_events.clear();
 	}
 
-    FMTeventcontainer::const_iterator FMTeventcontainer::erase(const FMTeventcontainer::const_iterator event)
+    FMTEventContainer::const_iterator FMTEventContainer::erase(const FMTEventContainer::const_iterator event)
     {
         return m_events.erase(event);
     }
 
-    int FMTeventcontainer::lastPeriod()const
+    int FMTEventContainer::lastPeriod()const
     {
         return m_events.rbegin()->getPeriod();
     }
 
-	void FMTeventcontainer::insert(const FMTevent& event)
+	void FMTEventContainer::insert(const FMTEvent& event)
 	{
 		m_events.insert(event);
 	}
 
-	FMTeventcontainer::const_iterator FMTeventcontainer::begin() const { return m_events.cbegin(); }
+	FMTEventContainer::const_iterator FMTEventContainer::begin() const { return m_events.cbegin(); }
 
-	FMTeventcontainer::const_iterator FMTeventcontainer::end() const { return m_events.cend(); }
+	FMTEventContainer::const_iterator FMTEventContainer::end() const { return m_events.cend(); }
 
-	bool FMTeventcontainer::empty() const { return m_events.empty(); }
+	bool FMTEventContainer::empty() const { return m_events.empty(); }
 
-	size_t FMTeventcontainer::size() const { return m_events.size(); }
+	size_t FMTEventContainer::size() const { return m_events.size(); }
 
-	FMTeventcontainer::const_iterator FMTeventcontainer::find(const FMTevent& event) const { return m_events.find(event); }
+	FMTEventContainer::const_iterator FMTEventContainer::find(const FMTEvent& event) const { return m_events.find(event); }
 
-    int FMTeventcontainer::firstPeriod()const
+    int FMTEventContainer::firstPeriod()const
     {
         return m_events.begin()->getPeriod();
     }
 
-	void FMTeventcontainer::erase(const FMTcoordinate& coord,const std::vector<FMTeventcontainer::iterator>& iterators)
+	void FMTEventContainer::erase(const FMTCoordinate& coord,const std::vector<FMTEventContainer::iterator>& iterators)
 	{
-		std::queue<FMTevent>emodif;
-		std::vector<FMTeventcontainer::iterator>::const_iterator lowerb = iterators.begin();
-		std::vector<FMTeventcontainer::iterator>::const_iterator upperb = iterators.end();
+		std::queue<FMTEvent>emodif;
+		std::vector<FMTEventContainer::iterator>::const_iterator lowerb = iterators.begin();
+		std::vector<FMTEventContainer::iterator>::const_iterator upperb = iterators.end();
 		while (lowerb != upperb)
 		{
 			if ((*lowerb)->contain(coord))
@@ -110,7 +110,7 @@ namespace Spatial
 		}
 		while (!emodif.empty())
 		{
-			FMTevent event = emodif.front();
+			FMTEvent event = emodif.front();
 			emodif.pop();
 			if (!event.willSplitEvent(coord))
 			{
@@ -123,7 +123,7 @@ namespace Spatial
 			else
 			{
 				event.erase(coord);
-				std::vector<FMTevent> splittedevents;
+				std::vector<FMTEvent> splittedevents;
 				if (event.splitEvent(splittedevents))
 				{
 					for (auto e : splittedevents)
@@ -146,7 +146,7 @@ namespace Spatial
 		}
 	}
 
-	void FMTeventcontainer::eraseCoordinate(const FMTcoordinate& coord, const int& periodStart, const std::vector<std::vector<bool>>& actionstarget)
+	void FMTEventContainer::eraseCoordinate(const FMTCoordinate& coord, const int& periodStart, const std::vector<std::vector<bool>>& actionstarget)
 		{
 		const int lastPeriod = static_cast<int>(actionstarget.size()) + periodStart;
 		size_t periodid = 0;
@@ -154,7 +154,7 @@ namespace Spatial
 			{
 			if (!actionstarget.at(periodid).empty())
 				{
-				const std::vector<FMTeventcontainer::const_iterator> iterators = getEvents(period, actionstarget.at(periodid));
+				const std::vector<FMTEventContainer::const_iterator> iterators = getEvents(period, actionstarget.at(periodid));
 				if (!iterators.empty())
 					{
 					erase(coord, iterators);
@@ -165,14 +165,14 @@ namespace Spatial
 			}
 		}
 
-	/*void FMTeventcontainer::eraseCoordinate (const FMTcoordinate& coord, const int& periodStart)
+	/*void FMTEventContainer::eraseCoordinate (const FMTCoordinate& coord, const int& periodStart)
     {
         const int lperiod=lastPeriod();
         for (int period=periodStart;period<=lperiod;++period)
         {
-            const FMTeventcontainer::const_iterator upper = upperBound(period);
-            FMTeventcontainer::const_iterator lower = lowerBound(period);
-            std::queue<FMTevent> emodif;
+            const FMTEventContainer::const_iterator upper = upperBound(period);
+            FMTEventContainer::const_iterator lower = lowerBound(period);
+            std::queue<FMTEvent> emodif;
             while (lower != upper)
             {
                 if (lower->contain(coord))
@@ -188,7 +188,7 @@ namespace Spatial
             }
             while (!emodif.empty())
             {
-                FMTevent event = emodif.front();
+                FMTEvent event = emodif.front();
                 emodif.pop();
                 if (!event.potentialysplitevent(coord))
                 {
@@ -201,7 +201,7 @@ namespace Spatial
                 else
                 {
                     event.erase(coord);
-                    std::vector<FMTevent> splittedevents;
+                    std::vector<FMTEvent> splittedevents;
                     if (event.splitEvent(1,splittedevents))
                     {
                         for (auto e : splittedevents)
@@ -224,21 +224,21 @@ namespace Spatial
         }
     }*/
 
-    std::pair<FMTeventcontainer::const_iterator,FMTeventcontainer::const_iterator> FMTeventcontainer::getBounds(const int& period) const
+    std::pair<FMTEventContainer::const_iterator,FMTEventContainer::const_iterator> FMTEventContainer::getBounds(const int& period) const
     {
-        return std::pair<FMTeventcontainer::const_iterator,FMTeventcontainer::const_iterator>(lowerBound(period),upperBound(period));
+        return std::pair<FMTEventContainer::const_iterator,FMTEventContainer::const_iterator>(lowerBound(period),upperBound(period));
     }
 
 
 
-	void FMTeventcontainer::pushAction(
-		const std::vector<FMTeventcontainer::const_iterator>& iterators,
-		const FMTcoordinate& coord, const int& period, 
+	void FMTEventContainer::pushAction(
+		const std::vector<FMTEventContainer::const_iterator>& iterators,
+		const FMTCoordinate& coord, const int& period, 
 		const int& actionid,size_t neighborsize, size_t p_GraphFamily)
 	{
 		try
 		{
-			std::vector<FMTeventcontainer::const_iterator> aroundevents;
+			std::vector<FMTEventContainer::const_iterator> aroundevents;
 			aroundevents.reserve(8);
 			if(neighborsize>0 && !iterators.empty())
 			{
@@ -246,15 +246,15 @@ namespace Spatial
 			}
 			if (aroundevents.empty())
 			{
-				FMTevent newevent(coord, actionid, period, p_GraphFamily);
+				FMTEvent newevent(coord, actionid, period, p_GraphFamily);
 				//newevent.insert(coord);
 				insert(newevent);
 			}
 			else
 			{
-				FMTevent combinedevents(coord, actionid, period, p_GraphFamily);
+				FMTEvent combinedevents(coord, actionid, period, p_GraphFamily);
 				//combinedevents.insert(coord);
-				for (FMTeventcontainer::const_iterator e : aroundevents)
+				for (FMTEventContainer::const_iterator e : aroundevents)
 				{
 					combinedevents.merge(*e);
 					erase(*e);
@@ -262,19 +262,19 @@ namespace Spatial
 				insert(combinedevents);
 			}
 		}catch(...){
-			_exhandler->raiseFromCatch("","FMTeventcontainer::pushAction", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTEventContainer::pushAction", __LINE__, __FILE__);
 		}
 	}
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getAroundEvents(const std::vector<FMTeventcontainer::const_iterator>& iterators,
-		const FMTcoordinate& coord, const size_t& neighborsize) const
+	std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getAroundEvents(const std::vector<FMTEventContainer::const_iterator>& iterators,
+		const FMTCoordinate& coord, const size_t& neighborsize) const
 	{
-		std::vector<FMTeventcontainer::const_iterator>aroundevents;
+		std::vector<FMTEventContainer::const_iterator>aroundevents;
 		aroundevents.reserve(8);
 		try{
-				const FMTcoordinate ndistcalculator = FMTcoordinate(neighborsize+1,neighborsize+1);
+				const FMTCoordinate ndistcalculator = FMTCoordinate(neighborsize+1,neighborsize+1);
 				const double distneighbors = ndistcalculator.at(neighborsize).distance(ndistcalculator);
-				for (FMTeventcontainer::const_iterator eventit : iterators)
+				for (FMTEventContainer::const_iterator eventit : iterators)
 				{
 					if (eventit->within(distneighbors, coord))
 					{
@@ -282,16 +282,16 @@ namespace Spatial
 					}
 				}
 		}catch(...){
-			_exhandler->raiseFromCatch("","FMTeventcontainer::getAroundEvents", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("","FMTEventContainer::getAroundEvents", __LINE__, __FILE__);
 		}
 		return aroundevents;
 	}
 
-	FMTeventcontainer::FMTEventIteratorSorter::FMTEventIteratorSorter(const FMTcoordinate& coordinate) : basecoordinate(coordinate)
+	FMTEventContainer::FMTEventIteratorSorter::FMTEventIteratorSorter(const FMTCoordinate& coordinate) : basecoordinate(coordinate)
 		{
 
 		}
-	bool FMTeventcontainer::FMTEventIteratorSorter::operator() (const FMTeventcontainer::const_iterator& eventit1, const FMTeventcontainer::const_iterator& eventit2) const
+	bool FMTEventContainer::FMTEventIteratorSorter::operator() (const FMTEventContainer::const_iterator& eventit1, const FMTEventContainer::const_iterator& eventit2) const
 		{
 		double approx1 = 0;
 		basecoordinate.closest(eventit1->getBorders(), approx1);
@@ -300,15 +300,15 @@ namespace Spatial
 		return approx1 < approx2;
 		}
 
-	void FMTeventcontainer::nthElements(std::vector<FMTeventcontainer::const_iterator>& iterators, const FMTcoordinate& coord, const size_t& nelement) const
+	void FMTEventContainer::nthElements(std::vector<FMTEventContainer::const_iterator>& iterators, const FMTCoordinate& coord, const size_t& nelement) const
 		{
 		std::nth_element(iterators.begin(),iterators.begin()+ nelement, iterators.end(), FMTEventIteratorSorter(coord));
 		//std::sort(iterators.begin(), iterators.end(), FMTEventIteratorSorter(coord));
 		}
 
 
-	void FMTeventcontainer::addAction (const FMTcoordinate& coord, const int& period,
-		const int& actionid, const FMTbindingspatialaction& binding,size_t p_GraphFamily)
+	void FMTEventContainer::addAction (const FMTCoordinate& coord, const int& period,
+		const int& actionid, const FMTBindingSpatialAction& binding,size_t p_GraphFamily)
 		{
 		// If maxsize is numeric limits, it means that there is no evaluation for maxsize and neighborsize
 		//So we push the action as an event for each cell.
@@ -319,20 +319,20 @@ namespace Spatial
 		}
 		const uint16_t minx = coord.getX() > maxsizeof ? coord.getX() - maxsizeof : 0;
 		const uint16_t miny = coord.getY() > maxsizeof ? coord.getY() - maxsizeof : 0;
-		const FMTcoordinate lower(minx, miny);
-		const FMTcoordinate upper(coord.getX()+ maxsizeof, coord.getY() + maxsizeof);
+		const FMTCoordinate lower(minx, miny);
+		const FMTCoordinate upper(coord.getX()+ maxsizeof, coord.getY() + maxsizeof);
 		pushAction(getEvents(period, actionid, lower, upper),
 			coord, period, actionid, binding.getMinimalNeighborSize(), p_GraphFamily);
 		}
 
-	void FMTeventcontainer::addActions(const FMTcoordinate& coord, const int& period,
-		const std::vector<int>& actionids, const std::vector<FMTbindingspatialaction>& bindings,
+	void FMTEventContainer::addActions(const FMTCoordinate& coord, const int& period,
+		const std::vector<int>& actionids, const std::vector<FMTBindingSpatialAction>& bindings,
 		size_t p_GraphFamily)
 		{
 		uint16_t maxsizeof = 0;
 		for (const int& id : actionids)
 		{
-			const FMTbindingspatialaction& binding = bindings.at(id);
+			const FMTBindingSpatialAction& binding = bindings.at(id);
 			if(binding.getMaximalSize() < std::numeric_limits<size_t>::max())
 			{
 				const uint16_t msize = static_cast<uint16_t>(binding.getMaximalSize());
@@ -341,10 +341,10 @@ namespace Spatial
 		}
 		const uint16_t minx = coord.getX() > maxsizeof ? coord.getX() - maxsizeof : 0;
 		const uint16_t miny = coord.getY() > maxsizeof ? coord.getY() - maxsizeof : 0;
-		const FMTcoordinate lower(minx, miny);
-		const FMTcoordinate upper(coord.getX() + maxsizeof, coord.getY() + maxsizeof);
+		const FMTCoordinate lower(minx, miny);
+		const FMTCoordinate upper(coord.getX() + maxsizeof, coord.getY() + maxsizeof);
 		size_t id = 0;
-		for (const std::vector<FMTeventcontainer::const_iterator>& eventits : getMultipleEvents(period, actionids, lower, upper))
+		for (const std::vector<FMTEventContainer::const_iterator>& eventits : getMultipleEvents(period, actionids, lower, upper))
 			{
 			const int& actid = actionids.at(id);
 			pushAction(eventits, coord, period, actid, bindings.at(actid).getMinimalNeighborSize(), p_GraphFamily);
@@ -352,13 +352,13 @@ namespace Spatial
 			}
 		}
 
-    std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getEvents(const int& period,
+    std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getEvents(const int& period,
                                                                                     const int& action_id) const
     {
-        FMTeventcontainer::const_iterator upper = upperBound(period);
-        FMTeventcontainer::const_iterator lower = lowerBound(period);
-        std::vector<FMTeventcontainer::const_iterator> selectedevents;
-        for  (FMTeventcontainer::const_iterator it = lower ; it != upper && it!= m_events.end() ; ++it)
+        FMTEventContainer::const_iterator upper = upperBound(period);
+        FMTEventContainer::const_iterator lower = lowerBound(period);
+        std::vector<FMTEventContainer::const_iterator> selectedevents;
+        for  (FMTEventContainer::const_iterator it = lower ; it != upper && it!= m_events.end() ; ++it)
         {
             if (it->getActionId()==action_id /*&& it->getPeriod()==period*/)
             {
@@ -368,8 +368,8 @@ namespace Spatial
         return selectedevents;
     }
 
-	FMTeventcontainer FMTeventcontainer::getEventsToAdd(const FMTcoordinate& coord, const int& period, const int& actionid,
-		const FMTbindingspatialaction& binding, FMTeventcontainer& newevents, size_t p_GraphFamily) const
+	FMTEventContainer FMTEventContainer::getEventsToAdd(const FMTCoordinate& coord, const int& period, const int& actionid,
+		const FMTBindingSpatialAction& binding, FMTEventContainer& newevents, size_t p_GraphFamily) const
 	{
 		uint16_t maxsizeof = 0;
 		if(binding.getMaximalSize()<std::numeric_limits<size_t>::max())
@@ -378,28 +378,28 @@ namespace Spatial
 		}
 		const uint16_t minx = coord.getX() > maxsizeof ? coord.getX() - maxsizeof : 0;
 		const uint16_t miny = coord.getY() > maxsizeof ? coord.getY() - maxsizeof : 0;
-		const FMTcoordinate lower(minx, miny);
-		const FMTcoordinate upper(coord.getX()+ maxsizeof, coord.getY() + maxsizeof);
-		const std::vector<FMTeventcontainer::const_iterator> eventits = getEvents(period, actionid, lower, upper);
-		std::vector<FMTeventcontainer::const_iterator> aroundevents;
+		const FMTCoordinate lower(minx, miny);
+		const FMTCoordinate upper(coord.getX()+ maxsizeof, coord.getY() + maxsizeof);
+		const std::vector<FMTEventContainer::const_iterator> eventits = getEvents(period, actionid, lower, upper);
+		std::vector<FMTEventContainer::const_iterator> aroundevents;
 		const size_t neighborsize = binding.getMaximalNeighborSize();
 		if(neighborsize>0 && !eventits.empty())
 		{
 			aroundevents = getAroundEvents(eventits,coord,neighborsize);
 		}
-		//std::vector<FMTeventcontainer::const_iterator>tocalculate;
-		FMTeventcontainer tocalculate;
+		//std::vector<FMTEventContainer::const_iterator>tocalculate;
+		FMTEventContainer tocalculate;
 		if (aroundevents.empty())
 		{
-			FMTevent newevent(coord, actionid, period, p_GraphFamily);
+			FMTEvent newevent(coord, actionid, period, p_GraphFamily);
 			//newevent.insert(coord);
 			newevents.insert(newevent);
 		}
 		else
 		{
-			FMTevent combinedevents(coord, actionid, period, p_GraphFamily);
+			FMTEvent combinedevents(coord, actionid, period, p_GraphFamily);
 			//combinedevents.insert(coord);
-			for (FMTeventcontainer::const_iterator e : aroundevents)
+			for (FMTEventContainer::const_iterator e : aroundevents)
 			{
 				combinedevents.merge(*e);
 				//tocalculate.push_back(e);
@@ -412,36 +412,36 @@ namespace Spatial
 	}
 
 
-	FMTeventcontainer FMTeventcontainer::addUpdate(const FMTeventcontainer& newevents, const FMTeventcontainer& eventstoremove)
+	FMTEventContainer FMTEventContainer::addUpdate(const FMTEventContainer& newevents, const FMTEventContainer& eventstoremove)
 	{
-		for (FMTeventcontainer::const_iterator it = eventstoremove.m_events.begin(); it != eventstoremove.m_events.end(); ++it)
+		for (FMTEventContainer::const_iterator it = eventstoremove.m_events.begin(); it != eventstoremove.m_events.end(); ++it)
 			{
 			m_events.erase(*it);
 			}
-		FMTeventcontainer newlyadded;
-		for (FMTeventcontainer::const_iterator it = newevents.m_events.begin(); it != newevents.m_events.end(); ++it)
+		FMTEventContainer newlyadded;
+		for (FMTEventContainer::const_iterator it = newevents.m_events.begin(); it != newevents.m_events.end(); ++it)
 			{
 			newlyadded.insert(*m_events.insert(*it).first);
 			}
 		return newlyadded;
 	}	
 
-	FMTeventcontainer FMTeventcontainer::getContainer(std::vector<FMTcoordinate> coordinates,const int& minperiod,const int& maxperiod, const size_t& buffer) const
+	FMTEventContainer FMTEventContainer::getContainer(std::vector<FMTCoordinate> coordinates,const int& minperiod,const int& maxperiod, const size_t& buffer) const
 	{
-		FMTeventcontainer newcontainer;
+		FMTEventContainer newcontainer;
 		if (!coordinates.empty())
 			{
 			const uint16_t bufferof = static_cast<uint16_t>(buffer);
 			std::sort(coordinates.begin(), coordinates.end());
 			const uint16_t minx = coordinates.begin()->getX() > bufferof ? coordinates.begin()->getX() - bufferof : 0;
 			const uint16_t miny = coordinates.begin()->getY() > bufferof ? coordinates.begin()->getY() - bufferof : 0;
-			const FMTcoordinate minimalcoord(minx, miny);
-			const FMTcoordinate maximalcoord(coordinates.back().getX() + bufferof, coordinates.back().getY() + bufferof);
+			const FMTCoordinate minimalcoord(minx, miny);
+			const FMTCoordinate maximalcoord(coordinates.back().getX() + bufferof, coordinates.back().getY() + bufferof);
 			for (int period = minperiod; period<=maxperiod ; ++period)
 				{
-				FMTeventcontainer::const_iterator lower = lowerBound(period, minimalcoord);
-				FMTeventcontainer::const_iterator upper = upperBound(period, maximalcoord);
-				for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+				FMTEventContainer::const_iterator lower = lowerBound(period, minimalcoord);
+				FMTEventContainer::const_iterator upper = upperBound(period, maximalcoord);
+				for (FMTEventContainer::const_iterator it = lower; it != upper; ++it)
 					{
 					newcontainer.insert(*it);
 					}
@@ -451,35 +451,35 @@ namespace Spatial
 		return newcontainer;
 	}
 
-	FMTeventcontainer FMTeventcontainer::getEventsToErase(const int& fromperiod, const std::vector<std::vector<bool>>& actionstarget,
-																				const FMTcoordinate& coord, const size_t& buffer, FMTeventcontainer& newevents) const
+	FMTEventContainer FMTEventContainer::getEventsToErase(const int& fromperiod, const std::vector<std::vector<bool>>& actionstarget,
+																				const FMTCoordinate& coord, const size_t& buffer, FMTEventContainer& newevents) const
 	{
 		const uint16_t bufferof = static_cast<uint16_t>(buffer);
 		const uint16_t minx = coord.getX() > bufferof ? coord.getX() - bufferof : 0;
 		const uint16_t miny = coord.getY() > bufferof ? coord.getY() - bufferof : 0;
-		const FMTcoordinate minimalcoord(minx, miny);
-		const FMTcoordinate maximalcoord(coord.getX()+ bufferof,coord.getY()+ bufferof);
+		const FMTCoordinate minimalcoord(minx, miny);
+		const FMTCoordinate maximalcoord(coord.getX()+ bufferof,coord.getY()+ bufferof);
 		const int lastPeriod = static_cast<int>(actionstarget.size()) + fromperiod;
 		size_t periodid = 0;
-		FMTeventcontainer erased;
+		FMTEventContainer erased;
 		for (int period = fromperiod; period < lastPeriod ; ++period)
 			{
-			FMTeventcontainer::const_iterator lower = lowerBound(period, minimalcoord);
-			FMTeventcontainer::const_iterator upper = upperBound(period, maximalcoord);
+			FMTEventContainer::const_iterator lower = lowerBound(period, minimalcoord);
+			FMTEventContainer::const_iterator upper = upperBound(period, maximalcoord);
 			if (!actionstarget.at(periodid).empty())
 			{
-			for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+			for (FMTEventContainer::const_iterator it = lower; it != upper; ++it)
 				{
 				if (actionstarget.at(periodid).at(it->getActionId()) && it->contain(coord))
 					{
-					std::queue<FMTevent>emodif;
+					std::queue<FMTEvent>emodif;
 					if (it->size() > 1)
 						{
 						emodif.push(*it);
 						}
 					while (!emodif.empty())
 					{
-						FMTevent event = emodif.front();
+						FMTEvent event = emodif.front();
 						emodif.pop();
 						if (!event.willSplitEvent(coord))
 						{
@@ -492,7 +492,7 @@ namespace Spatial
 						else
 						{
 							event.erase(coord);
-							std::vector<FMTevent> splittedevents;
+							std::vector<FMTEvent> splittedevents;
 							if (event.splitEvent(splittedevents))
 							{
 								for (auto e : splittedevents)
@@ -524,13 +524,13 @@ namespace Spatial
 
 
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getEvents(const int& period, const std::vector<bool>& actions_used,
-		const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const
+	std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getEvents(const int& period, const std::vector<bool>& actions_used,
+		const FMTCoordinate& minimalcoordinate, const FMTCoordinate& maximalcoordinate) const
 	{
-		FMTeventcontainer::const_iterator lower = lowerBound(period, minimalcoordinate);
-		FMTeventcontainer::const_iterator upper = upperBound(period, maximalcoordinate);
-		std::vector<FMTeventcontainer::const_iterator> selectedevents;
-		for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+		FMTEventContainer::const_iterator lower = lowerBound(period, minimalcoordinate);
+		FMTEventContainer::const_iterator upper = upperBound(period, maximalcoordinate);
+		std::vector<FMTEventContainer::const_iterator> selectedevents;
+		for (FMTEventContainer::const_iterator it = lower; it != upper; ++it)
 		{
 			if (actions_used.at(it->getActionId()) /*&& it->getPeriod() == period*/)
 			{
@@ -541,13 +541,13 @@ namespace Spatial
 
 	}
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getEvents(const int& period, const int& action_id,
-		const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const
+	std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getEvents(const int& period, const int& action_id,
+		const FMTCoordinate& minimalcoordinate, const FMTCoordinate& maximalcoordinate) const
 	{
-		FMTeventcontainer::const_iterator lower = lowerBound(period, minimalcoordinate);
-		FMTeventcontainer::const_iterator upper = upperBound(period, maximalcoordinate);
-		std::vector<FMTeventcontainer::const_iterator> selectedevents;
-		for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+		FMTEventContainer::const_iterator lower = lowerBound(period, minimalcoordinate);
+		FMTEventContainer::const_iterator upper = upperBound(period, maximalcoordinate);
+		std::vector<FMTEventContainer::const_iterator> selectedevents;
+		for (FMTEventContainer::const_iterator it = lower; it != upper; ++it)
 		{
 			if (it->getActionId() == action_id /*&& it->getPeriod() == period*/)
 			{
@@ -557,13 +557,13 @@ namespace Spatial
 		return selectedevents;
 	}
 
-	std::vector<std::vector<FMTeventcontainer::const_iterator>> FMTeventcontainer::getMultipleEvents(const int& period, const std::vector<int>& action_ids,
-		const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const
+	std::vector<std::vector<FMTEventContainer::const_iterator>> FMTEventContainer::getMultipleEvents(const int& period, const std::vector<int>& action_ids,
+		const FMTCoordinate& minimalcoordinate, const FMTCoordinate& maximalcoordinate) const
 		{
-		FMTeventcontainer::const_iterator lower = lowerBound(period, minimalcoordinate);
-		FMTeventcontainer::const_iterator upper = upperBound(period, maximalcoordinate);
-		std::vector<std::vector<FMTeventcontainer::const_iterator>> selectedevents(action_ids.size(), std::vector<FMTeventcontainer::const_iterator>());
-		for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+		FMTEventContainer::const_iterator lower = lowerBound(period, minimalcoordinate);
+		FMTEventContainer::const_iterator upper = upperBound(period, maximalcoordinate);
+		std::vector<std::vector<FMTEventContainer::const_iterator>> selectedevents(action_ids.size(), std::vector<FMTEventContainer::const_iterator>());
+		for (FMTEventContainer::const_iterator it = lower; it != upper; ++it)
 			{
 			for (size_t id = 0 ; id < action_ids.size();++id)
 				{
@@ -577,13 +577,13 @@ namespace Spatial
 		}
 
 
-    std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getEvents(const int& period,
+    std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getEvents(const int& period,
                                                                                     const std::vector<int>& actions_id) const
     {
-        FMTeventcontainer::const_iterator upper = upperBound(period);
-        FMTeventcontainer::const_iterator lower = lowerBound(period);
-        std::vector<FMTeventcontainer::const_iterator> selectedevents;
-        for  (FMTeventcontainer::const_iterator it = lower ; it != upper ; ++it)
+        FMTEventContainer::const_iterator upper = upperBound(period);
+        FMTEventContainer::const_iterator lower = lowerBound(period);
+        std::vector<FMTEventContainer::const_iterator> selectedevents;
+        for  (FMTEventContainer::const_iterator it = lower ; it != upper ; ++it)
         {
             if (std::find(actions_id.begin(),actions_id.end(),it->getActionId())!=actions_id.end() && it->getPeriod()==period)
             {
@@ -593,20 +593,20 @@ namespace Spatial
         return selectedevents;
     }
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getEvents(const int& period, const std::vector<bool>& actions_used) const
+	std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getEvents(const int& period, const std::vector<bool>& actions_used) const
 	{
-		/*FMTeventcontainer::const_iterator upper = upperBound(period);
-		FMTeventcontainer::const_iterator lower = lowerBound(period);
-		std::vector<FMTeventcontainer::const_iterator> selectedevents;
-		for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+		/*FMTEventContainer::const_iterator upper = upperBound(period);
+		FMTEventContainer::const_iterator lower = lowerBound(period);
+		std::vector<FMTEventContainer::const_iterator> selectedevents;
+		for (FMTEventContainer::const_iterator it = lower; it != upper; ++it)
 		{
 			if (actions_used.at(it->getActionId()))
 			{
 				selectedevents.push_back(it);
 			}
 		}*/
-		std::vector<FMTeventcontainer::const_iterator> selectedevents;
-		for (FMTeventcontainer::const_iterator it = lowerBound(period); it != upperBound(period); ++it)
+		std::vector<FMTEventContainer::const_iterator> selectedevents;
+		for (FMTEventContainer::const_iterator it = lowerBound(period); it != upperBound(period); ++it)
 		{
 			if (actions_used.at(it->getActionId()) && it->getPeriod()==period)
 			{
@@ -616,13 +616,13 @@ namespace Spatial
 		return selectedevents;
 	}
 
-    std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getEvents(const int& period,
-                                                                                    const FMTcoordinate& coord) const
+    std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getEvents(const int& period,
+                                                                                    const FMTCoordinate& coord) const
     {
-        FMTeventcontainer::const_iterator upper = upperBound(period);
-        FMTeventcontainer::const_iterator lower = lowerBound(period);
-        std::vector<FMTeventcontainer::const_iterator> selectedevents;
-        for  (FMTeventcontainer::const_iterator it = lower ; it != upper ; ++it)
+        FMTEventContainer::const_iterator upper = upperBound(period);
+        FMTEventContainer::const_iterator lower = lowerBound(period);
+        std::vector<FMTEventContainer::const_iterator> selectedevents;
+        for  (FMTEventContainer::const_iterator it = lower ; it != upper ; ++it)
         {
             if (it->contain(coord))
             {
@@ -633,17 +633,17 @@ namespace Spatial
 
     }
 
-    std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getEvents(const int& period,
-                                                                                    const std::set<FMTcoordinate>& territory) const
+    std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getEvents(const int& period,
+                                                                                    const std::set<FMTCoordinate>& territory) const
     {
-        std::vector<FMTeventcontainer::const_iterator> selectedevents;
+        std::vector<FMTEventContainer::const_iterator> selectedevents;
         if (!territory.empty())
         {
-            const FMTcoordinate minxy = *territory.begin();
-            const FMTcoordinate maxxy = *(territory.rbegin());
+            const FMTCoordinate minxy = *territory.begin();
+            const FMTCoordinate maxxy = *(territory.rbegin());
 			
-            FMTeventcontainer::const_iterator lower = lowerBound(period,minxy);
-            FMTeventcontainer::const_iterator upper = upperBound(period,maxxy);
+            FMTEventContainer::const_iterator lower = lowerBound(period,minxy);
+            FMTEventContainer::const_iterator upper = upperBound(period,maxxy);
             ///Debug
             //std::cout<<"Upper "<<upper->averageCentroid().getX()<<upper->averageCentroid().getY()<<" Action : "<<upper->getActionId()<<" Period : "<<upper->getPeriod()<<std::endl;
             //std::cout<<"Lower "<<lower->averageCentroid().getX()<<lower->averageCentroid().getY()<<" Action : "<<lower->getActionId()<<" Period : "<<lower->getPeriod()<<std::endl;
@@ -668,7 +668,7 @@ namespace Spatial
                     }
                 }
             while(lower!=upper);*/
-			for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+			for (FMTEventContainer::const_iterator it = lower; it != upper; ++it)
 				{
 				selectedevents.push_back(it);
 				}
@@ -678,44 +678,44 @@ namespace Spatial
 
 
 
-    FMTeventcontainer::const_iterator FMTeventcontainer::upperBound(const int& period) const
+    FMTEventContainer::const_iterator FMTEventContainer::upperBound(const int& period) const
     {
 		constexpr uint16_t MAX_BOUND = std::numeric_limits<uint16_t>::max();
-        FMTeventcontainer::const_iterator upper = m_events.upper_bound(FMTevent(FMTcoordinate(MAX_BOUND, MAX_BOUND),
+        FMTEventContainer::const_iterator upper = m_events.upper_bound(FMTEvent(FMTCoordinate(MAX_BOUND, MAX_BOUND),
                                                              INT_MAX,
                                                              period,0));
         return upper;
     }
 
-    FMTeventcontainer::const_iterator FMTeventcontainer::upperBound(const int& period, const FMTcoordinate& maxxycoord) const
+    FMTEventContainer::const_iterator FMTEventContainer::upperBound(const int& period, const FMTCoordinate& maxxycoord) const
     {
-        FMTeventcontainer::const_iterator upper = m_events.upper_bound(FMTevent(maxxycoord,
+        FMTEventContainer::const_iterator upper = m_events.upper_bound(FMTEvent(maxxycoord,
                                                                                   INT_MAX,
                                                                                   period,0));
         return upper;
     }
 
-    FMTeventcontainer::const_iterator FMTeventcontainer::lowerBound(const int& period) const
+    FMTEventContainer::const_iterator FMTEventContainer::lowerBound(const int& period) const
     {
-        FMTeventcontainer::const_iterator lower = m_events.lower_bound(FMTevent(FMTcoordinate(0,0),
+        FMTEventContainer::const_iterator lower = m_events.lower_bound(FMTEvent(FMTCoordinate(0,0),
                                                              0,
                                                              period,0));
         return lower;
     }
 
-    FMTeventcontainer::const_iterator FMTeventcontainer::lowerBound(const int& period,const FMTcoordinate& minxycoord) const
+    FMTEventContainer::const_iterator FMTEventContainer::lowerBound(const int& period,const FMTCoordinate& minxycoord) const
     {
-        FMTeventcontainer::const_iterator lower = m_events.lower_bound(FMTevent(minxycoord,
+        FMTEventContainer::const_iterator lower = m_events.lower_bound(FMTEvent(minxycoord,
                                                              0,
                                                              period,0));
         return lower;
     }
 
-    double FMTeventcontainer::minimalDistance(const FMTevent& event, const unsigned int& distancel,
+    double FMTEventContainer::minimalDistance(const FMTEvent& event, const unsigned int& distancel,
                                                 const int& period, const std::vector<int>& actionsid) const
     {
     double distancevalue = static_cast<double>(distancel) + 1.0;
-    std::vector<FMTeventcontainer::const_iterator> potentialneighbors = getEvents(period,actionsid);
+    std::vector<FMTEventContainer::const_iterator> potentialneighbors = getEvents(period,actionsid);
     for (const auto eventit : potentialneighbors)
     {
         if (*eventit!=event)
@@ -734,23 +734,23 @@ namespace Spatial
     return distancevalue;
     }
 
-	double FMTeventcontainer::evaluateDistance(const FMTevent& eventof, 
+	double FMTEventContainer::evaluateDistance(const FMTEvent& eventof, 
 											const double& lowerdistancetoevent,
 											const double& upperdistancetoevent,
 											const int& period, const std::vector<bool>& actionsused,
-											boost::unordered_set<FMTeventrelation>& relations) const
+											boost::unordered_set<FMTEventRelation>& relations) const
 	{
 	double distancevalue = 0;
 	const unsigned int lowerdistance = static_cast<unsigned int>(lowerdistancetoevent);
 	const unsigned int upperdistance = static_cast<unsigned int>(upperdistancetoevent);
 	const bool testlower = (lowerdistancetoevent == -std::numeric_limits<double>::infinity()) ? false : true;
 	const bool testupper = (upperdistancetoevent == std::numeric_limits<double>::infinity()) ? false : true;
-	for (FMTeventcontainer::const_iterator eventit : getEvents(period, actionsused))
+	for (FMTEventContainer::const_iterator eventit : getEvents(period, actionsused))
 		{
 			if (&(*eventit) != &eventof)//They will have the same address if it's the same event!
 			{
-			const FMTeventrelation straightrelation = eventof.getRelation(*eventit);
-			const FMTeventrelation reverserelation = eventit->getRelation(eventof);
+			const FMTEventRelation straightrelation = eventof.getRelation(*eventit);
+			const FMTEventRelation reverserelation = eventit->getRelation(eventof);
 			if (relations.find(straightrelation)==relations.end() && 
 				relations.find(reverserelation) == relations.end())
 				{
@@ -772,7 +772,7 @@ namespace Spatial
 	}
 
 
-	FMTeventcontainer::BoundingBox::BoundingBox():
+	FMTEventContainer::BoundingBox::BoundingBox():
 			m_bottomLeft(std::numeric_limits< uint16_t>::max(),0),
 			m_Width(0),
 			m_Height(0),
@@ -785,11 +785,11 @@ namespace Spatial
 
 	}
 
-	double FMTeventcontainer::evaluateSize(const std::vector<bool>& p_actions,
+	double FMTEventContainer::evaluateSize(const std::vector<bool>& p_actions,
 		int p_period, size_t  p_lowerBound, size_t p_upperBound, bool p_testLower) const
 	{
 		double value = 0.0;
-		for (const FMTeventcontainer::const_iterator& eventIt : getEvents(p_period, p_actions))
+		for (const FMTEventContainer::const_iterator& eventIt : getEvents(p_period, p_actions))
 		{
 			const size_t EVENT_SIZE = eventIt->size();
 			size_t EventValue = 0;
@@ -808,7 +808,7 @@ namespace Spatial
 		return value;
 	}
 
-	double FMTeventcontainer::getDispersion(
+	double FMTEventContainer::getDispersion(
 		const std::vector<bool>& p_actions, 
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId,
@@ -824,7 +824,7 @@ namespace Spatial
 		return total;
 	}
 
-	double FMTeventcontainer::getDispersion(int p_RuleId,
+	double FMTEventContainer::getDispersion(int p_RuleId,
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId, int p_FirstPeriod,
 		int p_LastPeriod, int p_bound) const
@@ -841,7 +841,7 @@ namespace Spatial
 
 
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getDispersionConflicts(
+	std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getDispersionConflicts(
 		const std::vector<bool>& p_actions,
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId,
@@ -849,10 +849,10 @@ namespace Spatial
 	{
 		const std::vector<BoundingBox> BOXES = _getBoundingBoxes(p_actions, p_Graphs, 
 			p_themeId, p_FirstPeriod,p_LastPeriod);
-		std::vector<FMTeventcontainer::const_iterator> conflicts;
+		std::vector<FMTEventContainer::const_iterator> conflicts;
 		for (const BoundingBox& BOX : BOXES)
 			{
-			const std::vector<FMTeventcontainer::const_iterator> BOX_CONFLICTS = BOX.getEvents();
+			const std::vector<FMTEventContainer::const_iterator> BOX_CONFLICTS = BOX.getEvents();
 			if (BOX.evaluateUpperBound(p_bound)>FMT_DBL_TOLERANCE)
 				{
 				conflicts.insert(conflicts.end(),
@@ -862,17 +862,17 @@ namespace Spatial
 		return  conflicts;
 	}
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getDispersionConflicts(int p_RuleId,
+	std::vector<FMTEventContainer::const_iterator> FMTEventContainer::getDispersionConflicts(int p_RuleId,
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId, int p_FirstPeriod,
 		int p_LastPeriod, int p_bound) const
 	{
 		const std::vector<BoundingBox> BOXES = _getBoundingBoxes(p_RuleId, p_Graphs,
 			p_themeId, p_FirstPeriod, p_LastPeriod);
-		std::vector<FMTeventcontainer::const_iterator> conflicts;
+		std::vector<FMTEventContainer::const_iterator> conflicts;
 		for (const BoundingBox& BOX : BOXES)
 		{
-			const std::vector<FMTeventcontainer::const_iterator> BOX_CONFLICTS = BOX.getEvents();
+			const std::vector<FMTEventContainer::const_iterator> BOX_CONFLICTS = BOX.getEvents();
 			if (BOX.evaluateUpperBound(p_bound) > FMT_DBL_TOLERANCE)
 			{
 				conflicts.insert(conflicts.end(),
@@ -883,11 +883,11 @@ namespace Spatial
 	}
 
 
-	std::vector<FMTeventcontainer::const_iterator>FMTeventcontainer::getEventsOf(int p_RuleId,
+	std::vector<FMTEventContainer::const_iterator>FMTEventContainer::getEventsOf(int p_RuleId,
 		int p_MinimalPeriod, int p_MaximalPeriod) const
 		{
-		std::vector<FMTeventcontainer::const_iterator> RuleEvents;
-		for (FMTeventcontainer::const_iterator it = lowerBound(p_MinimalPeriod);
+		std::vector<FMTEventContainer::const_iterator> RuleEvents;
+		for (FMTEventContainer::const_iterator it = lowerBound(p_MinimalPeriod);
 			it != upperBound(p_MaximalPeriod); ++it)
 			{
 			if (it->getActionId() == p_RuleId &&
@@ -901,7 +901,7 @@ namespace Spatial
 
 
 
-	std::vector<FMTeventcontainer::BoundingBox> FMTeventcontainer::_getBoundingBoxes(
+	std::vector<FMTEventContainer::BoundingBox> FMTEventContainer::_getBoundingBoxes(
 		const std::vector<bool>& p_actions,
 		const FMTSpatialGraphs& p_Graphs,
 		int p_themeId,
@@ -930,7 +930,7 @@ namespace Spatial
 		return Boxes;
 	}
 
-	std::vector<FMTeventcontainer::BoundingBox> FMTeventcontainer::_getBoundingBoxes(int p_RuleId,
+	std::vector<FMTEventContainer::BoundingBox> FMTEventContainer::_getBoundingBoxes(int p_RuleId,
 		const FMTSpatialGraphs& p_Graphs, int p_themeId,
 		int p_FirstPeriod, int p_LastPeriod) const
 	{
@@ -959,10 +959,10 @@ namespace Spatial
 
 
 
-	void FMTeventcontainer::BoundingBox::add(FMTeventcontainer::const_iterator p_event)
+	void FMTEventContainer::BoundingBox::add(FMTEventContainer::const_iterator p_event)
 	{
 
-			const std::array<FMTcoordinate, 4> EVENT_BOX = p_event->getEnveloppe();
+			const std::array<FMTCoordinate, 4> EVENT_BOX = p_event->getEnveloppe();
 			
 			const uint16_t EVENT_MIN_X = std::min(EVENT_BOX[2].getX(), EVENT_BOX[0].getX());
 			const uint16_t MIN_X = std::min(EVENT_MIN_X,m_bottomLeft.getX());
@@ -993,27 +993,27 @@ namespace Spatial
 				{
 				m_Top = p_event;
 				}
-			m_bottomLeft = FMTcoordinate(MIN_X, MAX_Y);
+			m_bottomLeft = FMTCoordinate(MIN_X, MAX_Y);
 			m_Width = MAX_X - MIN_X;
 			m_Height = MAX_Y - MIN_Y;
 	}
 
-	bool FMTeventcontainer::BoundingBox::_isNull() const
+	bool FMTEventContainer::BoundingBox::_isNull() const
 		{
 		return (m_bottomLeft.getX() == std::numeric_limits< uint16_t>::max());
 		}
 
-	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::BoundingBox::getEvents() const
+	std::vector<FMTEventContainer::const_iterator> FMTEventContainer::BoundingBox::getEvents() const
 		{
-		std::vector<FMTeventcontainer::const_iterator>returned;
+		std::vector<FMTEventContainer::const_iterator>returned;
 		if (!_isNull())
 			{
-			returned = std::vector<FMTeventcontainer::const_iterator>{m_Top, m_Right, m_Bottom, m_Left};
+			returned = std::vector<FMTEventContainer::const_iterator>{m_Top, m_Right, m_Bottom, m_Left};
 			}
 		return returned;
 		}
 
-	double FMTeventcontainer::BoundingBox::evaluateUpperBound(int p_UpperBound) const
+	double FMTEventContainer::BoundingBox::evaluateUpperBound(int p_UpperBound) const
 	{
 		double value = 0.0;
 		const double BOUND = static_cast<double>(p_UpperBound);
@@ -1025,7 +1025,7 @@ namespace Spatial
 		return value;
 	}
 
-	double FMTeventcontainer::BoundingBox::_getSize() const
+	double FMTEventContainer::BoundingBox::_getSize() const
 		{
 		return static_cast<double>(std::max(m_Width, m_Height));
 		}

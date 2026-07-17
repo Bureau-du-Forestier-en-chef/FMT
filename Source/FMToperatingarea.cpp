@@ -13,25 +13,25 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 {
 
-FMToperatingarea& FMToperatingarea::operator += (const double& value)
+FMTOperatingArea& FMTOperatingArea::operator += (const double& value)
 	{
 	this->_area += value;
 	return *this;
 	}
 
 
-double FMToperatingarea::getArea() const
+double FMTOperatingArea::getArea() const
 	{
 	return _area;
 	}
 
 
-std::vector<Core::FMTMask>FMToperatingarea::getNeighbors() const
+std::vector<Core::FMTMask>FMTOperatingArea::getNeighbors() const
 	{
 	return neighbors;
 	}
 
-FMToperatingarea::FMToperatingarea(const Core::FMTMask& lmask,const double& lneighborsperimeter):
+FMTOperatingArea::FMTOperatingArea(const Core::FMTMask& lmask,const double& lneighborsperimeter):
 	mask(lmask),
 	neighbors(),
 	neighborsperimeter(lneighborsperimeter),
@@ -40,31 +40,31 @@ FMToperatingarea::FMToperatingarea(const Core::FMTMask& lmask,const double& lnei
 
 	}
 
-void FMToperatingarea::setArea(const double& newarea)
+void FMTOperatingArea::setArea(const double& newarea)
     {
     _area = newarea;
     }
 
-void FMToperatingarea::setNeighbors(const std::vector<Core::FMTMask>& lneighbors)
+void FMTOperatingArea::setNeighbors(const std::vector<Core::FMTMask>& lneighbors)
 	{
 	neighbors = lneighbors;
 	}
 
-double FMToperatingarea::getNeighborsPerimeter() const
+double FMTOperatingArea::getNeighborsPerimeter() const
 	{
 	return neighborsperimeter;
 	}
 
-Core::FMTMask FMToperatingarea::getMask() const
+Core::FMTMask FMTOperatingArea::getMask() const
 	{
 	return mask;
 	}
 
-bool FMToperatingarea::operator == (const FMToperatingarea& rhs) const
+bool FMTOperatingArea::operator == (const FMTOperatingArea& rhs) const
 	{
 	return (mask == rhs.mask);
 	}
-bool FMToperatingarea::operator != (const FMToperatingarea& rhs) const
+bool FMTOperatingArea::operator != (const FMTOperatingArea& rhs) const
 	{
 	return !(*this == rhs);
 	}
@@ -74,20 +74,20 @@ FMTOperatingAreaComparator::FMTOperatingAreaComparator(const Core::FMTMask& lmas
 
 	}
 
-FMTOperatingAreaComparator::FMTOperatingAreaComparator(const FMToperatingarea& oparea):mask(oparea.getMask())
+FMTOperatingAreaComparator::FMTOperatingAreaComparator(const FMTOperatingArea& oparea):mask(oparea.getMask())
     {
 
     }
 
 
-bool FMTOperatingAreaComparator::operator()(const FMToperatingarea& oparea) const
+bool FMTOperatingAreaComparator::operator()(const FMTOperatingArea& oparea) const
 	{
 	return (oparea.getMask() == mask);
 	}
 
-FMToperatingarea FMToperatingarea::presolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>& presolvedthemes) const
+FMTOperatingArea FMTOperatingArea::presolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>& presolvedthemes) const
 {
-	FMToperatingarea presolvedoparea(*this);
+	FMTOperatingArea presolvedoparea(*this);
 	presolvedoparea.mask = this->mask.presolve(filter, presolvedthemes);
 	for(size_t i=0; i < presolvedoparea.neighbors.size(); ++i)
 	{
@@ -96,14 +96,14 @@ FMToperatingarea FMToperatingarea::presolveOperatingArea(const Core::FMTMaskFilt
 	return presolvedoparea;
 }
 
-FMToperatingarea FMToperatingarea::postsolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const
+FMTOperatingArea FMTOperatingArea::postsolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const
 {
-	FMToperatingarea postsolvedoparea(*this);
+	FMTOperatingArea postsolvedoparea(*this);
 	postsolvedoparea.mask = postsolvedoparea.mask.postSolve(filter,basethemes);
 	return postsolvedoparea;
 }
 
 
 }
-BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMToperatingarea)
+BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTOperatingArea)
 #endif

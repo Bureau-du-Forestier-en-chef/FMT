@@ -35,7 +35,7 @@ namespace Spatial{
 
 		}
 
-	void FMTVirtualLineGraph::setLineGraph(const Graph::FMTlinegraph& p_LineGraph,
+	void FMTVirtualLineGraph::setLineGraph(const Graph::FMTLineGraph& p_LineGraph,
 		FMTSolutionTracker& p_solution)
 		{
 		_insertInto(p_LineGraph, p_solution);
@@ -72,7 +72,7 @@ namespace Spatial{
 		FMTSpatialGraphs& p_Graphs,
 		FMTSolutionTracker& p_solution) const
 	{
-		Graph::FMTlinegraph graphCopy = getLineGraph();
+		Graph::FMTLineGraph graphCopy = getLineGraph();
 		graphCopy.postSolve(p_Filter, 
 			p_Graphs.getModel().getThemes(), p_actionMapping);
 		FMTVirtualLineGraph postSolved = p_Graphs.setVirtualGraph(graphCopy);
@@ -80,7 +80,7 @@ namespace Spatial{
 		return postSolved;
 	}
 
-	void FMTVirtualLineGraph::_insertInto(const Graph::FMTlinegraph& p_LineGraph,
+	void FMTVirtualLineGraph::_insertInto(const Graph::FMTLineGraph& p_LineGraph,
 		FMTSolutionTracker& p_solution)
 	{
 		_remove(p_solution);
@@ -117,7 +117,7 @@ namespace Spatial{
 		return *this;
 	}
 
-	const Graph::FMTlinegraph& FMTVirtualLineGraph::getLineGraph() const
+	const Graph::FMTLineGraph& FMTVirtualLineGraph::getLineGraph() const
 		{
 		return m_Iterator->first;
 		}

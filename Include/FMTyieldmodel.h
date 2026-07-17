@@ -14,7 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTpredictor;
+	class FMTPredictor;
 }
 
 namespace Models

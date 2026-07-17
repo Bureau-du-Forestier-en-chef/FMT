@@ -49,7 +49,7 @@ int main()
 		{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 		}
-	Spatial::FMTforest initialforestmap = areaparser.readRasters(simulationmodel.getThemes(), themesrast, agerast, 1, 0.0001);
+	Spatial::FMTForest initialforestmap = areaparser.readRasters(simulationmodel.getThemes(), themesrast, agerast, 1, 0.0001);
 	simulationmodel.setInitialMapping(initialforestmap);
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
@@ -74,7 +74,7 @@ int main()
 	Logging::FMTDefaultLogger() << "ysize : " << spatialsolution.getYSize() << "\n";
 	for (int period = 1; period <=30; ++period)
 		{
-		for (const std::pair<Spatial::FMTcoordinate, double>& value : spatialsolution.getOutputByCoordinate(simulationmodel, spatialoutput, period))
+		for (const std::pair<Spatial::FMTCoordinate, double>& value : spatialsolution.getOutputByCoordinate(simulationmodel, spatialoutput, period))
 				{
 				Logging::FMTDefaultLogger() << "period: " << period << " X: " << value.first.getX() << " Y: " << value.first.getY() << " value: " << value.second << "\n";
 				}

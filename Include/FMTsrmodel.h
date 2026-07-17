@@ -32,7 +32,7 @@ namespace Core
 
 namespace Graph
 {
-	class FMTgraphvertextoyield;
+	class FMTGraphVertexToYield;
 
 }
 
@@ -58,10 +58,10 @@ namespace Models
 		that depand on the full graph and model (like FMTYieldModel).
 		the function return a filled Graphvertexyoyield without a specific vertex selected.
 		*/
-		Graph::FMTgraphvertextoyield getGraphVertexToYield() const;
+		Graph::FMTGraphVertexToYield getGraphVertexToYield() const;
 		// DocString: FMTSrModel::postSolve
 		/*
-		This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTSrModel is also postsolved.
+		This function is for postsolving the presolved model into the original model. In this case, the FMTGraph of the FMTSrModel is also postsolved.
 		*/
 		virtual void postSolve(const FMTModel& originalbasemodel);
 		// DocString: FMTSrModel::setParallelLogger
@@ -91,11 +91,11 @@ namespace Models
 		Copy constructor of FMTSrModel
 		*/
 		FMTSrModel(const FMTSrModel& rhs);
-		// DocString: FMTSrModel(const FMTModel, const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>,	const FMTLpSolver)
+		// DocString: FMTSrModel(const FMTModel, const Graph::FMTGraph<Graph::FMTVertexProperties,Graph::FMTEdgeProperties>,	const FMTLpSolver)
 		/**
 		Constructor of FMTSrModel mainly use in postSolve.
 		*/
-		FMTSrModel(FMTModel&& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
+		FMTSrModel(FMTModel&& base,const Graph::FMTGraph<Graph::FMTVertexProperties,Graph::FMTEdgeProperties>& lgraph,
 					const FMTLpSolver& lsolver);
 		// DocString: FMTSrModel::operator=
 		/**
@@ -183,19 +183,19 @@ namespace Models
 		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/vertices...)
 		@return the full stats 
 		*/
-		Graph::FMTgraphstats getStats() const;
+		Graph::FMTGraphStats getStats() const;
 		// DocString: FMTSrModel::getStats
 		/**
 		@brief Get the graph stats of the graph and matrix (number of columns/rows/edges/vertices...)
 		@param[in] p_Subset the mask subset
 		@return the graph stats for the graph.
 		*/
-		Graph::FMTgraphstats getGraphStats(const Core::FMTMask& p_Subset) const;
+		Graph::FMTGraphStats getGraphStats(const Core::FMTMask& p_Subset) const;
 		// DocString: FMTSrModel::getCopy
 		/**
 		This function returns a copy of the FMTModel of the selected period.
 		If period = 0 it returns the FMTModel::getCopy if period > 0 then it returns
-		a copy of the FMTModel based on the developments of the FMTgraph of the FMTLpModel.
+		a copy of the FMTModel based on the developments of the FMTGraph of the FMTLpModel.
 		Need to have a builded graph with a solution to use this function.
 		*/
 		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
@@ -224,7 +224,7 @@ namespace Models
 		not fullbuild mode. Partialbuild will only build the graph linked to the solution. make it perfect to
 		reinterpret outputs for a given solution without rebuilding the whole graph.
 		*/
-		Graph::FMTgraphstats buildPeriod(Core::FMTSchedule schedule = Core::FMTSchedule(),
+		Graph::FMTGraphStats buildPeriod(Core::FMTSchedule schedule = Core::FMTSchedule(),
 				bool forcepartialbuild = false, int compressageclassoperability = 1);
 		// DocString: FMTSrModel::getFirstActivePeriod
 		/**
@@ -344,7 +344,7 @@ namespace Models
 	protected:
 		// DocString: FMTSrModel::graph
 		///graph holding the FMTdevelopments for all the periods.
-		std::unique_ptr<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>>m_graph;
+		std::unique_ptr<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>>m_graph;
 		// DocString: FMTSrModel::solver
 		///The lpsolver
 		FMTLpSolver solver;
@@ -357,17 +357,17 @@ namespace Models
 			std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const;
 		// DocString: FMTSrModel::initializeMatrix
 		/**
-		Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
+		Initialize the solverinterface called once when the FMTGraph was empty after the first call of buildperiod.
 		*/
-		Graph::FMTgraphstats initializeMatrix();
+		Graph::FMTGraphStats initializeMatrix();
 		// DocString: FMTSrModel::updateMatrix
 		/**
 		During a call to build period after the graph has been updated with nes developments type the solverinterface matrix
 		need to be updated. Variables and constraints related to each of those new developments will be added to the matrix.
 		So area transfer row and natural growth plus action variables.
 		*/
-		Graph::FMTgraphstats updateMatrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
-			const Graph::FMTgraphstats& newstats);
+		Graph::FMTGraphStats updateMatrix(const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_pair& targets,
+			const Graph::FMTGraphStats& newstats);
 		// DocString: FMTSrModel::getgraphlength
 		/**
 		Return the size of the graph.
@@ -383,7 +383,7 @@ namespace Models
 		@brief If the graph is not initialize then initialise the graph based on the area else return the actives vertices.
 		@return a queue of actives vertices of the graph.
 		*/
-		std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> getActives();
+		std::queue<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> getActives();
 	private:
 		// DocString: FMTSrModel::save
 		/**

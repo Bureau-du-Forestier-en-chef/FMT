@@ -11,39 +11,39 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	FMTvertexproperties::FMTvertexproperties(const FMTvertexproperties& rhs):
-		FMTbasevertexproperties(rhs), constraintID(rhs.constraintID)
+	FMTVertexProperties::FMTVertexProperties(const FMTVertexProperties& rhs):
+		FMTBaseVertexProperties(rhs), constraintID(rhs.constraintID)
 	{
 
 	}
 
-	FMTvertexproperties::FMTvertexproperties(const Core::FMTFuturDevelopment& ldevelopment,
-		const int& lconstraintID):FMTbasevertexproperties(ldevelopment),constraintID(lconstraintID)
+	FMTVertexProperties::FMTVertexProperties(const Core::FMTFuturDevelopment& ldevelopment,
+		const int& lconstraintID):FMTBaseVertexProperties(ldevelopment),constraintID(lconstraintID)
 		{
 		}
-	FMTvertexproperties::FMTvertexproperties(const Core::FMTActualDevelopment& ldevelopment,
-		const int& lconstraintID): FMTbasevertexproperties(ldevelopment), constraintID(lconstraintID)
+	FMTVertexProperties::FMTVertexProperties(const Core::FMTActualDevelopment& ldevelopment,
+		const int& lconstraintID): FMTBaseVertexProperties(ldevelopment), constraintID(lconstraintID)
 		{
 
 		}
-    FMTvertexproperties::FMTvertexproperties(const Core::FMTDevelopment& ldevelopment, const int& lconstraintID):
-		FMTbasevertexproperties(ldevelopment), constraintID(lconstraintID)
+    FMTVertexProperties::FMTVertexProperties(const Core::FMTDevelopment& ldevelopment, const int& lconstraintID):
+		FMTBaseVertexProperties(ldevelopment), constraintID(lconstraintID)
 		{
 
 		}
 
 	
 
-	void FMTvertexproperties::setConstraintID(const int& ID)
+	void FMTVertexProperties::setConstraintID(const int& ID)
 		{
 		constraintID = ID;
 		}
 
 
-	std::string FMTvertexproperties::constraintName() const
+	std::string FMTVertexProperties::constraintName() const
 		{
 		return "D" + std::to_string(constraintID);
 		}
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTvertexproperties)
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTVertexProperties)

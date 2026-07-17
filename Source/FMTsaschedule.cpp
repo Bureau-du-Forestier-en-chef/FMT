@@ -17,9 +17,9 @@ namespace Spatial
 {
 
 
-//FMTsaschedule base class
+//FMTSaSchedule base class
 
-    FMTsaschedule::FMTsaschedule(const std::string& typesc) :
+    FMTSaSchedule::FMTSaSchedule(const std::string& typesc) :
         m_ScheduleType(typesc),
         m_Level(0),
         m_Temperature(std::numeric_limits<double>::max()),
@@ -29,47 +29,47 @@ namespace Spatial
     }
 
 
-    FMTsaschedule::~FMTsaschedule(){}
+    FMTSaSchedule::~FMTSaSchedule(){}
 
-    void FMTsaschedule::setInitialTemperature(const double& Temp)
+    void FMTSaSchedule::setInitialTemperature(const double& Temp)
     {
         m_InitialTemperature = Temp;
         m_Temperature = Temp;
     }
 
 
-    void FMTsaschedule::reduceTemp()
+    void FMTSaSchedule::reduceTemp()
     {
         ++m_Level;
     }
 
-    double FMTsaschedule::getTemp() const
+    double FMTSaSchedule::getTemp() const
     {
         return m_Temperature;
     }
 
-    void FMTsaschedule::setTemp(double p_Temp)
+    void FMTSaSchedule::setTemp(double p_Temp)
     {
         m_Temperature = p_Temp;
     }
 
-    size_t FMTsaschedule::getLevel()const
+    size_t FMTSaSchedule::getLevel()const
     {
         return m_Level;
     }
    
 
-	std::string FMTsaschedule::getScheduleType()const
+	std::string FMTSaSchedule::getScheduleType()const
     {
         return m_ScheduleType;
     }
 
-	std::unique_ptr<FMTsaschedule> FMTsaschedule::Clone()const
+	std::unique_ptr<FMTSaSchedule> FMTSaSchedule::Clone()const
     {
-        return std::unique_ptr<FMTsaschedule>(new FMTsaschedule(*this));
+        return std::unique_ptr<FMTSaSchedule>(new FMTSaSchedule(*this));
     }
 
-    double FMTsaschedule::getInitialTemp() const
+    double FMTSaSchedule::getInitialTemp() const
         {
         return m_InitialTemperature;
         }

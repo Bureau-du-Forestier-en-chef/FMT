@@ -51,7 +51,7 @@ namespace Core {
 namespace Spatial
 {
 	template<typename T>
-	class FMTlayer;
+	class FMTLayer;
 }
 
 namespace Testing
@@ -265,10 +265,10 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		std::unique_ptr<OGRSpatialReference> getFORELSpatialRef() const;
 		// DocString: FMTParser::createDataset
 		/**
-		The function create an empty GDALDataset for a given FMTlayer.
+		The function create an empty GDALDataset for a given FMTLayer.
 		*/
 		template<typename T>
-		GDALDataset* createDataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid, std::string format = "GTiff") const;
+		GDALDataset* createDataset(const std::string& location, const Spatial::FMTLayer<T>& layer, const int datatypeid, std::string format = "GTiff") const;
 		// DocString: FMTParser::getDataset
 		/**
 		Open in readonly a GDALdataset from a given (location), will throw if anything went wrong.

@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 { 
 	FMTYieldRequest::FMTYieldRequest(const Core::FMTDevelopment& ldevelopment,
-		const Graph::FMTgraphvertextoyield& lgraphvertex) :
+		const Graph::FMTGraphVertexToYield& lgraphvertex) :
 		datas(),
 		resume_mask(),
 		m_yields(),
@@ -62,7 +62,7 @@ namespace Core
 	{
 		return resume_mask;
 	}
-	const Graph::FMTgraphvertextoyield* FMTYieldRequest::getVertexGraphInfo() const
+	const Graph::FMTGraphVertexToYield* FMTYieldRequest::getVertexGraphInfo() const
 	{
 		return graphvertex;
 	}

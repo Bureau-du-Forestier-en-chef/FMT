@@ -208,7 +208,7 @@ namespace Core {
 	std::unique_ptr<Models::FMTModel> FMTYieldModelDecisionTree::getNaturalGrowth(const Core::FMTYieldRequest& request) const
 	{
 		try {
-			const Graph::FMTgraphvertextoyield* graphinfo = request.getVertexGraphInfo();
+			const Graph::FMTGraphVertexToYield* graphinfo = request.getVertexGraphInfo();
 			//const Models::FMTModel* modelptr = graphinfo->getModel();
 			std::vector<Core::FMTActualDevelopment>newareas;
 			const Core::FMTMask mask = reference->getSources().begin()->getMask();

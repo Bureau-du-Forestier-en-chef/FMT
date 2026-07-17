@@ -29,7 +29,7 @@ int main()
 	{
 #if defined FMTWITHGDAL && defined FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 		{
 		#ifdef FMTWITHONNXR
 			
@@ -75,7 +75,7 @@ int main()
 				simulationmodel.setTransitions(strans);
 				Parser::FMTAreaParser areaparser;
 				//areaparser.passinobject(modelparser);
-				Spatial::FMTforest initialforestmap=areaparser.vectormaptoFMTforest(maplocation,380,optimizationmodel.getThemes(),agefield,areafield,1,0.0001,lockfield,0.0,"",false);
+				Spatial::FMTForest initialforestmap=areaparser.vectormaptoFMTforest(maplocation,380,optimizationmodel.getThemes(),agefield,areafield,1,0.0001,lockfield,0.0,"",false);
 				simulationmodel.setInitialMapping(initialforestmap);
 				for (size_t period = 1; period <= 5; ++period)
 				{
@@ -91,7 +91,7 @@ int main()
 				for (size_t period = 1; period <= 5; ++period)
 				{
 					std::vector<std::vector<std::pair<std::string,double>>> periodpredictors;
-					std::vector<std::vector<Graph::FMTpredictor>> predictors = areaparser.writePredictors(outdir,spatialschedule,yieldsforpredictors,simulationmodel,period);
+					std::vector<std::vector<Graph::FMTPredictor>> predictors = areaparser.writePredictors(outdir,spatialschedule,yieldsforpredictors,simulationmodel,period);
 					for (const auto& predictorslist : predictors)
 					{
 						for (const auto& predict : predictorslist)

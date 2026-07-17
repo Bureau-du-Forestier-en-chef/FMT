@@ -141,10 +141,10 @@ int main(int argc, char *argv[])
 
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
+	std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTReplanningTask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
 		replicate, repSize, 0.5, Core::FMToutputlevel::standard, writeschedule));
-	Parallel::FMTtaskhandler handler(maintaskptr, n_threads);
+	Parallel::FMTTaskHandler handler(maintaskptr, n_threads);
 	//handler.setQuietLogger();
 
 	handler.onDemandRun(); // Pareil à ce qui est dans plannification.cpp pour Lorena

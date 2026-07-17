@@ -29,7 +29,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 /// Namespace for handling FMT versions and features.
 namespace Version
 {
-// DocString: FMTversion
+// DocString: FMTVersion
 /**
 The only purpose of this class is to let the user see which version of FMT he's using.
 It also gives some information about the build date and the actual date.
@@ -38,61 +38,61 @@ It also informs the user about which features are avalaible in FMT.
 
 
 
-class FMTEXPORT FMTversion : public Core::FMTObject
+class FMTEXPORT FMTVersion : public Core::FMTObject
 	{
 	public:
-		// DocString: FMTversion()
+		// DocString: FMTVersion()
 		/**
-		Default constructor of FMTversion.
+		Default constructor of FMTVersion.
 		*/
-		FMTversion()=default;
-		// DocString: ~FMTversion()
+		FMTVersion()=default;
+		// DocString: ~FMTVersion()
 		/**
-		Destructor of FMTversion.
+		Destructor of FMTVersion.
 		*/
-		~FMTversion()=default;
-		// DocString: FMTversion::getMajor
+		~FMTVersion()=default;
+		// DocString: FMTVersion::getMajor
 		/**
 		Getter of the major version of FMT.
 		*/
 		static int getMajor();
-		// DocString: FMTversion::getMinor
+		// DocString: FMTVersion::getMinor
 		/**
 		Getter of the minor version of FMT.
 		*/
 		static int getMinor();
-		// DocString: FMTversion::getPatch
+		// DocString: FMTVersion::getPatch
 		/**
 		Getter of the patch version of FMT.
 		*/
 		static int getPatch();
-		// DocString: FMTversion::getVersion
+		// DocString: FMTVersion::getVersion
 		/**
 		Getter of the string of the version : MAjor.Minor.PATCH
 		*/
 		static std::string getVersion();
-		// DocString: FMTversion::getDatenow
+		// DocString: FMTVersion::getDatenow
 		/**
 		Getter of the actual date: Day Month date
 		*/
 		static std::string getDatenow();
-		// DocString: FMTversion::getBuildDate
+		// DocString: FMTVersion::getBuildDate
 		/**
 		Getter of the build date: date
 		*/
 		static std::string getBuildDate();
-		// DocString: FMTversion::isAtLeast
+		// DocString: FMTVersion::isAtLeast
 		/**
 		Test if the FMT version is at least the given major/minor/patch parameters.
 		*/
 		static bool isAtLeast(int major, int minor, int patch);
-		// DocString: FMTversion::hasFeature
+		// DocString: FMTVersion::hasFeature
 		/**
 		Test if the FMT version have the named feature.
 		Features GDAL,OSI,MOSEK,PYTHON,R.
 		*/
 		static bool hasFeature(const std::string& name);
-		// DocString: FMTversion::getLicense
+		// DocString: FMTVersion::getLicense
 		/**
 		Returns thes license has a regular string if french = true the returned license will be in french
 		*/

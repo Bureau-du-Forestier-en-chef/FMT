@@ -123,18 +123,18 @@ namespace Models
         FMTSeModel(rhs),
         m_TotalMoves(),
         m_CycleMoves(),
-        m_CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
+        m_CoolingSchedule(std::unique_ptr<Spatial::FMTExponentialSchedule>(new Spatial::FMTExponentialSchedule())),
         m_NotAcceptedMovesCount(),
         m_BestObjective()
     {
 
     }
 
-    FMTSaModel::FMTSaModel(const FMTModel& rhs, const Spatial::FMTforest& forest):
+    FMTSaModel::FMTSaModel(const FMTModel& rhs, const Spatial::FMTForest& forest):
         FMTSeModel(rhs,forest),
         m_TotalMoves(),
         m_CycleMoves(),
-        m_CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
+        m_CoolingSchedule(std::unique_ptr<Spatial::FMTExponentialSchedule>(new Spatial::FMTExponentialSchedule())),
         m_NotAcceptedMovesCount(),
         m_BestObjective()
     {
@@ -145,7 +145,7 @@ namespace Models
         FMTSeModel(rhs),
         m_TotalMoves(),
         m_CycleMoves(),
-        m_CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
+        m_CoolingSchedule(std::unique_ptr<Spatial::FMTExponentialSchedule>(new Spatial::FMTExponentialSchedule())),
         m_NotAcceptedMovesCount(),
         m_BestObjective()
     {
@@ -177,7 +177,7 @@ namespace Models
 		}
 
 
-    Graph::FMTgraphstats FMTSaModel::buildPeriod()
+    Graph::FMTGraphStats FMTSaModel::buildPeriod()
     {
 		return m_BestSolution.randomBuild(*this,m_generator);
     }
@@ -287,7 +287,7 @@ namespace Models
 
    Spatial::FMTSpatialSchedule FMTSaModel::_doConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
        const Spatial::FMTSpatialSchedule::actionbindings& bindings,
-       std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool, const int& period) const
+       std::vector<std::vector<Spatial::FMTCoordinate>> selectionpool, const int& period) const
    {
        try {
            const size_t MOVE_SIZE = _getLocalMoveSize();
@@ -298,19 +298,19 @@ namespace Models
            }
            std::shuffle(selectionpool.begin(), selectionpool.end(),m_generator);
            size_t totalsize = 0;
-           std::vector<Spatial::FMTcoordinate>finalSelection;
-           std::vector<std::vector<Spatial::FMTcoordinate>>::const_iterator selected = selectionpool.begin();
+           std::vector<Spatial::FMTCoordinate>finalSelection;
+           std::vector<std::vector<Spatial::FMTCoordinate>>::const_iterator selected = selectionpool.begin();
            while (totalsize < MOVE_SIZE && 
                selected != selectionpool.end())
            {
-               for (const Spatial::FMTcoordinate& coordinate : *selected)
+               for (const Spatial::FMTCoordinate& coordinate : *selected)
                {
                    finalSelection.push_back(coordinate);
                    ++totalsize;
                }
                ++selected;
            }
-           std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = finalSelection.begin();
+           std::vector<Spatial::FMTCoordinate>::const_iterator luckycoordinateit = finalSelection.begin();
            Spatial::FMTSpatialSchedule newsolution(actual, finalSelection.begin(), finalSelection.end());
            newsolution.enableSolutionTracker(m_SpatialGraphs);
            while (luckycoordinateit != finalSelection.end())
@@ -333,7 +333,7 @@ namespace Models
        try {
            const std::vector<bool>selectedActions = _getFromBindings(bindings,true);
            const int period = actual.getPeriodWithMaximalEvents(selectedActions);
-           const std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool = actual.getAdjacencyConflictCoordinates(bindings, period);
+           const std::vector<std::vector<Spatial::FMTCoordinate>> selectionpool = actual.getAdjacencyConflictCoordinates(bindings, period);
            return _doConflictDestruction(actual, bindings, selectionpool, period);
        }catch (...)
             {
@@ -346,12 +346,12 @@ namespace Models
    {
        try {
            std::vector<Core::FMTConstraint>::const_iterator ConstraintIt = constraints.begin();
-           std::vector<Spatial::FMTcoordinate>allCoordinates;
+           std::vector<Spatial::FMTCoordinate>allCoordinates;
            while (ConstraintIt != constraints.end())
            {
                if (ConstraintIt->getConstraintType() == Core::FMTconstrainttype::FMTSpatialGroup)
                {
-                   const  std::vector<Spatial::FMTcoordinate> CONSTRAINT_C = p_actual.getGroupsConflict(
+                   const  std::vector<Spatial::FMTCoordinate> CONSTRAINT_C = p_actual.getGroupsConflict(
                        *ConstraintIt, m_SpatialGraphs);
                    allCoordinates.insert(allCoordinates.end(), CONSTRAINT_C.begin(), CONSTRAINT_C.end());
                }
@@ -530,7 +530,7 @@ namespace Models
         try {
             const std::vector<bool>selectedActions = _getFromBindings(bindings);
             const int period = actual.getPeriodWithMaximalEvents(selectedActions);
-            const std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool = actual.getAreaConflictCoordinates(bindings, period);
+            const std::vector<std::vector<Spatial::FMTCoordinate>> selectionpool = actual.getAreaConflictCoordinates(bindings, period);
             return _doConflictDestruction(actual, bindings, selectionpool, period);
         }
         catch (...)
@@ -546,7 +546,7 @@ namespace Models
         try {
             const size_t MOVE_SIZE = _getLocalMoveSize();
             std::uniform_int_distribution<int> perioddistribution(1, actual.actPeriod() - 1);//period to change
-            std::vector<Spatial::FMTcoordinate> selectionPool;
+            std::vector<Spatial::FMTCoordinate> selectionPool;
             int period = 0;
             while (selectionPool.empty())
             {
@@ -559,7 +559,7 @@ namespace Models
                     "Empty solution ", "FMTSaModel::move()", __LINE__, __FILE__);
             }
             std::shuffle(selectionPool.begin(), selectionPool.end(), m_generator);
-            std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = selectionPool.begin();
+            std::vector<Spatial::FMTCoordinate>::const_iterator luckycoordinateit = selectionPool.begin();
             size_t perturbationdone = 0;
             const size_t SELECTED = std::min(MOVE_SIZE, selectionPool.size());
             _logger->logWithLevel("Local Move Selected " + std::to_string(SELECTED)+"\n", 2);
@@ -696,7 +696,7 @@ namespace Models
                     std::vector<Core::FMTActualDevelopment>shuffledArea(area);
                     std::shuffle(shuffledArea.begin(), shuffledArea.end(), m_generator);
                     FMTsolverinterface SolverInterface = FMTsolverinterface::CLP;
-                    if (Version::FMTversion::hasFeature("MOSEK"))
+                    if (Version::FMTVersion::hasFeature("MOSEK"))
                         {
                        SolverInterface = FMTsolverinterface::MOSEK;
                         }

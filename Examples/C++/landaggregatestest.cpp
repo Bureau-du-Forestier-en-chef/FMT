@@ -13,7 +13,7 @@ int main()
 {
 #ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
-	if (Version::FMTversion().hasFeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 	{
 		const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 		const std::string scenario = "landaggregates";

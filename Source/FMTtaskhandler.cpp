@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parallel
 {
-	FMTtaskhandler::FMTtaskhandler(const FMTtask& maintask, unsigned int maxthread):
+	FMTTaskHandler::FMTTaskHandler(const FMTTask& maintask, unsigned int maxthread):
 		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
 		alltasks()
 		{
@@ -27,11 +27,11 @@ namespace Parallel
 		}catch (...)
 			{
 			_exhandler->printExceptions("FMTtaskhandler reference constructor",
-				"FMTtaskhandler::FMTtaskhandler", __LINE__, __FILE__);
+				"FMTTaskHandler::FMTTaskHandler", __LINE__, __FILE__);
 			}
 		}
 
-	FMTtaskhandler::FMTtaskhandler(const std::unique_ptr<FMTtask>& maintask,
+	FMTTaskHandler::FMTTaskHandler(const std::unique_ptr<FMTTask>& maintask,
 		unsigned int maxthread) :
 		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
 		alltasks()
@@ -40,24 +40,24 @@ namespace Parallel
 		alltasks.push_back(std::move(maintask->clone()));
 	}
 
-	FMTtaskhandler::FMTtaskhandler(const FMTtaskhandler& rhs):
+	FMTTaskHandler::FMTTaskHandler(const FMTTaskHandler& rhs):
 		maxnumberofthread(rhs.maxnumberofthread),
 		alltasks()
 		{
-		for (const std::unique_ptr<FMTtask>& task : rhs.alltasks)
+		for (const std::unique_ptr<FMTTask>& task : rhs.alltasks)
 			{
 			alltasks.push_back(std::move(task->clone()));
 			}
 
 		}
 
-	FMTtaskhandler& FMTtaskhandler::operator =(const FMTtaskhandler& rhs)
+	FMTTaskHandler& FMTTaskHandler::operator =(const FMTTaskHandler& rhs)
 		{
 		if (this!=&rhs)
 			{
 			maxnumberofthread = rhs.maxnumberofthread;
 			alltasks.clear();
-			for (const std::unique_ptr<FMTtask>& task : rhs.alltasks)
+			for (const std::unique_ptr<FMTTask>& task : rhs.alltasks)
 				{
 				alltasks.push_back(std::move(task->clone()));
 				alltasks.push_back(std::move(task->clone()));
@@ -66,40 +66,40 @@ namespace Parallel
 		return *this;
 		}
 
-	const std::vector<std::unique_ptr<FMTtask>>& FMTtaskhandler::getTasks() const
+	const std::vector<std::unique_ptr<FMTTask>>& FMTTaskHandler::getTasks() const
 		{
 		return alltasks;
 		}
 	
-	void FMTtaskhandler::splitTasks()
+	void FMTTaskHandler::splitTasks()
 		{
 		try {
 			if (alltasks.size()>1)
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Too much task to split",
-					"FMTtask::split", __LINE__, __FILE__);
+					"FMTTask::split", __LINE__, __FILE__);
 				}
-			std::vector<std::unique_ptr<FMTtask>> newtasks = std::move(alltasks.at(0)->split(maxnumberofthread));
+			std::vector<std::unique_ptr<FMTTask>> newtasks = std::move(alltasks.at(0)->split(maxnumberofthread));
 			alltasks.swap(newtasks);
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTtaskhandler::splitTasks", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTTaskHandler::splitTasks", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTtaskhandler::finalize(std::unique_ptr<FMTtask>& lasttask)
+	void FMTTaskHandler::finalize(std::unique_ptr<FMTTask>& lasttask)
 	{
 		try {
 			lasttask->finalize();
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTtaskhandler::finalize", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTTaskHandler::finalize", __LINE__, __FILE__);
 		}
 
 	}
 
-	void FMTtaskhandler::_interruptWork(boost::thread& p_thread)
+	void FMTTaskHandler::_interruptWork(boost::thread& p_thread)
 		{
 		if (p_thread.joinable())
 			{
@@ -109,16 +109,16 @@ namespace Parallel
 			}
 		}
 
-	void FMTtaskhandler::conccurentRun()
+	void FMTTaskHandler::conccurentRun()
 		{
 		std::vector<boost::thread>workers;
 		try {
 			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getClock();
 			splitTasks();
-			FMTtask::setTotalThreads(alltasks.size());
-			for (std::unique_ptr<FMTtask>& task : alltasks)
+			FMTTask::setTotalThreads(alltasks.size());
+			for (std::unique_ptr<FMTTask>& task : alltasks)
 				{
-				workers.push_back(boost::thread(&FMTtask::run,task.get()));
+				workers.push_back(boost::thread(&FMTTask::run,task.get()));
 				}
 			for (boost::thread& worker : workers)
 				{
@@ -136,21 +136,21 @@ namespace Parallel
 				{
 				_interruptWork(worker);
 				}
-				_exhandler->printExceptions("", "FMTtaskhandler::conccurentRun", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTTaskHandler::conccurentRun", __LINE__, __FILE__);
 			}
 
 		}
 
-	void FMTtaskhandler::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
+	void FMTTaskHandler::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 		{
 		// TODO GAB faire un warning si on passe par ici on créer un nouveau logger qui va chier en multithreads
-		for (std::unique_ptr<FMTtask>& task : alltasks)
+		for (std::unique_ptr<FMTTask>& task : alltasks)
 			{
 			task->passInLogger(logger);
 			}
 		}
 
-	void FMTtaskhandler::onDemandRun()
+	void FMTTaskHandler::onDemandRun()
 	{
 		std::list<FMTWorkerTask> workers;
 
@@ -162,19 +162,19 @@ namespace Parallel
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Need to have one master task for ondemandrun",
-					"FMTtaskhandler::onDemandRun", __LINE__, __FILE__);
+					"FMTTaskHandler::onDemandRun", __LINE__, __FILE__);
 			}
 
 			if (maxnumberofthread <= 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Invalid thread count",
-					"FMTtaskhandler::onDemandRun", __LINE__, __FILE__);
+					"FMTTaskHandler::onDemandRun", __LINE__, __FILE__);
 			}
 
-			FMTtask::setTotalThreads(static_cast<size_t>(maxnumberofthread));
+			FMTTask::setTotalThreads(static_cast<size_t>(maxnumberofthread));
 
-			std::unique_ptr<FMTtask> newtask = alltasks.at(0)->spawn();
+			std::unique_ptr<FMTTask> newtask = alltasks.at(0)->spawn();
 
 			while (workers.size() < static_cast<size_t>(maxnumberofthread) && newtask)
 			{
@@ -214,19 +214,19 @@ namespace Parallel
 			}
 			workers.clear();
 
-			_exhandler->printExceptions("", "FMTtaskhandler::onDemandRun",
+			_exhandler->printExceptions("", "FMTTaskHandler::onDemandRun",
 				__LINE__, __FILE__);
 		}
 	}
 
-	void FMTtaskhandler::logTaskTime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const
+	void FMTTaskHandler::logTaskTime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const
 	{
 		try {
 			_logger->logWithLevel("All tasks completed " + getDurationInSeconds(startime) + "\n", 0);
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTtaskhandler::logTaskTime", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTTaskHandler::logTaskTime", __LINE__, __FILE__);
 		}
 	}
 

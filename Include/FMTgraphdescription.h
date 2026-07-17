@@ -25,8 +25,8 @@ namespace Graph
 	/*typedef boost::adjacency_list< boost::listS,
 		boost::listS,
 		boost::bidirectionalS,
-		FMTvertexproperties,
-		FMTedgeproperties,
+		FMTVertexProperties,
+		FMTEdgeProperties,
 		boost::no_property,
 		boost::listS>FMTadjacency_list;
 

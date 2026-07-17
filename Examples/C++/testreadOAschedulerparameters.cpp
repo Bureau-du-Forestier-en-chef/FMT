@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     std::vector<std::string>scenarios(1, scenario);
     const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
     Parser::FMTAreaParser areaParser;
-    const std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, models.at(0).getThemes(), 13, 1);
+    const std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, models.at(0).getThemes(), 13, 1);
 #endif
     return 0;
 	}

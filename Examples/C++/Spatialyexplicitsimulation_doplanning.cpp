@@ -46,7 +46,7 @@ int main()
 	simulationmodel.setTransitions(strans);
 	Parser::FMTAreaParser areaparser;
 	const std::string shpfile = modellocation + "Carte/TWD_land.shp";
-	Spatial::FMTforest initialforestmap = areaparser.vectormaptoFMTforest(shpfile,380,simulationmodel.getThemes(),"AGE","SUPERFICIE", 1, 0.0001);
+	Spatial::FMTForest initialforestmap = areaparser.vectormaptoFMTforest(shpfile,380,simulationmodel.getThemes(),"AGE","SUPERFICIE", 1, 0.0001);
 	simulationmodel.setInitialMapping(initialforestmap);
 	simulationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,10);
 	simulationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
@@ -96,7 +96,7 @@ int main()
 	Logging::FMTDefaultLogger() << "ysize : " << spatialsolution.getYSize() << "\n";
 	for (int period = 1; period <= 10; ++period)
 		{
-		for (const std::pair<Spatial::FMTcoordinate,double>& value : spatialsolution.getOutputByCoordinate(simulationmodel, spatialoutput, period))
+		for (const std::pair<Spatial::FMTCoordinate,double>& value : spatialsolution.getOutputByCoordinate(simulationmodel, spatialoutput, period))
 				{
 				Logging::FMTDefaultLogger() << "period: " << period << " X: " << value.first.getX() << " Y: " << value.first.getY() << " value: " << value.second << "\n";
 				}

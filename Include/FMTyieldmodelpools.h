@@ -47,7 +47,7 @@ namespace Core
 		/**
 		Implements FMTYieldModel::getInputValues().
 		*/
-		const std::vector<double> getInputValues(const Graph::FMTpredictor& predictor) const;
+		const std::vector<double> getInputValues(const Graph::FMTPredictor& predictor) const;
 		// DocString: FMTYieldModelPools::getModelType()
 		/**
 		Return the modeltype of the FMTYieldModel.

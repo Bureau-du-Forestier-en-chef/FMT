@@ -30,10 +30,10 @@ namespace Core
 {
 // DocString: FMTOutput
 /**
-FMTOutput let the user formulate constraint in the optimize section or just collect data across the FMTgraph.
+FMTOutput let the user formulate constraint in the optimize section or just collect data across the FMTGraph.
 FMTOutput hold a vector of outputsources and operators. Outputs  that are non linear cannot be used into
 matrix constraints formulation. Outputs have multiple outputs node representing a set of FMTDevelopment in the 
-FMTgraph. Each FMTDevelopment can be part of one FMTOutput.
+FMTGraph. Each FMTDevelopment can be part of one FMTOutput.
 */
 class FMTEXPORT FMTOutput: public FMTObject
     {
@@ -210,7 +210,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 			int period = 1) const;
 		// DocString: FMTOutput::isSinglePeriod
 		/**
-		Returns true if the FMTOutput cover only one single period of the FMTgraph, false if
+		Returns true if the FMTOutput cover only one single period of the FMTGraph, false if
 		the FMTOutput covers multiple periods.
 		*/
 		bool isSinglePeriod() const;

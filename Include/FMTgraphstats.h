@@ -20,14 +20,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-// DocString: FMTgraphstats
+// DocString: FMTGraphStats
 /**
-Graph stats gives you information about the FMTgraph and the FMTLpSolver. About there size, elements and type of elements.
+Graph stats gives you information about the FMTGraph and the FMTLpSolver. About there size, elements and type of elements.
 */
-class FMTEXPORT FMTgraphstats
+class FMTEXPORT FMTGraphStats
 	{
 	friend class boost::serialization::access;
-	// DocString: FMTgraphstats::serialize
+	// DocString: FMTGraphStats::serialize
 	/**
 	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
@@ -43,83 +43,83 @@ class FMTEXPORT FMTgraphstats
 		ar & BOOST_SERIALIZATION_NVP(output_cols);
 	}
 	public:
-		// DocString: FMTgraphstats::cols
+		// DocString: FMTGraphStats::cols
 		///Number of columns in the matrix of FMTLpSolver.
 		int cols;
-		// DocString: FMTgraphstats::rows
+		// DocString: FMTGraphStats::rows
 		///Number of rows in the matrix of FMTLpSolver.
 		int rows;
-		// DocString: FMTgraphstats::vertices
-		///Number of vertices in the FMTgraph.
+		// DocString: FMTGraphStats::vertices
+		///Number of vertices in the FMTGraph.
 		int vertices;
-		// DocString: FMTgraphstats::edges
-		///Number of edges in the FMTgraph.
+		// DocString: FMTGraphStats::edges
+		///Number of edges in the FMTGraph.
 		int edges;
-		// DocString: FMTgraphstats::transfer_rows
+		// DocString: FMTGraphStats::transfer_rows
 		///Number of area transfer rows in the FMTLpSolver.
 		int transfer_rows;
-		// DocString: FMTgraphstats::output_rows
+		// DocString: FMTGraphStats::output_rows
 		///Number of output rows in the FMTLpSolver.
 		int output_rows;
-		// DocString: FMTgraphstats::output_cols
+		// DocString: FMTGraphStats::output_cols
 		///Number of output cols in the FMTLpSolver.
 		int output_cols;
-		// DocString: FMTgraphstats()
+		// DocString: FMTGraphStats()
 		/**
-		Default constructor for FMTgraphstats.
+		Default constructor for FMTGraphStats.
 		*/
-		FMTgraphstats();
-		// DocString: FMTgraphstats(const FMTgraphstats&)
+		FMTGraphStats();
+		// DocString: FMTGraphStats(const FMTGraphStats&)
 		/**
-		Default copy constructor for FMTgraphstats.
+		Default copy constructor for FMTGraphStats.
 		*/
-		FMTgraphstats(const FMTgraphstats& rhs)=default;
-		// DocString: FMTgraphstats::operator=
+		FMTGraphStats(const FMTGraphStats& rhs)=default;
+		// DocString: FMTGraphStats::operator=
 		/**
-		Default copy assignment for FMTgraphstats.
+		Default copy assignment for FMTGraphStats.
 		*/
-		FMTgraphstats& operator = (const FMTgraphstats& rhs)=default;
-		// DocString: FMTgraphstats::operator+=
+		FMTGraphStats& operator = (const FMTGraphStats& rhs)=default;
+		// DocString: FMTGraphStats::operator+=
 		/**
-		Default += compount assignment for FMTgraphstats.
+		Default += compount assignment for FMTGraphStats.
 		*/
-		FMTgraphstats& operator += (const FMTgraphstats& rhs);
-		// DocString: FMTgraphstats::operator-=
+		FMTGraphStats& operator += (const FMTGraphStats& rhs);
+		// DocString: FMTGraphStats::operator-=
 		/**
-		Default -= compount assignment for FMTgraphstats.
+		Default -= compount assignment for FMTGraphStats.
 		*/
-		FMTgraphstats& operator -= (const FMTgraphstats& rhs);
-		// DocString: FMTgraphstats::operator+
+		FMTGraphStats& operator -= (const FMTGraphStats& rhs);
+		// DocString: FMTGraphStats::operator+
 		/**
-		Default + operator for FMTgraphstats.
+		Default + operator for FMTGraphStats.
 		*/
-		FMTgraphstats operator + (const FMTgraphstats& rhs);
-		// DocString: FMTgraphstats::operator-
+		FMTGraphStats operator + (const FMTGraphStats& rhs);
+		// DocString: FMTGraphStats::operator-
 		/**
-		Default - operator for FMTgraphstats.
+		Default - operator for FMTGraphStats.
 		*/
-		FMTgraphstats operator - (const FMTgraphstats& rhs);
-		// DocString: FMTgraphstats::operator==
+		FMTGraphStats operator - (const FMTGraphStats& rhs);
+		// DocString: FMTGraphStats::operator==
 		/**
-		Comparison operator of FMTgraphstats.
+		Comparison operator of FMTGraphStats.
 		*/
-		bool operator == (const FMTgraphstats& rhs) const;
-		// DocString: FMTgraphstats::operator!=
+		bool operator == (const FMTGraphStats& rhs) const;
+		// DocString: FMTGraphStats::operator!=
 		/**
-		FMTgraphstats nonequality operator.
+		FMTGraphStats nonequality operator.
 		*/
-		bool operator != (const FMTgraphstats& rhs) const;
-		// DocString: FMTgraphstats:operator std::string
+		bool operator != (const FMTGraphStats& rhs) const;
+		// DocString: FMTGraphStats:operator std::string
 		/**
-		Returns all the informations contained in the FMTgraphstats in a std::string.
+		Returns all the informations contained in the FMTGraphStats in a std::string.
 		*/
 		operator std::string() const;
-		// DocString: ~FMTgraphstats()
+		// DocString: ~FMTGraphStats()
 		/**
-		Default destructor for FMTgraphstats.
+		Default destructor for FMTGraphStats.
 		*/
-		~FMTgraphstats()=default;
+		~FMTGraphStats()=default;
 	};
 }
-BOOST_CLASS_EXPORT_KEY(Graph::FMTgraphstats)
+BOOST_CLASS_EXPORT_KEY(Graph::FMTGraphStats)
 #endif

@@ -443,7 +443,7 @@ std::unordered_set<int>FMTOutputSource::targetsSet(const std::vector<FMTAction>&
 }
 
 bool FMTOutputSource::use(const FMTDevelopment& development, const FMTYields& ylds,
-	const Graph::FMTgraphvertextoyield* graphinfo) const
+	const Graph::FMTGraphVertexToYield* graphinfo) const
 {
 	return (development.getMask().isSubsetOf(mask) && development.is(*this, ylds, graphinfo));
 }
@@ -477,7 +477,7 @@ void FMTOutputSource::setYield(const std::string& p_Yield)
 
 double FMTOutputSource::getCoef(const FMTDevelopment& development,
 	const FMTYields& yields,
-	const Graph::FMTgraphvertextoyield* graphinfo,
+	const Graph::FMTGraphVertexToYield* graphinfo,
 	std::vector<FMTDevelopmentPath> const * paths,
 	FMTAction const * modelaction) const
 	{

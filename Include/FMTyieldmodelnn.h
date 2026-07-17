@@ -89,7 +89,7 @@ namespace Core
 		/**
 		Returns inputs values based on a predictor passed as parameter.
 		*/
-		virtual const std::vector<double> getInputValues(const Graph::FMTpredictor& predictor) const = 0;
+		virtual const std::vector<double> getInputValues(const Graph::FMTPredictor& predictor) const = 0;
 		// DocString: FMTYieldModelNn::removeNans
 		/**
 		Replaces nan values with default values.

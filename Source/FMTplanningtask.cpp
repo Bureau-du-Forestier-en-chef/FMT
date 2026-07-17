@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parallel
 {
 
-	std::list<std::unique_ptr<Models::FMTModel>>FMTplanningtask::copyModels(const std::list<std::unique_ptr<Models::FMTModel>>& tocopy) const
+	std::list<std::unique_ptr<Models::FMTModel>>FMTPlanningTask::copyModels(const std::list<std::unique_ptr<Models::FMTModel>>& tocopy) const
 	{
 		std::list<std::unique_ptr<Models::FMTModel>>newmodels;
 		try {
@@ -27,13 +27,13 @@ namespace Parallel
 				}
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTplanningtask::copyModels", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTPlanningTask::copyModels", __LINE__, __FILE__);
 		}
 		return newmodels;
 	}
 
 
-	FMTplanningtask::FMTplanningtask(const FMTplanningtask& rhs):
+	FMTPlanningTask::FMTPlanningTask(const FMTPlanningTask& rhs):
 		m_ResultsWriter(rhs.m_ResultsWriter),
 		m_Models(copyModels(rhs.m_Models)),
 		m_allSchedules(rhs.m_allSchedules),
@@ -44,7 +44,7 @@ namespace Parallel
 		
 	}
 
-	FMTplanningtask& FMTplanningtask::operator = (const FMTplanningtask& rhs)
+	FMTPlanningTask& FMTPlanningTask::operator = (const FMTPlanningTask& rhs)
 	{
 		if (this!=&rhs)
 		{
@@ -58,7 +58,7 @@ namespace Parallel
 	}
 
 
-	FMTplanningtask::FMTplanningtask(
+	FMTPlanningTask::FMTPlanningTask(
 		const int& minoutputperiod,
 		const int& maxoutputperiod,
 		const std::string& outputlocation,
@@ -73,15 +73,15 @@ namespace Parallel
 		m_keepModels(false)
 	{
 		try {
-			m_ResultsWriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod, primaryfilelocatiron));
+			m_ResultsWriter = std::shared_ptr<FMTParallelWriter>(new FMTParallelWriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod, primaryfilelocatiron));
 			m_ResultsWriter->setLayer(boost::filesystem::path(primaryfilelocatiron).stem().string());
 		}catch (...)
 			{
-			_exhandler->printExceptions("", "FMTplanningtask::FMTplanningtask", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTPlanningTask::FMTPlanningTask", __LINE__, __FILE__);
 			}
 	}
 
-	void FMTplanningtask::push_back(const Models::FMTModel& model,
+	void FMTPlanningTask::push_back(const Models::FMTModel& model,
 		std::vector<Core::FMTSchedule>schedules, std::vector<Core::FMTOutput>loutputs)
 	{
 		try {
@@ -98,26 +98,26 @@ namespace Parallel
 			//;
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTplanningtask::push_back", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTPlanningTask::push_back", __LINE__, __FILE__);
 			}
 	}
 
 
-	std::unique_ptr<FMTtask> FMTplanningtask::clone() const
+	std::unique_ptr<FMTTask> FMTPlanningTask::clone() const
 		{
-		return std::unique_ptr<FMTtask>(new FMTplanningtask(*this));
+		return std::unique_ptr<FMTTask>(new FMTPlanningTask(*this));
 		}
 
-	std::vector<std::unique_ptr<FMTtask>>FMTplanningtask::split(const unsigned int& numberoftasks) const
+	std::vector<std::unique_ptr<FMTTask>>FMTPlanningTask::split(const unsigned int& numberoftasks) const
 	{
-		std::vector<std::unique_ptr<FMTtask>>tasks;
+		std::vector<std::unique_ptr<FMTTask>>tasks;
 		try {
 			std::list<std::unique_ptr<Models::FMTModel>>allmodels=copyModels(m_Models);
 			std::list<std::vector<Core::FMTSchedule>>modelschedules(m_allSchedules);
 			std::list<std::vector<Core::FMTOutput>>modeloutputs(m_Outputs);
 			for (const size_t tasksize : splitWork(numberoftasks, static_cast<int>(m_Models.size())))
 				{
-				FMTplanningtask newtask(*this);
+				FMTPlanningTask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTModel>>modelsoftask;
 				std::list<std::vector<Core::FMTSchedule>>schedulesoftask;
 				std::list<std::vector<Core::FMTOutput>>outputsoftask;
@@ -137,17 +137,17 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTplanningtask::split", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTPlanningTask::split", __LINE__, __FILE__);
 			}
 		return tasks;
 	}
 
-	std::unique_ptr<FMTtask>FMTplanningtask::spawn()
+	std::unique_ptr<FMTTask>FMTPlanningTask::spawn()
 	{
 		try {
 			if (!m_Models.empty())
 				{
-				FMTplanningtask newtask(*this);
+				FMTPlanningTask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTModel>>singlemodel;
 				std::list<std::vector<Core::FMTSchedule>>singleschedule;
 				std::list<std::vector<Core::FMTOutput>>singleoutputs;
@@ -164,12 +164,12 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTplanningtask::spawn", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTPlanningTask::spawn", __LINE__, __FILE__);
 			}
-	return std::unique_ptr<FMTtask>(nullptr);
+	return std::unique_ptr<FMTTask>(nullptr);
 	}
 
-	void FMTplanningtask::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
+	void FMTPlanningTask::passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger)
 		{
 		try {
 			for (std::unique_ptr<Models::FMTModel>& model : m_Models)
@@ -178,17 +178,17 @@ namespace Parallel
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTplanningtask::passInLogger", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTPlanningTask::passInLogger", __LINE__, __FILE__);
 			}
 		}
 
-	void FMTplanningtask::setKeepModels()
+	void FMTPlanningTask::setKeepModels()
 		{
 		m_keepModels = true;
 		}
 
 
-	void FMTplanningtask::work()
+	void FMTPlanningTask::work()
 	{
 		try {
 			std::list<std::unique_ptr<Models::FMTModel>>modelskept;
@@ -229,18 +229,18 @@ namespace Parallel
 			//setstatus(true);
 		}catch (...)
 		{
-			_exhandler->raiseFromThreadCatch("","FMTplanningtask::work", __LINE__, __FILE__);
+			_exhandler->raiseFromThreadCatch("","FMTPlanningTask::work", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTplanningtask::finalize()
+	void FMTPlanningTask::finalize()
 	{
 		try {
 		
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTplanningtask::finalize", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTPlanningTask::finalize", __LINE__, __FILE__);
 		}
 	}
 

@@ -17,36 +17,36 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Version
 {
-int FMTversion::getMajor()
+int FMTVersion::getMajor()
 	{
 	return FMT_MAJOR;
 	}
-int FMTversion::getMinor()
+int FMTVersion::getMinor()
 	{
 	return FMT_MINOR;
 	}
-int FMTversion::getPatch()
+int FMTVersion::getPatch()
 	{
 	return FMT_PATCH;
 	}
 
-std::string FMTversion::getDatenow()
+std::string FMTVersion::getDatenow()
 	{
 	auto now = std::chrono::system_clock::now();
 	std::time_t end_time = std::chrono::system_clock::to_time_t(now);
 	return static_cast<std::string>(std::ctime(&end_time));
 	}
 
-std::string FMTversion::getBuildDate()
+std::string FMTVersion::getBuildDate()
 	{
 	return (static_cast<std::string>((__DATE__)) +" "+ static_cast<std::string>(std::string(__TIME__)));
 	}
 
-std::string FMTversion::getVersion()
+std::string FMTVersion::getVersion()
 	{
 	return std::to_string(getMajor()) + "." + std::to_string(getMinor()) + "." + std::to_string(getPatch());
 	}
-bool FMTversion::isAtLeast(int major, int minor, int patch)
+bool FMTVersion::isAtLeast(int major, int minor, int patch)
 	{
 	if (getMajor()>=major && getMinor()>=minor && getPatch()>=patch)
 		{
@@ -54,7 +54,7 @@ bool FMTversion::isAtLeast(int major, int minor, int patch)
 		}
 	return false;
 	}
-bool FMTversion::hasFeature(const std::string& name)
+bool FMTVersion::hasFeature(const std::string& name)
 	{
 	#ifdef FMTWITHR
 		if (name == "R")
@@ -95,7 +95,7 @@ bool FMTversion::hasFeature(const std::string& name)
 	return false;
 	}
 
-std::string FMTversion::getLicense(bool french)
+std::string FMTVersion::getLicense(bool french)
     {
     std::string fulllicense;
     try{
@@ -104,7 +104,7 @@ std::string FMTversion::getLicense(bool french)
         if (!boost::filesystem::is_directory(boost::filesystem::path(licenselocation)))
             {
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-                "Cannot find LICENSES directory at "+licenselocation,"FMTversion::getLicense",__LINE__,__FILE__);
+                "Cannot find LICENSES directory at "+licenselocation,"FMTVersion::getLicense",__LINE__,__FILE__);
             }
         if (french)
             {
@@ -115,7 +115,7 @@ std::string FMTversion::getLicense(bool french)
         if (!boost::filesystem::is_regular_file(boost::filesystem::path(licenselocation)))
             {
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-                "Cannot find "+licenselocation,"FMTversion::getLicense",__LINE__,__FILE__);
+                "Cannot find "+licenselocation,"FMTVersion::getLicense",__LINE__,__FILE__);
             }
     Parser::FMTParser newparser;
     std::ifstream licensestream(licenselocation);
@@ -129,7 +129,7 @@ std::string FMTversion::getLicense(bool french)
         }
     }catch(...)
         {
-        _exhandler->printExceptions("", "FMTversion::getLicense", __LINE__, __FILE__);
+        _exhandler->printExceptions("", "FMTVersion::getLicense", __LINE__, __FILE__);
         }
     return fulllicense;
     }

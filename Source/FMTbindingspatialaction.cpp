@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
-	FMTbindingspatialaction::FMTbindingspatialaction(const std::vector<int>& lneighbors,
+	FMTBindingSpatialAction::FMTBindingSpatialAction(const std::vector<int>& lneighbors,
 		const size_t& mingreenup, const size_t& maxgreenup,
 		const size_t& minadjacency, const size_t& maxadjacency,
 		const size_t& minsize, const size_t& maxsize,
@@ -26,28 +26,28 @@ namespace Spatial
 	{
 
 	}
-	bool FMTbindingspatialaction::isSpatiallyBinding() const
+	bool FMTBindingSpatialAction::isSpatiallyBinding() const
 	{
 		return (isSpatiallyAdjacencyBinding()|| isSpatiallyAreaBinding());
 	}
 
-	bool FMTbindingspatialaction::isSpatiallyAdjacencyBinding() const
+	bool FMTBindingSpatialAction::isSpatiallyAdjacencyBinding() const
 	{
 		return (!neighbors.empty() && (minimal_adjacency > 0 ||
 			maximal_adjacency != std::numeric_limits<size_t>::max()));
 	}
 
-	bool FMTbindingspatialaction::isSpatiallyAreaBinding() const
+	bool FMTBindingSpatialAction::isSpatiallyAreaBinding() const
 		{
 		return (!neighbors.empty() && (minimal_size > 0 ||
 				maximal_size != std::numeric_limits<size_t>::max()));
 		}
 
-	bool FMTbindingspatialaction::testMinimalAdjacency() const
+	bool FMTBindingSpatialAction::testMinimalAdjacency() const
 	{
 		return (!neighbors.empty() &&  minimal_adjacency > 0);
 	}
-	bool FMTbindingspatialaction::testMaximalAdjacency() const
+	bool FMTBindingSpatialAction::testMaximalAdjacency() const
 	{
 		return (!neighbors.empty() &&  maximal_adjacency != std::numeric_limits<size_t>::max());
 	}

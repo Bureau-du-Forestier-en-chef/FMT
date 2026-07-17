@@ -62,7 +62,7 @@ int main()
 	{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 	}
-	Spatial::FMTforest initialforestmap = areaparser.readRasters(simulationmodel.getThemes(), themesrast, agerast, 1, 0.0001);
+	Spatial::FMTForest initialforestmap = areaparser.readRasters(simulationmodel.getThemes(), themesrast, agerast, 1, 0.0001);
 	simulationmodel.setInitialMapping(initialforestmap);
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
