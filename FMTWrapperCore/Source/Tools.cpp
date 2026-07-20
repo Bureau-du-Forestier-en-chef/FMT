@@ -161,7 +161,7 @@ void FMTWrapperCore::Tools::writeToProject(
 		}
 		const boost::filesystem::path PRIMARY_PATH = boost::filesystem::path(p_destinationDirectory) / (BASENAME + ".pri");
 		Parser::FMTModelParser ModelParser;
-		for (const Models::FMTmodel& MODEL : p_models)
+		for (const Models::FMTModel& MODEL : p_models)
 		{
 			ModelParser.writeToProject(PRIMARY_PATH.string(), MODEL);
 		}
