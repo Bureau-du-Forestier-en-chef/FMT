@@ -17,27 +17,32 @@ namespace Exception
 {
 // DocString: FMTFreeExceptionHandler
 /**
-The FMTFreeExceptionHandler is derived from the FMTExceptionHandler base class.
-This class is realy usefull if you want to pass the exception thrown by FMT directly to the user,
-So he can do whatever he wants to do with it.
+@brief Exception handler derived from FMTExceptionHandler that passes exceptions thrown by FMT directly to the user.
 */
 class FMTEXPORT FMTFreeExceptionHandler final : public FMTExceptionHandler
 {
 public:
 	// DocString: FMTFreeExceptionHandler()
 	/**
-	Default constructor for FMTFreeExceptionHandler
+	@brief Default constructor for FMTFreeExceptionHandler.
 	*/
 	FMTFreeExceptionHandler();
 	// DocString: ~FMTFreeExceptionHandler()
 	/**
-	Default destructor for FMTFreeExceptionHandler
+	@brief Default destructor for FMTFreeExceptionHandler.
 	*/
 	~FMTFreeExceptionHandler() = default;
 	// DocString: FMTFreeExceptionHandler::raise
 	/**
-	The function overide the base class raise function.
-	See raise function of FMTExceptionHandler class.
+	@brief Override the base class raise function. See FMTExceptionHandler::raise.
+	@param[in] lexception the exception type.
+	@param[in] text the message of the exception.
+	@param[in] method the method where the exception occurred.
+	@param[in] line the line where the exception occurred.
+	@param[in] file the file where the exception occurred.
+	@param[in] lsection the section in which the exception occurred.
+	@param[in] throwit if true throws the exception.
+	@return the raised FMTException.
 	*/
 	FMTException raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file,
@@ -45,14 +50,16 @@ public:
 #if defined FMTWITHGDAL
 	// DocString: FMTFreeExceptionHandler::getCPLdata
 	/**
-	Used in the handelCPLerror called back by GDAL function reutnr a abstract copy of itselft.
-	See getCPLdata of FMTExceptionHandler class.
+	@brief Return an abstract copy of itself, used in handelCPLerror called back by GDAL. See FMTExceptionHandler::getCPLdata.
+	@return a pointer to the exception handler.
 	*/
 	FMTExceptionHandler* getCPLdata() override;
 	// DocString: FMTFreeExceptionHandler::handelCPLerror
 	/**
-	Used has call back in gdal.
-	See handelCPLerror of FMTExceptionHandler class.
+	@brief Callback used in GDAL. See FMTExceptionHandler::handelCPLerror.
+	@param[in] eErrClass the error class.
+	@param[in] nError the error number.
+	@param[in] pszErrorMsg the error message.
 	*/
 	void handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg) override;
 #endif
@@ -65,7 +72,10 @@ public:
 private:
 	// DocString: FMTFreeExceptionHandler::serialize
 	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize the FMTFreeExceptionHandler through its base FMTExceptionHandler for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>

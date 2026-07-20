@@ -36,9 +36,8 @@ namespace Parallel
 	class FMTParallelWriter;
 	// DocString: FMTReplanningTask
 	/**
-	The replanning uses global/stochastic/local as abstract model to simulate natural disturbances  
-	over a certain amount of replanning periods for multiple replications. Those replications may generate different results
-	caused by the pseudo random constraints and seed used in the simulations / optimization of each abstract models.
+	@brief Replanning task using global, stochastic and local abstract models to simulate natural disturbances over several replanning periods for multiple replications.
+	@details The replications may generate different results because of the pseudo random constraints and seed used in the simulations and optimizations of each abstract model.
 	*/
 	class FMTEXPORT FMTReplanningTask : public FMTTask
 	{
@@ -46,34 +45,49 @@ namespace Parallel
 	public:
 		// DocString: FMTReplanningTask::FMTReplanningTask()
 		/**
-		Default constructor for FMTReplanningTask
+		@brief Default constructor for FMTReplanningTask.
 		*/
 		FMTReplanningTask() = default;
 		// DocString: FMTReplanningTask::FMTReplanningTask(const FMTReplanningTask&)
 		/**
-		Default copy constructor for FMTReplanningTask
+		@brief Default copy constructor for FMTReplanningTask.
+		@param[in] rhs the FMTReplanningTask to copy.
 		*/
 		FMTReplanningTask(const FMTReplanningTask& rhs) = default;
 		// DocString: FMTReplanningTask::operator=(const FMTReplanningTask&)
 		/**
-		Default copy assignement for FMTReplanningTask
+		@brief Default copy assignment operator for FMTReplanningTask.
+		@param[in] rhs the FMTReplanningTask to copy.
+		@return a reference to this FMTReplanningTask.
 		*/
 		FMTReplanningTask& operator = (const FMTReplanningTask& rhs) = default;
 		// DocString: FMTReplanningTask::~FMTReplanningTask()
 		/**
-		Default destructor
+		@brief Default destructor for FMTReplanningTask.
 		*/
 		virtual ~FMTReplanningTask() = default;
 		// DocString: FMTReplanningTask::clone
 		/**
-		Clone function for FMTReplanningTask
+		@brief Clone function for FMTReplanningTask.
+		@return a unique pointer to the cloned task.
 		*/
 		std::unique_ptr<FMTTask>clone() const;
 		// DocString: FMTReplanningTask::FMTReplanningTask(...)
 		/**
-		The models need to have common sections, outputs to write,outputlocation(outfile),
-		gdaldriver of the output file, the number of replicates, the number of replanning period and the weight of the global schedule applied 
-		to the localschedule.
+		@brief Construct a FMTReplanningTask from the models and the replanning parameters.
+		@details The models need to have common sections.
+		@param[in] globalm the global model.
+		@param[in] stochasticm the stochastic model.
+		@param[in] localm the local model.
+		@param[in] outputs the outputs to write.
+		@param[in] outputlocation the output location.
+		@param[in] gdaldriver the GDAL driver of the output file.
+		@param[in] creationoptions the creation options.
+		@param[in] replicates the number of replicates.
+		@param[in] replanningperiodssize the number of replanning periods.
+		@param[in] minimaldrift the minimal drift.
+		@param[in] outputlevel the output level.
+		@param[in] writeSchedule if true writes a schedule for each replicate.
 		*/
 		FMTReplanningTask(const Models::FMTModel& globalm,
 						const Models::FMTModel& stochasticm,
@@ -89,9 +103,15 @@ namespace Parallel
 						const bool writeSchedule = false);
 		// DocString: FMTReplanningTask::FMTReplanningTask(const Models::FMTModel&,const Models::FMTModel&,const Models::FMTModel&)
 		/**
-		Short constructor for replanning task will use the output of globalmodel as outputs.
-		0.5 as minimal drift...
-		You then need to set the number of replanning periods,globalweight, and the number of replicates.
+		@brief Short constructor for the replanning task using the outputs of the global model and 0.5 as minimal drift.
+		@details You then need to set the number of replanning periods, the global weight and the number of replicates.
+		@param[in] globalm the global model.
+		@param[in] stochasticm the stochastic model.
+		@param[in] localm the local model.
+		@param[in] outputlocation the output location.
+		@param[in] gdaldriver the GDAL driver.
+		@param[in] creationoptions the creation options.
+		@param[in] outputlevel the output level.
 		*/
 		FMTReplanningTask(const Models::FMTModel& globalm,
 			const Models::FMTModel& stochasticm,
@@ -102,48 +122,56 @@ namespace Parallel
 			Core::FMToutputlevel outputlevel);
 		// DocString: FMTReplanningTask::setReplicates
 		/**
-		Set the number of replicates to use...
+		@brief Set the number of replicates to use.
+		@param[in] replicatesnumber the number of replicates.
 		*/
 		void setReplicates(const int& replicatesnumber);
 		// DocString: FMTReplanningTask::setReplicates
 		/**
-		Set the number of replicates to use...
+		@brief Set the range of replicates to use.
+		@param[in] replicatesnumbermin the minimal replicate number.
+		@param[in] replicatesnumbermax the maximal replicate number.
 		*/
 		void setReplicates(const int& replicatesnumbermin, const int& replicatesnumbermax);
 		// DocString: FMTReplanningTask::setReplanningPeriods
 		/**
-		Set the number oof replanning periods.
+		@brief Set the number of replanning periods.
+		@param[in] periodsnumber the number of periods.
 		*/
 		void setReplanningPeriods(const int& periodsnumber);
 		// DocString: FMTReplanningTask::split
 		/**
-		The split fonction that split the main task into multiple tasks of replanning.
+		@brief Split the main task into multiple replanning tasks.
+		@param[in] numberoftasks the number of tasks.
+		@return the split tasks.
 		*/
 		virtual std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const;
 		// DocString: FMTReplanningTask::spwan
 		/**
-		Will spawn a minimal task from the master task
+		@brief Spawn a minimal task from the master task.
+		@return a unique pointer to the spawned task.
 		*/
 		virtual std::unique_ptr<FMTTask>spawn();
 		// DocString: FMTReplanningTask::work
 		/**
-		Main function that do the replanning task
+		@brief Main function doing the replanning task.
 		*/
 		virtual void work();
 		// DocString: FMTReplanningTask::finalize
 		/**
-		We need to take care of writing drift probabilities.
+		@brief Take care of writing the drift probabilities at finalization.
 		*/
 		virtual void finalize();
 		// DocString: FMTReplanningTask::passInLogger
 		/**
-		Pass the logger
+		@brief Pass in the logger.
+		@param[in] logger the logger.
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
-		// DocString: FMTReplanningTask::passInLogger
+		// DocString: FMTReplanningTask::setWriteSchedule
 		/**
-		Set variable tu write replanning schedule.
-		Write schedule = write a schedule for each replicate.
+		@brief Set whether a replanning schedule is written for each replicate.
+		@param[in] p_write if true writes a schedule for each replicate.
 		*/
 		void setWriteSchedule(const bool p_write);
 	private:
@@ -183,14 +211,20 @@ namespace Parallel
 		std::string m_outputlocation;
 		// DocString: FMTReplanningTask::copySharedModel
 		/**
-		Solver logger make it not save to clone a solver with a common logger.
-		So we need to lock this function to make sure that there's no racing between threads.
+		@brief Return a copy of a shared model, locking the function to avoid racing between threads because of the common solver logger.
+		@param[in] model the model to copy.
+		@return the copied model.
 		*/
 		std::unique_ptr<Models::FMTModel>copySharedModel(const std::shared_ptr<Models::FMTModel>model);
 		// DocString: FMTReplanningTask::doModelPlanning
 		/**
-		The main do planning function that call doPlanning on model for a given replanning period and will keep solution and constraints
-		id getsolutionandlocal = true and will apply the schedule weight if applyscheduleweight = true.
+		@brief Call doPlanning on a model for a given replanning period, keeping the solution and constraints and applying the schedule weight when requested.
+		@param[in] model the model.
+		@param[in] replanningperiod the replanning period.
+		@param[in] getsolutionandlocal if true keeps the solution and local constraints.
+		@param[in] applyscheduleweight if true applies the schedule weight.
+		@param[in] setdynamicconstraints if true sets the dynamic constraints.
+		@return the planned model.
 		*/
 		std::unique_ptr<Models::FMTModel>doModelPlanning(
 			const std::shared_ptr<Models::FMTModel>model,
@@ -200,35 +234,45 @@ namespace Parallel
 			bool setdynamicconstraints = true);
 		// DocString: FMTReplanningTask::writeResults
 		/**
-		Write the results from a model pointer, if onlyfirsperiod = true will only write first period else write the whole thing.
+		@brief Write the results from a model pointer.
+		@param[in] modelname the model name.
+		@param[in] modellength the model length.
+		@param[in] modelptr the model.
+		@param[in] replanningperiod the replanning period.
+		@param[in] onlyfirstperiod if true writes only the first period, otherwise the whole horizon.
 		*/
 		void writeResults(const std::string& modelname, const int& modellength,
 			const std::unique_ptr<Models::FMTModel>& modelptr, const int& replanningperiod, bool onlyfirstperiod = false);
 		// DocString: FMTReplanningTask::_writeSchedule
 		/**
-		@biref write down the schedule for the stochastic and tactic
-		@param[in] p_model the model
-		@param[in] p_ReportingPeriod
-		@param[in] p_ModelPeriod the models period
+		@brief Write down the schedule for the stochastic and tactic models.
+		@param[in] p_model the model.
+		@param[in] p_ReportingPeriod the reporting period.
+		@param[in] p_ModelPeriod the model period.
 		*/
 		void _writeSchedule(const std::unique_ptr<Models::FMTModel>& p_model,
 							int p_ReportingPeriod, int p_ModelPeriod) const;
 		// DocString: FMTReplanningTask::getIteration
 		/**
-		Get the actual iteration done by the task (front in the queue)
+		@brief Get the actual iteration done by the task (front of the queue).
+		@return the iteration.
 		*/
 		const int getIteration() const;
 		// DocString: FMTReplanningTask::setReIgnore
 		/**
-		Remove reignore constraints based on the replanning period.
+		@brief Remove the reignore constraints based on the replanning period.
+		@param[in,out] modelcpy the model.
+		@param[in] replanningperiod the replanning period.
 		*/
 		void setReIgnore(std::unique_ptr<Models::FMTModel>& modelcpy, const int& replanningperiod) const;
 		// DocString: FMTReplanningTask::setReplicate
 		/**
-		Ajuste constraints based on the replicate keyword
+		@brief Adjust the constraints based on the replicate keyword.
+		@param[in,out] modelcpy the model.
+		@param[in] replanningperiod the replanning period.
 		*/
 		void setReplicate(std::unique_ptr<Models::FMTModel>& modelcpy, const int& replanningperiod) const;
-		// DocString: FMTReplanningTask::setReplicate
+		// DocString: FMTReplanningTask::m_primaryName
 		/**
 		Primary name extracted to the path.
 		*/

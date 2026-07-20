@@ -20,77 +20,85 @@ namespace Parallel
 {
 	// DocString: FMTTask
 	/**
-	Task for parallel jobs needs to implement a clone / work / split functions for your task
-	to used it in the taskhandler.
+	@brief Task for parallel jobs.
+	@details Implement the clone, work and split functions of your task to use it in the FMTTaskHandler.
 	*/
 	class FMTEXPORT FMTTask : public Core::FMTObject
 	{
 	public:
 		// DocString: FMTTask::FMTTask()
 		/**
-		Default constructor for FMTTask
+		@brief Default constructor for FMTTask.
 		*/
 		FMTTask();
 		// DocString: ~FMTTask()
 		/**
-		FMTTask default virutal destructor.
+		@brief Default virtual destructor for FMTTask.
 		*/
 		virtual ~FMTTask() = default;
 		// DocString: FMTTask::FMTTask(const FMTTask&)
 		/**
-		Default copy constructor for FMTTask
+		@brief Default copy constructor for FMTTask.
+		@param[in] rhs the FMTTask to copy.
 		*/
 		FMTTask(const FMTTask& rhs);
 		// DocString: FMTTask::operator=(const FMTTask&)
 		/**
-		Default copy constructor for FMTTask
+		@brief Default copy assignment operator for FMTTask.
+		@param[in] rhs the FMTTask to copy.
+		@return a reference to this FMTTask.
 		*/
 		FMTTask& operator = (const FMTTask& rhs);
 		// DocString: FMTTask::clone()
 		/**
-		Clone function for FMTTask.
+		@brief Clone function for FMTTask.
+		@return a unique pointer to the cloned task.
 		*/
 		virtual std::unique_ptr<FMTTask>clone() const;
 		// DocString: FMTTask::split()
 		/**
-		Function to split the actual task in multiple tasks.
+		@brief Split the actual task into multiple tasks.
+		@param[in] numberoftasks the number of tasks.
+		@return the split tasks.
 		*/
 		virtual std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const;
 		// DocString: FMTTask::spawn()
 		/**
-		Will spawn a minimal task from the master task
+		@brief Spawn a minimal task from the master task.
+		@return a unique pointer to the spawned task.
 		*/
 		virtual std::unique_ptr<FMTTask>spawn();
 		// DocString: FMTTask::work
 		/**
-		This function is the main job executed by the thread.
+		@brief Main job executed by the thread.
 		*/
 		virtual void work();
 		// DocString: FMTTask::run
 		/**
-		@brief setup the crash handler and call work
+		@brief Set up the crash handler and call work.
 		*/
 		virtual void run();
 		// DocString: FMTTask::finalize
 		/**
-		If this function is overrided it will be called right after the last task
-		is done
+		@brief Called right after the last task is done, when overridden.
 		*/
 		virtual void finalize();
 		// DocString: FMTTask::isdone()
 		/**
-		Returns true if the job is all done.
+		@brief Return true if the job is all done.
+		@return true if the job is done else false.
 		*/
 		//bool isdone() const;
 		// DocString: FMTTask::getThreadId()
 		/**
 		@brief Get the thread id of the task.
+		@return the thread id.
 		*/
 		static std::string getThreadId();
 		// DocString: FMTTask::setTotalThreads()
 		/**
-		@brief set the total amount of threads
-		@param[in] the number of threads.
+		@brief Set the total amount of threads.
+		@param[in] p_threads the number of threads.
 		*/
 		static void setTotalThreads(const size_t& p_threads);
 		// DocString: FMTTaskHandler::done
@@ -106,28 +114,30 @@ namespace Parallel
 		std::unique_ptr<Logging::FMTLogger>tasklogger;
 		// DocString: FMTTask::setstatus()
 		/**
-		Change the status of the task
+		@brief Change the status of the task.
 		*/
 		//void setstatus(bool status);
-		// DocString: FMTTask::split()
+		// DocString: FMTTask::splitWork
 		/**
-		Split the totalworksize in much possible equal buckets.
+		@brief Split the total work size into buckets that are as equal as possible.
+		@param[in] numberoftasks the number of tasks.
+		@param[in] totalworksize the total work size.
+		@return the work size of each bucket.
 		*/
 		std::vector<size_t>splitWork(int numberoftasks,const int& totalworksize) const;
 		// DocString: FMTTask::decrementWorkingThread()
 		/**
-		@brief decrement the number of thread working.
+		@brief Decrement the number of working threads.
 		*/
 		void decrementWorkingThread();
 		// DocString: FMTTask::checkpoint()
 		/**
-		@brief wait for other thread to finish there jobs, if there job is done then continue.
+		@brief Wait for the other threads to finish their jobs, then continue.
 		*/
 		void checkpoint();
 		// DocString: FMTTask::_setCrashHandlers
 		/**
-		@brief set the terminate and abort handler before running global function in thread
-		also set the se_translator on windows.
+		@brief Set the terminate and abort handlers before running the global function in the thread, and set the se_translator on Windows.
 		*/
 		void _setCrashHandlers();
 	private:

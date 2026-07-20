@@ -29,7 +29,7 @@ namespace Parser
 {
 // DocString: FMTOutputParser
 /**
-The FMTOutputParser is made to read and write a vector of FMTOutput from or into a given file.
+@brief Parser reading and writing a vector of FMTOutput from or into a file.
 */
 class FMTEXPORT FMTOutputParser : public FMTParser
     {
@@ -50,7 +50,13 @@ class FMTEXPORT FMTOutputParser : public FMTParser
 	const static boost::regex rxoutputconstant;
 	// DocString: FMTOutputParser::readNFill
 	/**
-	Main function used by read and addOutputs to parse a file and fill a vector of outputs
+	@brief Parse a file and fill a vector of outputs, used by read and addOutputs.
+	@param[in,out] outputs the outputs to fill.
+	@param[in] themes the themes.
+	@param[in] actions the actions.
+	@param[in] ylds the yields.
+	@param[in] constants the constants.
+	@param[in] location the file location.
 	*/
 	void readNFill(std::vector<Core::FMTOutput>* outputs, 
 					const std::vector<Core::FMTTheme>& themes,
@@ -59,7 +65,15 @@ class FMTEXPORT FMTOutputParser : public FMTParser
 					const std::string& location);
 	// DocString: FMTOutputParser::appendToOutput
 	/**
-	When you need to append output data to output.
+	@brief Append output data to an output.
+	@param[in] strvalue the value string.
+	@param[in] outputid the output id.
+	@param[in] themetarget the theme target.
+	@param[in] lastoutput the last output index.
+	@param[in,out] lastoperator the last operator.
+	@param[in,out] stroperators the operator strings.
+	@param[in,out] sources the output sources.
+	@param[in,out] operators the operators.
 	*/
 	void appendToOutput(
 		const std::string& strvalue,
@@ -74,27 +88,36 @@ class FMTEXPORT FMTOutputParser : public FMTParser
     public:
 		// DocString: FMTOutputParser()
 		/**
-		Default constructor for FMTOutputParser.
+		@brief Default constructor for FMTOutputParser.
 		*/
         FMTOutputParser();
 		// DocString: ~FMTOutputParser()
 		/**
-		Default destructor for FMTOutputParser.
+		@brief Default destructor for FMTOutputParser.
 		*/
 		~FMTOutputParser() = default;
 		// DocString: FMTOutputParser(const FMTOutputParser&)
 		/**
-		Default copy constructor for FMTOutputParser.
+		@brief Copy constructor for FMTOutputParser.
+		@param[in] rhs the FMTOutputParser to copy.
 		*/
         FMTOutputParser(const FMTOutputParser& rhs)=default;
 		// DocString: FMTOutputParser::operator=
 		/**
-		Default copy assignment for FMTOutputParser.
+		@brief Copy assignment operator for FMTOutputParser.
+		@param[in] rhs the FMTOutputParser to copy.
+		@return a reference to this FMTOutputParser.
 		*/
         FMTOutputParser& operator = (const FMTOutputParser& rhs)=default;
 		// DocString: FMTOutputParser::read
 		/**
-		This function read a output file (location) based on (themes),(actions),(yields),(constants) and returns a vector of FMTOutput.
+		@brief Read an output file.
+		@param[in] themes the themes.
+		@param[in] actions the actions.
+		@param[in] ylds the yields.
+		@param[in] constants the constants.
+		@param[in] location the file location.
+		@return the outputs.
 		*/
 		std::vector<Core::FMTOutput> read(const std::vector<Core::FMTTheme>& themes,
                             const std::vector<Core::FMTAction>& actions,
@@ -102,9 +125,15 @@ class FMTEXPORT FMTOutputParser : public FMTParser
 							const std::string& location);
 		// DocString: FMTOutputParser::addOutputs
 		/**
-		This function read a output file and add the desired outputs(outputsnames) found in the output file(location) to the vector of outputs(oldoutputs) 
-		based on (themes),(actions),(yields),(constants) and returns a vector of FMTOutput. If outputsnames is empty, all the outputs in the file will
-		be add to the vector of outputs.
+		@brief Read an output file and add the desired outputs to a vector of outputs.
+		@param[in] oldoutputs the existing outputs.
+		@param[in] themes the themes.
+		@param[in] actions the actions.
+		@param[in] ylds the yields.
+		@param[in] constants the constants.
+		@param[in] location the file location.
+		@param[in] outputsnames the output names to add, all if empty.
+		@return the outputs.
 		*/
 		std::vector<Core::FMTOutput> addOutputs(const std::vector<Core::FMTOutput> oldoutputs, 
 							const std::vector<Core::FMTTheme>& themes,
@@ -114,7 +143,9 @@ class FMTEXPORT FMTOutputParser : public FMTParser
 							std::vector<std::string> outputsnames = std::vector<std::string>());
 		// DocString: FMTOutputParser::write
 		/**
-		This function write a vector of FMTOutput to a file at a given (location).
+		@brief Write a vector of outputs to a file.
+		@param[in] outputs the outputs.
+		@param[in] location the file location.
 		*/
         void write(const std::vector<Core::FMTOutput>& outputs,const std::string& location) const;
     };

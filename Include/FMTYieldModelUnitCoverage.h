@@ -17,8 +17,7 @@ namespace Core
 	class FMTOutput;
 	// DocString: FMTYieldModelUnitCoverage
 	/**
-	@classFMTyieldmodelUnitCoverage
-	@brief This yield model calculate the sum of a yield value over a spatial unit...at period 0.
+	@brief Yield model calculating the sum of a yield value over a spatial unit at period 0.
 	*/
 	class FMTYieldModelUnitCoverage :
 		public FMTYieldModel

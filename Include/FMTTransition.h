@@ -28,61 +28,64 @@ class FMTYields;
 class FMTTheme;
 // DocString: FMTTransition
 /**
-FMTTransition is a list of FMTFork (FMTSpec). Each FMTAction has it's FMTTransition.
-Using a FMTDevelopment you can simulate the impact of harvesting that development with a FMTTransition.
-Each fork is a transition source and its linked targets. FMTAction test for operability and FMTTransition only
-"disturb" the FMTDevelopment and generates new FMTDevelopmentPath.
+@brief List of FMTFork describing the transition of an action, disturbing a development to generate new development paths.
+@details Each FMTAction has its FMTTransition. Each fork is a transition source with its linked targets.
 */
 class FMTEXPORT FMTTransition : public FMTList<FMTFork>
     {
     public:
 		// DocString: FMTTransition::operator+=
 		/**
-		 * @brief append OtherTransition to this transition needs to be unskrink or it will throw an exception.
-		 * @param OtherTransition the other transition to append to this one.
-		 * @returns A reference the the newly appended transition.
-		 */
+		@brief Append another transition to this transition, which needs to be unshrunk otherwise an exception is thrown.
+		@param[in] OtherTransition the other transition to append to this one.
+		@return a reference to this appended transition.
+		*/
 		FMTTransition& operator+=(const FMTTransition& OtherTransition);
 		// DocString: FMTTransition()
 		/**
-		Default constructor for FMTTransition
+		@brief Default constructor for FMTTransition.
 		*/
         FMTTransition();
 		// DocString: ~FMTTransition()
 		/**
-		Default destructor for FMTTransition
+		@brief Default destructor for FMTTransition.
 		*/
 		~FMTTransition() = default;
 		// DocString: FMTTransition(const std::string&)
 		/**
-		FMTTransition constructor keeping only the name of the FMTTransition.
+		@brief Construct a transition keeping only its name.
+		@param[in] lname the name of the transition.
 		*/
 		FMTTransition(const std::string& lname);
 		// DocString: FMTTransition(const FMTTransition&)
 		/**
-		FMTTransition copy constructor.
+		@brief Copy constructor for FMTTransition.
+		@param[in] rhs the FMTTransition to copy.
 		*/
         FMTTransition(const FMTTransition& rhs);
 		// DocString: FMTTransition::operator=
 		/**
-		FMTTransition assignment operator.
+		@brief Copy assignment operator for FMTTransition.
+		@param[in] rhs the FMTTransition to copy.
+		@return a reference to this FMTTransition.
 		*/
         FMTTransition& operator = (const FMTTransition& rhs);
 		// DocString: FMTTransition::operator std::string
 		/**
-		FMTTransition conversion to string value like into a transition file.
+		@brief Convert the transition to a string as in a transition file.
+		@return the string representation of the transition.
 		*/
         operator std::string() const;
 		// DocString: FMTTransition::single
 		/**
-		A transition can lead to multiple FMTDevelopmentPath but for cell basesd models the FMTTransition should lead
-		to only one futurdevelopmenttype. Calling this function returns the a new FMTTransition that does not allow multiple
-		FMTDevelopmentPath. It select the path where the area proportion is the higher.
+		@brief Return a transition that leads to a single development path, selecting the one with the highest area proportion, for cell based models.
+		@return the single path transition.
 		*/
         FMTTransition single() const;
 		// DocString: FMTTransition::getName
 		/**
-		Getter for the FMTTransition name
+		@brief Get the name of the transition.
+		@return the name of the transition.
 		*/
 		inline std::string getName() const
 			{
@@ -90,38 +93,47 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 			}
 		// DocString: FMTTransition::setName
 		/**
-		@brief Setter for FMTTransition name
-		@param[in] 
+		@brief Set the name of the transition.
+		@param[in] p_name the name to set.
 		*/
 		void setName(const std::string& p_name);
 		// DocString: FMTTransition::isLeaking
 		/**
-		This function checks if each FMTFork has a total proportion equal to 1 if the transition proportion != 1
-		then isLeaking returns true.
+		@brief Return true if a fork has a total proportion different from 1.
+		@return true if the transition is leaking else false.
 		*/
 		bool isLeaking() const;
 		// DocString: FMTTransition::getFork
 		/**
-		Returns the FMTFork pointer for which the FMTDevelopment (dev) can be disturbed based on a given FMTYields section (ylds).
-		Looking at every possible fork returns only the first usefull fork.
+		@brief Return the first useful fork for which the development can be disturbed based on the yields.
+		@param[in] development the development.
+		@param[in] ylds the yields.
+		@return a pointer to the fork, or nullptr.
 		*/
         const FMTFork* getFork(const Core::FMTDevelopment& development, const FMTYields& ylds) const;
 		// DocString: FMTTransition::getStaticThemes
 		/**
-		Using a list of (themes) this function returns a subset of the theme list for which their's no attribute change
-		in the FMTTransitionMask (what we call here static themes).
+		@brief Return the themes that have no attribute change in the transition masks (static themes).
+		@param[in] themes the themes to filter.
+		@return the static themes.
 		*/
 		std::vector<const FMTTheme*>getStaticThemes(const std::vector<const FMTTheme*>& themes) const;
 		// DocString: FMTTransition::canProduce
 		/**
-		The function return all the possibles masks, if pass as a source for the transition, that can produce the given(mask).
+		@brief Return all the source masks that can produce the given mask through the transition.
+		@param[in] testmask the mask to produce.
+		@param[in] themes the themes.
+		@return the source masks that can produce the mask.
 		*/
 		std::vector<Core::FMTMask> canProduce(const Core::FMTMask& testmask,const std::vector<Core::FMTTheme>& themes) const;
 		// DocString: FMTTransition::ageAfter
 		/**
-		For GCBM a GCBMtransition is described by the age of the stand after the disturbance of the stand. Using a
-		vector of FMTDevelopment (devs) this functions return the average age after disturbances optained calculating the
-		return age for each FMTDevelopment in the list.
+		@brief Return the average age after disturbance across the developments, for GCBM.
+		@param[in] devs the developments.
+		@param[in] action the action.
+		@param[in] ylds the yields.
+		@param[in] themes the themes.
+		@return the average age after disturbance.
 		*/
 		unsigned int ageAfter(const std::vector<FMTDevelopment>& devs,
 			const FMTAction& action,
@@ -129,49 +141,63 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 			const std::vector<FMTTheme>& themes) const;
 		// DocString: FMTTransition::mainTarget
 		/**
-		Again for GCBM each GCBMtransition needs to have only one possible mask target. So this function returns 
-		the most targeted FMTMask across the developments list (devs) based on a given yields section (ylds).
+		@brief Return the most targeted mask across the developments based on the yields, for GCBM.
+		@param[in] devs the developments.
+		@param[in] ylds the yields.
+		@return the main target mask.
 		*/
         FMTMask mainTarget(const std::vector<FMTDevelopment>& devs,
                             const FMTYields& ylds) const;
 		// DocString: FMTTransition::attributeTargets
 		/**
-		This function classify the FMTDevelopment list (devs) by FMTMask key based on a FMTYields section (ylds). 
-		The returned map key is an FMTMask string separed by "-"
+		@brief Classify the developments by mask key based on the yields.
+		@param[in] devs the developments.
+		@param[in] ylds the yields.
+		@param[in] themes the themes.
+		@return a map of mask string (separated by -) to developments.
 		*/
 		std::map<std::string, std::vector<FMTDevelopment>> attributeTargets(const std::vector<FMTDevelopment>& devs,
 											const FMTYields& ylds, const std::vector<FMTTheme>& themes) const;
 		// DocString: FMTTransition::operator<
 		/**
-		FMTTransition less than operator.
+		@brief Less than comparison operator of FMTTransition.
+		@param[in] rhs the transition to compare with.
+		@return true if this transition is less than rhs else false.
 		*/
         bool operator < (const FMTTransition& rhs) const;
 		// DocString: FMTTransition::operator==
 		/**
-		FMTTransition equality operator check if FMTTransition (rhs) have the same name.
+		@brief Equality comparison operator of FMTTransition, checking if they have the same name.
+		@param[in] rhs the transition to compare with.
+		@return true if both transitions have the same name else false.
 		*/
         bool operator == (const FMTTransition& rhs) const;
 		// DocString: FMTTransition::operator!=
 		/**
-		FMTTransition nonequality operator check if FMTTransition (rhs) have not the same name.
+		@brief Inequality comparison operator of FMTTransition, checking if they have a different name.
+		@param[in] rhs the transition to compare with.
+		@return true if both transitions have a different name else false.
 		*/
         bool operator != (const FMTTransition& rhs) const;
 		// DocString: FMTTransition::presolve
 		/**
-		Returns a presolved FMTTransition based on a (baseMask), the actual model FMTTheme (originalthemes),
-		a (presolvedmask) and the new presolved themes list.
+		@brief Return a presolved transition based on a filter, the original themes and the new presolved themes.
+		@param[in] filter the mask filter.
+		@param[in] originalthemes the original themes.
+		@param[in,out] newthemes the presolved themes.
+		@param[in] compressdata if true compresses the data.
+		@return the presolved transition.
 		*/
 		FMTTransition presolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			std::vector<FMTTheme>& newthemes,bool compressdata=false) const;
 		// DocString: FMTTransition::presolveRef
 		/**
-		@brief Returns a presolved FMTTransition based on a (baseMask), the actual model FMTTheme (originalthemes),
-		a (presolvedmask) and the new presolved themes list.
-		@param[in] p_filter
-		@param[in] p_originalThemes
-		@param[in] p_newthemes
-		@param[in] p_compressdata
+		@brief Presolve the transition in place based on a filter, the original themes and the new presolved themes.
+		@param[in] p_filter the mask filter.
+		@param[in] p_originalThemes the original themes.
+		@param[in,out] p_newthemes the presolved themes.
+		@param[in] p_compressdata if true compresses the data.
 		*/
 		void presolveRef(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_originalThemes,
@@ -183,7 +209,10 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 	private:
 		// DocString: FMTTransition::serialize
 		/**
-		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTTransition through its base FMTList<FMTFork> for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -202,7 +231,7 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 
 // DocString: FMTTransitionComparator
 /**
-This class is made to compare FMTTransition using the std::find_if() function when FMTtransitions are in a std container.
+@brief Comparator used to compare FMTTransition with std::find_if when transitions are in a std container.
 */
 class FMTTransitionComparator
 {
@@ -212,12 +241,15 @@ class FMTTransitionComparator
 public:
 	// DocString: FMTTransitionComparator(std::string)
 	/**
-	FMTTransitionComparator constructor for testing if we can find a transition with the same (name).
+	@brief Construct the comparator from the transition name to match.
+	@param[in] name the name of the transition to match.
 	*/
 	FMTTransitionComparator(std::string name);
 	// DocString: FMTTransitionComparator(const FMTTransition&)
 	/**
-	Matching test operator for FMTTransitionComparator.
+	@brief Matching test operator for the comparator.
+	@param[in] transition the transition to test.
+	@return true if the transition matches else false.
 	*/
 	bool operator()(const FMTTransition& transition) const;
 

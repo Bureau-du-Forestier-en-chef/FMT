@@ -14,12 +14,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
+// DocString: FMToutputlevel
+/**
+@brief Enumerator describing the level of detail of an output (standard, total only, development).
+*/
 enum FMToutputlevel
 	{
 	standard = 1,
 	totalonly = 2,
 	developpement = 3
 	};
+// DocString: FMTsection
+/**
+@brief Enumerator describing the sections of a Woodstock model.
+*/
 enum FMTsection
     {
     Control= 1,
@@ -36,12 +44,20 @@ enum FMTsection
     Empty=12
     };
 
+// DocString: FMTkwor
+/**
+@brief Enumerator describing the source or target keyword of a transition.
+*/
 enum class FMTkwor
     {
     Source =1,
     Target =2
     };
 
+// DocString: FMTyldtype
+/**
+@brief Enumerator describing the type of a yield (age, time, complex, model).
+*/
 enum FMTyldtype
     {
     FMTageyld = 1,
@@ -50,6 +66,10 @@ enum FMTyldtype
 	FMTmodelyld = 4
     };
 
+// DocString: FMTyieldparserop
+/**
+@brief Enumerator describing the operators usable in the yield section.
+*/
 enum class FMTyieldparserop
     {
     FMTnone = 0,
@@ -71,6 +91,10 @@ enum class FMTyieldparserop
     FMTmin = 16
     };
 
+// DocString: FMTotar
+/**
+@brief Enumerator describing the target of an output (inventory, actual, value, time yield, level).
+*/
 enum FMTotar
     {
     inventory = 1,
@@ -80,6 +104,12 @@ enum FMTotar
 	level = 5
     };
 
+// DocString: FMTsection_str
+/**
+@brief Return the string representation of a section.
+@param[in] section the section.
+@return the string representation of the section.
+*/
 const char* FMTsection_str(FMTsection section);
 
 #ifndef FMTEXPORT

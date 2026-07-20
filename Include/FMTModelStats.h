@@ -17,15 +17,18 @@ namespace Models
 {
 	// DocString: FMTModelStats
 	/**
-	This class is used to report the stats of a FMTModel. Used alot with the presolve and postSolve functions.
-	Calling presolve or postSolve will changes the model stats.
+	@brief Class reporting the statistics of a FMTModel, used with the presolve and postsolve functions.
+	@details Calling presolve or postsolve changes the model stats.
 	*/
 	class FMTEXPORT FMTModelStats
 	{
 	friend class boost::serialization::access;
 	// DocString: FMTModelStats::serialize
 	/**
-	Serialize is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize the FMTModelStats for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -44,102 +47,130 @@ namespace Models
 		ar & BOOST_SERIALIZATION_NVP(constraintsdata);
 		}
 	public:
-		// DocString : FMTModelStats::themes
+		// DocString: FMTModelStats::themes
 		/// The number of themes the FMTModel.
 		int themes;
-		// DocString : FMTModelStats::themesdata
+		// DocString: FMTModelStats::themesdata
 		/// The themes's data size.
 		int themesdata;
-		// DocString : FMTModelStats::actions
+		// DocString: FMTModelStats::actions
 		/// The number of actions of the FMTModel.
 		int actions;
-		// DocString : FMTModelStats::actionsdata
+		// DocString: FMTModelStats::actionsdata
 		/// The actions's data size.
 		int actionsdata;
-		// DocString : FMTModelStats::transitions
+		// DocString: FMTModelStats::transitions
 		/// The number of transitions of the FMTModel.
 		int transitions;
-		// DocString : FMTModelStats::transitionsdata
+		// DocString: FMTModelStats::transitionsdata
 		/// The transitions's data size.
 		int transitionsdata;
-		// DocString : FMTModelStats::yieldsdata
+		// DocString: FMTModelStats::yieldsdata
 		/// The yields's data size.
 		int yieldsdata;
-		// DocString : FMTModelStats::lifespansdata
+		// DocString: FMTModelStats::lifespansdata
 		/// The lifespans's data size.
 		int lifespansdata;
-		// DocString : FMTModelStats::outputs
+		// DocString: FMTModelStats::outputs
 		/// The number of outputs of the FMTModel.
 		int outputs;
-		// DocString : FMTModelStats::outputsdata
+		// DocString: FMTModelStats::outputsdata
 		/// The outputsdata's data size.
 		int outputsdata;
-		// DocString : FMTModelStats::constraints
+		// DocString: FMTModelStats::constraints
 		/// The number of constraints of the FMTModel.
 		int constraints;
-		// DocString : FMTModelStats::constraintsdata
+		// DocString: FMTModelStats::constraintsdata
 		/// The constraintsdata's data size.
 		int constraintsdata;
-		// DocString : FMTModelStats(const size_t,const size_t,const size_t, const size_t,const size_t,const size_t, const size_t, const size_t,const size_t, const size_t,const size_t,const size_t)
+		// DocString: FMTModelStats(const size_t,const size_t,const size_t, const size_t,const size_t,const size_t, const size_t, const size_t,const size_t, const size_t,const size_t,const size_t)
 		/**
-		FMTModelStats constructor for complete stats.
+		@brief Constructor for complete stats.
+		@param[in] lthemes the number of themes.
+		@param[in] lthemesdata the themes data size.
+		@param[in] lactions the number of actions.
+		@param[in] lactionsdata the actions data size.
+		@param[in] ltransitions the number of transitions.
+		@param[in] ltransitionsdata the transitions data size.
+		@param[in] lyieldsdata the yields data size.
+		@param[in] llifespansdata the lifespans data size.
+		@param[in] loutputs the number of outputs.
+		@param[in] loutputsdata the outputs data size.
+		@param[in] lconstraints the number of constraints.
+		@param[in] lconstraintsdata the constraints data size.
 		*/
 		FMTModelStats(const size_t& lthemes,const size_t& lthemesdata, const size_t& lactions, const size_t& lactionsdata,
 			const size_t& ltransitions, const size_t& ltransitionsdata, const size_t& lyieldsdata,const size_t& llifespansdata,
 			const size_t& loutputs, const size_t& loutputsdata,const size_t& lconstraints, const size_t& lconstraintsdata);
-		// DocString : FMTModelStats()
+		// DocString: FMTModelStats()
 		/**
-		FMTModelStats default constructor.
+		@brief Default constructor for FMTModelStats.
 		*/
 		FMTModelStats() = default;
-		// DocString : FMTModelStats(const FMTModelStats)
+		// DocString: FMTModelStats(const FMTModelStats)
 		/**
-		FMTModelStats default copy constructor.
+		@brief Copy constructor for FMTModelStats.
+		@param[in] rhs the FMTModelStats to copy.
 		*/
 		FMTModelStats(const FMTModelStats& rhs) = default;
-		// DocString : ~FMTModelStats()
+		// DocString: ~FMTModelStats()
 		/**
-		FMTModelStats destructor.
+		@brief Default destructor for FMTModelStats.
 		*/
 		~FMTModelStats() = default;
-		// DocString : FMTModelStats::operator=
+		// DocString: FMTModelStats::operator=
 		/**
-		FMTModelStats default copy assignment.
+		@brief Copy assignment operator for FMTModelStats.
+		@param[in] rhs the FMTModelStats to copy.
+		@return a reference to this FMTModelStats.
 		*/
 		FMTModelStats& operator = (const FMTModelStats& rhs) = default;
-		// DocString : FMTModelStats::operator+=
+		// DocString: FMTModelStats::operator+=
 		/**
-		FMTModelStats addition assignment with an other FMTModelStats (rhs)
+		@brief Addition assignment operator with another FMTModelStats.
+		@param[in] rhs the stats to add.
+		@return a reference to this FMTModelStats.
 		*/
 		FMTModelStats& operator += (const FMTModelStats& rhs);
-		// DocString : FMTModelStats::operator-=
+		// DocString: FMTModelStats::operator-=
 		/**
-		FMTModelStats substraction assignment with an other FMTModelStats (rhs)
+		@brief Subtraction assignment operator with another FMTModelStats.
+		@param[in] rhs the stats to subtract.
+		@return a reference to this FMTModelStats.
 		*/
 		FMTModelStats& operator -= (const FMTModelStats& rhs);
-		// DocString : FMTModelStats::operator+
+		// DocString: FMTModelStats::operator+
 		/**
-		FMTModelStats copy addition assignment with an other FMTModelStats (rhs)
+		@brief Addition operator with another FMTModelStats.
+		@param[in] rhs the stats to add.
+		@return the resulting FMTModelStats.
 		*/
 		FMTModelStats operator + (const FMTModelStats& rhs);
-		// DocString : FMTModelStats::operator-
+		// DocString: FMTModelStats::operator-
 		/**
-		FMTModelStats copy substraction assignment with an other FMTModelStats (rhs)
+		@brief Subtraction operator with another FMTModelStats.
+		@param[in] rhs the stats to subtract.
+		@return the resulting FMTModelStats.
 		*/
 		FMTModelStats operator - (const FMTModelStats& rhs);
-		// DocString : FMTModelStats::operator==
+		// DocString: FMTModelStats::operator==
 		/**
-		FMTModelStats equality operator.
+		@brief Equality comparison operator of FMTModelStats.
+		@param[in] rhs the stats to compare with.
+		@return true if both stats are equal else false.
 		*/
 		bool operator == (const FMTModelStats& rhs) const;
-		// DocString : FMTModelStats::operator!=
+		// DocString: FMTModelStats::operator!=
 		/**
-		FMTModelStats non equality operator.
+		@brief Inequality comparison operator of FMTModelStats.
+		@param[in] rhs the stats to compare with.
+		@return true if both stats are different else false.
 		*/
 		bool operator != (const FMTModelStats& rhs) const;
-		// DocString : FMTModelStats::operator std::string()
+		// DocString: FMTModelStats::operator std::string()
 		/**
-		FMTModelStats to string operator.
+		@brief Return the string representation of the stats.
+		@return the string representation of the stats.
 		*/
 		operator std::string() const;
 		

@@ -42,9 +42,8 @@ namespace Core
 {
 // DocString: FMTObject
 /**
-FMTObject is the base class of multiple class it hold a shared exception handler pointer and logger.
-FMTObject plays a big role into exception handling and for ctrl-c signals for boost python.
-It also contains some usefull functions for mask validation and runtimelocation etc...
+@brief Base class of multiple FMT classes holding a shared exception handler pointer and logger.
+@details Plays a major role in exception handling and ctrl-c signals for boost::python, and provides utility functions for mask validation and runtime location.
 */
 class FMTEXPORT FMTObject
 	{
@@ -63,116 +62,123 @@ class FMTEXPORT FMTObject
 		static Exception::FMTExceptionHandler* getExceptionHandler();
 		// DocString: FMTObject::getRuntimeLocation
 		/**
-		This function return the location of the FMT shared library location.
+		@brief Return the location of the FMT shared library.
+		@return the runtime location of the FMT shared library.
 		*/
 		static std::string getRuntimeLocation();
 		// DocString: FMTObject::getAvailableMemory
 		/**
-		Get the available memory in bytes
+		@brief Return the available memory in bytes.
+		@return the available memory in bytes.
 		*/
 		static unsigned long long getAvailableMemory();
 		// DocString: FMTObject()
 		/**
-		FMTObject default constructor.
+		@brief Default constructor for FMTObject.
 		*/
 		FMTObject();
 		// DocString: ~FMTObject()
 		/**
-		FMTObject default virutal destructor.
+		@brief Default virtual destructor for FMTObject.
 		*/
 		virtual ~FMTObject();
 		// DocString: FMTObject(const std::unique_ptr<Exception::FMTExceptionHandler>)
 		/**
-		When constructing a new FMTObject it's sometime usefull to passin the exception handler of an
-		other FMTObject.
+		@brief Construct a FMTObject passing in the exception handler of another FMTObject.
+		@param[in] exhandler the exception handler to pass in.
 		*/
 		FMTObject(const std::unique_ptr<Exception::FMTExceptionHandler> exhandler);
 		// DocString: FMTObject(const FMTObject&)
 		/**
-		FMTObject default copy constructor.
+		@brief Copy constructor for FMTObject.
+		@param[in] rhs the FMTObject to copy.
 		*/
 		FMTObject(const FMTObject& rhs);
 		// DocString: FMTObject::operator=
 		/**
-		FMTObject default copy assignment.
+		@brief Copy assignment operator for FMTObject.
+		@param[in] rhs the FMTObject to copy.
+		@return a reference to this FMTObject.
 		*/
 		FMTObject& operator = (const FMTObject& rhs);
 		// DocString: FMTObject::passInLogger
 		/**
-		It's sometime usefull to pass in the logger of an other FMTObject.
+		@brief Pass in the logger of another FMTObject.
+		@param[in] logger the logger to pass in.
 		*/
 		virtual void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger);
 		// DocString: FMTObject::passInExceptionHandler
 		/**
-		It's sometime usefull to pass in the exception handler of an other FMTObject.
+		@brief Pass in the exception handler of another FMTObject.
+		@param[in] exhandler the exception handler to pass in.
 		*/
 		void passInExceptionHandler(const std::unique_ptr<Exception::FMTExceptionHandler>& exhandler);
 		// DocString: FMTObject::redirectLogToFile
 		/**
-		redict the log to a specific file (will append to it)
+		@brief Redirect the log to a specific file, appending to it.
+		@param[in] location the file to redirect the log to.
 		*/
 		void redirectLogToFile(const std::string& location);
 		// DocString: FMTObject::setDefaultLogger
 		/**
-		Create and set a default logger to the FMTObject.
+		@brief Create and set a default logger to the FMTObject.
 		*/
 		virtual void setDefaultLogger();
 		// DocString: FMTObject::setQuietLogger
 		/**
-		Create and set a quiet logger to the FMTObject.
+		@brief Create and set a quiet logger to the FMTObject.
 		*/
 		virtual void setQuietLogger();
 		// DocString: FMTObject::setTaskLogger
 		/**
-		Create and set a quiet logger to the FMTObject.
+		@brief Create and set a task logger to the FMTObject.
 		*/
 		virtual void setTaskLogger();
 		// DocString: FMTObject::setDebugLogger
 		/**
-		Create and set a debug logger to the FMTObject.
+		@brief Create and set a debug logger to the FMTObject.
 		*/
 		virtual void setDebugLogger();
 		// DocString: FMTObject::setDefaultExceptionHandler
 		/**
-		Create and set a default exception handler to the FMTObject.
+		@brief Create and set a default exception handler to the FMTObject.
 		*/
 		void setDefaultExceptionHandler();
 		// DocString: FMTObject::setQuietExceptionHandler
 		/**
-		Create and set a quiet exception handler to the FMTObject.
+		@brief Create and set a quiet exception handler to the FMTObject.
 		*/
 		void setQuietExceptionHandler();
 		// DocString: FMTObject::setDebugExceptionHandler
 		/**
-		Create and set a debug exception handler to the FMTObject.
+		@brief Create and set a debug exception handler to the FMTObject.
 		*/
 		void setDebugExceptionHandler();
 		// DocString: FMTObject::setFreeExceptionHandler
 		/**
-		Create and set a free exception handler to the FMTObject.
+		@brief Create and set a free exception handler to the FMTObject.
 		*/
 		void setFreeExceptionHandler();
 		// DocString: FMTObject::disableNestedExceptions
 		/**
-		Disable nested exception throw of the Exceptionhandler by default all handlers
-		do nested exception throw.
+		@brief Disable the nested exception throw of the exception handler.
 		*/
 		void disableNestedExceptions();
 		// DocString: FMTObject::enableNestedExceptions
 		/**
-		Enable nested exception throw of the Exceptionhandler by default all handlers
-		do nested exception throw.
+		@brief Enable the nested exception throw of the exception handler.
 		*/
 		void enableNestedExceptions();
 		// DocString: FMTObject::setErrorsToWarnings
 		/**
-		Very hazardous function if you want to live dangerously you can
-		set a vector of error to be cast to warnings to the exception handler...
+		@brief Set a list of errors to be cast to warnings on the exception handler.
+		@param[in] errors the errors to treat as warnings.
 		*/
 		void setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors);
 		// DocString: FMTObject::setMaxWarningsBeforeSilenced
 		/**
-		Change the number of warning raise before silenced.
+		@brief Set the number of warnings raised before being silenced.
+		@param[in] maxwarningcount the maximum warning count.
 		*/
 		void setMaxWarningsBeforeSilenced(const size_t& maxwarningcount);
 		// DocString: FMTExceptionHandler::setTerminateStack
@@ -187,7 +193,10 @@ class FMTEXPORT FMTObject
 		static void setAbortStack();
 		// DocString: FMTObject::serialize
 		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTObject for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -206,7 +215,10 @@ class FMTEXPORT FMTObject
 		static std::unique_ptr<Logging::FMTLogger> _logger;
 		// DocString: FMTObject:: forceSave
 		/**
-		By Default the serialization of a FMTObject does nothing if you want to get some usefull information use this function.
+		@brief Force the serialization to save useful information, which the default FMTObject serialization does not.
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to save to.
+		@param[in] version the serialization version.
 		*/
 		template<class Archive>
 		void forceSave(Archive& ar, const unsigned int version) const
@@ -217,7 +229,10 @@ class FMTEXPORT FMTObject
 		}
 		// DocString: FMTObject:: forceLoad
 		/**
-		By Default the serialization of a FMTObject does nothing if you want to get some usefull information use this function.
+		@brief Force the serialization to load useful information, which the default FMTObject serialization does not.
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to load from.
+		@param[in] version the serialization version.
 		*/
 		template<class Archive>
 		void forceLoad(Archive& ar, const unsigned int version)
@@ -230,28 +245,34 @@ class FMTEXPORT FMTObject
 		}
 		// DocString: FMTObject::checkSignals
 		/**
-		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
+		@brief Check if the user has sent a ctrl-c signal using boost::python to FMT.
 		*/
 		void checkSignals() const;
 		// DocString: FMTObject::setCPLhandler
 		/**
-		This function is for gdal only it pass the FMT exception handler to gdal exception handler.
+		@brief Pass the FMT exception handler to the GDAL exception handler (GDAL only).
 		*/
 		void setCPLhandler();
 		// DocString: FMTObject::getClock
 		/**
-		Will return a clock of "now" time.
+		@brief Return a clock of the current time.
+		@return a clock of the current time.
 		*/
 		static std::chrono::time_point<std::chrono::high_resolution_clock> getClock();
 		// DocString: FMTObject::getDuration
 		/**
-		With the high resolution clock you can get the time it took has a double.
+		@brief Return the time elapsed since a start clock as a double.
+		@tparam chrono the duration type.
+		@param[in] startclock the start clock.
+		@return the elapsed time.
 		*/
 		template<class chrono>
 		static double getDuration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 		// DocString: FMTObject::getDurationInSeconds
 		/**
-		With the clock time calculate time spent in second and return a string.
+		@brief Return the time elapsed since a start clock in seconds as a string.
+		@param[in] startclock the start clock.
+		@return the elapsed time in seconds.
 		*/
 		static std::string getDurationInSeconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 		// DocString: FMTExceptionHandler::_logStack
@@ -266,8 +287,8 @@ class FMTEXPORT FMTObject
 		static void _terminate();
 		// DocString: FMTExceptionHandler::_abort
 		/**
-		@brief Raise an error with the boost stacktrace.
-		@param[in] the signal for abort
+		@brief Raise an error with the boost stacktrace on abort.
+		@param[in] p_signal the signal for abort.
 		*/
 		static void _abort(int p_signal);
 		

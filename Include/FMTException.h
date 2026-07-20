@@ -23,7 +23,7 @@ namespace Exception
 {
 // DocString: FMTlev
 /**
-This enumerator describes the kind of the Exception trown by FMT.
+@brief Enumerator describing the kind of exception thrown by FMT.
 */
 enum FMTlev
     {
@@ -36,7 +36,7 @@ enum FMTlev
 
 // DocString: FMTexc
 /**
-This enumerator describes the exceptions thrown by FMT.
+@brief Enumerator describing the exceptions thrown by FMT.
 */
 enum FMTexc
     {
@@ -131,14 +131,16 @@ enum FMTexc
 
 // DocString: FMTException
 /**
-FMTException is the exception base class for FMT. All the informations regarding a given exception
-is kept by this class (type,section and message).
+@brief Base exception class for FMT holding the type, section and message of a given exception.
 */
 class FMTEXPORT FMTException : public std::exception
     {
 	// DocString: FMTException::serialize
 	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -169,97 +171,128 @@ class FMTEXPORT FMTException : public std::exception
     public:
 	// DocString: FMTException()
 	/**
-	FMTException default constructor.
+	@brief Default constructor for FMTException.
 	*/
     FMTException();
 	// DocString: ~FMTException()
 	/**
-	FMTException default virtual destructor.
+	@brief Default virtual destructor for FMTException.
 	*/
     virtual ~FMTException() = default;
 
-	// DocString: FMTException()
+	// DocString: FMTException(const std::exception&)
 	/**
-	FMTException with std exception
+	@brief Construct a FMTException from a std::exception.
+	@param[in] baseexception the std::exception to construct from.
 	*/
 	FMTException(const std::exception& baseexception);
 	// DocString: FMTException(const FMTexc,const std::string)
 	/**
-	FMTException constructor taking a exception type and a message.
+	@brief Construct a FMTException from an exception type and a message.
+	@param[in] lexception the exception type.
+	@param[in] message the message of the exception.
 	*/
     FMTException(const FMTexc lexception,const std::string message);
 
 	// DocString: FMTException(const FMTexc,Core::FMTsection,const std::string)
 	/**
-	FMTException constructor taking a exception type a section and a message.
+	@brief Construct a FMTException from an exception type, a section and a message.
+	@param[in] lexception the exception type.
+	@param[in] lsection the section in which the exception occurred.
+	@param[in] message the message of the exception.
 	*/
     FMTException(const FMTexc lexception,Core::FMTsection lsection,const std::string message);
 	// DocString: FMTException(const FMTexc,Core::FMTsection,const std::string,const std::string&,const std::string&,const std::string&)
 	/**
-	FMTException constructor taking a exception type a section and a message, the method, file and line
-	where the exception juste happened.
+	@brief Construct a FMTException from an exception type, a section, a message and the location where it occurred.
+	@param[in] lexception the exception type.
+	@param[in] lsection the section in which the exception occurred.
+	@param[in] message the message of the exception.
+	@param[in] lmethod the method where the exception occurred.
+	@param[in] lfile the file where the exception occurred.
+	@param[in] lline the line where the exception occurred.
 	*/
 	FMTException(const FMTexc lexception,Core::FMTsection lsection,const std::string message,
 		const std::string& lmethod, const std::string& lfile, const int& lline);
 
 	// DocString: FMTException(const FMTexc,Core::FMTsection,const std::string,const std::string&)
 	/**
-	FMTException constructor taking a exception type a section and a message, the method
-	where the exception juste happened.
+	@brief Construct a FMTException from an exception type, a section, a message and the method where it occurred.
+	@param[in] lexception the exception type.
+	@param[in] lsection the section in which the exception occurred.
+	@param[in] message the message of the exception.
+	@param[in] lmethod the method where the exception occurred.
 	*/
 	FMTException(const FMTexc lexception, Core::FMTsection lsection, const std::string message,
 		const std::string& lmethod);
 
 	// DocString: FMTException(const FMTexc, const std::string&,const std::string&,const std::string&,const int&)
 	/**
-	FMTException constructor taking a exception type and a message.
+	@brief Construct a FMTException from an exception type, a message and the location where it occurred.
+	@param[in] lexception the exception type.
+	@param[in] message the message of the exception.
+	@param[in] lmethod the method where the exception occurred.
+	@param[in] lfile the file where the exception occurred.
+	@param[in] lline the line where the exception occurred.
 	*/
 	FMTException(const FMTexc lexception, const std::string message,
 		const std::string& lmethod, const std::string& lfile, const int& lline);
 
 	// DocString: FMTException(const FMTexc, const std::string&,const std::string&,)
 	/**
-	FMTException constructor taking a exception type and a message and method.
+	@brief Construct a FMTException from an exception type, a message and the method where it occurred.
+	@param[in] lexception the exception type.
+	@param[in] message the message of the exception.
+	@param[in] lmethod the method where the exception occurred.
 	*/
 	FMTException(const FMTexc lexception, const std::string message,const std::string& lmethod);
 	// DocString: FMTException(const FMTException&)
 	/**
-	FMTException default copy constructor.
+	@brief Default copy constructor for FMTException.
+	@param[in] rhs the FMTException to copy.
 	*/
     FMTException(const FMTException& rhs);
 	// DocString: FMTException::operator=
 	/**
-	FMTException default copy assignment operator.
+	@brief Default copy assignment operator for FMTException.
+	@param[in] rhs the FMTException to copy.
+	@return a reference to this FMTException.
 	*/
     FMTException& operator = (const FMTException& rhs);
 	// DocString: FMTException::getType
 	/**
-	The function returns the type of exception kept by this FMTException.
+	@brief Return the type of exception held by this FMTException.
+	@return the exception type.
 	*/
 	FMTexc getType() const;
 	// DocString: FMTException::getSection
 	/**
-	The function returns the section in which the exception occured.
+	@brief Return the section in which the exception occurred.
+	@return the section.
 	*/
 	Core::FMTsection getSection() const;
 	// DocString: FMTException::what
 	/**
-	This function override the what function of the exception base class returning the message string.
+	@brief Override the what function of the base exception class returning the message string.
+	@return the message string.
 	*/
     const char* what() const throw() override;
 	// DocString: FMTException::hold
 	/**
-	Returns the value of the holdup member.
+	@brief Return the value of the holdup member.
+	@return the holdup value.
 	*/
 	bool hold() const;
 	// DocString: FMTException::setHold
 	/**
-	The function sets the value of holdup member.
+	@brief Set the value of the holdup member.
+	@param[in] side the value to set.
 	*/
 	void setHold(bool side);
 	// DocString: FMTException::getMethod
 	/**
-	Returns the method in which the exception occured.
+	@brief Return the method in which the exception occurred.
+	@return the method.
 	*/
 	inline std::string getMethod() const
 		{
@@ -267,7 +300,8 @@ class FMTEXPORT FMTException : public std::exception
 		}
 	// DocString: FMTException::getFile
 	/**
-	Returns the source file in which the exception occured.
+	@brief Return the source file in which the exception occurred.
+	@return the source file.
 	*/
 	inline std::string getFile() const
 		{
@@ -275,7 +309,8 @@ class FMTEXPORT FMTException : public std::exception
 		}
 	// DocString: FMTException::getLine
 	/**
-	Returns the source file line in which the exception occured.
+	@brief Return the source file line in which the exception occurred.
+	@return the source file line.
 	*/
 	inline int getLine() const
 		{
@@ -283,7 +318,8 @@ class FMTEXPORT FMTException : public std::exception
 		}
 	// DocString: FMTException::getSrcInfo
 	/**
-	Returns a formated string for the location of the exception.
+	@brief Return a formatted string for the location of the exception.
+	@return the formatted source location.
 	*/
 	std::string getSrcInfo() const;
     };

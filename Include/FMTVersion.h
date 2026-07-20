@@ -31,9 +31,7 @@ namespace Version
 {
 // DocString: FMTVersion
 /**
-The only purpose of this class is to let the user see which version of FMT he's using.
-It also gives some information about the build date and the actual date.
-It also informs the user about which features are avalaible in FMT.
+@brief Class exposing the version of FMT, its build date and the available features.
 */
 
 
@@ -43,58 +41,71 @@ class FMTEXPORT FMTVersion : public Core::FMTObject
 	public:
 		// DocString: FMTVersion()
 		/**
-		Default constructor of FMTVersion.
+		@brief Default constructor for FMTVersion.
 		*/
 		FMTVersion()=default;
 		// DocString: ~FMTVersion()
 		/**
-		Destructor of FMTVersion.
+		@brief Default destructor for FMTVersion.
 		*/
 		~FMTVersion()=default;
 		// DocString: FMTVersion::getMajor
 		/**
-		Getter of the major version of FMT.
+		@brief Return the major version of FMT.
+		@return the major version of FMT.
 		*/
 		static int getMajor();
 		// DocString: FMTVersion::getMinor
 		/**
-		Getter of the minor version of FMT.
+		@brief Return the minor version of FMT.
+		@return the minor version of FMT.
 		*/
 		static int getMinor();
 		// DocString: FMTVersion::getPatch
 		/**
-		Getter of the patch version of FMT.
+		@brief Return the patch version of FMT.
+		@return the patch version of FMT.
 		*/
 		static int getPatch();
 		// DocString: FMTVersion::getVersion
 		/**
-		Getter of the string of the version : MAjor.Minor.PATCH
+		@brief Return the version string of FMT (Major.Minor.Patch).
+		@return the version string.
 		*/
 		static std::string getVersion();
 		// DocString: FMTVersion::getDatenow
 		/**
-		Getter of the actual date: Day Month date
+		@brief Return the actual date (Day Month date).
+		@return the actual date.
 		*/
 		static std::string getDatenow();
 		// DocString: FMTVersion::getBuildDate
 		/**
-		Getter of the build date: date
+		@brief Return the build date of FMT.
+		@return the build date.
 		*/
 		static std::string getBuildDate();
 		// DocString: FMTVersion::isAtLeast
 		/**
-		Test if the FMT version is at least the given major/minor/patch parameters.
+		@brief Test if the FMT version is at least the given major, minor and patch.
+		@param[in] major the major version.
+		@param[in] minor the minor version.
+		@param[in] patch the patch version.
+		@return true if the version is at least the given one else false.
 		*/
 		static bool isAtLeast(int major, int minor, int patch);
 		// DocString: FMTVersion::hasFeature
 		/**
-		Test if the FMT version have the named feature.
-		Features GDAL,OSI,MOSEK,PYTHON,R.
+		@brief Test if the FMT version has the named feature (GDAL, OSI, MOSEK, PYTHON, R).
+		@param[in] name the feature name.
+		@return true if the feature is available else false.
 		*/
 		static bool hasFeature(const std::string& name);
 		// DocString: FMTVersion::getLicense
 		/**
-		Returns thes license has a regular string if french = true the returned license will be in french
+		@brief Return the license as a string.
+		@param[in] french if true returns the license in French.
+		@return the license string.
 		*/
 		static std::string getLicense(bool french=false);
 	};

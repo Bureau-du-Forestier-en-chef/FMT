@@ -23,21 +23,59 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
+	// DocString: FMTOutputNodeCache
+	/**
+	@brief Cache of graph vertices for output nodes, keyed by output source, used to speed up output computation on the graph.
+	@tparam tvdescriptor the vertex descriptor type.
+	@tparam titerator the iterator type over the vertices.
+	*/
 	template <class tvdescriptor,class titerator>
 	class FMTOutputNodeCache
 	{
 		
 	public:
+		// DocString: FMTOutputNodeCache()
+		/**
+		@brief Default constructor for FMTOutputNodeCache.
+		*/
 		FMTOutputNodeCache()=default;
+		// DocString: FMTOutputNodeCache(const FMTOutputNodeCache&)
+		/**
+		@brief Copy constructor for FMTOutputNodeCache.
+		@param[in] rhs the FMTOutputNodeCache to copy.
+		*/
 		FMTOutputNodeCache(const FMTOutputNodeCache& rhs) = default;
+		// DocString: FMTOutputNodeCache::operator=
+		/**
+		@brief Copy assignment operator for FMTOutputNodeCache.
+		@param[in] rhs the FMTOutputNodeCache to copy.
+		@return a reference to this FMTOutputNodeCache.
+		*/
 		FMTOutputNodeCache& operator = (const FMTOutputNodeCache& rhs) = default;
+		// DocString: ~FMTOutputNodeCache()
+		/**
+		@brief Default destructor for FMTOutputNodeCache.
+		*/
 		~FMTOutputNodeCache() = default;
+		// DocString: FMTOutputNodeCache(const std::vector<tvdescriptor>&)
+		/**
+		@brief Construct a cache from an initial set of nodes.
+		@param[in] initialnodes the initial nodes.
+		*/
 		FMTOutputNodeCache(const std::vector<tvdescriptor>& initialnodes) :
 			inmemorynodes(initialnodes), beginit(nullptr), endit(nullptr), searchtree(), m_allocator(), m_reserve()
 		{
 			inmemorynodes.shrink_to_fit();
 			std::sort(inmemorynodes.begin(),inmemorynodes.end());
 		}
+		// DocString: FMTOutputNodeCache(const titerator&, const titerator&, std::allocator<tvdescriptor>&, const size_t&)
+		/**
+		@brief Construct a cache from a range of nodes, an allocator and a reserve size.
+		@param[in] first the first iterator.
+		@param[in] last the last iterator.
+		@param[in] p_allocator the allocator.
+		@param[in] p_reserve the reserve size.
+		*/
 		FMTOutputNodeCache(const titerator& first, const titerator& last,std::allocator<tvdescriptor>& p_allocator,const size_t& p_reserve) :
 			inmemorynodes(), beginit(&first), endit(&last), searchtree(),m_allocator(&p_allocator), m_reserve(p_reserve)
 		{
@@ -57,16 +95,32 @@ namespace Graph
 				}
 
 		}
+		// DocString: FMTOutputNodeCache::eraseNode
+		/**
+		@brief Erase a node from the cache.
+		@param[in] node the node to erase.
+		*/
 		void eraseNode(const Core::FMTOutputNode& node)
 			{
 			searchtree.erase(node.source);
 			}
 
+		// DocString: FMTOutputNodeCache::contains
+		/**
+		@brief Return true if the cache contains a node.
+		@param[in] node the node.
+		@return true if the cache contains the node else false.
+		*/
 		bool contains(const Core::FMTOutputNode& node) const
 			{
 			return searchtree.find(node.source) != searchtree.end();
 			}
 
+		// DocString: FMTOutputNodeCache::removeLargest
+		/**
+		@brief Remove the largest entry of the cache and return the freed memory.
+		@return the amount of freed memory in bytes.
+		*/
 		unsigned long long removeLargest()
 		{
 			size_t largestsize = 0;
@@ -89,16 +143,35 @@ namespace Graph
 			}
 			return removedmemory;
 		}
+		// DocString: FMTOutputNodeCache::getVertices
+		/**
+		@brief Return the vertices for a target node, using the cache.
+		@param[in] targetnode the target node.
+		@param[in] actions the actions.
+		@param[in] themes the themes.
+		@param[out] exactvecticies true if the returned vertices are an exact match.
+		@return the vertices for the target node.
+		*/
 		const std::vector<tvdescriptor>& getVertices(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions,
 			const std::vector<Core::FMTTheme>&themes, bool& exactvecticies) const
 			{
 			return this->getCleanDescriptors(targetnode, actions, themes, exactvecticies);
 			}
+		// DocString: FMTOutputNodeCache::setValidVertices
+		/**
+		@brief Set the valid vertices for a target node in the cache.
+		@param[in] targetnode the target node.
+		@param[in] vertices the vertices to set.
+		*/
 		void setValidVertices(const Core::FMTOutputNode& targetnode,const std::vector<tvdescriptor>& vertices) const
 			{
 			searchtree[targetnode.source] = vertices;
 			searchtree[targetnode.source].shrink_to_fit();
 			}
+		// DocString: FMTOutputNodeCache::clear
+		/**
+		@brief Clear the cache.
+		*/
 		void clear()
 			{
 			beginit = nullptr;
@@ -106,11 +179,22 @@ namespace Graph
 			inmemorynodes.clear();
 			searchtree.clear();
 			}
+		// DocString: FMTOutputNodeCache::rebase
+		/**
+		@brief Rebase the cache on a new range of developments.
+		@param[in] beginofdevs the first iterator.
+		@param[in] endofdevs the last iterator.
+		*/
 		void rebase(const titerator& beginofdevs, const titerator& endofdevs)
 			{
 			beginit = &beginofdevs;
 			endit = &endofdevs;
 			}
+		// DocString: FMTOutputNodeCache::insert
+		/**
+		@brief Insert the content of another cache into this cache.
+		@param[in] rhs the cache to insert.
+		*/
 		void insert(const FMTOutputNodeCache& rhs)
 			{
 			if (beginit==nullptr)
@@ -124,6 +208,11 @@ namespace Graph
 			searchtree.insert(rhs.searchtree.begin(), rhs.searchtree.end());
 			}
 
+		// DocString: FMTOutputNodeCache::pushToVector
+		/**
+		@brief Push the nodes of the cache into a vector.
+		@param[in,out] refvecs the vector to push into.
+		*/
 		void pushToVector(std::vector<tvdescriptor>& refvecs) const
 		{
 			if (beginit!=nullptr)
@@ -145,6 +234,13 @@ namespace Graph
 		}
 	private:
 		friend class boost::serialization::access;
+		// DocString: FMTOutputNodeCache::serialize
+		/**
+		@brief Serialize the FMTOutputNodeCache for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
@@ -159,6 +255,15 @@ namespace Graph
 		size_t m_reserve;
         typedef typename std::map<Core::FMTOutputSource,std::vector<tvdescriptor>>::const_iterator notecacheit;
 		
+		// DocString: FMTOutputNodeCache::getCleanDescriptors
+		/**
+		@brief Return the clean vertex descriptors for a target node, rebuilding from the cache and parent nodes.
+		@param[in] targetnode the target node.
+		@param[in] actions the actions.
+		@param[in] themes the themes.
+		@param[out] exactnode true if the returned descriptors are an exact match.
+		@return the clean vertex descriptors.
+		*/
 		const std::vector<tvdescriptor>& getCleanDescriptors(const Core::FMTOutputNode& targetnode,const std::vector<Core::FMTAction>& actions,
 										const std::vector<Core::FMTTheme>&themes, bool& exactnode) const
 		{
@@ -216,6 +321,14 @@ namespace Graph
 			//return (returniterator.first)->second;
 			return cleaned;
 		}
+		// DocString: FMTOutputNodeCache::getActionRebuild
+		/**
+		@brief Rebuild the descriptors for an aggregate action from the cached descriptors of its member actions.
+		@param[in] targetnode the target node.
+		@param[in] actions the actions.
+		@param[in,out] cleaned the descriptors to rebuild.
+		@param[out] exactnode true if an exact match is found.
+		*/
 		void getActionRebuild(const Core::FMTOutputNode& targetnode,
 			const std::vector<Core::FMTAction>& actions,
 			std::vector<tvdescriptor>& cleaned,
@@ -299,6 +412,15 @@ namespace Graph
 
 			}
 		}
+		// DocString: FMTOutputNodeCache::_getParentNode
+		/**
+		@brief Return the parent node of a target node in the cache, an exact match or a subset.
+		@param[in] m_targetNode the target node.
+		@param[in] m_actions the actions.
+		@param[out] m_exactNode true if an exact match is found.
+		@param[in] m_foundSubset whether a subset was found.
+		@return an iterator to the parent node, or the end of the search tree.
+		*/
 		notecacheit _getParentNode(const Core::FMTOutputNode& m_targetNode,
 							const std::vector<Core::FMTAction>& m_actions,
 						bool& m_exactNode, bool m_foundSubset) const

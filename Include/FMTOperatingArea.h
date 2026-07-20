@@ -22,14 +22,17 @@ namespace Heuristics
 	{
 	// DocString: FMTOperatingArea
 	/**
-	FMTOperatingArea gives informations about a given operating area it's mask,neighbors,neighborsperimeter.
-	FMToperating area have to be based on static themes (not used within transitions).
+	@brief Operating area giving information about its mask, neighbors and neighbors perimeter.
+	@details The operating area has to be based on static themes not used within transitions.
 	*/
 	class FMTEXPORT FMTOperatingArea
 		{
 		// DocString: FMTOperatingArea::serialize
 		/**
-		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTOperatingArea for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -56,86 +59,107 @@ namespace Heuristics
 		public:
 			// DocString: FMTOperatingArea::operator+=
 			/**
-			Add area to the operating area.
+			@brief Add area to the operating area.
+			@param[in] value the area to add.
+			@return a reference to this FMTOperatingArea.
 			*/
 			FMTOperatingArea& operator += (const double& value);
 			// DocString: FMTOperatingArea::getNeighbors
 			/**
-			Getter returning a copy of the neighbors masks data of the operatingarea.
+			@brief Return a copy of the neighbors masks of the operating area.
+			@return the neighbors masks.
 			*/
 			std::vector<Core::FMTMask> getNeighbors() const;
 			// DocString: FMTOperatingArea::getArea
 			/**
-				Get the area of the operating area.
+			@brief Get the area of the operating area.
+			@return the area.
 			*/
 			double getArea() const;
 			// DocString: FMTOperatingArea::getNeighborsPerimeter
 			/**
-			Getter returning the percentage of perimeter the oprating area needs to share with a other operating area,
-			to be considered neighbor.
+			@brief Return the percentage of perimeter the operating area needs to share with another operating area to be considered a neighbor.
+			@return the neighbors perimeter.
 			*/
 			double getNeighborsPerimeter() const;
 			// DocString: FMTOperatingArea::getMask
 			/**
-			Getter returning mask of the operating area.
+			@brief Return the mask of the operating area.
+			@return the mask.
 			*/
 			Core::FMTMask getMask() const;
 			// DocString: FMTOperatingArea::setNeighbors
 			/**
-			Setter for the neighbors mask member data.
+			@brief Set the neighbors masks of the operating area.
+			@param[in] lneighbors the neighbors masks.
 			*/
 			void setNeighbors(const std::vector<Core::FMTMask>& lneighbors);
 			// DocString: FMTOperatingArea(const Core::FMTMask,const double)
 			/**
-			Main FMTOperatingArea constructor targeting the user. Before synchronizing everything to the solverinterface,
-			the user has to provide to the heuristics all the green-up, returntime etc.... for each operating area.
+			@brief Main constructor for FMTOperatingArea from a mask and a neighbors perimeter.
+			@details Before synchronizing to the solver interface, the user has to provide the green up, return time and other parameters for each operating area.
+			@param[in] lmask the mask.
+			@param[in] lneighborsperimeter the neighbors perimeter.
 			*/
 			FMTOperatingArea(const Core::FMTMask& lmask,const double& lneighborsperimeter);
 			// DocString: FMTOperatingArea::setArea
 			/**
-			Set the area of the operating area.
+			@brief Set the area of the operating area.
+			@param[in] newarea the new area.
 			*/
 			void setArea(const double& newarea);
 
 			// DocString: FMTOperatingArea()
 			/**
-			Default FMTOperatingArea constructor
+			@brief Default constructor for FMTOperatingArea.
 			*/
 			FMTOperatingArea()=default;
 			// DocString: FMTOperatingArea(const FMTOperatingArea)
 			/**
-			FMTOperatingArea copy constructor
+			@brief Copy constructor for FMTOperatingArea.
+			@param[in] rhs the FMTOperatingArea to copy.
 			*/
 			FMTOperatingArea(const FMTOperatingArea& rhs) = default;
 			// DocString: FMTOperatingArea::operator=
 			/**
-			FMTOperatingArea copy assignment
+			@brief Copy assignment operator for FMTOperatingArea.
+			@param[in] rhs the FMTOperatingArea to copy.
+			@return a reference to this FMTOperatingArea.
 			*/
 			FMTOperatingArea& operator = (const FMTOperatingArea& rhs)=default;
 			// DocString: FMTOperatingArea::operator==
 			/**
-			Comparison operator of FMTOperatingArea
+			@brief Comparison operator for FMTOperatingArea.
+			@param[in] rhs the FMTOperatingArea to compare to.
+			@return true if both operating areas are equal else false.
 			*/
 			bool operator == (const FMTOperatingArea& rhs) const;
 			// DocString: FMTOperatingArea::operator!=
 			/**
-			Comparison operator of FMTOperatingArea
+			@brief Comparison operator for FMTOperatingArea.
+			@param[in] rhs the FMTOperatingArea to compare to.
+			@return true if both operating areas are different else false.
 			*/
 			bool operator != (const FMTOperatingArea& rhs) const;
 			// DocString: ~FMTOperatingArea()
 			/**
-			Default FMTOperatingArea destructor
+			@brief Default destructor for FMTOperatingArea.
 			*/
 			virtual ~FMTOperatingArea()=default;
 			// DocString: FMTOperatingArea::presolve
 			/**
-			Using a FMTMask (selectedmask) and a subset of the original FMTthemes used to construct the FMTMask,
-			it returns a presolved FMTMask with potentialy less data.
+			@brief Return a presolved FMTOperatingArea using a mask filter and a subset of the original themes.
+			@param[in] filter the mask filter.
+			@param[in] presolvedthemes the presolved themes.
+			@return the presolved operating area.
 			*/
 			FMTOperatingArea presolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const;
 			// DocString: FMTOperatingArea::postSolve
 			/**
-			Using a FMTMask (selectedmask) and the original FMTthemes it returns a postsolved FMTMask.
+			@brief Return a postsolved FMTOperatingArea using a mask filter and the original themes.
+			@param[in] filter the mask filter.
+			@param[in] basethemes the base themes.
+			@return the postsolved operating area.
 			*/
 			FMTOperatingArea postsolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const;
 
@@ -143,7 +167,7 @@ namespace Heuristics
 
 	// DocString: FMTOperatingAreaComparator
 	/**
-	This class is made to compare FMTOperatingArea using the std::find_if() function when FMTOperatingArea are in a stl container.
+	@brief Comparator to find a FMTOperatingArea with std::find_if when operating areas are in an stl container.
 	*/
 	class FMTEXPORT FMTOperatingAreaComparator
 		{
@@ -153,17 +177,21 @@ namespace Heuristics
 		public:
 			// DocString: FMTOperatingAreaComparator(const Core::FMTMask)
 			/**
-			Constructor of the comparator using the FMTMask as reference.
+			@brief Construct the comparator from a mask reference.
+			@param[in] lmask the mask.
 			*/
 			FMTOperatingAreaComparator(const Core::FMTMask& lmask);
 			// DocString: FMTOperatingAreaComparator(const FMTOperatingArea& oparea)
 			/**
-			Constructor of the comparator using the operating area.
+			@brief Construct the comparator from an operating area.
+			@param[in] oparea the operating area.
 			*/
 			FMTOperatingAreaComparator(const FMTOperatingArea& oparea);
 			// DocString: FMTOperatingAreaComparator::operator()
 			/**
-			Comparator for FMToperating area.
+			@brief Comparator for FMTOperatingArea.
+			@param[in] oparea the operating area to compare to.
+			@return true if the operating area matches else false.
 			*/
 			bool operator()(const FMTOperatingArea& oparea) const;
 

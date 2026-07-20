@@ -23,40 +23,48 @@ namespace Parser
 {
 // DocString: FMTLifespanParser
 /**
-The lifespan parser is used to read the lifespan part of the model.The class is made to
-read and write lifespan section.
+@brief Parser reading and writing the lifespan section of the model.
 */
 class FMTEXPORT FMTLifespanParser : public FMTParser
     {
     public:
 		// DocString: FMTLifespanParser()
 		/**
-		Default constructor for FMTLifespanParser.
+		@brief Default constructor for FMTLifespanParser.
 		*/
         FMTLifespanParser();
 		// DocString: ~FMTLifespanParser()
 		/**
-		Default destructor for FMTLifespanParser.
+		@brief Default destructor for FMTLifespanParser.
 		*/
 		~FMTLifespanParser() = default;
 		// DocString: FMTLifespanParser(const FMTLifespanParser&)
 		/**
-		Default copy constructor for FMTLifespanParser.
+		@brief Copy constructor for FMTLifespanParser.
+		@param[in] rhs the FMTLifespanParser to copy.
 		*/
         FMTLifespanParser(const FMTLifespanParser& rhs);
 		// DocString: FMTLifespanParser::operator=
 		/**
-		Default copy assignment for FMTLifespanParser.
+		@brief Copy assignment operator for FMTLifespanParser.
+		@param[in] rhs the FMTLifespanParser to copy.
+		@return a reference to this FMTLifespanParser.
 		*/
         FMTLifespanParser& operator = (const FMTLifespanParser& rhs);
 		// DocString: FMTLifespanParser::read
 		/**
-		Read function for the lifespan section, needs (themes), (constants) and finaly the (location) of the lifespansection.
+		@brief Read the lifespan section.
+		@param[in] themes the themes.
+		@param[in] constants the constants.
+		@param[in] location the file location.
+		@return the lifespans.
 		*/
         Core::FMTLifespans read(const std::vector<Core::FMTTheme>& themes,const Core::FMTConstants& constants,const std::string& location);
 		// DocString: FMTLifespanParser::write
 		/**
-		Write function for the lifespan section, needs (lifespan) and  the (location) of the new lifespansection.
+		@brief Write the lifespan section.
+		@param[in] lifespan the lifespans.
+		@param[in] location the file location.
 		*/
         void write(const Core::FMTLifespans& lifespan,const std::string& location) const;
     };

@@ -19,8 +19,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
-    //DocString: FMTintmodelparameters
+    // DocString: FMTintmodelparameters
     //
+    /**
+    @brief Enumerator of the integer parameters of a FMTModel.
+    */
     enum FMTintmodelparameters
     {
         LENGTH = 0,/**< The number of period to optimize or simulate */
@@ -35,8 +38,11 @@ namespace Models
         MAX_CYCLE_MOVES = 9, /**< Maximal number of accepted moves per cycle */
         LastIntModelParam = 10/**< End marker, used to allocate a fixed-sized array to store int parameters. */
     };
-    //DocString: FMTdblmodelparameters
+    // DocString: FMTdblmodelparameters
     //
+    /**
+    @brief Enumerator of the double parameters of a FMTModel.
+    */
     enum FMTdblmodelparameters
     {
         TOLERANCE = 0,/**< Double tolerance used in doPlanning */
@@ -44,8 +50,11 @@ namespace Models
         INITIAL_ACCEPTANCE_PROBABILITY = 2,
         LastDblModelParam = 3/**< End marker, used to allocate a fixed-sized array to store double parameters. */
     };
-    //DocString: FMTboolmodelparameters
+    // DocString: FMTboolmodelparameters
     //
+    /**
+    @brief Enumerator of the boolean parameters of a FMTModel.
+    */
     enum FMTboolmodelparameters
     {
         FORCE_PARTIAL_BUILD = 0,/**< Force partial build of the graph if schedules are passed to doPlanning */
@@ -58,8 +67,11 @@ namespace Models
         QUIET_LOGGING = 7,
         LastBoolModelParam = 8/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
-    //DocString: FMTstrmodelparameters
+    // DocString: FMTstrmodelparameters
     //
+    /**
+    @brief Enumerator of the string parameters of a FMTModel.
+    */
     enum FMTstrmodelparameters
     {
         SOLVER_COLD_START = 0,/*Cold start parameters located in scenario folder*<  */
@@ -71,81 +83,145 @@ namespace Models
 
     // DocString: FMTModelParameters
     /**
-    FMTModelParameters is a class which contains all the informations 
-    a model need to be solve by the different types of FMTModel.
-    Default int parameters are : 
-        LENGTH = 30
-        SEED = 25
-        NUMBER_OF_ITERATIONS = 10000
-        PRESOLVE_ITERATIONS = 10
-        NUMBER_OF_THREADS = 4
-    Default double parameters are : 
-        TOLERANCE = FMT_DBL_TOLERANCE
-        GOALING_SCHEDULE_WEIGHT = 10000
-    Default bool parameters are :
-        FORCE_PARTIAL_BUILD = false
-        STRICTLY_POSITIVE = true
-        POSTSOLVE = true
-        SHOW_LOCK_IN_SCHEDULES = false
-    Default str parameters are:
+    @brief Class containing all the parameters a model needs to be solved by the different types of FMTModel.
     */
     class FMTEXPORT FMTModelParameters : public Core::FMTObject
     {
         public:
             // DocString: FMTModelParameters()
             /**
-            Default constructor
+            @brief Default constructor for FMTModelParameters.
             */
             FMTModelParameters();
             // DocString: FMTModelParameters(const FMTModelParameters&)
             /**
-            Copy constructor
+            @brief Copy constructor for FMTModelParameters.
+            @param[in] rhs the FMTModelParameters to copy.
             */
             FMTModelParameters(const FMTModelParameters& rhs);
             // DocString: FMTModelParameters::operator=(const FMTModelParameters&)
             /**
-            Copy assignment
+            @brief Copy assignment operator for FMTModelParameters.
+            @param[in] rhs the FMTModelParameters to copy.
+            @return a reference to this FMTModelParameters.
             */
             FMTModelParameters& operator = (const FMTModelParameters& rhs); 
             // DocString: ~FMTModelParameters
             /**
-                Default desctructor of FMTModelParameters.
-		    */
+            @brief Default destructor for FMTModelParameters.
+            */
             ~FMTModelParameters()=default;
             // DocString: FMTModelParameters(FMTModelParameters&&)
             /**
-            Default move constructor for FMTModelParameters.
+            @brief Default move constructor for FMTModelParameters.
+            @param[in] rhs the FMTModelParameters to move from.
             */
             FMTModelParameters(FMTModelParameters&& rhs)=default;
             // DocString: FMTModelParameters::operator=(FMTModelParameters&& rhs) 
             /**
-            Default move assignment for FMTModelParameters.
+            @brief Default move assignment for FMTModelParameters.
+            @param[in] rhs the FMTModelParameters to move from.
+            @return a reference to this FMTModelParameters.
             */
             FMTModelParameters& operator =(FMTModelParameters&& rhs) =default;
             // DocString: FMTModelParameters::swap(FMTModelParameters& rhs)
             /**
-            Default move assignment for FMTModelParameters.
+            @brief Swap this FMTModelParameters with another.
+            @param[in,out] rhs the FMTModelParameters to swap with.
             */
             void swap(FMTModelParameters& rhs);
             //###Setter
+            // DocString: FMTModelParameters::setIntParameter
+            /**
+            @brief Set a integer parameter.
+            @param[in] key the parameter key.
+            @param[in] value the value to set.
+            @return true if the parameter is set else false.
+            */
             bool setIntParameter(FMTintmodelparameters key,const int& value);
+            // DocString: FMTModelParameters::setDblParameter
+            /**
+            @brief Set a double parameter.
+            @param[in] key the parameter key.
+            @param[in] value the value to set.
+            @return true if the parameter is set else false.
+            */
             bool setDblParameter(FMTdblmodelparameters key,const double& value);
+            // DocString: FMTModelParameters::setBoolParameter
+            /**
+            @brief Set a boolean parameter.
+            @param[in] key the parameter key.
+            @param[in] value the value to set.
+            @return true if the parameter is set else false.
+            */
             bool setBoolParameter(FMTboolmodelparameters key,const bool& value);
+            // DocString: FMTModelParameters::setStrParameter
+            /**
+            @brief Set a string parameter.
+            @param[in] p_key the parameter key.
+            @param[in] p_value the value to set.
+            @return true if the parameter is set else false.
+            */
             bool setStrParameter(FMTstrmodelparameters p_key, const std::string& p_value);
+            // DocString: FMTModelParameters::setPeriodCompressTime
+            /**
+            @brief Set the compress time for a given period.
+            @param[in] period the period.
+            @param[in] value the compress time value.
+            @return true if the value is set else false.
+            */
             bool setPeriodCompressTime(const int& period, const int& value);
             //###Getter
+            // DocString: FMTModelParameters::getIntParameter
+            /**
+            @brief Return a integer parameter.
+            @param[in] key the parameter key.
+            @return the parameter value.
+            */
             int getIntParameter(FMTintmodelparameters key) const;
+            // DocString: FMTModelParameters::getDblParameter
+            /**
+            @brief Return a double parameter.
+            @param[in] key the parameter key.
+            @return the parameter value.
+            */
             double getDblParameter(FMTdblmodelparameters key) const;
+            // DocString: FMTModelParameters::getBoolParameter
+            /**
+            @brief Return a boolean parameter.
+            @param[in] key the parameter key.
+            @return the parameter value.
+            */
             bool getBoolParameter(FMTboolmodelparameters key) const;
+            // DocString: FMTModelParameters::getStrParameter
+            /**
+            @brief Return a string parameter.
+            @param[in] p_key the parameter key.
+            @return the parameter value.
+            */
             const std::string& getStrParameter(FMTstrmodelparameters p_key) const;
+            // DocString: FMTModelParameters::getPeriodCompressTime
+            /**
+            @brief Return the compress time for a given period.
+            @param[in] period the period.
+            @return the compress time value.
+            */
             int getPeriodCompressTime(const int& period)const;
+            // DocString: FMTModelParameters::getCompressTime
+            /**
+            @brief Return the compress time for each period.
+            @return the compress time values.
+            */
             std::vector<int> getCompressTime() const;
         private:
             friend class boost::serialization::access;
             // DocString: FMTModelParameters::serialize
-           /**
-           Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-           */
+            /**
+            @brief Serialize the FMTModelParameters through its base FMTObject for multiprocessing across multiple cpus (pickle in Python).
+            @tparam Archive the archive type.
+            @param[in,out] ar the archive to serialize to or from.
+            @param[in] version the serialization version.
+            */
             template<class Archive>
             void serialize(Archive& ar, const unsigned int version)
             {

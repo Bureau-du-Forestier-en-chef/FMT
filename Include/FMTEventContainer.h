@@ -25,12 +25,8 @@ class FMTSpatialGraphs;
 
 // DocString: FMTEventContainer
 /**
-This class is a container for FMTEvent. It's build to handle event
-comparison or distance calculation in an efficient way by allowing the
-user to get events by period, action id and/or coordinates.
-One container can hold all events for a model. They are sorted by
-period, centroid, action_id and finally by size.
-You can  remove FMTCoordinate and add FMTCoordinate by period and action.
+@brief Container of FMTEvent handling event comparison and distance calculation efficiently, allowing the user to get events by period, action id and coordinates.
+@details One container can hold all the events of a model, sorted by period, centroid, action id and finally size; coordinates can be added and removed by period and action.
 */
 class FMTEXPORT FMTEventContainer : public Core::FMTObject
 {
@@ -41,211 +37,306 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
         typedef typename std::set<FMTEvent>::const_reverse_iterator const_reverse_iterator;
         // DocString: FMTEventContainer()
         /**
-        Default constructor
+        @brief Default constructor for FMTEventContainer.
         */
         FMTEventContainer()=default;
         // DocString: ~FMTEventContainer()
         /**
-        Destructor
+        @brief Default destructor for FMTEventContainer.
         */
         ~FMTEventContainer()=default;
         // DocString: FMTEventContainer(const FMTEventContainer&)
         /**
-        Copy constructor
+        @brief Copy constructor for FMTEventContainer.
+        @param[in] rhs the FMTEventContainer to copy.
         */
         FMTEventContainer(const FMTEventContainer& rhs)=default;
         // DocString: FMTEventContainer::operator=
         /**
-        Copy assignment operator
+        @brief Copy assignment operator for FMTEventContainer.
+        @param[in] rhs the FMTEventContainer to copy.
+        @return a reference to this FMTEventContainer.
         */
         FMTEventContainer& operator=(const FMTEventContainer& rhs)=default;
         // DocString: FMTEventContainer::operator==
         /**
-        Comparison operator equal to
+        @brief Comparison operator for FMTEventContainer.
+        @param[in] rhs the FMTEventContainer to compare to.
+        @return true if both containers are equal else false.
         */
         bool operator==(const FMTEventContainer& rhs) const;
          // DocString: FMTEventContainer::swap
-        /**
-        Exchange contents of events with the content of rhs.events
-        */
+         /**
+         @brief Swap the events of this container with another one.
+         @param[in,out] rhs the FMTEventContainer to swap with.
+         */
         void swap(FMTEventContainer& rhs);
         // DocString: FMTEventContainer::begin
         /**
-        Return a const iterator to the first FMTEvent in events.
+        @brief Return a const iterator to the first event.
+        @return a const iterator to the first event.
         */
         const_iterator begin() const;
         // DocString: FMTEventContainer::end
         /**
-        Return a const iterator to the past-the-end element in events.
+        @brief Return a const iterator past the last event.
+        @return a const iterator past the last event.
         */
         const_iterator end() const;
         // DocString: FMTEventContainer::empty
         /**
-        Test whether the container is empty.
+        @brief Test whether the container is empty.
+        @return true if the container is empty else false.
         */
         bool empty() const;
 		// DocString: FMTEventContainer::size
-        /**
-        Return container size.
-        */
+		/**
+		@brief Return the number of events in the container.
+		@return the container size.
+		*/
         size_t size() const;
         // DocString: FMTEventContainer::find
         /**
-        Get const iterator to the first event found with the coord at the period specified.
+        @brief Return a const iterator to the first event found with a coordinate at a period.
+        @param[in] period the period.
+        @param[in] coord the coordinate.
+        @return a const iterator to the event.
         */
 		const_iterator find(const int& period, const FMTCoordinate& coord) const;
 		// DocString: FMTEventContainer::find
 		/**
-		Get const iterator to the element.
+		@brief Return a const iterator to an event.
+		@param[in] event the event.
+		@return a const iterator to the event.
 		*/
         const_iterator find(const FMTEvent& event) const;
         // DocString: FMTEventContainer::insert
         /**
-        Insert an event in the container.
+        @brief Insert an event in the container.
+        @param[in] event the event to insert.
         */
         void insert(const FMTEvent& event);
 		// DocString: FMTEventContainer::merge
 		/**
-		Merge two FMTEventContainer
+		@brief Merge another FMTEventContainer into this one.
+		@param[in] levents the container to merge.
 		*/
 		void merge(const FMTEventContainer& levents);
         // DocString: FMTEventContainer::erase(const FMTEvent&)
         /**
-        Erase an event from the container.
+        @brief Erase an event from the container.
+        @param[in] event the event to erase.
         */
         void erase(const FMTEvent& event);
         // DocString: FMTEventContainer::erase(const const_iterator)
         /**
-        Erase an event from the container and return the next iterator.
+        @brief Erase an event from the container and return the next iterator.
+        @param[in] event the iterator to the event to erase.
+        @return the next iterator.
         */
         const_iterator erase (const const_iterator event);
         // DocString: FMTEventContainer::clear
         /**
-        Clear content of the container.
+        @brief Clear the content of the container.
         */
         void clear();
         // DocString: FMTEventContainer::lasperiod
-        /*
-        Return the period of the last event in the container
+        /**
+        @brief Return the period of the last event in the container.
+        @return the last period.
         */
         int lastPeriod()const;
         // DocString: FMTEventContainer::firstPeriod
-        /*
-        Return the period of the first event in the container
+        /**
+        @brief Return the period of the first event in the container.
+        @return the first period.
         */
         int firstPeriod()const;
         // DocString: FMTEventContainer::eraseCoordinate
-        /*
-        Erase all coordinate corresponding to coord in events from the period start.
+        /**
+        @brief Erase all the coordinates corresponding to a coordinate in the events from a period.
+        @param[in] coord the coordinate.
+        @param[in] periodStart the first period.
         */
         //void eraseCoordinate(const FMTCoordinate& coord, const int& periodStart);
 		// DocString: FMTEventContainer::eraseCoordinate
-	   /*
-	   Erase all coordinate corresponding to coord in events from the period start.
-	   */
+		/**
+		@brief Erase all the coordinates corresponding to a coordinate in the events from a period.
+		@param[in] coord the coordinate.
+		@param[in] periodStart the first period.
+		@param[in] actionstarget the action targets.
+		*/
 		void eraseCoordinate(const FMTCoordinate& coord, const int& periodStart,const std::vector<std::vector<bool>>& actionstarget);
         // DocString: FMTEventContainer::getBounds(const int&)
-        /*
-        Return a pair of iterator pointing to the first and the last elements in the period
+        /**
+        @brief Return a pair of iterators pointing to the first and the last elements of a period.
+        @param[in] period the period.
+        @return the pair of iterators.
         */
         std::pair<const_iterator,const_iterator> getBounds(const int& period) const;
         // DocString: FMTEventContainer::addAction(const FMTCoordinate&, const int&, const int&,const FMTBindingSpatialAction&)
-        /*
-        Add an action at coordinate and add to existing event if possible or aggregate events based on binding
+        /**
+        @brief Add an action at a coordinate, adding to an existing event if possible or aggregating events based on the binding.
+        @param[in] coord the coordinate.
+        @param[in] period the period.
+        @param[in] actionid the action id.
+        @param[in] binding the binding spatial action.
+        @param[in] p_GraphFamily the graph family.
         */
         void addAction (const FMTCoordinate& coord, const int& period,
             const int& actionid,const FMTBindingSpatialAction& binding, size_t p_GraphFamily);
 		// DocString: FMTEventContainer::addActions()
-		/*
-		Add actions at coordinate and add to existing event if possible or aggregate events based on (bindings). 
-        (bindings) must be the size of the vector of action in model because we use (actionids) to find the right ones.  
+		/**
+		@brief Add actions at a coordinate, adding to an existing event if possible or aggregating events based on the bindings.
+		@details The bindings must be the size of the vector of actions in the model because the action ids are used to find the right ones.
+		@param[in] coord the coordinate.
+		@param[in] period the period.
+		@param[in] actionids the action ids.
+		@param[in] bindings the binding spatial actions.
+		@param[in] p_GraphFamily the graph family.
 		*/
 		void addActions(const FMTCoordinate& coord, const int& period, 
             const std::vector<int>& actionids, const std::vector<FMTBindingSpatialAction>& bindings, size_t p_GraphFamily);
         // DocString: FMTEventContainer::getEvents(const int&, const int&)
-        /*
-        Get events at specified period with specified action
+        /**
+        @brief Return the events at a period for an action.
+        @param[in] period the period.
+        @param[in] action_id the action id.
+        @return the events.
         */
         std::vector<const_iterator> getEvents(const int& period, const int& action_id) const;
 		// DocString: FMTEventContainer::getEvents(const int&, const int&,const FMTCoordinate&,const FMTCoordinate&)
-		/*
-		Get events at specified period with specified action for a minimal and maximalcoordinate.
+		/**
+		@brief Return the events at a period for an action between a minimal and a maximal coordinate.
+		@param[in] period the period.
+		@param[in] action_id the action id.
+		@param[in] minimalcoordinate the minimal coordinate.
+		@param[in] maximalcoordinate the maximal coordinate.
+		@return the events.
 		*/
 		std::vector<const_iterator> getEvents(const int& period, const int& action_id,
 			const FMTCoordinate& minimalcoordinate, const FMTCoordinate& maximalcoordinate) const;
 		// DocString: FMTEventContainer::getMultipleEvents()
-		/*
-		Get events at specified period with specified action for a minimal and maximalcoordinate.
+		/**
+		@brief Return the events at a period for multiple actions between a minimal and a maximal coordinate.
+		@param[in] period the period.
+		@param[in] action_ids the action ids.
+		@param[in] minimalcoordinate the minimal coordinate.
+		@param[in] maximalcoordinate the maximal coordinate.
+		@return the events per action.
 		*/
 		std::vector<std::vector<const_iterator>> getMultipleEvents(const int& period, const std::vector<int>& action_ids,
 						const FMTCoordinate& minimalcoordinate, const FMTCoordinate& maximalcoordinate) const;
         // DocString: FMTEventContainer::getEvents(const int&, const std::vector<int>&)
-        /*
-        Get events at specified period with multiple actions id
+        /**
+        @brief Return the events at a period for multiple action ids.
+        @param[in] period the period.
+        @param[in] actions_id the action ids.
+        @return the events.
         */
         std::vector<const_iterator> getEvents(const int& period, const std::vector<int>& actions_id) const;
 		// DocString: FMTEventContainer::getEvents(const int&, const std::vector<bool>&)
-		/*
-		 Get events at specified period is action is used
-		 */
+		/**
+		@brief Return the events at a period for the used actions.
+		@param[in] period the period.
+		@param[in] actions_used the used actions.
+		@return the events.
+		*/
 		std::vector<const_iterator> getEvents(const int& period, const std::vector<bool>& actions_used) const;
 		// DocString: FMTEventContainer::getEvents(const int&, const std::vector<bool>&,const FMTCoordinate&, const FMTCoordinate&)
-		/*
-		Get events at specified period for multiple (actions_used), between a minimal coordinate and a maximal coordinate.
+		/**
+		@brief Return the events at a period for the used actions between a minimal and a maximal coordinate.
+		@param[in] period the period.
+		@param[in] actions_used the used actions.
+		@param[in] minimalcoordinate the minimal coordinate.
+		@param[in] maximalcoordinate the maximal coordinate.
+		@return the events.
 		*/
 		std::vector<const_iterator> getEvents(const int& period, const std::vector<bool>& actions_used,
 			const FMTCoordinate& minimalcoordinate, const FMTCoordinate& maximalcoordinate) const;
         // DocString: FMTEventContainer::getEvents(const int&, const FMTCoordinate&)
-        /*
-        ///Get events at specified period with specified coordinates
+        /**
+        @brief Return the events at a period for a coordinate.
+        @param[in] period the period.
+        @param[in] coord the coordinate.
+        @return the events.
         */
         std::vector<const_iterator> getEvents(const int& period, const FMTCoordinate& coord) const;
-		// DocString: FMTEventContainer::getEvents(const int&, const FMTCoordinate&)
-		/*
-		Get events starting from a period based on a buffer around events returns the events to delete if you remove coord
-		The newevents container is the container containing modified events resulting from erasing the coord. Following a move,
-		get the infeasibility of the erased events, add the infeasibility of the events in the newevents added the this container with erased events.
+		// DocString: FMTEventContainer::getEventsToErase
+		/**
+		@brief Return the events to erase when removing a coordinate, starting from a period based on a buffer around the events, and fill the modified events.
+		@param[in] fromperiod the first period.
+		@param[in] actionstarget the action targets.
+		@param[in] coord the coordinate.
+		@param[in] buffer the buffer.
+		@param[in,out] newevents the modified events resulting from erasing the coordinate.
+		@return the events to erase.
 		*/
 		FMTEventContainer getEventsToErase(const int& fromperiod, const std::vector<std::vector<bool>>& actionstarget,
 			const FMTCoordinate& coord,const size_t& buffer,FMTEventContainer& newevents) const;
 		// DocString: FMTEventContainer::getEventsToAdd
-		/*
-		Add the action to the coordinate and return the modified events that infeasibility need to be calculated (removed). The newevents
-		contains the new events to calculated infeasibility you need to delete the vector returned and add the newevents to the container and
-		calculate the infeasibility of those events.
+		/**
+		@brief Add an action to a coordinate and return the modified events whose infeasibility needs to be recalculated, filling the new events.
+		@param[in] coord the coordinate.
+		@param[in] period the period.
+		@param[in] actionid the action id.
+		@param[in] binding the binding spatial action.
+		@param[in,out] newevents the new events.
+		@param[in] p_GraphFamily the graph family.
+		@return the events to add.
 		*/
 		FMTEventContainer getEventsToAdd(const FMTCoordinate& coord, const int& period, const int& actionid,
 									const FMTBindingSpatialAction& binding, FMTEventContainer& newevents,
                                     size_t p_GraphFamily) const;
 		// DocString: FMTEventContainer::getContainer
-		/*
-		Get container subset on the interesting coordinates.
+		/**
+		@brief Return a subset of the container on the coordinates of interest.
+		@param[in] coordinates the coordinates.
+		@param[in] minperiod the minimal period.
+		@param[in] maxperiod the maximal period.
+		@param[in] buffer the buffer.
+		@return the container subset.
 		*/
 		FMTEventContainer getContainer(std::vector<FMTCoordinate> coordinates, const int& minperiod, const int& maxperiod, const size_t& buffer) const;
 
 		// DocString: FMTEventContainer::addUpdate
-		/*
-		Update the events container.
-		Used to calculate infeasibility.
+		/**
+		@brief Update the container by adding the new events and removing the events to remove, used to compute the infeasibility.
+		@param[in] newevents the new events.
+		@param[in] eventstoremove the events to remove.
+		@return the updated container.
 		*/
 		FMTEventContainer addUpdate(const FMTEventContainer& newevents,const FMTEventContainer& eventstoremove);
 
         // DocString: FMTEventContainer::getEvents(const int&, const std::set<FMTCoordinate>&)
-        /*
-        ///Get events at specified period with multiple specified coordinates
+        /**
+        @brief Return the events at a period for multiple coordinates.
+        @param[in] period the period.
+        @param[in] territory the coordinates.
+        @return the events.
         */
         std::vector<const_iterator> getEvents(const int& period, const std::set<FMTCoordinate>& territory) const;
         // DocString: FMTEventContainer::minimalDistance
         /**
-        This function is used when we want to verify if the event is within a certain distance from
-        other events. If it's not, the specified distance distance+1 is return, else the minimal distance
-        is return. It's principally use to calculate penalty for simulated annealing models.
+        @brief Return the minimal distance between an event and the other events for a period, or the distance plus one if the event is not within the distance.
+        @details Mainly used to compute the penalty of simulated annealing models.
+        @param[in] event the event.
+        @param[in] distancel the distance.
+        @param[in] period the period.
+        @param[in] actionsid the action ids.
+        @return the minimal distance.
         */
         double minimalDistance(const FMTEvent&,const unsigned int& distancel,const int& period, const std::vector<int>& actionsid) const;
-		// DocString: FMTEventContainer::minimalDistance
+		// DocString: FMTEventContainer::evaluateDistance
 		/**
-		The function add each distance from the event if the even is within the ditancetoevent for a given period if within = true. If within = false
-		the if the event is not within the distance it will add up the distances.
+		@brief Add up the distances of the events that are within (or not within) a distance range for a period.
+		@param[in] event the event.
+		@param[in] lowerdistancetoevent the lower distance to the event.
+		@param[in] upperdistancetoevent the upper distance to the event.
+		@param[in] period the period.
+		@param[in] actionsused the used actions.
+		@param[in,out] relations the event relations.
+		@return the evaluated distance.
 		*/
 		double evaluateDistance(const FMTEvent&,
 			const double& lowerdistancetoevent,
@@ -253,27 +344,89 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
 			const int& period, const std::vector<bool>& actionsused,
 			boost::unordered_set<FMTEventRelation>& relations) const;
 
+        // DocString: FMTEventContainer::evaluateSize
+        /**
+        @brief Evaluate the size infeasibility of the events for a period against a size range.
+        @param[in] p_actions the actions.
+        @param[in] p_period the period.
+        @param[in] p_lowerBound the lower size bound.
+        @param[in] p_upperBound the upper size bound.
+        @param[in] p_testLower if true tests the lower bound.
+        @return the size infeasibility.
+        */
         double evaluateSize(const std::vector<bool>& p_actions,
             int p_period,size_t  p_lowerBound, size_t p_upperBound, bool p_testLower) const;
 
+        // DocString: FMTEventContainer::getDispersion(const std::vector<bool>&,const FMTSpatialGraphs&,int,int,int,int)
+        /**
+        @brief Evaluate the dispersion infeasibility of the events for a theme and a period range.
+        @param[in] p_actions the actions.
+        @param[in] p_Graphs the spatial graphs.
+        @param[in] p_themeId the theme id.
+        @param[in] p_FirstPeriod the first period.
+        @param[in] p_LastPeriod the last period.
+        @param[in] p_bound the bound.
+        @return the dispersion infeasibility.
+        */
         double getDispersion(const std::vector<bool>& p_actions,
                             const FMTSpatialGraphs& p_Graphs,
                             int p_themeId,int p_FirstPeriod, 
                             int p_LastPeriod, int p_bound) const;
 
+        // DocString: FMTEventContainer::getDispersion(int,const FMTSpatialGraphs&,int,int,int,int)
+        /**
+        @brief Evaluate the dispersion infeasibility of the events for a rule, a theme and a period range.
+        @param[in] p_RuleId the rule id.
+        @param[in] p_Graphs the spatial graphs.
+        @param[in] p_themeId the theme id.
+        @param[in] p_FirstPeriod the first period.
+        @param[in] p_LastPeriod the last period.
+        @param[in] p_bound the bound.
+        @return the dispersion infeasibility.
+        */
         double getDispersion(int p_RuleId,
             const FMTSpatialGraphs& p_Graphs,
             int p_themeId, int p_FirstPeriod,
             int p_LastPeriod, int p_bound) const;
 
+        // DocString: FMTEventContainer::getDispersionConflicts(const std::vector<bool>&,const FMTSpatialGraphs&,int,int,int,int)
+        /**
+        @brief Return the events in dispersion conflict for a theme and a period range.
+        @param[in] p_actions the actions.
+        @param[in] p_Graphs the spatial graphs.
+        @param[in] p_themeId the theme id.
+        @param[in] p_FirstPeriod the first period.
+        @param[in] p_LastPeriod the last period.
+        @param[in] p_bound the bound.
+        @return the conflicting events.
+        */
         std::vector<FMTEventContainer::const_iterator> getDispersionConflicts(const std::vector<bool>& p_actions,
                                                 const FMTSpatialGraphs& p_Graphs,
                                                 int p_themeId,int p_FirstPeriod,
                                                 int p_LastPeriod, int p_bound) const;
+        // DocString: FMTEventContainer::getDispersionConflicts(int,const FMTSpatialGraphs&,int,int,int,int)
+        /**
+        @brief Return the events in dispersion conflict for a rule, a theme and a period range.
+        @param[in] p_RuleId the rule id.
+        @param[in] p_Graphs the spatial graphs.
+        @param[in] p_themeId the theme id.
+        @param[in] p_FirstPeriod the first period.
+        @param[in] p_LastPeriod the last period.
+        @param[in] p_bound the bound.
+        @return the conflicting events.
+        */
         std::vector<FMTEventContainer::const_iterator> getDispersionConflicts(int p_RuleId,
                                                             const FMTSpatialGraphs& p_Graphs,
                                                             int p_themeId, int p_FirstPeriod,
                                                             int p_LastPeriod, int p_bound) const;
+        // DocString: FMTEventContainer::getEventsOf
+        /**
+        @brief Return the events of a rule for a period range.
+        @param[in] p_RuleId the rule id.
+        @param[in] p_MinimalPeriod the minimal period.
+        @param[in] p_MaximalPeriod the maximal period.
+        @return the events.
+        */
         std::vector<FMTEventContainer::const_iterator>getEventsOf(int p_RuleId, 
                                                         int p_MinimalPeriod, int p_MaximalPeriod) const;
        
@@ -297,6 +450,13 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
                 double _getSize() const;
             };
         friend class boost::serialization::access;
+        // DocString: FMTEventContainer::serialize
+        /**
+        @brief Serialize the FMTEventContainer for multiprocessing across multiple cpus (pickle in Python).
+        @tparam Archive the archive type.
+        @param[in,out] ar the archive to serialize to or from.
+        @param[in] version the serialization version.
+        */
         template<class Archive>
         void serialize(Archive& ar, const unsigned int version)
             {
@@ -321,21 +481,34 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
         ///Now it's splitting automatically if a coord is not within a distance of 1
 		void erase(const FMTCoordinate& coord, const std::vector<const_iterator>& iterators);
 		// DocString: FMTEventContainer::pushAction
-		/*
-		Push an action in container
+		/**
+		@brief Push an action in the container at a coordinate for a period.
+		@param[in] iterators the event iterators.
+		@param[in] coord the coordinate.
+		@param[in] period the period.
+		@param[in] actionid the action id.
+		@param[in] neighborsize the neighbor size.
+		@param[in] p_GraphFamily the graph family.
 		*/
 		void pushAction(const std::vector<FMTEventContainer::const_iterator>& iterators,
 			const FMTCoordinate& coord, const int& period, const int& actionid,
             size_t neighborsize, size_t p_GraphFamily);
         // DocString: FMTEventContainer::getAroundEvents()
-		/*
-		Return iterators to events considerate around based on neighborsize
-		*/
+        /**
+        @brief Return the iterators to the events considered around a coordinate based on a neighbor size.
+        @param[in] iterators the event iterators.
+        @param[in] coord the coordinate.
+        @param[in] neighborsize the neighbor size.
+        @return the surrounding events.
+        */
 		std::vector<FMTEventContainer::const_iterator> getAroundEvents(const std::vector<FMTEventContainer::const_iterator>& iterators,
 			const FMTCoordinate& coord, const size_t& neighborsize) const;
 		// DocString: FMTEventContainer::fastsort
-		/*
-		Sort events by proximity to a coordinate
+		/**
+		@brief Sort the first elements of the event iterators by proximity to a coordinate.
+		@param[in,out] iterators the event iterators.
+		@param[in] coord the coordinate.
+		@param[in] nelement the number of elements to sort.
 		*/
 		void nthElements(std::vector<FMTEventContainer::const_iterator>& iterators,const FMTCoordinate& coord,const size_t& nelement) const;
 

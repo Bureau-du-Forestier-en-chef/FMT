@@ -25,17 +25,19 @@ namespace Heuristics
 {
 // DocString: FMTOperatingAreaClusterBinary
 /**
-FMTOperatingAreaClusterBinary is the definition of a non clustered operating area this class is used by the FMTOperatingAreaCluster.
-The class contains extra informations for an FMToperating area. Eeach clusterbinary has a binary variable id, a maximal and minimal row
-statistic and finaly the statistic varlue of the binary used to calculate the objective function.
+@brief Definition of a non clustered operating area, used by the FMTOperatingAreaCluster.
+@details Each cluster binary has a binary variable id, a maximal and minimal row statistic and the statistic value of the binary used to compute the objective function.
 */
 	class FMTEXPORT FMTOperatingAreaClusterBinary : public FMTOperatingArea
 	{
 		friend class boost::serialization::access;
-		// DocString: FMTOperatingAreaClusterBinary:serialize
-        /**
-        Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-        */
+		// DocString: FMTOperatingAreaClusterBinary::serialize
+		/**
+		@brief Serialize the FMTOperatingAreaClusterBinary for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 			{
@@ -51,65 +53,74 @@ statistic and finaly the statistic varlue of the binary used to calculate the ob
 		double statistic;
 	public:
 	    // DocString: FMTOperatingAreaClusterBinary::FMTOperatingAreaClusterBinary()
-		/**
-        FMTOperatingAreaClusterBinary default constructor.
-		*/
+	    /**
+	    @brief Default constructor for FMTOperatingAreaClusterBinary.
+	    */
 		FMTOperatingAreaClusterBinary() = default;
 		 // DocString: FMTOperatingAreaClusterBinary::FMTOperatingAreaClusterBinary(const FMTOperatingAreaClusterBinary&)
-		/**
-        FMTOperatingAreaClusterBinary default copy constructor.
-		*/
+		 /**
+		 @brief Default copy constructor for FMTOperatingAreaClusterBinary.
+		 */
 		FMTOperatingAreaClusterBinary(const FMTOperatingAreaClusterBinary&) = default;
 		// DocString: FMTOperatingAreaClusterBinary::operator=
 		/**
-        FMTOperatingAreaClusterBinary default copy assignment.
+		@brief Default copy assignment operator for FMTOperatingAreaClusterBinary.
+		@return a reference to this FMTOperatingAreaClusterBinary.
 		*/
 		FMTOperatingAreaClusterBinary& operator = (const FMTOperatingAreaClusterBinary&) = default;
 		 // DocString: FMTOperatingAreaClusterBinary::~FMTOperatingAreaClusterBinary()
-		/**
-        FMTOperatingAreaClusterBinary default destructor.
-		*/
+		 /**
+		 @brief Default destructor for FMTOperatingAreaClusterBinary.
+		 */
 		~FMTOperatingAreaClusterBinary() = default;
 		// DocString: FMTOperatingAreaClusterBinary::FMTOperatingAreaClusterBinary(const FMTOperatingArea&)
 		/**
-        FMTOperatingAreaClusterBinary constructor using a base FMTOperatingArea.
+		@brief Construct a FMTOperatingAreaClusterBinary from a base operating area.
+		@param[in] oparea the operating area.
 		*/
 		FMTOperatingAreaClusterBinary(const FMTOperatingArea& oparea);
 		// DocString: FMTOperatingAreaClusterBinary::filterNeighbors
 		/**
-        This function takes a vector of potential binary link and filter this list by looking at the neighbors of each binary
-        to make sure that the linked list are real.y neighbors.
+		@brief Filter a list of potential binary links by looking at the neighbors of each binary to keep only the real neighbors.
+		@param[in] potentiallink the potential binary links.
+		@return the filtered neighbors.
 		*/
 		std::vector<FMTOperatingAreaClusterBinary> filterNeighbors(std::vector<FMTOperatingAreaClusterBinary> potentiallink) const;
 		// DocString: FMTOperatingAreaClusterBinary::getOutputIntersect
 		/**
-        Using an (output) this function is going to intersect the mask of the output with the mask of the operating area and it will result
-        of an output targeting only the operating area.
+		@brief Intersect the mask of an output with the mask of the operating area to get an output targeting only the operating area.
+		@param[in] output the output.
+		@param[in] themes the themes.
+		@return the intersected output.
 		*/
 		Core::FMTOutput getOutputIntersect(const Core::FMTOutput& output,
 			const std::vector<Core::FMTTheme>& themes) const;
 		// DocString: FMTOperatingAreaClusterBinary::setStatistic
 		/**
-        Setter for the statistic of the clusterbinary that is going to be used in the global objective for minimizing heterogenity.
+		@brief Set the statistic of the cluster binary used in the global objective to minimize heterogeneity.
+		@param[in] statvalue the statistic value.
 		*/
 		void setStatistic(const double& statvalue);
-		// DocString: FMTOperatingAreaClusterBinary::setStatistic
+		// DocString: FMTOperatingAreaClusterBinary::setVariable
 		/**
-        Setter for the binary variable of the lpmodel that represent the operating area.
+		@brief Set the binary variable of the LP model representing the operating area.
+		@param[in] lvariable the binary variable.
 		*/
 		void setVariable(const int& lvariable);
 		// DocString: FMTOperatingAreaClusterBinary::getVariable
 		/**
-        Getter for the binary variable of the lpmodel that represent the operating area.
+		@brief Return the binary variable of the LP model representing the operating area.
+		@return the binary variable.
 		*/
 		inline const int& getVariable() const
 			{
 			return variable;
 			}
         // DocString: FMTOperatingAreaClusterBinary::getStatistic
-		/**
-        Getter for the statistic value of the operating area.
-		*/
+        /**
+        @brief Return the statistic value of the operating area.
+        @return the statistic value.
+        */
 		inline const double& getStatistic() const
 			{
 			return statistic;

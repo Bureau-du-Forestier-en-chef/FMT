@@ -20,9 +20,9 @@ namespace Spatial
     {
 	// DocString: FMTLayer
 	/**
-	FMTLayer is a simple template class made to be used like a single raster file.
-	It hold the coordinates of each pixel using a map, it also have information about the projection of the raster.
-	It is mostly generated using the FMTAreaParser.
+	@brief Template class used like a single raster file, holding the coordinates of each pixel in a map along with the raster projection.
+	@details Mostly generated using the FMTAreaParser.
+	@tparam T the type of the value held for each pixel.
 	*/
     template <typename T>
     class FMTLayer : public Core::FMTObject
@@ -30,7 +30,10 @@ namespace Spatial
 		friend class boost::serialization::access;
 		// DocString: FMTLifespans::serialize
 		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTLayer through its base FMTObject for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
@@ -74,7 +77,9 @@ namespace Spatial
 			typedef typename std::map<FMTCoordinate,T>::const_iterator const_iterator;
 			// DocString: FMTLayer::operator[]
 			/**
-			Operator [] for FMTLayer accessing std::map (mapping).
+			@brief Access operator to the mapping of the layer.
+			@param[in] coordinate the coordinate.
+			@return a reference to the value at the coordinate.
 			*/
 			T& operator [](const FMTCoordinate& coordinate)
 				{
@@ -82,7 +87,9 @@ namespace Spatial
 				}
 			// DocString: FMTLayer::at
 			/**
-			At for FMTLayer accessing std::map (mapping).
+			@brief Access the value at a given coordinate.
+			@param[in] coordinate the coordinate.
+			@return a const reference to the value at the coordinate.
 			*/
 			const T& at(const FMTCoordinate& coordinate) const
 			{
@@ -90,7 +97,8 @@ namespace Spatial
 			}
 			// DocString: FMTLayer::empty
 			/**
-			Check if the FMTLayer is empty.
+			@brief Return true if the layer is empty.
+			@return true if the layer is empty else false.
 			*/
 			inline bool empty() const
 			{
@@ -98,7 +106,8 @@ namespace Spatial
 			}
 			// DocString: FMTLayer::begin
 			/**
-			Returns an iterator at the beginning of the FMTLayer.
+			@brief Return an iterator to the beginning of the layer.
+			@return an iterator to the beginning.
 			*/
 			iterator begin()
 			{
@@ -106,7 +115,8 @@ namespace Spatial
 			}
 			// DocString: FMTLayer::begin
 			/**
-			Returns an const iterator at the beginning of the FMTLayer.
+			@brief Return a const iterator to the beginning of the layer.
+			@return a const iterator to the beginning.
 			*/
 			const_iterator begin() const
 			{
@@ -114,7 +124,8 @@ namespace Spatial
 			}
 			// DocString: FMTLayer::end
 			/**
-			Returns an iterator at the end of the FMTLayer.
+			@brief Return an iterator to the end of the layer.
+			@return an iterator to the end.
 			*/
 			iterator  end()
 			{
@@ -122,7 +133,8 @@ namespace Spatial
 			}
 			// DocString: FMTLayer::end
 			/**
-			Returns an const iterator at the end of the FMTLayer.
+			@brief Return a const iterator to the end of the layer.
+			@return a const iterator to the end.
 			*/
 			const_iterator end() const
 			{
@@ -130,7 +142,9 @@ namespace Spatial
 			}
 			// DocString: FMTLayer::find
 			/**
-			Find the layer element at a given coordinate.
+			@brief Find the layer element at a given coordinate.
+			@param[in] coordinate the coordinate.
+			@return a const iterator to the element.
 			*/
 			const_iterator find(const FMTCoordinate& coordinate) const
 			{
@@ -138,7 +152,9 @@ namespace Spatial
 			}
 			// DocString: FMTLayer::find
 			/**
-			Find the layer element at a given coordinate.
+			@brief Find the layer element at a given coordinate.
+			@param[in] coordinate the coordinate.
+			@return an iterator to the element.
 			*/
 			iterator find(const FMTCoordinate& coordinate)
 			{
@@ -146,17 +162,18 @@ namespace Spatial
 			}
 			// DocString: FMTLayer()
 			/**
-			Default constructor for FMTLayer.
+			@brief Default constructor for FMTLayer.
 			*/
             FMTLayer():Core::FMTObject(),geotransform(),maxx(),maxy(),SRS_WKT(),cellsize(),mapping(){}
 			// DocString: ~FMTLayer()
 			/**
-			Default destructor for FMTLayer.
+			@brief Default virtual destructor for FMTLayer.
 			*/
             virtual~FMTLayer()=default;
 			// DocString: FMTLayer(FMTLayer&&)
 			/**
-			Default move constructor for FMTLayer.
+			@brief Default move constructor for FMTLayer.
+			@param[in,out] rhs the layer to move from.
 			*/
 			FMTLayer(FMTLayer&& rhs) noexcept :
 				Core::FMTObject(std::move(rhs)),
@@ -171,7 +188,12 @@ namespace Spatial
 					}
 			// DocString: FMTLayer(const std::vector<double>&,const unsigned int&,const unsigned int&,const std::string&,const double&)
 			/**
-			Constructor for the FMTLayer taking a geotransform, max x, max y, projection string and cell size.
+			@brief Construct a layer from a geotransform, max x, max y, projection string and cell size.
+			@param[in] lgeotransform the geotransform.
+			@param[in] lmaxx the maximal x value.
+			@param[in] lmaxy the maximal y value.
+			@param[in] lSRS_WKT the projection string.
+			@param[in] lcellsize the cell size.
 			*/
             FMTLayer(const std::vector<double>& lgeotransform,
                      const unsigned int& lmaxx,
@@ -186,7 +208,13 @@ namespace Spatial
                      mapping(){}
 			// DocString: FMTLayer(const std::map<FMTCoordinate,T>&,const std::vector<double>&,const unsigned int&,const unsigned int&,const std::string&,const double&)
 			/**
-			Constructor for the FMTLayer used to copy information from an other layer.
+			@brief Construct a layer by copying the information from a mapping and the extent.
+			@param[in] lmapping the mapping.
+			@param[in] lgeotransform the geotransform.
+			@param[in] lmaxx the maximal x value.
+			@param[in] lmaxy the maximal y value.
+			@param[in] lSRS_WKT the projection string.
+			@param[in] lcellsize the cell size.
 			*/
             FMTLayer(const std::map<FMTCoordinate,T>& lmapping,
                      const std::vector<double>& lgeotransform,
@@ -203,7 +231,8 @@ namespace Spatial
                              mapping(lmapping){}
 			// DocString: FMTLayer(const FMTLayer&)
 			/**
-			Default copy constructor for FMTLayer.
+			@brief Copy constructor for FMTLayer.
+			@param[in] rhs the FMTLayer to copy.
 			*/
             FMTLayer(const FMTLayer& rhs):Core::FMTObject(rhs),
                 geotransform(rhs.geotransform),
@@ -214,7 +243,9 @@ namespace Spatial
                 mapping(rhs.mapping){}
 			// DocString: FMTLayer::operator=
 			/**
-			Default copy assignment for FMTLayer.
+			@brief Copy assignment operator for FMTLayer.
+			@param[in] rhs the FMTLayer to copy.
+			@return a reference to this FMTLayer.
 			*/
             FMTLayer<T>& operator = (const FMTLayer<T>& rhs)
                 {
@@ -232,7 +263,8 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::swap
 			/**
-			Swap operator for FMTLayer.
+			@brief Swap this layer with another.
+			@param[in,out] rhs the layer to swap with.
 			*/
 			void swap(FMTLayer<T>& rhs)
 				{
@@ -251,7 +283,8 @@ namespace Spatial
 
 			// DocString: FMTLayer::setExtentFrom
 			/**
-			Using an other layer (rhs) it's going to set the informations (other than the main map) to this.
+			@brief Set the extent information (other than the mapping) from another layer.
+			@param[in] rhs the layer to copy the extent from.
 			*/
 			void setExtentFrom(const FMTLayer<T>& rhs)
 				{
@@ -263,7 +296,9 @@ namespace Spatial
 				}
 			// DocString: FMTLayer::copyExtent
 			/**
-			Create a new FMTLayer by copying informations (other than the main map) to a new FMTLayer from this.
+			@brief Create a new layer by copying the extent information (other than the mapping) from this layer.
+			@tparam newtype the value type of the new layer.
+			@return the new layer with the copied extent.
 			*/
             template<typename newtype>
             FMTLayer<newtype>copyExtent() const
@@ -278,7 +313,9 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::general
 			/**
-			Template specification for adding strings from a layer to a string layer using std::string operator+=.
+			@brief Addition assignment operator for FMTLayer.
+			@param[in] rhs the layer to add.
+			@return a reference to this FMTLayer.
 			*/
 			FMTLayer<T>& operator+= (const FMTLayer<T>& rhs)
 			{
@@ -286,7 +323,8 @@ namespace Spatial
 			}
 			// DocString: FMTLayer::getXSize
 			/**
-			Returns the maximal x value of the FMTLayer.
+			@brief Return the maximal x value of the layer.
+			@return the maximal x value.
 			*/
             unsigned int getXSize() const
                 {
@@ -294,7 +332,8 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::getYSize
 			/**
-			Returns the maximal y value of the FMTLayer.
+			@brief Return the maximal y value of the layer.
+			@return the maximal y value.
 			*/
             unsigned int getYSize() const
                 {
@@ -302,7 +341,8 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::getGeoTransform
 			/**
-			Returns the geotransform of the layer.
+			@brief Return the geotransform of the layer.
+			@return the geotransform.
 			*/
 			std::vector<double> getGeoTransform() const
                 {
@@ -310,7 +350,8 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::getProjection
 			/**
-			Returns the projection of the FMTLayer.
+			@brief Return the projection of the layer.
+			@return the projection.
 			*/
 			std::string getProjection() const
                 {
@@ -318,7 +359,8 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::getMapping
 			/**
-			Returns the underlying map of the FMTLayer.
+			@brief Return the underlying map of the layer.
+			@return the mapping.
 			*/
 			std::map<FMTCoordinate,T>getMapping() const
                 {
@@ -326,7 +368,8 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::area
 			/**
-			Returns the whole area of the FMTLayer using the size of a pixel.
+			@brief Return the whole area of the layer using the size of a pixel.
+			@return the area of the layer.
 			*/
             double area() const
                 {
@@ -334,7 +377,8 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::getCellSize
 			/**
-			Get the cell size for a single coordinate of the map.
+			@brief Return the cell size of the layer.
+			@return the cell size.
 			*/
 			double getCellSize() const
 				{
@@ -342,7 +386,8 @@ namespace Spatial
 				}
 			// DocString: FMTLayer::getAttributes
 			/**
-			Returns a vector of unique attributes present in the FMTLayer.
+			@brief Return the unique attributes present in the layer.
+			@return the unique attributes.
 			*/
             std::vector<T>getAttributes() const
                 {
@@ -358,7 +403,8 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::size
 			/**
-			Returns the size of the FMTLayer.
+			@brief Return the size of the layer.
+			@return the size of the layer.
 			*/
             size_t size() const
                 {
@@ -366,7 +412,9 @@ namespace Spatial
                 }
 			// DocString: FMTLayer::size
 			/**
-			Replaces values of a layer using iterators coming from an other FMTLayer.
+			@brief Replace the values of the layer using iterators from another layer.
+			@param[in] first the first iterator.
+			@param[in] last the last iterator.
 			*/
             void replace(typename std::map<FMTCoordinate,T>::const_iterator first,typename std::map<FMTCoordinate,T>::const_iterator last)
                 {

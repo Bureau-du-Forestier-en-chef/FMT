@@ -40,9 +40,8 @@ namespace Parallel
 {
 	// DocString: FMTOpAreaSchedulerTask
 	/**
-	The opareascheduler is a task used to find suboptimal schedule for operating area for a Models::FMTLpModel.
-	It keeps the best scheduler in memory and try to modify is actual schedule to get a better objective value.
-	It will generate time yields for the operating area.
+	@brief Task to find a suboptimal schedule for the operating areas of a FMTLpModel.
+	@details It keeps the best scheduler in memory and tries to modify its schedule to get a better objective value, generating time yields for the operating areas.
 	*/
 	class FMTEXPORT FMTOpAreaSchedulerTask : public FMTTask
 	{
@@ -78,56 +77,68 @@ namespace Parallel
 		int lastspawned;
 		// DocString: FMTOpAreaSchedulerTask::solveInitialModel
 		/**
-		Solve the initial model and return the objective value.
+		@brief Solve the initial model and return the objective value.
+		@param[in] model the model.
+		@return the objective value.
 		*/
 		double solveInitialModel(Models::FMTLpModel& model) const;
 		// DocString: FMTOpAreaSchedulerTask::setInitialScheduler
 		/**
-		Set the initialscheduler from the lpmodel using the operating areas and the output node.
+		@brief Set the initial scheduler from the LP model using the operating areas and the output node.
+		@param[in,out] model the model.
+		@param[in] opareas the operating areas.
+		@param[in] node the output node.
 		*/
 		void setInitialScheduler(Models::FMTLpModel& model,
 			const std::vector<Heuristics::FMTOperatingAreaScheme>& opareas,const Core::FMTOutputNode& node);
 		// DocString: FMTOpAreaSchedulerTask::getStopPoint
 		/**
-		Get the time at which the solving should stop.
+		@brief Get the time at which the solving should stop.
+		@param[in] timegap the time gap.
+		@return the stop time point.
 		*/
 		std::chrono::time_point<std::chrono::high_resolution_clock>getStopPoint(const int& timegap) const;
 		// DocString: FMTOpAreaSchedulerTask::getConstraintsSolution
 		/**
-		Get the outputs and constraints solution of the best scheduler and fill constraints and outputs.
+		@brief Fill the outputs and constraints with the solution of the best scheduler.
+		@param[in,out] outputs the outputs.
+		@param[in,out] constraints the constraints.
 		*/
 		void getConstraintsSolution(std::vector<Core::FMTOutput>& outputs,std::vector<Core::FMTConstraint>& constraints) const;
 		// DocString: FMTOpAreaSchedulerTask::writeFinalModel
 		/**
-		Using the solution of the best heuristic just rebuild the base model without anyconstraint and apply the solution found.
-		Then get the folder of the resulting solution et write the entire model and the solution.
+		@brief Rebuild the base model without any constraint, apply the solution of the best heuristic and write the entire model and the solution.
 		*/
 		void writeFinalModel() const;
 		// DocString: FMTOpAreaSchedulerTask::writeSolution
 		/**
-		Using the solution location write down the solution.
+		@brief Write the solution using the solution location.
 		*/
 		void writeSolution() const;
 		// DocString: FMTOpAreaSchedulerTask::gotInitialSolution
 		/**
-		Returns true if the bestscheduler is not empty and have an initial solution.
+		@brief Return true if the best scheduler is not empty and has an initial solution.
+		@return true if there is an initial solution else false.
 		*/
 		bool gotInitialSolution() const;
 		// DocString: FMTOpAreaSchedulerTask::evaluateAndCopy
 		/**
-		evaluate if the actualscheduler is better than the bestscheduler. If it is push the actualscheduler to the best scheduler.
-		Else take the solution from the bestscheduler.
+		@brief Evaluate if the actual scheduler is better than the best scheduler, pushing the actual scheduler to the best one if it is, otherwise taking the solution from the best scheduler.
 		*/
 		void evaluateAndCopy();
 		// DocString: FMTOpAreaSchedulerTask::goodToGo
 		/**
-		Return true if iterations > 0 and still time left.
+		@brief Return true if there are iterations left and time left.
+		@return true if the task can continue else false.
 		*/
 		bool goodToGo() const;
 		// DocString: FMTOpAreaSchedulerTask::getReturnTimeFromOutput
 		/**
-		Will return a new vector of FMTOperatingAreaScheme with new return_time value based on the output calculed
-		in the model for each operaging area.
+		@brief Return a new vector of operating area schemes with a return time value based on the output computed in the model for each operating area.
+		@param[in,out] model the model.
+		@param[in] opareas the operating areas.
+		@param[in] output the output.
+		@return the operating area schemes with the new return time.
 		*/
 		std::vector<Heuristics::FMTOperatingAreaScheme> getReturnTimeFromOutput(Models::FMTLpModel& model,
 			const std::vector<Heuristics::FMTOperatingAreaScheme>& opareas,
@@ -135,35 +146,45 @@ namespace Parallel
 	public:
 		// DocString: FMTOpAreaSchedulerTask::FMTOpAreaSchedulerTask()
 		/**
-		Default constructor for FMTOpAreaSchedulerTask
+		@brief Default constructor for FMTOpAreaSchedulerTask.
 		*/
 		FMTOpAreaSchedulerTask() = default;
 		// DocString: FMTOpAreaSchedulerTask::FMTOpAreaSchedulerTask(const FMTOpAreaSchedulerTask&)
 		/**
-		Default copy constructor for FMTOpAreaSchedulerTask
+		@brief Default copy constructor for FMTOpAreaSchedulerTask.
+		@param[in] rhs the FMTOpAreaSchedulerTask to copy.
 		*/
 		FMTOpAreaSchedulerTask(const FMTOpAreaSchedulerTask& rhs);
 		// DocString: FMTOpAreaSchedulerTask::operator=(const FMTOpAreaSchedulerTask&)
 		/**
-		Default copy assignement for FMTOpAreaSchedulerTask
+		@brief Default copy assignment operator for FMTOpAreaSchedulerTask.
+		@param[in] rhs the FMTOpAreaSchedulerTask to copy.
+		@return a reference to this FMTOpAreaSchedulerTask.
 		*/
 		FMTOpAreaSchedulerTask& operator = (const FMTOpAreaSchedulerTask& rhs);
 		// DocString: FMTOpAreaSchedulerTask::~FMTOpAreaSchedulerTask()
 		/**
-		We need to define a destructor to take care of writing the  solution.
+		@brief Destructor for FMTOpAreaSchedulerTask, taking care of writing the solution.
 		*/
 		virtual ~FMTOpAreaSchedulerTask()=default;
 		// DocString: FMTOpAreaSchedulerTask::clone
 		/**
-		Clone function for FMTOpAreaSchedulerTask
+		@brief Clone function for FMTOpAreaSchedulerTask.
+		@return a unique pointer to the cloned task.
 		*/
 		std::unique_ptr<FMTTask>clone() const;
 		// DocString: FMTOpAreaSchedulerTask::FMTOpAreaSchedulerTask(...)
 		/**
-		Using a model the constructor will call doPlanning of the model.
-		So you have to set the length and other parameters before. Then the task will obtain the operatingareascheme
-		from the FMTLpModel and setup everything else. If the returntime_output is non empty then it will use it to get the result
-		for each FMTOperatingAreaScheme and set the value to the returntime using the initial solution.
+		@brief Construct a FMTOpAreaSchedulerTask from a model, calling doPlanning on it and obtaining the operating area schemes from the FMTLpModel.
+		@details The length and other parameters must be set before; if the return time output is non empty it is used to set the return time of each operating area scheme using the initial solution.
+		@param[in] model the model.
+		@param[in] opareas the operating areas.
+		@param[in] node the output node.
+		@param[in] outputlocation the output location.
+		@param[in] outputyieldname the output yield name.
+		@param[in] maxiterations the maximum number of iterations.
+		@param[in] maxtime the maximum time.
+		@param[in] returntime_output the return time output.
 		*/
 		FMTOpAreaSchedulerTask(const Models::FMTLpModel& model,
 			const std::vector<Heuristics::FMTOperatingAreaScheme>& opareas,
@@ -175,27 +196,31 @@ namespace Parallel
 			Core::FMTOutput returntime_output = Core::FMTOutput());
 		// DocString: FMTOpAreaSchedulerTask::split
 		/**
-		The split fonction that split the main task into multiple tasks of operating area scheduler.
+		@brief Split the main task into multiple operating area scheduler tasks.
+		@param[in] numberoftasks the number of tasks.
+		@return the split tasks.
 		*/
 		virtual std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const;
 		// DocString: FMTOpAreaSchedulerTask::spawn
 		/**
-		Will spawn a minimal task from the master task
+		@brief Spawn a minimal task from the master task.
+		@return a unique pointer to the spawned task.
 		*/
 		virtual std::unique_ptr<FMTTask>spawn();
 		// DocString: FMTOpAreaSchedulerTask::work
 		/**
-		Main function that do the operating area scheduling task
+		@brief Main function doing the operating area scheduling task.
 		*/
 		virtual void work();
 		// DocString: FMTOpAreaSchedulerTask::finalize
 		/**
-		Write the solution...
+		@brief Write the solution at finalization.
 		*/
 		virtual void finalize();
 		// DocString: FMTopareaschedulertaskk::passInLogger
 		/**
-		Pass the logger
+		@brief Pass in the logger.
+		@param[in] logger the logger.
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
 

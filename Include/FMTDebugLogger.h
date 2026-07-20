@@ -14,14 +14,16 @@ namespace Logging
 {
 	// DocString: FMTDebugLogger 
 	/**
-	FMTDebugLogger is derived class from FMTLogger standing has the debug
-	level of log used by FMT. It's suppose to print more stuff than the FMTDefaultLogger.
+	@brief Debug level logger derived from FMTLogger that prints more than FMTDefaultLogger.
 	*/
 	class FMTEXPORT FMTDebugLogger final : public FMTLogger
 	{
 		// DocString: FMTDebugLogger::serialize
 		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTDebugLogger through its base FMTLogger for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -32,41 +34,44 @@ namespace Logging
 	public:
 		// DocString: FMTDebugLogger()
 		/**
-		FMTDebugLogger default constructor.
+		@brief Default constructor for FMTDebugLogger.
 		*/
 		FMTDebugLogger();
 		// DocString: FMTDebugLogger::operator=
 		/**
-		FMTDebugLogger default copy assignment operator.
+		@brief Default copy assignment operator for FMTDebugLogger.
+		@param[in] rhs the FMTDebugLogger to copy.
+		@return a reference to this FMTDebugLogger.
 		*/
 		FMTDebugLogger & operator = (const FMTDebugLogger & rhs) = default;
 		// DocString: FMTDebugLogger(const FMTDebugLogger&)
 		/**
-		FMTDebugLogger default copy constructor.
+		@brief Default copy constructor for FMTDebugLogger.
+		@param[in] rhs the FMTDebugLogger to copy.
 		*/
 		FMTDebugLogger(const FMTDebugLogger& rhs) = default;
 		#ifdef FMTWITHOSI
 			// DocString: FMTDebugLogger::print
 			/**
-			FMTDebugLogger print for osisolverinterface is the debug print level used by FMT.
-			See FMTLogger print function.
+			@brief Debug print level used by FMT for the OSI solver interface. See FMTLogger::print.
+			@return the value returned by the print function.
 			*/
 			int print() override;
 			// DocString: FMTDebugLogger::checkSeverity
 			/**
-			FMTDebugLogger checkseverity for osisolverinterface is the debug severity check used by FMT.
-			See FMTLogger checkSeverity function.
+			@brief Debug severity check used by FMT for the OSI solver interface. See FMTLogger::checkSeverity.
 			*/
 			void checkSeverity() override;
 			// DocString: FMTDebugLogger::clone
 			/**
-			See FMTLogger clone function.
+			@brief Clone the logger for the OSI solver interface. See FMTLogger::clone.
+			@return a pointer to the cloned logger.
 			*/
 			FMTLogger* clone() const override;
 		#endif
-		// DocString: FMTDebugLogger()
+		// DocString: ~FMTDebugLogger()
 		/**
-		FMTDebugLogger default destructor.
+		@brief Default destructor for FMTDebugLogger.
 		*/
 		~FMTDebugLogger() = default;
 		// DocString: FMTDebugLogger::Clone

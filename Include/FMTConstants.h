@@ -21,15 +21,17 @@ namespace Core
 {
 // DocString: FMTConstants
 /**
-FMTConstants is a class only used by the FMTparsers.
-When a model is read sometime the user uses constants defined in the constants section.
-The constant is represented by a string in this section and keeps double values.
+@brief Class holding the constants defined in the constants section of a model, used by the parsers.
+@details A constant is represented by a string and holds double values.
 */
 class FMTEXPORT FMTConstants : public FMTObject
     {
 	// DocString: FMTConstants::serialize
 	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize the FMTConstants for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -48,54 +50,71 @@ class FMTEXPORT FMTConstants : public FMTObject
     public:
 	// DocString: FMTConstants()
 	/**
-	Default constructor for FMTConstants.
+	@brief Default constructor for FMTConstants.
 	*/
     FMTConstants();
 	// DocString: ~FMTConstants()
 	/**
-	Default destructor for FMTConstants.
+	@brief Default destructor for FMTConstants.
 	*/
 	~FMTConstants()=default;
 	// DocString: FMTConstants(const FMTConstants&)
 	/**
-	Default copy constructor for FMTConstants.
+	@brief Copy constructor for FMTConstants.
+	@param[in] rhs the FMTConstants to copy.
 	*/
     FMTConstants(const FMTConstants& rhs);
 	// DocString: FMTConstants::set
 	/**
-	For a given constant (key) the function sets a (values) vector in the data unordered_map.
+	@brief Set the values of a given constant.
+	@param[in] key the constant definition string.
+	@param[in] values the values of the constant.
 	*/
     void set(const std::string& key, std::vector<double>values);
 	// DocString: FMTConstants::get
 	/**
-	For a given constant (key) the function gets a value for a given (period)
+	@brief Get the value of a given constant for a given period.
+	@tparam T the value type.
+	@param[in] key the constant definition string.
+	@param[in] period the period.
+	@return the value of the constant for the period.
 	*/
     template<typename T>
 	T get(std::string key, int period = 0) const;
 	// DocString: FMTConstants::getAll
 	/**
-	For a given constant (key) the function gets all the values of the constant.
+	@brief Get all the values of a given constant.
+	@tparam T the value type.
+	@param[in] key the constant definition string.
+	@return all the values of the constant.
 	*/
     template<typename T>
 	std::vector<T>getAll(std::string key) const;
 	// DocString: FMTConstants::isConstant
 	/**
-	Returns true if the (value) is considered a constant.
+	@brief Return true if the given value is considered a constant.
+	@param[in] value the value to check.
+	@return true if the value is a constant else false.
 	*/
     bool isConstant(std::string value) const;
 	// DocString: FMTConstants::length
 	/**
-	Returns the length of the constant (value), which is the number of double values kept by the constant.
+	@brief Return the number of double values kept by a given constant.
+	@param[in] value the constant definition string.
+	@return the number of values of the constant.
 	*/
     size_t length(std::string value) const;
 	// DocString: FMTConstants::operator=
 	/**
-	Copy assignment operator for FMTConstants.
+	@brief Copy assignment operator for FMTConstants.
+	@param[in] rhs the FMTConstants to copy.
+	@return a reference to this FMTConstants.
 	*/
     FMTConstants& operator = (const FMTConstants& rhs);
 	// DocString: FMTConstants::operator std::string
 	/**
-	Returns the FMTConstants as a constant section (.con) in a string.
+	@brief Return the constants as a constant section (.con) string.
+	@return the string representation of the constants.
 	*/
     operator std::string() const;
     };

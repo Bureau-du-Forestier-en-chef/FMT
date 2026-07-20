@@ -36,10 +36,9 @@ namespace Core
 {
 	// DocString: FMTList
 	/**
-	The FMTList class is made to keep track of objects with a FMTMask tag like dictionary. The yield, action and transition class
-	uses this class to list objects based on the tagged FMTMask and the position of the object in the list.
-	FMTList uses caching and a mask filter to reduce the size of the list and gives a fast access to objects present in
-	the list.
+	@brief Dictionary-like container keeping track of objects tagged with a FMTMask, used by the yield, action and transition classes.
+	@details Uses caching and a mask filter to reduce the size of the list and provide fast access to the objects.
+	@tparam T the type of the objects held by the list.
 	*/
 	template<typename T>
 	class FMTList: public FMTObject
@@ -56,10 +55,10 @@ namespace Core
 		typedef typename std::vector<std::pair<FMTMask, T>>::const_iterator const_iterator;
 		// DocString: FMTList::operator+=
 		/**
-		 * @brief append OtherList to this list actions both list had to be non shrinked, will throw exception if shrinked.
-		 * @param OtherList the other list to append to this one.
-		 * @returns A reference the the newly appended list.
-		 */
+		@brief Append another list to this list; both lists must be non shrunk otherwise an exception is thrown.
+		@param[in] OtherList the other list to append to this one.
+		@return a reference to this appended list.
+		*/
 		Core::FMTList<T>& operator+= (const Core::FMTList<T>& OtherList)
 		{
 			try {
@@ -81,7 +80,8 @@ namespace Core
 
 		// DocString: FMTList::swap
 		/**
-		Swap function for FMTList.
+		@brief Swap this list with another.
+		@param[in,out] rhs the list to swap with.
 		*/
 		void swap(Core::FMTList<T>& rhs)
 		{
@@ -91,7 +91,9 @@ namespace Core
 		}
 		// DocString: FMTList::getUnion
 		/**
-		Get a global union mask from all the masks of the FMTList.
+		@brief Return the union mask of all the masks of the list.
+		@param[in] themes the themes.
+		@return the union mask.
 		*/
 		FMTMask getUnion(const std::vector<FMTTheme>& themes) const
 		{
@@ -105,7 +107,7 @@ namespace Core
 		}
 		// DocString: FMTList()
 		/**
-		Default constructor for FMTList.
+		@brief Default constructor for FMTList.
 		*/
 		FMTList() :
 			FMTObject(),
@@ -114,7 +116,8 @@ namespace Core
 			fastpass() {};
 		// DocString: FMTList(const FMTList&)
 		/**
-		Default copy constructor for FMTList.
+		@brief Copy constructor for FMTList.
+		@param[in] rhs the FMTList to copy.
 		*/
 		FMTList(const FMTList<T>& rhs) :
 			FMTObject(rhs),
@@ -145,7 +148,9 @@ namespace Core
 			}
 		// DocString: FMTList::operator=
 		/**
-		Default copy assignment for FMTList.
+		@brief Copy assignment operator for FMTList.
+		@param[in] rhs the FMTList to copy.
+		@return a reference to this FMTList.
 		*/
 		FMTList& operator = (const FMTList<T>& rhs)
 		{
@@ -160,7 +165,9 @@ namespace Core
 		}
 		// DocString: FMTList::operator==
 		/**
-		Comparison operator of FMTList.
+		@brief Equality comparison operator of FMTList.
+		@param[in] rhs the list to compare with.
+		@return true if both lists are equal else false.
 		*/
 		bool operator == (const FMTList<T>& rhs) const
 		{
@@ -168,12 +175,13 @@ namespace Core
 		}
 		// DocString: ~FMTList()
 		/**
-		Default destructor for FMTList.
+		@brief Default destructor for FMTList.
 		*/
 		~FMTList() = default;
 		// DocString: FMTList::empty
 		/**
-		Returns true if the FMTList is empty else false.
+		@brief Return true if the list is empty.
+		@return true if the list is empty else false.
 		*/
 		bool empty() const
 		{
@@ -181,7 +189,8 @@ namespace Core
 		}
 		// DocString: FMTList::canShrink
 		/**
-		Returns true if the FMTList can be shrink else false.
+		@brief Return true if the list can be shrunk.
+		@return true if the list can be shrunk else false.
 		*/
 		bool canShrink() const
 		{
@@ -189,7 +198,7 @@ namespace Core
 		}
 		// DocString: FMTList::clearCache
 		/**
-		Clear fastpass by swaping with an empty container.
+		@brief Clear the fast pass cache by swapping it with an empty container.
 		*/
 		virtual void clearCache()
 		{
@@ -197,7 +206,8 @@ namespace Core
 		}
 		// DocString: FMTList::size
 		/**
-		Returns the size of the FMTList
+		@brief Return the size of the list.
+		@return the size of the list.
 		*/
 		size_t size() const
 		{
@@ -271,7 +281,9 @@ namespace Core
 		}
 		// DocString: FMTList::filterMask
 		/**
-		Function used to shrink the FMTMask (baseMask) using the global filter of the FMTList.
+		@brief Shrink a mask using the global filter of the list.
+		@param[in] baseMask the mask to filter.
+		@return the filtered mask.
 		*/
 		inline FMTMask filterMask(const FMTMask& baseMask) const
 		{
@@ -279,7 +291,7 @@ namespace Core
 		}
 		// DocString: FMTList::shrink
 		/**
-		Reduce the size of the FMTMask used in the FMTList for less complexity.
+		@brief Reduce the size of the masks used in the list to lower the complexity.
 		*/
 		void shrink()
 		{
@@ -314,7 +326,8 @@ namespace Core
 		}
 		// DocString: FMTList::unShrink
 		/**
-		Bring back the complexity of each FMTMask into the FMTList.
+		@brief Bring back the complexity of each mask into the list.
+		@param[in] themes the themes.
 		*/
 		void unShrink(const std::vector<FMTTheme>& themes)
 		{
@@ -327,7 +340,9 @@ namespace Core
 		}
 		// DocString: FMTList::apiPushBack
 		/**
-		For template specification to overcome the static_cast of function
+		@brief Push back an element, used for template specification to overcome the static cast of the function.
+		@param[in] mask the mask.
+		@param[in] value the value.
 		*/
 		void apiPushBack(const FMTMask& mask, const T& value)
 		{
@@ -335,7 +350,9 @@ namespace Core
 		}
 		// DocString: FMTList::push_back
 		/**
-		Push back an element at the end of the FMTList.
+		@brief Push back an element at the end of the list.
+		@param[in] mask the mask.
+		@param[in] value the value.
 		*/
 		void push_back(const FMTMask& mask, const T& value)
 		{
@@ -343,7 +360,7 @@ namespace Core
 		}
 		// DocString: FMTList::update
 		/**
-		Update the FMTList filter and shrink it if any changes appened in the list.
+		@brief Update the filter of the list and shrink it if any change occurred.
 		*/
 		virtual void update()
 		{
@@ -354,7 +371,8 @@ namespace Core
 		}
 		// DocString: FMTList::push_back
 		/**
-		Push back a whole FMTList at the end of this FMTList.
+		@brief Push back a whole list at the end of this list.
+		@param[in] rhs the list to append.
 		*/
 		void push_back(const FMTList<T>& rhs)
 		{
@@ -366,7 +384,9 @@ namespace Core
 		}
 		// DocString: FMTList::push_front
 		/**
-		Push front an element at the beginning of the FMTList.
+		@brief Push an element at the beginning of the list.
+		@param[in] mask the mask.
+		@param[in] value the value.
 		*/
 		void push_front(const FMTMask& mask, const T& value)
 		{
@@ -374,7 +394,7 @@ namespace Core
 		}
 		// DocString: FMTList::pop_back
 		/**
-		Pop back an element at the end of the FMTList.
+		@brief Pop the element at the end of the list.
 		*/
 		void pop_back()
 		{
@@ -382,7 +402,8 @@ namespace Core
 		}
 		// DocString: FMTList::erase
 		/**
-		Erase a specific element in the FMTList.
+		@brief Erase a specific element of the list.
+		@param[in] location the location of the element to erase.
 		*/
 		void erase(const size_t& location)
 		{
@@ -390,7 +411,10 @@ namespace Core
 		}
 		// DocString: FMTList::insert
 		/**
-		Insert an element in the FMTList at a specific location.
+		@brief Insert an element in the list at a specific location.
+		@param[in] location the location.
+		@param[in] mask the mask.
+		@param[in] value the value.
 		*/
 		void insert(const size_t& location, const FMTMask& mask, const T& value)
 		{
@@ -399,7 +423,8 @@ namespace Core
 		
 		// DocString: FMTList::begin
 		/**
-		Returns an iterator at the beginning of the FMTList.
+		@brief Return an iterator to the beginning of the list.
+		@return an iterator to the beginning.
 		*/
 		iterator begin()
 		{
@@ -407,7 +432,8 @@ namespace Core
 		}
 		// DocString: FMTList::begin
 		/**
-		Returns an const iterator at the beginning of the FMTList.
+		@brief Return a const iterator to the beginning of the list.
+		@return a const iterator to the beginning.
 		*/
 		const_iterator begin() const
 		{
@@ -415,7 +441,8 @@ namespace Core
 		}
 		// DocString: FMTList::end
 		/**
-		Returns an iterator at the end of the FMTList.
+		@brief Return an iterator to the end of the list.
+		@return an iterator to the end.
 		*/
 		iterator  end()
 		{
@@ -423,7 +450,8 @@ namespace Core
 		}
 		// DocString: FMTList::end
 		/**
-		Returns an const iterator at the end of the FMTList.
+		@brief Return a const iterator to the end of the list.
+		@return a const iterator to the end.
 		*/
 		const_iterator end() const
 		{
@@ -432,9 +460,8 @@ namespace Core
 	protected:
 		// DocString: FMTList::compressMasks
 		/**
-		During pressolve you can compress multiple mask into single one if you have the same
-		data. Usefull for actions and transitions. It will compress mask by generating aggregates
-		and so make changes to themes.
+		@brief Compress multiple masks into a single one when they hold the same data, generating aggregates and changing the themes, used during presolve for actions and transitions.
+		@param[in,out] newthemes the themes, modified by the compression.
 		*/
 		void compressMasks(std::vector<FMTTheme>& newthemes)
 			{
@@ -523,12 +550,11 @@ namespace Core
 			}
 		// DocString: FMTList::presolveList
 		/**
-		Using a baseMask reprensenting the whole forest landscape this function will
-		attempt to reduce the number of elements in the list knowing that if the element
-		represent something that is not in the baseMask this element could be deleted.
-		Also using a presolvecmask representing
-		Use this function with care because it's going to change the stade of the list
-		if user attempt to reference to a deleted element the model will seems broken.
+		@brief Reduce the number of elements in the list by deleting those not represented in the base mask.
+		@details Use with care because it changes the state of the list; referencing a deleted element makes the model seem broken.
+		@param[in] filter the mask filter.
+		@param[in] originalthemes the original themes.
+		@param[in] newthemes the presolved themes.
 		*/
 		void presolveList(
 			const FMTMaskFilter& filter,
@@ -577,6 +603,11 @@ namespace Core
 				_exhandler->raiseFromCatch("","FMTList::presolveList", __LINE__, __FILE__);
 				}
 			}
+		// DocString: FMTList::copyData
+		/**
+		@brief Copy the data from another list.
+		@param[in] rhs the list to copy the data from.
+		*/
 		void copyData(const Core::FMTList<T>& rhs)
 			{
 			data = rhs.data;
@@ -584,7 +615,10 @@ namespace Core
 	private:
 		// DocString: FMTList::save
 		/**
-		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Save function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to save to.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -604,7 +638,10 @@ namespace Core
 		}
 		// DocString: FMTList::load
 		/**
-		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Load function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to load from.
+		@param[in] version the serialization version.
 		*/
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
@@ -630,7 +667,10 @@ namespace Core
 		mutable boost::unordered_map<FMTMask, std::vector<int>>fastpass;
 		// DocString: FMTList::pushToData
 		/**
-		Push data in vector...
+		@brief Push data into a vector.
+		@param[in,out] datavector the vector to push into.
+		@param[in] mask the mask.
+		@param[in] maskdata the data.
 		*/
 		void pushToData(std::vector<std::pair<FMTMask, T>>& datavector,
 			const FMTMask& mask, const T& maskdata) const

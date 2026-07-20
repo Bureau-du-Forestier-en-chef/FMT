@@ -13,31 +13,67 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
+	// DocString: FMTLookup
+	/**
+	@brief Lookup helper holding an in-memory object and a pointer to a keyed object, used for hashing and comparison.
+	@tparam inmemory the in-memory object type.
+	@tparam pointer the pointed object type.
+	*/
 	template<class inmemory,class pointer>
 	class FMTLookup
 	{
 	public:
 		inmemory memoryobject;
 		const pointer* pointerobject;
+		// DocString: FMTLookup()
+		/**
+		@brief Default constructor for FMTLookup.
+		*/
 		FMTLookup() = default;
+		// DocString: ~FMTLookup()
+		/**
+		@brief Default destructor for FMTLookup.
+		*/
 		~FMTLookup() = default;
 		//For looking
+		// DocString: FMTLookup(const pointer&)
+		/**
+		@brief Construct a lookup for searching from a pointer.
+		@param[in] ptr the pointed object.
+		*/
 		FMTLookup(const pointer& ptr) :
 			memoryobject(), pointerobject(&ptr)
 		{
 
 		}
 		//For keeping
+		// DocString: FMTLookup(const inmemory&, const pointer&)
+		/**
+		@brief Construct a lookup for keeping from an in-memory object and a pointer.
+		@param[in] des the in-memory object.
+		@param[in] dev the pointed object.
+		*/
 		FMTLookup(const inmemory& des, const pointer& dev) :
 			memoryobject(des), pointerobject(&dev)
 		{
 
 		}
+		// DocString: FMTLookup(const FMTLookup&)
+		/**
+		@brief Copy constructor for FMTLookup.
+		@param[in] rhs the FMTLookup to copy.
+		*/
 		FMTLookup(const FMTLookup& rhs) :
 			memoryobject(rhs.memoryobject), pointerobject(rhs.pointerobject)
 		{
 
 		}
+		// DocString: FMTLookup::operator=
+		/**
+		@brief Copy assignment operator for FMTLookup.
+		@param[in] rhs the FMTLookup to copy.
+		@return a reference to this FMTLookup.
+		*/
 		FMTLookup& operator = (const FMTLookup& rhs)
 		{
 			if (this != &rhs)
@@ -47,6 +83,12 @@ namespace Core
 			}
 			return *this;
 		}
+		// DocString: FMTLookup::operator<
+		/**
+		@brief Less than comparison operator of FMTLookup.
+		@param[in] rhs the lookup to compare with.
+		@return true if this lookup is less than rhs else false.
+		*/
 		bool operator < (const FMTLookup& rhs) const
 		{
 			//strict ordering
@@ -61,6 +103,12 @@ namespace Core
 			return false;
 		}
 		
+		// DocString: FMTLookup::operator==
+		/**
+		@brief Equality comparison operator of FMTLookup.
+		@param[in] rhs the lookup to compare with.
+		@return true if both lookups are equal else false.
+		*/
 		bool operator == (const FMTLookup& rhs) const
 		{
 			return  (pointerobject != nullptr && rhs.pointerobject != nullptr && (*pointerobject) == (*rhs.pointerobject));
