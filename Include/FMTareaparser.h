@@ -360,7 +360,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			 * @exception Re-throws intercepted errors via `_exhandler->raisefromcatch` if the union operation fails.
 			 */
 			std::vector<OGRGeometry*>_GetUnion(const std::vector<OGRMultiPolygon>& p_collections) const;
-			// DocString: FMTareaparser::DestroyGeometries
+			// DocString: FMTareaparser::_DestroyGeometries
 			/**
 			 * @brief Safely releases heap memory for all OGRGeometry pointers in the vector and clears the container.
 			 * @details Iterates through the vector to destroy each geometry instance using the GDAL/OGR
@@ -370,7 +370,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			 * @note This method should be called on the output of methods like `GetUnion` to prevent memory leaks.
 			 * @exception Re-throws intercepted errors via `_exhandler->raisefromcatch` if the memory cleanup fails.
 			 */
-			void DestroyGeometries(std::vector<OGRGeometry*>& p_geometires) const;
+			void _DestroyGeometries(std::vector<OGRGeometry*>& p_geometires) const;
 			// DocString: FMTareaparser::getfeaturetodevelopment
 			/**
 			When the FMTareaparser read features from a shapefile it needs to convert this feature into
