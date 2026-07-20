@@ -154,7 +154,7 @@ void FMTWrapperCore::Tools::writeToProject(
 	}
 	try
 	{
-		const std::string BASENAME = p_models.front().getname();
+		const std::string BASENAME = p_models.front().getName();
 		if (!boost::filesystem::is_directory(p_destinationDirectory))
 		{
 			boost::filesystem::create_directories(p_destinationDirectory);
@@ -169,7 +169,7 @@ void FMTWrapperCore::Tools::writeToProject(
 	catch (...)
 	{
 		Exception::FMTExceptionHandler* modelExceptionHandler = p_models.front().getExceptionHandler();
-		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::writetoproject", __LINE__, __FILE__);
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::Tools::writeToProject", __LINE__, __FILE__);
 	}
 }
 
