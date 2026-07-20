@@ -21,14 +21,19 @@ namespace Heuristics
 {
 // DocString: FMTOperatingAreaClusterer
 /**
-FMTOperatingAreaClusterer is made to do spatial clustering of operatingarea across a defined landscape from
-a shapefile. You can define the minimal and maximal area of the resulting clusters and minimize the heteroginity
-of a given statistic output of the whole clustered map. The initialSolve will attend to find a good initialsolution
-then the user could try to get an optimal solution with the branchandbound().
+@brief Heuristic to do spatial clustering of operating areas across a landscape from a shapefile.
+@details The user can define the minimal and maximal area of the resulting clusters and minimize the heterogeneity of a statistic output over the clustered map. initialSolve finds a good initial solution and branchNBoundSolve tries to get an optimal one.
 */
 class FMTEXPORT FMTOperatingAreaClusterer : public FMTLpHeuristic
 	{
     friend class boost::serialization::access;
+		// DocString: FMTOperatingAreaClusterer::serialize
+		/**
+		@brief Serialize the FMTOperatingAreaClusterer for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
 		template<class Archive>
     void serialize(Archive& ar, const unsigned int version)
 		{
@@ -38,7 +43,9 @@ class FMTEXPORT FMTOperatingAreaClusterer : public FMTLpHeuristic
 
 		}
     // DocString: FMTOperatingAreaClusterer::clusters
-    ///Operating area clusters enumeration containing informations for the lpformulation.
+    /**
+    @brief Operating area clusters enumeration containing the information for the LP formulation.
+    */
 	std::vector<FMTOperatingAreaCluster>clusters;
 	// DocString: FMTOperatingAreaClusterer::numberofsimulationpass
     ///Number of tries made by the heuristic to find a feasible and/or a better solution.
@@ -53,164 +60,186 @@ class FMTEXPORT FMTOperatingAreaClusterer : public FMTLpHeuristic
 	///total area of the full map
 	double totalarea;
         // DocString: FMTOperatingAreaClusterer::getAllBinaries
-		/**
-		Returns all the binary decicions contained in the clusters data member, mapped by the mask.
-		*/
+        /**
+        @brief Return all the binary decisions contained in the clusters, mapped by mask.
+        @return the binaries mapped by mask.
+        */
         std::map<Core::FMTMask,std::vector<FMTOperatingAreaClusterBinary>>getAllBinaries() const;
 		// DocString: FMTOperatingAreaClusterer::getTotalArea()
 		/**
-		Get total area.
+		@brief Compute the total area of the full map.
+		@return the total area.
 		*/
 		double calculateTotalArea() const;
 		// DocString: FMTOperatingAreaClusterer::getTotalArea
 		/**
-		Get total area.
+		@brief Return the total area of the full map.
+		@return the total area.
 		*/
 		inline const double& getTotalArea() const
 			{
 			return totalarea;
 			}
         // DocString: FMTOperatingAreaClusterer::addMaxMinObjective
-		/**
-		This function adds objective rows to the lpmodel for a given cluster. Called by add objective.
-		*/
+        /**
+        @brief Add the objective rows to the LP model for a given cluster.
+        @param[in] cluster the cluster.
+        @param[in] binary the cluster binary.
+        @param[in] binaries the cluster binaries.
+        @param[in] clusterid the cluster id.
+        */
         void addMaxMinObjective(const FMTOperatingAreaCluster& cluster, const FMTOperatingAreaClusterBinary& binary,
             const std::vector<FMTOperatingAreaClusterBinary>& binaries,
 			const int& clusterid);
         // DocString: FMTOperatingAreaClusterer::buildClustersVariables
-		/**
-		First function to call to construct the lp formulation used by the heuristic, the function add and map variables for
-		each operating area binaries.
-		*/
+        /**
+        @brief Add and map the variables for each operating area binary, the first step of the LP formulation.
+        */
         void buildClustersVariables();
          // DocString: FMTOperatingAreaClusterer::addObjective
-		/**
-		This function build the objective functions for the whole lp formulation. It will also generates rows in the matrix.
-		The objective function is based on a minimization of the heterogenity found in the cluster.
-		*/
+         /**
+         @brief Build the objective function of the LP formulation, generating rows in the matrix, based on minimizing the heterogeneity found in the cluster.
+         */
         void addObjective();
          // DocString: FMTOperatingAreaClusterer::addLinksRows
-		/**
-		This function adds link rows when an OParea is selected to be part of a given cluster the opareas located between the
-		cluster centroid and the selected OParea has to be also part of the oparea.
-		*/
+         /**
+         @brief Add link rows so that the operating areas located between the cluster centroid and a selected operating area are also part of the cluster.
+         */
         void addLinksRows();
-        // DocString: FMTOperatingAreaClusterer::addLinksRows
-		/**
-		This function adds rows to make sure that an OParea is part of only one OParea cluster. An Oparea cannot be part of
-		two Clusters at the same time we force the solver to choose between those two.
-		*/
+        // DocString: FMTOperatingAreaClusterer::addForcingRows
+        /**
+        @brief Add rows so that an operating area is part of only one cluster, forcing the solver to choose between clusters.
+        */
         void addForcingRows();
 		// DocString: FMTOperatingAreaClusterer::addNumberOfClusterRows
 		/**
-		Add the minimal and maximal number of clusters.
+		@brief Add the minimal and maximal number of clusters constraints.
 		*/
 		void addNumberOfClusterRows();
         // DocString: FMTOperatingAreaClusterer::addAreaConstraints
-		/**
-		This function adds minimal and maximal area constraints for each potential cluster.
-		*/
+        /**
+        @brief Add the minimal and maximal area constraints for each potential cluster.
+        */
         void addAreaConstraints();
        
         // DocString: FMTOperatingAreaClusterer::setAllInteger
-		/**
-		This functions sets the binary variable has integer, normaly used before sending the problem to the branchandbound solve.
-		*/
+        /**
+        @brief Set the binary variables as integer, normally used before the branch and bound solve.
+        */
         void setAllInteger();
         // DocString: FMTOperatingAreaClusterer::getSpreadProbability
-		/**
-		For a given potential (target) binarycluster and all the binarycluster present in the actual cluster (incluster), it calculates the probability
-        of the fire to spread to a binary present in the cluster.
-		*/
+        /**
+        @brief Compute the probability of the fire to spread to a target binary from the binaries present in the cluster.
+        @param[in] incluster the binaries present in the cluster.
+        @param[in] target the target binary.
+        @return the spread probability.
+        */
         double getSpreadProbability(const std::vector<FMTOperatingAreaClusterBinary>& incluster,const FMTOperatingAreaClusterBinary& target) const;
         // DocString: FMTOperatingAreaClusterer::spread
-		/**
-		For a (ignition) binary this function makes spread the fire to its neighbors and update the (assigned) binaries vector. If the generated fire patch
-		is between the area bounds for the cluster it will return true else false and the problem will be ready to be optimized.
-		*/
+        /**
+        @brief Spread the fire from an ignition cluster to its neighbors and update the assigned binaries.
+        @details Returns true if the generated fire patch is between the area bounds of the cluster.
+        @param[in] ignition the ignition cluster.
+        @param[in,out] assigned the assigned binaries.
+        @return true if the patch is within the area bounds else false.
+        */
         bool spread(const FMTOperatingAreaCluster& ignition,std::vector<FMTOperatingAreaClusterBinary>& assigned);
          // DocString: FMTOperatingAreaClusterer::getTargetedOperatingAreaSize
-		/**
-		For a given cluster (target) this function generates a random targeted cluster size within the minimal and maximal area of the cluster.
-		*/
+         /**
+         @brief Generate a random targeted cluster size within the minimal and maximal area of a cluster.
+         @param[in] target the target cluster.
+         @return the targeted operating area size.
+         */
         double getTargetedOperatingAreaSize(const FMTOperatingAreaCluster& target);
 		// DocString: FMTOperatingAreaClusterer::isValidarea
 		/**
-		Check if the area calculated is valid.
+		@brief Check if a computed area is valid for a cluster.
+		@param[in] cluster the cluster.
+		@param[in] area the area.
+		@param[in] actives the number of active binaries.
+		@return true if the area is valid else false.
 		*/
 		bool isValidarea(const FMTOperatingAreaCluster& cluster,
 			const double& area, const size_t& actives) const;
          // DocString: FMTOperatingAreaClusterer::unboundAll
-		/**
-		This function release the bounds set by the heuristic on the binaries decision variables for the whole model.
-		*/
+         /**
+         @brief Release the bounds set by the heuristic on the binary decision variables for the whole model.
+         */
         void unboundAll();
          // DocString: FMTOperatingAreaClusterer::getBinariesVariables
-		/**
-		This function returns the Lp problem variables of the cluster binaries of the whole problem.
-		*/
+         /**
+         @brief Return the LP problem variables of the cluster binaries of the whole problem.
+         @return the binaries variables.
+         */
         std::vector<int>getBinariesVariables() const;
 	public:
 	    // DocString: FMTOperatingAreaClusterer::FMTOperatingAreaClusterer()
-		/**
-		Default constructor for FMTOperatingAreaClusterer.
-		*/
+	    /**
+	    @brief Default constructor for FMTOperatingAreaClusterer.
+	    */
 		FMTOperatingAreaClusterer() = default;
 		// DocString: FMTOperatingAreaClusterer::FMTOperatingAreaClusterer(const Models::FMTsolverinterface&,const size_t&,const std::vector<FMTOperatingAreaCluster>&)
 		/**
-		Constructor for FMTOperatingAreaClusterer taking a solver (interfacetype) a seed (lseed) an a vector of (clusters) to aggregate.
+		@brief Construct a FMTOperatingAreaClusterer from a solver interface, a seed and a vector of clusters to aggregate.
+		@param[in] interfacetype the solver interface type.
+		@param[in] lseed the seed.
+		@param[in] lclusters the clusters.
+		@param[in] minimalnumberofclusters the minimal number of clusters.
+		@param[in] maximalnumberofclusters the maximal number of clusters.
 		*/
 		FMTOperatingAreaClusterer(const Models::FMTsolverinterface& interfacetype,
 			const size_t& lseed,const std::vector<FMTOperatingAreaCluster>& lclusters,
 			int minimalnumberofclusters = -1,int maximalnumberofclusters = -1);
 		 // DocString: FMTOperatingAreaClusterer::FMTOperatingAreaClusterer(const FMTOperatingAreaClusterer&)
-		/**
-		Default copy constructor for FMTOperatingAreaClusterer.
-		*/
+		 /**
+		 @brief Default copy constructor for FMTOperatingAreaClusterer.
+		 */
 		FMTOperatingAreaClusterer(const FMTOperatingAreaClusterer&);
 		 // DocString: FMTOperatingAreaClusterer::operator =
-		/**
-		Default copy assignement for FMTOperatingAreaClusterer.
-		*/
+		 /**
+		 @brief Default copy assignment operator for FMTOperatingAreaClusterer.
+		 @return a reference to this FMTOperatingAreaClusterer.
+		 */
 		FMTOperatingAreaClusterer& operator = (const FMTOperatingAreaClusterer&) = default;
 		 // DocString: FMTOperatingAreaClusterer::setNumberOfSimulationPass
-		/**
-		Sets the number of pass that will be made in the heuristics. It's the number of try made to get a better objective and/or a feasible solution
-        value during the initialSolve phase.
-		*/
+		 /**
+		 @brief Set the number of passes made by the heuristic to get a better objective or a feasible solution during initialSolve.
+		 @param[in] pass the number of passes.
+		 */
 		void setNumberOfSimulationPass(const int& pass);
 		 // DocString: FMTOperatingAreaClusterer::~FMTOperatingAreaClusterer()
-		/**
-		Default destructor for FMTOperatingAreaClusterer.
-		*/
+		 /**
+		 @brief Default destructor for FMTOperatingAreaClusterer.
+		 */
 		~FMTOperatingAreaClusterer() = default;
 		// DocString: FMTOperatingAreaClusterer::getBinariesCount
 		/**
-		Get number of binaries in the whole problem.
+		@brief Get the number of binaries in the whole problem.
+		@return the number of binaries.
 		*/
 		size_t getBinariesCount() const;
 		// DocString: FMTOperatingAreaClusterer::initialSolve
 		/**
-		Solve the heuristic problem using the original heuristic resolving the problem till finding a initial solution
-		for each operating area.The fire spread heuristic will try to get a good initial clustering solution.
+		@brief Solve the heuristic problem using the fire spread heuristic to get a good initial clustering solution for each operating area.
+		@return true if an initial solution is found else false.
 		*/
 		bool initialSolve() final;
 		// DocString: FMTOperatingAreaClusterer::branchNBoundSolve
 		/**
-		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialSolve()
-		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
+		@brief Solve the problem using branch and bound on the primal formulation, using the heuristic solution as a starting MIP solution when initialSolve has been called.
+		@return true if a solution is found else false.
 		*/
 		bool branchNBoundSolve() final;
 		 // DocString: FMTOperatingAreaClusterer::getSolution
-		/**
-		Returns the clustering solution with cleaned operatingclusters, the user can then use the solution.
-		*/
+		 /**
+		 @brief Return the clustering solution with cleaned operating clusters.
+		 @return the clustering solution.
+		 */
 		std::vector<FMTOperatingAreaCluster>getSolution() const;
 		// DocString: FMTOperatingAreaClusterer::buildProblem
-	   /**
-	   This function build the whole problem by calling in this order buildclustersvariable,addObjective,addLinksRows,addForcingRows,addAreaConstraints.
-	   to generate a complete formulation for minimizing the heterogenity.
-	   */
+		/**
+		@brief Build the whole problem by calling buildClustersVariables, addObjective, addLinksRows, addForcingRows and addAreaConstraints to minimize the heterogeneity.
+		*/
 		void buildProblem();
 
 	};

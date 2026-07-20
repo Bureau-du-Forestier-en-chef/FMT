@@ -22,6 +22,11 @@ namespace Core
 {
 
 
+// DocString: FMTBounds
+/**
+@brief Templated lower and upper bounds for a value, used to characterize developments.
+@tparam T the type of the bounded value.
+*/
 template<typename T>
 class FMTBounds
     {
@@ -44,39 +49,93 @@ class FMTBounds
         T upper;
         T lower;
     public:
+        // DocString: FMTBounds()
+        /**
+        @brief Default constructor for FMTBounds.
+        */
         FMTBounds() : andbound(true),use(false),section(),keytype(),upper(),lower()
             {
 
             }
+        // DocString: FMTBounds(const FMTsection,const T&,const T&)
+        /**
+        @brief Construct bounds from a section, an upper and a lower bound.
+        @param[in] lsection the section.
+        @param[in] lupper the upper bound.
+        @param[in] llower the lower bound.
+        */
         FMTBounds(const FMTsection lsection, const T& lupper, const T& llower):andbound(true),use(true),section(lsection),keytype(),upper(lupper),lower(llower)
             {
 
             }
+        // DocString: FMTBounds(const FMTsection,const FMTkwor,const T&,const T&)
+        /**
+        @brief Construct bounds from a section, a keyword, an upper and a lower bound.
+        @param[in] lsection the section.
+        @param[in] key the keyword.
+        @param[in] lupper the upper bound.
+        @param[in] llower the lower bound.
+        */
         FMTBounds(const FMTsection lsection,const FMTkwor key, const T& lupper,const T& llower):andbound(true),use(true),section(lsection),keytype(key),upper(lupper),lower(llower)
             {
 
             }
+		// DocString: ~FMTBounds()
+		/**
+		@brief Default virtual destructor for FMTBounds.
+		*/
 		virtual ~FMTBounds() = default;
+        // DocString: FMTBounds::setOrBound
+        /**
+        @brief Set the bounds to be combined with an OR instead of an AND.
+        */
         void setOrBound()
             {
             andbound = false;
             }
+        // DocString: FMTBounds::getLower
+        /**
+        @brief Return the lower bound.
+        @return the lower bound.
+        */
         T getLower() const
             {
             return lower;
             }
+         // DocString: FMTBounds::getUpper
+         /**
+         @brief Return the upper bound.
+         @return the upper bound.
+         */
          T getUpper() const
             {
             return upper;
             }
+		 // DocString: FMTBounds::out
+		 /**
+		 @brief Return true if a value is outside the bounds.
+		 @param[in] value the value.
+		 @return true if the value is outside the bounds else false.
+		 */
 		 inline bool out(const T&  value) const
 			{
 			 return ((lower > value) || (upper < value));
 			}
+		 // DocString: FMTBounds::in
+		 /**
+		 @brief Return true if a value is within the bounds.
+		 @param[in] value the value.
+		 @return true if the value is within the bounds else false.
+		 */
 		 inline bool in(const T&  value) const
 			{
 			 return (empty() || (value <= upper && value >= lower));
 			}
+        // DocString: FMTBounds(const FMTBounds<T>&)
+        /**
+        @brief Copy constructor for FMTBounds.
+        @param[in] rhs the FMTBounds to copy.
+        */
         FMTBounds(const FMTBounds<T>& rhs) :
             andbound(rhs.andbound),
             use(rhs.use),
@@ -87,6 +146,12 @@ class FMTBounds
             {
 
             }
+		// DocString: FMTBounds::operator==
+		/**
+		@brief Equality comparison operator of FMTBounds.
+		@param[in] rhs the bounds to compare with.
+		@return true if both bounds are equal else false.
+		*/
 		bool operator == (const FMTBounds<T>& rhs) const
 			{
 			return (andbound == rhs.andbound &&
@@ -97,6 +162,12 @@ class FMTBounds
 				lower == rhs.lower);
 			}
 
+		// DocString: FMTBounds::operator<
+		/**
+		@brief Less than comparison operator of FMTBounds.
+		@param[in] rhs the bounds to compare with.
+		@return true if this bounds is less than rhs else false.
+		*/
 		bool operator < (const FMTBounds<T>& rhs) const
 			{
 			//strict ordering
@@ -127,6 +198,12 @@ class FMTBounds
 			return false;
 			}
 
+        // DocString: FMTBounds::operator=
+        /**
+        @brief Copy assignment operator for FMTBounds.
+        @param[in] rhs the FMTBounds to copy.
+        @return a reference to this FMTBounds.
+        */
         FMTBounds<T>& operator = (const FMTBounds<T>& rhs)
             {
             if (this!=&rhs)
@@ -140,10 +217,21 @@ class FMTBounds
                 }
             return *this;
             }
+        // DocString: FMTBounds::empty
+        /**
+        @brief Return true if the bounds are empty (not used).
+        @return true if the bounds are empty else false.
+        */
         bool empty() const
             {
             return !use;
             }
+        // DocString: FMTBounds::add
+        /**
+        @brief Add another bounds to this bounds.
+        @param[in] rhs the bounds to add.
+        @return true if the bounds are added else false.
+        */
         bool add(const FMTBounds<T>& rhs)
             {
             if (!this->empty())
@@ -162,6 +250,12 @@ class FMTBounds
             use = true;
             return true;
             }
+		// DocString: FMTBounds::toString
+		/**
+		@brief Return the string representation of the bounds for a given name.
+		@param[in] name the name.
+		@return the string representation of the bounds.
+		*/
 		std::string toString(const std::string& name) const
             {
             std::string line;
@@ -245,6 +339,10 @@ class FMTBounds
         }
     };
 
+// DocString: FMTYldBounds
+/**
+@brief Yield bounds of a development, a FMTBounds of double with an associated yield name.
+*/
 class FMTEXPORT FMTYldBounds: public FMTBounds<double>
     {
     friend class FMTSpec;
@@ -257,17 +355,74 @@ class FMTEXPORT FMTYldBounds: public FMTBounds<double>
 	}
     std::string yield;
     public:
+	// DocString: FMTYldBounds()
+	/**
+	@brief Default constructor for FMTYldBounds.
+	*/
 	FMTYldBounds();
+	// DocString: ~FMTYldBounds()
+	/**
+	@brief Default destructor for FMTYldBounds.
+	*/
 	~FMTYldBounds() = default;
+	// DocString: FMTYldBounds(const FMTsection,const std::string&,const double&,const double&)
+	/**
+	@brief Construct yield bounds from a section, a yield, an upper and a lower bound.
+	@param[in] lsection the section.
+	@param[in] lyield the yield.
+	@param[in] lupper the upper bound.
+	@param[in] llower the lower bound.
+	*/
 	FMTYldBounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower);
+    // DocString: FMTYldBounds(const FMTsection,const FMTkwor,const std::string&,const double&,const double&)
+    /**
+    @brief Construct yield bounds from a section, a keyword, a yield, an upper and a lower bound.
+    @param[in] lsection the section.
+    @param[in] key the keyword.
+    @param[in] lyield the yield.
+    @param[in] lupper the upper bound.
+    @param[in] llower the lower bound.
+    */
     FMTYldBounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper,const double& llower);
+    // DocString: FMTYldBounds(const std::string&,const FMTBounds<double>&)
+    /**
+    @brief Construct yield bounds from a yield and a FMTBounds.
+    @param[in] lyield the yield.
+    @param[in] rhs the bounds.
+    */
     FMTYldBounds(const std::string& lyield,const FMTBounds<double>& rhs);
+	// DocString: FMTYldBounds(const FMTYldBounds&)
+	/**
+	@brief Copy constructor for FMTYldBounds.
+	@param[in] rhs the FMTYldBounds to copy.
+	*/
 	FMTYldBounds(const FMTYldBounds& rhs);
+    // DocString: FMTYldBounds::operator=
+    /**
+    @brief Copy assignment operator for FMTYldBounds.
+    @param[in] rhs the FMTYldBounds to copy.
+    @return a reference to this FMTYldBounds.
+    */
     FMTYldBounds& operator = (const FMTYldBounds& rhs);
+	// DocString: FMTYldBounds::operator==
+	/**
+	@brief Equality comparison operator of FMTYldBounds.
+	@param[in] rhs the bounds to compare with.
+	@return true if both bounds are equal else false.
+	*/
 	bool operator == (const FMTYldBounds& rhs) const;
+    // DocString: FMTYldBounds::operator std::string
+    /**
+    @brief Return the string representation of the yld bounds.
+    @return the string representation of the bounds.
+    */
     operator std::string() const;
     };
 
+// DocString: FMTAgeBounds
+/**
+@brief Age bounds of a development, a FMTBounds of int.
+*/
 class FMTEXPORT FMTAgeBounds: public FMTBounds<int>
     {
     friend class FMTSpec;
@@ -278,17 +433,71 @@ class FMTEXPORT FMTAgeBounds: public FMTBounds<int>
 		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTBounds<int>>(*this));
 	}
     public:
+    // DocString: FMTAgeBounds()
+    /**
+    @brief Default constructor for FMTAgeBounds.
+    */
     FMTAgeBounds();
+	// DocString: ~FMTAgeBounds()
+	/**
+	@brief Default destructor for FMTAgeBounds.
+	*/
 	~FMTAgeBounds() = default;
+    // DocString: FMTAgeBounds(FMTsection,const int&,const int&)
+    /**
+    @brief Construct age bounds from a section, an upper and a lower bound.
+    @param[in] lsection the section.
+    @param[in] lupper the upper bound.
+    @param[in] llower the lower bound.
+    */
     FMTAgeBounds(FMTsection lsection,const int& lupper, const int& llower);
+    // DocString: FMTAgeBounds(FMTsection,FMTkwor,const int&,const int&)
+    /**
+    @brief Construct age bounds from a section, a keyword, an upper and a lower bound.
+    @param[in] lsection the section.
+    @param[in] key the keyword.
+    @param[in] lupper the upper bound.
+    @param[in] llower the lower bound.
+    */
     FMTAgeBounds(FMTsection lsection,FMTkwor key, const int& lupper, const int& llower);
+    // DocString: FMTAgeBounds(const FMTAgeBounds&)
+    /**
+    @brief Copy constructor for FMTAgeBounds.
+    @param[in] rhs the FMTAgeBounds to copy.
+    */
     FMTAgeBounds(const FMTAgeBounds& rhs);
+    // DocString: FMTAgeBounds(const FMTBounds<int>&)
+    /**
+    @brief Construct age bounds from a FMTBounds.
+    @param[in] rhs the bounds.
+    */
     FMTAgeBounds(const FMTBounds<int>& rhs);
+    // DocString: FMTAgeBounds::operator=
+    /**
+    @brief Copy assignment operator for FMTAgeBounds.
+    @param[in] rhs the FMTAgeBounds to copy.
+    @return a reference to this FMTAgeBounds.
+    */
     FMTAgeBounds& operator = (const FMTAgeBounds& rhs);
+	// DocString: FMTAgeBounds::operator==
+	/**
+	@brief Equality comparison operator of FMTAgeBounds.
+	@param[in] rhs the bounds to compare with.
+	@return true if both bounds are equal else false.
+	*/
 	bool operator == (const FMTAgeBounds& rhs) const;
+    // DocString: FMTAgeBounds::operator std::string
+    /**
+    @brief Return the string representation of the age bounds.
+    @return the string representation of the bounds.
+    */
     operator std::string() const;
     };
 
+// DocString: FMTPerBounds
+/**
+@brief Period bounds of a development, a FMTBounds of int.
+*/
 class FMTEXPORT FMTPerBounds: public FMTBounds<int>
     {
     friend class FMTSpec;
@@ -299,17 +508,63 @@ class FMTEXPORT FMTPerBounds: public FMTBounds<int>
 		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTBounds<int>>(*this));
 	}
     public:
+    // DocString: FMTPerBounds()
+    /**
+    @brief Default constructor for FMTPerBounds.
+    */
     FMTPerBounds();
+	// DocString: ~FMTPerBounds()
+	/**
+	@brief Default destructor for FMTPerBounds.
+	*/
 	~FMTPerBounds() = default;
+    // DocString: FMTPerBounds(const FMTsection,const int&,const int&)
+    /**
+    @brief Construct period bounds from a section, an upper and a lower bound.
+    @param[in] lsection the section.
+    @param[in] lupper the upper bound.
+    @param[in] llower the lower bound.
+    */
     FMTPerBounds(const FMTsection lsection,const int& lupper,const int& llower);
+    // DocString: FMTPerBounds(const FMTPerBounds&)
+    /**
+    @brief Copy constructor for FMTPerBounds.
+    @param[in] rhs the FMTPerBounds to copy.
+    */
     FMTPerBounds(const FMTPerBounds& rhs);
+	// DocString: FMTPerBounds(const FMTBounds<int>&)
+	/**
+	@brief Construct period bounds from a FMTBounds.
+	@param[in] rhs the bounds.
+	*/
 	FMTPerBounds(const FMTBounds<int>& rhs);
+    // DocString: FMTPerBounds::operator=
+    /**
+    @brief Copy assignment operator for FMTPerBounds.
+    @param[in] rhs the FMTPerBounds to copy.
+    @return a reference to this FMTPerBounds.
+    */
     FMTPerBounds& operator = (const FMTPerBounds& rhs);
+	// DocString: FMTPerBounds::operator==
+	/**
+	@brief Equality comparison operator of FMTPerBounds.
+	@param[in] rhs the bounds to compare with.
+	@return true if both bounds are equal else false.
+	*/
 	bool operator == (const FMTPerBounds& rhs) const;
+    // DocString: FMTPerBounds::operator std::string
+    /**
+    @brief Return the string representation of the per bounds.
+    @return the string representation of the bounds.
+    */
     operator std::string() const;
     };
 
 
+// DocString: FMTLockBounds
+/**
+@brief Lock bounds of a development, a FMTBounds of int.
+*/
 class FMTEXPORT FMTLockBounds : public FMTBounds<int>
     {
     friend class FMTSpec;
@@ -320,29 +575,75 @@ class FMTEXPORT FMTLockBounds : public FMTBounds<int>
 		ar & boost::serialization::make_nvp("bounds", boost::serialization::base_object<FMTBounds<int>>(*this));
 		}
     public:
+    // DocString: FMTLockBounds()
+    /**
+    @brief Default constructor for FMTLockBounds.
+    */
     FMTLockBounds();
+	// DocString: ~FMTLockBounds()
+	/**
+	@brief Default destructor for FMTLockBounds.
+	*/
 	~FMTLockBounds() = default;
+    // DocString: FMTLockBounds(const FMTsection,const FMTkwor,const int&,const int&)
+    /**
+    @brief Construct lock bounds from a section, a keyword, an upper and a lower bound.
+    @param[in] lsection the section.
+    @param[in] key the keyword.
+    @param[in] lupper the upper bound.
+    @param[in] llower the lower bound.
+    */
     FMTLockBounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower);
+	// DocString: FMTLockBounds(const FMTsection,const int&,const int&)
+	/**
+	@brief Construct lock bounds from a section, an upper and a lower bound.
+	@param[in] lsection the section.
+	@param[in] lupper the upper bound.
+	@param[in] llower the lower bound.
+	*/
 	FMTLockBounds(const FMTsection lsection, const int& lupper, const int& llower);
+    // DocString: FMTLockBounds(const FMTLockBounds&)
+    /**
+    @brief Copy constructor for FMTLockBounds.
+    @param[in] rhs the FMTLockBounds to copy.
+    */
     FMTLockBounds(const FMTLockBounds& rhs);
+    // DocString: FMTLockBounds::operator=
+    /**
+    @brief Copy assignment operator for FMTLockBounds.
+    @param[in] rhs the FMTLockBounds to copy.
+    @return a reference to this FMTLockBounds.
+    */
     FMTLockBounds& operator = (const FMTLockBounds& rhs);
+	// DocString: FMTLockBounds::operator==
+	/**
+	@brief Equality comparison operator of FMTLockBounds.
+	@param[in] rhs the bounds to compare with.
+	@return true if both bounds are equal else false.
+	*/
 	bool operator == (const FMTLockBounds& rhs) const;
+    // DocString: FMTLockBounds::operator std::string
+    /**
+    @brief Return the string representation of the lock bounds.
+    @return the string representation of the bounds.
+    */
     operator std::string() const;
     };
 
 class FMTYields;
 // DocString: FMTSpec
 /**
-FMTSpec represent the specifications of a group of FMTDevelopment. You can characterize a
-FMTDevelopment by it's period (FMTPerBounds), it's age (FMTAgeBounds), it's lock (FMTLockBounds) and 
-it's yields (yieldbounds). Bounds are "bounds" lower and upper bounds:
-Example: 1>=age<=10, 5>=period<=20, 0>=lock<=10 and 145<=yield<=700
+@brief Specifications of a group of developments, characterized by period, age, lock and yield bounds.
+@details Example: 1 <= age <= 10, 5 <= period <= 20, 0 <= lock <= 10 and 145 <= yield <= 700.
 */
 class FMTEXPORT FMTSpec
     {
 	// DocString: FMTSpec::serialize
 	/**
-	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize the FMTSpec for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	friend class Core::FMTYields;
 	friend class boost::serialization::access;
@@ -374,52 +675,69 @@ protected:
 public:
 	// DocString: FMTSpec()
 	/**
-	Default constructor for FMTSpec
+	@brief Default constructor for FMTSpec.
 	*/
     FMTSpec();
 	// DocString: ~FMTSpec()
 	/**
-	Destructor for FMTSpec
+	@brief Default virtual destructor for FMTSpec.
 	*/
     virtual ~FMTSpec()=default;
 	// DocString: FMTSpec(const FMTSpec&)
 	/**
-	FMTSpec copy constructor.
+	@brief Copy constructor for FMTSpec.
+	@param[in] rhs the FMTSpec to copy.
 	*/
     FMTSpec(const FMTSpec& rhs);
 	// DocString: FMTSpec::operator=
 	/**
-	Copy assignement of FMTSpec
+	@brief Copy assignment operator for FMTSpec.
+	@param[in] rhs the FMTSpec to copy.
+	@return a reference to this FMTSpec.
 	*/
     FMTSpec& operator = (const FMTSpec& rhs);
 	// DocString: FMTSpec::add
 	/**
-	Add yields spec or age, period or lock spec from an other spec.
+	@brief Add the yield, age, period or lock specifications from another spec.
+	@param[in] rhs the other spec.
+	@return true if the specifications are added else false.
 	*/
     bool add(const FMTSpec& rhs);
 	// DocString: FMTSpec::setBounds
 	/**
-	Set period bounds
+	@brief Set the period bounds.
+	@param[in] bound the period bounds.
+	@return true if the bounds are set else false.
 	*/
     bool setBounds(const FMTPerBounds& bound);
 	// DocString: FMTSpec::setBounds
 	/**
-	Set age bounds
+	@brief Add the age bounds.
+	@param[in] bound the age bounds.
+	@return true if the bounds are added else false.
 	*/
     bool addBounds(const FMTAgeBounds& bound);
 	// DocString: FMTSpec::setyldbounds
 	/**
-	Set yield bounds
+	@brief Add the yield bounds.
+	@param[in] bound the yield bounds.
+	@return true if the bounds are added else false.
 	*/
     bool addBounds(const FMTYldBounds& bound);
 	// DocString: FMTSpec::setlockbounds
 	/**
-	Set lock bounds
+	@brief Add the lock bounds.
+	@param[in] bound the lock bounds.
+	@return true if the bounds are added else false.
 	*/
     bool addBounds(const FMTLockBounds& bound);
 	// DocString: FMTSpec::allowWithoutYield
 	/**
-	return true if the given period, age and lock respect the age,period and lock bounds.
+	@brief Return true if the period, age and lock respect their bounds.
+	@param[in] tperiod the period.
+	@param[in] tage the age.
+	@param[in] tlock the lock.
+	@return true if allowed else false.
 	*/
 	inline bool allowWithoutYield(const int& tperiod, const int& tage, const int& tlock) const
 		{
@@ -429,7 +747,9 @@ public:
 		}
 	// DocString: FMTSpec::getYieldBound
 	/**
-	return the reference of a given FMTYldBounds using the name of the FMTYldBounds.
+	@brief Return the reference of a yield bound by its name.
+	@param[in] name the yield name.
+	@return a const reference to the yield bound.
 	*/
 	inline const FMTYldBounds& getYieldBound(const std::string& name) const
 		{
@@ -437,7 +757,9 @@ public:
 		}
 	// DocString: FMTSpec::allowYields
 	/**
-	Return true if all the yields (values) are within the yield bounds.
+	@brief Return true if all the yields are within the yield bounds.
+	@param[in] values the yield values.
+	@return true if the yields are allowed else false.
 	*/
 	inline bool allowYields(const std::vector<double>& values) const
 	{
@@ -453,7 +775,12 @@ public:
 	}
 	// DocString: FMTSpec::allow
 	/**
-	Return true if all age,period and lock are within the bounds and when the yields (values) are within the yield bounds
+	@brief Return true if the period, age and lock are within their bounds and the yields are within the yield bounds.
+	@param[in] tperiod the period.
+	@param[in] tage the age.
+	@param[in] tlock the lock.
+	@param[in] values the yield values.
+	@return true if allowed else false.
 	*/
 	inline bool allow(const int& tperiod, const int& tage, const int& tlock, const std::vector<double>& values) const
 		{
@@ -468,7 +795,8 @@ public:
 		}
 	// DocString: FMTSpec::getYlds
 	/**
-	Return the yields names of the yield bounds.
+	@brief Return the yield names of the yield bounds.
+	@return the yield names.
 	*/
 	inline const std::vector<std::string>& getYlds() const
 		{
@@ -476,7 +804,8 @@ public:
 		}
 	// DocString: FMTSpec::getYldBounds
 	/**
-	Return tthe yields bounds of the spec.
+	@brief Return the yield bounds of the spec.
+	@return the yield bounds.
 	*/
 	inline const std::vector<FMTYldBounds>& getYldBounds() const
 		{
@@ -484,82 +813,101 @@ public:
 		}
 	// DocString: FMTSpec::operator std::string
 	/**
-	Returns the string reprensentation of the FMTSpec like _age >= lower and _Age <= upper and ....
+	@brief Return the string representation of the spec.
+	@return the string representation of the spec.
 	*/
     virtual operator std::string() const;
 	// DocString: FMTSpec::operator==
 	/**
-	FMTSpec equality operator.
+	@brief Equality comparison operator of FMTSpec.
+	@param[in] rhs the spec to compare with.
+	@return true if both specs are equal else false.
 	*/
 	bool operator == (const FMTSpec& rhs) const;
 	// DocString: FMTSpec::operator<
 	/**
-	FMTSpec less than operator.
+	@brief Less than comparison operator of FMTSpec.
+	@param[in] rhs the spec to compare with.
+	@return true if this spec is less than rhs else false.
 	*/
 	bool operator < (const FMTSpec& rhs) const;
 	// DocString: FMTSpec::hash
 	/**
-	Return the hashed value of FMTSpec.
+	@brief Return the hash of the spec.
+	@return the hash value.
 	*/
 	size_t hash() const;
 	// DocString: FMTSpec::empty
 	/**
-	Return true if all bounds are empty.
+	@brief Return true if the spec (all bounds) is empty.
+	@return true if the spec (all bounds) is empty else false.
 	*/
     bool empty() const;
 	// DocString: FMTSpec::emptyAge
 	/**
-	Return true if age bound is empty.
+	@brief Return true if the age bound is empty.
+	@return true if the age bound is empty else false.
 	*/
 	bool emptyAge() const;
 	// DocString: FMTSpec::emptyYlds
 	/**
-	Return true if yields bounds are empty.
+	@brief Return true if the yield bounds is empty.
+	@return true if the yield bounds is empty else false.
 	*/
 	bool emptyYlds() const;
 	// DocString: FMTSpec::emptyPeriod
 	/**
-	Return true if period bounds is empty.
+	@brief Return true if the period bound is empty.
+	@return true if the period bound is empty else false.
 	*/
 	bool emptyPeriod() const;
 	// DocString: FMTSpec::emptyLock
 	/**
-	Return true if lock bounds is empty.
+	@brief Return true if the lock bound is empty.
+	@return true if the lock bound is empty else false.
 	*/
 	bool emptyLock() const;
 	// DocString: FMTSpec::getAgeUpperBound
 	/**
-	Get the upper bounds of the age bounds.
+	@brief Return the upper bound of the age bounds.
+	@return the age upper bound.
 	*/
 	int getAgeUpperBound() const;
 	// DocString: FMTSpec::getAgeLowerBound
 	/**
-	Get the lower bound of the age bounds.
+	@brief Return the lower bound of the age bounds.
+	@return the age lower bound.
 	*/
 	int getAgeLowerBound() const;
 	// DocString: FMTSpec::getPeriodUpperBound
 	/**
-	Get the upper bound of the period bounds.
+	@brief Return the upper bound of the period bounds.
+	@return the period upper bound.
 	*/
 	int getPeriodUpperBound() const;
 	// DocString: FMTSpec::getPeriodLowerBound
 	/**
-	Get the lower bound of the period bounds.
+	@brief Return the lower bound of the period bounds.
+	@return the period lower bound.
 	*/
 	int getPeriodLowerBound() const;
 	// DocString: FMTSpec::getLockUpperBound
 	/**
-	Get the upper bounds of the age bounds.
+	@brief Return the upper bound of the lock bounds.
+	@return the lock upper bound.
 	*/
 	int getLockUpperBound() const;
 	// DocString: FMTSpec::getLockLowerBound
 	/**
-	Get the lower bound of the age bounds.
+	@brief Return the lower bound of the lock bounds.
+	@return the lock lower bound.
 	*/
 	int getLockLowerBound() const;
 	// DocString: FMTSpec::isSubsetOf
 	/**
-	return true if this spec is the subset of the rhs spec.
+	@brief Return true if this spec is a subset of another.
+	@param[in] rhs the other spec.
+	@return true if this spec is a subset of rhs else false.
 	*/
 	bool isSubsetOf(const FMTSpec& rhs) const;
     };

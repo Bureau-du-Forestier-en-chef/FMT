@@ -22,82 +22,102 @@ namespace Core
 class FMTConstraint;
 // DocString: FMTSchedule
 /**
-FMTSchedule is the representation of a spatially referenced schedule. It can be used by the FMTLpModel and the FMTSesModel.
-It describes the area of a given developments for which an FMTAction can be operated (key).
-The vector is a reprensentation of lock level at position 0 in the vector the lock level = 0 (if lock level 0 exist in the graph
-, at position 1 lock level = 1.
+@brief Spatially referenced schedule describing the area of developments for which an action can be operated, usable by FMTLpModel and FMTSesModel.
+@details The vector represents the lock level: position 0 is lock level 0, position 1 is lock level 1, and so on.
 */
 class FMTEXPORT FMTSchedule : public FMTObject
     {
     public:
 		// DocString: FMTSchedule(const int&)
 		/**
-		FMTSchedule constructor for an empty schedule at given period
+		@brief Construct an empty schedule at a given period.
+		@param[in] lperiod the period.
+		@param[in] obj the object to copy the handlers from.
+		@param[in] luselock if true the schedule can contain locked developments.
 		*/
 		FMTSchedule(const int& lperiod, const FMTObject& obj, const bool& luselock);
 		// DocString: FMTSchedule(const int&,std::vector<FMTSchedule>&)
 		/**
-		FMTSchedule constructor for a complete construction of FMTSchedule with multiple FMTSchedule
+		@brief Construct a schedule from multiple schedules at a given period.
+		@param[in] lperiod the period.
+		@param[in] schedules the schedules to combine.
 		*/
 		FMTSchedule(const int& lperiod, std::vector<FMTSchedule>& schedules);
 		// DocString: FMTSchedule(int,std::map<FMTAction,std::map<FMTDevelopment,std::vector<double>>>)
 		/**
-		FMTSchedule constructor for a complete construction of FMTSchedule
+		@brief Construct a complete schedule from a period and a mapping.
+		@param[in] lperiod the period.
+		@param[in] mapping the mapping of actions to developments and areas.
 		*/
         FMTSchedule(int lperiod, std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> mapping);
 		// DocString: FMTSchedule(int,const std::map<FMTAction,std::map<FMTDevelopment,std::map<int,double>>>&)
 		/**
-		FMTSchedule constructor _lock based mapping (When a schedule is parsed).
+		@brief Construct a schedule from a period and a lock based mapping, when a schedule is parsed.
+		@param[in] lperiod the period.
+		@param[in] mapping the lock based mapping.
 		*/
 		FMTSchedule(int lperiod, const std::map<FMTAction, std::map<FMTDevelopment, std::map<int,double>>>& mapping);
 		// DocString: FMTSchedule()
 		/**
-		Default FMTSchedule constructor.
+		@brief Default constructor for FMTSchedule.
 		*/
         FMTSchedule();
 		// DocString: ~FMTSchedule()
 		/**
-		Default ~FMTSchedule constructor.
+		@brief Default destructor for FMTSchedule.
 		*/
 		~FMTSchedule() = default;
 		// DocString: FMTSchedule(const FMTSchedule&)
 		/**
-		Default FMTSchedule copy constructor.
+		@brief Copy constructor for FMTSchedule.
+		@param[in] rhs the FMTSchedule to copy.
 		*/
         FMTSchedule(const FMTSchedule& rhs);
 		// DocString: FMTSchedule::operator=
 		/**
-		Default FMTSchedule copy assignment.
+		@brief Copy assignment operator for FMTSchedule.
+		@param[in] rhs the FMTSchedule to copy.
+		@return a reference to this FMTSchedule.
 		*/
         FMTSchedule& operator = (const FMTSchedule& rhs);
 		// DocString: FMTSchedule::operator==
 		/**
-		FMTSchedule equality operator.
+		@brief Equality comparison operator of FMTSchedule.
+		@param[in] rhs the schedule to compare with.
+		@return true if both schedules are equal else false.
 		*/
 		bool operator == (const FMTSchedule& rhs) const;
 		// DocString: FMTSchedule::operator!=
 		/**
-		FMTSchedule nonequality operator.
+		@brief Inequality comparison operator of FMTSchedule.
+		@param[in] rhs the schedule to compare with.
+		@return true if both schedules are different else false.
 		*/
 		bool operator != (const FMTSchedule& rhs) const;
 		// DocString: FMTSchedule::operator+=
 		/**
-		This function append an FMTSchedule to an other FMTSchedule.
+		@brief Append another schedule to this schedule.
+		@param[in] rhs the schedule to append.
+		@return a reference to this FMTSchedule.
 		*/
 		FMTSchedule& operator += (const FMTSchedule& rhs);
 		// DocString: FMTSchedule::operator+
 		/**
-		This function append an FMTSchedule to an other FMTSchedule and return a new one.
+		@brief Append another schedule to this schedule and return a new one.
+		@param[in] rhs the schedule to append.
+		@return the resulting schedule.
 		*/
 		FMTSchedule operator + (const FMTSchedule& rhs) const;
 		// DocString: FMTSchedule::operator std::string
 		/**
-		Convert the FMTSchedule to a string like seen in a regular scedule file.
+		@brief Convert the schedule to a string as in a regular schedule file.
+		@return the string representation of the schedule.
 		*/
         operator std::string() const;
 		// DocString: FMTSchedule::getPeriod
 		/**
-		Getter for the schedule period.
+		@brief Return the period of the schedule.
+		@return the period of the schedule.
 		*/
 		inline int getPeriod() const
 			{
@@ -105,7 +125,8 @@ class FMTEXPORT FMTSchedule : public FMTObject
 			}
 		// DocString: FMTSchedule::doUseLock
 		/**
-		Return true if the schedule can contains locked development.
+		@brief Return true if the schedule can contain locked developments.
+		@return true if the schedule uses lock else false.
 		*/
 		inline bool doUseLock() const
 		{
@@ -113,81 +134,107 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		}
 		// DocString: FMTSchedule::setUseLock
 		/**
-		Mark the schedule has can contains locked development.
+		@brief Mark the schedule as able to contain locked developments.
+		@param[in] lock if true the schedule can contain locked developments.
 		*/
 		void setUseLock(const bool& lock);
 		// DocString: FMTSchedule::actionArea
 		/**
-		Return the total harvested area of a FMTAction present in the FMTSchedule.
+		@brief Return the total harvested area of an action in the schedule.
+		@param[in] action the action.
+		@return the total harvested area of the action.
 		*/
         double actionArea(const FMTAction& action) const;
 		// DocString: FMTSchedule::addEvent
 		/**
-		Add a new event to the shedule based on the development,action and area. See clean function also.
+		@brief Add a new event to the schedule from a development, an area and an action.
+		@param[in] dev the development.
+		@param[in] area the area.
+		@param[in] action the action.
 		*/
 		void addEvent(const Core::FMTDevelopment& dev, const double& area, const Core::FMTAction& action);
 		// DocString: FMTSchedule::clean
 		/**
-		After calling multiple time addEvent the schedule will end up with empty area if uselock == false.
-		So you need to call this function to clean the schedule before using it.
+		@brief Clean the schedule of empty areas after multiple addEvent calls, to be called before using it.
 		*/
 		void clean();
 		// DocString: FMTSchedule::area
 		/**
-		Return the total area of the schedule operated by all schedule actions.
+		@brief Return the total area of the schedule operated by all actions.
+		@return the total area of the schedule.
 		*/
         double area() const;
 		// DocString: FMTSchedule::operated
 		/**
-		Check if a given FMTDevelopment has been actioned for the this FMTSchedule.
+		@brief Check if a development has been operated by an action in the schedule.
+		@param[in] action the action.
+		@param[in] development the development.
+		@return true if the development has been operated else false.
 		*/
 		bool operated(const FMTAction& action,
 			const FMTDevelopment& development) const;
 		// DocString: FMTSchedule::getOperabilities
 		/**
-		Get all operabilities of the schedules in an hash table.
+		@brief Return all operabilities of the schedule in a hash table.
+		@param[in] actions the actions.
+		@return the operabilities of the schedule.
 		*/
 		std::vector<boost::unordered_set<FMTDevelopment>> getOperabilities(const std::vector<FMTAction>& actions) const;
 		// DocString: FMTSchedule::sort
 		/**
-		Sort the vector of double of the lock level per area for the FMTSchedule.
+		@brief Sort the vector of lock level per area of the schedule.
 		*/
 		void sort();
 		// DocString: FMTSchedule::empty
 		/**
-		Return true is the FMTSchedule is not empty.
+		@brief Return true if the schedule is empty.
+		@return true if the schedule is empty else false.
 		*/
 		bool empty() const;
 		// DocString: FMTSchedule::size
 		/**
-		Return the size of the FMTSchedule.
+		@brief Return the size of the schedule.
+		@return the size of the schedule.
 		*/
 		size_t size() const;
 		// DocString: FMTSchedule::presolve
 		/**
-		Presolve all masks base on a baseMask a preolved mask
-		and presolved themes and presolved actions list. The returned schedule can also be empty.
+		@brief Presolve the schedule, potentially returning an empty schedule.
+		@param[in] filter the mask filter.
+		@param[in] newthemes the presolved themes.
+		@param[in] presolvedaction the presolved actions.
+		@return the presolved schedule.
 		*/
 		FMTSchedule presolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& newthemes, const std::vector<FMTAction>&presolvedaction) const;
 		// DocString: FMTSchedule::postSolve
 		/**
-		Postsolve all masks base on a baseMask and the original themes and actions.
+		@brief Postsolve the schedule using the original themes and actions.
+		@param[in] filter the mask filter.
+		@param[in] originalbasethemes the original themes.
+		@param[in] originalbasebaseactions the original actions.
+		@return the postsolved schedule.
 		*/
 		FMTSchedule postSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalbasethemes, const std::vector<FMTAction>&originalbasebaseactions) const;
+		// DocString: FMTSchedule::setPeriod
 		/**
-		Setter for the period of the Schedule and the period developments of the schedule.
+		@brief Set the period of the schedule and of its developments.
+		@param[in] newperiod the period to set.
 		*/
 		void setPeriod(const int& newperiod);
 		// DocString: FMTSchedule::getNewSchedule
 		/**
-		Multiply this schedule with a factor and return it
+		@brief Multiply this schedule by a factor and return it.
+		@param[in] factor the factor.
+		@return the multiplied schedule.
 		*/
 		FMTSchedule getNewSchedule(const double& factor) const;
 		// DocString: FMTSchedule::isFuturConstraints
 		/**
-		Check if the schedule period will be bounded by new constraints.
+		@brief Check if the schedule period will be bounded by new constraints.
+		@param[in] constraints the constraints.
+		@return true if the schedule has future constraints else false.
 		*/
 		bool isFuturConstraints(const std::vector<Core::FMTConstraint>& constraints) const;
 		/**
@@ -196,18 +243,65 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		typedef typename std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::value_type value_type;
 		typedef typename std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator iterator;
 		typedef typename std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator const_iterator;
+		// DocString: FMTSchedule::operator[]
+		/**
+		@brief Return a reference to the developments and areas for a given action.
+		@param[in] action the action.
+		@return a reference to the map of developments to areas.
+		*/
 		std::map<FMTDevelopment, std::vector<double>>& operator[](const FMTAction& action);
+		// DocString: FMTSchedule::at
+		/**
+		@brief Return a const reference to the developments and areas for a given action.
+		@param[in] action the action.
+		@return a const reference to the map of developments to areas.
+		*/
 		const std::map<FMTDevelopment, std::vector<double>>& at(const FMTAction& action) const;
+		// DocString: FMTSchedule::find
+		/**
+		@brief Return an iterator to the given action.
+		@param[in] actionkey the action.
+		@return an iterator to the action.
+		*/
 		iterator find(const FMTAction& actionkey);
+		// DocString: FMTSchedule::find() const
+		/**
+		@brief Return a const iterator to the given action.
+		@param[in] actionkey the action.
+		@return a const iterator to the action.
+		*/
 		const_iterator find(const FMTAction& actionkey) const;
+		// DocString: FMTSchedule::begin
+		/**
+		@brief Return an iterator to the beginning of the schedule.
+		@return an iterator to the beginning.
+		*/
 		iterator begin();
+		// DocString: FMTSchedule::begin() const
+		/**
+		@brief Return a const iterator to the beginning of the schedule.
+		@return a const iterator to the beginning.
+		*/
 		const_iterator begin() const;
+		// DocString: FMTSchedule::end
+		/**
+		@brief Return an iterator to the end of the schedule.
+		@return an iterator to the end.
+		*/
 		iterator  end();
+		// DocString: FMTSchedule::end() const
+		/**
+		@brief Return a const iterator to the end of the schedule.
+		@return a const iterator to the end.
+		*/
 		const_iterator end() const;
 	private:
 		// DocString: FMTSchedule::serialize
 		/**
-		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTSchedule through its base FMTObject for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -235,7 +329,9 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> elements;
 		// DocString: FMTSchedule::sameElements
 		/**
-		Return true if the FMTSchedule contains the same elements.
+		@brief Return true if the schedule contains the same elements as another.
+		@param[in] rhs the schedule to compare with.
+		@return true if both schedules contain the same elements else false.
 		*/
 		bool sameElements(const FMTSchedule& rhs) const;
     };

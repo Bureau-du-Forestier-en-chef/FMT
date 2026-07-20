@@ -21,34 +21,44 @@ namespace Parallel
 {
 	// DocString: FMTParallelWriter
 	/**
-	Writer to use in concurrency when you want to write multiple results in the same layer.
+	@brief Writer used in concurrency to write multiple results in the same layer.
 	*/
 	class FMTEXPORT FMTParallelWriter : public Parser::FMTModelParser
 	{
 	public:
 		// DocString: FMTParallelWriter::FMTParallelWriter()
 		/**
-		Default constructor for FMTParallelWriter.
+		@brief Default constructor for FMTParallelWriter.
 		*/
 		FMTParallelWriter() = default;
 		// DocString: ~FMTparallelwrite()
 		/**
-		Default destructor for FMTparallelwrite.
+		@brief Default destructor for FMTParallelWriter.
 		*/
 		virtual ~FMTParallelWriter();
 		// DocString: FMTParallelWriter::FMTParallelWriter(const FMTParallelWriter&)
 		/**
-		Default copy constructor for FMTParallelWriter.
+		@brief Default copy constructor for FMTParallelWriter.
+		@param[in] rhs the FMTParallelWriter to copy.
 		*/
 		FMTParallelWriter(const FMTParallelWriter& rhs) = default;
 		// DocString: FMTParallelWriter::operator=()
 		/**
-		Default copy assignement for FMTParallelWriter.
+		@brief Default copy assignment operator for FMTParallelWriter.
+		@param[in] rhs the FMTParallelWriter to copy.
+		@return a reference to this FMTParallelWriter.
 		*/
 		FMTParallelWriter& operator = (const FMTParallelWriter& rhs) = default;
 		// DocString: FMTParallelWriter::FMTParallelWriter(const std::string&,const std::string&,const std::vector<Core::FMTOutput>&,const Models::FMTModel&)
 		/**
-		Constructor with the location and the driver of the outputs and the base model that we want to write.
+		@brief Construct a FMTParallelWriter from the location, driver and outputs and the base models to write.
+		@param[in] location the output location.
+		@param[in] driver the output driver.
+		@param[in] outputs the outputs.
+		@param[in] allmodels the models.
+		@param[in] layersoptions the layer options.
+		@param[in] minimaldrift the minimal drift.
+		@param[in] outputlevel the output level.
 		*/
 		FMTParallelWriter(const std::string& location,
 			const std::string& driver,
@@ -59,7 +69,14 @@ namespace Parallel
 			Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly);
 		// DocString: FMTParallelWriter::FMTParallelWriter(const std::string&,const std::string&,std::vector<std::string>,Core::FMToutputlevel)
 		/**
-		Constructor that will build the parser without layers and outputs.
+		@brief Construct a FMTParallelWriter without layers and outputs.
+		@param[in] location the output location.
+		@param[in] driver the output driver.
+		@param[in] outputlevel the output level.
+		@param[in] layersoptions the layer options.
+		@param[in] firstPeriod the first period.
+		@param[in] lastPeriod the last period.
+		@param[in] primaryfilelocation the primary file location.
 		*/
 		FMTParallelWriter(const std::string& location,
 			const std::string& driver,
@@ -76,40 +93,60 @@ namespace Parallel
 		void setLayer(const std::string& p_name);
 		// DocString: FMTParallelWriter::write()
 		/**
-		Write the modelptr results from the firstPeriod to the lastPeriod for a given iteration (replicate).
+		@brief Write the model results from the first to the last period for a given iteration (replicate).
+		@param[in] modelname the model name.
+		@param[in] results the results.
+		@param[in] firstPeriod the first period.
+		@param[in] lastPeriod the last period.
+		@param[in] iteration the iteration.
 		*/
 		void write(const std::string& modelname,
 			const std::map<std::string, std::vector<std::vector<double>>>& results,
 			const int& firstPeriod, const int& lastPeriod, const int& iteration) const;
-		// DocString: FMTParallelWriter::getResults()
+		// DocString: FMTParallelWriter::writeSchedules
 		/**
-		Write a schedules.
+		@brief Write schedules to a file.
+		@param[in] seqName the schedule file name.
+		@param[in] scheduleList the schedules.
+		@param[in] append if true appends to the file.
 		*/
 		void writeSchedules(const std::string seqName, const std::vector<Core::FMTSchedule> scheduleList, bool append) const;
 		// DocString: FMTParallelWriter::getResults()
 		/**
-		Get the results of a model.
+		@brief Get the results of a model.
+		@param[in] modelptr the model.
+		@param[in] firstPeriod the first period.
+		@param[in] lastPeriod the last period.
+		@return the results.
 		*/
 		std::map<std::string, std::vector<std::vector<double>>> getResults(const std::unique_ptr<Models::FMTModel>& modelptr, const int& firstPeriod, const int& lastPeriod) const;
 		// DocString: FMTParallelWriter::setDriftProbability()
 		/**
-		Get the results of a model With the global model and the localmodel starting from a minimum drift proportion.
+		@brief Compute the drift probability from the global and local models starting from a minimal drift proportion.
+		@param[in] globalmodel the global model name.
+		@param[in] localmodel the local model name.
 		*/
 		void setDriftProbability(const std::string& globalmodel, const std::string& localmodel) const;
 		// DocString: FMTParallelWriter::getAndWrite()
 		/**
-		Get the results of a model. and write it down.
+		@brief Get the results of a model and write them down.
+		@param[in] modelptr the model.
+		@param[in] loutputs the outputs.
 		*/
 		void getAndWrite(const std::unique_ptr<Models::FMTModel>& modelptr, const std::vector<Core::FMTOutput>& loutputs);
 		// DocString: FMTParallelWriter::close()
 		/**
-		Close the dataset and destroy the layers after this it wont be usable
+		@brief Close the dataset and destroy the layers, after which the writer is no longer usable.
 		*/
 		void close() noexcept;
 		protected:
 			// DocString: FMTParallelWriter::getDriftProbability()
 			/**
-			Calculate the drift probabilities.
+			@brief Compute the drift probabilities from the global and local values.
+			@param[in] globalvalues the global values.
+			@param[in] localvalues the local values.
+			@param[in] lower if true computes the lower drift.
+			@return the drift probabilities.
 			*/
 			const std::map<std::string, std::map<double, std::vector<double>>>getDriftProbability(
 				const std::map<std::string, std::vector<std::vector<double>>>& globalvalues,

@@ -20,40 +20,46 @@ namespace Parser
 {
 // DocString: FMTConstantParser
 /**
-The constant parser is used the read and write constants.
-It's used by the FMTModelParser,
+@brief Parser reading and writing constants, used by the model parser.
 */
 class FMTEXPORT FMTConstantParser : public FMTParser
     {
     public:
 		// DocString: FMTConstantParser()
 		/**
-		Default constructor for FMTConstantParser.
+		@brief Default constructor for FMTConstantParser.
 		*/
         FMTConstantParser();
 		// DocString: ~FMTConstantParser()
 		/**
-		Default destructor for FMTConstantParser.
+		@brief Default destructor for FMTConstantParser.
 		*/
 		~FMTConstantParser() = default;
 		// DocString: FMTConstantParser(const FMTConstantParser&)
 		/**
-		Default copy constructor for FMTConstantParser
+		@brief Copy constructor for FMTConstantParser.
+		@param[in] rhs the FMTConstantParser to copy.
 		*/
         FMTConstantParser(const FMTConstantParser& rhs)=default;
 		// DocString: FMTConstantParser::operator=
 		/**
-		Default copy assignment operator for FMTConstantParser
+		@brief Copy assignment operator for FMTConstantParser.
+		@param[in] rhs the FMTConstantParser to copy.
+		@return a reference to this FMTConstantParser.
 		*/
         FMTConstantParser& operator = (const FMTConstantParser& rhs)=default;
 		// DocString: FMTConstantParser::read
 		/**
-		This functions reads a constants file based on a given file (location).
+		@brief Read a constants file.
+		@param[in] location the file location.
+		@return the constants.
 		*/
         Core::FMTConstants read(const std::string& location);
 		// DocString: FMTConstantParser::write
 		/**
-		This functions writes (constants) to a file (location).
+		@brief Write constants to a file.
+		@param[in] constants the constants.
+		@param[in] location the file location.
 		*/
         void write(const Core::FMTConstants& constants, const std::string& location) const;
 		// DocString: FMTConstantParser:_fillConstants
@@ -66,21 +72,21 @@ class FMTEXPORT FMTConstantParser : public FMTParser
 		const static boost::regex rxconstant;
 		// DocString: FMTConstantParser::_fillConstants
 		/**
-		@brief fill the constants with the string
-		@param[out] p_constants the filleds constants
+		@brief Fill the constants from a string.
+		@param[out] p_constants the filled constants.
 		@param[in] p_input the input string.
-		@param[in] p_allowNonValid allow non valid string to enter method
-		@return true if added a constant else false
+		@param[in] p_allowNonValid if true allows non valid strings.
+		@return true if a constant is added else false.
 		*/
 		bool _fillConstants(Core::FMTConstants& p_constants, 
 			const std::string& p_input, bool p_allowNonValid = false) const;
 		// DocString: FMTParser::getCleanLinewfor
 		/**
-		@brief Get a clean line and consider for loops when reading the file and also a temps fill of constants.
-		@param[p_stream] p_stream  is the file stream
-		@param[in] p_themes model themes
-		@param[in] p_const the model constants
-		@return a queue of lines to process
+		@brief Get a clean line considering for loops and a temporary fill of constants.
+		@param[in,out] p_stream the file stream.
+		@param[in] p_themes the model themes.
+		@param[in] p_cons the model constants.
+		@return a queue of lines to process.
 		*/
 		std::queue<FMTLineInfo> getCleanLinewfor(std::ifstream& p_stream, 
 			const std::vector<Core::FMTTheme>& p_themes,

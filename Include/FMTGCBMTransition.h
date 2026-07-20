@@ -21,15 +21,17 @@ namespace Core
 {
 	// DocString: FMTGCBMTransition
 	/**
-	FMTGCBMTransition is a class that act like a simple container for a GCBM transition.
-	It is only usefull when working with GCBM.
+	@brief Simple container for a GCBM transition, only useful when working with GCBM.
 	*/
 	class FMTEXPORT FMTGCBMTransition
 	{
 		// DocString: FMTGCBMTransition::serialize
-	/**
-	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
+		/**
+		@brief Serialize the FMTGCBMTransition for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -50,37 +52,47 @@ namespace Core
 		std::string name;
 		// DocString: FMTGCBMTransition()
 		/**
-		Default constructor for FMTGCBMTransition
+		@brief Default constructor for FMTGCBMTransition.
 		*/
 		FMTGCBMTransition();
 		// DocString: FMTGCBMTransition(const int&,const std::map<std::string, std::string>&,const std::string&)
 		/**
-		Constructor for FMTGCBMTransition for ageafter,themes and name of the transition.
+		@brief Construct a GCBM transition from the age after, the themes and the name.
+		@param[in] lageafter the age set on the strata after the disturbance.
+		@param[in] lthemes the map of theme name to new attribute.
+		@param[in] lname the name of the transition.
 		*/
 		FMTGCBMTransition(const int& lageafter, const std::map<std::string, std::string>& lthemes, const std::string& lname);
 		// DocString: FMTGCBMTransition(const FMTGCBMTransition&)
 		/**
-		FMTGCBMTransition copy constructor.
+		@brief Copy constructor for FMTGCBMTransition.
+		@param[in] rhs the FMTGCBMTransition to copy.
 		*/
 		FMTGCBMTransition(const FMTGCBMTransition& rhs);
 		// DocString: FMTGCBMTransition::operator=
 		/**
-		FMTGCBMTransition assignment operator.
+		@brief Copy assignment operator for FMTGCBMTransition.
+		@param[in] rhs the FMTGCBMTransition to copy.
+		@return a reference to this FMTGCBMTransition.
 		*/
 		FMTGCBMTransition& operator = (const FMTGCBMTransition& rhs);
 		// DocString: FMTGCBMTransition::operator==
 		/**
-		FMTGCBMTransition equality operator.
+		@brief Equality comparison operator of FMTGCBMTransition.
+		@param[in] rhs the transition to compare with.
+		@return true if both transitions are equal else false.
 		*/
 		bool operator == (const FMTGCBMTransition& rhs) const;
 		// DocString: FMTGCBMTransition::operator!=
 		/**
-		FMTGCBMTransition equality operator.
+		@brief Inequality comparison operator of FMTGCBMTransition.
+		@param[in] rhs the transition to compare with.
+		@return true if both transitions are different else false.
 		*/
 		bool operator != (const FMTGCBMTransition& rhs) const;
 		// DocString: ~FMTGCBMTransition()
 		/**
-		Default destructor for FMTGCBMTransition
+		@brief Default destructor for FMTGCBMTransition.
 		*/
 		~FMTGCBMTransition()=default;
 	};

@@ -36,10 +36,8 @@ namespace Core
 class FMTActionComparator;
 // DocString: FMTAction
 /**
-FMTAction hold informations to check if a FMTDevelopment is operable or not to this.
-The operability testing for a given action is in the FMTDevelopment class.
-FMTAction consist of a list of specifications that dictate the operability of 
-a subsets of FMTdevelopments.
+@brief List of specifications dictating the operability of a subset of developments to this action.
+@details The operability testing for a given action is done in the FMTDevelopment class.
 */
 class FMTEXPORT FMTAction : public FMTList<FMTSpec>
     {
@@ -47,81 +45,92 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 	public:
 		// DocString: FMTAction::operator+=
 		/**
-		 * @brief append OtherAction to this action actions need to be the same kind of age reset otherwise it will throw an exception.
-		 * @param OtherAction the other action to append to this one.
-		 * @returns A reference the the newly appended action.
-		 */
+		@brief Append another action to this action; actions need to have the same age reset otherwise an exception is thrown.
+		@param[in] OtherAction the other action to append to this one.
+		@return a reference to this appended action.
+		*/
 		FMTAction& operator+=(const FMTAction & OtherAction);
 		// DocString: FMTAction()
 		/**
-		Default constructor for FMTAction
+		@brief Default constructor for FMTAction.
 		*/
 		FMTAction();
 		// DocString: ~FMTAction()
 		/**
-		Destructor for FMTAction
+		@brief Default virtual destructor for FMTAction.
 		*/
 		virtual ~FMTAction() = default;
 		// DocString: FMTAction(const std::string&)
 		/**
-		Construct a empty FMTAction with a given name
+		@brief Construct an empty action with a given name.
+		@param[in] lname the name of the action.
 		*/
 		FMTAction(const std::string& lname);
 		// DocString: FMTAction(const std::string&,const bool&,const bool&)
 		/**
-		Construct a empty FMTAction with a given name, respectlock? and resetage?
+		@brief Construct an empty action with a given name, respect lock and reset age flags.
+		@param[in] lname the name of the action.
+		@param[in] lock if true the action respects the lock.
+		@param[in] reset if true the action resets the age.
 		*/
 		FMTAction(const std::string& lname, const bool& lock, const bool& reset);
 		// DocString: FMTAction::pushAggregate
 		/**
-		Push back aggregate to the aggregates data member vector
+		@brief Push an aggregate to the aggregates of the action.
+		@param[in] aggregate the aggregate to push.
 		*/
 		void pushAggregate(const std::string& aggregate);
 		// DocString: FMTAction::pushPartials
 		/**
-		Push back a partiel yield name to the partials data member vector
+		@brief Push a partial yield name to the partials of the action.
+		@param[in] yield the partial yield name to push.
 		*/
 		void pushPartials(const std::string& yield);
 		// DocString: FMTAction(const FMTAction&)
 		/**
-		Copy constructor of FMTAction
+		@brief Copy constructor for FMTAction.
+		@param[in] rhs the FMTAction to copy.
 		*/
 		FMTAction(const FMTAction& rhs);
 		// DocString: FMTAction::operator=
 		/**
-		Copy assignement of FMTAction
+		@brief Copy assignment operator for FMTAction.
+		@param[in] rhs the FMTAction to copy.
+		@return a reference to this FMTAction.
 		*/
 		FMTAction& operator = (const FMTAction& rhs);
 		// DocString: FMTAction::update
 		/**
-		Every FMTList container need to have a update() function
-		this function calls setBounds() to update all bounds and also shrink
-		the FMTList (all for optimization of the process)
+		@brief Update the action by setting the bounds and shrinking the list, for optimization.
 		*/
 		void update() override;
 		// DocString: FMTAction::presolve
 		/**
-		Eliminate FMTspecification and presolve all masks base on a baseMask a preolved mask
-		and presolved themes. The returned action can also be empty.
+		@brief Presolve the action by eliminating specifications and presolving the masks; the returned action can be empty.
+		@param[in] filter the mask filter.
+		@param[in] originalthemes the original themes.
+		@param[in,out] newthemes the presolved themes.
+		@param[in] compressdata if true compresses the data.
+		@return the presolved action.
 		*/
 		FMTAction presolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			std::vector<FMTTheme>& newthemes, bool compressdata = false) const;
 		// DocString: FMTAction::presolveRef
 		/**
-		@brief Eliminate FMTspecification and presolve all masks base on a baseMask a preolved mask
-		and presolved themes. The returned action can also be empty.
-		@param[in] p_filter
-		@param[in] p_originalthemes
-		@param[in] p_newthemes
-		@param[in] p_compressdata
+		@brief Presolve the action in place by eliminating specifications and presolving the masks; the action can become empty.
+		@param[in] p_filter the mask filter.
+		@param[in] p_originalthemes the original themes.
+		@param[in,out] p_newthemes the presolved themes.
+		@param[in] p_compressdata if true compresses the data.
 		*/
 		void presolveRef(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_originalthemes,
 			std::vector<FMTTheme>& p_newthemes, bool p_compressdata = false);
 		// DocString: FMTAction::getAgeLowerBound
 		/**
-		Get the age lower bound for all FMTspecs.
+		@brief Get the age lower bound for all specifications.
+		@return the age lower bound.
 		*/
 		inline const int& getAgeLowerBound() const
 		{
@@ -129,7 +138,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::getAgeUpperBound
 		/**
-		Get the age upper bound for all FMTspecs.
+		@brief Get the age upper bound for all specifications.
+		@return the age upper bound.
 		*/
 		inline const int& getAgeUpperBound() const
 		{
@@ -137,7 +147,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::getPeriodLowerBound
 		/**
-		Get the period lower bound for all FMTspecs.
+		@brief Get the period lower bound for all specifications.
+		@return the period lower bound.
 		*/
 		inline const int& getPeriodLowerBound() const
 		{
@@ -145,7 +156,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::getPeriodUpperBound
 		/**
-		Get the period upper bound for all FMTspecs.
+		@brief Get the period upper bound for all specifications.
+		@return the period upper bound.
 		*/
 		inline const int& getPeriodUpperBound() const
 		{
@@ -153,7 +165,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::hash
 		/**
-		Return the hash value base on the action name.
+		@brief Return the hash of the action based on its name.
+		@return the hash value.
 		*/
 		inline size_t hash() const
 		{
@@ -161,7 +174,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::getName
 		/**
-		Get action name of the FMTAction.
+		@brief Get the name of the action.
+		@return the name of the action.
 		*/
 		inline std::string getName() const
 		{
@@ -169,8 +183,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::doRespectLock
 		/**
-		If True the action needs to respect the _lock stade of the development.
-		Else the action doesn't car about the _lock of the development.
+		@brief Return true if the action needs to respect the lock state of the development.
+		@return true if the action respects the lock else false.
 		*/
 		inline bool doRespectLock() const
 		{
@@ -178,8 +192,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::isResetAge
 		/**
-		If True When operated by this the FMTDevelopment is set to 0.
-		Else it stays the same
+		@brief Return true if the development age is reset to 0 when operated by this action.
+		@return true if the action resets the age else false.
 		*/
 		inline bool isResetAge() const
 		{
@@ -187,7 +201,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::isPartOfASerie
 		/**
-		Return true if the action is part of a serie.
+		@brief Return true if the action is part of a serie.
+		@return true if the action is part of a serie else false.
 		*/
 		inline bool isPartOfASerie() const
 		{
@@ -195,8 +210,9 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		}
 		// DocString: FMTAction::isAllowedInSerie
 		/**
-		Return true if the serie mask is part of one serie of the action if not
-		return false.
+		@brief Return true if the serie mask is part of one serie of the action.
+		@param[in] serie the serie mask.
+		@return true if the serie is allowed else false.
 		*/
 		bool isAllowedInSerie(const std::vector<std::string>& serie) const;
 		// DocString: FMTAction::getSerie
@@ -214,28 +230,33 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		const std::vector<FMTSerie>& getSeries() const;
 		// DocString: FMTAction::getSeriesNames
 		/**
-		Returns the series names of the action.
+		@brief Return the series names of the action.
+		@return the series names.
 		*/
 		std::vector<std::string> getSeriesNames() const;
 		// DocString: FMTAction::getLargestSerieSize
 		/**
-		Returns the size of the largest serie.
+		@brief Return the size of the largest serie of the action.
+		@return the size of the largest serie.
 		*/
 		size_t getLargestSerieSize() const;
 		// DocString: FMTAction::setSeries
 		/**
-		Giving a serie complete names, and the actions id of the serie occuring before this action,
-		Will go across all series and check if part of it and build it if in.
+		@brief Set the series of the action, checking which ones the action is part of and building them.
+		@param[in] p_series the series to set.
 		*/
 		void setSeries(std::vector<Core::FMTSerie> p_series);
 		// DocString: FMTAction::useYield
 		/**
-		Return true if the yield is used by the action to set operability.
+		@brief Return true if the yield is used by the action to set operability.
+		@param[in] yldname the yield name.
+		@return true if the yield is used else false.
 		*/
 		bool useYield(const std::string& yldname) const;
 		// DocString: FMTAction::getAggregates
 		/**
-		Gets all the aggregates name of which the action is part of.
+		@brief Return the names of the aggregates the action is part of.
+		@return the aggregates of the action.
 		*/
 		std::vector<std::string> getAggregates() const;
 		// DocString: FMTAction::setAggregates
@@ -246,50 +267,62 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		void setAggregates(const std::vector<std::string>& p_aggregates);
 		// DocString: FMTAction::getPartials
 		/**
-		Gets all the partial yields name of the FMTAction.
+		@brief Return the partial yield names of the action.
+		@return the partials of the action.
 		*/
 		std::vector<std::string> getPartials() const;
 		// DocString: FMTAction::operator<
 		/**
-		FMTAction less than operator (first test the action length and then the string name to place the action).
+		@brief Less than comparison operator of FMTAction, testing the action length then the name.
+		@param[in] rhs the action to compare with.
+		@return true if this action is less than rhs else false.
 		*/
 		bool operator < (const FMTAction& rhs) const;
 		// DocString: FMTAction::operator==
 		/**
-		FMTAction equality operator check if FMTactions have the same name.
+		@brief Equality comparison operator of FMTAction, checking if the actions have the same name.
+		@param[in] rhs the action to compare with.
+		@return true if both actions have the same name else false.
 		*/
 		bool operator == (const FMTAction& rhs) const;
 		// DocString: FMTAction::operator!=
 		/**
-		FMTAction nonequality operator check if FMTactions have the not same name.
+		@brief Inequality comparison operator of FMTAction, checking if the actions have a different name.
+		@param[in] rhs the action to compare with.
+		@return true if both actions have a different name else false.
 		*/
 		bool operator != (const FMTAction& rhs) const;
 		// DocString: FMTAction::operator std::string
 		/**
-		Convert the FMTAction to a string (like in a regular .act file)
+		@brief Convert the action to a string as in a .act file.
+		@return the string representation of the action.
 		*/
 		operator std::string() const;
 		// DocString: FMTAction::partial
 		/**
-		Check if the yield needs to be considered has partial for this action.
+		@brief Check if the yield needs to be considered as partial for this action.
+		@param[in] yield the yield name.
+		@return true if the yield is partial else false.
 		*/
 		bool partial(const std::string& yield) const;
 		// DocString: FMTAction::getGCBMActionId
 		/**
-		Returns the corresponding GCBM action id.
+		@brief Return the corresponding GCBM action id.
+		@return the GCBM action id.
 		*/
 		int getGCBMActionId() const;
 		// DocString: FMTAction::getGCBMActionName
 		/**
-		Returns the corresponding GCBM action name.
+		@brief Return the corresponding GCBM action name.
+		@return the GCBM action name.
 		*/
 		std::string getGCBMActionName() const;
 		// DocString: FMTAction::split
 		/**
-		@brief split action into different action using the p_mask
-		@param[in] the masks used to split the actions.
-		@param[in] the themes to generate the masks
-		@return multiple actions resulting from the split
+		@brief Split the action into different actions using the masks.
+		@param[in] p_mask the masks used to split the action.
+		@param[in] p_themes the themes to generate the masks.
+		@return the actions resulting from the split.
 		*/
 		std::vector<Core::FMTAction>split(const std::vector<Core::FMTMask>& p_mask,
 										const std::vector<Core::FMTTheme>& p_themes) const;
@@ -340,19 +373,22 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		bool m_InSerie;
 		// DocString: FMTAction::setBounds
 		/**
-		This function is for optimization it iterates on the specifications to get the 
-		agelowerbound, ageupperbound,periodlowerbound,periodupperbound and sets all member data.
+		@brief Set the age and period bounds member data by iterating on the specifications, for optimization.
 		*/
 		void setBounds();
 		// DocString: FMTAction::getGCBMActionDef
 		/**
-		Returns the corresponding GCBM action definition.
+		@brief Return the corresponding GCBM action definition.
+		@return the GCBM action definition.
 		*/
 		std::vector<std::string> getGCBMActionDef() const;
 	private:
 		// DocString: FMTAction::serialize
 		/**
-		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTAction through its base FMTList<FMTSpec> for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -379,8 +415,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 
 // DocString: FMTActionComparator
 /**
-FMTActionComparator to check if the action_name already exist in a std container.
-It can also check for aggregates.
+@brief Comparator used to check if an action name (or aggregate) already exists in a std container.
 */
 class FMTActionComparator
 	{
@@ -393,25 +428,32 @@ class FMTActionComparator
 	public:
 		// DocString: FMTActionComparator(std::string,bool)
 		/**
-		FMTActionComparator constructor name is the name of the action we want to match
-		if checkaggregate = true it will also return actions within the named aggregate.
+		@brief Construct the comparator from the action name to match.
+		@param[in] name the name of the action to match.
+		@param[in] lcheckaggregate if true also returns actions within the named aggregate.
 		*/
 		FMTActionComparator(std::string name, bool lcheckaggregate = false);
 		// DocString: FMTActionComparator::getAllAggregates
 		/**
-		Looking at the actions vector if aggregateonly = false it will returns actions mathching
-		the action_name if aggregateonly = true it will return only matching aggregates.
+		@brief Return the actions matching the action name, or only the matching aggregates.
+		@param[in] actions the actions to search.
+		@param[in] aggregateonly if true only returns matching aggregates.
+		@return the matching actions.
 		*/
 		std::vector<const FMTAction*> getAllAggregates(const std::vector<FMTAction>&actions,bool aggregateonly = false) const;
 		// DocString: FMTActionComparator::getAllAggregatesSet
 		/**
-		Looking at the actions vector if aggregateonly = false it will returns actions ids mathching
-		the action_name if aggregateonly = true it will return only matching aggregates.
+		@brief Return the ids of the actions matching the action name, or only the matching aggregates.
+		@param[in] actions the actions to search.
+		@param[in] aggregateonly if true only returns matching aggregates.
+		@return the ids of the matching actions.
 		*/
 		std::unordered_set<int> getAllAggregatesSet(const std::vector<FMTAction>&actions, bool aggregateonly = false) const;
 		// DocString: FMTActionComparator::operator()(const FMTAction&)
 		/**
-		Matching test operator for FMTActionComparator.
+		@brief Matching test operator for the comparator.
+		@param[in] action the action to test.
+		@return true if the action matches else false.
 		*/
 		bool operator()(const FMTAction& action) const;
 	};

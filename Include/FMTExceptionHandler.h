@@ -26,9 +26,8 @@ namespace Exception
 	class FMTException;
 	// DocString: FMTExceptionHandler
 	/**
-	The FMTExceptionHandler is a base class used to handel error thrown in FMT. It keeps count of the
-	number of warning thrown and error thrown it also has a shared pointer to an abstract FMTLogger.
-	This class is used in the FMTObject class.
+	@brief Base class used to handle errors thrown in FMT.
+	@details Keeps count of the warnings and errors thrown and holds a shared pointer to an abstract FMTLogger. Used in the FMTObject class.
 	*/
 	class FMTEXPORT FMTExceptionHandler
 	{
@@ -38,114 +37,146 @@ namespace Exception
 		std::unordered_map<int, size_t> _specificwarningcount;
 		// DocString: checkSignals()
 		/**
-		Check signals in R and Python, if we are on the main thread.
+		@brief Check signals in R and Python if on the main thread.
 		*/
 		void checkSignals() const;
 		// DocString: FMTExceptionHandler()
 		/**
-		Default constructor for FMTExceptionHandler.
+		@brief Default constructor for FMTExceptionHandler.
 		*/
 		FMTExceptionHandler();
 		// DocString: ~FMTExceptionHandler()
 		/**
-		Default virtual destructor for FMTExceptionHandler.
+		@brief Default virtual destructor for FMTExceptionHandler.
 		*/
 		virtual ~FMTExceptionHandler() = default;
 		// DocString: FMTExceptionHandler(const FMTExceptionHandler&)
 		/**
-		Copy constructor for FMTExceptionHandler.
+		@brief Copy constructor for FMTExceptionHandler.
+		@param[in] rhs the FMTExceptionHandler to copy.
 		*/
 		FMTExceptionHandler(const FMTExceptionHandler& rhs);
 		// DocString: FMTExceptionHandler(const std::unique_ptr<Logging::FMTLogger>&)
 		/**
-		Constructor with logger.
+		@brief Construct a FMTExceptionHandler with a logger.
+		@param[in] logger the logger to use.
 		*/
 		FMTExceptionHandler(const std::unique_ptr<Logging::FMTLogger>& logger);
 		// DocString: FMTExceptionHandler::passInLogger
 		/**
-		Pass a logger to the shared pointer of the FMTExceptionHandler class for sharing.
+		@brief Pass a logger to the shared pointer of the handler for sharing.
+		@param[in] logger the logger to pass in.
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger);
 
 		// DocString: FMTExceptionHandler::getCPLdata
 		/**
-		When using GDAL you need this function for abstract usage in the FMTCPLErrorHandler function.
-		it returns a copy of the abstract FMTExceptionHandler.
+		@brief Return a copy of the abstract handler for use in the FMTCPLErrorHandler function when using GDAL.
+		@return a pointer to the exception handler.
 		*/
 		virtual FMTExceptionHandler* getCPLdata();
 		#if defined FMTWITHGDAL
 				// DocString: FMTExceptionHandler::handelCPLerror
 				/**
-				Function called back by gdal for handling GDAL error thrown.
+				@brief Callback called by GDAL for handling GDAL errors thrown.
+				@param[in] eErrClass the error class.
+				@param[in] nError the error number.
+				@param[in] pszErrorMsg the error message.
 				*/
 				virtual void handelCPLerror(int eErrClass, int nError, const char* pszErrorMsg);
 		#endif
 		// DocString: FMTExceptionHandler::operator=
 		/**
-		Default assignment operator for FMTExceptionHandler.
+		@brief Default copy assignment operator for FMTExceptionHandler.
+		@param[in] rhs the FMTExceptionHandler to copy.
+		@return a reference to this FMTExceptionHandler.
 		*/
 		FMTExceptionHandler& operator = (const FMTExceptionHandler& rhs);
 		// DocString: FMTExceptionHandler::throwNested
 		/**
-		This function is not used by FMT seems to be usefull for nested exception thrown.
+		@brief Throw a nested exception.
+		@param[in] texception the exception to nest.
+		@param[in,out] level the nesting level.
+		@param[in] rethrow if true rethrows the exception.
 		*/
 		void throwNested(const std::exception& texception, int& level, bool rethrow = true);
 		// DocString: FMTExceptionHandler::printExceptions
 		/**
-		Print all nested exception starting with the first provided by the parameters.
+		@brief Print all nested exceptions starting with the first provided.
+		@param[in] text the message of the exception.
+		@param[in] method the method where the exception occurred.
+		@param[in] line the line where the exception occurred.
+		@param[in] fil the file where the exception occurred.
+		@param[in] lsection the section in which the exception occurred.
 		*/
 		virtual void printExceptions(std::string text,
 			const std::string& method, const int& line, const std::string& fil,
 			Core::FMTsection lsection = Core::FMTsection::Empty);
 		// DocString: FMTExceptionHandler::raise
 		/**
-		This function throw an FMTException based on the exception type,section,text to write, line in the source code
-		and file in the source code. Use also this function for warnings.
+		@brief Throw a FMTException based on the exception type, section, message and source location. Also used for warnings.
+		@param[in] lexception the exception type.
+		@param[in] text the message of the exception.
+		@param[in] method the method where the exception occurred.
+		@param[in] line the line where the exception occurred.
+		@param[in] file the file where the exception occurred.
+		@param[in] lsection the section in which the exception occurred.
+		@param[in] throwit if true throws the exception.
+		@return the raised FMTException.
 		*/
 		virtual FMTException raise(FMTexc lexception, std::string text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true);
 		// DocString: FMTExceptionHandler::raiseFromCatch
 		/**
-		Raise an exception from the catch body it will determine if the exception is unenhdled.
+		@brief Raise an exception from a catch body, determining if the exception is unhandled.
+		@param[in] text the message of the exception.
+		@param[in] method the method where the exception occurred.
+		@param[in] line the line where the exception occurred.
+		@param[in] file the file where the exception occurred.
+		@param[in] lsection the section in which the exception occurred.
+		@return the raised FMTException.
 		*/
 		virtual FMTException raiseFromCatch(std::string text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty);
 		// DocString: FMTExceptionHandler::raiseFromThreadCatch
 		/**
-		Raise an exception from the catch body it will determine if the exception is unenhdled.
-		Also catch all the exception to make sure their's no exceptions alive in the thread if not on the main thread.
-		Then printalltheexceptions and return without throwing.
+		@brief Raise an exception from a catch body on a worker thread, catching all exceptions and printing them without throwing.
+		@param[in] text the message of the exception.
+		@param[in] method the method where the exception occurred.
+		@param[in] line the line where the exception occurred.
+		@param[in] file the file where the exception occurred.
+		@param[in] lsection the section in which the exception occurred.
 		*/
 		void raiseFromThreadCatch(std::string text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty);
 		// DocString: FMTExceptionHandler::reRaiseIfThreadCrash
 		/**
-		If you have used threads make sure to use this to validate that there's no exception raised by any thread...
-		if there's one it will raise a multithread error.
+		@brief Re-raise a multithread error if an exception was raised by any thread.
 		*/
 		void reRaiseIfThreadCrash();
 		// DocString: FMTExceptionHandler::enableNestedExceptions
 		/**
-		Enable the nested exception throw.
+		@brief Enable the throwing of nested exceptions.
 		*/
 		void enableNestedExceptions();
 		// DocString: FMTExceptionHandler::disableNestedExceptions
 		/**
-		Disable the nested exception throw.
+		@brief Disable the throwing of nested exceptions.
 		*/
 		void disableNestedExceptions();
 		// DocString: setErrorsToWarnings()
 		/**
-		Very hazardous function if you want to live dangerously you can
-		set a vector of error to be cast to warnings...
+		@brief Set a list of errors to be cast to warnings.
+		@param[in] errors the errors to treat as warnings.
 		*/
 		void setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors);
 		// DocString: setMaxWarningsBeforeSilenced()
 		/**
-		Settter for maxwarningsbeforesilenced.
+		@brief Setter for the maximum number of warnings before they are silenced.
+		@param[in] maxwarningcount the maximum warning count.
 		*/
 		void setMaxWarningsBeforeSilenced(const size_t& maxwarningcount);
 		// DocString: FMTExceptionHandler::Clone
@@ -157,9 +188,8 @@ namespace Exception
 		#if defined _MSC_VER
 		// DocString: FMTExceptionHandler::translateStructuralWIN32Exceptions
 		/**
-		@brief translate win32 structural exception to c++ exception
-		@param[in] exception id
-		@param[in] exception_pointer
+		@brief Translate a Win32 structural exception to a C++ exception.
+		@param[in] p_u the structural exception id.
 		*/
 		static void translateStructuralWIN32Exceptions(unsigned int p_u, EXCEPTION_POINTERS*);
 		#endif
@@ -200,64 +230,82 @@ namespace Exception
 		std::exception_ptr threadcrashexception;
 		// DocString: FMTExceptionHandler::updateStatus
 		/**
-		This functions updates the status of the handler adding up to the warning or the error counts.
-		base on the exception type (lexception).
+		@brief Update the status of the handler, adding to the warning or error counts based on the exception type.
+		@param[in] lexception the exception type.
+		@param[in] message the message of the exception.
+		@return the updated status message.
 		*/
 		std::string updateStatus(const FMTexc lexception, const std::string message);
 		// DocString: FMTExceptionHandler::needToRethrow
 		/**
-		If usenested exceptions and exception == function error then it will be true and the exception will be rethrown.
+		@brief Return true if nested exceptions are used and the exception is a function error that must be rethrown.
+		@return true if the exception must be rethrown else false.
 		*/
 		bool needToRethrow() const;
 		// DocString: FMTExceptionHandler::isMainThread()
 		/**
-		Return true if we are on the main thread.
+		@brief Return true if we are on the main thread.
+		@return true if on the main thread else false.
 		*/
 		bool isMainThread() const;
 		// DocString: FMTExceptionHandler::isThrowedOnThread()
 		/**
-		Return true if an exception been thrown on a thread.
+		@brief Return true if an exception has been thrown on a thread.
+		@return true if an exception has been thrown on a thread else false.
 		*/
 		bool isThrowedOnThread() const;
 		// DocString: FMTExceptionHandler::isThisThreadThrowed()
 		/**
-		Return true if this thread throwed
+		@brief Return true if this thread has thrown.
+		@return true if this thread has thrown else false.
 		*/
 		bool isThisThreadThrowed() const;
 		// DocString: FMTExceptionHandler::registerthread
 		/**
-		Register a thread so that way the exceptionhandler knows that he is dealing with
-		a slave thread that is not the main one.
+		@brief Register a worker thread so the handler knows it is dealing with a slave thread and not the main one.
 		*/
 		void registerWorkerThread();
 		// DocString: FMTExceptionHandler::isregistered
 		/**
-		Return true if the thread is registered.
+		@brief Return true if the thread is registered.
+		@return true if the thread is registered else false.
 		*/
 		bool isThreadRegistered() const;
 		// DocString: FMTExceptionHandler::gutsOfPrintExceptions
 		/**
-		The guts of printexceptions.
+		@brief The guts of printExceptions.
+		@param[in] text the message of the exception.
+		@param[in] method the method where the exception occurred.
+		@param[in] line the line where the exception occurred.
+		@param[in] fil the file where the exception occurred.
+		@param[in,out] levelreference the nesting level reference.
+		@param[in] lsection the section in which the exception occurred.
+		@param[in] logfirstlevel if true logs the first level.
 		*/
 		void gutsOfPrintExceptions(std::string text,
 			const std::string& method, const int& line, const std::string& fil,
 			int& levelreference,Core::FMTsection lsection = Core::FMTsection::Empty,bool logfirstlevel = true);
 		// DocString: FMTExceptionHandler::gutsOfExceptionLog
 		/**
-		The guts of logging exceptions...
+		@brief The guts of logging exceptions.
+		@param[in] texception the exception to log.
+		@param[in] level the nesting level.
 		*/
 		void gutsOfExceptionLog(const std::exception& texception,const int& level);
 		// DocString: FMTExceptionHandler::getLevel
 		/**
-		@brief get the level of an exception.
-		@param[in] FMTexc exception enum
-		@return the FMTlev
+		@brief Get the level of an exception.
+		@param[in] p_exception the exception enum.
+		@return the exception level.
 		*/
 		FMTlev getLevel(const FMTexc p_exception) const;
 	private:
 		// DocString: FMTExceptionHandler::serialize
 		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>

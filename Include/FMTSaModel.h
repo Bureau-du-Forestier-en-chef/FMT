@@ -30,16 +30,10 @@ namespace Models
 #ifdef FMTWITHOSI
     class FMTLpModel;
 #endif
+// DocString: FMTSaModel
 /**
-This model is an area restricted model (ARM) using the simulated annealing
-meta-heuristic to solve the spatial optimization problem. Constraints must
-be goals with weight and the objective function must maximize or minimize
-those constraints. Only the functions needed to build a simulated annealing
-algorithm are implemented in this class, the algorithm must be written by the
-user using the functions exposed in this class.
-
-An FMTForest is needed to set the initial map. An FMTSaSchedule is needed as
-cooling schedule and FMTspatialaction must be set for the model.
+@brief Area restricted model (ARM) using the simulated annealing meta-heuristic to solve the spatial optimization problem.
+@details Constraints must be goals with weight and the objective function must maximize or minimize those constraints. Only the functions needed to build a simulated annealing algorithm are implemented; the algorithm itself must be written by the user using the functions exposed in this class. An FMTForest is needed to set the initial map, an FMTSaSchedule is needed as cooling schedule and the FMTspatialaction must be set for the model.
 */
 
 class FMTEXPORT FMTSaModel final: public FMTSeModel
@@ -47,72 +41,112 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
     public:
         // DocString: FMTSeModel::logMovesReport
         /**
-        Log the Moves report
+        @brief Log the moves report.
         */
         void logMovesReport() const;
         // DocString: FMTSaModel::isProvenOptimal
         /**
-        Return true if is optimal based on the termination criteria
+        @brief Return true if the solution is optimal based on the termination criteria.
+        @return true if the solution is proven optimal else false.
         */
         bool isProvenOptimal() const;
         // DocString: FMTSaModel::initialSolve
         /**
-        Try to solve the model from a coldstart.
+        @brief Try to solve the model from a cold start.
+        @return true if the initial solve succeeded else false.
         */
         bool initialSolve();
         // DocString: FMTSaModel::build
         /**
-        This function TRY to build the solution FMTSchedule to spatialschedule if there's a schedule if not it will
-        randomly build the model to be ready to solve.
+        @brief Try to build the spatial schedule from a schedule if one is provided, otherwise randomly build the model to be ready to solve.
+        @param[in] schedules the schedules.
+        @return true if the build succeeded else false.
         */
         virtual bool build(std::vector<Core::FMTSchedule> schedules = std::vector<Core::FMTSchedule>());
         // DocString: FMTSaModel::solve
         /**
-        This function call initialSolve on the solver.
+        @brief Call initialSolve on the solver.
+        @return true if the solve succeeded else false.
         */
         virtual bool solve();
         // DocString: FMTSaModel::presolve
         /**
-        This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTModel.
-        The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
+        @brief Return a presolved copy of the model using a vector of developments and the actual transitions, reducing the model data if it is badly formulated.
+        @param[in] optionaldevelopments the optional developments.
+        @return the presolved model.
         */
         virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
         // DocString: FMTSaModel::getCopy
         /**
-        This function returns a copy of the FMTModel of the selected period.
-        If period = 0 it returns the FMTModel::getCopy if period > 0 then it returns
-        a copy of the FMTModel based on the developments of the FMTGraph of the FMTLpModel.
-        Need to have a builded graph with a solution to use this function.
+        @brief Return a copy of the FMTModel for the selected period.
+        @details For period 0 returns FMTModel::getCopy; for period greater than 0 returns a copy based on the developments of the FMTGraph. Needs a built graph with a solution.
+        @param[in] period the period.
+        @return the copied model.
         */
         virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
+        // DocString: FMTSaModel()
+        /**
+        @brief Default constructor for FMTSaModel.
+        */
         FMTSaModel()=default;
-        ///Destructor
+        // DocString: ~FMTSaModel()
+        /**
+        @brief Destructor for FMTSaModel.
+        */
         ~FMTSaModel();
-        ///Copy constructor
+        // DocString: FMTSaModel(const FMTSaModel)
+        /**
+        @brief Copy constructor for FMTSaModel.
+        @param[in] rhs the FMTSaModel to copy.
+        */
         FMTSaModel(const FMTSaModel& rhs);
-        ///Copy constructor to use parent as argument in constructor
+        // DocString: FMTSaModel(const FMTModel)
+        /**
+        @brief Construct a FMTSaModel from a FMTModel, using the parent as argument.
+        @param[in] rhs the model.
+        */
         FMTSaModel(const FMTModel& rhs);
-        ///Copy constructor to use parent as argument in constructor
+        // DocString: FMTSaModel(const FMTModel, const FMTForest)
+        /**
+        @brief Construct a FMTSaModel from a FMTModel and a forest.
+        @param[in] rhs the model.
+        @param[in] forest the forest.
+        */
         FMTSaModel(const FMTModel& rhs, const Spatial::FMTForest& forest);
-        ///Copy assignment operator
+        // DocString: FMTSaModel::operator=
+        /**
+        @brief Copy assignment operator for FMTSaModel.
+        @param[in] rhs the FMTSaModel to copy.
+        @return a reference to this FMTSaModel.
+        */
         FMTSaModel& operator = (const FMTSaModel& rhs);
         // DocString: FMTSaModel::clone
         /**
-        Get a clone of the FMTSaModel
+        @brief Get a clone of the FMTSaModel.
+        @return a unique pointer to the cloned model.
         */
         virtual std::unique_ptr<FMTModel>clone() const final;
 
+        // DocString: FMTSaModel::buildPeriod
+        /**
+        @brief Build a period of the model.
+        @return the graph stats.
+        */
         Graph::FMTGraphStats buildPeriod();
     protected:
         // DocString: FMTSaModel::swapPtr
         /**
-        Swap with an abstract FMTModel
+        @brief Swap this model with an abstract FMTModel.
+        @param[in,out] rhs the unique pointer to swap with.
         */
         virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
     private:
     // DocString: FMTSaModel::Serialize
     /**
-    Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+    @brief Serialize the FMTSaModel through its base FMTSeModel for multiprocessing across multiple cpus (pickle in Python).
+    @tparam Archive the archive type.
+    @param[in,out] ar the archive to serialize to or from.
+    @param[in] version the serialization version.
     */
     friend class boost::serialization::access;
     template<class Archive>
@@ -130,6 +164,12 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         //ReBuilder = 7,
         MoveCount = 6
     };
+    // DocString: FMTSaModel::getMovesName
+    /**
+    @brief Return the name of a move.
+    @param[in] p_move the move.
+    @return the move name.
+    */
     static std::string getMovesName(FMTsamove p_move);
     class FMTMoveStats
         {
@@ -186,223 +226,313 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
     // DocString: FMTSaModel::m_MOVE_SIZE_FACTOR
     ///Factor to put on move size
     static const size_t m_MOVE_SIZE_FACTOR = 20;
-    // DocString: FMTSaModel()
+    // DocString: FMTSaModel(const FMTSeModel)
     /**
-    Constructor for presolve use
+    @brief Construct a FMTSaModel from a FMTSeModel, for presolve use.
+    @param[in] rhs the FMTSeModel.
     */
     FMTSaModel(const FMTSeModel& rhs);
     // DocString: FMTSaModel::_doWriteDisturbances
     /**
-    @brief check if dirtubances writing needed
-    @return true or false
+    @brief Check if writing the disturbances is needed.
+    @return true if the disturbances must be written else false.
     */
     bool _doWriteDisturbances() const;
     // DocString: FMTSaModel::_writeDisrturbances
-     /**
-     @brief Write the disturbances of the best solution
-     */
+    /**
+    @brief Write the disturbances of the best solution.
+    */
     void _writeDisrturbances() const;
         // DocString: FMTSaModel::getFromBindings
         /**
-        Get the selected action from the bindings
+        @brief Get the selected actions from the bindings.
+        @param[in] bindingactions the action bindings.
+        @param[in] adjacency if true considers adjacency.
+        @return a vector of booleans for the selected actions.
         */
         std::vector<bool> _getFromBindings(const Spatial::FMTSpatialSchedule::actionbindings& bindingactions, bool adjacency = false) const;
         // DocString: FMTSaModel::getCycleMoves
         /**
-        Get the total number of moves of the last cycle
+        @brief Get the total number of moves of the last cycle.
+        @return the number of moves of the last cycle.
         */
         size_t _getCycleMoves() const;
         // DocString: FMTSaModel::getAcceptedCycleMoves
         /**
-        Get the number of accepted move of the last cycle
+        @brief Get the number of accepted moves of the last cycle.
+        @return the number of accepted moves of the last cycle.
         */
         size_t _getAcceptedCycleMoves() const;
         // DocString: FMTSaModel::allowDestruction
         /**
-        Returns true if the bindings allow to destroy some events
-       */
+        @brief Return true if the bindings allow to destroy some events by area conflict.
+        @param[in] actual the actual solution.
+        @param[in] bindings the action bindings.
+        @return true if area destruction is allowed else false.
+        */
         bool _allowAreaDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTSaModel::_allowAdjacencyDestruction
-           /**
-           Returns true if the bindings allow to destroy some events
-          */
+        /**
+        @brief Return true if the bindings allow to destroy some events by adjacency conflict.
+        @param[in] actual the actual solution.
+        @param[in] bindings the action bindings.
+        @return true if adjacency destruction is allowed else false.
+        */
         bool _allowAdjacencyDestruction(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTSaModel::_allowGroupDestruction
         /**
-        @param[in] the solution to test
-        @return Returns true if allow group destruction move
+        @brief Return true if the solution allows a group destruction move.
+        @param[in] p_actual the solution to test.
+        @return true if group destruction is allowed else false.
         */
         bool _allowGroupDestruction(const Spatial::FMTSpatialSchedule& p_actual) const;
         // DocString: FMTSaModel::_allowEventsSpread
         /**
-        @brief check if event can be spread
-        @param[in] the solution to test
-        @return Returns true allow events spread
+        @brief Return true if events can be spread for the solution.
+        @param[in] p_actual the solution to test.
+        @return true if events spread is allowed else false.
         */
         bool _allowEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const;
         // DocString: FMTSaModel::allowMove
         /**
-        Check If you can allow the move 
-       */
+        @brief Check if the move can be allowed.
+        @param[in] move the move.
+        @return true if the move is allowed else false.
+        */
         bool _allowMove(const FMTsamove& move) const;
         // DocString: FMTSaModel::allowAnyMove
         /**
-        Return true if you can do a move
-       */
+        @brief Return true if any move can be done.
+        @return true if a move can be done else false.
+        */
         bool _allowAnyMove() const;
         // DocString: FMTSaModel::getAMove
         /**
-        Will return coordinates that might be good candidat to disturb
+        @brief Return coordinates that might be good candidates to disturb.
+        @param[in] actual the actual solution.
+        @param[in] bindings the action bindings.
+        @return the selected move.
         */
         FMTsamove _getAMove(const Spatial::FMTSpatialSchedule& actual, const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
 		// DocString: FMTSaModel::evaluate
 		/**
-		evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
-		the actual solution.Based on a temp.
+		@brief Evaluate the actual and a candidate solution and return true if the candidate is chosen to replace the actual solution, based on a temperature.
+		@param[in] p_candidatObjective the candidate objective value.
+		@return true if the candidate is better else false.
 		*/
 		bool _isBetter(double p_candidatObjective) const;
         // DocString: FMTSaModel::doLocalMove
         /**
-        Do a loval move and disturb a random number of graph at a random period
+        @brief Do a local move, disturbing a random number of graphs at a random period.
+        @param[in] actual the actual solution.
+        @param[in] bindings the action bindings.
+        @return the new spatial schedule.
         */
         Spatial::FMTSpatialSchedule _doLocalMove(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTSaModel::doConflictDestruction
         /**
-        Destroy the conflicts for a given periods and coordinates
-         */
+        @brief Destroy the conflicts for given periods and coordinates.
+        @param[in] actual the actual solution.
+        @param[in] bindings the action bindings.
+        @param[in] selectionpool the selection pool of coordinates.
+        @param[in] period the period.
+        @return the new spatial schedule.
+        */
         Spatial::FMTSpatialSchedule _doConflictDestruction(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings,
            std::vector<std::vector<Spatial::FMTCoordinate>> selectionpool, const int& period) const;
        // DocString: FMTSaModel::doEventsAreaConflictDestrutorMove
        /**
-       Destroy events that have some area conflict
+       @brief Destroy events that have an area conflict.
+       @param[in] actual the actual solution.
+       @param[in] bindings the action bindings.
+       @return the new spatial schedule.
        */
         Spatial::FMTSpatialSchedule _doEventsAreaConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTSaModel::doEventsAdjacencyConflictDestrutorMove
-      /**
-      Destroy events that have adjacency conflict
-      */
+        /**
+        @brief Destroy events that have an adjacency conflict.
+        @param[in] actual the actual solution.
+        @param[in] bindings the action bindings.
+        @return the new spatial schedule.
+        */
         Spatial::FMTSpatialSchedule _doEventsAdjacencyConflictDestrutorMove(const Spatial::FMTSpatialSchedule& actual,
             const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
         // DocString: FMTSaModel::doGroupsConflictDestrutorMove
-         /**
-        @brief Destroy events that have group conflict
-        @param[in] the actual solution
-        @return a new solution
+        /**
+        @brief Destroy events that have a group conflict.
+        @param[in] p_actual the actual solution.
+        @return the new spatial schedule.
         */
         Spatial::FMTSpatialSchedule _doGroupsConflictDestrutorMove(const Spatial::FMTSpatialSchedule& p_actual) const;
         // DocString: FMTSaModel::_doEventsSpread
-         /**
-        @brief Spread same actions to other cells
-        @param[in] the actual solution
-        @return a new solution
+        /**
+        @brief Spread the same actions to other cells.
+        @param[in] p_actual the actual solution.
+        @return the new spatial schedule.
         */
         Spatial::FMTSpatialSchedule _doEventsSpread(const Spatial::FMTSpatialSchedule& p_actual) const;
 
         
         // DocString: FMTSaModel::move
-		/**
-		Perturb a solution and produce a new one
-		*/
+        /**
+        @brief Perturb a solution and produce a new one.
+        @param[in] actual the actual solution.
+        @param[in] bindings the action bindings.
+        @return the new spatial schedule.
+        */
 		Spatial::FMTSpatialSchedule _move(const Spatial::FMTSpatialSchedule& actual,
 						const Spatial::FMTSpatialSchedule::actionbindings& bindings) const;
 		// DocString: FMTSaModel::warmup
 		/**
-		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
+		@brief Get an initial temperature using an initial probability close to one, a base solution and a number of iterations.
+		@param[in] actual the actual solution.
+		@param[in] bindings the action bindings.
+		@return the initial temperature.
 		*/
 		double _warmup(const Spatial::FMTSpatialSchedule& actual,
 			const Spatial::FMTSpatialSchedule::actionbindings& bindings);
         // DocString: FMTSaModel::initialgrow
         /**
-        Do an initial grow till you reach the length of the model with the actual solution
+        @brief Do an initial grow until the length of the model is reached with the actual solution.
         */
         void _initialGrow();
         // DocString: FMTSaModel::initialbuild
         /**
-        Call a random build if there's no solution
+        @brief Call a random build if there is no solution.
         */
         void _randomBuild();
         // DocString: FMTSaModel::schedulesbuild
         /**
-        Call schedules if there's no solution
+        @brief Build from the schedules if there is no solution.
+        @param[in] schedules the schedules.
         */
         void _schedulesBuild(const std::vector<Core::FMTSchedule>&schedules);
-        // DocString: FMTSaModel:GetLocalMoveSize
+        // DocString: FMTSaModel::_getLocalMoveSize
         /**
-        Generate the size of the local move.
-         */
+        @brief Generate the size of the local move.
+        @return the local move size.
+        */
         size_t _getLocalMoveSize() const;
-        // DocString: FMTSaModel:_getMaximalMoveSize
+        // DocString: FMTSaModel::_getMaximalMoveSize
         /**
-        @brief get maximal move size based on temperature
-        @param[in] p_maxSize
-        @return max move size
-         */
+        @brief Get the maximal move size based on the temperature.
+        @param[in] p_MaxSize the maximum size.
+        @return the maximal move size.
+        */
         size_t _getMaximalMoveSize(size_t p_MaxSize) const;
-        // DocString: FMTSaModel:_getRandomMoveSize
-       /**
-       @brief get random move size based on temperature
-       @param[in] p_maxSize
-       @return move size
+        // DocString: FMTSaModel::_getRandomMoveSize
+        /**
+        @brief Get a random move size based on the temperature.
+        @param[in] p_MaxSize the maximum size.
+        @return the random move size.
         */
         size_t _getRandomMoveSize(size_t p_MaxSize) const;
         // DocString: FMTSaModel::getRebuild
         /**
-        Take the actual non spatial solution of the actual solution and then
-        Rebuild the solution using greedyReferenceBuild
+        @brief Take the non spatial solution of the actual solution and rebuild the solution using greedyReferenceBuild.
+        @param[in] actual the actual solution.
+        @return the rebuilt spatial schedule.
         */
         Spatial::FMTSpatialSchedule _getRebuild(const Spatial::FMTSpatialSchedule& actual) const;
         // DocString: FMTSaModel::isCycleProvenOptimal
         /**
-        Return true if is optimal based on the termination criteria of the actual temp level
+        @brief Return true if the solution is optimal based on the termination criteria of the actual temperature level.
+        @return true if the cycle is proven optimal else false.
         */
         bool _isCycleProvenOptimal() const;
         // DocString: FMTSaModel::dofactorization
         /**
-        Do the constraint factorization
+        @brief Do the constraint factorization.
         */
         void _doFactorization();
         // DocString: FMTSaModel::logSolutionStatus
         /**
-        Log the status of the best solution
+        @brief Log the status of the best solution.
         */
         void _logSolutionStatus() const;
         // DocString: FMTSaModel::logTemperatureStatus
         /**
-        Log The temperature status and other usefull informations
+        @brief Log the temperature status and other useful information.
         */
         void _logCycleStatus() const;
         // DocString: FMTSaModel::coolDown
         /**
-        Cool down the annealer temp
+        @brief Cool down the annealer temperature.
         */
         void _coolDown();
         // DocString: FMTSaModel::updateFailedMoveCount
         /**
-        Update failed move count using NotAcceptedMovesCount and the move stats
+        @brief Update the failed move count using the not accepted moves count and the move stats.
         */
         void _UpdateFailedMoveCount();
 
+        // DocString: FMTSaModel::_GetSchedules
+        /**
+        @brief Get the schedules of a spatial solution.
+        @param[in] p_SpatialSchedule the spatial schedule.
+        @param[in] withlock if true includes the locked developments.
+        @return the schedules.
+        */
         std::vector<Core::FMTSchedule>_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const;
 
         #ifdef FMTWITHOSI
+            // DocString: FMTSaModel::_getRandomLpModel
+            /**
+            @brief Return a random FMTLpModel built from a spatial schedule.
+            @param[in] p_SpatialSchedule the spatial schedule.
+            @return the random FMTLpModel.
+            */
             Models::FMTLpModel _getRandomLpModel(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
         #endif
 
+        // DocString: FMTSaModel::_setBestSolutionTo
+        /**
+        @brief Set the best solution and its objective value.
+        @param[in,out] p_NewBestSolution the new best solution.
+        @param[in] p_ObjectiveValue the objective value.
+        */
         void _setBestSolutionTo(Spatial::FMTSpatialSchedule& p_NewBestSolution,
                                 double p_ObjectiveValue);
 
+        // DocString: FMTSaModel::_getConstraintsStats
+        /**
+        @brief Compute the constraint statistics of a solution.
+        @param[in] p_NewBestSolution the solution.
+        @param[out] p_Objective the objective value.
+        @param[out] p_SpatialRatio the spatial ratio.
+        @param[out] p_InventoryRatio the inventory ratio.
+        @param[out] p_TotalRatiom the total ratio.
+        @param[out] p_PrimalInf the primal infeasibility.
+        */
         void _getConstraintsStats(const Spatial::FMTSpatialSchedule& p_NewBestSolution,double& p_Objective,
                                  double& p_SpatialRatio, double& p_InventoryRatio, double& p_TotalRatiom,
                                  double& p_PrimalInf) const;
 
 
+        // DocString: FMTSaModel::_resetTabouMoves
+        /**
+        @brief Reset the tabou moves.
+        */
         void _resetTabouMoves();
 
+        // DocString: FMTSaModel::_getNonTabouMoves
+        /**
+        @brief Return the moves that are not tabou.
+        @return the non tabou moves.
+        */
         std::vector<FMTsamove> _getNonTabouMoves() const;
 
+        // DocString: FMTSaModel::_allowMove
+        /**
+        @brief Return true if a move is allowed for the actual solution and bindings.
+        @param[in] p_move the move.
+        @param[in] p_actual the actual solution.
+        @param[in] p_bindings the action bindings.
+        @return true if the move is allowed else false.
+        */
         bool _allowMove(FMTsamove p_move, const Spatial::FMTSpatialSchedule& p_actual,
             const Spatial::FMTSpatialSchedule::actionbindings& p_bindings) const;
 	

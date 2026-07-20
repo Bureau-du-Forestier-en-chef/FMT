@@ -77,6 +77,13 @@ enum class FMTgraphbuild
 #define FMT_COMMA ,
 
 
+// DocString: FMTGraph
+/**
+@brief Directed graph holding the FMTDevelopment of every period as vertices and the actions and natural growth as edges.
+@details The graph is divided per period and is the backbone used to build the matrix of the LP models and the line graphs of the spatially explicit models.
+@tparam tvertexproperties the vertex properties type.
+@tparam tedgeproperties the edge properties type.
+*/
 template <class tvertexproperties,class tedgeproperties>
 class FMTEXPORT FMTGraph : public Core::FMTObject
     {
@@ -97,6 +104,10 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		typedef typename std::pair<FMToutedge_iterator, FMToutedge_iterator> FMToutedge_pair;
 		typedef typename std::pair<FMTinedge_iterator, FMTinedge_iterator> FMTinedge_pair;
 		typedef typename std::pair<FMTvertex_iterator, FMTvertex_iterator> FMTvertex_pair;
+		// DocString: FMTGraph()
+		/**
+		@brief Default constructor for FMTGraph.
+		*/
 		FMTGraph() :
 			Core::FMTObject(),
 			data(),
@@ -111,8 +122,17 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		{
 
 		}
+		// DocString: ~FMTGraph()
+		/**
+		@brief Default virtual destructor for FMTGraph.
+		*/
 		virtual ~FMTGraph() = default;
 
+		// DocString: FMTGraph(const FMTgraphbuild)
+		/**
+		@brief Construct a FMTGraph from a build type.
+		@param[in] lbuildtype the build type.
+		*/
 		FMTGraph(const FMTgraphbuild lbuildtype) :
 			Core::FMTObject(),
 			data(),
@@ -128,6 +148,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 		}
 
+		// DocString: FMTGraph(const FMTGraph&)
+		/**
+		@brief Copy constructor for FMTGraph.
+		@param[in] rhs the FMTGraph to copy.
+		*/
 		FMTGraph(const FMTGraph& rhs) :
 			Core::FMTObject(rhs),
 			data(rhs.data),
@@ -143,6 +168,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			_generateDevelopments();
 		}
 
+		// DocString: FMTGraph::swap
+		/**
+		@brief Swap this FMTGraph with another one.
+		@param[in,out] rhs the FMTGraph to swap with.
+		*/
 		void swap(FMTGraph& rhs)
 		{
 			/*std::swap(buildtype, rhs.buildtype);
@@ -156,10 +186,21 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			m_allocator = rhs.m_allocator;*/
 			//std::swap(developments, rhs.developments);
 		}
+		// DocString: FMTGraph::reserveVertices
+		/**
+		@brief Reserve memory for a number of vertices.
+		@param[in] p_reserve the number of vertices to reserve.
+		*/
 		void reserveVertices(size_t p_reserve)
 		{
 			data.m_vertices.reserve(p_reserve);
 		}
+		// DocString: FMTGraph::operator=
+		/**
+		@brief Copy assignment operator for FMTGraph.
+		@param[in] rhs the FMTGraph to copy.
+		@return a reference to this FMTGraph.
+		*/
 		FMTGraph& operator = (const FMTGraph& rhs)
 		{
 			if (this != &rhs)
@@ -179,10 +220,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 		}
 
+		// DocString: FMTGraph::copyToPeriod
 		/**
-		* @brief Copy the graph but dont copy vertex with period > p_period
-		* @param[in] p_period maximal period
-		* @return a new graph
+		@brief Copy the graph, dropping the vertices with a period greater than the given one.
+		@param[in] p_period the maximal period.
+		@return the copied graph.
 		*/
 		FMTGraph copyToPeriod(int p_period) const
 		{
@@ -209,6 +251,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		}
 
 
+		// DocString: FMTGraph::operator==
+		/**
+		@brief Comparison operator for FMTGraph.
+		@param[in] rhs the FMTGraph to compare to.
+		@return true if both graphs are equal else false.
+		*/
 		bool operator == (const FMTGraph& rhs) const
 		{
 			try {
@@ -241,26 +289,56 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 			return false;
 		}
+		// DocString: FMTGraph::operator!=
+		/**
+		@brief Comparison operator for FMTGraph.
+		@param[in] rhs the FMTGraph to compare to.
+		@return true if both graphs are different else false.
+		*/
 		bool operator != (const FMTGraph& rhs) const
 		{
 			return (!(*this == rhs));
 		}
+		// DocString: FMTGraph::clearCache
+		/**
+		@brief Clear the output node cache of the graph.
+		*/
 		void clearCache()
 		{
 			std::vector<FMTOutputNodeCache<FMTvertex_descriptor FMT_COMMA FMTvertex_iterator>>().swap(nodescache);
 		}
+		// DocString: FMTGraph::clearDevelopments
+		/**
+		@brief Clear the developments location by period of the graph.
+		*/
 		void clearDevelopments()
 		{
 			std::vector<FMTvertex_pair>().swap(developments);
 		}
+		// DocString: FMTGraph::getBuildType
+		/**
+		@brief Return the build type of the graph.
+		@return the build type.
+		*/
 		FMTgraphbuild getBuildType() const
 		{
 			return buildtype;
 		}
+		// DocString: FMTGraph::setBuildType
+		/**
+		@brief Set the build type of the graph.
+		@param[in] build the build type.
+		*/
 		void setBuildType(const FMTgraphbuild& build)
 		{
 			buildtype = build;
 		}
+		// DocString: FMTGraph::getDevsSet
+		/**
+		@brief Return the developments of a period in a lookup set.
+		@param[in] period the period.
+		@return the developments lookup set.
+		*/
 		boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>>getDevsSet(const int& period) const
 		{
 			boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>> basedevs;
@@ -278,6 +356,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return basedevs;
 		}
 
+		// DocString: FMTGraph::containsDevelopment
+		/**
+		@brief Return true if a development is already in the lookup set.
+		@param[in] development the development.
+		@param[in] devsets the developments lookup set.
+		@return true if the development is present else false.
+		*/
 		bool containsDevelopment(
 			const Core::FMTDevelopment& development,
 			const boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, 
@@ -286,6 +371,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return (alldevs.find(Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>(development)) != alldevs.end());
 		}
 
+		// DocString: FMTGraph::initialize
+		/**
+		@brief Initialize the graph with the actual developments of the first period.
+		@param[in] actdevelopments the actual developments.
+		@return the queue of active vertices.
+		*/
 		std::queue<FMTvertex_descriptor> initialize(const std::vector<Core::FMTActualDevelopment>& actdevelopments)
 		{
 			std::queue<FMTvertex_descriptor>actives;
@@ -350,9 +441,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		}
 		// DocString: FMTGraph::build(const Models::FMTModel&,std::queue<FMTvertex_descriptor>)
 		/**
-		This function build one period at the end of the graph. Like in Woodstock, future developments of a given action
-		can not be operate by an action that is before in the section action. The actions in the model must be
-		ordered to take that in account.
+		@brief Build the graph for one period from the active vertices, adding the operable actions and the natural growth.
+		@param[in] model the model.
+		@param[in] actives the active vertices.
+		@param[in] compressageoperability the age class operability compression.
+		@return the graph stats of the newly built elements.
 		*/
 		FMTGraphStats build(
 			const Models::FMTModel& model,
@@ -437,6 +530,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return newstats;
 		}
 
+		// DocString: FMTGraph::isNoTransfer
+		/**
+		@brief Return true if a vertex has no area transfer.
+		@param[in] descriptor the vertex descriptor.
+		@param[in] outcount the number of out edges.
+		@return true if there is no transfer else false.
+		*/
 		bool isNoTransfer(
 			const FMTvertex_descriptor& descriptor, 
 			size_t outcount = 0) const
@@ -466,11 +566,25 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 
 
+		// DocString: FMTGraph::getInProportion
+		/**
+		@brief Return the sum of the proportions of the in edges of a vertex.
+		@param[in] vertex_descriptor the vertex descriptor.
+		@return the in proportion.
+		*/
 		double getInProportion(const FMTvertex_descriptor& vertex_descriptor) const
 		{
 			return 1;
 		}
 
+		// DocString: FMTGraph::naturalGrowth
+		/**
+		@brief Add the natural growth edges and vertices for the active vertices.
+		@param[in] actives the active vertices.
+		@param[in] statsDiff the stats to update.
+		@param[in] typeIImatrix if true builds a type II matrix.
+		@return the graph stats of the newly built elements.
+		*/
 		FMTGraphStats naturalGrowth(
 			std::queue<FMTvertex_descriptor> actives, 
 			FMTGraphStats statsDiff, 
@@ -535,6 +649,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 		}
 
+		// DocString: FMTGraph::noChoice
+		/**
+		@brief Return the developments of a base mask that have no action assigned other than death.
+		@param[in] baseMask the base mask.
+		@param[in] death_id the death action id.
+		@return the developments with no choice.
+		*/
 		std::vector<const Core::FMTDevelopment*> noChoice(
 			const Core::FMTMask& baseMask, 
 			const int& death_id) const
@@ -590,6 +711,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 
 
+		// DocString: FMTGraph::getVariableNames
+		/**
+		@brief Fill the column names of the matrix with the variable names of the graph.
+		@param[in] actions the model actions.
+		@param[in,out] colnames the column names.
+		*/
 		void getVariableNames(
 			const std::vector<Core::FMTAction>& actions,
 			std::vector<std::string>& colnames) const
@@ -668,6 +795,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 		}*/
 
+		// DocString: FMTGraph::getTransferRowNames
+		/**
+		@brief Fill the row names of the matrix with the area transfer row names of the graph.
+		@param[in,out] rownames the row names.
+		*/
 		void getTransferRowNames(std::vector<std::string>& rownames) const
 		{
 			try {
@@ -694,6 +826,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		}
 
 
+		// DocString: FMTGraph::getPeriodStopDev
+		/**
+		@brief Return the developments present at the end of a period based on the solution.
+		@param[in] location the period.
+		@param[in] actual_solution the solution.
+		@return the actual developments.
+		*/
 		std::vector<Core::FMTActualDevelopment> getPeriodStopDev(
 			const int location, 
 			const double* actual_solution) const
@@ -718,6 +857,16 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return all_period_stop_devs;
 
 		}
+		// DocString: FMTGraph::getOutput
+		/**
+		@brief Return the output value of a period using the solution.
+		@param[in] model the model.
+		@param[in] output the output.
+		@param[in] period the period.
+		@param[in] solution the solution.
+		@param[in] level the output level.
+		@return a map of names to values.
+		*/
 		std::map<std::string, double> getOutput(
 			const Models::FMTModel& model, 
 			const Core::FMTOutput& output,
@@ -838,6 +987,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 		}
 
+		// DocString: FMTGraph::getDevelopment(const Core::FMTDevelopment&,...)
+		/**
+		@brief Return the vertex descriptor of a development from the lookup set.
+		@param[in] development the development.
+		@param[in] devsets the developments lookup set.
+		@return the vertex descriptor.
+		*/
 		FMTvertex_descriptor getDevelopment(
 			const Core::FMTDevelopment& development,
 			const boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, 
@@ -847,11 +1003,24 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return alldevs.find(tofind)->memoryobject;
 		}
 
+		// DocString: FMTGraph::getDevelopment(const FMTvertex_descriptor&)
+		/**
+		@brief Return the development held by a vertex.
+		@param[in] descriptor the vertex descriptor.
+		@return the development.
+		*/
 		const Core::FMTDevelopment& getDevelopment(const FMTvertex_descriptor& descriptor) const
 		{
 			return data[descriptor].get();
 		}
 
+		// DocString: FMTGraph::addDevelopment(const Core::FMTFuturDevelopment&,...)
+		/**
+		@brief Add a futur development to the graph and to the lookup set, or return the existing vertex.
+		@param[in] futurdevelopment the futur development.
+		@param[in,out] devsets the developments lookup set.
+		@return the vertex descriptor.
+		*/
 		FMTvertex_descriptor addDevelopment(
 			const Core::FMTFuturDevelopment& futurdevelopment,
 			boost::unordered_set<Core::FMTLookup<FMTvertex_descriptor, Core::FMTDevelopment>>& alldevs, 
@@ -897,6 +1066,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 		}
 
+		// DocString: FMTGraph::addDevelopment(const Core::FMTFuturDevelopment&)
+		/**
+		@brief Add a futur development to the graph.
+		@param[in] futurdevelopment the futur development.
+		@return the vertex descriptor.
+		*/
 		FMTvertex_descriptor addDevelopment(const Core::FMTFuturDevelopment& futurdevelopment)
 		{
 			FMTvertex_descriptor newvertex = data.null_vertex();
@@ -913,6 +1088,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return newvertex;
 		}
 
+		// DocString: FMTGraph::hash
+		/**
+		@brief Hash the graph.
+		@param[in] seed the seed.
+		@return the hash of the graph.
+		*/
 		size_t hash(size_t seed = 0) const
 		{
 			try {
@@ -931,6 +1112,17 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return seed;
 
 		}
+		// DocString: FMTGraph::addAction(...,devsets,inserie)
+		/**
+		@brief Add an action edge and its target vertices to the graph, reusing the developments of the lookup set.
+		@param[in] actionID the action id.
+		@param[in,out] statsDiff the stats to update.
+		@param[in,out] actives the active vertices.
+		@param[in] out_vertex the source vertex.
+		@param[in] paths the development paths.
+		@param[in,out] devsets the developments lookup set.
+		@param[in] inserie if true the action is part of a serie.
+		*/
 		void addAction(const int& actionID,
 			FMTGraphStats& statsDiff,
 			std::queue<FMTvertex_descriptor>& actives,
@@ -983,6 +1175,15 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 		}
 
+		// DocString: FMTGraph::addAction(...,paths)
+		/**
+		@brief Add an action edge and its target vertices to the graph.
+		@param[in] actionID the action id.
+		@param[in,out] statsDiff the stats to update.
+		@param[in,out] actives the active vertices.
+		@param[in] out_vertex the source vertex.
+		@param[in] paths the development paths.
+		*/
 		void addAction(const int& actionID,
 			FMTGraphStats& statsDiff,
 			std::queue<FMTvertex_descriptor>& actives,
@@ -1008,6 +1209,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 		}
 
+		// DocString: FMTGraph::outArea
+		/**
+		@brief Return the area leaving a vertex through an action, based on the solution.
+		@param[in] out_vertex the vertex descriptor.
+		@param[in] actionID the action id.
+		@param[in] solution the solution.
+		@return the out area.
+		*/
 		double outArea(
 			const FMTvertex_descriptor& out_vertex,
 			const int& actionID,
@@ -1035,6 +1244,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return value;
 		}
 
+		// DocString: FMTGraph::getGrowthSource
+		/**
+		@brief Return the source vertex of the natural growth edge of a vertex.
+		@param[in] out_vertex the vertex descriptor.
+		@return the growth source vertex.
+		*/
 		FMTvertex_descriptor getGrowthSource(const FMTvertex_descriptor& out_vertex) const
 		{
 			try {
@@ -1055,6 +1270,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return FMTvertex_descriptor();
 		}
 
+		// DocString: FMTGraph::getActionSources
+		/**
+		@brief Return the source vertices of an action for a vertex.
+		@param[in] out_vertex the vertex descriptor.
+		@param[in] actionid the action id.
+		@return the source vertices.
+		*/
 		std::vector<FMTvertex_descriptor> getActionSources(
 			const FMTvertex_descriptor& out_vertex, 
 			const int& actionid) const
@@ -1078,6 +1300,15 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return vsources;
 		}
 
+		// DocString: FMTGraph::inArea
+		/**
+		@brief Return the area entering a vertex based on the solution.
+		@param[in] out_vertex the vertex descriptor.
+		@param[in] solution the solution.
+		@param[in] actionid the action id, -1 for all actions.
+		@param[in] growth if true only considers the natural growth.
+		@return the in area.
+		*/
 		double inArea(
 			const FMTvertex_descriptor& out_vertex,
 			const double*& solution, 
@@ -1103,6 +1334,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return area;
 		}
 
+		// DocString: FMTGraph::periodStart
+		/**
+		@brief Return true if a vertex is at the start of a period.
+		@param[in] out_vertex the vertex descriptor.
+		@return true if the vertex starts a period else false.
+		*/
 		bool periodStart(const FMTvertex_descriptor& out_vertex) const
 		{
 			try {
@@ -1115,6 +1352,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+		// DocString: FMTGraph::onlyPeriodStart
+		/**
+		@brief Return true if a vertex is only at the start of a period with no other in edge.
+		@param[in] out_vertex the vertex descriptor.
+		@return true if the vertex only starts a period else false.
+		*/
 		bool onlyPeriodStart(const FMTvertex_descriptor& out_vertex) const
 		{
 			try {
@@ -1139,6 +1382,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 		}
 
+		// DocString: FMTGraph::getMaximalLock
+		/**
+		@brief Return the maximal lock of a period.
+		@param[in] period the period.
+		@return the maximal lock.
+		*/
 		int getMaximalLock(const int& period)
 		{
 			int lock = 0;
@@ -1160,6 +1409,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return lock;
 		}
 
+		// DocString: FMTGraph::periodStop
+		/**
+		@brief Return true if a vertex is at the end of a period.
+		@param[in] out_vertex the vertex descriptor.
+		@return true if the vertex stops a period else false.
+		*/
 		bool periodStop(const FMTvertex_descriptor& out_vertex) const
 		{
 			try {
@@ -1185,6 +1440,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+		// DocString: FMTGraph::getPaths
+		/**
+		@brief Return the development paths generated by an action on a vertex.
+		@param[in] out_vertex the vertex descriptor.
+		@param[in] actionID the action id.
+		@return the development paths.
+		*/
 		std::vector<Core::FMTDevelopmentPath> getPaths(
 			const FMTvertex_descriptor& out_vertex,
 			const int& actionID) const
@@ -1213,6 +1475,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return paths;
 		}
 
+		// DocString: FMTGraph::isValidOuputNode
+		/**
+		@brief Return true if an output node is valid for the graph.
+		@param[in] model the model.
+		@param[in] node the output node.
+		@param[in] actions the selected actions.
+		@return true if the output node is valid else false.
+		*/
 		bool isValidOuputNode(
 			const Models::FMTModel& model, 
 			const Core::FMTOutputNode& node, 
@@ -1237,6 +1507,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		}
 
 
+		// DocString: FMTGraph::isValidGraphNode
+		/**
+		@brief Return true if a vertex falls within an output node description.
+		@param[in] p_model the model.
+		@param[in] p_vertex_descriptor the vertex descriptor.
+		@param[in] p_node the output node.
+		@return true if the vertex is valid for the node else false.
+		*/
 		bool isValidGraphNode(
 			const Models::FMTModel& p_model, 
 			const FMTvertex_descriptor& p_vertex_descriptor,
@@ -1285,6 +1563,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+		// DocString: FMTGraph::locateNode
+		/**
+		@brief Return the matrix variables and coefficients matching an output node for a period.
+		@param[in] model the model.
+		@param[in] output_node the output node.
+		@param[in] period the period.
+		@return the variables and coefficients.
+		*/
 		std::map<int, double> locateNode(
 			const Models::FMTModel& model,
 			Core::FMTOutputNode output_node,
@@ -1303,6 +1589,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return std::map<int, double>();
 
 		}
+		// DocString: FMTGraph::locateNodeByTheme
+		/**
+		@brief Return the matrix variables and coefficients matching an output node for a period, grouped by theme attribute.
+		@param[in] model the model.
+		@param[in] output_node the output node.
+		@param[in] period the period.
+		@return the variables and coefficients per theme attribute.
+		*/
 		std::map<std::string, std::map<int, double>> locateNodeByTheme(
 			const Models::FMTModel& model, 
 			Core::FMTOutputNode output_node, 
@@ -1346,12 +1640,25 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		}
 
 
+		// DocString: FMTGraph::setNodeSize
+		/**
+		@brief Set the reserved size of the output node cache.
+		@param[in] p_size the size to reserve.
+		*/
 		void setNodeSize(const size_t& p_size)
 		{
 			m_reserve = p_size;
 			m_selectedVertices.reserve(m_reserve);
 		}
 
+		// DocString: FMTGraph::getNode
+		/**
+		@brief Return the vertices matching an output node for a period.
+		@param[in] model the model.
+		@param[in,out] output_node the output node.
+		@param[in] period the period.
+		@return the matching vertices.
+		*/
 		std::vector<FMTvertex_descriptor> getNode(
 			const Models::FMTModel& model, 
 			Core::FMTOutputNode& output_node, 
@@ -1475,6 +1782,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return m_selectedVertices;
 		}
 
+		// DocString: FMTGraph::getVariables
+		/**
+		@brief Return the matrix variables and coefficients of an output node for a set of vertices.
+		@param[in] model the model.
+		@param[in] output_node the output node.
+		@param[in] verticies the vertices.
+		@return the variables and coefficients.
+		*/
 		std::map<int, double> getVariables(
 			const Models::FMTModel& model, 
 			const Core::FMTOutputNode& output_node, 
@@ -1483,6 +1798,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return std::map<int, double>();
 		}
 
+		// DocString: FMTGraph::isAnyOperables
+		/**
+		@brief Return true if any of the given actions is operable on a vertex.
+		@param[in] descriptor the vertex descriptor.
+		@param[in] actionsop the operable actions.
+		@return true if any action is operable else false.
+		*/
 		bool isAnyOperables(
 			const FMTvertex_descriptor& descriptor, 
 			const std::vector<bool>& actionsop) const noexcept
@@ -1510,6 +1832,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+		// DocString: FMTGraph::anyOperables
+		/**
+		@brief Return true if any of the given action ids is operable on a vertex.
+		@param[in] descriptor the vertex descriptor.
+		@param[in] action_ids the action ids.
+		@return true if any action is operable else false.
+		*/
 		bool anyOperables(
 			const FMTvertex_descriptor& descriptor, 
 			const std::vector<int>& action_ids) const
@@ -1534,6 +1863,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+		// DocString: FMTGraph::getInVariables
+		/**
+		@brief Return the matrix variables of the in edges of a vertex.
+		@param[in] out_vertex the vertex descriptor.
+		@return the in variables.
+		*/
 		std::vector<int>getInVariables(const FMTvertex_descriptor& out_vertex) const
 		{
 			std::vector<int>invars;
@@ -1553,6 +1888,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return invars;
 		}
 
+		// DocString: FMTGraph::getInProportions
+		/**
+		@brief Return the proportions of the in edges of a vertex.
+		@param[in] out_vertex the vertex descriptor.
+		@return the in proportions.
+		*/
 		std::vector<double>getInProportions(const FMTvertex_descriptor& out_vertex) const
 		{
 			std::vector<double>inprops;
@@ -1572,6 +1913,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return inprops;
 		}
 
+		// DocString: FMTGraph::getInIdsVariables
+		/**
+		@brief Return the action ids and matrix variables of the in edges of a vertex.
+		@param[in] out_vertex the vertex descriptor.
+		@return the action ids and variables.
+		*/
 		std::map<int, int>getInIdsVariables(const FMTvertex_descriptor& out_vertex) const
 		{
 			std::map<int, int> mapping;
@@ -1592,6 +1939,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return mapping;
 		}
 
+		// DocString: FMTGraph::getOutVariables
+		/**
+		@brief Return the action ids and matrix variables of the out edges of a vertex.
+		@param[in] out_vertex the vertex descriptor.
+		@return the action ids and variables.
+		*/
 		std::map<int, int> getOutVariables(const FMTvertex_descriptor& out_vertex) const
 		{
 			std::map<int, int> mapping;
@@ -1611,6 +1964,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return mapping;
 		}
 
+		// DocString: FMTGraph::getActionEdges
+		/**
+		@brief Return the out edges of a vertex for an action.
+		@param[in] pOutVertex the vertex descriptor.
+		@param[in] p_actionId the action id.
+		@return the action edges.
+		*/
 		std::vector<const FMTBaseEdgeProperties*> getActionEdges(
 			const FMTvertex_descriptor& pOutVertex,
 			const size_t& p_actionSize) const
@@ -1635,6 +1995,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return output;
 		}
 
+		// DocString: FMTGraph::getOutActions
+		/**
+		@brief Return the action ids of the out edges of a vertex.
+		@param[in] out_vertex the vertex descriptor.
+		@param[in] p_multipleEdges if true keeps the duplicated actions.
+		@return the out action ids.
+		*/
 		std::vector<int> getOutActions(
 			const FMTvertex_descriptor& out_vertex, 
 			bool p_multipleEdges = true) const
@@ -1665,6 +2032,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return actions;
 		}
 
+		// DocString: FMTGraph::selectedActions
+		/**
+		@brief Return the model actions matching a set of action ids.
+		@param[in] model the model.
+		@param[in] action_IDS the action ids.
+		@return the selected actions.
+		*/
 		std::vector<const Core::FMTAction*> selectedActions(
 			const Models::FMTModel& model, 
 			const std::vector<int>& action_IDS) const
@@ -1689,6 +2063,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return selected;
 		}
 
+		// DocString: FMTGraph::constraintLenght
+		/**
+		@brief Return the first and last period covered by a constraint in the graph.
+		@param[in] constraint the constraint.
+		@param[out] start the first period.
+		@param[out] stop the last period.
+		@return true if the constraint is within the graph else false.
+		*/
 		bool constraintLenght(
 			const Core::FMTConstraint& constraint, 
 			int& start, 
@@ -1716,6 +2098,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return (start < static_cast<int>(developments.size()) && start <= stop);
 		}
 
+		// DocString: FMTGraph::getStats(const Core::FMTMask&)
+		/**
+		@brief Return the graph stats for a mask subset.
+		@param[in] p_Subset the mask subset.
+		@return the graph stats.
+		*/
 		FMTGraphStats getStats(const Core::FMTMask& p_Subset)
 		{
 			FMTGraphStats SubsetStats;
@@ -1751,21 +2139,44 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return SubsetStats;
 		}
 
+		// DocString: FMTGraph::getStats()
+		/**
+		@brief Return the graph stats.
+		@return the graph stats.
+		*/
 		FMTGraphStats getStats() const
 		{
 			return stats;
 		}
 
+		// DocString: FMTGraph::getStatsPtr
+		/**
+		@brief Return a pointer to the graph stats.
+		@return a pointer to the graph stats.
+		*/
 		FMTGraphStats* getStatsPtr()
 		{
 			return &stats;
 		}
 
+		// DocString: FMTGraph::setStats
+		/**
+		@brief Set the graph stats.
+		@param[in] newstats the new stats.
+		*/
 		void setStats(const FMTGraphStats& newstats)
 		{
 			stats = newstats;
 		}
 
+		// DocString: FMTGraph::buildSchedule
+		/**
+		@brief Build the graph for one period following a schedule instead of every operable action.
+		@param[in] model the model.
+		@param[in] actives the active vertices.
+		@param[in] schedule the schedule.
+		@return the graph stats of the newly built elements.
+		*/
 		FMTGraphStats buildSchedule(
 			const Models::FMTModel& model,
 			std::queue<FMTvertex_descriptor> actives,
@@ -1823,6 +2234,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return naturalGrowth(actives, statsDiff, typeIIforestmodel);
 		}
 
+		// DocString: FMTGraph::erasePeriod
+		/**
+		@brief Erase the first period of the graph and return the deleted constraints and variables.
+		@param[in,out] deletedconstraints the deleted constraints.
+		@param[in,out] deletedvariables the deleted variables.
+		@param[in] keepbounded if true keeps the bounded vertices.
+		@return the graph stats of the deleted elements.
+		*/
 		FMTGraphStats erasePeriod(
 			std::vector<int>& deletedconstraints,
 			std::vector<int>& deletedvariables,
@@ -1832,11 +2251,21 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return getStats();
 		}
 
+		// DocString: FMTGraph::empty
+		/**
+		@brief Return true if the graph is empty.
+		@return true if the graph is empty else false.
+		*/
 		bool empty() const
 		{
 			return developments.empty();
 		}
 
+		// DocString: FMTGraph::getActiveVertices
+		/**
+		@brief Return the active vertices of the graph.
+		@return the queue of active vertices.
+		*/
 		std::queue<FMTvertex_descriptor> getActiveVertices() const
 		{
 			std::queue<FMTvertex_descriptor>actives;
@@ -1855,6 +2284,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		}
 
 
+		// DocString: FMTGraph::getPeriodVertices
+		/**
+		@brief Return the first and last vertex iterators of a period.
+		@param[in] period the period.
+		@return the vertex pair of the period.
+		*/
 		const FMTvertex_pair& getPeriodVertices(int period) const
 		{
 			return developments.at(period);
@@ -1869,16 +2304,36 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		{
 			return developments.at(period).cend();
 		}*/
+		// DocString: FMTGraph::size
+		/**
+		@brief Return the number of periods of the graph.
+		@return the graph size.
+		*/
 		size_t size() const
 		{
 			return developments.size();
 		}
 
+		// DocString: FMTGraph::setConstraintID
+		/**
+		@brief Set the constraint id of a vertex.
+		@param[in] vertex the vertex descriptor.
+		@param[in] id the constraint id.
+		*/
 		void setConstraintID(const FMTvertex_descriptor& vertex, const int& id)
 		{
 
 		}
 
+		// DocString: FMTGraph::getTransferRow
+		/**
+		@brief Fill the area transfer row of a vertex for the matrix.
+		@param[in] vertex_descriptor the vertex descriptor.
+		@param[in,out] row_starts the row starts.
+		@param[in,out] cols the columns.
+		@param[in,out] cols_value the column coefficients.
+		@return true if the row was filled else false.
+		*/
 		bool getTransferRow(
 			const FMTvertex_descriptor& vertex_descriptor,
 			std::vector<int>& row_starts,
@@ -1888,6 +2343,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+		// DocString: FMTGraph::getInitialBounds
+		/**
+		@brief Fill the lower and upper bounds of the area transfer rows of the first period.
+		@param[in,out] lower_bounds the lower bounds.
+		@param[in,out] upper_bounds the upper bounds.
+		*/
 		void getInitialBounds(
 			std::vector<double>& lower_bounds, 
 			std::vector<double>& upper_bounds) const
@@ -1909,11 +2370,26 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				_exhandler->raiseFromCatch("", "FMTGraph::getInitialBounds", __LINE__, __FILE__);
 			}
 		}
+		// DocString: FMTGraph::nEdges
+		/**
+		@brief Return the number of edges of the graph.
+		@return the number of edges.
+		*/
 		size_t nEdges() const
 		{
 			return boost::num_edges(data);
 		}
 
+		// DocString: FMTGraph::getSource
+		/**
+		@brief Return the values of an output node source for a period.
+		@param[in] model the model.
+		@param[in] node the output node.
+		@param[in] period the period.
+		@param[in] solution the solution.
+		@param[in] level the output level.
+		@return a map of names to values.
+		*/
 		std::map<std::string, double> getSource(
 			const Models::FMTModel& model,
 			const Core::FMTOutputNode& node,
@@ -1933,6 +2409,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return std::map<std::string, double>();
 		}
 
+		// DocString: FMTGraph::getVertexToYieldInfo
+		/**
+		@brief Return the vertex to yield adapter of a vertex, used for the yield requests depending on the graph.
+		@param[in] model the model.
+		@param[in] descriptor the vertex descriptor.
+		@return the vertex to yield adapter.
+		*/
 		Graph::FMTGraphVertexToYield getVertexToYieldInfo(
 			const Models::FMTModel& model, 
 			const FMTvertex_descriptor& descriptor) const
@@ -1947,6 +2430,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return Graph::FMTGraphVertexToYield();
 		}
 
+		// DocString: FMTGraph::getVertexFromVertexInfo
+		/**
+		@brief Return the vertex descriptor held by a vertex to yield adapter.
+		@param[in] info the vertex to yield adapter.
+		@return a pointer to the vertex descriptor.
+		*/
 		const FMTvertex_descriptor* getVertexFromVertexInfo(
 			const Graph::FMTGraphVertexToYield* info) const
 		{
@@ -1960,6 +2449,17 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return nullptr;
 		}
 
+		// DocString: FMTGraph::getValues
+		/**
+		@brief Return the output values of a set of vertices for a period.
+		@param[in] model the model.
+		@param[in] verticies the vertices.
+		@param[in] node the output node.
+		@param[in] period the period.
+		@param[in] solution the solution.
+		@param[in] level the output level.
+		@return a map of names to values.
+		*/
 		std::map<std::string, double> getValues(
 			const Models::FMTModel& model, 
 			const std::vector<FMTvertex_descriptor>& vertices,
@@ -2056,6 +2556,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return values;
 		}
 
+		// DocString: FMTGraph::getPeriod
+		/**
+		@brief Return the last period of the graph.
+		@return the last period.
+		*/
 		int getPeriod() const
 		{
 			try {
@@ -2071,6 +2576,10 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return 0;
 		}
 
+		// DocString: FMTGraph::rebaseCache
+		/**
+		@brief Rebase the output node cache after the graph has been shrinked.
+		*/
 		void rebaseCache()
 		{
 			try {
@@ -2085,6 +2594,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 		}
 		
+		// DocString: FMTGraph::sameEdgesAs
+		/**
+		@brief Return true if this graph has the same edges as another one.
+		@param[in] rhs the other graph.
+		@return true if the edges are the same else false.
+		*/
 		bool sameEdgesAs(const FMTGraph& rhs) const
 		{
 			bool different = false;
@@ -2112,17 +2627,35 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return different;
 		}
 
+		// DocString: FMTGraph::updateMatrixIndex
+		/**
+		@brief Update the matrix indexes of the vertices and edges after variables and constraints have been removed.
+		@param[in] removedvariables the removed variables.
+		@param[in] removedconstraints the removed constraints.
+		*/
 		void updateMatrixIndex(
 			const std::vector<int>& removedvariables,
 			const std::vector<int>& removedconstraints)
 		{
 
 		}
+		// DocString: FMTGraph::getFirstActivePeriod
+		/**
+		@brief Return the first active period of the graph.
+		@return the first active period.
+		*/
 		int getFirstActivePeriod() const
 		{
 			return static_cast<int>(std::distance(developments.begin(), getFirstConstBlock()));
 		}
 
+		// DocString: FMTGraph::getLastDisturbance
+		/**
+		@brief Return the in edge of the last disturbance and the number of periods since it happened.
+		@param[in] activeedge the active in edge.
+		@param[in,out] periodtolastdisturbance the number of periods since the last disturbance.
+		@return the in edge of the last disturbance.
+		*/
 		FMTinedge_iterator getLastDisturbance(
 			FMTinedge_iterator activeedge,
 			int& periodtolastdisturbance) const
@@ -2157,6 +2690,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return lastedge;
 		}
 
+		// DocString: FMTGraph::fillUpLastActions
+		/**
+		@brief Fill the last action edges seen before a target vertex up to a target period.
+		@param[in] targetperiod the target period.
+		@param[in] targetdescriptor the target vertex.
+		@param[in,out] edges the action edges.
+		@param[in,out] gaps the period gaps.
+		*/
 		void fillUpLastActions(
 			const int& targetperiod,
 			const FMTvertex_descriptor& targetdescriptor, 
@@ -2198,6 +2739,15 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 
 		}
 
+		// DocString: FMTGraph::getAmountOfPaths
+		/**
+		@brief Return the number of possible paths if an action is committed on a development.
+		@param[in] dev the development.
+		@param[in] actionid the action id.
+		@param[in] model the model.
+		@param[in] devsets the developments lookup set.
+		@return the number of paths.
+		*/
 		size_t getAmountOfPaths(
 			const Core::FMTDevelopment& dev, 
 			const int& actionid,
@@ -2268,6 +2818,16 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return amount;
 		}
 
+		// DocString: FMTGraph::getAllSeries
+		/**
+		@brief Return all the action series starting from a vertex.
+		@param[in] targetdescriptor the target vertex.
+		@param[in] p_series the base serie.
+		@param[in] actions the model actions.
+		@param[in] actionsets the aggregate action ids.
+		@param[in] mask the mask.
+		@return the series.
+		*/
 		std::set<Core::FMTSerie> getAllSeries(
 			FMTvertex_descriptor targetdescriptor, 
 			const std::vector<std::string>& p_series,
@@ -2356,6 +2916,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return theseries;
 		}
 
+		// DocString: FMTGraph::timeSinceLastAction
+		/**
+		@brief Return the number of periods since the last action on a vertex.
+		@param[in] targetdescriptor the vertex descriptor.
+		@return the number of periods since the last action.
+		*/
 		size_t timeSinceLastAction(const FMTvertex_descriptor& targetdescriptor) const
 		{
 			try {
@@ -2388,6 +2954,17 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return std::numeric_limits<size_t>::max();
 		}
 
+		// DocString: FMTGraph::getPredictors
+		/**
+		@brief Return the predictors of a vertex.
+		@param[in] targetdescriptor the target vertex.
+		@param[in] model the model.
+		@param[in] yieldnames the yield names.
+		@param[in] period the period.
+		@param[in] periodonevalues if true uses the period one values.
+		@param[in] withGCBMid if true uses the GCBM id.
+		@return the predictors.
+		*/
 		std::vector<FMTPredictor> getPredictors(
 			const FMTvertex_descriptor& targetdescriptor, 
 			const Models::FMTModel& model,
@@ -2433,11 +3010,23 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return predictors;
 		}
 
+		// DocString: FMTGraph::getFirstPeriod
+		/**
+		@brief Return the first period of the graph.
+		@return the first period.
+		*/
 		int getFirstPeriod() const
 		{
 			return data[*developments.at(getFirstActivePeriod() + 1).first].get().getPeriod();
 		}
 
+		// DocString: FMTGraph::postSolve
+		/**
+		@brief Postsolve the graph back into the original themes and actions.
+		@param[in] filter the mask filter used for the presolve.
+		@param[in] originalbasethemes the original themes.
+		@param[in] actionmapping the action mapping.
+		*/
 		void postSolve(
 			const Core::FMTMaskFilter& filter,
 			const std::vector<Core::FMTTheme>& originalbasethemes,
@@ -2481,6 +3070,15 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 		}
 
+		// DocString: FMTGraph::getSchedule
+		/**
+		@brief Return the operated schedule of a period based on the solution.
+		@param[in] actions the model actions.
+		@param[in] actual_solution the solution.
+		@param[in] lperiod the period.
+		@param[in] withlock if true includes the locked developments.
+		@return the schedule.
+		*/
 		Core::FMTSchedule getSchedule(
 			const std::vector<Core::FMTAction>& actions,
 			const double* actual_solution, 
@@ -2570,13 +3168,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		}
 		// DocString: FMTGraph::getRotations
 		/**
-		Based on a mask and an action get the distribution of the rotations (in period) taken to complete a serie of action. A serie can contain a subserie for an
-		aggregate of actions.
-		Args:
-			model FMTModel: the model
-			mask : the FMTMask of the rotations
-			aggregate : std::string on which the last action is considered to be in
-		Returns: Distribution of rotation period taken per series (where the serie is in string action1-action2-action3... string is the serie and int is the number of periods taken
+		@brief Return the distribution of the rotations (in periods) taken to complete a serie of actions for a mask and an action aggregate.
+		@details A serie can contain a subserie for an aggregate of actions.
+		@param[in] model the model.
+		@param[in] mask the mask of the rotations.
+		@param[in] aggregate the aggregate the last action is considered to be in.
+		@return the unique series with the number of periods taken.
 		*/
 		std::set<Core::FMTSerie> getRotations(
 			const Models::FMTModel& model, 
@@ -2629,6 +3226,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return theseries;
 		}
 
+		// DocString: FMTGraph::getAllDevelopmentsMask
+		/**
+		@brief Return the masks of all the developments of the graph, ignoring some themes.
+		@param[in] p_themesToIgnore the themes to ignore.
+		@return the development masks.
+		*/
 		std::set<std::string> getAllDevelopmentsMask(
 			const std::vector<Core::FMTTheme>& p_themesToIgnore) const 
 		{
@@ -2652,6 +3255,15 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return masks;
 		}
 
+		// DocString: FMTGraph::getOutVariablesProportions
+		/**
+		@brief Return the schedule of a period where the areas are expressed as proportions of the developments.
+		@param[in] actions the model actions.
+		@param[in] actual_solution the solution.
+		@param[in] lperiod the period.
+		@param[in] withlock if true includes the locked developments.
+		@return the proportion schedule.
+		*/
 		Core::FMTSchedule getOutVariablesProportions(
 			const std::vector<Core::FMTAction>& actions, 
 			const double* actual_solution, 
@@ -2704,6 +3316,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return newSchedule;
 		}
 
+		// DocString: FMTGraph::operator std::string
+		/**
+		@brief Return the string representation of the graph.
+		@return the string representation.
+		*/
 		operator std::string() const
 		{
 			std::ostringstream stream;
@@ -2725,6 +3342,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		typedef typename std::vector<FMTOutputNodeCache<FMTvertex_descriptor FMT_COMMA FMTvertex_iterator>>::reverse_iterator reversecachenodeit;
         FMTGraphStats stats;
 
+		// DocString: FMTGraph::updateVarsMap
+		/**
+		@brief Add a coefficient to a variable in a variables map, summing it if the variable is already present.
+		@param[in,out] variables the variables map.
+		@param[in] var the variable index.
+		@param[in] coef the coefficient.
+		*/
 		void updateVarsMap(
 			std::map<int,double>& variables,
 			const int& var,
@@ -2743,6 +3367,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 		}
 
+		// DocString: FMTGraph::getFirstBlock
+		/**
+		@brief Return an iterator to the first non empty period block of the graph.
+		@return the iterator to the first block.
+		*/
 		typename std::vector<FMTvertex_pair>::iterator getFirstBlock()
 		{
 			typename std::vector<FMTvertex_pair>::iterator periodit = developments.begin();
@@ -2768,6 +3397,11 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return periodit;
 		}
 
+		// DocString: FMTGraph::getFirstConstBlock
+		/**
+		@brief Return a const iterator to the first non empty period block of the graph.
+		@return the const iterator to the first block.
+		*/
 		typename std::vector<FMTvertex_pair>::const_iterator getFirstConstBlock() const
 		{
 			typename std::vector<FMTvertex_pair>::const_iterator periodit = developments.begin();
@@ -2793,6 +3427,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return periodit;
 		}
 
+		// DocString: FMTGraph::isDependant
+		/**
+		@brief Return true if a vertex already has an out edge of a lower action id, indicating an action dependency.
+		@param[in] descriptor the vertex descriptor.
+		@param[in] theactionid the action id.
+		@param[out] newEdge true if a new edge can be added.
+		@return true if the vertex is dependant else false.
+		*/
 		bool isDependant(const FMTvertex_descriptor& descriptor,
 			const int& theactionid,bool& newEdge) const
 		{
@@ -2827,6 +3469,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 	private:
 		friend class boost::serialization::access;
 		template<class Archive>
+		// DocString: FMTGraph::save
+		/**
+		@brief Save function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to save to.
+		@param[in] version the serialization version.
+		*/
 		void save(Archive& ar, unsigned int version) const
 		{
 			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
@@ -2838,6 +3487,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			ar& BOOST_SERIALIZATION_NVP(m_reserve);
 		}
 		template<class Archive>
+		// DocString: FMTGraph::load
+		/**
+		@brief Load function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to load from.
+		@param[in] version the serialization version.
+		*/
 		void load(Archive& ar, unsigned int version)
 		{
 			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
@@ -2851,6 +3507,10 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 
+		// DocString: FMTGraph::_generateDevelopments
+		/**
+		@brief Regenerate the developments location by period from the graph vertices.
+		*/
 		void _generateDevelopments()
 		{
 			try {
@@ -2892,13 +3552,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				_exhandler->raiseFromCatch("", "FMTGraph::_generateDevelopments", __LINE__, __FILE__);
 			}
 		}
+		// DocString: FMTGraph::getDescriptors
 		/**
-		 * @Get the vertex descriptors for one period
-		 * @param[in] p_period
-		 * @param[out] p_masks
-		 * @param[in] p_reserve
-		 * @return vector of descriptors
-		 */
+		@brief Return the vertex descriptors of one period matching a set of masks.
+		@param[in] p_period the period.
+		@param[in,out] p_masks the masks to match.
+		@param[in] p_reserve the number of descriptors to reserve.
+		@return the vertex descriptors.
+		*/
 		std::vector<FMTvertex_descriptor> getDescriptors(
 			const int& p_period,
 			std::vector<const Core::FMTMask*>& p_masks, 
@@ -2916,11 +3577,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 			return p_descriptors;
 		}
+		// DocString: FMTGraph::getSubset
 		/**
-		 * @Test if vectors of descriptors is subset.
-		 * @param[in] p_period
-		 * @param[in] p_reserve
-		 */
+		@brief Fill the masks that are a subset of a static mask.
+		@param[in] p_staticMask the static mask.
+		@param[in,out] p_masks the masks to test.
+		@param[in] p_period the period.
+		@param[in] p_reserve the number of masks to reserve.
+		*/
 		void getSubset(
 			const Core::FMTMask& p_staticMask,
 			std::vector<const Core::FMTMask*>& p_masks,
@@ -2935,13 +3599,15 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				}
 			}
 		}
+		// DocString: FMTGraph::threadedStaticSearch
 		/**
-		 * @Test if vectors of descriptors is subset.
-		 * @param[in] p_node
-		 * @param[in] p_model
-		 * @param[in] p_period
-		 * @param[in] p_reserve
-		 */
+		@brief Search in parallel the vertices matching a static output node for a period.
+		@param[in] p_node the output node.
+		@param[in] p_model the model.
+		@param[in] p_period the period.
+		@param[in] p_reserve the number of descriptors to reserve.
+		@return the matching vertex descriptors.
+		*/
 		std::vector<FMTvertex_descriptor> threadedStaticSearch(
 			const Core::FMTOutputNode& p_node,
 			const Models::FMTModel& p_model,
@@ -2993,6 +3659,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return cleaned;
 		}
 
+		// DocString: FMTGraph::fillNextPeriod
+		/**
+		@brief Fill the vertices of the next periods starting from a vertex.
+		@param[in] p_period the period.
+		@param[in] p_LastPeriod the last period.
+		@param[in] p_vertex the vertex descriptor.
+		@param[in,out] p_descriptors the vertex descriptors.
+		*/
 		void fillNextPeriod(
 			int p_period, 
 			int p_LastPeriod, 
@@ -3028,6 +3702,12 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 		}
 
+		// DocString: FMTGraph::getNextPeriod
+		/**
+		@brief Return the vertex of the next period reached by natural growth from a vertex.
+		@param[in] p_vertex the vertex descriptor.
+		@return the next period vertex.
+		*/
 		FMTvertex_descriptor getNextPeriod(const FMTvertex_descriptor& p_vertex) const
 		{
 			FMTvertex_descriptor NextPeriod = data.null_vertex();
@@ -3046,14 +3726,15 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return NextPeriod;
 		}
 
+		// DocString: FMTGraph::setNodeByStaticMask
 		/**
-		 * @brief select the vertices based on the static nodes. If p_descriptors is not empty it will presume same node but other period.
-		 * @param[in] p_model the optimization model.
-		 * @param[in] p_node the output node.
-		 * @param[in] p_period the period of the node.
-		 * @param[in] p_useCache
-		 * @return vector of cached vertices
-		 */
+		@brief Select the vertices based on the static nodes; if the descriptors are not empty it presumes the same node at another period.
+		@param[in] p_model the optimization model.
+		@param[in] p_node the output node.
+		@param[in] p_period the period of the node.
+		@param[in] p_useCache if true uses the cache.
+		@return the selected vertices.
+		*/
 		std::vector<FMTvertex_descriptor> setNodeByStaticMask(
 			const Models::FMTModel& p_model,
 			const Core::FMTOutputNode& p_node, 
@@ -3187,6 +3868,15 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return p_descriptors;
 		}
 
+		// DocString: FMTGraph::_keepForSerie
+		/**
+		@brief Return true if a vertex must be kept while building an action serie.
+		@param[in] targetdescriptor the target vertex.
+		@param[in] theaction the action iterator.
+		@param[in] actions the model actions.
+		@param[in] mask the mask.
+		@return true if the vertex is kept else false.
+		*/
 		bool _keepForSerie(
 			const FMTvertex_descriptor& targetdescriptor,
 			std::vector<Core::FMTAction>::const_iterator theaction,
@@ -3215,6 +3905,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+		// DocString: FMTGraph::_getActionSerie
+		/**
+		@brief Return the action serie starting from a vertex.
+		@param[in] targetdescriptor the target vertex.
+		@param[in] maxactions the maximal number of actions.
+		@param[in] actions the model actions.
+		@return the action serie.
+		*/
 		std::vector<std::string> _getActionSerie(
 			FMTvertex_descriptor targetdescriptor,
 			const size_t& maxactions, 
@@ -3263,6 +3961,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return theserie;
 		}
 
+		// DocString: FMTGraph::_getActionOfFirstSerie
+		/**
+		@brief Return the action of the first serie of a vertex.
+		@param[in] p_target the target vertex.
+		@param[in] p_SerieSize the serie size.
+		@param[in] p_actions the model actions.
+		@return the action iterator.
+		*/
 		std::vector<Core::FMTAction>::const_iterator _getActionOfFirstSerie(
 			const FMTvertex_descriptor& p_target,
 			size_t p_SerieMaxSize, 
@@ -3290,6 +3996,14 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return p_model.actions.cend();
 		}
 
+		// DocString: FMTGraph::_isValidSeriePath
+		/**
+		@brief Return true if the path from a vertex is a valid action serie.
+		@param[in] p_target the target vertex.
+		@param[in] p_ActionSerie the action serie iterator.
+		@param[in] p_actions the model actions.
+		@return true if the serie path is valid else false.
+		*/
 		bool _isValidSeriePath(
 			const FMTvertex_descriptor& p_target,
 			std::vector<Core::FMTAction>::const_iterator p_ActionSerie,
@@ -3313,6 +4027,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+		// DocString: FMTGraph::_setSerieOperabilityNDeath
+		/**
+		@brief Set the operability and the death of the actions of a serie for a vertex.
+		@param[in] p_target the target vertex.
+		@param[in] p_MaxSerieSize the maximal serie size.
+		@param[in,out] p_actions the model actions.
+		*/
 		void _setSerieOperabilityNDeath(
 			const FMTvertex_descriptor& p_target,
 			const size_t& p_MaxSerieSize,
@@ -3352,6 +4073,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 		}
 
+		// DocString: FMTGraph::isPeriodStart
+		/**
+		@brief Return true if a vertex is at the start of a period in a given adjacency list.
+		@param[in] out_vertex the vertex descriptor.
+		@param[in] p_graph the adjacency list.
+		@return true if the vertex starts a period else false.
+		*/
 		static bool isPeriodStart(
 			const FMTvertex_descriptor& out_vertex,
 			const FMTadjacency_list& p_graph)

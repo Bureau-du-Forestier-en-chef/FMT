@@ -81,7 +81,7 @@ namespace FMTWrapperCore
 		*@param p_models Les modèles du cache; le premier sert de base (ROOT).
 		*@param p_destinationDirectory Le dossier de destination où écrire le projet.
 		*/
-		static void writeToProject(const Models::FMTModel& p_model, const std::string& p_primaryLocation);
+		static void writeToProject(const std::vector<Models::FMTModel>& p_models, const std::string& p_destinationDirectory);
 
 	private:
 		/**

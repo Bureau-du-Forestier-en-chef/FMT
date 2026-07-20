@@ -40,9 +40,8 @@ class FMTMask;
 class FMTMaskFilter;
 // DocString: FMTTheme
 /**
-FMTTheme hold multiple attributes for only one theme. FMTTheme gives the description of a part of a FMTMask
-from the start bit to the start + theme.size() bit. It also hold the information about attribute aggregates.
-FMTTheme is realy close to FMTMask class.
+@brief Class holding the attributes and aggregates of a single theme, describing a part of a FMTMask.
+@details A FMTTheme describes a part of a FMTMask from its start bit to start + size, and holds the attribute aggregates. It is closely related to FMTMask.
 */
 class FMTEXPORT FMTTheme : public FMTObject
     {
@@ -51,17 +50,25 @@ class FMTEXPORT FMTTheme : public FMTObject
 	public:
 		// DocString: FMTTheme()
 		/**
-		Default constructor for FMTTheme.
+		@brief Default constructor for FMTTheme.
 		*/
 		FMTTheme();
 		// DocString: ~FMTTheme()
 		/**
-		Default destructor for FMTTheme.
+		@brief Default destructor for FMTTheme.
 		*/
 		~FMTTheme() = default;
 		// DocString: FMTTheme(const std::vector<std::string>&,const std::vector<std::string>&,const std::vector<std::vector<std::string>>,const std::vector<std::map<std::string, double>>&,const size_t&, const size_t&, const std::string&)
 		/**
-		FMTTheme constructor to use for FMTTheme indexing.
+		@brief Constructor used for theme indexing with indexes.
+		@param[in] p_attributes the attributes.
+		@param[in] p_attributenames the attribute names.
+		@param[in] p_aggregates the aggregates.
+		@param[in] p_aggregatenames the aggregate names.
+		@param[in] p_indexes the indexes of each attribute.
+		@param[in] p_id the id of the theme.
+		@param[in] p_start the start bit location.
+		@param[in] p_name the name of the theme.
 		*/
 		FMTTheme(const std::vector<std::string>& p_attributes,
 			const std::vector<std::string>& p_attributenames,
@@ -71,7 +78,14 @@ class FMTEXPORT FMTTheme : public FMTObject
 			const size_t& p_id, const size_t& p_start, const std::string& p_name);
 		// DocString: FMTTheme(const std::vector<std::string>&,const std::vector<std::string>&,const std::vector<std::vector<std::string>>,const size_t&, const size_t&, const std::string&)
 		/**
-		FMTTheme constructor to use for FMTTheme indexing.
+		@brief Constructor used for theme indexing.
+		@param[in] p_attributes the attributes.
+		@param[in] p_attributenames the attribute names.
+		@param[in] p_aggregates the aggregates.
+		@param[in] p_aggregatenames the aggregate names.
+		@param[in] p_id the id of the theme.
+		@param[in] p_start the start bit location.
+		@param[in] p_name the name of the theme.
 		*/
 		FMTTheme(const std::vector<std::string>& p_attributes,
 			const std::vector<std::string>& p_attributenames,
@@ -80,23 +94,32 @@ class FMTEXPORT FMTTheme : public FMTObject
 			const size_t& p_id, const size_t& p_start, const std::string& p_name);
 		// DocString: FMTTheme(const std::vector<std::string>& lattributes,const size_t&,const size_t&,const std::string&)
 		/**
-		A more simple constructor for FMTTheme without aggregates and indexing.
+		@brief Simpler constructor for a theme without aggregates or indexing.
+		@param[in] p_attributes the attributes.
+		@param[in] p_id the id of the theme.
+		@param[in] p_start the start bit location.
+		@param[in] p_name the name of the theme.
 		*/
 		FMTTheme(const std::vector<std::string>& p_attributes,
 			const size_t& p_id, const size_t& p_start, const std::string& p_name);
 		// DocString: FMTTheme(const FMTTheme&)
 		/**
-		Copy constructor for FMTTheme.
+		@brief Copy constructor for FMTTheme.
+		@param[in] rhs the FMTTheme to copy.
 		*/
 		FMTTheme(const FMTTheme& rhs);
 		// DocString: FMTTheme::operator=
 		/**
-		Copy assignment for FMTTheme.
+		@brief Copy assignment operator for FMTTheme.
+		@param[in] rhs the FMTTheme to copy.
+		@return a reference to this FMTTheme.
 		*/
 		FMTTheme& operator = (const FMTTheme& rhs);
 		// DocString: FMTTheme::isAttribute
 		/**
-		Return true if the (value) is an attribute of the FMTTheme.
+		@brief Return true if the value is an attribute of the theme.
+		@param[in] p_value the value to check.
+		@return true if the value is an attribute else false.
 		*/
 		inline bool isAttribute(const std::string& p_value) const
 		{
@@ -110,7 +133,9 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::isAggregate
 		/**
-		Return true if the (value) is an aggregate of the FMTTheme.
+		@brief Return true if the value is an aggregate of the theme.
+		@param[in] p_value the value to check.
+		@return true if the value is an aggregate else false.
 		*/
 		inline bool isAggregate(const std::string& p_value) const
 		{
@@ -125,42 +150,59 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::isIndex
 		/**
-		Return true if the (value) is an index of the FMTTheme (only use in yields section).
+		@brief Return true if the value is an index of the theme for a given attribute (yields section only).
+		@param[in] p_attribute the attribute.
+		@param[in] p_value the value to check.
+		@return true if the value is an index else false.
 		*/
 		bool isIndex(const std::string& p_attribute, const std::string& p_value) const;
 		// DocString: FMTTheme::isIndex
 		/**
-		Return true if the (value) is an index of the FMTTheme (only use in yields section).
+		@brief Return true if the value is an index of the theme (yields section only).
+		@param[in] p_value the value to check.
+		@return true if the value is an index else false.
 		*/
 		bool isIndex(const std::string& p_value) const;
 		// DocString: FMTTheme::useIndex
 		/**
-		Return true if the FMTTheme uses index.
+		@brief Return true if the theme uses indexes.
+		@return true if the theme uses indexes else false.
 		*/
 		bool useIndex() const;
 		// DocString: FMTTheme::getIndex
 		/**
-		Get the index for the given (attribute) of the index (value).
+		@brief Get the index value for a given attribute and index.
+		@param[in] p_attribute the attribute.
+		@param[in] p_value the index.
+		@return the index value.
 		*/
 		double getIndex(const std::string& p_attribute, const std::string& p_value) const;
 		// DocString: FMTTheme::inAggregate
 		/**
-		Check if the (value) is part of the (aggregate).
+		@brief Check if a value is part of an aggregate.
+		@param[in] p_value the value to check.
+		@param[in] p_aggregate the aggregate.
+		@return true if the value is part of the aggregate else false.
 		*/
 		bool inAggregate(const std::string& p_value, const std::string& p_aggregate);
 		// DocString: FMTTheme::isValid
 		/**
-		Check if the (value) is a valid attribute | aggregate | ? for the FMTTheme.
+		@brief Check if a value is a valid attribute, aggregate or question mark for the theme.
+		@param[in] p_value the value to check.
+		@return true if the value is valid else false.
 		*/
 		bool isValid(const std::string& p_value) const;
 		// DocString: FMTTheme::operator==
 		/**
-		Comparison operator of FMTTheme.
+		@brief Equality comparison operator of FMTTheme.
+		@param[in] p_rhs the theme to compare with.
+		@return true if both themes are equal else false.
 		*/
 		bool operator == (const FMTTheme& p_rhs) const;
 		// DocString: FMTTheme::size
 		/**
-		Return the size of FMTTheme can be 0 if the theme has no attribute.
+		@brief Return the size of the theme, 0 if it has no attribute.
+		@return the size of the theme.
 		*/
 		inline size_t size() const
 		{
@@ -168,7 +210,8 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::getStart
 		/**
-		Return the bit location of the mask at which the theme starts.
+		@brief Return the bit location of the mask at which the theme starts.
+		@return the start bit location.
 		*/
 		inline const size_t& getStart() const
 		{
@@ -176,7 +219,8 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::getId
 		/**
-		Getter for the FMTTheme id.
+		@brief Return the id of the theme.
+		@return the id of the theme.
 		*/
 		inline const size_t& getId() const
 		{
@@ -184,7 +228,8 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::getName
 		/**
-		Getter for the FMTTheme name.
+		@brief Return the name of the theme.
+		@return the name of the theme.
 		*/
 		inline std::string getName() const
 		{
@@ -192,7 +237,8 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::empty
 		/**
-		Check if the FMTTheme is empty (no attribute).
+		@brief Return true if the theme has no attribute.
+		@return true if the theme is empty else false.
 		*/
 		inline bool empty() const
 		{
@@ -200,13 +246,16 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::getAttributes
 		/**
-		Get the attributes of a aggregate (value) for the FMTTheme if aggregate_source == true then the
-		aggregate source map is used.
+		@brief Get the attributes of an aggregate for the theme.
+		@param[in] p_value the aggregate.
+		@param[in] p_aggregate_source if true uses the aggregate source map.
+		@return the attributes of the aggregate.
 		*/
 		std::vector<std::string>getAttributes(const std::string& p_value, bool p_aggregate_source = false) const;
 		// DocString: FMTTheme::getBaseAttributes
 		/**
-		Get a reference to the base attributes of the theme.
+		@brief Return a reference to the base attributes of the theme.
+		@return a reference to the base attributes.
 		*/
 		inline const std::vector<std::string>& getBaseAttributes() const
 		{
@@ -214,7 +263,8 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::getAttributeNames
 		/**
-		Get the names of the attributes.
+		@brief Return the names of the attributes.
+		@return the names of the attributes.
 		*/
 		const std::vector<std::string>& getAttributeNames() const
 		{
@@ -222,53 +272,66 @@ class FMTEXPORT FMTTheme : public FMTObject
 		}
 		// DocString: FMTTheme::presolve
 		/**
-		The function presolve the FMTTheme so it removes non used attributes base on the baseMask and fill up the
-		selected mask we the selected attribute is the presolved FMTTheme is not empty and size > 1 then
-		it gets an newid and a newstart and increment both.
+		@brief Presolve the theme, removing unused attributes based on the filter and assigning a new id and start.
+		@param[in,out] p_maskfilter the mask filter.
+		@param[in,out] p_newid the new id, incremented if the presolved theme is not empty and has size greater than 1.
+		@param[in,out] p_newstart the new start, incremented accordingly.
+		@return the presolved theme.
 		*/
 		FMTTheme presolve(FMTMaskFilter& p_maskfilter, size_t& p_newid, size_t& p_newstart) const;
 		// DocString: FMTTheme::updateFromMask
 		/**
-		Base on a global mask it will update the theme with the aggregate in the mask or with newly created aggregates.
-		It will also return the new attribute value.
+		@brief Update the theme with the aggregates in a global mask or with newly created aggregates and return the new attribute value.
+		@param[in] p_globalmask the global mask.
+		@return the new attribute value.
 		*/
 		std::string updateFromMask(const Core::FMTMask& p_globalmask);
 		// DocString: FMTTheme::operator std::string
 		/**
-		Return a string representation of the FMTTheme seen in a landscape file
+		@brief Return a string representation of the theme as seen in a landscape file.
+		@return the string representation of the theme.
 		*/
 		operator std::string() const;
 #if defined FMTWITHR
 		// DocString:  FMTTheme::getaggregatesdataframe
 		/**
-		Returns a dataframe filled up with the aggregates of each themes (col1 = THEME, col2 = ATTRIBUTES,col3 = AGGREGATES)
+		@brief Return a dataframe filled with the aggregates of each theme (THEME, ATTRIBUTES, AGGREGATES).
+		@return the aggregates dataframe.
 		*/
 		Rcpp::DataFrame getAggregatesAsDataFrame() const;
 		// DocString:  FMTTheme::getAttributesAsDataFrame
 		/**
-		Returns a dataframe filled up with the attributes (col1 = ATTRIBUTE, col2 = NAMES)
+		@brief Return a dataframe filled with the attributes (ATTRIBUTE, NAMES).
+		@return the attributes dataframe.
 		*/
 		Rcpp::DataFrame getAttributesAsDataFrame() const;
 #endif
 		// DocString: FMTTheme::validate
 		/**
-		The function validate a the construction of a valid FMTMask using the mask string based on the
-		themes. If their's less themes that the number present in the string mask then the string mask is
-		going to be trim for the good number of FMTthemes.
+		@brief Validate the construction of a valid mask string based on the themes, trimming the mask if there are fewer themes than in the string.
+		@param[in] p_themes the themes.
+		@param[in,out] p_mask the mask string.
+		@param[in] p_otherinformation optional additional information.
+		@return true if the mask is valid else false.
 		*/
 		static bool validate(const std::vector<Core::FMTTheme>& p_themes,
 			std::string& p_mask, std::string p_otherinformation = std::string());
 		// DocString: FMTObject::theme
 		/**
-		This function validate the mask string for a given vector of themes and throw exception if
-		something is not right. It'S called by the validate function.
+		@brief Validate the mask string for a vector of themes and throw an exception if something is wrong, called by validate.
+		@param[in] p_themes the themes.
+		@param[in] p_values the attribute values.
+		@param[in,out] p_mask the mask string.
+		@param[in] p_otherinformation additional information.
+		@return true if the mask is valid else false.
 		*/
 		static bool checkMask(const std::vector<Core::FMTTheme>& p_themes,
 			const std::vector<std::string>& p_values, std::string& p_mask,
 			const std::string& p_otherinformation);
 		// DocString: FMTObject::getAggregates
 		/**
-		Returns the aggregates of the theme.
+		@brief Return the aggregates of the theme.
+		@return the aggregates of the theme.
 		*/
 		std::vector<std::string>getAggregates() const;
 	protected:
@@ -281,7 +344,10 @@ class FMTEXPORT FMTTheme : public FMTObject
     private:
 		// DocString: FMTTheme::serialize
 		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTTheme through its base FMTObject for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -329,60 +395,62 @@ class FMTEXPORT FMTTheme : public FMTObject
 		std::string m_name;
 		// DocString: FMTTheme::strToBits
 		/**
-		Convert an attribute|aggregate|? (value) to a bitset for the entire theme size.
+		@brief Convert an attribute, aggregate or question mark to a bitset for the whole theme size.
+		@param[in] p_value the value to convert.
+		@return the bitset of the value.
 		*/
 		 boost::dynamic_bitset<uint8_t> strToBits(const std::string& p_value) const;
 		// DocString: FMTTheme::_getCount
 		/**
-		@brief Get the turned on bits of the theme subset.
-		@param[in] the mask.
-		@return the count
+		@brief Get the number of bits set in the theme subset of a mask.
+		@param[in] p_mask the mask.
+		@return the number of bits set.
 		*/
 		size_t _getCount(const Core::FMTMask& p_mask) const;
 		// DocString: FMTTheme::_getFlipCount
 		/**
-		@brief Get the turned off bits of the theme subset.
-		@param[in] the mask.
-		@return the count
+		@brief Get the number of bits unset in the theme subset of a mask.
+		@param[in] p_mask the mask.
+		@return the number of bits unset.
 		*/
 		size_t _getFlipCount(const Core::FMTMask& p_mask) const;
 		// DocString: FMTTheme::_findFirstFlip
 		/**
-		@brief Get the turned off bits of the theme subset.
-		@param[in] the mask.
-		@return the count
+		@brief Get the position of the first bit unset in the theme subset of a mask.
+		@param[in] p_mask the mask.
+		@return the position of the first bit unset.
 		*/
 		size_t _findFirstFlip(const Core::FMTMask& p_mask) const;
 		// DocString: FMTTheme::_findFirst
 		/**
-		@brief Get the turned on bits of the theme subset.
-		@param[in] the mask.
-		@return the count
+		@brief Get the position of the first bit set in the theme subset of a mask.
+		@param[in] p_mask the mask.
+		@return the position of the first bit set.
 		*/
 		size_t _findFirst(const Core::FMTMask& p_mask) const;
 		// DocString: FMTTheme::_isEqual
 		/**
-		@brief check if mask subset is equal to p_bits
-		@param[in] the mask.
-		@param[in] the bits to check.
-		@return true if equal
+		@brief Check if the theme subset of a mask is equal to given bits.
+		@param[in] p_mask the mask.
+		@param[in] p_bits the bits to check.
+		@return true if equal else false.
 		*/
 		bool _isEqual(const Core::FMTMask& p_mask,
 			const boost::dynamic_bitset<uint8_t>& p_bits) const;
 		// DocString: FMTTheme::_isFlipEqual
 		/**
-		@brief check if fmask subset is equal to flipped p_bits
-		@param[in] the mask.
-		@param[in] the bits to check.
-		@return true if equal
+		@brief Check if the theme subset of a mask is equal to the flipped given bits.
+		@param[in] p_mask the mask.
+		@param[in] p_bits the bits to check.
+		@return true if equal else false.
 		*/
 		bool _isFlipEqual(const Core::FMTMask& p_mask,
 			const boost::dynamic_bitset<uint8_t>& p_bits) const;
 		// DocString: FMTTheme::bitsToStr
 		/**
-		@brief Convert a bitset to an attribute|aggregate|? (value) for the entire theme size.
-		@param[in] the mask
-		@return the string value;
+		@brief Convert a bitset to an attribute, aggregate or question mark for the whole theme size.
+		@param[in] p_mask the mask.
+		@return the string value.
 		*/
 		std::string bitsToStr(const Core::FMTMask& p_mask) const;
 		// DocString: FMTTheme::_getAttribute
@@ -394,28 +462,36 @@ class FMTEXPORT FMTTheme : public FMTObject
 		const std::string& _getAttribute(size_t p_attributeId) const;
 		// DocString: FMTTheme::getAttribute
 		/**
-		Get the attribute iterator, will raise if not found.
+		@brief Get the attribute iterator, raising if not found.
+		@param[in] p_value the attribute value.
+		@param[in] p_raiseifnotfound if true raises if the attribute is not found.
+		@return the attribute iterator.
 		*/
 		lookiterator getAttribute(const std::string& p_value, bool p_raiseifnotfound = false) const;
 		// DocString: FMTTheme::buildAttributeLocations
 		/**
-		For optimization build the attribute location of the theme. If only new aggregates added
-		specify the aggregate id to skip some process if 0 will do everything.
+		@brief Build the attribute locations of the theme for optimization.
 		*/
 		void buildAttributeLocations();
 		// DocString: FMTTheme::fillupAggregates
 		/**
-		Fill up the aggregates vectors, vector<int> = themeid startingfrom 1, vector<std::string> = attributes, vector<std::string> = aggregates.
+		@brief Fill up the aggregates vectors of the theme.
+		@param[in,out] p_themeids the theme ids starting from 1.
+		@param[in,out] p_locattributes the attributes.
+		@param[in,out] p_locaggregates the aggregates.
 		*/
 		void fillupAggregates(std::vector<int>& p_themeids, std::vector<std::string>& p_locattributes, std::vector<std::string>& p_locaggregates) const;
 		// DocString: FMTTheme::pushAggregate
 		/**
-		Push a new aggregate.
+		@brief Push a new aggregate to the theme.
+		@param[in] p_aggregatename the name of the aggregate.
 		*/
 		void pushAggregate(const std::string& p_aggregatename);
 		// DocString: FMTTheme::pushAggregate
 		/**
-		Push a new aggregate value.
+		@brief Push a new value to an aggregate of the theme.
+		@param[in] p_aggregatename the name of the aggregate.
+		@param[in] p_value the value to push.
 		*/
 		void pushAggregateValue(const std::string& p_aggregatename, const std::string& p_value);
 	
@@ -424,19 +500,23 @@ class FMTEXPORT FMTTheme : public FMTObject
 
 	// DocString: FMTThemeComparator
 	/**
-	FMTThemeComparator to check two themes are the same.
+	@brief Comparator used to check if two themes are the same.
 	*/
 	class FMTThemeComparator
 	{
 	public:
 		// DocString: FMTThemeComparator(const FMTTheme&,const bool&)
 		/**
-		FMTThemeComparator constructor ltheme_mask is the theme of that we want to match.
+		@brief Construct the comparator from the theme to match.
+		@param[in] p_lbase_theme the theme to match.
+		@param[in] p_lcomparedwithpresolved if true compares with the presolved theme.
 		*/
 		FMTThemeComparator(const FMTTheme& p_lbase_theme,const bool& p_lcomparedwithpresolved=false);
 		// DocString: FMTthemecomparatorr::operator()(const FMTTheme&)
 		/**
-		Matching test operator for FMTThemeComparator.
+		@brief Matching test operator for the comparator.
+		@param[in] p_theme the theme to test.
+		@return true if the theme matches else false.
 		*/
 		bool operator()(const FMTTheme& p_theme) const;
 	private:

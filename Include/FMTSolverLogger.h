@@ -19,7 +19,7 @@ namespace Logging
 	class FMTLogger;
 	// DocString: FMTSolverLogger
 	/**
-	Abstract class for usage in Osisolverinterface.
+	@brief Abstract logger used with the OSI solver interface (CoinMessageHandler).
 	*/
 	class FMTSolverLogger: public CoinMessageHandler
 		{
@@ -27,49 +27,54 @@ namespace Logging
 		public:
 			// DocString: FMTSolverLogger(const FMTLogger& baselogger)
 			/**
-			Constuct a logger using an abstrsact FMTLogger.
+			@brief Construct a solver logger from a FMTLogger.
+			@param[in] baselogger the base FMTLogger to use.
 			*/
 			FMTSolverLogger(FMTLogger& baselogger);
 			// DocString: FMTSolverLogger()
 			/**
-			FMTSolverLogger default constructor.
+			@brief Default constructor for FMTSolverLogger.
 			*/
 			FMTSolverLogger();
 			// DocString: ~FMTSolverLogger()
 			/**
-			FMTsolverlogge default destructor.
+			@brief Default destructor for FMTSolverLogger.
 			*/
 			virtual ~FMTSolverLogger();
 			// DocString: FMTSolverLogger(const FMTsolverlogge&)
 			/**
-			FMTSolverLogger copy constructor.
+			@brief Default copy constructor for FMTSolverLogger.
+			@param[in] rhs the FMTSolverLogger to copy.
 			*/
 			FMTSolverLogger(const FMTSolverLogger& rhs)=default;
 			
 			// DocString: FMTLogger::operator=
 			/**
-			FMTsolverlogge copy assignment operator.
+			@brief Copy assignment operator for FMTSolverLogger.
+			@param[in] rhs the FMTSolverLogger to copy.
+			@return a reference to this FMTSolverLogger.
 			*/
 			FMTSolverLogger& operator = (const FMTSolverLogger& rhs)=default;
 			// DocString: FMTSolverLogger::print
 			/**
-			FMTsolverlogge print function if we are using Osisolverinterface the coinmessagehandler
-			print function needs to be overloaded.
+			@brief Override the CoinMessageHandler print function used with the OSI solver interface.
+			@return the value returned by the print function.
 			*/
 			int print() override;
 			// DocString: FMTSolverLogger::checkSeverity
 			/**
-			FMTsolverlogge check the severity of the message to be print by the coinmessagehandler base class.
+			@brief Check the severity of the message to be printed by the CoinMessageHandler base class.
 			*/
 			void checkSeverity() override;
 			// DocString: FMTSolverLogger::checkcoinSeverity
 			/**
-			FMTsolverlogge check the severity of the coin message to be print by the coinmessagehandler base class.
+			@brief Check the severity of the coin message to be printed by the CoinMessageHandler base class.
 			*/
 			void checkcoinSeverity();
 			// DocString: FMTSolverLogger::clone
 			/**
-			Clone function needed for the usage of abstract coingmessagehandler class.
+			@brief Clone the logger, needed for the abstract CoinMessageHandler class.
+			@return a pointer to the cloned CoinMessageHandler.
 			*/
 			CoinMessageHandler * clone() const override;
 		private:
@@ -81,17 +86,19 @@ namespace Logging
 			bool ownthelogger;
 			// DocString: FMTSolverLogger::cleanUp()
 			/**
-			Check if you can delete baselogger and delete it if so.
+			@brief Delete the base logger if it is owned by this logger.
 			*/
 			void cleanUp();
 			// DocString: FMTSolverLogger::copy()
 			/**
-			Safely copy from an other solverlogger
+			@brief Safely copy from another solver logger.
+			@param[in] rhs the FMTSolverLogger to copy from.
 			*/
 			void copy(const FMTSolverLogger& rhs);
 			// DocString: FMTSolverLogger::copyFrom()
 			/**
-			FMTSolverLogger copy constructor.
+			@brief Copy the members from another solver logger.
+			@param[in] rhs the FMTSolverLogger to copy from.
 			*/
 			void copyFrom(const FMTSolverLogger& rhs);
 		};

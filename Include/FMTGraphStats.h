@@ -22,14 +22,17 @@ namespace Graph
 {
 // DocString: FMTGraphStats
 /**
-Graph stats gives you information about the FMTGraph and the FMTLpSolver. About there size, elements and type of elements.
+@brief Statistics about a FMTGraph and its FMTLpSolver: their size, elements and type of elements.
 */
 class FMTEXPORT FMTGraphStats
 	{
 	friend class boost::serialization::access;
 	// DocString: FMTGraphStats::serialize
 	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize the FMTGraphStats for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -66,57 +69,73 @@ class FMTEXPORT FMTGraphStats
 		int output_cols;
 		// DocString: FMTGraphStats()
 		/**
-		Default constructor for FMTGraphStats.
+		@brief Default constructor for FMTGraphStats.
 		*/
 		FMTGraphStats();
 		// DocString: FMTGraphStats(const FMTGraphStats&)
 		/**
-		Default copy constructor for FMTGraphStats.
+		@brief Default copy constructor for FMTGraphStats.
+		@param[in] rhs the FMTGraphStats to copy.
 		*/
 		FMTGraphStats(const FMTGraphStats& rhs)=default;
 		// DocString: FMTGraphStats::operator=
 		/**
-		Default copy assignment for FMTGraphStats.
+		@brief Default copy assignment operator for FMTGraphStats.
+		@param[in] rhs the FMTGraphStats to copy.
+		@return a reference to this FMTGraphStats.
 		*/
 		FMTGraphStats& operator = (const FMTGraphStats& rhs)=default;
 		// DocString: FMTGraphStats::operator+=
 		/**
-		Default += compount assignment for FMTGraphStats.
+		@brief Compound addition assignment operator for FMTGraphStats.
+		@param[in] rhs the FMTGraphStats to add.
+		@return a reference to this FMTGraphStats.
 		*/
 		FMTGraphStats& operator += (const FMTGraphStats& rhs);
 		// DocString: FMTGraphStats::operator-=
 		/**
-		Default -= compount assignment for FMTGraphStats.
+		@brief Compound subtraction assignment operator for FMTGraphStats.
+		@param[in] rhs the FMTGraphStats to subtract.
+		@return a reference to this FMTGraphStats.
 		*/
 		FMTGraphStats& operator -= (const FMTGraphStats& rhs);
 		// DocString: FMTGraphStats::operator+
 		/**
-		Default + operator for FMTGraphStats.
+		@brief Addition operator for FMTGraphStats.
+		@param[in] rhs the FMTGraphStats to add.
+		@return the sum of the FMTGraphStats.
 		*/
 		FMTGraphStats operator + (const FMTGraphStats& rhs);
 		// DocString: FMTGraphStats::operator-
 		/**
-		Default - operator for FMTGraphStats.
+		@brief Subtraction operator for FMTGraphStats.
+		@param[in] rhs the FMTGraphStats to subtract.
+		@return the difference of the FMTGraphStats.
 		*/
 		FMTGraphStats operator - (const FMTGraphStats& rhs);
 		// DocString: FMTGraphStats::operator==
 		/**
-		Comparison operator of FMTGraphStats.
+		@brief Comparison operator for FMTGraphStats.
+		@param[in] rhs the FMTGraphStats to compare to.
+		@return true if both stats are equal else false.
 		*/
 		bool operator == (const FMTGraphStats& rhs) const;
 		// DocString: FMTGraphStats::operator!=
 		/**
-		FMTGraphStats nonequality operator.
+		@brief Comparison operator for FMTGraphStats.
+		@param[in] rhs the FMTGraphStats to compare to.
+		@return true if both stats are different else false.
 		*/
 		bool operator != (const FMTGraphStats& rhs) const;
-		// DocString: FMTGraphStats:operator std::string
+		// DocString: FMTGraphStats::operator std::string
 		/**
-		Returns all the informations contained in the FMTGraphStats in a std::string.
+		@brief Return all the information contained in the FMTGraphStats as a string.
+		@return the string representation of the stats.
 		*/
 		operator std::string() const;
 		// DocString: ~FMTGraphStats()
 		/**
-		Default destructor for FMTGraphStats.
+		@brief Default destructor for FMTGraphStats.
 		*/
 		~FMTGraphStats()=default;
 	};

@@ -15,13 +15,16 @@ namespace Logging
 {
 // DocString: FMTQuietLogger
 /**
-FMTQuietLogger will not print any solver informations from osisolverinterface.
+@brief Logger derived from FMTLogger that does not print any solver information from the OSI solver interface.
 */
 class FMTEXPORT FMTQuietLogger final : public FMTLogger
 	{
 	// DocString: FMTQuietLogger::serialize
 	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize the FMTQuietLogger through its base FMTLogger for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -32,45 +35,48 @@ class FMTEXPORT FMTQuietLogger final : public FMTLogger
 	public:
 		// DocString: FMTQuietLogger()
 		/**
-		FMTQuietLogger default constructor.
+		@brief Default constructor for FMTQuietLogger.
 		*/
 		FMTQuietLogger();
 		// DocString: FMTQuietLogger(const FMTQuietLogger&)
 		/**
-		FMTQuietLogger default copy constructor.
+		@brief Default copy constructor for FMTQuietLogger.
 		*/
 		FMTQuietLogger(const FMTQuietLogger&) = default;
 		// DocString: FMTQuietLogger::operator=
 		/**
-		FMTQuietLogger default copy assignment.
+		@brief Default copy assignment operator for FMTQuietLogger.
+		@return a reference to this FMTQuietLogger.
 		*/
 		FMTQuietLogger& operator = (const FMTQuietLogger&) = default;
 		// DocString: FMTQuietLogger::~FMTQuietLogger
 		/**
-		FMTQuietLogger default destructor.
+		@brief Default destructor for FMTQuietLogger.
 		*/
 		~FMTQuietLogger()=default;
 		#ifdef FMTWITHOSI
 			// DocString: FMTQuietLogger::print
 			/**
-			FMTQuietLogger print nothing with osisolverinterface.
-			See FMTLogger print function.
+			@brief Print nothing with the OSI solver interface. See FMTLogger::print.
+			@return the value returned by the print function.
 			*/
 			int print() override;
 			// DocString: FMTQuietLogger::checkSeverity
 			/**
-			See FMTLogger checkSeverity function.
+			@brief Check the severity of the message. See FMTLogger::checkSeverity.
 			*/
 			void checkSeverity() override;
 			// DocString: FMTQuietLogger::clone
 			/**
-			See FMTLogger clone function.
+			@brief Clone the logger for the OSI solver interface. See FMTLogger::clone.
+			@return a pointer to the cloned logger.
 			*/
 			FMTLogger* clone() const override;
 			#endif
 			// DocString: FMTQuietLogger::cout
 			/**
-			See FMTLogger cout function that does nothing.
+			@brief Output nothing. See FMTLogger::cout.
+			@param[in] message the message to output.
 			*/
 			void cout(const char* message) const override;
 		// DocString: FMTQuietLogger::Clone

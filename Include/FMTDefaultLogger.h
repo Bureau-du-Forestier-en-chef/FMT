@@ -14,14 +14,16 @@ namespace Logging
 {
 	// DocString: FMTDefaultLogger 
 	/**
-	FMTDefaultLogger is derived class from FMTLogger standing has the default
-	level of log used by FMT.
+	@brief Default level logger derived from FMTLogger used by FMT.
 	*/
 	class FMTEXPORT FMTDefaultLogger final: public FMTLogger
 	{
 		// DocString: FMTDefaultLogger::serialize
 		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTDefaultLogger through its base FMTLogger for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -32,40 +34,43 @@ namespace Logging
 	public:
 		// DocString: FMTDefaultLogger()
 		/**
-		FMTDefaultLogger default constructor.
+		@brief Default constructor for FMTDefaultLogger.
 		*/
 		FMTDefaultLogger();
 		// DocString: ~FMTDefaultLogger()
 		/**
-		FMTDefaultLogger default destructor.
+		@brief Default destructor for FMTDefaultLogger.
 		*/
 		~FMTDefaultLogger() = default;
 		// DocString: FMTDefaultLogger::operator=
 		/**
-		FMTDefaultLogger default copy assignment operator.
+		@brief Default copy assignment operator for FMTDefaultLogger.
+		@param[in] rhs the FMTDefaultLogger to copy.
+		@return a reference to this FMTDefaultLogger.
 		*/
 		FMTDefaultLogger & operator = (const FMTDefaultLogger & rhs) = default;
 		// DocString: FMTDefaultLogger(const FMTDefaultLogger&)
 		/**
-		FMTDefaultLogger default copy constructor.
+		@brief Default copy constructor for FMTDefaultLogger.
+		@param[in] rhs the FMTDefaultLogger to copy.
 		*/
 		FMTDefaultLogger(const FMTDefaultLogger& rhs) = default;
 		#ifdef FMTWITHOSI
 			// DocString: FMTDefaultLogger::print
 			/**
-			FMTDefaultLogger print for osisolverinterface is the default print level used by FMT.
-			See FMTLogger print function.
+			@brief Default print level used by FMT for the OSI solver interface. See FMTLogger::print.
+			@return the value returned by the print function.
 			*/
 			int print() override;
 			// DocString: FMTDefaultLogger::checkSeverity
 			/**
-			FMTDefaultLogger checkseverity for osisolverinterface is the default severity check used by FMT.
-			See FMTLogger checkSeverity function.
+			@brief Default severity check used by FMT for the OSI solver interface. See FMTLogger::checkSeverity.
 			*/
 			void checkSeverity() override;
 			// DocString: FMTDefaultLogger::clone
 			/**
-			See FMTLogger clone function.
+			@brief Clone the logger for the OSI solver interface. See FMTLogger::clone.
+			@return a pointer to the cloned logger.
 			*/
 			FMTLogger* clone() const override;
 		#endif

@@ -23,66 +23,81 @@ namespace Parser
 {
 // DocString: FMTScheduleParser
 /**
-FMTScheduleParser implement the reading and writing of a vector of FMTschedules.
-This parser is also used by the FMTModelParser.
+@brief Parser reading and writing vectors of schedules, also used by the model parser.
 */
 class FMTEXPORT FMTScheduleParser: public FMTParser
     {
 	public:
 		// DocString: FMTScheduleParser()
 		/**
-		Default constructor for FMTScheduleParser
+		@brief Default constructor for FMTScheduleParser.
 		*/
         FMTScheduleParser();
 		// DocString: ~FMTScheduleParser()
 		/**
-		Default destructor for FMTScheduleParser
+		@brief Default destructor for FMTScheduleParser.
 		*/
 		~FMTScheduleParser() = default;
 		// DocString: FMTScheduleParser(const FMTScheduleParser&)
 		/**
-		Default copy constructor for FMTScheduleParser
+		@brief Copy constructor for FMTScheduleParser.
+		@param[in] rhs the FMTScheduleParser to copy.
 		*/
         FMTScheduleParser(const FMTScheduleParser& rhs);
 		// DocString: FMTScheduleParser::getSchedulePath
 		/**
-		Take a primary path and a scenario name and return the path to the schedule file (in Scenario or in root).
+		@brief Return the path to the schedule file from a primary path and a scenario name.
+		@param[in] p_primary_path the primary path.
+		@param[in] p_output_scenario_name the scenario name.
+		@return the schedule file path.
 		*/
 		std::string getSchedulePath(const std::string& p_primary_path, const std::string& p_output_scenario_name);
 		// DocString: FMTScheduleParser::operator=
 		/**
-		Default copy assignment operator for FMTScheduleParser
+		@brief Copy assignment operator for FMTScheduleParser.
+		@param[in] rhs the FMTScheduleParser to copy.
+		@return a reference to this FMTScheduleParser.
 		*/
         FMTScheduleParser& operator = (const FMTScheduleParser& rhs);
 		// DocString: FMTScheduleParser::read
 		/**
-		This function reads a schedule section at a given (location) and turns it into a vector of FMTSchedule,
-		using a complete vector of FMTTheme (themes), a vector of FMTAction (action), and a optional (tolerance).
-		If area harvested for a given development is <= to tolerance parameter then it wont be selected. 
+		@brief Read a schedule section and turn it into a vector of schedules.
+		@param[in] themes the themes.
+		@param[in] actions the actions.
+		@param[in] location the file location.
+		@param[in] tolerance the area tolerance below which a development is not selected.
+		@return the schedules.
 		*/
         std::vector<Core::FMTSchedule>read(const std::vector<Core::FMTTheme>& themes,
 			const  std::vector<Core::FMTAction>& actions,const std::string& location,double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTScheduleParser::write
 		/**
-		This function write a vector of FMTschedules (schedules) into a (location) schedule file.
+		@brief Write a vector of schedules to a schedule file.
+		@param[in] schedules the schedules.
+		@param[in] location the file location.
+		@param[in] append if true appends to the file.
 		*/
         void write(const std::vector<Core::FMTSchedule>& schedules, const std::string& location, bool append = false) const;
 
 	private:
 		// DocString: FMTScheduleParser::getVariable
 		/**
-		This function uses the comment present in the schedule section representing the
-		variable index of the scheduled area to harvest and return it has a int value.
+		@brief Return the variable index of the scheduled area to harvest from the section comment.
+		@return the variable index.
 		*/
 		int getVariable() const;
 		// DocString: FMTScheduleParser::
 		/**
-
+		@brief Write the schedules to a stream.
+		@param[in,out] p_stream the output stream.
+		@param[in] p_schedules the schedules.
 		*/
 		static void _writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTSchedule>& p_schedules);
 		// DocString: FMTScheduleParser::
 		/**
-
+		@brief Return an iterator to the first empty schedule.
+		@param[in] p_schedules the schedules.
+		@return an iterator to the first empty schedule.
 		*/
 		static std::vector<Core::FMTSchedule>::const_iterator _getFirstEmptySchedule(const std::vector<Core::FMTSchedule>& p_schedules);
 

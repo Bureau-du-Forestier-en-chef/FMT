@@ -21,7 +21,7 @@ namespace Core
 	class FMTOutput;
 	// DocString: FMTYieldModelDecisionTree
 	/**
-	FMTYieldModelDecisionTree use a decision tree based on outputs of the model (growth only) to get yield values.
+	@brief Yield model using a decision tree based on the growth outputs of the model to get yield values.
 	*/
 	class FMTYieldModelDecisionTree : public FMTYieldModel
 	{
@@ -55,94 +55,121 @@ namespace Core
 	const std::string JSON_PROP_DEFAULT = "Default";
 	// DocString: FMTYieldModelDecisionTree::getMask
 	/**
-	Get the mask of the actual decision tree. Will return a valid mask of the reference output
+	@brief Return the mask of the decision tree, a valid mask of the reference output.
+	@return the mask.
 	*/
 	Core::FMTMask getMask() const;
 	// DocString: FMTYieldModelDecisionTree::buildconstraint
 	/**
-	Take the yield, the main mask lowerbound and upperbound and build up a constraint on the form of:
-	*OUTPUT constraint
-	*SOURCE mainmask _INVENT yld
-	constraint <= upperbound
-	constraint >= lowerbound
-	lag is the amount of period added or removed when getting constraint output values.
+	@brief Build a constraint on a yield with a lower and upper bound.
+	@param[in] name the constraint name.
+	@param[in] yld the yield.
+	@param[in] mask the main mask.
+	@param[in] lowerbound the lower bound.
+	@param[in] upperbound the upper bound.
+	@param[in] lag the number of periods added or removed when getting the constraint output values.
+	@return the constraint.
 	*/
 	Core::FMTConstraint buildConstraint(const std::string& name, const std::string& yld, const Core::FMTMask& mask, const double& lowerbound, const double& upperbound,const int& lag) const;
 	// DocString: FMTYieldModelDecisionTree::getadecision
 	/**
-	From de constraint id return a new constraint id based on the naturalGrowth and the period with the decision tree
+	@brief Return a new constraint id based on the natural growth and the period using the decision tree.
+	@param[in] naturalGrowth the natural growth model.
+	@param[in] constraint_id the constraint id.
+	@param[in] period the period.
+	@return the new constraint id.
 	*/
 	size_t getADecision(const std::unique_ptr<Models::FMTModel>& naturalGrowth,const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const;
 	// DocString: FMTYieldModelDecisionTree::getnaturalgrowth
 	/**
-	Build the natural growth model with a request (original model) to be able to call getadecision on the growthmodel
-	this function has to be thread safe. Only build a small model dedicated to the reference output 
+	@brief Build a small natural growth model dedicated to the reference output for a request, in a thread safe way.
+	@param[in] request the yield request.
+	@return the natural growth model.
 	*/
 	std::unique_ptr<Models::FMTModel> getNaturalGrowth(const Core::FMTYieldRequest& request) const;
 	// DocString: FMTYieldModelDecisionTree::modify
 	/**
-	This will modify the class if presolve = true will do presolve, if not will do postSolve.
+	@brief Modify the model by presolving or postsolving it.
+	@param[in] filter the mask filter.
+	@param[in] newthemes the themes.
+	@param[in] presolve if true presolves, otherwise postsolves.
+	@return the modified yield model.
 	*/
 	std::unique_ptr<FMTYieldModel> modify(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& newthemes,bool presolve = true) const;
 	public:
 		// DocString: FMTYieldModelDecisionTree::FMTYieldModelDecisionTree()
 		/**
-		Default constructor.
+		@brief Default constructor for FMTYieldModelDecisionTree.
 		*/
 		FMTYieldModelDecisionTree() = default;
 		// DocString: FMTYieldModelDecisionTree::FMTYieldModelDecisionTree(const FMTYieldModelDecisionTree& rhs)
 		/**
-		Copy constructor.
+		@brief Copy constructor for FMTYieldModelDecisionTree.
+		@param[in] rhs the FMTYieldModelDecisionTree to copy.
 		*/
 		FMTYieldModelDecisionTree(const FMTYieldModelDecisionTree& rhs);
 		// DocString: FMTYieldModelDecisionTree::operator = (const FMTYieldModelDecisionTree& rhs)
 		/**
-		Default equality operator.
+		@brief Copy assignment operator for FMTYieldModelDecisionTree.
+		@param[in] rhs the FMTYieldModelDecisionTree to copy.
+		@return a reference to this FMTYieldModelDecisionTree.
 		*/
 		FMTYieldModelDecisionTree& operator = (const FMTYieldModelDecisionTree& rhs)=default;
 		// DocString: FMTYieldModelDecisionTree::~FMTYieldModelDecisionTree()
 		/**
-		Default destructor.
+		@brief Default destructor for FMTYieldModelDecisionTree.
 		*/
 		~FMTYieldModelDecisionTree()=default;
 		// DocString: FMTYieldModelDecisionTree::FMTYieldModelDecisionTree(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 		/**
-		Construct a FMTYieldModelDecisionTree based on a JSON file and an input yield name list and also on the global mask
+		@brief Construct a decision tree yield model from a JSON tree, an input yield name list and the global mask.
+		@param[in] jsonProps the JSON properties.
+		@param[in] inputYields the input yield names.
+		@param[in] mainmask the global mask.
 		*/
 		FMTYieldModelDecisionTree(const boost::property_tree::ptree& jsonProps,const std::vector<std::string>& inputYields,const Core::FMTMask& mainmask);
 		// DocString: FMTYieldModelDecisionTree::Clone()
 		/**
-		Implements FMTYieldModel::Clone().
+		@brief Clone the yield model.
+		@return a unique pointer to the cloned yield model.
 		*/
 		std::unique_ptr<FMTYieldModel>Clone() const;
 		// DocString: FMTYieldModelDecisionTree::predict
 		/**
-		Runs the decision tree so if the values are not set build a naturalGrowth model and run the decision tree and get the decision for all
-		periods. Finaly return the predictions.
+		@brief Run the decision tree, building a natural growth model if needed, and return the predictions.
+		@param[in] request the yield request.
+		@return the predicted values.
 		*/
 		const std::vector<double>predict(const Core::FMTYieldRequest& request) const;
 		// DocString: FMTYieldModelDecisionTree::getModelType()
 		/**
-		Return the modeltype of the FMTYieldModel.
+		@brief Return the model type of the yield model.
+		@return the model type.
 		*/
 		static std::string getModelType();
 		// DocString: FMTYieldModelDecisionTree::presolve
 		/**
-		Return a presolved FMTYieldModelDecisionTree
+		@brief Return a presolved copy of the yield model.
+		@param[in] filter the mask filter.
+		@param[in] newthemes the presolved themes.
+		@return the presolved yield model.
 		*/
 		virtual std::unique_ptr<FMTYieldModel> presolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& newthemes) const;
 		// DocString: FMTYieldModelDecisionTree::postSolve
 		/**
-		Change the output and constraints mask to return to the original constraints and outputs.
+		@brief Return a postsolved copy of the yield model, restoring the original output and constraint masks.
+		@param[in] filter the mask filter.
+		@param[in] basethemes the original themes.
+		@return the postsolved yield model.
 		*/
 		virtual std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& basethemes) const;
 		// DocString: FMTyieldmodeldecisiontreel::getPeriodicValues
 		/**
-		Try to turn the FMTYieldModel into periodic constant values. if returns an non empty vector then
-		each first dimension is the yield id and each second dimension are the periodic value calculated by the yield.
+		@brief Try to turn the yield model into periodic constant values.
+		@return a vector where the first dimension is the yield id and the second is the periodic values, empty if not possible.
 		*/
 		virtual std::vector<std::vector<double>>getPeriodicValues() const;
 	};

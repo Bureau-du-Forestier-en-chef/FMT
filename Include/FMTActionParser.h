@@ -27,8 +27,7 @@ namespace Parser
 {
 // DocString: FMTActionParser
 /**
-FMTActionParser reads and writes actions from or into an action files.
-This parser is also used by the modelparser.
+@brief Parser reading and writing actions from or into action files, also used by the model parser.
 */
 class FMTEXPORT FMTActionParser : public FMTParser
     {
@@ -44,68 +43,89 @@ class FMTEXPORT FMTActionParser : public FMTParser
 		const static boost::regex m_SERIES_MATCH;
 		// DocString: FMTActionParser::_getSerie
 		/**
-		@brief get a serie from a line
-		@param[in] p_line parsed line
-		@param[in] p_actions the actions generated
-		@return a valid serie
+		@brief Get a serie from a line.
+		@param[in] p_line the parsed line.
+		@param[in] p_actions the generated actions.
+		@return the serie.
 		*/
 		Core::FMTSerie _getSerie(const std::string& p_line,
 			const std::vector<Core::FMTAction>& p_actions) const;
 		// DocString: FMTActionParser::sameActionAs
 		/**
-		Using a string containing potential action names (all_set) and a vector of (actions) this function
-		returns a vector of pointer to the corresponding action present in the all_set string.
+		@brief Return pointers to the actions present in a set string.
+		@param[in] all_set the set string of action names.
+		@param[in,out] actions the actions.
+		@return the matching actions.
 		*/
 		std::vector<Core::FMTAction*> sameActionAs(const std::string& all_set, std::vector<Core::FMTAction>& actions) const;
 		// DocString: FMTActionParser::getBounds
 		/**
-		This function fill up some specification (spec) usiing a string line of the area section.
+		@brief Fill up a specification from a line of the action section.
+		@param[in,out] line the line.
+		@param[in,out] spec the specification.
+		@param[in] constants the constants.
+		@param[in] ylds the yields.
+		@return the rest of the line.
 		*/
 		std::string getBounds(std::string& line, Core::FMTSpec& spec, const Core::FMTConstants& constants, const Core::FMTYields& ylds);
 		// DocString: FMTActionParser::valAgg
 		/**
-		This functions turns aggregates of aggregates into simple aggregates of action map.
+		@brief Turn aggregates of aggregates into simple aggregates of actions.
+		@param[in,out] actions the actions.
+		@param[in,out] aggregates the aggregates.
+		@return the simplified aggregates.
 		*/
 		std::map<std::string, std::vector<std::string>>valAgg(std::vector<Core::FMTAction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
 	public:
 		// DocString: FMTActionParser()
 		/**
-		Default constructor for FMTActionParser
+		@brief Default constructor for FMTActionParser.
 		*/
         FMTActionParser();
 		// DocString: ~FMTActionParser()
 		/**
-		Default destructor for FMTActionParser
+		@brief Default destructor for FMTActionParser.
 		*/
 		~FMTActionParser() = default;
 		// DocString: FMTActionParser(const FMTActionParser&)
 		/**
-		Default copy constructor for FMTActionParser
+		@brief Copy constructor for FMTActionParser.
+		@param[in] rhs the FMTActionParser to copy.
 		*/
         FMTActionParser(const FMTActionParser& rhs)=default;
 		// DocString: FMTActionParser::operator
 		/**
-		Default copy assignment operator for FMTActionParser
+		@brief Copy assignment operator for FMTActionParser.
+		@param[in] rhs the FMTActionParser to copy.
+		@return a reference to this FMTActionParser.
 		*/
         FMTActionParser& operator = (const FMTActionParser& rhs)=default;
 		// DocString: FMTActionParser::read
 		/**
-		The read function will read actions from a (location) action file using a complete vector of (themes),
-		a (yields) section, some and some (constants) and will returns a vector of FMTactions.
+		@brief Read actions from an action file.
+		@param[in] themes the themes.
+		@param[in] yields the yields.
+		@param[in] constants the constants.
+		@param[in] location the file location.
+		@return the actions.
 		*/
 		std::vector<Core::FMTAction>read(const std::vector<Core::FMTTheme>& themes,
 			const Core::FMTYields& yields,const Core::FMTConstants& constants,
 			const std::string& location);
 		// DocString: FMTActionParser::write
 		/**
-		Using the (location) of the action section to fill this function will write a vector of (actions)
-		to the given location.
+		@brief Write actions to an action file.
+		@param[in] actions the actions.
+		@param[in] location the file location.
+		@param[in] withgcbmagg if true writes the GCBM aggregates.
 		*/
         void write(const std::vector<Core::FMTAction>& actions,
 			const std::string& location,bool withgcbmagg = false) const;
 		// DocString: FMTActionParser::getactionsidsofmodelyields
 		/**
-		Returns the corresponding actions ids of the vector of actions read from the .json file in YieldPredModels.
+		@brief Return the GCBM action aggregates corresponding to the actions.
+		@param[in] actions the actions.
+		@return the GCBM action aggregates.
 		*/
 		std::vector<Core::FMTAction>getGCBMactionsaggregate(const std::vector<Core::FMTAction>& actions) const;
     };

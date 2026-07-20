@@ -36,6 +36,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace boost{
 
+// DocString: boost::pyHash
+/**
+@brief Hash a value using the boost hash of its type.
+@tparam T the value type.
+@param[in] value the value to hash.
+@return the hash of the value.
+*/
 template<class T>
 static size_t pyHash(const T& value)
     {
@@ -45,9 +52,21 @@ static size_t pyHash(const T& value)
 
 namespace Python
 {
+	// DocString: Python::MapToDict
+	/**
+	@brief Converter exposing a std::map to Python as a dict.
+	@tparam K the key type.
+	@tparam V the value type.
+	*/
 	template <class K, class V>
 	struct MapToDict
 	{
+		// DocString: Python::MapToDict::convert
+		/**
+		@brief Convert a std::map into a Python dict.
+		@param[in] lmap the map to convert.
+		@return the Python dict.
+		*/
 		static PyObject* convert(const std::map<K, V>& lmap)
 		{
 			boost::python::dict* dictionary = new boost::python::dict();
@@ -60,9 +79,21 @@ namespace Python
 
 	};
 
+	// DocString: Python::UMapToDict
+	/**
+	@brief Converter exposing a boost unordered_map to Python as a dict.
+	@tparam K the key type.
+	@tparam V the value type.
+	*/
 	template <class K, class V>
 	struct UMapToDict
 	{
+		// DocString: Python::UMapToDict::convert
+		/**
+		@brief Convert a boost unordered_map into a Python dict.
+		@param[in] lmap the map to convert.
+		@return the Python dict.
+		*/
 		static PyObject* convert(const boost::unordered_map<K, V>& lmap)
 		{
 			boost::python::dict* dictionary = new boost::python::dict();
@@ -77,9 +108,20 @@ namespace Python
 
 
 
+	// DocString: Python::VecToList
+	/**
+	@brief Converter exposing a std::vector to Python as a list.
+	@tparam T the element type.
+	*/
 	template<class T>
 	struct VecToList
 	{
+		// DocString: Python::VecToList::convert
+		/**
+		@brief Convert a std::vector into a Python list.
+		@param[in] vec the vector to convert.
+		@return the Python list.
+		*/
 		static PyObject* convert(const std::vector<T>& vec)
 		{
 			boost::python::list* l = new boost::python::list();
@@ -91,9 +133,20 @@ namespace Python
 		}
 	};
 
+	// DocString: Python::SetToList
+	/**
+	@brief Converter exposing a std::set to Python as a list.
+	@tparam T the element type.
+	*/
 	template<class T>
 	struct SetToList
 	{
+		// DocString: Python::SetToList::convert
+		/**
+		@brief Convert a std::set into a Python list.
+		@param[in] p_set the set to convert.
+		@return the Python list.
+		*/
 		static PyObject* convert(const std::set<T>& p_set)
 		{
 			boost::python::list* l = new boost::python::list();
@@ -105,10 +158,19 @@ namespace Python
 		}
 	};
 
+	// DocString: Python::VecFrList
+	/**
+	@brief Converter building a std::vector from a Python list.
+	@tparam T the element type.
+	*/
 	template<typename T>
 	struct VecFrList
 	{
 
+		// DocString: Python::VecFrList::VecFrList()
+		/**
+		@brief Register the Python list to std::vector converter.
+		*/
 		VecFrList()
 		{
 			boost::python::converter::registry::push_back(&VecFrList<T>::convertible,
@@ -117,6 +179,12 @@ namespace Python
 		}
 
 		// Determine if obj_ptr can be converted in a std::vector<T>
+		// DocString: Python::VecFrList::convertible
+		/**
+		@brief Return the object if it can be converted into a std::vector, else null.
+		@param[in] obj_ptr the Python object.
+		@return the object if convertible else null.
+		*/
 		static void* convertible(PyObject* obj_ptr)
 		{
 			if (!PyList_Check(obj_ptr)) {
@@ -127,6 +195,12 @@ namespace Python
 		}
 
 		// Convert obj_ptr into a std::vector<T>
+		// DocString: Python::VecFrList::construct
+		/**
+		@brief Construct a std::vector in place from a Python list.
+		@param[in] obj_ptr the Python list.
+		@param[in,out] data the boost.python conversion data.
+		*/
 		static void construct(
 			PyObject* obj_ptr,
 			boost::python::converter::rvalue_from_python_stage1_data* data)
@@ -161,10 +235,20 @@ namespace Python
 
 
 
+	// DocString: Python::iterable_converter
+	/**
+	@brief Converter building any iterable C++ container from a Python iterable.
+	*/
 	struct iterable_converter
 	{
 		/// @note Registers converter from a python interable type to the
 		///       provided type.
+		// DocString: Python::iterable_converter::from_python
+		/**
+		@brief Register the converter from a Python iterable to the provided container type.
+		@tparam Container the container type.
+		@return a reference to this converter, to support chaining.
+		*/
 		template <typename Container>
 		iterable_converter&
 			from_python()
@@ -178,11 +262,24 @@ namespace Python
 			return *this;
 		}
 
+		// DocString: Python::iterable_converter::convertible
+		/**
+		@brief Return the object if it is iterable, else null.
+		@param[in] object the Python object.
+		@return the object if convertible else null.
+		*/
 		static void* convertible(PyObject* object)
 		{
 			return PyObject_GetIter(object) ? object : NULL;
 		}
 
+		// DocString: Python::iterable_converter::construct
+		/**
+		@brief Construct the container in place from a Python iterable.
+		@tparam Container the container type.
+		@param[in] object the Python iterable.
+		@param[in,out] data the boost.python conversion data.
+		*/
 		template <typename Container>
 		static void construct(
 			PyObject* object,
@@ -213,11 +310,21 @@ namespace Python
 		}
 	};
 
+	// DocString: Python::MapFrDict
+	/**
+	@brief Converter building a std::map from a Python dict.
+	@tparam k the key type.
+	@tparam e the value type.
+	*/
 	template<class k, class e>
 	struct MapFrDict
 	{
 		/// @note Registers converter from a python interable type to the
 		///       provided type.
+		// DocString: Python::MapFrDict::MapFrDict()
+		/**
+		@brief Register the Python dict to std::map converter.
+		*/
 		MapFrDict()
 		{
 
@@ -228,6 +335,12 @@ namespace Python
 
 		}
 
+		// DocString: Python::MapFrDict::convertible
+		/**
+		@brief Return the object if it can be converted into a std::map, else null.
+		@param[in] obj_ptr the Python object.
+		@return the object if convertible else null.
+		*/
 		static void* convertible(PyObject* obj_ptr)
 		{
 			if (PyMapping_Check(obj_ptr)) {
@@ -240,6 +353,12 @@ namespace Python
 		}
 
 
+		// DocString: Python::MapFrDict::construct
+		/**
+		@brief Construct a std::map in place from a Python dict.
+		@param[in] obj_ptr the Python dict.
+		@param[in,out] data the boost.python conversion data.
+		*/
 		static void construct(
 			PyObject* obj_ptr,
 			boost::python::converter::rvalue_from_python_stage1_data* data)
@@ -275,6 +394,11 @@ namespace Python
 	};
 
 
+	// DocString: Python::FMTtranslate_warning
+	/**
+	@brief Translate a FMTWarning into a Python UserWarning.
+	@param[in] e the warning to translate.
+	*/
 	void FMTtranslate_warning(Exception::FMTWarning const& e)
 	{
 		PyErr_SetString(PyExc_UserWarning, e.what());
@@ -282,6 +406,11 @@ namespace Python
 
 	PyObject* FMTexceptiontype = NULL;
 
+	// DocString: Python::FMTtranslate_error
+	/**
+	@brief Translate a FMTError into a Python exception.
+	@param[in] error the error to translate.
+	*/
 	void FMTtranslate_error(Exception::FMTError const& error) //should be implemented more like https://stackoverflow.com/questions/9620268/boost-python-custom-exception-class
 	{
 		if (error.hold())
@@ -295,26 +424,60 @@ namespace Python
 		}
 	}
 
+	// DocString: Python::PairToPythonConverter
+	/**
+	@brief Converter exposing a std::pair to Python as a tuple.
+	@tparam T1 the first element type.
+	@tparam T2 the second element type.
+	*/
 	template<typename T1, typename T2>
 	struct PairToPythonConverter {
+		// DocString: Python::PairToPythonConverter::convert
+		/**
+		@brief Convert a std::pair into a Python tuple.
+		@param[in] pair the pair to convert.
+		@return the Python tuple.
+		*/
 		static PyObject* convert(const std::pair<T1, T2>& pair)
 		{
 			return boost::python::incref(boost::python::make_tuple(pair.first, pair.second).ptr());
 		}
 	};
 
+	// DocString: Python::PythonToPairConverter
+	/**
+	@brief Converter building a std::pair from a Python tuple.
+	@tparam T1 the first element type.
+	@tparam T2 the second element type.
+	*/
 	template<typename T1, typename T2>
 	struct PythonToPairConverter {
+		// DocString: Python::PythonToPairConverter::PythonToPairConverter()
+		/**
+		@brief Register the Python tuple to std::pair converter.
+		*/
 		PythonToPairConverter()
 		{
 			boost::python::converter::registry::push_back(&convertible, &construct, boost::python::type_id<std::pair<T1, T2> >());
 		}
+		// DocString: Python::PythonToPairConverter::convertible
+		/**
+		@brief Return the object if it is a two element tuple, else null.
+		@param[in] obj the Python object.
+		@return the object if convertible else null.
+		*/
 		static void* convertible(PyObject* obj)
 		{
 			if (!PyTuple_CheckExact(obj)) return 0;
 			if (PyTuple_Size(obj) != 2) return 0;
 			return obj;
 		}
+		// DocString: Python::PythonToPairConverter::construct
+		/**
+		@brief Construct a std::pair in place from a Python tuple.
+		@param[in] obj the Python tuple.
+		@param[in,out] data the boost.python conversion data.
+		*/
 		static void construct(PyObject* obj, boost::python::converter::rvalue_from_python_stage1_data* data)
 		{
 			boost::python::tuple tuple(boost::python::borrowed(obj));
@@ -324,6 +487,12 @@ namespace Python
 		}
 	};
 
+	// DocString: Python::py_pair
+	/**
+	@brief Registers both directions of the std::pair to Python tuple conversion.
+	@tparam T1 the first element type.
+	@tparam T2 the second element type.
+	*/
 	template<typename T1, typename T2>
 	struct py_pair {
 		boost::python::to_python_converter<std::pair<T1, T2>, PairToPythonConverter<T1, T2> > toPy;

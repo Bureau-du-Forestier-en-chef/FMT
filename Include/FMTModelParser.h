@@ -42,38 +42,47 @@ class FMTOptimizationParser;
 class FMTScheduleParser;
 // DocString: FMTModelParser
 /**
-FMTModelParser is the main parser class used for reading and writing models files.
-This class can read single model scenario and multiple model scenarios at the same time.
-The class make use of all other parser class of FMT to read and write a model.
+@brief Main parser reading and writing model files, for single or multiple scenarios, using all the other FMT parsers.
 */
 class FMTEXPORT FMTModelParser : public FMTParser
     {
     public:
 		// DocString: FMTModelParser()
 		/**
-		Default constructor for FMTModelParser.
+		@brief Default constructor for FMTModelParser.
 		*/
         FMTModelParser();
 		// DocString: ~FMTModelParser()
 		/**
-		Default destructor for FMTModelParser.
+		@brief Default virtual destructor for FMTModelParser.
 		*/
 		virtual ~FMTModelParser() = default;
 		// DocString: FMTModelParser(const FMTModelParser&)
 		/**
-		Default copy constructor for FMTModelParser.
+		@brief Copy constructor for FMTModelParser.
+		@param[in] rhs the FMTModelParser to copy.
 		*/
         FMTModelParser(const FMTModelParser& rhs);
 		// DocString: FMTModelParser::operator=
 		/**
-		Default copy assignment for FMTModelParser.
+		@brief Copy assignment operator for FMTModelParser.
+		@param[in] rhs the FMTModelParser to copy.
+		@return a reference to this FMTModelParser.
 		*/
         FMTModelParser& operator = (const FMTModelParser& rhs);
 		// DocString: FMTModelParser::read
 		/**
-		This function aim at reading a single model and return it as a FMTModel.
-		using the path to the constants (cont), landscape (lan), lifespan(lif),area(are),
-		yields(yld),actions(act),transitions(tr),outputs (out) and optional optimize (opt).
+		@brief Read a single model and return it as a FMTModel.
+		@param[in] con the constants file path.
+		@param[in] lan the landscape file path.
+		@param[in] lif the lifespan file path.
+		@param[in] are the area file path.
+		@param[in] yld the yields file path.
+		@param[in] act the actions file path.
+		@param[in] tr the transitions file path.
+		@param[in] out the outputs file path.
+		@param[in] opt the optional optimize file path.
+		@return the model.
 		*/
         Models::FMTModel read(const std::string& con,const std::string& lan,
                       const std::string& lif,const std::string& are,const std::string& yld,
@@ -81,59 +90,67 @@ class FMTEXPORT FMTModelParser : public FMTParser
 						std::string opt = std::string());
 		// DocString: FMTModelParser::readtemplate
 		/**
-		The readtemplate function read the base model from primarym_location and then load all everything from templatefolder and 
-		use each folder in templatefolder has scenarios of the base model. Each folders within the templatefolder will will gave their names
-		to the FMTModel. So within a given subfolder it will read *._act, *._yld and so on...
+		@brief Read the base model then load each folder in the template folder as a scenario of the base model.
+		@param[in] primarym_location the primary file location.
+		@param[in] templatefolder the template folder.
+		@return the models.
 		*/
 		std::vector<Models::FMTModel>readTemplates(const std::string& primarym_location,const std::string& templatefolder);
 		// DocString: FMTModelParser::readproject
 		/**
-		The readproject function reads multiple scenarios based on a primary file location (.pri).
-		If the scenarios vector is provided then FMTModelParser will only read the scenarios provied by the user.
-		For reading the base scenario the user needs to add the string "ROOT" to the scenarios vector. If the scenarios
-		vector is empty then all scenarios including the ROOT are going to be read. If readarea is false then the area section
-		wont be read. If readoutputs is false then output section wont be read. If readoptimize is false then the optimize section
-		wonht be read.
+		@brief Read multiple scenarios based on a primary file location.
+		@param[in] primarym_location the primary file location.
+		@param[in] scenarios the scenarios to read, all if empty, add ROOT for the base scenario.
+		@param[in] readarea if true reads the area section.
+		@param[in] readoutputs if true reads the output section.
+		@param[in] readoptimize if true reads the optimize section.
+		@return the models.
 		*/
 		std::vector<Models::FMTModel>readproject(const std::string& primarym_location,
 			std::vector<std::string>scenarios = std::vector<std::string>(),
 			bool readarea = true,bool readoutputs = true, bool readoptimize = true);
 		// DocString: FMTModelParser::writeToProject
 		/**
-		The function will create a primary file if it does not exist and write the model in has a root scenario.
-		If the primary file exist it will read the scenario writen and compare each section with the model and write the model has a 
-		new scenario...
+		@brief Create a primary file if needed and write the model as a root scenario, or as a new scenario if the primary file exists.
+		@param[in] primarym_location the primary file location.
+		@param[in] model the model.
 		*/
 		void writeToProject(const std::string& primarym_location,
 			const Models::FMTModel& model);
 		// DocString: FMTModelParser::readschedules
 		/**
-		The readschedules function read the schedule files of the specified (models) based on a primary file
-		(primarym_location). It returns a vector of vector of FMTSchedule ordered the same way as the models.
-		If validate file date is true then it will validate that the parser most recent file is older than the
-		schedule parser most recent file, if it is not it will return a empty schedule.
+		@brief Read the schedule files of the models based on a primary file.
+		@param[in] primarym_location the primary file location.
+		@param[in] models the models.
+		@return a vector of schedules per model.
 		*/
 		std::vector<std::vector<Core::FMTSchedule>>readschedules(const std::string& primarym_location,
 			const std::vector<Models::FMTModel>& models);
 		// DocString: FMTModelParser::getConstraintsFromString
 		/**
-		Get constraints from string.
+		@brief Get constraints from a string.
+		@param[in] constraintstr the constraint string.
+		@param[in] model the model.
+		@param[in] constants the constants.
+		@return the constraints.
 		*/
 		std::vector<Core::FMTConstraint>getConstraintsFromString(std::string constraintstr,
 			const Models::FMTModel& model,Core::FMTConstants constants = Core::FMTConstants());
 		// DocString: FMTModelParser::write
 		/**
-		The write function write a FMTModel (model) in to a folder (folder) all the files are going to be named
-		based on the name of the FMTModel.
+		@brief Write a model into a folder, naming the files based on the model name.
+		@param[in] model the model.
+		@param[in] folder the folder.
 		*/
         void write(const Models::FMTModel& model,const std::string& folder) const;
 		#ifdef FMTWITHGDAL
 		// DocString: FMTModelParser::createResultsLayer
 		/**
 		@brief Create a results layer on a dataset for a given model name.
-		@param[in] p_modelName the name of the model
-		@param[in] p_dataset the dataset of the layer
-		@return the newly created layer
+		@param[in] p_modelName the model name.
+		@param[in] p_dataset the dataset.
+		@param[in] p_creationOptions the creation options.
+		@return the created layer.
 		*/
 		OGRLayer* createResultsLayer(
 			const std::string& p_modelName,
@@ -141,22 +158,39 @@ class FMTEXPORT FMTModelParser : public FMTParser
 			std::vector<std::string> p_creationOptions = std::vector<std::string>()) const;
 		// DocString: FMTModelParser::fillUpInfeasibles
 		/**
-		Fill up the OGRlayer of infeasible values.
+		@brief Fill up an OGR layer with infeasible values.
+		@param[in,out] layer the layer.
+		@param[in] theoutputs the outputs.
+		@param[in] iteration the iteration.
+		@param[in] firstPeriod the first period.
+		@param[in] lastPeriod the last period.
 		*/
 		void fillUpInfeasibles(OGRLayer* layer,
 			const std::vector<Core::FMTOutput>&theoutputs,
 			const int& iteration,const int& firstPeriod, const int&lastPeriod) const;
 		// DocString: FMTModelParser::writeFeatures
 		/**
-		Write multiple features (outputs)
+		@brief Write multiple features to a layer.
+		@param[in,out] layer the layer.
+		@param[in] firstPeriod the first period.
+		@param[in] iteration the iteration.
+		@param[in] theoutputs the outputs.
+		@param[in] values the values.
+		@param[in] writeNaN if true writes NaN values.
 		*/
 		void writeFeatures(OGRLayer* layer,const int& firstPeriod, const int& iteration,
 			const std::vector<Core::FMTOutput>&theoutputs,
 			const std::map<std::string,std::vector<std::vector<double>>>& values, bool writeNaN = false)const;
 		// DocString: FMTModelParser::writeResults
 		/**
-		The function writeresults for any kind of FMTModel (optimized or simulated), starting from the first period to the last period, for a vector of outputs.
-		Write the results down in a gdaldriver (gdaldrivername), You can also specify the iteration will be 0 by default.
+		@brief Write the results of a model from the first to the last period for a vector of outputs into a GDAL driver.
+		@param[in] model the model.
+		@param[in] theoutputs the outputs.
+		@param[in] firstPeriod the first period.
+		@param[in] lastPeriod the last period.
+		@param[in] location the location.
+		@param[in] level the output level.
+		@param[in] gdaldrivername the GDAL driver name.
 		*/
 		void writeResults(const Models::FMTModel& model,
 			const std::vector<Core::FMTOutput>&theoutputs,
@@ -169,24 +203,42 @@ class FMTEXPORT FMTModelParser : public FMTParser
 	#ifdef FMTWITHGDAL
 		// DocString: FMTModelParser::getIterationsValues()
 		/**
-		Go back in the layer and get all values per iteration and periods.
+		@brief Return all the values per iteration and period from a layer.
+		@param[in] layer the layer.
+		@return a map of values per iteration and period.
 		*/
 		std::map<std::string, std::vector<std::vector<double>>>getIterationsValues(OGRLayer* layer) const;
 		// DocString: FMTModelParser::createDriftLayer()
 		/**
-		Create a output drift layer.
+		@brief Create an output drift layer.
+		@param[in] dataset the dataset.
+		@param[in] creationoptions the creation options.
+		@return the drift layer.
 		*/
 		OGRLayer* createDriftLayer(GDALDataset* dataset, std::vector<std::string> creationoptions = std::vector<std::string>()) const;
 		// DocString: FMTModelParser::writedriftr()
 		/**
-		Go back in the layer and get all values per iteration and periods.
+		@brief Write the drift lower and upper values to a layer.
+		@param[in,out] layer the layer.
+		@param[in] lowervalues the lower values.
+		@param[in] uppervalues the upper values.
 		*/
 		void writeDrift(OGRLayer* layer, const std::map<std::string, std::map<double, std::vector<double>>>& lowervalues,
 			const std::map<std::string, std::map<double, std::vector<double>>>& uppervalues) const;
 	#endif
 		// DocString: FMTModelParser::writePrimary()
 		/**
-		Write the primary file with all the other file name.
+		@brief Write the primary file with the section file names.
+		@param[in] location the location.
+		@param[in] lanfile the landscape file.
+		@param[in] arefile the area file.
+		@param[in] yldfile the yields file.
+		@param[in] actfile the actions file.
+		@param[in] trnfile the transitions file.
+		@param[in] outfile the outputs file.
+		@param[in] optfile the optimize file.
+		@param[in] liffile the lifespan file.
+		@param[in] seqfile the schedule file.
 		*/
 		void writePrimary(
 			const std::string& location,
@@ -201,7 +253,17 @@ class FMTEXPORT FMTModelParser : public FMTParser
 			std::string seqfile = std::string()) const;
 		// DocString: FMTModelParser::writeModel
 		/**
-		Base function to write model section if string non empty then write the corresponding section of the model with the schedules also if not empty
+		@brief Write the sections of a model, and the schedules if the schedule file is not empty.
+		@param[in] model the model.
+		@param[in] lanfile the landscape file.
+		@param[in] arefile the area file.
+		@param[in] yldfile the yields file.
+		@param[in] actfile the actions file.
+		@param[in] trnfile the transitions file.
+		@param[in] outfile the outputs file.
+		@param[in] optfile the optimize file.
+		@param[in] liffile the lifespan file.
+		@param[in] seqfile the schedule file.
 		*/
 		void writeModel(const Models::FMTModel& model,
 			const std::string& lanfile,
@@ -216,9 +278,20 @@ class FMTEXPORT FMTModelParser : public FMTParser
 	private:
 		// DocString: FMTModelParser::referenceRead
 		/**
-		When reading multiple scenarios at the same time, sometime some scenarios share the same section.
-		Instead of reading multiple time the same section this function read it once or reference it to
-		a section of a other model in the (models) vector.
+		@brief Read a section once or reference it to a section of another model when reading multiple scenarios sharing sections.
+		@param[in,out] commonm_sections the common sections.
+		@param[in,out] models the models.
+		@param[in] con the constants file path.
+		@param[in] lan the landscape file path.
+		@param[in] lif the lifespan file path.
+		@param[in] are the area file path.
+		@param[in] yld the yields file path.
+		@param[in] act the actions file path.
+		@param[in] tr the transitions file path.
+		@param[in] out the outputs file path.
+		@param[in] opt the optimize file path.
+		@param[in] allow_mapping if true allows mapping.
+		@return the model.
 		*/
 		Models::FMTModel referenceRead(std::map<std::string, std::vector<int>>& commonm_sections,
 			std::vector<Models::FMTModel>& models,
@@ -228,8 +301,15 @@ class FMTEXPORT FMTModelParser : public FMTParser
 			std::string opt = std::string(), bool allow_mapping = false);
 		// DocString: FMTModelParser::readFromFolder
 		/**
-		Read models from a folder (can be scenarios), based on a primarym_location, if scenarios is empty it will read all models in the
-		folder, if validatescenarioname is true it will only read model's section with name matching the primary name else it will read anything.
+		@brief Read models from a folder based on a primary location.
+		@param[in] primarym_location the primary file location.
+		@param[in] folder the folder.
+		@param[in] scenarios the scenarios to read, all if empty.
+		@param[in] validatescenarioname if true only reads sections matching the primary name.
+		@param[in] readarea if true reads the area section.
+		@param[in] readoutputs if true reads the output section.
+		@param[in] readoptimize if true reads the optimize section.
+		@return the models.
 		*/
 		std::vector<Models::FMTModel>readFromFolder(const std::string& primarym_location,
 			const std::string& folder,
@@ -238,9 +318,9 @@ class FMTEXPORT FMTModelParser : public FMTParser
 			bool readarea = true, bool readoutputs = true, bool readoptimize = true);
 		// DocString: FMTModelParser::setSolverParameters
 		/**
-		@brief based on the ColdStart.* file and WarmStart.* file in the same directory of p_optimize_file read and set the parameters to FMTModel
-		@p_model the model for which we want to set the solver parameters.
-		@p_optimize_file the string location of the optimization file.
+		@brief Read and set the solver parameters to a model from the ColdStart and WarmStart files in the optimize file directory.
+		@param[in,out] p_model the model.
+		@param[in] p_optimize_file the optimize file location.
 		*/
 		void setSolverParameters(Models::FMTModel& p_model, const std::string& p_optimize_file) const;
     };

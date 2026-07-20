@@ -25,10 +25,8 @@ namespace Models
 { 
 	// DocString: FMTMatrixBuild
 	/**
-	Sometime adding constraints and/or variables one at a time to the matrix using osisolverinterface can be slow.
-	CoinBuild object lets the user add row or variable to that class and then synchronize it with the matrix.
-	This class keeps track of the last added columns and last added row to let the user virtualy add more stuff
-	to the matrix (row and/or columns). This class is made for efficiency. 
+	@brief Helper caching rows and columns to add to a solver matrix in batch for efficiency.
+	@details CoinBuild lets the user add rows or columns and then synchronize them with the matrix. This class keeps track of the last added columns and rows to let the user virtually add more to the matrix.
 	*/
 	class FMTEXPORT FMTMatrixBuild
 	{
@@ -58,23 +56,29 @@ namespace Models
 		std::vector<std::string>rownames;
 		// DocString: FMTMatrixBuild::sortElementsAndClean
 		/**
-		The function removes duplicate and sort a vector of (elements).
+		@brief Remove duplicates and sort a vector of elements.
+		@param[in,out] elements the elements to sort and clean.
 		*/
 		void sortElementsAndClean(std::vector<int>& elements) const;
 		// DocString: FMTMatrixBuild::formatForMatrixName
 		/**
-		Format a string for matrix naming variables and constraints.
+		@brief Format a string for naming matrix variables and constraints.
+		@param[in] name the name to format.
+		@param[in] shortformat if true uses a short format.
+		@return the formatted name.
 		*/
 		std::string formatForMatrixName(std::string name, bool shortformat) const;
 	public:
 		// DocString: FMTMatrixBuild::swap
 		/**
-		Swap for FMTMatrixBuild
+		@brief Swap this FMTMatrixBuild with another.
+		@param[in,out] rhs the FMTMatrixBuild to swap with.
 		*/
 		void swap(FMTMatrixBuild& rhs);
 		// DocString: FMTMatrixBuild::getColumnNames
 		/**
-		Return cached column names.
+		@brief Return the cached column names.
+		@return a reference to the cached column names.
 		*/
 		inline std::vector<std::string>& getColumnNames()
 			{
@@ -82,7 +86,8 @@ namespace Models
 			}
 		// DocString: FMTMatrixBuild::getRowNames
 		/**
-		Return cached row names.
+		@brief Return the cached row names.
+		@return a reference to the cached row names.
 		*/
 		inline std::vector<std::string>& getRowNames()
 			{
@@ -90,70 +95,92 @@ namespace Models
 			}
 		// DocString: FMTMatrixBuild::formatAllNames
 		/**
-		Formats names of row and column in cache.
+		@brief Format the cached row and column names.
+		@param[in] shortformat if true uses a short format.
 		*/
 		void formatAllNames(bool shortformat);
 		// DocString: FMTMatrixBuild::setColName
 		/**
-		set column name.
+		@brief Set a column name.
+		@param[in] name the name to set.
+		@param[in] columnid the column id.
 		*/
 		void setColName(const std::string& name,const int& columnid);
 		// DocString: FMTMatrixBuild::setRowName
 		/**
-		set row name.
+		@brief Set a row name.
+		@param[in] name the name to set.
+		@param[in] rowid the row id.
 		*/
 		void setRowName(const std::string& name, const int& rowid);
 		// DocString: FMTMatrixBuild::synchronize
 		/**
-		This function synchronize the cols from colsbuild and the row of rowbuild 
-		with the Osisolverinterface matrix (solver)
+		@brief Synchronize the cached columns and rows with the solver matrix.
+		@param[in] solver the solver interface.
 		*/
 		void synchronize(std::shared_ptr<OsiSolverInterface> solver);
 		// DocString: FMTMatrixBuild()
 		/**
-			Default constructor of FMTMatrixBuild.
+		@brief Default constructor for FMTMatrixBuild.
 		*/
 		FMTMatrixBuild();
 		// DocString: FMTMatrixBuild(const FMTMatrixBuild)
 		/**
-		Copy constructor of FMTMatrixBuild.
+		@brief Copy constructor for FMTMatrixBuild.
+		@param[in] rhs the FMTMatrixBuild to copy.
 		*/
 		FMTMatrixBuild(const FMTMatrixBuild& rhs);
 		// DocString: FMTMatrixBuild::operator=
 		/**
-		Copy assignment of FMTMatrixBuild.
+		@brief Copy assignment operator for FMTMatrixBuild.
+		@param[in] rhs the FMTMatrixBuild to copy.
+		@return a reference to this FMTMatrixBuild.
 		*/
 		FMTMatrixBuild& operator = (const FMTMatrixBuild& rhs);
 		// DocString: ~FMTMatrixBuild()
 		/**
-		Destructor of FMTMatrixBuild.
+		@brief Destructor for FMTMatrixBuild.
 		*/
 		~FMTMatrixBuild();
 		// DocString: FMTMatrixBuild::addCol
 		/**
-		Add a column to colsbuild to potentialy synchronize it with the synchronize function.
+		@brief Add a column to the cache to potentially synchronize it later.
+		@param[in] numberInColumn the number of elements in the column.
+		@param[in] rows the row indices.
+		@param[in] elements the elements.
+		@param[in] columnLower the column lower bound.
+		@param[in] columnUpper the column upper bound.
+		@param[in] objectiveValue the objective value.
 		*/
 		void addCol(int numberInColumn, const int * rows, const double * elements, double columnLower = 0.0,
 			double columnUpper = std::numeric_limits<double>::max(), double objectiveValue = 0.0);
 		// DocString: FMTMatrixBuild::addRow
 		/**
-		Add a row to rowbuild to potentialy synchronize it with the synchronize function.
+		@brief Add a row to the cache to potentially synchronize it later.
+		@param[in] numberInRow the number of elements in the row.
+		@param[in] columns the column indices.
+		@param[in] elements the elements.
+		@param[in] rowLower the row lower bound.
+		@param[in] rowUpper the row upper bound.
 		*/
 		void addRow(int numberInRow, const int * columns, const double * elements,
 			double rowLower = -std::numeric_limits<double>::max(), double rowUpper = std::numeric_limits<double>::max());
 		// DocString: FMTMatrixBuild::deleteRow
 		/**
-		The function delete a row (rowindex) from the matrix cache.
+		@brief Delete a row from the matrix cache.
+		@param[in] rowindex the index of the row to delete.
 		*/
 		void deleteRow(const int& rowindex);
 		// DocString: FMTMatrixBuild::deleteCol
 		/**
-		The function delete a column (colindex) from the matrix cache.
+		@brief Delete a column from the matrix cache.
+		@param[in] colindex the index of the column to delete.
 		*/
 		void deleteCol(const int& colindex);
 		// DocString: FMTMatrixBuild::numbernewRows
 		/**
-		Returns the number of newly added rows that are in the matrix cache.
+		@brief Return the number of newly added rows in the matrix cache.
+		@return the number of newly added rows.
 		*/
 		inline int numbernewRows() const
 			{
@@ -161,7 +188,8 @@ namespace Models
 			}
 		// DocString: FMTMatrixBuild::numbernewCols
 		/**
-		Returns the number of newly added columns that are in the matrix cache.
+		@brief Return the number of newly added columns in the matrix cache.
+		@return the number of newly added columns.
 		*/
 		inline int numbernewCols() const
 			{
@@ -169,7 +197,8 @@ namespace Models
 			}
 		// DocString: FMTMatrixBuild::numberofdeletedRows
 		/**
-		Returns the number of newly deleted rows that are in the matrix cache.
+		@brief Return the number of newly deleted rows in the matrix cache.
+		@return the number of newly deleted rows.
 		*/
 		inline int numberofdeletedRows() const
 			{
@@ -177,7 +206,8 @@ namespace Models
 			}
 		// DocString: FMTMatrixBuild::numberofdeletedCols
 		/**
-		Returns the number of newly deleted columns that are in the matrix cache.
+		@brief Return the number of newly deleted columns in the matrix cache.
+		@return the number of newly deleted columns.
 		*/
 		inline int numberofdeletedCols() const
 			{
@@ -185,7 +215,8 @@ namespace Models
 			}
 		// DocString: FMTMatrixBuild::getDeletedConstraints
 		/**
-		Returns the newly deleted rows that are in the matrix cache.
+		@brief Return the newly deleted rows in the matrix cache.
+		@return the deleted constraints.
 		*/
 		inline const std::vector<int>& getDeletedConstraints() const
 			{
@@ -193,7 +224,8 @@ namespace Models
 			}
 		// DocString: FMTMatrixBuild::getDeletedVariables
 		/**
-		Returns the newly deleted columns that are in the matrix cache.
+		@brief Return the newly deleted columns in the matrix cache.
+		@return the deleted variables.
 		*/
 		inline const std::vector<int>& getDeletedVariables() const
 			{
@@ -201,30 +233,43 @@ namespace Models
 			}
 		// DocString: FMTMatrixBuild::sortAndCleanDeleted
 		/**
-		The function will remove duplicate from the deleted rows and columns elements and then sort the vector.
+		@brief Remove duplicates from the deleted rows and columns and sort them.
 		*/
 		void sortAndCleanDeleted();
 		// DocString: FMTMatrixBuild::getRowsToSynchronize
 		/**
-		The function is mainly for debugging it returns a string of all the rows that are in the matrix cache.
+		@brief Return a string of all the rows in the matrix cache, mainly for debugging.
+		@return the rows to synchronize.
 		*/
 		std::string getRowsToSynchronize() const;
 		// DocString: FMTMatrixBuild::getRowsToSynchronize
 		/**
-		The function is mainly for debugging it returns a string of all the columns that are in the matrix cache.
+		@brief Return a string of all the columns in the matrix cache, mainly for debugging.
+		@return the columns to synchronize.
 		*/
 		std::string getColsToSynchronize() const;
 		// DocString: FMTMatrixBuild::getRow
 		/**
-		Given a given row (whichRow) the function will fill up the row lower bound (rowLower), the row upper bound (rowUpper),
-		the row's (indicies) and the row's elements present in the cache.
+		@brief Fill up the bounds, indices and elements of a given row present in the cache.
+		@param[in] whichRow the row index.
+		@param[out] rowLower the row lower bound.
+		@param[out] rowUpper the row upper bound.
+		@param[out] indices the row indices.
+		@param[out] elements the row elements.
+		@return the number of elements in the row.
 		*/
 		int getRow(int whichRow, double &rowLower, double &rowUpper,
 			std::vector<int>& indices, std::vector<double>&elements) const;
 		// DocString: FMTMatrixBuild::getCol
 		/**
-		Given a col (whichCol) the function will fill up the column lower bound (colLower), the column upper bound (colUpper),
-		the column's objective (objectiveValue), the column's (indicies) and the column's elements present in the cache.
+		@brief Fill up the bounds, objective, indices and elements of a given column present in the cache.
+		@param[in] whichCol the column index.
+		@param[out] colLower the column lower bound.
+		@param[out] colUpper the column upper bound.
+		@param[out] objectiveValue the objective value.
+		@param[out] indices the column indices.
+		@param[out] elements the column elements.
+		@return the number of elements in the column.
 		*/
 		int getCol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
 			std::vector<int>& indices, std::vector<double>&elements) const;

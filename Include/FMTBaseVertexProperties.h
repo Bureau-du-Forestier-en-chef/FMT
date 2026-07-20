@@ -34,94 +34,98 @@ namespace Graph
 	public:
 		// DocString: FMTBaseVertexProperties::~FMTBaseVertexProperties
 		/**
-		@brief destructor of FMTbasevertexpropertie
+		@brief Default virtual destructor for FMTBaseVertexProperties.
 		*/
 		virtual ~FMTBaseVertexProperties() = default;
 		// DocString: FMTBaseVertexProperties::FMTBaseVertexProperties()
 		/**
-		@brief Default constructor
+		@brief Default constructor for FMTBaseVertexProperties.
 		*/
 		FMTBaseVertexProperties() = default;
 		// DocString: FMTBaseVertexProperties::FMTBaseVertexProperties(const FMTBaseVertexProperties&)
 		/**
-		@brief copy constructor
-		@param[in] a vertexproperties to copy.
+		@brief Copy constructor for FMTBaseVertexProperties.
+		@param[in] rhs the FMTBaseVertexProperties to copy.
 		*/
 		FMTBaseVertexProperties(const FMTBaseVertexProperties& rhs);
-		// DocString: FMTBaseVertexProperties::FMTBaseVertexProperties(const FMTBaseVertexProperties&)
+		// DocString: FMTBaseVertexProperties::operator=
 		/**
-		@brief copy constructor of vertexproperties
-		@param[in] a vertexproperties to copy.
-		@return a reference to the vertexproperties.
+		@brief Copy assignment operator for FMTBaseVertexProperties.
+		@param[in] rhs the FMTBaseVertexProperties to copy.
+		@return a reference to this FMTBaseVertexProperties.
 		*/
 		FMTBaseVertexProperties& operator = (const FMTBaseVertexProperties& rhs);
 		// DocString: FMTBaseVertexProperties::FMTBaseVertexProperties(const Core::FMTFuturDevelopment&)
 		/**
-		@brief constructor based on futur development.
-		@param[in] futur development.
+		@brief Construct a FMTBaseVertexProperties from a futur development.
+		@param[in] p_development the futur development.
 		*/
 		FMTBaseVertexProperties(const Core::FMTFuturDevelopment& p_development);
 		// DocString: FMTBaseVertexProperties::FMTBaseVertexProperties(const Core::FMTActualDevelopment&)
 		/**
-		@brief constructor based on actual development.
-		@param[in] actual development.
+		@brief Construct a FMTBaseVertexProperties from an actual development.
+		@param[in] p_development the actual development.
 		*/
 		FMTBaseVertexProperties(const Core::FMTActualDevelopment& p_development);
 		//FMTBaseVertexProperties(const Core::FMTDevelopment& p_development);
 		// DocString: FMTBaseVertexProperties::setDevlopementMask
 		/**
-		@brief set the development mask of the vertex.
-		@param[in] the mask of the FMTdevlopement.
+		@brief Set the development mask of the vertex.
+		@param[in] p_newMask the new mask of the development.
 		*/
 		void setDevlopementMask(const Core::FMTMask& p_newMask);
 		// DocString: FMTBaseVertexProperties::getBaseRhs
 		/**
-		@brief get the rhs of the constraint of the vertex.
-		@return the double value of the rhs.
+		@brief Get the right hand side of the constraint of the vertex.
+		@return the right hand side value.
 		*/
 		double getBaseRhs() const;
 		// DocString: FMTBaseVertexProperties::getConstraintId
 		/**
-		@brief get the index of the constraint of the vertex
-		@return the index of the vertex
+		@brief Get the index of the constraint of the vertex.
+		@return the constraint index.
 		*/
 		virtual int getConstraintId() const;
 		// DocString: FMTBaseVertexProperties::get
 		/**
-		@brief get a const reference to the development
-		@return a reference to the development.
+		@brief Get a const reference to the development of the vertex.
+		@return the development.
 		*/
 		const Core::FMTDevelopment& get() const;
 		// DocString: FMTBaseVertexProperties::hash
 		/**
-		@brief hash the development of the vertex.
-		@return hash of the vertex.
+		@brief Hash the development of the vertex.
+		@return the hash of the vertex.
 		*/
 		size_t hash() const;
 		// DocString: FMTBaseVertexProperties::operator<
 		/**
-		@brief less than operator
-		@return true if less than.
+		@brief Less than operator for FMTBaseVertexProperties.
+		@param[in] rhs the FMTBaseVertexProperties to compare to.
+		@return true if this vertex properties is less than the other else false.
 		*/
 		bool operator < (const FMTBaseVertexProperties& rhs) const;
 		// DocString: FMTBaseVertexProperties::operator==
 		/**
-		@brief equality test operator
-		@return true if equal
+		@brief Comparison operator for FMTBaseVertexProperties.
+		@param[in] rhs the FMTBaseVertexProperties to compare to.
+		@return true if both vertex properties are equal else false.
 		*/
 		bool operator == (const FMTBaseVertexProperties& rhs) const;
 		// DocString: FMTBaseVertexProperties::operator!=
 		/**
-		@brief non equality test operator
-		@return true if non equal
+		@brief Comparison operator for FMTBaseVertexProperties.
+		@param[in] rhs the FMTBaseVertexProperties to compare to.
+		@return true if both vertex properties are different else false.
 		*/
 		bool operator != (const FMTBaseVertexProperties& rhs) const;
 	private:
 		// DocString: FMTBaseVertexProperties::serialize
 		/**
-		@brief Serialize the vertex propertie
-		@param[out] the archive to serialize in
-		@param[in] the version of the archive
+		@brief Serialize the FMTBaseVertexProperties for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -138,6 +142,11 @@ namespace Graph
 		// DocString: FMTBaseVertexProperties::m_development
 		///The development that hold the information about the strata.
 		std::unique_ptr<Core::FMTDevelopment> m_development;
+		// DocString: FMTBaseVertexProperties::_save
+		/**
+		@brief Save the area of the vertex development during serialization.
+		@param[in] p_area the area to save.
+		*/
 		void _save(double p_area);
 	};
 }

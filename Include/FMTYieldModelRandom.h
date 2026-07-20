@@ -16,10 +16,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 // DocString: FMTYieldModelRandom
 /**
-@class FMTYieldModelRandom
-@brief This yield model generates random index from a discret distribution
-using discrete probability. The syntax in the yield section should look like this
-yrandom _PRED(RANDOM,y1,y2,y3,y4)
+@brief Yield model generating a random index from a discrete distribution using discrete probabilities.
+@details The syntax in the yield section looks like: yrandom _PRED(RANDOM,y1,y2,y3,y4).
 */
 namespace Core
 {

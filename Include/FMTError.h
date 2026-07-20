@@ -24,15 +24,17 @@ namespace Exception
 	{
 	// DocString: FMTError
 	/**
-	FMTError is derived from the FMTException base class.
-	See FMTException class for more information about the member data.
-	Any error should throw in FMT.
+	@brief Exception class derived from FMTException for errors thrown in FMT.
+	@details See FMTException for more information about the member data. Any error should be thrown in FMT.
 	*/
 	class FMTEXPORT FMTError : public FMTException
 		{
 		// DocString: FMTError::serialize
 		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTError through its base FMTException for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -43,58 +45,76 @@ namespace Exception
 		public:
 			// DocString: ~FMTError()
 			/**
-			Default destructor for FMTError.
+			@brief Default destructor for FMTError.
 			*/
 			~FMTError() = default;
 			// DocString: FMTError::operator=
 			/**
-			Default assignment operator for FMTError.
+			@brief Default copy assignment operator for FMTError.
+			@return a reference to this FMTError.
 			*/
 			FMTError& operator=(const FMTError&) = default;
 			// DocString: FMTError()
 			/**
-			Default constructor for FMTError.
+			@brief Default constructor for FMTError.
 			*/
 			FMTError();
 			// DocString: FMTError(const FMTException&)
 			/**
-			Default copy constructor for FMTError.
+			@brief Construct a FMTError from a FMTException.
+			@param[in] rhs the FMTException to copy from.
 			*/
 			FMTError(const FMTException& rhs);
 			// DocString: FMTError(const FMTexc,const std::string)
 			/**
-			Constructor for FMTError taking a exception type and message string as arguments.
+			@brief Construct a FMTError from an exception type and a message.
+			@param[in] lexception the exception type.
+			@param[in] message the message of the error.
 			*/
 			FMTError(const FMTexc lexception, const std::string message);
 			// DocString: FMTError(const FMTexc,const Core::FMTsection,const std::string)
 			/**
-			Constructor for FMTError taking a exception type, section in which the error occur and message string as arguments.
+			@brief Construct a FMTError from an exception type, a section and a message.
+			@param[in] lexception the exception type.
+			@param[in] lsection the section in which the error occurred.
+			@param[in] message the message of the error.
 			*/
 			FMTError(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
 			// DocString: FMTError(const FMTexc,const Core::FMTsection,const std::string,const std::string&,const std::string&,const int&)
 			/**
-			Constructor for FMTError taking a exception type, section in which the error occur and message string as arguments and the location
-			where the exception occured (method/file/line).
+			@brief Construct a FMTError from an exception type, a section, a message and the location where it occurred.
+			@param[in] lexception the exception type.
+			@param[in] lsection the section in which the error occurred.
+			@param[in] message the message of the error.
+			@param[in] lmethod the method where the error occurred.
+			@param[in] lfile the file where the error occurred.
+			@param[in] lline the line where the error occurred.
 			*/
 			FMTError(const FMTexc lexception,const Core::FMTsection lsection, const std::string message,
 					const std::string& lmethod, const std::string& lfile, const int& lline);
 			// DocString: FMTError(const FMTexc,const std::string,const std::string&,const std::string&,const int&)
 			/**
-			Constructor for FMTError taking a exception type, section in which the error occur and message string as arguments and the location
-			where the exception occured (method/file/line).
+			@brief Construct a FMTError from an exception type, a message and the location where it occurred.
+			@param[in] lexception the exception type.
+			@param[in] message the message of the error.
+			@param[in] lmethod the method where the error occurred.
+			@param[in] lfile the file where the error occurred.
+			@param[in] lline the line where the error occurred.
 			*/
 			FMTError(const FMTexc lexception, const std::string message,
 				const std::string& lmethod, const std::string& lfile, const int& lline);
 			#if defined FMTWITHOSI
 				// DocString: FMTError(const CoinError&)
 				/**
-				Constructor for FMTError from a CoinError.
+				@brief Construct a FMTError from a CoinError.
+				@param[in] coinexception the CoinError to construct from.
 				*/
 				FMTError(const CoinError& coinexception);
 			#endif
 			// DocString: FMTError(const boost::bad_graph&)
 			/**
-			Constructor for FMTError from a boost::bad_graph.
+			@brief Construct a FMTError from a boost::bad_graph.
+			@param[in] boostexception the boost::bad_graph to construct from.
 			*/
 			FMTError(const boost::bad_graph& boostexception);
 

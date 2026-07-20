@@ -26,20 +26,68 @@ namespace Heuristics
 	class FMTOperatingAreaClusterer;
 	class FMTLpHeuristic;
 
+	// DocString: FMTLpHeuristicMtHandler
+	/**
+	@brief Multithreading handler running several LP heuristics in parallel and keeping the best solution.
+	*/
 	class FMTEXPORT FMTLpHeuristicMtHandler
 		{
 		double initialsolution;
 		std::vector<FMTLpHeuristic*> heuristics;
+		// DocString: FMTLpHeuristicMtHandler::bestHeuristic
+		/**
+		@brief Return the index of the heuristic with the best solution.
+		@return the best heuristic index.
+		*/
 		size_t bestHeuristic() const;
+		// DocString: FMTLpHeuristicMtHandler::resetNumberOfThreads
+		/**
+		@brief Reset the number of threads used by each heuristic.
+		@param[in] ncpu the number of cpus.
+		*/
 		void resetNumberOfThreads(const unsigned int& ncpu) const;
 		public:
+		// DocString: FMTLpHeuristicMtHandler()
+		/**
+		@brief Default constructor for FMTLpHeuristicMtHandler.
+		*/
 		FMTLpHeuristicMtHandler();
+		// DocString: FMTLpHeuristicMtHandler(std::vector<FMTOperatingAreaScheduler>&,const double&)
+		/**
+		@brief Construct a FMTLpHeuristicMtHandler from operating area schedulers and an initial solution.
+		@param[in] lheuristics the scheduler heuristics.
+		@param[in] linitialsolution the initial solution value.
+		*/
 		FMTLpHeuristicMtHandler(std::vector<FMTOperatingAreaScheduler>& lheuristics, const double& linitialsolution);
+		// DocString: FMTLpHeuristicMtHandler(std::vector<FMTOperatingAreaClusterer>&,const double&)
+		/**
+		@brief Construct a FMTLpHeuristicMtHandler from operating area clusterers and an initial solution.
+		@param[in] lheuristics the clusterer heuristics.
+		@param[in] linitialsolution the initial solution value.
+		*/
 		FMTLpHeuristicMtHandler(std::vector<FMTOperatingAreaClusterer>& lheuristics, const double& linitialsolution);
 		#if defined FMTWITHPYTHON
+			// DocString: FMTLpHeuristicMtHandler(boost::python::list&,const double&)
+			/**
+			@brief Construct a FMTLpHeuristicMtHandler from a Python list of heuristics and an initial solution.
+			@param[in] lheuristics the heuristics.
+			@param[in] linitialsolution the initial solution value.
+			*/
 			FMTLpHeuristicMtHandler(boost::python::list& lheuristics, const double& linitialsolution);
 		#endif
+		// DocString: FMTLpHeuristicMtHandler::initialSolve
+		/**
+		@brief Solve each heuristic in parallel to find an initial solution and return the index of the best one.
+		@return the best heuristic index.
+		*/
 		size_t initialSolve() const;
+		// DocString: FMTLpHeuristicMtHandler::greedySolve
+		/**
+		@brief Improve the solution of each heuristic in parallel with greedy passes and return the index of the best one.
+		@param[in] iterations the number of iterations.
+		@param[in] maxtime the maximum time.
+		@return the best heuristic index.
+		*/
 		size_t greedySolve(const unsigned int& iterations, const double& maxtime) const;
 	    };
 }

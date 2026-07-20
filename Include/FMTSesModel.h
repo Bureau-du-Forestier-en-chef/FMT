@@ -18,17 +18,17 @@ namespace Models
 {
 // DocString: FMTSesModel
 /**
-This model is a spatially explicit simulation (ses) model.
-It uses simple cellular automaton to spatially simulate FMTactions on
-a raster stack for a given planning horizon following an harvest schedule.
-The FMTAction ordering is realy important because the simulator will
-attend to place the first action of the list on the map and so on.
+@brief Spatially explicit simulation model using a cellular automaton to simulate actions on a raster stack following a harvest schedule.
+@details The action ordering is important because the simulator places the first action of the list on the map first.
 */
 class FMTEXPORT FMTSesModel final: public FMTSeModel
     {
 	// DocString: FMTSesModel::Serialize
 	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize the FMTSesModel through its base FMTSeModel for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -36,63 +36,82 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 		{
 		ar & boost::serialization::make_nvp("semodel", boost::serialization::base_object<FMTSeModel>(*this));
 		}
+	// DocString: FMTSesModel::swapPtr
+	/**
+	@brief Swap this model for the element at the end of the unique pointer.
+	@param[in,out] rhs the unique pointer to swap with.
+	*/
 	virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
 	// DocString: FMTSesModel()
 	/**
-	Constructor for presolve use
+	@brief Construct a FMTSesModel from a FMTSeModel, for presolve use.
+	@param[in] rhs the FMTSeModel.
 	*/
 	FMTSesModel(const FMTSeModel& rhs);
     public:
 		// DocString: FMTSesModel()
 		/**
-		Default constructor of FMTSesModel
+		@brief Default constructor for FMTSesModel.
 		*/
 		FMTSesModel() = default;
 		// DocString: ~FMTSesModel()
 		/**
-		Default destructor of FMTSesModel
+		@brief Default destructor for FMTSesModel.
 		*/
 		~FMTSesModel() = default;
 		// DocString: FMTSesModel(const FMTSesModel)
 		/**
-		Copy constructor of FMTSesModel
+		@brief Copy constructor for FMTSesModel.
+		@param[in] rhs the FMTSesModel to copy.
 		*/
         FMTSesModel(const FMTSesModel& rhs)=default;
 		// DocString: FMTSesModel(const FMTModel)
 		/**
-		Parent constructor for FMTSesModel (easiest way to get information from a FMTModel)
+		@brief Construct a FMTSesModel from a FMTModel.
+		@param[in] rhs the model.
 		*/
         FMTSesModel(const FMTModel& rhs);
 		// DocString: FMTSesModel(const FMTModel)
 		/**
-		Parent constructor for FMTSesModel (easiest way to get information from a FMTModel)
+		@brief Construct a FMTSesModel from a FMTModel and a forest.
+		@param[in] rhs the model.
+		@param[in] forest the forest.
 		*/
 		FMTSesModel(const FMTModel& rhs, const Spatial::FMTForest& forest);
 		// DocString: FMTSesModel::operator=
 		/**
-		Copy assignment of FMTSesModel
+		@brief Copy assignment operator for FMTSesModel.
+		@param[in] rhs the FMTSesModel to copy.
+		@return a reference to this FMTSesModel.
 		*/
         FMTSesModel& operator = (const FMTSesModel& rhs)=default;
 		// DocString: FMTSesModel(FMTSesModel&&)
 		/**
-		Default move constructor for FMTSesModel.
+		@brief Default move constructor for FMTSesModel.
+		@param[in,out] rhs the model to move from.
 		*/
 		FMTSesModel(FMTSesModel&& rhs)=default;
 		// DocString: FMTSesModel::operator=(FMTSesModel&& rhs) 
 		/**
-		Default move assignment for FMTSesModel.
+		@brief Default move assignment for FMTSesModel.
+		@param[in,out] rhs the model to move from.
+		@return a reference to this FMTSesModel.
 		*/
 		FMTSesModel& operator =(FMTSesModel&& rhs) =default;
 		// DocString: FMTSesModel::getDisturbanceStats
 		/**
-		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
+		@brief Return a string of patch statistics (area, perimeter) of the disturbances stack.
+		@return the disturbance statistics.
 		*/
 		std::string getDisturbanceStats() const;
 		// DocString: FMTSesModel::greedyReferenceBuild
 		/**
-		This function call multiple time the function FMTSpatialSchedule::referenceBuild function to 
-		find the best possible spatialisation for a given schedule using random draw. It uses a schedule of actions (schedule) on the actual
-		spatially explicit forest.  The user can also set the seed to get different solutions from the simulator.
+		@brief Find the best spatialization for a schedule using random draws over several iterations.
+		@param[in] p_schedule the schedule of actions.
+		@param[in] p_randomIterations the number of random iterations.
+		@param[in] p_seed the seed.
+		@param[in] p_tolerance the tolerance.
+		@return a map of statistics.
 		*/
 		std::map<std::string, double> greedyReferenceBuild(
 			const Core::FMTSchedule& p_schedule,
@@ -101,17 +120,21 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 			double p_tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTSesModel::clone
 		/**
-		Get a clone of the FMTSesModel
+		@brief Get a clone of the FMTSesModel.
+		@return a unique pointer to the cloned model.
 		*/
 		virtual std::unique_ptr<FMTModel>clone() const;
 		// DocString: FMTSesModel::build
 		/**
-		This function will use the function greedyReferenceBuild over the number of period set as LENGTH in model parameters.
+		@brief Build the model by calling greedyReferenceBuild over the number of periods set as LENGTH.
+		@param[in] schedules the schedules.
+		@return true if the build succeeded else false.
 		*/
 		virtual bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>());
 		// DocString: FMTSesModel::solve
 		/**
-		There is no solve since it's only a simulation. The build phase simulate over the LENGTH given in model parameters. 
+		@brief Return true; there is no solve since this is a simulation.
+		@return true.
 		*/
 		virtual bool solve()
 		{
@@ -119,16 +142,16 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 		}
 		// DocString: FMTSesModel::presolve
 		/**
-		This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTModel.
-		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
+		@brief Return a presolved copy of the model.
+		@param[in] optionaldevelopments the optional developments.
+		@return the presolved model.
 		*/
 		virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTSesModel::getCopy
 		/**
-		This function returns a copy of the FMTModel of the selected period.
-		If period = 0 it returns the FMTModel::getCopy if period > 0 then it returns
-		a copy of the FMTModel based on the developments of the FMTGraph of the FMTLpModel.
-		Need to have a builded graph with a solution to use this function.
+		@brief Return a copy of the model for the selected period.
+		@param[in] period the period.
+		@return the copied model.
 		*/
 		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
     };

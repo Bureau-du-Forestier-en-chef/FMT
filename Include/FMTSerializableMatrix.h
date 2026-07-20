@@ -22,11 +22,8 @@ namespace Models
 {
 // DocString: FMTSerializableMatrix
 /**
-The FMTSerializableMatrix is made for the serialization of osisolverinterface matrix.
-Osisolverinterface matrix is a abstract class pointing on multiple solvertype.
-The goal of that class is to get the informations from osisolverinterface class into multiple
-vectors (solutions,bounds,etc...) to permit the synchronization.
-Also this class is usefull when copying osisolverinterface with the FMTsolverinterface type.
+@brief Helper for the serialization of an OSI solver interface matrix.
+@details Extracts the information from the OSI solver interface matrix into vectors (solutions, bounds, etc.) to allow synchronization, also useful when copying an OSI solver interface with the FMTsolverinterface type.
 */
 class FMTEXPORT FMTSerializableMatrix
 	{
@@ -56,7 +53,10 @@ class FMTEXPORT FMTSerializableMatrix
 	std::vector<double>rowprice;
 	// DocString: FMTSerializableMatrix::serialize
 	/**
-	Save and load functions are for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	@brief Serialize the matrix by extracting the OSI solver interface matrix into vectors, for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -154,6 +154,23 @@ class FMTEXPORT FMTSerializableMatrix
 		
 
 		}
+	// DocString: FMTSerializableMatrix::getSetMatrixElements
+	/**
+	@brief Get or set the matrix elements to or from the given variables depending on the loading flag.
+	@param[in] loading if true loads the elements, otherwise gets them.
+	@param[in,out] order the storage order.
+	@param[in,out] extragap the extra gap.
+	@param[in,out] extramajor the extra major.
+	@param[in,out] sizevector the size of the vectors.
+	@param[in,out] minordim the minor dimension.
+	@param[in,out] numelements the number of elements.
+	@param[in,out] majordim the major dimension.
+	@param[in,out] maxsize the maximum size.
+	@param[in,out] lelement the elements.
+	@param[in,out] lindex the indices.
+	@param[in,out] llength the lengths.
+	@param[in,out] lstart the starts.
+	*/
 	void getSetMatrixElements(bool loading,
 		bool& order,
 		double& extragap,
@@ -167,6 +184,18 @@ class FMTEXPORT FMTSerializableMatrix
 		std::vector<int>& lindex,
 		std::vector<int>& llength,
 		std::vector<int>& lstart);
+	// DocString: FMTSerializableMatrix::getSetMemberElements
+	/**
+	@brief Get or set the member elements to or from the given vectors depending on the loading flag.
+	@param[in] loading if true loads the elements, otherwise gets them.
+	@param[in,out] lcollb the columns lower bounds.
+	@param[in,out] lcolub the columns upper bounds.
+	@param[in,out] lobj the objective coefficients.
+	@param[in,out] lrowlb the rows lower bounds.
+	@param[in,out] lrowub the rows upper bounds.
+	@param[in,out] lcolsolution the primal solution.
+	@param[in,out] lrowprice the dual solution.
+	*/
 	void getSetMemberElements(bool loading,
 		std::vector<double>&lcollb,
 		std::vector<double>&lcolub,
@@ -178,23 +207,26 @@ class FMTEXPORT FMTSerializableMatrix
 	public:
 		// DocString: FMTSerializableMatrix()
 		/**
-		Default constructor of FMTSerializableMatrix
+		@brief Default constructor for FMTSerializableMatrix.
 		*/
 		FMTSerializableMatrix();
 		// DocString: FMTSerializableMatrix(const FMTSerializableMatrix)
 		/**
-		Copy constructor of FMTSerializableMatrix
+		@brief Copy constructor for FMTSerializableMatrix.
+		@param[in] rhs the FMTSerializableMatrix to copy.
 		*/
 		FMTSerializableMatrix(const FMTSerializableMatrix& rhs);
 		// DocString: FMTSerializableMatrix::operator=
 		/**
-		Copy assignment of FMTSerializableMatrix
+		@brief Copy assignment operator for FMTSerializableMatrix.
+		@param[in] rhs the FMTSerializableMatrix to copy.
+		@return a reference to this FMTSerializableMatrix.
 		*/
 		FMTSerializableMatrix& operator = (const FMTSerializableMatrix& rhs);
 		// DocString: FMTSerializableMatrix(const std::shared_ptr<OsiSolverInterface>,const FMTsolverinterface)
 		/**
-		Constructor of FMTSerializableMatrix with the solverinterface and the solvertype used.
-		Normaly used during the saving part of serialization.
+		@brief Construct a serializable matrix from a solver interface, normally used during the saving part of serialization.
+		@param[in] solverinterface the solver interface.
 		*/
 		FMTSerializableMatrix(const std::shared_ptr<OsiSolverInterface>& solverinterface);
 		// DocString: FMTSerializableMatrix::setSolverType
@@ -204,7 +236,8 @@ class FMTEXPORT FMTSerializableMatrix
 		//void setSolverType(FMTsolverinterface& lsolvertype) const;
 		// DocString: FMTSerializableMatrix::setMatrix
 		/**
-		This function will set it's contain to a solverinterface matrix, used during the loading part of serialization.
+		@brief Set the content of a solver interface matrix, used during the loading part of serialization.
+		@param[in] solverinterface the solver interface.
 		*/
 		void setMatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const;
 		// DocString: FMTSerializableMatrix::buildSolverInterface
@@ -219,7 +252,7 @@ class FMTEXPORT FMTSerializableMatrix
 		//std::shared_ptr<OsiSolverInterface> copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
 		// DocString: ~FMTSerializableMatrix()
 		/**
-		Default destructor of FMTSerializableMatrix
+		@brief Destructor for FMTSerializableMatrix.
 		*/
 		~FMTSerializableMatrix();
 	};

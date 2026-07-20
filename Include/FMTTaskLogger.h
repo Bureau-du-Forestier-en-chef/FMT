@@ -16,36 +16,37 @@ namespace Logging
 {
 // DocString: FMTTaskLogger
 /**
-FMTTaskLogger will not print any solver informations from osisolverinterface and other defaultlogging
+@brief Logger derived from FMTLogger that does not print solver information nor default logging, for use in tasks.
 */
 class FMTEXPORT FMTTaskLogger final : public FMTLogger
 	{
 	public:
 		// DocString: FMTTaskLogger()
 		/**
-		FMTTaskLogger default constructor.
+		@brief Default constructor for FMTTaskLogger.
 		*/
 		FMTTaskLogger();
 		// DocString: FMTTaskLogger(const FMTTaskLogger&)
 		/**
-		FMTTaskLogger default copy constructor.
+		@brief Default copy constructor for FMTTaskLogger.
 		*/
 		FMTTaskLogger(const FMTTaskLogger&) = default;
 		// DocString: FMTTaskLogger::operator=
 		/**
-		FMTTaskLogger default copy assignment.
+		@brief Default copy assignment operator for FMTTaskLogger.
+		@return a reference to this FMTTaskLogger.
 		*/
 		FMTTaskLogger& operator = (const FMTTaskLogger&) = default;
 		// DocString: FMTTaskLogger::~FMTTaskLogger
 		/**
-		FMTTaskLogger default destructor.
+		@brief Default destructor for FMTTaskLogger.
 		*/
 		~FMTTaskLogger()=default;
 		#ifdef FMTWITHOSI
 			// DocString: FMTTaskLogger::print
 			/**
-			FMTQuietLogger print nothing with osisolverinterface.
-			See FMTLogger print function.
+			@brief Print nothing with the OSI solver interface. See FMTLogger::print.
+			@return the value returned by the print function.
 			*/
 			int print() override;
 			// DocString: FMTTaskLogger::checkSeverity
@@ -55,7 +56,8 @@ class FMTEXPORT FMTTaskLogger final : public FMTLogger
 			void checkSeverity() override;
 			// DocString: FMTTaskLogger::clone
 			/**
-			See FMTLogger clone function.
+			@brief Clone the logger for the OSI solver interface. See FMTLogger::clone.
+			@return a pointer to the cloned logger.
 			*/
 			FMTLogger* clone() const override;
 		#endif
@@ -68,7 +70,10 @@ class FMTEXPORT FMTTaskLogger final : public FMTLogger
 	private:
 		// DocString: FMTTaskLogger::serialize
 		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief Serialize the FMTTaskLogger through its base FMTLogger for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
