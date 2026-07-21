@@ -16,9 +16,9 @@
 #endif
 #ifdef FMTWITHOSI
 
-std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
+std::vector<Heuristics::FMTOperatingAreaScheme> ObtenirOperatingArea(
     const std::string& fichierShp,
-    const std::vector<Core::FMTtheme>& themes,
+    const std::vector<Core::FMTTheme>& themes,
     const int& numeroTheme,
     const int& startingperiod,
     const std::string& nomChampAge,
@@ -26,18 +26,18 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
     const std::string& nomChampStanlock,
     const std::string& fichierParam)
     {
-        Parser::FMTareaparser areaParser;
-        std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(
+        Parser::FMTAreaParser areaParser;
+        std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOAschedulerparameters(
             fichierParam,
             themes,
             numeroTheme - 1,
             startingperiod);
         for (const auto& op : opeareas) 
         {
-            if (op.getneihgborsperimeter() > 0 || op.getgreenup() > 0)
+            if (op.getNeighborsPerimeter() > 0 || op.getGreenUp() > 0)
             {
-                Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
-                opeareas = areaParser.getschemeneighbors(
+                Logging::FMTDefaultLogger() << "Lecture des blocs voisins." << "\n";
+                opeareas = areaParser.getSchemeNeighbors(
                     opeareas, 
                     themes, 
                     fichierShp, 
@@ -56,7 +56,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
 int main(int argc, char *argv[])
     {   
      #ifdef FMTWITHOSI
-     Logging::FMTdefaultlogger().logstamp();
+     Logging::FMTDefaultLogger().logStamp();
      std::string primarylocation;
      std::vector<std::string> results;
      std::vector<std::string> scenarios;
@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
         fichierShp = "D:/02_Travail_Realisme/02_Travail_Realisme/Carte/PC_9943_UA_U08651.shp";
         results = std::vector<std::string>(1, "323_TYFSansPre_avsp");
         }
-     Parser::FMTmodelparser modelparser;
-     modelparser.setdefaultexceptionhandler();
+     Parser::FMTModelParser modelparser;
+     modelparser.setDefaultExceptionHandler();
                 std::vector<Exception::FMTexc> errors;
                 errors.push_back(Exception::FMTexc::FMTmissingyield);
                 errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -95,14 +95,14 @@ int main(int argc, char *argv[])
                 errors.push_back(Exception::FMTexc::FMTmissingyield);
                 errors.push_back(Exception::FMTexc::FMTEmptyOA);
                 errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-                modelparser.seterrorstowarnings(errors);
-                const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-                Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-                const int startingperiod = optimizationmodel.getparameter(Models::FMTintmodelparameters::UPDATE);
+                modelparser.setErrorsToWarnings(errors);
+                const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+                Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+                const int startingperiod = optimizationmodel.getParameter(Models::FMTintmodelparameters::UPDATE);
                
-                const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(
+                const std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = ObtenirOperatingArea(
                     fichierShp,
-                    optimizationmodel.getthemes(),
+                    optimizationmodel.getThemes(),
                     14,
                     startingperiod,
                     "AGE",
@@ -112,13 +112,13 @@ int main(int argc, char *argv[])
                 size_t neighborsCount = 0;
                 for (const auto& OPArea : opeareas)
                     {
-                    neighborsCount += OPArea.getneighbors().size();
+                    neighborsCount += OPArea.getNeighbors().size();
                     }
                 const size_t TESTED_VALUE = static_cast<size_t>(std::stoi(results[2]));
                 if (neighborsCount != TESTED_VALUE)
                     {
                     std::cout << neighborsCount << "!=" << TESTED_VALUE << "\n";
-                    Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+                    Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed,
                         "Wrong number of neighbors!",
                         "testOAAdjacency", __LINE__, __FILE__);
                     }
