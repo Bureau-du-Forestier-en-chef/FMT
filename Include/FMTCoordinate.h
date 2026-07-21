@@ -196,21 +196,21 @@ namespace Spatial
 			    ar & BOOST_SERIALIZATION_NVP(m_x);
 			    ar & BOOST_SERIALIZATION_NVP(m_y);
 			    }
-		    // DocString: FMTCoordinate::getXyGap
+		    // DocString: FMTCoordinate::_getXyGap
 		    /**
 		    @brief Compute the x and y gap to another coordinate.
 		    @param[in] rhs the other coordinate.
 		    @param[out] xgap the x gap.
 		    @param[out] y_gap the y gap.
 		    */
-		    void getXyGap(const FMTCoordinate& rhs, int& xgap, int& y_gap) const;
-            // DocString: FMTCoordinate::distanceApproximation
+		    void _getXyGap(const FMTCoordinate& rhs, int& xgap, int& y_gap) const;
+            // DocString: FMTCoordinate::_distanceApproximation
             /**
             @brief Return an approximation of the distance to another coordinate.
             @param[in] coord the other coordinate.
             @return the approximated distance.
             */
-            double distanceApproximation(const FMTCoordinate& coord) const;
+            double _distanceApproximation(const FMTCoordinate& coord) const;
  
         };
     }

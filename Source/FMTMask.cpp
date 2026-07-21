@@ -72,7 +72,7 @@ std::vector<FMTMask> FMTMask::decompose(const FMTTheme &theme) const
 		}
     return NewMasks;
     }
- boost::dynamic_bitset<uint8_t> FMTMask::subset(const FMTTheme& theme) const
+ boost::dynamic_bitset<uint8_t> FMTMask::_subset(const FMTTheme& theme) const
     {
     boost::dynamic_bitset<uint8_t> sub(theme.size(),false);
     int locit = 0;
@@ -158,8 +158,8 @@ std::string FMTMask::get(const std::vector<FMTTheme>& themes) const
 
 void  FMTMask::setExclusiveBits(const FMTMask& p_mask, const FMTTheme& p_theme)
 {
-	const boost::dynamic_bitset<uint8_t>BASE = this->subset(p_theme);
-	boost::dynamic_bitset<uint8_t>RHS = p_mask.subset(p_theme);
+	const boost::dynamic_bitset<uint8_t>BASE = this->_subset(p_theme);
+	boost::dynamic_bitset<uint8_t>RHS = p_mask._subset(p_theme);
 	RHS.flip(); 
 	setSubset(p_theme, BASE & RHS);
 	name.clear();
@@ -268,7 +268,7 @@ std::vector<const Core::FMTTheme*> FMTMask::getSelectedThemes(const  std::vector
 	std::vector<const Core::FMTTheme*>selected;
 	for (const Core::FMTTheme& theme : themes)
 	{
-		if (subset(theme).any())
+		if (_subset(theme).any())
 		{
 			selected.push_back(&theme);
 		}
@@ -432,7 +432,7 @@ FMTMask FMTMask::removeAggregates(const std::vector<FMTTheme>& themes, bool ques
 	const boost::dynamic_bitset<uint8_t> nullmask(data.size(), false);
 	for (const FMTTheme& theme : themes)
 		{
-		const boost::dynamic_bitset<uint8_t> localtheme = newmask.subset(theme);
+		const boost::dynamic_bitset<uint8_t> localtheme = newmask._subset(theme);
 		if (!questionmarkonly&&(localtheme.count()>1 || (localtheme.count()==1 && localtheme.size() == 1))||
 			questionmarkonly&&localtheme.count()==localtheme.size())
 			{
@@ -466,7 +466,7 @@ bool FMTMask::isNotThemesSubset(const FMTMask& rhs, const std::vector<const Core
 		const size_t themestop = themestart + theme->size()-1;
 		if (!(rhs.data[themestart]&this->data[themestart])&&
 			!(rhs.data[themestop]&this->data[themestop])&&
-			!((subset(*theme) & rhs.subset(*theme)).any())
+			!((_subset(*theme) & rhs._subset(*theme)).any())
 			)
 			{
 			return true;
@@ -487,7 +487,7 @@ bool FMTMask::isNotThemesSubset(const FMTMask& rhs, const  std::vector<Core::FMT
 			const size_t themestop = themestart + theme.size() - 1;
 			if (!(rhs.data[themestart] & this->data[themestart]) &&
 				!(rhs.data[themestop] & this->data[themestop]) &&
-				!((subset(theme) & rhs.subset(theme)).any()))
+				!((_subset(theme) & rhs._subset(theme)).any()))
 			{
 				return true;
 			}*/
@@ -530,8 +530,8 @@ FMTMask FMTMask::refine(const FMTMask& mask,const std::vector<FMTTheme>& themes)
 		boost::split(maskbases, baseMask,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
 		for(const FMTTheme& theme : themes)
 			{	
-			const size_t thiscount = subset(theme).count();
-			const size_t targetcount = mask.subset(theme).count();
+			const size_t thiscount = _subset(theme).count();
+			const size_t targetcount = mask._subset(theme).count();
 			if (thiscount == theme.size() ||  targetcount < thiscount)
 			{
 				bases.at(theme.m_id) = maskbases.at(theme.m_id);
@@ -596,7 +596,7 @@ bool FMTMask::canPresolve(const FMTMaskFilter& p_filter,
 	const Core::FMTMask PRESOLVED = Core::FMTMask(_getPresolveMask(p_filter, p_presolvedThemes));
 	for (const FMTTheme& theme : p_presolvedThemes)
 		{
-		if (PRESOLVED.subset(theme).count() == 0)
+		if (PRESOLVED._subset(theme).count() == 0)
 			{
 			return false;
 			}

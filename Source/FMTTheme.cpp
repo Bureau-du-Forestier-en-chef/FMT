@@ -684,7 +684,7 @@ void FMTTheme::pushAggregateValue(const std::string& p_aggregatename, const std:
 std::string FMTTheme::updateFromMask(const Core::FMTMask& p_globalmask)
 	{
 	try {
-		const boost::dynamic_bitset<uint8_t>global = p_globalmask.subset(*this);
+		const boost::dynamic_bitset<uint8_t>global = p_globalmask._subset(*this);
 		if ((global.count()>1)&&(global.count()<global.size()))
 			{
 			std::string lastFMTaggregate("~FMT"+std::to_string(getId())+"A_0");

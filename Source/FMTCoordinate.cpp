@@ -30,7 +30,7 @@ namespace Spatial
         return FMTCoordinate(m_x+(x_n[id]*factor), m_y+(y_n[id]*factor));
         }
 
-	void FMTCoordinate::getXyGap(const FMTCoordinate& rhs, int& xgap, int& y_gap) const
+	void FMTCoordinate::_getXyGap(const FMTCoordinate& rhs, int& xgap, int& y_gap) const
 		{
 		xgap = (static_cast<int>(m_x) - static_cast<int>(rhs.m_x));
 		y_gap = (static_cast<int>(m_y) - static_cast<int>(rhs.m_y));
@@ -38,14 +38,14 @@ namespace Spatial
 
     double FMTCoordinate::distance(const FMTCoordinate& coord) const
         {
-        return std::sqrt(distanceApproximation(coord));
+        return std::sqrt(_distanceApproximation(coord));
         }
 
-	double FMTCoordinate::distanceApproximation(const FMTCoordinate& coord) const
+	double FMTCoordinate::_distanceApproximation(const FMTCoordinate& coord) const
 		{
 		int distancex = 0;
 		int distancey = 0;
-		getXyGap(coord, distancex, distancey);
+		_getXyGap(coord, distancex, distancey);
 		return static_cast<double>(distancex * distancex + distancey * distancey);
 		}
 
@@ -55,7 +55,7 @@ namespace Spatial
 		std::set<FMTCoordinate>::const_iterator bestcoordinate;
 		for (const std::set<FMTCoordinate>::const_iterator& coordinate : coordinates)
 			{
-			const double value = distanceApproximation(*coordinate);
+			const double value = _distanceApproximation(*coordinate);
 			if (value < approximation)
 				{
 				approximation = value;
@@ -74,7 +74,7 @@ namespace Spatial
             }
             int distancex = 0;
             int distancey = 0;
-            getXyGap(coord, distancex, distancey);
+            _getXyGap(coord, distancex, distancey);
             return (static_cast<decltype(ldistance)>(std::abs(distancex)) <= ldistance && static_cast<decltype(ldistance)>(std::abs(distancey)) <= ldistance &&
                 std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
         }

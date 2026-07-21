@@ -525,13 +525,13 @@ class FMTEXPORT FMTMask
 			ar& BOOST_SERIALIZATION_NVP(data);
 			ar& BOOST_SERIALIZATION_NVP(name);
 		}
-		// DocString: FMTMask::subset
+		// DocString: FMTMask::_subset
 		/**
 		@brief Return the data subset bits for a given theme, of the length of the theme.
 		@param[in] theme the theme.
 		@return the subset bits of the theme.
 		*/
-		boost::dynamic_bitset<uint8_t> subset(const FMTTheme& theme) const;
+		boost::dynamic_bitset<uint8_t> _subset(const FMTTheme& theme) const;
 		// DocString: FMTMask::operator []
 		/**
 		@brief get bit value at i position.

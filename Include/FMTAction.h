@@ -371,17 +371,17 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		// DocString: FMTAction::m_InSerie
 		///True if the actions is in a serie
 		bool m_InSerie;
-		// DocString: FMTAction::setBounds
+		// DocString: FMTAction::_setBounds
 		/**
 		@brief Set the age and period bounds member data by iterating on the specifications, for optimization.
 		*/
-		void setBounds();
-		// DocString: FMTAction::getGCBMActionDef
+		void _setBounds();
+		// DocString: FMTAction::_getGCBMActionDef
 		/**
 		@brief Return the corresponding GCBM action definition.
 		@return the GCBM action definition.
 		*/
-		std::vector<std::string> getGCBMActionDef() const;
+		std::vector<std::string> _getGCBMActionDef() const;
 	private:
 		// DocString: FMTAction::serialize
 		/**

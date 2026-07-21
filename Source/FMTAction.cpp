@@ -136,7 +136,7 @@ namespace Core{
         return *this;
         }
 
-	void FMTAction::setBounds()
+	void FMTAction::_setBounds()
 		{
 		try {
 			m_ageupperbound = 0;
@@ -185,7 +185,7 @@ namespace Core{
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("for action "+this->getName(),
-				"FMTAction::setBounds", __LINE__, __FILE__,Core::FMTsection::Action);
+				"FMTAction::_setBounds", __LINE__, __FILE__,Core::FMTsection::Action);
 			}
 		}
 
@@ -193,7 +193,7 @@ namespace Core{
 		{
 		try {
 			FMTList<FMTSpec>::update();
-			this->setBounds();
+			this->_setBounds();
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("for action " + this->getName(),
@@ -461,7 +461,7 @@ std::unordered_set<int>FMTActionComparator::getAllAggregatesSet(
 	return actionsptr;
 }
 
-std::vector<std::string>FMTAction::getGCBMActionDef() const
+std::vector<std::string>FMTAction::_getGCBMActionDef() const
 {
 	std::vector<std::string> allvalues;
 	try {
@@ -474,12 +474,12 @@ std::vector<std::string>FMTAction::getGCBMActionDef() const
 			}
 		}
 		_exhandler->raise(Exception::FMTexc::FMTempty_action, "Missing GCBM action for action " + this->getName(),
-			"FMTAction::getGCBMActionDef", __LINE__, __FILE__, Core::FMTsection::Action);
+			"FMTAction::_getGCBMActionDef", __LINE__, __FILE__, Core::FMTsection::Action);
 	}
 	catch (...)
 	{
 		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getName(),
-			"FMTAction::getGCBMActionDef", __LINE__, __FILE__, Core::FMTsection::Action);
+			"FMTAction::_getGCBMActionDef", __LINE__, __FILE__, Core::FMTsection::Action);
 	}
 	return allvalues;
 }
@@ -487,7 +487,7 @@ std::vector<std::string>FMTAction::getGCBMActionDef() const
 int FMTAction::getGCBMActionId() const
 {
 	try {
-		return std::atoi(getGCBMActionDef().at(1).c_str());
+		return std::atoi(_getGCBMActionDef().at(1).c_str());
 	}
 	catch (...)
 	{
@@ -500,7 +500,7 @@ int FMTAction::getGCBMActionId() const
 std::string FMTAction::getGCBMActionName() const
 {
 	try {
-		return getGCBMActionDef().at(2).c_str();
+		return _getGCBMActionDef().at(2).c_str();
 	}
 	catch (...)
 	{
