@@ -3374,11 +3374,11 @@ void FMTModel::swapPtr(std::unique_ptr<FMTModel>& rhs)
 }
 
 
-FMTModelComparator::FMTModelComparator(std::string name) :model_name(name) {}
+FMTModelComparator::FMTModelComparator(std::string p_name) :m_modelName(p_name) {}
 
 bool FMTModelComparator::operator()(const FMTModel& model) const
 	{
-	return(model_name == model.getName());
+	return(m_modelName == model.getName());
 	}
 
 

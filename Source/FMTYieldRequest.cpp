@@ -16,24 +16,24 @@ namespace Core
 { 
 	FMTYieldRequest::FMTYieldRequest(const Core::FMTDevelopment& ldevelopment,
 		const Graph::FMTGraphVertexToYield& lgraphvertex) :
-		datas(),
-		resume_mask(),
+		m_datas(),
+		m_resumeMask(),
 		m_yields(),
-		development(&ldevelopment),
-		graphvertex(&lgraphvertex)
+		m_development(&ldevelopment),
+		m_graphvertex(&lgraphvertex)
 	{
 
 	}
 
 	FMTYieldRequest::FMTYieldRequest(const FMTDevelopment& ldevelopment,
 		const FMTYieldRequest& oldrequest):
-		datas(oldrequest.datas),
-		resume_mask(oldrequest.resume_mask),
+		m_datas(oldrequest.m_datas),
+		m_resumeMask(oldrequest.m_resumeMask),
 		m_yields(oldrequest.m_yields),
-		development(&ldevelopment),
-		graphvertex()
+		m_development(&ldevelopment),
+		m_graphvertex()
 	{
-		if (ldevelopment.getMask()!= oldrequest.development->getMask())
+		if (ldevelopment.getMask()!= oldrequest.m_development->getMask())
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot create a yield request with a different developement mask ",
 				"FMTYieldRequest::FMTYieldRequest()", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -41,30 +41,30 @@ namespace Core
 	}
 
 	FMTYieldRequest::FMTYieldRequest(const Core::FMTDevelopment& ldevelopment):
-		datas(),
-		resume_mask(),
+		m_datas(),
+		m_resumeMask(),
 		m_yields(),
-		development(&ldevelopment),
-		graphvertex(nullptr)
+		m_development(&ldevelopment),
+		m_graphvertex(nullptr)
 	{
 
 	}
 
 	const FMTDevelopment& FMTYieldRequest::getDevelopment() const
 	{
-		return *development;
+		return *m_development;
 	}
 	const std::vector<FMTYieldRequest::const_iterator>&FMTYieldRequest::getDatas() const
 	{
-		return datas;
+		return m_datas;
 	}
 	const Core::FMTMask& FMTYieldRequest::getResumeMask() const
 	{
-		return resume_mask;
+		return m_resumeMask;
 	}
 	const Graph::FMTGraphVertexToYield* FMTYieldRequest::getVertexGraphInfo() const
 	{
-		return graphvertex;
+		return m_graphvertex;
 	}
 
 	FMTYieldRequest::const_iterator FMTYieldRequest::getFirstSeen(const std::string& p_yield) const
@@ -76,11 +76,11 @@ namespace Core
 void FMTYieldRequest::_updateData(const FMTYields& yields) const
 {
 	try {
-		if (resume_mask.empty())
+		if (m_resumeMask.empty())
 		{
 			m_yields = &yields;
-			resume_mask = yields.filterMask(development->getMask());
-			datas = yields.findSetsWithFiltered(resume_mask);
+			m_resumeMask = yields.filterMask(m_development->getMask());
+			m_datas = yields.findSetsWithFiltered(m_resumeMask);
 		}
 	}
 	catch (...)

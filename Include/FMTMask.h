@@ -618,9 +618,6 @@ template<> inline void FMTMask::binarizedAppend<double>(const double& element)
 */
 class FMTMaskComparator
 	{
-	// DocString: FMTMaskComparator::base_mask
-	///The mask that we are looking for
-	FMTMask base_mask;
 	public:
 		// DocString: FMTMaskComparator:(const FMTMask&)
 		/**
@@ -636,6 +633,10 @@ class FMTMaskComparator
 		*/
 		bool operator()(const FMTMask& mask) const;
 
+	private:
+	// DocString: FMTMaskComparator::m_baseMask
+	///The mask that we are looking for
+	FMTMask m_baseMask;
 	};
 
 }

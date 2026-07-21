@@ -110,11 +110,11 @@ namespace Core
 		const_iterator getFirstSeen(const std::string& p_yield) const;
 	private:
 		friend class FMTYields;
-		mutable std::vector<const_iterator>datas;
-		mutable FMTMask resume_mask;
+		mutable std::vector<const_iterator>m_datas;
+		mutable FMTMask m_resumeMask;
 		mutable FMTYields const* m_yields;
-		FMTDevelopment const* development;
-		Graph::FMTGraphVertexToYield const* graphvertex;
+		FMTDevelopment const* m_development;
+		Graph::FMTGraphVertexToYield const* m_graphvertex;
 		// DocString: FMTYieldRequest::_updateData
 		/**
 		@brief Update the data of the request from the yields.

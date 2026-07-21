@@ -180,6 +180,9 @@ namespace Spatial
             uint16_t getY() const;
         private:
 		    friend class boost::serialization::access;
+            //unsigned int x,y;
+            uint16_t m_x;
+            uint16_t m_y;
 		    // DocString: FMTCoordinate::serialize
 		    /**
 		    @brief Serialize the FMTCoordinate for multiprocessing across multiple cpus (pickle in Python).
@@ -193,9 +196,6 @@ namespace Spatial
 			    ar & BOOST_SERIALIZATION_NVP(m_x);
 			    ar & BOOST_SERIALIZATION_NVP(m_y);
 			    }
-            //unsigned int x,y;
-            uint16_t m_x;
-            uint16_t m_y;
 		    // DocString: FMTCoordinate::getXyGap
 		    /**
 		    @brief Compute the x and y gap to another coordinate.

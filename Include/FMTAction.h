@@ -45,7 +45,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 	public:
 		// DocString: FMTAction::operator+=
 		/**
-		@brief Append another action to this action; actions need to have the same age reset otherwise an exception is thrown.
+		@brief Append another action to this action; actions need to have the same age m_reset otherwise an exception is thrown.
 		@param[in] OtherAction the other action to append to this one.
 		@return a reference to this appended action.
 		*/
@@ -62,28 +62,28 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		virtual ~FMTAction() = default;
 		// DocString: FMTAction(const std::string&)
 		/**
-		@brief Construct an empty action with a given name.
-		@param[in] lname the name of the action.
+		@brief Construct an empty action with a given m_name.
+		@param[in] lname the m_name of the action.
 		*/
 		FMTAction(const std::string& lname);
 		// DocString: FMTAction(const std::string&,const bool&,const bool&)
 		/**
-		@brief Construct an empty action with a given name, respect lock and reset age flags.
-		@param[in] lname the name of the action.
-		@param[in] lock if true the action respects the lock.
-		@param[in] reset if true the action resets the age.
+		@brief Construct an empty action with a given m_name, respect m_lock and m_reset age flags.
+		@param[in] lname the m_name of the action.
+		@param[in] m_lock if true the action respects the m_lock.
+		@param[in] m_reset if true the action resets the age.
 		*/
-		FMTAction(const std::string& lname, const bool& lock, const bool& reset);
+		FMTAction(const std::string& lname, const bool& p_lock, const bool& p_reset);
 		// DocString: FMTAction::pushAggregate
 		/**
-		@brief Push an aggregate to the aggregates of the action.
+		@brief Push an aggregate to the m_aggregates of the action.
 		@param[in] aggregate the aggregate to push.
 		*/
 		void pushAggregate(const std::string& aggregate);
 		// DocString: FMTAction::pushPartials
 		/**
-		@brief Push a partial yield name to the partials of the action.
-		@param[in] yield the partial yield name to push.
+		@brief Push a partial yield m_name to the m_partials of the action.
+		@param[in] yield the partial yield m_name to push.
 		*/
 		void pushPartials(const std::string& yield);
 		// DocString: FMTAction(const FMTAction&)
@@ -134,7 +134,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline const int& getAgeLowerBound() const
 		{
-			return agelowerbound;
+			return m_agelowerbound;
 		}
 		// DocString: FMTAction::getAgeUpperBound
 		/**
@@ -143,7 +143,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline const int& getAgeUpperBound() const
 		{
-			return ageupperbound;
+			return m_ageupperbound;
 		}
 		// DocString: FMTAction::getPeriodLowerBound
 		/**
@@ -152,7 +152,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline const int& getPeriodLowerBound() const
 		{
-			return periodlowerbound;
+			return m_periodlowerbound;
 		}
 		// DocString: FMTAction::getPeriodUpperBound
 		/**
@@ -161,43 +161,43 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline const int& getPeriodUpperBound() const
 		{
-			return periodupperbound;
+			return m_periodupperbound;
 		}
 		// DocString: FMTAction::hash
 		/**
-		@brief Return the hash of the action based on its name.
+		@brief Return the hash of the action based on its m_name.
 		@return the hash value.
 		*/
 		inline size_t hash() const
 		{
-			return boost::hash<std::string>()(name);
+			return boost::hash<std::string>()(m_name);
 		}
 		// DocString: FMTAction::getName
 		/**
-		@brief Get the name of the action.
-		@return the name of the action.
+		@brief Get the m_name of the action.
+		@return the m_name of the action.
 		*/
 		inline std::string getName() const
 		{
-			return name;
+			return m_name;
 		}
 		// DocString: FMTAction::doRespectLock
 		/**
-		@brief Return true if the action needs to respect the lock state of the development.
-		@return true if the action respects the lock else false.
+		@brief Return true if the action needs to respect the m_lock state of the development.
+		@return true if the action respects the m_lock else false.
 		*/
 		inline bool doRespectLock() const
 		{
-			return lock;
+			return m_lock;
 		}
 		// DocString: FMTAction::isResetAge
 		/**
-		@brief Return true if the development age is reset to 0 when operated by this action.
+		@brief Return true if the development age is m_reset to 0 when operated by this action.
 		@return true if the action resets the age else false.
 		*/
 		inline bool isResetAge() const
 		{
-			return reset;
+			return m_reset;
 		}
 		// DocString: FMTAction::isPartOfASerie
 		/**
@@ -249,47 +249,47 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		// DocString: FMTAction::useYield
 		/**
 		@brief Return true if the yield is used by the action to set operability.
-		@param[in] yldname the yield name.
+		@param[in] yldname the yield m_name.
 		@return true if the yield is used else false.
 		*/
 		bool useYield(const std::string& yldname) const;
 		// DocString: FMTAction::getAggregates
 		/**
-		@brief Return the names of the aggregates the action is part of.
-		@return the aggregates of the action.
+		@brief Return the names of the m_aggregates the action is part of.
+		@return the m_aggregates of the action.
 		*/
 		std::vector<std::string> getAggregates() const;
 		// DocString: FMTAction::setAggregates
 		/**
-		@brief Set a new vector of aggregates
-		@param[in] p_aggregates the vector of aggregates to set.
+		@brief Set a new vector of m_aggregates
+		@param[in] p_aggregates the vector of m_aggregates to set.
 		*/
 		void setAggregates(const std::vector<std::string>& p_aggregates);
 		// DocString: FMTAction::getPartials
 		/**
 		@brief Return the partial yield names of the action.
-		@return the partials of the action.
+		@return the m_partials of the action.
 		*/
 		std::vector<std::string> getPartials() const;
 		// DocString: FMTAction::operator<
 		/**
-		@brief Less than comparison operator of FMTAction, testing the action length then the name.
+		@brief Less than comparison operator of FMTAction, testing the action length then the m_name.
 		@param[in] rhs the action to compare with.
 		@return true if this action is less than rhs else false.
 		*/
 		bool operator < (const FMTAction& rhs) const;
 		// DocString: FMTAction::operator==
 		/**
-		@brief Equality comparison operator of FMTAction, checking if the actions have the same name.
+		@brief Equality comparison operator of FMTAction, checking if the actions have the same m_name.
 		@param[in] rhs the action to compare with.
-		@return true if both actions have the same name else false.
+		@return true if both actions have the same m_name else false.
 		*/
 		bool operator == (const FMTAction& rhs) const;
 		// DocString: FMTAction::operator!=
 		/**
-		@brief Inequality comparison operator of FMTAction, checking if the actions have a different name.
+		@brief Inequality comparison operator of FMTAction, checking if the actions have a different m_name.
 		@param[in] rhs the action to compare with.
-		@return true if both actions have a different name else false.
+		@return true if both actions have a different m_name else false.
 		*/
 		bool operator != (const FMTAction& rhs) const;
 		// DocString: FMTAction::operator std::string
@@ -301,7 +301,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		// DocString: FMTAction::partial
 		/**
 		@brief Check if the yield needs to be considered as partial for this action.
-		@param[in] yield the yield name.
+		@param[in] yield the yield m_name.
 		@return true if the yield is partial else false.
 		*/
 		bool partial(const std::string& yield) const;
@@ -313,8 +313,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		int getGCBMActionId() const;
 		// DocString: FMTAction::getGCBMActionName
 		/**
-		@brief Return the corresponding GCBM action name.
-		@return the GCBM action name.
+		@brief Return the corresponding GCBM action m_name.
+		@return the GCBM action m_name.
 		*/
 		std::string getGCBMActionName() const;
 		// DocString: FMTAction::split
@@ -334,8 +334,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		bool notUse() const;
 		// DocString: FMTAction::isPartOf
 		/**
-		@brief Check if action is part of action name or aggregate.
-		@param[in] p_name action name or aggregate.
+		@brief Check if action is part of action m_name or aggregate.
+		@param[in] p_name action m_name or aggregate.
 		@return true if is part else false.
 		*/
 		bool isPartOf(const std::string& p_name) const;
@@ -346,25 +346,25 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		bool isInSeries() const;
 	protected:
-		// DocString: FMTAction::aggregates
+		// DocString: FMTAction::m_aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.
-		std::vector<std::string> aggregates;
-		// DocString: FMTAction::partials
+		std::vector<std::string> m_aggregates;
+		// DocString: FMTAction::m_partials
 		///Keeps the yields name for determining the amount of wood harvested in case of partial cut.
-        std::vector<std::string> partials;
-		// DocString: FMTAction::agelowerbound
+        std::vector<std::string> m_partials;
+		// DocString: FMTAction::m_agelowerbound
 		///Those data members are for optimization only,
 		///the class determine within which bounds the aciton can take place for a given development.
-		int agelowerbound, ageupperbound, periodlowerbound, periodupperbound;
-		// DocString: FMTAction::name
+		int m_agelowerbound, m_ageupperbound, m_periodlowerbound, m_periodupperbound;
+		// DocString: FMTAction::m_name
 		///The name of the action
-		std::string name;
-		// DocString: FMTAction::lock
+		std::string m_name;
+		// DocString: FMTAction::m_lock
 		///If lock is true the action is not _lockexempt when false the action is _LOCKEXEMPT
-		bool lock;
-		// DocString: FMTAction::reset
+		bool m_lock;
+		// DocString: FMTAction::m_reset
 		///If reset is true then the action is age reset Y else the action  doen't reset age
-		bool reset;
+		bool m_reset;
 		// DocString: FMTAction::m_series
 		///The action series that the action is part of
 		std::vector<FMTSerie> m_series;
@@ -396,15 +396,15 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		{
 			try {
 				ar& boost::serialization::make_nvp("specs", boost::serialization::base_object<FMTList<FMTSpec>>(*this));
-				ar& BOOST_SERIALIZATION_NVP(partials);
-				ar& BOOST_SERIALIZATION_NVP(agelowerbound);
-				ar& BOOST_SERIALIZATION_NVP(ageupperbound);
-				ar& BOOST_SERIALIZATION_NVP(periodlowerbound);
-				ar& BOOST_SERIALIZATION_NVP(periodupperbound);
-				ar& BOOST_SERIALIZATION_NVP(name);
-				ar& BOOST_SERIALIZATION_NVP(aggregates);
-				ar& BOOST_SERIALIZATION_NVP(lock);
-				ar& BOOST_SERIALIZATION_NVP(reset);
+				ar& boost::serialization::make_nvp("partials", m_partials);
+				ar& boost::serialization::make_nvp("agelowerbound", m_agelowerbound);
+				ar& boost::serialization::make_nvp("ageupperbound", m_ageupperbound);
+				ar& boost::serialization::make_nvp("periodlowerbound", m_periodlowerbound);
+				ar& boost::serialization::make_nvp("periodupperbound", m_periodupperbound);
+				ar& boost::serialization::make_nvp("name", m_name);
+				ar& boost::serialization::make_nvp("aggregates", m_aggregates);
+				ar& boost::serialization::make_nvp("lock", m_lock);
+				ar& boost::serialization::make_nvp("reset", m_reset);
 			}
 			catch (...)
 			{
@@ -415,24 +415,18 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 
 // DocString: FMTActionComparator
 /**
-@brief Comparator used to check if an action name (or aggregate) already exists in a std container.
+@brief Comparator used to check if an action m_name (or aggregate) already exists in a std container.
 */
 class FMTActionComparator
 	{
-	// DocString: FMTActionComparator::action_name
-	///The action named that we are looking for.
-	std::string action_name;
-	// DocString: FMTActionComparator::checkaggregate
-	///If true the comparator will also check for aggregates.
-	bool checkaggregate;
 	public:
 		// DocString: FMTActionComparator(std::string,bool)
 		/**
 		@brief Construct the comparator from the action name to match.
-		@param[in] name the name of the action to match.
+		@param[in] p_name the name of the action to match.
 		@param[in] lcheckaggregate if true also returns actions within the named aggregate.
 		*/
-		FMTActionComparator(std::string name, bool lcheckaggregate = false);
+		FMTActionComparator(std::string p_name, bool lcheckaggregate = false);
 		// DocString: FMTActionComparator::getAllAggregates
 		/**
 		@brief Return the actions matching the action name, or only the matching aggregates.
@@ -456,6 +450,13 @@ class FMTActionComparator
 		@return true if the action matches else false.
 		*/
 		bool operator()(const FMTAction& action) const;
+	private:
+	// DocString: FMTActionComparator::m_actionName
+	///The action named that we are looking for.
+	std::string m_actionName;
+	// DocString: FMTActionComparator::m_checkAggregate
+	///If true the comparator will also check for aggregates.
+	bool m_checkAggregate;
 	};
 }
 

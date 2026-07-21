@@ -555,13 +555,13 @@ namespace Wrapper
 				throw std::out_of_range("Empty cache");
 			}
 			const std::string DESTINATION_DIRECTORY = msclr::interop::marshal_as<std::string>(p_destinationDirectory);
-			std::vector<Models::FMTmodel> models;
+			std::vector<Models::FMTModel> models;
 			models.reserve(FMTFormCache::GetInstance()->size());
 			for (size_t index = 0; index < FMTFormCache::GetInstance()->size(); ++index)
 			{
 				models.push_back(FMTFormCache::GetInstance()->getModel(static_cast<int>(index)));
 			}
-			FMTWrapperCore::Tools::writetoproject(models, DESTINATION_DIRECTORY);
+			FMTWrapperCore::Tools::writeToProject(models, DESTINATION_DIRECTORY);
 		}
 		catch (...)
 		{
