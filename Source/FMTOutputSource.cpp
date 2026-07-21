@@ -15,51 +15,51 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-FMTOutputSource::FMTOutputSource() : FMTSpec(), mask(),
-		target(FMTotar::val),
-		action(),
-		yield(),
-		levelname(),
-		values(),
-		average(),
-		sum(),
-		outputorigin(-1),
-		themetarget(-1)
+FMTOutputSource::FMTOutputSource() : FMTSpec(), m_mask(),
+		m_target(FMTotar::val),
+		m_action(),
+		m_yield(),
+		m_levelname(),
+		m_values(),
+		m_average(),
+		m_sum(),
+		m_outputorigin(-1),
+		m_themetarget(-1)
 	{
 
 	}
 
 
 FMTOutputSource::FMTOutputSource(const FMTotar ltarget,double lvalue, std::string lyield,
-	std::string laction,int origin,int ttarget) : FMTSpec(),mask(),
-    target(ltarget),
-    action(laction),
-    yield(lyield),
-	levelname(),
-    values(1,lvalue),
-	average(),
-	sum(),
-	outputorigin(origin),
-	themetarget(ttarget)
+	std::string laction,int origin,int ttarget) : FMTSpec(),m_mask(),
+    m_target(ltarget),
+    m_action(laction),
+    m_yield(lyield),
+	m_levelname(),
+    m_values(1,lvalue),
+	m_average(),
+	m_sum(),
+	m_outputorigin(origin),
+	m_themetarget(ttarget)
     {
 	if (isTimeYield())
 		{
-		values.clear();
+		m_values.clear();
 		}
 
     }
 
 
-FMTOutputSource::FMTOutputSource(const FMTotar ltarget,std::vector<double>lvalues, int origin, int ttarget, std::string llevelname): FMTSpec(),mask(),
-    target(ltarget),
-    action(),
-    yield(),
-	levelname(llevelname),
-    values(lvalues),
-	average(),
-	sum(),
-	outputorigin(origin),
-	themetarget(ttarget)
+FMTOutputSource::FMTOutputSource(const FMTotar ltarget,std::vector<double>lvalues, int origin, int ttarget, std::string llevelname): FMTSpec(),m_mask(),
+    m_target(ltarget),
+    m_action(),
+    m_yield(),
+	m_levelname(llevelname),
+    m_values(lvalues),
+	m_average(),
+	m_sum(),
+	m_outputorigin(origin),
+	m_themetarget(ttarget)
     {
 
 
@@ -69,18 +69,18 @@ FMTOutputSource::FMTOutputSource(const FMTotar ltarget,std::vector<double>lvalue
 FMTOutputSource::FMTOutputSource(const FMTSpec& spec,const FMTMask& lmask,
                const FMTotar ltarget,std::string lyield,
 			std::string laction, int origin,int ttarget) :
-                FMTSpec(spec),mask(lmask),
-                target(ltarget),action(laction),yield(lyield), levelname(), values(), average(), sum(), outputorigin(origin), themetarget(ttarget)
+                FMTSpec(spec),m_mask(lmask),
+                m_target(ltarget),m_action(laction),m_yield(lyield), m_levelname(), m_values(), m_average(), m_sum(), m_outputorigin(origin), m_themetarget(ttarget)
     {
 
 
     }
 
 FMTOutputSource::FMTOutputSource(const FMTOutputSource& rhs) : 
-	FMTSpec(rhs),mask(rhs.mask),target(rhs.target),
-    action(rhs.action),yield(rhs.yield), levelname(rhs.levelname),
-	values(rhs.values), average(rhs.average),
-	sum(rhs.sum), outputorigin(rhs.outputorigin), themetarget(rhs.themetarget)
+	FMTSpec(rhs),m_mask(rhs.m_mask),m_target(rhs.m_target),
+    m_action(rhs.m_action),m_yield(rhs.m_yield), m_levelname(rhs.m_levelname),
+	m_values(rhs.m_values), m_average(rhs.m_average),
+	m_sum(rhs.m_sum), m_outputorigin(rhs.m_outputorigin), m_themetarget(rhs.m_themetarget)
     {
 
     }
@@ -89,17 +89,17 @@ FMTOutputSource& FMTOutputSource::operator = (const FMTOutputSource& rhs)
     {
     if(this!=&rhs)
         {
-        target = rhs.target;
-        values = rhs.values;
-        action = rhs.action;
-        yield = rhs.yield;
-		levelname = rhs.levelname;
+        m_target = rhs.m_target;
+        m_values = rhs.m_values;
+        m_action = rhs.m_action;
+        m_yield = rhs.m_yield;
+		m_levelname = rhs.m_levelname;
         FMTSpec::operator=(rhs);
-        mask = rhs.mask;
-		average = rhs.average;
-		sum = rhs.sum;
-		outputorigin = rhs.outputorigin;
-		themetarget=rhs.themetarget;
+        m_mask = rhs.m_mask;
+		m_average = rhs.m_average;
+		m_sum = rhs.m_sum;
+		m_outputorigin = rhs.m_outputorigin;
+		m_themetarget=rhs.m_themetarget;
         }
     return *this;
     }
@@ -107,21 +107,21 @@ FMTOutputSource& FMTOutputSource::operator = (const FMTOutputSource& rhs)
 void FMTOutputSource::fillHashMask(Core::FMTMask& baseMask) const
 	{
 		//baseMask.append(mask.getBitsetReference());
-		baseMask.binarizedAppend<std::string>(std::string(mask));
-		baseMask.binarizedAppend<int>(static_cast<int>(target));
-		for (const double& lvalue : values)
+		baseMask.binarizedAppend<std::string>(std::string(m_mask));
+		baseMask.binarizedAppend<int>(static_cast<int>(m_target));
+		for (const double& lvalue : m_values)
 		{
 			baseMask.binarizedAppend<double>(lvalue);
 		}
-		baseMask.binarizedAppend<std::string>(yield);
-		baseMask.binarizedAppend<std::string>(action);
+		baseMask.binarizedAppend<std::string>(m_yield);
+		baseMask.binarizedAppend<std::string>(m_action);
 	}
 
 bool FMTOutputSource::isEqualByValue(const FMTOutputSource& rhs) const
 	{
-	return (FMTSpec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
-		yield == rhs.yield && action == rhs.action && values == rhs.values &&
-		levelname == rhs.levelname && average == rhs.average && sum == rhs.sum);
+	return (FMTSpec::operator == (rhs) && m_mask == rhs.m_mask && m_target == rhs.m_target &&
+		m_yield == rhs.m_yield && m_action == rhs.m_action && m_values == rhs.m_values &&
+		m_levelname == rhs.m_levelname && m_average == rhs.m_average && m_sum == rhs.m_sum);
 	}
 
 
@@ -134,45 +134,45 @@ void FMTOutputSource::fillHashSpec(Core::FMTMask& baseMask) const
 FMTOutputSource::operator std::string() const
     {
 	std::string line = "";
-	if (!mask.empty())
+	if (!m_mask.empty())
 		{
-		line += std::string(mask)+" ";
+		line += std::string(m_mask)+" ";
 		}
 	if (!FMTSpec::empty())
 		{
 		line += FMTSpec::operator std::string() + " ";
 		}
-    switch (target)
+    switch (m_target)
         {
         case FMTotar::val:
-            for (const double lvalue : values)
+            for (const double lvalue : m_values)
                 {
                 line += FMTOutputSource::trimDouble(std::to_string(lvalue))  + " ";
                 }
-            if (!values.empty())
+            if (!m_values.empty())
                 {
                 line.pop_back();
                 }
         break;
 		case FMTotar::timeyld:
-			line += yield;
+			line += m_yield;
 		break;
         case FMTotar::actual:
-            if (!action.empty())
+            if (!m_action.empty())
                 {
-                line += action +" ";
+                line += m_action +" ";
                 }
-            if (!yield.empty())
+            if (!m_yield.empty())
                 {
-                line += yield+" ";
+                line += m_yield+" ";
                 }else{
                 line+="_AREA";
                 }
         break;
         case FMTotar::inventory:
-            if (!action.empty())
+            if (!m_action.empty())
                 {
-                line+="_INVENT("+action+") ";
+                line+="_INVENT("+m_action+") ";
 				}
 				/*else if (this->lock.getLower() > 0)
 				{
@@ -181,24 +181,24 @@ FMTOutputSource::operator std::string() const
 				}*/else if (emptyLock()) {
                 line+= "_INVENT ";
                 }
-            if (!yield.empty())
+            if (!m_yield.empty())
                 {
-                line += yield;
+                line += m_yield;
                 }else{
                 line+="_AREA";
                 }
         break;
         case FMTotar::level:
-			line += (action + levelname);
+			line += (m_action + m_levelname);
 			/*if (!action.empty())
                 {
-                line += action;
+                line += m_action;
                 }else{
-                for (const double lvalue : values)
+                for (const double lvalue : m_values)
                     {
                     line += std::to_string(lvalue) + " ";
                     }
-                 if (!values.empty())
+                 if (!m_values.empty())
                     {
                     line.pop_back();
                     }
@@ -213,17 +213,17 @@ FMTOutputSource::operator std::string() const
 
 bool FMTOutputSource::operator < (const FMTOutputSource& rhs) const
 	{
-	if (mask < rhs.mask)
+	if (m_mask < rhs.m_mask)
 		return true;
-	if (rhs.mask < mask)
+	if (rhs.m_mask < m_mask)
 		return false;
-	if (target < rhs.target)
+	if (m_target < rhs.m_target)
 		return true;
-	if (rhs.target < target)
+	if (rhs.m_target < m_target)
 		return false;
-	if (action < rhs.action)
+	if (m_action < rhs.m_action)
 		return true;
-	if (rhs.action < action)
+	if (rhs.m_action < m_action)
 		return false;
 	if (FMTSpec::operator < (rhs))
 		return true;
@@ -232,7 +232,7 @@ bool FMTOutputSource::operator < (const FMTOutputSource& rhs) const
 
 bool FMTOutputSource::operator == (const FMTOutputSource& rhs) const
 	{
-	return (FMTSpec::operator == (rhs) && target == rhs.target && mask==rhs.mask  && action == rhs.action);
+	return (FMTSpec::operator == (rhs) && m_target == rhs.m_target && m_mask==rhs.m_mask  && m_action == rhs.m_action);
 	}
 
 bool FMTOutputSource::operator != (const FMTOutputSource& rhs) const
@@ -242,38 +242,38 @@ bool FMTOutputSource::operator != (const FMTOutputSource& rhs) const
 
 void FMTOutputSource::setThemeTarget(const int& newttarget)
 	{
-		themetarget=newttarget;
+		m_themetarget=newttarget;
 	}
 void FMTOutputSource::setOutputOrigin(const int& neworigin)
 	{
-		outputorigin=neworigin;
+		m_outputorigin=neworigin;
 	}
 
 void FMTOutputSource::resetValues(const FMTOperator& op,const FMTOutputSource& other)
 	{
-	std::vector<double>newvalues(std::max(other.values.size(), values.size()),0);
+	std::vector<double>newvalues(std::max(other.m_values.size(), m_values.size()),0);
 	for (int period = 1; period < static_cast<int>(newvalues.size()+1);++period)
 		{
 		const double othervalue = other.getValue(period);
 		newvalues[period-1]=op.call(getValue(period), othervalue);
 		}
-	values.swap(newvalues);
+	m_values.swap(newvalues);
 	if (other.isTimeYield())
 		{
-		yield = other.yield;
-		target = FMTotar::timeyld;
+		m_yield = other.m_yield;
+		m_target = FMTotar::timeyld;
 		}
 	}
 
 bool FMTOutputSource::isSubsetOf(const FMTOutputSource& rhs) const
 	{
 	if ((this->isVariable() && rhs.isVariable() &&
-		target == rhs.target && FMTSpec::isSubsetOf(rhs) &&
-		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) &&
-		(mask.isSubsetOf(rhs.mask) &&
-		((action.empty() && rhs.action.empty()) ||
-			(!action.empty() && !rhs.action.empty() &&
-			(action == rhs.action)))))
+		m_target == rhs.m_target && FMTSpec::isSubsetOf(rhs) &&
+		!((!m_action.empty() && rhs.m_action.empty()) || (!rhs.m_action.empty() && m_action.empty()))) &&
+		(m_mask.isSubsetOf(rhs.m_mask) &&
+		((m_action.empty() && rhs.m_action.empty()) ||
+			(!m_action.empty() && !rhs.m_action.empty() &&
+			(m_action == rhs.m_action)))))
 		{
 			return true;
 		}
@@ -282,7 +282,7 @@ bool FMTOutputSource::isSubsetOf(const FMTOutputSource& rhs) const
 
 bool FMTOutputSource::isSameButDifferentAction(const FMTOutputSource& rhs) const
 	{
-	return (FMTSpec::operator == (rhs) && target == rhs.target && mask == rhs.mask && action != rhs.action);
+	return (FMTSpec::operator == (rhs) && m_target == rhs.m_target && m_mask == rhs.m_mask && m_action != rhs.m_action);
 	}
 
 
@@ -290,10 +290,10 @@ bool FMTOutputSource::isInAggregate(const FMTOutputSource& rhs, const std::vecto
 	{
 	if (isAction() && rhs.isAction())
 		{
-		const std::vector<const FMTAction*>allactions = FMTActionComparator(rhs.action).getAllAggregates(actions);
+		const std::vector<const FMTAction*>allactions = FMTActionComparator(rhs.m_action).getAllAggregates(actions);
 		for (const FMTAction* actptr : allactions)
 			{
-				if (actptr->getName() == action)
+				if (actptr->getName() == m_action)
 				{
 					return true;
 				}
@@ -308,11 +308,11 @@ bool FMTOutputSource::isSubsetOf(const FMTOutputSource& rhs,
 	{
 	
 	if ((this->isVariable() && rhs.isVariable() && 
-		target == rhs.target && FMTSpec::isSubsetOf(rhs) && 
-		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) && 
-		(mask.isSubsetOf(rhs.mask) &&
-		((action.empty() && rhs.action.empty()) || 
-		(!action.empty() && !rhs.action.empty() && 
+		m_target == rhs.m_target && FMTSpec::isSubsetOf(rhs) && 
+		!((!m_action.empty() && rhs.m_action.empty()) || (!rhs.m_action.empty() && m_action.empty()))) && 
+		(m_mask.isSubsetOf(rhs.m_mask) &&
+		((m_action.empty() && rhs.m_action.empty()) || 
+		(!m_action.empty() && !rhs.m_action.empty() && 
 			isInAggregate(rhs,actions)))))
 			{
 			return true;
@@ -325,7 +325,7 @@ FMTOutputSource FMTOutputSource::presolve(const FMTMaskFilter& filter, const std
 	FMTOutputSource newsource(*this);
 	if (newsource.isVariable())
 		{
-		newsource.mask = newsource.mask.presolve(filter, newthemes);
+		newsource.m_mask = newsource.m_mask.presolve(filter, newthemes);
 		}
 	return newsource;
 	}
@@ -348,9 +348,9 @@ double FMTOutputSource::getConstantValue(const std::vector<Core::FMTActualDevelo
 			|| development.anyOperable(operabletoactions, yields))
 			{
 			double developmentvalue = development.getArea();
-			if (!yield.empty())
+			if (!m_yield.empty())
 				{
-				developmentvalue*=development.getInventoryCoef(yields, yield);
+				developmentvalue*=development.getInventoryCoef(yields, m_yield);
 				}
 			value += developmentvalue;
 			}
@@ -361,20 +361,20 @@ double FMTOutputSource::getConstantValue(const std::vector<Core::FMTActualDevelo
 
 void FMTOutputSource::setAverage()
 	{
-	average = true;
+	m_average = true;
 	}
 
 
 void FMTOutputSource::setSum()
 {
-	sum = true;
+	m_sum = true;
 }
 
 bool FMTOutputSource::isNull(const FMTYields& ylds) const
 	{
-	if (!yield.empty())
+	if (!m_yield.empty())
 		{
-		return ylds.isNullYld(yield);
+		return ylds.isNullYld(m_yield);
 		}
 	if (!isVariable())
 		{
@@ -383,61 +383,61 @@ bool FMTOutputSource::isNull(const FMTYields& ylds) const
 	return false;
 	}
 
-void  FMTOutputSource::pushValues(const std::vector<double>& newvalues)
+void  FMTOutputSource::_pushValues(const std::vector<double>& newvalues)
 	{
-	values.insert(values.end(),newvalues.begin(), newvalues.end());
+	m_values.insert(m_values.end(),newvalues.begin(), newvalues.end());
 	}
 
 double FMTOutputSource::getValue(int period) const
 	{
 	double returnvalue = 0;
-	if (target == FMTotar::timeyld&&
-		values.empty())
+	if (m_target == FMTotar::timeyld&&
+		m_values.empty())
 		{
 		return 1;
 		}
-	if (target == FMTotar::val||target == FMTotar::level||target==FMTotar::timeyld)
+	if (m_target == FMTotar::val||m_target == FMTotar::level||m_target==FMTotar::timeyld)
 		{
 		--period;
 		period = std::max(period, 0);//Cannot get negative period
-        if (period >= static_cast<int>(values.size()))
+        if (period >= static_cast<int>(m_values.size()))
             {
-            period = static_cast<int>(values.size() - 1);
+            period = static_cast<int>(m_values.size() - 1);
             }
-		returnvalue= values.at(period);
+		returnvalue= m_values.at(period);
 		}
 	return returnvalue;
 	}
 
 void FMTOutputSource::setMask(const FMTMask& newmask)
 	{
-	mask = newmask;
+	m_mask = newmask;
 	}
 
 void FMTOutputSource::setAction(const std::string& actionname)
 	{
-	action = actionname;
+	m_action = actionname;
 	}
 
 void FMTOutputSource::setTarget(const FMTotar& newtype)
 	{
-	target = newtype;
+	m_target = newtype;
 	}
 
 std::vector<const FMTAction*>FMTOutputSource::targets(const std::vector<FMTAction>& actions) const
 	{
-	if (target != FMTotar::level && !action.empty())
+	if (m_target != FMTotar::level && !m_action.empty())
         {
-		return FMTActionComparator(action).getAllAggregates(actions);
+		return FMTActionComparator(m_action).getAllAggregates(actions);
         }
 	return std::vector<const FMTAction*>();
 	}
 
 std::unordered_set<int>FMTOutputSource::targetsSet(const std::vector<FMTAction>& actions) const
 {
-	if (target != FMTotar::level && !action.empty())
+	if (m_target != FMTotar::level && !m_action.empty())
 	{
-		return FMTActionComparator(action).getAllAggregatesSet(actions);
+		return FMTActionComparator(m_action).getAllAggregatesSet(actions);
 	}
 	return std::unordered_set<int>();
 }
@@ -445,7 +445,7 @@ std::unordered_set<int>FMTOutputSource::targetsSet(const std::vector<FMTAction>&
 bool FMTOutputSource::use(const FMTDevelopment& development, const FMTYields& ylds,
 	const Graph::FMTGraphVertexToYield* graphinfo) const
 {
-	return (development.getMask().isSubsetOf(mask) && development.is(*this, ylds, graphinfo));
+	return (development.getMask().isSubsetOf(m_mask) && development.is(*this, ylds, graphinfo));
 }
 
 std::string FMTOutputSource::trimDouble(const std::string& string_number)
@@ -472,7 +472,7 @@ std::string FMTOutputSource::trimDouble(const std::string& string_number)
 
 void FMTOutputSource::setYield(const std::string& p_Yield)
 	{
-	yield = p_Yield;
+	m_yield = p_Yield;
 	}
 
 double FMTOutputSource::getCoef(const FMTDevelopment& development,
@@ -484,24 +484,24 @@ double FMTOutputSource::getCoef(const FMTDevelopment& development,
 	double coef = 1;
 	if (isVariable())
 		{
-		if (!yield.empty())
+		if (!m_yield.empty())
 			{
-			if (target == FMTotar::inventory)
+			if (m_target == FMTotar::inventory)
 			{
-				coef = development.getInventoryCoef(yields, yield, graphinfo);
+				coef = development.getInventoryCoef(yields, m_yield, graphinfo);
 			}
 			else {
-				coef = development.getHarvestCoef(*paths, *modelaction, yields, yield, graphinfo);
+				coef = development.getHarvestCoef(*paths, *modelaction, yields, m_yield, graphinfo);
 			}
 			}
 		}else{
-			if (!values.empty())
+			if (!m_values.empty())
 			{
 				coef = getValue(development.getPeriod());
 			}
 			if (isTimeYield())
 				{
-				coef *= development.getInventoryCoef(yields, yield, graphinfo);
+				coef *= development.getInventoryCoef(yields, m_yield, graphinfo);
 				}
 			}
 	return coef;
@@ -510,10 +510,10 @@ double FMTOutputSource::getCoef(const FMTDevelopment& development,
 size_t FMTOutputSource::hash(int period, bool withyield) const
 	{
 	size_t seed = 0;
-	boost::hash_combine(seed,mask.hash());
-	boost::hash_combine(seed,target);
-	boost::hash_combine(seed,action);
-	for (const double& lvalue : values)
+	boost::hash_combine(seed,m_mask.hash());
+	boost::hash_combine(seed,m_target);
+	boost::hash_combine(seed,m_action);
+	for (const double& lvalue : m_values)
         {
         boost::hash_combine(seed,lvalue);
         }
@@ -524,17 +524,17 @@ size_t FMTOutputSource::hash(int period, bool withyield) const
 		}
 	if (withyield)
 		{
-		boost::hash_combine(seed,yield);
+		boost::hash_combine(seed,m_yield);
 		}
 	return seed;
 	}
 
 
-FMTOutputSourceComparator::FMTOutputSourceComparator(bool lvariable) : variable(lvariable) {}
+FMTOutputSourceComparator::FMTOutputSourceComparator(bool lvariable) : m_variable(lvariable) {}
 
 bool FMTOutputSourceComparator::operator()(const FMTOutputSource& source) const
 	{
-	if (variable)
+	if (m_variable)
 		{
 		return source.isVariable();
 	}else {

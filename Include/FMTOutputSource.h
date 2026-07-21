@@ -137,7 +137,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline int getOutputOrigin() const
 			{
-			return outputorigin;
+			return m_outputorigin;
 			}
 		// DocString: FMTOutputSource::getThemeTarget
 		/**
@@ -146,7 +146,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline int getThemeTarget() const
 			{
-			return themetarget;
+			return m_themetarget;
 			}
 		// DocString: FMTOutputSource::isInAggregate
 		/**
@@ -185,7 +185,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline const FMTMask& getMask() const
 			{
-			return mask;
+			return m_mask;
 			}
 		// DocString: FMTOutputSource::setMask
 		/**
@@ -231,7 +231,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline const std::string& getAction() const
 			{
-			return action;
+			return m_action;
 			}
 		// DocString: FMTOutputSource::getYield
 		/**
@@ -240,7 +240,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline const std::string& getYield() const
 			{
-			return yield;
+			return m_yield;
 			}
 		// DocString: FMTOutputSource::getTarget
 		/**
@@ -249,7 +249,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline const FMTotar& getTarget() const
 			{
-			return target;
+			return m_target;
 			}
 		// DocString: FMTOutputSource::getValue
 		/**
@@ -265,7 +265,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isVariable() const
 			{
-			return bool(mask);
+			return bool(m_mask);
 			}
 		// DocString: FMTOutputSource::isLevel
 		/**
@@ -274,7 +274,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isLevel() const
 			{
-			return (target == FMTotar::level);
+			return (m_target == FMTotar::level);
 			}
 		// DocString: FMTOutputSource::isConstant
 		/**
@@ -283,7 +283,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isConstant() const
 			{
-			return (target == FMTotar::val);
+			return (m_target == FMTotar::val);
 			}
 		// DocString: FMTOutputSource::isVariableLevel
 		/**
@@ -292,7 +292,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isVariableLevel() const
 			{
-			return (!action.empty() && isLevel());
+			return (!m_action.empty() && isLevel());
 			}
 		// DocString: FMTOutputSource::getLevel
 		/**
@@ -301,7 +301,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline const std::string& getLevel() const
 			{
-			return yield;
+			return m_yield;
 			}
 		// DocString: FMTOutputSource::getValues
 		/**
@@ -310,7 +310,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline const std::vector<double>& getValues() const
 		{
-			return values;
+			return m_values;
 		}
 		// DocString: FMTOutputSource::isNull
 		/**
@@ -326,7 +326,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isTimeYield() const
 			{
-			return (target == FMTotar::timeyld);
+			return (m_target == FMTotar::timeyld);
 			}
 		// DocString: FMTOutputSource::targets
 		/**
@@ -349,7 +349,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isInventory() const
 			{
-			return (target == FMTotar::inventory);
+			return (m_target == FMTotar::inventory);
 			}
 		// DocString: FMTOutputSource::useInEdges
 		/**
@@ -358,7 +358,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool useInEdges() const
 			{
-			return (target == FMTotar::inventory);
+			return (m_target == FMTotar::inventory);
 			}
 		// DocString: FMTOutputSource::isNextPeriod
 		/**
@@ -367,7 +367,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isNextPeriod() const
 			{
-			return (target == FMTotar::inventory && action.empty());
+			return (m_target == FMTotar::inventory && m_action.empty());
 			}
 		// DocString: FMTOutputSource::useOutEdges
 		/**
@@ -376,7 +376,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool useOutEdges() const
 			{
-			return (target == FMTotar::actual);
+			return (m_target == FMTotar::actual);
 			}
 		// DocString: FMTOutputSource::getCoef
 		/**
@@ -385,14 +385,14 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		@param[in] yields the yields.
 		@param[in] graphinfo an optional graph vertex to yield.
 		@param[in] paths optional development paths.
-		@param[in] action an optional action.
+		@param[in] p_action an optional action.
 		@return the coefficient.
 		*/
 		double getCoef(const FMTDevelopment& development,
 			const FMTYields& yields,
 			const Graph::FMTGraphVertexToYield* graphinfo =nullptr,
 			std::vector<FMTDevelopmentPath> const * paths=nullptr,
-			 FMTAction const * action=nullptr) const;
+			 FMTAction const * p_action=nullptr) const;
 		// DocString: FMTOutputSource::use
 		/**
 		@brief Return true if the output source is used by a development based on the yields.
@@ -423,7 +423,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isAverage() const
 			{
-			return average;
+			return m_average;
 			}
 		// DocString: FMTOutputSource::setSum
 		/**
@@ -437,7 +437,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isSum() const
 		{
-			return sum;
+			return m_sum;
 		}
 		// DocString: FMTOutputSource::canBeDeducedToConstant
 		/**
@@ -489,7 +489,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		inline bool isAction() const
 			{
-			return !action.empty();
+			return !m_action.empty();
 			}
 		// DocString: FMTOutputSource::trimDouble
 		/**
@@ -518,28 +518,28 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			ar& boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTSpec>(*this));
-			ar& BOOST_SERIALIZATION_NVP(mask);
-			ar& BOOST_SERIALIZATION_NVP(target);
-			ar& BOOST_SERIALIZATION_NVP(action);
-			ar& BOOST_SERIALIZATION_NVP(yield);
-			ar& BOOST_SERIALIZATION_NVP(values);
-			ar& BOOST_SERIALIZATION_NVP(themetarget);
+			ar& boost::serialization::make_nvp("mask", m_mask);
+			ar& boost::serialization::make_nvp("target", m_target);
+			ar& boost::serialization::make_nvp("action", m_action);
+			ar& boost::serialization::make_nvp("yield", m_yield);
+			ar& boost::serialization::make_nvp("values", m_values);
+			ar& boost::serialization::make_nvp("themetarget", m_themetarget);
 		}
-		FMTMask mask;
-		FMTotar target;
-		std::string action, yield, levelname;//levelname is only for constant level...(for parsing)
-		std::vector<double>values;
-		bool average;
-		bool sum;
-		int outputorigin;
-		int themetarget;
+		FMTMask m_mask;
+		FMTotar m_target;
+		std::string m_action, m_yield, m_levelname;//m_levelname is only for constant level...(for parsing)
+		std::vector<double>m_values;
+		bool m_average;
+		bool m_sum;
+		int m_outputorigin;
+		int m_themetarget;
 		//target =-1 or themetarget constructor
-		// DocString: FMTOutputSource::pushValues
+		// DocString: FMTOutputSource::_pushValues
 		/**
 		@brief Push new values to the output source.
 		@param[in] newvalues the values to push.
 		*/
-		void pushValues(const std::vector<double>& newvalues);
+		void _pushValues(const std::vector<double>& newvalues);
     };
 
 // DocString: FMTOutputSourceComparator
@@ -548,7 +548,6 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 */
 class FMTOutputSourceComparator
 	{
-		bool variable;
 	public:
 		// DocString: FMTOutputSourceComparator(bool)
 		/**
@@ -564,6 +563,8 @@ class FMTOutputSourceComparator
 		*/
 		bool operator()(const FMTOutputSource& source) const;
 
+	private:
+		bool m_variable;
 	};
 }
 

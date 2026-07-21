@@ -36,7 +36,7 @@ enum  FMTconstrainttype
 	FMTevenflow = 5,
 	FMTnondeclining = 6,
 	FMTsequence = 7,
-	FMTstandard = 8,///Regular constraint type like output = 1...
+	FMTstandard = 8,///Regular constraint m_type like output = 1...
 	FMTspatialsize = 9,
 	FMTspatialadjacency = 10,
 	FMTspatialgreenup = 11,
@@ -442,12 +442,12 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		{
 			ar& boost::serialization::make_nvp("output", boost::serialization::base_object<FMTOutput>(*this));
 			ar& boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTSpec>(*this));
-			ar& BOOST_SERIALIZATION_NVP(type);
+			ar& boost::serialization::make_nvp("type", m_type);
 		}
-		// DocString: FMTConstraint::type
+		// DocString: FMTConstraint::m_type
 		///This enumerator sets the type of constraint of the FMTConstraint (objective/constraint/evenflow...)
-		FMTconstrainttype type;
-		// DocString: FMTConstraint::standardString
+		FMTconstrainttype m_type;
+		// DocString: FMTConstraint::_standardString
 		/**
 		@brief Format the constraint for its string conversion.
 		@param[in,out] line the line string.
@@ -456,32 +456,32 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		@param[in,out] global the global string.
 		@param[in] asInt if true formats as int.
 		*/
-		void standardString(std::string& line, std::string& period_bounds,
+		void _standardString(std::string& line, std::string& period_bounds,
 			std::string& goal, std::string& global,bool asInt = false) const;
-		// DocString: FMTConstraint::getMaxAndMin
+		// DocString: FMTConstraint::_getMaxAndMin
 		/**
 		@brief Return the maximal and minimal value of a vector of double for the constraint.
 		@param[in] values the values.
 		@param[out] min the minimal value.
 		@param[out] max the maximal value.
 		*/
-		void getMaxAndMin(const std::vector<double>& values, double& min, double& max) const;
-		// DocString: FMTConstraint::getSum
+		void _getMaxAndMin(const std::vector<double>& values, double& min, double& max) const;
+		// DocString: FMTConstraint::_getSum
 		/**
 		@brief Return the sum of a vector of double.
 		@param[in] values the values.
 		@return the sum of the values.
 		*/
-		double getSum(const std::vector<double>& values) const;
-		// DocString: FMTConstraint::getPeriodicVariationCost
+		double _getSum(const std::vector<double>& values) const;
+		// DocString: FMTConstraint::_getPeriodicVariationCost
 		/**
 		@brief Return the periodic variation of harvest for a vector of double.
 		@param[in] values the values.
 		@param[in] evaluateupper if true evaluates the upper variation.
 		@return the periodic variation cost.
 		*/
-		double getPeriodicVariationCost(const std::vector<double>& values, bool evaluateupper = false) const;
-		// DocString: FMTConstraint::getVariability
+		double _getPeriodicVariationCost(const std::vector<double>& values, bool evaluateupper = false) const;
+		// DocString: FMTConstraint::_getVariability
 		/**
 		@brief Return the variability based on a vector of double and the variations.
 		@param[in] values the values.
@@ -489,7 +489,7 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		@param[in] lowarvar the lower variation.
 		@return the variability.
 		*/
-		double getVariability(const std::vector<double>& values, const double& var, const double& lowarvar) const;
+		double _getVariability(const std::vector<double>& values, const double& var, const double& lowarvar) const;
 		// DocString: FMTConstraint::_getReplicateValues
 		/**
 		@brief get the bound values for a specific replicate.

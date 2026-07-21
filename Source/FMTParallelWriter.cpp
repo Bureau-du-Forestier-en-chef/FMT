@@ -22,10 +22,10 @@ namespace Parallel
 	void FMTParallelWriter::close() noexcept
 	{
 	#ifdef FMTWITHGDAL
-		if (!resultslayer.empty())
+		if (!m_resultslayer.empty())
 			{
-			resultslayer.clear();
-			GDALClose(resultsdataset);
+			m_resultslayer.clear();
+			GDALClose(m_resultsdataset);
 			}
 			
 	#endif
@@ -44,26 +44,26 @@ namespace Parallel
 		std::vector<std::string>layersoptions,
 		double minimaldrift,
 		Core::FMToutputlevel outputlevel) :
-		outputstowrite(outputs),
+		m_outputstowrite(outputs),
 		#ifdef FMTWITHGDAL
-			resultsdataset(),
-			resultslayer(),
-			driftlayer(),
+			m_resultsdataset(),
+			m_resultslayer(),
+			m_driftlayer(),
 		#endif
-		mtx(),
-		resultsminimaldrift(minimaldrift),
-		outputslevel(outputlevel),
-		alllayeroptions(layersoptions),
-		outputfirstperiod(),
-		outputlastperiod(),
-		projectdirectory(),
-		projectname(),
+		m_mtx(),
+		m_resultsminimaldrift(minimaldrift),
+		m_outputslevel(outputlevel),
+		m_alllayeroptions(layersoptions),
+		m_outputfirstperiod(),
+		m_outputlastperiod(),
+		m_projectdirectory(),
+		m_projectname(),
 		m_outputLocationPath(location)
 		
 	{
 		try {
 		#ifdef FMTWITHGDAL
-			resultsdataset = createOGRDataset(location, driver);
+			m_resultsdataset = createOGRDataset(location, driver);
 		#endif
 			if (outputs.empty())
 			{
@@ -76,7 +76,7 @@ namespace Parallel
 				setLayer(modelptr->getName());
 				}
 			#ifdef FMTWITHGDAL
-			driftlayer = createDriftLayer(resultsdataset);
+			m_driftlayer = createDriftLayer(m_resultsdataset);
 			#endif
 		}catch (...)
 			{
@@ -91,20 +91,20 @@ namespace Parallel
 		int firstPeriod,
 		int lastPeriod,
 		std::string primaryfilelocation):
-		outputstowrite(),
+		m_outputstowrite(),
 		#ifdef FMTWITHGDAL
-		resultsdataset(createOGRDataset(location, driver)),
-		resultslayer(),
-		driftlayer(),
+		m_resultsdataset(createOGRDataset(location, driver)),
+		m_resultslayer(),
+		m_driftlayer(),
 		#endif
-		mtx(),
-		resultsminimaldrift(),
-		outputslevel(outputlevel),
-		alllayeroptions(layersoptions),
-		outputfirstperiod(firstPeriod),
-		outputlastperiod(lastPeriod),
-		projectdirectory(),
-		projectname(),
+		m_mtx(),
+		m_resultsminimaldrift(),
+		m_outputslevel(outputlevel),
+		m_alllayeroptions(layersoptions),
+		m_outputfirstperiod(firstPeriod),
+		m_outputlastperiod(lastPeriod),
+		m_projectdirectory(),
+		m_projectname(),
 		m_outputLocationPath(location)
 
 	{
@@ -121,8 +121,8 @@ namespace Parallel
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
 					boutdirectory.string() + " is not a valid scenarios directory", "FMTParallelWriter::FMTParallelWriter(...)", __LINE__, __FILE__);
 				}
-			projectdirectory = boutdirectory.string();
-			projectname = boost::filesystem::path(primaryfilelocation).stem().string();
+			m_projectdirectory = boutdirectory.string();
+			m_projectname = boost::filesystem::path(primaryfilelocation).stem().string();
 		}
 		
 	}
@@ -131,7 +131,7 @@ namespace Parallel
 	{
 		try {
 			#ifdef FMTWITHGDAL
-			resultslayer[p_name] = createResultsLayer(p_name, resultsdataset,alllayeroptions);
+			m_resultslayer[p_name] = createResultsLayer(p_name, m_resultsdataset,m_alllayeroptions);
 			#endif
 		}
 		catch (...)
@@ -149,7 +149,7 @@ namespace Parallel
 		try {
 			if (modelptr)
 			{
-			results = modelptr->getOutputsFromPeriods(outputstowrite, firstPeriod, lastPeriod, outputslevel);
+			results = modelptr->getOutputsFromPeriods(m_outputstowrite, firstPeriod, lastPeriod, m_outputslevel);
 			}
 		}
 		catch (...)
@@ -159,7 +159,7 @@ namespace Parallel
 		return results;
 	}
 
-	const std::map<std::string, std::map<double, std::vector<double>>>FMTParallelWriter::getDriftProbability(
+	const std::map<std::string, std::map<double, std::vector<double>>>FMTParallelWriter::_getDriftProbability(
 		const std::map<std::string, std::vector<std::vector<double>>>& globalvalues,
 		const std::map<std::string, std::vector<std::vector<double>>>& localvalues,
 		const bool lower) const
@@ -181,18 +181,18 @@ namespace Parallel
 				{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"No drift calculated for missing values in " + globaloutput.first,
-						"FMTParallelWriter::getDriftProbability", __LINE__, __FILE__);
+						"FMTParallelWriter::_getDriftProbability", __LINE__, __FILE__);
 					continue;
 				}
 
-				for (double drift = resultsminimaldrift; drift >= 0; drift -= 0.05)
+				for (double drift = m_resultsminimaldrift; drift >= 0; drift -= 0.05)
 				{
 					driftprob = drift;
 					if (localvalues.find(globaloutput.first)== localvalues.end())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"No output "+ globaloutput.first +" in local",
-							"FMTParallelWriter::getDriftProbability", __LINE__, __FILE__);
+							"FMTParallelWriter::_getDriftProbability", __LINE__, __FILE__);
 					}
 					// TODO regarder si les length sont les mêmes entre les période (pas juste la première) donc un max()
 					std::size_t max_size = 0;
@@ -219,7 +219,7 @@ namespace Parallel
 						{
 							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 								"No iteration " + std::to_string(periodid) + " in global",
-								"FMTParallelWriter::getDriftProbability", __LINE__, __FILE__);
+								"FMTParallelWriter::_getDriftProbability", __LINE__, __FILE__);
 							return drifts;
 						}
 						const double globalvalue = globaloutput.second.at(periodid).at(0);
@@ -260,7 +260,7 @@ namespace Parallel
 		{
 			_exhandler->raiseFromCatch("On output "+outputname+" "+std::to_string(driftprob)
 				+" period id "+ std::to_string(periodof) + " on replicate " + std::to_string(iterationid + 1),
-				"FMTParallelWriter::getDriftProbability", __LINE__, __FILE__);
+				"FMTParallelWriter::_getDriftProbability", __LINE__, __FILE__);
 
 		}
 		return drifts;
@@ -270,21 +270,21 @@ namespace Parallel
 
 	void FMTParallelWriter::setDriftProbability(const std::string& globalmodel, const std::string& localmodel) const
 	{
-		boost::lock_guard<boost::recursive_mutex> lock(mtx);
+		boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 		try {
 		#ifdef FMTWITHGDAL
-			if (resultslayer.find(globalmodel)!= resultslayer.end()&&
-				resultslayer.find(localmodel) != resultslayer.end()&&
-				resultslayer.at(globalmodel) &&
-				resultslayer.at(localmodel))
+			if (m_resultslayer.find(globalmodel)!= m_resultslayer.end()&&
+				m_resultslayer.find(localmodel) != m_resultslayer.end()&&
+				m_resultslayer.at(globalmodel) &&
+				m_resultslayer.at(localmodel))
 			{
-				const std::map<std::string, std::vector<std::vector<double>>> globalvalues = getIterationsValues(resultslayer.at(globalmodel));
-				const std::map<std::string, std::vector<std::vector<double>>> localvalues = getIterationsValues(resultslayer.at(localmodel));
+				const std::map<std::string, std::vector<std::vector<double>>> globalvalues = getIterationsValues(m_resultslayer.at(globalmodel));
+				const std::map<std::string, std::vector<std::vector<double>>> localvalues = getIterationsValues(m_resultslayer.at(localmodel));
 				if (!globalvalues.empty() && !localvalues.empty())
 				{
-					const std::map<std::string, std::map<double, std::vector<double>>>lowerdrifts = getDriftProbability(globalvalues, localvalues);
-					const std::map<std::string, std::map<double, std::vector<double>>>upperdrifts = getDriftProbability(globalvalues, localvalues, false);
-					writeDrift(driftlayer, lowerdrifts, upperdrifts);
+					const std::map<std::string, std::map<double, std::vector<double>>>lowerdrifts = _getDriftProbability(globalvalues, localvalues);
+					const std::map<std::string, std::map<double, std::vector<double>>>upperdrifts = _getDriftProbability(globalvalues, localvalues, false);
+					writeDrift(m_driftlayer, lowerdrifts, upperdrifts);
 				}
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
@@ -311,14 +311,14 @@ namespace Parallel
 		const std::map<std::string, std::vector<std::vector<double>>>& results,
 		const int& firstPeriod, const int& lastPeriod, const int& iteration) const
 	{
-		boost::lock_guard<boost::recursive_mutex> lock(mtx);
+		boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 		try {
 		#ifdef FMTWITHGDAL
 			if (!results.empty())
 				{
-				writeFeatures(resultslayer.at(modelname), firstPeriod, iteration, outputstowrite, results);
+				writeFeatures(m_resultslayer.at(modelname), firstPeriod, iteration, m_outputstowrite, results);
 			}else {
-				fillUpInfeasibles(resultslayer.at(modelname), outputstowrite, iteration, firstPeriod, lastPeriod);
+				fillUpInfeasibles(m_resultslayer.at(modelname), m_outputstowrite, iteration, firstPeriod, lastPeriod);
 				}
 		#endif
 		}catch (...)
@@ -333,11 +333,11 @@ namespace Parallel
 		const std::vector<Core::FMTOutput>& loutputs)
 	{
 		try {
-			const int firstPeriod = outputfirstperiod;
-			const int lastPeriod = std::min(outputlastperiod, modelptr->getParameter(Models::FMTintmodelparameters::LENGTH));
-			boost::lock_guard<boost::recursive_mutex> lock(mtx);
-			outputstowrite = loutputs;
-			if (!outputstowrite.empty())
+			const int firstPeriod = m_outputfirstperiod;
+			const int lastPeriod = std::min(m_outputlastperiod, modelptr->getParameter(Models::FMTintmodelparameters::LENGTH));
+			boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+			m_outputstowrite = loutputs;
+			if (!m_outputstowrite.empty())
 			{
 				int replicateId = 0;
 				std::string writeName = modelptr->getName();
@@ -345,7 +345,7 @@ namespace Parallel
 					(!writeName.empty() && writeName.find_first_not_of("0123456789") == std::string::npos))
 					{
 					replicateId = std::stoi(modelptr->getName());
-					writeName = projectname;
+					writeName = m_projectname;
 					}
 				write(writeName,
 					getResults(modelptr, firstPeriod, lastPeriod),
@@ -353,13 +353,13 @@ namespace Parallel
 					lastPeriod,
 					replicateId);
 			}
-			if (!(projectdirectory.empty()) && !(modelptr->getParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
+			if (!(m_projectdirectory.empty()) && !(modelptr->getParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
 				{
 				const std::string scenarioname = modelptr->getName();
-				std::string schedulelocation = projectdirectory+"/Scenarios/"+scenarioname+"/"+projectname+"._seq";
+				std::string schedulelocation = m_projectdirectory+"/Scenarios/"+scenarioname+"/"+m_projectname+"._seq";
 				if (scenarioname=="ROOT")
 					{
-					schedulelocation = projectdirectory + "/" + projectname + ".seq";
+					schedulelocation = m_projectdirectory + "/" + m_projectname + ".seq";
 					}
 				Parser::FMTScheduleParser parser;
 				std::vector<Core::FMTSchedule>solution;
@@ -379,7 +379,7 @@ namespace Parallel
 		try
 		{
 			Parser::FMTScheduleParser parser;
-			boost::lock_guard<boost::recursive_mutex> lock(mtx);
+			boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 			parser.write(scheduleList, schedulePath, append);
 		}
 		catch (...)

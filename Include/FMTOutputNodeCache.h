@@ -63,10 +63,10 @@ namespace Graph
 		@param[in] initialnodes the initial nodes.
 		*/
 		FMTOutputNodeCache(const std::vector<tvdescriptor>& initialnodes) :
-			inmemorynodes(initialnodes), beginit(nullptr), endit(nullptr), searchtree(), m_allocator(), m_reserve()
+			m_inmemorynodes(initialnodes), m_beginit(nullptr), m_endit(nullptr), m_searchtree(), m_allocator(), m_reserve()
 		{
-			inmemorynodes.shrink_to_fit();
-			std::sort(inmemorynodes.begin(),inmemorynodes.end());
+			m_inmemorynodes.shrink_to_fit();
+			std::sort(m_inmemorynodes.begin(),m_inmemorynodes.end());
 		}
 		// DocString: FMTOutputNodeCache(const titerator&, const titerator&, std::allocator<tvdescriptor>&, const size_t&)
 		/**
@@ -77,21 +77,21 @@ namespace Graph
 		@param[in] p_reserve the reserve size.
 		*/
 		FMTOutputNodeCache(const titerator& first, const titerator& last,std::allocator<tvdescriptor>& p_allocator,const size_t& p_reserve) :
-			inmemorynodes(), beginit(&first), endit(&last), searchtree(),m_allocator(&p_allocator), m_reserve(p_reserve)
+			m_inmemorynodes(), m_beginit(&first), m_endit(&last), m_searchtree(),m_allocator(&p_allocator), m_reserve(p_reserve)
 		{
 			if (m_reserve>0)
 				{
 				std::vector<tvdescriptor>allocated(*m_allocator);
 				allocated.reserve(m_reserve);
-				for (titerator it = *beginit; it != *endit; ++it)
+				for (titerator it = *m_beginit; it != *m_endit; ++it)
 					{
 					allocated.push_back(*it);
 					}
-				beginit = nullptr;
-				endit = nullptr;
+				m_beginit = nullptr;
+				m_endit = nullptr;
 				std::sort(allocated.begin(), allocated.end());
 				allocated.shrink_to_fit();
-				inmemorynodes.swap(allocated);
+				m_inmemorynodes.swap(allocated);
 				}
 
 		}
@@ -102,7 +102,7 @@ namespace Graph
 		*/
 		void eraseNode(const Core::FMTOutputNode& node)
 			{
-			searchtree.erase(node.source);
+			m_searchtree.erase(node.source);
 			}
 
 		// DocString: FMTOutputNodeCache::contains
@@ -113,7 +113,7 @@ namespace Graph
 		*/
 		bool contains(const Core::FMTOutputNode& node) const
 			{
-			return searchtree.find(node.source) != searchtree.end();
+			return m_searchtree.find(node.source) != m_searchtree.end();
 			}
 
 		// DocString: FMTOutputNodeCache::removeLargest
@@ -125,8 +125,8 @@ namespace Graph
 		{
 			size_t largestsize = 0;
 			unsigned long long  removedmemory = 0;
-			notecacheit largestiterator = searchtree.end();
-			for (typename std::map<Core::FMTOutputSource, std::vector<tvdescriptor>>::iterator mapit = searchtree.begin(); mapit != searchtree.end(); mapit++)
+			notecacheit largestiterator = m_searchtree.end();
+			for (typename std::map<Core::FMTOutputSource, std::vector<tvdescriptor>>::iterator mapit = m_searchtree.begin(); mapit != m_searchtree.end(); mapit++)
 			{
 				size_t sizeofvec = mapit->second.size();
 				if (sizeofvec > largestsize)
@@ -136,10 +136,10 @@ namespace Graph
 				}
 
 			}
-			if (largestiterator != searchtree.end())
+			if (largestiterator != m_searchtree.end())
 			{
 				removedmemory = largestsize * sizeof(tvdescriptor);
-				searchtree.erase(largestiterator);
+				m_searchtree.erase(largestiterator);
 			}
 			return removedmemory;
 		}
@@ -155,7 +155,7 @@ namespace Graph
 		const std::vector<tvdescriptor>& getVertices(const Core::FMTOutputNode& targetnode, const std::vector<Core::FMTAction>& actions,
 			const std::vector<Core::FMTTheme>&themes, bool& exactvecticies) const
 			{
-			return this->getCleanDescriptors(targetnode, actions, themes, exactvecticies);
+			return this->_getCleanDescriptors(targetnode, actions, themes, exactvecticies);
 			}
 		// DocString: FMTOutputNodeCache::setValidVertices
 		/**
@@ -165,8 +165,8 @@ namespace Graph
 		*/
 		void setValidVertices(const Core::FMTOutputNode& targetnode,const std::vector<tvdescriptor>& vertices) const
 			{
-			searchtree[targetnode.source] = vertices;
-			searchtree[targetnode.source].shrink_to_fit();
+			m_searchtree[targetnode.source] = vertices;
+			m_searchtree[targetnode.source].shrink_to_fit();
 			}
 		// DocString: FMTOutputNodeCache::clear
 		/**
@@ -174,10 +174,10 @@ namespace Graph
 		*/
 		void clear()
 			{
-			beginit = nullptr;
-			endit = nullptr;
-			inmemorynodes.clear();
-			searchtree.clear();
+			m_beginit = nullptr;
+			m_endit = nullptr;
+			m_inmemorynodes.clear();
+			m_searchtree.clear();
 			}
 		// DocString: FMTOutputNodeCache::rebase
 		/**
@@ -187,8 +187,8 @@ namespace Graph
 		*/
 		void rebase(const titerator& beginofdevs, const titerator& endofdevs)
 			{
-			beginit = &beginofdevs;
-			endit = &endofdevs;
+			m_beginit = &beginofdevs;
+			m_endit = &endofdevs;
 			}
 		// DocString: FMTOutputNodeCache::insert
 		/**
@@ -197,27 +197,27 @@ namespace Graph
 		*/
 		void insert(const FMTOutputNodeCache& rhs)
 			{
-			if (beginit==nullptr)
+			if (m_beginit==nullptr)
 			{
-				if (inmemorynodes.size() < rhs.inmemorynodes.size())
+				if (m_inmemorynodes.size() < rhs.m_inmemorynodes.size())
 				{
-					inmemorynodes = rhs.inmemorynodes;
+					m_inmemorynodes = rhs.m_inmemorynodes;
 				}
 			}
 			
-			searchtree.insert(rhs.searchtree.begin(), rhs.searchtree.end());
+			m_searchtree.insert(rhs.m_searchtree.begin(), rhs.m_searchtree.end());
 			}
 
-		// DocString: FMTOutputNodeCache::pushToVector
+		// DocString: FMTOutputNodeCache::_pushToVector
 		/**
 		@brief Push the nodes of the cache into a vector.
 		@param[in,out] refvecs the vector to push into.
 		*/
-		void pushToVector(std::vector<tvdescriptor>& refvecs) const
+		void _pushToVector(std::vector<tvdescriptor>& refvecs) const
 		{
-			if (beginit!=nullptr)
+			if (m_beginit!=nullptr)
 			{
-				for (titerator it = *beginit; it != *endit; ++it)
+				for (titerator it = *m_beginit; it != *m_endit; ++it)
 				{
 					/*if (refvecs.capacity() <= (refvecs.size() + 1))
 					{
@@ -229,7 +229,7 @@ namespace Graph
 				std::sort(refvecs.begin(), refvecs.end());
 			}
 			else {
-				refvecs = inmemorynodes;
+				refvecs = m_inmemorynodes;
 			}
 		}
 	private:
@@ -244,18 +244,18 @@ namespace Graph
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar & BOOST_SERIALIZATION_NVP(inmemorynodes);
-			ar & BOOST_SERIALIZATION_NVP(searchtree);
+			ar & boost::serialization::make_nvp("inmemorynodes", m_inmemorynodes);
+			ar & boost::serialization::make_nvp("searchtree", m_searchtree);
 		}
-		std::vector<tvdescriptor>inmemorynodes;
-		titerator const * beginit;
-		titerator const * endit;
-		mutable std::map<Core::FMTOutputSource,std::vector<tvdescriptor>>searchtree;
+		std::vector<tvdescriptor>m_inmemorynodes;
+		titerator const * m_beginit;
+		titerator const * m_endit;
+		mutable std::map<Core::FMTOutputSource,std::vector<tvdescriptor>>m_searchtree;
 		std::allocator<tvdescriptor>* m_allocator;
 		size_t m_reserve;
         typedef typename std::map<Core::FMTOutputSource,std::vector<tvdescriptor>>::const_iterator notecacheit;
 		
-		// DocString: FMTOutputNodeCache::getCleanDescriptors
+		// DocString: FMTOutputNodeCache::_getCleanDescriptors
 		/**
 		@brief Return the clean vertex descriptors for a target node, rebuilding from the cache and parent nodes.
 		@param[in] targetnode the target node.
@@ -264,7 +264,7 @@ namespace Graph
 		@param[out] exactnode true if the returned descriptors are an exact match.
 		@return the clean vertex descriptors.
 		*/
-		const std::vector<tvdescriptor>& getCleanDescriptors(const Core::FMTOutputNode& targetnode,const std::vector<Core::FMTAction>& actions,
+		const std::vector<tvdescriptor>& _getCleanDescriptors(const Core::FMTOutputNode& targetnode,const std::vector<Core::FMTAction>& actions,
 										const std::vector<Core::FMTTheme>&themes, bool& exactnode) const
 		{
 			exactnode = false;
@@ -276,23 +276,23 @@ namespace Graph
 				return parent->second;
 			}
 			//std::vector<tvdescriptor> cleaned(*m_allocator);
-			searchtree[targetnode.source] = std::vector<tvdescriptor>(*m_allocator);
-			std::vector<tvdescriptor>& cleaned = searchtree[targetnode.source];
+			m_searchtree[targetnode.source] = std::vector<tvdescriptor>(*m_allocator);
+			std::vector<tvdescriptor>& cleaned = m_searchtree[targetnode.source];
 			if (foundSubset)
 			{
 				cleaned = parent->second;
 			}else {
 				cleaned.reserve(m_reserve);
-				pushToVector(cleaned);
+				_pushToVector(cleaned);
 			}
-			getActionRebuild(targetnode, actions, cleaned, exactnode);// , TO_RESERVE); // should be able to find also exact!!!!!!!!
+			_getActionRebuild(targetnode, actions, cleaned, exactnode);// , TO_RESERVE); // should be able to find also exact!!!!!!!!
 			if (!exactnode)
 			{
 				std::vector<tvdescriptor>toRemove(*m_allocator);
 				bool gotSomething = false;
 				const Core::FMTMask& targetmask = targetnode.source.getMask();
-				for (typename std::map<Core::FMTOutputSource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
-					sit != searchtree.rend(); sit++)
+				for (typename std::map<Core::FMTOutputSource, std::vector<tvdescriptor>>::const_reverse_iterator sit = m_searchtree.rbegin();
+					sit != m_searchtree.rend(); sit++)
 				{
 					const Core::FMTMask& nodemask = sit->first.getMask();
 					if (targetmask.isNotThemesSubset(nodemask, themes))//deal only with mask
@@ -321,7 +321,7 @@ namespace Graph
 			//return (returniterator.first)->second;
 			return cleaned;
 		}
-		// DocString: FMTOutputNodeCache::getActionRebuild
+		// DocString: FMTOutputNodeCache::_getActionRebuild
 		/**
 		@brief Rebuild the descriptors for an aggregate action from the cached descriptors of its member actions.
 		@param[in] targetnode the target node.
@@ -329,7 +329,7 @@ namespace Graph
 		@param[in,out] cleaned the descriptors to rebuild.
 		@param[out] exactnode true if an exact match is found.
 		*/
-		void getActionRebuild(const Core::FMTOutputNode& targetnode,
+		void _getActionRebuild(const Core::FMTOutputNode& targetnode,
 			const std::vector<Core::FMTAction>& actions,
 			std::vector<tvdescriptor>& cleaned,
 			bool& exactnode/*, const size_t& p_reserve*/) const
@@ -344,8 +344,8 @@ namespace Graph
 					potentials[attributeptr->getName()] = std::vector< notecacheit>();
 					potentials[attributeptr->getName()].reserve(m_reserve);
 				}
-				for (notecacheit sit = searchtree.begin();
-					sit != searchtree.end(); sit++)
+				for (notecacheit sit = m_searchtree.begin();
+					sit != m_searchtree.end(); sit++)
 				{
 					if (sit->first.isSubsetOf(targetnode.source, actions) && 
 						(sit->first != targetnode.source))
@@ -425,16 +425,16 @@ namespace Graph
 							const std::vector<Core::FMTAction>& m_actions,
 						bool& m_exactNode, bool m_foundSubset) const
 			{
-				notecacheit parentit = searchtree.find(m_targetNode.source);
-				if (parentit != searchtree.end())
+				notecacheit parentit = m_searchtree.find(m_targetNode.source);
+				if (parentit != m_searchtree.end())
 				{
 					m_exactNode = true;
 					return parentit;
 				}
-				parentit = searchtree.begin();
+				parentit = m_searchtree.begin();
 				m_exactNode = false;
 				m_foundSubset = false;
-				while (parentit != searchtree.end())
+				while (parentit != m_searchtree.end())
 				{
 					if (m_targetNode.source.isSubsetOf(parentit->first, m_actions))
 					{
@@ -443,7 +443,7 @@ namespace Graph
 					}
 					++parentit;
 				}
-				return searchtree.end();
+				return m_searchtree.end();
 			}
 	};
 
