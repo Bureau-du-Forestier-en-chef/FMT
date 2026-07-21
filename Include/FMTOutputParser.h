@@ -33,58 +33,6 @@ namespace Parser
 */
 class FMTEXPORT FMTOutputParser : public FMTParser
     {
-	// DocString: FMTOutputParser::rxoutput
-	///Regex to capture the name of the output and other informations.
-	const static boost::regex rxoutput;
-	// DocString: FMTOutputParser::rxsource
-	///Regex to capture the output sources.
-	const static boost::regex rxsource;
-	// DocString: FMTOutputParser::rxtar
-	///Regex to capture the output source specifications target.
-	const static boost::regex rxtar;
-	// DocString: FMTOutputParser::rxgrp
-	///Regex to capture outputs groups
-	const static boost::regex rxgrp;
-	// DocString: FMTOutputParser::rxoutputconstant
-	///Regex to capture constant output.
-	const static boost::regex rxoutputconstant;
-	// DocString: FMTOutputParser::readNFill
-	/**
-	@brief Parse a file and fill a vector of outputs, used by read and addOutputs.
-	@param[in,out] outputs the outputs to fill.
-	@param[in] themes the themes.
-	@param[in] actions the actions.
-	@param[in] ylds the yields.
-	@param[in] constants the constants.
-	@param[in] location the file location.
-	*/
-	void readNFill(std::vector<Core::FMTOutput>* outputs, 
-					const std::vector<Core::FMTTheme>& themes,
-					const std::vector<Core::FMTAction>& actions,
-					const Core::FMTYields& ylds,const Core::FMTConstants& constants,
-					const std::string& location);
-	// DocString: FMTOutputParser::appendToOutput
-	/**
-	@brief Append output data to an output.
-	@param[in] strvalue the value string.
-	@param[in] outputid the output id.
-	@param[in] themetarget the theme target.
-	@param[in] lastoutput the last output index.
-	@param[in,out] lastoperator the last operator.
-	@param[in,out] stroperators the operator strings.
-	@param[in,out] sources the output sources.
-	@param[in,out] operators the operators.
-	*/
-	void appendToOutput(
-		const std::string& strvalue,
-		const int& outputid,
-		const int& themetarget,
-		const size_t& lastoutput,
-		std::string& lastoperator,
-		std::vector<std::string>& stroperators,
-		std::vector<Core::FMTOutputSource>& sources,
-		std::vector<Core::FMTOperator>& operators) const;
-
     public:
 		// DocString: FMTOutputParser()
 		/**
@@ -148,6 +96,59 @@ class FMTEXPORT FMTOutputParser : public FMTParser
 		@param[in] location the file location.
 		*/
         void write(const std::vector<Core::FMTOutput>& outputs,const std::string& location) const;
+    private:
+	// DocString: FMTOutputParser::m_rxoutput
+	///Regex to capture the name of the output and other informations.
+	const static boost::regex m_rxoutput;
+	// DocString: FMTOutputParser::m_rxsource
+	///Regex to capture the output sources.
+	const static boost::regex m_rxsource;
+	// DocString: FMTOutputParser::m_rxtar
+	///Regex to capture the output source specifications target.
+	const static boost::regex m_rxtar;
+	// DocString: FMTOutputParser::m_rxgrp
+	///Regex to capture outputs groups
+	const static boost::regex m_rxgrp;
+	// DocString: FMTOutputParser::m_rxoutputconstant
+	///Regex to capture constant output.
+	const static boost::regex m_rxoutputconstant;
+	// DocString: FMTOutputParser::_readNFill
+	/**
+	@brief Parse a file and fill a vector of outputs, used by read and addOutputs.
+	@param[in,out] outputs the outputs to fill.
+	@param[in] themes the themes.
+	@param[in] actions the actions.
+	@param[in] ylds the yields.
+	@param[in] constants the constants.
+	@param[in] location the file location.
+	*/
+	void _readNFill(std::vector<Core::FMTOutput>* outputs, 
+					const std::vector<Core::FMTTheme>& themes,
+					const std::vector<Core::FMTAction>& actions,
+					const Core::FMTYields& ylds,const Core::FMTConstants& constants,
+					const std::string& location);
+	// DocString: FMTOutputParser::_appendToOutput
+	/**
+	@brief Append output data to an output.
+	@param[in] strvalue the value string.
+	@param[in] outputid the output id.
+	@param[in] themetarget the theme target.
+	@param[in] lastoutput the last output index.
+	@param[in,out] lastoperator the last operator.
+	@param[in,out] stroperators the operator strings.
+	@param[in,out] sources the output sources.
+	@param[in,out] operators the operators.
+	*/
+	void _appendToOutput(
+		const std::string& strvalue,
+		const int& outputid,
+		const int& themetarget,
+		const size_t& lastoutput,
+		std::string& lastoperator,
+		std::vector<std::string>& stroperators,
+		std::vector<Core::FMTOutputSource>& sources,
+		std::vector<Core::FMTOperator>& operators) const;
+
     };
 
 }

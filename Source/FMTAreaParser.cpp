@@ -37,7 +37,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-const boost::regex FMTAreaParser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTAreaParser::m_rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 const boost::regex FMTAreaParser::m_RxExclude = boost::regex("^(\\*EXCLUDE)((.+)|())", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
@@ -68,7 +68,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 	return false;
 }
 
-	std::vector<OGRPolygon*> FMTAreaParser::getUnion(const std::vector<OGRMultiPolygon>& multipartpolygons) const
+	std::vector<OGRPolygon*> FMTAreaParser::_getUnion(const std::vector<OGRMultiPolygon>& multipartpolygons) const
 		{
 		std::vector<OGRPolygon*> mergedpolygons;
 		try {
@@ -89,12 +89,12 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 		catch (...)
 		{
 			_exhandler->raiseFromCatch(
-				"", "FMTAreaParser::getUnion", __LINE__, __FILE__, m_section);
+				"", "FMTAreaParser::_getUnion", __LINE__, __FILE__, m_section);
 		}
 		return mergedpolygons;
 		}
 
-	void FMTAreaParser::destroyPolygons(std::vector<OGRPolygon*>& polygonstodestroy) const
+	void FMTAreaParser::_destroyPolygons(std::vector<OGRPolygon*>& polygonstodestroy) const
 		{
 		try{
 		for (OGRPolygon* polygon : polygonstodestroy)
@@ -106,12 +106,12 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 		catch (...)
 		{
 			_exhandler->raiseFromCatch(
-				"", "FMTAreaParser::destroyPolygons", __LINE__, __FILE__, m_section);
+				"", "FMTAreaParser::_destroyPolygons", __LINE__, __FILE__, m_section);
 		}
 		}
 	
 
-    void FMTAreaParser::validateRaster(const std::vector<std::string>&data_rasters) const
+    void FMTAreaParser::_validateRaster(const std::vector<std::string>&data_rasters) const
         {
 		try {
 			int xsize = -1;
@@ -129,7 +129,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidband,
 							"Rasters are not the same " + std::string(data->GetDescription()),
-							"FMTAreaParser::validateRaster", __LINE__, __FILE__, m_section);
+							"FMTAreaParser::_validateRaster", __LINE__, __FILE__, m_section);
 					}
 				}
 				else {
@@ -146,7 +146,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			_exhandler->raiseFromCatch("","in FMTareaparser::validate_raster", __LINE__, __FILE__,m_section);
 			}
         }
-	std::vector<Core::FMTGCBMTransition> FMTAreaParser::getGCBMtransitions(const Spatial::FMTLayer<std::string>& stacked_actions,
+	std::vector<Core::FMTGCBMTransition> FMTAreaParser::_getGCBMtransitions(const Spatial::FMTLayer<std::string>& stacked_actions,
 																const Spatial::FMTLayer<int>& ages,
 																const Spatial::FMTForest& newfor,
 																const std::vector<Core::FMTTheme>& themes) const
@@ -214,7 +214,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMTAreaParser::getGCBMtransitions", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("","FMTAreaParser::_getGCBMtransitions", __LINE__, __FILE__, m_section);
 			}
 		return GCBM;
 		}
@@ -307,7 +307,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
         }
 
 
-	std::string FMTAreaParser::getPeriodPathName(const std::string& location, const int& period, const std::string& name) const
+	std::string FMTAreaParser::_getPeriodPathName(const std::string& location, const int& period, const std::string& name) const
 	{
 		boost::filesystem::path full_path;
 		try {
@@ -318,7 +318,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("at " + location, "FMTAreaParser::getPeriodPathName", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("at " + location, "FMTAreaParser::_getPeriodPathName", __LINE__, __FILE__, m_section);
 		}
 		return full_path.string();
 	}
@@ -343,7 +343,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				{
 					lmapping[act.getName()] = act.getName();
 				}
-				writeLayer<std::string>(lastDistLayer, getPeriodPathName(location, period,"DIST"), lmapping);
+				writeLayer<std::string>(lastDistLayer, _getPeriodPathName(location, period,"DIST"), lmapping);
 			}
 			else
 			{
@@ -356,7 +356,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 					{
 						lmapping[item.second] = item.second;
 					}
-					writeLayer<std::string>(lastDistLayer, getPeriodPathName(location, period,"DIST"), lmapping);
+					writeLayer<std::string>(lastDistLayer, _getPeriodPathName(location, period,"DIST"), lmapping);
 				}
 			}
 		}
@@ -384,7 +384,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			{
 				predictors = spatialsolution.getPredictors(predictorids,model, yieldnames, period,periodonevalues, withGCBMid);
 				std::map<int, std::string>mapping;
-				writeLayer<int>(predictorids, getPeriodPathName(location, period,"PREDID"), mapping);
+				writeLayer<int>(predictorids, _getPeriodPathName(location, period,"PREDID"), mapping);
 			}
 		}catch (...)
 			{
@@ -407,7 +407,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			{
 				allrasters.push_back(lock);
 			}
-			validateRaster(allrasters);
+			_validateRaster(allrasters);
 			GDALDataset* agedataset = getDataset(age);
 			GDALRasterBand* ageband = getBand(agedataset);
 			int nXBlockSize, nYBlockSize;
@@ -597,7 +597,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 	return Spatial::FMTForest();
 	}
 
-	Core::FMTActualDevelopment FMTAreaParser::getFeatureToDevelopment(
+	Core::FMTActualDevelopment FMTAreaParser::_getFeatureToDevelopment(
 		const OGRFeature* feature,
 		const std::vector<Core::FMTTheme>& themes,
 		const std::map<int, int>& themes_fields,
@@ -653,12 +653,12 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(std::to_string(feature->GetFID()),
-				"FMTAreaParser::getFeatureToDevelopment", __LINE__, __FILE__, m_section);
+				"FMTAreaParser::_getFeatureToDevelopment", __LINE__, __FILE__, m_section);
 			}
 		return Core::FMTActualDevelopment();
 		}
 
-	GDALDataset* FMTAreaParser::openVectorFile(std::map<int, int>&themes_fields,int& age_field,int& lock_field,int& area_field,
+	GDALDataset* FMTAreaParser::_openVectorFile(std::map<int, int>&themes_fields,int& age_field,int& lock_field,int& area_field,
 		const std::string& data_vectors,const std::string& agefield,const std::string& areafield,const std::string& lockfield,
 		const std::vector<Core::FMTTheme>& themes) const
 		{
@@ -671,17 +671,17 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			if (themes_fields.size() > themes.size())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-					dataset->GetDescription(),"FMTAreaParser::openVectorFile", __LINE__, __FILE__, m_section);
+					dataset->GetDescription(),"FMTAreaParser::_openVectorFile", __LINE__, __FILE__, m_section);
 				}
 			layer->ResetReading();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch(data_vectors,"FMTAreaParser::openVectorFile", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch(data_vectors,"FMTAreaParser::_openVectorFile", __LINE__, __FILE__, m_section);
 			}
 		return dataset;
 		}
 
-	OGRLayer* FMTAreaParser::subsetLayer(OGRLayer*layer ,const std::vector<Core::FMTTheme>& themes,
+	OGRLayer* FMTAreaParser::_subsetLayer(OGRLayer*layer ,const std::vector<Core::FMTTheme>& themes,
 									const std::string& agefield, const std::string& areafield) const
 		{
 		std::string sqlcall;
@@ -700,7 +700,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			layer->SetAttributeFilter(sqlcall.c_str());
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("for SQL " + sqlcall,"FMTAreaParser::subsetLayer", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("for SQL " + sqlcall,"FMTAreaParser::_subsetLayer", __LINE__, __FILE__, m_section);
 			}
 		return layer;
 		}
@@ -714,13 +714,13 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			int age_field = -1;
 			int lock_field = -1;
 			int area_field = -1;
-			GDALDataset* dataset = openVectorFile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
+			GDALDataset* dataset = _openVectorFile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
 			OGRLayer*  layer = getLayer(dataset, 0);
-			layer = this->subsetLayer(layer, themes, agefield, areafield);
+			layer = this->_subsetLayer(layer, themes, agefield, areafield);
 			OGRFeature *feature;
 			while ((feature = layer->GetNextFeature()) != NULL)
 			{
-				const Core::FMTActualDevelopment actualdev = this->getFeatureToDevelopment(feature, themes, themes_fields, age_field,
+				const Core::FMTActualDevelopment actualdev = this->_getFeatureToDevelopment(feature, themes, themes_fields, age_field,
 					lock_field, area_field, agefactor, areafactor, minimalarea);
 
 				if (!actualdev.getMask().empty())
@@ -864,10 +864,10 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			int age_field = -1;
 			int lock_field = -1;
 			int area_field = -1;
-			GDALDataset* dataset = openVectorFile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
+			GDALDataset* dataset = _openVectorFile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
 			OGRLayer*  layer = getLayer(dataset, 0);
 			const std::vector<Core::FMTTheme>THEMES_SUBSET(themes.begin(), themes.begin() + themes_fields.size());
-			layer = this->subsetLayer(layer, THEMES_SUBSET, agefield, areafield);
+			layer = this->_subsetLayer(layer, THEMES_SUBSET, agefield, areafield);
 			OGRCoordinateTransformation* coordtransf = getProjTransform(layer, fittoforel);
 			const std::string Fieldname("devid");
 			GDALDataset* memds = getTransFormMemLayerCopy(layer, coordtransf->GetTargetCS(), Fieldname);
@@ -877,7 +877,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			OGRFeature* feature;
 			while ((feature = layer->GetNextFeature()) != NULL)
 			{
-				const Core::FMTActualDevelopment actualdev = this->getFeatureToDevelopment(feature, themes, themes_fields, age_field,
+				const Core::FMTActualDevelopment actualdev = this->_getFeatureToDevelopment(feature, themes, themes_fields, age_field,
 					lock_field, area_field, agefactor, areafactor, minimalarea);
 
 				if (!actualdev.getMask().empty())
@@ -925,7 +925,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			//{
 				OGRCoordinateTransformation::DestroyCT(coordtransf);
 			//}
-			basemap = getFMTforestfromlayer(memlayer,devs,Fieldname,resolution,areafactor,fittoforel);
+			basemap = _getFMTforestfromlayer(memlayer,devs,Fieldname,resolution,areafactor,fittoforel);
 			GDALClose(memds);
 			writeForest(basemap, themes, writeforestfolder);
 		}catch (...)
@@ -955,7 +955,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 
 
 
-	Spatial::FMTForest FMTAreaParser::getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const
+	Spatial::FMTForest FMTAreaParser::_getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const
 	{
 		//GDALAllRegister();
 		Spatial::FMTForest actualforest;
@@ -1025,7 +1025,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			VSIUnlink(vsi_path.c_str());
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTAreaParser::getFMTforestfromlayer", __LINE__, __FILE__, m_section);
+			_exhandler->printExceptions("", "FMTAreaParser::_getFMTforestfromlayer", __LINE__, __FILE__, m_section);
 		}
 		return actualforest;
 	}
@@ -1157,7 +1157,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 
 
 
-	std::vector<OGRMultiPolygon> FMTAreaParser::getMultipolygons(
+	std::vector<OGRMultiPolygon> FMTAreaParser::_getMultipolygons(
 		const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 		const std::vector<Core::FMTTheme>& themes, 
 		const std::string& data_vectors,
@@ -1174,14 +1174,14 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			int age_field = -1;
 			int lock_field = -1;
 			int area_field = -1;
-			GDALDataset* dataset = this->openVectorFile(themes_fields, age_field, lock_field, area_field,
+			GDALDataset* dataset = this->_openVectorFile(themes_fields, age_field, lock_field, area_field,
 				data_vectors, agefield, areafield, lockfield, themes);
 			OGRLayer * layer = getLayer(dataset, 0);
-			layer = this->subsetLayer(layer, themes, agefield, areafield);
+			layer = this->_subsetLayer(layer, themes, agefield, areafield);
 			OGRFeature *feature;
 			while ((feature = layer->GetNextFeature()) != NULL)
 			{
-				const Core::FMTActualDevelopment actualdev = this->getFeatureToDevelopment(feature, themes, themes_fields, age_field,
+				const Core::FMTActualDevelopment actualdev = this->_getFeatureToDevelopment(feature, themes, themes_fields, age_field,
 				lock_field, area_field, agefactor, areafactor, minimal_area);
 				if (!actualdev.getMask().empty())
 				{
@@ -1210,7 +1210,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			GDALClose(dataset);
 		} catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMTAreaParser::getMultipolygons", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("","FMTAreaParser::_getMultipolygons", __LINE__, __FILE__, m_section);
 			}
 		return multipolygons;
 		}
@@ -1218,7 +1218,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 
 
 	template<typename T, typename outT>
-	bool FMTAreaParser::writeBand(const Spatial::FMTLayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const
+	bool FMTAreaParser::_writeBand(const Spatial::FMTLayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const
 	{
 		double lastwriten;
 		bool gotSomething = false;
@@ -1269,7 +1269,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 						if (wband->WriteBlock(iXBlock, iYBlock, &block[0]) != CPLErr::CE_None)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
-								"on band id "+	std::to_string(wband->GetBand()), "FMTAreaParser::writeBand", __LINE__, __FILE__, m_section);
+								"on band id "+	std::to_string(wband->GetBand()), "FMTAreaParser::_writeBand", __LINE__, __FILE__, m_section);
 							}
 						}
 					xstack += nXValid;
@@ -1317,11 +1317,11 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				bool bandResult = [&]() {
 					switch (datatype) {
 					case GDALDataType::GDT_Byte:
-						return writeBand<T, uint8_t>(layer, wband, mapping);
+						return _writeBand<T, uint8_t>(layer, wband, mapping);
 					case GDALDataType::GDT_Int32:
-						return writeBand<T, int>(layer, wband, mapping);
+						return _writeBand<T, int>(layer, wband, mapping);
 					default:
-						return writeBand<T, double>(layer, wband, mapping);
+						return _writeBand<T, double>(layer, wband, mapping);
 					}
 					}();
 
@@ -1421,7 +1421,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 
 
 	#ifdef FMTWITHOSI
-			std::vector<Heuristics::FMTOperatingArea> FMTAreaParser::getNeighborsFromPolygons(const std::vector<OGRPolygon*>& polygons,
+			std::vector<Heuristics::FMTOperatingArea> FMTAreaParser::_getNeighborsFromPolygons(const std::vector<OGRPolygon*>& polygons,
 																						std::vector<Heuristics::FMTOperatingArea> operatingareas,
 																						const double& buffersize) const
 				{
@@ -1487,12 +1487,12 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 					}
 				}catch (...)
 					{
-					_exhandler->raiseFromCatch("","FMTAreaParser::getNeighborsFromPolygons", __LINE__, __FILE__, m_section);
+					_exhandler->raiseFromCatch("","FMTAreaParser::_getNeighborsFromPolygons", __LINE__, __FILE__, m_section);
 					}
 				return operatingareas;
 				}
 
-			std::vector<Heuristics::FMTOperatingAreaCluster> FMTAreaParser::getClustersFromPolygons(const std::vector<OGRPolygon*>& polygons,
+			std::vector<Heuristics::FMTOperatingAreaCluster> FMTAreaParser::_getClustersFromPolygons(const std::vector<OGRPolygon*>& polygons,
 																								const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 																								const double& maximaldistance) const
 			{
@@ -1502,7 +1502,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 						{
 						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"Invalid number of polygons / operating area",
-							"FMTAreaParser::getClustersFromPolygons", __LINE__, __FILE__, m_section);
+							"FMTAreaParser::_getClustersFromPolygons", __LINE__, __FILE__, m_section);
 						}
 					std::map<Core::FMTMask, std::map<Core::FMTMask, double>>distances;
 					std::map<Core::FMTMask, std::map<Core::FMTMask, std::set<Core::FMTMask>>>excludedfromlink;
@@ -1707,7 +1707,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 
 				}catch (...)
 					{
-					_exhandler->raiseFromCatch("", "FMTAreaParser::getClustersFromPolygons", __LINE__, __FILE__, m_section);
+					_exhandler->raiseFromCatch("", "FMTAreaParser::_getClustersFromPolygons", __LINE__, __FILE__, m_section);
 					}
 				return clusters;
 			}
@@ -1721,12 +1721,12 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				{
 				try {
 					const std::vector<Heuristics::FMTOperatingArea>baseoparea(operatingareaparameters.begin(), operatingareaparameters.end());
-					std::vector<OGRMultiPolygon>multipolygons = this->getMultipolygons(baseoparea, themes, data_vectors,
+					std::vector<OGRMultiPolygon>multipolygons = this->_getMultipolygons(baseoparea, themes, data_vectors,
 						agefield, areafield, agefactor,
 						areafactor, lockfield, minimal_area);
-					std::vector<OGRPolygon*>mergedpolygons = this->getUnion(multipolygons);
-					const std::vector<Heuristics::FMTOperatingArea>schemes = getNeighborsFromPolygons(mergedpolygons, baseoparea, buffersize);
-					this->destroyPolygons(mergedpolygons);
+					std::vector<OGRPolygon*>mergedpolygons = this->_getUnion(multipolygons);
+					const std::vector<Heuristics::FMTOperatingArea>schemes = _getNeighborsFromPolygons(mergedpolygons, baseoparea, buffersize);
+					this->_destroyPolygons(mergedpolygons);
 					size_t opareaid = 0;
 					for (const Heuristics::FMTOperatingArea& oparea : schemes)
 						{
@@ -1750,14 +1750,14 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			{
 				std::vector<Heuristics::FMTOperatingAreaCluster>finalclusters;
 				try {
-					std::vector<OGRMultiPolygon>multipolygons = this->getMultipolygons(operatingareas, themes, data_vectors,
+					std::vector<OGRMultiPolygon>multipolygons = this->_getMultipolygons(operatingareas, themes, data_vectors,
 						agefield, areafield, agefactor,
 						areafactor, lockfield, minimal_area);
-					std::vector<OGRPolygon*>mergedpolygons = this->getUnion(multipolygons);
+					std::vector<OGRPolygon*>mergedpolygons = this->_getUnion(multipolygons);
 					std::vector<Heuristics::FMTOperatingArea>newopareas(operatingareas.begin(), operatingareas.end());
-					const std::vector<Heuristics::FMTOperatingArea>opareawithneighbors = getNeighborsFromPolygons(mergedpolygons, newopareas, buffersize);
-					finalclusters = this->getClustersFromPolygons(mergedpolygons, opareawithneighbors, maximaldistance);
-					this->destroyPolygons(mergedpolygons);
+					const std::vector<Heuristics::FMTOperatingArea>opareawithneighbors = _getNeighborsFromPolygons(mergedpolygons, newopareas, buffersize);
+					finalclusters = this->_getClustersFromPolygons(mergedpolygons, opareawithneighbors, maximaldistance);
+					this->_destroyPolygons(mergedpolygons);
 				}catch (...)
 				{
 					_exhandler->printExceptions("", "FMTAreaParser::getClusters", __LINE__, __FILE__, m_section);
@@ -2142,7 +2142,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 										}
 									}
 									boost::smatch kmatch;
-									if (boost::regex_search(line, kmatch, FMTAreaParser::rxcleanarea))
+									if (boost::regex_search(line, kmatch, FMTAreaParser::m_rxcleanarea))
 									{
 										std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
 										std::string mask;

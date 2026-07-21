@@ -23,11 +23,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-const boost::regex FMTTransitionParser::rxsection = boost::regex("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTTransitionParser::rxlock = boost::regex("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTTransitionParser::rxage = boost::regex("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTTransitionParser::rxreplace = boost::regex("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)([\\+\\-\\*\\/])([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTTransitionParser::rxtyld = boost::regex("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxsection = boost::regex("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxlock = boost::regex("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxage = boost::regex("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxreplace = boost::regex("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)([\\+\\-\\*\\/])([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxtyld = boost::regex("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 FMTTransitionParser::FMTTransitionParser():FMTParser()
     {
@@ -102,21 +102,21 @@ std::vector<Core::FMTTransitionMask> FMTTransitionParser::getMaskTran(const std:
 		int age = -1;
 		int lock = 0;
 		Core::FMTTransitionMask trans(mask, themes, proportion);
-		if (boost::regex_search(rest, kmatch, FMTTransitionParser::rxlock))
+		if (boost::regex_search(rest, kmatch, FMTTransitionParser::m_rxlock))
 		{
 			const std::string strlock = kmatch[4];
 			lock = getNum<int>(strlock, constants);
 			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
 			trans.addBounds(Core::FMTLockBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, lock, lock));
 		}
-		if (boost::regex_search(rest, kmatch, FMTTransitionParser::rxage))
+		if (boost::regex_search(rest, kmatch, FMTTransitionParser::m_rxage))
 		{
 			std::string strage = kmatch[4];
 			age = getNum<int>(strage, constants);
 			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
 			trans.addBounds(Core::FMTAgeBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, age, age));
 		}
-		if (boost::regex_search(rest, kmatch, FMTTransitionParser::rxreplace))
+		if (boost::regex_search(rest, kmatch, FMTTransitionParser::m_rxreplace))
 		{
 			const std::string strtargettheme = kmatch[4];
 			const std::string stroptheme = kmatch[9];
@@ -157,7 +157,7 @@ std::vector<Core::FMTTransitionMask> FMTTransitionParser::getMaskTran(const std:
 			replaced = targetTheme;
 			rest = std::string(kmatch[1]) + std::string(kmatch[14]);
 		}
-		if (isValid(rest) && boost::regex_search(rest, kmatch, FMTTransitionParser::rxtyld))
+		if (isValid(rest) && boost::regex_search(rest, kmatch, FMTTransitionParser::m_rxtyld))
 		{
 			const std::string yld = kmatch[2];
 			const std::string strvalue = kmatch[4];
@@ -213,7 +213,7 @@ std::vector<Core::FMTTransition> FMTTransitionParser::read(const std::vector<Cor
 				{
 					
 					boost::smatch kmatch;
-					if (!boost::regex_search(line, kmatch, FMTTransitionParser::rxsection))
+					if (!boost::regex_search(line, kmatch, FMTTransitionParser::m_rxsection))
 					{
 						//crash here
 					}

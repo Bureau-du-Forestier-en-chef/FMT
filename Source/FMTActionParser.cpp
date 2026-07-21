@@ -21,9 +21,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-	const boost::regex FMTActionParser::rxsection = boost::regex("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)|(\\*ACTIONSERIES)", 
+	const boost::regex FMTActionParser::m_rxsection = boost::regex("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)|(\\*ACTIONSERIES)", 
 							boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTActionParser::rxoperator = boost::regex("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)",
+	const boost::regex FMTActionParser::m_rxoperator = boost::regex("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)",
 								boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMTActionParser::m_SERIES_MATCH = boost::regex("(.+)([\\s\\t]*)((_ASAP)|(_ALAP))|(.+)",
 															boost::regex_constants::ECMAScript | boost::regex_constants::icase);
@@ -33,7 +33,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 	setSection(Core::FMTsection::Action);
 	}
 
-	std::string FMTActionParser::getBounds(
+	std::string FMTActionParser::_getBounds(
 		std::string& line, 
 		Core::FMTSpec& spec,
 		const Core::FMTConstants& constants, 
@@ -89,12 +89,12 @@ FMTActionParser::FMTActionParser() : FMTParser()
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				"for "+line,"FMTActionParser::getBounds", __LINE__, __FILE__, m_section);
+				"for "+line,"FMTActionParser::_getBounds", __LINE__, __FILE__, m_section);
 			}
         return mask;
         }
 
-	std::map<std::string, std::vector<std::string>>FMTActionParser::valAgg(
+	std::map<std::string, std::vector<std::string>>FMTActionParser::_valAgg(
 		std::vector<Core::FMTAction>& actions, 
 		std::map<std::string, std::vector<std::string>>& aggregates)
         {
@@ -111,7 +111,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				"","FMTActionParser::valAgg", __LINE__, __FILE__, m_section);
+				"","FMTActionParser::_valAgg", __LINE__, __FILE__, m_section);
 			}
         return aggs;
         }
@@ -144,7 +144,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 					{
 						boost::smatch kmatch;
 						
-						if (!boost::regex_search(line, kmatch, FMTActionParser::rxsection))
+						if (!boost::regex_search(line, kmatch, FMTActionParser::m_rxsection))
 						{
 							//crash here
 						}
@@ -179,7 +179,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 								{
 								actions.push_back(Core::FMTAction("_DEATH", false, true));
 								}
-							const std::vector<Core::FMTAction*>pactions = sameActionAs(operablename, actions);
+							const std::vector<Core::FMTAction*>pactions = _sameActionAs(operablename, actions);
 							theaction = pactions.at(0);
 							operablename = theaction->getName();
 							if (pactions.size() > 1)
@@ -207,7 +207,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 						{
 							
 							partialname = kmatch[21];
-							const std::vector<Core::FMTAction*>pactions = sameActionAs(partialname, actions);
+							const std::vector<Core::FMTAction*>pactions = _sameActionAs(partialname, actions);
 							operablename.clear();
 							aggregatename.clear();
 							inseries = false;
@@ -232,7 +232,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 						else if (!operablename.empty())
 						{
 							Core::FMTSpec spec;
-							std::string mask = getBounds(line, spec, constants, yields);
+							std::string mask = _getBounds(line, spec, constants, yields);
 							
 							if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
 							const Core::FMTMask newmask(mask, themes);
@@ -290,7 +290,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 							action.getName(),"FMTActionParser::read", __LINE__, __FILE__, m_section);
 					}
 				}
-				std::map<std::string, std::vector<std::string>>cleanedag = valAgg(actions, aggregates);
+				std::map<std::string, std::vector<std::string>>cleanedag = _valAgg(actions, aggregates);
 				aggregates = cleanedag;
 			}
 			for (const auto& aggobj : aggregates)
@@ -472,7 +472,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 			}
         }
 
-    std::vector<Core::FMTAction*> FMTActionParser::sameActionAs(
+    std::vector<Core::FMTAction*> FMTActionParser::_sameActionAs(
 		const std::string& all_set, 
 		std::vector<Core::FMTAction>& actions) const
         {
@@ -486,7 +486,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				"","FMTActionParser::sameActionAs", __LINE__, __FILE__, m_section);
+				"","FMTActionParser::_sameActionAs", __LINE__, __FILE__, m_section);
 			}
         return all_pointers;
         }

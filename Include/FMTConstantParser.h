@@ -67,9 +67,9 @@ class FMTEXPORT FMTConstantParser : public FMTParser
 		This functions writes (constants) to a file (location).
 		*/
 	private:
-		// DocString: FMTParser::rxconstant
+		// DocString: FMTConstantParser::m_rxconstant
 		///Regex to capture constant.
-		const static boost::regex rxconstant;
+		const static boost::regex m_rxconstant;
 		// DocString: FMTConstantParser::_fillConstants
 		/**
 		@brief Fill the constants from a string.

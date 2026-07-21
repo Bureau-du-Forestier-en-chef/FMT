@@ -387,9 +387,9 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		*/
 		void write(const std::vector<Core::FMTActualDevelopment>& areas, const std::string& location) const;
     private:
-		// DocString: FMTAreaParser::rxcleanarea
+		// DocString: FMTAreaParser::m_rxcleanarea
 		///This regex is used to capture the information kept in the .are section.
-        const static boost::regex rxcleanarea;
+        const static boost::regex m_rxcleanarea;
 		// DocString: FMTAreaParser::m_RxExclude
 		///To capture the exclude keyword
 		const static boost::regex m_RxExclude;
@@ -434,7 +434,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			const Core::FMTConstants& p_constants,
 			const std::string& p_value,
 			Core::FMTList<Core::FMTSpec>& p_list) const;
-		// DocString: FMTAreaParser::getPeriodPathName
+		// DocString: FMTAreaParser::_getPeriodPathName
 		/**
 		@brief Return the path to a disturbance layer raster file for a period.
 		@param[in] location the folder.
@@ -442,8 +442,8 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@param[in] name the name.
 		@return the raster file path.
 		*/
-		std::string getPeriodPathName(const std::string& location, const int& period,const std::string& name) const;
-		// DocString: FMTAreaParser::getGCBMtransitions
+		std::string _getPeriodPathName(const std::string& location, const int& period,const std::string& name) const;
+		// DocString: FMTAreaParser::_getGCBMtransitions
 		/**
 		@brief Return the GCBM transitions from the disturbances of a FMTSesModel, for use with GCBM.
 		@param[in] stacked_actions the stacked actions.
@@ -452,12 +452,12 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@param[in] themes the themes.
 		@return the GCBM transitions.
 		*/
-		std::vector<Core::FMTGCBMTransition> getGCBMtransitions(const Spatial::FMTLayer<std::string>& stacked_actions,
+		std::vector<Core::FMTGCBMTransition> _getGCBMtransitions(const Spatial::FMTLayer<std::string>& stacked_actions,
 													const Spatial::FMTLayer<int>& ages,
 													const Spatial::FMTForest& newfor,
 													const std::vector<Core::FMTTheme>& themes) const;
 		#ifdef FMTWITHGDAL
-			// DocString: FMTAreaParser::writeBand
+			// DocString: FMTAreaParser::_writeBand
 			/**
 			@brief Write a layer into a raster band.
 			@tparam T the layer value type.
@@ -468,21 +468,21 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@return true if the band is written else false.
 			*/
 			template<typename T,typename outT>
-			bool writeBand(const Spatial::FMTLayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const;
-			// DocString: FMTAreaParser::getUnion
+			bool _writeBand(const Spatial::FMTLayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const;
+			// DocString: FMTAreaParser::_getUnion
 			/**
 			@brief Union cascaded on all multipart polygons to create a single polygon per multipart.
 			@param[in] multipartpolygons the multipart polygons.
 			@return the union polygons.
 			*/
-			std::vector<OGRPolygon*> getUnion(const std::vector<OGRMultiPolygon>& multipartpolygons) const;
-			// DocString: FMTAreaParser::destroyPolygons
+			std::vector<OGRPolygon*> _getUnion(const std::vector<OGRMultiPolygon>& multipartpolygons) const;
+			// DocString: FMTAreaParser::_destroyPolygons
 			/**
 			@brief Destroy all heap allocated polygons in a vector.
 			@param[in,out] polygonstodestroy the polygons to destroy.
 			*/
-			void destroyPolygons(std::vector<OGRPolygon*>& polygonstodestroy) const;
-			// DocString: FMTAreaParser::getFeatureToDevelopment
+			void _destroyPolygons(std::vector<OGRPolygon*>& polygonstodestroy) const;
+			// DocString: FMTAreaParser::_getFeatureToDevelopment
 			/**
 			@brief Convert a feature into an actual development.
 			@param[in] feature the feature.
@@ -496,7 +496,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] minimalarea the minimal area.
 			@return the actual development.
 			*/
-			Core::FMTActualDevelopment getFeatureToDevelopment(const OGRFeature* feature,
+			Core::FMTActualDevelopment _getFeatureToDevelopment(const OGRFeature* feature,
 															const std::vector<Core::FMTTheme>& themes,
 															const std::map<int, int>& themes_fields,
 															const int& age_field,
@@ -505,13 +505,13 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 															const double& agefactor,
 															const double& areafactor,
 															const double& minimalarea) const;
-			// DocString: FMTAreaParser::validateRaster
+			// DocString: FMTAreaParser::_validateRaster
 			/**
 			@brief Validate that a vector of rasters are perfectly part of each other and can be treated as a stack, throwing on error.
 			@param[in] data_rasters the raster file paths.
 			*/
-			void validateRaster(const std::vector<std::string>&data_rasters) const;
-			// DocString: FMTAreaParser::openVectorFile
+			void _validateRaster(const std::vector<std::string>&data_rasters) const;
+			// DocString: FMTAreaParser::_openVectorFile
 			/**
 			@brief Open a vector file and return a dataset if all mandatory fields are present, throwing otherwise, filling the field indices.
 			@param[in,out] themes_fields the theme field indices.
@@ -525,11 +525,11 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] themes the themes.
 			@return the dataset.
 			*/
-			GDALDataset* openVectorFile(std::map<int, int>&themes_fields, int& age_field, int& lock_field, int& area_field,
+			GDALDataset* _openVectorFile(std::map<int, int>&themes_fields, int& age_field, int& lock_field, int& area_field,
 				const std::string& data_vectors, const std::string& agefield, const std::string& areafield, const std::string& lockfield,
 				const std::vector<Core::FMTTheme>& themes) const;
 			#ifdef FMTWITHOSI
-			// DocString: FMTAreaParser::getMultipolygons
+			// DocString: FMTAreaParser::_getMultipolygons
 			/**
 			@brief Aggregate the polygons of a vector file into multipolygons, one per operating area.
 			@param[in] operatingareas the operating areas.
@@ -543,12 +543,12 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] minimal_area the minimal area below which a feature is not selected.
 			@return the multipolygons.
 			*/
-			std::vector<OGRMultiPolygon>getMultipolygons(const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
+			std::vector<OGRMultiPolygon>_getMultipolygons(const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 											  const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 											  const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 											  double areafactor = 1, std::string lockfield = "",
 											  double minimal_area = 0.0) const;
-			// DocString: FMTAreaParser::getNeighborsFromPolygons
+			// DocString: FMTAreaParser::_getNeighborsFromPolygons
 			/**
 			@brief Calculate the neighbors of each operating area from multipolygons and a buffer size.
 			@param[in] polygons the polygons.
@@ -556,11 +556,11 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] buffersize the buffer width used to determine the shared perimeter.
 			@return the operating areas with their neighbors filled.
 			*/
-			std::vector<Heuristics::FMTOperatingArea> getNeighborsFromPolygons(const std::vector<OGRPolygon*>&polygons,
+			std::vector<Heuristics::FMTOperatingArea> _getNeighborsFromPolygons(const std::vector<OGRPolygon*>&polygons,
 																			std::vector<Heuristics::FMTOperatingArea> operatingareas,
 																	const double& buffersize) const;
 
-			// DocString: FMTAreaParser::getClustersFromPolygons
+			// DocString: FMTAreaParser::_getClustersFromPolygons
 			/**
 			@brief Return the potential clusters of operating areas from polygons and a maximal clustering distance.
 			@param[in] polygons the polygons.
@@ -568,7 +568,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] maximaldistance the maximal clustering distance.
 			@return the operating area clusters.
 			*/
-			std::vector<Heuristics::FMTOperatingAreaCluster> getClustersFromPolygons(const std::vector<OGRPolygon*>&polygons,
+			std::vector<Heuristics::FMTOperatingAreaCluster> _getClustersFromPolygons(const std::vector<OGRPolygon*>&polygons,
 																		const std::vector<Heuristics::FMTOperatingArea>& operatingareas,const double& maximaldistance) const;
 			// DocString: FMTAreaParser::_isMapWithSameThemes
 			/**
@@ -580,7 +580,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			bool _isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_themes,
 				const std::string& p_VectorsMap) const;
 		#endif
-			// DocString: FMTAreaParser::getFMTforestfromlayer
+			// DocString: FMTAreaParser::_getFMTforestfromlayer
 			/**
 			@brief Rasterize a layer and return the corresponding forest.
 			@param[in] layer the layer.
@@ -591,8 +591,8 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] fittoforel if true aligns with the Quebec FOREL rasters.
 			@return the forest.
 			*/
-			Spatial::FMTForest getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
-			// DocString: FMTAreaParser::subsetLayer
+			Spatial::FMTForest _getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
+			// DocString: FMTAreaParser::_subsetLayer
 			/**
 			@brief Return a layer with only the non null features of a layer.
 			@param[in,out] layer the layer.
@@ -601,7 +601,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] areafield the area field name.
 			@return the subset layer.
 			*/
-			OGRLayer* subsetLayer(OGRLayer*layer, const std::vector<Core::FMTTheme>& themes,
+			OGRLayer* _subsetLayer(OGRLayer*layer, const std::vector<Core::FMTTheme>& themes,
 								const std::string& agefield, const std::string& areafield) const;
 	#endif
 			

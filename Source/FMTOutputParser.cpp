@@ -15,11 +15,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser
 {
-	const boost::regex FMTOutputParser::rxoutput=boost::regex("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTOutputParser::rxsource = boost::regex("(\\*SOURCE)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTOutputParser::rxtar = boost::regex("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTOutputParser::rxgrp = boost::regex("(\\*GROUP)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTOutputParser::rxoutputconstant = boost::regex("([^\\[]*)(\\[[\\s\\t]*)(\\-?[0-9])([\\s\\t]*\\])", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOutputParser::m_rxoutput=boost::regex("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOutputParser::m_rxsource = boost::regex("(\\*SOURCE)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOutputParser::m_rxtar = boost::regex("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOutputParser::m_rxgrp = boost::regex("(\\*GROUP)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTOutputParser::m_rxoutputconstant = boost::regex("([^\\[]*)(\\[[\\s\\t]*)(\\-?[0-9])([\\s\\t]*\\])", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 
        FMTOutputParser::FMTOutputParser():FMTParser()
@@ -27,7 +27,7 @@ namespace Parser
 		    setSection(Core::FMTsection::Outputs);
             }
 
-	   void FMTOutputParser::appendToOutput(
+	   void FMTOutputParser::_appendToOutput(
 		   const std::string& strvalue,
 		   const int& outputid,
 		   const int& themetarget,
@@ -143,13 +143,13 @@ namespace Parser
 			   }
 		   }catch (...)
 		   {
-			   _exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line), "FMTOutputParser::appendToOutput", __LINE__, __FILE__, m_section);
+			   _exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line), "FMTOutputParser::_appendToOutput", __LINE__, __FILE__, m_section);
 		   }
 	
 	   }
 
 
-		void FMTOutputParser::readNFill(std::vector<Core::FMTOutput>* outputs, 
+		void FMTOutputParser::_readNFill(std::vector<Core::FMTOutput>* outputs, 
 					const std::vector<Core::FMTTheme>& themes,
 					const std::vector<Core::FMTAction>& actions,
 					const Core::FMTYields& ylds,const Core::FMTConstants& constants,
@@ -184,7 +184,7 @@ namespace Parser
 							{
 								boost::smatch kmatch;
 								const std::string outline = line + " ";
-								if (boost::regex_search(outline, kmatch, rxoutput))
+								if (boost::regex_search(outline, kmatch, m_rxoutput))
 								{
 									if (!sources.empty() || (processing_level && !insource))
 									{
@@ -250,14 +250,14 @@ namespace Parser
 									boost::trim_right(description);
 									insource = false;
 								}
-								if (boost::regex_search(line, kmatch, rxgrp))
+								if (boost::regex_search(line, kmatch, m_rxgrp))
 								{
 									std::string groupname(kmatch[3]);
 									boost::trim(groupname);
 									lastgroup = groupname;
 									insource = false;
 								}
-								else if (boost::regex_search(line, kmatch, rxsource) || insource)
+								else if (boost::regex_search(line, kmatch, m_rxsource) || insource)
 								{
 									std::string rest;
 									if (insource && line.find("*SOURCE") == std::string::npos)
@@ -371,7 +371,7 @@ namespace Parser
 												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 													name + " at line " + std::to_string(m_line),"FMTOutputParser::read", __LINE__, __FILE__, m_section);
 											}
-											appendToOutput(
+											_appendToOutput(
 												std::to_string(value),
 												outputid,
 												themetarget,
@@ -417,7 +417,7 @@ namespace Parser
 											{
 												//need to use get equation to simplify output!!!
 												std::vector<Core::FMTOutput>::const_iterator it = std::find_if(outputs->begin(), outputs->end(), Core::FMTOutputComparator(strsrc));
-												if (it != outputs->end()||boost::regex_search(strsrc, constantmatch, rxoutputconstant))
+												if (it != outputs->end()||boost::regex_search(strsrc, constantmatch, m_rxoutputconstant))
 												{
 													lastoutput = sources.size() + 1;
 													Core::FMTOutput targetoutput;
@@ -495,7 +495,7 @@ namespace Parser
 												else if (ylds.isYld(strsrc))//isYld(ylds,strsrc,m_section))
 												{
 													//sources.push_back(Core::FMTOutputSource(Core::FMTotar::timeyld, 0, strsrc,"",outputid,themetarget));
-													appendToOutput(
+													_appendToOutput(
 														strsrc,
 														outputid,
 														themetarget,
@@ -579,7 +579,7 @@ namespace Parser
 												}
 												if (isValid(rest))
 												{
-													if (boost::regex_search(rest, kmatch, rxtar))
+													if (boost::regex_search(rest, kmatch, m_rxtar))
 													{
 														if (!std::string(kmatch[25]).empty())
 														{
@@ -820,7 +820,7 @@ namespace Parser
 			-------------------------------------------*/
 			}catch(...)
 			{
-				_exhandler->raiseFromCatch("Output "+name +" In " + m_location + " at line " + std::to_string(m_line),"FMTOutputParser::readNFill", __LINE__, __FILE__,m_section);
+				_exhandler->raiseFromCatch("Output "+name +" In " + m_location + " at line " + std::to_string(m_line),"FMTOutputParser::_readNFill", __LINE__, __FILE__,m_section);
 			}
 		}
 
@@ -830,7 +830,7 @@ namespace Parser
             {
 			std::vector<Core::FMTOutput>outputs;
 			try {
-				readNFill(&outputs,themes,actions,ylds,constants,location);
+				_readNFill(&outputs,themes,actions,ylds,constants,location);
 			}catch (...)
 				{
 				_exhandler->raiseFromCatch("In " + m_location + " at line " + std::to_string(m_line),"FMTOutputParser::read", __LINE__, __FILE__,m_section);
@@ -846,7 +846,7 @@ namespace Parser
 		{
 			std::vector<Core::FMTOutput>outputs = oldoutputs;
 			try {
-				readNFill(&outputs,themes,actions,ylds,constants,location);
+				_readNFill(&outputs,themes,actions,ylds,constants,location);
 				//This part remove all outputs parsed from file that are not in outputsname
 				if (!outputsnames.empty())
 				{
