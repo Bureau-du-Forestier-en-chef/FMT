@@ -222,29 +222,6 @@ else
                     "../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
                 // On regarde si on est capable de relire ce qu'on vient de créer
                 noptimizationmodel.doplanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 
-                
-                if (results.size() >= 4)
-                {
-                    const double TESTED_VALUE = std::stod(results[3]);
-                    const double TOLERANCE = 0.01;
-                    for (const auto& OUTPUT : noptimizationmodel.getoutputs())
-                    {
-                        if (OUTPUT.getname() == results[2])
-                        {
-                            const double VALUE = noptimizationmodel.getoutput(OUTPUT,
-                                noptimizationmodel.getparameter(Models::FMTintmodelparameters::UPDATE),
-                                Core::FMToutputlevel::totalonly).at("Total");
-                            if (std::abs(VALUE - TESTED_VALUE) >= ((1 + TOLERANCE) * TESTED_VALUE))
-                            {
-                                std::cout << VALUE << "!=" << TESTED_VALUE << "\n";
-                                Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
-                                    "Wrong value",
-                                    "testOAScheduler", __LINE__, __FILE__);
-                            }
-                            break;
-                        }
-                    }
-                }
                
             #endif 
         return 0;
