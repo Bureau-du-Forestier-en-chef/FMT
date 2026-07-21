@@ -967,7 +967,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 				//_logger->logTime();
 			}
 			readstart = getClock();
-			std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
+			std::map<Core::FMTsection, std::string>bases = _getPrimary(primarym_location);
 
 			if (!readarea)
 			{
@@ -1154,7 +1154,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 		std::vector<std::vector<Core::FMTSchedule>>schedules(models.size());
 		try {
 			const boost::filesystem::path primary_path(primarym_location);
-			const std::map<Core::FMTsection, std::string>bases = getPrimary(primarym_location);
+			const std::map<Core::FMTsection, std::string>bases = _getPrimary(primarym_location);
 			FMTScheduleParser scheduleparser;
 			scheduleparser.passInExceptionHandler(_exhandler);
 			std::vector<Models::FMTModel>::const_iterator model_it = std::find_if(models.begin(), models.end(), Models::FMTModelComparator("ROOT"));

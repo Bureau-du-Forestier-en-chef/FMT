@@ -30,7 +30,7 @@ namespace Parser{
 
 FMTActionParser::FMTActionParser() : FMTParser()
     {
-	setSection(Core::FMTsection::Action);
+	_setSection(Core::FMTsection::Action);
 	}
 
 	std::string FMTActionParser::_getBounds(
@@ -84,7 +84,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 			mask = mask.substr(0, mask.size() - 1);
 			for (const std::string yldname : yields)
 			{
-				if (!isYld(ylds, yldname, Core::FMTsection::Action)) continue;
+				if (!_isYld(ylds, yldname, Core::FMTsection::Action)) continue;
 			}
 		}catch (...)
 			{
@@ -136,10 +136,10 @@ FMTActionParser::FMTActionParser() : FMTParser()
 			std::vector<Core::FMTSerie> allseries;
 			if (FMTParser::tryOpening(actionstream, location))
 			{
-				std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(actionstream, themes, constants);
+				std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::_getCleanLinewfor(actionstream, themes, constants);
 				while (!Lines.empty())
 				{
-					std::string line = getLine(Lines);
+					std::string line = _getLine(Lines);
 					if (!line.empty())
 					{
 						boost::smatch kmatch;
@@ -388,7 +388,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 								"FMTActionParser::getactionsidsofmodelyields", __LINE__, __FILE__, Core::FMTsection::Action);
 						}else {
 							//test to int!
-							const int idofaction = getNum<int>(root.get<std::string>(action.getName() + ".id"));
+							const int idofaction = _getNum<int>(root.get<std::string>(action.getName() + ".id"));
 							if (idofaction== FMTGCBMGROWTHID || idofaction == FMTGCBMUNKNOWNID) //|| idofaction == FMTGCBMDEATHID)
 								{
 								_exhandler->raise(Exception::FMTinvalid_number,"cannot use GCBM actions id "+std::to_string(FMTGCBMGROWTHID)+" or "+ std::to_string(FMTGCBMUNKNOWNID) + " or " + std::to_string(FMTGCBMDEATHID) + " at line " + std::to_string(m_line),
@@ -478,7 +478,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
         {
 		std::vector<Core::FMTAction*>all_pointers;
 		try {
-			const std::vector<std::string>response = sameAs(all_set);
+			const std::vector<std::string>response = _sameAs(all_set);
 			for(const std::string& actname : response)
 				{
 				all_pointers.push_back(&(*(std::find_if(actions.begin(), actions.end(), Core::FMTActionComparator(actname)))));

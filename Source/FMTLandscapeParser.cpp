@@ -37,7 +37,7 @@ namespace Parser
 	FMTLandscapeParser::FMTLandscapeParser() :
     FMTParser()
         {
-		setSection(Core::FMTsection::Landscape);
+		_setSection(Core::FMTsection::Landscape);
         }
 
     std::map<std::string,double>FMTLandscapeParser::_getIndexes(std::string indexm_line,const Core::FMTConstants& constants)
@@ -57,7 +57,7 @@ namespace Parser
 					{
 						std::string index_value = std::string(kmatch[3]);
 						boost::trim(index_value);
-						indexes[std::string(kmatch[1])] = getNum<double>(index_value, constants);
+						indexes[std::string(kmatch[1])] = _getNum<double>(index_value, constants);
 					}
 				}
 			}
@@ -88,7 +88,7 @@ namespace Parser
 			tempid = unknownID;
 		}
 		else {
-			tempid = getNum<size_t>(theme, constants);
+			tempid = _getNum<size_t>(theme, constants);
 		}
 		++unknownID;
 
@@ -143,7 +143,7 @@ namespace Parser
 		if (!targetTheme.empty())
 		{
 			ctx.aggregatename = std::string(kmatch[17]);
-			ctx.pasttheme = getNum<int>(targetTheme, constants) - 1;
+			ctx.pasttheme = _getNum<int>(targetTheme, constants) - 1;
 
 			if (static_cast<size_t>(ctx.pasttheme) >= themes.size())
 			{
@@ -290,7 +290,7 @@ namespace Parser
 		boost::smatch preDeclaredMatch;
 		if (boost::regex_search(line, preDeclaredMatch, FMTLandscapeParser::m_rxPreAttributes)) {
 			context.state = ParseState::IN_PRE_DECLARATION;
-			int themeID = getNum<int>(std::string(preDeclaredMatch[4]), constants);
+			int themeID = _getNum<int>(std::string(preDeclaredMatch[4]), constants);
 			context.currentKey = std::to_string(themeID);
 			return true;
 		}
@@ -326,8 +326,8 @@ namespace Parser
 		size_t id = 0;
         for(const std::string& location : locations)
             {
-            GDALDataset* dataset = getDataset(location);
-			const std::vector<std::string>categories = getCat(dataset);
+            GDALDataset* dataset = _getDataset(location);
+			const std::vector<std::string>categories = _getCat(dataset);
             themes.push_back(Core::FMTTheme(categories,id,start,""));
 			//themes.back().passinobject(*this);
             start+=static_cast<int>(categories.size());
@@ -347,11 +347,11 @@ namespace Parser
 		std::vector<Core::FMTTheme>themes;
 		try {
 			//GDALAllRegister();
-			GDALDataset* dataset = getVectorDataset(location);
-			OGRLayer * layer = getLayer(dataset, 0);
+			GDALDataset* dataset = _getVectorDataset(location);
+			OGRLayer * layer = _getLayer(dataset, 0);
 			std::map<int, int>themes_fields;
 			int age, area, lock;
-			getWSFields(layer, themes_fields, age, area, lock);
+			_getWSFields(layer, themes_fields, age, area, lock);
 			OGRFeature *feature;
 			layer->ResetReading();
 			std::vector<std::vector<std::string>>themesattributes(themes_fields.size(), std::vector<std::string>());
@@ -402,10 +402,10 @@ namespace Parser
 	
 			if (FMTParser::tryOpening(landstream, location))
 			{
-				std::queue<FMTParser::FMTLineInfo> Lines = FMTParser::getCleanLinewfor(landstream, themes, constants);
+				std::queue<FMTParser::FMTLineInfo> Lines = FMTParser::_getCleanLinewfor(landstream, themes, constants);
 				while (!Lines.empty())
 				{
-					const std::string line = getLine(Lines);
+					const std::string line = _getLine(Lines);
 					if (!line.empty())
 					{
 						if (_processPreDeclarationLine(line, preContext, constants)) {

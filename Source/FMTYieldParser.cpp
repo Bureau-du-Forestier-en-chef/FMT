@@ -48,7 +48,7 @@ const boost::regex FMTYieldParser::m_rxyieldsolo = boost::regex("^\\s*(?!\\d+\\b
 
 FMTYieldParser::FMTYieldParser():FMTParser()
         {
-		setSection(Core::FMTsection::Yield);
+		_setSection(Core::FMTsection::Yield);
         }
 
 Core::FMTyldtype FMTYieldParser::_getYldType(const std::string& value) const
@@ -284,7 +284,7 @@ double FMTYieldParser::_getNumwithproportion(const std::string& value,const Core
 		{
 			factor = proportions.at(std::min(static_cast<int>(proportions.size()) - 1, location));
 		}
-		return getNum<double>(value, constants)*factor;
+		return _getNum<double>(value, constants)*factor;
 	}
 	catch (...)
 	{
@@ -321,13 +321,13 @@ Core::FMTData FMTYieldParser::_getEq(const std::string& basestr,
 			for (std::string token : tokens)
 			{
 				boost::trim(token);
-				if (isValid(token))
+				if (_isValid(token))
 				{
 					double number = 0;
 					std::string source_value(token);
-					if (isNum(token) || constants.isConstant(token))
+					if (_isNum(token) || constants.isConstant(token))
 					{
-						number = getNum<double>(token, constants);
+						number = _getNum<double>(token, constants);
 					}
 					else if (!Core::FMTOperator(token).valid() && !Core::FMTFunctionCall(token).valid() && token != "(" && token != ")")
 					{
@@ -474,10 +474,10 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 		size_t overrideid = 1;
 		if (FMTParser::tryOpening(yieldstream, location))
 		{
-			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(yieldstream, themes, constants);
+			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::_getCleanLinewfor(yieldstream, themes, constants);
 			while (!Lines.empty())
 			{
-				const std::string line = getLine(Lines);
+				const std::string line = _getLine(Lines);
 				if (!line.empty())
 				{
 					lineerror = line;
@@ -525,7 +525,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 							//size_t proportion_id = 0;
 							for (const std::string& value : values)
 							{
-								proportion.push_back(getNum<double>(value) / 100.0);
+								proportion.push_back(_getNum<double>(value) / 100.0);
 							}
 							continue;
 						}
@@ -544,11 +544,11 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 							}
 							else if (!sided)
 							{
-								if (!isNum(values.at(0), constants))
+								if (!_isNum(values.at(0), constants))
 								{
 									continue;
 								}
-								const int newbase = getNum<int>(values[0], constants);
+								const int newbase = _getNum<int>(values[0], constants);
 								const std::vector<int>& bases = actualyield->second->getBases();
 								if (std::find(bases.begin(), bases.end(), newbase) == bases.end())
 								{
@@ -562,7 +562,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									const std::string& value = values.at(id);
 									if(passednames.find(yldname)==passednames.end())
 									{
-										if (!isNum(value, constants))
+										if (!_isNum(value, constants))
 										{
 											continue;
 										}
@@ -585,10 +585,10 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								_checkPreexisting(dump);
 								if (actualyield->second->empty())
 								{
-									actualyield->second->pushBase(getNum<int>(values[0], constants));
+									actualyield->second->pushBase(_getNum<int>(values[0], constants));
 								}
 								const int location = static_cast<int>(actualyield->second->size());
-								if (!isNum(values.at(1),constants))
+								if (!_isNum(values.at(1),constants))
 									{
 									continue;
 									}
@@ -611,13 +611,13 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 							}
 							else if (!sided)
 							{
-								if (!isNum(values.at(0), constants))
+								if (!_isNum(values.at(0), constants))
 								{
 									continue;
 								}
 								if (actualyield->second->empty())
 								{
-									actualyield->second->pushBase(getNum<int>(values[0], constants));
+									actualyield->second->pushBase(_getNum<int>(values[0], constants));
 									values.erase(values.begin());
 									int id = 0;
 									for (const std::string& yldname : yldsnames)
@@ -628,7 +628,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									}
 								}
 								else {
-									const int newbase = getNum<int>(values[0], constants);
+									const int newbase = _getNum<int>(values[0], constants);
 									values.erase(values.begin());
 									for (int base = actualyield->second->getLastBase(); base <= newbase; ++base)
 									{
@@ -640,7 +640,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 											double thevalue = actualyield->second->getLastValue(yldname);
 											if (base == newbase)
 											{
-												thevalue = getNum<double>(value, constants);
+												thevalue = _getNum<double>(value, constants);
 											}
 											actualyield->second->pushData(yldname, thevalue);
 											++id;
@@ -651,7 +651,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 
 							}
 							else {
-								if (isNum(values.at(0),constants,false))
+								if (_isNum(values.at(0),constants,false))
 								{
 									int id = 0;
 									for (const std::string& value : values)
@@ -678,7 +678,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 										std::vector<std::string>sources;
 										std::vector<bool>stacking;
 										const std::string percentage = boost::trim_copy(std::string(discountmatch[3]));
-										double valueper = getNum<double>(percentage, constants);
+										double valueper = _getNum<double>(percentage, constants);
 										const std::string dopercentage = std::string(discountmatch[4]);
 										if (dopercentage.find("%") != std::string::npos)
 										{
@@ -687,18 +687,18 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 										yielddata.push_back(valueper);
 										stacking.push_back(false);
 										std::string yperperiod = boost::trim_copy(std::string(discountmatch[6]));
-										yielddata.push_back(getNum<double>(yperperiod, constants));
+										yielddata.push_back(_getNum<double>(yperperiod, constants));
 										stacking.push_back(false);
 										sources.push_back(boost::trim_copy(std::string(discountmatch[9])));
 										stacking.push_back(true);
 										actualyield->second->pushData(yldname, Core::FMTData(yielddata, Core::FMTyieldparserop::FMTdiscountfactor, sources, stacking));
 									}
 									else {
-										if (!isNum(values.at(0), constants))
+										if (!_isNum(values.at(0), constants))
 											{
 											continue;
 											}
-										actualyield->second->pushBase(getNum<int>(values[0], constants));
+										actualyield->second->pushBase(_getNum<int>(values[0], constants));
 										values.erase(values.begin());
 										int id = 0;
 										for (const std::string& value : values)
@@ -763,9 +763,9 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									std::vector<bool>stacking;
 									for (size_t id = 0; id < values.size(); ++id)
 									{
-										if (isNum(values[id]) || constants.isConstant(values[id]))
+										if (_isNum(values[id]) || constants.isConstant(values[id]))
 										{
-											const double value = getNum<double>(values[id], constants);
+											const double value = _getNum<double>(values[id], constants);
 											cvalues.push_back(value);
 											stacking.push_back(false);
 										}
@@ -891,9 +891,9 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 				for (const std::string& index : indexvalues)
 				{
 					indexerror = index;
-					if (isNum(index) || constants.isConstant(index))
+					if (_isNum(index) || constants.isConstant(index))
 						{
-						handler_values[index] = getNum<double>(index,constants);
+						handler_values[index] = _getNum<double>(index,constants);
 						continue;
 						}
 					if (theme.isIndex(attribute,index))
@@ -981,7 +981,7 @@ void FMTYieldParser::_cleanUp(Core::FMTYields& yields,const std::vector<Core::FM
 							{
 								numbers[data_loc] = handler_values.at(source);
 							}
-							else if (isNum(source))
+							else if (_isNum(source))
 							{
 								numbers[data_loc] = std::stod(source);
 							}

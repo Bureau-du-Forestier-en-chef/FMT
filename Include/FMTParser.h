@@ -107,7 +107,7 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		*/
 		void setHeader(const std::string& header);
 		#ifdef FMTWITHGDAL
-		// DocString: FMTParser::getWSFields
+		// DocString: FMTParser::_getWSFields
 		/**
 		@brief Create an OGR vector dataset based on a driver name and a location.
 		@param[in] location the location of the dataset.
@@ -263,12 +263,12 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		// DocString: FMTParser::m_MostRecentFile
 		///The most recent file time read by this parser.
 		mutable std::time_t m_MostRecentFile;
-		// DocString: FMTParser::setSection
+		// DocString: FMTParser::_setSection
 		/**
 		@brief Set the section member of the parser.
 		@param[in] section the section to set.
 		*/
-		void setSection(const Core::FMTsection& section) const;
+		void _setSection(const Core::FMTsection& section) const;
 	#ifdef FMTWITHGDAL
 		// DocString: FMTParser::getallGDALdrivernames
 		/**
@@ -277,7 +277,7 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] testcreation if true only returns drivers that support creation.
 		@return the GDAL drivers.
 		*/
-		std::vector<GDALDriver*> getAllGDALDrivers(const char* spatialtype, bool testcreation = true) const;
+		std::vector<GDALDriver*> _getAllGDALDrivers(const char* spatialtype, bool testcreation = true) const;
 		// DocString: FMTParser::getGDALExtensions
 		/**
 		@brief Return the GDAL extensions organized by driver for a given spatial type.
@@ -286,22 +286,22 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@return the GDAL extensions organized by driver.
 		*/
 		std::vector<std::vector<std::string>>getGDALExtensions(const char* spatialtype, bool testcreation = true) const;
-		// DocString: FMTParser::setCategories
+		// DocString: FMTParser::_setCategories
 		/**
 		@brief Write the categories in the band information.
 		@param[in,out] band the raster band.
 		@param[in] categories the categories.
 		*/
-		void setCategories(GDALRasterBand* band, const std::vector<std::string>& categories) const;
-		// DocString: FMTAreaParser::getProjTransform
+		void _setCategories(GDALRasterBand* band, const std::vector<std::string>& categories) const;
+		// DocString: FMTAreaParser::_getProjTransform
 		/**
 		@brief Return a coordinate transformation for a layer, optionally fitting to FOREL.
 		@param[in] baselayer the base layer.
 		@param[in] fittoforel if true fits to FOREL.
 		@return the coordinate transformation.
 		*/
-		OGRCoordinateTransformation* getProjTransform(OGRLayer* baselayer, bool fittoforel = true) const;
-		// DocString: FMTAreaParser::getTransFormMemLayerCopy
+		OGRCoordinateTransformation* _getProjTransform(OGRLayer* baselayer, bool fittoforel = true) const;
+		// DocString: FMTAreaParser::_getTransFormMemLayerCopy
 		/**
 		@brief Create a memory dataset copying a layer with a new field, optionally with a new spatial reference.
 		@param[in] baselayer the base layer.
@@ -309,14 +309,14 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] fieldname the new field name.
 		@return the memory dataset.
 		*/
-		GDALDataset* getTransFormMemLayerCopy(OGRLayer* baselayer, const OGRSpatialReference* newreference, const std::string& fieldname) const;
-		// DocString: FMTParser::getFORELSpatialRef
+		GDALDataset* _getTransFormMemLayerCopy(OGRLayer* baselayer, const OGRSpatialReference* newreference, const std::string& fieldname) const;
+		// DocString: FMTParser::_getFORELSpatialRef
 		/**
 		@brief Return the spatial reference used for FORELs in Quebec.
 		@return the FOREL spatial reference.
 		*/
-		std::unique_ptr<OGRSpatialReference> getFORELSpatialRef() const;
-		// DocString: FMTParser::createDataset
+		std::unique_ptr<OGRSpatialReference> _getFORELSpatialRef() const;
+		// DocString: FMTParser::_createDataset
 		/**
 		@brief Create an empty GDAL dataset for a layer.
 		@tparam T the layer value type.
@@ -327,38 +327,38 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@return the created dataset.
 		*/
 		template<typename T>
-		GDALDataset* createDataset(const std::string& location, const Spatial::FMTLayer<T>& layer, const int datatypeid, std::string format = "GTiff") const;
-		// DocString: FMTParser::getDataset
+		GDALDataset* _createDataset(const std::string& location, const Spatial::FMTLayer<T>& layer, const int datatypeid, std::string format = "GTiff") const;
+		// DocString: FMTParser::_getDataset
 		/**
 		@brief Open a GDAL dataset in read only from a location, throwing on error.
 		@param[in] location the location.
 		@return the dataset.
 		*/
-		GDALDataset* getDataset(const std::string& location) const;
-		// DocString: FMTParser::getVectorDataset
+		GDALDataset* _getDataset(const std::string& location) const;
+		// DocString: FMTParser::_getVectorDataset
 		/**
 		@brief Open a GDAL vector dataset in read only from a location, throwing on error.
 		@param[in] location the location.
 		@return the dataset.
 		*/
-		GDALDataset* getVectorDataset(const std::string& location) const;
-		// DocString: FMTParser::getLayer
+		GDALDataset* _getVectorDataset(const std::string& location) const;
+		// DocString: FMTParser::_getLayer
 		/**
 		@brief Open a GDAL layer from a vector dataset by its id, throwing on error.
 		@param[in] dataset the dataset.
 		@param[in] id the layer id.
 		@return the layer.
 		*/
-		OGRLayer* getLayer(GDALDataset* dataset, int id) const;
-		// DocString: FMTParser::getBand
+		OGRLayer* _getLayer(GDALDataset* dataset, int id) const;
+		// DocString: FMTParser::_getBand
 		/**
 		@brief Open a GDAL raster band from a dataset.
 		@param[in] dataset the dataset.
 		@param[in] bandid the band id.
 		@return the raster band.
 		*/
-		GDALRasterBand* getBand(GDALDataset* dataset, int bandid = 1) const;
-		// DocString: FMTParser::createBand
+		GDALRasterBand* _getBand(GDALDataset* dataset, int bandid = 1) const;
+		// DocString: FMTParser::_createBand
 		/**
 		@brief Create a GDAL raster band in a dataset with categories.
 		@param[in] dataset the dataset.
@@ -366,24 +366,24 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] bandid the band id.
 		@return the raster band.
 		*/
-		GDALRasterBand* createBand(GDALDataset* dataset, const std::vector<std::string>& categories, int bandid = 1) const;
-		// DocString: FMTParser::getCat
+		GDALRasterBand* _createBand(GDALDataset* dataset, const std::vector<std::string>& categories, int bandid = 1) const;
+		// DocString: FMTParser::_getCat
 		/**
 		@brief Return the categories of a dataset for a given band.
 		@param[in] dataset the dataset.
 		@param[in] bandid the band id.
 		@return the categories.
 		*/
-		std::vector<std::string> getCat(GDALDataset* dataset, int bandid = 1) const;
-		// DocString: FMTParser::getOverview
+		std::vector<std::string> _getCat(GDALDataset* dataset, int bandid = 1) const;
+		// DocString: FMTParser::_getOverview
 		/**
 		@brief Return an overview of a raster band.
 		@param[in] band the raster band.
 		@param[in] view the overview index.
 		@return the overview raster band.
 		*/
-		GDALRasterBand* getOverview(GDALRasterBand* band, int view = 1) const;
-		// DocString: FMTParser::getWSFields
+		GDALRasterBand* _getOverview(GDALRasterBand* band, int view = 1) const;
+		// DocString: FMTParser::_getWSFields
 		/**
 		@brief Fill up the field ids of the themes, age, area and lock of a layer.
 		@param[in] layer the layer.
@@ -395,29 +395,29 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] areafield the area field name.
 		@param[in] lockfield the lock field name.
 		*/
-		void getWSFields(OGRLayer* layer, std::map<int, int>& themes, int& age, int& area, int& lock, std::string agefield = "", std::string areafield = "", std::string lockfield = "") const;
-		// DocString: FMTParser::createVectorMemoryDs
+		void _getWSFields(OGRLayer* layer, std::map<int, int>& themes, int& age, int& area, int& lock, std::string agefield = "", std::string areafield = "", std::string lockfield = "") const;
+		// DocString: FMTParser::_createVectorMemoryDs
 		/**
 		@brief Create a vector memory dataset.
 		@return the memory dataset.
 		*/
-		GDALDataset* createVectorMemoryDs() const;
+		GDALDataset* _createVectorMemoryDs() const;
 	#endif
 	
-		// DocString: FMTParser::isValidFile
+		// DocString: FMTParser::_isValidFile
 		/**
 		@brief Check if a file location is valid.
 		@param[in] location the location.
 		@return true if the file is valid else false.
 		*/
-		bool isValidFile(const std::string& location) const;
-		// DocString: FMTParser::isValid
+		bool _isValidFile(const std::string& location) const;
+		// DocString: FMTParser::_isValid
 		/**
 		@brief Check if a line is valid and clean it.
 		@param[in] line the line.
 		@return true if the line is valid else false.
 		*/
-		bool isValid(const std::string& line) const;
+		bool _isValid(const std::string& line) const;
 		// DocString: FMTParser::regexLoop
 		/**
 		@brief Capture a for loop from a line and return the variables to loop on.
@@ -434,19 +434,19 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@return the split strings.
 		*/
 		std::vector<std::string>spliter(std::string strmask, const boost::regex& xspliter) const;
-		// DocString: FMTParser::clearComments
+		// DocString: FMTParser::_clearComments
 		/**
 		@brief Clear the comments from a line and fill up the comment member.
 		@param[in,out] line the line.
 		*/
-		void clearComments(std::string& line) const;
-		// DocString: FMTParser::upper
+		void _clearComments(std::string& line) const;
+		// DocString: FMTParser::_upper
 		/**
 		@brief Convert a string to upper case.
 		@param[in] lowercases the string to convert.
 		@return the upper case string.
 		*/
-		std::string upper(const std::string& lowercases) const;
+		std::string _upper(const std::string& lowercases) const;
 		// DocString: FMTParser::returnInclude
 		/**
 		@brief Return the next lines to be read by the parser, considering included files.
@@ -455,10 +455,10 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] p_ForOut the output of the for loops unroll.
 		@return a queue of lines to process.
 		*/
-		virtual std::queue<FMTLineInfo> tryInclude(const std::vector<Core::FMTTheme>& p_themes, const Core::FMTConstants& p_cons,
+		virtual std::queue<FMTLineInfo> _tryInclude(const std::vector<Core::FMTTheme>& p_themes, const Core::FMTConstants& p_cons,
 															std::queue<FMTLineInfo>p_ForOut) const;
 
-		// DocString: FMTParser::getCleanLinewfor
+		// DocString: FMTParser::_getCleanLinewfor
 		/**
 		@brief Get a clean line considering for loops when reading the file.
 		@param[in,out] p_stream the file stream.
@@ -466,16 +466,16 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] p_cons the model constants.
 		@return a queue of lines to process.
 		*/
-		virtual std::queue<FMTLineInfo> getCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTTheme>& p_themes,
+		virtual std::queue<FMTLineInfo> _getCleanLinewfor(std::ifstream& p_stream, const std::vector<Core::FMTTheme>& p_themes,
 																const Core::FMTConstants& p_cons) const;
-		// DocString: FMTParser::getAllLines
+		// DocString: FMTParser::_getAllLines
 		/**
 		@brief Get all the lines of a file.
 		@param[in,out] p_stream the file stream.
 		@return a queue of lines to process.
 		*/
-		std::queue<FMTLineInfo> getAllLines(std::ifstream& p_stream) const;
-		// DocString: FMTParser::processForLoopsNInclude
+		std::queue<FMTLineInfo> _getAllLines(std::ifstream& p_stream) const;
+		// DocString: FMTParser::_processForLoopsNInclude
 		/**
 		@brief Process the for loops and include lines.
 		@param[in] p_themes the model themes.
@@ -483,18 +483,18 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] p_AllLines all the lines read from the file.
 		@return a queue of lines to process.
 		*/
-		std::queue<FMTLineInfo> processForLoopsNInclude(
+		std::queue<FMTLineInfo> _processForLoopsNInclude(
 			const std::vector<Core::FMTTheme>& p_themes,
 			const Core::FMTConstants& p_cons,
 			std::queue<FMTLineInfo>p_AllLines) const;
-		// DocString: FMTParser::isNum
+		// DocString: FMTParser::_isNum
 		/**
 		@brief Return true if the value is a number.
 		@param[in] value the value.
 		@return true if the value is a number else false.
 		*/
-		bool isNum(std::string value) const;
-		// DocString: FMTParser::isNum
+		bool _isNum(std::string value) const;
+		// DocString: FMTParser::_isNum
 		/**
 		@brief Return true if the value is a number, raising if it is not a valid number when throwerror is true.
 		@param[in] value the value.
@@ -502,8 +502,8 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] throwerror if true raises on a non valid number.
 		@return true if the value is a number else false.
 		*/
-		bool isNum(const std::string& value, const Core::FMTConstants& constant, bool throwerror = true) const;
-		// DocString: FMTParser::getNum
+		bool _isNum(const std::string& value, const Core::FMTConstants& constant, bool throwerror = true) const;
+		// DocString: FMTParser::_getNum
 		/**
 		@brief Return a numeric value from a string based on the constants and a period.
 		@tparam T the numeric type.
@@ -513,8 +513,8 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@return the numeric value.
 		*/
 		template<typename T>
-		T getNum(const std::string& value, const Core::FMTConstants& constant, int period = 0) const;
-		// DocString: FMTParser::getNum
+		T _getNum(const std::string& value, const Core::FMTConstants& constant, int period = 0) const;
+		// DocString: FMTParser::_getNum
 		/**
 		@brief Return a numeric value from a string.
 		@tparam T the numeric type.
@@ -523,8 +523,8 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@return the numeric value.
 		*/
 		template<typename T>
-		T getNum(const std::string& value, bool omitnumtest = false) const;
-		// DocString: FMTParser::tryFillNumber
+		T _getNum(const std::string& value, bool omitnumtest = false) const;
+		// DocString: FMTParser::_tryFillNumber
 		/**
 		@brief Try to get a number from a string, returning false on failure.
 		@tparam T the numeric type.
@@ -535,7 +535,7 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@return true if the number is filled else false.
 		*/
 		template<typename T>
-		bool tryFillNumber(T& number, const std::string& value, const Core::FMTConstants& constant, int period = 0) const;
+		bool _tryFillNumber(T& number, const std::string& value, const Core::FMTConstants& constant, int period = 0) const;
 		// DocString: FMTParser::bounds
 		/**
 		@brief Return a FMTBounds from a value based on the constants and a section.
@@ -554,21 +554,21 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@return the base operators.
 		*/
 		std::array<std::string, 5>getBaseOperators() const;
-		// DocString: FMTParser::sameAs
+		// DocString: FMTParser::_sameAs
 		/**
 		@brief Handle the _sameAs keyword.
 		@param[in] allset the set string.
 		@return the resulting strings.
 		*/
-		std::vector<std::string> sameAs(const std::string& allset) const;
-		// DocString: FMTParser::getPrimary
+		std::vector<std::string> _sameAs(const std::string& allset) const;
+		// DocString: FMTParser::_getPrimary
 		/**
 		@brief Return the file locations of the different sections from a primary file.
 		@param[in] primarylocation the primary file location.
 		@return a map of section to file location.
 		*/
-		std::map<Core::FMTsection, std::string> getPrimary(const std::string& primarylocation);
-		// DocString: FMTParser::isYld
+		std::map<Core::FMTsection, std::string> _getPrimary(const std::string& primarylocation);
+		// DocString: FMTParser::_isYld
 		/**
 		@brief Check if a value is a valid yield.
 		@param[in] p_ylds the yield section.
@@ -577,9 +577,9 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] p_throwError if true raises if the value is not a yield.
 		@return true if the value is a yield else false.
 		*/
-		bool isYld(const Core::FMTYields& p_ylds, const std::string& p_value,
+		bool _isYld(const Core::FMTYields& p_ylds, const std::string& p_value,
 			Core::FMTsection pm_section, bool p_throwError = true) const;
-		// DocString: FMTParser::isAct
+		// DocString: FMTParser::_isAct
 		/**
 		@brief Check if a value is an action.
 		@param[in] section the section.
@@ -587,8 +587,8 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] action the value.
 		@return true if the value is an action else false.
 		*/
-		bool isAct(Core::FMTsection section, const std::vector<Core::FMTAction>& actions, std::string action) const;
-		// DocString: FMTParser::setSpecs
+		bool _isAct(Core::FMTsection section, const std::vector<Core::FMTAction>& actions, std::string action) const;
+		// DocString: FMTParser::_setSpecs
 		/**
 		@brief Set the specifications of one or multiple specs and return the rest of the line.
 		@param[in] section the section.
@@ -599,8 +599,8 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] line the line.
 		@return the rest of the line.
 		*/
-		std::string setSpecs(Core::FMTsection section, Core::FMTkwor key, const Core::FMTYields& ylds, const Core::FMTConstants& constants, std::vector<Core::FMTSpec>& specs, const std::string& line);
-		// DocString: FMTParser::setSpec
+		std::string _setSpecs(Core::FMTsection section, Core::FMTkwor key, const Core::FMTYields& ylds, const Core::FMTConstants& constants, std::vector<Core::FMTSpec>& specs, const std::string& line);
+		// DocString: FMTParser::_setSpec
 		/**
 		@brief Set the specification of a spec and return the rest of the line.
 		@param[in] section the section.
@@ -611,7 +611,7 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] line the line.
 		@return the rest of the line.
 		*/
-		std::string setSpec(Core::FMTsection section, Core::FMTkwor key, const Core::FMTYields& ylds, const Core::FMTConstants& constants, Core::FMTSpec& spec, const std::string& line);
+		std::string _setSpec(Core::FMTsection section, Core::FMTkwor key, const Core::FMTYields& ylds, const Core::FMTConstants& constants, Core::FMTSpec& spec, const std::string& line);
 		// DocString: FMTParser::readCsv
 		/**
 		@brief Read a CSV file from a location using a separator.
@@ -620,7 +620,7 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@return a vector of vector of lines.
 		*/
 		std::vector<std::vector<std::string>>readCsv(const std::string& location, const char& separator);
-		// DocString: FMTParser::getPerBound
+		// DocString: FMTParser::_getPerBound
 		/**
 		@brief Return the period bound of an input.
 		@param[in] p_lower the lower bound.
@@ -628,10 +628,10 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] p_constants the constants.
 		@return the period bound.
 		*/
-		Core::FMTPerBounds getPerBound(const std::string& p_lower,
+		Core::FMTPerBounds _getPerBound(const std::string& p_lower,
 			const std::string& p_upper,
 			const Core::FMTConstants& p_constants) const;
-		// DocString: FMTParser::setPeriodWithBounds
+		// DocString: FMTParser::_setPeriodWithBounds
 		/**
 		@brief Set the periods of a spec from a lower and upper bound.
 		@param[in,out] p_spec the spec.
@@ -639,11 +639,11 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] p_upper the upper bound.
 		@param[in] p_constants the constants.
 		*/
-		void setPeriodWithBounds(Core::FMTSpec& p_spec,
+		void _setPeriodWithBounds(Core::FMTSpec& p_spec,
 			const std::string& p_lower,
 			const std::string& p_upper,
 			const Core::FMTConstants& p_constants) const;
-		// DocString: FMTParser::setPeriods
+		// DocString: FMTParser::_setPeriods
 		/**
 		@brief Set the periods of a spec from a parsed period string.
 		@param[in,out] p_spec the spec.
@@ -651,10 +651,10 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] p_constants the constants.
 		@return true if the periods are set else false.
 		*/
-		bool setPeriods(Core::FMTSpec& p_spec,
+		bool _setPeriods(Core::FMTSpec& p_spec,
 			const std::string& p_periods,
 			const Core::FMTConstants& p_constants) const;
-		// DocString: FMTParser::getForLoops
+		// DocString: FMTParser::_getForLoops
 		/**
 		@brief Fill up the for loops queue with the targeted variables.
 		@param[in] p_line the for loop header line.
@@ -662,40 +662,40 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		@param[in] p_cons the model constants.
 		@return the for loop values with the target as key.
 		*/
-		std::map<std::string, std::vector<std::string>> getForLoops(const std::string& p_line,
+		std::map<std::string, std::vector<std::string>> _getForLoops(const std::string& p_line,
 			const std::vector<Core::FMTTheme>& p_themes,
 			const Core::FMTConstants& p_cons) const;
-		// DocString: FMTParser::getForLoops
+		// DocString: FMTParser::_getForLoops
 		/**
 		@brief Unroll the for loops in the queue and set the results in the queue.
 		@param[in] p_themes the model themes.
 		@param[in] p_constants the model constants.
 		@param[in,out] p_queue the resulting queue of lines.
 		*/
-		void processForLoops(const std::vector<Core::FMTTheme>& p_themes,
+		void _processForLoops(const std::vector<Core::FMTTheme>& p_themes,
 			const Core::FMTConstants& p_constants,
 			std::queue<FMTLineInfo>& p_queue) const;
-		// DocString: FMTParser::isForLoops
+		// DocString: FMTParser::_isForLoops
 		/**
 		@brief Return true if a line is a for loop header.
 		@param[in] p_line the line.
 		@return true if the line is a for loop else false.
 		*/
-		bool isForLoops(const std::string& p_line) const;
-		// DocString: FMTParser::isForLoopsEnd
+		bool _isForLoops(const std::string& p_line) const;
+		// DocString: FMTParser::_isForLoopsEnd
 		/**
 		@brief Return true if a line is the end of a for loop.
 		@param[in] p_line the line.
 		@return true if the line is the end of a for loop else false.
 		*/
-		bool isForLoopsEnd(const std::string& p_line) const;
+		bool _isForLoopsEnd(const std::string& p_line) const;
 		// DocString: FMTParser:::getLine
 		/**
 		@brief Get and pop the front line of a queue.
 		@param[in,out] p_Lines the queue of lines.
 		@return the front line value.
 		*/
-		std::string getLine(std::queue<FMTLineInfo>& p_Lines) const;
+		std::string _getLine(std::queue<FMTLineInfo>& p_Lines) const;
 	private:
 		friend class Testing::UnitTestFMTParser;
 		// DocString: FMTParser::m_VECTOR_THEME

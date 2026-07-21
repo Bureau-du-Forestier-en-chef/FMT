@@ -23,7 +23,7 @@ const boost::regex FMTConstantParser::m_rxconstant = boost::regex("^([\\s\\t]*)(
 FMTConstantParser::FMTConstantParser():
 	FMTParser()
     {
-	setSection(Core::FMTsection::Constants);
+	_setSection(Core::FMTsection::Constants);
     }
 
 bool FMTConstantParser::_fillConstants(Core::FMTConstants& p_constants,
@@ -61,9 +61,9 @@ bool FMTConstantParser::_fillConstants(Core::FMTConstants& p_constants,
 					strid.erase(0, 1);
 					values.push_back(p_constants.get<double>(strid, period));
 				}
-				else if (isNum(splited.at(id)))
+				else if (_isNum(splited.at(id)))
 				{
-					values.push_back(getNum<double>(splited.at(id)));
+					values.push_back(_getNum<double>(splited.at(id)));
 				}
 			}
 			if (!values.empty())
@@ -88,24 +88,24 @@ bool FMTConstantParser::_fillConstants(Core::FMTConstants& p_constants,
 	return true;
 	}
 
-std::queue<FMTParser::FMTLineInfo> FMTConstantParser::getCleanLinewfor(std::ifstream& p_stream,
+std::queue<FMTParser::FMTLineInfo> FMTConstantParser::_getCleanLinewfor(std::ifstream& p_stream,
 	const std::vector<Core::FMTTheme>& p_themes,
 	const Core::FMTConstants& p_cons) const
 {
 	std::queue<FMTLineInfo> lines;
 	try {
-		std::queue<FMTLineInfo> TempQueue = getAllLines(p_stream);
+		std::queue<FMTLineInfo> TempQueue = _getAllLines(p_stream);
 		Core::FMTConstants constantsCopy(p_cons);
 		while (!TempQueue.empty())
 			{
 			lines.push(TempQueue.front());
-			const std::string LINE = getLine(TempQueue);
+			const std::string LINE = _getLine(TempQueue);
 			_fillConstants(constantsCopy, LINE,true);
 			}
-		lines = processForLoopsNInclude(p_themes, constantsCopy, lines);
+		lines = _processForLoopsNInclude(p_themes, constantsCopy, lines);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTConstantParser::getCleanLinewfor",
+		_exhandler->raiseFromCatch("", "FMTConstantParser::_getCleanLinewfor",
 			__LINE__, __FILE__, m_section);
 		}
 	return lines;
@@ -124,11 +124,11 @@ Core::FMTConstants FMTConstantParser::read(const std::string& location)
 			std::vector<Core::FMTTheme>themes;
 			if (FMTParser::tryOpening(CONstream, location))
 			{
-				std::queue<FMTParser::FMTLineInfo>Lines = getCleanLinewfor(CONstream, 
+				std::queue<FMTParser::FMTLineInfo>Lines = _getCleanLinewfor(CONstream, 
 										themes, constants);
 				while (!Lines.empty())
 					{
-					const std::string LINE = getLine(Lines);
+					const std::string LINE = _getLine(Lines);
 					_fillConstants(constants, LINE);
 					}
 			}

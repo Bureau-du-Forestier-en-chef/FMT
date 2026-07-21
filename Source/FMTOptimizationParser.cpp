@@ -43,7 +43,7 @@ namespace Parser
 		FMTParser()/*,
 		m_ineach()*/
 		{
-		setSection(Core::FMTsection::Optimize);
+		_setSection(Core::FMTsection::Optimize);
 		}
 
 	bool FMTOptimizationParser::_setEnding(Core::FMTConstraint& constraint,std::string& line, const Core::FMTConstants& constants)
@@ -71,7 +71,7 @@ namespace Parser
 					}
 				
 			}else {
-				const double variale_value = getNum<double>(numvalue, constants);
+				const double variale_value = _getNum<double>(numvalue, constants);
 				std::string yieldtarget(target);
 				if (target == "_GOAL")
 				{
@@ -127,7 +127,7 @@ namespace Parser
 					if (!simple_value.empty())
 					{
 						boost::trim(simple_value);
-						if (isNum(simple_value, p_constants,false))
+						if (_isNum(simple_value, p_constants,false))
 						{
 							if (p_constants.isConstant(simple_value) && p_constants.length(simple_value) > 1)
 								{
@@ -135,8 +135,8 @@ namespace Parser
 									"Periodic based not supported "+ simple_value + " at line " + std::to_string(m_line),
 									"FMTOptimizationParser::_getEquation", __LINE__, __FILE__, m_section);
 								}
-							simple_value = std::to_string(getNum<double>(simple_value, p_constants));
-						}else if (isYld(p_yields, simple_value, Core::FMTsection::Optimize,false) &&
+							simple_value = std::to_string(_getNum<double>(simple_value, p_constants));
+						}else if (_isYld(p_yields, simple_value, Core::FMTsection::Optimize,false) &&
 							std::find_if(p_outputs.begin(), p_outputs.end(), Core::FMTOutputComparator(simple_value))== p_outputs.end())
 						{
 							specialCases[simplificaiton.at(simplificaiton.size() - 2)] =
@@ -175,7 +175,7 @@ namespace Parser
 
 			}
 			boost::trim(simple_value);
-			if (isNum(simple_value, p_constants, false))
+			if (_isNum(simple_value, p_constants, false))
 			{
 				if (p_constants.isConstant(simple_value) && p_constants.length(simple_value) > 1)
 				{
@@ -183,8 +183,8 @@ namespace Parser
 						"Periodic based not supported " + simple_value + " at line " + std::to_string(m_line),
 						"FMTOptimizationParser::_getEquation", __LINE__, __FILE__, m_section);
 				}
-				simple_value = std::to_string(getNum<double>(simple_value, p_constants));
-			}else if(isYld(p_yields, simple_value,Core::FMTsection::Optimize,false)&&
+				simple_value = std::to_string(_getNum<double>(simple_value, p_constants));
+			}else if(_isYld(p_yields, simple_value,Core::FMTsection::Optimize,false)&&
 				std::find_if(p_outputs.begin(), p_outputs.end(), Core::FMTOutputComparator(simple_value)) == p_outputs.end())
 				{
 				specialCases[simplificaiton.at(simplificaiton.size() - 2)] =
@@ -283,7 +283,7 @@ namespace Parser
 						const std::string upperperiod = std::string(special_match[11]) + std::string(special_match[12]);
 						if (!lowerperiod.empty() || !upperperiod.empty())
 						{		
-							bounding = getPerBound(lowerperiod, upperperiod, constants);
+							bounding = _getPerBound(lowerperiod, upperperiod, constants);
 						}
 						output_name = std::string(special_match[4]) + std::string(special_match[13]);
 
@@ -336,7 +336,7 @@ namespace Parser
 					
 					if (!target_period.empty())
 					{
-						inttarget_period = getNum<int>(target_period, constants);
+						inttarget_period = _getNum<int>(target_period, constants);
 						bounding = Core::FMTPerBounds(Core::FMTsection::Optimize, inttarget_period, inttarget_period);
 					}
 					//copy the output and the specify the attribute and the periods!!!
@@ -407,16 +407,16 @@ namespace Parser
 			else {
 				boost::split(splitted, inargument, boost::is_any_of(","));
 				actionoraggregates=boost::trim_copy(splitted.at(0));
-				isAct(m_section, p_actions, actionoraggregates);
+				_isAct(m_section, p_actions, actionoraggregates);
 				const std::string naming = constrainttypestr + "(" + inargument + ")";
 				if (constrainttypestr == "_SIZE")
 				{
 					constrainttype = Core::FMTconstrainttype::FMTspatialsize;
-					lowerneighborsize = getNum<double>(boost::trim_copy(splitted.at(1)), p_constants);
+					lowerneighborsize = _getNum<double>(boost::trim_copy(splitted.at(1)), p_constants);
 				}
 				else if (constrainttypestr == "_ADJACENCY")
 				{
-					lowergreenup = getNum<double>(boost::trim_copy(splitted.at(1)), p_constants);
+					lowergreenup = _getNum<double>(boost::trim_copy(splitted.at(1)), p_constants);
 					constrainttype = Core::FMTconstrainttype::FMTspatialadjacency;
 				}
 				else if (constrainttypestr == "_GROUP")
@@ -425,11 +425,11 @@ namespace Parser
 					if (boost::regex_search(boost::trim_copy(splitted.at(1)), ThMatch,
 						boost::regex("(_TH)([\\d]*)")))
 					{
-						ThemeId = getNum<double>(ThMatch[2], p_constants);
-						lowergreenup = getNum<double>(
+						ThemeId = _getNum<double>(ThMatch[2], p_constants);
+						lowergreenup = _getNum<double>(
 							boost::trim_copy(splitted.at(2)), p_constants);
 					}else {
-						lowergreenup = getNum<double>(
+						lowergreenup = _getNum<double>(
 							boost::trim_copy(splitted.at(1)), p_constants);
 						}
 					constrainttype = Core::FMTconstrainttype::FMTSpatialGroup;
@@ -457,7 +457,7 @@ namespace Parser
 			}
 			double lower = 0;
 			double upper = 0;
-			const double rhs = getNum<double>(rhsstring, p_constants);
+			const double rhs = _getNum<double>(rhsstring, p_constants);
 			_fillBounds(senseofconstraint, rhs,lower,upper);
 			const std::string target("RHS");
 			
@@ -538,7 +538,7 @@ namespace Parser
 					{
 						lower_variation.erase(std::remove(lower_variation.begin(), lower_variation.end(), '%'), lower_variation.end());
 					}
-					lower_var = getNum<double>(lower_variation, p_constants);
+					lower_var = _getNum<double>(lower_variation, p_constants);
 				}
 				//std::string high_variation = std::string(kmatch[10]);
 				std::string high_variation = std::string(kmatch[13]);
@@ -548,7 +548,7 @@ namespace Parser
 					{
 						high_variation.erase(std::remove(high_variation.begin(), high_variation.end(), '%'), high_variation.end());
 					}
-					higher_var = getNum<double>(high_variation, p_constants);
+					higher_var = _getNum<double>(high_variation, p_constants);
 				}
 				const std::string yld_name = "Variation";
 				constraint.addBounds(Core::FMTYldBounds(Core::FMTsection::Optimize, yld_name, higher_var, lower_var));
@@ -640,7 +640,7 @@ namespace Parser
 				for (const std::string& value : splitted)
 					{
 					Core::FMTConstraint newconstraint(constraint);
-					if (!setPeriods(newconstraint, value, constants))
+					if (!_setPeriods(newconstraint, value, constants))
 						{
 						_exhandler->raise(Exception::FMTexc::FMTemptybound,
 							" for " + value,
@@ -674,7 +674,7 @@ namespace Parser
 				const std::string keyword(specialmatch[2]);
 				if (keyword=="_SETGLOBALSCHEDULE")
 					{
-					const double scheduleweight = getNum<double>(std::string(specialmatch[4]), p_constants);
+					const double scheduleweight = _getNum<double>(std::string(specialmatch[4]), p_constants);
 					objective.addBounds(Core::FMTYldBounds(Core::FMTsection::Optimize,keyword,scheduleweight, scheduleweight));
 					}
 
@@ -751,7 +751,7 @@ namespace Parser
 				}
 				objective.setOutput(final_output);
 				
-				setPeriodWithBounds(objective, lower_period, upper_period, p_constants);
+				_setPeriodWithBounds(objective, lower_period, upper_period, p_constants);
 			}
 		}catch (...)
 			{
@@ -813,7 +813,7 @@ namespace Parser
 					std::queue<FMTParser::FMTLineInfo>Lines  = _getOptline(optimizestream, p_themes, p_constants, p_outputs);
 					while (!Lines.empty())
 					{
-						std::string line = getLine(Lines);
+						std::string line = _getLine(Lines);
 						if (!line.empty())
 						{
 							FMToptimizationsection newsection = _getSection(line);
@@ -1092,10 +1092,10 @@ namespace Parser
 		{
 		std::queue<FMTLineInfo>FinalLines;
 		try {
-			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(stream, themes, cons);
+			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::_getCleanLinewfor(stream, themes, cons);
 			while (!Lines.empty())
 				{
-				const std::string line = getLine(Lines);
+				const std::string line = _getLine(Lines);
 				if (line.find("_EACH") != std::string::npos)
 					{
 					std::queue<std::string> EACH_LINES = _getEachLines(line, cons, outputs, themes);

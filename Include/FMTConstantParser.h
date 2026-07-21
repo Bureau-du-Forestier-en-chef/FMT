@@ -80,7 +80,7 @@ class FMTEXPORT FMTConstantParser : public FMTParser
 		*/
 		bool _fillConstants(Core::FMTConstants& p_constants, 
 			const std::string& p_input, bool p_allowNonValid = false) const;
-		// DocString: FMTParser::getCleanLinewfor
+		// DocString: FMTParser::_getCleanLinewfor
 		/**
 		@brief Get a clean line considering for loops and a temporary fill of constants.
 		@param[in,out] p_stream the file stream.
@@ -88,7 +88,7 @@ class FMTEXPORT FMTConstantParser : public FMTParser
 		@param[in] p_cons the model constants.
 		@return a queue of lines to process.
 		*/
-		std::queue<FMTLineInfo> getCleanLinewfor(std::ifstream& p_stream, 
+		std::queue<FMTLineInfo> _getCleanLinewfor(std::ifstream& p_stream, 
 			const std::vector<Core::FMTTheme>& p_themes,
 			const Core::FMTConstants& p_cons) const override;
 
