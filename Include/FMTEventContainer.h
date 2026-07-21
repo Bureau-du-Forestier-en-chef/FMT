@@ -467,15 +467,15 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
         std::set<FMTEvent> m_events;
         //Actually not needed
         ///Returns an iterator pointing to the first element in the container which is considered to go after val.
-        const_iterator upperBound(const int& period) const;
+        const_iterator _upperBound(const int& period) const;
         ///Returns an iterator pointing to the first element in the container which is considered to go after val.
-        const_iterator upperBound(const int& period,const FMTCoordinate& maxxycoord) const;
+        const_iterator _upperBound(const int& period,const FMTCoordinate& maxxycoord) const;
         ///Returns an iterator pointing to the first element in the container which is not considered to go before val.
         ///(i.e., either it is equivalent or goes after)
-        const_iterator lowerBound(const int& period) const;
+        const_iterator _lowerBound(const int& period) const;
         ///Returns an iterator pointing to the first element in the container which is not considered to go before val.
         ///(i.e., either it is equivalent or goes after)
-        const_iterator lowerBound(const int& period, const FMTCoordinate& minxycoord) const;
+        const_iterator _lowerBound(const int& period, const FMTCoordinate& minxycoord) const;
 		///Update the container by erasing a coordinate from the iterators
 		///(i.e., either it is equivalent or goes after)
         ///Now it's splitting automatically if a coord is not within a distance of 1
@@ -523,10 +523,11 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
 
 		class FMTEventIteratorSorter
 		{
-		FMTCoordinate	basecoordinate;
 		public:
 			FMTEventIteratorSorter(const FMTCoordinate& coordinate);
 			bool operator() (const FMTEventContainer::const_iterator& eventit1, const FMTEventContainer::const_iterator& eventit2) const;
+		private:
+		FMTCoordinate	m_basecoordinate;
 		};
 
 

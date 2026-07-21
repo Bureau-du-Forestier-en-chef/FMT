@@ -72,7 +72,7 @@ namespace Core
 		std::unique_ptr<Ort::Session> m_sessionPtr;
 	#endif
 		static const float m_UNKNOWN_DISTURBANCE_CODE;
-		const std::string m_JSON_PROP_MODEL_TYPE = "m_modelType";
+		const std::string m_JSON_PROP_MODEL_TYPE = "modelType";
 		const std::string m_JSON_PROP_MODEL_YIELDS = "modelYields";
 		const std::string m_JSON_PROP_MODEL_OUTPUTS = "outputNames";
 		const std::string m_JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";

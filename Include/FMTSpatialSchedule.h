@@ -683,7 +683,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		*/
 		void disableSolutionTracker();
 	protected:
-		// DocString: FMTSpatialSchedule::getFromEvents(const Core::FMTConstraint&, const std::vector<Core::FMTAction>&, const int&, const int&)
+		// DocString: FMTSpatialSchedule::_getFromEvents(const Core::FMTConstraint&, const std::vector<Core::FMTAction>&, const int&, const int&)
 		/**
 		@brief Return the line graphs of the events for a constraint, actions and a period range.
 		@param[in] constraint the constraint.
@@ -692,8 +692,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		@param[in] stop the stop period.
 		@return the line graphs.
 		*/
-		std::vector<const Graph::FMTLineGraph*>getFromEvents(const Core::FMTConstraint& constraint, const std::vector<Core::FMTAction>& actions, const int& start, const int& stop) const;
-		// DocString: FMTSpatialSchedule::getFromEvents(const Core::FMTOutputNode&, const std::vector<Core::FMTAction>&, const int&)
+		std::vector<const Graph::FMTLineGraph*>_getFromEvents(const Core::FMTConstraint& constraint, const std::vector<Core::FMTAction>& actions, const int& start, const int& stop) const;
+		// DocString: FMTSpatialSchedule::_getFromEvents(const Core::FMTOutputNode&, const std::vector<Core::FMTAction>&, const int&)
 		/**
 		@brief Return the coordinates present in the events for an output node, actions and a period.
 		@param[in] node the output node.
@@ -701,8 +701,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		@param[in] period the period.
 		@return the coordinates.
 		*/
-		std::vector<FMTCoordinate>getFromEvents(const Core::FMTOutputNode& node, const std::vector<Core::FMTAction>& actions, const int& period) const;
-		// DocString: FMTSpatialSchedule::getOutputFromGraph
+		std::vector<FMTCoordinate>_getFromEvents(const Core::FMTOutputNode& node, const std::vector<Core::FMTAction>& actions, const int& period) const;
+		// DocString: FMTSpatialSchedule::_getOutputFromGraph
 		/**
 		@brief Get the requested output from a line graph into the period values.
 		@param[in] linegraph the line graph.
@@ -716,7 +716,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		@param[in] level the output level.
 		@return a map of names to values.
 		*/
-		std::map<std::string,double> getOutputFromGraph(const Graph::FMTLineGraph& linegraph, const Models::FMTModel & model,
+		std::map<std::string,double> _getOutputFromGraph(const Graph::FMTLineGraph& linegraph, const Models::FMTModel & model,
 			const Core::FMTOutputNode& node, const double* solution,const int&period, const Core::FMTMask& nodemask,
 			boost::unordered_map<Core::FMTMask, double>& nodecache, const Core::FMTTheme*  p_theme,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 		// DocString: FMTSpatialSchedule::getmaximalpatchsizes
@@ -724,7 +724,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		@brief Return the maximal patch size of a vector of spatial actions.
 		*/
 		//std::vector<size_t>getmaximalpatchsizes(const std::vector<FMTspatialaction>& spactions) const;
-		// DocString: FMTSpatialSchedule::inScheduleOperabilities
+		// DocString: FMTSpatialSchedule::_inScheduleOperabilities
 		/**
 		@brief Return true if a development is operable for an action in the schedule operabilities.
 		@param[in] scheduleoperabilities the schedule operabilities.
@@ -733,7 +733,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		@param[in] action the action.
 		@return true if the development is operable else false.
 		*/
-		bool inScheduleOperabilities(const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
+		bool _inScheduleOperabilities(const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
 			Core::FMTDevelopment const* dev,const int& actionid, const Core::FMTAction& action) const;
     private:
 		// DocString: FMTSpatialSchedule::m_scheduleType

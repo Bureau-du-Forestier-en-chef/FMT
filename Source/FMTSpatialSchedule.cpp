@@ -313,7 +313,7 @@ namespace Spatial
 							for (const int& actionid : actiontargets)
 							{
 								if ((actionid > LAST_ACTION_ID || LAST_ACTION_ID < 0) &&
-									((schedule_only && (inScheduleOperabilities(scheduleoperabilities, &active_development, actionid, model.actions.at(actionid))/*selection.operated(action, active_development)*/)) ||
+									((schedule_only && (_inScheduleOperabilities(scheduleoperabilities, &active_development, actionid, model.actions.at(actionid))/*selection.operated(action, active_development)*/)) ||
 										(!schedule_only && active_development.operable(model.actions.at(actionid), model.yields))))
 								{
 									cacheit->second[actionid] = true;
@@ -1424,7 +1424,7 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		}
 
 
-	std::vector<FMTCoordinate>FMTSpatialSchedule::getFromEvents(const Core::FMTOutputNode& node, const std::vector<Core::FMTAction>& actions, const int& period) const
+	std::vector<FMTCoordinate>FMTSpatialSchedule::_getFromEvents(const Core::FMTOutputNode& node, const std::vector<Core::FMTAction>& actions, const int& period) const
 	{
 		//std::vector<const Graph::FMTLineGraph*>graphs;
 		std::vector<FMTCoordinate>coordinates;
@@ -1448,13 +1448,13 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getFromEvents", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_getFromEvents", __LINE__, __FILE__);
 		}
 		return coordinates;
 
 	}
 
-	std::vector<const Graph::FMTLineGraph*>FMTSpatialSchedule::getFromEvents(const Core::FMTConstraint& constraint, const std::vector<Core::FMTAction>& actions, const int& start,const int& stop) const
+	std::vector<const Graph::FMTLineGraph*>FMTSpatialSchedule::_getFromEvents(const Core::FMTConstraint& constraint, const std::vector<Core::FMTAction>& actions, const int& start,const int& stop) const
 		{
 		std::vector<const Graph::FMTLineGraph*>graphs;
 
@@ -1501,12 +1501,12 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getFromEvents", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_getFromEvents", __LINE__, __FILE__);
 			}
 		return graphs;
 		}
 
-std::map<std::string,double> FMTSpatialSchedule::getOutputFromGraph(const Graph::FMTLineGraph& linegraph, const Models::FMTModel & model,
+std::map<std::string,double> FMTSpatialSchedule::_getOutputFromGraph(const Graph::FMTLineGraph& linegraph, const Models::FMTModel & model,
 											 const Core::FMTOutputNode& node, const double* solution, const int&period,
 											const Core::FMTMask& nodemask,
 											boost::unordered_map<Core::FMTMask, double>& nodecache,
@@ -1538,7 +1538,7 @@ std::map<std::string,double> FMTSpatialSchedule::getOutputFromGraph(const Graph:
 	}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::getOutputFromGraph", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_getOutputFromGraph", __LINE__, __FILE__);
 		}
 	return values;
 	}
@@ -1621,7 +1621,7 @@ FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTMaskFilter& p_fil
 	}
 
 
-bool FMTSpatialSchedule::inScheduleOperabilities(const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
+bool FMTSpatialSchedule::_inScheduleOperabilities(const std::vector<boost::unordered_set<Core::FMTDevelopment>>& scheduleoperabilities,
 	Core::FMTDevelopment const* dev, const int& actionid, const Core::FMTAction& action) const
 {
 	try {
@@ -1645,7 +1645,7 @@ bool FMTSpatialSchedule::inScheduleOperabilities(const std::vector<boost::unorde
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::inScheduleOperabilities", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_inScheduleOperabilities", __LINE__, __FILE__);
 	}
 	return false;
 }

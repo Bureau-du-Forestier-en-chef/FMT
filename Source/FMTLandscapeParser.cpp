@@ -172,7 +172,7 @@ namespace Parser
 				ctx.aggregatenames.push_back(std::vector<std::string>());
 			}
 			else {
-				themes[ctx.pasttheme].pushAggregate(ctx.aggregatename);
+				themes[ctx.pasttheme]._pushAggregate(ctx.aggregatename);
 			}
 		}
 	}
@@ -198,7 +198,7 @@ namespace Parser
 			}
 			else if (ctx.pasttheme >= 0)
 			{
-				themes[ctx.pasttheme].pushAggregateValue(ctx.aggregatename, val);
+				themes[ctx.pasttheme]._pushAggregateValue(ctx.aggregatename, val);
 			}
 			else {
 				ctx.aggregatenames[std::distance(ctx.aggregates.begin(),
@@ -467,7 +467,7 @@ namespace Parser
 			themes.shrink_to_fit();
 			for (Core::FMTTheme& theme : themes)
 				{
-				theme.buildAttributeLocations();
+				theme._buildAttributeLocations();
 				}
 			}catch(...)
 				{

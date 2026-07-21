@@ -148,7 +148,7 @@ std::string FMTMask::get(const std::vector<FMTTheme>& themes) const
 	std::string value = "";
     for(const FMTTheme& theme : themes)
         {
-        value += theme.bitsToStr(*this) + " ";
+        value += theme._bitsToStr(*this) + " ";
         }
 	value.pop_back();
     return value;
@@ -218,7 +218,7 @@ void FMTMask::set(const std::vector<FMTTheme>& themes,const std::string& value)
     data.resize(fullsize,false);
     for(const FMTTheme& theme : themes)
         {
-		const boost::dynamic_bitset<uint8_t>bits = theme.strToBits(bases.at(theme.m_id));
+		const boost::dynamic_bitset<uint8_t>bits = theme._strToBits(bases.at(theme.m_id));
 		this->setSubset(theme, bits);
         }
 	//name.shrink_to_fit();
@@ -227,7 +227,7 @@ std::string FMTMask::get(const FMTTheme& theme) const
     {
     //const boost::dynamic_bitset<uint8_t>bits =  this->subset(theme);
     //return theme.bitsToStr(bits);
-	return  theme.bitsToStr(*this);
+	return  theme._bitsToStr(*this);
     }
 
 const std::string& FMTMask::getAttribute(const FMTTheme& p_theme) const
@@ -279,7 +279,7 @@ std::vector<const Core::FMTTheme*> FMTMask::getSelectedThemes(const  std::vector
 
 void FMTMask::set(const FMTTheme& theme,const std::string& value)
     {
-    const boost::dynamic_bitset<uint8_t>sub=theme.strToBits(value);
+    const boost::dynamic_bitset<uint8_t>sub=theme._strToBits(value);
     std::vector<std::string>bases;
     boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
 	bases.at(theme.m_id) = value;
@@ -307,7 +307,7 @@ void FMTMask::update(const std::vector<FMTTheme>& themes)
 	name.clear();
     for(const FMTTheme& THEME : themes)
         {
-        name+= THEME.bitsToStr(*this)+" ";
+        name+= THEME._bitsToStr(*this)+" ";
         }
 	name.pop_back();
     }
@@ -580,7 +580,7 @@ void FMTMask::presolveRef(const FMTMaskFilter& p_filter,
 		name.clear();
 		for (const FMTTheme& theme : p_presolvedThemes)
 			{
-			name += theme.bitsToStr(*this) + " ";
+			name += theme._bitsToStr(*this) + " ";
 			}
 		name.pop_back();
 		if (p_allowReallocation)
@@ -619,7 +619,7 @@ FMTMask FMTMask::postSolve(const FMTMaskFilter& filter,
 		}
 	for (const FMTTheme& theme: basethemes)
 		{
-		newmask.name += theme.bitsToStr(newmask) + " ";
+		newmask.name += theme._bitsToStr(newmask) + " ";
 		}
 	newmask.name.pop_back();
 	//newmask.name.shrink_to_fit();

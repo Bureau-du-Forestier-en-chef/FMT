@@ -254,7 +254,7 @@ namespace Core
 			ar& BOOST_SERIALIZATION_NVP(m_elements);
 		}
 		std::map<std::string, FMTData, cmpYieldString>m_elements;
-		// DocString: FMTComplexYieldHandler::getSources
+		// DocString: FMTComplexYieldHandler::_getSources
 		/**
 		@brief Return the source values of the complex yield.
 		@param[in] srcdata the source data.
@@ -262,7 +262,7 @@ namespace Core
 		@param[out] age_only true if the sources depend only on age.
 		@return the source values.
 		*/
-		std::map<std::string, double> getSources(const std::map<std::string, const std::unique_ptr<FMTYieldHandler>*>& srcdata,
+		std::map<std::string, double> _getSources(const std::map<std::string, const std::unique_ptr<FMTYieldHandler>*>& srcdata,
 			const FMTYieldRequest& request, bool& age_only) const;
 
 		// DocString: FMTComplexYieldHandler::_getData
@@ -288,7 +288,7 @@ namespace Core
 											const std::vector<const std::string*>& p_names,
 											const std::vector<const std::unique_ptr<FMTYieldHandler>*>& p_data);
 
-		// DocString: FMTComplexYieldHandler::getSourcesArray
+		// DocString: FMTComplexYieldHandler::_getSourcesArray
 		/**
 		@brief Return the source values of the complex yield as an array.
 		@param[in] srcdata the source data.
@@ -296,9 +296,9 @@ namespace Core
 		@param[out] age_only true if the sources depend only on age.
 		@return the source values array.
 		*/
-		std::vector<double>getSourcesArray(const std::map<std::string, const std::unique_ptr<FMTYieldHandler>*>& srcdata,
+		std::vector<double>_getSourcesArray(const std::map<std::string, const std::unique_ptr<FMTYieldHandler>*>& srcdata,
 			const FMTYieldRequest& request, bool& age_only) const;
-		// DocString: FMTComplexYieldHandler::toAgeYld
+		// DocString: FMTComplexYieldHandler::_toAgeYld
 		/**
 		@brief Convert the yields to an age yield handler over an age range.
 		@param[in] request the yield request.
@@ -307,7 +307,7 @@ namespace Core
 		@param[in] maxage the maximum age.
 		@return the age yield handler.
 		*/
-		std::unique_ptr<FMTYieldHandler>toAgeYld(const FMTYieldRequest& request,
+		std::unique_ptr<FMTYieldHandler>_toAgeYld(const FMTYieldRequest& request,
 			const std::vector<std::string>& yieldnames, const int& minage, const int& maxage) const;
 		// DocString: FMTComplexYieldHandler::_getRange
 		/**
@@ -435,8 +435,8 @@ namespace Core
 		@return the computed value.
 		*/
 		double _getMin(const FMTData* p_data, const std::string& p_yld, const FMTYieldRequest& p_request) const;
-		std::unordered_set<size_t>overridetabou;
-		size_t overrideindex;
+		std::unordered_set<size_t>m_overridetabou;
+		size_t m_overrideindex;
 		mutable FMTYieldsCache _cache;
 	};
 
