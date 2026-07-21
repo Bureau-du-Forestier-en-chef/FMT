@@ -1,20 +1,20 @@
 #ifdef FMTWITHOSI
 	#include <vector>
-	#include "FMTlpmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTscheduleparser.h"
-	#include "FMTschedule.h"
-	#include "FMToutputnode.h"
-	#include "FMTfreeexceptionhandler.h"
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTScheduleParser.h"
+	#include "FMTSchedule.h"
+	#include "FMTOutputNode.h"
+	#include "FMTFreeExceptionHandler.h"
 #endif
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	Logging::FMTDefaultLogger().logStamp();
+	if (Version::FMTVersion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
 		std::vector<std::string>scenarios;
@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
 			argc = 4;
 		}
 
-		Parser::FMTmodelparser modelparser;
-		modelparser.setdefaultexceptionhandler();
+		Parser::FMTModelParser modelparser;
+		modelparser.setDefaultExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -44,32 +44,32 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
         errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		modelparser.seterrorstowarnings(errors);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
+		modelparser.setErrorsToWarnings(errors);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.0001;
 		for (size_t period = 1; period <= 6; ++period)
 			{
-			optimizationmodel.buildperiod(schedules.at(period-1),true);
+			optimizationmodel.buildPeriod(schedules.at(period-1),true);
 			}
 		for (size_t period = 1; period <= 6; ++period)
 			{
-			optimizationmodel.setsolutionbylp(period,schedules.at(period-1), tolerance);
+			optimizationmodel.setSolutionByLp(period,schedules.at(period-1), tolerance);
 			}
 		if (argc>3)//Got the double for validation!
 			{
 			bool gotovoltotrec = false;
-			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
 				{
-				if (output.getname()=="OVOLTOTREC")
+				if (output.getName()=="OVOLTOTREC")
 					{
 					gotovoltotrec = true;
-					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
-                    Logging::FMTdefaultlogger() << "returned value : "+std::to_string(returnedvalue)+ "\nValue : "+std::to_string(ovoltotrecvalue) << "\n";
+					const double returnedvalue = optimizationmodel.getOutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
+                    Logging::FMTDefaultLogger() << "returned value : "+std::to_string(returnedvalue)+ "\nValue : "+std::to_string(ovoltotrecvalue) << "\n";
 					if ((returnedvalue < (ovoltotrecvalue - 1))||(returnedvalue > (ovoltotrecvalue + 1)))
 						{
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 							"FMTsetsolutionbylp", __LINE__, primarylocation);
 						}
 					break;
@@ -77,13 +77,13 @@ int main(int argc, char *argv[])
 				}
 			if (!gotovoltotrec)
 				{
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
 					"FMTsetsolution", __LINE__, primarylocation);
 				}
 			}
 
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 	#endif
 	return 0;

@@ -1,11 +1,11 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include "FMTmodel.h"
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTModel.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
 #include "Tools.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTFreeExceptionHandler.h"
 #include <set>
 
 int main(int argc, char* argv[])
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 		rastpath = "";
 	}
 
-	Parser::FMTmodelparser ModelParser;
+	Parser::FMTModelParser ModelParser;
 	std::vector<Exception::FMTexc>errors;
 	//errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -66,9 +66,9 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	ModelParser.seterrorstowarnings(errors);
+	ModelParser.setErrorsToWarnings(errors);
 
-	Models::FMTmodel model = ModelParser.readproject(pathPri, { scenarioName }).at(0);
+	Models::FMTModel model = ModelParser.readproject(pathPri, { scenarioName }).at(0);
 
 	std::cout << pathPri << "\n";
 	std::cout << scenarioName << "\n";
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
 
 	if (RESULT.size() != resultSize) {
 		std::cout << std::to_string(RESULT.size()) + "!=" + std::to_string(resultSize);
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
 	}
 

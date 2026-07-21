@@ -13,20 +13,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <Rcpp.h>
 #include <vector>
 #include <map>
-#include "FMTlist.hpp"
-#include "FMTlayer.hpp"
+#include "FMTList.hpp"
+#include "FMTLayer.hpp"
 
 
 
 #define RCPP_DEFINEVECTOR(CLASS) namespace Rcpp{\
 template <> std::vector<CLASS> as(SEXP obj){\
 const int RTYPE = traits::r_sexptype_traits<CLASS>::rtype;\
-Vector<RTYPE> rcppvec(obj);\
+Vector<RTYPE> rcppVec(obj);\
 std::vector<CLASS>newvec;\
-newvec.reserve(rcppvec.size());\
-for(int index = 0; index < rcppvec.size();++index)\
+newvec.reserve(rcppVec.size());\
+for(int index = 0; index < rcppVec.size();++index)\
 {\
-newvec.push_back(rcppvec[index]);\
+newvec.push_back(rcppVec[index]);\
 }\
 return newvec;}\
 template <> SEXP wrap(const std::vector<CLASS>& obj){\
@@ -35,84 +35,84 @@ return Vector<RTYPE>(obj.begin(), obj.end());}}
 
 #define RCPP_DEFINELIST(CLASS) namespace Rcpp{\
 template <> std::vector<CLASS> as(SEXP obj){\
-List listobj(obj);\
+List listObj(obj);\
 std::vector<CLASS>newvec;\
-newvec.reserve(listobj.size());\
-for(int index = 0; index < listobj.size();++index)\
+newvec.reserve(listObj.size());\
+for(int index = 0; index < listObj.size();++index)\
 {\
-newvec.push_back(as<CLASS>(listobj[index]));\
+newvec.push_back(as<CLASS>(listObj[index]));\
 }\
 return newvec;}\
 template <> SEXP wrap(const std::vector<CLASS>& obj){\
-List listobj(obj.size());\
-for(int index = 0; index < listobj.size();++index)\
+List listObj(obj.size());\
+for(int index = 0; index < listObj.size();++index)\
 {\
-listobj[index]=wrap<CLASS>(obj.at(index));\
+listObj[index]=wrap<CLASS>(obj.at(index));\
 }\
-return listobj;}}
+return listObj;}}
 
 #define RCPP_DEFINEPAIR(FIRST,SECOND)namespace Rcpp{\
 template <> std::pair<FIRST,SECOND> as(SEXP obj){\
-Rcpp::List rcpplist(obj);\
-return std::pair<FIRST,SECOND>(as<FIRST>(rcpplist["first"]), as<SECOND>(rcpplist["second"]));}\
+Rcpp::List rcppList(obj);\
+return std::pair<FIRST,SECOND>(as<FIRST>(rcppList["first"]), as<SECOND>(rcppList["second"]));}\
 template <> SEXP wrap(const std::pair<FIRST,SECOND>& obj){\
 return List::create(Named("first") = wrap<FIRST>(obj.first),Named("second") = wrap<SECOND>(obj.second));}}
 
 #define RCPP_DEFINEMAP(KEY,OBJECT)namespace Rcpp{\
 template <> std::map<KEY,OBJECT> as(SEXP obj){\
-List rcpplist(obj);\
+List rcppList(obj);\
 std::map<KEY,OBJECT>newmap;\
-for(int index = 0; index < rcpplist.size();++index)\
+for(int index = 0; index < rcppList.size();++index)\
 {\
-newmap[as<KEY>(as<List>(rcpplist[index])["first"])]=as<OBJECT>(as<List>(rcpplist[index])["second"]);\
+newmap[as<KEY>(as<List>(rcppList[index])["first"])]=as<OBJECT>(as<List>(rcppList[index])["second"]);\
 }\
 return newmap;}\
 template <> SEXP wrap(const std::map<KEY,OBJECT>& obj){\
-List rcpplist(obj.size());\
+List rcppList(obj.size());\
 size_t index = 0;\
 for(const auto& mapobject: obj)\
 {\
-rcpplist[index]=List::create(Named("first")=wrap<KEY>(mapobject.first),Named("second")=wrap<OBJECT>(mapobject.second));\
+rcppList[index]=List::create(Named("first")=wrap<KEY>(mapobject.first),Named("second")=wrap<OBJECT>(mapobject.second));\
 ++index;\
 }\
-return rcpplist;}}
+return rcppList;}}
 
 namespace R
 {
 	template <class T>
 	void define_FMTlist(const char* name)
 		{
-		Rcpp::class_< Core::FMTlist<T> >(name, "@DocString(FMTlist)")
-			.constructor("@DocString(FMTlist())")
-			.method("update", &Core::FMTlist<T>::update,
-				"@DocString(FMTlist::update)")
+		Rcpp::class_< Core::FMTList<T> >(name, "@DocString(FMTList)")
+			.constructor("@DocString(FMTList())")
+			.method("update", &Core::FMTList<T>::update,
+				"@DocString(FMTList::update)")
 			.method("push_back",
-				Core::FMTlist<T>::APIpush_back,
-				"@DocString(FMTyieldhandler::APIpush_back)");
+				Core::FMTList<T>::apiPushBack,
+				"@DocString(FMTYieldHandler::APIpush_back)");
 
 		}
 
 	template <class T>
 	void define_FMTlayer(const char* name)
 		{
-		Rcpp::class_<Spatial::FMTlayer<T>>(name, "@DocString(FMTlayer)")
-				.constructor("@DocString(FMTlayer())")
-				.method("getXSize", &Spatial::FMTlayer<T>::GetXSize,
-					"@DocString(FMTlayer::GetXSize)")
-				.method("getYSize", &Spatial::FMTlayer<T>::GetYSize,
-					"@DocString(FMTlayer::GetYSize)")
-				.method("getgeotransform", &Spatial::FMTlayer<T>::getgeotransform,
-					"@DocString(FMTlayer::getgeotransform)")
-				.method("getprojection", &Spatial::FMTlayer<T>::getprojection,
-					"@DocString(FMTlayer::getprojection)")
-				.method("getmapping", &Spatial::FMTlayer<T>::getmapping,
-					"@DocString(FMTlayer::getmapping)")
-				.method("area", &Spatial::FMTlayer<T>::area,
-					"@DocString(FMTlayer::area)")
-				.method("getcellsize", &Spatial::FMTlayer<T>::getcellsize,
-					"@DocString(FMTlayer::getcellsize)")
-				.method("size", &Spatial::FMTlayer<T>::size,
-					"@DocString(FMTlayer::size)");
+		Rcpp::class_<Spatial::FMTLayer<T>>(name, "@DocString(FMTLayer)")
+				.constructor("@DocString(FMTLayer())")
+				.method("getXSize", &Spatial::FMTLayer<T>::getXSize,
+					"@DocString(FMTLayer::GetXSize)")
+				.method("getYSize", &Spatial::FMTLayer<T>::getYSize,
+					"@DocString(FMTLayer::GetYSize)")
+				.method("getgeotransform", &Spatial::FMTLayer<T>::getGeoTransform,
+					"@DocString(FMTLayer::getgeotransform)")
+				.method("getprojection", &Spatial::FMTLayer<T>::getProjection,
+					"@DocString(FMTLayer::getprojection)")
+				.method("getmapping", &Spatial::FMTLayer<T>::getMapping,
+					"@DocString(FMTLayer::getmapping)")
+				.method("area", &Spatial::FMTLayer<T>::area,
+					"@DocString(FMTLayer::area)")
+				.method("getcellsize", &Spatial::FMTLayer<T>::getCellSize,
+					"@DocString(FMTLayer::getcellsize)")
+				.method("size", &Spatial::FMTLayer<T>::size,
+					"@DocString(FMTLayer::size)");
 		}
 }
 

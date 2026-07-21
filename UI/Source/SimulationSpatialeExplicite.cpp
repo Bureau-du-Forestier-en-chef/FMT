@@ -1,21 +1,21 @@
 #include "stdafx.h"
 #include <sstream>
-#include "FMTforest.h"
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTsesmodel.h"
-#include "FMTareaparser.h"
-#include "FMTscheduleparser.h"
-#include "FMTtransitionparser.h"
-#include "FMTGCBMtransition.h"
-#include "FMToutputnode.h"
+#include "FMTForest.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
+#include "FMTSesModel.h"
+#include "FMTAreaParser.h"
+#include "FMTScheduleParser.h"
+#include "FMTTransitionParser.h"
+#include "FMTGCBMTransition.h"
+#include "FMTOutputNode.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTFormLogger.h"
 #include "FMTForm.h"
-#include "FMTmodel.h"
+#include "FMTModel.h"
 #include "FMTFormCache.h"
 #include "FMTexceptionhandlerwarning.h"
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 #include "SES.h"
 
 namespace Wrapper
@@ -201,7 +201,7 @@ namespace Wrapper
     {
         try
         {
-            std::unique_ptr<Logging::FMTlogger> savedLogger;
+            std::unique_ptr<Logging::FMTLogger> savedLogger;
             {
                 FMTFormLogger* mainLogger = FMTFormCache::GetInstance()->GetFormLogger();
                 if (mainLogger)
@@ -210,7 +210,7 @@ namespace Wrapper
                 }
             }
 
-            const std::string scenarioName = FMTFormCache::GetInstance()->getmodel(scenario).getname();
+            const std::string scenarioName = FMTFormCache::GetInstance()->getModel(scenario).getName();
 
             FMTWrapperCore::SESParameters params = ConvertirParametres(
                 fichierPri, cheminRasters, scenario, contraintes, periodes,
@@ -220,13 +220,13 @@ namespace Wrapper
                 indCarbon, predictoryields, growththemes,
                 scenarioName); 
 
-            Models::FMTmodel selectedModel = FMTFormCache::GetInstance()->getmodel(scenario);
+            Models::FMTModel selectedModel = FMTFormCache::GetInstance()->getModel(scenario);
 
-            const std::vector<Core::FMTschedule> schedules = ObtenirSEQ(fichierPri, scenario);
+            const std::vector<Core::FMTSchedule> schedules = ObtenirSEQ(fichierPri, scenario);
     
             if (savedLogger)
             {
-                selectedModel.passinlogger(savedLogger);
+                selectedModel.passInLogger(savedLogger);
             }
             // Re-acquérir le pointeur valide vers le logger restauré
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
@@ -255,7 +255,7 @@ namespace Wrapper
         }
         catch (...)
         {
-            raisefromcatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
+            raiseFromCatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
             return false;
         }
     }

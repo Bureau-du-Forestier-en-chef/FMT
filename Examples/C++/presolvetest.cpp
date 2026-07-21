@@ -1,18 +1,18 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTmodelparser.h"
-    #include "FMTlpmodel.h"
-    #include "FMTconstraint.h"
-    #include "FMTfreeexceptionhandler.h"
-    #include "FMTexception.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTModelParser.h"
+    #include "FMTLpModel.h"
+    #include "FMTConstraint.h"
+    #include "FMTFreeExceptionHandler.h"
+    #include "FMTException.h"
 #endif
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTDefaultLogger().logStamp();
 	std::string primarylocation;
 	std::string scenario;
 	int scenario_length;
@@ -37,27 +37,27 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
-	modelparser.seterrorstowarnings(errors);
+	Parser::FMTModelParser modelparser;
+	modelparser.setDefaultExceptionHandler();
+	modelparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, scenario);
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,scenario_length);
-	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
-	optimizationmodel.doplanning(true);
-	Models::FMTlpmodel presolvedoptimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, scenario_length);
-	presolvedoptimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
-	presolvedoptimizationmodel.doplanning(true);
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,scenario_length);
+	optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+	optimizationmodel.doPlanning(true);
+	Models::FMTLpModel presolvedoptimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	presolvedoptimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, scenario_length);
+	presolvedoptimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	presolvedoptimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
+	presolvedoptimizationmodel.doPlanning(true);
 	const double nopresolve = optimizationmodel.getObjValue();
 	const double presolve = presolvedoptimizationmodel.getObjValue();
 	if (std::abs(nopresolve - presolve) >= 0.1)
 	{
 		
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);
 	}
 	#endif

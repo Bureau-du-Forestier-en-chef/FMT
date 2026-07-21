@@ -1,19 +1,19 @@
 #include <vector>
 #ifdef FMTWITHGDAL
-#include "FMTactualdevelopment.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTareaparser.h"
-#include "FMTlandscapeparser.h"
-#include "FMTforest.h"
-#include "FMTtheme.h"
-#include "FMTconstants.h"
+#include "FMTActualDevelopment.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTAreaParser.h"
+#include "FMTLandscapeParser.h"
+#include "FMTForest.h"
+#include "FMTTheme.h"
+#include "FMTConstants.h"
 #endif
 
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-    Logging::FMTdefaultlogger().logstamp();
+    Logging::FMTDefaultLogger().logStamp();
     int side;//196
     std::string	themesLocation;
     std::string	pointsLocation;
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     }
     const std::string LOCK_FIELD = "STANLOCK";
 
-    Parser::FMTareaparser areaparser;
+    Parser::FMTAreaParser areaparser;
     std::vector<Exception::FMTexc>errors;
     errors.push_back(Exception::FMTexc::FMTmissingyield);
     errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -46,14 +46,14 @@ int main(int argc, char* argv[])
     errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
     errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
     errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-    areaparser.seterrorstowarnings(errors);
+    areaparser.setErrorsToWarnings(errors);
 
-    Parser::FMTlandscapeparser landScapeParse;
-    const std::vector<Core::FMTtheme> THEMES = landScapeParse.read(Core::FMTconstants(), themesLocation);
+    Parser::FMTLandscapeParser landScapeParse;
+    const std::vector<Core::FMTTheme> THEMES = landScapeParse.read(Core::FMTConstants(), themesLocation);
    
-    const Spatial::FMTforest FOREST = areaparser.vectormaptoFMTforest(pointsLocation,side, THEMES,"AGE","SUPERFICIE",
+    const Spatial::FMTForest FOREST = areaparser.vectormaptoFMTforest(pointsLocation,side, THEMES,"AGE","SUPERFICIE",
                                                                     1,0.0001, LOCK_FIELD,0.0,writeLocation,false);
-    areaparser.write(FOREST.getarea(), writeLocation + "area.are");
+    areaparser.write(FOREST.getArea(), writeLocation + "area.are");
 #endif
 	return 0;
 }

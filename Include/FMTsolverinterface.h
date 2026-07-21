@@ -13,9 +13,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 { 
     
-    //Docstring: FMTsolverinterface
+    // DocString: FMTsolverinterface
     /**
-    *Enumerator used to specify the solver to use when solving the FMTlpmodel
+    @brief Enumerator used to specify the solver to use when solving the FMTLpModel.
     */
 	enum class FMTsolverinterface
 	{

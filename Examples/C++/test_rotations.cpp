@@ -1,14 +1,14 @@
 #include <vector>
 #ifdef FMTWITHOSI
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTscheduleparser.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTconstraint.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTLpModel.h"
+#include "FMTModelParser.h"
+#include "FMTScheduleParser.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTConstraint.h"
+#include "FMTFreeExceptionHandler.h"
 #include <boost/algorithm/string.hpp>
-#include "FMTmask.h"
+#include "FMTMask.h"
 #include "FMTSerie.h"
 #endif
 
@@ -16,9 +16,9 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTDefaultLogger().logStamp();
 
-	if (Version::FMTversion().hasfeature("OSI"))
+	if (Version::FMTVersion().hasFeature("OSI"))
 	{
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 		const std::string scenario = "test";
 		const int length = 20;
 		const int rotation_length = 100;*/
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -43,30 +43,30 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 2);
-		optimizationmodel.doplanning(false);//No solve!
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+		optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 2);
+		optimizationmodel.doPlanning(false);//No solve!
 		std::string fullmask;
-		for (size_t thid = 0; thid < optimizationmodel.getthemes().size(); ++thid)
+		for (size_t thid = 0; thid < optimizationmodel.getThemes().size(); ++thid)
 		{
 			fullmask += "? ";
 		}
 		fullmask.pop_back();
-		const Core::FMTmask mainmask(fullmask, optimizationmodel.getthemes());
+		const Core::FMTMask mainmask(fullmask, optimizationmodel.getThemes());
 		const std::set<Core::FMTSerie>rotations = optimizationmodel.getRotations(mainmask, "REGAPRE");
 			if (static_cast<int>(rotations.size()) != rotation_length)
 			{
-				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 					"presolvetest", __LINE__, primarylocation);
 			}
 		}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 	}
 #endif 
 	return 0;

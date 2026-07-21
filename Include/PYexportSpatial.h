@@ -8,21 +8,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef PYEXPORTSPATIAL_H_INCLUDED
 #define PYEXPORTSPATIAL_H_INCLUDED
 
-#include "FMTcoordinate.h"
-#include "FMTforest.h"
+#include "FMTCoordinate.h"
+#include "FMTForest.h"
 #include "FMTSpatialSchedule.h"
 //#include "FMTspatialaction.h"
-#include "FMTeventcontainer.h"
-//#include "FMTsaschedule.h"
-#include "FMTgraph.hpp"
-//#include "FMTsasolution.h"
+#include "FMTEventContainer.h"
+//#include "FMTSaSchedule.h"
+#include "FMTGraph.hpp"
+//#include "FMTSaSolution.h"
 #include "boost/python.hpp"
 
 namespace Python 
 {
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getforestperiod_overloads, getforestperiod, 1, 2)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getconstraintevaluation_overloads,getconstraintevaluation,2,2)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getobjectivevalue_overloads,getobjectivevalue,2,2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getforestperiod_overloads, getForestPeriod, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getconstraintevaluation_overloads,getConstraintEvaluation,2,2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getobjectivevalue_overloads,getObjectiveValue,2,2)
 void exportSpatial()
     {
     namespace bp = boost::python;
@@ -35,49 +35,49 @@ void exportSpatial()
     "   :synopsis: Spatial module used for Simulation.\n"
     "\n";
 
-    bp::class_<Spatial::FMTcoordinate>("FMTcoordinate", "@DocString(FMTcoordinate)")
+    bp::class_<Spatial::FMTCoordinate>("FMTcoordinate", "@DocString(FMTCoordinate)")
         .def(bp::init<unsigned int,unsigned int>())
-        .def("__lt__",&Spatial::FMTcoordinate::operator <,
-			"@DocString(FMTcoordinate::operator<)")
-        .def("getx",&Spatial::FMTcoordinate::getx,
-			"@DocString(FMTcoordinate::getx)")
-        .def("gety",&Spatial::FMTcoordinate::gety,
-			"@DocString(FMTcoordinate::gety)")
-        .def("getSpatialCoordinate",&Spatial::FMTcoordinate::getSpatialCoordinate,
-			"@DocString(FMTcoordinate::getSpatialCoordinate)")
-        .setattr("__hash__",&boost::pyhash<Spatial::FMTcoordinate>);
+        .def("__lt__",&Spatial::FMTCoordinate::operator <,
+			"@DocString(FMTCoordinate::operator<)")
+        .def("getx",&Spatial::FMTCoordinate::getX,
+			"@DocString(FMTCoordinate::getx)")
+        .def("gety",&Spatial::FMTCoordinate::getY,
+			"@DocString(FMTCoordinate::gety)")
+        .def("getSpatialCoordinate",&Spatial::FMTCoordinate::getSpatialCoordinate,
+			"@DocString(FMTCoordinate::getSpatialCoordinate)")
+        .setattr("__hash__",&boost::pyHash<Spatial::FMTCoordinate>);
 
-    define_FMTlayer<Core::FMTdevelopment>();
-    //Mainly to iter over FMTforest
-    define_pypair<Spatial::FMTcoordinate,Core::FMTdevelopment>();
-    define_pypair<Spatial::FMTcoordinate const,Core::FMTdevelopment>();
-    define_pypair<Spatial::FMTcoordinate,Graph::FMTlinegraph>();
-    define_pypair<Spatial::FMTcoordinate const,Graph::FMTlinegraph>();
-
-
-
-	bp::class_<Spatial::FMTforest, bp::bases<Spatial::FMTlayer<Core::FMTdevelopment>>>("FMTforest", "@DocString(FMTforest)")
-        .def(bp::init<Spatial::FMTforest>())
-        .def("getarea",&Spatial::FMTforest::getarea,
-			"@DocString(FMTforest::getarea)")
-        .def("grow",&Spatial::FMTforest::grow,
-			"@DocString(FMTforest::grow)")
-        .def("getage",&Spatial::FMTforest::getage,
-			"@DocString(FMTforest::getage)")
-         .def("setperiod",&Spatial::FMTforest::setperiod,
-			"@DocString(FMTforest::setperiod)");
+    define_FMTlayer<Core::FMTDevelopment>();
+    //Mainly to iter over FMTForest
+    definePyPair<Spatial::FMTCoordinate,Core::FMTDevelopment>();
+    definePyPair<Spatial::FMTCoordinate const,Core::FMTDevelopment>();
+    definePyPair<Spatial::FMTCoordinate,Graph::FMTLineGraph>();
+    definePyPair<Spatial::FMTCoordinate const,Graph::FMTLineGraph>();
 
 
-     define_pylist<Spatial::FMTforest>();
 
-	bp::class_<Spatial::FMTeventcontainer>("FMTeventcontainer", "@DocString(FMTeventcontainer)")
-		.def(bp::init<Spatial::FMTeventcontainer>());
+	bp::class_<Spatial::FMTForest, bp::bases<Spatial::FMTLayer<Core::FMTDevelopment>>>("FMTforest", "@DocString(FMTForest)")
+        .def(bp::init<Spatial::FMTForest>())
+        .def("getarea",&Spatial::FMTForest::getArea,
+			"@DocString(FMTForest::getarea)")
+        .def("grow",&Spatial::FMTForest::grow,
+			"@DocString(FMTForest::grow)")
+        .def("getage",&Spatial::FMTForest::getAge,
+			"@DocString(FMTForest::getage)")
+         .def("setperiod",&Spatial::FMTForest::setPeriod,
+			"@DocString(FMTForest::setperiod)");
 
-	define_pylist<Spatial::FMTeventcontainer>();
+
+     definePyList<Spatial::FMTForest>();
+
+	bp::class_<Spatial::FMTEventContainer>("FMTeventcontainer", "@DocString(FMTEventContainer)")
+		.def(bp::init<Spatial::FMTEventContainer>());
+
+	definePyList<Spatial::FMTEventContainer>();
 
     /*
-	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTaction>>("FMTspatialaction", "@DocString(FMTspatialaction)")
-        .def(bp::init<Core::FMTaction>())
+	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTAction>>("FMTspatialaction", "@DocString(FMTspatialaction)")
+        .def(bp::init<Core::FMTAction>())
         .add_property("neighbors", bp::make_getter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()),
                      make_setter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()))
         .def_readwrite("green_up",&Spatial::FMTspatialaction::green_up,
@@ -96,13 +96,13 @@ void exportSpatial()
 			"@DocString(FMTspatialaction::adjacency_weight)")
         .def_readwrite("size_weight",&Spatial::FMTspatialaction::size_weight,
 			"@DocString(FMTspatialaction::size_weight)");
-    define_pylist<Spatial::FMTspatialaction>();*/
+    definePyList<Spatial::FMTspatialaction>();*/
 
     
-	//bp::class_<Spatial::FMTsaschedule, boost::noncopyable>("Abstract_FMTsaschedule","@DocString(FMTsaschedule)", bp::no_init);
+	//bp::class_<Spatial::FMTSaSchedule, boost::noncopyable>("Abstract_FMTsaschedule","@DocString(FMTSaSchedule)", bp::no_init);
 
 
-	//bp::class_<Spatial::FMTexponentialschedule, bp::bases<Spatial::FMTsaschedule>>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
+	//bp::class_<Spatial::FMTExponentialSchedule, bp::bases<Spatial::FMTSaSchedule>>("FMTexponentialschedule", "@DocString(FMTExponentialSchedule)")
      //   .def(bp::init<double>());
 
 	/*bp::enum_<Spatial::FMTsamovetype>("FMTsamovetype")
@@ -110,33 +110,33 @@ void exportSpatial()
 		.value("cluster", Spatial::FMTsamovetype::cluster)
 		.value("opt1", Spatial::FMTsamovetype::opt1);
 
-    bp::class_<Spatial::FMTsasolution, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTsasolution", "@DocString(FMTsasolution)")
-        .def("get_stats",&Spatial::FMTsasolution::getsolution_stats, "@DocString(FMTsasolution::getsolution_stats)")
-        .def("getobjfvalue",&Spatial::FMTsasolution::getobjfvalue, "@DocString(FMTsasolution::getobjfvalue)")
-        .def("get_forest_at_period",&Spatial::FMTsasolution::getforestperiod, "@DocString(FMTsasolution::getforestperiod)")
-		.def("get_graphs_outputs", &Spatial::FMTsasolution::getgraphsoutputs);
+    bp::class_<Spatial::FMTSaSolution, bp::bases<Spatial::FMTLayer<Graph::FMTLineGraph>>>("FMTsasolution", "@DocString(FMTSaSolution)")
+        .def("get_stats",&Spatial::FMTSaSolution::getsolution_stats, "@DocString(FMTSaSolution::getsolution_stats)")
+        .def("getobjfvalue",&Spatial::FMTSaSolution::getobjfvalue, "@DocString(FMTSaSolution::getobjfvalue)")
+        .def("get_forest_at_period",&Spatial::FMTSaSolution::getForestPeriod, "@DocString(FMTSaSolution::getForestPeriod)")
+		.def("get_graphs_outputs", &Spatial::FMTSaSolution::getgraphsoutputs);
 
-    define_pylist<Spatial::FMTsasolution>();
+    definePyList<Spatial::FMTSaSolution>();
     */
 
-    define_FMTlayer<Graph::FMTlinegraph>();
+    define_FMTlayer<Graph::FMTLineGraph>();
 
-	bp::class_<Spatial::FMTSpatialSchedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTSpatialSchedule", "@DocString(FMTSpatialSchedule)")
+	bp::class_<Spatial::FMTSpatialSchedule, bp::bases<Spatial::FMTLayer<Graph::FMTLineGraph>>>("FMTSpatialSchedule", "@DocString(FMTSpatialSchedule)")
 		.def(bp::init<Spatial::FMTSpatialSchedule>())
-		.def("getforestperiod", &Spatial::FMTSpatialSchedule::getforestperiod, getforestperiod_overloads(bp::args("period","periodstart"),"@DocString(FMTSpatialSchedule::getforestperiod)"))
-        .def("getoutputbycoordinate", &Spatial::FMTSpatialSchedule::getoutputbycoordinate, "@DocString(FMTSpatialSchedule::getoutputbycoordinate)")
-        .def("getbindingactions", &Spatial::FMTSpatialSchedule::getbindingactions, "@DocString(FMTSpatialSchedule::getbindingactions)")
-        .def("operatecoord", &Spatial::FMTSpatialSchedule::operatecoord, "@DocString(FMTSpatialSchedule::operatecoord)")
-        .def("getconstraintevaluation", &Spatial::FMTSpatialSchedule::getconstraintevaluation, getconstraintevaluation_overloads(bp::args("constraint","model"),"@DocString(FMTSpatialSchedule::getconstraintevaluation)"))
+		.def("getforestperiod", &Spatial::FMTSpatialSchedule::getForestPeriod, getforestperiod_overloads(bp::args("period","periodstart"),"@DocString(FMTSpatialSchedule::getforestperiod)"))
+        .def("getoutputbycoordinate", &Spatial::FMTSpatialSchedule::getOutputByCoordinate, "@DocString(FMTSpatialSchedule::getoutputbycoordinate)")
+        .def("getbindingactions", &Spatial::FMTSpatialSchedule::getBindingActions, "@DocString(FMTSpatialSchedule::getbindingactions)")
+        .def("operatecoord", &Spatial::FMTSpatialSchedule::operateCoord, "@DocString(FMTSpatialSchedule::operatecoord)")
+        .def("getconstraintevaluation", &Spatial::FMTSpatialSchedule::getConstraintEvaluation, getconstraintevaluation_overloads(bp::args("constraint","model"),"@DocString(FMTSpatialSchedule::getconstraintevaluation)"))
         .def("grow", &Spatial::FMTSpatialSchedule::grow, "@DocString(FMTSpatialSchedule::grow)");
-	define_pylist<Spatial::FMTSpatialSchedule>();
+	definePyList<Spatial::FMTSpatialSchedule>();
 
-    bp::class_<Spatial::FMTbindingspatialaction>("FMTbindingspatialaction", "@DocString(FMTbindingspatialaction)")
-        .def("getminimaladjacency", &Spatial::FMTbindingspatialaction::getminimaladjacency,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTSpatialSchedule::getminimaladjacency)")
-        .def("getminimalsize",&Spatial::FMTbindingspatialaction::getminimalsize,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTSpatialSchedule::getminimalsize)")
-        .def("getmaximalsize",&Spatial::FMTbindingspatialaction::getmaximalsize,boost::python::return_value_policy<boost::python::copy_const_reference>(), "@DocString(FMTSpatialSchedule::getmaximalsize)");
+    bp::class_<Spatial::FMTBindingSpatialAction>("FMTbindingspatialaction", "@DocString(FMTBindingSpatialAction)")
+        .def("getminimaladjacency", &Spatial::FMTBindingSpatialAction::getMinimalAdjacency,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTSpatialSchedule::getminimaladjacency)")
+        .def("getminimalsize",&Spatial::FMTBindingSpatialAction::getMinimalSize,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTSpatialSchedule::getminimalsize)")
+        .def("getmaximalsize",&Spatial::FMTBindingSpatialAction::getMaximalSize,boost::python::return_value_policy<boost::python::copy_const_reference>(), "@DocString(FMTSpatialSchedule::getmaximalsize)");
 
-	define_pylist<Spatial::FMTbindingspatialaction>();
+	definePyList<Spatial::FMTBindingSpatialAction>();
 
     }
 }

@@ -74,6 +74,13 @@ function (ExportAllVariablesToInstall)
     foreach(_variableName ${_variableNames})
 		if(NOT "${_variableName}" MATCHES "REGEX")
 			if("${${_variableName}}" MATCHES "\\\\")
+				# Multi-line values (e.g. CMAKE_*_COMPILER_ID_*_CONTENT probe source)
+				# get their newlines flattened below, which glues C tokens together and
+				# produces malformed set() code and CMake dev warnings. They are of no use
+				# to the install scripts, so skip them entirely.
+				if("${${_variableName}}" MATCHES "[\r\n]")
+					continue()
+				endif()
 				string(REPLACE "\\" "\\\\" ${_variableName} "${${_variableName}}")
 				string(REGEX REPLACE "[\r\n]+" "" ${_variableName} "${${_variableName}}")
 			endif()

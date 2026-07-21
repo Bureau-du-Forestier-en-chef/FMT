@@ -16,7 +16,10 @@ namespace Exception
 {
 	// DocString: FMTCPLErrorHandler
 	/**
-	This function is used by has a callback in GDAL for handling GDAL errors.
+	@brief Callback used in GDAL for handling GDAL errors.
+	@param[in] eErrClass the error class.
+	@param[in] nError the error number.
+	@param[in] pszErrorMsg the error message.
 	*/
 	#if defined FMTWITHGDAL
 		void CPL_STDCALL FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg);

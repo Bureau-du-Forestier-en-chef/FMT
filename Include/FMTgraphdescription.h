@@ -8,9 +8,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTgraphdescription_Hm_included
 #define FMTgraphdescription_Hm_included
 
-#include "FMTvertexproperties.h"
-#include "FMTedgeproperties.h"
-#include "FMTdevelopment.h"
+#include "FMTVertexProperties.h"
+#include "FMTEdgeProperties.h"
+#include "FMTDevelopment.h"
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/labeled_graph.hpp>
@@ -25,8 +25,8 @@ namespace Graph
 	/*typedef boost::adjacency_list< boost::listS,
 		boost::listS,
 		boost::bidirectionalS,
-		FMTvertexproperties,
-		FMTedgeproperties,
+		FMTVertexProperties,
+		FMTEdgeProperties,
 		boost::no_property,
 		boost::listS>FMTadjacency_list;
 

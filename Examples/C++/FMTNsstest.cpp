@@ -1,16 +1,16 @@
 #include <vector>
 #include <cmath>
-#include "FMTnssmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTfreeexceptionhandler.h"
-#include "FMToutput.h"
+#include "FMTNssModel.h"
+#include "FMTModelParser.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTFreeExceptionHandler.h"
+#include "FMTOutput.h"
 	
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTDefaultLogger().logStamp();
 	std::string PRIMARY;
 	std::string SCENARIO;
 	std::string  OUTPUT;
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 		OUTPUT_VALUE = 60;
 		PERIOD = 5;
 	}
-	Parser::FMTmodelparser mparser;
+	Parser::FMTModelParser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -53,35 +53,35 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	mparser.seterrorstowarnings(errors);
+	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>SCENARIOS(1, SCENARIO);
-	const std::vector<Models::FMTmodel> MODELS = mparser.readproject(PRIMARY, SCENARIOS);
-	Models::FMTnssmodel NssModel(MODELS.at(0),0);
-	NssModel.setparameter(Models::FMTintmodelparameters::UPDATE, 1);
-	std::vector<Core::FMTactualdevelopment>newDevs;
-	for (Core::FMTactualdevelopment dev : NssModel.getarea())
+	const std::vector<Models::FMTModel> MODELS = mparser.readproject(PRIMARY, SCENARIOS);
+	Models::FMTNssModel NssModel(MODELS.at(0),0);
+	NssModel.setParameter(Models::FMTintmodelparameters::UPDATE, 1);
+	std::vector<Core::FMTActualDevelopment>newDevs;
+	for (Core::FMTActualDevelopment dev : NssModel.getArea())
 		{
-		dev.setperiod(PERIOD-1);
+		dev.setPeriod(PERIOD-1);
 		newDevs.push_back(dev);
 		}
-	NssModel.setarea(newDevs);
-	NssModel.setparameter(Models::FMTintmodelparameters::LENGTH, LENGTH);
-	NssModel.doplanning(true);
-	Core::FMToutput sumOutput;
-	for (const Core::FMToutput& output : NssModel.getoutputs())
+	NssModel.setArea(newDevs);
+	NssModel.setParameter(Models::FMTintmodelparameters::LENGTH, LENGTH);
+	NssModel.doPlanning(true);
+	Core::FMTOutput sumOutput;
+	for (const Core::FMTOutput& output : NssModel.getOutputs())
 	{
-		if (output.getname() == OUTPUT)
+		if (output.getName() == OUTPUT)
 		{
 			sumOutput = output;
 		}
 	}
 	
-	const double RESULT = NssModel.getoutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
-	Logging::FMTdefaultlogger() << "VALUE OF "<< RESULT<<" "<< OUTPUT_VALUE << "\n";
+	const double RESULT = NssModel.getOutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
+	Logging::FMTDefaultLogger() << "VALUE OF "<< RESULT<<" "<< OUTPUT_VALUE << "\n";
 	if (argc == 4 && std::abs(RESULT - OUTPUT_VALUE)>1)
 	{
-		Logging::FMTdefaultlogger() << "bad" << "\n";
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+		Logging::FMTDefaultLogger() << "bad" << "\n";
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"FMTNsstest", __LINE__, PRIMARY);
 	}
 	return 0;

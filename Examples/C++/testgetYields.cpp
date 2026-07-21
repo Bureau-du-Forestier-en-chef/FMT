@@ -1,22 +1,22 @@
 ﻿#ifdef FMTWITHOSI
-	#include "FMTlpmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTscheduleparser.h"
-	#include "FMTversion.h"
-	#include "FMTexception.h"
-	#include "FMTdevelopment.h"
-	#include "FMTyieldrequest.h"
-	#include "FMTgraphvertextoyield.h"
-	#include "FMTfreeexceptionhandler.h"
-	#include "FMTdefaultlogger.h"
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTScheduleParser.h"
+	#include "FMTVersion.h"
+	#include "FMTException.h"
+	#include "FMTDevelopment.h"
+	#include "FMTYieldRequest.h"
+	#include "FMTGraphVertexToYield.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTDefaultLogger.h"
 	#include <vector>
 #endif
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	Logging::FMTDefaultLogger().logStamp();
+	if (Version::FMTVersion().hasFeature("OSI"))
 		{
 		std::string primarylocation;
 		std::string scenario;
@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
 			period = 17;
 
 		}
-		Parser::FMTmodelparser modelparser;
-		modelparser.setdefaultexceptionhandler();
+		Parser::FMTModelParser modelparser;
+		modelparser.setDefaultExceptionHandler();
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -58,44 +58,44 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 
 		const std::vector<std::string>scenarios(1, scenario);
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		
 		const double tolerance = 0.01;
-		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
-		//optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
-		optimizationmodel.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getperiod());
+		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+		optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		//optimizationmodel.FMTModel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+		optimizationmodel.FMTModel::setParameter(Models::FMTintmodelparameters::LENGTH, schedules.back().getPeriod());
 		
-		const bool FEASIBLE = optimizationmodel.doplanning( false, schedules);
+		const bool FEASIBLE = optimizationmodel.doPlanning( false, schedules);
 		/*if (FEASIBLE)
 		{
-			std::vector<Core::FMTschedule>OutSchedules;
+			std::vector<Core::FMTSchedule>OutSchedules;
 			for (int period = 1; period <= 10; ++period)
 			{
-				OutSchedules.push_back(optimizationmodel.getsolution(period));
+				OutSchedules.push_back(optimizationmodel.getSolution(period));
 			}
-			Parser::FMTscheduleparser scparser;
+			Parser::FMTScheduleParser scparser;
 			scparser.write(OutSchedules, "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CahierCOS_SPAT_P10_IT1_V/test.seq");
 		}*/
 		
 		bool gotovoltotrec = false;
-		const Core::FMTdevelopment adev(Core::FMTmask(maskstr,optimizationmodel.getthemes()), age, 0, period);
-		const Graph::FMTgraphvertextoyield graph_info = optimizationmodel.getGraphVertexToYield();
-		const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest(&graph_info);
-		const double returnedvalue = optimizationmodel.getyields().get(yieldrequest,yieldname);
-		Logging::FMTdefaultlogger() << returnedvalue << "\n";
+		const Core::FMTDevelopment adev(Core::FMTMask(maskstr,optimizationmodel.getThemes()), age, 0, period);
+		const Graph::FMTGraphVertexToYield graph_info = optimizationmodel.getGraphVertexToYield();
+		const Core::FMTYieldRequest yieldrequest = adev.getYieldRequest(&graph_info);
+		const double returnedvalue = optimizationmodel.getYields().get(yieldrequest,yieldname);
+		Logging::FMTDefaultLogger() << returnedvalue << "\n";
 		if ((returnedvalue < (yieldvalue - tolerance)) || (returnedvalue > (yieldvalue + tolerance)))
 			{
-			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 				"FMTsetsolution", __LINE__, primarylocation);
 			}
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 	#endif
 	return 0;

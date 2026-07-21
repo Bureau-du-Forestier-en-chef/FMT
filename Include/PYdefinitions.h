@@ -14,14 +14,14 @@ namespace Python
 { 
 
 template<class T>
-void define_pylist()
+void definePyList()
 {
 	boost::python::to_python_converter<std::vector<T, std::allocator<T>>, VecToList<T>>();
 	iterable_converter().from_python<std::vector<T>>();
 }
 
 template<class T>
-void define_pyset()
+void definePySet()
 {
     boost::python::to_python_converter<std::set<T>, SetToList<T>>();
     iterable_converter().from_python<std::set<T>>();
@@ -30,47 +30,47 @@ void define_pyset()
 template <class T>
 void define_FMTlist()
     {
-	 py_pair<Core::FMTmask, T>();
-	 py_pair<Core::FMTmask const, T>();
-	 boost::python::class_<Core::FMTlist<T>>("FMTlist", "@DocString(FMTlist)")
-		 .def("__iter__", boost::python::iterator<Core::FMTlist<T>>())
-         .def("update", &Core::FMTlist<T>::update,
-             "@DocString(FMTlist::update)")
+	 py_pair<Core::FMTMask, T>();
+	 py_pair<Core::FMTMask const, T>();
+	 boost::python::class_<Core::FMTList<T>>("FMTlist", "@DocString(FMTList)")
+		 .def("__iter__", boost::python::iterator<Core::FMTList<T>>())
+         .def("update", &Core::FMTList<T>::update,
+             "@DocString(FMTList::update)")
          .def("push_back",
-             &Core::FMTlist<T>::APIpush_back,
-             "@DocString(FMTyieldhandler::APIpush_back)");
-	define_pylist<T>();
+             &Core::FMTList<T>::apiPushBack,
+             "@DocString(FMTYieldHandler::APIpush_back)");
+	definePyList<T>();
     }
 
 template <class T>
 void define_FMTlayer()
     {
 
-	boost::python::class_<Spatial::FMTlayer<T>>("FMTlayer", "@DocString(FMTlayer)")
-        .def("getXSize",&Spatial::FMTlayer<T>::GetXSize,
-			"@DocString(FMTlayer::GetXSize)")
-        .def("getYSize",&Spatial::FMTlayer<T>::GetYSize,
-			"@DocString(FMTlayer::GetYSize)")
-        .def("getgeotransform",&Spatial::FMTlayer<T>::getgeotransform,
-			"@DocString(FMTlayer::getgeotransform)")
-        .def("getprojection",&Spatial::FMTlayer<T>::getprojection,
-			"@DocString(FMTlayer::getprojection)")
-        .def("getmapping",&Spatial::FMTlayer<T>::getmapping,
-			"@DocString(FMTlayer::getmapping)")
-        .def("area",&Spatial::FMTlayer<T>::area,
-			"@DocString(FMTlayer::area)")
-        .def("getcellsize",&Spatial::FMTlayer<T>::getcellsize,
-			"@DocString(FMTlayer::getcellsize)")
-        .def("__len__",&Spatial::FMTlayer<T>::size,
-			"@DocString(FMTlayer::size)")
+	boost::python::class_<Spatial::FMTLayer<T>>("FMTlayer", "@DocString(FMTLayer)")
+        .def("getXSize",&Spatial::FMTLayer<T>::getXSize,
+			"@DocString(FMTLayer::GetXSize)")
+        .def("getYSize",&Spatial::FMTLayer<T>::getYSize,
+			"@DocString(FMTLayer::GetYSize)")
+        .def("getgeotransform",&Spatial::FMTLayer<T>::getGeoTransform,
+			"@DocString(FMTLayer::getgeotransform)")
+        .def("getprojection",&Spatial::FMTLayer<T>::getProjection,
+			"@DocString(FMTLayer::getprojection)")
+        .def("getmapping",&Spatial::FMTLayer<T>::getMapping,
+			"@DocString(FMTLayer::getmapping)")
+        .def("area",&Spatial::FMTLayer<T>::area,
+			"@DocString(FMTLayer::area)")
+        .def("getcellsize",&Spatial::FMTLayer<T>::getCellSize,
+			"@DocString(FMTLayer::getcellsize)")
+        .def("__len__",&Spatial::FMTLayer<T>::size,
+			"@DocString(FMTLayer::size)")
         //const because begin and end return const iterator
-        .def("itercell", boost::python::iterator<Spatial::FMTlayer<T>>())
-        .def("__getitem__",&Spatial::FMTlayer<T>::at,boost::python::return_internal_reference<>(),"@DocString(FMTlayer::at)");
-    boost::python::to_python_converter<std::map<Spatial::FMTcoordinate,T>,MapToDict<Spatial::FMTcoordinate,T>>();
+        .def("itercell", boost::python::iterator<Spatial::FMTLayer<T>>())
+        .def("__getitem__",&Spatial::FMTLayer<T>::at,boost::python::return_internal_reference<>(),"@DocString(FMTLayer::at)");
+    boost::python::to_python_converter<std::map<Spatial::FMTCoordinate,T>,MapToDict<Spatial::FMTCoordinate,T>>();
     }
 
 template<class k,class v>
-void define_pydict()
+void definePyDict()
     {
     boost::python::to_python_converter<std::map<k,v>,MapToDict<k,v>>();
 	MapFrDict<k,v>();
@@ -106,7 +106,7 @@ struct PythonToPairConverter {
 };*/
 
 template<typename T1, typename T2>
-void define_pypair() {
+void definePyPair() {
 	boost::python::to_python_converter<std::pair<T1, T2>, PairToPythonConverter<T1, T2>>();
     PythonToPairConverter<T1, T2>();
 	}

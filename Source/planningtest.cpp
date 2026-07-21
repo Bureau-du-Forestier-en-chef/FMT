@@ -1,17 +1,17 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTtaskhandler.h"
-	#include "FMTplanningtask.h"
-	#include "FMTlpmodel.h"
-	#include "FMTnssmodel.h"
-	#include "FMTfreeexceptionhandler.h"
-	#include "FMTmodelparser.h"
+	#include "FMTTaskHandler.h"
+	#include "FMTPlanningTask.h"
+	#include "FMTLpModel.h"
+	#include "FMTNssModel.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTModelParser.h"
 #endif
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTLogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<bool>playback;
@@ -22,39 +22,39 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("LP4");
 	playback.push_back(false);
 	allscenarios.push_back("LP5");
-	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
+	Parser::FMTModelParser modelparser;
+	modelparser.setDefaultExceptionHandler();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
-	modelparser.seterrorstowarnings(errors);
+	modelparser.setErrorsToWarnings(errors);
 	const std::string outputlocation = "tests/planning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
-	Parallel::FMTplanningtask newplanningtask(1,7, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly/*, primlocation*/);
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
-	const std::vector<std::vector<Core::FMTschedule>> schedules = modelparser.readschedules(primlocation, models);
+	Parallel::FMTPlanningTask newplanningtask(1,7, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly/*, primlocation*/);
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readschedules(primlocation, models);
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{
-		Models::FMTlpmodel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
-		lpmodel.setparameter(Models::FMTintmodelparameters::LENGTH,7);
-		lpmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-		std::vector<Core::FMToutput>selectedoutputs;
-		for (const Core::FMToutput& output : lpmodel.getoutputs())
+		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
+		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH,7);
+		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+		std::vector<Core::FMTOutput>selectedoutputs;
+		for (const Core::FMTOutput& output : lpmodel.getOutputs())
 		{
-			if (output.getname() == "OVOLREC")
+			if (output.getName() == "OVOLREC")
 			{
 				selectedoutputs.push_back(output);
 			}
 		}
-		lpmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
-		lpmodel.setoutputs(selectedoutputs);
+		lpmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
+		lpmodel.setOutputs(selectedoutputs);
 		newplanningtask.push_back(lpmodel,schedules.at(modelid));
 		}
-	Parallel::FMTtaskhandler handler(newplanningtask,3);
-	handler.setquietlogger();
-	//handler.ondemandrun();
-	handler.conccurentrun();
+	Parallel::FMTTaskHandler handler(newplanningtask,3);
+	handler.setQuietLogger();
+	//handler.onDemandRun();
+	handler.conccurentRun();
 	#endif
 	return 0;
 	}

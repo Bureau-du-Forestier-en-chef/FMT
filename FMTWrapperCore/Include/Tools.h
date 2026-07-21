@@ -1,19 +1,19 @@
 #include <string>
 #include <vector>
 #include <set>
-#include "FMTmodel.h"
+#include "FMTModel.h"
 
 namespace Core { 
-    class FMTschedule;
-    class FMTconstraint;
-    class FMToutput;
-	class FMTtheme;
-	class FMTmask;
+    class FMTSchedule;
+    class FMTConstraint;
+    class FMTOutput;
+	class FMTTheme;
+	class FMTMask;
 }
 
 namespace Models
 {
-	class FMTmodel;
+	class FMTModel;
 }
 
 namespace FMTWrapperCore
@@ -27,7 +27,7 @@ namespace FMTWrapperCore
 		*@param p_model Le modèle à utiliser.
 		* @return int l'age max du model.
 		*/
-		static int getMaxAge(const Models::FMTmodel& p_model);
+		static int getMaxAge(const Models::FMTModel& p_model);
 
 		/**
 		* @brief retourne une listes des noms d'actions du mod�le.
@@ -61,7 +61,7 @@ namespace FMTWrapperCore
 		*@param p_age
 		* @return Un double du yield
 		*/
-		static double getYield(const Models::FMTmodel& p_model, const std::string& p_mask,const std::string& p_yield, int p_age);
+		static double getYield(const Models::FMTModel& p_model, const std::string& p_mask,const std::string& p_yield, int p_age);
 
 		/**
 		* @brief retourne un set de tous les masks utiles du modèle selon les thèmes sélectionné.
@@ -70,7 +70,7 @@ namespace FMTWrapperCore
 		*@param un vector de themes a vérifier.
 		*@return Un set des masks.
 		*/
-		static std::set<std::string> getAllMasks(const Models::FMTmodel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath);
+		static std::set<std::string> getAllMasks(const Models::FMTModel& p_model, const int p_periods, const std::vector<int>& p_themesNumbers, const std::string& p_rasterPath);
 
 		/**
 		* @brief écrit un projet en cache (base + scénarios) dans un dossier.
@@ -81,22 +81,22 @@ namespace FMTWrapperCore
 		*@param p_models Les modèles du cache; le premier sert de base (ROOT).
 		*@param p_destinationDirectory Le dossier de destination où écrire le projet.
 		*/
-		static void writetoproject(const std::vector<Models::FMTmodel>& p_models, const std::string& p_destinationDirectory);
+		static void writeToProject(const std::vector<Models::FMTModel>& p_models, const std::string& p_destinationDirectory);
 
 	private:
 		/**
-		* @brief Retourne un vecteur de FMTactualdevelopment selon le raster d'aire.
+		* @brief Retourne un vecteur de FMTActualDevelopment selon le raster d'aire.
 		*
 		*@param p_model le Modele a utiliser.
 		*@param p_rasterPath Le path du raster d'aire.
-		*@return Un vecteur de FMTactualdevelopment.
+		*@return Un vecteur de FMTActualDevelopment.
 		*/
-		static std::vector<Core::FMTactualdevelopment> getRasterArea(const Models::FMTmodel& p_model, const std::string& p_rasterPath);
+		static std::vector<Core::FMTActualDevelopment> getRasterArea(const Models::FMTModel& p_model, const std::string& p_rasterPath);
 		static const size_t m_GET_ALL_MASKS_THRESHOLD = 1000000;
-		static Core::FMTmask _GetFullMask(const std::vector<Core::FMTtheme>& p_themes);
+		static Core::FMTMask _GetFullMask(const std::vector<Core::FMTTheme>& p_themes);
 		static std::set<std::string> _GetThemesDecomposition(
-					const Core::FMTmask& p_mask,
-					const std::vector<Core::FMTtheme>& p_themes);
+					const Core::FMTMask& p_mask,
+					const std::vector<Core::FMTTheme>& p_themes);
 		
 	
 	};

@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include <sstream>
-#include "FMTforest.h"
-#include "FMTmodelparser.h"
-#include "FMTsamodel.h"
-#include "FMTareaparser.h"
-#include "FMTscheduleparser.h"
+#include "FMTForest.h"
+#include "FMTModelParser.h"
+#include "FMTSaModel.h"
+#include "FMTAreaParser.h"
+#include "FMTScheduleParser.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTFormLogger.h"
 #include "FMTForm.h"
-#include "FMTmodel.h"
+#include "FMTModel.h"
 #include "FMTFormCache.h"
-#include "FMTdefaultlogger.h"
+#include "FMTDefaultLogger.h"
 #include "SES.h"
 
 namespace Wrapper
@@ -112,10 +112,10 @@ namespace Wrapper
         try
         {
             FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-            *logger << Logging::FMTdefaultlogger().getlogstamp() << "\n";
+            *logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
 
-            const Models::FMTmodel& BASE_MODEL = FMTFormCache::GetInstance()->getmodel(scenario);
-            const std::string scenarioName = BASE_MODEL.getname();
+            const Models::FMTModel& BASE_MODEL = FMTFormCache::GetInstance()->getModel(scenario);
+            const std::string scenarioName = BASE_MODEL.getName();
 
            
 
@@ -152,7 +152,7 @@ namespace Wrapper
         }
         catch (...)
         {
-            raisefromcatch("", "FMTForm::OptimisationSpatialeExplicite", __LINE__, __FILE__);
+            raiseFromCatch("", "FMTForm::OptimisationSpatialeExplicite", __LINE__, __FILE__);
             return false;
         }
     }

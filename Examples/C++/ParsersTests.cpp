@@ -1,20 +1,20 @@
 #include <vector>
-#include "FMTareaparser.h"
-#include "FMTlandscapeparser.h"
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTversion.h"
+#include "FMTAreaParser.h"
+#include "FMTLandscapeParser.h"
+#include "FMTConstants.h"
+#include "FMTTheme.h"
+#include "FMTVersion.h"
 #include "FMTutility.h"
-#include "FMTdefaultexceptionhandler.h"
-#include "FMTdefaultlogger.h"
-#include "FMTactualdevelopment.h"
+#include "FMTDefaultExceptionHandler.h"
+#include "FMTDefaultLogger.h"
+#include "FMTActualDevelopment.h"
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("GDAL"))
+	Logging::FMTDefaultLogger().logStamp();
+	if (Version::FMTVersion().hasFeature("GDAL"))
 	{
 		std::string path;
 		if (argc > 1) {
@@ -24,9 +24,9 @@ int main(int argc, char* argv[])
 			path = "C:\\Users\\Admlocal\\Documents\\issues\\C2_01017018\\Pour_Bruno";
 		}
 		const boost::filesystem::path FOLDER_PATH(path);
-		Core::FMTconstants baseConstants;
-		std::vector<Core::FMTtheme>baseThemes;
-		Parser::FMTareaparser AreaParser;
+		Core::FMTConstants baseConstants;
+		std::vector<Core::FMTTheme>baseThemes;
+		Parser::FMTAreaParser AreaParser;
 		bool testedArea = false;
 		bool testedLan = false;
 		while (!(testedArea && testedLan))
@@ -39,21 +39,21 @@ int main(int argc, char* argv[])
 				try {
 					if (!testedLan && SECTION == Core::FMTsection::Landscape)
 					{
-						Parser::FMTlandscapeparser LandscapeParser;
+						Parser::FMTLandscapeParser LandscapeParser;
 						baseThemes = LandscapeParser.read(baseConstants, PATH_TO_FILE);
 						testedLan = true;
 						if (baseThemes.empty())
 						{
-							AreaParser.GetExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Landscape parser failed to read " + PATH_TO_FILE,
+							AreaParser.getExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Landscape parser failed to read " + PATH_TO_FILE,
 								"ParsersTests", __LINE__, __FILE__);
 						}
 					}
 					if (SECTION == Core::FMTsection::Area && testedLan)
 					{
-						const std::vector<Core::FMTactualdevelopment>DEVELOPMENTS = AreaParser.read(baseThemes, baseConstants, PATH_TO_FILE);
+						const std::vector<Core::FMTActualDevelopment>DEVELOPMENTS = AreaParser.read(baseThemes, baseConstants, PATH_TO_FILE);
 						if (DEVELOPMENTS.empty())
 						{
-							AreaParser.GetExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Area parser failed to read " + PATH_TO_FILE,
+							AreaParser.getExceptionHandler()->raise(Exception::FMTexc::FMTfunctionfailed, "Area parser failed to read " + PATH_TO_FILE,
 								"ParsersTests", __LINE__, __FILE__);
 						}
 						testedArea = true;
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 				}
 				catch (...)
 				{
-					AreaParser.GetExceptionHandler()->printexceptions("ParserTests Failed", "", __LINE__, __FILE__);
+					AreaParser.getExceptionHandler()->printExceptions("ParserTests Failed", "", __LINE__, __FILE__);
 				}
 
 			}

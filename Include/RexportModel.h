@@ -8,48 +8,48 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef REXPORTMODEL_H_INCLUDED
 #define REXPORTMODEL_H_INCLUDED
 
-#include "FMTmodel.h"
-#include "FMTsrmodel.h"
-#include "FMTlpmodel.h"
-#include "FMTsemodel.h"
-#include "FMTsesmodel.h"
-#include "FMTnssmodel.h"
-#include "FMTsamodel.h"
-#include "FMTlpsolver.h"
+#include "FMTModel.h"
+#include "FMTSrModel.h"
+#include "FMTLpModel.h"
+#include "FMTSeModel.h"
+#include "FMTSesModel.h"
+#include "FMTNssModel.h"
+#include "FMTSaModel.h"
+#include "FMTLpSolver.h"
 #include "Rdefinitions.h"
 #include "FMTsolverinterface.h"
 #include <Rcpp.h>
 #include <string>
 
-RCPP_EXPOSED_WRAP(Models::FMTmodel);
-RCPP_EXPOSED_AS(Models::FMTmodel);
-RCPP_DEFINEVECTOR(Models::FMTmodel);//For vector
+RCPP_EXPOSED_WRAP(Models::FMTModel);
+RCPP_EXPOSED_AS(Models::FMTModel);
+RCPP_DEFINEVECTOR(Models::FMTModel);//For vector
 RCPP_DEFINEMAP(std::string,double);//For map<string,double>
-RCPP_EXPOSED_WRAP(Models::FMTsemodel);
-RCPP_EXPOSED_AS(Models::FMTsemodel);
-RCPP_DEFINEVECTOR(Models::FMTsemodel);//For vector
-RCPP_EXPOSED_WRAP(Models::FMTsesmodel);
-RCPP_EXPOSED_AS(Models::FMTsesmodel);
-RCPP_DEFINEVECTOR(Models::FMTsesmodel);//For vector
+RCPP_EXPOSED_WRAP(Models::FMTSeModel);
+RCPP_EXPOSED_AS(Models::FMTSeModel);
+RCPP_DEFINEVECTOR(Models::FMTSeModel);//For vector
+RCPP_EXPOSED_WRAP(Models::FMTSesModel);
+RCPP_EXPOSED_AS(Models::FMTSesModel);
+RCPP_DEFINEVECTOR(Models::FMTSesModel);//For vector
 #ifdef FMTWITHOSI
-	RCPP_EXPOSED_WRAP(Models::FMTsrmodel);
-	RCPP_EXPOSED_AS(Models::FMTsrmodel);
-	RCPP_DEFINEVECTOR(Models::FMTsrmodel);//For vector
-	RCPP_EXPOSED_WRAP(Models::FMTnssmodel);
-	RCPP_EXPOSED_AS(Models::FMTnssmodel);
-	RCPP_DEFINEVECTOR(Models::FMTnssmodel);//For vector
+	RCPP_EXPOSED_WRAP(Models::FMTSrModel);
+	RCPP_EXPOSED_AS(Models::FMTSrModel);
+	RCPP_DEFINEVECTOR(Models::FMTSrModel);//For vector
+	RCPP_EXPOSED_WRAP(Models::FMTNssModel);
+	RCPP_EXPOSED_AS(Models::FMTNssModel);
+	RCPP_DEFINEVECTOR(Models::FMTNssModel);//For vector
 	RCPP_EXPOSED_ENUM_NODECL(Models::FMTsolverinterface);
-	RCPP_EXPOSED_WRAP(Models::FMTlpsolver);
-	RCPP_EXPOSED_AS(Models::FMTlpsolver);
-	RCPP_DEFINEVECTOR(Models::FMTlpsolver);//For vector
-	RCPP_EXPOSED_WRAP(Models::FMTlpmodel);
-	RCPP_EXPOSED_AS(Models::FMTlpmodel);
-	RCPP_DEFINEVECTOR(Models::FMTlpmodel);//For vector
+	RCPP_EXPOSED_WRAP(Models::FMTLpSolver);
+	RCPP_EXPOSED_AS(Models::FMTLpSolver);
+	RCPP_DEFINEVECTOR(Models::FMTLpSolver);//For vector
+	RCPP_EXPOSED_WRAP(Models::FMTLpModel);
+	RCPP_EXPOSED_AS(Models::FMTLpModel);
+	RCPP_DEFINEVECTOR(Models::FMTLpModel);//For vector
 #endif
 
-RCPP_EXPOSED_WRAP(Models::FMTsamodel);
-RCPP_EXPOSED_AS(Models::FMTsamodel);
-RCPP_DEFINEVECTOR(Models::FMTsamodel);//For vector
+RCPP_EXPOSED_WRAP(Models::FMTSaModel);
+RCPP_EXPOSED_AS(Models::FMTSaModel);
+RCPP_DEFINEVECTOR(Models::FMTSaModel);//For vector
 
 RCPP_EXPOSED_ENUM_NODECL(Models::FMTintmodelparameters);
 RCPP_EXPOSED_ENUM_NODECL(Models::FMTdblmodelparameters);
@@ -60,185 +60,185 @@ namespace R
 
 void exportModel()
 {
-	Rcpp::class_<Models::FMTmodel>("FMTmodel", "@DocString(FMTmodel)")
-		.derives<Core::FMTobject>("FMTobject")
-		.constructor<Models::FMTmodel>("@DocString(FMTmodel(Models::FMTmodel))")
-		.constructor("@DocString(FMTmodel())")
-           .method("getname",&Models::FMTmodel::getname,
-				"@DocString(FMTmodel::getname)")
-            .method("getyields",&Models::FMTmodel::getyields,
-				"@DocString(FMTmodel::getyields)")
-			.method("setyields", &Models::FMTmodel::setyields,
-				"@DocString(FMTmodel::setyields)")
-            .method("getarea",&Models::FMTmodel::getarea,
-				"@DocString(FMTmodel::getarea)")
-			.method("setarea", &Models::FMTmodel::setarea,
-				"@DocString(FMTmodel::setarea)")
-            .method("getthemes",&Models::FMTmodel::getthemes,
-				"@DocString(FMTmodel::getthemes)")
-			.method("setthemes", &Models::FMTmodel::setthemes,
-				"@DocString(FMTmodel::setthemes)")
-            .method("getactions",&Models::FMTmodel::getactions,
-				"@DocString(FMTmodel::getactions)")
-			.method("setactions", &Models::FMTmodel::setactions,
-				"@DocString(FMTmodel::setactions)")
-			.method("getoutputs", &Models::FMTmodel::getoutputs, 
-				"@DocString(FMTmodel::getoutputs)")
-			.method("setoutputs", &Models::FMTmodel::setoutputs,
-				"@DocString(FMTmodel::setoutputs)")
-			.method("getconstraints", &Models::FMTmodel::getconstraints,
-				"@DocString(FMTmodel::getconstraints)")
-			.method("setconstraints", &Models::FMTmodel::setconstraints,
-				"@DocString(FMTmodel::setconstraints)")
-            .method("gettransitions",&Models::FMTmodel::gettransitions,
-				"@DocString(FMTmodel::gettransitions)")
-            .method("settransitions",&Models::FMTmodel::settransitions,
-				"@DocString(FMTmodel::settransitions)")
-			.method("setname", &Models::FMTmodel::setname,
-				"@DocString(FMTmodel::setname)")
-			.method("setareaperiod", &Models::FMTmodel::setareaperiod,
-				"@DocString(FMTmodel::setareaperiod)")
-            .method("getlifespan",&Models::FMTmodel::getlifespan,
-				"@DocString(FMTmodel::getlifespan)")
-			.method("setlifespan", &Models::FMTmodel::setlifespan,
-				"@DocString(FMTmodel::setlifespan)")
-            .method("isValid",&Models::FMTmodel::isValid,
-				"@DocString(FMTmodel::isValid)")
-			.method("getpostsolvefilter", &Models::FMTmodel::getpostsolvefilter,
-				"@DocString(FMTmodel::getpostsolvefilter)")
-			.method("isoptimal", &Models::FMTmodel::isoptimal,
-				"@DocString(FMTmodel::isoptimal)")
-			.method("getobjectivevalue", &Models::FMTmodel::getobjectivevalue,
-				"@DocString(FMTmodel::getobjectivevalue)")
-			.method("GetStaticTransitionThemes", &Models::FMTmodel::GetStaticTransitionThemes,
-				"@DocString(FMTmodel::GetStaticTransitionThemes)")
+	Rcpp::class_<Models::FMTModel>("FMTmodel", "@DocString(FMTModel)")
+		.derives<Core::FMTObject>("FMTobject")
+		.constructor<Models::FMTModel>("@DocString(FMTModel(Models::FMTModel))")
+		.constructor("@DocString(FMTModel())")
+           .method("getname",&Models::FMTModel::getName,
+				"@DocString(FMTModel::getname)")
+            .method("getyields",&Models::FMTModel::getYields,
+				"@DocString(FMTModel::getyields)")
+			.method("setyields", &Models::FMTModel::setYields,
+				"@DocString(FMTModel::setyields)")
+            .method("getarea",&Models::FMTModel::getArea,
+				"@DocString(FMTModel::getarea)")
+			.method("setarea", &Models::FMTModel::setArea,
+				"@DocString(FMTModel::setarea)")
+            .method("getthemes",&Models::FMTModel::getThemes,
+				"@DocString(FMTModel::getthemes)")
+			.method("setthemes", &Models::FMTModel::setThemes,
+				"@DocString(FMTModel::setthemes)")
+            .method("getactions",&Models::FMTModel::getactions,
+				"@DocString(FMTModel::getactions)")
+			.method("setactions", &Models::FMTModel::setActions,
+				"@DocString(FMTModel::setactions)")
+			.method("getoutputs", &Models::FMTModel::getOutputs, 
+				"@DocString(FMTModel::getoutputs)")
+			.method("setoutputs", &Models::FMTModel::setOutputs,
+				"@DocString(FMTModel::setoutputs)")
+			.method("getconstraints", &Models::FMTModel::getconstraints,
+				"@DocString(FMTModel::getconstraints)")
+			.method("setconstraints", &Models::FMTModel::setConstraints,
+				"@DocString(FMTModel::setconstraints)")
+            .method("gettransitions",&Models::FMTModel::getTransitions,
+				"@DocString(FMTModel::gettransitions)")
+            .method("settransitions",&Models::FMTModel::setTransitions,
+				"@DocString(FMTModel::settransitions)")
+			.method("setname", &Models::FMTModel::setName,
+				"@DocString(FMTModel::setname)")
+			.method("setareaperiod", &Models::FMTModel::setAreaPeriod,
+				"@DocString(FMTModel::setareaperiod)")
+            .method("getlifespan",&Models::FMTModel::getLifespan,
+				"@DocString(FMTModel::getlifespan)")
+			.method("setlifespan", &Models::FMTModel::setLifespan,
+				"@DocString(FMTModel::setlifespan)")
+            .method("isValid",&Models::FMTModel::isValid,
+				"@DocString(FMTModel::isValid)")
+			.method("getpostsolvefilter", &Models::FMTModel::getPostsolveFilter,
+				"@DocString(FMTModel::getpostsolvefilter)")
+			.method("isoptimal", &Models::FMTModel::isOptimal,
+				"@DocString(FMTModel::isoptimal)")
+			.method("getobjectivevalue", &Models::FMTModel::getObjectiveValue,
+				"@DocString(FMTModel::getobjectivevalue)")
+			.method("GetStaticTransitionThemes", &Models::FMTModel::getStaticTransitionThemes,
+				"@DocString(FMTModel::GetStaticTransitionThemes)")
 			.method("setboolparameter",
-				static_cast<bool(Models::FMTmodel::*)(const Models::FMTboolmodelparameters&, const bool&)>(&Models::FMTmodel::setparameter),
-				"@DocString(Models::FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
+				static_cast<bool(Models::FMTModel::*)(const Models::FMTboolmodelparameters&, const bool&)>(&Models::FMTModel::setParameter),
+				"@DocString(Models::FMTModel::setparameter(const FMTboolmodelparameters,const bool))")
 			.method("setintparameter",
-				static_cast<bool(Models::FMTmodel::*)(const Models::FMTintmodelparameters&, const int&)>(&Models::FMTmodel::setparameter),
-				"@DocString(Models::FMTmodel::setparameter(const FMTintmodelparameters,const int))")
+				static_cast<bool(Models::FMTModel::*)(const Models::FMTintmodelparameters&, const int&)>(&Models::FMTModel::setParameter),
+				"@DocString(Models::FMTModel::setparameter(const FMTintmodelparameters,const int))")
 			.method("setdblparameter",
-				static_cast<bool(Models::FMTmodel::*)(const Models::FMTdblmodelparameters&, const double&)>(&Models::FMTmodel::setparameter),
-				"@DocString(Models::FMTmodel::setparameter(const FMTdblmodelparameters,const int))")
-			.method("showparameters",&Models::FMTmodel::showparameters,
-			"@DocString(FMTmodel::showparameters)")
-			.method("doplanning",&Models::FMTmodel::doplanning,
-				"@DocString(FMTmodel::doplanning)");
+				static_cast<bool(Models::FMTModel::*)(const Models::FMTdblmodelparameters&, const double&)>(&Models::FMTModel::setParameter),
+				"@DocString(Models::FMTModel::setparameter(const FMTdblmodelparameters,const int))")
+			.method("showparameters",&Models::FMTModel::showParameters,
+			"@DocString(FMTModel::showparameters)")
+			.method("doplanning",&Models::FMTModel::doPlanning,
+				"@DocString(FMTModel::doplanning)");
 
-	Rcpp::class_<Models::FMTsemodel>("FMTsemodel", "@DocString(FMTsemodel)")
-		.derives<Models::FMTmodel>("FMTmodel")
-		.constructor("@DocString(FMTsemodel())")
-		.constructor<Models::FMTmodel>("@DocString(FMTsemodel(Models::FMTmodel))")
-		.method("getmapping", &Models::FMTsemodel::getmapping,
-			"@DocString(FMTsemodel::getmapping)")
-		.method("getschedule", &Models::FMTsemodel::getschedule,
-			"@DocString(FMTsemodel::getschedule)")
-		.method("getspschedule", &Models::FMTsemodel::getspschedule,
-			"@DocString(FMTsemodel::getdisturbances)")
-		.method("setinitialmapping", &Models::FMTsemodel::setinitialmapping,
-			"@DocString(FMTsemodel::setinitialmapping)")
-		.method("getspatialoutput", &Models::FMTsemodel::getspatialoutput,
-			"@DocString(FMTsemodel::getschedule)")
-		.method("getdisturbancestats", &Models::FMTsemodel::getdisturbancestats,
-			"@DocString(FMTsemodel::getdisturbancestats)");
+	Rcpp::class_<Models::FMTSeModel>("FMTsemodel", "@DocString(FMTSeModel)")
+		.derives<Models::FMTModel>("FMTmodel")
+		.constructor("@DocString(FMTSeModel())")
+		.constructor<Models::FMTModel>("@DocString(FMTSeModel(Models::FMTModel))")
+		.method("getmapping", &Models::FMTSeModel::getMapping,
+			"@DocString(FMTSeModel::getmapping)")
+		.method("getschedule", &Models::FMTSeModel::getSchedule,
+			"@DocString(FMTSeModel::getschedule)")
+		.method("getspschedule", &Models::FMTSeModel::getSpSchedule,
+			"@DocString(FMTSeModel::getdisturbances)")
+		.method("setinitialmapping", &Models::FMTSeModel::setInitialMapping,
+			"@DocString(FMTSeModel::setinitialmapping)")
+		.method("getspatialoutput", &Models::FMTSeModel::getSpatialOutput,
+			"@DocString(FMTSeModel::getschedule)")
+		.method("getdisturbancestats", &Models::FMTSeModel::getDisturbanceStats,
+			"@DocString(FMTSeModel::getdisturbancestats)");
 
 
-	Rcpp::class_<Models::FMTsesmodel>("FMTsesmodel", "@DocString(FMTsesmodel)")
-		.derives<Models::FMTsemodel>("FMTsemodel")
-		.constructor("@DocString(FMTsesmodel())")
-		.constructor<Models::FMTmodel>("@DocString(FMTsesmodel(Models::FMTmodel))")
-		.method("greedyreferencebuild", &Models::FMTsesmodel::GreedyReferenceBuild,
-			"@DocString(FMTsesmodel:::GreedyReferenceBuild)");
+	Rcpp::class_<Models::FMTSesModel>("FMTsesmodel", "@DocString(FMTSesModel)")
+		.derives<Models::FMTSeModel>("FMTsemodel")
+		.constructor("@DocString(FMTSesModel())")
+		.constructor<Models::FMTModel>("@DocString(FMTSesModel(Models::FMTModel))")
+		.method("greedyreferencebuild", &Models::FMTSesModel::greedyReferenceBuild,
+			"@DocString(FMTSesModel:::GreedyReferenceBuild)");
 
 	#ifdef FMTWITHOSI
-	Rcpp::class_<Models::FMTlpsolver>("FMTlpsolver", "@DocString(FMTlpsolver)")
-		.constructor("@DocString(FMTlpsolver())")
-		.method("isProvenOptimal", &Models::FMTlpsolver::isProvenOptimal,
-			"@DocString(FMTlpsolver::isProvenOptimal)")
-		.method("getObjValue", &Models::FMTlpsolver::getObjValue,
-			"@DocString(FMTlpsolver::getObjValue)")
-		.method("writeLP", &Models::FMTlpsolver::writeLP,
-			"@DocString(FMTlpsolver::writeLP)")
-		.method("writeMPS", &Models::FMTlpsolver::writeMPS,
-			"@DocString(FMTlpsolver::writeMPS)");
+	Rcpp::class_<Models::FMTLpSolver>("FMTlpsolver", "@DocString(FMTLpSolver)")
+		.constructor("@DocString(FMTLpSolver())")
+		.method("isProvenOptimal", &Models::FMTLpSolver::isProvenOptimal,
+			"@DocString(FMTLpSolver::isProvenOptimal)")
+		.method("getObjValue", &Models::FMTLpSolver::getObjValue,
+			"@DocString(FMTLpSolver::getObjValue)")
+		.method("writeLP", &Models::FMTLpSolver::writeLP,
+			"@DocString(FMTLpSolver::writeLP)")
+		.method("writeMPS", &Models::FMTLpSolver::writeMPS,
+			"@DocString(FMTLpSolver::writeMPS)");
 
 
-	Rcpp::class_<Models::FMTsrmodel>("FMTsrmodel", "@DocString(FMTsrmodel)")
-		.derives<Models::FMTmodel>("FMTmodel")
-		.constructor("@DocString(FMTsrmodel())")
-		.method("buildperiod", &Models::FMTsrmodel::buildperiod,
-			"@DocString(FMTsrmodel::buildperiod)")
-		.method("boundsolution", &Models::FMTsrmodel::boundsolution,
-			"@DocString(FMTsrmodel::boundsolution)")
-		.method("getsolution", &Models::FMTsrmodel::getsolution,
-			"@DocString(FMTsrmodel::getsolution)")
-		.method("setsolution", &Models::FMTsrmodel::setsolution,
-			"@DocString(FMTsrmodel::setsolution)")
-		.method("setsolutionbylp", &Models::FMTsrmodel::setsolutionbylp,
-			"@DocString(FMTsrmodel::setsolutionbylp)")
-		.method("getoutputsdataframe", &Models::FMTsrmodel::getoutputsdataframe,
-			"@DocString(FMTsrmodel::getoutputsdataframe)")
-		.method("getoutput", &Models::FMTsrmodel::getoutput,
-			"@DocString(FMTsrmodel::getoutput)")
-		.method("getstats", &Models::FMTsrmodel::getstats,
-			"@DocString(FMTsrmodel::getstats)");
+	Rcpp::class_<Models::FMTSrModel>("FMTsrmodel", "@DocString(FMTSrModel)")
+		.derives<Models::FMTModel>("FMTmodel")
+		.constructor("@DocString(FMTSrModel())")
+		.method("buildperiod", &Models::FMTSrModel::buildPeriod,
+			"@DocString(FMTSrModel::buildperiod)")
+		.method("boundsolution", &Models::FMTSrModel::boundSolution,
+			"@DocString(FMTSrModel::boundsolution)")
+		.method("getsolution", &Models::FMTSrModel::getSolution,
+			"@DocString(FMTSrModel::getsolution)")
+		.method("setsolution", &Models::FMTSrModel::setSolution,
+			"@DocString(FMTSrModel::setsolution)")
+		.method("setsolutionbylp", &Models::FMTSrModel::setSolutionByLp,
+			"@DocString(FMTSrModel::setsolutionbylp)")
+		.method("getoutputsdataframe", &Models::FMTSrModel::getOutputsDataFrame,
+			"@DocString(FMTSrModel::getoutputsdataframe)")
+		.method("getoutput", &Models::FMTSrModel::getOutput,
+			"@DocString(FMTSrModel::getoutput)")
+		.method("getstats", &Models::FMTSrModel::getStats,
+			"@DocString(FMTSrModel::getstats)");
 
-	Rcpp::class_<Models::FMTnssmodel>("FMTnssmodel", "@DocString(FMTnssmodel)")
-		.derives<Models::FMTsrmodel>("FMTsrmodel")
-		.constructor("@DocString(FMTnssmodel())")
-		.constructor<Models::FMTmodel, unsigned int>("@DocString(FMTnssmodel(Models::FMTmodel,unsigned int))")
-		.method("simulate", &Models::FMTnssmodel::simulate,
-			"@DocString(FMTnssmodel::simulate)");
+	Rcpp::class_<Models::FMTNssModel>("FMTnssmodel", "@DocString(FMTNssModel)")
+		.derives<Models::FMTSrModel>("FMTsrmodel")
+		.constructor("@DocString(FMTNssModel())")
+		.constructor<Models::FMTModel, unsigned int>("@DocString(FMTNssModel(Models::FMTModel,unsigned int))")
+		.method("simulate", &Models::FMTNssModel::simulate,
+			"@DocString(FMTNssModel::simulate)");
 		
 
 
-	Rcpp::class_<Models::FMTlpmodel>("FMTlpmodel", "@DocString(FMTlpmodel)")
-		.derives<Models::FMTsrmodel>("FMTsrmodel")
-		.constructor<Models::FMTmodel, Models::FMTsolverinterface>("@DocString(FMTlpmodel(Models::FMTmodel,Models::FMTsolverinterface))")
-		.constructor("@DocString(FMTlpmodel())")
-		.constructor<Models::FMTlpmodel>("@DocString(FMTlpmodel(const FMTlpmodel&))")
-		.method("setobjective", &Models::FMTlpmodel::setobjective,
-			"@DocString(FMTlpmodel::setobjective)")
-		.method("setconstraint", &Models::FMTlpmodel::setconstraint,
-			"@DocString(FMTlpmodel::setconstraint)")
-		.method("eraseconstraint", &Models::FMTlpmodel::eraseconstraint,
-			"@DocString(FMTlpmodel::eraseconstraint)")
-		.method("eraseperiod", &Models::FMTlpmodel::eraseperiod,
-			"@DocString(FMTlpmodel::eraseperiod)")
-		.method("resolve", &Models::FMTlpmodel::resolve,
-			"@DocString(FMTlpmodel::resolve)")
-		.method("initialsolve", &Models::FMTlpmodel::initialsolve,
-			"@DocString(FMTlpmodel::initialsolve)")
-		.method("eq", &Models::FMTlpmodel::operator ==,
-			"@DocString(FMTlpmodel::operator==)")
-		.method("ne", &Models::FMTlpmodel::operator !=,
-			"@DocString(FMTlpmodel::operator!=)")
-		.method("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getoperatingareaschedulerheuristics,
-			"@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)")
-		.method("getvariabilities", &Models::FMTlpmodel::getvariabilities,
-			"@DocString(FMTlpmodel::getvariabilities)")
-		.method("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,
-			"@DocString(FMTlpmodel::getareavariabilities)")
-		.method("writeLP", &Models::FMTlpmodel::writeLP,
-			"@DocString(FMTlpmodel::writeLP)")
-		.method("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setstrictlypositivesoutputsmatrix,
-			"@DocString(FMTlpmodel::setstrictlypositivesoutputsmatrix)")
-		.method("getObjValue", &Models::FMTlpmodel::getObjValue,
-					"@DocString(FMTlpmodel::getObjValue)")
-		.method("writeMPS", &Models::FMTlpmodel::writeMPS,
-			"@DocString(FMTlpmodel::writeMPS)");;
+	Rcpp::class_<Models::FMTLpModel>("FMTlpmodel", "@DocString(FMTLpModel)")
+		.derives<Models::FMTSrModel>("FMTsrmodel")
+		.constructor<Models::FMTModel, Models::FMTsolverinterface>("@DocString(FMTLpModel(Models::FMTModel,Models::FMTsolverinterface))")
+		.constructor("@DocString(FMTLpModel())")
+		.constructor<Models::FMTLpModel>("@DocString(FMTLpModel(const FMTLpModel&))")
+		.method("setobjective", &Models::FMTLpModel::setObjective,
+			"@DocString(FMTLpModel::setobjective)")
+		.method("setconstraint", &Models::FMTLpModel::setConstraint,
+			"@DocString(FMTLpModel::setconstraint)")
+		.method("eraseconstraint", &Models::FMTLpModel::eraseConstraint,
+			"@DocString(FMTLpModel::eraseconstraint)")
+		.method("eraseperiod", &Models::FMTLpModel::erasePeriod,
+			"@DocString(FMTLpModel::eraseperiod)")
+		.method("resolve", &Models::FMTLpModel::resolve,
+			"@DocString(FMTLpModel::resolve)")
+		.method("initialsolve", &Models::FMTLpModel::initialSolve,
+			"@DocString(FMTLpModel::initialsolve)")
+		.method("eq", &Models::FMTLpModel::operator ==,
+			"@DocString(FMTLpModel::operator==)")
+		.method("ne", &Models::FMTLpModel::operator !=,
+			"@DocString(FMTLpModel::operator!=)")
+		.method("getoperatingareaschedulerheuristics", &Models::FMTLpModel::getOperatingAreaSchedulerHeuristics,
+			"@DocString(FMTLpModel::getoperatingareaschedulerheuristics)")
+		.method("getvariabilities", &Models::FMTLpModel::getVariabilities,
+			"@DocString(FMTLpModel::getvariabilities)")
+		.method("getareavariabilities", &Models::FMTLpModel::getAreaVariabilities,
+			"@DocString(FMTLpModel::getareavariabilities)")
+		.method("writeLP", &Models::FMTLpModel::writeLP,
+			"@DocString(FMTLpModel::writeLP)")
+		.method("setstrictlypositivesoutputsmatrix", &Models::FMTLpModel::setStrictlyPositivesOutputsMatrix,
+			"@DocString(FMTLpModel::setstrictlypositivesoutputsmatrix)")
+		.method("getObjValue", &Models::FMTLpModel::getObjValue,
+					"@DocString(FMTLpModel::getObjValue)")
+		.method("writeMPS", &Models::FMTLpModel::writeMPS,
+			"@DocString(FMTLpModel::writeMPS)");;
 	
 
 	#endif
 
 	
-	Rcpp::class_<Models::FMTsamodel>("FMTsamodel", "@DocString(FMTsamodel)")
-		.derives<Models::FMTsemodel>("FMTmodel")
-		.constructor<Models::FMTmodel>("@DocString(FMTsamodel(FMTmodel))")
-		.constructor("@DocString(FMTsamodel())")
-		.method("initialsolve", &Models::FMTsamodel::initialsolve,
-			"@DocString(FMTsamodel::initialsolve)");
+	Rcpp::class_<Models::FMTSaModel>("FMTsamodel", "@DocString(FMTSaModel)")
+		.derives<Models::FMTSeModel>("FMTmodel")
+		.constructor<Models::FMTModel>("@DocString(FMTSaModel(FMTModel))")
+		.constructor("@DocString(FMTSaModel())")
+		.method("initialsolve", &Models::FMTSaModel::initialSolve,
+			"@DocString(FMTSaModel::initialsolve)");
 	
     }
 }
