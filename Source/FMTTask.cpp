@@ -12,7 +12,7 @@
 namespace Parallel
 {
 
-	boost::recursive_mutex FMTTask::taskmutex;
+	boost::recursive_mutex FMTTask::m_taskmutex;
 
 	boost::mutex FMTTask::m_checkpointMutex;
 
@@ -30,15 +30,15 @@ namespace Parallel
 	}
 
 
-	void FMTTask::decrementWorkingThread()
+	void FMTTask::_decrementWorkingThread()
 	{
 		boost::mutex::scoped_lock guard(m_checkpointMutex);
 		--m_workingThreads;
 	}
 
-	void FMTTask::checkpoint()
+	void FMTTask::_checkpoint()
 	{
-		decrementWorkingThread();
+		_decrementWorkingThread();
 		if (m_workingThreads == 0)
 			{
 			m_checkpoint.notify_all();
@@ -71,7 +71,7 @@ namespace Parallel
 	FMTTask::FMTTask() :
 		Core::FMTObject(),
 		done(false),
-		tasklogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()))
+		m_tasklogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()))
 		#if defined _MSC_VER
 			,m_SeTranslator(Exception::FMTExceptionHandler::translateStructuralWIN32Exceptions)
 		#endif
@@ -82,7 +82,7 @@ namespace Parallel
 	FMTTask::FMTTask(const FMTTask& rhs) :
 		Core::FMTObject(rhs),
 		done(false),
-		tasklogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()))
+		m_tasklogger(std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger()))
 		#if defined _MSC_VER
 			,m_SeTranslator(Exception::FMTExceptionHandler::translateStructuralWIN32Exceptions)
 		#endif
@@ -96,7 +96,7 @@ namespace Parallel
 		{
 			Core::FMTObject::operator=(rhs);
 			done = rhs.done;
-			tasklogger = std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger());
+			m_tasklogger = std::unique_ptr<Logging::FMTLogger>(new Logging::FMTTaskLogger());
 
 		}
 		return *this;
@@ -142,7 +142,7 @@ namespace Parallel
 		return std::move(std::unique_ptr<FMTTask>(new FMTTask()));
 	}
 
-	std::vector<size_t>FMTTask::splitWork(int numberoftasks, const int& totalworksize) const
+	std::vector<size_t>FMTTask::_splitWork(int numberoftasks, const int& totalworksize) const
 		{
 		std::vector<size_t>taskssize;
 		try {
@@ -153,7 +153,7 @@ namespace Parallel
 				numberoftasks = totalworksize;
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot split task of size "+ std::to_string(totalworksize) +" in "+std::to_string(numberoftasks)
-					,"FMTTask::splitWork", __LINE__, __FILE__);
+					,"FMTTask::_splitWork", __LINE__, __FILE__);
 				}
 			const int zp = numberoftasks - (totalworksize % numberoftasks);
 			const int equaltask = totalworksize / numberoftasks;
@@ -169,7 +169,7 @@ namespace Parallel
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTTask::splitWork", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTTask::_splitWork", __LINE__, __FILE__);
 			}
 		return taskssize;
 		}
@@ -212,14 +212,14 @@ namespace Parallel
 	void FMTTask::setstatus(bool status)
 	{
 		checkSignals();
-		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
+		boost::lock_guard<boost::recursive_mutex> guard(m_taskmutex);
 		done = status;
 	}
 
 	bool FMTTask::isdone() const
 	{
 		checkSignals();
-		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
+		boost::lock_guard<boost::recursive_mutex> guard(m_taskmutex);
 		const bool isdone = (done );
 		return done;
 	}

@@ -86,7 +86,7 @@ namespace Parallel
 	{
 		try {
 			m_Models.push_back(std::move(model.clone()));
-			m_Models.back()->setParallelLogger(*tasklogger.get());
+			m_Models.back()->setParallelLogger(*m_tasklogger.get());
 			const std::string SCENARIO_NAME = m_Models.back()->getName();
 			if (!model.getParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)||
 				!(!SCENARIO_NAME.empty() && SCENARIO_NAME.find_first_not_of("0123456789") == std::string::npos))
@@ -115,7 +115,7 @@ namespace Parallel
 			std::list<std::unique_ptr<Models::FMTModel>>allmodels=copyModels(m_Models);
 			std::list<std::vector<Core::FMTSchedule>>modelschedules(m_allSchedules);
 			std::list<std::vector<Core::FMTOutput>>modeloutputs(m_Outputs);
-			for (const size_t tasksize : splitWork(numberoftasks, static_cast<int>(m_Models.size())))
+			for (const size_t tasksize : _splitWork(numberoftasks, static_cast<int>(m_Models.size())))
 				{
 				FMTPlanningTask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTModel>>modelsoftask;
