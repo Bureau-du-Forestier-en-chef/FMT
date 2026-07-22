@@ -1,8 +1,8 @@
 #include <string>
 #include <vector>
-#include "FMTexception.h"
-#include "FMTmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTException.h"
+#include "FMTModel.h"
+#include "FMTModelParser.h"
 #include "TransformationCore.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 		boost::split(splittedMask, argv[3], boost::is_any_of("|"));
 	}
 	std::string output_scenario_name = scenarioName + "_test";
-	Parser::FMTmodelparser ModelParser;
+	Parser::FMTModelParser ModelParser;
 
 
 	std::vector<Exception::FMTexc>errors;
@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	ModelParser.seterrorstowarnings(errors);
+	ModelParser.setErrorsToWarnings(errors);
 
 
-	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
-	const Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODELS.at(0), primary_path, splitted, splittedMask, output_scenario_name);
+	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
+	const Models::FMTModel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODELS.at(0), primary_path, splitted, splittedMask, output_scenario_name);
 	
 	// On vérifie si on a plus d'actions dans le nouveau model
 	if (SPLITTED_MODEL.getactions().size() <= MODELS.at(0).getactions().size())

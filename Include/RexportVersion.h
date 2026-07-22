@@ -9,70 +9,70 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define REXPORTVERSION_H_INCLUDED
 
 #include <Rcpp.h>
-#include "FMTversion.h"
+#include "FMTVersion.h"
 #include "Rdefinitions.h"
 #include <string>
 
-RCPP_EXPOSED_WRAP(Version::FMTversion);
-RCPP_EXPOSED_AS(Version::FMTversion);
+RCPP_EXPOSED_WRAP(Version::FMTVersion);
+RCPP_EXPOSED_AS(Version::FMTVersion);
 
 namespace R
 {
-int getmajorstaticpass(Version::FMTversion* versionobject)
+int getMajorStaticPass(Version::FMTVersion* versionobject)
 	{
-	return Version::FMTversion::getmajor();
+	return Version::FMTVersion::getMajor();
 	}
 
-int getminorstaticpass(Version::FMTversion* versionobject)
+int getMinorStaticPass(Version::FMTVersion* versionobject)
 	{
-	return Version::FMTversion::getminor();
+	return Version::FMTVersion::getMinor();
 	}
 
-int getpatchstaticpass(Version::FMTversion* versionobject)
+int getPatchStaticPass(Version::FMTVersion* versionobject)
 	{
-	return Version::FMTversion::getpatch();
+	return Version::FMTVersion::getPatch();
 	}
 
-std::string getversionstaticpass(Version::FMTversion* versionobject)
+std::string getVersionStaticPass(Version::FMTVersion* versionobject)
 	{
-	return Version::FMTversion::getversion();
+	return Version::FMTVersion::getVersion();
 	}
 
-bool isatleaststaticpass(Version::FMTversion* versionobject, int major, int minor, int patch)
+bool isAtLeastStaticPass(Version::FMTVersion* versionobject, int major, int minor, int patch)
 	{
-	return Version::FMTversion::isatleast(major,minor,patch);
+	return Version::FMTVersion::isAtLeast(major,minor,patch);
 	}
 
-bool hasfeaturestaticpass(Version::FMTversion* versionobject, const std::string& feature)
+bool hasFeatureStaticPass(Version::FMTVersion* versionobject, const std::string& feature)
 	{
-	return Version::FMTversion::hasfeature(feature);
+	return Version::FMTVersion::hasFeature(feature);
 	}
 
-std::string getlicensestaticpass(Version::FMTversion* versionobject, bool french)
+std::string getLicenseStaticPass(Version::FMTVersion* versionobject, bool french)
     {
-	const Version::FMTversion version;
-    return version.getlicense(french);
+	const Version::FMTVersion version;
+    return version.getLicense(french);
     }
 
 void exportVersion()
 {
 
-	Rcpp::class_<Version::FMTversion>("FMTversion", "@DocString(FMTversion)")
-		.constructor("@DocString(FMTversion())")
-		.method("getmajor", &getmajorstaticpass,
-			"@DocString(FMTversion::getmajor)")
-		.method("getminor",&getminorstaticpass,
-			"@DocString(FMTversion::getminor)")
-		.method("getpatch", &getpatchstaticpass,
-			"@DocString(FMTversion::getpatch)")
-		.method("getversion", &getversionstaticpass,
-			"@DocString(FMTversion::getversion)")
-		.method("isatleast", &isatleaststaticpass,
-			"@DocString(FMTversion::isatleast)")
-		.method("hasfeature", &hasfeaturestaticpass,
-			"@DocString(FMTversion::hasfeature)")
-        .method("getlicense",&getlicensestaticpass,
-			"@DocString(FMTversion::getlicense)");
+	Rcpp::class_<Version::FMTVersion>("FMTversion", "@DocString(FMTVersion)")
+		.constructor("@DocString(FMTVersion())")
+		.method("getmajor", &getMajorStaticPass,
+			"@DocString(FMTVersion::getmajor)")
+		.method("getminor",&getMinorStaticPass,
+			"@DocString(FMTVersion::getminor)")
+		.method("getpatch", &getPatchStaticPass,
+			"@DocString(FMTVersion::getpatch)")
+		.method("getversion", &getVersionStaticPass,
+			"@DocString(FMTVersion::getversion)")
+		.method("isatleast", &isAtLeastStaticPass,
+			"@DocString(FMTVersion::isatleast)")
+		.method("hasfeature", &hasFeatureStaticPass,
+			"@DocString(FMTVersion::hasfeature)")
+        .method("getlicense",&getLicenseStaticPass,
+			"@DocString(FMTVersion::getlicense)");
 	}
 }
 

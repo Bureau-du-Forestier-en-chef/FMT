@@ -1,24 +1,24 @@
 #ifdef FMTWITHOSI
-    #include "FMTareaparser.h"
-	#include "FMTlpmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTconstraint.h"
-    #include "FMToutputnode.h"
-    #include "FMTmask.h"
-	#include "FMTopareaschedulertask.h"
-	#include "FMTtaskhandler.h"
-    #include "FMToperatingareascheduler.h"
-    #include "FMTtimeyieldhandler.h"
-    #include "FMTfreeexceptionhandler.h"
+    #include "FMTAreaParser.h"
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTConstraint.h"
+    #include "FMTOutputNode.h"
+    #include "FMTMask.h"
+	#include "FMTOpAreaSchedulerTask.h"
+	#include "FMTTaskHandler.h"
+    #include "FMTOperatingAreaScheduler.h"
+    #include "FMTTimeYieldHandler.h"
+    #include "FMTFreeExceptionHandler.h"
     #include "boost/filesystem.hpp"
 #endif
 #ifdef FMTWITHOSI
 
-std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
+std::vector<Heuristics::FMTOperatingAreaScheme> ObtenirOperatingArea(
     const std::string& fichierShp,
-    const std::vector<Core::FMTtheme>& themes,
+    const std::vector<Core::FMTTheme>& themes,
     const int& numeroTheme,
     const int& startingperiod,
     const std::string& nomChampAge,
@@ -26,18 +26,18 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
     const std::string& nomChampStanlock,
     const std::string& fichierParam)
     {
-        Parser::FMTareaparser areaParser;
-        std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(
+        Parser::FMTAreaParser areaParser;
+        std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOAschedulerparameters(
             fichierParam,
             themes,
             numeroTheme - 1,
             startingperiod);
         for (const auto& op : opeareas) 
         {
-            if (op.getneihgborsperimeter() > 0 || op.getgreenup() > 0)
+            if (op.getNeighborsPerimeter() > 0 || op.getGreenUp() > 0)
             {
-                Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
-                opeareas = areaParser.getschemeneighbors(
+                Logging::FMTDefaultLogger() << "Lecture des blocs voisins." << "\n";
+                opeareas = areaParser.getSchemeNeighbors(
                     opeareas, 
                     themes, 
                     fichierShp, 
@@ -52,27 +52,27 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(
         return opeareas;
 }
 
-Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)   
+Core::FMTOutputNode createBFECoptaggregate(Models::FMTModel& model)   
     {
         std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
-            std::vector<Core::FMTaction> newactions;
+            std::vector<Core::FMTAction> newactions;
             int youvert = 0;
 
-            for (Core::FMTaction& action : model.getactions())
+            for (Core::FMTAction& action : model.getactions())
             {
-                if (action.useyield("YOUVERT"))
+                if (action.useYield("YOUVERT"))
                 {
                     youvert += 1;
-                    std::vector<std::string> agg = action.getaggregates();
+                    std::vector<std::string> agg = action.getAggregates();
                     if (std::count(agg.begin(), agg.end(), Agg_name))
                     {
-                        Exception::FMTfreeexceptionhandler().raise(
+                        Exception::FMTFreeExceptionHandler().raise(
                             Exception::FMTexc::FMTfunctionfailed, 
                             "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs",
-                            "testOAschedulerBFEC", __LINE__,model.getname());  
+                            "testOAschedulerBFEC", __LINE__,model.getName());  
                     }
 
-                    action.push_aggregate(Agg_name);
+                    action.pushAggregate(Agg_name);
                 }
 
                 newactions.push_back(action);
@@ -80,14 +80,14 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 
             if (youvert < 1)
             {
-                Exception::FMTfreeexceptionhandler().raise(
+                Exception::FMTFreeExceptionHandler().raise(
                     Exception::FMTexc::FMTfunctionfailed, 
                     "Aucune action dans le modèle n'a de youvert",
-                    "testOAschedulerBFEC", __LINE__,model.getname()) ;
+                    "testOAschedulerBFEC", __LINE__,model.getName()) ;
             }
 
-            model.setactions(newactions);
-            const std::vector<Core::FMTtheme> themes = model.getthemes();	
+            model.setActions(newactions);
+            const std::vector<Core::FMTTheme> themes = model.getThemes();	
             std::string stringMask = "";
             for (int i = 1; i <= themes.size(); i++)
             {
@@ -101,15 +101,15 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
                 }
             }
 
-            Core::FMTmask fmtMask = Core::FMTmask(stringMask, themes);
-            return Core::FMToutputnode(fmtMask, Agg_name);
+            Core::FMTMask fmtMask = Core::FMTMask(stringMask, themes);
+            return Core::FMTOutputNode(fmtMask, Agg_name);
     }
 #endif
 int main(int argc, char *argv[])
     {   
 
         #ifdef FMTWITHOSI
-            Logging::FMTdefaultlogger().logstamp();
+            Logging::FMTDefaultLogger().logStamp();
             std::string primarylocation;
             std::vector<std::string> results;
             std::vector<std::string> scenarios;
@@ -148,8 +148,8 @@ int main(int argc, char *argv[])
                 }
            
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
-            Parser::FMTmodelparser modelparser;
-            modelparser.setdefaultexceptionhandler();
+            Parser::FMTModelParser modelparser;
+            modelparser.setDefaultExceptionHandler();
             std::vector<Exception::FMTexc> errors;
             errors.push_back(Exception::FMTexc::FMTmissingyield);
             errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -162,30 +162,30 @@ int main(int argc, char *argv[])
             errors.push_back(Exception::FMTexc::FMTmissingyield);
             errors.push_back(Exception::FMTexc::FMTEmptyOA);
             errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-            modelparser.seterrorstowarnings(errors);
-            const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-            Models::FMTmodel model = models.at(0);
-            //Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::CLP);
-            Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); 
+            modelparser.setErrorsToWarnings(errors);
+            const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+            Models::FMTModel model = models.at(0);
+            //Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::CLP);
+            Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
+            optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+            optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+	        optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); 
             // pour gérer les variables négatives
-            //const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
-            const int startingperiod = optimizationmodel.getparameter(Models::FMTintmodelparameters::UPDATE);
-            const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
-            Core::FMToutput adm7m;
-            for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+            //const int startingperiod = optimizationmodel.getconstraints().at(0).getPeriodLowerBound();
+            const int startingperiod = optimizationmodel.getParameter(Models::FMTintmodelparameters::UPDATE);
+            const Core::FMTOutputNode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
+            Core::FMTOutput adm7m;
+            for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
                 {
-                if (output.getname() == "OATTEINTE7M")
+                if (output.getName() == "OATTEINTE7M")
                     {
                     adm7m = output;
                     break;
                     }
                 }
-            const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(
+            const std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = ObtenirOperatingArea(
                 fichierShp,
-                optimizationmodel.getthemes(),
+                optimizationmodel.getThemes(),
                 14, 
                 startingperiod, 
                 "AGE", 
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
                 "STANLOCK", 
                 lfichierParam);
             {
-                std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(
+                std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTOpAreaSchedulerTask(
                     optimizationmodel, 
                     opeareas, 
                     nodeofoutput, 
@@ -202,23 +202,23 @@ int main(int argc, char *argv[])
                     10, 
                     9000, 
                     adm7m));//120));
-                Parallel::FMTtaskhandler handler(maintaskptr, 1);
-                handler.settasklogger();
-                handler.conccurentrun();
+                Parallel::FMTTaskHandler handler(maintaskptr, 1);
+                handler.setTaskLogger();
+                handler.conccurentRun();
                 maintaskptr->finalize(); // écrit ici le meilleur modèle sur le disque
             }
             // On relit ici le nouveau "root" qui est le meilleur modèle écrit précédement 
-            const std::vector<Models::FMTmodel> nmodels = modelparser.readproject(
+            const std::vector<Models::FMTModel> nmodels = modelparser.readproject(
                 "../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string> (1, "ROOT"));
-            Models::FMTmodel readmodel = nmodels.at(0);
-            Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
-            noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-            noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-            noptimizationmodel.Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-            const std::vector<Core::FMTschedule> schedules = modelparser.readschedules(
+            Models::FMTModel readmodel = nmodels.at(0);
+            Models::FMTLpModel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
+            noptimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+            noptimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+            noptimizationmodel.Models::FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+            const std::vector<Core::FMTSchedule> schedules = modelparser.readschedules(
                 "../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
             // On regarde si on est capable de relire ce qu'on vient de créer
-            noptimizationmodel.doplanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 
+            noptimizationmodel.doPlanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 
 		#endif 
         return 0;
 	}

@@ -1,31 +1,31 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTlpmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTconstraint.h"
-	#include "FMTscheduleparser.h"
-	#include "FMTfreeexceptionhandler.h"
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTConstraint.h"
+	#include "FMTScheduleParser.h"
+	#include "FMTFreeExceptionHandler.h"
 #endif
 
 
 int main()
 	{
 #ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
-	if (Version::FMTversion().hasfeature("OSI"))
+	Logging::FMTDefaultLogger().logStamp();
+	if (Version::FMTVersion().hasFeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<std::string>scenarios;
 		scenarios.push_back("stdconstraints");
-		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel lpmodel(models.at(0),Models::FMTsolverinterface::CLP);
-		lpmodel.doplanning(true);
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTLpModel lpmodel(models.at(0),Models::FMTsolverinterface::CLP);
+		lpmodel.doPlanning(true);
 	}else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 #endif 
 	return 0;

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTFormLogger.h"
-#include "FMTlogger.h"
+#include "FMTLogger.h"
 #include <memory>
 
 #define LOGLEVEL 1
@@ -9,28 +9,28 @@
 
 using namespace Logging;
 
-std::unique_ptr <FMTlogger> Wrapper::FMTFormLogger::Clone() const
+std::unique_ptr <FMTLogger> Wrapper::FMTFormLogger::Clone() const
 {
-	return std::unique_ptr<FMTlogger>(new Wrapper::FMTFormLogger(*this));
+	return std::unique_ptr<FMTLogger>(new Wrapper::FMTFormLogger(*this));
 }
 
-FMTlogger* Wrapper::FMTFormLogger::clone() const
+FMTLogger* Wrapper::FMTFormLogger::clone() const
 {
 	return new Wrapper::FMTFormLogger(*this);
 }
 
 Wrapper::FMTFormLogger::FMTFormLogger(
 	const std::string& nomFichierLogger, logfunc feed)
-	: FMTlogger(), keepprint(false), m_isMainInstance(true),
+	: FMTLogger(), keepprint(false), m_isMainInstance(true),
 	lastprint(), sendfeedback(feed)
 {
-	redirectofile(nomFichierLogger, false);
-	setlogginglevel(LOGLEVEL);
-	setstreamflush(true);
+	redirectToFile(nomFichierLogger, false);
+	setLoggingLevel(LOGLEVEL);
+	setStreamFlush(true);
 }
 
 Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
-	: FMTlogger(rhs), 
+	: FMTLogger(rhs), 
 	keepprint(rhs.keepprint),
 	m_isMainInstance(false),
 	lastprint(rhs.lastprint), 
@@ -40,18 +40,18 @@ Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
 	//filepath.clear();
 }
 
-void Wrapper::FMTFormLogger::logtime()
+void Wrapper::FMTFormLogger::logTime()
 {
 	// No-op intentionnel : sendfeedback ne peut pas être appelé depuis un thread natif.
-	// Le fichier log est ouvert une fois dans le constructeur via redirectofile().
-	// Les timestamps sont écrits explicitement via *logger << logstamp
+	// Le fichier log est ouvert une fois dans le constructeur via redirectToFile().
+	// Les timestamps sont écrits explicitement via *logger << logStamp
 }
 
 Wrapper::FMTFormLogger::~FMTFormLogger()
 {
 	// Ferme et libere le flux fichier AVANT l'execution du destructeur de base
-	// FMTlogger::~FMTlogger(). Sinon, la répartition virtuelle pendant la destruction
-	// appelle FMTlogger::logtime() (la partie dérivée étant déjà détruite, l'override
+	// FMTLogger::~FMTLogger(). Sinon, la répartition virtuelle pendant la destruction
+	// appelle FMTLogger::logTime() (la partie dérivée étant déjà détruite, l'override
 	// no-op n'est plus atteint), ce qui insère une ligne timestamp parasite
 	// "Thread(id) <date>" dans le log à chaque destruction d'un clone du logger.
 	closeFile();
@@ -104,10 +104,10 @@ void Wrapper::FMTFormLogger::cout(const char * message) const
 
 void Wrapper::FMTFormLogger::settasklogginglevel(int taskLogLevel)
 {
-	setlogginglevel(taskLogLevel);
+	setLoggingLevel(taskLogLevel);
 }
 
 void Wrapper::FMTFormLogger::setdefaultlogginglevel()
 {
-	setlogginglevel(LOGLEVEL);
+	setLoggingLevel(LOGLEVEL);
 }

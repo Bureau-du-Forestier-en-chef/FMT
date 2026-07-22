@@ -6,23 +6,23 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTPatchRules.h"
-#include "FMTconstraint.h"
-#include "FMTaction.h"
-#include "FMTeventcontainer.h"
+#include "FMTConstraint.h"
+#include "FMTAction.h"
+#include "FMTEventContainer.h"
 #include "FMTSpatialGraphs.h"
 #include <limits>
 
 namespace Spatial
 {
 
-	std::vector<FMTPatchRules> FMTPatchRules::GetRules(
-		const std::vector<Core::FMTconstraint>& p_constraints,
-		const std::vector<Core::FMTaction>& p_actions)
+	std::vector<FMTPatchRules> FMTPatchRules::getRules(
+		const std::vector<Core::FMTConstraint>& p_constraints,
+		const std::vector<Core::FMTAction>& p_actions)
 	{
 		std::vector<FMTPatchRules> Rules;
 		try {
 			const std::vector<std::pair<std::vector<int>,
-				std::pair<int, int>>> RULES = _GetOrderedRules(p_constraints, p_actions);
+				std::pair<int, int>>> RULES = _getOrderedRules(p_constraints, p_actions);
 			int i = 0;
 			for (const auto& RULE_ELEMENTS : RULES)
 				{
@@ -31,38 +31,38 @@ namespace Spatial
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTPatchRules::GetRules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTPatchRules::getRules", __LINE__, __FILE__);
 			}
 		return Rules;
 	}
 
-	double FMTPatchRules::Evaluate(const FMTeventcontainer& p_events,
+	double FMTPatchRules::evaluate(const FMTEventContainer& p_events,
 		const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
 		double cost = 0;
 		try {
-			if (_IsSizeUsed())
+			if (_isSizeUsed())
 			{
-				cost += _EvaluateSize(p_events);
+				cost += _evaluateSize(p_events);
 			}
-			if (_IsAdjacencyUsed())
+			if (_isAdjacencyUsed())
 			{
-				cost += _EvaluateAdjacency(p_events);
+				cost += _evaluateAdjacency(p_events);
 			}
-			if (_IsGroupUsed())
+			if (_isGroupUsed())
 			{
-				cost += _EvaluateGroup(p_events, p_SpatialGraphs);
+				cost += _evaluateGroup(p_events, p_SpatialGraphs);
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTPatchRules::Evaluate", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTPatchRules::evaluate", __LINE__, __FILE__);
 			}
 		return cost;
 	}
 
-	bool FMTPatchRules::_TooSmall(const FMTevent& p_event, size_t& p_cost) const
+	bool FMTPatchRules::_tooSmall(const FMTEvent& p_event, size_t& p_cost) const
 	{
 		bool use = false;
 		const size_t EVENT_SIZE = p_event.size();
@@ -73,7 +73,7 @@ namespace Spatial
 		}
 		return use;
 	}
-	bool FMTPatchRules::_TooBig(const FMTevent& p_event, size_t& p_cost) const
+	bool FMTPatchRules::_tooBig(const FMTEvent& p_event, size_t& p_cost) const
 	{
 		bool use = false;
 		const size_t EVENT_SIZE = p_event.size();
@@ -87,32 +87,32 @@ namespace Spatial
 	}
 
 
-	void  FMTPatchRules::FillTooSmallEvents(std::vector<std::set<FMTevent>::iterator>& p_SmallEvents,
-		FMTeventcontainer& p_events) const
+	void  FMTPatchRules::fillTooSmallEvents(std::vector<std::set<FMTEvent>::iterator>& p_SmallEvents,
+		FMTEventContainer& p_events) const
 	{
-		if (_IsSizeUsed())
+		if (_isSizeUsed())
 			{
-			for (const auto& EVENT : p_events.GetEventsOf(m_RulesId,
+			for (const auto& EVENT : p_events.getEventsOf(m_RulesId,
 				m_MinimalPeriod, m_MaximalPeriod))
 			{
 				size_t useLess = 0;
-				if (_TooSmall(*EVENT, useLess))
+				if (_tooSmall(*EVENT, useLess))
 				{
 					p_SmallEvents.push_back(EVENT);
 				}
 			}
 			}
 	}
-	void  FMTPatchRules::FillTooBigEvents(std::vector<std::set<FMTevent>::iterator>& p_BigEvents,
-		FMTeventcontainer& p_events) const
+	void  FMTPatchRules::fillTooBigEvents(std::vector<std::set<FMTEvent>::iterator>& p_BigEvents,
+		FMTEventContainer& p_events) const
 	{
-		if (_IsSizeUsed())
+		if (_isSizeUsed())
 		{
-			for (const auto& EVENT : p_events.GetEventsOf(m_RulesId,
+			for (const auto& EVENT : p_events.getEventsOf(m_RulesId,
 				m_MinimalPeriod, m_MaximalPeriod))
 			{
 				size_t useLess = 0;
-				if (_TooBig(*EVENT, useLess))
+				if (_tooBig(*EVENT, useLess))
 				{
 					p_BigEvents.push_back(EVENT);
 				}
@@ -120,56 +120,56 @@ namespace Spatial
 		}
 	}
 
-	void FMTPatchRules::FillDispertionEvents(std::vector<std::set<FMTevent>::iterator>& p_Dispertion,
-		FMTeventcontainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const
+	void FMTPatchRules::fillDispersionEvents(std::vector<std::set<FMTEvent>::iterator>& p_Dispersion,
+		FMTEventContainer& p_events, const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
-		if (_IsGroupUsed())
+		if (_isGroupUsed())
 			{
 			for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 				{
-				const std::vector < std::set<FMTevent>::iterator > CONFLICTS =
-					p_events.GetDispertionConflicts(m_RulesId, p_SpatialGraphs,
+				const std::vector < std::set<FMTEvent>::iterator > CONFLICTS =
+					p_events.getDispersionConflicts(m_RulesId, p_SpatialGraphs,
 						m_GroupTheme, period,
 						period + m_GroupGreenUp, m_MaximalGroupDistance);
-				p_Dispertion.insert(p_Dispertion.end(), CONFLICTS.begin(), CONFLICTS.end());
+				p_Dispersion.insert(p_Dispersion.end(), CONFLICTS.begin(), CONFLICTS.end());
 				}
 			}
 	}
 
 
-	double FMTPatchRules::_EvaluateSize(const FMTeventcontainer& p_events) const
+	double FMTPatchRules::_evaluateSize(const FMTEventContainer& p_events) const
 	{
 		double cost = 0;
 		try {
-			if (_IsSizeUsed())
+			if (_isSizeUsed())
 				{
-					for (const auto& EVENT : p_events.GetEventsOf(m_RulesId,
+					for (const auto& EVENT : p_events.getEventsOf(m_RulesId,
 						m_MinimalPeriod, m_MaximalPeriod))
 					{
 						size_t EventCost = 0;
-						if (!_TooSmall(*EVENT, EventCost))
+						if (!_tooSmall(*EVENT, EventCost))
 						{
-							_TooBig(*EVENT, EventCost);
+							_tooBig(*EVENT, EventCost);
 						}
 						cost += static_cast<double>(EventCost);
 					}
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTPatchRules::_EvaluateSize", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTPatchRules::_evaluateSize", __LINE__, __FILE__);
 			}
 		return cost;
 	}
 
-	bool FMTPatchRules::_IsTooClose(const FMTevent& p_event, const FMTeventcontainer& p_events, size_t& p_cost) const
+	bool FMTPatchRules::_isTooClose(const FMTEvent& p_event, const FMTEventContainer& p_events, size_t& p_cost) const
 		{
 		bool TooClose = false;
-		if (_HasMinimalAdjacency())
+		if (_hasMinimalAdjacency())
 			{
-			for (int period = p_event.getperiod(); period <= p_event.getperiod() + m_GreenUp; ++period)
+			for (int period = p_event.getPeriod(); period <= p_event.getPeriod() + m_GreenUp; ++period)
 				{
-				for (const FMTeventcontainer::const_iterator eventIt : p_events.getevents(period, m_RulesId))
+				for (const FMTEventContainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
 					{
 					if (*eventIt != p_event &&
 						p_event.within(m_MinimalAdjacency, *eventIt))
@@ -184,15 +184,15 @@ namespace Spatial
 		}
 
 
-	double FMTPatchRules::_EvaluateAdjacency(const FMTeventcontainer& p_events) const
+	double FMTPatchRules::_evaluateAdjacency(const FMTEventContainer& p_events) const
 	{
 		double cost = 0;
 		try {
-			if (_IsAdjacencyUsed())
+			if (_isAdjacencyUsed())
 				{
 				for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 					{
-					for (const FMTeventcontainer::const_iterator eventIt : p_events.getevents(period, m_RulesId))
+					for (const FMTEventContainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
 						{
 						
 						}
@@ -217,25 +217,25 @@ namespace Spatial
 				}
 
 
-				for (const FMTeventcontainer::const_iterator eventit : m_events.getevents(p_period, p_actions))
+				for (const FMTEventContainer::const_iterator eventit : m_events.getEvents(p_period, p_actions))
 				{
 					const uint16_t containerlookup = static_cast<uint16_t>(baselookup + eventit->size());
 
 					//0//-//1//
 					//-//-//-//
 					//2//-//3//
-					const std::array<FMTcoordinate, 4> enveloppe = eventit->getEnveloppe();
-					const uint16_t minimalx = containerlookup < enveloppe.at(0).getx() ? enveloppe.at(0).getx() - containerlookup : 0;
-					const uint16_t minimaly = containerlookup < enveloppe.at(0).gety() ? enveloppe.at(0).gety() - containerlookup : 0;
-					const uint16_t maximalx = enveloppe.at(3).getx() + containerlookup;
-					const uint16_t maximaly = enveloppe.at(3).gety() + containerlookup;
-					const FMTcoordinate minimalcoord(minimalx, minimaly);
-					const FMTcoordinate maximalcoord(maximalx, maximaly);
+					const std::array<FMTCoordinate, 4> enveloppe = eventit->getEnveloppe();
+					const uint16_t minimalx = containerlookup < enveloppe.at(0).getX() ? enveloppe.at(0).getX() - containerlookup : 0;
+					const uint16_t minimaly = containerlookup < enveloppe.at(0).getY() ? enveloppe.at(0).getY() - containerlookup : 0;
+					const uint16_t maximalx = enveloppe.at(3).getX() + containerlookup;
+					const uint16_t maximaly = enveloppe.at(3).getY() + containerlookup;
+					const FMTCoordinate minimalcoord(minimalx, minimaly);
+					const FMTCoordinate maximalcoord(maximalx, maximaly);
 					double totalwithincount = 0;
 					for (int gupperiod = std::max(1, p_period - p_greenup); gupperiod <= p_period; ++gupperiod)
 					{
 						const double periodfactor = static_cast<double>((p_greenup - (p_period - gupperiod))) + 1;
-						for (const FMTeventcontainer::const_iterator eventof : m_events.getevents(gupperiod, p_actions, minimalcoord, maximalcoord))
+						for (const FMTEventContainer::const_iterator eventof : m_events.getEvents(gupperiod, p_actions, minimalcoord, maximalcoord))
 						{
 							if (eventit != eventof)//They will have the same address if it's the same event!
 							{
@@ -258,21 +258,21 @@ namespace Spatial
 			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTPatchRules::_EvaluateAdjacency", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTPatchRules::_evaluateAdjacency", __LINE__, __FILE__);
 			}
 		return cost;
 	}
-	double FMTPatchRules::_EvaluateGroup(const FMTeventcontainer& p_events,
+	double FMTPatchRules::_evaluateGroup(const FMTEventContainer& p_events,
 		const FMTSpatialGraphs& p_SpatialGraphs) const
 	{
 		double cost = 0;
 		try {
-			if (_IsGroupUsed())
+			if (_isGroupUsed())
 			{
 				for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 				{
-					cost += p_events.GetDispertion(m_RulesId, p_SpatialGraphs,
+					cost += p_events.getDispersion(m_RulesId, p_SpatialGraphs,
 						m_GroupTheme, period,
 						period + m_GroupGreenUp, m_MaximalGroupDistance);
 				}
@@ -280,15 +280,15 @@ namespace Spatial
 			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTPatchRules::_EvaluateGroup", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTPatchRules::_evaluateGroup", __LINE__, __FILE__);
 			}
 		return cost;
 	}
 
 
-	FMTPatchRules::FMTPatchRules(const std::vector<Core::FMTconstraint>& p_constraints,
-		const std::vector<Core::FMTaction>& p_actions, int p_Id):
+	FMTPatchRules::FMTPatchRules(const std::vector<Core::FMTConstraint>& p_constraints,
+		const std::vector<Core::FMTAction>& p_actions, int p_Id):
 		m_GreenUp(),
 		m_MinimalAdjacency(),
 		m_MaximalAdjacency(),
@@ -304,23 +304,23 @@ namespace Spatial
 		m_MinimalPeriod(),
 		m_MaximalPeriod()
 		{
-		_BuildPatchRules(p_constraints, p_actions, p_Id);
+		_buildPatchRules(p_constraints, p_actions, p_Id);
 		}
 
 std::vector<std::pair<std::vector<int>,
-	std::pair<int, int>>>  FMTPatchRules::_GetOrderedRules(
-		const std::vector<Core::FMTconstraint>& p_constraints,
-		const std::vector<Core::FMTaction>& p_actions)
+	std::pair<int, int>>>  FMTPatchRules::_getOrderedRules(
+		const std::vector<Core::FMTConstraint>& p_constraints,
+		const std::vector<Core::FMTAction>& p_actions)
 	{
 	std::vector<std::pair<std::vector<int>,
 		std::pair<int, int>>> Rules;
-		for (const Core::FMTconstraint& CONSTRAINT : p_constraints)
+		for (const Core::FMTConstraint& CONSTRAINT : p_constraints)
 			{
-				if (CONSTRAINT.isspatial())
+				if (CONSTRAINT.isSpatial())
 				{
-					const std::vector<int>ACTION_IDS = CONSTRAINT.getactionids(p_actions);
-					const int LOWER_PERIOD = CONSTRAINT.getperiodlowerbound();
-					const int UPPER_PERIOD = CONSTRAINT.getperiodupperbound();
+					const std::vector<int>ACTION_IDS = CONSTRAINT.getActionIds(p_actions);
+					const int LOWER_PERIOD = CONSTRAINT.getPeriodLowerBound();
+					const int UPPER_PERIOD = CONSTRAINT.getPeriodUpperBound();
 					const std::pair<std::vector<int>, std::pair<int, int>> NEW_RULES =
 						std::pair<std::vector<int>, std::pair<int, int>>(ACTION_IDS,
 							std::pair<int, int>(LOWER_PERIOD, UPPER_PERIOD));
@@ -334,7 +334,7 @@ std::vector<std::pair<std::vector<int>,
 	}
 
 	template <typename U>
-	void  FMTPatchRules::_GetBounds(double p_lower, double p_upper,
+	void  FMTPatchRules::_getBounds(double p_lower, double p_upper,
 		U& p_NewLower, U& p_NewUpper)
 	{
 		if (p_lower == std::numeric_limits<double>::lowest())
@@ -355,20 +355,20 @@ std::vector<std::pair<std::vector<int>,
 
 
 
-	void FMTPatchRules::_BuildPatchRules(
-		const std::vector<Core::FMTconstraint>& p_constraints,
-		const std::vector<Core::FMTaction>& p_actions, int p_Id)
+	void FMTPatchRules::_buildPatchRules(
+		const std::vector<Core::FMTConstraint>& p_constraints,
+		const std::vector<Core::FMTAction>& p_actions, int p_Id)
 	{
 		try {
 			const std::vector<std::pair<std::vector<int>,
-				std::pair<int, int>>> RULES = _GetOrderedRules(p_constraints, p_actions);
-			for (const Core::FMTconstraint& CONSTRAINT : p_constraints)
+				std::pair<int, int>>> RULES = _getOrderedRules(p_constraints, p_actions);
+			for (const Core::FMTConstraint& CONSTRAINT : p_constraints)
 			{
-				if (CONSTRAINT.isspatial())
+				if (CONSTRAINT.isSpatial())
 				{
-					const std::vector<int>ACTION_IDS = CONSTRAINT.getactionids(p_actions);
-					const int LOWER_PERIOD = CONSTRAINT.getperiodlowerbound();
-					const int UPPER_PERIOD = CONSTRAINT.getperiodupperbound();
+					const std::vector<int>ACTION_IDS = CONSTRAINT.getActionIds(p_actions);
+					const int LOWER_PERIOD = CONSTRAINT.getPeriodLowerBound();
+					const int UPPER_PERIOD = CONSTRAINT.getPeriodUpperBound();
 					const std::pair<std::vector<int>, std::pair<int, int>> NEW_RULES =
 						std::pair<std::vector<int>, std::pair<int, int>>(ACTION_IDS,
 							std::pair<int, int>(LOWER_PERIOD, UPPER_PERIOD));
@@ -380,42 +380,42 @@ std::vector<std::pair<std::vector<int>,
 						m_ActionTargets = ACTION_IDS;
 						m_MinimalPeriod = LOWER_PERIOD;
 						m_MaximalPeriod = UPPER_PERIOD;
-						if (CONSTRAINT.getconstrainttype() ==
+						if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTspatialsize)
 							{
-							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getyieldbound("NSIZE");
-							m_NeighborSize = static_cast<size_t>(BOUNDS.getlower());
+							const Core::FMTYldBounds& BOUNDS = CONSTRAINT.getYieldBound("NSIZE");
+							m_NeighborSize = static_cast<size_t>(BOUNDS.getLower());
 							double lowerSIZE = 0;
 							double upperSIZE = 0;
-							CONSTRAINT.getbounds(lowerSIZE, upperSIZE, 0);
-							_GetBounds<size_t>(lowerSIZE, upperSIZE,
+							CONSTRAINT.getBounds(lowerSIZE, upperSIZE, 0);
+							_getBounds<size_t>(lowerSIZE, upperSIZE,
 								m_MinimalSize, m_MaximalSize);
-						}else if (CONSTRAINT.getconstrainttype() ==
+						}else if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTspatialadjacency)
 							{
-							const Core::FMTyldbounds& BOUNDS = CONSTRAINT.getyieldbound("GUP");
-							m_GreenUp = static_cast<size_t>(BOUNDS.getlower());
+							const Core::FMTYldBounds& BOUNDS = CONSTRAINT.getYieldBound("GUP");
+							m_GreenUp = static_cast<size_t>(BOUNDS.getLower());
 							size_t minimalGreenUp = 0;
 							size_t maximalGreenUp = 0;
 							double lowerGreenUp = 0;
 							double upperGreenUp = 0;
-							CONSTRAINT.getbounds(lowerGreenUp, upperGreenUp, 0);
-							_GetBounds<size_t>(lowerGreenUp, upperGreenUp,
+							CONSTRAINT.getBounds(lowerGreenUp, upperGreenUp, 0);
+							_getBounds<size_t>(lowerGreenUp, upperGreenUp,
 								m_MinimalAdjacency, m_MaximalAdjacency);
-						}else if (CONSTRAINT.getconstrainttype() ==
+						}else if (CONSTRAINT.getConstraintType() ==
 							Core::FMTconstrainttype::FMTSpatialGroup)
 							{
-							m_GroupGreenUp = static_cast<int>(CONSTRAINT.getyieldbound("GUP").getlower());
-							const Core::FMTyldbounds& THEME_BOUNDS = CONSTRAINT.getyieldbound("THEME");
+							m_GroupGreenUp = static_cast<int>(CONSTRAINT.getYieldBound("GUP").getLower());
+							const Core::FMTYldBounds& THEME_BOUNDS = CONSTRAINT.getYieldBound("THEME");
 							int themeTarget = -1;
-							if (THEME_BOUNDS.getlower() >= 0.0)
+							if (THEME_BOUNDS.getLower() >= 0.0)
 								{
-								m_GroupTheme = (static_cast<int>(THEME_BOUNDS.getlower()) - 1);
+								m_GroupTheme = (static_cast<int>(THEME_BOUNDS.getLower()) - 1);
 								}
 							double lowerDistance = 0;
 							double upperDistance = 0;
-							CONSTRAINT.getbounds(lowerDistance, upperDistance, 0);
-							_GetBounds<int>(lowerDistance, upperDistance,
+							CONSTRAINT.getBounds(lowerDistance, upperDistance, 0);
+							_getBounds<int>(lowerDistance, upperDistance,
 								m_MinimalGroupDistance, m_MaximalGroupDistance);
 							}
 					}
@@ -425,33 +425,33 @@ std::vector<std::pair<std::vector<int>,
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("",
-				"FMTPatchRules::_BuildPatchRules", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("",
+				"FMTPatchRules::_buildPatchRules", __LINE__, __FILE__);
 			}
 	}
 
 
-	bool FMTPatchRules::_IsSizeUsed() const
+	bool FMTPatchRules::_isSizeUsed() const
 	{
 		return (!m_ActionTargets.empty() && (m_MinimalSize > 0 ||
 			m_MaximalSize != std::numeric_limits<size_t>::max()));
 	}
-	bool FMTPatchRules::_IsAdjacencyUsed() const
+	bool FMTPatchRules::_isAdjacencyUsed() const
 	{
 		return (!m_ActionTargets.empty() && (m_MinimalAdjacency > 0 ||
 			m_MaximalAdjacency != std::numeric_limits<size_t>::max()));
 	}
-	bool FMTPatchRules::_HasMinimalAdjacency() const
+	bool FMTPatchRules::_hasMinimalAdjacency() const
 	{
 		return (!m_ActionTargets.empty() && m_MinimalAdjacency > 0);
 	}
-	bool FMTPatchRules::_HasMaximalAdjacency() const
+	bool FMTPatchRules::_hasMaximalAdjacency() const
 	{
 		return (!m_ActionTargets.empty() &&
 			m_MaximalAdjacency != std::numeric_limits<size_t>::max());
 	}
 
-	bool FMTPatchRules::_IsGroupUsed() const
+	bool FMTPatchRules::_isGroupUsed() const
 	{
 		return m_GroupTheme >= 0;
 	}

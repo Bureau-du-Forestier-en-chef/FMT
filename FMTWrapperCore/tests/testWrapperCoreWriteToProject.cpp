@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
-#include "FMTmodel.h"
-#include "FMTmodelparser.h"
+#include "FMTModel.h"
+#include "FMTModelParser.h"
 #include "Tools.h"
 #include <boost/filesystem.hpp>
 
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	Parser::FMTmodelparser ModelParser;
+	Parser::FMTModelParser ModelParser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -42,26 +42,26 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-	ModelParser.seterrorstowarnings(errors);
+	ModelParser.setErrorsToWarnings(errors);
 
 	// On lit le projet puis on fabrique plusieurs models pour simuler une cache
 	// contenant un model de base + des sc�narios d�riv�s (noms distincts).
-	const Models::FMTmodel BASE_MODEL = ModelParser.readproject(primary_path, { scenarioName }).at(0);
+	const Models::FMTModel BASE_MODEL = ModelParser.readproject(primary_path, { scenarioName }).at(0);
 	const std::string SCENARIO_A = "writetoproject_test_A";
 	const std::string SCENARIO_B = "writetoproject_test_B";
-	Models::FMTmodel scenarioModelA = BASE_MODEL;
-	scenarioModelA.setname(SCENARIO_A);
-	Models::FMTmodel scenarioModelB = BASE_MODEL;
-	scenarioModelB.setname(SCENARIO_B);
+	Models::FMTModel scenarioModelA = BASE_MODEL;
+	scenarioModelA.setName(SCENARIO_A);
+	Models::FMTModel scenarioModelB = BASE_MODEL;
+	scenarioModelB.setName(SCENARIO_B);
 
-	std::vector<Models::FMTmodel> models;
+	std::vector<Models::FMTModel> models;
 	models.push_back(BASE_MODEL);
 	models.push_back(scenarioModelA);
 	models.push_back(scenarioModelB);
 
-	FMTWrapperCore::Tools::writetoproject(models, output_directory);
+	FMTWrapperCore::Tools::writeToProject(models, output_directory);
 
-	const std::string BASENAME = models.front().getname();
+	const std::string BASENAME = models.front().getName();
 	const boost::filesystem::path OUTPUT_DIR = boost::filesystem::path(output_directory);
 
 	std::vector<std::string> extensions = { ".pri", ".lan", ".are", ".yld", ".act", ".trn" };

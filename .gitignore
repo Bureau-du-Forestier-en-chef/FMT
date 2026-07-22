@@ -63,3 +63,6 @@ vcpkg_installed/
 out/
 # UI/ On ajoute le ui dans Github a la demande de tommy
 UI/build/*
+# Python bytecode (outillage .rename_tools/)
+__pycache__/
+*.pyc

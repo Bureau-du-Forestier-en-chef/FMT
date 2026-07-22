@@ -1,17 +1,17 @@
 #ifdef FMTWITHOSI
 	#include <vector>
-	#include "FMTlpmodel.h"
-	#include "FMTmodelparser.h"
-	#include "FMTareaparser.h"
-	#include "FMTversion.h"
-	#include "FMTlogger.h"
-	#include "FMTscheduleparser.h"
-	#include "FMTschedule.h"
-	#include "FMToperatingarea.h"
-	#include "FMToperatingareacluster.h"
-	#include "FMToperatingareaclusterer.h"
-	#include "FMTtheme.h"
-	#include "FMTfreeexceptionhandler.h"
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTAreaParser.h"
+	#include "FMTVersion.h"
+	#include "FMTLogger.h"
+	#include "FMTScheduleParser.h"
+	#include "FMTSchedule.h"
+	#include "FMTOperatingArea.h"
+	#include "FMTOperatingAreaCluster.h"
+	#include "FMTOperatingAreaClusterer.h"
+	#include "FMTTheme.h"
+	#include "FMTFreeExceptionHandler.h"
 	#include <string>
 #endif
 
@@ -20,79 +20,79 @@ int main(int argc, char *argv[])
 	#ifdef FMTWITHOSI
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primarylocation = folder + "TWD_land.pri";
-	Parser::FMTmodelparser modelparser;
+	Parser::FMTModelParser modelparser;
 	const std::vector<std::string>scenarios(1, "LP");
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	std::vector<Core::FMTtheme>themes = optmodel.getthemes();
-	std::vector<Heuristics::FMToperatingarea>opareas;
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	std::vector<Core::FMTTheme>themes = optmodel.getThemes();
+	std::vector<Heuristics::FMTOperatingArea>opareas;
 	const size_t themetarget(0);
-	for (const std::string& attribute : themes.at(themetarget).getattributes("UC"))
+	for (const std::string& attribute : themes.at(themetarget).getAttributes("UC"))
 	{
 		std::vector<std::string> mask;
-		for (const Core::FMTtheme& theme : themes)
+		for (const Core::FMTTheme& theme : themes)
 		{
 			mask.push_back("?");
 		}
 		mask[themetarget] = attribute;
-		opareas.push_back(Heuristics::FMToperatingarea(Core::FMTmask(mask, themes), 0.01));
+		opareas.push_back(Heuristics::FMTOperatingArea(Core::FMTMask(mask, themes), 0.01));
 	}
 	std::vector<std::string>themesfields;
 	size_t thid = 1;
-	for (const Core::FMTtheme& theme : themes)
+	for (const Core::FMTTheme& theme : themes)
 	{
 		themesfields.push_back(std::to_string(thid));
 		++thid;
 	}
 	const std::string agefield("AGE");
 	const std::string areafield("SUPERFICIE");
-	std::vector<Heuristics::FMToperatingareacluster>opareasclusterswithbounds;
-	Parser::FMTareaparser areaparser;
+	std::vector<Heuristics::FMTOperatingAreaCluster>opareasclusterswithbounds;
+	Parser::FMTAreaParser areaparser;
 	const std::string maplocation = folder + "/Carte/TWD_land.shp";
-	for (const Heuristics::FMToperatingareacluster& oparea : areaparser.getclusters(opareas, themes, maplocation, agefield, areafield, 20000))
+	for (const Heuristics::FMTOperatingAreaCluster& oparea : areaparser.getClusters(opareas, themes, maplocation, agefield, areafield, 20000))
 		{
-		Heuristics::FMToperatingareacluster newoparea(oparea,400,10000000000);
+		Heuristics::FMTOperatingAreaCluster newoparea(oparea,400,10000000000);
 		opareasclusterswithbounds.push_back(newoparea);
 		}
 	for (size_t period = 0; period < 2; ++period)
 	{
-		optmodel.buildperiod();
+		optmodel.buildPeriod();
 	}
-	std::vector<Core::FMTconstraint>allconstraints = optmodel.getconstraints();
-	const Core::FMTconstraint objective = allconstraints.at(0);
+	std::vector<Core::FMTConstraint>allconstraints = optmodel.getconstraints();
+	const Core::FMTConstraint objective = allconstraints.at(0);
 	allconstraints.erase(allconstraints.begin());
-	for (const Core::FMTconstraint& constraint : allconstraints)
+	for (const Core::FMTConstraint& constraint : allconstraints)
 	{
-		optmodel.setconstraint(constraint);
+		optmodel.setConstraint(constraint);
 	}
-	optmodel.setobjective(objective);
-	if (optmodel.initialsolve())
+	optmodel.setObjective(objective);
+	if (optmodel.initialSolve())
 	{
-		Core::FMToutput opareaareasoutput;
-		Core::FMToutput opareastatisticsoutput;
-		for (const Core::FMToutput& output : optmodel.getoutputs())
+		Core::FMTOutput opareaareasoutput;
+		Core::FMTOutput opareastatisticsoutput;
+		for (const Core::FMTOutput& output : optmodel.getOutputs())
 		{
-			if ("VOLINVENT" == output.getname())
+			if ("VOLINVENT" == output.getName())
 			{
 				opareastatisticsoutput = output;
 			}
-			else if ("TOTALAREA" == output.getname())
+			else if ("TOTALAREA" == output.getName())
 			{
 				opareaareasoutput = output;
 			}
 		}
-		std::vector<Heuristics::FMToperatingareaclusterer>heuristics = optmodel.getoperatingareaclustererheuristics(opareasclusterswithbounds, opareastatisticsoutput, opareaareasoutput, 1, 1);
-		heuristics[0].setnumberofsimulationpass(25);
-		heuristics[0].setquietlogger();
-		if (!heuristics[0].initialsolve())
+		std::vector<Heuristics::FMTOperatingAreaClusterer>heuristics = optmodel.getOperatingAreaClustererHeuristics(opareasclusterswithbounds, opareastatisticsoutput, opareaareasoutput, 1, 1);
+		heuristics[0].setNumberOfSimulationPass(25);
+		heuristics[0].setQuietLogger();
+		if (!heuristics[0].initialSolve())
 		{
-			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,"No solution",
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed,"No solution",
 				"testOPAreaclustering", __LINE__, primarylocation);
 		}
-		//heuristics[0].branchnboundsolve();
-		for (const Heuristics::FMToperatingareacluster& cluster : heuristics.at(0).getsolution())
+		//heuristics[0].branchNBoundSolve();
+		for (const Heuristics::FMTOperatingAreaCluster& cluster : heuristics.at(0).getSolution())
 		{
-			for (const Core::FMTmask& mask : cluster.getallmasks())
+			for (const Core::FMTMask& mask : cluster.getAllMasks())
 			{
 				std::cout << std::string(mask) << " ";
 			}
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	else {
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Infeasible model",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Infeasible model",
 			"testOPAreaclustering", __LINE__, primarylocation);
 	}
 	#endif

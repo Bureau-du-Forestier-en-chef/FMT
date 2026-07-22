@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include <string>
 #include <fstream>
-#include "FMTconstraint.h"
-#include "FMTmodelparser.h"
-#include "FMToutput.h"
-#include "FMTparser.h"
-#include "FMTlpmodel.h"
-#include "FMTareaparser.h"
-#include "FMTscheduleparser.h"
+#include "FMTConstraint.h"
+#include "FMTModelParser.h"
+#include "FMTOutput.h"
+#include "FMTParser.h"
+#include "FMTLpModel.h"
+#include "FMTAreaParser.h"
+#include "FMTScheduleParser.h"
 #include <msclr\marshal_cppstd.h>
 #include "FMTForm.h"
 #include "FMTFormLogger.h"
@@ -18,7 +18,7 @@
 namespace Wrapper
 {
 
-	void FMTForm::raisefromcatch(std::string text,
+	void FMTForm::raiseFromCatch(std::string text,
 		const std::string& method, const int& line, const std::string& fil)
 	{
 		FMTexceptionhandlerwarning* exhandler = FMTFormCache::GetInstance()->GetFormHandler();
@@ -30,8 +30,8 @@ namespace Wrapper
 		FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 		if (logger)
 		{
-			logger->logwithlevel("*************************************************************\n", 0);
-			logger->logwithlevel("FMT - ERROR " + errorstack + "\n", 0);
+			logger->logWithLevel("*************************************************************\n", 0);
+			logger->logWithLevel("FMT - ERROR " + errorstack + "\n", 0);
 		}
 		else
 		{
@@ -70,7 +70,7 @@ namespace Wrapper
 		try
 		{
 			//FeedBack("FMT Event Spatialy Explicit Simulation c++ - > ObtientListeContraintes", gcnew System::EventArgs());
-			for (const Core::FMTconstraint& constraint : ObtenirArrayContraintes(indexScenario))
+			for (const Core::FMTConstraint& constraint : ObtenirArrayContraintes(indexScenario))
 			{
 				retour->Add(gcnew System::String(std::string(constraint).c_str()));
 			}
@@ -78,38 +78,38 @@ namespace Wrapper
 		catch (...)
 		{
 			retour->Clear();
-			raisefromcatch("", "FMTForm::ObtenirListeContraintes", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::ObtenirListeContraintes", __LINE__, __FILE__);
 		}
 
 		return retour;
 	}
 
-	std::vector<Core::FMTconstraint> FMTForm::ObtenirArrayContraintes(
+	std::vector<Core::FMTConstraint> FMTForm::ObtenirArrayContraintes(
 		int indexScenario)
 	{
-		std::vector<Core::FMTconstraint> retour;
+		std::vector<Core::FMTConstraint> retour;
 		try
 		{
 			//FeedBack("FMT Event Spatialy Explicit Simulation c++ - > ObtenirArrayContraintes", gcnew System::EventArgs());
-			retour = FMTFormCache::GetInstance()->getmodel(indexScenario).getconstraints();
+			retour = FMTFormCache::GetInstance()->getModel(indexScenario).getconstraints();
 		}
 		catch (...)
 		{
-			FMTFormCache::GetInstance()->GetFormHandler()->raisefromcatch("", "FMTForm::ObtenirArrayContraintes", __LINE__, __FILE__);
+			FMTFormCache::GetInstance()->GetFormHandler()->raiseFromCatch("", "FMTForm::ObtenirArrayContraintes", __LINE__, __FILE__);
 		}
 
 		return retour;
 	}
 
-	std::vector<Core::FMTconstraint> FMTForm::ObtenirArrayContraintesSelectionnees(
-		std::vector<Core::FMTconstraint> contraitesBase,
+	std::vector<Core::FMTConstraint> FMTForm::ObtenirArrayContraintesSelectionnees(
+		std::vector<Core::FMTConstraint> contraitesBase,
 		System::Collections::Generic::List<System::String^>^ contraintesSelection)
 	{
-		std::vector<Core::FMTconstraint> retour;
+		std::vector<Core::FMTConstraint> retour;
 		try
 		{
 			//FeedBack("FMT Event Spatialy Explicit Simulation c++ - > ObtenirArrayContraintesSelectionnees", gcnew System::EventArgs());
-			for (const Core::FMTconstraint& contrainte : contraitesBase)
+			for (const Core::FMTConstraint& contrainte : contraitesBase)
 			{
 				for each (System::String ^ selection in contraintesSelection)
 				{
@@ -131,20 +131,20 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			FMTFormCache::GetInstance()->GetFormHandler()->raisefromcatch("", "FMTForm::ObtenirArrayContraintesSelectionnees", __LINE__, __FILE__);
+			FMTFormCache::GetInstance()->GetFormHandler()->raiseFromCatch("", "FMTForm::ObtenirArrayContraintesSelectionnees", __LINE__, __FILE__);
 		}
 
 		return retour;
 	}
 
-	std::vector<Core::FMToutput> FMTForm::ObtenirArrayOutputsSelectionnees(std::vector<Core::FMToutput> outputsBase, System::Collections::Generic::List<System::String^>^ outputsSelection)
+	std::vector<Core::FMTOutput> FMTForm::ObtenirArrayOutputsSelectionnees(std::vector<Core::FMTOutput> outputsBase, System::Collections::Generic::List<System::String^>^ outputsSelection)
 	{
-		std::vector<Core::FMToutput> retour;
+		std::vector<Core::FMTOutput> retour;
 		try
 		{
-			for (const Core::FMToutput& fmtOutput : outputsBase)
+			for (const Core::FMTOutput& fmtOutput : outputsBase)
 			{
-				if (outputsSelection->Contains(gcnew System::String(fmtOutput.getname().c_str())))
+				if (outputsSelection->Contains(gcnew System::String(fmtOutput.getName().c_str())))
 				{
 					retour.push_back(fmtOutput);
 				}
@@ -152,21 +152,21 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			FMTFormCache::GetInstance()->GetFormHandler()->raisefromcatch("", "FMTForm::ObtenirArrayOutputsSelectionnees", __LINE__, __FILE__);
+			FMTFormCache::GetInstance()->GetFormHandler()->raiseFromCatch("", "FMTForm::ObtenirArrayOutputsSelectionnees", __LINE__, __FILE__);
 		}
 
 		return retour;
 
 	}
 
-	Core::FMToutput FMTForm::ObtenirOutputSelectionnee(std::vector<Core::FMToutput> outputsBase, System::String^ outputSelection)
+	Core::FMTOutput FMTForm::ObtenirOutputSelectionnee(std::vector<Core::FMTOutput> outputsBase, System::String^ outputSelection)
 	{
-		Core::FMToutput retour;
+		Core::FMTOutput retour;
 		try
 		{
-			for (const Core::FMToutput& fmtOutput : outputsBase)
+			for (const Core::FMTOutput& fmtOutput : outputsBase)
 			{
-				if (outputSelection == gcnew System::String(fmtOutput.getname().c_str()))
+				if (outputSelection == gcnew System::String(fmtOutput.getName().c_str()))
 				{
 					retour = fmtOutput;
 					break;
@@ -175,7 +175,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			FMTFormCache::GetInstance()->GetFormHandler()->raisefromcatch("", "FMTForm::ObtenirOutputSelectionnee", __LINE__, __FILE__);
+			FMTFormCache::GetInstance()->GetFormHandler()->raiseFromCatch("", "FMTForm::ObtenirOutputSelectionnee", __LINE__, __FILE__);
 		}
 
 		return retour;
@@ -188,7 +188,7 @@ namespace Wrapper
 
 		try
 		{
-			Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
+			Parser::FMTModelParser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
 			const std::vector<std::vector<std::string>> listeExtensions = Modelparser.getGDALVectorDriverExtensions();
 			const std::vector<std::string> listeDrivers = Modelparser.getGDALVectorDriverNames();
 
@@ -203,7 +203,7 @@ namespace Wrapper
 		catch (...)
 		{
 			retour = gcnew System::Collections::Generic::List<System::String^>();
-			raisefromcatch("", "FMTForm::ObtenirListeExtentionsSorties", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::ObtenirListeExtentionsSorties", __LINE__, __FILE__);
 		}
 
 		return retour;
@@ -215,7 +215,7 @@ namespace Wrapper
 
 		try
 		{
-			for (Models::FMTsolverinterface solver : Models::FMTsrmodel::getavailablesolverinterface())
+			for (Models::FMTsolverinterface solver : Models::FMTSrModel::getAvailableSolverInterface())
 			{
 				retour->Add(static_cast<int>(solver));
 			}
@@ -223,7 +223,7 @@ namespace Wrapper
 		catch (...)
 		{
 			retour = gcnew System::Collections::Generic::List<int>();
-			raisefromcatch("", "FMTForm::ObtenirListeSolvers", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::ObtenirListeSolvers", __LINE__, __FILE__);
 		}
 
 		return retour;
@@ -261,7 +261,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::InscrireLigneFichierTexte", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::InscrireLigneFichierTexte", __LINE__, __FILE__);
 		}
 	}
 
@@ -274,16 +274,16 @@ namespace Wrapper
 		{
 			if (!FMTFormCache::GetInstance()->empty())
 			{
-				for (const Core::FMToutput& output : FMTFormCache::GetInstance()->getmodel(indexScenario).getoutputs())
+				for (const Core::FMTOutput& output : FMTFormCache::GetInstance()->getModel(indexScenario).getOutputs())
 				{
-					retour->Add(gcnew System::String(std::string(output.getname()).c_str()));
+					retour->Add(gcnew System::String(std::string(output.getName()).c_str()));
 				}
 			}
 		}
 		catch (...)
 		{
 			retour = gcnew System::Collections::Generic::List<System::String^>();
-			raisefromcatch("", "FMTForm::ObtenirListeOutputs", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::ObtenirListeOutputs", __LINE__, __FILE__);
 		}
 
 		return retour;
@@ -296,11 +296,11 @@ namespace Wrapper
 
 		try
 		{
-			retour = FMTFormCache::GetInstance()->getmodel(indexScenario).getthemes().size();
+			retour = FMTFormCache::GetInstance()->getModel(indexScenario).getThemes().size();
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::ObtenirNombreThemes", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::ObtenirNombreThemes", __LINE__, __FILE__);
 		}
 
 		return retour;
@@ -314,28 +314,28 @@ namespace Wrapper
 
 		try
 		{
-			retour = ObtenirSEQ(nomFichierPri, indexScenario).back().getperiod();
+			retour = ObtenirSEQ(nomFichierPri, indexScenario).back().getPeriod();
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::ObtenirNombrePeriodes", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::ObtenirNombrePeriodes", __LINE__, __FILE__);
 		}
 
 		return retour;
 	}
 
-	std::vector<Core::FMTschedule> FMTForm::ObtenirSEQ(
+	std::vector<Core::FMTSchedule> FMTForm::ObtenirSEQ(
 		System::String^ nomFichierPri,
 		int indexScenario)
 	{
-		std::vector<Core::FMTschedule> retour;
+		std::vector<Core::FMTSchedule> retour;
 		try
 		{
-			Parser::FMTscheduleparser schedulerparser;
-			Parser::FMTmodelparser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
-			std::vector<Models::FMTmodel> models;
-			models.push_back(FMTFormCache::GetInstance()->getmodel(indexScenario));
-			std::vector<Core::FMTschedule> liste = Modelparser.readschedules(msclr::interop::marshal_as<std::string>(nomFichierPri), models).at(0);
+			Parser::FMTScheduleParser schedulerparser;
+			Parser::FMTModelParser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
+			std::vector<Models::FMTModel> models;
+			models.push_back(FMTFormCache::GetInstance()->getModel(indexScenario));
+			std::vector<Core::FMTSchedule> liste = Modelparser.readschedules(msclr::interop::marshal_as<std::string>(nomFichierPri), models).at(0);
 			if (liste.size() > 0)
 			{
 				retour = liste;
@@ -343,7 +343,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::ObtenirSEQ", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::ObtenirSEQ", __LINE__, __FILE__);
 		}
 
 		return retour;
@@ -358,18 +358,18 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getmodel(p_index);
-			const std::vector<Core::FMTaction> ACTIONS = MODEL.getactions();
+			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_index);
+			const std::vector<Core::FMTAction> ACTIONS = MODEL.getactions();
 			// On it�re sur les actions pour obbtenir leurs noms
 			for (int i = 0; i < ACTIONS.size(); ++i)
 			{
-				System::String^ name = msclr::interop::marshal_as<System::String^>(ACTIONS[i].getname());
+				System::String^ name = msclr::interop::marshal_as<System::String^>(ACTIONS[i].getName());
 				actionsNames->Add(name);
 			}
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTModelgetActionsNames", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTModelgetActionsNames", __LINE__, __FILE__);
 		}
 		return actionsNames;
 	}
@@ -382,13 +382,13 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getmodel(p_modelIndex);
-			const std::vector<Core::FMTaction> ACTIONS = MODEL.getactions();
+			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
+			const std::vector<Core::FMTAction> ACTIONS = MODEL.getactions();
 			std::set<std::string> uniqueAggregates;
 
 			for (int i = 0; i < ACTIONS.size(); ++i)
 			{
-				std::vector<std::string> agg = ACTIONS[i].getaggregates();
+				std::vector<std::string> agg = ACTIONS[i].getAggregates();
 				for (const auto& aggregate : agg)
 				{
 					uniqueAggregates.insert(aggregate);
@@ -401,7 +401,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::getAggregates", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::getAggregates", __LINE__, __FILE__);
 		}
 		return aggregatesList;
 	}
@@ -416,11 +416,11 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getmodel(p_index);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_index);
 
-			const Core::FMTyields YIELDS = MODEL.getyields();
+			const Core::FMTYields YIELDS = MODEL.getYields();
 
-			std::vector<std::string> yieldsNames = YIELDS.getallyieldnames();
+			std::vector<std::string> yieldsNames = YIELDS.getAllYieldNames();
 
 			for (int i = 0; i < yieldsNames.size(); ++i)
 			{
@@ -430,7 +430,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::getYields", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::getYields", __LINE__, __FILE__);
 		}
 		return yieldsNamesConverted;
 	}
@@ -446,13 +446,13 @@ namespace Wrapper
 			}
 			const std::string CONVERTEDSTRING = msclr::interop::marshal_as<std::string>(p_mask);
 			const std::string CONVERTEDYIELD = msclr::interop::marshal_as<std::string>(p_yield);
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getmodel(p_modelIndex);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 
 			result = FMTWrapperCore::Tools::getYield(MODEL, CONVERTEDSTRING, CONVERTEDYIELD, p_age);
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::getYield", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::getYield", __LINE__, __FILE__);
 		}
 		return result;
 	}
@@ -466,14 +466,14 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel MODEL = FMTFormCache::GetInstance()->getmodel(p_modelIndex);
+			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 
 			result = static_cast<double>(FMTWrapperCore::Tools::getMaxAge(MODEL));
 
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTModelgetActionsNames", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTModelgetActionsNames", __LINE__, __FILE__);
 		}
 		return result;
 	}
@@ -501,16 +501,16 @@ namespace Wrapper
 			// changer le str de C# en str applicable dans C++
 			std::string MASK = msclr::interop::marshal_as<std::string>(p_mask);
 			// On va chercher le mod�le
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getmodel(p_modelIndex);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 			// On va chercher tous les th�mes dans le mod�le
-			const std::vector<Core::FMTtheme> THEMES = MODEL.getthemes();
+			const std::vector<Core::FMTTheme> THEMES = MODEL.getThemes();
 			// On call validate
-			result = Core::FMTtheme::validate(THEMES, MASK);
+			result = Core::FMTTheme::validate(THEMES, MASK);
 		}
 
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::validateMask", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::validateMask", __LINE__, __FILE__);
 		}
 		return result;
 	}
@@ -523,7 +523,7 @@ namespace Wrapper
 			{
 				throw std::out_of_range("Invalid model index");
 			}
-			const Models::FMTmodel& MODEL = FMTFormCache::GetInstance()->getmodel(p_modelIndex);
+			const Models::FMTModel& MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
 			std::vector<int> themes;
 			for each (int theme in p_themesNumbers)
 			{
@@ -540,7 +540,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm:getAllMasks", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm:getAllMasks", __LINE__, __FILE__);
 		}
 		return result;
 	}
@@ -559,13 +559,13 @@ namespace Wrapper
 			models.reserve(FMTFormCache::GetInstance()->size());
 			for (size_t index = 0; index < FMTFormCache::GetInstance()->size(); ++index)
 			{
-				models.push_back(FMTFormCache::GetInstance()->getmodel(static_cast<int>(index)));
+				models.push_back(FMTFormCache::GetInstance()->getModel(static_cast<int>(index)));
 			}
 			FMTWrapperCore::Tools::writetoproject(models, DESTINATION_DIRECTORY);
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::writetoprojectfromcache", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::writetoprojectfromcache", __LINE__, __FILE__);
 			passed = false;
 		}
 		return passed;
@@ -579,7 +579,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raisefromcatch("", "FMTForm::CloseLogger", __LINE__, __FILE__);
+			raiseFromCatch("", "FMTForm::CloseLogger", __LINE__, __FILE__);
 		}
 	}
 }

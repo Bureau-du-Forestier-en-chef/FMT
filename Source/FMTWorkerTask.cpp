@@ -1,10 +1,10 @@
 #include "FMTWorkerTask.h"
-#include "FMTlogger.h"
-#include "FMTtask.h"
+#include "FMTLogger.h"
+#include "FMTTask.h"
 
 namespace Parallel
 {
-	FMTWorkerTask::FMTWorkerTask(std::unique_ptr<FMTtask> t)
+	FMTWorkerTask::FMTWorkerTask(std::unique_ptr<FMTTask> t)
 		: m_task(std::move(t)), m_done(false)
 	{
 		m_worker = boost::thread([this]() {

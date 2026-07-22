@@ -8,37 +8,37 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef PYEXPORTCORE_H_INCLUDED
 #define PYEXPORTCORE_H_INCLUDED
 
-#include "FMTGCBMtransition.h"
-#include "FMTobject.h"
-#include "FMTmask.h"
-#include "FMTtheme.h"
-#include "FMTbounds.hpp"
-#include "FMTdevelopment.h"
-#include "FMTactualdevelopment.h"
-#include "FMTfuturdevelopment.h"
-#include "FMTaction.h"
-#include "FMTtransition.h"
-#include "FMToutput.h"
-#include "FMTconstraint.h"
-#include "FMTschedule.h"
-#include "FMTyields.h"
-#include "FMTconstants.h"
+#include "FMTGCBMTransition.h"
+#include "FMTObject.h"
+#include "FMTMask.h"
+#include "FMTTheme.h"
+#include "FMTBounds.hpp"
+#include "FMTDevelopment.h"
+#include "FMTActualDevelopment.h"
+#include "FMTFuturDevelopment.h"
+#include "FMTAction.h"
+#include "FMTTransition.h"
+#include "FMTOutput.h"
+#include "FMTConstraint.h"
+#include "FMTSchedule.h"
+#include "FMTYields.h"
+#include "FMTConstants.h"
 #include "boost/python.hpp"
-//#include "FMTdata.h"
-#include "FMTtimeyieldhandler.h"
-#include "FMTageyieldhandler.h"
-#include "FMTmaskfilter.h"
-#include "FMTtransitionmask.h"
-#include "FMTdevelopmentpath.h"
+//#include "FMTData.h"
+#include "FMTTimeYieldHandler.h"
+#include "FMTAgeYieldHandler.h"
+#include "FMTMaskFilter.h"
+#include "FMTTransitionMask.h"
+#include "FMTDevelopmentPath.h"
 #include "FMTSerie.h"
 
 namespace Python
 {
 
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getattributes_overloads, getattributes, 1, 2)
-//BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 3, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 1, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getyieldrequest_overloads, getyieldrequest, 0, 0)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getattributes_overloads, getAttributes, 1, 2)
+//BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getNodes, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getNodes, 1, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getyieldrequest_overloads, getYieldRequest, 0, 0)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(operable_overloads, operable, 2, 3)
 
 void exportCore()
@@ -87,95 +87,95 @@ void exportCore()
 		.value("FMTspatialgreenup", Core::FMTconstrainttype::FMTspatialgreenup)
 		.export_values();
 
-	bp::class_<Core::FMTobject>("FMTobject", "@DocString(FMTobject)")
-		.def("setdefaultexceptionhandler", &Core::FMTobject::setdefaultexceptionhandler,
-			"@DocString(FMTobject::setdefaultexceptionhandler)")
-		.def("setquietexceptionhandler", &Core::FMTobject::setquietexceptionhandler,
-			"@DocString(FMTobject::setquietexceptionhandler)")
-		.def("setdebugexceptionhandler", &Core::FMTobject::setdebugexceptionhandler,
-			"@DocString(FMTobject::setdebugexceptionhandler)")
-		.def("setfreeexceptionhandler", &Core::FMTobject::setfreeexceptionhandler,
-			"@DocString(FMTobject::setfreeexceptionhandler)")
-		.def("enablenestedexceptions", &Core::FMTobject::enablenestedexceptions,
-			"@DocString(FMTobject::enablenestedexceptions)")
-		.def("disablenestedexceptions", &Core::FMTobject::disablenestedexceptions,
-			"@DocString(FMTobject::disablenestedexceptions)")
-		.def("setdefaultlogger", &Core::FMTobject::setdefaultlogger,
-			"@DocString(FMTobject::setdefaultlogger)")
-		.def("setdebuglogger", &Core::FMTobject::setdebuglogger,
-			"@DocString(FMTobject::setdebuglogger)")
-		.def("setquietlogger", &Core::FMTobject::setquietlogger,
-			"@DocString(FMTobject::setquietlogger)")
-		.def("settasklogger", &Core::FMTobject::settasklogger,
-			"@DocString(FMTobject::settasklogger")
-		.def("redirectlogtofile", &Core::FMTobject::redirectlogtofile,
-			"@DocString(FMTobject::redirectlogtofile)")
-		.def("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
-			"@DocString(FMTobject::seterrorstowarnings)");
+	bp::class_<Core::FMTObject>("FMTobject", "@DocString(FMTObject)")
+		.def("setdefaultexceptionhandler", &Core::FMTObject::setDefaultExceptionHandler,
+			"@DocString(FMTObject::setdefaultexceptionhandler)")
+		.def("setquietexceptionhandler", &Core::FMTObject::setQuietExceptionHandler,
+			"@DocString(FMTObject::setquietexceptionhandler)")
+		.def("setdebugexceptionhandler", &Core::FMTObject::setDebugExceptionHandler,
+			"@DocString(FMTObject::setdebugexceptionhandler)")
+		.def("setfreeexceptionhandler", &Core::FMTObject::setFreeExceptionHandler,
+			"@DocString(FMTObject::setfreeexceptionhandler)")
+		.def("enablenestedexceptions", &Core::FMTObject::enableNestedExceptions,
+			"@DocString(FMTObject::enablenestedexceptions)")
+		.def("disablenestedexceptions", &Core::FMTObject::disableNestedExceptions,
+			"@DocString(FMTObject::disablenestedexceptions)")
+		.def("setdefaultlogger", &Core::FMTObject::setDefaultLogger,
+			"@DocString(FMTObject::setdefaultlogger)")
+		.def("setdebuglogger", &Core::FMTObject::setDebugLogger,
+			"@DocString(FMTObject::setdebuglogger)")
+		.def("setquietlogger", &Core::FMTObject::setQuietLogger,
+			"@DocString(FMTObject::setquietlogger)")
+		.def("settasklogger", &Core::FMTObject::setTaskLogger,
+			"@DocString(FMTObject::settasklogger")
+		.def("redirectlogtofile", &Core::FMTObject::redirectLogToFile,
+			"@DocString(FMTObject::redirectlogtofile)")
+		.def("seterrorstowarnings", &Core::FMTObject::setErrorsToWarnings,
+			"@DocString(FMTObject::seterrorstowarnings)");
 
-		bp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)");
+		bp::class_<Core::FMTMaskFilter>("FMTmaskfilter", "@DocString(FMTMaskFilter)");
 
-		define_pylist<Core::FMTdevelopmentpath>();
-		define_pyset<Core::FMTSerie>();
-		define_pylist<Core::FMTSerie>();
-		define_pylist<Core::FMTmaskfilter>();
-		define_pylist<Core::FMTmask>();
-        define_pylist<Core::FMTdevelopment>();
-        define_pylist<Core::FMTfuturdevelopment>();
-        define_pylist<Core::FMTactualdevelopment>();
-		define_pydict<std::string, std::vector<Core::FMTdevelopment>>();
+		definePyList<Core::FMTDevelopmentPath>();
+		definePySet<Core::FMTSerie>();
+		definePyList<Core::FMTSerie>();
+		definePyList<Core::FMTMaskFilter>();
+		definePyList<Core::FMTMask>();
+        definePyList<Core::FMTDevelopment>();
+        definePyList<Core::FMTFuturDevelopment>();
+        definePyList<Core::FMTActualDevelopment>();
+		definePyDict<std::string, std::vector<Core::FMTDevelopment>>();
 
-        define_pylist<Core::FMTtheme>();
-        define_pylist<Core::FMTaction>();
-        define_pylist<Core::FMTtransition>();
-        define_pylist<Core::FMToutput>();
-        define_pylist<Core::FMTschedule>();
-		define_pylist<std::vector<Core::FMTschedule>>();
-		define_pylist<Core::FMTyieldhandler>();
-		define_pylist<Core::FMToutputsource>();
-		define_pylist<Core::FMToperator>();
+        definePyList<Core::FMTTheme>();
+        definePyList<Core::FMTAction>();
+        definePyList<Core::FMTTransition>();
+        definePyList<Core::FMTOutput>();
+        definePyList<Core::FMTSchedule>();
+		definePyList<std::vector<Core::FMTSchedule>>();
+		definePyList<Core::FMTYieldHandler>();
+		definePyList<Core::FMTOutputSource>();
+		definePyList<Core::FMTOperator>();
 
-        define_pydict<Core::FMTdevelopment, std::vector<double>>();
-        define_pydict<Core::FMTaction,std::map<Core::FMTdevelopment, std::vector<double>>>();
-		py_pair<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>();
-		py_pair<Core::FMTaction const, std::map<Core::FMTdevelopment, std::vector<double>>>();
+        definePyDict<Core::FMTDevelopment, std::vector<double>>();
+        definePyDict<Core::FMTAction,std::map<Core::FMTDevelopment, std::vector<double>>>();
+		py_pair<Core::FMTAction, std::map<Core::FMTDevelopment, std::vector<double>>>();
+		py_pair<Core::FMTAction const, std::map<Core::FMTDevelopment, std::vector<double>>>();
 
-		define_FMTlist<Core::FMTspec>();
-		define_pylist<std::vector<std::string>>();
+		define_FMTlist<Core::FMTSpec>();
+		definePyList<std::vector<std::string>>();
 
-		bool (Core::FMTmask::*issubsetof)(const Core::FMTmask&) const = &Core::FMTmask::isSubsetOf;
+		bool (Core::FMTMask::*issubsetof)(const Core::FMTMask&) const = &Core::FMTMask::isSubsetOf;
 
-		bp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
-				.def(bp::init<Core::FMTmask>())
-				.def_pickle(FMT_pickle_suite<Core::FMTmask>())
-				.def(bp::init<const std::vector<std::string>&,const std::vector<Core::FMTtheme>&>())
-				.def(bp::init<const std::string&, const std::vector<Core::FMTtheme>&>())
-				.def("__len__", &Core::FMTmask::operator bool,
-					"@DocString(FMTmask::operator bool)")
-                .def("__str__",&Core::FMTmask::operator std::string,
-					"@DocString(FMTmask::operator std::string)")
-				.def("__eq__", &Core::FMTmask::operator ==,
-					"@DocString(FMTmask::operator==)")
-				.def("__ne__", &Core::FMTmask::operator !=,
-					"@DocString(FMTmask::operator!=)")
-				.def("__lt__", &Core::FMTmask::operator <,
-					"@DocString(FMTmask::operator<)")
-                .def("__hash__",&boost::pyhash<Core::FMTmask>)
+		bp::class_<Core::FMTMask>("FMTmask", "@DocString(FMTMask)")
+				.def(bp::init<Core::FMTMask>())
+				.def_pickle(FMT_pickle_suite<Core::FMTMask>())
+				.def(bp::init<const std::vector<std::string>&,const std::vector<Core::FMTTheme>&>())
+				.def(bp::init<const std::string&, const std::vector<Core::FMTTheme>&>())
+				.def("__len__", &Core::FMTMask::operator bool,
+					"@DocString(FMTMask::operator bool)")
+                .def("__str__",&Core::FMTMask::operator std::string,
+					"@DocString(FMTMask::operator std::string)")
+				.def("__eq__", &Core::FMTMask::operator ==,
+					"@DocString(FMTMask::operator==)")
+				.def("__ne__", &Core::FMTMask::operator !=,
+					"@DocString(FMTMask::operator!=)")
+				.def("__lt__", &Core::FMTMask::operator <,
+					"@DocString(FMTMask::operator<)")
+                .def("__hash__",&boost::pyHash<Core::FMTMask>)
 				.def("issubsetof",issubsetof,
-					"@DocString(FMTmask::issubsetof)")
-				.def("presolve",&Core::FMTmask::presolve,
-					"@DocString(FMTmask::presolve)")
-				.def("postsolve",&Core::FMTmask::postsolve,
-					"@DocString(FMTmask::postsolve)");
+					"@DocString(FMTMask::issubsetof)")
+				.def("presolve",&Core::FMTMask::presolve,
+					"@DocString(FMTMask::presolve)")
+				.def("postsolve",&Core::FMTMask::postSolve,
+					"@DocString(FMTMask::postsolve)");
 
-		bp::class_<Core::FMTdevelopmentpath>("FMTdevelopmentpath", "@DocString(FMTdevelopmentpath)")
-			.def(bp::init<Core::FMTdevelopmentpath>())
-			.def("getDevelopment", &Core::FMTdevelopmentpath::getDevelopment,
+		bp::class_<Core::FMTDevelopmentPath>("FMTdevelopmentpath", "@DocString(FMTDevelopmentPath)")
+			.def(bp::init<Core::FMTDevelopmentPath>())
+			.def("getDevelopment", &Core::FMTDevelopmentPath::getDevelopment,
 				bp::return_value_policy<bp::return_by_value>(),
-				"@DocString(FMTdevelopmentpath::getDevelopment)")
-			.def("getProportion", &Core::FMTdevelopmentpath::getProportion,
+				"@DocString(FMTDevelopmentPath::getDevelopment)")
+			.def("getProportion", &Core::FMTDevelopmentPath::getProportion,
 				bp::return_value_policy<bp::return_by_value>(),
-				"@DocString(FMTdevelopmentpath::getProportion)");
+				"@DocString(FMTDevelopmentPath::getProportion)");
 
 		bp::class_<Core::FMTSerie>("FMTSerie", "@DocString(FMTSerie)")
 			.def(bp::init<Core::FMTSerie>())
@@ -188,141 +188,141 @@ void exportCore()
 
 		
 
-		bp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
-				.def_pickle(FMT_pickle_suite<Core::FMTdevelopment>())
-			    .def(bp::init<Core::FMTdevelopment>())
-				.def("getage", &Core::FMTdevelopment::getage,
-					"@DocString(FMTdevelopment::getage)")
-				.def("getlock", &Core::FMTdevelopment::getlock,
-					"@DocString(FMTdevelopment::getlock)")
-				.def("getperiod", &Core::FMTdevelopment::getperiod,
-					"@DocString(FMTdevelopment::getperiod)")
-				.def("getmask", &Core::FMTdevelopment::getmaskcopy,
-					"@DocString(FMTdevelopment::getmask)")
-				.def("setage", &Core::FMTdevelopment::setage,
-					"@DocString(FMTdevelopment::setage)")
-				.def("setlock", &Core::FMTdevelopment::setlock,
-					"@DocString(FMTdevelopment::setlock)")
-				.def("setperiod", &Core::FMTdevelopment::setperiod,
-					"@DocString(FMTdevelopment::setperiod)")
-				.def("setmask", &Core::FMTdevelopment::setmask,
-					"@DocString(FMTdevelopment::setmask)")
-				.def("__eq__", &Core::FMTdevelopment::operator ==,
-					"@DocString(FMTdevelopment::operator==)")
-				.def("__ne__", &Core::FMTdevelopment::operator !=,
-					"@DocString(FMTdevelopment::operator!=)")
-                .def("__lt__",&Core::FMTdevelopment::operator <,
-					"@DocString(FMTdevelopment::operator<")
-                .def("grow",&Core::FMTdevelopment::grow,
-					"@DocString(FMTdevelopment::grow)")
-                .def("operable",&Core::FMTdevelopment::operable,operable_overloads(bp::args("action,yields,yieldrequest"),"@DocString(FMTdevelopment::operable)"))
-                .def("operate",&Core::FMTdevelopment::operate,
-					"@DocString(FMTdevelopment::operate)")
-				 .def("getyieldrequest",&Core::FMTdevelopment::getyieldrequest,getyieldrequest_overloads("@DocString(FMTdevelopment::getyieldrequest)"))
-				.def("__str__", &Core::FMTdevelopment::operator std::string,
-					"@DocString(FMTdevelopment::operator std::string)")
-                .setattr("__hash__",&boost::pyhash<Core::FMTdevelopment>);
+		bp::class_<Core::FMTDevelopment>("FMTdevelopment", "@DocString(FMTDevelopment)")
+				.def_pickle(FMT_pickle_suite<Core::FMTDevelopment>())
+			    .def(bp::init<Core::FMTDevelopment>())
+				.def("getage", &Core::FMTDevelopment::getAge,
+					"@DocString(FMTDevelopment::getage)")
+				.def("getlock", &Core::FMTDevelopment::getLock,
+					"@DocString(FMTDevelopment::getlock)")
+				.def("getperiod", &Core::FMTDevelopment::getPeriod,
+					"@DocString(FMTDevelopment::getperiod)")
+				.def("getmask", &Core::FMTDevelopment::getMaskCopy,
+					"@DocString(FMTDevelopment::getmask)")
+				.def("setage", &Core::FMTDevelopment::setAge,
+					"@DocString(FMTDevelopment::setage)")
+				.def("setlock", &Core::FMTDevelopment::setLock,
+					"@DocString(FMTDevelopment::setlock)")
+				.def("setperiod", &Core::FMTDevelopment::setPeriod,
+					"@DocString(FMTDevelopment::setperiod)")
+				.def("setmask", &Core::FMTDevelopment::setMask,
+					"@DocString(FMTDevelopment::setmask)")
+				.def("__eq__", &Core::FMTDevelopment::operator ==,
+					"@DocString(FMTDevelopment::operator==)")
+				.def("__ne__", &Core::FMTDevelopment::operator !=,
+					"@DocString(FMTDevelopment::operator!=)")
+                .def("__lt__",&Core::FMTDevelopment::operator <,
+					"@DocString(FMTDevelopment::operator<")
+                .def("grow",&Core::FMTDevelopment::grow,
+					"@DocString(FMTDevelopment::grow)")
+                .def("operable",&Core::FMTDevelopment::operable,operable_overloads(bp::args("action,yields,yieldrequest"),"@DocString(FMTDevelopment::operable)"))
+                .def("operate",&Core::FMTDevelopment::operate,
+					"@DocString(FMTDevelopment::operate)")
+				 .def("getyieldrequest",&Core::FMTDevelopment::getYieldRequest,getyieldrequest_overloads("@DocString(FMTDevelopment::getyieldrequest)"))
+				.def("__str__", &Core::FMTDevelopment::operator std::string,
+					"@DocString(FMTDevelopment::operator std::string)")
+                .setattr("__hash__",&boost::pyHash<Core::FMTDevelopment>);
 
 
 
-		bp::class_<Core::FMTagebounds>("FMTagebounds", "@DocString(FMTagebounds)")
-			.def(bp::init<Core::FMTagebounds>())
+		bp::class_<Core::FMTAgeBounds>("FMTagebounds", "@DocString(FMTAgeBounds)")
+			.def(bp::init<Core::FMTAgeBounds>())
 			.def(bp::init<Core::FMTsection, int, int>());
 
-		bp::class_<Core::FMTperbounds>("FMTperbounds", "@DocString(FMTperbounds)")
-			.def(bp::init<Core::FMTperbounds>())
+		bp::class_<Core::FMTPerBounds>("FMTperbounds", "@DocString(FMTPerBounds)")
+			.def(bp::init<Core::FMTPerBounds>())
 			.def(bp::init<Core::FMTsection, int, int>());
 
-		bp::class_<Core::FMTyldbounds>("FMTyldbounds", "@DocString(FMTyldbounds)")
-			.def(bp::init<Core::FMTyldbounds>())
+		bp::class_<Core::FMTYldBounds>("FMTyldbounds", "@DocString(FMTYldBounds)")
+			.def(bp::init<Core::FMTYldBounds>())
 			.def(bp::init<Core::FMTsection, std::string, double, double>());
 
-		bp::class_<Core::FMTlockbounds>("FMTlockbounds", "@DocString(FMTlockbounds)")
-			.def(bp::init<Core::FMTlockbounds>())
+		bp::class_<Core::FMTLockBounds>("FMTlockbounds", "@DocString(FMTLockBounds)")
+			.def(bp::init<Core::FMTLockBounds>())
 			.def(bp::init<Core::FMTsection, int, int>());
 
-		bp::class_<Core::FMTspec>("FMTspec", "@DocString(FMTspec)")
-			.def(bp::init<Core::FMTspec>())
-			.def("getperiodlowerbound", &Core::FMTspec::getperiodlowerbound,
-				"@DocString(FMTspec::getperiodlowerbound)")
-			.def("getperiodupperbound", &Core::FMTspec::getperiodupperbound,
-				"@DocString(FMTspec::getperiodupperbound)")
-			.def("setbounds", &Core::FMTspec::setbounds, "@DocString(Core::FMTspec::setbounds())")
-			.def<bool(Core::FMTspec::*)(const Core::FMTagebounds&)>("addbounds", &Core::FMTspec::addbounds,
-				"@DocString(Core::FMTspec::addbounds(const FMTagebounds&))")
-			.def<bool(Core::FMTspec::*)(const Core::FMTyldbounds&)>("addbounds",&Core::FMTspec::addbounds,
-				"@DocString(Core::FMTspec::addbounds(const FMTyldbounds&))")
-			.def<bool(Core::FMTspec::*)(const Core::FMTlockbounds&)>("addbounds",&Core::FMTspec::addbounds,
-				"@DocString(Core::FMTspec::addbounds(const FMTlockbounds&))");
+		bp::class_<Core::FMTSpec>("FMTspec", "@DocString(FMTSpec)")
+			.def(bp::init<Core::FMTSpec>())
+			.def("getperiodlowerbound", &Core::FMTSpec::getPeriodLowerBound,
+				"@DocString(FMTSpec::getperiodlowerbound)")
+			.def("getperiodupperbound", &Core::FMTSpec::getPeriodUpperBound,
+				"@DocString(FMTSpec::getperiodupperbound)")
+			.def("setbounds", &Core::FMTSpec::setBounds, "@DocString(Core::FMTSpec::setbounds())")
+			.def<bool(Core::FMTSpec::*)(const Core::FMTAgeBounds&)>("addbounds", &Core::FMTSpec::addBounds,
+				"@DocString(Core::FMTSpec::addbounds(const FMTAgeBounds&))")
+			.def<bool(Core::FMTSpec::*)(const Core::FMTYldBounds&)>("addbounds",&Core::FMTSpec::addBounds,
+				"@DocString(Core::FMTSpec::addbounds(const FMTYldBounds&))")
+			.def<bool(Core::FMTSpec::*)(const Core::FMTLockBounds&)>("addbounds",&Core::FMTSpec::addBounds,
+				"@DocString(Core::FMTSpec::addbounds(const FMTLockBounds&))");
 
-		bp::class_<Core::FMTtransitionmask>("FMTtransitionmask", "@DocString(FMTtransitionmask)")
-			.def(bp::init<const std::string&, const std::vector<Core::FMTtheme>&, const double&>())
-			.def(bp::init<Core::FMTtransitionmask>());
+		bp::class_<Core::FMTTransitionMask>("FMTtransitionmask", "@DocString(FMTTransitionMask)")
+			.def(bp::init<const std::string&, const std::vector<Core::FMTTheme>&, const double&>())
+			.def(bp::init<Core::FMTTransitionMask>());
 
-		bp::class_<Core::FMTfork, bp::bases<Core::FMTlist<Core::FMTspec>>>("FMTfork", "@DocString(FMTfork)")
-			.def(bp::init<Core::FMTfork>())
-			.def("add", &Core::FMTfork::add,
-				"@DocString(FMTfork::add)");
-
-
+		bp::class_<Core::FMTFork, bp::bases<Core::FMTList<Core::FMTSpec>>>("FMTfork", "@DocString(FMTFork)")
+			.def(bp::init<Core::FMTFork>())
+			.def("add", &Core::FMTFork::add,
+				"@DocString(FMTFork::add)");
 
 
-		bp::class_<Core::FMTactualdevelopment, bp::bases<Core::FMTdevelopment>>("FMTactualdevelopment", "@DocString(FMTactualdevelopment)")
-				.def(bp::init<const Core::FMTmask&, const int&, const int&, const double&>())
-				.def(bp::init<Core::FMTactualdevelopment>())
-			    .def("getarea", &Core::FMTactualdevelopment::getarea,
-					"@DocString(FMTactualdevelopment::getarea)")
-				.def("setarea", &Core::FMTactualdevelopment::setarea,
-					"@DocString(FMTactualdevelopment::setarea)")
-				.def("__eq__", &Core::FMTactualdevelopment::operator ==,
-					"@DocString(FMTactualdevelopment::operator==)")
-				.def("__ne__", &Core::FMTactualdevelopment::operator !=,
-					"@DocString(FMTactualdevelopment::operator!=)")
-				.def("__lt__", &Core::FMTactualdevelopment::operator <,
-					"@DocString(FMTactualdevelopment::operator<)");
 
-		bp::class_<Core::FMTfuturdevelopment, bp::bases<Core::FMTdevelopment>>("FMTfuturdevelopment", "@DocString(FMTfuturdevelopment)");
+
+		bp::class_<Core::FMTActualDevelopment, bp::bases<Core::FMTDevelopment>>("FMTactualdevelopment", "@DocString(FMTActualDevelopment)")
+				.def(bp::init<const Core::FMTMask&, const int&, const int&, const double&>())
+				.def(bp::init<Core::FMTActualDevelopment>())
+			    .def("getarea", &Core::FMTActualDevelopment::getArea,
+					"@DocString(FMTActualDevelopment::getarea)")
+				.def("setarea", &Core::FMTActualDevelopment::setArea,
+					"@DocString(FMTActualDevelopment::setarea)")
+				.def("__eq__", &Core::FMTActualDevelopment::operator ==,
+					"@DocString(FMTActualDevelopment::operator==)")
+				.def("__ne__", &Core::FMTActualDevelopment::operator !=,
+					"@DocString(FMTActualDevelopment::operator!=)")
+				.def("__lt__", &Core::FMTActualDevelopment::operator <,
+					"@DocString(FMTActualDevelopment::operator<)");
+
+		bp::class_<Core::FMTFuturDevelopment, bp::bases<Core::FMTDevelopment>>("FMTfuturdevelopment", "@DocString(FMTFuturDevelopment)");
 
             //Need preprocessor here
             
 
 			define_FMTlist<int>();
-			//define_pylist<string>();
-			//define_FMTlist<std::unique_ptr<Core::FMTyieldhandler>>();
-			define_FMTlist<Core::FMTfork>();
+			//definePyList<string>();
+			//define_FMTlist<std::unique_ptr<Core::FMTYieldHandler>>();
+			define_FMTlist<Core::FMTFork>();
 
 
 
-			bp::class_<Core::FMTaction, bp::bases<Core::FMTlist<Core::FMTspec>>>("FMTaction", "@DocString(FMTaction)")
-				.def_pickle(FMT_pickle_suite<Core::FMTaction>())
-				.def(bp::init<Core::FMTaction>())
+			bp::class_<Core::FMTAction, bp::bases<Core::FMTList<Core::FMTSpec>>>("FMTaction", "@DocString(FMTAction)")
+				.def_pickle(FMT_pickle_suite<Core::FMTAction>())
+				.def(bp::init<Core::FMTAction>())
 				.def(bp::init<const std::string&,const bool&,const bool&>())
-                .def("__eq__",&Core::FMTaction::operator ==,
-					"@DocString(FMTaction::operator==)")
-                .def("__ne__",&Core::FMTaction::operator !=,
-					"@DocString(FMTaction::operator!=)")
-                .def("__lt__",&Core::FMTaction::operator <,
-					"@DocString(FMTaction::operator<)")
-				.def("__str__", &Core::FMTaction::operator std::string,
-					"@DocString(FMTaction::operator std::string)")
-                .def("getname",&Core::FMTaction::getname,
-					"@DocString(FMTaction::getname)")
-                .def("dorespectlock",&Core::FMTaction::dorespectlock,
-					"@DocString(FMTaction::dorespectlock)")
-				.def("useyield", &Core::FMTaction::useyield,
-					"@DocString(FMTaction::useyield)")
-				.def("push_aggregate", &Core::FMTaction::push_aggregate,
-					"@DocString(FMTaction::push_aggregate)")
-				.def("getaggregates", &Core::FMTaction::getaggregates,
-					"@DocString(FMTaction::getaggregates)")
-				.def("update", &Core::FMTaction::update,
-					"@DocString(FMTaction::update)")
-                .def_readwrite("isresetage",&Core::FMTaction::isresetage,
-					"@DocString(FMTaction::isresetage)")
-                .setattr("__hash__",&boost::pyhash<Core::FMTaction>);
+                .def("__eq__",&Core::FMTAction::operator ==,
+					"@DocString(FMTAction::operator==)")
+                .def("__ne__",&Core::FMTAction::operator !=,
+					"@DocString(FMTAction::operator!=)")
+                .def("__lt__",&Core::FMTAction::operator <,
+					"@DocString(FMTAction::operator<)")
+				.def("__str__", &Core::FMTAction::operator std::string,
+					"@DocString(FMTAction::operator std::string)")
+                .def("getname",&Core::FMTAction::getName,
+					"@DocString(FMTAction::getname)")
+                .def("dorespectlock",&Core::FMTAction::doRespectLock,
+					"@DocString(FMTAction::dorespectlock)")
+				.def("useyield", &Core::FMTAction::useYield,
+					"@DocString(FMTAction::useyield)")
+				.def("push_aggregate", &Core::FMTAction::pushAggregate,
+					"@DocString(FMTAction::push_aggregate)")
+				.def("getaggregates", &Core::FMTAction::getAggregates,
+					"@DocString(FMTAction::getaggregates)")
+				.def("update", &Core::FMTAction::update,
+					"@DocString(FMTAction::update)")
+                .def_readwrite("isresetage",&Core::FMTAction::isResetAge,
+					"@DocString(FMTAction::isresetage)")
+                .setattr("__hash__",&boost::pyHash<Core::FMTAction>);
 
-			bp::class_<Core::FMTlifespans, bp::bases<Core::FMTlist<int>>>("FMTlifespans", "@DocString(FMTlifespans)")
-				.def(bp::init<Core::FMTlifespans>());
+			bp::class_<Core::FMTLifespans, bp::bases<Core::FMTList<int>>>("FMTlifespans", "@DocString(FMTLifespans)")
+				.def(bp::init<Core::FMTLifespans>());
 
 
 			bp::enum_<Core::FMTyldtype>("FMTyldtype")
@@ -331,80 +331,80 @@ void exportCore()
 				.value("FMTcomplexyld", Core::FMTyldtype::FMTcomplexyld)
 				.export_values();
 
-			define_pydict<std::string, std::map<std::string,std::vector<double>>>();
+			definePyDict<std::string, std::map<std::string,std::vector<double>>>();
 
-			define_pydict<std::string, std::vector<double>>();
+			definePyDict<std::string, std::vector<double>>();
 
-			bp::class_<Core::FMTyieldhandler>("FMTyieldhandler", "@DocString(FMTyieldhandler)")
-				.def(bp::init<Core::FMTyieldhandler>())
-				.def<bool (Core::FMTyieldhandler::*)(const std::string& yld, const double& value)>("push_data",&Core::FMTyieldhandler::push_data,
-					"@DocString(FMTyieldhandler::push_data(const std::string&,const double&))")
-				.def("push_base", &Core::FMTyieldhandler::push_base,
-					"@DocString(FMTyieldhandler::push_base)");
+			bp::class_<Core::FMTYieldHandler>("FMTyieldhandler", "@DocString(FMTYieldHandler)")
+				.def(bp::init<Core::FMTYieldHandler>())
+				.def<bool (Core::FMTYieldHandler::*)(const std::string& yld, const double& value)>("push_data",&Core::FMTYieldHandler::pushData,
+					"@DocString(FMTYieldHandler::push_data(const std::string&,const double&))")
+				.def("push_base", &Core::FMTYieldHandler::pushBase,
+					"@DocString(FMTYieldHandler::push_base)");
 
 
-			bp::class_<Core::FMTageyieldhandler,bp::bases<Core::FMTyieldhandler>>("FMTageyieldhandler", "@DocString(FMTageyieldhandler)")
-				.def(bp::init<const Core::FMTmask&>())
-				.def_pickle(FMT_pickle_suite<Core::FMTageyieldhandler>())
-				.def("__str__", &Core::FMTageyieldhandler::operator std::string,
-					"@DocString(FMTageyieldhandler::operator std::string)")
-				.def("setyieldvalues", &Core::FMTageyieldhandler::setyieldvalues,
-					"@DocString(FMTageyieldhandler::setyieldvalues)");
+			bp::class_<Core::FMTAgeYieldHandler,bp::bases<Core::FMTYieldHandler>>("FMTageyieldhandler", "@DocString(FMTAgeYieldHandler)")
+				.def(bp::init<const Core::FMTMask&>())
+				.def_pickle(FMT_pickle_suite<Core::FMTAgeYieldHandler>())
+				.def("__str__", &Core::FMTAgeYieldHandler::operator std::string,
+					"@DocString(FMTAgeYieldHandler::operator std::string)")
+				.def("setyieldvalues", &Core::FMTAgeYieldHandler::setYieldValues,
+					"@DocString(FMTAgeYieldHandler::setyieldvalues)");
 				
-			define_pylist<Core::FMTageyieldhandler>();
+			definePyList<Core::FMTAgeYieldHandler>();
 
-			bp::class_<Core::FMTtimeyieldhandler,bp::bases<Core::FMTyieldhandler>>("FMTtimeyieldhandler", "@DocString(FMTtimeyieldhandler)")
-				.def(bp::init<const Core::FMTmask&>())
-				.def_pickle(FMT_pickle_suite<Core::FMTtimeyieldhandler>())
-				.def("__str__", &Core::FMTtimeyieldhandler::operator std::string,
-					"@DocString(FMTtimeyieldhandler::operator std::string)")
-				.def("setyieldvalues", &Core::FMTtimeyieldhandler::setyieldvalues,
-					"@DocString(FMTtimeyieldhandler::setyieldvalues)");
+			bp::class_<Core::FMTTimeYieldHandler,bp::bases<Core::FMTYieldHandler>>("FMTtimeyieldhandler", "@DocString(FMTTimeYieldHandler)")
+				.def(bp::init<const Core::FMTMask&>())
+				.def_pickle(FMT_pickle_suite<Core::FMTTimeYieldHandler>())
+				.def("__str__", &Core::FMTTimeYieldHandler::operator std::string,
+					"@DocString(FMTTimeYieldHandler::operator std::string)")
+				.def("setyieldvalues", &Core::FMTTimeYieldHandler::setYieldValues,
+					"@DocString(FMTTimeYieldHandler::setyieldvalues)");
 			
-			define_pylist<Core::FMTtimeyieldhandler>();
+			definePyList<Core::FMTTimeYieldHandler>();
 
-			bp::class_<Core::FMTyields/*, bp::bases<Core::FMTlist<std::unique_ptr<Core::FMTyieldhandler>>>*/>("FMTyields", "@DocString(FMTyields)")
-				.def(bp::init<Core::FMTyields>())
-				.def_pickle(FMT_pickle_suite<Core::FMTyields>())
-				.def("getallyields", &Core::FMTyields::getallyields,
-					"@DocString(FMTyields::getallyields)")
-				.def("get", &Core::FMTyields::get,
-					"@DocString(FMTyields::get)")
-				.def("push_back", &Core::FMTyields::push_backagehandler,
-					"@DocString(FMTyields::push_backagehandler)")
-				.def("push_back", &Core::FMTyields::push_backtimehandler,
-					"@DocString(FMTyields::push_backtimehandler)")
-				.def("getallyieldnames", &Core::FMTyields::getallyieldnames,
-					"@DocString(FMTyields::getallyieldnames)")
-				.def("getfromfactor",&Core::FMTyields::getfromfactor,
-					"@DocString(FMTyields::getfromfactor)")
-				.def("update", &Core::FMTyields::update,
-					"@DocString(FMTyields::update)");
+			bp::class_<Core::FMTYields/*, bp::bases<Core::FMTList<std::unique_ptr<Core::FMTYieldHandler>>>*/>("FMTyields", "@DocString(FMTYields)")
+				.def(bp::init<Core::FMTYields>())
+				.def_pickle(FMT_pickle_suite<Core::FMTYields>())
+				.def("getallyields", &Core::FMTYields::getAllYields,
+					"@DocString(FMTYields::getallyields)")
+				.def("get", &Core::FMTYields::get,
+					"@DocString(FMTYields::get)")
+				.def("push_back", &Core::FMTYields::pushBackAgeHandler,
+					"@DocString(FMTYields::push_backagehandler)")
+				.def("push_back", &Core::FMTYields::pushBackTimeHandler,
+					"@DocString(FMTYields::push_backtimehandler)")
+				.def("getallyieldnames", &Core::FMTYields::getAllYieldNames,
+					"@DocString(FMTYields::getallyieldnames)")
+				.def("getfromfactor",&Core::FMTYields::getFromFactor,
+					"@DocString(FMTYields::getfromfactor)")
+				.def("update", &Core::FMTYields::update,
+					"@DocString(FMTYields::update)");
 
 
 
-			bp::class_<Core::FMTtransition, bp::bases<Core::FMTlist<Core::FMTfork>>>("FMTtransition", "@DocString(FMTtransition)")
-				.def_pickle(FMT_pickle_suite<Core::FMTtransition>())
-				.def(bp::init<Core::FMTtransition>())
+			bp::class_<Core::FMTTransition, bp::bases<Core::FMTList<Core::FMTFork>>>("FMTtransition", "@DocString(FMTTransition)")
+				.def_pickle(FMT_pickle_suite<Core::FMTTransition>())
+				.def(bp::init<Core::FMTTransition>())
 				.def(bp::init<const std::string&>())
-                .def("single",&Core::FMTtransition::single,
-					"@DocString(FMTtransition::single)")
-				.def("main_target", &Core::FMTtransition::main_target,
-					"@DocString(FMTtransition::main_target)")
-				.def("age_after", &Core::FMTtransition::age_after,
-					"@DocString(FMTtransition::age_after)")
-				.def("attribute_targets", &Core::FMTtransition::attribute_targets,
-					"@DocString(FMTtransition::attribute_targets)")
-				.def("__str__", &Core::FMTtransition::operator std::string,
-					"@DocString(FMTtransition::operator std::string)")
-                .def("__eq__",&Core::FMTtransition::operator ==,
-					"@DocString(FMTtransition::operator==)")
-                .def("__ne__",&Core::FMTtransition::operator !=,
-					"@DocString(FMTtransition::operator!=)")
-                .def("__lt__",&Core::FMTtransition::operator <,
-					"@DocString(FMTtransition::operator<)")
-                .def("getname",&Core::FMTtransition::getname,
-					"@DocString(FMTtransition::getname)");
+                .def("single",&Core::FMTTransition::single,
+					"@DocString(FMTTransition::single)")
+				.def("main_target", &Core::FMTTransition::mainTarget,
+					"@DocString(FMTTransition::main_target)")
+				.def("age_after", &Core::FMTTransition::ageAfter,
+					"@DocString(FMTTransition::age_after)")
+				.def("attribute_targets", &Core::FMTTransition::attributeTargets,
+					"@DocString(FMTTransition::attribute_targets)")
+				.def("__str__", &Core::FMTTransition::operator std::string,
+					"@DocString(FMTTransition::operator std::string)")
+                .def("__eq__",&Core::FMTTransition::operator ==,
+					"@DocString(FMTTransition::operator==)")
+                .def("__ne__",&Core::FMTTransition::operator !=,
+					"@DocString(FMTTransition::operator!=)")
+                .def("__lt__",&Core::FMTTransition::operator <,
+					"@DocString(FMTTransition::operator<)")
+                .def("getname",&Core::FMTTransition::getName,
+					"@DocString(FMTTransition::getname)");
 
 
 				bp::enum_<Core::FMTotar>("FMTotar")
@@ -415,138 +415,138 @@ void exportCore()
 				.value("level", Core::FMTotar::level)
 				.export_values();
 
-				bp::class_<Core::FMToutputsource>("FMToutputsource", "@DocString(FMToutputsource)")
-					.def(bp::init<const Core::FMTspec&, const Core::FMTmask&,
+				bp::class_<Core::FMTOutputSource>("FMToutputsource", "@DocString(FMTOutputSource)")
+					.def(bp::init<const Core::FMTSpec&, const Core::FMTMask&,
 						Core::FMTotar, const std::string&,
 						const std::string&, const int&, const int&>())
-					.def(bp::init<Core::FMToutputsource>());
+					.def(bp::init<Core::FMTOutputSource>());
 
-			bp::class_<Core::FMToperator>("FMToperator", "@DocString(FMToperator)")
-				.def(bp::init<Core::FMToperator>());
+			bp::class_<Core::FMTOperator>("FMToperator", "@DocString(FMTOperator)")
+				.def(bp::init<Core::FMTOperator>());
 
 
-			bp::class_<Core::FMToutputnode>("FMToutputnode", "@DocString(FMToutputnode)")
-				.def(bp::init<const Core::FMTmask&,const std::string&>())
-				.def("__str__", &Core::FMToutputnode::operator std::string,
-					"@DocString(FMToutputnode::operator std::string)");
+			bp::class_<Core::FMTOutputNode>("FMToutputnode", "@DocString(FMTOutputNode)")
+				.def(bp::init<const Core::FMTMask&,const std::string&>())
+				.def("__str__", &Core::FMTOutputNode::operator std::string,
+					"@DocString(FMTOutputNode::operator std::string)");
 
-			define_FMTlist<Core::FMToutputnode>();
+			define_FMTlist<Core::FMTOutputNode>();
 
-			bp::class_<Core::FMToutput>("FMToutput", "@DocString(FMToutput)")
-				.def(bp::init<Core::FMToutput>())
+			bp::class_<Core::FMTOutput>("FMToutput", "@DocString(FMTOutput)")
+				.def(bp::init<Core::FMTOutput>())
 				.def(bp::init<const std::string&, const std::string&, const std::string&,
-					const std::vector<Core::FMToutputsource>&,
-					const std::vector<Core::FMToperator>&>())
-				.def_pickle(FMT_pickle_suite<Core::FMTtransition>())
-                .def("getname",&Core::FMToutput::getname,
-					"@DocString(FMToutput::getname)")
-                .def("getdescription",&Core::FMToutput::getdescription,
-					"@DocString(FMToutput::getdescription)")
-				.def("empty", &Core::FMToutput::empty,
-					"@DocString(FMToutput::empty)")
-				.def("containslevel",&Core::FMToutput::containslevel,
-					"@DocString(FMToutput::containslevel)")
-				.def("islevel", &Core::FMToutput::islevel,
-					"@DocString(FMToutput::islevel)")
-				.def("isonlylevel", &Core::FMToutput::isonlylevel,
-					"@DocString(FMToutput::isonlylevel)")
-				.def("getnodes",&Core::FMToutput::getnodes, getnodes_overloads(bp::args("multiplier"), "@DocString(FMToutput::getnodes)"))
-				.def("__str__", &Core::FMToutput::operator std::string,
-					"@DocString(FMToutput::operator std::string)")
-                .def("__eq__",&Core::FMToutput::operator ==,
-					"@DocString(FMToutput::operator==)")
-                .def("__ne__",&Core::FMToutput::operator !=,
-					"@DocString(FMToutput::operator!=)");
+					const std::vector<Core::FMTOutputSource>&,
+					const std::vector<Core::FMTOperator>&>())
+				.def_pickle(FMT_pickle_suite<Core::FMTTransition>())
+                .def("getname",&Core::FMTOutput::getName,
+					"@DocString(FMTOutput::getname)")
+                .def("getdescription",&Core::FMTOutput::getDescription,
+					"@DocString(FMTOutput::getdescription)")
+				.def("empty", &Core::FMTOutput::empty,
+					"@DocString(FMTOutput::empty)")
+				.def("containslevel",&Core::FMTOutput::containsLevel,
+					"@DocString(FMTOutput::containslevel)")
+				.def("islevel", &Core::FMTOutput::isLevel,
+					"@DocString(FMTOutput::islevel)")
+				.def("isonlylevel", &Core::FMTOutput::isOnlyLevel,
+					"@DocString(FMTOutput::isonlylevel)")
+				.def("getnodes",&Core::FMTOutput::getNodes, getnodes_overloads(bp::args("multiplier"), "@DocString(FMTOutput::getnodes)"))
+				.def("__str__", &Core::FMTOutput::operator std::string,
+					"@DocString(FMTOutput::operator std::string)")
+                .def("__eq__",&Core::FMTOutput::operator ==,
+					"@DocString(FMTOutput::operator==)")
+                .def("__ne__",&Core::FMTOutput::operator !=,
+					"@DocString(FMTOutput::operator!=)");
 
-			bp::class_<Core::FMTtheme>("FMTtheme", "@DocString(FMTtheme)")
-				.def_pickle(FMT_pickle_suite<Core::FMTtheme>())
+			bp::class_<Core::FMTTheme>("FMTtheme", "@DocString(FMTTheme)")
+				.def_pickle(FMT_pickle_suite<Core::FMTTheme>())
 				.def(bp::init<const std::vector<std::string>&,const std::vector<std::string>&,const std::vector<std::string>&,const std::vector<std::vector<std::string>>&,const size_t&,const size_t&, const std::string&>())
-				.def(bp::init<Core::FMTtheme>())
-				.def("__str__", &Core::FMTtheme::operator std::string,
-					"@DocString(FMTtheme::operator std::string)")
-				.def("__eq__", &Core::FMTtheme::operator ==,
-					"@DocString(FMTtheme::operator==)")
-				.def("getaggregates", &Core::FMTtheme::getaggregates,
-					"@DocString(Core::FMTtheme::getaggregates)")
-				.def("getstart", &Core::FMTtheme::getstart,
+				.def(bp::init<Core::FMTTheme>())
+				.def("__str__", &Core::FMTTheme::operator std::string,
+					"@DocString(FMTTheme::operator std::string)")
+				.def("__eq__", &Core::FMTTheme::operator ==,
+					"@DocString(FMTTheme::operator==)")
+				.def("getaggregates", &Core::FMTTheme::getAggregates,
+					"@DocString(Core::FMTTheme::getaggregates)")
+				.def("getstart", &Core::FMTTheme::getStart,
 					bp::return_value_policy<bp::return_by_value>(),
-					"@DocString(Core::FMTtheme::getaggregates)")
-				.def("getid", &Core::FMTtheme::getid,
+					"@DocString(Core::FMTTheme::getaggregates)")
+				.def("getid", &Core::FMTTheme::getId,
 					bp::return_value_policy<bp::return_by_value>(),
-					"@DocString(Core::FMTtheme::getid)")
-				.def("getattributenames", &Core::FMTtheme::getattributenames,
+					"@DocString(Core::FMTTheme::getid)")
+				.def("getattributenames", &Core::FMTTheme::getAttributeNames,
 					bp::return_value_policy<bp::return_by_value>(),
-					"@DocString(Core::FMTtheme::getattributenames)")
-				.def("getattributes", &Core::FMTtheme::getattributes, getattributes_overloads(bp::args("value","aggregate_source"), "@DocString(FMTtheme::getattributes)"))
-				.def("getname", &Core::FMTtheme::getname,
-					"@DocString(FMTtheme::getname)");
+					"@DocString(Core::FMTTheme::getattributenames)")
+				.def("getattributes", &Core::FMTTheme::getAttributes, getattributes_overloads(bp::args("value","aggregate_source"), "@DocString(FMTTheme::getattributes)"))
+				.def("getname", &Core::FMTTheme::getName,
+					"@DocString(FMTTheme::getname)");
 
-			bp::class_<Core::FMTconstants>("FMTconstants","@DocString(FMTconstants)");
+			bp::class_<Core::FMTConstants>("FMTconstants","@DocString(FMTConstants)");
 
-			bp::class_<Core::FMTschedule>("FMTschedule", "@DocString(FMTschedule)")
-				.def_pickle(FMT_pickle_suite<Core::FMTschedule>())
-				.def(bp::init<Core::FMTschedule>())
-				.def(bp::init<int, std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>>())
-				.def("__str__", &Core::FMTschedule::operator std::string,
-					"@DocString(FMTschedule::operator std::string)")
-				.def("__add__", &Core::FMTschedule::operator +,
-					"@DocString(FMTschedule::operator+)")
-				.def("actionarea", &Core::FMTschedule::actionarea,
-					"@DocString(FMTschedule::actionarea)")
-				.def("getperiod", &Core::FMTschedule::getperiod,
-					"@DocString(FMTschedule::getperiod)")
-				.def("setperiod", &Core::FMTschedule::setperiod,
-					"@DocString(FMTschedule::setperiod)")
-				.def("__eq__", &Core::FMTschedule::operator ==,
-					"@DocString(FMTschedule::operator==)")
-				.def("__ne__", &Core::FMTschedule::operator !=,
-					"@DocString(FMTschedule::operator!=)")
-				.def("__iter__", boost::python::iterator<Core::FMTschedule>())
-				.def("empty",&Core::FMTschedule::empty,
-					"@DocString(FMTschedule::empty)");
+			bp::class_<Core::FMTSchedule>("FMTschedule", "@DocString(FMTSchedule)")
+				.def_pickle(FMT_pickle_suite<Core::FMTSchedule>())
+				.def(bp::init<Core::FMTSchedule>())
+				.def(bp::init<int, std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::vector<double>>>>())
+				.def("__str__", &Core::FMTSchedule::operator std::string,
+					"@DocString(FMTSchedule::operator std::string)")
+				.def("__add__", &Core::FMTSchedule::operator +,
+					"@DocString(FMTSchedule::operator+)")
+				.def("actionarea", &Core::FMTSchedule::actionArea,
+					"@DocString(FMTSchedule::actionarea)")
+				.def("getperiod", &Core::FMTSchedule::getPeriod,
+					"@DocString(FMTSchedule::getperiod)")
+				.def("setperiod", &Core::FMTSchedule::setPeriod,
+					"@DocString(FMTSchedule::setperiod)")
+				.def("__eq__", &Core::FMTSchedule::operator ==,
+					"@DocString(FMTSchedule::operator==)")
+				.def("__ne__", &Core::FMTSchedule::operator !=,
+					"@DocString(FMTSchedule::operator!=)")
+				.def("__iter__", boost::python::iterator<Core::FMTSchedule>())
+				.def("empty",&Core::FMTSchedule::empty,
+					"@DocString(FMTSchedule::empty)");
 
-			bp::class_<Core::FMTGCBMtransition>("FMTGCBMtransition", "@DocString(FMTGCBMtransition)")
-				.def_readwrite("name", &Core::FMTGCBMtransition::name,
-					"@DocString(FMTGCBMtransition::name)")
-				.def_readwrite("ageafter", &Core::FMTGCBMtransition::ageafter,
-					"@DocString(FMTGCBMtransition::ageafter)")
-				.add_property("themes", bp::make_getter(&Core::FMTGCBMtransition::themes, bp::return_value_policy<bp::return_by_value>()),
-					bp::make_setter(&Core::FMTGCBMtransition::themes, bp::return_value_policy<bp::return_by_value>()));
+			bp::class_<Core::FMTGCBMTransition>("FMTGCBMtransition", "@DocString(FMTGCBMTransition)")
+				.def_readwrite("name", &Core::FMTGCBMTransition::name,
+					"@DocString(FMTGCBMTransition::name)")
+				.def_readwrite("ageafter", &Core::FMTGCBMTransition::ageafter,
+					"@DocString(FMTGCBMTransition::ageafter)")
+				.add_property("themes", bp::make_getter(&Core::FMTGCBMTransition::themes, bp::return_value_policy<bp::return_by_value>()),
+					bp::make_setter(&Core::FMTGCBMTransition::themes, bp::return_value_policy<bp::return_by_value>()));
 
-			bp::class_<Core::FMTconstraint, bp::bases<Core::FMToutput,Core::FMTspec>>("FMTconstraint", "@DocString(FMTconstraint)")
-				.def(bp::init<Core::FMTconstraint>())
-				.def(bp::init<Core::FMTconstrainttype,const Core::FMToutput&>())
-				.def("__str__", &Core::FMTconstraint::operator std::string,
-					"@DocString(FMTconstraint::operator std::string)")
-				.def("__eq__", &Core::FMTconstraint::operator ==,
-					"@DocString(FMTconstraint::operator==)")
-				.def("isspatial",&Core::FMTconstraint::isspatial,
-					"@DocString(FMTconstraint::isspatial)")
-				.def("setlength", &Core::FMTconstraint::setlength,
-					"@DocString(FMTconstraint::setlength)")
-				.def("issetfrom", &Core::FMTconstraint::issetfrom,
-					"@DocString(FMTconstraint::issetfrom)")
-				.def("setfrom", &Core::FMTconstraint::setfrom,
-					"@DocString(FMTconstraint::setfrom)")
-				.def("sense",&Core::FMTconstraint::sense,
-					"@DocString(FMTconstraint::sense)")
-				.def("setrhs", &Core::FMTconstraint::setrhs,
-					"@DocString(FMTconstraint::setrhs)")
-				.def("getconstrainttype", &Core::FMTconstraint::getconstrainttype,
-					"@DocString(FMTconstraint::getconstrainttype)")
-				.def("getfromreplicate", &Core::FMTconstraint::getfromreplicate,
-					"@DocString(FMTconstraint::getfromreplicate)")
-				.def("getscheduleweight", &Core::FMTconstraint::getscheduleweight,
-					"@DocString(FMTconstraint::getscheduleweight)")
-				.def("setpenalties", &Core::FMTconstraint::setpenalties,
-					"@DocString(FMTconstraint::setpenalties)");
+			bp::class_<Core::FMTConstraint, bp::bases<Core::FMTOutput,Core::FMTSpec>>("FMTconstraint", "@DocString(FMTConstraint)")
+				.def(bp::init<Core::FMTConstraint>())
+				.def(bp::init<Core::FMTconstrainttype,const Core::FMTOutput&>())
+				.def("__str__", &Core::FMTConstraint::operator std::string,
+					"@DocString(FMTConstraint::operator std::string)")
+				.def("__eq__", &Core::FMTConstraint::operator ==,
+					"@DocString(FMTConstraint::operator==)")
+				.def("isspatial",&Core::FMTConstraint::isSpatial,
+					"@DocString(FMTConstraint::isspatial)")
+				.def("setlength", &Core::FMTConstraint::setLength,
+					"@DocString(FMTConstraint::setlength)")
+				.def("issetfrom", &Core::FMTConstraint::isSetFrom,
+					"@DocString(FMTConstraint::issetfrom)")
+				.def("setfrom", &Core::FMTConstraint::setFrom,
+					"@DocString(FMTConstraint::setfrom)")
+				.def("sense",&Core::FMTConstraint::sense,
+					"@DocString(FMTConstraint::sense)")
+				.def("setrhs", &Core::FMTConstraint::setRhs,
+					"@DocString(FMTConstraint::setrhs)")
+				.def("getconstrainttype", &Core::FMTConstraint::getConstraintType,
+					"@DocString(FMTConstraint::getconstrainttype)")
+				.def("getfromreplicate", &Core::FMTConstraint::getFromReplicate,
+					"@DocString(FMTConstraint::getfromreplicate)")
+				.def("getscheduleweight", &Core::FMTConstraint::getScheduleWeight,
+					"@DocString(FMTConstraint::getscheduleweight)")
+				.def("setpenalties", &Core::FMTConstraint::setPenalties,
+					"@DocString(FMTConstraint::setpenalties)");
 
-			define_FMTlist<Core::FMTconstraint>();
-			define_FMTlist<Core::FMTGCBMtransition>();
+			define_FMTlist<Core::FMTConstraint>();
+			define_FMTlist<Core::FMTGCBMTransition>();
 
-			bp::class_<Core::FMTyieldrequest>("FMTyieldrequest", "@DocString(FMTyieldrequest)");
+			bp::class_<Core::FMTYieldRequest>("FMTyieldrequest", "@DocString(FMTYieldRequest)");
 
-			define_FMTlist<Core::FMTyieldrequest>();
+			define_FMTlist<Core::FMTYieldRequest>();
 
 
     }

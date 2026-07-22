@@ -1,24 +1,24 @@
 #include <vector>
 #ifdef FMTWITHOSI
-#include "FMTsamodel.h"
-#include "FMTmodelparser.h"
-#include "FMTareaparser.h"
-#include "FMTforest.h"
-#include "FMTversion.h"
-#include "FMTdefaultlogger.h"
-#include "FMTconstraint.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTSaModel.h"
+#include "FMTModelParser.h"
+#include "FMTAreaParser.h"
+#include "FMTForest.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTConstraint.h"
+#include "FMTFreeExceptionHandler.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include "FMTGCBMtransition.h"
+#include "FMTGCBMTransition.h"
 #endif
 
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTDefaultLogger().logStamp();
 
-	if (Version::FMTversion().hasfeature("GDAL"))
+	if (Version::FMTVersion().hasFeature("GDAL"))
 	{
 		std::string primarylocation;
 		std::string scenario;
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 			objectivevalue = 1000;*/
 			}
 		const std::string outputlocation = "../../tests/sasolve";
-		Parser::FMTmodelparser modelparser;
+		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
 		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -62,52 +62,52 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		errors.push_back(Exception::FMTexc::FMTempty_schedules);
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-		modelparser.seterrorstowarnings(errors);
+		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
-		std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
+		std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 		
 		boost::filesystem::path pripath(primarylocation);
 		boost::filesystem::path basefolder = pripath.parent_path();
 		const boost::filesystem::path RASTER_LOCATION = basefolder / boost::filesystem::path("rasters");
-		Spatial::FMTforest forest;
-		Parser::FMTareaparser areaparser;
+		Spatial::FMTForest forest;
+		Parser::FMTAreaParser areaparser;
 		if (boost::filesystem::is_directory(RASTER_LOCATION))
 			{
 			std::vector<std::string>themesName;
 			size_t i = 1;
-			for (const auto& THEME : models.at(0).getthemes())
+			for (const auto& THEME : models.at(0).getThemes())
 			{
 				themesName.push_back(RASTER_LOCATION.string() + "/THEME" + std::to_string(i)+".tif");
 				++i;
 			}
-			forest = areaparser.readrasters(models.at(0).getthemes(),
+			forest = areaparser.readRasters(models.at(0).getThemes(),
 				themesName, RASTER_LOCATION.string() + "/AGE.tif", 1.0, 0.0001, RASTER_LOCATION.string() + "/STANLOCK.tif");
 		}else {
 			boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
-			forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
+			forest = areaparser.vectormaptoFMTforest(maplocation.string(), resolution, models.at(0).getThemes(), "AGE", "SUPERFICIE", 1, 0.0001);
 			}
-		//models[0].setparameter(Models::FMTintmodelparameters::SEED, 100);
-		Models::FMTsamodel optimizationmodel(models.at(0));
-		optimizationmodel.setinitialmapping(forest);
-		//optimizationmodel.redirectlogtofile(outputlocation + "/SA.log");
-		std::vector<Core::FMTtransition>singletransitions;
-		for (const Core::FMTtransition transition : optimizationmodel.gettransitions())
+		//models[0].setParameter(Models::FMTintmodelparameters::SEED, 100);
+		Models::FMTSaModel optimizationmodel(models.at(0));
+		optimizationmodel.setInitialMapping(forest);
+		//optimizationmodel.redirectLogToFile(outputlocation + "/SA.log");
+		std::vector<Core::FMTTransition>singletransitions;
+		for (const Core::FMTTransition transition : optimizationmodel.getTransitions())
 			{
 			singletransitions.push_back(transition.single());
 			}
-		optimizationmodel.settransitions(singletransitions);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 500000);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 3000);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 5000);
-		//optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
-		//optimizationmodel.setparameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
-		optimizationmodel.doplanning(true);
-		//optimizationmodel.LogConstraintsInfeasibilities();
-		/*std::vector<Core::FMToutput>outputs;
-		for (const Core::FMToutput& out : optimizationmodel.getoutputs())
+		optimizationmodel.setTransitions(singletransitions);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::MAX_MOVES, 500000);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::MAX_ACCEPTED_CYCLE_MOVES, 3000);
+		optimizationmodel.setParameter(Models::FMTintmodelparameters::MAX_CYCLE_MOVES, 5000);
+		//optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
+		//optimizationmodel.setParameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY, outputlocation);
+		optimizationmodel.doPlanning(true);
+		//optimizationmodel.logConstraintsInfeasibilities();
+		/*std::vector<Core::FMTOutput>outputs;
+		for (const Core::FMTOutput& out : optimizationmodel.getoutputs())
 		{
-			if (out.getname().find("OVOL")!=std::string::npos)
+			if (out.getName().find("OVOL")!=std::string::npos)
 			{
 				outputs.push_back(out);
 			}
@@ -116,12 +116,12 @@ int main(int argc, char* argv[])
 		modelparser.writeresults(optimizationmodel, outputs, 1, length, outputlocation, Core::FMToutputlevel::totalonly);
 		for (int period = 1; period <= length; ++period)
 			{
-			areaparser.writedisturbances(outputlocation, optimizationmodel.getspschedule(), optimizationmodel.getactions(), optimizationmodel.getthemes(), period);
+			areaparser.writeDisturbances(outputlocation, optimizationmodel.getSpSchedule(), optimizationmodel.getactions(), optimizationmodel.getthemes(), period);
 			}*/
 		
 	}
 	else {
-		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
 	}
 	return 0;
 }

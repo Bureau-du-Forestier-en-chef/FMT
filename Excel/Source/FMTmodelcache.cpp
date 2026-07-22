@@ -3,25 +3,25 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
-#include "FMTlpmodel.h"
-#include "FMToutput.h"
-#include "FMTtheme.h"
-#include "FMTmask.h"
-#include "FMTschedule.h"
-#include "FMTexceptionhandler.h"
-#include "FMTexception.h"
-#include "FMTexcellogger.h"
+#include "FMTLpModel.h"
+#include "FMTOutput.h"
+#include "FMTTheme.h"
+#include "FMTMask.h"
+#include "FMTSchedule.h"
+#include "FMTExceptionHandler.h"
+#include "FMTException.h"
+#include "FMTExcelLogger.h"
 #include "FMTmodelcache.h"
-#include "FMTexception.h"
-#include "FMTobject.h"
+#include "FMTException.h"
+#include "FMTObject.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread.hpp>
-#include "FMTforest.h"
-#include "FMTareaparser.h"
-#include "FMToperatingareascheme.h"
-#include "FMToperatingarea.h"
-#include "FMTgraphstats.h"
+#include "FMTForest.h"
+#include "FMTAreaParser.h"
+#include "FMTOperatingAreaScheme.h"
+#include "FMTOperatingArea.h"
+#include "FMTGraphStats.h"
 #include "FMTExcelExceptionHandler.h"
 #include <map>
 #include "FMTSerie.h"
@@ -34,7 +34,7 @@ namespace Wrapper
 
 
 	FMTmodelcache::FMTmodelcache():
-		Models::FMTlpmodel(),
+		Models::FMTLpModel(),
 		cachingswitch(false),
 		mtx(new boost::recursive_mutex()),
 		outputsmap(),
@@ -50,7 +50,7 @@ namespace Wrapper
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
 		SerieCachemtx(new boost::recursive_mutex()),
-		OAcache(new std::vector<Heuristics::FMToperatingarea>()),
+		OAcache(new std::vector<Heuristics::FMTOperatingArea>()),
 		all_exceptions()
 
 	{
@@ -68,7 +68,7 @@ namespace Wrapper
 			boost::lock(*mtx, *rhs.mtx);
 			boost::lock_guard<boost::recursive_mutex> self_lock(*mtx, boost::adopt_lock);
 			boost::lock_guard<boost::recursive_mutex> other_lock(*rhs.mtx, boost::adopt_lock);
-			Core::FMTobject::operator = (rhs);
+			Core::FMTObject::operator = (rhs);
 			outputsmap = rhs.outputsmap;
 			themesmap = rhs.themesmap;
 			maskcache = rhs.maskcache;
@@ -76,13 +76,13 @@ namespace Wrapper
 			maplocation = rhs.maplocation;
 			generalcache = rhs.generalcache;
 			SerieCache = rhs.SerieCache;
-			Models::FMTlpmodel::operator=(rhs);
+			Models::FMTLpModel::operator=(rhs);
 			globalmask = rhs.globalmask;
-			OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
+			OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMTOperatingArea>>(new std::vector<Heuristics::FMTOperatingArea>(*rhs.OAcache)));
 			all_exceptions = rhs.all_exceptions;
 			if (rhs.map)
 				{
-				map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
+				map = std::move(std::unique_ptr<Spatial::FMTForest>(new Spatial::FMTForest(*rhs.map)));
 				}
 			//allocateressource();
 		}
@@ -90,7 +90,7 @@ namespace Wrapper
 	}
 
 	FMTmodelcache::FMTmodelcache(const FMTmodelcache& rhs):
-		Models::FMTlpmodel(rhs),
+		Models::FMTLpModel(rhs),
 		cachingswitch(rhs.cachingswitch),
 		mtx(new boost::recursive_mutex()),
 		outputsmap(rhs.outputsmap),
@@ -113,9 +113,9 @@ namespace Wrapper
 		boost::lock_guard<boost::recursive_mutex> guard2(*rhs.mtx);
 		if (rhs.map)
 		{
-			map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
+			map = std::move(std::unique_ptr<Spatial::FMTForest>(new Spatial::FMTForest(*rhs.map)));
 		}
-		OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
+		OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMTOperatingArea>>(new std::vector<Heuristics::FMTOperatingArea>(*rhs.OAcache)));
 		//allocateressource();
 	}
 
@@ -124,14 +124,14 @@ namespace Wrapper
 		{
 		try {
 			if (cachingswitch&&
-				this->getgraphsize() > 0 &&
+				this->getGraphSize() > 0 &&
 				outputcache.empty()&&
 				generalcache.empty()&&
 				maskcache.empty())
 				{
 				const size_t nperiods = static_cast<size_t>(getperiods());
 				size_t maxsizet = 0;
-				for (const Core::FMTtheme& theme : themes)
+				for (const Core::FMTTheme& theme : themes)
 					{
 					maxsizet = std::max(maxsizet, theme.size());
 					}
@@ -142,7 +142,7 @@ namespace Wrapper
 				}
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTmodelcache::allocateressource", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::allocateressource", __LINE__, __FILE__);
 			}
 		
 		}
@@ -153,12 +153,12 @@ namespace Wrapper
 			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
 			if (!map && !maplocation.empty())
 				{
-				Parser::FMTareaparser areaparser;
-				map = std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(areaparser.vectormaptoFMTforest(maplocation,250,themes,"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
+				Parser::FMTAreaParser areaparser;
+				map = std::unique_ptr<Spatial::FMTForest>(new Spatial::FMTForest(areaparser.vectormaptoFMTforest(maplocation,250,themes,"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
 				}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::loadmap", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::loadmap", __LINE__, __FILE__);
 		}
 	}
 
@@ -168,12 +168,12 @@ namespace Wrapper
 			loadmap();
 			if (map)
 				{
-				Parser::FMTareaparser areaparser;
+				Parser::FMTAreaParser areaparser;
 				//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-				//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
-				const Core::FMTtheme& theme = themes.at(themeid);
+				//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeSelectionToMask", __LINE__, __FILE__);
+				const Core::FMTTheme& theme = themes.at(themeid);
 				std::map<std::string, std::string> layer_map;
-				const std::vector<std::string>& allatributes = theme.getbaseattributes();
+				const std::vector<std::string>& allatributes = theme.getBaseAttributes();
 				size_t attributeid = 0;
 				for (const std::string& attribute : allatributes)
 					{
@@ -185,7 +185,7 @@ namespace Wrapper
 						}
 						++attributeid; 
 					}
-				return areaparser.writeforesttheme(
+				return areaparser.writeForestTheme(
 					*map,
 					theme,
 					jpeglocation,
@@ -195,7 +195,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::writejpeg", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::writejpeg", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -204,15 +204,15 @@ namespace Wrapper
 	{
 		try {
 			size_t outid = 0;
-			for (const Core::FMToutput& output : outputs)
+			for (const Core::FMTOutput& output : outputs)
 			{
-				outputsmap[output.getname()] = outid;
+				outputsmap[output.getName()] = outid;
 				++outid;
 			}
 			size_t theid = 0;
-			for (const Core::FMTtheme& theme : themes)
+			for (const Core::FMTTheme& theme : themes)
 			{
-				themesmap[theme.getname()] = theid;
+				themesmap[theme.getName()] = theid;
 				++theid;
 			}
 			std::string mask;
@@ -221,27 +221,27 @@ namespace Wrapper
 				mask += "? ";
 			}
 			mask.pop_back();
-			globalmask = Core::FMTmask(mask, themes);
-			//setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-			Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
+			globalmask = Core::FMTMask(mask, themes);
+			//setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+			Models::FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
 			/*int period = 0;
-			for (const Core::FMTschedule& schedule : schedules)
+			for (const Core::FMTSchedule& schedule : schedules)
 			{
-				period = std::max(period, schedule.getperiod());
+				period = std::max(period, schedule.getPeriod());
 			}
 			setparameter(Models::FMTintmodelparameters::LENGTH, period);*/
 			cachingswitch = true;
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::setbaseressources", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::setbaseressources", __LINE__, __FILE__);
 		}
 
 	}
 
 
-	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation):
-		Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::MOSEK),
+	FMTmodelcache::FMTmodelcache(const Models::FMTModel& lmodel, const std::string& lmaplocation):
+		Models::FMTLpModel(lmodel, Models::FMTsolverinterface::MOSEK),
 		cachingswitch(false),
 		mtx(new boost::recursive_mutex()),
 		outputsmap(),
@@ -257,7 +257,7 @@ namespace Wrapper
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
 		SerieCachemtx(new boost::recursive_mutex()),
-		OAcache(new std::vector<Heuristics::FMToperatingarea>()),
+		OAcache(new std::vector<Heuristics::FMTOperatingArea>()),
 		all_exceptions()
 	{
 		try {
@@ -267,36 +267,36 @@ namespace Wrapper
 
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::FMTmodelcache()", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::FMTmodelcache()", __LINE__, __FILE__);
 		}
 
 	}
 
-	void  FMTmodelcache::setlength(const int& period)
+	void  FMTmodelcache::setLength(const int& period)
 	{
 		try {
-			setparameter(Models::FMTintmodelparameters::LENGTH, period);
+			setParameter(Models::FMTintmodelparameters::LENGTH, period);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::setlength", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::setLength", __LINE__, __FILE__);
 		}
 
 	}
 
 
-	void FMTmodelcache::setsolution(const std::vector<Core::FMTschedule>& schedules) 
+	void FMTmodelcache::setSolution(const std::vector<Core::FMTSchedule>& schedules) 
 	{
 		try {
-			setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+			setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 			Exception::FMTExcelExceptionHandler* excelhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(_exhandler.get());
-			excelhandler->resetbuildexceptions();//Reset the exceptions
-			doplanning(false, schedules);
-			all_exceptions = excelhandler->getbuildexceptions();//get the exceptions generated
+			excelhandler->resetBuildExceptions();//Reset the exceptions
+			doPlanning(false, schedules);
+			all_exceptions = excelhandler->getBuildExceptions();//get the exceptions generated
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::setsolution", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::setSolution", __LINE__, __FILE__);
 		}
 	}
 
@@ -304,14 +304,14 @@ namespace Wrapper
 	{
 		try {
 			Exception::FMTExcelExceptionHandler* excelhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(_exhandler.get());
-			excelhandler->resetbuildexceptions();//Reset the exceptions
-			const bool optimal = doplanning(solve);
-			all_exceptions = excelhandler->getbuildexceptions();//get the exceptions generated
+			excelhandler->resetBuildExceptions();//Reset the exceptions
+			const bool optimal = doPlanning(solve);
+			all_exceptions = excelhandler->getBuildExceptions();//get the exceptions generated
 			return (!solve || optimal);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::solve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::solve", __LINE__, __FILE__);
 		}
 		return false;
 	}
@@ -319,16 +319,16 @@ namespace Wrapper
 
 	int FMTmodelcache::getperiods() const
 	{
-		return getparameter(Models::FMTintmodelparameters::LENGTH);
+		return getParameter(Models::FMTintmodelparameters::LENGTH);
 	}
 
-	bool FMTmodelcache::getfrommaskcache(const std::string& cachekey, Core::FMTmask& mask) const
+	bool FMTmodelcache::getfrommaskcache(const std::string& cachekey, Core::FMTMask& mask) const
 	{
 		try {
 			if (cachingswitch)
 				{
 					boost::lock_guard<boost::recursive_mutex> guard1(*maskcachemtx);
-					std::unordered_map<std::string, Core::FMTmask>::iterator mskit = maskcache.find(cachekey);
+					std::unordered_map<std::string, Core::FMTMask>::iterator mskit = maskcache.find(cachekey);
 					if (mskit != maskcache.end())
 					{
 						mask = mskit->second;
@@ -338,12 +338,12 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getfrommaskcache", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getfrommaskcache", __LINE__, __FILE__);
 		}
 		mask= globalmask;
 		return false;
 	}
-	void FMTmodelcache::writetomaskcache(const std::string& cachekey,const Core::FMTmask& mask) const
+	void FMTmodelcache::writetomaskcache(const std::string& cachekey,const Core::FMTMask& mask) const
 	{
 		try {
 			if (cachingswitch)
@@ -354,15 +354,15 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::writetomaskcache", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::writetomaskcache", __LINE__, __FILE__);
 		}
 	}
 
 
-	Core::FMTmask FMTmodelcache::themeSelectionToMask(const std::string& p_themeSelection) const
+	Core::FMTMask FMTmodelcache::themeSelectionToMask(const std::string& p_themeSelection) const
 	{
 		try {
-		Core::FMTmask subset;
+		Core::FMTMask subset;
 		if (getfrommaskcache(p_themeSelection, subset))
 			{
 			return subset;
@@ -374,13 +374,13 @@ namespace Wrapper
 			boost::split(results, p_themeSelection, boost::is_any_of(";"));
 			std::string emptyMask;
 			std::vector<std::string>composition;
-			for (const Core::FMTtheme& theme : themes)
+			for (const Core::FMTTheme& theme : themes)
 			{
 				emptyMask += "? ";
 				composition.push_back("?");
 			}
 			emptyMask.pop_back();
-			subset = Core::FMTmask(emptyMask, themes);
+			subset = Core::FMTMask(emptyMask, themes);
 			
 			for (std::string& value : results)
 			{ 
@@ -389,20 +389,20 @@ namespace Wrapper
 				if (stfind != std::string::npos)//need to subsettheme!
 				{
 					const std::string themename = value.substr(0, stfind);
-					Core::FMTtheme const* localtheme = nullptr;
+					Core::FMTTheme const* localtheme = nullptr;
 					if (themename.find("THEME") != std::string::npos)
 					{
 						const size_t themeid = static_cast<size_t>(std::stoi(themename.substr(themename.find("THEME") + 5)) - 1);
 						if (!(themeid < themes.size()))
 						{
-							return Core::FMTmask();
+							return Core::FMTMask();
 						}
 						localtheme = &themes.at(themeid);
 					}
 					else {
 						if (themesmap.find(themename) == themesmap.end())
 						{
-							return Core::FMTmask();
+							return Core::FMTMask();
 						}
 						localtheme = &themes.at(themesmap.at(themename));
 					}
@@ -424,32 +424,32 @@ namespace Wrapper
 					for (std::string& attribute : attributes)
 					{
 						boost::trim(attribute);
-						Core::FMTmask localMask(subset);
+						Core::FMTMask localMask(subset);
 						
 						if (localtheme)
 						{
-							if (localtheme->isattribute(attribute) ||
-								localtheme->isaggregate(attribute) ||
+							if (localtheme->isAttribute(attribute) ||
+								localtheme->isAggregate(attribute) ||
 								attribute == "?")
 							{
 								localMask.set(*localtheme, attribute);
 							}
 							//attributes names is a vector of string that the string can be empty ... so we cannot search in it
 							else if (!attribute.empty()) {
-								const std::vector<std::string>& attributenames = localtheme->getattributenames();
+								const std::vector<std::string>& attributenames = localtheme->getAttributeNames();
 								std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
 								if (ait == attributenames.end())//raise
 								{
-									return Core::FMTmask();
+									return Core::FMTMask();
 								}
 								else {
-									const std::string attname = localtheme->getbaseattributes().at(std::distance(attributenames.begin(), ait));
+									const std::string attname = localtheme->getBaseAttributes().at(std::distance(attributenames.begin(), ait));
 									localMask.set(*localtheme, attname);
 
 								}
 							}
 							else {
-								return Core::FMTmask();
+								return Core::FMTMask();
 							}
 						}
 					if (attributes.size()==1 ||
@@ -457,14 +457,14 @@ namespace Wrapper
 						{
 						subset = localMask;
 						}else {
-						subset = subset.getunion(localMask);
+						subset = subset.getUnion(localMask);
 						std::string final_value;
 						for (const std::string& VAL : composition)
 							{
 							final_value += VAL + " ";
 							}
 						final_value.pop_back();
-						subset = Core::FMTmask(final_value, subset.getbitsetreference());
+						subset = Core::FMTMask(final_value, subset.getBitsetReference());
 						}
 					
 					}
@@ -477,15 +477,15 @@ namespace Wrapper
 		}
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::themeSelectionToMask", __LINE__, __FILE__);
 			}
-		return Core::FMTmask();
+		return Core::FMTMask();
 	}
 
 	
 
 
-	Core::FMToutput FMTmodelcache::getoutput(const std::string& outputname, const Core::FMTmask& subset) const
+	Core::FMTOutput FMTmodelcache::getOutput(const std::string& outputname, const Core::FMTMask& subset) const
 	{
 		try {
 			std::unordered_map<std::string,size_t>::const_iterator outit = outputsmap.find(outputname);
@@ -496,11 +496,11 @@ namespace Wrapper
 					{
 					return  outputs.at(outit->second);
 					}else {
-					Core::FMToutput output;
+					Core::FMTOutput output;
 					const std::string cachekey = outputname +"_"+ std::string(subset);
 					if (!getfromoutputcache(cachekey, output))
 						{
-						output = outputs.at(outit->second).intersectwithmask(subset, themes);
+						output = outputs.at(outit->second).intersectWithMask(subset, themes);
 						writetooutputcache(cachekey, output);
 						}
 					return output;
@@ -508,37 +508,37 @@ namespace Wrapper
 				}
 			}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getoutput", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getOutput", __LINE__, __FILE__);
 		}
-		return Core::FMToutput();
+		return Core::FMTOutput();
 	}
-	double FMTmodelcache::getvaluefrommodel(const Core::FMToutput& output, const int& period) const
+	double FMTmodelcache::getvaluefrommodel(const Core::FMTOutput& output, const int& period) const
 	{
 		double value = 0;
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard(*mtx); // guard pour le multi thread
-			value = Models::FMTlpmodel::getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
+			value = Models::FMTLpModel::getOutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
 
 			// 1-faire des prints de calcul pour voir lorsqu'il rentre versus lorsqu'il sort? Voir si des threads se pile sur les pieds
-			// 2-à chaque fois qu'il y a un appel  de getoutput, detruire et reconstruire le model pour empêcher que la cache suit
+			// 2-Ã  chaque fois qu'il y a un appel  de getOutput, detruire et reconstruire le model pour empÃªcher que la cache suit
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getvaluefrommodel", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getvaluefrommodel", __LINE__, __FILE__);
 		}
 		return value;
 	}
 
 
 
-	bool FMTmodelcache::getfromoutputcache(const std::string& cachekey, Core::FMToutput& output) const
+	bool FMTmodelcache::getfromoutputcache(const std::string& cachekey, Core::FMTOutput& output) const
 	{
 		bool incache = false;
 		try {
 			if (cachingswitch)
 			{
 				boost::lock_guard<boost::recursive_mutex> guard(*outputcachemtx);
-				std::unordered_map<std::string, Core::FMToutput>::iterator outit = outputcache.find(cachekey);
+				std::unordered_map<std::string, Core::FMTOutput>::iterator outit = outputcache.find(cachekey);
 				if (outit != outputcache.end())
 				{
 					incache = true;
@@ -547,12 +547,12 @@ namespace Wrapper
 			}
 		}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTmodelcache::getfromoutputcache", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodelcache::getfromoutputcache", __LINE__, __FILE__);
 		}
 		return incache;
 	}
 
-	void FMTmodelcache::writetooutputcache(const std::string& cachekey, const Core::FMToutput& output) const
+	void FMTmodelcache::writetooutputcache(const std::string& cachekey, const Core::FMTOutput& output) const
 	{
 		try {
 			if (cachingswitch)
@@ -563,7 +563,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::writetooutputcache", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::writetooutputcache", __LINE__, __FILE__);
 		}
 
 	}
@@ -572,17 +572,17 @@ namespace Wrapper
 	{
 		std::vector<std::string>masks;
 		try {
-			const Core::FMTmask mask_filter = themeSelectionToMask(filter);
+			const Core::FMTMask mask_filter = themeSelectionToMask(filter);
 			if (!mask_filter.empty())
 				{
-				for (const Core::FMTdevelopment* dev : this->getnochoice(mask_filter))
+				for (const Core::FMTDevelopment* dev : this->getNoChoice(mask_filter))
 					{
 					masks.push_back(std::string(*dev));
 					}
 				}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getnoaction", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getnoaction", __LINE__, __FILE__);
 		}
 		return masks;
 	}
@@ -593,20 +593,20 @@ namespace Wrapper
 	try{
 		if (!maplocation.empty())
 		{
-			std::vector<Heuristics::FMToperatingareascheme>allscheme;
+			std::vector<Heuristics::FMTOperatingAreaScheme>allscheme;
 			std::vector<size_t>allmasks;
-			boost::unordered_map<Core::FMTmask, size_t>masklocation;
+			boost::unordered_map<Core::FMTMask, size_t>masklocation;
 			size_t idofit = 0;
 			std::vector<std::string>selected;
 			for (const std::string& thselection : themeselection)
 			{
-				const Core::FMTmask subset = themeSelectionToMask(thselection);
+				const Core::FMTMask subset = themeSelectionToMask(thselection);
 				if (!subset.empty())
 				{
-					std::vector<Heuristics::FMToperatingarea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMToperatingareacomparator(subset));
+					std::vector<Heuristics::FMTOperatingArea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMTOperatingAreaComparator(subset));
 					if (itof == OAcache->end())
 						{
-						allscheme.push_back(Heuristics::FMToperatingareascheme(Heuristics::FMToperatingarea(subset, perimeters), 2, 6, 6, 1, 1, 1));
+						allscheme.push_back(Heuristics::FMTOperatingAreaScheme(Heuristics::FMTOperatingArea(subset, perimeters), 2, 6, 6, 1, 1, 1));
 					}else {
 						const size_t location = std::distance(OAcache->cbegin(), itof);
 						allmasks.push_back(location);
@@ -619,12 +619,12 @@ namespace Wrapper
 			}
 			if (!allscheme.empty())
 				{
-				Parser::FMTareaparser areaparser;
-				const std::vector<Heuristics::FMToperatingareascheme> Ioop = areaparser.getschemeneighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
-				for (const Heuristics::FMToperatingareascheme& scheme : Ioop)
+				Parser::FMTAreaParser areaparser;
+				const std::vector<Heuristics::FMTOperatingAreaScheme> Ioop = areaparser.getSchemeNeighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
+				for (const Heuristics::FMTOperatingAreaScheme& scheme : Ioop)
 					{
 					allmasks.push_back(OAcache->size());
-					masklocation[scheme.getmask()] = OAcache->size();
+					masklocation[scheme.getMask()] = OAcache->size();
 					OAcache->push_back(scheme);
 					}
 				}
@@ -637,15 +637,15 @@ namespace Wrapper
 				double notrespected = 0.0;
 				for (const std::string& thselection : selected)
 					{
-					if (getyield(yieldname, thselection, 0, period)>0)
+					if (getYield(yieldname, thselection, 0, period)>0)
 					{
-						for (const Core::FMTmask& neighbor : OAcache->at(allmasks.at(oaid)).getneighbors())
+						for (const Core::FMTMask& neighbor : OAcache->at(allmasks.at(oaid)).getNeighbors())
 						{
 							if (masklocation.find(neighbor)!= masklocation.end())
 							{
 								const std::string nselection = selected.at(masklocation.at(neighbor));
-								if (!got_output || ((getyield(yieldname, nselection, 0, period) > 0) &&
-									(getvalue(output, nselection, period) >= ratio)))
+								if (!got_output || ((getYield(yieldname, nselection, 0, period) > 0) &&
+									(getValue(output, nselection, period) >= ratio)))
 								{
 									++notrespected;
 									break;
@@ -661,13 +661,13 @@ namespace Wrapper
 		}
 	}catch (...)
 		{
-		_exhandler->printexceptions("", "FMTmodelcache::Juxtaposition", __LINE__, __FILE__);
+		_exhandler->printExceptions("", "FMTmodelcache::Juxtaposition", __LINE__, __FILE__);
 		}
 	return allratios;
 	}
 
 
-	double  FMTmodelcache::getvalue(const std::string& outputname, const std::string& themeselection, const int& period) const
+	double  FMTmodelcache::getValue(const std::string& outputname, const std::string& themeselection, const int& period) const
 	{
 		double value = 0;
 		try {
@@ -675,8 +675,8 @@ namespace Wrapper
 			const bool incache = fillfromcache(value, cachekey);
 			if (!incache)
 			{
-				const Core::FMTmask subset = themeSelectionToMask(themeselection);
-				const Core::FMToutput theoutput = getoutput(outputname, subset);
+				const Core::FMTMask subset = themeSelectionToMask(themeselection);
+				const Core::FMTOutput theoutput = getOutput(outputname, subset);
 				if (!outputs.empty() &&
 					outputsmap.find(outputname) != outputsmap.end() &&
 					!theoutput.empty())
@@ -688,12 +688,12 @@ namespace Wrapper
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getvalue", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getValue", __LINE__, __FILE__);
 		}
 		return value;
 	}
 
-	double  FMTmodelcache::getyieldfrommodel(const Core::FMTyieldrequest& request, const std::string& yieldname) const
+	double  FMTmodelcache::getyieldfrommodel(const Core::FMTYieldRequest& request, const std::string& yieldname) const
 	{
 		double value = 0;
 		try {
@@ -704,13 +704,13 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "getyieldfrommodel", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "getyieldfrommodel", __LINE__, __FILE__);
 		}
 		return value;
 
 	}
 
-	double FMTmodelcache::getyield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const
+	double FMTmodelcache::getYield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const
 	{
 		double value = 0;
 		try {
@@ -718,15 +718,15 @@ namespace Wrapper
 			const bool incache = fillfromcache(value, cachekey);
 			if (!incache)
 			{
-				//const Core::FMTyields& yields = model->getyields();
-				const Core::FMTmask subset = themeSelectionToMask(themeselection);
+				//const Core::FMTYields& yields = model->getYields();
+				const Core::FMTMask subset = themeSelectionToMask(themeselection);
 				if (!yields.empty() &&
 					yields.isYld(yieldname) &&
 					!(subset.empty() && !themeselection.empty()))
 				{
-					const Core::FMTdevelopment adev(subset, age, 0, period);
-					const Graph::FMTgraphvertextoyield graph_info = getGraphVertexToYield();
-					const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest(&graph_info);
+					const Core::FMTDevelopment adev(subset, age, 0, period);
+					const Graph::FMTGraphVertexToYield graph_info = getGraphVertexToYield();
+					const Core::FMTYieldRequest yieldrequest = adev.getYieldRequest(&graph_info);
 					value = getyieldfrommodel(yieldrequest, yieldname);
 				}
 				settocache(cachekey, value);
@@ -734,28 +734,28 @@ namespace Wrapper
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getyield", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getYield", __LINE__, __FILE__);
 		}
 		return value;
 	}
 
-	std::vector<std::string> FMTmodelcache::getattributes(const int& themeid, const std::string& value,const bool& aggregates) const
+	std::vector<std::string> FMTmodelcache::getAttributes(const int& themeid, const std::string& value,const bool& aggregates) const
 	{
 		std::vector<std::string> attributes;
 		try {
 			if (!themes.empty() &&
 				(static_cast<size_t>(themeid) < themes.size()))
 				{
-				if (themes.at(themeid).isattribute(value) || themes.at(themeid).isaggregate(value))
+				if (themes.at(themeid).isAttribute(value) || themes.at(themeid).isAggregate(value))
 					{
-					attributes = themes.at(themeid).getattributes(value,aggregates);
+					attributes = themes.at(themeid).getAttributes(value,aggregates);
 				}else {
-					attributes =  themes.at(themeid).getattributes("?",aggregates);
+					attributes =  themes.at(themeid).getAttributes("?",aggregates);
 					}
 				}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getattribute", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getAttribute", __LINE__, __FILE__);
 		}
 		return attributes;
 	}
@@ -767,14 +767,14 @@ namespace Wrapper
 			if (!themes.empty() &&
 				(static_cast<size_t>(themeid) < themes.size()))
 			{
-				std::vector<std::string>basenames = themes.at(themeid).getattributenames();
+				std::vector<std::string>basenames = themes.at(themeid).getAttributeNames();
 				std::vector<std::string>references;
-				if (themes.at(themeid).isattribute(value))
+				if (themes.at(themeid).isAttribute(value))
 				{
-					references = themes.at(themeid).getattributes(value);
+					references = themes.at(themeid).getAttributes(value);
 				}
 				else {
-					references = themes.at(themeid).getattributes("?");
+					references = themes.at(themeid).getAttributes("?");
 				}
 				for (const std::string& refvalue : references)
 					{
@@ -786,25 +786,25 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getattributesdescription", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getattributesdescription", __LINE__, __FILE__);
 		}
 		return attributes;
 	}
 
 
-	std::vector<std::string> FMTmodelcache::getaggregates(const int& themeid) const
+	std::vector<std::string> FMTmodelcache::getAggregates(const int& themeid) const
 	{
 		std::vector<std::string> aggregates;
 		try {
 			if (!themes.empty()&&
 				(static_cast<size_t>(themeid) < themes.size()))
 			{
-				aggregates = themes.at(themeid).getaggregates();
+				aggregates = themes.at(themeid).getAggregates();
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getaggregates", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getAggregates", __LINE__, __FILE__);
 		}
 		return aggregates;
 	
@@ -819,7 +819,7 @@ namespace Wrapper
 			key = type + "_" + outputname + "_" + themeselection + "_" + std::to_string(age) + "_" + std::to_string(period);
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getcachekey", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getcachekey", __LINE__, __FILE__);
 		}
 		return key;
 	}
@@ -838,7 +838,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::fillfromcache", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::fillfromcache", __LINE__, __FILE__);
 		}
 		return gotincash;
 
@@ -858,7 +858,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", " FMTmodelcache::getSeriesFromCache", __LINE__, __FILE__);
+			_exhandler->printExceptions("", " FMTmodelcache::getSeriesFromCache", __LINE__, __FILE__);
 		}
 		return gotincash;
 
@@ -876,7 +876,7 @@ namespace Wrapper
 				}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::settocache", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::settocache", __LINE__, __FILE__);
 		}
 	}
 
@@ -891,7 +891,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::setSeriesToCache", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::setSeriesToCache", __LINE__, __FILE__);
 		}
 	}
 
@@ -899,17 +899,17 @@ namespace Wrapper
 	std::vector<std::string> FMTmodelcache::getactionaggregates(const std::string& filter) const
 	{
 		try {
-			for (const Core::FMTaction& action : actions)
+			for (const Core::FMTAction& action : actions)
 			{
-				if (action.getname()==filter)
+				if (action.getName()==filter)
 				{
-					return action.getaggregates();
+					return action.getAggregates();
 				}
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getactionaggregates", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getactionaggregates", __LINE__, __FILE__);
 		}
 		return std::vector<std::string>();
 
@@ -921,17 +921,17 @@ namespace Wrapper
 		std::vector<std::string>actionsname;
 		actionsname.reserve(actions.size());
 		try {
-			for (const Core::FMTaction& action : actions)
+			for (const Core::FMTAction& action : actions)
 				{
-				const std::vector<std::string> aggregates = action.getaggregates();
+				const std::vector<std::string> aggregates = action.getAggregates();
 				if (filter=="?" || std::find(aggregates.begin(), aggregates.end(), filter) != aggregates.end())
 					{
-					actionsname.push_back(action.getname());
+					actionsname.push_back(action.getName());
 					}
 				}
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTmodelcache::getactions", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getactions", __LINE__, __FILE__);
 			}
 		return actionsname;
 	}
@@ -941,7 +941,7 @@ namespace Wrapper
 		std::vector<std::string>constraintsname;
 		constraintsname.reserve(constraints.size());
 		try {
-			for (const Core::FMTconstraint& constraint : constraints)
+			for (const Core::FMTConstraint& constraint : constraints)
 			{
 				const std::string value = std::string(constraint);
 				if (value.find(output)!=std::string::npos)
@@ -952,12 +952,12 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getconstraints", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getconstraints", __LINE__, __FILE__);
 		}
 		return constraintsname;
 	}
 
-	std::vector<std::string>FMTmodelcache::getbuildexceptions(const int& exceptionid) const
+	std::vector<std::string>FMTmodelcache::getBuildExceptions(const int& exceptionid) const
 		{
 		std::vector<std::string>values;
 		try {
@@ -968,7 +968,7 @@ namespace Wrapper
 			
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTmodelcache::getbuildexceptions", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getBuildExceptions", __LINE__, __FILE__);
 			}
 		return values;
 		}
@@ -981,17 +981,17 @@ namespace Wrapper
 			const bool gotSeries = getSeriesFromCache(series, CacheKey);
 			if (!gotSeries)
 			{
-				const Core::FMTmask subset = themeSelectionToMask(themeselection);
+				const Core::FMTMask subset = themeSelectionToMask(themeselection);
 				if (!aggregate.empty() && !subset.empty())
 				{
-					series = FMTsrmodel::getRotations(subset, aggregate);
+					series = FMTSrModel::getRotations(subset, aggregate);
 				}
 				setSeriesToCache(CacheKey, series);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getrotations", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getRotations", __LINE__, __FILE__);
 		}
 		return series;
 	}
@@ -1000,7 +1000,7 @@ namespace Wrapper
 	{
 		bool gotIt = false;
 		try {
-			const Core::FMTmask subset = themeSelectionToMask(themeselection);
+			const Core::FMTMask subset = themeSelectionToMask(themeselection);
 			if (!aggregate.empty() && !subset.empty())
 			{
 				const std::string CacheKey = getcachekey("SERIE", aggregate, themeselection, 0, 0);
@@ -1008,10 +1008,10 @@ namespace Wrapper
 				const bool gotSeries = getSeriesFromCache(AllSeries, CacheKey);
 				if (!gotSeries)
 				{
-					AllSeries = FMTsrmodel::getRotations(subset, aggregate);
+					AllSeries = FMTSrModel::getRotations(subset, aggregate);
 					setSeriesToCache(CacheKey, AllSeries);
 				}
-				const int length = getparameter(Models::FMTintmodelparameters::LENGTH);
+				const int length = getParameter(Models::FMTintmodelparameters::LENGTH);
 				Core::FMTSerie lowerBound(p_serie, 0);
 				Core::FMTSerie upperBound(p_serie, length+1);
 				std::set<Core::FMTSerie>::const_iterator it = AllSeries.lower_bound(lowerBound);
@@ -1029,17 +1029,17 @@ namespace Wrapper
 
 		}catch (...)
 			{
-				_exhandler->printexceptions("", "FMTmodelcache::haveSerie", __LINE__, __FILE__);
+				_exhandler->printExceptions("", "FMTmodelcache::haveSerie", __LINE__, __FILE__);
 			}
 		return gotIt;
 	}
 
 
-	std::vector<int> FMTmodelcache::getgraphstats() const
+	std::vector<int> FMTmodelcache::getGraphStats() const
 	{
 		std::vector<int>stats;
 		try {
-			Graph::FMTgraphstats graphstats = FMTsrmodel::getgraphstats();
+			Graph::FMTGraphStats graphstats = FMTSrModel::getStats();
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
 			stats.push_back(graphstats.vertices);
@@ -1049,7 +1049,7 @@ namespace Wrapper
 			stats.push_back(graphstats.output_cols);
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getgraphstats", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getGraphStats", __LINE__, __FILE__);
 		}
 		return stats;
 	}
@@ -1058,8 +1058,8 @@ namespace Wrapper
 	{
 		std::vector<int>stats;
 		try {
-			const Core::FMTmask SUBSET = themeSelectionToMask(p_ThemeSelection);
-			Graph::FMTgraphstats graphstats = FMTsrmodel::getGraphStats(SUBSET);
+			const Core::FMTMask SUBSET = themeSelectionToMask(p_ThemeSelection);
+			Graph::FMTGraphStats graphstats = FMTSrModel::getGraphStats(SUBSET);
 			stats.push_back(graphstats.cols);
 			stats.push_back(graphstats.rows);
 			stats.push_back(graphstats.vertices);
@@ -1068,57 +1068,57 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getGraphStatsSubset", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getGraphStatsSubset", __LINE__, __FILE__);
 		}
 		return stats;
 	}
 
 
 
-	std::vector<std::string> FMTmodelcache::getoutputs() const
+	std::vector<std::string> FMTmodelcache::getOutputs() const
 	{
 		std::vector<std::string>outputsname;
 		outputsname.reserve(outputs.size());
 		try {
-			for (const Core::FMToutput& output : outputs)
+			for (const Core::FMTOutput& output : outputs)
 			{
-				outputsname.push_back(output.getname());
+				outputsname.push_back(output.getName());
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getoutputs", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getOutputs", __LINE__, __FILE__);
 		}
 		return outputsname;
 
 	}
 
-	std::vector<std::string> FMTmodelcache::getyields() const
+	std::vector<std::string> FMTmodelcache::getYields() const
 	{
 		try {
-			return yields.getallyieldnames();
+			return yields.getAllYieldNames();
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getyields", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getYields", __LINE__, __FILE__);
 		}
 		return std::vector<std::string>();
 
 	}
 
-	std::vector<std::string> FMTmodelcache::getthemes() const
+	std::vector<std::string> FMTmodelcache::getThemes() const
 	{
 		std::vector<std::string>themenames;
 		themenames.reserve(themes.size());
 		try {
-			for (const Core::FMTtheme& theme : themes)
+			for (const Core::FMTTheme& theme : themes)
 			{
-				themenames.push_back(theme.getname());
+				themenames.push_back(theme.getName());
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::getthemes", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getThemes", __LINE__, __FILE__);
 		}
 		return themenames;
 
@@ -1133,11 +1133,11 @@ namespace Wrapper
 		return log;
 		}
 
-	void FMTmodelcache::putlogger(const std::unique_ptr<Logging::FMTlogger>& log)
+	void FMTmodelcache::putlogger(const std::unique_ptr<Logging::FMTLogger>& log)
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-		Core::FMTobject::passinlogger(log);
-		//this->passinlogger(log);
+		Core::FMTObject::passInLogger(log);
+		//this->passInLogger(log);
 		}
 
 }

@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 
-#include "FMTversion.h"
+#include "FMTVersion.h"
 
 #if defined FMTWITHPYTHON
 #include "FMTpythonpickle.h"

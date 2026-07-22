@@ -2,14 +2,14 @@
 #include "stdafx.h"
 
 #include "FMTExcelExceptionHandler.h"
-#include "FMTwarning.h"
-#include "FMTerror.h"
+#include "FMTWarning.h"
+#include "FMTError.h"
 #include <boost/thread.hpp>
 
 namespace Exception
 {
 
-	FMTExcelExceptionHandler::FMTExcelExceptionHandler():FMTexceptionhandler(), build_exceptions()
+	FMTExcelExceptionHandler::FMTExcelExceptionHandler():FMTExceptionHandler(), build_exceptions()
 		{
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -22,19 +22,19 @@ namespace Exception
 		errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-		seterrorstowarnings(errors);
-		setmaxwarningsbeforesilenced(1000);
+		setErrorsToWarnings(errors);
+		setMaxWarningsBeforeSilenced(1000);
 		}
 
-	std::unordered_map<int, std::vector<std::string>> FMTExcelExceptionHandler::getbuildexceptions() const
+	std::unordered_map<int, std::vector<std::string>> FMTExcelExceptionHandler::getBuildExceptions() const
 		{
 		return build_exceptions;
 		}
-	void FMTExcelExceptionHandler::resetbuildexceptions()
+	void FMTExcelExceptionHandler::resetBuildExceptions()
 		{
 		build_exceptions.clear();
 		}
-	FMTexception FMTExcelExceptionHandler::raise(FMTexc lexception, std::string text,
+	FMTException FMTExcelExceptionHandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file,
 		Core::FMTsection lsection, bool throwit)
 		{
@@ -45,36 +45,36 @@ namespace Exception
 			build_exceptions[static_cast<int>(lexception)] = std::vector<std::string>();
 			}
 		build_exceptions[static_cast<int>(lexception)].push_back(text);
-		FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
+		FMTException excp = FMTException(lexception, updateStatus(lexception, text));
 		if (lsection != Core::FMTsection::Empty)
 		{
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
+			excp = FMTException(lexception, lsection, updateStatus(lexception, text));
 		}
 		if (LEVEL != FMTlev::FMT_Warning)
 		{
 			if (lsection == Core::FMTsection::Empty)
 			{
-				excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);
+				excp = FMTException(lexception, updateStatus(lexception, text), method, file, line);
 			}
 			else {
-				excp = FMTexception(lexception, lsection, updatestatus(lexception, text), method, file, line);
+				excp = FMTException(lexception, lsection, updateStatus(lexception, text), method, file, line);
 			}
-			if (throwit && (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range) && !needtorethrow())
+			if (throwit && (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range) && !needToRethrow())
 			{
-				std::throw_with_nested(FMTerror(excp));
+				std::throw_with_nested(FMTError(excp));
 			}
 		}
 		else if (throwit)
 		{
-			FMTwarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
+			FMTWarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
 		}
 
 		return excp;
 		}
 
-	std::unique_ptr <FMTexceptionhandler> FMTExcelExceptionHandler::Clone() const
+	std::unique_ptr <FMTExceptionHandler> FMTExcelExceptionHandler::Clone() const
 	{
-		return std::unique_ptr<FMTexceptionhandler>(new FMTExcelExceptionHandler(*this));
+		return std::unique_ptr<FMTExceptionHandler>(new FMTExcelExceptionHandler(*this));
 	}
 
 }

@@ -1,18 +1,18 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTversion.h"
-	#include "FMTdefaultlogger.h"
-	#include "FMTmodelparser.h"
-    #include "FMTlpmodel.h"
-    #include "FMTconstraint.h"
-    #include "FMTfreeexceptionhandler.h"
-    #include "FMTexception.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTModelParser.h"
+    #include "FMTLpModel.h"
+    #include "FMTConstraint.h"
+    #include "FMTFreeExceptionHandler.h"
+    #include "FMTException.h"
 #endif
 
 int main()
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTdefaultlogger().logstamp();
+	Logging::FMTDefaultLogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primarylocation = folder + "TWD_land.pri";
 	std::vector<Exception::FMTexc>errors;
@@ -22,47 +22,47 @@ int main()
 	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
-	Parser::FMTmodelparser modelparser;
-	modelparser.setdefaultexceptionhandler();
-	modelparser.seterrorstowarnings(errors);
+	Parser::FMTModelParser modelparser;
+	modelparser.setDefaultExceptionHandler();
+	modelparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1,"LP");
-	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
-	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
-	Core::FMToutput out;
-	for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, 5);
+	optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+	optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+	Core::FMTOutput out;
+	for (const Core::FMTOutput& output : optimizationmodel.getOutputs())
 		{
-			if (output.getname() == "OVOLREC")
+			if (output.getName() == "OVOLREC")
 			{
 				out = output;
 				break;
 			}
 		}
-	Models::FMTlpmodel lowerboundmodel, upperboundmodel;
+	Models::FMTLpModel lowerboundmodel, upperboundmodel;
 	lowerboundmodel = upperboundmodel = optimizationmodel;
 	//Select the yields to change.
 	std::vector<std::string>yieldstochange;
 	yieldstochange.push_back("VOLUMETOTAL");
 	//Change the Yields...
-	const Core::FMTyields baseyields = optimizationmodel.getyields();
-	const Core::FMTyields lowerboundyields = baseyields.getfromfactor(0.9, yieldstochange);//-10%
-	lowerboundmodel.setyields(lowerboundyields);
-	const Core::FMTyields upperboundyields = baseyields.getfromfactor(1.1, yieldstochange);//+10%
-	upperboundmodel.setyields(upperboundyields);
+	const Core::FMTYields baseyields = optimizationmodel.getYields();
+	const Core::FMTYields lowerboundyields = baseyields.getFromFactor(0.9, yieldstochange);//-10%
+	lowerboundmodel.setYields(lowerboundyields);
+	const Core::FMTYields upperboundyields = baseyields.getFromFactor(1.1, yieldstochange);//+10%
+	upperboundmodel.setYields(upperboundyields);
 	//Solve all models
-	lowerboundmodel.doplanning(true);
-	upperboundmodel.doplanning(true);
-	optimizationmodel.doplanning(true);
-	const double basevalue = optimizationmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
-	const double lowervalue = lowerboundmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
-	const double uppervalue = upperboundmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
-	Logging::FMTdefaultlogger() << "LOWER: "<< lowervalue << "BASE: "<< basevalue << "UPPER: "<< uppervalue << "\n";
+	lowerboundmodel.doPlanning(true);
+	upperboundmodel.doPlanning(true);
+	optimizationmodel.doPlanning(true);
+	const double basevalue = optimizationmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
+	const double lowervalue = lowerboundmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
+	const double uppervalue = upperboundmodel.getOutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
+	Logging::FMTDefaultLogger() << "LOWER: "<< lowervalue << "BASE: "<< basevalue << "UPPER: "<< uppervalue << "\n";
 	if ((lowervalue>uppervalue)||(basevalue<lowervalue)||(basevalue > uppervalue))
 	{
-		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);
 	}
 	#endif

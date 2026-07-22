@@ -8,35 +8,35 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef REXPORTEXCEPTIONS_H_INCLUDED
 #define REXPORTEXCEPTIONS_H_INCLUDED
 
-#include "FMTdefaultexceptionhandler.h"
-#include "FMTdebugexceptionhandler.h"
-#include "FMTquietexceptionhandler.h"
-#include "FMTexceptionhandler.h"
+#include "FMTDefaultExceptionHandler.h"
+#include "FMTDebugExceptionHandler.h"
+#include "FMTQuietExceptionHandler.h"
+#include "FMTExceptionHandler.h"
 #include <Rcpp.h>
 #include "Rdefinitions.h"
-#include "FMTerror.h"
-#include "FMTwarning.h"
-#include "FMTexception.h"
+#include "FMTError.h"
+#include "FMTWarning.h"
+#include "FMTException.h"
 
 /*
-RCPP_EXPOSED_WRAP(Exception::FMTexceptionhandler);
-RCPP_EXPOSED_AS(Exception::FMTexceptionhandler);*/
-RCPP_EXPOSED_WRAP(Exception::FMTdefaultexceptionhandler);
-RCPP_EXPOSED_AS(Exception::FMTdefaultexceptionhandler);
-RCPP_EXPOSED_WRAP(Exception::FMTquietexceptionhandler);
-RCPP_EXPOSED_AS(Exception::FMTquietexceptionhandler);
-RCPP_EXPOSED_WRAP(Exception::FMTdebugexceptionhandler);
-RCPP_EXPOSED_AS(Exception::FMTdebugexceptionhandler);
+RCPP_EXPOSED_WRAP(Exception::FMTExceptionHandler);
+RCPP_EXPOSED_AS(Exception::FMTExceptionHandler);*/
+RCPP_EXPOSED_WRAP(Exception::FMTDefaultExceptionHandler);
+RCPP_EXPOSED_AS(Exception::FMTDefaultExceptionHandler);
+RCPP_EXPOSED_WRAP(Exception::FMTQuietExceptionHandler);
+RCPP_EXPOSED_AS(Exception::FMTQuietExceptionHandler);
+RCPP_EXPOSED_WRAP(Exception::FMTDebugExceptionHandler);
+RCPP_EXPOSED_AS(Exception::FMTDebugExceptionHandler);
 RCPP_EXPOSED_ENUM_NODECL(Exception::FMTexc);
 RCPP_DEFINEVECTOR(Exception::FMTexc);//For vector
 RCPP_EXPOSED_ENUM_NODECL(Exception::FMTlev);
 RCPP_EXPOSED_ENUM_NODECL(Core::FMTsection);
-RCPP_EXPOSED_WRAP(Exception::FMTexception);
-RCPP_EXPOSED_AS(Exception::FMTexception);
-RCPP_EXPOSED_WRAP(Exception::FMTerror);
-RCPP_EXPOSED_AS(Exception::FMTerror);
-RCPP_EXPOSED_WRAP(Exception::FMTwarning);
-RCPP_EXPOSED_AS(Exception::FMTwarning);
+RCPP_EXPOSED_WRAP(Exception::FMTException);
+RCPP_EXPOSED_AS(Exception::FMTException);
+RCPP_EXPOSED_WRAP(Exception::FMTError);
+RCPP_EXPOSED_AS(Exception::FMTError);
+RCPP_EXPOSED_WRAP(Exception::FMTWarning);
+RCPP_EXPOSED_AS(Exception::FMTWarning);
 
 namespace R
 {
@@ -44,47 +44,47 @@ namespace R
 void exportException()
     {
 
-	/*Rcpp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler", "@DocString(FMTexceptionhandler)")
-		.constructor("@DocString(FMTexceptionhandler())");*/
+	/*Rcpp::class_<Exception::FMTExceptionHandler>("FMTexceptionhandler", "@DocString(FMTExceptionHandler)")
+		.constructor("@DocString(FMTExceptionHandler())");*/
 
 
-	Rcpp::class_<Exception::FMTdefaultexceptionhandler>("FMTdefaultexceptionhandler", "@DocString(FMTdefaultexceptionhandler)")
-		//.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
-		.constructor("@DocString(FMTdefaultexceptionhandler())")
-        .method("raise",&Exception::FMTdefaultexceptionhandler::raise,
-			"@DocString(FMTdefaultexceptionhandler::raise)");
+	Rcpp::class_<Exception::FMTDefaultExceptionHandler>("FMTdefaultexceptionhandler", "@DocString(FMTDefaultExceptionHandler)")
+		//.derives<Exception::FMTExceptionHandler>("FMTexceptionhandler")
+		.constructor("@DocString(FMTDefaultExceptionHandler())")
+        .method("raise",&Exception::FMTDefaultExceptionHandler::raise,
+			"@DocString(FMTDefaultExceptionHandler::raise)");
 
 
-	Rcpp::class_<Exception::FMTquietexceptionhandler>("FMTquietexceptionhandler", "@DocString(FMTquietexceptionhandler)")
-		//.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
-		.constructor("@DocString(FMTquietexceptionhandler())")
-        .method("raise",&Exception::FMTquietexceptionhandler::raise,
-			"@DocString(FMTquietexceptionhandler::raise)");
+	Rcpp::class_<Exception::FMTQuietExceptionHandler>("FMTquietexceptionhandler", "@DocString(FMTQuietExceptionHandler)")
+		//.derives<Exception::FMTExceptionHandler>("FMTexceptionhandler")
+		.constructor("@DocString(FMTQuietExceptionHandler())")
+        .method("raise",&Exception::FMTQuietExceptionHandler::raise,
+			"@DocString(FMTQuietExceptionHandler::raise)");
 
 
-	Rcpp::class_<Exception::FMTdebugexceptionhandler>("FMTdebugexceptionhandler", "@DocString(FMTdebugexceptionhandler)")
-		//.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
-		.constructor("@DocString(FMTdebugexceptionhandler())")
-		.method("raise", &Exception::FMTdebugexceptionhandler::raise,
-			"@DocString(FMTdebugexceptionhandler::raise)");
+	Rcpp::class_<Exception::FMTDebugExceptionHandler>("FMTdebugexceptionhandler", "@DocString(FMTDebugExceptionHandler)")
+		//.derives<Exception::FMTExceptionHandler>("FMTexceptionhandler")
+		.constructor("@DocString(FMTDebugExceptionHandler())")
+		.method("raise", &Exception::FMTDebugExceptionHandler::raise,
+			"@DocString(FMTDebugExceptionHandler::raise)");
 
 
-	Rcpp::class_<Exception::FMTexception>("FMTexception")
-		.constructor("@DocString(FMTdebugexceptionhandler())")
-		.method("gettype", &Exception::FMTexception::gettype,
-			"@DocString(FMTdebugexceptionhandler::gettype)")
-		.method("getsection", &Exception::FMTexception::getsection,
-			"@DocString(FMTdebugexceptionhandler::getsection)")
-		.method("what", &Exception::FMTexception::what,
-			"@DocString(FMTdebugexceptionhandler::what)");
+	Rcpp::class_<Exception::FMTException>("FMTexception")
+		.constructor("@DocString(FMTDebugExceptionHandler())")
+		.method("gettype", &Exception::FMTException::getType,
+			"@DocString(FMTDebugExceptionHandler::gettype)")
+		.method("getsection", &Exception::FMTException::getSection,
+			"@DocString(FMTDebugExceptionHandler::getsection)")
+		.method("what", &Exception::FMTException::what,
+			"@DocString(FMTDebugExceptionHandler::what)");
 
-	Rcpp::class_<Exception::FMTerror>("FMTerror", "@DocString(FMTerror)")
-		.derives<Exception::FMTexception>("FMTexception")
-		.constructor("@DocString(FMTerror())");
+	Rcpp::class_<Exception::FMTError>("FMTerror", "@DocString(FMTError)")
+		.derives<Exception::FMTException>("FMTexception")
+		.constructor("@DocString(FMTError())");
 
-	Rcpp::class_<Exception::FMTwarning>("FMTwarning", "@DocString(FMTwarning)")
-		.derives<Exception::FMTexception>("FMTexception")
-		.constructor("@DocString(FMTwarning())");
+	Rcpp::class_<Exception::FMTWarning>("FMTwarning", "@DocString(FMTWarning)")
+		.derives<Exception::FMTException>("FMTexception")
+		.constructor("@DocString(FMTWarning())");
 	}
 
 }

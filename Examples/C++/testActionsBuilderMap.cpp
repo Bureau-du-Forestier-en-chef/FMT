@@ -1,21 +1,21 @@
 #include <vector>
 #ifdef FMTWITHGDAL
-    #include "FMTforest.h"
-    #include "FMTmodelparser.h"
-    #include "FMTareaparser.h"
-    #include "FMTversion.h"
-    #include "FMTdefaultlogger.h"
-    #include "FMTareaparser.h"
-    #include "FMTforest.h"
-    #include "FMTmodel.h"
-    #include "FMTtheme.h"
+    #include "FMTForest.h"
+    #include "FMTModelParser.h"
+    #include "FMTAreaParser.h"
+    #include "FMTVersion.h"
+    #include "FMTDefaultLogger.h"
+    #include "FMTAreaParser.h"
+    #include "FMTForest.h"
+    #include "FMTModel.h"
+    #include "FMTTheme.h"
     #include <boost/filesystem.hpp>
 #endif
 
 int main(int argc, char* argv[])
 {
     #ifdef FMTWITHGDAL
-        Logging::FMTdefaultlogger().logstamp();
+        Logging::FMTDefaultLogger().logStamp();
         std::string primarylocation;
         std::string scenario;
         int side;
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
         {
             lockfield = "STANLOCK";
         }
-        Parser::FMTmodelparser mparser;
+        Parser::FMTModelParser mparser;
         std::vector<Exception::FMTexc>errors;
         errors.push_back(Exception::FMTexc::FMTmissingyield);
         errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -64,16 +64,16 @@ int main(int argc, char* argv[])
         errors.push_back(Exception::FMTexc::FMTdeathwithlock);
         errors.push_back(Exception::FMTexc::FMTempty_schedules);
         errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-        mparser.seterrorstowarnings(errors);
+        mparser.setErrorsToWarnings(errors);
         const std::vector<std::string>scenarios(1, scenario);
-        const std::vector<Models::FMTmodel> MODELS = mparser.readproject(primarylocation, scenarios);
-        const Models::FMTmodel BUILDED_MODEL = MODELS.at(0).buildAction(ACTION_NAME, TARGET_YIELD);
-        const std::vector<Core::FMTtheme> themes = BUILDED_MODEL.getthemes();
-        Parser::FMTareaparser areaparser;
-        //areaparser.setdefaultexceptionhandler();
-        Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(MAPm_location,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0);
-        areaparser.WriteForestExtended(forest,
-            MAPm_location, themes, BUILDED_MODEL.getarea(), writelocation);
+        const std::vector<Models::FMTModel> MODELS = mparser.readproject(primarylocation, scenarios);
+        const Models::FMTModel BUILDED_MODEL = MODELS.at(0).buildAction(ACTION_NAME, TARGET_YIELD);
+        const std::vector<Core::FMTTheme> themes = BUILDED_MODEL.getThemes();
+        Parser::FMTAreaParser areaparser;
+        //areaparser.setDefaultExceptionHandler();
+        Spatial::FMTForest forest = areaparser.vectormaptoFMTforest(MAPm_location,side,themes,"AGE","SUPERFICIE",1,0.0001, lockfield,0.0);
+        areaparser.writeForestExtended(forest,
+            MAPm_location, themes, BUILDED_MODEL.getArea(), writelocation);
 
 #endif
 	return 0;
