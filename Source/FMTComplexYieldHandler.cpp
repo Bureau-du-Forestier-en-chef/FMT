@@ -25,7 +25,7 @@ namespace Core {
 	{
 		std::string value;
 		try {
-			value += "*YC " + std::string(mask);
+			value += "*YC " + std::string(m_mask);
 			if (getOverrideIndex()>0)
 				{
 				value += " _OVERRIDE";
@@ -55,12 +55,12 @@ namespace Core {
 
 	bool FMTComplexYieldHandler::pushData(const std::string& yld, const double& value)
 	{
-		return (basePushData(m_elements, yld, value));
+		return (_basePushData(m_elements, yld, value));
 	}
 
 	bool FMTComplexYieldHandler::pushData(const std::string& yld, const FMTData& data)
 	{
-		return (basePushData(m_elements, yld, data));
+		return (_basePushData(m_elements, yld, data));
 	}
 
 	std::vector<std::string> FMTComplexYieldHandler::indexes(const std::vector<std::string>& names) const
@@ -130,7 +130,7 @@ namespace Core {
 	std::unique_ptr<FMTYieldHandler>FMTComplexYieldHandler::_toAgeYld(const FMTYieldRequest& request,
 		const std::vector<std::string>& yieldnames, const int& minage, const int& maxage) const
 	{
-		FMTAgeYieldHandler nhandler(mask);
+		FMTAgeYieldHandler nhandler(m_mask);
 		try {
 			for (int age = minage; age <= maxage; ++age)
 			{
@@ -569,7 +569,7 @@ namespace Core {
 				//ddata = srcsdata.at(*ylds.at(0));
 				ddata = SOURCES_DATA.at(0);
 				peak = (*ddata)->getEndPoint(*ylds.at(0), lowerpeak, lowerbound, source_values.at(*ylds.at(0)));
-				value = (-getChangesFrom(AGE, peak));
+				value = (-_getChangesFrom(AGE, peak));
 			}
 			if (source_values.at(*ylds.at(1)) > upperbound)
 			{
@@ -579,7 +579,7 @@ namespace Core {
 				//ddata = srcsdata.at(*ylds.at(1));
 				ddata = SOURCES_DATA.at(1);
 				peak = (*ddata)->getEndPoint(*ylds.at(1), lowerpeak, upperbound, source_values.at(*ylds.at(1)));
-				value = (-getChangesFrom(AGE, peak));
+				value = (-_getChangesFrom(AGE, peak));
 			}
 		}catch (...)
 			{
@@ -743,13 +743,13 @@ namespace Core {
 				}
 			const FMTData* C_DATA = &m_elements.at(yld);
 			std::chrono::time_point<std::chrono::high_resolution_clock>calculationStart;
-			if (lookat.empty())
+			if (m_lookat.empty())
 				{
 				calculationStart = getClock();
 				}
-				if (lookat.find(yld) == lookat.end())
+				if (m_lookat.find(yld) == m_lookat.end())
 					{
-						lookat.insert(yld);
+						m_lookat.insert(yld);
 					}
 					else {
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
@@ -831,10 +831,10 @@ namespace Core {
 					default:
 						break;
 					}
-					lookat.erase(yld);
+					m_lookat.erase(yld);
 				value = std::round(value * 100000000) / 100000000;
 				
-				if (lookat.empty())//Cache only first cally
+				if (m_lookat.empty())//Cache only first cally
 				{
 					const double TIME_TOOK = getDuration<std::chrono::milliseconds::period>(calculationStart);
 					if (TIME_TOOK>0.05)
@@ -910,8 +910,8 @@ namespace Core {
 		return FMTyldtype::FMTcomplexyld;
 	}
 
-	FMTComplexYieldHandler::FMTComplexYieldHandler(const FMTMask& mask):
-		FMTYieldHandler(mask), m_elements(), m_overridetabou(), m_overrideindex(0), _cache()
+	FMTComplexYieldHandler::FMTComplexYieldHandler(const FMTMask& p_mask):
+		FMTYieldHandler(p_mask), m_elements(), m_overridetabou(), m_overrideindex(0), _cache()
 	{
 
 	}
@@ -952,7 +952,7 @@ namespace Core {
 	{
 		try {
 			std::vector<std::string>ylds(1, yld);
-			const int maxbase = getMaxBase(request);
+			const int maxbase = _getMaxBase(request);
 			return _toAgeYld(request, ylds, 0, maxbase)->getPeak(request,yld,targetage);
 		}catch (...) {
 			_exhandler->raiseFromCatch("", "FMTComplexYieldHandler::getPeak", __LINE__, __FILE__);

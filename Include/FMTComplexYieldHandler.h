@@ -111,7 +111,7 @@ namespace Core
 		@brief Construct a complex yield handler from a mask.
 		@param[in] mask the mask.
 		*/
-		FMTComplexYieldHandler(const FMTMask& mask);
+		FMTComplexYieldHandler(const FMTMask& p_mask);
 		// DocString: FMTComplexYieldHandler::getDataElements
 		/**
 		@brief Return the data elements of the handler.

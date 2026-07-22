@@ -73,7 +73,7 @@ namespace Core
 		@brief Construct a model yield handler from a mask.
 		@param[in] mask the mask.
 		*/
-		FMTModelYieldHandler(const FMTMask& mask);
+		FMTModelYieldHandler(const FMTMask& p_mask);
 		// DocString: FMTModelYieldHandler::getModelsNameByIndex
 		/**
 		@brief Return the model names by their index.
@@ -198,7 +198,7 @@ namespace Core
 			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
 			ar& m_yldnames;
 		}
-		std::vector<std::unique_ptr<FMTYieldModel>>models;
+		std::vector<std::unique_ptr<FMTYieldModel>>m_models;
 		std::map<std::string, std::pair<size_t, size_t>, cmpYieldString>m_yldnames;
 	};
 

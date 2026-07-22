@@ -66,7 +66,7 @@ namespace Core
 		@brief Construct a time yield handler from a mask.
 		@param[in] mask the mask.
 		*/
-		FMTTimeYieldHandler(const FMTMask& mask);
+		FMTTimeYieldHandler(const FMTMask& p_mask);
 		// DocString: FMTTimeYieldHandler::setYieldValues
 		/**
 		@brief Set the values for a given yield name.
