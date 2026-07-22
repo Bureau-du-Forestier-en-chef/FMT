@@ -22,6 +22,7 @@ install_manifest.txt
 CMakeCache.txt
 *.autotools
 *.sln
+!Excel/FMTExcel/FMTExcel.sln
 GDAL_DATA/*
 RCa06500
 *.dll
