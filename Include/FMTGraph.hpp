@@ -734,7 +734,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					for (boost::tie(outit, outend) = boost::out_edges(*vertex_iterator, data); outit != outend; ++outit)
 					{
 						std::string actionname = "EVO";
-						const int variableid = data[*outit].getvariableID();
+						const int variableid = data[*outit].getVariableID();
 						if (colnames.at(variableid).empty())
 						{
 							const int actionid = data[*outit].getactionID();
@@ -1232,7 +1232,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					if (edgeprop.getactionID() == actionID)
 					{
 
-						value += *(solution + edgeprop.getvariableID()) * (edgeprop.getProportion() / 100);
+						value += *(solution + edgeprop.getVariableID()) * (edgeprop.getProportion() / 100);
 					}
 				}
 
@@ -1323,7 +1323,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
 					if (edgeprop.getactionID() == actionid || !growth)
 					{
-						area += *(solution + edgeprop.getvariableID()) * (edgeprop.getProportion() / 100);
+						area += *(solution + edgeprop.getVariableID()) * (edgeprop.getProportion() / 100);
 					}
 				}
 			}
@@ -1877,7 +1877,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-					invars.push_back(edgeprop.getvariableID());
+					invars.push_back(edgeprop.getVariableID());
 
 				}
 			}
@@ -1928,8 +1928,8 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
 					int actionid = edgeprop.getactionID();
-					//*_logger << actionid << " test "<< edgeprop.getvariableID() <<"\n";
-					mapping[actionid] = edgeprop.getvariableID();
+					//*_logger << actionid << " test "<< edgeprop.getVariableID() <<"\n";
+					mapping[actionid] = edgeprop.getVariableID();
 				}
 			}
 			catch (...)
@@ -1954,7 +1954,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
 					int actionid = edgeprop.getactionID();
-					mapping[actionid] = edgeprop.getvariableID();
+					mapping[actionid] = edgeprop.getVariableID();
 				}
 			}
 			catch (...)
@@ -4162,7 +4162,7 @@ template<> inline std::map<int, int> FMTGraph<Graph::FMTVertexProperties, Graph:
 			{
 				const FMTEdgeProperties& edgeprop = data[*edge_pair.first];
 				int actionid = edgeprop.getactionID();
-				mapping[actionid] = edgeprop.getvariableID();
+				mapping[actionid] = edgeprop.getVariableID();
 			}
 		}catch (...)
 		{
@@ -4212,7 +4212,7 @@ template<> inline double FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProp
 				const FMTEdgeProperties& edgeprop = data[*inedge_iterator];
 				if (edgeprop.getactionID() == actionid || !growth)
 				{
-					area += *(solution + edgeprop.getvariableID()) * (edgeprop.getProportion() / 100);
+					area += *(solution + edgeprop.getVariableID()) * (edgeprop.getProportion() / 100);
 				}
 			}
 		}catch (...)
@@ -4235,7 +4235,7 @@ template<> inline double FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProp
 				const FMTEdgeProperties& edgeprop = data[*outedge_iterator];
 				if (edgeprop.getactionID() == actionID)
 				{
-					value += *(solution + edgeprop.getvariableID()) * (edgeprop.getProportion() / 100);
+					value += *(solution + edgeprop.getVariableID()) * (edgeprop.getProportion() / 100);
 				}
 			}
 		}catch (...)
@@ -4281,14 +4281,14 @@ template<> inline std::map<int, double> FMTGraph<Graph::FMTVertexProperties, Gra
 							const int actionid = edgeprop.getactionID();
 							if (actionid < 0 || output_node.source.isAction())
 							{
-								updateVarsMap(variables, edgeprop.getvariableID(), (edgeprop.getProportion() / 100)*coef);
+								updateVarsMap(variables, edgeprop.getVariableID(), (edgeprop.getProportion() / 100)*coef);
 								continue;
 							}
 							const FMTvertex_descriptor sourceverex = boost::source(*inedge_iterator, data);
 							const FMTVertexProperties& sourceproperties = data[sourceverex];
 							if ((sourceproperties.get().getPeriod() == development.getPeriod() && !periodStart(sourceverex)))
 							{
-								updateVarsMap(variables, edgeprop.getvariableID(), (edgeprop.getProportion() / 100)*coef);
+								updateVarsMap(variables, edgeprop.getVariableID(), (edgeprop.getProportion() / 100)*coef);
 							}
 						}
 					}
@@ -4303,7 +4303,7 @@ template<> inline std::map<int, double> FMTGraph<Graph::FMTVertexProperties, Gra
 						{
 							const std::vector<Core::FMTDevelopmentPath>paths = getPaths(vertex, actionID);
 							const double action_coef = output_node.source.getCoef(development, model.yields, &vertexinfo, &paths, act) * output_node.factor.getCoef(development, model.yields, &vertexinfo, &paths, act) * output_node.constant;
-							updateVarsMap(variables, ACTION_EDGES.at(actionID)->getvariableID(), action_coef);
+							updateVarsMap(variables, ACTION_EDGES.at(actionID)->getVariableID(), action_coef);
 						}
 					}
 				}
@@ -4338,7 +4338,7 @@ template<> inline FMTGraphStats FMTGraph<Graph::FMTVertexProperties, Graph::FMTE
 				{
 					gotinedges = true;
 					const FMTEdgeProperties& edgeproperty = data[*inedge_iterator];
-					int varvalue = edgeproperty.getvariableID();
+					int varvalue = edgeproperty.getVariableID();
 					if (std::find(deletedvariables.begin(), deletedvariables.end(), varvalue) == deletedvariables.end())
 					{
 						--stats.cols;
@@ -4436,7 +4436,7 @@ template<> inline bool FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProper
 		for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vertex_descriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
 		{
 			const FMTEdgeProperties& edgeprop = data[*inedge_iterator];
-			cols.push_back(edgeprop.getvariableID());
+			cols.push_back(edgeprop.getVariableID());
 			cols_value.push_back((edgeprop.getProportion() / 100));
 			gotin = true;
 		}
@@ -4445,7 +4445,7 @@ template<> inline bool FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProper
 		for (boost::tie(outedge_iterator, outedge_end) = boost::out_edges(vertex_descriptor, data); outedge_iterator != outedge_end; ++outedge_iterator)
 		{
 			const FMTEdgeProperties& edgeprop = data[*outedge_iterator];
-			const int edgevar = edgeprop.getvariableID();
+			const int edgevar = edgeprop.getVariableID();
 			if (std::find(locals.begin(), locals.end(), edgevar) == locals.end())
 			{
 				cols.push_back(edgevar);
@@ -4529,7 +4529,7 @@ template<> inline void FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProper
 			for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
 			{
 				FMTEdgeProperties& edgeproperty = data[*edge_iterator];
-				const int actualvariable = edgeproperty.getvariableID();
+				const int actualvariable = edgeproperty.getVariableID();
 				if (actualvariable >= 0)
 				{
 					int toRemove = 0;
@@ -4546,7 +4546,7 @@ template<> inline void FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProper
 					{
 						toRemove = static_cast<int>(removedvariables.size());
 					}
-					edgeproperty.setvariableID(actualvariable - toRemove);
+					edgeproperty.setVariableID(actualvariable - toRemove);
 				}
 
 			}

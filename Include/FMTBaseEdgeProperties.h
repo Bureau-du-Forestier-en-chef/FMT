@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -84,12 +84,12 @@ namespace Graph
 		@param[in] laction the action.
 		*/
 		constexpr FMTBaseEdgeProperties(const int& laction) : action(static_cast<int8_t>(laction)) {}
-		// DocString: FMTBaseEdgeProperties::getvariableID
+		// DocString: FMTBaseEdgeProperties::getVariableID
 		/**
 		@brief Return the variable id of the edge.
 		@return the variable id.
 		*/
-		virtual inline int	getvariableID() const
+		virtual inline int	getVariableID() const
 			{
 			return 0;
 			}

@@ -46,9 +46,9 @@ namespace Core {
 						}
 			#endif
 			boost::filesystem::path fmtdll(getRuntimeLocation());
-			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
+			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(m_JSON_PROP_MODEL_NAME);
 			boost::filesystem::path filenamepath(modelNameIt->second.data());
-			modelName = (fmtdll / filenamepath).string();
+			m_modelName = (fmtdll / filenamepath).string();
 
 			boost::property_tree::ptree::const_assoc_iterator modelTypeIt = jsonProps.find(m_JSON_PROP_MODEL_TYPE);
 			m_modelType = modelTypeIt->second.data();
@@ -57,7 +57,7 @@ namespace Core {
 			boost::filesystem::path parampath(stdParamsFileNameIt->second.data());
 			std::string stdParamsFileName = (fmtdll / parampath).string();
 
-			std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
+			std::wstring wideModelName = std::wstring(m_modelName.begin(), m_modelName.end());
 			#ifdef FMTWITHONNXR
 			m_sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*m_envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 			#endif
@@ -77,7 +77,7 @@ namespace Core {
 
 			_validateInputYields(yields, inputYields);
 
-			modelYields = inputYields;
+			m_modelYields = inputYields;
 
 			for (auto& item : jsonProps.get_child(m_JSON_PROP_MODEL_OUTPUTS))
 			{
@@ -110,7 +110,7 @@ namespace Core {
 		m_modelOutputs(rhs.getModelOutputNames())
 	{
 	#ifdef FMTWITHONNXR
-		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
+		std::wstring wideModelName = std::wstring(m_modelName.begin(), m_modelName.end());
 		m_sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*m_envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 	#endif
 	}
@@ -179,7 +179,7 @@ namespace Core {
 		try {
 			const std::string mdlName = getModelName();
 		#ifdef FMTWITHONNXR
-			const std::vector<std::string> modelYields = getModelYields();
+			const std::vector<std::string> m_modelYields = getModelYields();
 			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 			Ort::AllocatorWithDefaultOptions allocator;
 			#if ORT_API_VERSION <= 4
@@ -209,7 +209,7 @@ namespace Core {
 			if (linegraph != nullptr)//Im a linegraph
 			{
 				const Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>::FMTvertex_descriptor* vertex = linegraph->getVertexFromVertexInfo(graphinfo);
-				const std::vector<Graph::FMTPredictor>predictors = linegraph->getPredictors(*vertex, *modelptr, modelYields, 3);
+				const std::vector<Graph::FMTPredictor>predictors = linegraph->getPredictors(*vertex, *modelptr, m_modelYields, 3);
 				if (predictors.empty())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
@@ -233,7 +233,7 @@ namespace Core {
 			else if (fullgraph != nullptr)//Im a full graph
 			{
 				const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor* vertex = fullgraph->getVertexFromVertexInfo(graphinfo);
-				const std::vector<Graph::FMTPredictor>predictors = fullgraph->getPredictors(*vertex, *modelptr, modelYields, 3);
+				const std::vector<Graph::FMTPredictor>predictors = fullgraph->getPredictors(*vertex, *modelptr, m_modelYields, 3);
 				if (predictors.empty())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",

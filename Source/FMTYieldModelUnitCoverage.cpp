@@ -21,9 +21,9 @@ namespace Core
 		const std::vector<std::string>& p_yields, const Core::FMTMask& p_mask):
 		m_cache(), m_mask(p_mask)
 	{
-		boost::property_tree::ptree::const_assoc_iterator modelNameIt = p_jsonProps.find(JSON_PROP_MODEL_NAME);
-		modelName = modelNameIt->second.data();
-		modelYields = p_yields;
+		boost::property_tree::ptree::const_assoc_iterator modelNameIt = p_jsonProps.find(m_JSON_PROP_MODEL_NAME);
+		m_modelName = modelNameIt->second.data();
+		m_modelYields = p_yields;
 	}
 
 	const std::vector<double>FMTYieldModelUnitCoverage::predict(const Core::FMTYieldRequest& p_request) const
@@ -81,7 +81,7 @@ namespace Core
 	{
 		std::vector<FMTOutput>outputs;
 		try {
-			for (const std::string& yld : modelYields)
+			for (const std::string& yld : m_modelYields)
 				{
 				std::vector<Core::FMTOutputSource>sources;
 				sources.push_back(Core::FMTOutputSource(Core::FMTSpec(), m_mask, Core::FMTotar::inventory, yld));

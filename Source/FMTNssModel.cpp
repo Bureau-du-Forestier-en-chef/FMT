@@ -588,7 +588,7 @@ namespace Models
 			if(key==SEED)
 			{
 				m_generator=std::default_random_engine(value);
-				yields.setModel(this);
+				yields._setModel(this);
 			}
 			parametersetted=true;
 		}catch(...)

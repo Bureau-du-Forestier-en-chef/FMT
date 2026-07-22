@@ -104,7 +104,7 @@ namespace Core {
 		std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		return it->second.data.back();
 	}
-	int FMTAgeYieldHandler::getAge(const std::string yld, const double& value, const int& starting_age) const
+	int FMTAgeYieldHandler::_getAge(const std::string yld, const double& value, const int& starting_age) const
 	{
 		int age = 0;
 		try {
@@ -130,7 +130,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::_getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return age;
 	}
@@ -159,7 +159,7 @@ namespace Core {
 				if (containsYield(yieldnames.at(id)))
 				{
 					const FMTYldBounds* bound = &yieldbounds.at(id);
-					const int new_age = getAge(yieldnames.at(id), bound->getLower(), request.getDevelopment().getAge());
+					const int new_age = _getAge(yieldnames.at(id), bound->getLower(), request.getDevelopment().getAge());
 					if (new_age < age)
 					{
 						age = new_age;

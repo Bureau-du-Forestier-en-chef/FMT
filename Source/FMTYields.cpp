@@ -224,7 +224,7 @@ void FMTYields::clearCache()
 
 void FMTYields::clearRandomYieldsCache()
 	{
-	for (FMTYieldHandler*  handler : getHandlers(FMTyldtype::FMTmodelyld))
+	for (FMTYieldHandler*  handler : _getHandlers(FMTyldtype::FMTmodelyld))
 		{
 		dynamic_cast<FMTModelYieldHandler*>(handler)->clearRandomYieldsCache();
 		}
@@ -483,7 +483,7 @@ bool FMTYields::operator != (const FMTYields& rhs) const
 	return !(*this == rhs);
 	}
 
-std::vector<const FMTYieldHandler*> FMTYields::getHandlerOfType(FMTyldtype type) const
+std::vector<const FMTYieldHandler*> FMTYields::_getHandlerOfType(FMTyldtype type) const
 	{
 	std::vector<const FMTYieldHandler*>selectedhandlers;
 	try{
@@ -497,14 +497,14 @@ std::vector<const FMTYieldHandler*> FMTYields::getHandlerOfType(FMTyldtype type)
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTYields::getHandlerOfType", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTYields::_getHandlerOfType", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return selectedhandlers;
 	}
 
-void FMTYields::setModel(Models::FMTModel* p_modelPtr)
+void FMTYields::_setModel(Models::FMTModel* p_modelPtr)
 {
-	const std::vector<FMTYieldHandler*> HANDLERS = getHandlers(FMTyldtype::FMTmodelyld);
+	const std::vector<FMTYieldHandler*> HANDLERS = _getHandlers(FMTyldtype::FMTmodelyld);
 	for (FMTYieldHandler* handler : HANDLERS)
 		{
 		FMTModelYieldHandler* ModelHandler = dynamic_cast<FMTModelYieldHandler*>(handler);
@@ -524,7 +524,7 @@ FMTYields::const_iterator  FMTYields::_getFirstSeen(const std::string& p_yield) 
 	}
 
 
-std::vector<FMTYieldHandler*> FMTYields::getHandlers(FMTyldtype type)
+std::vector<FMTYieldHandler*> FMTYields::_getHandlers(FMTyldtype type)
 	{
 	std::vector<FMTYieldHandler*>selectedhandlers;
 	try {
@@ -538,7 +538,7 @@ std::vector<FMTYieldHandler*> FMTYields::getHandlers(FMTyldtype type)
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTYields::getHandlers", __LINE__, __FILE__, FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTYields::_getHandlers", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return selectedhandlers;
 	}
@@ -546,7 +546,7 @@ std::vector<FMTYieldHandler*> FMTYields::getHandlers(FMTyldtype type)
 bool FMTYields::gotYieldType(FMTyldtype type) const
 {
 	try {
-		return !getHandlerOfType(type).empty();
+		return !_getHandlerOfType(type).empty();
 	}
 	catch (...)
 	{
@@ -559,7 +559,7 @@ void FMTYields::setActionsMappingToModelHandlers(const std::vector<int>& actioni
 {
 	
 	try {
-		for (FMTYieldHandler* handler : getHandlers(FMTyldtype::FMTmodelyld))
+		for (FMTYieldHandler* handler : _getHandlers(FMTyldtype::FMTmodelyld))
 		{
 			handler->setBase(actionids);
 		}
@@ -603,7 +603,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTYields::getA
 	{
 	std::map<std::string, std::map<std::string, std::vector<double>>>result;
 	try {
-		const std::vector<const FMTYieldHandler*> handlers = getHandlerOfType(type);
+		const std::vector<const FMTYieldHandler*> handlers = _getHandlerOfType(type);
 		const int maxbase = getMaxBase(handlers);
 		for (const FMTYieldHandler* handler : handlers)
 		{

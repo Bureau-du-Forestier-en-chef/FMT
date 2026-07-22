@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -63,21 +63,21 @@ namespace Graph
 		@return a reference to this FMTEdgeProperties.
 		*/
 		FMTEdgeProperties& operator = (const FMTEdgeProperties& rhs) = default;
-		// DocString: FMTEdgeProperties::getvariableID
+		// DocString: FMTEdgeProperties::getVariableID
 		/**
 		@brief Return the variable id of the edge.
 		@return the variable id.
 		*/
-		inline int	getvariableID() const override
+		inline int	getVariableID() const override
 		{
 			return variableID;
 		}
-		// DocString: FMTEdgeProperties::setvariableID
+		// DocString: FMTEdgeProperties::setVariableID
 		/**
 		@brief Set the variable id of the edge.
 		@param[in] newvariableID the new variable id.
 		*/
-		void setvariableID(const int& newvariableID);
+		void setVariableID(const int& newvariableID);
 		// DocString: FMTEdgeProperties::getProportion
 		/**
 		@brief Return the proportion of the edge.

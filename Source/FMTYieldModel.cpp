@@ -24,7 +24,7 @@ namespace Core {
 
 
 
-	FMTYieldModel::FMTYieldModel() : modelName(), modelYields(), m_modelPtr()
+	FMTYieldModel::FMTYieldModel() : m_modelName(), m_modelYields(), m_modelPtr()
 	{
 
 	}
@@ -32,12 +32,12 @@ namespace Core {
 
 	const std::vector<std::string>& FMTYieldModel::getModelYields() const
 	{
-		return modelYields;
+		return m_modelYields;
 	}
 
 	const std::string& FMTYieldModel::getModelName() const
 	{
-		return modelName;
+		return m_modelName;
 	}
 
 	std::unique_ptr<FMTYieldModel> FMTYieldModel::presolve(const FMTMaskFilter& filter,

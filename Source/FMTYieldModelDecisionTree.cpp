@@ -102,9 +102,9 @@ namespace Core {
 
 	{
 		try {
-			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
-			modelName = modelNameIt->second.data();
-			modelYields = inputYields;
+			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(m_JSON_PROP_MODEL_NAME);
+			m_modelName = modelNameIt->second.data();
+			m_modelYields = inputYields;
 			std::vector<std::pair<std::string,std::string>>targets;
 			std::map<std::string, size_t>locations;
 			for (const boost::property_tree::ptree::value_type& node : jsonProps.get_child(JSON_PROP_TREE))
