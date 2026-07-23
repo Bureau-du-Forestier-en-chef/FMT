@@ -135,13 +135,13 @@ namespace Graph
 		*/
 		std::vector<std::string>getPredictorNames(const std::vector<std::string>& yieldnames)const;
 	private:
-		const FMTBaseVertexProperties* source_vertex;
-		const FMTBaseVertexProperties* target_vertex;
-		std::vector<double>source_yields;
-		std::vector<double>target_yields;
-		std::vector<int>periodgaps;
-		std::vector<int>sourceactions;
-		// DocString: FMTPredictor::getYields
+		const FMTBaseVertexProperties* m_source_vertex;
+		const FMTBaseVertexProperties* m_target_vertex;
+		std::vector<double>m_source_yields;
+		std::vector<double>m_target_yields;
+		std::vector<int>m_periodgaps;
+		std::vector<int>m_sourceactions;
+		// DocString: FMTPredictor::_getYields
 		/**
 		@brief Return the yields of a vertex.
 		@param[in] vertex the vertex.
@@ -149,7 +149,7 @@ namespace Graph
 		@param[in] yieldnames the yield names.
 		@return the yields.
 		*/
-		std::vector<double>getYields(const FMTBaseVertexProperties& vertex, const Core::FMTYields& yields, const std::vector<std::string>& yieldnames) const;
+		std::vector<double>_getYields(const FMTBaseVertexProperties& vertex, const Core::FMTYields& yields, const std::vector<std::string>& yieldnames) const;
 	};
 }
 

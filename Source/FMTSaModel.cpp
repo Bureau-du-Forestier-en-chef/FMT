@@ -806,7 +806,7 @@ namespace Models
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                     "Cannot rebuild empty solution", "FMTSaModel::_getRebuild", __LINE__, __FILE__);
             }
-            newsolution = getNewSolution(actual);
+            newsolution = _getNewSolution(actual);
 
             const std::vector<double>& FACTORS = actual.getConstraintsFactor();
             if (!FACTORS.empty())
@@ -958,7 +958,7 @@ namespace Models
 		{
 		double temperature = 0;
 		try {
-        const std::vector<double>actuals = getConstraintsValues(actual);
+        const std::vector<double>actuals = _getConstraintsValues(actual);
         std::vector<double>maximals = actuals;
         std::vector<double>deltasums(constraints.size(), 0);
         size_t iterations = m_WARM_UP_ITERATIONS;
@@ -968,7 +968,7 @@ namespace Models
         {
             const Spatial::FMTSpatialSchedule newsolution = _move(actual, bindings);
             size_t cntid = 0;
-            for (const double& value : getConstraintsValues(newsolution))
+            for (const double& value : _getConstraintsValues(newsolution))
             {
                 //*_logger << "Value " << value << "\n";
                 if (value != 0 && (maximals.at(cntid) > 0 && maximals.at(cntid) < value ||
@@ -987,7 +987,7 @@ namespace Models
         //double AverageCount = 0.0;
         for (double& value : maximals)//Need to normalize the calculated delta
         {
-            value = getConstraintFactor(cntid, value);
+            value = _getConstraintFactor(cntid, value);
             /*if (isValidFactor(value))
                 {
                 AverageFactor += value;
@@ -1000,7 +1000,7 @@ namespace Models
         temperature = (- (deltasum / totalits) * 100) / std::log(
             getParameter(Models::FMTdblmodelparameters::INITIAL_ACCEPTANCE_PROBABILITY));
         m_BestSolution.setConstraintsFactor(*this, maximals);
-        m_BestObjective = getGlobalObjective(m_BestSolution);
+        m_BestObjective = _getGlobalObjective(m_BestSolution);
         }catch (...)
             {
             _exhandler->raiseFromCatch("", "FMTSaModel::_warmup", __LINE__, __FILE__);
@@ -1059,7 +1059,7 @@ namespace Models
             try {
                 if (m_TotalMoves % 100 == 0)
                 {
-                    doRefactorization(m_BestSolution);
+                    _doRefactorization(m_BestSolution);
                 }
             }
             catch (...)
@@ -1154,7 +1154,7 @@ namespace Models
 				while (!_isCycleProvenOptimal())
 					{
 					Spatial::FMTSpatialSchedule newSolution = _move(m_BestSolution, ACTIONS_BINDING);
-                    const double CANDIDAT_OBJECTIVE = getGlobalObjective(newSolution);
+                    const double CANDIDAT_OBJECTIVE = _getGlobalObjective(newSolution);
                     if (_isBetter(CANDIDAT_OBJECTIVE))
                         {
                         _setBestSolutionTo(newSolution,

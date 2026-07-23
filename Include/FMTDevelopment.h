@@ -63,7 +63,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		*/
 		inline int getAge() const
 			{
-			return static_cast<int>(age);
+			return static_cast<int>(m_age);
 			}
 		// DocString: FMTDevelopment::getShortAge
 		/**
@@ -72,7 +72,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		*/
 		inline uint8_t getShortAge() const
 		{
-			return age;
+			return m_age;
 		}
 		// DocString: FMTDevelopment::getLock
 		/**
@@ -81,7 +81,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		*/
 		inline int getLock() const
 			{
-			return static_cast<int>(lock);
+			return static_cast<int>(m_lock);
 			}
 		// DocString: FMTDevelopment::getPeriod
 		/**
@@ -90,7 +90,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		*/
 		inline int getPeriod() const
 			{
-			return static_cast<int>(period);
+			return static_cast<int>(m_period);
 			}
 		// DocString: FMTDevelopment::getMask
 		/**
@@ -99,7 +99,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		*/
 		inline const Core::FMTMask& getMask() const
 			{
-			return mask;
+			return m_mask;
 			}
 		// DocString: FMTDevelopment::getMaskCopy
 		/**
@@ -108,7 +108,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		*/
 		inline Core::FMTMask getMaskCopy() const
 		{
-			return mask;
+			return m_mask;
 		}
 		// DocString: FMTDevelopment::setAge
 		/**
@@ -151,7 +151,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		@param[in] age the age.
 		@param[in] lock the lock level.
 		*/
-		FMTDevelopment(const FMTMask& mask, const int& age, const int& lock);
+		FMTDevelopment(const FMTMask& lmask, const int& lage, const int& llock);
 		// DocString: FMTDevelopment(const FMTMask,const int&,const int&,const int&)
 		/**
 		@brief Construct a development from a mask, an age, a lock level and a period.
@@ -330,10 +330,10 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		inline size_t hash() const
 			{
 			std::size_t seed =0;
-			boost::hash_combine(seed, boost::hash<Core::FMTMask>()(mask));
-			boost::hash_combine(seed, boost::hash<uint8_t>()(age));
-			boost::hash_combine(seed, boost::hash<uint8_t>()(lock));
-			boost::hash_combine(seed, boost::hash<uint8_t>()(period));
+			boost::hash_combine(seed, boost::hash<Core::FMTMask>()(m_mask));
+			boost::hash_combine(seed, boost::hash<uint8_t>()(m_age));
+			boost::hash_combine(seed, boost::hash<uint8_t>()(m_lock));
+			boost::hash_combine(seed, boost::hash<uint8_t>()(m_period));
 			return seed;
 			}
 		private:
@@ -363,28 +363,28 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 			{
 				try {
 					ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
-					ar& BOOST_SERIALIZATION_NVP(mask);
-					ar& BOOST_SERIALIZATION_NVP(age);
-					ar& BOOST_SERIALIZATION_NVP(lock);
-					ar& BOOST_SERIALIZATION_NVP(period);
+					ar& boost::serialization::make_nvp("mask", m_mask);
+					ar& boost::serialization::make_nvp("age", m_age);
+					ar& boost::serialization::make_nvp("lock", m_lock);
+					ar& boost::serialization::make_nvp("period", m_period);
 				}
 				catch (...)
 				{
 					_exhandler->printExceptions("", "FMTDevelopment::serialize", __LINE__, __FILE__);
 				}
 			}
-			// DocString: FMTDevelopment::mask
+			// DocString: FMTDevelopment::m_mask
 			///Mask of the FMTDevelopment data member
-			FMTMask mask;
-			// DocString: FMTDevelopment::age
+			FMTMask m_mask;
+			// DocString: FMTDevelopment::m_age
 			///Age is the age of the FMTDevelopment in period (no unit)
-			uint8_t age;
-			// DocString: FMTDevelopment::lock
+			uint8_t m_age;
+			// DocString: FMTDevelopment::m_lock
 			///Lock is the lock level of the FMTDevelopment if lock == 0 then the development is not locked
-			uint8_t lock;
-			// DocString: FMTDevelopment::period
+			uint8_t m_lock;
+			// DocString: FMTDevelopment::m_period
 			///period is the period at which the development exist from 0 to ...
-			uint8_t period;
+			uint8_t m_period;
     };
 
 }

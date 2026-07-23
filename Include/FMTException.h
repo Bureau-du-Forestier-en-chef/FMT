@@ -146,28 +146,28 @@ class FMTEXPORT FMTException : public std::exception
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version);
     protected:
-		// DocString: FMTException::holdup
+		// DocString: FMTException::m_holdup
 		///This member is normaly set to false but for the free exception handler
 		///we want to let the exception percolate to boost::python and let the user handel the exception when holdup=true.
-		bool holdup;
+		bool m_holdup;
 		// DocString: FMTException::_msg
 		///Keeps the message string of the exception.
 		std::string _msg;
-		// DocString: FMTException::exceptiontype
+		// DocString: FMTException::m_exceptiontype
 		///Type of the exception thrown.
-		FMTexc exceptiontype;
-		// DocString: FMTException::section
+		FMTexc m_exceptiontype;
+		// DocString: FMTException::m_section
 		///Section in which the exception just happened.
-		Core::FMTsection section;
-		// DocString: FMTException::method
+		Core::FMTsection m_section;
+		// DocString: FMTException::m_method
 		///Function where the exception just happened
-		std::string method;
-		// DocString: FMTException::file
+		std::string m_method;
+		// DocString: FMTException::m_file
 		///Source file where the exception just happened
-		std::string file;
-		// DocString: FMTException::line
+		std::string m_file;
+		// DocString: FMTException::m_line
 		///Source file line where the exception just happened
-		int line;
+		int m_line;
     public:
 	// DocString: FMTException()
 	/**
@@ -296,7 +296,7 @@ class FMTEXPORT FMTException : public std::exception
 	*/
 	inline std::string getMethod() const
 		{
-		return method;
+		return m_method;
 		}
 	// DocString: FMTException::getFile
 	/**
@@ -305,7 +305,7 @@ class FMTEXPORT FMTException : public std::exception
 	*/
 	inline std::string getFile() const
 		{
-		return file;
+		return m_file;
 		}
 	// DocString: FMTException::getLine
 	/**
@@ -314,7 +314,7 @@ class FMTEXPORT FMTException : public std::exception
 	*/
 	inline int getLine() const
 		{
-		return line;
+		return m_line;
 		}
 	// DocString: FMTException::getSrcInfo
 	/**
