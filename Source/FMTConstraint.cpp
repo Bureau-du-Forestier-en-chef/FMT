@@ -84,7 +84,7 @@ namespace Core
 	std::vector<std::string>FMTConstraint::getVariableLevels() const
         {
 		std::vector<std::string>names;
-        for (const FMTOutputSource& source : sources)
+        for (const FMTOutputSource& source : m_sources)
             {
             if (source.isVariableLevel())
                 {
@@ -202,7 +202,7 @@ namespace Core
 	bool FMTConstraint::doSupportRandom() const
 		{
 		try {
-			return (sources.size() == 2 && sources.at(0).isAction() && !sources.at(0).isInventory() && sources.at(0).isVariable());
+			return (m_sources.size() == 2 && m_sources.at(0).isAction() && !m_sources.at(0).isInventory() && m_sources.at(0).isVariable());
 		}catch (...)
 			{
 			_exhandler->printExceptions("", "FMTConstraint::doSupportRandom", __LINE__, __FILE__,Core::FMTsection::Optimize);
@@ -452,7 +452,7 @@ namespace Core
 	void FMTConstraint::setRhs(double lower,double upper)
 		{
 		
-		if (isDivision())
+		if (_isDivision())
 			{
 			double multilywith = 0;
 			if (lower != std::numeric_limits<double>::lowest())
@@ -465,7 +465,7 @@ namespace Core
 				multilywith = upper;
 				upper = 0.0;
 			}
-			replaceDivision(multilywith);
+			_replaceDivision(multilywith);
 			}
 			this->addBounds(FMTYldBounds(FMTsection::Optimize, "RHS", upper, lower));
 
@@ -502,11 +502,11 @@ namespace Core
             size_t location = 0;
             size_t opm_location = 0;
             double factor = 1;
-            for (const FMTOutputSource& source : sources)
+            for (const FMTOutputSource& source : m_sources)
                 {
-                if (opm_location<operators.size())
+                if (opm_location<m_operators.size())
                     {
-                    factor = operators.at(opm_location).call(0,factor);
+                    factor = m_operators.at(opm_location).call(0,factor);
                     }
                 if (source.isLevel() && !source.isVariable())//constant level!
                     {
@@ -739,7 +739,7 @@ namespace Core
 						{FMTconstrainttype::FMTMINMAXobjective, "_MINMAX "},
 					};
 					line += prefixes.at(this->m_type);
-					line += this->name;
+					line += this->m_name;
 					if (!penalty.empty()) line += penalty;
 					line += " ";
 					line += period_bounds + " " + ScheduleWeight;
@@ -756,7 +756,7 @@ namespace Core
 						{FMTconstrainttype::FMTsequence,    "_SEQ("},
 					};
 					line += keywords.at(this->m_type);
-					line += this->name;
+					line += this->m_name;
 					if (!variation.empty()) line += variation;
 					line += ") ";
 					line += period_bounds + " " + goal;
@@ -824,7 +824,7 @@ namespace Core
 					opt_str = "<= ";
 					opt_str += upperStr;
 				}
-				line += (this->name + " " + opt_str + " "+ period_bounds+" " + goal + " " + global+"\n");
+				line += (this->m_name + " " + opt_str + " "+ period_bounds+" " + goal + " " + global+"\n");
 				//line += " " + period_bounds + "\n";
 		}
 		catch (...)
@@ -1147,7 +1147,7 @@ namespace Core
 					getBounds(lower, upper);
 					if (m_type == Core::FMTconstrainttype::FMTstandard && lower<=0 && upper==0 && !isLevel() && !isObjective() && !isGoal())
 						{
-						for (const Core::FMTOutputSource& source: sources)
+						for (const Core::FMTOutputSource& source: m_sources)
 						{
 							if ((source.isVariable()&&(!source.getYield().empty()||!source.empty()||!source.getAction().empty()||!source.emptyAge()))||
 								(source.isConstant()&&source.getValue()<0))
@@ -1157,7 +1157,7 @@ namespace Core
 
 						}
 						
-						for (const Core::FMTOperator& op : operators)
+						for (const Core::FMTOperator& op : m_operators)
 							{
 							if (op != Core::FMTOperator("+") && 
 								op != Core::FMTOperator("*"))
@@ -1184,9 +1184,9 @@ namespace Core
 		{
 			try {
 				std::vector<Core::FMTOutputSource> sourcestoturnintoyield;
-				sourcestoturnintoyield.reserve(sources.size());
+				sourcestoturnintoyield.reserve(m_sources.size());
 				std::vector<Core::FMTOperator> operatorstoturnintoyield;
-				operatorstoturnintoyield.reserve(operators.size());
+				operatorstoturnintoyield.reserve(m_operators.size());
 				Core::FMTotar newtarget=FMTotar::actual;
 				size_t transitionid=0;
 				for(const FMTTransition& transition : trans)
@@ -1194,7 +1194,7 @@ namespace Core
 					if (p_valideActions[transitionid])
 					{
 						const Core::FMTAction& trigerringaction = actions.at(transitionid);
-						for (const Core::FMTOutputSource& source : sources)
+						for (const Core::FMTOutputSource& source : m_sources)
 						{
 							if (source.isVariable())
 							{
@@ -1212,7 +1212,7 @@ namespace Core
 				//if (!sourcestoturnintoyield.empty())
 				//{
 					FMTConstraint toturnintoyield(*this);
-					toturnintoyield.sources = sourcestoturnintoyield;
+					toturnintoyield.m_sources = sourcestoturnintoyield;
 					toturnintoyield.turnToYieldsAndActions(themes, actions, p_valideActions, yields, constraintid);
 				//}
 				
@@ -1230,7 +1230,7 @@ namespace Core
 				getBounds(lower, upper);
 				if (m_type == Core::FMTconstrainttype::FMTstandard && lower<=0 && upper==0 && !isLevel() && !isInventory() && !isObjective() && !isGoal())
 					{
-					for (const Core::FMTOutputSource& source: sources)
+					for (const Core::FMTOutputSource& source: m_sources)
 					{
 						if ((source.isVariable()&&(!source.getYield().empty()||!source.empty()||source.getAction().empty()||!source.emptyAge()))||
 							(source.isConstant()&&source.getValue()<0))
@@ -1240,7 +1240,7 @@ namespace Core
 
 					}
 					
-					for (const Core::FMTOperator& op : operators)
+					for (const Core::FMTOperator& op : m_operators)
 						{
 						if (op != Core::FMTOperator("+") && 
 							op != Core::FMTOperator("*"))
@@ -1305,12 +1305,12 @@ namespace Core
 				//defaulthandler.pushBase(1);
 				size_t sourceid = 0;
 				yields.unShrink(themes);
-				for (const Core::FMTOutputSource& source : sources)
+				for (const Core::FMTOutputSource& source : m_sources)
 				{
 					if (source.isVariable())
 					{
 					const std::string yieldname(baseyieldnames + "_" + std::to_string(sourceid));
-					const bool IS_VALId_ACTION = isValidAction(source.getAction(), actions, p_valideActions);
+					const bool IS_VALId_ACTION = _isValidAction(source.getAction(), actions, p_valideActions);
 					if (IS_VALId_ACTION)
 							{
 								for (const Core::FMTAction* actionptr : Core::FMTActionComparator(source.getAction()).getAllAggregates(actions, false))

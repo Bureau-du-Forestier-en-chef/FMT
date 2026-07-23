@@ -118,7 +118,7 @@ namespace Heuristics
 				minimaltarget = std::max(getTotalArea()/ minimalnumberofclusters, minimaltarget);
 				}
             std::uniform_real_distribution<double>areadistribution(minimaltarget,maximaltarget);
-            returnedsize = areadistribution(generator);
+            returnedsize = areadistribution(m_generator);
         }catch(...)
             {
             _exhandler->raiseFromCatch("", "FMTOperatingAreaClusterer::getTargetedOperatingAreaSize", __LINE__, __FILE__);
@@ -170,7 +170,7 @@ namespace Heuristics
 							intprobability.push_back(static_cast<int>(probability/totaldifference)*100);
 							}
 						std::discrete_distribution<int>spreaddistribution(intprobability.begin(),intprobability.end());
-						const int selection = spreaddistribution(generator);
+						const int selection = spreaddistribution(m_generator);
 						//*_logger << "active size " << actives.size() << "\n";
 						const FMTOperatingAreaClusterBinary selected = actives.at(selection);
 						actives.erase(actives.begin()+selection);
@@ -278,7 +278,7 @@ namespace Heuristics
                     if (Models::FMTLpSolver::resolve())
                         {
                         std::vector<FMTOperatingAreaCluster>clustertospread=clusters;
-                        std::shuffle(clustertospread.begin(),clustertospread.end(),generator);
+                        std::shuffle(clustertospread.begin(),clustertospread.end(),m_generator);
                         size_t iterationdone = 0;
                         while(!clustertospread.empty() && iterationdone < (clusters.size()*2))
                             {

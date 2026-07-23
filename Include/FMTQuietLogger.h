@@ -73,12 +73,12 @@ class FMTEXPORT FMTQuietLogger final : public FMTLogger
 			*/
 			FMTLogger* clone() const override;
 			#endif
-			// DocString: FMTQuietLogger::cout
+			// DocString: FMTQuietLogger::_cout
 			/**
 			@brief Output nothing. See FMTLogger::cout.
 			@param[in] message the message to output.
 			*/
-			void cout(const char* message) const override;
+			void _cout(const char* message) const override;
 		// DocString: FMTQuietLogger::Clone
 		/**
 		@brief clone the FMTQuietLogger

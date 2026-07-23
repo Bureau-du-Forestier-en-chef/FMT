@@ -26,13 +26,13 @@ namespace Exception
 		const std::string& method,const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
 		
-		const FMTlev LEVEL = getLevel(lexception);
+		const FMTlev LEVEL = _getLevel(lexception);
 		FMTException excp;
 		if (lsection == Core::FMTsection::Empty)
 			{
-			excp = FMTException(lexception, updateStatus(lexception, text), method, file, line);
+			excp = FMTException(lexception, _updateStatus(lexception, text), method, file, line);
 			}else {
-			excp = FMTException(lexception, lsection, updateStatus(lexception, text),method, file,line);
+			excp = FMTException(lexception, lsection, _updateStatus(lexception, text),method, file,line);
 			}
 
 
@@ -40,10 +40,10 @@ namespace Exception
 			{
 			if (LEVEL == FMTlev::FMT_Warning || LEVEL == FMTlev::FMT_Debug)
 				{
-				FMTWarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
+				FMTWarning(excp).warn(*_logger, _specificwarningcount, m_maxwarningsbeforesilenced);
 				}else if(LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range)
 				{
-					boost::lock_guard<boost::recursive_mutex> guard(mtx);
+					boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 					std::throw_with_nested(FMTError(excp));
 				}
 

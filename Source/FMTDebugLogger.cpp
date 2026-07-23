@@ -21,7 +21,7 @@ namespace Logging
 		FMTLogger()
 		{
 		#ifdef FMTWITHOSI
-			solverref->setLogLevel(4);
+			m_solverref->setLogLevel(4);
 		#endif
 		}
 	#ifdef FMTWITHOSI

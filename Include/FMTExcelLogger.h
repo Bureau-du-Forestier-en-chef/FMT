@@ -49,12 +49,12 @@ namespace Logging
 	*/
 	virtual std::unique_ptr <FMTLogger> Clone() const;
 	protected:
-		// DocString: FMTExcelLogger::cout
+		// DocString: FMTExcelLogger::_cout
 		/**
 		@brief Append a message to the stored output.
 		@param[in] message the message to append.
 		*/
-		void cout(const char* message) const override;
+		void _cout(const char* message) const override;
 	private:
 		mutable std::string printout;
 	};
