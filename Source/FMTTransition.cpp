@@ -312,11 +312,11 @@ FMTMask FMTTransition::mainTarget(const std::vector<FMTDevelopment>& devs,
 	 std::vector<FMTTheme>& p_newthemes, bool p_compressdata)
  {
 	 try {
-		presolveList(p_filter, p_originalThemes, p_newthemes);
+		_presolveList(p_filter, p_originalThemes, p_newthemes);
 		update();
 		 if (p_compressdata)
 		 {
-			 compressMasks(p_newthemes);
+			 _compressMasks(p_newthemes);
 		 }
 		 if (!p_filter.emptyFlipped())
 		 {

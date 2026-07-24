@@ -578,10 +578,10 @@ void FMTAction::presolveRef(
 	 bool p_compressdata)
 {
 	try {
-		presolveList(p_filter, p_originalthemes, p_newthemes);
+		_presolveList(p_filter, p_originalthemes, p_newthemes);
 		if (p_compressdata)
 			{
-			compressMasks(p_newthemes);
+			_compressMasks(p_newthemes);
 			}
 		update();
 	}catch (...)

@@ -42,20 +42,6 @@ namespace Core
 */
 class FMTEXPORT FMTOperator
 {
-    FMTokey key;
-	friend class boost::serialization::access;
-	// DocString: FMTOperator::serialize
-	/**
-	@brief Serialize the FMTOperator for multiprocessing across multiple cpus (pickle in Python).
-	@tparam Archive the archive type.
-	@param[in,out] ar the archive to serialize to or from.
-	@param[in] version the serialization version.
-	*/
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & BOOST_SERIALIZATION_NVP(key);
-	}
 public:
 	// DocString: FMTOperator()
 	/**
@@ -168,6 +154,21 @@ public:
     @return the string representation of the operator.
     */
     operator std::string() const;
+private:
+    FMTokey m_key;
+	friend class boost::serialization::access;
+	// DocString: FMTOperator::serialize
+	/**
+	@brief Serialize the FMTOperator for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
+	*/
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar & boost::serialization::make_nvp("key", m_key);
+	}
 };
 
 }

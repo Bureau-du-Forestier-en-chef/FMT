@@ -292,7 +292,7 @@ FMTYields FMTYields::presolve(const FMTMaskFilter& filter,
 	FMTYields newyields(*this);
 	try {
 		
-		newyields.presolveList(filter, originalthemes, newthemes);
+		newyields._presolveList(filter, originalthemes, newthemes);
 		if (!filter.emptyFlipped())
 		{
 			for (auto& yieldObject : newyields)
@@ -315,7 +315,7 @@ void FMTYields::presolveRef(const FMTMaskFilter& p_filter,
 	const std::vector<FMTTheme>& p_newThemes)
 {
 	try {
-		presolveList(p_filter, p_originalThemes, p_newThemes);
+		_presolveList(p_filter, p_originalThemes, p_newThemes);
 		if (!p_filter.emptyFlipped())
 		{
 			for (auto& yieldobject : *this)

@@ -12,12 +12,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-FMTExpression::FMTExpression():infix()
+FMTExpression::FMTExpression():m_infix()
 	{
 
 	}
 
-FMTExpression::FMTExpression(const FMTExpression& rhs) : infix(rhs.infix)
+FMTExpression::FMTExpression(const FMTExpression& rhs) : m_infix(rhs.m_infix)
 	{
 
 	}
@@ -26,7 +26,7 @@ FMTExpression& FMTExpression::operator = (const FMTExpression& rhs)
 	{
 	if (this!=&rhs)
 		{
-		infix = rhs.infix;
+		m_infix = rhs.m_infix;
 		}
 	return *this;
 	}
@@ -34,7 +34,7 @@ FMTExpression& FMTExpression::operator = (const FMTExpression& rhs)
 FMTExpression::operator std::string() const
     {
 	std::string exx = "";
-    for (const std::string& value : infix)
+    for (const std::string& value : m_infix)
         {
         exx+=" "+value;
         }
@@ -43,7 +43,7 @@ FMTExpression::operator std::string() const
     }
 
 
-std::vector<std::string> FMTExpression::getPostFix(const std::vector<std::string>& localinfix) const
+std::vector<std::string> FMTExpression::_getPostFix(const std::vector<std::string>& localinfix) const
 	{
 	std::stack<std::string> values;
 	std::stack<bool>function_parenthesis;
@@ -111,7 +111,7 @@ std::vector<std::string> FMTExpression::getPostFix(const std::vector<std::string
 	}
 
 
-bool FMTExpression::isNumber(const std::string& s) const
+bool FMTExpression::_isNumber(const std::string& s) const
     {
 	std::string::const_iterator it = s.begin();
     while (it != s.end() && (isdigit(*it) || (*it)=='.')) ++it;
@@ -121,9 +121,9 @@ bool FMTExpression::isNumber(const std::string& s) const
 std::vector<std::string>FMTExpression::getVariables() const
     {
 	std::vector<std::string>variables;
-    for (const std::string& value : infix)
+    for (const std::string& value : m_infix)
         {
-        if(!isNumber(value) && !FMTOperator(value).valid() && !FMTFunctionCall(value).valid()) //assign 0 to all variables!
+        if(!_isNumber(value) && !FMTOperator(value).valid() && !FMTFunctionCall(value).valid()) //assign 0 to all variables!
             {
             variables.push_back(value);
             }
@@ -134,9 +134,9 @@ std::vector<std::string>FMTExpression::getVariables() const
 FMTExpression FMTExpression::simplify(std::map<std::string,double>& values) const
     {
 	std::map<std::string,double>shuntvalues;
-    for (const std::string& value : infix)
+    for (const std::string& value : m_infix)
         {
-        if(!isNumber(value) && !FMTOperator(value).valid() && !value.empty()) //assign 0 to all variables!
+        if(!_isNumber(value) && !FMTOperator(value).valid() && !value.empty()) //assign 0 to all variables!
             {
             shuntvalues[value] = 0;
 			
@@ -188,17 +188,17 @@ FMTExpression FMTExpression::simplify(std::map<std::string,double>& values) cons
     }
 
 
-FMTExpression::FMTExpression(const std::vector<std::string>& lsources) :infix(lsources)
+FMTExpression::FMTExpression(const std::vector<std::string>& lsources) :m_infix(lsources)
 	{
 
 	}
 
-std::vector<std::string> FMTExpression::replaceVariables(const std::map<std::string, double>& mapping) const
+std::vector<std::string> FMTExpression::_replaceVariables(const std::map<std::string, double>& mapping) const
 	{
 	if (!mapping.empty())
 		{
 		std::vector<std::string>newinfix;
-		for (const std::string& invar : infix)
+		for (const std::string& invar : m_infix)
 		{
 
 			std::string result = invar;
@@ -210,10 +210,10 @@ std::vector<std::string> FMTExpression::replaceVariables(const std::map<std::str
 		}
 		return newinfix;
 		}
-	return infix;
+	return m_infix;
 	}
 
-double FMTExpression::evaluatePostFix(const std::vector<std::string>& postfix) const
+double FMTExpression::_evaluatePostFix(const std::vector<std::string>& postfix) const
 	{
 	std::stack<double>values;
 	for (const std::string& post : postfix)
@@ -248,17 +248,17 @@ double FMTExpression::evaluatePostFix(const std::vector<std::string>& postfix) c
 
 std::vector<std::string>FMTExpression::getInFix() const
     {
-    return infix;
+    return m_infix;
     }
 
 double FMTExpression::shuntingYard(const std::map<std::string, double>& mapping) const
 	{
 	double result = 0;
-	if (!infix.empty())
+	if (!m_infix.empty())
 		{
-		const std::vector<std::string>newin = replaceVariables(mapping);
-		const std::vector<std::string>postfix = getPostFix(newin);
-		result = evaluatePostFix(postfix);
+		const std::vector<std::string>newin = _replaceVariables(mapping);
+		const std::vector<std::string>postfix = _getPostFix(newin);
+		result = _evaluatePostFix(postfix);
 		}
 	return result;
 	}

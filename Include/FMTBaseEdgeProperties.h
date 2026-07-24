@@ -29,21 +29,6 @@ namespace Graph
 	*/
 	class FMTBaseEdgeProperties
 	{
-		friend class boost::serialization::access;
-		// DocString: FMTBaseEdgeProperties::serialize
-		/**
-		@brief Serialize the FMTBaseEdgeProperties for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar & BOOST_SERIALIZATION_NVP(action);
-		}
-	protected:
-		int8_t action;
 	public:
 		// DocString: ~FMTBaseEdgeProperties()
 		/**
@@ -161,6 +146,22 @@ namespace Graph
 			return &action;
 			}*/
 
+	protected:
+		int8_t action;
+	private:
+		friend class boost::serialization::access;
+		// DocString: FMTBaseEdgeProperties::serialize
+		/**
+		@brief Serialize the FMTBaseEdgeProperties for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar & BOOST_SERIALIZATION_NVP(action);
+		}
 	};
 }
 

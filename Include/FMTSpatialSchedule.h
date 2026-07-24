@@ -119,7 +119,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
         @brief Test whether the map is empty.
         @return true if the map is empty else false.
         */
-        bool empty() const {return mapping.empty();};
+        bool empty() const {return m_mapping.empty();};
         // DocString: FMTSpatialSchedule::actPeriod
         /**
         @brief Return the last period in the graph, which is the active one.

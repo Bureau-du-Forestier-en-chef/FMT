@@ -135,39 +135,6 @@ enum FMTexc
 */
 class FMTEXPORT FMTException : public std::exception
     {
-	// DocString: FMTException::serialize
-	/**
-	@brief Serialize function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
-	@tparam Archive the archive type.
-	@param[in,out] ar the archive to serialize to or from.
-	@param[in] version the serialization version.
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version);
-    protected:
-		// DocString: FMTException::m_holdup
-		///This member is normaly set to false but for the free exception handler
-		///we want to let the exception percolate to boost::python and let the user handel the exception when holdup=true.
-		bool m_holdup;
-		// DocString: FMTException::_msg
-		///Keeps the message string of the exception.
-		std::string _msg;
-		// DocString: FMTException::m_exceptiontype
-		///Type of the exception thrown.
-		FMTexc m_exceptiontype;
-		// DocString: FMTException::m_section
-		///Section in which the exception just happened.
-		Core::FMTsection m_section;
-		// DocString: FMTException::m_method
-		///Function where the exception just happened
-		std::string m_method;
-		// DocString: FMTException::m_file
-		///Source file where the exception just happened
-		std::string m_file;
-		// DocString: FMTException::m_line
-		///Source file line where the exception just happened
-		int m_line;
     public:
 	// DocString: FMTException()
 	/**
@@ -322,6 +289,40 @@ class FMTEXPORT FMTException : public std::exception
 	@return the formatted source location.
 	*/
 	std::string getSrcInfo() const;
+    protected:
+		// DocString: FMTException::m_holdup
+		///This member is normaly set to false but for the free exception handler
+		///we want to let the exception percolate to boost::python and let the user handel the exception when holdup=true.
+		bool m_holdup;
+		// DocString: FMTException::_msg
+		///Keeps the message string of the exception.
+		std::string _msg;
+		// DocString: FMTException::m_exceptiontype
+		///Type of the exception thrown.
+		FMTexc m_exceptiontype;
+		// DocString: FMTException::m_section
+		///Section in which the exception just happened.
+		Core::FMTsection m_section;
+		// DocString: FMTException::m_method
+		///Function where the exception just happened
+		std::string m_method;
+		// DocString: FMTException::m_file
+		///Source file where the exception just happened
+		std::string m_file;
+		// DocString: FMTException::m_line
+		///Source file line where the exception just happened
+		int m_line;
+    private:
+	// DocString: FMTException::serialize
+	/**
+	@brief Serialize function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
+	*/
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version);
     };
 
 }

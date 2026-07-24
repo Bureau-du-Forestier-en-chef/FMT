@@ -67,7 +67,7 @@ namespace Core
 					_exhandler->raise(Exception::FMTexc::FMTinvalid_action, "Cant append list together",
 						"FMTList::operator::+=", __LINE__, __FILE__);
 					}
-				for (const std::pair<FMTMask, T>& Object : OtherList.data)
+				for (const std::pair<FMTMask, T>& Object : OtherList.m_data)
 					{
 					push_back(Object.first, Object.second);
 					}
@@ -85,9 +85,9 @@ namespace Core
 		*/
 		void swap(Core::FMTList<T>& rhs)
 		{
-			data.swap(rhs.data);
-			filter.swap(rhs.filter);
-			fastpass.swap(rhs.fastpass);
+			m_data.swap(rhs.m_data);
+			m_filter.swap(rhs.m_filter);
+			m_fastpass.swap(rhs.m_fastpass);
 		}
 		// DocString: FMTList::getUnion
 		/**
@@ -111,9 +111,9 @@ namespace Core
 		*/
 		FMTList() :
 			FMTObject(),
-			data(),
-			filter(),
-			fastpass() {};
+			m_data(),
+			m_filter(),
+			m_fastpass() {};
 		// DocString: FMTList(const FMTList&)
 		/**
 		@brief Copy constructor for FMTList.
@@ -121,11 +121,11 @@ namespace Core
 		*/
 		FMTList(const FMTList<T>& rhs) :
 			FMTObject(rhs),
-			data(),
-			filter(rhs.filter),
-			fastpass(rhs.fastpass)
+			m_data(),
+			m_filter(rhs.m_filter),
+			m_fastpass(rhs.m_fastpass)
 		{
-			copyData(rhs);
+			_copyData(rhs);
 		}
 		// DocString: FMTList::reserve
 		/**
@@ -134,8 +134,8 @@ namespace Core
 		*/
 		void reserve(const FMTList<T>& p_other)
 			{
-			data.reserve(p_other.data.size());
-			fastpass.reserve(p_other.data.size());
+			m_data.reserve(p_other.m_data.size());
+			m_fastpass.reserve(p_other.m_data.size());
 			}
 		// DocString: FMTList::clear
 		/**
@@ -143,8 +143,8 @@ namespace Core
 		*/
 		void clear()
 			{
-			data.clear();
-			fastpass.clear();
+			m_data.clear();
+			m_fastpass.clear();
 			}
 		// DocString: FMTList::operator=
 		/**
@@ -157,9 +157,9 @@ namespace Core
 			if (this != &rhs)
 			{
 				FMTObject::operator=(rhs);
-				copyData(rhs);
-				filter = rhs.filter;
-				fastpass = rhs.fastpass;
+				_copyData(rhs);
+				m_filter = rhs.m_filter;
+				m_fastpass = rhs.m_fastpass;
 			}
 			return *this;
 		}
@@ -171,7 +171,7 @@ namespace Core
 		*/
 		bool operator == (const FMTList<T>& rhs) const
 		{
-			return (data == rhs.data);
+			return (m_data == rhs.m_data);
 		}
 		// DocString: ~FMTList()
 		/**
@@ -185,7 +185,7 @@ namespace Core
 		*/
 		bool empty() const
 		{
-			return data.empty();
+			return m_data.empty();
 		}
 		// DocString: FMTList::canShrink
 		/**
@@ -194,7 +194,7 @@ namespace Core
 		*/
 		bool canShrink() const
 		{
-			return filter.empty();
+			return m_filter.empty();
 		}
 		// DocString: FMTList::clearCache
 		/**
@@ -202,7 +202,7 @@ namespace Core
 		*/
 		virtual void clearCache()
 		{
-			boost::unordered_map<FMTMask, std::vector<int>>().swap(fastpass);
+			boost::unordered_map<FMTMask, std::vector<int>>().swap(m_fastpass);
 		}
 		// DocString: FMTList::size
 		/**
@@ -211,7 +211,7 @@ namespace Core
 		*/
 		size_t size() const
 		{
-			return data.size();
+			return m_data.size();
 		}
 		// DocString: FMTList::findSets
 		/**
@@ -224,7 +224,7 @@ namespace Core
 		{
 			std::vector<FMTList::const_iterator>subset;
 			try {
-				const FMTMask NEW_KEY = filter.filter(p_mask);
+				const FMTMask NEW_KEY = m_filter.filter(p_mask);
 				subset = findSetsWithFiltered(NEW_KEY);
 			}catch (...)
 				{
@@ -244,9 +244,9 @@ namespace Core
 			std::vector<const_iterator>allhits;
 			try {
 				const_iterator BEGINNING = begin();
-				boost::unordered_map<FMTMask, std::vector<int>>::const_iterator fast_it = fastpass.find(p_newKey);
+				boost::unordered_map<FMTMask, std::vector<int>>::const_iterator fast_it = m_fastpass.find(p_newKey);
 				//const int SIZE_OF_DATE = static_cast<int>(size());
-				if (fast_it != fastpass.end())
+				if (fast_it != m_fastpass.end())
 				{
 					allhits.reserve(fast_it->second.size());
 					for (const int& location : fast_it->second)
@@ -260,18 +260,18 @@ namespace Core
 					}
 				}
 				else {
-					fastpass[p_newKey] = std::vector<int>();
+					m_fastpass[p_newKey] = std::vector<int>();
 					int location = 0;
-					for (const std::pair<FMTMask, T>& object : data)
+					for (const std::pair<FMTMask, T>& object : m_data)
 					{
 						if (p_newKey.isSubsetOf(object.first))
 						{
-							fastpass[p_newKey].push_back(location);
+							m_fastpass[p_newKey].push_back(location);
 							allhits.push_back(BEGINNING + location);
 						}
 						++location;
 					}
-					fastpass[p_newKey].shrink_to_fit();
+					m_fastpass[p_newKey].shrink_to_fit();
 				}
 			}catch (...) 
 				{
@@ -287,7 +287,7 @@ namespace Core
 		*/
 		inline FMTMask filterMask(const FMTMask& baseMask) const
 		{
-			return filter.filter(baseMask);
+			return m_filter.filter(baseMask);
 		}
 		// DocString: FMTList::shrink
 		/**
@@ -296,12 +296,12 @@ namespace Core
 		void shrink()
 		{
 			try {
-				if (!data.empty())
+				if (!m_data.empty())
 				{
-					fastpass.clear();
+					m_fastpass.clear();
 					std::vector<Core::FMTMask> filteredmasks;
-					filteredmasks.reserve(data.size());
-					for (const std::pair<FMTMask, T>& object : data)
+					filteredmasks.reserve(m_data.size());
+					for (const std::pair<FMTMask, T>& object : m_data)
 					{
 						filteredmasks.push_back(object.first);
 					}
@@ -309,12 +309,12 @@ namespace Core
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, "Empty mask", "FMTActionParser::shrink", __LINE__, __FILE__);
 					}
-					filter = Core::FMTMaskFilter(filteredmasks);
-					for (std::pair<FMTMask, T>& object : data)
+					m_filter = Core::FMTMaskFilter(filteredmasks);
+					for (std::pair<FMTMask, T>& object : m_data)
 					{
-						object.first = filter.filter(object.first);
+						object.first = m_filter.filter(object.first);
 					}
-					data.shrink_to_fit();
+					m_data.shrink_to_fit();
 				}
 				
 			}
@@ -331,9 +331,9 @@ namespace Core
 		*/
 		void unShrink(const std::vector<FMTTheme>& themes)
 		{
-			fastpass.clear();
-			filter = Core::FMTMaskFilter();
-			for (std::pair<FMTMask, T>& object : data)
+			m_fastpass.clear();
+			m_filter = Core::FMTMaskFilter();
+			for (std::pair<FMTMask, T>& object : m_data)
 			{
 				object.first = FMTMask(std::string(object.first), themes);
 			}
@@ -356,7 +356,7 @@ namespace Core
 		*/
 		void push_back(const FMTMask& mask, const T& value)
 		{
-			data.emplace_back(mask, value);
+			m_data.emplace_back(mask, value);
 		}
 		// DocString: FMTList::update
 		/**
@@ -378,7 +378,7 @@ namespace Core
 		{
 			if (this->canShrink() && rhs.canShrink())
 			{
-				copyData(rhs);
+				_copyData(rhs);
 				this->shrink();
 			}
 		}
@@ -398,7 +398,7 @@ namespace Core
 		*/
 		void pop_back()
 		{
-			data.pop_back();
+			m_data.pop_back();
 		}
 		// DocString: FMTList::erase
 		/**
@@ -407,7 +407,7 @@ namespace Core
 		*/
 		void erase(const size_t& location)
 		{
-			data.erase(data.begin() + location);
+			m_data.erase(m_data.begin() + location);
 		}
 		// DocString: FMTList::insert
 		/**
@@ -418,7 +418,7 @@ namespace Core
 		*/
 		void insert(const size_t& location, const FMTMask& mask, const T& value)
 		{
-			data.insert(data.begin() + location, std::pair<FMTMask, T>(mask, value));
+			m_data.insert(m_data.begin() + location, std::pair<FMTMask, T>(mask, value));
 		}
 		
 		// DocString: FMTList::begin
@@ -428,7 +428,7 @@ namespace Core
 		*/
 		iterator begin()
 		{
-			return data.begin();
+			return m_data.begin();
 		}
 		// DocString: FMTList::begin
 		/**
@@ -437,7 +437,7 @@ namespace Core
 		*/
 		const_iterator begin() const
 		{
-			return data.begin();
+			return m_data.begin();
 		}
 		// DocString: FMTList::end
 		/**
@@ -446,7 +446,7 @@ namespace Core
 		*/
 		iterator  end()
 		{
-			return data.end();
+			return m_data.end();
 		}
 		// DocString: FMTList::end
 		/**
@@ -455,15 +455,15 @@ namespace Core
 		*/
 		const_iterator end() const
 		{
-			return data.end();
+			return m_data.end();
 		}
 	protected:
-		// DocString: FMTList::compressMasks
+		// DocString: FMTList::_compressMasks
 		/**
 		@brief Compress multiple masks into a single one when they hold the same data, generating aggregates and changing the themes, used during presolve for actions and transitions.
 		@param[in,out] newthemes the themes, modified by the compression.
 		*/
-		void compressMasks(std::vector<FMTTheme>& newthemes)
+		void _compressMasks(std::vector<FMTTheme>& newthemes)
 			{
 			try {
 				if (size()==1)
@@ -475,10 +475,10 @@ namespace Core
 				for (FMTTheme& theme : newthemes)
 				{
 					std::vector<std::pair<FMTMask, T>>newvecdata;
-					newvecdata.reserve(data.size());
-					std::list<std::pair<FMTMask, T>>newData(data.begin(), data.end());
+					newvecdata.reserve(m_data.size());
+					std::list<std::pair<FMTMask, T>>newData(m_data.begin(), m_data.end());
 					boost::dynamic_bitset<uint8_t>selectedbits;
-					selectedbits.resize(data.begin()->first.size(), true);
+					selectedbits.resize(m_data.begin()->first.size(), true);
 					for (size_t loc = thstart;loc < (theme.size()+ thstart);++loc)
 						{
 						selectedbits[loc] = false;
@@ -540,7 +540,7 @@ namespace Core
 						newvecdata.push_back(newElement);
 						}
 					thstart += theme.size();
-					data.swap(newvecdata);
+					m_data.swap(newvecdata);
 				}
 				shrink();
 			}catch (...)
@@ -548,7 +548,7 @@ namespace Core
 				_exhandler->raiseFromCatch("", "compressMasks", __LINE__, __FILE__);
 				}
 			}
-		// DocString: FMTList::presolveList
+		// DocString: FMTList::_presolveList
 		/**
 		@brief Reduce the number of elements in the list by deleting those not represented in the base mask.
 		@details Use with care because it changes the state of the list; referencing a deleted element makes the model seem broken.
@@ -556,7 +556,7 @@ namespace Core
 		@param[in] originalthemes the original themes.
 		@param[in] newthemes the presolved themes.
 		*/
-		void presolveList(
+		void _presolveList(
 			const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			const std::vector<FMTTheme>& newthemes)
@@ -567,23 +567,23 @@ namespace Core
 					unShrink(originalthemes);
 				}
 				const std::vector<const FMTTheme*>maskthemes = filter.getSelectedThemes(originalthemes);
-				size_t dataId = data.size();
+				size_t dataId = m_data.size();
 				while (dataId!=0)
 					{
 					--dataId;
-					if (!filter.emptyFlipped() && filter.canPresolve(data[dataId].first, maskthemes))
+					if (!filter.emptyFlipped() && filter.canPresolve(m_data[dataId].first, maskthemes))
 						{
-						data[dataId].first.presolveRef(filter, newthemes,false);
+						m_data[dataId].first.presolveRef(filter, newthemes,false);
 					}else {
-						data.erase(data.begin() + dataId);
+						m_data.erase(m_data.begin() + dataId);
 						}
 					}
 				FMTList::update();
 				//data.shrink_to_fit();
 				/*
 				std::vector<std::pair<FMTMask, T>>newData;
-				newData.reserve(data.size());
-				for (const std::pair<FMTMask, T>& object : data)
+				newData.reserve(m_data.size());
+				for (const std::pair<FMTMask, T>& object : m_data)
 				{
 					if (filter.canPresolve(object.first,maskthemes))
 					{
@@ -595,22 +595,22 @@ namespace Core
 						pushToData(newData, mskkey, object.second);
 					}
 				}
-				data.swap(newData);*/
+				m_data.swap(newData);*/
 				//FMTList::update();
 				//data.shrink_to_fit();
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch("","FMTList::presolveList", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("","FMTList::_presolveList", __LINE__, __FILE__);
 				}
 			}
-		// DocString: FMTList::copyData
+		// DocString: FMTList::_copyData
 		/**
 		@brief Copy the data from another list.
 		@param[in] rhs the list to copy the data from.
 		*/
-		void copyData(const Core::FMTList<T>& rhs)
+		void _copyData(const Core::FMTList<T>& rhs)
 			{
-			data = rhs.data;
+			m_data = rhs.m_data;
 			}
 	private:
 		// DocString: FMTList::save
@@ -626,9 +626,9 @@ namespace Core
 		{
 			try {
 				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
-				ar& BOOST_SERIALIZATION_NVP(data);
-				ar& BOOST_SERIALIZATION_NVP(filter);
-				std::vector<std::pair<FMTMask, std::vector<int>>>vecFastPass(fastpass.begin(), fastpass.end());
+				ar& boost::serialization::make_nvp("data", m_data);
+				ar& boost::serialization::make_nvp("filter", m_filter);
+				std::vector<std::pair<FMTMask, std::vector<int>>>vecFastPass(m_fastpass.begin(), m_fastpass.end());
 				ar& BOOST_SERIALIZATION_NVP(vecFastPass);
 			}
 			catch (...)
@@ -646,25 +646,25 @@ namespace Core
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
-			ar& BOOST_SERIALIZATION_NVP(data);
-			ar& BOOST_SERIALIZATION_NVP(filter);
+			ar& boost::serialization::make_nvp("data", m_data);
+			ar& boost::serialization::make_nvp("filter", m_filter);
 			std::vector<std::pair<FMTMask, std::vector<int>>>vecFastPass;
 			ar& BOOST_SERIALIZATION_NVP(vecFastPass);
 			for (const std::pair<FMTMask, std::vector<int>>& values : vecFastPass)
 			{
-				fastpass[values.first] = values.second;
+				m_fastpass[values.first] = values.second;
 			}
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
-			// DocString: FMTList::data
+			// DocString: FMTList::m_data
 			///The container holding the data and the masks of the FMTList.
-			std::vector<std::pair<FMTMask, T>>data;
-		// DocString: FMTList::filter
+			std::vector<std::pair<FMTMask, T>>m_data;
+		// DocString: FMTList::m_filter
 		///The mask filter used by the FMTList to shrink the original FMTMask.
-		FMTMaskFilter filter;
-		// DocString: FMTList::fastpass
+		FMTMaskFilter m_filter;
+		// DocString: FMTList::m_fastpass
 		///unordered_map used to do caching of mask subsets of the FMTList.
-		mutable boost::unordered_map<FMTMask, std::vector<int>>fastpass;
+		mutable boost::unordered_map<FMTMask, std::vector<int>>m_fastpass;
 		// DocString: FMTList::pushToData
 		/**
 		@brief Push data into a vector.
@@ -680,7 +680,7 @@ namespace Core
 
 	};
 
-	template<> inline void FMTList<std::unique_ptr<Core::FMTYieldHandler>>::compressMasks(std::vector<FMTTheme>& newthemes)
+	template<> inline void FMTList<std::unique_ptr<Core::FMTYieldHandler>>::_compressMasks(std::vector<FMTTheme>& newthemes)
 	{
 
 	}
@@ -691,7 +691,7 @@ namespace Core
 		const std::unique_ptr<Core::FMTYieldHandler>& value)
 	{
 		std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>> newobject = std::make_pair(mask, std::move(value->clone()));
-		data.insert(data.begin() + location, std::move(newobject));
+		m_data.insert(m_data.begin() + location, std::move(newobject));
 	}
 
 	template<> inline void FMTList<std::unique_ptr<Core::FMTYieldHandler>>::pushToData(
@@ -708,17 +708,17 @@ namespace Core
 		const FMTMask& mask, 
 		const std::unique_ptr<Core::FMTYieldHandler>& value)
 	{
-		pushToData(data, mask, value);
+		pushToData(m_data, mask, value);
 	}
 
-	template<> inline void FMTList<std::unique_ptr<Core::FMTYieldHandler>>::copyData(
+	template<> inline void FMTList<std::unique_ptr<Core::FMTYieldHandler>>::_copyData(
 		const FMTList<std::unique_ptr<Core::FMTYieldHandler>>& rhs)
 	{
-		data.clear();
-		data.reserve(rhs.data.size());
-		for (const std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>& object : rhs.data)
+		m_data.clear();
+		m_data.reserve(rhs.m_data.size());
+		for (const std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>& object : rhs.m_data)
 		{
-			pushToData(data, object.first, object.second);
+			pushToData(m_data, object.first, object.second);
 		}
 	}
 }

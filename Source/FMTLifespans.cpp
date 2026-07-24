@@ -44,10 +44,10 @@ FMTLifespans FMTLifespans::presolve(const FMTMaskFilter& filter,
 	try {
 		if (!empty())
 		{
-			newlifespans.presolveList(filter, originalthemes, newthemes);
+			newlifespans._presolveList(filter, originalthemes, newthemes);
 			if (compressdata)
 			{
-				newlifespans.compressMasks(newthemes);
+				newlifespans._compressMasks(newthemes);
 			}
 			newlifespans.update();
 		}
