@@ -11,21 +11,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 
-FMTConstants::FMTConstants():FMTObject(),data(){}
-FMTConstants::FMTConstants(const FMTConstants& rhs) : FMTObject(rhs),data(rhs.data)
+FMTConstants::FMTConstants():FMTObject(),m_data(){}
+FMTConstants::FMTConstants(const FMTConstants& rhs) : FMTObject(rhs),m_data(rhs.m_data)
     {
 
     }
 void FMTConstants::set(const std::string& key, std::vector<double>values)
     {
-    data[key] = values;
+    m_data[key] = values;
     }
 bool FMTConstants::isConstant(std::string value) const
     {
     if (value.find("#")!= std::string::npos)
         {
         value.erase(0,1);
-		return (data.find(value) != data.end());
+		return (m_data.find(value) != m_data.end());
         }
     return false;
     }
@@ -39,8 +39,8 @@ T FMTConstants::get(std::string key, int period) const
 		{
 			key.erase(0, 1);
 		}
-		boost::unordered_map<std::string, std::vector<double>>::const_iterator it = data.find(key);
-		if (it == data.end())
+		boost::unordered_map<std::string, std::vector<double>>::const_iterator it = m_data.find(key);
+		if (it == m_data.end())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTundefined_constant, key + " at period " + std::to_string(period), "FMTConstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
 		}
@@ -89,14 +89,14 @@ FMTConstants& FMTConstants::operator = (const FMTConstants& rhs)
     if (this!=&rhs)
         {
 		FMTObject::operator=(rhs);
-        data=rhs.data;
+        m_data=rhs.m_data;
         }
     return *this;
     }
 FMTConstants::operator std::string() const
     {
 	std::string line;
-    for (auto it : data)
+    for (auto it : m_data)
         {
         line+=it.first+" ";
         for (auto val : it.second)
@@ -113,9 +113,9 @@ size_t FMTConstants::length(std::string value) const
     if (value.find("#")!= std::string::npos)
         {
         value.erase(0,1);
-        if (data.find(value)!=data.end())
+        if (m_data.find(value)!=m_data.end())
             {
-            return (data.at(value).size());
+            return (m_data.at(value).size());
             }
         }
     return 0;

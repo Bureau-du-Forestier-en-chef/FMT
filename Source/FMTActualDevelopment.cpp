@@ -147,13 +147,13 @@ namespace Core
 		return (FMTDevelopment::operator < (rhs) && area < rhs.area);
 		}
 
-	FMTActualDevelopmentComparator::FMTActualDevelopmentComparator(const FMTDevelopment* base) : basedev(base)
+	FMTActualDevelopmentComparator::FMTActualDevelopmentComparator(const FMTDevelopment* base) : m_basedev(base)
 		{
 
 		}
 	bool FMTActualDevelopmentComparator::operator()(const FMTActualDevelopment& actualdev) const
 		{
-		return (*basedev == actualdev);
+		return (*m_basedev == actualdev);
 		}
 
 }

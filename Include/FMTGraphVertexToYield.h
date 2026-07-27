@@ -29,17 +29,6 @@ namespace Graph
 	*/
 	class FMTGraphVertexToYield
 	{
-		enum FMTgraphrequest
-		{
-			nograph = 0,
-			linegraph = 1,
-			fullgraph = 2,
-			count = 3
-		};
-		void const* graph;
-		void const* vertex;
-		FMTgraphrequest graphtype;
-		Models::FMTModel const* modelptr;
 	public:
 		// DocString: FMTGraphVertexToYield(const Models::FMTModel&,const FMTGraph<FMTBaseVertexProperties, FMTBaseEdgeProperties>&,const void*)
 		/**
@@ -94,7 +83,7 @@ namespace Graph
 		*/
 		inline const void* getVertexPtr() const
 		{
-			return vertex;
+			return m_vertex;
 		}
 		// DocString: FMTGraphVertexToYield::getModel
 		/**
@@ -102,6 +91,18 @@ namespace Graph
 		@return a pointer to the model.
 		*/
 		const Models::FMTModel* getModel() const;
+	private:
+		enum FMTgraphrequest
+		{
+			nograph = 0,
+			linegraph = 1,
+			fullgraph = 2,
+			count = 3
+		};
+		void const* m_graph;
+		void const* m_vertex;
+		FMTgraphrequest m_graphtype;
+		Models::FMTModel const* m_modelptr;
 	};
 
 }

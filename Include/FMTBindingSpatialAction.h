@@ -21,15 +21,6 @@ namespace Spatial
 	*/
 	class FMTBindingSpatialAction
 	{
-		std::vector<int>neighbors;
-		size_t minimal_green_up;
-		size_t maximal_green_up;
-		size_t minimal_adjacency;
-		size_t maximal_adjacency;
-		size_t minimal_size;
-		size_t maximal_size;
-		size_t minimal_neighbors_size;
-		size_t maximal_neighbors_size;
 	public:
 		// DocString: FMTBindingSpatialAction()
 		/**
@@ -104,7 +95,7 @@ namespace Spatial
 		*/
 		inline const std::vector<int>& getNeighbors() const
 			{
-			return neighbors;
+			return m_neighbors;
 			}
 		// DocString: FMTBindingSpatialAction::getMinimalGreenUp
 		/**
@@ -113,7 +104,7 @@ namespace Spatial
 		*/
 		inline const size_t& getMinimalGreenUp() const
 			{
-			return minimal_green_up;
+			return m_minimal_green_up;
 			}
 		// DocString: FMTBindingSpatialAction::getMaximalGreenUp
 		/**
@@ -122,7 +113,7 @@ namespace Spatial
 		*/
 		inline const size_t& getMaximalGreenUp() const
 			{
-			return maximal_green_up;
+			return m_maximal_green_up;
 			}
 		// DocString: FMTBindingSpatialAction::getMinimalAdjacency
 		/**
@@ -131,7 +122,7 @@ namespace Spatial
 		*/
 		inline const size_t& getMinimalAdjacency() const
 			{
-			return minimal_adjacency;
+			return m_minimal_adjacency;
 			}
 		// DocString: FMTBindingSpatialAction::getMaximalAdjacency
 		/**
@@ -140,7 +131,7 @@ namespace Spatial
 		*/
 		inline const size_t& getMaximalAdjacency() const
 			{
-			return maximal_adjacency;
+			return m_maximal_adjacency;
 			}
 		// DocString: FMTBindingSpatialAction::getMinimalSize
 		/**
@@ -149,7 +140,7 @@ namespace Spatial
 		*/
 		inline const size_t& getMinimalSize() const
 			{
-			return minimal_size;
+			return m_minimal_size;
 			}
 		// DocString: FMTBindingSpatialAction::getMaximalSize
 		/**
@@ -158,7 +149,7 @@ namespace Spatial
 		*/
 		inline const size_t& getMaximalSize() const
 			{
-			return maximal_size;
+			return m_maximal_size;
 			}
 		// DocString: FMTBindingSpatialAction::getMinimalNeighborSize
 		/**
@@ -167,7 +158,7 @@ namespace Spatial
 		*/
 		inline const size_t& getMinimalNeighborSize() const
 			{
-			return minimal_neighbors_size;
+			return m_minimal_neighbors_size;
 			}
 		// DocString: FMTBindingSpatialAction::getMaximalNeighborSize
 		/**
@@ -176,8 +167,18 @@ namespace Spatial
 		*/
 		inline const size_t& getMaximalNeighborSize() const
 			{
-			return maximal_neighbors_size;
+			return m_maximal_neighbors_size;
 			}
+	private:
+		std::vector<int>m_neighbors;
+		size_t m_minimal_green_up;
+		size_t m_maximal_green_up;
+		size_t m_minimal_adjacency;
+		size_t m_maximal_adjacency;
+		size_t m_minimal_size;
+		size_t m_maximal_size;
+		size_t m_minimal_neighbors_size;
+		size_t m_maximal_neighbors_size;
 	};
 
 

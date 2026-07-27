@@ -25,42 +25,6 @@ namespace Heuristics
     */
 	class FMTEXPORT FMTOperatingAreaCluster
 	{
-		friend class boost::serialization::access;
-		// DocString: FMTOperatingAreaCluster::serialize
-		/**
-		@brief Serialize the FMTOperatingAreaCluster for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar & BOOST_SERIALIZATION_NVP(maxvar);
-			ar & BOOST_SERIALIZATION_NVP(minvar);
-			ar & BOOST_SERIALIZATION_NVP(minimalarea);
-			ar & BOOST_SERIALIZATION_NVP(maximalarea);
-			ar & BOOST_SERIALIZATION_NVP(binaries);
-			ar & BOOST_SERIALIZATION_NVP(centroid);
-		}
-		// DocString: FMTOperatingAreaCluster::maxvar
-        ///Linear variable representing the maximal value of the statistic present in the whole cluster, if active.
-		int maxvar;
-		// DocString: FMTOperatingAreaCluster::minvar
-        ///Linear variable representing the minimal value of the statistic present in the whole cluster, if active.
-		int minvar;
-		// DocString: FMTOperatingAreaCluster::minimalarea
-        ///Minimal area of the cluster,if smaller then the minimalarea the problem is infeasible.
-		double minimalarea;
-		// DocString: FMTOperatingAreaCluster::maximalarea
-        ///Maximal area of the cluster,if greater then the maximal the problem is infeasible.
-        double maximalarea;
-        // DocString: FMTOperatingAreaCluster::binaries
-        ///All the potential clusterbinaries that the cluster can potentialy have.
-		std::vector<FMTOperatingAreaClusterBinary>binaries;
-		// DocString: FMTOperatingAreaCluster::centroid
-        ///Centroid binary of the cluster, it's the non aggregated Operating area in the middle of the cluster.
-		FMTOperatingAreaClusterBinary centroid;
 	public:
 	    // DocString: FMTOperatingAreaCluster::FMTOperatingAreaCluster()
 	    /**
@@ -115,7 +79,7 @@ namespace Heuristics
 		*/
 		inline FMTOperatingAreaClusterBinary getCentroid() const
             {
-            return centroid;
+            return m_centroid;
             }
 		// DocString: FMTOperatingAreaCluster::getBinaries
 		/**
@@ -124,7 +88,7 @@ namespace Heuristics
 		*/
 		inline std::vector<FMTOperatingAreaClusterBinary> getBinaries() const
             {
-            return binaries;
+            return m_binaries;
             }
 		// DocString: FMTOperatingAreaCluster::getMaximalObjectiveVariable
 		/**
@@ -133,7 +97,7 @@ namespace Heuristics
 		*/
 		inline int getMaximalObjectiveVariable() const
             {
-            return maxvar;
+            return m_maxvar;
             }
         // DocString: FMTOperatingAreaCluster::getMinimalObjectiveVariable
         /**
@@ -142,7 +106,7 @@ namespace Heuristics
         */
 		inline int getMinimalObjectiveVariable() const
             {
-            return minvar;
+            return m_minvar;
             }
         // DocString: FMTOperatingAreaCluster::getMinimalArea
         /**
@@ -169,7 +133,7 @@ namespace Heuristics
 		*/
 		inline double getRealMinimalArea() const
             {
-            return minimalarea;
+            return m_minimalarea;
             }
         // DocString: FMTOperatingAreaCluster::getRealMaximalArea
         /**
@@ -178,7 +142,7 @@ namespace Heuristics
         */
 		inline double getRealMaximalArea() const
             {
-            return maximalarea;
+            return m_maximalarea;
             }
         // DocString: FMTOperatingAreaCluster::getTotalPotentialArea
         /**
@@ -236,6 +200,43 @@ namespace Heuristics
 		@return the masks.
 		*/
 		std::vector<Core::FMTMask>getAllMasks() const;
+	private:
+		friend class boost::serialization::access;
+		// DocString: FMTOperatingAreaCluster::serialize
+		/**
+		@brief Serialize the FMTOperatingAreaCluster for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar & boost::serialization::make_nvp("maxvar", m_maxvar);
+			ar & boost::serialization::make_nvp("minvar", m_minvar);
+			ar & boost::serialization::make_nvp("minimalarea", m_minimalarea);
+			ar & boost::serialization::make_nvp("maximalarea", m_maximalarea);
+			ar & boost::serialization::make_nvp("binaries", m_binaries);
+			ar & boost::serialization::make_nvp("centroid", m_centroid);
+		}
+		// DocString: FMTOperatingAreaCluster::m_maxvar
+        ///Linear variable representing the maximal value of the statistic present in the whole cluster, if active.
+		int m_maxvar;
+		// DocString: FMTOperatingAreaCluster::m_minvar
+        ///Linear variable representing the minimal value of the statistic present in the whole cluster, if active.
+		int m_minvar;
+		// DocString: FMTOperatingAreaCluster::m_minimalarea
+        ///Minimal area of the cluster,if smaller then the minimalarea the problem is infeasible.
+		double m_minimalarea;
+		// DocString: FMTOperatingAreaCluster::m_maximalarea
+        ///Maximal area of the cluster,if greater then the maximal the problem is infeasible.
+        double m_maximalarea;
+        // DocString: FMTOperatingAreaCluster::m_binaries
+        ///All the potential clusterbinaries that the cluster can potentialy have.
+		std::vector<FMTOperatingAreaClusterBinary>m_binaries;
+		// DocString: FMTOperatingAreaCluster::m_centroid
+        ///Centroid binary of the cluster, it's the non aggregated Operating area in the middle of the cluster.
+		FMTOperatingAreaClusterBinary m_centroid;
 	};
 }
 

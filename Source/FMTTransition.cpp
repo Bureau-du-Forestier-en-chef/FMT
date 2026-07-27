@@ -287,10 +287,10 @@ FMTMask FMTTransition::mainTarget(const std::vector<FMTDevelopment>& devs,
 	 return results;
 	 }
 
- FMTTransitionComparator::FMTTransitionComparator(std::string name) :transition_name(name) {}
+ FMTTransitionComparator::FMTTransitionComparator(std::string name) :m_transitionName(name) {}
  bool FMTTransitionComparator::operator()(const FMTTransition& transition) const
 	{
-	return (transition.getName()  == transition_name);
+	return (transition.getName()  == m_transitionName);
 	}
 
  FMTTransition FMTTransition::presolve(const FMTMaskFilter& filter,

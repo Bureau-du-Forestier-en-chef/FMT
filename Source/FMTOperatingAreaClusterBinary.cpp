@@ -16,19 +16,19 @@ namespace Heuristics
 {
 
 	FMTOperatingAreaClusterBinary::FMTOperatingAreaClusterBinary(const FMTOperatingArea& oparea) :
-		FMTOperatingArea(oparea), statistic()
+		FMTOperatingArea(oparea), m_statistic()
 		{
 
 		}
 
 	void FMTOperatingAreaClusterBinary::setStatistic(const double& statvalue)
 		{
-		statistic = statvalue;
+		m_statistic = statvalue;
 		}
 
 	void FMTOperatingAreaClusterBinary::setVariable(const int& lvariable)
 		{
-		variable = lvariable;
+		m_variable = lvariable;
 		}
 
 

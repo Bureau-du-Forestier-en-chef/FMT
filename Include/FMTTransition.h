@@ -235,9 +235,6 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 */
 class FMTTransitionComparator
 {
-	// DocString: FMTTransitionComparator::transition_name
-	///transition name that we are looking for in the std
-	std::string transition_name;
 public:
 	// DocString: FMTTransitionComparator(std::string)
 	/**
@@ -253,6 +250,10 @@ public:
 	*/
 	bool operator()(const FMTTransition& transition) const;
 
+private:
+	// DocString: FMTTransitionComparator::m_transitionName
+	///transition name that we are looking for in the std
+	std::string m_transitionName;
 };
 
 }
