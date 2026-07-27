@@ -214,6 +214,16 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		@return the yield request.
 		*/
 		FMTYieldRequest getYieldRequest(const Graph::FMTGraphVertexToYield* graphyieldrequest = nullptr) const;
+		// DocString: FMTDevelopment::getNonOperabilityInfo
+		/**
+		@brief Check why this developpement is not operable for p_action and return the info.
+		@param[in] p_action the action to test
+		@param[in] p_yields the yields
+		@param[in] p_yieldRequest a yield request
+		@return the of info string or empty if is operable.
+		*/
+		std::string getNonOperabilityInfo(const FMTAction& p_action,
+			const Core::FMTYields& p_yields, const Graph::FMTGraphVertexToYield* p_yieldRequest) const;
 		// DocString: FMTDevelopment::operable
 		/**
 		@brief Check if this development is operable to an action based on multiple yields.
