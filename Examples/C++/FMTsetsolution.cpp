@@ -29,9 +29,9 @@ int main(int argc, char *argv[])
 				}
 			
 		}else{
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/07351/PC_9589_U07351_4_Vg3_2023_vSSP6.pri";
-			scenarios = std::vector<std::string>(1, "14_Sc5_Determin3_apsp");
-			ovoltotrecvalue = 2901200;
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/WS_08751_REG/Feux_2023_ouest_V01.pri";
+			scenarios = std::vector<std::string>(1, "2001_StratReg_2028_apFeu_avsp");
+			ovoltotrecvalue = 2252907.601621;
 			argc = 4;
 		}
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 		//optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
-		//delparser.write(optimizationmodel, "D:/test/");
+		//modelparser.write(*optimizationmodel.presolve(), "D:/test/");
 		optimizationmodel.doPlanning(false, schedules);
 		/*for (size_t period = 1; period <= 6; ++period)
 			{

@@ -162,6 +162,56 @@ namespace Core{
 			return FMTYieldRequest(*this);
 		}
 
+	std::string FMTDevelopment::getNonOperabilityInfo(const FMTAction& p_action,
+		const Core::FMTYields& p_yields, const Graph::FMTGraphVertexToYield* p_yieldRequest) const
+	{
+		std::string Info;
+		if (!operable(p_action, p_yields))
+			{
+			Info += "For action " + p_action.getName()+"\n";
+			if ((p_action.doRespectLock() && lock != 0))
+				{
+				Info += "Lock of " + std::to_string(getLock()) + " so it is not operable!" + "\n";
+				}
+			if (p_action.getAgeLowerBound() > getAge())
+				{
+				Info += "Age of " + std::to_string(getAge()) + " vs Lower bound of "+ std::to_string(p_action.getAgeLowerBound()) + "\n";
+				}
+			if (p_action.getAgeUpperBound() < getAge())
+				{
+				Info += "Age of " + std::to_string(getAge()) + " vs Upper bound of " + std::to_string(p_action.getAgeUpperBound()) + "\n";
+				}
+			if (p_action.getPeriodLowerBound() > getPeriod())
+				{
+				Info += "Period of " + std::to_string(getPeriod()) + " vs Lower bound of " + std::to_string(p_action.getPeriodLowerBound()) + "\n";
+				}
+			if (p_action.getPeriodUpperBound() < getPeriod())
+				{
+				Info += "Period of " + std::to_string(getPeriod()) + " vs Upper bound of " + std::to_string(p_action.getPeriodUpperBound()) + "\n";
+				}
+			std::string yldsStr;
+			for (const auto& OPERABILITY : p_action.findSets(getMask()))
+			{
+				for (const std::string& YLD_NAME : OPERABILITY->second.getYlds())
+				{
+					if (yldsStr.find(YLD_NAME) == std::string::npos)
+					{
+						yldsStr += YLD_NAME + ":" + std::to_string(p_yields.get(getYieldRequest(), YLD_NAME)) + "\n";
+					}
+				}
+			}
+			if (!yldsStr.empty())
+				{
+				yldsStr.pop_back();
+				yldsStr.insert(0, "\n");
+				Info +=  "With Yields values of " + yldsStr;
+				}
+			}
+		return Info;
+	}
+
+
+
      bool FMTDevelopment::operable(const FMTAction& action,const FMTYields& ylds, const Graph::FMTGraphVertexToYield* graphyieldrequest) const
         {
 		 try{

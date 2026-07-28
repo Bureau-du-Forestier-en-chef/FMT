@@ -2606,7 +2606,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 						{
 							presolvedConstraint.turnToYieldsAndActions(newthemes, presolvedModel->actions,validActions, newyields, originalId);
 						}
-						else if (presolvedConstraint.canBeTurnedToYieldsBasedOnTransitions())
+						else if (presolvedConstraint.canBeTurnedToYieldsBasedOnTransitions(newthemes, presolvedModel->transitions, presolvedModel->actions, validActions))
 						{
 							presolvedConstraint.turnToYieldsBasedOnTransition(newthemes, presolvedModel->transitions, presolvedModel->actions,validActions, newyields, originalId);
 						}
