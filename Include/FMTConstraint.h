@@ -376,9 +376,16 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		// DocString: FMTConstraint::canBeTurnedToYieldsBasedOnTransitions
 		/**
 		@brief Return true if the constraint can be turned to a simple action bound using a simple yield, checking the transitions.
+		@param[in] themes the themes.
+		@param[in] trans the transitions.
+		@param[in] actions the actions.
+		@param[in] p_valideActions the valid actions
 		@return true if the constraint can be turned to yields else false.
 		*/
-		bool canBeTurnedToYieldsBasedOnTransitions() const;
+		bool canBeTurnedToYieldsBasedOnTransitions(const std::vector<Core::FMTTheme>& p_themes,
+												const std::vector<Core::FMTTransition>& p_trans,
+												const std::vector<Core::FMTAction>& p_actions,
+												const std::vector<bool>& p_valideActions) const;
 		// DocString: FMTConstraint::turnToYieldsBasedOnTransition
 		/**
 		@brief Turn the constraint to yields and actions based on the transitions.

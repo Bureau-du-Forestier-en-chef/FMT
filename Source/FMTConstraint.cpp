@@ -14,6 +14,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTExceptionHandler.h"
 #include <math.h>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/container_hash/hash.hpp>
 
 namespace Core
 
@@ -1139,20 +1141,25 @@ namespace Core
 			return ids;
 			}
 
-		bool FMTConstraint::canBeTurnedToYieldsBasedOnTransitions() const
+		bool FMTConstraint::canBeTurnedToYieldsBasedOnTransitions(const std::vector<Core::FMTTheme>& p_themes,
+															const std::vector<Core::FMTTransition>& p_trans,
+															const std::vector<Core::FMTAction>& p_actions,
+															const std::vector<bool>& p_valideActions) const
 				{
+			    bool isValid = false;
 				try {
 					double lower;
 					double upper;
 					getBounds(lower, upper);
 					if (m_type == Core::FMTconstrainttype::FMTstandard && lower<=0 && upper==0 && !isLevel() && !isObjective() && !isGoal())
 						{
+						isValid = true;
 						for (const Core::FMTOutputSource& source: m_sources)
 						{
 							if ((source.isVariable()&&(!source.getYield().empty()||!source.empty()||!source.getAction().empty()||!source.emptyAge()))||
 								(source.isConstant()&&source.getValue()<0))
 							{
-								return false;
+								isValid = false;
 							}
 
 						}
@@ -1162,17 +1169,51 @@ namespace Core
 							if (op != Core::FMTOperator("+") && 
 								op != Core::FMTOperator("*"))
 								{
-								return false;
+								isValid = false;
 								}
 							}
-						return true;
+						if (isValid)
+						{
+							size_t transitionId = 0;
+							while (isValid && transitionId < p_trans.size())
+							{
+								if (p_valideActions[transitionId])
+								{
+									for (const Core::FMTOutputSource& source : sources)
+									{
+										if (source.isVariable())
+										{
+											for (const FMTMask& MASK : p_trans.at(transitionId).canProduce(
+												source.getMask(), p_themes))
+											{
+												size_t actionId = 0;//Check for all actions for other periods.
+												while (isValid && actionId < p_actions.size())
+												{
+													if (p_valideActions[actionId])
+													{
+														if (!p_actions.at(actionId).findSets(MASK).empty())
+														{
+															isValid = false;
+														}
+													}
+													
+													++actionId;
+												}
+											}
+										}
+									}
+								}
+								++transitionId;
+							}
+						}
+
 						}
 				}
 				catch (...)
 				{
 					_exhandler->raiseFromCatch("", "FMTConstraint::canBeTurnedToYieldsBasedOnTransitions", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
-				return false;
+				return isValid;
 				}
 
 		void FMTConstraint::turnToYieldsBasedOnTransition(	const std::vector<Core::FMTTheme>& themes,

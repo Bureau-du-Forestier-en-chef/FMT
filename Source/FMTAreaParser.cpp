@@ -47,6 +47,48 @@ const boost::regex FMTAreaParser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 
 #ifdef FMTWITHGDAL
 
+
+double FMTAreaParser::_GetGeometryArea(const OGRGeometry* p_geometry)
+	{
+	double area = 0.0;
+	if (p_geometry != nullptr)
+		{
+			const OGRwkbGeometryType TYPE = p_geometry->getGeometryType();
+			switch (TYPE)
+				{
+				case wkbPolygon:
+					{
+					area = dynamic_cast<const OGRPolygon*>(p_geometry)->get_Area();
+					break;
+					}
+				case wkbCurvePolygon:
+					{
+					area = dynamic_cast<const OGRCurvePolygon*>(p_geometry)->get_Area();
+					break;
+					}
+				case wkbMultiPolygon:
+				case wkbGeometryCollection:
+				case wkbMultiSurface:
+				{
+					const OGRGeometryCollection* poGC =
+						dynamic_cast<const OGRGeometryCollection*>(p_geometry);
+					if (poGC != nullptr)
+					{
+						for (int i = 0; i < poGC->getNumGeometries(); i++)
+						{
+							area += FMTAreaParser::_GetGeometryArea(poGC->getGeometryRef(i));
+						}
+					}
+				}
+				default:
+					area = 0.0;
+				}
+		}
+	return area;
+	}
+
+
+
 bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_themes,
 	const std::string& p_VectorsMap) const
 {
@@ -68,47 +110,43 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 	return false;
 }
 
-	std::vector<OGRPolygon*> FMTAreaParser::_getUnion(const std::vector<OGRMultiPolygon>& multipartpolygons) const
+	std::vector<OGRGeometry*> FMTAreaParser::_getUnion(const std::vector<OGRMultiPolygon>& p_collections) const
 		{
-		std::vector<OGRPolygon*> mergedpolygons;
+		std::vector<OGRGeometry*> mergedCollections(p_collections.size(),nullptr);
 		try {
-			for (const OGRMultiPolygon& polygons : multipartpolygons)
+			size_t i = 0;
+			for (const OGRMultiPolygon& COLLECTION : p_collections)
 			{
-				if (polygons.IsEmpty())
-				{
-					mergedpolygons.push_back(nullptr);
-				}
-				else
-				{
-					OGRGeometry* geometry = polygons.UnionCascaded();
-					OGRPolygon* polygon = dynamic_cast<OGRPolygon*>(geometry);
-					mergedpolygons.push_back(polygon);
-				}
+				if (!COLLECTION.IsEmpty())
+					{
+					OGRGeometry* NEW_GEOMETRY = COLLECTION.UnaryUnion();
+					mergedCollections.at(i) = NEW_GEOMETRY;
+					}
+				++i;
 			}
-		}
-		catch (...)
-		{
+		}catch (...)
+			{
 			_exhandler->raiseFromCatch(
 				"", "FMTAreaParser::_getUnion", __LINE__, __FILE__, m_section);
 		}
 		return mergedpolygons;
 		}
 
-	void FMTAreaParser::_destroyPolygons(std::vector<OGRPolygon*>& polygonstodestroy) const
-		{
-		try{
-		for (OGRPolygon* polygon : polygonstodestroy)
+	void FMTAreaParser::_destroyGeometries(std::vector<OGRGeometry*>& p_geometires) const
+	{
+		try {
+			for (OGRGeometry* geometry : p_geometires)
+				{
+				OGRGeometryFactory::destroyGeometry(geometry);
+				}
+			p_geometires.clear();
+		}catch (...)
 			{
-			OGRGeometryFactory::destroyGeometry(polygon);
-			}
-		polygonstodestroy.clear();
-		}
-		catch (...)
-		{
 			_exhandler->raiseFromCatch(
-				"", "FMTAreaParser::_destroyPolygons", __LINE__, __FILE__, m_section);
-		}
-		}
+				"", "FMTAreaParser::_destroyGeometries", __LINE__, __FILE__, m_section);
+			}
+	}
+
 	
 
     void FMTAreaParser::_validateRaster(const std::vector<std::string>&data_rasters) const
@@ -1157,7 +1195,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 
 
 
-	std::vector<OGRMultiPolygon> FMTAreaParser::_getMultipolygons(
+	std::vector<OGRMultiPolygon>FMTAreaParser::_getMultiPolygons(
 		const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 		const std::vector<Core::FMTTheme>& themes, 
 		const std::string& data_vectors,
@@ -1210,7 +1248,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			GDALClose(dataset);
 		} catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMTAreaParser::_getMultipolygons", __LINE__, __FILE__, m_section);
+			_exhandler->raiseFromCatch("","FMTAreaParser::_getMultiPolygons", __LINE__, __FILE__, m_section);
 			}
 		return multipolygons;
 		}
@@ -1421,7 +1459,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 
 
 	#ifdef FMTWITHOSI
-			std::vector<Heuristics::FMTOperatingArea> FMTAreaParser::_getNeighborsFromPolygons(const std::vector<OGRPolygon*>& polygons,
+			std::vector<Heuristics::FMTOperatingArea> FMTAreaParser::_getNeighborsFromPolygons(const std::vector<OGRGeometry*>& polygons,
 																						std::vector<Heuristics::FMTOperatingArea> operatingareas,
 																						const double& buffersize) const
 				{
@@ -1441,16 +1479,16 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 									buffered->Intersects(polygons.at(opareaneighborindex)))
 								{
 									OGRGeometry* intersect = buffered->Intersection(polygons.at(opareaneighborindex));
-									if (intersect || !intersect->IsEmpty())
+									if (intersect && !intersect->IsEmpty())
 									{
-										const OGRSurface* area = dynamic_cast<OGRSurface*>(intersect);
-										if (area)
-										{
-											const double intersectarea = area->get_Area();
-											fullbuffered += intersectarea;
+
+										const double AREA = FMTAreaParser::_GetGeometryArea(intersect);
+										if (AREA > FMT_DBL_TOLERANCE)
+											{
+											fullbuffered += AREA;
 											neighborsid.push_back(opareaneighborindex);
-											areas.push_back(intersectarea);
-										}
+											areas.push_back(AREA);
+											}
 									}
 									OGRGeometryFactory::destroyGeometry(intersect);
 								}
@@ -1492,7 +1530,8 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				return operatingareas;
 				}
 
-			std::vector<Heuristics::FMTOperatingAreaCluster> FMTAreaParser::_getClustersFromPolygons(const std::vector<OGRPolygon*>& polygons,
+
+			std::vector<Heuristics::FMTOperatingAreaCluster> FMTAreaParser::_getClustersFromPolygons(const std::vector<OGRGeometry*>& polygons,
 																								const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 																								const double& maximaldistance) const
 			{
@@ -1508,7 +1547,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 					std::map<Core::FMTMask, std::map<Core::FMTMask, std::set<Core::FMTMask>>>excludedfromlink;
 				
 					size_t opareaid = 0;
-					for (const OGRPolygon* polygon : polygons)
+					for (const OGRGeometry* polygon : polygons)
 						{
 						distances[operatingareas.at(opareaid).getMask()] = std::map<Core::FMTMask, double>();
 						excludedfromlink[operatingareas.at(opareaid).getMask()] = std::map<Core::FMTMask, std::set<Core::FMTMask>>();
@@ -1560,7 +1599,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 							{
 							const Core::FMTMask binarymask(binary.getMask());
 							std::vector<Core::FMTMask>linkerneighbors;
-							const OGRPolygon* binary_polygon = polygons.at(polygonids.at(binaryid));
+							const OGRGeometry* binary_polygon = polygons.at(polygonids.at(binaryid));
 							OGRPoint binarycentroid;
 							binary_polygon->Centroid(&binarycentroid);
 							OGRLineString linkingm_line;
@@ -1580,7 +1619,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 									subbinarymask != mainmask&&
 									exclusion->find(subbinarymask)==exclusion->end())
 								{
-									const OGRPolygon* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
+									const OGRGeometry* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
 									if (linkingm_line.Intersects(subbinary_polygon))
 									{
 										linkerneighbors.push_back(subbinarymask);
@@ -1635,12 +1674,14 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 									size_t subbinaryid = 0;
 									for (const Heuristics::FMTOperatingAreaClusterBinary& subbinary : binaries)
 									{
-										OGRPolygon* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
+										OGRGeometry* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
 										const Core::FMTMask subbinarymask(subbinary.getMask());
+
 										if (subbinarymask != binarymask && subbinarymask != mainmask && intersection->Intersects(subbinary_polygon))
 										{
-											OGRPolygon* subintersection = dynamic_cast<OGRPolygon*>(intersection->Intersection(subbinary_polygon));
-											if (subintersection->get_Area() >= subbinary_polygon->get_Area()*0.5)
+											OGRGeometry* subintersection = dynamic_cast<OGRPolygon*>(intersection->Intersection(subbinary_polygon));
+											if (_GetGeometryArea(subintersection) >= 
+												_GetGeometryArea(subbinary_polygon) * 0.5)
 											{
 												insertiondone = true;
 												linkerneighbors.push_back(subbinarymask);
@@ -1720,13 +1761,14 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 																			double minimal_area , double buffersize) const
 				{
 				try {
+
 					const std::vector<Heuristics::FMTOperatingArea>baseoparea(operatingareaparameters.begin(), operatingareaparameters.end());
-					std::vector<OGRMultiPolygon>multipolygons = this->_getMultipolygons(baseoparea, themes, data_vectors,
+					const std::vector<OGRMultiPolygon>COLLECTIONS = this->_getMultiPolygons(baseoparea, themes, data_vectors,
 						agefield, areafield, agefactor,
 						areafactor, lockfield, minimal_area);
-					std::vector<OGRPolygon*>mergedpolygons = this->_getUnion(multipolygons);
-					const std::vector<Heuristics::FMTOperatingArea>schemes = _getNeighborsFromPolygons(mergedpolygons, baseoparea, buffersize);
-					this->_destroyPolygons(mergedpolygons);
+					std::vector<OGRGeometry*>GEOMETRIES = this->_getUnion(COLLECTIONS);
+					const std::vector<Heuristics::FMTOperatingArea>schemes = _getNeighborsFromPolygons(GEOMETRIES, baseoparea, buffersize);
+					this->_destroyGeometries(GEOMETRIES);
 					size_t opareaid = 0;
 					for (const Heuristics::FMTOperatingArea& oparea : schemes)
 						{
@@ -1750,14 +1792,14 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			{
 				std::vector<Heuristics::FMTOperatingAreaCluster>finalclusters;
 				try {
-					std::vector<OGRMultiPolygon>multipolygons = this->_getMultipolygons(operatingareas, themes, data_vectors,
+					std::vector<OGRMultiPolygon>multipolygons = this->_getMultiPolygons(operatingareas, themes, data_vectors,
 						agefield, areafield, agefactor,
 						areafactor, lockfield, minimal_area);
-					std::vector<OGRPolygon*>mergedpolygons = this->_getUnion(multipolygons);
+					std::vector<OGRGeometry*>mergedpolygons = this->_getUnion(multipolygons);
 					std::vector<Heuristics::FMTOperatingArea>newopareas(operatingareas.begin(), operatingareas.end());
 					const std::vector<Heuristics::FMTOperatingArea>opareawithneighbors = _getNeighborsFromPolygons(mergedpolygons, newopareas, buffersize);
 					finalclusters = this->_getClustersFromPolygons(mergedpolygons, opareawithneighbors, maximaldistance);
-					this->_destroyPolygons(mergedpolygons);
+					this->_destroyGeometries(mergedpolygons);
 				}catch (...)
 				{
 					_exhandler->printExceptions("", "FMTAreaParser::getClusters", __LINE__, __FILE__, m_section);

@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 				ovoltotrecvalue = std::stod(argv[3]);
 				}
 		}else {
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/01171/PC_7719_U01171_4_2018_VPF04.pri";
-			scenarios = std::vector<std::string>(1, "scenario_4");
+			primarylocation = "T:/Donnees/Usagers/CYRGU3/WS_08751_REG - Copie/Feux_2023_ouest_V01.pri";
+			scenarios = std::vector<std::string>(1, "2001_StratReg_2028_apFeu_avsp");
 			ovoltotrecvalue = 2085200.026;
 			argc = 4;
 		}

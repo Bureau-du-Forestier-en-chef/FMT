@@ -854,9 +854,12 @@ namespace Models
 								std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 								if (varit == outvariables.cend())
 								{
+									const Graph::FMTGraphVertexToYield VERTEX_INFO = m_graph->getVertexToYieldInfo(*this, vdescriptor);
+									const std::string OP_INFO = m_graph->getDevelopment(vdescriptor).getNonOperabilityInfo(
+										actions.at(actionid), yields,&VERTEX_INFO);
 									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 												"Developement " + std::string(devit.first) + " is not operable "
-												" for action " + actionit->first.getName(), 
+												" for action " + actionit->first.getName() +" "+ OP_INFO,
 												"FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 								}
 								const int variable = varit->second;
@@ -901,9 +904,12 @@ namespace Models
 										std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 										if (varit == outvariables.cend())
 										{
+											const Graph::FMTGraphVertexToYield VERTEX_INFO = m_graph->getVertexToYieldInfo(*this, vdescriptor);
+											const std::string OP_INFO = m_graph->getDevelopment(vdescriptor).getNonOperabilityInfo(
+												actions.at(actionid), yields, &VERTEX_INFO);
 											_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 														"Developement " + std::string(devit.first) + " is not operable "
-														" for action " + actionit->first.getName(), 
+														" for action " + actionit->first.getName() + " " + OP_INFO,
 														"FMTSrModel::setSolutionByLp", __LINE__, __FILE__);
 										}
 										const int variable = varit->second;
