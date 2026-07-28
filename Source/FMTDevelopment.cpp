@@ -169,7 +169,7 @@ namespace Core{
 		if (!operable(p_action, p_yields))
 			{
 			Info += "For action " + p_action.getName()+"\n";
-			if ((p_action.doRespectLock() && lock != 0))
+			if ((p_action.doRespectLock() && m_lock != 0))
 				{
 				Info += "Lock of " + std::to_string(getLock()) + " so it is not operable!" + "\n";
 				}

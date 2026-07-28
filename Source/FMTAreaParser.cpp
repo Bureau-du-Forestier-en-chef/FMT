@@ -129,7 +129,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			_exhandler->raiseFromCatch(
 				"", "FMTAreaParser::_getUnion", __LINE__, __FILE__, m_section);
 		}
-		return mergedpolygons;
+		return mergedCollections;
 		}
 
 	void FMTAreaParser::_destroyGeometries(std::vector<OGRGeometry*>& p_geometires) const

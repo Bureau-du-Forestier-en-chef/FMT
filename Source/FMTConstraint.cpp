@@ -1179,7 +1179,7 @@ namespace Core
 							{
 								if (p_valideActions[transitionId])
 								{
-									for (const Core::FMTOutputSource& source : sources)
+									for (const Core::FMTOutputSource& source : m_sources)
 									{
 										if (source.isVariable())
 										{
