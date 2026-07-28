@@ -132,7 +132,7 @@ namespace Parser
 		const static boost::regex m_rxspecialobjective;
 		const static boost::regex m_rxstartwithoperator;
 		//std::queue<std::string>m_ineach;
-		// DocString: FMTOptimizationParser::getObjective
+		// DocString: FMTOptimizationParser::_getObjective
 		/**
 		@brief Return an objective from a line of the optimization section.
 		@param[in] pm_line the line.
@@ -142,19 +142,19 @@ namespace Parser
 		@param[in] p_themes the themes.
 		@return the objective.
 		*/
-		Core::FMTConstraint getObjective(const std::string& pm_line,
+		Core::FMTConstraint _getObjective(const std::string& pm_line,
 			const Core::FMTConstants& p_constants,
 			const Core::FMTYields& p_yields,
 			const std::vector<Core::FMTOutput>& p_outputs,
 			const std::vector<Core::FMTTheme>& p_themes);
-		// DocString: FMTOptimizationParser::getSection
+		// DocString: FMTOptimizationParser::_getSection
 		/**
 		@brief Return the optimization section of a line.
 		@param[in] line the line.
 		@return the optimization section.
 		*/
-		FMToptimizationsection getSection(const std::string& line) const;
-		// DocString: FMTOptimizationParser::setEnding
+		FMToptimizationsection _getSection(const std::string& line) const;
+		// DocString: FMTOptimizationParser::_setEnding
 		/**
 		@brief Set the ending bounds of a constraint from a line.
 		@param[in,out] constraint the constraint.
@@ -162,8 +162,8 @@ namespace Parser
 		@param[in] constants the constants.
 		@return true if the ending is set else false.
 		*/
-		bool setEnding(Core::FMTConstraint& constraint, std::string& line, const Core::FMTConstants& constants);
-		// DocString: FMTOptimizationParser::resumeOutput
+		bool _setEnding(Core::FMTConstraint& constraint, std::string& line, const Core::FMTConstants& constants);
+		// DocString: FMTOptimizationParser::_resumeOutput
 		/**
 		@brief Build an output from a map of nodes.
 		@param[in] nodes the nodes.
@@ -172,11 +172,11 @@ namespace Parser
 		@param[in] constants the constants.
 		@return the resumed output.
 		*/
-		Core::FMTOutput resumeOutput(const std::map<std::string, double>& nodes,
+		Core::FMTOutput _resumeOutput(const std::map<std::string, double>& nodes,
 			const std::vector<Core::FMTOutput>& outputs,
 			const std::vector<Core::FMTTheme>& themes,
 			const Core::FMTConstants& constants);
-		// DocString: FMTOptimizationParser::getOptline
+		// DocString: FMTOptimizationParser::_getOptline
 		/**
 		@brief Get the optimization lines from a stream, considering for loops and outputs.
 		@param[in,out] stream the file stream.
@@ -185,9 +185,9 @@ namespace Parser
 		@param[in] outputs the outputs.
 		@return a queue of lines to process.
 		*/
-		std::queue<FMTParser::FMTLineInfo>getOptline(std::ifstream& stream, const std::vector<Core::FMTTheme>& themes,
+		std::queue<FMTParser::FMTLineInfo>_getOptline(std::ifstream& stream, const std::vector<Core::FMTTheme>& themes,
 								const Core::FMTConstants& cons, const std::vector<Core::FMTOutput>& outputs);
-		// DocString: FMTOptimizationParser::getEachLines
+		// DocString: FMTOptimizationParser::_getEachLines
 		/**
 		@brief Unroll the _EACH lines of a constraint line.
 		@param[in] line the line.
@@ -196,8 +196,8 @@ namespace Parser
 		@param[in] themes the themes.
 		@return the resulting lines.
 		*/
-		std::queue<std::string> getEachLines(const std::string& line, const Core::FMTConstants& constants, const std::vector<Core::FMTOutput>& outputs, const std::vector<Core::FMTTheme>& themes) const;
-		// DocString: FMTOptimizationParser::getEquation
+		std::queue<std::string> _getEachLines(const std::string& line, const Core::FMTConstants& constants, const std::vector<Core::FMTOutput>& outputs, const std::vector<Core::FMTTheme>& themes) const;
+		// DocString: FMTOptimizationParser::_getEquation
 		/**
 		@brief Simplify the equation of a constraint line before formatting it for an output.
 		@param[in] pm_line the line.
@@ -207,10 +207,10 @@ namespace Parser
 		@param[in] p_lhssize the size of the RHS.
 		@return the simplified output nodes.
 		*/
-		std::map<std::string, double>getEquation(const std::string& pm_line, const Core::FMTConstants& p_constants,
+		std::map<std::string, double>_getEquation(const std::string& pm_line, const Core::FMTConstants& p_constants,
 			const Core::FMTYields& p_yields, const std::vector<Core::FMTOutput>& p_outputs,
 			size_t p_lhssize = std::numeric_limits<size_t>::max());
-		// DocString: FMTOptimizationParser::getPeriodsBounds
+		// DocString: FMTOptimizationParser::_getPeriodsBounds
 		/**
 		@brief Return the constraints for each period bound of a constraint.
 		@param[in] periodstr the period string.
@@ -218,8 +218,8 @@ namespace Parser
 		@param[in] constants the constants.
 		@return the period constraints.
 		*/
-		std::vector<Core::FMTConstraint> getPeriodsBounds(std::string periodstr, const Core::FMTConstraint& constraint, const Core::FMTConstants& constants) const;
-		// DocString: FMTOptimizationParser::fillBounds
+		std::vector<Core::FMTConstraint> _getPeriodsBounds(std::string periodstr, const Core::FMTConstraint& constraint, const Core::FMTConstants& constants) const;
+		// DocString: FMTOptimizationParser::_fillBounds
 		/**
 		@brief Fill up the lower and upper bounds from an operator and a RHS.
 		@param[in] operatorvalue the operator.
@@ -227,8 +227,8 @@ namespace Parser
 		@param[out] lower the lower bound.
 		@param[out] upper the upper bound.
 		*/
-		void fillBounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const;
-		// DocString: FMTOptimizationParser::getSpatialConstraint
+		void _fillBounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const;
+		// DocString: FMTOptimizationParser::_getSpatialConstraint
 		/**
 		@brief Turn a base constraint into a spatial constraint from a line.
 		@param[in] p_baseconstraint the base constraint.
@@ -241,20 +241,20 @@ namespace Parser
 		@param[in] p_themes the themes.
 		@return the spatial constraint.
 		*/
-		Core::FMTConstraint getSpatialConstraint(const Core::FMTConstraint& p_baseconstraint,
+		Core::FMTConstraint _getSpatialConstraint(const Core::FMTConstraint& p_baseconstraint,
 			const boost::smatch& p_match, const std::string& pm_line,
 			const Core::FMTConstants& p_constants,
 			const Core::FMTYields& p_yields,
 			const std::vector<Core::FMTAction>& p_actions,
 			const std::vector<Core::FMTOutput>& p_outputs,
 			const std::vector<Core::FMTTheme>& p_themes);
-		// DocString: FMTOptimizationParser::getReplicateChanges
+		// DocString: FMTOptimizationParser::_getReplicateChanges
 		/**
 		@brief Return the replicate bound changes from a replicate argument.
 		@param[in] replicateargument the replicate argument.
 		@return the replicate changes.
 		*/
-		std::vector<std::vector<double>>getReplicateChanges(const std::string& replicateargument);
+		std::vector<std::vector<double>>_getReplicateChanges(const std::string& replicateargument);
 	};
 }
 

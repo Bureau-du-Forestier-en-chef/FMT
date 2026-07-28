@@ -24,12 +24,6 @@ namespace Spatial
 	*/
 	class FMTEventRelation
 	{
-		int fromaction;
-		int toaction;
-		int fromperiod;
-		int toperiod;
-		FMTCoordinate fromcoord;
-		FMTCoordinate tocoord;
 	public:
 		// DocString: FMTEventRelation(const Spatial::FMTEvent&,const Spatial::FMTEvent&)
 		/**
@@ -69,6 +63,13 @@ namespace Spatial
 		@brief Default destructor for FMTEventRelation.
 		*/
 		~FMTEventRelation() = default;
+	private:
+		int m_fromaction;
+		int m_toaction;
+		int m_fromperiod;
+		int m_toperiod;
+		FMTCoordinate m_fromcoord;
+		FMTCoordinate m_tocoord;
 	};
 
 }

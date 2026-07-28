@@ -31,7 +31,6 @@ namespace Core
 	*/
 	class FMTFunctionCall
 	{
-		FMTfkey key;
 	public:
 		// DocString: FMTFunctionCall()
 		/**
@@ -75,6 +74,8 @@ namespace Core
 		@brief Default destructor for FMTFunctionCall.
 		*/
 		~FMTFunctionCall() = default;
+	private:
+		FMTfkey m_key;
 	};
 }
 

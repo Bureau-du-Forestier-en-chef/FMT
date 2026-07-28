@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -11,15 +11,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-FMTSchedule::FMTSchedule(const int& lperiod,const FMTObject& obj, const bool& luselock) :FMTObject(obj), period(lperiod), uselock(luselock), elements() {}
+FMTSchedule::FMTSchedule(const int& lperiod,const FMTObject& obj, const bool& luselock) :FMTObject(obj), m_period(lperiod), m_uselock(luselock), m_elements() {}
 
-FMTSchedule::FMTSchedule():FMTObject(),period(), uselock(false),elements(){}
+FMTSchedule::FMTSchedule():FMTObject(),m_period(), m_uselock(false),m_elements(){}
 
-FMTSchedule::FMTSchedule(const int& lperiod, std::vector<FMTSchedule>& schedules) : FMTObject(),period(lperiod), uselock(false),elements()
+FMTSchedule::FMTSchedule(const int& lperiod, std::vector<FMTSchedule>& schedules) : FMTObject(),m_period(lperiod), m_uselock(false),m_elements()
 	{
 	if (!schedules.empty())
 		{
-		elements = schedules.at(0).elements;
+		m_elements = schedules.at(0).m_elements;
 		for (size_t scheduleid = 1; scheduleid < schedules.size();++scheduleid)
 			{
 			*this += schedules.at(scheduleid);
@@ -27,28 +27,28 @@ FMTSchedule::FMTSchedule(const int& lperiod, std::vector<FMTSchedule>& schedules
 		}
 	}
 
-FMTSchedule::FMTSchedule(int lperiod, std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> mapping) : FMTObject(),period(lperiod), uselock(false),elements(mapping)
+FMTSchedule::FMTSchedule(int lperiod, std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> mapping) : FMTObject(),m_period(lperiod), m_uselock(false),m_elements(mapping)
     {
 
     }
 
-FMTSchedule::FMTSchedule(int lperiod, const std::map<FMTAction, std::map<FMTDevelopment, std::map<int, double>>>& mapping) : FMTObject(),period(lperiod), uselock(false), elements()
+FMTSchedule::FMTSchedule(int lperiod, const std::map<FMTAction, std::map<FMTDevelopment, std::map<int, double>>>& mapping) : FMTObject(),m_period(lperiod), m_uselock(false), m_elements()
 	{
 	for (std::map<FMTAction, std::map<FMTDevelopment, std::map<int, double>>>::const_iterator its = mapping.begin(); its != mapping.end(); its++)
 		{
-		elements[its->first] = std::map<FMTDevelopment, std::vector<double>>();
+		m_elements[its->first] = std::map<FMTDevelopment, std::vector<double>>();
 		for (std::map<FMTDevelopment, std::map<int, double>>::const_iterator elits = its->second.begin(); elits != its->second.end(); elits++)
 			{
-			elements[its->first][elits->first] = std::vector<double>();
+			m_elements[its->first][elits->first] = std::vector<double>();
 			for (std::map<int, double>::const_iterator valit = elits->second.begin(); valit!= elits->second.end(); valit++)
 				{
-				elements[its->first][elits->first].push_back(valit->second);
+				m_elements[its->first][elits->first].push_back(valit->second);
 				}
 			}
 		}
 	}
 
-FMTSchedule::FMTSchedule(const FMTSchedule& rhs) : FMTObject(rhs),period(rhs.period), uselock(rhs.uselock),elements(rhs.elements)
+FMTSchedule::FMTSchedule(const FMTSchedule& rhs) : FMTObject(rhs),m_period(rhs.m_period), m_uselock(rhs.m_uselock),m_elements(rhs.m_elements)
     {
 
     }
@@ -58,24 +58,24 @@ FMTSchedule& FMTSchedule::operator = (const FMTSchedule& rhs)
     if (this!=&rhs)
         {
 		FMTObject::operator=(rhs);
-		uselock = rhs.uselock;
-        elements = rhs.elements;
-        period = rhs.period;
+		m_uselock = rhs.m_uselock;
+        m_elements = rhs.m_elements;
+        m_period = rhs.m_period;
         }
     return *this;
     }
 
-bool FMTSchedule::sameElements(const FMTSchedule& rhs) const
+bool FMTSchedule::_sameElements(const FMTSchedule& rhs) const
 	{
 	try {
-		if (elements.size() != rhs.elements.size())
+		if (m_elements.size() != rhs.m_elements.size())
 		{
 			return false;
 		}
-		for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+		for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = m_elements.begin(); actit != m_elements.end(); actit++)
 		{
-			std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator rhsactit = rhs.elements.find(actit->first);
-			if (rhsactit == rhs.elements.end())
+			std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator rhsactit = rhs.m_elements.find(actit->first);
+			if (rhsactit == rhs.m_elements.end())
 			{
 				return false;
 			}
@@ -108,14 +108,14 @@ bool FMTSchedule::sameElements(const FMTSchedule& rhs) const
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTSchedule::sameElements", __LINE__, __FILE__, Core::FMTsection::Schedule);
+		_exhandler->raiseFromCatch("", "FMTSchedule::_sameElements", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 	return true;
 	}
 
 bool FMTSchedule::operator == (const FMTSchedule& rhs) const
 	{
-	return (period == rhs.period&& uselock ==rhs.uselock && sameElements(rhs));
+	return (m_period == rhs.m_period&& m_uselock ==rhs.m_uselock && _sameElements(rhs));
 	}
 
 bool FMTSchedule::operator != (const FMTSchedule& rhs) const
@@ -126,19 +126,19 @@ bool FMTSchedule::operator != (const FMTSchedule& rhs) const
 FMTSchedule& FMTSchedule::operator += (const FMTSchedule& rhs)
     {
 	try{
-    for(std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = rhs.elements.begin(); actit != rhs.elements.end(); actit++)
+    for(std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = rhs.m_elements.begin(); actit != rhs.m_elements.end(); actit++)
         {
-        if (elements.find(actit->first)==elements.end())
+        if (m_elements.find(actit->first)==m_elements.end())
             {
-            elements[actit->first] = actit->second;
+            m_elements[actit->first] = actit->second;
             }else{
              for(std::map<FMTDevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
                 {
-                if (elements.at(actit->first).find(devit->first) == elements.at(actit->first).end())
+                if (m_elements.at(actit->first).find(devit->first) == m_elements.at(actit->first).end())
                     {
-                    elements[actit->first][devit->first] = devit->second;
+                    m_elements[actit->first][devit->first] = devit->second;
                     }else{
-                    const size_t max_size = std::max(devit->second.size(),elements[actit->first][devit->first].size());
+                    const size_t max_size = std::max(devit->second.size(),m_elements[actit->first][devit->first].size());
 					std::vector<double>values(max_size,0);
                     for (size_t id = 0; id < max_size; ++id)
                         {
@@ -146,12 +146,12 @@ FMTSchedule& FMTSchedule::operator += (const FMTSchedule& rhs)
                             {
                             values[id]+=devit->second.at(id);
                             }
-                        if (id < elements.at(actit->first).at(devit->first).size())
+                        if (id < m_elements.at(actit->first).at(devit->first).size())
                             {
-                            values[id]+= elements.at(actit->first).at(devit->first).at(id);
+                            values[id]+= m_elements.at(actit->first).at(devit->first).at(id);
                             }
                         }
-                    elements[actit->first][devit->first] = values;
+                    m_elements[actit->first][devit->first] = values;
                     }
                 }
             }
@@ -182,7 +182,7 @@ FMTSchedule::operator std::string() const
     {
 	std::string line = "";
 	try{
-    for(std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+    for(std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = m_elements.begin(); actit != m_elements.end(); actit++)
         {
         for(std::map<FMTDevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
             {
@@ -190,11 +190,11 @@ FMTSchedule::operator std::string() const
 			for (const double & value : devit->second)
 				{
 				line += std::string(dev->getMask()) + " " + std::to_string(dev->getAge()) + " " + std::to_string(value);
-				if (uselock)
+				if (m_uselock)
 					{
 					line += " " + std::to_string(dev->getLock());
 					}
-				line += +" " + actit->first.getName() + " " + std::to_string(period);
+				line += +" " + actit->first.getName() + " " + std::to_string(m_period);
 				line+=+"\n";
 				}
             }
@@ -209,15 +209,15 @@ FMTSchedule::operator std::string() const
 
 	void FMTSchedule::setUseLock(const bool& lock)
 	{
-		uselock = lock;
+		m_uselock = lock;
 	}
 
 	void FMTSchedule::clean()
 	{
 		try {
-			if (!uselock)
+			if (!m_uselock)
 			{
-				for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = elements.begin(); actit != elements.end(); actit++)
+				for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = m_elements.begin(); actit != m_elements.end(); actit++)
 				{
 					for (std::map<FMTDevelopment, std::vector<double>>::iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 						{
@@ -245,13 +245,13 @@ FMTSchedule::operator std::string() const
 	void FMTSchedule::addEvent(const Core::FMTDevelopment& dev, const double& area, const Core::FMTAction& action)
 	{
 		try {
-			iterator actit = elements.find(action);
-			if (actit ==elements.end())
+			iterator actit = m_elements.find(action);
+			if (actit ==m_elements.end())
 				{
-				actit = elements.insert(std::pair<Core::FMTAction, std::map<Core::FMTDevelopment, std::vector<double>>>(action, std::map<Core::FMTDevelopment, std::vector<double>>())).first;
+				actit = m_elements.insert(std::pair<Core::FMTAction, std::map<Core::FMTDevelopment, std::vector<double>>>(action, std::map<Core::FMTDevelopment, std::vector<double>>())).first;
 				}
 			std::map<FMTDevelopment, std::vector<double>>::iterator devit = actit->second.end(); 
-			if (uselock)
+			if (m_uselock)
 			{
 				devit = actit->second.find(dev);
 				if (devit == actit->second.end())
@@ -286,9 +286,9 @@ FMTSchedule::operator std::string() const
 	{
 		double value = 0;
 		try{
-		if (elements.find(action) != elements.end())
+		if (m_elements.find(action) != m_elements.end())
 		{
-			for (std::map<FMTDevelopment, std::vector<double>>::const_iterator devit = elements.at(action).begin(); devit != elements.at(action).end(); devit++)
+			for (std::map<FMTDevelopment, std::vector<double>>::const_iterator devit = m_elements.at(action).begin(); devit != m_elements.at(action).end(); devit++)
 			{
 				for (const double& val : devit->second)
 				{
@@ -309,7 +309,7 @@ FMTSchedule::operator std::string() const
 	{
 		double value = 0;
 		try{
-		for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+		for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = m_elements.begin(); actit != m_elements.end(); actit++)
 		{
 			for (std::map<FMTDevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 			{
@@ -334,8 +334,8 @@ FMTSchedule::operator std::string() const
 			size_t actionid = 0;
 			for (const FMTAction& action : actions)
 				{
-				std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = elements.find(action);
-				if (actit != elements.end())
+				std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = m_elements.find(action);
+				if (actit != m_elements.end())
 					{
 					for (std::map<FMTDevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); ++devit)
 						{
@@ -359,11 +359,11 @@ FMTSchedule::operator std::string() const
 	{
 		bool value = false;
 		try{
-		std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = elements.find(action);
-		if (actit != elements.end())
+		std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = m_elements.find(action);
+		if (actit != m_elements.end())
 		{
 			std::map<FMTDevelopment, std::vector<double>>::const_iterator devit;
-			if (uselock||action.doRespectLock())
+			if (m_uselock||action.doRespectLock())
 			{
 				devit = actit->second.find(development);
 			}
@@ -385,13 +385,13 @@ FMTSchedule::operator std::string() const
 
 	bool FMTSchedule::empty() const
 	{
-		return elements.empty();
+		return m_elements.empty();
 	}
 
 	void FMTSchedule::sort()
 	{
 		try{
-		for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = elements.begin(); actit != elements.end(); actit++)
+		for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = m_elements.begin(); actit != m_elements.end(); actit++)
 		{
 			for (std::map<FMTDevelopment, std::vector<double>>::iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 			{
@@ -412,8 +412,8 @@ FMTSchedule::operator std::string() const
 	{
 		FMTSchedule newSchedule(*this);
 		try {
-			newSchedule.elements.clear();
-			for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+			newSchedule.m_elements.clear();
+			for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = m_elements.begin(); actit != m_elements.end(); actit++)
 			{
 				std::map<FMTDevelopment, std::vector<double>>newmapping;
 				for (std::map<FMTDevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
@@ -436,7 +436,7 @@ FMTSchedule::operator std::string() const
 					std::vector<FMTAction>::const_iterator actfit = std::find_if(presolvedaction.begin(), presolvedaction.end(), FMTActionComparator(actit->first.getName()));
 					if (actfit != presolvedaction.end())
 					{
-						newSchedule.elements[*actfit] = newmapping;
+						newSchedule.m_elements[*actfit] = newmapping;
 					}
 				}
 			}
@@ -452,8 +452,8 @@ FMTSchedule::operator std::string() const
 	{
 		FMTSchedule newSchedule(*this);
 		try {
-			newSchedule.elements.clear();
-			for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+			newSchedule.m_elements.clear();
+			for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::const_iterator actit = m_elements.begin(); actit != m_elements.end(); actit++)
 			{
 				std::map<FMTDevelopment, std::vector<double>>newmapping;
 				for (std::map<FMTDevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
@@ -468,7 +468,7 @@ FMTSchedule::operator std::string() const
 					std::vector<FMTAction>::const_iterator actfit = std::find_if(originalbasebaseactions.begin(), originalbasebaseactions.end(), FMTActionComparator(actit->first.getName()));
 					if (actfit != originalbasebaseactions.end())
 					{
-						newSchedule.elements[*actfit] = newmapping;
+						newSchedule.m_elements[*actfit] = newmapping;
 					}
 				}
 			}
@@ -481,10 +481,10 @@ FMTSchedule::operator std::string() const
 
 	void FMTSchedule::setPeriod(const int& newperiod)
 		{
-			period = newperiod;
+			m_period = newperiod;
 			try{
-			for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = elements.begin();
-				actit != elements.end(); actit++)
+			for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = m_elements.begin();
+				actit != m_elements.end(); actit++)
 			{
 				std::map<FMTDevelopment, std::vector<double>>newmapping;
 				for (std::map<FMTDevelopment, std::vector<double>>::iterator devit = actit->second.begin();
@@ -507,8 +507,8 @@ FMTSchedule::operator std::string() const
 		{
 		FMTSchedule newscedule(*this);
 		try{
-		for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = newscedule.elements.begin();
-			actit != newscedule.elements.end(); actit++)
+		for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = newscedule.m_elements.begin();
+			actit != newscedule.m_elements.end(); actit++)
 			{
 				for (std::map<FMTDevelopment, std::vector<double>>::iterator devit = actit->second.begin();devit != actit->second.end(); devit++)
 				{
@@ -533,7 +533,7 @@ FMTSchedule::operator std::string() const
 		try{
 		for (const Core::FMTConstraint& constraint : constraints)
 			{
-			if (constraint.acrossPeriod()&&constraint.getPeriodLowerBound()==period)
+			if (constraint.acrossPeriod()&&constraint.getPeriodLowerBound()==m_period)
 				{
 				return true;
 				}
@@ -548,44 +548,44 @@ FMTSchedule::operator std::string() const
 
 	std::map<FMTDevelopment, std::vector<double>>& FMTSchedule::operator[](const FMTAction& action)
 	{
-		return elements[action];
+		return m_elements[action];
 	}
 	const std::map<FMTDevelopment, std::vector<double>>& FMTSchedule::at(const FMTAction& action) const
 	{
-		return elements.at(action);
+		return m_elements.at(action);
 	}
 	size_t FMTSchedule::size() const
 	{
-		return elements.size();
+		return m_elements.size();
 	}
 	FMTSchedule::iterator FMTSchedule::find(const FMTAction& actionkey)
 	{
-		return elements.find(actionkey);
+		return m_elements.find(actionkey);
 	}
 
 	FMTSchedule::const_iterator FMTSchedule::find(const FMTAction& actionkey) const
 	{
-		return elements.find(actionkey);
+		return m_elements.find(actionkey);
 	}
 
 	FMTSchedule::iterator FMTSchedule::begin()
 	{
-		return elements.begin();
+		return m_elements.begin();
 	}
 
 	FMTSchedule::const_iterator FMTSchedule::begin() const
 	{
-		return elements.begin();
+		return m_elements.begin();
 	}
 
 	FMTSchedule::iterator  FMTSchedule::end()
 	{
-		return elements.end();
+		return m_elements.end();
 	}
 
 	FMTSchedule::const_iterator FMTSchedule::end() const
 	{
-		return elements.end();
+		return m_elements.end();
 	}
 
 }

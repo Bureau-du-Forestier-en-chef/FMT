@@ -25,7 +25,7 @@ Wrapper::FMTFormLogger::FMTFormLogger(
 	lastprint(), sendfeedback(feed)
 {
 	redirectToFile(nomFichierLogger, false);
-	setLoggingLevel(LOGLEVEL);
+	_setLoggingLevel(LOGLEVEL);
 	setStreamFlush(true);
 }
 
@@ -86,7 +86,7 @@ std::string Wrapper::FMTFormLogger::getlastprint() const
 }
 
 
-void Wrapper::FMTFormLogger::cout(const char * message) const
+void Wrapper::FMTFormLogger::_cout(const char * message) const
 {
 	if (m_FileStream && m_FileStream->is_open())
 	{
@@ -104,10 +104,10 @@ void Wrapper::FMTFormLogger::cout(const char * message) const
 
 void Wrapper::FMTFormLogger::settasklogginglevel(int taskLogLevel)
 {
-	setLoggingLevel(taskLogLevel);
+	_setLoggingLevel(taskLogLevel);
 }
 
 void Wrapper::FMTFormLogger::setdefaultlogginglevel()
 {
-	setLoggingLevel(LOGLEVEL);
+	_setLoggingLevel(LOGLEVEL);
 }

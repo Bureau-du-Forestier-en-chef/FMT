@@ -79,7 +79,7 @@ namespace Models
 
 	}
 
-	double FMTSeModel::getConstraintFactor(size_t p_constraint, double p_GrossValue) const
+	double FMTSeModel::_getConstraintFactor(size_t p_constraint, double p_GrossValue) const
 	{
 		double value =  _getConstraintNumerator(p_constraint) / std::abs(p_GrossValue);
 		if (value == std::numeric_limits<double>::infinity())
@@ -89,7 +89,7 @@ namespace Models
 		return value;
 	}
 
-	bool FMTSeModel::isValidFactor(double p_GrossValue)const
+	bool FMTSeModel::_isValidFactor(double p_GrossValue)const
 		{
 		return p_GrossValue < MAX_FACTOR;
 		}
@@ -407,7 +407,7 @@ namespace Models
 		return value;
 	}
 
-	double FMTSeModel::getGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const
+	double FMTSeModel::_getGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const
 	{
 		double value = 0.0;
 		try {
@@ -415,7 +415,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTSeModel::getGlobalObjective", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSeModel::_getGlobalObjective", __LINE__, __FILE__);
 		}
 		return value;
 	}
@@ -440,7 +440,7 @@ namespace Models
 		return value;
 	}
 
-	std::vector<double> FMTSeModel::getConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
+	std::vector<double> FMTSeModel::_getConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
 		{
 		std::vector<double> values;
 		try {
@@ -448,7 +448,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTSeModel::getConstraintsValues", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSeModel::_getConstraintsValues", __LINE__, __FILE__);
 		}
 		return values;
 		}
@@ -480,7 +480,7 @@ namespace Models
 		return value;
 	}
 
-	void FMTSeModel::doRefactorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
+	void FMTSeModel::_doRefactorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const
 	{
 		try {
 			const std::vector<double>& FACTORS = p_SpatialSchedule.getConstraintsFactor();
@@ -494,7 +494,7 @@ namespace Models
 					if ((VALUE_WITH_FACTOR > _getConstraintNumerator(cntid) ||
 						VALUE_WITH_FACTOR < -_getConstraintNumerator(cntid)))
 					{
-						NewFactors[cntid] = getConstraintFactor(cntid, VALUE);
+						NewFactors[cntid] = _getConstraintFactor(cntid, VALUE);
 					}
 					++cntid;
 				}
@@ -508,7 +508,7 @@ namespace Models
 	}
 
 
-	Spatial::FMTSpatialSchedule  FMTSeModel::getNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const
+	Spatial::FMTSpatialSchedule  FMTSeModel::_getNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const
 		{
 		return p_FromSolution.getBaseSchedule(m_SpatialGraphs);
 		}

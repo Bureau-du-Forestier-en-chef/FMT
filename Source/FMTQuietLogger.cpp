@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -19,7 +19,7 @@ std::unique_ptr <FMTLogger> FMTQuietLogger::Clone() const
 	return std::unique_ptr <FMTLogger>(new FMTQuietLogger(*this));
 	}
 
-void FMTQuietLogger::cout(const char* message) const
+void FMTQuietLogger::_cout(const char* message) const
 	{
 
 	}
@@ -28,7 +28,7 @@ FMTQuietLogger::FMTQuietLogger():
 	FMTLogger()
 	{
 	#ifdef FMTWITHOSI
-		solverref->setLogLevel(0);
+		m_solverref->setLogLevel(0);
 	#endif
 	}
 #ifdef FMTWITHOSI
@@ -47,7 +47,7 @@ void FMTQuietLogger::checkSeverity()
 
 FMTLogger * FMTQuietLogger::clone() const
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
+	boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 	return new FMTQuietLogger(*this);
 	}
 #endif

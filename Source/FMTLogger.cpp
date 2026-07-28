@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -35,10 +35,10 @@ namespace Logging
 	void FMTLogger::save(Archive& ar, const unsigned int version) const
 	{
 	#ifdef FMTWITHOSI
-		const int logl = solverref->logLevel();
+		const int logl = m_solverref->logLevel();
 		ar & BOOST_SERIALIZATION_NVP(logl);
 	#endif
-		ar & filepath;
+		ar & m_filepath;
 	}
 
 	template<class Archive>
@@ -47,12 +47,12 @@ namespace Logging
 		#ifdef FMTWITHOSI
 		int coinloglevel = 0;
 		ar & BOOST_SERIALIZATION_NVP(coinloglevel);
-		solverref->setLogLevel(coinloglevel);
+		m_solverref->setLogLevel(coinloglevel);
 		#endif
-		ar & filepath;
-		if (!filepath.empty())
+		ar & m_filepath;
+		if (!m_filepath.empty())
 		{
-			setToFile(filepath);
+			_setToFile(m_filepath);
 		}
 	}
 
@@ -64,7 +64,7 @@ namespace Logging
 
 
 
-	void FMTLogger::setToFile(const std::string& filename) const
+	void FMTLogger::_setToFile(const std::string& filename) const
 		{
 		if (m_FileStream !=nullptr)
 			{
@@ -79,9 +79,9 @@ namespace Logging
 
 	FMTLogger::FMTLogger() : 
 #if defined FMTWITHOSI
-		solverref(new FMTSolverLogger(*this)),
+		m_solverref(new FMTSolverLogger(*this)),
 #endif
-		filepath(), m_FileStream(), mtx(),flushstream(false)
+		m_filepath(), m_FileStream(), m_mtx(),m_flushstream(false)
 		{
 		
 
@@ -89,9 +89,9 @@ namespace Logging
 
 	void FMTLogger::redirectToFile(const std::string& filename, bool logStamp)
 	{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		filepath = filename;
-		setToFile(filepath);
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+		m_filepath = filename;
+		_setToFile(m_filepath);
 		if (m_FileStream && m_FileStream->is_open() && logStamp)
 		{
 			this->logStamp();
@@ -99,17 +99,17 @@ namespace Logging
 		}
 	}
 
-	FMTLogger::FMTLogger(const FMTLogger& rhs):filepath(), m_FileStream(), mtx(), flushstream(false)
+	FMTLogger::FMTLogger(const FMTLogger& rhs):m_filepath(), m_FileStream(), m_mtx(), m_flushstream(false)
 		{
-		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
-		filepath=rhs.filepath;
-		setToFile(filepath);
-		flushstream=rhs.flushstream;
+		boost::lock_guard<boost::recursive_mutex> lock(rhs.m_mtx);
+		m_filepath=rhs.m_filepath;
+		_setToFile(m_filepath);
+		m_flushstream=rhs.m_flushstream;
 		#if defined FMTWITHOSI
-			solverref.reset(new FMTSolverLogger(*this));
-			if (rhs.solverref)
+			m_solverref.reset(new FMTSolverLogger(*this));
+			if (rhs.m_solverref)
 				{
-				solverref->setLogLevel(rhs.solverref->logLevel());
+				m_solverref->setLogLevel(rhs.m_solverref->logLevel());
 				}
 			
 		#endif
@@ -120,37 +120,37 @@ namespace Logging
 		if (this!=&rhs)
 			{
 			//std::lock(mtx, rhs.mtx);
-			boost::lock(mtx, rhs.mtx);
-			boost::lock_guard<boost::recursive_mutex> self_lock(mtx,boost::adopt_lock /*std::adopt_lock*/);
-			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.mtx,boost::adopt_lock /*std::adopt_lock*/);
+			boost::lock(m_mtx, rhs.m_mtx);
+			boost::lock_guard<boost::recursive_mutex> self_lock(m_mtx,boost::adopt_lock /*std::adopt_lock*/);
+			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.m_mtx,boost::adopt_lock /*std::adopt_lock*/);
 			#if defined FMTWITHOSI
-				solverref.reset(new FMTSolverLogger(*rhs.solverref));
-				if (rhs.solverref)
+				m_solverref.reset(new FMTSolverLogger(*rhs.m_solverref));
+				if (rhs.m_solverref)
 					{
-					solverref->setLogLevel(rhs.solverref->logLevel());
+					m_solverref->setLogLevel(rhs.m_solverref->logLevel());
 					}
 			#endif
-			filepath = rhs.filepath;
-			setToFile(filepath);
-			flushstream = rhs.flushstream;
+			m_filepath = rhs.m_filepath;
+			_setToFile(m_filepath);
+			m_flushstream = rhs.m_flushstream;
 			}
 		return *this;
 		}
 
 	void FMTLogger::closeFileStream()
 		{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 		if (m_FileStream && m_FileStream->is_open())
 			{
 			this->logTime();
 			m_FileStream->close();
-			filepath.clear();
+			m_filepath.clear();
 			}
 		}
 
 	FMTLogger::~FMTLogger()
 		{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 		if (m_FileStream && m_FileStream->is_open())
 			{
 			this->logTime();
@@ -181,52 +181,52 @@ namespace Logging
 
 	void FMTLogger::setStreamFlush(bool flush)
 		{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		flushstream = flush;
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+		m_flushstream = flush;
 		}
 
 
 	FMTLogger& FMTLogger::operator<<(const std::string& msg)
 		{
-		this->cout(msg.c_str());
+		this->_cout(msg.c_str());
 		return *this;
 		}
 
 	FMTLogger& FMTLogger::operator<<(const int& msg)
 	{
 		const std::string value = std::to_string(msg);
-		this->cout(value.c_str());
+		this->_cout(value.c_str());
 		return *this;
 	}
 
 	FMTLogger& FMTLogger::operator<<(const double& msg)
 	{
 		const std::string value = std::to_string(msg);
-		this->cout(value.c_str());
+		this->_cout(value.c_str());
 		return *this;
 	}
 	FMTLogger& FMTLogger::operator<<(const float& msg)
 	{
 		const std::string value = std::to_string(msg);
-		this->cout(value.c_str());
+		this->_cout(value.c_str());
 		return *this;
 	}
 	FMTLogger& FMTLogger::operator<<(const std::time_t& msg)
 	{
 		const std::string value = std::to_string(msg);
-		this->cout(value.c_str());
+		this->_cout(value.c_str());
 		return *this;
 	}
 	FMTLogger& FMTLogger::operator<<(const size_t& msg)
 	{
 		const std::string value = std::to_string(msg);
-		this->cout(value.c_str());
+		this->_cout(value.c_str());
 		return *this;
 	}
 	FMTLogger& FMTLogger::operator<<(const unsigned int& msg)
 	{
 		const std::string value = std::to_string(msg);
-		this->cout(value.c_str());
+		this->_cout(value.c_str());
 		return *this;
 	}
 
@@ -235,20 +235,20 @@ namespace Logging
 		std::ostringstream ons;
 		ons << std::hex << msg;
 		const std::string value = ons.str();
-		this->cout(value.c_str());
+		this->_cout(value.c_str());
 		return *this;
 	}
 
 	bool FMTLogger::logWithLevel(const std::string& p_msg, const int& p_messageLevel) const
 	{
 		#ifdef FMTWITHOSI
-		if (solverref->logLevel() < p_messageLevel)
+		if (m_solverref->logLevel() < p_messageLevel)
 				{
 				return false;
 				}
 		#endif
 		
-	this->cout(p_msg.c_str());
+	this->_cout(p_msg.c_str());
 	return true;
 	}
 
@@ -257,26 +257,26 @@ namespace Logging
 		void FMTLogger::checkSeverity()
 			{
 			#ifdef FMTWITHOSI
-			if (solverref->logLevel() == 0)//
+			if (m_solverref->logLevel() == 0)//
 				{
 				return;
 				}
 			#endif
-			boost::lock_guard<boost::recursive_mutex> guard(mtx);
-			solverref->checkcoinSeverity();
+			boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+			m_solverref->checkcoinSeverity();
 			}
 	
 		/*FMTLogger* FMTLogger::clone() const
 			{
-			boost::lock_guard<boost::recursive_mutex> guard(mtx);
+			boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 			return new FMTLogger(*this);
 			}*/
 
 	#endif
 
-	void FMTLogger::cout(const char* message) const
+	void FMTLogger::_cout(const char* message) const
 		{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 		std::string thread = "Thread("+Parallel::FMTTask::getThreadId()+") ";
 		if (message && message[0]=='\n')
 			{
@@ -309,20 +309,20 @@ namespace Logging
 		int FMTLogger::print()
 			{
 			#ifdef FMTWITHOSI
-			if (solverref->logLevel()  == 0)//
+			if (m_solverref->logLevel()  == 0)//
 				{
 				return 0;
 				}
 			#endif
-			boost::lock_guard<boost::recursive_mutex> guard(mtx);
-			if (solverref->messageOut_ > solverref->messageBuffer())
+			boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+			if (m_solverref->messageOut_ > m_solverref->messageBuffer())
 				{
 				char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
-				snprintf(buffer, sizeof(buffer), "%s\n", solverref->messageBuffer());
-				this->cout(buffer);
-				if (solverref->currentMessage().severity_ == 'S')
+				snprintf(buffer, sizeof(buffer), "%s\n", m_solverref->messageBuffer());
+				this->_cout(buffer);
+				if (m_solverref->currentMessage().severity_ == 'S')
 					{
-					fprintf(solverref->filePointer(), "Stopping due to previous errors.\n");
+					fprintf(m_solverref->filePointer(), "Stopping due to previous errors.\n");
 					//Should do walkback
 					//abort();
 					std::throw_with_nested(Exception::FMTError(
@@ -335,12 +335,12 @@ namespace Logging
 
 		FMTSolverLogger* FMTLogger::getSolverLogger()
 			{
-			return solverref.get();
+			return m_solverref.get();
 			}
 		
-		void FMTLogger::setLoggingLevel(const int& level)
+		void FMTLogger::_setLoggingLevel(const int& level)
 		{
-			solverref->setLogLevel(level);
+			m_solverref->setLogLevel(level);
 		}
 
 	#endif

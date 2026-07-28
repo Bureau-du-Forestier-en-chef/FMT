@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -287,10 +287,10 @@ FMTMask FMTTransition::mainTarget(const std::vector<FMTDevelopment>& devs,
 	 return results;
 	 }
 
- FMTTransitionComparator::FMTTransitionComparator(std::string name) :transition_name(name) {}
+ FMTTransitionComparator::FMTTransitionComparator(std::string name) :m_transitionName(name) {}
  bool FMTTransitionComparator::operator()(const FMTTransition& transition) const
 	{
-	return (transition.getName()  == transition_name);
+	return (transition.getName()  == m_transitionName);
 	}
 
  FMTTransition FMTTransition::presolve(const FMTMaskFilter& filter,
@@ -312,11 +312,11 @@ FMTMask FMTTransition::mainTarget(const std::vector<FMTDevelopment>& devs,
 	 std::vector<FMTTheme>& p_newthemes, bool p_compressdata)
  {
 	 try {
-		presolveList(p_filter, p_originalThemes, p_newthemes);
+		_presolveList(p_filter, p_originalThemes, p_newthemes);
 		update();
 		 if (p_compressdata)
 		 {
-			 compressMasks(p_newthemes);
+			 _compressMasks(p_newthemes);
 		 }
 		 if (!p_filter.emptyFlipped())
 		 {

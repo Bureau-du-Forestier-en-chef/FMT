@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -44,10 +44,10 @@ FMTLifespans FMTLifespans::presolve(const FMTMaskFilter& filter,
 	try {
 		if (!empty())
 		{
-			newlifespans.presolveList(filter, originalthemes, newthemes);
+			newlifespans._presolveList(filter, originalthemes, newthemes);
 			if (compressdata)
 			{
-				newlifespans.compressMasks(newthemes);
+				newlifespans._compressMasks(newthemes);
 			}
 			newlifespans.update();
 		}

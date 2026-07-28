@@ -20,11 +20,11 @@ namespace Core
 	FMTYieldModelRandom::FMTYieldModelRandom(const boost::property_tree::ptree& p_jsonProps, const std::vector<std::string>& p_distribution):
 		FMTYieldModel(), m_cache(), m_useCache(false)
 		{
-		boost::property_tree::ptree::const_assoc_iterator modelNameIt = p_jsonProps.find(JSON_PROP_MODEL_NAME);
-		modelName = modelNameIt->second.data();
+		boost::property_tree::ptree::const_assoc_iterator modelNameIt = p_jsonProps.find(m_JSON_PROP_MODEL_NAME);
+		m_modelName = modelNameIt->second.data();
 		boost::property_tree::ptree::const_assoc_iterator modelCacheIt = p_jsonProps.find("caching");
 		m_useCache = modelCacheIt->second.get_value<bool>();
-		modelYields = p_distribution;
+		m_modelYields = p_distribution;
 		}
 
 	void FMTYieldModelRandom::clearRandomYieldsCache()
@@ -35,7 +35,7 @@ namespace Core
 			}
 		}
 
-	std::vector<size_t> FMTYieldModelRandom::getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTYieldRequest& p_request) const
+	std::vector<size_t> FMTYieldModelRandom::_getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTYieldRequest& p_request) const
 	{
 		std::vector<size_t> values(p_yields.size());
 		try {
@@ -60,7 +60,7 @@ namespace Core
 				{
 					_exhandler->raise(Exception::FMTexc::FMTmissingyield,
 						yieldName + " for developement " + std::string(p_request.getDevelopment()),
-						"FMTYieldModelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
+						"FMTYieldModelRandom::_getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 				++nameId;
 			}
@@ -72,13 +72,13 @@ namespace Core
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTYieldModelRandom::getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelRandom::_getNormalizedYields", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return values;
 	}
 
 
-	double FMTYieldModelRandom::getRandomIndex(const std::vector<size_t>& p_distribution) const
+	double FMTYieldModelRandom::_getRandomIndex(const std::vector<size_t>& p_distribution) const
 	{
 		double choice = 0;
 		try {
@@ -87,7 +87,7 @@ namespace Core
 			choice = static_cast<double>(GENERATED);
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTYieldModelRandom::getRandomIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelRandom::_getRandomIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return choice;
 	}
@@ -106,8 +106,8 @@ namespace Core
 			{
 				value = m_cache.at(p_request.getDevelopment().getPeriod());
 			}else {
-				const std::vector<size_t>DISTRIBUTION = getNormalizedYields(modelYields, p_request);
-				value = getRandomIndex(DISTRIBUTION);		
+				const std::vector<size_t>DISTRIBUTION = _getNormalizedYields(m_modelYields, p_request);
+				value = _getRandomIndex(DISTRIBUTION);		
 				if (m_useCache)
 					{
 					m_cache[p_request.getDevelopment().getPeriod()] = value;

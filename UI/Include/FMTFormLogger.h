@@ -18,7 +18,7 @@ namespace Wrapper
 		logfunc sendfeedback;
 		bool m_isMainInstance;
 	protected:
-		void cout(const char* message) const;
+		void _cout(const char* message) const;
 	public:
 		void logTime() override;
 		FMTFormLogger() = default;

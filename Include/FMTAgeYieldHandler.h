@@ -71,7 +71,7 @@ namespace Core
 		@brief Construct an age yield handler from a mask.
 		@param[in] mask the mask.
 		*/
-		FMTAgeYieldHandler(const FMTMask& mask);
+		FMTAgeYieldHandler(const FMTMask& p_mask);
 		// DocString: FMTAgeYieldHandler::setYieldValues
 		/**
 		@brief Set the values for a given yield name.
@@ -242,7 +242,7 @@ namespace Core
 			ar& BOOST_SERIALIZATION_NVP(m_elements);
 		}
 		std::map<std::string, FMTData, cmpYieldString>m_elements;
-		// DocString: FMTAgeYieldHandler::getAge(const std::string, const double&, const int&)
+		// DocString: FMTAgeYieldHandler::_getAge(const std::string, const double&, const int&)
 		/**
 		@brief Return the age at which a yield reaches a value from a starting age.
 		@param[in] yld the yield name.
@@ -250,7 +250,7 @@ namespace Core
 		@param[in] starting_age the starting age.
 		@return the age.
 		*/
-		int getAge(const std::string yld, const double& value, const int& starting_age) const;
+		int _getAge(const std::string yld, const double& value, const int& starting_age) const;
 	};
 
 }

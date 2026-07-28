@@ -16,19 +16,19 @@ namespace Heuristics
 {
 
 	FMTOperatingAreaClusterBinary::FMTOperatingAreaClusterBinary(const FMTOperatingArea& oparea) :
-		FMTOperatingArea(oparea), statistic()
+		FMTOperatingArea(oparea), m_statistic()
 		{
 
 		}
 
 	void FMTOperatingAreaClusterBinary::setStatistic(const double& statvalue)
 		{
-		statistic = statvalue;
+		m_statistic = statvalue;
 		}
 
 	void FMTOperatingAreaClusterBinary::setVariable(const int& lvariable)
 		{
-		variable = lvariable;
+		m_variable = lvariable;
 		}
 
 
@@ -47,13 +47,13 @@ namespace Heuristics
 				potentiallink = finalbinaries;
 				finalbinaries.clear();
 				}
-			std::map<Core::FMTMask, std::vector<Core::FMTMask>>neighbors;
+			std::map<Core::FMTMask, std::vector<Core::FMTMask>>m_neighbors;
 			for (const FMTOperatingAreaClusterBinary& mainbinary : potentiallink)
 				{
-				neighbors[mainbinary.getMask()] = std::vector<Core::FMTMask>(1, this->getMask());
+				m_neighbors[mainbinary.getMask()] = std::vector<Core::FMTMask>(1, this->getMask());
 				}
-			for (std::map<Core::FMTMask, std::vector<Core::FMTMask>>::iterator dcit = neighbors.begin();
-				dcit != neighbors.end(); dcit++)
+			for (std::map<Core::FMTMask, std::vector<Core::FMTMask>>::iterator dcit = m_neighbors.begin();
+				dcit != m_neighbors.end(); dcit++)
 				{
 					for (const FMTOperatingAreaClusterBinary& mainbinary : potentiallink)
 					{
@@ -66,8 +66,8 @@ namespace Heuristics
 				}
 			for (const FMTOperatingAreaClusterBinary& mainbinary : potentiallink)
 				{
-				if (std::find(neighbors[mainbinary.getMask()].begin(), neighbors[mainbinary.getMask()].end(), mainbinary.getMask()) != neighbors[mainbinary.getMask()].end()||
-                    std::find(neighbors[mainbinary.getMask()].begin(), neighbors[mainbinary.getMask()].end(), this->getMask()) != neighbors[mainbinary.getMask()].end())
+				if (std::find(m_neighbors[mainbinary.getMask()].begin(), m_neighbors[mainbinary.getMask()].end(), mainbinary.getMask()) != m_neighbors[mainbinary.getMask()].end()||
+                    std::find(m_neighbors[mainbinary.getMask()].begin(), m_neighbors[mainbinary.getMask()].end(), this->getMask()) != m_neighbors[mainbinary.getMask()].end())
 					{
 					finalbinaries.push_back(mainbinary);
 					}

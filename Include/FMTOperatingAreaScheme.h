@@ -351,7 +351,7 @@ namespace Heuristics
 			@param[in] neighbors the neighboring operating areas.
 			@return the potential primal scheme indexes.
 			*/
-			std::vector<size_t>getPotentialPrimalSchemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds,const std::vector<FMTOperatingAreaScheme>& neighbors) const;
+			std::vector<size_t>getPotentialPrimalSchemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds,const std::vector<FMTOperatingAreaScheme>& m_neighbors) const;
 			// DocString: FMTOperatingAreaScheme::getPotentialDualSchemes
 			/**
 			@brief Return the potential scheme indexes from the dual solution, the rows upper bounds and the neighboring operating areas, ordered from the most to the least area used but greater than 0.
@@ -360,7 +360,7 @@ namespace Heuristics
 			@param[in] neighbors the neighboring operating areas.
 			@return the potential dual scheme indexes.
 			*/
-			std::vector<size_t>getPotentialDualSchemes(const double* dualsolution, const double* upperbound, const std::vector<FMTOperatingAreaScheme>& neighbors) const;
+			std::vector<size_t>getPotentialDualSchemes(const double* dualsolution, const double* upperbound, const std::vector<FMTOperatingAreaScheme>& m_neighbors) const;
 			// DocString: FMTOperatingAreaScheme::getRessourcesToDelete
 			/**
 			@brief Push all the variables and constraints of the operating area into the columns and rows to delete vectors.
@@ -618,9 +618,6 @@ namespace Heuristics
 	*/
 	class FMTOperatingAreaSchemeComparator
 		{
-			// DocString: FMTOperatingAreaSchemeComparator::mask
-			///FMTMask of the operating area we wish to find.
-			Core::FMTMask mask;
 		public:
 			// DocString: FMTOperatingAreaSchemeComparator(const Core::FMTMask)
 			/**
@@ -636,6 +633,10 @@ namespace Heuristics
 			*/
 			bool operator()(const FMTOperatingAreaScheme& oparea) const;
 
+		private:
+			// DocString: FMTOperatingAreaSchemeComparator::m_mask
+			///FMTMask of the operating area we wish to find.
+			Core::FMTMask m_mask;
 		};
 
 	}

@@ -140,7 +140,7 @@ namespace Parallel
 		*/
 		void close() noexcept;
 		protected:
-			// DocString: FMTParallelWriter::getDriftProbability()
+			// DocString: FMTParallelWriter::_getDriftProbability()
 			/**
 			@brief Compute the drift probabilities from the global and local values.
 			@param[in] globalvalues the global values.
@@ -148,50 +148,50 @@ namespace Parallel
 			@param[in] lower if true computes the lower drift.
 			@return the drift probabilities.
 			*/
-			const std::map<std::string, std::map<double, std::vector<double>>>getDriftProbability(
+			const std::map<std::string, std::map<double, std::vector<double>>>_getDriftProbability(
 				const std::map<std::string, std::vector<std::vector<double>>>& globalvalues,
 				const std::map<std::string, std::vector<std::vector<double>>>& localvalues,
 				const bool lower = true) const;
 		private:
-			// DocString: FMTParallelWriter::outputstowrite
+			// DocString: FMTParallelWriter::m_outputstowrite
 			///Outputs that the writer will write for different models.
-			std::vector<Core::FMTOutput>outputstowrite;
+			std::vector<Core::FMTOutput>m_outputstowrite;
 			#ifdef FMTWITHGDAL
-					// DocString: FMTParallelWriter::resultsdataset
+					// DocString: FMTParallelWriter::m_resultsdataset
 					///The dataset of the results.
-					GDALDataset* resultsdataset;
-					// DocString: FMTParallelWriter::resultslayer
+					GDALDataset* m_resultsdataset;
+					// DocString: FMTParallelWriter::m_resultslayer
 					///The layer of the results. the key is the model name.
-					std::map<std::string, OGRLayer*> resultslayer;
-					// DocString: FMTParallelWriter::driftlayer
+					std::map<std::string, OGRLayer*> m_resultslayer;
+					// DocString: FMTParallelWriter::m_driftlayer
 					///The drift layer probability.
-					OGRLayer* driftlayer;
+					OGRLayer* m_driftlayer;
 			#endif
-			// DocString: FMTParallelWriter::mtx
+			// DocString: FMTParallelWriter::m_mtx
 			///The recursive mutex used to control the usage of the writer by the thread.
-			mutable boost::recursive_mutex mtx;
-			// DocString: FMTParallelWriter::resultsminimaldrift;
+			mutable boost::recursive_mutex m_mtx;
+			// DocString: FMTParallelWriter::m_resultsminimaldrift;
 			///Used when writing drift probability layer
-			double resultsminimaldrift;
-			// DocString: FMTParallelWriter::outputslevel
+			double m_resultsminimaldrift;
+			// DocString: FMTParallelWriter::m_outputslevel
 			///The output level of detail
-			Core::FMToutputlevel outputslevel;
-			// DocString: FMTParallelWriter::alllayeroptions
+			Core::FMToutputlevel m_outputslevel;
+			// DocString: FMTParallelWriter::m_alllayeroptions
 			///The layers options
-			std::vector<std::string> alllayeroptions;
-			// DocString: FMTParallelWriter::outputfirstperiod
+			std::vector<std::string> m_alllayeroptions;
+			// DocString: FMTParallelWriter::m_outputfirstperiod
 			///First period for the output value.
-			int outputfirstperiod;
-			// DocString: FMTParallelWriter::outputlastperiod;
+			int m_outputfirstperiod;
+			// DocString: FMTParallelWriter::m_outputlastperiod;
 			///Lastperiod for the output value.
-			int outputlastperiod;
-			// DocString: FMTParallelWriter::projectdirectory;
+			int m_outputlastperiod;
+			// DocString: FMTParallelWriter::m_projectdirectory;
 			///The directory of the primary file.
-			std::string projectdirectory;
-			// DocString: FMTParallelWriter::projectname;
+			std::string m_projectdirectory;
+			// DocString: FMTParallelWriter::m_projectname;
 			///The name of the project file
-			std::string projectname;
-			// DocString: FMTParallelWriter::projectname;
+			std::string m_projectname;
+			// DocString: FMTParallelWriter::m_projectname;
 			///The directory output path.
 			std::string m_outputLocationPath;
 		};

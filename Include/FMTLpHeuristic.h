@@ -32,48 +32,6 @@ namespace Heuristics
 	*/
 	class FMTEXPORT FMTLpHeuristic : public Models::FMTLpSolver
 	{
-		// DocString: FMTLpHeuristic::save
-		/**
-		@brief Save function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to save to.
-		@param[in] version the serialization version.
-		*/
-		friend class boost::serialization::access;
-		template<class Archive>
-		void save(Archive& ar, const unsigned int version) const
-		{
-			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTLpSolver>(*this));
-			ar & BOOST_SERIALIZATION_NVP(seed);
-			ar & BOOST_SERIALIZATION_NVP(usingsolvercopy);
-		}
-		// DocString: FMTLpHeuristic::load
-		/**
-		@brief Load function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to load from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void load(Archive& ar, const unsigned int version)
-		{
-			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTLpSolver>(*this));
-			this->passInMessageHandler(*this->_logger);
-			ar & BOOST_SERIALIZATION_NVP(seed);
-			this->setGeneratorSeed(seed);
-			ar & BOOST_SERIALIZATION_NVP(usingsolvercopy);
-		}
-		BOOST_SERIALIZATION_SPLIT_MEMBER()
-	protected:
-		// DocString: FMTLpHeuristic::generator
-		///std random number generator of the heuristic each heuristic has it's own generator to generate different solution
-		std::default_random_engine generator;
-		// DocString: FMTLpHeuristic::seed
-		///The random engine seed need to be a data member when serializing the class
-		size_t seed;
-		// DocString: FMTLpHeuristic::usingsolvercopy
-		///If true the heuristic will work from it's own copy of solverinterface, else it's going to work on the FMTLpModel solverinterface.
-		bool usingsolvercopy;
 	public:
 		// DocString: FMTLpHeuristic::setGeneratorSeed
 		/**
@@ -150,6 +108,49 @@ namespace Heuristics
 		*/
 		virtual ~FMTLpHeuristic() = default;
 
+	protected:
+		// DocString: FMTLpHeuristic::m_generator
+		///std random number generator of the heuristic each heuristic has it's own generator to generate different solution
+		std::default_random_engine m_generator;
+		// DocString: FMTLpHeuristic::m_seed
+		///The random engine seed need to be a data member when serializing the class
+		size_t m_seed;
+		// DocString: FMTLpHeuristic::m_usingsolvercopy
+		///If true the heuristic will work from it's own copy of solverinterface, else it's going to work on the FMTLpModel solverinterface.
+		bool m_usingsolvercopy;
+	private:
+		// DocString: FMTLpHeuristic::save
+		/**
+		@brief Save function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to save to.
+		@param[in] version the serialization version.
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void save(Archive& ar, const unsigned int version) const
+		{
+			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTLpSolver>(*this));
+			ar & boost::serialization::make_nvp("seed", m_seed);
+			ar & boost::serialization::make_nvp("usingsolvercopy", m_usingsolvercopy);
+		}
+		// DocString: FMTLpHeuristic::load
+		/**
+		@brief Load function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to load from.
+		@param[in] version the serialization version.
+		*/
+		template<class Archive>
+		void load(Archive& ar, const unsigned int version)
+		{
+			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTLpSolver>(*this));
+			this->passInMessageHandler(*this->_logger);
+			ar & boost::serialization::make_nvp("seed", m_seed);
+			this->setGeneratorSeed(m_seed);
+			ar & boost::serialization::make_nvp("usingsolvercopy", m_usingsolvercopy);
+		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
 	};
 
 }

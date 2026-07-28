@@ -21,35 +21,6 @@ namespace Core
 	*/
 	class FMTExpression
 	{
-		std::vector<std::string>infix;
-		// DocString: FMTExpression::getPostFix
-		/**
-		@brief Convert an infix expression to postfix notation.
-		@param[in] localinfix the infix expression.
-		@return the postfix expression.
-		*/
-		std::vector<std::string> getPostFix(const std::vector<std::string>& localinfix) const;
-		// DocString: FMTExpression::replaceVariables
-		/**
-		@brief Replace the variables of the expression by their values.
-		@param[in] mapping the values of the variables.
-		@return the expression with variables replaced by their values.
-		*/
-		std::vector<std::string> replaceVariables(const std::map<std::string, double>& mapping) const;
-		// DocString: FMTExpression::evaluatePostFix
-		/**
-		@brief Evaluate a postfix expression.
-		@param[in] postfix the postfix expression.
-		@return the value of the expression.
-		*/
-		double evaluatePostFix(const std::vector<std::string>& postfix) const;
-		// DocString: FMTExpression::isNumber
-		/**
-		@brief Return true if a string is a number.
-		@param[in] s the string to check.
-		@return true if the string is a number else false.
-		*/
-		bool isNumber(const std::string& s) const;
 	public:
 		// DocString: FMTExpression()
 		/**
@@ -113,6 +84,36 @@ namespace Core
 		*/
 		~FMTExpression() = default;
 
+	private:
+		std::vector<std::string>m_infix;
+		// DocString: FMTExpression::_getPostFix
+		/**
+		@brief Convert an infix expression to postfix notation.
+		@param[in] localinfix the infix expression.
+		@return the postfix expression.
+		*/
+		std::vector<std::string> _getPostFix(const std::vector<std::string>& localinfix) const;
+		// DocString: FMTExpression::_replaceVariables
+		/**
+		@brief Replace the variables of the expression by their values.
+		@param[in] mapping the values of the variables.
+		@return the expression with variables replaced by their values.
+		*/
+		std::vector<std::string> _replaceVariables(const std::map<std::string, double>& mapping) const;
+		// DocString: FMTExpression::_evaluatePostFix
+		/**
+		@brief Evaluate a postfix expression.
+		@param[in] postfix the postfix expression.
+		@return the value of the expression.
+		*/
+		double _evaluatePostFix(const std::vector<std::string>& postfix) const;
+		// DocString: FMTExpression::_isNumber
+		/**
+		@brief Return true if a string is a number.
+		@param[in] s the string to check.
+		@return true if the string is a number else false.
+		*/
+		bool _isNumber(const std::string& s) const;
 	};
 }
 

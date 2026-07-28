@@ -30,27 +30,6 @@ namespace Heuristics
 */
 	class FMTEXPORT FMTOperatingAreaClusterBinary : public FMTOperatingArea
 	{
-		friend class boost::serialization::access;
-		// DocString: FMTOperatingAreaClusterBinary::serialize
-		/**
-		@brief Serialize the FMTOperatingAreaClusterBinary for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-			{
-			ar & boost::serialization::make_nvp("operatingarea", boost::serialization::base_object<FMTOperatingArea>(*this));
-			ar & BOOST_SERIALIZATION_NVP(variable);
-			ar & BOOST_SERIALIZATION_NVP(statistic);
-			}
-        // DocString: FMTOperatingAreaClusterBinary::variable
-        ///Binary variable set to 1 if binary in an active cluster else 0.
-		int variable;
-		// DocString: FMTOperatingAreaClusterBinary::statistic
-        ///Value of the statistic we want to globaly minimize the heterogenity across the landscape3.
-		double statistic;
 	public:
 	    // DocString: FMTOperatingAreaClusterBinary::FMTOperatingAreaClusterBinary()
 	    /**
@@ -114,7 +93,7 @@ namespace Heuristics
 		*/
 		inline const int& getVariable() const
 			{
-			return variable;
+			return m_variable;
 			}
         // DocString: FMTOperatingAreaClusterBinary::getStatistic
         /**
@@ -123,9 +102,31 @@ namespace Heuristics
         */
 		inline const double& getStatistic() const
 			{
-			return statistic;
+			return m_statistic;
 			}
 
+	private:
+		friend class boost::serialization::access;
+		// DocString: FMTOperatingAreaClusterBinary::serialize
+		/**
+		@brief Serialize the FMTOperatingAreaClusterBinary for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+			{
+			ar & boost::serialization::make_nvp("operatingarea", boost::serialization::base_object<FMTOperatingArea>(*this));
+			ar & boost::serialization::make_nvp("variable", m_variable);
+			ar & boost::serialization::make_nvp("statistic", m_statistic);
+			}
+        // DocString: FMTOperatingAreaClusterBinary::m_variable
+        ///Binary variable set to 1 if binary in an active cluster else 0.
+		int m_variable;
+		// DocString: FMTOperatingAreaClusterBinary::m_statistic
+        ///Value of the statistic we want to globaly minimize the heterogenity across the landscape3.
+		double m_statistic;
 	};
 
 }

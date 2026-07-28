@@ -259,7 +259,7 @@ namespace Parallel
 		try {
 			
 			const double* thesolution = bestscheduler->getColSolution();
-			basemodel->getSolverPtr()->passInMessageHandler(*tasklogger.get());
+			basemodel->getSolverPtr()->passInMessageHandler(*m_tasklogger.get());
 			Models::FMTLpModel modelcopy(*basemodel);
 			modelcopy.doPlanning(false);
 			Core::FMTYields newyields = modelcopy.getYields();
@@ -386,7 +386,7 @@ namespace Parallel
 						*bestscheduler = *actualscheduler;
 					}else {
 						*actualscheduler = *bestscheduler;
-						actualscheduler->passInMessageHandler(*tasklogger.get());
+						actualscheduler->passInMessageHandler(*m_tasklogger.get());
 					}
 				}
 		}catch (...)
@@ -466,7 +466,7 @@ namespace Parallel
 	{
 		try {
 			//If you dont have initialsolution, you need to do an initialSolve
-			actualscheduler->passInMessageHandler(*tasklogger.get());
+			actualscheduler->passInMessageHandler(*m_tasklogger.get());
 			bool needinitialsolve = !gotInitialSolution();
 			while (goodToGo())
 			{
@@ -484,7 +484,7 @@ namespace Parallel
 					{
 						needinitialsolve = false;
 						*actualscheduler = *bestscheduler;
-						actualscheduler->passInMessageHandler(*tasklogger.get());
+						actualscheduler->passInMessageHandler(*m_tasklogger.get());
 					}
 				}
 				else {

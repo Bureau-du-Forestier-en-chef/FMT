@@ -29,29 +29,6 @@ namespace Core
 */
 class FMTEXPORT FMTMaskFilter
     {
-	friend class boost::serialization::access;
-	friend class FMTTheme;
-	friend class FMTMask;
-	// DocString: FMTMaskFilter::serialize
-	/**
-	@brief Serialize the FMTMaskFilter for multiprocessing across multiple cpus (pickle in Python).
-	@tparam Archive the archive type.
-	@param[in,out] ar the archive to serialize to or from.
-	@param[in] version the serialization version.
-	*/
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-		{
-		/*ar & BOOST_SERIALIZATION_NVP(fullset);*/
-		ar & BOOST_SERIALIZATION_NVP(selection);
-		ar & BOOST_SERIALIZATION_NVP(flippedselection);
-		//ar & BOOST_SERIALIZATION_NVP(index);
-		}
-    protected:
-		/*boost::dynamic_bitset<> fullset;*/
-        boost::dynamic_bitset<uint8_t> selection;
-        boost::dynamic_bitset<uint8_t> flippedselection;
-		//std::vector<size_t>index;
     public:
         // DocString: FMTMaskFilter()
         /**
@@ -164,6 +141,30 @@ class FMTEXPORT FMTMaskFilter
 			{
 			return (boost::hash<boost::dynamic_bitset<uint8_t>>()(selection) ^ boost::hash<boost::dynamic_bitset<uint8_t>>()(flippedselection));
 			}
+    protected:
+		/*boost::dynamic_bitset<> fullset;*/
+        boost::dynamic_bitset<uint8_t> selection;
+        boost::dynamic_bitset<uint8_t> flippedselection;
+		//std::vector<size_t>index;
+    private:
+	friend class boost::serialization::access;
+	friend class FMTTheme;
+	friend class FMTMask;
+	// DocString: FMTMaskFilter::serialize
+	/**
+	@brief Serialize the FMTMaskFilter for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
+	*/
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+		{
+		/*ar & BOOST_SERIALIZATION_NVP(fullset);*/
+		ar & BOOST_SERIALIZATION_NVP(selection);
+		ar & BOOST_SERIALIZATION_NVP(flippedselection);
+		//ar & BOOST_SERIALIZATION_NVP(index);
+		}
     };
 
 

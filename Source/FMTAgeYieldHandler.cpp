@@ -18,7 +18,7 @@ namespace Core {
 	{
 		std::string value;
 		try {
-				value += "*Y " + std::string(mask) + "\n";
+				value += "*Y " + std::string(m_mask) + "\n";
 				value += "_AGE \t";
 				const std::vector<std::string> yieldNames = getYieldNames();
 				for (const std::string& NAME : yieldNames)
@@ -27,7 +27,7 @@ namespace Core {
 				}
 				value += "\n";
 				int baseid = 0;
-				for (const int& base : bases)
+				for (const int& base : m_bases)
 				{
 					value += std::to_string(base) + "\t";
 					for (const std::string& NAME : yieldNames)
@@ -50,16 +50,16 @@ namespace Core {
 
 	bool FMTAgeYieldHandler::pushData(const std::string& yld, const double& value)
 	{
-		return (basePushData(m_elements, yld, value));
+		return (_basePushData(m_elements, yld, value));
 	}
 
 	bool FMTAgeYieldHandler::pushData(const std::string& yld, const FMTData& data)
 	{
-		return (basePushData(m_elements, yld,data));
+		return (_basePushData(m_elements, yld,data));
 	}
 
-	FMTAgeYieldHandler::FMTAgeYieldHandler(const FMTMask& mask) :
-		FMTYieldHandler(mask)
+	FMTAgeYieldHandler::FMTAgeYieldHandler(const FMTMask& p_mask) :
+		FMTYieldHandler(p_mask)
 	{
 
 	}
@@ -104,7 +104,7 @@ namespace Core {
 		std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		return it->second.data.back();
 	}
-	int FMTAgeYieldHandler::getAge(const std::string yld, const double& value, const int& starting_age) const
+	int FMTAgeYieldHandler::_getAge(const std::string yld, const double& value, const int& starting_age) const
 	{
 		int age = 0;
 		try {
@@ -118,19 +118,19 @@ namespace Core {
 				size_t index = 0;
 				for (const double& vdata : ldata->data)
 				{
-					if (abs(vdata - value) <= minimal_gap && index > 0 && bases.at(index) <= starting_age)
+					if (abs(vdata - value) <= minimal_gap && index > 0 && m_bases.at(index) <= starting_age)
 					{
 						minimal_gap = abs(vdata - value);
 						minimal_gap_index = index;
 					}
 					++index;
 				}
-				age = std::max(bases.at(minimal_gap_index), 1);
+				age = std::max(m_bases.at(minimal_gap_index), 1);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::_getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return age;
 	}
@@ -159,7 +159,7 @@ namespace Core {
 				if (containsYield(yieldnames.at(id)))
 				{
 					const FMTYldBounds* bound = &yieldbounds.at(id);
-					const int new_age = getAge(yieldnames.at(id), bound->getLower(), request.getDevelopment().getAge());
+					const int new_age = _getAge(yieldnames.at(id), bound->getLower(), request.getDevelopment().getAge());
 					if (new_age < age)
 					{
 						age = new_age;
@@ -265,16 +265,16 @@ namespace Core {
 		std::map<std::string, std::vector<double>>localstuff;
 		try {
 			const int lastbase = getLastBase();
-			std::vector<int>bases = getBases();
+			std::vector<int>m_bases = getBases();
 			for (std::map<std::string, FMTData, cmpYieldString>::const_iterator cit = m_elements.begin(); cit != m_elements.end(); cit++)
 			{
 				localstuff[cit->first] = std::vector<double>();
 				for (int base = 0; base <= maxbase; ++base)
 				{
-					std::vector<int>::const_iterator baseit = std::find(bases.begin(), bases.end(), base);
-					if (baseit != bases.end())
+					std::vector<int>::const_iterator baseit = std::find(m_bases.begin(), m_bases.end(), base);
+					if (baseit != m_bases.end())
 					{
-						size_t index = std::distance<std::vector<int>::const_iterator>(bases.begin(), baseit);
+						size_t index = std::distance<std::vector<int>::const_iterator>(m_bases.begin(), baseit);
 						localstuff[cit->first].push_back(cit->second.data.at(index));
 					}
 					else if (base < lastbase)
@@ -324,7 +324,7 @@ namespace Core {
 		double value = 0;
 		try {
 			const int peak = static_cast<int>(getPeakfrom(yld));
-			value = getChangesFrom(targetage, peak);
+			value = _getChangesFrom(targetage, peak);
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTAgeYieldHandler::getPeak", __LINE__, __FILE__, Core::FMTsection::Yield);

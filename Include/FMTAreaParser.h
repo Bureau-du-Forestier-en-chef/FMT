@@ -388,9 +388,9 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		*/
 		void write(const std::vector<Core::FMTActualDevelopment>& areas, const std::string& location) const;
     private:
-		// DocString: FMTAreaParser::rxcleanarea
+		// DocString: FMTAreaParser::m_rxcleanarea
 		///This regex is used to capture the information kept in the .are section.
-        const static boost::regex rxcleanarea;
+        const static boost::regex m_rxcleanarea;
 		// DocString: FMTAreaParser::m_RxExclude
 		///To capture the exclude keyword
 		const static boost::regex m_RxExclude;
@@ -435,7 +435,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			const Core::FMTConstants& p_constants,
 			const std::string& p_value,
 			Core::FMTList<Core::FMTSpec>& p_list) const;
-		// DocString: FMTAreaParser::getPeriodPathName
+		// DocString: FMTAreaParser::_getPeriodPathName
 		/**
 		@brief Return the path to a disturbance layer raster file for a period.
 		@param[in] location the folder.
@@ -443,8 +443,8 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@param[in] name the name.
 		@return the raster file path.
 		*/
-		std::string getPeriodPathName(const std::string& location, const int& period,const std::string& name) const;
-		// DocString: FMTAreaParser::getGCBMtransitions
+		std::string _getPeriodPathName(const std::string& location, const int& period,const std::string& name) const;
+		// DocString: FMTAreaParser::_getGCBMtransitions
 		/**
 		@brief Return the GCBM transitions from the disturbances of a FMTSesModel, for use with GCBM.
 		@param[in] stacked_actions the stacked actions.
@@ -453,12 +453,12 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@param[in] themes the themes.
 		@return the GCBM transitions.
 		*/
-		std::vector<Core::FMTGCBMTransition> getGCBMtransitions(const Spatial::FMTLayer<std::string>& stacked_actions,
+		std::vector<Core::FMTGCBMTransition> _getGCBMtransitions(const Spatial::FMTLayer<std::string>& stacked_actions,
 													const Spatial::FMTLayer<int>& ages,
 													const Spatial::FMTForest& newfor,
 													const std::vector<Core::FMTTheme>& themes) const;
 		#ifdef FMTWITHGDAL
-			// DocString: FMTAreaParser::writeBand
+			// DocString: FMTAreaParser::_writeBand
 			/**
 			@brief Write a layer into a raster band.
 			@tparam T the layer value type.
@@ -469,32 +469,32 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@return true if the band is written else false.
 			*/
 			template<typename T,typename outT>
-			bool writeBand(const Spatial::FMTLayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const;
-			// DocString: FMTareaparser::_GetUnion
+			bool _writeBand(const Spatial::FMTLayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const;
+			// DocString: FMTAreaParser::_getUnion
 			/**
-			 * @brief Merges overlapping or adjacent polygons within each multipolygon using a cascaded union algorithm.
-			 * @details Iterates through the provided vector of multipolygons. For each non-empty multipolygon,
-			 *          it combines its internal polygonal parts into a single optimized geometry.
-			 * @param[in] p_collections Vector of OGRMultiPolygon objects to be unified.
-			 * @return A vector of pointers to the merged `OGRGeometry` objects. The output vector retains the
-			 *         exact same size and indexing as `p_collections`. Elements remain `nullptr` if the
-			 *         corresponding source multipolygon was empty.
-			 * @note The caller takes ownership of the returned `OGRGeometry*` pointers and is responsible for
-			 *       deleting them using `OGRGeometryFactory::destroyGeometry` to prevent memory leaks.
-			 * @exception Re-throws intercepted errors via `_exhandler->raisefromcatch` if the union operation fails.
+			@brief Merges overlapping or adjacent polygons within each multipolygon using a cascaded union algorithm.
+			@details Iterates through the provided vector of multipolygons. For each non-empty multipolygon,
+			         it combines its internal polygonal parts into a single optimized geometry.
+			@param[in] p_collections Vector of OGRMultiPolygon objects to be unified.
+			@return A vector of pointers to the merged `OGRGeometry` objects. The output vector retains the
+			        exact same size and indexing as `p_collections`. Elements remain `nullptr` if the
+			        corresponding source multipolygon was empty.
+			@note The caller takes ownership of the returned `OGRGeometry*` pointers and is responsible for
+			      deleting them using `OGRGeometryFactory::destroyGeometry` to prevent memory leaks.
+			@exception Re-throws intercepted errors via `_exhandler->raisefromcatch` if the union operation fails.
 			 */
-			std::vector<OGRGeometry*>_GetUnion(const std::vector<OGRMultiPolygon>& p_collections) const;
-			// DocString: FMTareaparser::_DestroyGeometries
+			std::vector<OGRGeometry*> _getUnion(const std::vector<OGRMultiPolygon>& p_collections) const;
+			// DocString: FMTareaparser::_destroyGeometries
 			/**
-			 * @brief Safely releases heap memory for all OGRGeometry pointers in the vector and clears the container.
-			 * @details Iterates through the vector to destroy each geometry instance using the GDAL/OGR
-			 *          `OGRGeometryFactory::destroyGeometry` factory method. Passing `nullptr` elements is
-			 *          safely handled by the GDAL factory. The vector is cleared of all elements upon completion.
-			 * @param[in,out] p_geometires Vector of OGRGeometry pointers to be destroyed. Modified in-place and emptied.
-			 * @note This method should be called on the output of methods like `GetUnion` to prevent memory leaks.
-			 * @exception Re-throws intercepted errors via `_exhandler->raisefromcatch` if the memory cleanup fails.
+			@brief Safely releases heap memory for all OGRGeometry pointers in the vector and clears the container.
+			@details Iterates through the vector to destroy each geometry instance using the GDAL/OGR
+			         `OGRGeometryFactory::destroyGeometry` factory method. Passing `nullptr` elements is
+			         safely handled by the GDAL factory. The vector is cleared of all elements upon completion.
+			@param[in,out] p_geometires Vector of OGRGeometry pointers to be destroyed. Modified in-place and emptied.
+			@note This method should be called on the output of methods like `GetUnion` to prevent memory leaks.
+			@exception Re-throws intercepted errors via `_exhandler->raisefromcatch` if the memory cleanup fails.
 			 */
-			void _DestroyGeometries(std::vector<OGRGeometry*>& p_geometires) const;
+			void _destroyGeometries(std::vector<OGRGeometry*>& p_geometires) const;
 			// DocString: FMTAreaParser::getFeatureToDevelopment
 			/**
 			@brief Convert a feature into an actual development.
@@ -509,7 +509,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] minimalarea the minimal area.
 			@return the actual development.
 			*/
-			Core::FMTActualDevelopment getFeatureToDevelopment(const OGRFeature* feature,
+			Core::FMTActualDevelopment _getFeatureToDevelopment(const OGRFeature* feature,
 															const std::vector<Core::FMTTheme>& themes,
 															const std::map<int, int>& themes_fields,
 															const int& age_field,
@@ -518,13 +518,13 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 															const double& agefactor,
 															const double& areafactor,
 															const double& minimalarea) const;
-			// DocString: FMTAreaParser::validateRaster
+			// DocString: FMTAreaParser::_validateRaster
 			/**
 			@brief Validate that a vector of rasters are perfectly part of each other and can be treated as a stack, throwing on error.
 			@param[in] data_rasters the raster file paths.
 			*/
-			void validateRaster(const std::vector<std::string>&data_rasters) const;
-			// DocString: FMTAreaParser::openVectorFile
+			void _validateRaster(const std::vector<std::string>&data_rasters) const;
+			// DocString: FMTAreaParser::_openVectorFile
 			/**
 			@brief Open a vector file and return a dataset if all mandatory fields are present, throwing otherwise, filling the field indices.
 			@param[in,out] themes_fields the theme field indices.
@@ -538,55 +538,55 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] themes the themes.
 			@return the dataset.
 			*/
-			GDALDataset* openVectorFile(std::map<int, int>&themes_fields, int& age_field, int& lock_field, int& area_field,
+			GDALDataset* _openVectorFile(std::map<int, int>&themes_fields, int& age_field, int& lock_field, int& area_field,
 				const std::string& data_vectors, const std::string& agefield, const std::string& areafield, const std::string& lockfield,
 				const std::vector<Core::FMTTheme>& themes) const;
 			#ifdef FMTWITHOSI
-			// DocString: FMTareaparser::_GetMultiPolygons
+			// DocString: FMTareaparser::_getMultiPolygons
 			/**
-			 * @brief Extracts and groups valid multipolygons from a vector layer, indexed by operating area.
-			 * @details Opens the specified vector data source, applies thematic and attribute filters, and processes
-			 *          each feature based on age, area, and lock constraints. Features meeting the criteria are converted
-			 *          and appended to the corresponding `OGRMultiPolygon` container matching the feature's operating area mask.
-			 * @param[in] operatingareas Vector of target operating areas used to classify and index the multipolygons.
-			 * @param[in] themes Vector of FMT themes used for configuration and data filtering.
-			 * @param[in] data_vectors File path or connection string to the vector data source.
-			 * @param[in] agefield Name of the attribute field representing age.
-			 * @param[in] areafield Name of the attribute field representing area.
-			 * @param[in] agefactor Multiplier factor applied to the parsed age attribute values (Default = 1.0).
-			 * @param[in] areafactor Multiplier factor applied to the parsed area attribute values (Default = 1.0).
-			 * @param[in] lockfield Name of the attribute field representing the lock status (Default = "").
-			 * @param[in] minimal_area Minimum required surface area threshold to retain a feature (Default = 0.0).
-			 * @return A vector of `OGRMultiPolygon` objects matching the exact size of `operatingareas`.
-			 *         Each index holds the compiled valid multipolygons belonging to that specific operating area.
-			 * @note Only valid spatial features that pass the `minimal_area` threshold are appended to the resulting collection.
+			@brief Extracts and groups valid multipolygons from a vector layer, indexed by operating area.
+			@details Opens the specified vector data source, applies thematic and attribute filters, and processes
+			         each feature based on age, area, and lock constraints. Features meeting the criteria are converted
+			         and appended to the corresponding `OGRMultiPolygon` container matching the feature's operating area mask.
+			@param[in] operatingareas Vector of target operating areas used to classify and index the multipolygons.
+			@param[in] themes Vector of FMT themes used for configuration and data filtering.
+			@param[in] data_vectors File path or connection string to the vector data source.
+			@param[in] agefield Name of the attribute field representing age.
+			@param[in] areafield Name of the attribute field representing area.
+			@param[in] agefactor Multiplier factor applied to the parsed age attribute values (Default = 1.0).
+			@param[in] areafactor Multiplier factor applied to the parsed area attribute values (Default = 1.0).
+			@param[in] lockfield Name of the attribute field representing the lock status (Default = "").
+			@param[in] minimal_area Minimum required surface area threshold to retain a feature (Default = 0.0).
+			@return A vector of `OGRMultiPolygon` objects matching the exact size of `operatingareas`.
+			        Each index holds the compiled valid multipolygons belonging to that specific operating area.
+			@note Only valid spatial features that pass the `minimal_area` threshold are appended to the resulting collection.
 			 */
-			std::vector<OGRMultiPolygon>_GetMultiPolygons(const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
+			std::vector<OGRMultiPolygon> _getMultiPolygons(const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 				const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 				const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 				double areafactor = 1, std::string lockfield = "",
 				double minimal_area = 0.0) const;
-			// DocString: FMTareaparser::_GetNeighborsFromPolygons
+			// DocString: FMTareaparser::_getNeighborsFromPolygons
 			/**
-			 * @brief Identifies and assigns mutual neighboring operating areas by evaluating spatial intersections using buffers.
-			 * @details For each operating area, its corresponding geometry is buffered by a given distance to find intersections
-			 *          with other areas. A neighbor is initially considered if the intersection area ratio meets a threshold defined
-			 *          by `getneihgborsperimeter()`. A final reciprocity pass ensures that two areas are only saved as neighbors
-			 *          if the neighborhood relationship is mutual (A recognizes B, and B recognizes A).
-			 * @param[in] polygons Vector of OGRGeometry pointers representing the spatial boundary of each operating area.
-			 * @param[in] operatingareas A copy of the operating areas vector to be updated with neighborhood information.
-			 * @param[in] buffersize The buffer distance (double) used to expand geometries to test for spatial adjacency.
-			 * @return A new vector of `Heuristics::FMToperatingarea` with updated neighborhood masks, maintaining the same size
-			 *         and order as the input parameters.
-			 * @note This method safely handles memory management for all internal intermediary geometries (`buffered` and `intersect`)
-			 *       using `OGRGeometryFactory::destroyGeometry`.
-			 * @exception Re-throws intercepted errors via `_exhandler->raisefromcatch` if geometry buffering or intersection math fails.
+			@brief Identifies and assigns mutual neighboring operating areas by evaluating spatial intersections using buffers.
+			@details For each operating area, its corresponding geometry is buffered by a given distance to find intersections
+			         with other areas. A neighbor is initially considered if the intersection area ratio meets a threshold defined
+			         by `getneihgborsperimeter()`. A final reciprocity pass ensures that two areas are only saved as neighbors
+			         if the neighborhood relationship is mutual (A recognizes B, and B recognizes A).
+			@param[in] polygons Vector of OGRGeometry pointers representing the spatial boundary of each operating area.
+			@param[in] operatingareas A copy of the operating areas vector to be updated with neighborhood information.
+			@param[in] buffersize The buffer distance (double) used to expand geometries to test for spatial adjacency.
+			@return A new vector of `Heuristics::FMToperatingarea` with updated neighborhood masks, maintaining the same size
+			        and order as the input parameters.
+			@note This method safely handles memory management for all internal intermediary geometries (`buffered` and `intersect`)
+			      using `OGRGeometryFactory::destroyGeometry`.
+			@exception Re-throws intercepted errors via `_exhandler->raisefromcatch` if geometry buffering or intersection math fails.
 			 */
-			std::vector<Heuristics::FMTOperatingArea> _GetNeighborsFromPolygons(const std::vector<OGRGeometry*>& polygons,
+			std::vector<Heuristics::FMTOperatingArea> _getNeighborsFromPolygons(const std::vector<OGRGeometry*>& polygons,
 				std::vector<Heuristics::FMTOperatingArea> operatingareas,
 				const double& buffersize) const;
 
-			// DocString: FMTAreaParser::getClustersFromPolygons
+			// DocString: FMTAreaParser::_getClustersFromPolygons
 			/**
 			@brief Return the potential clusters of operating areas from polygons and a maximal clustering distance.
 			@param[in] polygons the polygons.
@@ -594,7 +594,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] maximaldistance the maximal clustering distance.
 			@return the operating area clusters.
 			*/
-			std::vector<Heuristics::FMTOperatingAreaCluster> getClustersFromPolygons(const std::vector<OGRGeometry*>&polygons,
+			std::vector<Heuristics::FMTOperatingAreaCluster> _getClustersFromPolygons(const std::vector<OGRGeometry*>&polygons,
 																		const std::vector<Heuristics::FMTOperatingArea>& operatingareas,const double& maximaldistance) const;
 			// DocString: FMTAreaParser::_isMapWithSameThemes
 			/**
@@ -614,7 +614,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			 */
 			static double _GetGeometryArea(const OGRGeometry* p_geometry);
 		#endif
-			// DocString: FMTAreaParser::getFMTforestfromlayer
+			// DocString: FMTAreaParser::_getFMTforestfromlayer
 			/**
 			@brief Rasterize a layer and return the corresponding forest.
 			@param[in] layer the layer.
@@ -625,8 +625,8 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] fittoforel if true aligns with the Quebec FOREL rasters.
 			@return the forest.
 			*/
-			Spatial::FMTForest getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
-			// DocString: FMTAreaParser::subsetLayer
+			Spatial::FMTForest _getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTActualDevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
+			// DocString: FMTAreaParser::_subsetLayer
 			/**
 			@brief Return a layer with only the non null features of a layer.
 			@param[in,out] layer the layer.
@@ -635,7 +635,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			@param[in] areafield the area field name.
 			@return the subset layer.
 			*/
-			OGRLayer* subsetLayer(OGRLayer*layer, const std::vector<Core::FMTTheme>& themes,
+			OGRLayer* _subsetLayer(OGRLayer*layer, const std::vector<Core::FMTTheme>& themes,
 								const std::string& agefield, const std::string& areafield) const;
 	#endif
 			

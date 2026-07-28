@@ -200,78 +200,78 @@ namespace Exception
 		// DocString: FMTExceptionHandler::_errorcount
 		///Keeps count of the number of error thrown.
 		int _errorcount;
-		// DocString: FMTExceptionHandler::maxwarningsbeforesilenced
+		// DocString: FMTExceptionHandler::m_maxwarningsbeforesilenced
 		///Number of time that the handler throw a certain warning before stop throwing it.
-		size_t maxwarningsbeforesilenced;
+		size_t m_maxwarningsbeforesilenced;
 		// DocString: FMTExceptionHandler::_logger
 		///pointer to the logger used to print the warning / error.
 		Logging::FMTLogger* _logger;
-		// DocString: FMTExceptionHandler::usenestedexceptions
+		// DocString: FMTExceptionHandler::m_usenestedexceptions
 		///If usenested = true then the handler will throw nested exceptions
-		bool usenestedexceptions;
-		// DocString: FMTExceptionHandler::mtx
+		bool m_usenestedexceptions;
+		// DocString: FMTExceptionHandler::m_mtx
 		///Mutex for multi-threading.
 		//mutable std::recursive_mutex mtx;
-		mutable boost::recursive_mutex mtx;
-		// DocString: FMTExceptionHandler::errorstowarnings
+		mutable boost::recursive_mutex m_mtx;
+		// DocString: FMTExceptionHandler::m_errorstowarnings
 		///If an error is in this list it's going to processed like a warning.
-		std::vector<Exception::FMTexc>errorstowarnings;
+		std::vector<Exception::FMTexc>m_errorstowarnings;
 		// DocString: FMTExceptionHandler::registred_threads
 		///This is the level of the last FMTException thrown by the FMTExceptionHandler.
-		std::set<boost::thread::id> registered_threads;
-		// DocString: FMTExceptionHandler::mainthreadid
+		std::set<boost::thread::id> m_registered_threads;
+		// DocString: FMTExceptionHandler::m_mainthreadid
 		///Main thread id
-		static boost::thread::id mainthreadid;
-		// DocString: FMTExceptionHandler::crashedthreadid
+		static boost::thread::id m_mainthreadid;
+		// DocString: FMTExceptionHandler::m_crashedthreadid
 		///The thread id of the crashed thread
-		static boost::thread::id crashedthreadid;
+		static boost::thread::id m_crashedthreadid;
 		// DocString: FMTExceptionHandler::threadcrashexceptions
 		///The exception throwed by the faulty thread...
-		std::exception_ptr threadcrashexception;
-		// DocString: FMTExceptionHandler::updateStatus
+		std::exception_ptr m_threadcrashexception;
+		// DocString: FMTExceptionHandler::_updateStatus
 		/**
 		@brief Update the status of the handler, adding to the warning or error counts based on the exception type.
 		@param[in] lexception the exception type.
 		@param[in] message the message of the exception.
 		@return the updated status message.
 		*/
-		std::string updateStatus(const FMTexc lexception, const std::string message);
-		// DocString: FMTExceptionHandler::needToRethrow
+		std::string _updateStatus(const FMTexc lexception, const std::string message);
+		// DocString: FMTExceptionHandler::_needToRethrow
 		/**
 		@brief Return true if nested exceptions are used and the exception is a function error that must be rethrown.
 		@return true if the exception must be rethrown else false.
 		*/
-		bool needToRethrow() const;
-		// DocString: FMTExceptionHandler::isMainThread()
+		bool _needToRethrow() const;
+		// DocString: FMTExceptionHandler::_isMainThread()
 		/**
 		@brief Return true if we are on the main thread.
 		@return true if on the main thread else false.
 		*/
-		bool isMainThread() const;
-		// DocString: FMTExceptionHandler::isThrowedOnThread()
+		bool _isMainThread() const;
+		// DocString: FMTExceptionHandler::_isThrowedOnThread()
 		/**
 		@brief Return true if an exception has been thrown on a thread.
 		@return true if an exception has been thrown on a thread else false.
 		*/
-		bool isThrowedOnThread() const;
-		// DocString: FMTExceptionHandler::isThisThreadThrowed()
+		bool _isThrowedOnThread() const;
+		// DocString: FMTExceptionHandler::_isThisThreadThrowed()
 		/**
 		@brief Return true if this thread has thrown.
 		@return true if this thread has thrown else false.
 		*/
-		bool isThisThreadThrowed() const;
+		bool _isThisThreadThrowed() const;
 		// DocString: FMTExceptionHandler::registerthread
 		/**
 		@brief Register a worker thread so the handler knows it is dealing with a slave thread and not the main one.
 		*/
-		void registerWorkerThread();
+		void _registerWorkerThread();
 		// DocString: FMTExceptionHandler::isregistered
 		/**
 		@brief Return true if the thread is registered.
 		@return true if the thread is registered else false.
 		*/
-		bool isThreadRegistered() const;
-		// DocString: FMTExceptionHandler::gutsOfPrintExceptions
+		bool _isThreadRegistered() const;
+		// DocString: FMTExceptionHandler::_gutsOfPrintExceptions
 		/**
 		@brief The guts of printExceptions.
 		@param[in] text the message of the exception.
@@ -282,23 +282,23 @@ namespace Exception
 		@param[in] lsection the section in which the exception occurred.
 		@param[in] logfirstlevel if true logs the first level.
 		*/
-		void gutsOfPrintExceptions(std::string text,
+		void _gutsOfPrintExceptions(std::string text,
 			const std::string& method, const int& line, const std::string& fil,
 			int& levelreference,Core::FMTsection lsection = Core::FMTsection::Empty,bool logfirstlevel = true);
-		// DocString: FMTExceptionHandler::gutsOfExceptionLog
+		// DocString: FMTExceptionHandler::_gutsOfExceptionLog
 		/**
 		@brief The guts of logging exceptions.
 		@param[in] texception the exception to log.
 		@param[in] level the nesting level.
 		*/
-		void gutsOfExceptionLog(const std::exception& texception,const int& level);
-		// DocString: FMTExceptionHandler::getLevel
+		void _gutsOfExceptionLog(const std::exception& texception,const int& level);
+		// DocString: FMTExceptionHandler::_getLevel
 		/**
 		@brief Get the level of an exception.
 		@param[in] p_exception the exception enum.
 		@return the exception level.
 		*/
-		FMTlev getLevel(const FMTexc p_exception) const;
+		FMTlev _getLevel(const FMTexc p_exception) const;
 	private:
 		// DocString: FMTExceptionHandler::serialize
 		/**
@@ -313,7 +313,7 @@ namespace Exception
 		{
 			ar& BOOST_SERIALIZATION_NVP(_exception);
 			ar& BOOST_SERIALIZATION_NVP(_logger);
-			ar& BOOST_SERIALIZATION_NVP(usenestedexceptions);
+			ar& BOOST_SERIALIZATION_NVP(m_usenestedexceptions);
 		}
 		#if defined _MSC_VER
 		// DocString: FMTScopedSeTranslator::m_SeTranslator

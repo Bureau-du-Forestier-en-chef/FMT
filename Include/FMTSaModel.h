@@ -205,27 +205,6 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
     // DocString: FMTSaModel::m_BestObjective
     ///The objective value of the best solution
     double m_BestObjective;
-    // DocString: FMTSaModel::WARM_UP_ITERATIONS
-    ///Number of iterations in the warm up
-    static const size_t m_WARM_UP_ITERATIONS = 1000;
-    // DocString: FMTSaModel::MINIMAL_ACCEPTED_MOVES
-    ///Number of iterations in the warm up
-    static const size_t m_MINIMAL_ACCEPTED_MOVES = 3;
-    // DocString: FMTSaModel::UPDATE_PERIOD_FACTOR
-   ///Factor multiplicator for period 1
-    static const size_t m_UPDATE_PERIOD_FACTOR = 5;
-    // DocString: FMTSaModel::SOLUTION_MERGE_ITERATIONS
-    ///Number of iterations on greedy merge
-    static const size_t m_SOLUTION_MERGE_ITERATIONS = 200;
-    // DocString: FMTSaModel::m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU
-    ///Number of iterations on greedy merge
-    static const size_t m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU = 5;
-    // DocString: FMTSaModel::m_TABOU_FLUSH
-    ///Number of iterations before flushing tabou
-    static const size_t m_TABOU_FLUSH = 100000;
-    // DocString: FMTSaModel::m_MOVE_SIZE_FACTOR
-    ///Factor to put on move size
-    static const size_t m_MOVE_SIZE_FACTOR = 20;
     // DocString: FMTSaModel(const FMTSeModel)
     /**
     @brief Construct a FMTSaModel from a FMTSeModel, for presolve use.

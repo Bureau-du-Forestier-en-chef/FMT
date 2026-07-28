@@ -27,14 +27,14 @@ namespace Core {
 			}
 			else {
 				bool dont_write = true;
-				value += "*YM " + std::string(mask) + "\n";
-				std::vector<std::string>modelslines(models.size());
+				value += "*YM " + std::string(m_mask) + "\n";
+				std::vector<std::string>modelslines(m_models.size());
 				for (const auto& data : m_yldnames)
 				{
 					modelslines[data.second.first] += data.first + ",";
 				}
 				size_t modelid = 0;
-				for (const std::unique_ptr<FMTYieldModel>& model : models)
+				for (const std::unique_ptr<FMTYieldModel>& model : m_models)
 				{
 					const std::string model_data = std::string(*model);
 					if (!model_data.empty())
@@ -61,7 +61,7 @@ namespace Core {
 
 	void FMTModelYieldHandler::setModel(Models::FMTModel* p_modelPtr)
 	{
-		for (const std::unique_ptr<FMTYieldModel>& model : models)
+		for (const std::unique_ptr<FMTYieldModel>& model : m_models)
 		{
 			model->setModel(p_modelPtr);
 		}
@@ -74,7 +74,7 @@ namespace Core {
 			FMTTimeYieldHandler newhandler(getMask());
 			bool gotallmodel = true;
 			size_t modelid = 0;
-			for (const std::unique_ptr<FMTYieldModel>& model : models)
+			for (const std::unique_ptr<FMTYieldModel>& model : m_models)
 				{
 				std::vector<std::vector<double>> values = model->getPeriodicValues();
 				if (values.empty())
@@ -116,23 +116,23 @@ namespace Core {
 		return FMTyldtype::FMTmodelyld;
 	}
 
-	FMTModelYieldHandler::FMTModelYieldHandler(const FMTMask& mask) :
-		FMTYieldHandler(mask),models(),m_yldnames()
+	FMTModelYieldHandler::FMTModelYieldHandler(const FMTMask& p_mask) :
+		FMTYieldHandler(p_mask),m_models(),m_yldnames()
 	{
 
 	}
 
 	FMTModelYieldHandler::FMTModelYieldHandler() :
-		FMTYieldHandler(), models(), m_yldnames()
+		FMTYieldHandler(), m_models(), m_yldnames()
 	{
 
 	}
 	FMTModelYieldHandler::FMTModelYieldHandler(const FMTModelYieldHandler& rhs) :
-		FMTYieldHandler(rhs), models(), m_yldnames(rhs.m_yldnames)
+		FMTYieldHandler(rhs), m_models(), m_yldnames(rhs.m_yldnames)
 	{
-		for (const std::unique_ptr<FMTYieldModel>& model : rhs.models)
+		for (const std::unique_ptr<FMTYieldModel>& model : rhs.m_models)
 		{
-			models.push_back(std::move(model->Clone()));
+			m_models.push_back(std::move(model->Clone()));
 		}
 	}
 
@@ -141,9 +141,9 @@ namespace Core {
 		if (this!=&rhs)
 		{
 			FMTYieldHandler::operator=(rhs);
-			for (const std::unique_ptr<FMTYieldModel>& model : rhs.models)
+			for (const std::unique_ptr<FMTYieldModel>& model : rhs.m_models)
 				{
-				models.push_back(std::move(model->Clone()));
+				m_models.push_back(std::move(model->Clone()));
 				}
 			m_yldnames = rhs.m_yldnames;
 
@@ -157,7 +157,7 @@ namespace Core {
 		std::map<std::string, size_t>modelmapping;
 		try {
 			size_t location = 0;
-			for (const std::unique_ptr<FMTYieldModel>& model : models)
+			for (const std::unique_ptr<FMTYieldModel>& model : m_models)
 			{
 				modelmapping[model->getModelName()] = location;
 				++location;
@@ -182,11 +182,11 @@ namespace Core {
 		try {
 			const size_t modelid = m_yldnames.at(yld).first;
 			const size_t yieldid = m_yldnames.at(yld).second;
-			const std::unique_ptr<FMTYieldModel>&model = models.at(modelid);
+			const std::unique_ptr<FMTYieldModel>&model = m_models.at(modelid);
 			//const std::vector<std::string>sources = model->GetYieldsOutputs();
 			/*if (lookat.find(yld) == lookat.end())
 			{
-				lookat.insert(yld);
+				m_lookat.insert(yld);
 			}
 			else {
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
@@ -203,7 +203,7 @@ namespace Core {
 
 	bool FMTModelYieldHandler::empty() const
 	{
-		return models.empty();
+		return m_models.empty();
 	}
 	size_t FMTModelYieldHandler::size() const
 	{
@@ -212,7 +212,7 @@ namespace Core {
 
 	void FMTModelYieldHandler::pushBackModel(const std::unique_ptr<FMTYieldModel>& model)
 	{
-		models.push_back(std::move(model->Clone()));
+		m_models.push_back(std::move(model->Clone()));
 	}
 	void FMTModelYieldHandler::setYield(const size_t& modelid, const size_t& yieldid, const std::string& yldname)
 	{
@@ -255,10 +255,10 @@ namespace Core {
 	{
 		try {
 			FMTModelYieldHandler newhandler(*this);
-			newhandler.models.clear();
-			for (const std::unique_ptr<FMTYieldModel>& yieldmodelptr : models)
+			newhandler.m_models.clear();
+			for (const std::unique_ptr<FMTYieldModel>& yieldmodelptr : m_models)
 				{
-				newhandler.models.push_back(yieldmodelptr->presolve(filter, newthemes));
+				newhandler.m_models.push_back(yieldmodelptr->presolve(filter, newthemes));
 				}
 			return std::unique_ptr<FMTYieldHandler>(new FMTModelYieldHandler(newhandler));
 		}
@@ -270,7 +270,7 @@ namespace Core {
 	}
 	void FMTModelYieldHandler::clearRandomYieldsCache()
 	{
-		for (std::unique_ptr<FMTYieldModel>& yieldModelPtr : models)
+		for (std::unique_ptr<FMTYieldModel>& yieldModelPtr : m_models)
 			{
 			yieldModelPtr->clearRandomYieldsCache();
 			}
@@ -281,10 +281,10 @@ namespace Core {
 	{
 		try {
 			FMTModelYieldHandler newhandler(*this);
-			newhandler.models.clear();
-			for (const std::unique_ptr<FMTYieldModel>& yieldmodelptr : models)
+			newhandler.m_models.clear();
+			for (const std::unique_ptr<FMTYieldModel>& yieldmodelptr : m_models)
 			{
-				newhandler.models.push_back(yieldmodelptr->postSolve(filter, basethemes));
+				newhandler.m_models.push_back(yieldmodelptr->postSolve(filter, basethemes));
 			}
 			return newhandler.FMTYieldHandler::postSolve(filter, basethemes);
 		}

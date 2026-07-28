@@ -44,8 +44,13 @@ class FMTExponentialSchedule : public FMTSaSchedule
 		@return a unique pointer to the cloned schedule.
 		*/
 		std::unique_ptr<FMTSaSchedule> Clone()const;
+        // DocString: FMTExponentialSchedule::setAnnealingRate
+        /**
+        @brief Set the annealing rate.
+        */
+        void setAnnealingRate(const double& p_annealingRate);
     private:
-        static const double m_ANNEALING_RATE;
+        double m_ANNEALING_RATE;
 
     };
 }

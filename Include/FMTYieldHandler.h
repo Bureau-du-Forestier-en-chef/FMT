@@ -369,10 +369,10 @@ public:
 	*/
 	virtual double getYieldLinearValue(const std::string&yldname, const FMTYieldRequest& request, bool allowoutofrange=true) const;
 protected:
-	FMTMask mask;
-	std::vector<int>bases;
-	mutable std::unordered_set<std::string>lookat;
-	// DocString: FMTYieldHandler::basePushData(std::map<std::string, FMTData, cmpYieldString>&, const std::string&, const double&)
+	FMTMask m_mask;
+	std::vector<int>m_bases;
+	mutable std::unordered_set<std::string>m_lookat;
+	// DocString: FMTYieldHandler::_basePushData(std::map<std::string, FMTData, cmpYieldString>&, const std::string&, const double&)
 	/**
 	@brief Push a value for a yield into the given elements.
 	@param[in,out] elements the elements.
@@ -380,8 +380,8 @@ protected:
 	@param[in] value the value.
 	@return true if the value is pushed else false.
 	*/
-	static bool basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const double& value);
-	// DocString: FMTYieldHandler::basePushData(std::map<std::string, FMTData, cmpYieldString>&, const std::string&, const FMTData&)
+	static bool _basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const double& value);
+	// DocString: FMTYieldHandler::_basePushData(std::map<std::string, FMTData, cmpYieldString>&, const std::string&, const FMTData&)
 	/**
 	@brief Push data for a yield into the given elements.
 	@param[in,out] elements the elements.
@@ -389,22 +389,22 @@ protected:
 	@param[in] data the data.
 	@return true if the data is pushed else false.
 	*/
-	static bool basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const FMTData& data);
-	// DocString: FMTYieldHandler::getChangesFrom
+	static bool _basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const FMTData& data);
+	// DocString: FMTYieldHandler::_getChangesFrom
 	/**
 	@brief Return the change of value from a target age over a peak step.
 	@param[in] targetage the target age.
 	@param[in] peakstep the peak step.
 	@return the change of value.
 	*/
-	double getChangesFrom(const int& targetage, const int& peakstep) const;
-	// DocString: FMTYieldHandler::getMaxBase
+	double _getChangesFrom(const int& targetage, const int& peakstep) const;
+	// DocString: FMTYieldHandler::_getMaxBase
 	/**
 	@brief Return the maximum base age for a request.
 	@param[in] request the yield request.
 	@return the maximum base age.
 	*/
-	int getMaxBase(const FMTYieldRequest& request) const;
+	int _getMaxBase(const FMTYieldRequest& request) const;
 private:
 	friend class boost::serialization::access;
 	// DocString: FMTYieldHandler::serialize
@@ -417,8 +417,8 @@ private:
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar& BOOST_SERIALIZATION_NVP(mask);
-		ar& BOOST_SERIALIZATION_NVP(bases);
+		ar& boost::serialization::make_nvp("mask", m_mask);
+		ar& boost::serialization::make_nvp("bases", m_bases);
 	}
 
 	

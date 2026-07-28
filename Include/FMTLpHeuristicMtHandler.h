@@ -32,20 +32,6 @@ namespace Heuristics
 	*/
 	class FMTEXPORT FMTLpHeuristicMtHandler
 		{
-		double initialsolution;
-		std::vector<FMTLpHeuristic*> heuristics;
-		// DocString: FMTLpHeuristicMtHandler::bestHeuristic
-		/**
-		@brief Return the index of the heuristic with the best solution.
-		@return the best heuristic index.
-		*/
-		size_t bestHeuristic() const;
-		// DocString: FMTLpHeuristicMtHandler::resetNumberOfThreads
-		/**
-		@brief Reset the number of threads used by each heuristic.
-		@param[in] ncpu the number of cpus.
-		*/
-		void resetNumberOfThreads(const unsigned int& ncpu) const;
 		public:
 		// DocString: FMTLpHeuristicMtHandler()
 		/**
@@ -89,6 +75,21 @@ namespace Heuristics
 		@return the best heuristic index.
 		*/
 		size_t greedySolve(const unsigned int& iterations, const double& maxtime) const;
+		private:
+		double m_initialsolution;
+		std::vector<FMTLpHeuristic*> m_heuristics;
+		// DocString: FMTLpHeuristicMtHandler::_bestHeuristic
+		/**
+		@brief Return the index of the heuristic with the best solution.
+		@return the best heuristic index.
+		*/
+		size_t _bestHeuristic() const;
+		// DocString: FMTLpHeuristicMtHandler::_resetNumberOfThreads
+		/**
+		@brief Reset the number of threads used by each heuristic.
+		@param[in] ncpu the number of cpus.
+		*/
+		void _resetNumberOfThreads(const unsigned int& ncpu) const;
 	    };
 }
 //BOOST_CLASS_EXPORT_KEY(Heuristics::FMTLpHeuristicMtHandler)

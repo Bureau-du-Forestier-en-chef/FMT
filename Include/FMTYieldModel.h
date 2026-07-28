@@ -134,9 +134,9 @@ namespace Core
 		*/
 		virtual void clearRandomYieldsCache();
 	protected:
-		std::string modelName;
-		std::vector<std::string> modelYields = {};
-		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
+		std::string m_modelName;
+		std::vector<std::string> m_modelYields = {};
+		const std::string m_JSON_PROP_MODEL_NAME = "modelFileName";
 		Models::FMTModel* m_modelPtr=nullptr;
 	private:
 		friend class boost::serialization::access;

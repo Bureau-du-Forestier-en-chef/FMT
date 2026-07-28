@@ -170,9 +170,6 @@ class FMTEXPORT FMTActualDevelopment : public FMTDevelopment
 */
 class FMTActualDevelopmentComparator
 	{
-		// DocString: FMTActionComparator::basedev
-		///The FMTDevelopment that we compare
-		const FMTDevelopment* basedev;
 	public:
 		// DocString: FMTActualDevelopmentComparator(const FMTDevelopment*)
 		/**
@@ -188,6 +185,10 @@ class FMTActualDevelopmentComparator
 		*/
 		bool operator()(const FMTActualDevelopment& actualdev) const;
 
+	private:
+		// DocString: FMTActualDevelopmentComparator::m_basedev
+		///The FMTDevelopment that we compare
+		const FMTDevelopment* m_basedev;
 	};
 
 }
