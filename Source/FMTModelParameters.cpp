@@ -26,10 +26,18 @@ namespace Models
         m_intparameters[MAX_MOVES] = 80000;
         m_intparameters[MAX_ACCEPTED_CYCLE_MOVES] = 500;
         m_intparameters[MAX_CYCLE_MOVES] = 1000;
+        m_intparameters[WARM_UP_ITERATIONS] = 1000;
+        m_intparameters[MINIMAL_ACCEPTED_MOVES] = 3;
+        m_intparameters[UPDATE_PERIOD_FACTOR] = 5;
+        m_intparameters[SOLUTION_MERGE_ITERATIONS] = 200;
+        m_intparameters[MAX_NON_ACCEPTED_MOVES_FOR_TABOU] = 5;
+        m_intparameters[TABOU_FLUSH] = 100000;
+        m_intparameters[MOVE_SIZE_FACTOR] = 20;
         //DBLparameters
         m_dblparameters[TOLERANCE]= FMT_DBL_TOLERANCE;
         m_dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;
         m_dblparameters[INITIAL_ACCEPTANCE_PROBABILITY] = 0.80;
+        m_dblparameters[ANNEALING_RATE] = 0.95;
         //BOOLparameters
         m_boolparameters[FORCE_PARTIAL_BUILD]=false;
         m_boolparameters[STRICTLY_POSITIVE]=false;

@@ -243,7 +243,7 @@ namespace Models
             const size_t MINIMUM_MOVES = size_t(1);
             const size_t MAXIMUM_MOVES = static_cast<size_t>(
                 static_cast<double>(p_MaxSize) * MAP_RATIO);
-            sizeOfMove = std::max(MINIMUM_MOVES,MAXIMUM_MOVES / m_MOVE_SIZE_FACTOR);
+            sizeOfMove = std::max(MINIMUM_MOVES, MAXIMUM_MOVES / static_cast<size_t>(getParameter(Models::FMTintmodelparameters::MOVE_SIZE_FACTOR)));
         }catch (...)
             {
             _exhandler->raiseFromCatch("", 
@@ -717,7 +717,7 @@ namespace Models
 
    void  FMTSaModel::_resetTabouMoves()
         {
-        if (m_TotalMoves % m_TABOU_FLUSH  == 0)
+        if (m_TotalMoves % static_cast<size_t>(getParameter(Models::FMTintmodelparameters::TABOU_FLUSH)) == 0)
             {
             for (auto& MOVE : m_NotAcceptedMovesCount)
                 {
@@ -829,7 +829,7 @@ namespace Models
     bool  FMTSaModel::_allowMove(const FMTsamove& move) const
     {
         try {
-            return  (m_NotAcceptedMovesCount.at(static_cast<int>(move) - 1) <= m_MINIMAL_ACCEPTED_MOVES);
+            return  (m_NotAcceptedMovesCount.at(static_cast<int>(move) - 1) <= static_cast<size_t>(getParameter(Models::FMTintmodelparameters::MINIMAL_ACCEPTED_MOVES)));
         }catch (...)
         {
             _exhandler->raiseFromCatch("", "FMTSaModel::_allowMove", __LINE__, __FILE__);
@@ -863,7 +863,7 @@ namespace Models
         for (int i = 1; i < static_cast<int>(FMTsamove::MoveCount);++i)
         {
             if (m_NotAcceptedMovesCount.at(i - 1)
-                <= m_MAX_NON_ACCEPTED_MOVES_FOR_TABOU)
+                <= static_cast<size_t>(getParameter(Models::FMTintmodelparameters::MAX_NON_ACCEPTED_MOVES_FOR_TABOU)))
             {
                 potentialMoves.push_back(static_cast<FMTsamove>(i));
             }
@@ -961,8 +961,8 @@ namespace Models
         const std::vector<double>actuals = getConstraintsValues(actual);
         std::vector<double>maximals = actuals;
         std::vector<double>deltasums(constraints.size(), 0);
-        size_t iterations = m_WARM_UP_ITERATIONS;
-        const double totalits = static_cast<double>(m_WARM_UP_ITERATIONS);
+        size_t iterations = static_cast<size_t>(getParameter(Models::FMTintmodelparameters::WARM_UP_ITERATIONS));
+        const double totalits = static_cast<double>(iterations);
         //double deltasum = 0;
         while (iterations > 0)
         {
@@ -1148,6 +1148,12 @@ namespace Models
             *_logger << "Generator initial state: " + std::to_string(m_generator()) << "\n";
 			const double INITIAL_TEMPERATURE = _warmup(m_BestSolution, ACTIONS_BINDING);
             m_CoolingSchedule->setInitialTemperature(INITIAL_TEMPERATURE);
+            if (Spatial::FMTExponentialSchedule* expschedule =
+                dynamic_cast<Spatial::FMTExponentialSchedule*>(m_CoolingSchedule.get()))
+            {
+                expschedule->setAnnealingRate(
+                    getParameter(Models::FMTdblmodelparameters::ANNEALING_RATE));
+            }
 			while (!isProvenOptimal())
 				{
                 m_CycleMoves.clear();
