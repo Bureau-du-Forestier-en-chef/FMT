@@ -270,7 +270,7 @@ class FMTEXPORT FMTTheme : public FMTObject
 		{
 			return m_attributenames;
 		}
-		// DocString: FMTTheme::presolve
+		// DocString: FMTTheme::preSolve
 		/**
 		@brief Presolve the theme, removing unused attributes based on the filter and assigning a new id and start.
 		@param[in,out] p_maskfilter the mask filter.
@@ -278,7 +278,7 @@ class FMTEXPORT FMTTheme : public FMTObject
 		@param[in,out] p_newstart the new start, incremented accordingly.
 		@return the presolved theme.
 		*/
-		FMTTheme presolve(FMTMaskFilter& p_maskfilter, size_t& p_newid, size_t& p_newstart) const;
+		FMTTheme preSolve(FMTMaskFilter& p_maskfilter, size_t& p_newid, size_t& p_newstart) const;
 		// DocString: FMTTheme::updateFromMask
 		/**
 		@brief Update the theme with the aggregates in a global mask or with newly created aggregates and return the new attribute value.

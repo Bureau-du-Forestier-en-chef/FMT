@@ -395,14 +395,14 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
         }
 
 
-	std::unique_ptr<FMTYieldHandler> FMTYieldHandler::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
+	std::unique_ptr<FMTYieldHandler> FMTYieldHandler::preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
 		{
 		std::unique_ptr<FMTYieldHandler> newhandler = this->clone();
 		try {
-			newhandler->m_mask = this->m_mask.presolve(filter, newthemes);
+			newhandler->m_mask = this->m_mask.preSolve(filter, newthemes);
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTYieldHandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return newhandler;
 		}

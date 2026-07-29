@@ -78,16 +78,16 @@ void exportModel()
 				"@DocString(FMTModel::getthemes)")
 			.method("setthemes", &Models::FMTModel::setThemes,
 				"@DocString(FMTModel::setthemes)")
-            .method("getactions",&Models::FMTModel::getactions,
-				"@DocString(FMTModel::getactions)")
+            .method("getactions",&Models::FMTModel::getActions,
+				"@DocString(FMTModel::getActions)")
 			.method("setactions", &Models::FMTModel::setActions,
 				"@DocString(FMTModel::setactions)")
 			.method("getoutputs", &Models::FMTModel::getOutputs, 
 				"@DocString(FMTModel::getoutputs)")
 			.method("setoutputs", &Models::FMTModel::setOutputs,
 				"@DocString(FMTModel::setoutputs)")
-			.method("getconstraints", &Models::FMTModel::getconstraints,
-				"@DocString(FMTModel::getconstraints)")
+			.method("getconstraints", &Models::FMTModel::getConstraints,
+				"@DocString(FMTModel::getConstraints)")
 			.method("setconstraints", &Models::FMTModel::setConstraints,
 				"@DocString(FMTModel::setconstraints)")
             .method("gettransitions",&Models::FMTModel::getTransitions,
@@ -104,7 +104,7 @@ void exportModel()
 				"@DocString(FMTModel::setlifespan)")
             .method("isValid",&Models::FMTModel::isValid,
 				"@DocString(FMTModel::isValid)")
-			.method("getpostsolvefilter", &Models::FMTModel::getPostsolveFilter,
+			.method("getpostsolvefilter", &Models::FMTModel::getPostSolveFilter,
 				"@DocString(FMTModel::getpostsolvefilter)")
 			.method("isoptimal", &Models::FMTModel::isOptimal,
 				"@DocString(FMTModel::isoptimal)")
@@ -158,10 +158,10 @@ void exportModel()
 			"@DocString(FMTLpSolver::isProvenOptimal)")
 		.method("getObjValue", &Models::FMTLpSolver::getObjValue,
 			"@DocString(FMTLpSolver::getObjValue)")
-		.method("writeLP", &Models::FMTLpSolver::writeLP,
-			"@DocString(FMTLpSolver::writeLP)")
-		.method("writeMPS", &Models::FMTLpSolver::writeMPS,
-			"@DocString(FMTLpSolver::writeMPS)");
+		.method("writeLP", &Models::FMTLpSolver::writeLp,
+			"@DocString(FMTLpSolver::writeLp)")
+		.method("writeMPS", &Models::FMTLpSolver::writeMps,
+			"@DocString(FMTLpSolver::writeMps)");
 
 
 	Rcpp::class_<Models::FMTSrModel>("FMTsrmodel", "@DocString(FMTSrModel)")
@@ -220,14 +220,14 @@ void exportModel()
 			"@DocString(FMTLpModel::getvariabilities)")
 		.method("getareavariabilities", &Models::FMTLpModel::getAreaVariabilities,
 			"@DocString(FMTLpModel::getareavariabilities)")
-		.method("writeLP", &Models::FMTLpModel::writeLP,
-			"@DocString(FMTLpModel::writeLP)")
+		.method("writeLP", &Models::FMTLpModel::writeLp,
+			"@DocString(FMTLpModel::writeLp)")
 		.method("setstrictlypositivesoutputsmatrix", &Models::FMTLpModel::setStrictlyPositivesOutputsMatrix,
 			"@DocString(FMTLpModel::setstrictlypositivesoutputsmatrix)")
 		.method("getObjValue", &Models::FMTLpModel::getObjValue,
 					"@DocString(FMTLpModel::getObjValue)")
-		.method("writeMPS", &Models::FMTLpModel::writeMPS,
-			"@DocString(FMTLpModel::writeMPS)");;
+		.method("writeMPS", &Models::FMTLpModel::writeMps,
+			"@DocString(FMTLpModel::writeMps)");;
 	
 
 	#endif

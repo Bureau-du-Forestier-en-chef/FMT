@@ -320,12 +320,12 @@ bool FMTOutputSource::isSubsetOf(const FMTOutputSource& rhs,
 	return false;
 	}
 
-FMTOutputSource FMTOutputSource::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
+FMTOutputSource FMTOutputSource::preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
 	{
 	FMTOutputSource newsource(*this);
 	if (newsource.isVariable())
 		{
-		newsource.m_mask = newsource.m_mask.presolve(filter, newthemes);
+		newsource.m_mask = newsource.m_mask.preSolve(filter, newthemes);
 		}
 	return newsource;
 	}

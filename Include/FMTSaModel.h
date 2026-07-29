@@ -69,13 +69,13 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         @return true if the solve succeeded else false.
         */
         virtual bool solve();
-        // DocString: FMTSaModel::presolve
+        // DocString: FMTSaModel::preSolve
         /**
         @brief Return a presolved copy of the model using a vector of developments and the actual transitions, reducing the model data if it is badly formulated.
         @param[in] optionaldevelopments the optional developments.
         @return the presolved model.
         */
-        virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+        virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
         // DocString: FMTSaModel::getCopy
         /**
         @brief Return a copy of the FMTModel for the selected period.
@@ -207,7 +207,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
     double m_BestObjective;
     // DocString: FMTSaModel(const FMTSeModel)
     /**
-    @brief Construct a FMTSaModel from a FMTSeModel, for presolve use.
+    @brief Construct a FMTSaModel from a FMTSeModel, for preSolve use.
     @param[in] rhs the FMTSeModel.
     */
     FMTSaModel(const FMTSeModel& rhs);
@@ -217,11 +217,11 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
     @return true if the disturbances must be written else false.
     */
     bool _doWriteDisturbances() const;
-    // DocString: FMTSaModel::_writeDisrturbances
+    // DocString: FMTSaModel::_writeDisturbances
     /**
     @brief Write the disturbances of the best solution.
     */
-    void _writeDisrturbances() const;
+    void _writeDisturbances() const;
         // DocString: FMTSaModel::getFromBindings
         /**
         @brief Get the selected actions from the bindings.

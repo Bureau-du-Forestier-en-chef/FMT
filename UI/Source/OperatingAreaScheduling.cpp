@@ -49,7 +49,7 @@ namespace Wrapper
 			const std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
 			std::vector<Core::FMTAction> newactions;
 			int youvert = 0;
-			for (Core::FMTAction& action : optimizationmodel.getactions())
+			for (Core::FMTAction& action : optimizationmodel.getActions())
 			{
 				if (action.useYield("YOUVERT"))
 				{

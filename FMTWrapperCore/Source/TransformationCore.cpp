@@ -20,7 +20,7 @@ Models::FMTModel FMTWrapperCore::Transformation::aggregateAllActions(
 	try
 	{
 		Parser::FMTModelParser ModelParser;
-		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(p_primary_path, { p_model }).at(0);
+		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readSchedules(p_primary_path, { p_model }).at(0);
 		std::vector<std::string> scheduleOrder = p_model.getSchedulesPriorities(SCHEDULES);
 
 		aggregatedModel = p_model.aggregateAllActions(p_aggregates, scheduleOrder);
@@ -64,7 +64,7 @@ Models::FMTModel FMTWrapperCore::Transformation::splitActions(const Models::FMTM
 
 		std::string outputPath;
 
-		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(p_primary_path, {p_model}).at(0);
+		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readSchedules(p_primary_path, {p_model}).at(0);
 		//ATTENTION il est important d'ecrire le model avant la schedule car modelParser.write va ecraser le fichier de schedule
 
 		ModelParser.writeToProject(p_primary_path, SPLITTED_MODEL);
@@ -92,7 +92,7 @@ Models::FMTModel FMTWrapperCore::Transformation::buildAction(const Models::FMTMo
 	{
 		Parser::FMTModelParser ModelParser;
 		std::string outputPath;
-		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(p_primaryPath, { p_model }).at(0);
+		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readSchedules(p_primaryPath, { p_model }).at(0);
 		BUILDED_MODEL = p_model.buildAction(p_actionName, p_targetYield);
 		BUILDED_MODEL.setName(p_scenario_name);
 
@@ -103,7 +103,7 @@ Models::FMTModel FMTWrapperCore::Transformation::buildAction(const Models::FMTMo
 		if (!SCHEDULES.empty())
 		{
 			Parser::FMTScheduleParser SCHEDULE_PARSER;
-			const std::vector<Core::FMTSchedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), 
+			const std::vector<Core::FMTSchedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getActions().begin(), 
 				p_model,p_targetYield, SCHEDULES);
 			std::string schedule_path = SCHEDULE_PARSER.getSchedulePath(p_primaryPath, p_scenario_name);
 			SCHEDULE_PARSER.write(NEW_SCHEDULE, schedule_path);

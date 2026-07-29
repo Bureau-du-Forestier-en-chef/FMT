@@ -157,21 +157,21 @@ class FMTEXPORT FMTTransitionMask : public FMTMaskFilter,public FMTSpec
         @param[in] newproportion the proportion to set.
         */
         void setProportion(double newproportion);
-		// DocString: FMTTransitionMask::presolve
+		// DocString: FMTTransitionMask::preSolve
 		/**
 		@brief Return a presolved copy of the transition mask.
 		@param[in] filter the mask filter.
 		@param[in] presolvedthemes the presolved themes.
 		@return the presolved transition mask.
 		*/
-		FMTTransitionMask presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const;
-        // DocString: FMTTransitionMask::presolveRef
+		FMTTransitionMask preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const;
+        // DocString: FMTTransitionMask::preSolveRef
         /**
         @brief Presolve the transition mask in place.
         @param[in] filter the mask filter.
         @param[in] presolvedthemes the presolved themes.
         */
-        void presolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes);
+        void preSolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes);
         // DocString: FMTTransitionMask::operator std::string
         /**
         @brief Return the string representation of the transition mask.

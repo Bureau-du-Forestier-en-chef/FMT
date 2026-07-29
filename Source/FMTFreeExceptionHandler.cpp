@@ -18,18 +18,18 @@ namespace Exception
 {
 
 #ifdef FMTWITHGDAL
-	FMTExceptionHandler* FMTFreeExceptionHandler::getCPLdata()
+	FMTExceptionHandler* FMTFreeExceptionHandler::getCplData()
 		{
 		return this;
 		}
-	void FMTFreeExceptionHandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
+	void FMTFreeExceptionHandler::handelCplError(int eErrClass, int nError, const char * pszErrorMsg)
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
         try{
-            FMTExceptionHandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+            FMTExceptionHandler::handelCplError(eErrClass,nError,pszErrorMsg);
             }catch(...)
                 {
-                raiseFromCatch("", "FMTFreeExceptionHandler::handelCPLerror", __LINE__, __FILE__);
+                raiseFromCatch("", "FMTFreeExceptionHandler::handelCplError", __LINE__, __FILE__);
                 }
 		}
 #endif
@@ -77,7 +77,7 @@ FMTException FMTFreeExceptionHandler::raise(FMTexc lexception, std::string text,
 }
 
 
-std::unique_ptr <FMTExceptionHandler> FMTFreeExceptionHandler::Clone() const
+std::unique_ptr <FMTExceptionHandler> FMTFreeExceptionHandler::clone() const
 {
 	return std::unique_ptr <FMTExceptionHandler>(new FMTFreeExceptionHandler(*this));
 }

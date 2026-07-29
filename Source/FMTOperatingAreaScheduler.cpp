@@ -577,7 +577,7 @@ namespace Heuristics
 		{
 		try {
 			Core::FMTOutputNode specifictarget(target);
-			const std::vector<Core::FMTAction>modelactions = model.getactions();
+			const std::vector<Core::FMTAction>modelactions = model.getActions();
 			//const std::unordered_map<size_t, Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> basedescriptors = maingraph.getPeriodVertices(maingraph.getFirstActivePeriod());
 			Core::FMTOutputNode areatarget(specifictarget);
 			Core::FMTMask areamask = areatarget.source.getMask();
@@ -1173,7 +1173,7 @@ namespace Heuristics
 			size_t complexity=0;
 			for (const auto& oparea : operatingareas)
 			{
-				complexity+=oparea.getNumberofscheme();
+				complexity+=oparea.getNumberOfScheme();
 			}
 			const std::string logof = "Complexity calculated by scheduler : " + std::to_string(complexity) + "\n";
 			(*_logger) << logof;
@@ -1242,8 +1242,8 @@ namespace Heuristics
 			size_t basecomplexity = 0;
 			for (const Heuristics::FMTOperatingAreaScheme& oparea : operatingareas)
 			{
-				complexity += oparea.getNumberofscheme();
-				basecomplexity += oparea.getNumberofsimplescheme();
+				complexity += oparea.getNumberOfScheme();
+				basecomplexity += oparea.getNumberOfSimpleScheme();
 			}
 			const double complexdif = static_cast<double>(complexity - basecomplexity);
 			const double complexprop = std::min((complexdif / static_cast<double>(basecomplexity)),1.0);

@@ -150,14 +150,14 @@ namespace Core
 		@brief Clear the cache of the handler.
 		*/
 		virtual void clearCache();
-		// DocString: FMTModelYieldHandler::presolve
+		// DocString: FMTModelYieldHandler::preSolve
 		/**
 		@brief Return a presolved copy of the handler.
 		@param[in] filter the mask filter.
 		@param[in] newthemes the presolved themes.
 		@return the presolved yield handler.
 		*/
-		virtual std::unique_ptr<FMTYieldHandler> presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const;
+		virtual std::unique_ptr<FMTYieldHandler> preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const;
 		// DocString: FMTModelYieldHandler::postSolve
 		/**
 		@brief Return a postsolved copy of the handler.

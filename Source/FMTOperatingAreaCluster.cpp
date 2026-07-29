@@ -70,7 +70,7 @@ namespace Heuristics
 		return maxincluster;
 		}
 
-    bool FMTOperatingAreaCluster::isValidarea(const double& area) const
+    bool FMTOperatingAreaCluster::isValidArea(const double& area) const
         {
         return (area >= getMinimalArea() && area <= getMaximalArea());
         }
@@ -95,7 +95,7 @@ namespace Heuristics
         m_maximalarea = newmaximalarea;
         }
 
-    bool FMTOperatingAreaCluster::isValidareabounds() const
+    bool FMTOperatingAreaCluster::isValidAreaBounds() const
         {
         return (getTotalPotentialArea() >= m_minimalarea && m_maximalarea >= m_minimalarea);
         }

@@ -468,39 +468,39 @@ class FMTEXPORT FMTMask
 		@return the refined mask.
 		*/
 		FMTMask refine(const FMTMask& mask, const std::vector<FMTTheme>& themes) const;
-		// DocString: FMTMask::getPostsolveMask
+		// DocString: FMTMask::getPostSolveMask
 		/**
 		@brief Turn off the bits of themes that are still active on a base postsolve mask.
 		@param[in] mask the mask used to turn off bits.
 		@param[in] themes the themes.
 		@return the postsolve mask.
 		*/
-		FMTMask getPostsolveMask(const FMTMask& mask,const std::vector<FMTTheme>& themes) const;
-		// DocString: FMTMask::presolve
+		FMTMask getPostSolveMask(const FMTMask& mask,const std::vector<FMTTheme>& themes) const;
+		// DocString: FMTMask::preSolve
 		/**
 		@brief Return a presolved mask with potentially less data using a filter and a subset of the original themes.
 		@param[in] filter the mask filter.
 		@param[in] presolvedthemes the presolved themes.
 		@return the presolved mask.
 		*/
-		FMTMask presolve(const FMTMaskFilter& filter,const std::vector<FMTTheme>&presolvedthemes) const;
-		// DocString: FMTMask::presolveRef
+		FMTMask preSolve(const FMTMaskFilter& filter,const std::vector<FMTTheme>&presolvedthemes) const;
+		// DocString: FMTMask::preSolveRef
 		/**
 		@brief Presolve this mask in place with potentially less data using a filter and a subset of the original themes.
 		@param[in] p_filter the mask filter.
 		@param[in] p_presolvedThemes the presolved themes.
 		@param[in] p_allowReallocation if true allows reallocation of the data.
 		*/
-		void presolveRef(const FMTMaskFilter& p_filter, const std::vector<FMTTheme>& p_presolvedThemes,bool p_allowReallocation = true);
+		void preSolveRef(const FMTMaskFilter& p_filter, const std::vector<FMTTheme>& p_presolvedThemes,bool p_allowReallocation = true);
 
-		// DocString: FMTMask::canPresolve
+		// DocString: FMTMask::canPreSolve
 		/**
 		@brief Return true if the mask can be presolved with the given filter and themes.
 		@param[in] p_filter the mask filter.
 		@param[in] p_presolvedThemes the presolved themes.
 		@return true if the mask can be presolved else false.
 		*/
-		bool canPresolve(const FMTMaskFilter& p_filter, const std::vector<FMTTheme>& p_presolvedThemes) const;
+		bool canPreSolve(const FMTMaskFilter& p_filter, const std::vector<FMTTheme>& p_presolvedThemes) const;
 		// DocString: FMTMask::postSolve
 		/**
 		@brief Return a postsolved mask using a filter and the original themes.
@@ -556,12 +556,12 @@ class FMTEXPORT FMTMask
 		size_t _countTheme(const FMTTheme& p_Theme) const;
 		// DocString: FMTMask::_getPresolveMas
 		/**
-		@brief Return the bitset used to presolve the mask.
+		@brief Return the bitset used to preSolve the mask.
 		@param[in] p_filter the mask filter.
 		@param[in] p_presolvedThemes the presolved themes.
-		@return the presolve bitset.
+		@return the preSolve bitset.
 		*/
-		boost::dynamic_bitset<uint8_t> _getPresolveMask(const FMTMaskFilter& p_filter,
+		boost::dynamic_bitset<uint8_t> _getPreSolveMask(const FMTMaskFilter& p_filter,
 								const std::vector<FMTTheme>& p_presolvedThemes) const;
 		// DocString: FMTMask::_setSubset
 		/**

@@ -139,39 +139,39 @@ namespace Models
 		@param[in] colindex the index of the column to delete.
 		*/
 		void deleteCol(const int& colindex);
-		// DocString: FMTMatrixBuild::numbernewRows
+		// DocString: FMTMatrixBuild::numberNewRows
 		/**
 		@brief Return the number of newly added rows in the matrix cache.
 		@return the number of newly added rows.
 		*/
-		inline int numbernewRows() const
+		inline int numberNewRows() const
 			{
 			return m_rowscount;
 			}
-		// DocString: FMTMatrixBuild::numbernewCols
+		// DocString: FMTMatrixBuild::numberNewCols
 		/**
 		@brief Return the number of newly added columns in the matrix cache.
 		@return the number of newly added columns.
 		*/
-		inline int numbernewCols() const
+		inline int numberNewCols() const
 			{
 			return m_colscount;
 			}
-		// DocString: FMTMatrixBuild::numberofdeletedRows
+		// DocString: FMTMatrixBuild::numberOfDeletedRows
 		/**
 		@brief Return the number of newly deleted rows in the matrix cache.
 		@return the number of newly deleted rows.
 		*/
-		inline int numberofdeletedRows() const
+		inline int numberOfDeletedRows() const
 			{
 			return static_cast<int>(m_deletedconstraints.size());
 			}
-		// DocString: FMTMatrixBuild::numberofdeletedCols
+		// DocString: FMTMatrixBuild::numberOfDeletedCols
 		/**
 		@brief Return the number of newly deleted columns in the matrix cache.
 		@return the number of newly deleted columns.
 		*/
-		inline int numberofdeletedCols() const
+		inline int numberOfDeletedCols() const
 			{
 			return static_cast<int>(m_deletedvariables.size());
 			}

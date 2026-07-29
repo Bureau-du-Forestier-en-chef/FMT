@@ -85,7 +85,7 @@ void FMTExceptionHandler::checkSignals() const
 
 #if defined  FMTWITHGDAL
 
-void FMTExceptionHandler::handelCPLerror(int eErrClass,int nError, const char * pszErrorMsg)
+void FMTExceptionHandler::handelCplError(int eErrClass,int nError, const char * pszErrorMsg)
 	{
 	//CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg
 	
@@ -93,15 +93,15 @@ void FMTExceptionHandler::handelCPLerror(int eErrClass,int nError, const char * 
     if (theerrorclass == CE_Failure || theerrorclass == CE_Fatal)
         {
 
-        raise(FMTexc::FMTGDALerror,std::string(pszErrorMsg),"FMTDefaultExceptionHandler::handelCPLerror",__LINE__, __FILE__);
+        raise(FMTexc::FMTGDALerror,std::string(pszErrorMsg),"FMTDefaultExceptionHandler::handelCplError",__LINE__, __FILE__);
         }else if(theerrorclass == CE_Warning)
             {
-            raise(FMTexc::FMTGDALwarning,std::string(pszErrorMsg),"FMTDefaultExceptionHandler::handelCPLerror",__LINE__, __FILE__);
+            raise(FMTexc::FMTGDALwarning,std::string(pszErrorMsg),"FMTDefaultExceptionHandler::handelCplError",__LINE__, __FILE__);
             }
 	}
 #endif
 
-FMTExceptionHandler* FMTExceptionHandler::getCPLdata()
+FMTExceptionHandler* FMTExceptionHandler::getCplData()
 {
 	return this;
 }

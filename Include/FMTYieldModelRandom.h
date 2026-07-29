@@ -44,7 +44,7 @@ namespace Core
 		@return Predicted random values ranging from the distribution lower to upper bound.
 		*/
 		const std::vector<double>predict(const Core::FMTYieldRequest& p_request) const;
-		// DocString: FMTYieldModelRandom::presolve
+		// DocString: FMTYieldModelRandom::preSolve
 		/**
 		@brief If the FMTYieldModelRandom contains Core classes it also need to be presolved when presolved is called on the FMTModel.
 		By default it will return the same FMTYieldModelRandom.
@@ -52,7 +52,7 @@ namespace Core
 		@param[in] p_newThemes the new themes of the presolved model.
 		@return a pointer to a presolved FMTYieldModel.
 		*/
-		 std::unique_ptr<FMTYieldModel> presolve(const FMTMaskFilter& p_filter,
+		 std::unique_ptr<FMTYieldModel> preSolve(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_newThemes) const;
 		// DocString: FMTYieldModelRandom::postSolve
 		/**
@@ -63,12 +63,12 @@ namespace Core
 		*/
 		std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_baseThemes) const;
-		// DocString: FMTYieldModelRandom::Clone
+		// DocString: FMTYieldModelRandom::clone
 		/**
-		@brief Clone this FMTYieldModel
+		@brief clone this FMTYieldModel
 		@return a cloned FMTYieldModel.
 		*/
-		std::unique_ptr<FMTYieldModel>Clone() const;
+		std::unique_ptr<FMTYieldModel>clone() const;
 		// DocString: FMTYieldModelRandom:: getModelType
 		/**
 		@brief Get the model type.

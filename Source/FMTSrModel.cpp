@@ -217,7 +217,7 @@ namespace Models
 												" for action " + actionit->first.getName(), 
 												"FMTSrModel::forceSolution", __LINE__, __FILE__);
 								}
-								//std::cout<<std::string(devit.first)<<" "+std::to_string(devit.second.at(0))<<" "+std::to_string(actionid)<<std::endl;//" "+this->getactions().at(actionid).getName()<<std::endl;
+								//std::cout<<std::string(devit.first)<<" "+std::to_string(devit.second.at(0))<<" "+std::to_string(actionid)<<std::endl;//" "+this->getActions().at(actionid).getName()<<std::endl;
 								varproportions.emplace(varit->second,devit.second.at(0));
 								
 							}
@@ -291,7 +291,7 @@ namespace Models
 												
 											}
 										}
-										//std::cout<<std::string(m_graph->getDevelopment(*vertex_iterator)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inArea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getName()<<std::endl;
+										//std::cout<<std::string(m_graph->getDevelopment(*vertex_iterator)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inArea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getActions().at(varit->first).getName()<<std::endl;
 										double proportion = 1;
 										if (setrest)
 											{
@@ -385,7 +385,7 @@ namespace Models
 										descriptors.push(m_graph->getDevelopment(path.getDevelopment(), lookup));
 									}
 								}
-								//std::cout<<std::string(m_graph->getDevelopment(first)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inArea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getName()<<std::endl;
+								//std::cout<<std::string(m_graph->getDevelopment(first)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inArea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getActions().at(varit->first).getName()<<std::endl;
 								double proportion = 1;
 								if (setrest)
 								{
@@ -1055,7 +1055,7 @@ namespace Models
 	void FMTSrModel::postSolve(const FMTModel& originalbasemodel)
 	{
 		try {
-			postsolveGraph(originalbasemodel);
+			postSolveGraph(originalbasemodel);
 			FMTModel::postSolve(originalbasemodel);
 		}catch (...)
 		{
@@ -1093,19 +1093,19 @@ namespace Models
 
 
 
-	std::unique_ptr<FMTModel>FMTSrModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTModel>FMTSrModel::preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 	{
 		try{
 			if (!m_graph->empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"Cannot presolve a srmodel with period(s) builded in m_graph->",
-					"FMTSrModel::presolve", __LINE__, __FILE__);
+					"FMTSrModel::preSolve", __LINE__, __FILE__);
 				}
-			return std::unique_ptr<FMTModel>(new FMTSrModel(std::move(*FMTModel::presolve(optionaldevelopments)),*m_graph,solver));
+			return std::unique_ptr<FMTModel>(new FMTSrModel(std::move(*FMTModel::preSolve(optionaldevelopments)),*m_graph,solver));
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTSrModel::presolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::preSolve", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTModel>(nullptr);
 	}
@@ -1178,7 +1178,7 @@ namespace Models
 				{
 					//Type II behavior
 				}else {//Else add a new transfer row.
-					m_graph->setConstraintID(*it, newconstraintID);
+					m_graph->setConstraintId(*it, newconstraintID);
 					if (m_graph->getTransferRow(*it, row_Starts, targetcols, elements))
 					{
 
@@ -1386,12 +1386,12 @@ namespace Models
 		return m_graph->getFirstActivePeriod();
 	}
 
-	void FMTSrModel::postsolveGraph(const FMTModel& originalbasemodel)
+	void FMTSrModel::postSolveGraph(const FMTModel& originalbasemodel)
 	{
 		try {
 			const std::vector<Core::FMTTheme>& postsolvethemes = dynamic_cast<const FMTSrModel*>(&originalbasemodel)->themes;
 			const std::vector<Core::FMTAction>& postsolveactions = dynamic_cast<const FMTSrModel*>(&originalbasemodel)->actions;
-			const Core::FMTMaskFilter postsolvefilter = this->getPostsolveFilter(originalbasemodel.getThemes(),originalbasemodel.getArea().begin()->getMask());
+			const Core::FMTMaskFilter postsolvefilter = this->getPostSolveFilter(originalbasemodel.getThemes(),originalbasemodel.getArea().begin()->getMask());
 			const std::vector<Core::FMTAction>& presolveactions = this->actions;
 			std::vector<int>actionmapping;
 			actionmapping.reserve(presolveactions.size());
@@ -1404,7 +1404,7 @@ namespace Models
 			
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTSrModel::postsolveGraph", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSrModel::postSolveGraph", __LINE__, __FILE__);
 		}
 	}
 

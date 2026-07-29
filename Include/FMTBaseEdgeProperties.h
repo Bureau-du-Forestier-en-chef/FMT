@@ -87,12 +87,12 @@ namespace Graph
 			{
 			return 100;
 			}
-		// DocString: FMTBaseEdgeProperties::getactionID
+		// DocString: FMTBaseEdgeProperties::getActionID
 		/**
 		@brief Return the action id of the edge.
 		@return the action id.
 		*/
-		inline int getactionID() const
+		inline int getActionID() const
 			{
 			return static_cast<int>(action);
 			}
@@ -105,12 +105,12 @@ namespace Graph
 			{
 			return action;
 			}
-		// DocString: FMTBaseEdgeProperties::setactionID
+		// DocString: FMTBaseEdgeProperties::setActionID
 		/**
 		@brief Set the action id of the edge.
 		@param[in] newid the new action id.
 		*/
-		void setactionID(const int& newid);
+		void setActionID(const int& newid);
 		// DocString: FMTBaseEdgeProperties::isAction
 		/**
 		@brief Return true if the edge action matches a given action.

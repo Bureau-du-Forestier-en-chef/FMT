@@ -149,7 +149,7 @@ std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties
 		return ignored;
 	}
 
-	void FMTOperatingAreaScheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>>& schemes,
+	void FMTOperatingAreaScheme::schemesToLp(const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>>& schemes,
 		const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& periodictargetednodes,
 		const std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>& totalareavertices,
 		Models::FMTLpSolver& solver,
@@ -706,7 +706,7 @@ void FMTOperatingAreaScheme::setConstraints(const std::vector<std::vector<Graph:
 	{
 	const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>> schemes = this->generateSchemes(vertices);
 	schemesperiods = schemesToPeriods(schemes, graph);
-	schemestoLP(schemes, vertices, totalareavertices, solver, primalsolution, graph, actionIDS);
+	schemesToLp(schemes, vertices, totalareavertices, solver, primalsolution, graph, actionIDS);
 	}
 
 
@@ -1241,9 +1241,9 @@ bool FMTOperatingAreaScheme::isDualBounded(const double* upperbounds) const
 	}
 
 
-FMTOperatingAreaScheme FMTOperatingAreaScheme::presolve(const Core::FMTMask& selectedmask, const std::vector<Core::FMTTheme>& presolvedthemes) const
+FMTOperatingAreaScheme FMTOperatingAreaScheme::preSolve(const Core::FMTMask& selectedmask, const std::vector<Core::FMTTheme>& presolvedthemes) const
 {
-	const FMTOperatingArea presolveoparea = FMTOperatingArea::presolveOperatingArea(selectedmask,presolvedthemes);
+	const FMTOperatingArea presolveoparea = FMTOperatingArea::preSolveOperatingArea(selectedmask,presolvedthemes);
 	return FMTOperatingAreaScheme(presolveoparea,this->openingtime, this->returntime,this->maxreturntime,this->repetition,this->greenup,this->startingperiod);
 }
 
@@ -1263,12 +1263,12 @@ bool FMTOperatingAreaScheme::operator != (const FMTOperatingAreaScheme& rhs) con
 	return (!(*this == rhs));
 	}
 
-size_t FMTOperatingAreaScheme::getNumberofscheme() const
+size_t FMTOperatingAreaScheme::getNumberOfScheme() const
 	{
 		return schemesperiods.size();
 	}
 
-size_t FMTOperatingAreaScheme::getNumberofsimplescheme() const
+size_t FMTOperatingAreaScheme::getNumberOfSimpleScheme() const
 	{
 	std::unordered_set<int>allperiods;
 	for (const std::vector<int>& schemeperiod : schemesperiods)

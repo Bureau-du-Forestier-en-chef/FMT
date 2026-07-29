@@ -307,14 +307,14 @@ public:
 	@return a map of yield names to their values.
 	*/
 	virtual std::map<std::string, std::vector<double>>getAllYieldsData(const int& maxbase)const;
-	// DocString: FMTYieldHandler::presolve
+	// DocString: FMTYieldHandler::preSolve
 	/**
 	@brief Return a presolved copy of the handler.
 	@param[in] filter the mask filter.
 	@param[in] newthemes the presolved themes.
 	@return the presolved yield handler.
 	*/
-	virtual std::unique_ptr<FMTYieldHandler> presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const;
+	virtual std::unique_ptr<FMTYieldHandler> preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const;
 	// DocString: FMTYieldHandler::postSolve
 	/**
 	@brief Return a postsolved copy of the handler.

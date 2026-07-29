@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
 	Parallel::FMTPlanningTask newplanningtask(0, length, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
-	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readschedules(primlocation, models);
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readSchedules(primlocation, models);
 	for (size_t modelid = 0; modelid<models.size(); ++modelid)
 		{
 		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTsolverinterface::MOSEK);

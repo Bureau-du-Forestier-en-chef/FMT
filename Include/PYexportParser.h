@@ -140,8 +140,8 @@ void exportParser()
                 .def("read",&Parser::FMTModelParser::read, readmodel_overloads(bp::args("con","lan","lif","are","yld","act","tr","out","opt"), "@DocString(FMTModel::read)"))
 				.def("readproject", &Parser::FMTModelParser::readproject, readproject_overloads(bp::args("primary_location","scenarios","readarea","readoutputs","readoptimize"), "@DocString(FMTModel::readproject)"))
 				.def("getconstraintsfromstring",&Parser::FMTModelParser::getConstraintsFromString, getconstraintsfromstring_overloads(bp::args("constraintstr", "model", "constants"), "@DocString(FMTModel::getconstraintsfromstring)"))
-				.def("readschedules", &Parser::FMTModelParser::readschedules,
-					"@DocString(FMTModelParser::readschedules)")
+				.def("readschedules", &Parser::FMTModelParser::readSchedules,
+					"@DocString(FMTModelParser::readSchedules)")
 				#ifdef FMTWITHGDAL
 				.def("writeresults", &Parser::FMTModelParser::writeResults,
 					writeresults_overloads(bp::args("model", "theoutputs", "firstperiod", "lastperiod", "outlocation", "outputlevel", "gdaldrivername"),

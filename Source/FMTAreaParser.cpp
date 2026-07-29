@@ -1808,7 +1808,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			}
 			
 		#ifdef FMTWITHGDAL
-			void FMTAreaParser::writeOAschedulerparameters(const std::string& location, const std::vector<Heuristics::FMTOperatingAreaScheme>& OAschemes,
+			void FMTAreaParser::writeOaSchedulerParameters(const std::string& location, const std::vector<Heuristics::FMTOperatingAreaScheme>& OAschemes,
 															std::vector<std::string> creationoptions) const
 			{
 				try {
@@ -1846,7 +1846,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 						newlayer->CreateField(&GUPField) != OGRERR_NONE)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-							"Cannote create new fields outputsdrift", "FMTAreaParser::writeOAschedulerparameters", __LINE__, __FILE__, m_section);
+							"Cannote create new fields outputsdrift", "FMTAreaParser::writeOaSchedulerParameters", __LINE__, __FILE__, m_section);
 					}
 					for (const Heuristics::FMTOperatingAreaScheme& scheme : OAschemes)
 						{
@@ -1854,7 +1854,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 						if (newfeature == NULL)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote generate new feature ", "FMTAreaParser::writeOAschedulerparameters", __LINE__, __FILE__, m_section);
+								"Cannote generate new feature ", "FMTAreaParser::writeOaSchedulerParameters", __LINE__, __FILE__, m_section);
 							//Failed to generate feature
 						}
 						newfeature->SetField("OA",std::string(scheme.getMask()).c_str());
@@ -1868,7 +1868,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 						if (newlayer->CreateFeature(newfeature) != OGRERR_NONE)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote create new feature id " + std::to_string(newlayer->GetFeatureCount()), "FMTAreaParser::writeOAschedulerparameters", __LINE__, __FILE__, m_section);
+								"Cannote create new feature id " + std::to_string(newlayer->GetFeatureCount()), "FMTAreaParser::writeOaSchedulerParameters", __LINE__, __FILE__, m_section);
 							//Failed to generate feature
 						}
 						OGRFeature::DestroyFeature(newfeature);
@@ -1878,7 +1878,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				}
 				catch (...)
 				{
-					_exhandler->printExceptions("", "FMTAreaParser::writeOAschedulerparameters", __LINE__, __FILE__);
+					_exhandler->printExceptions("", "FMTAreaParser::writeOaSchedulerParameters", __LINE__, __FILE__);
 				}
 			}
 		#endif
@@ -1886,7 +1886,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			std::vector<Heuristics::FMTOperatingAreaScheme> FMTAreaParser::getOperatingArea(const std::string& fichierShp, const std::vector<Core::FMTTheme>& themes, const int& numeroTheme, const int& startingperiod, const std::string& nomChampAge, const std::string& nomChampSuperficie, const std::string& nomChampStanlock, const std::string& fichierParam) const
 			{
 				Parser::FMTAreaParser areaParser;
-				std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, themes, numeroTheme, startingperiod);
+				std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOaSchedulerParameters(fichierParam, themes, numeroTheme, startingperiod);
 				for (const auto& op : opeareas)
 				{
 					if (op.getNeighborsPerimeter() > 0 || op.getGreenUp() > 0)
@@ -1899,7 +1899,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				return opeareas;
 			}
 
-			std::vector<Heuristics::FMTOperatingAreaScheme> FMTAreaParser::readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTTheme>& modelthemes, const int& themetarget,const int& startingperiod) const
+			std::vector<Heuristics::FMTOperatingAreaScheme> FMTAreaParser::readOaSchedulerParameters(const std::string& location, const std::vector<Core::FMTTheme>& modelthemes, const int& themetarget,const int& startingperiod) const
 			{
 				std::vector<Heuristics::FMTOperatingAreaScheme> schemes;
 				try{
@@ -1942,7 +1942,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 											else {
 												_exhandler->raise(Exception::FMTexc::FMTmissingfield,
 													"Missing required column " + title + " in parameters file",
-													"FMTAreaParser::readOAschedulerparameters", __LINE__, __FILE__);
+													"FMTAreaParser::readOaSchedulerParameters", __LINE__, __FILE__);
 											
 											}
 										}
@@ -1975,7 +1975,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 										{
 											_exhandler->raise(Exception::FMTexc::FMTmissingfield,
 												"Missing required column " + title + " for " + OA + " in parameters file",
-												"FMTAreaParser::readOAschedulerparameters", __LINE__, __FILE__);
+												"FMTAreaParser::readOaSchedulerParameters", __LINE__, __FILE__);
 										}
 									}
 									const int opt = std::stoi(splittedline[columns["OPT"]]);
@@ -2006,7 +2006,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 												{
 													_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 														" for " + OA + " opr not <= 1 and >= 0 in parameters file!",
-														"FMTAreaParser::readOAschedulerparameters", __LINE__, __FILE__);
+														"FMTAreaParser::readOaSchedulerParameters", __LINE__, __FILE__);
 												}
 											}
 										//}
@@ -2015,13 +2015,13 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 									{
 										_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 											" for " + OA + " opt not >= 1 in parameters file!",
-											"FMTAreaParser::readOAschedulerparameters", __LINE__, __FILE__);
+											"FMTAreaParser::readOaSchedulerParameters", __LINE__, __FILE__);
 									}
 									if (!(rep >= 1))
 									{
 										_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 											" for " + OA + " rep not >= 1 in parameters file!",
-											"FMTAreaParser::readOAschedulerparameters", __LINE__, __FILE__);
+											"FMTAreaParser::readOaSchedulerParameters", __LINE__, __FILE__);
 									}
 									double gup = 0;
 									double npe = 0;
@@ -2036,7 +2036,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 												{
 													_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 														" for " + OA + " npe not <= 1 and >= 0 in parameters file!",
-														"FMTAreaParser::readOAschedulerparameters", __LINE__, __FILE__);
+														"FMTAreaParser::readOaSchedulerParameters", __LINE__, __FILE__);
 												}
 											}
 										//}
@@ -2052,7 +2052,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 												{
 													_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 														" for " + OA + " gup >= 0 in parameters file!",
-														"FMTAreaParser::readOAschedulerparameters", __LINE__, __FILE__);
+														"FMTAreaParser::readOaSchedulerParameters", __LINE__, __FILE__);
 												}
 											}
 										//}
@@ -2067,7 +2067,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				}
 				catch (...)
 				{
-					_exhandler->printExceptions("", "FMTAreaParser::readOAschedulerparameters", __LINE__, __FILE__);
+					_exhandler->printExceptions("", "FMTAreaParser::readOaSchedulerParameters", __LINE__, __FILE__);
 				}
 				return schemes;
 			}

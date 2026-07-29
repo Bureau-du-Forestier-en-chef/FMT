@@ -85,12 +85,12 @@ namespace Core
 		@return the model yield names.
 		*/
 		const std::vector<std::string>& getModelYields() const;
-		// DocString: FMTYieldModel::Clone()
+		// DocString: FMTYieldModel::clone()
 		/**
-		@brief Clone the yield model.
+		@brief clone the yield model.
 		@return a unique pointer to the cloned yield model.
 		*/
-		virtual std::unique_ptr<FMTYieldModel>Clone() const = 0;
+		virtual std::unique_ptr<FMTYieldModel>clone() const = 0;
 		// DocString: FMTYieldModel::predict
 		/**
 		@brief Predict the yield for a request.
@@ -98,14 +98,14 @@ namespace Core
 		@return the predicted yield values.
 		*/
 		virtual const std::vector<double>predict(const Core::FMTYieldRequest& request) const = 0;
-		// DocString: FMTYieldModel::presolve
+		// DocString: FMTYieldModel::preSolve
 		/**
 		@brief Return a presolved copy of the yield model, or the same model by default.
 		@param[in] filter the mask filter.
 		@param[in] newthemes the presolved themes.
 		@return the presolved yield model.
 		*/
-		virtual std::unique_ptr<FMTYieldModel> presolve(const FMTMaskFilter& filter,
+		virtual std::unique_ptr<FMTYieldModel> preSolve(const FMTMaskFilter& filter,
 				const std::vector<FMTTheme>& newthemes) const;
 		// DocString: FMTYieldModel::postSolve
 		/**

@@ -75,7 +75,7 @@ Core::FMTOutputNode createBFECoptaggregate(Models::FMTModel& model)
             std::vector<Core::FMTAction> newactions;
             int youvert = 0;
 
-            for (Core::FMTAction& action : model.getactions())
+            for (Core::FMTAction& action : model.getActions())
             {
                 if (action.useYield("YOUVERT"))
                 {
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 	        optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
             optimizationmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
           
-            const int startingperiod = optimizationmodel.getconstraints().at(0).getPeriodLowerBound();
+            const int startingperiod = optimizationmodel.getConstraints().at(0).getPeriodLowerBound();
             optimizationmodel.doPlanning(true);
             const double initialobjectivevalue = optimizationmodel.getObjValue();
             const Core::FMTOutputNode nodeofoutput =  createBFECoptaggregate(optimizationmodel);

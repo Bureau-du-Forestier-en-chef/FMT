@@ -65,12 +65,12 @@ class FMTEXPORT FMTOutputNode
 		@return the hash value.
 		*/
 		size_t hashForValue() const;
-		// DocString: FMTOutputNode::allowCashdeduction
+		// DocString: FMTOutputNode::allowCashDeduction
 		/**
 		@brief Return true if the output node allows cache deduction.
 		@return true if the output node allows cache deduction else false.
 		*/
-		bool allowCashdeduction() const;
+		bool allowCashDeduction() const;
 		// DocString: FMTOutputNode::singlePeriod
 		/**
 		@brief Return true if the output node covers a single period.
@@ -140,12 +140,12 @@ class FMTEXPORT FMTOutputNode
 			{
 			return source.getOutputOrigin();
 			}
-		// DocString: FMTOutputNode::isActionbased
+		// DocString: FMTOutputNode::isActionBased
 		/**
 		@brief Return true if the output node is action based.
 		@return true if the output node is action based else false.
 		*/
-		inline bool isActionbased() const
+		inline bool isActionBased() const
 			{
 			return source.isAction();
 			}

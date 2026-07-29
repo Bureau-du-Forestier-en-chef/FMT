@@ -197,7 +197,7 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		@return the size of the schedule.
 		*/
 		size_t size() const;
-		// DocString: FMTSchedule::presolve
+		// DocString: FMTSchedule::preSolve
 		/**
 		@brief Presolve the schedule, potentially returning an empty schedule.
 		@param[in] filter the mask filter.
@@ -205,7 +205,7 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		@param[in] presolvedaction the presolved actions.
 		@return the presolved schedule.
 		*/
-		FMTSchedule presolve(const FMTMaskFilter& filter,
+		FMTSchedule preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& newthemes, const std::vector<FMTAction>&presolvedaction) const;
 		// DocString: FMTSchedule::postSolve
 		/**
@@ -220,9 +220,9 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		// DocString: FMTSchedule::setPeriod
 		/**
 		@brief Set the period of the schedule and of its developments.
-		@param[in] newperiod the period to set.
+		@param[in] newPeriod the period to set.
 		*/
-		void setPeriod(const int& newperiod);
+		void setPeriod(const int& newPeriod);
 		// DocString: FMTSchedule::getNewSchedule
 		/**
 		@brief Multiply this schedule by a factor and return it.

@@ -120,15 +120,15 @@ class FMTEXPORT FMTActualDevelopment : public FMTDevelopment
 		@brief Return a unique pointer of FMTDevelopment cloning the actual development.
 		@return a unique pointer to the cloned development.
 		*/
-		std::unique_ptr<FMTDevelopment> Clone() const override;
-		// DocString: FMTActualDevelopment::presolve
+		std::unique_ptr<FMTDevelopment> clone() const override;
+		// DocString: FMTActualDevelopment::preSolve
 		/**
-		@brief Presolve the actual development using the FMTDevelopment presolve function.
+		@brief Presolve the actual development using the FMTDevelopment preSolve function.
 		@param[in] filter the mask filter.
 		@param[in] presolvedthemes the presolved themes.
 		@return the presolved actual development.
 		*/
-		FMTActualDevelopment presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const;
+		FMTActualDevelopment preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const;
 		// DocString: FMTActualDevelopment::reduceLockToDeath
 		/**
 		@brief Reduce the lock of the actual development to its lifespan if the lifespan is shorter than the lock.

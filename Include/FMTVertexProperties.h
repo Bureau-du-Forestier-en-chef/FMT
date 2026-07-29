@@ -109,12 +109,12 @@ namespace Graph
 				{
 				return constraintID;
 				}
-			// DocString: FMTVertexProperties::setConstraintID
+			// DocString: FMTVertexProperties::setConstraintId
 			/**
 			@brief Set the constraint id of the vertex.
 			@param[in] ID the constraint id.
 			*/
-			void setConstraintID(const int& ID);
+			void setConstraintId(const int& ID);
 		};
 }
 

@@ -150,7 +150,7 @@ namespace Core
 		}
 	}
 
-		void FMTObject::setCPLhandler()
+		void FMTObject::setCplHandler()
 			{
 			#if defined  FMTWITHGDAL
 				if (_exhandler)
@@ -160,7 +160,7 @@ namespace Core
 						{
 						CPLPopErrorHandler();
 						}
-					CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCPLdata());
+					CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCplData());
 					}
 			#endif
 			}
@@ -234,7 +234,7 @@ namespace Core
 
 	FMTObject::FMTObject(const std::unique_ptr<Exception::FMTExceptionHandler> exhandler)
 	{
-		_exhandler = std::move(exhandler->Clone());
+		_exhandler = std::move(exhandler->clone());
 		_exhandler->passInLogger(_logger);
 		this->checkSignals();
 
@@ -264,9 +264,9 @@ namespace Core
 		{
 		try{
 			this->checkSignals();
-			_exhandler = exhandler->Clone();
+			_exhandler = exhandler->clone();
 			_exhandler->passInLogger(_logger);
-			setCPLhandler();
+			setCplHandler();
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTObject::passInExceptionHandler", __LINE__, __FILE__);

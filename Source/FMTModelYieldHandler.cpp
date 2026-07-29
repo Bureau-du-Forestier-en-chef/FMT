@@ -132,7 +132,7 @@ namespace Core {
 	{
 		for (const std::unique_ptr<FMTYieldModel>& model : rhs.m_models)
 		{
-			m_models.push_back(std::move(model->Clone()));
+			m_models.push_back(std::move(model->clone()));
 		}
 	}
 
@@ -143,7 +143,7 @@ namespace Core {
 			FMTYieldHandler::operator=(rhs);
 			for (const std::unique_ptr<FMTYieldModel>& model : rhs.m_models)
 				{
-				m_models.push_back(std::move(model->Clone()));
+				m_models.push_back(std::move(model->clone()));
 				}
 			m_yldnames = rhs.m_yldnames;
 
@@ -212,7 +212,7 @@ namespace Core {
 
 	void FMTModelYieldHandler::pushBackModel(const std::unique_ptr<FMTYieldModel>& model)
 	{
-		m_models.push_back(std::move(model->Clone()));
+		m_models.push_back(std::move(model->clone()));
 	}
 	void FMTModelYieldHandler::setYield(const size_t& modelid, const size_t& yieldid, const std::string& yldname)
 	{
@@ -251,20 +251,20 @@ namespace Core {
 	}
 
 
-	std::unique_ptr<FMTYieldHandler> FMTModelYieldHandler::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
+	std::unique_ptr<FMTYieldHandler> FMTModelYieldHandler::preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const
 	{
 		try {
 			FMTModelYieldHandler newhandler(*this);
 			newhandler.m_models.clear();
 			for (const std::unique_ptr<FMTYieldModel>& yieldmodelptr : m_models)
 				{
-				newhandler.m_models.push_back(yieldmodelptr->presolve(filter, newthemes));
+				newhandler.m_models.push_back(yieldmodelptr->preSolve(filter, newthemes));
 				}
 			return std::unique_ptr<FMTYieldHandler>(new FMTModelYieldHandler(newhandler));
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTModelYieldHandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTModelYieldHandler::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldHandler>(nullptr);
 	}

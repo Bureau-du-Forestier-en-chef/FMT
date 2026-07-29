@@ -71,8 +71,8 @@ namespace Parser
 
 	void FMTLandscapeParser::_processThemeLine(
 		const boost::smatch& kmatch, 
-		ThemeParsingContext& ctx, 
-		PreDeclarationContext& preContext, 
+		themeParsingContext& ctx, 
+		preDeclarationContext& preContext, 
 		std::vector<Core::FMTTheme>& themes, 
 		const Core::FMTConstants& constants, 
 		size_t& unknownID)
@@ -131,7 +131,7 @@ namespace Parser
 
 	void FMTLandscapeParser::_processAggregateLine(
 		const boost::smatch& kmatch, 
-		ThemeParsingContext& ctx, 
+		themeParsingContext& ctx, 
 		std::vector<Core::FMTTheme>& themes, 
 		const Core::FMTConstants& constants)
 	{
@@ -177,7 +177,7 @@ namespace Parser
 		}
 	}
 
-	void FMTLandscapeParser::_processAggregateValueLine(const std::string& line, ThemeParsingContext& ctx, std::vector<Core::FMTTheme>& themes)
+	void FMTLandscapeParser::_processAggregateValueLine(const std::string& line, themeParsingContext& ctx, std::vector<Core::FMTTheme>& themes)
 	{
 		const std::vector<std::string> splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 
@@ -221,7 +221,7 @@ namespace Parser
 
 	void FMTLandscapeParser::_processAttributeLine(
 		const std::string& line, 
-		ThemeParsingContext& ctx, 
+		themeParsingContext& ctx, 
 		const Core::FMTConstants& constants)
 	{
 		ctx.pasttheme = -1;
@@ -262,9 +262,9 @@ namespace Parser
 		}
 	}
 
-	FMTLandscapeParser::ThemeParsingContext::ThemeParsingContext() : id(0), start(0), stop(0), pasttheme(-1), aggregate_redefinition(false)
+	FMTLandscapeParser::themeParsingContext::themeParsingContext() : id(0), start(0), stop(0), pasttheme(-1), aggregate_redefinition(false)
 	{}
-	void FMTLandscapeParser::ThemeParsingContext::clear()
+	void FMTLandscapeParser::themeParsingContext::clear()
 	{
 		attributes.clear();
 		attributenames.clear();
@@ -275,16 +275,16 @@ namespace Parser
 		indexes_values.clear();
 	}
 
-	FMTLandscapeParser::PreDeclarationContext::PreDeclarationContext() : state(ParseState::NORMAL), currentKey("")
+	FMTLandscapeParser::preDeclarationContext::preDeclarationContext() : state(ParseState::NORMAL), currentKey("")
 	{}
-	void FMTLandscapeParser::PreDeclarationContext::clearTheme(std::string nameID)
+	void FMTLandscapeParser::preDeclarationContext::clearTheme(std::string nameID)
 	{
 		declarations.erase(nameID);
 	}
 
 	bool FMTLandscapeParser::_processPreDeclarationLine(
 		const std::string& line,
-		PreDeclarationContext& context, 
+		preDeclarationContext& context, 
 		const Core::FMTConstants& constants)
 	{
 		boost::smatch preDeclaredMatch;
@@ -396,8 +396,8 @@ namespace Parser
 		std::vector<Core::FMTTheme> themes;
 		try {
 			std::ifstream landstream(location);
-			ThemeParsingContext ctx;
-			PreDeclarationContext preContext;
+			themeParsingContext ctx;
+			preDeclarationContext preContext;
 			size_t unknownID = 1;
 	
 			if (FMTParser::tryOpening(landstream, location))

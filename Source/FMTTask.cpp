@@ -209,18 +209,18 @@ namespace Parallel
 	}
 	
 	/*
-	void FMTTask::setstatus(bool status)
+	void FMTTask::setStatus(bool status)
 	{
 		checkSignals();
 		boost::lock_guard<boost::recursive_mutex> guard(m_taskmutex);
 		done = status;
 	}
 
-	bool FMTTask::isdone() const
+	bool FMTTask::isDone() const
 	{
 		checkSignals();
 		boost::lock_guard<boost::recursive_mutex> guard(m_taskmutex);
-		const bool isdone = (done );
+		const bool isDone = (done );
 		return done;
 	}
 	*/

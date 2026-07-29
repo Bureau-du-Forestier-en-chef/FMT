@@ -163,8 +163,8 @@ void exportCore()
                 .def("__hash__",&boost::pyHash<Core::FMTMask>)
 				.def("issubsetof",issubsetof,
 					"@DocString(FMTMask::issubsetof)")
-				.def("presolve",&Core::FMTMask::presolve,
-					"@DocString(FMTMask::presolve)")
+				.def("presolve",&Core::FMTMask::preSolve,
+					"@DocString(FMTMask::preSolve)")
 				.def("postsolve",&Core::FMTMask::postSolve,
 					"@DocString(FMTMask::postsolve)");
 

@@ -27,7 +27,7 @@ std::vector<Heuristics::FMTOperatingAreaScheme> ObtenirOperatingArea(
     const std::string& fichierParam)
     {
         Parser::FMTAreaParser areaParser;
-        std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOAschedulerparameters(
+        std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOaSchedulerParameters(
             fichierParam,
             themes,
             numeroTheme - 1,
@@ -58,7 +58,7 @@ Core::FMTOutputNode createBFECoptaggregate(Models::FMTModel& model)
             std::vector<Core::FMTAction> newactions;
             int youvert = 0;
 
-            for (Core::FMTAction& action : model.getactions())
+            for (Core::FMTAction& action : model.getActions())
             {
                 if (action.useYield("YOUVERT"))
                 {
@@ -172,7 +172,7 @@ else
             optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 	        optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); 
             // pour gérer les variables négatives
-            //const int startingperiod = optimizationmodel.getconstraints().at(0).getPeriodLowerBound();
+            //const int startingperiod = optimizationmodel.getConstraints().at(0).getPeriodLowerBound();
             const int startingperiod = optimizationmodel.getParameter(Models::FMTintmodelparameters::UPDATE);
             const Core::FMTOutputNode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             Core::FMTOutput adm7m;
@@ -216,7 +216,7 @@ else
                 noptimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
                 noptimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
                 noptimizationmodel.Models::FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-                const std::vector<Core::FMTSchedule> schedules = modelparser.readschedules(
+                const std::vector<Core::FMTSchedule> schedules = modelparser.readSchedules(
                     "../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
                 // On regarde si on est capable de relire ce qu'on vient de créer
                 noptimizationmodel.doPlanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 

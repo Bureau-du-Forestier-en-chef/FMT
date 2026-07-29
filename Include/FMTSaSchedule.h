@@ -80,12 +80,12 @@ class FMTSaSchedule
         @return the initial temperature.
         */
         double getInitialTemp() const;
-        // DocString: FMTSaSchedule::Clone
+        // DocString: FMTSaSchedule::clone
         /**
         @brief Return a clone of the FMTSaSchedule.
         @return a unique pointer to the cloned schedule.
         */
-        virtual std::unique_ptr<FMTSaSchedule> Clone()const;
+        virtual std::unique_ptr<FMTSaSchedule> clone()const;
     protected:
         std::string m_ScheduleType;
         size_t m_Level;

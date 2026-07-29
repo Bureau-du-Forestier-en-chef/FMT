@@ -26,7 +26,7 @@ Parser::FMTModelParser FMTFormCache::GetConfiguredParser() const
 		}
 		const FMTexceptionhandlerwarning* handler = GetFormHandler();
 		std::unique_ptr<Exception::FMTExceptionHandler> handlerClone =
-			handler->Clone();
+			handler->clone();
 		parser.passInExceptionHandler(handlerClone);
 	}
 	catch (...)

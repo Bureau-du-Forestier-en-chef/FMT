@@ -179,7 +179,7 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 		@return true if both transitions have a different name else false.
 		*/
         bool operator != (const FMTTransition& rhs) const;
-		// DocString: FMTTransition::presolve
+		// DocString: FMTTransition::preSolve
 		/**
 		@brief Return a presolved transition based on a filter, the original themes and the new presolved themes.
 		@param[in] filter the mask filter.
@@ -188,10 +188,10 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 		@param[in] compressdata if true compresses the data.
 		@return the presolved transition.
 		*/
-		FMTTransition presolve(const FMTMaskFilter& filter,
+		FMTTransition preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			std::vector<FMTTheme>& newthemes,bool compressdata=false) const;
-		// DocString: FMTTransition::presolveRef
+		// DocString: FMTTransition::preSolveRef
 		/**
 		@brief Presolve the transition in place based on a filter, the original themes and the new presolved themes.
 		@param[in] p_filter the mask filter.
@@ -199,7 +199,7 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 		@param[in,out] p_newthemes the presolved themes.
 		@param[in] p_compressdata if true compresses the data.
 		*/
-		void presolveRef(const FMTMaskFilter& p_filter,
+		void preSolveRef(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_originalThemes,
 			std::vector<FMTTheme>& p_newthemes, bool p_compressdata = false);
 	protected:

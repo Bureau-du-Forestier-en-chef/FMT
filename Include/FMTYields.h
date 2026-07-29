@@ -130,12 +130,12 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		@return a map of yield names to their values.
 		*/
 		//std::vector<double>get(std::vector<FMTYieldRequest>& requests) const;
-		// DocString: FMTYields::getsingle
+		// DocString: FMTYields::getSingle
 		/**
 		@brief Get the yield value for a development, looking at age, period, lock and mask.
 		@return the yield value.
 		*/
-		//double getsingle(const FMTDevelopment& dev,const std::string& target) const;
+		//double getSingle(const FMTDevelopment& dev,const std::string& target) const;
 		//std::map<std::string,double>getYlds(const FMTDevelopment& dev,const FMTSpec& spec) const;
 		// DocString: FMTYields::getYlds
 		/**
@@ -184,7 +184,7 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		@param[in] p_other the other yields.
 		*/
 		void reserve(const FMTYields& p_other);
-		// DocString: FMTYields::presolve
+		// DocString: FMTYields::preSolve
 		/**
 		@brief Return a presolved FMTYields section, removing useless data.
 		@param[in] filter the mask filter.
@@ -192,17 +192,17 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		@param[in] newthemes the presolved themes.
 		@return the presolved yields.
 		*/
-		FMTYields presolve(const FMTMaskFilter& filter,
+		FMTYields preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			const std::vector<FMTTheme>& newthemes) const;
-		// DocString: FMTYields::presolveRef
+		// DocString: FMTYields::preSolveRef
 		/**
 		@brief Presolve the FMTYields section in place, removing useless data.
 		@param[in] p_filter the mask filter.
 		@param[in] p_originalThemes the original themes.
 		@param[in] p_newThemes the presolved themes.
 		*/
-		void presolveRef(const FMTMaskFilter& p_filter,
+		void preSolveRef(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_originalThemes,
 			const std::vector<FMTTheme>& p_newThemes);
 		// DocString: FMTYields::getStacked

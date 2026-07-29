@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
 	optmodel.doPlanning(true);
-	//optmodel.writeLP("D:/FMT/build/release/tests/testmodelwriter/strategic");
+	//optmodel.writeLp("D:/FMT/build/release/tests/testmodelwriter/strategic");
 	//return 0;
 	modelparser.write(optmodel, outdir);
 	const double initobjvalue = optmodel.getObjValue();

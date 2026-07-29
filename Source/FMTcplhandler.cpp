@@ -21,7 +21,7 @@ namespace Exception
 		FMTExceptionHandler* handler = reinterpret_cast<FMTExceptionHandler*>(CPLGetErrorHandlerUserData());
 		if (handler)
 		{
-			handler->handelCPLerror(eErrClass, nError, pszErrorMsg);
+			handler->handelCplError(eErrClass, nError, pszErrorMsg);
 		}
 	}
 #endif

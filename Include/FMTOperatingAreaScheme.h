@@ -122,7 +122,7 @@ namespace Heuristics
 		@return the potential schemes.
 		*/
 		std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>> generateSchemes(const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& vertices);
-		// DocString: FMTOperatingAreaScheme::schemestoLP
+		// DocString: FMTOperatingAreaScheme::schemesToLp
 		/**
 		@brief Fill the opening constraints and binaries and add the newly formulated constraints and binaries to the solver interface, keeping the model linear.
 		@param[in] schemes the generated schemes.
@@ -133,7 +133,7 @@ namespace Heuristics
 		@param[in] maingraph the main graph.
 		@param[in] actionIDS the action ids.
 		*/
-		void schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>>& schemes,
+		void schemesToLp(const std::vector<std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>>& schemes,
 			const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& periodictargetednodes,
 			const std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>& totalareavertices,
 			Models::FMTLpSolver& solver,
@@ -528,26 +528,26 @@ namespace Heuristics
 			@brief Default destructor for FMTOperatingAreaScheme.
 			*/
 			~FMTOperatingAreaScheme()=default;
-			// DocString: FMTOperatingAreaScheme::presolve
+			// DocString: FMTOperatingAreaScheme::preSolve
 			/**
 			@brief Return a presolved FMTOperatingAreaScheme using a mask and a subset of the original themes.
 			@param[in] selectedmask the selected mask.
 			@param[in] presolvedthemes the presolved themes.
 			@return the presolved operating area scheme.
 			*/
-			FMTOperatingAreaScheme presolve(const Core::FMTMask& selectedmask,const std::vector<Core::FMTTheme>&presolvedthemes) const;
-			// DocString: FMTOperatingAreaScheme::getNumberofscheme
+			FMTOperatingAreaScheme preSolve(const Core::FMTMask& selectedmask,const std::vector<Core::FMTTheme>&presolvedthemes) const;
+			// DocString: FMTOperatingAreaScheme::getNumberOfScheme
 			/**
-			@brief Return the number of schemes of the operating area, only usable after schemestoLP has been called.
+			@brief Return the number of schemes of the operating area, only usable after schemesToLp has been called.
 			@return the number of schemes.
 			*/
-			size_t getNumberofscheme() const;
-			// DocString: FMTOperatingAreaScheme::getNumberofsimplescheme
+			size_t getNumberOfScheme() const;
+			// DocString: FMTOperatingAreaScheme::getNumberOfSimpleScheme
 			/**
 			@brief Return the number of simple schemes with a fixed return time and opening time.
 			@return the number of simple schemes.
 			*/
-			size_t getNumberofsimplescheme() const;
+			size_t getNumberOfSimpleScheme() const;
 			// DocString: FMTOperatingAreaScheme::getRejectedNodesCid
 			/**
 			@brief Return the constraint id of the rejected nodes.

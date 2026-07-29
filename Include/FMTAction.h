@@ -104,7 +104,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		@brief Update the action by setting the bounds and shrinking the list, for optimization.
 		*/
 		void update() override;
-		// DocString: FMTAction::presolve
+		// DocString: FMTAction::preSolve
 		/**
 		@brief Presolve the action by eliminating specifications and presolving the masks; the returned action can be empty.
 		@param[in] filter the mask filter.
@@ -113,10 +113,10 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		@param[in] compressdata if true compresses the data.
 		@return the presolved action.
 		*/
-		FMTAction presolve(const FMTMaskFilter& filter,
+		FMTAction preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			std::vector<FMTTheme>& newthemes, bool compressdata = false) const;
-		// DocString: FMTAction::presolveRef
+		// DocString: FMTAction::preSolveRef
 		/**
 		@brief Presolve the action in place by eliminating specifications and presolving the masks; the action can become empty.
 		@param[in] p_filter the mask filter.
@@ -124,7 +124,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		@param[in,out] p_newthemes the presolved themes.
 		@param[in] p_compressdata if true compresses the data.
 		*/
-		void presolveRef(const FMTMaskFilter& p_filter,
+		void preSolveRef(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_originalthemes,
 			std::vector<FMTTheme>& p_newthemes, bool p_compressdata = false);
 		// DocString: FMTAction::getAgeLowerBound

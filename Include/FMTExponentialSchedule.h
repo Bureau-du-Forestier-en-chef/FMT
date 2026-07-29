@@ -38,12 +38,12 @@ class FMTExponentialSchedule : public FMTSaSchedule
         @brief Reduce the temperature using the exponential annealing rate.
         */
         void reduceTemp();
-		// DocString: FMTExponentialSchedule::Clone
+		// DocString: FMTExponentialSchedule::clone
 		/**
 		@brief Return a clone of the FMTExponentialSchedule.
 		@return a unique pointer to the cloned schedule.
 		*/
-		std::unique_ptr<FMTSaSchedule> Clone()const;
+		std::unique_ptr<FMTSaSchedule> clone()const;
         // DocString: FMTExponentialSchedule::setAnnealingRate
         /**
         @brief Set the annealing rate.

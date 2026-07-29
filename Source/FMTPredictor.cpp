@@ -53,7 +53,7 @@ namespace Graph
 		{
 			if (edgeprop != nullptr)
 			{
-				if (edgeprop->getactionID() < 0)
+				if (edgeprop->getActionID() < 0)
 				{
 					if(withGCBMid)
 					{
@@ -65,9 +65,9 @@ namespace Graph
 				else {
 					if(withGCBMid)
 					{
-						m_sourceactions.push_back(actions.at(edgeprop->getactionID()).getGCBMActionId());
+						m_sourceactions.push_back(actions.at(edgeprop->getActionID()).getGCBMActionId());
 					}else{
-						m_sourceactions.push_back(edgeprop->getactionID());
+						m_sourceactions.push_back(edgeprop->getActionID());
 					}
 					
 				}

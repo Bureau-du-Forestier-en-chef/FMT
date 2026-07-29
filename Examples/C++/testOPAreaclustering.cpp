@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	{
 		optmodel.buildPeriod();
 	}
-	std::vector<Core::FMTConstraint>allconstraints = optmodel.getconstraints();
+	std::vector<Core::FMTConstraint>allconstraints = optmodel.getConstraints();
 	const Core::FMTConstraint objective = allconstraints.at(0);
 	allconstraints.erase(allconstraints.begin());
 	for (const Core::FMTConstraint& constraint : allconstraints)

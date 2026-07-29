@@ -52,12 +52,12 @@ int main(int argc, char *argv[])
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 		//Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
+		const std::vector<Core::FMTSchedule>schedules = modelparser.readSchedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
 		//optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
-		//modelparser.write(*optimizationmodel.presolve(), "D:/test/");
+		//modelparser.write(*optimizationmodel.preSolve(), "D:/test/");
 		optimizationmodel.doPlanning(false, schedules);
 		/*for (size_t period = 1; period <= 6; ++period)
 			{

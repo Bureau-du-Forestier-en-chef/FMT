@@ -46,15 +46,15 @@ namespace Core
 	}
 
 
-	std::unique_ptr<FMTYieldModel> FMTYieldModelUnitCoverage::presolve(const FMTMaskFilter& p_filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelUnitCoverage::preSolve(const FMTMaskFilter& p_filter,
 		const std::vector<FMTTheme>& p_newThemes) const
 	{
 		FMTYieldModelUnitCoverage newPresolved(*this);
 		try {
-			newPresolved.m_mask = newPresolved.m_mask.presolve(p_filter, p_newThemes);
+			newPresolved.m_mask = newPresolved.m_mask.preSolve(p_filter, p_newThemes);
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch(getModelName(), "FMTYieldModelUnitCoverage::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelName(), "FMTYieldModelUnitCoverage::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(new FMTYieldModelUnitCoverage(newPresolved));
 	}
@@ -67,7 +67,7 @@ namespace Core
 		return std::unique_ptr<FMTYieldModel>(new FMTYieldModelUnitCoverage(newPostsolved));
 	}
 
-	std::unique_ptr<FMTYieldModel>FMTYieldModelUnitCoverage::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelUnitCoverage::clone() const
 	{
 		return std::unique_ptr<FMTYieldModel>(new FMTYieldModelUnitCoverage(*this));
 	}

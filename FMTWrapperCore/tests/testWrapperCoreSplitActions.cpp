@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 	const Models::FMTModel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODELS.at(0), primary_path, splitted, splittedMask, output_scenario_name);
 	
 	// On vérifie si on a plus d'actions dans le nouveau model
-	if (SPLITTED_MODEL.getactions().size() <= MODELS.at(0).getactions().size())
+	if (SPLITTED_MODEL.getActions().size() <= MODELS.at(0).getActions().size())
 	{
 		throw Exception::FMTexc::FMTinvalid_action;
 	}

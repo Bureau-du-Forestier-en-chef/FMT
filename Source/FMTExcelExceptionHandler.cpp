@@ -69,7 +69,7 @@ namespace Exception
 		return excp;
 		}
 
-	std::unique_ptr <FMTExceptionHandler> FMTExcelExceptionHandler::Clone() const
+	std::unique_ptr <FMTExceptionHandler> FMTExcelExceptionHandler::clone() const
 	{
 		return std::unique_ptr<FMTExceptionHandler>(new FMTExcelExceptionHandler(*this));
 	}

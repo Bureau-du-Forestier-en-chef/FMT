@@ -480,7 +480,7 @@ namespace Core{
 		return value;
 		}
 
-	std::unique_ptr<FMTDevelopment> FMTDevelopment::Clone() const
+	std::unique_ptr<FMTDevelopment> FMTDevelopment::clone() const
 		{
 		return std::unique_ptr<FMTDevelopment>(new FMTDevelopment(*this));
 		}

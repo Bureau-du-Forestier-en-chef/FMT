@@ -144,19 +144,19 @@ void  FMTForest::setLastThemeWithArea(const std::vector<Core::FMTActualDevelopme
 
 }
 
-FMTForest FMTForest::presolve(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const
+FMTForest FMTForest::preSolve(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const
 	{
 	FMTForest newforest(*this);
 	try{
 		for (std::map<FMTCoordinate, Core::FMTDevelopment>::iterator coordit = newforest.m_mapping.begin();
 			coordit != newforest.m_mapping.end(); ++coordit)
 			{
-			coordit->second = Core::FMTActualDevelopment(coordit->second, 0.0).presolve(filter, presolvedthemes);
+			coordit->second = Core::FMTActualDevelopment(coordit->second, 0.0).preSolve(filter, presolvedthemes);
 			}
 	
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTForest::presolve", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTForest::preSolve", __LINE__, __FILE__);
 	}
 	
 	

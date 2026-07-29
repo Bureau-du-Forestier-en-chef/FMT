@@ -36,7 +36,7 @@ int main()
 	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
 	//mparser.write(models.at(0), "E:/Projects/BFEC_MachineLearning/test/");
 	Models::FMTSesModel simulationmodel(models.at(0));
-	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readSchedules(primarylocation, models);
 	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
 	{
@@ -45,7 +45,7 @@ int main()
 	simulationmodel.setTransitions(strans);
 	std::vector<Core::FMTConstraint>newconstraints;
 	size_t id = 0;
-	for (const Core::FMTConstraint& cnt : simulationmodel.getconstraints())
+	for (const Core::FMTConstraint& cnt : simulationmodel.getConstraints())
 	{
 		if (id<2)
 		{

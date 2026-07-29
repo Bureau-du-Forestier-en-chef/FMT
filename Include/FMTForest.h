@@ -27,7 +27,7 @@ namespace Spatial
     /**
     @brief Spatially referenced layer of Core::FMTDevelopment representing the forest.
     @details FMTForest is a FMTLayer mapping each spatial cell to a FMTDevelopment and provides
-    growth, area aggregation and presolve / postsolve operations on the forest.
+    growth, area aggregation and preSolve / postsolve operations on the forest.
     */
     class FMTEXPORT FMTForest: public FMTLayer<Core::FMTDevelopment>
         {
@@ -122,14 +122,14 @@ namespace Spatial
 		@param[in] period the period to set.
 		*/
 		void setPeriod(int period);
-		// DocString: FMTForest::presolve
+		// DocString: FMTForest::preSolve
 		/**
 		@brief Return a presolved copy of the forest by presolving each development with the mask filter.
 		@param[in] filter the mask filter to apply.
 		@param[in] presolvedthemes the presolved themes.
 		@return the presolved forest.
 		*/
-		FMTForest presolve(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const;
+		FMTForest preSolve(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const;
 		// DocString: FMTForest::postSolve
 		/**
 		@brief Return a postsolved copy of the forest by postsolving each development mask.
