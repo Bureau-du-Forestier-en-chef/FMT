@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -14,19 +14,19 @@ namespace Parser{
 
 FMTLifespanParser::FMTLifespanParser():FMTParser()
     {
-	setSection(Core::FMTsection::Lifespan);
+	_setSection(Core::FMTsection::Lifespan);
     }
 
 FMTLifespanParser::FMTLifespanParser(const FMTLifespanParser& rhs):FMTParser(rhs)
     {
-	setSection(Core::FMTsection::Lifespan);
+	_setSection(Core::FMTsection::Lifespan);
     }
 FMTLifespanParser& FMTLifespanParser::operator = (const FMTLifespanParser& rhs)
     {
     if (this!=&rhs)
         {
         FMTParser::operator=(rhs);
-		setSection(Core::FMTsection::Lifespan);
+		_setSection(Core::FMTsection::Lifespan);
         }
     return *this;
     }
@@ -38,15 +38,15 @@ Core::FMTLifespans FMTLifespanParser::read(const std::vector<Core::FMTTheme>& th
 		std::ifstream LIFstream(location);
 		if (FMTParser::tryOpening(LIFstream, location))
 		{
-			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(LIFstream, themes, constants);
+			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::_getCleanLinewfor(LIFstream, themes, constants);
 			while (!Lines.empty())
 			{
-				const std::string line = getLine(Lines);
+				const std::string line = _getLine(Lines);
 				if (!line.empty())
 				{
 					std::vector<std::string>splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 					std::string page = splited[splited.size() - 1];
-					const int age = getNum<int>(page, constants);
+					const int age = _getNum<int>(page, constants);
 					splited.pop_back();
 					std::string mask = boost::algorithm::join(splited, " ");
 					if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;

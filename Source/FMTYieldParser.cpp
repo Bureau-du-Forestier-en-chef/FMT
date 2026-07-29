@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -38,20 +38,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-const boost::regex FMTYieldParser::rxyieldtype = boost::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTYieldParser::rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA)|(_DISTANCE)|(_MAX)|(_MIN))([\\s\\t]*)(\\()(.+)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTYieldParser::rxeqs = boost::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
-const boost::regex FMTYieldParser::rxdiscount = boost::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
-const boost::regex FMTYieldParser::rxpredictor = boost::regex("^(.+)(_PRED)(\\()(.+)(\\))");
-const boost::regex FMTYieldParser::rxyieldsolo = boost::regex("^\\s*(?!\\d+\\b)(\\S+)\\s+(\\S+)\\s*$", boost::regex_constants::ECMAScript);
+const boost::regex FMTYieldParser::m_rxyieldtype = boost::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTYieldParser::m_rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA)|(_DISTANCE)|(_MAX)|(_MIN))([\\s\\t]*)(\\()(.+)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTYieldParser::m_rxeqs = boost::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
+const boost::regex FMTYieldParser::m_rxdiscount = boost::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
+const boost::regex FMTYieldParser::m_rxpredictor = boost::regex("^(.+)(_PRED)(\\()(.+)(\\))");
+const boost::regex FMTYieldParser::m_rxyieldsolo = boost::regex("^\\s*(?!\\d+\\b)(\\S+)\\s+(\\S+)\\s*$", boost::regex_constants::ECMAScript);
 
 
 FMTYieldParser::FMTYieldParser():FMTParser()
         {
-		setSection(Core::FMTsection::Yield);
+		_setSection(Core::FMTsection::Yield);
         }
 
-Core::FMTyldtype FMTYieldParser::getYldType(const std::string& value) const
+Core::FMTyldtype FMTYieldParser::_getYldType(const std::string& value) const
     {
 	try {
 		if (value == "Y")
@@ -71,16 +71,16 @@ Core::FMTyldtype FMTYieldParser::getYldType(const std::string& value) const
 			return Core::FMTyldtype::FMTmodelyld;
 		}
 		else {
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTYieldParser::getYldType", __LINE__, __FILE__, m_section);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTYieldParser::_getYldType", __LINE__, __FILE__, m_section);
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for " + value,"FMTYieldParser::getYldType", __LINE__, __FILE__ ,m_section);
+		_exhandler->raiseFromCatch("for " + value,"FMTYieldParser::_getYldType", __LINE__, __FILE__ ,m_section);
 		}
     return Core::FMTyldtype::FMTageyld;
     }
 
-std::unique_ptr<Core::FMTYieldHandler> FMTYieldParser::getHandler(const Core::FMTMask& mask,const Core::FMTyldtype& yldtype) const
+std::unique_ptr<Core::FMTYieldHandler> FMTYieldParser::_getHandler(const Core::FMTMask& mask,const Core::FMTyldtype& yldtype) const
 {
 	try {
 		switch (yldtype)
@@ -112,12 +112,12 @@ std::unique_ptr<Core::FMTYieldHandler> FMTYieldParser::getHandler(const Core::FM
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTYieldParser::getYldType", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTYieldParser::_getYldType", __LINE__, __FILE__, m_section);
 	}
 	return std::unique_ptr<Core::FMTYieldHandler>();
 }
 
-Core::FMTyieldparserop FMTYieldParser::getYldCtype(const std::string& value) const
+Core::FMTyieldparserop FMTYieldParser::_getYldCtype(const std::string& value) const
     {
 	try {
 		if (value == "_RANGE")
@@ -175,16 +175,16 @@ Core::FMTyieldparserop FMTYieldParser::getYldCtype(const std::string& value) con
 		{
 			return Core::FMTyieldparserop::FMTmin;
 		}else {
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTYieldParser::getYldCtype", __LINE__, __FILE__, m_section);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTYieldParser::_getYldCtype", __LINE__, __FILE__, m_section);
 		}
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch(
-			"for " + value,"FMTYieldParser::getYldCtype", __LINE__, __FILE__, m_section);
+			"for " + value,"FMTYieldParser::_getYldCtype", __LINE__, __FILE__, m_section);
 		}
 	return Core::FMTyieldparserop::FMTnone;
     }
-void FMTYieldParser::setOveridedYlds(Core::FMTYields& yielddata,
+void FMTYieldParser::_setOveridedYlds(Core::FMTYields& yielddata,
 	std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
 	const std::string& yld) const
 {
@@ -207,12 +207,12 @@ void FMTYieldParser::setOveridedYlds(Core::FMTYields& yielddata,
 					{
 						_exhandler->raise(Exception::FMTexc::FMToveridedyield, "For overrided yield " + yld
 							+ " at line " + std::to_string(m_line) + " in " + m_location,
-							"FMTYieldParser::getYldUse", __LINE__, __FILE__, m_section);
+							"FMTYieldParser::_getYldUse", __LINE__, __FILE__, m_section);
 					}
 					if (actualyield->second->getOverrideIndex()==0)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use non overrided at line " + std::to_string(m_line) + " in " + m_location,
-							"FMTYieldParser::getYldUse", __LINE__, __FILE__, m_section);
+							"FMTYieldParser::_getYldUse", __LINE__, __FILE__, m_section);
 					}
 					yldptr->setTabou(actualyield->second->getOverrideIndex());
 				}
@@ -223,12 +223,12 @@ void FMTYieldParser::setOveridedYlds(Core::FMTYields& yielddata,
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTYieldParser::setOveridedYlds", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTYieldParser::_setOveridedYlds", __LINE__, __FILE__, m_section);
 	}
 }
 
 
-std::vector<std::string> FMTYieldParser::getYldUse(Core::FMTYields& yielddata,
+std::vector<std::string> FMTYieldParser::_getYldUse(Core::FMTYields& yielddata,
 	std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
                                    const std::vector<std::string>& values) const
     {
@@ -258,11 +258,11 @@ std::vector<std::string> FMTYieldParser::getYldUse(Core::FMTYields& yielddata,
 		}
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("","FMTYieldParser::getYldUse", __LINE__, __FILE__,m_section);
+		_exhandler->raiseFromCatch("","FMTYieldParser::_getYldUse", __LINE__, __FILE__,m_section);
 	}
     return dump;
     }
-void FMTYieldParser::checkPreexisting(const std::vector<std::string>& preexists) const
+void FMTYieldParser::_checkPreexisting(const std::vector<std::string>& preexists) const
     {
     if (!preexists.empty())
         {
@@ -270,12 +270,12 @@ void FMTYieldParser::checkPreexisting(const std::vector<std::string>& preexists)
             {
             _exhandler->raise(Exception::FMTexc::FMTpreexisting_yield,
 				yl+" at line "+ std::to_string(m_line) + " in " + m_location,
-				"FMTYieldParser::checkPreexisting", __LINE__, __FILE__, m_section);
+				"FMTYieldParser::_checkPreexisting", __LINE__, __FILE__, m_section);
             }
         }
     }
 
-double FMTYieldParser::getNumwithproportion(const std::string& value,const Core::FMTConstants& constants,
+double FMTYieldParser::_getNumwithproportion(const std::string& value,const Core::FMTConstants& constants,
 	const std::vector<double>& proportions, const int& location)
 	{
 	try {
@@ -284,16 +284,16 @@ double FMTYieldParser::getNumwithproportion(const std::string& value,const Core:
 		{
 			factor = proportions.at(std::min(static_cast<int>(proportions.size()) - 1, location));
 		}
-		return getNum<double>(value, constants)*factor;
+		return _getNum<double>(value, constants)*factor;
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTYieldParser::getNumwithproportion", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTYieldParser::_getNumwithproportion", __LINE__, __FILE__, m_section);
 	}
 	return 0;
 	}
 
-bool FMTYieldParser::isFunction(const std::string& strfunction) const
+bool FMTYieldParser::_isFunction(const std::string& strfunction) const
 	{
 	try {
 		const std::vector<std::string>cplxf = { "EXP","LN" };
@@ -303,12 +303,12 @@ bool FMTYieldParser::isFunction(const std::string& strfunction) const
 		}
 	}catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTYieldParser::isFunction", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTYieldParser::_isFunction", __LINE__, __FILE__, m_section);
 	}
 	return false;
 	}
 
-Core::FMTData FMTYieldParser::getEq(const std::string& basestr,
+Core::FMTData FMTYieldParser::_getEq(const std::string& basestr,
 	const Core::FMTConstants& constants, const Core::FMTYields& ylds,
 	const std::vector<Core::FMTTheme>& themes)
 	{
@@ -321,13 +321,13 @@ Core::FMTData FMTYieldParser::getEq(const std::string& basestr,
 			for (std::string token : tokens)
 			{
 				boost::trim(token);
-				if (isValid(token))
+				if (_isValid(token))
 				{
 					double number = 0;
 					std::string source_value(token);
-					if (isNum(token) || constants.isConstant(token))
+					if (_isNum(token) || constants.isConstant(token))
 					{
-						number = getNum<double>(token, constants);
+						number = _getNum<double>(token, constants);
 					}
 					else if (!Core::FMTOperator(token).valid() && !Core::FMTFunctionCall(token).valid() && token != "(" && token != ")")
 					{
@@ -345,7 +345,7 @@ Core::FMTData FMTYieldParser::getEq(const std::string& basestr,
 							if (should_throw)
 							{
 								/*_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
-									token + " at line " + std::to_string(m_line),"FMTYieldParser::getEq",
+									token + " at line " + std::to_string(m_line),"FMTYieldParser::_getEq",
 									__LINE__, __FILE__, m_section);*/
 								
 								_exhandler->raise(Exception::FMTexc::FMTignore,
@@ -363,26 +363,26 @@ Core::FMTData FMTYieldParser::getEq(const std::string& basestr,
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("for "+ basestr,"FMTYieldParser::getEq", __LINE__, __FILE__,m_section);
+			_exhandler->raiseFromCatch("for "+ basestr,"FMTYieldParser::_getEq", __LINE__, __FILE__,m_section);
 			}
 		return Core::FMTData(numbers, Core::FMTyieldparserop::FMTequation,valuesnoperators);
 	}
 
-void FMTYieldParser::cleanAll(Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const
+void FMTYieldParser::_cleanAll(Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const
 {
 	try{
 		ylds.generateDefaultYields(themes);
 		ylds.update();
-		cleanUp(ylds, themes, constants);
+		_cleanUp(ylds, themes, constants);
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTYieldParser::cleanAll", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("", "FMTYieldParser::_cleanAll", __LINE__, __FILE__, m_section);
 	}
 }
 
 
-std::unique_ptr<Core::FMTYieldModel>FMTYieldParser::readYieldModel(const std::string& modelname, std::vector<std::string>& inputYields, const Core::FMTMask& mainmask) const
+std::unique_ptr<Core::FMTYieldModel>FMTYieldParser::_readYieldModel(const std::string& modelname, std::vector<std::string>& inputYields, const Core::FMTMask& mainmask) const
 {
 	try {
 		const boost::filesystem::path modeldirectory = boost::filesystem::path(getRuntimeLocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path(modelname);
@@ -390,7 +390,7 @@ std::unique_ptr<Core::FMTYieldModel>FMTYieldParser::readYieldModel(const std::st
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
 							  modeldirectory.string() + " is not a valid directory ",
-							  "FMTYieldParser::readYieldModel", __LINE__, __FILE__, m_section);
+							  "FMTYieldParser::_readYieldModel", __LINE__, __FILE__, m_section);
 		}
 		const boost::filesystem::path modeljson = modeldirectory / boost::filesystem::path(modelname + ".json");
 		if (!boost::filesystem::is_regular_file(modeljson))
@@ -398,7 +398,7 @@ std::unique_ptr<Core::FMTYieldModel>FMTYieldParser::readYieldModel(const std::st
 
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
 							  modeljson.string(),
-							  "FMTYieldParser::readYieldModel", __LINE__, __FILE__, m_section);
+							  "FMTYieldParser::_readYieldModel", __LINE__, __FILE__, m_section);
 		}
 		std::ifstream jsonstream(modeljson.string());
 		Parser::FMTParser yieldsParser;
@@ -406,7 +406,7 @@ std::unique_ptr<Core::FMTYieldModel>FMTYieldParser::readYieldModel(const std::st
 		{
 			_exhandler->raise(Exception::FMTunhandlederror,
 							  modeljson.string(),
-							  "FMTYieldParser::readYieldModel", __LINE__, __FILE__, m_section);
+							  "FMTYieldParser::_readYieldModel", __LINE__, __FILE__, m_section);
 		}
 
 		boost::property_tree::ptree root;
@@ -419,7 +419,7 @@ std::unique_ptr<Core::FMTYieldModel>FMTYieldParser::readYieldModel(const std::st
 		{
 			_exhandler->raise(Exception::FMTfunctionfailed,
 				"No valid model type for "+modeljson.string(),
-				"FMTYieldParser::readYieldModel", __LINE__, __FILE__, m_section);
+				"FMTYieldParser::_readYieldModel", __LINE__, __FILE__, m_section);
 		}
 
 		const std::string modelType = modelTypeIt->second.data();
@@ -447,10 +447,10 @@ std::unique_ptr<Core::FMTYieldModel>FMTYieldParser::readYieldModel(const std::st
 			}
 		_exhandler->raise(Exception::FMTfunctionfailed,
 			"No valid model type for " + modeljson.string(),
-							  "FMTYieldParser::readYieldModel", __LINE__, __FILE__, m_section);
+							  "FMTYieldParser::_readYieldModel", __LINE__, __FILE__, m_section);
 	} catch (...)
 	{
-		_exhandler->raiseFromCatch("While reading model "+modelname,"FMTYieldParser::readYieldModel", __LINE__, __FILE__, m_section);
+		_exhandler->raiseFromCatch("While reading model "+modelname,"FMTYieldParser::_readYieldModel", __LINE__, __FILE__, m_section);
 	}
 	return std::unique_ptr<Core::FMTYieldModel>(nullptr);
 }
@@ -474,15 +474,15 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 		size_t overrideid = 1;
 		if (FMTParser::tryOpening(yieldstream, location))
 		{
-			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(yieldstream, themes, constants);
+			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::_getCleanLinewfor(yieldstream, themes, constants);
 			while (!Lines.empty())
 			{
-				const std::string line = getLine(Lines);
+				const std::string line = _getLine(Lines);
 				if (!line.empty())
 				{
 					lineerror = line;
 					boost::smatch kmatch;
-					if (boost::regex_search(line, kmatch, rxyieldtype))
+					if (boost::regex_search(line, kmatch, m_rxyieldtype))
 					{
 						
 						overyld = false;
@@ -496,9 +496,9 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 						}
 
 						if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
-						Core::FMTyldtype yldtype = getYldType(yieldtype);
+						Core::FMTyldtype yldtype = _getYldType(yieldtype);
 						tmask = Core::FMTMask(mask, themes);
-						std::unique_ptr<Core::FMTYieldHandler>newyield = getHandler(tmask, yldtype);
+						std::unique_ptr<Core::FMTYieldHandler>newyield = _getHandler(tmask, yldtype);
 						if (!overyld)
 						{
 							yields.push_back(tmask, newyield);
@@ -525,7 +525,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 							//size_t proportion_id = 0;
 							for (const std::string& value : values)
 							{
-								proportion.push_back(getNum<double>(value) / 100.0);
+								proportion.push_back(_getNum<double>(value) / 100.0);
 							}
 							continue;
 						}
@@ -539,16 +539,16 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								dump.clear();
 								values.erase(values.begin());
 								yldsnames = values;
-								dump = getYldUse(yields, actualyield, values);
-								checkPreexisting(dump);
+								dump = _getYldUse(yields, actualyield, values);
+								_checkPreexisting(dump);
 							}
 							else if (!sided)
 							{
-								if (!isNum(values.at(0), constants))
+								if (!_isNum(values.at(0), constants))
 								{
 									continue;
 								}
-								const int newbase = getNum<int>(values[0], constants);
+								const int newbase = _getNum<int>(values[0], constants);
 								const std::vector<int>& bases = actualyield->second->getBases();
 								if (std::find(bases.begin(), bases.end(), newbase) == bases.end())
 								{
@@ -562,11 +562,11 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									const std::string& value = values.at(id);
 									if(passednames.find(yldname)==passednames.end())
 									{
-										if (!isNum(value, constants))
+										if (!_isNum(value, constants))
 										{
 											continue;
 										}
-										actualyield->second->pushData(yldname, getNumwithproportion(value, constants, proportion, id));
+										actualyield->second->pushData(yldname, _getNumwithproportion(value, constants, proportion, id));
 										passednames.insert(yldname);
 									}else if(!multipledef)
 									{
@@ -581,18 +581,18 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 							else {
 								std::vector<std::string>tyld = { values[0] };
 								values.erase(values.begin());
-								dump = getYldUse(yields, actualyield, tyld);
-								checkPreexisting(dump);
+								dump = _getYldUse(yields, actualyield, tyld);
+								_checkPreexisting(dump);
 								if (actualyield->second->empty())
 								{
-									actualyield->second->pushBase(getNum<int>(values[0], constants));
+									actualyield->second->pushBase(_getNum<int>(values[0], constants));
 								}
 								const int location = static_cast<int>(actualyield->second->size());
-								if (!isNum(values.at(1),constants))
+								if (!_isNum(values.at(1),constants))
 									{
 									continue;
 									}
-								actualyield->second->pushData(tyld[0], getNumwithproportion(values[1], constants, proportion, location));
+								actualyield->second->pushData(tyld[0], _getNumwithproportion(values[1], constants, proportion, location));
 							}
 
 						}
@@ -606,29 +606,29 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								dump.clear();
 								values.erase(values.begin());
 								yldsnames = values;
-								dump = getYldUse(yields, actualyield, values);
-								checkPreexisting(dump);
+								dump = _getYldUse(yields, actualyield, values);
+								_checkPreexisting(dump);
 							}
 							else if (!sided)
 							{
-								if (!isNum(values.at(0), constants))
+								if (!_isNum(values.at(0), constants))
 								{
 									continue;
 								}
 								if (actualyield->second->empty())
 								{
-									actualyield->second->pushBase(getNum<int>(values[0], constants));
+									actualyield->second->pushBase(_getNum<int>(values[0], constants));
 									values.erase(values.begin());
 									int id = 0;
 									for (const std::string& yldname : yldsnames)
 									{
 										const std::string& value = values.at(id);
-										actualyield->second->pushData(yldname, getNumwithproportion(value, constants, proportion, id));
+										actualyield->second->pushData(yldname, _getNumwithproportion(value, constants, proportion, id));
 										++id;
 									}
 								}
 								else {
-									const int newbase = getNum<int>(values[0], constants);
+									const int newbase = _getNum<int>(values[0], constants);
 									values.erase(values.begin());
 									for (int base = actualyield->second->getLastBase(); base <= newbase; ++base)
 									{
@@ -640,7 +640,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 											double thevalue = actualyield->second->getLastValue(yldname);
 											if (base == newbase)
 											{
-												thevalue = getNum<double>(value, constants);
+												thevalue = _getNum<double>(value, constants);
 											}
 											actualyield->second->pushData(yldname, thevalue);
 											++id;
@@ -651,12 +651,12 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 
 							}
 							else {
-								if (isNum(values.at(0),constants,false))
+								if (_isNum(values.at(0),constants,false))
 								{
 									int id = 0;
 									for (const std::string& value : values)
 									{
-										actualyield->second->pushData(yldsnames.back(), getNumwithproportion(value, constants, proportion, id));
+										actualyield->second->pushData(yldsnames.back(), _getNumwithproportion(value, constants, proportion, id));
 										++id;
 									}
 								}
@@ -666,19 +666,19 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									const std::string yldname = values[0];
 									yldsnames.push_back(values[0]);
 									dump.clear();
-									dump = getYldUse(yields, actualyield, values);
-									checkPreexisting(dump);
+									dump = _getYldUse(yields, actualyield, values);
+									_checkPreexisting(dump);
 									values.erase(values.begin());
 									//Need to check if rest of values is a _discountfactor!!!
 									const std::string joinedvalues = boost::algorithm::join(values, "");
 									boost::smatch discountmatch;
-									if (boost::regex_search(joinedvalues, discountmatch, rxdiscount))
+									if (boost::regex_search(joinedvalues, discountmatch, m_rxdiscount))
 									{
 										std::vector<double>yielddata;
 										std::vector<std::string>sources;
 										std::vector<bool>stacking;
 										const std::string percentage = boost::trim_copy(std::string(discountmatch[3]));
-										double valueper = getNum<double>(percentage, constants);
+										double valueper = _getNum<double>(percentage, constants);
 										const std::string dopercentage = std::string(discountmatch[4]);
 										if (dopercentage.find("%") != std::string::npos)
 										{
@@ -687,23 +687,23 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 										yielddata.push_back(valueper);
 										stacking.push_back(false);
 										std::string yperperiod = boost::trim_copy(std::string(discountmatch[6]));
-										yielddata.push_back(getNum<double>(yperperiod, constants));
+										yielddata.push_back(_getNum<double>(yperperiod, constants));
 										stacking.push_back(false);
 										sources.push_back(boost::trim_copy(std::string(discountmatch[9])));
 										stacking.push_back(true);
 										actualyield->second->pushData(yldname, Core::FMTData(yielddata, Core::FMTyieldparserop::FMTdiscountfactor, sources, stacking));
 									}
 									else {
-										if (!isNum(values.at(0), constants))
+										if (!_isNum(values.at(0), constants))
 											{
 											continue;
 											}
-										actualyield->second->pushBase(getNum<int>(values[0], constants));
+										actualyield->second->pushBase(_getNum<int>(values[0], constants));
 										values.erase(values.begin());
 										int id = 0;
 										for (const std::string& value : values)
 										{
-											actualyield->second->pushData(yldname, getNumwithproportion(value, constants, proportion, id));
+											actualyield->second->pushData(yldname, _getNumwithproportion(value, constants, proportion, id));
 											++id;
 										}
 									}
@@ -719,7 +719,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 							boost::smatch kmatch;
 							boost::smatch kmatch2;
 							const size_t should_be_equation = line.find_first_of("+-*/");
-							bool simple_match = boost::regex_search(line, kmatch, rxcomplex);
+							bool simple_match = boost::regex_search(line, kmatch, m_rxcomplex);
 							if (simple_match || should_be_equation != std::string::npos)
 							{
 								std::string yldname;
@@ -739,7 +739,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								}
 								else {
 									yldname = kmatch[1];
-									for (int id = 4; id < 18; ++id) //12 - > 13 -> 16
+									for (int id = 4; id < 18; ++id) //12 - >ï¿½13 -> 16
 									{
 										cyld += std::string(kmatch[id]);
 									}
@@ -748,7 +748,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								dump.clear();
 								const std::vector<std::string>theylds = { yldname };
 								
-								const Core::FMTyieldparserop complextype = getYldCtype(cyld);
+								const Core::FMTyieldparserop complextype = _getYldCtype(cyld);
 								std::vector<std::string>values;
 								boost::trim_if(data, boost::is_any_of(FMT_STR_SEPARATOR));
 								const std::string yldsplitc = FMT_STR_SEPARATOR + std::string(",");
@@ -757,15 +757,15 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								std::vector<std::string>csource;
 								if (complextype == Core::FMTyieldparserop::FMTequation)
 								{
-									actualyield->second->pushData(yldname, getEq(data, constants, yields, themes));
+									actualyield->second->pushData(yldname, _getEq(data, constants, yields, themes));
 								}
 								else {
 									std::vector<bool>stacking;
 									for (size_t id = 0; id < values.size(); ++id)
 									{
-										if (isNum(values[id]) || constants.isConstant(values[id]))
+										if (_isNum(values[id]) || constants.isConstant(values[id]))
 										{
-											const double value = getNum<double>(values[id], constants);
+											const double value = _getNum<double>(values[id], constants);
 											cvalues.push_back(value);
 											stacking.push_back(false);
 										}
@@ -787,18 +787,18 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									}
 									actualyield->second->pushData(yldname, Core::FMTData(cvalues, complextype, csource, stacking));
 								}
-								dump = getYldUse(yields, actualyield, theylds);
-								checkPreexisting(dump);
+								dump = _getYldUse(yields, actualyield, theylds);
+								_checkPreexisting(dump);
 								if (overyld)//deal with the last inserted yield to take into account override!
 								{
-									setOveridedYlds(yields, actualyield,yldname);
+									_setOveridedYlds(yields, actualyield,yldname);
 								}
 							}
 
-							else if (boost::regex_search(line, kmatch2, rxyieldsolo) &&
+							else if (boost::regex_search(line, kmatch2, m_rxyieldsolo) &&
 								yields.isYld(kmatch2[2], true))
 							{
-								actualyield->second->pushData(kmatch2[1], getEq(kmatch2[2], constants, yields, themes));
+								actualyield->second->pushData(kmatch2[1], _getEq(kmatch2[2], constants, yields, themes));
 							}
 
 							else {
@@ -808,7 +808,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 						}else if (actualyield->second->getType() == Core::FMTyldtype::FMTmodelyld)
 							{
 							boost::smatch predmatch;
-							if (boost::regex_search(line, predmatch,rxpredictor))
+							if (boost::regex_search(line, predmatch,m_rxpredictor))
 								{
 								const std::string yieldseparators = FMT_STR_SEPARATOR + std::string(",");
 								const std::string yieldsarray = boost::trim_copy(std::string(predmatch[1]));
@@ -820,8 +820,8 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								std::copy_if(modelArgs.begin(), modelArgs.end(), std::back_inserter(inputYields), [modelname](const std::string& v) { return v != modelname; });
 								std::vector<std::string>newyields;
 								boost::split(newyields, yieldsarray, boost::is_any_of(yieldseparators), boost::token_compress_on);
-								dump = getYldUse(yields, actualyield, newyields);
-								checkPreexisting(dump);
+								dump = _getYldUse(yields, actualyield, newyields);
+								_checkPreexisting(dump);
 
 								for (auto& yld : inputYields)
 								{
@@ -840,7 +840,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									modelid = handlermodels.at(modelname);
 								}else {
 									modelid = handlerptr->size();
-									const std::unique_ptr<Core::FMTYieldModel>yldmodel = readYieldModel(modelname, inputYields,handlerptr->getMask());
+									const std::unique_ptr<Core::FMTYieldModel>yldmodel = _readYieldModel(modelname, inputYields,handlerptr->getMask());
 									const std::vector<std::string> allyields = yields.getAllYieldNames();
 
 									handlerptr->pushBackModel(yldmodel);
@@ -867,7 +867,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 				}
 			}
 		}
-		cleanAll(yields, themes, constants);
+		_cleanAll(yields, themes, constants);
 	}catch(...)
 		{
 		_exhandler->raiseFromCatch(
@@ -876,7 +876,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
     return yields;
     }
 
-	std::map<std::string, double>FMTYieldParser::getIndexValues(const Core::FMTMask& mask,
+	std::map<std::string, double>FMTYieldParser::_getIndexValues(const Core::FMTMask& mask,
 		const std::vector<Core::FMTTheme>& themes,const std::vector<std::string>&indexvalues, const Core::FMTConstants& constants) const
 	{
 		std::map<std::string, double>handler_values;
@@ -891,9 +891,9 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 				for (const std::string& index : indexvalues)
 				{
 					indexerror = index;
-					if (isNum(index) || constants.isConstant(index))
+					if (_isNum(index) || constants.isConstant(index))
 						{
-						handler_values[index] = getNum<double>(index,constants);
+						handler_values[index] = _getNum<double>(index,constants);
 						continue;
 						}
 					if (theme.isIndex(attribute,index))
@@ -910,12 +910,12 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 		catch (...)
 		{
 			_exhandler->raiseFromCatch(
-				"for "+std::string(mask)+" at index "+ indexerror+" for theme "+std::to_string(themeid), "FMTYieldParser::getIndexValues", __LINE__, __FILE__, m_section);
+				"for "+std::string(mask)+" at index "+ indexerror+" for theme "+std::to_string(themeid), "FMTYieldParser::_getIndexValues", __LINE__, __FILE__, m_section);
 		}
 	return handler_values;
 	}
 
-void FMTYieldParser::cleanUp(Core::FMTYields& yields,const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const
+void FMTYieldParser::_cleanUp(Core::FMTYields& yields,const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const
 	{
 	try {
 		//iterate on all yieldhandler if equation with index then take the handler
@@ -962,8 +962,8 @@ void FMTYieldParser::cleanUp(Core::FMTYields& yields,const std::vector<Core::FMT
 				}
 				for (const Core::FMTMask& newmask : todecompose)
 				{
-					std::unique_ptr<Core::FMTYieldHandler>newhandler = getHandler(newmask, Core::FMTyldtype::FMTcomplexyld);
-					std::map<std::string, double>handler_values = getIndexValues(newmask, themes_windex, indexvalues,constants);
+					std::unique_ptr<Core::FMTYieldHandler>newhandler = _getHandler(newmask, Core::FMTyldtype::FMTcomplexyld);
+					std::map<std::string, double>handler_values = _getIndexValues(newmask, themes_windex, indexvalues,constants);
 					const Core::FMTComplexYieldHandler* oldhandlerptr = dynamic_cast<const Core::FMTComplexYieldHandler*>(oldhandler.get());
 					Core::FMTComplexYieldHandler* newhandlerptr = dynamic_cast<Core::FMTComplexYieldHandler*>(newhandler.get());
 					newhandlerptr->setTabou(*oldhandlerptr);
@@ -981,7 +981,7 @@ void FMTYieldParser::cleanUp(Core::FMTYields& yields,const std::vector<Core::FMT
 							{
 								numbers[data_loc] = handler_values.at(source);
 							}
-							else if (isNum(source))
+							else if (_isNum(source))
 							{
 								numbers[data_loc] = std::stod(source);
 							}
@@ -1006,7 +1006,7 @@ void FMTYieldParser::cleanUp(Core::FMTYields& yields,const std::vector<Core::FMT
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch(
-			"", "FMTYieldParser::cleanUp", __LINE__, __FILE__, m_section);
+			"", "FMTYieldParser::_cleanUp", __LINE__, __FILE__, m_section);
 		}
 	}
 

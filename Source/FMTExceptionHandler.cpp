@@ -39,9 +39,9 @@ namespace Exception
 	
 
 
-boost::thread::id FMTExceptionHandler::mainthreadid = boost::this_thread::get_id();
+boost::thread::id FMTExceptionHandler::m_mainthreadid = boost::this_thread::get_id();
 
-boost::thread::id FMTExceptionHandler::crashedthreadid = boost::this_thread::get_id();
+boost::thread::id FMTExceptionHandler::m_crashedthreadid = boost::this_thread::get_id();
 
 #if defined _MSC_VER
 FMTScopedSeTranslator FMTExceptionHandler::m_SeTranslator = FMTScopedSeTranslator(FMTExceptionHandler::translateStructuralWIN32Exceptions);
@@ -52,24 +52,24 @@ void FMTExceptionHandler::translateStructuralWIN32Exceptions(unsigned int p_u, E
 	}
 #endif
 
-bool FMTExceptionHandler::isMainThread() const
+bool FMTExceptionHandler::_isMainThread() const
 	{
-	return (boost::this_thread::get_id() == mainthreadid);
+	return (boost::this_thread::get_id() == m_mainthreadid);
 	}
 
-bool FMTExceptionHandler::isThrowedOnThread() const
+bool FMTExceptionHandler::_isThrowedOnThread() const
 	{
-	return (crashedthreadid != mainthreadid);
+	return (m_crashedthreadid != m_mainthreadid);
 	}
 
-bool FMTExceptionHandler::isThisThreadThrowed() const
+bool FMTExceptionHandler::_isThisThreadThrowed() const
 	{
-	return (!isMainThread() && boost::this_thread::get_id() == crashedthreadid);
+	return (!_isMainThread() && boost::this_thread::get_id() == m_crashedthreadid);
 	}
 
 void FMTExceptionHandler::checkSignals() const
 	{
-	if (FMTExceptionHandler::isMainThread())
+	if (FMTExceptionHandler::_isMainThread())
 		{
 		#if defined FMTWITHPYTHON
 				if (PyErr_CheckSignals() == -1)
@@ -116,17 +116,17 @@ FMTExceptionHandler& FMTExceptionHandler::operator = (const FMTExceptionHandler&
 	if (this != &rhs)
 	{
 		//std::lock(mtx, rhs.mtx);
-		boost::lock(mtx, rhs.mtx);
-		boost::lock_guard<boost::recursive_mutex> self_lock(mtx, boost::adopt_lock/*std::adopt_lock*/);
-		boost::lock_guard<boost::recursive_mutex> other_lock(rhs.mtx, boost::adopt_lock/*std::adopt_lock*/);
+		boost::lock(m_mtx, rhs.m_mtx);
+		boost::lock_guard<boost::recursive_mutex> self_lock(m_mtx, boost::adopt_lock/*std::adopt_lock*/);
+		boost::lock_guard<boost::recursive_mutex> other_lock(rhs.m_mtx, boost::adopt_lock/*std::adopt_lock*/);
 		_exception = rhs._exception;
-		maxwarningsbeforesilenced = rhs.maxwarningsbeforesilenced;
+		m_maxwarningsbeforesilenced = rhs.m_maxwarningsbeforesilenced;
 		_logger = rhs._logger;
-		usenestedexceptions = rhs.usenestedexceptions;
-		errorstowarnings = rhs.errorstowarnings;
+		m_usenestedexceptions = rhs.m_usenestedexceptions;
+		m_errorstowarnings = rhs.m_errorstowarnings;
 		_specificwarningcount = rhs._specificwarningcount;
-		registered_threads = rhs.registered_threads;
-		threadcrashexception = rhs.threadcrashexception;
+		m_registered_threads = rhs.m_registered_threads;
+		m_threadcrashexception = rhs.m_threadcrashexception;
 	}
 	return *this;
 }
@@ -134,8 +134,8 @@ FMTExceptionHandler& FMTExceptionHandler::operator = (const FMTExceptionHandler&
 
 void FMTExceptionHandler::throwNested(const std::exception& texception, int& level,bool rethrow)
 {
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		gutsOfExceptionLog(texception, level);
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+		_gutsOfExceptionLog(texception, level);
 		try {
 			const auto _Nested = dynamic_cast<const std::nested_exception*>(&texception);
 			if (_Nested && _Nested->nested_ptr())
@@ -173,20 +173,20 @@ void FMTExceptionHandler::throwNested(const std::exception& texception, int& lev
 
 void FMTExceptionHandler::enableNestedExceptions()
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	usenestedexceptions = true;
+	boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+	m_usenestedexceptions = true;
 	}
 
 void FMTExceptionHandler::disableNestedExceptions()
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	usenestedexceptions = false;
+	boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+	m_usenestedexceptions = false;
 	}
 
-bool FMTExceptionHandler::needToRethrow() const
+bool FMTExceptionHandler::_needToRethrow() const
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	if (!usenestedexceptions &&
+	boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+	if (!m_usenestedexceptions &&
 		(_exception == FMTexc::FMTfunctionfailed || _exception == FMTexc::FMTunhandlederror))
 		{
 		const std::exception_ptr expointer = std::current_exception();
@@ -205,17 +205,17 @@ FMTException FMTExceptionHandler::raise(FMTexc lexception, std::string text,
 {
 	
 	FMTException excp;
-	const FMTlev LEVEL = getLevel(lexception);
+	const FMTlev LEVEL = _getLevel(lexception);
 	if (lsection == Core::FMTsection::Empty)
 	{
-		excp = FMTException(lexception, updateStatus(lexception, text), method, file, line);
+		excp = FMTException(lexception, _updateStatus(lexception, text), method, file, line);
 	}
 	else {
-		excp = FMTException(lexception, lsection, updateStatus(lexception, text),method,file,line);
+		excp = FMTException(lexception, lsection, _updateStatus(lexception, text),method,file,line);
 	}
-	if (throwit && !needToRethrow())
+	if (throwit && !_needToRethrow())
 		{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 		if (LEVEL == FMTlev::FMT_Warning)
 			{
 				std::throw_with_nested(FMTWarning(excp));
@@ -230,26 +230,26 @@ FMTException FMTExceptionHandler::raise(FMTexc lexception, std::string text,
 
 FMTExceptionHandler::FMTExceptionHandler(const FMTExceptionHandler& rhs)
 	{
-		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
+		boost::lock_guard<boost::recursive_mutex> lock(rhs.m_mtx);
 		_exception=rhs._exception;
-		maxwarningsbeforesilenced = rhs.maxwarningsbeforesilenced;
+		m_maxwarningsbeforesilenced = rhs.m_maxwarningsbeforesilenced;
 		_logger=rhs._logger;
-		usenestedexceptions=rhs.usenestedexceptions;
-		errorstowarnings = rhs.errorstowarnings;
+		m_usenestedexceptions=rhs.m_usenestedexceptions;
+		m_errorstowarnings = rhs.m_errorstowarnings;
 		_specificwarningcount = rhs._specificwarningcount;
-		registered_threads = rhs.registered_threads;
-		threadcrashexception = rhs.threadcrashexception;
+		m_registered_threads = rhs.m_registered_threads;
+		m_threadcrashexception = rhs.m_threadcrashexception;
 	}
 
 FMTExceptionHandler::FMTExceptionHandler(const std::unique_ptr<Logging::FMTLogger>& logger) : 
 	_specificwarningcount(),
 	_exception(FMTexc::None),
-	maxwarningsbeforesilenced(10),
+	m_maxwarningsbeforesilenced(10),
 	_logger(logger.get()),
-	usenestedexceptions(true),
-	errorstowarnings(),
-	registered_threads(),
-	threadcrashexception()
+	m_usenestedexceptions(true),
+	m_errorstowarnings(),
+	m_registered_threads(),
+	m_threadcrashexception()
 {
 
 }
@@ -258,12 +258,12 @@ FMTExceptionHandler::FMTExceptionHandler(const std::unique_ptr<Logging::FMTLogge
 FMTExceptionHandler::FMTExceptionHandler() : 
 		_specificwarningcount(),
 		_exception(FMTexc::None),
-		maxwarningsbeforesilenced(10),
+		m_maxwarningsbeforesilenced(10),
 		_logger(),
-		usenestedexceptions(true),
-		errorstowarnings(),
-		registered_threads(),
-		threadcrashexception()
+		m_usenestedexceptions(true),
+		m_errorstowarnings(),
+		m_registered_threads(),
+		m_threadcrashexception()
 		
 		{
 
@@ -272,21 +272,21 @@ FMTExceptionHandler::FMTExceptionHandler() :
 
 void FMTExceptionHandler::setErrorsToWarnings(const std::vector<Exception::FMTexc>& errors)
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	errorstowarnings = errors;
+	boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+	m_errorstowarnings = errors;
 	}
 
 void FMTExceptionHandler::setMaxWarningsBeforeSilenced(const size_t& maxwarningcount)
 	{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		maxwarningsbeforesilenced = maxwarningcount;
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+		m_maxwarningsbeforesilenced = maxwarningcount;
 	}
 
-FMTlev FMTExceptionHandler::getLevel(const FMTexc p_exception) const
+FMTlev FMTExceptionHandler::_getLevel(const FMTexc p_exception) const
 	{
 	FMTlev level = FMTlev::FMT_None;
-	if (std::find(errorstowarnings.begin(), errorstowarnings.end(), p_exception)
-		!= errorstowarnings.end())
+	if (std::find(m_errorstowarnings.begin(), m_errorstowarnings.end(), p_exception)
+		!= m_errorstowarnings.end())
 	{
 		level = FMTlev::FMT_Warning;
 	}
@@ -551,7 +551,7 @@ FMTlev FMTExceptionHandler::getLevel(const FMTexc p_exception) const
 	}
 
 
-std::string FMTExceptionHandler::updateStatus(const FMTexc lexception, const std::string message)
+std::string FMTExceptionHandler::_updateStatus(const FMTexc lexception, const std::string message)
 {
 	std::string msg;
 	bool gotWarning = false;
@@ -972,8 +972,8 @@ std::string FMTExceptionHandler::updateStatus(const FMTexc lexception, const std
 		gotException = true;
 		break;
 	};
-	if (std::find(errorstowarnings.begin(), errorstowarnings.end(), lexception)
-		!= errorstowarnings.end())
+	if (std::find(m_errorstowarnings.begin(), m_errorstowarnings.end(), lexception)
+		!= m_errorstowarnings.end())
 		{
 		msg += "Ignoring: " + message;
 		gotException = false;
@@ -981,11 +981,11 @@ std::string FMTExceptionHandler::updateStatus(const FMTexc lexception, const std
 		}
 		if (gotException)
 		{
-			boost::lock_guard<boost::recursive_mutex> guard(mtx);
+			boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 			_exception = lexception;
-			if (!isMainThread() && !isThrowedOnThread())
+			if (!_isMainThread() && !_isThrowedOnThread())
 			{
-				crashedthreadid = boost::this_thread::get_id();
+				m_crashedthreadid = boost::this_thread::get_id();
 			}
 		}
 	return msg;
@@ -995,30 +995,30 @@ void FMTExceptionHandler::raiseFromThreadCatch(std::string text,
 	const std::string& method, const int& line, const std::string& file,
 	Core::FMTsection lsection)
 {
-	if (isThisThreadThrowed())
+	if (_isThisThreadThrowed())
 	{
 		try {
 			raiseFromCatch(text, method, line, file, lsection);
 		}catch (...)
 		{
-			threadcrashexception = std::current_exception();
+			m_threadcrashexception = std::current_exception();
 		}
-	}else if (isMainThread())
+	}else if (_isMainThread())
 	{
 		raiseFromCatch(text, method, line, file, lsection);
 	}
 	//Do nothing if you are a thread an you have not thrown...all your exceptions are lost
 }
 
-void FMTExceptionHandler::registerWorkerThread()
+void FMTExceptionHandler::_registerWorkerThread()
 {
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	registered_threads.insert(boost::this_thread::get_id());
+	boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
+	m_registered_threads.insert(boost::this_thread::get_id());
 }
 
-bool FMTExceptionHandler::isThreadRegistered() const
+bool FMTExceptionHandler::_isThreadRegistered() const
 {
-return (registered_threads.find(boost::this_thread::get_id()) != registered_threads.end());
+return (m_registered_threads.find(boost::this_thread::get_id()) != m_registered_threads.end());
 }
 
 
@@ -1026,9 +1026,9 @@ return (registered_threads.find(boost::this_thread::get_id()) != registered_thre
 void FMTExceptionHandler::reRaiseIfThreadCrash()
 {
 	
-	if (isThrowedOnThread() && !isThisThreadThrowed() && !isThreadRegistered())
+	if (_isThrowedOnThread() && !_isThisThreadThrowed() && !_isThreadRegistered())
 	{
-		registerWorkerThread();
+		_registerWorkerThread();
 		//registered_threads.insert(boost::this_thread::get_id());
 		//Raise a dumy exception to make sure the main thread and the slave thread are aware of crash
 		raise(Exception::FMTexc::FMTthreadcrash,"","FMTExceptionHandler::reRaiseIfThreadCrash",__LINE__,__FILE__);
@@ -1039,7 +1039,7 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 	const std::string& method, const int& line, const std::string& file,
 	Core::FMTsection lsection)
 {
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
+	boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 	FMTexc lexception = FMTexc::FMTfunctionfailed;
 	const std::exception_ptr expointer = std::current_exception();
 	if (expointer)
@@ -1055,7 +1055,7 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 			catch (const CoinError& coinexception)
 			{
 
-				updateStatus(FMTexc::FMTcoinerror,coinexception.message());
+				_updateStatus(FMTexc::FMTcoinerror,coinexception.message());
 				try {
 					std::throw_with_nested(FMTError(coinexception));
 				}catch (...)
@@ -1066,7 +1066,7 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 		#endif
 		catch (const boost::bad_graph& grapherror)
 		{
-			updateStatus(FMTexc::FMTboostgrapherror,grapherror.what());
+			_updateStatus(FMTexc::FMTboostgrapherror,grapherror.what());
 			try {
 				std::throw_with_nested(FMTError(grapherror));
 			}
@@ -1079,7 +1079,7 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 			catch (const FMTSeException& seError)
 			{
 				const std::string CAUGHTWIN32 = "Win32 Error number " + std::to_string(seError.getSeNumber());
-				updateStatus(FMTexc::FMTWIN32Error, CAUGHTWIN32);
+				_updateStatus(FMTexc::FMTWIN32Error, CAUGHTWIN32);
 				try {
 					std::throw_with_nested(FMTError(seError));
 				}
@@ -1093,7 +1093,7 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 		{
 			//Instrumentation: surface the real std::exception type/message instead of
 			//a bare "Unhandled error" so we can see the failing container/key.
-			updateStatus(FMTexc::FMTunhandlederror,
+			_updateStatus(FMTexc::FMTunhandlederror,
 				std::string("std::exception: ") + stdexception.what());
 			lexception = FMTexc::FMTunhandlederror;
 			return this->raise(lexception, std::string(stdexception.what()) + " " + text,
@@ -1108,11 +1108,11 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 	return this->raise(lexception,text, method, line, file, lsection);
 }
 
-void FMTExceptionHandler::gutsOfPrintExceptions(std::string text,
+void FMTExceptionHandler::_gutsOfPrintExceptions(std::string text,
 	const std::string& method, const int& line, const std::string& fil,int& levelreference,
 	Core::FMTsection lsection, bool logfirstlevel)
 {
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
+	boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 	FMTexc lexception = FMTexc::FMTfunctionfailed;
 	const std::exception_ptr expointer = std::current_exception();
 	bool rethrowing = false;
@@ -1127,7 +1127,7 @@ void FMTExceptionHandler::gutsOfPrintExceptions(std::string text,
 	{
 		_logger->setStreamFlush(true);
 	}
-	const bool keepit =  ((!isMainThread() && isThisThreadThrowed()));// && !print);
+	const bool keepit =  ((!_isMainThread() && _isThisThreadThrowed()));// && !print);
 	//Keep it est a vrai sur le main mais devrait �tre � faux...
 	bool needtolog = logfirstlevel;
 
@@ -1147,7 +1147,7 @@ void FMTExceptionHandler::gutsOfPrintExceptions(std::string text,
 		}
 		catch (const FMTException& tcexception)
 		{
-			if (usenestedexceptions)
+			if (m_usenestedexceptions)
 			{
 				if (needtolog)
 				{
@@ -1162,7 +1162,7 @@ void FMTExceptionHandler::gutsOfPrintExceptions(std::string text,
 #if defined FMTWITHOSI
 		catch (const CoinError& coinexception)
 		{
-			if (usenestedexceptions)
+			if (m_usenestedexceptions)
 			{
 				if (needtolog)
 				{
@@ -1177,7 +1177,7 @@ void FMTExceptionHandler::gutsOfPrintExceptions(std::string text,
 #endif
 		catch (const boost::bad_graph& grapherror)
 		{
-			if (usenestedexceptions)
+			if (m_usenestedexceptions)
 			{
 				if (needtolog)
 				{
@@ -1192,7 +1192,7 @@ void FMTExceptionHandler::gutsOfPrintExceptions(std::string text,
 		#if defined _MSC_VER
 		catch (const FMTSeException& seError)
 		{
-			if (usenestedexceptions)
+			if (m_usenestedexceptions)
 			{
 				if (needtolog)
 				{
@@ -1217,7 +1217,7 @@ void FMTExceptionHandler::gutsOfPrintExceptions(std::string text,
 	}
 }
 
-void FMTExceptionHandler::gutsOfExceptionLog(const std::exception& texception, const int& level)
+void FMTExceptionHandler::_gutsOfExceptionLog(const std::exception& texception, const int& level)
 {
 	const std::string linereplacement = "\n" + std::string(level, ' ');
 	std::string message = texception.what();
@@ -1240,19 +1240,19 @@ void FMTExceptionHandler::printExceptions(std::string text,
 {
 	int levelofprint = 0;
 	try {
-		gutsOfPrintExceptions(text, method, line, fil, levelofprint,lsection);
+		_gutsOfPrintExceptions(text, method, line, fil, levelofprint,lsection);
 	}catch (...)
 	{
-		if (threadcrashexception)
+		if (m_threadcrashexception)
 		{
-			*_logger << std::string(levelofprint,' ') + "Crash on thread " << boost::lexical_cast<std::string>(crashedthreadid) << "\n";
+			*_logger << std::string(levelofprint,' ') + "Crash on thread " << boost::lexical_cast<std::string>(m_crashedthreadid) << "\n";
 			try {
-				std::rethrow_exception(threadcrashexception);
+				std::rethrow_exception(m_threadcrashexception);
 			}
 			catch (...)
 			{
 				
-				gutsOfPrintExceptions(text, method, line, fil, levelofprint, lsection,false);
+				_gutsOfPrintExceptions(text, method, line, fil, levelofprint, lsection,false);
 			}
 		}
 		throw;

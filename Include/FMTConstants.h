@@ -26,27 +26,6 @@ namespace Core
 */
 class FMTEXPORT FMTConstants : public FMTObject
     {
-	// DocString: FMTConstants::serialize
-	/**
-	@brief Serialize the FMTConstants for multiprocessing across multiple cpus (pickle in Python).
-	@tparam Archive the archive type.
-	@param[in,out] ar the archive to serialize to or from.
-	@param[in] version the serialization version.
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-		{
-		try{
-			ar & BOOST_SERIALIZATION_NVP(data);
-		}catch (...)
-			{
-			_exhandler->printExceptions("", "FMTConstants::serialize", __LINE__, __FILE__);
-			}
-		}
-	// DocString: FMTConstants::data
-	///This unordered_map keeps uses the constant definition string has key and the double value has elements.
-    boost::unordered_map<std::string,std::vector<double>>data;
     public:
 	// DocString: FMTConstants()
 	/**
@@ -117,6 +96,28 @@ class FMTEXPORT FMTConstants : public FMTObject
 	@return the string representation of the constants.
 	*/
     operator std::string() const;
+    private:
+	// DocString: FMTConstants::serialize
+	/**
+	@brief Serialize the FMTConstants for multiprocessing across multiple cpus (pickle in Python).
+	@tparam Archive the archive type.
+	@param[in,out] ar the archive to serialize to or from.
+	@param[in] version the serialization version.
+	*/
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+		{
+		try{
+			ar & boost::serialization::make_nvp("data", m_data);
+		}catch (...)
+			{
+			_exhandler->printExceptions("", "FMTConstants::serialize", __LINE__, __FILE__);
+			}
+		}
+	// DocString: FMTConstants::m_data
+	///This unordered_map keeps uses the constant definition string has key and the double value has elements.
+    boost::unordered_map<std::string,std::vector<double>>m_data;
     };
 }
 

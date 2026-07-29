@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -23,10 +23,10 @@ namespace Core{
 
 	FMTDevelopment::FMTDevelopment(FMTDevelopment&& rhs) :
 		FMTObject(std::move(rhs)),
-		mask(std::move(rhs.mask)),
-		age(std::move(rhs.age)),
-		lock(std::move(rhs.lock)),
-		period(std::move(rhs.period))
+		m_mask(std::move(rhs.m_mask)),
+		m_age(std::move(rhs.m_age)),
+		m_lock(std::move(rhs.m_lock)),
+		m_period(std::move(rhs.m_period))
 	{
 
 	}
@@ -34,17 +34,17 @@ namespace Core{
 	FMTDevelopment& FMTDevelopment::operator=(FMTDevelopment&& rhs)
 	{
 		FMTObject::operator=(std::move(rhs));
-		mask = std::move(rhs.mask);
-		age = std::move(rhs.age);
-		lock = std::move(rhs.lock);
-		period = std::move(rhs.period);
+		m_mask = std::move(rhs.m_mask);
+		m_age = std::move(rhs.m_age);
+		m_lock = std::move(rhs.m_lock);
+		m_period = std::move(rhs.m_period);
 		return *this;
 	}
 
 	void FMTDevelopment::setAge(const int& lage)
 	{
 		try {
-			age = static_cast<uint8_t>(lage);
+			m_age = static_cast<uint8_t>(lage);
 		}
 		catch (...)
 		{
@@ -55,7 +55,7 @@ namespace Core{
 	void FMTDevelopment::setLock(const int& llock)
 	{
 		try{
-		lock = static_cast<uint8_t>(llock);
+		m_lock = static_cast<uint8_t>(llock);
 		}
 		catch (...)
 		{
@@ -66,7 +66,7 @@ namespace Core{
 	void FMTDevelopment::setPeriod(const int& lperiod)
 	{
 		try{
-		period = static_cast<uint8_t>(lperiod);
+		m_period = static_cast<uint8_t>(lperiod);
 		}
 		catch (...)
 		{
@@ -76,10 +76,10 @@ namespace Core{
 
 	void FMTDevelopment::setMask(const Core::FMTMask& lmask)
 	{
-		mask = lmask;
+		m_mask = lmask;
 	}
 
-  FMTDevelopment::FMTDevelopment():FMTObject(), mask(),age(),lock(),period(0)
+  FMTDevelopment::FMTDevelopment():FMTObject(), m_mask(),m_age(),m_lock(),m_period(0)
   {
 
 
@@ -88,29 +88,29 @@ namespace Core{
 
 
   FMTDevelopment::FMTDevelopment(const FMTMask& lmask,const int& lage,const int& llock) : FMTObject(),
-	  mask(lmask),
-	  age(static_cast<uint8_t>(lage)),
-	  lock(static_cast<uint8_t>(llock)),
-	  period(0)
+	  m_mask(lmask),
+	  m_age(static_cast<uint8_t>(lage)),
+	  m_lock(static_cast<uint8_t>(llock)),
+	  m_period(0)
         {
 
         }
   FMTDevelopment::FMTDevelopment(const FMTMask&  lmask,const int& lage,const int& llock,const int& lperiod): 
 	  FMTObject(),
-	  mask(lmask),
-	  age(static_cast<uint8_t>(lage)),
-	  lock(static_cast<uint8_t>(llock)),
-	  period(static_cast<uint8_t>(lperiod))
+	  m_mask(lmask),
+	  m_age(static_cast<uint8_t>(lage)),
+	  m_lock(static_cast<uint8_t>(llock)),
+	  m_period(static_cast<uint8_t>(lperiod))
         {
 
         }
   
     FMTDevelopment::FMTDevelopment(const FMTDevelopment& rhs) :
 		FMTObject(rhs),
-        mask(rhs.mask),
-        age(rhs.age),
-        lock(rhs.lock),
-        period(rhs.period)
+        m_mask(rhs.m_mask),
+        m_age(rhs.m_age),
+        m_lock(rhs.m_lock),
+        m_period(rhs.m_period)
         {
 
 
@@ -121,10 +121,10 @@ namespace Core{
         if (this!=&rhs)
             {
 			FMTObject::operator=(rhs);
-            mask = rhs.mask;
-            age = rhs.age;
-            lock = rhs.lock;
-            period = rhs.period;
+            m_mask = rhs.m_mask;
+            m_age = rhs.m_age;
+            m_lock = rhs.m_lock;
+            m_period = rhs.m_period;
             }
         return *this;
         }
@@ -132,12 +132,12 @@ namespace Core{
         {
         FMTFuturDevelopment newDev(*this);
 		try {
-			++newDev.age;
-			if (newDev.lock > 0)
+			++newDev.m_age;
+			if (newDev.m_lock > 0)
 			{
-				--newDev.lock;
+				--newDev.m_lock;
 			}
-			++newDev.period;
+			++newDev.m_period;
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("for " + std::string(*this), "FMTDevelopment::grow", __LINE__, __FILE__);
@@ -147,7 +147,7 @@ namespace Core{
 
 	bool FMTDevelopment::worthTestingOperability(const FMTAction& action) const
 		{
-		return (((action.doRespectLock() && lock == 0) || !action.doRespectLock()) &&
+		return (((action.doRespectLock() && m_lock == 0) || !action.doRespectLock()) &&
 			action.getAgeLowerBound() <= getAge() && getAge() <= action.getAgeUpperBound() &&
 			action.getPeriodLowerBound() <= getPeriod() && getPeriod() <= action.getPeriodUpperBound());
 		}
@@ -169,7 +169,7 @@ namespace Core{
 		if (!operable(p_action, p_yields))
 			{
 			Info += "For action " + p_action.getName()+"\n";
-			if ((p_action.doRespectLock() && lock != 0))
+			if ((p_action.doRespectLock() && m_lock != 0))
 				{
 				Info += "Lock of " + std::to_string(getLock()) + " so it is not operable!" + "\n";
 				}
@@ -217,7 +217,7 @@ namespace Core{
 		 try{
 			if (worthTestingOperability(action))
 				{
-				for (const FMTAction::const_iterator spec: action.findSets(mask))
+				for (const FMTAction::const_iterator spec: action.findSets(m_mask))
 					{
 					if (is(spec->second, ylds,graphyieldrequest))
 						{
@@ -345,7 +345,7 @@ namespace Core{
 
     bool FMTDevelopment::operator == (const FMTDevelopment& rhs) const
         {
-        return (age == rhs.age && lock == rhs.lock && period == rhs.period && mask == rhs.mask);
+        return (m_age == rhs.m_age && m_lock == rhs.m_lock && m_period == rhs.m_period && m_mask == rhs.m_mask);
         }
     bool FMTDevelopment::operator != (const FMTDevelopment& rhs) const
         {
@@ -354,28 +354,28 @@ namespace Core{
      bool FMTDevelopment::operator < (const FMTDevelopment& rhs) const
         {
 		 //strict ordering
-		 if (mask < rhs.mask)
+		 if (m_mask < rhs.m_mask)
 			 return true;
-		 if (rhs.mask < mask)
+		 if (rhs.m_mask < m_mask)
 			 return false;
-		 if (age < rhs.age)
+		 if (m_age < rhs.m_age)
 			 return true;
-		 if (rhs.age < age)
+		 if (rhs.m_age < m_age)
 			 return false;
-		 if (lock < rhs.lock)
+		 if (m_lock < rhs.m_lock)
 			 return true;
-		 if (rhs.lock < lock)
+		 if (rhs.m_lock < m_lock)
 			 return false;
-		 if (period < rhs.period)
+		 if (m_period < rhs.m_period)
 			 return true;
-		 if (rhs.period < period)
+		 if (rhs.m_period < m_period)
 			 return false;
 		 return false;
         }
     FMTDevelopment::operator std::string() const
         {
 		std::string line = "";
-        line+=std::string(mask)+" ";
+        line+=std::string(m_mask)+" ";
         line+=std::to_string(getAge())+" ";
         line+=std::to_string(getLock())+" ";
         line+=std::to_string(getPeriod())+" ";
@@ -389,7 +389,7 @@ namespace Core{
 	FMTDevelopment FMTDevelopment::clearLock() const
 		{
 		FMTDevelopment nolock(*this);
-		nolock.lock = 0;
+		nolock.m_lock = 0;
 		return nolock;
 		}
 

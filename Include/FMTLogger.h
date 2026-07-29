@@ -193,34 +193,34 @@ namespace Logging
 			virtual std::unique_ptr <FMTLogger> Clone() const = 0;
 		protected:
 			#if defined FMTWITHOSI
-			std::unique_ptr<FMTSolverLogger>solverref;
+			std::unique_ptr<FMTSolverLogger>m_solverref;
 			#endif
 			// DocString: FMTLogger::pathtostream
 			///string path the the potential filestream
-			std::string filepath;
+			std::string m_filepath;
 			// DocString: FMTLogger::m_FileStream
 			///stream if the logger redirect the logging into somesort of file.
 			mutable std::unique_ptr<std::ofstream>m_FileStream;
-			// DocString: FMTLogger::mtx
+			// DocString: FMTLogger::m_mtx
 			///Mutex for multi-threading.
 			//mutable std::recursive_mutex mtx;
-			mutable boost::recursive_mutex mtx;
-			// DocString: FMTLogger::flushstream
+			mutable boost::recursive_mutex m_mtx;
+			// DocString: FMTLogger::m_flushstream
 			///If true will flush stream at each write
-			bool flushstream;
-			// DocString: FMTLogger::cout
+			bool m_flushstream;
+			// DocString: FMTLogger::_cout
 			/**
 			@brief Output a message, sometimes needed on Windows with boost::python to print directly into the Python window.
 			@param[in] message the message to output.
 			*/
-			virtual void cout(const char* message) const;
+			virtual void _cout(const char* message) const;
 			#ifdef FMTWITHOSI
-			// DocString: FMTLogger::setLoggingLevel
+			// DocString: FMTLogger::_setLoggingLevel
 			/**
 			@brief Set the solver logger logging level.
 			@param[in] level the logging level to set.
 			*/
-			virtual void setLoggingLevel(const int& level);
+			virtual void _setLoggingLevel(const int& level);
 			#endif // FMTWITHOSI
 		private:
 			friend class boost::serialization::access;
@@ -251,12 +251,12 @@ namespace Logging
 			*/
 			template<class Archive>
 			void serialize(Archive& ar, const unsigned int file_version);
-			// DocString: FMTLogger::setToFile
+			// DocString: FMTLogger::_setToFile
 			/**
 			@brief Redirect the log information to a file.
 			@param[in] filename the file to redirect the log to.
 			*/
-			void setToFile(const std::string& filename) const;
+			void _setToFile(const std::string& filename) const;
 			
 		};
 

@@ -24,7 +24,7 @@ namespace Core {
 
 	FMTYieldModelTsla::FMTYieldModelTsla() :FMTYieldModel() 
 	{
-		modelName = FMTYieldModelTsla::getModelType();
+		m_modelName = FMTYieldModelTsla::getModelType();
 	}
 
 

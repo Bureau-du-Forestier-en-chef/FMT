@@ -17,7 +17,7 @@ namespace Core {
 	{
 		std::string value;
 		try {
-			value += "*YT " + std::string(mask) + "\n";
+			value += "*YT " + std::string(m_mask) + "\n";
 			size_t baseid = 0;
 			for (std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
 			{
@@ -26,7 +26,7 @@ namespace Core {
 				{
 					value += std::to_string(base) + " ";
 				}*/
-				value += std::to_string(bases.at(std::min(baseid, bases.size()-1))) + " ";
+				value += std::to_string(m_bases.at(std::min(baseid, m_bases.size()-1))) + " ";
 				const std::vector<double>* data = &it->second.data;
 				for (const double & val : *data)
 				{
@@ -54,12 +54,12 @@ namespace Core {
 			if (m_elements.find(yld) == m_elements.end())
 			{
 				m_elements[yld] = FMTData();
-				if (m_elements.size() > 1  && bases.size() >= m_elements.size())//presume that the last base pushed is the base of the push data...
+				if (m_elements.size() > 1  && m_bases.size() >= m_elements.size())//presume that the last base pushed is the base of the push data...
 				{
 					const size_t newlocation = std::distance(std::begin(m_elements), m_elements.find(yld));
 					const int lastbase = getLastBase();
-					bases.insert(bases.begin() + newlocation, lastbase);
-					bases.pop_back();
+					m_bases.insert(m_bases.begin() + newlocation, lastbase);
+					m_bases.pop_back();
 				}
 			}
 			m_elements[yld].data.push_back(value);
@@ -73,7 +73,7 @@ namespace Core {
 
 	bool FMTTimeYieldHandler::pushData(const std::string& yld, const FMTData& data)
 	{
-		return (basePushData(m_elements, yld, data));
+		return (_basePushData(m_elements, yld, data));
 	}
 	FMTyldtype FMTTimeYieldHandler::getType() const
 	{
@@ -214,8 +214,8 @@ namespace Core {
 
 	}
 
-	FMTTimeYieldHandler::FMTTimeYieldHandler(const FMTMask& mask):
-		FMTYieldHandler(mask)
+	FMTTimeYieldHandler::FMTTimeYieldHandler(const FMTMask& p_mask):
+		FMTYieldHandler(p_mask)
 	{
 
 	}

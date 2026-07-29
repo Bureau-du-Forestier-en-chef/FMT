@@ -1126,16 +1126,13 @@ namespace Models
 */
 class FMTModelComparator
 {
-	// DocString: FMTModelComparator::model_name
-	///name of the FMTModel (name membmer of FMTModel)
-	std::string model_name;
 public:
 	// DocString: FMTModelComparator(std::string)
 	/**
 	@brief Constructor of the comparator.
-	@param[in] name the name of the model to check for in the stl container.
+	@param[in] p_name the name of the model to check for in the stl container.
 	*/
-	FMTModelComparator(std::string name);
+	FMTModelComparator(std::string p_name);
 	// DocString: FMTModelComparator::operator()
 	/**
 	@brief Return true if the given model matches the name held by the comparator.
@@ -1144,6 +1141,10 @@ public:
 	*/
 	bool operator()(const FMTModel& model) const;
 
+private:
+	// DocString: FMTModelComparator::m_modelName
+	///name of the FMTModel (name membmer of FMTModel)
+	std::string m_modelName;
 };
 
 }

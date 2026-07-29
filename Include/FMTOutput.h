@@ -133,7 +133,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		*/
 		inline std::string getName() const
 		{
-			return name;
+			return m_name;
 		}
 		// DocString: FMTOutput::getDescription
 		/**
@@ -142,7 +142,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		*/
 		inline std::string getDescription() const
 		{
-			return description;
+			return m_description;
 		}
 		// DocString: FMTOutput::getGroup
 		/**
@@ -151,7 +151,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		*/
 		inline std::string getGroup() const
 		{
-			return group;
+			return m_group;
 		}
 		// DocString: FMTOutput::empty
 		/**
@@ -288,7 +288,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		*/
 		inline std::vector<FMTOutputSource> getSources() const
 		{
-			return sources;
+			return m_sources;
 		}
 		// DocString: FMTOutput::getSourcesReference
 		/**
@@ -297,7 +297,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		*/
 		inline const std::vector<FMTOutputSource>& getSourcesReference() const
 		{
-			return sources;
+			return m_sources;
 		}
 		// DocString: FMTOutput::getOpes
 		/**
@@ -306,7 +306,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		*/
 		inline std::vector<FMTOperator> getOpes() const
 		{
-			return operators;
+			return m_operators;
 		}
 		// DocString: FMTOutput::targetTheme
 		/**
@@ -322,7 +322,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		*/
 		inline int targetThemeId() const
 		{
-			return sources.begin()->getThemeTarget();
+			return m_sources.begin()->getThemeTarget();
 		}
 		// DocString: FMTOutput::getDecomposition
 		/**
@@ -455,45 +455,45 @@ class FMTEXPORT FMTOutput: public FMTObject
 			std::map<std::string, std::vector<std::string>>& allequations) const;
 
 	protected:
-		// DocString: FMTOutput::sources
+		// DocString: FMTOutput::m_sources
 		///outputsources data used to generate outputnodes
-		std::vector<FMTOutputSource>sources;
-		// DocString: FMTOutput::operators
+		std::vector<FMTOutputSource>m_sources;
+		// DocString: FMTOutput::m_operators
 		///vector of simple operators like +-*/
-		std::vector<FMTOperator>operators;
+		std::vector<FMTOperator>m_operators;
 		// DocString: FMTOutput::theme_target
 		///Sometime output can specify multiple attributes of a given themes
 		//int theme_target;
-		// DocString: FMTOutput::name
+		// DocString: FMTOutput::m_name
 		///This is the name of the output
-		std::string name;
-		// DocString: FMTOutput::description
+		std::string m_name;
+		// DocString: FMTOutput::m_description
 		///This is description of the FMTOutput has seen in the output section.
-		std::string description;
-		// DocString: FMTOutput::group
+		std::string m_description;
+		// DocString: FMTOutput::m_group
 		///This is the group of the output, if empty there's no group
-		std::string group;
-		// DocString: FMTOutput::setProportions
+		std::string m_group;
+		// DocString: FMTOutput::_setProportions
 		/**
 		@brief Set the equation proportions for developments, turning numeric entries into proportions.
 		@param[in,out] allequations the equations.
 		@param[in] baseequation the base equation.
 		*/
-		void setProportions(std::map<std::string, std::vector<std::string>>& allequations,
+		void _setProportions(std::map<std::string, std::vector<std::string>>& allequations,
 			const std::vector<std::string>& baseequation) const;
-		// DocString: FMTOutput::isDivision
+		// DocString: FMTOutput::_isDivision
 		/**
 		@brief Return true if the output contains a division.
 		@return true if the output contains a division else false.
 		*/
-		bool isDivision() const;
-		// DocString: FMTOutput::isDivision
+		bool _isDivision() const;
+		// DocString: FMTOutput::_isDivision
 		/**
 		@brief Replace the division with the bound and reverse the denominator.
 		@param[in] bound the bound.
 		*/
-		void replaceDivision(const double& bound);
-		// DocString: FMTOutput::isValidAction
+		void _replaceDivision(const double& bound);
+		// DocString: FMTOutput::_isValidAction
 		/**
 		@brief Return true if an action or aggregate is in the actions.
 		@param[in] p_actionOrAggregate the name or aggregate of the action.
@@ -501,7 +501,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		@param[in] p_validActions the validity of the actions.
 		@return true if the action is valid else false.
 		*/
-		static bool isValidAction(const std::string& p_actionOrAggregate,
+		static bool _isValidAction(const std::string& p_actionOrAggregate,
 			const std::vector<FMTAction>& p_actions,
 			const std::vector<bool>& p_validActions);
 	private:
@@ -518,11 +518,11 @@ class FMTEXPORT FMTOutput: public FMTObject
 		{
 			try {
 				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
-				ar& BOOST_SERIALIZATION_NVP(sources);
-				ar& BOOST_SERIALIZATION_NVP(operators);
+				ar& boost::serialization::make_nvp("sources", m_sources);
+				ar& boost::serialization::make_nvp("operators", m_operators);
 				//ar & BOOST_SERIALIZATION_NVP(theme_target);
-				ar& BOOST_SERIALIZATION_NVP(name);
-				ar& BOOST_SERIALIZATION_NVP(description);
+				ar& boost::serialization::make_nvp("name", m_name);
+				ar& boost::serialization::make_nvp("description", m_description);
 			}
 			catch (...)
 			{
@@ -573,9 +573,6 @@ class FMTEXPORT FMTOutput: public FMTObject
 */
 class FMTEXPORT FMTOutputComparator
 {
-	// DocString: FMTOutputComparator::output_name
-	///The name of the FMTOutput we are looking for.
-	std::string output_name;
 public:
 	// DocString: FMTOutputComparator()
 	/**
@@ -591,6 +588,10 @@ public:
 	*/
 	bool operator()(const FMTOutput& output) const;
 
+private:
+	// DocString: FMTOutputComparator::m_outputName
+	///The name of the FMTOutput we are looking for.
+	std::string m_outputName;
 };
 
 }

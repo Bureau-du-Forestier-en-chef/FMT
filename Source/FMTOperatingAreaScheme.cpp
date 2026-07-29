@@ -157,12 +157,12 @@ std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties
 		const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>& maingraph, const std::vector<int>& actionIDS)
 	{
 		int binaryid = solver.getNumCols();
-		_area = 0;
+		m_area = 0;
 		if (!totalareavertices.empty())
 			{
 			const double area = this->getPrimalArea(primalsolution, maingraph, totalareavertices);
 			//To remove the numeric instability from the multiplication in the graph inArea
-			_area = static_cast<double>((static_cast<int>(area/100)*100)+100);
+			m_area = static_cast<double>((static_cast<int>(area/100)*100)+100);
 			//old code
 			//_area=this->getPrimalArea(primalsolution, maingraph, totalareavertices);
 			}
@@ -251,7 +251,7 @@ std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties
 							std::find(schemesperiods.at(shemeidselected).begin(), schemesperiods.at(shemeidselected).end(), periodics->first) != schemesperiods.at(shemeidselected).end())
 						{
 							targetedvariables.push_back(openingbinaries.at(validscheme));
-							elements.push_back(-_area);
+							elements.push_back(-m_area);
 							if (constraintsmap.find(shemeidselected) == constraintsmap.end())
 							{
 								constraintsmap[shemeidselected] = std::vector<int>();
@@ -367,7 +367,7 @@ size_t FMTOperatingAreaScheme::unboundAllDualSchemes(std::vector<int>& targets, 
 					{
 					targets.push_back(newconstraint);
 					bounds.push_back(-std::numeric_limits<double>::max());
-					bounds.push_back(_area);
+					bounds.push_back(m_area);
 					}
 				}
 				processed += 1;
@@ -390,7 +390,7 @@ bool FMTOperatingAreaScheme::unboundDualScheme(const double* rowactivities,std::
 	double minimalopeningarea = std::numeric_limits<double>::lowest();
 	if (threshold > FMT_DBL_TOLERANCE)
 		{
-		minimalopeningarea = threshold * _area;
+		minimalopeningarea = threshold * m_area;
 		}
 	size_t cid = 0;
 	//std::cout << std::string(getMask()) << " ";
@@ -420,7 +420,7 @@ bool FMTOperatingAreaScheme::unboundDualScheme(const double* rowactivities,std::
 								//std::cout << "CID " << cid<<" " << *(rowactivities + cit)<<" "<< minimalcosarea <<" " << minimalopeningarea<<" "<< looseset << " "<<_area<<" ";
 								//bounds.push_back(std::numeric_limits<double>::lowest());
 								bounds.push_back(minimalcosarea);
-								bounds.push_back(_area);
+								bounds.push_back(m_area);
 							}
 							else {
 								bounds.push_back(0);
@@ -438,7 +438,7 @@ bool FMTOperatingAreaScheme::unboundDualScheme(const double* rowactivities,std::
 						//std::cout << "CID " << cid<<" " << *(rowactivities + cit) << " " << minimalcosarea<<" "<< minimalopeningarea<<" "<<looseset << " " << _area<<" ";
 						//bounds[location * 2] = std::numeric_limits<double>::lowest();
 						bounds[location * 2] = minimalcosarea;
-						bounds[location * 2 + 1] = _area;
+						bounds[location * 2 + 1] = m_area;
 						}
 					++constraintid;
 					}
@@ -518,7 +518,7 @@ std::vector<double> FMTOperatingAreaScheme::getDualSolution(const double* upperb
 				filledpattern[period] = 1;
 				lastPeriod = period;
 			}
-			const bool gotneighbors = !neighbors.empty();
+			const bool gotneighbors = !m_neighbors.empty();
 			const int maxperiod = getMaxPeriod();
 			if (maxperiod > 0)
 			{
@@ -850,13 +850,13 @@ bool FMTOperatingAreaScheme::haveActivitySolution(const double* dualsolution) co
 
 
 
-std::vector<size_t>FMTOperatingAreaScheme::getPotentialPrimalSchemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds, const std::vector<FMTOperatingAreaScheme>& neighbors) const
+std::vector<size_t>FMTOperatingAreaScheme::getPotentialPrimalSchemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds, const std::vector<FMTOperatingAreaScheme>& m_neighbors) const
 	{
 	std::vector<size_t>potentialindexes;
 	if (havePotentialSolution(primalsolution))//Got something more than zero...
 		{
 		std::vector<int>potentials = this->openingbinaries;
-		for (const FMTOperatingAreaScheme& neighbor : neighbors)
+		for (const FMTOperatingAreaScheme& neighbor : m_neighbors)
 			{
 			if (neighbor.isPrimalBounded(lowerbounds, upperbounds))
 				{
@@ -910,13 +910,13 @@ double FMTOperatingAreaScheme::getRowsActivitySum(const std::vector<int>& rows, 
 std::vector<size_t> FMTOperatingAreaScheme::getPotentialDualSchemes(
 	const double* dualsolution, 
 	const double* upperbound, 
-	const std::vector<FMTOperatingAreaScheme>& neighbors) const
+	const std::vector<FMTOperatingAreaScheme>& m_neighbors) const
 	{
 	std::vector<size_t> potentialIndexes;
 	if (haveActivitySolution(dualsolution))//Got something more than zero...
 		{
 			std::vector<int> potentials = this->openingbinaries;
-			for (const FMTOperatingAreaScheme& neighbor : neighbors)
+			for (const FMTOperatingAreaScheme& neighbor : m_neighbors)
 			{
 				if (neighbor.isDualBounded(upperbound))
 				{
@@ -1108,7 +1108,7 @@ double FMTOperatingAreaScheme::_maxNearThresholdActivityRows(const std::vector<i
 		++optid;
 	}
 	
-	double newThreshold = (maxValue / (_area + FMT_DBL_TOLERANCE));
+	double newThreshold = (maxValue / (m_area + FMT_DBL_TOLERANCE));
 
 	return newThreshold;
 }
@@ -1167,7 +1167,7 @@ bool FMTOperatingAreaScheme::isThresholdActivityRows(const std::vector<int>& row
 {
 	/*for (const int& constraint : rows)
 	{
-		if (*(dualsolution + constraint) < ((threshold*_area) - FMT_DBL_TOLERANCE))
+		if (*(dualsolution + constraint) < ((threshold*m_area) - FMT_DBL_TOLERANCE))
 		{
 			return false;
 		}
@@ -1179,7 +1179,7 @@ bool FMTOperatingAreaScheme::isThresholdActivityRows(const std::vector<int>& row
 
 	while (optid < openingtime && optid < rows.size())
 	{
-		if (*(dualsolution + rows.at(optid)) < ((thresholdValue * _area) - FMT_DBL_TOLERANCE))
+		if (*(dualsolution + rows.at(optid)) < ((thresholdValue * m_area) - FMT_DBL_TOLERANCE))
 		{
 			return false;
 		}
@@ -1256,7 +1256,7 @@ size_t FMTOperatingAreaScheme::getStartingPeriod() const
 
 bool FMTOperatingAreaScheme::operator == (const FMTOperatingAreaScheme& rhs) const
 	{
-	return (mask == rhs.mask);
+	return (m_mask == rhs.m_mask);
 	}
 bool FMTOperatingAreaScheme::operator != (const FMTOperatingAreaScheme& rhs) const
 	{
@@ -1297,13 +1297,13 @@ const int& FMTOperatingAreaScheme::getMaximalSchemesConstraint() const
 }
 
 
-FMTOperatingAreaSchemeComparator::FMTOperatingAreaSchemeComparator(const Core::FMTMask& lmask):mask(lmask)
+FMTOperatingAreaSchemeComparator::FMTOperatingAreaSchemeComparator(const Core::FMTMask& lmask):m_mask(lmask)
 	{
 
 	}
 bool FMTOperatingAreaSchemeComparator::operator()(const FMTOperatingAreaScheme& oparea) const
 	{
-	return (oparea.getMask() == mask);
+	return (oparea.getMask() == m_mask);
 	}
 
 

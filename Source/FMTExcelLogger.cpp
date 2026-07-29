@@ -5,7 +5,7 @@
 namespace Logging
 {
 
-	void FMTExcelLogger::cout(const char* message) const
+	void FMTExcelLogger::_cout(const char* message) const
 		{
 		printout += std::string(message);
 		}

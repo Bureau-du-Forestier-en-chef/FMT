@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -28,7 +28,7 @@ namespace Logging
 		FMTLogger()
 		{
 		#ifdef FMTWITHOSI
-			solverref->setLogLevel(1);
+			m_solverref->setLogLevel(1);
 		#endif
 		}
 

@@ -70,10 +70,10 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		/**
 		@brief Construct an empty action with a given name, respect lock and reset age flags.
 		@param[in] lname the name of the action.
-		@param[in] lock if true the action respects the lock.
-		@param[in] reset if true the action resets the age.
+		@param[in] p_lock if true the action respects the lock.
+		@param[in] p_reset if true the action resets the age.
 		*/
-		FMTAction(const std::string& lname, const bool& lock, const bool& reset);
+		FMTAction(const std::string& lname, const bool& p_lock, const bool& p_reset);
 		// DocString: FMTAction::pushAggregate
 		/**
 		@brief Push an aggregate to the aggregates of the action.
@@ -134,7 +134,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline const int& getAgeLowerBound() const
 		{
-			return agelowerbound;
+			return m_agelowerbound;
 		}
 		// DocString: FMTAction::getAgeUpperBound
 		/**
@@ -143,7 +143,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline const int& getAgeUpperBound() const
 		{
-			return ageupperbound;
+			return m_ageupperbound;
 		}
 		// DocString: FMTAction::getPeriodLowerBound
 		/**
@@ -152,7 +152,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline const int& getPeriodLowerBound() const
 		{
-			return periodlowerbound;
+			return m_periodlowerbound;
 		}
 		// DocString: FMTAction::getPeriodUpperBound
 		/**
@@ -161,7 +161,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline const int& getPeriodUpperBound() const
 		{
-			return periodupperbound;
+			return m_periodupperbound;
 		}
 		// DocString: FMTAction::hash
 		/**
@@ -170,7 +170,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline size_t hash() const
 		{
-			return boost::hash<std::string>()(name);
+			return boost::hash<std::string>()(m_name);
 		}
 		// DocString: FMTAction::getName
 		/**
@@ -179,7 +179,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline std::string getName() const
 		{
-			return name;
+			return m_name;
 		}
 		// DocString: FMTAction::doRespectLock
 		/**
@@ -188,7 +188,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline bool doRespectLock() const
 		{
-			return lock;
+			return m_lock;
 		}
 		// DocString: FMTAction::isResetAge
 		/**
@@ -197,7 +197,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		inline bool isResetAge() const
 		{
-			return reset;
+			return m_reset;
 		}
 		// DocString: FMTAction::isPartOfASerie
 		/**
@@ -346,42 +346,42 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		*/
 		bool isInSeries() const;
 	protected:
-		// DocString: FMTAction::aggregates
+		// DocString: FMTAction::m_aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.
-		std::vector<std::string> aggregates;
-		// DocString: FMTAction::partials
+		std::vector<std::string> m_aggregates;
+		// DocString: FMTAction::m_partials
 		///Keeps the yields name for determining the amount of wood harvested in case of partial cut.
-        std::vector<std::string> partials;
-		// DocString: FMTAction::agelowerbound
+        std::vector<std::string> m_partials;
+		// DocString: FMTAction::m_agelowerbound
 		///Those data members are for optimization only,
 		///the class determine within which bounds the aciton can take place for a given development.
-		int agelowerbound, ageupperbound, periodlowerbound, periodupperbound;
-		// DocString: FMTAction::name
+		int m_agelowerbound, m_ageupperbound, m_periodlowerbound, m_periodupperbound;
+		// DocString: FMTAction::m_name
 		///The name of the action
-		std::string name;
-		// DocString: FMTAction::lock
+		std::string m_name;
+		// DocString: FMTAction::m_lock
 		///If lock is true the action is not _lockexempt when false the action is _LOCKEXEMPT
-		bool lock;
-		// DocString: FMTAction::reset
+		bool m_lock;
+		// DocString: FMTAction::m_reset
 		///If reset is true then the action is age reset Y else the action  doen't reset age
-		bool reset;
+		bool m_reset;
 		// DocString: FMTAction::m_series
 		///The action series that the action is part of
 		std::vector<FMTSerie> m_series;
 		// DocString: FMTAction::m_InSerie
 		///True if the actions is in a serie
 		bool m_InSerie;
-		// DocString: FMTAction::setBounds
+		// DocString: FMTAction::_setBounds
 		/**
 		@brief Set the age and period bounds member data by iterating on the specifications, for optimization.
 		*/
-		void setBounds();
-		// DocString: FMTAction::getGCBMActionDef
+		void _setBounds();
+		// DocString: FMTAction::_getGCBMActionDef
 		/**
 		@brief Return the corresponding GCBM action definition.
 		@return the GCBM action definition.
 		*/
-		std::vector<std::string> getGCBMActionDef() const;
+		std::vector<std::string> _getGCBMActionDef() const;
 	private:
 		// DocString: FMTAction::serialize
 		/**
@@ -396,15 +396,15 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		{
 			try {
 				ar& boost::serialization::make_nvp("specs", boost::serialization::base_object<FMTList<FMTSpec>>(*this));
-				ar& BOOST_SERIALIZATION_NVP(partials);
-				ar& BOOST_SERIALIZATION_NVP(agelowerbound);
-				ar& BOOST_SERIALIZATION_NVP(ageupperbound);
-				ar& BOOST_SERIALIZATION_NVP(periodlowerbound);
-				ar& BOOST_SERIALIZATION_NVP(periodupperbound);
-				ar& BOOST_SERIALIZATION_NVP(name);
-				ar& BOOST_SERIALIZATION_NVP(aggregates);
-				ar& BOOST_SERIALIZATION_NVP(lock);
-				ar& BOOST_SERIALIZATION_NVP(reset);
+				ar& boost::serialization::make_nvp("partials", m_partials);
+				ar& boost::serialization::make_nvp("agelowerbound", m_agelowerbound);
+				ar& boost::serialization::make_nvp("ageupperbound", m_ageupperbound);
+				ar& boost::serialization::make_nvp("periodlowerbound", m_periodlowerbound);
+				ar& boost::serialization::make_nvp("periodupperbound", m_periodupperbound);
+				ar& boost::serialization::make_nvp("name", m_name);
+				ar& boost::serialization::make_nvp("aggregates", m_aggregates);
+				ar& boost::serialization::make_nvp("lock", m_lock);
+				ar& boost::serialization::make_nvp("reset", m_reset);
 			}
 			catch (...)
 			{
@@ -419,20 +419,14 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 */
 class FMTActionComparator
 	{
-	// DocString: FMTActionComparator::action_name
-	///The action named that we are looking for.
-	std::string action_name;
-	// DocString: FMTActionComparator::checkaggregate
-	///If true the comparator will also check for aggregates.
-	bool checkaggregate;
 	public:
 		// DocString: FMTActionComparator(std::string,bool)
 		/**
 		@brief Construct the comparator from the action name to match.
-		@param[in] name the name of the action to match.
+		@param[in] p_name the name of the action to match.
 		@param[in] lcheckaggregate if true also returns actions within the named aggregate.
 		*/
-		FMTActionComparator(std::string name, bool lcheckaggregate = false);
+		FMTActionComparator(std::string p_name, bool lcheckaggregate = false);
 		// DocString: FMTActionComparator::getAllAggregates
 		/**
 		@brief Return the actions matching the action name, or only the matching aggregates.
@@ -456,6 +450,13 @@ class FMTActionComparator
 		@return true if the action matches else false.
 		*/
 		bool operator()(const FMTAction& action) const;
+	private:
+	// DocString: FMTActionComparator::m_actionName
+	///The action named that we are looking for.
+	std::string m_actionName;
+	// DocString: FMTActionComparator::m_checkAggregate
+	///If true the comparator will also check for aggregates.
+	bool m_checkAggregate;
 	};
 }
 

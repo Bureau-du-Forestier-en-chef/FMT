@@ -107,34 +107,34 @@ namespace Parallel
 	protected:
 		// DocString: FMTTask::mutex
 		///Recursive mutex for the task
-		static boost::recursive_mutex taskmutex;
-		// DocString: FMTTask::tasklogger
+		static boost::recursive_mutex m_taskmutex;
+		// DocString: FMTTask::m_tasklogger
 		///Logger for solver in parallel...coinmessagehandler does not support concurency.
 		///This logger wont print anything so dont use it in parallel.
-		std::unique_ptr<Logging::FMTLogger>tasklogger;
+		std::unique_ptr<Logging::FMTLogger>m_tasklogger;
 		// DocString: FMTTask::setstatus()
 		/**
 		@brief Change the status of the task.
 		*/
 		//void setstatus(bool status);
-		// DocString: FMTTask::splitWork
+		// DocString: FMTTask::_splitWork
 		/**
 		@brief Split the total work size into buckets that are as equal as possible.
 		@param[in] numberoftasks the number of tasks.
 		@param[in] totalworksize the total work size.
 		@return the work size of each bucket.
 		*/
-		std::vector<size_t>splitWork(int numberoftasks,const int& totalworksize) const;
-		// DocString: FMTTask::decrementWorkingThread()
+		std::vector<size_t>_splitWork(int numberoftasks,const int& totalworksize) const;
+		// DocString: FMTTask::_decrementWorkingThread()
 		/**
 		@brief Decrement the number of working threads.
 		*/
-		void decrementWorkingThread();
-		// DocString: FMTTask::checkpoint()
+		void _decrementWorkingThread();
+		// DocString: FMTTask::_checkpoint()
 		/**
 		@brief Wait for the other threads to finish their jobs, then continue.
 		*/
-		void checkpoint();
+		void _checkpoint();
 		// DocString: FMTTask::_setCrashHandlers
 		/**
 		@brief Set the terminate and abort handlers before running the global function in the thread, and set the se_translator on Windows.

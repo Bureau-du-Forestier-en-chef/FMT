@@ -27,69 +27,69 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 
 	#ifdef FMTWITHONNXR
-		std::unique_ptr<Ort::Env> FMTYieldModelNn::envPtr = std::unique_ptr<Ort::Env>(nullptr);
+		std::unique_ptr<Ort::Env> FMTYieldModelNn::m_envPtr = std::unique_ptr<Ort::Env>(nullptr);
 	#endif	
 
-		const float FMTYieldModelNn::UNKNOWN_DISTURBANCE_CODE = 17;
+		const float FMTYieldModelNn::m_UNKNOWN_DISTURBANCE_CODE = 17;
 
 
 	FMTYieldModelNn::FMTYieldModelNn(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 	#ifdef FMTWITHONNXR
-			:sessionPtr()
+			:m_sessionPtr()
 	#endif	
 	{
 		try {
 			#ifdef FMTWITHONNXR
-						if (!envPtr)
+						if (!m_envPtr)
 						{
-							envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+							m_envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
 						}
 			#endif
 			boost::filesystem::path fmtdll(getRuntimeLocation());
-			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
+			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(m_JSON_PROP_MODEL_NAME);
 			boost::filesystem::path filenamepath(modelNameIt->second.data());
-			modelName = (fmtdll / filenamepath).string();
+			m_modelName = (fmtdll / filenamepath).string();
 
-			boost::property_tree::ptree::const_assoc_iterator modelTypeIt = jsonProps.find(JSON_PROP_MODEL_TYPE);
-			modelType = modelTypeIt->second.data();
-			boost::property_tree::ptree::const_assoc_iterator stdParamsFileNameIt = jsonProps.find(JSON_PROP_STAND_FILE_PATH);
+			boost::property_tree::ptree::const_assoc_iterator modelTypeIt = jsonProps.find(m_JSON_PROP_MODEL_TYPE);
+			m_modelType = modelTypeIt->second.data();
+			boost::property_tree::ptree::const_assoc_iterator stdParamsFileNameIt = jsonProps.find(m_JSON_PROP_STAND_FILE_PATH);
 
 			boost::filesystem::path parampath(stdParamsFileNameIt->second.data());
 			std::string stdParamsFileName = (fmtdll / parampath).string();
 
-			std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
+			std::wstring wideModelName = std::wstring(m_modelName.begin(), m_modelName.end());
 			#ifdef FMTWITHONNXR
-			sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
+			m_sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*m_envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 			#endif
 			std::ifstream file(stdParamsFileName);
-			std::vector<std::string> headers = getNextLineAndSplitIntoTokens(file);
+			std::vector<std::string> headers = _getNextLineAndSplitIntoTokens(file);
 			headers.erase(headers.begin());
-			std::vector<std::string> strMeans = getNextLineAndSplitIntoTokens(file);
+			std::vector<std::string> strMeans = _getNextLineAndSplitIntoTokens(file);
 			strMeans.erase(strMeans.begin());
-			std::vector<std::string> strVars = getNextLineAndSplitIntoTokens(file);
+			std::vector<std::string> strVars = _getNextLineAndSplitIntoTokens(file);
 			strVars.erase(strVars.begin());
 
 			std::vector<std::string> yields;
-			for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_YIELDS))
+			for (auto& item : jsonProps.get_child(m_JSON_PROP_MODEL_YIELDS))
 			{
 				yields.push_back(item.second.get_value<std::string>());
 			}
 
-			validateInputYields(yields, inputYields);
+			_validateInputYields(yields, inputYields);
 
-			modelYields = inputYields;
+			m_modelYields = inputYields;
 
-			for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_OUTPUTS))
+			for (auto& item : jsonProps.get_child(m_JSON_PROP_MODEL_OUTPUTS))
 			{
-				modelOutputs.push_back(item.second.get_value<std::string>());
+				m_modelOutputs.push_back(item.second.get_value<std::string>());
 			}
 
-			standardParamMeans = std::vector<float>(strMeans.size());
-			standardParamVars = std::vector<float>(strVars.size());
+			m_standardParamMeans = std::vector<float>(strMeans.size());
+			m_standardParamVars = std::vector<float>(strVars.size());
 			for (size_t i = 0; i < strMeans.size(); i++)
 			{
-				standardParamMeans[i] = std::stof(strMeans[i]);
-				standardParamVars[i] = std::stof(strVars[i]);
+				m_standardParamMeans[i] = std::stof(strMeans[i]);
+				m_standardParamVars[i] = std::stof(strVars[i]);
 			}
 		}
 		catch (...)
@@ -104,26 +104,26 @@ namespace Core {
 
 	FMTYieldModelNn::FMTYieldModelNn(const FMTYieldModelNn& rhs):
 		FMTYieldModel(rhs),
-		modelType(rhs.getModelType()),
-		standardParamMeans(rhs.getStandardParamMeans()),
-		standardParamVars(rhs.getStandardParamVars()),
-		modelOutputs(rhs.getModelOutputNames())
+		m_modelType(rhs.getModelType()),
+		m_standardParamMeans(rhs._getStandardParamMeans()),
+		m_standardParamVars(rhs._getStandardParamVars()),
+		m_modelOutputs(rhs.getModelOutputNames())
 	{
 	#ifdef FMTWITHONNXR
-		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
-		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
+		std::wstring wideModelName = std::wstring(m_modelName.begin(), m_modelName.end());
+		m_sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*m_envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 	#endif
 	}
 
 	FMTYieldModelNn::~FMTYieldModelNn()
 	{
 	#ifdef FMTWITHONNXR
-			sessionPtr->release();
+			m_sessionPtr->release();
 	#endif
 	}
 
 
-	const std::vector<std::string> FMTYieldModelNn::getNextLineAndSplitIntoTokens(std::istream& str)
+	const std::vector<std::string> FMTYieldModelNn::_getNextLineAndSplitIntoTokens(std::istream& str)
 	{
 		std::vector<std::string>   result;
 		std::string                line;
@@ -145,7 +145,7 @@ namespace Core {
 		return result;
 	}
 
-	const std::vector<float> FMTYieldModelNn::standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars)
+	const std::vector<float> FMTYieldModelNn::_standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars)
 	{
 		std::vector<float> output(input.size());
 		for (size_t i = 0; i < input.size(); i++)
@@ -156,7 +156,7 @@ namespace Core {
 		return std::vector<float>(output.begin(), output.end());
 	}
 	
-	void FMTYieldModelNn::validateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const
+	void FMTYieldModelNn::_validateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const
 	{
 		size_t expectedNbYld = expectedYields.size();
 		size_t recievedNbYld = inputYields.size();
@@ -179,12 +179,12 @@ namespace Core {
 		try {
 			const std::string mdlName = getModelName();
 		#ifdef FMTWITHONNXR
-			const std::vector<std::string> modelYields = getModelYields();
+			const std::vector<std::string> m_modelYields = getModelYields();
 			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 			Ort::AllocatorWithDefaultOptions allocator;
 			#if ORT_API_VERSION <= 4
-			char* inputName = sessionPtr->GetInputName(0, allocator);
-			char* outputName = sessionPtr->GetOutputName(0, allocator);
+			char* inputName = m_sessionPtr->GetInputName(0, allocator);
+			char* outputName = m_sessionPtr->GetOutputName(0, allocator);
 			std::vector<const char*> inputNames{ inputName };
 			std::vector<const char*> outputNames{ outputName };
 			#else
@@ -192,10 +192,10 @@ namespace Core {
 			std::vector<Ort::AllocatedStringPtr> outputNodeNameAllocatedStrings;
 			std::vector<const char*> inputNames;
 			std::vector<const char*> outputNames;
-			auto inputName = sessionPtr->GetInputNameAllocated(0, allocator);
+			auto inputName = m_sessionPtr->GetInputNameAllocated(0, allocator);
 			inputNodeNameAllocatedStrings.push_back(std::move(inputName));
 			inputNames.push_back(inputNodeNameAllocatedStrings.back().get());
-			auto outputName = sessionPtr->GetOutputNameAllocated(0, allocator);
+			auto outputName = m_sessionPtr->GetOutputNameAllocated(0, allocator);
 			outputNodeNameAllocatedStrings.push_back(std::move(outputName));
 			outputNames.push_back(outputNodeNameAllocatedStrings.back().get());
 			#endif
@@ -209,7 +209,7 @@ namespace Core {
 			if (linegraph != nullptr)//Im a linegraph
 			{
 				const Graph::FMTGraph<Graph::FMTBaseVertexProperties, Graph::FMTBaseEdgeProperties>::FMTvertex_descriptor* vertex = linegraph->getVertexFromVertexInfo(graphinfo);
-				const std::vector<Graph::FMTPredictor>predictors = linegraph->getPredictors(*vertex, *modelptr, modelYields, 3);
+				const std::vector<Graph::FMTPredictor>predictors = linegraph->getPredictors(*vertex, *modelptr, m_modelYields, 3);
 				if (predictors.empty())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
@@ -220,10 +220,10 @@ namespace Core {
 				std::vector<double> inputsDbl = getInputValues(predictor);
 				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
 				removeNans(inputs);
-				std::vector<int64_t> inputShape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-				std::vector<float> stdInput = standardize(inputs, getStandardParamMeans(), getStandardParamVars());
+				std::vector<int64_t> inputShape = m_sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+				std::vector<float> stdInput = _standardize(inputs, _getStandardParamMeans(), _getStandardParamVars());
 				const Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memoryInfo, stdInput.data(), stdInput.size(), inputShape.data(), inputShape.size());
-				std::vector<Ort::Value> output_tensors = sessionPtr->Run(Ort::RunOptions{ nullptr }, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
+				std::vector<Ort::Value> output_tensors = m_sessionPtr->Run(Ort::RunOptions{ nullptr }, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
 				std::vector<int64_t> outputShape = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
 				const float* outputValues = output_tensors[0].GetTensorMutableData<float>();
 				std::vector<float> result_flt(outputValues, outputValues + ((int)outputShape.data()[1]));
@@ -233,7 +233,7 @@ namespace Core {
 			else if (fullgraph != nullptr)//Im a full graph
 			{
 				const Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor* vertex = fullgraph->getVertexFromVertexInfo(graphinfo);
-				const std::vector<Graph::FMTPredictor>predictors = fullgraph->getPredictors(*vertex, *modelptr, modelYields, 3);
+				const std::vector<Graph::FMTPredictor>predictors = fullgraph->getPredictors(*vertex, *modelptr, m_modelYields, 3);
 				if (predictors.empty())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
@@ -284,10 +284,10 @@ namespace Core {
 						std::vector<double> inputsDbl = getInputValues(predictor);
 						std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
 						removeNans(inputs);
-						std::vector<int64_t> inputShape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-						std::vector<float> stdInput = standardize(inputs, getStandardParamMeans(), getStandardParamVars());
+						std::vector<int64_t> inputShape = m_sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+						std::vector<float> stdInput = _standardize(inputs, _getStandardParamMeans(), _getStandardParamVars());
 						const Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memoryInfo, stdInput.data(), stdInput.size(), inputShape.data(), inputShape.size());
-						std::vector<Ort::Value> output_tensors = sessionPtr->Run(Ort::RunOptions{ nullptr }, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
+						std::vector<Ort::Value> output_tensors = m_sessionPtr->Run(Ort::RunOptions{ nullptr }, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
 						std::vector<int64_t> outputShape = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
 						const float* outputValues = output_tensors[0].GetTensorMutableData<float>();
 						std::vector<float> result_flt(outputValues, outputValues + ((int)outputShape.data()[1]));
@@ -325,22 +325,22 @@ namespace Core {
 
 	const std::string& FMTYieldModelNn::getModelType() const
 	{
-		return modelType;
+		return m_modelType;
 	}
 
-	const std::vector<float>& FMTYieldModelNn::getStandardParamMeans() const
+	const std::vector<float>& FMTYieldModelNn::_getStandardParamMeans() const
 	{
-		return standardParamMeans;
+		return m_standardParamMeans;
 	}
 
-	const std::vector<float>& FMTYieldModelNn::getStandardParamVars() const
+	const std::vector<float>& FMTYieldModelNn::_getStandardParamVars() const
 	{
-		return standardParamVars;
+		return m_standardParamVars;
 	}
 
 	const std::vector<std::string>& FMTYieldModelNn::getModelOutputNames() const
 	{
-		return modelOutputs;
+		return m_modelOutputs;
 	}
 
 	const void FMTYieldModelNn::removeNans(std::vector<float>& input) const
@@ -352,7 +352,7 @@ namespace Core {
 				if (i == 0 || i == 2 || i == 4)
 					input[i] = 0;
 				if (i == 1 || i == 3 || i == 5)
-					input[i] = FMTYieldModelNn::UNKNOWN_DISTURBANCE_CODE;
+					input[i] = FMTYieldModelNn::m_UNKNOWN_DISTURBANCE_CODE;
 			}
 		}
 	}

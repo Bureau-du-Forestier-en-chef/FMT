@@ -82,27 +82,27 @@ namespace Core
 		*/
 		virtual void setModel(Models::FMTModel* p_modelPtr);
 	private:
-		// DocString: FMTYieldModelRandom::getNormalizedYields
+		// DocString: FMTYieldModelRandom::_getNormalizedYields
 		/**
 		@brief Get the yields value of p_yield based on p_request.
 		@param[in] p_yields, a valid yields contained in the yield section.
 		@param[in] p_request, a valid request from the model.
 		@return Yields normalized yield values based on total value multiply by 100.
 		*/
-		std::vector<size_t> getNormalizedYields(const std::vector<std::string>& p_yields,const Core::FMTYieldRequest& p_request) const;
+		std::vector<size_t> _getNormalizedYields(const std::vector<std::string>& p_yields,const Core::FMTYieldRequest& p_request) const;
 		// DocString: FMTYieldModelRandom::getYield
 		/**
 		@brief REturn a randomly selected index
 		@param[in] p_distribution
 		@return a double randomly generated.
 		*/
-		double getRandomIndex(const std::vector<size_t>& p_distribution) const;
+		double _getRandomIndex(const std::vector<size_t>& p_distribution) const;
 		// DocString: FMTYieldModelRandom::getYield
 		/**
 		@brief If the seed of the FMTModel parameters changed from the last call then update the m_seed and the m_generator.
 		@param[in] p_request a valid request.
 		*/
-		void updateGeneratorAndSeed(const Core::FMTYieldRequest& p_request) const;
+		void _updateGeneratorAndSeed(const Core::FMTYieldRequest& p_request) const;
 		// DocString: FMTYieldModelRandom::m_cache
 		///the cache value of the random number 
 		mutable std::unordered_map<int,double>m_cache;

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -15,66 +15,66 @@ namespace Heuristics
 
 FMTOperatingArea& FMTOperatingArea::operator += (const double& value)
 	{
-	this->_area += value;
+	this->m_area += value;
 	return *this;
 	}
 
 
 double FMTOperatingArea::getArea() const
 	{
-	return _area;
+	return m_area;
 	}
 
 
 std::vector<Core::FMTMask>FMTOperatingArea::getNeighbors() const
 	{
-	return neighbors;
+	return m_neighbors;
 	}
 
 FMTOperatingArea::FMTOperatingArea(const Core::FMTMask& lmask,const double& lneighborsperimeter):
-	mask(lmask),
-	neighbors(),
-	neighborsperimeter(lneighborsperimeter),
-	_area()
+	m_mask(lmask),
+	m_neighbors(),
+	m_neighborsperimeter(lneighborsperimeter),
+	m_area()
 	{
 
 	}
 
 void FMTOperatingArea::setArea(const double& newarea)
     {
-    _area = newarea;
+    m_area = newarea;
     }
 
 void FMTOperatingArea::setNeighbors(const std::vector<Core::FMTMask>& lneighbors)
 	{
-	neighbors = lneighbors;
+	m_neighbors = lneighbors;
 	}
 
 double FMTOperatingArea::getNeighborsPerimeter() const
 	{
-	return neighborsperimeter;
+	return m_neighborsperimeter;
 	}
 
 Core::FMTMask FMTOperatingArea::getMask() const
 	{
-	return mask;
+	return m_mask;
 	}
 
 bool FMTOperatingArea::operator == (const FMTOperatingArea& rhs) const
 	{
-	return (mask == rhs.mask);
+	return (m_mask == rhs.m_mask);
 	}
 bool FMTOperatingArea::operator != (const FMTOperatingArea& rhs) const
 	{
 	return !(*this == rhs);
 	}
 
-FMTOperatingAreaComparator::FMTOperatingAreaComparator(const Core::FMTMask& lmask):mask(lmask)
+FMTOperatingAreaComparator::FMTOperatingAreaComparator(const Core::FMTMask& lmask):m_mask(lmask)
 	{
 
 	}
 
-FMTOperatingAreaComparator::FMTOperatingAreaComparator(const FMTOperatingArea& oparea):mask(oparea.getMask())
+FMTOperatingAreaComparator::FMTOperatingAreaComparator(const FMTOperatingArea& oparea):m_mask(oparea.getMask())
     {
 
     }
@@ -82,16 +82,16 @@ FMTOperatingAreaComparator::FMTOperatingAreaComparator(const FMTOperatingArea& o
 
 bool FMTOperatingAreaComparator::operator()(const FMTOperatingArea& oparea) const
 	{
-	return (oparea.getMask() == mask);
+	return (oparea.getMask() == m_mask);
 	}
 
 FMTOperatingArea FMTOperatingArea::presolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>& presolvedthemes) const
 {
 	FMTOperatingArea presolvedoparea(*this);
-	presolvedoparea.mask = this->mask.presolve(filter, presolvedthemes);
-	for(size_t i=0; i < presolvedoparea.neighbors.size(); ++i)
+	presolvedoparea.m_mask = this->m_mask.presolve(filter, presolvedthemes);
+	for(size_t i=0; i < presolvedoparea.m_neighbors.size(); ++i)
 	{
-		presolvedoparea.neighbors[i]=this->neighbors[i].presolve(filter, presolvedthemes);
+		presolvedoparea.m_neighbors[i]=this->m_neighbors[i].presolve(filter, presolvedthemes);
 	}
 	return presolvedoparea;
 }
@@ -99,7 +99,7 @@ FMTOperatingArea FMTOperatingArea::presolveOperatingArea(const Core::FMTMaskFilt
 FMTOperatingArea FMTOperatingArea::postsolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const
 {
 	FMTOperatingArea postsolvedoparea(*this);
-	postsolvedoparea.mask = postsolvedoparea.mask.postSolve(filter,basethemes);
+	postsolvedoparea.m_mask = postsolvedoparea.m_mask.postSolve(filter,basethemes);
 	return postsolvedoparea;
 }
 

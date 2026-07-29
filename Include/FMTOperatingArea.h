@@ -27,35 +27,6 @@ namespace Heuristics
 	*/
 	class FMTEXPORT FMTOperatingArea
 		{
-		// DocString: FMTOperatingArea::serialize
-		/**
-		@brief Serialize the FMTOperatingArea for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-			{
-			ar & BOOST_SERIALIZATION_NVP(mask);
-			ar & BOOST_SERIALIZATION_NVP(neighbors);
-			ar & BOOST_SERIALIZATION_NVP(neighborsperimeter);
-			ar & BOOST_SERIALIZATION_NVP(_area);
-			}
-		protected:
-		// DocString: FMTOperatingArea::mask
-		///The mask describing the operating area
-		Core::FMTMask mask;
-		// DocString: FMTOperatingArea::neighbors
-		///Neighbors mask of the operating area
-		std::vector<Core::FMTMask>neighbors;
-		// DocString: FMTOperatingArea::neighborsperimeter
-		///neighborsperimeter is the ratio a operatingarea needs to share to a other operatingarea to be considered neighbor.
-		double neighborsperimeter;
-		// DocString: FMTOperatingArea::_area
-		///The initial area of the operating area used as big M for the MIP.
-		double _area;
 		public:
 			// DocString: FMTOperatingArea::operator+=
 			/**
@@ -163,6 +134,36 @@ namespace Heuristics
 			*/
 			FMTOperatingArea postsolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const;
 
+		protected:
+		// DocString: FMTOperatingArea::m_mask
+		///The mask describing the operating area
+		Core::FMTMask m_mask;
+		// DocString: FMTOperatingArea::m_neighbors
+		///Neighbors mask of the operating area
+		std::vector<Core::FMTMask>m_neighbors;
+		// DocString: FMTOperatingArea::m_neighborsperimeter
+		///neighborsperimeter is the ratio a operatingarea needs to share to a other operatingarea to be considered neighbor.
+		double m_neighborsperimeter;
+		// DocString: FMTOperatingArea::m_area
+		///The initial area of the operating area used as big M for the MIP.
+		double m_area;
+		private:
+		// DocString: FMTOperatingArea::serialize
+		/**
+		@brief Serialize the FMTOperatingArea for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+			{
+			ar & boost::serialization::make_nvp("mask", m_mask);
+			ar & boost::serialization::make_nvp("neighbors", m_neighbors);
+			ar & boost::serialization::make_nvp("neighborsperimeter", m_neighborsperimeter);
+			ar & boost::serialization::make_nvp("_area", m_area);
+			}
 		};
 
 	// DocString: FMTOperatingAreaComparator
@@ -171,9 +172,6 @@ namespace Heuristics
 	*/
 	class FMTEXPORT FMTOperatingAreaComparator
 		{
-			// DocString: FMTOperatingAreaComparator::mask
-			///FMTMask of the operating area we wish to find.
-			Core::FMTMask mask;
 		public:
 			// DocString: FMTOperatingAreaComparator(const Core::FMTMask)
 			/**
@@ -195,6 +193,10 @@ namespace Heuristics
 			*/
 			bool operator()(const FMTOperatingArea& oparea) const;
 
+		private:
+			// DocString: FMTOperatingAreaComparator::m_mask
+			///FMTMask of the operating area we wish to find.
+			Core::FMTMask m_mask;
 		};
 
 	}

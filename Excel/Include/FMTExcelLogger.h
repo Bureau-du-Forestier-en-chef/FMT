@@ -22,7 +22,7 @@ namespace Logging
 	#endif
 	virtual std::unique_ptr <FMTLogger> Clone() const;
 	protected:
-		void cout(const char* message) const override;
+		void _cout(const char* message) const override;
 	private:
 		mutable std::string printout;
 	};

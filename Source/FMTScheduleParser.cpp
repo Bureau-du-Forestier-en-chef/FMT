@@ -20,11 +20,11 @@ namespace Parser {
 
 	FMTScheduleParser::FMTScheduleParser() :FMTParser()
 	{
-		setSection(Core::FMTsection::Schedule);
+		_setSection(Core::FMTsection::Schedule);
 	}
 	FMTScheduleParser::FMTScheduleParser(const FMTScheduleParser& rhs) : FMTParser(rhs)
 	{
-		setSection(Core::FMTsection::Schedule);
+		_setSection(Core::FMTsection::Schedule);
 	}
 
 	int FMTScheduleParser::getVariable() const
@@ -37,7 +37,7 @@ namespace Parser {
 				strvalue.erase(strvalue.begin() + 1);
 				std::vector<std::string>strsources;
 				boost::split(strsources, strvalue, boost::is_any_of(";\t "), boost::token_compress_on);
-				value = getNum<int>(strsources.at(1));
+				value = _getNum<int>(strsources.at(1));
 			}
 		}
 		catch (...)
@@ -77,7 +77,7 @@ namespace Parser {
 		if (this != &rhs)
 		{
 			FMTParser::operator=(rhs);
-			setSection(Core::FMTsection::Schedule);
+			_setSection(Core::FMTsection::Schedule);
 		}
 		return *this;
 	}
@@ -123,27 +123,27 @@ namespace Parser {
 							}
 							mask.pop_back();
 							if (!Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line))) continue;
-							const int age = getNum<int>(values[id]);
+							const int age = _getNum<int>(values[id]);
 							++id;
-							const double area = getNum<double>(values[id]);
+							const double area = _getNum<double>(values[id]);
 							if (area > tolerance)
 							{
 								++id;
 								int lock = 0;
 								if(uselock)
 								{
-									lock = getNum<int>(values[id]);
+									lock = _getNum<int>(values[id]);
 									++id;
 								}
 								const std::string actionname = values[id];
-								if (!isAct(Core::FMTsection::Schedule, actions, actionname)) 
+								if (!_isAct(Core::FMTsection::Schedule, actions, actionname)) 
 								{
 									_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, 
 									"The schedule must specify an action existing in the model for each developement. No action named " + actionname + " at line " + std::to_string(m_line),
 									"FMTScheduleParser::read", __LINE__, __FILE__);
 								}
 								++id;
-								const int period = getNum<int>(values[id]);
+								const int period = _getNum<int>(values[id]);
 								if (static_cast<size_t>(period) - 1 == data.size())
 								{
 									data.push_back(std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::map<int, double>>>());

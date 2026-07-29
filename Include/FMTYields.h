@@ -288,31 +288,31 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		// DocString: FMTYields::nullYield
 		///the null yields.
 		static const std::string m_nullYield;
-		// DocString: FMTYields::getHandlerOfType
+		// DocString: FMTYields::_getHandlerOfType
 		/**
 		@brief Return pointers to all yield handlers of a given type.
 		@param[in] type the yield handler type.
 		@return the yield handlers of the type.
 		*/
-		std::vector<const FMTYieldHandler*> getHandlerOfType(FMTyldtype type) const;
-		// DocString: FMTYields::getHandlerOfType
+		std::vector<const FMTYieldHandler*> _getHandlerOfType(FMTyldtype type) const;
+		// DocString: FMTYields::_getHandlerOfType
 		/**
 		@brief Return pointers to all yield handlers of a given type.
 		@param[in] type the yield handler type.
 		@return the yield handlers of the type.
 		*/
-		std::vector<FMTYieldHandler*> getHandlers(FMTyldtype type);
+		std::vector<FMTYieldHandler*> _getHandlers(FMTyldtype type);
 		// DocString: FMTYields::_updateYieldLocations
 		/**
 		@brief Update the presence of the yields.
 		*/
 		void _updateYieldLocations();
-		// DocString: FMTYields::setModel
+		// DocString: FMTYields::_setModel
 		/**
 		@brief Set the model linked to the yield model handlers.
 		@param[in] p_modelPtr the model to link to the yield handlers.
 		*/
-		void setModel(Models::FMTModel* p_modelPtr);
+		void _setModel(Models::FMTModel* p_modelPtr);
 		// DocString: FMTYields::_getFirstSeen
 		/**
 		@brief Return the location of the first yield with a given name, or size() if not found.

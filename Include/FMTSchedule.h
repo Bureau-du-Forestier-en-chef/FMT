@@ -121,7 +121,7 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		*/
 		inline int getPeriod() const
 			{
-			return period;
+			return m_period;
 			}
 		// DocString: FMTSchedule::doUseLock
 		/**
@@ -130,7 +130,7 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		*/
 		inline bool doUseLock() const
 		{
-			return uselock;
+			return m_uselock;
 		}
 		// DocString: FMTSchedule::setUseLock
 		/**
@@ -309,31 +309,31 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		{
 			try {
 				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
-				ar& BOOST_SERIALIZATION_NVP(period);
-				ar& BOOST_SERIALIZATION_NVP(elements);
+				ar& boost::serialization::make_nvp("period", m_period);
+				ar& boost::serialization::make_nvp("elements", m_elements);
 			}
 			catch (...)
 			{
 				_exhandler->printExceptions("", "FMTSchedule::serialize", __LINE__, __FILE__);
 			}
 		}
-		// DocString: FMTSchedule::period
+		// DocString: FMTSchedule::m_period
 		///The period at which the schedule needs to be applied
-		int period;
-		// DocString: FMTSchedule::uselock
+		int m_period;
+		// DocString: FMTSchedule::m_uselock
 		///If true the schedule contains locked development by default it is False.
-		bool uselock;
-		// DocString: FMTSchedule::elements
+		bool m_uselock;
+		// DocString: FMTSchedule::m_elements
 		///Main FMTSchedule elements action has key, followed by a map of FMTDevelopment and a vector of double
 		///The vector of double represent the _lock level.
-		std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> elements;
-		// DocString: FMTSchedule::sameElements
+		std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> m_elements;
+		// DocString: FMTSchedule::_sameElements
 		/**
 		@brief Return true if the schedule contains the same elements as another.
 		@param[in] rhs the schedule to compare with.
 		@return true if both schedules contain the same elements else false.
 		*/
-		bool sameElements(const FMTSchedule& rhs) const;
+		bool _sameElements(const FMTSchedule& rhs) const;
     };
 
 

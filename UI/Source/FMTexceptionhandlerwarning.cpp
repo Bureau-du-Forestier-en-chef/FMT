@@ -20,7 +20,7 @@ Wrapper::FMTexceptionhandlerwarning::FMTexceptionhandlerwarning(const size_t& ma
 
 void Wrapper::FMTexceptionhandlerwarning::ResetThread()
 {
-	crashedthreadid = mainthreadid;
+	m_crashedthreadid = m_mainthreadid;
 }
 
 void Wrapper::FMTexceptionhandlerwarning::tryfileopener(const std::string& fullerrorstr) const
@@ -87,30 +87,30 @@ std::unique_ptr <Exception::FMTExceptionHandler> Wrapper::FMTexceptionhandlerwar
 
 Exception::FMTException Wrapper::FMTexceptionhandlerwarning::raise(Exception::FMTexc lexception, std::string text, const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 {
-	const Exception::FMTlev LEVEL = getLevel(lexception);
-	Exception::FMTException excp = Exception::FMTException(lexception, updateStatus(lexception, text));
+	const Exception::FMTlev LEVEL = _getLevel(lexception);
+	Exception::FMTException excp = Exception::FMTException(lexception, _updateStatus(lexception, text));
 	if (lsection != Core::FMTsection::Empty)
 	{
-		excp = Exception::FMTException(lexception, lsection, updateStatus(lexception, text));
+		excp = Exception::FMTException(lexception, lsection, _updateStatus(lexception, text));
 	}
 	if (LEVEL != Exception::FMTlev::FMT_Warning)
 	{
 		if (lsection == Core::FMTsection::Empty)
 		{
-			excp = Exception::FMTException(lexception, updateStatus(lexception, text), method, file, line);
+			excp = Exception::FMTException(lexception, _updateStatus(lexception, text), method, file, line);
 		}
 		else {
-			excp = Exception::FMTException(lexception, lsection, updateStatus(lexception, text), method, file, line);
+			excp = Exception::FMTException(lexception, lsection, _updateStatus(lexception, text), method, file, line);
 		}
-		if (throwit && (LEVEL == Exception::FMTlev::FMT_logic || LEVEL == Exception::FMTlev::FMT_range) && !needToRethrow())
+		if (throwit && (LEVEL == Exception::FMTlev::FMT_logic || LEVEL == Exception::FMTlev::FMT_range) && !_needToRethrow())
 		{
-			boost::lock_guard<boost::recursive_mutex> guard(mtx);
+			boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 			std::throw_with_nested(Exception::FMTError(excp));
 		}
 	}
 	else if (throwit)
 	{
-		Exception::FMTWarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
+		Exception::FMTWarning(excp).warn(*_logger, _specificwarningcount, m_maxwarningsbeforesilenced);
 	}
 	return excp;
 }

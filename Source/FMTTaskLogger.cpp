@@ -20,7 +20,7 @@ namespace Logging
 	FMTTaskLogger::FMTTaskLogger()
 	{
 #ifdef FMTWITHOSI
-		solverref->setLogLevel(0);
+		m_solverref->setLogLevel(0);
 #endif
 	}
 #ifdef FMTWITHOSI
@@ -39,7 +39,7 @@ namespace Logging
 
 	FMTLogger* FMTTaskLogger::clone() const
 	{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 		return new FMTTaskLogger(*this);
 	}
 #endif

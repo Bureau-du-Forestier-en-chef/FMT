@@ -323,15 +323,15 @@ class FMTEXPORT FMTMask
 		template <class typetobinarize>
 		void binarizedAppend(const typetobinarize& element)
 		{
-			size_t  location = data.size();
-			data.resize(data.size() + (sizeof(typetobinarize) * 8));
+			size_t  location = m_data.size();
+			m_data.resize(m_data.size() + (sizeof(typetobinarize) * 8));
 			const char* charelements = reinterpret_cast<const char*>(&element);
 			for (size_t charit = 0; charit < sizeof(typetobinarize); ++charit)
 			{
 				const char value = charelements[charit];
 				for (int i = 7; i >= 0; --i)
 				{
-					data[location] = ((value & (1 << i)));
+					m_data[location] = ((value & (1 << i)));
 					++location;
 				}
 			}
@@ -412,7 +412,7 @@ class FMTEXPORT FMTMask
 		*/
 		inline size_t hash() const
 			{
-			return boost::hash<boost::dynamic_bitset<uint8_t>>()(data);
+			return boost::hash<boost::dynamic_bitset<uint8_t>>()(m_data);
 			}
 		// DocString: FMTMask::getBitsString
 		/**
@@ -427,7 +427,7 @@ class FMTEXPORT FMTMask
 		*/
 		inline operator std::string() const
 			{
-			return name;
+			return m_name;
 			}
 		// DocString: FMTMask::isSubsetOf
 		/**
@@ -443,7 +443,7 @@ class FMTEXPORT FMTMask
 		*/
 		inline const boost::dynamic_bitset<uint8_t>& getBitsetReference() const
 			{
-			return data;
+			return m_data;
 			}
 		// DocString: FMTMask::getStringReference
 		/**
@@ -452,7 +452,7 @@ class FMTEXPORT FMTMask
 		*/
 		inline const std::string& getStringReference() const
 		{
-			return name;
+			return m_name;
 		}
 		// DocString: FMTMask::reserve
 		/**
@@ -522,16 +522,16 @@ class FMTEXPORT FMTMask
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& BOOST_SERIALIZATION_NVP(data);
-			ar& BOOST_SERIALIZATION_NVP(name);
+			ar& boost::serialization::make_nvp("data", m_data);
+			ar& boost::serialization::make_nvp("name", m_name);
 		}
-		// DocString: FMTMask::subset
+		// DocString: FMTMask::_subset
 		/**
 		@brief Return the data subset bits for a given theme, of the length of the theme.
 		@param[in] theme the theme.
 		@return the subset bits of the theme.
 		*/
-		boost::dynamic_bitset<uint8_t> subset(const FMTTheme& theme) const;
+		boost::dynamic_bitset<uint8_t> _subset(const FMTTheme& theme) const;
 		// DocString: FMTMask::operator []
 		/**
 		@brief get bit value at i position.
@@ -563,33 +563,33 @@ class FMTEXPORT FMTMask
 		*/
 		boost::dynamic_bitset<uint8_t> _getPresolveMask(const FMTMaskFilter& p_filter,
 								const std::vector<FMTTheme>& p_presolvedThemes) const;
-		// DocString: FMTMask::setSubset
+		// DocString: FMTMask::_setSubset
 		/**
 		@brief Set a given subset of the length of a theme for that theme in the mask.
 		@param[in] theme the theme.
 		@param[in] subset the subset bits to set.
 		*/
-		void setSubset(const FMTTheme& theme, const boost::dynamic_bitset<uint8_t>& subset);
-		// DocString: FMTMask::name
+		void _setSubset(const FMTTheme& theme, const boost::dynamic_bitset<uint8_t>& subset);
+		// DocString: FMTMask::m_name
 		///name of the FMTMask attributes or aggregates splitted by a space
-		std::string name;
-		// DocString: FMTMask::data
+		std::string m_name;
+		// DocString: FMTMask::m_data
 		///dynamic bitset holding the attributes information member.
-		boost::dynamic_bitset<uint8_t> data;
+		boost::dynamic_bitset<uint8_t> m_data;
     };
 
 
 template<> inline void FMTMask::binarizedAppend<std::string>(const std::string& element)
 	{
-		size_t  location = data.size();
-		data.resize(data.size() + (element.size() * 8));
+		size_t  location = m_data.size();
+		m_data.resize(m_data.size() + (element.size() * 8));
 		const char* charelements = element.c_str();
 		for (size_t charit = 0; charit < element.size(); ++charit)
 		{
 			const char value = charelements[charit];
 			for (int i = 7; i >= 0; --i)
 			{
-				data[location] = ((value & (1 << i)));
+				m_data[location] = ((value & (1 << i)));
 				++location;
 			}
 		}
@@ -597,16 +597,16 @@ template<> inline void FMTMask::binarizedAppend<std::string>(const std::string& 
 
 template<> inline void FMTMask::binarizedAppend<double>(const double& element)
 {
-	size_t  location = data.size();
+	size_t  location = m_data.size();
 	const int corrected = static_cast<int>(element*(1 / FMT_DBL_TOLERANCE));
-	data.resize(data.size() + (sizeof(int) * 8));
+	m_data.resize(m_data.size() + (sizeof(int) * 8));
 	const char* charelements = reinterpret_cast<const char*>(&corrected);
 	for (size_t charit = 0; charit < sizeof(int); ++charit)
 	{
 		const char value = charelements[charit];
 		for (int i = 7; i >= 0; --i)
 		{
-			data[location] = ((value & (1 << i)));
+			m_data[location] = ((value & (1 << i)));
 			++location;
 		}
 	}
@@ -618,9 +618,6 @@ template<> inline void FMTMask::binarizedAppend<double>(const double& element)
 */
 class FMTMaskComparator
 	{
-	// DocString: FMTMaskComparator::base_mask
-	///The mask that we are looking for
-	FMTMask base_mask;
 	public:
 		// DocString: FMTMaskComparator:(const FMTMask&)
 		/**
@@ -636,6 +633,10 @@ class FMTMaskComparator
 		*/
 		bool operator()(const FMTMask& mask) const;
 
+	private:
+	// DocString: FMTMaskComparator::m_baseMask
+	///The mask that we are looking for
+	FMTMask m_baseMask;
 	};
 
 }

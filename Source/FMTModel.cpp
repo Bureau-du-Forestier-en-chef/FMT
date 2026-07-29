@@ -268,7 +268,7 @@ namespace Models{
 			aggregateThemes = getStaticTransitionThemes();
 			std::set<size_t>subset;
 			for (const auto& HANDLER :
-				yields.getHandlerOfType(Core::FMTyldtype::FMTageyld))
+				yields._getHandlerOfType(Core::FMTyldtype::FMTageyld))
 			{
 				if (HANDLER->containsYield(p_yieldName))
 				{
@@ -318,7 +318,7 @@ namespace Models{
 		try {
 			const std::vector<size_t>AGGREGATE_THEMES = _getAggregatesThemes(p_yieldName);
 			for (const auto& HANDLER :
-				yields.getHandlerOfType(Core::FMTyldtype::FMTageyld))
+				yields._getHandlerOfType(Core::FMTyldtype::FMTageyld))
 			{
 				if (HANDLER->containsYield(p_yieldName) &&
 					HANDLER->getType() == Core::FMTyldtype::FMTageyld)
@@ -1287,7 +1287,7 @@ FMTModel& FMTModel::operator =(FMTModel&& rhs)
 		constraints.swap(rhs.constraints);
 		name = std::move(rhs.name);
 		statictransitionthemes.swap(rhs.statictransitionthemes);
-		yields.setModel(this);
+		yields._setModel(this);
 
 	}
 	return *this;
@@ -1304,7 +1304,7 @@ void FMTModel::_gutsOfConstructor(const std::vector<Core::FMTActualDevelopment>&
 	setDefaultObjects();
 	cleanActionsNTransitions();
 	setSeed(getParameter(Models::FMTintmodelparameters::SEED));
-	yields.setModel(this);
+	yields._setModel(this);
 	}
 
 
@@ -1323,7 +1323,7 @@ FMTModel::FMTModel(const FMTModel& rhs):Core::FMTObject(rhs), m_generator(rhs.m_
 		statictransitionthemes(rhs.statictransitionthemes)
 
 	{
-	yields.setModel(this);
+	yields._setModel(this);
 	}
 
 FMTModel& FMTModel::operator = (const FMTModel& rhs)
@@ -1343,7 +1343,7 @@ FMTModel& FMTModel::operator = (const FMTModel& rhs)
 		constraints = rhs.constraints;
         name = rhs.name;
 		statictransitionthemes = rhs.statictransitionthemes;
-		yields.setModel(this);
+		yields._setModel(this);
         }
 	
     return *this;
@@ -1729,7 +1729,7 @@ void FMTModel::setYields(const Core::FMTYields& lylds)
 	try {
 		yields = lylds;
 		yields.update();
-		yields.setModel(this);
+		yields._setModel(this);
 	}catch (...)
 		{
 			_exhandler->printExceptions("", "FMTModel::setYields", __LINE__, __FILE__);
@@ -3374,11 +3374,11 @@ void FMTModel::swapPtr(std::unique_ptr<FMTModel>& rhs)
 }
 
 
-FMTModelComparator::FMTModelComparator(std::string name) :model_name(name) {}
+FMTModelComparator::FMTModelComparator(std::string p_name) :m_modelName(p_name) {}
 
 bool FMTModelComparator::operator()(const FMTModel& model) const
 	{
-	return(model_name == model.getName());
+	return(m_modelName == model.getName());
 	}
 
 

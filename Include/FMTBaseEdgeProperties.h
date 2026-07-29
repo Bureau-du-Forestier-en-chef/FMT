@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -29,21 +29,6 @@ namespace Graph
 	*/
 	class FMTBaseEdgeProperties
 	{
-		friend class boost::serialization::access;
-		// DocString: FMTBaseEdgeProperties::serialize
-		/**
-		@brief Serialize the FMTBaseEdgeProperties for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar & BOOST_SERIALIZATION_NVP(action);
-		}
-	protected:
-		int8_t action;
 	public:
 		// DocString: ~FMTBaseEdgeProperties()
 		/**
@@ -84,12 +69,12 @@ namespace Graph
 		@param[in] laction the action.
 		*/
 		constexpr FMTBaseEdgeProperties(const int& laction) : action(static_cast<int8_t>(laction)) {}
-		// DocString: FMTBaseEdgeProperties::getvariableID
+		// DocString: FMTBaseEdgeProperties::getVariableID
 		/**
 		@brief Return the variable id of the edge.
 		@return the variable id.
 		*/
-		virtual inline int	getvariableID() const
+		virtual inline int	getVariableID() const
 			{
 			return 0;
 			}
@@ -161,6 +146,22 @@ namespace Graph
 			return &action;
 			}*/
 
+	protected:
+		int8_t action;
+	private:
+		friend class boost::serialization::access;
+		// DocString: FMTBaseEdgeProperties::serialize
+		/**
+		@brief Serialize the FMTBaseEdgeProperties for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar & BOOST_SERIALIZATION_NVP(action);
+		}
 	};
 }
 

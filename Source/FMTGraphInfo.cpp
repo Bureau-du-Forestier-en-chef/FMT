@@ -16,7 +16,7 @@ namespace Spatial
 	{
 
 	FMTGraphInfo::FMTGraphInfo(size_t Id):
-		m_GraphId(Id), m_Values()
+		m_Values(), m_GraphId(Id)
 	{
 
 	}

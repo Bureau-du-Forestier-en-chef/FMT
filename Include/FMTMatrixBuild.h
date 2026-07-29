@@ -30,44 +30,6 @@ namespace Models
 	*/
 	class FMTEXPORT FMTMatrixBuild
 	{
-		// DocString: FMTMatrixBuild::lastcol
-		///lastcol is the matrix index's of the last column added to colsbuild object
-		int colscount;
-		// DocString: FMTMatrixBuild::lastrow
-		///lastrow is the matrix index's of the last row added to rowsbuild object
-		int rowscount;
-		// DocString: FMTMatrixBuild::colsbuild
-		///colsbuild keep the track of all columns to add to the matrix
-		std::unique_ptr<CoinBuild>colsbuild;
-		// DocString: FMTMatrixBuild::rowsbuild
-		///rowsbuild keep the track of all rows to add to the matrix
-		std::unique_ptr<CoinBuild>rowsbuild;
-		// DocString: FMTMatrixBuild::deletedconstraints
-		///Deleted constraints used in replanning context when the constraints indexes need to be updated.
-		std::vector<int>deletedconstraints;
-		// DocString: FMTMatrixBuild::deletedvariables
-		///Deleted variables used in replanning context when the variables indexes need to be updated.
-		std::vector<int>deletedvariables;
-		// DocString: FMTMatrixBuild::columnnames
-		///Cached column names;
-		std::vector<std::string>columnnames;
-		// DocString: FMTMatrixBuild::rownames
-		///Cached row names;
-		std::vector<std::string>rownames;
-		// DocString: FMTMatrixBuild::sortElementsAndClean
-		/**
-		@brief Remove duplicates and sort a vector of elements.
-		@param[in,out] elements the elements to sort and clean.
-		*/
-		void sortElementsAndClean(std::vector<int>& elements) const;
-		// DocString: FMTMatrixBuild::formatForMatrixName
-		/**
-		@brief Format a string for naming matrix variables and constraints.
-		@param[in] name the name to format.
-		@param[in] shortformat if true uses a short format.
-		@return the formatted name.
-		*/
-		std::string formatForMatrixName(std::string name, bool shortformat) const;
 	public:
 		// DocString: FMTMatrixBuild::swap
 		/**
@@ -82,7 +44,7 @@ namespace Models
 		*/
 		inline std::vector<std::string>& getColumnNames()
 			{
-			return columnnames;
+			return m_columnnames;
 			}
 		// DocString: FMTMatrixBuild::getRowNames
 		/**
@@ -91,7 +53,7 @@ namespace Models
 		*/
 		inline std::vector<std::string>& getRowNames()
 			{
-			return rownames;
+			return m_rownames;
 			}
 		// DocString: FMTMatrixBuild::formatAllNames
 		/**
@@ -184,7 +146,7 @@ namespace Models
 		*/
 		inline int numbernewRows() const
 			{
-			return rowscount;
+			return m_rowscount;
 			}
 		// DocString: FMTMatrixBuild::numbernewCols
 		/**
@@ -193,7 +155,7 @@ namespace Models
 		*/
 		inline int numbernewCols() const
 			{
-			return colscount;
+			return m_colscount;
 			}
 		// DocString: FMTMatrixBuild::numberofdeletedRows
 		/**
@@ -202,7 +164,7 @@ namespace Models
 		*/
 		inline int numberofdeletedRows() const
 			{
-			return static_cast<int>(deletedconstraints.size());
+			return static_cast<int>(m_deletedconstraints.size());
 			}
 		// DocString: FMTMatrixBuild::numberofdeletedCols
 		/**
@@ -211,7 +173,7 @@ namespace Models
 		*/
 		inline int numberofdeletedCols() const
 			{
-			return static_cast<int>(deletedvariables.size());
+			return static_cast<int>(m_deletedvariables.size());
 			}
 		// DocString: FMTMatrixBuild::getDeletedConstraints
 		/**
@@ -220,7 +182,7 @@ namespace Models
 		*/
 		inline const std::vector<int>& getDeletedConstraints() const
 			{
-			return deletedconstraints;
+			return m_deletedconstraints;
 			}
 		// DocString: FMTMatrixBuild::getDeletedVariables
 		/**
@@ -229,7 +191,7 @@ namespace Models
 		*/
 		inline const std::vector<int>& getDeletedVariables() const
 			{
-			return deletedvariables;
+			return m_deletedvariables;
 			}
 		// DocString: FMTMatrixBuild::sortAndCleanDeleted
 		/**
@@ -275,6 +237,45 @@ namespace Models
 			std::vector<int>& indices, std::vector<double>&elements) const;
 
 
+	private:
+		// DocString: FMTMatrixBuild::lastcol
+		///lastcol is the matrix index's of the last column added to colsbuild object
+		int m_colscount;
+		// DocString: FMTMatrixBuild::lastrow
+		///lastrow is the matrix index's of the last row added to rowsbuild object
+		int m_rowscount;
+		// DocString: FMTMatrixBuild::m_colsbuild
+		///colsbuild keep the track of all columns to add to the matrix
+		std::unique_ptr<CoinBuild>m_colsbuild;
+		// DocString: FMTMatrixBuild::m_rowsbuild
+		///rowsbuild keep the track of all rows to add to the matrix
+		std::unique_ptr<CoinBuild>m_rowsbuild;
+		// DocString: FMTMatrixBuild::m_deletedconstraints
+		///Deleted constraints used in replanning context when the constraints indexes need to be updated.
+		std::vector<int>m_deletedconstraints;
+		// DocString: FMTMatrixBuild::m_deletedvariables
+		///Deleted variables used in replanning context when the variables indexes need to be updated.
+		std::vector<int>m_deletedvariables;
+		// DocString: FMTMatrixBuild::m_columnnames
+		///Cached column names;
+		std::vector<std::string>m_columnnames;
+		// DocString: FMTMatrixBuild::m_rownames
+		///Cached row names;
+		std::vector<std::string>m_rownames;
+		// DocString: FMTMatrixBuild::_sortElementsAndClean
+		/**
+		@brief Remove duplicates and sort a vector of elements.
+		@param[in,out] elements the elements to sort and clean.
+		*/
+		void _sortElementsAndClean(std::vector<int>& elements) const;
+		// DocString: FMTMatrixBuild::_formatForMatrixName
+		/**
+		@brief Format a string for naming matrix variables and constraints.
+		@param[in] name the name to format.
+		@param[in] shortformat if true uses a short format.
+		@return the formatted name.
+		*/
+		std::string _formatForMatrixName(std::string name, bool shortformat) const;
 	};
 }
 

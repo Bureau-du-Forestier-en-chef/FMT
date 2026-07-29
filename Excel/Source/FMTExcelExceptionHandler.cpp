@@ -38,35 +38,35 @@ namespace Exception
 		const std::string& method, const int& line, const std::string& file,
 		Core::FMTsection lsection, bool throwit)
 		{
-		const FMTlev LEVEL = getLevel(lexception);
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		const FMTlev LEVEL = _getLevel(lexception);
+		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 		if (build_exceptions.find(static_cast<int>(lexception))== build_exceptions.end())
 			{
 			build_exceptions[static_cast<int>(lexception)] = std::vector<std::string>();
 			}
 		build_exceptions[static_cast<int>(lexception)].push_back(text);
-		FMTException excp = FMTException(lexception, updateStatus(lexception, text));
+		FMTException excp = FMTException(lexception, _updateStatus(lexception, text));
 		if (lsection != Core::FMTsection::Empty)
 		{
-			excp = FMTException(lexception, lsection, updateStatus(lexception, text));
+			excp = FMTException(lexception, lsection, _updateStatus(lexception, text));
 		}
 		if (LEVEL != FMTlev::FMT_Warning)
 		{
 			if (lsection == Core::FMTsection::Empty)
 			{
-				excp = FMTException(lexception, updateStatus(lexception, text), method, file, line);
+				excp = FMTException(lexception, _updateStatus(lexception, text), method, file, line);
 			}
 			else {
-				excp = FMTException(lexception, lsection, updateStatus(lexception, text), method, file, line);
+				excp = FMTException(lexception, lsection, _updateStatus(lexception, text), method, file, line);
 			}
-			if (throwit && (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range) && !needToRethrow())
+			if (throwit && (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range) && !_needToRethrow())
 			{
 				std::throw_with_nested(FMTError(excp));
 			}
 		}
 		else if (throwit)
 		{
-			FMTWarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
+			FMTWarning(excp).warn(*_logger, _specificwarningcount, m_maxwarningsbeforesilenced);
 		}
 
 		return excp;

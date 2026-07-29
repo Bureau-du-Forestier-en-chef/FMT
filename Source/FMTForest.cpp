@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -27,8 +27,8 @@ FMTForest& FMTForest::operator = (const FMTForest& rhs)
 
 FMTLayer<std::string>FMTForest::getLock() const
     {
-    FMTLayer<std::string>newlayer(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
-    for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
+    FMTLayer<std::string>newlayer(this->m_geotransform,this->m_maxx,this->m_maxy,this->m_SRS_WKT,this->m_cellsize);
+    for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator it = m_mapping.begin(); it != m_mapping.end(); ++it)
         {
         if (it->second.getLock() > 0 )
             {
@@ -40,7 +40,7 @@ FMTLayer<std::string>FMTForest::getLock() const
 
 void FMTForest::setPeriod(int period)
 	{
-	for (std::map<FMTCoordinate, Core::FMTDevelopment>::iterator it = mapping.begin(); it != mapping.end(); ++it)
+	for (std::map<FMTCoordinate, Core::FMTDevelopment>::iterator it = m_mapping.begin(); it != m_mapping.end(); ++it)
 		{
 		it->second.setPeriod(period);
 		}
@@ -50,15 +50,15 @@ void FMTForest::setPeriod(int period)
 std::vector<Core::FMTActualDevelopment>FMTForest::getArea() const
             {
 	std::vector<Core::FMTActualDevelopment>devs;
-            for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
+            for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator it = m_mapping.begin(); it != m_mapping.end(); ++it)
                 {
-                const Core::FMTActualDevelopment newadev(it->second,cellsize);
+                const Core::FMTActualDevelopment newadev(it->second,m_cellsize);
 				std::vector<Core::FMTActualDevelopment>::iterator devit = std::find_if(devs.begin(),devs.end(), Core::FMTActualDevelopmentComparator(&newadev));
                 if (devit==devs.end())
                     {
                     devs.push_back(newadev);
                     }else{
-                    devit->setArea(devit->getArea()+(cellsize));
+                    devit->setArea(devit->getArea()+(m_cellsize));
                     }
                 }
 			
@@ -67,19 +67,19 @@ std::vector<Core::FMTActualDevelopment>FMTForest::getArea() const
 FMTForest FMTForest::grow() const
             {
             FMTForest newforest(*this);
-            for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator devit = mapping.begin(); devit != mapping.end(); ++devit)
+            for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator devit = m_mapping.begin(); devit != m_mapping.end(); ++devit)
                 {
                 const Core::FMTDevelopment* dev = &devit->second;
                 const Core::FMTDevelopment newDev = dev->grow();
-                newforest.mapping[devit->first] = newDev;
+                newforest.m_mapping[devit->first] = newDev;
                 }
             return newforest;
             }
 
 std::vector<FMTLayer<std::string>> FMTForest::getThemes(const std::vector<Core::FMTTheme>& themes) const
             {
-			std::vector<FMTLayer<std::string>> newlayers(themes.size(),FMTLayer<std::string>(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize));
-            for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
+			std::vector<FMTLayer<std::string>> newlayers(themes.size(),FMTLayer<std::string>(this->m_geotransform,this->m_maxx,this->m_maxy,this->m_SRS_WKT,this->m_cellsize));
+            for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator it = m_mapping.begin(); it != m_mapping.end(); ++it)
                 {
                 for(size_t id = 0 ; id < newlayers.size();++id)
                     {
@@ -91,8 +91,8 @@ std::vector<FMTLayer<std::string>> FMTForest::getThemes(const std::vector<Core::
             }
 FMTLayer<int>FMTForest::getAge() const
             {
-            FMTLayer<int>newlayer(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
-            for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
+            FMTLayer<int>newlayer(this->m_geotransform,this->m_maxx,this->m_maxy,this->m_SRS_WKT,this->m_cellsize);
+            for(std::map<FMTCoordinate,Core::FMTDevelopment>::const_iterator it = m_mapping.begin(); it != m_mapping.end(); ++it)
                 {
                 newlayer[it->first] = it->second.getAge();
                 }
@@ -101,7 +101,7 @@ FMTLayer<int>FMTForest::getAge() const
 
 FMTForest FMTForest::getCopy(bool copyData) const
     {
-    FMTLayer<Core::FMTDevelopment> forest(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
+    FMTLayer<Core::FMTDevelopment> forest(this->m_geotransform,this->m_maxx,this->m_maxy,this->m_SRS_WKT,this->m_cellsize);
     if(copyData)
         {
         forest = *this;
@@ -148,8 +148,8 @@ FMTForest FMTForest::presolve(const Core::FMTMaskFilter& filter, const std::vect
 	{
 	FMTForest newforest(*this);
 	try{
-		for (std::map<FMTCoordinate, Core::FMTDevelopment>::iterator coordit = newforest.mapping.begin();
-			coordit != newforest.mapping.end(); ++coordit)
+		for (std::map<FMTCoordinate, Core::FMTDevelopment>::iterator coordit = newforest.m_mapping.begin();
+			coordit != newforest.m_mapping.end(); ++coordit)
 			{
 			coordit->second = Core::FMTActualDevelopment(coordit->second, 0.0).presolve(filter, presolvedthemes);
 			}
@@ -168,8 +168,8 @@ FMTForest FMTForest::presolve(const Core::FMTMaskFilter& filter, const std::vect
 FMTForest FMTForest::postSolve(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&originalbasethemes) const
 	{
 	FMTForest newforest(*this);
-	for (std::map<FMTCoordinate, Core::FMTDevelopment>::iterator coordit = newforest.mapping.begin();
-		coordit != newforest.mapping.end(); ++coordit)
+	for (std::map<FMTCoordinate, Core::FMTDevelopment>::iterator coordit = newforest.m_mapping.begin();
+		coordit != newforest.m_mapping.end(); ++coordit)
 		{
 		coordit->second.setMask(coordit->second.getMask().postSolve(filter, originalbasethemes));
 		}

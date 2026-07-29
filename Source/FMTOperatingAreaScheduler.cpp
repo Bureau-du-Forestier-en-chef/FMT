@@ -758,7 +758,7 @@ namespace Heuristics
 	FMTOperatingAreaScheduler::~FMTOperatingAreaScheduler()
 		{
 		try {
-		    if (!usingsolvercopy&&canUpdateSource())
+		    if (!m_usingsolvercopy&&canUpdateSource())
                 {
                   //Will need a clean matrix to fit with FMTLpModel!
                 std::vector<int>rowstodelete;
@@ -878,7 +878,7 @@ namespace Heuristics
             /*const size_t maxareatopick = static_cast<size_t>(std::ceil(static_cast<double>(operatingareas.size()) * proportionofset));
             if (userandomness)
                 {
-                std::shuffle(potentials.begin(), potentials.end(), this->generator);
+                std::shuffle(potentials.begin(), potentials.end(), this->m_generator);
                 }
 			std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>::iterator randomit = potentials.begin();
 			while ((selected.size() < maxareatopick) && randomit != potentials.end())
@@ -901,7 +901,7 @@ namespace Heuristics
 			const size_t maxopareatopick = static_cast<size_t>(std::ceil(static_cast<double>(operatingareas.size()) * proportionofset));
 			if (userandomness)
 				{
-				std::shuffle(oparea.begin(), oparea.end(), this->generator);
+				std::shuffle(oparea.begin(), oparea.end(), this->m_generator);
 				}
 			std::vector<std::vector<FMTOperatingAreaScheme>::const_iterator>::iterator randomit = oparea.begin();
 			while ((selected.size() < maxopareatopick) && randomit != oparea.end())

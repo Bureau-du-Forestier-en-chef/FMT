@@ -221,35 +221,35 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		///Contains all the SpatialGraphs
 		Spatial::FMTSpatialGraphs m_SpatialGraphs;
 
-		// DocString: FMTSeModel::getGlobalObjective
+		// DocString: FMTSeModel::_getGlobalObjective
 		/**
 		@brief Return the global objective of a spatial schedule.
 		@param[in] p_Schedule the spatial schedule.
 		@return the global objective.
 		*/
-		double getGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const;
+		double _getGlobalObjective(const Spatial::FMTSpatialSchedule& p_Schedule) const;
 
-		// DocString: FMTSeModel::getConstraintsValues
+		// DocString: FMTSeModel::_getConstraintsValues
 		/**
 		@brief Return the constraint values of a spatial schedule.
 		@param[in] p_SpatialSchedule the spatial schedule.
 		@return the constraint values.
 		*/
-		std::vector<double> getConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+		std::vector<double> _getConstraintsValues(const Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
 
-		// DocString: FMTSeModel::doRefactorization
+		// DocString: FMTSeModel::_doRefactorization
 		/**
 		@brief Refactorize a spatial schedule.
 		@param[in,out] p_SpatialSchedule the spatial schedule.
 		*/
-		void doRefactorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
-		// DocString: FMTSeModel::getNewSolution
+		void _doRefactorization(Spatial::FMTSpatialSchedule& p_SpatialSchedule) const;
+		// DocString: FMTSeModel::_getNewSolution
 		/**
 		@brief Return a new solution from an existing one.
 		@param[in] p_FromSolution the solution to start from.
 		@return the new solution.
 		*/
-		Spatial::FMTSpatialSchedule getNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
+		Spatial::FMTSpatialSchedule _getNewSolution(const Spatial::FMTSpatialSchedule& p_FromSolution) const;
 		// DocString: FMTSeModel::greedyReferenceBuild
 		/**
 		@brief Find the best spatialization for a schedule using random draws.
@@ -268,21 +268,21 @@ class FMTEXPORT FMTSeModel : public FMTModel
 			unsigned int seed = 0,
 			double tolerance = FMT_DBL_TOLERANCE,
 			bool log = true) const;
-		// DocString: FMTSeModel::getConstraintFactor
+		// DocString: FMTSeModel::_getConstraintFactor
 		/**
 		@brief Return the factor of a constraint for a gross value.
 		@param[in] p_constraint the constraint index.
 		@param[in] p_GrossValue the gross value.
 		@return the constraint factor.
 		*/
-		double getConstraintFactor(size_t p_constraint, double p_GrossValue) const;
-		// DocString: FMTSeModel::isValidFactor
+		double _getConstraintFactor(size_t p_constraint, double p_GrossValue) const;
+		// DocString: FMTSeModel::_isValidFactor
 		/**
 		@brief Return true if a gross value is a valid factor.
 		@param[in] p_GrossValue the gross value.
 		@return true if the factor is valid else false.
 		*/
-		bool isValidFactor(double p_GrossValue)const;
+		bool _isValidFactor(double p_GrossValue)const;
 	private:
 		// DocString: FMTSeModel::Serialize
 		/**

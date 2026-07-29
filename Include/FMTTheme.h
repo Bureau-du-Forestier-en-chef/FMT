@@ -125,9 +125,9 @@ class FMTEXPORT FMTTheme : public FMTObject
 		{
 			if (!p_value.empty() && p_value.at(0) == '!')
 			{
-				return (getAttribute(p_value.substr(1, p_value.size())) != m_attributem_locations.end());
+				return (_getAttribute(p_value.substr(1, p_value.size())) != m_attributem_locations.end());
 			}else {
-				return (getAttribute(p_value) != m_attributem_locations.end());
+				return (_getAttribute(p_value) != m_attributem_locations.end());
 				}
 			
 		}
@@ -363,7 +363,7 @@ class FMTEXPORT FMTTheme : public FMTObject
 				ar & BOOST_SERIALIZATION_NVP(m_aggregatenames);
 				ar & BOOST_SERIALIZATION_NVP(m_indexes);
 				ar & BOOST_SERIALIZATION_NVP(m_name);
-				buildAttributeLocations();
+				_buildAttributeLocations();
 			}catch (...)
 				{
 				_exhandler->printExceptions("", "FMTTheme::serialize", __LINE__, __FILE__);
@@ -393,13 +393,13 @@ class FMTEXPORT FMTTheme : public FMTObject
 		// DocString: FMTTheme::name
 		///The name of the FMTTheme if their's a name provided by the user.
 		std::string m_name;
-		// DocString: FMTTheme::strToBits
+		// DocString: FMTTheme::_strToBits
 		/**
 		@brief Convert an attribute, aggregate or question mark to a bitset for the whole theme size.
 		@param[in] p_value the value to convert.
 		@return the bitset of the value.
 		*/
-		 boost::dynamic_bitset<uint8_t> strToBits(const std::string& p_value) const;
+		 boost::dynamic_bitset<uint8_t> _strToBits(const std::string& p_value) const;
 		// DocString: FMTTheme::_getCount
 		/**
 		@brief Get the number of bits set in the theme subset of a mask.
@@ -446,13 +446,13 @@ class FMTEXPORT FMTTheme : public FMTObject
 		*/
 		bool _isFlipEqual(const Core::FMTMask& p_mask,
 			const boost::dynamic_bitset<uint8_t>& p_bits) const;
-		// DocString: FMTTheme::bitsToStr
+		// DocString: FMTTheme::_bitsToStr
 		/**
 		@brief Convert a bitset to an attribute, aggregate or question mark for the whole theme size.
 		@param[in] p_mask the mask.
 		@return the string value.
 		*/
-		std::string bitsToStr(const Core::FMTMask& p_mask) const;
+		std::string _bitsToStr(const Core::FMTMask& p_mask) const;
 		// DocString: FMTTheme::_getAttribute
 		/**
 		@brief get a string reference to the attribute targeted by attributeId
@@ -460,40 +460,40 @@ class FMTEXPORT FMTTheme : public FMTObject
 		@return the reference to the attribute targeted;
 		*/
 		const std::string& _getAttribute(size_t p_attributeId) const;
-		// DocString: FMTTheme::getAttribute
+		// DocString: FMTTheme::_getAttribute
 		/**
 		@brief Get the attribute iterator, raising if not found.
 		@param[in] p_value the attribute value.
 		@param[in] p_raiseifnotfound if true raises if the attribute is not found.
 		@return the attribute iterator.
 		*/
-		lookiterator getAttribute(const std::string& p_value, bool p_raiseifnotfound = false) const;
-		// DocString: FMTTheme::buildAttributeLocations
+		lookiterator _getAttribute(const std::string& p_value, bool p_raiseifnotfound = false) const;
+		// DocString: FMTTheme::_buildAttributeLocations
 		/**
 		@brief Build the attribute locations of the theme for optimization.
 		*/
-		void buildAttributeLocations();
-		// DocString: FMTTheme::fillupAggregates
+		void _buildAttributeLocations();
+		// DocString: FMTTheme::_fillupAggregates
 		/**
 		@brief Fill up the aggregates vectors of the theme.
 		@param[in,out] p_themeids the theme ids starting from 1.
 		@param[in,out] p_locattributes the attributes.
 		@param[in,out] p_locaggregates the aggregates.
 		*/
-		void fillupAggregates(std::vector<int>& p_themeids, std::vector<std::string>& p_locattributes, std::vector<std::string>& p_locaggregates) const;
-		// DocString: FMTTheme::pushAggregate
+		void _fillupAggregates(std::vector<int>& p_themeids, std::vector<std::string>& p_locattributes, std::vector<std::string>& p_locaggregates) const;
+		// DocString: FMTTheme::_pushAggregate
 		/**
 		@brief Push a new aggregate to the theme.
 		@param[in] p_aggregatename the name of the aggregate.
 		*/
-		void pushAggregate(const std::string& p_aggregatename);
-		// DocString: FMTTheme::pushAggregate
+		void _pushAggregate(const std::string& p_aggregatename);
+		// DocString: FMTTheme::_pushAggregate
 		/**
 		@brief Push a new value to an aggregate of the theme.
 		@param[in] p_aggregatename the name of the aggregate.
 		@param[in] p_value the value to push.
 		*/
-		void pushAggregateValue(const std::string& p_aggregatename, const std::string& p_value);
+		void _pushAggregateValue(const std::string& p_aggregatename, const std::string& p_value);
 	
 	
     };

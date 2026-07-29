@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -31,9 +31,9 @@ FMTYieldHandler::operator std::string() const
 
     FMTYieldHandler::FMTYieldHandler(const FMTMask& lmask) :
 		FMTObject(),
-		mask(lmask),
-		bases(),
-		lookat()
+		m_mask(lmask),
+		m_bases(),
+		m_lookat()
 	{
 	
 	}
@@ -57,7 +57,7 @@ FMTYieldHandler::operator std::string() const
     bool FMTYieldHandler::pushBase(const int& base)
         {
 		try {
-			bases.push_back(base);
+			m_bases.push_back(base);
 		}
 		catch (...)
 		{
@@ -77,7 +77,7 @@ FMTYieldHandler::operator std::string() const
 		return false;
         }
 
-	bool FMTYieldHandler::basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const double& value)
+	bool FMTYieldHandler::_basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const double& value)
 	{
 		if (elements.find(yld) == elements.end())
 		{
@@ -86,7 +86,7 @@ FMTYieldHandler::operator std::string() const
 		elements[yld].data.push_back(value);
 		return true;
 	}
-	bool FMTYieldHandler::basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const FMTData& data)
+	bool FMTYieldHandler::_basePushData(std::map<std::string, FMTData, cmpYieldString>& elements, const std::string& yld, const FMTData& data)
 	{
 		elements[yld] = FMTData(data);
 		return true;
@@ -94,12 +94,12 @@ FMTYieldHandler::operator std::string() const
 
 	void FMTYieldHandler::setBase(const std::vector<int>& allvalues)
 		{
-		bases = allvalues;
+		m_bases = allvalues;
 		}
 
 	bool FMTYieldHandler::inLookAt(const std::string& yld) const
 	{
-		return (lookat.find(yld) != lookat.end());
+		return (m_lookat.find(yld) != m_lookat.end());
 	}
 
 	std::vector<std::string> FMTYieldHandler::indexes(const std::vector<std::string>& names) const
@@ -143,12 +143,12 @@ FMTYieldHandler::operator std::string() const
 
 	FMTMask FMTYieldHandler::getMask() const
 		{
-		return mask;
+		return m_mask;
 		}
 
 	void FMTYieldHandler::setMask(const FMTMask& p_mask)
 		{
-		mask = p_mask;
+		m_mask = p_mask;
 		}
 
 
@@ -181,8 +181,8 @@ FMTYieldHandler::operator std::string() const
 
 	 bool FMTYieldHandler::operator == (const FMTYieldHandler& rhs) const
 	 {
-		 return (mask == rhs.mask &&
-			 bases == rhs.bases);
+		 return (m_mask == rhs.m_mask &&
+			 m_bases == rhs.m_bases);
 	 }
 
 
@@ -205,23 +205,23 @@ FMTYieldHandler::operator std::string() const
 		{
 		double value = 0;
 		try{
-		if (agetarget >= bases.back())
+		if (agetarget >= m_bases.back())
 			{
 			value = dls.back();
-			if (!allowoutofrange && agetarget > bases.back())
+			if (!allowoutofrange && agetarget > m_bases.back())
 			{
-				_exhandler->raise(Exception::FMTexc::FMToutofrangeyield, " at age "+std::to_string(agetarget)+" for max age of "+ std::to_string(bases.back())+" "+std::string(mask)+"\n",
+				_exhandler->raise(Exception::FMTexc::FMToutofrangeyield, " at age "+std::to_string(agetarget)+" for max age of "+ std::to_string(m_bases.back())+" "+std::string(m_mask)+"\n",
 					"FMTYieldHandler::getLinearValue", __LINE__, __FILE__, Core::FMTsection::Yield);
 				return 0;
 			}
-		}else if(agetarget < bases.front())
+		}else if(agetarget < m_bases.front())
 			{
-			value = (agetarget * (dls[0] / static_cast<double>(bases[0])));
+			value = (agetarget * (dls[0] / static_cast<double>(m_bases[0])));
 			}else{
 			int id = 0;
 			int highindex = -1;
 			int lowindex = -1;
-			for (const int& base : bases)
+			for (const int& base : m_bases)
 				{
 				if (base <= agetarget)
 					{
@@ -236,9 +236,9 @@ FMTYieldHandler::operator std::string() const
 				}
 			if (lowindex != highindex)
 				{
-				const double factor = ((dls[highindex] - dls[lowindex]) / (static_cast<double>(bases[highindex]) - static_cast<double>(bases[lowindex])));
+				const double factor = ((dls[highindex] - dls[lowindex]) / (static_cast<double>(m_bases[highindex]) - static_cast<double>(m_bases[lowindex])));
 				const double lastvalue = dls[lowindex];
-				value = lastvalue + ((agetarget - bases[lowindex]) * factor);
+				value = lastvalue + ((agetarget - m_bases[lowindex]) * factor);
 				}else{
 				value = dls[highindex];
 				}
@@ -254,9 +254,9 @@ FMTYieldHandler::operator std::string() const
 	int FMTYieldHandler::getLastBase() const
 		{
 		int basevalue = 0;
-		if (!bases.empty())
+		if (!m_bases.empty())
 		{
-			basevalue= bases.back();
+			basevalue= m_bases.back();
 		}
 		return basevalue;
 		}
@@ -278,7 +278,7 @@ FMTYieldHandler::operator std::string() const
 
 	const std::vector<int>& FMTYieldHandler::getBases() const
 		{
-		return bases;
+		return m_bases;
 		}
 
 	double FMTYieldHandler::getLastValue(const std::string yld) const
@@ -307,15 +307,15 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		return 0;
 	}
 
-	double FMTYieldHandler::getChangesFrom(const int& targetage, const int& peakstep) const
+	double FMTYieldHandler::_getChangesFrom(const int& targetage, const int& peakstep) const
 		{
 		double value = 0;
 		try{
 		if (peakstep > 0)
 			{
 			const size_t agesize = static_cast<size_t>(targetage);
-			std::vector<double>peakvalues(std::max(agesize, bases.size()) + 1, 0.0);
-			const int peakage = bases[peakstep];
+			std::vector<double>peakvalues(std::max(agesize, m_bases.size()) + 1, 0.0);
+			const int peakage = m_bases[peakstep];
 			int id = 0;
 			for (double& pvalue : peakvalues)
 			{
@@ -327,7 +327,7 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTYieldHandler::getChangesFrom", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::_getChangesFrom", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return value;
 		}
@@ -359,7 +359,7 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		return 0;
 	}
 
-	int FMTYieldHandler::getMaxBase(const FMTYieldRequest& request) const
+	int FMTYieldHandler::_getMaxBase(const FMTYieldRequest& request) const
 	{
 		int maxage = 0;
 		try {
@@ -375,7 +375,7 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTYieldHandler::getMaxBase", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldHandler::_getMaxBase", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return maxage;
 	}
@@ -399,7 +399,7 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		{
 		std::unique_ptr<FMTYieldHandler> newhandler = this->clone();
 		try {
-			newhandler->mask = this->mask.presolve(filter, newthemes);
+			newhandler->m_mask = this->m_mask.presolve(filter, newthemes);
 		}catch (...)
 		{
 			_exhandler->raiseFromCatch("", "FMTYieldHandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -412,7 +412,7 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 			std::unique_ptr<FMTYieldHandler> newhandler = this->clone();
 			try {
 				std::vector<std::string> values;
-				const std::string maskname(std::string(newhandler->mask));
+				const std::string maskname(std::string(newhandler->m_mask));
 				boost::split(values, maskname,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
 				for (const std::string& value : values)
 				{
@@ -420,12 +420,12 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 					{
 						if(bt.isAggregate(value))
 						{
-							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot postSolve mask with aggregates " + std::string(newhandler->mask),
+							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot postSolve mask with aggregates " + std::string(newhandler->m_mask),
 														"FMTYieldHandler::postSolve", __LINE__, __FILE__);
 						}
 					}
 				}
-				newhandler->mask = newhandler->mask.postSolve(filter,basethemes);
+				newhandler->m_mask = newhandler->m_mask.postSolve(filter,basethemes);
 			}catch (...)
 			{
 				_exhandler->printExceptions("", "FMTYieldHandler::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);

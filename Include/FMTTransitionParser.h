@@ -33,21 +33,6 @@ namespace Parser
 */
 class FMTEXPORT FMTTransitionParser : public FMTParser
     {
-		// DocString: FMTTransitionParser::rxsection
-		///Regex to capture the transition section.
-		const static boost::regex rxsection;
-		// DocString: FMTTransitionParser::rxlock
-		///Regex to capture the lock level of the transition mask.
-		const static boost::regex rxlock;
-		// DocString: FMTTransitionParser::rxage
-		///Regex to capture the age level of the transition mask.
-		const static boost::regex rxage;
-		// DocString: FMTTransitionParser::rxreplace
-		///Regex to capture the age level of the transition mask.
-		const static boost::regex rxreplace;
-		// DocString: FMTTransitionParser::rxtyld
-		///Regex to capture yield bounds of the transition mask.
-		const static boost::regex rxtyld;
     public:
 		// DocString: FMTTransitionParser()
 		/**
@@ -135,6 +120,22 @@ class FMTEXPORT FMTTransitionParser : public FMTParser
 		@return the GCBM transitions.
 		*/
 		std::vector<Core::FMTGCBMTransition>readGCBM(const std::string& location) const;
+    private:
+		// DocString: FMTTransitionParser::m_rxsection
+		///Regex to capture the transition section.
+		const static boost::regex m_rxsection;
+		// DocString: FMTTransitionParser::m_rxlock
+		///Regex to capture the lock level of the transition mask.
+		const static boost::regex m_rxlock;
+		// DocString: FMTTransitionParser::m_rxage
+		///Regex to capture the age level of the transition mask.
+		const static boost::regex m_rxage;
+		// DocString: FMTTransitionParser::m_rxreplace
+		///Regex to capture the age level of the transition mask.
+		const static boost::regex m_rxreplace;
+		// DocString: FMTTransitionParser::m_rxtyld
+		///Regex to capture yield bounds of the transition mask.
+		const static boost::regex m_rxtyld;
     };
 }
 #endif // FMTtransitionparser_Hm_included

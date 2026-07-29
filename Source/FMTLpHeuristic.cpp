@@ -18,7 +18,7 @@ namespace Heuristics
 
 	FMTLpHeuristic::FMTLpHeuristic(const FMTLpHeuristic& rhs) :
 		Models::FMTLpSolver(rhs),
-		generator(rhs.generator),seed(rhs.seed),usingsolvercopy(true)
+		m_generator(rhs.m_generator),m_seed(rhs.m_seed),m_usingsolvercopy(true)
 		{
 
 		}
@@ -27,22 +27,22 @@ namespace Heuristics
 		if (this!=&rhs)
 			{
 			FMTLpSolver::operator = (rhs);
-			generator=rhs.generator;
-			seed = rhs.seed;
-			usingsolvercopy = true;
+			m_generator=rhs.m_generator;
+			m_seed = rhs.m_seed;
+			m_usingsolvercopy = true;
 			}
 		return *this;
 		}
 
     FMTLpHeuristic::FMTLpHeuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
        Models::FMTLpSolver(interfacetype,std::string(), std::string(),"LpHeuristic_"+std::to_string(lseed)),
-		generator(static_cast<unsigned int>(lseed)), seed(lseed), usingsolvercopy(true/*false*/)
+		m_generator(static_cast<unsigned int>(lseed)), m_seed(lseed), m_usingsolvercopy(true/*false*/)
         {
         //this->buildSolverInterface(interfacetype);
         }
 
 	FMTLpHeuristic::FMTLpHeuristic(Models::FMTLpSolver& basesolve, size_t lseed,bool copysolver):
-		Models::FMTLpSolver(),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(copysolver)
+		Models::FMTLpSolver(),m_generator(static_cast<unsigned int>(lseed)),m_seed(lseed), m_usingsolvercopy(copysolver)
 		{
 		try {
 			if (copysolver)
@@ -60,8 +60,8 @@ namespace Heuristics
 
 	void FMTLpHeuristic::setGeneratorSeed(const size_t& lseed)
 		{
-		seed = lseed;
-		generator.seed(static_cast<unsigned int>(lseed));
+		m_seed = lseed;
+		m_generator.seed(static_cast<unsigned int>(lseed));
 		}
 
 	bool FMTLpHeuristic::branchNBoundSolve()

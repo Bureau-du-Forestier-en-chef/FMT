@@ -14,15 +14,15 @@ namespace Spatial
 		const size_t& minadjacency, const size_t& maxadjacency,
 		const size_t& minsize, const size_t& maxsize,
 		const size_t& minnsize, const size_t& maxnsize):
-		neighbors(lneighbors),
-		minimal_green_up(mingreenup),
-		maximal_green_up(maxgreenup),
-		minimal_adjacency(minadjacency),
-		maximal_adjacency(maxadjacency),
-		minimal_size(minsize),
-		maximal_size(maxsize),
-		minimal_neighbors_size(minnsize),
-		maximal_neighbors_size(maxnsize)
+		m_neighbors(lneighbors),
+		m_minimal_green_up(mingreenup),
+		m_maximal_green_up(maxgreenup),
+		m_minimal_adjacency(minadjacency),
+		m_maximal_adjacency(maxadjacency),
+		m_minimal_size(minsize),
+		m_maximal_size(maxsize),
+		m_minimal_neighbors_size(minnsize),
+		m_maximal_neighbors_size(maxnsize)
 	{
 
 	}
@@ -33,23 +33,23 @@ namespace Spatial
 
 	bool FMTBindingSpatialAction::isSpatiallyAdjacencyBinding() const
 	{
-		return (!neighbors.empty() && (minimal_adjacency > 0 ||
-			maximal_adjacency != std::numeric_limits<size_t>::max()));
+		return (!m_neighbors.empty() && (m_minimal_adjacency > 0 ||
+			m_maximal_adjacency != std::numeric_limits<size_t>::max()));
 	}
 
 	bool FMTBindingSpatialAction::isSpatiallyAreaBinding() const
 		{
-		return (!neighbors.empty() && (minimal_size > 0 ||
-				maximal_size != std::numeric_limits<size_t>::max()));
+		return (!m_neighbors.empty() && (m_minimal_size > 0 ||
+				m_maximal_size != std::numeric_limits<size_t>::max()));
 		}
 
 	bool FMTBindingSpatialAction::testMinimalAdjacency() const
 	{
-		return (!neighbors.empty() &&  minimal_adjacency > 0);
+		return (!m_neighbors.empty() &&  m_minimal_adjacency > 0);
 	}
 	bool FMTBindingSpatialAction::testMaximalAdjacency() const
 	{
-		return (!neighbors.empty() &&  maximal_adjacency != std::numeric_limits<size_t>::max());
+		return (!m_neighbors.empty() &&  m_maximal_adjacency != std::numeric_limits<size_t>::max());
 	}
 
 }

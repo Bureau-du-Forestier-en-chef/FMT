@@ -18,58 +18,58 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser
 {
-	const boost::regex FMTLandscapeParser::rxPreAttributes = boost::regex(
+	const boost::regex FMTLandscapeParser::m_rxPreAttributes = boost::regex(
 		"^(\\*ATTRIBUTES)([\\s\\t]*)\\(([\\s\\t]*)_TH(\\d+)([\\s\\t]*)\\)",
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTLandscapeParser::rxPreAggregate = boost::regex(
+	const boost::regex FMTLandscapeParser::m_rxPreAggregate = boost::regex(
 		"^(\\*AGGREGATE)([\\s\\t]*)\\(([\\s\\t]*)_(\\w+)([\\s\\t]*)\\)",
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTLandscapeParser::rxcleanlans = boost::regex(
+	const boost::regex FMTLandscapeParser::m_rxcleanlans = boost::regex(
 		"^(\\*THEME)([\\s\\t]*)(([0-9]*$)|([0-9]*)([\\s\\t]*)(.+))|(\\*AGGREGATE)([\\s\\t]*)(\\()([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*)(\\))([\\s\\t]*)(.+)|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", 
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTLandscapeParser::rxindex = boost::regex(
+	const boost::regex FMTLandscapeParser::m_rxindex = boost::regex(
 		"^(_INDEX)(\\()([^\\)]*)(\\))", 
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTLandscapeParser::rxparameter = boost::regex(
+	const boost::regex FMTLandscapeParser::m_rxparameter = boost::regex(
 		"^([^=]*)(=)(#.+|[-\\s\\t\\d.]*)", 
 		boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 	FMTLandscapeParser::FMTLandscapeParser() :
     FMTParser()
         {
-		setSection(Core::FMTsection::Landscape);
+		_setSection(Core::FMTsection::Landscape);
         }
 
-    std::map<std::string,double>FMTLandscapeParser::getIndexes(std::string indexm_line,const Core::FMTConstants& constants)
+    std::map<std::string,double>FMTLandscapeParser::_getIndexes(std::string indexm_line,const Core::FMTConstants& constants)
         {
 		std::map<std::string,double>indexes;
 		try {
 			boost::trim(indexm_line);
 			boost::smatch kmatch;
-			if (boost::regex_search(indexm_line, kmatch, FMTLandscapeParser::rxindex))
+			if (boost::regex_search(indexm_line, kmatch, FMTLandscapeParser::m_rxindex))
 			{
 				std::vector<std::string>parameters;
 				const std::string values = kmatch[3];
 				boost::split(parameters, values, boost::is_any_of(","), boost::token_compress_on);
 				for (const std::string& parameter : parameters)
 				{
-					if (boost::regex_search(parameter, kmatch, FMTLandscapeParser::rxparameter))
+					if (boost::regex_search(parameter, kmatch, FMTLandscapeParser::m_rxparameter))
 					{
 						std::string index_value = std::string(kmatch[3]);
 						boost::trim(index_value);
-						indexes[std::string(kmatch[1])] = getNum<double>(index_value, constants);
+						indexes[std::string(kmatch[1])] = _getNum<double>(index_value, constants);
 					}
 				}
 			}
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch(
-				 "for line " + indexm_line,"FMTLandscapeParser::getIndexes", __LINE__, __FILE__,m_section);
+				 "for line " + indexm_line,"FMTLandscapeParser::_getIndexes", __LINE__, __FILE__,m_section);
 			}
         return indexes;
         }
 
-	void FMTLandscapeParser::processThemeLine(
+	void FMTLandscapeParser::_processThemeLine(
 		const boost::smatch& kmatch, 
 		ThemeParsingContext& ctx, 
 		PreDeclarationContext& preContext, 
@@ -88,7 +88,7 @@ namespace Parser
 			tempid = unknownID;
 		}
 		else {
-			tempid = getNum<size_t>(theme, constants);
+			tempid = _getNum<size_t>(theme, constants);
 		}
 		++unknownID;
 
@@ -129,7 +129,7 @@ namespace Parser
 		ctx.themename = themename_match;
 	}
 
-	void FMTLandscapeParser::processAggregateLine(
+	void FMTLandscapeParser::_processAggregateLine(
 		const boost::smatch& kmatch, 
 		ThemeParsingContext& ctx, 
 		std::vector<Core::FMTTheme>& themes, 
@@ -143,7 +143,7 @@ namespace Parser
 		if (!targetTheme.empty())
 		{
 			ctx.aggregatename = std::string(kmatch[17]);
-			ctx.pasttheme = getNum<int>(targetTheme, constants) - 1;
+			ctx.pasttheme = _getNum<int>(targetTheme, constants) - 1;
 
 			if (static_cast<size_t>(ctx.pasttheme) >= themes.size())
 			{
@@ -172,12 +172,12 @@ namespace Parser
 				ctx.aggregatenames.push_back(std::vector<std::string>());
 			}
 			else {
-				themes[ctx.pasttheme].pushAggregate(ctx.aggregatename);
+				themes[ctx.pasttheme]._pushAggregate(ctx.aggregatename);
 			}
 		}
 	}
 
-	void FMTLandscapeParser::processAggregateValueLine(const std::string& line, ThemeParsingContext& ctx, std::vector<Core::FMTTheme>& themes)
+	void FMTLandscapeParser::_processAggregateValueLine(const std::string& line, ThemeParsingContext& ctx, std::vector<Core::FMTTheme>& themes)
 	{
 		const std::vector<std::string> splited = FMTParser::spliter(line, FMTParser::m_SEPARATOR);
 
@@ -198,7 +198,7 @@ namespace Parser
 			}
 			else if (ctx.pasttheme >= 0)
 			{
-				themes[ctx.pasttheme].pushAggregateValue(ctx.aggregatename, val);
+				themes[ctx.pasttheme]._pushAggregateValue(ctx.aggregatename, val);
 			}
 			else {
 				ctx.aggregatenames[std::distance(ctx.aggregates.begin(),
@@ -219,7 +219,7 @@ namespace Parser
 		}
 	}
 
-	void FMTLandscapeParser::processAttributeLine(
+	void FMTLandscapeParser::_processAttributeLine(
 		const std::string& line, 
 		ThemeParsingContext& ctx, 
 		const Core::FMTConstants& constants)
@@ -235,7 +235,7 @@ namespace Parser
 			splited.erase(splited.begin());
 			name = boost::algorithm::join(splited, " ");
 
-			const std::map<std::string, double> indexes = getIndexes(name, constants);
+			const std::map<std::string, double> indexes = _getIndexes(name, constants);
 			if (!indexes.empty())
 			{
 				const size_t indexlocation = std::distance(ctx.attributes.begin(),
@@ -282,15 +282,15 @@ namespace Parser
 		declarations.erase(nameID);
 	}
 
-	bool FMTLandscapeParser::processPreDeclarationLine(
+	bool FMTLandscapeParser::_processPreDeclarationLine(
 		const std::string& line,
 		PreDeclarationContext& context, 
 		const Core::FMTConstants& constants)
 	{
 		boost::smatch preDeclaredMatch;
-		if (boost::regex_search(line, preDeclaredMatch, FMTLandscapeParser::rxPreAttributes)) {
+		if (boost::regex_search(line, preDeclaredMatch, FMTLandscapeParser::m_rxPreAttributes)) {
 			context.state = ParseState::IN_PRE_DECLARATION;
-			int themeID = getNum<int>(std::string(preDeclaredMatch[4]), constants);
+			int themeID = _getNum<int>(std::string(preDeclaredMatch[4]), constants);
 			context.currentKey = std::to_string(themeID);
 			return true;
 		}
@@ -326,8 +326,8 @@ namespace Parser
 		size_t id = 0;
         for(const std::string& location : locations)
             {
-            GDALDataset* dataset = getDataset(location);
-			const std::vector<std::string>categories = getCat(dataset);
+            GDALDataset* dataset = _getDataset(location);
+			const std::vector<std::string>categories = _getCat(dataset);
             themes.push_back(Core::FMTTheme(categories,id,start,""));
 			//themes.back().passinobject(*this);
             start+=static_cast<int>(categories.size());
@@ -347,11 +347,11 @@ namespace Parser
 		std::vector<Core::FMTTheme>themes;
 		try {
 			//GDALAllRegister();
-			GDALDataset* dataset = getVectorDataset(location);
-			OGRLayer * layer = getLayer(dataset, 0);
+			GDALDataset* dataset = _getVectorDataset(location);
+			OGRLayer * layer = _getLayer(dataset, 0);
 			std::map<int, int>themes_fields;
 			int age, area, lock;
-			getWSFields(layer, themes_fields, age, area, lock);
+			_getWSFields(layer, themes_fields, age, area, lock);
 			OGRFeature *feature;
 			layer->ResetReading();
 			std::vector<std::vector<std::string>>themesattributes(themes_fields.size(), std::vector<std::string>());
@@ -402,36 +402,36 @@ namespace Parser
 	
 			if (FMTParser::tryOpening(landstream, location))
 			{
-				std::queue<FMTParser::FMTLineInfo> Lines = FMTParser::getCleanLinewfor(landstream, themes, constants);
+				std::queue<FMTParser::FMTLineInfo> Lines = FMTParser::_getCleanLinewfor(landstream, themes, constants);
 				while (!Lines.empty())
 				{
-					const std::string line = getLine(Lines);
+					const std::string line = _getLine(Lines);
 					if (!line.empty())
 					{
-						if (processPreDeclarationLine(line, preContext, constants)) {
+						if (_processPreDeclarationLine(line, preContext, constants)) {
 							continue; 
 						}
 
 						boost::smatch kmatch;
-						boost::regex_search(line, kmatch, FMTLandscapeParser::rxcleanlans);
+						boost::regex_search(line, kmatch, FMTLandscapeParser::m_rxcleanlans);
 						const std::string potentialtheme = std::string(kmatch[4]) + std::string(kmatch[5]) + std::string(kmatch[7]);
 						const std::string aggregate = std::string(kmatch[8]) + std::string(kmatch[18]);
 			
 						if (!potentialtheme.empty())
 						{
-							processThemeLine(kmatch, ctx, preContext, themes, constants, unknownID);
+							_processThemeLine(kmatch, ctx, preContext, themes, constants, unknownID);
 						}
 						else if (!aggregate.empty())
 						{
-							processAggregateLine(kmatch, ctx, themes, constants);
+							_processAggregateLine(kmatch, ctx, themes, constants);
 						}
 						else if (!ctx.aggregatename.empty() /* && !aggregate_redefiniton*/)
 						{
-							processAggregateValueLine(line, ctx, themes);
+							_processAggregateValueLine(line, ctx, themes);
 						}
 						else 
 						{
-							processAttributeLine(line, ctx, constants);
+							_processAttributeLine(line, ctx, constants);
 						}
 					}
 				}
@@ -467,7 +467,7 @@ namespace Parser
 			themes.shrink_to_fit();
 			for (Core::FMTTheme& theme : themes)
 				{
-				theme.buildAttributeLocations();
+				theme._buildAttributeLocations();
 				}
 			}catch(...)
 				{

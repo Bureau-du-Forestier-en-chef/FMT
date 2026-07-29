@@ -31,51 +31,6 @@ namespace Parser
 */
 class FMTEXPORT FMTActionParser : public FMTParser
     {
-    private:
-		// DocString: FMTActionParser::rxsection
-		///This the main regex used to catch all the keywords of the action section.
-        const static boost::regex rxsection;
-		// DocString: FMTActionParser::rxoperator
-		///This regex catches the operators used in the action section.
-		const static boost::regex rxoperator;
-		// DocString: FMTActionParser::m_SERIES_MATCH
-		///This regex catchesthe series.
-		const static boost::regex m_SERIES_MATCH;
-		// DocString: FMTActionParser::_getSerie
-		/**
-		@brief Get a serie from a line.
-		@param[in] p_line the parsed line.
-		@param[in] p_actions the generated actions.
-		@return the serie.
-		*/
-		Core::FMTSerie _getSerie(const std::string& p_line,
-			const std::vector<Core::FMTAction>& p_actions) const;
-		// DocString: FMTActionParser::sameActionAs
-		/**
-		@brief Return pointers to the actions present in a set string.
-		@param[in] all_set the set string of action names.
-		@param[in,out] actions the actions.
-		@return the matching actions.
-		*/
-		std::vector<Core::FMTAction*> sameActionAs(const std::string& all_set, std::vector<Core::FMTAction>& actions) const;
-		// DocString: FMTActionParser::getBounds
-		/**
-		@brief Fill up a specification from a line of the action section.
-		@param[in,out] line the line.
-		@param[in,out] spec the specification.
-		@param[in] constants the constants.
-		@param[in] ylds the yields.
-		@return the rest of the line.
-		*/
-		std::string getBounds(std::string& line, Core::FMTSpec& spec, const Core::FMTConstants& constants, const Core::FMTYields& ylds);
-		// DocString: FMTActionParser::valAgg
-		/**
-		@brief Turn aggregates of aggregates into simple aggregates of actions.
-		@param[in,out] actions the actions.
-		@param[in,out] aggregates the aggregates.
-		@return the simplified aggregates.
-		*/
-		std::map<std::string, std::vector<std::string>>valAgg(std::vector<Core::FMTAction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
 	public:
 		// DocString: FMTActionParser()
 		/**
@@ -128,6 +83,51 @@ class FMTEXPORT FMTActionParser : public FMTParser
 		@return the GCBM action aggregates.
 		*/
 		std::vector<Core::FMTAction>getGCBMactionsaggregate(const std::vector<Core::FMTAction>& actions) const;
+    private:
+		// DocString: FMTActionParser::m_rxsection
+		///This the main regex used to catch all the keywords of the action section.
+        const static boost::regex m_rxsection;
+		// DocString: FMTActionParser::m_rxoperator
+		///This regex catches the operators used in the action section.
+		const static boost::regex m_rxoperator;
+		// DocString: FMTActionParser::m_SERIES_MATCH
+		///This regex catchesthe series.
+		const static boost::regex m_SERIES_MATCH;
+		// DocString: FMTActionParser::_getSerie
+		/**
+		@brief Get a serie from a line.
+		@param[in] p_line the parsed line.
+		@param[in] p_actions the generated actions.
+		@return the serie.
+		*/
+		Core::FMTSerie _getSerie(const std::string& p_line,
+			const std::vector<Core::FMTAction>& p_actions) const;
+		// DocString: FMTActionParser::_sameActionAs
+		/**
+		@brief Return pointers to the actions present in a set string.
+		@param[in] all_set the set string of action names.
+		@param[in,out] actions the actions.
+		@return the matching actions.
+		*/
+		std::vector<Core::FMTAction*> _sameActionAs(const std::string& all_set, std::vector<Core::FMTAction>& actions) const;
+		// DocString: FMTActionParser::_getBounds
+		/**
+		@brief Fill up a specification from a line of the action section.
+		@param[in,out] line the line.
+		@param[in,out] spec the specification.
+		@param[in] constants the constants.
+		@param[in] ylds the yields.
+		@return the rest of the line.
+		*/
+		std::string _getBounds(std::string& line, Core::FMTSpec& spec, const Core::FMTConstants& constants, const Core::FMTYields& ylds);
+		// DocString: FMTActionParser::_valAgg
+		/**
+		@brief Turn aggregates of aggregates into simple aggregates of actions.
+		@param[in,out] actions the actions.
+		@param[in,out] aggregates the aggregates.
+		@return the simplified aggregates.
+		*/
+		std::map<std::string, std::vector<std::string>>_valAgg(std::vector<Core::FMTAction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
     };
 
 }

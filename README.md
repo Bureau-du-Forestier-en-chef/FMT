@@ -169,5 +169,3 @@ MSVC ![](https://img.shields.io/badge/coverage-0%25-red)
 ## 💻 Build
 GNU ![](https://img.shields.io/badge/build-pass-brightgreen)
 MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)
-
-

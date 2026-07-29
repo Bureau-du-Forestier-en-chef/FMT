@@ -82,7 +82,7 @@ namespace Parallel
 		const std::vector<const ptrtype*> getTasksFromDynamicCast() const
 		{
 			std::vector<const ptrtype*>castedptr;
-			for (const std::unique_ptr<FMTTask>& task : alltasks)
+			for (const std::unique_ptr<FMTTask>& task : m_alltasks)
 			{
 				castedptr.push_back(dynamic_cast<const ptrtype*>(task.get()));
 			}
@@ -105,29 +105,29 @@ namespace Parallel
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
 	private:
-		// DocString: FMTTaskHandler::maxnumberofthread
+		// DocString: FMTTaskHandler::m_maxnumberofthread
 		///Maximal number of threads
-		unsigned int maxnumberofthread;
-		// DocString: FMTTaskHandler::alltasks
+		unsigned int m_maxnumberofthread;
+		// DocString: FMTTaskHandler::m_alltasks
 		///All the tasks that are running
-		std::vector<std::unique_ptr<FMTTask>>alltasks;
-		// DocString: FMTTaskHandler::splitTasks
+		std::vector<std::unique_ptr<FMTTask>>m_alltasks;
+		// DocString: FMTTaskHandler::_splitTasks
 		/**
 		@brief Split all the tasks and replace them with the newly split tasks.
 		*/
-		void splitTasks();
-		// DocString: FMTTaskHandler::finalize
+		void _splitTasks();
+		// DocString: FMTTaskHandler::_finalize
 		/**
 		@brief Call FMTTask::finalize when the last task is done.
 		@param[in,out] lasttask the last task.
 		*/
-		void finalize(std::unique_ptr<FMTTask>& lasttask);
-		// DocString: FMTTaskHandler::logTaskTime
+		void _finalize(std::unique_ptr<FMTTask>& lasttask);
+		// DocString: FMTTaskHandler::_logTaskTime
 		/**
 		@brief Log the time it took to run all the tasks.
 		@param[in] startime the start time.
 		*/
-		void logTaskTime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const;
+		void _logTaskTime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const;
 		// DocString: FMTTaskHandler::_interruptWork
 		/**
 		@brief Interrupt the work of a thread on an exception to avoid a std::terminate if it is joinable.

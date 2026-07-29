@@ -13,51 +13,51 @@ namespace Graph
 {
 
 	FMTGraphVertexToYield::FMTGraphVertexToYield(const Models::FMTModel& model,const FMTGraph<FMTBaseVertexProperties,FMTBaseEdgeProperties>& linegraph,const void* lvertex) :
-		graph(reinterpret_cast<const void* const>(&linegraph)),
-		vertex(lvertex),
-		graphtype(FMTgraphrequest::linegraph),
-		modelptr(&model)
+		m_graph(reinterpret_cast<const void* const>(&linegraph)),
+		m_vertex(lvertex),
+		m_graphtype(FMTgraphrequest::linegraph),
+		m_modelptr(&model)
 	{
 		
 	}
 	FMTGraphVertexToYield::FMTGraphVertexToYield():
-		graph(nullptr),
-		vertex(nullptr),
-		graphtype(FMTgraphrequest::nograph),
-		modelptr(nullptr)
+		m_graph(nullptr),
+		m_vertex(nullptr),
+		m_graphtype(FMTgraphrequest::nograph),
+		m_modelptr(nullptr)
 	{
 
 	}
 
 	FMTGraphVertexToYield::FMTGraphVertexToYield(const Models::FMTModel& model,const FMTGraph<FMTVertexProperties, FMTEdgeProperties>& fullgraph,const void* lvertex) :
-		graph(reinterpret_cast<const void* const>(&fullgraph)),
-		vertex(lvertex),
-		graphtype(FMTgraphrequest::fullgraph),
-		modelptr(&model)
+		m_graph(reinterpret_cast<const void* const>(&fullgraph)),
+		m_vertex(lvertex),
+		m_graphtype(FMTgraphrequest::fullgraph),
+		m_modelptr(&model)
 	{
 		 
 	}
 
 	const FMTGraph<FMTBaseVertexProperties,FMTBaseEdgeProperties>* const FMTGraphVertexToYield::getLineGraph() const
 	{
-		if (graphtype == FMTgraphrequest::linegraph)
+		if (m_graphtype == FMTgraphrequest::linegraph)
 		{
-			return reinterpret_cast<const Graph::FMTGraph<FMTBaseVertexProperties,FMTBaseEdgeProperties>* const>(graph);
+			return reinterpret_cast<const Graph::FMTGraph<FMTBaseVertexProperties,FMTBaseEdgeProperties>* const>(m_graph);
 		}
 		return nullptr;
 	}
 	const FMTGraph<FMTVertexProperties,FMTEdgeProperties>* const FMTGraphVertexToYield::getFullGraph() const
 	{
-		if (graphtype == FMTgraphrequest::fullgraph)
+		if (m_graphtype == FMTgraphrequest::fullgraph)
 		{
-			return reinterpret_cast<const FMTGraph<FMTVertexProperties,FMTEdgeProperties>* const>(graph);
+			return reinterpret_cast<const FMTGraph<FMTVertexProperties,FMTEdgeProperties>* const>(m_graph);
 		}
 		return nullptr;
 	}
 
 	const Models::FMTModel* FMTGraphVertexToYield::getModel() const
 	{
-		return modelptr;
+		return m_modelptr;
 	}
 
 }

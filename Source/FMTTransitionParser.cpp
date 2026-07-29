@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -23,15 +23,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-const boost::regex FMTTransitionParser::rxsection = boost::regex("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTTransitionParser::rxlock = boost::regex("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTTransitionParser::rxage = boost::regex("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTTransitionParser::rxreplace = boost::regex("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)([\\+\\-\\*\\/])([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTTransitionParser::rxtyld = boost::regex("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxsection = boost::regex("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxlock = boost::regex("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxage = boost::regex("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxreplace = boost::regex("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)([\\+\\-\\*\\/])([\\s\\t]*)([0-9]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTTransitionParser::m_rxtyld = boost::regex("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 FMTTransitionParser::FMTTransitionParser():FMTParser()
     {
-	setSection(Core::FMTsection::Transition);
+	_setSection(Core::FMTsection::Transition);
     }
 
 
@@ -62,7 +62,7 @@ Core::FMTMask FMTTransitionParser::getSource(std::string& line, Core::FMTSpec& s
 			Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line));
 			const Core::FMTMask newmask(mask, themes);
 			rest += " ";
-			rest = setSpec(Core::FMTsection::Transition, Core::FMTkwor::Source, ylds, constants, spec, rest);
+			rest = _setSpec(Core::FMTsection::Transition, Core::FMTkwor::Source, ylds, constants, spec, rest);
 			return newmask;
 		}
 	}catch (...)
@@ -90,7 +90,7 @@ std::vector<Core::FMTTransitionMask> FMTTransitionParser::getMaskTran(const std:
 		}
 		mask = mask.substr(0, mask.size() - 1);
 		Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line));
-		proportion = getNum<double>(elements[id], constants);
+		proportion = _getNum<double>(elements[id], constants);
 		++id;
 		std::string rest = " ";
 		while (id < elements.size())
@@ -102,21 +102,21 @@ std::vector<Core::FMTTransitionMask> FMTTransitionParser::getMaskTran(const std:
 		int age = -1;
 		int lock = 0;
 		Core::FMTTransitionMask trans(mask, themes, proportion);
-		if (boost::regex_search(rest, kmatch, FMTTransitionParser::rxlock))
+		if (boost::regex_search(rest, kmatch, FMTTransitionParser::m_rxlock))
 		{
 			const std::string strlock = kmatch[4];
-			lock = getNum<int>(strlock, constants);
+			lock = _getNum<int>(strlock, constants);
 			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
 			trans.addBounds(Core::FMTLockBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, lock, lock));
 		}
-		if (boost::regex_search(rest, kmatch, FMTTransitionParser::rxage))
+		if (boost::regex_search(rest, kmatch, FMTTransitionParser::m_rxage))
 		{
 			std::string strage = kmatch[4];
-			age = getNum<int>(strage, constants);
+			age = _getNum<int>(strage, constants);
 			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
 			trans.addBounds(Core::FMTAgeBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, age, age));
 		}
-		if (boost::regex_search(rest, kmatch, FMTTransitionParser::rxreplace))
+		if (boost::regex_search(rest, kmatch, FMTTransitionParser::m_rxreplace))
 		{
 			const std::string strtargettheme = kmatch[4];
 			const std::string stroptheme = kmatch[9];
@@ -127,8 +127,8 @@ std::vector<Core::FMTTransitionMask> FMTTransitionParser::getMaskTran(const std:
 				baseoperator = Core::FMTOperator(stroperator);
 				}
 			const std::string stradd = kmatch[13];
-			const int targetTheme = getNum<int>(strtargettheme) - 1;
-			const double addupp = getNum<double>(stradd);
+			const int targetTheme = _getNum<int>(strtargettheme) - 1;
+			const double addupp = _getNum<double>(stradd);
 			Core::FMTMask targetmask(mask, themes);
 			targetmask.set(themes[targetTheme], sourcemask.get(themes[targetTheme]));
 			for (Core::FMTMask& lmask : targetmask.decompose(themes[targetTheme]))
@@ -136,9 +136,9 @@ std::vector<Core::FMTTransitionMask> FMTTransitionParser::getMaskTran(const std:
 				
 				const std::string actual = lmask.get(themes[targetTheme]);
 				std::string newval;
-				if (isNum(actual))//just math
+				if (_isNum(actual))//just math
 					{
-					const int newint =  static_cast<int>(baseoperator.call(getNum<double>(actual),addupp));
+					const int newint =  static_cast<int>(baseoperator.call(_getNum<double>(actual),addupp));
 					newval = std::to_string(newint);
 				}else {
 					newval = actual+ stradd;
@@ -157,15 +157,15 @@ std::vector<Core::FMTTransitionMask> FMTTransitionParser::getMaskTran(const std:
 			replaced = targetTheme;
 			rest = std::string(kmatch[1]) + std::string(kmatch[14]);
 		}
-		if (isValid(rest) && boost::regex_search(rest, kmatch, FMTTransitionParser::rxtyld))
+		if (_isValid(rest) && boost::regex_search(rest, kmatch, FMTTransitionParser::m_rxtyld))
 		{
 			const std::string yld = kmatch[2];
 			const std::string strvalue = kmatch[4];
 			if (!yld.empty() && !strvalue.empty())
 			{
 				constexpr double upperbound = std::numeric_limits<double>::max();
-				const double lowerbound = getNum<double>(strvalue, constants);
-				isYld(ylds, yld, Core::FMTsection::Transition);
+				const double lowerbound = _getNum<double>(strvalue, constants);
+				_isYld(ylds, yld, Core::FMTsection::Transition);
 				trans.addBounds(Core::FMTYldBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, yld, upperbound, lowerbound));
 			}
 		}
@@ -205,15 +205,15 @@ std::vector<Core::FMTTransition> FMTTransitionParser::read(const std::vector<Cor
 			std::vector<int>replacedvec;
 			Core::FMTMask srcmsk;
 			std::vector<Core::FMTTransition>::iterator last_transition = temp_transitions.end();
-			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::getCleanLinewfor(transitionstream, themes, constants);
+			std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::_getCleanLinewfor(transitionstream, themes, constants);
 			while (!Lines.empty())
 			{
-				const std::string line = getLine(Lines);
+				const std::string line = _getLine(Lines);
 				if (!line.empty())
 				{
 					
 					boost::smatch kmatch;
-					if (!boost::regex_search(line, kmatch, FMTTransitionParser::rxsection))
+					if (!boost::regex_search(line, kmatch, FMTTransitionParser::m_rxsection))
 					{
 						//crash here
 					}
@@ -222,7 +222,7 @@ std::vector<Core::FMTTransition> FMTTransitionParser::read(const std::vector<Cor
 					TARGET = kmatch[7];
 					if (!CASE.empty())
 					{
-						const std::vector<std::string>ptransitionname = sameAs(CASE);
+						const std::vector<std::string>ptransitionname = _sameAs(CASE);
 						actionname = ptransitionname.at(0);
 						temp_transitions.push_back(Core::FMTTransition(actionname));
 						last_transition = --temp_transitions.end();
@@ -234,7 +234,7 @@ std::vector<Core::FMTTransition> FMTTransitionParser::read(const std::vector<Cor
 								last_transition->push_back(forkobj.first,forkobj.second);
 							}
 						}
-						if (!isAct(Core::FMTsection::Transition, actions, actionname)) continue;
+						if (!_isAct(Core::FMTsection::Transition, actions, actionname)) continue;
 					}
 					else if (!SOURCE.empty())
 					{
