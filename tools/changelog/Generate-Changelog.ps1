@@ -43,6 +43,53 @@ $ErrorActionPreference = 'Stop'
 # Affichage console en UTF-8.
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 
+# Recupere les issues fermees depuis une date, puis ne GARDE que celles fermees
+# comme "completed" (reellement resolues ; les "not planned" = doublons/invalides/
+# abandonnees sont ecartees). Source : gh d'abord, sinon l'API REST publique (sans auth).
+# Comparaison de state_reason insensible a la casse (API renvoie 'completed',
+# gh renvoie 'COMPLETED'). Renvoie { Issues=@(); Source; RawTotal; Fetched }.
+function Get-ClosedIssues {
+    param([string]$OwnerRepo, [string]$SinceDate)
+    $res = [pscustomobject]@{ Issues = @(); Source = 'none'; RawTotal = 0; Fetched = 0 }
+    if (-not $OwnerRepo) { return $res }
+
+    # 1) gh issue list (si gh present et connecte)
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
+        try {
+            $ghArgs = @('issue', 'list', '--repo', $OwnerRepo, '--state', 'closed', '--limit', '300', '--json', 'number,title,stateReason')
+            if ($SinceDate) { $ghArgs += @('--search', "closed:>=$SinceDate") }
+            $out = & gh @ghArgs 2>$null
+            if ($LASTEXITCODE -eq 0 -and $out) {
+                $all = @($out | ConvertFrom-Json)
+                $res.Fetched  = $all.Count
+                $res.RawTotal = $all.Count
+                $res.Issues   = @($all | Where-Object { $_.stateReason -eq 'completed' } |
+                                  ForEach-Object { [pscustomobject]@{ number = $_.number; title = $_.title } })
+                $res.Source   = 'gh'
+                return $res
+            }
+        } catch { }
+    }
+
+    # 2) API REST publique de GitHub (repli, sans auth ; ~10 req/min)
+    try {
+        $q = "repo:$OwnerRepo is:issue is:closed"
+        if ($SinceDate) { $q += " closed:>=$SinceDate" }
+        $uri = "https://api.github.com/search/issues?q=" + [uri]::EscapeDataString($q) + "&per_page=100"
+        $headers = @{ 'User-Agent' = 'FMT-changelog-tool'; 'Accept' = 'application/vnd.github+json' }
+        $resp = Invoke-RestMethod -Uri $uri -Headers $headers -Method Get -TimeoutSec 20
+        $items = @($resp.items)
+        $res.Fetched  = $items.Count
+        $res.RawTotal = [int]$resp.total_count
+        $res.Issues   = @($items | Where-Object { $_.state_reason -eq 'completed' } |
+                          ForEach-Object { [pscustomobject]@{ number = $_.number; title = $_.title } })
+        $res.Source   = 'api'
+        return $res
+    } catch { }
+
+    return $res
+}
+
 # Se placer a la racine du depot (le script vit dans tools/changelog/).
 $repoRoot = (& git rev-parse --show-toplevel 2>$null)
 if (-not $repoRoot) {
@@ -61,6 +108,47 @@ if ($Since) { $range = "$Since..HEAD" } else { $range = "HEAD" }
 $today    = Get-Date -Format 'yyyy-MM-dd'
 $headHash = (& git rev-parse --short HEAD).Trim()
 $baseDesc = if ($Since) { $Since } else { '(debut de l''historique)' }
+
+# URL du depot (derivee de origin, avec repli sur l'URL connue de FMT).
+$remote  = (& git remote get-url origin 2>$null)
+$repoUrl = $null
+if ($remote) {
+    $r = $remote.Trim()
+    if     ($r -match '^git@([^:]+):(.+?)(?:\.git)?$')     { $repoUrl = "https://$($Matches[1])/$($Matches[2])" }
+    elseif ($r -match '^(https?://[^/]+)/(.+?)(?:\.git)?$') { $repoUrl = "$($Matches[1])/$($Matches[2])" }
+}
+if (-not $repoUrl) { $repoUrl = 'https://github.com/Bureau-du-Forestier-en-chef/FMT' }
+
+# Date de la version de base, pour filtrer les issues fermees depuis.
+$baseDate = ''
+if ($Since) { $baseDate = (& git log -1 --format=%ad --date=short $Since 2>$null) }
+if ($baseDate) { $baseDate = $baseDate.Trim() }
+$baseDateDesc = if ($baseDate) { $baseDate } else { '(debut de l''historique)' }
+
+# URL de recherche GitHub : issues fermees depuis la base.
+$issueQuery = 'is:issue is:closed'
+if ($baseDate) { $issueQuery += " closed:>=$baseDate" }
+$issuesUrl = "$repoUrl/issues?q=" + ([uri]::EscapeDataString($issueQuery)).Replace('%20', '+')
+
+# Issues fermees comme "completed" (resolues) depuis la base, injectees dans le prompt.
+$ownerRepo = $repoUrl -replace '^https?://[^/]+/', ''
+$issuesData = Get-ClosedIssues -OwnerRepo $ownerRepo -SinceDate $baseDate
+$issueCount = $issuesData.Issues.Count
+$closedIssuesBlock = ''
+if ($issuesData.Source -ne 'none') {
+    $srcLabel = if ($issuesData.Source -eq 'gh') { 'gh issue list' } else { 'API GitHub' }
+    $note = ''
+    if ($issuesData.RawTotal -gt $issuesData.Fetched) {
+        $note = " ; NB: 1re page seulement ($($issuesData.Fetched)/$($issuesData.RawTotal)), voir $issuesUrl"
+    }
+    $header = "ISSUES FERMEES ET RESOLUES (completed) depuis $baseDateDesc (source: $srcLabel ; $issueCount resolues sur $($issuesData.RawTotal) fermees)$note :"
+    if ($issueCount -gt 0) {
+        $lines = $issuesData.Issues | ForEach-Object { "- #$($_.number) $($_.title)" }
+        $closedIssuesBlock = "`r`n`r`n$header`r`n" + ($lines -join "`r`n")
+    } else {
+        $closedIssuesBlock = "`r`n`r`n$header`r`n(aucune)"
+    }
+}
 
 # Recuperer les commits (hors merges).
 $commits = & git log $range --no-merges --pretty=format:'- %s (%h, %an, %ad)' --date=short
@@ -97,12 +185,16 @@ if (-not (Test-Path $templatePath)) {
 }
 $template = Get-Content -Raw -Encoding UTF8 $templatePath
 $prompt = $template.
-    Replace('{{RANGE}}',   $range).
-    Replace('{{BASE}}',    $baseDesc).
-    Replace('{{DATE}}',    $today).
-    Replace('{{HEAD}}',    $headHash).
-    Replace('{{COMMITS}}', $commitsText).
-    Replace('{{DIFF}}',    $diffBlock)
+    Replace('{{RANGE}}',     $range).
+    Replace('{{BASE}}',      $baseDesc).
+    Replace('{{BASE_DATE}}', $baseDateDesc).
+    Replace('{{DATE}}',      $today).
+    Replace('{{HEAD}}',      $headHash).
+    Replace('{{REPO_URL}}',  $repoUrl).
+    Replace('{{ISSUES_URL}}',$issuesUrl).
+    Replace('{{COMMITS}}',   $commitsText).
+    Replace('{{DIFF}}',      $diffBlock).
+    Replace('{{CLOSED_ISSUES}}', $closedIssuesBlock)
 
 # Copier dans le presse-papier.
 Set-Clipboard -Value $prompt
@@ -117,15 +209,13 @@ if ($Diff -and $diffChars) {
 } elseif (-not $Diff) {
     Write-Host "  (messages de commit seuls)" -ForegroundColor DarkGray
 }
+if ($issuesData.Source -eq 'none') {
+    Write-Host "  Issues : non recuperees (gh/API indispo) ; le prompt pointe vers :" -ForegroundColor DarkGray
+    Write-Host "    $issuesUrl" -ForegroundColor DarkGray
+} else {
+    Write-Host "  Issues resolues (completed) depuis $baseDateDesc : $issueCount injectees sur $($issuesData.RawTotal) fermees (source: $($issuesData.Source))." -ForegroundColor Green
+}
 Write-Host "==================================================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  Etapes :"
-Write-Host "   1. Ouvrez Copilot (onglet Teams ou l'app Copilot Windows)."
-Write-Host "   2. Collez (Ctrl+V) et envoyez."
-Write-Host "   3. Copiez les deux blocs rendus par Copilot :"
-Write-Host "        - bloc FRANCAIS -> collez-le en haut de CHANGELOG.fr.md"
-Write-Host "        - bloc ANGLAIS  -> collez-le en haut de CHANGELOG.md"
-Write-Host "      Chaque bloc contient deja un titre '## [vX.Y.Z] - $today ($headHash)'."
-Write-Host "   4. Verifiez le numero propose ; ajustez-le au besoin, puis taguez :"
-Write-Host "        git tag -a vX.Y.Z -m `"...`""
+Write-Host "  -> Collez ce prompt dans Copilot ; sa reponse ira dans CHANGELOG.fr.md / CHANGELOG.md." -ForegroundColor DarkGray
 Write-Host ""

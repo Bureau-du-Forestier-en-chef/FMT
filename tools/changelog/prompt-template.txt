@@ -19,7 +19,15 @@ CONSIGNES
    préfixe « **Breaking:** » (FR : « **Cassant :** »).
 5. Si une section DIFF est fournie plus bas, SERS-T'EN pour préciser l'analyse au-delà
    des messages de commit (fichiers réellement touchés, nature exacte du changement).
-6. Propose le prochain numéro de version en SemVer à partir de la base {{BASE}}
+6. ISSUES RÉSOLUES : la section « ISSUES FERMEES ET RESOLUES » en bas de ce message liste
+   les issues fermées comme « completed » (réellement résolues) depuis la dernière version
+   ({{BASE}}, le {{BASE_DATE}}) — les fermetures « not planned » (doublons, invalides,
+   abandonnées) en ont déjà été retirées. Recoupe-les avec les commits et intègre les
+   issues PERTINENTES au changelog (format « #N titre ») dans la catégorie appropriée
+   (souvent Corrigé/Fixed) ; tu peux tout de même écarter une entrée sans valeur pour le
+   lecteur. Si la section est absente ou vide, consulte {{ISSUES_URL}} (ou
+   {{REPO_URL}}/issues) ou les références d'issues présentes dans les commits.
+7. Propose le prochain numéro de version en SemVer à partir de la base {{BASE}}
    (feat -> mineure, fix -> patch, changement cassant -> majeure) et place-le
    directement dans le titre de version de chaque bloc (voir FORMAT DE SORTIE).
 
@@ -48,3 +56,4 @@ n'invente ni la date ni le hash, réutilise ceux ci-dessus.
 COMMITS
 {{COMMITS}}
 {{DIFF}}
+{{CLOSED_ISSUES}}
