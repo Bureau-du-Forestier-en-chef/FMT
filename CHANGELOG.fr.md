@@ -7,34 +7,33 @@ et ce projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 
 > English version: [CHANGELOG.md](CHANGELOG.md)
 
-## [v1.1.0] - 2026-07-30 (0231c55e)
-
-> **Sources de version désynchronisées :** dernier tag `v1.0.2`, `CMakeLists.txt` déclare `1.0.3`,
-> `vcpkg.json` déclare `1.0.0`. Le renommage cassant en camelCase justifierait `v2.0.0` selon un
-> SemVer strict. À réconcilier au moment de couper la version.
+## [v1.1.0] - 2026-07-30 (ac3bddd1)
 
 ### Ajouté
-- Exposition des thèmes statiques et du nombre maximal d'avertissements à l'interface R, avec des règles de patch supplémentaires.
-- Utilitaire de fermeture du journal (log) appelable depuis le wrapper (`FMTWrapperCore`).
-- Rétablissement du module FMTExcel.
-- Nouvel exemple Python associant les actions aux superficies, ainsi que des fichiers d'exemple et Excel additionnels.
-- Couverture de tests additionnelle pour `writeProject` et `testWrapperCore` (dont le recuit simulé).
+- Exposition des thèmes statiques dans l’interface R, avec ajout de nouvelles règles de correctifs associées.
+- Réintégration du support FMTExcel et ajout d’exemples d’utilisation (dont un exemple Python « Map to Area »).
+- Ajout d’un utilitaire permettant au wrapper de fermer correctement les journaux (logs).
+- Ajout d’options et de fonctionnalités dans le wrapper R liées à la nouvelle syntaxe et aux mécanismes de remplacement (`_replace`, `rxreplace`).
 
 ### Modifié
-- **Cassant :** Migration des noms de méthodes publiques vers le camelCase dans toute l'API (auparavant PascalCase/minuscule), y compris les couches UI et Excel.
-- Amélioration de l'optimiseur par recuit simulé : taux de recuit configurable, gestion par mini-lots et critères d'arrêt basés sur la température.
-- Reprise des docstrings Doxygen et correction de fautes d'orthographe dans la documentation des méthodes.
+- Refonte importante de l’API et du wrapper R : harmonisation des noms de méthodes vers le format `camelCase`, corrections de casse et renommages cohérents.
+- Introduction et maturation d’une nouvelle infrastructure de gestion par lots (« batch » / mini-batch) pour les méthodes d’optimisation.
+- Refonte de la gestion des blocs et réorganisation de plusieurs composants internes afin d’améliorer la maintenabilité.
+- Amélioration de l’algorithme de recuit simulé (Simulated Annealing), notamment des paramètres de température et du comportement d’optimisation.
+- Améliorations de la documentation Doxygen, des exemples et du système de génération du changelog.
+- Mise à jour du système de compilation (CMake, build MAM) et ajustements de compatibilité pour l’interface R.
 
 ### Corrigé
-- Résolution de l'instabilité du journal (log) : plantages silencieux, journal bloqué et problèmes d'horodatage.
-- Correction des contraintes d'adjacence et de voisinage pour l'ordonnanceur de secteurs d'aménagement (`OAscheduler`).
-- Correction de l'optimisation du Replanner.
-- Correction de `writeProject` et de la sortie raster GDAL.
-- Correction des régressions de sensibilité à la casse introduites par le renommage camelCase.
-- Correction des avertissements et de la compilation R (dont le problème de `git fetch` pour R).
-- Résolution des tickets #317 et #320.
+- Correction de l’optimisation spatialement explicite lorsqu’aucune cache n’est disponible (#317 Optimisation spatialement Explicite non Fonctionnelle sans la cache).
+- Résolution de plusieurs problèmes liés au système de journalisation et au gestionnaire d’exceptions du wrapper, incluant des blocages, incohérences et plantages silencieux (#313 Adaptation Log et Exception Handler dans FMTWrapper).
+- Correction de la gestion des voisinages et des contraintes d’adjacence dans les algorithmes d’ordonnancement et d’optimisation spatiale.
+- Correction de la rasterisation lorsque des thèmes invalides sont rencontrés (#326 Invalid Theme Missing Mask sous rastérisation CC).
+- Correction de la lecture d’une transition GCBM vide (#311 Lecture d'une transition GCBM vide).
+- Correction de plusieurs problèmes de compilation et d’intégration de l’interface R (avertissements, sensibilité à la casse, appels surchargés, export GDAL, compilation multi-plateforme).
+- Correction de l’écriture de projets et stabilisation des tests associés.
+- Ajout d’un mécanisme d’écriture de la cache depuis l’interface (#320 Créer un bouton pour écrire la cache dans l'interface).
+- Correctifs liés à la nouvelle syntaxe et aux expressions régulières SQL (#323 Nouvelle syntaxe, #322 rxreplace, #321 _replace, #316 Adaptation regex pour constante SQL).
+- Réduction de plusieurs causes de plantage et amélioration générale de la robustesse du wrapper et des outils d’optimisation.
 
 ### Supprimé
-- Suppression de l'en-tête obsolète `Include/FMTareaparser.h`.
-
-[v1.1.0]: https://github.com/Bureau-du-Forestier-en-chef/FMT/compare/v1.0.2...HEAD
+- Retrait de certains fichiers d’en-tête et inclusions devenus obsolètes dans le cadre du nettoyage et de la réorganisation du code.

@@ -7,34 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > Version française : [CHANGELOG.fr.md](CHANGELOG.fr.md)
 
-## [v1.1.0] - 2026-07-30 (0231c55e)
-
-> **Version sources are out of sync:** last tag `v1.0.2`, `CMakeLists.txt` declares `1.0.3`,
-> `vcpkg.json` declares `1.0.0`. The breaking camelCase rename would justify `v2.0.0` under
-> strict SemVer. Reconcile all three when you cut the release.
+## [v1.1.0] - 2026-07-30 (ac3bddd1)
 
 ### Added
-- Expose static themes and the maximum-warning count to the R interface, with additional patch rules.
-- Log-closing utility callable from the wrapper (`FMTWrapperCore`).
-- Restore the FMTExcel module.
-- New Python example mapping actions to area, plus additional example and Excel files.
-- Additional `writeProject` and `testWrapperCore` coverage (including simulated annealing).
+- Exposed static themes to the R interface and introduced additional patch-rule capabilities.
+- Restored FMTExcel support and added new usage examples, including a Python “Map to Area” example.
+- Added a utility allowing the wrapper to properly close log files.
+- Added wrapper functionality supporting the new syntax and replacement mechanisms (`_replace`, `rxreplace`).
 
 ### Changed
-- **Breaking:** Migrate public method names to camelCase across the API (previously PascalCase/lowercase), including the UI and Excel layers.
-- Improve the simulated-annealing optimizer: configurable annealing rate, mini-batch handling and temperature-based stop criteria.
-- Redo Doxygen docstrings and fix spelling in method documentation.
+- Major cleanup of the R wrapper API, including method renaming, `camelCase` standardization, and case-consistency improvements.
+- Introduced and refined a new batch/mini-batch optimization workflow.
+- Refactored block-related components and internal structures to improve maintainability.
+- Improved the Simulated Annealing optimization workflow, including temperature and convergence-related behavior.
+- Enhanced Doxygen documentation, examples, and changelog generation tooling.
+- Updated build infrastructure (CMake, MAM build) and improved R interface compatibility.
 
 ### Fixed
-- Resolve logger instability: silent crashes, stuck logger and log-timing issues.
-- Fix adjacency and neighboring constraints for the operating-area scheduler (`OAscheduler`).
-- Fix Replanner optimization.
-- Fix `writeProject` and GDAL raster output.
-- Fix case-sensitivity regressions introduced by the camelCase rename.
-- Fix R build warnings and compilation (including the R `git fetch` issue).
-- Resolve issues #317 and #320.
+- Fixed spatially explicit optimization when no cache is available (#317 Spatially Explicit Optimization Not Functional Without Cache).
+- Resolved multiple logging and exception-handling issues in the wrapper, including hangs, inconsistencies, and silent crashes (#313 Adaptation Log and Exception Handler in FMTWrapper).
+- Fixed neighborhood and adjacency handling in spatial optimization and scheduling components.
+- Fixed rasterization failures caused by invalid themes (#326 Invalid Theme Missing Mask During Rasterization).
+- Fixed loading of empty GCBM transitions (#311 Reading an Empty GCBM Transition).
+- Fixed several R integration and compilation issues, including warnings, case-sensitivity problems, overloaded calls, GDAL output handling, and build compatibility.
+- Fixed project-writing operations and stabilized related tests.
+- Added support for writing cache data directly from the interface (#320 Create a Button to Write Cache in the Interface).
+- Fixed issues related to the new syntax and SQL regular-expression handling (#323 New Syntax, #322 rxreplace, #321 _replace, #316 Regex Adaptation for SQL Constants).
+- Improved overall stability by addressing multiple crash scenarios in the wrapper and optimization components.
 
 ### Removed
-- Remove the obsolete `Include/FMTareaparser.h` header.
-
-[v1.1.0]: https://github.com/Bureau-du-Forestier-en-chef/FMT/compare/v1.0.2...HEAD
+- Removed obsolete header files and unused includes as part of the codebase cleanup and restructuring effort.
