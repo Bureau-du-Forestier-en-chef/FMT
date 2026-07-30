@@ -138,12 +138,12 @@ class FMTEXPORT FMTYieldParser : public FMTParser
 		void _setOveridedYlds(Core::FMTYields& yielddata,
 			std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
 			const std::string& yld) const;
-		// DocString: FMTYieldParser::_checkPreexisting
+		// DocString: FMTYieldParser::_checkPreExisting
 		/**
 		@brief Check preexisting yields and throw a warning if one already exists.
 		@param[in] preexists the preexisting yields.
 		*/
-        void _checkPreexisting(const std::vector<std::string>& preexists) const;
+        void _checkPreExisting(const std::vector<std::string>& preexists) const;
 		// DocString: FMTYieldParser::_isFunction
 		/**
 		@brief Return true if the string is a complex yield function.

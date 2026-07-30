@@ -656,7 +656,7 @@ void FMTTheme::_pushAggregate(const std::string& p_aggregatename)
 		if (isAggregate(p_aggregatename))
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				p_aggregatename+" is already an aggregate", "FMTTheme::presolve", __LINE__, __FILE__);
+				p_aggregatename+" is already an aggregate", "FMTTheme::preSolve", __LINE__, __FILE__);
 			}
 		m_aggregates.push_back(p_aggregatename);
 		m_aggregatenames.push_back(std::vector<std::string>());
@@ -733,13 +733,13 @@ std::vector<std::string>FMTTheme::getAggregates() const
 	}
 
 
-FMTTheme FMTTheme::presolve(FMTMaskFilter& p_maskfilter, size_t& p_newid, size_t& p_newstart) const
+FMTTheme FMTTheme::preSolve(FMTMaskFilter& p_maskfilter, size_t& p_newid, size_t& p_newstart) const
 	{
 	try {
 		if (p_maskfilter.empty())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-				"Empty selection", "FMTTheme::presolve", __LINE__, __FILE__);
+				"Empty selection", "FMTTheme::preSolve", __LINE__, __FILE__);
 		}
 		if (p_maskfilter.flippedselection.empty())
 		{
@@ -809,7 +809,7 @@ FMTTheme FMTTheme::presolve(FMTMaskFilter& p_maskfilter, size_t& p_newid, size_t
 		return newtheme;
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for theme "+std::to_string(m_id),"FMTTheme::presolve", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raiseFromCatch("for theme "+std::to_string(m_id),"FMTTheme::preSolve", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return FMTTheme();
 	}

@@ -226,7 +226,7 @@ namespace Parallel
 					m_Models.push_back(std::move(model));
 				}
 			}
-			//setstatus(true);
+			//setStatus(true);
 		}catch (...)
 		{
 			_exhandler->raiseFromThreadCatch("","FMTPlanningTask::work", __LINE__, __FILE__);

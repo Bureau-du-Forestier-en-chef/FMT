@@ -36,7 +36,7 @@ void FMTLifespans::update()
 		}
 	}
 
-FMTLifespans FMTLifespans::presolve(const FMTMaskFilter& filter,
+FMTLifespans FMTLifespans::preSolve(const FMTMaskFilter& filter,
 	const std::vector<FMTTheme>& originalthemes,
 	std::vector<FMTTheme>& newthemes,bool compressdata) const
 	{
@@ -44,7 +44,7 @@ FMTLifespans FMTLifespans::presolve(const FMTMaskFilter& filter,
 	try {
 		if (!empty())
 		{
-			newlifespans._presolveList(filter, originalthemes, newthemes);
+			newlifespans._preSolveList(filter, originalthemes, newthemes);
 			if (compressdata)
 			{
 				newlifespans._compressMasks(newthemes);
@@ -53,7 +53,7 @@ FMTLifespans FMTLifespans::presolve(const FMTMaskFilter& filter,
 		}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTLifespans::presolve", __LINE__, __FILE__, Core::FMTsection::Lifespan);
+		_exhandler->raiseFromCatch("","FMTLifespans::preSolve", __LINE__, __FILE__, Core::FMTsection::Lifespan);
 		}
 	return newlifespans;
 	}

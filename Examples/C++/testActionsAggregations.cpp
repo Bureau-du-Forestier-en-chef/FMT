@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 		ModelParser.setErrorsToWarnings(errors);
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
 		const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
-		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readschedules(PRIMARYm_location, MODELS).at(0);
+		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readSchedules(PRIMARYm_location, MODELS).at(0);
 		Models::FMTLpModel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
 
 		//ModelParser.writeToProject(OUTPUT_DIRECTORY + "test.pri", Optimization1);
@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 			}
 		const std::vector<std::string>ROOT(1,"ROOT");
 		const std::vector<Models::FMTModel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
-		const std::vector<Core::FMTSchedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0); //read 1
+		const std::vector<Core::FMTSchedule>READSCHEDULE = ModelParser.readSchedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0); //read 1
 		Models::FMTSesModel Simulation(READMODELS.at(0));
 		Parser::FMTAreaParser areaParser;
 		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARYm_location).parent_path();
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
 		Simulation.FMTModel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
 		Simulation.doPlanning(true, READSCHEDULE);
 		areaParser.writeDisturbances(OUTPUT_DIRECTORY, Simulation.getSpSchedule(),
-			Simulation.getactions(), Simulation.getThemes(), 1);
+			Simulation.getActions(), Simulation.getThemes(), 1);
 
 		
 	}else {

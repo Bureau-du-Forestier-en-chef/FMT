@@ -167,12 +167,12 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		@param[in] rhs the FMTDevelopment to copy.
 		*/
 		FMTDevelopment(const FMTDevelopment& rhs);
-		// DocString: FMTDevelopment::Clone()
+		// DocString: FMTDevelopment::clone()
 		/**
 		@brief Virtual clone function for FMTDevelopment.
 		@return a unique pointer to the cloned development.
 		*/
-		virtual std::unique_ptr<FMTDevelopment> Clone() const;
+		virtual std::unique_ptr<FMTDevelopment> clone() const;
 		// DocString: FMTDevelopment::operator=
 		/**
 		@brief Copy assignment operator for FMTDevelopment.

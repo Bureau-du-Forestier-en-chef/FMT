@@ -865,7 +865,7 @@ namespace Core
 			return FMTOutput::empty();
 			}
 
-		FMTConstraint FMTConstraint::presolve(const FMTMaskFilter& filter,
+		FMTConstraint FMTConstraint::preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			const std::vector<const FMTTheme*>& selectedthemes,
 			const std::vector<FMTTheme>& newthemes,
@@ -874,15 +874,15 @@ namespace Core
 			{
 			FMTConstraint newconstraint(*this);
 			try {
-				newconstraint.presolveRef(filter, originalthemes, selectedthemes, newthemes, actions, p_valideActions, yields);
+				newconstraint.preSolveRef(filter, originalthemes, selectedthemes, newthemes, actions, p_valideActions, yields);
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch("for " + std::string(*this),"FMTConstraint::presolve", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				_exhandler->raiseFromCatch("for " + std::string(*this),"FMTConstraint::preSolve", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 			return newconstraint;
 			}
 
-		void FMTConstraint::presolveRef(const FMTMaskFilter& p_filter,
+		void FMTConstraint::preSolveRef(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_originalThemes,
 			const std::vector<const FMTTheme*>& p_selectedThemes,
 			const std::vector<FMTTheme>& p_newThemes,
@@ -891,7 +891,7 @@ namespace Core
 			const FMTYields& p_yields)
 		{
 			try {
-				setOutput(FMTOutput::presolve(p_filter, p_originalThemes, p_selectedThemes, p_newThemes, p_actions, p_valideActions, p_yields));
+				setOutput(FMTOutput::preSolve(p_filter, p_originalThemes, p_selectedThemes, p_newThemes, p_actions, p_valideActions, p_yields));
 				if (m_type == Core::FMTconstrainttype::FMTSpatialGroup)
 					{
 					const std::string THEME_TARGET("THEME");
@@ -910,14 +910,14 @@ namespace Core
 						}else {
 							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 								"Presolved removed theme used for grouping " + std::string(*this) ,
-								"FMTConstraint::presolveRef", __LINE__, __FILE__);
+								"FMTConstraint::preSolveRef", __LINE__, __FILE__);
 							}
 						}
 					}
 
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch("for " + std::string(*this), "FMTConstraint::presolveRef", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				_exhandler->raiseFromCatch("for " + std::string(*this), "FMTConstraint::preSolveRef", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 		}
 

@@ -18,7 +18,7 @@ namespace Core
 
 		}
 
-	bool FMTOutputNode::allowCashdeduction() const
+	bool FMTOutputNode::allowCashDeduction() const
 		{
 		return (!factor.isTimeYield());
 		}

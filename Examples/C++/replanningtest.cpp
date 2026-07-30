@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
 	//On lis les schédules
 	const std::vector<Core::FMTTheme> THEMES = models.at(0).getThemes();
-	const std::vector<Core::FMTAction> ACTIONS = models.at(0).getactions();
+	const std::vector<Core::FMTAction> ACTIONS = models.at(0).getActions();
 	scheduleParser.read(THEMES, ACTIONS, scheduleLocation);
 
 	#endif

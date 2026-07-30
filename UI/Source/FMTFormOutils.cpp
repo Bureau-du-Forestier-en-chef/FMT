@@ -91,7 +91,7 @@ namespace Wrapper
 		try
 		{
 			//FeedBack("FMT Event Spatialy Explicit Simulation c++ - > ObtenirArrayContraintes", gcnew System::EventArgs());
-			retour = FMTFormCache::GetInstance()->getModel(indexScenario).getconstraints();
+			retour = FMTFormCache::GetInstance()->getModel(indexScenario).getConstraints();
 		}
 		catch (...)
 		{
@@ -335,7 +335,7 @@ namespace Wrapper
 			Parser::FMTModelParser Modelparser = FMTFormCache::GetInstance()->GetConfiguredParser();
 			std::vector<Models::FMTModel> models;
 			models.push_back(FMTFormCache::GetInstance()->getModel(indexScenario));
-			std::vector<Core::FMTSchedule> liste = Modelparser.readschedules(msclr::interop::marshal_as<std::string>(nomFichierPri), models).at(0);
+			std::vector<Core::FMTSchedule> liste = Modelparser.readSchedules(msclr::interop::marshal_as<std::string>(nomFichierPri), models).at(0);
 			if (liste.size() > 0)
 			{
 				retour = liste;
@@ -359,7 +359,7 @@ namespace Wrapper
 				throw std::out_of_range("Invalid model index");
 			}
 			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_index);
-			const std::vector<Core::FMTAction> ACTIONS = MODEL.getactions();
+			const std::vector<Core::FMTAction> ACTIONS = MODEL.getActions();
 			// On it�re sur les actions pour obbtenir leurs noms
 			for (int i = 0; i < ACTIONS.size(); ++i)
 			{
@@ -383,7 +383,7 @@ namespace Wrapper
 				throw std::out_of_range("Invalid model index");
 			}
 			const Models::FMTModel MODEL = FMTFormCache::GetInstance()->getModel(p_modelIndex);
-			const std::vector<Core::FMTAction> ACTIONS = MODEL.getactions();
+			const std::vector<Core::FMTAction> ACTIONS = MODEL.getActions();
 			std::set<std::string> uniqueAggregates;
 
 			for (int i = 0; i < ACTIONS.size(); ++i)

@@ -92,11 +92,11 @@ namespace Core
 	@brief Modify the model by presolving or postsolving it.
 	@param[in] filter the mask filter.
 	@param[in] newthemes the themes.
-	@param[in] presolve if true presolves, otherwise postsolves.
+	@param[in] preSolve if true presolves, otherwise postsolves.
 	@return the modified yield model.
 	*/
 	std::unique_ptr<FMTYieldModel> modify(const FMTMaskFilter& filter,
-		const std::vector<FMTTheme>& newthemes,bool presolve = true) const;
+		const std::vector<FMTTheme>& newthemes,bool preSolve = true) const;
 	public:
 		// DocString: FMTYieldModelDecisionTree::FMTYieldModelDecisionTree()
 		/**
@@ -129,12 +129,12 @@ namespace Core
 		@param[in] mainmask the global mask.
 		*/
 		FMTYieldModelDecisionTree(const boost::property_tree::ptree& jsonProps,const std::vector<std::string>& inputYields,const Core::FMTMask& mainmask);
-		// DocString: FMTYieldModelDecisionTree::Clone()
+		// DocString: FMTYieldModelDecisionTree::clone()
 		/**
-		@brief Clone the yield model.
+		@brief clone the yield model.
 		@return a unique pointer to the cloned yield model.
 		*/
-		std::unique_ptr<FMTYieldModel>Clone() const;
+		std::unique_ptr<FMTYieldModel>clone() const;
 		// DocString: FMTYieldModelDecisionTree::predict
 		/**
 		@brief Run the decision tree, building a natural growth model if needed, and return the predictions.
@@ -148,14 +148,14 @@ namespace Core
 		@return the model type.
 		*/
 		static std::string getModelType();
-		// DocString: FMTYieldModelDecisionTree::presolve
+		// DocString: FMTYieldModelDecisionTree::preSolve
 		/**
 		@brief Return a presolved copy of the yield model.
 		@param[in] filter the mask filter.
 		@param[in] newthemes the presolved themes.
 		@return the presolved yield model.
 		*/
-		virtual std::unique_ptr<FMTYieldModel> presolve(const FMTMaskFilter& filter,
+		virtual std::unique_ptr<FMTYieldModel> preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& newthemes) const;
 		// DocString: FMTYieldModelDecisionTree::postSolve
 		/**

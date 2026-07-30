@@ -73,12 +73,12 @@ class FMTEXPORT FMTVersion : public Core::FMTObject
 		@return the version string.
 		*/
 		static std::string getVersion();
-		// DocString: FMTVersion::getDatenow
+		// DocString: FMTVersion::getDateNow
 		/**
 		@brief Return the actual date (Day Month date).
 		@return the actual date.
 		*/
-		static std::string getDatenow();
+		static std::string getDateNow();
 		// DocString: FMTVersion::getBuildDate
 		/**
 		@brief Return the build date of FMT.

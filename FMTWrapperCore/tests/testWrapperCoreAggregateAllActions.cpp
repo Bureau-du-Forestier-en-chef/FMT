@@ -62,8 +62,8 @@ int main(int argc, char* argv[])
 		Models::FMTModel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, primary_path, output_scenario_name);
 
 		// On v�rifie si on a moins d'action que dans le nouveau
-		std::vector<Core::FMTAction> actions = MODELS.at(0).getactions();
-		std::vector<Core::FMTAction> aggregatedActions = aggregatedModel.getactions();
+		std::vector<Core::FMTAction> actions = MODELS.at(0).getActions();
+		std::vector<Core::FMTAction> aggregatedActions = aggregatedModel.getActions();
 		if (actions.size() <= aggregatedActions.size())
 		{
 			throw Exception::FMTexc::FMTinvalid_aggregate;

@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
 	presolvedoptimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 	presolvedoptimizationmodel.doPlanning(true);
 	const double nopresolve = optimizationmodel.getObjValue();
-	const double presolve = presolvedoptimizationmodel.getObjValue();
-	if (std::abs(nopresolve - presolve) >= 0.1)
+	const double preSolve = presolvedoptimizationmodel.getObjValue();
+	if (std::abs(nopresolve - preSolve) >= 0.1)
 	{
 		
 		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",

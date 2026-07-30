@@ -89,7 +89,7 @@ class FMTEXPORT FMTLifespans : public FMTList<int>
 		@brief Override the FMTList update function, to be called after any change to the list.
 		*/
 		void update() override;
-		// DocString: FMTLifespans::presolve
+		// DocString: FMTLifespans::preSolve
 		/**
 		@brief Presolve the lifespans by eliminating list elements and presolving the masks.
 		@param[in] filter the mask filter.
@@ -98,7 +98,7 @@ class FMTEXPORT FMTLifespans : public FMTList<int>
 		@param[in] compressdata if true compresses the data.
 		@return the presolved FMTLifespans.
 		*/
-		FMTLifespans presolve(const FMTMaskFilter& filter,
+		FMTLifespans preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			std::vector<FMTTheme>& newthemes,bool compressdata=false) const;
     };

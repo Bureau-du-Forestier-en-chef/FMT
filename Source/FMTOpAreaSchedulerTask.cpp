@@ -163,7 +163,7 @@ namespace Parallel
 				layersoptions.push_back("SEPARATOR=SEMICOLON");
 				layersoptions.push_back("STRING_QUOTING=IF_NEEDED");
 				#ifdef FMTWITHGDAL
-					area_parser.writeOAschedulerparameters(location, newschemes, layersoptions);
+					area_parser.writeOaSchedulerParameters(location, newschemes, layersoptions);
 				#endif
 				setInitialScheduler(modelcopy, newschemes, node);
 				}else {
@@ -271,7 +271,7 @@ namespace Parallel
 			}
 			newyields.update();
 			modelcopy.setYields(newyields);
-			std::vector<Core::FMTConstraint>constraints=basemodel->getconstraints();
+			std::vector<Core::FMTConstraint>constraints=basemodel->getConstraints();
 			std::vector<Core::FMTOutput>outputs=basemodel->getOutputs();
 			getConstraintsSolution(outputs, constraints);
 			modelcopy.setConstraints(constraints);
@@ -497,7 +497,7 @@ namespace Parallel
 					--iterations;
 				}
 			}
-			//setstatus(true);
+			//setStatus(true);
 		}catch (...)
 		{
 			_exhandler->raiseFromThreadCatch("","FMTOpAreaSchedulerTask::work", __LINE__, __FILE__);

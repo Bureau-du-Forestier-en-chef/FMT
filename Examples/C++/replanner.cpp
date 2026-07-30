@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	modelparser.setErrorsToWarnings(errors);
 	//std::vector<Models::FMTModel> tests = modelparser.readproject(primlocation, allscenarios);
-	//tests[0].presolve();
+	//tests[0].preSolve();
 	std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
 	std::cout << models.at(0).getName() << std::endl;
 	//modelparser.write(models.at(0), "D:/test/");

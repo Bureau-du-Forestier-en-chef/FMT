@@ -114,7 +114,7 @@ size_t FMTMask::_countTheme(const FMTTheme& theme) const
 	 return gotIntersect;
 	 }
 
-FMTMask FMTMask::getPostsolveMask(const FMTMask& mask, const std::vector<FMTTheme>& themes) const
+FMTMask FMTMask::getPostSolveMask(const FMTMask& mask, const std::vector<FMTTheme>& themes) const
 	{
 	FMTMask postsolvedmask(*this);
 	for (const Core::FMTTheme & basetheme : themes)
@@ -547,15 +547,15 @@ FMTMask FMTMask::refine(const FMTMask& mask,const std::vector<FMTTheme>& themes)
 		return FMTMask(boost::algorithm::join(bases," "),themes);
 	}	
 
-FMTMask FMTMask::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const
+FMTMask FMTMask::preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const
 	{
 	FMTMask newMask(*this);
-	newMask.presolveRef(filter, presolvedthemes);
+	newMask.preSolveRef(filter, presolvedthemes);
 	return newMask;
 	}
 
 
-boost::dynamic_bitset<uint8_t> FMTMask::_getPresolveMask(const FMTMaskFilter& p_filter,
+boost::dynamic_bitset<uint8_t> FMTMask::_getPreSolveMask(const FMTMaskFilter& p_filter,
 	const std::vector<FMTTheme>& p_presolvedThemes) const
 {
 	boost::dynamic_bitset<uint8_t>newData(p_filter.flippedselection.count(), false);
@@ -571,10 +571,10 @@ boost::dynamic_bitset<uint8_t> FMTMask::_getPresolveMask(const FMTMaskFilter& p_
 	return newData;
 }
 
-void FMTMask::presolveRef(const FMTMaskFilter& p_filter, 
+void FMTMask::preSolveRef(const FMTMaskFilter& p_filter, 
 	const std::vector<FMTTheme>& p_presolvedThemes, bool p_allowReallocation)
 {
-	m_data = _getPresolveMask(p_filter, p_presolvedThemes);
+	m_data = _getPreSolveMask(p_filter, p_presolvedThemes);
 	if (!m_name.empty())
 	{
 		m_name.clear();
@@ -590,10 +590,10 @@ void FMTMask::presolveRef(const FMTMaskFilter& p_filter,
 	}
 }
 
-bool FMTMask::canPresolve(const FMTMaskFilter& p_filter,
+bool FMTMask::canPreSolve(const FMTMaskFilter& p_filter,
 	const std::vector<FMTTheme>& p_presolvedThemes) const
 {
-	const Core::FMTMask PRESOLVED = Core::FMTMask(_getPresolveMask(p_filter, p_presolvedThemes));
+	const Core::FMTMask PRESOLVED = Core::FMTMask(_getPreSolveMask(p_filter, p_presolvedThemes));
 	for (const FMTTheme& theme : p_presolvedThemes)
 		{
 		if (PRESOLVED._subset(theme).count() == 0)

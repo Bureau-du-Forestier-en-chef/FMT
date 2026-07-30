@@ -27,7 +27,7 @@ int main()
 		{
 			optimizationmodel.buildPeriod();
 		}
-		std::vector<Core::FMTConstraint>constraints = optimizationmodel.getconstraints();
+		std::vector<Core::FMTConstraint>constraints = optimizationmodel.getConstraints();
 		const Core::FMTConstraint objective = constraints.at(0);
 		constraints.erase(constraints.begin());
 		for (const Core::FMTConstraint& constraint : constraints)

@@ -37,7 +37,7 @@ namespace Graph
 	}
 	
 	FMTBaseVertexProperties::FMTBaseVertexProperties(const FMTBaseVertexProperties& rhs) :
-		m_development(rhs.m_development->Clone())
+		m_development(rhs.m_development->clone())
 	{
 
 
@@ -46,7 +46,7 @@ namespace Graph
 	{
 		if (this != &rhs)
 		{
-			m_development = rhs.m_development->Clone();
+			m_development = rhs.m_development->clone();
 		}
 		return *this;
 	}

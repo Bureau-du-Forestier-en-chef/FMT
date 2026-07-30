@@ -91,7 +91,7 @@ namespace Models
 		return constraints.end();
 		}
 
-	std::vector<Core::FMTConstraint>::const_iterator FMTLpModel::_getsetConstraintIndex(const Core::FMTConstraint& p_constraint)
+	std::vector<Core::FMTConstraint>::const_iterator FMTLpModel::_getSetConstraintIndex(const Core::FMTConstraint& p_constraint)
 		{
 		std::vector<Core::FMTConstraint>::const_iterator it = _getConstraintIndex(p_constraint);
 		if (it == constraints.end())
@@ -254,7 +254,7 @@ namespace Models
 					}
 				
                 const Heuristics::FMTOperatingAreaCluster newopcluster(Heuristics::FMTOperatingAreaCluster(centroid,allbinaries),originalcluster.getRealMinimalArea(),originalcluster.getRealMaximalArea());
-                if (!newopcluster.isValidareabounds())
+                if (!newopcluster.isValidAreaBounds())
                     {
                     _exhandler->raise(Exception::FMTexc::FMTignore,
 									"Operating area cluster "+std::string(centroid.getMask())+" wont reach its minimal size",
@@ -602,7 +602,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 			}*/
 			if (!constraint.isObjective()&&!constraint.isSpatial())
 			{
-				const std::vector<Core::FMTConstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
+				const std::vector<Core::FMTConstraint>::const_iterator CONSTRAINT_IT = _getSetConstraintIndex(constraint);
 				if (!constraint.isLinear())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
@@ -1024,7 +1024,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 	Graph::FMTGraphStats FMTLpModel::eraseConstraint(const Core::FMTConstraint& constraint, int period)
 		{
 		try {
-		const std::vector<Core::FMTConstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
+		const std::vector<Core::FMTConstraint>::const_iterator CONSTRAINT_IT = _getSetConstraintIndex(constraint);
 		if (period==-1)
 			{
 				int first_period = 0;
@@ -1483,7 +1483,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 					"The objective output " + std::string(objective) + " cannot be deduct to output nodes",
 					"FMTLpModel::setObjective", __LINE__, __FILE__);
 			}
-			const std::vector<Core::FMTConstraint>::const_iterator OBJECTIVE_IT = _getsetConstraintIndex(objective);
+			const std::vector<Core::FMTConstraint>::const_iterator OBJECTIVE_IT = _getSetConstraintIndex(objective);
 			const bool strictlypositivesoutputsmatrix = getParameter(STRICTLY_POSITIVE);
 			int first_period = 0;
 			int last_period = 0;
@@ -1602,7 +1602,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 		 {
 			 if (DEBUG_MATRIX)
 			 {
-				 writeLP((boost::filesystem::path(getRuntimeLocation()) += boost::filesystem::path::preferred_separator).string());
+				 writeLp((boost::filesystem::path(getRuntimeLocation()) += boost::filesystem::path::preferred_separator).string());
 			 }
 			 _exhandler->printExceptions("", "FMTLpModel::resolve", __LINE__, __FILE__);
 		 }
@@ -1916,7 +1916,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 			if (DEBUG_MATRIX)
 			{
 				*_logger << "Writing matrix here " + boost::filesystem::path(getRuntimeLocation()).string() << "\n";
-				writeLP((boost::filesystem::path(getRuntimeLocation()) += boost::filesystem::path::preferred_separator).string());
+				writeLp((boost::filesystem::path(getRuntimeLocation()) += boost::filesystem::path::preferred_separator).string());
 			}
 			_exhandler->printExceptions(getName(), "FMTLpModel::initialSolve", __LINE__, __FILE__);
 		}
@@ -1949,7 +1949,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 		}
 
 
-	void FMTLpModel::writeLP(const std::string& location)
+	void FMTLpModel::writeLp(const std::string& location)
 	{
 		try {
 			updateMatrixNaming();
@@ -1958,24 +1958,24 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 				{
 				*_logger << "Writing matrix here " + name +".lp" + "\n";
 				}
-			solver.writeLP(name);
+			solver.writeLp(name);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTLpModel::writeLP", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::writeLp", __LINE__, __FILE__);
 		}
 	}
 
 
-	void FMTLpModel::writeMPS(const std::string& location)
+	void FMTLpModel::writeMps(const std::string& location)
 	{
 		try {
 			updateMatrixNaming();
-			solver.writeMPS(location);
+			solver.writeMps(location);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTLpModel::writeMPS", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::writeMps", __LINE__, __FILE__);
 		}
 	}
 
@@ -2181,13 +2181,13 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 	}
 
 
-	std::unique_ptr<FMTModel> FMTLpModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTModel> FMTLpModel::preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 	{
 		try{
-			return std::unique_ptr<FMTModel>(new FMTLpModel(*(dynamic_cast<FMTSrModel*>(FMTSrModel::presolve(optionaldevelopments).get()))));
+			return std::unique_ptr<FMTModel>(new FMTLpModel(*(dynamic_cast<FMTSrModel*>(FMTSrModel::preSolve(optionaldevelopments).get()))));
 		}catch(...)
 		{
-			_exhandler->raiseFromCatch("", "FMTLpModel::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpModel::preSolve", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTModel>(nullptr);
 	}

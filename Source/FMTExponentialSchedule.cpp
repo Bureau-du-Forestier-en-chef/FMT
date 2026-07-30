@@ -34,7 +34,7 @@ namespace Spatial
         m_Temperature = m_Temperature * pow(m_ANNEALING_RATE, exponant);
     }
 
-	std::unique_ptr<FMTSaSchedule> FMTExponentialSchedule::Clone()const
+	std::unique_ptr<FMTSaSchedule> FMTExponentialSchedule::clone()const
     {
         return std::unique_ptr<FMTSaSchedule>(new FMTExponentialSchedule(*this));
     }

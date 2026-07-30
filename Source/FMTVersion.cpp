@@ -30,7 +30,7 @@ int FMTVersion::getPatch()
 	return FMT_PATCH;
 	}
 
-std::string FMTVersion::getDatenow()
+std::string FMTVersion::getDateNow()
 	{
 	auto now = std::chrono::system_clock::now();
 	std::time_t end_time = std::chrono::system_clock::to_time_t(now);

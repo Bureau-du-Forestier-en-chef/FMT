@@ -135,7 +135,7 @@ namespace Parallel
 			m_replicateids.pop();
 			m_baseschedule = std::shared_ptr<Core::FMTSchedule>(new Core::FMTSchedule(modelcpy->getSolution(1, true)));
 			m_iterationglobalschedule = *m_baseschedule;
-			m_dynamicconstraints = modelcpy->getReplanningConstraints("GLOBAL",m_local->getconstraints(), 1);
+			m_dynamicconstraints = modelcpy->getReplanningConstraints("GLOBAL",m_local->getConstraints(), 1);
 			for (int replicateid = 1; replicateid < (replicates+1); ++replicateid)
 			{
 				m_replicateids.push(replicateid);
@@ -367,7 +367,7 @@ namespace Parallel
 			if(modelcpy->gotReIgnore(replanningperiod))
 			{
 				std::vector<Core::FMTConstraint>newconstraints;
-				const std::vector<Core::FMTConstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
+				const std::vector<Core::FMTConstraint> MODEL_CONSTRAINTS = modelcpy->getConstraints();
 				newconstraints.reserve(MODEL_CONSTRAINTS.size());
 				for (const Core::FMTConstraint& constraint : MODEL_CONSTRAINTS)
 				{
@@ -393,7 +393,7 @@ namespace Parallel
 			{
 				modelcpy->setReplicate(_getIteration(), replanningperiod);
 				/*std::vector<Core::FMTConstraint>newconstraints;
-				const std::vector<Core::FMTConstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
+				const std::vector<Core::FMTConstraint> MODEL_CONSTRAINTS = modelcpy->getConstraints();
 				newconstraints.reserve(MODEL_CONSTRAINTS.size());
 				for (const Core::FMTConstraint& basenssconstraint : MODEL_CONSTRAINTS)
 				{
@@ -473,7 +473,7 @@ namespace Parallel
 				_logger->logWithLevel("Replanning on replicate " + std::to_string(_getIteration()) + " done\n", 0);
 				m_replicateids.pop();
 			}
-			//setstatus(true);
+			//setStatus(true);
 		}catch (...)
 		{
 			const std::string LOCATION = "on replicate " + std::to_string(_getIteration());
@@ -513,7 +513,7 @@ namespace Parallel
 				#ifdef FMTWITHOSI
 					Models::FMTLpModel* lpmodel = dynamic_cast<Models::FMTLpModel*>(modelcpy.get());
 					lpmodel->doPlanning(false);
-					const double  globalsolutionweight = lpmodel->getconstraints().at(0).getScheduleWeight();
+					const double  globalsolutionweight = lpmodel->getConstraints().at(0).getScheduleWeight();
 					lpmodel->addScheduleToObjective(m_iterationglobalschedule, globalsolutionweight);
 					solvedmodel = lpmodel->initialSolve();
 					#else
@@ -522,7 +522,7 @@ namespace Parallel
 				if (solvedmodel)
 					{
 					optimal = true;
-					m_dynamicconstraints = modelcpy->getReplanningConstraints("LOCAL", global->getconstraints(), modelsize);
+					m_dynamicconstraints = modelcpy->getReplanningConstraints("LOCAL", global->getConstraints(), modelsize);
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTreplanningwarning,
 						"infeasible model named " + modelcpy->getName() + " on replicate " + std::to_string(_getIteration()) + " at replanning period " + std::to_string(replanningperiod),
@@ -533,14 +533,14 @@ namespace Parallel
 					{
 					writefirstperiodonly = false;
 					}
-				//lpmodel->writeLP("C:/Users/cyrgu3/Desktop/test/FMT2/FMT/build/debug/bin/Debug/tests/testlocal"+std::to_string(replanningperiod));
+				//lpmodel->writeLp("C:/Users/cyrgu3/Desktop/test/FMT2/FMT/build/debug/bin/Debug/tests/testlocal"+std::to_string(replanningperiod));
 			}else {
 				if (modelcpy->doPlanning(true))
 				{
 					optimal = true;
 					if (getsolutionandlocal)
 					{
-						m_dynamicconstraints = modelcpy->getReplanningConstraints("GLOBAL",m_local->getconstraints(), replanningperiod + 1);
+						m_dynamicconstraints = modelcpy->getReplanningConstraints("GLOBAL",m_local->getConstraints(), replanningperiod + 1);
 						m_iterationglobalschedule = modelcpy->getSolution(replanningperiod, true);
 						m_iterationglobalschedule.setPeriod(1);
 						if (m_iterationglobalschedule.empty())

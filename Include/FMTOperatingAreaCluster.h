@@ -150,13 +150,13 @@ namespace Heuristics
         @return the total potential area.
         */
 		double getTotalPotentialArea() const;
-		// DocString: FMTOperatingAreaCluster::isValidarea
+		// DocString: FMTOperatingAreaCluster::isValidArea
 		/**
 		@brief Check if an area is valid for the cluster (between the bounds).
 		@param[in] area the area.
 		@return true if the area is valid else false.
 		*/
-		bool isValidarea(const double& area) const;
+		bool isValidArea(const double& area) const;
 		// DocString: FMTOperatingAreaCluster::setMaximalObjectiveVariable
 		/**
 		@brief Set the maximal objective variable of the cluster.
@@ -181,12 +181,12 @@ namespace Heuristics
 		@param[in] newmaximalarea the new maximal area.
 		*/
 		void setMaximalArea(const double& newmaximalarea);
-		// DocString: FMTOperatingAreaCluster::isValidareabounds
+		// DocString: FMTOperatingAreaCluster::isValidAreaBounds
 		/**
 		@brief Validate that the minimal and maximal area set by the user respect the binaries present in the cluster.
 		@return true if the area bounds are valid else false.
 		*/
-		bool isValidareabounds() const;
+		bool isValidAreaBounds() const;
 		// DocString: FMTOperatingAreaCluster::getFilteredCluster
 		/**
 		@brief Return a cluster with the binaries not falling in a mask definition removed, which can reduce the number of binaries.

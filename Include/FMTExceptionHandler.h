@@ -69,21 +69,21 @@ namespace Exception
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger);
 
-		// DocString: FMTExceptionHandler::getCPLdata
+		// DocString: FMTExceptionHandler::getCplData
 		/**
 		@brief Return a copy of the abstract handler for use in the FMTCPLErrorHandler function when using GDAL.
 		@return a pointer to the exception handler.
 		*/
-		virtual FMTExceptionHandler* getCPLdata();
+		virtual FMTExceptionHandler* getCplData();
 		#if defined FMTWITHGDAL
-				// DocString: FMTExceptionHandler::handelCPLerror
+				// DocString: FMTExceptionHandler::handelCplError
 				/**
 				@brief Callback called by GDAL for handling GDAL errors thrown.
 				@param[in] eErrClass the error class.
 				@param[in] nError the error number.
 				@param[in] pszErrorMsg the error message.
 				*/
-				virtual void handelCPLerror(int eErrClass, int nError, const char* pszErrorMsg);
+				virtual void handelCplError(int eErrClass, int nError, const char* pszErrorMsg);
 		#endif
 		// DocString: FMTExceptionHandler::operator=
 		/**
@@ -179,12 +179,12 @@ namespace Exception
 		@param[in] maxwarningcount the maximum warning count.
 		*/
 		void setMaxWarningsBeforeSilenced(const size_t& maxwarningcount);
-		// DocString: FMTExceptionHandler::Clone
+		// DocString: FMTExceptionHandler::clone
 		/**
 		@brief clone the FMTExceptionHandler
 		@return a valid cloned FMTExceptionHandler
 		*/
-		virtual std::unique_ptr <FMTExceptionHandler> Clone() const = 0;
+		virtual std::unique_ptr <FMTExceptionHandler> clone() const = 0;
 		#if defined _MSC_VER
 		// DocString: FMTExceptionHandler::translateStructuralWIN32Exceptions
 		/**

@@ -112,7 +112,7 @@ namespace Models
         FMTSeModel(rhs),
         m_TotalMoves(rhs.m_TotalMoves),
         m_CycleMoves(rhs.m_CycleMoves),
-        m_CoolingSchedule(rhs.m_CoolingSchedule->Clone()),
+        m_CoolingSchedule(rhs.m_CoolingSchedule->clone()),
         m_NotAcceptedMovesCount(),
         m_BestObjective()
     {
@@ -160,7 +160,7 @@ namespace Models
             FMTSeModel::operator = (rhs);
             m_TotalMoves = rhs.m_TotalMoves;
             m_CycleMoves = rhs.m_CycleMoves;
-            m_CoolingSchedule = std::move(m_CoolingSchedule->Clone());
+            m_CoolingSchedule = std::move(m_CoolingSchedule->clone());
             m_BestObjective = rhs.m_BestObjective;
             }
         return *this;
@@ -187,7 +187,7 @@ namespace Models
         return !getParameter(Models::FMTstrmodelparameters::WORKING_DIRECTORY).empty();
     }
 
-    void FMTSaModel::_writeDisrturbances() const
+    void FMTSaModel::_writeDisturbances() const
     {
         try {
             if (_doWriteDisturbances())
@@ -207,7 +207,7 @@ namespace Models
            
         }catch (...)
         {
-            _exhandler->raiseFromCatch("", "FMTSaModel::_writeDisrturbances", __LINE__, __FILE__);
+            _exhandler->raiseFromCatch("", "FMTSaModel::_writeDisturbances", __LINE__, __FILE__);
         }
     }
 
@@ -1174,7 +1174,7 @@ namespace Models
 					}
                 _UpdateFailedMoveCount();
                 _logCycleStatus();
-                _writeDisrturbances();
+                _writeDisturbances();
 				_coolDown();
                	}
             logConstraintsFactors();
@@ -1229,10 +1229,10 @@ namespace Models
         return false;
     }
 
-    std::unique_ptr<FMTModel>FMTSaModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+    std::unique_ptr<FMTModel>FMTSaModel::preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
     {
         try {
-            std::unique_ptr<FMTModel>BASE_PRESOLVE = FMTSeModel::presolve(optionaldevelopments);
+            std::unique_ptr<FMTModel>BASE_PRESOLVE = FMTSeModel::preSolve(optionaldevelopments);
             std::unique_ptr<FMTModel>PRESOLVED = std::unique_ptr<FMTModel>(
                                 new FMTSaModel(
                                     *(dynamic_cast<FMTSeModel*>(BASE_PRESOLVE.get()))));
@@ -1241,7 +1241,7 @@ namespace Models
         }
         catch (...)
         {
-            _exhandler->printExceptions("", "FMTSaModel::presolve", __LINE__, __FILE__);
+            _exhandler->printExceptions("", "FMTSaModel::preSolve", __LINE__, __FILE__);
         }
         return std::unique_ptr<FMTModel>(nullptr);
     }

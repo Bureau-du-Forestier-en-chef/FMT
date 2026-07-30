@@ -26,11 +26,11 @@ namespace Graph
 		const int& lvariableID,
 		const double& lproportion) :action()
 	{
-		setactionID(laction);
+		setActionID(laction);
 
 	}
 
-	void FMTBaseEdgeProperties::setactionID(const int& newid)
+	void FMTBaseEdgeProperties::setActionID(const int& newid)
 	{
 		action = static_cast<int8_t>(newid);
 	}

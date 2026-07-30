@@ -43,12 +43,12 @@ namespace Core
 		@param[in,out] inputYields the input yield names.
 		*/
 		FMTYieldModelNep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields);
-		// DocString: FMTYieldModelNep::Clone()
+		// DocString: FMTYieldModelNep::clone()
 		/**
-		@brief Clone the yield model.
+		@brief clone the yield model.
 		@return a unique pointer to the cloned yield model.
 		*/
-		std::unique_ptr<FMTYieldModel>Clone() const;
+		std::unique_ptr<FMTYieldModel>clone() const;
 		// DocString: FMTYieldModelNep::getModelOutputNames()
 		/**
 		@brief Return the input values for a predictor.

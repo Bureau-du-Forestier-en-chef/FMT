@@ -21,7 +21,7 @@ namespace Exception
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true);
 		FMTExcelExceptionHandler();
-		virtual std::unique_ptr <FMTExceptionHandler> Clone() const;
+		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
 	private:
 		std::unordered_map<int, std::vector<std::string>>build_exceptions;
 	};

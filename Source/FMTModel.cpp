@@ -1200,7 +1200,7 @@ std::vector<size_t>FMTModel::getStaticTransitionThemes() const
 	return statics;
 	}
 
-std::vector<const Core::FMTTheme*>FMTModel::getStaticPresolveThemes() const
+std::vector<const Core::FMTTheme*>FMTModel::getStaticPreSolveThemes() const
 	{
 	std::vector<const Core::FMTTheme*>fullstatics;
 	for (const Core::FMTTheme& theme : themes)
@@ -1253,7 +1253,7 @@ std::vector<const Core::FMTTheme*>FMTModel::getStaticPresolveThemes() const
 			}
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTModel::getStaticPresolveThemes", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("", "FMTModel::getStaticPreSolveThemes", __LINE__, __FILE__);
 		}
 	return fullstatics;
 	}
@@ -2263,20 +2263,20 @@ Core::FMTMask FMTModel::getBaseMask(std::vector<Core::FMTActualDevelopment> opti
 	return baseMask;
 	}
 
-Core::FMTMaskFilter FMTModel::getPostsolveFilter(const std::vector<Core::FMTTheme>& originalthemes,const Core::FMTMask& devmask) const
+Core::FMTMaskFilter FMTModel::getPostSolveFilter(const std::vector<Core::FMTTheme>& originalthemes,const Core::FMTMask& devmask) const
 {
 	try {
 		const Core::FMTMask presolvemask = getSelectedMask(originalthemes);
-		const Core::FMTMask emptythemes = devmask.getPostsolveMask(presolvemask, originalthemes);
+		const Core::FMTMask emptythemes = devmask.getPostSolveMask(presolvemask, originalthemes);
 		return Core::FMTMaskFilter(presolvemask,emptythemes);
 	}catch (...)
 	{
-		_exhandler->printExceptions("for " + name, "FMTModel::getPostsolveFilter", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTModel::getPostSolveFilter", __LINE__, __FILE__);
 	}
 	return Core::FMTMaskFilter();
 }
 
-Core::FMTMaskFilter FMTModel::getPresolveFilter(const std::vector<Core::FMTTheme>& originalthemes) const
+Core::FMTMaskFilter FMTModel::getPreSolveFilter(const std::vector<Core::FMTTheme>& originalthemes) const
 {
 	try {
 		const Core::FMTMask presolvemask = getSelectedMask(originalthemes);
@@ -2284,7 +2284,7 @@ Core::FMTMaskFilter FMTModel::getPresolveFilter(const std::vector<Core::FMTTheme
 	}
 	catch (...)
 	{
-		_exhandler->printExceptions("for " + name, "FMTModel::getPresolveFilter", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTModel::getPreSolveFilter", __LINE__, __FILE__);
 	}
 	return Core::FMTMaskFilter();
 }
@@ -2351,7 +2351,7 @@ Core::FMTMask FMTModel::getSelectedMask(const std::vector<Core::FMTTheme>& origi
 			if (newmask.getSubsetCount(theme) == 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-					"Non valid base presolve mask for model: " + name + " for theme id: " + std::to_string(theme.getId()),
+					"Non valid base preSolve mask for model: " + name + " for theme id: " + std::to_string(theme.getId()),
 					"FMTModel::getSelectedMask", __LINE__, __FILE__);
 			}
 		}*/
@@ -2364,21 +2364,21 @@ Core::FMTMask FMTModel::getSelectedMask(const std::vector<Core::FMTTheme>& origi
 	return newmask;
 	}
 
-FMTModel FMTModel::basePresolve() const
+FMTModel FMTModel::basePreSolve() const
 {
 	std::unique_ptr<FMTModel>mdlptr;
 	try {
-		mdlptr = presolve(area);
+		mdlptr = preSolve(area);
 
 	}catch (...)
 		{
-		_exhandler->printExceptions("for " + name, "FMTModel::basePresolve", __LINE__, __FILE__);
+		_exhandler->printExceptions("for " + name, "FMTModel::basePreSolve", __LINE__, __FILE__);
 		}
 	return *mdlptr;
 }
 
 
-std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+std::unique_ptr<FMTModel> FMTModel::preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 	{
 	std::unique_ptr<FMTModel>presolvedModel(new FMTModel());
 	int presolvepass = getParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS);
@@ -2443,7 +2443,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 			Core::FMTMaskFilter newfilter(oldpresolvefilter);
 			if (didonepass)
 			{
-				newfilter = newfilter.presolve(presolvedModel->themes);
+				newfilter = newfilter.preSolve(presolvedModel->themes);
 				oldsize = newsize;
 			}
 			newsize = 0;
@@ -2455,7 +2455,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 			int oldthemeid = 0;
 			for (const Core::FMTTheme& theme : presolvedModel->themes)
 			{
-				Core::FMTTheme PresolvedTheme = theme.presolve(newfilter, themeid, themestart);
+				Core::FMTTheme PresolvedTheme = theme.preSolve(newfilter, themeid, themestart);
 				// test gab ici
 				if (!PresolvedTheme.empty())
 				{ 
@@ -2480,7 +2480,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 						newDev.setMask(mskit->second);
 					}
 					else {
-						const Core::FMTMask presolvedmask = devmask.presolve(newfilter, newthemes);
+						const Core::FMTMask presolvedmask = devmask.preSolve(newfilter, newthemes);
 						topresolve[devmask] = presolvedmask;
 						newDev.setMask(presolvedmask);
 					}
@@ -2503,7 +2503,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 				newarea = presolvedModel->area;
 			}
 			newsize += newarea.size();
-			//reduce the number of actions and presolve the actions
+			//reduce the number of actions and preSolve the actions
 			const std::vector<const Core::FMTTheme*>maskthemes = newfilter.getSelectedThemes(presolvedModel->themes);
 			size_t actionIds = 0;
 			for (Core::FMTAction& PresolvedAction : presolvedModel->actions)
@@ -2513,9 +2513,9 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 				{
 					validActions[actionIds] = false;
 					const Core::FMTMask TESTED_MASK = PresolvedAction.getUnion(presolvedModel->themes);
-					if (newfilter.canPresolve(TESTED_MASK, maskthemes) && !PresolvedAction.notUse())
+					if (newfilter.canPreSolve(TESTED_MASK, maskthemes) && !PresolvedAction.notUse())
 					{
-						PresolvedAction.presolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
+						PresolvedAction.preSolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
 						validActions[actionIds] = true;
 						newsize += PresolvedAction.size();
 						newsize += 1;
@@ -2526,7 +2526,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 			}
 			//newsize += newactions.size();
 			//std::cin.get();
-			//reduce the number of transitions and presolve the transitions
+			//reduce the number of transitions and preSolve the transitions
 			size_t transitionIds = 0;
 			for (Core::FMTTransition& presolvedTransition : presolvedModel->transitions)
 			{
@@ -2541,9 +2541,9 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 					const Core::FMTMask TESTED_MASK = presolvedTransition.getUnion(presolvedModel->themes);
 					if (actionIt != presolvedModel->actions.end() && 
 						validActions[ACTIONm_location] && 
-						newfilter.canPresolve(TESTED_MASK, maskthemes))
+						newfilter.canPreSolve(TESTED_MASK, maskthemes))
 					{
-						presolvedTransition.presolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
+						presolvedTransition.preSolveRef(newfilter, presolvedModel->themes, newthemes, !didonepass);
 						validTransitions[transitionIds] = true;
 						newsize += presolvedTransition.size();
 						newsize += 1;
@@ -2554,16 +2554,16 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 			}
 			//newsize += newtransitions.size();
 			//Presolve yields
-			newyields = presolvedModel->yields.presolve(newfilter, presolvedModel->themes, newthemes);
+			newyields = presolvedModel->yields.preSolve(newfilter, presolvedModel->themes, newthemes);
 			//Presolve lifespan data
-			newlifespans = presolvedModel->lifespan.presolve(newfilter, presolvedModel->themes, newthemes,!didonepass);
+			newlifespans = presolvedModel->lifespan.preSolve(newfilter, presolvedModel->themes, newthemes,!didonepass);
 			newsize += newlifespans.size();
 			//Outputs and data
 			std::set<int> keptoutputid;
 			int oloutputdid=0;
 			for (const Core::FMTOutput& output : presolvedModel->outputs)
 			{
-				Core::FMTOutput PresolvedOutput = output.presolve(newfilter, presolvedModel->themes, maskthemes,
+				Core::FMTOutput PresolvedOutput = output.preSolve(newfilter, presolvedModel->themes, maskthemes,
 																newthemes, presolvedModel->actions, validActions,
 																presolvedModel->yields);
 				if(!PresolvedOutput.empty())
@@ -2596,7 +2596,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 				if (validConstraints[constraintId])
 				{
 					validConstraints[constraintId] = false;
-					presolvedConstraint.presolveRef(newfilter, presolvedModel->themes, maskthemes, newthemes, presolvedModel->actions,
+					presolvedConstraint.preSolveRef(newfilter, presolvedModel->themes, maskthemes, newthemes, presolvedModel->actions,
 													validActions, presolvedModel->yields);
 					if (!presolvedConstraint.outputEmpty() ||
 						(presolvedConstraint.isObjective() && presolvedConstraint.isGoal()))
@@ -2633,7 +2633,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 			for (const Core::FMTConstraint& constraint : oldconstraints)
 			{
 				const int originalid = *oriit;
-				Core::FMTConstraint presolvedconstraint = constraint.presolve(newfilter, oldthemes, maskthemes, newthemes, newactions, oldyields);
+				Core::FMTConstraint presolvedconstraint = constraint.preSolve(newfilter, oldthemes, maskthemes, newthemes, newactions, oldyields);
 				if (!presolvedconstraint.outputEmpty()||
 					(presolvedconstraint.isObjective() && presolvedconstraint.isGoal()))
 				{
@@ -2710,7 +2710,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 		{
 			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Empty section: " + section + " after presolve",
-				"FMTModel::presolve", __LINE__, __FILE__);
+				"FMTModel::preSolve", __LINE__, __FILE__);
 		}
 		++sectionid;
 	}
@@ -2719,7 +2719,7 @@ std::unique_ptr<FMTModel> FMTModel::presolve(std::vector<Core::FMTActualDevelopm
 	presolvedModel->_gutsOfConstructor(presolvedModel->area);
 	}catch (...)
 		{
-		_exhandler->printExceptions("for "+name+"at presolve pass "+std::to_string(presolvepass),"FMTModel::presolve", __LINE__, __FILE__);
+		_exhandler->printExceptions("for "+name+"at presolve pass "+std::to_string(presolvepass),"FMTModel::preSolve", __LINE__, __FILE__);
 		}
 	return presolvedModel;
 	}
@@ -2734,16 +2734,16 @@ void FMTModel::postSolve(const FMTModel& originalbasemodel)
 		}
 	}
 
-Core::FMTSchedule FMTModel::presolveSchedule(const Core::FMTSchedule& originalbaseschedule,
+Core::FMTSchedule FMTModel::preSolveSchedule(const Core::FMTSchedule& originalbaseschedule,
 	const FMTModel& originalbasemodel) const
 	{
 	Core::FMTSchedule newSchedule;
 	try {
-		const Core::FMTMaskFilter newfilter = getPresolveFilter(originalbasemodel.getThemes());
-		newSchedule = originalbaseschedule.presolve(newfilter, this->themes, this->actions);
+		const Core::FMTMaskFilter newfilter = getPreSolveFilter(originalbasemodel.getThemes());
+		newSchedule = originalbaseschedule.preSolve(newfilter, this->themes, this->actions);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTModel::presolveSchedule", __LINE__, __FILE__);
+		_exhandler->raiseFromCatch("","FMTModel::preSolveSchedule", __LINE__, __FILE__);
 		}
 	return newSchedule;
 	}
@@ -3004,7 +3004,7 @@ bool FMTModel::doPlanning(const bool& solve, std::vector<Core::FMTSchedule> sche
 		if(presolve_iterations>0)
 		{
 			const std::chrono::time_point<std::chrono::high_resolution_clock>presolvestart = getClock();
-			presolved_model = this->presolve(area);
+			presolved_model = this->preSolve(area);
 			//Parser::FMTModelParser mparser;
 			//mparser.write(*presolved_model,"C:/Users/admlocal/Desktop/test/");
 			if (!QUIET_LOG)
@@ -3017,7 +3017,7 @@ bool FMTModel::doPlanning(const bool& solve, std::vector<Core::FMTSchedule> sche
 		{
 			for (const Core::FMTSchedule schedule : schedules )
 			{
-				presolved_schedules.push_back(presolved_model->presolveSchedule(schedule,*this));
+				presolved_schedules.push_back(presolved_model->preSolveSchedule(schedule,*this));
 			}
 		}else{
 			presolved_schedules = schedules;

@@ -40,17 +40,17 @@ namespace Core {
 		return m_modelName;
 	}
 
-	std::unique_ptr<FMTYieldModel> FMTYieldModel::presolve(const FMTMaskFilter& filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModel::preSolve(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& newthemes) const
 	{
 	
-		return Clone();
+		return clone();
 	}
 
 	std::unique_ptr<FMTYieldModel> FMTYieldModel::postSolve(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& basethemes) const
 	{
-		return Clone();
+		return clone();
 	}
 
 	std::vector<std::vector<double>>FMTYieldModel::getPeriodicValues() const

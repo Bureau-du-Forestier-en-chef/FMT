@@ -43,7 +43,7 @@ namespace Core
 		return FMTDevelopment::operator==(rhs);
 	}
 
-	std::unique_ptr<FMTDevelopment> FMTFuturDevelopment::Clone() const
+	std::unique_ptr<FMTDevelopment> FMTFuturDevelopment::clone() const
 		{
 		return std::unique_ptr<FMTDevelopment>(new FMTFuturDevelopment(*this));
 		}

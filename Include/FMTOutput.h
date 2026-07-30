@@ -368,7 +368,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		@return the static themes.
 		*/
 		std::vector<const Core::FMTTheme*>getStaticThemes(const std::vector<Core::FMTTheme>& themes, const Core::FMTYields& yields, bool ignoreoutputvariables = false) const;
-		// DocString: FMTOutput::presolve
+		// DocString: FMTOutput::preSolve
 		/**
 		@brief Presolve the output and remove unused output sources.
 		@param[in] filter the mask filter.
@@ -380,7 +380,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		@param[in] yields the yields.
 		@return the presolved output.
 		*/
-		FMTOutput presolve(const FMTMaskFilter& filter,
+		FMTOutput preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			const std::vector<const FMTTheme*>& selectedthemes,
 			const std::vector<FMTTheme>& newthemes,
@@ -389,7 +389,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 			const FMTYields& yields) const;
 		// DocString: FMTOutput::changeoutputsorigin
 		/**
-		@brief Change the output origin and target theme id of each source with the distance from the beginning of the set, normally used after presolve.
+		@brief Change the output origin and target theme id of each source with the distance from the beginning of the set, normally used after preSolve.
 		@param[in] newoutputsorigin the new output origins.
 		@param[in] newthemeid the new theme ids.
 		*/
@@ -418,15 +418,15 @@ class FMTEXPORT FMTOutput: public FMTObject
 		// DocString: FMTOutput::setPeriod
 		/**
 		@brief Set the output sources to a single period.
-		@param[in] newperiod the period to set.
+		@param[in] newPeriod the period to set.
 		*/
-		void setPeriod(const int& newperiod);
-		// DocString: FMTOutput::isActionbased
+		void setPeriod(const int& newPeriod);
+		// DocString: FMTOutput::isActionBased
 		/**
 		@brief Return true if the output contains action nodes.
 		@return true if the output is action based else false.
 		*/
-		bool isActionbased() const;
+		bool isActionBased() const;
 		// DocString: FMTOutput::isVariableSizeOf
 		/**
 		@brief Return true if a variable source has a mask size equal to the given size, or if no source is variable.

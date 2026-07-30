@@ -52,7 +52,7 @@ FMTMaskFilter::FMTMaskFilter(const FMTMask& presolveselection) :
 
 }
 
-bool FMTMaskFilter::canPresolve(const FMTMask& mask, const std::vector<const Core::FMTTheme*>& themes) const
+bool FMTMaskFilter::canPreSolve(const FMTMask& mask, const std::vector<const Core::FMTTheme*>& themes) const
 	{
 	return !FMTMask(selection).isNotThemesSubset(mask, themes);
 	}
@@ -62,9 +62,9 @@ std::vector<const Core::FMTTheme*> FMTMaskFilter::getSelectedThemes(const std::v
 	return FMTMask(selection).getSelectedThemes(themes);
 	}
 
-FMTMaskFilter FMTMaskFilter::presolve(const std::vector<FMTTheme>& themes) const
+FMTMaskFilter FMTMaskFilter::preSolve(const std::vector<FMTTheme>& themes) const
 	{
-	return FMTMaskFilter(FMTMask(selection).presolve(*this, themes));
+	return FMTMaskFilter(FMTMask(selection).preSolve(*this, themes));
 	}
 
 FMTMaskFilter::FMTMaskFilter(std::vector<FMTMask>& masks): /*fullset(),*/selection(), flippedselection()//, index()

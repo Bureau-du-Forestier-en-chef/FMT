@@ -35,14 +35,14 @@ namespace Core {
 
 
 
-	std::unique_ptr<FMTYieldModel>FMTYieldModelTsla::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelTsla::clone() const
 	{
 		try {
 			return std::unique_ptr<FMTYieldModel>(new FMTYieldModelTsla());
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(getModelType(), "FMTYieldModelTsla::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTYieldModelTsla::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
@@ -84,15 +84,15 @@ namespace Core {
 		return returned;
 	}
 
-	std::unique_ptr<FMTYieldModel> FMTYieldModelTsla::presolve(const FMTMaskFilter& filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelTsla::preSolve(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& newthemes) const
 	{
 		try {
-			return Clone();
+			return clone();
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(getModelType(), "FMTYieldModelTsla::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelType(), "FMTYieldModelTsla::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
@@ -101,7 +101,7 @@ namespace Core {
 		const std::vector<FMTTheme>& basethemes) const
 	{
 		try {
-			return Clone();
+			return clone();
 		}
 		catch (...)
 		{

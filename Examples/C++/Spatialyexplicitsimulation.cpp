@@ -34,7 +34,7 @@ int main()
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTSesModel simulationmodel(models.at(0));
-	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readSchedules(primarylocation, models);
 	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
 		{
@@ -80,7 +80,7 @@ int main()
 				}
 		Logging::FMTDefaultLogger() << std::to_string(period) << " "<<simulationmodel.getOutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total")  <<"\n";
 		}
-	const std::vector<Core::FMTAction>actions = simulationmodel.getactions();
+	const std::vector<Core::FMTAction>actions = simulationmodel.getActions();
 	const std::vector<Core::FMTTheme>growththeme(1,simulationmodel.getThemes().at(1));
 	Parser::FMTTransitionParser transitionparser;
 	for (int period = 1; period <= 10; ++period)

@@ -19,7 +19,7 @@ namespace Wrapper
 		//void throwNested(const std::exception& texception, int level = 0, bool rethrow = true) override;
 		FMTexceptionhandlerwarning() = default;
 		~FMTexceptionhandlerwarning() = default;
-		std::unique_ptr <Exception::FMTExceptionHandler> Clone() const;
+		std::unique_ptr <Exception::FMTExceptionHandler> clone() const;
 		void ResetThread();
 	};
 }

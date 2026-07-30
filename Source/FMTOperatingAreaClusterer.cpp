@@ -88,7 +88,7 @@ namespace Heuristics
 	bool FMTOperatingAreaClusterer::_isValidarea(const FMTOperatingAreaCluster& cluster, const double& area, const size_t& actives) const
 	{
 		try {
-			if (cluster.isValidarea(area))
+			if (cluster.isValidArea(area))
 			{
 				if (m_maximalnumberofclusters>0)
 				{
@@ -221,7 +221,7 @@ namespace Heuristics
                         return true;
                         }
                     }
-			//*_logger << "out! "<< isValidarea(ignition, firesize, actives.size()) << "\n";
+			//*_logger << "out! "<< isValidArea(ignition, firesize, actives.size()) << "\n";
         }catch(...)
             {
             _exhandler->raiseFromCatch("", "FMTOperatingAreaClusterer::_spread", __LINE__, __FILE__);
@@ -710,7 +710,7 @@ namespace Heuristics
 				this->branchAndBound();
 				}
             this->_unboundAll();
-			//this->writeLP("C:/Users/cyrgu3/Desktop/test/integer");
+			//this->writeLp("C:/Users/cyrgu3/Desktop/test/integer");
             this->branchAndBound();
 			if (this->isProvenOptimal())
 				{

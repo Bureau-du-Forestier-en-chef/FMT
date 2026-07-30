@@ -184,7 +184,7 @@ namespace Models
 			double brokenup = 0;
 			double total = 0;
 			*_logger << "Constraints infeasibilities report: " << "\n";
-			const std::vector<Core::FMTConstraint>constraints = getconstraints();
+			const std::vector<Core::FMTConstraint>constraints = getConstraints();
 			for (double value : m_BestSolution.getConstraintsValues(m_SpatialGraphs))
 			{
 				if (cid > 0 /* && !constraints.at(cid).isSpatial()*/)
@@ -302,30 +302,30 @@ namespace Models
 		return m_BestSolution.getPatchStats(actions);
 	}
 
-	std::unique_ptr<FMTModel>FMTSeModel::presolve(
+	std::unique_ptr<FMTModel>FMTSeModel::preSolve(
 		std::vector<Core::FMTActualDevelopment> optionaldevelopments ) const
 		{
 		try {
-			if (m_BestSolution.actPeriod() == 1)//just presolve if no solution
+			if (m_BestSolution.actPeriod() == 1)//just preSolve if no solution
 			{
 				//const std::vector<Core::FMTActualDevelopment>areas = solution.getForestPeriod(0).getArea();
 				const std::vector<Core::FMTActualDevelopment>areas = m_BestSolution.getArea();
 				optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
-				std::unique_ptr<FMTModel>presolvedmod(new FMTSeModel(*(FMTModel::presolve(optionaldevelopments))));
+				std::unique_ptr<FMTModel>presolvedmod(new FMTSeModel(*(FMTModel::preSolve(optionaldevelopments))));
 				FMTSeModel*presolvedses = dynamic_cast<FMTSeModel*>(presolvedmod.get());
-				Core::FMTMaskFilter presolveFilter = presolvedses->getPresolveFilter(themes);
+				Core::FMTMaskFilter presolveFilter = presolvedses->getPreSolveFilter(themes);
 				const Core::FMTMask baseMask = this->getBaseMask(optionaldevelopments);
 				const boost::dynamic_bitset<uint8_t>&bitsets = baseMask.getBitsetReference();
-				//presolvedses->solution = Spatial::FMTSpatialSchedule(solution.getForestPeriod(0).presolve(presolvefilter, presolvedses->themes));
+				//presolvedses->solution = Spatial::FMTSpatialSchedule(solution.getForestPeriod(0).preSolve(presolvefilter, presolvedses->themes));
 				const size_t LENGTH = static_cast<size_t>(getParameter(FMTintmodelparameters::LENGTH) + 2);
 				presolvedses->m_SpatialGraphs = Spatial::FMTSpatialGraphs(*presolvedses, m_BestSolution.getCellSize());
-				Spatial::FMTSpatialSchedule presolvedSolution = m_BestSolution.presolve(presolveFilter, presolvedses->m_SpatialGraphs, LENGTH);
+				Spatial::FMTSpatialSchedule presolvedSolution = m_BestSolution.preSolve(presolveFilter, presolvedses->m_SpatialGraphs, LENGTH);
 				presolvedses->m_BestSolution.swap(presolvedSolution);
 				return presolvedmod;
 			}
 		}catch (...)
 			{
-			_exhandler->printExceptions("", "FMTSeModel::presolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSeModel::preSolve", __LINE__, __FILE__);
 			}
 		return std::unique_ptr<FMTModel>(nullptr);
 		}
@@ -335,9 +335,9 @@ namespace Models
 		try {
 			if (m_BestSolution.actPeriod()>=1)//just postSolve if you have a solution
 			{
-				const Core::FMTMaskFilter presolvedmask = this->getPostsolveFilter(originalbasemodel.getThemes(), originalbasemodel.getArea().begin()->getMask());
+				const Core::FMTMaskFilter presolvedmask = this->getPostSolveFilter(originalbasemodel.getThemes(), originalbasemodel.getArea().begin()->getMask());
 				Spatial::FMTSpatialGraphs postSolvedGraphs = Spatial::FMTSpatialGraphs(originalbasemodel, m_BestSolution.getCellSize());
-				m_BestSolution.postSolve(presolvedmask,this->getactions(), postSolvedGraphs);
+				m_BestSolution.postSolve(presolvedmask,this->getActions(), postSolvedGraphs);
 				m_SpatialGraphs.swap(postSolvedGraphs);
 				FMTModel::postSolve(originalbasemodel);
 				m_SpatialGraphs.setModel(*this);

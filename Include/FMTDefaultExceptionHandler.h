@@ -53,28 +53,28 @@ class FMTEXPORT FMTDefaultExceptionHandler final : public FMTExceptionHandler
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true) override;
 
-		// DocString: FMTDefaultExceptionHandler::getCPLdata
+		// DocString: FMTDefaultExceptionHandler::getCplData
 		/**
-		@brief Return an abstract copy of itself, used in handelCPLerror called back by GDAL. See FMTExceptionHandler::getCPLdata.
+		@brief Return an abstract copy of itself, used in handelCplError called back by GDAL. See FMTExceptionHandler::getCplData.
 		@return a pointer to the exception handler.
 		*/
-		FMTExceptionHandler* getCPLdata() override;
-		// DocString: FMTDefaultExceptionHandler::handelCPLerror
+		FMTExceptionHandler* getCplData() override;
+		// DocString: FMTDefaultExceptionHandler::handelCplError
 		#if defined FMTWITHGDAL
 		/**
-		@brief Callback used in GDAL. See FMTExceptionHandler::handelCPLerror.
+		@brief Callback used in GDAL. See FMTExceptionHandler::handelCplError.
 		@param[in] eErrClass the error class.
 		@param[in] nError the error number.
 		@param[in] pszErrorMsg the error message.
 		*/
-		void handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg) override;
+		void handelCplError(int eErrClass, int nError, const char * pszErrorMsg) override;
 		#endif
-		// DocString: FMTDefaultExceptionHandler::Clone
+		// DocString: FMTDefaultExceptionHandler::clone
 		/**
 		@brief clone the FMTdefaulexceptionhandler
 		@return a valid cloned FMTdefaulexceptionhandler
 		*/
-		virtual std::unique_ptr <FMTExceptionHandler> Clone() const;
+		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
 	private:
 		// DocString: FMTDefaultExceptionHandler::serialize
 		/**

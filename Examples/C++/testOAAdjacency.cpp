@@ -27,7 +27,7 @@ std::vector<Heuristics::FMTOperatingAreaScheme> ObtenirOperatingArea(
     const std::string& fichierParam)
     {
         Parser::FMTAreaParser areaParser;
-        std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOAschedulerparameters(
+        std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaParser.readOaSchedulerParameters(
             fichierParam,
             themes,
             numeroTheme - 1,

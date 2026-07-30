@@ -15,20 +15,20 @@ namespace Exception
 
 {
 
-	FMTExceptionHandler* FMTDefaultExceptionHandler::getCPLdata()
+	FMTExceptionHandler* FMTDefaultExceptionHandler::getCplData()
 		{
 		return this;
 		}
 
 #if defined FMTWITHGDAL
-	void FMTDefaultExceptionHandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
+	void FMTDefaultExceptionHandler::handelCplError(int eErrClass, int nError, const char * pszErrorMsg)
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
         try{
-            FMTExceptionHandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+            FMTExceptionHandler::handelCplError(eErrClass,nError,pszErrorMsg);
         }catch(...)
             {
-            raiseFromCatch("", "FMTDefaultExceptionHandler::handelCPLerror", __LINE__, __FILE__);
+            raiseFromCatch("", "FMTDefaultExceptionHandler::handelCplError", __LINE__, __FILE__);
             }
 		}
 #endif
@@ -40,7 +40,7 @@ namespace Exception
 	{
 	#if defined  FMTWITHGDAL
 		Exception::FMTExceptionHandler* handler = reinterpret_cast<Exception::FMTExceptionHandler*>(CPLGetErrorHandlerUserData());
-		CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, this->getCPLdata());
+		CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, this->getCplData());
 	#endif
 	}
 
@@ -75,7 +75,7 @@ namespace Exception
 	}
 
 
-	std::unique_ptr <FMTExceptionHandler> FMTDefaultExceptionHandler::Clone() const
+	std::unique_ptr <FMTExceptionHandler> FMTDefaultExceptionHandler::clone() const
 	{
 		return std::unique_ptr<FMTExceptionHandler>(new FMTDefaultExceptionHandler(*this));
 	}

@@ -85,13 +85,13 @@ namespace Models
 			@brief Do a non spatial simulation based on the area constraints in the optimize section.
 			*/
 			void simulate();
-			// DocString: FMTNssModel::presolve
+			// DocString: FMTNssModel::preSolve
 			/**
 			@brief Return a presolved copy of the model.
 			@param[in] optionaldevelopments the optional developments.
 			@return the presolved model.
 			*/
-			virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+			virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 			// DocString: FMTNssModel::clone
 			/**
 			@brief Get a clone of the FMTNssModel.
