@@ -9,6 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTParser.h"
 #include <chrono>
 #include <ctime>
+#include <fstream>
+#include <sstream>
 #include "FMTsolverinterface.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -132,6 +134,37 @@ std::string FMTVersion::getLicense(bool french)
         _exhandler->printExceptions("", "FMTVersion::getLicense", __LINE__, __FILE__);
         }
     return fulllicense;
+    }
+
+std::string FMTVersion::getChangelog(bool french)
+    {
+    std::string fullchangelog;
+    try{
+        std::string changeloglocation = getRuntimeLocation();
+        if (french)
+            {
+            changeloglocation += "\\CHANGELOG.fr.md";
+            }else{
+            changeloglocation += "\\CHANGELOG.md";
+            }
+        if (!boost::filesystem::is_regular_file(boost::filesystem::path(changeloglocation)))
+            {
+            _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+                "Cannot find "+changeloglocation,"FMTVersion::getChangelog",__LINE__,__FILE__);
+            return fullchangelog;
+            }
+        std::ifstream changelogstream(changeloglocation);
+        if (changelogstream.is_open())
+            {
+            std::stringstream buffer;
+            buffer << changelogstream.rdbuf();
+            fullchangelog = buffer.str();
+            }
+    }catch(...)
+        {
+        _exhandler->printExceptions("", "FMTVersion::getChangelog", __LINE__, __FILE__);
+        }
+    return fullchangelog;
     }
 
 }

@@ -20,6 +20,8 @@ set(FMTpackageloc "FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_
 			file(COPY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj" DESTINATION "${FMTlibdir}")
 		endif(GDAL_FOUND)
 		file(COPY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/LICENSES" DESTINATION "${FMTlibdir}")
+		file(COPY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/CHANGELOG.md" DESTINATION "${FMTlibdir}")
+		file(COPY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/CHANGELOG.fr.md" DESTINATION "${FMTlibdir}")
 		file(COPY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/YieldPredModels" DESTINATION "${FMTlibdir}")
 		#Copy the lib
 		foreach(FMTlibof ${FMTlibfiles})

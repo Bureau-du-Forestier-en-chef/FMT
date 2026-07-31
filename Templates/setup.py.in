@@ -43,6 +43,9 @@ setup(
         "GDAL_DATA/*.*", 
         "GDAL_DATA/html/*.*",
         "LICENSES/*",
+        "LICENSES/*/*",
+        "CHANGELOG.md",
+        "CHANGELOG.fr.md",
         "proj/*",
         ] + generate_YieldPredModels()
         },

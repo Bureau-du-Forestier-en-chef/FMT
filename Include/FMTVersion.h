@@ -108,6 +108,13 @@ class FMTEXPORT FMTVersion : public Core::FMTObject
 		@return the license string.
 		*/
 		static std::string getLicense(bool french=false);
+		// DocString: FMTVersion::getChangelog
+		/**
+		@brief Return the changelog as a string.
+		@param[in] french if true returns the changelog in French.
+		@return the changelog string.
+		*/
+		static std::string getChangelog(bool french=false);
 	};
 }
 
