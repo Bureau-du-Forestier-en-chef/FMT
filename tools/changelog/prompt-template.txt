@@ -27,9 +27,12 @@ CONSIGNES
    (souvent Corrigé/Fixed) ; tu peux tout de même écarter une entrée sans valeur pour le
    lecteur. Si la section est absente ou vide, consulte {{ISSUES_URL}} (ou
    {{REPO_URL}}/issues) ou les références d'issues présentes dans les commits.
-7. Propose le prochain numéro de version en SemVer à partir de la base {{BASE}}
-   (feat -> mineure, fix -> patch, changement cassant -> majeure) et place-le
-   directement dans le titre de version de chaque bloc (voir FORMAT DE SORTIE).
+7. NUMÉRO DE VERSION : propose le prochain numéro en SemVer à partir de la base {{BASE}}
+   (feat -> mineure, fix -> patch, changement cassant -> majeure) et place-le dans le titre.
+   MAIS tu n'es PAS obligé d'incrémenter : si les changements sont trop mineurs pour
+   justifier une nouvelle version, utilise plutôt le titre « ## [Unreleased] » (FR :
+   « ## [Non publié] »), SANS date ni hash, pour accumuler jusqu'à la prochaine vraie
+   version. Emploie le MÊME choix (version, ou non publié) pour les deux blocs.
 
 CONTEXTE VERSION (valeurs réelles fournies par l'outil, à réutiliser telles quelles)
 - Version de base (précédente) : {{BASE}}
@@ -38,17 +41,20 @@ CONTEXTE VERSION (valeurs réelles fournies par l'outil, à réutiliser telles q
 
 FORMAT DE SORTIE
 Fournis DEUX blocs markdown séparés, prêts à coller TELS QUELS dans le changelog.
-Chaque bloc commence par un titre de version où vX.Y.Z est le numéro que TU proposes ;
-n'invente ni la date ni le hash, réutilise ceux ci-dessus.
+Chaque bloc commence par UN titre, au choix (même choix pour les deux blocs) :
+  - version : « ## [vX.Y.Z] - {{DATE}} ({{HEAD}}) » où vX.Y.Z est ta proposition
+    (n'invente ni la date ni le hash, réutilise ceux ci-dessus) ;
+  - ou, si les changements ne justifient pas encore une version :
+    « ## [Unreleased] » (côté anglais) / « ## [Non publié] » (côté français), sans date ni hash.
 
 === FRANÇAIS (pour CHANGELOG.fr.md) ===
-## [vX.Y.Z] - {{DATE}} ({{HEAD}})
+## [vX.Y.Z] - {{DATE}} ({{HEAD}})        (ou, si insuffisant : ## [Non publié])
 
 ### Ajouté / ### Modifié / ### Corrigé / ### Supprimé   (selon le cas)
 - ...
 
 === ENGLISH (for CHANGELOG.md) ===
-## [vX.Y.Z] - {{DATE}} ({{HEAD}})
+## [vX.Y.Z] - {{DATE}} ({{HEAD}})        (or, if insufficient: ## [Unreleased])
 
 ### Added / ### Changed / ### Fixed / ### Removed   (as applicable)
 - ...
