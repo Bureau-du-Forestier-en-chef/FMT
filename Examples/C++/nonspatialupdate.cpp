@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 		const std::vector<Core::FMTActualDevelopment>newarea = optimizationmodel.getArea(updateto);
 		optimizationmodel.setArea(newarea);
 		std::vector<Core::FMTConstraint>constraints;
-		for (const Core::FMTConstraint& constraint : optimizationmodel.getconstraints())
+		for (const Core::FMTConstraint& constraint : optimizationmodel.getConstraints())
 			{
 			Core::FMTConstraint newconstraint(constraint);
 			if (keepandupdate(newconstraint, updateto))
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 			}
 		optimizationmodel.setConstraints(constraints);
 		std::vector<Core::FMTAction>actions;
-		for (const Core::FMTAction& action : optimizationmodel.getactions())
+		for (const Core::FMTAction& action : optimizationmodel.getActions())
 			{
 			Core::FMTAction newaction(action);
 			bool gotone = false;

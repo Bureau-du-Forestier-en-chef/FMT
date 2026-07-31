@@ -61,8 +61,8 @@ void exportHeuristics()
 	bp::class_<Heuristics::FMTOperatingAreaScheme,bp::bases<Heuristics::FMTOperatingArea>>("FMToperatingareascheme", "@DocString(FMTOperatingAreaScheme)")
 		.def(bp::init<const Heuristics::FMTOperatingArea&,const size_t&,const size_t&,
 			const size_t&, const size_t&, const size_t&, const size_t&, double>())
-		.def("presolve", &Heuristics::FMTOperatingAreaScheme::presolve,
-			"@DocString(FMTOperatingAreaScheme::presolve)");
+		.def("presolve", &Heuristics::FMTOperatingAreaScheme::preSolve,
+			"@DocString(FMTOperatingAreaScheme::preSolve)");
 
 	definePyList<Heuristics::FMTOperatingAreaScheme>();
 

@@ -13,14 +13,14 @@ namespace Core {
 	}
 
 
-	std::unique_ptr<FMTYieldModel>FMTYieldModelNep::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelNep::clone() const
 	{
 		try {
 			return std::unique_ptr<FMTYieldModel>(new FMTYieldModelNep(*this));
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTYieldModelNep::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("", "FMTYieldModelNep::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}

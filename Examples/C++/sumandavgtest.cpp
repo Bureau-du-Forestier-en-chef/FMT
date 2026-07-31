@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	Parallel::FMTPlanningTask newplanningtask(1,10, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
 	newplanningtask.setKeepModels();
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
-	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readschedules(primlocation, models);
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readSchedules(primlocation, models);
 	std::vector<Core::FMTOutput>selectedoutputs;
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{

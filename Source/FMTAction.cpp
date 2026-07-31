@@ -571,14 +571,14 @@ std::vector<Core::FMTAction>FMTAction::split(const std::vector<Core::FMTMask>& p
 	return Splitted;
 }
 
-void FMTAction::presolveRef(
+void FMTAction::preSolveRef(
 	const FMTMaskFilter& p_filter,
 	const std::vector<FMTTheme>& p_originalthemes,
 	std::vector<FMTTheme>& p_newthemes,
 	 bool p_compressdata)
 {
 	try {
-		_presolveList(p_filter, p_originalthemes, p_newthemes);
+		_preSolveList(p_filter, p_originalthemes, p_newthemes);
 		if (p_compressdata)
 			{
 			_compressMasks(p_newthemes);
@@ -587,21 +587,21 @@ void FMTAction::presolveRef(
 	}catch (...)
 		{
 		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getName(),
-			"FMTAction::presolveRef", __LINE__, __FILE__, Core::FMTsection::Action);
+			"FMTAction::preSolveRef", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
 }
 
-FMTAction FMTAction::presolve(const FMTMaskFilter& filter,
+FMTAction FMTAction::preSolve(const FMTMaskFilter& filter,
 	const std::vector<FMTTheme>& originalthemes,
 	std::vector<FMTTheme>& newthemes,bool compressdata) const
 	{
 	FMTAction newaction(*this);
 	try {
-		newaction.presolveRef(filter, originalthemes, newthemes, compressdata);
+		newaction.preSolveRef(filter, originalthemes, newthemes, compressdata);
 	}catch (...)
 		{
 		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for action "+this->getName(),
-			"FMTAction::presolve", __LINE__, __FILE__, Core::FMTsection::Action);
+			"FMTAction::preSolve", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
 	return newaction;
 	}

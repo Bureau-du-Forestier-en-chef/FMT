@@ -80,7 +80,7 @@ void Wrapper::FMTexceptionhandlerwarning::printExceptions(std::string text,
 {
 	raiseFromCatch(text, method, line, fil, lsection);
 }
-std::unique_ptr <Exception::FMTExceptionHandler> Wrapper::FMTexceptionhandlerwarning::Clone() const
+std::unique_ptr <Exception::FMTExceptionHandler> Wrapper::FMTexceptionhandlerwarning::clone() const
 {
 	return std::unique_ptr<Exception::FMTExceptionHandler>(new FMTexceptionhandlerwarning(*this));
 }

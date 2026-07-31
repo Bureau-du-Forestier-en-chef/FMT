@@ -47,27 +47,27 @@ namespace Exception
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true) override;
     #if defined FMTWITHGDAL
-		// DocString: FMTQuietExceptionHandler::getCPLdata
+		// DocString: FMTQuietExceptionHandler::getCplData
 		/**
-		@brief Return an abstract copy of itself, used in handelCPLerror called back by GDAL. See FMTExceptionHandler::getCPLdata.
+		@brief Return an abstract copy of itself, used in handelCplError called back by GDAL. See FMTExceptionHandler::getCplData.
 		@return a pointer to the exception handler.
 		*/
-		FMTExceptionHandler* getCPLdata() override;
-		// DocString: FMTQuietExceptionHandler::handelCPLerror
+		FMTExceptionHandler* getCplData() override;
+		// DocString: FMTQuietExceptionHandler::handelCplError
 		/**
-		@brief Callback used in GDAL. See FMTExceptionHandler::handelCPLerror.
+		@brief Callback used in GDAL. See FMTExceptionHandler::handelCplError.
 		@param[in] eErrClass the error class.
 		@param[in] nError the error number.
 		@param[in] pszErrorMsg the error message.
 		*/
-		void handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg) override;
+		void handelCplError(int eErrClass, int nError, const char * pszErrorMsg) override;
 		#endif
-		// DocString: FMTQuietExceptionHandler::Clone
+		// DocString: FMTQuietExceptionHandler::clone
 		/**
 		@brief clone the FMTQuietExceptionHandler
 		@return a valid cloned FMTQuietExceptionHandler
 		*/
-		virtual std::unique_ptr <FMTExceptionHandler> Clone() const;
+		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
 	private:
 		// DocString: FMTQuietExceptionHandler::serialize
 		/**

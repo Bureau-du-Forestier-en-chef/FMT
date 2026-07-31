@@ -682,7 +682,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 							for (edge_pair = boost::out_edges(source_descritor, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 							{
 								const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-								const int action_id = edgeprop.getactionID();
+								const int action_id = edgeprop.getActionID();
 								if (action_id != -1 && action_id != death_id)
 								{
 									got_choice = true;
@@ -737,7 +737,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 						const int variableid = data[*outit].getVariableID();
 						if (colnames.at(variableid).empty())
 						{
-							const int actionid = data[*outit].getactionID();
+							const int actionid = data[*outit].getActionID();
 							if (actionid >= 0)
 							{
 								actionname = actions.at(actionid).getName();
@@ -1102,7 +1102,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*edge_iterator];
-					boost::hash_combine(seed, edgeprop.getactionID());
+					boost::hash_combine(seed, edgeprop.getActionID());
 				}
 			}
 			catch (...)
@@ -1229,7 +1229,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(outedge_iterator, outedge_end) = boost::out_edges(out_vertex, data); outedge_iterator != outedge_end; ++outedge_iterator)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*outedge_iterator];
-					if (edgeprop.getactionID() == actionID)
+					if (edgeprop.getActionID() == actionID)
 					{
 
 						value += *(solution + edgeprop.getVariableID()) * (edgeprop.getProportion() / 100);
@@ -1257,7 +1257,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-					if (edgeprop.getactionID() < 0)
+					if (edgeprop.getActionID() < 0)
 					{
 						return boost::source(*inedge_iterator, data);
 					}
@@ -1287,7 +1287,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-					if (edgeprop.getactionID() == actionid)
+					if (edgeprop.getActionID() == actionid)
 					{
 						vsources.push_back(boost::source(*inedge_iterator, data));
 					}
@@ -1321,7 +1321,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-					if (edgeprop.getactionID() == actionid || !growth)
+					if (edgeprop.getActionID() == actionid || !growth)
 					{
 						area += *(solution + edgeprop.getVariableID()) * (edgeprop.getProportion() / 100);
 					}
@@ -1367,7 +1367,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 					{
 						const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-						if (edgeprop.getactionID() == -1)
+						if (edgeprop.getActionID() == -1)
 						{
 							return true;
 						}
@@ -1427,7 +1427,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(outedge_iterator, outedge_end) = boost::out_edges(out_vertex, data); outedge_iterator != outedge_end; ++outedge_iterator)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*outedge_iterator];
-					if (edgeprop.getactionID() == -1)
+					if (edgeprop.getActionID() == -1)
 					{
 						return true;
 					}
@@ -1457,7 +1457,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (FMToutedge_pair edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-					if (edgeprop.getactionID() == actionID)
+					if (edgeprop.getActionID() == actionID)
 					{
 						const FMTBaseVertexProperties& vertex_target = data[target(*edge_pair.first, data)];
 						paths.push_back(Core::FMTDevelopmentPath(vertex_target.get().getMask(),
@@ -1816,7 +1816,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (edge_pair = boost::out_edges(descriptor, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-					const int actionid = edgeprop.getactionID();
+					const int actionid = edgeprop.getActionID();
 					if (actionid >= 0 && actionsop.at(actionid))
 					{
 						return true;
@@ -1927,7 +1927,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-					int actionid = edgeprop.getactionID();
+					int actionid = edgeprop.getActionID();
 					//*_logger << actionid << " test "<< edgeprop.getVariableID() <<"\n";
 					mapping[actionid] = edgeprop.getVariableID();
 				}
@@ -1953,7 +1953,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-					int actionid = edgeprop.getactionID();
+					int actionid = edgeprop.getActionID();
 					mapping[actionid] = edgeprop.getVariableID();
 				}
 			}
@@ -1981,10 +1981,10 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (edge_pair = boost::out_edges(pOutVertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 				{
 					const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-					const int actionId = edgeprop.getactionID();
+					const int actionId = edgeprop.getActionID();
 					if (actionId >= 0)
 					{
-						output[edgeprop.getactionID()] = &edgeprop;
+						output[edgeprop.getActionID()] = &edgeprop;
 					}
 				}
 			}
@@ -2016,7 +2016,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					for (edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 					{
 						const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-						const int actionid = edgeprop.getactionID();
+						const int actionid = edgeprop.getActionID();
 						if ((actionid) >= 0)
 						{
 							actions.emplace_back(static_cast<int>(actionid));
@@ -2314,13 +2314,13 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return developments.size();
 		}
 
-		// DocString: FMTGraph::setConstraintID
+		// DocString: FMTGraph::setConstraintId
 		/**
 		@brief Set the constraint id of a vertex.
 		@param[in] vertex the vertex descriptor.
 		@param[in] id the constraint id.
 		*/
-		void setConstraintID(const FMTvertex_descriptor& vertex, const int& id)
+		void setConstraintId(const FMTvertex_descriptor& vertex, const int& id)
 		{
 
 		}
@@ -2612,7 +2612,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				{
 					const FMTBaseEdgeProperties& thisedgeprop = data[*thisedge_iterator];
 					const FMTBaseEdgeProperties& rhsedgeprop = rhs.data[*rhsedge_iterator];
-					if (thisedgeprop.getactionID() != rhsedgeprop.getactionID())
+					if (thisedgeprop.getActionID() != rhsedgeprop.getActionID())
 					{
 						different = true;
 					}
@@ -2669,7 +2669,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					activeedge = actives.front();
 					actives.pop();
 					const FMTvertex_descriptor vertexsource = boost::source(*activeedge, data);
-					if (data[*activeedge].getactionID() >= 0)
+					if (data[*activeedge].getActionID() >= 0)
 					{
 						periodtolastdisturbance = data[vertexsource].get().getPeriod();
 						return activeedge;
@@ -2719,7 +2719,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 						const FMTvertex_descriptor& sourcevertex = boost::source(*inedge_iterator, data);
 						activevertex.push(sourcevertex);
 						const int sourceperiod = data[sourcevertex].get().getPeriod();
-						if (inedgeproperties.getactionID() >= 0)
+						if (inedgeproperties.getActionID() >= 0)
 						{
 							lastactions.push_back(&inedgeproperties);
 							distances.push_back(targetperiod - sourceperiod);
@@ -2774,7 +2774,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					for (edge_pair = boost::out_edges(act, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 					{
 						const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-						if (edgeprop.getactionID() < 0)
+						if (edgeprop.getActionID() < 0)
 						{
 							paths.push_back(boost::target(*edge_pair.first, data));
 							break;
@@ -2796,7 +2796,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 						for (edge_pair = boost::out_edges(vdescriptor, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 						{
 							const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-							if (edgeprop.getactionID() < 0)
+							if (edgeprop.getActionID() < 0)
 							{
 								vdescriptor = boost::target(*edge_pair.first, data);
 								gotit = true;
@@ -2857,7 +2857,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 							if (targetproperties.get().getMask().isSubsetOf(mask))//natural growth or action in the aggregate
 							{
 								const FMTBaseEdgeProperties& inedgeproperties = data[*inedge_iterator];
-								const int actionid = inedgeproperties.getactionID();
+								const int actionid = inedgeproperties.getActionID();
 								const int perioddiff = startperiod - targetproperties.get().getPeriod();
 								//bool digMore = true;
 								if (/*actionid >= 0 &&*/ actionselected.find(actionid) != actionselected.end())
@@ -2896,7 +2896,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 							if (targetproperties.get().getMask().isSubsetOf(mask))//natural growth or action in the aggregate
 							{
 								const FMTBaseEdgeProperties& inedgeproperties = data[*inedge_iterator];
-								const int actionid = inedgeproperties.getactionID();
+								const int actionid = inedgeproperties.getActionID();
 								if (/*actionid >= 0 &&*/ actionselected.find(actionid) != actionselected.end())
 								{
 									actualSerie.insert(actualSerie.begin(), actions.at(actionid).getName());
@@ -2934,7 +2934,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(descriptor_n_depth.first, data); inedge_iterator != inedge_end; ++inedge_iterator)
 					{
 						const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-						if (edgeprop.getactionID() != -1)
+						if (edgeprop.getActionID() != -1)
 						{
 							return descriptor_n_depth.second;
 						}
@@ -3023,7 +3023,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		// DocString: FMTGraph::postSolve
 		/**
 		@brief Postsolve the graph back into the original themes and actions.
-		@param[in] filter the mask filter used for the presolve.
+		@param[in] filter the mask filter used for the preSolve.
 		@param[in] originalbasethemes the original themes.
 		@param[in] actionmapping the action mapping.
 		*/
@@ -3040,9 +3040,9 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
 				{
 					FMTBaseEdgeProperties& edgeprop = data[*edge_iterator];
-					if (edgeprop.getactionID() >= 0)
+					if (edgeprop.getActionID() >= 0)
 					{
-						edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
+						edgeprop.setActionID(actionmapconnection.at(edgeprop.getActionID()));
 					}
 				}
 				boost::unordered_map<Core::FMTMask, Core::FMTMask>presolvetopostsolve;
@@ -3198,7 +3198,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 						for (edge_pair = boost::out_edges(targetdescriptor, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 						{
 							const FMTBaseEdgeProperties& edgeprop = data[*edge_pair.first];
-							int actionid = edgeprop.getactionID();
+							int actionid = edgeprop.getActionID();
 							if (/*actionid >= 0 &&*/ actionsets.find(actionid) != actionsets.end())
 							{
 								std::set<Core::FMTSerie>subset;
@@ -3446,9 +3446,9 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					for (boost::tie(outit, outend) = boost::out_edges(descriptor, data); outit != outend; ++outit)
 					{
 						const FMTBaseEdgeProperties& edgeprop = data[*outit];
-						if (edgeprop.getactionID() >= 0)
+						if (edgeprop.getActionID() >= 0)
 							{
-							if (edgeprop.getactionID() < theactionid)
+							if (edgeprop.getActionID() < theactionid)
 								{
 								return true;
 								}
@@ -3679,7 +3679,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				nextDev == data.null_vertex())
 			{
 				const FMTBaseEdgeProperties& Edge = data[*edge_pair.first];
-				const int& EdgeId = Edge.getactionID();
+				const int& EdgeId = Edge.getActionID();
 				
 				FMTvertex_descriptor nextDev = boost::target(*edge_pair.first, data);
 				if (EdgeId < 0) // évolution naturelle si actionid < 0
@@ -3716,7 +3716,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				NextPeriod == data.null_vertex())
 			{
 				const FMTBaseEdgeProperties& Edge = data[*edge_pair.first];
-				const int& EdgeId = Edge.getactionID();
+				const int& EdgeId = Edge.getActionID();
 				if (EdgeId < 0) // évolution naturelle si actionid < 0
 				{
 					NextPeriod = boost::target(*edge_pair.first, data);
@@ -3826,7 +3826,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 											if (right_period.find(NEXT_DESCRIPTOR) == right_period.end())
 											{
 												const FMTBaseEdgeProperties& Edge = data[*edge_pair.first];
-												const int ACTION_ID = Edge.getactionID();
+												const int ACTION_ID = Edge.getActionID();
 												if (ACTION_ID >= 0)
 												{
 													//const FMTvertex_descriptor NEXT_DESCRIPTOR = boost::target(*edge_pair.first, data);
@@ -3933,7 +3933,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 							for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(targetdescriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
 							{
 								const FMTBaseEdgeProperties& inedgeproperties = data[*inedge_iterator];
-								actions += std::to_string(inedgeproperties.getactionID()) + " ";
+								actions += std::to_string(inedgeproperties.getActionID()) + " ";
 							}
 							const FMTBaseVertexProperties& targetproperties = data[targetdescriptor];
 							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -3944,7 +3944,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 						FMTinedge_iterator inedge_iterator, inedge_end;
 						boost::tie(inedge_iterator, inedge_end) = boost::in_edges(targetdescriptor, data);
 						const FMTBaseEdgeProperties& inedgeproperties = data[*inedge_iterator];
-						const int actionid = inedgeproperties.getactionID();
+						const int actionid = inedgeproperties.getActionID();
 						if (actionid >= 0)
 						{
 							theserie.insert(theserie.begin(), actions.at(actionid).getName());
@@ -4089,7 +4089,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				inedge_iterator != inedge_end; ++inedge_iterator)
 				{
 				const FMTBaseEdgeProperties& edgeprop = p_graph[*inedge_iterator];
-				if (edgeprop.getactionID() == -1)
+				if (edgeprop.getActionID() == -1)
 					{
 						return true;
 					}
@@ -4131,7 +4131,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				const int VERTEX_PERIOD = (*m_from)[sourceVertex].get().getPeriod();
 				if (VERTEX_PERIOD < m_period)
 				{
-					const int ACTION_ID = (*m_from)[p_descriptor].getactionID();
+					const int ACTION_ID = (*m_from)[p_descriptor].getActionID();
 					if (ACTION_ID >= 0)
 					{
 						++m_stats->cols;
@@ -4161,7 +4161,7 @@ template<> inline std::map<int, int> FMTGraph<Graph::FMTVertexProperties, Graph:
 			for (edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 			{
 				const FMTEdgeProperties& edgeprop = data[*edge_pair.first];
-				int actionid = edgeprop.getactionID();
+				int actionid = edgeprop.getActionID();
 				mapping[actionid] = edgeprop.getVariableID();
 			}
 		}catch (...)
@@ -4181,7 +4181,7 @@ template<> inline std::vector<Core::FMTDevelopmentPath> FMTGraph<Graph::FMTVerte
 			for (FMToutedge_pair edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 			{
 				const FMTEdgeProperties& edgeprop = data[*edge_pair.first];
-				if (edgeprop.getactionID() == actionID)
+				if (edgeprop.getActionID() == actionID)
 				{
 					const FMTBaseVertexProperties& vertex_target = data[target(*edge_pair.first, data)];
 					paths.push_back(Core::FMTDevelopmentPath(vertex_target.get().getMask(),
@@ -4210,7 +4210,7 @@ template<> inline double FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProp
 			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 			{
 				const FMTEdgeProperties& edgeprop = data[*inedge_iterator];
-				if (edgeprop.getactionID() == actionid || !growth)
+				if (edgeprop.getActionID() == actionid || !growth)
 				{
 					area += *(solution + edgeprop.getVariableID()) * (edgeprop.getProportion() / 100);
 				}
@@ -4233,7 +4233,7 @@ template<> inline double FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProp
 			for (boost::tie(outedge_iterator, outedge_end) = boost::out_edges(out_vertex, data); outedge_iterator != outedge_end; ++outedge_iterator)
 			{
 				const FMTEdgeProperties& edgeprop = data[*outedge_iterator];
-				if (edgeprop.getactionID() == actionID)
+				if (edgeprop.getActionID() == actionID)
 				{
 					value += *(solution + edgeprop.getVariableID()) * (edgeprop.getProportion() / 100);
 				}
@@ -4278,7 +4278,7 @@ template<> inline std::map<int, double> FMTGraph<Graph::FMTVertexProperties, Gra
 						for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 						{
 							const FMTEdgeProperties& edgeprop = data[*inedge_iterator];
-							const int actionid = edgeprop.getactionID();
+							const int actionid = edgeprop.getActionID();
 							if (actionid < 0 || output_node.source.isAction())
 							{
 								updateVarsMap(variables, edgeprop.getVariableID(), (edgeprop.getProportion() / 100)*coef);
@@ -4380,7 +4380,7 @@ template<> inline FMTGraphStats FMTGraph<Graph::FMTVertexProperties, Graph::FMTE
 				--stats.rows;
 				--stats.transfer_rows;
 				deletedconstraints.push_back(constvalue);
-				vertexproperty.setConstraintID(-1);
+				vertexproperty.setConstraintId(-1);
 			}
 			if (!keepbounded || out_degree(vertexm_location, data) == 0)
 			{
@@ -4415,11 +4415,11 @@ template<> inline FMTGraphStats FMTGraph<Graph::FMTVertexProperties, Graph::FMTE
 	return stats;
 }
 
-template<> inline void FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::setConstraintID(
+template<> inline void FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::setConstraintId(
 	const FMTvertex_descriptor& vertex,
 	const int& id)
 {
-	data[vertex].setConstraintID(id);
+	data[vertex].setConstraintId(id);
 }
 
 template<> inline bool FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::getTransferRow(
@@ -4516,7 +4516,7 @@ template<> inline void FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProper
 					{
 						toRemove = static_cast<int>(removedconstraints.size());
 					}
-					vertexproperty.setConstraintID(actualconstraint - toRemove);
+					vertexproperty.setConstraintId(actualconstraint - toRemove);
 				}
 			}
 		}

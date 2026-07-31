@@ -405,7 +405,7 @@ FMTSchedule::operator std::string() const
 		}
 	}
 
-	FMTSchedule FMTSchedule::presolve(
+	FMTSchedule FMTSchedule::preSolve(
 		const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& newthemes,
 		const std::vector<FMTAction>&presolvedaction) const
@@ -420,14 +420,14 @@ FMTSchedule::operator std::string() const
 				{
 					FMTDevelopment newDev(devit->first);
 					const Core::FMTMask& BASE = newDev.getMask();
-					if (BASE.canPresolve(filter, newthemes))
+					if (BASE.canPreSolve(filter, newthemes))
 						{
-						newDev.setMask(newDev.getMask().presolve(filter, newthemes));
+						newDev.setMask(newDev.getMask().preSolve(filter, newthemes));
 						newmapping[newDev] = devit->second;
 					}else {
 						_exhandler->raise(Exception::FMTexc::FMTignore,
 							"Presolve Removed "+std::string(newDev)+" from the base solution",
-							"FMTSchedule::presolve", __LINE__, __FILE__);
+							"FMTSchedule::preSolve", __LINE__, __FILE__);
 					}
 					
 				}
@@ -442,7 +442,7 @@ FMTSchedule::operator std::string() const
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("","FMTSchedule::presolve", __LINE__, __FILE__,Core::FMTsection::Schedule);
+			_exhandler->raiseFromCatch("","FMTSchedule::preSolve", __LINE__, __FILE__,Core::FMTsection::Schedule);
 			}
 	return newSchedule;
 	}
@@ -479,9 +479,9 @@ FMTSchedule::operator std::string() const
 		return newSchedule;
 	}
 
-	void FMTSchedule::setPeriod(const int& newperiod)
+	void FMTSchedule::setPeriod(const int& newPeriod)
 		{
-			m_period = newperiod;
+			m_period = newPeriod;
 			try{
 			for (std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>>::iterator actit = m_elements.begin();
 				actit != m_elements.end(); actit++)
@@ -491,7 +491,7 @@ FMTSchedule::operator std::string() const
 					devit != actit->second.end(); devit++)
 					{
 					FMTDevelopment newDev(devit->first);
-					newDev.setPeriod(newperiod);
+					newDev.setPeriod(newPeriod);
 					newmapping[newDev] = devit->second;
 					}
 				actit->second = newmapping;

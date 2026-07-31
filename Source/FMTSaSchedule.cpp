@@ -64,7 +64,7 @@ namespace Spatial
         return m_ScheduleType;
     }
 
-	std::unique_ptr<FMTSaSchedule> FMTSaSchedule::Clone()const
+	std::unique_ptr<FMTSaSchedule> FMTSaSchedule::clone()const
     {
         return std::unique_ptr<FMTSaSchedule>(new FMTSaSchedule(*this));
     }

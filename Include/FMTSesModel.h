@@ -44,7 +44,7 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 	virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
 	// DocString: FMTSesModel()
 	/**
-	@brief Construct a FMTSesModel from a FMTSeModel, for presolve use.
+	@brief Construct a FMTSesModel from a FMTSeModel, for preSolve use.
 	@param[in] rhs the FMTSeModel.
 	*/
 	FMTSesModel(const FMTSeModel& rhs);
@@ -140,13 +140,13 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 		{
 			return true;
 		}
-		// DocString: FMTSesModel::presolve
+		// DocString: FMTSesModel::preSolve
 		/**
 		@brief Return a presolved copy of the model.
 		@param[in] optionaldevelopments the optional developments.
 		@return the presolved model.
 		*/
-		virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+		virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTSesModel::getCopy
 		/**
 		@brief Return a copy of the model for the selected period.

@@ -29,7 +29,7 @@ namespace Models
         LENGTH = 0,/**< The number of period to optimize or simulate */
         SEED = 1, /**< The seed used for stochastique process in FMTSaModel, FMTNssModel and FMTSesModel */
         NUMBER_OF_ITERATIONS = 2,/**< The number of iterations to do in FMTSesModel::greedyReferenceBuild  */
-        PRESOLVE_ITERATIONS = 3,/**< The number of iterations to do in FMTModel::presolve */
+        PRESOLVE_ITERATIONS = 3,/**< The number of iterations to do in FMTModel::preSolve */
         NUMBER_OF_THREADS = 4,/**< Number of thread use by solver for optimisation */
 		MATRIX_TYPE = 5,/**< matrix forest model TYPE I,II,III (1,2,3) */
         UPDATE = 6,/**< At which period the model update period stop (excluded) if stops at 2 (2 is part of optimization) but 1 in update */
@@ -69,7 +69,7 @@ namespace Models
         STRICTLY_POSITIVE = 1,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective if coefficient is negative and it contains a yield for FMTLpModel */
         POSTSOLVE = 2,/**< Return a postsolved model for the doPlanning */
         SHOW_LOCK_IN_SCHEDULES = 3,//Not needed or change parameters in fonctions ... maybe more for task
-		PRESOLVE_CAN_REMOVE_STATIC_THEMES =4,//The presolve will allow the removing of static themes even in use (it can alter the area section).
+		PRESOLVE_CAN_REMOVE_STATIC_THEMES =4,//The preSolve will allow the removing of static themes even in use (it can alter the area section).
         DEBUG_MATRIX = 5,//If true, when an error occur in lpmodel initialSolve or resolve, the matrix will be written. 
         SETSOLUTION_THROW = 6, //Fix pour setSolution pour ne pas throw lorsque c'est vrai TODO meilleur def
         QUIET_LOGGING = 7,

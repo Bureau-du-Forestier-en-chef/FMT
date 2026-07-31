@@ -403,14 +403,14 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		*/
 		bool use(const FMTDevelopment& development, const FMTYields& ylds,
 			const Graph::FMTGraphVertexToYield* graphinfo = nullptr) const;
-		// DocString: FMTOutputSource::presolve
+		// DocString: FMTOutputSource::preSolve
 		/**
 		@brief Return a presolved copy of the output source.
 		@param[in] filter the mask filter.
 		@param[in] newthemes the presolved themes.
 		@return the presolved output source.
 		*/
-		FMTOutputSource presolve(const FMTMaskFilter& filter,const std::vector<FMTTheme>& newthemes) const;
+		FMTOutputSource preSolve(const FMTMaskFilter& filter,const std::vector<FMTTheme>& newthemes) const;
 		// DocString: FMTOutputSource::setAverage
 		/**
 		@brief Set the output source as an average.

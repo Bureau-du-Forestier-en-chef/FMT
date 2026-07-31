@@ -460,7 +460,7 @@ namespace Core
 	protected:
 		// DocString: FMTList::_compressMasks
 		/**
-		@brief Compress multiple masks into a single one when they hold the same data, generating aggregates and changing the themes, used during presolve for actions and transitions.
+		@brief Compress multiple masks into a single one when they hold the same data, generating aggregates and changing the themes, used during preSolve for actions and transitions.
 		@param[in,out] newthemes the themes, modified by the compression.
 		*/
 		void _compressMasks(std::vector<FMTTheme>& newthemes)
@@ -548,7 +548,7 @@ namespace Core
 				_exhandler->raiseFromCatch("", "compressMasks", __LINE__, __FILE__);
 				}
 			}
-		// DocString: FMTList::_presolveList
+		// DocString: FMTList::_preSolveList
 		/**
 		@brief Reduce the number of elements in the list by deleting those not represented in the base mask.
 		@details Use with care because it changes the state of the list; referencing a deleted element makes the model seem broken.
@@ -556,7 +556,7 @@ namespace Core
 		@param[in] originalthemes the original themes.
 		@param[in] newthemes the presolved themes.
 		*/
-		void _presolveList(
+		void _preSolveList(
 			const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			const std::vector<FMTTheme>& newthemes)
@@ -571,9 +571,9 @@ namespace Core
 				while (dataId!=0)
 					{
 					--dataId;
-					if (!filter.emptyFlipped() && filter.canPresolve(m_data[dataId].first, maskthemes))
+					if (!filter.emptyFlipped() && filter.canPreSolve(m_data[dataId].first, maskthemes))
 						{
-						m_data[dataId].first.presolveRef(filter, newthemes,false);
+						m_data[dataId].first.preSolveRef(filter, newthemes,false);
 					}else {
 						m_data.erase(m_data.begin() + dataId);
 						}
@@ -585,12 +585,12 @@ namespace Core
 				newData.reserve(m_data.size());
 				for (const std::pair<FMTMask, T>& object : m_data)
 				{
-					if (filter.canPresolve(object.first,maskthemes))
+					if (filter.canPreSolve(object.first,maskthemes))
 					{
 						FMTMask mskkey = object.first;
 						if (!filter.emptyFlipped())
 						{
-							mskkey = mskkey.presolve(filter, newthemes);
+							mskkey = mskkey.preSolve(filter, newthemes);
 						}
 						pushToData(newData, mskkey, object.second);
 					}
@@ -600,7 +600,7 @@ namespace Core
 				//data.shrink_to_fit();
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch("","FMTList::_presolveList", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("","FMTList::_preSolveList", __LINE__, __FILE__);
 				}
 			}
 		// DocString: FMTList::_copyData

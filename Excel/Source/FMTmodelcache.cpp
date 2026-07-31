@@ -916,7 +916,7 @@ namespace Wrapper
 	}
 
 
-	std::vector<std::string> FMTmodelcache::getactions(const std::string& filter) const
+	std::vector<std::string> FMTmodelcache::getActions(const std::string& filter) const
 	{
 		std::vector<std::string>actionsname;
 		actionsname.reserve(actions.size());
@@ -931,12 +931,12 @@ namespace Wrapper
 				}
 		}catch (...)
 			{
-			_exhandler->printExceptions("", "FMTmodelcache::getactions", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getActions", __LINE__, __FILE__);
 			}
 		return actionsname;
 	}
 
-	std::vector<std::string> FMTmodelcache::getconstraints(const std::string& output) const
+	std::vector<std::string> FMTmodelcache::getConstraints(const std::string& output) const
 	{
 		std::vector<std::string>constraintsname;
 		constraintsname.reserve(constraints.size());
@@ -952,7 +952,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("", "FMTmodelcache::getconstraints", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTmodelcache::getConstraints", __LINE__, __FILE__);
 		}
 		return constraintsname;
 	}

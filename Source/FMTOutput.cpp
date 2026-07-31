@@ -868,7 +868,7 @@ size_t FMTOutput::size() const
 	}
 
 
-FMTOutput FMTOutput::presolve(const FMTMaskFilter& filter,
+FMTOutput FMTOutput::preSolve(const FMTMaskFilter& filter,
 	const std::vector<FMTTheme>& originalthemes,
 	const std::vector<const FMTTheme*>& selectedthemes,
 	const std::vector<FMTTheme>& newthemes,
@@ -893,14 +893,14 @@ FMTOutput FMTOutput::presolve(const FMTMaskFilter& filter,
 			{
 				const std::string& actionname = m_sources.at(sourceid).getAction();
 				const bool IS_VALId_ACTION = _isValidAction(actionname,actions, p_valideActions);
-				if (filter.canPresolve(m_sources.at(sourceid).getMask(), selectedthemes) &&
+				if (filter.canPreSolve(m_sources.at(sourceid).getMask(), selectedthemes) &&
 					(actionname.empty() ||
 						IS_VALId_ACTION) &&
 						(yieldname.empty() || !yields.isNullYld(yieldname)))
 				{
 					if (!filter.emptyFlipped())
 					{
-						newsources.push_back(m_sources.at(sourceid).presolve(filter, newthemes));
+						newsources.push_back(m_sources.at(sourceid).preSolve(filter, newthemes));
 						pushfactor = true;
 					}else {
 						pushedsource = false;
@@ -955,7 +955,7 @@ FMTOutput FMTOutput::presolve(const FMTMaskFilter& filter,
 		newoutput.m_operators.swap(newoperators);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for "+this->getName(),"FMTOutput::presolve", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raiseFromCatch("for "+this->getName(),"FMTOutput::preSolve", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
@@ -1322,15 +1322,15 @@ std::vector<const Core::FMTTheme*>FMTOutput::getStaticThemes(const std::vector<C
 	}
 
 
-void FMTOutput::setPeriod(const int& newperiod)
+void FMTOutput::setPeriod(const int& newPeriod)
 	{
 	for (FMTOutputSource& source : m_sources)
 		{
-		source.setBounds(FMTPerBounds(FMTsection::Outputs, newperiod, newperiod));
+		source.setBounds(FMTPerBounds(FMTsection::Outputs, newPeriod, newPeriod));
 		}
 	}
 
-bool FMTOutput::isActionbased() const
+bool FMTOutput::isActionBased() const
 	{
 	for (const FMTOutputSource& source : m_sources)
 		{

@@ -254,7 +254,7 @@ namespace Models
 			}
 		}
 
-	void FMTLpSolver::setMIPgaptolerance(const double& gap)
+	void FMTLpSolver::setMipGapTolerance(const double& gap)
 	{
 		try {
 			switch (solvertype)
@@ -270,13 +270,13 @@ namespace Models
 			#endif
 			default:
 				_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set gap tolerance for " + getSolverName(),
-					"FMTLpSolver::setMIPgaptolerance", __LINE__, __FILE__);
+					"FMTLpSolver::setMipGapTolerance", __LINE__, __FILE__);
 				break;
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTLpSolver::setMIPgaptolerance", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpSolver::setMipGapTolerance", __LINE__, __FILE__);
 		}
 	}
 
@@ -314,12 +314,12 @@ namespace Models
 			}
 			catch (...)
 			{
-				_exhandler->raiseFromCatch("", "FMTLpSolver::setMIPgaptolerance", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTLpSolver::setMipGapTolerance", __LINE__, __FILE__);
 			}
 		}
 
 
-	void FMTLpSolver::setoptimizerMAXtime(const double& time)
+	void FMTLpSolver::setOptimizerMaxTime(const double& time)
 		{
 			try {
 				switch (solvertype)
@@ -335,13 +335,13 @@ namespace Models
 				#endif
 				default:
 					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set max time for " + getSolverName(),
-						"FMTLpSolver::setoptimizerMAXtime", __LINE__, __FILE__);
+						"FMTLpSolver::setOptimizerMaxTime", __LINE__, __FILE__);
 					break;
 				}
 			}
 			catch (...)
 			{
-				_exhandler->raiseFromCatch("", "FMTLpSolver::setMIPgaptolerance", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTLpSolver::setMipGapTolerance", __LINE__, __FILE__);
 			}
 		}
 
@@ -378,7 +378,7 @@ namespace Models
 	}
 #endif
 
-	void FMTLpSolver::_setCLPOptions()
+	void FMTLpSolver::_setClpOptions()
 	{
 		OsiClpSolverInterface* clpsolver = nullptr;
 		clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
@@ -413,7 +413,7 @@ namespace Models
 					8 - bit set to do scaling
 					16 - set to be aggressive with gamma/delta?
 					32 - Use KKT
-				5 - for presolve
+				5 - for preSolve
 					1 - switch off dual stuff
 				6 - extra switches
 				*/
@@ -465,7 +465,7 @@ namespace Models
 				case FMTsolverinterface::CLP:
 				{
 					OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
-					_setCLPOptions();
+					_setClpOptions();
 					clpsolver->initialSolve();
 				}
 				break;
@@ -597,12 +597,12 @@ namespace Models
 
 	int FMTLpSolver::getNumCols() const
 		{
-		return solverinterface->getNumCols() + matrixcache.numbernewCols() - matrixcache.numberofdeletedCols();
+		return solverinterface->getNumCols() + matrixcache.numberNewCols() - matrixcache.numberOfDeletedCols();
 		}
 
 	int FMTLpSolver::getNumRows() const
 	{
-		return solverinterface->getNumRows() + matrixcache.numbernewRows() - matrixcache.numberofdeletedRows();
+		return solverinterface->getNumRows() + matrixcache.numberNewRows() - matrixcache.numberOfDeletedRows();
 	}
 
 	const double* FMTLpSolver::getColLower() const
@@ -1094,7 +1094,7 @@ namespace Models
 	}
 	*/
 
-	void FMTLpSolver::writeLP(const std::string& location) const
+	void FMTLpSolver::writeLp(const std::string& location) const
 		{
 		try{
 			matrixcache.synchronize(solverinterface);
@@ -1113,7 +1113,7 @@ namespace Models
 					colnames.push_back(strdup(buffer));
 					if (strlen(buffer)>100)
 						{
-						_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Buffer size for colnames is bigger than allowed in CLPIO", "FMTLpSolver::writeLP", __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Buffer size for colnames is bigger than allowed in CLPIO", "FMTLpSolver::writeLp", __LINE__, __FILE__);
 						}
 					}
 				for (int rowid = 0; rowid < solverinterface->getNumRows(); ++rowid)
@@ -1123,7 +1123,7 @@ namespace Models
 					rownames.push_back(strdup(buffer));
 					if (strlen(buffer)>100)
 					{
-						_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Buffer size for rownames is bigger than allowed in CLPIO", "FMTLpSolver::writeLP", __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Buffer size for rownames is bigger than allowed in CLPIO", "FMTLpSolver::writeLp", __LINE__, __FILE__);
 					}
 				}
 				rownames.push_back(strdup("objective"));
@@ -1144,17 +1144,17 @@ namespace Models
 			
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("", "FMTLpSolver::writeLP", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLpSolver::writeLp", __LINE__, __FILE__);
 			}
 		}
-	void FMTLpSolver::writeMPS(const std::string& location) const
+	void FMTLpSolver::writeMps(const std::string& location) const
 		{
 		try {
 			matrixcache.synchronize(solverinterface);
 			solverinterface->writeMps(location.c_str());
 		}catch (...)
 			{
-				_exhandler->raiseFromCatch("", "FMTLpSolver::writeMPS", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("", "FMTLpSolver::writeMps", __LINE__, __FILE__);
 			}
 		}
 
@@ -1258,11 +1258,11 @@ namespace Models
 		{
 		try{
 		const int numberofnoncacherows = solverinterface->getNumRows();
-		if (matrixcache.numberofdeletedRows() >0 || matrixcache.numberofdeletedCols() > 0)
+		if (matrixcache.numberOfDeletedRows() >0 || matrixcache.numberOfDeletedCols() > 0)
 			{
 			matrixcache.synchronize(solverinterface);
 		}else if (whichRow >= numberofnoncacherows &&
-			whichRow <(numberofnoncacherows + matrixcache.numbernewRows()))
+			whichRow <(numberofnoncacherows + matrixcache.numberNewRows()))
 			{
 			return matrixcache.getRow(whichRow, rowLower, rowUpper, indices, elements);
 			}
@@ -1299,13 +1299,13 @@ namespace Models
 		{
 		try{
 		const int numberofnoncachecols = solverinterface-> getNumCols();
-		const int numberofdeletedcols = matrixcache.numberofdeletedCols();
-		if (matrixcache.numberofdeletedRows() > 0 || matrixcache.numberofdeletedCols() > 0)
+		const int numberofdeletedcols = matrixcache.numberOfDeletedCols();
+		if (matrixcache.numberOfDeletedRows() > 0 || matrixcache.numberOfDeletedCols() > 0)
 		{
 			matrixcache.synchronize(solverinterface);
 		}
 		else if (whichCol >= numberofnoncachecols &&
-			whichCol < (numberofnoncachecols + matrixcache.numbernewCols()))
+			whichCol < (numberofnoncachecols + matrixcache.numberNewCols()))
 		{
 			return matrixcache.getCol(whichCol, colLower, colUpper, objectiveValue, indices, elements);
 		}

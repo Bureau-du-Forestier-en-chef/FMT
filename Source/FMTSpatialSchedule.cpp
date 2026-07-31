@@ -909,7 +909,7 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 			double infeasibilities = 0;
 			getSolutionStatus(objective, infeasibilities, p_Graphs, false, false);
 			const double global = (objective + infeasibilities);
-			std::vector<Core::FMTConstraint>constraints = p_Graphs.getModel().getconstraints();
+			std::vector<Core::FMTConstraint>constraints = p_Graphs.getModel().getConstraints();
 			const double sizefactor = static_cast<double>(constraints.size());
 			const double localw = std::abs(global / sizefactor);
 			double value = 1;
@@ -946,7 +946,7 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		std::vector<double>allvalues;
 		try {
 			assert(isPartial() || m_mapping.size() == _getNonSpatialCellsCount());
-			const std::vector<Core::FMTConstraint>& CONSTRAINTS = p_Graphs.getModel().getconstraints();
+			const std::vector<Core::FMTConstraint>& CONSTRAINTS = p_Graphs.getModel().getConstraints();
 			allvalues.push_back(this->getObjectiveValue(p_Graphs,false));
 			for (size_t ConstraintId = 1; ConstraintId < CONSTRAINTS.size(); ++ConstraintId)
 				{
@@ -1011,7 +1011,7 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 					"Cannot use a non complete schedule ",
 					"FMTSpatialSchedule::isBetterThan", __LINE__, __FILE__);
 			}
-			const std::vector<Core::FMTConstraint> constraints = p_Graphs.getModel().getconstraints();
+			const std::vector<Core::FMTConstraint> constraints = p_Graphs.getModel().getConstraints();
 			size_t maximalgroup = 0;
 			for (const Core::FMTConstraint& constraint : constraints)
 				{
@@ -1070,7 +1070,7 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		const FMTSpatialGraphs& p_Graphs, bool withsense,bool withfactorization, bool withspatial) const
 	{
 		try {
-			//std::vector<Core::FMTConstraint>constraints = model.getconstraints();
+			//std::vector<Core::FMTConstraint>constraints = model.getConstraints();
 			objective = this->getObjectiveValue(p_Graphs, withsense);
 			if (withfactorization&&!m_ConstraintsFactor.empty())
 				{
@@ -1429,7 +1429,7 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		//std::vector<const Graph::FMTLineGraph*>graphs;
 		std::vector<FMTCoordinate>coordinates;
 		try {
-			if (node.isActionbased()&& node.source.isVariable())
+			if (node.isActionBased()&& node.source.isVariable())
 			{
 				std::vector<bool>targetedactions(actions.size(),false);
 				for (const Core::FMTAction* actionptr : node.source.targets(actions))
@@ -1459,7 +1459,7 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 		std::vector<const Graph::FMTLineGraph*>graphs;
 
 		try {
-		if (constraint.isActionbased())
+		if (constraint.isActionBased())
 			{
 			std::vector<int>targetedactions;
 			for (const Core::FMTOutputSource& osource : constraint.getSources())
@@ -1514,7 +1514,7 @@ std::map<std::string,double> FMTSpatialSchedule::_getOutputFromGraph(const Graph
 	{
 	std::map<std::string, double> values;
 	try{
-	if (!(node.isActionbased()&&linegraph.isOnlyGrow(period)))
+	if (!(node.isActionBased()&&linegraph.isOnlyGrow(period)))
 	{
 		boost::unordered_map<Core::FMTMask, double>::const_iterator cashit = nodecache.find(nodemask);
 		if (cashit != nodecache.end() && level == Core::FMToutputlevel::totalonly)//get it from cashing
@@ -1549,7 +1549,7 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 	{
 	try {
 		m_Tracker = p_Graphs.getBaseSolution();
-		const std::vector<Core::FMTAction> postsolveactions = p_Graphs.getModel().getactions();
+		const std::vector<Core::FMTAction> postsolveactions = p_Graphs.getModel().getActions();
 		std::vector<int>actionmapping;
 		actionmapping.reserve(p_PresolveActions.size());
 		for (const Core::FMTAction action : p_PresolveActions)
@@ -1577,16 +1577,16 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 		}
 	}
 
-FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTMaskFilter& p_filter,
+FMTSpatialSchedule FMTSpatialSchedule::preSolve(const Core::FMTMaskFilter& p_filter,
 	FMTSpatialGraphs& p_Graphs, size_t p_ReserveSize) const
 	{
 	FMTSpatialSchedule presolvedSchedule;
 	try {
-		if (actPeriod() != 1)//just presolve if no solution
+		if (actPeriod() != 1)//just preSolve if no solution
 			{
 			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 				"Cannot presolve a schedule with more than 1 period",
-				"FMTSpatialSchedule::presolve", __LINE__, __FILE__);
+				"FMTSpatialSchedule::preSolve", __LINE__, __FILE__);
 			}
 		presolvedSchedule.m_scheduleType = FMTSpatialScheduletype::FMTcomplete;
 		presolvedSchedule.FMTLayer<FMTVirtualLineGraph>::operator = (copyExtent<FMTVirtualLineGraph>());
@@ -1598,7 +1598,7 @@ FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTMaskFilter& p_fil
 			{
 			//std::queue<Graph::FMTLineGraph::FMTvertex_descriptor> allDescriptors = graphIt->second.getLineGraph().getActiveVertices();
 			const Core::FMTDevelopment& NON_PRESOLVED = graphIt->second.getLineGraph().getPeriodStopDev(0);
-			const Core::FMTActualDevelopment PRESOLVED_DEV = Core::FMTActualDevelopment(NON_PRESOLVED, getCellSize()).presolve(p_filter, p_Graphs.getModel().themes);
+			const Core::FMTActualDevelopment PRESOLVED_DEV = Core::FMTActualDevelopment(NON_PRESOLVED, getCellSize()).preSolve(p_filter, p_Graphs.getModel().themes);
 			if (cacheGraph.find(PRESOLVED_DEV) == cacheGraph.end())
 			{
 				std::vector<Core::FMTActualDevelopment> actDevelopment;
@@ -1615,7 +1615,7 @@ FMTSpatialSchedule FMTSpatialSchedule::presolve(const Core::FMTMaskFilter& p_fil
 			}
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTSpatialSchedule::preSolve", __LINE__, __FILE__);
 		}
 	return presolvedSchedule;
 	}
@@ -1805,7 +1805,7 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 				"FMTSpatialSchedule::referenceBuild", __LINE__, __FILE__);
 		}
 		const int period = this->actPeriod();
-		//this->setnewperiod();
+		//this->setNewPeriod();
 		//std::default_random_engine generator(seed);
 		double total_area = 0;
 		std::vector<double>targets(model.actions.size(),0.0);
@@ -2089,7 +2089,7 @@ void FMTSpatialSchedule::setGrow(const std::vector<FMTCoordinate>& p_coordinates
 			for (int period = 1; period <= p_model.getParameter(Models::FMTintmodelparameters::LENGTH);++period)
 				{
 				std::map<Core::FMTDevelopment, std::vector<bool>>tabouOperability;
-				const std::vector<std::vector<bool>>GRAPH_ACTIONS = VirtualGraph.getLineGraph().getactions(p_model, 
+				const std::vector<std::vector<bool>>GRAPH_ACTIONS = VirtualGraph.getLineGraph().getActions(p_model, 
 																					period, tabouOperability);
 				FMTEventContainer newEvents;
 				const FMTEventContainer EVENTS_TO_ERASE = m_events.getEventsToErase(period, GRAPH_ACTIONS,
@@ -2155,7 +2155,7 @@ void FMTSpatialSchedule::perturbGraph(const FMTCoordinate& coordinate,const int&
 		const auto& Vgraph = m_mapping.at(coordinate);
 		const size_t graphsize = Vgraph.getLineGraph().size();
 		std::map<Core::FMTDevelopment, std::vector<bool>>tabuoperability;
-		const std::vector<std::vector<bool>>actions = Vgraph.getLineGraph().getactions(model, period, tabuoperability);
+		const std::vector<std::vector<bool>>actions = Vgraph.getLineGraph().getActions(model, period, tabuoperability);
 		bool dontbuildgrowth = false;
 		std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>>ToFitIncache;
 		if (!actions.empty())

@@ -242,11 +242,11 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		@brief Grow every graph of the schedule by one period.
 		*/
 		void grow();
-		// DocString: FMTSpatialSchedule::setnewperiod
+		// DocString: FMTSpatialSchedule::setNewPeriod
 		/**
 		@brief Set a new period in the schedule.
 		*/
-		//void setnewperiod();
+		//void setNewPeriod();
 		// DocString: FMTSpatialSchedule::getSchedules
 		/**
 		@brief Return the operated schedules from the line graphs.
@@ -580,14 +580,14 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		// DocString: FMTSpatialSchedule::postSolve
 		/**
 		@brief Postsolve the spatial solution.
-		@param[in] p_Filter the filter used for the presolve.
+		@param[in] p_Filter the filter used for the preSolve.
 		@param[in] p_PresolveActions the presolved actions.
 		@param[in,out] p_Graphs the spatial graphs.
 		*/
 		void postSolve(const Core::FMTMaskFilter&  p_Filter,
 			const std::vector<Core::FMTAction>& p_PresolveActions,
 			Spatial::FMTSpatialGraphs& p_Graphs);
-		// DocString: FMTSpatialSchedule::presolve
+		// DocString: FMTSpatialSchedule::preSolve
 		/**
 		@brief Return a presolved solution of the original solution.
 		@param[in] p_filter the filter used to keep the mask.
@@ -595,7 +595,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		@param[in] p_ReserveSize the number of vertices to reserve per line graph.
 		@return the presolved schedule.
 		*/
-		FMTSpatialSchedule presolve(const Core::FMTMaskFilter& p_filter,
+		FMTSpatialSchedule preSolve(const Core::FMTMaskFilter& p_filter,
 			FMTSpatialGraphs& p_Graphs,size_t p_ReserveSize) const;
 		// DocString: FMTSpatialSchedule::getArea
 		/**
@@ -719,11 +719,11 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		std::map<std::string,double> _getOutputFromGraph(const Graph::FMTLineGraph& linegraph, const Models::FMTModel & model,
 			const Core::FMTOutputNode& node, const double* solution,const int&period, const Core::FMTMask& nodemask,
 			boost::unordered_map<Core::FMTMask, double>& nodecache, const Core::FMTTheme*  p_theme,Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
-		// DocString: FMTSpatialSchedule::getmaximalpatchsizes
+		// DocString: FMTSpatialSchedule::getMaximalPatchSizes
 		/**
 		@brief Return the maximal patch size of a vector of spatial actions.
 		*/
-		//std::vector<size_t>getmaximalpatchsizes(const std::vector<FMTspatialaction>& spactions) const;
+		//std::vector<size_t>getMaximalPatchSizes(const std::vector<FMTspatialaction>& spactions) const;
 		// DocString: FMTSpatialSchedule::_inScheduleOperabilities
 		/**
 		@brief Return true if a development is operable for an action in the schedule operabilities.

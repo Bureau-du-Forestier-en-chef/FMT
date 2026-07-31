@@ -262,7 +262,7 @@ std::vector<std::string> FMTYieldParser::_getYldUse(Core::FMTYields& yielddata,
 	}
     return dump;
     }
-void FMTYieldParser::_checkPreexisting(const std::vector<std::string>& preexists) const
+void FMTYieldParser::_checkPreExisting(const std::vector<std::string>& preexists) const
     {
     if (!preexists.empty())
         {
@@ -270,7 +270,7 @@ void FMTYieldParser::_checkPreexisting(const std::vector<std::string>& preexists
             {
             _exhandler->raise(Exception::FMTexc::FMTpreexisting_yield,
 				yl+" at line "+ std::to_string(m_line) + " in " + m_location,
-				"FMTYieldParser::_checkPreexisting", __LINE__, __FILE__, m_section);
+				"FMTYieldParser::_checkPreExisting", __LINE__, __FILE__, m_section);
             }
         }
     }
@@ -540,7 +540,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								values.erase(values.begin());
 								yldsnames = values;
 								dump = _getYldUse(yields, actualyield, values);
-								_checkPreexisting(dump);
+								_checkPreExisting(dump);
 							}
 							else if (!sided)
 							{
@@ -582,7 +582,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								std::vector<std::string>tyld = { values[0] };
 								values.erase(values.begin());
 								dump = _getYldUse(yields, actualyield, tyld);
-								_checkPreexisting(dump);
+								_checkPreExisting(dump);
 								if (actualyield->second->empty())
 								{
 									actualyield->second->pushBase(_getNum<int>(values[0], constants));
@@ -607,7 +607,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								values.erase(values.begin());
 								yldsnames = values;
 								dump = _getYldUse(yields, actualyield, values);
-								_checkPreexisting(dump);
+								_checkPreExisting(dump);
 							}
 							else if (!sided)
 							{
@@ -667,7 +667,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									yldsnames.push_back(values[0]);
 									dump.clear();
 									dump = _getYldUse(yields, actualyield, values);
-									_checkPreexisting(dump);
+									_checkPreExisting(dump);
 									values.erase(values.begin());
 									//Need to check if rest of values is a _discountfactor!!!
 									const std::string joinedvalues = boost::algorithm::join(values, "");
@@ -788,7 +788,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 									actualyield->second->pushData(yldname, Core::FMTData(cvalues, complextype, csource, stacking));
 								}
 								dump = _getYldUse(yields, actualyield, theylds);
-								_checkPreexisting(dump);
+								_checkPreExisting(dump);
 								if (overyld)//deal with the last inserted yield to take into account override!
 								{
 									_setOveridedYlds(yields, actualyield,yldname);
@@ -821,7 +821,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								std::vector<std::string>newyields;
 								boost::split(newyields, yieldsarray, boost::is_any_of(yieldseparators), boost::token_compress_on);
 								dump = _getYldUse(yields, actualyield, newyields);
-								_checkPreexisting(dump);
+								_checkPreExisting(dump);
 
 								for (auto& yld : inputYields)
 								{

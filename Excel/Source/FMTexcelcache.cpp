@@ -244,7 +244,7 @@ namespace Wrapper
 				const std::string sfile = context.marshal_as<std::string>(scenario);
 				std::vector<std::string>scenarios(1, sfile);
 				const std::vector<Models::FMTModel> allmodels = parser->readproject(pfile, scenarios);
-				const std::vector<std::vector<Core::FMTSchedule>>allschedule = parser->readschedules(pfile, allmodels);
+				const std::vector<std::vector<Core::FMTSchedule>>allschedule = parser->readSchedules(pfile, allmodels);
 				const std::string mappath = getmappath(pfile);
 				int period = 0;
 				for (const Core::FMTSchedule& schedule : allschedule.at(0))
@@ -535,7 +535,7 @@ namespace Wrapper
 		return list;
 	}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getconstraints(System::String^ primaryname, System::String^ scenario, System::String^ output)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getConstraints(System::String^ primaryname, System::String^ scenario, System::String^ output)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -545,7 +545,7 @@ namespace Wrapper
 			{
 				msclr::interop::marshal_context context;
 				const std::string sfilter = context.marshal_as<std::string>(output);
-				for (const std::string& value : mit->second.getconstraints(sfilter))
+				for (const std::string& value : mit->second.getConstraints(sfilter))
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
@@ -555,7 +555,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getconstraints");
+			captureexception("FMTexcelcache::getConstraints");
 		}
 		return list;
 	}
@@ -608,7 +608,7 @@ namespace Wrapper
 
 
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getactions(System::String^ primaryname, System::String^ scenario, System::String^ filter)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getActions(System::String^ primaryname, System::String^ scenario, System::String^ filter)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -618,7 +618,7 @@ namespace Wrapper
 			{
 				msclr::interop::marshal_context context;
 				const std::string sfilter = context.marshal_as<std::string>(filter);
-				for (const std::string& value : mit->second.getactions(sfilter))
+				for (const std::string& value : mit->second.getActions(sfilter))
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
@@ -628,7 +628,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getactions");
+			captureexception("FMTexcelcache::getActions");
 		}
 		return list;
 	}

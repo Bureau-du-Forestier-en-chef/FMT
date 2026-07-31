@@ -248,11 +248,11 @@ class FMTEXPORT FMTObject
 		@brief Check if the user has sent a ctrl-c signal using boost::python to FMT.
 		*/
 		void checkSignals() const;
-		// DocString: FMTObject::setCPLhandler
+		// DocString: FMTObject::setCplHandler
 		/**
 		@brief Pass the FMT exception handler to the GDAL exception handler (GDAL only).
 		*/
-		void setCPLhandler();
+		void setCplHandler();
 		// DocString: FMTObject::getClock
 		/**
 		@brief Return a clock of the current time.

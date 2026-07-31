@@ -37,7 +37,7 @@ int main()
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTSesModel simulationmodel(models.at(0));
-	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readschedules(primarylocation, models);
+	const std::vector<std::vector<Core::FMTSchedule>> schedules = mparser.readSchedules(primarylocation, models);
 	std::vector<Core::FMTTransition> strans;
 	for (const auto& tran : simulationmodel.getTransitions())
 		{
@@ -78,7 +78,7 @@ int main()
 	}
 	mparser.writeResults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
 	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getSpSchedule();
-	const std::string stats = spatialsolution.getPatchStats(simulationmodel.getactions());
+	const std::string stats = spatialsolution.getPatchStats(simulationmodel.getActions());
 	std::vector<std::string>results;
 	boost::split(results, stats, boost::is_any_of("\n"));
 	for (const std::string& result : results)

@@ -38,7 +38,8 @@ namespace Core {
 		if (FIRST_LENGTH == SECOND_LENGTH)
 		{
 			size_t i = FIRST_LENGTH;
-			while (!equal && i > 0)
+			equal = true;
+			while (equal && i > 0)
 			{
 				--i;
 				equal = (p_first[i] == p_second[i]);

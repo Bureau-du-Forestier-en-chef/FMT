@@ -117,14 +117,14 @@ namespace Heuristics
 			@brief Default destructor for FMTOperatingArea.
 			*/
 			virtual ~FMTOperatingArea()=default;
-			// DocString: FMTOperatingArea::presolve
+			// DocString: FMTOperatingArea::preSolve
 			/**
 			@brief Return a presolved FMTOperatingArea using a mask filter and a subset of the original themes.
 			@param[in] filter the mask filter.
 			@param[in] presolvedthemes the presolved themes.
 			@return the presolved operating area.
 			*/
-			FMTOperatingArea presolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const;
+			FMTOperatingArea preSolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&presolvedthemes) const;
 			// DocString: FMTOperatingArea::postSolve
 			/**
 			@brief Return a postsolved FMTOperatingArea using a mask filter and the original themes.
@@ -132,7 +132,7 @@ namespace Heuristics
 			@param[in] basethemes the base themes.
 			@return the postsolved operating area.
 			*/
-			FMTOperatingArea postsolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const;
+			FMTOperatingArea postSolveOperatingArea(const Core::FMTMaskFilter& filter, const std::vector<Core::FMTTheme>&basethemes) const;
 
 		protected:
 		// DocString: FMTOperatingArea::m_mask

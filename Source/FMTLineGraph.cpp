@@ -68,7 +68,7 @@ namespace Graph
         return *this;
     }
 
-	/*void FMTLineGraph::newperiod()
+	/*void FMTLineGraph::newPeriod()
 	{
 		try {
 			size_t activessize = 0;
@@ -86,15 +86,15 @@ namespace Graph
 			rebaseCache();
 			if (activessize > 1)
 			{
-				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than one active at the begining of the period", "FMTLineGraph::newperiod()", __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than one active at the begining of the period", "FMTLineGraph::newPeriod()", __LINE__, __FILE__);
 			}
 			if (activessize < 1)
 			{
-				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "0 actives at the begining of the period", "FMTLineGraph::newperiod()", __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "0 actives at the begining of the period", "FMTLineGraph::newPeriod()", __LINE__, __FILE__);
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTLineGraph::newperiod", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTLineGraph::newPeriod", __LINE__, __FILE__);
 			}
 	}*/
 
@@ -194,7 +194,7 @@ namespace Graph
 			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vdesc, data); inedge_iterator != inedge_end; ++inedge_iterator)
 			{
 				const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-				const int id = edgeprop.getactionID();
+				const int id = edgeprop.getActionID();
 				ids.push_back(id);
 			}
 			if (ids.size() > 1)
@@ -263,7 +263,7 @@ namespace Graph
 					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(outv, data); inedge_iterator != inedge_end; ++inedge_iterator)
 					{
 						const FMTBaseEdgeProperties& edgeprop = data[*inedge_iterator];
-						const int id = edgeprop.getactionID();
+						const int id = edgeprop.getActionID();
 						ids.push_back(id);
 					}*/
 				}
@@ -491,7 +491,7 @@ namespace Graph
 	{
 		try {
 			
-			const int id = edgeproperty.getactionID();
+			const int id = edgeproperty.getActionID();
 			return  (id >=0 && actions.find(id) != actions.end());
 		}
 		catch (...)
@@ -757,7 +757,7 @@ namespace Graph
 			while (edge_iterator != edge_iterator_end && periodcount <= maximalperiod)
 			{
 				const FMTBaseEdgeProperties& edgeprop = data[*edge_iterator];
-				const int actionid = edgeprop.getactionID();
+				const int actionid = edgeprop.getActionID();
 				hashstr += std::to_string(actionid);
 				if (actionid < 0)
 				{
@@ -782,7 +782,7 @@ namespace Graph
 		return hashstr;
 		}
 
-	std::vector<std::vector<bool>>FMTLineGraph::getactions(const Models::FMTModel& model, const int& fromperiod,
+	std::vector<std::vector<bool>>FMTLineGraph::getActions(const Models::FMTModel& model, const int& fromperiod,
 		std::map<Core::FMTDevelopment, std::vector<bool>>& operability) const
 		{
 		std::vector<std::vector<bool>>allactions;
@@ -796,7 +796,7 @@ namespace Graph
 			while (edge_iterator != edge_iterator_end)
 			{
 				const FMTBaseEdgeProperties& edgeprop = data[*edge_iterator];
-				const int actionid = edgeprop.getactionID();
+				const int actionid = edgeprop.getActionID();
 				if (actionid >= 0)
 				{
 					const FMTvertex_descriptor descriptor = boost::source(*edge_iterator, data);
@@ -831,7 +831,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTLineGraph::getactions", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("", "FMTLineGraph::getActions", __LINE__, __FILE__);
 		}
 		return allactions;
 		}
@@ -841,7 +841,7 @@ namespace Graph
 		return boost::hash<std::string>{}(getEdgesStr(maximalperiod, gotthewhole));
 		}
 
-	/*void FMTLineGraph::addfromevents(const Spatial::FMTCoordinate& localisation, const Models::FMTModel& model, Spatial::FMTEventContainer& events) const
+	/*void FMTLineGraph::addFromEvents(const Spatial::FMTCoordinate& localisation, const Models::FMTModel& model, Spatial::FMTEventContainer& events) const
 		{
 		try{
 		FMTedge_iterator edge_iterator,edge_iterator_end;
@@ -849,7 +849,7 @@ namespace Graph
 		while (edge_iterator!= edge_iterator_end)
 			{
 			const FMTBaseEdgeProperties& edgeprop = data[*edge_iterator];
-			const int actionid = edgeprop.getactionID();
+			const int actionid = edgeprop.getActionID();
 			if (actionid>=0)
 				{
 				const FMTvertex_descriptor descriptor = boost::source(*edge_iterator,data);
@@ -861,7 +861,7 @@ namespace Graph
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTLineGraph::addfromevents", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTLineGraph::addFromEvents", __LINE__, __FILE__);
 		}
 		}*/
 

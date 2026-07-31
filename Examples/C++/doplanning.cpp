@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 
 			}*/
 			//modelparser.writeResults(optimizationmodel, outputs, 10, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
-			//optimizationmodel.writeLP("D:/test/"+ scenario+".lp");
+			//optimizationmodel.writeLp("D:/test/"+ scenario+".lp");
 		}
 		
 		

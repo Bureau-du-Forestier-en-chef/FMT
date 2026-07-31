@@ -240,57 +240,57 @@ namespace Models
 		@return a unique pointer to the copied FMTModel.
 		*/
 		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
-		// DocString: FMTModel::basePresolve
+		// DocString: FMTModel::basePreSolve
 		/**
 		@brief Presolve the model using the existing area.
 		@details Can reduce the number of global themes, actions, transitions, yields, lifespans, outputs and constraints if the model is badly formulated.
 		@return the presolved FMTModel.
 		*/
-		FMTModel basePresolve() const;
-		// DocString: FMTModel::getPresolveFilter
+		FMTModel basePreSolve() const;
+		// DocString: FMTModel::getPreSolveFilter
 		/**
-		@brief Get the presolve filter.
+		@brief Get the preSolve filter.
 		@param[in] originalthemes the original themes of the model.
-		@return the presolve mask filter.
+		@return the preSolve mask filter.
 		*/
-		Core::FMTMaskFilter getPresolveFilter(const std::vector<Core::FMTTheme>& originalthemes) const;
-		// DocString: FMTModel::getPostsolveFilter
+		Core::FMTMaskFilter getPreSolveFilter(const std::vector<Core::FMTTheme>& originalthemes) const;
+		// DocString: FMTModel::getPostSolveFilter
 		/**
-		@brief Get the postsolve filter used by the presolve, to turn a presolved mask into a postsolve mask.
+		@brief Get the postsolve filter used by the preSolve, to turn a presolved mask into a postsolve mask.
 		@param[in] originalthemes the original themes of the model.
 		@param[in] devmask the development mask.
 		@return the postsolve mask filter.
 		*/
-		Core::FMTMaskFilter getPostsolveFilter(const std::vector<Core::FMTTheme>& originalthemes, const Core::FMTMask& devmask) const;
+		Core::FMTMaskFilter getPostSolveFilter(const std::vector<Core::FMTTheme>& originalthemes, const Core::FMTMask& devmask) const;
 		// DocString: FMTModel::getSelectedMask
 		/**
-		@brief Get the selection mask needed to presolve a FMTMask when the model is presolved.
+		@brief Get the selection mask needed to preSolve a FMTMask when the model is presolved.
 		@param[in] originalthemes the original themes of the model.
 		@return the selection mask.
 		*/
 		Core::FMTMask getSelectedMask(const std::vector<Core::FMTTheme>& originalthemes) const;
-		// DocString: FMTModel::presolve
+		// DocString: FMTModel::preSolve
 		/**
 		@brief Return a new presolved FMTModel using developments and the actual transitions of the model.
 		@details Can reduce the number of global themes, actions, transitions, yields, lifespans, outputs and constraints if the model is badly formulated.
-		@param[in] optionaldevelopments optional developments to presolve on.
+		@param[in] optionaldevelopments optional developments to preSolve on.
 		@return a unique pointer to the presolved FMTModel.
 		*/
-		virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+		virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTModel::postSolve
 		/**
 		@brief Postsolve the presolved model into the original model.
 		@param[in] originalbasemodel the original base model.
 		*/
 		virtual void postSolve(const FMTModel& originalbasemodel);
-		// DocString: FMTModel::presolveSchedule
+		// DocString: FMTModel::preSolveSchedule
 		/**
 		@brief Return a new schedule with presolved development masks and actions.
 		@param[in] originalbaseschedule the original (not presolved) schedule.
 		@param[in] originalbasemodel the original (not presolved) model.
 		@return the presolved schedule.
 		*/
-		Core::FMTSchedule presolveSchedule(const Core::FMTSchedule& originalbaseschedule,
+		Core::FMTSchedule preSolveSchedule(const Core::FMTSchedule& originalbaseschedule,
 			const FMTModel& originalbasemodel) const;
 		// DocString: FMTModel::getModelStats
 		/**
@@ -321,12 +321,12 @@ namespace Models
 		{
 			return themes;
 		}
-		// DocString: FMTModel::getactions
+		// DocString: FMTModel::getActions
 		/**
 		@brief Return a copy of the actions of the model.
 		@return the model actions.
 		*/
-		inline std::vector<Core::FMTAction>getactions() const
+		inline std::vector<Core::FMTAction>getActions() const
 		{
 			return actions;
 		}
@@ -366,12 +366,12 @@ namespace Models
 		{
 			return outputs;
 		}
-		// DocString: FMTModel::getconstraints
+		// DocString: FMTModel::getConstraints
 		/**
 		@brief Return a copy of the constraints of the model.
 		@return the model constraints.
 		*/
-		inline std::vector<Core::FMTConstraint>getconstraints() const
+		inline std::vector<Core::FMTConstraint>getConstraints() const
 		{
 			return constraints;
 		}
@@ -891,12 +891,12 @@ namespace Models
 		*/
 		Core::FMTMask getBaseMask(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const;
 		
-		// DocString: FMTModel::getStaticPresolveThemes
+		// DocString: FMTModel::getStaticPreSolveThemes
 		/**
 		@brief Return the themes that are not part of the model, using the transition themes, constraints, actions and yields.
-		@return the static presolve themes.
+		@return the static preSolve themes.
 		*/
-		std::vector<const Core::FMTTheme*>getStaticPresolveThemes() const;
+		std::vector<const Core::FMTTheme*>getStaticPreSolveThemes() const;
 		// DocString: FMTModel::clearActionsCache
 		/**
 		@brief Clear the cached actions data.

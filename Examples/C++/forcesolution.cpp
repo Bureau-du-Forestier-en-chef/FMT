@@ -34,7 +34,7 @@ int main()
 		initialmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		initialmodel.setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
 		Models::FMTLpModel optimizationmodel(initialmodel, Models::FMTsolverinterface::CLP);
-		const std::vector<Core::FMTSchedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
+		const std::vector<Core::FMTSchedule>schedules = modelparser.readSchedules(primarylocation,models).at(0);
 		optimizationmodel.doPlanning(false,schedules);
         std::vector<Core::FMTSchedule> lockedproportionscheduled;
 		for (size_t period = 1; period <= static_cast<size_t>(lenght); ++period)

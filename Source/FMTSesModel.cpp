@@ -83,13 +83,13 @@ namespace Models
 		*this = std::move(*dynamic_cast<FMTSesModel*>(rhs.get()));
 	}
 
-	std::unique_ptr<FMTModel>FMTSesModel::presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTModel>FMTSesModel::preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments) const
 		{
 		try {
-			return std::unique_ptr<FMTModel>(new FMTSesModel(*(dynamic_cast<FMTSeModel*>(FMTSeModel::presolve(optionaldevelopments).get()))));
+			return std::unique_ptr<FMTModel>(new FMTSesModel(*(dynamic_cast<FMTSeModel*>(FMTSeModel::preSolve(optionaldevelopments).get()))));
 		}catch (...)
 		{
-			_exhandler->printExceptions("", "FMTSesModel::presolve", __LINE__, __FILE__);
+			_exhandler->printExceptions("", "FMTSesModel::preSolve", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTModel>(nullptr);
 		}

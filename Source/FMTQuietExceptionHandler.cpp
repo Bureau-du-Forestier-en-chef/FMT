@@ -49,23 +49,23 @@ namespace Exception
 	}
 	#ifdef FMTWITHGDAL
 
-		FMTExceptionHandler* FMTQuietExceptionHandler::getCPLdata()
+		FMTExceptionHandler* FMTQuietExceptionHandler::getCplData()
 			{
 			return this;
 			}
-		void FMTQuietExceptionHandler::handelCPLerror(int eErrClass,int nError, const char * pszErrorMsg)
+		void FMTQuietExceptionHandler::handelCplError(int eErrClass,int nError, const char * pszErrorMsg)
 			{
 			//boost::lock_guard<boost::recursive_mutex> guard(mtx);
             try{
-                FMTExceptionHandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+                FMTExceptionHandler::handelCplError(eErrClass,nError,pszErrorMsg);
             }catch(...)
                 {
-                raiseFromCatch("", "FMTQuietExceptionHandler::handelCPLerror", __LINE__, __FILE__);
+                raiseFromCatch("", "FMTQuietExceptionHandler::handelCplError", __LINE__, __FILE__);
                 }
 			}
 	#endif
 
-	std::unique_ptr <FMTExceptionHandler>  FMTQuietExceptionHandler::Clone() const
+	std::unique_ptr <FMTExceptionHandler>  FMTQuietExceptionHandler::clone() const
 		{
 			return std::unique_ptr<FMTExceptionHandler>(new FMTQuietExceptionHandler(*this));
 		}

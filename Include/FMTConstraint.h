@@ -309,9 +309,9 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		@return true if the output is empty else false.
 		*/
 		size_t outputEmpty() const;
-		// DocString: FMTConstraint::presolve
+		// DocString: FMTConstraint::preSolve
 		/**
-		@brief Presolve the constraint, potentially returning an empty constraint. See FMTOutput::presolve.
+		@brief Presolve the constraint, potentially returning an empty constraint. See FMTOutput::preSolve.
 		@param[in] filter the mask filter.
 		@param[in] originalthemes the original themes.
 		@param[in] selectedthemes the selected themes.
@@ -321,16 +321,16 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		@param[in] yields the yields.
 		@return the presolved constraint.
 		*/
-		FMTConstraint presolve(const FMTMaskFilter& filter,
+		FMTConstraint preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			const std::vector<const FMTTheme*>& selectedthemes,
 			const std::vector<FMTTheme>& newthemes,
 			const std::vector<FMTAction>& actions,
 			const std::vector<bool>& p_valideActions,
 			const FMTYields& yields) const;
-		// DocString: FMTConstraint::presolveRef
+		// DocString: FMTConstraint::preSolveRef
 		/**
-		@brief Presolve the constraint in place. See FMTOutput::presolve.
+		@brief Presolve the constraint in place. See FMTOutput::preSolve.
 		@param[in] p_filter the mask filter.
 		@param[in] p_originalThemes the original themes.
 		@param[in] p_selectedThemes the selected themes.
@@ -339,7 +339,7 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		@param[in] p_valideActions the valid actions.
 		@param[in] p_yields the yields.
 		*/
-		void presolveRef(const FMTMaskFilter& p_filter,
+		void preSolveRef(const FMTMaskFilter& p_filter,
 			const std::vector<FMTTheme>& p_originalThemes,
 			const std::vector<const FMTTheme*>& p_selectedThemes,
 			const std::vector<FMTTheme>& p_newThemes,

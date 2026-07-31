@@ -166,7 +166,7 @@ namespace FMTWrapperCore
         if (!params.constraintNames.empty())
         {
             simulationModel.setConstraints(
-                filterConstraints(simulationModel.getconstraints(), params.constraintNames));
+                filterConstraints(simulationModel.getConstraints(), params.constraintNames));
         }
 
         applySingleTransitions(simulationModel);
@@ -286,7 +286,7 @@ namespace FMTWrapperCore
             // les mêmes messages pour les retourner à l'appelant.
             semodel.logConstraintsInfeasibilities();
 
-            const std::vector<Core::FMTConstraint> constraints = semodel.getconstraints();
+            const std::vector<Core::FMTConstraint> constraints = semodel.getConstraints();
             double brokenup = 0;
             double total = 0;
 
@@ -345,7 +345,7 @@ namespace FMTWrapperCore
         if (!params.constraintNames.empty())
         {
             optimizationModel.setConstraints(
-                filterConstraints(optimizationModel.getconstraints(), params.constraintNames));
+                filterConstraints(optimizationModel.getConstraints(), params.constraintNames));
         }
 
         applySingleTransitions(optimizationModel);
@@ -435,7 +435,7 @@ namespace FMTWrapperCore
                 CarbonReportData::PeriodData periodData;
                 periodData.period = period;
 
-                std::vector<Core::FMTConstraint> periodicconstraints = semodel.getconstraints();
+                std::vector<Core::FMTConstraint> periodicconstraints = semodel.getConstraints();
                 for (Core::FMTConstraint& periodconstraint : periodicconstraints)
                 {
                     const int lowerperiod = periodconstraint.getPeriodLowerBound();
@@ -524,7 +524,7 @@ namespace FMTWrapperCore
                 semodel.getThemes(),
                 growthThemeIndices);
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTAction> actions = semodel.getactions();
+            const std::vector<Core::FMTAction> actions = semodel.getActions();
 
             Parser::FMTTransitionParser transitionparser;
             Parser::FMTAreaParser areaparser;
@@ -564,7 +564,7 @@ namespace FMTWrapperCore
         try
         {
             const Spatial::FMTSpatialSchedule& schedule = semodel.getSpSchedule();
-            const std::vector<Core::FMTAction> actions = semodel.getactions();
+            const std::vector<Core::FMTAction> actions = semodel.getActions();
             eventsData.statistics = schedule.getPatchStats(actions);
         }
         catch (std::exception& e)

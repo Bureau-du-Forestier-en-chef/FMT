@@ -83,12 +83,12 @@ namespace Parallel
 		@brief Called right after the last task is done, when overridden.
 		*/
 		virtual void finalize();
-		// DocString: FMTTask::isdone()
+		// DocString: FMTTask::isDone()
 		/**
 		@brief Return true if the job is all done.
 		@return true if the job is done else false.
 		*/
-		//bool isdone() const;
+		//bool isDone() const;
 		// DocString: FMTTask::getThreadId()
 		/**
 		@brief Get the thread id of the task.
@@ -112,11 +112,11 @@ namespace Parallel
 		///Logger for solver in parallel...coinmessagehandler does not support concurency.
 		///This logger wont print anything so dont use it in parallel.
 		std::unique_ptr<Logging::FMTLogger>m_tasklogger;
-		// DocString: FMTTask::setstatus()
+		// DocString: FMTTask::setStatus()
 		/**
 		@brief Change the status of the task.
 		*/
-		//void setstatus(bool status);
+		//void setStatus(bool status);
 		// DocString: FMTTask::_splitWork
 		/**
 		@brief Split the total work size into buckets that are as equal as possible.

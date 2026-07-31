@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	//const std::vector<std::string>scenarios(1, "tactique");
 	//const std::vector<std::string>scenarios(1, "strategique");
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-	//optmodel.writeLP("D:/FMT/build/release/tests/testmodelwriter/strategic");
+	//optmodel.writeLp("D:/FMT/build/release/tests/testmodelwriter/strategic");
 	//return 0;
 	modelparser.write(models.at(0), outdir); // On va chercher le modèle
 	const std::vector<Models::FMTModel> rereadmodels = modelparser.readproject(outdir + models.at(0).getName() + ".pri", std::vector<std::string>(1, "ROOT"));

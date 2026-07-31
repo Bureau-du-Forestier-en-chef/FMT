@@ -117,14 +117,14 @@ class FMTEXPORT FMTModelParser : public FMTParser
 		*/
 		void writeToProject(const std::string& primarym_location,
 			const Models::FMTModel& model);
-		// DocString: FMTModelParser::readschedules
+		// DocString: FMTModelParser::readSchedules
 		/**
 		@brief Read the schedule files of the models based on a primary file.
 		@param[in] primarym_location the primary file location.
 		@param[in] models the models.
 		@return a vector of schedules per model.
 		*/
-		std::vector<std::vector<Core::FMTSchedule>>readschedules(const std::string& primarym_location,
+		std::vector<std::vector<Core::FMTSchedule>>readSchedules(const std::string& primarym_location,
 			const std::vector<Models::FMTModel>& models);
 		// DocString: FMTModelParser::getConstraintsFromString
 		/**

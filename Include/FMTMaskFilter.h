@@ -25,7 +25,7 @@ namespace Core
 
 // DocString: FMTMaskFilter
 /**
-@brief Filter built from masks used to presolve and postsolve FMTMask objects.
+@brief Filter built from masks used to preSolve and postsolve FMTMask objects.
 */
 class FMTEXPORT FMTMaskFilter
     {
@@ -55,15 +55,15 @@ class FMTEXPORT FMTMaskFilter
         FMTMaskFilter& operator = (const FMTMaskFilter& rhs);
 		// DocString: FMTMaskFilter(const FMTMask&, const FMTMask&)
 		/**
-		@brief Construct a filter from a presolve selection mask and a buffer mask.
-		@param[in] presolveselection the presolve selection mask.
+		@brief Construct a filter from a preSolve selection mask and a buffer mask.
+		@param[in] presolveselection the preSolve selection mask.
 		@param[in] buffermask the buffer mask.
 		*/
 		FMTMaskFilter(const FMTMask& presolveselection, const FMTMask& buffermask);
 		// DocString: FMTMaskFilter(const FMTMask&)
 		/**
-		@brief Construct a filter from a presolve selection mask.
-		@param[in] presolveselection the presolve selection mask.
+		@brief Construct a filter from a preSolve selection mask.
+		@param[in] presolveselection the preSolve selection mask.
 		*/
 		FMTMaskFilter(const FMTMask& presolveselection);
         // DocString: FMTMaskFilter(std::vector<FMTMask>&)
@@ -92,21 +92,21 @@ class FMTEXPORT FMTMaskFilter
 		@param[in,out] rhs the filter to swap with.
 		*/
 		void swap(FMTMaskFilter& rhs);
-		// DocString: FMTMaskFilter::presolve
+		// DocString: FMTMaskFilter::preSolve
 		/**
 		@brief Return a presolved copy of the filter.
 		@param[in] themes the themes.
 		@return the presolved filter.
 		*/
-		FMTMaskFilter presolve(const std::vector<FMTTheme>& themes) const;
-		// DocString: FMTMaskFilter::canPresolve
+		FMTMaskFilter preSolve(const std::vector<FMTTheme>& themes) const;
+		// DocString: FMTMaskFilter::canPreSolve
 		/**
 		@brief Return true if the mask can be presolved with the filter.
 		@param[in] mask the mask to check.
 		@param[in] themes the themes.
 		@return true if the mask can be presolved else false.
 		*/
-		bool canPresolve(const FMTMask& mask, const std::vector<const Core::FMTTheme*>& themes) const;
+		bool canPreSolve(const FMTMask& mask, const std::vector<const Core::FMTTheme*>& themes) const;
 		// DocString: FMTMaskFilter::getSelectedThemes
 		/**
 		@brief Return the themes selected by the filter.

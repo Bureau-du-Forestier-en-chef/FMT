@@ -79,16 +79,16 @@ void exportModel()
 				"@DocString(FMTModel::getthemes)")
 			.def("setthemes", &Models::FMTModel::setThemes,
 				"@DocString(FMTModel::setthemes)")
-            .def("getactions",&Models::FMTModel::getactions,
-				"@DocString(FMTModel::getactions)")
+            .def("getactions",&Models::FMTModel::getActions,
+				"@DocString(FMTModel::getActions)")
 			.def("setactions", &Models::FMTModel::setActions,
 				"@DocString(FMTModel::setactions)")
 			.def("getoutputs", &Models::FMTModel::getOutputs,
 				"@DocString(FMTModel::getoutputs)")
 			.def("setoutputs", &Models::FMTModel::setOutputs,
 				"@DocString(FMTModel::setoutputs)")
-			.def("getconstraints", &Models::FMTModel::getconstraints,
-				"@DocString(FMTModel::getconstraints)")
+			.def("getconstraints", &Models::FMTModel::getConstraints,
+				"@DocString(FMTModel::getConstraints)")
 			.def("setconstraints", &Models::FMTModel::setConstraints,
 				"@DocString(FMTModel::setconstraints)")
             .def("gettransitions",&Models::FMTModel::getTransitions,
@@ -107,9 +107,9 @@ void exportModel()
 				"@DocString(FMTModel::clearcache)")
 			.def("getselectedmask",&Models::FMTModel::getSelectedMask,
 				"@DocString(FMTModel::getselectedmask)")
-			.def("getpostsolvefilter",&Models::FMTModel::getPostsolveFilter,
+			.def("getpostsolvefilter",&Models::FMTModel::getPostSolveFilter,
 				"@DocString(FMTModel::getpostsolvefilter)")
-			.def("basepresolve",&Models::FMTModel::basePresolve,
+			.def("basepresolve",&Models::FMTModel::basePreSolve,
 				"@DocString(FMTModel::basepresolve)")
 			.def("isoptimal", &Models::FMTModel::isOptimal,
 				"@DocString(FMTModel::isoptimal)")
@@ -233,14 +233,14 @@ void exportModel()
 			"@DocString(FMTLpSolver::getObjSense)")
 		.def("setnumberofthreads", &Models::FMTLpSolver::setNumberOfThreads,
 			"@DocString(FMTLpSolver::setnumberofthreads)")
-		.def("setMIPgaptolerance", &Models::FMTLpSolver::setMIPgaptolerance,
-			"@DocString(FMTLpSolver::setMIPgaptolerance)")
-		.def("setoptimizerMAXtime", &Models::FMTLpSolver::setoptimizerMAXtime,
-			"@DocString(FMTLpSolver::setoptimizerMAXtime)")
-		.def("writeLP", &Models::FMTLpSolver::writeLP,
-			"@DocString(FMTLpSolver::writeLP)")
-		.def("writeMPS", &Models::FMTLpSolver::writeMPS,
-			"@DocString(FMTLpSolver::writeMPS)");
+		.def("setMIPgaptolerance", &Models::FMTLpSolver::setMipGapTolerance,
+			"@DocString(FMTLpSolver::setMipGapTolerance)")
+		.def("setoptimizerMAXtime", &Models::FMTLpSolver::setOptimizerMaxTime,
+			"@DocString(FMTLpSolver::setOptimizerMaxTime)")
+		.def("writeLP", &Models::FMTLpSolver::writeLp,
+			"@DocString(FMTLpSolver::writeLp)")
+		.def("writeMPS", &Models::FMTLpSolver::writeMps,
+			"@DocString(FMTLpSolver::writeMps)");
 
 	bp::class_<Models::FMTSrModel, bp::bases<Models::FMTModel>>("FMTsrmodel", "@DocString(FMTSrModel)")
 		.def_pickle(FMT_pickle_suite<Models::FMTSrModel>())
@@ -312,8 +312,8 @@ void exportModel()
 			&Models::FMTLpModel::getReplanningConstraints,
 			"@DocString(FMTLpModel::getreplanningconstraints)")
 		.def("writeLP",
-			&Models::FMTLpModel::writeLP,
-			"@DocString(FMTLpModel::writeLP)")
+			&Models::FMTLpModel::writeLp,
+			"@DocString(FMTLpModel::writeLp)")
 		.def("getoperatingareaschedulerheuristics", &Models::FMTLpModel::getOperatingAreaSchedulerHeuristics, getoperatingareaschedulerheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver","updatematrixname"), "@DocString(FMTLpModel::getoperatingareaschedulerheuristics)"))
 		.def("getoperatingareaclustererheuristics", &Models::FMTLpModel::getOperatingAreaClustererHeuristics, getoperatingareaclustererheuristics_overloads(bp::args("opareas", "statisticoutput", "areaoutput", "period", "numberofheuristics"), "@DocString(FMTLpModel::getoperatingareaschedulerheuristics)"))
 		.def("getvariabilities", &Models::FMTLpModel::getVariabilities, "@DocString(FMTLpModel::getvariabilities)")

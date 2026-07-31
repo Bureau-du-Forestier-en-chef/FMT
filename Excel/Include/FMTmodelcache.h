@@ -51,12 +51,12 @@ namespace Wrapper
 		std::vector<std::string> getAttributes(const int& themeid, const std::string& value, const bool& aggregates) const;
 		std::vector<std::string> getattributesdescription(const int& themeid, const std::string& value) const;
 		std::vector<std::string> getAggregates(const int& themeid) const;
-		std::vector<std::string> getactions(const std::string& filter) const;
+		std::vector<std::string> getActions(const std::string& filter) const;
 		std::vector<std::string> getactionaggregates(const std::string& filter) const;
 		std::vector<std::string> getOutputs() const;
 		std::vector<std::string> getYields() const;
 		std::vector<std::string> getThemes() const;
-		std::vector<std::string> getconstraints(const std::string& output) const;
+		std::vector<std::string> getConstraints(const std::string& output) const;
 		std::vector<std::string> getBuildExceptions(const int& exceptionid) const;
 		std::vector<std::string> getnoaction(const std::string& filter) const;
 		std::set<Core::FMTSerie> getRotations(const std::string& themeselection, const std::string& aggregate) const;

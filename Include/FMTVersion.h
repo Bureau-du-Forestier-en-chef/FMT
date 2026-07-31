@@ -73,12 +73,12 @@ class FMTEXPORT FMTVersion : public Core::FMTObject
 		@return the version string.
 		*/
 		static std::string getVersion();
-		// DocString: FMTVersion::getDatenow
+		// DocString: FMTVersion::getDateNow
 		/**
 		@brief Return the actual date (Day Month date).
 		@return the actual date.
 		*/
-		static std::string getDatenow();
+		static std::string getDateNow();
 		// DocString: FMTVersion::getBuildDate
 		/**
 		@brief Return the build date of FMT.
@@ -108,6 +108,13 @@ class FMTEXPORT FMTVersion : public Core::FMTObject
 		@return the license string.
 		*/
 		static std::string getLicense(bool french=false);
+		// DocString: FMTVersion::getChangelog
+		/**
+		@brief Return the changelog as a string.
+		@param[in] french if true returns the changelog in French.
+		@return the changelog string.
+		*/
+		static std::string getChangelog(bool french=false);
 	};
 }
 

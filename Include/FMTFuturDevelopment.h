@@ -76,7 +76,7 @@ namespace Core
 			@brief Return a unique pointer of FMTDevelopment cloning the future development.
 			@return a unique pointer to the cloned development.
 			*/
-			std::unique_ptr<FMTDevelopment> Clone() const override;
+			std::unique_ptr<FMTDevelopment> clone() const override;
 			// DocString: FMTFuturDevelopment::getArea
 			/**
 			@brief Return the area of the future development, which is 0.

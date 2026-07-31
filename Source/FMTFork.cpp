@@ -64,18 +64,18 @@ FMTFork::FMTFork():FMTSpec(),FMTObject(), m_transitions()
         return line;
         }
 
-	FMTFork FMTFork::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const
+	FMTFork FMTFork::preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const
 		{
 		FMTFork newfork(*this);
-        newfork.presolveRef(filter, presolvedthemes);
+        newfork.preSolveRef(filter, presolvedthemes);
         return newfork;
 		}
 
-    void FMTFork::presolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes)
+    void FMTFork::preSolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes)
         {
         for (FMTTransitionMask& trmask : m_transitions)
             {
-            trmask.presolveRef(filter, presolvedthemes);
+            trmask.preSolveRef(filter, presolvedthemes);
             }
         }
 

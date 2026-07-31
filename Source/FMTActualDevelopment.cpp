@@ -64,18 +64,18 @@ namespace Core
 
 		}
 
-	FMTActualDevelopment FMTActualDevelopment::presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const
+	FMTActualDevelopment FMTActualDevelopment::preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const
 		{
 		FMTActualDevelopment newDev(*this);
 		try {
 			if (!filter.emptyFlipped())
 			{
-				newDev.setMask(newDev.getMask().presolve(filter, presolvedthemes));
-				//newDev.mask = mask.presolve(selectedmask, presolvedthemes);
+				newDev.setMask(newDev.getMask().preSolve(filter, presolvedthemes));
+				//newDev.mask = mask.preSolve(selectedmask, presolvedthemes);
 			}
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("for "+std::string(*this),"FMTActualDevelopment::presolve", __LINE__, __FILE__);
+			_exhandler->raiseFromCatch("for "+std::string(*this),"FMTActualDevelopment::preSolve", __LINE__, __FILE__);
 			}
 		return newDev;
 		}
@@ -137,7 +137,7 @@ namespace Core
 		area = newarea;
 		}
 
-	std::unique_ptr<FMTDevelopment> FMTActualDevelopment::Clone() const
+	std::unique_ptr<FMTDevelopment> FMTActualDevelopment::clone() const
 		{
 		return std::unique_ptr<FMTDevelopment>(new FMTActualDevelopment(*this));
 		}

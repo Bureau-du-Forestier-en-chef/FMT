@@ -293,26 +293,26 @@ FMTMask FMTTransition::mainTarget(const std::vector<FMTDevelopment>& devs,
 	return (transition.getName()  == m_transitionName);
 	}
 
- FMTTransition FMTTransition::presolve(const FMTMaskFilter& filter,
+ FMTTransition FMTTransition::preSolve(const FMTMaskFilter& filter,
 	 const std::vector<FMTTheme>& originalthemes,
 	 std::vector<FMTTheme>& newthemes,bool compressdata) const
 	{
 	FMTTransition newtransition(*this);
 	try {
-		newtransition.presolveRef(filter, originalthemes, newthemes, compressdata);
+		newtransition.preSolveRef(filter, originalthemes, newthemes, compressdata);
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::presolve", __LINE__, __FILE__, Core::FMTsection::Transition);
+		_exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::preSolve", __LINE__, __FILE__, Core::FMTsection::Transition);
 		}
 	return newtransition;
 	}
 
- void FMTTransition::presolveRef(const FMTMaskFilter& p_filter,
+ void FMTTransition::preSolveRef(const FMTMaskFilter& p_filter,
 	 const std::vector<FMTTheme>& p_originalThemes,
 	 std::vector<FMTTheme>& p_newthemes, bool p_compressdata)
  {
 	 try {
-		_presolveList(p_filter, p_originalThemes, p_newthemes);
+		_preSolveList(p_filter, p_originalThemes, p_newthemes);
 		update();
 		 if (p_compressdata)
 		 {
@@ -322,13 +322,13 @@ FMTMask FMTTransition::mainTarget(const std::vector<FMTDevelopment>& devs,
 		 {
 			 for (auto& transitionobject : *this)
 			 {
-				 transitionobject.second.presolveRef(p_filter, p_newthemes);
+				 transitionobject.second.preSolveRef(p_filter, p_newthemes);
 			 }
 		 }
 	 }
 	 catch (...)
 	 {
-		 _exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::presolveRef", __LINE__, __FILE__, Core::FMTsection::Transition);
+		 _exhandler->raiseFromCatch("for transition " + this->getName(), "FMTTransition::preSolveRef", __LINE__, __FILE__, Core::FMTsection::Transition);
 	 }
  }
 

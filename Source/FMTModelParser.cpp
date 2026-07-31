@@ -401,7 +401,7 @@ namespace Parser {
 		if (!actfile.empty())
 		{
 			FMTActionParser actparser;
-			actparser.write(model.getactions(), actfile);
+			actparser.write(model.getActions(), actfile);
 		}
 		
 		if (!trnfile.empty())
@@ -425,7 +425,7 @@ namespace Parser {
 		}
 		if (!optfile.empty())
 		{
-			const std::vector<Core::FMTConstraint>constraints = model.getconstraints();
+			const std::vector<Core::FMTConstraint>constraints = model.getConstraints();
 			if (!constraints.empty())
 			{
 				FMTOptimizationParser optparser;
@@ -619,7 +619,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 									if (!common_actions.empty())
 									{
 										std::sort(common_actions.begin(), common_actions.end());
-										actions = models.at(*common_actions.begin()).getactions();
+										actions = models.at(*common_actions.begin()).getActions();
 										if (transitions_it != commonm_sections.end())
 										{
 											std::vector<int>common_transitions(common_actions.size() + transitions_it->second.size());
@@ -656,7 +656,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 									if (!common_optimize.empty())
 									{
 										std::sort(common_optimize.begin(), common_optimize.end());
-										constraints = models.at(*common_optimize.begin()).getconstraints();
+										constraints = models.at(*common_optimize.begin()).getConstraints();
 									}
 								}
 							}
@@ -912,7 +912,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 						yldfile = boost::filesystem::path(scenario / (filename + "._yld")).string();
 					}
 					std::string actfile;
-					if (models.begin()->getactions() != model.getactions())
+					if (models.begin()->getActions() != model.getActions())
 					{
 						actfile = boost::filesystem::path(scenario / (filename + "._act")).string();
 					}
@@ -927,7 +927,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 						outfile = boost::filesystem::path(scenario / (filename + "._out")).string();
 					}
 					std::string optfile;
-					if (models.begin()->getconstraints() != model.getconstraints())
+					if (models.begin()->getConstraints() != model.getConstraints())
 					{
 						optfile = boost::filesystem::path(scenario / (filename + "._opt")).string();
 					}
@@ -1148,7 +1148,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 		return std::vector<Models::FMTModel>();
 	}
 
-	std::vector<std::vector<Core::FMTSchedule>>FMTModelParser::readschedules(const std::string& primarym_location,
+	std::vector<std::vector<Core::FMTSchedule>>FMTModelParser::readSchedules(const std::string& primarym_location,
 		const std::vector<Models::FMTModel>& models)
 	{
 		std::vector<std::vector<Core::FMTSchedule>>schedules(models.size());
@@ -1164,13 +1164,13 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 				const boost::filesystem::path root_solution(bases.at(Core::FMTsection::Schedule));
 				if (boost::filesystem::is_regular_file(root_solution))
 				{
-					const std::vector<Core::FMTAction>actions = model_it->getactions();
+					const std::vector<Core::FMTAction>actions = model_it->getActions();
 					const std::vector<Core::FMTTheme>themes = model_it->getThemes();
 					schedules[location] = scheduleparser.read(themes, actions, root_solution.string());
 				}
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTempty_schedules,
-						primarym_location + " for the ROOT scenario", "FMTModelParser::readschedules", __LINE__, __FILE__);
+						primarym_location + " for the ROOT scenario", "FMTModelParser::readSchedules", __LINE__, __FILE__);
 				}
 			}
 			const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
@@ -1194,14 +1194,14 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 							if (boost::filesystem::is_regular_file(solutionpath))
 							{
 								const size_t location = std::distance<std::vector<Models::FMTModel>::const_iterator>(models.begin(), model_it);
-								const std::vector<Core::FMTAction>actions = model_it->getactions();
+								const std::vector<Core::FMTAction>actions = model_it->getActions();
 								const std::vector<Core::FMTTheme>themes = model_it->getThemes();
 								const std::vector<Core::FMTActualDevelopment>area = model_it->getArea();
 								schedules[location] = scheduleparser.read(themes, actions, solutionpath.string());
 							}
 							else {
 								_exhandler->raise(Exception::FMTexc::FMTempty_schedules,
-									primarym_location + " for the scenario " + model_name, "FMTModelParser::readschedules", __LINE__, __FILE__);
+									primarym_location + " for the scenario " + model_name, "FMTModelParser::readSchedules", __LINE__, __FILE__);
 							}
 						}
 					}
@@ -1210,12 +1210,12 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 			if (std::difftime(m_MostRecentFile, scheduleparser.getMostRecentFiletime()) > 0)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"Schedules files older than the model at " + primarym_location, "FMTModelParser::readschedules", __LINE__, __FILE__);
+					"Schedules files older than the model at " + primarym_location, "FMTModelParser::readSchedules", __LINE__, __FILE__);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printExceptions("at " + primarym_location, "FMTModelParser::readschedules", __LINE__, __FILE__);
+			_exhandler->printExceptions("at " + primarym_location, "FMTModelParser::readSchedules", __LINE__, __FILE__);
 		}
 
 		return schedules;

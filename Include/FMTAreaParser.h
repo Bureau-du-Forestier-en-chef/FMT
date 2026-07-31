@@ -181,11 +181,11 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			const int& period,
 			bool periodonevalues = false,
 			bool withGCBMid = true) const;
-		// DocString: FMTAreaParser::writesasolution
+		// DocString: FMTAreaParser::writeSaSolution
 	   /**
 
 	   */
-	   /*bool writesasolution(const std::string location,
+	   /*bool writeSaSolution(const std::string location,
 						   const Spatial::FMTSaSolution& solution,
 						   const std::vector<Core::FMTTheme>& themes,
 						   const std::vector<Core::FMTAction>& actions,
@@ -248,7 +248,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@return the operating area schemes.
 		*/
 		std::vector<Heuristics::FMTOperatingAreaScheme> getOperatingArea(const std::string& fichierShp, const std::vector<Core::FMTTheme>& themes, const int& numeroTheme, const int& startingperiod, const std::string& nomChampAge, const std::string& nomChampSuperficie, const std::string& nomChampStanlock, const std::string& fichierParam) const;
-		// DocString: FMTAreaParser::readOAschedulerparameters
+		// DocString: FMTAreaParser::readOaSchedulerParameters
 		/**
 		@brief Return the operating area schemes from a parameters file, for use in the operating area scheduler.
 		@param[in] location the parameters file location.
@@ -257,15 +257,15 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@param[in] startingperiod the starting period.
 		@return the operating area schemes.
 		*/
-		std::vector<Heuristics::FMTOperatingAreaScheme> readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTTheme>& modelthemes, const int& themetarget, const int& startingperiod) const;
-		// DocString: FMTAreaParser::writeOAschedulerparameters
+		std::vector<Heuristics::FMTOperatingAreaScheme> readOaSchedulerParameters(const std::string& location, const std::vector<Core::FMTTheme>& modelthemes, const int& themetarget, const int& startingperiod) const;
+		// DocString: FMTAreaParser::writeOaSchedulerParameters
 		/**
 		@brief Write a parameters file with the full mask in the OA column into a csv file.
 		@param[in] location the file location.
 		@param[in] OAschemes the operating area schemes.
 		@param[in] creationoptions the creation options.
 		*/
-		void writeOAschedulerparameters(const std::string& location, const std::vector<Heuristics::FMTOperatingAreaScheme>& OAschemes,
+		void writeOaSchedulerParameters(const std::string& location, const std::vector<Heuristics::FMTOperatingAreaScheme>& OAschemes,
 			std::vector<std::string> creationoptions = std::vector<std::string>()) const;
 #endif
 		// DocString: FMTAreaParser::readVectors

@@ -123,21 +123,21 @@ class FMTEXPORT FMTFork : public FMTSpec, public FMTObject
         @return the number of transition masks.
         */
         size_t size() const;
-		// DocString: FMTFork::presolve
+		// DocString: FMTFork::preSolve
 		/**
 		@brief Return a presolved copy of the fork using a mask filter and the presolved themes.
 		@param[in] filter the mask filter.
 		@param[in] presolvedthemes the presolved themes.
 		@return the presolved fork.
 		*/
-		FMTFork presolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const;
-        // DocString: FMTFork::presolveRef
+		FMTFork preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>&presolvedthemes) const;
+        // DocString: FMTFork::preSolveRef
         /**
         @brief Presolve the fork in place using a mask filter and the presolved themes.
         @param[in] filter the mask filter.
         @param[in] presolvedthemes the presolved themes.
         */
-        void presolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes);
+        void preSolveRef(const FMTMaskFilter& filter, const std::vector<FMTTheme>& presolvedthemes);
         // DocString: FMTFork::operator std::string
         /**
         @brief Return the string representation of the fork.

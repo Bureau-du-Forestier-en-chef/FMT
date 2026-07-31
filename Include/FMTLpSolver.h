@@ -141,20 +141,20 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@param[in] nthread the number of threads.
 		*/
 		void setNumberOfThreads(const size_t& nthread);
-		// DocString: FMTLpSolver::setMIPgaptolerance
+		// DocString: FMTLpSolver::setMipGapTolerance
 		/**
 		@brief Set the tolerance between the relaxed optimal and the integer optimal.
 		@details The default is 1.0e-4; a larger gap such as 0.01 (1%) or even 5% may be better. Not all solvers can have the MIP gap set.
 		@param[in] gap the MIP gap tolerance.
 		*/
-		void setMIPgaptolerance(const double& gap);
-		// DocString: FMTLpSolver::setoptimizerMAXtime
+		void setMipGapTolerance(const double& gap);
+		// DocString: FMTLpSolver::setOptimizerMaxTime
 		/**
 		@brief Set the maximum amount of time the optimizer is allowed to spend on the optimization.
 		@details A negative number means infinity.
 		@param[in] time the maximum optimization time.
 		*/
-		void setoptimizerMAXtime(const double& time);
+		void setOptimizerMaxTime(const double& time);
 		// DocString: FMTLpSolver::setFeasiblePumpImprovSol
 		/**
 		@brief Set the mixed-integer optimizer parameters, including the way the feasibility pump heuristic is employed to improve solution quality.
@@ -448,18 +448,18 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@param[in] rowid the row index.
 		*/
 		void setRowName(const std::string& name, const int& rowid) const;
-		// DocString: FMTLpSolver::writeLP
+		// DocString: FMTLpSolver::writeLp
 		/**
 		@brief Write the solver interface matrix to a file using the LP formulation.
 		@param[in] location the file location.
 		*/
-		void writeLP(const std::string& location) const;
-		// DocString: FMTLpSolver::writeMPS
+		void writeLp(const std::string& location) const;
+		// DocString: FMTLpSolver::writeMps
 		/**
 		@brief Write the solver interface matrix to a file using the MPS formulation.
 		@param[in] location the file location.
 		*/
-		void writeMPS(const std::string& location) const;
+		void writeMps(const std::string& location) const;
 		// DocString: FMTLpSolver::branchAndBound
 		/**
 		@brief Synchronize the matrix cache and call the branch and bound MIP enumeration solver.
@@ -672,11 +672,11 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		*/
 		int _mskOptimizeWithDefaultParameters();
 	#endif
-		// DocString: FMTLpSolver::_setCLPOptions
+		// DocString: FMTLpSolver::_setClpOptions
 		/**
 		@brief Set the options of a CLP solver before optimization.
 		*/
-		void _setCLPOptions();
+		void _setClpOptions();
 		
 	};
 }

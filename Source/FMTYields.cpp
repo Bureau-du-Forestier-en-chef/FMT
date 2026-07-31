@@ -285,19 +285,19 @@ void FMTYields::reserve(const FMTYields& p_other)
 	}
 
 
-FMTYields FMTYields::presolve(const FMTMaskFilter& filter,
+FMTYields FMTYields::preSolve(const FMTMaskFilter& filter,
 	const std::vector<FMTTheme>& originalthemes,
 	const std::vector<FMTTheme>& newthemes) const
 	{
 	FMTYields newyields(*this);
 	try {
 		
-		newyields._presolveList(filter, originalthemes, newthemes);
+		newyields._preSolveList(filter, originalthemes, newthemes);
 		if (!filter.emptyFlipped())
 		{
 			for (auto& yieldObject : newyields)
 			{
-				yieldObject.second = yieldObject.second->presolve(filter, newthemes);
+				yieldObject.second = yieldObject.second->preSolve(filter, newthemes);
 				
 			}
 		}
@@ -305,29 +305,29 @@ FMTYields FMTYields::presolve(const FMTMaskFilter& filter,
 		newyields.update();
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("","FMTYields::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+		_exhandler->raiseFromCatch("","FMTYields::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return newyields;
 	}
 
-void FMTYields::presolveRef(const FMTMaskFilter& p_filter,
+void FMTYields::preSolveRef(const FMTMaskFilter& p_filter,
 	const std::vector<FMTTheme>& p_originalThemes,
 	const std::vector<FMTTheme>& p_newThemes)
 {
 	try {
-		_presolveList(p_filter, p_originalThemes, p_newThemes);
+		_preSolveList(p_filter, p_originalThemes, p_newThemes);
 		if (!p_filter.emptyFlipped())
 		{
 			for (auto& yieldobject : *this)
 			{
-				yieldobject.second = yieldobject.second->presolve(p_filter, p_newThemes);
+				yieldobject.second = yieldobject.second->preSolve(p_filter, p_newThemes);
 			}
 		}
 		update();
 	}
 	catch (...)
 	{
-		_exhandler->raiseFromCatch("", "FMTYields::presolveRef", __LINE__, __FILE__, Core::FMTsection::Yield);
+		_exhandler->raiseFromCatch("", "FMTYields::preSolveRef", __LINE__, __FILE__, Core::FMTsection::Yield);
 	}
 }
 
@@ -396,7 +396,7 @@ double FMTYields::get(const FMTYieldRequest& request, const std::string& yld) co
 	return 0;
 }
 
-/*double FMTYields::getsingle(const FMTDevelopment& dev,
+/*double FMTYields::getSingle(const FMTDevelopment& dev,
 	const std::string& target) const
 {
 	try {

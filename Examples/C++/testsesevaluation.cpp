@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 				100,
 				0,
 				0.1);
-			const std::vector<Core::FMTConstraint>BASE_CONSTRAINTS = simmodel.getconstraints();
+			const std::vector<Core::FMTConstraint>BASE_CONSTRAINTS = simmodel.getConstraints();
 			size_t i = 0;
 			for (const Core::FMTConstraint& constraint : BASE_CONSTRAINTS)
 			{

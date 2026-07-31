@@ -48,12 +48,12 @@ namespace Exception
 		@brief Default constructor for FMTExcelExceptionHandler.
 		*/
 		FMTExcelExceptionHandler();
-		// DocString: FMTExcelExceptionHandler::Clone
+		// DocString: FMTExcelExceptionHandler::clone
 		/**
-		@brief Clone the FMTExcelExceptionHandler.
+		@brief clone the FMTExcelExceptionHandler.
 		@return a unique pointer to the cloned exception handler.
 		*/
-		virtual std::unique_ptr <FMTExceptionHandler> Clone() const;
+		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
 	private:
 		std::unordered_map<int, std::vector<std::string>>build_exceptions;
 	};

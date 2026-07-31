@@ -75,11 +75,11 @@ class FMTEXPORT FMTLineGraph : public FMTGraph<FMTBaseVertexProperties,FMTBaseEd
 		@return a reference to this FMTLineGraph.
 		*/
         FMTLineGraph& operator = (const FMTGraph<FMTBaseVertexProperties,FMTBaseEdgeProperties>& rhs);
-		// DocString: FMTLineGraph::newperiod
+		// DocString: FMTLineGraph::newPeriod
 		/**
 		@brief Generate a new period container at the end of the line graph.
 		*/
-		//void newperiod();
+		//void newPeriod();
 		// DocString: FMTLineGraph::setAction
 		/**
 		@brief Add an action edge based on paths on an active vertex.
@@ -172,7 +172,7 @@ class FMTEXPORT FMTLineGraph : public FMTGraph<FMTBaseVertexProperties,FMTBaseEd
 		std::vector<int> randomBuildPeriod(const Models::FMTModel& model,std::default_random_engine& generator,
 									boost::unordered_map<Core::FMTDevelopment, std::vector<int>>& operability,
 									bool dontchoosegrow=false);
-		// DocString: FMTLineGraph::getactions
+		// DocString: FMTLineGraph::getActions
 		/**
 		@brief Return, starting from a period, a vector of booleans per period indicating whether each action is operable.
 		@param[in] model the model.
@@ -180,7 +180,7 @@ class FMTEXPORT FMTLineGraph : public FMTGraph<FMTBaseVertexProperties,FMTBaseEd
 		@param[in,out] operability the operability cache.
 		@return the operable actions per period.
 		*/
-		std::vector<std::vector<bool>>getactions(const Models::FMTModel& model,const int& fromperiod,
+		std::vector<std::vector<bool>>getActions(const Models::FMTModel& model,const int& fromperiod,
 			std::map<Core::FMTDevelopment, std::vector<bool>>& operability) const;
 		// DocString: FMTLineGraph::getBaseDevelopment
 		/**
@@ -264,11 +264,11 @@ class FMTEXPORT FMTLineGraph : public FMTGraph<FMTBaseVertexProperties,FMTBaseEd
 		@return true if the graph only grows else false.
 		*/
 		bool isOnlyGrow(int period=0) const;
-		// DocString: FMTLineGraph::addfromevents
+		// DocString: FMTLineGraph::addFromEvents
 		/**
 		@brief Add actions (edges) and vertices to the graph based on an event.
 		*/
-		//void addfromevents(const Spatial::FMTCoordinate& localisation,const Models::FMTModel& model, Spatial::FMTEventContainer& events) const;
+		//void addFromEvents(const Spatial::FMTCoordinate& localisation,const Models::FMTModel& model, Spatial::FMTEventContainer& events) const;
 		// DocString: FMTLineGraph::ismovable
 		/**
 		@brief Return true if the graph can be modified at a period, operated by a different action or turned into natural growth.

@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
 		modelparser.writeresults(optimizationmodel, outputs, 1, length, outputlocation, Core::FMToutputlevel::totalonly);
 		for (int period = 1; period <= length; ++period)
 			{
-			areaparser.writeDisturbances(outputlocation, optimizationmodel.getSpSchedule(), optimizationmodel.getactions(), optimizationmodel.getthemes(), period);
+			areaparser.writeDisturbances(outputlocation, optimizationmodel.getSpSchedule(), optimizationmodel.getActions(), optimizationmodel.getthemes(), period);
 			}*/
 		
 	}

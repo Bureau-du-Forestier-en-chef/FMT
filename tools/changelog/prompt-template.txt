@@ -1,0 +1,65 @@
+Tu es un assistant qui rédige le CHANGELOG d'un projet logiciel.
+
+Voici la liste des commits git (hors merges) pour la plage {{RANGE}} du dépôt FMT
+(Forest Management Tool, C++ / interface R). Les messages sont souvent bruts,
+incohérents ou de type « work in progress ». Ta tâche : produire un changelog propre,
+lisible et fidèle.
+
+CONSIGNES
+1. Classe les changements selon Keep a Changelog :
+   Added / Changed / Deprecated / Removed / Fixed / Security.
+   Mappe les Conventional Commits : feat -> Added, fix -> Fixed,
+   refactor|perf -> Changed, docs -> une puce sous Changed (ou ignore si trivial).
+2. CONSOLIDE le bruit : regroupe les commits « work in progress » (ex. « m_batch 7 »,
+   « class block 3 », « cleanup », « minor », « à tester », « working », « update »)
+   en UNE seule entrée thématique et lisible. N'inclus PAS un commit par ligne.
+3. Écris pour un lecteur humain (mainteneur ou utilisateur), pas une liste brute de
+   commits. Ignore les commits purement internes sans valeur pour le lecteur.
+4. Signale explicitement tout changement CASSANT (rupture d'API/comportement) avec le
+   préfixe « **Breaking:** » (FR : « **Cassant :** »).
+5. Si une section DIFF est fournie plus bas, SERS-T'EN pour préciser l'analyse au-delà
+   des messages de commit (fichiers réellement touchés, nature exacte du changement).
+6. ISSUES RÉSOLUES : la section « ISSUES FERMEES ET RESOLUES » en bas de ce message liste
+   les issues fermées comme « completed » (réellement résolues) depuis la dernière version
+   ({{BASE}}, le {{BASE_DATE}}) — les fermetures « not planned » (doublons, invalides,
+   abandonnées) en ont déjà été retirées. Recoupe-les avec les commits et intègre les
+   issues PERTINENTES au changelog (format « #N titre ») dans la catégorie appropriée
+   (souvent Corrigé/Fixed) ; tu peux tout de même écarter une entrée sans valeur pour le
+   lecteur. Si la section est absente ou vide, consulte {{ISSUES_URL}} (ou
+   {{REPO_URL}}/issues) ou les références d'issues présentes dans les commits.
+7. NUMÉRO DE VERSION : propose le prochain numéro en SemVer à partir de la base {{BASE}}
+   (feat -> mineure, fix -> patch, changement cassant -> majeure) et place-le dans le titre.
+   MAIS tu n'es PAS obligé d'incrémenter : si les changements sont trop mineurs pour
+   justifier une nouvelle version, utilise plutôt le titre « ## [Unreleased] » (FR :
+   « ## [Non publié] »), SANS date ni hash, pour accumuler jusqu'à la prochaine vraie
+   version. Emploie le MÊME choix (version, ou non publié) pour les deux blocs.
+
+CONTEXTE VERSION (valeurs réelles fournies par l'outil, à réutiliser telles quelles)
+- Version de base (précédente) : {{BASE}}
+- Date du jour                 : {{DATE}}
+- Dernier commit couvert       : {{HEAD}}
+
+FORMAT DE SORTIE
+Fournis DEUX blocs markdown séparés, prêts à coller TELS QUELS dans le changelog.
+Chaque bloc commence par UN titre, au choix (même choix pour les deux blocs) :
+  - version : « ## [vX.Y.Z] - {{DATE}} ({{HEAD}}) » où vX.Y.Z est ta proposition
+    (n'invente ni la date ni le hash, réutilise ceux ci-dessus) ;
+  - ou, si les changements ne justifient pas encore une version :
+    « ## [Unreleased] » (côté anglais) / « ## [Non publié] » (côté français), sans date ni hash.
+
+=== FRANÇAIS (pour CHANGELOG.fr.md) ===
+## [vX.Y.Z] - {{DATE}} ({{HEAD}})        (ou, si insuffisant : ## [Non publié])
+
+### Ajouté / ### Modifié / ### Corrigé / ### Supprimé   (selon le cas)
+- ...
+
+=== ENGLISH (for CHANGELOG.md) ===
+## [vX.Y.Z] - {{DATE}} ({{HEAD}})        (or, if insufficient: ## [Unreleased])
+
+### Added / ### Changed / ### Fixed / ### Removed   (as applicable)
+- ...
+
+COMMITS
+{{COMMITS}}
+{{DIFF}}
+{{CLOSED_ISSUES}}

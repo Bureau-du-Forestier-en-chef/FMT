@@ -165,8 +165,8 @@ void exportParser()
 					"@DocString(FMTModelParser::read)")
 				.method("readproject", &Parser::FMTModelParser::readproject,
 					"@DocString(FMTModelParser::readproject)")
-				.method("readschedules", &Parser::FMTModelParser::readschedules,
-					"@DocString(FMTModelParser::readschedules)")
+				.method("readschedules", &Parser::FMTModelParser::readSchedules,
+					"@DocString(FMTModelParser::readSchedules)")
                 .method("write",&Parser::FMTModelParser::write,
 					"@DocString(FMTModelParser::write)");
 	Rcpp::class_<Parser::FMTScheduleParser>("FMTscheduleparser", "@DocString(FMTScheduleParser)")

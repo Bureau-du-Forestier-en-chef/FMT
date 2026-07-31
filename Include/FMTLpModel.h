@@ -288,31 +288,31 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		@return the objective value.
 		*/
 		double getObjValue() const;
-		// DocString: FMTLpModel::writeLP
+		// DocString: FMTLpModel::writeLp
 		/**
 		@brief Write the solver interface matrix to a file using the LP formulation.
 		@param[in] location the file location.
 		*/
-		void writeLP(const std::string& location);
-		// DocString: FMTLpModel::writeMPS
+		void writeLp(const std::string& location);
+		// DocString: FMTLpModel::writeMps
 		/**
 		@brief Write the solver interface matrix to a file using the MPS formulation.
 		@param[in] location the file location.
 		*/
-		void writeMPS(const std::string& location);
+		void writeMps(const std::string& location);
 		// DocString: FMTLpModel::clone
 		/**
 		@brief Get a clone of the FMTLpModel.
 		@return a unique pointer to the cloned model.
 		*/
 		virtual std::unique_ptr<FMTModel>clone() const;
-		// DocString: FMTLpModel::presolve
+		// DocString: FMTLpModel::preSolve
 		/**
 		@brief Return a presolved copy of the model using a vector of developments and the actual transitions, reducing the model data if it is badly formulated.
 		@param[in] optionaldevelopments the optional developments.
 		@return the presolved model.
 		*/
-		virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+		virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTModel::build
 		/**
 		@brief Build the graph and set the solution if schedules are passed.
@@ -371,13 +371,13 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		@return the const iterator of the constraint.
 		*/
 		std::vector<Core::FMTConstraint>::const_iterator _getConstraintIndex(const Core::FMTConstraint& p_constraint) const;
-		// DocString: FMTLpModel::_getsetConstraintIndex
+		// DocString: FMTLpModel::_getSetConstraintIndex
 		/**
 		@brief Get or set a constraint and get its iterator.
 		@param[in] p_constraint the constraint to get or set.
 		@return the const iterator of the constraint.
 		*/
-		std::vector<Core::FMTConstraint>::const_iterator _getsetConstraintIndex(const Core::FMTConstraint& p_constraint);
+		std::vector<Core::FMTConstraint>::const_iterator _getSetConstraintIndex(const Core::FMTConstraint& p_constraint);
 		// DocString: FMTLpModel::_getIndex
 		/**
 		@brief Get the index of a const iterator of constraint.
@@ -625,7 +625,7 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
 		// DocString: FMTLpModel::FMTLpModel(const FMTSrModel&)
 		/**
-		@brief Construct a FMTLpModel from a FMTSrModel, for presolve use.
+		@brief Construct a FMTLpModel from a FMTSrModel, for preSolve use.
 		@param[in] rhs the FMTSrModel.
 		*/
 		FMTLpModel(const FMTSrModel& rhs);

@@ -116,21 +116,21 @@ namespace Parser
 		@brief Enumerator of the parsing states of the landscape parser.
 		*/
 		enum class ParseState {NORMAL = 0, IN_PRE_DECLARATION = 1};
-		// DocString: FMTLandscapeParser::PreDeclarationContext
+		// DocString: FMTLandscapeParser::preDeclarationContext
 		/**
 		@brief Context holding the state of a pre declaration during parsing.
 		*/
-		struct PreDeclarationContext {
+		struct preDeclarationContext {
 			ParseState state;
 			std::string currentKey; 
 			std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string>>> declarations;
 			
-			// DocString: FMTLandscapeParser::PreDeclarationContext()
+			// DocString: FMTLandscapeParser::preDeclarationContext()
 			/**
-			@brief Default constructor for PreDeclarationContext.
+			@brief Default constructor for preDeclarationContext.
 			*/
-			PreDeclarationContext();
-			// DocString: FMTLandscapeParser::PreDeclarationContext::clearTheme
+			preDeclarationContext();
+			// DocString: FMTLandscapeParser::preDeclarationContext::clearTheme
 			/**
 			@brief Clear the declarations of a theme.
 			@param[in] nameID the theme name.
@@ -147,13 +147,13 @@ namespace Parser
 		*/
 		bool _processPreDeclarationLine(
 			const std::string& line,
-			PreDeclarationContext& context,
+			preDeclarationContext& context,
 			const Core::FMTConstants& constants);
-		// DocString: FMTLandscapeParser::ThemeParsingContext
+		// DocString: FMTLandscapeParser::themeParsingContext
 		/**
 		@brief Context holding the state of a theme being parsed.
 		*/
-		struct ThemeParsingContext {
+		struct themeParsingContext {
 			std::vector<std::string> attributes;
 			std::vector<std::string> attributenames;
 			std::vector<std::string> aggregates;
@@ -167,12 +167,12 @@ namespace Parser
 			int pasttheme;
 			bool aggregate_redefinition;
 
-			// DocString: FMTLandscapeParser::ThemeParsingContext()
+			// DocString: FMTLandscapeParser::themeParsingContext()
 			/**
-			@brief Default constructor for ThemeParsingContext.
+			@brief Default constructor for themeParsingContext.
 			*/
-			ThemeParsingContext();
-			// DocString: FMTLandscapeParser::ThemeParsingContext::clear
+			themeParsingContext();
+			// DocString: FMTLandscapeParser::themeParsingContext::clear
 			/**
 			@brief Clear the theme parsing context.
 			*/
@@ -190,8 +190,8 @@ namespace Parser
 		*/
 		void _processThemeLine(
 			const boost::smatch& kmatch,
-			ThemeParsingContext& ctx,
-			PreDeclarationContext& preContext,
+			themeParsingContext& ctx,
+			preDeclarationContext& preContext,
 			std::vector<Core::FMTTheme>& themes,
 			const Core::FMTConstants& constants,
 			size_t& unknownID);
@@ -205,7 +205,7 @@ namespace Parser
 		*/
 		void _processAggregateLine(
 			const boost::smatch& kmatch,
-			ThemeParsingContext& ctx,
+			themeParsingContext& ctx,
 			std::vector<Core::FMTTheme>& themes,
 			const Core::FMTConstants& constants);
 		// DocString: FMTLandscapeParser::_processAggregateValueLine
@@ -217,7 +217,7 @@ namespace Parser
 		*/
 		void _processAggregateValueLine(
 			const std::string& line,
-			ThemeParsingContext& ctx,
+			themeParsingContext& ctx,
 			std::vector<Core::FMTTheme>& themes);
 		// DocString: FMTLandscapeParser::_processAttributeLine
 		/**
@@ -228,7 +228,7 @@ namespace Parser
 		*/
 		void _processAttributeLine(
 			const std::string& line,
-			ThemeParsingContext& ctx,
+			themeParsingContext& ctx,
 			const Core::FMTConstants& constants);
     };
 }

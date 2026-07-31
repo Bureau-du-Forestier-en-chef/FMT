@@ -317,13 +317,13 @@ namespace Models
 		@param[in] logger the logger.
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
-		// DocString: FMTSrModel::presolve
+		// DocString: FMTSrModel::preSolve
 		/**
 		@brief Return a presolved copy of the FMTSrModel.
 		@param[in] optionaldevelopments the optional developments.
 		@return the presolved model.
 		*/
-		virtual std::unique_ptr<FMTModel>presolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
+		virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
 		// DocString: FMTSrModel::boundSolution
 		/**
 		@brief Bound the primal variables to the primal solution present in the matrix for a given period and tolerance.
@@ -424,12 +424,12 @@ namespace Models
 		@return the graph size.
 		*/
 		size_t getGraphSize() const;
-		// DocString: FMTSrModel::postsolveGraph
+		// DocString: FMTSrModel::postSolveGraph
 		/**
 		@brief Postsolve the graph, rebuilding each vertex and edge based on the original model.
 		@param[in] originalbasemodel the original base model.
 		*/
-		void postsolveGraph(const FMTModel& originalbasemodel);
+		void postSolveGraph(const FMTModel& originalbasemodel);
 		// DocString: FMTSrModel::getActives
 		/**
 		@brief Initialize the graph based on the area if it is not initialized, otherwise return the active vertices.

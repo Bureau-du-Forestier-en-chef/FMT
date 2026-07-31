@@ -122,19 +122,19 @@ namespace Core
 		return result;
 	}
 
-	std::unique_ptr<FMTYieldModel>FMTYieldModelRandom::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelRandom::clone() const
 		{
 		return std::unique_ptr<FMTYieldModel>(new FMTYieldModelRandom(*this));
 		}
 
-	std::unique_ptr<FMTYieldModel> FMTYieldModelRandom::presolve(const FMTMaskFilter& p_filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelRandom::preSolve(const FMTMaskFilter& p_filter,
 										const std::vector<FMTTheme>& p_newThemes) const
 	{
 		try {
-			return Clone();
+			return clone();
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch(getModelName(), "FMTYieldModelRandom::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(getModelName(), "FMTYieldModelRandom::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
@@ -142,7 +142,7 @@ namespace Core
 	std::unique_ptr<FMTYieldModel> FMTYieldModelRandom::postSolve(const FMTMaskFilter& p_filter,
 		const std::vector<FMTTheme>& p_baseThemes) const
 	{
-		return Clone();
+		return clone();
 	}
 	std::string FMTYieldModelRandom::getModelType()
 	{

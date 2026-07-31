@@ -193,14 +193,14 @@ namespace Core {
 	}
 
 
-	std::unique_ptr<FMTYieldModel>FMTYieldModelDecisionTree::Clone() const
+	std::unique_ptr<FMTYieldModel>FMTYieldModelDecisionTree::clone() const
 	{
 		try {
 			return std::unique_ptr<FMTYieldModel>(new FMTYieldModelDecisionTree(*this));
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
@@ -226,7 +226,7 @@ namespace Core {
 			naturalGrowth->setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
 			naturalGrowth->setArea(newareas);//Will only work with lp model going to get big with semodel...
 			naturalGrowth->setName(std::string(reference->getSources().begin()->getMask()));
-			//std::vector<Core::FMTAction> newactions = naturalGrowth->getactions();
+			//std::vector<Core::FMTAction> newactions = naturalGrowth->getActions();
 			const int updatestopat = m_modelPtr->getParameter(Models::FMTintmodelparameters::UPDATE);
 			/*for (Core::FMTAction& action : newactions)
 			{
@@ -245,7 +245,7 @@ namespace Core {
 			std::vector<Core::FMTConstraint>newconstraints;
 
 			/*size_t constraintid = 0;
-			for (const Core::FMTConstraint& constraint : naturalGrowth->getconstraints())
+			for (const Core::FMTConstraint& constraint : naturalGrowth->getConstraints())
 			{
 				if (constraintid>0)
 				{
@@ -375,7 +375,7 @@ namespace Core {
 	}
 
 	std::unique_ptr<FMTYieldModel> FMTYieldModelDecisionTree::modify(const FMTMaskFilter& filter,
-		const std::vector<FMTTheme>& newthemes, bool presolve) const
+		const std::vector<FMTTheme>& newthemes, bool preSolve) const
 	{
 		try {
 			FMTYieldModelDecisionTree newdecisions(*this);
@@ -386,9 +386,9 @@ namespace Core {
 				if (!constraint.FMTOutput::empty())
 				{
 					Core::FMTOutputSource oldsource = *constraint.getSources().begin();
-					if (presolve)
+					if (preSolve)
 					{
-						oldsource.setMask(oldsource.getMask().presolve(filter, newthemes));
+						oldsource.setMask(oldsource.getMask().preSolve(filter, newthemes));
 					}
 					else {
 						oldsource.setMask(oldsource.getMask().postSolve(filter, newthemes));
@@ -402,9 +402,9 @@ namespace Core {
 				
 			}
 			Core::FMTOutputSource oldsource = *reference->getSources().begin();
-			if (presolve)
+			if (preSolve)
 			{
-				oldsource.setMask(oldsource.getMask().presolve(filter, newthemes));
+				oldsource.setMask(oldsource.getMask().preSolve(filter, newthemes));
 			}
 			else {
 				oldsource.setMask(oldsource.getMask().postSolve(filter, newthemes));
@@ -423,7 +423,7 @@ namespace Core {
 	}
 
 
-	std::unique_ptr<FMTYieldModel> FMTYieldModelDecisionTree::presolve(const FMTMaskFilter& filter,
+	std::unique_ptr<FMTYieldModel> FMTYieldModelDecisionTree::preSolve(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& newthemes) const
 	{
 		try {
@@ -431,7 +431,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}

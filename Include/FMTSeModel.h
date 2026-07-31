@@ -113,13 +113,13 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		@brief Log the constraint factors.
 		*/
 		void logConstraintsFactors() const;
-		// DocString: FMTSeModel::presolve
+		// DocString: FMTSeModel::preSolve
 		/**
 		@brief Return a presolved copy of the model, presolving the forest map and the spatial actions.
 		@param[in] optionaldevelopments the optional developments.
 		@return the presolved model.
 		*/
-		virtual std::unique_ptr<FMTModel>presolve(
+		virtual std::unique_ptr<FMTModel>preSolve(
 			std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
 		// DocString: FMTSeModel::postSolve
 		/**

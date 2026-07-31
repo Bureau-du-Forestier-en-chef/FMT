@@ -52,7 +52,7 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ getAggregates(System::String^ primaryname, System::String^ scenario, int themeid);
 		System::Collections::Generic::List<System::String^>^ getprimaries();
 		System::Collections::Generic::List<System::String^>^ getscenarios(System::String^ fichierprimaire);
-		System::Collections::Generic::List<System::String^>^ getactions(System::String^ primaryname, System::String^ scenario, System::String^ filter);
+		System::Collections::Generic::List<System::String^>^ getActions(System::String^ primaryname, System::String^ scenario, System::String^ filter);
 		System::Collections::Generic::List<System::String^>^ getactionaggregates(System::String^ primaryname, System::String^ scenario, System::String^ filter);
 		System::Collections::Generic::List<System::String^>^ getOutputs(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getYields(System::String^ primaryname, System::String^ scenario);
@@ -63,7 +63,7 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ getRotationsKeys(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate);
 		bool containsRotations(System::String^ primaryname, System::String^ scenario, System::String^ serie, System::String^ themeselection, System::String^ aggregate);
 		System::Collections::Generic::List<int>^ getperiods(System::String^ primaryname, System::String^ scenario);
-		System::Collections::Generic::List<System::String^>^ getconstraints(System::String^ primaryname, System::String^ scenario, System::String^ output);
+		System::Collections::Generic::List<System::String^>^ getConstraints(System::String^ primaryname, System::String^ scenario, System::String^ output);
 		System::Collections::Generic::List<int>^ getgraphstats(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<int>^ getGraphStatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection);
 		bool writejpeg(System::String^ jpeglocation, System::String^ primaryname, System::String^ scenario, int themeid, System::Collections::Generic::List<System::String^>^ attributes);

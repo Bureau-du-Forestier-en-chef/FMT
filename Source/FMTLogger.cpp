@@ -175,7 +175,7 @@ namespace Logging
 	void FMTLogger::logTime()
 		{
 		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		const std::string message = Version::FMTVersion().getDatenow();
+		const std::string message = Version::FMTVersion().getDateNow();
 		*this << (message);
 		}
 
