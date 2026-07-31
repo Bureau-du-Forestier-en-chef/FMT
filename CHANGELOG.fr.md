@@ -7,6 +7,12 @@ et ce projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 
 > English version: [CHANGELOG.md](CHANGELOG.md)
 
+## [Non publié]
+
+### Modifié
+- Amélioration des outils de génération et de publication du changelog.
+- Le script `Release-Changelog.ps1` prend désormais en charge un mode d'accumulation basé sur le titre `## [Non publié]` / `## [Unreleased]`, permettant de valider, committer et pousser les mises à jour du changelog sans créer de tag, de branche d'archivage ni effectuer de mise à jour de version.
+
 ## [v1.1.0] - 2026-07-30 (ac3bddd1)
 
 ### Ajouté

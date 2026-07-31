@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > Version française : [CHANGELOG.fr.md](CHANGELOG.fr.md)
 
+## [Unreleased]
+
+### Changed
+- Improved changelog generation and release tooling.
+- `Release-Changelog.ps1` now supports an accumulation workflow based on the `## [Unreleased]` / `## [Non publié]` heading, allowing changelog updates to be committed and pushed without creating tags, archive branches, or performing version bumps.
+
 ## [v1.1.0] - 2026-07-30 (ac3bddd1)
 
 ### Added
