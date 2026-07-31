@@ -9,9 +9,19 @@ et ce projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
+## [Non publié]
+
+### Ajouté
+- Exposition du changelog à l'exécution via `FMTVersion::getChangelog()`, avec prise en charge des interfaces C++, R et Python.
+- Inclusion des fichiers `CHANGELOG.md` et `CHANGELOG.fr.md` dans les artefacts distribués et les packages générés.
+
 ### Modifié
 - Amélioration des outils de génération et de publication du changelog.
 - Le script `Release-Changelog.ps1` prend désormais en charge un mode d'accumulation basé sur le titre `## [Non publié]` / `## [Unreleased]`, permettant de valider, committer et pousser les mises à jour du changelog sans créer de tag, de branche d'archivage ni effectuer de mise à jour de version.
+- Ajustements de l'installation et du packaging afin de distribuer systématiquement la documentation de licence et le changelog avec les versions publiées.
+
+### Corrigé
+- Correction de l'exposition et de l'empaquetage des informations de licence dans certaines distributions.
 
 ## [v1.1.0] - 2026-07-30 (ac3bddd1)
 
