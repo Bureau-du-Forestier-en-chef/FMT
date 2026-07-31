@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > Version française : [CHANGELOG.fr.md](CHANGELOG.fr.md)
 
+## [Unreleased]
+
+### Added
+- Exposed the changelog at runtime through `FMTVersion::getChangelog()`, available from the C++, R, and Python interfaces.
+- Packaged `CHANGELOG.md` and `CHANGELOG.fr.md` as part of distributed artifacts and generated packages.
+
+### Changed
+- Improved changelog generation and release tooling.
+- `Release-Changelog.ps1` now supports an accumulation workflow based on the `## [Unreleased]` / `## [Non publié]` heading, allowing changelog updates to be committed and pushed without creating tags, archive branches, or version bumps.
+- Updated installation and packaging workflows to consistently distribute license documentation and changelog files with released builds.
+
+### Fixed
+- Fixed license exposure and packaging issues affecting some distributions.
+
 ## [v1.1.0] - 2026-07-30 (ac3bddd1)
 
 ### Added

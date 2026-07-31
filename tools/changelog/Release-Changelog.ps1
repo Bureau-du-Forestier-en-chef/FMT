@@ -6,10 +6,12 @@
     A lancer APRES avoir colle la reponse de Copilot dans CHANGELOG.fr.md / CHANGELOG.md
     et SAUVEGARDE les fichiers. Le script :
       A. verifie que le changelog a change depuis le dernier commit ;
-      B. lit le numero de version dans le titre du haut de CHANGELOG.md (## [vX.Y.Z] - ...) ;
-      C. valide (version > dernier tag ; tag et branche pas deja existants) ;
-      D. apres confirmation : git add -A, commit, tag, branche archive/vX.Y.Z si version
-         mineure ou plus (au-dela du dernier chiffre), puis push origin.
+      B. lit le titre du haut de CHANGELOG.md :
+         - "## [vX.Y.Z]"    -> mode VERSION (commit + tag + branche + bump + push) ;
+         - "## [Unreleased]" -> mode ACCUMULATION (commit + push seulement, aucun tag).
+      C. en mode version : valide (version > dernier tag ; tag et branche pas deja existants) ;
+      D. apres confirmation : git add -A, commit, puis (mode version) tag, branche
+         archive/vX.Y.Z si mineure+, bump CMakeLists/vcpkg, puis push origin.
     Aucune action git n'est faite sans la confirmation [o/N].
 
 .PARAMETER Push
@@ -83,97 +85,123 @@ if ($fileList.Count -eq 1) {
     Write-Host "Note : un seul des deux changelogs semble modifie. Verifiez fr + en." -ForegroundColor Yellow
 }
 
-# B. Numero de version depuis le titre du haut : ## [vX.Y.Z] - ...
-$heading = Select-String -Path $changelog -Pattern '^\s{0,3}##\s*\[v?(\d+)\.(\d+)\.(\d+)\]' |
-           Select-Object -First 1
-if (-not $heading) {
-    Write-Error "Aucun titre '## [vX.Y.Z]' trouve en haut de $changelog."
+# B. Lire le TOUT PREMIER titre de section : ## [ ... ]  (version ou Unreleased).
+$firstHeading = Select-String -Path $changelog -Pattern '^\s{0,3}##\s*\[(.+?)\]' | Select-Object -First 1
+if (-not $firstHeading) {
+    Write-Error "Aucun titre de section '## [...]' trouve en haut de $changelog."
     exit 1
 }
-$g = $heading.Matches[0].Groups
-$maj = [int]$g[1].Value; $min = [int]$g[2].Value; $pat = [int]$g[3].Value
-$version = "v$maj.$min.$pat"
-$numericVersion = "$maj.$min.$pat"   # sans le prefixe 'v', pour CMake / vcpkg
+$label = $firstHeading.Matches[0].Groups[1].Value.Trim()
 
-# Fichiers ou synchroniser le numero de version (motif : groupes nommes 'pre' et 'ver').
+$isUnreleased   = $false
+$version        = $null
+$numericVersion = $null
+if ($label -match '^(unreleased|non[\s-]*publi|in[\s-]*dev|in[\s-]*progress|wip)') {
+    # Accumulation : on commit/pousse le changelog, mais pas de tag/branche/bump.
+    $isUnreleased = $true
+}
+elseif ($label -match '^v?(\d+)\.(\d+)\.(\d+)$') {
+    $maj = [int]$Matches[1]; $min = [int]$Matches[2]; $pat = [int]$Matches[3]
+    $version = "v$maj.$min.$pat"
+    $numericVersion = "$maj.$min.$pat"   # sans le prefixe 'v', pour CMake / vcpkg
+}
+else {
+    Write-Error "Le titre du haut '[$label]' n'est ni une version [vX.Y.Z] ni [Unreleased]. Corrigez-le."
+    exit 1
+}
+
+# Fichiers ou synchroniser le numero de version (mode version seulement).
 $versionFiles = @(
     @{ Path = 'CMakeLists.txt'; Pattern = '(?<pre>project\s*\(\s*FMT\s+VERSION\s+)(?<ver>\d+(?:\.\d+)*)'; Max = 0 }
     @{ Path = 'vcpkg.json';     Pattern = '(?<pre>"version"\s*:\s*")(?<ver>\d+(?:\.\d+)*)';               Max = 1 }
 )
 
-# Version precedente (dernier tag).
-$prevTag = (& git describe --tags --abbrev=0 2>$null)
-$pMaj = 0; $pMin = 0; $pPat = 0
-if ($prevTag -match 'v?(\d+)\.(\d+)\.(\d+)') {
-    $pMaj = [int]$Matches[1]; $pMin = [int]$Matches[2]; $pPat = [int]$Matches[3]
-}
-
-# C. Validations.
-$newNum = 1000000 * $maj + 1000 * $min + $pat
-$oldNum = 1000000 * $pMaj + 1000 * $pMin + $pPat
-if ($prevTag -and $newNum -le $oldNum) {
-    Write-Error "Version $version <= dernier tag $prevTag. Corrigez le titre du changelog."
-    exit 1
-}
-
-# Mineure ou plus = changement au-dela du dernier chiffre (patch).
-$isMinorPlus   = ($maj -gt $pMaj) -or ($min -gt $pMin)
-$archiveBranch = "archive/$version"
 $currentBranch = (& git rev-parse --abbrev-ref HEAD).Trim()
+$isMinorPlus   = $false
+$archiveBranch = $null
+$prevTag       = $null
 
-# Le tag ne doit pas exister deja.
-& git rev-parse -q --verify "refs/tags/$version" > $null 2>&1
-if ($LASTEXITCODE -eq 0) {
-    Write-Error "Le tag $version existe deja. Abandon (incrementez la version)."
-    exit 1
-}
-# La branche d'archivage ne doit pas exister deja (locale ni distante).
-if ($isMinorPlus) {
-    & git rev-parse -q --verify "refs/heads/$archiveBranch" > $null 2>&1
-    $localExists = ($LASTEXITCODE -eq 0)
-    $remoteExists = [bool](& git ls-remote --heads origin $archiveBranch 2>$null)
-    if ($localExists -or $remoteExists) {
-        Write-Error "La branche $archiveBranch existe deja (locale ou distante). Abandon."
+if (-not $isUnreleased) {
+    # Version precedente (dernier tag).
+    $prevTag = (& git describe --tags --abbrev=0 2>$null)
+    $pMaj = 0; $pMin = 0; $pPat = 0
+    if ($prevTag -match 'v?(\d+)\.(\d+)\.(\d+)') {
+        $pMaj = [int]$Matches[1]; $pMin = [int]$Matches[2]; $pPat = [int]$Matches[3]
+    }
+
+    # C. Validations.
+    $newNum = 1000000 * $maj + 1000 * $min + $pat
+    $oldNum = 1000000 * $pMaj + 1000 * $pMin + $pPat
+    if ($prevTag -and $newNum -le $oldNum) {
+        Write-Error "Version $version <= dernier tag $prevTag. Corrigez le titre du changelog."
         exit 1
+    }
+
+    # Mineure ou plus = changement au-dela du dernier chiffre (patch).
+    $isMinorPlus   = ($maj -gt $pMaj) -or ($min -gt $pMin)
+    $archiveBranch = "archive/$version"
+
+    # Le tag ne doit pas exister deja.
+    & git rev-parse -q --verify "refs/tags/$version" > $null 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        Write-Error "Le tag $version existe deja. Abandon (incrementez la version)."
+        exit 1
+    }
+    # La branche d'archivage ne doit pas exister deja (locale ni distante).
+    if ($isMinorPlus) {
+        & git rev-parse -q --verify "refs/heads/$archiveBranch" > $null 2>&1
+        $localExists = ($LASTEXITCODE -eq 0)
+        $remoteExists = [bool](& git ls-remote --heads origin $archiveBranch 2>$null)
+        if ($localExists -or $remoteExists) {
+            Write-Error "La branche $archiveBranch existe deja (locale ou distante). Abandon."
+            exit 1
+        }
     }
 }
 
-# Message de commit (demande ; defaut = version).
-$msg = $version
+# Message de commit (demande ; defaut = version, ou libelle changelog en mode Unreleased).
+$defaultMsg = if ($isUnreleased) { 'Mise a jour du changelog (Unreleased)' } else { $version }
+$msg = $defaultMsg
 if (-not $DryRun) {
-    $entered = Read-Host "Message de commit (Entree = $version)"
+    $entered = Read-Host "Message de commit (Entree = $defaultMsg)"
     if (-not [string]::IsNullOrWhiteSpace($entered)) { $msg = $entered }
 }
 
 # Plan.
 Write-Host ""
 Write-Host "==================== PLAN DE PUBLICATION ====================" -ForegroundColor Cyan
-Write-Host ("  Version     : {0}   (precedente : {1})" -f $version, $(if ($prevTag) { $prevTag } else { '(aucune)' }))
-Write-Host ("  Type        : {0}" -f $(if ($isMinorPlus) { "mineure/majeure -> branche $archiveBranch" } else { 'patch -> pas de branche' }))
+if ($isUnreleased) {
+    Write-Host "  Mode        : Unreleased -> commit + push seulement (PAS de tag/branche/bump)." -ForegroundColor Yellow
+} else {
+    Write-Host ("  Version     : {0}   (precedente : {1})" -f $version, $(if ($prevTag) { $prevTag } else { '(aucune)' }))
+    Write-Host ("  Type        : {0}" -f $(if ($isMinorPlus) { "mineure/majeure -> branche $archiveBranch" } else { 'patch -> pas de branche' }))
+}
 Write-Host ("  Branche     : {0}" -f $currentBranch)
 Write-Host ("  Message     : {0}" -f $msg)
 Write-Host ("  Push origin : {0}" -f $(if ($Push) { 'oui' } else { 'non (tout reste local)' }))
-Write-Host "  Fichiers de version (mis a jour avant le commit) :"
-foreach ($vf in $versionFiles) {
-    $old = Sync-VersionFile -Path $vf.Path -PatternStr $vf.Pattern -NewVersion $numericVersion -Apply $false -MaxReplace $vf.Max
-    if ($null -ne $old) {
-        $state = if ($old -eq $numericVersion) { "deja a $numericVersion" } else { "$old -> $numericVersion" }
-        Write-Host "     $($vf.Path) : $state"
+if (-not $isUnreleased) {
+    Write-Host "  Fichiers de version (mis a jour avant le commit) :"
+    foreach ($vf in $versionFiles) {
+        $old = Sync-VersionFile -Path $vf.Path -PatternStr $vf.Pattern -NewVersion $numericVersion -Apply $false -MaxReplace $vf.Max
+        if ($null -ne $old) {
+            $state = if ($old -eq $numericVersion) { "deja a $numericVersion" } else { "$old -> $numericVersion" }
+            Write-Host "     $($vf.Path) : $state"
+        }
     }
 }
 Write-Host "  A committer (git add -A) :"
 & git status --short | ForEach-Object { Write-Host "     $_" }
 Write-Host ""
 Write-Host "  Actions :"
-Write-Host "    maj version -> $numericVersion dans CMakeLists.txt / vcpkg.json"
+if (-not $isUnreleased) { Write-Host "    maj version -> $numericVersion dans CMakeLists.txt / vcpkg.json" }
 Write-Host "    git add -A"
 Write-Host "    git commit -m `"$msg`""
-Write-Host "    git tag -a $version -m `"$msg`""
-if ($isMinorPlus) { Write-Host "    git branch $archiveBranch" }
+if (-not $isUnreleased) { Write-Host "    git tag -a $version -m `"$msg`"" }
+if ($isMinorPlus)       { Write-Host "    git branch $archiveBranch" }
 if ($Push) {
     Write-Host "    git push origin $currentBranch"
-    Write-Host "    git push origin $version"
-    if ($isMinorPlus) { Write-Host "    git push origin $archiveBranch" }
+    if (-not $isUnreleased) { Write-Host "    git push origin $version" }
+    if ($isMinorPlus)       { Write-Host "    git push origin $archiveBranch" }
 }
 Write-Host "============================================================" -ForegroundColor Cyan
 
@@ -189,21 +217,27 @@ if ($confirm -ne 'o' -and $confirm -ne 'O') {
 }
 
 # D. Execution.
-foreach ($vf in $versionFiles) {
-    Sync-VersionFile -Path $vf.Path -PatternStr $vf.Pattern -NewVersion $numericVersion -Apply $true -MaxReplace $vf.Max | Out-Null
+if (-not $isUnreleased) {
+    foreach ($vf in $versionFiles) {
+        Sync-VersionFile -Path $vf.Path -PatternStr $vf.Pattern -NewVersion $numericVersion -Apply $true -MaxReplace $vf.Max | Out-Null
+    }
 }
 Run-Git @('add', '-A')
 Run-Git @('commit', '-m', $msg)
-Run-Git @('tag', '-a', $version, '-m', $msg)
-if ($isMinorPlus) { Run-Git @('branch', $archiveBranch) }
+if (-not $isUnreleased) { Run-Git @('tag', '-a', $version, '-m', $msg) }
+if ($isMinorPlus)       { Run-Git @('branch', $archiveBranch) }
 if ($Push) {
     Run-Git @('push', 'origin', $currentBranch)
-    Run-Git @('push', 'origin', $version)
-    if ($isMinorPlus) { Run-Git @('push', 'origin', $archiveBranch) }
+    if (-not $isUnreleased) { Run-Git @('push', 'origin', $version) }
+    if ($isMinorPlus)       { Run-Git @('push', 'origin', $archiveBranch) }
 }
 
 Write-Host ""
-Write-Host "Publication terminee : $version" -ForegroundColor Green
-if ($isMinorPlus) {
-    Write-Host "Branche d'archivage creee : $archiveBranch (vous restez sur $currentBranch)." -ForegroundColor Green
+if ($isUnreleased) {
+    Write-Host "Changelog (Unreleased) committe et pousse sur $currentBranch. Aucun tag cree." -ForegroundColor Green
+} else {
+    Write-Host "Publication terminee : $version" -ForegroundColor Green
+    if ($isMinorPlus) {
+        Write-Host "Branche d'archivage creee : $archiveBranch (vous restez sur $currentBranch)." -ForegroundColor Green
+    }
 }

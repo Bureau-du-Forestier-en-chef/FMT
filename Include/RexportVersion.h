@@ -54,6 +54,12 @@ std::string getLicenseStaticPass(Version::FMTVersion* versionobject, bool french
     return version.getLicense(french);
     }
 
+std::string getChangelogStaticPass(Version::FMTVersion* versionobject, bool french)
+    {
+	const Version::FMTVersion version;
+    return version.getChangelog(french);
+    }
+
 void exportVersion()
 {
 
@@ -72,7 +78,9 @@ void exportVersion()
 		.method("hasfeature", &hasFeatureStaticPass,
 			"@DocString(FMTVersion::hasfeature)")
         .method("getlicense",&getLicenseStaticPass,
-			"@DocString(FMTVersion::getlicense)");
+			"@DocString(FMTVersion::getlicense)")
+        .method("getchangelog",&getChangelogStaticPass,
+			"@DocString(FMTVersion::getchangelog)");
 	}
 }
 
