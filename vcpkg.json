@@ -2,15 +2,20 @@
     "name": "fmt",
     "version": "1.0.0",
     "dependencies": [
-          {
           "name":"python3",
-          "version>=":"3.10.7"
-          },
           "boost",
           "coin-or-cbc",
+		  {
+		  "name": "arrow",
+		  "features": [
+			"parquet",
+			"dataset",
+			"compute"
+			]
+		  },
           "gdal"
     ],
-    "builtin-baseline": "13766fcd1292a973fea53fba731a0fb90c7ee310",
+    "builtin-baseline": "8242f360c490a6e031eb0579e0a0d922bb039401",
     "overrides": [
         { "name": "python3", "version": "3.10.7" },
         { "name":"libffi", "version": "3.4.4#2"},

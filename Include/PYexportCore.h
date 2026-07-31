@@ -161,6 +161,8 @@ void exportCore()
 				.def("__lt__", &Core::FMTMask::operator <,
 					"@DocString(FMTMask::operator<)")
                 .def("__hash__",&boost::pyHash<Core::FMTMask>)
+				.def("decompose", &Core::FMTMask::decompose,
+					"@DocString(FMTMask::decompose)")
 				.def("issubsetof",issubsetof,
 					"@DocString(FMTMask::issubsetof)")
 				.def("presolve",&Core::FMTMask::presolve,
