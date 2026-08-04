@@ -67,3 +67,6 @@ UI/build/*
 # Python bytecode (outillage .rename_tools/)
 __pycache__/
 *.pyc
+Documentation/Warnings.Log
+Documentation/html/*
+Documentation/latex/*

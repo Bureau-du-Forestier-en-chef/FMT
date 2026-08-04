@@ -345,22 +345,24 @@ namespace Heuristics
 			// DocString: FMTOperatingAreaScheme::getPotentialPrimalSchemes
 			/**
 			@brief Return the potential scheme indexes from the primal solution, its bounds and the neighboring operating areas, ordered from the most to the least area used but greater than 0.
-			@param[in] primalsolution the primal solution.
-			@param[in] lowerbounds the lower bounds.
-			@param[in] upperbounds the upper bounds.
-			@param[in] neighbors the neighboring operating areas.
+			@param[in] p_primalsolution the primal solution.
+			@param[in] p_lowerbounds the lower bounds.
+			@param[in] p_upperbounds the upper bounds.
+			@param[in] p_neighbors the neighboring operating areas.
 			@return the potential primal scheme indexes.
 			*/
-			std::vector<size_t>getPotentialPrimalSchemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds,const std::vector<FMTOperatingAreaScheme>& m_neighbors) const;
+			std::vector<size_t>getPotentialPrimalSchemes(const double* p_primalsolution, const double* p_lowerbounds,
+				const double* p_upperbounds,const std::vector<FMTOperatingAreaScheme>& p_neighbors) const;
 			// DocString: FMTOperatingAreaScheme::getPotentialDualSchemes
 			/**
 			@brief Return the potential scheme indexes from the dual solution, the rows upper bounds and the neighboring operating areas, ordered from the most to the least area used but greater than 0.
-			@param[in] dualsolution the dual solution.
-			@param[in] upperbound the rows upper bounds.
-			@param[in] neighbors the neighboring operating areas.
+			@param[in] p_dualsolution the dual solution.
+			@param[in] p_upperbound the rows upper bounds.
+			@param[in] p_neighbors the neighboring operating areas.
 			@return the potential dual scheme indexes.
 			*/
-			std::vector<size_t>getPotentialDualSchemes(const double* dualsolution, const double* upperbound, const std::vector<FMTOperatingAreaScheme>& m_neighbors) const;
+			std::vector<size_t>getPotentialDualSchemes(const double* p_dualsolution, const double* p_upperbound,
+						const std::vector<FMTOperatingAreaScheme>& p_neighbors) const;
 			// DocString: FMTOperatingAreaScheme::getRessourcesToDelete
 			/**
 			@brief Push all the variables and constraints of the operating area into the columns and rows to delete vectors.

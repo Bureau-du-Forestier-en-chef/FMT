@@ -69,7 +69,7 @@ namespace Core
 		// DocString: FMTAgeYieldHandler(const FMTMask&)
 		/**
 		@brief Construct an age yield handler from a mask.
-		@param[in] mask the mask.
+		@param[in] p_mask the mask.
 		*/
 		FMTAgeYieldHandler(const FMTMask& p_mask);
 		// DocString: FMTAgeYieldHandler::setYieldValues

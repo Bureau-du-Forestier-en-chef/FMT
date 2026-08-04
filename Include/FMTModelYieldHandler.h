@@ -71,7 +71,7 @@ namespace Core
 		// DocString: FMTModelYieldHandler(const FMTMask&)
 		/**
 		@brief Construct a model yield handler from a mask.
-		@param[in] mask the mask.
+		@param[in] p_mask the mask.
 		*/
 		FMTModelYieldHandler(const FMTMask& p_mask);
 		// DocString: FMTModelYieldHandler::getModelsNameByIndex

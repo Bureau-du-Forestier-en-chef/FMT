@@ -35,14 +35,14 @@ class FMTEXPORT FMTOperatingAreaClusterer : public FMTLpHeuristic
 		// DocString: FMTOperatingAreaClusterer::FMTOperatingAreaClusterer(const Models::FMTsolverinterface&,const size_t&,const std::vector<FMTOperatingAreaCluster>&)
 		/**
 		@brief Construct a FMTOperatingAreaClusterer from a solver interface, a seed and a vector of clusters to aggregate.
-		@param[in] interfacetype the solver interface type.
-		@param[in] lseed the seed.
-		@param[in] lclusters the clusters.
-		@param[in] minimalnumberofclusters the minimal number of clusters.
-		@param[in] maximalnumberofclusters the maximal number of clusters.
+		@param[in] p_interfacetype the solver interface type.
+		@param[in] p_seed the seed.
+		@param[in] p_clusters the clusters.
+		@param[in] p_minimalnumberofclusters the minimal number of clusters.
+		@param[in] p_maximalnumberofclusters the maximal number of clusters.
 		*/
-		FMTOperatingAreaClusterer(const Models::FMTsolverinterface& interfacetype,
-			const size_t& lseed,const std::vector<FMTOperatingAreaCluster>& lclusters,
+		FMTOperatingAreaClusterer(const Models::FMTsolverinterface& p_interfacetype,
+			const size_t& p_seed,const std::vector<FMTOperatingAreaCluster>& p_clusters,
 			int p_minimalnumberofclusters = -1,int p_maximalnumberofclusters = -1);
 		 // DocString: FMTOperatingAreaClusterer::FMTOperatingAreaClusterer(const FMTOperatingAreaClusterer&)
 		 /**

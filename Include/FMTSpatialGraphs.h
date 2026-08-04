@@ -61,9 +61,9 @@ namespace Spatial
 			// DocString: FMTSpatialGraphs(const FMTSpatialGraphs&)
 			/**
 			@brief Default copy constructor for FMTSpatialGraphs.
-			@param[in] rhs the FMTSpatialGraphs to copy.
+			@param[in] p_rhs the FMTSpatialGraphs to copy.
 			*/
-			FMTSpatialGraphs(const FMTSpatialGraphs&)=default;
+			FMTSpatialGraphs(const FMTSpatialGraphs& p_rhs)=default;
 			// DocString: FMTSpatialGraphs::operator=
 			/**
 			@brief Default copy assignment operator for FMTSpatialGraphs.

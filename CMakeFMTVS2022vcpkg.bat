@@ -1,6 +1,9 @@
 ::Set the dependencies with MSVC_dependencies_setup.bat
 call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
 
+set VCPKG_MAX_CONCURRENCY=5
+::For manifest mode vcpkg x-update-baseline
+::else
 :::in debug
 ::in vcpkg repo make sure that
 ::git fetch origin 13766fcd1292a973fea53fba731a0fb90c7ee310
@@ -33,6 +36,8 @@ cmake --build build/debug --config Debug -j 8
 cmake --install build/debug --config Debug
 
 ::in release
+::For manifest mode vcpkg x-update-baseline
+::else
 ::in vcpkg repo make sure that 
 ::git fetch origin 13766fcd1292a973fea53fba731a0fb90c7ee310
 ::git pull

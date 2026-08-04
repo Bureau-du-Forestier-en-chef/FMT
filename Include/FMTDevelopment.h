@@ -131,9 +131,9 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		// DocString: FMTDevelopment::setMask
 		/**
 		@brief Set the mask of the development.
-		@param[in] lmask the mask to set.
+		@param[in] p_mask the mask to set.
 		*/
-		void setMask(const Core::FMTMask& lmask);
+		void setMask(const Core::FMTMask& p_mask);
 		// DocString: FMTDevelopment()
 		/**
 		@brief Default constructor for FMTDevelopment.
@@ -147,20 +147,20 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		// DocString: FMTDevelopment(const FMTMask&,const int&,const int&)
 		/**
 		@brief Construct a development from a mask, an age and a lock level.
-		@param[in] mask the mask.
-		@param[in] age the age.
-		@param[in] lock the lock level.
+		@param[in] p_mask the mask.
+		@param[in] p_age the age.
+		@param[in] p_lock the lock level.
 		*/
-		FMTDevelopment(const FMTMask& lmask, const int& lage, const int& llock);
+		FMTDevelopment(const FMTMask& p_mask, const int& p_age, const int& p_lock);
 		// DocString: FMTDevelopment(const FMTMask,const int&,const int&,const int&)
 		/**
 		@brief Construct a development from a mask, an age, a lock level and a period.
-		@param[in] lmask the mask.
-		@param[in] lage the age.
-		@param[in] llock the lock level.
-		@param[in] lperiod the period.
+		@param[in] p_mask the mask.
+		@param[in] p_age the age.
+		@param[in] p_lock the lock level.
+		@param[in] p_period the period.
 		*/
-		FMTDevelopment(const FMTMask& lmask, const int& lage, const int& llock, const int& lperiod);
+		FMTDevelopment(const FMTMask& p_mask, const int& p_age, const int& p_lock, const int& p_period);
 		// DocString: FMTDevelopment(const FMTDevelopment&)
 		/**
 		@brief Copy constructor for FMTDevelopment.

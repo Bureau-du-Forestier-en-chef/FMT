@@ -21,13 +21,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 
 
-	Core::FMTMask FMTYieldModelDecisionTree::getMask() const
+	Core::FMTMask FMTYieldModelDecisionTree::_getMask() const
 	{
 		Core::FMTMask mask;
 		try {
-			if (reference && !reference->getSources().empty())
+			if (m_reference && !m_reference->getSources().empty())
 			{
-				mask = reference->getSources().begin()->getMask();
+				mask = m_reference->getSources().begin()->getMask();
 
 			}
 		}
@@ -45,9 +45,9 @@ namespace Core {
 	{
 		std::vector<std::vector<double>>returned;
 		try {
-			if (!values.empty())
+			if (!m_values.empty())
 			{
-				for (std::map<size_t, std::vector<double>>::const_iterator valuesit = values.begin(); valuesit != values.end(); ++valuesit)
+				for (std::map<size_t, std::vector<double>>::const_iterator valuesit = m_values.begin(); valuesit != m_values.end(); ++valuesit)
 				{
 					returned.push_back(valuesit->second);
 				}
@@ -62,7 +62,7 @@ namespace Core {
 
 
 
-	Core::FMTConstraint FMTYieldModelDecisionTree::buildConstraint(const std::string& name, const std::string& yld, const Core::FMTMask& mask, const double& lowerbound, const double& upperbound, const int& lag) const
+	Core::FMTConstraint FMTYieldModelDecisionTree::_buildConstraint(const std::string& name, const std::string& yld, const Core::FMTMask& mask, const double& lowerbound, const double& upperbound, const int& lag) const
 	{
 		Core::FMTConstraint constraint;
 		try {
@@ -92,13 +92,15 @@ namespace Core {
 	}
 
 
-	FMTYieldModelDecisionTree::FMTYieldModelDecisionTree(const boost::property_tree::ptree& jsonProps,const std::vector<std::string>& inputYields, const Core::FMTMask& mainmask):
+	FMTYieldModelDecisionTree::FMTYieldModelDecisionTree(const boost::property_tree::ptree& jsonProps,
+		const std::vector<std::string>& inputYields, const Core::FMTMask& mainmask):
 		FMTYieldModel(),
-		mtx(),
-		values(),
-		reference(),
-		nodes(),
-		default_values()
+		m_mtx(),
+		m_values(),
+		m_reference(),
+		m_nodes(),
+		m_default_values(),
+		m_update()
 
 	{
 		try {
@@ -128,8 +130,8 @@ namespace Core {
 				{
 					branches.push_back(branch.second.get_value<std::string>());
 				}
-				locations[node_name] = nodes.size();
-				nodes.push_back(buildConstraint(node_name,yield_name,mainmask,*bounds.begin(),bounds.back(),time_lag));
+				locations[node_name] = m_nodes.size();
+				m_nodes.push_back(buildConstraint(node_name,yield_name,mainmask,*bounds.begin(),bounds.back(),time_lag));
 				targets.push_back(std::pair<std::string, std::string>(*branches.begin(), branches.back()));
 				
 			}
@@ -144,11 +146,11 @@ namespace Core {
 					{
 					lag_value = 1.0;
 					}
-				locations[decision_name] = nodes.size();
-				nodes.push_back(buildConstraint(decision_name, "", Core::FMTMask(), value, yieldid, lag_value));
+				locations[decision_name] = m_nodes.size();
+				m_nodes.push_back(buildConstraint(decision_name, "", Core::FMTMask(), value, yieldid, lag_value));
 				}
 			size_t constraint_id = 0;
-			for (Core::FMTConstraint& constraint : nodes)
+			for (Core::FMTConstraint& constraint : m_nodes)
 			{
 				if (constraint_id< targets.size())
 				{
@@ -172,8 +174,13 @@ namespace Core {
 				const std::string invalidyieldid = "No yield id " + std::to_string(yieldid) + " provided for FMTyieldmodeldecisiontree";
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, invalidyieldid, "FMTYieldModelDecisionTree::FMTYieldModelDecisionTree", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
-			reference = std::unique_ptr<Core::FMTOutput>( new Core::FMTOutput(buildConstraint(JSON_PROP_REFERENCE, inputYields.at(yieldid), mainmask, 1.0, 1.0,0.0)));
+			m_reference = std::unique_ptr<Core::FMTOutput>( new Core::FMTOutput(buildConstraint(JSON_PROP_REFERENCE, inputYields.at(yieldid), mainmask, 1.0, 1.0,0.0)));
 		
+			const size_t UPDATE_ID = jsonProps.get<size_t>(m_JSON_PROP_UPDATE);
+			if (inputYields.size()>UPDATE_ID)
+				{
+				m_update = inputYields.at(UPDATE_ID);
+				}
 		
 		}catch (...)
 		{
@@ -183,13 +190,14 @@ namespace Core {
 
 	FMTYieldModelDecisionTree::FMTYieldModelDecisionTree(const FMTYieldModelDecisionTree& rhs):
 		Core::FMTYieldModel(rhs),
-		mtx(),
-		values(rhs.values),
-		reference(),
-		nodes(rhs.nodes),
-		default_values(rhs.default_values)
+		m_mtx(),
+		m_values(rhs.m_values),
+		m_reference(),
+		m_nodes(rhs.m_nodes),
+		m_default_values(rhs.m_default_values),
+		m_update(rhs.m_update)
 	{
-		reference = std::move(std::unique_ptr<Core::FMTOutput>(new Core::FMTOutput(*rhs.reference)));
+		m_reference = std::move(std::unique_ptr<Core::FMTOutput>(new Core::FMTOutput(*rhs.m_reference)));
 	}
 
 
@@ -205,13 +213,13 @@ namespace Core {
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
 
-	std::unique_ptr<Models::FMTModel> FMTYieldModelDecisionTree::getNaturalGrowth(const Core::FMTYieldRequest& request) const
+	std::unique_ptr<Models::FMTModel> FMTYieldModelDecisionTree::_getNaturalGrowth(const Core::FMTYieldRequest& request) const
 	{
 		try {
 			const Graph::FMTGraphVertexToYield* graphinfo = request.getVertexGraphInfo();
 			//const Models::FMTModel* modelptr = graphinfo->getModel();
 			std::vector<Core::FMTActualDevelopment>newareas;
-			const Core::FMTMask mask = reference->getSources().begin()->getMask();
+			const Core::FMTMask mask = m_reference->getSources().begin()->getMask();
 			for (const Core::FMTActualDevelopment& development : m_modelPtr->getArea())
 				{
 				if (development.getMask().isSubsetOf(mask))
@@ -225,9 +233,9 @@ namespace Core {
 			naturalGrowth->setParallelLogger(ModelLogger);
 			naturalGrowth->setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
 			naturalGrowth->setArea(newareas);//Will only work with lp model going to get big with semodel...
-			naturalGrowth->setName(std::string(reference->getSources().begin()->getMask()));
+			naturalGrowth->setName(std::string(m_reference->getSources().begin()->getMask()));
 			//std::vector<Core::FMTAction> newactions = naturalGrowth->getActions();
-			const int updatestopat = m_modelPtr->getParameter(Models::FMTintmodelparameters::UPDATE);
+			//const int updatestopat = _getUpdatePeriod(request);
 			/*for (Core::FMTAction& action : newactions)
 			{
 				if (action.getName() != "_DEATH")
@@ -269,39 +277,39 @@ namespace Core {
 			if (!naturalGrowth->doPlanning(true))
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
-					"Infeasible natural growth for "+std::string(mask) , "FMTYieldModelDecisionTree::getNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
+					"Infeasible natural growth for "+std::string(mask) , "FMTYieldModelDecisionTree::_getNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 			return naturalGrowth;
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::getNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::_getNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return std::unique_ptr<Models::FMTModel>(nullptr);
 	}
 
-	size_t FMTYieldModelDecisionTree::getADecision(const std::unique_ptr<Models::FMTModel>& naturalGrowth, const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const
+	size_t FMTYieldModelDecisionTree::_getADecision(const std::unique_ptr<Models::FMTModel>& p_naturalGrowth,
+												size_t p_constraint_id, int p_period, int p_update) const
 		{
 		size_t target = 0;
 		try {
-			const int time_lag = static_cast<int>(nodes.at(constraint_id).getYieldBound("LAG").getLower());
-			const int update_period = naturalGrowth->getParameter(Models::FMTintmodelparameters::UPDATE);
-			const int targeted_period = std::max(period + time_lag, update_period);
-			const double reference_value = naturalGrowth->getOutput(*reference, targeted_period, Core::FMToutputlevel::totalonly).at("Total");
-			const double value = naturalGrowth->getOutput(nodes.at(constraint_id), targeted_period, Core::FMToutputlevel::totalonly).at("Total");
+			const int time_lag = static_cast<int>(m_nodes.at(p_constraint_id).getYieldBound("LAG").getLower());
+			const int targeted_period = std::max(p_period + time_lag, p_update);
+			const double reference_value = p_naturalGrowth->getOutput(*m_reference, targeted_period, Core::FMToutputlevel::totalonly).at("Total");
+			const double value = p_naturalGrowth->getOutput(m_nodes.at(p_constraint_id), targeted_period, Core::FMToutputlevel::totalonly).at("Total");
 			const double percentage_value = (value/reference_value) * 100;
 			//decision_stack += ("("+std::to_string(percentage_value)+")");
 			std::vector<double>evaluates;
 			evaluates.push_back(percentage_value);
-			if (nodes.at(constraint_id).evaluate(evaluates)>0)
+			if (m_nodes.at(p_constraint_id).evaluate(evaluates)>0)
 				{
-				target = static_cast<size_t>(nodes.at(constraint_id).getYieldBound("Decisions").getLower());
+				target = static_cast<size_t>(m_nodes.at(p_constraint_id).getYieldBound("Decisions").getLower());
 			}else {
-				target = static_cast<size_t>(nodes.at(constraint_id).getYieldBound("Decisions").getUpper());
+				target = static_cast<size_t>(m_nodes.at(p_constraint_id).getYieldBound("Decisions").getUpper());
 				}
 			
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("On constraint "+std::string(nodes.at(constraint_id)), "FMTYieldModelDecisionTree::getADecision", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("On constraint "+std::string(m_nodes.at(constraint_id)), "FMTYieldModelDecisionTree::_getADecision", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return target;
 		}
@@ -311,46 +319,46 @@ namespace Core {
 		std::vector<double>returned;
 		try {
 			const int MODEL_LENGTH = m_modelPtr->getParameter(Models::FMTintmodelparameters::LENGTH);
-			if (values.empty())
+			if (m_values.empty())
 			{
 				const int DEV_PERIOD = request.getDevelopment().getPeriod();
 				
-				const int UPDATE_PERIOD = m_modelPtr->getParameter(Models::FMTintmodelparameters::UPDATE);
+				const int UPDATE_PERIOD = _getUpdatePeriod(request);
 				if (DEV_PERIOD< UPDATE_PERIOD)
 					{
-					return default_values;
+					return m_default_values;
 				}else {
 					const int FIRST_PERIOD = m_modelPtr->getArea().cbegin()->getPeriod();
 					const int FILL_IN = std::max(UPDATE_PERIOD, FIRST_PERIOD+1);
-					for (size_t yieldid = 0; yieldid < default_values.size(); ++yieldid)
+					for (size_t yieldid = 0; yieldid < m_default_values.size(); ++yieldid)
 						{
-						std::vector<double>base_values(FILL_IN, default_values.at(yieldid));//Dont forget period 0!
-						values[yieldid] = base_values;
+						std::vector<double>base_values(FILL_IN, m_default_values.at(yieldid));//Dont forget period 0!
+						m_values[yieldid] = base_values;
 						}
-					boost::lock_guard<boost::recursive_mutex> guard(mtx);
+					boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 					const std::unique_ptr<Models::FMTModel>naturalgrowthmodel = getNaturalGrowth(request);
 					const int MAX_PERIOD = (FIRST_PERIOD + MODEL_LENGTH);
 					for (int period = FILL_IN; period <= MAX_PERIOD; ++period)
 					{
-						size_t target_node = getADecision(naturalgrowthmodel, 0, period);// , decision_stack);
-						while (!nodes.at(target_node).FMTOutput::empty())//If you get and empty output then you make a decision!
+						size_t target_node = _getADecision(naturalgrowthmodel, 0, period, UPDATE_PERIOD);// , decision_stack);
+						while (!m_nodes.at(target_node).FMTOutput::empty())//If you get and empty output then you make a decision!
 						{
-							target_node = getADecision(naturalgrowthmodel, target_node, period);// , decision_stack);
+							target_node = _getADecision(naturalgrowthmodel, target_node, period, UPDATE_PERIOD);// , decision_stack);
 						}
 						double lowerbound = 0;//value
 						double upperbound = 0;//target yield
-						nodes.at(target_node).getBounds(lowerbound, upperbound, 1);
+						m_nodes.at(target_node).getBounds(lowerbound, upperbound, 1);
 						const size_t yieldid = static_cast<size_t>(upperbound);
-						const int rest_of_period = static_cast<int>(nodes.at(target_node).getYieldBound("LAG").getLower());
+						const int rest_of_period = static_cast<int>(m_nodes.at(target_node).getYieldBound("LAG").getLower());
 						if (rest_of_period)
 						{
 							for (; period <= MAX_PERIOD; ++period)
 							{
-								values[yieldid].push_back(lowerbound);
+								m_values[yieldid].push_back(lowerbound);
 							}
 						}
 						else {
-							values[yieldid].push_back(lowerbound);
+							m_values[yieldid].push_back(lowerbound);
 						}
 					}
 					
@@ -359,7 +367,7 @@ namespace Core {
 			}
 			
 			
-			for (std::map<size_t,std::vector<double>>::const_iterator valuesit = values.begin(); valuesit!=values.end(); ++valuesit)
+			for (std::map<size_t,std::vector<double>>::const_iterator valuesit = m_values.begin(); valuesit!= m_values.end(); ++valuesit)
 			{
 				const size_t INDEX = std::min(static_cast<size_t>(request.getDevelopment().getPeriod()), valuesit->second.size() - 1);
 				returned.push_back(valuesit->second.at(INDEX));
@@ -374,14 +382,34 @@ namespace Core {
 		return returned;
 	}
 
-	std::unique_ptr<FMTYieldModel> FMTYieldModelDecisionTree::modify(const FMTMaskFilter& filter,
+	int FMTYieldModelDecisionTree::_getUpdatePeriod(const Core::FMTYieldRequest& p_request) const
+		{
+		int update = 0;
+		try {
+			if (!m_update.empty())
+				{
+				update = p_request.getFirstSeen(m_update).get(m_update, p_request);
+				}else if (m_modelPtr)
+					{
+					update = m_modelPtr->getParameter(Models::FMTintmodelparameters::UPDATE);
+					}
+			}catch (...)
+				{
+				_exhandler->raiseFromCatch(std::string(getMask()), 
+					"FMTYieldModelDecisionTree::_getUpdatePeriod", __LINE__, __FILE__, Core::FMTsection::Yield);
+				}
+		return update;
+		}
+
+
+	std::unique_ptr<FMTYieldModel> FMTYieldModelDecisionTree::_modify(const FMTMaskFilter& filter,
 		const std::vector<FMTTheme>& newthemes, bool preSolve) const
 	{
 		try {
 			FMTYieldModelDecisionTree newdecisions(*this);
 			std::vector<Core::FMTAction>emptyactions;
 			Core::FMTYields newtempyields;
-			for (Core::FMTConstraint& constraint : newdecisions.nodes)
+			for (Core::FMTConstraint& constraint : newdecisions.m_nodes)
 			{
 				if (!constraint.FMTOutput::empty())
 				{
@@ -401,7 +429,7 @@ namespace Core {
 				}
 				
 			}
-			Core::FMTOutputSource oldsource = *reference->getSources().begin();
+			Core::FMTOutputSource oldsource = *m_reference->getSources().begin();
 			if (preSolve)
 			{
 				oldsource.setMask(oldsource.getMask().preSolve(filter, newthemes));
@@ -411,13 +439,13 @@ namespace Core {
 			}
 			std::vector<Core::FMTOutputSource>sources;
 			sources.push_back(oldsource);
-			newdecisions.reference = std::unique_ptr<Core::FMTOutput>(new Core::FMTOutput(reference->getName(), reference->getDescription(), reference->getGroup(), sources, std::vector<Core::FMTOperator>()));
+			newdecisions.m_reference = std::unique_ptr<Core::FMTOutput>(new Core::FMTOutput(m_reference->getName(), m_reference->getDescription(), m_reference->getGroup(), sources, std::vector<Core::FMTOperator>()));
 			return std::unique_ptr<FMTYieldModel>(new FMTYieldModelDecisionTree(newdecisions));
 
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::modify", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::_modify", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}

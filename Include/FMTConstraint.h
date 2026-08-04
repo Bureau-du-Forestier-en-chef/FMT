@@ -376,9 +376,9 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		// DocString: FMTConstraint::canBeTurnedToYieldsBasedOnTransitions
 		/**
 		@brief Return true if the constraint can be turned to a simple action bound using a simple yield, checking the transitions.
-		@param[in] themes the themes.
-		@param[in] trans the transitions.
-		@param[in] actions the actions.
+		@param[in] p_themes the themes.
+		@param[in] p_trans the transitions.
+		@param[in] p_actions the actions.
 		@param[in] p_valideActions the valid actions
 		@return true if the constraint can be turned to yields else false.
 		*/

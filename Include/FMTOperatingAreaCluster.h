@@ -34,21 +34,21 @@ namespace Heuristics
 		// DocString: FMTOperatingAreaCluster::FMTOperatingAreaCluster(const FMTOperatingAreaClusterBinary&,const std::vector<FMTOperatingAreaClusterBinary>&)
 		/**
 		@brief Incomplete constructor for FMTOperatingAreaCluster from a centroid and its neighbors binaries.
-		@param[in] localcentroid the centroid binary.
-		@param[in] neighborsbinaries the neighbors binaries.
+		@param[in] p_localcentroid the centroid binary.
+		@param[in] p_neighborsbinaries the neighbors binaries.
 		*/
-		FMTOperatingAreaCluster(const FMTOperatingAreaClusterBinary& localcentroid,
-								const std::vector<FMTOperatingAreaClusterBinary>& neighborsbinaries);
+		FMTOperatingAreaCluster(const FMTOperatingAreaClusterBinary& p_localcentroid,
+								const std::vector<FMTOperatingAreaClusterBinary>& p_neighborsbinaries);
         // DocString: FMTOperatingAreaCluster::FMTOperatingAreaCluster(const FMTOperatingAreaCluster&,const double&,const double&)
         /**
         @brief Complete constructor for FMTOperatingAreaCluster from a base cluster and its minimal and maximal area.
-        @param[in] basecluster the base cluster.
-        @param[in] lminimalarea the minimal area.
-        @param[in] lmaximalarea the maximal area.
+        @param[in] p_basecluster the base cluster.
+        @param[in] p_minimalarea the minimal area.
+        @param[in] p_maximalarea the maximal area.
         */
-        FMTOperatingAreaCluster(const FMTOperatingAreaCluster& basecluster,
-								const double& lminimalarea,
-								const double& lmaximalarea);
+        FMTOperatingAreaCluster(const FMTOperatingAreaCluster& p_basecluster,
+								const double& p_minimalarea,
+								const double& p_maximalarea);
         // DocString: FMTOperatingAreaCluster::FMTOperatingAreaCluster(const FMTOperatingAreaCluster&)
         /**
         @brief Default copy constructor for FMTOperatingAreaCluster.

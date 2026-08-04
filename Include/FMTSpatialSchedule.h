@@ -50,12 +50,6 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 {
     public:
 		typedef std::vector<std::vector<Spatial::FMTBindingSpatialAction>> actionbindings;
-		// DocString: FMTSpatialSchedule(FMTSpatialSchedule&&)
-		/**
-		@brief Default move constructor for FMTSpatialSchedule.
-		@param[in,out] rhs the FMTSpatialSchedule to move from.
-		*/
-		//FMTSpatialSchedule(FMTSpatialSchedule&& rhs) noexcept;
         // DocString: FMTSpatialSchedule()
         /**
         @brief Default constructor for FMTSpatialSchedule.

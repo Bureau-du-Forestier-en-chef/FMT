@@ -1,4 +1,5 @@
 {
-	"overlay-ports": [
-    "./vcpkg-custom-ports"]
+  "overlay-ports": [
+    "./vcpkg-custom-ports"
+  ]
 }

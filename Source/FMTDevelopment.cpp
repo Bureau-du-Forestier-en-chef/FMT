@@ -74,9 +74,9 @@ namespace Core{
 		}
 	}
 
-	void FMTDevelopment::setMask(const Core::FMTMask& lmask)
+	void FMTDevelopment::setMask(const Core::FMTMask& p_mask)
 	{
-		m_mask = lmask;
+		m_mask = p_mask;
 	}
 
   FMTDevelopment::FMTDevelopment():FMTObject(), m_mask(),m_age(),m_lock(),m_period(0)
@@ -87,20 +87,20 @@ namespace Core{
 
 
 
-  FMTDevelopment::FMTDevelopment(const FMTMask& lmask,const int& lage,const int& llock) : FMTObject(),
-	  m_mask(lmask),
-	  m_age(static_cast<uint8_t>(lage)),
-	  m_lock(static_cast<uint8_t>(llock)),
+  FMTDevelopment::FMTDevelopment(const FMTMask& p_mask,const int& p_age,const int& p_lock) : FMTObject(),
+	  m_mask(p_mask),
+	  m_age(static_cast<uint8_t>(p_age)),
+	  m_lock(static_cast<uint8_t>(p_lock)),
 	  m_period(0)
         {
 
         }
-  FMTDevelopment::FMTDevelopment(const FMTMask&  lmask,const int& lage,const int& llock,const int& lperiod): 
+  FMTDevelopment::FMTDevelopment(const FMTMask& p_mask,const int& p_age,const int& p_lock,const int& p_period):
 	  FMTObject(),
-	  m_mask(lmask),
-	  m_age(static_cast<uint8_t>(lage)),
-	  m_lock(static_cast<uint8_t>(llock)),
-	  m_period(static_cast<uint8_t>(lperiod))
+	  m_mask(p_mask),
+	  m_age(static_cast<uint8_t>(p_age)),
+	  m_lock(static_cast<uint8_t>(p_lock)),
+	  m_period(static_cast<uint8_t>(p_period))
         {
 
         }

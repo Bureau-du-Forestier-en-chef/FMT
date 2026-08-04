@@ -152,21 +152,15 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
         @return the first period.
         */
         int firstPeriod()const;
-        // DocString: FMTEventContainer::eraseCoordinate
-        /**
-        @brief Erase all the coordinates corresponding to a coordinate in the events from a period.
-        @param[in] coord the coordinate.
-        @param[in] periodStart the first period.
-        */
-        //void eraseCoordinate(const FMTCoordinate& coord, const int& periodStart);
 		// DocString: FMTEventContainer::eraseCoordinate
 		/**
 		@brief Erase all the coordinates corresponding to a coordinate in the events from a period.
-		@param[in] coord the coordinate.
-		@param[in] periodStart the first period.
-		@param[in] actionstarget the action targets.
+		@param[in] p_coord the coordinate.
+		@param[in] p_periodStart the first period.
+		@param[in] p_actionstarget the action targets.
 		*/
-		void eraseCoordinate(const FMTCoordinate& coord, const int& periodStart,const std::vector<std::vector<bool>>& actionstarget);
+		void eraseCoordinate(const FMTCoordinate& p_coord, 
+            const int& p_periodStart,const std::vector<std::vector<bool>>& p_actionstarget);
         // DocString: FMTEventContainer::getBounds(const int&)
         /**
         @brief Return a pair of iterators pointing to the first and the last elements of a period.
@@ -320,29 +314,30 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
         /**
         @brief Return the minimal distance between an event and the other events for a period, or the distance plus one if the event is not within the distance.
         @details Mainly used to compute the penalty of simulated annealing models.
-        @param[in] event the event.
-        @param[in] distancel the distance.
-        @param[in] period the period.
-        @param[in] actionsid the action ids.
+        @param[in] p_event the event.
+        @param[in] p_distancel the distance.
+        @param[in] p_period the period.
+        @param[in] p_actionsid the action ids.
         @return the minimal distance.
         */
-        double minimalDistance(const FMTEvent&,const unsigned int& distancel,const int& period, const std::vector<int>& actionsid) const;
+        double minimalDistance(const FMTEvent& p_event,const unsigned int& p_distancel,
+            const int& p_period, const std::vector<int>& p_actionsid) const;
 		// DocString: FMTEventContainer::evaluateDistance
 		/**
 		@brief Add up the distances of the events that are within (or not within) a distance range for a period.
-		@param[in] event the event.
-		@param[in] lowerdistancetoevent the lower distance to the event.
-		@param[in] upperdistancetoevent the upper distance to the event.
-		@param[in] period the period.
-		@param[in] actionsused the used actions.
-		@param[in,out] relations the event relations.
+		@param[in] p_event the event.
+		@param[in] p_lowerdistancetoevent the lower distance to the event.
+		@param[in] p_upperdistancetoevent the upper distance to the event.
+		@param[in] p_period the period.
+		@param[in] p_actionsused the used actions.
+		@param[in,out] p_relations the event relations.
 		@return the evaluated distance.
 		*/
-		double evaluateDistance(const FMTEvent&,
-			const double& lowerdistancetoevent,
-			const double& upperdistancetoevent,
-			const int& period, const std::vector<bool>& actionsused,
-			boost::unordered_set<FMTEventRelation>& relations) const;
+		double evaluateDistance(const FMTEvent& p_event,
+			const double& p_lowerdistancetoevent,
+			const double& p_upperdistancetoevent,
+			const int& p_period, const std::vector<bool>& p_actionsused,
+			boost::unordered_set<FMTEventRelation>& p_relations) const;
 
         // DocString: FMTEventContainer::evaluateSize
         /**
