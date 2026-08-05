@@ -652,7 +652,7 @@ OGRCoordinateTransformation* FMTParser::_getProjTransform(OGRLayer* baselayer, b
 	OGRCoordinateTransformation* coordtransf = nullptr;
 	try {
 		std::unique_ptr<OGRSpatialReference> forelspref = _getFORELSpatialRef();
-		OGRSpatialReference* lspref = baselayer->GetSpatialRef();
+		const OGRSpatialReference* lspref = baselayer->GetSpatialRef();
 		if (fittoforel)
 			{
 			coordtransf = OGRCreateCoordinateTransformation(lspref, &*forelspref);

@@ -8,7 +8,7 @@ def getkey(matches):
     keytosearchfor=(matches.group(4).strip()).rstrip(")")
     if "(" in keytosearchfor:
         keytosearchfor+=")"
-    return keytosearchfor
+    return keytosearchfor.upper()
 
 
 def getelementstocomment(filelist):
@@ -36,7 +36,7 @@ def getcommentselements(headerfiles):
                 if not docstring:
                     matches=re.match("([\s\t]*)(// DocString:)(.+)",line)
                     if matches:
-                        docstring=matches.group(3).strip()
+                        docstring=matches.group(3).strip().upper()
                 elif (docstring and (line.strip().startswith("/") or line.strip().startswith("*/"))):
                     singlecommentmatch=re.match("([\s\t]*)(///)([\s\t]*)(.+)",line)
                     multilinematch=re.match("([\s\t]*)(/\*\*)([\s\t]*)",line)
