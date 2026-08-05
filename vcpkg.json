@@ -9,6 +9,13 @@
 	"zlib",
     "boost",
     "coin-or-cbc",
+	{
+      "name": "arrow",
+      "features": [
+        "parquet",
+        "filesystem"
+      ]
+    },
     {
       "name": "gdal",
       "version>=": "3.12.4",
@@ -17,7 +24,7 @@
       ]
     }
   ],
-  "builtin-baseline": "f1d4bbc72f183441403ba5107cb19d75a5abc2a2",
+  "builtin-baseline": "13766fcd1292a973fea53fba731a0fb90c7ee310",
   "overrides": [
    {"name":"coin-or-osi","version":"2023-02-01"},
     {"name":"coinutils","version":"2023-02-02"},

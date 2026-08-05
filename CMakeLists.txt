@@ -6,9 +6,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
 
-#set(VCPKG_OVERLAY_PORTS "${CMAKE_SOURCE_DIR}/vcpkg-overlays")
+set(VCPKG_OVERLAY_PORTS "${CMAKE_SOURCE_DIR}/vcpkg-overlays")
+
+if(POLICY CMP0167)
+   cmake_policy(SET CMP0167 OLD)
+endif()
 
 cmake_minimum_required(VERSION 3.20)
+
+
 
 
 project(FMT VERSION 1.1.0 LANGUAGES CXX)

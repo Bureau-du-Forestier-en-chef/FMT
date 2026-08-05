@@ -1,0 +1,20 @@
+{
+  "name": "arrow",
+  "version-string": "25.0.0",
+  "description": "Apache Arrow with targeted Boost detection fix",
+  "dependencies": [
+    "boost"
+  ],
+  "features": {
+    "parquet": {
+      "description": "Build Parquet support",
+      "dependencies": [
+	    "thrift",
+        "zlib"
+      ]
+    },
+	"filesystem": {
+      "description": "Build Arrow Filesystem Support"
+    }
+  }
+}
