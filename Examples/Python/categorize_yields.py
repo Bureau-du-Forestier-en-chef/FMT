@@ -28,7 +28,8 @@ def get_all_masks(THEMES,THEMES_SELECTED,FILTER):
     
 def get_categories(YIELDS_NAMES,ALL_MASKS,THEMES_SELECTED,
                 YIELDS,AGE_RANGE,PERIOD_RANGE):
-    target_dev=Core.FMTdevelopment()
+    target_dev=Core.FMTactualdevelopment()
+    target_dev.setarea(1.0)
     categories = {}
     for MASK in ALL_MASKS:
         target_dev.setmask(MASK)
@@ -43,10 +44,8 @@ def get_categories(YIELDS_NAMES,ALL_MASKS,THEMES_SELECTED,
                     target_dev.setperiod(PERIOD)
                     VALUE = YIELDS.get(target_dev.getyieldrequest(),YIELD)
                     yield_total += VALUE
-            
-            if yield_total > categories[NAME][1]:
+            if categories[NAME][1] == 0 and yield_total > 0:
                 categories[NAME] = (YIELD,yield_total)
-        
     return categories
     
 def write_categories(CATEGORIES,LOCATION,SELECTED):
@@ -74,11 +73,11 @@ if __name__ == "__main__":
     #FILTER = {}
     #YIELDS_NAMES = ["VOLUMETOTAL"]
     PRIMARY_FILE = "D:/CC_V1/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri"
-    SCENARIO_NAME = "strategique_histo"
+    SCENARIO_NAME = "PlayBack_Histo"
     #THEMES_SELECTED = [2,4,14]
     FILTER = {7:"REGTBE"}
     THEMES_SELECTED = [4]
-    YIELDS_NAMES = ["YTBE_SS","YTBE_SR","YTBE_SF","YTBE_FRS"]
+    YIELDS_NAMES = ["YTBE_SS","YTBE_SR","YTBE_SF","YTBE_FRS","YTBE_PE","YTBE_AU"]
     modelparser.seterrorstowarnings([FMTexception.FMTexc.FMToveridedyield,FMTexception.FMTexc.FMTmissingyield,
         FMTexception.FMTexc.FMTdeathwithlock,FMTexception.FMTexc.FMToutput_too_much_operator])
     MODEL = modelparser.readproject(PRIMARY_FILE,[SCENARIO_NAME])[0]

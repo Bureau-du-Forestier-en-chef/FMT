@@ -55,7 +55,7 @@ namespace Core {
 
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::getPeriodicValues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::getPeriodicValues", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return returned;
 	}
@@ -81,7 +81,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::buildConstraint", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::buildConstraint", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return constraint;
 	}
@@ -109,7 +109,7 @@ namespace Core {
 			m_modelYields = inputYields;
 			std::vector<std::pair<std::string,std::string>>targets;
 			std::map<std::string, size_t>locations;
-			for (const boost::property_tree::ptree::value_type& node : jsonProps.get_child(JSON_PROP_TREE))
+			for (const boost::property_tree::ptree::value_type& node : jsonProps.get_child(m_JSON_PROP_TREE))
 			{
 				const std::string node_name = node.first;
 				const size_t yieldid = node.second.get<size_t>("Yield");
@@ -131,11 +131,11 @@ namespace Core {
 					branches.push_back(branch.second.get_value<std::string>());
 				}
 				locations[node_name] = m_nodes.size();
-				m_nodes.push_back(buildConstraint(node_name,yield_name,mainmask,*bounds.begin(),bounds.back(),time_lag));
+				m_nodes.push_back(_buildConstraint(node_name,yield_name,mainmask,*bounds.begin(),bounds.back(),time_lag));
 				targets.push_back(std::pair<std::string, std::string>(*branches.begin(), branches.back()));
 				
 			}
-			for (const boost::property_tree::ptree::value_type& decision : jsonProps.get_child(JSON_PROP_DECISIONS))
+			for (const boost::property_tree::ptree::value_type& decision : jsonProps.get_child(m_JSON_PROP_DECISIONS))
 				{
 				const std::string decision_name = decision.first;
 				const double value = decision.second.get<double>("Value");
@@ -147,7 +147,7 @@ namespace Core {
 					lag_value = 1.0;
 					}
 				locations[decision_name] = m_nodes.size();
-				m_nodes.push_back(buildConstraint(decision_name, "", Core::FMTMask(), value, yieldid, lag_value));
+				m_nodes.push_back(_buildConstraint(decision_name, "", Core::FMTMask(), value, yieldid, lag_value));
 				}
 			size_t constraint_id = 0;
 			for (Core::FMTConstraint& constraint : m_nodes)
@@ -162,19 +162,19 @@ namespace Core {
 				++constraint_id;
 			}
 
-			for (const boost::property_tree::ptree::value_type& defaultval : jsonProps.get_child(JSON_PROP_DEFAULT))
+			for (const boost::property_tree::ptree::value_type& defaultval : jsonProps.get_child(m_JSON_PROP_DEFAULT))
 			{
-				default_values.push_back(defaultval.second.get_value<double>());
+				m_default_values.push_back(defaultval.second.get_value<double>());
 			}
 
 
-			const size_t yieldid = jsonProps.get<size_t>(JSON_PROP_REFERENCE);
+			const size_t yieldid = jsonProps.get<size_t>(m_JSON_PROP_REFERENCE);
 			if (yieldid >= inputYields.size())
 				{
 				const std::string invalidyieldid = "No yield id " + std::to_string(yieldid) + " provided for FMTyieldmodeldecisiontree";
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, invalidyieldid, "FMTYieldModelDecisionTree::FMTYieldModelDecisionTree", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
-			m_reference = std::unique_ptr<Core::FMTOutput>( new Core::FMTOutput(buildConstraint(JSON_PROP_REFERENCE, inputYields.at(yieldid), mainmask, 1.0, 1.0,0.0)));
+			m_reference = std::unique_ptr<Core::FMTOutput>( new Core::FMTOutput(_buildConstraint(m_JSON_PROP_REFERENCE, inputYields.at(yieldid), mainmask, 1.0, 1.0,0.0)));
 		
 			const size_t UPDATE_ID = jsonProps.get<size_t>(m_JSON_PROP_UPDATE);
 			if (inputYields.size()>UPDATE_ID)
@@ -184,7 +184,7 @@ namespace Core {
 		
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::FMTYieldModelDecisionTree()", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::FMTYieldModelDecisionTree()", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 
@@ -208,7 +208,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
@@ -282,7 +282,7 @@ namespace Core {
 			return naturalGrowth;
 		}catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::_getNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::_getNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return std::unique_ptr<Models::FMTModel>(nullptr);
 	}
@@ -309,7 +309,7 @@ namespace Core {
 			
 		}catch (...)
 			{
-			_exhandler->raiseFromCatch("On constraint "+std::string(m_nodes.at(constraint_id)), "FMTYieldModelDecisionTree::_getADecision", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch("On constraint "+std::string(m_nodes.at(p_constraint_id)), "FMTYieldModelDecisionTree::_getADecision", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		return target;
 		}
@@ -336,7 +336,7 @@ namespace Core {
 						m_values[yieldid] = base_values;
 						}
 					boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
-					const std::unique_ptr<Models::FMTModel>naturalgrowthmodel = getNaturalGrowth(request);
+					const std::unique_ptr<Models::FMTModel>naturalgrowthmodel = _getNaturalGrowth(request);
 					const int MAX_PERIOD = (FIRST_PERIOD + MODEL_LENGTH);
 					for (int period = FILL_IN; period <= MAX_PERIOD; ++period)
 					{
@@ -377,7 +377,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return returned;
 	}
@@ -388,14 +388,14 @@ namespace Core {
 		try {
 			if (!m_update.empty())
 				{
-				update = p_request.getFirstSeen(m_update).get(m_update, p_request);
+				update = p_request.getFirstSeen(m_update)->second->get(m_update, p_request);
 				}else if (m_modelPtr)
 					{
 					update = m_modelPtr->getParameter(Models::FMTintmodelparameters::UPDATE);
 					}
 			}catch (...)
 				{
-				_exhandler->raiseFromCatch(std::string(getMask()), 
+				_exhandler->raiseFromCatch(std::string(_getMask()), 
 					"FMTYieldModelDecisionTree::_getUpdatePeriod", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 		return update;
@@ -445,7 +445,7 @@ namespace Core {
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::_modify", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::_modify", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
@@ -455,11 +455,11 @@ namespace Core {
 		const std::vector<FMTTheme>& newthemes) const
 	{
 		try {
-			return modify(filter, newthemes);
+			return _modify(filter, newthemes);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::preSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
@@ -468,11 +468,11 @@ namespace Core {
 		const std::vector<FMTTheme>& basethemes) const
 	{
 		try {
-			return modify(filter, basethemes,false);
+			return _modify(filter, basethemes,false);
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(getMask()), "FMTYieldModelDecisionTree::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raiseFromCatch(std::string(_getMask()), "FMTYieldModelDecisionTree::postSolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}

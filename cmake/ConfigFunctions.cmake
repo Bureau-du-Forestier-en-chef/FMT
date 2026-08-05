@@ -72,19 +72,20 @@ function (ExportAllVariablesToInstall)
     get_cmake_property(_variableNames VARIABLES)
     list(SORT _variableNames)
     foreach(_variableName ${_variableNames})
-		if(NOT "${_variableName}" MATCHES "REGEX")
-			if("${${_variableName}}" MATCHES "\\\\")
-				# Multi-line values (e.g. CMAKE_*_COMPILER_ID_*_CONTENT probe source)
-				# get their newlines flattened below, which glues C tokens together and
-				# produces malformed set() code and CMake dev warnings. They are of no use
-				# to the install scripts, so skip them entirely.
-				if("${${_variableName}}" MATCHES "[\r\n]")
-					continue()
-				endif()
-				string(REPLACE "\\" "\\\\" ${_variableName} "${${_variableName}}")
-				string(REGEX REPLACE "[\r\n]+" "" ${_variableName} "${${_variableName}}")
-			endif()
-			install(CODE "set(\"${_variableName}\" \"${${_variableName}}\")")
-		endif()
-    endforeach()
+    if(NOT "${_variableName}" MATCHES "REGEX")
+        if("${${_variableName}}" MATCHES "\\\\")
+            # Ignorer les valeurs multi-lignes qui corrompent le script d'installation
+            if("${${_variableName}}" MATCHES "[\r\n]")
+                continue()
+            endif()
+            
+            string(REPLACE "\\" "\\\\" ${_variableName} "${${_variableName}}")
+            string(REGEX REPLACE "[\r\n]+" "" ${_variableName} "${${_variableName}}")
+        endif()
+        
+        # CORRECTIF : Échapper les guillemets internes pour éviter de casser la syntaxe du fichier généré
+        string(REPLACE "\"" "\\\"" _safeValue "${${_variableName}}")
+        install(CODE "set(\"${_variableName}\" \"${_safeValue}\")")
+    endif()
+endforeach()
 endfunction(ExportAllVariablesToInstall)
