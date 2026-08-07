@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Heuristics
 {
-	FMTOperatingAreaClusterer::FMTOperatingAreaClusterer(const Models::FMTsolverinterface& interfacetype,const size_t& lseed,
+	FMTOperatingAreaClusterer::FMTOperatingAreaClusterer(const Models::FMTSolverInterface& interfacetype,const size_t& lseed,
 		const std::vector<FMTOperatingAreaCluster>& lclusters,int p_minimalnumberofclusters, int p_maximalnumberofclusters):
 	    FMTLpHeuristic(interfacetype,lseed),
 		m_clusters(lclusters),

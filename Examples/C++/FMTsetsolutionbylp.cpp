@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.setErrorsToWarnings(errors);
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readSchedules(primarylocation,models).at(0);
 		const double tolerance = 0.0001;
 		for (size_t period = 1; period <= 6; ++period)

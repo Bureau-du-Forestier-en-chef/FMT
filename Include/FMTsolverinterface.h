@@ -5,26 +5,25 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTsolverinterface_H
-#define FMTsolverinterface_H
+#ifndef FMTSOLVERINTERFACE
+#define FMTSOLVERINTERFACE
 
 #ifdef FMTWITHOSI
 
 namespace Models
 { 
     
-    // DocString: FMTsolverinterface
+    // DocString: FMTSolverInterface
     /**
     @brief Enumerator used to specify the solver to use when solving the FMTLpModel.
     */
-	enum class FMTsolverinterface
+	enum class FMTSolverInterface
 	{
 		CLP = 1,/**< Coin-or linear programming solver : https://github.com/coin-or/Clp */
-		//#ifdef  FMTWITHMOSEK
-			MOSEK = 2,/**< MOSEK optimization software : https://www.mosek.com */
-		//#endif
-		CPLEX = 3,/**< IBM CPLEX Optimizer : https://www.ibm.com/analytics/cplex-optimizer */
-		GUROBI = 4/**< Gurobi optimizer : https://www.gurobi.com/ */
+		MOSEK = 2,/**< MOSEK optimization software : https://www.mosek.com */
+		GLPK = 3,
+		CPLEX = 4,/**< IBM CPLEX Optimizer : https://www.ibm.com/analytics/cplex-optimizer */
+		GUROBI = 5/**< Gurobi optimizer : https://www.gurobi.com/ */
 	};
 
 }

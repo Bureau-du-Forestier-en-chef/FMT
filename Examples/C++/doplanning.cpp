@@ -59,9 +59,9 @@ int main(int argc, char* argv[])
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 		#ifdef FMTWITHMOSEK
-			Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+			Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::MOSEK);
 		#else
-			Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+			Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
 		#endif
 		//modelparser.write(optimizationmodel, "D:/test/");
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);

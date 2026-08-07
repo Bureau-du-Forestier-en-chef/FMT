@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
 		const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
 		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readSchedules(PRIMARYm_location, MODELS).at(0);
-		Models::FMTLpModel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel Optimization1(MODELS.at(0), Models::FMTSolverInterface::CLP);
 
 		//ModelParser.writeToProject(OUTPUT_DIRECTORY + "test.pri", Optimization1);
 

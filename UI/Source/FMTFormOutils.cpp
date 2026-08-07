@@ -215,7 +215,7 @@ namespace Wrapper
 
 		try
 		{
-			for (Models::FMTsolverinterface solver : Models::FMTSrModel::getAvailableSolverInterface())
+			for (Models::FMTSolverInterface solver : Models::FMTSrModel::getAvailableSolverInterface())
 			{
 				retour->Add(static_cast<int>(solver));
 			}

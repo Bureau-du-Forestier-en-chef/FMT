@@ -76,15 +76,15 @@ namespace Models
 		@brief Return the available solver interfaces.
 		@return the available solver interfaces.
 		*/
-		static std::vector<Models::FMTsolverinterface> getAvailableSolverInterface();
-		// DocString: FMTSrModel(const FMTModel,FMTsolverinterface)
+		static std::vector<Models::FMTSolverInterface> getAvailableSolverInterface();
+		// DocString: FMTSrModel(const FMTModel,FMTSolverInterface)
 		/**
 		@brief Main constructor building a FMTSrModel from its base class and letting the user choose the solver type.
-		@details See FMTsolverinterface.h for the supported solver types (CLP, MOSEK, GUROBI, CPLEX).
+		@details See FMTSolverInterface.h for the supported solver types (CLP, MOSEK, GUROBI, CPLEX).
 		@param[in] base the base model.
 		@param[in] lsolvertype the solver type.
 		*/
-		FMTSrModel(const FMTModel& base, FMTsolverinterface lsolvertype);
+		FMTSrModel(const FMTModel& base, FMTSolverInterface lsolvertype);
 		// DocString: FMTSrModel()
 		/**
 		@brief Default constructor for FMTSrModel.

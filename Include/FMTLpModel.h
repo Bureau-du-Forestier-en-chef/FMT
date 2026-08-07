@@ -65,14 +65,14 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		@details This breaks the relation between the FMTModel constraints and the matrix constraints.
 		*/
 		void clearConstraintLocation();
-		// DocString: FMTLpModel(const FMTModel,FMTsolverinterface)
+		// DocString: FMTLpModel(const FMTModel,FMTSolverInterface)
 		/**
 		@brief Main constructor building a FMTLpModel from its base class and letting the user choose the solver type.
-		@details See FMTsolverinterface.h for the supported solver types (CLP, MOSEK, GUROBI, CPLEX).
+		@details See FMTSolverInterface.h for the supported solver types (CLP, MOSEK, GUROBI, CPLEX).
 		@param[in] base the base model.
 		@param[in] lsolvertype the solver type.
 		*/
-		FMTLpModel(const FMTModel& base, FMTsolverinterface lsolvertype);
+		FMTLpModel(const FMTModel& base, FMTSolverInterface lsolvertype);
 		// DocString: FMTLpModel()
 		/**
 		@brief Default constructor for FMTLpModel.
@@ -93,7 +93,7 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		// DocString: FMTLpModel::initialSolve
 		/**
 		@brief Cold start of the LP solve of a simple LP model.
-		@details By default calls solverinterface->initialSolve, but based on the FMTsolverinterface it tries to use the best solver parameters for a type III forest planning model; interior point is considered the best algorithm for all solvers.
+		@details By default calls solverinterface->initialSolve, but based on the FMTSolverInterface it tries to use the best solver parameters for a type III forest planning model; interior point is considered the best algorithm for all solvers.
 		@return true if the initial solve succeeded else false.
 		*/
 		bool initialSolve();

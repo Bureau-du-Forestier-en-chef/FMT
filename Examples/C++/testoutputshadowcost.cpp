@@ -23,7 +23,7 @@ int main()
 		Parser::FMTModelParser modelparser;
 		const std::vector<std::string>scenarios(1, "LP2");
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
 		std::vector<std::string>outputnames;
 		outputnames.push_back("OVOLREC");
 		std::vector<Core::FMTOutput>outputtotest;

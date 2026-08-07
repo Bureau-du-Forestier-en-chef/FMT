@@ -20,7 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
-#include "FMTsolverinterface.h"
+#include "FMTSolverInterface.h"
 
 /// Namespace regrouping all tools for solving LP/MIP problems using an heuristic.
 namespace Heuristics
@@ -48,13 +48,13 @@ namespace Heuristics
 		@param[in] copysolver if true copies the solver.
 		*/
 		FMTLpHeuristic(Models::FMTLpSolver& basesolve, size_t lseed = 0,bool copysolver = true);
-		// DocString: FMTLpHeuristic(const Models::FMTsolverinterface&,const size_t&)
+		// DocString: FMTLpHeuristic(const Models::FMTSolverInterface&,const size_t&)
 		/**
 		@brief Construct a FMTLpHeuristic from a solver type and a seed.
 		@param[in] interfacetype the solver interface type.
 		@param[in] lseed the seed.
 		*/
-		FMTLpHeuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed);
+		FMTLpHeuristic(const Models::FMTSolverInterface& interfacetype,const size_t& lseed);
 		// DocString: FMTLpHeuristic()
 		/**
 		@brief Default constructor for FMTLpHeuristic.

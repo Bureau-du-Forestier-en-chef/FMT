@@ -112,7 +112,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			modelCopy.setConstraints(std::vector<Core::FMTConstraint>());
 			modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 			//modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 30);
-			/**Models::FMTLpModel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+			/**Models::FMTLpModel optModel(modelCopy, Models::FMTSolverInterface::MOSEK);
 			optModel.setparameter(Models::FMTintmodelparameters::LENGTH, p_periods);
 			optModel.doPlanning(false);
 			masks = optModel.getAllMasks(themes);*/
@@ -120,7 +120,7 @@ std::set<std::string> FMTWrapperCore::Tools::getAllMasks(
 			std::vector<Core::FMTActualDevelopment> area = modelCopy.getArea();
 			for (int i = 1; i <= p_periods; ++i)
 			{
-				Models::FMTLpModel optModel(modelCopy, Models::FMTsolverinterface::MOSEK);
+				Models::FMTLpModel optModel(modelCopy, Models::FMTSolverInterface::MOSEK);
 				for (auto& dev : area)
 					{
 					dev.setPeriod(i-1);

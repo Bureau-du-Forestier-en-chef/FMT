@@ -46,13 +46,13 @@ void out(const char* data) {
 					Parser::FMTModelParser Modelparser;
 					Modelparser.passInLogger(logger);
 					std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
-					Models::FMTLpModel global(models.at(0), Models::FMTsolverinterface::CLP);
+					Models::FMTLpModel global(models.at(0), Models::FMTSolverInterface::CLP);
 					global.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
 					global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 					global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 					Models::FMTNssModel stochastic(models.at(1), 0);
 					stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
-					Models::FMTLpModel local(models.at(2), Models::FMTsolverinterface::CLP);
+					Models::FMTLpModel local(models.at(2), Models::FMTSolverInterface::CLP);
 					local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 					local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 					std::vector<Core::FMTOutput>selectedoutputs;

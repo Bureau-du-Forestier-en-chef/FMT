@@ -8,7 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHOSI
 #ifndef FMTsolve_Hm_included
 #define FMTsolve_Hm_included
-#include "FMTsolverinterface.h"
+#include "FMTSolverInterface.h"
 #include "FMTMatrixBuild.h"
 #include "FMTExceptionHandler.h"
 #include "FMTObject.h"
@@ -95,7 +95,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@return a reference to this FMTLpSolver.
 		*/
 		FMTLpSolver& operator =(FMTLpSolver&& rhs) =default;
-		// DocString: FMTLpSolver(FMTsolverinterface,const std::string,const std::string)
+		// DocString: FMTLpSolver(FMTSolverInterface,const std::string,const std::string)
 		/**
 		@brief Main constructor for FMTLpSolver with a solver type, cold and warm start parameters and a problem name.
 		@param[in] lsolvertype the solver type.
@@ -103,7 +103,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@param[in] p_WarmStartParameters the warm start parameters on the form param_name param_value per line.
 		@param[in] p_problemName the name of the problem.
 		*/
-		FMTLpSolver(FMTsolverinterface lsolvertype,
+		FMTLpSolver(FMTSolverInterface lsolvertype,
 			const std::string& p_ColdStartParameters,
 			const std::string& p_WarmStartParameters,
 			const std::string& p_problemName);
@@ -130,7 +130,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		// DocString: FMTLpSolver::initialSolve
 		/**
 		@brief Cold start of the LP solve of a simple LP model.
-		@details By default calls solverinterface->initialSolve, but based on the FMTsolverinterface it tries to use the best solver parameters for a type III forest planning model; interior point is considered the best algorithm for all solvers.
+		@details By default calls solverinterface->initialSolve, but based on the FMTSolverInterface it tries to use the best solver parameters for a type III forest planning model; interior point is considered the best algorithm for all solvers.
 		@return true if the initial solve succeeded else false.
 		*/
 		virtual bool initialSolve();
@@ -189,7 +189,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@brief Setter of the solver type of the serializable matrix.
 		@param[in] lsolvertype the solver type.
 		*/
-		void setSolverType(FMTsolverinterface& lsolvertype) const;
+		void setSolverType(FMTSolverInterface& lsolvertype) const;
 		// DocString: FMTLpSolver::gotLicense
 		/**
 		@brief Return true if the license of the solver is available.
@@ -480,7 +480,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@brief Return the solver type of the solver.
 		@return the solver type.
 		*/
-		inline FMTsolverinterface getSolverType() const
+		inline FMTSolverInterface getSolverType() const
 		{
 			return solvertype;
 		}
@@ -547,7 +547,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		mutable FMTMatrixBuild matrixcache;
 		// DocString: FMTLpSolver::solvertype
 		///Solver type used maybe usefull for initialSolve or resolve to know what solver we are using to speed-up the process.
-		FMTsolverinterface solvertype;
+		FMTSolverInterface solvertype;
 		// DocString: FMTLpSolver::canUpdateSource
 		/**
 		@brief Return true if the solver interface source can be updated.
@@ -560,7 +560,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@param[in] lsolvertype the solver type.
 		@return a shared pointer to the solver interface.
 		*/
-		std::shared_ptr<OsiSolverInterface> buildSolverInterface(const FMTsolverinterface& lsolvertype) const;
+		std::shared_ptr<OsiSolverInterface> buildSolverInterface(const FMTSolverInterface& lsolvertype) const;
 		// DocString: FMTLpSolver::copySolverInterface
 		/**
 		@brief Copy a shared pointer to a solver interface into another shared pointer, passing the message handler to the pointer.
@@ -568,7 +568,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@param[in] lsolvertype the solver type.
 		@return a shared pointer to the copied solver interface.
 		*/
-		std::shared_ptr<OsiSolverInterface> copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype) const;
+		std::shared_ptr<OsiSolverInterface> copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTSolverInterface& lsolvertype) const;
 		// DocString: FMTLpSolver::clearRowCache
 		/**
 		@brief Clear the row caching of the OsiSolverInterface if Mosek is used.

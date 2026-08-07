@@ -16,7 +16,7 @@
 				Parser::FMTModelParser mparser;
 				const std::vector<std::string>scenarios(1, "LPPredictors");
 				const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
-				Models::FMTLpModel optimizationmodel(models.at(0),Models::FMTsolverinterface::CLP);
+				Models::FMTLpModel optimizationmodel(models.at(0),Models::FMTSolverInterface::CLP);
 				optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
 				optimizationmodel.doPlanning(true);
 		#endif

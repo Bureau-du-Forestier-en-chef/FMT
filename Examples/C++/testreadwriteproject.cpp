@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 	const std::vector<Models::FMTModel> READ_MODELS = modelparser.readproject(primarylocation, scenarios);
 	for (const Models::FMTModel& model: READ_MODELS)
 	{
-		Models::FMTLpModel lpmodel(model,Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel lpmodel(model,Models::FMTSolverInterface::CLP);
 		lpmodel.doPlanning(true);
 		modelparser.writeToProject(outdir + "test.pri", lpmodel);
 	}

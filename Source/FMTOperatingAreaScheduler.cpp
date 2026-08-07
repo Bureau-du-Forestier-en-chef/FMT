@@ -159,7 +159,7 @@ namespace Heuristics
 	int FMTOperatingAreaScheduler::resolveModel()
 		{
 		try {
-			if (!useprimal || solvertype != Models::FMTsolverinterface::CLP)
+			if (!useprimal || solvertype != Models::FMTSolverInterface::CLP)
 			{
 				FMTLpSolver::resolve();
 			}

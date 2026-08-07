@@ -42,7 +42,7 @@ int main()
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 		for (size_t scnid = 0 ; scnid < models.size();++scnid)
 		{
-			Models::FMTLpModel optimizationmodel(models.at(scnid), Models::FMTsolverinterface::CLP);
+			Models::FMTLpModel optimizationmodel(models.at(scnid), Models::FMTSolverInterface::CLP);
 			size_t scenariolength = 1;
 			if (scnid>=4)
 				{

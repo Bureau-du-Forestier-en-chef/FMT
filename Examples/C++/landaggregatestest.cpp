@@ -32,7 +32,7 @@ int main()
 		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);

@@ -136,7 +136,7 @@ int main()
 	constraints.push_back(evenflow);
 	///////////////////////////////////////////////////////////
 	//Create Model
-	Models::FMTLpModel model(Models::FMTModel(),Models::FMTsolverinterface::MOSEK);
+	Models::FMTLpModel model(Models::FMTModel(),Models::FMTSolverInterface::MOSEK);
 	model.setName("TEST");
 	model.setThemes(themes);
 	model.setYields(yields);

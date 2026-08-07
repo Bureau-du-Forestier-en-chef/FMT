@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	std::vector<Core::FMTOutput>selectedoutputs;
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{
-		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTSolverInterface::CLP);
 		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH,7);
 		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		for (const Core::FMTOutput& output : lpmodel.getOutputs())

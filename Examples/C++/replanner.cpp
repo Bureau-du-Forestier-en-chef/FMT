@@ -77,9 +77,9 @@ int main(int argc, char *argv[])
 
 
 	#ifdef FMTWITHMOSEK
-		Models::FMTLpModel global(models.at(0), Models::FMTsolverinterface::MOSEK);
+		Models::FMTLpModel global(models.at(0), Models::FMTSolverInterface::MOSEK);
 	#else
-		Models::FMTLpModel global(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel global(models.at(0), Models::FMTSolverInterface::CLP);
 	#endif
 	global.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 	/*global.setCompressTime(10, 12, 2);
@@ -91,9 +91,9 @@ int main(int argc, char *argv[])
 	Models::FMTNssModel stochastic(models.at(1), 0);
 	stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 	#ifdef FMTWITHMOSEK
-		Models::FMTLpModel local(models.at(2), Models::FMTsolverinterface::MOSEK);
+		Models::FMTLpModel local(models.at(2), Models::FMTSolverInterface::MOSEK);
 	#else
-		Models::FMTLpModel local(models.at(2), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel local(models.at(2), Models::FMTSolverInterface::CLP);
 	#endif
 	local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);

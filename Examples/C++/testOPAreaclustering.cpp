@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 	Parser::FMTModelParser modelparser;
 	const std::vector<std::string>scenarios(1, "LP");
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTLpModel optmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	Models::FMTLpModel optmodel(models.at(0), Models::FMTSolverInterface::CLP);
 	std::vector<Core::FMTTheme>themes = optmodel.getThemes();
 	std::vector<Heuristics::FMTOperatingArea>opareas;
 	const size_t themetarget(0);

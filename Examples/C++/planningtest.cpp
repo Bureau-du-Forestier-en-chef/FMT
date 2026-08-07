@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readSchedules(primlocation, models);
 	for (size_t modelid = 0; modelid<models.size(); ++modelid)
 		{
-		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTsolverinterface::MOSEK);
+		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTSolverInterface::MOSEK);
 		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, n_threads);
 		lpmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);

@@ -367,7 +367,7 @@ namespace Models
 		}
 	}
 
-	FMTLpModel::FMTLpModel(const FMTModel& base, FMTsolverinterface lsolvertype) :
+	FMTLpModel::FMTLpModel(const FMTModel& base, FMTSolverInterface lsolvertype) :
 		FMTSrModel(base,lsolvertype),
 		m_rowsAllocator(),
 		m_indexAllocator(),

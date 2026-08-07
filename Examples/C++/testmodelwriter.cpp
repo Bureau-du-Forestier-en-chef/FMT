@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 	//const std::vector<std::string>scenarios(1, "14_Sc5_Determin_apsp_02751_tmw");
 	//const std::vector<std::string>scenarios(1, "201_UG107_feu");
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTLpModel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+	Models::FMTLpModel optmodel(models.at(0), Models::FMTSolverInterface::MOSEK);
 	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,  3);
 	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 	modelparser.write(optmodel, outdir);
 	const double initobjvalue = optmodel.getObjValue();
 	const std::vector<Models::FMTModel> rereadmodels = modelparser.readproject(outdir + optmodel.getName() + ".pri", std::vector<std::string>(1, "ROOT"));
-	optmodel = Models::FMTLpModel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
+	optmodel = Models::FMTLpModel(rereadmodels.at(0), Models::FMTSolverInterface::MOSEK);
 	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,3);
 	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 3);
 	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);

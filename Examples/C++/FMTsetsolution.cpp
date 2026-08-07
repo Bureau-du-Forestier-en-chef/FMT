@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		modelparser.setErrorsToWarnings(errors);
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-		//Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+		//Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::MOSEK);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readSchedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
 		//optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);

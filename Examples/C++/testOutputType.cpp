@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 	//return 0;
 	modelparser.write(models.at(0), outdir); // On va chercher le modèle
 	const std::vector<Models::FMTModel> rereadmodels = modelparser.readproject(outdir + models.at(0).getName() + ".pri", std::vector<std::string>(1, "ROOT"));
-	Models::FMTLpModel optmodel = Models::FMTLpModel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
+	Models::FMTLpModel optmodel = Models::FMTLpModel(rereadmodels.at(0), Models::FMTSolverInterface::MOSEK);
 	//modelparser.write(optmodel, outdir+"other/");
 	if (optmodel.getOutputs().size() != N_OUTPUT)
 	{

@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTLpHeuristic.h"
 #include <algorithm>
 #include <random>
-#include "FMTsolverinterface.h"
+#include "FMTSolverInterface.h"
 #include "FMTExceptionHandler.h"
 
 namespace Heuristics
@@ -34,7 +34,7 @@ namespace Heuristics
 		return *this;
 		}
 
-    FMTLpHeuristic::FMTLpHeuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
+    FMTLpHeuristic::FMTLpHeuristic(const Models::FMTSolverInterface& interfacetype,const size_t& lseed):
        Models::FMTLpSolver(interfacetype,std::string(), std::string(),"LpHeuristic_"+std::to_string(lseed)),
 		m_generator(static_cast<unsigned int>(lseed)), m_seed(lseed), m_usingsolvercopy(true/*false*/)
         {

@@ -327,7 +327,7 @@ namespace Heuristics
 		@return the level solution outputs.
 		*/
 		std::vector<Core::FMTOutput>getLevelSolution(const std::string& outputname,const std::string& aggregate,int outputid) const;
-		// DocString: FMTOperatingAreaScheduler(const std::vector<FMTOperatingArea>,const Graph::FMTGraph,const Models::FMTModel,const Core::FMTOutputNode,std::shared_ptr<OsiSolverInterface>,const Models::FMTsolverinterface,size_t lseed,double proportionofset,bool userandomness,bool copysolver)
+		// DocString: FMTOperatingAreaScheduler(const std::vector<FMTOperatingArea>,const Graph::FMTGraph,const Models::FMTModel,const Core::FMTOutputNode,std::shared_ptr<OsiSolverInterface>,const Models::FMTSolverInterface,size_t lseed,double proportionofset,bool userandomness,bool copysolver)
 		/**
 		@brief Main constructor for FMTOperatingAreaScheduler, taking the information coming from a FMTLpModel.
 		@details Constructing the scheduler copies the solver interface when copysolver is true; after construction the scheduler no longer needs the FMTLpModel.

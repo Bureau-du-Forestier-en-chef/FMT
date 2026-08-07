@@ -22,7 +22,7 @@ int main()
 		std::vector<std::string>scenarios;
 		scenarios.push_back("stdconstraints");
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTLpModel lpmodel(models.at(0),Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel lpmodel(models.at(0),Models::FMTSolverInterface::CLP);
 		lpmodel.doPlanning(true);
 	}else {
 		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";

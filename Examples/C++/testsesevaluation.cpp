@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	mparser.setErrorsToWarnings(errors);
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
-	Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+	Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
 	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 	if (optimizationmodel.doPlanning(true))
 	{

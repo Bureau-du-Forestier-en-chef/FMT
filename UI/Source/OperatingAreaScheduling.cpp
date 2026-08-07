@@ -40,7 +40,7 @@ namespace Wrapper
 			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
 			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
 			*logger << "Préparation du modèle" << "\n";
-			Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTsolverinterface>(solver));
+			Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTSolverInterface>(solver));
 			*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";
 			optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, nombrePeriodes);
 			optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);

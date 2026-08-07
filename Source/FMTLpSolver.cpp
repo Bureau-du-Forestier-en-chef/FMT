@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHOSI
 #include "FMTLpSolver.h"
 #include "OsiSolverInterface.hpp"
+#include "OsiGlpkSolverInterface.hpp"
 
 #ifdef FMTWITHMOSEK
 	#include "mosek.h"
@@ -31,24 +32,27 @@ namespace Models
 	}
 
 
-	std::shared_ptr<OsiSolverInterface> FMTLpSolver::buildSolverInterface(const FMTsolverinterface& lsolvertype) const
+	std::shared_ptr<OsiSolverInterface> FMTLpSolver::buildSolverInterface(const FMTSolverInterface& lsolvertype) const
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
 		try {
 			switch (lsolvertype)
 			{
-			case FMTsolverinterface::CLP:
+			case FMTSolverInterface::CLP:
 				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface());
 				break;
 #ifdef  FMTWITHMOSEK
-			case FMTsolverinterface::MOSEK:
+			case FMTSolverInterface::MOSEK:
 				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface());
 			break;
 #endif
-				/*case FMTsolverinterface::CPLEX:
+			case FMTSolverInterface::GLPK:
+				newsolverinterface = std::shared_ptr<OsiGlpkSolverInterface>(new OsiGlpkSolverInterface());
+			break;
+				/*case FMTSolverInterface::CPLEX:
 					newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 				break;
-				case FMTsolverinterface::GUROBI:
+				case FMTSolverInterface::GUROBI:
 					newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
 				break;*/
 			default:
@@ -63,7 +67,7 @@ namespace Models
 	}
 
 
-	std::shared_ptr<OsiSolverInterface> FMTLpSolver::copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr,const FMTsolverinterface& lsolvertype) const
+	std::shared_ptr<OsiSolverInterface> FMTLpSolver::copySolverInterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr,const FMTSolverInterface& lsolvertype) const
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
 		try{
@@ -72,27 +76,6 @@ namespace Models
 					newsolverinterface.reset(solver_ptr->clone(true));
 					newsolverinterface->resolve();
 				}
-		/*switch (lsolvertype)
-		{
-		case FMTsolverinterface::CLP:
-			newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
-			break;
-	#ifdef  FMTWITHMOSEK
-			case FMTsolverinterface::MOSEK:
-				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface(*dynamic_cast<OsiMskSolverInterface*>(solver_ptr.get())));
-				newsolverinterface->resolve();
-				break;
-	#endif
-			//case FMTsolverinterface::CPLEX:
-				//newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface(*dynamic_cast<OsiCpxSolverInterface*>(solver_ptr.get())));
-			//break;
-			//case FMTsolverinterface::GUROBI:
-				//newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface(*dynamic_cast<OsiGrbSolverInterface*>(solver_ptr.get())));
-			//break;
-		default:
-			newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
-			break;
-		}*/
 		}
 		catch (...)
 		{
@@ -143,7 +126,7 @@ namespace Models
 			}
 		return *this;
 		}
-	FMTLpSolver::FMTLpSolver(FMTsolverinterface lsolvertype,
+	FMTLpSolver::FMTLpSolver(FMTSolverInterface lsolvertype,
 		const std::string& p_ColdStartParameters,
 		const std::string& p_WarmStartParameters,
 		const std::string& p_problemName):
@@ -154,7 +137,7 @@ namespace Models
 		solverinterface = buildSolverInterface(lsolvertype);
 		//solverinterface->setStrParam(OsiStrParam::OsiProbName, p_problemName);
 		passInMessageHandler(*_logger);
-		/*if (solvertype == FMTsolverinterface::MOSEK)//weird in debug...
+		/*if (solvertype == FMTSolverInterface::MOSEK)//weird in debug...
 			{
 			OsiMskSolverInterface* mskSolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 			MSKtask_t mskTask = mskSolver->getMutableLpPtr();
@@ -171,7 +154,7 @@ namespace Models
 			bool erroroccured = false;
 			switch (solvertype)
 			{
-				case FMTsolverinterface::CLP:
+				case FMTSolverInterface::CLP:
 				{
 					OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
 					ClpSimplex* splexmodel = clpsolver->getModelPtr();
@@ -182,7 +165,7 @@ namespace Models
 				}
 				break;
 				#ifdef  FMTWITHMOSEK
-				case FMTsolverinterface::MOSEK:
+				case FMTSolverInterface::MOSEK:
 				{
 					MSKrescodee error = static_cast<MSKrescodee>(_mskOptimizeWithParameters());
 
@@ -227,7 +210,7 @@ namespace Models
 		try {
 			switch (solvertype)
 				{
-				case FMTsolverinterface::CLP:
+				case FMTSolverInterface::CLP:
 				{
 				const OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
 				ClpSimplex* splexmodel = clpsolver->getModelPtr();
@@ -235,7 +218,7 @@ namespace Models
 				break;
 				}
 				#ifdef  FMTWITHMOSEK
-				case FMTsolverinterface::MOSEK:
+				case FMTSolverInterface::MOSEK:
 					{
 					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 					MSKtask_t task = msksolver->getMutableLpPtr();
@@ -260,7 +243,7 @@ namespace Models
 			switch (solvertype)
 			{
 			#ifdef  FMTWITHMOSEK
-			case FMTsolverinterface::MOSEK:
+			case FMTSolverInterface::MOSEK:
 				{
 					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 					MSKtask_t task = msksolver->getMutableLpPtr();
@@ -286,7 +269,7 @@ namespace Models
 				switch (solvertype)
 				{
 				#ifdef  FMTWITHMOSEK
-				case FMTsolverinterface::MOSEK:
+				case FMTSolverInterface::MOSEK:
 					{
 						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 						MSKtask_t task = msksolver->getMutableLpPtr();
@@ -325,7 +308,7 @@ namespace Models
 				switch (solvertype)
 				{
 				#ifdef  FMTWITHMOSEK
-				case FMTsolverinterface::MOSEK:
+				case FMTSolverInterface::MOSEK:
 					{
 						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 						MSKtask_t task = msksolver->getMutableLpPtr();
@@ -462,7 +445,7 @@ namespace Models
 			bool erroroccured = false;
 			switch (solvertype)
 			{
-				case FMTsolverinterface::CLP:
+				case FMTSolverInterface::CLP:
 				{
 					OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
 					_setClpOptions();
@@ -470,7 +453,7 @@ namespace Models
 				}
 				break;
 				#ifdef FMTWITHMOSEK
-				case FMTsolverinterface::MOSEK:
+				case FMTSolverInterface::MOSEK:
 				{
 					MSKrescodee error = static_cast<MSKrescodee>(_mskOptimizeWithParameters());
 
@@ -489,10 +472,10 @@ namespace Models
 				}
 				break;
 				#endif
-				/*case FMTsolverinterface::CPLEX:
+				/*case FMTSolverInterface::CPLEX:
 					solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 				break;
-				case FMTsolverinterface::GUROBI:
+				case FMTSolverInterface::GUROBI:
 					solverinterface = unique_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
 				break;*/
 				default:
@@ -532,7 +515,7 @@ namespace Models
 		switch (solvertype)
 		{
 		#ifdef FMTWITHMOSEK
-				case FMTsolverinterface::MOSEK:
+				case FMTSolverInterface::MOSEK:
 				{
 					const OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 					licensestatus = !msksolver->isLicenseError();
@@ -540,10 +523,10 @@ namespace Models
 				}
 		break;
 		#endif
-		/*case FMTsolverinterface::CPLEX:
+		/*case FMTSolverInterface::CPLEX:
 			solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 		break;
-		case FMTsolverinterface::GUROBI:
+		case FMTSolverInterface::GUROBI:
 			solverinterface = unique_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
 		break;*/
 		default:
@@ -566,19 +549,22 @@ namespace Models
 		try {
 			switch (solvertype)
 			{
-			case FMTsolverinterface::CLP:
+			case FMTSolverInterface::CLP:
 				name = "CLP";
 				break;
 #ifdef FMTWITHMOSEK
-			case FMTsolverinterface::MOSEK:
+			case FMTSolverInterface::MOSEK:
 				name = "MOSEK";
 				break;
 #endif
-
-				/*case FMTsolverinterface::CPLEX:
+			case FMTSolverInterface::GLPK:
+				name = "GLPK";
+				break;
+			break;
+				/*case FMTSolverInterface::CPLEX:
 					name = "CPLEX";
 				break;
-				case FMTsolverinterface::GUROBI:
+				case FMTSolverInterface::GUROBI:
 					name = "GUROBI";
 				break;*/
 			default:
@@ -785,7 +771,7 @@ namespace Models
 		try{
 		switch (solvertype)
 		{
-		case FMTsolverinterface::CLP:
+		case FMTSolverInterface::CLP:
 			{
 			const OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
 			const ClpSimplex* splexmodel = clpsolver->getModelPtr();
@@ -793,7 +779,7 @@ namespace Models
 			}
 		break;
 		#ifdef FMTWITHMOSEK
-		case FMTsolverinterface::MOSEK:
+		case FMTSolverInterface::MOSEK:
 			{
 			const OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 			const MSKtask_t task = msksolver->getMutableLpPtr();
@@ -801,10 +787,10 @@ namespace Models
 			}
 		break;
 		#endif
-		/*case FMTsolverinterface::CPLEX:
+		/*case FMTSolverInterface::CPLEX:
 			solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 		break;
-		case FMTsolverinterface::GUROBI:
+		case FMTSolverInterface::GUROBI:
 			solverinterface = unique_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
 		break;*/
 		default:
@@ -821,7 +807,7 @@ namespace Models
 		return iterations;
 		}
 
-	void FMTLpSolver::setSolverType(FMTsolverinterface& lsolvertype) const
+	void FMTLpSolver::setSolverType(FMTSolverInterface& lsolvertype) const
 		{
 		lsolvertype = solvertype;
 		}
@@ -857,7 +843,7 @@ namespace Models
 		try{
 		#ifdef  FMTWITHMOSEK
 			matrixcache.synchronize(solverinterface);
-			if (solvertype == Models::FMTsolverinterface::MOSEK)
+			if (solvertype == Models::FMTSolverInterface::MOSEK)
 				{
 				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 				msksolver->freeCachedRowRim();
@@ -1018,7 +1004,7 @@ namespace Models
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror, 
 								"NumCols or NumRows size is different of the number of names given", "FMTLpSolver::updateRowsAndColsNames", __LINE__, __FILE__);		
 			}
-			if (solvertype == Models::FMTsolverinterface::MOSEK)
+			if (solvertype == Models::FMTSolverInterface::MOSEK)
 			{
 				#ifdef FMTWITHMOSEK
 				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
@@ -1045,61 +1031,14 @@ namespace Models
 			_exhandler->raiseFromCatch("", "FMTLpSolver::updateRowsAndColsNames", __LINE__, __FILE__);
 		}
 	}
-	/*
-	void FMTLpSolver::updateMatrixNaming(const std::unordered_map<int, std::string>& colsnames,
-		const std::unordered_map<int, std::string>& rownames)
-	{
-		try {
-			matrixcache.synchronize(solverinterface);
-			for (int colid = 0 ; colid < solverinterface->getNumCols();++colid)
-			{
-				std::string name = "C"  + std::to_string(colid);
-				if (colsnames.find(colid)!= colsnames.end())
-					{
-					name = colsnames.at(colid);
-					}
-			if (solvertype== Models::FMTsolverinterface::MOSEK)
-				{
-				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-				MSKtask_t task = msksolver->getMutableLpPtr();
-				MSK_putvarname(task, colid, name.c_str());
-			}else {
-				solverinterface->setColName(colid, name);
-				}
-			
-			}
-			for (int rowid = 0; rowid < solverinterface->getNumRows(); ++rowid)
-			{
-				std::string name = "R" + std::to_string(rowid);
-				if (rownames.find(rowid) != rownames.end())
-					{
-					name = rownames.at(rowid);
-					}
-				if (solvertype == Models::FMTsolverinterface::MOSEK)
-				{
-					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-					MSKtask_t task = msksolver->getMutableLpPtr();
-					MSK_putconname(task, rowid, name.c_str());
-				}
-				else {
-					solverinterface->setRowName(rowid, name);
-				}
-				
-			}
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTLpSolver::updateMatrixNaming", __LINE__, __FILE__);
-		}
-	}
-	*/
+	
 
 	void FMTLpSolver::writeLp(const std::string& location) const
 		{
 		try{
 			matrixcache.synchronize(solverinterface);
 			
-			if (solvertype == Models::FMTsolverinterface::MOSEK)
+			if (solvertype == Models::FMTSolverInterface::MOSEK)
 			{
 				#ifdef FMTWITHMOSEK
 				std::vector<char*>rownames;

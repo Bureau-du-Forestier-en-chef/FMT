@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTSaModel.h"
 #include "FMTLpSolver.h"
 #include "Rdefinitions.h"
-#include "FMTsolverinterface.h"
+#include "FMTSolverInterface.h"
 #include <Rcpp.h>
 #include <string>
 
@@ -38,7 +38,7 @@ RCPP_DEFINEVECTOR(Models::FMTSesModel);//For vector
 	RCPP_EXPOSED_WRAP(Models::FMTNssModel);
 	RCPP_EXPOSED_AS(Models::FMTNssModel);
 	RCPP_DEFINEVECTOR(Models::FMTNssModel);//For vector
-	RCPP_EXPOSED_ENUM_NODECL(Models::FMTsolverinterface);
+	RCPP_EXPOSED_ENUM_NODECL(Models::FMTSolverInterface);
 	RCPP_EXPOSED_WRAP(Models::FMTLpSolver);
 	RCPP_EXPOSED_AS(Models::FMTLpSolver);
 	RCPP_DEFINEVECTOR(Models::FMTLpSolver);//For vector
@@ -195,7 +195,7 @@ void exportModel()
 
 	Rcpp::class_<Models::FMTLpModel>("FMTlpmodel", "@DocString(FMTLpModel)")
 		.derives<Models::FMTSrModel>("FMTsrmodel")
-		.constructor<Models::FMTModel, Models::FMTsolverinterface>("@DocString(FMTLpModel(Models::FMTModel,Models::FMTsolverinterface))")
+		.constructor<Models::FMTModel, Models::FMTSolverInterface>("@DocString(FMTLpModel(Models::FMTModel,Models::FMTSolverInterface))")
 		.constructor("@DocString(FMTLpModel())")
 		.constructor<Models::FMTLpModel>("@DocString(FMTLpModel(const FMTLpModel&))")
 		.method("setobjective", &Models::FMTLpModel::setObjective,

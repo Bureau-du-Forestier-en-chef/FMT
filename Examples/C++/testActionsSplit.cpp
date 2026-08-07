@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
 		const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(PRIMARYm_location, SCENARIOS);
 		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readSchedules(PRIMARYm_location, MODELS).at(0);
-		Models::FMTLpModel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel Optimization1(MODELS.at(0), Models::FMTSolverInterface::CLP);
 		Optimization1.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
 		Optimization1.FMTModel::setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		Optimization1.FMTModel::setParameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));

@@ -166,8 +166,8 @@ else
             modelparser.setErrorsToWarnings(errors);
             const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTModel model = models.at(0);
-            //Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::CLP);
-            Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
+            //Models::FMTLpModel optimizationmodel(model, Models::FMTSolverInterface::CLP);
+            Models::FMTLpModel optimizationmodel(model, Models::FMTSolverInterface::MOSEK);
             optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
             optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 	        optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true); 
@@ -212,7 +212,7 @@ else
                 const std::vector<Models::FMTModel> nmodels = modelparser.readproject(
                     "../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string>(1, "ROOT"));
                 Models::FMTModel readmodel = nmodels.at(0);
-                Models::FMTLpModel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP); // Pourquoi CLP et pas Mosek?
+                Models::FMTLpModel noptimizationmodel(readmodel, Models::FMTSolverInterface::CLP); // Pourquoi CLP et pas Mosek?
                 noptimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
                 noptimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
                 noptimizationmodel.Models::FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);

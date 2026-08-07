@@ -11,7 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <ctime>
 #include <fstream>
 #include <sstream>
-#include "FMTsolverinterface.h"
+#include "FMTSolverInterface.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "FMTExceptionHandler.h"

@@ -1210,7 +1210,7 @@ namespace Models
 	}
 
 
-	FMTSrModel::FMTSrModel(const FMTModel& base, FMTsolverinterface lsolvertype) :
+	FMTSrModel::FMTSrModel(const FMTModel& base, FMTSolverInterface lsolvertype) :
 		FMTModel(base),
 		m_graph(new Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>(Graph::FMTgraphbuild::nobuild)),
 		solver(lsolvertype,
@@ -1647,12 +1647,12 @@ namespace Models
 		return std::unique_ptr<FMTModel>(new FMTSrModel(*this));
 	}
 
-	std::vector<Models::FMTsolverinterface> FMTSrModel::getAvailableSolverInterface()
+	std::vector<Models::FMTSolverInterface> FMTSrModel::getAvailableSolverInterface()
 	{
-		std::vector<Models::FMTsolverinterface> interfaces;
-		interfaces.push_back(Models::FMTsolverinterface::CLP);
+		std::vector<Models::FMTSolverInterface> interfaces;
+		interfaces.push_back(Models::FMTSolverInterface::CLP);
 		#ifdef FMTWITHMOSEK
-			interfaces.push_back(Models::FMTsolverinterface::MOSEK);
+			interfaces.push_back(Models::FMTSolverInterface::MOSEK);
 		#endif
 		return interfaces;
 	}

@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 		}
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readSchedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
 		optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);

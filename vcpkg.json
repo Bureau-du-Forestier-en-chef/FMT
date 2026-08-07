@@ -8,6 +8,7 @@
     },
 	"zlib",
     "boost",
+	"onnxruntime-gpu",
     "coin-or-cbc",
 	{
       "name": "arrow",

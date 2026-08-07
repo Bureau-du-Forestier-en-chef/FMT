@@ -33,7 +33,7 @@ int main()
 		initialmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
 		initialmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		initialmodel.setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
-		Models::FMTLpModel optimizationmodel(initialmodel, Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel optimizationmodel(initialmodel, Models::FMTSolverInterface::CLP);
 		const std::vector<Core::FMTSchedule>schedules = modelparser.readSchedules(primarylocation,models).at(0);
 		optimizationmodel.doPlanning(false,schedules);
         std::vector<Core::FMTSchedule> lockedproportionscheduled;
@@ -41,7 +41,7 @@ int main()
 		{
 			lockedproportionscheduled.push_back(optimizationmodel.getScheduleProportions(period,true));
 		}
-		optimizationmodel = Models::FMTLpModel(initialmodel, Models::FMTsolverinterface::CLP);
+		optimizationmodel = Models::FMTLpModel(initialmodel, Models::FMTSolverInterface::CLP);
 		// ici on vient changer la section area 
 		#ifdef FMTWITHGDAL
 		const std::vector<Core::FMTActualDevelopment> newarea = areaparser.readVectors(	optimizationmodel.getThemes(),

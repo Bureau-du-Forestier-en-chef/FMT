@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
 			}
 		for (size_t id = 0; id < models.size(); ++id)
 		{
-			Models::FMTsolverinterface solver = (argc > 1)
-				? Models::FMTsolverinterface::CLP 
-				: Models::FMTsolverinterface::MOSEK;
+			Models::FMTSolverInterface solver = (argc > 1)
+				? Models::FMTSolverInterface::CLP 
+				: Models::FMTSolverInterface::MOSEK;
 			Models::FMTLpModel test(models.at(id), solver);
 			test.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 			test.doPlanning(true);

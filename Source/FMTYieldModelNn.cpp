@@ -19,7 +19,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <cmath>
 
 #ifdef FMTWITHONNXR
-	#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
+#if __has_include(<onnxruntime/core/session/onnxruntime_cxx_api.h>)
+	# include <onnxruntime/core/session/onnxruntime_cxx_api.h>
+#else 
+	# include <onnxruntime_cxx_api.h>
+#endif
 #endif
 
 

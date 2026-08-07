@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 		    modelparser.setErrorsToWarnings(errors);
             const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTModel model = models.at(0);
-            Models::FMTLpModel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
+            Models::FMTLpModel optimizationmodel(model, Models::FMTSolverInterface::MOSEK);
             optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,5);
 	        optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	        optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
                                     );
             }
             myields.update();
-            optimizationmodel = Models::FMTLpModel(model, Models::FMTsolverinterface::MOSEK);
+            optimizationmodel = Models::FMTLpModel(model, Models::FMTSolverInterface::MOSEK);
             optimizationmodel.setYields(myields);
             optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,5);
             optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);

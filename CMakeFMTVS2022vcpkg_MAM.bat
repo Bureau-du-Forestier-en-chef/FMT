@@ -21,8 +21,7 @@ cmake CMakeLists.txt ^
     -DPARALLEL_TESTS=8 ^
     -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
     -DVCPKG_TARGET_TRIPLET=x64-windows ^
-    -DVCPKG_MANIFEST_MODE=ON ^
-    -DONNXR_DIR="D:/dependencies/onnxruntime/"
+    -DVCPKG_MANIFEST_MODE=ON
 	
 cmake --build build/release --config Release
 
@@ -37,5 +36,4 @@ cmake CMakeLists.txt ^
     -DPARALLEL_TESTS=8 ^
     -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
     -DVCPKG_TARGET_TRIPLET=x64-windows ^
-    -DVCPKG_MANIFEST_MODE=ON ^
-    -DONNXR_DIR="D:/dependencies/onnxruntime/"
+    -DVCPKG_MANIFEST_MODE=ON

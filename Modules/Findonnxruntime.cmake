@@ -12,185 +12,239 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 include(FindPackageHandleStandardArgs)
 
-FILE(GLOB_RECURSE ONNX_POTENTIALbin $ENV{ONNXR_DIR}/onnxruntime${CMAKE_STATIC_LIBRARY_SUFFIX})
+if(DEFINED VCPKG_TARGET_TRIPLET)
+    # =========================================================================
+    # LOGIQUE MODERNE (Pour installation vcpkg)
+    # =========================================================================
+    # Vcpkg centralise tout. Pas besoin de lier les dépendances internes (protobuf, re2, etc.)
+    # car elles sont déjà fusionnées ou gérées de manière transitive.
 
-foreach(includepath ${ONNX_POTENTIALbin})
-	get_filename_component(potfolder ${includepath} DIRECTORY)
-	string(TOLOWER "${includepath}" lowercase)
-	if ("${lowercase}" MATCHES "debug")
-		set(ONNXLIBDEBUG_DIR "${potfolder}")
-	else()
-		set(ONNXLIB_DIR "${potfolder}")
-	endif("${lowercase}" MATCHES "debug")
-endforeach()
+    set(_onnx_search_include "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+    set(_onnx_search_lib "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
+    set(_onnx_search_debug_lib "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib")
+    set(_onnx_search_bin "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin")
+    set(_onnx_search_debug_bin "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/bin")
 
-#Needs to be for debug and release here!
-get_filename_component(ONNXRBUILD_DIR ${ONNXLIB_DIR} DIRECTORY)
+    find_path(onnxruntime_INCLUDE_DIR
+        NAMES onnxruntime_c_api.h core/session/onnxruntime_c_api.h
+        PATHS ${_onnx_search_include}
+        PATH_SUFFIXES onnxruntime
+    )
+    set(onnxruntime_INCLUDE_DIRS "${onnxruntime_INCLUDE_DIR}")
 
-set(onnxruntime_INCLUDE_DIRS "$ENV{ONNXR_DIR}cmake/external/eigen;${ONNXRBUILD_DIR}/onnx;${ONNXRBUILD_DIR};$ENV{ONNXR_DIR}cmake/external/protobuf/src;$ENV{ONNXR_DIR}cmake/external/onnx;$ENV{ONNXR_DIR}cmake/external/SageInt;$ENV{ONNXR_DIR}/onnxruntime;$ENV{ONNXR_DIR}/include/onnxruntime/core/session;$ENV{ONNXR_DIR}/include/onnxruntime;$ENV{ONNXR_DIR}/include")
+    find_library(onnxruntime_RELEASE_LIBRARY
+        NAMES onnxruntime
+        PATHS ${_onnx_search_lib}
+        NO_DEFAULT_PATH
+    )
 
+    find_library(onnxruntime_DEBUG_LIBRARY
+        NAMES onnxruntime onnxruntimed
+        PATHS ${_onnx_search_debug_lib}
+        NO_DEFAULT_PATH
+    )
 
+    set(onnxruntime_LIBRARIES "")
+    if(onnxruntime_RELEASE_LIBRARY AND onnxruntime_DEBUG_LIBRARY)
+        list(APPEND onnxruntime_LIBRARIES "optimized" "${onnxruntime_RELEASE_LIBRARY}" "debug" "${onnxruntime_DEBUG_LIBRARY}")
+    elseif(onnxruntime_RELEASE_LIBRARY)
+        list(APPEND onnxruntime_LIBRARIES "${onnxruntime_RELEASE_LIBRARY}")
+    elseif(onnxruntime_DEBUG_LIBRARY)
+        list(APPEND onnxruntime_LIBRARIES "${onnxruntime_DEBUG_LIBRARY}")
+    endif()
 
-#look for libprotobuf
-FILE(GLOB_RECURSE ONNX_POTENTIALprotobin ${ONNXRBUILD_DIR}/libprotobuf${CMAKE_STATIC_LIBRARY_SUFFIX})
-list(GET ONNX_POTENTIALprotobin 0 FIRSTbin)
-get_filename_component(PROTOLIB_DIR ${FIRSTbin} DIRECTORY)
+    set(onnxruntime_DLLs "")
+    if(WIN32)
+        if(CMAKE_BUILD_TYPE MATCHES "Debug")
+            file(GLOB _debug_dlls "${_onnx_search_debug_bin}/*.dll")
+            list(APPEND onnxruntime_DLLs ${_debug_dlls})
+        else()
+            file(GLOB _release_dlls "${_onnx_search_bin}/*.dll")
+            list(APPEND onnxruntime_DLLs ${_release_dlls})
+        endif()
+    endif()
 
-#look for re2
-FILE(GLOB_RECURSE ONNX_POTENTIALre2bin ${ONNXRBUILD_DIR}/re2${CMAKE_STATIC_LIBRARY_SUFFIX})
-list(GET ONNX_POTENTIALre2bin 0 FIRSTbin)
-get_filename_component(RE2LIB_DIR ${FIRSTbin} DIRECTORY)
-
-#look for onnx and onnx_proto
-FILE(GLOB_RECURSE ONNX_POTENTIALonnxproto ${ONNXRBUILD_DIR}/onnx${CMAKE_STATIC_LIBRARY_SUFFIX})
-list(GET ONNX_POTENTIALonnxproto 0 FIRSTbin)
-get_filename_component(onnxproto_DIR ${FIRSTbin} DIRECTORY)
-
-
-
-find_library(onnxruntime_LIBRARY onnxruntime
-    PATHS "${ONNXLIB_DIR}"
-)
-
-find_library(win_getopt_wide_LIBRARY win_getopt_wide
-    PATHS "${ONNXLIB_DIR}"
-)
-
-find_library(onnxruntime_session_LIBRARY onnxruntime_session
-    PATHS "${ONNXLIB_DIR}"
-)
-
-find_library(onnxruntime_optimizer_LIBRARY onnxruntime_optimizer
-    PATHS "${ONNXLIB_DIR}"
-)
-
-find_library(onnxruntime_providers_LIBRARY onnxruntime_providers
-    PATHS "${ONNXLIB_DIR}"
-)
-find_library(onnxruntime_util_LIBRARY onnxruntime_util
-    PATHS "${ONNXLIB_DIR}"
-)
-find_library(onnxruntime_framework_LIBRARY onnxruntime_framework
-    PATHS "${ONNXLIB_DIR}"
-)
-find_library(onnxruntime_graph_LIBRARY onnxruntime_graph
-    PATHS "${ONNXLIB_DIR}"
-)
-find_library(onnxruntime_common_LIBRARY onnxruntime_common
-    PATHS "${ONNXLIB_DIR}"
-)
-find_library(onnxruntime_mlas_LIBRARY onnxruntime_mlas
-    PATHS "${ONNXLIB_DIR}"
-)
-
-find_library(PROTOLIB_LIBRARY libprotobuf-lite
-    PATHS "${PROTOLIB_DIR}"
-)
-
-
-
-find_library(RE2_LIBRARY re2
-    PATHS "${RE2LIB_DIR}"
-)
-find_library(ONNXP_LIBRARY onnx
-    PATHS "${onnxproto_DIR}"
-)
-find_library(ONNXPROTO_LIBRARY onnx_proto
-    PATHS "${onnxproto_DIR}"
-)
-
-
-
-set(onnxruntime_LIBRARIES "optimized;${onnxruntime_LIBRARY};optimized;${win_getopt_wide_LIBRARY};optimized;${onnxruntime_session_LIBRARY};optimized;${onnxruntime_optimizer_LIBRARY};optimized;${onnxruntime_providers_LIBRARY};optimized;${onnxruntime_util_LIBRARY};optimized;${onnxruntime_framework_LIBRARY};optimized;${onnxruntime_graph_LIBRARY};optimized;${onnxruntime_common_LIBRARY};optimized;${onnxruntime_mlas_LIBRARY};optimized;${PROTOLIB_LIBRARY};optimized;${RE2_LIBRARY};optimized;${ONNXP_LIBRARY};optimized;${ONNXPROTO_LIBRARY}")
-if (DEFINED VCPKG_TARGET_TRIPLET)
-	set(onnxruntime_DEBUGLIBRARIES "debug;${onnxruntime_LIBRARY};debug;${win_getopt_wide_LIBRARY};debug;${onnxruntime_session_LIBRARY};debug;${onnxruntime_optimizer_LIBRARY};debug;${onnxruntime_providers_LIBRARY};debug;${onnxruntime_util_LIBRARY};debug;${onnxruntime_framework_LIBRARY};debug;${onnxruntime_graph_LIBRARY};debug;${onnxruntime_common_LIBRARY};debug;${onnxruntime_mlas_LIBRARY};debug;${PROTOLIB_LIBRARY};debug;${RE2_LIBRARY};debug;${ONNXP_LIBRARY};debug;${ONNXPROTO_LIBRARY}")
-endif(DEFINED VCPKG_TARGET_TRIPLET)
-list (APPEND onnxruntime_LIBRARIES ${onnxruntime_DEBUGLIBRARIES})
-
-FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIB_DIR}/*.dll)
-
-#Onnxruntime broken in debug...
-if (NOT DEFINED VCPKG_TARGET_TRIPLET)
-if (DEFINED ONNXLIBDEBUG_DIR)#If got debug
-	#Needs to be for debug and release here!
-	get_filename_component(ONNXRDEBUGBUILD_DIR ${ONNXLIBDEBUG_DIR} DIRECTORY)
-	#set (onnxdebuginclude "$ENV{ONNXR_DIR}cmake/external/eigen;${ONNXRDEBUGBUILD_DIR}/onnx;${ONNXRDEBUGBUILD_DIR};$ENV{ONNXR_DIR}cmake/external/protobuf/src;$ENV{ONNXR_DIR}cmake/external/onnx;$ENV{ONNXR_DIR}cmake/external/SageInt;$ENV{ONNXR_DIR}/onnxruntime;$ENV{ONNXR_DIR}/include/onnxruntime/core/session;$ENV{ONNXR_DIR}/include/onnxruntime;$ENV{ONNXR_DIR}/include")
-	#list (APPEND onnxdebuginclude ${onnxruntime_INCLUDE_DIRS})
-	FILE(GLOB_RECURSE onnxdebugruntime_DLLs ${ONNXLIBDEBUG_DIR}/*.dll)
-	if(BUILD_TYPE MATCHES Debug)
-		list (APPEND onnxruntime_DLLs ${onnxdebugruntime_DLLs})
-	endif(BUILD_TYPE MATCHES Debug)
-	#look for libprotobuf
-	FILE(GLOB_RECURSE ONNX_POTENTIALprotobin ${ONNXRDEBUGBUILD_DIR}/libprotobufd${CMAKE_STATIC_LIBRARY_SUFFIX})
-	list(GET ONNX_POTENTIALprotobin 0 FIRSTbin)
-	get_filename_component(PROTODEBUGLIB_DIR ${FIRSTbin} DIRECTORY)
-	#look for re2
-	FILE(GLOB_RECURSE ONNX_POTENTIALre2bin ${ONNXRDEBUGBUILD_DIR}/re2${CMAKE_STATIC_LIBRARY_SUFFIX})
-	list(GET ONNX_POTENTIALre2bin 0 FIRSTbin)
-	get_filename_component(RE2DEBUGLIB_DIR ${FIRSTbin} DIRECTORY)
-	#look for onnx and onnx_proto
-	FILE(GLOB_RECURSE ONNX_POTENTIALonnxproto ${ONNXRDEBUGBUILD_DIR}/onnx${CMAKE_STATIC_LIBRARY_SUFFIX})
-	list(GET ONNX_POTENTIALonnxproto 0 FIRSTbin)
-	get_filename_component(onnxprotoDEBUG_DIR ${FIRSTbin} DIRECTORY)
-	find_library(onnxruntimedebug_LIBRARY onnxruntime
-   	 PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-	find_library(win_getopt_widedebug_LIBRARY win_getopt_wide
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-
-	find_library(onnxruntime_sessiondebug_LIBRARY onnxruntime_session
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-
-	find_library(onnxruntime_optimizerdebug_LIBRARY onnxruntime_optimizer
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-
-	find_library(onnxruntime_providersdebug_LIBRARY onnxruntime_providers
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-	find_library(onnxruntime_utildebug_LIBRARY onnxruntime_util
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-	find_library(onnxruntime_frameworkdebug_LIBRARY onnxruntime_framework
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-	find_library(onnxruntime_graphdebug_LIBRARY onnxruntime_graph
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-	find_library(onnxruntime_commondebug_LIBRARY onnxruntime_common
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-	find_library(onnxruntime_mlasdebug_LIBRARY onnxruntime_mlas
-		PATHS "${ONNXLIBDEBUG_DIR}"
-	)
-
-	find_library(PROTOLIBdebug_LIBRARY libprotobuf-lited
-		PATHS "${PROTODEBUGLIB_DIR}"
-	)
-
-
-
-	find_library(RE2debug_LIBRARY re2
-		PATHS "${RE2DEBUGLIB_DIR}"
-	)
-	find_library(ONNXPdebug_LIBRARY onnx
-		PATHS "${onnxprotoDEBUG_DIR}"
-	)
-	find_library(ONNXPROTOdebug_LIBRARY onnx_proto
-		PATHS "${onnxprotoDEBUG_DIR}"
-	)
-	set(onnxruntime_DEBUGLIBRARIES "debug;${onnxruntimedebug_LIBRARY};debug;${win_getopt_widedebug_LIBRARY};debug;${onnxruntime_sessiondebug_LIBRARY};debug;${onnxruntime_optimizerdebug_LIBRARY};debug;${onnxruntime_providersdebug_LIBRARY};debug;${onnxruntime_utildebug_LIBRARY};debug;${onnxruntime_frameworkdebug_LIBRARY};debug;${onnxruntime_graphdebug_LIBRARY};debug;${onnxruntime_commondebug_LIBRARY};debug;${onnxruntime_mlasdebug_LIBRARY};debug;${PROTOLIBdebug_LIBRARY};debug;${RE2debug_LIBRARY};debug;${ONNXPdebug_LIBRARY};debug;${ONNXPROTOdebug_LIBRARY}")
-	list (APPEND onnxruntime_LIBRARIES ${onnxruntime_DEBUGLIBRARIES})
-	if(BUILD_TYPE MATCHES Debug)
-		FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIBDEBUG_DIR}/*.dll)
-	endif(BUILD_TYPE MATCHES Debug)
 else()
-	FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIB_DIR}/*.dll)
-endif(DEFINED ONNXLIBDEBUG_DIR)
-endif(NOT DEFINED VCPKG_TARGET_TRIPLET)
 
+	FILE(GLOB_RECURSE ONNX_POTENTIALbin $ENV{ONNXR_DIR}/onnxruntime${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+	foreach(includepath ${ONNX_POTENTIALbin})
+		get_filename_component(potfolder ${includepath} DIRECTORY)
+		string(TOLOWER "${includepath}" lowercase)
+		if ("${lowercase}" MATCHES "debug")
+			set(ONNXLIBDEBUG_DIR "${potfolder}")
+		else()
+			set(ONNXLIB_DIR "${potfolder}")
+		endif("${lowercase}" MATCHES "debug")
+	endforeach()
+
+	#Needs to be for debug and release here!
+	get_filename_component(ONNXRBUILD_DIR ${ONNXLIB_DIR} DIRECTORY)
+
+	set(onnxruntime_INCLUDE_DIRS "$ENV{ONNXR_DIR}cmake/external/eigen;${ONNXRBUILD_DIR}/onnx;${ONNXRBUILD_DIR};$ENV{ONNXR_DIR}cmake/external/protobuf/src;$ENV{ONNXR_DIR}cmake/external/onnx;$ENV{ONNXR_DIR}cmake/external/SageInt;$ENV{ONNXR_DIR}/onnxruntime;$ENV{ONNXR_DIR}/include/onnxruntime/core/session;$ENV{ONNXR_DIR}/include/onnxruntime;$ENV{ONNXR_DIR}/include")
+
+
+
+	#look for libprotobuf
+	FILE(GLOB_RECURSE ONNX_POTENTIALprotobin ${ONNXRBUILD_DIR}/libprotobuf${CMAKE_STATIC_LIBRARY_SUFFIX})
+	list(GET ONNX_POTENTIALprotobin 0 FIRSTbin)
+	get_filename_component(PROTOLIB_DIR ${FIRSTbin} DIRECTORY)
+
+	#look for re2
+	FILE(GLOB_RECURSE ONNX_POTENTIALre2bin ${ONNXRBUILD_DIR}/re2${CMAKE_STATIC_LIBRARY_SUFFIX})
+	list(GET ONNX_POTENTIALre2bin 0 FIRSTbin)
+	get_filename_component(RE2LIB_DIR ${FIRSTbin} DIRECTORY)
+
+	#look for onnx and onnx_proto
+	FILE(GLOB_RECURSE ONNX_POTENTIALonnxproto ${ONNXRBUILD_DIR}/onnx${CMAKE_STATIC_LIBRARY_SUFFIX})
+	list(GET ONNX_POTENTIALonnxproto 0 FIRSTbin)
+	get_filename_component(onnxproto_DIR ${FIRSTbin} DIRECTORY)
+
+
+
+	find_library(onnxruntime_LIBRARY onnxruntime
+		PATHS "${ONNXLIB_DIR}"
+	)
+
+	find_library(win_getopt_wide_LIBRARY win_getopt_wide
+		PATHS "${ONNXLIB_DIR}"
+	)
+
+	find_library(onnxruntime_session_LIBRARY onnxruntime_session
+		PATHS "${ONNXLIB_DIR}"
+	)
+
+	find_library(onnxruntime_optimizer_LIBRARY onnxruntime_optimizer
+		PATHS "${ONNXLIB_DIR}"
+	)
+
+	find_library(onnxruntime_providers_LIBRARY onnxruntime_providers
+		PATHS "${ONNXLIB_DIR}"
+	)
+	find_library(onnxruntime_util_LIBRARY onnxruntime_util
+		PATHS "${ONNXLIB_DIR}"
+	)
+	find_library(onnxruntime_framework_LIBRARY onnxruntime_framework
+		PATHS "${ONNXLIB_DIR}"
+	)
+	find_library(onnxruntime_graph_LIBRARY onnxruntime_graph
+		PATHS "${ONNXLIB_DIR}"
+	)
+	find_library(onnxruntime_common_LIBRARY onnxruntime_common
+		PATHS "${ONNXLIB_DIR}"
+	)
+	find_library(onnxruntime_mlas_LIBRARY onnxruntime_mlas
+		PATHS "${ONNXLIB_DIR}"
+	)
+
+	find_library(PROTOLIB_LIBRARY libprotobuf-lite
+		PATHS "${PROTOLIB_DIR}"
+	)
+
+
+
+	find_library(RE2_LIBRARY re2
+		PATHS "${RE2LIB_DIR}"
+	)
+	find_library(ONNXP_LIBRARY onnx
+		PATHS "${onnxproto_DIR}"
+	)
+	find_library(ONNXPROTO_LIBRARY onnx_proto
+		PATHS "${onnxproto_DIR}"
+	)
+
+
+
+	set(onnxruntime_LIBRARIES "optimized;${onnxruntime_LIBRARY};optimized;${win_getopt_wide_LIBRARY};optimized;${onnxruntime_session_LIBRARY};optimized;${onnxruntime_optimizer_LIBRARY};optimized;${onnxruntime_providers_LIBRARY};optimized;${onnxruntime_util_LIBRARY};optimized;${onnxruntime_framework_LIBRARY};optimized;${onnxruntime_graph_LIBRARY};optimized;${onnxruntime_common_LIBRARY};optimized;${onnxruntime_mlas_LIBRARY};optimized;${PROTOLIB_LIBRARY};optimized;${RE2_LIBRARY};optimized;${ONNXP_LIBRARY};optimized;${ONNXPROTO_LIBRARY}")
+	if (DEFINED VCPKG_TARGET_TRIPLET)
+		set(onnxruntime_DEBUGLIBRARIES "debug;${onnxruntime_LIBRARY};debug;${win_getopt_wide_LIBRARY};debug;${onnxruntime_session_LIBRARY};debug;${onnxruntime_optimizer_LIBRARY};debug;${onnxruntime_providers_LIBRARY};debug;${onnxruntime_util_LIBRARY};debug;${onnxruntime_framework_LIBRARY};debug;${onnxruntime_graph_LIBRARY};debug;${onnxruntime_common_LIBRARY};debug;${onnxruntime_mlas_LIBRARY};debug;${PROTOLIB_LIBRARY};debug;${RE2_LIBRARY};debug;${ONNXP_LIBRARY};debug;${ONNXPROTO_LIBRARY}")
+	endif(DEFINED VCPKG_TARGET_TRIPLET)
+	list (APPEND onnxruntime_LIBRARIES ${onnxruntime_DEBUGLIBRARIES})
+
+	FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIB_DIR}/*.dll)
+
+	#Onnxruntime broken in debug...
+	if (NOT DEFINED VCPKG_TARGET_TRIPLET)
+	if (DEFINED ONNXLIBDEBUG_DIR)#If got debug
+		#Needs to be for debug and release here!
+		get_filename_component(ONNXRDEBUGBUILD_DIR ${ONNXLIBDEBUG_DIR} DIRECTORY)
+		#set (onnxdebuginclude "$ENV{ONNXR_DIR}cmake/external/eigen;${ONNXRDEBUGBUILD_DIR}/onnx;${ONNXRDEBUGBUILD_DIR};$ENV{ONNXR_DIR}cmake/external/protobuf/src;$ENV{ONNXR_DIR}cmake/external/onnx;$ENV{ONNXR_DIR}cmake/external/SageInt;$ENV{ONNXR_DIR}/onnxruntime;$ENV{ONNXR_DIR}/include/onnxruntime/core/session;$ENV{ONNXR_DIR}/include/onnxruntime;$ENV{ONNXR_DIR}/include")
+		#list (APPEND onnxdebuginclude ${onnxruntime_INCLUDE_DIRS})
+		FILE(GLOB_RECURSE onnxdebugruntime_DLLs ${ONNXLIBDEBUG_DIR}/*.dll)
+		if(BUILD_TYPE MATCHES Debug)
+			list (APPEND onnxruntime_DLLs ${onnxdebugruntime_DLLs})
+		endif(BUILD_TYPE MATCHES Debug)
+		#look for libprotobuf
+		FILE(GLOB_RECURSE ONNX_POTENTIALprotobin ${ONNXRDEBUGBUILD_DIR}/libprotobufd${CMAKE_STATIC_LIBRARY_SUFFIX})
+		list(GET ONNX_POTENTIALprotobin 0 FIRSTbin)
+		get_filename_component(PROTODEBUGLIB_DIR ${FIRSTbin} DIRECTORY)
+		#look for re2
+		FILE(GLOB_RECURSE ONNX_POTENTIALre2bin ${ONNXRDEBUGBUILD_DIR}/re2${CMAKE_STATIC_LIBRARY_SUFFIX})
+		list(GET ONNX_POTENTIALre2bin 0 FIRSTbin)
+		get_filename_component(RE2DEBUGLIB_DIR ${FIRSTbin} DIRECTORY)
+		#look for onnx and onnx_proto
+		FILE(GLOB_RECURSE ONNX_POTENTIALonnxproto ${ONNXRDEBUGBUILD_DIR}/onnx${CMAKE_STATIC_LIBRARY_SUFFIX})
+		list(GET ONNX_POTENTIALonnxproto 0 FIRSTbin)
+		get_filename_component(onnxprotoDEBUG_DIR ${FIRSTbin} DIRECTORY)
+		find_library(onnxruntimedebug_LIBRARY onnxruntime
+		 PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+		find_library(win_getopt_widedebug_LIBRARY win_getopt_wide
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+
+		find_library(onnxruntime_sessiondebug_LIBRARY onnxruntime_session
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+
+		find_library(onnxruntime_optimizerdebug_LIBRARY onnxruntime_optimizer
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+
+		find_library(onnxruntime_providersdebug_LIBRARY onnxruntime_providers
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+		find_library(onnxruntime_utildebug_LIBRARY onnxruntime_util
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+		find_library(onnxruntime_frameworkdebug_LIBRARY onnxruntime_framework
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+		find_library(onnxruntime_graphdebug_LIBRARY onnxruntime_graph
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+		find_library(onnxruntime_commondebug_LIBRARY onnxruntime_common
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+		find_library(onnxruntime_mlasdebug_LIBRARY onnxruntime_mlas
+			PATHS "${ONNXLIBDEBUG_DIR}"
+		)
+
+		find_library(PROTOLIBdebug_LIBRARY libprotobuf-lited
+			PATHS "${PROTODEBUGLIB_DIR}"
+		)
+
+
+
+		find_library(RE2debug_LIBRARY re2
+			PATHS "${RE2DEBUGLIB_DIR}"
+		)
+		find_library(ONNXPdebug_LIBRARY onnx
+			PATHS "${onnxprotoDEBUG_DIR}"
+		)
+		find_library(ONNXPROTOdebug_LIBRARY onnx_proto
+			PATHS "${onnxprotoDEBUG_DIR}"
+		)
+		set(onnxruntime_DEBUGLIBRARIES "debug;${onnxruntimedebug_LIBRARY};debug;${win_getopt_widedebug_LIBRARY};debug;${onnxruntime_sessiondebug_LIBRARY};debug;${onnxruntime_optimizerdebug_LIBRARY};debug;${onnxruntime_providersdebug_LIBRARY};debug;${onnxruntime_utildebug_LIBRARY};debug;${onnxruntime_frameworkdebug_LIBRARY};debug;${onnxruntime_graphdebug_LIBRARY};debug;${onnxruntime_commondebug_LIBRARY};debug;${onnxruntime_mlasdebug_LIBRARY};debug;${PROTOLIBdebug_LIBRARY};debug;${RE2debug_LIBRARY};debug;${ONNXPdebug_LIBRARY};debug;${ONNXPROTOdebug_LIBRARY}")
+		list (APPEND onnxruntime_LIBRARIES ${onnxruntime_DEBUGLIBRARIES})
+		if(BUILD_TYPE MATCHES Debug)
+			FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIBDEBUG_DIR}/*.dll)
+		endif(BUILD_TYPE MATCHES Debug)
+	else()
+		FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIB_DIR}/*.dll)
+	endif(DEFINED ONNXLIBDEBUG_DIR)
+	endif(NOT DEFINED VCPKG_TARGET_TRIPLET)
+endif(DEFINED VCPKG_TARGET_TRIPLET)
 
 find_package_handle_standard_args(onnxruntime DEFAULT_MSG onnxruntime_LIBRARIES onnxruntime_INCLUDE_DIRS onnxruntime_DLLs)
 

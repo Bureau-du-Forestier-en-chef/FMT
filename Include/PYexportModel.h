@@ -213,18 +213,18 @@ void exportModel()
 
 	#ifdef FMTWITHOSI
 
-	bp::enum_<Models::FMTsolverinterface>("FMTsolverinterface")
-		.value("CLP", Models::FMTsolverinterface::CLP)
+	bp::enum_<Models::FMTSolverInterface>("FMTSolverInterface")
+		.value("CLP", Models::FMTSolverInterface::CLP)
 		#ifdef  FMTWITHMOSEK
-			.value("MOSEK", Models::FMTsolverinterface::MOSEK)
+			.value("MOSEK", Models::FMTSolverInterface::MOSEK)
 		#endif
-		.value("CPLEX", Models::FMTsolverinterface::CPLEX)
-		.value("GUROBI", Models::FMTsolverinterface::GUROBI);
+		.value("CPLEX", Models::FMTSolverInterface::CPLEX)
+		.value("GUROBI", Models::FMTSolverInterface::GUROBI);
 		
-	definePyList<Models::FMTsolverinterface>();
+	definePyList<Models::FMTSolverInterface>();
 
 	bp::class_<Models::FMTLpSolver>("FMTlpolver", "@DocString(FMTLpSolver)")
-		//.def(bp::init<Models::FMTsolverinterface>())
+		//.def(bp::init<Models::FMTSolverInterface>())
 		.def("isProvenOptimal", &Models::FMTLpSolver::isProvenOptimal,
 			"@DocString(FMTLpSolver::isProvenOptimal)")
 		.def("getObjValue", &Models::FMTLpSolver::getObjValue,
@@ -277,7 +277,7 @@ void exportModel()
 
 
 	bp::class_<Models::FMTLpModel, bp::bases<Models::FMTSrModel>>("FMTlpmodel", "@DocString(FMTLpModel)")
-		.def(bp::init<Models::FMTModel, Models::FMTsolverinterface>())
+		.def(bp::init<Models::FMTModel, Models::FMTSolverInterface>())
 		.def(bp::init<Models::FMTLpModel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTLpModel>())
 		//.def("boundSolution", &Models::FMTLpModel::boundSolution,

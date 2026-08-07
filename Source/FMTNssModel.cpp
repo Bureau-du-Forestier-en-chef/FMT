@@ -16,9 +16,9 @@ namespace Models
 	FMTNssModel::FMTNssModel():
 		FMTSrModel(FMTModel(),
 		#ifdef FMTWITHMOSEK
-				Models::FMTsolverinterface::MOSEK
+				Models::FMTSolverInterface::MOSEK
 		#else
-				Models::FMTsolverinterface::CLP
+				Models::FMTSolverInterface::CLP
 		#endif
 			)
 	{
@@ -34,9 +34,9 @@ namespace Models
 	FMTNssModel::FMTNssModel(const FMTModel& rhs, unsigned int seed):
 		FMTSrModel(rhs,
 		#ifdef FMTWITHMOSEK
-					Models::FMTsolverinterface::MOSEK
+					Models::FMTSolverInterface::MOSEK
 		#else
-					Models::FMTsolverinterface::CLP
+					Models::FMTSolverInterface::CLP
 		#endif
 		)
 	{

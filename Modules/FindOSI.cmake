@@ -18,30 +18,38 @@ find_path(OSI_INCLUDE_DIR
 FILE(GLOB_RECURSE OSI_POTENTIAL_LIB $ENV{OSI_DIR}/*${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 
-if (MSVC)
-	foreach(includepath ${OSI_POTENTIAL_LIB})
-		get_filename_component(potfolder ${includepath} DIRECTORY)
-		string(TOLOWER "${includepath}" lowercase)
-		if ("${lowercase}" MATCHES "debug" AND "${lowercase}" MATCHES "x64")
-			list(APPEND POTOSI_LIB_DEBUG_DIR ${potfolder})
-		else()
-			list(APPEND POTOSI_LIB_DIR ${potfolder})
-		endif("${lowercase}" MATCHES "debug" AND "${lowercase}" MATCHES "x64")
-        
-	endforeach()
+if(VCPKG_TOOLCHAIN)
+	set(POTOSI_LIB_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
+	set(POTOSI_LIB_DEBUG_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib")
 else()
-	foreach(full_path ${OSI_POTENTIAL_LIB})
-		get_filename_component(LIB_DIR ${full_path} DIRECTORY)
-		string(TOLOWER "${full_path}" lowercase)
-		if ("${lowercase}" MATCHES "debug")
-			list(APPEND POTOSI_LIB_DEBUG_DIR ${LIB_DIR})
-		else()
-			list(APPEND POTOSI_LIB_DIR ${LIB_DIR})
-		endif("${lowercase}" MATCHES "debug")
-	endforeach()
-	#list(GET OSI_POTENTIAL_LIB 0 FIRSTLIB)
-	#get_filename_component(POTOSI_LIB_DIR ${FIRSTLIB} DIRECTORY)
-endif(MSVC)
+	if (MSVC)
+		foreach(includepath ${OSI_POTENTIAL_LIB})
+			get_filename_component(potfolder ${includepath} DIRECTORY)
+			string(TOLOWER "${includepath}" lowercase)
+			if ("${lowercase}" MATCHES "debug" AND "${lowercase}" MATCHES "x64")
+				list(APPEND POTOSI_LIB_DEBUG_DIR ${potfolder})
+			else()
+				list(APPEND POTOSI_LIB_DIR ${potfolder})
+			endif("${lowercase}" MATCHES "debug" AND "${lowercase}" MATCHES "x64")
+			
+		endforeach()
+	else()
+		foreach(full_path ${OSI_POTENTIAL_LIB})
+			get_filename_component(LIB_DIR ${full_path} DIRECTORY)
+			string(TOLOWER "${full_path}" lowercase)
+			if ("${lowercase}" MATCHES "debug")
+				list(APPEND POTOSI_LIB_DEBUG_DIR ${LIB_DIR})
+			else()
+				list(APPEND POTOSI_LIB_DIR ${LIB_DIR})
+			endif("${lowercase}" MATCHES "debug")
+		endforeach()
+		#list(GET OSI_POTENTIAL_LIB 0 FIRSTLIB)
+		#get_filename_component(POTOSI_LIB_DIR ${FIRSTLIB} DIRECTORY)
+	endif(MSVC)
+endif(VCPKG_TOOLCHAIN)
+
+
+
 
 
 #get CLP include
@@ -51,6 +59,15 @@ get_filename_component(POTCLP_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
 find_path(CLP_INCLUDE_DIR
           NAMES ClpSimplex.hpp
           PATHS ${POTCLP_INCLUDE_DIR}
+          )
+
+#get GLPK include
+FILE(GLOB_RECURSE GLPK_POTENTIAL_INCLUDE $ENV{OSI_DIR}glpk.h $ENV{OSI_DIR}/glpk.h)
+list(GET GLPK_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
+get_filename_component(POTGLPK_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
+find_path(GLPK_INCLUDE_DIR
+          NAMES glpk.h
+          PATHS ${POTGLPK_INCLUDE_DIR}
           )
 
 #get coin utils headers
@@ -69,60 +86,80 @@ find_path(CU_INCLUDE_DIR
 find_library(COINUTILS_LIBRARY_RELEASE
 			NAMES CoinUtils libCoinUtils libCoinUtils.a
 			PATHS ${POTOSI_LIB_DIR}
+			NO_DEFAULT_PATH
              )
 
 
 find_library( OSI_LIBRARY_RELEASE
               NAMES Osi libOsi
               PATHS ${POTOSI_LIB_DIR}
+			  NO_DEFAULT_PATH
               )
 
-#if (NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
-	find_library( OSI_CLP_LIBRARY_RELEASE
+
+
+find_library( OSI_CLP_LIBRARY_RELEASE
               	NAMES OsiClp libOsiClp
               	PATHS  ${POTOSI_LIB_DIR}
+				NO_DEFAULT_PATH
               	)
-#else()
-#	set(OSI_CLP_LIBRARY_RELEASE "${OSI_LIBRARY_RELEASE}")
-#endif(NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
 
+find_library( OSI_GLPK_LIBRARY_RELEASE
+              	NAMES OsiGlpk libOsiGlpk
+              	PATHS  ${POTOSI_LIB_DIR}
+				NO_DEFAULT_PATH
+              	)
 
-
+find_library(GLPK_LIBRARY_RELEASE
+              NAMES glpk libGlpk libglpk
+              PATHS ${POTOSI_LIB_DIR}
+			  NO_DEFAULT_PATH
+              )
 
 
 find_library(CLP_LIBRARY_RELEASE
               NAMES Clp libClp libclp
               PATHS ${POTOSI_LIB_DIR}
+			  NO_DEFAULT_PATH
               )
+			  
+find_library(CLP_LIBRARY_DEBUG
+              NAMES Clp libClp libclp
+              PATHS ${POTOSI_LIB_DEBUG_DIR}
+			  NO_DEFAULT_PATH
+              )			  
 
 
-	find_library(COINUTILS_LIBRARY_DEBUG
+find_library(COINUTILS_LIBRARY_DEBUG
 			NAMES CoinUtils libCoinUtils
 			PATHS ${POTOSI_LIB_DEBUG_DIR}
 			NO_DEFAULT_PATH
              )
 
 
-	find_library( OSI_LIBRARY_DEBUG
+find_library( OSI_LIBRARY_DEBUG
               NAMES Osi libOsi
               PATHS ${POTOSI_LIB_DEBUG_DIR}
 	      NO_DEFAULT_PATH
               )
 
 
-	#if (NOT "${POTOSI_LIB_DEBUG_DIR}" MATCHES "vcpkg")
-		find_library( OSI_CLP_LIBRARY_DEBUG
+
+find_library( OSI_CLP_LIBRARY_DEBUG
               	NAMES OsiClp libOsiClp
               	PATHS  ${POTOSI_LIB_DEBUG_DIR}
-		NO_DEFAULT_PATH
+				NO_DEFAULT_PATH
               	)
-	#else()
-	#	set(OSI_CLP_LIBRARY_DEBUG "${OSI_LIBRARY_DEBUG}")
-	#endif(NOT "${POTOSI_LIB_DEBUG_DIR}" MATCHES "vcpkg")
+
+find_library( OSI_GLPK_LIBRARY_DEBUG
+              	NAMES OsiGlpk libOsiGlpk
+              	PATHS  ${POTOSI_LIB_DEBUG_DIR}
+				NO_DEFAULT_PATH
+              	)
 
 
-	find_library(CLP_LIBRARY_DEBUG
-              NAMES Clp libClp libclp
+	find_library(GLPK_LIBRARY_DEBUG
+              NAMES glpk libGlpk libglpk
               PATHS ${POTOSI_LIB_DEBUG_DIR}
 	      NO_DEFAULT_PATH
               )
@@ -136,6 +173,7 @@ if(DEFINED ENV{MOSEK_DIR})
 	find_library(OSI_MSK_LIBRARY_RELEASE
 				  NAMES libOsiMsk OsiMsk
 				  PATHS ${POTOSI_LIB_DIR}
+				  NO_DEFAULT_PATH
 				  )
 
 	find_library(OSI_MSK_LIBRARY_DEBUG
@@ -157,6 +195,17 @@ if(NOT MSVC)
 
 	find_library(CLP_SOLVER_LIBRARY_DEBUG
 				NAMES libClpSolver
+				PATHS ${POTOSI_LIB_DEBUG_DIR}
+				NO_DEFAULT_PATH
+				)
+				
+	find_library(GLPK_SOLVER_LIBRARY_RELEASE
+				NAMES libGlpkSolver
+				PATHS ${POTOSI_LIB_DIR}
+				)
+
+	find_library(GLPK_SOLVER_LIBRARY_DEBUG
+				NAMES libGlpkSolver
 				PATHS ${POTOSI_LIB_DEBUG_DIR}
 				NO_DEFAULT_PATH
 				)
@@ -196,30 +245,53 @@ FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiClpSolverInterface.hpp $
 list(GET OSI_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
 get_filename_component(OSICLP_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
 
-if (DEFINED ENV_PREFIX)
-	set(OSI_CLP_LIBRARY_DEBUG "${OSI_CLP_LIBRARY_RELEASE}")
-	set(CLP_LIBRARY_DEBUG "${CLP_LIBRARY_RELEASE}")
-	set(OSI_LIBRARY_DEBUG "${OSI_LIBRARY_RELEASE}")
-	set(COINUTILS_LIBRARY_DEBUG "${COINUTILS_LIBRARY_RELEASE}")
-endif(DEFINED ENV_PREFIX)
+#Get Osiclpheader
+
+FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiGlpkSolverInterface.hpp $ENV{OSI_DIR}/OsiGlpkSolverInterface.hpp)
+list(LENGTH OSI_POTENTIAL_INCLUDE list_len)
+if(list_len GREATER 0)
+	list(GET OSI_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
+	get_filename_component(OSIGLPK_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
+endif(list_len GREATER 0)
 
 
 
-set(OSI_INCLUDE_DIRS "${OSI_INCLUDE_DIR};${CLP_INCLUDE_DIR};${CU_INCLUDE_DIR};${OSICLP_INCLUDE_DIR}" )
+if (DEFINED GLPK_INCLUDE_DIR)
+	set(OSI_INCLUDE_DIRS "${OSI_INCLUDE_DIR};${CLP_INCLUDE_DIR};${CU_INCLUDE_DIR};${OSICLP_INCLUDE_DIR};${GLPK_INCLUDE_DIR}" )
+else()
+	set(OSI_INCLUDE_DIRS "${OSI_INCLUDE_DIR};${CLP_INCLUDE_DIR};${CU_INCLUDE_DIR};${OSICLP_INCLUDE_DIR}" )
+endif(DEFINED GLPK_INCLUDE_DIR)
 
 #Libraries
+
 set(OSI_LIBRARIES "optimized;${OSI_CLP_LIBRARY_RELEASE};debug;${OSI_CLP_LIBRARY_DEBUG}")
+if(OSI_GLPK_LIBRARY_RELEASE)
+	set(OSI_LIBRARIES "${OSI_LIBRARIES};optimized;${OSI_GLPK_LIBRARY_RELEASE};debug;${OSI_GLPK_LIBRARY_DEBUG}")
+endif(OSI_GLPK_LIBRARY_RELEASE)
+
 if(CLP_SOLVER_LIBRARY_RELEASE)
 	set(OSI_LIBRARIES "${OSI_LIBRARIES};optimized;${CLP_SOLVER_LIBRARY_RELEASE};debug;${CLP_SOLVER_LIBRARY_DEBUG}")
 endif(CLP_SOLVER_LIBRARY_RELEASE)
+
 set(OSI_LIBRARIES "${OSI_LIBRARIES};optimized;${CLP_LIBRARY_RELEASE};debug;${CLP_LIBRARY_DEBUG}")
+
+if(GLPK_LIBRARY_RELEASE)
+	set(OSI_LIBRARIES "${OSI_LIBRARIES};optimized;${GLPK_LIBRARY_RELEASE};debug;${GLPK_LIBRARY_DEBUG}")
+endif(GLPK_LIBRARY_RELEASE)
+
+if(GLPK_SOLVER_LIBRARY_RELEASE)
+	set(OSI_LIBRARIES "${OSI_LIBRARIES};optimized;${GLPK_SOLVER_LIBRARY_RELEASE};debug;${GLPK_SOLVER_LIBRARY_DEBUG}")
+endif(GLPK_SOLVER_LIBRARY_RELEASE)
+
 if(OSI_MSK_LIBRARY_RELEASE)
 	set(OSI_LIBRARIES "${OSI_LIBRARIES};optimized;${OSI_MSK_LIBRARY_RELEASE};debug;${OSI_MSK_LIBRARY_DEBUG}")
 endif(OSI_MSK_LIBRARY_RELEASE)
+
+
 set(OSI_LIBRARIES "${OSI_LIBRARIES};optimized;${OSI_LIBRARY_RELEASE};debug;${OSI_LIBRARY_DEBUG};optimized;${COINUTILS_LIBRARY_RELEASE};debug;${COINUTILS_LIBRARY_DEBUG}")
 
-
-
+list(REMOVE_DUPLICATES OSI_LIBRARIES)
+list(REMOVE_DUPLICATES OSI_INCLUDE_DIRS)
 
 
 
@@ -230,14 +302,54 @@ include(FindPackageHandleStandardArgs)
 
 if (NOT MSVC)
 find_package_handle_standard_args(OSI  DEFAULT_MSG
-                                  OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE COINUTILS_LIBRARY_RELEASE CLP_LIBRARY_RELEASE OSI_INCLUDE_DIRS CLP_INCLUDE_DIR CU_INCLUDE_DIR OSI_LINKER_FLAGS OSICLP_INCLUDE_DIR)
+                                  OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE
+								  OSI_GLPK_RELEASE OSI_GLPK_LIBRARY_RELEASE 
+								  COINUTILS_LIBRARY_RELEASE 
+								  CLP_LIBRARY_RELEASE 
+								  GLPK_LIBRARY_RELEASE
+								  OSI_INCLUDE_DIRS 
+								  CLP_INCLUDE_DIR 
+								  GLPK_INCLUDE_DIR
+								  CU_INCLUDE_DIR OSI_LINKER_FLAGS 
+								  OSICLP_INCLUDE_DIR
+								  OSIGLPK_INCLUDE_DIR)
 
 mark_as_advanced(OSI_INCLUDE_DIRS CLP_INCLUDE_DIR
-					OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE COINUTILS_LIBRARY_RELEASE CLP_LIBRARY_RELEASE CU_INCLUDE_DIR OSICLP_INCLUDE_DIR OSI_LINKER_FLAGS OSI_FOUND)
+					OSI_LIBRARY_RELEASE 
+					OSI_CLP_LIBRARY_RELEASE
+					OSI_GLPK_LIBRARY_RELEASE 
+					COINUTILS_LIBRARY_RELEASE 
+					CLP_LIBRARY_RELEASE 
+					GLPK_LIBRARY_RELEASE 
+					CU_INCLUDE_DIR 
+					OSICLP_INCLUDE_DIR
+					OSIGLPK_INCLUDE_DIR  
+					OSI_LINKER_FLAGS OSI_FOUND)
 else()
 find_package_handle_standard_args(OSI  DEFAULT_MSG
-                                  OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE COINUTILS_LIBRARY_RELEASE CLP_LIBRARY_RELEASE OSI_INCLUDE_DIRS CLP_INCLUDE_DIR CU_INCLUDE_DIR OSICLP_INCLUDE_DIR)
+                                  OSI_LIBRARY_RELEASE 
+								  OSI_CLP_LIBRARY_RELEASE
+								  OSI_GLPK_LIBRARY_RELEASE  
+								  COINUTILS_LIBRARY_RELEASE 
+								  CLP_LIBRARY_RELEASE 
+								  GLPK_LIBRARY_RELEASE 
+								  OSI_INCLUDE_DIRS 
+								  CLP_INCLUDE_DIR 
+								  GLPK_INCLUDE_DIR 
+								  CU_INCLUDE_DIR 
+								  OSICLP_INCLUDE_DIR
+								  OSIGLPK_INCLUDE_DIR)
 
-mark_as_advanced(OSI_INCLUDE_DIRS CLP_INCLUDE_DIR
-					OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE COINUTILS_LIBRARY_RELEASE CLP_LIBRARY_RELEASE CU_INCLUDE_DIR OSICLP_INCLUDE_DIR OSI_FOUND)
+mark_as_advanced(OSI_INCLUDE_DIRS 
+				CLP_INCLUDE_DIR
+				GLPK_INCLUDE_DIR
+				OSI_LIBRARY_RELEASE 
+				OSI_GLPK_LIBRARY_RELEASE 
+				COINUTILS_LIBRARY_RELEASE 
+				CLP_LIBRARY_RELEASE 
+				GLPK_LIBRARY_RELEASE 
+				CU_INCLUDE_DIR 
+				OSICLP_INCLUDE_DIR
+				OSIGLPK_INCLUDE_DIR 
+				OSI_FOUND)
 endif(NOT MSVC)

@@ -695,10 +695,10 @@ namespace Models
                     std::shuffle(firstToShuffle, shuffledConstraints.end(), m_generator);
                     std::vector<Core::FMTActualDevelopment>shuffledArea(area);
                     std::shuffle(shuffledArea.begin(), shuffledArea.end(), m_generator);
-                    FMTsolverinterface SolverInterface = FMTsolverinterface::CLP;
+                    FMTSolverInterface SolverInterface = FMTSolverInterface::CLP;
                     if (Version::FMTVersion::hasFeature("MOSEK"))
                         {
-                       SolverInterface = FMTsolverinterface::MOSEK;
+                       SolverInterface = FMTSolverInterface::MOSEK;
                         }
                     newLp = Models::FMTLpModel(*this, SolverInterface);
                     newLp.setArea(shuffledArea);

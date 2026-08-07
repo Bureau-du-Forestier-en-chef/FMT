@@ -1,3 +1,9 @@
+
+
+
+
+
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO coin-or/Osi
@@ -15,17 +21,20 @@ file(COPY "${CURRENT_INSTALLED_DIR}/share/coin-or-buildtools/" DESTINATION "${SO
 
 set(ENV{ACLOCAL} "aclocal -I \"${SOURCE_PATH}/BuildTools\"")
 
-if (MOSEK_FOUND)
-	set(ENV{LDFLAGS} "-LIBPATH:${MOSEK_LIB_LOCATION}${MOSEK_WIN_LIBS}")
+set(GLPK_LFLAGS_DEBUG "${CURRENT_INSTALLED_DIR}/debug/lib glpk.lib")
+set(GLPK_LFLAGS_RELEASE "${CURRENT_INSTALLED_DIR}/lib glpk.lib")
+set(GLPK_INCLUDE "-I${CURRENT_INSTALLED_DIR}/include")
+
+if (Mosek_FOUND)
+	set(ENV{LDFLAGS} "-LIBPATH:${Mosek_LIB_LOCATION}${Mosek_WIN_LIBS}")
 	vcpkg_configure_make(
 		SOURCE_PATH "${SOURCE_PATH}"
 		AUTOCONFIG
 		CONFIGURE_ENVIRONMENT_VARIABLES LIBS
 		OPTIONS
 			--disable-option-checking
-			--with-mosek-cflags=-I${MOSEK_INCLUDE_DIR}
-			--with-mosek-lflags=-LIBPATH:${MOSEK_LIB_LOCATION}${MOSEK_WIN_LIBS}
-			--with-glpk
+			--with-mosek-cflags=-I${Mosek_INCLUDE_DIR}
+			--with-mosek-lflags=-LIBPATH:${Mosek_LIB_LOCATION}${Mosek_WIN_LIBS}
 			--with-lapack
 			--with-coinutils
 			--without-netlib
@@ -38,8 +47,12 @@ if (MOSEK_FOUND)
 			--disable-readline
 		OPTIONS_DEBUG
 			"CXXFLAGS=-Xcompiler -std:c++14 -Xcompiler -Zc:__cplusplus -Xcompiler -EHsc -Xcompiler -MDd"
+			--with-glpk-cflags=${GLPK_INCLUDE}
+			--with-glpk-lflags=-LIBPATH:${GLPK_LFLAGS_DEBUG}
 		OPTIONS_RELEASE
 			"CXXFLAGS=-Xcompiler -std:c++14 -Xcompiler -Zc:__cplusplus -Xcompiler -EHsc -Xcompiler -MD"
+			--with-glpk-cflags=${GLPK_INCLUDE}
+			--with-glpk-lflags=-LIBPATH:${GLPK_LFLAGS_RELEASE}
 	)
 else()
 	vcpkg_configure_make(
@@ -60,11 +73,15 @@ else()
 			--disable-readline
 		OPTIONS_DEBUG
 			"CXXFLAGS=-Xcompiler -std:c++14 -Xcompiler -Zc:__cplusplus -Xcompiler -EHsc -Xcompiler -MDd"
+			--with-glpk-cflags=${GLPK_INCLUDE}
+			--with-glpk-lflags=-LIBPATH:${GLPK_LFLAGS_DEBUG}
 		OPTIONS_RELEASE
 			"CXXFLAGS=-Xcompiler -std:c++14 -Xcompiler -Zc:__cplusplus -Xcompiler -EHsc -Xcompiler -MD"
+			--with-glpk-cflags=${GLPK_INCLUDE}
+			--with-glpk-lflags=-LIBPATH:${GLPK_LFLAGS_RELEASE}
 	)
 
-endif(MOSEK_FOUND)
+endif(Mosek_FOUND)
 
 vcpkg_install_make()
 vcpkg_copy_pdbs()

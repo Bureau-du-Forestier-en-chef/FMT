@@ -47,10 +47,10 @@ int main(int argc, char *argv[])
     const std::vector<std::string>scenarios(1, scenario);
     const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
    
-		Models::FMTsolverinterface solverinterface = Models::FMTsolverinterface::CLP;
+		Models::FMTSolverInterface solverinterface = Models::FMTSolverInterface::CLP;
         if(Version::FMTVersion::hasFeature("MOSEK"))
         {
-			solverinterface = Models::FMTsolverinterface::MOSEK;
+			solverinterface = Models::FMTSolverInterface::MOSEK;
         }
 		Models::FMTLpModel optimizationmodel(models.at(0), solverinterface);
         optimizationmodel.setStrictlyPositivesOutputsMatrix();

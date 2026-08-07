@@ -51,7 +51,7 @@ int main()
         modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario_name);
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
 		for (size_t period = 0; period < 5; ++period)
 		{
 			optimizationmodel.buildPeriod();

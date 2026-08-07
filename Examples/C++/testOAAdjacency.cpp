@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
                 errors.push_back(Exception::FMTexc::FMTdeathwithlock);
                 modelparser.setErrorsToWarnings(errors);
                 const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-                Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+                Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::MOSEK);
                 const int startingperiod = optimizationmodel.getParameter(Models::FMTintmodelparameters::UPDATE);
                
                 const std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = ObtenirOperatingArea(
