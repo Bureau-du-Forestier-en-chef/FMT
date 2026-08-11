@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTWarning.h"
 #include "FMTException.h"
 #include "boost/python.hpp"
+#include "PYdefinitions.h"
 
 namespace Python
 {
@@ -46,26 +47,8 @@ void exportException()
 			"@DocString(FMTDebugExceptionHandler::raise)");
 
 
-	bp::enum_<Exception::FMTexc>("FMTexc")
-		.value("FMTinvalid_number", Exception::FMTexc::FMTinvalid_number)
-		.value("FMTundefined_attribute", Exception::FMTexc::FMTundefined_attribute)
-		.value("FMTundefined_output", Exception::FMTexc::FMTundefined_output)
-		.value("FMTundefined_action", Exception::FMTexc::FMTundefined_action)
-		.value("FMTinvalid_yield", Exception::FMTexc::FMTinvalid_yield)
-		.value("FMTmissingyield", Exception::FMTexc::FMTmissingyield)
-		.value("FMTundefined_constant", Exception::FMTexc::FMTundefined_constant)
-		.value("FMTinvalid_maskrange", Exception::FMTexc::FMTinvalid_maskrange)
-		.value("FMTunsupported_yield", Exception::FMTexc::FMTunsupported_yield)
-		.value("FMToutput_missing_operator", Exception::FMTexc::FMToutput_missing_operator)
-		.value("FMTinvalidyield_number",Exception::FMTexc::FMTinvalidyield_number)
-		.value("FMTundefinedoutput_attribute", Exception::FMTexc::FMTundefinedoutput_attribute)
-		.value("FMToutput_too_much_operator", Exception::FMTexc::FMToutput_too_much_operator)
-		.value("FMTinvalid_geometry", Exception::FMTexc::FMTinvalid_geometry)
-		.value("FMToveridedyield", Exception::FMTexc::FMToveridedyield)
-		.value("FMTdeathwithlock", Exception::FMTexc::FMTdeathwithlock)
-		.value("FMTsourcetotarget_transition", Exception::FMTexc::FMTsourcetotarget_transition)
-		.value("FMTsame_transitiontargets", Exception::FMTexc::FMTsame_transitiontargets)
-		.export_values();
+	export_any_enum<Exception::FMTexc>("FMTexc");
+
 
 	definePyList<Exception::FMTexc>();
 

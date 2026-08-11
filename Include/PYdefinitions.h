@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define PYDEFINITIONS_H_INCLUDED
 
 #include "boost/python.hpp"
+#include <magic_enum.hpp>
 
 namespace Python
 { 
@@ -76,40 +77,26 @@ void definePyDict()
 	MapFrDict<k,v>();
     }
 
-/*template<typename T1, typename T2>
-struct PairToPythonConverter {
-    static PyObject* convert(const std::pair<T1, T2>& pair)
-    {
-        return boost::python::incref(boost::python::make_tuple(pair.first, pair.second).ptr());
-    }
-};
-
-template<typename T1, typename T2>
-struct PythonToPairConverter {
-    PythonToPairConverter()
-    {
-    	boost::python::converter::registry::push_back(&convertible, &construct, boost::python::type_id<std::pair<T1, T2> >());
-    }
-    static void* convertible(PyObject* obj)
-    {
-        if (!PyTuple_CheckExact(obj)) return 0;
-        if (PyTuple_Size(obj) != 2) return 0;
-        return obj;
-    }
-    static void construct(PyObject* obj, boost::python::converter::rvalue_from_python_stage1_data* data)
-    {
-    	boost::python::tuple tuple(boost::python::borrowed(obj));
-        void* storage = ((boost::python::converter::rvalue_from_python_storage<std::pair<T1, T2> >*) data)->storage.bytes;
-        new (storage) std::pair<T1, T2>(boost::python::extract<T1>(tuple[0]), boost::python::extract<T2>(tuple[1]));
-        data->convertible = storage;
-    }
-};*/
 
 template<typename T1, typename T2>
 void definePyPair() {
 	boost::python::to_python_converter<std::pair<T1, T2>, PairToPythonConverter<T1, T2>>();
     PythonToPairConverter<T1, T2>();
 	}
+
+template <typename T>
+void export_any_enum(const char* name) {
+    auto py_enum = boost::python::enum_<T>(name);
+
+    // Magic Enum gets all entries automatically at compile time
+    constexpr auto entries = magic_enum::enum_entries<T>();
+
+    for (const auto& [value, string_name] : entries) {
+        py_enum.value(string_name.data(), value);
+    }
+
+    py_enum.export_values();
+}
 
 
 }

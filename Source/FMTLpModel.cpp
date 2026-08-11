@@ -128,7 +128,7 @@ namespace Models
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTWIN32Error,
+			_exhandler->raise(Exception::FMTexc::FMTWIN32_Error,
 				"Unsufficient RAM",
 				"FMTLpModel::_setGraphCache", __LINE__, __FILE__);
 			}

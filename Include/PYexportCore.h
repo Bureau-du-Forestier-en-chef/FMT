@@ -31,6 +31,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTTransitionMask.h"
 #include "FMTDevelopmentPath.h"
 #include "FMTSerie.h"
+#include "PYdefinitions.h"
 
 namespace Python
 {
@@ -53,39 +54,12 @@ void exportCore()
     "   :synopsis: Core class for generating Forest Models.\n"
     "\n";
 
-	bp::enum_<Core::FMTsection>("FMTsection")
-		.value("Control", Core::FMTsection::Control)
-		.value("Landscape", Core::FMTsection::Landscape)
-		.value("Area", Core::FMTsection::Area)
-		.value("Action", Core::FMTsection::Action)
-		.value("Transition", Core::FMTsection::Transition)
-		.value("Yield", Core::FMTsection::Yield)
-		.value("Outputs", Core::FMTsection::Outputs)
-		.value("Optimize", Core::FMTsection::Optimize)
-		.value("Constants", Core::FMTsection::Constants)
-		.value("Schedule", Core::FMTsection::Schedule)
-		.value("Empty", Core::FMTsection::Empty)
-		.export_values();
+	export_any_enum<Core::FMTsection>("FMTsection");
 
-	bp::enum_<Core::FMToutputlevel>("FMToutputlevel")
-		.value("standard", Core::FMToutputlevel::standard)
-		.value("totalonly", Core::FMToutputlevel::totalonly)
-		.value("developpement", Core::FMToutputlevel::developpement)
-		.export_values();
+	export_any_enum<Core::FMToutputlevel>("FMToutputlevel");
 
-	bp::enum_<Core::FMTconstrainttype>("FMTconstrainttype")
-		.value("FMTMAXobjective", Core::FMTconstrainttype::FMTMAXobjective)
-		.value("FMTMINobjective", Core::FMTconstrainttype::FMTMINobjective)
-		.value("FMTMAXMINobjective", Core::FMTconstrainttype::FMTMAXMINobjective)
-		.value("FMTMINMAXobjective", Core::FMTconstrainttype::FMTMINMAXobjective)
-		.value("FMTevenflow", Core::FMTconstrainttype::FMTevenflow)
-		.value("FMTnondeclining", Core::FMTconstrainttype::FMTnondeclining)
-		.value("FMTsequence", Core::FMTconstrainttype::FMTsequence)
-		.value("FMTstandard", Core::FMTconstrainttype::FMTstandard)
-		.value("FMTspatialsize", Core::FMTconstrainttype::FMTspatialsize)
-		.value("FMTspatialadjacency", Core::FMTconstrainttype::FMTspatialadjacency)
-		.value("FMTspatialgreenup", Core::FMTconstrainttype::FMTspatialgreenup)
-		.export_values();
+	export_any_enum<Core::FMTconstrainttype>("FMTconstrainttype");
+
 
 	bp::class_<Core::FMTObject>("FMTobject", "@DocString(FMTObject)")
 		.def("setdefaultexceptionhandler", &Core::FMTObject::setDefaultExceptionHandler,
@@ -327,11 +301,8 @@ void exportCore()
 				.def(bp::init<Core::FMTLifespans>());
 
 
-			bp::enum_<Core::FMTyldtype>("FMTyldtype")
-				.value("FMTageyld", Core::FMTyldtype::FMTageyld)
-				.value("FMTtimeyld", Core::FMTyldtype::FMTtimeyld)
-				.value("FMTcomplexyld", Core::FMTyldtype::FMTcomplexyld)
-				.export_values();
+
+			export_any_enum<Core::FMTyldtype>("FMTyldtype");
 
 			definePyDict<std::string, std::map<std::string,std::vector<double>>>();
 
@@ -409,13 +380,7 @@ void exportCore()
 					"@DocString(FMTTransition::getname)");
 
 
-				bp::enum_<Core::FMTotar>("FMTotar")
-				.value("inventory", Core::FMTotar::inventory)
-				.value("actual", Core::FMTotar::actual)
-				.value("val", Core::FMTotar::val)
-				.value("timeyld", Core::FMTotar::timeyld)
-				.value("level", Core::FMTotar::level)
-				.export_values();
+				export_any_enum<Core::FMTotar>("FMTotar");
 
 				bp::class_<Core::FMTOutputSource>("FMToutputsource", "@DocString(FMTOutputSource)")
 					.def(bp::init<const Core::FMTSpec&, const Core::FMTMask&,

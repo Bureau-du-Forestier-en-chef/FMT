@@ -29,19 +29,7 @@ namespace Exception
 	*/
 	class FMTEXPORT FMTWarning : public FMTException
 	{
-	// DocString: FMTWarning::serialize
-	/**
-	@brief Serialize the FMTWarning through its base FMTException for multiprocessing across multiple cpus (pickle in Python).
-	@tparam Archive the archive type.
-	@param[in,out] ar the archive to serialize to or from.
-	@param[in] version the serialization version.
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-		{
-			ar &  boost::serialization::make_nvp("parent_exception", boost::serialization::base_object<FMTException>(*this));
-		}
+	
 	public:
 		// DocString: ~FMTWarning()
 		/**
@@ -59,39 +47,21 @@ namespace Exception
 		@brief Default constructor for FMTWarning.
 		*/
 		FMTWarning();
-		// DocString: FMTWarning(const FMTException&)
-		/**
-		@brief Construct a FMTWarning from a FMTException.
-		@param[in] rhs the FMTException to copy from.
-		*/
-		FMTWarning(const FMTException& rhs);
-		// DocString: FMTWarning(const FMTexc,const std::string)
-		/**
-		@brief Construct a FMTWarning from an exception type and a message.
-		@param[in] lexception the exception type.
-		@param[in] message the message of the warning.
-		*/
-		FMTWarning(const FMTexc lexception, const std::string message);
-		// DocString: FMTWarning(const FMTexc,const Core::FMTsection,const std::string)
-		/**
-		@brief Construct a FMTWarning from an exception type, a section and a message.
-		@param[in] lexception the exception type.
-		@param[in] lsection the section in which the warning occurred.
-		@param[in] message the message of the warning.
-		*/
-		FMTWarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
-		// DocString: FMTWarning(const FMTexc,const Core::FMTsection, const std::string,const std::string&,const std::string&,const std::string&)
+		// DocString: FMTWarning(FMTexc,Core::FMTsection,const std::string&,const std::string&,const std::string&,const int&,const std::string&,const std::string&)
 		/**
 		@brief Construct a FMTWarning from an exception type, a section, a message and the location where it occurred.
-		@param[in] lexception the exception type.
-		@param[in] lsection the section in which the warning occurred.
-		@param[in] message the message of the warning.
-		@param[in] lmethod the method where the warning occurred.
-		@param[in] lfile the file where the warning occurred.
-		@param[in] lline the line where the warning occurred.
+		@param[in] p_exception the exception type.
+		@param[in] p_section the section in which the exception occurred.
+		@param[in] p_message the message of the exception.
+		@param[in] p_method the method where the exception occurred.
+		@param[in] p_file the file where the exception occurred.
+		@param[in] p_line the line where the exception occurred.
+		@param[in] p_FrenchDescription french description.
+		@param[in] p_EnglishDescription english description.
 		*/
-		FMTWarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message,
-			const std::string& lmethod, const std::string& lfile, const int& lline);
+		FMTWarning(FMTexc p_exception, Core::FMTsection p_section, const std::string& p_message,
+			const std::string& p_method, const std::string& p_file, const int& p_line,
+			const std::string& p_FrenchDescription, const std::string& p_EnglishDescription);
 		// DocString: FMTWarning::warn
 		/**
 		@brief Log the warning using the given logger.
@@ -100,6 +70,20 @@ namespace Exception
 		@param[in] maxwarning the maximum number of times a warning is logged.
 		*/
 		void warn(Logging::FMTLogger& logger,std::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const;
+	private:
+		// DocString: FMTWarning::serialize
+		/**
+		@brief Serialize the FMTWarning through its base FMTException for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("parent_exception", boost::serialization::base_object<FMTException>(*this));
+		}
 	};
 }
 #endif

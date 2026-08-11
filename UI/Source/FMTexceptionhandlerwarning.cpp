@@ -87,30 +87,23 @@ std::unique_ptr <Exception::FMTExceptionHandler> Wrapper::FMTexceptionhandlerwar
 
 Exception::FMTException Wrapper::FMTexceptionhandlerwarning::raise(Exception::FMTexc lexception, std::string text, const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 {
-	const Exception::FMTlev LEVEL = _getLevel(lexception);
-	Exception::FMTException excp = Exception::FMTException(lexception, _updateStatus(lexception, text));
-	if (lsection != Core::FMTsection::Empty)
+
+	std::unique_ptr<Exception::FMTException> newException = _createException(lexception, lsection,
+		text, method, file, line);
+	_updateStatus(newException);
+
+	if (newException->getLevel() != Exception::FMTlev::FMT_Warning)
 	{
-		excp = Exception::FMTException(lexception, lsection, _updateStatus(lexception, text));
-	}
-	if (LEVEL != Exception::FMTlev::FMT_Warning)
-	{
-		if (lsection == Core::FMTsection::Empty)
-		{
-			excp = Exception::FMTException(lexception, _updateStatus(lexception, text), method, file, line);
-		}
-		else {
-			excp = Exception::FMTException(lexception, lsection, _updateStatus(lexception, text), method, file, line);
-		}
-		if (throwit && (LEVEL == Exception::FMTlev::FMT_logic || LEVEL == Exception::FMTlev::FMT_range) && !_needToRethrow())
+		if (throwit && (newException->isFatal()) && !_needToRethrow())
 		{
 			boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
-			std::throw_with_nested(Exception::FMTError(excp));
+			std::throw_with_nested(*newException);
 		}
 	}
 	else if (throwit)
 	{
-		Exception::FMTWarning(excp).warn(*_logger, _specificwarningcount, m_maxwarningsbeforesilenced);
+		const Exception::FMTWarning* WARNING = dynamic_cast<const Exception::FMTWarning*>(newException.get());
+		_updateWarningCount(*WARNING);
 	}
-	return excp;
+	return *newException;
 }

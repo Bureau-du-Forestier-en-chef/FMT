@@ -7,11 +7,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTExceptionHandler.h"
 #include "FMTException.h"
-#include "FMTWarning.h"
-#include "FMTError.h"
 #include "FMTcplhandler.h"
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
+#include "FMTExceptionFactory.h"
+#include "FMTWarning.h"
 
 
 #if defined FMTWITHR
@@ -51,6 +51,14 @@ void FMTExceptionHandler::translateStructuralWIN32Exceptions(unsigned int p_u, E
 		throw FMTSeException(p_u);
 	}
 #endif
+
+
+std::string FMTExceptionHandler::getErrorDescription(bool p_french, FMTexc p_type)
+	{
+	std::unique_ptr<FMTException> EXCEPTION = _createException(p_type, Core::FMTsection::Empty,
+		"", "FMTExceptionHandler::getErrorDescription", __FILE__, __LINE__);
+	return EXCEPTION->getDescription(p_french);
+	}
 
 bool FMTExceptionHandler::_isMainThread() const
 	{
@@ -124,7 +132,7 @@ FMTExceptionHandler& FMTExceptionHandler::operator = (const FMTExceptionHandler&
 		_logger = rhs._logger;
 		m_usenestedexceptions = rhs.m_usenestedexceptions;
 		m_errorstowarnings = rhs.m_errorstowarnings;
-		_specificwarningcount = rhs._specificwarningcount;
+		m_specificwarningcount = rhs.m_specificwarningcount;
 		m_registered_threads = rhs.m_registered_threads;
 		m_threadcrashexception = rhs.m_threadcrashexception;
 	}
@@ -204,28 +212,19 @@ FMTException FMTExceptionHandler::raise(FMTexc lexception, std::string text,
 	const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 {
 	
-	FMTException excp;
-	const FMTlev LEVEL = _getLevel(lexception);
-	if (lsection == Core::FMTsection::Empty)
-	{
-		excp = FMTException(lexception, _updateStatus(lexception, text), method, file, line);
-	}
-	else {
-		excp = FMTException(lexception, lsection, _updateStatus(lexception, text),method,file,line);
-	}
+	std::unique_ptr<FMTException> newException = _createException(lexception, lsection,
+									text, method, file, line);
+	_updateStatus(newException);
 	if (throwit && !_needToRethrow())
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
-		if (LEVEL == FMTlev::FMT_Warning)
+		if (newException->getLevel() != FMTlev::FMT_None &&
+			newException->getLevel() != FMTlev::FMT_Debug)
 			{
-				std::throw_with_nested(FMTWarning(excp));
-			}
-		else if (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range)
-			{
-			std::throw_with_nested(FMTError(excp));
+			std::throw_with_nested(*newException);
 			}
 		}
-	return excp;
+	return *newException;
 }
 
 FMTExceptionHandler::FMTExceptionHandler(const FMTExceptionHandler& rhs)
@@ -236,35 +235,34 @@ FMTExceptionHandler::FMTExceptionHandler(const FMTExceptionHandler& rhs)
 		_logger=rhs._logger;
 		m_usenestedexceptions=rhs.m_usenestedexceptions;
 		m_errorstowarnings = rhs.m_errorstowarnings;
-		_specificwarningcount = rhs._specificwarningcount;
+		m_specificwarningcount = rhs.m_specificwarningcount;
 		m_registered_threads = rhs.m_registered_threads;
 		m_threadcrashexception = rhs.m_threadcrashexception;
 	}
 
 FMTExceptionHandler::FMTExceptionHandler(const std::unique_ptr<Logging::FMTLogger>& logger) : 
-	_specificwarningcount(),
 	_exception(FMTexc::None),
 	m_maxwarningsbeforesilenced(10),
 	_logger(logger.get()),
 	m_usenestedexceptions(true),
 	m_errorstowarnings(),
 	m_registered_threads(),
-	m_threadcrashexception()
+	m_threadcrashexception(),
+	m_specificwarningcount()
 {
 
 }
 
 
 FMTExceptionHandler::FMTExceptionHandler() : 
-		_specificwarningcount(),
 		_exception(FMTexc::None),
 		m_maxwarningsbeforesilenced(10),
 		_logger(),
 		m_usenestedexceptions(true),
 		m_errorstowarnings(),
 		m_registered_threads(),
-		m_threadcrashexception()
-		
+		m_threadcrashexception(),
+		m_specificwarningcount()
 		{
 
 		}
@@ -282,713 +280,37 @@ void FMTExceptionHandler::setMaxWarningsBeforeSilenced(const size_t& maxwarningc
 		m_maxwarningsbeforesilenced = maxwarningcount;
 	}
 
-FMTlev FMTExceptionHandler::_getLevel(const FMTexc p_exception) const
+
+	std::unique_ptr<FMTException> FMTExceptionHandler::_createException(
+		FMTexc p_exception, 
+		Core::FMTsection p_section, 
+		const std::string& p_message,
+		const std::string& p_method,
+		const std::string& p_file, 
+		int p_line)
 	{
-	FMTlev level = FMTlev::FMT_None;
-	if (std::find(m_errorstowarnings.begin(), m_errorstowarnings.end(), p_exception)
-		!= m_errorstowarnings.end())
-	{
-		level = FMTlev::FMT_Warning;
-	}
-	else {
-		switch (p_exception)
-		{
-		case FMTexc::FMTconstants_replacement:
-			level = FMTlev::FMT_Debug;
-			break;
-		case FMTexc::FMTfutur_types:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTcomma_replacement:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTinvalid_theme:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalid_aggregate:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalid_maskrange:
-			level = FMTlev::FMT_range;
-			break;
-		case FMTexc::FMTinvalid_number:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalid_path:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTtheme_redefinition:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTaggregate_redefinition:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTempty_theme:
-			level = FMTlev::FMT_range;
-			break;
-		case FMTexc::FMTempty_aggregate:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTundefined_aggregate_value:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTundefined_attribute:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTempty_action:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTwrong_partial:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalid_yield:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTpreexisting_yield:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTunsupported_yield:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalidband:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvaliddataset:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalidrasterblock:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalidlayer:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTmissingfield:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalidoverview:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTmissingrasterattribute:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTunsupported_transition:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTundefined_action:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTempty_transition:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTundefined_output:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTunsupported_output:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalid_transition_case:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvaliddriver:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalidAandT:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTleakingtransition:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTundefineddeathaction:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTundefineddeathtransition:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTignore:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTmissingyield:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTattribute_redefinition:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTundefined_constant:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTmissingdevelopment:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTmissingobjective:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTunsupported_objective:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalid_constraint:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTemptybound:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTunboundedperiod:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTnonaddedconstraint:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTinfeasibleconstraint:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTmissinglicense:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTfunctionfailed:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTcoinerror:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTboostgrapherror:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTunhandlederror:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTnotlinegraph:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTrangeerror:
-			level = FMTlev::FMT_range;
-			break;
-		case FMTexc::FMTGDALerror:
-			level = FMTlev::FMT_range;
-			break;
-		case FMTexc::FMTGDALwarning:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTthematic_output_diff:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMToutput_missing_operator:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMToutput_too_much_operator:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTgdal_constructor_error:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalid_geometry:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTinvalidyield_number:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTundefinedoutput_attribute:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTempty_schedules:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTmissing_scenarios:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTschemefailed:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTmskerror:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMToveridedyield:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTmissing_parameter:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTdeathwithlock:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTreplanningwarning:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTyieldmodelprediction:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTsourcetotarget_transition:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTsame_transitiontargets:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTunclosedforloop:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTthreadcrash:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMToutofrangeyield:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTEmptyOA:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTWIN32Error:
-			level = FMTlev::FMT_logic;
-			break;
-		case FMTexc::FMTMSKnumerical_problem:
-			level = FMTlev::FMT_Warning;
-			break;
-		case FMTexc::FMTunreachable_threshold:
-			level = FMTlev::FMT_Warning;
-			break;
-		default:
-			level = FMTlev::FMT_logic;
-			break;
-		};
-	}
-	return level;
+		return FMTExceptionFactory::create(p_exception, p_section, p_message, p_method, p_file, p_line);
 	}
 
 
-std::string FMTExceptionHandler::_updateStatus(const FMTexc lexception, const std::string message)
+void FMTExceptionHandler::_updateStatus(std::unique_ptr<FMTException>& p_exception)
 {
-	std::string msg;
-	bool gotWarning = false;
-	bool gotException = false;
-	switch (lexception)
-	{
-	case FMTexc::FMTconstants_replacement:
-		msg += "Replaced Constants: " + message;
-		gotWarning = true;
-		break;
-	case FMTexc::FMTfutur_types:
-		msg += "Detected futur types: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTcomma_replacement:
-		msg += "Replaced comma: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTinvalid_theme:
-		msg += "Invalid Themes: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalid_aggregate:
-		msg += "Invalid Aggregates: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalid_maskrange:
-		msg += "Invalid Mask: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalid_number:
-		msg += "Invalid number: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalid_path:
-		msg += "Invalid path: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTtheme_redefinition:
-		msg += "Theme redefinition: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTaggregate_redefinition:
-		msg += "Aggregate redefinition: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTempty_theme:
-		msg += "Empty Theme: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTempty_aggregate:
-		msg += "Empty Aggregate: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTundefined_aggregate_value:
-		msg += "Undefined aggregate value: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTundefined_attribute:
-		msg += "Undefined attribute value: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTempty_action:
-		msg += "Empty Action: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTwrong_partial:
-		msg += "Wrong *Partial usage: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalid_yield:
-		msg += "Invalid Yield: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTpreexisting_yield:
-		msg += "Pre-existing Yield: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTunsupported_yield:
-		msg += "Unsupported Yield: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalidband:
-		msg += "Invalid raster band: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvaliddataset:
-		msg += "Invalid GDAL dataset: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalidrasterblock:
-		msg += "Invalid GDAL block: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalidlayer:
-		msg += "Invalid GDAL layer: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTmissingfield:
-		msg += "Missing field: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalidoverview:
-		msg += "Invalid GDAL overview: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTmissingrasterattribute:
-		msg += "Missing raster cells attributes: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTunsupported_transition:
-		msg += "Unsupported Transition: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTundefined_action:
-		msg += "Undefined Action: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTempty_transition:
-		msg += "Empty Transition: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTundefined_output:
-		msg += "Undefined Output: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTunsupported_output:
-		msg += "Unsupported Output: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalid_transition_case:
-		msg += "Invalid transition case: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvaliddriver:
-		msg += "Invalid driver: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalidAandT:
-		msg += "Invalid number of Actions and Transitions: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTleakingtransition:
-		msg += "Transition leaking area: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTundefineddeathaction:
-		msg += "Undefined _death action: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTundefineddeathtransition:
-		msg += "Undefined _death transition: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTignore:
-		msg += "Ignoring: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTmissingyield:
-		msg += "Missing yield: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTattribute_redefinition:
-		msg += "Attribute redefinition: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTundefined_constant:
-		msg += "Undefined constant: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTmissingdevelopment:
-		msg += "Missing developement: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTmissingobjective:
-		msg += "Missing objective function: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTunsupported_objective:
-		msg += "Unsupported objective function: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTinvalid_constraint:
-		msg += "Invalid constraint: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTemptybound:
-		msg += "Invalid @ bounds: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTunboundedperiod:
-		msg += "Unbounded replanning period: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTnonaddedconstraint:
-		msg += "Constraint not added to matrix: " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTinfeasibleconstraint:
-		msg += "Infeasible constraint: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTmissinglicense:
-		msg += "License error: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTfunctionfailed:
-		msg += "Function failed: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTcoinerror:
-		msg +=  message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTboostgrapherror:
-		msg +=  message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTunhandlederror:
-		msg += "Unhandled error: " + message;
-		
-		gotException=true;
-		break;
-    case FMTexc::FMTnotlinegraph:
-		msg += "FMTlinegragh error: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTrangeerror:
-		msg += "FMTrange error: " + message;
-		
-		gotException=true;
-		break;
-    case FMTexc::FMTGDALerror:
-        msg += "GDAL error: " + message;
-		
-		gotException=true;
-        break;
-    case FMTexc::FMTGDALwarning:
-        msg += "GDAL warning: " + message;
-		
-		gotWarning = true;
-        break;
-    case FMTexc::FMTthematic_output_diff:
-		msg += "Differences in output thematic: " + message;
-		
-		gotWarning = true;
-		break;
-    case FMTexc::FMToutput_missing_operator:
-   		msg += "Missing operator for the output: " + message;
-   		
-   		gotException=true;
-   		break;
-    case FMTexc::FMToutput_too_much_operator:
-   		msg += "Too much operator in the output definition " + message;
-   		
-   		gotException=true;
-   		break;
-	case FMTexc::FMTgdal_constructor_error:
-   		msg += "Error while contructing gdal object : " + message;
-   		
-   		gotException=true;
-   		break;
-	case FMTexc::FMTinvalid_geometry:
-   		msg += "Invalid geometry " + message;
-   		
-   		gotException=true;
-   		break;
-	case FMTexc::FMTinvalidyield_number:
-		msg += "Non valid yield number: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTundefinedoutput_attribute:
-		msg += "Undefined output attribute value: " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTempty_schedules:
-		msg += "No schedule found at : " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTmissing_scenarios:
-		msg += "Cannot find scenarios : " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTschemefailed:
-		msg += message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTmskerror:
-		msg += "Mosek error : " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMToveridedyield:
-		msg += "Overided yield : " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTmissing_parameter:
-		msg += "Missing parameter : " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTdeathwithlock:
-		msg += "The given FMTactualdevelopement will be dead before the lock expire : " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTreplanningwarning:
-		msg += "While replanning " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTyieldmodelprediction:
-		msg += "When predicting " + message;
-		
-		gotWarning = true;
-		break;
-	case FMTexc::FMTsourcetotarget_transition:
-		msg += "Transition source can return target " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTsame_transitiontargets:
-		msg += "Equivalent transition target " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTunclosedforloop:
-		msg += "Unclosed for loops " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTthreadcrash:
-		msg += "Crash on thread " + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMToutofrangeyield:
-		msg += "Out of range yield" + message;
-		
-		gotException=true;
-		break;
-	case FMTexc::FMTEmptyOA:
-		msg += "Empty Operating Area " + message;
-		gotException=true;
-		break;
-	case FMTexc::FMTWIN32Error:
-		msg += message;
-		gotException = true;
-		break;
-	case FMTexc::FMTMSKnumerical_problem:
-		msg += "Unsolvable model with set parameters: " + message;
-		gotWarning = true;
-		break;
-	case FMTexc::FMTunreachable_threshold:
-		msg += "Threshold unreachable with set parameters: " + message;
-		gotWarning = true;
-		break;
-	default:
-		gotException = true;
-		break;
-	};
-	if (std::find(m_errorstowarnings.begin(), m_errorstowarnings.end(), lexception)
+	bool gotException = p_exception->isFatal();
+	if (std::find(m_errorstowarnings.begin(), m_errorstowarnings.end(), p_exception->getType())
 		!= m_errorstowarnings.end())
 		{
-		msg += "Ignoring: " + message;
+		p_exception->setIgnoreMessage();
 		gotException = false;
-		gotWarning = true;
 		}
-		if (gotException)
+	if (gotException)
 		{
 			boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
-			_exception = lexception;
+			_exception = p_exception->getType();
 			if (!_isMainThread() && !_isThrowedOnThread())
 			{
 				m_crashedthreadid = boost::this_thread::get_id();
 			}
 		}
-	return msg;
 }
 
 void FMTExceptionHandler::raiseFromThreadCatch(std::string text,
@@ -1054,10 +376,10 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 		#if defined FMTWITHOSI
 			catch (const CoinError& coinexception)
 			{
-
-				_updateStatus(FMTexc::FMTcoinerror,coinexception.message());
+				std::unique_ptr<FMTException> error = FMTExceptionFactory::createCoinException(coinexception);
+				_updateStatus(error);
 				try {
-					std::throw_with_nested(FMTError(coinexception));
+					std::throw_with_nested(*error);
 				}catch (...)
 					{
 					return this->raise(lexception, text, method, line, file, lsection);
@@ -1066,9 +388,10 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 		#endif
 		catch (const boost::bad_graph& grapherror)
 		{
-			_updateStatus(FMTexc::FMTboostgrapherror,grapherror.what());
+			std::unique_ptr<FMTException> error = FMTExceptionFactory::createBoostGraphException(grapherror);
+			_updateStatus(error);
 			try {
-				std::throw_with_nested(FMTError(grapherror));
+				std::throw_with_nested(*error);
 			}
 			catch (...)
 			{
@@ -1078,10 +401,10 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 		#if defined _MSC_VER
 			catch (const FMTSeException& seError)
 			{
-				const std::string CAUGHTWIN32 = "Win32 Error number " + std::to_string(seError.getSeNumber());
-				_updateStatus(FMTexc::FMTWIN32Error, CAUGHTWIN32);
+				std::unique_ptr<FMTException> error = FMTExceptionFactory::createSeException(seError);
+				_updateStatus(error);
 				try {
-					std::throw_with_nested(FMTError(seError));
+					std::throw_with_nested(*error);
 				}
 				catch (...)
 				{
@@ -1091,18 +414,14 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 		#endif
 		catch (const std::exception& stdexception)
 		{
-			//Instrumentation: surface the real std::exception type/message instead of
-			//a bare "Unhandled error" so we can see the failing container/key.
-			_updateStatus(FMTexc::FMTunhandlederror,
-				std::string("std::exception: ") + stdexception.what());
-			lexception = FMTexc::FMTunhandlederror;
-			return this->raise(lexception, std::string(stdexception.what()) + " " + text,
+			std::unique_ptr<FMTException> error = FMTExceptionFactory::createUnhandledException(stdexception);
+			_updateStatus(error);
+			return this->raise(error->getType(), 
+				std::string(stdexception.what()) + " " + text,
 				method, line, file, lsection);
-		}
-		catch (...)
+		}catch (...)
 		{
-			lexception = FMTexc::FMTunhandlederror;
-			return this->raise(lexception,text, method, line, file, lsection);
+			return this->raise(FMTexc::FMTunhandlederror,text, method, line, file, lsection);
 		}
 	}
 	return this->raise(lexception,text, method, line, file, lsection);
@@ -1172,7 +491,7 @@ void FMTExceptionHandler::_gutsOfPrintExceptions(std::string text,
 				++levelreference;
 				//levelreference = 1;
 			}
-			this->throwNested(Exception::FMTError(coinexception), levelreference);
+			this->throwNested(*FMTExceptionFactory::createCoinException(coinexception), levelreference);
 		}
 #endif
 		catch (const boost::bad_graph& grapherror)
@@ -1187,7 +506,7 @@ void FMTExceptionHandler::_gutsOfPrintExceptions(std::string text,
 				++levelreference;
 				//levelreference = 1;
 			}
-			this->throwNested(Exception::FMTError(grapherror), levelreference);
+			this->throwNested(*FMTExceptionFactory::createBoostGraphException(grapherror), levelreference);
 		}
 		#if defined _MSC_VER
 		catch (const FMTSeException& seError)
@@ -1201,7 +520,7 @@ void FMTExceptionHandler::_gutsOfPrintExceptions(std::string text,
 				}
 				++levelreference;
 			}
-			this->throwNested(Exception::FMTError(seError), levelreference);
+			this->throwNested(*FMTExceptionFactory::createSeException(seError), levelreference);
 		}
 	#endif
 		catch (...)
@@ -1232,6 +551,30 @@ void FMTExceptionHandler::_gutsOfExceptionLog(const std::exception& texception, 
 		}
 	#endif
 }
+
+void  FMTExceptionHandler::_updateWarningCount(const FMTWarning& p_warning)
+	{
+	std::unordered_map<FMTexc, size_t>::iterator spwit = m_specificwarningcount.find(p_warning.getType());
+	if (spwit != m_specificwarningcount.end())
+		{
+			size_t wcount = spwit->second;
+			if (wcount <= m_maxwarningsbeforesilenced)
+			{
+				*_logger << p_warning.getMessage() << "\n";
+				wcount += 1;
+			}
+			else if (wcount == m_maxwarningsbeforesilenced + 1)
+			{
+				*_logger << "FMTexc(" + std::to_string(static_cast<int>(p_warning.getType())) + ") has reached the maximum number of times it can be raised." << "\n";
+				wcount += 1;
+			}
+			spwit->second = wcount;
+		}
+		else {
+			*_logger << p_warning.getMessage() << "\n";
+			m_specificwarningcount[p_warning.getType()] = 1;
+		}
+	}
 
 
 void FMTExceptionHandler::printExceptions(std::string text,

@@ -26,29 +26,25 @@ namespace Exception
 		const std::string& method,const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
 		
-		const FMTlev LEVEL = _getLevel(lexception);
-		FMTException excp;
-		if (lsection == Core::FMTsection::Empty)
-			{
-			excp = FMTException(lexception, _updateStatus(lexception, text), method, file, line);
-			}else {
-			excp = FMTException(lexception, lsection, _updateStatus(lexception, text),method, file,line);
-			}
-
+		std::unique_ptr<FMTException> newException = _createException(lexception, lsection,
+			text, method, file, line);
+		_updateStatus(newException);
 
 		if (throwit)
 			{
-			if (LEVEL == FMTlev::FMT_Warning || LEVEL == FMTlev::FMT_Debug)
+			if (newException->getLevel() == FMTlev::FMT_Warning || 
+				newException->getLevel() == FMTlev::FMT_Debug)
 				{
-				FMTWarning(excp).warn(*_logger, _specificwarningcount, m_maxwarningsbeforesilenced);
-				}else if(LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range)
+				const FMTWarning* WARNING = dynamic_cast<const FMTWarning*>(newException.get());
+				_updateWarningCount(*WARNING);
+				}else if(newException->isFatal())
 				{
 					boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
-					std::throw_with_nested(FMTError(excp));
+					std::throw_with_nested(*newException);
 				}
 
 			}
-		return excp;
+		return *newException;
 	}
 #ifdef FMTWITHGDAL
 

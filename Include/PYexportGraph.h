@@ -54,10 +54,9 @@ void exportGraph()
 	definePyList<Graph::FMTPredictor>();
 	definePyDict<int, int>();
 	definePyList<std::vector<Graph::FMTPredictor>>();
-	bp::enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
-		.value("schedulebuild", Graph::FMTgraphbuild::schedulebuild)
-		.value("fullbuild", Graph::FMTgraphbuild::fullbuild)
-		.value("nobuild", Graph::FMTgraphbuild::nobuild);
+
+
+	export_any_enum<Graph::FMTgraphbuild>("FMTsolverinterface");
 
 	//bp::class_<Graph::FMTGraph>("FMTgraph", "@DocString(FMTGraph)")
 	//	.def_pickle(FMT_pickle_suite<Graph::FMTGraph>());

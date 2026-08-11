@@ -18,6 +18,19 @@
 namespace Wrapper
 {
 
+	System::String^ FMTForm::getChangeLog()
+		{
+		return gcnew System::String(FMTWrapperCore::Tools::getChangeLog().c_str());
+		}
+
+
+	System::String^ FMTForm::getExceptionDescription(int p_exceptionId)
+		{
+		return gcnew System::String(FMTWrapperCore::Tools::getExceptionDescription(p_exceptionId).c_str());
+		}
+
+
+
 	void FMTForm::raiseFromCatch(std::string text,
 		const std::string& method, const int& line, const std::string& fil)
 	{

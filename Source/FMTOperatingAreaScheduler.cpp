@@ -633,7 +633,7 @@ namespace Heuristics
 					}
 					if (!choiceOnDescriptors)
 						{
-						_exhandler->raise(Exception::FMTexc::FMTEmptyOA,
+						_exhandler->raise(Exception::FMTexc::FMTEmpty_OA,
 							"No actions found in graph for " +
 							std::string(operatingareait->getMask()),
 							"FMTOperatingAreaScheduler::setOperatingAreasConstraints", __LINE__, __FILE__);

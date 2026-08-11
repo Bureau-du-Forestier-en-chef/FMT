@@ -302,7 +302,16 @@ namespace Wrapper
 		*/
 		bool writetoprojectfromcache(
 			System::String^ p_destinationDirectory);
-
+		/**
+		* @brief Get change log
+		*@return the change log
+		*/
+		System::String^ getChangeLog();
+		/**
+		* @brief Get exception description
+		*@return the exception description
+		*/
+		System::String^ getExceptionDescription(int p_exceptionId);
 	private:
 		void InscrireLigneFichierTexte(System::String^ nomFichier, System::String^ message, bool indicateurFeedback, bool nouveaufichier);
 		std::vector<Core::FMTConstraint> ObtenirArrayContraintes(int indexScenario);

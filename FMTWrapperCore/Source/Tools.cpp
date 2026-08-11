@@ -8,7 +8,20 @@
 #include <vector>
 #include <string>
 #include <boost/filesystem.hpp>
+#include "FMTVersion.h"
+#include "FMTExcelExceptionHandler.h"
 
+
+std::string FMTWrapperCore::Tools::getChangeLog()
+	{
+	return Version::FMTVersion::getChangelog(true);
+	}
+
+std::string FMTWrapperCore::Tools::getExceptionDescription(int p_exceptionId)
+	{
+	return Exception::FMTExceptionHandler::getErrorDescription(true,
+		static_cast<Exception::FMTexc>(p_exceptionId));
+	}
 
 
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTModel& p_model)
@@ -210,5 +223,6 @@ std::vector<Core::FMTActualDevelopment> FMTWrapperCore::Tools::getRasterArea(con
 
 	return area;
 }
+
 
 

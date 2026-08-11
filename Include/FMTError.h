@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <boost/graph/exception.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/base_object.hpp>
 
 
 namespace Exception
@@ -29,19 +30,6 @@ namespace Exception
 	*/
 	class FMTEXPORT FMTError : public FMTException
 		{
-		// DocString: FMTError::serialize
-		/**
-		@brief Serialize the FMTError through its base FMTException for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar &  boost::serialization::make_nvp("exception", boost::serialization::base_object<FMTException>(*this));
-		}
 		public:
 			// DocString: ~FMTError()
 			/**
@@ -59,64 +47,36 @@ namespace Exception
 			@brief Default constructor for FMTError.
 			*/
 			FMTError();
-			// DocString: FMTError(const FMTException&)
-			/**
-			@brief Construct a FMTError from a FMTException.
-			@param[in] rhs the FMTException to copy from.
-			*/
-			FMTError(const FMTException& rhs);
-			// DocString: FMTError(const FMTexc,const std::string)
-			/**
-			@brief Construct a FMTError from an exception type and a message.
-			@param[in] lexception the exception type.
-			@param[in] message the message of the error.
-			*/
-			FMTError(const FMTexc lexception, const std::string message);
-			// DocString: FMTError(const FMTexc,const Core::FMTsection,const std::string)
-			/**
-			@brief Construct a FMTError from an exception type, a section and a message.
-			@param[in] lexception the exception type.
-			@param[in] lsection the section in which the error occurred.
-			@param[in] message the message of the error.
-			*/
-			FMTError(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
-			// DocString: FMTError(const FMTexc,const Core::FMTsection,const std::string,const std::string&,const std::string&,const int&)
+			// DocSt*ing: FMTError(FMTexc,FMTlev,Core::*MTsection,const std::string&,const*std::string&,const std::string&,co*st int&,const std::string&,const s*d::string&)
 			/**
 			@brief Construct a FMTError from an exception type, a section, a message and the location where it occurred.
-			@param[in] lexception the exception type.
-			@param[in] lsection the section in which the error occurred.
-			@param[in] message the message of the error.
-			@param[in] lmethod the method where the error occurred.
-			@param[in] lfile the file where the error occurred.
-			@param[in] lline the line where the error occurred.
+			@param[in] p_exception the exception type.
+			@param[in] p_level level of the exception type.
+			@param[in] p_section the section in which the exception occurred.
+			@param[in] p_message the message of the exception.
+			@param[in] p_method the method where the exception occurred.
+			@param[in] p_file the file where the exception occurred.
+			@param[in] p_line the line where the exception occurred.
+			@param[in] p_FrenchDescription french description.
+			@param[in] p_EnglishDescription english description.
 			*/
-			FMTError(const FMTexc lexception,const Core::FMTsection lsection, const std::string message,
-					const std::string& lmethod, const std::string& lfile, const int& lline);
-			// DocString: FMTError(const FMTexc,const std::string,const std::string&,const std::string&,const int&)
+			FMTError(FMTexc p_exception, FMTlev p_level, Core::FMTsection p_section, const std::string& p_message,
+				const std::string& p_method, const std::string& p_file, const int& p_line,
+				const std::string& p_FrenchDescription, const std::string& p_EnglishDescription);
+		private:
+			// DocString: FMTError::serialize
 			/**
-			@brief Construct a FMTError from an exception type, a message and the location where it occurred.
-			@param[in] lexception the exception type.
-			@param[in] message the message of the error.
-			@param[in] lmethod the method where the error occurred.
-			@param[in] lfile the file where the error occurred.
-			@param[in] lline the line where the error occurred.
+			@brief Serialize the FMTError through its base FMTException for multiprocessing across multiple cpus (pickle in Python).
+			@tparam Archive the archive type.
+			@param[in,out] ar the archive to serialize to or from.
+			@param[in] version the serialization version.
 			*/
-			FMTError(const FMTexc lexception, const std::string message,
-				const std::string& lmethod, const std::string& lfile, const int& lline);
-			#if defined FMTWITHOSI
-				// DocString: FMTError(const CoinError&)
-				/**
-				@brief Construct a FMTError from a CoinError.
-				@param[in] coinexception the CoinError to construct from.
-				*/
-				FMTError(const CoinError& coinexception);
-			#endif
-			// DocString: FMTError(const boost::bad_graph&)
-			/**
-			@brief Construct a FMTError from a boost::bad_graph.
-			@param[in] boostexception the boost::bad_graph to construct from.
-			*/
-			FMTError(const boost::bad_graph& boostexception);
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& boost::serialization::make_nvp("exception", boost::serialization::base_object<FMTException>(*this));
+			}
 
 		};
 	}

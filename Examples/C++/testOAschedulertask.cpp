@@ -161,7 +161,7 @@ else
             errors.push_back(Exception::FMTexc::FMToutofrangeyield);
             errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
             errors.push_back(Exception::FMTexc::FMTmissingyield);
-            errors.push_back(Exception::FMTexc::FMTEmptyOA);
+            errors.push_back(Exception::FMTexc::FMTEmpty_OA);
             errors.push_back(Exception::FMTexc::FMTdeathwithlock);
             modelparser.setErrorsToWarnings(errors);
             const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);

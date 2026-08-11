@@ -19,33 +19,21 @@ namespace Exception
 		const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
 		
-		const FMTlev LEVEL = _getLevel(lexception);
-		FMTException excp = FMTException(lexception, _updateStatus(lexception, text));
-		if (lsection != Core::FMTsection::Empty)
-		{
-			excp = FMTException(lexception, lsection, _updateStatus(lexception, text));
-		}
-		if (LEVEL != FMTlev::FMT_Warning)
-		{
-			if (lsection == Core::FMTsection::Empty)
-			{
-				excp = FMTException(lexception, _updateStatus(lexception, text), method, file, line);
-			}
-			else {
-				excp = FMTException(lexception, lsection, _updateStatus(lexception, text), method, file, line);
-			}
-		}
+		std::unique_ptr<FMTException> newException = _createException(lexception, lsection,
+			text, method, file, line);
+		_updateStatus(newException);
+
 		if (throwit)
 		{
-			if (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range)
+			if (newException->isFatal())
 			{
 				boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 				if (!_needToRethrow()) {
-					std::throw_with_nested(FMTError(excp));
+					std::throw_with_nested(*newException);
 				}
 			}
 		}
-		return excp;
+		return *newException;
 	}
 	#ifdef FMTWITHGDAL
 

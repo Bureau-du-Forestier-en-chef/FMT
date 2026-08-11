@@ -82,7 +82,16 @@ namespace FMTWrapperCore
 		*@param p_destinationDirectory Le dossier de destination où écrire le projet.
 		*/
 		static void writeToProject(const std::vector<Models::FMTModel>& p_models, const std::string& p_destinationDirectory);
-
+		/**
+		* @brief Get change log
+		*@return the change log
+		*/
+		static std::string getChangeLog();
+		/**
+		* @brief Get exception description
+		*@return the exception description
+		*/
+		static std::string getExceptionDescription(int p_exceptionId);
 	private:
 		/**
 		* @brief Retourne un vecteur de FMTActualDevelopment selon le raster d'aire.

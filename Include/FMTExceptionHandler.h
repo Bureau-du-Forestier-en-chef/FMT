@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Exception
 {
 	class FMTException;
+	class FMTWarning;
 	// DocString: FMTExceptionHandler
 	/**
 	@brief Base class used to handle errors thrown in FMT.
@@ -32,9 +33,6 @@ namespace Exception
 	class FMTEXPORT FMTExceptionHandler
 	{
 	public:
-		// DocString: FMTExceptionHandler::_specificwarningcount
-		///Keeps count of the number of each type of warning thrown.
-		std::unordered_map<int, size_t> _specificwarningcount;
 		// DocString: checkSignals()
 		/**
 		@brief Check signals in R and Python if on the main thread.
@@ -193,6 +191,14 @@ namespace Exception
 		*/
 		static void translateStructuralWIN32Exceptions(unsigned int p_u, EXCEPTION_POINTERS*);
 		#endif
+		// DocString: getErrorDescription(bool,FMTexc)
+		/**
+		@brief get descriptions of the potential errors
+		@param[in] p_french true you get it in french
+		@param[in] p_exception excpetion type
+		return string description
+		*/
+		static std::string getErrorDescription(bool p_french, FMTexc p_type);
 	protected:
 		// DocString: FMTExceptionHandler::_exception
 		///This is the type of the last FMTException thrown by the FMTExceptionHandler.
@@ -230,12 +236,22 @@ namespace Exception
 		std::exception_ptr m_threadcrashexception;
 		// DocString: FMTExceptionHandler::_updateStatus
 		/**
-		@brief Update the status of the handler, adding to the warning or error counts based on the exception type.
-		@param[in] lexception the exception type.
-		@param[in] message the message of the exception.
-		@return the updated status message.
+		@brief Update the status of the handler of the last exception type thrown and modify if it as to be ignored
+		@param[in] p_exception the new exception
 		*/
-		std::string _updateStatus(const FMTexc lexception, const std::string message);
+		void _updateStatus(std::unique_ptr<FMTException>& p_exception);
+		// DocString: FMTExceptionHandler(FMTexc,Core::FMTsection,const std::string&,const std::string&,const std::string&,int)
+		/**
+		@brief Construct a FMTException from an exception type, a section, a message and the location where it occurred.
+		@param[in] p_exception the exception type.
+		@param[in] p_section the section in which the exception occurred.
+		@param[in] p_message the message of the exception.
+		@param[in] p_method the method where the exception occurred.
+		@param[in] p_file the file where the exception occurred.
+		@param[in] p_line the line where the exception occurred.
+		*/
+		static std::unique_ptr<FMTException> _createException(FMTexc p_exception, Core::FMTsection p_section, const std::string& p_message,
+			const std::string& p_method, const std::string& p_file, int p_line);
 		// DocString: FMTExceptionHandler::_needToRethrow
 		/**
 		@brief Return true if nested exceptions are used and the exception is a function error that must be rethrown.
@@ -292,13 +308,12 @@ namespace Exception
 		@param[in] level the nesting level.
 		*/
 		void _gutsOfExceptionLog(const std::exception& texception,const int& level);
-		// DocString: FMTExceptionHandler::_getLevel
+		// DocString: FMTExceptionHandler::_updateWarningCount
 		/**
-		@brief Get the level of an exception.
-		@param[in] p_exception the exception enum.
-		@return the exception level.
+		@brief update the warning count and print if max not reached
+		@param[in] p_warning the famous warning
 		*/
-		FMTlev _getLevel(const FMTexc p_exception) const;
+		void _updateWarningCount(const FMTWarning& p_warning);
 	private:
 		// DocString: FMTExceptionHandler::serialize
 		/**
@@ -311,8 +326,8 @@ namespace Exception
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& BOOST_SERIALIZATION_NVP(_exception);
-			ar& BOOST_SERIALIZATION_NVP(_logger);
+			ar& BOOST_SERIALIZATION_NVP(m_exception);
+			ar& BOOST_SERIALIZATION_NVP(m_logger);
 			ar& BOOST_SERIALIZATION_NVP(m_usenestedexceptions);
 		}
 		#if defined _MSC_VER
@@ -320,6 +335,10 @@ namespace Exception
 		///The structural exceptions win32 translator
 		static FMTScopedSeTranslator m_SeTranslator;
 		#endif
+		// DocString: FMTExceptionHandler::_specificwarningcount
+		///Keeps count of the number of each type of warning thrown.
+		std::unordered_map<FMTexc, size_t> m_specificwarningcount;
+
 	};
 
 }

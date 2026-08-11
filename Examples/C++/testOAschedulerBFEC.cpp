@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 		    errors.push_back(Exception::FMTexc::FMToveridedyield);
 		    errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 		    errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
-            errors.push_back(Exception::FMTexc::FMTEmptyOA);
+            errors.push_back(Exception::FMTexc::FMTEmpty_OA);
             errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		    modelparser.setErrorsToWarnings(errors);
             const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);

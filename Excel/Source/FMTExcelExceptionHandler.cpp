@@ -38,38 +38,29 @@ namespace Exception
 		const std::string& method, const int& line, const std::string& file,
 		Core::FMTsection lsection, bool throwit)
 		{
-		const FMTlev LEVEL = _getLevel(lexception);
+		std::unique_ptr<FMTException> newException = _createException(lexception, lsection,
+			text, method, file, line);
+		_updateStatus(newException);
 		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 		if (build_exceptions.find(static_cast<int>(lexception))== build_exceptions.end())
 			{
 			build_exceptions[static_cast<int>(lexception)] = std::vector<std::string>();
 			}
 		build_exceptions[static_cast<int>(lexception)].push_back(text);
-		FMTException excp = FMTException(lexception, _updateStatus(lexception, text));
-		if (lsection != Core::FMTsection::Empty)
+		if (newException->getLevel() != FMTlev::FMT_Warning)
 		{
-			excp = FMTException(lexception, lsection, _updateStatus(lexception, text));
-		}
-		if (LEVEL != FMTlev::FMT_Warning)
-		{
-			if (lsection == Core::FMTsection::Empty)
+			if (throwit && (newException->isFatal()) && !_needToRethrow())
 			{
-				excp = FMTException(lexception, _updateStatus(lexception, text), method, file, line);
-			}
-			else {
-				excp = FMTException(lexception, lsection, _updateStatus(lexception, text), method, file, line);
-			}
-			if (throwit && (LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range) && !_needToRethrow())
-			{
-				std::throw_with_nested(FMTError(excp));
+				std::throw_with_nested(*newException);
 			}
 		}
 		else if (throwit)
 		{
-			FMTWarning(excp).warn(*_logger, _specificwarningcount, m_maxwarningsbeforesilenced);
+			const FMTWarning* WARNING = dynamic_cast<const FMTWarning*>(newException.get());
+			_updateWarningCount(*WARNING);
 		}
 
-		return excp;
+		return *newException;
 		}
 
 	std::unique_ptr <FMTExceptionHandler> FMTExcelExceptionHandler::clone() const

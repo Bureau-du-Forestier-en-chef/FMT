@@ -23,7 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #if defined FMTWITHOSI
 #include "FMTSolverLogger.h"
 #include "CoinMessageHandler.hpp"
-#include "FMTError.h"
+#include "FMTCoinError.h"
 #include "FMTTask.h"
 #endif
 
@@ -325,9 +325,8 @@ namespace Logging
 					fprintf(m_solverref->filePointer(), "Stopping due to previous errors.\n");
 					//Should do walkback
 					//abort();
-					std::throw_with_nested(Exception::FMTError(
-						Exception::FMTException(Exception::FMTexc::FMTcoinerror,Core::FMTsection::Empty,
-									"Stopping due to previous errors.\n","FMTLogger::print",__FILE__, __LINE__)));
+					std::throw_with_nested(Exception::FMTCoinError(Core::FMTsection::Empty,
+									"Stopping due to previous errors.\n","FMTLogger::print",__FILE__, __LINE__));
 					}
 				}
 			return 0;
