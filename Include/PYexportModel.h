@@ -183,18 +183,29 @@ void exportModel()
 
     definePyList<Models::FMTSesModel>();
 
-
-	export_any_enum<Models::FMTintmodelparameters>("FMTintmodelparameters");
+	bp::enum_<Models::FMTintmodelparameters>("FMTintmodelparameters")
+		.value("LENGTH", Models::FMTintmodelparameters::LENGTH)
+		.value("SEED", Models::FMTintmodelparameters::SEED)
+		.value("NUMBER_OF_ITERATIONS", Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS)
+		.value("PRESOLVE_ITERATIONS", Models::FMTintmodelparameters::PRESOLVE_ITERATIONS)
+		.value("NUMBER_OF_THREADS", Models::FMTintmodelparameters::NUMBER_OF_THREADS)
+		.value("MATRIX_TYPE", Models::FMTintmodelparameters::MATRIX_TYPE);
 	
 	definePyList<Models::FMTintmodelparameters>();
-
-	export_any_enum<Models::FMTdblmodelparameters>("FMTdblmodelparameters");
 	
+	bp::enum_<Models::FMTdblmodelparameters>("FMTdblmodelparameters")
+		.value("TOLERANCE", Models::FMTdblmodelparameters::TOLERANCE)
+		.value("GOALING_SCHEDULE_WEIGHT", Models::FMTdblmodelparameters::GOALING_SCHEDULE_WEIGHT);
 
 	definePyList<Models::FMTdblmodelparameters>();
 
-	export_any_enum<Models::FMTboolmodelparameters>("FMTboolmodelparameters");
-
+	bp::enum_<Models::FMTboolmodelparameters>("FMTboolmodelparameters")
+		.value("FORCE_PARTIAL_BUILD", Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)
+		.value("STRICTLY_POSITIVE", Models::FMTboolmodelparameters::STRICTLY_POSITIVE)
+		.value("POSTSOLVE", Models::FMTboolmodelparameters::POSTSOLVE)
+		.value("SHOW_LOCK_IN_SCHEDULES", Models::FMTboolmodelparameters::SHOW_LOCK_IN_SCHEDULES)
+		.value("PRESOLVE_CAN_REMOVE_STATIC_THEMES", Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES)
+		.value("DEBUG_MATRIX", Models::FMTboolmodelparameters::DEBUG_MATRIX);
 
 	definePyList<Models::FMTboolmodelparameters>();
 
@@ -202,13 +213,19 @@ void exportModel()
 
 	#ifdef FMTWITHOSI
 
-
-	export_any_enum<Models::FMTSolverInterface>("FMTSolverInterface");
+	bp::enum_<Models::FMTSolverInterface>("FMTsolverinterface")
+		.value("CLP", Models::FMTSolverInterface::CLP)
+		.value("GLPK", Models::FMTSolverInterface::GLPK)
+		#ifdef  FMTWITHMOSEK
+				.value("MOSEK", Models::FMTSolverInterface::MOSEK)
+		#endif
+		.value("CPLEX", Models::FMTSolverInterface::CPLEX)
+		.value("GUROBI", Models::FMTSolverInterface::GUROBI);
 		
 	definePyList<Models::FMTSolverInterface>();
 
 	bp::class_<Models::FMTLpSolver>("FMTlpolver", "@DocString(FMTLpSolver)")
-		//.def(bp::init<Models::FMTSolverInterface>())
+		//.def(bp::init<Models::FMTsolverinterface>())
 		.def("isProvenOptimal", &Models::FMTLpSolver::isProvenOptimal,
 			"@DocString(FMTLpSolver::isProvenOptimal)")
 		.def("getObjValue", &Models::FMTLpSolver::getObjValue,
