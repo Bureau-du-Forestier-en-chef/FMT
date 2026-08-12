@@ -44,7 +44,7 @@ namespace Exception
 			build_exceptions[static_cast<int>(lexception)] = std::vector<std::string>();
 			}
 		build_exceptions[static_cast<int>(lexception)].push_back(text);
-		if (newException->getType() != FMTlev::FMT_Warning)
+		if (newException->getLevel() != FMTlev::FMT_Warning)
 		{
 			if (throwit && (newException->isFatal()) && !_needToRethrow())
 			{

@@ -8,7 +8,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHOSI
 #include "FMTLpSolver.h"
 #include "OsiSolverInterface.hpp"
-#include "OsiGlpkSolverInterface.hpp"
+
+#if __has_include("OsiGlpkSolverInterface.hpp")
+	#include "OsiGlpkSolverInterface.hpp"
+#endif
+
 
 #ifdef FMTWITHMOSEK
 	#include "mosek.h"
@@ -46,9 +50,11 @@ namespace Models
 					newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface());
 				break;
 			#endif
-			case FMTSolverInterface::GLPK:
-				newsolverinterface = std::shared_ptr<OsiGlpkSolverInterface>(new OsiGlpkSolverInterface());
-			break;
+			#if __has_include("OsiGlpkSolverInterface.hpp")
+				case FMTSolverInterface::GLPK:
+					newsolverinterface = std::shared_ptr<OsiGlpkSolverInterface>(new OsiGlpkSolverInterface());
+				break;
+			#endif
 				/*case FMTSolverInterface::CPLEX:
 					newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 				break;

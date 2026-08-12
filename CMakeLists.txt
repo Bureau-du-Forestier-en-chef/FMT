@@ -67,7 +67,7 @@ if (DEFINED ENV_PREFIX)
 	cmake_path(ABSOLUTE_PATH sub_path NORMALIZE)
 	set(GDAL_DIR "${sub_path}")
 	set(GEOS_DIR "${sub_path}")
-	set(ONNXR_DIR "${sub_path}")
+	#set(ONNXR_DIR "${sub_path}")
 	set(OSI_DIR "${sub_path}")
 endif(DEFINED ENV_PREFIX)
 

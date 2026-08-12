@@ -326,8 +326,8 @@ namespace Exception
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& BOOST_SERIALIZATION_NVP(m_exception);
-			ar& BOOST_SERIALIZATION_NVP(m_logger);
+			ar& BOOST_SERIALIZATION_NVP(_exception);
+			ar& BOOST_SERIALIZATION_NVP(_logger);
 			ar& BOOST_SERIALIZATION_NVP(m_usenestedexceptions);
 		}
 		#if defined _MSC_VER
