@@ -102,8 +102,7 @@ Exception::FMTException Wrapper::FMTexceptionhandlerwarning::raise(Exception::FM
 	}
 	else if (throwit)
 	{
-		const Exception::FMTWarning* WARNING = dynamic_cast<const Exception::FMTWarning*>(newException.get());
-		_updateWarningCount(*WARNING);
+		_updateWarningCount(*newException);
 	}
 	return *newException;
 }

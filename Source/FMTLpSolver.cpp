@@ -41,11 +41,11 @@ namespace Models
 			case FMTSolverInterface::CLP:
 				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface());
 				break;
-#ifdef  FMTWITHMOSEK
-			case FMTSolverInterface::MOSEK:
-				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface());
-			break;
-#endif
+			#ifdef  FMTWITHMOSEK
+				case FMTSolverInterface::MOSEK:
+					newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface());
+				break;
+			#endif
 			case FMTSolverInterface::GLPK:
 				newsolverinterface = std::shared_ptr<OsiGlpkSolverInterface>(new OsiGlpkSolverInterface());
 			break;
@@ -56,9 +56,12 @@ namespace Models
 					newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
 				break;*/
 			default:
-				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface());
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					" Cannot use this solver type ",
+					"FMTLpSolver::buildSolverInterface", __LINE__, __FILE__);
 				break;
 			}
+			
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("Cannot build solver","FMTLpSolver::buildSolverInterface", __LINE__, __FILE__);
@@ -438,6 +441,7 @@ namespace Models
 		}
 	#endif
 
+
 	bool FMTLpSolver::initialSolve()
 	{
 		try {
@@ -498,10 +502,34 @@ namespace Models
 		return solverinterface->isProvenOptimal();
 		}
 
+
+	void FMTLpSolver::_setGlpkLogLevel(Logging::FMTLogger& p_logger)
+		{
+		//Glpk does not use the message handler just the level 
+		//No way for now to make it work like the other solvers...will need to capture the c print from the os :(
+		if (solvertype == FMTSolverInterface::GLPK)//here is a patch
+			{
+			const int LOG_LEVEL = p_logger.getSolverLogger()->logLevel();
+			bool sense = false;
+			OsiHintStrength strength = OsiHintStrength::OsiHintIgnore;
+			if (LOG_LEVEL == 0)
+				{
+				sense = true;
+				strength = OsiHintStrength::OsiHintDo;
+			}else {
+				sense = false;
+				strength = OsiHintStrength::OsiHintTry;
+				}
+			solverinterface->setHintParam(OsiHintParam::OsiDoReducePrint,
+				sense, strength);
+			}
+		}
+
 	void FMTLpSolver::passInMessageHandler(Logging::FMTLogger& logger)
 		{
 		try{
 		solverinterface->passInMessageHandler(dynamic_cast<CoinMessageHandler*>(logger.getSolverLogger()));
+		_setGlpkLogLevel(logger);
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTLpSolver::passInMessageHandler", __LINE__, __FILE__);
@@ -569,7 +597,7 @@ namespace Models
 				break;*/
 			default:
 			{
-				name = "CLP";
+				name = "Not a Valid Solver";
 			}
 			break;
 			}

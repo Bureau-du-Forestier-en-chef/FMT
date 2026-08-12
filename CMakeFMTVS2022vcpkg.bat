@@ -65,7 +65,6 @@ cmake CMakeLists.txt ^
 	-DVCPKG_MANIFEST_MODE=ON 
 	
 cmake --build build/release --config Release
-
 cmake --install build/release --config Release
-
+::
 

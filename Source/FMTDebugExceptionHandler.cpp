@@ -29,7 +29,7 @@ namespace Exception
 		std::unique_ptr<FMTException> newException = _createException(lexception, lsection,
 			text, method, file, line);
 		_updateStatus(newException);
-
+		newException->setPrintLevel(3);
 		if (throwit)
 			{
 			if (newException->getLevel() == FMTlev::FMT_Warning || 

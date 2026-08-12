@@ -71,3 +71,4 @@ doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ForLoops;5;65733
 testWrapperCoreGetAllMasks;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|10|9;1|3;;
 UnitTestFMTParser;;;
 testWrapperCoreWriteToProject;../../../../Examples/Models/TWD_land/TWD_land.pri|actionseries;../../tests/testWrapperCoreWriteToProject/;;;
+testSolvers;;;

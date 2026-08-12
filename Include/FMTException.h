@@ -266,18 +266,35 @@ class FMTEXPORT FMTException : public std::exception
 		@return true or false
 		*/
 		bool isFatal() const;
-		// DocString: FMTException::setIgnoreMessage
+		// DocString: FMTException::setIgnore
 		/**
-		@brief set a ignore message to the exception.
+		@brief set a ignore message to the exception and turn the level to warning
 		*/
-		void setIgnoreMessage();
+		void setIgnore();
+		// DocString: FMTException::setPrintLevel
+		/**
+		@brief set the level of print and change the message
+		@param[in] p_level the level of print
+		*/
+		void setPrintLevel(int p_level);
     private:
+		// DocString: FMTException::_getPrintLevel
+		/**
+		@brief Get the print level
+		@return the print level
+		*/
+		int _getPrintLevel() const;
+		// DocString: FMTException::_getUserMessage
+		/**
+		@brief Returne the message of the user
+		@return a beautifull message
+		*/
+		const std::string& _getUserMessage() const;
 		// DocString: FMTException::_buildMessage
 		/**
-		@brief Build the message of the Exception.
-		@param[in] the input message
+		@brief Build the resulting message
 		*/
-		void _buildMessage(const std::string& p_message);
+		void _buildMessage();
 		// DocString: FMTException::serialize
 		/**
 		@brief Serialize function used for serialization to do multiprocessing across multiple cpus (pickle in Python).
@@ -319,6 +336,12 @@ class FMTEXPORT FMTException : public std::exception
 		// DocString: FMTException::m_level
 		///The exception level
 		FMTlev m_level;
+		// DocString: FMTException::m_PrintLevel
+		///the level of verbosity
+		int m_PrintLevel;
+		// DocString: FMTException::m_UserMessage 
+		///The base user message
+		std::string m_UserMessage;
     };
 
 }

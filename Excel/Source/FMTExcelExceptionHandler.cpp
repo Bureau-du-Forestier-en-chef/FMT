@@ -56,8 +56,7 @@ namespace Exception
 		}
 		else if (throwit)
 		{
-			const FMTWarning* WARNING = dynamic_cast<const FMTWarning*>(newException.get());
-			_updateWarningCount(*WARNING);
+			_updateWarningCount(*newException);
 		}
 
 		return *newException;

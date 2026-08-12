@@ -313,7 +313,7 @@ namespace Exception
 		@brief update the warning count and print if max not reached
 		@param[in] p_warning the famous warning
 		*/
-		void _updateWarningCount(const FMTWarning& p_warning);
+		void _updateWarningCount(const FMTException& p_warning);
 	private:
 		// DocString: FMTExceptionHandler::serialize
 		/**

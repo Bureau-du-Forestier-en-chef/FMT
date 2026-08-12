@@ -47,11 +47,13 @@ namespace Exception
 		ar& BOOST_SERIALIZATION_NVP(m_FrenchDescription);
 		ar& BOOST_SERIALIZATION_NVP(m_EnglishDescription);
 		ar& BOOST_SERIALIZATION_NVP(m_level);
+		ar& BOOST_SERIALIZATION_NVP(m_PrintLevel);
+		ar& BOOST_SERIALIZATION_NVP(m_UserMessage);
 	}
 
 	FMTException::FMTException() :m_holdup(false), m_msg(), m_exceptiontype(FMTexc::None),
 		m_section(Core::FMTsection::Empty), m_method(), m_file(), m_line(), m_FrenchDescription(), m_EnglishDescription(),
-		m_level(FMTlev::FMT_None){}
+		m_level(FMTlev::FMT_None), m_PrintLevel(0){}
 
 
 
@@ -63,10 +65,11 @@ namespace Exception
 		m_method(p_method), m_file(p_file), m_line(p_line),
 		m_FrenchDescription(p_FrenchDescription),
 		m_EnglishDescription(p_EnglishDescription),
-		m_level(p_level)
+		m_level(p_level), 
+		m_PrintLevel(0), 
+		m_UserMessage(p_message)
 	{
-		_buildMessage(p_message);
-		
+		_buildMessage();
 	}
 
 
@@ -97,20 +100,34 @@ namespace Exception
 
 	std::string FMTException::getSrcInfo() const
 		{
-		return "In Method("+ m_method +") In File(" + m_file + ") At Line(" + std::to_string(m_line) + ")";
+		return "In Method("+ m_method +") \n In File(" + m_file + ") \n At Line(" + std::to_string(m_line) + ")";
 		}
 
-	void FMTException::_buildMessage(const std::string& p_message)
+	int FMTException::_getPrintLevel() const
+		{
+		return m_PrintLevel;
+		}
+
+	const std::string& FMTException::_getUserMessage() const
+	{
+		return m_UserMessage;
+	}
+
+	void FMTException::_buildMessage()
 	{
 		if (m_section == Core::FMTsection::Empty)
 		{
-			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") "+ getDescription() + p_message + "\n" + FMTException::getSrcInfo();
+			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") " + getDescription() + "\n" + _getUserMessage();
+		}else {
+			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") " + getDescription() + "\n" + _getUserMessage() +
+				" FMTsection(" + std::to_string(static_cast<int>(m_section)) + ") " + Core::FMTsection_str(m_section);
 		}
-		else {
-			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") " + getDescription() + p_message +
-				" FMTsection(" + std::to_string(static_cast<int>(m_section)) + ")" + Core::FMTsection_str(m_section) + "\n" + FMTException::getSrcInfo();
-		}
+		if (_getPrintLevel() > 0)
+			{
+			m_msg += "\n" + getSrcInfo();
+			}
 	}
+
 
 	const std::string& FMTException::getMessage() const
 		{
@@ -122,9 +139,18 @@ namespace Exception
 		return m_level;
 		}
 
-	void FMTException::setIgnoreMessage()
+
+	void FMTException::setIgnore()
 		{
-		m_msg.insert(0, "Ignoring: ");
+		m_UserMessage.insert(0, "Ignoring: ");
+		m_level = FMTlev::FMT_Warning;
+		_buildMessage();
+		}
+
+	void FMTException::setPrintLevel(int p_level)
+		{
+		m_PrintLevel = p_level;
+		_buildMessage();
 		}
 
 	bool FMTException::isFatal() const

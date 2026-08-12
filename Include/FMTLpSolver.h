@@ -671,6 +671,12 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@return the Mosek response code.
 		*/
 		int _mskOptimizeWithDefaultParameters();
+		// DocString: FMTLpSolver::_setGlpkLogLevel
+		/**
+		@brief Set a log level that fit with the logger to GLPK note that glpk does not support messageHandler so here is the patch
+		@param[in,out] p_logger the base logger
+		*/
+		void _setGlpkLogLevel(Logging::FMTLogger& p_logger);
 	#endif
 		// DocString: FMTLpSolver::_setClpOptions
 		/**

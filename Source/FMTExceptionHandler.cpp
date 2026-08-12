@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/lexical_cast.hpp>
 #include "FMTExceptionFactory.h"
 #include "FMTWarning.h"
+#include <boost/graph/exception.hpp>
 
 
 #if defined FMTWITHR
@@ -299,7 +300,7 @@ void FMTExceptionHandler::_updateStatus(std::unique_ptr<FMTException>& p_excepti
 	if (std::find(m_errorstowarnings.begin(), m_errorstowarnings.end(), p_exception->getType())
 		!= m_errorstowarnings.end())
 		{
-		p_exception->setIgnoreMessage();
+		p_exception->setIgnore();
 		gotException = false;
 		}
 	if (gotException)
@@ -552,7 +553,7 @@ void FMTExceptionHandler::_gutsOfExceptionLog(const std::exception& texception, 
 	#endif
 }
 
-void  FMTExceptionHandler::_updateWarningCount(const FMTWarning& p_warning)
+void  FMTExceptionHandler::_updateWarningCount(const FMTException& p_warning)
 	{
 	std::unordered_map<FMTexc, size_t>::iterator spwit = m_specificwarningcount.find(p_warning.getType());
 	if (spwit != m_specificwarningcount.end())
