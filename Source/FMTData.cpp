@@ -266,6 +266,9 @@ FMTData::operator std::string() const
 		case FMTyieldparserop::FMTmin:
 			value += "_MIN(";
 		break;
+		case FMTyieldparserop::FMTShift:
+			value += "_SHIFT(";
+			break;
         default:
         break;
         }

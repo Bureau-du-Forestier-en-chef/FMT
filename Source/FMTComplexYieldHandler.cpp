@@ -731,6 +731,34 @@ namespace Core {
 		return value;
 	}
 
+
+	double FMTComplexYieldHandler::_getShift(const FMTData* p_data, const std::string& p_yld, const FMTYieldRequest& p_request) const
+		{
+		double value = 0.0;
+		try {
+			Core::FMTDevelopment newDevelopment(p_request.getDevelopment());
+			int age = newDevelopment.getAge();
+			int period = newDevelopment.getPeriod();
+			const std::vector<const double*>VALUES = p_data->getValues();
+			const double* LAG = *(p_data->getValues().begin()+1);
+			const int BASE_LAG = static_cast<int>(*LAG);
+			newDevelopment.setAge(age + BASE_LAG);
+			newDevelopment.setPeriod(period + BASE_LAG);
+			const FMTYieldRequest NEW_REQUEST(newDevelopment, p_request);
+			const std::vector<const std::string*> SOURCES = p_data->getSources();
+			const std::vector<const std::unique_ptr<FMTYieldHandler>*> SOURCES_DATA = _getData(p_request, 
+				SOURCES, p_yld);
+			const std::map<std::string, double>SOURCE_VALUES = _toMap(NEW_REQUEST, 
+				SOURCES, SOURCES_DATA);
+			value = SOURCE_VALUES.at(**SOURCES.begin());
+			}catch (...)
+				{
+				_exhandler->raiseFromCatch("On yield " + p_yld, 
+					"FMTComplexYieldHandler::_getShift", __LINE__, __FILE__, Core::FMTsection::Yield);
+				}
+			return value;
+		}
+
 	
 
 	double FMTComplexYieldHandler::get(const std::string& yld, const FMTYieldRequest& request) const
@@ -827,7 +855,11 @@ namespace Core {
 						value = _getMin(C_DATA, yld, request);
 						break;
 					}
-
+					case FMTyieldparserop::FMTShift:
+					{
+						value = _getShift(C_DATA, yld, request);
+						break;
+					}
 					default:
 						break;
 					}

@@ -1,0 +1,7 @@
+
+*OBJECTIVE
+_MAX ovoltot_shift 1.._LENGTH
+
+*CONSTRAINTS
+
+*FORMAT MOSEK

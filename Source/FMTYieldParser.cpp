@@ -39,7 +39,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser{
 
 const boost::regex FMTYieldParser::m_rxyieldtype = boost::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTYieldParser::m_rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA)|(_DISTANCE)|(_MAX)|(_MIN))([\\s\\t]*)(\\()(.+)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTYieldParser::m_rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA)|(_DISTANCE)|(_MAX)|(_MIN)|(_SHIFT))([\\s\\t]*)(\\()(.+)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 const boost::regex FMTYieldParser::m_rxeqs = boost::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
 const boost::regex FMTYieldParser::m_rxdiscount = boost::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
 const boost::regex FMTYieldParser::m_rxpredictor = boost::regex("^(.+)(_PRED)(\\()(.+)(\\))");
@@ -171,9 +171,13 @@ Core::FMTyieldparserop FMTYieldParser::_getYldCtype(const std::string& value) co
 		else if (value == "_MAX")
 		{
 			return Core::FMTyieldparserop::FMTmax;
-		}else if (value == "_MIN")
+		}
+		else if (value == "_MIN")
 		{
 			return Core::FMTyieldparserop::FMTmin;
+		}else if(value == "_SHIFT")
+		{
+			return Core::FMTyieldparserop::FMTShift;
 		}else {
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(m_line),"FMTYieldParser::_getYldCtype", __LINE__, __FILE__, m_section);
 		}
@@ -739,11 +743,13 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								}
 								else {
 									yldname = kmatch[1];
-									for (int id = 4; id < 18; ++id) //12 - >�13 -> 16
+									constexpr int MAX_COMPLEX = static_cast<int>(Core::FMTyieldparserop::COUNT);
+									for (int id = 4; 
+										id <= MAX_COMPLEX; ++id) //12 - >�13 -> 16
 									{
 										cyld += std::string(kmatch[id]);
 									}
-									data = kmatch[20];//18
+									data = kmatch[MAX_COMPLEX+3];//18
 								}
 								dump.clear();
 								const std::vector<std::string>theylds = { yldname };

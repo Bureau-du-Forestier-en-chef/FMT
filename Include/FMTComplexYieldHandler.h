@@ -435,6 +435,15 @@ namespace Core
 		@return the computed value.
 		*/
 		double _getMin(const FMTData* p_data, const std::string& p_yld, const FMTYieldRequest& p_request) const;
+		// DocString: FMTComplexYieldHandler::_getShift
+		/**
+		@brief Shift the yield by the numeric value age + i and period + i
+		@param[in] p_data the data.
+		@param[in] p_yld the yield name.
+		@param[in] p_request the yield request.
+		@return the computed value.
+		*/
+		double _getShift(const FMTData* p_data, const std::string& p_yld, const FMTYieldRequest& p_request) const;
 		std::unordered_set<size_t>m_overridetabou;
 		size_t m_overrideindex;
 		mutable FMTYieldsCache _cache;

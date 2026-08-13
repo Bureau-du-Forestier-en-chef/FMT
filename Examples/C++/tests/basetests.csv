@@ -72,3 +72,4 @@ testWrapperCoreGetAllMasks;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|
 UnitTestFMTParser;;;
 testWrapperCoreWriteToProject;../../../../Examples/Models/TWD_land/TWD_land.pri|actionseries;../../tests/testWrapperCoreWriteToProject/;;;
 testSolvers;;;
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|Shift;10;3646861

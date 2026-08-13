@@ -89,7 +89,8 @@ enum class FMTyieldparserop
     FMTdistance = 14,
     FMTmax = 15,
     FMTmin = 16,
-    FMTShift = 17
+    FMTShift = 17,
+    COUNT = 18
     };
 
 // DocString: FMTotar
