@@ -43,14 +43,14 @@ int main(int argc, char *argv[])
 		primlocation = "D://CC_modele_feu//CC_V3//Mod_cc_v3.pri";
 		outputlocation = "D://test//";
 		length = 20;
-		replicate = 1;
-		n_threads = 1;
+		replicate = 5;
+		n_threads = 5;
 		// Stratégique
-		allscenarios.push_back("ev_nat_strategique_Histo_02"); 
+		allscenarios.push_back("strategique_Histo_02"); 
 		// Stochastique
 		allscenarios.push_back("stochastique_Histo_02");
 		// Tactique
-		allscenarios.push_back("ev_nat_tactique_Histo_02");
+		allscenarios.push_back("tactique_Histo_02");
 	}
 	int repSize = length;
 	//int repSize = 20;

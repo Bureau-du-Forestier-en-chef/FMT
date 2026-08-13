@@ -16,7 +16,7 @@
 
 FMT (**F**orest **M**anagement **T**ool) is an **open source Forest Management library**.
 
-- It is a C++ library made to interpret forest planning models based on the Woodstock files formulation. 
+- It is a C++17 library made to interpret forest planning models based on the Woodstock files formulation. 
 - It can be used through Python, Cran-R or directly from C++. 
 - It's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. 
 - It's objective is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.
@@ -25,7 +25,7 @@ FMT (**F**orest **M**anagement **T**ool) is an **open source Forest Management l
 
 ### Spatially referenced forest planning
 
-FMT allows the user to generate and solve spatially referenced type III forest planning model problems. The tool can be used to do sensitivity analyses over multiple parameters of the forest planning model. It can also be used for analysing impacts of stochastic events such as fire or spruce budworm using Replanning.
+FMT allows the user to generate and solve spatially referenced type II or III forest planning model problems. The tool can be used to do sensitivity analyses over multiple parameters of the forest planning model. It can also be used for analysing impacts of stochastic events such as fire or spruce budworm using Replanning.
 
 ### Spatially explicit forest planning
 
@@ -37,7 +37,7 @@ If your main inputs are Woodstock files, FMT is probably the way to go to develo
 
 ## 💽 Installation
 
-The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library for R or Python, or directly from C++. The Cmake script of this repository supports generating FMT on Windows using VS2017/2019 or MINGW-64 on MSYS2 or CYGWIN.
+The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library for R or Python, or directly from C++. The Cmake script of this repository supports generating FMT on Windows using MSVS >= 2017 or MINGW-64 on MSYS2 or CYGWIN.
 
 <br><br>
 <p align="center">
@@ -48,14 +48,17 @@ The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library 
 ## 📦 Dependencies
 
 ### Required :
-  + Boost compiled with zlib. (http://boost.org)
+  + Boost (http://boost.org)
 ### Optional :
   + GEOS library (http://trac.orgeo.org/geos/)
   + GDAL library (http://GDAL.org)
   + Mosek library (http://mosek.com)
-  + OSI library throught the CBC solver (http://github.com/coin/Cbc)
+  + GLPK library (https://github.com/Sonderfall/GLPK)
+  + CLP library (https://github.com/coin-or/Clp)
+  + OSI library  (http://github.com/coin/Cbc)
   + Boost Python library
   + Rcpp and cran-R with at least Rtools40 (http://cran.r-project.org)
+  + OnnxRuntime library (https://github.com/microsoft/onnxruntime)
 
 ## 📖 Documentation
 
@@ -67,91 +70,82 @@ The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library 
 </p>
 <br><br>
 
-**If you want to compile the doxygen documentation by yourself**, with a powershell prompt, go into the FMT folder and use:
-
- ```powershell
-  cd Documentation
-  doxygen FMTdoxygenconfig
- ```
-To populate comments in R and Python source files (files starting with R and PY):
-
- ```powershell
-  cd Documentation
-  python commentsPythonandR.py
- ```
-
 ## 👉 Examples
 
- Here's a short example for reading a forest planning model and solve the type III Linear programming formulation.
+ Here's a short example for reading a forest planning model and solve the type II Linear programming formulation.
  + Using Python
   ```python
-  from FMT import Models
+from FMT import Core
+from FMT import Models
 from FMT import Parser
 
-modelparser = Parser.FMTmodelparser()
-models = modelparser.readproject("pathtoprimaryfile",["scenariox"])#read scenario x from the primay file (.pri)
-optimizationmodel=Models.FMTlpmodel(models[0],Models.FMTsolverinterface.CLP)#Construct a type III linear programming model from the FMTmodel
-
-###Build the graph for 10 periods
-for period in range(0,10):
-        print(optimizationmodel.buildperiod())
-
-#Now add objective function to the FMTlpmodel and all the constraints
-constraints = optimizationmodel.getconstraints()
-objective = constraints.pop(0)
-for constraint in constraints:
-    print(optimizationmodel.setconstraint(constraint))
-print(optimizationmodel.setobjective(objective))
-#Do a initial solve of the forest planning model
-optimizationmodel.initialsolve()
+modelParser = Parser.FMTmodelparser()
+### Read the model
+MODELS = modelParser.readproject("Examples/Models/TWD_land/TWD_land.pri",["LP"])
+TypeIIModel=Models.FMTlpmodel(MODELS[0],Models.FMTsolverinterface.CLP)
+## Set a length of 10 periods
+LENGTH = 10
+TypeIIModel.setparameter(Models.FMTintmodelparameters.LENGTH,10)
+## Solve
+OPTIMAL = TypeIIModel.doplanning(True) #Solutionne le modèle
+## Get the objective and outputs values
+if OPTIMAL:
+    print("OBJECTIVE: ",TypeIIModel.getobjectivevalue())
+    for OUTPUT in TypeIIModel.getoutputs():
+        for PERIOD in range(0,LENGTH):
+            print(PERIOD,TypeIIModel.getoutput(OUTPUT,PERIOD,Core.FMToutputlevel.totalonly))
  ```
  + Using R
  ```R
 library(FMT)
-modelparser<-new(FMTmodelparser)
-models<-modelparser$readproject("pathtoprimaryfile",c("scenariox"),TRUE,TRUE,TRUE)#read scenario x from the primay file (.pri)
-optimizationmodel<-new(FMTlpmodel,models[[1]],FMTsolverinterface$CLP)#Construct a type III linear programming model from the FMTmodel
-emptyschedule<-new(FMTschedule)
-#Build the graph for 10 periods
-for (period in 1:10)
-	{
-	print(optimizationmodel$buildperiod(emptyschedule,FALSE)$str())
-	}
-#Now add objective function to the FMTlpmodel and all the constraints
-allmodelconstraints<-optimizationmodel$getconstraints()
-modelobjective<-allmodelconstraints[[1]]
-modelconstraints<-allmodelconstraints[2:length(allmodelconstraints)]
-for (constraint in modelconstraints)
-	{
-	print(optimizationmodel$setconstraint(constraint)$str())
-	}
-print(optimizationmodel$setobjective(modelobjective)$str())
-#Do a initial solve of the forest planning model
-optimizationmodel$initialsolve()
+modelParser<-new(FMTmodelparser)
+### Read the model
+MODELS<-modelParser$readproject("Examples/Models/TWD_land/TWD_land.pri",c("LP"),TRUE,TRUE,TRUE)
+TypeIIModel<-new(FMTlpmodel,MODELS[[1]],FMTsolverinterface$CLP)
+EMPTY_SCHEDULE<-new(FMTschedule)
+## Set a length of 10 periods
+LENGTH <- 10L
+TypeIIModel$setintparameter(FMTintmodelparameters$LENGTH,LENGTH)
+EMPTY_SCHEDULES<-list()
+## Solve
+OPTIMAL <- TypeIIModel$doplanning(TRUE,EMPTY_SCHEDULES)
+## Get the objective and outputs values
+if (OPTIMAL)
+    {
+    print(paste("OBJECTIVE: ", TypeIIModel$getobjectivevalue()))
+    OUTPUTS <- TypeIIModel$getoutputsdataframe(TypeIIModel$getoutputs(), 1, LENGTH)
+    print(OUTPUTS)
+    }
  ```
 + Using C++
 ``` C++
+#include <iostream>
 #include <vector>
 #include "FMTLpModel.h"
 #include "FMTModelParser.h"
 
-Parser::FMTModelParser modelparser;
-const std::vector<std::string>scenarios(1, "scenariox");
-const std::vector<Models::FMTModel> models = modelparser.readproject("pathtoprimaryfile", scenarios);
-Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-for (size_t period = 0; period < 10; ++period)
-	{
-	optimizationmodel.buildperiod();
-	}
-std::vector<Core::FMTConstraint>constraints = optimizationmodel.getconstraints();
-const Core::FMTConstraint objective = constraints.at(0);
-constraints.erase(constraints.begin());
-for (const Core::FMTConstraint& constraint : constraints)
-	{
-	optimizationmodel.setconstraint(constraint);
-	}
-optimizationmodel.setobjective(objective);
-optimizationmodel.initialsolve();
+Parser::FMTModelParser modelParser;
+const std::vector<std::string>SCENARIOS(1, "LP");
+// Read the model
+const std::vector<Models::FMTModel> MODELS = modelparser.readproject("Examples/Models/TWD_land/TWD_land.pri", SCENARIOS);
+Models::FMTLpModel TypeIIModel(MODELS.at(0), Models::FMTsolverinterface::CLP);
+// Set a length of 10 periods
+const int LENGTH = 10;
+TypeIIModel.setparameter(Models::FMTintmodelparameters::LENGTH,LENGTH);
+// Solve
+const bool OPTIMAL = TypeIIModel.doPlanning(true);
+// Get the objective and outputs values
+if (OPTIMAL)
+    {
+    std::cout<<"OBJECTIVE: "<<TypeIIModel.getObjectiveValue()<<std::endl;
+    for (const Core::FMToutput& OUTPUT : TypeIIModel.getOutputs())
+        {
+        for(int PERIOD = 0; PERIOD < LENGTH;++PERIOD)
+            {
+            std::cout<<PERIOD <<" "<<OUTPUT.getName()<<" "<<TypeIIModel.getOutput(OUTPUT,PERIOD,Core::FMToutputlevel::totalonly).at("Total")<<std::endl;
+            }
+        }
+    }
 ```
 
 ## 🔑 License 
