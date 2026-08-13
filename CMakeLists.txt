@@ -85,6 +85,7 @@ if (DEFINED ENV{Mosek_DIR})
 	list(APPEND DLLlookuppaths ${Mosek_DIR})
 endif(DEFINED ENV{Mosek_DIR})
 
+
 TargetDependency(BOOST_DIR DLLlookuppaths)
 TargetDependency(GDAL_DIR DLLlookuppaths)
 TargetDependency(R_DIR DLLlookuppaths)
@@ -136,6 +137,15 @@ target_include_directories(FMTlib PRIVATE "${FMTINCLUDEDIR}")
 ##################################################################################################
 ##################################################################################################
 ##################################################################################################
+
+find_package(mimalloc CONFIG)
+if(mimalloc_FOUND)
+    message(STATUS "mimalloc was found successfully!")
+    message(STATUS "mimalloc version: ${mimalloc_VERSION}")
+	target_link_libraries(FMTlib PRIVATE mimalloc)
+else()
+    message(WARNING "mimalloc was NOT found. Falling back to default allocator.")
+endif(mimalloc_FOUND)
 
 
 
