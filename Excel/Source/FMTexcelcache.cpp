@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "FMTexcelcache.h"
+#include "FMTExcelCache.h"
 #include <vector>
 #include <string>
 #include <memory>
@@ -15,7 +15,7 @@
 #include <msclr\marshal_cppstd.h>
 #include <cliext/list>
 #include "FMTModelParser.h"
-#include "FMTmodelcache.h"
+#include "FMTModelCache.h"
 #include "FMTException.h"
 #include "FMTObject.h"
 #include <boost/algorithm/string.hpp>
@@ -28,197 +28,357 @@
 
 namespace Wrapper
 {
-
-
-	FMTexcelcache::FMTexcelcache():
-		parser(new Parser::FMTModelParser()),
-		cachelog(),
-		cacheexceptionhandler(),
-		models(new std::unordered_map<std::string, FMTmodelcache>()),
-		exceptionraised(false)
+	FMTExcelCache::FMTExcelCache() :
+		m_parser(new Parser::FMTModelParser()),
+		m_cacheLog(),
+		m_cacheExceptionHandler(),
+		m_models(
+			new std::unordered_map<
+			std::string,
+			FMTModelCache>()),
+		m_exceptionRaised(false)
 	{
-		
-		std::unique_ptr<Logging::FMTLogger>logger(new Logging::FMTExcelLogger());
-		std::unique_ptr<Exception::FMTExceptionHandler>handler(new Exception::FMTExcelExceptionHandler());
-		parser->passInLogger(logger);
-		parser->passInExceptionHandler(handler);
-		cachelog = parser->getLogger();
-		cacheexceptionhandler = dynamic_cast<Exception::FMTExcelExceptionHandler*>(parser->getExceptionHandler());
-		
+		std::unique_ptr<Logging::FMTLogger> logger(
+			new Logging::FMTExcelLogger());
 
+		std::unique_ptr<Exception::FMTExceptionHandler>
+			handler(
+				new Exception::FMTExcelExceptionHandler());
+
+		m_parser->passInLogger(logger);
+		m_parser->passInExceptionHandler(handler);
+
+		m_cacheLog =
+			m_parser->getLogger();
+
+		m_cacheExceptionHandler =
+			dynamic_cast<
+			Exception::FMTExcelExceptionHandler*>(
+				m_parser->getExceptionHandler());
 	}
 
-	bool FMTexcelcache::gotexception()
-		{
-		return exceptionraised;
-		}
-	
+	bool FMTExcelCache::gotexception()
+	{
+		return m_exceptionRaised;
+	}
 
-	System::String^ FMTexcelcache::getlogoutput()
-		{
-		FMTmodelcache emptycache;
-		Logging::FMTExcelLogger* log = emptycache.getlogger();
+	System::String^ FMTExcelCache::getlogoutput()
+	{
+		FMTModelCache emptycache;
+
+		Logging::FMTExcelLogger* log =
+			emptycache.getlogger();
+
 		std::string out;
+
 		if (log != nullptr)
 		{
 			out = log->getPrintOut();
 			log->clearOut();
 		}
-		System::String^ str2 = gcnew System::String(out.c_str());
+
+		System::String^ str2 =
+			gcnew System::String(out.c_str());
+
 		return str2;
+	}
+
+	FMTExcelCache::~FMTExcelCache()
+	{
+		if (m_parser != nullptr)
+		{
+			delete m_parser;
 		}
 
-	FMTexcelcache::~FMTexcelcache()
-	{
-		if (parser!=nullptr)
-			{
-			delete parser;
-			}
-		/*if (cachelog != nullptr)
-			{
-			delete cachelog;
-			}
-		if (cacheexceptionhandler != nullptr)
+		/*
+		if (m_cacheLog != nullptr)
 		{
-			delete cacheexceptionhandler;
-		}*/
-		if (models!=nullptr)
-			{
-			delete models;
-			}
+			delete m_cacheLog;
+		}
 
+		if (m_cacheExceptionHandler != nullptr)
+		{
+			delete m_cacheExceptionHandler;
+		}
+		*/
+
+		if (m_models != nullptr)
+		{
+			delete m_models;
+		}
 	}
 
-	void FMTexcelcache::captureexception(const std::string& method)
+	void FMTExcelCache::_captureException(
+		const std::string& method)
 	{
-		exceptionraised = true;
+		(void)method;
+
+		m_exceptionRaised = true;
 	}
 
-	std::string FMTexcelcache::formatforcache(System::String^ primarylocation, System::String^ scenario)
+	std::string FMTExcelCache::_formatForCache(
+		System::String^ primarylocation,
+		System::String^ scenario)
 	{
 		std::string cachename;
-		try {
+
+		try
+		{
 			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primarylocation);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string justprimary = getprimaryname(pfile);
-			cachename = justprimary + "~" + sfile;
+
+			const std::string pfile =
+				context.marshal_as<std::string>(
+					primarylocation);
+
+			const std::string sfile =
+				context.marshal_as<std::string>(
+					scenario);
+
+			const std::string justprimary =
+				_getPrimaryName(pfile);
+
+			cachename =
+				justprimary + "~" + sfile;
+
 			boost::to_upper(cachename);
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::formatforcache");
+			_captureException(
+				"FMTExcelCache::_formatForCache");
 		}
-		return cachename;
 
+		return cachename;
 	}
 
-	std::string FMTexcelcache::getprimaryname(const std::string& primarylocation)
+	std::string FMTExcelCache::_getPrimaryName(
+		const std::string& primarylocation)
 	{
 		std::string primaryname;
-		try {
-			std::string base_filename = primarylocation.substr(primarylocation.find_last_of("/\\") + 1);
-			std::string::size_type const fit(base_filename.find_last_of('.'));
-			primaryname = base_filename.substr(0, fit);
-		}catch (...)
+
+		try
 		{
-			captureexception("FMTexcelcache::getprimaryname");
+			std::string base_filename =
+				primarylocation.substr(
+					primarylocation.find_last_of("/\\") + 1);
+
+			std::string::size_type const fit(
+				base_filename.find_last_of('.'));
+
+			primaryname =
+				base_filename.substr(
+					0,
+					fit);
 		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::_getPrimaryName");
+		}
+
 		return primaryname;
 	}
 
-	std::string FMTexcelcache::getmappath(const std::string& primarylocation)
-		{
-		std::string mappath;
-		try {
-			const boost::filesystem::path primpath(primarylocation);
-			boost::filesystem::path pridir = primpath.parent_path();
-			const boost::filesystem::path mapdir = pridir / boost::filesystem::path("Carte");
-			if (boost::filesystem::is_directory(mapdir))
-				{
-				for (auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(mapdir), {}))
-					{
-					std::string extension = entry.path().extension().string();
-					boost::to_upper(extension);
-					if (extension==".SHP")
-						{
-						mappath = std::string(entry.path().string());
-						break;
-						}
-					}
-				}
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::mapname");
-		}
-		return mappath;
-		}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::readnsolveTemplates(
-		System::String^ primarylocation, 
-		System::String^ templatefolder, 
-		int length,
-		bool solve)
+	std::string FMTExcelCache::_getMapPath(
+		const std::string& primarylocation)
 	{
-		System::Collections::Generic::List<System::String^>^ scenarios = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primarylocation);
-			const std::string sfile = context.marshal_as<std::string>(templatefolder);
-			const std::vector<Models::FMTModel> allmodels = parser->readTemplates(pfile, sfile);
-			const std::string mappath = getmappath(pfile);
-			for (const Models::FMTModel& model :  allmodels)
+		std::string mappath;
+
+		try
+		{
+			const boost::filesystem::path primpath(
+				primarylocation);
+
+			boost::filesystem::path pridir =
+				primpath.parent_path();
+
+			const boost::filesystem::path mapdir =
+				pridir /
+				boost::filesystem::path("Carte");
+
+			if (boost::filesystem::is_directory(mapdir))
 			{
-				const std::string name = model.getName();
-				if (name!="ROOT")
+				for (auto& entry :
+					boost::make_iterator_range(
+						boost::filesystem::directory_iterator(
+							mapdir),
+						{}))
 				{
-					System::String^ modelname = gcnew System::String(name.c_str());
-					const std::string naming = formatforcache(primarylocation, modelname);
-					(*models)[naming] = FMTmodelcache(model, mappath);
-					(*models)[naming].setLength(length);
-					if ((*models)[naming].buildnsolve(solve))
+					std::string extension =
+						entry.path()
+						.extension()
+						.string();
+
+					boost::to_upper(extension);
+
+					if (extension == ".SHP")
 					{
-						scenarios->Add(modelname);
-					}
-					else {
-						FMTmodelcache emptycache;
-						Logging::FMTExcelLogger* log = emptycache.getlogger();
-						*log << "Infeasable model: " + name + "\n";
+						mappath =
+							std::string(
+								entry.path().string());
+
+						break;
 					}
 				}
 			}
-		}catch (...)
-		{
-			captureexception("FMTexcelcache::readnsolveTemplates");
 		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::_getMapPath");
+		}
+
+		return mappath;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::readnsolveTemplates(
+			System::String^ primarylocation,
+			System::String^ templatefolder,
+			int length,
+			bool solve)
+	{
+		System::Collections::Generic::List<System::String^>^
+			scenarios =
+			gcnew System::Collections::Generic::List<
+			System::String^>();
+
+		try
+		{
+			msclr::interop::marshal_context context;
+
+			const std::string pfile =
+				context.marshal_as<std::string>(
+					primarylocation);
+
+			const std::string sfile =
+				context.marshal_as<std::string>(
+					templatefolder);
+
+			const std::vector<Models::FMTModel> allmodels =
+				m_parser->readTemplates(
+					pfile,
+					sfile);
+
+			const std::string mappath =
+				_getMapPath(
+					pfile);
+
+			for (const Models::FMTModel& model :
+				allmodels)
+			{
+				const std::string name =
+					model.getName();
+
+				if (name != "ROOT")
+				{
+					System::String^ modelname =
+						gcnew System::String(
+							name.c_str());
+
+					const std::string naming =
+						_formatForCache(
+							primarylocation,
+							modelname);
+
+					(*m_models)[naming] =
+						FMTModelCache(
+							model,
+							mappath);
+
+					(*m_models)[naming]
+						.setLength(length);
+
+					if ((*m_models)[naming]
+						.buildnsolve(solve))
+					{
+						scenarios->Add(
+							modelname);
+					}
+					else
+					{
+						FMTModelCache emptycache;
+
+						Logging::FMTExcelLogger* log =
+							emptycache.getlogger();
+
+						*log <<
+							"Infeasable model: " +
+							name +
+							"\n";
+					}
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::readnsolveTemplates");
+		}
+
 		return scenarios;
 	}
 
-	bool FMTexcelcache::addAndBuild(System::String^ primarylocation, System::String^ scenario, int length)
+	bool FMTExcelCache::addAndBuild(
+		System::String^ primarylocation,
+		System::String^ scenario,
+		int length)
 	{
-		try {
-			const std::string naming = formatforcache(primarylocation, scenario);
-			if (models->find(naming) == models->end())
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primarylocation,
+					scenario);
+
+			if (m_models->find(naming) ==
+				m_models->end())
 			{
-				//Default behavior reload pas avec le même nom 
 				msclr::interop::marshal_context context;
-				const std::string pfile = context.marshal_as<std::string>(primarylocation);
-				const std::string sfile = context.marshal_as<std::string>(scenario);
-				std::vector<std::string>scenarios(1, sfile);
-				const std::vector<Models::FMTModel> allmodels = parser->readproject(pfile, scenarios);
-				const std::string mappath = getmappath(pfile);
-				(*models)[naming] = FMTmodelcache(allmodels.at(0), mappath);
-				(*models)[naming].setLength(length);
-				if ((*models)[naming].buildnsolve(false))
-					{
+
+				const std::string pfile =
+					context.marshal_as<std::string>(
+						primarylocation);
+
+				const std::string sfile =
+					context.marshal_as<std::string>(
+						scenario);
+
+				std::vector<std::string> scenarios(
+					1,
+					sfile);
+
+				const std::vector<Models::FMTModel>
+					allmodels =
+					m_parser->readproject(
+						pfile,
+						scenarios);
+
+				const std::string mappath =
+					_getMapPath(
+						pfile);
+
+				(*m_models)[naming] =
+					FMTModelCache(
+						allmodels.at(0),
+						mappath);
+
+				(*m_models)[naming]
+					.setLength(length);
+
+				if ((*m_models)[naming]
+					.buildnsolve(false))
+				{
 					return true;
-					}
-				
+				}
 			}
-			else {
-				FMTmodelcache emptycache;
-				Logging::FMTExcelLogger* log = emptycache.getlogger();
+			else
+			{
+				FMTModelCache emptycache;
+
+				Logging::FMTExcelLogger* log =
+					emptycache.getlogger();
+
 				if (log != nullptr)
 				{
 					log->clearOut();
@@ -227,622 +387,1230 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			captureexception(" FMTexcelcache::addAndBuild");
+			_captureException(
+				"FMTExcelCache::addAndBuild");
 		}
+
 		return false;
 	}
 
-	bool FMTexcelcache::add(System::String^ primarylocation, System::String^ scenario)
+	bool FMTExcelCache::add(
+		System::String^ primarylocation,
+		System::String^ scenario)
 	{
-		try {
-			const std::string naming = formatforcache(primarylocation, scenario);
-			if(models->find(naming)==models->end())
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primarylocation,
+					scenario);
+
+			if (m_models->find(naming) ==
+				m_models->end())
 			{
-				//Default behavior reload pas avec le même nom 
 				msclr::interop::marshal_context context;
-				const std::string pfile = context.marshal_as<std::string>(primarylocation);
-				const std::string sfile = context.marshal_as<std::string>(scenario);
-				std::vector<std::string>scenarios(1, sfile);
-				const std::vector<Models::FMTModel> allmodels = parser->readproject(pfile, scenarios);
-				const std::vector<std::vector<Core::FMTSchedule>>allschedule = parser->readSchedules(pfile, allmodels);
-				const std::string mappath = getmappath(pfile);
+
+				const std::string pfile =
+					context.marshal_as<std::string>(
+						primarylocation);
+
+				const std::string sfile =
+					context.marshal_as<std::string>(
+						scenario);
+
+				std::vector<std::string> scenarios(
+					1,
+					sfile);
+
+				const std::vector<Models::FMTModel>
+					allmodels =
+					m_parser->readproject(
+						pfile,
+						scenarios);
+
+				const std::vector<
+					std::vector<Core::FMTSchedule>>
+					allschedule =
+					m_parser->readSchedules(
+						pfile,
+						allmodels);
+
+				const std::string mappath =
+					_getMapPath(
+						pfile);
+
 				int period = 0;
-				for (const Core::FMTSchedule& schedule : allschedule.at(0))
+
+				for (const Core::FMTSchedule& schedule :
+					allschedule.at(0))
 				{
-					period = std::max(period, schedule.getPeriod());
+					period =
+						std::max(
+							period,
+							schedule.getPeriod());
 				}
-				(*models)[naming] = FMTmodelcache(allmodels.at(0), mappath);
-				(*models)[naming].setLength(period);
-				//(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
-				//Removed from constructor because of the copy after it's created, the solver started ....
-				models->at(naming).setSolution(allschedule.at(0));
+
+				(*m_models)[naming] =
+					FMTModelCache(
+						allmodels.at(0),
+						mappath);
+
+				(*m_models)[naming]
+					.setLength(period);
+
+				m_models->at(naming)
+					.setSolution(
+						allschedule.at(0));
+
 				return true;
-			}else{
-				FMTmodelcache emptycache;
-				Logging::FMTExcelLogger* log = emptycache.getlogger();
+			}
+			else
+			{
+				FMTModelCache emptycache;
+
+				Logging::FMTExcelLogger* log =
+					emptycache.getlogger();
+
 				if (log != nullptr)
 				{
 					log->clearOut();
 				}
 			}
-		}catch (...)
-		{
-			captureexception("FMTexcelcache::add");
 		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::add");
+		}
+
 		return false;
 	}
 
-	void FMTexcelcache::remove(System::String^ primarylocation, System::String^ scenario)
+	void FMTExcelCache::remove(
+		System::String^ primarylocation,
+		System::String^ scenario)
+	{
+		try
 		{
-		try {
-			const std::string naming = formatforcache(primarylocation, scenario);
-			if (models->find(naming)!= models->end())
-				{
-				models->erase(naming);
-				}
-		}catch (...)
+			const std::string naming =
+				_formatForCache(
+					primarylocation,
+					scenario);
+
+			if (m_models->find(naming) !=
+				m_models->end())
 			{
-			captureexception("FMTexcelcache::remove");
+				m_models->erase(
+					naming);
 			}
 		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::remove");
+		}
+	}
 
-	System::Collections::Generic::List<int>^ FMTexcelcache::getperiods(System::String^ primaryname, System::String^ scenario)
+	System::Collections::Generic::List<int>^
+		FMTExcelCache::getperiods(
+			System::String^ primaryname,
+			System::String^ scenario)
 	{
-		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())//crash wrong definition
+		System::Collections::Generic::List<int>^ list =
+			gcnew System::Collections::Generic::List<int>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
 			{
-				for (int period = 1 ; period <= mit->second.getperiods();++period)
-					{
+				for (int period = 1;
+					period <= mit->second.getperiods();
+					++period)
+				{
 					list->Add(period);
-					}
+				}
 			}
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getperiods");
+			_captureException(
+				"FMTExcelCache::getperiods");
 		}
+
 		return list;
 	}
 
-	bool FMTexcelcache::writejpeg(System::String^ jpeglocation,System::String^ primaryname, System::String^ scenario, int themeid, System::Collections::Generic::List<System::String^>^ attributes)
+	bool FMTExcelCache::writejpeg(
+		System::String^ jpeglocation,
+		System::String^ primaryname,
+		System::String^ scenario,
+		int themeid,
+		System::Collections::Generic::List<
+		System::String^>^ attributes)
 	{
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())//crash wrong definition
-			{
-				std::vector<std::string>values;
-				msclr::interop::marshal_context context;
-				for each (System::String ^ attribute in attributes)
-					{
-					values.push_back(context.marshal_as<std::string>(attribute));
-					}
-				const std::string location = context.marshal_as<std::string>(jpeglocation);
-				return mit->second.writejpeg(static_cast<size_t>(themeid), values, location);
-			}
-		}catch (...)
+		try
 		{
-			captureexception("FMTexcelcache::writejpeg");
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				std::vector<std::string> values;
+
+				msclr::interop::marshal_context context;
+
+				for each (System::String ^ attribute in attributes)
+				{
+					values.push_back(
+						context.marshal_as<std::string>(
+							attribute));
+				}
+
+				const std::string location =
+					context.marshal_as<std::string>(
+						jpeglocation);
+
+				return mit->second.writejpeg(
+					static_cast<size_t>(themeid),
+					values,
+					location);
+			}
 		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::writejpeg");
+		}
+
 		return false;
 	}
 
-	double FMTexcelcache::getvalue(System::String^ primaryname, System::String^ scenario,
-		System::String^ outputname, System::String^ themeselection, int period)
+	double FMTExcelCache::getvalue(
+		System::String^ primaryname,
+		System::String^ scenario,
+		System::String^ outputname,
+		System::String^ themeselection,
+		int period)
 	{
-		double value = 0;
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string,FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit!=models->end())//crash wrong definition
-				{
-				msclr::interop::marshal_context context;
-				const std::string outname = context.marshal_as<std::string>(outputname);
-				const std::string selection = context.marshal_as<std::string>(themeselection);
-				value = mit->second.getValue(outname, selection, period);
-				}
-		}catch (...)
+		double value = 0.0;
+
+		try
 		{
-			captureexception("FMTexcelcache::getvalue ");
-		}
-		return value;
-	}
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
 
-	
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
 
-	double FMTexcelcache::getyield(System::String^ primaryname, System::String^ scenario,
-		System::String^ yieldname, System::String^ themeselection, int period, int age)
-	{
-		double value = 0;
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())//crash wrong definition
+			if (mit != m_models->end())
 			{
 				msclr::interop::marshal_context context;
-				const std::string yieldnamec = context.marshal_as<std::string>(yieldname);
-				const std::string selection = context.marshal_as<std::string>(themeselection);
-				value = mit->second.getYield(yieldnamec, selection, age, period);
+
+				const std::string outname =
+					context.marshal_as<std::string>(
+						outputname);
+
+				const std::string selection =
+					context.marshal_as<std::string>(
+						themeselection);
+
+				value =
+					mit->second.getValue(
+						outname,
+						selection,
+						period);
 			}
-			
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getyield");
+			_captureException(
+				"FMTExcelCache::getvalue");
 		}
+
 		return value;
 	}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getattributes(System::String^ primaryname, System::String^ scenario, int themeid ,System::String^ value, bool aggregates)
+	double FMTExcelCache::getyield(
+		System::String^ primaryname,
+		System::String^ scenario,
+		System::String^ yieldname,
+		System::String^ themeselection,
+		int period,
+		int age)
 	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-				{
+		double value = 0.0;
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
 				msclr::interop::marshal_context context;
-				const std::string valueof = context.marshal_as<std::string>(value);
-				for (const std::string& value : mit->second.getAttributes(themeid, valueof,aggregates))
-					{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
+
+				const std::string yieldnamec =
+					context.marshal_as<std::string>(
+						yieldname);
+
+				const std::string selection =
+					context.marshal_as<std::string>(
+						themeselection);
+
+				value =
+					mit->second.getYield(
+						yieldnamec,
+						selection,
+						age,
+						period);
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getyield");
+		}
+
+		return value;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getattributes(
+			System::String^ primaryname,
+			System::String^ scenario,
+			int themeid,
+			System::String^ value,
+			bool aggregates)
+	{
+		System::Collections::Generic::List<System::String^>^
+			list =
+			gcnew System::Collections::Generic::List<
+			System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				msclr::interop::marshal_context context;
+
+				const std::string valueof =
+					context.marshal_as<std::string>(
+						value);
+
+				for (const std::string& item :
+					mit->second.getAttributes(
+						themeid,
+						valueof,
+						aggregates))
+				{
+					System::String^ sysvalue =
+						gcnew System::String(
+							item.c_str());
+
 					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getattributes");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getbuildexceptions(
+			System::String^ primaryname,
+			System::String^ scenario,
+			int exception)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(
+					_formatForCache(
+						primaryname,
+						scenario));
+
+			if (mit != m_models->end())
+			{
+				for (const std::string& value :
+					mit->second.getBuildExceptions(
+						exception))
+				{
+					System::String^ sysvalue =
+						gcnew System::String(
+							value.c_str());
+
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getbuildexceptions");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getnochoice(
+			System::String^ primaryname,
+			System::String^ scenario,
+			System::String^ filter)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				msclr::interop::marshal_context context;
+
+				const std::string sfilter =
+					context.marshal_as<std::string>(
+						filter);
+
+				for (const std::string& value :
+					mit->second.getnoaction(
+						sfilter))
+				{
+					System::String^ sysvalue =
+						gcnew System::String(
+							value.c_str());
+
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getattributesdescription");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getattributesdescription(
+			System::String^ primaryname,
+			System::String^ scenario,
+			int themeid,
+			System::String^ value)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				msclr::interop::marshal_context context;
+
+				const std::string valueof =
+					context.marshal_as<std::string>(
+						value);
+
+				for (const std::string& item :
+					mit->second.getattributesdescription(
+						themeid,
+						valueof))
+				{
+					System::String^ sysvalue =
+						gcnew System::String(
+							item.c_str());
+
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getattributesdescription");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getAggregates(
+			System::String^ primaryname,
+			System::String^ scenario,
+			int themeid)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				for (const std::string& value :
+					mit->second.getAggregates(
+						themeid))
+				{
+					System::String^ sysvalue =
+						gcnew System::String(
+							value.c_str());
+
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getAggregates");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getprimaries()
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		for (const auto& item : *m_models)
+		{
+			const std::string value =
+				item.first.substr(
+					0,
+					item.first.find("~"));
+
+			System::String^ str2 =
+				gcnew System::String(
+					value.c_str());
+
+			if (!list->Contains(str2))
+			{
+				list->Add(str2);
+			}
+		}
+
+		return list;
+	}
+
+	int FMTExcelCache::size()
+	{
+		return static_cast<int>(
+			m_models->size());
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getscenarios(
+			System::String^ fichierprimaire)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		msclr::interop::marshal_context context;
+
+		const std::string pfile =
+			context.marshal_as<std::string>(
+				fichierprimaire);
+
+		for (const auto& item : *m_models)
+		{
+			if (item.first.find(pfile) !=
+				std::string::npos)
+			{
+				const std::string value =
+					item.first.substr(
+						item.first.find("~") + 1,
+						item.first.size());
+
+				System::String^ str2 =
+					gcnew System::String(
+						value.c_str());
+
+				list->Add(str2);
+			}
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getConstraints(
+			System::String^ primaryname,
+			System::String^ scenario,
+			System::String^ output)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				msclr::interop::marshal_context context;
+
+				const std::string sfilter =
+					context.marshal_as<std::string>(
+						output);
+
+				for (const std::string& value :
+					mit->second.getConstraints(
+						sfilter))
+				{
+					System::String^ sysvalue =
+						gcnew System::String(
+							value.c_str());
+
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getConstraints");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<int>^
+		FMTExcelCache::getGraphStatsSubset(
+			System::String^ p_PrimaryName,
+			System::String^ p_Scenario,
+			System::String^ p_ThemeSelection)
+	{
+		System::Collections::Generic::List<int>^ list =
+			gcnew System::Collections::Generic::List<int>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					p_PrimaryName,
+					p_Scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				msclr::interop::marshal_context context;
+
+				const std::string selection =
+					context.marshal_as<std::string>(
+						p_ThemeSelection);
+
+				for (const int& value :
+					mit->second.getGraphStatsSubset(
+						selection))
+				{
+					list->Add(value);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getgraphstats");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<int>^
+		FMTExcelCache::getgraphstats(
+			System::String^ primaryname,
+			System::String^ scenario)
+	{
+		System::Collections::Generic::List<int>^ list =
+			gcnew System::Collections::Generic::List<int>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				for (const int& value :
+					mit->second.getGraphStats())
+				{
+					list->Add(value);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getgraphstats");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getActions(
+			System::String^ primaryname,
+			System::String^ scenario,
+			System::String^ filter)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				msclr::interop::marshal_context context;
+
+				const std::string sfilter =
+					context.marshal_as<std::string>(
+						filter);
+
+				for (const std::string& value :
+					mit->second.getActions(
+						sfilter))
+				{
+					System::String^ sysvalue =
+						gcnew System::String(
+							value.c_str());
+
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getActions");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getactionaggregates(
+			System::String^ primaryname,
+			System::String^ scenario,
+			System::String^ filter)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(
+					primaryname,
+					scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				msclr::interop::marshal_context context;
+
+				const std::string sfilter =
+					context.marshal_as<std::string>(
+						filter);
+
+				for (const std::string& value :
+					mit->second.getactionaggregates(
+						sfilter))
+				{
+					System::String^ sysvalue =
+						gcnew System::String(
+							value.c_str());
+
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getactionaggregates");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getOutputs(
+			System::String^ primaryname,
+			System::String^ scenario)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(primaryname, scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				for (const std::string& value :
+					mit->second.getOutputs())
+				{
+					list->Add(
+						gcnew System::String(
+							value.c_str()));
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getOutputs");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getYields(
+			System::String^ primaryname,
+			System::String^ scenario)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(primaryname, scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				for (const std::string& value :
+					mit->second.getYields())
+				{
+					list->Add(
+						gcnew System::String(
+							value.c_str()));
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getYields");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getThemes(
+			System::String^ primaryname,
+			System::String^ scenario)
+	{
+		System::Collections::Generic::List<System::String^>^ list =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(primaryname, scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				for (const std::string& value :
+					mit->second.getThemes())
+				{
+					list->Add(
+						gcnew System::String(
+							value.c_str()));
+				}
+			}
+		}
+		catch (...)
+		{
+			_captureException(
+				"FMTExcelCache::getThemes");
+		}
+
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^
+		FMTExcelCache::getRotationsKeys(
+			System::String^ primaryname,
+			System::String^ scenario,
+			System::String^ themeselection,
+			System::String^ aggregate)
+	{
+		System::Collections::Generic::List<System::String^>^ values =
+			gcnew System::Collections::Generic::List<System::String^>();
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(primaryname, scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				std::unordered_set<std::string>
+					uniqueRotations;
+
+				msclr::interop::marshal_context context;
+
+				const std::string sfilter =
+					context.marshal_as<std::string>(
+						themeselection);
+
+				const std::string saggregate =
+					context.marshal_as<std::string>(
+						aggregate);
+
+				for (const Core::FMTSerie& rotation :
+					mit->second.getRotations(
+						sfilter,
+						saggregate))
+				{
+					System::String^ rotationName =
+						gcnew System::String(
+							rotation.getSerie().c_str());
+
+					const std::string key =
+						context.marshal_as<std::string>(
+							rotationName);
+
+					if (uniqueRotations.find(key) ==
+						uniqueRotations.end())
+					{
+						values->Add(rotationName);
+						uniqueRotations.insert(key);
 					}
 				}
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getattributes");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getbuildexceptions(System::String^ primaryname, System::String^ scenario, int exception)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(formatforcache(primaryname, scenario));
-			if (mit != models->end())
-			{
-				for (const std::string& value : mit->second.getBuildExceptions(exception))
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
 			}
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getbuildexceptions");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getnochoice(System::String^ primaryname, System::String^ scenario, System::String^ filter)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				msclr::interop::marshal_context context;
-				const std::string sfilter = context.marshal_as<std::string>(filter);
-				for (const std::string& value : mit->second.getnoaction(sfilter))
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getattributesdescription");
-		}
-		return list;
-	}
-
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getattributesdescription(System::String^ primaryname, System::String^ scenario, int themeid, System::String^ value)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				msclr::interop::marshal_context context;
-				const std::string valueof = context.marshal_as<std::string>(value);
-				for (const std::string& value : mit->second.getattributesdescription(themeid, valueof))
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getattributesdescription");
-		}
-		return list;
-
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getAggregates(System::String^ primaryname, System::String^ scenario, int themeid)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				for (const std::string& value : mit->second.getAggregates(themeid))
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getAggregates");
-		}
-		return list;
-	}
-
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getprimaries()
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		for (const auto& item : *models)
-			{
-			const std::string value = item.first.substr(0, item.first.find("~"));
-			System::String^ str2 = gcnew System::String(value.c_str());
-			if (!list->Contains(str2))
-				{
-				list->Add(str2);
-				}
-			}
-		return list;
-	}
-
-	int FMTexcelcache::size()
-		{
-		return static_cast<int>(models->size());
+			_captureException(
+				"FMTExcelCache::getRotationsKeys");
 		}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getscenarios(System::String^ fichierprimaire)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		msclr::interop::marshal_context context;
-		const std::string pfile = context.marshal_as<std::string>(fichierprimaire);
-		for (const auto& item : *models)
-		{
-			if (item.first.find(pfile)!=std::string::npos)
-			{
-				const std::string value = item.first.substr(item.first.find("~") + 1, item.first.size());
-				System::String^ str2 = gcnew System::String(value.c_str());
-				list->Add(str2);
-			}
-			
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getConstraints(System::String^ primaryname, System::String^ scenario, System::String^ output)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				msclr::interop::marshal_context context;
-				const std::string sfilter = context.marshal_as<std::string>(output);
-				for (const std::string& value : mit->second.getConstraints(sfilter))
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getConstraints");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<int>^ FMTexcelcache::getGraphStatsSubset(System::String^ p_PrimaryName, System::String^ p_Scenario, System::String^ p_ThemeSelection)
-	{
-		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
-		try {
-			const std::string naming = formatforcache(p_PrimaryName, p_Scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				msclr::interop::marshal_context context;
-				const std::string SELECTION = context.marshal_as<std::string>(p_ThemeSelection);
-				for (const int& value : mit->second.getGraphStatsSubset(SELECTION))
-				{
-					list->Add(value);
-				}
-			}
-
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getgraphstats");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<int>^ FMTexcelcache::getgraphstats(System::String^ primaryname, System::String^ scenario)
-	{
-		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				for (const int& value : mit->second.getGraphStats())
-				{
-					list->Add(value);
-				}
-			}
-
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getgraphstats");
-		}
-		return list;
-	}
-
-
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getActions(System::String^ primaryname, System::String^ scenario, System::String^ filter)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				msclr::interop::marshal_context context;
-				const std::string sfilter = context.marshal_as<std::string>(filter);
-				for (const std::string& value : mit->second.getActions(sfilter))
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getActions");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getactionaggregates(System::String^ primaryname, System::String^ scenario, System::String^ filter)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				msclr::interop::marshal_context context;
-				const std::string sfilter = context.marshal_as<std::string>(filter);
-				for (const std::string& value : mit->second.getactionaggregates(sfilter))
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-		}catch (...)
-		{
-			captureexception("FMTexcelcache::getactionaggregates");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getOutputs(System::String^ primaryname, System::String^ scenario)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				for (const std::string& value : mit->second.getOutputs())
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getOutputs");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getYields(System::String^ primaryname, System::String^ scenario)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				for (const std::string& value : mit->second.getYields())
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getYields");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getThemes(System::String^ primaryname, System::String^ scenario)
-	{
-		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				for (const std::string& value : mit->second.getThemes())
-				{
-					System::String^ sysvalue = gcnew System::String(value.c_str());
-					list->Add(sysvalue);
-				}
-			}
-
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getThemes");
-		}
-		return list;
-	}
-
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getRotationsKeys(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate)
-	{
-		System::Collections::Generic::List<System::String^>^ values = gcnew System::Collections::Generic::List<System::String^>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				std::unordered_set<std::string>UniqueRotations;
-				msclr::interop::marshal_context context;
-				const std::string sfilter = context.marshal_as<std::string>(themeselection);
-				const std::string saggregate = context.marshal_as<std::string>(aggregate);
-				for (const Core::FMTSerie& rotation : mit->second.getRotations(sfilter, saggregate))
-				{
-					System::String^ rotationName = gcnew System::String(rotation.getSerie().c_str());
-					const std::string KEY = context.marshal_as<std::string>(rotationName);
-					if (UniqueRotations.find(KEY)== UniqueRotations.end())
-						{
-						values->Add(rotationName);
-						UniqueRotations.insert(KEY);
-						}
-				
-				}
-
-			}
-		}
-		catch (...)
-		{
-			captureexception("FMTexcelcache::getRotationsKeys");
-		}
 		return values;
 	}
 
-	bool FMTexcelcache::containsRotations(System::String^ primaryname, System::String^ scenario, System::String^ serie, System::String^ themeselection, System::String^ aggregate)
+	bool FMTExcelCache::containsRotations(
+		System::String^ primaryname,
+		System::String^ scenario,
+		System::String^ serie,
+		System::String^ themeselection,
+		System::String^ aggregate)
 	{
 		bool answer = false;
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
+
+		try
+		{
+			const std::string naming =
+				_formatForCache(primaryname, scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
 			{
 				msclr::interop::marshal_context context;
-				const std::string sfilter = context.marshal_as<std::string>(themeselection);
-				const std::string saggregate = context.marshal_as<std::string>(aggregate);
-				const std::string theSerie = context.marshal_as<std::string>(serie);
-				answer = mit->second.haveSerie(theSerie,sfilter, saggregate);
+
+				const std::string sfilter =
+					context.marshal_as<std::string>(
+						themeselection);
+
+				const std::string saggregate =
+					context.marshal_as<std::string>(
+						aggregate);
+
+				const std::string theSerie =
+					context.marshal_as<std::string>(
+						serie);
+
+				answer =
+					mit->second.haveSerie(
+						theSerie,
+						sfilter,
+						saggregate);
 			}
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::containsRotations");
+			_captureException(
+				"FMTExcelCache::containsRotations");
 		}
+
 		return answer;
 	}
 
-
-	
-	System::Collections::Generic::List<System::Collections::Generic::KeyValuePair< System::String^, int>>^ FMTexcelcache::getRotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate)
+	System::Collections::Generic::List<
+		System::Collections::Generic::KeyValuePair<
+		System::String^,
+		int>>^ FMTExcelCache::getRotations(
+			System::String^ primaryname,
+			System::String^ scenario,
+			System::String^ themeselection,
+			System::String^ aggregate)
 	{
-		System::Collections::Generic::List<System::Collections::Generic::KeyValuePair< System::String^, int>>^ values = gcnew System::Collections::Generic::List<System::Collections::Generic::KeyValuePair< System::String^, int>>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-				{
-				msclr::interop::marshal_context context;
-				const std::string sfilter = context.marshal_as<std::string>(themeselection);
-				const std::string saggregate= context.marshal_as<std::string>(aggregate);
-				for (const Core::FMTSerie& rotation : mit->second.getRotations(sfilter, saggregate))
-					{
-					System::String^ rotationName = gcnew System::String(rotation.getSerie().c_str());
-					values->Add(System::Collections::Generic::KeyValuePair<System::String^, int>(rotationName, rotation.getLength()));
-					}
+		auto values =
+			gcnew System::Collections::Generic::List<
+			System::Collections::Generic::KeyValuePair<
+			System::String^,
+			int>>();
 
+		try
+		{
+			const std::string naming =
+				_formatForCache(primaryname, scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				msclr::interop::marshal_context context;
+
+				const std::string sfilter =
+					context.marshal_as<std::string>(
+						themeselection);
+
+				const std::string saggregate =
+					context.marshal_as<std::string>(
+						aggregate);
+
+				for (const Core::FMTSerie& rotation :
+					mit->second.getRotations(
+						sfilter,
+						saggregate))
+				{
+					System::String^ rotationName =
+						gcnew System::String(
+							rotation.getSerie().c_str());
+
+					values->Add(
+						System::Collections::Generic::
+						KeyValuePair<
+						System::String^,
+						int>(
+							rotationName,
+							rotation.getLength()));
 				}
+			}
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getRotations");
+			_captureException(
+				"FMTExcelCache::getRotations");
 		}
+
 		return values;
 	}
 
-
-	System::Collections::Generic::List<double>^ FMTexcelcache::Juxtaposition(System::String^ primaryname, System::String^ scenario,System::Collections::Generic::List<System::String^>^ themeselection, System::String^ yieldname, System::String^ output, double ratio, double perimeters)
+	System::Collections::Generic::List<double>^
+		FMTExcelCache::Juxtaposition(
+			System::String^ primaryname,
+			System::String^ scenario,
+			System::Collections::Generic::List<
+			System::String^>^ themeselection,
+			System::String^ yieldname,
+			System::String^ output,
+			double ratio,
+			double perimeters)
 	{
-		System::Collections::Generic::List<double>^ list = gcnew System::Collections::Generic::List<double>();
-		try {
-			const std::string naming = formatforcache(primaryname, scenario);
-			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
-			if (mit != models->end())
-			{
-				std::vector<std::string>themeselections;
-				msclr::interop::marshal_context context;
-				for each (System::String ^ ths in themeselection)
-					{
-					themeselections.push_back(context.marshal_as<std::string>(ths));
-					}
-				const std::string stroutput = context.marshal_as<std::string>(output);
-				const std::string yieldof = context.marshal_as<std::string>(yieldname);
-				for (const double& value : mit->second.Juxtaposition(themeselections, yieldof, stroutput, ratio, perimeters))
-					{
-					list->Add(value);
-					}
-			}
+		System::Collections::Generic::List<double>^ list =
+			gcnew System::Collections::Generic::List<double>();
 
+		try
+		{
+			const std::string naming =
+				_formatForCache(primaryname, scenario);
+
+			std::unordered_map<
+				std::string,
+				FMTModelCache>::const_iterator mit =
+				m_models->find(naming);
+
+			if (mit != m_models->end())
+			{
+				std::vector<std::string> themeselections;
+
+				msclr::interop::marshal_context context;
+
+				for each (System::String ^ ths in themeselection)
+				{
+					themeselections.push_back(
+						context.marshal_as<std::string>(
+							ths));
+				}
+
+				const std::string stroutput =
+					context.marshal_as<std::string>(
+						output);
+
+				const std::string yieldof =
+					context.marshal_as<std::string>(
+						yieldname);
+
+				for (const double& value :
+					mit->second.Juxtaposition(
+						themeselections,
+						yieldof,
+						stroutput,
+						ratio,
+						perimeters))
+				{
+					list->Add(value);
+				}
+			}
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::Juxtaposition");
+			_captureException(
+				"FMTExcelCache::Juxtaposition");
 		}
+
 		return list;
 	}
 
-	void FMTexcelcache::unraiseexception()
+	void FMTExcelCache::unraiseexception()
 	{
-		exceptionraised = false;
+		m_exceptionRaised = false;
 	}
-
 
 }

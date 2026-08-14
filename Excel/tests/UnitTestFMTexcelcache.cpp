@@ -16,7 +16,7 @@ namespace Testing
 		public:
 			UnitTestFMTexcelcache() : m_cache()
 				{
-				m_cache = gcnew Wrapper::FMTexcelcache();
+				m_cache = gcnew Wrapper::FMTExcelCache();
 				if (m_cache->size() != 0)
 					{
 					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Non empty selection mask",
@@ -125,7 +125,7 @@ namespace Testing
 
 
 		private:
-			Wrapper::FMTexcelcache^ m_cache;
+			Wrapper::FMTExcelCache^ m_cache;
 
 		};
 

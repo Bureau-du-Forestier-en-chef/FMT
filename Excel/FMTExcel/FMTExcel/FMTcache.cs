@@ -85,16 +85,16 @@ namespace FMTXLL
         public static void initialize(string pathtoFMTlib)
         {
             wrapperassembly = System.Reflection.Assembly.LoadFile(pathtoFMTlib);
-            excelcachetype = wrapperassembly.GetType("Wrapper.FMTexcelcache");
+            excelcachetype = wrapperassembly.GetType("Wrapper.FMTExcelCache");
             if (excelcachetype == null)//crash
             {
-                reportAndCrash("No class named Wrapper.FMTexcelcache exist");
+                reportAndCrash("No class named Wrapper.FMTExcelCache exist");
             }
             System.Reflection.ConstructorInfo constructor = excelcachetype.GetConstructor(Type.EmptyTypes);
             data = constructor.Invoke(null);
             if (data == null)//crash
             {
-                reportAndCrash("Cannot create class Wrapper.FMTexcelcache");
+                reportAndCrash("Cannot create class Wrapper.FMTExcelCache");
             }
 
             gotexceptionmethod = SafeGetMethod("gotexception", new Type[] { });
@@ -302,12 +302,12 @@ namespace FMTXLL
         {
             if (excelcachetype == null)//crash
             {
-                reportAndCrash("No class named Wrapper.FMTexcelcache exist");
+                reportAndCrash("No class named Wrapper.FMTExcelCache exist");
             }
             System.Reflection.MethodInfo methodInfo = excelcachetype.GetMethod(methodname, parameters);
             if (methodInfo == null)//crash
             {
-                reportAndCrash("Cannot find " + methodname + " method in class Wrapper.FMTexcelcache");
+                reportAndCrash("Cannot find " + methodname + " method in class Wrapper.FMTExcelCache");
             }
             return methodInfo;
         }

@@ -9,7 +9,7 @@
 namespace Exception
 {
 
-	FMTExcelExceptionHandler::FMTExcelExceptionHandler():FMTExceptionHandler(), build_exceptions()
+	FMTExcelExceptionHandler::FMTExcelExceptionHandler():FMTExceptionHandler(), m_build_exceptions()
 		{
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -28,11 +28,11 @@ namespace Exception
 
 	std::unordered_map<int, std::vector<std::string>> FMTExcelExceptionHandler::getBuildExceptions() const
 		{
-		return build_exceptions;
+		return m_build_exceptions;
 		}
 	void FMTExcelExceptionHandler::resetBuildExceptions()
 		{
-		build_exceptions.clear();
+		m_build_exceptions.clear();
 		}
 	FMTException FMTExcelExceptionHandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file,
@@ -42,11 +42,11 @@ namespace Exception
 			text, method, file, line);
 		_updateStatus(newException);
 		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
-		if (build_exceptions.find(static_cast<int>(lexception))== build_exceptions.end())
+		if (m_build_exceptions.find(static_cast<int>(lexception))== m_build_exceptions.end())
 			{
-			build_exceptions[static_cast<int>(lexception)] = std::vector<std::string>();
+			m_build_exceptions[static_cast<int>(lexception)] = std::vector<std::string>();
 			}
-		build_exceptions[static_cast<int>(lexception)].push_back(text);
+		m_build_exceptions[static_cast<int>(lexception)].push_back(text);
 		if (newException->getLevel() != FMTlev::FMT_Warning)
 		{
 			if (throwit && (newException->isFatal()) && !_needToRethrow())

@@ -55,7 +55,7 @@ namespace Exception
 		*/
 		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
 	private:
-		std::unordered_map<int, std::vector<std::string>>build_exceptions;
+		std::unordered_map<int, std::vector<std::string>>m_build_exceptions;
 	};
 
 }
