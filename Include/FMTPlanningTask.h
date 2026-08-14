@@ -146,6 +146,12 @@ namespace Parallel
 			}
 			return castedptr;
 		}
+		// DocString: FMTPlanningTask::SupportsMultiThreading()
+		/**
+		@brief Check if the task support multithreading
+		@return true if it support
+		*/
+		bool SupportsMultiThreading() const override;
 	private:
 		// DocString: FMTPlanningTask::m_ResultsWriter
 		///Concurrent results writer who writes the results of each abstract model after each call to doPlanning

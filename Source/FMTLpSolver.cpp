@@ -9,9 +9,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTLpSolver.h"
 #include "OsiSolverInterface.hpp"
 
-#if __has_include("OsiGlpkSolverInterface.hpp")
+#ifdef FMTWITHGLPK
 	#include "OsiGlpkSolverInterface.hpp"
 #endif
+
+#ifdef FMTWITHCLP
+	#include "OsiClpSolverInterface.hpp"
+#endif
+
+
 
 
 #ifdef FMTWITHMOSEK
@@ -19,8 +25,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "OsiMskSolverInterface.hpp"
 #endif
 
-
-#include "OsiClpSolverInterface.hpp"
 #include "FMTDefaultExceptionHandler.h"
 #include "FMTSolverLogger.h"
 #include "FMTSerializableMatrix.h"
@@ -1313,7 +1317,7 @@ namespace Models
 		return -1;
 		}
 
-	#ifdef FMTWITHMOSEK
+
 		std::string FMTLpSolver::getMskErrorDesc(int error) const
 		{
 			std::string errordescription;
@@ -1325,7 +1329,11 @@ namespace Models
 			errordescription+=desc;
 			return errordescription;
 		}
-	#endif
+
+		bool FMTLpSolver::SupportsMultiThreading() const
+		{
+			return (getSolverType() != FMTSolverInterface::GLPK);
+		}
 
 	std::vector<std::pair<std::string, std::string>>FMTLpSolver::strtoParams(const std::string& p_params)
 		{

@@ -114,7 +114,7 @@ namespace Wrapper
 				"YOUVERT",
 				nombreIteration,
 				tempsMaximum,
-				ObtenirOutputSelectionnee(optimizationmodel.getOutputs(),
+				_ObtenirOutputSelectionnee(optimizationmodel.getOutputs(),
 					returnTimeOutput));
 			Parallel::FMTTaskHandler handler(maintask, nombreThread);
 			*logger << "Génération du calendrier de COS" << "\n";
@@ -122,7 +122,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raiseFromCatch("", "FMTForm::OperatingAreaScheduling", __LINE__, __FILE__);
+			_raiseFromCatch("", "FMTForm::OperatingAreaScheduling", __LINE__, __FILE__);
 			return false;
 		}
 

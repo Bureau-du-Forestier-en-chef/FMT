@@ -579,4 +579,11 @@ namespace Parallel
 		m_writeSchedule = p_write;
 	}
 
+	bool FMTReplanningTask::SupportsMultiThreading() const
+		{
+		return 	(global->SupportsMultiThreading() &&
+			m_stochastic->SupportsMultiThreading() &&
+			m_local->SupportsMultiThreading());
+		}
+
 }

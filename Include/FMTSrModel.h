@@ -385,6 +385,12 @@ namespace Models
 		@return a set of masks.
 		*/
 		std::set<std::string> getAllMasks(const std::vector<Core::FMTTheme>& p_selectedThemes) const;
+		// DocString: FMTSrModel::SupportsMultiThreading
+		/**
+		@brief Return true if the solver support multithreading
+		@return true if it support else false
+		*/
+		bool SupportsMultiThreading() const override;
 	protected:
 		// DocString: FMTSrModel::graph
 		///graph holding the FMTdevelopments for all the periods.

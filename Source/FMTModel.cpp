@@ -1172,6 +1172,12 @@ void FMTModel::setDefaultObjects()
 	
 	}
 
+bool FMTModel::SupportsMultiThreading() const
+	{
+	return true;
+	}
+
+
 std::vector<size_t>FMTModel::getStaticTransitionThemes() const
 	{
 	std::vector<size_t>statics;

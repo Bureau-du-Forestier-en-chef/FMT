@@ -182,6 +182,19 @@ namespace Parallel
 			}
 		}
 
+	bool FMTPlanningTask::SupportsMultiThreading() const
+		{
+		for (const std::unique_ptr<Models::FMTModel>& MODEL : m_Models)
+			{
+			if (!MODEL->SupportsMultiThreading())
+				{
+				return false;
+				}
+			}
+		return true;
+		}
+
+
 	void FMTPlanningTask::setKeepModels()
 		{
 		m_keepModels = true;

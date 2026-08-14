@@ -33,7 +33,7 @@ bool FMTForm::InitialAreaVariability(
 		Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTSolverInterface>(solver));
 		*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";
 		*logger << "FMT Event Spatialy Explicit Simulation c++ - > Intégration des contraintes sélectionnées" << "\n";
-		optimizationmodel.setConstraints(ObtenirArrayContraintesSelectionnees(optimizationmodel.getConstraints(), contraintes));
+		optimizationmodel.setConstraints(_ObtenirArrayContraintesSelectionnees(optimizationmodel.getConstraints(), contraintes));
 
 		//Période
 		for (size_t per = 0; per < period; ++per)
@@ -120,7 +120,7 @@ bool FMTForm::InitialAreaVariability(
 	}
 	catch (...)
 	{
-		raiseFromCatch("", "FMTForm::InitialAreaVariability", __LINE__, __FILE__);
+		_raiseFromCatch("", "FMTForm::InitialAreaVariability", __LINE__, __FILE__);
 		return false;
 	}	
 

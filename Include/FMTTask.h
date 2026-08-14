@@ -101,6 +101,12 @@ namespace Parallel
 		@param[in] p_threads the number of threads.
 		*/
 		static void setTotalThreads(const size_t& p_threads);
+		// DocString: FMTTask::SupportsMultiThreading()
+		/**
+		@brief Check if the task support multithreading
+		@return true if it support
+		*/
+		virtual bool SupportsMultiThreading() const;
 		// DocString: FMTTaskHandler::done
 		///If the task is done true else false
 		bool done;

@@ -17,8 +17,12 @@ namespace Models
 		FMTSrModel(FMTModel(),
 		#ifdef FMTWITHMOSEK
 				Models::FMTSolverInterface::MOSEK
-		#else
+		#elif defined(FMTWITHCLP)
 				Models::FMTSolverInterface::CLP
+		#elif defined(FMTWITHGLPK)
+				Models::FMTSolverInterface::GLPK
+		#else
+			    Models::FMTSolverInterface::COUNT
 		#endif
 			)
 	{

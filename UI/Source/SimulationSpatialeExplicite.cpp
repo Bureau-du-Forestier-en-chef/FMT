@@ -91,7 +91,7 @@ namespace Wrapper
 
     } 
 
-    void FMTForm::EnvoyerResultatsInterface(
+    void FMTForm::_EnvoyerResultatsInterface(
         const FMTWrapperCore::SESResults& results,
         bool indCarbon)
     {
@@ -222,7 +222,7 @@ namespace Wrapper
 
             Models::FMTModel selectedModel = FMTFormCache::GetInstance()->getModel(scenario);
 
-            const std::vector<Core::FMTSchedule> schedules = ObtenirSEQ(fichierPri, scenario);
+            const std::vector<Core::FMTSchedule> schedules = _ObtenirSEQ(fichierPri, scenario);
     
             if (savedLogger)
             {
@@ -249,13 +249,13 @@ namespace Wrapper
                 }
             }
 
-            EnvoyerResultatsInterface(results, indCarbon);
+            _EnvoyerResultatsInterface(results, indCarbon);
 
             return true;
         }
         catch (...)
         {
-            raiseFromCatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
+            _raiseFromCatch("", "FMTForm::SimulationSpatialeExplicite", __LINE__, __FILE__);
             return false;
         }
     }

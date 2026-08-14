@@ -23,13 +23,7 @@ bool failed = true;
 		const std::vector<std::string>scenarios(1, SCENARIO);
 		Models::FMTModel Model = modelParser.readproject(PRIMARY_LOCATION, scenarios).at(0);
 		Model.setParameter(Models::FMTintmodelparameters::LENGTH, 3);
-		std::vector<Models::FMTSolverInterface>SolversToTest;
-		SolversToTest.push_back(Models::FMTSolverInterface::CLP);
-		SolversToTest.push_back(Models::FMTSolverInterface::GLPK);
-		#ifdef FMTWITHMOSEK
-			SolversToTest.push_back(Models::FMTSolverInterface::MOSEK);
-		#endif
-		for (const Models::FMTSolverInterface SOLVER_TYPE : SolversToTest)
+		for (const Models::FMTSolverInterface SOLVER_TYPE : Models::FMTSrModel::getAvailableSolverInterface())
 			{
 			Models::FMTLpModel OptModel(Model, SOLVER_TYPE);
 			const bool SOLVED = OptModel.doPlanning(true);

@@ -19,10 +19,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parallel
 {
 	FMTTaskHandler::FMTTaskHandler(const FMTTask& maintask, unsigned int maxthread):
-		m_maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
+		m_maxnumberofthread(),
 		m_alltasks()
 		{
 		try {
+			_setMaximumNumberOfThreads(maintask, maxthread);
 			m_alltasks.push_back(std::move(maintask.clone()));
 		}catch (...)
 			{
@@ -33,10 +34,10 @@ namespace Parallel
 
 	FMTTaskHandler::FMTTaskHandler(const std::unique_ptr<FMTTask>& maintask,
 		unsigned int maxthread) :
-		m_maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
+		m_maxnumberofthread(),
 		m_alltasks()
 	{
-		
+		_setMaximumNumberOfThreads(*maintask, maxthread);
 		m_alltasks.push_back(std::move(maintask->clone()));
 	}
 
@@ -98,6 +99,23 @@ namespace Parallel
 		}
 
 	}
+
+	void FMTTaskHandler::_setMaximumNumberOfThreads(const FMTTask& p_MainTask,
+													unsigned int p_UserDecision)
+		{
+		if (p_MainTask.SupportsMultiThreading())
+			{
+			m_maxnumberofthread = std::min(boost::thread::hardware_concurrency(), p_UserDecision);
+		}else{
+			if (p_UserDecision>1)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTignore,
+					"The maximum number of thread will be set to 1 because de task does not support multithreading"
+					, "FMTTaskHandler::_setMaximumNumberOfThreads", __LINE__, __FILE__);
+				}
+			m_maxnumberofthread =  1U;
+			}
+		}
 
 	void FMTTaskHandler::_interruptWork(boost::thread& p_thread)
 		{

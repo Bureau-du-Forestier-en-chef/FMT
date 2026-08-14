@@ -31,6 +31,11 @@ namespace Models
 		m_graph->setNodeSize(p_size);
 	}
 
+	bool FMTSrModel::SupportsMultiThreading() const
+	{
+		return (solver.SupportsMultiThreading());
+	}
+
 	Graph::FMTGraphVertexToYield FMTSrModel::getGraphVertexToYield() const
 	{
 		try {
@@ -1650,10 +1655,16 @@ namespace Models
 	std::vector<Models::FMTSolverInterface> FMTSrModel::getAvailableSolverInterface()
 	{
 		std::vector<Models::FMTSolverInterface> interfaces;
-		interfaces.push_back(Models::FMTSolverInterface::CLP);
+		#ifdef FMTWITHCLP
+			interfaces.push_back(Models::FMTSolverInterface::CLP);
+		#endif
+		#ifdef FMTWITHGLPK
+			interfaces.push_back(Models::FMTSolverInterface::GLPK);
+		#endif
 		#ifdef FMTWITHMOSEK
 			interfaces.push_back(Models::FMTSolverInterface::MOSEK);
 		#endif
+
 		return interfaces;
 	}
 

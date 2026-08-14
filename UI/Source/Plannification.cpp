@@ -57,7 +57,7 @@ namespace Wrapper
 				if (playbackscen)
 				{
 					*logger << "FMT -> Lecture de cédule pour le scénario : " + optimizationmodel.getName() << "\n";
-					cedule = ObtenirSEQ(fichierPri, scen);
+					cedule = _ObtenirSEQ(fichierPri, scen);
 				}
 				optimizationmodel.setStrictlyPositivesOutputsMatrix();
 				optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, period);
@@ -69,7 +69,7 @@ namespace Wrapper
 
 				optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, valeur_NUMBER_OF_THREADS);
 				optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-				std::vector<Core::FMTOutput> selectedoutputs = ObtenirArrayOutputsSelectionnees(optimizationmodel.getOutputs(), outputs);
+				std::vector<Core::FMTOutput> selectedoutputs = _ObtenirArrayOutputsSelectionnees(optimizationmodel.getOutputs(), outputs);
 				optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playbackscen);
 				newplanningtask.push_back(optimizationmodel, cedule, selectedoutputs);
 				*logger << "FMT -> Scénario : " + optimizationmodel.getName() + " prêt a être lancer." << "\n";
@@ -80,7 +80,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raiseFromCatch("", "FMTForm::Plannification", __LINE__, __FILE__);
+			_raiseFromCatch("", "FMTForm::Plannification", __LINE__, __FILE__);
 			return false;
 		}
 
@@ -122,7 +122,7 @@ namespace Wrapper
 			local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 			local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 			local.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			std::vector<Core::FMTOutput> listeOutputs = ObtenirArrayOutputsSelectionnees(global.getOutputs(), outputs);
+			std::vector<Core::FMTOutput> listeOutputs = _ObtenirArrayOutputsSelectionnees(global.getOutputs(), outputs);
 
 			std::vector<std::string>layersoptions;
 			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
@@ -156,7 +156,7 @@ namespace Wrapper
 		}
 		catch (...)
 		{
-			raiseFromCatch("", "FMTForm::Replanification", __LINE__, __FILE__);
+			_raiseFromCatch("", "FMTForm::Replanification", __LINE__, __FILE__);
 			return false;
 		}
 

@@ -174,6 +174,12 @@ namespace Parallel
 		@param[in] p_write if true writes a schedule for each replicate.
 		*/
 		void setWriteSchedule(const bool p_write);
+		// DocString: FMTReplanningTask::SupportsMultiThreading()
+		/**
+		@brief Check if the task support multithreading
+		@return true if it support
+		*/
+		bool SupportsMultiThreading() const override;
 	private:
 		// DocString: FMTReplanningTask::m_resultswriter
 		///Concurrent results writer who writes the results of each abstract model after each call to doPlanning

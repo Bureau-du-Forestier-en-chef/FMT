@@ -134,6 +134,14 @@ namespace Parallel
 		@param[in] p_thread the thread to interrupt.
 		*/
 		static void _interruptWork(boost::thread& p_thread);
+		// DocString: FMTTaskHandler::_setMaximumNumberOfThreads
+		/**
+		@brief set the maximum of threads used
+		@param[in] p_MainTask the main task to test
+		@param[in] p_UserDecision the number of thread the user want to use.
+		*/
+		void _setMaximumNumberOfThreads(const FMTTask& p_MainTask,
+												unsigned int p_UserDecision);
 
 	};
 

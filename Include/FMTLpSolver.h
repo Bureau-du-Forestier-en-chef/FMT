@@ -19,7 +19,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include "FMTSerializableMatrix.h"
-//#include <mutex>
+
+#if __has_include("OsiGlpkSolverInterface.hpp")
+	#ifndef FMTWITHGLPK
+		#define FMTWITHGLPK
+	#endif
+#endif
+
+#if __has_include("OsiClpSolverInterface.hpp")
+	#ifndef FMTWITHCLP
+		#define FMTWITHCLP
+	#endif
+#endif
 
 
 class OsiSolverInterface;
@@ -532,15 +543,19 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@param[in] shortformat if true uses the short format.
 		*/
 		void updateRowsAndColsNames(bool shortformat = true);
-		#ifdef FMTWITHMOSEK
-			// DocString: FMTLpSolver::getMskErrorDesc
-			/**
-			@brief Return the description of an error code from Mosek.
-			@param[in] error the error code.
-			@return the error description.
-			*/
-			std::string getMskErrorDesc(int error) const;
-		#endif
+		// DocString: FMTLpSolver::getMskErrorDesc
+		/**
+		@brief Return the description of an error code from Mosek.
+		@param[in] error the error code.
+		@return the error description.
+		*/
+		std::string getMskErrorDesc(int error) const;
+		// DocString: FMTLpSolver::SupportsMultiThreading
+		/**
+		@brief Return true if the solver support multithreading
+		@return true if it support else false
+		*/
+		bool SupportsMultiThreading() const;
 	protected:
 		// DocString: FMTLpSolver::matrixcache
 		///The matrix cache follow the constraints or variables that need to be added or removed to the problem.

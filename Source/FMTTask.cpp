@@ -9,6 +9,7 @@
 #endif
 
 
+
 namespace Parallel
 {
 
@@ -28,6 +29,11 @@ namespace Parallel
 		m_allThreads = p_threads;
 		m_workingThreads = p_threads;
 	}
+
+	bool FMTTask::SupportsMultiThreading() const
+		{
+		return true;
+		}
 
 
 	void FMTTask::_decrementWorkingThread()
@@ -66,6 +72,7 @@ namespace Parallel
 				_exhandler->raiseFromCatch("", " FMTtask::_setCrashHandlers", __LINE__, __FILE__);
 			}
 	}
+
 
 
 	FMTTask::FMTTask() :
@@ -208,22 +215,6 @@ namespace Parallel
 		}
 	}
 	
-	/*
-	void FMTTask::setStatus(bool status)
-	{
-		checkSignals();
-		boost::lock_guard<boost::recursive_mutex> guard(m_taskmutex);
-		done = status;
-	}
-
-	bool FMTTask::isDone() const
-	{
-		checkSignals();
-		boost::lock_guard<boost::recursive_mutex> guard(m_taskmutex);
-		const bool isDone = (done );
-		return done;
-	}
-	*/
 
 
 	std::string FMTTask::getThreadId()

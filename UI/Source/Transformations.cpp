@@ -40,7 +40,7 @@ namespace Wrapper {
 		}
 		catch (...)
 		{
-			raiseFromCatch("", "FMTModelaggregateAllActions", __LINE__, __FILE__);
+			_raiseFromCatch("", "FMTModelaggregateAllActions", __LINE__, __FILE__);
 			return false;
 		}
 
@@ -93,7 +93,7 @@ namespace Wrapper {
 		}
 		catch (...)
 		{
-			raiseFromCatch("", "FMTModelaggregateAllActions", __LINE__, __FILE__);
+			_raiseFromCatch("", "FMTModelaggregateAllActions", __LINE__, __FILE__);
 			return false;
 		}
 	}
@@ -124,7 +124,7 @@ namespace Wrapper {
 			}
 		}
 		catch (...) {
-			raiseFromCatch("", "FMTForm::getAttributes", __LINE__, __FILE__);
+			_raiseFromCatch("", "FMTForm::getAttributes", __LINE__, __FILE__);
 		}
 
 		return results;
@@ -154,7 +154,7 @@ namespace Wrapper {
 			FMTFormCache::GetInstance()->push_back(BUILDED_MODEL);
 		}
 		catch (...) {
-			raiseFromCatch("", "FMTForm::buildAction", __LINE__, __FILE__);
+			_raiseFromCatch("", "FMTForm::buildAction", __LINE__, __FILE__);
 			passed = false;
 		}
 		return passed;

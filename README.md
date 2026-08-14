@@ -87,7 +87,7 @@ TypeIIModel=Models.FMTlpmodel(MODELS[0],Models.FMTsolverinterface.CLP)
 LENGTH = 10
 TypeIIModel.setparameter(Models.FMTintmodelparameters.LENGTH,10)
 ## Solve
-OPTIMAL = TypeIIModel.doplanning(True) #Solutionne le modèle
+OPTIMAL = TypeIIModel.doplanning(True)
 ## Get the objective and outputs values
 if OPTIMAL:
     print("OBJECTIVE: ",TypeIIModel.getobjectivevalue())
@@ -162,4 +162,4 @@ MSVC ![](https://img.shields.io/badge/coverage-0%25-red)
 
 ## 💻 Build
 GNU ![](https://img.shields.io/badge/build-pass-brightgreen)
-MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)
+MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)n)

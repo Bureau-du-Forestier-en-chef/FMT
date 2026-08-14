@@ -121,7 +121,11 @@ if (-not $repoUrl) { $repoUrl = 'https://github.com/Bureau-du-Forestier-en-chef/
 
 # Date de la version de base, pour filtrer les issues fermees depuis.
 $baseDate = ''
-if ($Since) { $baseDate = (& git log -1 --format=%ad --date=short $Since 2>$null) }
+if ($Since) { 
+    # On tente d'abord de lire comme un tag exact, sinon on laisse Git chercher (ex: si c'est un commit hash ou HEAD~3)
+    $refToCheck = if (& git show-ref --tags $Since 2>$null) { "refs/tags/$Since" } else { $Since }
+    $baseDate = (& git log -1 --format=%ad --date=short $refToCheck 2>$null) 
+}
 if ($baseDate) { $baseDate = $baseDate.Trim() }
 $baseDateDesc = if ($baseDate) { $baseDate } else { '(debut de l''historique)' }
 

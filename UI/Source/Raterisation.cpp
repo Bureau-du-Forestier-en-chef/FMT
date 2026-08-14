@@ -31,7 +31,7 @@ bool Wrapper::FMTForm::Raterisation(System::String^ fichierPri, int scenario, Sy
 							VECTORS_PATH, THEMES, AREA, OUTPUT_FOLDER);
 	}catch (...)
 		{
-		raiseFromCatch("", "Wrapper::FMTForm::Raterisation", __LINE__, __FILE__);
+		_raiseFromCatch("", "Wrapper::FMTForm::Raterisation", __LINE__, __FILE__);
 		return false;
 		}
 	return true;

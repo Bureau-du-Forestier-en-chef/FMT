@@ -217,12 +217,18 @@ namespace Parallel
 		@brief Write the solution at finalization.
 		*/
 		virtual void finalize();
-		// DocString: FMTopareaschedulertaskk::passInLogger
+		// DocString: FMTopareaschedulertask::passInLogger
 		/**
 		@brief Pass in the logger.
 		@param[in] logger the logger.
 		*/
 		void passInLogger(const std::unique_ptr<Logging::FMTLogger>& logger) override;
+		// DocString: FMTopareaschedulertask::SupportsMultiThreading()
+		/**
+		@brief Check if the task support multithreading
+		@return true if it support
+		*/
+		bool SupportsMultiThreading() const override;
 
 	};
 

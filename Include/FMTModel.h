@@ -834,6 +834,12 @@ namespace Models
 		@return the indexes of the static transition themes.
 		*/
 		std::vector<size_t>getStaticTransitionThemes() const;
+		// DocString: FMTModel::SupportsMultiThreading
+		/**
+		@brief Some solver dont support multithreading 
+		@return true if it support else false
+		*/
+		virtual bool SupportsMultiThreading() const;
     protected:
 		// DocString: FMTModel::m_generator
 		///Random number generator.

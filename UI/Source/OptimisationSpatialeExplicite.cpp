@@ -152,7 +152,7 @@ namespace Wrapper
         }
         catch (...)
         {
-            raiseFromCatch("", "FMTForm::OptimisationSpatialeExplicite", __LINE__, __FILE__);
+            _raiseFromCatch("", "FMTForm::OptimisationSpatialeExplicite", __LINE__, __FILE__);
             return false;
         }
     }

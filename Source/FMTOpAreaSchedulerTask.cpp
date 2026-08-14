@@ -55,6 +55,12 @@ namespace Parallel
 		return 0;
 	}
 
+
+	bool FMTOpAreaSchedulerTask::SupportsMultiThreading() const
+	{
+		return actualscheduler->SupportsMultiThreading();
+	}
+
 	std::vector<Heuristics::FMTOperatingAreaScheme> FMTOpAreaSchedulerTask::getReturnTimeFromOutput(
 		Models::FMTLpModel& model,
 		const std::vector<Heuristics::FMTOperatingAreaScheme>& opareas,
