@@ -3,8 +3,10 @@
 #include <iostream>
 #include "FMTException.h"
 
+
 int testChangeLog()
 {
+
 	std::string log;
 	try{
 		log = FMTWrapperCore::Tools::getChangeLog();
@@ -44,5 +46,6 @@ int testGetExceptionDescription()
 
 int main(int argc, char* argv[])
 {
+
 	return testChangeLog()+testGetExceptionDescription();
 }
