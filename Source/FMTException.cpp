@@ -100,7 +100,7 @@ namespace Exception
 
 	std::string FMTException::getSrcInfo() const
 		{
-		return "In Method("+ m_method +") \n In File(" + m_file + ") \n At Line(" + std::to_string(m_line) + ")";
+		return "\nIn Method("+ m_method +") \n In File(" + m_file + ") \n At Line(" + std::to_string(m_line) + ")";
 		}
 
 	int FMTException::_getPrintLevel() const
@@ -117,14 +117,14 @@ namespace Exception
 	{
 		if (m_section == Core::FMTsection::Empty)
 		{
-			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") " + getDescription() + "\n" + _getUserMessage();
+			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") " + getDescription() +  _getUserMessage();
 		}else {
-			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") " + getDescription() + "\n" + _getUserMessage() +
+			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") " + getDescription() + _getUserMessage() +
 				" FMTsection(" + std::to_string(static_cast<int>(m_section)) + ") " + Core::FMTsection_str(m_section);
 		}
 		if (_getPrintLevel() > 0)
 			{
-			m_msg += "\n" + getSrcInfo();
+			m_msg +=  getSrcInfo();
 			}
 	}
 

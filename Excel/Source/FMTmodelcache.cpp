@@ -530,11 +530,98 @@ namespace Wrapper
 					Core::FMTMask(
 						emptyMask,
 						themes);
+				for (std::string& value : results)
+				{
+					boost::trim(value);
+					size_t stfind = value.find('=');
+					if (stfind != std::string::npos)//need to subsettheme!
+					{
+						const std::string themename = value.substr(0, stfind);
+						Core::FMTTheme const* localtheme = nullptr;
+						if (themename.find("THEME") != std::string::npos)
+						{
+							const size_t themeid = static_cast<size_t>(std::stoi(themename.substr(themename.find("THEME") + 5)) - 1);
+							if (!(themeid < themes.size()))
+							{
+								return Core::FMTMask();
+							}
+							localtheme = &themes.at(themeid);
+						}
+						else {
+							if (m_themesMap.find(themename) == m_themesMap.end())
+							{
+								return Core::FMTMask();
+							}
+							localtheme = &themes.at(m_themesMap.at(themename));
+						}
+						std::string data = value.substr(stfind + 1, value.size());
+						boost::trim(data);
+						std::vector<std::string>attributes;
+						if (!data.empty() && data.at(0) == '{' && data.back() == '}')
+						{
+							data.pop_back();
+							data.erase(data.begin());
+							boost::split(attributes, data, boost::is_any_of(","));
+						}
+						else {
+							attributes.push_back(data);
+						}
 
-				// remainder of function unchanged except:
-				// themesmap -> m_themesMap
-				// writetomaskcache() stays same
-				// globalmask -> m_globalMask
+						composition[std::distance(&*themes.begin(), localtheme)] = data;
+
+						for (std::string& attribute : attributes)
+						{
+							boost::trim(attribute);
+							Core::FMTMask localMask(subset);
+
+							if (localtheme)
+							{
+								if (localtheme->isAttribute(attribute) ||
+									localtheme->isAggregate(attribute) ||
+									attribute == "?")
+								{
+									localMask.set(*localtheme, attribute);
+								}
+								//attributes names is a vector of string that the string can be empty ... so we cannot search in it
+								else if (!attribute.empty()) {
+									const std::vector<std::string>& attributenames = localtheme->getAttributeNames();
+									std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
+									if (ait == attributenames.end())//raise
+									{
+										return Core::FMTMask();
+									}
+									else {
+										const std::string attname = localtheme->getBaseAttributes().at(std::distance(attributenames.begin(), ait));
+										localMask.set(*localtheme, attname);
+
+									}
+								}
+								else {
+									return Core::FMTMask();
+								}
+							}
+							if (attributes.size() == 1 ||
+								*attributes.begin() == attribute)
+							{
+								subset = localMask;
+							}
+							else {
+								subset = subset.getUnion(localMask);
+								std::string final_value;
+								for (const std::string& VAL : composition)
+								{
+									final_value += VAL + " ";
+								}
+								final_value.pop_back();
+								subset = Core::FMTMask(final_value, subset.getBitsetReference());
+							}
+
+						}
+					}
+				}
+
+				writetomaskcache(p_themeSelection, subset);
+				return subset;
 			}
 		}
 		catch (...)
