@@ -163,7 +163,7 @@ endif (EXISTS "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT")
 	if (FAILED_TESTS LESS 10)#Not Broken
 		set (build_badge "${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/build-pass-brightgreen)")
 	endif(FAILED_TESTS LESS 10)
-	set (build_regex "${CMAKE_CXX_COMPILER_ID}[^\\n^c]*build[^\\n]*")
+	set (build_regex "${CMAKE_CXX_COMPILER_ID}[^\\n]*build[^\\n]*")
 	#English
 	file(READ "${readme}" filedata)
 	string(REGEX REPLACE "${build_regex}" "${build_badge}"  filedata "${filedata}")
