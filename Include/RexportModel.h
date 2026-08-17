@@ -161,7 +161,11 @@ void exportModel()
 		.method("writeLP", &Models::FMTLpSolver::writeLp,
 			"@DocString(FMTLpSolver::writeLp)")
 		.method("writeMPS", &Models::FMTLpSolver::writeMps,
-			"@DocString(FMTLpSolver::writeMps)");
+			"@DocString(FMTLpSolver::writeMps)")
+		.method("getObjValue", &Models::FMTLpSolver::getObjValue,
+			"@DocString(FMTLpSolver::getObjValue)")
+		.method("getAvailableSolverInterface", &Models::FMTLpSolver::getAvailableSolverInterface,
+			"@DocString(FMTLpSolver::getAvailableSolverInterface)");
 
 
 	Rcpp::class_<Models::FMTSrModel>("FMTsrmodel", "@DocString(FMTSrModel)")

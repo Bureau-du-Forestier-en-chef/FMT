@@ -156,7 +156,6 @@ namespace Wrapper
 		@return List of output extensions.
 		*/
 		System::Collections::Generic::List<System::String^>^ ObtenirListeExtentionsSorties();
-
 		// DocString: FMTForm::ObtenirListeSolvers
 		/**
 		@brief Returns the list of available optimization solvers.
@@ -164,7 +163,13 @@ namespace Wrapper
 		@return List of solver identifiers.
 		*/
 		System::Collections::Generic::List<int>^ ObtenirListeSolvers();
-
+		// DocString: FMTForm::ObtenirNomSolveur
+		/**
+		@brief Returns the list of available optimization solvers.
+		@param[in] p_solveur le solveur selectionne
+		@return obtenir le nom du solveur
+		*/
+		System::String^ ObtenirNomSolveur(int p_solveur);
 		// DocString: FMTForm::ObtenirNombreThemes
 		/**
 		@brief Returns the number of themes defined in a model.

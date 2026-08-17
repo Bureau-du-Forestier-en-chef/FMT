@@ -11,6 +11,7 @@
 #include "FMTAreaParser.h"
 #include "FMTScheduleParser.h"
 #include <msclr/marshal_cppstd.h>
+#include "FMTLpSolver.h"
 
 #include "FMTForm.h"
 #include "FMTFormLogger.h"
@@ -369,7 +370,7 @@ namespace Wrapper
 		try
 		{
 			for (Models::FMTSolverInterface solver :
-			Models::FMTSrModel::getAvailableSolverInterface())
+			Models::FMTLpSolver::getAvailableSolverInterface())
 			{
 				retour->Add(
 					static_cast<int>(solver));
@@ -388,6 +389,27 @@ namespace Wrapper
 		}
 
 		return retour;
+	}
+
+
+	System::String^ FMTForm::ObtenirNomSolveur(int p_solveur)
+	{
+		System::String^ name;
+		try
+		{
+			const Models::FMTSolverInterface SOLVEUR = static_cast<Models::FMTSolverInterface>(p_solveur);
+			const std::string NAME = std::string(Models::FMTLpSolver::toString(SOLVEUR));
+			name = gcnew System::String(NAME.c_str());
+		}catch (...)
+		{
+
+			_raiseFromCatch(
+				"",
+				"FMTForm::ObtenirNomSolveur",
+				__LINE__,
+				__FILE__);
+		}
+		return name;
 	}
 
 	void FMTForm::_InscrireLigneFichierTexte(

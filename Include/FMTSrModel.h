@@ -71,12 +71,6 @@ namespace Models
 		@param[in] logger the logger.
 		*/
 		void setParallelLogger(Logging::FMTLogger& logger) override;
-		// DocString: FMTSrModel::getAvailableSolverInterface
-		/**
-		@brief Return the available solver interfaces.
-		@return the available solver interfaces.
-		*/
-		static std::vector<Models::FMTSolverInterface> getAvailableSolverInterface();
 		// DocString: FMTSrModel(const FMTModel,FMTSolverInterface)
 		/**
 		@brief Main constructor building a FMTSrModel from its base class and letting the user choose the solver type.

@@ -241,7 +241,9 @@ void exportModel()
 		.def("writeLP", &Models::FMTLpSolver::writeLp,
 			"@DocString(FMTLpSolver::writeLp)")
 		.def("writeMPS", &Models::FMTLpSolver::writeMps,
-			"@DocString(FMTLpSolver::writeMps)");
+			"@DocString(FMTLpSolver::writeMps)")
+		.def("getavailablesolverinterface", &Models::FMTLpSolver::getAvailableSolverInterface,
+			"@DocString(FMTLpSolver::getAvailableSolverInterface)").staticmethod("getavailablesolverinterface");
 
 	bp::class_<Models::FMTSrModel, bp::bases<Models::FMTModel>>("FMTsrmodel", "@DocString(FMTSrModel)")
 		.def_pickle(FMT_pickle_suite<Models::FMTSrModel>())
@@ -261,8 +263,6 @@ void exportModel()
 			"@DocString(FMTSrModel::getRotations)")
 		.def("getGraphStats", &Models::FMTSrModel::getGraphStats,
 			"@DocString(FMTSrModel::getGraphStats)")
-		.def("getavailablesolverinterface", &Models::FMTSrModel::getAvailableSolverInterface,
-			"@DocString(FMTSrModel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
 		.def("getscheduleproportions", &Models::FMTSrModel::getScheduleProportions,
 			"@DocString(FMTSrModel::getscheduleproportions)");
 

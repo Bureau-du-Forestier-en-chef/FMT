@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTObject.h"
 #include <memory>
 #include <unordered_map>
+#include <string_view>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -556,6 +557,19 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@return true if it support else false
 		*/
 		bool SupportsMultiThreading() const;
+		// DocString: FMTLpSolver::getAvailableSolverInterface
+		/**
+		@brief Return the available solver interfaces.
+		@return the available solver interfaces.
+		*/
+		static std::vector<Models::FMTSolverInterface> getAvailableSolverInterface();
+		// DocString: FMTLpSolver::toString
+		/**
+		@brief return the string value of the solver
+		@param[in] p_solver the solver
+		@return the solver string view
+		*/
+		static std::string_view toString(Models::FMTSolverInterface p_solver);
 	protected:
 		// DocString: FMTLpSolver::matrixcache
 		///The matrix cache follow the constraints or variables that need to be added or removed to the problem.
@@ -672,8 +686,6 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		// DocString: FMTLpSolver::>m_WarmStartParameters
 		///Parameters used by the linear programming solver. First = parameter, Seconde = parameter values.
 		std::vector<std::pair<std::string, std::string>>m_WarmStartParameters;
-		
-	#ifdef FMTWITHMOSEK
 		// DocString: FMTLpSolver::_mskOptimizeWithParameters
 		/**
 		@brief Set the parameters of a MSK task and optimize.
@@ -692,13 +704,11 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@param[in,out] p_logger the base logger
 		*/
 		void _setGlpkLogLevel(Logging::FMTLogger& p_logger);
-	#endif
 		// DocString: FMTLpSolver::_setClpOptions
 		/**
 		@brief Set the options of a CLP solver before optimization.
 		*/
 		void _setClpOptions();
-		
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTLpSolver)

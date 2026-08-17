@@ -2,6 +2,7 @@
 #include <iostream>
 #ifdef FMTWITHOSI
 	#include "FMTLpModel.h"
+	#include "FMTLpSolver.h"
 	#include "FMTModelParser.h"
 #endif
 #include "FMTVersion.h"
@@ -23,7 +24,7 @@ bool failed = true;
 		const std::vector<std::string>scenarios(1, SCENARIO);
 		Models::FMTModel Model = modelParser.readproject(PRIMARY_LOCATION, scenarios).at(0);
 		Model.setParameter(Models::FMTintmodelparameters::LENGTH, 3);
-		for (const Models::FMTSolverInterface SOLVER_TYPE : Models::FMTSrModel::getAvailableSolverInterface())
+		for (const Models::FMTSolverInterface SOLVER_TYPE : Models::FMTLpSolver::getAvailableSolverInterface())
 			{
 			Models::FMTLpModel OptModel(Model, SOLVER_TYPE);
 			const bool SOLVED = OptModel.doPlanning(true);

@@ -581,43 +581,45 @@ namespace Models
 		return licensestatus;
 		}
 
+
 	std::string FMTLpSolver::getSolverName() const
 		{
 		std::string name;
 		try {
-			switch (solvertype)
-			{
-			case FMTSolverInterface::CLP:
-				name = "CLP";
-				break;
-#ifdef FMTWITHMOSEK
-			case FMTSolverInterface::MOSEK:
-				name = "MOSEK";
-				break;
-#endif
-			case FMTSolverInterface::GLPK:
-				name = "GLPK";
-				break;
-			break;
-				/*case FMTSolverInterface::CPLEX:
-					name = "CPLEX";
-				break;
-				case FMTSolverInterface::GUROBI:
-					name = "GUROBI";
-				break;*/
-			default:
-			{
-				name = "Not a Valid Solver";
-			}
-			break;
-			}
-			}
-			catch (...)
-			{
-				_exhandler->raiseFromCatch("", +"FMTLpSolver::getSolverName", __LINE__, __FILE__);
-			}
+			name = toString(getSolverType());
+			}catch (...)
+				{
+				_exhandler->raiseFromCatch("", 
+					"FMTLpSolver::getSolverName", __LINE__, __FILE__);
+				}
 		return name;
 		}
+
+	std::vector<Models::FMTSolverInterface> FMTLpSolver::getAvailableSolverInterface()
+	{
+		return {
+		#ifdef FMTWITHCLP
+				Models::FMTSolverInterface::CLP,
+		#endif
+		#ifdef FMTWITHGLPK
+				Models::FMTSolverInterface::GLPK,
+		#endif
+		#ifdef FMTWITHMOSEK
+				Models::FMTSolverInterface::MOSEK,
+		#endif
+		};
+	}
+
+	std::string_view FMTLpSolver::toString(Models::FMTSolverInterface p_solver)
+	{
+		switch (p_solver)
+		{
+		case Models::FMTSolverInterface::CLP:   return "CLP";
+		case Models::FMTSolverInterface::GLPK:  return "GLPK";
+		case Models::FMTSolverInterface::MOSEK: return "MOSEK";
+		default:                                return "Unknown Solver";
+		}
+	}
 
 	int FMTLpSolver::getNumCols() const
 		{
