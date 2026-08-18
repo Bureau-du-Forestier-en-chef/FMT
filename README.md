@@ -37,7 +37,7 @@ If your main inputs are Woodstock files, FMT is probably the way to go to develo
 
 ## 💽 Installation
 
-The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library for R or Python, or directly from C++. The Cmake script of this repository supports generating FMT on Windows using MSVS >= 2017 or MINGW-64 on MSYS2 or CYGWIN.
+The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library for R or Python, or directly from C++. The Cmake script of this repository supports generating FMT on Windows using MSVC >= 2017 or MINGW-64 on MSYS2 or CYGWIN.
 
 <br><br>
 <p align="center">
