@@ -92,6 +92,11 @@ namespace FMTWrapperCore
 		*@return the exception description
 		*/
 		static std::string getExceptionDescription(int p_exceptionId);
+		/**
+		* @brief return all the errors that can be ignored
+		*@return the errors
+		*/
+		static std::vector<int> getErrorsToIgnore();
 	private:
 		/**
 		* @brief Retourne un vecteur de FMTActualDevelopment selon le raster d'aire.

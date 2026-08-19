@@ -8,6 +8,7 @@
 #include "FMTFormCache.h"
 #include "FMTModel.h"
 #include "FMTTheme.h"
+#include "Tools.h"
 
 namespace Wrapper
 {
@@ -45,6 +46,28 @@ namespace Wrapper
 				__LINE__,
 				__FILE__);
 		}
+	}
+
+	System::Collections::Generic::List<int>^ FMTForm::getErrorsToIgnore()
+	{
+		System::Collections::Generic::List<int>^ errors = gcnew System::Collections::Generic::List<int>();
+		try
+		{
+			for (int error : FMTWrapperCore::Tools::getErrorsToIgnore())
+			{
+				errors->Add(error);
+			}
+			
+		}
+		catch (...)
+		{
+			_raiseFromCatch(
+				"",
+				" FMTForm::getErrorsToIgnore",
+				__LINE__,
+				__FILE__);
+		}
+		return errors;
 	}
 
 	void FMTForm::Cache_InitialiserModelParser(

@@ -23,6 +23,17 @@ std::string FMTWrapperCore::Tools::getExceptionDescription(int p_exceptionId)
 		static_cast<Exception::FMTexc>(p_exceptionId));
 	}
 
+std::vector<int> FMTWrapperCore::Tools::getErrorsToIgnore()
+	{
+	const std::vector<Exception::FMTexc>Errors = Exception::FMTExceptionHandler::getErrorsToIgnore();
+	std::vector<int> toIgnore(Errors.size());
+	for (size_t i = 0; i < Errors.size();++i)
+		{
+		toIgnore[i] = Errors[i];
+		}
+	return toIgnore;
+	}
+
 
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTModel& p_model)
 {

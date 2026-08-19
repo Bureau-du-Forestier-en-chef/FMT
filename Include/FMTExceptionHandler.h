@@ -199,6 +199,12 @@ namespace Exception
 		return string description
 		*/
 		static std::string getErrorDescription(bool p_french, FMTexc p_type);
+		// DocString: getErrorsToIgnore
+		/**
+		@brief gives you a vector of error you can safely turn into warning using setErrorsToWarning
+		return a vector of FMTexc
+		*/
+		static std::vector<FMTexc> getErrorsToIgnore();
 	protected:
 		// DocString: FMTExceptionHandler::_exception
 		///This is the type of the last FMTException thrown by the FMTExceptionHandler.

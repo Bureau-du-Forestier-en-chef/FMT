@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
 	{
 		primlocation = "D://CC_modele_feu//CC_V3//Mod_cc_v3.pri";
 		outputlocation = "D://test//";
-		length = 20;
-		replicate = 5;
-		n_threads = 5;
+		length = 5;
+		replicate = 10;
+		n_threads = 10;
 		// Stratégique
 		allscenarios.push_back("strategique_Histo_02"); 
 		// Stochastique

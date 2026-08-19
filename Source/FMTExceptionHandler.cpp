@@ -61,6 +61,27 @@ std::string FMTExceptionHandler::getErrorDescription(bool p_french, FMTexc p_typ
 	return EXCEPTION->getDescription(p_french);
 	}
 
+std::vector<FMTexc> FMTExceptionHandler::getErrorsToIgnore()
+	{
+	return {
+		FMTexc::FMTmissingyield,
+		FMTexc::FMToutput_missing_operator,
+		FMTexc::FMToutput_too_much_operator,
+		FMTexc::FMTinvalid_geometry,
+		FMTexc::FMTinvalidyield_number,
+		FMTexc::FMTundefinedoutput_attribute,
+		FMTexc::FMTempty_schedules,
+		FMTexc::FMTmissing_scenarios,
+		FMTexc::FMToveridedyield,
+		FMTexc::FMTdeathwithlock,
+		FMTexc::FMTreplanningwarning,
+		FMTexc::FMTyieldmodelprediction,
+		FMTexc::FMTsourcetotarget_transition,
+		FMTexc::FMTsame_transitiontargets,
+		FMTexc::FMTunclosedforloop,
+		FMTexc::FMTEmpty_OA};
+	}
+
 bool FMTExceptionHandler::_isMainThread() const
 	{
 	return (boost::this_thread::get_id() == m_mainthreadid);

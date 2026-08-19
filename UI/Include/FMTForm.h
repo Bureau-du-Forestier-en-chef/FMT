@@ -90,7 +90,12 @@ namespace Wrapper
 		void SetErrorsToWarnings(
 			System::Collections::Generic::List<int>^ listeWarnings,
 			int maxWarnings);
-
+		// DocString: FMTForm::getErrorsToIgnore
+		/**
+		@brief Get you all the errors you can safely ignore
+		@return a list of errors int
+		*/
+		System::Collections::Generic::List<int>^ getErrorsToIgnore();
 		// DocString: FMTForm::Cache_AssignerNomLogger
 		/**
 		@brief Initializes the logger.

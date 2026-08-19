@@ -1,5 +1,6 @@
 #include "Tools.h"
 #include <string>
+#include <vector>
 #include <iostream>
 #include "FMTException.h"
 
@@ -16,11 +17,31 @@ int testChangeLog()
 			}
 	if (!log.empty())
 		{
-		std::cout << "testChangeLog passed!" << std::endl;
+		std::cout << "test ChangeLog passed!" << std::endl;
 		return 0;
 	}else {
 		return 1;
 		}
+}
+
+int testGetErrorsToIgnore()
+{
+	std::vector<int>toIgnore;
+	try {
+		toIgnore = FMTWrapperCore::Tools::getErrorsToIgnore();
+	}
+	catch (...)
+	{
+		return 1;
+	}
+	if (!toIgnore.empty())
+	{
+		std::cout << "test GetErrorsToIgnore passed!" << std::endl;
+		return 0;
+	}
+	else {
+		return 1;
+	}
 }
 
 int testGetExceptionDescription()
@@ -37,7 +58,7 @@ int testGetExceptionDescription()
 	}
 	if (!failed)
 	{
-		std::cout << "testGetExceptionDescription passed!" << std::endl;
+		std::cout << "test GetExceptionDescription passed!" << std::endl;
 		return 0;
 	}else{
 		return 1;
@@ -47,5 +68,5 @@ int testGetExceptionDescription()
 int main(int argc, char* argv[])
 {
 
-	return testChangeLog()+testGetExceptionDescription();
+	return testChangeLog()+testGetExceptionDescription()+ testGetErrorsToIgnore();
 }
