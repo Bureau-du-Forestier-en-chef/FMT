@@ -97,13 +97,20 @@ namespace Core
 		*/
 		FMTMask getUnion(const std::vector<FMTTheme>& themes) const
 		{
-			Core::FMTMask testedMask(std::string(this->begin()->first), themes);
-			for (const auto& object : *this)
+			auto it = this->begin();
+			FMTMask result(
+				it->first.getStringReference(),
+				themes);
+
+			++it;
+			for (; it != this->end(); ++it)
 			{
-				const Core::FMTMask specifierMask(std::string(object.first), themes);
-				testedMask = testedMask.getUnion(specifierMask);
+				FMTMask Mask(
+					it->first.getStringReference(),
+					themes);
+				result.unionWith(Mask);
 			}
-			return testedMask;
+			return result;
 		}
 		// DocString: FMTList()
 		/**
@@ -471,52 +478,61 @@ namespace Core
 					return;
 				}
 				unShrink(newthemes);
+				boost::dynamic_bitset<uint8_t>selectedbits(m_data.begin()->first.size(), true);
+				boost::dynamic_bitset<uint8_t>reverSelect(selectedbits.size());
+				std::string newmask;
+				newmask.reserve(newthemes.size() * 10);
 				size_t thstart = 0;
 				for (FMTTheme& theme : newthemes)
 				{
+					const size_t THEME_END = (theme.size() + thstart);
 					std::vector<std::pair<FMTMask, T>>newvecdata;
 					newvecdata.reserve(m_data.size());
 					std::list<std::pair<FMTMask, T>>newData(m_data.begin(), m_data.end());
-					boost::dynamic_bitset<uint8_t>selectedbits;
-					selectedbits.resize(m_data.begin()->first.size(), true);
-					for (size_t loc = thstart;loc < (theme.size()+ thstart);++loc)
-						{
+					selectedbits.set();
+					for (size_t loc = thstart; loc < THEME_END; ++loc)
+					{
 						selectedbits[loc] = false;
-						}
+					}
+					std::vector<typename std::list<std::pair<FMTMask, T>>::iterator>toRemove;
+					toRemove.reserve(newData.size());
 					while (!newData.empty())
 						{
 						typename std::list<std::pair<FMTMask, T>>::iterator baseit = newData.begin();
 						typename std::list<std::pair<FMTMask, T>>::iterator datait = newData.begin();
 						++datait;
-						std::vector<typename std::list<std::pair<FMTMask, T>>::iterator>toRemove;
-						toRemove.reserve(newData.size());
+						toRemove.clear();
 						Core::FMTMask baseMask(baseit->first);
-						const boost::dynamic_bitset<uint8_t> selecinter = selectedbits & baseit->first.getBitsetReference();
-						boost::dynamic_bitset<uint8_t> reverSelect(selecinter);
-						for (size_t loc = thstart; loc < (theme.size() + thstart); ++loc)
+						const auto& BASE_SELECT =
+							baseit->first.getBitsetReference();
+						reverSelect.reset();
+						for (size_t bit = selectedbits.find_first();
+							bit != boost::dynamic_bitset<uint8_t>::npos;
+							bit = selectedbits.find_next(bit))
+						{
+							if (BASE_SELECT[bit])
 							{
-							reverSelect[loc] = true;
+								reverSelect[bit] = true;
 							}
-						/*Core::FMTMask testmask(baseit->first);
-						testmask.set(theme, "?");*/
+						}
+						for (size_t bit = thstart; bit < THEME_END; ++bit)
+						{
+							reverSelect[bit] = true;
+						}
 						while (datait!=newData.end())
 							{
-							/*Core::FMTMask datamask(datait->first);
-							datamask.set(theme, "?");*/
-							const boost::dynamic_bitset<uint8_t>&dataref = datait->first.getBitsetReference();
-							if (dataref.is_subset_of(reverSelect))
-							{
-								const boost::dynamic_bitset<uint8_t> datainter = selectedbits & dataref;
-								if (datainter == selecinter &&
-									baseit->second == datait->second)
+							if (_canAggregate(
+								*baseit,
+								*datait,
+								selectedbits,
+								reverSelect))
 								{
-									baseMask = baseMask.getUnion(datait->first);
-									toRemove.push_back(datait);
-								}
-							}
+								baseMask.unionWith(datait->first);
+								toRemove.push_back(datait);
+								}	
 							++datait;
 							}
-						std::pair<FMTMask, T>newElement(baseMask,baseit->second);
+						auto DataCopy = baseit->second;
 						newData.erase(newData.begin());
 						for (typename std::list<std::pair<FMTMask, T>>::iterator remove : toRemove)
 							{
@@ -524,20 +540,24 @@ namespace Core
 							}
 						if(!toRemove.empty())//aggregation done set new aggregate and refresh mask
 							{
-							std::string newmask;
+							newmask.clear();
 							for (const FMTTheme& subtheme : newthemes)
 								{
 								if (subtheme==theme)
 									{
-									newmask +=theme.updateFromMask(baseMask) + " ";
+									newmask += theme.updateFromMask(baseMask);
+									newmask += ' ';
 								}else {
-									newmask += baseMask.get(subtheme) + " ";
+									newmask += baseMask.get(subtheme);
+									newmask += ' ';
 									}
 								}
 							newmask.pop_back();
-							newElement.first = Core::FMTMask(newmask, newthemes);
+							baseMask = Core::FMTMask(newmask, newthemes);
 							}
-						newvecdata.push_back(newElement);
+						newvecdata.emplace_back(
+							std::move(baseMask),
+							std::move(DataCopy));
 						}
 					thstart += theme.size();
 					m_data.swap(newvecdata);
@@ -676,6 +696,62 @@ namespace Core
 			const FMTMask& mask, const T& maskdata) const
 		{
 			datavector.push_back(std::pair<FMTMask, T>(mask, maskdata));
+		}
+		/**
+		 * @brief Determines whether a candidate entry can be aggregated with a
+		 *        base entry during mask compression.
+		 *
+		 * Two entries can be aggregated when:
+		 * - The candidate mask is a subset of p_reverseSelect.
+		 * - The candidate mask matches the base mask on all bits selected by
+		 *   p_selectedBits.
+		 * - Both entries have the same associated value.
+		 *
+		 * @param p_baseData Base entry used as the aggregation reference.
+		 * @param p_candidateData Entry being evaluated for aggregation.
+		 * @param p_selectedBits Bitset identifying the dimensions that must match.
+		 * @param p_selectedIntersection Intersection of p_selectedBits and the
+		 *        base mask bitset.
+		 * @param p_reverseSelect Bitset used to validate the candidate mask
+		 *        subset relationship.
+		 *
+		 * @return True if the candidate entry can be merged with the base entry;
+		 *         otherwise false.
+		 */
+		template<class T>
+		bool _canAggregate(
+			const std::pair<FMTMask, T>& p_baseData,
+			const std::pair<FMTMask, T>& p_candidateData,
+			const boost::dynamic_bitset<uint8_t>& p_selectedBits,
+			const boost::dynamic_bitset<uint8_t>& p_reverseSelect) const
+		{
+			const auto& baseMask =
+				p_baseData.first.getBitsetReference();
+
+			const auto& candidateMask =
+				p_candidateData.first.getBitsetReference();
+
+			if (!candidateMask.is_subset_of(p_reverseSelect))
+			{
+				return false;
+			}
+
+			if (!(p_baseData.second == p_candidateData.second))
+			{
+				return false;
+			}
+
+			for (size_t bit = p_selectedBits.find_first();
+				bit != boost::dynamic_bitset<uint8_t>::npos;
+				bit = p_selectedBits.find_next(bit))
+			{
+				if (baseMask[bit] != candidateMask[bit])
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 	};

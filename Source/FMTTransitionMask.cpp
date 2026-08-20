@@ -134,6 +134,11 @@ FMTTransitionMask::FMTTransitionMask(const std::string& lmask,const std::vector<
             return mask;
         }
 
+    const FMTMask& FMTTransitionMask::getMaskReference() const
+        {
+        return mask;
+        }
+
     void FMTTransitionMask::setMask(const Core::FMTMask& mtmask)
         {
         mask = mtmask;

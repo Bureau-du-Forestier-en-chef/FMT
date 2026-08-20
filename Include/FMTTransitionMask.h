@@ -145,6 +145,12 @@ class FMTEXPORT FMTTransitionMask : public FMTMaskFilter,public FMTSpec
         @return the mask.
         */
         FMTMask getMask() const;
+        // DocString: FMTTransitionMask::getMaskReference
+        /**
+        @brief Return the reference mask of the transition mask.
+        @return the mask.
+        */
+        const FMTMask& getMaskReference() const;
         // DocString: FMTTransitionMask::setMask
         /**
         @brief Set the mask of the transition mask.

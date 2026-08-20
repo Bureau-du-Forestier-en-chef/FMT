@@ -2157,7 +2157,7 @@ Core::FMTMask FMTModel::getBaseMask(std::vector<Core::FMTActualDevelopment> opti
 		Core::FMTMask areamask( boost::dynamic_bitset<uint8_t>(area.begin()->getMask().size(), false));
 		for (const Core::FMTActualDevelopment& development : optionaldevelopments)
 			{
-			areamask = areamask.getUnion(development.getMask());
+			areamask.unionWith(development.getMask());
 			}
 		size_t trid = 0;
 		std::vector<bool>jumptransitions;
@@ -2174,11 +2174,11 @@ Core::FMTMask FMTModel::getBaseMask(std::vector<Core::FMTActualDevelopment> opti
 			}else {
 				for (const auto& transitionobject : transition)
 				{
-					const Core::FMTMask source(std::string(transitionobject.first),themes);
+					//const Core::FMTMask source(std::string(transitionobject.first),themes);
 					for (const Core::FMTTransitionMask& fork : transitionobject.second.getMaskTrans())
 					{
-						const Core::FMTMask maskwithoutaggregates = fork.getMask().removeAggregates(themes);
-						baseMask = baseMask.getUnion(maskwithoutaggregates);
+						const Core::FMTMask maskwithoutaggregates = fork.getMaskReference().removeAggregates(themes);
+						baseMask.unionWith(maskwithoutaggregates);
 					}
 				}
 				jumptransitions.push_back(false);

@@ -336,6 +336,12 @@ class FMTEXPORT FMTMask
 				}
 			}
 		}
+		// DocString: FMTMask::unionWith
+		/**
+		 * @brief Performs an in-place union with another mask.
+		 * @param rhs Mask whose bits will be added to the current mask.
+		 */
+		void unionWith(const FMTMask& rhs);
 		// DocString: FMTMask::getUnion
 		/**
 		@brief Return the union of this mask and another mask.

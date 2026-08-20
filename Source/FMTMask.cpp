@@ -312,6 +312,12 @@ void FMTMask::update(const std::vector<FMTTheme>& themes)
 	m_name.pop_back();
     }
 
+void FMTMask::unionWith(const FMTMask& rhs)
+	{
+	m_name.clear();
+	m_data |= rhs.m_data;
+	}
+
 FMTMask FMTMask::getUnion(const FMTMask& rhs) const
 	{
 	FMTMask newmask(m_data);
