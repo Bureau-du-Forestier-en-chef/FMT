@@ -1322,14 +1322,16 @@ namespace Models
 
 		std::string FMTLpSolver::getMskErrorDesc(int error) const
 		{
-			std::string errordescription;
+		std::string errordescription;
+		#ifdef  FMTWITHMOSEK
 			char symname[MSK_MAX_STR_LEN];
 			char desc[MSK_MAX_STR_LEN];
 			MSK_getcodedesc(static_cast<MSKrescodee>(error), symname, desc);
 			errordescription+=symname;
 			errordescription+=" ";
 			errordescription+=desc;
-			return errordescription;
+		#endif
+		return errordescription;
 		}
 
 		bool FMTLpSolver::SupportsMultiThreading() const
