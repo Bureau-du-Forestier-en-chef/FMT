@@ -718,7 +718,6 @@ namespace Core
 		 * @return True if the candidate entry can be merged with the base entry;
 		 *         otherwise false.
 		 */
-		template<class T>
 		bool _canAggregate(
 			const std::pair<FMTMask, T>& p_baseData,
 			const std::pair<FMTMask, T>& p_candidateData,

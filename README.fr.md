@@ -159,11 +159,7 @@ FMT utilise la license [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LIC
 
 ## 📈 Coverage
 GNU ![](https://img.shields.io/badge/coverage-71%25-orange)
-MSVC ![](https://img.shields.io/badge/coverage-0%25-red)
-
-
-## 💻 Build
-GNU ![](https://img.shields.io/badge/build-pass-brightgreen)
-MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)
+MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)n)
+MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)n)
 
 
