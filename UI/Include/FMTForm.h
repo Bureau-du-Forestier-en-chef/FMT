@@ -798,6 +798,18 @@ namespace Wrapper
 		void _EnvoyerResultatsInterface(
 			const FMTWrapperCore::SESResults& results,
 			bool indCarbon);
+		// DocString: FMTForm::_convertToSystemString
+		/**
+		@brief Converts a std::string to a System::String^.
+
+		The conversion assumes the source string is encoded in UTF-8 and
+		preserves accented and other non-ASCII characters.
+
+		@param[in] value Source string to convert.
+
+		@return Managed string representation of the input value.
+		*/
+		System::String^ _convertToSystemString(std::string value);
 	};
 }
 #endif

@@ -120,8 +120,7 @@ namespace Wrapper
         {
             for (const std::string& fichier : results.disturbanceFiles)
             {
-                RetourJson(gcnew System::String(("GCBMtransitionlocations;" + fichier).c_str()),
-                    gcnew System::EventArgs());
+                RetourJson(_convertToSystemString("GCBMtransitionlocations;" + fichier), gcnew System::EventArgs());
             }
         }
 
