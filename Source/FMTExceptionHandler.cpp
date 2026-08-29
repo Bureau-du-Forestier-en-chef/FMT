@@ -79,7 +79,8 @@ std::vector<FMTexc> FMTExceptionHandler::getErrorsToIgnore()
 		FMTexc::FMTsourcetotarget_transition,
 		FMTexc::FMTsame_transitiontargets,
 		FMTexc::FMTunclosedforloop,
-		FMTexc::FMTEmpty_OA};
+		FMTexc::FMTEmpty_OA,
+		FMTexc::FMTunsupported_objective};
 	}
 
 bool FMTExceptionHandler::_isMainThread() const

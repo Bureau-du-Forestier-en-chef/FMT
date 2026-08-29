@@ -765,9 +765,9 @@ namespace Core {
 	{
 		double value = 0;
 		try {
-			if (_cache.inCache(request, yld))
+			if (_cache.tryToGet(value, request, yld))
 				{
-				return _cache.get(request, yld);
+				return value;
 				}
 			const FMTData* C_DATA = &m_elements.at(yld);
 			std::chrono::time_point<std::chrono::high_resolution_clock>calculationStart;
@@ -775,13 +775,10 @@ namespace Core {
 				{
 				calculationStart = getClock();
 				}
-				if (m_lookat.find(yld) == m_lookat.end())
+				if (!m_lookat.insert(yld).second)
 					{
-						m_lookat.insert(yld);
-					}
-					else {
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
-							"FMTComplexYieldHandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+					_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
+						"FMTComplexYieldHandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 					}
 					switch (C_DATA->getOp())
 					{

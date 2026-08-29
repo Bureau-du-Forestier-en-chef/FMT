@@ -63,6 +63,20 @@ namespace Core
 		return value;
 		}
 
+	bool FMTYieldsCache::tryToGet(double& p_value,
+		const FMTYieldRequest& p_request,
+		const std::string& p_yield) const
+	{
+		bool found = false;
+		const FMTYieldDevelopment KEY = _getKey(p_request, p_yield);
+		m_cache->visit(KEY, [&](const std::pair<FMTYieldDevelopment, double>& data)
+			{
+			p_value = data.second;
+			found = true;
+			});
+		return found;
+	}
+
 	void FMTYieldsCache::_clearIfTooBig()
 		{
 		const size_t TABLE_SIZE = m_cache->size();

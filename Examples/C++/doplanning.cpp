@@ -34,12 +34,12 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "D:/CC_modele_feu/CC_V3/Mod_cc_v3.pri";
-			scenario = "tactique_CC_adaptation_09";
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+			scenario = "14_Sc5_Determin_apsp";
 			//primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/02571/22_Phase1_Corr_Volume/24_ModeleWS/02_Travail/2026-04-13/PC_10067_U02571_2028_Corr_volume/PC_10067_U02571_2028_MODB01.pri";
 			//scenario = "160_Equi_apsp";
 			length = 10; 
-			objectivevalue = 3646861;
+			objectivevalue = 30285431.3;
 		}
 		Parser::FMTModelParser modelparser;
 		//modelparser.setDebugExceptionHandler();

@@ -76,6 +76,9 @@ namespace Spatial{
 		graphCopy.postSolve(p_Filter, 
 			p_Graphs.getModel().getThemes(), p_actionMapping);
 		FMTVirtualLineGraph postSolved = p_Graphs.setVirtualGraph(graphCopy);
+		p_Graphs.removeToSolution(p_solution, 
+			postSolved.m_GraphFamily,
+			p_Graphs.getBaseIterator(postSolved.m_GraphFamily));
 		postSolved._add(p_solution);
 		return postSolved;
 	}

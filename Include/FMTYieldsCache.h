@@ -68,6 +68,17 @@ namespace Core
 			*/
 			double get(const FMTYieldRequest& p_request,
 				const std::string& p_yield) const;
+			// DocString: FMTYieldsCache::tryToGet
+			/**
+			@brief Get the cached value for a request and yield return false if not found
+			@param[in,out] p_value the value reached
+			@param[in] p_request the yield request.
+			@param[in] p_yield the yield name.
+			@return true if found
+			*/
+			bool tryToGet(double& p_value,
+				const FMTYieldRequest& p_request,
+				const std::string& p_yield) const;
 			// DocString: FMTYieldsCache::set
 			/**
 			@brief Cache a value for a request and yield.

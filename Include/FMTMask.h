@@ -339,9 +339,18 @@ class FMTEXPORT FMTMask
 		// DocString: FMTMask::unionWith
 		/**
 		 * @brief Performs an in-place union with another mask.
-		 * @param rhs Mask whose bits will be added to the current mask.
+		 * @param[in] rhs Mask whose bits will be added to the current mask.
 		 */
 		void unionWith(const FMTMask& rhs);
+		// DocString: FMTMask::filter
+		/**
+		 * @brief Perform a filtering for FMTMaskFilter and keep the same name
+		 * @param[in] p_selection bits
+		 * @param[in]  p_flippedSelection bits
+		 * @return a new mask with selected bits
+		 */
+		FMTMask filter(const boost::dynamic_bitset<uint8_t> p_selection,
+					   const boost::dynamic_bitset<uint8_t> p_flippedSelection) const;
 		// DocString: FMTMask::getUnion
 		/**
 		@brief Return the union of this mask and another mask.

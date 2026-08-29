@@ -458,6 +458,27 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 													const Spatial::FMTForest& newfor,
 													const std::vector<Core::FMTTheme>& themes) const;
 		#ifdef FMTWITHGDAL
+			// DocString: FMTAreaParser::_getProjectionRef
+			/**
+			@brief return the projection string of spatial reference
+			@param[in] p_reference spatial reference to get projection
+			@return projection string
+			*/
+			std::string _getProjectionRef(const OGRSpatialReference* p_reference) const;
+			// DocString: FMTAreaParser::_getProjectionRef
+			/**
+			@brief return the projection string of dataset
+			@param[in] p_dataset dataset to get projection
+			@return projection string
+			*/
+			std::string _getProjectionRef(const GDALDataset* p_dataset) const;
+			// DocString: FMTAreaParser::_getProjectionRef
+			/**
+			@brief return the projection string of p_layer
+			@param[in] p_layer layer to get projection
+			@return projection string
+			*/
+			std::string _getProjectionRef(const OGRLayer* p_layer) const;
 			// DocString: FMTAreaParser::_writeBand
 			/**
 			@brief Write a layer into a raster band.

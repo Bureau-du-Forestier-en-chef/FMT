@@ -163,7 +163,10 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				GDALRasterBand* band = _getBand(data);
 				if (xsize > 0)
 				{
-					if ((data->GetRasterXSize() != xsize) || (data->GetRasterYSize() != ysize) || (data->GetRasterCount() != rastercount) || (data->GetProjectionRef() != projection) /*|| (band->getOverviewCount() != overview)*/)
+					if ((data->GetRasterXSize() != xsize) || 
+						(data->GetRasterYSize() != ysize) || 
+						(data->GetRasterCount() != rastercount) || 
+						(_getProjectionRef(data) != projection) /*|| (band->getOverviewCount() != overview)*/)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidband,
 							"Rasters are not the same " + std::string(data->GetDescription()),
@@ -174,7 +177,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 					xsize = data->GetRasterXSize();
 					ysize = data->GetRasterYSize();
 					rastercount = data->GetRasterCount();
-					projection = data->GetProjectionRef();
+					projection = _getProjectionRef(data);
 					//overview = band->getOverviewCount();
 				}
 				GDALClose(data);
@@ -488,7 +491,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				attributes.push_back(_getCat(dataset));
 			}
 			//std::map<Spatial::FMTCoordinate, Core::FMTDevelopment>mapping;
-			const std::string projection = agedataset->GetProjectionRef();
+			const std::string projection = _getProjectionRef(agedataset);
 			const unsigned int xsize = ageband->GetXSize();
 			const unsigned int ysize = ageband->GetYSize();
 			Spatial::FMTLayer<Core::FMTDevelopment>mapping(pad, xsize, ysize, projection, cellsize);
@@ -1055,7 +1058,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 				}
 				ystack += nYValid;
 			}
-			const std::string projection = devidds->GetProjectionRef();
+			const std::string projection = _getProjectionRef(devidds);
 			const unsigned int xsize = devidband->GetXSize();
 			const unsigned int ysize = devidband->GetYSize();
 			actualforest = Spatial::FMTForest(Spatial::FMTLayer<Core::FMTDevelopment>(mapping, pad, xsize, ysize, projection, cellsize));
@@ -1139,20 +1142,15 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			geotrans[1]=20;
 			geotrans[3]=(20*NYSize)+min_y;
 			geotrans[5]=-20;
-			char* spref;
-			if (layer->GetSpatialRef()->exportToWkt(&spref)!=OGRERR_NONE)
-			{
-				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-											"Spatial reference "+std::string(poDstDS->GetDescription()),"FMTParser::ogrLayerToRaster", __LINE__, __FILE__, m_section);
-			}
-			poDstDS->SetProjection(spref);
+			const std::string SPREF = _getProjectionRef(layer);
+			poDstDS->SetProjection(SPREF.c_str());
 			poDstDS->SetGeoTransform(&geotrans[0]);
         	poDstDS->GetRasterBand(1)->Fill(-9999);
 			poDstDS->FlushCache();
 			char **rasterizeOptions = NULL;
 			rasterizeOptions = CSLSetNameValue( rasterizeOptions, "ATTRIBUTE", fieldname.c_str() );
 			int bandlist[1]={1};
-			OGRLayerH layers[1] = {layer};
+			OGRLayerH layers[1] = { reinterpret_cast<OGRLayerH>(layer)};
 			GDALRasterizeLayers(poDstDS,1,bandlist,1, layers,NULL,NULL,NULL,rasterizeOptions,NULL,NULL);
 			CSLDestroy( rasterizeOptions );
 			if (resolution == 20)
@@ -1174,11 +1172,10 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 			geotrans[1]=resolution;
 			geotrans[3]=(resolution*resYsize)+min_y;
 			geotrans[5]=-resolution;
-			nDS->SetProjection(spref);
+			nDS->SetProjection(SPREF.c_str());
 			nDS->SetGeoTransform(&geotrans[0]);
         	nDS->GetRasterBand(1)->Fill(-9999);
 			nDS->FlushCache();
-			CPLFree(spref);
 			CSLDestroy( papszOptions );
 			GDALReprojectImage(poDstDS, NULL, nDS, NULL, GRA_Mode , 0.0, 0.0, NULL, NULL,NULL);
 			nDS->GetRasterBand(1)->SetNoDataValue(-9999);//We only set the nodata here to be sure that is not ignore in the resampling
@@ -1253,6 +1250,64 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 		return multipolygons;
 		}
 	#endif
+
+
+	std::string FMTAreaParser::_getProjectionRef(const OGRSpatialReference* p_reference) const
+	{
+		std::string projection;
+		try {
+			char* pszWKT = nullptr;
+			if (p_reference != nullptr &&
+				p_reference->exportToWkt(&pszWKT) == OGRERR_NONE) {
+				projection = pszWKT;
+				CPLFree(pszWKT);
+			}
+			if (projection.empty())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+					"Empty projection " ,
+					"FMTAreaParser::_getProjectionRef", __LINE__, __FILE__, m_section);
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raiseFromCatch("",
+				"FMTAreaParser::_getProjectionRef",
+				__LINE__, __FILE__, m_section);
+		}
+		return projection;
+	}
+
+
+	std::string FMTAreaParser::_getProjectionRef(const GDALDataset* p_dataset) const
+	{
+		std::string projection;
+		try {
+			projection = _getProjectionRef(p_dataset->GetSpatialRef());
+		}
+		catch (...)
+			{
+			_exhandler->raiseFromCatch(std::string(p_dataset->GetDescription()),
+				"FMTAreaParser::_getProjectionRef",
+				__LINE__, __FILE__, m_section);
+			}
+		return projection;
+	}
+
+	std::string FMTAreaParser::_getProjectionRef(const OGRLayer* p_layer) const
+	{
+		std::string projection;
+		try {
+			projection = _getProjectionRef(p_layer->GetSpatialRef());
+		}
+		catch (...)
+		{
+			_exhandler->raiseFromCatch(std::string(p_layer->GetName()),
+				"FMTAreaParser::_getProjectionRef",
+				__LINE__, __FILE__, m_section);
+		}
+		return projection;
+	}
 
 
 	template<typename T, typename outT>

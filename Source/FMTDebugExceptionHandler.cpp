@@ -35,8 +35,7 @@ namespace Exception
 			if (newException->getLevel() == FMTlev::FMT_Warning || 
 				newException->getLevel() == FMTlev::FMT_Debug)
 				{
-				const FMTWarning* WARNING = dynamic_cast<const FMTWarning*>(newException.get());
-				_updateWarningCount(*WARNING);
+				_updateWarningCount(*newException);
 				}else if(newException->isFatal())
 				{
 					boost::lock_guard<boost::recursive_mutex> guard(m_mtx);

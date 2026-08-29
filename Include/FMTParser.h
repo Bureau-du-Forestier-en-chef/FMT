@@ -763,6 +763,12 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 				const std::string& p_DataBaseLocation,
 				const std::string& p_VariableName,
 				const std::string& p_Query) const;
+			// DocString: FMTParser::_getGDALProjVersion
+			/**
+			@brief Get the proj version that gdal builded with
+			@return string version
+			*/
+			static std::string _getGDALProjVersion();
 		#endif
 			// DocString: FMTParser::_getAbsolutePath
 			/**

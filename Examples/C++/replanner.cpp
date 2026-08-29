@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
 	{
 		primlocation = "D://CC_modele_feu//CC_V3//Mod_cc_v3.pri";
 		outputlocation = "D://test//";
-		length = 5;
-		replicate = 10;
-		n_threads = 10;
+		length = 20;
+		replicate = 5;
+		n_threads = 5;
 		// Stratégique
 		allscenarios.push_back("strategique_Histo_02"); 
 		// Stochastique
@@ -60,15 +60,8 @@ int main(int argc, char *argv[])
 	modelparser.setDefaultLogger();
 	modelparser.setTerminateStack();
 	modelparser.setAbortStack(); 
-	std::vector<Exception::FMTexc> errors;
-	errors.push_back(Exception::FMTexc::FMTmissingyield);
-	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
-	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
-	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
-	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
-	errors.push_back(Exception::FMTexc::FMToveridedyield);
-	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-	modelparser.setErrorsToWarnings(errors);
+	const std::vector<Exception::FMTexc> ALL_WARNINGS = modelparser.getExceptionHandler()->getErrorsToIgnore();
+	modelparser.setErrorsToWarnings(ALL_WARNINGS);
 	//std::vector<Models::FMTModel> tests = modelparser.readproject(primlocation, allscenarios);
 	//tests[0].preSolve();
 	std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);

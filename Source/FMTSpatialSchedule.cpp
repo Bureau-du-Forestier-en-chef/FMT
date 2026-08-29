@@ -1548,6 +1548,7 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 								Spatial::FMTSpatialGraphs& p_Graphs)
 	{
 	try {
+		assert(m_mapping.size() == _getNonSpatialCellsCount());
 		m_Tracker = p_Graphs.getBaseSolution();
 		const std::vector<Core::FMTAction> postsolveactions = p_Graphs.getModel().getActions();
 		std::vector<int>actionmapping;
@@ -1571,6 +1572,7 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 			newevents.insert(newevent);
 			}
 		m_events.swap(newevents);
+		assert(m_mapping.size() == _getNonSpatialCellsCount());
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::postSolve", __LINE__, __FILE__);
@@ -1931,6 +1933,7 @@ std::map<std::string, double> FMTSpatialSchedule::greedyReferenceBuild(const Cor
 	size_t iteration = 0;
 	const unsigned int initialseed = seed;
 	try {
+		assert(m_mapping.size() == _getNonSpatialCellsCount());
 		if (m_scheduleType != FMTSpatialScheduletype::FMTcomplete)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -2031,6 +2034,7 @@ std::map<std::string, double> FMTSpatialSchedule::greedyReferenceBuild(const Cor
 		}
 		bestresults["Primalinfeasibility"] = lastprimalinf;
 		bestresults["Objective"] = lastobjective;
+		assert(m_mapping.size() == _getNonSpatialCellsCount());
 	}
 	catch (...)
 	{

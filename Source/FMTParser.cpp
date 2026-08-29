@@ -28,7 +28,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "ogrsf_frmts.h"
 	#include "gdal_rat.h"
 	#if defined (_MSC_VER)
-	#include "cpl_conv.h"
+		#include "cpl_conv.h"
 	#endif
 	#include <cpl_string.h>
 #endif 
@@ -157,21 +157,22 @@ void FMTParser::_initializeGDAL()
 	if (!gdalInitialization)
 		{
 		const std::string baseruntimelocation = getRuntimeLocation();
-		const std::string  runtimelocation = baseruntimelocation + "\\GDAL_DATA";
-		if (!boost::filesystem::is_directory(boost::filesystem::path(runtimelocation)))
+		const boost::filesystem::path GDAL_PATH = boost::filesystem::path(baseruntimelocation) / boost::filesystem::path("GDAL_DATA");
+		if (!boost::filesystem::is_directory(GDAL_PATH))
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-				"Can not find GDAL_DATA at " + runtimelocation, "FMTParser::FMTParser()", __LINE__, __FILE__);
+				"Can not find GDAL_DATA at " + GDAL_PATH.string(), 
+				"FMTParser::FMTParser()", __LINE__, __FILE__);
 		}
-		CPLSetConfigOption("GDAL_DATA", runtimelocation.c_str());
 		//No need of drivers from shared library see : https://gdal.org/api/gdaldriver_cpp.html ; https://gdal.org/api/cpl.html ; https://trac.osgeo.org/gdal/wiki/ConfigOptions
 		CPLSetConfigOption("GDAL_DRIVER_PATH", "");
 		#if (GDAL_VERSION_MAJOR>=3)//Since GDAL 3.0
-				const std::string  projruntimelocation = baseruntimelocation + "/proj";
+				const boost::filesystem::path PROJ_PATH = boost::filesystem::path(baseruntimelocation) / boost::filesystem::path("proj");
+				const std::string PROJ_STR_PATH = PROJ_PATH.string();
 				std::vector<const char*>projsearch;
-				projsearch.push_back(projruntimelocation.c_str());
-				projsearch.push_back(NULL);
-				OSRSetPROJSearchPaths(&projsearch[0]);
+				projsearch.push_back(PROJ_STR_PATH.c_str());
+				projsearch.push_back(nullptr);
+				OSRSetPROJSearchPaths(projsearch.data());
 		#endif
 		GDALAllRegister();
 		gdalInitialization = true;
@@ -638,7 +639,7 @@ GDALDataset* FMTParser::_createVectorMemoryDs() const
 	{
 	GDALDataset* dataset = nullptr;
 	try{
-		dataset = createOGRDataset("Memoryds", "Memory");
+		dataset = createOGRDataset("Memoryds", "MEM");
 		}
 		catch (...)
 			{
@@ -1670,6 +1671,17 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 	}
 
 #ifdef FMTWITHGDAL
+
+	std::string FMTParser::_getGDALProjVersion()
+	{
+		int major, minor, patch;
+		OSRGetPROJVersion(&major, &minor, &patch);
+		const std::string VERSION = std::to_string(major) + "." + 
+			std::to_string(minor) + "." + std::to_string(patch);
+		return VERSION;
+	}
+
+
 	std::map<std::string, std::vector<std::string>>FMTParser::_queryDatabase(
 		const std::string& p_DataBaseLocation,
 		const std::string& p_VariableName,

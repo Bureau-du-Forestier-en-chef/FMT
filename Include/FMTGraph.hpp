@@ -118,7 +118,10 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			stats(),
 			m_allocator(),
 			m_reserve(),
-			m_selectedVertices(m_allocator)
+			m_selectedVertices(m_allocator),
+			m_visitedVerticies(m_allocator),
+			m_VerticiesGeneration(),
+			m_actives(m_allocator)
 		{
 
 		}
@@ -143,7 +146,10 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			stats(),
 			m_allocator(),
 			m_reserve(),
-			m_selectedVertices(m_allocator)
+			m_selectedVertices(m_allocator),
+			m_visitedVerticies(m_allocator),
+			m_VerticiesGeneration(),
+			m_actives(m_allocator)
 		{
 
 		}
@@ -163,7 +169,10 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			stats(rhs.stats),
 			m_allocator(rhs.m_allocator),
 			m_reserve(rhs.m_reserve),
-			m_selectedVertices(rhs.m_allocator)
+			m_selectedVertices(rhs.m_allocator),
+			m_visitedVerticies(rhs.m_visitedVerticies),
+			m_VerticiesGeneration(rhs.m_VerticiesGeneration),
+			m_actives(rhs.m_actives)
 		{
 			_generateDevelopments();
 		}
@@ -214,6 +223,9 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				m_reserve = rhs.m_reserve;
 				m_allocator = rhs.m_allocator;
 				m_selectedVertices = rhs.m_selectedVertices;
+				m_visitedVerticies = rhs.m_visitedVerticies;
+				m_VerticiesGeneration = rhs.m_VerticiesGeneration;
+				m_actives = rhs.m_actives;
 				_generateDevelopments();
 			}
 			return *this;
@@ -3665,38 +3677,35 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		@param[in] p_period the period.
 		@param[in] p_LastPeriod the last period.
 		@param[in] p_vertex the vertex descriptor.
-		@param[in,out] p_descriptors the vertex descriptors.
 		*/
 		void fillNextPeriod(
 			int p_period, 
 			int p_LastPeriod, 
-			const FMTvertex_descriptor& p_vertex, 
-			std::queue<FMTvertex_descriptor>&p_actives) const
+			const FMTvertex_descriptor& p_vertex) const
 		{
-			FMTvertex_descriptor nextDev = data.null_vertex();
 			FMToutedge_pair edge_pair = boost::out_edges(p_vertex, data);
-			while (edge_pair.first != edge_pair.second &&
-				nextDev == data.null_vertex())
+			while (edge_pair.first != edge_pair.second)
 			{
 				const FMTBaseEdgeProperties& Edge = data[*edge_pair.first];
 				const int& EdgeId = Edge.getActionID();
-				
 				FMTvertex_descriptor nextDev = boost::target(*edge_pair.first, data);
+				const size_t DEV_ID = static_cast<size_t>(nextDev);
 				if (EdgeId < 0) // évolution naturelle si actionid < 0
 				{
 					if (p_LastPeriod == p_period - 1 &&
-						nextDev != data.null_vertex())
+						m_visitedVerticies[DEV_ID]!= m_VerticiesGeneration)
 					{ 
-						p_actives.push(nextDev);
+						m_visitedVerticies[DEV_ID] = m_VerticiesGeneration;
+						m_actives.push_back(nextDev);
 					}
 					else if (p_period > p_LastPeriod)
 					{
-						fillNextPeriod(p_period, ++p_LastPeriod, nextDev, p_actives);
+						fillNextPeriod(p_period, p_LastPeriod+1, nextDev);
 					}
 				}
 				else
 				{
-					fillNextPeriod(p_period, p_LastPeriod, nextDev, p_actives);
+					fillNextPeriod(p_period, p_LastPeriod, nextDev);
 				}
 				++edge_pair.first;
 			}
@@ -3724,6 +3733,34 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 				++edge_pair.first;
 			}
 			return NextPeriod;
+		}
+		// DocString: FMTGraph::allocateStaticVerticies
+		/**
+		@brief Allocate the base members for graph traversal and clear the actives
+		*/
+		void allocateStaticVerticies() const
+		{
+			m_actives.clear();
+			const size_t NUM_VERTICIES = boost::num_vertices(data);
+			if (m_visitedVerticies.size() < NUM_VERTICIES)
+			{
+				m_visitedVerticies.resize(NUM_VERTICIES, 0);
+			}
+			if (m_actives.capacity() < NUM_VERTICIES)
+			{
+				m_actives.reserve(NUM_VERTICIES);
+			}
+			++m_VerticiesGeneration;
+
+			if (m_VerticiesGeneration == 0)
+			{
+				std::fill(
+					m_visitedVerticies.begin(),
+					m_visitedVerticies.end(),
+					0);
+
+				++m_VerticiesGeneration;
+			}
 		}
 
 		// DocString: FMTGraph::setNodeByStaticMask
@@ -3776,70 +3813,52 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 						//*_logger << "Node evo " << p_node << " " << p_period << "\n";
 						bool exact = false;
 						const std::vector<FMTvertex_descriptor>& PAST_DESCRIPTORS = nodescache.at(POTENTIAL_LAST_PERIOD).getVertices(p_node, p_model.actions, p_model.themes, exact);
-						std::queue<FMTvertex_descriptor>actives(m_allocator);
-
-						//for (FMTvertex_descriptor PAST_DESCRIPTOR : PAST_DESCRIPTORS)
-						//	{
-						//		int BasePeriod = POTENTIAL_LAST_PERIOD;
-						//		while (BasePeriod != p_period && PAST_DESCRIPTOR != data.null_vertex())
-						//		{
-						//			PAST_DESCRIPTOR = getNextPeriod(PAST_DESCRIPTOR);
-						//			++BasePeriod;
-						//		}
-						//		if (BasePeriod == p_period &&
-						//			PAST_DESCRIPTOR != data.null_vertex())
-						//		{
-						//			actives.push(PAST_DESCRIPTOR);
-						//		}
-						//	}
-						
+						allocateStaticVerticies();
 						for (const FMTvertex_descriptor& PAST_DESCRIPTOR : PAST_DESCRIPTORS)
 						{
-							fillNextPeriod(p_period, POTENTIAL_LAST_PERIOD, PAST_DESCRIPTOR, actives);
-						}
+							const size_t PAST_DESCRIPTOR_INDEX =
+								static_cast<size_t>(PAST_DESCRIPTOR);
 
-						//const size_t INITITAL_COUNT = actives.size();
+							if (m_visitedVerticies[PAST_DESCRIPTOR_INDEX] != m_VerticiesGeneration)
+							{
+								m_visitedVerticies[PAST_DESCRIPTOR_INDEX] =
+									m_VerticiesGeneration;
+
+								fillNextPeriod(
+									p_period,
+									POTENTIAL_LAST_PERIOD,
+									PAST_DESCRIPTOR);
+							}
+						}
 						if (POTENTIAL_LAST_PERIOD != p_period)
 						{
 							nodescache.at(POTENTIAL_LAST_PERIOD).eraseNode(p_node);//Dont make a mess in the cache and delete the last period...
 						}
-						
-						//std::allocator<FMTvertex_descriptor> treeAllocator;
-						//treeAllocator.allocate(PAST_DESCRIPTORS.size() * 2);
-						std::unordered_set<FMTvertex_descriptor>right_period(m_allocator);
-						right_period.reserve(actives.size()*2);
-						while (!actives.empty())
+						while (!m_actives.empty())
 						{
-							const FMTvertex_descriptor& DESCRIPTOR = actives.front();
-							//const FMTvertex_descriptor DESCRIPTOR = actives.back();
-							//actives.pop_back();
-							auto inserted = right_period.insert(DESCRIPTOR);
-							if (inserted.second)
-							{
-								p_descriptors.push_back(DESCRIPTOR);
-								if (m_gotDeath||boost::out_degree(DESCRIPTOR, data)>1)
+							const FMTvertex_descriptor DESCRIPTOR = m_actives.back();
+							m_actives.pop_back();
+							p_descriptors.push_back(DESCRIPTOR);
+							if (m_gotDeath||boost::out_degree(DESCRIPTOR, data)>1)
 									{
 									FMToutedge_pair edge_pair;
 									for (edge_pair = boost::out_edges(DESCRIPTOR, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 										{
 											const FMTvertex_descriptor NEXT_DESCRIPTOR = boost::target(*edge_pair.first, data);
-											if (right_period.find(NEXT_DESCRIPTOR) == right_period.end())
+											const size_t NEXT_DESCRIPTOR_INDEX = static_cast<size_t>(NEXT_DESCRIPTOR);
+											if (m_visitedVerticies[NEXT_DESCRIPTOR_INDEX] != m_VerticiesGeneration)
 											{
 												const FMTBaseEdgeProperties& Edge = data[*edge_pair.first];
 												const int ACTION_ID = Edge.getActionID();
 												if (ACTION_ID >= 0)
 												{
-													//const FMTvertex_descriptor NEXT_DESCRIPTOR = boost::target(*edge_pair.first, data);
-													actives.push(NEXT_DESCRIPTOR);
-													//actives.push_back(NEXT_DESCRIPTOR);
+													m_visitedVerticies[NEXT_DESCRIPTOR_INDEX] = m_VerticiesGeneration;
+													m_actives.push_back(NEXT_DESCRIPTOR);
 												}
 											}
 										}
 									}
-							}
-							actives.pop();
 						}
-
 					}
 					if (p_period <= p_model.getParameter(Models::FMTintmodelparameters::LENGTH))
 					{
@@ -3854,7 +3873,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					for (boost::tie(vertex_iterator, vertex_iterator_end) = getPeriodVertices(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 					{
 						const Core::FMTDevelopment& DEV = data[*vertex_iterator].get();
-						if (DEV.getMask().isSubsetOf(THE_STATIC_MASK, BLOCKS_SUBSET))//DEV.getMask().isSubsetOf(THE_STATIC_MASK))
+						if (DEV.getMask().isSubsetOf(THE_STATIC_MASK, BLOCKS_SUBSET))
 						{
 							p_descriptors.push_back(*vertex_iterator);
 						}
@@ -4149,6 +4168,9 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		mutable std::allocator<FMTvertex_descriptor> m_allocator;
 		size_t m_reserve;
 		mutable  std::vector<FMTvertex_descriptor> m_selectedVertices;
+		mutable std::vector<size_t> m_visitedVerticies;
+		mutable size_t m_VerticiesGeneration = 0;
+		mutable std::vector<FMTvertex_descriptor> m_actives;
 
     };
 

@@ -318,6 +318,16 @@ void FMTMask::unionWith(const FMTMask& rhs)
 	m_data |= rhs.m_data;
 	}
 
+FMTMask FMTMask::filter(
+	const boost::dynamic_bitset<uint8_t> p_selection,
+	const boost::dynamic_bitset<uint8_t> p_flippedSelection) const
+{
+	FMTMask newMask(*this);
+	newMask.m_data &= p_selection;
+	newMask.m_data |= p_flippedSelection;
+	return newMask;
+}
+
 FMTMask FMTMask::getUnion(const FMTMask& rhs) const
 	{
 	FMTMask newmask(m_data);

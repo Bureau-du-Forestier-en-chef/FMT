@@ -139,9 +139,9 @@ FMTMask FMTMaskFilter::filter(const FMTMask& devmask) const
         {
         if (!selection.empty())
             {
+            //return devmask.filter(selection, flippedselection);
             const boost::dynamic_bitset<uint8_t> newkey = ((devmask.getBitsetReference() & selection) | flippedselection);
-            return FMTMask(devmask.getStringReference(),newkey);
-			//return newmask.resume(index);
+            return FMTMask(devmask.getStringReference(), newkey);
             }
         return devmask;
         }
