@@ -21,19 +21,26 @@
 
 namespace Wrapper
 {
-
 	System::String^ FMTForm::getChangeLog()
 	{
-		return gcnew System::String(
-			FMTWrapperCore::Tools::getChangeLog().c_str());
+		return _convertToSystemString(FMTWrapperCore::Tools::getChangeLog());
 	}
 
-	System::String^ FMTForm::getExceptionDescription(
-		int p_exceptionId)
+	System::String^ FMTForm::getExceptionDescription(int p_exceptionId)
 	{
-		return gcnew System::String(
-			FMTWrapperCore::Tools::getExceptionDescription(
-				p_exceptionId).c_str());
+		return _convertToSystemString(FMTWrapperCore::Tools::getExceptionDescription(p_exceptionId));
+	}
+
+	System::String^ FMTForm::_convertToSystemString(std::string value)
+	{
+		array<System::Byte>^ bytes = gcnew array<System::Byte>(static_cast<int>(value.size()));
+
+		for (size_t i = 0; i < value.size(); ++i)
+		{
+			bytes[i] = static_cast<System::Byte>(value[i]);
+		}
+
+		return System::Text::Encoding::UTF8->GetString(bytes);
 	}
 
 	void FMTForm::_raiseFromCatch(
