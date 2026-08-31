@@ -1297,17 +1297,20 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 	std::string FMTAreaParser::_getProjectionRef(const OGRLayer* p_layer) const
 	{
 		std::string projection;
+		OGRLayer* NON_CONST_LAYER = const_cast<OGRLayer*>(p_layer);//Patch for old GDAL
 		try {
-			projection = _getProjectionRef(p_layer->GetSpatialRef());
+			projection = _getProjectionRef(NON_CONST_LAYER->GetSpatialRef());
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch(std::string(p_layer->GetName()),
+			_exhandler->raiseFromCatch(std::string(NON_CONST_LAYER->GetName()),
 				"FMTAreaParser::_getProjectionRef",
 				__LINE__, __FILE__, m_section);
 		}
 		return projection;
 	}
+
+
 
 
 	template<typename T, typename outT>

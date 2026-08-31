@@ -139,13 +139,13 @@ else
     //fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02020265\\02_Travail_Realisme\\Carte\\PC_9943_UA_U08651.shp";
     //results = std::vector<std::string> (1, "323_TYFSansPre_avsp");
     //length = 20;
-    primarylocation = "D:/02_Travail_Realisme/02_Travail_Realisme/PC_9943_U08651_2028_MODB01.pri";
-    scenarios = std::vector<std::string>(1, "323_TYFSansPre_avsp");
+    primarylocation = "D:/test/Modele/PC_9584_U09471_Vg4_2023_vSSPR.pri";
+    scenarios = std::vector<std::string>(1, "6001_Determination_avsp");
     boost::filesystem::path primpath(primarylocation);
     const boost::filesystem::path basefolder = primpath.parent_path();
-    lfichierParam = "D:/02_Travail_Realisme/02_Travail_Realisme/Parametres_Bfecopt.csv";
-    fichierShp = "D:/02_Travail_Realisme/02_Travail_Realisme/Carte/PC_9943_UA_U08651.shp";
-    results = std::vector<std::string>(1, "323_TYFSansPre_avsp");
+    lfichierParam = "D:/test/parametres.csv";
+    fichierShp = "D:/test/Modele/Carte/PC_9584_UA_U09471.shp";
+    results = std::vector<std::string>(1, "test");
     length = 5;
             }
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
