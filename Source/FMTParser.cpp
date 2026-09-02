@@ -41,8 +41,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser
 {
 
-	FMTParser::FMTLineInfo::FMTLineInfo(const std::string p_line, int p_number, const std::string& p_file):
-		m_lineValue(p_line),m_lineNumber(p_number),m_file(p_file)
+	FMTParser::FMTLineInfo::FMTLineInfo(const std::string p_line, 
+		int p_number, const std::string& p_file, const std::string& p_comment):
+		m_lineValue(p_line),m_lineNumber(p_number),m_file(p_file),m_comment(p_comment)
 		{
 
 		}
@@ -51,7 +52,7 @@ namespace Parser
 	const boost::regex Parser::FMTParser::m_NUMBER = boost::regex("-?[\\d.,]+(?:E-?[\\d.,]+)?", boost::regex_constants::icase);
 	const boost::regex Parser::FMTParser::m_REMOVE_COMMENT = boost::regex("^(.*?)([;]+.*)");
 	const boost::regex Parser::FMTParser::m_VALID = boost::regex("^(?!\\s*$).+");
-	const boost::regex Parser::FMTParser::m_INCLUDE = boost::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
+	const boost::regex Parser::FMTParser::m_INCLUDE = boost::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)", boost::regex_constants::icase);
 	// regex de foreeach ici?
 	const boost::regex Parser::FMTParser::m_FOR = boost::regex(
 		"^(FOREACH)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(IN)([\\s\\t]*)((\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*\\)[\\s\\t]*\\))|"//thematic for each
@@ -1335,69 +1336,99 @@ std::vector<std::string>FMTParser::regexLoop(const boost::regex& cutregex, std::
 
 
 	std::string FMTParser::getCleanLine(std::istream& stream) const
-        {
-        ++m_line;
-		std::string newline;
+	{
+		++m_line;
+
 		std::string line;
-		try{
+		std::string newline;
+
+		try
+		{
 			if (_safeGetline(stream, line))
 			{
 				m_comment.clear();
 				_clearComments(line);
 
-				//std::string fullline = newline;
-			   // newline = "";
-			
 				newline.reserve(line.size());
-				for(int loc = 0; loc < static_cast<int>(line.size()); ++loc)
-					{
-					const char& VALUE = line.at(loc);
-					if(m_inComment)
-						{
-						if (VALUE =='}')
-							{
-							m_inComment = false;
-							}
-						}else{
-						if (VALUE =='{')
-							{
-							m_inComment = true;
-							}else{
-							newline+=toupper(VALUE);
-							}
-						}
-					}
-				if (m_inComment && !m_comment.empty() && m_comment.find('}') != std::string::npos)
-					{
-					m_inComment = false;
-					}
-				if (!m_comment.empty() && m_comment.find('{') != std::string::npos)
-					{
-					m_inComment = true;
-					}
-				 } else if(std::ifstream* ifs = dynamic_cast<std::ifstream*>(&stream) )
-					{
-					 ifs->close();
-					}
-			
-        boost::trim(newline);
-		if (newline.empty() && m_inComment && !m_comment.empty() && m_comment.find('}') != std::string::npos &&
-			(m_comment.find('{') == std::string::npos || m_comment.find('{') < m_comment.find('}')))
-			{
-			m_inComment = false;
-			}
-		}catch (...)
-			{
-			_exhandler->raiseFromCatch("", "FMTParser::getCleanLine", __LINE__, __FILE__, m_section);
-			}
-        return newline;
-        }
 
-	std::string FMTParser::_getLine(std::queue<FMTLineInfo>& p_Lines) const
+				for (char value : line)
+				{
+					if (value == '{')
+					{
+						m_inComment = true;
+						continue;
+					}
+
+					if (value == '}')
+					{
+						m_inComment = false;
+						continue;
+					}
+
+					if (!m_inComment)
+					{
+						newline.push_back(value);
+					}
+				}
+
+				const size_t openPos = m_comment.find('{');
+				const size_t closePos = m_comment.find('}');
+
+				if (m_inComment && closePos != std::string::npos)
+				{
+					m_inComment = false;
+				}
+
+				if (openPos != std::string::npos)
+				{
+					m_inComment = true;
+				}
+			}
+			else if (auto* ifs = dynamic_cast<std::ifstream*>(&stream))
+			{
+				ifs->close();
+			}
+
+			boost::trim(newline);
+
+			if (newline.empty() &&
+				m_inComment)
+			{
+				const size_t openPos = m_comment.find('{');
+				const size_t closePos = m_comment.find('}');
+
+				if (closePos != std::string::npos &&
+					(openPos == std::string::npos ||
+						openPos < closePos))
+				{
+					m_inComment = false;
+				}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raiseFromCatch(
+				"",
+				"FMTParser::getCleanLine",
+				__LINE__,
+				__FILE__,
+				m_section);
+		}
+
+		return newline;
+	}
+
+	std::string FMTParser::_getLine(std::queue<FMTLineInfo>& p_Lines,
+									bool p_ToCapital) const
 		{
 		std::string returnedValue = p_Lines.front().m_lineValue;
+		if (p_ToCapital)
+			{
+			boost::to_upper(returnedValue);
+			}
 		m_line = p_Lines.front().m_lineNumber;
 		m_location = p_Lines.front().m_file;
+		m_comment = p_Lines.front().m_comment;
 		p_Lines.pop();
 		return returnedValue;
 		}
@@ -1455,7 +1486,8 @@ std::map<std::string, std::vector<std::string>>  FMTParser::_getForLoops(const s
 		else if (!std::string(kmatch[10]).empty())
 		{
 			const int theme = _getNum<int>(std::string(kmatch[10])) - 1;
-			std::string aggregate = kmatch[12];
+			std::string aggregate(kmatch[12]);
+			boost::to_upper(aggregate);
 			allValues[TARGET] = p_themes[theme].getAttributes(aggregate,true);
 		}
 		else if (!std::string(kmatch[19]).empty() || !std::string(kmatch[26]).empty())
@@ -1738,7 +1770,7 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 				OGRFieldDefn* FIELD_DEF = FIELD_DEFINITIONS->GetFieldDefn(iField);
 				std::string FieldName = FIELD_DEF->GetNameRef();
 				FieldName = p_VariableName + "." + FieldName;
-				boost::to_upper(FieldName);
+				//boost::to_upper(FieldName);
 				fieldsData[FieldName] = std::vector<std::string>();
 				fieldsData[FieldName].swap(Data[iField]);
 				}
@@ -1757,7 +1789,9 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 		p_queue.pop();
 		std::string Line = FULL_LINE.m_lineValue;
 		m_line = FULL_LINE.m_lineNumber;
-		if (!_isForLoops(FULL_LINE.m_lineValue) && Line.find("FOREACH") != std::string::npos)
+		const boost::regex FOR_EXPRESSION("foreach", boost::regex::icase);
+		if (!_isForLoops(FULL_LINE.m_lineValue) && 
+			boost::regex_search(Line, FOR_EXPRESSION))
 		{
 			size_t OpeningBraces = 0;
 			size_t ClosingBraces = 0;
@@ -1770,7 +1804,8 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 				ClosingBraces = std::count(Line.begin(), Line.end(), ')');
 			} while (OpeningBraces > ClosingBraces && !p_queue.empty());
 		}
-		return FMTLineInfo(Line, FULL_LINE.m_lineNumber, FULL_LINE.m_file);
+		return FMTLineInfo(Line, FULL_LINE.m_lineNumber, 
+			FULL_LINE.m_file, FULL_LINE.m_comment);
 	}
 
 	std::string FMTParser::_processConstants(std::string p_input,
@@ -1888,11 +1923,13 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 							size_t variableID = 0;
 							for (const auto& VARIABLE : Variables)
 							{
-								ModifiedLine = boost::regex_replace(ModifiedLine, boost::regex(VARIABLE), VariablesData[variableID][REPLACER_ID]);
+								const boost::regex VARIABLE_EXPRESSION(VARIABLE, boost::regex::icase);
+								ModifiedLine = boost::regex_replace(ModifiedLine, 
+									VARIABLE_EXPRESSION, VariablesData[variableID][REPLACER_ID]);
 								boost::trim(ModifiedLine);
 								++variableID;
 							}
-							ForloopQueues[UnrolId].push_back(FMTLineInfo(ModifiedLine,m_line,m_location));
+							ForloopQueues[UnrolId].push_back(FMTLineInfo(ModifiedLine,m_line,m_location,m_comment));
 							++UnrolId;
 						}
 					}else {
@@ -1940,7 +1977,7 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 				const std::string LINE = getCleanLine(p_stream);
 				if (!LINE.empty())
 				{
-					lines.push(FMTLineInfo(LINE, m_line, m_location));
+					lines.push(FMTLineInfo(LINE, m_line, m_location,m_comment));
 				}
 			}
 		}catch (...)

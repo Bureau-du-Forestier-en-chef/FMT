@@ -64,12 +64,16 @@ class FMTEXPORT FMTScheduleParser: public FMTParser
 		@brief Read a schedule section and turn it into a vector of schedules.
 		@param[in] themes the themes.
 		@param[in] actions the actions.
+		@param[in] p_constants the constants.
 		@param[in] location the file location.
 		@param[in] tolerance the area tolerance below which a development is not selected.
 		@return the schedules.
 		*/
         std::vector<Core::FMTSchedule>read(const std::vector<Core::FMTTheme>& themes,
-			const  std::vector<Core::FMTAction>& actions,const std::string& location,double tolerance = FMT_DBL_TOLERANCE);
+			const Core::FMTConstants& p_constants,
+			const std::vector<Core::FMTAction>& actions,
+			const std::string& location,
+			double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTScheduleParser::write
 		/**
 		@brief Write a vector of schedules to a schedule file.

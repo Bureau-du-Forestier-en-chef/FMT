@@ -83,6 +83,7 @@ namespace Parser {
 	}
 	std::vector<Core::FMTSchedule> FMTScheduleParser::read(
 		const std::vector<Core::FMTTheme>& themes,
+		const Core::FMTConstants& p_constants,
 		const std::vector<Core::FMTAction>& actions, 
 		const std::string& location, 
 		double tolerance)
@@ -92,12 +93,14 @@ namespace Parser {
 			std::ifstream schedulestream(location);
 			if (FMTParser::tryOpening(schedulestream, location))
 			{
+				std::queue<FMTParser::FMTLineInfo>Lines = FMTParser::_getCleanLinewfor(schedulestream, 
+																		themes, p_constants);
+				
 				std::vector<std::map<Core::FMTAction, std::map<Core::FMTDevelopment, std::map<int, double>>>>data;
 				bool uselock = false;
-				bool firstline = true;
-				while (schedulestream.is_open())
+				while (!Lines.empty())
 				{
-					std::string line = FMTParser::getCleanLine(schedulestream);
+					const std::string line = _getLine(Lines);
 					if (!line.empty())
 					{
 						std::vector<std::string>values;
@@ -108,16 +111,9 @@ namespace Parser {
 						}
 						else {
 							int variable = getVariable();
-							if (firstline&&line.find("_FUTURE")==std::string::npos&&
-								line.find("_EXISTING")==std::string::npos&&
-								(values.size()-themes.size())==5)
-								{
-								uselock = true;
-								}
-							firstline = false;
 							std::string mask = "";
-							int id = 0;
-							for (; id < static_cast<int>(themes.size()); ++id)
+							size_t id = 0;
+							for (; id < themes.size(); ++id)
 							{
 								mask += values[id] + " ";
 							}
@@ -130,9 +126,13 @@ namespace Parser {
 							{
 								++id;
 								int lock = 0;
-								if(uselock)
+								
+								if(values.size() == (themes.size() + 5) &&
+									line.find("_FUTURE") == std::string::npos &&
+									line.find("_EXISTING") == std::string::npos)
 								{
 									lock = _getNum<int>(values[id]);
+									uselock = !uselock ? true : true;
 									++id;
 								}
 								const std::string actionname = values[id];

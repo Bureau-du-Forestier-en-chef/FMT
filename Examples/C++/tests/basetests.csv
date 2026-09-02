@@ -73,3 +73,4 @@ UnitTestFMTParser;;;
 testWrapperCoreWriteToProject;../../../../Examples/Models/TWD_land/TWD_land.pri|actionseries;../../tests/testWrapperCoreWriteToProject/;;;
 testSolvers;;;
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|Shift;10;3646861
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|DB_test;1;270600

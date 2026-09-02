@@ -216,10 +216,12 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 				@param[in] p_number the line number.
 				@param[in] p_file the file.
 				*/
-				FMTLineInfo(const std::string p_line, int p_number, const std::string& p_file);
+				FMTLineInfo(const std::string p_line, 
+					int p_number, const std::string& p_file, const std::string& p_comment);
 				std::string m_lineValue;
 				int m_lineNumber;
 				std::string m_file;
+				std::string m_comment;
 			};
 		// DocString: FMTParser::m_SEPARATOR
 		///A regex for splitting general string.
@@ -692,10 +694,12 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		// DocString: FMTParser:::getLine
 		/**
 		@brief Get and pop the front line of a queue.
-		@param[in,out] p_Lines the queue of lines.
+		@param[in] p_Lines the queue of lines.
+		@param[in] p_ToCapital capitalize the output
 		@return the front line value.
 		*/
-		std::string _getLine(std::queue<FMTLineInfo>& p_Lines) const;
+		std::string _getLine(std::queue<FMTLineInfo>& p_Lines, 
+								bool p_ToCapital = true) const;
 	private:
 		friend class Testing::UnitTestFMTParser;
 		// DocString: FMTParser::m_VECTOR_THEME

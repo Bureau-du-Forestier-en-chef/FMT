@@ -143,7 +143,7 @@ else
     scenarios = std::vector<std::string>(1, "6001_Determination_avsp");
     boost::filesystem::path primpath(primarylocation);
     const boost::filesystem::path basefolder = primpath.parent_path();
-    lfichierParam = "D:/test/parametres.csv";
+    lfichierParam = "T:/Donnees/Usagers/TROAL1/TEST_FMT_9471/parametres.csv";
     fichierShp = "D:/test/Modele/Carte/PC_9584_UA_U09471.shp";
     results = std::vector<std::string>(1, "test");
     length = 5;

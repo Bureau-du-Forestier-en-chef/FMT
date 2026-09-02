@@ -1166,7 +1166,9 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 				{
 					const std::vector<Core::FMTAction>actions = model_it->getActions();
 					const std::vector<Core::FMTTheme>themes = model_it->getThemes();
-					schedules[location] = scheduleparser.read(themes, actions, root_solution.string());
+					const Core::FMTConstants EMPTY_CONSTANTS = Core::FMTConstants();
+					schedules[location] = scheduleparser.read(themes, EMPTY_CONSTANTS,
+											actions, root_solution.string());
 				}
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTempty_schedules,
@@ -1197,7 +1199,9 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 								const std::vector<Core::FMTAction>actions = model_it->getActions();
 								const std::vector<Core::FMTTheme>themes = model_it->getThemes();
 								const std::vector<Core::FMTActualDevelopment>area = model_it->getArea();
-								schedules[location] = scheduleparser.read(themes, actions, solutionpath.string());
+								const Core::FMTConstants EMPTY_CONSTANTS = Core::FMTConstants();
+								schedules[location] = scheduleparser.read(themes, EMPTY_CONSTANTS,
+																actions, solutionpath.string());
 							}
 							else {
 								_exhandler->raise(Exception::FMTexc::FMTempty_schedules,

@@ -99,7 +99,7 @@ std::queue<FMTParser::FMTLineInfo> FMTConstantParser::_getCleanLinewfor(std::ifs
 		while (!TempQueue.empty())
 			{
 			lines.push(TempQueue.front());
-			const std::string LINE = _getLine(TempQueue);
+			const std::string LINE = _getLine(TempQueue,false);
 			_fillConstants(constantsCopy, LINE,true);
 			}
 		lines = _processForLoopsNInclude(p_themes, constantsCopy, lines);

@@ -39,9 +39,9 @@ int main(int argc, char* argv[])
 			boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));
 			const std::vector<std::string>ORDERING = {};
 		}else {
-			PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
-			CARTE = "Carte/PC_7002071_UA_U08152.shp";
-			SCENARIO = "20_Regl_prov";
+			PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02751/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+			CARTE = "Carte/PC_9509_UA_U02751.shp";
+			SCENARIO = "14_Sc5_Determin_apsp";
 
 			//PRIMARYm_location = "T:/Donnees/Usagers/PICBR1/2024/Taille_min_bloc/PC9588_U07152_DET/PC_9588_U07152_4_Vg3_2023_vSSP05.pri";
 			//CARTE = "Carte/PC_9588_UA_U07152.shp";

@@ -1101,11 +1101,11 @@ namespace Parser
 					std::queue<std::string> EACH_LINES = _getEachLines(line, cons, outputs, themes);
 					while (!EACH_LINES.empty())
 						{
-						FinalLines.push(FMTLineInfo(EACH_LINES.front(),m_line,m_location));
+						FinalLines.push(FMTLineInfo(EACH_LINES.front(),m_line,m_location, m_comment));
 						EACH_LINES.pop();
 						}
 				}else {
-					FinalLines.push(FMTLineInfo(line,m_line, m_location));
+					FinalLines.push(FMTLineInfo(line,m_line, m_location,m_comment));
 					}
 				}
 		}catch (...)
