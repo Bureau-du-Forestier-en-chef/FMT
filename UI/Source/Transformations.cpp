@@ -140,7 +140,7 @@ namespace Wrapper {
 				passed = false;
 				throw std::out_of_range("Invalid model index");
 			}
-			Parser::FMTModelParser ModelParser = FMTFormCache::GetInstance()->GetConfiguredParser();
+			Parser::FMTModelParser ModelParser;
 			const std::string ACTION_NAME = msclr::interop::marshal_as<std::string>(p_actionName);
 			const std::string TARGET_YIELD = msclr::interop::marshal_as<std::string>(p_targetYield);
 			const std::string SCHEDULE_PRIMARYm_location = msclr::interop::marshal_as<std::string>(p_schedulePri);

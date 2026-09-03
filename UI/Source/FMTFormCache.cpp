@@ -16,43 +16,6 @@ namespace Wrapper
 	std::unique_ptr<FMTFormCache> FMTFormCache::m_Instance =
 		std::unique_ptr<FMTFormCache>(nullptr);
 
-	Parser::FMTModelParser FMTFormCache::GetConfiguredParser() const
-	{
-		Parser::FMTModelParser parser;
-
-		try
-		{
-			FMTFormLogger* mainLogger =
-				dynamic_cast<FMTFormLogger*>(Models::FMTModel::getLogger());
-
-			if (mainLogger)
-			{
-				std::unique_ptr<Logging::FMTLogger> loggerClone =
-					mainLogger->Clone();
-
-				parser.passInLogger(loggerClone);
-			}
-
-			const FMTExceptionHandlerWarning* handler =
-				GetFormHandler();
-
-			std::unique_ptr<Exception::FMTExceptionHandler> handlerClone =
-				handler->clone();
-
-			parser.passInExceptionHandler(handlerClone);
-		}
-		catch (...)
-		{
-			getExceptionHandler()->raiseFromCatch(
-				"",
-				"FMTFormCache::GetConfiguredParser",
-				__LINE__,
-				__FILE__);
-		}
-
-		return parser;
-	}
-
 	FMTFormCache* FMTFormCache::GetInstance()
 	{
 		if (!m_Instance)

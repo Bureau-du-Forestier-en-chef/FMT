@@ -324,8 +324,7 @@ namespace Wrapper
 
 		try
 		{
-			Parser::FMTModelParser Modelparser =
-				FMTFormCache::GetInstance()->GetConfiguredParser();
+			Parser::FMTModelParser Modelparser;
 
 			const std::vector<std::vector<std::string>>
 				listeExtensions =
@@ -566,17 +565,20 @@ namespace Wrapper
 
 		try
 		{
+
 			Parser::FMTScheduleParser schedulerparser;
 
-			Parser::FMTModelParser Modelparser =
-				FMTFormCache::GetInstance()
-				->GetConfiguredParser();
+
+			Parser::FMTModelParser Modelparser;
+
 
 			std::vector<Models::FMTModel> models;
+
 
 			models.push_back(
 				FMTFormCache::GetInstance()
 				->getModel(indexScenario));
+
 
 			std::vector<Core::FMTSchedule> liste =
 				Modelparser.readSchedules(
@@ -584,10 +586,13 @@ namespace Wrapper
 						nomFichierPri),
 					models).at(0);
 
+
 			if (!liste.empty())
 			{
 				retour = liste;
 			}
+
+
 		}
 		catch (...)
 		{

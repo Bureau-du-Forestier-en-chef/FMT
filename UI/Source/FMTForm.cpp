@@ -161,8 +161,7 @@ namespace Wrapper
 
 			scenarios.push_back(scenario);
 
-			Parser::FMTModelParser Modelparser =
-				FMTFormCache::GetInstance()->GetConfiguredParser();
+			Parser::FMTModelParser Modelparser;
 
 			const std::vector<Models::FMTModel> models =
 				Modelparser.readproject(

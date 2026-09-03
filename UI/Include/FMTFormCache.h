@@ -185,17 +185,6 @@ namespace Wrapper
 		*/
 		const std::string& GetLoggerFilename() const;
 
-		// DocString: FMTFormCache::GetConfiguredParser
-		/**
-		@brief Creates a parser configured with the current logger and exception handler.
-
-		Copies of the active logger and exception handler are attached to
-		the returned parser instance.
-
-		@return A configured model parser.
-		*/
-		Parser::FMTModelParser GetConfiguredParser() const;
-
 		FMTFormCache(const FMTFormCache& rhs) = delete;
 		FMTFormCache& operator =(const FMTFormCache& rhs) = delete;
 
