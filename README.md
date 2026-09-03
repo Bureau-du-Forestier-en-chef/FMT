@@ -156,7 +156,7 @@ FMT is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ
 
 
 ## 📈 Coverage
-GNU ![](https://img.shields.io/badge/coverage-71%25-orange)
-GNU ![](https://img.shields.io/badge/build-pass-brightgreen)
-MSVC ![](https://img.shields.io/badge/coverage-0%25-red)
-MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)
+GNU ![](https://img.shields.io/badge/coverage-71%25-orange)<br>
+GNU ![](https://img.shields.io/badge/build-pass-brightgreen)<br>
+MSVC ![](https://img.shields.io/badge/coverage-0%25-red)<br>
+MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)<br>
