@@ -1815,7 +1815,7 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 			// The constant token stops at whitespace, tabs, quotes, commas and
 			// parentheses so that a delimiter surrounding the constant (a quote or
 			// punctuation such as ',' '(' ')') is not part of the captured token.
-			const boost::regex Constants("(#[^\\s\\t'\"(),]*)");
+			const boost::regex Constants("(#[^\\s\\t'\"(),]*)", boost::regex_constants::icase);
 			boost::smatch matches;
 			const std::string Source(p_input);
 			std::string::const_iterator start = Source.begin();
@@ -1824,7 +1824,7 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 			Result.reserve(Source.size());
 			while (boost::regex_search(start, end, matches, Constants))
 				{
-				const std::string TARGET = matches[1].str();
+				const std::string TARGET = boost::to_upper_copy(matches[1].str());
 				Result.append(start, matches[1].first);
 				const char BEFORE = (matches[1].first != Source.begin()) ? *(matches[1].first - 1) : '\0';
 				const char AFTER = (matches[1].second != end) ? *(matches[1].second) : '\0';

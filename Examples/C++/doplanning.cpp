@@ -34,12 +34,12 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/Mod_cc_v2.pri";
-			scenario = "ROOT";
+			primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
+			scenario = "infinitforloops";
 			//primarylocation = "T:/Donnees/02_Courant/01_CPF/01_UA/_2028_2033/02571/22_Phase1_Corr_Volume/24_ModeleWS/02_Travail/2026-04-13/PC_10067_U02571_2028_Corr_volume/PC_10067_U02571_2028_MODB01.pri";
 			//scenario = "160_Equi_apsp";
 			length = 5; 
-			objectivevalue = 270600;
+			objectivevalue = 363;
 		}
 		Parser::FMTModelParser modelparser;
 		//modelparser.setDebugExceptionHandler();

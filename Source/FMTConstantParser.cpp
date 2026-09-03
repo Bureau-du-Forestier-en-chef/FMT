@@ -45,6 +45,7 @@ bool FMTConstantParser::_fillConstants(Core::FMTConstants& p_constants,
 					"FMTConstantParser::_fillConstants", __LINE__, __FILE__, m_section);
 			}
 			std::string key = std::string(kmatch[4]) + std::string(kmatch[6]);
+			boost::to_upper(key);
 			if (!std::string(kmatch[5]).empty())
 			{
 				key += ")";

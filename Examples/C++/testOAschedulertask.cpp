@@ -139,14 +139,14 @@ else
     //fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02020265\\02_Travail_Realisme\\Carte\\PC_9943_UA_U08651.shp";
     //results = std::vector<std::string> (1, "323_TYFSansPre_avsp");
     //length = 20;
-    primarylocation = "D:/test/Modele/PC_9584_U09471_Vg4_2023_vSSPR.pri";
+    primarylocation = "T:/Donnees/Usagers/TROAL1/TEST_FMT_9471/Modele/PC_9584_U09471_Vg4_2023_vSSPR.pri";
     scenarios = std::vector<std::string>(1, "6001_Determination_avsp");
     boost::filesystem::path primpath(primarylocation);
     const boost::filesystem::path basefolder = primpath.parent_path();
     lfichierParam = "T:/Donnees/Usagers/TROAL1/TEST_FMT_9471/parametres.csv";
-    fichierShp = "D:/test/Modele/Carte/PC_9584_UA_U09471.shp";
+    fichierShp = "T:/Donnees/Usagers/TROAL1/TEST_FMT_9471/Modele/Carte/PC_9584_UA_U09471.shp";
     results = std::vector<std::string>(1, "test");
-    length = 5;
+    length = 20;
             }
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTModelParser modelparser;

@@ -4,7 +4,7 @@ foreach PEUP in (peuplement1,peuplement2,peuplement3)
 	FOREACH ROW in .\TWD_land.db QUERY(
 			SELECT age, volumetotal
 			FROM yields
-			WHERE stand_name = 'PEUP'
+			WHERE stand_name = 'PEUP' and age >= #ctest
 			ORDER BY age
 			)
 		ROW.age ROW.volumetotal
