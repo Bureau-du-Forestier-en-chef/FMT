@@ -1,0 +1,95 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "release-mam",
+      "displayName": "Release MAM (Visual Studio, tests activés)",
+      "description": "Miroir des .bat de build de l'équipe (CMakeFMTVS2022vcpkg.bat / CMakeFMTVS2022vcpkg_MAM.bat), sans WITHOUT_TESTS ni GENERATE_RELEASE_PACKAGE pour avoir les exécutables de test dans build/release.",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "toolset": "v143",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "BUILD_TYPE": "Release",
+        "PARALLEL_TESTS": "8",
+        "CMAKE_TOOLCHAIN_FILE": "C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_MANIFEST_MODE": "ON"
+      },
+      "environment": {
+        "MOSEK_DIR": "C:/PROGRA~1/Mosek/10.1/",
+        "MODULE_PATH": "${sourceDir}/Modules",
+        "VCPKG_KEEP_ENV_VARS": "MOSEK_DIR;MODULE_PATH"
+      }
+    },
+    {
+      "name": "release-gc",
+      "displayName": "Release GC (Visual Studio, tests activés)",
+      "description": "Copie du preset MAM basée sur CMakeFMTVS2022vcpkg.bat (Gcyr). Adapter au minimum CMAKE_TOOLCHAIN_FILE et MOSEK_DIR au chemin réel de ta machine.",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "toolset": "v143,version=14.36.17.6",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "BUILD_TYPE": "Release",
+        "PARALLEL_TESTS": "8",
+        "CMAKE_TOOLCHAIN_FILE": "C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_MANIFEST_MODE": "ON"
+      },
+      "environment": {
+        "MOSEK_DIR": "C:/PROGRA~1/Mosek/10.1/",
+        "MODULE_PATH": "${sourceDir}/Modules",
+        "VCPKG_KEEP_ENV_VARS": "MOSEK_DIR;MODULE_PATH",
+        "VCPKG_MAX_CONCURRENCY": "5"
+      }
+    },
+    {
+      "name": "release-gl",
+      "displayName": "Release GL (Visual Studio, tests activés)",
+      "description": "Copie du preset MAM basée sur CMakeFMTVS2022vcpkg_GL.bat. Adapter au minimum CMAKE_TOOLCHAIN_FILE, MOSEK_DIR et le chemin du Ninja embarqué de VS au chemin réel de ta machine.",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "toolset": "v143",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "BUILD_TYPE": "Release",
+        "PARALLEL_TESTS": "8",
+        "CMAKE_TOOLCHAIN_FILE": "C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_MANIFEST_MODE": "ON"
+      },
+      "environment": {
+        "MOSEK_DIR": "C:/PROGRA~1/Mosek/10.1/",
+        "MODULE_PATH": "${sourceDir}/Modules",
+        "VCPKG_VISUAL_STUDIO_PATH": "C:/Program Files/Microsoft Visual Studio/2022/Professional",
+        "VCPKG_PLATFORM_TOOLSET": "v143",
+        "CMAKE_MAKE_PROGRAM": "C:/Program Files/Microsoft Visual Studio/2022/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe",
+        "PATH": "C:/Program Files/Microsoft Visual Studio/2022/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja;$penv{PATH}",
+        "VCPKG_KEEP_ENV_VARS": "MOSEK_DIR;MODULE_PATH;CMAKE_MAKE_PROGRAM;VCPKG_VISUAL_STUDIO_PATH;VCPKG_PLATFORM_TOOLSET"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "release-mam",
+      "configurePreset": "release",
+      "configuration": "Release"
+    },
+    {
+      "name": "release-gc",
+      "configurePreset": "release-gc",
+      "configuration": "Release"
+    },
+    {
+      "name": "release-gl",
+      "configurePreset": "release-gl",
+      "configuration": "Release"
+    }
+  ]
+}
