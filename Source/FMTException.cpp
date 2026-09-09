@@ -14,20 +14,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/string.hpp>
-#if defined (_MSC_VER)
-#define NOMINMAX
-#include <comdef.h>
-#include <windows.h>
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #include <boost/filesystem.hpp>
+#if defined (_MSC_VER)
+	#define NOMINMAX
 #endif
 
 #if defined (__CYGWIN__)
-#define NOMINMAX
-#include <windows.h>
-#include <iterator>
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-#include <boost/filesystem.hpp>
+	#define NOMINMAX
 #endif
 
 namespace Exception
