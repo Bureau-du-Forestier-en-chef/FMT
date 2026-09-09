@@ -53,6 +53,9 @@ external/*
 ### vscode ###
 .vs/*
 
+### CLION ###
+.idea/*
+
 ### vcpkg ###
 vcpkg/
 vcpkg-manifest-install.log
