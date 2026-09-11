@@ -1,9 +1,10 @@
 Tu es un assistant qui rédige le CHANGELOG d'un projet logiciel.
 
-Voici la liste des commits git (hors merges) pour la plage {{RANGE}} du dépôt FMT
-(Forest Management Tool, C++ / interface R). Les messages sont souvent bruts,
-incohérents ou de type « work in progress ». Ta tâche : produire un changelog propre,
-lisible et fidèle.
+Tu reçois, pour le dépôt FMT (Forest Management Tool, C++ / interface R) et la plage
+{{RANGE}} : les commits git (hors merges), éventuellement leur diff, les modifications
+NON COMMITÉES de l'arbre de travail, et les issues résolues. Les messages de commit sont
+souvent bruts, incohérents ou de type « work in progress ». Ta tâche : produire un
+changelog propre, lisible et fidèle, plus un message de commit.
 
 CONSIGNES
 1. Classe les changements selon Keep a Changelog :
@@ -19,6 +20,14 @@ CONSIGNES
    préfixe « **Breaking:** » (FR : « **Cassant :** »).
 5. Si une section DIFF est fournie plus bas, SERS-T'EN pour préciser l'analyse au-delà
    des messages de commit (fichiers réellement touchés, nature exacte du changement).
+5b. TRAVAIL EN COURS : si une section « MODIFICATIONS NON COMMITEES » est fournie, elle
+   décrit des changements présents dans l'arbre de travail mais PAS encore commités —
+   donc AUCUN message de commit ne les décrit. Ils seront commités en même temps que ce
+   changelog : tu DOIS donc les décrire aussi, au même titre que les commits. Déduis leur
+   nature des noms de fichiers, du volume par fichier et du diff s'il est fourni ; les
+   fichiers marqués « ?? » sont de NOUVEAUX fichiers (souvent des ajouts de
+   fonctionnalité). Si tu n'es pas sûr de l'intention d'un changement, reste factuel
+   plutôt que d'inventer.
 6. ISSUES RÉSOLUES : la section « ISSUES FERMEES ET RESOLUES » en bas de ce message liste
    les issues fermées comme « completed » (réellement résolues) depuis la dernière version
    ({{BASE}}, le {{BASE_DATE}}) — les fermetures « not planned » (doublons, invalides,
@@ -33,6 +42,16 @@ CONSIGNES
    justifier une nouvelle version, utilise plutôt le titre « ## [Unreleased] » (FR :
    « ## [Non publié] »), SANS date ni hash, pour accumuler jusqu'à la prochaine vraie
    version. Emploie le MÊME choix (version, ou non publié) pour les deux blocs.
+8. MESSAGE DE COMMIT : propose EN PLUS un message de commit d'une seule ligne au format
+   Conventional Commits — « type(scope): description » — en français, 72 caractères max.
+   Types : feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert.
+   Si le changement est CASSANT, ajoute « ! » après le type/scope, en cohérence avec la
+   consigne 4 (ex. « feat(FMTWrapperCore)!: renommage des methodes publiques »).
+   Base-le EN PRIORITÉ sur la section « MODIFICATIONS NON COMMITEES » (c'est ce qui sera
+   réellement commité avec ce changelog) ; le scope est le module principal touché
+   (ex. FMTWrapperCore, UI, parser).
+   S'il n'y a aucune modification non commitée, le commit ne contient que le changelog :
+   utilise alors « chore(changelog): ... ».
 
 CONTEXTE VERSION (valeurs réelles fournies par l'outil, à réutiliser telles quelles)
 - Version de base (précédente) : {{BASE}}
@@ -40,8 +59,9 @@ CONTEXTE VERSION (valeurs réelles fournies par l'outil, à réutiliser telles q
 - Dernier commit couvert       : {{HEAD}}
 
 FORMAT DE SORTIE
-Fournis DEUX blocs markdown séparés, prêts à coller TELS QUELS dans le changelog.
-Chaque bloc commence par UN titre, au choix (même choix pour les deux blocs) :
+Fournis TROIS blocs séparés : le changelog FRANÇAIS, le changelog ANGLAIS (tous deux
+prêts à coller TELS QUELS), puis le MESSAGE DE COMMIT sur une seule ligne.
+Chacun des deux blocs de changelog commence par UN titre, au choix (le MÊME pour les deux) :
   - version : « ## [vX.Y.Z] - {{DATE}} ({{HEAD}}) » où vX.Y.Z est ta proposition
     (n'invente ni la date ni le hash, réutilise ceux ci-dessus) ;
   - ou, si les changements ne justifient pas encore une version :
@@ -59,7 +79,11 @@ Chaque bloc commence par UN titre, au choix (même choix pour les deux blocs) :
 ### Added / ### Changed / ### Fixed / ### Removed   (as applicable)
 - ...
 
+=== MESSAGE DE COMMIT (Conventional Commits, une seule ligne) ===
+type(scope): description courte en français
+
 COMMITS
 {{COMMITS}}
 {{DIFF}}
+{{WORKING_TREE}}
 {{CLOSED_ISSUES}}

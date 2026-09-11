@@ -65,6 +65,50 @@ function Sync-VersionFile {
     return $old
 }
 
+# Deduit un message Conventional Commit a partir des fichiers non commites.
+# Ne renvoie un type que si le signal est NET ; sinon $null (on n'invente pas de type,
+# ce qui inscrirait une fausse categorie dans l'historique git).
+function Get-SuggestedCommitMessage {
+    param([string[]]$StatusLines)
+    if (-not $StatusLines -or $StatusLines.Count -eq 0) { return $null }
+
+    $paths = @(); $nNew = 0; $nRen = 0; $nDel = 0; $nMod = 0
+    foreach ($line in $StatusLines) {
+        if ($line.Length -lt 4) { continue }
+        $code = $line.Substring(0, 2)
+        $rest = $line.Substring(3).Trim()
+        if ($rest -match '->') { $rest = ($rest -split '->')[-1] }   # renommage : garder la cible
+        $paths += $rest.Trim().Trim('"')
+        if     ($code -match '\?') { $nNew++ }
+        elseif ($code -match 'R')  { $nRen++ }
+        elseif ($code -match 'D')  { $nDel++ }
+        else                       { $nMod++ }
+    }
+    if ($paths.Count -eq 0) { return $null }
+    $total = $paths.Count
+
+    $isCi    = @($paths | Where-Object { $_ -match '^\.github/' -or $_ -match '(^|/)(\.gitlab-ci\.yml|azure-pipelines\.yml)$' }).Count
+    $isTest  = @($paths | Where-Object { $_ -match '(^|/)tests?/' }).Count
+    $isDoc   = @($paths | Where-Object { $_ -match '\.md$' }).Count
+    $isBuild = @($paths | Where-Object { $_ -match '(CMakeLists\.txt|CMakePresets\.json|\.cmake|vcpkg[^/]*\.json|\.bat|\.sh)$' }).Count
+
+    # Scope = premier segment de chemin le plus frequent.
+    $scope = (@($paths | ForEach-Object { ($_ -split '/')[0] }) |
+              Group-Object | Sort-Object Count -Descending | Select-Object -First 1).Name
+
+    $type = $null; $desc = $null
+    if     ($isCi    -eq $total) { $type = 'ci';    $desc = "mise a jour de l'integration continue" }
+    elseif ($isTest  -eq $total) { $type = 'test';  $desc = 'mise a jour des tests' }
+    elseif ($isDoc   -eq $total) { $type = 'docs';  $desc = 'mise a jour de la documentation' }
+    elseif ($isBuild -eq $total) { $type = 'build'; $desc = 'mise a jour de la configuration de build' }
+    elseif ($nRen -gt 0 -and $nRen -ge $nNew) { $type = 'refactor'; $desc = "deplacement/renommage de $nRen fichier(s)" }
+    elseif ($nNew -gt 0 -and $nNew -ge $nMod) { $type = 'feat';     $desc = "ajout de $nNew fichier(s)" }
+    else { return $null }   # signal ambigu -> pas de type invente
+
+    if ($scope -and $scope -notmatch '\.') { return "${type}(${scope}): $desc" }
+    return "${type}: $desc"
+}
+
 # Racine du depot.
 $repoRoot = (& git rev-parse --show-toplevel 2>$null)
 if (-not $repoRoot) { Write-Error "Ce dossier n'est pas un depot git."; exit 1 }
@@ -159,10 +203,23 @@ if (-not $isUnreleased) {
     }
 }
 
-# Message de commit (demande ; defaut = version, ou libelle changelog en mode Unreleased).
-$defaultMsg = if ($isUnreleased) { 'Mise a jour du changelog (Unreleased)' } else { $version }
+# Le commit embarque-t-il autre chose que les changelogs ? (git add -A ratisse tout)
+$otherChanges = @(& git status --porcelain | Where-Object { $_ -notmatch 'CHANGELOG(\.fr)?\.md$' })
+$hasCode = $otherChanges.Count -gt 0
+$suggested = Get-SuggestedCommitMessage -StatusLines $otherChanges
+
+# Message de commit (demande ; le defaut est DEDUIT des changements non commites).
+$defaultMsg =
+    if (-not $isUnreleased)  { $version }
+    elseif ($suggested)      { $suggested }
+    elseif ($hasCode)        { 'mise a jour du code et du changelog' }
+    else                     { 'chore(changelog): mise a jour de la section Unreleased' }
 $msg = $defaultMsg
 if (-not $DryRun) {
+    if ($hasCode -and $isUnreleased) {
+        Write-Host "Note : le commit inclut $($otherChanges.Count) fichier(s) hors changelog." -ForegroundColor Yellow
+        Write-Host "       Copilot propose un message en fin de reponse : collez-le (Ctrl+V)." -ForegroundColor Yellow
+    }
     $entered = Read-Host "Message de commit (Entree = $defaultMsg)"
     if (-not [string]::IsNullOrWhiteSpace($entered)) { $msg = $entered }
 }
