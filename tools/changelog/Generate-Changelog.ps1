@@ -154,30 +154,65 @@ if ($issuesData.Source -ne 'none') {
     }
 }
 
+# Modifications non commitees de l'arbre de travail, changelogs exclus (sinon
+# le prompt decrirait sa propre sortie).
+$wtPathspec = @('--', '.', ':(exclude)CHANGELOG.md', ':(exclude)CHANGELOG.fr.md')
+$wtStatus   = @(& git status --porcelain | Where-Object { $_ -notmatch 'CHANGELOG(\.fr)?\.md$' })
+$wtCount    = $wtStatus.Count
+
 # Recuperer les commits (hors merges).
 $commits = & git log $range --no-merges --pretty=format:'- %s (%h, %an, %ad)' --date=short
-if (-not $commits) {
-    Write-Host "Aucun commit a documenter pour la plage '$range'." -ForegroundColor Yellow
+$count   = if ($commits) { ($commits | Measure-Object -Line).Lines } else { 0 }
+if ($count -eq 0 -and $wtCount -eq 0) {
+    Write-Host "Rien a documenter : aucun commit sur '$range' et aucun changement non commite." -ForegroundColor Yellow
     exit 0
 }
-$count = ($commits | Measure-Object -Line).Lines
-$commitsText = ($commits -join "`r`n")
+$commitsText = if ($commits) { ($commits -join "`r`n") } else { '(aucun nouveau commit depuis la base)' }
 
-# Section DIFF optionnelle.
+# Budget de diff partage : le travail non commite est PRIORITAIRE (aucun message de
+# commit ne le decrit), le diff des commits prend ce qui reste.
+$budget = $MaxDiffChars
+
+# Section MODIFICATIONS NON COMMITEES.
+$workingTreeBlock = ''
+$wtDiffChars = 0
+if ($wtCount -gt 0) {
+    $wtStat = (& git diff HEAD --stat @wtPathspec | Out-String).TrimEnd()
+    $parts  = @("MODIFICATIONS NON COMMITEES (arbre de travail, changelogs exclus) - $wtCount entree(s) :",
+                ($wtStatus -join "`r`n"))
+    if ($wtStat) { $parts += @('', 'Volume par fichier :', $wtStat) }
+    if ($Diff) {
+        $wtFull = (& git diff HEAD @wtPathspec | Out-String).TrimEnd()
+        $wtDiffChars = $wtFull.Length
+        if ($wtDiffChars -gt $budget) {
+            $wtFull = $wtFull.Substring(0, $budget) +
+                      "`r`n`r`n... [diff non commite tronque a $budget caracteres] ..."
+            $budget = 0
+        } else {
+            $budget -= $wtDiffChars
+        }
+        if ($wtFull) { $parts += @('', 'DIFF complet des changements non commites :', $wtFull) }
+    }
+    $workingTreeBlock = "`r`n`r`n" + ($parts -join "`r`n")
+}
+
+# Section DIFF des commits (optionnelle, sur le budget restant).
 $diffBlock = ''
 $diffChars = 0
 if ($Diff) {
     if (-not $Since) {
-        Write-Host "Attention : -Diff sans reference de base ; diff omis. Precisez un tag/hash." -ForegroundColor Yellow
+        Write-Host "Attention : -Diff sans reference de base ; diff des commits omis." -ForegroundColor Yellow
+    } elseif ($budget -le 0) {
+        Write-Host "Budget de diff epuise par le travail non commite ; diff des commits omis." -ForegroundColor Yellow
     } else {
         $stat = (& git diff --stat $Since HEAD | Out-String).TrimEnd()
         $full = (& git diff $Since HEAD | Out-String).TrimEnd()
         $diffChars = $full.Length
-        if ($diffChars -gt $MaxDiffChars) {
-            $full = $full.Substring(0, $MaxDiffChars) +
-                    "`r`n`r`n... [diff tronque a $MaxDiffChars caracteres - restreignez la plage] ..."
+        if ($diffChars -gt $budget) {
+            $full = $full.Substring(0, $budget) +
+                    "`r`n`r`n... [diff tronque a $budget caracteres - restreignez la plage] ..."
         }
-        $diffBlock = "`r`n`r`nDIFF (plage $range) - resume :`r`n$stat`r`n`r`nDIFF complet :`r`n$full"
+        $diffBlock = "`r`n`r`nDIFF DES COMMITS (plage $range) - resume :`r`n$stat`r`n`r`nDIFF complet :`r`n$full"
     }
 }
 
@@ -198,6 +233,7 @@ $prompt = $template.
     Replace('{{ISSUES_URL}}',$issuesUrl).
     Replace('{{COMMITS}}',   $commitsText).
     Replace('{{DIFF}}',      $diffBlock).
+    Replace('{{WORKING_TREE}}', $workingTreeBlock).
     Replace('{{CLOSED_ISSUES}}', $closedIssuesBlock)
 
 # Copier dans le presse-papier.
@@ -208,10 +244,19 @@ Write-Host ""
 Write-Host "==================================================================" -ForegroundColor Cyan
 Write-Host "  Prompt CHANGELOG copie dans le presse-papier." -ForegroundColor Green
 Write-Host "  Plage : $range  ($count commits)  base=$baseDesc  HEAD=$headHash" -ForegroundColor Green
+if ($wtCount -gt 0) {
+    $wtNote = if ($Diff -and $wtDiffChars) { " (diff joint : $wtDiffChars caracteres)" } else { ' (liste + volume par fichier)' }
+    Write-Host "  Non commite : $wtCount entree(s) de l'arbre de travail injectees$wtNote." -ForegroundColor Yellow
+    Write-Host "                -> elles seront commitees AVEC le changelog qui les decrit." -ForegroundColor Yellow
+} else {
+    Write-Host "  Non commite : rien (arbre de travail propre)." -ForegroundColor DarkGray
+}
 if ($Diff -and $diffChars) {
-    Write-Host "  Diff joint : $diffChars caracteres (max $MaxDiffChars)." -ForegroundColor Green
-} elseif (-not $Diff) {
-    Write-Host "  (messages de commit seuls)" -ForegroundColor DarkGray
+    Write-Host "  Diff des commits joint : $diffChars caracteres (plafond global $MaxDiffChars, partage)." -ForegroundColor Green
+} elseif ($Diff) {
+    Write-Host "  Diff des commits : omis (plafond consomme par le diff non commite)." -ForegroundColor Yellow
+} else {
+    Write-Host "  (sans diff du code : messages de commit + liste des fichiers)" -ForegroundColor DarkGray
 }
 if ($issuesData.Source -eq 'none') {
     Write-Host "  Issues : non recuperees (gh/API indispo) ; le prompt pointe vers :" -ForegroundColor DarkGray
@@ -221,5 +266,6 @@ if ($issuesData.Source -eq 'none') {
 }
 Write-Host "==================================================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  -> Collez ce prompt dans Copilot ; sa reponse ira dans CHANGELOG.fr.md / CHANGELOG.md." -ForegroundColor DarkGray
+Write-Host "  -> Collez ce prompt dans Copilot. Sa reponse contient 3 blocs :" -ForegroundColor DarkGray
+Write-Host "     changelog FR, changelog EN, et un message de commit a coller a l'invite." -ForegroundColor DarkGray
 Write-Host ""
