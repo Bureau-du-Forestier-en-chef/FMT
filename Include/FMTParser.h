@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTutility.h"
 #include <array>
 #include <ctime>
+#include <mutex>
 
 
 #include <boost/thread/recursive_mutex.hpp>
@@ -738,9 +739,6 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		// DocString: FMTParser::m_included
 		///lines comming from an included file.
 		//std::queue<std::string>m_included;
-		// DocString: FMTParser::gdalInitialization;
-		///True if GDAL has been initialized.
-		static bool gdalInitialization;
 		// DocString: FMTParser::_safeGetline
 		/**
 		@brief Safe getline function for Linux and Windows.
@@ -750,10 +748,10 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		*/
 		std::istream& _safeGetline(std::istream& is, std::string& t) const;
 		#ifdef FMTWITHGDAL
-			// DocString: FMTParser::gdalInitialization
-			/**
-			Initialize GDAL once
-			*/
+			// DocString: FMTParser::gdalInitFlag;
+			///True if GDAL has been initialized.
+			static std::once_flag gdalInitFlag;
+			static void _tryToInitializeGDAL();
 			static void _initializeGDAL();
 			// DocString: FMTParser::_queryDatabase
 			/**

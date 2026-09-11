@@ -84,8 +84,6 @@ namespace Parser
 
 	std::map<Core::FMTsection, std::string>FMTParser::primarym_sections = std::map<Core::FMTsection, std::string>();
 
-bool FMTParser::gdalInitialization = false;
-
 Core::FMTsection FMTParser::fromExtension(const std::string& ext)
     {
 	try {
@@ -153,10 +151,22 @@ std::string FMTParser::createSubDirectory(const std::string& p_Directory,
 }
 
 #if defined FMTWITHGDAL
+
+std::once_flag Parser::FMTParser::gdalInitFlag;
+
+void FMTParser::_tryToInitializeGDAL()
+{
+		std::call_once(
+			gdalInitFlag,
+			[]
+		{
+			_initializeGDAL();
+		});
+	
+}
+
 void FMTParser::_initializeGDAL()
 	{
-	if (!gdalInitialization)
-		{
 		const std::string baseruntimelocation = getRuntimeLocation();
 		const boost::filesystem::path GDAL_PATH = boost::filesystem::path(baseruntimelocation) / boost::filesystem::path("GDAL_DATA");
 		if (!boost::filesystem::is_directory(GDAL_PATH))
@@ -176,8 +186,6 @@ void FMTParser::_initializeGDAL()
 				OSRSetPROJSearchPaths(projsearch.data());
 		#endif
 		GDALAllRegister();
-		gdalInitialization = true;
-		}
 	}
 std::vector<GDALDriver*> FMTParser::_getAllGDALDrivers(const char* spatialtype,bool testcreation) const
 {
@@ -262,7 +270,7 @@ FMTParser::FMTParser() : Core::FMTObject(),
 		m_MostRecentFile()
         {
 		#ifdef FMTWITHGDAL
-			_initializeGDAL();
+			_tryToInitializeGDAL();
 		#endif
         }
 

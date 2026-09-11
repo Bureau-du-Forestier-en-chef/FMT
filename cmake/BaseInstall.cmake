@@ -59,6 +59,11 @@
           	COMMAND "${PYTHON}" -m ensurepip
          	 WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
        		 )
+		#Install pybind11
+		execute_process(
+          	COMMAND "${PYTHON}" -m pip install pybind11 pybind11-stubgen
+         	 WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+       		 )
 		#Call pip from python and install it....
 		execute_process(
           	COMMAND "${PYTHON}" -m pip install wheel

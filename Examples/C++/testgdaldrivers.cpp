@@ -10,9 +10,19 @@ int main(int argc, char* argv[])
 {
 	#ifdef FMTWITHGDAL
 		Logging::FMTDefaultLogger().logStamp();
-		const std::string DriverType =  argv[1];
-		const std::string DriverName =  argv[2];
-		const std::string DriverExtension =  argv[3];
+		std::string DriverType;
+		std::string DriverName;
+		std::string DriverExtension;
+		if (argc>1)
+			{
+				DriverType = argv[1];
+				DriverName = argv[2];
+				DriverExtension = argv[3];
+			}else{
+				DriverType = "vector";
+				DriverName = "ESRI Shapefile";
+				DriverExtension = "shp";
+			}
 		Parser::FMTAreaParser AreaParser;
 		std::vector<std::string>Drivers;
 		std::vector<std::string>Extensions;

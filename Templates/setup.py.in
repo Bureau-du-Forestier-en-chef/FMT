@@ -1,55 +1,163 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 from pathlib import Path
-from glob import glob
-import os
+import shutil,sys
+
+
+
+def clean_build_artifacts():
+    """Remove old build artifacts."""
+
+    for path in (
+        "build",
+        "dist",
+        "FMT.egg-info",
+    ):
+        shutil.rmtree(path, ignore_errors=True)
+		
+def cleanup_generated_files():
+    """Remove all temporary files generated for wheel creation."""
+
+    print("Cleaning temporary build files...")
+
+    shutil.rmtree("build", ignore_errors=True)
+    shutil.rmtree("FMT.egg-info", ignore_errors=True)
+    shutil.rmtree("FMT", ignore_errors=True)
+
+    for stub in Path(".").glob("*.pyi"):
+        print(f"Removing {stub}")
+        stub.unlink(missing_ok=True)
+
+
+def remove_stale_stubs():
+    """Remove old generated top-level stubs."""
+
+    for stub in Path(".").glob("*.pyi"):
+        print(f"Removing stale stub: {stub}")
+        stub.unlink(missing_ok=True)
+
+    if Path("FMT").exists():
+        shutil.rmtree("FMT", ignore_errors=True)
+
+
+def generate_stubs():
+    """Generate and normalize pybind11 stubs."""
+
+    try:
+        from pybind11_stubgen import main as pybind_main
+
+        remove_stale_stubs()
+
+        pybind_main(
+            [
+                "FMT",
+                "-o",
+                ".",
+            ]
+        )
+
+        Path("py.typed").touch(exist_ok=True)
+        
+        sys.path.append(str(Path(r"@CMAKE_CURRENT_SOURCE_DIR@") / "Templates"))
+        
+        import normalize_stubs
+
+        normalize_stubs.main()
+
+        print("Successfully generated Python stubs.")
+
+    except Exception as exc:
+        raise RuntimeError(
+            f"Failed to generate stubs: {exc}"
+        ) from exc
+        
+def install_stubs():
+
+    for stub in Path("FMT").glob("*.pyi"):
+        shutil.copy2(stub, Path(stub.name))
+
+    shutil.copy2(
+        Path("FMT/__init__.pyi"),
+        Path("__init__.pyi"),
+    )
+
 
 try:
     from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+
     class bdist_wheel(_bdist_wheel):
+
         def finalize_options(self):
-            _bdist_wheel.finalize_options(self)
+            super().finalize_options()
             self.root_is_pure = False
+
+        def run(self):
+
+            print("Cleaning previous artifacts...")
+            clean_build_artifacts()
+
+            print("Generating stubs...")
+            generate_stubs()
+            
+            print("install_stubs...")
+            install_stubs()
+
+            print("Building wheel...")
+            super().run()
+
+            print("Cleaning temporary build files...")
+            cleanup_generated_files()
 except ImportError:
     bdist_wheel = None
+
 
 def generate_YieldPredModels(base_dir="YieldPredModels"):
     base = Path(__file__).parent / base_dir
     patterns = []
-    for path in base.glob("**"):
+
+    for path in base.rglob("*"):
         if path.is_dir() and any(path.iterdir()):
             rel = path.relative_to(Path(__file__).parent)
-            patterns.append(rel.as_posix() + "/*")  
-    
+            patterns.append(rel.as_posix() + "/*")
+
     return patterns
+
 
 setup(
     name="FMT",
     version="@PROJECT_VERSION@",
     description="Forest Management Tool",
-    long_description="FMT is a C++ library made to interpret forest planning models based on Woodstock files formulation. FMT can be used through Python, Cran-R or directly from C++. FMT's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. The objective behind this project is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.",
+    long_description=(
+        "FMT is a C++ library made to interpret forest planning "
+        "models based on Woodstock files formulation. "
+        "FMT can be used through Python, R, or directly from C++."
+    ),
     url="https://github.com/Bureau-du-Forestier-en-chef/FMT",
     author="Guillaume Cyr",
-    author_email="Guillaume Cyr <Guillaume.Cyr@fec.gouv.qc.ca>",
-    install_requires=[],
-    extras_require={},
-    include_package_data=True,
+    author_email="Guillaume.Cyr@fec.gouv.qc.ca",
+    python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*",
     packages=["FMT"],
     package_dir={"FMT": ""},
-    package_data={"FMT": [
-        "*.dll", 
-        "*.lib", 
-        "*.exp", 
-        "*.pyd", 
-        "GDAL_DATA/*.*", 
-        "GDAL_DATA/html/*.*",
-        "LICENSES/*",
-        "LICENSES/*/*",
-        "CHANGELOG.md",
-        "CHANGELOG.fr.md",
-        "proj/*",
-        ] + generate_YieldPredModels()
-        },
-    entry_points={},
-    python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*",
-    cmdclass={'bdist_wheel': bdist_wheel}
+    include_package_data=True,
+    package_data={
+        "FMT": [
+            "*.dll",
+            "*.lib",
+            "*.exp",
+            "*.pyd",
+            "*.so",
+            "*.pyi",
+            "py.typed",
+            "GDAL_DATA/*.*",
+            "GDAL_DATA/html/*.*",
+            "LICENSES/*",
+            "LICENSES/*/*",
+            "CHANGELOG.md",
+            "CHANGELOG.fr.md",
+            "proj/*",
+        ]
+        + generate_YieldPredModels()
+    },
+    cmdclass={
+        "bdist_wheel": bdist_wheel
+    },
 )

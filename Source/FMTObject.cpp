@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTFreeExceptionHandler.h"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/dll/runtime_symbol_info.hpp>
 #include <boost/stacktrace.hpp>
 #include <exception>
 #include <chrono>
@@ -28,10 +29,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#ifndef NOMINMAX
 		#define NOMINMAX
 	#endif
-	#include "windows.h"
-	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-#else
-    #include <boost/dll/runtime_symbol_info.hpp>
 #endif
 
 #if defined FMTWITHR
@@ -44,25 +41,36 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef NOMINMAX
 	#define NOMINMAX
 #endif
-#include <windows.h>
 #endif
 
-#if defined __unix
-#include <sys/sysinfo.h>
-#endif
 
 #if defined (_MSC_VER)
-#ifndef NOMINMAX
-	#define NOMINMAX
-#endif
-#include <comdef.h>
-#include <windows.h>
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-#include <boost/filesystem.hpp>
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
 #endif
 
 #if defined FMTWITHPYTHON
 	#include <boost/python.h>
+#endif
+
+// Common
+#include <cstdint>
+
+// Windows
+#if defined(_WIN32)
+	#include <windows.h>
+#endif
+
+// Linux
+#if defined(__linux__)
+	#include <sys/sysinfo.h>
+#endif
+
+// macOS
+#if defined(__APPLE__)
+	#include <mach/mach.h>
+	#include <unistd.h>
 #endif
 
 
@@ -86,22 +94,62 @@ namespace Core
 	unsigned long long FMTObject::getAvailableMemory()
 	{
 		unsigned long long available = 0;
-		try {
-			#if defined _WIN32
-			MEMORYSTATUSEX status;
-			status.dwLength = sizeof(status);
-			GlobalMemoryStatusEx(&status);
-			available = static_cast<unsigned long long>(status.ullAvailPhys);
-			#endif
-			#if defined __unix
-			struct sysinfo i;
-			short status = sysinfo(&i);
-			available = static_cast<unsigned long long>(sysinfo.freeram*sysinfo.mem_unit);
-			#endif
-		}catch (...)
-			{
-				_exhandler->raiseFromCatch("", "FMTObject::getAvailableMemory", __LINE__, __FILE__);
-			}
+
+		try
+		{
+		#if defined(_WIN32)
+
+					MEMORYSTATUSEX status{};
+					status.dwLength = sizeof(status);
+
+					if (GlobalMemoryStatusEx(&status))
+					{
+						available =
+							static_cast<unsigned long long>(
+								status.ullAvailPhys);
+					}
+
+		#elif defined(__linux__)
+
+					struct sysinfo info;
+
+					if (sysinfo(&info) == 0)
+					{
+						available =
+							static_cast<unsigned long long>(info.freeram) *
+							static_cast<unsigned long long>(info.mem_unit);
+					}
+
+		#elif defined(__APPLE__)
+
+					vm_statistics64_data_t vmstat;
+					mach_msg_type_number_t count =
+						HOST_VM_INFO64_COUNT;
+
+					if (host_statistics64(
+						mach_host_self(),
+						HOST_VM_INFO64,
+						reinterpret_cast<host_info64_t>(&vmstat),
+						&count) == KERN_SUCCESS)
+					{
+						available =
+							static_cast<unsigned long long>(
+								vmstat.free_count) *
+							static_cast<unsigned long long>(
+								getpagesize());
+					}
+
+		#endif
+		}
+		catch (...)
+		{
+			_exhandler->raiseFromCatch(
+				"",
+				"FMTObject::getAvailableMemory",
+				__LINE__,
+				__FILE__);
+		}
+
 		return available;
 	}
 
@@ -110,30 +158,8 @@ namespace Core
 	{
 		std::string strDLLpath;
 		try {
-			WCHAR   DllPath[MAX_PATH] = { 0 };
-			GetModuleFileNameW((HINSTANCE)&__ImageBase, DllPath, boost::size(DllPath));
-			std::wstring wstrpath(DllPath);
-			const std::string strpath(wstrpath.begin(), wstrpath.end());
-	#if defined (_MSC_VER)
-			const boost::filesystem::path boost_path(strpath);
-
-	#elif defined __MINGW64__ || __CYGWIN__
-			std::string clean_path;
-			if (strpath.find(":")!= std::string::npos)
-				{
-				 clean_path = strpath.substr(strpath.find(":")-1);
-				 if (strpath.find("\\")!= std::string::npos)
-					{
-					std::replace( clean_path.begin(), clean_path.end(), '\\', '/');
-					}
-				}
-			boost::filesystem::path boost_path(clean_path);
-
-	#else
-			int var;
-			boost::filesystem::path boost_path = boost::dll::symbolm_location(var);
-	#endif
-			strDLLpath = boost_path.parent_path().string();
+			boost::filesystem::path THIS_LOCATION = boost::dll::this_line_location();
+			strDLLpath = THIS_LOCATION.parent_path().string();
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTObject::getRuntimeLocation", __LINE__, __FILE__);

@@ -8,11 +8,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTSCOPEDSETRANSLATOR_Hm_included
 
 #if defined _MSC_VER
-#ifndef NOMINMAX
-    #define NOMINMAX
-#endif
-#include <windows.h>
-#include <eh.h>
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #include <windows.h>
+    #include <eh.h>
 #endif	
 
 /// Namespace for exceptions and exceptions handling (warnings and errors) thrown by FMT and all exceptions handlers available.
