@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
 #include <vector>
 #include <string>
 #include <memory>
@@ -18,7 +17,7 @@ namespace Exception
 	class FMTExceptionHandler;
 }
 
-namespace Wrapper
+namespace FMTWrapperCore
 {
 	class FMTFormLogger;
 	class FMTExceptionHandlerWarning;
@@ -32,15 +31,21 @@ namespace Wrapper
 	mechanisms for rebuilding logging and exception handling resources
 	after a crash.
 	*/
-	class FMTFormCache
+	class __declspec(dllexport) FMTFormCache
 	{
 	public:
 
 		// DocString: ~FMTFormCache()
 		/**
-		@brief Default destructor.
+		@brief Destructor.
+
+		Declare ici mais defini dans le .cpp : m_Models contient des
+		std::unique_ptr<Models::FMTModel> alors que ce header ne connait
+		FMTModel que par declaration avancee. Comme la classe est exportee,
+		un destructeur defini inline serait instancie dans chaque unite de
+		compilation cliente, qui ne peut pas detruire un type incomplet.
 		*/
-		~FMTFormCache() = default;
+		~FMTFormCache();
 
 		// DocString: FMTFormCache::getModel
 		/**
@@ -162,7 +167,7 @@ namespace Wrapper
 		*/
 		void InitializeLogger(
 			const std::string& filename,
-			System::IntPtr intptrptr);
+			void* intptrptr);
 
 		// DocString: FMTFormCache::RecoverLoggerAndHandler
 		/**
@@ -175,7 +180,7 @@ namespace Wrapper
 
 		@param[in] intptrptr Fresh managed callback function pointer.
 		*/
-		void RecoverLoggerAndHandler(System::IntPtr intptrptr);
+		void RecoverLoggerAndHandler(void* intptrptr);
 
 		// DocString: FMTFormCache::GetLoggerFilename
 		/**
@@ -193,8 +198,12 @@ namespace Wrapper
 		// DocString: FMTFormCache()
 		/**
 		@brief Default constructor.
+
+		Defini dans le .cpp pour la meme raison que le destructeur : si la
+		construction d'un membre posterieur a m_Models echoue, le deroulement
+		de pile detruit m_Models, ce qui exige FMTModel complet.
 		*/
-		FMTFormCache() = default;
+		FMTFormCache();
 
 		// DocString: FMTFormCache::m_Models
 		/**

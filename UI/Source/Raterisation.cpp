@@ -1,38 +1,38 @@
 #include "stdafx.h"
-#include "FMTModelParser.h"
-#include "FMTForest.h"
-#include "FMTAreaParser.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTForm.h"
-#include "FMTModel.h"
-#include "FMTFormCache.h"
-#include "FMTFormLogger.h"
 
-bool Wrapper::FMTForm::Raterisation(System::String^ fichierPri, int scenario, System::String^ fichierShp, System::String^ repertoireSortie, int resolution, System::String^ nomChampAge, System::String^ nomChampSuperficie, System::String^ nomChampStanlock)
+#include "FMTForm.h"
+#include "Rasterization.h"
+
+bool Wrapper::FMTForm::Raterisation(
+	System::String^ fichierPri,
+	int scenario,
+	System::String^ fichierShp,
+	System::String^ repertoireSortie,
+	int resolution,
+	System::String^ nomChampAge,
+	System::String^ nomChampSuperficie,
+	System::String^ nomChampStanlock)
 {
+	// fichierPri n'a jamais été utilisé : il reste dans la signature publique,
+	// dont dépend le UI .NET.
 	try
 	{
-		const std::vector<Core::FMTTheme> THEMES = FMTFormCache::GetInstance()->getModel(scenario).getThemes();
-		const std::vector<Core::FMTActualDevelopment> AREA = FMTFormCache::GetInstance()->getModel(scenario).getArea();
-		const std::string VECTORS_PATH = msclr::interop::marshal_as<std::string>(fichierShp);
-		const std::string OUTPUT_FOLDER = msclr::interop::marshal_as<std::string>(repertoireSortie);
-		Parser::FMTAreaParser areaparser;
-		Spatial::FMTForest forest = areaparser.vectormaptoFMTforest(
-			VECTORS_PATH,
-			resolution,
-			THEMES,
-			msclr::interop::marshal_as<std::string>(nomChampAge),
-			msclr::interop::marshal_as<std::string>(nomChampSuperficie),
-			1,
-			0.0001,
-			msclr::interop::marshal_as<std::string>(nomChampStanlock),
-			0.0);
-		areaparser.writeForestExtended(forest,
-							VECTORS_PATH, THEMES, AREA, OUTPUT_FOLDER);
-	}catch (...)
-		{
+		FMTWrapperCore::RasterizationParameters params;
+		params.vectorFilePath = msclr::interop::marshal_as<std::string>(fichierShp);
+		params.outputFolder = msclr::interop::marshal_as<std::string>(repertoireSortie);
+		params.resolution = resolution;
+		params.ageField = msclr::interop::marshal_as<std::string>(nomChampAge);
+		params.areaField = msclr::interop::marshal_as<std::string>(nomChampSuperficie);
+		params.lockField = msclr::interop::marshal_as<std::string>(nomChampStanlock);
+
+		FMTWrapperCore::Rasterization::rasterize(params, scenario);
+	}
+	catch (...)
+	{
 		_raiseFromCatch("", "Wrapper::FMTForm::Raterisation", __LINE__, __FILE__);
 		return false;
-		}
+	}
+
 	return true;
 }

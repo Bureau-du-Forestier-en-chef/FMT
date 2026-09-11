@@ -217,27 +217,29 @@ namespace FMTWrapperCore
             const SAParameters& params,
             const Models::FMTModel& baseModel);
 
+        /**
+         * @brief Exécute une simulation spatiale explicite sur un scénario du cache
+         * @param params Paramètres de simulation ; scenarioName est renseigné ici
+         * @param p_modelIndex Index du scénario dans FMTFormCache
+         * @return Résultats complets de la simulation
+         *
+         * Entrée indexée destinée au wrapper : elle résout le modèle, clone le
+         * logger de l'interface, lit les cédules du fichier primaire et journalise
+         * la progression, pour que le wrapper n'ait à manipuler aucun objet FMT.
+         */
+        static SESResults RunSES(const SESParameters& params, int p_modelIndex);
+
+        /**
+         * @brief Exécute une optimisation spatiale sur un scénario du cache
+         * @param params Paramètres d'optimisation ; scenarioName est renseigné ici
+         * @param p_modelIndex Index du scénario dans FMTFormCache
+         * @return Résultats complets de l'optimisation
+         *
+         * Entrée indexée destinée au wrapper, voir RunSES(const SESParameters&, int).
+         */
+        static SAResults RunOptimization(const SAParameters& params, int p_modelIndex);
+
     private:
-        /**
-         * @brief Filtre les contraintes selon les noms spécifiés
-         * @param allConstraints Toutes les contraintes du modèle
-         * @param selectedNames Noms des contraintes sélectionnées
-         * @return Vecteur des contraintes filtrées
-         */
-        static std::vector<Core::FMTConstraint> filterConstraints(
-            const std::vector<Core::FMTConstraint>& allConstraints,
-            const std::vector<std::string>& selectedNames);
-
-        /**
-         * @brief Filtre les outputs selon les noms spécifiés
-         * @param allOutputs Tous les outputs du modèle
-         * @param selectedNames Noms des outputs sélectionnés
-         * @return Vecteur des outputs filtrés
-         */
-        static std::vector<Core::FMTOutput> filterOutputs(
-            const std::vector<Core::FMTOutput>& allOutputs,
-            const std::vector<std::string>& selectedNames);
-
         /**
          * @brief Construit les thèmes de croissance à partir des indices
          * @param allThemes Tous les thèmes du modèle

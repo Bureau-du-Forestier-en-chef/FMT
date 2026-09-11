@@ -2,7 +2,7 @@
 #include <string>
 #include "FMTModel.h"
 #include "FMTModelParser.h"
-#include "Tools.h"
+#include "ModelQuery.h"
 #include <boost/filesystem.hpp>
 
 int main(int argc, char* argv[])
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	models.push_back(scenarioModelA);
 	models.push_back(scenarioModelB);
 
-	FMTWrapperCore::Tools::writeToProject(models, output_directory);
+	FMTWrapperCore::ModelQuery::writeToProject(models, output_directory);
 
 	const std::string BASENAME = models.front().getName();
 	const boost::filesystem::path OUTPUT_DIR = boost::filesystem::path(output_directory);

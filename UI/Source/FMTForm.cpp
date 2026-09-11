@@ -8,7 +8,7 @@
 #include "FMTFormCache.h"
 #include "FMTModel.h"
 #include "FMTTheme.h"
-#include "Tools.h"
+#include "Environment.h"
 
 namespace Wrapper
 {
@@ -34,7 +34,7 @@ namespace Wrapper
 					static_cast<Exception::FMTexc>(valeur));
 			}
 
-			FMTFormCache::GetInstance()->InitializeExceptionHandler(
+			FMTWrapperCore::FMTFormCache::GetInstance()->InitializeExceptionHandler(
 				defaultwarnings,
 				listeExceptions);
 		}
@@ -53,7 +53,7 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ errors = gcnew System::Collections::Generic::List<int>();
 		try
 		{
-			for (int error : FMTWrapperCore::Tools::getErrorsToIgnore())
+			for (int error : FMTWrapperCore::Environment::getErrorsToIgnore())
 			{
 				errors->Add(error);
 			}
@@ -97,8 +97,8 @@ namespace Wrapper
 				GetFunctionPointerForDelegate(
 					m_managedFeed);
 
-			FMTFormCache::GetInstance()->RecoverLoggerAndHandler(
-				m_unmanagedFeed);
+			FMTWrapperCore::FMTFormCache::GetInstance()->RecoverLoggerAndHandler(
+				m_unmanagedFeed.ToPointer());
 		}
 		catch (...)
 		{
@@ -129,9 +129,9 @@ namespace Wrapper
 				msclr::interop::marshal_as<std::string>(
 					nomFichierLogger);
 
-			FMTFormCache::GetInstance()->InitializeLogger(
+			FMTWrapperCore::FMTFormCache::GetInstance()->InitializeLogger(
 				filename,
-				m_unmanagedFeed);
+				m_unmanagedFeed.ToPointer());
 		}
 		catch (...)
 		{
@@ -170,7 +170,7 @@ namespace Wrapper
 
 			for (const Models::FMTModel& model : models)
 			{
-				FMTFormCache::GetInstance()->push_back(
+				FMTWrapperCore::FMTFormCache::GetInstance()->push_back(
 					model);
 			}
 
@@ -193,7 +193,7 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTFormCache::GetInstance()->erase(
+			FMTWrapperCore::FMTFormCache::GetInstance()->erase(
 				indexScenario);
 
 			return true;
@@ -214,7 +214,7 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTFormCache::GetInstance()->clear();
+			FMTWrapperCore::FMTFormCache::GetInstance()->clear();
 		}
 		catch (...)
 		{

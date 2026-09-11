@@ -1,4 +1,9 @@
 #include "SES.h"
+#include "Selection.h"
+#include "ModelQuery.h"
+#include "FMTFormCache.h"
+#include "FMTFormLogger.h"
+#include "FMTDefaultLogger.h"
 #include "FMTSesModel.h"
 #include "FMTSaModel.h"
 #include "FMTLpModel.h"
@@ -24,27 +29,6 @@
 
 namespace FMTWrapperCore
 {
-    std::vector<Core::FMTOutput> SES::filterOutputs(
-        const std::vector<Core::FMTOutput>& allOutputs,
-        const std::vector<std::string>& selectedNames)
-    {
-        std::vector<Core::FMTOutput> filtered;
-
-        for (const std::string& name : selectedNames)
-        {
-            for (const Core::FMTOutput& output : allOutputs)
-            {
-                if (output.getName() == name)
-                {
-                    filtered.push_back(output);
-                    break;
-                }
-            }
-        }
-
-        return filtered;
-    }
-
     std::vector<Core::FMTTheme> SES::buildGrowthThemes(
         const std::vector<Core::FMTTheme>& allThemes,
         const std::vector<int>& themeIndices)
@@ -64,27 +48,6 @@ namespace FMTWrapperCore
         }
 
         return growthThemes;
-    }
-
-    std::vector<Core::FMTConstraint> SES::filterConstraints(
-        const std::vector<Core::FMTConstraint>& allConstraints,
-        const std::vector<std::string>& selectedNames)
-    {
-        std::vector<Core::FMTConstraint> selectedConstraints;
-
-        for (const std::string& name : selectedNames)
-        {
-            for (const Core::FMTConstraint& constraint : allConstraints)
-            {
-                if (std::string(constraint) == name)
-                {
-                    selectedConstraints.push_back(constraint);
-                    break;
-                }
-            }
-        }
-
-        return selectedConstraints;
     }
 
     void SES::applySingleTransitions(Models::FMTModel& model)
@@ -166,7 +129,7 @@ namespace FMTWrapperCore
         if (!params.constraintNames.empty())
         {
             simulationModel.setConstraints(
-                filterConstraints(simulationModel.getConstraints(), params.constraintNames));
+                Selection::selectConstraints(simulationModel.getConstraints(), params.constraintNames));
         }
 
         applySingleTransitions(simulationModel);
@@ -345,7 +308,7 @@ namespace FMTWrapperCore
         if (!params.constraintNames.empty())
         {
             optimizationModel.setConstraints(
-                filterConstraints(optimizationModel.getConstraints(), params.constraintNames));
+                Selection::selectConstraints(optimizationModel.getConstraints(), params.constraintNames));
         }
 
         applySingleTransitions(optimizationModel);
@@ -591,7 +554,7 @@ namespace FMTWrapperCore
         try
         {
             const std::vector<Core::FMTOutput> allOutputs = semodel.getOutputs();
-            std::vector<Core::FMTOutput> selectedOutputs = filterOutputs(allOutputs, outputNames);
+            std::vector<Core::FMTOutput> selectedOutputs = Selection::selectOutputs(allOutputs, outputNames);
 
             outputsData.outputObjects = selectedOutputs;
 
@@ -823,5 +786,97 @@ namespace FMTWrapperCore
         {
             Exception::FMTFreeExceptionHandler().raiseFromCatch("Unknown error", "SES::exportResults", __LINE__, __FILE__);
         }
+    }
+
+    SESResults SES::RunSES(const SESParameters& params, int p_modelIndex)
+    {
+        FMTFormCache* cache = FMTFormCache::GetInstance();
+
+        // Le logger de l'interface est cloné avant d'être passé au modèle : la
+        // simulation journalise ensuite à travers le logger du modèle.
+        std::unique_ptr<Logging::FMTLogger> savedLogger;
+        {
+            FMTFormLogger* mainLogger = cache->GetFormLogger();
+            if (mainLogger)
+            {
+                savedLogger = mainLogger->Clone();
+            }
+        }
+
+        Models::FMTModel selectedModel = cache->getModel(p_modelIndex);
+
+        SESParameters localParams = params;
+        localParams.scenarioName = selectedModel.getName();
+
+        // Les cédules sont lues avant que le logger cloné ne soit passé au modèle,
+        // comme le faisait le wrapper.
+        const std::vector<Core::FMTSchedule> SCHEDULES =
+            ModelQuery::readSchedules(localParams.primaryFilePath, selectedModel);
+
+        if (savedLogger)
+        {
+            selectedModel.passInLogger(savedLogger);
+        }
+
+        // Ré-acquérir le pointeur valide vers le logger restauré.
+        FMTFormLogger* logger = cache->GetFormLogger();
+
+        *logger << "FMT -> Démarrage de la simulation pour le scénario: " + localParams.scenarioName << "\n";
+
+        SESResults results = RunSES(localParams, selectedModel, SCHEDULES);
+
+        *logger << "FMT -> Simulation terminée avec succès" << "\n";
+
+        if (localParams.carbonMode)
+        {
+            for (const auto& result : results.outputsData.results)
+            {
+                for (const auto& periodValue : result.periodValues)
+                {
+                    *logger << "outputs;" + result.outputName + ";" +
+                        std::to_string(periodValue.second) << "\n";
+                }
+            }
+        }
+
+        return results;
+    }
+
+    SAResults SES::RunOptimization(const SAParameters& params, int p_modelIndex)
+    {
+        FMTFormCache* cache = FMTFormCache::GetInstance();
+        FMTFormLogger* logger = cache->GetFormLogger();
+
+        *logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
+
+        const Models::FMTModel& BASE_MODEL = cache->getModel(p_modelIndex);
+
+        SAParameters localParams = params;
+        localParams.scenarioName = BASE_MODEL.getName();
+
+        *logger << "FMT -> Traitement pour le scénario : " + localParams.scenarioName << "\n";
+        *logger << "FMT -> Démarrage de l'optimisation" << "\n";
+
+        SAResults results = RunOptimization(localParams, BASE_MODEL);
+
+        if (!results.success)
+        {
+            *logger << "FMT -> Erreur d'optimisation: " + results.errorMessage << "\n";
+            return results;
+        }
+
+        *logger << "FMT -> Optimisation terminée avec succès" << "\n";
+        *logger << "FMT -> Exportations des sorties " << "\n";
+
+        for (const auto& result : results.outputsData.results)
+        {
+            for (const auto& periodValue : result.periodValues)
+            {
+                *logger << "outputs;" + result.outputName + ";" +
+                    std::to_string(periodValue.second) << "\n";
+            }
+        }
+
+        return results;
     }
 }

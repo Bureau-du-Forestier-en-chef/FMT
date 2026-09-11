@@ -705,17 +705,6 @@ namespace Wrapper
 			const std::string& p_method,
 			const int& p_line,
 			const std::string& p_file);
-		// DocString: FMTForm::_ObtenirArrayContraintes
-		/**
-		@brief Gets all constraints available in a model.
-
-		@param[in] indexScenario Model index.
-
-		@return Collection of model constraints.
-		*/
-		std::vector<Core::FMTConstraint> _ObtenirArrayContraintes(
-			int indexScenario);
-
 		// DocString: FMTForm::_ObtenirArrayContraintesSelectionnees
 		/**
 		@brief Filters constraints according to the user selection.
@@ -754,24 +743,6 @@ namespace Wrapper
 		std::vector<Core::FMTOutput> _ObtenirArrayOutputsSelectionnees(
 			std::vector<Core::FMTOutput> outputsBase,
 			System::Collections::Generic::List<System::String^>^ outputsSelection);
-
-		// DocString: FMTForm::_InscrireLigneFichierTexte
-		/**
-		@brief Writes a message to a text file.
-
-		Optionally creates a new file and can forward the message through
-		the feedback mechanism.
-
-		@param[in] nomFichier File path.
-		@param[in] message Message to write.
-		@param[in] indicateurFeedback Indicates whether feedback should be generated.
-		@param[in] nouveaufichier Indicates whether a new file should be created.
-		*/
-		void _InscrireLigneFichierTexte(
-			System::String^ nomFichier,
-			System::String^ message,
-			bool indicateurFeedback,
-			bool nouveaufichier);
 
 		// DocString: FMTForm::_ObtenirSEQ
 		/**

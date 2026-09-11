@@ -2,7 +2,7 @@
 
 #include "FMTExceptionHandler.h"
 
-namespace Wrapper
+namespace FMTWrapperCore
 {
 	// DocString: FMTExceptionHandlerWarning
 	/**
@@ -13,7 +13,7 @@ namespace Wrapper
 	the graphical user interface. Fatal exceptions may be rethrown
 	while warning-level exceptions are tracked and counted.
 	*/
-	public class FMTExceptionHandlerWarning :
+	class __declspec(dllexport) FMTExceptionHandlerWarning :
 		public virtual Exception::FMTExceptionHandler
 	{
 	public:

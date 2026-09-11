@@ -3,7 +3,7 @@
 #include "FMTModel.h"
 #include "FMTLpModel.h"
 #include "FMTModelParser.h"
-#include "Tools.h"
+#include "ModelQuery.h"
 #include "FMTFreeExceptionHandler.h"
 
 int main(int argc, char* argv[])
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 
 	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 
-	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
+	const double yield = FMTWrapperCore::ModelQuery::getYield(MODELS.at(0), mask, yieldName, age);
 	std::cout << "Yield: " << yield << std::endl;
 
 	// on fait des v�rifications sur le nombre renvoyer

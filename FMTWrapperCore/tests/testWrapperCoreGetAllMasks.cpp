@@ -4,7 +4,7 @@
 #include "FMTModel.h"
 #include "FMTLpModel.h"
 #include "FMTModelParser.h"
-#include "Tools.h"
+#include "ModelQuery.h"
 #include "FMTFreeExceptionHandler.h"
 #include <set>
 
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 		std::cout << "theme " + std::to_string(theme) << "\n";
 	}
 
-	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(
+	const std::set<std::string> RESULT = FMTWrapperCore::ModelQuery::getAllMasks(
 		model, periods, themesNumbers, rastpath);
 
 	// �criture sur le disque en cas de test manuel

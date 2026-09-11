@@ -1,5 +1,3 @@
-#include "stdafx.h"
-#include <msclr\marshal_cppstd.h>
 #include "FMTFormLogger.h"
 #include "FMTLogger.h"
 #include <memory>
@@ -9,17 +7,17 @@
 
 using namespace Logging;
 
-std::unique_ptr <FMTLogger> Wrapper::FMTFormLogger::Clone() const
+std::unique_ptr <FMTLogger> FMTWrapperCore::FMTFormLogger::Clone() const
 {
-	return std::unique_ptr<FMTLogger>(new Wrapper::FMTFormLogger(*this));
+	return std::unique_ptr<FMTLogger>(new FMTWrapperCore::FMTFormLogger(*this));
 }
 
-FMTLogger* Wrapper::FMTFormLogger::clone() const
+FMTLogger* FMTWrapperCore::FMTFormLogger::clone() const
 {
-	return new Wrapper::FMTFormLogger(*this);
+	return new FMTWrapperCore::FMTFormLogger(*this);
 }
 
-Wrapper::FMTFormLogger::FMTFormLogger(
+FMTWrapperCore::FMTFormLogger::FMTFormLogger(
 	const std::string& nomFichierLogger, logfunc feed)
 	: FMTLogger(), keepprint(false), m_isMainInstance(true),
 	lastprint(), sendfeedback(feed)
@@ -29,7 +27,7 @@ Wrapper::FMTFormLogger::FMTFormLogger(
 	setStreamFlush(true);
 }
 
-Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
+FMTWrapperCore::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
 	: FMTLogger(rhs), 
 	keepprint(rhs.keepprint),
 	m_isMainInstance(false),
@@ -40,14 +38,14 @@ Wrapper::FMTFormLogger::FMTFormLogger(const FMTFormLogger& rhs)
 	//filepath.clear();
 }
 
-void Wrapper::FMTFormLogger::logTime()
+void FMTWrapperCore::FMTFormLogger::logTime()
 {
 	// No-op intentionnel : sendfeedback ne peut pas être appelé depuis un thread natif.
 	// Le fichier log est ouvert une fois dans le constructeur via redirectToFile().
 	// Les timestamps sont écrits explicitement via *logger << logStamp
 }
 
-Wrapper::FMTFormLogger::~FMTFormLogger()
+FMTWrapperCore::FMTFormLogger::~FMTFormLogger()
 {
 	// Ferme et libere le flux fichier AVANT l'execution du destructeur de base
 	// FMTLogger::~FMTLogger(). Sinon, la répartition virtuelle pendant la destruction
@@ -57,7 +55,7 @@ Wrapper::FMTFormLogger::~FMTFormLogger()
 	closeFile();
 }
 
-void Wrapper::FMTFormLogger::closeFile()
+void FMTWrapperCore::FMTFormLogger::closeFile()
 {
 	if (m_FileStream)
 	{
@@ -69,24 +67,24 @@ void Wrapper::FMTFormLogger::closeFile()
 	}
 }
 
-void Wrapper::FMTFormLogger::dokeepprint()
+void FMTWrapperCore::FMTFormLogger::dokeepprint()
 {
 	keepprint = true;
 }
 
-void Wrapper::FMTFormLogger::resetkeepprint()
+void FMTWrapperCore::FMTFormLogger::resetkeepprint()
 {
 	keepprint = false;
 	lastprint.clear();
 }
 
-std::string Wrapper::FMTFormLogger::getlastprint() const
+std::string FMTWrapperCore::FMTFormLogger::getlastprint() const
 {
 	return lastprint;
 }
 
 
-void Wrapper::FMTFormLogger::_cout(const char * message) const
+void FMTWrapperCore::FMTFormLogger::_cout(const char * message) const
 {
 	if (m_FileStream && m_FileStream->is_open())
 	{
@@ -102,12 +100,12 @@ void Wrapper::FMTFormLogger::_cout(const char * message) const
 	}
 }
 
-void Wrapper::FMTFormLogger::settasklogginglevel(int taskLogLevel)
+void FMTWrapperCore::FMTFormLogger::settasklogginglevel(int taskLogLevel)
 {
 	_setLoggingLevel(taskLogLevel);
 }
 
-void Wrapper::FMTFormLogger::setdefaultlogginglevel()
+void FMTWrapperCore::FMTFormLogger::setdefaultlogginglevel()
 {
 	_setLoggingLevel(LOGLEVEL);
 }

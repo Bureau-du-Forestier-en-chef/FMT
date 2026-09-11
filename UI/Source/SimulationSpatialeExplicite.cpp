@@ -1,21 +1,8 @@
 #include "stdafx.h"
-#include <sstream>
-#include "FMTForest.h"
-#include "FMTLpModel.h"
-#include "FMTModelParser.h"
-#include "FMTSesModel.h"
-#include "FMTAreaParser.h"
-#include "FMTScheduleParser.h"
-#include "FMTTransitionParser.h"
-#include "FMTGCBMTransition.h"
-#include "FMTOutputNode.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTFormLogger.h"
+
 #include "FMTForm.h"
-#include "FMTModel.h"
-#include "FMTFormCache.h"
-#include "FMTexceptionhandlerwarning.h"
-#include "FMTDefaultLogger.h"
+#include "FMTOutput.h"
 #include "SES.h"
 
 namespace Wrapper
@@ -25,7 +12,6 @@ namespace Wrapper
         FMTWrapperCore::SESParameters ConvertirParametres(
             System::String^ fichierPri,
             System::String^ cheminRasters,
-            int scenario,
             System::Collections::Generic::List<System::String^>^ contraintes,
             int periodes,
             int greedySearch,
@@ -40,17 +26,16 @@ namespace Wrapper
             System::String^ providerGdal,
             bool indCarbon,
             System::Collections::Generic::List<System::String^>^ predictoryields,
-            System::Collections::Generic::List<int>^ growththemes,
-            const std::string& scenarioName)
+            System::Collections::Generic::List<int>^ growththemes)
         {
             FMTWrapperCore::SESParameters params;
 
-            // Conversion des chemins
+            // Conversion des chemins. scenarioName est renseigné par le Core, qui
+            // résout le modèle lui-même.
             params.primaryFilePath = msclr::interop::marshal_as<std::string>(fichierPri);
             params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
             params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
             params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
-            params.scenarioName = scenarioName;
 
             // Paramètres numériques
             params.numberOfPeriods = periodes;
@@ -89,7 +74,7 @@ namespace Wrapper
             return params;
         }
 
-    } 
+    }
 
     void FMTForm::_EnvoyerResultatsInterface(
         const FMTWrapperCore::SESResults& results,
@@ -200,55 +185,17 @@ namespace Wrapper
     {
         try
         {
-            std::unique_ptr<Logging::FMTLogger> savedLogger;
-            {
-                FMTFormLogger* mainLogger = FMTFormCache::GetInstance()->GetFormLogger();
-                if (mainLogger)
-                {
-                    savedLogger = mainLogger->Clone();
-                }
-            }
-
-            const std::string scenarioName = FMTFormCache::GetInstance()->getModel(scenario).getName();
-
-            FMTWrapperCore::SESParameters params = ConvertirParametres(
-                fichierPri, cheminRasters, scenario, contraintes, periodes,
+            const FMTWrapperCore::SESParameters PARAMS = ConvertirParametres(
+                fichierPri, cheminRasters, contraintes, periodes,
                 greedySearch, outputs, indicateurStanlock, outputLevel,
                 etanduSortiesMin, etanduSortiesMax, cheminSorties,
                 indGenererEvents, indSortiesSpatiales, providerGdal,
-                indCarbon, predictoryields, growththemes,
-                scenarioName); 
+                indCarbon, predictoryields, growththemes);
 
-            Models::FMTModel selectedModel = FMTFormCache::GetInstance()->getModel(scenario);
+            const FMTWrapperCore::SESResults RESULTS =
+                FMTWrapperCore::SES::RunSES(PARAMS, scenario);
 
-            const std::vector<Core::FMTSchedule> schedules = _ObtenirSEQ(fichierPri, scenario);
-    
-            if (savedLogger)
-            {
-                selectedModel.passInLogger(savedLogger);
-            }
-            // Re-acquérir le pointeur valide vers le logger restauré
-            FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-
-            *logger << "FMT -> Démarrage de la simulation pour le scénario: " + scenarioName << "\n";
-
-            FMTWrapperCore::SESResults results =
-                FMTWrapperCore::SES::RunSES(params, selectedModel, schedules);
-
-            *logger << "FMT -> Simulation terminée avec succès" << "\n";
-
-            if (indCarbon && !results.outputsData.results.empty())
-            {
-                for (const auto& result : results.outputsData.results)
-                {
-                    for (const auto& periodValue : result.periodValues)
-                    {
-                        *logger << "outputs;" + result.outputName + ";" + std::to_string(periodValue.second) << "\n";
-                    }
-                }
-            }
-
-            _EnvoyerResultatsInterface(results, indCarbon);
+            _EnvoyerResultatsInterface(RESULTS, indCarbon);
 
             return true;
         }
@@ -258,20 +205,4 @@ namespace Wrapper
             return false;
         }
     }
-
-    // ============================================================================
-    // ANCIENNES MÉTHODES - SUPPRIMÉES
-    // ============================================================================
-    // Toute la logique métier a été déplacée dans SES.cpp
-    // Les méthodes suivantes n'existent plus dans FMTForm :
-    // - RapportdeBris
-    // - RapportdeCarboneSpatial
-    // - EcrituredesPerturbations
-    // - EcritureDesEvenements
-    // - EcritureDesOutputs
-    // - EcrituredesOutputsSpatiaux
-    // - EcritureDesPredicteurs
-    //
-    // Toute la logique est maintenant orchestrée par SES::RunSES()
-    // ============================================================================
-} 
+}

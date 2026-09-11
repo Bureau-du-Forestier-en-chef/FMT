@@ -1,4 +1,4 @@
-#include "Tools.h"
+#include "Environment.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -10,7 +10,7 @@ int testChangeLog()
 
 	std::string log;
 	try{
-		log = FMTWrapperCore::Tools::getChangeLog();
+		log = FMTWrapperCore::Environment::getChangeLog();
 		}catch (...)
 			{
 			return 1;
@@ -28,7 +28,7 @@ int testGetErrorsToIgnore()
 {
 	std::vector<int>toIgnore;
 	try {
-		toIgnore = FMTWrapperCore::Tools::getErrorsToIgnore();
+		toIgnore = FMTWrapperCore::Environment::getErrorsToIgnore();
 	}
 	catch (...)
 	{
@@ -49,7 +49,7 @@ int testGetExceptionDescription()
 	bool failed = false;
 	for (int i = 1; i < Exception::FMTexc::FMTmaxnumberofexception;++i)
 	{
-		const std::string DESCRIPTION = FMTWrapperCore::Tools::getExceptionDescription(i);
+		const std::string DESCRIPTION = FMTWrapperCore::Environment::getExceptionDescription(i);
 		if (DESCRIPTION.empty())
 			{
 			std::cout << "Missing exception description for exception id " << i << std::endl;

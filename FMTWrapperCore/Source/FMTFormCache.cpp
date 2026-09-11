@@ -1,20 +1,24 @@
-#include "stdafx.h"
 #include <string>
 
 #include "FMTExceptionHandlerWarning.h"
 #include "FMTDefaultExceptionHandler.h"
 
-#include <msclr/marshal_cppstd.h>
 
 #include "FMTFormLogger.h"
 #include "FMTModel.h"
 #include "FMTFormCache.h"
 
-namespace Wrapper
+namespace FMTWrapperCore
 {
 
 	std::unique_ptr<FMTFormCache> FMTFormCache::m_Instance =
 		std::unique_ptr<FMTFormCache>(nullptr);
+
+	// Definis ici, ou FMTModel.h est inclus : construire ou detruire m_Models
+	// (un vector d'unique_ptr<FMTModel>) exige le type complet.
+	FMTFormCache::FMTFormCache() = default;
+
+	FMTFormCache::~FMTFormCache() = default;
 
 	FMTFormCache* FMTFormCache::GetInstance()
 	{
@@ -255,12 +259,12 @@ namespace Wrapper
 
 	void FMTFormCache::InitializeLogger(
 		const std::string& filename,
-		System::IntPtr intptrptr)
+		void* intptrptr)
 	{
 		try
 		{
 			m_loggerFilename = filename;
-			m_loggerFuncPtr = intptrptr.ToPointer();
+			m_loggerFuncPtr = intptrptr;
 
 			// Bug fix: required for RecoverLoggerAndHandler()
 			m_loggerInitialized = true;
@@ -303,13 +307,13 @@ namespace Wrapper
 		return m_loggerFilename;
 	}
 
-	void FMTFormCache::RecoverLoggerAndHandler(System::IntPtr intptrptr)
+	void FMTFormCache::RecoverLoggerAndHandler(void* intptrptr)
 	{
 		try
 		{
 			if (m_loggerInitialized)
 			{
-				m_loggerFuncPtr = intptrptr.ToPointer();
+				m_loggerFuncPtr = intptrptr;
 				buildLogger();
 			}
 

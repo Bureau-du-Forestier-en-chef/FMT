@@ -1,4 +1,6 @@
-#include "stdafx.h"
+#ifndef NOMINMAX
+	#define NOMINMAX
+#endif // !NOMINMAX
 #include "FMTExceptionHandlerWarning.h"
 #include "FMTError.h"
 #include "FMTWarning.h"
@@ -13,7 +15,7 @@
 #include "windows.h"
 #include "FMTObject.h"
 
-Wrapper::FMTExceptionHandlerWarning::FMTExceptionHandlerWarning(
+FMTWrapperCore::FMTExceptionHandlerWarning::FMTExceptionHandlerWarning(
 	const size_t& maxnumberofwarnings)
 	: FMTExceptionHandler()
 {
@@ -21,12 +23,12 @@ Wrapper::FMTExceptionHandlerWarning::FMTExceptionHandlerWarning(
 	ResetThread();
 }
 
-void Wrapper::FMTExceptionHandlerWarning::ResetThread()
+void FMTWrapperCore::FMTExceptionHandlerWarning::ResetThread()
 {
 	m_crashedthreadid = m_mainthreadid;
 }
 
-void Wrapper::FMTExceptionHandlerWarning::tryfileopener(
+void FMTWrapperCore::FMTExceptionHandlerWarning::tryfileopener(
 	const std::string& fullerrorstr) const
 {
 	const std::regex linecaper(
@@ -70,7 +72,7 @@ void Wrapper::FMTExceptionHandlerWarning::tryfileopener(
 	}
 }
 
-std::string Wrapper::FMTExceptionHandlerWarning::geterrorstack(
+std::string FMTWrapperCore::FMTExceptionHandlerWarning::geterrorstack(
 	std::string text,
 	const std::string& method,
 	const int& line,
@@ -78,8 +80,8 @@ std::string Wrapper::FMTExceptionHandlerWarning::geterrorstack(
 {
 	std::string finalstack;
 
-	Wrapper::FMTFormLogger* ModifLogger =
-		dynamic_cast<Wrapper::FMTFormLogger*>(_logger);
+	FMTWrapperCore::FMTFormLogger* ModifLogger =
+		dynamic_cast<FMTWrapperCore::FMTFormLogger*>(_logger);
 
 	if (!ModifLogger)
 	{
@@ -110,7 +112,7 @@ std::string Wrapper::FMTExceptionHandlerWarning::geterrorstack(
 	return finalstack;
 }
 
-void Wrapper::FMTExceptionHandlerWarning::printExceptions(
+void FMTWrapperCore::FMTExceptionHandlerWarning::printExceptions(
 	std::string text,
 	const std::string& method,
 	const int& line,
@@ -121,14 +123,14 @@ void Wrapper::FMTExceptionHandlerWarning::printExceptions(
 }
 
 std::unique_ptr<Exception::FMTExceptionHandler>
-Wrapper::FMTExceptionHandlerWarning::clone() const
+FMTWrapperCore::FMTExceptionHandlerWarning::clone() const
 {
 	return std::unique_ptr<Exception::FMTExceptionHandler>(
 		new FMTExceptionHandlerWarning(*this));
 }
 
 Exception::FMTException
-Wrapper::FMTExceptionHandlerWarning::raise(
+FMTWrapperCore::FMTExceptionHandlerWarning::raise(
 	Exception::FMTexc lexception,
 	std::string text,
 	const std::string& method,

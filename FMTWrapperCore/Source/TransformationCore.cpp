@@ -1,4 +1,5 @@
 #include "TransformationCore.h"
+#include "FMTFormCache.h"
 #include "FMTModel.h"
 #include "FMTSchedule.h"
 #include "FMTModelParser.h"
@@ -114,4 +115,43 @@ Models::FMTModel FMTWrapperCore::Transformation::buildAction(const Models::FMTMo
 		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::TransformationCore::buildAction", __LINE__, __FILE__);
 	}
 	return BUILDED_MODEL;
+}
+
+void FMTWrapperCore::Transformation::aggregateAllActionsFromCache(
+	int p_modelIndex,
+	const std::vector<std::string>& p_aggregates,
+	const std::vector<std::string>& p_order,
+	const std::string& p_primary_path,
+	const std::string& p_scenario_name)
+{
+	FMTFormCache* cache = FMTFormCache::GetInstance();
+	const Models::FMTModel AGGREGATED = aggregateAllActions(
+		cache->getModel(p_modelIndex), p_aggregates, p_order, p_primary_path, p_scenario_name);
+	cache->push_back(AGGREGATED);
+}
+
+void FMTWrapperCore::Transformation::splitActionsFromCache(
+	int p_modelIndex,
+	const std::string& p_schedulePri,
+	const std::vector<std::string>& p_splitted,
+	const std::vector<std::string>& p_splitted_mask,
+	const std::string& p_scenario_name)
+{
+	FMTFormCache* cache = FMTFormCache::GetInstance();
+	const Models::FMTModel SPLITTED = splitActions(
+		cache->getModel(p_modelIndex), p_schedulePri, p_splitted, p_splitted_mask, p_scenario_name);
+	cache->push_back(SPLITTED);
+}
+
+void FMTWrapperCore::Transformation::buildActionFromCache(
+	int p_modelIndex,
+	const std::string& p_actionName,
+	const std::string& p_targetYield,
+	const std::string& p_schedulePri,
+	const std::string& p_scenario_name)
+{
+	FMTFormCache* cache = FMTFormCache::GetInstance();
+	const Models::FMTModel BUILDED = buildAction(
+		cache->getModel(p_modelIndex), p_actionName, p_targetYield, p_schedulePri, p_scenario_name);
+	cache->push_back(BUILDED);
 }
