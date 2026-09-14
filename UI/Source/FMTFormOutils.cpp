@@ -190,16 +190,6 @@ namespace Wrapper
 		return retour;
 	}
 
-	std::vector<Core::FMTConstraint>
-		FMTForm::_ObtenirArrayContraintesSelectionnees(
-			std::vector<Core::FMTConstraint> contraitesBase,
-			System::Collections::Generic::List<System::String^>^ contraintesSelection)
-	{
-		return FMTWrapperCore::Selection::selectConstraints(
-			contraitesBase,
-			_toStdVector(contraintesSelection));
-	}
-
 	std::vector<Core::FMTOutput>
 		FMTForm::_ObtenirArrayOutputsSelectionnees(
 			std::vector<Core::FMTOutput> outputsBase,
@@ -208,16 +198,6 @@ namespace Wrapper
 		return FMTWrapperCore::Selection::selectOutputs(
 			outputsBase,
 			_toStdVector(outputsSelection));
-	}
-
-	Core::FMTOutput
-		FMTForm::_ObtenirOutputSelectionnee(
-			std::vector<Core::FMTOutput> outputsBase,
-			System::String^ outputSelection)
-	{
-		return FMTWrapperCore::Selection::findOutput(
-			outputsBase,
-			msclr::interop::marshal_as<std::string>(outputSelection));
 	}
 
 	std::vector<Core::FMTSchedule>

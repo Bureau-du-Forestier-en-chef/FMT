@@ -83,6 +83,13 @@ namespace FMTWrapperCore
             const std::string& p_rasterPath);
 
         /**
+         * @brief Construit le masque « tout accepté » pour une liste de thèmes.
+         * @param p_themes Les thèmes du modèle.
+         * @return Le masque dont chaque attribut vaut « ? ».
+         */
+        static Core::FMTMask getFullMask(const std::vector<Core::FMTTheme>& p_themes);
+
+        /**
          * @brief Vérifie qu'un masque est valide pour les thèmes du modèle.
          * @param p_model Le modèle à interroger.
          * @param p_mask Le masque à valider.
@@ -208,13 +215,6 @@ namespace FMTWrapperCore
         static std::vector<Core::FMTActualDevelopment> _getRasterArea(
             const Models::FMTModel& p_model,
             const std::string& p_rasterPath);
-
-        /**
-         * @brief Construit le masque « tout accepté » pour une liste de thèmes.
-         * @param p_themes Les thèmes du modèle.
-         * @return Le masque correspondant.
-         */
-        static Core::FMTMask _getFullMask(const std::vector<Core::FMTTheme>& p_themes);
 
         /**
          * @brief Décompose un masque sur chacun des thèmes fournis.

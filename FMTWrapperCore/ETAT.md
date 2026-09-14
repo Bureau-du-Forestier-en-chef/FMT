@@ -73,6 +73,8 @@ Les tests appellent la première et n'ont pas à peupler le singleton.
 | `Transformation` | Agrégation, séparation et construction d'actions |
 | `SES` | Simulation spatiale explicite et optimisation par recuit simulé |
 | `Rasterization` | Rastérisation d'un fichier vectoriel selon les thèmes d'un modèle |
+| `OperatingArea` | Planification des aires d'opération (calendrier de COS) |
+| `AreaVariability` | Variabilité de l'aire initiale selon des proportions par masque |
 
 `Tools` a été éclaté au lot 2 en `Environment` + `ModelQuery` et n'existe plus.
 
@@ -83,10 +85,10 @@ Les tests appellent la première et n'ont pas à peupler le singleton.
 | `SimulationSpatialeExplicite.cpp` | 207 | **migré** | `SES` | -- |
 | `OptimisationSpatialeExplicite.cpp` | 105 | **migré** | `SES` | -- |
 | `Transformations.cpp` | 136 | **migré** | `Transformation`, `ModelQuery` | -- |
-| `FMTFormOutils.cpp` | 618 | partiel | `ModelQuery`, `Environment`, `Selection` | 4 helpers privés délégués, à supprimer aux lots 4/5/6 |
+| `FMTFormOutils.cpp` | 599 | partiel | `ModelQuery`, `Environment`, `Selection` | 2 helpers privés délégués (`_ObtenirArrayOutputsSelectionnees`, `_ObtenirSEQ`), à supprimer au lot 6 |
 | `Raterisation.cpp` | 38 | **migré** | `Rasterization` | -- |
-| `OperatingAreaScheduling.cpp` | 131 | à faire | `OperatingArea` | lot 4 |
-| `InitialAreaVariability.cpp` | 130 | à faire | `AreaVariability` | lot 5 |
+| `OperatingAreaScheduling.cpp` | 60 | **migré** | `OperatingArea` | -- |
+| `InitialAreaVariability.cpp` | 86 | **migré** | `AreaVariability` | -- |
 | `Plannification.cpp` | 165 | à faire | `Planning` | lot 6 |
 | `FMTForm.cpp` | 228 | partiel | `FMTFormCache` | `Cache_AjouterScenarios` et `SetErrorsToWarnings` à déplacer (lot 7) ; le reste est managé par nature (délégué, `IntPtr`) |
 
@@ -111,13 +113,15 @@ commande corrigée, l'état d'origine à partir de `git show HEAD`.
 | Après le lot 1 | 138 |
 | Après le lot 2 | 90 |
 | Après le lot 3 | 86 |
+| Après le lot 4 | 64 |
+| Après le lot 5 | 45 |
 
-Répartition après le lot 3 : `Plannification.cpp` 33, `OperatingAreaScheduling.cpp` 18, `InitialAreaVariability.cpp` 15, `FMTFormOutils.cpp` 8, `FMTForm.h` 7, `FMTForm.cpp` 5.
+Répartition après le lot 5 : `Plannification.cpp` 33, `FMTForm.cpp` 5, `FMTFormOutils.cpp` 4, `FMTForm.h` 3.
 
 `UI/tests` : 23 occurrences, dans `UnitTestFMTFormLogger.cpp` (voir le suspens du lot 1).
 
-Objectif : zéro à la fin du lot 7. Les lots 4 à 6 vident les fichiers de domaine et
-les quatre helpers privés de `FMTForm` ; ce qui reste ensuite est dans `FMTForm.cpp`.
+Objectif : zéro à la fin du lot 7. Le lot 6 vide le dernier fichier de domaine et les
+deux helpers privés restants de `FMTForm` ; ce qui reste ensuite est dans `FMTForm.cpp`.
 
 ## 3. Journal des lots
 
@@ -155,8 +159,9 @@ Deux suspens :
 
 **Statut** : compilé le 2026-09-10, après trois corrections (macro Windows `ERROR`,
 `FMTTheme::validate` non-const, constructeur et destructeur de `FMTFormCache` sortis du
-header -- voir Pièges). **Reste à valider** : `testWrapperCoreSES` avant/après, pour
-l'unification du filtrage, seul changement de comportement potentiel du lot.
+header -- voir Pièges). **Validé** le 2026-09-11 : SES fonctionne dans l'interface et
+`testWrapperCoreSES` passe, après l'unification du filtrage -- seul changement de
+comportement potentiel du lot.
 
 - **`Tools` supprimé**, remplacé par `Environment` (sans modèle) et `ModelQuery`
   (interrogation d'un modèle). `testWrapperCoreTools` devient
@@ -227,62 +232,140 @@ dernier appelant : `_ObtenirOutputSelectionnee` (lot 4),
 Trouvé en passant, **non corrigé** car dans FMTlib : le point-virgule parasite de
 `FMTAreaParser::writeForestExtended` (voir Pièges).
 
+### Lot 4 -- `OperatingAreaScheduling` -> `OperatingArea` (2026-09-11)
+
+- **`OperatingArea` créé** : `OperatingAreaParameters`, `OperatingAreaResults` et
+  `schedule(params, modèle)` avec son entrée indexée. Le Core journalise par
+  `Models::FMTModel::getLogger()` (statique), qui atteint le même `FMTFormLogger` que le
+  wrapper : l'entrée pure est testable sans le cache, messages compris.
+- Les deux refus du modèle (agrégat réservé déjà utilisé, aucune action `YOUVERT`)
+  deviennent `success = false` et `errorMessage`, journalisés comme avant. Toute autre
+  erreur remonte par exception.
+- `ModelQuery::_getFullMask` devient public (`getFullMask`) : le wrapper reconstruisait
+  le même masque « tout `?` » à la main. Ajout d'une garde contre un modèle sans thème.
+- `_ObtenirOutputSelectionnee` supprimé de `FMTForm` ; le Core appelle
+  `Selection::findOutput`.
+- **`OperatingAreaScheduling.cpp` réécrit** en traduction pure (131 -> 60 lignes), et
+  converti de cp1252 en UTF-8 au passage, par réécriture complète.
+- **Régression potentielle du lot 2 corrigée** : depuis le lot 2,
+  `_ObtenirOutputSelectionnee` marshalait `returnTimeOutput`, et `marshal_as` lève sur
+  `nullptr` ; le code d'origine le comparait sans le marshaler. Le wrapper passe
+  maintenant un nom vide quand l'interface n'en envoie pas.
+- **`testWrapperCoreOperatingArea` ajouté**, privé : aucun modèle public n'a de yield
+  `YOUVERT`. Mêmes arguments que `testOAschedulertask`, et même vérification : le modèle
+  final écrit par la tâche doit se relire et rejouer sa cédule.
+
+Constats consignés, comportement conservé tel quel :
+
+- `numeroTheme` est transmis sans conversion à `readOaSchedulerParameters`, qui attend un
+  indice 0-based ; l'exemple `testOAschedulertask`, lui, retranche 1 d'un numéro 1-based
+  dans sa propre copie de `getOperatingArea`.
+- La tâche écrit son modèle final dans le dossier de résultat (le parent de
+  `<dossier>\Retour.txt`), et ses sorties de temps de retour sous `<dossier>\Retour\`.
+  `FMTTaskHandler::conccurentRun()` appelle lui-même `finalize()`.
+- Les messages de progression sont passés en UTF-8, comme ceux de SES : voir Pièges,
+  « Encodage des messages ».
+
+### Lot 5 -- `InitialAreaVariability` -> `AreaVariability` (2026-09-11)
+
+- **`AreaVariability` créé** : `AreaVariabilityParameters`, `AreaVariabilityResults` et
+  `run(params, modèle)` avec son entrée indexée, sur le patron du lot 4 (journalisation
+  par le logger statique de FMT).
+- **Découpage de la table** : le wrapper convertit `ListeInformations` telle quelle en
+  `std::vector<std::vector<std::string>>`, en distinguant table absente et table vide ;
+  le Core l'interprète (en-tête ignoré, dernière colonne = proportion, reste = masque).
+- **Décisions de Gabriel appliquées** :
+  - la construction des masques reproduit fidèlement le comportement historique : une
+    colonne dont la valeur égale la proportion est écartée du masque. Le bug est suivi
+    dans une issue, et un commentaire le signale dans `AreaVariability.cpp` ;
+  - l'`exit(-1)` sur des masques qui se recoupent, qui fermait tout le processus de
+    l'interface, devient une exception FMT (`FMTfunctionfailed`). Son message nomme le
+    développement fautif et le nombre de masques qui le recouvrent.
+- Les trois refus (table absente, table vide, aucun output demandé) deviennent
+  `success = false` et `errorMessage`, avec les messages d'avant. Une ligne vide dans la
+  table lève une exception explicite, là où l'ancien code levait une
+  `IndexOutOfRangeException`.
+- Le wrapper convertit les `nullptr` en valeurs vides : le Core produit alors ses propres
+  messages, au lieu d'une `NullReferenceException` qui dépendait de l'endroit où le
+  `nullptr` était lu.
+- `_ObtenirArrayContraintesSelectionnees` supprimé de `FMTForm` ; le Core appelle
+  `Selection::selectConstraints`.
+- **`InitialAreaVariability.cpp` réécrit** en traduction pure (130 -> 86 lignes). Ses
+  messages étaient déjà en UTF-8 : ils sont passés octet pour octet dans le Core.
+- **`testWrapperCoreAreaVariability` ajouté**, sur les données publiques `TWD_land`
+  (scénario `LP`, masques de l'exemple `testareavariabilities`). Il couvre le cas
+  nominal, les trois refus et l'exception des masques qui se recoupent.
+
+Suspens : trois copies de `_toStdVector` vivent maintenant dans le wrapper
+(`FMTFormOutils.cpp`, `Transformations.cpp`, `InitialAreaVariability.cpp`) -- à réunir
+dans un header de conversion (voir « Ensuite »).
+
 ## 4. Prochain lot
 
-### Lot 4 -- `OperatingAreaScheduling` -> `OperatingArea`
+### Lot 6 -- `Plannification` / `Replanification` -> `Planning`
 
-1. Créer `OperatingArea.h` / `.cpp` : `OperatingAreaParameters` (shapefile, solveur,
-   nombres de périodes, de threads et d'itérations, numéro de thème, temps maximum,
-   champs âge / superficie / stanlock, chemin des paramètres, dossier de résultat,
-   période de mise à jour, nom de l'output de temps de retour) et
-   `OperatingAreaResults` (`success`, `errorMessage`).
-2. Déplacer le corps de `FMTForm::OperatingAreaScheduling` :
-   - l'injection de l'agrégat `~BFECOPTOUTPUTYOUVERT~` dans les actions qui utilisent
-     le yield `YOUVERT` ;
-   - les deux `return false` (nom d'agrégat déjà utilisé, aucune action avec `YOUVERT`)
-     deviennent des `errorMessage`, journalisés comme aujourd'hui ;
-   - le masque « tout `?` » y est construit à la main, en double de
-     `ModelQuery::_getFullMask` : rendre ce dernier public plutôt que de réécrire la boucle ;
-   - `FMTAreaParser::getOperatingArea`, puis `FMTOpAreaSchedulerTask` et
-     `FMTTaskHandler::conccurentRun`.
-3. Remplacer `_ObtenirOutputSelectionnee` par `Selection::findOutput` dans le Core, puis
-   supprimer ce helper de `FMTForm.h` et `FMTFormOutils.cpp` : c'était son dernier appelant.
-4. **Fichier cp1252** : réécrire via le scratchpad et un script Python, jamais avec un
-   outil qui suppose l'UTF-8. Ses messages accentués passent dans un fichier Core UTF-8 :
-   leurs octets changent, donc leur affichage aussi -- normalement corrigé, à vérifier à
-   l'exécution (voir Pièges, `/utf-8`).
-5. `fichierPri` n'y est pas utilisé non plus : il reste dans la signature publique.
-6. Test : `basetests.csv` contient `testOPAreaclustering` ; vérifier s'il existe un jeu
-   public d'aires d'opération utilisable par défaut avant de retomber sur un modèle `T:\`.
+Le plus lourd : deux entrées, des tâches parallèles, et le dernier fichier en cp1252.
 
-Critère de sortie : `OperatingAreaScheduling.cpp` ne contient plus un seul type de FMTlib
-(18 aujourd'hui), et `_ObtenirOutputSelectionnee` n'existe plus.
+1. `PlanningParameters` / `ReplanningParameters` et une classe `Planning`, avec
+   `plan(params, modèles)` et `replan(params, stratégique, stochastique, tactique)`, plus
+   leurs entrées indexées.
+2. **Plannification** : un `FMTPlanningTask` reçoit un modèle par scénario (solveur,
+   `LENGTH`, `TOLERANCE` 0,01, outputs retenus, `FORCE_PARTIAL_BUILD` selon la relecture
+   de cédule), puis `FMTTaskHandler::conccurentRun`. Deux détails à reproduire :
+   - le drapeau de relecture est lu par `playback[scenarios->IndexOf(scen)]` : un scénario
+     présent deux fois reprend le drapeau de sa première occurrence ;
+   - threads par scénario : `nbreProcessus / scenarios->Count` si
+     `scenarios->Count <= nbreProcessus`, sinon 1.
+3. **Replanification** : modèles global (`FMTLpModel`), stochastique (`FMTNssModel`) et
+   local (`FMTLpModel`), `FMTReplanningTask`, puis `FMTTaskHandler::onDemandRun`. Elle
+   appelle `settasklogginglevel` / `setdefaultlogginglevel`, propres à `FMTFormLogger` :
+   l'entrée pure ne doit les appliquer que si le logger en est un (`dynamic_cast`), pour
+   rester testable. `p_writeSchedule` n'est pas utilisé.
+4. `layersoptions` : `SEPARATOR=SEMICOLON` quand le pilote est `CSV`, dans les deux entrées.
+5. `_ObtenirArrayOutputsSelectionnees` et `_ObtenirSEQ` disparaissent, et avec eux les
+   déclarations avancées `Core::` de `FMTForm.h`.
+6. **Fichier cp1252** : réécriture complète ; ses messages passent en UTF-8, comme au lot 4.
+7. Test : `TWD_land` a des scénarios publics de replanification (`Globalreplanning`,
+   `Globalfire`, `Localreplanning`, déjà utilisés par `UnitTestFMTFormLogger`), et `LP`
+   pour la plannification.
+
+Critère de sortie : `Plannification.cpp` ne contient plus un seul type de FMTlib
+(33 aujourd'hui), et `FMTForm` plus aucun helper privé à types FMT.
 
 ### Ensuite
 
-- **Lot 5 -- `InitialAreaVariability`** : le parsing de `ListeInformations` reste dans le
-  wrapper, le Core reçoit masques et proportions ; l'`exit(-1)` devient une exception ;
-  `_ObtenirArrayContraintesSelectionnees` disparaît.
-- **Lot 6 -- `Plannification` / `Replanification`** : le plus lourd (tâches parallèles,
-  journalisation dans la boucle des scénarios). `_ObtenirArrayOutputsSelectionnees` et
-  `_ObtenirSEQ` disparaissent. Fichier cp1252.
 - **Lot 7 -- `FMTForm.cpp`** : `Cache_AjouterScenarios` (lecture du projet avec
   `FMTModelParser`) et `SetErrorsToWarnings` (conversion en `Exception::FMTexc`) passent
   dans `FMTFormCache`, qui reçoit des `std::string` et des `int`. Ce sont les derniers
-  types de FMTlib du wrapper une fois les lots 4 à 6 faits.
+  types de FMTlib du wrapper une fois le lot 6 fait.
+- **Nettoyage** : réunir les conversions du wrapper (`_toStdString`, `_toStdVector`) dans
+  un header ; renommer les classes d'infrastructure (`ModelCache` / `CallbackLogger` /
+  `WarningExceptionHandler`), reporté depuis le lot 1.
 
 ## 5. Pièges connus
 
-- **Encodage cp1252** -- `UI/Source/Plannification.cpp` et
-  `UI/Source/OperatingAreaScheduling.cpp` sont en cp1252 ; tous les autres fichiers de
-  `UI/` et de `FMTWrapperCore/` sont en UTF-8 sans BOM. Les éditer avec un outil qui
-  suppose l'UTF-8 corrompt les accents : passer par un script Python en `latin-1`.
-- **Pas de `/utf-8`** dans la configuration MSVC : les fichiers UTF-8 sans BOM sont relus
-  en cp1252, les octets traversent tels quels jusqu'à `_convertToSystemString` qui les
-  décode en UTF-8 -- d'où l'affichage correct côté interface. Les fichiers cp1252, eux,
-  produisent des accents cassés dans le journal. Créer les nouveaux fichiers Core en UTF-8
-  sans BOM. Effet de bord attendu aux lots 4 et 6 : les messages s'afficheront
-  correctement. À vérifier à l'exécution, pas à tenir pour acquis.
+- **Encodage cp1252** -- `UI/Source/Plannification.cpp` est le dernier fichier en cp1252
+  (`OperatingAreaScheduling.cpp` a été converti au lot 4) ; tous les autres fichiers de
+  `UI/` et de `FMTWrapperCore/` sont en UTF-8 sans BOM. L'éditer avec un outil qui suppose
+  l'UTF-8 corrompt les accents : le réécrire entièrement, ou l'éditer au niveau octet.
+- **Normaliser un fichier en Python** : lire *avant* d'ouvrir en écriture.
+  `open(p, 'wb').write(f(open(p, 'rb').read()))` tronque le fichier avant de le lire et
+  l'écrit vide -- vu au lot 4 sur `OperatingArea.h/.cpp`, restaurés aussitôt.
+- **Encodage des messages** -- MSVC compile sans `/utf-8` : un fichier UTF-8 sans BOM est
+  relu en cp1252 et ses octets passent tels quels dans le binaire. Deux chemins les
+  décodent ensuite différemment :
+  - `_convertToSystemString` (valeurs de retour : changelog, descriptions d'exceptions)
+    décode en **UTF-8** ;
+  - `_toFeedback`, par lequel passent tous les messages du logger, fait
+    `gcnew System::String(const char*)`, qui décode dans la **page ANSI** (cp1252) sous
+    .NET Framework.
+  La convention de l'équipe est l'UTF-8 : `SimulationSpatialeExplicite.cpp` a été converti
+  le 2025-09-19 (`f71f5dd5`), et SES fonctionne dans l'interface. Les messages déplacés au
+  lot 4 sont donc en UTF-8 et se comportent désormais comme ceux de SES. **À vérifier une
+  fois dans l'interface** : si les accents des messages de progression y paraissent
+  déformés (« DÃ©marrage »), la correction est unique et tient dans `_toFeedback` -- mais
+  elle toucherait aussi les messages de FMTlib qui citent le contenu des fichiers de
+  modèle, dont l'encodage est à vérifier avant.
 - **Filtrage des contraintes / outputs** : deux implémentations divergentes coexistent.
   `FMTForm::_ObtenirArrayContraintesSelectionnees` retire `\r`/`\n`, applique `TrimEnd`,
   suit l'ordre du modèle et **ne fait pas de `break`**. `SES::filterConstraints` fait une
@@ -323,7 +406,6 @@ Critère de sortie : `OperatingAreaScheduling.cpp` ne contient plus un seul type
   `FMTFormCache::m_Models`. **Ne pas** « corriger » en incluant `FMTModel.h` dans
   le header : ça exposerait le type à tout le wrapper, contre la règle 2.
 - **Signatures `FMTForm` figées** : le UI .NET externe en dépend.
-- **`exit(-1)`** dans `InitialAreaVariability.cpp` -- à convertir en exception (lot 5).
 - **Bug de FMTlib repéré, non corrigé** : `FMTAreaParser::writeForestExtended`
   (`Source/FMTAreaParser.cpp`) contient
   `if (!_isMapWithSameThemes(p_themes, p_VectorFile));` -- le point-virgule rend le `if`
@@ -358,3 +440,6 @@ du Core restent **manuels et privés**.
   `Examples/Models/TWD_land` avec les mêmes arguments que `maptoFMTforest`. Il reste
   manuel, mais rejoindra ctest en une ligne le moment venu. Les tests SES, qui n'ont que
   des modèles privés, prennent un JSON.
+- Sinon, le test tourne sur un modèle privé et reprend la forme d'arguments de son cousin
+  de `BFECtests.csv` : `testWrapperCoreOperatingArea` a les mêmes arguments que
+  `testOAschedulertask`, aucun modèle public n'ayant de yield `YOUVERT`.

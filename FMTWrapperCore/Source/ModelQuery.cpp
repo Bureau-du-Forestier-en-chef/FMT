@@ -102,7 +102,7 @@ namespace FMTWrapperCore
         return getYield(_getCachedModel(p_modelIndex), p_mask, p_yield, p_age);
     }
 
-    Core::FMTMask ModelQuery::_getFullMask(const std::vector<Core::FMTTheme>& p_themes)
+    Core::FMTMask ModelQuery::getFullMask(const std::vector<Core::FMTTheme>& p_themes)
     {
         std::string mask;
 
@@ -111,7 +111,11 @@ namespace FMTWrapperCore
             mask += "? ";
         }
 
-        mask.pop_back();
+        // Sans thème, la chaîne est vide : pop_back() serait un comportement indéfini.
+        if (!mask.empty())
+        {
+            mask.pop_back();
+        }
 
         return Core::FMTMask(mask, p_themes);
     }
@@ -237,7 +241,7 @@ namespace FMTWrapperCore
             }
             else
             {
-                const Core::FMTMask PLAIN_MASK = _getFullMask(THEMESMODELS);
+                const Core::FMTMask PLAIN_MASK = getFullMask(THEMESMODELS);
                 masks = _getThemesDecomposition(PLAIN_MASK, themes);
             }
         }

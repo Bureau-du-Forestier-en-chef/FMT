@@ -705,32 +705,6 @@ namespace Wrapper
 			const std::string& p_method,
 			const int& p_line,
 			const std::string& p_file);
-		// DocString: FMTForm::_ObtenirArrayContraintesSelectionnees
-		/**
-		@brief Filters constraints according to the user selection.
-
-		@param[in] contraitesBase Source constraint collection.
-		@param[in] contraintesSelection Selected constraint names.
-
-		@return Collection containing only the selected constraints.
-		*/
-		std::vector<Core::FMTConstraint> _ObtenirArrayContraintesSelectionnees(
-			std::vector<Core::FMTConstraint> contraitesBase,
-			System::Collections::Generic::List<System::String^>^ contraintesSelection);
-
-		// DocString: FMTForm::_ObtenirOutputSelectionnee
-		/**
-		@brief Retrieves an output definition by name.
-
-		@param[in] outputsBase Available outputs.
-		@param[in] outputSelection Selected output name.
-
-		@return Matching output definition.
-		*/
-		Core::FMTOutput _ObtenirOutputSelectionnee(
-			std::vector<Core::FMTOutput> outputsBase,
-			System::String^ outputSelection);
-
 		// DocString: FMTForm::_ObtenirArrayOutputsSelectionnees
 		/**
 		@brief Filters outputs according to the user selection.
