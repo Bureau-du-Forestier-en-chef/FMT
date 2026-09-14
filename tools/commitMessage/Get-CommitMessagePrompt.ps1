@@ -3,64 +3,131 @@ Add-Type -AssemblyName System.Windows.Forms
 $ErrorActionPreference = "Stop"
 
 ###############################################################################
-# Resolve repository
+# Helper functions
 ###############################################################################
 
-# Repository root relative to this script.
-$RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
-
-Set-Location $RepoRoot
-
-###############################################################################
-# Validate Git repository
-###############################################################################
-
-git rev-parse --is-inside-work-tree *> $null
-
-if ($LASTEXITCODE -ne 0)
+function Show-Message
 {
-    [System.Windows.Forms.MessageBox]::Show(
-        "The resolved directory is not a Git repository.`n`n$RepoRoot",
-        "Commit Message Generator",
-        [System.Windows.Forms.MessageBoxButtons]::OK,
-        [System.Windows.Forms.MessageBoxIcon]::Error
+    param(
+        [Parameter(Mandatory)]
+        [string] $Message,
+
+        [Parameter(Mandatory)]
+        [string] $Title,
+
+        [System.Windows.Forms.MessageBoxIcon] $Icon =
+            [System.Windows.Forms.MessageBoxIcon]::Information
     )
 
+    [void] [System.Windows.Forms.MessageBox]::Show(
+        $Message,
+        $Title,
+        [System.Windows.Forms.MessageBoxButtons]::OK,
+        $Icon
+    )
+}
+
+function Stop-WithError
+{
+    param(
+        [Parameter(Mandatory)]
+        [string] $Message
+    )
+
+    Show-Message `
+        -Message $Message `
+        -Title "Commit Message Generator" `
+        -Icon ([System.Windows.Forms.MessageBoxIcon]::Error)
+
+    Write-Error $Message
     exit 1
 }
 
 ###############################################################################
-# Read staged changes
+# Resolve repository root
 ###############################################################################
 
-$files = git diff --cached --name-status
-
-if ($LASTEXITCODE -ne 0)
+try
 {
-    throw "Unable to retrieve the staged file list."
-}
-
-$diff = git diff --cached --no-ext-diff --no-color
-
-if ($LASTEXITCODE -ne 0)
-{
-    throw "Unable to retrieve the staged diff."
-}
-
-if (:IsNullOrWhiteSpace(($diff -join "`n")))
-{
-    [System.Windows.Forms.MessageBox]::Show(
-        "No staged changes found.",
-        "Commit Message Generator",
-        [System.Windows.Forms.MessageBoxButtons]::OK,
-        [System.Windows.Forms.MessageBoxIcon]::Information
+    # Expected script location:
+    #
+    #   <repository>/tools/commitMessage/Get-CommitMessagePrompt.ps1
+    #
+    # The repository root is two levels above this script.
+    $RepoRoot = Resolve-Path (
+        Join-Path $PSScriptRoot "..\.."
     )
+}
+catch
+{
+    Stop-WithError (
+        "Unable to resolve the repository root.`n`n" +
+        $_.Exception.Message
+    )
+}
+
+Set-Location $RepoRoot
+
+###############################################################################
+# Validate the Git repository
+###############################################################################
+
+$gitRepositoryCheck = git rev-parse --is-inside-work-tree 2>$null
+
+if ($LASTEXITCODE -ne 0 -or $gitRepositoryCheck -ne "true")
+{
+    Stop-WithError (
+        "The resolved directory is not a Git repository.`n`n" +
+        $RepoRoot
+    )
+}
+
+###############################################################################
+# Get staged files
+###############################################################################
+
+$files = @(
+    git diff --cached --name-status --no-ext-diff
+)
+
+if ($LASTEXITCODE -ne 0)
+{
+    Stop-WithError "Unable to retrieve the staged file list."
+}
+
+$filesText = $files -join "`n"
+
+###############################################################################
+# Get staged diff
+###############################################################################
+
+$diff = @(
+    git diff --cached --no-ext-diff --no-color
+)
+
+if ($LASTEXITCODE -ne 0)
+{
+    Stop-WithError "Unable to retrieve the staged diff."
+}
+
+$diffText = $diff -join "`n"
+
+###############################################################################
+# Stop when there are no staged changes
+###############################################################################
+
+if ([System.String]::IsNullOrWhiteSpace($diffText))
+{
+    Show-Message `
+        -Message "No staged changes found." `
+        -Title "Commit Message Generator" `
+        -Icon ([System.Windows.Forms.MessageBoxIcon]::Information)
 
     exit 0
 }
 
 ###############################################################################
-# Generate the Copilot prompt
+# Build the Copilot prompt
 ###############################################################################
 
 $prompt = @"
@@ -118,7 +185,7 @@ Rules:
     - relevant implementation details
 
 13. If the staged changes introduce a breaking API or behavior change:
-    - add ! immediately before the colon, and
+    - add ! immediately before the colon
     - add a footer in this exact form:
 
       BREAKING CHANGE: <description>
@@ -132,7 +199,7 @@ Rules:
 
 16. Output only the raw commit message.
 
-17. Do not output explanations, analysis, alternatives, headings, markdown,
+17. Do not output explanations, analysis, alternatives, headings, Markdown,
     code fences, surrounding quotation marks, or leading and trailing text.
 
 Example output:
@@ -147,35 +214,52 @@ feat(python): add packaged type stubs
 STAGED FILES
 ====================
 
-$($files -join "`n")
+$filesText
 
 ====================
 STAGED DIFF
 ====================
 
-$($diff -join "`n")
+$diffText
 "@
 
 ###############################################################################
-# Copy prompt
+# Copy the prompt to the clipboard
 ###############################################################################
 
-Set-Clipboard -Value $prompt
+try
+{
+    Set-Clipboard -Value $prompt
+}
+catch
+{
+    Stop-WithError (
+        "Unable to copy the prompt to the clipboard.`n`n" +
+        $_.Exception.Message
+    )
+}
 
-[System.Windows.Forms.MessageBox]::Show(
-    "A Conventional Commits prompt was copied to the clipboard.`n`n" +
-    "Paste it into Copilot to generate the commit message.",
-    "Commit Message Generator",
-    [System.Windows.Forms.MessageBoxButtons]::OK,
-    [System.Windows.Forms.MessageBoxIcon]::Information
-)
+###############################################################################
+# Notify the user
+###############################################################################
+
+Show-Message `
+    -Message (
+        "A Conventional Commits prompt was copied to the clipboard.`n`n" +
+        "Paste it into Copilot to generate the commit message."
+    ) `
+    -Title "Commit Message Generator" `
+    -Icon ([System.Windows.Forms.MessageBoxIcon]::Information)
 
 ###############################################################################
 # Console summary
 ###############################################################################
 
 Write-Host ""
-Write-Host "Repository: $RepoRoot" -ForegroundColor Cyan
+Write-Host "Repository:" -ForegroundColor Cyan
+Write-Host "  $RepoRoot"
+
+Write-Host ""
 Write-Host "Staged files:" -ForegroundColor Cyan
 
 foreach ($file in $files)
