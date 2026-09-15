@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
             TARGET_YIELD = argv[2];
             ACTION_NAME = argv[3];
         }else {
-               primarylocation = "C:/Users/admlocal/Desktop/03_Carbone/03_Carbone/PC_9981_U06471_2028_MODB01.pri";
-               scenario = "200_StratReg_apsp";
+               primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+               scenario = "20_Regl_prov";
                side = 1420;
-               maplocation = "Carte/PC_9981_UA_U06471.shp";
+               maplocation = "Carte/PC_7002071_UA_U08152.shp";
                TARGET_YIELD = "YV_S_MORT";
                ACTION_NAME = "TBE";
             }
