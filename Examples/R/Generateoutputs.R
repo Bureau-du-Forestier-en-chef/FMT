@@ -15,7 +15,7 @@ tryCatch({
         newparser$seterrorstowarnings(exceptions)
         primarylocation <- "T:/Donnees/Usagers/LANGA3/tempLUPCA1/pourGabriel/02352_Diffusion/PC_7675_U02352_4_2018_vPF03_copie.pri"
         modelslist <- newparser$readproject(primarylocation, c("scenario_4"), TRUE, TRUE, TRUE)
-        lpmodel <- new(FMTlpmodel, modelslist[[1]], FMTsolverinterface$MOSEK)
+        lpmodel <- new(FMTlpmodel, modelslist[[1]], FMTSolverInterface$MOSEK)
         tolerance <- 0.01
         schedules <- newparser$readschedules(primarylocation, modelslist)[[1]]
         

@@ -3,7 +3,7 @@ if (new(FMTversion)$hasfeature("OSI"))
 	{
 	newparser<-new(FMTmodelparser)
 	modelslist<-newparser$readproject("../Models/TWD_land/TWD_land.pri",c("LP"),TRUE,TRUE,TRUE)
-    lpmodel <- new(FMTlpmodel, modelslist[[1]], FMTsolverinterface$CLP)
+    lpmodel <- new(FMTlpmodel, modelslist[[1]], FMTSolverInterface$CLP)
 	emptyschedule<-new(FMTschedule)
 	for (period in 1:10)
 		{
