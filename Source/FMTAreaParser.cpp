@@ -981,7 +981,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 		const std::vector<Core::FMTActualDevelopment>& p_area, const std::string& p_folder) const
 	{
 		try {
-			if (!_isMapWithSameThemes(p_themes, p_VectorFile));
+			if (!_isMapWithSameThemes(p_themes, p_VectorFile))
 			{
 				p_forest.setLastThemeWithArea(p_area, p_themes);
 			}
