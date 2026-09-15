@@ -2,7 +2,7 @@
 #include <msclr\marshal_cppstd.h>
 
 #include "FMTForm.h"
-#include "Rasterization.h"
+#include "Controller.h"
 
 bool Wrapper::FMTForm::Raterisation(
 	System::String^ fichierPri,
@@ -26,7 +26,7 @@ bool Wrapper::FMTForm::Raterisation(
 		params.areaField = msclr::interop::marshal_as<std::string>(nomChampSuperficie);
 		params.lockField = msclr::interop::marshal_as<std::string>(nomChampStanlock);
 
-		FMTWrapperCore::Rasterization::rasterize(params, scenario);
+		FMTWrapperCore::Controller::rasterize(params, scenario);
 	}
 	catch (...)
 	{

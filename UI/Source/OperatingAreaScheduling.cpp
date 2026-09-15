@@ -2,7 +2,7 @@
 #include <msclr\marshal_cppstd.h>
 
 #include "FMTForm.h"
-#include "OperatingArea.h"
+#include "Controller.h"
 
 namespace Wrapper
 {
@@ -49,7 +49,7 @@ namespace Wrapper
 				? std::string()
 				: msclr::interop::marshal_as<std::string>(returnTimeOutput);
 
-			return FMTWrapperCore::OperatingArea::schedule(params, scenario).success;
+			return FMTWrapperCore::Controller::scheduleOperatingAreas(params, scenario).success;
 		}
 		catch (...)
 		{

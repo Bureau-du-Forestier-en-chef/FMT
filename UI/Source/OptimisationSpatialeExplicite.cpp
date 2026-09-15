@@ -2,8 +2,7 @@
 #include <msclr\marshal_cppstd.h>
 
 #include "FMTForm.h"
-#include "FMTOutput.h"
-#include "SES.h"
+#include "Controller.h"
 
 namespace Wrapper
 {
@@ -28,8 +27,8 @@ namespace Wrapper
         {
             FMTWrapperCore::SAParameters params;
 
-            // Conversion des chemins. scenarioName est renseigné par le Core, qui
-            // résout le modèle lui-même.
+            // Conversion des chemins. scenarioName reste vide : le Core journalise le nom
+            // du scénario que le contrôleur a résolu.
             params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
             params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
             params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
@@ -93,7 +92,7 @@ namespace Wrapper
                 indGenererEvents, indSortiesSpatiales, providerGdal);
 
             const FMTWrapperCore::SAResults RESULTS =
-                FMTWrapperCore::SES::RunOptimization(PARAMS, scenario);
+                FMTWrapperCore::Controller::runSpatialOptimization(PARAMS, scenario);
 
             return RESULTS.success;
         }

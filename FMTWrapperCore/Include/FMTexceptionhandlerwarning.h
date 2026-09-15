@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FMTExceptionHandler.h"
+#include "FMTWrapperCoreExport.h"
 
 namespace FMTWrapperCore
 {
@@ -13,7 +14,7 @@ namespace FMTWrapperCore
 	the graphical user interface. Fatal exceptions may be rethrown
 	while warning-level exceptions are tracked and counted.
 	*/
-	class __declspec(dllexport) FMTExceptionHandlerWarning :
+	class FMTWRAPPERCOREEXPORT FMTExceptionHandlerWarning :
 		public virtual Exception::FMTExceptionHandler
 	{
 	public:

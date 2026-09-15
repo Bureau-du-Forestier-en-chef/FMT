@@ -1,8 +1,6 @@
 #include "SES.h"
 #include "Selection.h"
 #include "ModelQuery.h"
-#include "FMTFormCache.h"
-#include "FMTFormLogger.h"
 #include "FMTDefaultLogger.h"
 #include "FMTSesModel.h"
 #include "FMTSaModel.h"
@@ -187,10 +185,12 @@ namespace FMTWrapperCore
 
         if (!params.outputNames.empty())
         {
+            std::vector<Core::FMTOutput> selectedOutputs;
             results.outputsData = calculateOutputs(
                 simulationModel,
                 params.outputNames,
-                params.numberOfPeriods);
+                params.numberOfPeriods,
+                selectedOutputs);
 
             results.scheduleFilePath = writeSchedule(simulationModel, outputDirectory);
 
@@ -198,7 +198,7 @@ namespace FMTWrapperCore
             {
                 exportResults(
                     simulationModel,
-                    results.outputsData.outputObjects,
+                    selectedOutputs,
                     params.outputMinPeriod,
                     params.outputMaxPeriod,
                     params.outputPath,
@@ -228,7 +228,7 @@ namespace FMTWrapperCore
             {
                 results.spatialOutputFiles = writeSpatialOutputs(
                     simulationModel,
-                    results.outputsData.outputObjects,
+                    selectedOutputs,
                     params.outputMinPeriod,
                     params.outputMaxPeriod,
                     outputDirectory);
@@ -301,6 +301,14 @@ namespace FMTWrapperCore
         const SAParameters& params,
         const Models::FMTModel& baseModel)
     {
+        // Logger statique de FMT : dans l'interface, c'est le FMTFormLogger ; dans un
+        // test, le logger par défaut.
+        Logging::FMTLogger& logger = *Models::FMTModel::getLogger();
+
+        logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
+        logger << "FMT -> Traitement pour le scénario : " + baseModel.getName() << "\n";
+        logger << "FMT -> Démarrage de l'optimisation" << "\n";
+
         SAResults results;
 
         Models::FMTSaModel optimizationModel(baseModel);
@@ -348,16 +356,18 @@ namespace FMTWrapperCore
 
         if (!params.outputNames.empty())
         {
+            std::vector<Core::FMTOutput> selectedOutputs;
             results.outputsData = calculateOutputs(
                 optimizationModel,
                 params.outputNames,
-                params.numberOfPeriods);
+                params.numberOfPeriods,
+                selectedOutputs);
 
             results.scheduleFilePath = writeSchedule(optimizationModel, outputDirectory);
 
             exportResults(
                 optimizationModel,
-                results.outputsData.outputObjects,
+                selectedOutputs,
                 params.outputMinPeriod,
                 params.outputMaxPeriod,
                 params.outputPath,
@@ -368,7 +378,7 @@ namespace FMTWrapperCore
             {
                 results.spatialOutputFiles = writeSpatialOutputs(
                     optimizationModel,
-                    results.outputsData.outputObjects,
+                    selectedOutputs,
                     params.outputMinPeriod,
                     params.outputMaxPeriod,
                     outputDirectory);
@@ -376,6 +386,19 @@ namespace FMTWrapperCore
         }
 
         results.success = true;
+
+        logger << "FMT -> Optimisation terminée avec succès" << "\n";
+        logger << "FMT -> Exportations des sorties " << "\n";
+
+        for (const auto& result : results.outputsData.results)
+        {
+            for (const auto& periodValue : result.periodValues)
+            {
+                logger << "outputs;" + result.outputName + ";" +
+                    std::to_string(periodValue.second) << "\n";
+            }
+        }
+
         return results;
     }
 
@@ -547,16 +570,15 @@ namespace FMTWrapperCore
     OutputsData SES::calculateOutputs(
         const Models::FMTSeModel& semodel,
         const std::vector<std::string>& outputNames,
-        const int numberOfPeriods)
+        const int numberOfPeriods,
+        std::vector<Core::FMTOutput>& selectedOutputs)
     {
         OutputsData outputsData;
 
         try
         {
             const std::vector<Core::FMTOutput> allOutputs = semodel.getOutputs();
-            std::vector<Core::FMTOutput> selectedOutputs = Selection::selectOutputs(allOutputs, outputNames);
-
-            outputsData.outputObjects = selectedOutputs;
+            selectedOutputs = Selection::selectOutputs(allOutputs, outputNames);
 
             for (const Core::FMTOutput& output : selectedOutputs)
             {
@@ -788,92 +810,49 @@ namespace FMTWrapperCore
         }
     }
 
-    SESResults SES::RunSES(const SESParameters& params, int p_modelIndex)
+    SESResults SES::RunSES(const SESParameters& params, const Models::FMTModel& baseModel)
     {
-        FMTFormCache* cache = FMTFormCache::GetInstance();
-
-        // Le logger de l'interface est cloné avant d'être passé au modèle : la
-        // simulation journalise ensuite à travers le logger du modèle.
+        // Le logger courant est cloné avant d'être repassé au modèle : la simulation
+        // journalise ensuite à travers ce clone. Dans l'interface, c'est le FMTFormLogger.
         std::unique_ptr<Logging::FMTLogger> savedLogger;
         {
-            FMTFormLogger* mainLogger = cache->GetFormLogger();
-            if (mainLogger)
+            const Logging::FMTLogger* currentLogger = Models::FMTModel::getLogger();
+            if (currentLogger)
             {
-                savedLogger = mainLogger->Clone();
+                savedLogger = currentLogger->Clone();
             }
         }
 
-        Models::FMTModel selectedModel = cache->getModel(p_modelIndex);
-
-        SESParameters localParams = params;
-        localParams.scenarioName = selectedModel.getName();
+        Models::FMTModel selectedModel = baseModel;
 
         // Les cédules sont lues avant que le logger cloné ne soit passé au modèle,
         // comme le faisait le wrapper.
         const std::vector<Core::FMTSchedule> SCHEDULES =
-            ModelQuery::readSchedules(localParams.primaryFilePath, selectedModel);
+            ModelQuery::readSchedules(params.primaryFilePath, selectedModel);
 
         if (savedLogger)
         {
             selectedModel.passInLogger(savedLogger);
         }
 
-        // Ré-acquérir le pointeur valide vers le logger restauré.
-        FMTFormLogger* logger = cache->GetFormLogger();
+        // Ré-acquérir le logger : passInLogger a remplacé celui qui a été cloné.
+        Logging::FMTLogger& logger = *Models::FMTModel::getLogger();
 
-        *logger << "FMT -> Démarrage de la simulation pour le scénario: " + localParams.scenarioName << "\n";
+        logger << "FMT -> Démarrage de la simulation pour le scénario: " + selectedModel.getName() << "\n";
 
-        SESResults results = RunSES(localParams, selectedModel, SCHEDULES);
+        SESResults results = RunSES(params, selectedModel, SCHEDULES);
 
-        *logger << "FMT -> Simulation terminée avec succès" << "\n";
+        logger << "FMT -> Simulation terminée avec succès" << "\n";
 
-        if (localParams.carbonMode)
+        if (params.carbonMode)
         {
             for (const auto& result : results.outputsData.results)
             {
                 for (const auto& periodValue : result.periodValues)
                 {
-                    *logger << "outputs;" + result.outputName + ";" +
+                    logger << "outputs;" + result.outputName + ";" +
                         std::to_string(periodValue.second) << "\n";
                 }
-            }
-        }
-
-        return results;
-    }
-
-    SAResults SES::RunOptimization(const SAParameters& params, int p_modelIndex)
-    {
-        FMTFormCache* cache = FMTFormCache::GetInstance();
-        FMTFormLogger* logger = cache->GetFormLogger();
-
-        *logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-
-        const Models::FMTModel& BASE_MODEL = cache->getModel(p_modelIndex);
-
-        SAParameters localParams = params;
-        localParams.scenarioName = BASE_MODEL.getName();
-
-        *logger << "FMT -> Traitement pour le scénario : " + localParams.scenarioName << "\n";
-        *logger << "FMT -> Démarrage de l'optimisation" << "\n";
-
-        SAResults results = RunOptimization(localParams, BASE_MODEL);
-
-        if (!results.success)
-        {
-            *logger << "FMT -> Erreur d'optimisation: " + results.errorMessage << "\n";
-            return results;
-        }
-
-        *logger << "FMT -> Optimisation terminée avec succès" << "\n";
-        *logger << "FMT -> Exportations des sorties " << "\n";
-
-        for (const auto& result : results.outputsData.results)
-        {
-            for (const auto& periodValue : result.periodValues)
-            {
-                *logger << "outputs;" + result.outputName + ";" +
-                    std::to_string(periodValue.second) << "\n";
             }
         }
 

@@ -4,15 +4,12 @@
 #include <vector>
 #include <string>
 
+// Transitoire (lot 6) : types des deux helpers privés qu'appelle encore Plannification.cpp.
 namespace Core {
 	class FMTSchedule;
-	class FMTConstraint;
 	class FMTOutput;
 }
 
-namespace Models {
-	class FMTSeModel;
-}
 namespace FMTWrapperCore {
 	struct SESResults;
 }
@@ -26,8 +23,8 @@ namespace Wrapper
 	simulation, scheduling, rasterization and analysis features to
 	managed client applications.
 
-	Logging and exception handling are delegated to the wrapper
-	infrastructure through FMTFormCache.
+	This class only translates between .NET and std types: every native
+	operation goes through FMTWrapperCore::Controller.
 	*/
 	public ref class FMTForm
 	{

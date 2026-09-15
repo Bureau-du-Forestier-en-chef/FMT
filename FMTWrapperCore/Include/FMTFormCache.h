@@ -6,6 +6,7 @@
 
 #include "FMTException.h"
 #include "FMTModelParser.h"
+#include "FMTWrapperCoreExport.h"
 
 namespace Models
 {
@@ -31,7 +32,7 @@ namespace FMTWrapperCore
 	mechanisms for rebuilding logging and exception handling resources
 	after a crash.
 	*/
-	class __declspec(dllexport) FMTFormCache
+	class FMTWRAPPERCOREEXPORT FMTFormCache
 	{
 	public:
 

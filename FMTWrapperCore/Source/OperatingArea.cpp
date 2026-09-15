@@ -7,7 +7,6 @@
 #include "FMTAction.h"
 #include "FMTAreaParser.h"
 #include "FMTDefaultLogger.h"
-#include "FMTFormCache.h"
 #include "FMTLogger.h"
 #include "FMTLpModel.h"
 #include "FMTMask.h"
@@ -135,12 +134,5 @@ namespace FMTWrapperCore
         }
 
         return results;
-    }
-
-    OperatingAreaResults OperatingArea::schedule(
-        const OperatingAreaParameters& p_params,
-        int p_modelIndex)
-    {
-        return schedule(p_params, FMTFormCache::GetInstance()->getModel(p_modelIndex));
     }
 }

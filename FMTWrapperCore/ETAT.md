@@ -8,7 +8,7 @@
 `FMTWrapper` (cible `UI/`, C++/CLI) doit se réduire à de la **traduction C# <-> C++**.
 Toute la logique vit dans `FMTWrapperCore` (C++ pur), où elle est testable par exécutable.
 
-Deux règles, vérifiables mécaniquement :
+Trois règles, vérifiables mécaniquement :
 
 1. **Aucune logique dans `FMTWrapper`** : conversion, `try/catch`, émission d'événements.
 2. **Aucun objet FMT visible depuis `FMTWrapper`** : plus un seul `Core::`, `Models::`,
@@ -17,40 +17,60 @@ Deux règles, vérifiables mécaniquement :
    *Seule exception* : les DTO `FMTWrapperCore::*Parameters` / `*Results`, qui ne
    contiennent que des types `std`. C'est le contrat de traduction : le wrapper doit
    le voir.
+3. **Le wrapper ne parle au Core que par `Controller`** : il n'inclut que `Controller.h`
+   et n'y nomme que `FMTWrapperCore::Controller` et les DTO (lot 5b).
 
 ### Patron par domaine
 
 | Fichier | Contenu |
 |---|---|
-| `FMTWrapperCore/Include/<Domaine>.h` | forward-decl FMT, `struct <X>Parameters` (types `std`), `struct <X>Results` (`success`, `errorMessage`, données), `class __declspec(dllexport) <X>` |
-| `FMTWrapperCore/Source/<Domaine>.cpp` | la logique ; erreurs via `Exception::FMTFreeExceptionHandler().raiseFromCatch(...)` |
-| `UI/Source/<Fichier>.cpp` | `ConvertirParametres` (C# -> `Parameters`), l'appel Core, `_EnvoyerResultats...` (`Results` -> `RetourJson`/`FeedBack`) |
+| `FMTWrapperCore/Include/<Domaine>Types.h` | les DTO, types `std` uniquement : `struct <X>Parameters`, `struct <X>Results` (`success`, `errorMessage`, données) |
+| `FMTWrapperCore/Include/<Domaine>.h` | le service : forward-decl FMT, `class FMTWRAPPERCOREEXPORT <X>` et ses entrées pures |
+| `FMTWrapperCore/Source/<Domaine>.cpp` | la logique ; erreurs via `raiseFromCatch` du gestionnaire d'exceptions |
+| `Controller.h` / `Controller.cpp` | une méthode par opération système de `FMTForm` : résout l'index de scénario, délègue à l'entrée pure |
+| `UI/Source/<Fichier>.cpp` | `ConvertirParametres` (C# -> `Parameters`), l'appel du contrôleur, `_EnvoyerResultats...` (`Results` -> `RetourJson`/`FeedBack`) |
 
-Référence vivante : `SES.h` / `SES.cpp` / `UI/Source/SimulationSpatialeExplicite.cpp`.
+Référence vivante : `OperatingAreaTypes.h`, `OperatingArea.h` / `.cpp`,
+`Controller::scheduleOperatingAreas` et `UI/Source/OperatingAreaScheduling.cpp`.
 
 `<X>Results` n'existe que si l'opération produit des données en mémoire. Sinon l'entrée
 retourne `void` et les erreurs remontent par exception : c'est le cas de `Rasterization`
-et des méthodes `...FromCache` de `Transformation`.
+et des transformations.
 
-### Convention des doubles entrées
+### Contrôleur façade
 
-C'est elle qui permet la règle 2 sans sacrifier la testabilité. Chaque classe Core expose :
+`FMTWrapperCore::Controller` (lot 5b) applique le patron *Controller* de GRASP (Larman) :
+un objet hors de l'interface reçoit les opérations système et les délègue.
+
+- **Les services n'ont que des entrées pures** : elles prennent les objets FMT et ne
+  connaissent pas le cache. Les tests C++ les appellent directement.
+- **Le contrôleur** ne reçoit que des types `std`, des DTO et des index de scénario. Il
+  résout l'index dans `FMTFormCache`, puis délègue à l'entrée pure : il coordonne sans
+  calculer. Dans le Core, seuls `Controller.cpp` et `FMTFormCache.cpp` utilisent le cache.
+- **`Controller.h` n'inclut que les `<Domaine>Types.h`** : le wrapper ne voit ni les
+  services ni la moindre déclaration de FMTlib.
+- Il est sans état et ses méthodes sont statiques : l'état de la session (scénarios,
+  logger, gestionnaire d'exceptions) reste dans `FMTFormCache`.
 
 ```cpp
-// Entrée pure : prend les objets FMT. Utilisée par les tests C++.
-static Results run(const Parameters& p_params, const Models::FMTModel& p_model);
-// Entrée indexée : résout le modèle via FMTFormCache. Utilisée par le wrapper.
-static Results run(const Parameters& p_params, int p_modelIndex);
-```
+// Service : entrée pure, testable sans cache.
+static OperatingAreaResults schedule(const OperatingAreaParameters& p_params, const Models::FMTModel& p_model);
 
-Le wrapper n'appelle **que** la seconde, et ne touche donc jamais un `FMTModel`.
-Les tests appellent la première et n'ont pas à peupler le singleton.
+// Contrôleur : résout l'index, délègue.
+OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParameters& p_params, int p_modelIndex)
+{
+    return OperatingArea::schedule(p_params, getCachedModel(p_modelIndex));
+}
+```
 
 ### Règles transversales
 
 - Les signatures publiques de `FMTForm` ne changent pas : le UI .NET externe en dépend.
-- Journalisation : le wrapper clone le logger et fait `model.passInLogger(...)` ; le Core
-  journalise à travers le modèle. La progression reste en temps réel.
+- Journalisation : les entrées pures écrivent dans le logger statique de FMT
+  (`Models::FMTModel::getLogger()`) : le `FMTFormLogger` dans l'interface, le logger par
+  défaut dans un test. La progression reste en temps réel.
+- Toute classe du Core porte `FMTWRAPPERCOREEXPORT` (`FMTWrapperCoreExport.h`) ; les DTO,
+  sans fonction membre hors ligne, n'en ont pas besoin.
 - Chaque lot laisse l'ensemble compilable et ce fichier à jour.
 
 ## 2. Inventaire
@@ -67,6 +87,7 @@ Les tests appellent la première et n'ont pas à peupler le singleton.
 
 | Classe | Rôle |
 |---|---|
+| `Controller` | Contrôleur façade : le seul point d'entrée du wrapper, une méthode par opération de `FMTForm` |
 | `Environment` | Capacités de FMT, sans modèle : solveurs, pilotes GDAL, changelog, exceptions |
 | `ModelQuery` | Interrogation d'un modèle : yields, masques, thèmes, actions, cédules, écriture de projet |
 | `Selection` | Filtrage des contraintes et outputs par nom |
@@ -76,21 +97,23 @@ Les tests appellent la première et n'ont pas à peupler le singleton.
 | `OperatingArea` | Planification des aires d'opération (calendrier de COS) |
 | `AreaVariability` | Variabilité de l'aire initiale selon des proportions par masque |
 
-`Tools` a été éclaté au lot 2 en `Environment` + `ModelQuery` et n'existe plus.
+`Tools` a été éclaté au lot 2 en `Environment` + `ModelQuery` et n'existe plus. Depuis le
+lot 5b, les DTO de chaque domaine sont dans `<Domaine>Types.h`, et
+`FMTWrapperCoreExport.h` définit `FMTWRAPPERCOREEXPORT`.
 
 ### Domaines
 
-| Fichier UI | L. | Statut | Classe Core | Reste à faire |
+| Fichier UI | L. | Statut | Service, appelé par `Controller` | Reste à faire |
 |---|---|---|---|---|
 | `SimulationSpatialeExplicite.cpp` | 207 | **migré** | `SES` | -- |
 | `OptimisationSpatialeExplicite.cpp` | 105 | **migré** | `SES` | -- |
-| `Transformations.cpp` | 136 | **migré** | `Transformation`, `ModelQuery` | -- |
-| `FMTFormOutils.cpp` | 599 | partiel | `ModelQuery`, `Environment`, `Selection` | 2 helpers privés délégués (`_ObtenirArrayOutputsSelectionnees`, `_ObtenirSEQ`), à supprimer au lot 6 |
+| `Transformations.cpp` | 135 | **migré** | `Transformation`, `ModelQuery` | -- |
+| `FMTFormOutils.cpp` | 556 | partiel | `ModelQuery`, `Environment`, `Selection` | 2 helpers privés transitoires (`_ObtenirArrayOutputsSelectionnees`, `_ObtenirSEQ`) pour `Plannification.cpp`, à supprimer au lot 6 |
 | `Raterisation.cpp` | 38 | **migré** | `Rasterization` | -- |
 | `OperatingAreaScheduling.cpp` | 60 | **migré** | `OperatingArea` | -- |
 | `InitialAreaVariability.cpp` | 86 | **migré** | `AreaVariability` | -- |
 | `Plannification.cpp` | 165 | à faire | `Planning` | lot 6 |
-| `FMTForm.cpp` | 228 | partiel | `FMTFormCache` | `Cache_AjouterScenarios` et `SetErrorsToWarnings` à déplacer (lot 7) ; le reste est managé par nature (délégué, `IntPtr`) |
+| `FMTForm.cpp` | 206 | **migré** | `FMTFormCache`, `Environment` | -- (le délégué et l'`IntPtr` restent : managés par nature) |
 
 ### Mesure de la règle 2
 
@@ -115,13 +138,29 @@ commande corrigée, l'état d'origine à partir de `git show HEAD`.
 | Après le lot 3 | 86 |
 | Après le lot 4 | 64 |
 | Après le lot 5 | 45 |
+| Après le lot 5b | 40 |
 
-Répartition après le lot 5 : `Plannification.cpp` 33, `FMTForm.cpp` 5, `FMTFormOutils.cpp` 4, `FMTForm.h` 3.
+Répartition après le lot 5b : `Plannification.cpp` 33, `FMTFormOutils.cpp` 4, `FMTForm.h` 3.
 
 `UI/tests` : 23 occurrences, dans `UnitTestFMTFormLogger.cpp` (voir le suspens du lot 1).
 
-Objectif : zéro à la fin du lot 7. Le lot 6 vide le dernier fichier de domaine et les
-deux helpers privés restants de `FMTForm` ; ce qui reste ensuite est dans `FMTForm.cpp`.
+Objectif : zéro à la fin du lot 6, qui vide le dernier fichier de domaine et les deux
+helpers privés restants de `FMTForm`. `FMTForm.cpp` est à zéro depuis le lot 5b, qui a
+absorbé le lot 7.
+
+### Mesure de la règle 3
+
+Les noms du Core que le wrapper utilise, hors `Controller` et DTO :
+
+```
+grep -raoE "FMTWrapperCore::\w+" UI/Include UI/Source | grep -vE "::(Controller|\w+Parameters|\w+Results)$" | sort | uniq -c
+```
+
+Après le lot 5b, il ne reste que ce que le lot 6 fera disparaître : `Plannification.cpp`
+(`FMTFormCache` 6, `FMTFormLogger` 2) et les deux helpers transitoires de
+`FMTFormOutils.cpp` (`FMTFormCache`, `ModelQuery`, `Selection`, une fois chacun). Ce sont
+aussi les deux seuls fichiers du wrapper qui incluent un autre en-tête du Core que
+`Controller.h`.
 
 ## 3. Journal des lots
 
@@ -300,15 +339,77 @@ Suspens : trois copies de `_toStdVector` vivent maintenant dans le wrapper
 (`FMTFormOutils.cpp`, `Transformations.cpp`, `InitialAreaVariability.cpp`) -- à réunir
 dans un header de conversion (voir « Ensuite »).
 
+### Lot 5b -- Contrôleur façade et macro d'export (2026-09-14)
+
+**Statut** : livré le 2026-09-14, **pas encore compilé**. Refactor sans changement de
+comportement attendu, décidé avec Gabriel avant le lot 6 pour que celui-ci s'écrive
+directement dans la forme finale. Il absorbe le lot 7.
+
+- **`FMTWrapperCoreExport.h`** définit `FMTWRAPPERCOREEXPORT` : `dllexport` quand
+  `FMTWrapperCore_EXPORTS` est défini (CMake le fait pour la cible SHARED), `dllimport`
+  sinon, `visibility("default")` hors Windows. Il remplace les 11 `__declspec(dllexport)`
+  codés en dur, que les clients voyaient à tort (voir Pièges).
+- **`Controller` créé** : 36 méthodes statiques, une par opération système de `FMTForm`.
+  Il reprend les entrées indexées et les `...FromCache` des lots 2 à 5, tout l'accès au
+  cache de `FMTForm.cpp` (logger, gestionnaire d'exceptions, ajout, retrait et vidage des
+  scénarios) et la partie native de `FMTForm::_raiseFromCatch` (`logCurrentException`,
+  `openErrorLocation`).
+- **Lot 7 absorbé** : `Cache_AjouterScenarios` (lecture du projet) et
+  `SetErrorsToWarnings` (conversion en `Exception::FMTexc`, 10 avertissements par défaut)
+  passent dans `Controller::addScenarios` et `Controller::setErrorsToWarnings`.
+- **Les services n'ont plus que des entrées pures**, et aucun n'inclut plus
+  `FMTFormCache.h`. `ModelQuery::getPeriodsCount` gagne son entrée pure.
+- **DTO séparés** dans `SESTypes.h`, `RasterizationTypes.h`, `OperatingAreaTypes.h` et
+  `AreaVariabilityTypes.h`, les seuls en-têtes que `Controller.h` inclut.
+  `OutputsData::outputObjects` (`std::vector<Core::FMTOutput>`, « pour usage ultérieur »)
+  en sort : c'était le seul type FMT d'un DTO, et SES ne s'en servait qu'en interne ;
+  `calculateOutputs` rend désormais la sélection par un paramètre de sortie.
+- **Journalisation de SES ramenée dans les entrées pures.** La nouvelle surcharge
+  `SES::RunSES(params, modèle)` reprend l'ancienne entrée indexée dans le même ordre :
+  clone du logger courant, lecture des cédules, `passInLogger`, messages. Les messages de
+  l'ancienne `RunOptimization` indexée passent dans son entrée pure :
+  `testWrapperCoreSA` journalise donc maintenant sa progression.
+- **Wrapper** : `FMTForm.cpp` et les fichiers de domaine n'incluent plus que
+  `Controller.h`. `FMTForm.cpp` n'a plus un seul type de FMTlib (règle 2 : 45 -> 40).
+- Divers : déclarations avancées mortes retirées de `FMTForm.h` (`Core::FMTConstraint`,
+  `Models::FMTSeModel`) ; seuil `m_GET_ALL_MASKS_THRESHOLD` sorti du header de
+  `ModelQuery` (détail d'implémentation, et pas de donnée statique dans une classe
+  importée) ; quatre U+FFFD corrigés dans les commentaires de `TransformationCore.cpp`.
+
+Différences observables, toutes sur des chemins d'erreur :
+
+- un index demandé sur un cache vide lève désormais le même `FMTrangeerror` (« no scenario
+  in cache for index N ») pour toutes les opérations ; SES, la rastérisation, les aires
+  d'opération, la variabilité et les transformations levaient celui de
+  `FMTFormCache::getModel` ;
+- `RunSES` et `RunOptimization` ne vérifient plus que le logger installé est un
+  `FMTFormLogger` ; dans l'interface, il l'est toujours ;
+- l'horodatage de l'optimisation est journalisé après la résolution du scénario, et manque
+  donc si l'index est invalide ;
+- le message « FMT -> Erreur d'optimisation » disparaît : sa branche était morte, puisque
+  `RunOptimization` ne retourne jamais `success = false` ;
+- les noms de méthode cités dans les piles d'erreurs changent
+  (`ModelQuery::_getCachedModel` -> `Controller::getCachedModel`, etc.).
+
+Transitoire jusqu'au lot 6 : `_ObtenirSEQ` résout lui-même le scénario par `FMTFormCache`,
+puisque `ModelQuery` n'a plus d'entrée indexée et que le contrôleur ne peut pas retourner
+de `Core::FMTSchedule`.
+
+À faire par Gabriel : reconfigurer CMake (7 nouveaux fichiers), compiler `FMTWrapperCore`,
+`FMTWrapper` et les tests, puis un aller-retour dans l'interface : chargement d'un
+scénario, SES, et une erreur provoquée pour exercer `_raiseFromCatch`.
+
 ## 4. Prochain lot
 
 ### Lot 6 -- `Plannification` / `Replanification` -> `Planning`
 
 Le plus lourd : deux entrées, des tâches parallèles, et le dernier fichier en cp1252.
 
-1. `PlanningParameters` / `ReplanningParameters` et une classe `Planning`, avec
-   `plan(params, modèles)` et `replan(params, stratégique, stochastique, tactique)`, plus
-   leurs entrées indexées.
+1. `PlanningTypes.h` (`PlanningParameters`, `ReplanningParameters`) et un service
+   `Planning` aux entrées pures `plan(params, modèles)` et
+   `replan(params, stratégique, stochastique, tactique)` ; le contrôleur gagne `plan` et
+   `replan`, qui reçoivent les index de scénario. Le stub vide
+   `FMTPlanningTaskParameters.h` est à reprendre ou à supprimer.
 2. **Plannification** : un `FMTPlanningTask` reçoit un modèle par scénario (solveur,
    `LENGTH`, `TOLERANCE` 0,01, outputs retenus, `FORCE_PARTIAL_BUILD` selon la relecture
    de cédule), puis `FMTTaskHandler::conccurentRun`. Deux détails à reproduire :
@@ -323,24 +424,27 @@ Le plus lourd : deux entrées, des tâches parallèles, et le dernier fichier en
    rester testable. `p_writeSchedule` n'est pas utilisé.
 4. `layersoptions` : `SEPARATOR=SEMICOLON` quand le pilote est `CSV`, dans les deux entrées.
 5. `_ObtenirArrayOutputsSelectionnees` et `_ObtenirSEQ` disparaissent, et avec eux les
-   déclarations avancées `Core::` de `FMTForm.h`.
+   déclarations avancées `Core::` de `FMTForm.h` et les inclusions transitoires de
+   `FMTFormOutils.cpp` (`FMTFormCache.h`, `FMTSchedule.h`, `ModelQuery.h`, `Selection.h`).
 6. **Fichier cp1252** : réécriture complète ; ses messages passent en UTF-8, comme au lot 4.
 7. Test : `TWD_land` a des scénarios publics de replanification (`Globalreplanning`,
    `Globalfire`, `Localreplanning`, déjà utilisés par `UnitTestFMTFormLogger`), et `LP`
    pour la plannification.
 
-Critère de sortie : `Plannification.cpp` ne contient plus un seul type de FMTlib
-(33 aujourd'hui), et `FMTForm` plus aucun helper privé à types FMT.
+Critère de sortie : les mesures des règles 2 et 3 tombent à zéro (40 types de FMTlib et
+11 noms du Core aujourd'hui, tous dans `Plannification.cpp` et les deux helpers).
 
 ### Ensuite
 
-- **Lot 7 -- `FMTForm.cpp`** : `Cache_AjouterScenarios` (lecture du projet avec
-  `FMTModelParser`) et `SetErrorsToWarnings` (conversion en `Exception::FMTexc`) passent
-  dans `FMTFormCache`, qui reçoit des `std::string` et des `int`. Ce sont les derniers
-  types de FMTlib du wrapper une fois le lot 6 fait.
 - **Nettoyage** : réunir les conversions du wrapper (`_toStdString`, `_toStdVector`) dans
   un header ; renommer les classes d'infrastructure (`ModelCache` / `CallbackLogger` /
   `WarningExceptionHandler`), reporté depuis le lot 1.
+- **Portabilité du Core**, s'il doit un jour compiler hors Windows :
+  `FMTExceptionHandlerWarning::tryfileopener` lance Notepad++ par `windows.h`, du
+  comportement d'interface à isoler sous `#ifdef _WIN32` ou à rendre au wrapper ; et deux
+  inclusions n'ont pas la casse du fichier (`"FMTExceptionHandlerWarning.h"` pour
+  `FMTexceptionhandlerwarning.h`, dans `FMTFormCache.cpp` et
+  `FMTexceptionhandlerwarning.cpp`), sans effet sous Windows.
 
 ## 5. Pièges connus
 
@@ -396,11 +500,19 @@ Critère de sortie : `Plannification.cpp` ne contient plus un seul type de FMTli
   cible sans ce flag (la ligne existait, commentée, et visait `FMTWrapper` par
   copier-coller). Corrigé au lot 1. Symptôme à reconnaître : un `LNK2019` sur un
   `static` d'une classe FMTlib, alors que les fonctions de la même classe passent.
-- **`__declspec(dllexport)`** obligatoire sur toute classe Core consommée par le wrapper.
-- **Exporter une classe instancie ses membres implicites dans chaque client.** Une
-  classe exportée dont un membre est un `std::unique_ptr<T>` avec `T` seulement
+- **`FMTWRAPPERCOREEXPORT`** sur toute classe du Core appelée depuis un autre binaire : le
+  wrapper (par `Controller`) et les exécutables de test (par les entrées pures). Pas sur
+  les DTO. **Ne pas** utiliser `FMTEXPORT` : il vaut `dllimport` dans `FMTWrapperCore`,
+  qui définit `FMTLIBIMPORT`. **Ne pas** coder `__declspec(dllexport)` en dur : les
+  clients doivent voir `dllimport`, et GCC hors Windows ne connaît pas `__declspec`.
+- **Rien de FMTlib dans `Controller.h`** : une opération qui retournerait un objet FMT
+  n'a pas sa place dans le contrôleur. Vu au lot 5b avec `_ObtenirSEQ`, qui retourne des
+  `Core::FMTSchedule` : il reste dans le wrapper jusqu'au lot 6, qui le supprime.
+- **Exporter une classe instancie ses membres implicites dans chaque unité de
+  compilation qui la voit exportée** : chaque client jusqu'au lot 5b, qui voyait
+  `dllexport` en dur ; chaque source du Core depuis. Une classe exportée dont un membre est un `std::unique_ptr<T>` avec `T` seulement
   déclaré en avant ne peut plus définir constructeur ni destructeur `= default`
-  dans le header : chaque unité de compilation cliente les instancie et échoue sur
+  dans le header : chaque unité de compilation concernée les instancie et échoue sur
   `can't delete an incomplete type`. Les déclarer dans le header et les définir
   `= default` dans le .cpp, là où le type est complet. Vu au lot 2 sur
   `FMTFormCache::m_Models`. **Ne pas** « corriger » en incluant `FMTModel.h` dans
@@ -433,8 +545,9 @@ du Core restent **manuels et privés**.
 - **Ne pas** ajouter d'`add_test()` dans `FMTWrapperCore/CMakeLists.txt` : l'absence est
   volontaire tant que les modèles sont privés. Le jour où une interface publique existera,
   les tests base basculeront dans ctest.
-- Chaque lot ajoute son `testWrapperCore<Domaine>.cpp` selon ce patron. La convention des
-  doubles entrées garantit que les tests n'ont jamais à peupler le singleton.
+- Chaque lot ajoute son `testWrapperCore<Domaine>.cpp` selon ce patron. Les tests
+  appellent les entrées pures des services, jamais `Controller` : ils n'ont pas à peupler
+  le singleton.
 - Quand un jeu de données public existe, le test l'utilise par défaut et reprend la forme
   d'arguments de son cousin de `basetests.csv` : `testWrapperCoreRasterization` tourne sur
   `Examples/Models/TWD_land` avec les mêmes arguments que `maptoFMTforest`. Il reste

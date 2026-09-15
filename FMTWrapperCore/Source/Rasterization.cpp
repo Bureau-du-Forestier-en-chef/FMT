@@ -4,7 +4,6 @@
 
 #include "FMTAreaParser.h"
 #include "FMTForest.h"
-#include "FMTFormCache.h"
 #include "FMTModel.h"
 #include "FMTTheme.h"
 
@@ -55,12 +54,5 @@ namespace FMTWrapperCore
             p_model.getExceptionHandler()->raiseFromCatch(
                 "", "Rasterization::rasterize", __LINE__, __FILE__);
         }
-    }
-
-    void Rasterization::rasterize(
-        const RasterizationParameters& p_params,
-        int p_modelIndex)
-    {
-        rasterize(p_params, FMTFormCache::GetInstance()->getModel(p_modelIndex));
     }
 }

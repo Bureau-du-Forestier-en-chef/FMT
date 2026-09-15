@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "FMTWrapperCoreExport.h"
+
 namespace Core
 {
     class FMTActualDevelopment;
@@ -23,17 +25,13 @@ namespace FMTWrapperCore
     /**
      * @brief Interrogation d'un modèle FMT.
      *
-     * Chaque opération existe en deux versions :
-     *
-     * - une **version pure**, qui prend le modèle en paramètre. C'est celle
-     *   qu'utilisent les tests C++ : elle n'a besoin d'aucun cache.
-     * - une **version indexée**, qui résout le modèle dans FMTFormCache à partir
-     *   de son index de scénario. C'est celle qu'appelle le wrapper, ce qui lui
-     *   évite de manipuler le moindre objet FMT.
+     * Chaque opération prend le modèle en paramètre et n'a besoin d'aucun cache : les
+     * tests C++ l'appellent directement. Le wrapper y accède par Controller, qui résout
+     * le scénario dans FMTFormCache à partir de son index.
      *
      * Tout ce qui ne dépend pas d'un modèle appartient à Environment.
      */
-    class __declspec(dllexport) ModelQuery
+    class FMTWRAPPERCOREEXPORT ModelQuery
     {
     public:
         /**
@@ -42,7 +40,6 @@ namespace FMTWrapperCore
          * @return L'âge maximum.
          */
         static int getMaxAge(const Models::FMTModel& p_model);
-        static int getMaxAge(int p_modelIndex);
 
         /**
          * @brief Retourne la valeur d'un yield.
@@ -57,11 +54,6 @@ namespace FMTWrapperCore
             const std::string& p_mask,
             const std::string& p_yield,
             int p_age);
-        static double getYield(
-            int p_modelIndex,
-            const std::string& p_mask,
-            const std::string& p_yield,
-            int p_age);
 
         /**
          * @brief Retourne tous les masques utiles du modèle selon les thèmes choisis.
@@ -73,11 +65,6 @@ namespace FMTWrapperCore
          */
         static std::set<std::string> getAllMasks(
             const Models::FMTModel& p_model,
-            const int p_periods,
-            const std::vector<int>& p_themesNumbers,
-            const std::string& p_rasterPath);
-        static std::set<std::string> getAllMasks(
-            int p_modelIndex,
             const int p_periods,
             const std::vector<int>& p_themesNumbers,
             const std::string& p_rasterPath);
@@ -96,7 +83,6 @@ namespace FMTWrapperCore
          * @return true si le masque est valide.
          */
         static bool validateMask(const Models::FMTModel& p_model, const std::string& p_mask);
-        static bool validateMask(int p_modelIndex, const std::string& p_mask);
 
         /**
          * @brief Retourne la représentation textuelle des contraintes du modèle.
@@ -104,7 +90,6 @@ namespace FMTWrapperCore
          * @return Une entrée par contrainte.
          */
         static std::vector<std::string> getConstraintsAsText(const Models::FMTModel& p_model);
-        static std::vector<std::string> getConstraintsAsText(int p_modelIndex);
 
         /**
          * @brief Retourne les noms des outputs du modèle.
@@ -112,7 +97,6 @@ namespace FMTWrapperCore
          * @return Les noms des outputs.
          */
         static std::vector<std::string> getOutputsNames(const Models::FMTModel& p_model);
-        static std::vector<std::string> getOutputsNames(int p_modelIndex);
 
         /**
          * @brief Retourne les noms des actions du modèle.
@@ -120,7 +104,6 @@ namespace FMTWrapperCore
          * @return Les noms des actions.
          */
         static std::vector<std::string> getActionsNames(const Models::FMTModel& p_model);
-        static std::vector<std::string> getActionsNames(int p_modelIndex);
 
         /**
          * @brief Retourne les agrégats distincts déclarés par les actions du modèle.
@@ -128,7 +111,6 @@ namespace FMTWrapperCore
          * @return Les agrégats, dédoublonnés et triés.
          */
         static std::vector<std::string> getAggregates(const Models::FMTModel& p_model);
-        static std::vector<std::string> getAggregates(int p_modelIndex);
 
         /**
          * @brief Retourne les noms des yields du modèle.
@@ -136,7 +118,6 @@ namespace FMTWrapperCore
          * @return Les noms des yields.
          */
         static std::vector<std::string> getYieldsNames(const Models::FMTModel& p_model);
-        static std::vector<std::string> getYieldsNames(int p_modelIndex);
 
         /**
          * @brief Retourne le nombre de thèmes du modèle.
@@ -144,7 +125,6 @@ namespace FMTWrapperCore
          * @return Le nombre de thèmes.
          */
         static int getThemesCount(const Models::FMTModel& p_model);
-        static int getThemesCount(int p_modelIndex);
 
         /**
          * @brief Retourne les attributs de base d'un thème.
@@ -154,9 +134,6 @@ namespace FMTWrapperCore
          */
         static std::vector<std::string> getThemeAttributes(
             const Models::FMTModel& p_model,
-            const int p_themeIndex);
-        static std::vector<std::string> getThemeAttributes(
-            int p_modelIndex,
             const int p_themeIndex);
 
         /**
@@ -168,17 +145,16 @@ namespace FMTWrapperCore
         static std::vector<Core::FMTSchedule> readSchedules(
             const std::string& p_primaryFilePath,
             const Models::FMTModel& p_model);
-        static std::vector<Core::FMTSchedule> readSchedules(
-            const std::string& p_primaryFilePath,
-            int p_modelIndex);
 
         /**
          * @brief Retourne la dernière période couverte par les cédules du modèle.
          * @param p_primaryFilePath Chemin du fichier .pri.
-         * @param p_modelIndex Index du scénario dans le cache.
+         * @param p_model Le modèle dont on lit les cédules.
          * @return La dernière période, ou 0 si aucune cédule n'est disponible.
          */
-        static int getPeriodsCount(const std::string& p_primaryFilePath, int p_modelIndex);
+        static int getPeriodsCount(
+            const std::string& p_primaryFilePath,
+            const Models::FMTModel& p_model);
 
         /**
          * @brief Écrit un projet (base + scénarios) dans un dossier.
@@ -192,20 +168,7 @@ namespace FMTWrapperCore
             const std::vector<Models::FMTModel>& p_models,
             const std::string& p_destinationDirectory);
 
-        /**
-         * @brief Écrit tout le contenu du cache dans un dossier.
-         * @param p_destinationDirectory Le dossier de destination.
-         */
-        static void writeToProjectFromCache(const std::string& p_destinationDirectory);
-
     private:
-        /**
-         * @brief Résout un modèle du cache en validant que celui-ci n'est pas vide.
-         * @param p_modelIndex Index du scénario.
-         * @return Le modèle demandé.
-         */
-        static const Models::FMTModel& _getCachedModel(int p_modelIndex);
-
         /**
          * @brief Retourne l'aire du modèle telle que lue dans les rasters.
          * @param p_model Le modèle à utiliser.
@@ -225,12 +188,6 @@ namespace FMTWrapperCore
         static std::set<std::string> _getThemesDecomposition(
             const Core::FMTMask& p_mask,
             const std::vector<Core::FMTTheme>& p_themes);
-
-        /**
-         * @brief Au-delà de ce nombre de combinaisons d'attributs, la décomposition
-         *        exhaustive des masques est trop coûteuse et le modèle est résolu.
-         */
-        static const size_t m_GET_ALL_MASKS_THRESHOLD = 1000000;
     };
 }
 

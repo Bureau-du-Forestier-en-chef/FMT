@@ -6,6 +6,7 @@
 
 #include "FMTConstraint.h"
 #include "FMTOutput.h"
+#include "FMTWrapperCoreExport.h"
 
 namespace FMTWrapperCore
 {
@@ -25,7 +26,7 @@ namespace FMTWrapperCore
      * - chaque élément du modèle est retenu au plus une fois, même si plusieurs
      *   entrées de la sélection lui correspondent.
      */
-    class __declspec(dllexport) Selection
+    class FMTWRAPPERCOREEXPORT Selection
     {
     public:
         /**

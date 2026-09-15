@@ -1,7 +1,8 @@
 #ifndef FMTWRAPPERCORE_RASTERIZATION_HEADER
 #define FMTWRAPPERCORE_RASTERIZATION_HEADER
 
-#include <string>
+#include "RasterizationTypes.h"
+#include "FMTWrapperCoreExport.h"
 
 namespace Models
 {
@@ -10,25 +11,6 @@ namespace Models
 
 namespace FMTWrapperCore
 {
-    /**
-     * @brief Paramètres de la rastérisation d'un fichier vectoriel.
-     */
-    struct RasterizationParameters
-    {
-        /** Fichier vectoriel à rastériser. */
-        std::string vectorFilePath;
-        /** Dossier où écrire les rasters de la forêt. */
-        std::string outputFolder;
-        /** Résolution des rasters produits (taille d'une cellule). */
-        int resolution = 0;
-        /** Champ du fichier vectoriel portant l'âge. */
-        std::string ageField;
-        /** Champ du fichier vectoriel portant la superficie. */
-        std::string areaField;
-        /** Champ du fichier vectoriel portant le verrou ; vide s'il n'y en a pas. */
-        std::string lockField;
-    };
-
     /**
      * @brief Rastérisation d'un fichier vectoriel selon les thèmes d'un modèle.
      *
@@ -39,7 +21,7 @@ namespace FMTWrapperCore
      * L'opération ne produit pas de données en mémoire : elle ne retourne rien et
      * les erreurs remontent par exception.
      */
-    class __declspec(dllexport) Rasterization
+    class FMTWRAPPERCOREEXPORT Rasterization
     {
     public:
         /**
@@ -50,15 +32,6 @@ namespace FMTWrapperCore
         static void rasterize(
             const RasterizationParameters& p_params,
             const Models::FMTModel& p_model);
-
-        /**
-         * @brief Rastérise le fichier vectoriel selon un scénario du cache.
-         * @param p_params Paramètres de la rastérisation.
-         * @param p_modelIndex Index du scénario dans FMTFormCache.
-         */
-        static void rasterize(
-            const RasterizationParameters& p_params,
-            int p_modelIndex);
     };
 }
 

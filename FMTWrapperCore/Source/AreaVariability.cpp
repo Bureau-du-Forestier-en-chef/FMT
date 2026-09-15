@@ -6,7 +6,6 @@
 
 #include "FMTConstraint.h"
 #include "FMTDefaultLogger.h"
-#include "FMTFormCache.h"
 #include "FMTFreeExceptionHandler.h"
 #include "FMTLogger.h"
 #include "FMTLpModel.h"
@@ -174,12 +173,5 @@ namespace FMTWrapperCore
         }
 
         return results;
-    }
-
-    AreaVariabilityResults AreaVariability::run(
-        const AreaVariabilityParameters& p_params,
-        int p_modelIndex)
-    {
-        return run(p_params, FMTFormCache::GetInstance()->getModel(p_modelIndex));
     }
 }

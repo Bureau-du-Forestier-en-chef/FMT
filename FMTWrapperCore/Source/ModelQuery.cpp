@@ -10,8 +10,6 @@
 #include "FMTAreaParser.h"
 #include "FMTConstraint.h"
 #include "FMTForest.h"
-#include "FMTFormCache.h"
-#include "FMTFreeExceptionHandler.h"
 #include "FMTLpModel.h"
 #include "FMTMask.h"
 #include "FMTModel.h"
@@ -22,21 +20,11 @@
 
 namespace FMTWrapperCore
 {
-    const Models::FMTModel& ModelQuery::_getCachedModel(int p_modelIndex)
+    namespace
     {
-        FMTFormCache* cache = FMTFormCache::GetInstance();
-
-        if (cache->empty())
-        {
-            Exception::FMTFreeExceptionHandler().raise(
-                Exception::FMTexc::FMTrangeerror,
-                "no scenario in cache for index " + std::to_string(p_modelIndex),
-                "ModelQuery::_getCachedModel",
-                __LINE__,
-                __FILE__);
-        }
-
-        return cache->getModel(p_modelIndex);
+        // Au-delà de ce nombre de combinaisons d'attributs, la décomposition exhaustive
+        // des masques est trop coûteuse et le modèle est résolu.
+        constexpr size_t GET_ALL_MASKS_THRESHOLD = 1000000;
     }
 
     int ModelQuery::getMaxAge(const Models::FMTModel& p_model)
@@ -67,11 +55,6 @@ namespace FMTWrapperCore
         return result;
     }
 
-    int ModelQuery::getMaxAge(int p_modelIndex)
-    {
-        return getMaxAge(_getCachedModel(p_modelIndex));
-    }
-
     double ModelQuery::getYield(
         const Models::FMTModel& p_model,
         const std::string& p_mask,
@@ -91,15 +74,6 @@ namespace FMTWrapperCore
         }
 
         return result;
-    }
-
-    double ModelQuery::getYield(
-        int p_modelIndex,
-        const std::string& p_mask,
-        const std::string& p_yield,
-        int p_age)
-    {
-        return getYield(_getCachedModel(p_modelIndex), p_mask, p_yield, p_age);
     }
 
     Core::FMTMask ModelQuery::getFullMask(const std::vector<Core::FMTTheme>& p_themes)
@@ -214,7 +188,7 @@ namespace FMTWrapperCore
                 numberOfAttributes *= themes.back().size();
             }
 
-            if (numberOfAttributes > m_GET_ALL_MASKS_THRESHOLD)
+            if (numberOfAttributes > GET_ALL_MASKS_THRESHOLD)
             {
                 modelCopy.setConstraints(std::vector<Core::FMTConstraint>());
                 modelCopy.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
@@ -254,15 +228,6 @@ namespace FMTWrapperCore
         return masks;
     }
 
-    std::set<std::string> ModelQuery::getAllMasks(
-        int p_modelIndex,
-        const int p_periods,
-        const std::vector<int>& p_themesNumbers,
-        const std::string& p_rasterPath)
-    {
-        return getAllMasks(_getCachedModel(p_modelIndex), p_periods, p_themesNumbers, p_rasterPath);
-    }
-
     bool ModelQuery::validateMask(const Models::FMTModel& p_model, const std::string& p_mask)
     {
         bool valid = false;
@@ -282,11 +247,6 @@ namespace FMTWrapperCore
         }
 
         return valid;
-    }
-
-    bool ModelQuery::validateMask(int p_modelIndex, const std::string& p_mask)
-    {
-        return validateMask(_getCachedModel(p_modelIndex), p_mask);
     }
 
     std::vector<std::string> ModelQuery::getConstraintsAsText(const Models::FMTModel& p_model)
@@ -309,11 +269,6 @@ namespace FMTWrapperCore
         return constraints;
     }
 
-    std::vector<std::string> ModelQuery::getConstraintsAsText(int p_modelIndex)
-    {
-        return getConstraintsAsText(_getCachedModel(p_modelIndex));
-    }
-
     std::vector<std::string> ModelQuery::getOutputsNames(const Models::FMTModel& p_model)
     {
         std::vector<std::string> names;
@@ -334,19 +289,6 @@ namespace FMTWrapperCore
         return names;
     }
 
-    std::vector<std::string> ModelQuery::getOutputsNames(int p_modelIndex)
-    {
-        // L'interface peuple sa liste d'outputs avant qu'un scenario soit charge.
-        // Un cache vide n'est donc pas une erreur ici, contrairement aux autres
-        // interrogations : on retourne simplement une liste vide.
-        if (FMTFormCache::GetInstance()->empty())
-        {
-            return std::vector<std::string>();
-        }
-
-        return getOutputsNames(_getCachedModel(p_modelIndex));
-    }
-
     std::vector<std::string> ModelQuery::getActionsNames(const Models::FMTModel& p_model)
     {
         std::vector<std::string> names;
@@ -365,11 +307,6 @@ namespace FMTWrapperCore
         }
 
         return names;
-    }
-
-    std::vector<std::string> ModelQuery::getActionsNames(int p_modelIndex)
-    {
-        return getActionsNames(_getCachedModel(p_modelIndex));
     }
 
     std::vector<std::string> ModelQuery::getAggregates(const Models::FMTModel& p_model)
@@ -399,11 +336,6 @@ namespace FMTWrapperCore
         return aggregates;
     }
 
-    std::vector<std::string> ModelQuery::getAggregates(int p_modelIndex)
-    {
-        return getAggregates(_getCachedModel(p_modelIndex));
-    }
-
     std::vector<std::string> ModelQuery::getYieldsNames(const Models::FMTModel& p_model)
     {
         std::vector<std::string> names;
@@ -421,11 +353,6 @@ namespace FMTWrapperCore
         return names;
     }
 
-    std::vector<std::string> ModelQuery::getYieldsNames(int p_modelIndex)
-    {
-        return getYieldsNames(_getCachedModel(p_modelIndex));
-    }
-
     int ModelQuery::getThemesCount(const Models::FMTModel& p_model)
     {
         int count = 0;
@@ -441,11 +368,6 @@ namespace FMTWrapperCore
         }
 
         return count;
-    }
-
-    int ModelQuery::getThemesCount(int p_modelIndex)
-    {
-        return getThemesCount(_getCachedModel(p_modelIndex));
     }
 
     std::vector<std::string> ModelQuery::getThemeAttributes(
@@ -468,13 +390,6 @@ namespace FMTWrapperCore
         }
 
         return attributes;
-    }
-
-    std::vector<std::string> ModelQuery::getThemeAttributes(
-        int p_modelIndex,
-        const int p_themeIndex)
-    {
-        return getThemeAttributes(_getCachedModel(p_modelIndex), p_themeIndex);
     }
 
     std::vector<Core::FMTSchedule> ModelQuery::readSchedules(
@@ -500,17 +415,12 @@ namespace FMTWrapperCore
         return schedules;
     }
 
-    std::vector<Core::FMTSchedule> ModelQuery::readSchedules(
+    int ModelQuery::getPeriodsCount(
         const std::string& p_primaryFilePath,
-        int p_modelIndex)
-    {
-        return readSchedules(p_primaryFilePath, _getCachedModel(p_modelIndex));
-    }
-
-    int ModelQuery::getPeriodsCount(const std::string& p_primaryFilePath, int p_modelIndex)
+        const Models::FMTModel& p_model)
     {
         const std::vector<Core::FMTSchedule> SCHEDULES =
-            readSchedules(p_primaryFilePath, p_modelIndex);
+            readSchedules(p_primaryFilePath, p_model);
 
         // Sans cette garde, back() sur un vecteur vide est un comportement indefini.
         if (SCHEDULES.empty())
@@ -554,30 +464,5 @@ namespace FMTWrapperCore
             p_models.front().getExceptionHandler()->raiseFromCatch(
                 "", "ModelQuery::writeToProject", __LINE__, __FILE__);
         }
-    }
-
-    void ModelQuery::writeToProjectFromCache(const std::string& p_destinationDirectory)
-    {
-        FMTFormCache* cache = FMTFormCache::GetInstance();
-
-        if (cache->empty())
-        {
-            Exception::FMTFreeExceptionHandler().raise(
-                Exception::FMTexc::FMTrangeerror,
-                "empty cache",
-                "ModelQuery::writeToProjectFromCache",
-                __LINE__,
-                __FILE__);
-        }
-
-        std::vector<Models::FMTModel> models;
-        models.reserve(cache->size());
-
-        for (size_t index = 0; index < cache->size(); ++index)
-        {
-            models.push_back(cache->getModel(static_cast<int>(index)));
-        }
-
-        writeToProject(models, p_destinationDirectory);
     }
 }

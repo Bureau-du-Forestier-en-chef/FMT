@@ -2,7 +2,7 @@
 #include <msclr\marshal_cppstd.h>
 
 #include "FMTForm.h"
-#include "AreaVariability.h"
+#include "Controller.h"
 
 namespace Wrapper
 {
@@ -75,7 +75,7 @@ namespace Wrapper
 				}
 			}
 
-			return FMTWrapperCore::AreaVariability::run(params, scenario).success;
+			return FMTWrapperCore::Controller::runAreaVariability(params, scenario).success;
 		}
 		catch (...)
 		{

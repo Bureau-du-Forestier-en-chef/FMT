@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "FMTWrapperCoreExport.h"
+
 namespace FMTWrapperCore
 {
     /**
@@ -13,7 +15,7 @@ namespace FMTWrapperCore
      * solveurs disponibles, pilotes GDAL, changelog et description des exceptions.
      * Tout ce qui interroge un modèle appartient à ModelQuery.
      */
-    class __declspec(dllexport) Environment
+    class FMTWRAPPERCOREEXPORT Environment
     {
     public:
         /**

@@ -3,7 +3,9 @@
 
 #include <string>
 #include <vector>
-#include <map>
+
+#include "FMTWrapperCoreExport.h"
+#include "SESTypes.h"
 
 namespace Core {
     class FMTSchedule;
@@ -14,10 +16,7 @@ namespace Core {
 }
 
 namespace Models {
-    class FMTModel;  // Forward declaration corrigée
-}
-
-namespace Models {
+    class FMTModel;
     class FMTSeModel;
 }
 
@@ -28,167 +27,26 @@ namespace Spatial {
 namespace FMTWrapperCore
 {
     /**
-     * @brief Structure pour les résultats du rapport de carbone spatial
-     */
-    struct CarbonReportData
-    {
-        struct PeriodData
-        {
-            int period;
-            double objectiveValue;
-            double primalInfeasibility;
-            double totalRatio;
-            std::map<std::string, double> actionRatios; // actionName -> ratio
-        };
-
-        std::vector<PeriodData> periods;
-    };
-
-    /**
-     * @brief Structure pour les informations d'événements
-     */
-    struct EventsData
-    {
-        std::string statistics; // Contient toutes les stats formatées
-    };
-
-    /**
-     * @brief Structure pour les résultats des outputs
-     */
-    struct OutputsData
-    {
-        struct OutputResult
-        {
-            std::string outputName;
-            std::map<int, double> periodValues; // period -> value
-        };
-
-        std::vector<OutputResult> results;
-        std::vector<Core::FMTOutput> outputObjects; // Pour usage ultérieur
-    };
-
-    /**
-     * @brief Structure pour les prédicteurs
-     */
-    struct PredictorsData
-    {
-        struct PredictorNode
-        {
-            int period;
-            int nodeIndex;
-            std::vector<double> values;
-        };
-
-        std::vector<std::string> predictorNames;
-        std::vector<PredictorNode> nodes;
-    };
-
-    /**
-     * @brief Paramètres pour la simulation spatiale explicite
-     */
-    struct SESParameters
-    {
-        std::string primaryFilePath;
-        std::string rastersPath;
-        std::string scenarioName;
-        std::vector<std::string> constraintNames;
-        int numberOfPeriods;
-        int greedySearchIterations;
-        std::vector<std::string> outputNames;
-        bool useStanlock;
-        int outputLevel;
-        int outputMinPeriod;
-        int outputMaxPeriod;
-        std::string outputPath;
-        bool generateEvents;
-        bool generateSpatialOutputs;
-        std::string gdalProvider;
-        bool carbonMode;
-        std::vector<std::string> predictorYields;
-        std::vector<int> growthThemes;
-    };
-
-    /**
-     * @brief Résultats complets de la simulation
-     */
-    struct SESResults
-    {
-        bool success;
-        std::string errorMessage;
-
-        // Rapports
-        std::vector<std::string> infeasibilityMessages;
-        CarbonReportData carbonReport;  
-
-        // Fichiers créés
-        std::vector<std::string> disturbanceFiles;
-        EventsData eventsData;
-        std::string eventsFilePath;
-
-        // Outputs
-        OutputsData outputsData;
-        std::string scheduleFilePath;
-        std::vector<std::string> spatialOutputFiles;
-
-        // Prédicteurs
-        PredictorsData predictorsData;
-
-        SESResults() : success(false) {}
-    };
-
-    /**
-     * @brief Paramètres pour l'optimisation spatiale (Simulated Annealing)
-     */
-    struct SAParameters
-    {
-        std::string rastersPath;
-        std::string scenarioName;
-        std::vector<std::string> constraintNames;
-        int numberOfPeriods;
-        int maxMoves;
-        int maxAcceptedMoves;
-        int maxCycleMoves;
-        std::vector<std::string> outputNames;
-        bool useStanlock;
-        int outputLevel;
-        int outputMinPeriod;
-        int outputMaxPeriod;
-        std::string outputPath;
-        bool generateEvents;
-        bool generateSpatialOutputs;
-        std::string gdalProvider;
-    };
-
-    /**
-     * @brief Résultats de l'optimisation spatiale
-     */
-    struct SAResults
-    {
-        bool success;
-        std::string errorMessage;
-
-        // Rapports
-        std::vector<std::string> infeasibilityMessages;
-
-        // Fichiers créés
-        std::vector<std::string> disturbanceFiles;
-        EventsData eventsData;
-        std::string eventsFilePath;
-
-        // Outputs
-        OutputsData outputsData;
-        std::string scheduleFilePath;
-        std::vector<std::string> spatialOutputFiles;
-
-        SAResults() : success(false) {}
-    };
-
-    /**
      * @brief Classe pour les simulations spatiales explicites
      */
-    class __declspec(dllexport) SES
+    class FMTWRAPPERCOREEXPORT SES
     {
     public:
+        /**
+         * @brief Exécute une simulation spatiale explicite telle que l'interface la lance
+         * @param params Paramètres de simulation ; les cédules sont lues dans
+         *        params.primaryFilePath
+         * @param baseModel Modèle FMT de base
+         * @return Résultats complets de la simulation
+         *
+         * Lit les cédules du modèle, repasse au modèle un clone du logger courant, puis
+         * journalise la progression autour de la simulation proprement dite, faite par
+         * RunSES(const SESParameters&, const Models::FMTModel&, const std::vector<Core::FMTSchedule>&).
+         */
+        static SESResults RunSES(
+            const SESParameters& params,
+            const Models::FMTModel& baseModel);
+
         /**
          * @brief Exécute une simulation spatiale explicite complète
          * @param params Paramètres de simulation
@@ -210,34 +68,13 @@ namespace FMTWrapperCore
          * @param baseModel Modèle FMT de base (déjà chargé)
          * @return Résultats complets de l'optimisation
          *
-         * Cette méthode orchestre toute l'optimisation spatiale et peut être appelée
-         * directement depuis du code C++ pur pour les tests et le débogage.
+         * Cette méthode orchestre toute l'optimisation spatiale, en journalise la
+         * progression et les outputs, et peut être appelée directement depuis du code
+         * C++ pur pour les tests et le débogage.
          */
         static SAResults RunOptimization(
             const SAParameters& params,
             const Models::FMTModel& baseModel);
-
-        /**
-         * @brief Exécute une simulation spatiale explicite sur un scénario du cache
-         * @param params Paramètres de simulation ; scenarioName est renseigné ici
-         * @param p_modelIndex Index du scénario dans FMTFormCache
-         * @return Résultats complets de la simulation
-         *
-         * Entrée indexée destinée au wrapper : elle résout le modèle, clone le
-         * logger de l'interface, lit les cédules du fichier primaire et journalise
-         * la progression, pour que le wrapper n'ait à manipuler aucun objet FMT.
-         */
-        static SESResults RunSES(const SESParameters& params, int p_modelIndex);
-
-        /**
-         * @brief Exécute une optimisation spatiale sur un scénario du cache
-         * @param params Paramètres d'optimisation ; scenarioName est renseigné ici
-         * @param p_modelIndex Index du scénario dans FMTFormCache
-         * @return Résultats complets de l'optimisation
-         *
-         * Entrée indexée destinée au wrapper, voir RunSES(const SESParameters&, int).
-         */
-        static SAResults RunOptimization(const SAParameters& params, int p_modelIndex);
 
     private:
         /**
@@ -328,12 +165,14 @@ namespace FMTWrapperCore
          * @param semodel Le modèle SES
          * @param outputNames Noms des outputs à calculer
          * @param numberOfPeriods Nombre de périodes
+         * @param[out] selectedOutputs Outputs retenus par outputNames, dans l'ordre du modèle
          * @return Structure contenant les résultats des outputs
          */
         static OutputsData calculateOutputs(
             const Models::FMTSeModel& semodel,
             const std::vector<std::string>& outputNames,
-            const int numberOfPeriods);
+            const int numberOfPeriods,
+            std::vector<Core::FMTOutput>& selectedOutputs);
 
         /**
          * @brief Écrit les outputs spatiaux

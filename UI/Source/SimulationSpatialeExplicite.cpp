@@ -2,8 +2,7 @@
 #include <msclr\marshal_cppstd.h>
 
 #include "FMTForm.h"
-#include "FMTOutput.h"
-#include "SES.h"
+#include "Controller.h"
 
 namespace Wrapper
 {
@@ -30,8 +29,8 @@ namespace Wrapper
         {
             FMTWrapperCore::SESParameters params;
 
-            // Conversion des chemins. scenarioName est renseigné par le Core, qui
-            // résout le modèle lui-même.
+            // Conversion des chemins. scenarioName reste vide : le Core journalise le nom
+            // du scénario que le contrôleur a résolu.
             params.primaryFilePath = msclr::interop::marshal_as<std::string>(fichierPri);
             params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
             params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
@@ -193,7 +192,7 @@ namespace Wrapper
                 indCarbon, predictoryields, growththemes);
 
             const FMTWrapperCore::SESResults RESULTS =
-                FMTWrapperCore::SES::RunSES(PARAMS, scenario);
+                FMTWrapperCore::Controller::runSpatialSimulation(PARAMS, scenario);
 
             _EnvoyerResultatsInterface(RESULTS, indCarbon);
 

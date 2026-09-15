@@ -1,5 +1,6 @@
 #pragma once
 #include "FMTLogger.h"
+#include "FMTWrapperCoreExport.h"
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -19,7 +20,7 @@ namespace FMTWrapperCore
 	This logger extends Logging::FMTLogger and redirects output both to
 	a log file and to a user-provided callback function.
 	*/
-	class __declspec(dllexport) FMTFormLogger final :
+	class FMTWRAPPERCOREEXPORT FMTFormLogger final :
 		public Logging::FMTLogger
 	{
 	private:

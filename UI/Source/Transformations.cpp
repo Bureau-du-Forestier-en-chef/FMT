@@ -2,8 +2,7 @@
 #include <msclr\marshal_cppstd.h>
 
 #include "FMTForm.h"
-#include "ModelQuery.h"
-#include "TransformationCore.h"
+#include "Controller.h"
 
 namespace Wrapper {
 
@@ -39,7 +38,7 @@ namespace Wrapper {
 	{
 		try
 		{
-			FMTWrapperCore::Transformation::aggregateAllActionsFromCache(
+			FMTWrapperCore::Controller::aggregateAllActions(
 				p_modelIndex,
 				_toStdVector(p_aggregates),
 				_toStdVector(p_order),
@@ -66,7 +65,7 @@ namespace Wrapper {
 	{
 		try
 		{
-			FMTWrapperCore::Transformation::splitActionsFromCache(
+			FMTWrapperCore::Controller::splitActions(
 				p_modelIndex,
 				msclr::interop::marshal_as<std::string>(p_schedulePri),
 				_toStdVector(p_splitted),
@@ -92,7 +91,7 @@ namespace Wrapper {
 		try
 		{
 			for (const std::string& ATTRIBUTE :
-				FMTWrapperCore::ModelQuery::getThemeAttributes(p_modelIndex, p_themeIndex))
+				FMTWrapperCore::Controller::getThemeAttributes(p_modelIndex, p_themeIndex))
 			{
 				results->Add(gcnew System::String(ATTRIBUTE.c_str()));
 			}
@@ -118,7 +117,7 @@ namespace Wrapper {
 
 		try
 		{
-			FMTWrapperCore::Transformation::buildActionFromCache(
+			FMTWrapperCore::Controller::buildAction(
 				p_modelIndex,
 				msclr::interop::marshal_as<std::string>(p_actionName),
 				msclr::interop::marshal_as<std::string>(p_targetYield),
