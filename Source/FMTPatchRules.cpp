@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTEventContainer.h"
 #include "FMTSpatialGraphs.h"
 #include <limits>
+#include "FMTSpec.h"
 
 namespace Spatial
 {

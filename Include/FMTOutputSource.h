@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTutility.h"
 #include <unordered_set>
 #include "FMTDevelopment.h"
+#include "FMTspec.h"
 
 
 namespace Graph

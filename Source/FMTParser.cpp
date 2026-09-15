@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTConstants.h"
 #include "FMTLayer.hpp"
 #include "FMTExceptionHandler.h"
+#include "FMTSpec.h"
 
 #if defined FMTWITHGDAL
 	#include "gdal_version.h"

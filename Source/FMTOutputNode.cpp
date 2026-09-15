@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTOutputNode.h"
 #include "FMTAction.h"
 #include <algorithm>
+#include "FMTSpec.h"
 
 namespace Core
 

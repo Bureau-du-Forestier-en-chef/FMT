@@ -14,7 +14,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <string>
 #include <vector>
+#include <map>
 #include "FMTutility.h"
+#include "FMTspec.h"
 
 
 

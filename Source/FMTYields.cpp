@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTYieldModelTsla.h"
 #include <boost/algorithm/string.hpp> 
 #include <memory>
+#include "FMTSpec.h"
 
 namespace Core{
 

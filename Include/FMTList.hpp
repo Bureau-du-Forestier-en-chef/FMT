@@ -30,6 +30,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTYieldHandler.h"
 #include "FMTTheme.h"
+#include "FMTSpec.h"
 
 
 namespace Core

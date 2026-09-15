@@ -23,6 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 	class FMTOutputNode;
 	class FMTTheme;
+	class FMTPerBounds;
 }
 
 

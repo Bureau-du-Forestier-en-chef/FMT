@@ -27,6 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <random>
 #include <unordered_map>
 #include "FMTDefaultLogger.h"
+#include "FMTspec.h"
 
 #ifdef FMTWITHGDAL
 	#include "gdal_alg.h"

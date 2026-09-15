@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTSchedule.h"
 #include "FMTConstraint.h"
 #include "FMTExceptionHandler.h"
+#include "FMTSpec.h"
 
 namespace Core{
 
