@@ -8,6 +8,7 @@
 #include "AreaVariabilityTypes.h"
 #include "FMTWrapperCoreExport.h"
 #include "OperatingAreaTypes.h"
+#include "PlanningTypes.h"
 #include "RasterizationTypes.h"
 #include "SESTypes.h"
 
@@ -19,9 +20,9 @@ namespace FMTWrapperCore
      * Chaque méthode correspond à une opération système de FMTForm. Elle reçoit des types
      * std, des DTO et des index de scénario, résout le scénario dans FMTFormCache, puis
      * délègue à l'entrée pure d'un service : Environment, ModelQuery, Transformation, SES,
-     * Rasterization, OperatingArea ou AreaVariability. Le contrôleur coordonne sans
-     * calculer : la logique reste dans les services, que les tests appellent directement,
-     * sans passer par le cache.
+     * Rasterization, OperatingArea, AreaVariability ou Planning. Le contrôleur coordonne
+     * sans calculer : la logique reste dans les services, que les tests appellent
+     * directement, sans passer par le cache.
      *
      * Aucun type de FMTlib n'apparaît dans cette interface : le wrapper n'inclut que ce
      * header, et ne peut donc manipuler aucun objet FMT.
@@ -237,6 +238,34 @@ namespace FMTWrapperCore
         static AreaVariabilityResults runAreaVariability(
             const AreaVariabilityParameters& p_params,
             int p_modelIndex);
+
+        /**
+         * @brief Voir Planning::plan.
+         *
+         * Une relecture de cédule en échec est journalisée comme toute erreur de
+         * l'interface (logCurrentException, openErrorLocation), et la planification continue.
+         *
+         * @param p_params Paramètres de la planification.
+         * @param p_modelIndexes Index des scénarios à planifier.
+         * @param p_playback Drapeau de relecture de chaque scénario, par position.
+         */
+        static void plan(
+            const PlanningParameters& p_params,
+            const std::vector<int>& p_modelIndexes,
+            const std::vector<bool>& p_playback);
+
+        /**
+         * @brief Voir Planning::replan.
+         * @param p_params Paramètres de la replanification.
+         * @param p_strategicModelIndex Index du scénario stratégique (global).
+         * @param p_stochasticModelIndex Index du scénario stochastique.
+         * @param p_tacticalModelIndex Index du scénario tactique (local).
+         */
+        static void replan(
+            const ReplanningParameters& p_params,
+            int p_strategicModelIndex,
+            int p_stochasticModelIndex,
+            int p_tacticalModelIndex);
     };
 }
 

@@ -6,35 +6,10 @@
 #include "FMTForm.h"
 #include "Controller.h"
 
-// Transitoire (lot 6) : les deux helpers privés qu'appelle encore Plannification.cpp.
-#include "FMTFormCache.h"
-#include "FMTSchedule.h"
-#include "ModelQuery.h"
-#include "Selection.h"
-
 namespace Wrapper
 {
 	namespace
 	{
-		// Conversion entrante : une liste managee devient un vecteur std.
-		std::vector<std::string> _toStdVector(
-			System::Collections::Generic::List<System::String^>^ p_values)
-		{
-			std::vector<std::string> converted;
-
-			if (p_values == nullptr)
-			{
-				return converted;
-			}
-
-			for each (System::String ^ value in p_values)
-			{
-				converted.push_back(msclr::interop::marshal_as<std::string>(value));
-			}
-
-			return converted;
-		}
-
 		// Conversion sortante : un vecteur std devient une liste managee.
 		System::Collections::Generic::List<System::String^>^ _toManagedList(
 			const std::vector<std::string>& p_values)
@@ -139,42 +114,6 @@ namespace Wrapper
 			_raiseFromCatch(
 				"",
 				"FMTForm::ObtenirListeContraintes",
-				__LINE__,
-				__FILE__);
-		}
-
-		return retour;
-	}
-
-	std::vector<Core::FMTOutput>
-		FMTForm::_ObtenirArrayOutputsSelectionnees(
-			std::vector<Core::FMTOutput> outputsBase,
-			System::Collections::Generic::List<System::String^>^ outputsSelection)
-	{
-		return FMTWrapperCore::Selection::selectOutputs(
-			outputsBase,
-			_toStdVector(outputsSelection));
-	}
-
-	std::vector<Core::FMTSchedule>
-		FMTForm::_ObtenirSEQ(
-			System::String^ nomFichierPri,
-			int indexScenario)
-	{
-		std::vector<Core::FMTSchedule> retour;
-
-		try
-		{
-			// Transitoire (lot 6) : le wrapper résout encore le scénario lui-même.
-			retour = FMTWrapperCore::ModelQuery::readSchedules(
-				msclr::interop::marshal_as<std::string>(nomFichierPri),
-				FMTWrapperCore::FMTFormCache::GetInstance()->getModel(indexScenario));
-		}
-		catch (...)
-		{
-			_raiseFromCatch(
-				"",
-				"FMTForm::_ObtenirSEQ",
 				__LINE__,
 				__FILE__);
 		}

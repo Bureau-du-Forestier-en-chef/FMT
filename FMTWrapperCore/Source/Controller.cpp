@@ -13,6 +13,7 @@
 #include "FMTModelParser.h"
 #include "ModelQuery.h"
 #include "OperatingArea.h"
+#include "Planning.h"
 #include "Rasterization.h"
 #include "SES.h"
 #include "TransformationCore.h"
@@ -348,5 +349,42 @@ namespace FMTWrapperCore
         int p_modelIndex)
     {
         return AreaVariability::run(p_params, getCachedModel(p_modelIndex));
+    }
+
+    void Controller::plan(
+        const PlanningParameters& p_params,
+        const std::vector<int>& p_modelIndexes,
+        const std::vector<bool>& p_playback)
+    {
+        std::vector<const Models::FMTModel*> models;
+        models.reserve(p_modelIndexes.size());
+
+        for (const int MODEL_INDEX : p_modelIndexes)
+        {
+            models.push_back(&getCachedModel(MODEL_INDEX));
+        }
+
+        // Une relecture de cédule en échec est signalée comme l'interface le fait pour toute
+        // erreur, sans interrompre la planification.
+        Planning::plan(p_params, models, p_playback,
+            [](const std::string& p_method, int p_line, const std::string& p_file)
+            {
+                Controller::openErrorLocation(
+                    Controller::logCurrentException("", p_method, p_line, p_file));
+            });
+    }
+
+    void Controller::replan(
+        const ReplanningParameters& p_params,
+        int p_strategicModelIndex,
+        int p_stochasticModelIndex,
+        int p_tacticalModelIndex)
+    {
+        // Résolus dans l'ordre : un index invalide lève toujours la même erreur.
+        const Models::FMTModel& STRATEGIC = getCachedModel(p_strategicModelIndex);
+        const Models::FMTModel& STOCHASTIC = getCachedModel(p_stochasticModelIndex);
+        const Models::FMTModel& TACTICAL = getCachedModel(p_tacticalModelIndex);
+
+        Planning::replan(p_params, STRATEGIC, STOCHASTIC, TACTICAL);
     }
 }

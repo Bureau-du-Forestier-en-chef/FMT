@@ -96,6 +96,7 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 | `Rasterization` | Rastérisation d'un fichier vectoriel selon les thèmes d'un modèle |
 | `OperatingArea` | Planification des aires d'opération (calendrier de COS) |
 | `AreaVariability` | Variabilité de l'aire initiale selon des proportions par masque |
+| `Planning` | Planification et replanification de scénarios, par les tâches parallèles de FMT |
 
 `Tools` a été éclaté au lot 2 en `Environment` + `ModelQuery` et n'existe plus. Depuis le
 lot 5b, les DTO de chaque domaine sont dans `<Domaine>Types.h`, et
@@ -108,11 +109,11 @@ lot 5b, les DTO de chaque domaine sont dans `<Domaine>Types.h`, et
 | `SimulationSpatialeExplicite.cpp` | 207 | **migré** | `SES` | -- |
 | `OptimisationSpatialeExplicite.cpp` | 105 | **migré** | `SES` | -- |
 | `Transformations.cpp` | 135 | **migré** | `Transformation`, `ModelQuery` | -- |
-| `FMTFormOutils.cpp` | 556 | partiel | `ModelQuery`, `Environment`, `Selection` | 2 helpers privés transitoires (`_ObtenirArrayOutputsSelectionnees`, `_ObtenirSEQ`) pour `Plannification.cpp`, à supprimer au lot 6 |
+| `FMTFormOutils.cpp` | 495 | **migré** | `ModelQuery`, `Environment` | -- |
 | `Raterisation.cpp` | 38 | **migré** | `Rasterization` | -- |
 | `OperatingAreaScheduling.cpp` | 60 | **migré** | `OperatingArea` | -- |
 | `InitialAreaVariability.cpp` | 86 | **migré** | `AreaVariability` | -- |
-| `Plannification.cpp` | 165 | à faire | `Planning` | lot 6 |
+| `Plannification.cpp` | 141 | **migré** | `Planning` | -- |
 | `FMTForm.cpp` | 206 | **migré** | `FMTFormCache`, `Environment` | -- (le délégué et l'`IntPtr` restent : managés par nature) |
 
 ### Mesure de la règle 2
@@ -139,14 +140,11 @@ commande corrigée, l'état d'origine à partir de `git show HEAD`.
 | Après le lot 4 | 64 |
 | Après le lot 5 | 45 |
 | Après le lot 5b | 40 |
-
-Répartition après le lot 5b : `Plannification.cpp` 33, `FMTFormOutils.cpp` 4, `FMTForm.h` 3.
+| Après le lot 6 | 0 |
 
 `UI/tests` : 23 occurrences, dans `UnitTestFMTFormLogger.cpp` (voir le suspens du lot 1).
 
-Objectif : zéro à la fin du lot 6, qui vide le dernier fichier de domaine et les deux
-helpers privés restants de `FMTForm`. `FMTForm.cpp` est à zéro depuis le lot 5b, qui a
-absorbé le lot 7.
+**Objectif atteint au lot 6** : plus un seul type de FMTlib dans le wrapper.
 
 ### Mesure de la règle 3
 
@@ -156,11 +154,8 @@ Les noms du Core que le wrapper utilise, hors `Controller` et DTO :
 grep -raoE "FMTWrapperCore::\w+" UI/Include UI/Source | grep -vE "::(Controller|\w+Parameters|\w+Results)$" | sort | uniq -c
 ```
 
-Après le lot 5b, il ne reste que ce que le lot 6 fera disparaître : `Plannification.cpp`
-(`FMTFormCache` 6, `FMTFormLogger` 2) et les deux helpers transitoires de
-`FMTFormOutils.cpp` (`FMTFormCache`, `ModelQuery`, `Selection`, une fois chacun). Ce sont
-aussi les deux seuls fichiers du wrapper qui incluent un autre en-tête du Core que
-`Controller.h`.
+**À zéro depuis le lot 6** : la commande ne retourne rien, et aucun fichier du wrapper
+n'inclut d'autre en-tête du Core que `Controller.h`.
 
 ## 3. Journal des lots
 
@@ -399,40 +394,62 @@ de `Core::FMTSchedule`.
 `FMTWrapper` et les tests, puis un aller-retour dans l'interface : chargement d'un
 scénario, SES, et une erreur provoquée pour exercer `_raiseFromCatch`.
 
+### Lot 6 -- `Plannification` / `Replanification` -> `Planning` (2026-09-15)
+
+**Statut** : livré le 2026-09-15, **pas encore compilé**. Dernier lot de domaine : les
+règles 2 et 3 sont à zéro.
+
+- **`Planning` créé**, avec `PlanningTypes.h` (`PlanningParameters`,
+  `ReplanningParameters`) et deux entrées pures : `plan(params, modèles, relectures,
+  rapporteur)` et `replan(params, stratégique, stochastique, tactique)`. Le contrôleur gagne
+  `plan` et `replan`, qui reçoivent les index de scénario.
+- **Plannification** reproduite pas à pas : un `FMTLpModel` par scénario,
+  `setStrictlyPositivesOutputsMatrix`, `LENGTH`, threads partagés entre les scénarios
+  s'il y en a assez (sinon 1), `TOLERANCE` 0,01 sur `FMTModel`, outputs retenus,
+  `FORCE_PARTIAL_BUILD` selon la relecture, puis `conccurentRun`. Un scénario présent deux
+  fois reprend le drapeau de sa première occurrence : le service le retrouve par identité
+  du modèle, le contrôleur résolvant un même index vers le même modèle du cache.
+- **Décisions de Gabriel appliquées** :
+  - une relecture de cédule en échec reste **signalée sans interrompre** la
+    planification, le scénario étant lancé avec une cédule vide. Le service confie
+    l'erreur à un `Planning::ErrorReporter` appelé depuis son bloc `catch` ; le contrôleur
+    y branche `logCurrentException` et `openErrorLocation`, ce que faisait
+    `_raiseFromCatch`. Sans rapporteur (appel direct au service), l'erreur remonte ;
+  - le niveau du logger de l'interface est **rétabli même si la replanification lève** :
+    un garde (`ScopedTaskLoggingLevel`) remplace l'appel à `setdefaultlogginglevel`, qui
+    ne s'exécutait qu'après un succès.
+- **Replanification** : modèles global, stochastique et local paramétrés comme avant,
+  `FMTReplanningTask`, `setReplicates`, puis `onDemandRun`. Le niveau des tâches ne
+  s'applique qu'à un `FMTFormLogger` (`dynamic_cast`) : un test garde son logger.
+- **`indProduireSolution` commande l'écriture des cédules des réplicats**
+  (`writeSchedule` de `FMTReplanningTask`) depuis la première version de l'interface
+  (`eeebbdaf`, 2024) ; `p_writeSchedule` n'a jamais été branché. Comportement conservé,
+  et consigné dans le wrapper.
+- **`Plannification.cpp` réécrit** en traduction pure (165 -> 141 lignes) et converti de
+  cp1252 en UTF-8 : c'était le dernier fichier cp1252 du wrapper. Ses messages sont passés
+  dans le Core à l'identique, en UTF-8.
+- `_ObtenirArrayOutputsSelectionnees`, `_ObtenirSEQ` et les déclarations avancées `Core::`
+  de `FMTForm.h` disparaissent, avec les inclusions transitoires de `FMTFormOutils.cpp` et
+  son `_toStdVector` devenu inutile. Le stub vide `FMTPlanningTaskParameters.h` est
+  supprimé.
+- **`testWrapperCorePlanning` ajouté**, sur une **copie** de `TWD_land` (voir Pièges) :
+  planification de `LP` (optimisé, cédule réécrite), `LP3` (rejoué) et
+  `Globalreplanning` (sans cédule : relecture signalée, planification poursuivie) ;
+  replanification des scénarios de `replanningtest`, cédules des réplicats comprises.
+
+Différences observables, toutes sur des chemins d'erreur :
+
+- une relecture de cédule en échec apparaît une fois dans l'interface au lieu de deux :
+  `_raiseFromCatch` la renvoyait aussi directement par `FeedBack`, en plus du logger ;
+- les index de scénario sont tous résolus avant la première journalisation : un index
+  invalide lève avant l'horodatage et les messages des scénarios précédents.
+
 ## 4. Prochain lot
 
-### Lot 6 -- `Plannification` / `Replanification` -> `Planning`
-
-Le plus lourd : deux entrées, des tâches parallèles, et le dernier fichier en cp1252.
-
-1. `PlanningTypes.h` (`PlanningParameters`, `ReplanningParameters`) et un service
-   `Planning` aux entrées pures `plan(params, modèles)` et
-   `replan(params, stratégique, stochastique, tactique)` ; le contrôleur gagne `plan` et
-   `replan`, qui reçoivent les index de scénario. Le stub vide
-   `FMTPlanningTaskParameters.h` est à reprendre ou à supprimer.
-2. **Plannification** : un `FMTPlanningTask` reçoit un modèle par scénario (solveur,
-   `LENGTH`, `TOLERANCE` 0,01, outputs retenus, `FORCE_PARTIAL_BUILD` selon la relecture
-   de cédule), puis `FMTTaskHandler::conccurentRun`. Deux détails à reproduire :
-   - le drapeau de relecture est lu par `playback[scenarios->IndexOf(scen)]` : un scénario
-     présent deux fois reprend le drapeau de sa première occurrence ;
-   - threads par scénario : `nbreProcessus / scenarios->Count` si
-     `scenarios->Count <= nbreProcessus`, sinon 1.
-3. **Replanification** : modèles global (`FMTLpModel`), stochastique (`FMTNssModel`) et
-   local (`FMTLpModel`), `FMTReplanningTask`, puis `FMTTaskHandler::onDemandRun`. Elle
-   appelle `settasklogginglevel` / `setdefaultlogginglevel`, propres à `FMTFormLogger` :
-   l'entrée pure ne doit les appliquer que si le logger en est un (`dynamic_cast`), pour
-   rester testable. `p_writeSchedule` n'est pas utilisé.
-4. `layersoptions` : `SEPARATOR=SEMICOLON` quand le pilote est `CSV`, dans les deux entrées.
-5. `_ObtenirArrayOutputsSelectionnees` et `_ObtenirSEQ` disparaissent, et avec eux les
-   déclarations avancées `Core::` de `FMTForm.h` et les inclusions transitoires de
-   `FMTFormOutils.cpp` (`FMTFormCache.h`, `FMTSchedule.h`, `ModelQuery.h`, `Selection.h`).
-6. **Fichier cp1252** : réécriture complète ; ses messages passent en UTF-8, comme au lot 4.
-7. Test : `TWD_land` a des scénarios publics de replanification (`Globalreplanning`,
-   `Globalfire`, `Localreplanning`, déjà utilisés par `UnitTestFMTFormLogger`), et `LP`
-   pour la plannification.
-
-Critère de sortie : les mesures des règles 2 et 3 tombent à zéro (40 types de FMTlib et
-11 noms du Core aujourd'hui, tous dans `Plannification.cpp` et les deux helpers).
+Les lots de domaine sont terminés : les règles 2 et 3 sont à zéro depuis le lot 6. Le
+prochain travail est sa validation -- compilation, `testWrapperCorePlanning`, puis
+Plannification et Replanification dans l'interface -- et, au passage, l'affichage des
+accents des messages de progression (voir Pièges, « Encodage des messages »).
 
 ### Ensuite
 
@@ -445,13 +462,25 @@ Critère de sortie : les mesures des règles 2 et 3 tombent à zéro (40 types d
   inclusions n'ont pas la casse du fichier (`"FMTExceptionHandlerWarning.h"` pour
   `FMTexceptionhandlerwarning.h`, dans `FMTFormCache.cpp` et
   `FMTexceptionhandlerwarning.cpp`), sans effet sous Windows.
+- **`UI/tests/UnitTestFMTFormLogger.cpp`** teste une classe du Core depuis les tests du
+  wrapper (suspens du lot 1) : à déplacer le jour où les tests base du Core rejoindront
+  ctest.
 
 ## 5. Pièges connus
 
-- **Encodage cp1252** -- `UI/Source/Plannification.cpp` est le dernier fichier en cp1252
-  (`OperatingAreaScheduling.cpp` a été converti au lot 4) ; tous les autres fichiers de
-  `UI/` et de `FMTWrapperCore/` sont en UTF-8 sans BOM. L'éditer avec un outil qui suppose
-  l'UTF-8 corrompt les accents : le réécrire entièrement, ou l'éditer au niveau octet.
+- **Encodage cp1252** -- depuis le lot 6, le wrapper (`UI/`) et les sources du Core
+  (`FMTWrapperCore/Include`, `FMTWrapperCore/Source`) sont en UTF-8 sans BOM
+  (`Plannification.cpp` était le dernier en cp1252). Restent en cp1252 deux tests du Core,
+  `testWrapperCoreGetMaxAge.cpp` et `testWrapperCoreSplitActions.cpp`, et des fichiers
+  ailleurs dans FMT (ex. `Source/FMTReplanningTask.cpp`, `Examples/C++/planningtest.cpp`) :
+  les éditer avec un outil qui suppose l'UTF-8 corrompt les accents ; les réécrire
+  entièrement, ou les éditer au niveau octet.
+- **La planification écrit dans le projet** -- quand `FMTPlanningTask` reçoit le fichier
+  primaire, `FMTParallelWriter::getAndWrite` réécrit
+  `Scenarios/<scénario>/<projet>._seq` pour chaque scénario optimisé. Planifier sur
+  `Examples/Models` modifie donc des fichiers suivis : un test travaille sur une copie,
+  comme `testWrapperCorePlanning`. Et `FMTParser::createOGRDataset` tente de supprimer la
+  destination des sorties si elle existe déjà.
 - **Normaliser un fichier en Python** : lire *avant* d'ouvrir en écriture.
   `open(p, 'wb').write(f(open(p, 'rb').read()))` tronque le fichier avant de le lire et
   l'écrit vide -- vu au lot 4 sur `OperatingArea.h/.cpp`, restaurés aussitôt.
@@ -464,8 +493,8 @@ Critère de sortie : les mesures des règles 2 et 3 tombent à zéro (40 types d
     `gcnew System::String(const char*)`, qui décode dans la **page ANSI** (cp1252) sous
     .NET Framework.
   La convention de l'équipe est l'UTF-8 : `SimulationSpatialeExplicite.cpp` a été converti
-  le 2025-09-19 (`f71f5dd5`), et SES fonctionne dans l'interface. Les messages déplacés au
-  lot 4 sont donc en UTF-8 et se comportent désormais comme ceux de SES. **À vérifier une
+  le 2025-09-19 (`f71f5dd5`), et SES fonctionne dans l'interface. Les messages déplacés aux
+  lots 4 et 6 sont donc en UTF-8 et se comportent désormais comme ceux de SES. **À vérifier une
   fois dans l'interface** : si les accents des messages de progression y paraissent
   déformés (« DÃ©marrage »), la correction est unique et tient dans `_toFeedback` -- mais
   elle toucherait aussi les messages de FMTlib qui citent le contenu des fichiers de
@@ -507,7 +536,7 @@ Critère de sortie : les mesures des règles 2 et 3 tombent à zéro (40 types d
   clients doivent voir `dllimport`, et GCC hors Windows ne connaît pas `__declspec`.
 - **Rien de FMTlib dans `Controller.h`** : une opération qui retournerait un objet FMT
   n'a pas sa place dans le contrôleur. Vu au lot 5b avec `_ObtenirSEQ`, qui retourne des
-  `Core::FMTSchedule` : il reste dans le wrapper jusqu'au lot 6, qui le supprime.
+  `Core::FMTSchedule` : il est resté dans le wrapper jusqu'au lot 6, qui l'a supprimé.
 - **Exporter une classe instancie ses membres implicites dans chaque unité de
   compilation qui la voit exportée** : chaque client jusqu'au lot 5b, qui voyait
   `dllexport` en dur ; chaque source du Core depuis. Une classe exportée dont un membre est un `std::unique_ptr<T>` avec `T` seulement
@@ -548,6 +577,8 @@ du Core restent **manuels et privés**.
 - Chaque lot ajoute son `testWrapperCore<Domaine>.cpp` selon ce patron. Les tests
   appellent les entrées pures des services, jamais `Controller` : ils n'ont pas à peupler
   le singleton.
+- Un test qui écrit dans un projet (planification) travaille sur une copie du jeu de
+  données, jamais sur `Examples/Models` : voir `testWrapperCorePlanning`.
 - Quand un jeu de données public existe, le test l'utilise par défaut et reprend la forme
   d'arguments de son cousin de `basetests.csv` : `testWrapperCoreRasterization` tourne sur
   `Examples/Models/TWD_land` avec les mêmes arguments que `maptoFMTforest`. Il reste

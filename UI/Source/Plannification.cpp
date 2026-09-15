@@ -1,25 +1,33 @@
 #include "stdafx.h"
-#include <sstream>
-#include "FMTLpModel.h"
-#include "FMTModelParser.h"
-#include "FMTScheduleParser.h"
-#include "FMTutility.h"
-#include "FMTNssModel.h"
-#include "FMTTaskHandler.h"
-#include "FMTReplanningTask.h"
 #include <msclr\marshal_cppstd.h>
-#include <string>
-#include <iostream>
-#include "FMTFormLogger.h"
+
 #include "FMTForm.h"
-#include "FMTFormCache.h"
-#include "FMTPlanningTask.h"
-#include "FMTDefaultLogger.h"
+#include "Controller.h"
 
 namespace Wrapper
 {
+	namespace
+	{
+		std::vector<std::string> _toStdVector(
+			System::Collections::Generic::List<System::String^>^ p_values)
+		{
+			std::vector<std::string> converted;
 
-	bool  FMTForm::Plannification(
+			if (p_values == nullptr)
+			{
+				return converted;
+			}
+
+			for each (System::String ^ value in p_values)
+			{
+				converted.push_back(msclr::interop::marshal_as<std::string>(value));
+			}
+
+			return converted;
+		}
+	}
+
+	bool FMTForm::Plannification(
 		System::String^ fichierPri,
 		System::Collections::Generic::List<int>^ scenarios,
 		int solver,
@@ -35,48 +43,38 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTWrapperCore::FMTFormLogger* logger = FMTWrapperCore::FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-			std::vector<std::string> layersoptions;
-			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
+			FMTWrapperCore::PlanningParameters params;
+			params.primaryFilePath = msclr::interop::marshal_as<std::string>(fichierPri);
+			params.solver = solver;
+			params.numberOfPeriods = period;
+			params.numberOfThreads = nbreProcessus;
+			params.outputNames = _toStdVector(outputs);
+			params.outputLevel = outputLevel;
+			params.outputMinPeriod = etanduSortiesMin;
+			params.outputMaxPeriod = etanduSortiesMax;
+			params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
+			params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
+
+			std::vector<int> modelIndexes;
+
+			for each (int scenario in scenarios)
 			{
-				layersoptions.push_back("SEPARATOR=SEMICOLON");
+				modelIndexes.push_back(scenario);
 			}
 
-			Parallel::FMTPlanningTask newplanningtask(etanduSortiesMin, etanduSortiesMax,
-				msclr::interop::marshal_as<std::string>(cheminSorties),
-				msclr::interop::marshal_as<std::string>(providerGdal),
-				layersoptions, static_cast<Core::FMToutputlevel>(outputLevel),
-				msclr::interop::marshal_as<std::string>(fichierPri));
-			for each (int scen in scenarios)
-			{
-				Models::FMTLpModel optimizationmodel(FMTWrapperCore::FMTFormCache::GetInstance()->getModel(scen), static_cast<Models::FMTSolverInterface>(solver));
-				*logger << "FMT -> Préparation pour le scénario : " + optimizationmodel.getName() << "\n";
-				std::vector<Core::FMTSchedule> cedule;
-				bool playbackscen = playback[scenarios->IndexOf(scen)];
-				if (playbackscen)
-				{
-					*logger << "FMT -> Lecture de cédule pour le scénario : " + optimizationmodel.getName() << "\n";
-					cedule = _ObtenirSEQ(fichierPri, scen);
-				}
-				optimizationmodel.setStrictlyPositivesOutputsMatrix();
-				optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, period);
-				int valeur_NUMBER_OF_THREADS = 1;
-				if (scenarios->Count <= nbreProcessus)
-				{
-					valeur_NUMBER_OF_THREADS = nbreProcessus / scenarios->Count;
-				}
+			// Sans drapeaux, le Core refuse le premier scÃ©nario, comme l'ancien code
+			// Ã©chouait Ã  lire playback.
+			std::vector<bool> playbackFlags;
 
-				optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, valeur_NUMBER_OF_THREADS);
-				optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-				std::vector<Core::FMTOutput> selectedoutputs = _ObtenirArrayOutputsSelectionnees(optimizationmodel.getOutputs(), outputs);
-				optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playbackscen);
-				newplanningtask.push_back(optimizationmodel, cedule, selectedoutputs);
-				*logger << "FMT -> Scénario : " + optimizationmodel.getName() + " prêt a être lancer." << "\n";
+			if (playback != nullptr)
+			{
+				for each (bool value in playback)
+				{
+					playbackFlags.push_back(value);
+				}
 			}
 
-			Parallel::FMTTaskHandler handler(newplanningtask, nbreProcessus);
-			handler.conccurentRun();
+			FMTWrapperCore::Controller::plan(params, modelIndexes, playbackFlags);
 		}
 		catch (...)
 		{
@@ -106,53 +104,31 @@ namespace Wrapper
 		bool indProduireSolution,
 		bool p_writeSchedule)
 	{
+		// p_writeSchedule n'a jamais Ã©tÃ© utilisÃ© : depuis la premiÃ¨re version de l'interface,
+		// c'est indProduireSolution qui commande l'Ã©criture des cÃ©dules des rÃ©plicats. Il
+		// reste dans la signature publique, dont dÃ©pend le UI .NET.
 		try
 		{
-			FMTWrapperCore::FMTFormLogger* logger = FMTWrapperCore::FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-			Models::FMTLpModel global(FMTWrapperCore::FMTFormCache::GetInstance()->getModel(indexScenStrategique), static_cast<Models::FMTSolverInterface>(solver));
-			global.setParameter(Models::FMTintmodelparameters::LENGTH, period);
-			global.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-			global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
-			Models::FMTNssModel stochastic(FMTWrapperCore::FMTFormCache::GetInstance()->getModel(indexScenStochastique), 0);
-			stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
-			stochastic.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			Models::FMTLpModel local(FMTWrapperCore::FMTFormCache::GetInstance()->getModel(indexScenTactique), static_cast<Models::FMTSolverInterface>(solver));
-			local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
-			local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-			local.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			std::vector<Core::FMTOutput> listeOutputs = _ObtenirArrayOutputsSelectionnees(global.getOutputs(), outputs);
+			FMTWrapperCore::ReplanningParameters params;
+			params.solver = solver;
+			params.numberOfPeriods = period;
+			params.replanningPeriods = periodReplannif;
+			params.minimalDrift = variabilite;
+			params.numberOfThreads = nbreProcessus;
+			params.minimumReplicates = nombreReplicasMin;
+			params.maximumReplicates = nombreReplicasMax;
+			params.outputNames = _toStdVector(outputs);
+			params.outputLevel = outputLevel;
+			params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
+			params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
+			params.taskLogLevel = taskLogLevel;
+			params.writeSchedules = indProduireSolution;
 
-			std::vector<std::string>layersoptions;
-			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
-			{
-				layersoptions.push_back("SEPARATOR=SEMICOLON");
-			}
-			*logger << "FMT -> Préparation de la replanification " << "\n";
-			logger->logTime();
-			Parallel::FMTReplanningTask* task = new Parallel::FMTReplanningTask(
-				global,
-				stochastic,
-				local,
-				listeOutputs,
-				msclr::interop::marshal_as<std::string>(cheminSorties),
-				msclr::interop::marshal_as<std::string>(providerGdal),
-				layersoptions,
-				nombreReplicasMax,
-				periodReplannif,
-				variabilite,
-				static_cast<Core::FMToutputlevel>(outputLevel),
-				indProduireSolution);
-			task->setReplicates(nombreReplicasMin, nombreReplicasMax);
-			std::unique_ptr<Parallel::FMTTask> maintaskptr(task);
-			*logger << "FMT -> Préparation de la replanification terminée" << "\n";
-			Parallel::FMTTaskHandler handler(maintaskptr, nbreProcessus);
-			logger->settasklogginglevel(taskLogLevel);
-			handler.onDemandRun();
-			//handler.conccurentRun();
-			logger->logTime();
-			logger->setdefaultlogginglevel();
+			FMTWrapperCore::Controller::replan(
+				params,
+				indexScenStrategique,
+				indexScenStochastique,
+				indexScenTactique);
 		}
 		catch (...)
 		{

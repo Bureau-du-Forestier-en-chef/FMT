@@ -4,12 +4,6 @@
 #include <vector>
 #include <string>
 
-// Transitoire (lot 6) : types des deux helpers privés qu'appelle encore Plannification.cpp.
-namespace Core {
-	class FMTSchedule;
-	class FMTOutput;
-}
-
 namespace FMTWrapperCore {
 	struct SESResults;
 }
@@ -702,31 +696,6 @@ namespace Wrapper
 			const std::string& p_method,
 			const int& p_line,
 			const std::string& p_file);
-		// DocString: FMTForm::_ObtenirArrayOutputsSelectionnees
-		/**
-		@brief Filters outputs according to the user selection.
-
-		@param[in] outputsBase Available outputs.
-		@param[in] outputsSelection Selected output names.
-
-		@return Collection containing only the selected outputs.
-		*/
-		std::vector<Core::FMTOutput> _ObtenirArrayOutputsSelectionnees(
-			std::vector<Core::FMTOutput> outputsBase,
-			System::Collections::Generic::List<System::String^>^ outputsSelection);
-
-		// DocString: FMTForm::_ObtenirSEQ
-		/**
-		@brief Reads schedules associated with a scenario.
-
-		@param[in] nomFichierPri Project file path.
-		@param[in] indexScenario Scenario index.
-
-		@return Collection of schedules.
-		*/
-		std::vector<Core::FMTSchedule> _ObtenirSEQ(
-			System::String^ nomFichierPri,
-			int indexScenario);
 		// DocString: FMTForm::_EnvoyerResultatsInterface
 		/**
 		@brief Sends SES results to the managed interface.
