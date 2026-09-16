@@ -27,6 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <random>
 #include <unordered_map>
 #include "FMTDefaultLogger.h"
+#include "FMTspec.h"
 
 #ifdef FMTWITHGDAL
 	#include "gdal_alg.h"
@@ -981,7 +982,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 		const std::vector<Core::FMTActualDevelopment>& p_area, const std::string& p_folder) const
 	{
 		try {
-			if (!_isMapWithSameThemes(p_themes, p_VectorFile));
+			if (!_isMapWithSameThemes(p_themes, p_VectorFile))
 			{
 				p_forest.setLastThemeWithArea(p_area, p_themes);
 			}

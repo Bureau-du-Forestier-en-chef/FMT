@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTDevelopment.h"
 #include "FMTData.h"
 #include "FMTExceptionHandler.h"
+#include "FMTSpec.h"
 
 namespace Core {
 

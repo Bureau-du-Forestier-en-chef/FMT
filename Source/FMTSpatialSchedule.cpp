@@ -23,6 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTSpatialGraphs.h"
 #include "FMTSeModel.h"
 #include "FMTPatchRules.h"
+#include "FMTSpec.h"
 
 
 namespace Spatial

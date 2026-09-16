@@ -3,7 +3,7 @@ if (new(FMTversion)$hasfeature("GDAL") && new(FMTversion)$hasfeature("OSI"))
 	{
 	newparser<-new(FMTmodelparser)
     modelslist <- newparser$readproject("../Models/TWD_land/TWD_land.pri", c("Spatial"), TRUE, TRUE, TRUE)
-    lpmodel <- new(FMTlpmodel, modelslist[[1]], FMTsolverinterface$CLP)
+    lpmodel <- new(FMTlpmodel, modelslist[[1]], FMTSolverInterface$CLP)
 	emptyschedule<-new(FMTschedule)
 	for (period in 1:10)
 		{

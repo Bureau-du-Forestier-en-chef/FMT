@@ -9,7 +9,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTFORK_Hm_included
 
 #include "FMTTransitionMask.h"
-#include "FMTBounds.hpp"
 #include <vector>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/split_member.hpp>
@@ -18,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/unique_ptr.hpp>
 #include <boost/serialization/vector.hpp>
 #include "FMTObject.h"
+#include "FMTspec.h"
 
 namespace Core
 {

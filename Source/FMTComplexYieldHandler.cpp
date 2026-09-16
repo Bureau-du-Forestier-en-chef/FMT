@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTException.h"
 #include "FMTExpression.h"
 #include <unordered_set>
+#include "FMTspec.h"
 
 
 namespace Core {

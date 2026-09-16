@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <bitset>
 #include <boost/algorithm/string/split.hpp>
 #include <algorithm>
+#include "FMTSpec.h"
 
 namespace Core{
 

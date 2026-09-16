@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string/regex.hpp>
+#include "FMTSpec.h"
 
 namespace Parser{
 

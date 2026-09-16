@@ -1,16 +1,16 @@
 #importation de FMT
 library(FMT)
 #Creation du model
-model<-new(FMTlpmodel,new(FMTmodel),FMTsolverinterface$CLP)
-#Établir une gestion des erreurs faite par l'utilisateur R
+model<-new(FMTlpmodel,new(FMTmodel),FMTSolverInterface$CLP)
+#?tablir une gestion des erreurs faite par l'utilisateur R
 model$setfreeexceptionhandler()
-#Tous les strings doivent êtres en majuscule
+#Tous les strings doivent ?tres en majuscule
 #Noms des themes
 nomthemes <- list()
 nomthemes[[1]] <- "Groupes de strates"
 nomthemes[[2]] <- "Famille de courbes"
 nomthemes[[3]] <-  "Compartiments spatiaux"
-#Creation des attributs des différents thèmes
+#Creation des attributs des diff?rents th?mes
 attributs <- list()
 attributs[[1]] <- c("GS1","GS2","GS3") #theme 1
 attributs[[2]] <- c("FC4","FC6") #theme 2
@@ -25,14 +25,14 @@ aggregats <- list()
 aggregats[[1]] <- vector(mode ="character") #aggregat du theme 1
 aggregats[[2]] <- vector(mode ="character") #aggregat du theme 2
 aggregats[[3]] <- c("COSSTA") #aggregat du theme 3
-#Creation des éléments des aggrégats
+#Creation des ?l?ments des aggr?gats
 elementsaggregats <- list()
 elementsaggregats[[1]] <- list()
 elementsaggregats[[2]] <- list()
 elementsaggregats[[3]] <- list()
-elementsaggregats[[3]][[1]] <- c("COS8","COS20") #Seulement le theme 3 possède un aggrgat (à l'index 1)
-#Creation de la liste de themes nous allons maintenant créer les themes et les mettre dans une liste
-#On utilise le tryCatch pour utiliser le gestionnaire de message d'erreur de FMT pour savoir si on a fait une erreur dans nos données
+elementsaggregats[[3]][[1]] <- c("COS8","COS20") #Seulement le theme 3 poss?de un aggrgat (? l'index 1)
+#Creation de la liste de themes nous allons maintenant cr?er les themes et les mettre dans une liste
+#On utilise le tryCatch pour utiliser le gestionnaire de message d'erreur de FMT pour savoir si on a fait une erreur dans nos donn?es
 themes <- list()
 tryCatch(
 	{
@@ -44,14 +44,14 @@ tryCatch(
 		}
 	},
     error = function(e){ 
-		print("Problème suivant lors de la création des thèmes")
+		print("Probl?me suivant lors de la cr?ation des th?mes")
         print(e$message)
 		quit(save="ask")
     })
 #Creation de la section area
-#Nous allons créer 4 dévelopement distinct
+#Nous allons cr?er 4 d?velopement distinct
 area <- list()
-#le constructeur du FMTmask requirt un string et les themes que nous avons déjà construit
+#le constructeur du FMTmask requirt un string et les themes que nous avons d?j? construit
 #le constructeur du FMTactualdevelopment requirt un masque,l'age du developpement, le lock du developement (0 = pas de lock) et finalement la superficie
 tryCatch(
 	{
@@ -61,11 +61,11 @@ tryCatch(
 	area[[4]] <- new(FMTactualdevelopment,new(FMTmask,"GS1 FC4 COS30",themes),25,0,5454.00)
 	},
     error = function(e){ 
-		print("Problème suivant lors de la création de la section area")
+		print("Probl?me suivant lors de la cr?ation de la section area")
         print(e$message)
 		quit(save="ask")
     })
-#La résultante est une liste de developement (section area)
+#La r?sultante est une liste de developement (section area)
 #Creation des yields
 yields <- new(FMTyields)
 tryCatch(
@@ -88,7 +88,7 @@ tryCatch(
 	yields$update() #Ne pas oublier d'appeller update
 	},
     error = function(e){ 
-		print("Problème suivant lors de la création de la section yield")
+		print("Probl?me suivant lors de la cr?ation de la section yield")
         print(e$message)
 		quit(save="ask")
     })
@@ -98,13 +98,13 @@ tryCatch(
 	{
 	actions[[1]] <- new(FMTaction,"ACT",TRUE,TRUE)#Nom,agereset,respect lock
 	actionspec <- new(FMTspec)
-	#On met un minimum de 3 et maximum de 100 d'âge pour l'action
+	#On met un minimum de 3 et maximum de 100 d'?ge pour l'action
 	actionspec$addbounds(new(FMTagebounds,FMTsection$Action,100,3))
 	actions[[1]]$push_back(new(FMTmask,"? ? ?",themes),actionspec)
 	actions[[1]]$update()
 	},
     error = function(e){ 
-		print("Problème suivant lors de la création de la section action")
+		print("Probl?me suivant lors de la cr?ation de la section action")
         print(e$message)
 		quit(save="ask")
     })
@@ -119,7 +119,7 @@ tryCatch(
 	transitions[[1]]$update()
 	},
     error = function(e){ 
-		print("Problème suivant lors de la création de la section transition")
+		print("Probl?me suivant lors de la cr?ation de la section transition")
         print(e$message)
 		quit(save="ask")
     })
@@ -131,7 +131,7 @@ tryCatch(
 	lifespan$update();
 	},
     error = function(e){ 
-		print("Problème suivant lors de la création de la section lifespan")
+		print("Probl?me suivant lors de la cr?ation de la section lifespan")
         print(e$message)
 		quit(save="ask")
     })
@@ -145,7 +145,7 @@ tryCatch(
 	outputs[[1]]<-new(FMToutput,"OVOLTOTREC","VOLUME RECOLTE","GROUPX",sources,operators)
 	},
 	error = function(e){ 
-			print("Problème suivant lors de la création de la section output")
+			print("Probl?me suivant lors de la cr?ation de la section output")
 			print(e$message)
 			quit(save="ask")
 		})
@@ -161,7 +161,7 @@ tryCatch(
 	constraints[[2]]$setlength(1,20)
 	},
 	error = function(e){ 
-			print("Problème suivant lors de la création de la section optimize")
+			print("Probl?me suivant lors de la cr?ation de la section optimize")
 			print(e$message)
 			quit(save="ask")
 	})
@@ -175,15 +175,15 @@ model$settransitions(transitions)
 model$setactions(actions)
 model$setoutputs(outputs)
 model$setconstraints(constraints)
-#Nombre de périodes du modèle
+#Nombre de p?riodes du mod?le
 model$setintparameter(FMTintmodelparameters$LENGTH,10)
 mparser <- new(FMTmodelparser)
-#Écriture du modèle
+#?criture du mod?le
 dir.create("tests")
 mparser$write(model,"tests/")
-#Résolution du modèle
+#R?solution du mod?le
 emptyschedules<-list()
 model$doplanning(TRUE,emptyschedules)
-#Obtenir des résultats en dataframe
+#Obtenir des r?sultats en dataframe
 result <- model$getoutputsdataframe(outputs,1,10)
 print(result)
