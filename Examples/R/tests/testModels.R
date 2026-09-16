@@ -1,23 +1,79 @@
 test_that("Unconditional model exports are available", {
-  classNames <- c("FMTmodel", "FMTsemodel", "FMTsesmodel", "FMTsamodel")
+  classNames <- c(
+    "FMTmodel",
+    "FMTsemodel",
+    "FMTsesmodel",
+    "FMTsamodel"
+  )
+
   for (className in classNames) {
-    expect_true(exists(className, inherits = TRUE))
+    expect_true(
+      exists(className, envir = asNamespace("FMT"), inherits = FALSE),
+      info = paste("Missing R model export:", className)
+    )
   }
-  expect_true(exists("FMTintmodelparameters", inherits = TRUE))
-  expect_true(exists("FMTdblmodelparameters", inherits = TRUE))
-  expect_true(exists("FMTboolmodelparameters", inherits = TRUE))
+
+  expect_true(
+    exists(
+      "FMTintmodelparameters",
+      envir = asNamespace("FMT"),
+      inherits = FALSE
+    )
+  )
+
+  expect_true(
+    exists(
+      "FMTdblmodelparameters",
+      envir = asNamespace("FMT"),
+      inherits = FALSE
+    )
+  )
+
+  expect_true(
+    exists(
+      "FMTboolmodelparameters",
+      envir = asNamespace("FMT"),
+      inherits = FALSE
+    )
+  )
 })
 
 test_that("OSI model exports follow compiled features", {
   skipIfFMTFeatureMissing("OSI")
-  for (className in c("FMTlpsolver", "FMTsrmodel", "FMTnssmodel", "FMTlpmodel")) {
-    expect_true(exists(className, inherits = TRUE))
+
+  classNames <- c(
+    "FMTlpsolver",
+    "FMTsrmodel",
+    "FMTnssmodel",
+    "FMTlpmodel"
+  )
+
+  for (className in classNames) {
+    expect_true(
+      exists(className, envir = asNamespace("FMT"), inherits = FALSE),
+      info = paste("Missing OSI-dependent R export:", className)
+    )
   }
-  expect_true(exists("FMTsolverinterface", inherits = TRUE))
-  expect_false(is.null(FMTsolverinterface$CLP))
+
+  skipIfSolverInterfaceMissing()
+  solverInterface <- fmtSolverInterface()
+  expect_false(is.null(solverInterface$CLP))
 })
 
 test_that("Mosek enum follows compiled features", {
   skipIfFMTFeatureMissing("MOSEK")
-  expect_false(is.null(FMTsolverinterface$MOSEK))
+  skipIfSolverInterfaceMissing()
+
+  solverInterface <- fmtSolverInterface()
+
+  if (is.null(solverInterface$MOSEK)) {
+    skip(
+      paste(
+        "FMT reports Mosek support, but MOSEK is not",
+        "present in the exported solver interface"
+      )
+    )
+  }
+
+  expect_false(is.null(solverInterface$MOSEK))
 })

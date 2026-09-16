@@ -222,6 +222,13 @@ namespace Core {
 				}
 				const Graph::FMTPredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
 				std::vector<double> inputsDbl = getInputValues(predictor);
+				std::vector<float> inputs(inputsDbl.size());
+				size_t i = 0;
+				for (double value : inputsDbl)
+				{
+					inputs[i] = static_cast<float>(value);
+					++i;
+				}
 				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
 				removeNans(inputs);
 				std::vector<int64_t> inputShape = m_sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
