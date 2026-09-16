@@ -134,7 +134,7 @@ setup(
     url="https://github.com/Bureau-du-Forestier-en-chef/FMT",
     author="Guillaume Cyr",
     author_email="Guillaume.Cyr@fec.gouv.qc.ca",
-    python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*",
+    python_requires=">=@PYTHONMAJOR@.@PYTHONMINOR@.*",
     packages=["FMT"],
     package_dir={"FMT": ""},
     include_package_data=True,
