@@ -11,12 +11,12 @@ namespace FMTWrapperCore
 {
     namespace
     {
-        // Facteurs appliqués aux champs du fichier vectoriel. L'ancienne
-        // implémentation du wrapper les passait en dur ; ils sont repris tels quels.
+        // Factors applied to the fields of the vector file. The former wrapper
+        // implementation hardcoded them; they are kept as is.
         constexpr double AGE_FACTOR = 1.0;
-        // 0.0001 convertit une superficie exprimée en m² en hectares.
+        // 0.0001 converts an area in square meters to hectares.
         constexpr double AREA_FACTOR = 0.0001;
-        // Aucune entité n'est écartée pour cause de superficie trop petite.
+        // No feature is discarded for being too small.
         constexpr double MINIMAL_AREA = 0.0;
     }
 

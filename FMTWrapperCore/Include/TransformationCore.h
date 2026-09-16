@@ -20,11 +20,11 @@ namespace Models
 namespace FMTWrapperCore
 {
     /**
-     * @brief Transformations produisant un nouveau scénario à partir d'un modèle.
+     * @brief Transformations producing a new scenario from a model.
      *
-     * Chaque méthode écrit le scénario transformé et ses cédules dans le projet, puis
-     * retourne le modèle transformé ; les tests C++ l'appellent directement. Le wrapper
-     * y accède par Controller, qui ajoute ce modèle au cache de l'interface.
+     * Each method writes the transformed scenario and its schedules to the project, then
+     * returns the transformed model; the C++ tests call them directly. The wrapper reaches
+     * them through Controller, which adds that model to the interface cache.
      */
     class FMTWRAPPERCOREEXPORT Transformation
     {

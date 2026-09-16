@@ -11,23 +11,23 @@
 #include "FMTModelParser.h"
 #include "Planning.h"
 
-// Test manuel de FMTWrapperCore::Planning, sur les données publiques TWD_land.
+// Test of FMTWrapperCore::Planning, registered in basetests.csv, on the public
+// TWD_land data.
 //
-// La planification écrit dans le projet la cédule des scénarios optimisés : le test travaille
-// donc sur une copie de TWD_land, jamais sur l'exemple du dépôt.
+// Planning writes the schedule of the optimized scenarios into the project: the test
+// therefore works on a copy of TWD_land, never on the repository example.
 //
-// - Planification : LP est optimisé et sa cédule réécrite ; LP3 est rejoué depuis sa cédule
-//   (scénario de planningtest) ; Globalreplanning, qui n'a pas de cédule, vérifie qu'une
-//   relecture en échec est signalée sans interrompre la planification.
-// - Replanification : les scénarios de replanningtest, avec l'écriture des cédules des
-//   réplicats.
+// - Planning: LP is optimized and its schedule rewritten; LP3 is played back from its
+//   schedule (planningtest scenario); Globalreplanning, which has no schedule, checks
+//   that a failed schedule read is reported without interrupting the planning.
+// - Replanning: the replanningtest scenarios, with the replicate schedules written.
 namespace
 {
 	int failures = 0;
 
 	void check(bool p_condition, const std::string& p_description)
 	{
-		std::cout << (p_condition ? "  ok      " : "  ECHEC   ") << p_description << std::endl;
+		std::cout << (p_condition ? "  ok      " : "  FAILED  ") << p_description << std::endl;
 
 		if (!p_condition)
 		{
@@ -47,7 +47,7 @@ namespace
 			}
 		}
 
-		throw std::runtime_error("Scenario introuvable : " + p_name);
+		throw std::runtime_error("Scenario not found: " + p_name);
 	}
 
 	bool containsFile(const std::filesystem::path& p_folder, const std::string& p_extension)
@@ -100,7 +100,7 @@ int main()
 		std::filesystem::create_directories(TEST_FOLDER);
 		std::filesystem::copy(SOURCE_PROJECT, PROJECT, std::filesystem::copy_options::recursive);
 
-		// La planification doit réécrire la cédule de LP, qu'elle optimise.
+		// Planning must rewrite the schedule of LP, which it optimizes.
 		std::filesystem::remove(OPTIMIZED_SCHEDULE);
 
 		Parser::FMTModelParser modelParser;
@@ -131,20 +131,20 @@ int main()
 
 		int reportedScheduleErrors = 0;
 
-		std::cout << "Planification" << std::endl;
+		std::cout << "Planning" << std::endl;
 		FMTWrapperCore::Planning::plan(planning, PLANNED, PLAYBACK,
 			[&reportedScheduleErrors](const std::string& p_method, int, const std::string&)
 			{
 				++reportedScheduleErrors;
-				std::cout << "  relecture en echec, signalee depuis " << p_method << std::endl;
+				std::cout << "  failed schedule read, reported from " << p_method << std::endl;
 			});
 
 		const std::filesystem::path LP_RESULTS = PLANNING_OUTPUT / "LP.csv";
 
-		check(reportedScheduleErrors == 1, "la relecture en echec de Globalreplanning est signalee une fois");
-		check(std::filesystem::exists(OPTIMIZED_SCHEDULE), "la cedule de LP, optimise, est reecrite dans le projet");
+		check(reportedScheduleErrors == 1, "the failed schedule read of Globalreplanning is reported once");
+		check(std::filesystem::exists(OPTIMIZED_SCHEDULE), "the schedule of LP, optimized, is rewritten in the project");
 		check(std::filesystem::exists(LP_RESULTS) && std::filesystem::file_size(LP_RESULTS) > 0,
-			"les sorties de LP sont ecrites");
+			"the outputs of LP are written");
 
 		FMTWrapperCore::ReplanningParameters replanning;
 		replanning.solver = static_cast<int>(Models::FMTSolverInterface::CLP);
@@ -161,15 +161,15 @@ int main()
 		replanning.taskLogLevel = 1;
 		replanning.writeSchedules = true;
 
-		std::cout << "Replanification" << std::endl;
+		std::cout << "Replanning" << std::endl;
 		FMTWrapperCore::Planning::replan(
 			replanning,
 			findModel(MODELS, "Globalreplanning"),
 			findModel(MODELS, "Globalfire"),
 			findModel(MODELS, "Localreplanning"));
 
-		check(containsFile(REPLANNING_OUTPUT, ".csv"), "les sorties de la replanification sont ecrites");
-		check(containsFile(REPLANNING_OUTPUT, "._seq"), "une cedule est ecrite par replicat");
+		check(containsFile(REPLANNING_OUTPUT, ".csv"), "the replanning outputs are written");
+		check(containsFile(REPLANNING_OUTPUT, "._seq"), "one schedule is written per replicate");
 	}
 	catch (const std::exception& e)
 	{
@@ -184,7 +184,7 @@ int main()
 
 	if (failures > 0)
 	{
-		std::cerr << failures << " verification(s) en echec" << std::endl;
+		std::cerr << failures << " check(s) failed" << std::endl;
 		return 1;
 	}
 

@@ -5,7 +5,7 @@
 
 namespace FMTWrapperCore
 {
-	// DocString: FMTExceptionHandlerWarning
+	// DocString: WarningExceptionHandler
 	/**
 	@brief Exception handler used by the graphical interface.
 
@@ -14,21 +14,21 @@ namespace FMTWrapperCore
 	the graphical user interface. Fatal exceptions may be rethrown
 	while warning-level exceptions are tracked and counted.
 	*/
-	class FMTWRAPPERCOREEXPORT FMTExceptionHandlerWarning :
+	class FMTWRAPPERCOREEXPORT WarningExceptionHandler :
 		public virtual Exception::FMTExceptionHandler
 	{
 	public:
 
-		// DocString: FMTExceptionHandlerWarning(const size_t&)
+		// DocString: WarningExceptionHandler(const size_t&)
 		/**
 		@brief Constructs a warning-aware exception handler.
 
 		@param[in] maxnumberofwarnings Maximum number of warnings that
 		may be emitted before warning messages are silenced.
 		*/
-		FMTExceptionHandlerWarning(const size_t& maxnumberofwarnings);
+		WarningExceptionHandler(const size_t& maxnumberofwarnings);
 
-		// DocString: FMTExceptionHandlerWarning::printExceptions
+		// DocString: WarningExceptionHandler::printExceptions
 		/**
 		@brief Processes exception information captured in a catch block.
 
@@ -48,7 +48,7 @@ namespace FMTWrapperCore
 			const std::string& fil,
 			Core::FMTsection lsection) override;
 
-		// DocString: FMTExceptionHandlerWarning::tryfileopener
+		// DocString: WarningExceptionHandler::tryfileopener
 		/**
 		@brief Attempts to open the source file associated with an error.
 
@@ -60,7 +60,7 @@ namespace FMTWrapperCore
 		*/
 		void tryfileopener(const std::string& fullerrorstr) const;
 
-		// DocString: FMTExceptionHandlerWarning::geterrorstack
+		// DocString: WarningExceptionHandler::geterrorstack
 		/**
 		@brief Builds a formatted exception stack trace.
 
@@ -80,7 +80,7 @@ namespace FMTWrapperCore
 			const int& line,
 			const std::string& fil);
 
-		// DocString: FMTExceptionHandlerWarning::raise
+		// DocString: WarningExceptionHandler::raise
 		/**
 		@brief Creates, processes and optionally throws an FMT exception.
 
@@ -107,19 +107,19 @@ namespace FMTWrapperCore
 			Core::FMTsection lsection,
 			bool throwit) override;
 
-		// DocString: FMTExceptionHandlerWarning()
+		// DocString: WarningExceptionHandler()
 		/**
 		@brief Default constructor.
 		*/
-		FMTExceptionHandlerWarning() = default;
+		WarningExceptionHandler() = default;
 
-		// DocString: ~FMTExceptionHandlerWarning()
+		// DocString: ~WarningExceptionHandler()
 		/**
 		@brief Default destructor.
 		*/
-		~FMTExceptionHandlerWarning() = default;
+		~WarningExceptionHandler() = default;
 
-		// DocString: FMTExceptionHandlerWarning::clone
+		// DocString: WarningExceptionHandler::clone
 		/**
 		@brief Creates a copy of this exception handler.
 
@@ -127,7 +127,7 @@ namespace FMTWrapperCore
 		*/
 		std::unique_ptr<Exception::FMTExceptionHandler> clone() const;
 
-		// DocString: FMTExceptionHandlerWarning::ResetThread
+		// DocString: WarningExceptionHandler::ResetThread
 		/**
 		@brief Resets crash tracking information to the main thread.
 

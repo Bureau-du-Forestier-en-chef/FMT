@@ -3,6 +3,7 @@
 
 #include "FMTForm.h"
 #include "Controller.h"
+#include "Conversions.h"
 
 bool Wrapper::FMTForm::Raterisation(
 	System::String^ fichierPri,
@@ -14,17 +15,17 @@ bool Wrapper::FMTForm::Raterisation(
 	System::String^ nomChampSuperficie,
 	System::String^ nomChampStanlock)
 {
-	// fichierPri n'a jamais été utilisé : il reste dans la signature publique,
-	// dont dépend le UI .NET.
+	// fichierPri has never been used: it stays in the public signature,
+	// which the .NET UI depends on.
 	try
 	{
 		FMTWrapperCore::RasterizationParameters params;
-		params.vectorFilePath = msclr::interop::marshal_as<std::string>(fichierShp);
-		params.outputFolder = msclr::interop::marshal_as<std::string>(repertoireSortie);
+		params.vectorFilePath = Conversions::toStdString(fichierShp);
+		params.outputFolder = Conversions::toStdString(repertoireSortie);
 		params.resolution = resolution;
-		params.ageField = msclr::interop::marshal_as<std::string>(nomChampAge);
-		params.areaField = msclr::interop::marshal_as<std::string>(nomChampSuperficie);
-		params.lockField = msclr::interop::marshal_as<std::string>(nomChampStanlock);
+		params.ageField = Conversions::toStdString(nomChampAge);
+		params.areaField = Conversions::toStdString(nomChampSuperficie);
+		params.lockField = Conversions::toStdString(nomChampStanlock);
 
 		FMTWrapperCore::Controller::rasterize(params, scenario);
 	}

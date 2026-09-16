@@ -54,12 +54,12 @@ int main(int argc, char* argv[])
 	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
 	const Models::FMTModel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODELS.at(0), primary_path, splitted, splittedMask, output_scenario_name);
 	
-	// On vérifie si on a plus d'actions dans le nouveau model
+	// Check whether the new model has more actions
 	if (SPLITTED_MODEL.getActions().size() <= MODELS.at(0).getActions().size())
 	{
 		throw Exception::FMTexc::FMTinvalid_action;
 	}
-	// On vérifie si on a bien écrit le modèle
+	// Check that the model was actually written
 	const boost::filesystem::path SCENARIO_PATH = boost::filesystem::path(primary_path).parent_path() / boost::filesystem::path("Scenarios") / boost::filesystem::path(output_scenario_name);
 	if (!boost::filesystem::is_directory(SCENARIO_PATH))
 	{

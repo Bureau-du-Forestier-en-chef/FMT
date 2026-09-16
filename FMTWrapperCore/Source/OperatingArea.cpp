@@ -24,9 +24,9 @@ namespace FMTWrapperCore
 {
     namespace
     {
-        // Agrégat réservé que la planification ajoute aux actions qui utilisent YOUVERT.
+        // Reserved aggregate the scheduling adds to the actions that use YOUVERT.
         const std::string YOUVERT_AGGREGATE = "~BFECOPTOUTPUTYOUVERT~";
-        // Yield qui marque les actions ouvrant une aire d'opération.
+        // Yield marking the actions that open an operating area.
         const std::string YOUVERT_YIELD = "YOUVERT";
     }
 
@@ -38,8 +38,8 @@ namespace FMTWrapperCore
 
         try
         {
-            // Logger statique de FMT : dans l'interface, c'est le FMTFormLogger que le
-            // wrapper utilisait directement ; dans un test, le logger par défaut.
+            // FMT static logger: in the interface, it is the CallbackLogger the wrapper used
+            // directly; in a test, the default logger.
             Logging::FMTLogger& logger = *Models::FMTModel::getLogger();
 
             logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
@@ -58,7 +58,7 @@ namespace FMTWrapperCore
             const int STARTING_PERIOD =
                 optimizationModel.getParameter(Models::FMTintmodelparameters::UPDATE);
 
-            // L'agrégat réservé désigne les actions YOUVERT dans le noeud d'output de la tâche.
+            // The reserved aggregate designates the YOUVERT actions in the output node of the task.
             std::vector<Core::FMTAction> actions = optimizationModel.getActions();
             int youvertActions = 0;
 

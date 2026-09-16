@@ -27,7 +27,7 @@ Models::FMTModel FMTWrapperCore::Transformation::aggregateAllActions(
 		aggregatedModel.setName(p_output_scenario_name);
 		std::string outputPath;
 		
-		//ATTENTION il est important d'écrire le model avant la schedule car modelParser.write va écraser le fichier de schedule
+		//WARNING: the model must be written before the schedule, because modelParser.write overwrites the schedule file
 		ModelParser.writeToProject(p_primary_path, aggregatedModel);
 		
 		if (!SCHEDULES.empty())
@@ -65,7 +65,7 @@ Models::FMTModel FMTWrapperCore::Transformation::splitActions(const Models::FMTM
 		std::string outputPath;
 
 		const std::vector<Core::FMTSchedule>SCHEDULES = ModelParser.readSchedules(p_primary_path, {p_model}).at(0);
-		//ATTENTION il est important d'ecrire le model avant la schedule car modelParser.write va ecraser le fichier de schedule
+		//WARNING: the model must be written before the schedule, because modelParser.write overwrites the schedule file
 
 		ModelParser.writeToProject(p_primary_path, SPLITTED_MODEL);
 		if (!SCHEDULES.empty())
@@ -96,7 +96,7 @@ Models::FMTModel FMTWrapperCore::Transformation::buildAction(const Models::FMTMo
 		BUILDED_MODEL = p_model.buildAction(p_actionName, p_targetYield);
 		BUILDED_MODEL.setName(p_scenario_name);
 
-		//ATTENTION il est important d'écrire le model avant la schedule car modelParser.write va écraser le fichier de schedule
+		//WARNING: the model must be written before the schedule, because modelParser.write overwrites the schedule file
 
 		ModelParser.writeToProject(p_primaryPath, BUILDED_MODEL);
 

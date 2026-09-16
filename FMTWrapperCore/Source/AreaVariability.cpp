@@ -43,8 +43,8 @@ namespace FMTWrapperCore
 
         try
         {
-            // Logger statique de FMT : dans l'interface, c'est le FMTFormLogger que le
-            // wrapper utilisait directement ; dans un test, le logger par défaut.
+            // FMT static logger: in the interface, it is the CallbackLogger the wrapper used
+            // directly; in a test, the default logger.
             Logging::FMTLogger& logger = *Models::FMTModel::getLogger();
 
             logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
@@ -84,7 +84,7 @@ namespace FMTWrapperCore
             std::vector<Core::FMTMask> maskTargets;
             std::vector<double> proportions;
 
-            // La première ligne de la table est un en-tête.
+            // The first row of the table is a header.
             for (size_t row = 1; row < p_params.proportionsTable.size(); ++row)
             {
                 const std::vector<std::string>& VALUES = p_params.proportionsTable.at(row);
@@ -100,9 +100,9 @@ namespace FMTWrapperCore
                 const std::string& PROPORTION = VALUES.back();
                 std::string mask;
 
-                // Comportement historique conservé tel quel, le bug étant suivi dans une
-                // issue : toute colonne dont la valeur égale celle de la dernière colonne est
-                // écartée du masque, pas seulement la dernière colonne.
+                // Historical behavior kept as is, the bug being tracked in an issue: any column
+                // whose value equals the value of the last column is dropped from the mask,
+                // not only the last column.
                 for (const std::string& VALUE : VALUES)
                 {
                     if (VALUE != PROPORTION)
@@ -115,8 +115,8 @@ namespace FMTWrapperCore
                 maskTargets.push_back(Core::FMTMask(trim(mask), THEMES));
             }
 
-            // Un même développement ne peut relever que d'un seul masque de la table.
-            // L'ancien code faisait exit(-1) ici, ce qui fermait tout le processus.
+            // A development can belong to a single mask of the table only.
+            // The former code called exit(-1) here, which closed the whole process.
             for (const Core::FMTActualDevelopment& DEVELOPMENT : optimizationModel.getArea())
             {
                 int matches = 0;

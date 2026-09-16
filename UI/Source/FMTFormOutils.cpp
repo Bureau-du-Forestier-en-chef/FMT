@@ -5,48 +5,19 @@
 
 #include "FMTForm.h"
 #include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
-	namespace
-	{
-		// Conversion sortante : un vecteur std devient une liste managee.
-		System::Collections::Generic::List<System::String^>^ _toManagedList(
-			const std::vector<std::string>& p_values)
-		{
-			System::Collections::Generic::List<System::String^>^ converted =
-				gcnew System::Collections::Generic::List<System::String^>();
-
-			for (const std::string& VALUE : p_values)
-			{
-				converted->Add(gcnew System::String(VALUE.c_str()));
-			}
-
-			return converted;
-		}
-	}
-
 	System::String^ FMTForm::getChangeLog()
 	{
-		return _convertToSystemString(FMTWrapperCore::Controller::getChangeLog());
+		return Conversions::fromUtf8(FMTWrapperCore::Controller::getChangeLog());
 	}
 
 	System::String^ FMTForm::getExceptionDescription(int p_exceptionId)
 	{
-		return _convertToSystemString(
+		return Conversions::fromUtf8(
 			FMTWrapperCore::Controller::getExceptionDescription(p_exceptionId));
-	}
-
-	System::String^ FMTForm::_convertToSystemString(std::string value)
-	{
-		array<System::Byte>^ bytes = gcnew array<System::Byte>(static_cast<int>(value.size()));
-
-		for (size_t i = 0; i < value.size(); ++i)
-		{
-			bytes[i] = static_cast<System::Byte>(value[i]);
-		}
-
-		return System::Text::Encoding::UTF8->GetString(bytes);
 	}
 
 	void FMTForm::_raiseFromCatch(
@@ -104,7 +75,7 @@ namespace Wrapper
 
 		try
 		{
-			retour = _toManagedList(
+			retour = Conversions::toManagedList(
 				FMTWrapperCore::Controller::getConstraintsAsText(indexScenario));
 		}
 		catch (...)
@@ -129,7 +100,7 @@ namespace Wrapper
 
 		try
 		{
-			retour = _toManagedList(
+			retour = Conversions::toManagedList(
 				FMTWrapperCore::Controller::getVectorDriverExtensions());
 		}
 		catch (...)
@@ -203,7 +174,7 @@ namespace Wrapper
 
 		try
 		{
-			retour = _toManagedList(
+			retour = Conversions::toManagedList(
 				FMTWrapperCore::Controller::getOutputsNames(indexScenario));
 		}
 		catch (...)
@@ -250,7 +221,7 @@ namespace Wrapper
 		try
 		{
 			retour = FMTWrapperCore::Controller::getPeriodsCount(
-				msclr::interop::marshal_as<std::string>(nomFichierPri),
+				Conversions::toStdString(nomFichierPri),
 				indexScenario);
 		}
 		catch (...)
@@ -300,7 +271,7 @@ namespace Wrapper
 
 		try
 		{
-			aggregatesList = _toManagedList(
+			aggregatesList = Conversions::toManagedList(
 				FMTWrapperCore::Controller::getAggregates(p_modelIndex));
 		}
 		catch (...)
@@ -324,7 +295,7 @@ namespace Wrapper
 
 		try
 		{
-			yieldsNamesConverted = _toManagedList(
+			yieldsNamesConverted = Conversions::toManagedList(
 				FMTWrapperCore::Controller::getYieldsNames(p_index));
 		}
 		catch (...)
@@ -351,8 +322,8 @@ namespace Wrapper
 		{
 			result = FMTWrapperCore::Controller::getYield(
 				p_modelIndex,
-				msclr::interop::marshal_as<std::string>(p_mask),
-				msclr::interop::marshal_as<std::string>(p_yield),
+				Conversions::toStdString(p_mask),
+				Conversions::toStdString(p_yield),
 				p_age);
 		}
 		catch (...)
@@ -398,7 +369,7 @@ namespace Wrapper
 		{
 			result = FMTWrapperCore::Controller::validateMask(
 				p_modelIndex,
-				msclr::interop::marshal_as<std::string>(p_mask));
+				Conversions::toStdString(p_mask));
 		}
 		catch (...)
 		{
@@ -436,7 +407,7 @@ namespace Wrapper
 					p_modelIndex,
 					p_periods,
 					themes,
-					msclr::interop::marshal_as<std::string>(p_cheminRasters)))
+					Conversions::toStdString(p_cheminRasters)))
 			{
 				result->Add(gcnew System::String(MASK.c_str()));
 			}
@@ -461,7 +432,7 @@ namespace Wrapper
 		try
 		{
 			FMTWrapperCore::Controller::writeScenariosToProject(
-				msclr::interop::marshal_as<std::string>(p_destinationDirectory));
+				Conversions::toStdString(p_destinationDirectory));
 		}
 		catch (...)
 		{

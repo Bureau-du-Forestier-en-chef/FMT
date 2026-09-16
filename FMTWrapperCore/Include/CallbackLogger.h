@@ -13,14 +13,14 @@ namespace FMTWrapperCore
 	*/
 	typedef void(__stdcall* logfunc)(const char* sts);
 
-	// DocString: FMTFormLogger
+	// DocString: CallbackLogger
 	/**
 	@brief Logger implementation used by the graphical interface.
 
 	This logger extends Logging::FMTLogger and redirects output both to
 	a log file and to a user-provided callback function.
 	*/
-	class FMTWRAPPERCOREEXPORT FMTFormLogger final :
+	class FMTWRAPPERCOREEXPORT CallbackLogger final :
 		public Logging::FMTLogger
 	{
 	private:
@@ -31,7 +31,7 @@ namespace FMTWrapperCore
 
 	protected:
 
-		// DocString: FMTFormLogger::_cout
+		// DocString: CallbackLogger::_cout
 		/**
 		@brief Outputs a message to the configured logging destinations.
 
@@ -45,7 +45,7 @@ namespace FMTWrapperCore
 
 	public:
 
-		// DocString: FMTFormLogger::logTime
+		// DocString: CallbackLogger::logTime
 		/**
 		@brief Overrides the base timestamp logging behavior.
 
@@ -55,29 +55,29 @@ namespace FMTWrapperCore
 		*/
 		void logTime() override;
 
-		// DocString: FMTFormLogger()
+		// DocString: CallbackLogger()
 		/**
 		@brief Default constructor.
 		*/
-		FMTFormLogger() = default;
+		CallbackLogger() = default;
 
-		// DocString: FMTFormLogger(const FMTFormLogger&)
+		// DocString: CallbackLogger(const CallbackLogger&)
 		/**
 		@brief Copy constructor.
 
 		@param[in] rhs Logger to copy.
 		*/
-		FMTFormLogger(const FMTFormLogger& rhs);
+		CallbackLogger(const CallbackLogger& rhs);
 
-		// DocString: ~FMTFormLogger()
+		// DocString: ~CallbackLogger()
 		/**
 		@brief Destructor.
 
 		The log file is closed before the base class destructor executes.
 		*/
-		~FMTFormLogger();
+		~CallbackLogger();
 
-		// DocString: FMTFormLogger::dokeepprint
+		// DocString: CallbackLogger::dokeepprint
 		/**
 		@brief Enables message buffering.
 
@@ -86,7 +86,7 @@ namespace FMTWrapperCore
 		*/
 		void dokeepprint();
 
-		// DocString: FMTFormLogger::closeFile
+		// DocString: CallbackLogger::closeFile
 		/**
 		@brief Closes the current log file and releases the associated stream.
 
@@ -94,13 +94,13 @@ namespace FMTWrapperCore
 		*/
 		void closeFile();
 
-		// DocString: FMTFormLogger::resetkeepprint
+		// DocString: CallbackLogger::resetkeepprint
 		/**
 		@brief Disables message buffering and clears buffered content.
 		*/
 		void resetkeepprint();
 
-		// DocString: FMTFormLogger::getlastprint
+		// DocString: CallbackLogger::getlastprint
 		/**
 		@brief Returns the buffered log output.
 
@@ -108,16 +108,16 @@ namespace FMTWrapperCore
 		*/
 		std::string getlastprint() const;
 
-		// DocString: FMTFormLogger(const std::string&,logfunc)
+		// DocString: CallbackLogger(const std::string&,logfunc)
 		/**
 		@brief Constructs a logger using a log file and callback function.
 
 		@param[in] nomFichierLogger Path of the log file.
 		@param[in] feed Callback used to forward log messages.
 		*/
-		FMTFormLogger(const std::string& nomFichierLogger, logfunc feed);
+		CallbackLogger(const std::string& nomFichierLogger, logfunc feed);
 
-		// DocString: FMTFormLogger::settasklogginglevel
+		// DocString: CallbackLogger::settasklogginglevel
 		/**
 		@brief Sets the logging level used for task execution.
 
@@ -125,13 +125,13 @@ namespace FMTWrapperCore
 		*/
 		void settasklogginglevel(int taskLogLevel);
 
-		// DocString: FMTFormLogger::setdefaultlogginglevel
+		// DocString: CallbackLogger::setdefaultlogginglevel
 		/**
 		@brief Restores the default logging level.
 		*/
 		void setdefaultlogginglevel();
 
-		// DocString: FMTFormLogger::Clone
+		// DocString: CallbackLogger::Clone
 		/**
 		@brief Creates a copy of this logger.
 
@@ -141,7 +141,7 @@ namespace FMTWrapperCore
 
 #ifdef FMTWITHOSI
 
-		// DocString: FMTFormLogger::clone
+		// DocString: CallbackLogger::clone
 		/**
 		@brief Creates a copy of this logger.
 

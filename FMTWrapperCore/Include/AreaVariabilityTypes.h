@@ -3,8 +3,8 @@
 
 /**
  * @file AreaVariabilityTypes.h
- * @brief DTO de AreaVariability : types std uniquement. C'est le contrat de traduction que le
- *        wrapper voit, par Controller.h.
+ * @brief AreaVariability DTOs: std types only. This is the translation contract the
+ *        wrapper sees, through Controller.h.
  */
 
 #include <string>
@@ -13,46 +13,46 @@
 namespace FMTWrapperCore
 {
     /**
-     * @brief Paramètres de la variabilité de l'aire initiale.
+     * @brief Parameters of the initial area variability.
      */
     struct AreaVariabilityParameters
     {
-        /** Solveur, valeur de Models::FMTSolverInterface. */
+        /** Solver, a Models::FMTSolverInterface value. */
         int solver = 0;
-        /** Contraintes retenues, par leur représentation textuelle. */
+        /** Selected constraints, by their text representation. */
         std::vector<std::string> constraintNames;
-        /** Nombre de périodes à construire. */
+        /** Number of periods to build. */
         int numberOfPeriods = 0;
-        /** Noms des outputs à écrire ; si la liste est vide, l'opération est refusée. */
+        /** Names of the outputs to write; the operation is refused if the list is empty. */
         std::vector<std::string> outputNames;
-        /** Niveau des sorties, valeur de Core::FMToutputlevel. */
+        /** Output level, a Core::FMToutputlevel value. */
         int outputLevel = 0;
-        /** Première période écrite. */
+        /** First written period. */
         int outputMinPeriod = 0;
-        /** Dernière période écrite. */
+        /** Last written period. */
         int outputMaxPeriod = 0;
-        /** Emplacement des sorties. */
+        /** Output location. */
         std::string outputPath;
-        /** Pilote GDAL des sorties. */
+        /** GDAL driver of the outputs. */
         std::string gdalProvider;
         /**
-         * Table des proportions, telle que lue du fichier de paramètres : la première
-         * ligne est un en-tête, la dernière colonne de chaque ligne est la proportion et
-         * les colonnes précédentes forment le masque.
+         * Proportions table, as read from the parameters file: the first row is a header,
+         * the last column of each row is the proportion and the previous columns form the
+         * mask.
          */
         std::vector<std::vector<std::string>> proportionsTable;
-        /** false si l'interface n'a transmis aucune table. */
+        /** false if the interface sent no table. */
         bool proportionsTableProvided = false;
     };
 
     /**
-     * @brief Résultat de la variabilité de l'aire initiale.
+     * @brief Result of the initial area variability.
      */
     struct AreaVariabilityResults
     {
-        /** false quand l'opération a été refusée. */
+        /** false when the operation was refused. */
         bool success = false;
-        /** Motif du refus quand success vaut false, vide sinon. */
+        /** Reason for the refusal when success is false, empty otherwise. */
         std::string errorMessage;
     };
 }

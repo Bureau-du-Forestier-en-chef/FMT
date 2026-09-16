@@ -16,40 +16,40 @@ namespace Models
 namespace FMTWrapperCore
 {
     /**
-     * @brief Planification et replanification de scénarios, par les tâches parallèles de FMT.
+     * @brief Planning and replanning of scenarios, through the parallel tasks of FMT.
      *
-     * Les deux opérations écrivent leurs résultats sur disque et ne retournent rien ; les
-     * erreurs remontent par exception.
+     * Both operations write their results to disk and return nothing; errors are raised as
+     * exceptions.
      */
     class FMTWRAPPERCOREEXPORT Planning
     {
     public:
         /**
-         * @brief Signale l'erreur en cours de traitement, sans interrompre l'opération.
+         * @brief Reports the error being handled, without interrupting the operation.
          *
-         * Appelée depuis un bloc catch, l'exception étant encore active, avec la méthode,
-         * la ligne et le fichier où elle a été attrapée.
+         * Called from a catch block, while the exception is still active, with the method,
+         * the line and the file where it was caught.
          */
         using ErrorReporter = std::function<void(const std::string&, int, const std::string&)>;
 
         /**
-         * @brief Planifie des scénarios dans une même FMTPlanningTask.
+         * @brief Plans scenarios in a single FMTPlanningTask.
          *
-         * Chaque scénario est optimisé, ou rejoué à partir de sa cédule si son drapeau de
-         * relecture est levé (construction partielle forcée). La tâche écrit dans le projet
-         * la cédule des scénarios optimisés.
+         * Each scenario is optimized, or played back from its schedule if its playback flag
+         * is set (forced partial build). The task writes the schedule of the optimized
+         * scenarios into the project.
          *
-         * Deux comportements historiques sont conservés :
-         * - un même modèle présent deux fois dans p_models reprend le drapeau de relecture de
-         *   sa première occurrence ;
-         * - une relecture de cédule en échec est confiée à p_reportScheduleError, puis le
-         *   scénario est lancé avec une cédule vide. Sans p_reportScheduleError, l'erreur
-         *   remonte.
+         * Two historical behaviors are kept:
+         * - a model present twice in p_models takes the playback flag of its first
+         *   occurrence;
+         * - a failed schedule read for playback is handed to p_reportScheduleError, then the
+         *   scenario runs with an empty schedule. Without p_reportScheduleError, the error is
+         *   raised.
          *
-         * @param p_params Paramètres de la planification.
-         * @param p_models Modèles à planifier.
-         * @param p_playback Drapeau de relecture de chaque modèle, par position.
-         * @param p_reportScheduleError Reçoit les relectures de cédule en échec.
+         * @param p_params Planning parameters.
+         * @param p_models Models to plan.
+         * @param p_playback Playback flag of each model, by position.
+         * @param p_reportScheduleError Receives the failed schedule reads.
          */
         static void plan(
             const PlanningParameters& p_params,
@@ -58,16 +58,16 @@ namespace FMTWrapperCore
             const ErrorReporter& p_reportScheduleError);
 
         /**
-         * @brief Replanifie à partir des modèles stratégique, stochastique et tactique.
+         * @brief Replans from the strategic, stochastic and tactical models.
          *
-         * Pendant l'exécution des tâches, le logger de l'interface (FMTFormLogger) passe au
-         * niveau p_params.taskLogLevel ; son niveau par défaut est rétabli ensuite, même en
-         * cas d'erreur. Un autre logger n'est pas touché.
+         * While the tasks run, the interface logger (CallbackLogger) is set to the
+         * p_params.taskLogLevel level; its default level is restored afterwards, even on
+         * error. Any other logger is left untouched.
          *
-         * @param p_params Paramètres de la replanification.
-         * @param p_strategic Modèle global (stratégique).
-         * @param p_stochastic Modèle stochastique.
-         * @param p_tactical Modèle local (tactique).
+         * @param p_params Replanning parameters.
+         * @param p_strategic Global (strategic) model.
+         * @param p_stochastic Stochastic model.
+         * @param p_tactical Local (tactical) model.
          */
         static void replan(
             const ReplanningParameters& p_params,

@@ -45,12 +45,12 @@ un objet hors de l'interface reçoit les opérations système et les délègue.
 - **Les services n'ont que des entrées pures** : elles prennent les objets FMT et ne
   connaissent pas le cache. Les tests C++ les appellent directement.
 - **Le contrôleur** ne reçoit que des types `std`, des DTO et des index de scénario. Il
-  résout l'index dans `FMTFormCache`, puis délègue à l'entrée pure : il coordonne sans
-  calculer. Dans le Core, seuls `Controller.cpp` et `FMTFormCache.cpp` utilisent le cache.
+  résout l'index dans `ModelCache`, puis délègue à l'entrée pure : il coordonne sans
+  calculer. Dans le Core, seuls `Controller.cpp` et `ModelCache.cpp` utilisent le cache.
 - **`Controller.h` n'inclut que les `<Domaine>Types.h`** : le wrapper ne voit ni les
   services ni la moindre déclaration de FMTlib.
 - Il est sans état et ses méthodes sont statiques : l'état de la session (scénarios,
-  logger, gestionnaire d'exceptions) reste dans `FMTFormCache`.
+  logger, gestionnaire d'exceptions) reste dans `ModelCache`.
 
 ```cpp
 // Service : entrée pure, testable sans cache.
@@ -67,10 +67,16 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 
 - Les signatures publiques de `FMTForm` ne changent pas : le UI .NET externe en dépend.
 - Journalisation : les entrées pures écrivent dans le logger statique de FMT
-  (`Models::FMTModel::getLogger()`) : le `FMTFormLogger` dans l'interface, le logger par
+  (`Models::FMTModel::getLogger()`) : le `CallbackLogger` dans l'interface, le logger par
   défaut dans un test. La progression reste en temps réel.
 - Toute classe du Core porte `FMTWRAPPERCOREEXPORT` (`FMTWrapperCoreExport.h`) ; les DTO,
   sans fonction membre hors ligne, n'en ont pas besoin.
+- Langue : commentaires, documentation Doxygen et sorties des tests en **anglais** ;
+  messages affichés aux utilisateurs (journal, refus, textes d'exception) et ce fichier en
+  **français**.
+- Les conversions entrantes .NET -> `std` du wrapper passent toutes par
+  `UI/Include/Conversions.h` (`Wrapper::Conversions`), qui rend une valeur vide pour
+  `nullptr`. Les conversions sortantes gardent chacune leur décodage (voir lot 2).
 - Chaque lot laisse l'ensemble compilable et ce fichier à jour.
 
 ## 2. Inventaire
@@ -79,9 +85,9 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 
 | Classe | Emplacement | Statut |
 |---|---|---|
-| `FMTFormCache` | `FMTWrapperCore/{Include,Source}` | migré (lot 1) |
-| `FMTFormLogger` | `FMTWrapperCore/{Include,Source}` | migré (lot 1) |
-| `FMTExceptionHandlerWarning` | `FMTWrapperCore/{Include,Source}` | migré (lot 1) |
+| `ModelCache` | `FMTWrapperCore/{Include,Source}` | migré (lot 1) ; ex-`FMTFormCache`, renommé au nettoyage |
+| `CallbackLogger` | `FMTWrapperCore/{Include,Source}` | migré (lot 1) ; ex-`FMTFormLogger`, renommé au nettoyage |
+| `WarningExceptionHandler` | `FMTWrapperCore/{Include,Source}` | migré (lot 1) ; ex-`FMTExceptionHandlerWarning`, renommé au nettoyage |
 
 ### Classes du Core
 
@@ -114,7 +120,7 @@ lot 5b, les DTO de chaque domaine sont dans `<Domaine>Types.h`, et
 | `OperatingAreaScheduling.cpp` | 60 | **migré** | `OperatingArea` | -- |
 | `InitialAreaVariability.cpp` | 86 | **migré** | `AreaVariability` | -- |
 | `Plannification.cpp` | 141 | **migré** | `Planning` | -- |
-| `FMTForm.cpp` | 206 | **migré** | `FMTFormCache`, `Environment` | -- (le délégué et l'`IntPtr` restent : managés par nature) |
+| `FMTForm.cpp` | 206 | **migré** | `ModelCache`, `Environment` | -- (le délégué et l'`IntPtr` restent : managés par nature) |
 
 ### Mesure de la règle 2
 
@@ -125,9 +131,9 @@ wrapper lui-même (`UI/Include`, `UI/Source`) ; les tests de `UI/tests` sont com
 grep -rhoE "\b(Core|Models|Parser|Parallel|Spatial|Heuristics|Exception|Logging)::FMT" UI/Include UI/Source | wc -l
 ```
 
-Le `\b` est indispensable : sans lui, `Core::FMT` correspond aussi à l'intérieur de
-`FMTWrapperCore::FMTFormCache`, qui est une classe du Core et a toute sa place dans le
-wrapper. **Les valeurs publiées aux lots 1 et 2 (241 et 145) étaient faussées de cette
+Le `\b` est indispensable : sans lui, `Core::FMT` correspondait aussi à l'intérieur de
+`FMTWrapperCore::FMTFormCache` (aujourd'hui `ModelCache`), une classe du Core qui avait
+toute sa place dans le wrapper. **Les valeurs publiées aux lots 1 et 2 (241 et 145) étaient faussées de cette
 façon, et comptaient en plus `UI/tests`.** La série ci-dessous est recalculée avec la
 commande corrigée, l'état d'origine à partir de `git show HEAD`.
 
@@ -142,7 +148,9 @@ commande corrigée, l'état d'origine à partir de `git show HEAD`.
 | Après le lot 5b | 40 |
 | Après le lot 6 | 0 |
 
-`UI/tests` : 23 occurrences, dans `UnitTestFMTFormLogger.cpp` (voir le suspens du lot 1).
+`UI/tests` : n'existe plus depuis le 2026-09-16. Ses 23 occurrences étaient dans
+`UnitTestCallbackLogger.cpp` (ex-`UnitTestFMTFormLogger.cpp`), passé dans
+`FMTWrapperCore/tests/` (suspens du lot 1).
 
 **Objectif atteint au lot 6** : plus un seul type de FMTlib dans le wrapper.
 
@@ -188,6 +196,10 @@ Deux suspens :
   `UI/CMakeLists.txt`. Le déplacer vers `FMTWrapperCore/tests/` le sortirait de ctest,
   puisque les tests du Core n'y sont pas enregistrés. À trancher le jour où les tests base
   du Core basculeront dans ctest.
+  *Rectifié le 2026-09-16* : les tests du Core rejoignent ctest par les CSV de tests
+  (section 6), le déplacement ne le sortirait donc pas de ctest.
+  **Résolu le 2026-09-16** : déplacé dans `FMTWrapperCore/tests/` et inscrit dans
+  `basetests.csv`.
 
 ### Lot 2 -- `Tools` éclaté, entrées indexées, wrapper aminci (2026-09-09)
 
@@ -336,7 +348,7 @@ dans un header de conversion (voir « Ensuite »).
 
 ### Lot 5b -- Contrôleur façade et macro d'export (2026-09-14)
 
-**Statut** : livré le 2026-09-14, **pas encore compilé**. Refactor sans changement de
+**Statut** : livré le 2026-09-14, compilé avant le lot 6. Refactor sans changement de
 comportement attendu, décidé avec Gabriel avant le lot 6 pour que celui-ci s'écrive
 directement dans la forme finale. Il absorbe le lot 7.
 
@@ -396,7 +408,7 @@ scénario, SES, et une erreur provoquée pour exercer `_raiseFromCatch`.
 
 ### Lot 6 -- `Plannification` / `Replanification` -> `Planning` (2026-09-15)
 
-**Statut** : livré le 2026-09-15, **pas encore compilé**. Dernier lot de domaine : les
+**Statut** : livré le 2026-09-15, compilé avant le nettoyage. Dernier lot de domaine : les
 règles 2 et 3 sont à zéro.
 
 - **`Planning` créé**, avec `PlanningTypes.h` (`PlanningParameters`,
@@ -444,37 +456,127 @@ Différences observables, toutes sur des chemins d'erreur :
 - les index de scénario sont tous résolus avant la première journalisation : un index
   invalide lève avant l'horodatage et les messages des scénarios précédents.
 
+### Nettoyage -- renommages, conversions et commentaires en anglais (2026-09-15)
+
+**Statut** : livré et compilé le 2026-09-15. **Validé en partie** le 2026-09-16 : ctest
+passe (166 tests sur 166, dont `UnitTestCallbackLogger` et les tests du Core inscrits dans
+les CSV) et l'interface fonctionne à première vue ; le reste est en section 4. Lancé par
+Gabriel après la compilation du lot 6.
+
+- **Classes d'infrastructure renommées**, fichiers compris : `FMTFormCache` -> `ModelCache`,
+  `FMTFormLogger` -> `CallbackLogger`, `FMTExceptionHandlerWarning` ->
+  `WarningExceptionHandler`, ainsi que les accesseurs `GetFormLogger` -> `GetCallbackLogger`
+  et `GetFormHandler` -> `GetWarningHandler`. Le test `UnitTestFMTFormLogger` devient
+  `UnitTestCallbackLogger`, nom ctest compris. Les inclusions à la mauvaise casse de
+  `FMTexceptionhandlerwarning.h` disparaissent avec le renommage. Le journal ci-dessus garde
+  les anciens noms.
+- **Conversions du wrapper réunies** dans `UI/Include/Conversions.h`
+  (`Wrapper::Conversions`) : `toStdString`, `toStdVector`, `toManagedList` et `fromUtf8`
+  remplacent les copies locales de `Transformations.cpp`, `InitialAreaVariability.cpp`,
+  `Plannification.cpp` et `FMTFormOutils.cpp`, ainsi que le membre
+  `FMTForm::_convertToSystemString`. Seule différence : un élément `nullptr` dans une liste
+  devient une chaîne vide dans `Transformations.cpp` et `Plannification.cpp`, où
+  `marshal_as` levait.
+- **Commentaires, documentation et sorties des tests en anglais** (décision de Gabriel),
+  dans tout `FMTWrapperCore/` et le wrapper ; les messages affichés aux utilisateurs et les
+  textes d'exception restent en français. 279 blocs traduits un à un, puis, pour chacun des
+  50 fichiers touchés, vérification que le code sans commentaires est identique. Au passage :
+  - les deux tests encore en cp1252 (`testWrapperCoreGetMaxAge.cpp`,
+    `testWrapperCoreSplitActions.cpp`) sont devenus ASCII, et les accents corrompus
+    (U+FFFD) des commentaires de plusieurs tests ont disparu avec eux ;
+  - la docstring de `FMTForm::ObtenirNomSolveur`, qui annonçait la liste des solveurs, est
+    corrigée.
+- Pour git, `FMTFormLogger.cpp` -> `CallbackLogger.cpp` n'est semblable qu'à 40 % après la
+  traduction : il apparaît comme une suppression et un ajout, et `git log --follow` ne
+  remonte au-delà du nettoyage qu'avec `-M40%`. Les six autres renommages sont reconnus.
+
+### Tests dans ctest et conversions entrantes (2026-09-16)
+
+**Statut** : livré le 2026-09-16, **pas encore compilé**. Décidé par Gabriel après la
+validation partielle du nettoyage.
+
+- **Tests de la migration dans ctest**, par les CSV (section 6) :
+  - `basetests.csv` : `testWrapperCoreRasterization` (arguments de `maptoFMTforest`),
+    `testWrapperCoreAreaVariability`, `testWrapperCorePlanning`,
+    `testWrapperCoreEnvironment` et `UnitTestCallbackLogger` ;
+  - `BFECtests.csv`, local : `testWrapperCoreOperatingArea`, avec les arguments de la
+    première ligne de `testOAschedulertask`. La ligne morte `UnitTestFMTFormLogger` en est
+    retirée ;
+  - `testWrapperCoreSA` reste hors ctest : son repli est un gabarit `TODO`, et aucun JSON
+    de recuit simulé n'existe sous `Modeles_test`.
+- **`testWrapperCoreGetYield` réparé**, jamais exécuté par ctest jusqu'ici :
+  - ses deux lignes nomment enfin la cible. Celle de `basetests.csv` passe à la forme
+    d'arguments en vigueur depuis 2025 : `TEST1` du scénario `equation`, la constante
+    `EXP(1.970 - 0.405 * LN(0.3)) + 17.71`, soit 29,3868586 ;
+  - la valeur attendue était lue par `std::stoi` : « 54.53 » devenait 54. Elle est lue par
+    `std::stod` et comparée avec une tolérance relative de 1e-6, un yield d'équation étant
+    calculé.
+- **`UnitTestCallbackLogger.cpp` déplacé** de `UI/tests/` vers `FMTWrapperCore/tests/`, à
+  l'identique (suspens du lot 1) : il n'inclut rien du wrapper. `UI/tests/`, vide, est
+  supprimé. La chaîne MSYS2 compile désormais ce test aussi.
+- Les en-têtes des tests inscrits ne les disent plus « manuels ».
+- **Conversions entrantes alignées** : les 46 appels directs à
+  `marshal_as<std::string>` (8 fichiers) passent par `Conversions::toStdString`, et les
+  boucles de listes de `SimulationSpatialeExplicite.cpp` et
+  `OptimisationSpatialeExplicite.cpp` par `Conversions::toStdVector`. Le seul `marshal_as`
+  restant est la conversion sortante de `getActionsNames`. Contrôle : en défaisant les
+  remplacements, chaque fichier redevient identique à l'original.
+
+Différence observable, sur `nullptr` seulement : l'interface ne lève plus
+d'`ArgumentNullException`. Le Core reçoit une chaîne vide, comme pour une zone de texte
+vide, et une liste `nullptr` de SES ou du recuit simulé devient une liste vide. Le Core ne
+refuse pas toutes les valeurs vides : d'après le code, un dossier de résultat vide pour les
+aires d'opération écrit sous `\Retour`, à la racine du lecteur, et un nom de scénario vide
+pour les transformations écrit directement dans `Scenarios/`. Ces cas existaient déjà pour
+une chaîne vide (voir « Ensuite »).
+
 ## 4. Prochain lot
 
-Les lots de domaine sont terminés : les règles 2 et 3 sont à zéro depuis le lot 6. Le
-prochain travail est sa validation -- compilation, `testWrapperCorePlanning`, puis
-Plannification et Replanification dans l'interface -- et, au passage, l'affichage des
-accents des messages de progression (voir Pièges, « Encodage des messages »).
+Les lots de domaine sont terminés depuis le lot 6. Le nettoyage compile, ctest passe et
+l'interface fonctionne à première vue (2026-09-16). Le lot « Tests dans ctest et
+conversions entrantes » reste à compiler. À valider ensuite :
+
+- **ctest, après reconfiguration de CMake** : les tests nouvellement inscrits couvrent les
+  lots 3 à 6, pour lesquels aucune validation à l'exécution n'est consignée ici.
+  `testWrapperCoreGetYield` et `testWrapperCoreEnvironment` n'ont jamais tourné dans ctest ;
+  un échec de ce dernier signalerait une exception de FMT sans description.
+- **Dans l'interface** :
+  - planification d'un scénario optimisé, d'un scénario rejoué et d'un scénario sans
+    cédule : l'erreur de ce dernier s'affiche une fois et la planification se poursuit ;
+  - replanification : le niveau du journal est rétabli ensuite, même après une erreur ;
+  - aires d'opération, variabilité de l'aire initiale (des masques qui se recoupent
+    affichent une erreur au lieu de fermer l'interface) et rastérisation ;
+  - une erreur provoquée : message, ouverture du fichier fautif, puis `RecoverFromCrash` ;
+  - les accents des messages de progression (Pièges, « Encodage des messages »).
+- **La chaîne MSYS2** (`CMakeFMTMSYS2rcran45.sh`) : le `CMakeLists.txt` racine inclut
+  `FMTWrapperCore` sans condition MSVC, donc GCC compile le Core et ses tests. Aucune
+  compilation MSYS2 n'est consignée depuis le début de la migration. La recherche des
+  extensions MSVC courantes (`std::exception("...")`, fonctions `_s`, `#pragma warning`) ne
+  relève rien, et `windows.h` comme `WinExec` existent sous MinGW : seule une compilation
+  tranchera.
+  Depuis le lot « Tests dans ctest », elle compile aussi `UnitTestCallbackLogger`.
 
 ### Ensuite
 
-- **Nettoyage** : réunir les conversions du wrapper (`_toStdString`, `_toStdVector`) dans
-  un header ; renommer les classes d'infrastructure (`ModelCache` / `CallbackLogger` /
-  `WarningExceptionHandler`), reporté depuis le lot 1.
-- **Portabilité du Core**, s'il doit un jour compiler hors Windows :
-  `FMTExceptionHandlerWarning::tryfileopener` lance Notepad++ par `windows.h`, du
-  comportement d'interface à isoler sous `#ifdef _WIN32` ou à rendre au wrapper ; et deux
-  inclusions n'ont pas la casse du fichier (`"FMTExceptionHandlerWarning.h"` pour
-  `FMTexceptionhandlerwarning.h`, dans `FMTFormCache.cpp` et
-  `FMTexceptionhandlerwarning.cpp`), sans effet sous Windows.
-- **`UI/tests/UnitTestFMTFormLogger.cpp`** teste une classe du Core depuis les tests du
-  wrapper (suspens du lot 1) : à déplacer le jour où les tests base du Core rejoindront
-  ctest.
+- **Un jeu de données pour `testWrapperCoreSA`** : JSON d'entrée et de référence, comme
+  `InputSES_1.json` et `ResultSES_1.json`, puis sa ligne dans `BFECtests.csv`.
+- **Refuser les valeurs vides dans le Core** là où elles écrivent au mauvais endroit :
+  dossier de résultat des aires d'opération, nom de scénario des transformations, et à
+  vérifier pour les autres dossiers de sortie. Préexistant pour une chaîne vide ; à
+  décider.
+- **Portabilité du Core** hors Windows : `WarningExceptionHandler::tryfileopener` lance
+  Notepad++ par `WinExec` (`windows.h`), du comportement d'interface à isoler sous
+  `#ifdef _WIN32` ou à rendre au wrapper. Sans objet tant que les deux chaînes de
+  compilation tournent sous Windows.
 
 ## 5. Pièges connus
 
-- **Encodage cp1252** -- depuis le lot 6, le wrapper (`UI/`) et les sources du Core
-  (`FMTWrapperCore/Include`, `FMTWrapperCore/Source`) sont en UTF-8 sans BOM
-  (`Plannification.cpp` était le dernier en cp1252). Restent en cp1252 deux tests du Core,
-  `testWrapperCoreGetMaxAge.cpp` et `testWrapperCoreSplitActions.cpp`, et des fichiers
-  ailleurs dans FMT (ex. `Source/FMTReplanningTask.cpp`, `Examples/C++/planningtest.cpp`) :
-  les éditer avec un outil qui suppose l'UTF-8 corrompt les accents ; les réécrire
-  entièrement, ou les éditer au niveau octet.
+- **Encodage cp1252** -- depuis le nettoyage, tous les fichiers de `UI/` et de
+  `FMTWrapperCore/` sont en UTF-8 sans BOM : les deux derniers tests en cp1252 sont devenus
+  ASCII en passant à l'anglais. Des fichiers cp1252 subsistent ailleurs dans FMT (ex.
+  `Source/FMTReplanningTask.cpp`, `Examples/C++/planningtest.cpp`) : les éditer avec un
+  outil qui suppose l'UTF-8 corrompt les accents ; les réécrire entièrement, ou les éditer
+  au niveau octet.
 - **La planification écrit dans le projet** -- quand `FMTPlanningTask` reçoit le fichier
   primaire, `FMTParallelWriter::getAndWrite` réécrit
   `Scenarios/<scénario>/<projet>._seq` pour chaque scénario optimisé. Planifier sur
@@ -487,7 +589,7 @@ accents des messages de progression (voir Pièges, « Encodage des messages »).
 - **Encodage des messages** -- MSVC compile sans `/utf-8` : un fichier UTF-8 sans BOM est
   relu en cp1252 et ses octets passent tels quels dans le binaire. Deux chemins les
   décodent ensuite différemment :
-  - `_convertToSystemString` (valeurs de retour : changelog, descriptions d'exceptions)
+  - `Conversions::fromUtf8` (valeurs de retour : changelog, descriptions d'exceptions)
     décode en **UTF-8** ;
   - `_toFeedback`, par lequel passent tous les messages du logger, fait
     `gcnew System::String(const char*)`, qui décode dans la **page ANSI** (cp1252) sous
@@ -499,13 +601,10 @@ accents des messages de progression (voir Pièges, « Encodage des messages »).
   déformés (« DÃ©marrage »), la correction est unique et tient dans `_toFeedback` -- mais
   elle toucherait aussi les messages de FMTlib qui citent le contenu des fichiers de
   modèle, dont l'encodage est à vérifier avant.
-- **Filtrage des contraintes / outputs** : deux implémentations divergentes coexistent.
-  `FMTForm::_ObtenirArrayContraintesSelectionnees` retire `\r`/`\n`, applique `TrimEnd`,
-  suit l'ordre du modèle et **ne fait pas de `break`**. `SES::filterConstraints` fait une
-  égalité stricte, suit l'ordre des noms sélectionnés et `break`. Les unifier change
-  l'ordre et le nombre de contraintes passées à `setConstraints` dans SES, **et l'ordre
-  influence la matrice LP**. Valider par `testWrapperCoreSES` avant/après ; si les sorties
-  diffèrent, garder deux méthodes aux sémantiques distinctes et documentées.
+- **Filtrage des contraintes / outputs** -- unifié au lot 2 dans `Selection` (retrait des
+  CR/LF puis trim, ordre du modèle, chaque élément retenu une fois). **L'ordre influence la
+  matrice LP** : toute modification de `Selection` se valide par `testWrapperCoreSES`
+  avant/après.
 - **`public class`** est une syntaxe C++/CLI : à abandonner dans tout code déplacé.
 - **Macros Windows** -- `windows.h` arrive par inclusion transitive (GDAL via
   `FMTModelParser.h`) et définit `ERROR`, `DELETE`, `IN`, `OUT`, `NEAR`, `FAR`.
@@ -544,7 +643,7 @@ accents des messages de progression (voir Pièges, « Encodage des messages »).
   dans le header : chaque unité de compilation concernée les instancie et échoue sur
   `can't delete an incomplete type`. Les déclarer dans le header et les définir
   `= default` dans le .cpp, là où le type est complet. Vu au lot 2 sur
-  `FMTFormCache::m_Models`. **Ne pas** « corriger » en incluant `FMTModel.h` dans
+  `FMTFormCache::m_Models` (aujourd'hui `ModelCache`). **Ne pas** « corriger » en incluant `FMTModel.h` dans
   le header : ça exposerait le type à tout le wrapper, contre la règle 2.
 - **Signatures `FMTForm` figées** : le UI .NET externe en dépend.
 - **Bug de FMTlib repéré, non corrigé** : `FMTAreaParser::writeForestExtended`
@@ -557,23 +656,39 @@ accents des messages de progression (voir Pièges, « Encodage des messages »).
   `FMTModel::getLogger()` / `getExceptionHandler()` restent partagées entre
   `FMTWrapper.dll` et `FMTWrapperCore.dll`. C'est ce qui rend le lot 1 sûr.
 - **`Excel/`** a son propre `Wrapper::FMTModelCache` (~2600 lignes, dérive de `FMTLpModel`),
-  sans rapport avec `FMTFormCache`. Hors périmètre, mais c'est la raison du choix du
+  sans rapport avec `ModelCache`. Hors périmètre, mais c'est la raison du choix du
   namespace `FMTWrapperCore` plutôt que `Wrapper`.
 
 ## 6. Tests
 
-**Base et BFEC restent séparés.** L'interface n'étant pas publique sur le dépôt, les tests
-du Core restent **manuels et privés**.
+**Base et BFEC restent séparés**, chacun dans son CSV : `Examples/C++/tests/basetests.csv`
+(modèles publics de `Examples/Models/`, suivi par git) et `Examples/C++/tests/BFECtests.csv`
+(modèles privés sur `T:\`, local et ignoré par git).
 
-- Convention existante : `Examples/C++/tests/basetests.csv` (modèles publics de
-  `Examples/Models/`, enregistrés dans ctest) contre `Examples/C++/tests/BFECtests.csv`
-  (modèles privés sur `T:\`).
-- Les tests `FMTWrapperCore/tests/*` sont des exécutables lancés à la main, sur le patron
-  de `testWrapperCoreSES.cpp` : paramètres via un JSON en `argv[1]`, valeurs de référence
-  en `argv[2]`, repli codé en dur sur un modèle `T:\`.
-- **Ne pas** ajouter d'`add_test()` dans `FMTWrapperCore/CMakeLists.txt` : l'absence est
-  volontaire tant que les modèles sont privés. Le jour où une interface publique existera,
-  les tests base basculeront dans ctest.
+- **ctest passe par ces CSV** (rectifié le 2026-09-16 : ce fichier disait les tests du Core
+  « manuels »). `Examples/C++/CMakeLists.txt` enregistre chaque ligne dont la première
+  colonne nomme une cible existante (`if (TARGET ...)`, sensible à la casse), avec les
+  colonnes suivantes pour arguments. Les cibles du Core existent à ce moment-là
+  (`FMTWrapperCore/CMakeLists.txt` est inclus avant) ; celles de `UI/tests`, pas encore :
+  `UI/CMakeLists.txt` les enregistre lui-même.
+- **Inscrits depuis le 2026-09-16** : tous les tests du Core sauf `testWrapperCoreSA`. Sans
+  le préfixe `testWrapperCore` :
+  - `basetests.csv` : `GetMaxAge`, `GetYield`, `GetAllMasks`, `WriteToProject`,
+    `Rasterization`, `AreaVariability`, `Planning`, `Environment`, ainsi que
+    `UnitTestCallbackLogger` ;
+  - `BFECtests.csv` : `SES`, `GetYield`, `GetAllMasks`, `AggregateAllActions`,
+    `SplitActions`, `BuildAction` et `OperatingArea`.
+- **Hors ctest** : `testWrapperCoreSA`, faute de jeu de données (son repli est un gabarit
+  `TODO`).
+- **Une ligne mal nommée ne produit aucune erreur** : elle est ignorée. C'est ainsi que
+  `testWrapperCoreGetYield` n'a jamais tourné de 2024 à 2026 (`testWrapperCoreGetyield`
+  dans un CSV, `testWrapperCoreGetYield.cpp` dans l'autre). Après une modification,
+  vérifier le nom dans `build/release/CTestTestfile.cmake`.
+- Les tests `FMTWrapperCore/tests/*` suivent le patron de `testWrapperCoreSES.cpp` :
+  paramètres via un JSON en `argv[1]`, valeurs de référence en `argv[2]`, repli codé en dur
+  sur un modèle `T:\`.
+- **Ne pas** ajouter d'`add_test()` dans `FMTWrapperCore/CMakeLists.txt` : un test du Core
+  rejoint ctest par une ligne dans le CSV de son jeu de données.
 - Chaque lot ajoute son `testWrapperCore<Domaine>.cpp` selon ce patron. Les tests
   appellent les entrées pures des services, jamais `Controller` : ils n'ont pas à peupler
   le singleton.
@@ -581,9 +696,9 @@ du Core restent **manuels et privés**.
   données, jamais sur `Examples/Models` : voir `testWrapperCorePlanning`.
 - Quand un jeu de données public existe, le test l'utilise par défaut et reprend la forme
   d'arguments de son cousin de `basetests.csv` : `testWrapperCoreRasterization` tourne sur
-  `Examples/Models/TWD_land` avec les mêmes arguments que `maptoFMTforest`. Il reste
-  manuel, mais rejoindra ctest en une ligne le moment venu. Les tests SES, qui n'ont que
-  des modèles privés, prennent un JSON.
+  `Examples/Models/TWD_land` avec les mêmes arguments que `maptoFMTforest`, et sa ligne
+  de ce CSV reprend la sienne. Les tests SES, qui n'ont que des modèles privés, prennent
+  un JSON.
 - Sinon, le test tourne sur un modèle privé et reprend la forme d'arguments de son cousin
   de `BFECtests.csv` : `testWrapperCoreOperatingArea` a les mêmes arguments que
   `testOAschedulertask`, aucun modèle public n'ayant de yield `YOUVERT`.

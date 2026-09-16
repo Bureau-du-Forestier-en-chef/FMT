@@ -12,22 +12,21 @@ namespace Models
 namespace FMTWrapperCore
 {
     /**
-     * @brief Rastérisation d'un fichier vectoriel selon les thèmes d'un modèle.
+     * @brief Rasterization of a vector file according to the themes of a model.
      *
-     * Écrit dans le dossier de sortie les rasters de la forêt (AGE.tif, THEME<i>.tif,
-     * et STANLOCK.tif le cas échéant) : ce sont ceux que relisent SES et
-     * ModelQuery::getAllMasks.
+     * Writes the forest rasters (AGE.tif, THEME<i>.tif, and STANLOCK.tif if applicable) to
+     * the output folder: they are the ones SES and ModelQuery::getAllMasks read back.
      *
-     * L'opération ne produit pas de données en mémoire : elle ne retourne rien et
-     * les erreurs remontent par exception.
+     * The operation produces no in-memory data: it returns nothing and errors are raised
+     * as exceptions.
      */
     class FMTWRAPPERCOREEXPORT Rasterization
     {
     public:
         /**
-         * @brief Rastérise le fichier vectoriel selon les thèmes du modèle.
-         * @param p_params Paramètres de la rastérisation.
-         * @param p_model Modèle fournissant les thèmes et l'aire initiale.
+         * @brief Rasterizes the vector file according to the model themes.
+         * @param p_params Rasterization parameters.
+         * @param p_model Model providing the themes and the initial area.
          */
         static void rasterize(
             const RasterizationParameters& p_params,

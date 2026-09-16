@@ -37,7 +37,7 @@ namespace FMTWrapperCore
         {
             for (int themeID : themeIndices)
             {
-                // Les indices sont 1-based dans l'interface
+                // Indices are 1-based in the interface
                 if (themeID > 0 && static_cast<size_t>(themeID) <= allThemes.size())
                 {
                     growthThemes.push_back(allThemes.at(themeID - 1));
@@ -245,16 +245,16 @@ namespace FMTWrapperCore
 
         try
         {
-            // Journalise le rapport (via le logger du modèle) puis reconstruit
-            // les mêmes messages pour les retourner à l'appelant.
+            // Logs the report (through the model logger) then rebuilds
+            // the same messages to return them to the caller.
             semodel.logConstraintsInfeasibilities();
 
             const std::vector<Core::FMTConstraint> constraints = semodel.getConstraints();
             double brokenup = 0;
             double total = 0;
 
-            // L'indice 0 correspond à l'objectif : on commence à 1 comme dans
-            // FMTSeModel::logConstraintsInfeasibilities().
+            // Index 0 is the objective: start at 1, as
+            // FMTSeModel::logConstraintsInfeasibilities() does.
             for (size_t cid = 1; cid < constraints.size(); ++cid)
             {
                 double value = semodel.getConstraintEvaluation(cid);
@@ -301,8 +301,8 @@ namespace FMTWrapperCore
         const SAParameters& params,
         const Models::FMTModel& baseModel)
     {
-        // Logger statique de FMT : dans l'interface, c'est le FMTFormLogger ; dans un
-        // test, le logger par défaut.
+        // FMT static logger: in the interface, it is the CallbackLogger; in a
+        // test, the default logger.
         Logging::FMTLogger& logger = *Models::FMTModel::getLogger();
 
         logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
@@ -680,7 +680,7 @@ namespace FMTWrapperCore
                     predictorsData.predictorNames = predictors.back().back().getPredictorNames(predictorYields);
                 }
 
-                // Extraire les valeurs pour chaque nœud
+                // Extract the values of each node
                 size_t indexPredictors = 0;
                 for (const auto& predictorslist : predictors)
                 {
@@ -812,8 +812,8 @@ namespace FMTWrapperCore
 
     SESResults SES::RunSES(const SESParameters& params, const Models::FMTModel& baseModel)
     {
-        // Le logger courant est cloné avant d'être repassé au modèle : la simulation
-        // journalise ensuite à travers ce clone. Dans l'interface, c'est le FMTFormLogger.
+        // The current logger is cloned before being passed back to the model: the simulation
+        // then logs through that clone. In the interface, it is the CallbackLogger.
         std::unique_ptr<Logging::FMTLogger> savedLogger;
         {
             const Logging::FMTLogger* currentLogger = Models::FMTModel::getLogger();
@@ -825,8 +825,8 @@ namespace FMTWrapperCore
 
         Models::FMTModel selectedModel = baseModel;
 
-        // Les cédules sont lues avant que le logger cloné ne soit passé au modèle,
-        // comme le faisait le wrapper.
+        // The schedules are read before the cloned logger is passed to the model,
+        // as the wrapper did.
         const std::vector<Core::FMTSchedule> SCHEDULES =
             ModelQuery::readSchedules(params.primaryFilePath, selectedModel);
 
@@ -835,7 +835,7 @@ namespace FMTWrapperCore
             selectedModel.passInLogger(savedLogger);
         }
 
-        // Ré-acquérir le logger : passInLogger a remplacé celui qui a été cloné.
+        // Re-acquire the logger: passInLogger replaced the one that was cloned.
         Logging::FMTLogger& logger = *Models::FMTModel::getLogger();
 
         logger << "FMT -> Démarrage de la simulation pour le scénario: " + selectedModel.getName() << "\n";

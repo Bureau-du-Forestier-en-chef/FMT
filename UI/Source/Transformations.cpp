@@ -3,29 +3,9 @@
 
 #include "FMTForm.h"
 #include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper {
-
-	namespace
-	{
-		std::vector<std::string> _toStdVector(
-			System::Collections::Generic::List<System::String^>^ p_values)
-		{
-			std::vector<std::string> converted;
-
-			if (p_values == nullptr)
-			{
-				return converted;
-			}
-
-			for each (System::String ^ value in p_values)
-			{
-				converted.push_back(msclr::interop::marshal_as<std::string>(value));
-			}
-
-			return converted;
-		}
-	}
 
 	bool FMTForm::aggregateAllActions(
 		const int p_modelIndex,
@@ -40,10 +20,10 @@ namespace Wrapper {
 		{
 			FMTWrapperCore::Controller::aggregateAllActions(
 				p_modelIndex,
-				_toStdVector(p_aggregates),
-				_toStdVector(p_order),
-				msclr::interop::marshal_as<std::string>(p_shedulePri),
-				msclr::interop::marshal_as<std::string>(p_scenario_name));
+				Conversions::toStdVector(p_aggregates),
+				Conversions::toStdVector(p_order),
+				Conversions::toStdString(p_shedulePri),
+				Conversions::toStdString(p_scenario_name));
 
 			return true;
 		}
@@ -67,10 +47,10 @@ namespace Wrapper {
 		{
 			FMTWrapperCore::Controller::splitActions(
 				p_modelIndex,
-				msclr::interop::marshal_as<std::string>(p_schedulePri),
-				_toStdVector(p_splitted),
-				_toStdVector(p_splitted_mask),
-				msclr::interop::marshal_as<std::string>(p_scenario_name));
+				Conversions::toStdString(p_schedulePri),
+				Conversions::toStdVector(p_splitted),
+				Conversions::toStdVector(p_splitted_mask),
+				Conversions::toStdString(p_scenario_name));
 
 			return true;
 		}
@@ -119,10 +99,10 @@ namespace Wrapper {
 		{
 			FMTWrapperCore::Controller::buildAction(
 				p_modelIndex,
-				msclr::interop::marshal_as<std::string>(p_actionName),
-				msclr::interop::marshal_as<std::string>(p_targetYield),
-				msclr::interop::marshal_as<std::string>(p_schedulePri),
-				msclr::interop::marshal_as<std::string>(p_scenario_name));
+				Conversions::toStdString(p_actionName),
+				Conversions::toStdString(p_targetYield),
+				Conversions::toStdString(p_schedulePri),
+				Conversions::toStdString(p_scenario_name));
 		}
 		catch (...)
 		{

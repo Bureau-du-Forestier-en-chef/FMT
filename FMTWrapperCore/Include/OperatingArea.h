@@ -12,24 +12,24 @@ namespace Models
 namespace FMTWrapperCore
 {
     /**
-     * @brief Planification des aires d'opération : génère le calendrier de COS.
+     * @brief Operating area scheduling: generates the COS schedule.
      *
-     * Ajoute l'agrégat réservé ~BFECOPTOUTPUTYOUVERT~ aux actions qui utilisent le
-     * yield YOUVERT, lit les aires d'opération, puis lance FMTOpAreaSchedulerTask.
+     * Adds the reserved aggregate ~BFECOPTOUTPUTYOUVERT~ to the actions that use the
+     * YOUVERT yield, reads the operating areas, then runs FMTOpAreaSchedulerTask.
      *
-     * Deux situations du modèle font refuser la planification, sans exception : une
-     * action porte déjà l'agrégat réservé, ou aucune action n'utilise YOUVERT. Le motif
-     * est alors dans OperatingAreaResults::errorMessage, et journalisé. Toute autre
-     * erreur remonte par exception.
+     * Two situations of the model refuse the scheduling, without an exception: an action
+     * already carries the reserved aggregate, or no action uses YOUVERT. The reason is then
+     * in OperatingAreaResults::errorMessage, and logged. Any other error is raised as an
+     * exception.
      */
     class FMTWRAPPERCOREEXPORT OperatingArea
     {
     public:
         /**
-         * @brief Planifie les aires d'opération du modèle.
-         * @param p_params Paramètres de la planification.
-         * @param p_model Modèle à planifier.
-         * @return Le résultat ; success vaut false si le modèle a été refusé.
+         * @brief Schedules the operating areas of the model.
+         * @param p_params Scheduling parameters.
+         * @param p_model Model to schedule.
+         * @return The result; success is false if the model was refused.
          */
         static OperatingAreaResults schedule(
             const OperatingAreaParameters& p_params,

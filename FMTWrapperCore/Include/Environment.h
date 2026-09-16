@@ -9,51 +9,51 @@
 namespace FMTWrapperCore
 {
     /**
-     * @brief Interrogation de l'environnement FMT, indépendamment de tout modèle.
+     * @brief Queries on the FMT environment, independent of any model.
      *
-     * Regroupe ce qui relève des capacités de la bibliothèque elle-même :
-     * solveurs disponibles, pilotes GDAL, changelog et description des exceptions.
-     * Tout ce qui interroge un modèle appartient à ModelQuery.
+     * Groups what belongs to the capabilities of the library itself: available solvers,
+     * GDAL drivers, changelog and exception descriptions. Anything that queries a model
+     * belongs to ModelQuery.
      */
     class FMTWRAPPERCOREEXPORT Environment
     {
     public:
         /**
-         * @brief Retourne les interfaces de solveurs compilées dans FMT.
-         * @return Les valeurs de Models::FMTSolverInterface, converties en int.
+         * @brief Returns the solver interfaces compiled into FMT.
+         * @return The Models::FMTSolverInterface values, converted to int.
          */
         static std::vector<int> getAvailableSolvers();
 
         /**
-         * @brief Retourne le nom lisible d'une interface de solveur.
-         * @param p_solver Valeur de Models::FMTSolverInterface.
-         * @return Le nom du solveur, ou une chaîne vide en cas d'échec.
+         * @brief Returns the readable name of a solver interface.
+         * @param p_solver A Models::FMTSolverInterface value.
+         * @return The solver name, or an empty string on failure.
          */
         static std::string getSolverName(int p_solver);
 
         /**
-         * @brief Retourne les extensions de fichiers vectoriels supportées par GDAL.
-         * @return Une entrée par couple pilote/extension, formatée "PILOTE|*.ext"
-         *         pour alimenter directement un filtre de boîte de dialogue.
+         * @brief Returns the vector file extensions supported by GDAL.
+         * @return One entry per driver/extension pair, formatted "DRIVER|*.ext" to feed a
+         *         dialog box filter directly.
          */
         static std::vector<std::string> getVectorDriverExtensions();
 
         /**
-         * @brief Retourne le journal des modifications de FMT.
-         * @return Le changelog.
+         * @brief Returns the FMT changelog.
+         * @return The changelog.
          */
         static std::string getChangeLog();
 
         /**
-         * @brief Retourne la description d'une exception FMT.
-         * @param p_exceptionId Valeur de Exception::FMTexc.
-         * @return La description de l'exception.
+         * @brief Returns the description of an FMT exception.
+         * @param p_exceptionId An Exception::FMTexc value.
+         * @return The exception description.
          */
         static std::string getExceptionDescription(int p_exceptionId);
 
         /**
-         * @brief Retourne les erreurs qui peuvent être ignorées.
-         * @return Les valeurs de Exception::FMTexc, converties en int.
+         * @brief Returns the errors that can be ignored.
+         * @return The Exception::FMTexc values, converted to int.
          */
         static std::vector<int> getErrorsToIgnore();
     };

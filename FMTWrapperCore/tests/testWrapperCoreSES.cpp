@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 		params.greedySearchIterations = 5;
 		params.useStanlock = false;
 
-		// outputLevel: STRATE = 3, THÉMATIQUE = 1, TOTALE = 2
+		// outputLevel: STRATE (stratum) = 3, THÉMATIQUE (thematic) = 1, TOTALE (total) = 2
 		params.outputLevel = 2;
 
 		params.outputMinPeriod = 1;

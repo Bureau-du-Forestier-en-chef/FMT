@@ -3,30 +3,10 @@
 
 #include "FMTForm.h"
 #include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
-	namespace
-	{
-		std::vector<std::string> _toStdVector(
-			System::Collections::Generic::List<System::String^>^ p_values)
-		{
-			std::vector<std::string> converted;
-
-			if (p_values == nullptr)
-			{
-				return converted;
-			}
-
-			for each (System::String ^ value in p_values)
-			{
-				converted.push_back(msclr::interop::marshal_as<std::string>(value));
-			}
-
-			return converted;
-		}
-	}
-
 	bool FMTForm::Plannification(
 		System::String^ fichierPri,
 		System::Collections::Generic::List<int>^ scenarios,
@@ -44,16 +24,16 @@ namespace Wrapper
 		try
 		{
 			FMTWrapperCore::PlanningParameters params;
-			params.primaryFilePath = msclr::interop::marshal_as<std::string>(fichierPri);
+			params.primaryFilePath = Conversions::toStdString(fichierPri);
 			params.solver = solver;
 			params.numberOfPeriods = period;
 			params.numberOfThreads = nbreProcessus;
-			params.outputNames = _toStdVector(outputs);
+			params.outputNames = Conversions::toStdVector(outputs);
 			params.outputLevel = outputLevel;
 			params.outputMinPeriod = etanduSortiesMin;
 			params.outputMaxPeriod = etanduSortiesMax;
-			params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
-			params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
+			params.outputPath = Conversions::toStdString(cheminSorties);
+			params.gdalProvider = Conversions::toStdString(providerGdal);
 
 			std::vector<int> modelIndexes;
 
@@ -62,8 +42,8 @@ namespace Wrapper
 				modelIndexes.push_back(scenario);
 			}
 
-			// Sans drapeaux, le Core refuse le premier scénario, comme l'ancien code
-			// échouait à lire playback.
+			// Without flags, the Core refuses the first scenario, as the former code
+			// failed to read playback.
 			std::vector<bool> playbackFlags;
 
 			if (playback != nullptr)
@@ -104,9 +84,9 @@ namespace Wrapper
 		bool indProduireSolution,
 		bool p_writeSchedule)
 	{
-		// p_writeSchedule n'a jamais été utilisé : depuis la première version de l'interface,
-		// c'est indProduireSolution qui commande l'écriture des cédules des réplicats. Il
-		// reste dans la signature publique, dont dépend le UI .NET.
+		// p_writeSchedule has never been used: since the first version of the interface,
+		// indProduireSolution drives the writing of the replicate schedules. It
+		// stays in the public signature, which the .NET UI depends on.
 		try
 		{
 			FMTWrapperCore::ReplanningParameters params;
@@ -117,10 +97,10 @@ namespace Wrapper
 			params.numberOfThreads = nbreProcessus;
 			params.minimumReplicates = nombreReplicasMin;
 			params.maximumReplicates = nombreReplicasMax;
-			params.outputNames = _toStdVector(outputs);
+			params.outputNames = Conversions::toStdVector(outputs);
 			params.outputLevel = outputLevel;
-			params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
-			params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
+			params.outputPath = Conversions::toStdString(cheminSorties);
+			params.gdalProvider = Conversions::toStdString(providerGdal);
 			params.taskLogLevel = taskLogLevel;
 			params.writeSchedules = indProduireSolution;
 

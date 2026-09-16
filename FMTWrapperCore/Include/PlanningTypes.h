@@ -3,8 +3,8 @@
 
 /**
  * @file PlanningTypes.h
- * @brief DTO de Planning : types std uniquement. C'est le contrat de traduction que le
- *        wrapper voit, par Controller.h.
+ * @brief Planning DTOs: std types only. This is the translation contract the wrapper
+ *        sees, through Controller.h.
  */
 
 #include <string>
@@ -13,62 +13,62 @@
 namespace FMTWrapperCore
 {
     /**
-     * @brief Paramètres de la planification de plusieurs scénarios.
+     * @brief Parameters of the planning of several scenarios.
      */
     struct PlanningParameters
     {
-        /** Fichier .pri du projet : les cédules y sont relues, et celles des scénarios optimisés y sont écrites. */
+        /** Project .pri file: schedules are read back from it, and those of the optimized scenarios are written to it. */
         std::string primaryFilePath;
-        /** Solveur, valeur de Models::FMTSolverInterface. */
+        /** Solver, a Models::FMTSolverInterface value. */
         int solver = 0;
-        /** Nombre de périodes à planifier (paramètre LENGTH). */
+        /** Number of periods to plan (LENGTH parameter). */
         int numberOfPeriods = 0;
-        /** Nombre de threads, partagés entre les scénarios. */
+        /** Number of threads, shared among the scenarios. */
         int numberOfThreads = 1;
-        /** Noms des outputs à écrire. */
+        /** Names of the outputs to write. */
         std::vector<std::string> outputNames;
-        /** Niveau des sorties, valeur de Core::FMToutputlevel. */
+        /** Output level, a Core::FMToutputlevel value. */
         int outputLevel = 0;
-        /** Première période écrite. */
+        /** First written period. */
         int outputMinPeriod = 0;
-        /** Dernière période écrite. */
+        /** Last written period. */
         int outputMaxPeriod = 0;
-        /** Emplacement des sorties. */
+        /** Output location. */
         std::string outputPath;
-        /** Pilote GDAL des sorties. */
+        /** GDAL driver of the outputs. */
         std::string gdalProvider;
     };
 
     /**
-     * @brief Paramètres de la replanification.
+     * @brief Parameters of the replanning.
      */
     struct ReplanningParameters
     {
-        /** Solveur des modèles global et local, valeur de Models::FMTSolverInterface. */
+        /** Solver of the global and local models, a Models::FMTSolverInterface value. */
         int solver = 0;
-        /** Nombre de périodes du modèle global (paramètre LENGTH). */
+        /** Number of periods of the global model (LENGTH parameter). */
         int numberOfPeriods = 0;
-        /** Nombre de périodes de replanification. */
+        /** Number of replanning periods. */
         int replanningPeriods = 0;
-        /** Dérive minimale (« variabilité » dans l'interface). */
+        /** Minimal drift ("variabilité" in the interface). */
         double minimalDrift = 0.0;
-        /** Nombre de threads alloués à la tâche. */
+        /** Number of threads allocated to the task. */
         int numberOfThreads = 1;
-        /** Nombre minimum de réplicats. */
+        /** Minimum number of replicates. */
         int minimumReplicates = 0;
-        /** Nombre maximum de réplicats. */
+        /** Maximum number of replicates. */
         int maximumReplicates = 0;
-        /** Noms des outputs à écrire, pris parmi ceux du modèle global. */
+        /** Names of the outputs to write, taken from the outputs of the global model. */
         std::vector<std::string> outputNames;
-        /** Niveau des sorties, valeur de Core::FMToutputlevel. */
+        /** Output level, a Core::FMToutputlevel value. */
         int outputLevel = 0;
-        /** Emplacement des sorties. */
+        /** Output location. */
         std::string outputPath;
-        /** Pilote GDAL des sorties. */
+        /** GDAL driver of the outputs. */
         std::string gdalProvider;
-        /** Niveau du logger de l'interface pendant l'exécution des tâches. */
+        /** Level of the interface logger while the tasks run. */
         int taskLogLevel = 0;
-        /** true pour écrire une cédule par réplicat (« produire la solution » dans l'interface). */
+        /** true to write one schedule per replicate ("produire la solution" in the interface). */
         bool writeSchedules = false;
     };
 }

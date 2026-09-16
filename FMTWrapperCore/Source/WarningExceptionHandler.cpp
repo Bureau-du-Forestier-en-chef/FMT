@@ -1,10 +1,10 @@
 #ifndef NOMINMAX
 	#define NOMINMAX
 #endif // !NOMINMAX
-#include "FMTExceptionHandlerWarning.h"
+#include "WarningExceptionHandler.h"
 #include "FMTError.h"
 #include "FMTWarning.h"
-#include "FMTFormLogger.h"
+#include "CallbackLogger.h"
 #include "FMTExceptionHandler.h"
 
 #include <boost/algorithm/string/replace.hpp>
@@ -15,7 +15,7 @@
 #include "windows.h"
 #include "FMTObject.h"
 
-FMTWrapperCore::FMTExceptionHandlerWarning::FMTExceptionHandlerWarning(
+FMTWrapperCore::WarningExceptionHandler::WarningExceptionHandler(
 	const size_t& maxnumberofwarnings)
 	: FMTExceptionHandler()
 {
@@ -23,12 +23,12 @@ FMTWrapperCore::FMTExceptionHandlerWarning::FMTExceptionHandlerWarning(
 	ResetThread();
 }
 
-void FMTWrapperCore::FMTExceptionHandlerWarning::ResetThread()
+void FMTWrapperCore::WarningExceptionHandler::ResetThread()
 {
 	m_crashedthreadid = m_mainthreadid;
 }
 
-void FMTWrapperCore::FMTExceptionHandlerWarning::tryfileopener(
+void FMTWrapperCore::WarningExceptionHandler::tryfileopener(
 	const std::string& fullerrorstr) const
 {
 	const std::regex linecaper(
@@ -72,7 +72,7 @@ void FMTWrapperCore::FMTExceptionHandlerWarning::tryfileopener(
 	}
 }
 
-std::string FMTWrapperCore::FMTExceptionHandlerWarning::geterrorstack(
+std::string FMTWrapperCore::WarningExceptionHandler::geterrorstack(
 	std::string text,
 	const std::string& method,
 	const int& line,
@@ -80,8 +80,8 @@ std::string FMTWrapperCore::FMTExceptionHandlerWarning::geterrorstack(
 {
 	std::string finalstack;
 
-	FMTWrapperCore::FMTFormLogger* ModifLogger =
-		dynamic_cast<FMTWrapperCore::FMTFormLogger*>(_logger);
+	FMTWrapperCore::CallbackLogger* ModifLogger =
+		dynamic_cast<FMTWrapperCore::CallbackLogger*>(_logger);
 
 	if (!ModifLogger)
 	{
@@ -112,7 +112,7 @@ std::string FMTWrapperCore::FMTExceptionHandlerWarning::geterrorstack(
 	return finalstack;
 }
 
-void FMTWrapperCore::FMTExceptionHandlerWarning::printExceptions(
+void FMTWrapperCore::WarningExceptionHandler::printExceptions(
 	std::string text,
 	const std::string& method,
 	const int& line,
@@ -123,14 +123,14 @@ void FMTWrapperCore::FMTExceptionHandlerWarning::printExceptions(
 }
 
 std::unique_ptr<Exception::FMTExceptionHandler>
-FMTWrapperCore::FMTExceptionHandlerWarning::clone() const
+FMTWrapperCore::WarningExceptionHandler::clone() const
 {
 	return std::unique_ptr<Exception::FMTExceptionHandler>(
-		new FMTExceptionHandlerWarning(*this));
+		new WarningExceptionHandler(*this));
 }
 
 Exception::FMTException
-FMTWrapperCore::FMTExceptionHandlerWarning::raise(
+FMTWrapperCore::WarningExceptionHandler::raise(
 	Exception::FMTexc lexception,
 	std::string text,
 	const std::string& method,

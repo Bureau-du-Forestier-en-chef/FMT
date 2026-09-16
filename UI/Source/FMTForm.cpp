@@ -4,6 +4,7 @@
 #include <msclr/marshal_cppstd.h>
 
 #include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
@@ -61,7 +62,7 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ listeWarnings,
 		int maxWarnings)
 	{
-		// Alias retrocompatible : le UI .NET externe appelle encore cette methode.
+		// Backward-compatible alias: the external .NET UI still calls this method.
 		SetErrorsToWarnings(
 			listeWarnings,
 			maxWarnings);
@@ -71,8 +72,8 @@ namespace Wrapper
 	{
 		try
 		{
-			// Recree un delegue manage frais : apres un crash, l'ancien pointeur
-			// de fonction peut etre invalide.
+			// Recreate a fresh managed delegate: after a crash, the old function
+			// pointer may be invalid.
 
 			m_managedFeed =
 				gcnew ManagedFeed(
@@ -113,7 +114,7 @@ namespace Wrapper
 					m_managedFeed);
 
 			const std::string filename =
-				msclr::interop::marshal_as<std::string>(
+				Conversions::toStdString(
 					nomFichierLogger);
 
 			FMTWrapperCore::Controller::initializeLogger(
@@ -137,13 +138,13 @@ namespace Wrapper
 		try
 		{
 			std::string fichierPri =
-				msclr::interop::marshal_as<std::string>(
+				Conversions::toStdString(
 					fichierPriSystem);
 
 			std::vector<std::string> scenarios;
 
 			std::string scenario =
-				msclr::interop::marshal_as<std::string>(
+				Conversions::toStdString(
 					scenarioSystem);
 
 			scenarios.push_back(scenario);

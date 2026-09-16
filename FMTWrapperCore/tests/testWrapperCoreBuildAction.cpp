@@ -53,12 +53,12 @@ int main(int argc, char* argv[])
 	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
 	const Models::FMTModel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), actionName, targetYield, primary_path, output_scenario_name);
 
-	// on fait des v�rifications sur le model construit
+	// Checks on the built model
 	if (MODELS.at(0) == BUILDED_MODEL)
 	{
 		throw Exception::FMTexc::FMTfunctionfailed;
 	}
-	// on v�rifie s'il y a bien �crit le mod�le
+	// Check that the model was actually written
 	const boost::filesystem::path SCENARIO_PATH = boost::filesystem::path(primary_path).parent_path() / boost::filesystem::path("Scenarios") / boost::filesystem::path(output_scenario_name);
 	if (!boost::filesystem::is_directory(SCENARIO_PATH))
 	{

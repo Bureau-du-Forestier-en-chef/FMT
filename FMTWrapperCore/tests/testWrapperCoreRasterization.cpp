@@ -13,20 +13,19 @@
 #include "FMTTheme.h"
 #include "Rasterization.h"
 
-// Test manuel de FMTWrapperCore::Rasterization.
+// Test of FMTWrapperCore::Rasterization, registered in basetests.csv.
 //
-// Sans argument, il tourne sur le modèle public TWD_land, avec les mêmes données
-// que le test de base maptoFMTforest.
+// Without arguments, it runs on the public TWD_land model, with the same data as the
+// maptoFMTforest base test.
 //
-// Avec arguments, même forme que maptoFMTforest, pour pouvoir rejoindre
-// basetests.csv en une ligne le jour où les tests du Core seront dans ctest :
-//   argv[1] = "<fichier .pri>|<scénario>|<résolution>"
-//   argv[2] = fichier vectoriel
-//   argv[3] = dossier de sortie
-//   argv[4] = champ de verrou (optionnel)
+// With arguments, same form as maptoFMTforest, whose basetests.csv line it mirrors:
+//   argv[1] = "<.pri file>|<scenario>|<resolution>"
+//   argv[2] = vector file
+//   argv[3] = output folder
+//   argv[4] = lock field (optional)
 //
-// AGE.tif et THEME<i>.tif sont supprimés du dossier de sortie avant l'appel, pour
-// que leur présence ensuite prouve qu'ils viennent bien d'être écrits.
+// AGE.tif and THEME<i>.tif are deleted from the output folder before the call, so that
+// their presence afterwards proves they have just been written.
 int main(int argc, char* argv[])
 {
 	std::string primaryLocation;
@@ -116,7 +115,7 @@ int main(int argc, char* argv[])
 
 	if (!std::filesystem::exists(AGE_RASTER))
 	{
-		std::cerr << "Raster manquant : " << AGE_RASTER.string() << std::endl;
+		std::cerr << "Missing raster: " << AGE_RASTER.string() << std::endl;
 		return 1;
 	}
 
@@ -124,12 +123,12 @@ int main(int argc, char* argv[])
 	{
 		if (!std::filesystem::exists(RASTER))
 		{
-			std::cerr << "Raster manquant : " << RASTER << std::endl;
+			std::cerr << "Missing raster: " << RASTER << std::endl;
 			return 1;
 		}
 	}
 
-	// Aller-retour : les rasters écrits doivent se relire en une forêt non vide.
+	// Round trip: the written rasters must be read back into a non-empty forest.
 	Parser::FMTAreaParser areaParser;
 	Spatial::FMTForest forest = areaParser.readRasters(
 		THEMES, themesRasters, AGE_RASTER.string(), 1, 0.0001);
@@ -138,12 +137,12 @@ int main(int argc, char* argv[])
 
 	if (DEVELOPMENTS == 0)
 	{
-		std::cerr << "La forêt relue depuis les rasters est vide" << std::endl;
+		std::cerr << "The forest read back from the rasters is empty" << std::endl;
 		return 1;
 	}
 
 	std::cout << "test Rasterization passed! (" << DEVELOPMENTS
-		<< " développements relus depuis les rasters)" << std::endl;
+		<< " developments read back from the rasters)" << std::endl;
 
 	return 0;
 }

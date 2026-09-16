@@ -23,31 +23,31 @@ namespace Models
 namespace FMTWrapperCore
 {
     /**
-     * @brief Interrogation d'un modèle FMT.
+     * @brief Queries on an FMT model.
      *
-     * Chaque opération prend le modèle en paramètre et n'a besoin d'aucun cache : les
-     * tests C++ l'appellent directement. Le wrapper y accède par Controller, qui résout
-     * le scénario dans FMTFormCache à partir de son index.
+     * Each operation takes the model as a parameter and needs no cache: the C++ tests call
+     * it directly. The wrapper reaches it through Controller, which resolves the scenario
+     * in ModelCache from its index.
      *
-     * Tout ce qui ne dépend pas d'un modèle appartient à Environment.
+     * Anything that does not depend on a model belongs to Environment.
      */
     class FMTWRAPPERCOREEXPORT ModelQuery
     {
     public:
         /**
-         * @brief Retourne l'âge maximum du modèle selon les yields basés sur l'âge.
-         * @param p_model Le modèle à interroger.
-         * @return L'âge maximum.
+         * @brief Returns the maximum age of the model according to its age-based yields.
+         * @param p_model The model to query.
+         * @return The maximum age.
          */
         static int getMaxAge(const Models::FMTModel& p_model);
 
         /**
-         * @brief Retourne la valeur d'un yield.
-         * @param p_model Le modèle à interroger.
-         * @param p_mask Le masque du peuplement.
-         * @param p_yield Le nom du yield.
-         * @param p_age L'âge auquel évaluer le yield.
-         * @return La valeur du yield.
+         * @brief Returns the value of a yield.
+         * @param p_model The model to query.
+         * @param p_mask The stand mask.
+         * @param p_yield The yield name.
+         * @param p_age The age at which the yield is evaluated.
+         * @return The yield value.
          */
         static double getYield(
             const Models::FMTModel& p_model,
@@ -56,12 +56,12 @@ namespace FMTWrapperCore
             int p_age);
 
         /**
-         * @brief Retourne tous les masques utiles du modèle selon les thèmes choisis.
-         * @param p_model Le modèle à interroger.
-         * @param p_periods Nombre de périodes à simuler si le modèle doit être résolu.
-         * @param p_themesNumbers Numéros des thèmes retenus (1-based).
-         * @param p_rasterPath Chemin des rasters, vide pour utiliser l'aire du modèle.
-         * @return Les masques trouvés.
+         * @brief Returns every useful mask of the model for the chosen themes.
+         * @param p_model The model to query.
+         * @param p_periods Number of periods to simulate if the model has to be solved.
+         * @param p_themesNumbers Numbers of the selected themes (1-based).
+         * @param p_rasterPath Path of the rasters, empty to use the model area.
+         * @return The masks found.
          */
         static std::set<std::string> getAllMasks(
             const Models::FMTModel& p_model,
@@ -70,99 +70,99 @@ namespace FMTWrapperCore
             const std::string& p_rasterPath);
 
         /**
-         * @brief Construit le masque « tout accepté » pour une liste de thèmes.
-         * @param p_themes Les thèmes du modèle.
-         * @return Le masque dont chaque attribut vaut « ? ».
+         * @brief Builds the "accept everything" mask for a list of themes.
+         * @param p_themes The model themes.
+         * @return The mask whose every attribute is "?".
          */
         static Core::FMTMask getFullMask(const std::vector<Core::FMTTheme>& p_themes);
 
         /**
-         * @brief Vérifie qu'un masque est valide pour les thèmes du modèle.
-         * @param p_model Le modèle à interroger.
-         * @param p_mask Le masque à valider.
-         * @return true si le masque est valide.
+         * @brief Checks that a mask is valid for the model themes.
+         * @param p_model The model to query.
+         * @param p_mask The mask to validate.
+         * @return true if the mask is valid.
          */
         static bool validateMask(const Models::FMTModel& p_model, const std::string& p_mask);
 
         /**
-         * @brief Retourne la représentation textuelle des contraintes du modèle.
-         * @param p_model Le modèle à interroger.
-         * @return Une entrée par contrainte.
+         * @brief Returns the text representation of the model constraints.
+         * @param p_model The model to query.
+         * @return One entry per constraint.
          */
         static std::vector<std::string> getConstraintsAsText(const Models::FMTModel& p_model);
 
         /**
-         * @brief Retourne les noms des outputs du modèle.
-         * @param p_model Le modèle à interroger.
-         * @return Les noms des outputs.
+         * @brief Returns the names of the model outputs.
+         * @param p_model The model to query.
+         * @return The output names.
          */
         static std::vector<std::string> getOutputsNames(const Models::FMTModel& p_model);
 
         /**
-         * @brief Retourne les noms des actions du modèle.
-         * @param p_model Le modèle à interroger.
-         * @return Les noms des actions.
+         * @brief Returns the names of the model actions.
+         * @param p_model The model to query.
+         * @return The action names.
          */
         static std::vector<std::string> getActionsNames(const Models::FMTModel& p_model);
 
         /**
-         * @brief Retourne les agrégats distincts déclarés par les actions du modèle.
-         * @param p_model Le modèle à interroger.
-         * @return Les agrégats, dédoublonnés et triés.
+         * @brief Returns the distinct aggregates declared by the model actions.
+         * @param p_model The model to query.
+         * @return The aggregates, deduplicated and sorted.
          */
         static std::vector<std::string> getAggregates(const Models::FMTModel& p_model);
 
         /**
-         * @brief Retourne les noms des yields du modèle.
-         * @param p_model Le modèle à interroger.
-         * @return Les noms des yields.
+         * @brief Returns the names of the model yields.
+         * @param p_model The model to query.
+         * @return The yield names.
          */
         static std::vector<std::string> getYieldsNames(const Models::FMTModel& p_model);
 
         /**
-         * @brief Retourne le nombre de thèmes du modèle.
-         * @param p_model Le modèle à interroger.
-         * @return Le nombre de thèmes.
+         * @brief Returns the number of themes of the model.
+         * @param p_model The model to query.
+         * @return The number of themes.
          */
         static int getThemesCount(const Models::FMTModel& p_model);
 
         /**
-         * @brief Retourne les attributs de base d'un thème.
-         * @param p_model Le modèle à interroger.
-         * @param p_themeIndex Index du thème (0-based).
-         * @return Les attributs du thème.
+         * @brief Returns the base attributes of a theme.
+         * @param p_model The model to query.
+         * @param p_themeIndex Theme index (0-based).
+         * @return The theme attributes.
          */
         static std::vector<std::string> getThemeAttributes(
             const Models::FMTModel& p_model,
             const int p_themeIndex);
 
         /**
-         * @brief Lit les cédules (SEQ) associées au modèle dans un fichier primaire.
-         * @param p_primaryFilePath Chemin du fichier .pri.
-         * @param p_model Le modèle dont on lit les cédules.
-         * @return Les cédules lues, vide si le fichier n'en contient pas.
+         * @brief Reads the schedules (SEQ) of the model from a primary file.
+         * @param p_primaryFilePath Path of the .pri file.
+         * @param p_model The model whose schedules are read.
+         * @return The schedules read, empty if the file holds none.
          */
         static std::vector<Core::FMTSchedule> readSchedules(
             const std::string& p_primaryFilePath,
             const Models::FMTModel& p_model);
 
         /**
-         * @brief Retourne la dernière période couverte par les cédules du modèle.
-         * @param p_primaryFilePath Chemin du fichier .pri.
-         * @param p_model Le modèle dont on lit les cédules.
-         * @return La dernière période, ou 0 si aucune cédule n'est disponible.
+         * @brief Returns the last period covered by the model schedules.
+         * @param p_primaryFilePath Path of the .pri file.
+         * @param p_model The model whose schedules are read.
+         * @return The last period, or 0 if no schedule is available.
          */
         static int getPeriodsCount(
             const std::string& p_primaryFilePath,
             const Models::FMTModel& p_model);
 
         /**
-         * @brief Écrit un projet (base + scénarios) dans un dossier.
+         * @brief Writes a project (base + scenarios) to a directory.
          *
-         * Le nom du fichier .pri est dérivé du nom du premier modèle, qui sert de base.
+         * The .pri file name is derived from the name of the first model, which is the base.
          *
-         * @param p_models Les modèles à écrire ; le premier sert de base (ROOT).
-         * @param p_destinationDirectory Le dossier de destination.
+         * @param p_models The models to write; the first one is the base (ROOT).
+         * @param p_destinationDirectory The destination directory.
          */
         static void writeToProject(
             const std::vector<Models::FMTModel>& p_models,
@@ -170,20 +170,20 @@ namespace FMTWrapperCore
 
     private:
         /**
-         * @brief Retourne l'aire du modèle telle que lue dans les rasters.
-         * @param p_model Le modèle à utiliser.
-         * @param p_rasterPath Le dossier contenant les rasters.
-         * @return Les développements actuels lus.
+         * @brief Returns the model area as read from the rasters.
+         * @param p_model The model to use.
+         * @param p_rasterPath The directory holding the rasters.
+         * @return The actual developments read.
          */
         static std::vector<Core::FMTActualDevelopment> _getRasterArea(
             const Models::FMTModel& p_model,
             const std::string& p_rasterPath);
 
         /**
-         * @brief Décompose un masque sur chacun des thèmes fournis.
-         * @param p_mask Le masque de départ.
-         * @param p_themes Les thèmes sur lesquels décomposer.
-         * @return Les masques obtenus.
+         * @brief Decomposes a mask on each of the given themes.
+         * @param p_mask The starting mask.
+         * @param p_themes The themes to decompose on.
+         * @return The resulting masks.
          */
         static std::set<std::string> _getThemesDecomposition(
             const Core::FMTMask& p_mask,

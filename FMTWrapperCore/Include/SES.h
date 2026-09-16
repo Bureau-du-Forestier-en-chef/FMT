@@ -27,20 +27,20 @@ namespace Spatial {
 namespace FMTWrapperCore
 {
     /**
-     * @brief Classe pour les simulations spatiales explicites
+     * @brief Class for spatially explicit simulations
      */
     class FMTWRAPPERCOREEXPORT SES
     {
     public:
         /**
-         * @brief Exécute une simulation spatiale explicite telle que l'interface la lance
-         * @param params Paramètres de simulation ; les cédules sont lues dans
+         * @brief Runs a spatially explicit simulation the way the interface launches it
+         * @param params Simulation parameters; the schedules are read from
          *        params.primaryFilePath
-         * @param baseModel Modèle FMT de base
-         * @return Résultats complets de la simulation
+         * @param baseModel Base FMT model
+         * @return Complete simulation results
          *
-         * Lit les cédules du modèle, repasse au modèle un clone du logger courant, puis
-         * journalise la progression autour de la simulation proprement dite, faite par
+         * Reads the model schedules, passes a clone of the current logger back to the model,
+         * then logs the progress around the simulation itself, done by
          * RunSES(const SESParameters&, const Models::FMTModel&, const std::vector<Core::FMTSchedule>&).
          */
         static SESResults RunSES(
@@ -48,14 +48,14 @@ namespace FMTWrapperCore
             const Models::FMTModel& baseModel);
 
         /**
-         * @brief Exécute une simulation spatiale explicite complète
-         * @param params Paramètres de simulation
-         * @param baseModel Modèle FMT de base
-         * @param schedules Schedules à utiliser pour la simulation
-         * @return Résultats complets de la simulation
+         * @brief Runs a complete spatially explicit simulation
+         * @param params Simulation parameters
+         * @param baseModel Base FMT model
+         * @param schedules Schedules to use for the simulation
+         * @return Complete simulation results
          *
-         * Cette méthode orchestre toute la simulation et peut être appelée
-         * directement depuis du code C++ pur pour les tests et le débogage.
+         * This method orchestrates the whole simulation and can be called directly from
+         * pure C++ code for testing and debugging.
          */
         static SESResults RunSES(
             const SESParameters& params,
@@ -63,14 +63,13 @@ namespace FMTWrapperCore
             const std::vector<Core::FMTSchedule>& schedules);
 
         /**
-         * @brief Exécute une optimisation spatiale (Simulated Annealing)
-         * @param params Paramètres d'optimisation
-         * @param baseModel Modèle FMT de base (déjà chargé)
-         * @return Résultats complets de l'optimisation
+         * @brief Runs a spatial optimization (Simulated Annealing)
+         * @param params Optimization parameters
+         * @param baseModel Base FMT model (already loaded)
+         * @return Complete optimization results
          *
-         * Cette méthode orchestre toute l'optimisation spatiale, en journalise la
-         * progression et les outputs, et peut être appelée directement depuis du code
-         * C++ pur pour les tests et le débogage.
+         * This method orchestrates the whole spatial optimization, logs its progress and
+         * outputs, and can be called directly from pure C++ code for testing and debugging.
          */
         static SAResults RunOptimization(
             const SAParameters& params,
@@ -78,29 +77,29 @@ namespace FMTWrapperCore
 
     private:
         /**
-         * @brief Construit les thèmes de croissance à partir des indices
-         * @param allThemes Tous les thèmes du modèle
-         * @param themeIndices Indices des thèmes (1-based)
-         * @return Vecteur des thèmes sélectionnés
+         * @brief Builds the growth themes from their indices
+         * @param allThemes All the model themes
+         * @param themeIndices Theme indices (1-based)
+         * @return Vector of the selected themes
          */
         static std::vector<Core::FMTTheme> buildGrowthThemes(
             const std::vector<Core::FMTTheme>& allThemes,
             const std::vector<int>& themeIndices);
 
         /**
-         * @brief Convertit toutes les transitions du modèle en transitions "single"
-         * @param model Le modèle dont les transitions sont modifiées en place
+         * @brief Converts every transition of the model into a "single" transition
+         * @param model The model whose transitions are modified in place
          */
         static void applySingleTransitions(Models::FMTModel& model);
 
         /**
-         * @brief Construit les chemins des rasters, lit la forêt initiale et
-         *        l'assigne au modèle.
-         * @param model Le modèle SES qui reçoit la forêt initiale
-         * @param rastersPath Chemin de base des rasters
-         * @param useStanlock true pour utiliser le raster STANLOCK
-         * @param[out] ageRasterPath Chemin du raster d'âge construit
-         * @param[out] themeRasterPaths Chemins des rasters de thèmes construits
+         * @brief Builds the raster paths, reads the initial forest and assigns it to the
+         *        model.
+         * @param model The SES model receiving the initial forest
+         * @param rastersPath Base path of the rasters
+         * @param useStanlock true to use the STANLOCK raster
+         * @param[out] ageRasterPath Path of the built age raster
+         * @param[out] themeRasterPaths Paths of the built theme rasters
          */
         static void prepareInitialForest(
             Models::FMTSeModel& model,
@@ -110,19 +109,19 @@ namespace FMTWrapperCore
             std::vector<std::string>& themeRasterPaths);
 
         /**
-         * @brief Génère le rapport des contraintes infaisables
-         * @param semodel Le modèle SES à analyser
-         * @return Vecteur de messages d'infaisabilité (un par contrainte brisée,
-         *         suivi du pourcentage global de contraintes infaisables)
+         * @brief Generates the report of the infeasible constraints
+         * @param semodel The SES model to analyze
+         * @return Vector of infeasibility messages (one per broken constraint, followed by
+         *         the global percentage of infeasible constraints)
          */
         static std::vector<std::string> generateInfeasibilityReport(const Models::FMTSeModel& semodel);
 
         /**
-         * @brief Génère le rapport de carbone spatial
-         * @param semodel Le modèle SES
-         * @param numberOfPeriods Nombre de périodes
-         * @param schedules Vecteur des schedules originaux
-         * @return Structure contenant les données du rapport
+         * @brief Generates the spatial carbon report
+         * @param semodel The SES model
+         * @param numberOfPeriods Number of periods
+         * @param schedules Vector of the original schedules
+         * @return Structure holding the report data
          */
         static CarbonReportData generateCarbonReport(
             const Models::FMTSeModel& semodel,
@@ -130,12 +129,12 @@ namespace FMTWrapperCore
             const std::vector<Core::FMTSchedule>& schedules);
 
         /**
-         * @brief Écrit les perturbations (transitions GCBM)
-         * @param semodel Le modèle SES
-         * @param outputBasePath Chemin de base pour les sorties
-         * @param numberOfPeriods Nombre de périodes
-         * @param growthThemeIndices Indices des thèmes de croissance (1-based)
-         * @return Vecteur des chemins de fichiers de transition créés
+         * @brief Writes the disturbances (GCBM transitions)
+         * @param semodel The SES model
+         * @param outputBasePath Base path of the outputs
+         * @param numberOfPeriods Number of periods
+         * @param growthThemeIndices Indices of the growth themes (1-based)
+         * @return Vector of the paths of the created transition files
          */
         static std::vector<std::string> writeDisturbances(
             const Models::FMTSeModel& semodel,
@@ -144,29 +143,29 @@ namespace FMTWrapperCore
             const std::vector<int>& growthThemeIndices);
 
         /**
-         * @brief Génère les données d'événements
-         * @param semodel Le modèle SES
-         * @return Structure contenant les statistiques d'événements
+         * @brief Generates the events data
+         * @param semodel The SES model
+         * @return Structure holding the events statistics
          */
         static EventsData generateEventsData(const Models::FMTSeModel& semodel);
 
         /**
-         * @brief Génère les données d'événements et les écrit dans un fichier
-         * @param semodel Le modèle SES
-         * @param eventsFilePath Chemin complet du fichier d'événements à écrire
-         * @return Structure contenant les statistiques d'événements
+         * @brief Generates the events data and writes it to a file
+         * @param semodel The SES model
+         * @param eventsFilePath Full path of the events file to write
+         * @return Structure holding the events statistics
          */
         static EventsData writeEventsFile(
             const Models::FMTSeModel& semodel,
             const std::string& eventsFilePath);
 
         /**
-         * @brief Calcule les outputs pour toutes les périodes
-         * @param semodel Le modèle SES
-         * @param outputNames Noms des outputs à calculer
-         * @param numberOfPeriods Nombre de périodes
-         * @param[out] selectedOutputs Outputs retenus par outputNames, dans l'ordre du modèle
-         * @return Structure contenant les résultats des outputs
+         * @brief Computes the outputs for every period
+         * @param semodel The SES model
+         * @param outputNames Names of the outputs to compute
+         * @param numberOfPeriods Number of periods
+         * @param[out] selectedOutputs Outputs selected by outputNames, in the model order
+         * @return Structure holding the outputs results
          */
         static OutputsData calculateOutputs(
             const Models::FMTSeModel& semodel,
@@ -175,13 +174,13 @@ namespace FMTWrapperCore
             std::vector<Core::FMTOutput>& selectedOutputs);
 
         /**
-         * @brief Écrit les outputs spatiaux
-         * @param semodel Le modèle SES
-         * @param outputs Vecteur des outputs à écrire
-         * @param minPeriod Période minimum
-         * @param maxPeriod Période maximum
-         * @param outputPath Chemin de sortie
-         * @return Vecteur des chemins de fichiers raster créés
+         * @brief Writes the spatial outputs
+         * @param semodel The SES model
+         * @param outputs Vector of the outputs to write
+         * @param minPeriod Minimum period
+         * @param maxPeriod Maximum period
+         * @param outputPath Output path
+         * @return Vector of the paths of the created raster files
          */
         static std::vector<std::string> writeSpatialOutputs(
             const Models::FMTSeModel& semodel,
@@ -191,12 +190,12 @@ namespace FMTWrapperCore
             const std::string& outputPath);
 
         /**
-         * @brief Calcule les prédicteurs
-         * @param semodel Le modèle SES
-         * @param rasterPath Chemin des rasters
-         * @param numberOfPeriods Nombre de périodes
-         * @param predictorYields Noms des yields pour les prédicteurs
-         * @return Structure contenant les données des prédicteurs
+         * @brief Computes the predictors
+         * @param semodel The SES model
+         * @param rasterPath Path of the rasters
+         * @param numberOfPeriods Number of periods
+         * @param predictorYields Names of the yields used as predictors
+         * @return Structure holding the predictors data
          */
         static PredictorsData calculatePredictors(
             const Models::FMTSeModel& semodel,
@@ -205,22 +204,22 @@ namespace FMTWrapperCore
             const std::vector<std::string>& predictorYields);
 
         /**
-         * @brief Écrit le schedule dans un fichier
-         * @param semodel Le modèle SES
-         * @param outputPath Chemin du fichier de sortie
-         * @return Chemin complet du fichier créé
+         * @brief Writes the schedule to a file
+         * @param semodel The SES model
+         * @param outputPath Path of the output file
+         * @return Full path of the created file
          */
         static std::string writeSchedule(
             const Models::FMTSeModel& semodel,
             const std::string& outputPath);
 
         /**
-         * @brief Écrit la forêt mise à jour (rasters)
-         * @param semodel Le modèle SES
-         * @param rasterPath Chemin de base des rasters
-         * @param themeRasterPaths Chemins des rasters de thèmes
-         * @param ageRasterPath Chemin du raster d'âge
-         * @param stanlockRasterPath Chemin du raster stanlock
+         * @brief Writes the updated forest (rasters)
+         * @param semodel The SES model
+         * @param rasterPath Base path of the rasters
+         * @param themeRasterPaths Paths of the theme rasters
+         * @param ageRasterPath Path of the age raster
+         * @param stanlockRasterPath Path of the stanlock raster
          */
         static void writeUpdatedForest(
             const Models::FMTSeModel& semodel,
@@ -230,14 +229,14 @@ namespace FMTWrapperCore
             const std::string& stanlockRasterPath);
 
         /**
-         * @brief Exporte les résultats via le model parser
-         * @param semodel Le modèle SES
-         * @param outputs Vecteur des outputs
-         * @param minPeriod Période minimum
-         * @param maxPeriod Période maximum
-         * @param outputPath Chemin de sortie
-         * @param outputLevel Niveau de détail des outputs
-         * @param gdalProvider Provider GDAL à utiliser
+         * @brief Exports the results through the model parser
+         * @param semodel The SES model
+         * @param outputs Vector of the outputs
+         * @param minPeriod Minimum period
+         * @param maxPeriod Maximum period
+         * @param outputPath Output path
+         * @param outputLevel Detail level of the outputs
+         * @param gdalProvider GDAL provider to use
          */
         static void exportResults(
             const Models::FMTSeModel& semodel,

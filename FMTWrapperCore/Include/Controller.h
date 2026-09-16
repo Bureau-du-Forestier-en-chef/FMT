@@ -15,72 +15,71 @@
 namespace FMTWrapperCore
 {
     /**
-     * @brief Contrôleur façade (GRASP) : le seul point d'entrée du wrapper dans le Core.
+     * @brief Facade controller (GRASP): the wrapper's single entry point into the Core.
      *
-     * Chaque méthode correspond à une opération système de FMTForm. Elle reçoit des types
-     * std, des DTO et des index de scénario, résout le scénario dans FMTFormCache, puis
-     * délègue à l'entrée pure d'un service : Environment, ModelQuery, Transformation, SES,
-     * Rasterization, OperatingArea, AreaVariability ou Planning. Le contrôleur coordonne
-     * sans calculer : la logique reste dans les services, que les tests appellent
-     * directement, sans passer par le cache.
+     * Each method matches a system operation of FMTForm. It receives std types, DTOs and
+     * scenario indexes, resolves the scenario in ModelCache, then delegates to the pure
+     * entry point of a service: Environment, ModelQuery, Transformation, SES,
+     * Rasterization, OperatingArea, AreaVariability or Planning. The controller
+     * coordinates without computing: the logic stays in the services, which the tests call
+     * directly, without going through the cache.
      *
-     * Aucun type de FMTlib n'apparaît dans cette interface : le wrapper n'inclut que ce
-     * header, et ne peut donc manipuler aucun objet FMT.
+     * No FMTlib type appears in this interface: the wrapper includes only this header, and
+     * therefore cannot handle any FMT object.
      *
-     * Le contrôleur n'a pas d'état. L'état de la session (scénarios chargés, logger et
-     * gestionnaire d'exceptions de l'interface) est dans FMTFormCache.
+     * The controller is stateless. The session state (loaded scenarios, interface logger
+     * and exception handler) lives in ModelCache.
      *
-     * Toute opération qui prend un index de scénario lève une exception FMTrangeerror si
-     * le cache est vide, sauf getOutputsNames, qui retourne alors une liste vide.
+     * Every operation that takes a scenario index raises an FMTrangeerror exception if the
+     * cache is empty, except getOutputsNames, which then returns an empty list.
      */
     class FMTWRAPPERCOREEXPORT Controller
     {
     public:
-        // Session : journal, erreurs et scénarios chargés.
+        // Session: log, errors and loaded scenarios.
 
         /**
-         * @brief Installe le logger de l'interface.
-         * @param p_logFilePath Fichier du journal.
-         * @param p_callback Pointeur de fonction natif du délégué managé qui reçoit chaque
-         *        message.
+         * @brief Installs the interface logger.
+         * @param p_logFilePath Log file.
+         * @param p_callback Native function pointer of the managed delegate that receives
+         *        each message.
          */
         static void initializeLogger(const std::string& p_logFilePath, void* p_callback);
 
         /**
-         * @brief Reconstruit le logger et le gestionnaire d'exceptions après un plantage,
-         *        avec la configuration conservée par FMTFormCache.
-         * @param p_callback Nouveau pointeur de fonction du délégué managé.
+         * @brief Rebuilds the logger and the exception handler after a crash, with the
+         *        configuration kept by ModelCache.
+         * @param p_callback New function pointer of the managed delegate.
          */
         static void recoverLoggerAndHandler(void* p_callback);
 
         /**
-         * @brief Ferme le fichier du journal.
+         * @brief Closes the log file.
          */
         static void closeLogger();
 
         /**
-         * @brief Installe le gestionnaire d'exceptions de l'interface.
-         * @param p_exceptionIds Exceptions à traiter comme des avertissements, valeurs de
-         *        Exception::FMTexc.
-         * @param p_maxWarnings Nombre d'avertissements avant qu'ils ne soient tus ; 10 si la
-         *        valeur n'est pas positive.
+         * @brief Installs the interface exception handler.
+         * @param p_exceptionIds Exceptions to treat as warnings, Exception::FMTexc values.
+         * @param p_maxWarnings Number of warnings before they are silenced; 10 if the value
+         *        is not positive.
          */
         static void setErrorsToWarnings(
             const std::vector<int>& p_exceptionIds,
             int p_maxWarnings);
 
         /**
-         * @brief Journalise l'exception en cours de traitement.
+         * @brief Logs the exception being handled.
          *
-         * À appeler depuis un bloc catch : la pile d'erreurs est reconstruite à partir de
-         * l'exception courante. Elle est écrite dans le journal, ou directement dans son
-         * fichier si le logger de l'interface n'est pas installé.
+         * To be called from a catch block: the error stack is rebuilt from the current
+         * exception. It is written to the log, or directly to its file if the interface
+         * logger is not installed.
          *
-         * @param p_text Message à ajouter à la pile.
-         * @param p_method Méthode où l'exception a été attrapée.
-         * @param p_line Ligne où l'exception a été attrapée.
-         * @param p_file Fichier où l'exception a été attrapée.
-         * @return La pile d'erreurs formatée, à renvoyer à l'interface.
+         * @param p_text Message to add to the stack.
+         * @param p_method Method where the exception was caught.
+         * @param p_line Line where the exception was caught.
+         * @param p_file File where the exception was caught.
+         * @return The formatted error stack, to send back to the interface.
          */
         static std::string logCurrentException(
             const std::string& p_text,
@@ -89,112 +88,111 @@ namespace FMTWrapperCore
             const std::string& p_file);
 
         /**
-         * @brief Ouvre dans Notepad++ le fichier et la ligne cités par une pile d'erreurs,
-         *        s'il y en a.
-         * @param p_errorStack Pile retournée par logCurrentException.
+         * @brief Opens in Notepad++ the file and line quoted by an error stack, if any.
+         * @param p_errorStack Stack returned by logCurrentException.
          */
         static void openErrorLocation(const std::string& p_errorStack);
 
         /**
-         * @brief Lit des scénarios d'un projet et les ajoute au cache.
-         * @param p_primaryFilePath Fichier .pri du projet.
-         * @param p_scenarioNames Noms des scénarios à lire.
+         * @brief Reads scenarios from a project and adds them to the cache.
+         * @param p_primaryFilePath Project .pri file.
+         * @param p_scenarioNames Names of the scenarios to read.
          */
         static void addScenarios(
             const std::string& p_primaryFilePath,
             const std::vector<std::string>& p_scenarioNames);
 
         /**
-         * @brief Retire un scénario du cache.
-         * @param p_modelIndex Index du scénario.
+         * @brief Removes a scenario from the cache.
+         * @param p_modelIndex Scenario index.
          */
         static void removeScenario(int p_modelIndex);
 
         /**
-         * @brief Retire tous les scénarios du cache.
+         * @brief Removes every scenario from the cache.
          */
         static void clearScenarios();
 
         /**
-         * @brief Écrit tous les scénarios du cache dans un projet ; le premier sert de base.
-         * @param p_destinationDirectory Dossier de destination.
+         * @brief Writes every scenario of the cache to a project; the first one is the base.
+         * @param p_destinationDirectory Destination directory.
          */
         static void writeScenariosToProject(const std::string& p_destinationDirectory);
 
-        // Environnement, sans scénario : voir Environment.
+        // Environment, without any scenario: see Environment.
 
-        /** @brief Voir Environment::getAvailableSolvers. */
+        /** @brief See Environment::getAvailableSolvers. */
         static std::vector<int> getAvailableSolvers();
 
-        /** @brief Voir Environment::getSolverName. */
+        /** @brief See Environment::getSolverName. */
         static std::string getSolverName(int p_solver);
 
-        /** @brief Voir Environment::getVectorDriverExtensions. */
+        /** @brief See Environment::getVectorDriverExtensions. */
         static std::vector<std::string> getVectorDriverExtensions();
 
-        /** @brief Voir Environment::getChangeLog. */
+        /** @brief See Environment::getChangeLog. */
         static std::string getChangeLog();
 
-        /** @brief Voir Environment::getExceptionDescription. */
+        /** @brief See Environment::getExceptionDescription. */
         static std::string getExceptionDescription(int p_exceptionId);
 
-        /** @brief Voir Environment::getErrorsToIgnore. */
+        /** @brief See Environment::getErrorsToIgnore. */
         static std::vector<int> getErrorsToIgnore();
 
-        // Interrogation d'un scénario du cache, désigné par son index : voir ModelQuery.
+        // Queries on a cached scenario, designated by its index: see ModelQuery.
 
-        /** @brief Voir ModelQuery::getMaxAge. */
+        /** @brief See ModelQuery::getMaxAge. */
         static int getMaxAge(int p_modelIndex);
 
-        /** @brief Voir ModelQuery::getYield. */
+        /** @brief See ModelQuery::getYield. */
         static double getYield(
             int p_modelIndex,
             const std::string& p_mask,
             const std::string& p_yield,
             int p_age);
 
-        /** @brief Voir ModelQuery::getAllMasks. */
+        /** @brief See ModelQuery::getAllMasks. */
         static std::set<std::string> getAllMasks(
             int p_modelIndex,
             int p_periods,
             const std::vector<int>& p_themesNumbers,
             const std::string& p_rasterPath);
 
-        /** @brief Voir ModelQuery::validateMask. */
+        /** @brief See ModelQuery::validateMask. */
         static bool validateMask(int p_modelIndex, const std::string& p_mask);
 
-        /** @brief Voir ModelQuery::getConstraintsAsText. */
+        /** @brief See ModelQuery::getConstraintsAsText. */
         static std::vector<std::string> getConstraintsAsText(int p_modelIndex);
 
         /**
-         * @brief Voir ModelQuery::getOutputsNames.
+         * @brief See ModelQuery::getOutputsNames.
          *
-         * Retourne une liste vide si le cache est vide : l'interface peuple sa liste
-         * d'outputs avant qu'un scénario soit chargé.
+         * Returns an empty list if the cache is empty: the interface fills its output list
+         * before any scenario is loaded.
          */
         static std::vector<std::string> getOutputsNames(int p_modelIndex);
 
-        /** @brief Voir ModelQuery::getActionsNames. */
+        /** @brief See ModelQuery::getActionsNames. */
         static std::vector<std::string> getActionsNames(int p_modelIndex);
 
-        /** @brief Voir ModelQuery::getAggregates. */
+        /** @brief See ModelQuery::getAggregates. */
         static std::vector<std::string> getAggregates(int p_modelIndex);
 
-        /** @brief Voir ModelQuery::getYieldsNames. */
+        /** @brief See ModelQuery::getYieldsNames. */
         static std::vector<std::string> getYieldsNames(int p_modelIndex);
 
-        /** @brief Voir ModelQuery::getThemesCount. */
+        /** @brief See ModelQuery::getThemesCount. */
         static int getThemesCount(int p_modelIndex);
 
-        /** @brief Voir ModelQuery::getThemeAttributes. */
+        /** @brief See ModelQuery::getThemeAttributes. */
         static std::vector<std::string> getThemeAttributes(int p_modelIndex, int p_themeIndex);
 
-        /** @brief Voir ModelQuery::getPeriodsCount. */
+        /** @brief See ModelQuery::getPeriodsCount. */
         static int getPeriodsCount(const std::string& p_primaryFilePath, int p_modelIndex);
 
-        // Transformations : voir Transformation. Le scénario produit est ajouté au cache.
+        // Transformations: see Transformation. The produced scenario is added to the cache.
 
-        /** @brief Voir Transformation::aggregateAllActions. */
+        /** @brief See Transformation::aggregateAllActions. */
         static void aggregateAllActions(
             int p_modelIndex,
             const std::vector<std::string>& p_aggregates,
@@ -202,7 +200,7 @@ namespace FMTWrapperCore
             const std::string& p_primaryFilePath,
             const std::string& p_scenarioName);
 
-        /** @brief Voir Transformation::splitActions. */
+        /** @brief See Transformation::splitActions. */
         static void splitActions(
             int p_modelIndex,
             const std::string& p_primaryFilePath,
@@ -210,7 +208,7 @@ namespace FMTWrapperCore
             const std::vector<std::string>& p_splittedMasks,
             const std::string& p_scenarioName);
 
-        /** @brief Voir Transformation::buildAction. */
+        /** @brief See Transformation::buildAction. */
         static void buildAction(
             int p_modelIndex,
             const std::string& p_actionName,
@@ -218,36 +216,36 @@ namespace FMTWrapperCore
             const std::string& p_primaryFilePath,
             const std::string& p_scenarioName);
 
-        // Traitements sur un scénario du cache.
+        // Processing on a cached scenario.
 
-        /** @brief Voir SES::RunSES(const SESParameters&, const Models::FMTModel&). */
+        /** @brief See SES::RunSES(const SESParameters&, const Models::FMTModel&). */
         static SESResults runSpatialSimulation(const SESParameters& p_params, int p_modelIndex);
 
-        /** @brief Voir SES::RunOptimization. */
+        /** @brief See SES::RunOptimization. */
         static SAResults runSpatialOptimization(const SAParameters& p_params, int p_modelIndex);
 
-        /** @brief Voir Rasterization::rasterize. */
+        /** @brief See Rasterization::rasterize. */
         static void rasterize(const RasterizationParameters& p_params, int p_modelIndex);
 
-        /** @brief Voir OperatingArea::schedule. */
+        /** @brief See OperatingArea::schedule. */
         static OperatingAreaResults scheduleOperatingAreas(
             const OperatingAreaParameters& p_params,
             int p_modelIndex);
 
-        /** @brief Voir AreaVariability::run. */
+        /** @brief See AreaVariability::run. */
         static AreaVariabilityResults runAreaVariability(
             const AreaVariabilityParameters& p_params,
             int p_modelIndex);
 
         /**
-         * @brief Voir Planning::plan.
+         * @brief See Planning::plan.
          *
-         * Une relecture de cédule en échec est journalisée comme toute erreur de
-         * l'interface (logCurrentException, openErrorLocation), et la planification continue.
+         * A failed schedule read for playback is logged like any interface error
+         * (logCurrentException, openErrorLocation), and the planning goes on.
          *
-         * @param p_params Paramètres de la planification.
-         * @param p_modelIndexes Index des scénarios à planifier.
-         * @param p_playback Drapeau de relecture de chaque scénario, par position.
+         * @param p_params Planning parameters.
+         * @param p_modelIndexes Indexes of the scenarios to plan.
+         * @param p_playback Playback flag of each scenario, by position.
          */
         static void plan(
             const PlanningParameters& p_params,
@@ -255,11 +253,11 @@ namespace FMTWrapperCore
             const std::vector<bool>& p_playback);
 
         /**
-         * @brief Voir Planning::replan.
-         * @param p_params Paramètres de la replanification.
-         * @param p_strategicModelIndex Index du scénario stratégique (global).
-         * @param p_stochasticModelIndex Index du scénario stochastique.
-         * @param p_tacticalModelIndex Index du scénario tactique (local).
+         * @brief See Planning::replan.
+         * @param p_params Replanning parameters.
+         * @param p_strategicModelIndex Index of the strategic (global) scenario.
+         * @param p_stochasticModelIndex Index of the stochastic scenario.
+         * @param p_tacticalModelIndex Index of the tactical (local) scenario.
          */
         static void replan(
             const ReplanningParameters& p_params,

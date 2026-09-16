@@ -44,8 +44,8 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	ModelParser.setErrorsToWarnings(errors);
 
-	// On lit le projet puis on fabrique plusieurs models pour simuler une cache
-	// contenant un model de base + des sc�narios d�riv�s (noms distincts).
+	// Read the project, then build several models to simulate a cache
+	// holding a base model + derived scenarios (distinct names).
 	const Models::FMTModel BASE_MODEL = ModelParser.readproject(primary_path, { scenarioName }).at(0);
 	const std::string SCENARIO_A = "writetoproject_test_A";
 	const std::string SCENARIO_B = "writetoproject_test_B";

@@ -5,9 +5,9 @@
 #include "AreaVariability.h"
 #include "Environment.h"
 #include "FMTException.h"
-#include "FMTexceptionhandlerwarning.h"
-#include "FMTFormCache.h"
-#include "FMTFormLogger.h"
+#include "WarningExceptionHandler.h"
+#include "ModelCache.h"
+#include "CallbackLogger.h"
 #include "FMTFreeExceptionHandler.h"
 #include "FMTModel.h"
 #include "FMTModelParser.h"
@@ -22,14 +22,14 @@ namespace FMTWrapperCore
 {
     namespace
     {
-        // Nombre d'avertissements tolérés avant silence, quand l'interface n'en précise pas.
+        // Number of warnings tolerated before silence, when the interface does not specify one.
         constexpr int DEFAULT_MAX_WARNINGS = 10;
 
-        // Résout un scénario du cache. Un cache vide est signalé ici ; un index hors
-        // limites l'est par FMTFormCache::getModel.
+        // Resolves a cached scenario. An empty cache is reported here; an out-of-range
+        // index is reported by ModelCache::getModel.
         const Models::FMTModel& getCachedModel(int p_modelIndex)
         {
-            FMTFormCache* cache = FMTFormCache::GetInstance();
+            ModelCache* cache = ModelCache::GetInstance();
 
             if (cache->empty())
             {
@@ -47,17 +47,17 @@ namespace FMTWrapperCore
 
     void Controller::initializeLogger(const std::string& p_logFilePath, void* p_callback)
     {
-        FMTFormCache::GetInstance()->InitializeLogger(p_logFilePath, p_callback);
+        ModelCache::GetInstance()->InitializeLogger(p_logFilePath, p_callback);
     }
 
     void Controller::recoverLoggerAndHandler(void* p_callback)
     {
-        FMTFormCache::GetInstance()->RecoverLoggerAndHandler(p_callback);
+        ModelCache::GetInstance()->RecoverLoggerAndHandler(p_callback);
     }
 
     void Controller::closeLogger()
     {
-        FMTFormCache::GetInstance()->CloseLogger();
+        ModelCache::GetInstance()->CloseLogger();
     }
 
     void Controller::setErrorsToWarnings(
@@ -71,7 +71,7 @@ namespace FMTWrapperCore
             warnings.push_back(static_cast<Exception::FMTexc>(EXCEPTION_ID));
         }
 
-        FMTFormCache::GetInstance()->InitializeExceptionHandler(
+        ModelCache::GetInstance()->InitializeExceptionHandler(
             p_maxWarnings > 0 ? p_maxWarnings : DEFAULT_MAX_WARNINGS,
             warnings);
     }
@@ -82,12 +82,12 @@ namespace FMTWrapperCore
         int p_line,
         const std::string& p_file)
     {
-        FMTFormCache* cache = FMTFormCache::GetInstance();
+        ModelCache* cache = ModelCache::GetInstance();
 
         const std::string FORMATTED_STACK =
-            cache->GetFormHandler()->geterrorstack(p_text, p_method, p_line, p_file);
+            cache->GetWarningHandler()->geterrorstack(p_text, p_method, p_line, p_file);
 
-        FMTFormLogger* logger = cache->GetFormLogger();
+        CallbackLogger* logger = cache->GetCallbackLogger();
 
         if (logger)
         {
@@ -101,7 +101,7 @@ namespace FMTWrapperCore
         }
         else
         {
-            // Sans logger d'interface, la pile est ajoutée directement au fichier du journal.
+            // Without an interface logger, the stack is appended directly to the log file.
             try
             {
                 const std::string& LOGGER_FILENAME = cache->GetLoggerFilename();
@@ -127,7 +127,7 @@ namespace FMTWrapperCore
 
     void Controller::openErrorLocation(const std::string& p_errorStack)
     {
-        FMTFormCache::GetInstance()->GetFormHandler()->tryfileopener(p_errorStack);
+        ModelCache::GetInstance()->GetWarningHandler()->tryfileopener(p_errorStack);
     }
 
     void Controller::addScenarios(
@@ -141,23 +141,23 @@ namespace FMTWrapperCore
 
         for (const Models::FMTModel& MODEL : MODELS)
         {
-            FMTFormCache::GetInstance()->push_back(MODEL);
+            ModelCache::GetInstance()->push_back(MODEL);
         }
     }
 
     void Controller::removeScenario(int p_modelIndex)
     {
-        FMTFormCache::GetInstance()->erase(p_modelIndex);
+        ModelCache::GetInstance()->erase(p_modelIndex);
     }
 
     void Controller::clearScenarios()
     {
-        FMTFormCache::GetInstance()->clear();
+        ModelCache::GetInstance()->clear();
     }
 
     void Controller::writeScenariosToProject(const std::string& p_destinationDirectory)
     {
-        FMTFormCache* cache = FMTFormCache::GetInstance();
+        ModelCache* cache = ModelCache::GetInstance();
 
         if (cache->empty())
         {
@@ -246,9 +246,9 @@ namespace FMTWrapperCore
 
     std::vector<std::string> Controller::getOutputsNames(int p_modelIndex)
     {
-        // L'interface peuple sa liste d'outputs avant qu'un scénario soit chargé : un cache
-        // vide n'est pas une erreur ici, contrairement aux autres interrogations.
-        if (FMTFormCache::GetInstance()->empty())
+        // The interface fills its output list before any scenario is loaded: an empty cache
+        // is not an error here, unlike the other queries.
+        if (ModelCache::GetInstance()->empty())
         {
             return std::vector<std::string>();
         }
@@ -295,7 +295,7 @@ namespace FMTWrapperCore
     {
         const Models::FMTModel AGGREGATED = Transformation::aggregateAllActions(
             getCachedModel(p_modelIndex), p_aggregates, p_order, p_primaryFilePath, p_scenarioName);
-        FMTFormCache::GetInstance()->push_back(AGGREGATED);
+        ModelCache::GetInstance()->push_back(AGGREGATED);
     }
 
     void Controller::splitActions(
@@ -307,7 +307,7 @@ namespace FMTWrapperCore
     {
         const Models::FMTModel SPLITTED = Transformation::splitActions(
             getCachedModel(p_modelIndex), p_primaryFilePath, p_splitted, p_splittedMasks, p_scenarioName);
-        FMTFormCache::GetInstance()->push_back(SPLITTED);
+        ModelCache::GetInstance()->push_back(SPLITTED);
     }
 
     void Controller::buildAction(
@@ -319,7 +319,7 @@ namespace FMTWrapperCore
     {
         const Models::FMTModel BUILT = Transformation::buildAction(
             getCachedModel(p_modelIndex), p_actionName, p_targetYield, p_primaryFilePath, p_scenarioName);
-        FMTFormCache::GetInstance()->push_back(BUILT);
+        ModelCache::GetInstance()->push_back(BUILT);
     }
 
     SESResults Controller::runSpatialSimulation(const SESParameters& p_params, int p_modelIndex)
@@ -364,8 +364,8 @@ namespace FMTWrapperCore
             models.push_back(&getCachedModel(MODEL_INDEX));
         }
 
-        // Une relecture de cédule en échec est signalée comme l'interface le fait pour toute
-        // erreur, sans interrompre la planification.
+        // A failed schedule read for playback is reported the way the interface reports any
+        // error, without interrupting the planning.
         Planning::plan(p_params, models, p_playback,
             [](const std::string& p_method, int p_line, const std::string& p_file)
             {
@@ -380,7 +380,7 @@ namespace FMTWrapperCore
         int p_stochasticModelIndex,
         int p_tacticalModelIndex)
     {
-        // Résolus dans l'ordre : un index invalide lève toujours la même erreur.
+        // Resolved in order: an invalid index always raises the same error.
         const Models::FMTModel& STRATEGIC = getCachedModel(p_strategicModelIndex);
         const Models::FMTModel& STOCHASTIC = getCachedModel(p_stochasticModelIndex);
         const Models::FMTModel& TACTICAL = getCachedModel(p_tacticalModelIndex);

@@ -161,9 +161,9 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ ObtenirListeSolvers();
 		// DocString: FMTForm::ObtenirNomSolveur
 		/**
-		@brief Returns the list of available optimization solvers.
-		@param[in] p_solveur le solveur selectionne
-		@return obtenir le nom du solveur
+		@brief Returns the name of an optimization solver.
+		@param[in] p_solveur The selected solver.
+		@return The solver name.
 		*/
 		System::String^ ObtenirNomSolveur(int p_solveur);
 		// DocString: FMTForm::ObtenirNombreThemes
@@ -709,18 +709,6 @@ namespace Wrapper
 		void _EnvoyerResultatsInterface(
 			const FMTWrapperCore::SESResults& results,
 			bool indCarbon);
-		// DocString: FMTForm::_convertToSystemString
-		/**
-		@brief Converts a std::string to a System::String^.
-
-		The conversion assumes the source string is encoded in UTF-8 and
-		preserves accented and other non-ASCII characters.
-
-		@param[in] value Source string to convert.
-
-		@return Managed string representation of the input value.
-		*/
-		System::String^ _convertToSystemString(std::string value);
 	};
 }
 #endif

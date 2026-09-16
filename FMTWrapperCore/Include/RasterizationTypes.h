@@ -3,8 +3,8 @@
 
 /**
  * @file RasterizationTypes.h
- * @brief DTO de Rasterization : types std uniquement. C'est le contrat de traduction que le
- *        wrapper voit, par Controller.h.
+ * @brief Rasterization DTOs: std types only. This is the translation contract the
+ *        wrapper sees, through Controller.h.
  */
 
 #include <string>
@@ -12,21 +12,21 @@
 namespace FMTWrapperCore
 {
     /**
-     * @brief Paramètres de la rastérisation d'un fichier vectoriel.
+     * @brief Parameters of the rasterization of a vector file.
      */
     struct RasterizationParameters
     {
-        /** Fichier vectoriel à rastériser. */
+        /** Vector file to rasterize. */
         std::string vectorFilePath;
-        /** Dossier où écrire les rasters de la forêt. */
+        /** Folder where the forest rasters are written. */
         std::string outputFolder;
-        /** Résolution des rasters produits (taille d'une cellule). */
+        /** Resolution of the produced rasters (size of a cell). */
         int resolution = 0;
-        /** Champ du fichier vectoriel portant l'âge. */
+        /** Field of the vector file holding the age. */
         std::string ageField;
-        /** Champ du fichier vectoriel portant la superficie. */
+        /** Field of the vector file holding the area. */
         std::string areaField;
-        /** Champ du fichier vectoriel portant le verrou ; vide s'il n'y en a pas. */
+        /** Field of the vector file holding the lock; empty if there is none. */
         std::string lockField;
     };
 }

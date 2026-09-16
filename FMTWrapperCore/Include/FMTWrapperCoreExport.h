@@ -3,20 +3,20 @@
 
 /**
  * @file FMTWrapperCoreExport.h
- * @brief Visibilité des classes de FMTWrapperCore à la frontière de la bibliothèque.
+ * @brief Visibility of the FMTWrapperCore classes at the library boundary.
  *
- * FMTWRAPPERCOREEXPORT vaut __declspec(dllexport) pendant la compilation de
- * FMTWrapperCore, et __declspec(dllimport) chez ses clients (FMTWrapper, exécutables de
- * test). CMake définit FMTWrapperCore_EXPORTS pour la seule cible SHARED qui construit la
- * bibliothèque : l'import est le cas par défaut, et aucun client n'a de drapeau à ajouter.
+ * FMTWRAPPERCOREEXPORT is __declspec(dllexport) while FMTWrapperCore is compiled, and
+ * __declspec(dllimport) in its clients (FMTWrapper, test executables). CMake defines
+ * FMTWrapperCore_EXPORTS only for the SHARED target that builds the library: import is the
+ * default, and no client has a flag to add.
  *
- * FMTEXPORT (FMTutility.h) ne convient pas : il appartient à FMTlib, et vaut
- * __declspec(dllimport) dans FMTWrapperCore, puisque cette cible définit FMTLIBIMPORT.
+ * FMTEXPORT (FMTutility.h) does not fit: it belongs to FMTlib, and it is
+ * __declspec(dllimport) inside FMTWrapperCore, since that target defines FMTLIBIMPORT.
  *
- * _WIN32 couvre MSVC et MinGW. Ailleurs, la macro garde les classes visibles même si la
- * bibliothèque est compilée avec -fvisibility=hidden.
+ * _WIN32 covers MSVC and MinGW. Elsewhere, the macro keeps the classes visible even if the
+ * library is compiled with -fvisibility=hidden.
  *
- * Pour une compilation statique, définir FMTWRAPPERCOREEXPORT vide avant toute inclusion.
+ * For a static build, define FMTWRAPPERCOREEXPORT as empty before any inclusion.
  */
 #ifndef FMTWRAPPERCOREEXPORT
     #if defined(_WIN32)

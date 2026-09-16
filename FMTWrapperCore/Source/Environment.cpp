@@ -115,7 +115,7 @@ namespace FMTWrapperCore
         std::vector<int> toIgnore;
         toIgnore.reserve(ERRORS.size());
 
-        // Ne pas nommer cette variable ERROR : windows.h en fait une macro.
+        // Do not name this variable ERROR: windows.h makes it a macro.
         for (const Exception::FMTexc EXCEPTION_ID : ERRORS)
         {
             toIgnore.push_back(static_cast<int>(EXCEPTION_ID));

@@ -12,21 +12,21 @@ namespace Models
 namespace FMTWrapperCore
 {
     /**
-     * @brief Variabilité de l'aire initiale : écrit les sorties d'un modèle dont l'aire
-     *        initiale est modifiée selon des proportions par masque.
+     * @brief Initial area variability: writes the outputs of a model whose initial area
+     *        is modified by per-mask proportions.
      *
-     * Trois situations font refuser l'opération, sans exception : table absente, table
-     * réduite à son en-tête, aucun output demandé. Des masques qui se recoupent sur un
-     * même développement lèvent une exception.
+     * Three situations refuse the operation, without an exception: missing table, table
+     * reduced to its header, no output requested. Masks that overlap on the same
+     * development raise an exception.
      */
     class FMTWRAPPERCOREEXPORT AreaVariability
     {
     public:
         /**
-         * @brief Applique les proportions au modèle et écrit ses sorties.
-         * @param p_params Paramètres de l'opération.
-         * @param p_model Modèle de départ.
-         * @return Le résultat ; success vaut false si l'opération a été refusée.
+         * @brief Applies the proportions to the model and writes its outputs.
+         * @param p_params Operation parameters.
+         * @param p_model Starting model.
+         * @return The result; success is false if the operation was refused.
          */
         static AreaVariabilityResults run(
             const AreaVariabilityParameters& p_params,

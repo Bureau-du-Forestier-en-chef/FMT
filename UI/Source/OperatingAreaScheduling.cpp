@@ -3,6 +3,7 @@
 
 #include "FMTForm.h"
 #include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
@@ -24,30 +25,27 @@ namespace Wrapper
 		int periodeMiseAjour,
 		System::String^ returnTimeOutput)
 	{
-		// fichierPri n'a jamais été utilisé : il reste dans la signature publique,
-		// dont dépend le UI .NET.
+		// fichierPri has never been used: it stays in the public signature,
+		// which the .NET UI depends on.
 		try
 		{
 			FMTWrapperCore::OperatingAreaParameters params;
-			params.vectorFilePath = msclr::interop::marshal_as<std::string>(fichierShp);
+			params.vectorFilePath = Conversions::toStdString(fichierShp);
 			params.solver = solver;
 			params.numberOfPeriods = nombrePeriodes;
 			params.numberOfThreads = nombreThread;
 			params.themeNumber = numeroTheme;
 			params.maximumTime = tempsMaximum;
 			params.numberOfIterations = nombreIteration;
-			params.ageField = msclr::interop::marshal_as<std::string>(nomChampAge);
-			params.areaField = msclr::interop::marshal_as<std::string>(nomChampSuperficie);
-			params.lockField = msclr::interop::marshal_as<std::string>(nomChampStanlock);
-			params.parametersFilePath = msclr::interop::marshal_as<std::string>(cheminParametres);
-			params.resultFolder = msclr::interop::marshal_as<std::string>(nomFichierResultat);
+			params.ageField = Conversions::toStdString(nomChampAge);
+			params.areaField = Conversions::toStdString(nomChampSuperficie);
+			params.lockField = Conversions::toStdString(nomChampStanlock);
+			params.parametersFilePath = Conversions::toStdString(cheminParametres);
+			params.resultFolder = Conversions::toStdString(nomFichierResultat);
 			params.updatePeriod = periodeMiseAjour;
 
-			// L'output de temps de retour est facultatif : marshal_as lève sur nullptr,
-			// alors qu'un nom vide signifie simplement « aucun ».
-			params.returnTimeOutputName = returnTimeOutput == nullptr
-				? std::string()
-				: msclr::interop::marshal_as<std::string>(returnTimeOutput);
+			// The return time output is optional: an empty name means "none".
+			params.returnTimeOutputName = Conversions::toStdString(returnTimeOutput);
 
 			return FMTWrapperCore::Controller::scheduleOperatingAreas(params, scenario).success;
 		}

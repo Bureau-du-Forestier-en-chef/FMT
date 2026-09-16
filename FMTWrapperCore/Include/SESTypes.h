@@ -3,8 +3,8 @@
 
 /**
  * @file SESTypes.h
- * @brief DTO de SES : types std uniquement. C'est le contrat de traduction que le
- *        wrapper voit, par Controller.h.
+ * @brief SES DTOs: std types only. This is the translation contract the wrapper sees,
+ *        through Controller.h.
  */
 
 #include <map>
@@ -14,7 +14,7 @@
 namespace FMTWrapperCore
 {
     /**
-     * @brief Structure pour les résultats du rapport de carbone spatial
+     * @brief Structure for the results of the spatial carbon report
      */
     struct CarbonReportData
     {
@@ -31,15 +31,15 @@ namespace FMTWrapperCore
     };
 
     /**
-     * @brief Structure pour les informations d'événements
+     * @brief Structure for the events information
      */
     struct EventsData
     {
-        std::string statistics; // Contient toutes les stats formatées
+        std::string statistics; // Holds every formatted statistic
     };
 
     /**
-     * @brief Structure pour les résultats des outputs
+     * @brief Structure for the outputs results
      */
     struct OutputsData
     {
@@ -53,7 +53,7 @@ namespace FMTWrapperCore
     };
 
     /**
-     * @brief Structure pour les prédicteurs
+     * @brief Structure for the predictors
      */
     struct PredictorsData
     {
@@ -69,7 +69,7 @@ namespace FMTWrapperCore
     };
 
     /**
-     * @brief Paramètres pour la simulation spatiale explicite
+     * @brief Parameters of the spatially explicit simulation
      */
     struct SESParameters
     {
@@ -94,18 +94,18 @@ namespace FMTWrapperCore
     };
 
     /**
-     * @brief Résultats complets de la simulation
+     * @brief Complete results of the simulation
      */
     struct SESResults
     {
         bool success;
         std::string errorMessage;
 
-        // Rapports
+        // Reports
         std::vector<std::string> infeasibilityMessages;
         CarbonReportData carbonReport;  
 
-        // Fichiers créés
+        // Created files
         std::vector<std::string> disturbanceFiles;
         EventsData eventsData;
         std::string eventsFilePath;
@@ -115,14 +115,14 @@ namespace FMTWrapperCore
         std::string scheduleFilePath;
         std::vector<std::string> spatialOutputFiles;
 
-        // Prédicteurs
+        // Predictors
         PredictorsData predictorsData;
 
         SESResults() : success(false) {}
     };
 
     /**
-     * @brief Paramètres pour l'optimisation spatiale (Simulated Annealing)
+     * @brief Parameters of the spatial optimization (Simulated Annealing)
      */
     struct SAParameters
     {
@@ -145,17 +145,17 @@ namespace FMTWrapperCore
     };
 
     /**
-     * @brief Résultats de l'optimisation spatiale
+     * @brief Results of the spatial optimization
      */
     struct SAResults
     {
         bool success;
         std::string errorMessage;
 
-        // Rapports
+        // Reports
         std::vector<std::string> infeasibilityMessages;
 
-        // Fichiers créés
+        // Created files
         std::vector<std::string> disturbanceFiles;
         EventsData eventsData;
         std::string eventsFilePath;

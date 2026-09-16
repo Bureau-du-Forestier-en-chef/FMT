@@ -3,8 +3,8 @@
 
 /**
  * @file OperatingAreaTypes.h
- * @brief DTO de OperatingArea : types std uniquement. C'est le contrat de traduction que le
- *        wrapper voit, par Controller.h.
+ * @brief OperatingArea DTOs: std types only. This is the translation contract the
+ *        wrapper sees, through Controller.h.
  */
 
 #include <string>
@@ -12,48 +12,48 @@
 namespace FMTWrapperCore
 {
     /**
-     * @brief Paramètres de la planification des aires d'opération.
+     * @brief Parameters of the operating area scheduling.
      */
     struct OperatingAreaParameters
     {
-        /** Fichier vectoriel des aires d'opération. */
+        /** Vector file of the operating areas. */
         std::string vectorFilePath;
-        /** Solveur, valeur de Models::FMTSolverInterface. */
+        /** Solver, a Models::FMTSolverInterface value. */
         int solver = 0;
-        /** Nombre de périodes du modèle (paramètre LENGTH). */
+        /** Number of periods of the model (LENGTH parameter). */
         int numberOfPeriods = 0;
-        /** Nombre de threads alloués à la tâche. */
+        /** Number of threads allocated to the task. */
         int numberOfThreads = 1;
-        /** Numéro du thème qui porte les aires d'opération, tel que l'attend FMTAreaParser::getOperatingArea. */
+        /** Number of the theme holding the operating areas, as FMTAreaParser::getOperatingArea expects it. */
         int themeNumber = 0;
-        /** Temps maximum accordé à l'heuristique. */
+        /** Maximum time given to the heuristic. */
         int maximumTime = 0;
-        /** Nombre maximum d'itérations de l'heuristique. */
+        /** Maximum number of iterations of the heuristic. */
         int numberOfIterations = 0;
-        /** Champ du fichier vectoriel portant l'âge. */
+        /** Field of the vector file holding the age. */
         std::string ageField;
-        /** Champ du fichier vectoriel portant la superficie. */
+        /** Field of the vector file holding the area. */
         std::string areaField;
-        /** Champ du fichier vectoriel portant le verrou. */
+        /** Field of the vector file holding the lock. */
         std::string lockField;
-        /** Fichier de paramètres des aires d'opération. */
+        /** Parameters file of the operating areas. */
         std::string parametersFilePath;
-        /** Dossier de résultat : la tâche y écrit son modèle final, et ses autres sorties sous l'emplacement Retour. */
+        /** Result folder: the task writes its final model there, and its other outputs under the Retour location. */
         std::string resultFolder;
-        /** Période de mise à jour (paramètre UPDATE du modèle). */
+        /** Update period (UPDATE parameter of the model). */
         int updatePeriod = 0;
-        /** Nom de l'output de temps de retour ; vide pour n'en utiliser aucun. */
+        /** Name of the return time output; empty to use none. */
         std::string returnTimeOutputName;
     };
 
     /**
-     * @brief Résultat de la planification des aires d'opération.
+     * @brief Result of the operating area scheduling.
      */
     struct OperatingAreaResults
     {
-        /** false quand le modèle ne se prête pas à la planification. */
+        /** false when the model does not lend itself to the scheduling. */
         bool success = false;
-        /** Motif du refus quand success vaut false, vide sinon. */
+        /** Reason for the refusal when success is false, empty otherwise. */
         std::string errorMessage;
     };
 }

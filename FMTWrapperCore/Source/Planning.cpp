@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "FMTDefaultLogger.h"
-#include "FMTFormLogger.h"
+#include "CallbackLogger.h"
 #include "FMTLogger.h"
 #include "FMTLpModel.h"
 #include "FMTModel.h"
@@ -23,8 +23,8 @@ namespace FMTWrapperCore
 {
     namespace
     {
-        // Le pilote CSV de GDAL sépare les champs par des virgules ; les sorties de FMT
-        // utilisent des points-virgules.
+        // The GDAL CSV driver separates fields with commas; FMT outputs use
+        // semicolons.
         std::vector<std::string> getLayersOptions(const std::string& p_gdalProvider)
         {
             std::vector<std::string> layersOptions;
@@ -37,12 +37,12 @@ namespace FMTWrapperCore
             return layersOptions;
         }
 
-        // Porte le logger de l'interface au niveau des tâches le temps d'une portée, et
-        // rétablit son niveau par défaut à la sortie, exception comprise.
+        // Sets the interface logger to the task level for the lifetime of a scope, and
+        // restores its default level on exit, exceptions included.
         class ScopedTaskLoggingLevel
         {
         public:
-            ScopedTaskLoggingLevel(FMTFormLogger* p_logger, int p_level)
+            ScopedTaskLoggingLevel(CallbackLogger* p_logger, int p_level)
                 : m_logger(p_logger)
             {
                 if (m_logger)
@@ -63,7 +63,7 @@ namespace FMTWrapperCore
             ScopedTaskLoggingLevel& operator=(const ScopedTaskLoggingLevel&) = delete;
 
         private:
-            FMTFormLogger* m_logger;
+            CallbackLogger* m_logger;
         };
     }
 
@@ -75,8 +75,8 @@ namespace FMTWrapperCore
     {
         try
         {
-            // Logger statique de FMT : dans l'interface, c'est le FMTFormLogger ; dans un
-            // test, le logger par défaut.
+            // FMT static logger: in the interface, it is the CallbackLogger; in a
+            // test, the default logger.
             Logging::FMTLogger& logger = *Models::FMTModel::getLogger();
 
             logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
@@ -100,8 +100,8 @@ namespace FMTWrapperCore
 
                 logger << "FMT -> Préparation pour le scénario : " + optimizationModel.getName() << "\n";
 
-                // Comportement historique : un scénario présent deux fois reprend le drapeau de
-                // relecture de sa première occurrence.
+                // Historical behavior: a scenario present twice takes the playback flag of its
+                // first occurrence.
                 const size_t FIRST_OCCURRENCE = static_cast<size_t>(
                     std::find(p_models.begin(), p_models.end(), MODEL) - p_models.begin());
                 const bool PLAYBACK = p_playback.at(FIRST_OCCURRENCE);
@@ -112,8 +112,8 @@ namespace FMTWrapperCore
                 {
                     logger << "FMT -> Lecture de cédule pour le scénario : " + optimizationModel.getName() << "\n";
 
-                    // Comportement historique : une relecture en échec est signalée, puis le
-                    // scénario est lancé avec une cédule vide.
+                    // Historical behavior: a failed read is reported, then the scenario runs
+                    // with an empty schedule.
                     try
                     {
                         schedules = ModelQuery::readSchedules(p_params.primaryFilePath, *MODEL);
@@ -132,7 +132,7 @@ namespace FMTWrapperCore
                 optimizationModel.setStrictlyPositivesOutputsMatrix();
                 optimizationModel.setParameter(Models::FMTintmodelparameters::LENGTH, p_params.numberOfPeriods);
 
-                // Les threads sont partagés entre les scénarios, s'il y en a au moins un par scénario.
+                // Threads are shared among the scenarios, if there is at least one per scenario.
                 int threadsPerScenario = 1;
 
                 if (NUMBER_OF_SCENARIOS <= p_params.numberOfThreads)
@@ -170,8 +170,8 @@ namespace FMTWrapperCore
     {
         try
         {
-            // Logger statique de FMT : dans l'interface, c'est le FMTFormLogger ; dans un
-            // test, le logger par défaut.
+            // FMT static logger: in the interface, it is the CallbackLogger; in a
+            // test, the default logger.
             Logging::FMTLogger& logger = *Models::FMTModel::getLogger();
 
             logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
@@ -223,7 +223,7 @@ namespace FMTWrapperCore
 
             {
                 const ScopedTaskLoggingLevel TASK_LOGGING_LEVEL(
-                    dynamic_cast<FMTFormLogger*>(&logger),
+                    dynamic_cast<CallbackLogger*>(&logger),
                     p_params.taskLogLevel);
 
                 handler.onDemandRun();

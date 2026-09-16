@@ -11,19 +11,19 @@
 #include "AreaVariability.h"
 #include "ModelQuery.h"
 
-// Test manuel de FMTWrapperCore::AreaVariability, sur les données publiques TWD_land
-// (scénario LP), avec les masques de l'exemple testareavariabilities.
+// Test of FMTWrapperCore::AreaVariability, registered in basetests.csv, on the public
+// TWD_land data (LP scenario), with the masks of the testareavariabilities example.
 //
-// Couvre le cas nominal (le fichier de sortie est écrit), les trois refus (table absente,
-// table réduite à son en-tête, aucun output demandé) et l'exception levée quand deux
-// masques de la table recouvrent un même développement.
+// Covers the nominal case (the output file is written), the three refusals (missing
+// table, table reduced to its header, no output requested) and the exception raised
+// when two masks of the table cover the same development.
 namespace
 {
 	int failures = 0;
 
 	void check(bool p_condition, const std::string& p_description)
 	{
-		std::cout << (p_condition ? "  ok      " : "  ECHEC   ") << p_description << std::endl;
+		std::cout << (p_condition ? "  ok      " : "  FAILED  ") << p_description << std::endl;
 
 		if (!p_condition)
 		{
@@ -90,35 +90,35 @@ int main()
 			{ "?", "PEUPLEMENT2", "?", "0.01" },
 			{ "?", "PEUPLEMENT3", "?", "-0.10" } });
 
-		std::cout << "Cas nominal" << std::endl;
+		std::cout << "Nominal case" << std::endl;
 		const FMTWrapperCore::AreaVariabilityResults NOMINAL =
 			FMTWrapperCore::AreaVariability::run(base, MODEL);
-		check(NOMINAL.success, "l'operation reussit");
-		check(std::filesystem::exists(OUTPUT_FILE), "le fichier de sortie est ecrit");
+		check(NOMINAL.success, "the operation succeeds");
+		check(std::filesystem::exists(OUTPUT_FILE), "the output file is written");
 
-		std::cout << "Refus" << std::endl;
+		std::cout << "Refusals" << std::endl;
 
 		FMTWrapperCore::AreaVariabilityParameters noTable = base;
 		noTable.proportionsTableProvided = false;
 		noTable.proportionsTable.clear();
 		const FMTWrapperCore::AreaVariabilityResults NO_TABLE =
 			FMTWrapperCore::AreaVariability::run(noTable, MODEL);
-		check(!NO_TABLE.success && !NO_TABLE.errorMessage.empty(), "table absente");
+		check(!NO_TABLE.success && !NO_TABLE.errorMessage.empty(), "missing table");
 
 		FMTWrapperCore::AreaVariabilityParameters headerOnly = base;
 		headerOnly.proportionsTable = makeTable({});
 		const FMTWrapperCore::AreaVariabilityResults HEADER_ONLY =
 			FMTWrapperCore::AreaVariability::run(headerOnly, MODEL);
-		check(!HEADER_ONLY.success && !HEADER_ONLY.errorMessage.empty(), "table reduite a son en-tete");
+		check(!HEADER_ONLY.success && !HEADER_ONLY.errorMessage.empty(), "table reduced to its header");
 
 		FMTWrapperCore::AreaVariabilityParameters noOutput = base;
 		noOutput.outputNames.clear();
 		const FMTWrapperCore::AreaVariabilityResults NO_OUTPUT =
 			FMTWrapperCore::AreaVariability::run(noOutput, MODEL);
-		check(!NO_OUTPUT.success && !NO_OUTPUT.errorMessage.empty(), "aucun output demande");
+		check(!NO_OUTPUT.success && !NO_OUTPUT.errorMessage.empty(), "no output requested");
 
-		// Deux masques « tout accepté » recouvrent forcément chaque développement.
-		std::cout << "Masques qui se recoupent" << std::endl;
+		// Two "accept everything" masks necessarily cover every development.
+		std::cout << "Overlapping masks" << std::endl;
 
 		FMTWrapperCore::AreaVariabilityParameters overlapping = base;
 		overlapping.proportionsTable = makeTable({
@@ -136,7 +136,7 @@ int main()
 			raised = true;
 		}
 
-		check(raised, "une exception est levee, au lieu de l'ancien exit(-1)");
+		check(raised, "an exception is raised, instead of the former exit(-1)");
 	}
 	catch (const std::exception& e)
 	{
@@ -151,7 +151,7 @@ int main()
 
 	if (failures > 0)
 	{
-		std::cerr << failures << " verification(s) en echec" << std::endl;
+		std::cerr << failures << " check(s) failed" << std::endl;
 		return 1;
 	}
 

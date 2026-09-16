@@ -3,6 +3,7 @@
 
 #include "FMTForm.h"
 #include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
@@ -27,13 +28,13 @@ namespace Wrapper
         {
             FMTWrapperCore::SAParameters params;
 
-            // Conversion des chemins. scenarioName reste vide : le Core journalise le nom
-            // du scénario que le contrôleur a résolu.
-            params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
-            params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
-            params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
+            // Path conversion. scenarioName stays empty: the Core logs the name
+            // of the scenario the controller resolved.
+            params.rastersPath = Conversions::toStdString(cheminRasters);
+            params.outputPath = Conversions::toStdString(cheminSorties);
+            params.gdalProvider = Conversions::toStdString(providerGdal);
 
-            // Paramètres numériques
+            // Numeric parameters
             params.numberOfPeriods = periodes;
             params.maxMoves = p_MaxMoves;
             params.maxAcceptedMoves = p_MaxAcceptedMoves;
@@ -42,21 +43,14 @@ namespace Wrapper
             params.outputMinPeriod = etanduSortiesMin;
             params.outputMaxPeriod = etanduSortiesMax;
 
-            // Options booléennes
+            // Boolean options
             params.useStanlock = indicateurStanlock;
             params.generateEvents = indGenererEvents;
             params.generateSpatialOutputs = indSortiesSpatiales;
 
-            // Conversion des listes C# → C++
-            for each (System::String ^ constraint in contraintes)
-            {
-                params.constraintNames.push_back(msclr::interop::marshal_as<std::string>(constraint));
-            }
-
-            for each (System::String ^ output in outputs)
-            {
-                params.outputNames.push_back(msclr::interop::marshal_as<std::string>(output));
-            }
+            // C# to C++ list conversions
+            params.constraintNames = Conversions::toStdVector(contraintes);
+            params.outputNames = Conversions::toStdVector(outputs);
 
             return params;
         }

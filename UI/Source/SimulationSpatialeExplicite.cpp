@@ -3,6 +3,7 @@
 
 #include "FMTForm.h"
 #include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
@@ -29,41 +30,30 @@ namespace Wrapper
         {
             FMTWrapperCore::SESParameters params;
 
-            // Conversion des chemins. scenarioName reste vide : le Core journalise le nom
-            // du scénario que le contrôleur a résolu.
-            params.primaryFilePath = msclr::interop::marshal_as<std::string>(fichierPri);
-            params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
-            params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
-            params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
+            // Path conversion. scenarioName stays empty: the Core logs the name
+            // of the scenario the controller resolved.
+            params.primaryFilePath = Conversions::toStdString(fichierPri);
+            params.rastersPath = Conversions::toStdString(cheminRasters);
+            params.outputPath = Conversions::toStdString(cheminSorties);
+            params.gdalProvider = Conversions::toStdString(providerGdal);
 
-            // Paramètres numériques
+            // Numeric parameters
             params.numberOfPeriods = periodes;
             params.greedySearchIterations = greedySearch;
             params.outputLevel = outputLevel;
             params.outputMinPeriod = etanduSortiesMin;
             params.outputMaxPeriod = etanduSortiesMax;
 
-            // Options booléennes
+            // Boolean options
             params.useStanlock = indicateurStanlock;
             params.generateEvents = indGenererEvents;
             params.generateSpatialOutputs = indSortiesSpatiales;
             params.carbonMode = indCarbon;
 
-            // Conversion des listes C# → C++
-            for each (System::String ^ constraint in contraintes)
-            {
-                params.constraintNames.push_back(msclr::interop::marshal_as<std::string>(constraint));
-            }
-
-            for each (System::String ^ output in outputs)
-            {
-                params.outputNames.push_back(msclr::interop::marshal_as<std::string>(output));
-            }
-
-            for each (System::String ^ yield in predictoryields)
-            {
-                params.predictorYields.push_back(msclr::interop::marshal_as<std::string>(yield));
-            }
+            // C# to C++ list conversions
+            params.constraintNames = Conversions::toStdVector(contraintes);
+            params.outputNames = Conversions::toStdVector(outputs);
+            params.predictorYields = Conversions::toStdVector(predictoryields);
 
             for each (int theme in growththemes)
             {
@@ -99,16 +89,16 @@ namespace Wrapper
                 gcnew System::EventArgs());
         }
 
-        // Fichiers de perturbations
+        // Disturbance files
         if (indCarbon)
         {
             for (const std::string& fichier : results.disturbanceFiles)
             {
-                RetourJson(_convertToSystemString("GCBMtransitionlocations;" + fichier), gcnew System::EventArgs());
+                RetourJson(Conversions::fromUtf8("GCBMtransitionlocations;" + fichier), gcnew System::EventArgs());
             }
         }
 
-        // Fichier d'événements
+        // Events file
         if (!results.eventsFilePath.empty() && indCarbon)
         {
             RetourJson(gcnew System::String(("eventslocation;" + results.eventsFilePath).c_str()),
@@ -135,7 +125,7 @@ namespace Wrapper
                 gcnew System::EventArgs());
         }
 
-        // Prédicteurs
+        // Predictors
         if (indCarbon && !results.predictorsData.nodes.empty())
         {
             for (const auto& node : results.predictorsData.nodes)

@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	const double maxAge = FMTWrapperCore::ModelQuery::getMaxAge(MODELS.at(0));
 	std::cout << "MaxAge: " << maxAge << std::endl;
 
-	// on fait des vérifications sur le nombre renvoyer
+	// Checks on the returned number
 	if (maxAge < 1)
 	{
 		throw "Error: The age is empty or negative";
