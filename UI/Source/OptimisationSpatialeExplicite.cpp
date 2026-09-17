@@ -9,7 +9,7 @@ namespace Wrapper
 {
     namespace {
 
-        FMTWrapperCore::SAParameters ConvertirParametresOptimisation(
+        FMTWrapper::Backend::SAParameters ConvertirParametresOptimisation(
             System::String^ cheminRasters,
             System::Collections::Generic::List<System::String^>^ contraintes,
             int periodes,
@@ -26,7 +26,7 @@ namespace Wrapper
             bool indSortiesSpatiales,
             System::String^ providerGdal)
         {
-            FMTWrapperCore::SAParameters params;
+            FMTWrapper::Backend::SAParameters params;
 
             // Path conversion. scenarioName stays empty: the Core logs the name
             // of the scenario the controller resolved.
@@ -78,15 +78,15 @@ namespace Wrapper
     {
         try
         {
-            const FMTWrapperCore::SAParameters PARAMS = ConvertirParametresOptimisation(
+            const FMTWrapper::Backend::SAParameters PARAMS = ConvertirParametresOptimisation(
                 cheminRasters, contraintes, periodes,
                 p_MaxMoves, p_MaxAcceptedMoves, p_MaxCycleMoves,
                 outputs, indicateurStanlock, outputLevel,
                 etanduSortiesMin, etanduSortiesMax, cheminSorties,
                 indGenererEvents, indSortiesSpatiales, providerGdal);
 
-            const FMTWrapperCore::SAResults RESULTS =
-                FMTWrapperCore::Controller::runSpatialOptimization(PARAMS, scenario);
+            const FMTWrapper::Backend::SAResults RESULTS =
+                FMTWrapper::Backend::Controller::runSpatialOptimization(PARAMS, scenario);
 
             return RESULTS.success;
         }

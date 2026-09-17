@@ -17,7 +17,7 @@ namespace Models
 	class FMTModel;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Transformations producing a new scenario from a model.

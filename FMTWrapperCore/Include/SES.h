@@ -24,7 +24,7 @@ namespace Spatial {
     class FMTSpatialSchedule;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Class for spatially explicit simulations

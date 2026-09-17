@@ -6,7 +6,7 @@
 
 #include "FMTWrapperCoreExport.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Queries on the FMT environment, independent of any model.

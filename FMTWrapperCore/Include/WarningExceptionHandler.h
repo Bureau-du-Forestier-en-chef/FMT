@@ -3,7 +3,7 @@
 #include "FMTExceptionHandler.h"
 #include "FMTWrapperCoreExport.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
 	// DocString: WarningExceptionHandler
 	/**

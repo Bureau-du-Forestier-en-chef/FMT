@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Parameters of the planning of several scenarios.

@@ -8,7 +8,7 @@
 #include "FMTOutput.h"
 #include "FMTWrapperCoreExport.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Selection of a subset of constraints or outputs by name.

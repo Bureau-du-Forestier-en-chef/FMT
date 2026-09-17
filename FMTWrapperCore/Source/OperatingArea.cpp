@@ -20,7 +20,7 @@
 #include "ModelQuery.h"
 #include "Selection.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     namespace
     {

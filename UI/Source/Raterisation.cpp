@@ -19,7 +19,7 @@ bool Wrapper::FMTForm::Raterisation(
 	// which the .NET UI depends on.
 	try
 	{
-		FMTWrapperCore::RasterizationParameters params;
+		FMTWrapper::Backend::RasterizationParameters params;
 		params.vectorFilePath = Conversions::toStdString(fichierShp);
 		params.outputFolder = Conversions::toStdString(repertoireSortie);
 		params.resolution = resolution;
@@ -27,7 +27,7 @@ bool Wrapper::FMTForm::Raterisation(
 		params.areaField = Conversions::toStdString(nomChampSuperficie);
 		params.lockField = Conversions::toStdString(nomChampStanlock);
 
-		FMTWrapperCore::Controller::rasterize(params, scenario);
+		FMTWrapper::Backend::Controller::rasterize(params, scenario);
 	}
 	catch (...)
 	{

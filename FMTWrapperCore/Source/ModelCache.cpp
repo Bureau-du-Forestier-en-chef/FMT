@@ -8,7 +8,7 @@
 #include "FMTModel.h"
 #include "ModelCache.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
 
 	std::unique_ptr<ModelCache> ModelCache::m_Instance =

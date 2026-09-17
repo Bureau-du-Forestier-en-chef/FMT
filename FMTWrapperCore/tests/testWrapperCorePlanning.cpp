@@ -11,7 +11,7 @@
 #include "FMTModelParser.h"
 #include "Planning.h"
 
-// Test of FMTWrapperCore::Planning, registered in basetests.csv, on the public
+// Test of FMTWrapper::Backend::Planning, registered in basetests.csv, on the public
 // TWD_land data.
 //
 // Planning writes the schedule of the optimized scenarios into the project: the test
@@ -111,7 +111,7 @@ int main()
 			PRIMARY_FILE.string(),
 			{ "LP", "LP3", "Globalreplanning", "Globalfire", "Localreplanning" });
 
-		FMTWrapperCore::PlanningParameters planning;
+		FMTWrapper::Backend::PlanningParameters planning;
 		planning.primaryFilePath = PRIMARY_FILE.string();
 		planning.solver = static_cast<int>(Models::FMTSolverInterface::CLP);
 		planning.numberOfPeriods = 5;
@@ -132,7 +132,7 @@ int main()
 		int reportedScheduleErrors = 0;
 
 		std::cout << "Planning" << std::endl;
-		FMTWrapperCore::Planning::plan(planning, PLANNED, PLAYBACK,
+		FMTWrapper::Backend::Planning::plan(planning, PLANNED, PLAYBACK,
 			[&reportedScheduleErrors](const std::string& p_method, int, const std::string&)
 			{
 				++reportedScheduleErrors;
@@ -146,7 +146,7 @@ int main()
 		check(std::filesystem::exists(LP_RESULTS) && std::filesystem::file_size(LP_RESULTS) > 0,
 			"the outputs of LP are written");
 
-		FMTWrapperCore::ReplanningParameters replanning;
+		FMTWrapper::Backend::ReplanningParameters replanning;
 		replanning.solver = static_cast<int>(Models::FMTSolverInterface::CLP);
 		replanning.numberOfPeriods = 10;
 		replanning.replanningPeriods = 3;
@@ -162,7 +162,7 @@ int main()
 		replanning.writeSchedules = true;
 
 		std::cout << "Replanning" << std::endl;
-		FMTWrapperCore::Planning::replan(
+		FMTWrapper::Backend::Planning::replan(
 			replanning,
 			findModel(MODELS, "Globalreplanning"),
 			findModel(MODELS, "Globalfire"),

@@ -4,7 +4,7 @@
 
 #include "FMTFreeExceptionHandler.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     std::string Selection::_normalize(const std::string& p_text)
     {

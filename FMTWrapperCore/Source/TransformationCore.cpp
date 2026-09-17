@@ -9,7 +9,7 @@
 
 
 
-Models::FMTModel FMTWrapperCore::Transformation::aggregateAllActions(
+Models::FMTModel FMTWrapper::Backend::Transformation::aggregateAllActions(
 	const Models::FMTModel& p_model, 
 	const std::vector<std::string>& p_aggregates, 
 	const std::vector<std::string>& p_order, 
@@ -43,13 +43,13 @@ Models::FMTModel FMTWrapperCore::Transformation::aggregateAllActions(
 	catch (...)
 	{
 		Exception::FMTExceptionHandler* modelExceptionHandler = p_model.getExceptionHandler();
-		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::TransformationCore::aggregateAllActions", __LINE__, __FILE__);
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapper::Backend::TransformationCore::aggregateAllActions", __LINE__, __FILE__);
 	}
 	return aggregatedModel;
 
 }
 
-Models::FMTModel FMTWrapperCore::Transformation::splitActions(const Models::FMTModel& p_model, const std::string& p_primary_path, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_scenario_name)
+Models::FMTModel FMTWrapper::Backend::Transformation::splitActions(const Models::FMTModel& p_model, const std::string& p_primary_path, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_scenario_name)
 {
 	Models::FMTModel SPLITTED_MODEL;
 	try
@@ -80,12 +80,12 @@ Models::FMTModel FMTWrapperCore::Transformation::splitActions(const Models::FMTM
 	catch (...)
 	{
 		Exception::FMTExceptionHandler* modelExceptionHandler = p_model.getExceptionHandler();
-		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::TransformationCore::splitActions", __LINE__, __FILE__);
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapper::Backend::TransformationCore::splitActions", __LINE__, __FILE__);
 	}
 	return SPLITTED_MODEL;
 }
 
-Models::FMTModel FMTWrapperCore::Transformation::buildAction(const Models::FMTModel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_primaryPath, const std::string& p_scenario_name)
+Models::FMTModel FMTWrapper::Backend::Transformation::buildAction(const Models::FMTModel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_primaryPath, const std::string& p_scenario_name)
 {
 	Models::FMTModel BUILDED_MODEL;
 	try
@@ -111,7 +111,7 @@ Models::FMTModel FMTWrapperCore::Transformation::buildAction(const Models::FMTMo
 	}
 	catch (...) {
 		Exception::FMTExceptionHandler* modelExceptionHandler = p_model.getExceptionHandler();
-		modelExceptionHandler->raiseFromCatch("", "FMTWrapperCore::TransformationCore::buildAction", __LINE__, __FILE__);
+		modelExceptionHandler->raiseFromCatch("", "FMTWrapper::Backend::TransformationCore::buildAction", __LINE__, __FILE__);
 	}
 	return BUILDED_MODEL;
 }

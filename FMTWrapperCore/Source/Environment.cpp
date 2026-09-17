@@ -6,7 +6,7 @@
 #include "FMTModelParser.h"
 #include "FMTVersion.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     std::vector<int> Environment::getAvailableSolvers()
     {

@@ -29,7 +29,7 @@ namespace Wrapper
 		// which the .NET UI depends on.
 		try
 		{
-			FMTWrapperCore::OperatingAreaParameters params;
+			FMTWrapper::Backend::OperatingAreaParameters params;
 			params.vectorFilePath = Conversions::toStdString(fichierShp);
 			params.solver = solver;
 			params.numberOfPeriods = nombrePeriodes;
@@ -47,7 +47,7 @@ namespace Wrapper
 			// The return time output is optional: an empty name means "none".
 			params.returnTimeOutputName = Conversions::toStdString(returnTimeOutput);
 
-			return FMTWrapperCore::Controller::scheduleOperatingAreas(params, scenario).success;
+			return FMTWrapper::Backend::Controller::scheduleOperatingAreas(params, scenario).success;
 		}
 		catch (...)
 		{

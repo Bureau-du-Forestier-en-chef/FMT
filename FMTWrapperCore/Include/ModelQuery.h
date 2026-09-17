@@ -20,7 +20,7 @@ namespace Models
     class FMTModel;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Queries on an FMT model.

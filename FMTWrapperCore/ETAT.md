@@ -14,11 +14,11 @@ Trois règles, vérifiables mécaniquement :
 2. **Aucun objet FMT visible depuis `FMTWrapper`** : plus un seul `Core::`, `Models::`,
    `Parser::`, `Parallel::`, `Spatial::`, `Heuristics::`, `Exception::`, `Logging::`
    dans le wrapper (`UI/Include`, `UI/Source`).
-   *Seule exception* : les DTO `FMTWrapperCore::*Parameters` / `*Results`, qui ne
+   *Seule exception* : les DTO `FMTWrapper::Backend::*Parameters` / `*Results`, qui ne
    contiennent que des types `std`. C'est le contrat de traduction : le wrapper doit
    le voir.
 3. **Le wrapper ne parle au Core que par `Controller`** : il n'inclut que `Controller.h`
-   et n'y nomme que `FMTWrapperCore::Controller` et les DTO (lot 5b).
+   et n'y nomme que `FMTWrapper::Backend::Controller` et les DTO (lot 5b).
 
 ### Patron par domaine
 
@@ -39,7 +39,7 @@ et des transformations.
 
 ### Contrôleur façade
 
-`FMTWrapperCore::Controller` (lot 5b) applique le patron *Controller* de GRASP (Larman) :
+`FMTWrapper::Backend::Controller` (lot 5b) applique le patron *Controller* de GRASP (Larman) :
 un objet hors de l'interface reçoit les opérations système et les délègue.
 
 - **Les services n'ont que des entrées pures** : elles prennent les objets FMT et ne
@@ -71,6 +71,8 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
   défaut dans un test. La progression reste en temps réel.
 - Toute classe du Core porte `FMT_WRAPPER_CORE_EXPORT` (`FMTWrapperCoreExport.h`) ; les DTO,
   sans fonction membre hors ligne, n'en ont pas besoin.
+- Le code du Core vit dans l'espace de noms `FMTWrapper::Backend` (lot A) ; la bibliothèque,
+  sa cible CMake et son dossier gardent le nom `FMTWrapperCore`.
 - Langue : commentaires, documentation Doxygen et sorties des tests en **anglais** ;
   messages affichés aux utilisateurs (journal, refus, textes d'exception) et ce fichier en
   **français**.
@@ -159,7 +161,7 @@ commande corrigée, l'état d'origine à partir de `git show HEAD`.
 Les noms du Core que le wrapper utilise, hors `Controller` et DTO :
 
 ```
-grep -raoE "FMTWrapperCore::\w+" UI/Include UI/Source | grep -vE "::(Controller|\w+Parameters|\w+Results)$" | sort | uniq -c
+grep -raoE "FMTWrapper::Backend::\w+" UI/Include UI/Source | grep -vE "::(Controller|\w+Parameters|\w+Results)$" | sort | uniq -c
 ```
 
 **À zéro depuis le lot 6** : la commande ne retourne rien, et aucun fichier du wrapper
@@ -544,11 +546,76 @@ une chaîne vide (voir « Ensuite »).
   sans avertissement, et la macro s'étend en `dllexport` avec `FMTWrapperCore_EXPORTS`, en
   `dllimport` sans.
 
+### Lot A -- espace de noms `FMTWrapper::Backend` (2026-09-17)
+
+**Statut** : livré le 2026-09-17, **pas encore compilé par Gabriel**. Premier lot de la revue
+de la PR #345 (section 4).
+
+- `namespace FMTWrapperCore` devient `namespace FMTWrapper::Backend` (29 déclarations) et
+  `FMTWrapperCore::` devient `FMTWrapper::Backend::` (135 noms qualifiés, commentaires et noms
+  de méthode des messages d'erreur de `TransformationCore.cpp` compris), dans 56 fichiers du
+  Core, de ses tests et du wrapper. Le journal ci-dessus garde l'ancien nom.
+- Inchangés : la bibliothèque, sa cible CMake et son dossier `FMTWrapperCore`,
+  `FMTWrapperCoreExport.h`, `FMTWrapperCore_EXPORTS` et les gardes d'inclusion.
+- `Core` était exclu : voir Pièges, « Pas d'espace de noms `Core` dans le Core ».
+- Contrôles : en remettant l'ancien nom, le diff s'annule ligne à ligne. Compilé sans édition
+  de liens, dans le scratchpad, avec les options du build (`cl` de VS 2022, `/W1`) : les 13
+  sources du Core, ses 15 tests et les 11 sources du wrapper en `/clr` passent sans erreur ni
+  avertissement, et les objets portent le nouveau nom.
+
 ## 4. Prochain lot
 
-Les lots de domaine sont terminés depuis le lot 6. Le nettoyage compile, ctest passe et
-l'interface fonctionne à première vue (2026-09-16). Le lot « Tests dans ctest et
-conversions entrantes » et le renommage de la macro d'export restent à compiler. À valider ensuite :
+Les lots de domaine sont terminés depuis le lot 6. La revue de la PR #345 ouvre trois lots :
+A (livré), puis B et C, dans cet ordre.
+
+### Revue de la PR #345 : décisions de Gabriel (2026-09-17)
+
+| Commentaire de gcyr | Décision | Lot |
+|---|---|---|
+| Nom de la macro d'export | `FMT_WRAPPER_CORE_EXPORT` | fait (`8fb920c1`) |
+| `FMTException`, `FMTModel` et `FMTModelParser` dans `Controller.cpp` | **Non négociable** : le contrôleur ne contient aucune logique, ne connaît rien de FMT et n'accepte ou ne renvoie que des DTO | B |
+| `DEFAULT_MAX_WARNINGS` dans le `.h` | Accepté | B |
+| Espace de noms `FMTWrapper::Core` | `FMTWrapper::Backend` : `Core` entre en conflit avec FMTlib (Pièges) | A, livré |
+| Callbacks et `void*` remplacés par des événements | Accepté : événements typés et liste d'abonnés | C |
+
+**Lot B -- contrôleur sans logique.**
+
+- **Un seul contrôleur**, décision de Gabriel : chacune de ses 38 méthodes se réduit à une
+  délégation. Une god class concentre de la logique ; celui-ci n'en aura plus.
+- **La logique passe dans des cas d'utilisation découpés par domaine**, qui reçoivent DTO et
+  index de scénario, résolvent les index dans `ModelCache` et appellent les services : lecture
+  et écriture des scénarios, conversion des codes d'erreur, pile d'erreur, ajout au cache des
+  scénarios transformés, préparation de la planification. Le refus du cache vide passe dans
+  `ModelCache::getModel`. `Environment`, déjà en types `std` et sans scénario, joue lui-même
+  ce rôle.
+- **Règles vérifiées par script** : `Controller.cpp` n'inclut que des DTO et des cas
+  d'utilisation (aucun `FMT*.h`, ni `ModelCache.h`, ni service de domaine), et chaque méthode
+  tient en une délégation.
+- `DEFAULT_MAX_WARNINGS` passe dans `Controller.h` ; la règle « 0 ou moins = valeur par
+  défaut » va dans le cas d'utilisation.
+
+**Lot C -- événements.**
+
+- Plus de `void*` ni de pointeur de fonction : un abonné est un
+  `std::function<void(const Event&)>`, où `Event` est un `std::variant` de structures en types
+  `std` (`LogEvent`, `ErrorEvent`, puis au besoin `WarningEvent`, `ProgressEvent`...). Ajouter
+  un événement, c'est une structure de plus ; un consommateur ignore ceux qu'il ne connaît pas.
+- Un point de publication unique dans le Core, avec une liste d'abonnés :
+  `Controller::subscribe` rend un identifiant, `Controller::unsubscribe` le retire. Les
+  émetteurs (logger, gestionnaire d'avertissements, cas d'utilisation) ne connaissent pas les
+  consommateurs ; livraison, filtrage ou file d'attente se changent à cet endroit seulement.
+- Côté wrapper, l'abonné se construit dans une fonction libre (Pièges, « Lambda dans une
+  classe managée ») et relaie les événements par `FeedBack` : l'interface .NET ne change pas.
+- Vérifié avec `cl`, sans le build : `variant`, `std::function` et une publication depuis un
+  thread de travail (natif) ; `std::visit` dans une lambda qui capture `gcroot` (`/clr`).
+- À valider dans l'interface : une partie des messages part des threads de FMTlib, où le
+  délégué actuel ne peut pas toujours être appelé (voir `CallbackLogger::logTime`).
+
+### Validations en attente
+
+Le nettoyage compile, ctest passe et l'interface fonctionne à première vue (2026-09-16).
+Restent à compiler, d'après ce fichier : le lot « Tests dans ctest et conversions
+entrantes », le renommage de la macro d'export et le lot A. À valider ensuite :
 
 - **ctest, après reconfiguration de CMake** : les tests nouvellement inscrits couvrent les
   lots 3 à 6, pour lesquels aucune validation à l'exécution n'est consignée ici.
@@ -670,8 +737,17 @@ conversions entrantes » et le renommage de la macro d'export restent à compile
   `FMTModel::getLogger()` / `getExceptionHandler()` restent partagées entre
   `FMTWrapper.dll` et `FMTWrapperCore.dll`. C'est ce qui rend le lot 1 sûr.
 - **`Excel/`** a son propre `Wrapper::FMTModelCache` (~2600 lignes, dérive de `FMTLpModel`),
-  sans rapport avec `ModelCache`. Hors périmètre, mais c'est la raison du choix du
-  namespace `FMTWrapperCore` plutôt que `Wrapper`.
+  sans rapport avec `ModelCache`. Hors périmètre, mais c'est pourquoi le Core n'utilise pas
+  l'espace de noms `Wrapper`.
+- **Pas d'espace de noms `Core` dans le Core** -- à l'intérieur de `FMTWrapper::Core`,
+  `Core::FMTOutput` désignerait `FMTWrapper::Core::FMTOutput` et non la classe de FMTlib : la
+  centaine d'usages de `Core::` du Core ne compilerait plus. C'est pourquoi la revue de la
+  PR #345 a abouti à `FMTWrapper::Backend`. Même prudence avec les autres espaces de noms de
+  FMTlib (`Models`, `Parser`, `Spatial`...).
+- **Lambda dans une classe managée** -- `cl /clr` refuse une lambda écrite dans une fonction
+  membre d'une `ref class` (C3923 : pas de classe locale dans une classe managée). Pour
+  capturer `FMTForm` (par `gcroot<FMTForm^>`), construire la lambda dans une fonction libre.
+  Vérifié le 2026-09-17, en préparant le lot C.
 
 ## 6. Tests
 

@@ -10,7 +10,7 @@ int testChangeLog()
 
 	std::string log;
 	try{
-		log = FMTWrapperCore::Environment::getChangeLog();
+		log = FMTWrapper::Backend::Environment::getChangeLog();
 		}catch (...)
 			{
 			return 1;
@@ -28,7 +28,7 @@ int testGetErrorsToIgnore()
 {
 	std::vector<int>toIgnore;
 	try {
-		toIgnore = FMTWrapperCore::Environment::getErrorsToIgnore();
+		toIgnore = FMTWrapper::Backend::Environment::getErrorsToIgnore();
 	}
 	catch (...)
 	{
@@ -49,7 +49,7 @@ int testGetExceptionDescription()
 	bool failed = false;
 	for (int i = 1; i < Exception::FMTexc::FMTmaxnumberofexception;++i)
 	{
-		const std::string DESCRIPTION = FMTWrapperCore::Environment::getExceptionDescription(i);
+		const std::string DESCRIPTION = FMTWrapper::Backend::Environment::getExceptionDescription(i);
 		if (DESCRIPTION.empty())
 			{
 			std::cout << "Missing exception description for exception id " << i << std::endl;

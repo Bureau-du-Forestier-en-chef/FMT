@@ -9,7 +9,7 @@ namespace Models
     class FMTModel;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Rasterization of a vector file according to the themes of a model.

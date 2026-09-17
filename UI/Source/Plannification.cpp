@@ -23,7 +23,7 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTWrapperCore::PlanningParameters params;
+			FMTWrapper::Backend::PlanningParameters params;
 			params.primaryFilePath = Conversions::toStdString(fichierPri);
 			params.solver = solver;
 			params.numberOfPeriods = period;
@@ -54,7 +54,7 @@ namespace Wrapper
 				}
 			}
 
-			FMTWrapperCore::Controller::plan(params, modelIndexes, playbackFlags);
+			FMTWrapper::Backend::Controller::plan(params, modelIndexes, playbackFlags);
 		}
 		catch (...)
 		{
@@ -89,7 +89,7 @@ namespace Wrapper
 		// stays in the public signature, which the .NET UI depends on.
 		try
 		{
-			FMTWrapperCore::ReplanningParameters params;
+			FMTWrapper::Backend::ReplanningParameters params;
 			params.solver = solver;
 			params.numberOfPeriods = period;
 			params.replanningPeriods = periodReplannif;
@@ -104,7 +104,7 @@ namespace Wrapper
 			params.taskLogLevel = taskLogLevel;
 			params.writeSchedules = indProduireSolution;
 
-			FMTWrapperCore::Controller::replan(
+			FMTWrapper::Backend::Controller::replan(
 				params,
 				indexScenStrategique,
 				indexScenStochastique,

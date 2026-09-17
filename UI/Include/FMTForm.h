@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace FMTWrapperCore {
+namespace FMTWrapper::Backend {
 	struct SESResults;
 }
 namespace Wrapper
@@ -18,7 +18,7 @@ namespace Wrapper
 	managed client applications.
 
 	This class only translates between .NET and std types: every native
-	operation goes through FMTWrapperCore::Controller.
+	operation goes through FMTWrapper::Backend::Controller.
 	*/
 	public ref class FMTForm
 	{
@@ -707,7 +707,7 @@ namespace Wrapper
 		@param[in] indCarbon Indicates whether carbon outputs are included.
 		*/
 		void _EnvoyerResultatsInterface(
-			const FMTWrapperCore::SESResults& results,
+			const FMTWrapper::Backend::SESResults& results,
 			bool indCarbon);
 	};
 }

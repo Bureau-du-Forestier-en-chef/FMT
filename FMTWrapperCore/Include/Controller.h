@@ -12,7 +12,7 @@
 #include "RasterizationTypes.h"
 #include "SESTypes.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Facade controller (GRASP): the wrapper's single entry point into the Core.

@@ -13,7 +13,7 @@
 
 int main(int argc, char* argv[])
 {
-	FMTWrapperCore::SAParameters params;
+	FMTWrapper::Backend::SAParameters params;
 
 	// SAParameters does not hold the .pri path; it is kept locally
 	// because readproject needs it (but RunOptimization does not).
@@ -110,10 +110,10 @@ int main(int argc, char* argv[])
 			"testWrapperCoreSA", __LINE__, primaryFilePath);
 	}
 
-	FMTWrapperCore::SAResults results;
+	FMTWrapper::Backend::SAResults results;
 	try
 	{
-		results = FMTWrapperCore::SES::RunOptimization(
+		results = FMTWrapper::Backend::SES::RunOptimization(
 			params,
 			selectedModel);
 	}

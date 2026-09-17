@@ -9,7 +9,7 @@ namespace Models
     class FMTModel;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Operating area scheduling: generates the COS schedule.

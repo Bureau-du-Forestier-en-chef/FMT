@@ -18,7 +18,7 @@
 #include "SES.h"
 #include "TransformationCore.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     namespace
     {

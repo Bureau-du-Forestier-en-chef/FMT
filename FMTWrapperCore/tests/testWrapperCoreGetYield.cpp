@@ -8,7 +8,7 @@
 #include "ModelQuery.h"
 #include "FMTFreeExceptionHandler.h"
 
-// Test of FMTWrapperCore::ModelQuery::getYield, registered in basetests.csv (TWD_land)
+// Test of FMTWrapper::Backend::ModelQuery::getYield, registered in basetests.csv (TWD_land)
 // and BFECtests.csv.
 //   argv[1] = "<.pri file>|<scenario>|<yield>|<mask>"
 //   argv[2] = "<age>|<expected value>"
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 
 	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 
-	const double yield = FMTWrapperCore::ModelQuery::getYield(MODELS.at(0), mask, yieldName, age);
+	const double yield = FMTWrapper::Backend::ModelQuery::getYield(MODELS.at(0), mask, yieldName, age);
 	std::cout << "Yield: " << yield << std::endl;
 
 	// Checks on the returned number, within a relative tolerance: equation yields are

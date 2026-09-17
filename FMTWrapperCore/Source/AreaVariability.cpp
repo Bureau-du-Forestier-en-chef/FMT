@@ -15,7 +15,7 @@
 #include "FMTTheme.h"
 #include "Selection.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     namespace
     {

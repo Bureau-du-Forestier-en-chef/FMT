@@ -18,7 +18,7 @@ namespace Exception
 	class FMTExceptionHandler;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
 	class CallbackLogger;
 	class WarningExceptionHandler;

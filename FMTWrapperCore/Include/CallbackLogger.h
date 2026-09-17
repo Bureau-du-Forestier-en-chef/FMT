@@ -5,7 +5,7 @@
 #include <iostream>
 #include <memory>
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
 	// DocString: logfunc
 	/**

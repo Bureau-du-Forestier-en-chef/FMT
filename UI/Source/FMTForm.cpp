@@ -22,7 +22,7 @@ namespace Wrapper
 				listeExceptions.push_back(valeur);
 			}
 
-			FMTWrapperCore::Controller::setErrorsToWarnings(
+			FMTWrapper::Backend::Controller::setErrorsToWarnings(
 				listeExceptions,
 				maxWarnings);
 		}
@@ -41,7 +41,7 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ errors = gcnew System::Collections::Generic::List<int>();
 		try
 		{
-			for (int error : FMTWrapperCore::Controller::getErrorsToIgnore())
+			for (int error : FMTWrapper::Backend::Controller::getErrorsToIgnore())
 			{
 				errors->Add(error);
 			}
@@ -85,7 +85,7 @@ namespace Wrapper
 				GetFunctionPointerForDelegate(
 					m_managedFeed);
 
-			FMTWrapperCore::Controller::recoverLoggerAndHandler(
+			FMTWrapper::Backend::Controller::recoverLoggerAndHandler(
 				m_unmanagedFeed.ToPointer());
 		}
 		catch (...)
@@ -117,7 +117,7 @@ namespace Wrapper
 				Conversions::toStdString(
 					nomFichierLogger);
 
-			FMTWrapperCore::Controller::initializeLogger(
+			FMTWrapper::Backend::Controller::initializeLogger(
 				filename,
 				m_unmanagedFeed.ToPointer());
 		}
@@ -149,7 +149,7 @@ namespace Wrapper
 
 			scenarios.push_back(scenario);
 
-			FMTWrapperCore::Controller::addScenarios(
+			FMTWrapper::Backend::Controller::addScenarios(
 				fichierPri,
 				scenarios);
 
@@ -172,7 +172,7 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTWrapperCore::Controller::removeScenario(
+			FMTWrapper::Backend::Controller::removeScenario(
 				indexScenario);
 
 			return true;
@@ -193,7 +193,7 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTWrapperCore::Controller::clearScenarios();
+			FMTWrapper::Backend::Controller::clearScenarios();
 		}
 		catch (...)
 		{

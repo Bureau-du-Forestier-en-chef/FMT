@@ -25,7 +25,7 @@
 #include <filesystem>
 #include <algorithm>
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     std::vector<Core::FMTTheme> SES::buildGrowthThemes(
         const std::vector<Core::FMTTheme>& allThemes,

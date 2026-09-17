@@ -9,7 +9,7 @@ namespace Wrapper
 {
     namespace {
 
-        FMTWrapperCore::SESParameters ConvertirParametres(
+        FMTWrapper::Backend::SESParameters ConvertirParametres(
             System::String^ fichierPri,
             System::String^ cheminRasters,
             System::Collections::Generic::List<System::String^>^ contraintes,
@@ -28,7 +28,7 @@ namespace Wrapper
             System::Collections::Generic::List<System::String^>^ predictoryields,
             System::Collections::Generic::List<int>^ growththemes)
         {
-            FMTWrapperCore::SESParameters params;
+            FMTWrapper::Backend::SESParameters params;
 
             // Path conversion. scenarioName stays empty: the Core logs the name
             // of the scenario the controller resolved.
@@ -66,7 +66,7 @@ namespace Wrapper
     }
 
     void FMTForm::_EnvoyerResultatsInterface(
-        const FMTWrapperCore::SESResults& results,
+        const FMTWrapper::Backend::SESResults& results,
         bool indCarbon)
     {
         for (const auto& periodData : results.carbonReport.periods)
@@ -174,15 +174,15 @@ namespace Wrapper
     {
         try
         {
-            const FMTWrapperCore::SESParameters PARAMS = ConvertirParametres(
+            const FMTWrapper::Backend::SESParameters PARAMS = ConvertirParametres(
                 fichierPri, cheminRasters, contraintes, periodes,
                 greedySearch, outputs, indicateurStanlock, outputLevel,
                 etanduSortiesMin, etanduSortiesMax, cheminSorties,
                 indGenererEvents, indSortiesSpatiales, providerGdal,
                 indCarbon, predictoryields, growththemes);
 
-            const FMTWrapperCore::SESResults RESULTS =
-                FMTWrapperCore::Controller::runSpatialSimulation(PARAMS, scenario);
+            const FMTWrapper::Backend::SESResults RESULTS =
+                FMTWrapper::Backend::Controller::runSpatialSimulation(PARAMS, scenario);
 
             _EnvoyerResultatsInterface(RESULTS, indCarbon);
 

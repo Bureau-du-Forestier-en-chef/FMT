@@ -15,7 +15,7 @@
 #include "windows.h"
 #include "FMTObject.h"
 
-FMTWrapperCore::WarningExceptionHandler::WarningExceptionHandler(
+FMTWrapper::Backend::WarningExceptionHandler::WarningExceptionHandler(
 	const size_t& maxnumberofwarnings)
 	: FMTExceptionHandler()
 {
@@ -23,12 +23,12 @@ FMTWrapperCore::WarningExceptionHandler::WarningExceptionHandler(
 	ResetThread();
 }
 
-void FMTWrapperCore::WarningExceptionHandler::ResetThread()
+void FMTWrapper::Backend::WarningExceptionHandler::ResetThread()
 {
 	m_crashedthreadid = m_mainthreadid;
 }
 
-void FMTWrapperCore::WarningExceptionHandler::tryfileopener(
+void FMTWrapper::Backend::WarningExceptionHandler::tryfileopener(
 	const std::string& fullerrorstr) const
 {
 	const std::regex linecaper(
@@ -72,7 +72,7 @@ void FMTWrapperCore::WarningExceptionHandler::tryfileopener(
 	}
 }
 
-std::string FMTWrapperCore::WarningExceptionHandler::geterrorstack(
+std::string FMTWrapper::Backend::WarningExceptionHandler::geterrorstack(
 	std::string text,
 	const std::string& method,
 	const int& line,
@@ -80,8 +80,8 @@ std::string FMTWrapperCore::WarningExceptionHandler::geterrorstack(
 {
 	std::string finalstack;
 
-	FMTWrapperCore::CallbackLogger* ModifLogger =
-		dynamic_cast<FMTWrapperCore::CallbackLogger*>(_logger);
+	FMTWrapper::Backend::CallbackLogger* ModifLogger =
+		dynamic_cast<FMTWrapper::Backend::CallbackLogger*>(_logger);
 
 	if (!ModifLogger)
 	{
@@ -112,7 +112,7 @@ std::string FMTWrapperCore::WarningExceptionHandler::geterrorstack(
 	return finalstack;
 }
 
-void FMTWrapperCore::WarningExceptionHandler::printExceptions(
+void FMTWrapper::Backend::WarningExceptionHandler::printExceptions(
 	std::string text,
 	const std::string& method,
 	const int& line,
@@ -123,14 +123,14 @@ void FMTWrapperCore::WarningExceptionHandler::printExceptions(
 }
 
 std::unique_ptr<Exception::FMTExceptionHandler>
-FMTWrapperCore::WarningExceptionHandler::clone() const
+FMTWrapper::Backend::WarningExceptionHandler::clone() const
 {
 	return std::unique_ptr<Exception::FMTExceptionHandler>(
 		new WarningExceptionHandler(*this));
 }
 
 Exception::FMTException
-FMTWrapperCore::WarningExceptionHandler::raise(
+FMTWrapper::Backend::WarningExceptionHandler::raise(
 	Exception::FMTexc lexception,
 	std::string text,
 	const std::string& method,

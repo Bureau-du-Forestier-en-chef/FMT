@@ -25,7 +25,7 @@ namespace Wrapper
 		// which the .NET UI depends on.
 		try
 		{
-			FMTWrapperCore::AreaVariabilityParameters params;
+			FMTWrapper::Backend::AreaVariabilityParameters params;
 			params.solver = solver;
 			params.constraintNames = Conversions::toStdVector(contraintes);
 			params.numberOfPeriods = period;
@@ -48,7 +48,7 @@ namespace Wrapper
 				}
 			}
 
-			return FMTWrapperCore::Controller::runAreaVariability(params, scenario).success;
+			return FMTWrapper::Backend::Controller::runAreaVariability(params, scenario).success;
 		}
 		catch (...)
 		{

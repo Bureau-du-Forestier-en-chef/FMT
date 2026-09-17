@@ -9,7 +9,7 @@ namespace Models
     class FMTModel;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Initial area variability: writes the outputs of a model whose initial area

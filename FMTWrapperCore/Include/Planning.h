@@ -13,7 +13,7 @@ namespace Models
     class FMTModel;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Planning and replanning of scenarios, through the parallel tasks of FMT.
