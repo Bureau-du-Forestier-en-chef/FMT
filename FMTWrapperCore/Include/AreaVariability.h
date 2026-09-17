@@ -19,7 +19,7 @@ namespace FMTWrapperCore
      * reduced to its header, no output requested. Masks that overlap on the same
      * development raise an exception.
      */
-    class FMTWRAPPERCOREEXPORT AreaVariability
+    class FMT_WRAPPER_CORE_EXPORT AreaVariability
     {
     public:
         /**

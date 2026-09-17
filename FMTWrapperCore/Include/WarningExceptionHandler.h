@@ -14,7 +14,7 @@ namespace FMTWrapperCore
 	the graphical user interface. Fatal exceptions may be rethrown
 	while warning-level exceptions are tracked and counted.
 	*/
-	class FMTWRAPPERCOREEXPORT WarningExceptionHandler :
+	class FMT_WRAPPER_CORE_EXPORT WarningExceptionHandler :
 		public virtual Exception::FMTExceptionHandler
 	{
 	public:

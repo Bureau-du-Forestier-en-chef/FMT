@@ -33,7 +33,7 @@ namespace FMTWrapperCore
      * Every operation that takes a scenario index raises an FMTrangeerror exception if the
      * cache is empty, except getOutputsNames, which then returns an empty list.
      */
-    class FMTWRAPPERCOREEXPORT Controller
+    class FMT_WRAPPER_CORE_EXPORT Controller
     {
     public:
         // Session: log, errors and loaded scenarios.

@@ -20,7 +20,7 @@ namespace FMTWrapperCore
 	This logger extends Logging::FMTLogger and redirects output both to
 	a log file and to a user-provided callback function.
 	*/
-	class FMTWRAPPERCOREEXPORT CallbackLogger final :
+	class FMT_WRAPPER_CORE_EXPORT CallbackLogger final :
 		public Logging::FMTLogger
 	{
 	private:

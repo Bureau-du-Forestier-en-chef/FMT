@@ -31,7 +31,7 @@ namespace FMTWrapperCore
      *
      * Anything that does not depend on a model belongs to Environment.
      */
-    class FMTWRAPPERCOREEXPORT ModelQuery
+    class FMT_WRAPPER_CORE_EXPORT ModelQuery
     {
     public:
         /**

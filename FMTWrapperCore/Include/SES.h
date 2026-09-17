@@ -29,7 +29,7 @@ namespace FMTWrapperCore
     /**
      * @brief Class for spatially explicit simulations
      */
-    class FMTWRAPPERCOREEXPORT SES
+    class FMT_WRAPPER_CORE_EXPORT SES
     {
     public:
         /**

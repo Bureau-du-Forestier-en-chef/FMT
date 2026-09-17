@@ -20,7 +20,7 @@ namespace FMTWrapperCore
      * The operation produces no in-memory data: it returns nothing and errors are raised
      * as exceptions.
      */
-    class FMTWRAPPERCOREEXPORT Rasterization
+    class FMT_WRAPPER_CORE_EXPORT Rasterization
     {
     public:
         /**

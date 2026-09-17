@@ -32,7 +32,7 @@ namespace FMTWrapperCore
 	mechanisms for rebuilding logging and exception handling resources
 	after a crash.
 	*/
-	class FMTWRAPPERCOREEXPORT ModelCache
+	class FMT_WRAPPER_CORE_EXPORT ModelCache
 	{
 	public:
 

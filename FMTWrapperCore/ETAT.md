@@ -25,7 +25,7 @@ Trois règles, vérifiables mécaniquement :
 | Fichier | Contenu |
 |---|---|
 | `FMTWrapperCore/Include/<Domaine>Types.h` | les DTO, types `std` uniquement : `struct <X>Parameters`, `struct <X>Results` (`success`, `errorMessage`, données) |
-| `FMTWrapperCore/Include/<Domaine>.h` | le service : forward-decl FMT, `class FMTWRAPPERCOREEXPORT <X>` et ses entrées pures |
+| `FMTWrapperCore/Include/<Domaine>.h` | le service : forward-decl FMT, `class FMT_WRAPPER_CORE_EXPORT <X>` et ses entrées pures |
 | `FMTWrapperCore/Source/<Domaine>.cpp` | la logique ; erreurs via `raiseFromCatch` du gestionnaire d'exceptions |
 | `Controller.h` / `Controller.cpp` | une méthode par opération système de `FMTForm` : résout l'index de scénario, délègue à l'entrée pure |
 | `UI/Source/<Fichier>.cpp` | `ConvertirParametres` (C# -> `Parameters`), l'appel du contrôleur, `_EnvoyerResultats...` (`Results` -> `RetourJson`/`FeedBack`) |
@@ -69,7 +69,7 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 - Journalisation : les entrées pures écrivent dans le logger statique de FMT
   (`Models::FMTModel::getLogger()`) : le `CallbackLogger` dans l'interface, le logger par
   défaut dans un test. La progression reste en temps réel.
-- Toute classe du Core porte `FMTWRAPPERCOREEXPORT` (`FMTWrapperCoreExport.h`) ; les DTO,
+- Toute classe du Core porte `FMT_WRAPPER_CORE_EXPORT` (`FMTWrapperCoreExport.h`) ; les DTO,
   sans fonction membre hors ligne, n'en ont pas besoin.
 - Langue : commentaires, documentation Doxygen et sorties des tests en **anglais** ;
   messages affichés aux utilisateurs (journal, refus, textes d'exception) et ce fichier en
@@ -106,7 +106,7 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 
 `Tools` a été éclaté au lot 2 en `Environment` + `ModelQuery` et n'existe plus. Depuis le
 lot 5b, les DTO de chaque domaine sont dans `<Domaine>Types.h`, et
-`FMTWrapperCoreExport.h` définit `FMTWRAPPERCOREEXPORT`.
+`FMTWrapperCoreExport.h` définit `FMT_WRAPPER_CORE_EXPORT`.
 
 ### Domaines
 
@@ -530,11 +530,25 @@ aires d'opération écrit sous `\Retour`, à la racine du lecteur, et un nom de 
 pour les transformations écrit directement dans `Scenarios/`. Ces cas existaient déjà pour
 une chaîne vide (voir « Ensuite »).
 
+### Macro d'export renommée (2026-09-17)
+
+**Statut** : livré le 2026-09-17, **pas encore compilé**. Demandé par Gabriel.
+
+- `FMTWRAPPERCOREEXPORT` devient `FMT_WRAPPER_CORE_EXPORT` : sa définition dans
+  `FMTWrapperCoreExport.h` et les 13 classes du Core qui le portent. Le journal ci-dessus
+  garde l'ancien nom.
+- Inchangés : `FMTWrapperCore_EXPORTS`, que CMake définit lui-même pour la cible SHARED, et
+  la garde d'inclusion `FMTWRAPPERCORE_EXPORT_HEADER`, au format de celles des autres
+  en-têtes du Core.
+- Vérifié avec `cl` de VS 2022 (`/W4 /permissive-`), sans le build : `Controller.h` compile
+  sans avertissement, et la macro s'étend en `dllexport` avec `FMTWrapperCore_EXPORTS`, en
+  `dllimport` sans.
+
 ## 4. Prochain lot
 
 Les lots de domaine sont terminés depuis le lot 6. Le nettoyage compile, ctest passe et
 l'interface fonctionne à première vue (2026-09-16). Le lot « Tests dans ctest et
-conversions entrantes » reste à compiler. À valider ensuite :
+conversions entrantes » et le renommage de la macro d'export restent à compiler. À valider ensuite :
 
 - **ctest, après reconfiguration de CMake** : les tests nouvellement inscrits couvrent les
   lots 3 à 6, pour lesquels aucune validation à l'exécution n'est consignée ici.
@@ -628,7 +642,7 @@ conversions entrantes » reste à compiler. À valider ensuite :
   cible sans ce flag (la ligne existait, commentée, et visait `FMTWrapper` par
   copier-coller). Corrigé au lot 1. Symptôme à reconnaître : un `LNK2019` sur un
   `static` d'une classe FMTlib, alors que les fonctions de la même classe passent.
-- **`FMTWRAPPERCOREEXPORT`** sur toute classe du Core appelée depuis un autre binaire : le
+- **`FMT_WRAPPER_CORE_EXPORT`** sur toute classe du Core appelée depuis un autre binaire : le
   wrapper (par `Controller`) et les exécutables de test (par les entrées pures). Pas sur
   les DTO. **Ne pas** utiliser `FMTEXPORT` : il vaut `dllimport` dans `FMTWrapperCore`,
   qui définit `FMTLIBIMPORT`. **Ne pas** coder `__declspec(dllexport)` en dur : les

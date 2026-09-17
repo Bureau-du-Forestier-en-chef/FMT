@@ -21,7 +21,7 @@ namespace FMTWrapperCore
      * Both operations write their results to disk and return nothing; errors are raised as
      * exceptions.
      */
-    class FMTWRAPPERCOREEXPORT Planning
+    class FMT_WRAPPER_CORE_EXPORT Planning
     {
     public:
         /**
