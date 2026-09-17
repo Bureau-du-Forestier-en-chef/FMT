@@ -16,6 +16,7 @@
 - [Dependency Rules](#-dependency-rules)
 - [Loose Coupling](#-loose-coupling)
 - [Portability](#-portability)
+- [Performance and Memory Efficiency](#-performance-and-memory-efficiency)
 - [Public Interfaces](#-public-interfaces)
 - [Error Handling and Logging](#-error-handling-and-logging)
 - [Events and Notifications](#-events-and-notifications)
@@ -82,6 +83,10 @@ The FMT architecture aims to:
 - separate workflow orchestration from domain behavior;
 - isolate platform-specific and infrastructure-specific implementations;
 - enforce portability across supported operating systems and compilers;
+- preserve speed as a primary architectural objective;
+- reduce memory consumption and memory fragmentation;
+- favor preallocation and reuse in calculation-intensive code;
+- avoid repeated small allocations and deallocations during calculations;
 - use loose coupling as a guiding principle for new features and refactoring;
 - make dependencies explicit and strongly typed;
 - reduce duplicated behavior across wrappers and interfaces;
@@ -397,6 +402,159 @@ Some existing components are intentionally platform-specific. These constraints 
 
 ---
 
+## ⚡ Performance and Memory Efficiency
+
+Execution speed is a primary architectural objective of FMT.
+
+FMT performs calculation-intensive forest-planning, optimization, simulation, graph, yield, raster, and scheduling operations. Performance optimization has historically been an important part of the library and must remain an important part of future development and refactoring.
+
+Memory efficiency is equally important.
+
+FMT performs substantial multithreaded work. Repeated small allocations and deallocations can increase synchronization costs, reduce cache locality, fragment memory, and multiply memory consumption across worker threads.
+
+New calculation-intensive code should therefore be designed for:
+
+- predictable execution cost;
+- efficient data access;
+- good cache locality;
+- bounded temporary storage;
+- reuse of existing objects and buffers;
+- minimal allocator activity;
+- controlled memory use under multithreading;
+- avoidance of unnecessary copies;
+- reduced memory fragmentation.
+
+### Preallocate before calculation
+
+Objects, strategies, buffers, indexes, source references, temporary arrays, and other calculation resources should be allocated and initialized before the calculation phase whenever their required size can be determined or safely bounded.
+
+During calculation, code should reuse existing storage rather than repeatedly creating and destroying small objects.
+
+Calculation paths should avoid:
+
+```cpp
+new
+std::make_unique
+std::make_shared
+```
+
+They should also avoid hidden allocation caused by:
+
+```cpp
+std::vector::push_back
+std::vector::resize
+std::string concatenation
+std::map insertion
+std::unordered_map insertion
+returning large containers by value
+```
+
+These operations are not prohibited everywhere in FMT. They should be avoided inside performance-critical loops and calculation paths unless storage has already been reserved and the operation is known not to increase capacity or allocate memory.
+
+### Reuse storage
+
+Prefer reusable storage owned by the component responsible for the calculation.
+
+Examples include:
+
+- pre-sized vectors;
+- reserved containers;
+- reusable scratch buffers;
+- stable index-based lookup tables;
+- object pools when their complexity is justified;
+- contiguous storage;
+- spans, views, iterators, or references into existing storage;
+- precomputed relationships and indexes.
+
+A calculation may overwrite or reset existing storage, but should not increase its capacity unexpectedly.
+
+If the required capacity depends on model content, determine and reserve it during parsing, model initialization, graph construction, or another preparation phase.
+
+### Avoid memory fragmentation
+
+Repeated allocation and deallocation of many small objects should be treated as an architectural concern, particularly in long-running and multithreaded workflows.
+
+Prefer:
+
+- contiguous collections over individually allocated elements;
+- value storage over per-element heap allocation when object size permits;
+- stable ownership over repeated construction and destruction;
+- batched allocation over many small allocations;
+- indexed references over temporary associative containers in hot paths;
+- reuse over churn.
+
+When dynamic allocation is unavoidable, allocation frequency and lifetime should be considered explicitly.
+
+### Multithreading and memory
+
+Parallel execution can multiply per-thread memory use.
+
+A design that appears acceptable in one thread may become excessively expensive when replicated across many workers.
+
+For multithreaded calculations:
+
+- identify whether temporary storage is shared, thread-local, or task-local;
+- avoid false sharing between frequently modified values;
+- avoid unnecessary synchronization around allocators or shared containers;
+- bound the memory required by each worker;
+- preallocate worker contexts before launching calculations;
+- reuse each worker's buffers across tasks when safe;
+- do not share mutable scratch storage without explicit synchronization;
+- avoid allocating temporary objects repeatedly inside parallel loops.
+
+Thread-local storage should not be used automatically. Its lifetime and multiplied memory cost must be understood.
+
+### Measure before and after
+
+Performance-sensitive changes should be supported by measurement when practical.
+
+Relevant measurements may include:
+
+- elapsed time;
+- CPU time;
+- peak memory usage;
+- allocation count;
+- allocated bytes;
+- cache behavior;
+- scaling across thread counts;
+- solver and I/O time where relevant.
+
+Optimization should preserve correctness, deterministic behavior where required, and public compatibility.
+
+Tests protect behavior. Benchmarks and profiling demonstrate performance effects. Neither should replace the other.
+
+### Readability remains required
+
+Performance code must remain readable and testable.
+
+An optimization should be documented when its purpose or constraints are not obvious. Comments should explain why a less direct implementation is required and which performance property it protects.
+
+Do not introduce complexity based only on assumptions. Prefer measured and focused optimization while still designing calculation paths to avoid obvious allocation churn.
+
+### Performance design principle
+
+The preferred calculation lifecycle is:
+
+```text
+Parse and initialize
+        ↓
+Determine required capacities
+        ↓
+Allocate strategies, objects, indexes, and buffers
+        ↓
+Launch calculation or worker threads
+        ↓
+Reuse preallocated storage
+        ↓
+Produce results without repeated allocation churn
+```
+
+The key principle is:
+
+> **Allocate and prepare before calculation. Reuse during calculation. Avoid repeated small allocations and deallocations in hot and multithreaded paths.**
+
+---
+
 ## 📦 Public Interfaces
 
 FMT exposes functionality through:
@@ -682,6 +840,10 @@ New features and refactoring should:
 - avoid unnecessary global state;
 - isolate platform-specific behavior;
 - remain portable where the component is intended to be portable;
+- optimize calculation-intensive code for speed;
+- preallocate and reuse memory in hot paths;
+- reduce small allocations, deallocations, and memory fragmentation;
+- account for per-thread memory cost in parallel workflows;
 - add or improve automated tests;
 - preserve supported public interfaces whenever practical;
 - avoid duplicating behavior across wrappers;
@@ -703,6 +865,9 @@ An architectural change is valuable when it:
 - reduces coupling;
 - makes dependencies explicit;
 - improves portability;
+- improves execution speed where performance matters;
+- reduces allocation churn and memory fragmentation;
+- keeps multithreaded memory use controlled;
 - improves testability;
 - removes duplication;
 - preserves or improves type safety;
