@@ -89,14 +89,14 @@ namespace Core
 		@param[in] p_request, a valid request from the model.
 		@return Yields normalized yield values based on total value multiply by 100.
 		*/
-		std::vector<size_t> _getNormalizedYields(const std::vector<std::string>& p_yields,const Core::FMTYieldRequest& p_request) const;
+		std::vector<double> _getNormalizedYields(const std::vector<std::string>& p_yields,const Core::FMTYieldRequest& p_request) const;
 		// DocString: FMTYieldModelRandom::getYield
 		/**
 		@brief REturn a randomly selected index
 		@param[in] p_distribution
 		@return a double randomly generated.
 		*/
-		double _getRandomIndex(const std::vector<size_t>& p_distribution) const;
+		double _getRandomIndex(const std::vector<double>& p_distribution) const;
 		// DocString: FMTYieldModelRandom::getYield
 		/**
 		@brief If the seed of the FMTModel parameters changed from the last call then update the m_seed and the m_generator.
