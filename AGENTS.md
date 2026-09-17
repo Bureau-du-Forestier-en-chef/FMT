@@ -1,451 +1,134 @@
-# 🤖 FMT Agent Guidelines
+# FMT Agent Guidelines
 
-> Instructions for AI coding assistants and automated contributors working in the FMT repository.
+Operational guide for contributors and coding assistants working in this repository.
 
----
+This file covers what is specific to FMT: where things are, how to build and test, and the
+conventions that are easy to break without noticing. Design rules are not repeated here. Each rule
+lives in exactly one document, and changes to it belong in that document only.
 
-## 📚 Required Reading
+| What you need | Where it is defined |
+| --- | --- |
+| Layers, responsibilities, dependency direction, loose coupling, performance and memory | [Documentation/Architecture.md](Documentation/Architecture.md) |
+| Naming, file organization, documentation, type safety, ownership, errors, tests, warnings, compatibility | [Documentation/CodingStandards.md](Documentation/CodingStandards.md) |
+| Repository map, build and test mechanics, repository traps, task workflow | this file |
 
-Before modifying the repository, read:
+## Repository map
 
-- [`Documentation/Architecture.md`](Documentation/Architecture.md)
-- [`Documentation/CodingStandards.md`](Documentation/CodingStandards.md)
-- [`CONTRIBUTING.md`](CONTRIBUTING.md), when available
+| Path | Contents |
+| --- | --- |
+| `Include/`, `Source/` | The FMT library: 247 headers, 224 sources. Namespaces `Core` (model concepts), `Models` (planning models), `Spatial`, `Graph`, `Parser` (Woodstock files), `Heuristics`, `Parallel`, `Logging`, `Exception`. |
+| `FMTWrapperCore/` | Portable wrapper core shared by the interfaces, with its own `tests/`. |
+| `UI/` | `FMTForm` and the user interface. |
+| `Excel/` | Excel integration. |
+| `Examples/C++/` | Example programs. Each `.cpp` also becomes a test executable. |
+| `Examples/Python/tests/`, `Examples/R/tests/` | pytest and testthat suites, run through the install targets. |
+| `Examples/Models/` | Woodstock models used by the tests. |
+| `Templates/` | Packaging inputs and generated artifacts: R package, `setup.py.in`, `__init__.py.in`, stub normalization. |
+| `cmake/`, `Modules/` | Install and configuration scripts; `Find*.cmake` for GEOS, MOSEK, OSI, R, Rcpp, ONNX Runtime. |
+| `tools/` | `commitMessage/`, `changelog/`, `HeapCorruption/`, `RToolsSetup/`. |
+| `vcpkg.json`, `vcpkg-custom-ports/`, `vcpkg-overlays/` | Dependencies: GDAL, Arrow, COIN-OR, Python. |
+| `Documentation/` | Architecture, coding standards, Doxygen configuration, training material. |
 
-These documents are authoritative. This file is a concise entry point and must not replace them.
+## Building
 
----
+Configure presets are defined in `CMakePresets.json`: `release-mam`, `release-gc` and `release-gl`,
+all Visual Studio 17 2022 generators with testing enabled. They all build into `build/release`.
 
-## 🎯 Project Context
-
-FMT, the **Forest Management Tool**, is a mature C++17 library for forest-planning models.
-
-FMT exposes functionality through multiple interfaces:
-
-- native C++;
-- Python;
-- R;
-- .NET and C++/CLI;
-- Excel.
-
-A change to a public native C++ symbol may therefore affect several wrappers, bindings, generated files, packages, and user applications.
-
-FMT is modular and contains identifiable architectural layers, but it is not yet a strictly layered system. New features and refactoring should move the codebase incrementally toward clearer boundaries without requiring a complete rewrite.
-
----
-
-## 🏗️ Architectural Direction
-
-The intended dependency direction is:
-
-```text
-Applications and User Interfaces
-                ↓
-Wrappers and Language Bindings
-                ↓
-Application Controllers and Services
-                ↓
-Forest-Planning Domain
-                ↓
-Infrastructure and External Libraries
+```bash
+cmake --preset release-gl
+cmake --build --preset release-gl
 ```
 
-Apply these rules:
+Scripted entry points exist for the usual configurations: `CMakeFMTVS2022vcpkg.bat` and its variants
+on Windows, `CMakeFMTMSYS2rcran45.sh` for the MSYS2 build of the R package. Configuring with
+`-DWITHOUT_TESTING=ON` skips test registration entirely.
 
-1. Domain code must not depend on wrappers or user interfaces.
-2. Wrappers convert platform-specific types and delegate operations.
-3. Controllers coordinate use cases but should not contain domain algorithms.
-4. Complex workflows belong in focused application services.
-5. Infrastructure-specific behavior should remain isolated.
-6. Platform-specific types must not cross into portable domain interfaces.
-7. New dependencies should be explicit and strongly typed.
-8. Circular dependencies should be avoided.
-9. Shared behavior should have one authoritative implementation.
-10. Legacy code does not automatically define the preferred design for new code.
+## Testing
 
----
-
-## 🔗 Loose Coupling
-
-Loose coupling is a core FMT design philosophy.
-
-New features and refactoring should:
-
-- minimize knowledge between components;
-- make dependencies explicit;
-- avoid unnecessary global mutable state;
-- avoid expanding singleton usage;
-- avoid coupling portable code to a specific UI or language binding;
-- improve independent testability;
-- use focused services and portable data types;
-- prefer the simplest useful abstraction.
-
-Do not create an interface, factory, observer, or dependency-injection mechanism only for theoretical flexibility.
-
-Introduce an abstraction when it provides a practical benefit such as:
-
-- clearer responsibilities;
-- improved testability;
-- portability;
-- meaningful dependency isolation;
-- support for multiple implementations.
-
----
-
-## 🌍 Portability
-
-FMT portable code is expected to support the project-approved configurations of:
-
-- MSVC on Windows;
-- GCC on Linux;
-- Clang where supported.
-
-FMT uses C++17.
-
-When writing portable code:
-
-- prefer standard C++17 facilities;
-- avoid unnecessary compiler extensions;
-- isolate platform-specific code;
-- use `std::filesystem::path` for native file-system paths when practical;
-- do not assume Windows separators, drive letters, or case-insensitive file systems;
-- do not expose managed, Python, Rcpp, Excel, Qt, GTK, or operating-system types through portable interfaces;
-- do not introduce new compiler warnings.
-
-Platform-specific behavior should be contained in dedicated wrappers, adapters, infrastructure components, source files, or localized CMake conditions.
-
----
-
-## 📁 Files and Classes
-
-Follow these file-organization rules:
-
-- one primary class per file;
-- regular classes use a `.h` declaration and `.cpp` implementation;
-- template classes and template definitions generally use one `.hpp` file;
-- private implementation helpers may remain in a `.cpp` file when they have no meaning outside that implementation;
-- public headers should expose the minimum required dependencies;
-- do not rely on transitive includes;
-- do not compress declarations or implementations onto single lines.
-
-Examples:
-
-```text
-FMTAction.h
-FMTAction.cpp
-FMTBounds.hpp
+```bash
+ctest --test-dir build/release -C Release
 ```
 
-Do not create extra files or abstractions unless they improve the structure meaningfully.
+### Adding a C++ test
 
----
+Registration is data-driven. There is no `add_test` call to copy.
 
-## 🎨 Code Style
+1. Add a `.cpp` file to `Examples/C++/`. Every file in that directory becomes an executable
+   ([Examples/C++/CMakeLists.txt](Examples/C++/CMakeLists.txt), line 11).
+2. Add a row to a CSV in `Examples/C++/tests/`, in the form
+   `TEST;primarylocation;scenario;doublevalue`. The row registers the test with CTest only if a
+   target of that name exists (same file, line 42).
+3. `basetests.csv` is versioned. `BFECtests.csv` is listed in `.gitignore`, so `git grep` never shows
+   it. Read that file directly before concluding what CTest actually runs.
 
-Follow the root `.clang-format` file when present.
+Python and R behaviour is covered by `Examples/Python/tests/` and `Examples/R/tests/`, wired in
+`cmake/BaseInstallPython.cmake` and `cmake/BaseInstallR.cmake`.
 
-General expectations:
+Do not report that tests passed unless they were executed. When you could not run them, state
+explicitly which validation is missing.
 
-- use readable indentation and spacing;
-- place braces consistently with the surrounding component and formatter;
-- split long signatures across multiple lines;
-- use descriptive names;
-- avoid unexplained abbreviations;
-- avoid unrelated formatting changes;
-- do not add `using namespace` directives to header files;
-- include the corresponding header first in a `.cpp` file;
-- preserve the established naming convention of the component being modified.
+## Conventions that are easy to break
 
-Do not perform a repository-wide naming migration as part of an unrelated change.
+Each of these is defined in full where it is linked. They are listed here because they are easy to
+break before you have read anything else.
 
----
+| Trap | What it means for you |
+| --- | --- |
+| Source files are encoded in cp1252, not UTF-8, and hold accented characters | Preserve the encoding and the CRLF endings of every file you edit. Rewriting one as UTF-8 corrupts every accent in it. [Rule](Documentation/CodingStandards.md#file-encoding-and-line-endings) |
+| Every source and CMake file carries the LiLiQ-R license header | Copy it into any new file. [Rule](Documentation/CodingStandards.md#license-header) |
+| A Doxygen block needs a `// DocString:` marker to reach Python and R users | Add the marker above the block, naming the symbol. [Rule](Documentation/CodingStandards.md#docstring-markers) |
+| Parameters use the `p_` prefix in modernized code | Do not add to the legacy `l` prefix, and do not mix both in one interface. [Rule](Documentation/CodingStandards.md#parameters) |
+| `Examples/C++/tests/BFECtests.csv` is listed in `.gitignore` | `git grep` never shows it. Read it directly before concluding what CTest runs. |
 
-## 📖 Documentation
+### Language
 
-Only public classes and public methods accessible to FMT library users require public API documentation.
+- Code, comments, Doxygen and test output: English.
+- User-facing interface strings, `ETAT.md` files and `CHANGELOG.fr.md`: French.
+- `CHANGELOG.md` and `CHANGELOG.fr.md` cover the same releases and are updated together.
 
-This includes APIs exposed through:
+## Commits and changelog
 
-- C++;
-- Python;
-- R;
-- .NET;
-- Excel.
+Commit messages follow Conventional Commits 1.0.0, as produced by `CommitMessage_Generator.bat`
+(`tools/commitMessage/`): `type(scope): description`, lowercase type, imperative subject, 72
+characters or fewer, `!` after the type or scope for a breaking change.
 
-Public documentation should explain:
+The changelog follows Keep a Changelog and SemVer, produced by `Changelog_Generate.bat`
+(`tools/changelog/`).
 
-- purpose;
-- observable behavior;
-- parameters;
-- return values;
-- exceptions;
-- important side effects;
-- ownership and lifetime requirements;
-- thread-safety guarantees where relevant;
-- compatibility or deprecation information.
+Do not create commits unless you are asked to. Describe what changed and leave the commit to the
+maintainer.
 
-Private methods, internal classes, protected implementation details, and local helpers do not require public API documentation.
+## Work that spans several sessions
 
-Add internal comments only when they explain non-obvious intent, invariants, algorithms, workarounds, performance decisions, compatibility constraints, or lifetime requirements.
+For a campaign that runs over several sessions, such as a migration, a large rename or a test
+effort, keep a status file next to the work: `FMTWrapperCore/ETAT.md`, `Examples/C++/tests/ETAT.md`.
+Write it in French. Read it before each batch and update it afterwards.
 
-Do not add comments that merely repeat the code.
+It should record:
 
----
+- the objective, and what is explicitly out of scope;
+- what is done and what remains, batch by batch;
+- decisions already taken, so they are not reopened;
+- traps encountered along the way;
+- how to verify the work.
 
-## 🧷 Type Safety
+A status file tracks a campaign in progress. This file, `Architecture.md` and `CodingStandards.md`
+are permanent.
 
-Prefer strongly typed interfaces.
+## Working rules
 
-Avoid introducing:
+- Stay within the requested scope. Do not reformat a legacy file you happened to open, and do not
+  start a repository-wide rename inside an unrelated change.
+- Do not modify generated artifacts, such as the contents of `Templates/` or generated `.pyi` stubs,
+  without updating the step that generates them.
+- Do not change `vcpkg.json`, `vcpkg-custom-ports/` or `vcpkg-overlays/` unless dependencies are the
+  task.
+- Existing code does not define the standard for new code. Equally, do not rewrite a working
+  component to match a rule as a side effect of an unrelated change.
+- Report accurately what was verified and what was not.
 
-```cpp
-void*
-```
+## Before you finish
 
-when the intent can be represented with:
-
-- a concrete type;
-- an `enum class`;
-- a focused interface;
-- a template;
-- `std::function`;
-- a typed event.
-
-Use `std::size_t` for container sizes and indexes where appropriate.
-
-Do not implicitly narrow:
-
-- `std::size_t` to `int`;
-- `double` to `float`;
-- large unsigned integers to smaller or floating-point types.
-
-When narrowing is required, validate the range when necessary and make the conversion explicit.
-
-Do not use relational operators on Boolean values when an explicit logical expression communicates the intent more clearly.
-
----
-
-## 🧠 Ownership and Lifetime
-
-Use RAII.
-
-Prefer:
-
-- automatic storage;
-- references for required non-owning dependencies;
-- pointers for optional non-owning dependencies;
-- `std::unique_ptr` for exclusive dynamic ownership;
-- `std::shared_ptr` only for genuinely shared ownership;
-- `std::weak_ptr` for non-owning observation of shared objects.
-
-Do not infer ownership from a raw pointer without examining how the object is created, stored, and destroyed.
-
-Event handlers and callbacks must not outlive the objects they invoke.
-
----
-
-## 🚨 Exceptions, Logging, and Events
-
-Use the established FMT exception hierarchy for native failures.
-
-Catch exceptions only where they can be handled, translated, or enriched meaningfully.
-
-Restrict `catch (...)` primarily to application and interoperability boundaries where the exception is immediately translated, logged, or rethrown.
-
-Domain code must not depend on UI-specific logging or event mechanisms.
-
-For a controller with one event consumer, prefer:
-
-```cpp
-std::function<void(const Event&)>
-```
-
-instead of an untyped callback context.
-
-Event payloads should use portable native C++ types. Platform-specific conversion belongs in the wrapper layer.
-
-If multiple simultaneous consumers become necessary, the typed event model may later evolve into an event dispatcher.
-
----
-
-## 🧪 Testing Requirements
-
-Automated tests are a primary safety mechanism for FMT development and refactoring.
-
-Apply these rules:
-
-1. New observable features require tests.
-2. Bug fixes require regression tests when practical.
-3. Refactoring must rely on tests to preserve observable behavior.
-4. Add characterization tests when existing behavior is insufficiently covered.
-5. Domain behavior should be tested without requiring a UI or language wrapper.
-6. Controllers and application services should be independently testable.
-7. Wrapper tests should focus on conversion, exception translation, event forwarding, and public API availability.
-8. Tests must be deterministic and focused.
-9. Prefer the smallest practical model and dataset.
-10. Register tests with CMake and CTest where practical.
-
-Coverage should identify important untested paths, but coverage percentage is not a substitute for meaningful assertions.
-
-Do not claim that tests passed unless they were actually executed.
-
-When execution is unavailable, clearly state which validation was not performed.
-
----
-
-## 🔌 Wrappers and Bindings
-
-Wrappers are interoperability adapters, not alternate implementations of FMT behavior.
-
-### Python
-
-When public Python bindings change, consider:
-
-- generated `.pyi` files;
-- `py.typed` packaging;
-- stub normalization;
-- mypy or equivalent validation;
-- IDE completion;
-- wheel contents.
-
-### R
-
-When Rcpp modules change, preserve runtime reflection and RStudio completion where practical.
-
-### .NET and Excel
-
-Keep managed types at the interoperability boundary.
-
-Convert managed values before calling portable native C++ services.
-
-Each shared library should use an export macro appropriate to that library. Do not define import and export states simultaneously for the same implementation target.
-
----
-
-## ⚠️ Compiler Warnings
-
-Treat compiler warnings as actionable until investigated.
-
-Pay special attention to:
-
-```text
-C4244  Potential data loss during conversion
-C4267  Conversion from std::size_t to a smaller type
-C4273  Inconsistent DLL linkage
-C4804  Unsafe Boolean operation
-```
-
-Warnings emitted from standard-library or third-party headers may still originate from an FMT call site.
-
-Do not suppress warnings globally to hide a local problem.
-
-Any unavoidable suppression must be localized, justified, and documented.
-
----
-
-## ♻️ Refactoring
-
-Refactoring should improve structure without unintentionally changing observable behavior.
-
-Observable behavior includes:
-
-- public API signatures;
-- generated outputs;
-- numerical and optimization results;
-- exception behavior;
-- logging and events;
-- serialization and file formats;
-- C++, Python, R, .NET, and Excel interfaces.
-
-Prefer focused, reviewable changes.
-
-Avoid combining all of the following in one change unless necessary:
-
-- large file movement;
-- broad renaming;
-- new features;
-- behavioral changes;
-- dependency upgrades;
-- unrelated formatting.
-
-Remove dead and commented-out code after verifying that supported interfaces no longer require it. Version control preserves history.
-
-Update `Documentation/Architecture.md` when responsibilities, dependency direction, or architectural principles change.
-
----
-
-## 🛡️ Backward Compatibility
-
-Before changing a public symbol, check its exposure through:
-
-- C++;
-- Python;
-- R;
-- .NET;
-- Excel.
-
-When practical:
-
-- preserve compatibility through a delegating alias;
-- avoid duplicated old and new implementations;
-- document deprecation;
-- provide a migration path;
-- add compatibility tests.
-
-File formats, serialized data, generated outputs, and numerical behavior require the same compatibility care as public APIs.
-
----
-
-## 🚫 Do Not
-
-Do not:
-
-- place domain logic in a wrapper;
-- make the domain depend on a UI or language binding;
-- introduce new `void*` callback contexts when a typed alternative exists;
-- expand global mutable state without strong justification;
-- copy a legacy pattern only because it already exists;
-- add public API documentation to every private helper;
-- invent test results;
-- silently change public behavior during refactoring;
-- ignore compiler warnings without investigation;
-- modify generated files without updating the generation process;
-- perform broad unrelated cleanup in a focused bug fix;
-- introduce an abstraction with no practical benefit.
-
----
-
-## ✅ Before Completing a Change
-
-Verify the following where applicable:
-
-- [ ] The code belongs in the correct architectural layer.
-- [ ] Responsibilities remain focused.
-- [ ] Dependencies are explicit and loosely coupled.
-- [ ] Portable code remains platform-independent.
-- [ ] Public API impacts were assessed across supported interfaces.
-- [ ] Public user-facing classes and methods are documented.
-- [ ] Ownership and lifetime are clear.
-- [ ] Narrowing conversions are explicit and safe.
-- [ ] No new compiler warnings were introduced.
-- [ ] New behavior has tests.
-- [ ] Bug fixes have regression tests when practical.
-- [ ] Refactored behavior is protected by tests.
-- [ ] Generated bindings, stubs, or packages were updated when needed.
-- [ ] Architecture or coding documentation was updated when project-wide rules changed.
-- [ ] The final response accurately reports what was and was not validated.
-
----
-
-## 📝 Keeping This File Current
-
-`AGENTS.md` is a concise operational guide.
-
-The authoritative sources remain:
-
-```text
-Documentation/Architecture.md
-Documentation/CodingStandards.md
-```
-
-When those documents change, update this file if the new rule affects how automated contributors should work.
+Work through the checklist in
+[CodingStandards.md, Code Review Checklist](Documentation/CodingStandards.md#code-review-checklist).
+It is the only checklist in the project; this file does not keep a second copy.

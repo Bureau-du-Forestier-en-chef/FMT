@@ -1,46 +1,42 @@
-# 🧭 FMT Coding Standards
+# FMT Coding Standards
 
 > **Forest Management Tool**
 >
 > This document defines the coding standards for FMT. It complements [`Architecture.md`](Architecture.md), which describes the architectural layers, responsibilities, dependency rules, and long-term direction of the project.
 
----
+## Table of Contents
 
-## 📚 Table of Contents
+- [Purpose](#purpose)
+- [Scope](#scope)
+- [General Principles](#general-principles)
+- [Language Standard](#language-standard)
+- [Portability](#portability)
+- [File Encoding and Line Endings](#file-encoding-and-line-endings)
+- [File Organization](#file-organization)
+- [Naming](#naming)
+- [Readability and Declaration Order](#readability-and-declaration-order)
+- [Formatting](#formatting)
+- [Includes](#includes)
+- [Namespaces](#namespaces)
+- [Classes and Responsibilities](#classes-and-responsibilities)
+- [Public API Design](#public-api-design)
+- [Documentation](#documentation)
+- [Type Safety](#type-safety)
+- [Ownership and Lifetime](#ownership-and-lifetime)
+- [Error Handling](#error-handling)
+- [Logging and Events](#logging-and-events)
+- [Thread Safety](#thread-safety)
+- [Templates](#templates)
+- [Serialization](#serialization)
+- [Numerical Code](#numerical-code)
+- [Wrappers and Bindings](#wrappers-and-bindings)
+- [Compiler Warnings](#compiler-warnings)
+- [Testing](#testing)
+- [Refactoring](#refactoring)
+- [Backward Compatibility](#backward-compatibility)
+- [Code Review Checklist](#code-review-checklist)
 
-- [Purpose](#-purpose)
-- [Scope](#-scope)
-- [General Principles](#-general-principles)
-- [Language Standard](#-language-standard)
-- [Portability](#-portability)
-- [File Organization](#-file-organization)
-- [Naming](#-naming)
-- [Readability and Declaration Order](#-readability-and-declaration-order)
-- [Formatting](#-formatting)
-- [Includes](#-includes)
-- [Namespaces](#-namespaces)
-- [Classes and Responsibilities](#-classes-and-responsibilities)
-- [Public API Design](#-public-api-design)
-- [Documentation](#-documentation)
-- [Type Safety](#-type-safety)
-- [Ownership and Lifetime](#-ownership-and-lifetime)
-- [Error Handling](#-error-handling)
-- [Logging and Events](#-logging-and-events)
-- [Thread Safety](#-thread-safety)
-- [Templates](#-templates)
-- [Serialization](#-serialization)
-- [Numerical Code](#-numerical-code)
-- [Wrappers and Bindings](#-wrappers-and-bindings)
-- [Compiler Warnings](#-compiler-warnings)
-- [Testing](#-testing)
-- [Refactoring](#-refactoring)
-- [Backward Compatibility](#-backward-compatibility)
-- [Code Review Checklist](#-code-review-checklist)
-- [Living Document](#-living-document)
-
----
-
-## 🎯 Purpose
+## Purpose
 
 These standards aim to make FMT code:
 
@@ -55,9 +51,22 @@ These standards aim to make FMT code:
 
 These rules apply primarily to new code and modified code. Existing legacy code should be improved incrementally when it is touched, without introducing unnecessary unrelated changes.
 
----
+### How to read these rules
 
-## 🔭 Scope
+Not every rule carries the same weight. Three words are used deliberately.
+
+**Must** marks a rule that is not negotiable, because breaking it produces a broken build, corrupted files, or a false claim. The list is short:
+
+- the license header on every new file;
+- the existing encoding and line endings of a file you edit;
+- no new compiler warnings;
+- no test result reported without having run the test.
+
+**Should** marks the default. Deviate when the situation genuinely calls for it, and say why in the code or in the change description.
+
+**Avoid** marks a known trap. There is normally a better option in the same paragraph.
+
+## Scope
 
 This document applies to:
 
@@ -72,47 +81,26 @@ This document applies to:
 - CMake build definitions;
 - automated tests.
 
-Architecture and dependency rules are defined in:
+Architecture and dependency rules are defined in [Architecture.md](Architecture.md). The repository map, build commands, test registration, and the conventions specific to this repository are in [AGENTS.md](../AGENTS.md).
 
-```text
-Documentation/Architecture.md
-```
+Each rule lives in one document. Where another document already states a rule, this one links to it rather than restating it, and the rule is updated where it is defined.
 
-Contribution workflow should be defined separately in:
+These standards evolve with FMT. When the project adopts a repository-wide convention, add it here in the same change. A convention should be enforceable, understandable, and worth its cost; a rule that no longer serves the project should be revised rather than kept out of habit.
 
-```text
-CONTRIBUTING.md
-```
+## General Principles
 
----
-
-## ✨ General Principles
-
-New code and refactoring should favor:
-
-- readability as the primary code-quality objective;
-- a natural top-to-bottom reading order;
-- clear responsibilities;
-- loose coupling;
-- explicit dependencies;
-- strong typing;
-- portability;
-- RAII;
-- deterministic behavior;
-- independent testability;
-- backward compatibility;
-- the simplest design that satisfies the requirements.
+Readability is the primary code-quality objective. After that, new code and refactoring should favor a natural top-to-bottom reading order, clear responsibilities, explicit dependencies, strong typing, RAII, deterministic behavior, and the simplest design that satisfies the requirements.
 
 Code should communicate intent clearly without requiring unnecessary comments or knowledge of unrelated components.
+
+The architectural goals these serve, including loose coupling and independent testability, are in [Architecture.md](Architecture.md).
 
 > [!IMPORTANT]
 > Existing code does not automatically define the preferred standard for new code.
 
 Avoid introducing abstractions only for theoretical flexibility. An abstraction should provide a practical benefit such as clearer responsibilities, improved testability, portability, or support for multiple implementations.
 
----
-
-## 🧰 Language Standard
+## Language Standard
 
 FMT uses **C++17**.
 
@@ -135,9 +123,9 @@ Do not introduce a dependency on a newer C++ standard unless the supported toolc
 
 Compiler-specific extensions may be used only in components that are explicitly platform-specific or when no suitable portable alternative exists.
 
----
+## Portability
 
-## 🌍 Portability
+Portability is an architectural objective, described in [Architecture.md, Portability](Architecture.md#portability). This section covers what it means when writing code.
 
 Portable components should compile with the supported configurations of:
 
@@ -200,9 +188,36 @@ The portable domain and application layers must not expose:
 
 Wrappers must convert platform-specific values into portable C++ types before calling portable services.
 
----
+## File Encoding and Line Endings
 
-## 📁 File Organization
+Source files in this repository are encoded in **cp1252**, not UTF-8, and they contain accented characters. Every file opens with a license header containing `Gouvernement du Québec`, and French text appears in comments and in user-facing strings.
+
+The consequence is easy to get wrong: reading such a file as UTF-8 and writing it back replaces every accented character with a replacement sequence. The build still succeeds, the damage spreads across lines unrelated to the change, and it reaches users through generated documentation and interface strings.
+
+You must preserve the encoding and the line endings of any file you edit.
+
+- Files use CRLF line endings. Do not convert a file to LF as a side effect of editing it.
+- When a file contains bytes above 127, edit it through a tool that reads and writes latin-1 rather than a UTF-8 editor.
+- After a bulk edit, verify that the accented characters survived before proposing the change.
+
+New source files should be written in cp1252 to match their neighbours. Markdown documentation in this repository is UTF-8 without BOM, also with CRLF endings.
+
+## File Organization
+
+### License header
+
+Every source file and CMake file must begin with the project license header:
+
+```cpp
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+```
+
+CMake files carry the same text inside the `#[[ ]]` comment form. A new file without this header is incomplete.
 
 ### One primary class per file
 
@@ -246,9 +261,9 @@ Source files should contain:
 
 ### Header guards
 
-All headers must use a consistent include guard or the project-approved alternative.
+Every header must have an include guard. FMT has no single spelling for it: existing headers use forms such as `FMTACT_Hm_included` in `FMTAction.h`.
 
-Example:
+Match the convention of the component you are working in. In a new component, derive the macro from the file name and keep it unique:
 
 ```cpp
 #ifndef FMTACTION_H_INCLUDED
@@ -259,9 +274,9 @@ Example:
 #endif
 ```
 
----
+Do not rename an existing guard as a side effect of another change.
 
-## 🏷️ Naming
+## Naming
 
 Naming should make the code read naturally and communicate intent without requiring the reader to inspect the implementation first.
 
@@ -413,17 +428,15 @@ A large-scope variable should only have a short name when the concept is central
 
 Parameter names should describe what the caller supplies.
 
-Follow the established convention of the component, but do not mix styles in the same new interface.
-
-Avoid mixing:
+New and modified code uses the `p_` prefix:
 
 ```cpp
-modelIndex
-p_modelIndex
-lmodelindex
+double getYieldValue(const std::string& p_mask, const std::string& p_yield, int p_age, int p_period) const;
 ```
 
-Prefer one consistent form within the component.
+This is the convention in the modernized components, and it makes a parameter distinguishable at a glance from a data member (`m_`) and from a local variable.
+
+Older code uses an `l` prefix, such as `lactions`, `lname`, and `loutputs`, or no prefix at all. That form is being retired: do not add to it, and do not mix two forms in one new interface. Converting an existing signature is a rename with public API consequences, so treat it as one; see [Backward Compatibility](#backward-compatibility).
 
 ### Data members
 
@@ -459,9 +472,7 @@ Use names that clearly communicate immutability and meaning. Follow the conventi
 
 Avoid unexplained numeric literals. Use named constants when the value has domain or algorithmic meaning.
 
----
-
-## 📖 Readability and Declaration Order
+## Readability and Declaration Order
 
 Readability is the primary coding-style objective in FMT.
 
@@ -586,6 +597,18 @@ Definitions in the `.cpp` file should follow the same order as declarations in t
 
 This makes navigation predictable and allows the reader to move through the interface and implementation in the same sequence.
 
+### Declaration order changes that are not safe
+
+The ordering rules above are about readability, and they apply to ordinary classes. Three cases are exceptions, and one of them has already broken FMT at runtime.
+
+**Data members are constructed in declaration order.** Reordering them changes initialization order, which breaks any constructor whose members depend on each other. The compiler does not warn in every case.
+
+**Templates.** Reordering the members of a template class has broken the runtime in this repository: a reordering of `FMTLayer` did exactly that. Rename members of a template when it helps, but leave their order alone.
+
+**Serialized classes.** Boost serialization visits members in the order the serialize function lists them. Changing that order silently invalidates files that users already hold. See [Serialization](#serialization).
+
+For a class that is both a template and serialized, do not reorder it at all. The readability gain is small and the failure is silent.
+
 ### Optimize for the reader
 
 Code is read more often than it is written.
@@ -673,24 +696,13 @@ The goal is not to maximize the number of methods or classes. The goal is to cre
 
 A public method should present a concise use case. Its private methods should explain the implementation as a sequence of meaningful steps. If those steps represent separate responsibilities, move them into focused collaborator classes.
 
+## Formatting
 
----
+FMT has no `.clang-format` file and no automated formatter. Formatting therefore means matching the file you are editing, within the rules below.
 
-## 🎨 Formatting
+**Indent with tabs.** That is the convention in `Include/` and `Source/`. Mixing spaces into a tab-indented file produces a diff that hides the real change.
 
-FMT source code should be formatted consistently.
-
-If a root `.clang-format` file exists, it is the authoritative mechanical formatting configuration.
-
-Code must use normal spacing and indentation. Do not compress multiple declarations, statements, or method implementations onto one line.
-
-Avoid:
-
-```cpp
-if (value) { run(); return true; }
-```
-
-Prefer:
+**Brace placement varies between older files.** Follow the file you are editing rather than converting it. In a new file, put the opening brace on its own line:
 
 ```cpp
 if (value)
@@ -698,6 +710,12 @@ if (value)
     run();
     return true;
 }
+```
+
+Never compress declarations, statements, or method bodies onto one line:
+
+```cpp
+if (value) { run(); return true; }
 ```
 
 Use blank lines to separate logical sections, but avoid excessive vertical spacing.
@@ -713,11 +731,9 @@ FMTYldBounds::FMTYldBounds(
     const double& lower)
 ```
 
-Formatting-only changes should not be mixed with unrelated behavioral changes when that would make review more difficult.
+Do not reformat code you did not otherwise change. A formatting pass over a legacy file buries the real change in the diff and makes the history harder to read. When a file genuinely needs reformatting, that is its own change.
 
----
-
-## 📥 Includes
+## Includes
 
 ### Include what is used
 
@@ -769,9 +785,7 @@ Public headers should expose the minimum required dependencies.
 
 Platform-specific and wrapper-specific headers must not leak unnecessarily into portable public headers.
 
----
-
-## 📦 Namespaces
+## Namespaces
 
 Place code in the namespace matching its responsibility.
 
@@ -799,54 +813,15 @@ In source files, prefer explicit namespace qualification when it improves clarit
 
 Namespaces should represent stable concepts rather than temporary implementation details.
 
----
+## Classes and Responsibilities
 
-## 🧱 Classes and Responsibilities
-
-A class should have one clear primary responsibility.
-
-- Domain behavior belongs in domain classes.
-- Workflow orchestration belongs in application services.
-- Wrappers convert types and delegate operations.
-- Controllers coordinate use cases.
-- Infrastructure components communicate with external technologies.
+A class should have one clear primary responsibility. Which responsibilities belong to which layer is defined in [Architecture.md, Layer Responsibilities](Architecture.md#layer-responsibilities).
 
 A class should not gain unrelated responsibilities simply because it is already widely used.
 
-### Wrappers
+What a wrapper and a controller are allowed to do is defined in [Architecture.md, Layer Responsibilities](Architecture.md#layer-responsibilities). Two consequences apply when writing the code: a wrapper class such as `FMTForm` holds no forest-planning behavior of its own, and a controller that accumulates unrelated workflows has stopped being a controller. The rules for writing wrapper code are in [Wrappers and Bindings](#wrappers-and-bindings).
 
-Wrapper classes such as `FMTForm` should primarily:
-
-- convert managed or language-specific types;
-- translate exceptions at interoperability boundaries;
-- forward typed events;
-- delegate operations to portable controllers or services.
-
-Wrappers should not implement:
-
-- forest-planning business rules;
-- solver algorithms;
-- rasterization algorithms;
-- duplicated selection logic;
-- domain behavior already available in native components.
-
-### Controllers
-
-Controllers may:
-
-- validate application-level requests;
-- obtain required models and services;
-- coordinate a use case;
-- publish typed events;
-- return application-level results.
-
-Controllers should not become God objects containing unrelated workflows and domain algorithms.
-
-Complex operations should be delegated to focused services.
-
----
-
-## 🔐 Public API Design
+## Public API Design
 
 Public APIs should be:
 
@@ -863,17 +838,9 @@ Prefer domain types or enums instead of unrelated integers when the type carries
 
 Public methods should avoid unnecessary output parameters when a return type can express the result clearly.
 
-Changes to public native C++ APIs must be evaluated for their effects on:
+A change to a public native C++ API reaches Python, R, .NET, Excel, and existing native applications. Evaluate it across all of them before making it: see [Backward Compatibility](#backward-compatibility).
 
-- Python;
-- R;
-- .NET;
-- Excel;
-- existing native applications.
-
----
-
-## 📖 Documentation
+## Documentation
 
 ### Documentation scope
 
@@ -899,6 +866,22 @@ They should only be commented when necessary to explain:
 - a lifetime or ownership constraint;
 - behavior outside the current component.
 
+### DocString markers
+
+A public documentation block is preceded by a marker naming the symbol it documents:
+
+```cpp
+// DocString: FMTModel::setReplicate
+```
+
+219 of the 247 headers in `Include/` use it, and `Documentation/commentsPythonandR.py` parses these markers to generate the Python and R docstrings. A Doxygen block written without the marker is invisible to that generator, so the symbol reaches Python and R users undocumented.
+
+Use the qualified `Class::method` form. When a method is overloaded, include the parameter types so the marker identifies one overload:
+
+```cpp
+// DocString: FMTGraphVertexToYield(const Models::FMTModel&,const FMTGraph<FMTBaseVertexProperties, FMTBaseEdgeProperties>&,const void*)
+```
+
 ### Public documentation content
 
 Public documentation should describe:
@@ -916,15 +899,14 @@ Public documentation should describe:
 Example:
 
 ```cpp
+// DocString: FMTModel::getPeriodCount
 /**
- * @brief Returns the number of planning periods in the model.
- *
- * @param modelIndex Index of the model in the model cache.
- * @return Number of planning periods.
- *
- * @throws Exception::FMTException If the model index is invalid.
- */
-int getPeriodCount(int modelIndex) const;
+@brief Returns the number of planning periods in the model.
+@param[in] p_modelIndex Index of the model in the model cache.
+@return Number of planning periods.
+@throws Exception::FMTException If the model index is invalid.
+*/
+int getPeriodCount(int p_modelIndex) const;
 ```
 
 ### Comment quality
@@ -948,9 +930,7 @@ Prefer:
 
 Public documentation should describe behavior from the library user's perspective and should not expose unnecessary implementation details.
 
----
-
-## 🧷 Type Safety
+## Type Safety
 
 Prefer strongly typed interfaces.
 
@@ -1026,9 +1006,7 @@ rather than:
 if (sourceEnabled <= targetEnabled)
 ```
 
----
-
-## 🧠 Ownership and Lifetime
+## Ownership and Lifetime
 
 Use RAII for resource management.
 
@@ -1050,9 +1028,7 @@ Resources such as files, locks, solver handles, and external-library objects sho
 
 Callbacks and event handlers must not outlive the object they invoke.
 
----
-
-## 🚨 Error Handling
+## Error Handling
 
 Use the established FMT exception hierarchy for native failures.
 
@@ -1079,9 +1055,7 @@ Do not use exceptions for ordinary control flow.
 
 Functions should leave objects in a valid state when an exception occurs.
 
----
-
-## 📣 Logging and Events
+## Logging and Events
 
 Domain classes should not depend on UI-specific logging or event mechanisms.
 
@@ -1109,9 +1083,7 @@ Do not invoke an event handler after the object owning the handler has been dest
 
 If multiple simultaneous consumers become necessary, the typed event model may evolve into a dispatcher without changing domain behavior.
 
----
-
-## 🧵 Thread Safety
+## Thread Safety
 
 Thread-safety guarantees must be explicit for components used concurrently.
 
@@ -1133,9 +1105,7 @@ Avoid exposing internal mutexes or requiring callers to know internal locking ru
 
 Tests involving concurrency should avoid fragile timing assumptions.
 
----
-
-## 🧩 Templates
+## Templates
 
 Template definitions should generally remain in `.hpp` files.
 
@@ -1152,9 +1122,7 @@ Avoid overly generic templates when a concrete domain type would communicate int
 
 Template error messages should remain understandable where practical. Use constraints expressed through C++17 techniques only when they materially improve correctness.
 
----
-
-## 💾 Serialization
+## Serialization
 
 Serialization changes require special care because existing user data may depend on the current representation.
 
@@ -1162,6 +1130,7 @@ Before modifying serialized classes:
 
 - determine whether previously generated files must remain readable;
 - preserve serialized field names where required;
+- preserve the order in which members are serialized, which matters as much as their names; see [Declaration order changes that are not safe](#declaration-order-changes-that-are-not-safe);
 - update versions when needed;
 - add compatibility tests;
 - review all supported archive formats.
@@ -1170,9 +1139,7 @@ A structural refactoring must not silently invalidate existing serialized data.
 
 Serialization functions should include all required state and avoid serializing temporary caches unless that behavior is intentional.
 
----
-
-## 🔢 Numerical Code
+## Numerical Code
 
 Forest-planning and optimization results may be sensitive to apparently minor implementation changes.
 
@@ -1194,9 +1161,7 @@ When converting between `double` and `float`, make the conversion explicit and v
 
 Randomized algorithms should support deterministic tests through controlled seeds where practical.
 
----
-
-## 🔌 Wrappers and Bindings
+## Wrappers and Bindings
 
 Wrappers are interoperability adapters, not alternative implementations of FMT behavior.
 
@@ -1237,11 +1202,9 @@ Managed wrappers should not expose portable components to managed types internal
 
 Each shared library should use an export macro appropriate to that library. Import and export macros must not be active simultaneously for the same library implementation.
 
----
+## Compiler Warnings
 
-## ⚠️ Compiler Warnings
-
-New code should not introduce warnings in supported build configurations.
+New code must not introduce warnings in supported build configurations.
 
 Warnings involving potential data loss, unsafe expressions, inconsistent linkage, or portability must be investigated rather than disabled globally.
 
@@ -1265,11 +1228,11 @@ Warning suppression must be:
 
 Do not lower the project-wide warning level to hide a local problem.
 
----
+## Testing
 
-## 🧪 Testing
+Why tests matter architecturally, and how testability relates to coupling, is in [Architecture.md, Testing as an Architectural Foundation](Architecture.md#testing-as-an-architectural-foundation). This section covers what to write.
 
-FMT intends to increase unit-test coverage substantially and rely heavily on automated tests for new features and refactoring.
+A test result must never be reported without having run the test. When the suite could not be executed, state which validation is missing. How to build and register tests is in [AGENTS.md](../AGENTS.md).
 
 ### New features
 
@@ -1288,7 +1251,7 @@ A bug fix should include a regression test that fails before the correction and 
 
 Refactoring should rely on tests to demonstrate that observable behavior remains unchanged.
 
-When existing behavior lacks coverage, add characterization tests before or during the refactoring.
+When existing behavior lacks coverage, add characterization tests before or during the refactoring. A characterization test records the current behavior and provides the baseline that makes it safe to change the implementation underneath it.
 
 ### Test levels
 
@@ -1334,9 +1297,7 @@ Coverage should identify important untested paths and risky components.
 
 Coverage percentage is a diagnostic indicator, not the objective by itself. Meaningful assertions and representative scenarios matter more than executing lines without validating behavior.
 
----
-
-## ♻️ Refactoring
+## Refactoring
 
 Refactoring should improve internal structure without unintentionally changing observable behavior.
 
@@ -1399,11 +1360,20 @@ Update `Architecture.md` when a refactoring changes:
 - architectural boundaries;
 - project-wide design principles.
 
----
-
-## 🛡️ Backward Compatibility
+## Backward Compatibility
 
 FMT exposes public functionality across several ecosystems.
+
+The compatibility surface is wider than the list of public method names. It includes:
+
+- public class and method names;
+- language-binding symbols;
+- model and project file formats;
+- serialized data;
+- exception behavior;
+- generated outputs;
+- numerical results;
+- logging and event behavior.
 
 Before renaming, moving, or removing a public symbol, verify whether it is accessible through:
 
@@ -1425,9 +1395,7 @@ Do not keep two independent implementations of old and new behavior.
 
 Changes to file formats, serialization, numerical behavior, or generated output require the same compatibility review as public API changes.
 
----
-
-## ✅ Code Review Checklist
+## Code Review Checklist
 
 Before submitting or approving a change, consider the following.
 
@@ -1478,13 +1446,3 @@ Before submitting or approving a change, consider the following.
 - [ ] Is refactored behavior protected by tests?
 - [ ] Are tests deterministic and focused?
 - [ ] Can the relevant behavior be tested without a UI or wrapper?
-
----
-
-## 📝 Living Document
-
-These coding standards should evolve with FMT.
-
-When the project adopts a new repository-wide convention, this document should be updated as part of the same change.
-
-A convention should be enforceable, understandable, and beneficial. Rules that no longer serve the project should be revised rather than preserved only by habit.

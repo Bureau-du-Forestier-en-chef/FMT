@@ -1,36 +1,31 @@
-# 🏗️ FMT Architecture
+# FMT Architecture
 
 > **Forest Management Tool**
 >
 > This document describes the architecture of FMT, the responsibilities of its major components, the intended direction of dependencies, and the principles that guide new development and refactoring.
 
----
+## Table of Contents
 
-## 📚 Table of Contents
+- [Purpose](#purpose)
+- [Architectural Status](#architectural-status)
+- [Architectural Goals](#architectural-goals)
+- [High-Level Architecture](#high-level-architecture)
+- [Layer Responsibilities](#layer-responsibilities)
+- [Dependency Rules](#dependency-rules)
+- [Loose Coupling](#loose-coupling)
+- [Portability](#portability)
+- [Performance and Memory Efficiency](#performance-and-memory-efficiency)
+- [Public Interfaces](#public-interfaces)
+- [Error Handling and Logging](#error-handling-and-logging)
+- [Events and Notifications](#events-and-notifications)
+- [State and Ownership](#state-and-ownership)
+- [Thread Safety](#thread-safety)
+- [Testing as an Architectural Foundation](#testing-as-an-architectural-foundation)
+- [Backward Compatibility](#backward-compatibility)
+- [Known Architectural Debt](#known-architectural-debt)
+- [Architectural Decision Principle](#architectural-decision-principle)
 
-- [Purpose](#-purpose)
-- [Architectural Status](#-architectural-status)
-- [Architectural Goals](#-architectural-goals)
-- [High-Level Architecture](#-high-level-architecture)
-- [Layer Responsibilities](#-layer-responsibilities)
-- [Dependency Rules](#-dependency-rules)
-- [Loose Coupling](#-loose-coupling)
-- [Portability](#-portability)
-- [Performance and Memory Efficiency](#-performance-and-memory-efficiency)
-- [Public Interfaces](#-public-interfaces)
-- [Error Handling and Logging](#-error-handling-and-logging)
-- [Events and Notifications](#-events-and-notifications)
-- [State and Ownership](#-state-and-ownership)
-- [Thread Safety](#-thread-safety)
-- [Testing as an Architectural Foundation](#-testing-as-an-architectural-foundation)
-- [Backward Compatibility](#-backward-compatibility)
-- [Known Architectural Debt](#-known-architectural-debt)
-- [Direction for New Development](#-direction-for-new-development)
-- [Architectural Decision Principle](#-architectural-decision-principle)
-
----
-
-## 🎯 Purpose
+## Purpose
 
 This document provides a shared architectural reference for FMT contributors, maintainers, reviewers, and coding assistants.
 
@@ -43,11 +38,13 @@ It explains:
 - which principles should guide new features and refactoring;
 - how FMT intends to evolve without requiring a complete rewrite.
 
-This document describes architectural intent. Detailed naming, formatting, documentation, and coding conventions belong in `Documentation/CodingStandards.md`.
+This document describes architectural intent. Naming, formatting, documentation, and coding conventions belong in [CodingStandards.md](CodingStandards.md). The repository map, build and test mechanics, and the conventions specific to this repository belong in [AGENTS.md](../AGENTS.md).
 
----
+Each rule lives in one document. Where another document already states a rule, this one links to it rather than restating it, and the rule is updated where it is defined.
 
-## 🧭 Architectural Status
+This document evolves with FMT. When a change introduces an architectural boundary, modifies layer responsibilities, or establishes a project-wide principle, update it in the same change.
+
+## Architectural Status
 
 FMT is a mature and modular C++17 library with identifiable domain, application, infrastructure, and interoperability layers.
 
@@ -71,27 +68,18 @@ The objective is to move **incrementally** toward clearer architectural boundari
 > [!IMPORTANT]
 > Existing code does not automatically define the preferred architecture for new code.
 
----
-
-## ✨ Architectural Goals
+## Architectural Goals
 
 The FMT architecture aims to:
 
 - preserve the independence of forest-planning domain logic;
-- move progressively toward clearer architectural layers;
-- keep wrappers lightweight and focused on interoperability;
-- separate workflow orchestration from domain behavior;
+- move progressively toward clearer architectural layers, keeping wrappers focused on interoperability and workflow orchestration out of domain behavior;
 - isolate platform-specific and infrastructure-specific implementations;
 - enforce portability across supported operating systems and compilers;
-- preserve speed as a primary architectural objective;
-- reduce memory consumption and memory fragmentation;
-- favor preallocation and reuse in calculation-intensive code;
-- avoid repeated small allocations and deallocations during calculations;
-- use loose coupling as a guiding principle for new features and refactoring;
-- make dependencies explicit and strongly typed;
+- preserve execution speed, and keep memory use and allocation churn controlled in calculation-intensive code;
+- use loose coupling as a guiding principle, with explicit and strongly typed dependencies;
 - reduce duplicated behavior across wrappers and interfaces;
-- significantly increase unit-test coverage;
-- rely heavily on automated tests to support safe development and refactoring;
+- rely on automated tests to support safe development and refactoring, and increase unit-test coverage substantially;
 - preserve backward compatibility whenever practical;
 - improve maintainability without introducing unnecessary abstractions.
 
@@ -99,9 +87,7 @@ A concise summary of this direction is:
 
 > **New features and refactoring should favor loose coupling, explicit dependencies, portability, and independent testability. Automated tests are the primary safety mechanism used to preserve FMT behavior as the architecture evolves.**
 
----
-
-## 🗺️ High-Level Architecture
+## High-Level Architecture
 
 The intended dependency direction is:
 
@@ -135,11 +121,21 @@ The domain must not depend on user interfaces, managed wrappers, or language-bin
        Solver, GDAL, ONNX, files, serialization
 ```
 
----
+## Layer Responsibilities
 
-## 🧱 Layer Responsibilities
+Each layer maps to directories and namespaces in the repository:
 
-### 🖥️ Applications and User Interfaces
+| Layer | Where it lives |
+| --- | --- |
+| Applications and user interfaces | `UI/`, `Excel/FMTExcel/`, `Examples/C++/` |
+| Wrappers and language bindings | `UI/` (`FMTForm`), `Excel/`, the `Python` and `R` namespaces in `Include/` and `Source/` |
+| Application controllers and services | `FMTWrapperCore/` (`SES`, `Tools`, `TransformationCore`) |
+| Forest-planning domain | `Include/` and `Source/`, namespaces `Core`, `Models`, `Spatial`, `Graph`, `Heuristics` |
+| Infrastructure and external libraries | `Include/` and `Source/`, namespaces `Parser`, `Logging`, `Exception`, `Parallel`, plus solver, GDAL, and ONNX Runtime integration |
+
+The mapping is not one directory per layer. `Include/` and `Source/` hold several layers separated only by namespace, which is one reason the boundaries have to be maintained deliberately rather than relied upon from the directory structure.
+
+### Applications and User Interfaces
 
 This layer provides user-facing applications and workflows.
 
@@ -153,9 +149,7 @@ Examples include:
 
 This layer may depend on public wrapper or application interfaces. It should not directly implement forest-planning rules.
 
----
-
-### 🔌 Wrappers and Language Bindings
+### Wrappers and Language Bindings
 
 This layer exposes FMT to supported platforms and programming languages.
 
@@ -193,9 +187,7 @@ std::string
 Controller or application service
 ```
 
----
-
-### 🎛️ Application Controllers and Services
+### Application Controllers and Services
 
 The application layer coordinates use cases and workflows.
 
@@ -232,9 +224,7 @@ AreaVariability
 Environment
 ```
 
----
-
-### 🌲 Forest-Planning Domain
+### Forest-Planning Domain
 
 The domain layer contains the principal concepts, rules, and behavior of FMT.
 
@@ -263,9 +253,7 @@ It must remain independent from:
 - Excel APIs;
 - platform-specific user-interface frameworks.
 
----
-
-### 🧰 Infrastructure and External Libraries
+### Infrastructure and External Libraries
 
 The infrastructure layer provides technical capabilities required by the domain and application layers.
 
@@ -287,9 +275,7 @@ Infrastructure-specific details should be isolated behind dedicated components o
 - replaceability;
 - clarity of dependencies.
 
----
-
-## ➡️ Dependency Rules
+## Dependency Rules
 
 The following rules guide new development:
 
@@ -313,9 +299,9 @@ The following rules guide new development:
 
 10. **Legacy dependencies do not automatically define the preferred architecture for new code.**
 
----
+FMT does not invert these dependencies today: domain components call the solver, GDAL, and serialization services directly rather than through interfaces they define themselves. That remains acceptable. Introduce an interface owned by the caller when it buys testability or replaceability for a specific component, not as a general conversion of the codebase.
 
-## 🔗 Loose Coupling
+## Loose Coupling
 
 Loose coupling is a fundamental design philosophy of FMT.
 
@@ -362,47 +348,17 @@ Abstractions should be introduced when they:
 
 The simplest design that maintains clear boundaries and explicit dependencies should generally be preferred.
 
----
+## Portability
 
-## 🌍 Portability
+Portability is a core architectural objective of FMT. The primary targets are Windows with MSVC, Linux with GCC, and Clang where supported, reached through native C++17, Python, R, .NET, and Excel.
 
-Portability is a core architectural objective of FMT.
+Architecturally this comes down to containment: platform-specific behavior belongs in dedicated wrappers, adapters, source files, infrastructure implementations, or localized CMake conditions, so that supporting another platform does not require touching unrelated forest-planning logic.
 
-FMT is intended to support multiple operating systems, compilers, architectures, and programming-language interfaces.
+Some components are intentionally platform-specific. Those constraints should be identified and contained rather than spread across layers.
 
-The primary portability targets include:
+The coding rules that follow from this, including path handling and the platform types that must not appear in portable headers, are in [CodingStandards.md, Portability](CodingStandards.md#portability).
 
-- Windows with MSVC;
-- Linux with GCC;
-- Clang where supported;
-- native C++17 applications;
-- Python;
-- R;
-- .NET and Excel where supported.
-
-Portable domain and application components should remain independent from:
-
-- operating-system APIs;
-- compiler-specific extensions;
-- user-interface frameworks;
-- managed runtimes;
-- language-binding types.
-
-Platform-specific behavior should be isolated in:
-
-- dedicated wrappers;
-- adapters;
-- dedicated source files;
-- infrastructure implementations;
-- localized CMake platform conditions.
-
-Adding support for another platform should not require modifications to unrelated forest-planning domain logic.
-
-Some existing components are intentionally platform-specific. These constraints should be clearly identified and contained rather than spread across unrelated layers.
-
----
-
-## ⚡ Performance and Memory Efficiency
+## Performance and Memory Efficiency
 
 Execution speed is a primary architectural objective of FMT.
 
@@ -430,26 +386,21 @@ Objects, strategies, buffers, indexes, source references, temporary arrays, and 
 
 During calculation, code should reuse existing storage rather than repeatedly creating and destroying small objects.
 
-Calculation paths should avoid:
+The rule concerns capacity, not a list of forbidden functions: inside a calculation path, no operation should grow storage or reach the allocator. Reserve the capacity during the preparation phase, then reuse it.
+
+In practice, watch for the following inside calculation paths:
 
 ```cpp
 new
 std::make_unique
 std::make_shared
-```
-
-They should also avoid hidden allocation caused by:
-
-```cpp
-std::vector::push_back
+std::vector::push_back on a vector whose capacity was not reserved
 std::vector::resize
 std::string concatenation
-std::map insertion
-std::unordered_map insertion
-returning large containers by value
+std::map and std::unordered_map insertion
 ```
 
-These operations are not prohibited everywhere in FMT. They should be avoided inside performance-critical loops and calculation paths unless storage has already been reserved and the operation is known not to increase capacity or allocate memory.
+None of these is prohibited in FMT generally. Outside hot paths they are ordinary C++, and a `push_back` into a reserved vector allocates nothing. Returning a container by value is also fine: copy elision and move semantics make it free in the common case.
 
 ### Reuse storage
 
@@ -553,9 +504,7 @@ The key principle is:
 
 > **Allocate and prepare before calculation. Reuse during calculation. Avoid repeated small allocations and deallocations in hot and multithreaded paths.**
 
----
-
-## 📦 Public Interfaces
+## Public Interfaces
 
 FMT exposes functionality through:
 
@@ -569,21 +518,11 @@ The native C++ domain and application APIs form the foundation of these interfac
 
 Language bindings and wrappers should expose equivalent concepts when practical, but each interface may adapt naming and types to the conventions of its ecosystem.
 
-Changes to public C++ classes may affect:
+A change to a public C++ class reaches Python bindings and type stubs, Rcpp modules, .NET and C++/CLI wrappers, Excel integrations, and existing native applications. Public API changes must therefore be evaluated across every supported interface; the procedure is in [CodingStandards.md, Backward Compatibility](CodingStandards.md#backward-compatibility).
 
-- Python bindings and type stubs;
-- Rcpp modules;
-- .NET and C++/CLI wrappers;
-- Excel integrations;
-- existing native applications.
+The scope of public API documentation, and the `// DocString:` marker FMT uses to drive Python and R docstring generation, are defined in [CodingStandards.md, Documentation](CodingStandards.md#documentation).
 
-Public API changes must therefore be evaluated across all supported interfaces.
-
-Only public classes and public methods accessible to FMT library users require public API documentation. Internal classes, private methods, protected implementation details, and local helpers should only be documented when necessary to explain non-obvious behavior or maintenance constraints.
-
----
-
-## 🚨 Error Handling and Logging
+## Error Handling and Logging
 
 FMT uses shared exception and logging concepts across several interfaces.
 
@@ -593,19 +532,11 @@ Wrappers are responsible for translating those exceptions into the error-reporti
 
 Logging and feedback mechanisms should remain independent from specific user interfaces.
 
-New cross-layer communication should use strongly typed interfaces. Untyped callback contexts such as:
+New cross-layer communication should use strongly typed interfaces rather than untyped callback contexts.
 
-```cpp
-void*
-```
+How exceptions are raised, caught, and translated is defined in [CodingStandards.md, Error Handling](CodingStandards.md#error-handling).
 
-should be avoided when the interaction can be represented using a concrete type or typed event handler.
-
-Catch-all exception handlers should normally remain at application or interoperability boundaries where exceptions are immediately translated, reported, or rethrown.
-
----
-
-## 📣 Events and Notifications
+## Events and Notifications
 
 Application controllers may report:
 
@@ -653,43 +584,23 @@ Event payloads should use portable native C++ types.
 
 Conversion to .NET, Python, R, Qt, GTK, or another platform belongs in the relevant wrapper or application layer.
 
----
+## State and Ownership
 
-## 🧠 State and Ownership
+Architecturally, the concern is shared state rather than individual pointers.
 
-Ownership and lifetime should be explicit.
+Global mutable state and singleton dependencies should not be expanded without strong justification. Existing caches and shared services should be isolated behind focused APIs and reduced incrementally as the components around them are refactored: shared state is what makes a component impossible to test alone, and what makes parallel execution expensive.
 
-New components should prefer:
+The ownership rules that apply when writing a class are in [CodingStandards.md, Ownership and Lifetime](CodingStandards.md#ownership-and-lifetime).
 
-- automatic storage and RAII;
-- references for required non-owning dependencies;
-- pointers for optional non-owning dependencies;
-- `std::unique_ptr` for exclusive dynamic ownership;
-- `std::shared_ptr` only when ownership is genuinely shared.
+## Thread Safety
 
-Global mutable state and singleton dependencies should not be expanded without strong justification.
+A thread-safety guarantee is part of a component's contract: a component used concurrently must state what it guarantees, and nothing in FMT should be assumed thread-safe by default.
 
-Existing caches and singleton services should be isolated behind focused APIs and reduced incrementally when affected components are refactored.
+FMT runs substantial parallel work, so this is an architectural property and not only an implementation detail. A component that hides shared mutable state cannot be made safe by its callers.
 
-A raw pointer should not be replaced mechanically with a smart pointer without first determining whether it owns the referenced object.
+The rules for writing such components are in [CodingStandards.md, Thread Safety](CodingStandards.md#thread-safety).
 
----
-
-## 🧵 Thread Safety
-
-Components that support concurrent execution must clearly define their thread-safety guarantees.
-
-Shared state, caches, event handlers, loggers, solvers, and model instances must not be assumed to be thread-safe unless explicitly designed and documented as such.
-
-Application services should avoid hidden shared mutable state.
-
-Synchronization should be localized to the component that owns the protected resource.
-
-Event handlers must not be invoked after their owner has been destroyed. Registration, replacement, and lifetime rules must be explicit when asynchronous or concurrent execution is involved.
-
----
-
-## 🧪 Testing as an Architectural Foundation
+## Testing as an Architectural Foundation
 
 FMT aims to significantly increase its unit-test coverage and rely more heavily on automated tests when developing new features and refactoring existing components.
 
@@ -707,49 +618,9 @@ New features should be designed so that their principal behavior can be tested i
 
 Refactoring should rely on tests to demonstrate that observable behavior remains unchanged.
 
-When existing behavior is not sufficiently covered, characterization tests should be added before or during refactoring. A characterization test records current behavior and provides a baseline for safely improving the internal implementation.
+When existing behavior is not sufficiently covered, characterization tests should be added before or during refactoring.
 
-### Testing expectations
-
-1. **New features require tests.**
-
-   New observable behavior should include automated tests for the main success cases, failure cases, and relevant boundaries.
-
-2. **Bug fixes require regression tests.**
-
-   A bug fix should include a test that fails before the correction and passes after it.
-
-3. **Refactoring relies on behavior tests.**
-
-   Refactoring should preserve observable behavior unless the change is intentional, documented, and tested.
-
-4. **Domain behavior should be tested at the domain level.**
-
-   Forest-planning rules should be tested without requiring a user interface or language wrapper.
-
-5. **Application workflows should be independently testable.**
-
-   Controllers and services should be testable without requiring `FMTForm`, Excel, Python, R, or another interface.
-
-6. **Wrappers require focused integration tests.**
-
-   Wrapper tests should verify type conversion, exception translation, event forwarding, and public API availability. They should not duplicate every domain test.
-
-7. **Tests should be deterministic.**
-
-   Tests should not depend on execution order, uncontrolled randomness, unstable external state, or fragile timing assumptions.
-
-8. **Tests should remain focused.**
-
-   The smallest practical model and dataset should be used to demonstrate the behavior under test.
-
-9. **Tests must run automatically.**
-
-   Tests should be integrated with CMake and CTest so they can run consistently in local builds and continuous integration.
-
-10. **Coverage should guide improvement.**
-
-    Code coverage should identify untested behavior and risky components. Coverage percentages are indicators, not substitutes for meaningful assertions and representative scenarios.
+What to test, at which level, and how tests are registered are defined in [CodingStandards.md, Testing](CodingStandards.md#testing) and in [AGENTS.md](../AGENTS.md).
 
 ### Relationship between testing and loose coupling
 
@@ -769,119 +640,48 @@ When a component is difficult to test, its design should be examined for:
 
 Testing should be considered during API and component design, not added only after implementation.
 
----
-
-## 🛡️ Backward Compatibility
+## Backward Compatibility
 
 FMT is used through several programming-language and platform interfaces.
 
-Architectural improvements should preserve established public behavior whenever practical.
+Architectural improvements should preserve established public behavior whenever practical. The compatibility surface, and the procedure for changing a public symbol, are in [CodingStandards.md, Backward Compatibility](CodingStandards.md#backward-compatibility).
 
-Compatibility concerns include:
-
-- public class and method names;
-- language-binding symbols;
-- model and project file formats;
-- serialized data;
-- exception behavior;
-- generated outputs;
-- numerical results;
-- logging and event behavior.
-
-When an existing public operation is renamed, a compatibility alias may delegate to the new implementation during a documented transition period.
-
-For example:
+When an existing public operation is renamed, a compatibility alias may delegate to the new implementation during a documented transition period. The alias holds no behavior of its own:
 
 ```cpp
-void Cache_InitialiserModelParser(...)
+// Deprecated: kept for the Excel and .NET callers, remove after the transition period.
+void setErrorsToWarnings(bool p_enabled)
 {
-    SetErrorsToWarnings(...);
+    setExceptionHandlerToWarnings(p_enabled);
 }
 ```
 
-Compatibility methods should delegate to the authoritative implementation and must not maintain duplicated behavior.
+Compatibility methods delegate to the authoritative implementation and must not maintain a second copy of the behavior. Two independent implementations of the old and new API is the failure mode this rule exists to prevent.
 
----
+## Known Architectural Debt
 
-## 🧹 Known Architectural Debt
+FMT contains historical design decisions that do not represent the preferred direction for new development. A debt list is only useful if it names real code, so the following are concrete and checkable:
 
-FMT contains historical design decisions that do not necessarily represent the preferred direction for new development.
+| Debt | Where |
+| --- | --- |
+| Broad façade at the interoperability boundary, 814 lines of declarations | `UI/Include/FMTForm.h` |
+| Caching implemented in the interface layer rather than in an application service | `UI/Include/FMTFormCache.h` |
+| Untyped `const void*` vertex handles crossing a public interface | `Include/FMTGraphVertexToYield.h` |
+| Two parameter conventions in the same header, legacy `l` prefix next to `p_` | `Include/FMTModel.h` and others |
+| Protected members exposing base-class internals to derived classes | 31 of 247 headers |
+| Behavior covered mainly by end-to-end example executables rather than unit tests | `Examples/C++/` |
 
-Examples may include:
-
-- broad façade classes;
-- singleton caches;
-- shared mutable state;
-- untyped callbacks;
-- wrapper logic mixed with application workflows;
-- duplicated selection or conversion logic;
-- export macros shared across distinct libraries;
-- direct infrastructure dependencies in high-level components;
-- limited tests in some components.
-
-These areas should be improved incrementally when touched by feature development or focused refactoring.
+These should be improved incrementally when a feature or a focused refactoring touches them. Add a row when a change reveals a new case, and remove one when it is closed.
 
 > [!WARNING]
 > New code should not copy an existing pattern solely because that pattern already exists in the repository.
 
 Architectural debt should be documented when it cannot be corrected safely within the scope of the current change.
 
----
+## Architectural Decision Principle
 
-## 🚀 Direction for New Development
+The purpose of the FMT architecture is not to maximize the number of abstractions. The goals listed at the top of this document are the test: an architectural change is worth making when it advances one of them, and among the designs that do, the simplest is the right one.
 
-New features and refactoring should:
+An abstraction introduced without one of those goals behind it is a cost with no return. Clearer responsibilities, reduced coupling, better testability, or a real portability or performance gain justify an interface, a service, or a new type. Theoretical flexibility does not.
 
-- place behavior in the appropriate architectural layer;
-- preserve domain independence;
-- favor loose coupling;
-- make dependencies explicit;
-- use strongly typed interfaces;
-- avoid unnecessary global state;
-- isolate platform-specific behavior;
-- remain portable where the component is intended to be portable;
-- optimize calculation-intensive code for speed;
-- preallocate and reuse memory in hot paths;
-- reduce small allocations, deallocations, and memory fragmentation;
-- account for per-thread memory cost in parallel workflows;
-- add or improve automated tests;
-- preserve supported public interfaces whenever practical;
-- avoid duplicating behavior across wrappers;
-- remain focused and reviewable.
-
-A refactoring should improve internal structure without hiding behavioral changes.
-
-If behavior changes intentionally, the work should be documented and tested as a feature or bug fix rather than presented only as structural cleanup.
-
----
-
-## ⚖️ Architectural Decision Principle
-
-The purpose of the FMT architecture is not to maximize the number of abstractions.
-
-An architectural change is valuable when it:
-
-- clarifies responsibilities;
-- reduces coupling;
-- makes dependencies explicit;
-- improves portability;
-- improves execution speed where performance matters;
-- reduces allocation churn and memory fragmentation;
-- keeps multithreaded memory use controlled;
-- improves testability;
-- removes duplication;
-- preserves or improves type safety;
-- simplifies maintenance;
-- supports existing and future public interfaces.
-
-The simplest design that satisfies these requirements should generally be preferred.
-
----
-
-## 📝 Living Document
-
-This architecture document is expected to evolve with FMT.
-
-When a change introduces a new architectural boundary, modifies layer responsibilities, or establishes a new project-wide principle, this document should be updated as part of the same change.
-
-Architecture is not only the current directory structure. It is the set of responsibilities, dependencies, and decisions that allow FMT to evolve safely.
+One consequence deserves stating on its own: a refactoring should improve internal structure without hiding behavioral changes. When behavior changes intentionally, document and test the work as a feature or a bug fix rather than presenting it as structural cleanup.
