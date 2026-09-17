@@ -43,6 +43,8 @@ function(createexecutable executablecpplocation executablename)
   target_compile_definitions(${executablename} PRIVATE "-DFMTLIBIMPORT")
   target_link_libraries(${executablename} PRIVATE FMTlib)
   target_include_directories(${executablename} PRIVATE ${FMTINCLUDEDIR})
+  #Shared tools of the test executables (Examples/C++/tests/TestTools.h)
+  target_include_directories(${executablename} PRIVATE "${PROJECT_SOURCE_DIR}/Examples/C++/tests")
   SetBinaryLocation(${executablename})
 	if (MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
 	set_target_properties(
