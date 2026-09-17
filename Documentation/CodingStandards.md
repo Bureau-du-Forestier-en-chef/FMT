@@ -15,6 +15,7 @@
 - [Portability](#-portability)
 - [File Organization](#-file-organization)
 - [Naming](#-naming)
+- [Readability and Declaration Order](#-readability-and-declaration-order)
 - [Formatting](#-formatting)
 - [Includes](#-includes)
 - [Namespaces](#-namespaces)
@@ -89,6 +90,8 @@ CONTRIBUTING.md
 
 New code and refactoring should favor:
 
+- readability as the primary code-quality objective;
+- a natural top-to-bottom reading order;
 - clear responsibilities;
 - loose coupling;
 - explicit dependencies;
@@ -260,7 +263,9 @@ Example:
 
 ## 🏷️ Naming
 
-Naming should communicate domain meaning and remain consistent within a component.
+Naming should make the code read naturally and communicate intent without requiring the reader to inspect the implementation first.
+
+Names should be chosen according to both meaning and scope.
 
 ### Classes and structures
 
@@ -272,39 +277,145 @@ class FMTAction;
 struct FMTEvent;
 ```
 
-### Methods
+Class names should describe the responsibility or domain concept represented by the class.
 
-Use the convention established by the component and avoid mixing multiple conventions in the same API.
-
-When creating a new coherent API, prefer descriptive names that express behavior:
+Avoid generic names such as:
 
 ```cpp
-getOutput()
-setParameter()
-doPlanning()
-validateMask()
+Manager
+Helper
+Processor
+Data
 ```
 
-Large naming migrations should be handled as dedicated refactoring work rather than being mixed into unrelated changes.
+unless the surrounding namespace and responsibility make the meaning unambiguous.
+
+### Public methods
+
+Public method names should be **short, clear, and expressive**.
+
+They should describe the operation from the caller's perspective without exposing implementation details.
+
+Prefer:
+
+```cpp
+load()
+save()
+plan()
+validate()
+getOutput()
+setParameter()
+```
+
+Avoid unnecessarily long names such as:
+
+```cpp
+performCompleteModelValidationAndReturnResult()
+```
+
+Public names should remain concise, but not vague. A short name is useful only when its meaning is clear in the context of the class.
+
+For example:
+
+```cpp
+model.validate();
+parser.readProject();
+controller.clearScenarios();
+```
+
+Public methods must not begin with an underscore.
+
+### Private methods
+
+Private method names should be explicit about their internal responsibility and must begin with a single underscore:
+
+```cpp
+_loadModel()
+_validateScenario()
+_rebuildCache()
+_publishEvent()
+```
+
+A private method may use a longer name than a public method when the additional detail improves maintainability.
+
+The underscore communicates that the method is an implementation detail and is not part of the public API.
+
+Do not use double underscores. Names containing double underscores are reserved by the C++ implementation.
+
+Avoid:
+
+```cpp
+__loadModel()
+```
+
+Prefer:
+
+```cpp
+_loadModel()
+```
 
 ### Local variables
 
-Use descriptive names:
+Local variables should use specific and descriptive names that explain their immediate role.
+
+Prefer:
 
 ```cpp
-modelIndex
-scenarioName
-outputPath
-periodCount
+scenarioIndex
+selectedOutput
+minimumPeriod
+convertedPath
 ```
 
-Avoid unclear abbreviations unless they are established domain terminology.
+Avoid vague names:
+
+```cpp
+value
+data
+temp
+obj
+```
+
+unless the variable is extremely short-lived and its meaning is immediately obvious.
+
+A local variable should normally be understandable without reading several surrounding functions.
+
+### Variables with a large scope
+
+Variables visible across a larger scope should use short, stable names that represent well-established concepts in that scope.
+
+The name should remain concise because it will appear frequently throughout the component, but it must still be meaningful.
+
+Examples include:
+
+```cpp
+model
+cache
+logger
+solver
+context
+```
+
+Do not use cryptic abbreviations merely to shorten a name.
+
+Avoid:
+
+```cpp
+mdl
+cch
+slv
+ctx2
+```
+
+A large-scope variable should only have a short name when the concept is central and unambiguous throughout that scope.
 
 ### Parameters
 
-Follow the established convention of the component.
+Parameter names should describe what the caller supplies.
 
-Do not mix styles such as:
+Follow the established convention of the component, but do not mix styles in the same new interface.
+
+Avoid mixing:
 
 ```cpp
 modelIndex
@@ -312,11 +423,13 @@ p_modelIndex
 lmodelindex
 ```
 
-inside the same new interface.
+Prefer one consistent form within the component.
 
 ### Data members
 
-Use a consistent convention within each component. For new components, the `m_` prefix is preferred for private data members:
+Use a consistent convention within each component.
+
+For new components, the `m_` prefix is preferred for private data members:
 
 ```cpp
 m_eventHandler
@@ -324,11 +437,242 @@ m_modelCache
 m_outputPath
 ```
 
+Data-member names should identify the stored concept rather than its implementation type.
+
+Prefer:
+
+```cpp
+m_models
+```
+
+rather than:
+
+```cpp
+m_modelVector
+```
+
+unless the container type itself is important to the design.
+
 ### Constants
 
 Use names that clearly communicate immutability and meaning. Follow the convention of the surrounding component.
 
 Avoid unexplained numeric literals. Use named constants when the value has domain or algorithmic meaning.
+
+---
+
+## 📖 Readability and Declaration Order
+
+Readability is the primary coding-style objective in FMT.
+
+A class should read naturally from top to bottom, almost like prose. The reader should first understand what the class offers, then how it maintains its state, and finally how it implements its internal behavior.
+
+### Public interface first
+
+Declare the public interface first.
+
+The preferred class order is:
+
+1. public constructors and destructor;
+2. public operations in a logical usage order;
+3. private data members;
+4. private helper methods.
+
+Example:
+
+```cpp
+class FMTModelService
+{
+public:
+    FMTModelService();
+    ~FMTModelService() = default;
+
+    void load(const std::filesystem::path& path);
+    bool validate() const;
+    void save(const std::filesystem::path& path) const;
+
+private:
+    std::vector<FMTModel> m_models;
+    bool m_loaded = false;
+
+    void _clearInvalidModels();
+    void _validateState() const;
+};
+```
+
+This order allows a reader to understand the class contract before seeing implementation details.
+
+### Methods should read like prose
+
+Public methods should be ordered according to the normal workflow of the class.
+
+For example:
+
+```text
+construct
+configure
+load
+validate
+execute
+query results
+save
+close
+```
+
+Related overloads should remain together.
+
+Getters and setters should be grouped with the capability they support rather than placed automatically at the beginning or end of every class.
+
+Avoid alphabetical ordering when it makes the usage flow harder to understand.
+
+### No protected members
+
+Do not declare protected data members or protected methods in new code.
+
+Avoid:
+
+```cpp
+class Base
+{
+protected:
+    std::vector<FMTModel> models;
+    void rebuildCache();
+};
+```
+
+Protected members expose implementation details to derived classes and create tight coupling between the base class and its inheritance hierarchy.
+
+Prefer private members with a focused public or private abstraction:
+
+```cpp
+class Base
+{
+public:
+    const std::vector<FMTModel>& models() const;
+
+private:
+    std::vector<FMTModel> m_models;
+
+    void _rebuildCache();
+};
+```
+
+When a derived class requires customizable behavior, prefer one of the following:
+
+- composition;
+- a focused strategy object;
+- a public non-virtual interface delegating to a private virtual implementation;
+- an explicit protected-free interface between collaborators.
+
+Existing protected members may be preserved for backward compatibility, but new code should not expand their use. Refactoring should reduce protected state incrementally when tests and compatibility constraints permit.
+
+### Keep declarations close to their purpose
+
+Methods that form a coherent feature should be declared next to each other.
+
+For example:
+
+```cpp
+void setEventHandler(EventHandler handler);
+void clearEventHandler();
+bool hasEventHandler() const;
+```
+
+Do not separate closely related declarations across distant parts of a class.
+
+### Implementation order
+
+Definitions in the `.cpp` file should follow the same order as declarations in the header.
+
+This makes navigation predictable and allows the reader to move through the interface and implementation in the same sequence.
+
+### Optimize for the reader
+
+Code is read more often than it is written.
+
+Prefer a structure that lets a new contributor understand the common path quickly, even when another order might save a few lines or match historical placement.
+
+### Keep methods short
+
+Methods should be short, focused, and readable from top to bottom without requiring the reader to track several unrelated responsibilities at once.
+
+A method should normally perform one clear operation at one level of abstraction.
+
+Prefer extracting focused private methods over creating one large method containing validation, conversion, orchestration, computation, logging, and result formatting.
+
+Avoid:
+
+```cpp
+void executePlanning()
+{
+    // Validate input.
+    // Load the model.
+    // Configure the solver.
+    // Build constraints.
+    // Execute planning.
+    // Format outputs.
+    // Write files.
+    // Publish events.
+}
+```
+
+Prefer:
+
+```cpp
+void executePlanning()
+{
+    _validateRequest();
+    _loadModel();
+    _configureSolver();
+    _buildConstraints();
+    _solve();
+    _writeOutputs();
+    _publishCompletion();
+}
+```
+
+It is better to have several short, well-named private methods than one giant method.
+
+Short methods should:
+
+- express one clear intent;
+- remain at a consistent level of abstraction;
+- avoid deeply nested control flow;
+- make failure paths easy to identify;
+- be independently understandable;
+- make unit testing and refactoring easier.
+
+Private extraction is encouraged when a block of code:
+
+- performs a distinct step of a workflow;
+- requires its own meaningful name;
+- contains nested conditions or loops;
+- is repeated;
+- hides the main path of the public method;
+- can be tested or reasoned about separately.
+
+Do not extract trivial methods merely to reduce line count. A private method should improve readability by naming a meaningful operation.
+
+### Prefer focused classes over giant classes
+
+When a class accumulates many unrelated private methods, this may indicate that it owns too many responsibilities.
+
+Prefer several focused classes and services over one giant class that coordinates and implements every operation.
+
+A large workflow may be decomposed into collaborating classes such as:
+
+```text
+Planning
+Selection
+Rasterization
+ModelQuery
+OutputWriter
+```
+
+The goal is not to maximize the number of methods or classes. The goal is to create small, cohesive units with clear responsibilities and explicit dependencies.
+
+A public method should present a concise use case. Its private methods should explain the implementation as a sequence of meaningful steps. If those steps represent separate responsibilities, move them into focused collaborator classes.
+
 
 ---
 
@@ -1111,6 +1455,16 @@ Before submitting or approving a change, consider the following.
 
 ### Quality
 
+- [ ] Can each class be read naturally from top to bottom?
+- [ ] Are methods short and focused on one operation?
+- [ ] Was a giant method decomposed into meaningful private methods?
+- [ ] Does each class remain cohesive rather than accumulating unrelated responsibilities?
+- [ ] Is the public interface declared before private implementation details?
+- [ ] Do `.cpp` definitions follow the declaration order in the header?
+- [ ] Are new protected members avoided?
+- [ ] Do private methods begin with a single underscore?
+- [ ] Are public method names short, clear, and caller-focused?
+- [ ] Are local and large-scope variable names appropriate to their scope?
 - [ ] Is duplicated behavior avoided?
 - [ ] Is the code formatted and readable?
 - [ ] Are includes explicit and minimal?
