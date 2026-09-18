@@ -1,0 +1,61 @@
+*Y ? peuplement1 ?
+_AGE volumetotal
+0    0
+5    100
+10   150
+15   200
+20   250
+25   300
+30   350
+
+*Y ? peuplement2 ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+*Y ? peuplement3 ?
+_AGE volumetotal
+0    0
+5    75
+10   125
+15   175
+20   225
+25   250
+30   200
+
+*Y ? feu ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+*YC ? ? ?
+YBM_RTM_BOG _EQUATION(1.2159259330000001*10^0.87191668899999997)
+YBM_RTM_F _SUM(YBM_RTM_BOG,YBM_RTM_MEH)
+YBM_RTM_MEH _EQUATION(1.1017722459999999*12^0.83493872400000002)
+
+*Y ? ? ?
+_AGE volumezero
+0    0
+; Complex yields alone in their block: no equation holds a number or a constant here,
+; so the operators are kept as they are read. Values computed by hand for
+; testScenarioReading, with volumetotal = 120 at age 7 of UNITE1 PEUPLEMENT1 UTR1.
+*YC ? ? ?
+TWICE _SUM(VOLUMETOTAL,VOLUMETOTAL)
+SUMWITHNUMBER _SUM(VOLUMETOTAL,30)
+DOUBLE _MULTIPLY(VOLUMETOTAL,2)
+HALF _DIVIDE(VOLUMETOTAL,2)
+LESS _SUBTRACT(VOLUMETOTAL,20)
+INRANGE _RANGE(VOLUMETOTAL,100,200)
+OUTRANGE _RANGE(VOLUMETOTAL,0,50)
+GROWTH _MAI(VOLUMETOTAL)
+CURRENT _CAI(VOLUMETOTAL)

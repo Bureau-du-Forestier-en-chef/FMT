@@ -84,7 +84,19 @@ Depuis le lot 1, `Examples/C++/tests/TestTools.h` (namespace `Testing`, inclus p
 - `SKIP_RETURN_CODE` (77) et `skip(raison)` ;
 - `copyProject(source, destination)` : remplace la destination par une copie du projet ;
 - `runTest(corps)` : rend le code du corps, ou 1 si une exception s'échappe, après l'avoir
-  affichée avec ses exceptions imbriquées.
+  affichée avec ses exceptions imbriquées (`printException`) ;
+- `visitNested(exception, visiteur)` : parcourt la chaîne d'exceptions imbriquées sans
+  `std::terminate` (lot 2, voir § 7).
+
+Depuis le lot 2, trois tests génériques pilotés par le CSV servent de modèles :
+
+- `testScenarioReading` : une ligne = une requête sur un scénario lu (`THEMES`, `ATTRIBUTES`,
+  `AGGREGATE`, `AREA`, `ACTIONS`, `OPERABLE`, `YIELD`, `OUTPUTS`, `CONSTRAINT`... ; liste en
+  tête du source) et sa valeur attendue ;
+- `testJointScenarioReading` : une ligne = une liste de scénarios lus ensemble ;
+- `testReadingErrors` : une ligne = un scénario invalide et le `FMTexc` attendu.
+
+Ajouter une ligne à l'un d'eux ne demande pas de recompiler, seulement de reconfigurer.
 
 L'en-tête compile sans avertissement avec MSVC (`/W4 /permissive-`) après `windows.h`, dont les
 macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduire ces noms.
@@ -147,9 +159,10 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
 
 | Étape | Vérifie une valeur | Exécute sans vérifier |
 |---|---|---|
-| Lecture d'un scénario | indirect : objectifs de `doplanning` (16 scénarios), `landaggregatestest`, `testlevelopt` ; direct : constantes (`UnitTestFMTParser`, 3 cas), un yield complexe (`testWrapperCoreGetYield`), nombre de masques (`testWrapperCoreGetAllMasks`), âge maximal (`testWrapperCoreGetMaxAge`, borne seulement), gabarits (`templatestest`, au moins un modèle) | tous les autres tests |
-| Lecture de plusieurs scénarios d'un coup | indirect : `testlevelopt` (9 scénarios, objectifs) | `testreadwriteproject`, `planningtest`, `replanningtest`, `replanningmodeladaption`, `UnitTestCallbackLogger` |
-| Objets du cœur (masques, yields, opérabilité, transitions) | `nochoice` (développements sans choix d'un masque), `testyieldsfromfactor` (monotonie), `testtimeyieldoutputs` (2 outputs de yields temporels) ; le reste indirectement par les objectifs | `testaddtomodel` (vérification de valeur morte) |
+| Lecture d'un scénario | direct : `testScenarioReading` (lot 2 : thèmes, attributs, agrégats, aire par masque, actions et drapeaux, outputs et contraintes de ROOT ; noms de thèmes, aire héritée et contraintes de `LP3` ; contraintes de `stdconstraints`), constantes (`UnitTestFMTParser`, 3 cas), un yield complexe (`testWrapperCoreGetYield`), nombre de masques (`testWrapperCoreGetAllMasks`), âge maximal (`testWrapperCoreGetMaxAge`, borne seulement), gabarits (`templatestest`, au moins un modèle) ; indirect : objectifs de `doplanning` (16 scénarios), `landaggregatestest`, `testlevelopt` | tous les autres tests |
+| Lecture de plusieurs scénarios d'un coup | direct : `testJointScenarioReading` (lot 2 : 7 combinaisons, 32 scénarios) ; indirect : `testlevelopt` (9 scénarios, objectifs) | `testreadwriteproject`, `planningtest`, `replanningtest`, `replanningmodeladaption`, `UnitTestCallbackLogger` |
+| Erreurs de lecture | `testReadingErrors` (lot 2 : 7 scénarios invalides, 6 codes `FMTexc`) | -- |
+| Objets du cœur (masques, yields, opérabilité, transitions) | `testScenarioReading` (lot 2 : opérabilité aux bornes d'âge, de yield et d'agrégat, `_DEATH` tiré du lifespan, interpolation des yields d'âge, opérateurs de yields complexes), `nochoice` (développements sans choix d'un masque), `testyieldsfromfactor` (monotonie), `testtimeyieldoutputs` (2 outputs de yields temporels) ; transitions et vieillissement : indirectement par les objectifs | `testaddtomodel` (vérification de valeur morte) |
 | Présolve et postsolve | `presolvetest` (objectif avec ou sans présolve, NOT_MASK seulement) ; `doplanning` (présolve de 10 itérations) | -- |
 | Graphe et matrice | indirect (objectifs) | `testoutputshadowcost` (vérifie seulement la résolution après retrait et remise d'une contrainte) |
 | Optimisation | `doplanning` (16), `testlevelopt` (9), `landaggregatestest` ; `testSolvers` (chaque solveur résout, sans valeur) | `Simpleplanning`, `createmodel` |
@@ -179,16 +192,19 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
 
 ### 2.5 Hors ctest, désactivés ou jamais exécutés
 
-- `teststdconstraints` : **désactivé dans `knownbugs.csv`** (lot 1).
+- `teststdconstraints` : **supprimé au lot 2**, remplacé par 8 lignes de `testScenarioReading`
+  sur le scénario `stdconstraints`.
   - Sa ligne de `basetests.csv` s'appelait `stdconstraints` depuis sa création (`e97d30d4`,
     2022-05-13) : il n'a jamais tourné.
-  - Il ne peut pas passer : le scénario `stdconstraints` optimise un output `TEST2` qui n'a
-    jamais été défini, et la lecture lève `FMTexc(34)` (output non défini). Ce sont les
-    données du test qui sont fausses, pas FMT.
-  - Ce test visait l'expression régulière des contraintes (`rxequations` de
+  - Il ne pouvait pas passer : le scénario optimisait un output `TEST2` jamais défini, et la
+    lecture levait `FMTexc(34)`. Ce sont les données du test qui étaient fausses, pas FMT.
+  - Il visait l'expression régulière des contraintes (`m_rxequations` de
     `FMTOptimizationParser`, passée de `boost::regex` à `std::regex`) sur des lignes comme
-    `test2 <= 567 + 1000,45345.322 1..3,6,8`. À réécrire au lot 2 : définir l'output dans le
-    scénario, puis vérifier les contraintes lues (bornes par période) plutôt qu'un objectif.
+    `test2 <= 567 + 1000,45345.322 1..3,6,8`.
+  - Le lot 2 définit `TEST2` dans `Scenarios/stdconstraints/TWD_land._out` et vérifie les 7
+    lignes lues. La virgule est un séparateur de milliers (`FMTParser::_getNum` l'efface) :
+    `567 + 1000,45345.322` donne 100045912.322. Une liste de périodes `1..3,6,8` donne une
+    contrainte par morceau (1..3, 6, 8).
 - Ligne `coordinatetest` : retirée au lot 1, sa source avait été supprimée.
 - `testWrapperCoreSA` : pas de jeu de données (repli `TODO`).
 - `UnitTestFMTmodelcache` (Excel) : compilé, jamais inscrit.
@@ -205,6 +221,78 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
 `testWrapperCoreAggregateAllActions`, `testWrapperCoreBuildAction`,
 `testWrapperCoreOperatingArea`, `testWrapperCoreSES`, `testWrapperCoreSplitActions`,
 `test_rotations`, `testgetYields`, `testreadOAschedulerparameters`, `testsesevaluation`.
+
+### 2.7 Bogues révélés, inscrits dans `knownbugs.csv`
+
+Deux défauts de FMTlib révélés au lot 2, sans correction dans ce chantier (règle 3). Les lignes
+de `knownbugs.csv` échouent aujourd'hui : elles passeront dans `basetests.csv` avec la
+correction. Issues GitHub : **#346** (priorité de `^`) et **#347** (bloc `*YC` mélangé, qui
+couvre aussi la constante d'équation). Démonstrations refaites le
+2026-09-17 avec les exécutables du build de `new_test`, sur des copies de TWD_land hors dépôt.
+
+1. **Priorité de `^` dans `_EQUATION` (issue #346).**
+   - `FMTOperator::precedence` (`Source/FMTOperator.cpp:175`) donne à `^` la même priorité
+     qu'à `*` et `/`, et `FMTExpression::_getPostFix` dépile les opérateurs de priorité
+     égale : l'expression s'évalue de gauche à droite.
+   - `2*3^2` vaut 36 au lieu de 18, et `12/2^2` vaut 36 au lieu de 3. `2*(3^2)` et `3^2*2`
+     valent 18 : les parenthèses contournent le défaut.
+   - Présent depuis l'ajout de `^` (`da6df324`, 2019-08-21).
+   - Sur la racine de TWD_land, `YBM_RTM_BOG` = `1.2159259330000001*10^0.87191668899999997`
+     vaut 8.82975 (soit (1.2159...×10)^0.8719...) au lieu de 9.05365. `YBM_RTM_MEH` est
+     touché de la même façon. Ce sont les deux seules expressions de TWD_land concernées.
+   - Lignes : `yieldoperators` `PRECEDENCE`, ROOT `YBM_RTM_BOG`.
+2. **Yields complexes d'un bloc `*YC` qui contient une équation avec un nombre ou une
+   constante (issue #347).**
+   - Dans un tel bloc, tout yield dont l'opérateur n'est pas `_EQUATION` (`_SUM`, `_MULTIPLY`,
+     `_DIVIDE`, `_SUBTRACT`, `_RANGE`, `_MAI`...) rend la valeur de sa dernière source, sans
+     constante :
+     - `_SUM(VOLUMETOTAL,VOLUMETOTAL)` = 120 au lieu de 240 ;
+     - `_SUM(FIRST,4)` = 6 au lieu de 10 ;
+     - `_RANGE(VOLUMETOTAL,0,50)` = 120 au lieu de 0 ;
+     - `_MAI(VOLUMETOTAL)` = 120 au lieu de 17,14.
+
+     Le même yield est juste dans un bloc sans nombre, ou quand l'équation numérique est dans
+     un autre bloc `*YC`. Une équation sans nombre, comme `_EQUATION(VOLUMETOTAL+VOLUMETOTAL)`,
+     ne déclenche rien.
+   - Mécanisme :
+     1. `FMTYieldParser::_getEq` garde le texte des nombres et des constantes parmi les
+        sources de l'équation. Avant `c59ea269` (2020-11-27, version 0.9.5), ce texte était
+        vide.
+     2. `FMTComplexYieldHandler::indexes` prend ces textes pour des index de thème : le bloc
+        passe par la branche des index de `FMTYieldParser::_cleanUp`, même sans thème indexé.
+     3. Cette branche reconstruit chaque yield du bloc en `_EQUATION` avec
+        `FMTData::toExpression`, qui ne convient qu'aux équations : `_SUM(A,B)` devient
+        `_EQUATION(AB)`, sans opérateur ni constante.
+     4. `FMTExpression::_evaluatePostFix` rend le sommet de la pile, soit la dernière source.
+   - Même branche : sans thème indexé, une constante d'équation vaut 0, car
+     `FMTYieldParser::_getIndexValues` ne résout les constantes que dans sa boucle sur les
+     thèmes indexés. `_EQUATION(#DEUX*3)` vaut 0 au lieu de 6 ; `_MULTIPLY(VOLUMETOTAL,#DEUX)`,
+     hors équation, est juste.
+   - Preuves :
+     - le modèle relu puis écrit par `FMTModelParser::write` contient `_EQUATION(AB)` ;
+     - l'exécutable officiel `testWrapperCoreGetYield` donne les mêmes valeurs ;
+     - dans une simulation `FMTNssModel` (`FMTNsstest`), l'inventaire de
+       `_SUM(VOLUMETOTAL,VOLUMETOTAL)` égale celui de `VOLUMETOTAL`.
+   - Dans TWD_land, relevé par une sonde : seul `YBM_RTM_F` = `_SUM(YBM_RTM_BOG,YBM_RTM_MEH)`
+     est touché (il vaut `YBM_RTM_MEH`), dans la racine et 57 scénarios qui en reprennent le
+     bloc. Les `_RANGE`, `_DIVIDE`, `_MAI`... des autres scénarios sont dans des blocs sans
+     nombre et restent justes. Quatre scénarios, illisibles sans conversion d'erreurs en
+     avertissements, n'ont pas été relevés.
+   - Contournements : mettre les équations numériques dans un autre bloc `*YC`, ou écrire
+     `_EQUATION(FIRST+SECOND)`.
+   - Correction : d'après le code, les équations numériques ne fonctionnent aujourd'hui que
+     grâce à cette reconstruction (sans elle, `_toMap` lirait leurs nombres comme des yields
+     inconnus, donc 0). Piste : dans `_cleanUp`, ne reconstruire que les `_EQUATION`, et
+     résoudre nombres et constantes hors de la boucle des thèmes indexés.
+   - Lignes désactivées : `yieldoperators` `SUMOFYIELDS`, `SUMWITHCONSTANT`, `SUMOFAGEYIELDS`,
+     `PRODUCT`, `QUOTIENT`, `SUBTRACTION`, `INRANGE`, `GROWTH` et `CONSTANT`.
+   - Lignes base qui protègent le comportement juste : les 9 yields de `yieldoperatorsalone`,
+     les mêmes opérateurs dans un bloc sans équation numérique.
+
+Dans TWD_land, `YBM_RTM_BOG`, `YBM_RTM_MEH` et `YBM_RTM_F` ne servent qu'à l'output `TOTALCAR`,
+qu'aucun objectif ni aucune contrainte n'utilise. À la correction, relancer la suite base pour
+repérer les valeurs attendues qui changent, et justifier au journal toute valeur modifiée
+(règle 9).
 
 ## 3. Lacunes classées par criticité
 
@@ -225,6 +313,11 @@ Critère : une étape que tout modèle traverse passe avant une fonction de nich
 | 8 | **Écriture et relecture** : `FMTModelParser::write` (`Source/FMTModelParser.cpp:467`), `writeToProject` (`Include/FMTModelParser.h:118`), `FMTScheduleParser` | Pas d'idempotence (écrire, relire, réécrire) ni d'aller-retour de cédule ; `testreadwriteproject` n'a aucune vérification. |
 
 L'optimisation elle-même (objectifs) est l'étape la mieux protégée : 26 objectifs vérifiés.
+
+**État au lot 2** : les lacunes 1, 2 et 3 ont leurs premiers tests (`testScenarioReading`,
+`testJointScenarioReading`, `testReadingErrors`). Il reste pour la lacune 1 les transitions et
+le détail des yields par section. La lacune 4 est entamée par l'opérabilité et les yields ;
+restent `operate` (transitions) et le vieillissement, au lot 3.
 
 ### Gains rapides : des lignes CSV sans code
 
@@ -279,7 +372,8 @@ valeur mesurée une fois puis vue rouge.
   transition mais pas d'action (créée par défaut à la lecture).
 - Yields d'âge de 0 à 30 ans, 3 yields complexes (`*YC`), 16 outputs, lifespan 80 (0 pour
   `feu`).
-- 74 scénarios dans `Scenarios/`.
+- 82 scénarios dans `Scenarios/` : 74 d'origine, plus 8 créés au lot 2 (`yieldoperators` et
+  7 `INVALID_*`) ; `stdconstraints` a reçu un `_out`.
 - `Carte/TWD_land.shp` : 8 polygones, champs `AGE`, `THEME1`-`THEME3`, `SUPERFICIE`, sans
   `STANLOCK`. `Carte/TWD_LAND_forcesolution_modif.*` sert à `forcesolution`.
 - `rasters/` : `AGE.tif`, `THEME1-3.tif`, sans `STANLOCK.tif`.
@@ -297,9 +391,10 @@ valeur mesurée une fois puis vue rouge.
 
 | Besoin | Faisabilité | Données à créer |
 |---|---|---|
-| Structure lue (lacune 1) | texte seul | aucune : racine et scénarios existants |
-| Lecture groupée (lacune 2) | texte seul | aucune : `levelopt1-9`, `LP`/`LP2`/`LP4`/`LP5`, trio de replanification |
-| Tests négatifs (lacune 3) | texte seul | un `Scenarios/INVALID_<erreur>` par erreur visée |
+| Structure lue (lacune 1) | **fait au lot 2** | aucune : racine, `LP3` ; `stdconstraints` a reçu l'output `TEST2` |
+| Lecture groupée (lacune 2) | **fait au lot 2** | aucune : 7 combinaisons de scénarios existants |
+| Tests négatifs (lacune 3) | **fait au lot 2** | `INVALID_undefinedoutput` (34), `INVALID_undefinedattribute` (19), `INVALID_undefinedaggregate` (19), `INVALID_invalidnumber` (12), `INVALID_undefinedyield` (8), `INVALID_leakingtransition` (38), `INVALID_unclosedforloop` (81) : chacun copie une section de la racine et n'en change qu'une ligne, commentée en tête |
+| Opérateurs de yields complexes | **fait au lot 2** | deux blocs `*YC` à valeurs calculables à la main : `yieldoperators`, mélangé à des équations numériques (§ 2.7), et `yieldoperatorsalone`, sans équation numérique, où les mêmes opérateurs sont justes |
 | Opérabilité, transitions, vieillissement (lacune 4) | texte seul | aucune : développements construits dans le test sur la racine |
 | Fonctions de yield qu'aucun scénario n'utilise : `_SUBTRACT`, `_YTP`, `_ENDPOINT`, `_DELTA`, `_DISCOUNTFACTOR` | texte seul | un scénario de yields, valeurs calculées à la main |
 | `*PARTIAL`, `*STRATA`, `_SEQ`, `_INVLOCK` | texte seul, à confirmer | liste heuristique : vérifier d'abord dans les parseurs que ces mots-clés existent |
@@ -413,21 +508,140 @@ Validation (après le build de Gabriel, 2026-09-17) :
 - **Nettoyage** : `build/release/tests/sumandavgtest/` garde `TWD_land.csv` et `sumavg.csv`, écrits
   par l'ancien emplacement des sorties. Ce sont des restes sans effet.
 
+### Lot 2 : lecture (2026-09-17)
+
+**Statut** : livré le 2026-09-17 dans le worktree `new_test`, compilé par Gabriel le 2026-09-17,
+**validé** le 2026-09-17 : suite base de 167 tests, 159 verts et 8 désactivés, en 13,8 s avec
+`-j 8` (voir « Validation » ci-dessous). Reste à inscrire le numéro des issues du § 2.7.
+
+- **Trois exécutables** dans `Examples/C++/` :
+  - `testScenarioReading` : requêtes sur un scénario lu (§ 1, « Patron d'un test ») ;
+  - `testJointScenarioReading` : scénarios lus ensemble ou un par un, comparés par leur
+    écriture texte, dans `build/release/tests/testJointScenarioReading/<hachage>` ;
+  - `testReadingErrors` : code `FMTexc` attendu, cherché dans toute la chaîne d'exceptions.
+- **`basetests.csv`, 77 lignes** :
+  - 63 requêtes : 43 sur ROOT, 7 sur `LP3`, 8 sur `stdconstraints`, 5 sur `yieldoperators` ;
+  - 7 combinaisons de lecture groupée ;
+  - 7 erreurs de lecture.
+- **Valeurs attendues** : toutes calculées à la main depuis les fichiers du modèle, puis
+  confirmées à l'exécution. Pour les points à interpréter, le code a été lu avant de fixer la
+  valeur : interpolation linéaire, âge au-delà du dernier point (dernière valeur,
+  `FMTYieldHandler::getLinearValue`), `_LENGTH` (`INT_MAX`), virgule des contraintes.
+- **`knownbugs.csv`** : la ligne `teststdconstraints` est remplacée par les 8 lignes des deux
+  bogues du § 2.7.
+- **`teststdconstraints.cpp` supprimé** (§ 2.5) ; `Scenarios/stdconstraints/TWD_land._out`
+  définit `TEST2`.
+- **Nouveaux scénarios** : `yieldoperators` et les 7 `INVALID_*` (§ 4.3).
+- **Correctif de `TestTools.h` (défaut du lot 1)** : `printException` appelait
+  `std::rethrow_if_nested` sur une exception FMT dont le pointeur imbriqué est vide, donc
+  `std::terminate`. Toute exception FMT qui s'échappait d'un test finissait en arrêt anormal
+  au lieu d'un retour à 1. Le parcours passe par `visitNested`, qui vérifie `nested_ptr()`
+  comme `FMTExceptionHandler::throwNested`.
+- **Écarts au plan** :
+  - `teststdconstraints` n'est pas réécrit mais remplacé par des lignes du test générique ;
+  - les bogues de yields (§ 2.7) ont été trouvés en posant les valeurs attendues des yields
+    complexes de la racine ; ils ont conduit au scénario `yieldoperators`.
+
+Vérifications (hors build, 2026-09-17) :
+
+- **Compilation** : chaque test compilé dans le scratchpad avec les options du `.vcxproj`
+  généré (`cl`, mêmes définitions et bibliothèques) et lié au `FMTlib.lib` du build de `dev`,
+  dont les sources de FMTlib sont identiques à celles de `new_test`. Deux erreurs corrigées
+  avant livraison : `FMTActionComparator` n'est pas exportée (erreur de lien), et
+  `DIFFERENCE` est une macro de `windows.h`.
+- **Rejeu des CSV**, découpés comme le fait `Examples/C++/CMakeLists.txt` : les 77 lignes base
+  passent, les 8 lignes de `knownbugs.csv` échouent, et les 85 noms ctest sont distincts.
+- **Vu rouge**, sans recompiler :
+  - `testScenarioReading` avec une valeur attendue fausse ;
+  - `testJointScenarioReading` en comparant `LP` avec `LP2` lu seul (6 échecs) ;
+  - `testReadingErrors` avec le code attendu 0.
+- **`TestTools.h`** : auto-test étendu (exception imbriquée à la manière de FMT, `visitNested`),
+  vert avec `cl /W4 /permissive-`.
+- **Bogues du § 2.7** recoupés avec l'exécutable officiel `testWrapperCoreGetYield` et avec
+  `FMTNsstest` (planification), sur trois builds.
+- **Encodages** : fichiers nouveaux en ASCII et CRLF ; aucun U+FFFD introduit.
+
+Validation (après le build de Gabriel, 2026-09-17) :
+
+- **`CTestTestfile.cmake` régénéré** (`ctest --show-only=json-v1`) :
+  - 167 tests inscrits, aucun sous `T:/` : `BFECtests.csv` est absent de ce worktree ;
+  - les 164 lignes des CSV sont toutes inscrites (156 base, 8 de `knownbugs.csv`) : aucune
+    ligne sans cible ;
+  - `SKIP_RETURN_CODE 77` et `FIXTURES_REQUIRED` sur ces 164 tests, dont 8 `DISABLED` ;
+  - plus aucune trace de `teststdconstraints` ;
+  - verrous : `testreadwriteproject` 3 et `planningtest` 1. Les lignes BFEC des autres
+    verrous manquent dans ce worktree.
+- **Suite base** (`-E "T:/" -j 8`) : 167 tests ; 159 verts ; les 8 lignes de `knownbugs.csv`
+  « Not Run (Disabled) » ; 13,8 s réelles.
+- **Fixture** :
+  - `ExamplesModelsSnapshot` est le premier test exécuté à se terminer (9/167, juste après
+    les 8 désactivés) ;
+  - `ExamplesModelsUnchanged` se termine en dernier (167/167) ;
+  - les deux sont verts, et `git status` est inchangé après le passage.
+- **Vu rouge sur le vrai build**, sans recompiler. Chaque commande rend 1 sur la vérification
+  elle-même, pas sur une exception :
+  - `testScenarioReading` : aire fausse, actions dans le mauvais ordre, `COUPETOTALE`
+    opérable à 4 ans ;
+  - `testJointScenarioReading` : `LP|LP2` comparés à `LP2|LP` lus seuls (6 échecs, sections
+    `.act`, `.opt` et `.pri`) ;
+  - `testReadingErrors` : code attendu 0 sur `INVALID_undefinedoutput` ; ROOT, qui ne lève
+    rien, avec le code 34.
+
+  Les mêmes commandes avec les bonnes valeurs rendent 0. Sur le code faux, le message liste
+  la chaîne (`FMTexc(53)` quatre fois, puis `FMTexc(34)`) et le test rend 1 : le correctif de
+  `TestTools.h` tient.
+- **Lignes de `knownbugs.csv` lancées à la main** : les 8 échouent encore, avec les valeurs du
+  § 2.7 (36 ; 8,82975442 ; 5 ; 6 ; 120 ; 5 ; 5 ; 5).
+- **Durées des nouveaux tests** sous `-j 8` :
+  - `testScenarioReading` : 5,7 s cumulées pour 63 lignes, 0,17 s au plus ;
+  - `testJointScenarioReading` : 13,3 s pour 7 lignes, dont 9,85 s pour la ligne
+    `fullcarbon` (4,3 s lancée seule) ;
+  - `testReadingErrors` : 23,5 s pour 7 lignes, mais de 0,05 à 0,08 s par ligne lancée
+    seule. Ce sont les tests d'optimisation lancés en même temps qui ralentissent tout (§ 8).
+
+### Complément du lot 2 : démonstrations du § 2.7 (2026-09-17)
+
+**Statut** : livré le 2026-09-17 (12 lignes CSV et deux scénarios, aucun code), **validé** le
+2026-09-18 après la reconfiguration de Gabriel : 179 tests inscrits, 168 verts, 11 désactivés,
+13,7 s réelles. Les 9 lignes de `yieldoperatorsalone` coûtent 0,5 s en tout.
+
+- Demandé par Gabriel, qui doutait de la description du deuxième bogue. La cause a été trouvée
+  dans le code et démontrée avec les exécutables du build (§ 2.7) : ce n'est pas « `_SUM` ne
+  garde que la dernière source », mais la conversion en `_EQUATION` de tout un bloc `*YC` dès
+  qu'une de ses équations contient un nombre ou une constante. Un troisième défaut est apparu
+  au passage : sans thème indexé, une constante d'équation vaut 0.
+- **Nouveau scénario `yieldoperatorsalone`** : les mêmes opérateurs, seuls dans leur bloc.
+  9 lignes base, calculées à la main depuis la table d'âge de la racine (`volumetotal` = 120 à
+  7 ans) : `_SUM` (240, et 150 avec une constante), `_MULTIPLY` (240), `_DIVIDE` (60),
+  `_SUBTRACT` (100), `_RANGE` (1 dans l'intervalle, 0 hors de l'intervalle), `_MAI` (17,14),
+  `_CAI` (10).
+- **`yieldoperators`** reçoit trois yields de plus et un `TWD_land._con` : `INRANGE` (`_RANGE`),
+  `GROWTH` (`_MAI`) et `CONSTANT` (`_EQUATION(#TWO*3)`), inscrits dans `knownbugs.csv`. Ils
+  rendent 120, 120 et 0.
+- Vérifications : les 9 lignes base passent et ont été vues rouges avec une valeur fausse ; les
+  3 lignes connues échouent avec les valeurs du § 2.7 ; au rejeu des CSV découpés comme
+  `Examples/C++/CMakeLists.txt`, 176 noms de tests, aucun doublon. La suite déjà inscrite
+  (167 tests) reste verte après la modification du scénario `yieldoperators`.
+
 ## 6. Prochain lot
 
-### Lot 2 : lecture
+### Reste du lot 2
 
-- Structure de la racine et de quelques scénarios (valeurs calculables à la main).
-- Scénarios lus d'un coup comparés aux lectures une par une (`referenceRead`).
-- Premiers tests négatifs du parseur (`Scenarios/INVALID_<erreur>`).
-- `teststdconstraints` réécrit :
-  - l'output `TEST2` est défini dans son scénario ;
-  - le test vérifie les contraintes lues (bornes par période) ;
-  - il retourne dans `basetests.csv`.
+- **Rien ne bloque.** Les issues #346 et #347 sont ouvertes (§ 2.7) et la suite est verte.
+- **Modèles BFEC** : j'ai proposé d'y relever les blocs `*YC` mélangés, pour mesurer l'effet
+  réel du § 2.7. Sans retour pour l'instant.
+
+### Lot 3 : objets du cœur
+
+- `operate` et transitions : cibles, proportions, `_LOCK`, âge cible, `_DEATH`. Une requête
+  `OPERATE|<action>|<masque>|<âge>` de `testScenarioReading` rendrait les chemins de
+  développement (masque, âge, verrou, proportion).
+- Vieillissement (`grow`) et verrous.
+- Fonctions de yield qu'aucun scénario n'utilise : `_YTP`, `_ENDPOINT`, `_DELTA`,
+  `_DISCOUNTFACTOR`, `_RANGE`, `_MAI`, `_CAI`. Les ajouter à `yieldoperators`, en gardant en
+  tête le § 2.7 pour celles qui prennent plusieurs sources.
 
 ### Ensuite (par criticité)
-- **Lot 3 : objets du cœur.** Opérabilité, transitions, vieillissement, lifespan sur des
-  développements construits à la main.
 - **Lot 4 : construction et optimisation.** `presolvetest` étendu (lignes CSV) ; statistiques
   du graphe par période ; rejeu de la cédule optimale.
 - **Lot 5 : écriture et relecture.** Idempotence, aller-retour de cédule ; vérifications
@@ -483,7 +697,44 @@ Validation (après le build de Gabriel, 2026-09-17) :
   `Scenarios/<scénario>/<projet>._seq` des scénarios optimisés : travailler sur une copie.
 - **`.gitignore`** exclut `*.lp`, `*.mps` et `*html` : pas de fichier de référence sous ces
   extensions.
-- **Mon passage de ctest écrase** `build/release/Testing/Temporary/LastTest.log`.
+- **Tout appel de ctest réécrit** `build/release/Testing/Temporary/LastTest.log`, même
+  `ctest -N` ou `--show-only`, qui le laissent vide. Le copier avant le premier appel, et
+  prendre les durées dans la sortie console du passage.
+- **Exceptions imbriquées de FMT** : `FMTDefaultExceptionHandler::raise` lance même
+  l'exception la plus profonde par `std::throw_with_nested`, hors de tout `catch`. Son
+  pointeur imbriqué est donc vide, et `std::rethrow_if_nested` appelle alors `std::terminate`.
+  - Parcourir une chaîne avec `Testing::visitNested`, jamais avec `std::rethrow_if_nested`
+    directement.
+  - `testWrapperCoreAreaVariability`, `testWrapperCorePlanning` et `testWrapperCoreSA`
+    l'appellent encore dans leur affichage d'erreur : à corriger quand on les touche.
+- **Macros de `windows.h`** (par GDAL) : outre `min`, `max`, `ERROR`, `NEAR`, `FAR`, `IN`,
+  `OUT`, `DELETE`, aussi `DIFFERENCE` (lot 2). Écrire `(std::max)(...)` et
+  `(std::numeric_limits<int>::max)()`.
+- **Classes non exportées** : `Core::FMTActionComparator` (et d'autres comparateurs) n'a pas
+  `FMTEXPORT`. Un test qui l'utilise ne se lie pas.
+- **Argument vide** : CMake retire une colonne vide de la commande, donc un test ne peut pas
+  attendre une valeur vide. Par exemple, les thèmes de la racine n'ont pas de nom.
+- **Longueur des chemins** : le dossier de sortie d'un test ne doit pas porter une liste de
+  noms. `testJointScenarioReading` le nomme par un hachage, car 9 noms de scénarios
+  dépassaient la limite de 260 caractères de Windows. Un fichier de scénario au-delà de cette
+  limite (dossier courant et chemin relatif mis bout à bout) est ignoré sans message : FMT lit
+  la section de la racine à la place.
+- **Yield inconnu** : `FMTYields::get` rend 0 sans erreur pour un nom qu'aucun bloc ne
+  contient. Une requête `YIELD` sur un nom mal écrit passe donc si la valeur attendue est 0.
+- **`FMTModelParser::write`** attrape ses exceptions sans les relancer : vérifier que les
+  fichiers existent.
+- **Lecture de `output_type`** : seule, avec le gestionnaire par défaut, elle lève
+  `FMTexc(64)`. Ce scénario n'est lu qu'avec des erreurs converties en avertissements.
+- **Transition d'une action inconnue** : simple avertissement `FMTignore` (41), pas une
+  erreur. Pas de test négatif possible.
+- **Écriture (pour le lot 5)** :
+  - `_SUM(YBM_RTM_BOG,YBM_RTM_MEH)` est réécrit `_EQUATION(YBM_RTM_BOGYBM_RTM_MEH)` sans
+    opérateur, que la relecture remplace par 0 ;
+  - l'objectif `_MIN _PENALTY(...)` est réécrit `_MIN y_PENALTY(...)`.
+- **Sondes hors build** (compilation dans le scratchpad contre le FMTlib de `dev`) : un
+  exécutable placé hors de `bin/Release` charge `C:\Windows\System32\onnxruntime.dll`, trop
+  ancienne (« version [16] is not supported »). Copier `onnxruntime.dll` à côté de
+  l'exécutable de sonde.
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans
   `doplanning`) : lire le numéro de ligne plutôt que le nom.
 
@@ -495,12 +746,16 @@ Validation (après le build de Gabriel, 2026-09-17) :
 |---|---|---|---|---|---|---|---|---|
 | 2026-09-16 (lot 0) | 80 (79 lignes + `UnitTestFMTexcelcache`) | 51 s cumulées (passage complet avec BFEC) | 48 | 17 | 3 | 2 | 0 | 25 |
 | 2026-09-17 (lot 1) | 83 (79 lignes, 2 fixtures, `teststdconstraints` désactivé, `UnitTestFMTexcelcache`) | 9,3 s réelles ; 65,7 s cumulées | 48 | 17 | 3 | 0 | 1 | 25 |
+| 2026-09-17 (lot 2) | 167 (156 lignes, 8 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 13,8 s réelles ; 104,5 s cumulées | 51 | 17 | 3 | 0 | 8 | 25 |
+| 2026-09-18 (complément lot 2) | 179 (165 lignes, 11 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 13,7 s réelles ; 100,3 s cumulées | 51 | 17 | 3 | 0 | 11 | 25 |
 
 - Tests base inscrits : `ctest ... -N -E "T:/"` (fixtures et tests désactivés compris).
 - Durée : la référence est le temps réel de la suite base seule (`Total Test time (real)`).
   La somme des « Test time » de `LastTest.log` varie avec la charge : avec `-j 8`, les tests
   base lancés ensemble se ralentissent entre eux. Les 65,7 s du lot 1 ne se comparent donc pas
-  aux 51 s du lot 0, mesurées dans le passage complet.
+  aux 51 s du lot 0, mesurées dans le passage complet. Au lot 2, la somme vient de la sortie
+  console : `LastTest.log` avait été réécrit (§ 7).
 - Exécutables base : premières colonnes distinctes de `basetests.csv` qui nomment une cible.
-- Lignes CSV ignorées : alertes `no target named` à la configuration.
+- Lignes CSV ignorées : alertes `no target named` à la configuration. Sans la sortie de la
+  configuration, compter les lignes des CSV absentes de `ctest -N` (lot 2).
 - Désactivés : lignes de `knownbugs.csv`.

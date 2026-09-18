@@ -107,22 +107,40 @@ namespace Testing
 		std::filesystem::copy(p_source, p_destination, std::filesystem::copy_options::recursive);
 	}
 
-	// Prints an exception, then its nested exceptions with an increasing indentation.
-	inline void printException(const std::exception& p_exception, std::size_t p_depth = 0)
+	// Calls p_visit on an exception, then on each exception it nests, outermost first, with
+	// the nesting depth. FMT raises even its innermost exception with std::throw_with_nested,
+	// outside of any catch block: its nested pointer is empty, and std::rethrow_if_nested
+	// would then call std::terminate. The pointer is checked before rethrowing.
+	inline void visitNested(const std::exception& p_exception,
+		const std::function<void(const std::exception&, std::size_t)>& p_visit, std::size_t p_depth = 0)
 	{
-		std::cerr << std::string(p_depth * 2, ' ') << p_exception.what() << std::endl;
+		p_visit(p_exception, p_depth);
+		const std::nested_exception* NESTED = dynamic_cast<const std::nested_exception*>(&p_exception);
+		if (NESTED == nullptr || NESTED->nested_ptr() == nullptr)
+		{
+			return;
+		}
 		try
 		{
-			std::rethrow_if_nested(p_exception);
+			NESTED->rethrow_nested();
 		}
 		catch (const std::exception& nested)
 		{
-			printException(nested, p_depth + 1);
+			visitNested(nested, p_visit, p_depth + 1);
 		}
 		catch (...)
 		{
 			std::cerr << std::string((p_depth + 1) * 2, ' ') << "Unknown nested exception" << std::endl;
 		}
+	}
+
+	// Prints an exception, then its nested exceptions with an increasing indentation.
+	inline void printException(const std::exception& p_exception)
+	{
+		visitNested(p_exception, [](const std::exception& p_nested, std::size_t p_depth)
+			{
+			std::cerr << std::string(p_depth * 2, ' ') << p_nested.what() << std::endl;
+			});
 	}
 
 	// Runs the body of a test and returns its exit code, or 1 when an exception escapes it.
