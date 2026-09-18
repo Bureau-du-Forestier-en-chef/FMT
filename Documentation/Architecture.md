@@ -129,7 +129,7 @@ Each layer maps to directories and namespaces in the repository:
 | --- | --- |
 | Applications and user interfaces | `UI/`, `Excel/FMTExcel/`, `Examples/C++/` |
 | Wrappers and language bindings | `UI/` (`FMTForm`), `Excel/`, the `Python` and `R` namespaces in `Include/` and `Source/` |
-| Application controllers and services | `FMTWrapperCore/` (`SES`, `Tools`, `TransformationCore`) |
+| Application controllers and services | `FMTWrapperCore/` (`Controller`, the `UseCases` classes, `SES`, `Planning`, `TransformationCore`) |
 | Forest-planning domain | `Include/` and `Source/`, namespaces `Core`, `Models`, `Spatial`, `Graph`, `Heuristics` |
 | Infrastructure and external libraries | `Include/` and `Source/`, namespaces `Parser`, `Logging`, `Exception`, `Parallel`, plus solver, GDAL, and ONNX Runtime integration |
 
@@ -223,6 +223,8 @@ OperatingArea
 AreaVariability
 Environment
 ```
+
+In `FMTWrapperCore` this layer has two levels. `Controller` is the façade the wrappers call: it receives data transfer objects and scenario indexes, delegates each system operation, and holds no logic and no FMT type of its own. The `UseCases` classes behind it resolve the scenario indexes in `ModelCache`, coordinate the workflow, update the session state, and call the services listed above.
 
 ### Forest-Planning Domain
 
@@ -665,7 +667,6 @@ FMT contains historical design decisions that do not represent the preferred dir
 | Debt | Where |
 | --- | --- |
 | Broad façade at the interoperability boundary, 814 lines of declarations | `UI/Include/FMTForm.h` |
-| Caching implemented in the interface layer rather than in an application service | `UI/Include/FMTFormCache.h` |
 | Untyped `const void*` vertex handles crossing a public interface | `Include/FMTGraphVertexToYield.h` |
 | Two parameter conventions in the same header, legacy `l` prefix next to `p_` | `Include/FMTModel.h` and others |
 | Protected members exposing base-class internals to derived classes | 31 of 247 headers |

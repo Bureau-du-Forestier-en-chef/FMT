@@ -11,6 +11,7 @@
 #include "PlanningTypes.h"
 #include "RasterizationTypes.h"
 #include "SESTypes.h"
+#include "SessionTypes.h"
 
 namespace FMTWrapper::Backend
 {
@@ -18,11 +19,14 @@ namespace FMTWrapper::Backend
      * @brief Facade controller (GRASP): the wrapper's single entry point into the Core.
      *
      * Each method matches a system operation of FMTForm. It receives std types, DTOs and
-     * scenario indexes, resolves the scenario in ModelCache, then delegates to the pure
-     * entry point of a service: Environment, ModelQuery, Transformation, SES,
-     * Rasterization, OperatingArea, AreaVariability or Planning. The controller
-     * coordinates without computing: the logic stays in the services, which the tests call
-     * directly, without going through the cache.
+     * scenario indexes, and delegates to a use case: SessionUseCases, ScenarioUseCases,
+     * QueryUseCases, TransformationUseCases, SpatialUseCases or PlanningUseCases, and to
+     * Environment for what needs no scenario. A use case resolves the scenario indexes in
+     * ModelCache and calls the services, whose pure entry points the tests call directly,
+     * without going through the cache.
+     *
+     * The controller holds no logic of its own, and no FMT header reaches its
+     * implementation.
      *
      * No FMTlib type appears in this interface: the wrapper includes only this header, and
      * therefore cannot handle any FMT object.
@@ -61,8 +65,8 @@ namespace FMTWrapper::Backend
         /**
          * @brief Installs the interface exception handler.
          * @param p_exceptionIds Exceptions to treat as warnings, Exception::FMTexc values.
-         * @param p_maxWarnings Number of warnings before they are silenced; 10 if the value
-         *        is not positive.
+         * @param p_maxWarnings Number of warnings before they are silenced;
+         *        DEFAULT_MAX_WARNINGS if the value is not positive.
          */
         static void setErrorsToWarnings(
             const std::vector<int>& p_exceptionIds,

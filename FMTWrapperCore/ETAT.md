@@ -27,39 +27,54 @@ Trois règles, vérifiables mécaniquement :
 | `FMTWrapperCore/Include/<Domaine>Types.h` | les DTO, types `std` uniquement : `struct <X>Parameters`, `struct <X>Results` (`success`, `errorMessage`, données) |
 | `FMTWrapperCore/Include/<Domaine>.h` | le service : forward-decl FMT, `class FMT_WRAPPER_CORE_EXPORT <X>` et ses entrées pures |
 | `FMTWrapperCore/Source/<Domaine>.cpp` | la logique ; erreurs via `raiseFromCatch` du gestionnaire d'exceptions |
-| `Controller.h` / `Controller.cpp` | une méthode par opération système de `FMTForm` : résout l'index de scénario, délègue à l'entrée pure |
+| `FMTWrapperCore/{Include,Source}/<Domaine>UseCases.*` | le cas d'utilisation : reçoit DTO et index de scénario, résout l'index dans `ModelCache`, appelle les services, met le cache à jour |
+| `Controller.h` / `Controller.cpp` | une méthode par opération système de `FMTForm` : délègue au cas d'utilisation, sans logique ni type FMT |
 | `UI/Source/<Fichier>.cpp` | `ConvertirParametres` (C# -> `Parameters`), l'appel du contrôleur, `_EnvoyerResultats...` (`Results` -> `RetourJson`/`FeedBack`) |
 
 Référence vivante : `OperatingAreaTypes.h`, `OperatingArea.h` / `.cpp`,
-`Controller::scheduleOperatingAreas` et `UI/Source/OperatingAreaScheduling.cpp`.
+`SpatialUseCases::scheduleOperatingAreas`, `Controller::scheduleOperatingAreas` et
+`UI/Source/OperatingAreaScheduling.cpp`.
 
 `<X>Results` n'existe que si l'opération produit des données en mémoire. Sinon l'entrée
 retourne `void` et les erreurs remontent par exception : c'est le cas de `Rasterization`
 et des transformations.
 
-### Contrôleur façade
+### Contrôleur façade et cas d'utilisation
 
 `FMTWrapper::Backend::Controller` (lot 5b) applique le patron *Controller* de GRASP (Larman) :
-un objet hors de l'interface reçoit les opérations système et les délègue.
+un objet hors de l'interface reçoit les opérations système et les délègue. Depuis le lot B, il
+ne fait que cela.
 
+- **Le contrôleur** ne reçoit et ne rend que des types `std`, des DTO et des index de
+  scénario. Chacune de ses 38 méthodes tient en une délégation : aucune logique, aucune
+  structure de contrôle, et aucun en-tête de FMT n'atteint son implémentation.
+- **Les cas d'utilisation** (`<Domaine>UseCases`) portent la coordination : résolution des
+  index dans `ModelCache`, appel des services, mise à jour du cache. Internes à la
+  bibliothèque, ils ne sont pas exportés.
 - **Les services n'ont que des entrées pures** : elles prennent les objets FMT et ne
   connaissent pas le cache. Les tests C++ les appellent directement.
-- **Le contrôleur** ne reçoit que des types `std`, des DTO et des index de scénario. Il
-  résout l'index dans `ModelCache`, puis délègue à l'entrée pure : il coordonne sans
-  calculer. Dans le Core, seuls `Controller.cpp` et `ModelCache.cpp` utilisent le cache.
 - **`Controller.h` n'inclut que les `<Domaine>Types.h`** : le wrapper ne voit ni les
   services ni la moindre déclaration de FMTlib.
-- Il est sans état et ses méthodes sont statiques : l'état de la session (scénarios,
-  logger, gestionnaire d'exceptions) reste dans `ModelCache`.
+- Dans le Core, `ModelCache` n'est utilisé que par les cas d'utilisation et par lui-même.
+- `Environment` ne dépend d'aucun scénario et son interface est déjà en types `std` : le
+  contrôleur l'appelle sans passer par un cas d'utilisation.
+- Le contrôleur est sans état et ses méthodes sont statiques : l'état de la session
+  (scénarios, logger, gestionnaire d'exceptions) reste dans `ModelCache`.
 
 ```cpp
 // Service : entrée pure, testable sans cache.
 static OperatingAreaResults schedule(const OperatingAreaParameters& p_params, const Models::FMTModel& p_model);
 
-// Contrôleur : résout l'index, délègue.
+// Cas d'utilisation : résout l'index, appelle le service.
+OperatingAreaResults SpatialUseCases::scheduleOperatingAreas(const OperatingAreaParameters& p_params, int p_modelIndex)
+{
+    return OperatingArea::schedule(p_params, ModelCache::GetInstance()->getModel(p_modelIndex));
+}
+
+// Contrôleur : délègue.
 OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParameters& p_params, int p_modelIndex)
 {
-    return OperatingArea::schedule(p_params, getCachedModel(p_modelIndex));
+    return SpatialUseCases::scheduleOperatingAreas(p_params, p_modelIndex);
 }
 ```
 
@@ -69,8 +84,9 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 - Journalisation : les entrées pures écrivent dans le logger statique de FMT
   (`Models::FMTModel::getLogger()`) : le `CallbackLogger` dans l'interface, le logger par
   défaut dans un test. La progression reste en temps réel.
-- Toute classe du Core porte `FMT_WRAPPER_CORE_EXPORT` (`FMTWrapperCoreExport.h`) ; les DTO,
-  sans fonction membre hors ligne, n'en ont pas besoin.
+- Toute classe du Core appelée depuis un autre binaire porte `FMT_WRAPPER_CORE_EXPORT`
+  (`FMTWrapperCoreExport.h`) ; les DTO, sans fonction membre hors ligne, et les cas
+  d'utilisation, internes à la bibliothèque, n'en ont pas besoin.
 - Le code du Core vit dans l'espace de noms `FMTWrapper::Backend` (lot A) ; la bibliothèque,
   sa cible CMake et son dossier gardent le nom `FMTWrapperCore`.
 - Langue : commentaires, documentation Doxygen et sorties des tests en **anglais** ;
@@ -95,7 +111,8 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 
 | Classe | Rôle |
 |---|---|
-| `Controller` | Contrôleur façade : le seul point d'entrée du wrapper, une méthode par opération de `FMTForm` |
+| `Controller` | Contrôleur façade : le seul point d'entrée du wrapper, une méthode par opération de `FMTForm`, chacune une délégation |
+| `SessionUseCases`, `ScenarioUseCases`, `QueryUseCases`, `TransformationUseCases`, `SpatialUseCases`, `PlanningUseCases` | Cas d'utilisation (lot B) : résolution des index de scénario, coordination des services, mise à jour du cache |
 | `Environment` | Capacités de FMT, sans modèle : solveurs, pilotes GDAL, changelog, exceptions |
 | `ModelQuery` | Interrogation d'un modèle : yields, masques, thèmes, actions, cédules, écriture de projet |
 | `Selection` | Filtrage des contraintes et outputs par nom |
@@ -494,8 +511,9 @@ Gabriel après la compilation du lot 6.
 
 ### Tests dans ctest et conversions entrantes (2026-09-16)
 
-**Statut** : livré le 2026-09-16, **pas encore compilé**. Décidé par Gabriel après la
-validation partielle du nettoyage.
+**Statut** : livré le 2026-09-16, compilé et validé le 2026-09-18 : les sept tests
+nouvellement inscrits passent dans ctest, `testWrapperCoreGetYield` compris, dans ses deux
+lignes.
 
 - **Tests de la migration dans ctest**, par les CSV (section 6) :
   - `basetests.csv` : `testWrapperCoreRasterization` (arguments de `maptoFMTforest`),
@@ -534,7 +552,7 @@ une chaîne vide (voir « Ensuite »).
 
 ### Macro d'export renommée (2026-09-17)
 
-**Statut** : livré le 2026-09-17, **pas encore compilé**. Demandé par Gabriel.
+**Statut** : livré le 2026-09-17, compilé le 2026-09-18. Demandé par Gabriel.
 
 - `FMTWRAPPERCOREEXPORT` devient `FMT_WRAPPER_CORE_EXPORT` : sa définition dans
   `FMTWrapperCoreExport.h` et les 13 classes du Core qui le portent. Le journal ci-dessus
@@ -548,8 +566,8 @@ une chaîne vide (voir « Ensuite »).
 
 ### Lot A -- espace de noms `FMTWrapper::Backend` (2026-09-17)
 
-**Statut** : livré le 2026-09-17, **pas encore compilé par Gabriel**. Premier lot de la revue
-de la PR #345 (section 4).
+**Statut** : livré le 2026-09-17, compilé le 2026-09-18. Premier lot de la revue de la
+PR #345 (section 4).
 
 - `namespace FMTWrapperCore` devient `namespace FMTWrapper::Backend` (29 déclarations) et
   `FMTWrapperCore::` devient `FMTWrapper::Backend::` (135 noms qualifiés, commentaires et noms
@@ -563,6 +581,42 @@ de la PR #345 (section 4).
   sources du Core, ses 15 tests et les 11 sources du wrapper en `/clr` passent sans erreur ni
   avertissement, et les objets portent le nouveau nom.
 
+### Lot B -- contrôleur sans logique (2026-09-17)
+
+**Statut** : livré le 2026-09-17. **Compilé, et la suite ctest passe** le 2026-09-18 :
+173 tests sur 173. Deuxième lot de la revue de la PR #345 (section 4).
+
+- **Six cas d'utilisation créés** : `SessionUseCases` (journal, gestionnaire d'exceptions,
+  pile d'erreur), `ScenarioUseCases` (lecture, retrait et écriture des scénarios),
+  `QueryUseCases` (les douze interrogations), `TransformationUseCases`, `SpatialUseCases`
+  (SES, recuit simulé, rastérisation, aires d'opération) et `PlanningUseCases` (planification,
+  replanification, variabilité de l'aire initiale).
+- **`Controller.cpp` ne contient plus que des délégations** : chacune de ses 38 méthodes tient
+  en une instruction. Il n'inclut plus que `Controller.h`, `Environment.h` et les six cas
+  d'utilisation, tous en types `std` ; plus un seul type de FMT n'y apparaît.
+- **`DEFAULT_MAX_WARNINGS` quitte l'espace anonyme du `.cpp`** : il est déclaré dans
+  `SessionTypes.h`, que `Controller.h` inclut, et la règle « zéro ou moins = valeur par
+  défaut » est appliquée par `SessionUseCases`.
+- Le refus du cache vide disparaît du contrôleur : `ModelCache::getModel` lève déjà
+  `FMTrangeerror` pour tout index hors limites, cache vide compris. Seul le message change,
+  « no scenario for index N in cache », levé depuis `ModelCache::getModel`.
+- Les nouveaux fichiers portent l'en-tête de licence LiLiQ-R exigé par `CodingStandards.md`,
+  que les fichiers existants du Core n'ont pas (voir « Ensuite »).
+- Signatures publiques inchangées : le wrapper n'est pas touché.
+- Contrôles : contrôleur sans type FMT ni en-tête qui en expose, 38 méthodes d'une seule
+  instruction et sans structure de contrôle, cas d'utilisation non exportés, 38 méthodes
+  appelées par le wrapper. Compilé sans édition de liens avec les options du build (`cl` de
+  VS 2022, `/W1`) : 19 sources du Core, 15 tests et 11 sources du wrapper en `/clr`, sans
+  erreur ni avertissement.
+- `Architecture.md` : la couche « Application controllers and services » décrit maintenant le
+  contrôleur, les cas d'utilisation et les services ; la dette « cache dans la couche
+  interface » est retirée, le cache vivant dans le Core depuis le lot 1.
+- **Hors migration**, deux corrections de FMTlib livrées avec ce lot, parce qu'elles
+  bloquaient le build et viennent de master (`4c61d509`) : une déclaration de `inputs` en
+  double dans `FMTYieldModelNn.cpp`, et `std::discrete_distribution<double>` dans
+  `FMTYieldModelRandom.cpp`, que MSVC 14.44 refuse désormais, le paramètre de patron étant
+  celui de l'indice tiré et devant être entier. Aucun avertissement, de `/W1` à `/W4`.
+
 ## 4. Prochain lot
 
 Les lots de domaine sont terminés depuis le lot 6. La revue de la PR #345 ouvre trois lots :
@@ -573,26 +627,12 @@ A (livré), puis B et C, dans cet ordre.
 | Commentaire de gcyr | Décision | Lot |
 |---|---|---|
 | Nom de la macro d'export | `FMT_WRAPPER_CORE_EXPORT` | fait (`8fb920c1`) |
-| `FMTException`, `FMTModel` et `FMTModelParser` dans `Controller.cpp` | **Non négociable** : le contrôleur ne contient aucune logique, ne connaît rien de FMT et n'accepte ou ne renvoie que des DTO | B |
-| `DEFAULT_MAX_WARNINGS` dans le `.h` | Accepté | B |
+| `FMTException`, `FMTModel` et `FMTModelParser` dans `Controller.cpp` | **Non négociable** : le contrôleur ne contient aucune logique, ne connaît rien de FMT et n'accepte ou ne renvoie que des DTO | B, livré |
+| `DEFAULT_MAX_WARNINGS` dans le `.h` | Accepté | B, livré |
 | Espace de noms `FMTWrapper::Core` | `FMTWrapper::Backend` : `Core` entre en conflit avec FMTlib (Pièges) | A, livré |
 | Callbacks et `void*` remplacés par des événements | Accepté : événements typés et liste d'abonnés | C |
 
-**Lot B -- contrôleur sans logique.**
-
-- **Un seul contrôleur**, décision de Gabriel : chacune de ses 38 méthodes se réduit à une
-  délégation. Une god class concentre de la logique ; celui-ci n'en aura plus.
-- **La logique passe dans des cas d'utilisation découpés par domaine**, qui reçoivent DTO et
-  index de scénario, résolvent les index dans `ModelCache` et appellent les services : lecture
-  et écriture des scénarios, conversion des codes d'erreur, pile d'erreur, ajout au cache des
-  scénarios transformés, préparation de la planification. Le refus du cache vide passe dans
-  `ModelCache::getModel`. `Environment`, déjà en types `std` et sans scénario, joue lui-même
-  ce rôle.
-- **Règles vérifiées par script** : `Controller.cpp` n'inclut que des DTO et des cas
-  d'utilisation (aucun `FMT*.h`, ni `ModelCache.h`, ni service de domaine), et chaque méthode
-  tient en une délégation.
-- `DEFAULT_MAX_WARNINGS` passe dans `Controller.h` ; la règle « 0 ou moins = valeur par
-  défaut » va dans le cas d'utilisation.
+**Lot B -- contrôleur sans logique.** Livré le 2026-09-17 : voir le journal, section 3.
 
 **Lot C -- événements.**
 
@@ -613,14 +653,13 @@ A (livré), puis B et C, dans cet ordre.
 
 ### Validations en attente
 
-Le nettoyage compile, ctest passe et l'interface fonctionne à première vue (2026-09-16).
-Restent à compiler, d'après ce fichier : le lot « Tests dans ctest et conversions
-entrantes », le renommage de la macro d'export et le lot A. À valider ensuite :
+**Tout ce qui est livré compile, et la suite ctest passe** : 173 tests sur 173 le 2026-09-18,
+lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans ctest ». Restent
+à valider :
 
-- **ctest, après reconfiguration de CMake** : les tests nouvellement inscrits couvrent les
-  lots 3 à 6, pour lesquels aucune validation à l'exécution n'est consignée ici.
-  `testWrapperCoreGetYield` et `testWrapperCoreEnvironment` n'ont jamais tourné dans ctest ;
-  un échec de ce dernier signalerait une exception de FMT sans description.
+- **Les lots 3 à 6 par leurs tests** : fait le 2026-09-18. `Rasterization`,
+  `AreaVariability`, `Planning`, `OperatingArea`, `Environment` et les deux lignes de
+  `GetYield` passent, ces dernières pour la première fois depuis 2024.
 - **Dans l'interface** :
   - planification d'un scénario optimisé, d'un scénario rejoué et d'un scénario sans
     cédule : l'erreur de ce dernier s'affiche une fois et la planification se poursuit ;
@@ -645,6 +684,9 @@ entrantes », le renommage de la macro d'export et le lot A. À valider ensuite 
   dossier de résultat des aires d'opération, nom de scénario des transformations, et à
   vérifier pour les autres dossiers de sortie. Préexistant pour une chaîne vide ; à
   décider.
+- **En-tête de licence** : les fichiers du Core, sauf son `CMakeLists.txt` et les nouveaux du
+  lot B, n'ont pas l'en-tête LiLiQ-R que `CodingStandards.md` exige. À généraliser dans un lot
+  dédié, jamais au passage d'un autre changement.
 - **Portabilité du Core** hors Windows : `WarningExceptionHandler::tryfileopener` lance
   Notepad++ par `WinExec` (`windows.h`), du comportement d'interface à isoler sous
   `#ifdef _WIN32` ou à rendre au wrapper. Sans objet tant que les deux chaînes de
