@@ -6,7 +6,7 @@
 #ifdef FMTWITHMOSEK
 	#include "FMTModelParser.h"
 	#include "FMTVersion.h"
-	#include "FMTFormLogger.h"
+	#include "CallbackLogger.h"
 	#include "FMTFreeExceptionHandler.h"
 	#include "FMTDefaultLogger.h"
 	#include "FMTLpModel.h"
@@ -19,17 +19,17 @@ void out(const char* data) {
 
 	namespace Testing
 	{
-		class UnitTestFMTFormLogger
+		class UnitTestCallbackLogger
 			{
 			public:
-				UnitTestFMTFormLogger()
+				UnitTestCallbackLogger()
 					{
-					m_OutLocation = "../../tests/UnitTesteFMTFormLogger";
-					// const std::string outFile = m_OutLocation+"/FMTFormLoggertest.log";
-					const std::string outFile = "FMTFormLoggertest.log";
-					// (Wrapper::logfunc)(void*)intptrptr=&std::cout;
-					// std::unique_ptr<Logging::FMTLogger> logger(new Wrapper::FMTFormLogger(filename, (logfunc)(void*)intptrptr));
-					m_logger = Wrapper::FMTFormLogger(outFile, (Wrapper::logfunc)(void*)&out);
+					m_OutLocation = "../../tests/UnitTestCallbackLogger";
+					// const std::string outFile = m_OutLocation+"/CallbackLoggerTest.log";
+					const std::string outFile = "CallbackLoggerTest.log";
+					// (FMTWrapper::Backend::logfunc)(void*)intptrptr=&std::cout;
+					// std::unique_ptr<Logging::FMTLogger> logger(new FMTWrapper::Backend::CallbackLogger(filename, (logfunc)(void*)intptrptr));
+					m_logger = FMTWrapper::Backend::CallbackLogger(outFile, (FMTWrapper::Backend::logfunc)(void*)&out);
 					m_logger.settasklogginglevel(1);
 					}
 				void testReplanning()
@@ -42,7 +42,7 @@ void out(const char* data) {
 					allscenarios.push_back("Globalfire");
 					allscenarios.push_back("Localreplanning");
 					Parser::FMTModelParser modelparser;
-					std::unique_ptr<Logging::FMTLogger> logger(new Wrapper::FMTFormLogger(m_logger));
+					std::unique_ptr<Logging::FMTLogger> logger(new FMTWrapper::Backend::CallbackLogger(m_logger));
 					Parser::FMTModelParser Modelparser;
 					Modelparser.passInLogger(logger);
 					std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
@@ -70,7 +70,7 @@ void out(const char* data) {
 					Parallel::FMTTaskHandler handler(maintaskptr, 2);
 				}
 			private:
-				Wrapper::FMTFormLogger m_logger;
+				FMTWrapper::Backend::CallbackLogger m_logger;
 				std::string m_OutLocation;
 
 			};
@@ -84,7 +84,7 @@ void out(const char* data) {
 int main()
 {
 	#ifdef FMTWITHMOSEK
-		Testing::UnitTestFMTFormLogger test;
+		Testing::UnitTestCallbackLogger test;
 		test.testReplanning();
 	#endif 
 	return 0;

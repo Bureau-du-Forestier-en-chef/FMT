@@ -1,12 +1,12 @@
 #pragma once
 
-#include "stdafx.h"
 #include <vector>
 #include <string>
 #include <memory>
 
 #include "FMTException.h"
 #include "FMTModelParser.h"
+#include "FMTWrapperCoreExport.h"
 
 namespace Models
 {
@@ -18,12 +18,12 @@ namespace Exception
 	class FMTExceptionHandler;
 }
 
-namespace Wrapper
+namespace FMTWrapper::Backend
 {
-	class FMTFormLogger;
-	class FMTExceptionHandlerWarning;
+	class CallbackLogger;
+	class WarningExceptionHandler;
 
-	// DocString: FMTFormCache
+	// DocString: ModelCache
 	/**
 	@brief Singleton cache used by the graphical interface.
 
@@ -32,17 +32,24 @@ namespace Wrapper
 	mechanisms for rebuilding logging and exception handling resources
 	after a crash.
 	*/
-	class FMTFormCache
+	class FMT_WRAPPER_CORE_EXPORT ModelCache
 	{
 	public:
 
-		// DocString: ~FMTFormCache()
+		// DocString: ~ModelCache()
 		/**
-		@brief Default destructor.
-		*/
-		~FMTFormCache() = default;
+		@brief Destructor.
 
-		// DocString: FMTFormCache::getModel
+		Declared here but defined in the .cpp: m_Models holds
+		std::unique_ptr<Models::FMTModel> while this header only knows
+		FMTModel through a forward declaration. Since the class is exported,
+		an inline destructor would be instantiated in every translation unit
+		that sees the class exported, and none of them can delete an
+		incomplete type.
+		*/
+		~ModelCache();
+
+		// DocString: ModelCache::getModel
 		/**
 		@brief Returns a model stored in the cache.
 
@@ -52,23 +59,23 @@ namespace Wrapper
 		*/
 		const Models::FMTModel& getModel(const int& index) const;
 
-		// DocString: FMTFormCache::GetFormHandler
+		// DocString: ModelCache::GetWarningHandler
 		/**
 		@brief Returns the graphical exception handler.
 
-		@return Pointer to the cached FMTExceptionHandlerWarning instance.
+		@return Pointer to the cached WarningExceptionHandler instance.
 		*/
-		FMTExceptionHandlerWarning* GetFormHandler();
+		WarningExceptionHandler* GetWarningHandler();
 
-		// DocString: FMTFormCache::GetFormHandler const
+		// DocString: ModelCache::GetWarningHandler const
 		/**
 		@brief Returns the graphical exception handler.
 
-		@return Constant pointer to the cached FMTExceptionHandlerWarning instance.
+		@return Constant pointer to the cached WarningExceptionHandler instance.
 		*/
-		const FMTExceptionHandlerWarning* GetFormHandler() const;
+		const WarningExceptionHandler* GetWarningHandler() const;
 
-		// DocString: FMTFormCache::getExceptionHandler
+		// DocString: ModelCache::getExceptionHandler
 		/**
 		@brief Returns the active exception handler.
 
@@ -76,23 +83,23 @@ namespace Wrapper
 		*/
 		Exception::FMTExceptionHandler* getExceptionHandler() const;
 
-		// DocString: FMTFormCache::GetFormLogger
+		// DocString: ModelCache::GetCallbackLogger
 		/**
 		@brief Returns the graphical logger.
 
-		@return Pointer to the cached FMTFormLogger instance.
+		@return Pointer to the cached CallbackLogger instance.
 		*/
-		FMTFormLogger* GetFormLogger();
+		CallbackLogger* GetCallbackLogger();
 
-		// DocString: FMTFormCache::GetInstance
+		// DocString: ModelCache::GetInstance
 		/**
 		@brief Returns the singleton instance.
 
 		@return Pointer to the singleton cache instance.
 		*/
-		static FMTFormCache* GetInstance();
+		static ModelCache* GetInstance();
 
-		// DocString: FMTFormCache::empty
+		// DocString: ModelCache::empty
 		/**
 		@brief Checks whether the cache contains any models.
 
@@ -100,7 +107,7 @@ namespace Wrapper
 		*/
 		bool empty() const;
 
-		// DocString: FMTFormCache::size
+		// DocString: ModelCache::size
 		/**
 		@brief Returns the number of cached models.
 
@@ -108,7 +115,7 @@ namespace Wrapper
 		*/
 		size_t size() const;
 
-		// DocString: FMTFormCache::push_back
+		// DocString: ModelCache::push_back
 		/**
 		@brief Adds a model to the cache.
 
@@ -116,7 +123,7 @@ namespace Wrapper
 		*/
 		void push_back(const Models::FMTModel& model);
 
-		// DocString: FMTFormCache::erase
+		// DocString: ModelCache::erase
 		/**
 		@brief Removes a model from the cache.
 
@@ -124,13 +131,13 @@ namespace Wrapper
 		*/
 		void erase(const int& index);
 
-		// DocString: FMTFormCache::clear
+		// DocString: ModelCache::clear
 		/**
 		@brief Removes all models from the cache.
 		*/
 		void clear();
 
-		// DocString: FMTFormCache::InitializeExceptionHandler
+		// DocString: ModelCache::InitializeExceptionHandler
 		/**
 		@brief Initializes and installs the graphical exception handler.
 
@@ -144,13 +151,13 @@ namespace Wrapper
 			const int& maxwarnings,
 			const std::vector<Exception::FMTexc>& warning);
 
-		// DocString: FMTFormCache::CloseLogger
+		// DocString: ModelCache::CloseLogger
 		/**
 		@brief Closes the active logger.
 		*/
 		void CloseLogger();
 
-		// DocString: FMTFormCache::InitializeLogger
+		// DocString: ModelCache::InitializeLogger
 		/**
 		@brief Initializes and installs the graphical logger.
 
@@ -162,9 +169,9 @@ namespace Wrapper
 		*/
 		void InitializeLogger(
 			const std::string& filename,
-			System::IntPtr intptrptr);
+			void* intptrptr);
 
-		// DocString: FMTFormCache::RecoverLoggerAndHandler
+		// DocString: ModelCache::RecoverLoggerAndHandler
 		/**
 		@brief Rebuilds the logger and exception handler after a crash.
 
@@ -175,9 +182,9 @@ namespace Wrapper
 
 		@param[in] intptrptr Fresh managed callback function pointer.
 		*/
-		void RecoverLoggerAndHandler(System::IntPtr intptrptr);
+		void RecoverLoggerAndHandler(void* intptrptr);
 
-		// DocString: FMTFormCache::GetLoggerFilename
+		// DocString: ModelCache::GetLoggerFilename
 		/**
 		@brief Returns the filename used by the graphical logger.
 
@@ -185,72 +192,76 @@ namespace Wrapper
 		*/
 		const std::string& GetLoggerFilename() const;
 
-		FMTFormCache(const FMTFormCache& rhs) = delete;
-		FMTFormCache& operator =(const FMTFormCache& rhs) = delete;
+		ModelCache(const ModelCache& rhs) = delete;
+		ModelCache& operator =(const ModelCache& rhs) = delete;
 
 	private:
 
-		// DocString: FMTFormCache()
+		// DocString: ModelCache()
 		/**
 		@brief Default constructor.
-		*/
-		FMTFormCache() = default;
 
-		// DocString: FMTFormCache::m_Models
+		Defined in the .cpp for the same reason as the destructor: if the
+		construction of a member declared after m_Models fails, stack
+		unwinding destroys m_Models, which requires a complete FMTModel.
+		*/
+		ModelCache();
+
+		// DocString: ModelCache::m_Models
 		/**
 		@brief Collection of models stored in the cache.
 		*/
 		std::vector<std::unique_ptr<Models::FMTModel>> m_Models;
 
-		// DocString: FMTFormCache::m_Instance
+		// DocString: ModelCache::m_Instance
 		/**
 		@brief Singleton instance of the cache.
 		*/
-		static std::unique_ptr<FMTFormCache> m_Instance;
+		static std::unique_ptr<ModelCache> m_Instance;
 
-		// DocString: FMTFormCache::m_loggerFilename
+		// DocString: ModelCache::m_loggerFilename
 		/**
 		@brief Logger filename retained for crash recovery.
 		*/
 		std::string m_loggerFilename;
 
-		// DocString: FMTFormCache::m_loggerFuncPtr
+		// DocString: ModelCache::m_loggerFuncPtr
 		/**
 		@brief Callback function pointer retained for crash recovery.
 		*/
 		void* m_loggerFuncPtr = nullptr;
 
-		// DocString: FMTFormCache::m_loggerInitialized
+		// DocString: ModelCache::m_loggerInitialized
 		/**
 		@brief Indicates whether the logger has been initialized.
 		*/
 		bool m_loggerInitialized = false;
 
-		// DocString: FMTFormCache::m_maxwarnings
+		// DocString: ModelCache::m_maxwarnings
 		/**
 		@brief Maximum number of warnings before warning messages are silenced.
 		*/
 		int m_maxwarnings = 10;
 
-		// DocString: FMTFormCache::m_warnings
+		// DocString: ModelCache::m_warnings
 		/**
 		@brief Collection of exceptions that should be treated as warnings.
 		*/
 		std::vector<Exception::FMTexc> m_warnings;
 
-		// DocString: FMTFormCache::m_handlerInitialized
+		// DocString: ModelCache::m_handlerInitialized
 		/**
 		@brief Indicates whether the exception handler has been initialized.
 		*/
 		bool m_handlerInitialized = false;
 
-		// DocString: FMTFormCache::buildLogger
+		// DocString: ModelCache::buildLogger
 		/**
 		@brief Builds and installs the graphical logger using the stored configuration.
 		*/
 		void buildLogger();
 
-		// DocString: FMTFormCache::buildExceptionHandler
+		// DocString: ModelCache::buildExceptionHandler
 		/**
 		@brief Builds and installs the graphical exception handler using the stored configuration.
 

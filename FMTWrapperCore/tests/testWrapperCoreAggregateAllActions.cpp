@@ -59,16 +59,16 @@ int main(int argc, char* argv[])
 		ModelParser.setErrorsToWarnings(errors);
 
 		const std::vector<Models::FMTModel> MODELS =ModelParser.readproject(primary_path, SCENARIOS);
-		Models::FMTModel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, primary_path, output_scenario_name);
+		Models::FMTModel aggregatedModel = FMTWrapper::Backend::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, primary_path, output_scenario_name);
 
-		// On v�rifie si on a moins d'action que dans le nouveau
+		// Check whether there are fewer actions than in the new model
 		std::vector<Core::FMTAction> actions = MODELS.at(0).getActions();
 		std::vector<Core::FMTAction> aggregatedActions = aggregatedModel.getActions();
 		if (actions.size() <= aggregatedActions.size())
 		{
 			throw Exception::FMTexc::FMTinvalid_aggregate;
 		}
-		// on v�rifie s'il y a bien �crit le mod�le
+		// Check that the model was actually written
 		const boost::filesystem::path SCENARIO_PATH = boost::filesystem::path(primary_path).parent_path() / boost::filesystem::path("Scenarios") / boost::filesystem::path(output_scenario_name);
 		if (!boost::filesystem::is_directory(SCENARIO_PATH))
 		{

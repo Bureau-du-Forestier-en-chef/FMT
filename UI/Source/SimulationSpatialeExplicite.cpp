@@ -1,31 +1,17 @@
 #include "stdafx.h"
-#include <sstream>
-#include "FMTForest.h"
-#include "FMTLpModel.h"
-#include "FMTModelParser.h"
-#include "FMTSesModel.h"
-#include "FMTAreaParser.h"
-#include "FMTScheduleParser.h"
-#include "FMTTransitionParser.h"
-#include "FMTGCBMTransition.h"
-#include "FMTOutputNode.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTFormLogger.h"
+
 #include "FMTForm.h"
-#include "FMTModel.h"
-#include "FMTFormCache.h"
-#include "FMTexceptionhandlerwarning.h"
-#include "FMTDefaultLogger.h"
-#include "SES.h"
+#include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
     namespace {
 
-        FMTWrapperCore::SESParameters ConvertirParametres(
+        FMTWrapper::Backend::SESParameters ConvertirParametres(
             System::String^ fichierPri,
             System::String^ cheminRasters,
-            int scenario,
             System::Collections::Generic::List<System::String^>^ contraintes,
             int periodes,
             int greedySearch,
@@ -40,46 +26,34 @@ namespace Wrapper
             System::String^ providerGdal,
             bool indCarbon,
             System::Collections::Generic::List<System::String^>^ predictoryields,
-            System::Collections::Generic::List<int>^ growththemes,
-            const std::string& scenarioName)
+            System::Collections::Generic::List<int>^ growththemes)
         {
-            FMTWrapperCore::SESParameters params;
+            FMTWrapper::Backend::SESParameters params;
 
-            // Conversion des chemins
-            params.primaryFilePath = msclr::interop::marshal_as<std::string>(fichierPri);
-            params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
-            params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
-            params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
-            params.scenarioName = scenarioName;
+            // Path conversion. scenarioName stays empty: the Core logs the name
+            // of the scenario the controller resolved.
+            params.primaryFilePath = Conversions::toStdString(fichierPri);
+            params.rastersPath = Conversions::toStdString(cheminRasters);
+            params.outputPath = Conversions::toStdString(cheminSorties);
+            params.gdalProvider = Conversions::toStdString(providerGdal);
 
-            // Paramètres numériques
+            // Numeric parameters
             params.numberOfPeriods = periodes;
             params.greedySearchIterations = greedySearch;
             params.outputLevel = outputLevel;
             params.outputMinPeriod = etanduSortiesMin;
             params.outputMaxPeriod = etanduSortiesMax;
 
-            // Options booléennes
+            // Boolean options
             params.useStanlock = indicateurStanlock;
             params.generateEvents = indGenererEvents;
             params.generateSpatialOutputs = indSortiesSpatiales;
             params.carbonMode = indCarbon;
 
-            // Conversion des listes C# → C++
-            for each (System::String ^ constraint in contraintes)
-            {
-                params.constraintNames.push_back(msclr::interop::marshal_as<std::string>(constraint));
-            }
-
-            for each (System::String ^ output in outputs)
-            {
-                params.outputNames.push_back(msclr::interop::marshal_as<std::string>(output));
-            }
-
-            for each (System::String ^ yield in predictoryields)
-            {
-                params.predictorYields.push_back(msclr::interop::marshal_as<std::string>(yield));
-            }
+            // C# to C++ list conversions
+            params.constraintNames = Conversions::toStdVector(contraintes);
+            params.outputNames = Conversions::toStdVector(outputs);
+            params.predictorYields = Conversions::toStdVector(predictoryields);
 
             for each (int theme in growththemes)
             {
@@ -89,10 +63,10 @@ namespace Wrapper
             return params;
         }
 
-    } 
+    }
 
     void FMTForm::_EnvoyerResultatsInterface(
-        const FMTWrapperCore::SESResults& results,
+        const FMTWrapper::Backend::SESResults& results,
         bool indCarbon)
     {
         for (const auto& periodData : results.carbonReport.periods)
@@ -115,16 +89,16 @@ namespace Wrapper
                 gcnew System::EventArgs());
         }
 
-        // Fichiers de perturbations
+        // Disturbance files
         if (indCarbon)
         {
             for (const std::string& fichier : results.disturbanceFiles)
             {
-                RetourJson(_convertToSystemString("GCBMtransitionlocations;" + fichier), gcnew System::EventArgs());
+                RetourJson(Conversions::fromUtf8("GCBMtransitionlocations;" + fichier), gcnew System::EventArgs());
             }
         }
 
-        // Fichier d'événements
+        // Events file
         if (!results.eventsFilePath.empty() && indCarbon)
         {
             RetourJson(gcnew System::String(("eventslocation;" + results.eventsFilePath).c_str()),
@@ -151,7 +125,7 @@ namespace Wrapper
                 gcnew System::EventArgs());
         }
 
-        // Prédicteurs
+        // Predictors
         if (indCarbon && !results.predictorsData.nodes.empty())
         {
             for (const auto& node : results.predictorsData.nodes)
@@ -200,55 +174,17 @@ namespace Wrapper
     {
         try
         {
-            std::unique_ptr<Logging::FMTLogger> savedLogger;
-            {
-                FMTFormLogger* mainLogger = FMTFormCache::GetInstance()->GetFormLogger();
-                if (mainLogger)
-                {
-                    savedLogger = mainLogger->Clone();
-                }
-            }
-
-            const std::string scenarioName = FMTFormCache::GetInstance()->getModel(scenario).getName();
-
-            FMTWrapperCore::SESParameters params = ConvertirParametres(
-                fichierPri, cheminRasters, scenario, contraintes, periodes,
+            const FMTWrapper::Backend::SESParameters PARAMS = ConvertirParametres(
+                fichierPri, cheminRasters, contraintes, periodes,
                 greedySearch, outputs, indicateurStanlock, outputLevel,
                 etanduSortiesMin, etanduSortiesMax, cheminSorties,
                 indGenererEvents, indSortiesSpatiales, providerGdal,
-                indCarbon, predictoryields, growththemes,
-                scenarioName); 
+                indCarbon, predictoryields, growththemes);
 
-            Models::FMTModel selectedModel = FMTFormCache::GetInstance()->getModel(scenario);
+            const FMTWrapper::Backend::SESResults RESULTS =
+                FMTWrapper::Backend::Controller::runSpatialSimulation(PARAMS, scenario);
 
-            const std::vector<Core::FMTSchedule> schedules = _ObtenirSEQ(fichierPri, scenario);
-    
-            if (savedLogger)
-            {
-                selectedModel.passInLogger(savedLogger);
-            }
-            // Re-acquérir le pointeur valide vers le logger restauré
-            FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-
-            *logger << "FMT -> Démarrage de la simulation pour le scénario: " + scenarioName << "\n";
-
-            FMTWrapperCore::SESResults results =
-                FMTWrapperCore::SES::RunSES(params, selectedModel, schedules);
-
-            *logger << "FMT -> Simulation terminée avec succès" << "\n";
-
-            if (indCarbon && !results.outputsData.results.empty())
-            {
-                for (const auto& result : results.outputsData.results)
-                {
-                    for (const auto& periodValue : result.periodValues)
-                    {
-                        *logger << "outputs;" + result.outputName + ";" + std::to_string(periodValue.second) << "\n";
-                    }
-                }
-            }
-
-            _EnvoyerResultatsInterface(results, indCarbon);
+            _EnvoyerResultatsInterface(RESULTS, indCarbon);
 
             return true;
         }
@@ -258,20 +194,4 @@ namespace Wrapper
             return false;
         }
     }
-
-    // ============================================================================
-    // ANCIENNES MÉTHODES - SUPPRIMÉES
-    // ============================================================================
-    // Toute la logique métier a été déplacée dans SES.cpp
-    // Les méthodes suivantes n'existent plus dans FMTForm :
-    // - RapportdeBris
-    // - RapportdeCarboneSpatial
-    // - EcrituredesPerturbations
-    // - EcritureDesEvenements
-    // - EcritureDesOutputs
-    // - EcrituredesOutputsSpatiaux
-    // - EcritureDesPredicteurs
-    //
-    // Toute la logique est maintenant orchestrée par SES::RunSES()
-    // ============================================================================
-} 
+}

@@ -1,25 +1,13 @@
 #include "stdafx.h"
-#include <sstream>
-#include "FMTLpModel.h"
-#include "FMTModelParser.h"
-#include "FMTScheduleParser.h"
-#include "FMTutility.h"
-#include "FMTNssModel.h"
-#include "FMTTaskHandler.h"
-#include "FMTReplanningTask.h"
 #include <msclr\marshal_cppstd.h>
-#include <string>
-#include <iostream>
-#include "FMTFormLogger.h"
+
 #include "FMTForm.h"
-#include "FMTFormCache.h"
-#include "FMTPlanningTask.h"
-#include "FMTDefaultLogger.h"
+#include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
-
-	bool  FMTForm::Plannification(
+	bool FMTForm::Plannification(
 		System::String^ fichierPri,
 		System::Collections::Generic::List<int>^ scenarios,
 		int solver,
@@ -35,48 +23,38 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-			std::vector<std::string> layersoptions;
-			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
+			FMTWrapper::Backend::PlanningParameters params;
+			params.primaryFilePath = Conversions::toStdString(fichierPri);
+			params.solver = solver;
+			params.numberOfPeriods = period;
+			params.numberOfThreads = nbreProcessus;
+			params.outputNames = Conversions::toStdVector(outputs);
+			params.outputLevel = outputLevel;
+			params.outputMinPeriod = etanduSortiesMin;
+			params.outputMaxPeriod = etanduSortiesMax;
+			params.outputPath = Conversions::toStdString(cheminSorties);
+			params.gdalProvider = Conversions::toStdString(providerGdal);
+
+			std::vector<int> modelIndexes;
+
+			for each (int scenario in scenarios)
 			{
-				layersoptions.push_back("SEPARATOR=SEMICOLON");
+				modelIndexes.push_back(scenario);
 			}
 
-			Parallel::FMTPlanningTask newplanningtask(etanduSortiesMin, etanduSortiesMax,
-				msclr::interop::marshal_as<std::string>(cheminSorties),
-				msclr::interop::marshal_as<std::string>(providerGdal),
-				layersoptions, static_cast<Core::FMToutputlevel>(outputLevel),
-				msclr::interop::marshal_as<std::string>(fichierPri));
-			for each (int scen in scenarios)
-			{
-				Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scen), static_cast<Models::FMTSolverInterface>(solver));
-				*logger << "FMT -> Préparation pour le scénario : " + optimizationmodel.getName() << "\n";
-				std::vector<Core::FMTSchedule> cedule;
-				bool playbackscen = playback[scenarios->IndexOf(scen)];
-				if (playbackscen)
-				{
-					*logger << "FMT -> Lecture de cédule pour le scénario : " + optimizationmodel.getName() << "\n";
-					cedule = _ObtenirSEQ(fichierPri, scen);
-				}
-				optimizationmodel.setStrictlyPositivesOutputsMatrix();
-				optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, period);
-				int valeur_NUMBER_OF_THREADS = 1;
-				if (scenarios->Count <= nbreProcessus)
-				{
-					valeur_NUMBER_OF_THREADS = nbreProcessus / scenarios->Count;
-				}
+			// Without flags, the Core refuses the first scenario, as the former code
+			// failed to read playback.
+			std::vector<bool> playbackFlags;
 
-				optimizationmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, valeur_NUMBER_OF_THREADS);
-				optimizationmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
-				std::vector<Core::FMTOutput> selectedoutputs = _ObtenirArrayOutputsSelectionnees(optimizationmodel.getOutputs(), outputs);
-				optimizationmodel.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playbackscen);
-				newplanningtask.push_back(optimizationmodel, cedule, selectedoutputs);
-				*logger << "FMT -> Scénario : " + optimizationmodel.getName() + " prêt a être lancer." << "\n";
+			if (playback != nullptr)
+			{
+				for each (bool value in playback)
+				{
+					playbackFlags.push_back(value);
+				}
 			}
 
-			Parallel::FMTTaskHandler handler(newplanningtask, nbreProcessus);
-			handler.conccurentRun();
+			FMTWrapper::Backend::Controller::plan(params, modelIndexes, playbackFlags);
 		}
 		catch (...)
 		{
@@ -106,53 +84,31 @@ namespace Wrapper
 		bool indProduireSolution,
 		bool p_writeSchedule)
 	{
+		// p_writeSchedule has never been used: since the first version of the interface,
+		// indProduireSolution drives the writing of the replicate schedules. It
+		// stays in the public signature, which the .NET UI depends on.
 		try
 		{
-			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-			Models::FMTLpModel global(FMTFormCache::GetInstance()->getModel(indexScenStrategique), static_cast<Models::FMTSolverInterface>(solver));
-			global.setParameter(Models::FMTintmodelparameters::LENGTH, period);
-			global.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-			global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
-			Models::FMTNssModel stochastic(FMTFormCache::GetInstance()->getModel(indexScenStochastique), 0);
-			stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
-			stochastic.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			Models::FMTLpModel local(FMTFormCache::GetInstance()->getModel(indexScenTactique), static_cast<Models::FMTSolverInterface>(solver));
-			local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
-			local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-			local.setParameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
-			std::vector<Core::FMTOutput> listeOutputs = _ObtenirArrayOutputsSelectionnees(global.getOutputs(), outputs);
+			FMTWrapper::Backend::ReplanningParameters params;
+			params.solver = solver;
+			params.numberOfPeriods = period;
+			params.replanningPeriods = periodReplannif;
+			params.minimalDrift = variabilite;
+			params.numberOfThreads = nbreProcessus;
+			params.minimumReplicates = nombreReplicasMin;
+			params.maximumReplicates = nombreReplicasMax;
+			params.outputNames = Conversions::toStdVector(outputs);
+			params.outputLevel = outputLevel;
+			params.outputPath = Conversions::toStdString(cheminSorties);
+			params.gdalProvider = Conversions::toStdString(providerGdal);
+			params.taskLogLevel = taskLogLevel;
+			params.writeSchedules = indProduireSolution;
 
-			std::vector<std::string>layersoptions;
-			if (msclr::interop::marshal_as<std::string>(providerGdal) == "CSV")
-			{
-				layersoptions.push_back("SEPARATOR=SEMICOLON");
-			}
-			*logger << "FMT -> Préparation de la replanification " << "\n";
-			logger->logTime();
-			Parallel::FMTReplanningTask* task = new Parallel::FMTReplanningTask(
-				global,
-				stochastic,
-				local,
-				listeOutputs,
-				msclr::interop::marshal_as<std::string>(cheminSorties),
-				msclr::interop::marshal_as<std::string>(providerGdal),
-				layersoptions,
-				nombreReplicasMax,
-				periodReplannif,
-				variabilite,
-				static_cast<Core::FMToutputlevel>(outputLevel),
-				indProduireSolution);
-			task->setReplicates(nombreReplicasMin, nombreReplicasMax);
-			std::unique_ptr<Parallel::FMTTask> maintaskptr(task);
-			*logger << "FMT -> Préparation de la replanification terminée" << "\n";
-			Parallel::FMTTaskHandler handler(maintaskptr, nbreProcessus);
-			logger->settasklogginglevel(taskLogLevel);
-			handler.onDemandRun();
-			//handler.conccurentRun();
-			logger->logTime();
-			logger->setdefaultlogginglevel();
+			FMTWrapper::Backend::Controller::replan(
+				params,
+				indexScenStrategique,
+				indexScenStochastique,
+				indexScenTactique);
 		}
 		catch (...)
 		{

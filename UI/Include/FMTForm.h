@@ -4,16 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace Core {
-	class FMTSchedule;
-	class FMTConstraint;
-	class FMTOutput;
-}
-
-namespace Models {
-	class FMTSeModel;
-}
-namespace FMTWrapperCore {
+namespace FMTWrapper::Backend {
 	struct SESResults;
 }
 namespace Wrapper
@@ -26,8 +17,8 @@ namespace Wrapper
 	simulation, scheduling, rasterization and analysis features to
 	managed client applications.
 
-	Logging and exception handling are delegated to the wrapper
-	infrastructure through FMTFormCache.
+	This class only translates between .NET and std types: every native
+	operation goes through FMTWrapper::Backend::Controller.
 	*/
 	public ref class FMTForm
 	{
@@ -170,9 +161,9 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ ObtenirListeSolvers();
 		// DocString: FMTForm::ObtenirNomSolveur
 		/**
-		@brief Returns the list of available optimization solvers.
-		@param[in] p_solveur le solveur selectionne
-		@return obtenir le nom du solveur
+		@brief Returns the name of an optimization solver.
+		@param[in] p_solveur The selected solver.
+		@return The solver name.
 		*/
 		System::String^ ObtenirNomSolveur(int p_solveur);
 		// DocString: FMTForm::ObtenirNombreThemes
@@ -705,86 +696,6 @@ namespace Wrapper
 			const std::string& p_method,
 			const int& p_line,
 			const std::string& p_file);
-		// DocString: FMTForm::_ObtenirArrayContraintes
-		/**
-		@brief Gets all constraints available in a model.
-
-		@param[in] indexScenario Model index.
-
-		@return Collection of model constraints.
-		*/
-		std::vector<Core::FMTConstraint> _ObtenirArrayContraintes(
-			int indexScenario);
-
-		// DocString: FMTForm::_ObtenirArrayContraintesSelectionnees
-		/**
-		@brief Filters constraints according to the user selection.
-
-		@param[in] contraitesBase Source constraint collection.
-		@param[in] contraintesSelection Selected constraint names.
-
-		@return Collection containing only the selected constraints.
-		*/
-		std::vector<Core::FMTConstraint> _ObtenirArrayContraintesSelectionnees(
-			std::vector<Core::FMTConstraint> contraitesBase,
-			System::Collections::Generic::List<System::String^>^ contraintesSelection);
-
-		// DocString: FMTForm::_ObtenirOutputSelectionnee
-		/**
-		@brief Retrieves an output definition by name.
-
-		@param[in] outputsBase Available outputs.
-		@param[in] outputSelection Selected output name.
-
-		@return Matching output definition.
-		*/
-		Core::FMTOutput _ObtenirOutputSelectionnee(
-			std::vector<Core::FMTOutput> outputsBase,
-			System::String^ outputSelection);
-
-		// DocString: FMTForm::_ObtenirArrayOutputsSelectionnees
-		/**
-		@brief Filters outputs according to the user selection.
-
-		@param[in] outputsBase Available outputs.
-		@param[in] outputsSelection Selected output names.
-
-		@return Collection containing only the selected outputs.
-		*/
-		std::vector<Core::FMTOutput> _ObtenirArrayOutputsSelectionnees(
-			std::vector<Core::FMTOutput> outputsBase,
-			System::Collections::Generic::List<System::String^>^ outputsSelection);
-
-		// DocString: FMTForm::_InscrireLigneFichierTexte
-		/**
-		@brief Writes a message to a text file.
-
-		Optionally creates a new file and can forward the message through
-		the feedback mechanism.
-
-		@param[in] nomFichier File path.
-		@param[in] message Message to write.
-		@param[in] indicateurFeedback Indicates whether feedback should be generated.
-		@param[in] nouveaufichier Indicates whether a new file should be created.
-		*/
-		void _InscrireLigneFichierTexte(
-			System::String^ nomFichier,
-			System::String^ message,
-			bool indicateurFeedback,
-			bool nouveaufichier);
-
-		// DocString: FMTForm::_ObtenirSEQ
-		/**
-		@brief Reads schedules associated with a scenario.
-
-		@param[in] nomFichierPri Project file path.
-		@param[in] indexScenario Scenario index.
-
-		@return Collection of schedules.
-		*/
-		std::vector<Core::FMTSchedule> _ObtenirSEQ(
-			System::String^ nomFichierPri,
-			int indexScenario);
 		// DocString: FMTForm::_EnvoyerResultatsInterface
 		/**
 		@brief Sends SES results to the managed interface.
@@ -796,20 +707,8 @@ namespace Wrapper
 		@param[in] indCarbon Indicates whether carbon outputs are included.
 		*/
 		void _EnvoyerResultatsInterface(
-			const FMTWrapperCore::SESResults& results,
+			const FMTWrapper::Backend::SESResults& results,
 			bool indCarbon);
-		// DocString: FMTForm::_convertToSystemString
-		/**
-		@brief Converts a std::string to a System::String^.
-
-		The conversion assumes the source string is encoded in UTF-8 and
-		preserves accented and other non-ASCII characters.
-
-		@param[in] value Source string to convert.
-
-		@return Managed string representation of the input value.
-		*/
-		System::String^ _convertToSystemString(std::string value);
 	};
 }
 #endif
