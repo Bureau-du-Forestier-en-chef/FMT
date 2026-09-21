@@ -8,6 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTWRAPPERCORE_SESSIONUSECASES_HEADER
 #define FMTWRAPPERCORE_SESSIONUSECASES_HEADER
 
+#include "Events.h"
+
 #include <string>
 #include <vector>
 
@@ -22,11 +24,18 @@ namespace FMTWrapper::Backend
     class SessionUseCases
     {
     public:
-        static void initializeLogger(
-            const std::string& p_logFilePath,
-            void* p_callback);
+        /**
+        @brief Adds a subscriber to the events of the session.
 
-        static void recoverLoggerAndHandler(void* p_callback);
+        @return The identifier needed to remove it, never zero.
+        */
+        static SubscriptionId subscribe(EventHandler p_handler);
+
+        static void unsubscribe(SubscriptionId p_subscription);
+
+        static void initializeLogger(const std::string& p_logFilePath);
+
+        static void recoverLoggerAndHandler();
 
         static void closeLogger();
 
@@ -42,10 +51,11 @@ namespace FMTWrapper::Backend
             int p_maxWarnings);
 
         /**
-        @brief Logs the exception being handled and returns its formatted stack.
+        @brief Logs the exception being handled, reports it and returns its formatted stack.
 
         Called from a catch block. Without an interface logger, the stack is appended to the
-        log file instead.
+        log file instead. The stack is published as an ErrorEvent, which is how an interface
+        shows it.
         */
         static std::string logCurrentException(
             const std::string& p_text,

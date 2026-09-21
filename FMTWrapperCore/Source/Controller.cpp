@@ -15,20 +15,32 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "SpatialUseCases.h"
 #include "TransformationUseCases.h"
 
+#include <utility>
+
 // The controller receives the system operations of the interface and delegates each one.
 // It knows the data transfer objects and the use cases, and nothing of FMT: no forest model,
 // no parser, no exception type appears here.
 
 namespace FMTWrapper::Backend
 {
-    void Controller::initializeLogger(const std::string& p_logFilePath, void* p_callback)
+    SubscriptionId Controller::subscribe(EventHandler p_handler)
     {
-        SessionUseCases::initializeLogger(p_logFilePath, p_callback);
+        return SessionUseCases::subscribe(std::move(p_handler));
     }
 
-    void Controller::recoverLoggerAndHandler(void* p_callback)
+    void Controller::unsubscribe(SubscriptionId p_subscription)
     {
-        SessionUseCases::recoverLoggerAndHandler(p_callback);
+        SessionUseCases::unsubscribe(p_subscription);
+    }
+
+    void Controller::initializeLogger(const std::string& p_logFilePath)
+    {
+        SessionUseCases::initializeLogger(p_logFilePath);
+    }
+
+    void Controller::recoverLoggerAndHandler()
+    {
+        SessionUseCases::recoverLoggerAndHandler();
     }
 
     void Controller::closeLogger()

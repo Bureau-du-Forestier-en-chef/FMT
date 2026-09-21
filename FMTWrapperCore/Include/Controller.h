@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "AreaVariabilityTypes.h"
+#include "Events.h"
 #include "FMTWrapperCoreExport.h"
 #include "OperatingAreaTypes.h"
 #include "PlanningTypes.h"
@@ -43,19 +44,33 @@ namespace FMTWrapper::Backend
         // Session: log, errors and loaded scenarios.
 
         /**
-         * @brief Installs the interface logger.
-         * @param p_logFilePath Log file.
-         * @param p_callback Native function pointer of the managed delegate that receives
-         *        each message.
+         * @brief Subscribes to the events of the session: log messages and errors.
+         *
+         * The subscriber runs on the thread that publishes, which may be a worker thread of
+         * FMT, and must not outlive what it calls.
+         *
+         * @param p_handler Called for every event until it is removed.
+         * @return The identifier needed to remove it, never zero.
          */
-        static void initializeLogger(const std::string& p_logFilePath, void* p_callback);
+        static SubscriptionId subscribe(EventHandler p_handler);
+
+        /**
+         * @brief Removes a subscriber. An unknown identifier is ignored.
+         * @param p_subscription Identifier returned by subscribe.
+         */
+        static void unsubscribe(SubscriptionId p_subscription);
+
+        /**
+         * @brief Installs the interface logger.
+         * @param p_logFilePath Log file. Its messages reach the subscribers as LogEvent.
+         */
+        static void initializeLogger(const std::string& p_logFilePath);
 
         /**
          * @brief Rebuilds the logger and the exception handler after a crash, with the
-         *        configuration kept by ModelCache.
-         * @param p_callback New function pointer of the managed delegate.
+         *        configuration kept by ModelCache. Subscribers are kept.
          */
-        static void recoverLoggerAndHandler(void* p_callback);
+        static void recoverLoggerAndHandler();
 
         /**
          * @brief Closes the log file.

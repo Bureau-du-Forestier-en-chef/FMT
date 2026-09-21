@@ -5,6 +5,7 @@
 
 
 #include "CallbackLogger.h"
+#include "EventPublisher.h"
 #include "FMTModel.h"
 #include "ModelCache.h"
 
@@ -16,7 +17,10 @@ namespace FMTWrapper::Backend
 
 	// Defined here, where FMTModel.h is included: building or destroying m_Models
 	// (a vector of unique_ptr<FMTModel>) requires the complete type.
-	ModelCache::ModelCache() = default;
+	ModelCache::ModelCache()
+		: m_eventPublisher(new EventPublisher())
+	{
+	}
 
 	ModelCache::~ModelCache() = default;
 
@@ -251,20 +255,17 @@ namespace FMTWrapper::Backend
 		std::unique_ptr<Logging::FMTLogger> logger(
 			new CallbackLogger(
 				m_loggerFilename,
-				(logfunc)m_loggerFuncPtr));
+				m_eventPublisher.get()));
 
 		Models::FMTModel useLessModel;
 		useLessModel.passInLogger(logger);
 	}
 
-	void ModelCache::InitializeLogger(
-		const std::string& filename,
-		void* intptrptr)
+	void ModelCache::InitializeLogger(const std::string& filename)
 	{
 		try
 		{
 			m_loggerFilename = filename;
-			m_loggerFuncPtr = intptrptr;
 
 			// Bug fix: required for RecoverLoggerAndHandler()
 			m_loggerInitialized = true;
@@ -307,13 +308,17 @@ namespace FMTWrapper::Backend
 		return m_loggerFilename;
 	}
 
-	void ModelCache::RecoverLoggerAndHandler(void* intptrptr)
+	EventPublisher& ModelCache::GetEventPublisher()
+	{
+		return *m_eventPublisher;
+	}
+
+	void ModelCache::RecoverLoggerAndHandler()
 	{
 		try
 		{
 			if (m_loggerInitialized)
 			{
-				m_loggerFuncPtr = intptrptr;
 				buildLogger();
 			}
 

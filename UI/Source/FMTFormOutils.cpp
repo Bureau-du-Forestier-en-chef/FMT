@@ -26,6 +26,8 @@ namespace Wrapper
 		const int& line,
 		const std::string& fil)
 	{
+		// The Core publishes the stack as an ErrorEvent, which reaches the interface
+		// through _toErrorFeedback.
 		const std::string errorstack =
 			FMTWrapper::Backend::Controller::logCurrentException(
 				text,
@@ -33,18 +35,22 @@ namespace Wrapper
 				line,
 				fil);
 
+		FMTWrapper::Backend::Controller::openErrorLocation(errorstack);
+	}
+
+	void FMTForm::_toErrorFeedback(
+		const char* p_errorStack)
+	{
 		FeedBack(
 			"*************************************************************",
 			gcnew System::EventArgs());
 
 		const std::string message =
-			"FMT - ERROR " + errorstack;
+			"FMT - ERROR " + std::string(p_errorStack);
 
 		FeedBack(
 			gcnew System::String(message.c_str()),
 			gcnew System::EventArgs());
-
-		FMTWrapper::Backend::Controller::openErrorLocation(errorstack);
 	}
 
 	void FMTForm::_toFeedback(

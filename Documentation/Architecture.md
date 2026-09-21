@@ -556,23 +556,24 @@ When there is a single event consumer, the preferred mechanism is a typed event 
 std::function<void(const Event&)>
 ```
 
-A portable event model may begin with:
+`FMTWrapperCore` implements this model. Each kind of event is a structure carrying its own
+portable data, and `Event` is the variant of those structures:
 
 ```cpp
-enum class EventType
-{
-    Info,
-    Warning,
-    Error,
-    Progress
-};
+struct LogEvent   { std::string message; };
+struct ErrorEvent { std::string errorStack; };
 
-struct Event
-{
-    EventType type;
-    std::string message;
-};
+using Event = std::variant<LogEvent, ErrorEvent>;
+using EventHandler = std::function<void(const Event&)>;
 ```
+
+Reporting something new means adding a structure to that list. A consumer written with
+`std::get_if` or `std::visit` ignores what it does not know, so an interface written earlier
+keeps working.
+
+`EventPublisher` is the single place where an event reaches its subscribers. Delivery can
+therefore change -- one subscriber or several, filtering, a queue for the thread of an
+interface -- without touching what publishes.
 
 This approach:
 

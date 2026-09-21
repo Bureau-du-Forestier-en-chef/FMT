@@ -1,4 +1,5 @@
 #include "CallbackLogger.h"
+#include "EventPublisher.h"
 #include "FMTLogger.h"
 #include <memory>
 
@@ -18,11 +19,11 @@ FMTLogger* FMTWrapper::Backend::CallbackLogger::clone() const
 }
 
 FMTWrapper::Backend::CallbackLogger::CallbackLogger(
-	const std::string& nomFichierLogger, logfunc feed)
+	const std::string& p_logFilePath, const EventPublisher* p_publisher)
 	: FMTLogger(), keepprint(false), m_isMainInstance(true),
-	lastprint(), sendfeedback(feed)
+	lastprint(), m_publisher(p_publisher)
 {
-	redirectToFile(nomFichierLogger, false);
+	redirectToFile(p_logFilePath, false);
 	_setLoggingLevel(LOGLEVEL);
 	setStreamFlush(true);
 }
@@ -32,7 +33,7 @@ FMTWrapper::Backend::CallbackLogger::CallbackLogger(const CallbackLogger& rhs)
 	keepprint(rhs.keepprint),
 	m_isMainInstance(false),
 	lastprint(rhs.lastprint), 
-	sendfeedback(rhs.sendfeedback)
+	m_publisher(rhs.m_publisher)
 {
 	//m_FileStream.reset();
 	//filepath.clear();
@@ -40,7 +41,7 @@ FMTWrapper::Backend::CallbackLogger::CallbackLogger(const CallbackLogger& rhs)
 
 void FMTWrapper::Backend::CallbackLogger::logTime()
 {
-	// Intentional no-op: sendfeedback cannot be called from a native thread.
+	// Intentional no-op: the interface cannot be reached from a native thread.
 	// The log file is opened once in the constructor through redirectToFile().
 	// Timestamps are written explicitly through *logger << logStamp
 }
@@ -95,8 +96,9 @@ void FMTWrapper::Backend::CallbackLogger::_cout(const char * message) const
 	{
 		lastprint += message;
 	}
-	else {
-		sendfeedback(message);
+	else if (m_publisher)
+	{
+		m_publisher->publish(LogEvent{ message });
 	}
 }
 

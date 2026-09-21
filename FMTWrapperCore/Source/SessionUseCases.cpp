@@ -8,6 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "SessionUseCases.h"
 
 #include "CallbackLogger.h"
+#include "EventPublisher.h"
+#include "Events.h"
 #include "FMTException.h"
 #include "ModelCache.h"
 #include "SessionTypes.h"
@@ -15,20 +17,29 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <fstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace FMTWrapper::Backend
 {
-    void SessionUseCases::initializeLogger(
-        const std::string& p_logFilePath,
-        void* p_callback)
+    SubscriptionId SessionUseCases::subscribe(EventHandler p_handler)
     {
-        ModelCache::GetInstance()->InitializeLogger(p_logFilePath, p_callback);
+        return ModelCache::GetInstance()->GetEventPublisher().subscribe(std::move(p_handler));
     }
 
-    void SessionUseCases::recoverLoggerAndHandler(void* p_callback)
+    void SessionUseCases::unsubscribe(SubscriptionId p_subscription)
     {
-        ModelCache::GetInstance()->RecoverLoggerAndHandler(p_callback);
+        ModelCache::GetInstance()->GetEventPublisher().unsubscribe(p_subscription);
+    }
+
+    void SessionUseCases::initializeLogger(const std::string& p_logFilePath)
+    {
+        ModelCache::GetInstance()->InitializeLogger(p_logFilePath);
+    }
+
+    void SessionUseCases::recoverLoggerAndHandler()
+    {
+        ModelCache::GetInstance()->RecoverLoggerAndHandler();
     }
 
     void SessionUseCases::closeLogger()
@@ -98,6 +109,9 @@ namespace FMTWrapper::Backend
             {
             }
         }
+
+        // Reported as an event: the interface decides how it shows an error.
+        cache->GetEventPublisher().publish(ErrorEvent{ FORMATTED_STACK });
 
         return FORMATTED_STACK;
     }

@@ -18,7 +18,8 @@ Trois règles, vérifiables mécaniquement :
    contiennent que des types `std`. C'est le contrat de traduction : le wrapper doit
    le voir.
 3. **Le wrapper ne parle au Core que par `Controller`** : il n'inclut que `Controller.h`
-   et n'y nomme que `FMTWrapper::Backend::Controller` et les DTO (lot 5b).
+   et n'y nomme que `FMTWrapper::Backend::Controller`, les DTO et les types
+   d'événements (lots 5b et C).
 
 ### Patron par domaine
 
@@ -89,6 +90,9 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
   d'utilisation, internes à la bibliothèque, n'en ont pas besoin.
 - Le code du Core vit dans l'espace de noms `FMTWrapper::Backend` (lot A) ; la bibliothèque,
   sa cible CMake et son dossier gardent le nom `FMTWrapperCore`.
+- Ce que le Core rapporte à une interface passe par des événements typés (`Events.h`) et un
+  point de publication unique (`EventPublisher`) : aucun rappel non typé ne traverse la
+  frontière (lot C).
 - Langue : commentaires, documentation Doxygen et sorties des tests en **anglais** ;
   messages affichés aux utilisateurs (journal, refus, textes d'exception) et ce fichier en
   **français**.
@@ -112,6 +116,7 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 | Classe | Rôle |
 |---|---|
 | `Controller` | Contrôleur façade : le seul point d'entrée du wrapper, une méthode par opération de `FMTForm`, chacune une délégation |
+| `EventPublisher` | Point de publication unique des événements : abonnement, désabonnement, diffusion (lot C) |
 | `SessionUseCases`, `ScenarioUseCases`, `QueryUseCases`, `TransformationUseCases`, `SpatialUseCases`, `PlanningUseCases` | Cas d'utilisation (lot B) : résolution des index de scénario, coordination des services, mise à jour du cache |
 | `Environment` | Capacités de FMT, sans modèle : solveurs, pilotes GDAL, changelog, exceptions |
 | `ModelQuery` | Interrogation d'un modèle : yields, masques, thèmes, actions, cédules, écriture de projet |
@@ -125,7 +130,8 @@ OperatingAreaResults Controller::scheduleOperatingAreas(const OperatingAreaParam
 
 `Tools` a été éclaté au lot 2 en `Environment` + `ModelQuery` et n'existe plus. Depuis le
 lot 5b, les DTO de chaque domaine sont dans `<Domaine>Types.h`, et
-`FMTWrapperCoreExport.h` définit `FMT_WRAPPER_CORE_EXPORT`.
+`FMTWrapperCoreExport.h` définit `FMT_WRAPPER_CORE_EXPORT`. Les types d'événements sont
+dans `Events.h` (lot C).
 
 ### Domaines
 
@@ -178,7 +184,7 @@ commande corrigée, l'état d'origine à partir de `git show HEAD`.
 Les noms du Core que le wrapper utilise, hors `Controller` et DTO :
 
 ```
-grep -raoE "FMTWrapper::Backend::\w+" UI/Include UI/Source | grep -vE "::(Controller|\w+Parameters|\w+Results)$" | sort | uniq -c
+grep -raoE "FMTWrapper::Backend::\w+" UI/Include UI/Source | grep -vE "::(Controller|\w+Parameters|\w+Results|\w*Event|EventHandler|SubscriptionId)$" | sort | uniq -c
 ```
 
 **À zéro depuis le lot 6** : la commande ne retourne rien, et aucun fichier du wrapper
@@ -617,6 +623,43 @@ PR #345 (section 4).
   `FMTYieldModelRandom.cpp`, que MSVC 14.44 refuse désormais, le paramètre de patron étant
   celui de l'indice tiré et devant être entier. Aucun avertissement, de `/W1` à `/W4`.
 
+### Lot C -- événements typés (2026-09-18)
+
+**Statut** : livré le 2026-09-18, **pas encore compilé par Gabriel**. Dernier lot de la revue
+de la PR #345 (section 4).
+
+- **Le `void*` disparaît.** `Controller::initializeLogger` ne prend plus que le chemin du
+  journal, `recoverLoggerAndHandler` ne prend plus rien, et deux opérations s'ajoutent :
+  `subscribe`, qui rend un identifiant, et `unsubscribe`. Le `typedef logfunc` en `__stdcall`,
+  le délégué managé et l'`IntPtr` du wrapper sont supprimés.
+- **Modèle d'événements** (`Events.h`) : `LogEvent`, un message, et `ErrorEvent`, une pile
+  d'erreur formatée, réunis dans un `std::variant`, avec
+  `EventHandler = std::function<void(const Event&)>`. Rapporter autre chose, c'est ajouter une
+  structure ; un abonné écrit avec `std::get_if` ignore ce qu'il ne connaît pas.
+- **Point de publication unique** (`EventPublisher`) : la liste d'abonnés est remplacée plutôt
+  que modifiée, si bien que publier ne copie qu'un `shared_ptr`, sans allocation sur le chemin
+  qui porte chaque ligne de journal. Les abonnés sont appelés hors du verrou, sur le thread qui
+  publie. Le cache possède le publieur et le passe au `CallbackLogger`.
+- **Qui publie quoi** : `CallbackLogger::_cout` publie un `LogEvent` là où il appelait le
+  pointeur de fonction ; `SessionUseCases::logCurrentException` publie un `ErrorEvent` après
+  avoir journalisé la pile.
+- **Côté wrapper**, `makeEventHandler` construit l'abonné dans une fonction libre, avec
+  `gcroot<FMTForm^>` (Pièges, « Lambda dans une classe managée »). `_raiseFromCatch` n'envoie
+  plus lui-même les deux lignes d'erreur : elles viennent de l'`ErrorEvent`, par
+  `_toErrorFeedback`. L'abonnement est pris une seule fois, à la première assignation du
+  journal.
+- **Sortie inchangée pour l'interface .NET** : mêmes lignes, dans le même ordre, toujours
+  décodées dans la page ANSI. `RecoverFromCrash` ne recrée plus de délégué, la liste d'abonnés
+  survivant à l'incident.
+- `unsubscribe` n'est appelé nulle part dans le wrapper -- le formulaire vit aussi longtemps
+  que l'interface -- mais `UnitTestCallbackLogger` s'en sert, et une autre interface en aura
+  besoin.
+- Contrôles : plus un seul `void*`, `logfunc` ou délégué ; 40 méthodes du contrôleur, chacune
+  une délégation ; règles 2 et 3 à zéro, les types d'événements rejoignant les DTO dans le
+  contrat. Compilé sans édition de liens (`cl`, `/W1`) : 20 sources du Core, 15 tests et 11
+  sources du wrapper en `/clr`, sans erreur ni avertissement. À `/W3`, `EventPublisher` ajoute
+  un C4251, comme les 265 que produisent déjà les classes exportées de FMTlib et du Core.
+
 ## 4. Prochain lot
 
 Les lots de domaine sont terminés depuis le lot 6. La revue de la PR #345 ouvre trois lots :
@@ -630,26 +673,98 @@ A (livré), puis B et C, dans cet ordre.
 | `FMTException`, `FMTModel` et `FMTModelParser` dans `Controller.cpp` | **Non négociable** : le contrôleur ne contient aucune logique, ne connaît rien de FMT et n'accepte ou ne renvoie que des DTO | B, livré |
 | `DEFAULT_MAX_WARNINGS` dans le `.h` | Accepté | B, livré |
 | Espace de noms `FMTWrapper::Core` | `FMTWrapper::Backend` : `Core` entre en conflit avec FMTlib (Pièges) | A, livré |
-| Callbacks et `void*` remplacés par des événements | Accepté : événements typés et liste d'abonnés | C |
+| Callbacks et `void*` remplacés par des événements | Accepté : événements typés et liste d'abonnés | C, livré |
 
 **Lot B -- contrôleur sans logique.** Livré le 2026-09-17 : voir le journal, section 3.
 
-**Lot C -- événements.**
+**Lot C -- événements.** Livré le 2026-09-18 : voir le journal, section 3.
 
-- Plus de `void*` ni de pointeur de fonction : un abonné est un
-  `std::function<void(const Event&)>`, où `Event` est un `std::variant` de structures en types
-  `std` (`LogEvent`, `ErrorEvent`, puis au besoin `WarningEvent`, `ProgressEvent`...). Ajouter
-  un événement, c'est une structure de plus ; un consommateur ignore ceux qu'il ne connaît pas.
-- Un point de publication unique dans le Core, avec une liste d'abonnés :
-  `Controller::subscribe` rend un identifiant, `Controller::unsubscribe` le retire. Les
-  émetteurs (logger, gestionnaire d'avertissements, cas d'utilisation) ne connaissent pas les
-  consommateurs ; livraison, filtrage ou file d'attente se changent à cet endroit seulement.
-- Côté wrapper, l'abonné se construit dans une fonction libre (Pièges, « Lambda dans une
-  classe managée ») et relaie les événements par `FeedBack` : l'interface .NET ne change pas.
-- Vérifié avec `cl`, sans le build : `variant`, `std::function` et une publication depuis un
-  thread de travail (natif) ; `std::visit` dans une lambda qui capture `gcroot` (`/clr`).
-- À valider dans l'interface : une partie des messages part des threads de FMTlib, où le
-  délégué actuel ne peut pas toujours être appelé (voir `CallbackLogger::logTime`).
+### Banc de scénarios pour l'interface (2026-09-21)
+
+`Examples/Models/TWD_land/Scenarios` porte un scénario `_pass` et un `_fail` par module de
+l'interface. Le modèle est minuscule -- huit peuplements, trois thèmes -- donc chaque essai se
+compte en secondes, et les scénarios reprennent ceux qui existaient déjà (`COS`, `LP`,
+`Spatial`, les trois de la replanification) quand ils conviennent.
+
+| Module | `_pass` | `_fail` | Ce que le `_fail` doit produire |
+|---|---|---|---|
+| Calendrier de COS | `cos_pass` | `cos_fail` | « Aucune action dans le modèle n'a de yield youvert » ; la fonction rend faux, sans exception |
+| Planification | `planification_pass` | `planification_fail` | « infeasible scenario planification_fail » (`FMTPlanningTask::work`) |
+| Replanification | `replanification_global` + `replanification_feux` + `replanification_local` | `replanification_fail`, comme modèle tactique | modèle local sans solution |
+| Rastérisation | `rasterisation_pass` | `rasterisation_fail` | « A referenced attribute is missing or undefined. UNITE3 at theme 1 at line 5 » |
+| Transformation | `transformation_pass` | `transformation_fail` | pile pointant `transformation_fail/TWD_land._seq` ligne 6, et Notepad++ s'ouvre dessus |
+| Simulation spatialement explicite | `sse_pass` | `sse_fail` | rapport des contraintes : `OVOLREC >= 1000000` brisée |
+| Optimisation spatialement explicite | `ose_pass` | `ose_fail` | même rapport |
+| Chargement du scénario | -- | `chargement_fail` | pile pointant `chargement_fail/TWD_land._opt` ligne 8, et Notepad++ s'ouvre dessus |
+
+Les deux derniers `_fail` sont ceux qui valident le lot C de bout en bout : ils produisent une
+pile d'erreur de la forme `In <fichier> at line <n> FMTsection`, la seule que
+`WarningExceptionHandler::tryfileopener` sait ouvrir.
+
+**Ce qu'il faut saisir**
+
+- **Rastérisation et COS** : carte `Carte/TWD_land.shp`, champ d'âge `AGE`, champ de
+  superficie `SUPERFICIE`, pas de champ stanlock, résolution 1420.
+- **COS** : fichier de paramètres `Scenarios/cos_pass/parametres_cos.csv` (une copie est dans
+  `cos_fail`), qui découpe les aires d'opération sur le thème 3, celui des UTR. Le Core passe
+  le numéro de thème tel quel à `readOaSchedulerParameters`, qui compte à partir de zéro : si
+  les aires ne sont pas reconnues, essayer 2 plutôt que 3.
+- **Simulation et optimisation spatiales** : dossier de rasters `rasters/`, 5 périodes, sortie
+  `OVOLREC`, niveau total, périodes 1 à 5, pilote `CSV`. Pour l'optimisation, les valeurs de
+  `sasolve` : 500 000 mouvements, 3 000 acceptés, 5 000 par cycle.
+- **Planification** : 5 périodes, sortie `OVOLREC`. `planification_pass` a une cédule, donc il
+  se planifie et se rejoue ; `planification_fail` n'en a pas.
+- **Replanification** : `replanification_global` en stratégique, `replanification_feux` en
+  stochastique, `replanification_local` en tactique ; 10 périodes, 3 de replanification,
+  variabilité 0,5, 2 réplicats.
+- **Transformation** : cocher les trois agrégats, `ARECOLTE`, `ASYLVICULTURE` et
+  `APERTURBATION`. L'agrégation exige que chaque action appartienne à un agrégat demandé,
+  sinon elle refuse avec « Missing aggregate for actions ».
+- **Partout** : garder la liste d'erreurs ignorées par défaut, celle que rend
+  `Controller::getErrorsToIgnore`. Sans elle, des avertissements du modèle de base
+  (`_DEATH` non défini, yield redéfini) empêchent les scénarios de se lire.
+
+**Ce que j'ai vérifié** avec les exécutables du build du 2026-09-17, donc sans le lot C :
+
+- `planification_pass` se résout (65 733), `planification_fail` non : `doPlanning` rend faux.
+- `rasterisation_pass` passe `testWrapperCoreRasterization` (8 peuplements relus des rasters) ;
+  `rasterisation_fail` échoue sur l'attribut absent de la carte.
+- `transformation_pass` passe `testWrapperCoreAggregateAllActions` et écrit son scénario ;
+  `transformation_fail` s'arrête sur la cédule, à la ligne voulue.
+- `sse_pass` : 0 % de contraintes brisées ; `sse_fail` : la contrainte impossible, 20 %.
+- `ose_pass` : 0 % de contraintes brisées et une récolte réelle (46 000 à 112 000 par période) ;
+  `ose_fail` : la contrainte impossible, 50 %.
+- `chargement_fail` s'arrête à la lecture, sur la bonne ligne.
+- `cos_pass` franchit le test du yield youvert, `cos_fail` s'y arrête ; le fichier de paramètres
+  se lit sans erreur. **La génération du calendrier elle-même n'est pas vérifiée** :
+  `testOAschedulertask` et `testWrapperCoreOperatingArea` figent le numéro de thème et la sortie
+  de temps de retour, pour des modèles privés à quatorze thèmes.
+- Les trois scénarios de replanification sont des copies octet pour octet de
+  `Globalreplanning`, `Globalfire` et `Localreplanning`, que `testWrapperCorePlanning` fait
+  passer. **La réaction de la replanification à un modèle tactique sans solution n'est pas
+  vérifiée** : `replanner` s'effondre même sur le trio valide, et les deux autres tests figent
+  leurs scénarios.
+- `testWrapperCorePlanning` passe avec le banc en place : les nouveaux dossiers ne dérangent
+  aucun test existant, `readproject` ne lisant que les scénarios qu'on lui nomme.
+
+**Pièges**
+
+- **Les trois scénarios de replanification sont des copies** de `Globalreplanning`,
+  `Globalfire` et `Localreplanning` : le banc se lit tout seul dans la liste de l'interface,
+  au prix d'une dérive possible si les originaux changent. Les remplacer par leurs originaux
+  ne coûte qu'une ligne du tableau.
+- **Les transformations écrivent dans le projet** : elles ajoutent un scénario et réécrivent le
+  `.pri`. Travailler sur une copie de `TWD_land`, ou nettoyer avec git après coup.
+- **L'interface ne montre pas le refus de la simulation spatiale** :
+  `FMTForm::SimulationSpatialeExplicite` rend `true` sans lire `SESResults::success` ni
+  `errorMessage`. Un refus du Core (« No schedules provided », « Dépassement de la période »)
+  passe donc inaperçu. Présent depuis la première migration de SES (`98c2bdd8`), avant les
+  lots A, B et C. `OptimisationSpatialeExplicite`, elle, rend `RESULTS.success`.
+- **La colonne MAXRET du fichier de paramètres des aires d'opération est ignorée** :
+  `FMTAreaParser::readOaSchedulerParameters` initialise `useRETasMAXRET` à vrai et ne le remet
+  jamais à faux, si bien que `MAXRET` vaut toujours `RET`. Démontré : avec `RET=5` et
+  `MAXRET=2`, l'avertissement « MAXRET value for UTR1 is less than RET value » ne sort pas.
+  Introduit par `f4c0fb76` (2026-07-22), sans rapport avec la migration.
 
 ### Validations en attente
 
@@ -660,13 +775,15 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
 - **Les lots 3 à 6 par leurs tests** : fait le 2026-09-18. `Rasterization`,
   `AreaVariability`, `Planning`, `OperatingArea`, `Environment` et les deux lignes de
   `GetYield` passent, ces dernières pour la première fois depuis 2024.
-- **Dans l'interface** :
+- **Dans l'interface**, avec le banc de scénarios ci-dessous :
   - planification d'un scénario optimisé, d'un scénario rejoué et d'un scénario sans
     cédule : l'erreur de ce dernier s'affiche une fois et la planification se poursuit ;
   - replanification : le niveau du journal est rétabli ensuite, même après une erreur ;
   - aires d'opération, variabilité de l'aire initiale (des masques qui se recoupent
     affichent une erreur au lieu de fermer l'interface) et rastérisation ;
-  - une erreur provoquée : message, ouverture du fichier fautif, puis `RecoverFromCrash` ;
+  - une erreur provoquée : message, ouverture du fichier fautif, puis `RecoverFromCrash`.
+    Le lot C fait passer ces messages par les événements : cet aller-retour est ce qui le
+    valide ;
   - les accents des messages de progression (Pièges, « Encodage des messages »).
 - **La chaîne MSYS2** (`CMakeFMTMSYS2rcran45.sh`) : le `CMakeLists.txt` racine inclut
   `FMTWrapperCore` sans condition MSVC, donc GCC compile le Core et ses tests. Aucune

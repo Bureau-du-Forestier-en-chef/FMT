@@ -1,0 +1,49 @@
+*OUTPUT oSupRec Superficie récolté
+*SOURCE ? ? ? coupetotale _AREA
+
+*OUTPUT oVolRec Volume récolté
+*SOURCE ? ? ? coupetotale volumetotal + ? ? ? arecup volumetotal * 0.5
+
+*OUTPUT oSupMassCar Superficie massifs caribou
+*SOURCE ? ? ? aCaribou _AREA
+
+*OUTPUT P2area
+*SOURCE ? PEUPLEMENT2 ? _INVENT _AREA
+
+*OUTPUT Burnedarea
+*SOURCE ? ? ? aFire _AREA
+
+*OUTPUT recuparea
+*SOURCE ? ? ? arecup _AREA
+
+*OUTPUT totalarea
+*SOURCE ? ? ? _INVENT _AREA
+
+*OUTPUT totalcar
+*SOURCE ? ? ? _INVENT YBM_RTM_F
+
+*OUTPUT oVollocaltarget
+*SOURCE ? ? ? coupetotale volumetotal + ? ? ? arecup volumetotal * 100
+*OUTPUT oSuppl
+*SOURCE ? ? ? plantation _AREA
+
+*OUTPUT volinvent
+*SOURCE ? ? ? _INVENT volumetotal
+
+*OUTPUT oVolRecPEUPLEMENT1
+*SOURCE ? PEUPLEMENT1 ? coupetotale _AREA
+
+*OUTPUT oVolRecPEUPLEMENT2
+*SOURCE ? PEUPLEMENT2 ? coupetotale _AREA
+
+*OUTPUT oVolRecPEUPLEMENT3
+*SOURCE ? PEUPLEMENT3 ? coupetotale _AREA
+
+*OUTPUT COUPE2PEU
+*SOURCE oVolRecPEUPLEMENT1 + oVolRecPEUPLEMENT2 + oVolRecPEUPLEMENT3
+
+
+
+
+
+

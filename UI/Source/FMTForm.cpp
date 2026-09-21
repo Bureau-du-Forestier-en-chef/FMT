@@ -2,12 +2,40 @@
 #include "FMTForm.h"
 
 #include <msclr/marshal_cppstd.h>
+#include <vcclr.h>
 
 #include "Controller.h"
 #include "Conversions.h"
 
 namespace Wrapper
 {
+	namespace
+	{
+		// Built here rather than in a method of FMTForm: cl refuses a local class in a
+		// member function of a managed class (C3923). gcroot keeps the form reachable for
+		// the Core, which holds the subscriber.
+		FMTWrapper::Backend::EventHandler makeEventHandler(FMTForm^ p_form)
+		{
+			gcroot<FMTForm^> form(p_form);
+
+			return [form](const FMTWrapper::Backend::Event& p_event)
+			{
+				if (const FMTWrapper::Backend::LogEvent* log =
+					std::get_if<FMTWrapper::Backend::LogEvent>(&p_event))
+				{
+					form->_toFeedback(log->message.c_str());
+				}
+				else if (const FMTWrapper::Backend::ErrorEvent* error =
+					std::get_if<FMTWrapper::Backend::ErrorEvent>(&p_event))
+				{
+					form->_toErrorFeedback(error->errorStack.c_str());
+				}
+
+				// An event the interface does not know yet is ignored.
+			};
+		}
+	}
+
 
 	void FMTForm::SetErrorsToWarnings(
 		System::Collections::Generic::List<int>^ listeWarnings,
@@ -72,21 +100,9 @@ namespace Wrapper
 	{
 		try
 		{
-			// Recreate a fresh managed delegate: after a crash, the old function
-			// pointer may be invalid.
-
-			m_managedFeed =
-				gcnew ManagedFeed(
-					this,
-					&FMTForm::_toFeedback);
-
-			m_unmanagedFeed =
-				System::Runtime::InteropServices::Marshal::
-				GetFunctionPointerForDelegate(
-					m_managedFeed);
-
-			FMTWrapper::Backend::Controller::recoverLoggerAndHandler(
-				m_unmanagedFeed.ToPointer());
+			// The subscription survives a crash: only the logger and the exception
+			// handler are rebuilt.
+			FMTWrapper::Backend::Controller::recoverLoggerAndHandler();
 		}
 		catch (...)
 		{
@@ -103,23 +119,18 @@ namespace Wrapper
 	{
 		try
 		{
-			m_managedFeed =
-				gcnew ManagedFeed(
-					this,
-					&FMTForm::_toFeedback);
-
-			m_unmanagedFeed =
-				System::Runtime::InteropServices::Marshal::
-				GetFunctionPointerForDelegate(
-					m_managedFeed);
+			if (m_eventSubscription == 0)
+			{
+				m_eventSubscription =
+					FMTWrapper::Backend::Controller::subscribe(
+						makeEventHandler(this));
+			}
 
 			const std::string filename =
 				Conversions::toStdString(
 					nomFichierLogger);
 
-			FMTWrapper::Backend::Controller::initializeLogger(
-				filename,
-				m_unmanagedFeed.ToPointer());
+			FMTWrapper::Backend::Controller::initializeLogger(filename);
 		}
 		catch (...)
 		{

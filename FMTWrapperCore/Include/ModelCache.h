@@ -21,6 +21,7 @@ namespace Exception
 namespace FMTWrapper::Backend
 {
 	class CallbackLogger;
+	class EventPublisher;
 	class WarningExceptionHandler;
 
 	// DocString: ModelCache
@@ -165,24 +166,19 @@ namespace FMTWrapper::Backend
 		be reconstructed during crash recovery.
 
 		@param[in] filename Log file path.
-		@param[in] intptrptr Pointer to the managed logging callback.
 		*/
-		void InitializeLogger(
-			const std::string& filename,
-			void* intptrptr);
+		void InitializeLogger(const std::string& filename);
 
 		// DocString: ModelCache::RecoverLoggerAndHandler
 		/**
 		@brief Rebuilds the logger and exception handler after a crash.
 
-		The reconstructed logger is reopened using the original log file
-		and a fresh callback function pointer. Previously logged
-		information is preserved because the log file is reopened in
-		append mode.
-
-		@param[in] intptrptr Fresh managed callback function pointer.
+		The reconstructed logger is reopened using the original log file.
+		Previously logged information is preserved because the log file is
+		reopened in append mode, and the subscribers of the publisher are
+		kept.
 		*/
-		void RecoverLoggerAndHandler(void* intptrptr);
+		void RecoverLoggerAndHandler();
 
 		// DocString: ModelCache::GetLoggerFilename
 		/**
@@ -191,6 +187,14 @@ namespace FMTWrapper::Backend
 		@return The configured log file path.
 		*/
 		const std::string& GetLoggerFilename() const;
+
+		// DocString: ModelCache::GetEventPublisher
+		/**
+		@brief Returns the publisher through which the session reports its events.
+
+		@return The publisher, which lives as long as the cache.
+		*/
+		EventPublisher& GetEventPublisher();
 
 		ModelCache(const ModelCache& rhs) = delete;
 		ModelCache& operator =(const ModelCache& rhs) = delete;
@@ -225,11 +229,11 @@ namespace FMTWrapper::Backend
 		*/
 		std::string m_loggerFilename;
 
-		// DocString: ModelCache::m_loggerFuncPtr
+		// DocString: ModelCache::m_eventPublisher
 		/**
-		@brief Callback function pointer retained for crash recovery.
+		@brief Publisher shared by the logger and the use cases.
 		*/
-		void* m_loggerFuncPtr = nullptr;
+		std::unique_ptr<EventPublisher> m_eventPublisher;
 
 		// DocString: ModelCache::m_loggerInitialized
 		/**
