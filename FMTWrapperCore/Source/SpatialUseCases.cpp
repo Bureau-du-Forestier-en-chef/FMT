@@ -7,6 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "SpatialUseCases.h"
 
+#include "EventPublisher.h"
+#include "Events.h"
 #include "ModelCache.h"
 #include "OperatingArea.h"
 #include "Rasterization.h"
@@ -18,7 +20,17 @@ namespace FMTWrapper::Backend
         const SESParameters& p_params,
         int p_modelIndex)
     {
-        return SES::RunSES(p_params, ModelCache::GetInstance()->getModel(p_modelIndex));
+        ModelCache* cache = ModelCache::GetInstance();
+        const SESResults RESULTS = SES::RunSES(p_params, cache->getModel(p_modelIndex));
+
+        // The simulation refuses without raising and without logging: published here, its
+        // refusal reaches an interface the way any other error does.
+        if (!RESULTS.success && !RESULTS.errorMessage.empty())
+        {
+            cache->GetEventPublisher().publish(ErrorEvent{ RESULTS.errorMessage });
+        }
+
+        return RESULTS;
     }
 
     SAResults SpatialUseCases::runSpatialOptimization(

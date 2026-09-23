@@ -660,6 +660,41 @@ de la PR #345 (section 4).
   sources du wrapper en `/clr`, sans erreur ni avertissement. À `/W3`, `EventPublisher` ajoute
   un C4251, comme les 265 que produisent déjà les classes exportées de FMTlib et du Core.
 
+### Correctif -- le refus de la simulation spatiale (2026-09-22)
+
+**Statut** : livré le 2026-09-22, **pas encore compilé par Gabriel**.
+
+`SES::RunSES` a deux sorties anticipées, quand la cédule est vide et quand elle ne couvre pas
+les périodes demandées. Elles posaient `success = false` et remplissaient `errorMessage` sans
+rien journaliser ni lever d'exception ; la surcharge indexée annonçait ensuite « Simulation
+terminée avec succès » sans condition, et `FMTForm::SimulationSpatialeExplicite` rendait
+`true` sans lire le drapeau. Trois occasions de voir le refus, trois manquées : l'interface
+annonçait une simulation réussie alors que rien n'avait été simulé.
+
+Démontré sur `sse_pass`, dont la cédule s'arrête à la période 10 : demander 5 périodes donne
+27 lignes de journal, le rapport des contraintes et 18 fichiers ; en demander 20 donne 5
+lignes, aucun fichier, aucun message, et le code de retour zéro. Le défaut datait de
+`98c2bdd8`, la première migration de SES, avant les lots A, B et C.
+
+- `SpatialUseCases::runSpatialSimulation` publie `errorMessage` comme `ErrorEvent`. Le refus
+  emprunte donc le chemin du lot C et sort par `_toErrorFeedback`, sur deux lignes, comme
+  toute autre erreur. Publier ici plutôt que dans `SES` garde le service libre du cache : les
+  tests C++ appellent toujours l'entrée pure sans peupler le singleton.
+- `SES::RunSES`, surcharge indexée, rend le résultat tout de suite quand il porte un refus,
+  au lieu d'annoncer un succès.
+- `FMTForm::SimulationSpatialeExplicite` rend `RESULTS.success`, comme le fait déjà
+  `OptimisationSpatialeExplicite`. Sa documentation Doxygen promettait déjà « True if the
+  simulation completed successfully » : le code la rejoint.
+- Les sept modules ont été revus : les quatre dont le Core rend un DTO lisent maintenant son
+  drapeau, et les trois dont l'entrée est `void` -- rastérisation, transformations,
+  planification -- gardent leur `return true`, leurs échecs étant des exceptions.
+- Compilé sans édition de liens (`cl`, `/W1`) : 20 sources du Core, 15 tests et 11 sources du
+  wrapper en `/clr`, sans erreur ni avertissement. Contrôles d'architecture au vert.
+  **La nouvelle publication n'est pas observable sans édition de liens** : `testWrapperCoreSES`
+  appelle l'entrée pure, pas celle qui passe par le cache. C'est l'aller-retour dans
+  l'interface qui la validera, en demandant plus de périodes que la cédule de `sse_pass` n'en
+  couvre.
+
 ## 4. Prochain lot
 
 Les lots de domaine sont terminés depuis le lot 6. La revue de la PR #345 ouvre trois lots :
@@ -709,9 +744,16 @@ pile d'erreur de la forme `In <fichier> at line <n> FMTsection`, la seule que
   `cos_fail`), qui découpe les aires d'opération sur le thème 3, celui des UTR. Le Core passe
   le numéro de thème tel quel à `readOaSchedulerParameters`, qui compte à partir de zéro : si
   les aires ne sont pas reconnues, essayer 2 plutôt que 3.
+  L'en-tête porte les huit colonnes, `OA;OPT;RET;MAXRET;REP;OPR;NPE;GUP` : le Core n'exige que
+  les cinq premières, mais l'interface refuse le fichier sans `NPE` ni `GUP`. Les deux sont à
+  zéro exprès -- au-dessus, `getOperatingArea` lit les blocs voisins dans le fichier de formes,
+  ce que ce modèle n'a jamais exercé.
 - **Simulation et optimisation spatiales** : dossier de rasters `rasters/`, 5 périodes, sortie
   `OVOLREC`, niveau total, périodes 1 à 5, pilote `CSV`. Pour l'optimisation, les valeurs de
-  `sasolve` : 500 000 mouvements, 3 000 acceptés, 5 000 par cycle.
+  `sasolve` : 500 000 mouvements, 3 000 acceptés, 5 000 par cycle. Pour voir le refus de la
+  simulation, demander 20 périodes sur `sse_pass`, dont la cédule s'arrête à la période 10 :
+  depuis le correctif du 2026-09-22, le refus doit sortir sur deux lignes et la fonction doit
+  rendre faux.
 - **Planification** : 5 périodes, sortie `OVOLREC`. `planification_pass` a une cédule, donc il
   se planifie et se rejoue ; `planification_fail` n'en a pas.
 - **Replanification** : `replanification_global` en stratégique, `replanification_feux` en
@@ -736,16 +778,23 @@ pile d'erreur de la forme `In <fichier> at line <n> FMTsection`, la seule que
   `ose_fail` : la contrainte impossible, 50 %.
 - `chargement_fail` s'arrête à la lecture, sur la bonne ligne.
 - `cos_pass` franchit le test du yield youvert, `cos_fail` s'y arrête ; le fichier de paramètres
-  se lit sans erreur. **La génération du calendrier elle-même n'est pas vérifiée** :
-  `testOAschedulertask` et `testWrapperCoreOperatingArea` figent le numéro de thème et la sortie
-  de temps de retour, pour des modèles privés à quatorze thèmes.
+  se lit sans erreur.
 - Les trois scénarios de replanification sont des copies octet pour octet de
   `Globalreplanning`, `Globalfire` et `Localreplanning`, que `testWrapperCorePlanning` fait
-  passer. **La réaction de la replanification à un modèle tactique sans solution n'est pas
-  vérifiée** : `replanner` s'effondre même sur le trio valide, et les deux autres tests figent
-  leurs scénarios.
+  passer.
+
+Deux cases du tableau restent vides : la génération du calendrier de COS et la réaction de la
+replanification à un modèle tactique sans solution. Elles sont inscrites en « Validations en
+attente », plus bas.
 - `testWrapperCorePlanning` passe avec le banc en place : les nouveaux dossiers ne dérangent
   aucun test existant, `readproject` ne lisant que les scénarios qu'on lui nomme.
+
+**Le banc est gardé par ctest** : neuf lignes de `basetests.csv` inscrivent les scénarios
+`_pass`, pour qu'ils ne pourrissent pas. Huit sont des `doplanning`, qui prouvent que le
+scénario se lit et se résout, et la neuvième passe `rasterisation_pass` par
+`testWrapperCoreRasterization`. Les valeurs ont été mesurées deux fois chacune, avec MOSEK.
+Les scénarios `_fail`, eux, ne sont pas inscriptibles : aucun harnais n'exprime « doit
+échouer ».
 
 **Pièges**
 
@@ -755,16 +804,22 @@ pile d'erreur de la forme `In <fichier> at line <n> FMTsection`, la seule que
   ne coûte qu'une ligne du tableau.
 - **Les transformations écrivent dans le projet** : elles ajoutent un scénario et réécrivent le
   `.pri`. Travailler sur une copie de `TWD_land`, ou nettoyer avec git après coup.
-- **L'interface ne montre pas le refus de la simulation spatiale** :
-  `FMTForm::SimulationSpatialeExplicite` rend `true` sans lire `SESResults::success` ni
-  `errorMessage`. Un refus du Core (« No schedules provided », « Dépassement de la période »)
-  passe donc inaperçu. Présent depuis la première migration de SES (`98c2bdd8`), avant les
-  lots A, B et C. `OptimisationSpatialeExplicite`, elle, rend `RESULTS.success`.
-- **La colonne MAXRET du fichier de paramètres des aires d'opération est ignorée** :
-  `FMTAreaParser::readOaSchedulerParameters` initialise `useRETasMAXRET` à vrai et ne le remet
-  jamais à faux, si bien que `MAXRET` vaut toujours `RET`. Démontré : avec `RET=5` et
-  `MAXRET=2`, l'avertissement « MAXRET value for UTR1 is less than RET value » ne sort pas.
-  Introduit par `f4c0fb76` (2026-07-22), sans rapport avec la migration.
+- **Un refus du Core n'est pas une exception.** Quatre opérations rendent un DTO qui porte
+  `success` et `errorMessage` au lieu de lever : la simulation et l'optimisation spatiales,
+  les aires d'opération et la variabilité de l'aire initiale. Arriver au `return true` du
+  wrapper ne prouve donc pas que l'opération a eu lieu : il faut lire le drapeau et faire
+  remonter le message. La simulation spatiale l'a oublié pendant toute la migration -- voir
+  le correctif du 2026-09-22, section 3.
+- **Le fichier de paramètres des aires d'opération perd deux de ses colonnes** (issue à
+  ouvrir, le code est de gcyr ; sans rapport avec la migration). `MAXRET` d'abord :
+  `readOaSchedulerParameters` initialise `useRETasMAXRET` à vrai sans jamais le remettre à
+  faux, si bien que `MAXRET` vaut toujours `RET` -- démontré avec `RET=5` et `MAXRET=2`,
+  l'avertissement « MAXRET value for UTR1 is less than RET value » ne sort pas. Introduit par
+  `f4c0fb76` (2026-07-22). Le périmètre de voisinage ensuite : `writeOaSchedulerParameters`
+  écrit la colonne `NEP` (ligne 1891) alors que la lecture cherche `NPE` (ligne 2087), et le
+  fichier sort par le pilote CSV, celui par défaut de `createOGRDataset`. FMT ne sait donc pas
+  relire le fichier qu'il écrit -- démontré avec la même valeur `0.5` : sous `NPE`, « Lecture
+  des blocs voisins. » apparaît ; sous `NEP`, rien.
 
 ### Validations en attente
 
@@ -785,6 +840,17 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
     Le lot C fait passer ces messages par les événements : cet aller-retour est ce qui le
     valide ;
   - les accents des messages de progression (Pièges, « Encodage des messages »).
+- **La génération du calendrier de COS**, qu'aucun test ne couvre sur un modèle public.
+  `testOAschedulertask` et `testWrapperCoreOperatingArea` figent le numéro de thème -- 14 et 13,
+  pour des modèles privés -- et la sortie de temps de retour `OATTEINTE7M`. Sur TWD_land, qui n'a
+  que trois thèmes, les masques d'aires d'opération deviennent tous `? ? ?` et se recoupent.
+  Vérifié quand même : `cos_pass` a bien une action qui lit le yield youvert et `cos_fail` non,
+  et `parametres_cos.csv` se lit sans erreur. Reste à voir le calendrier lui-même, dans
+  l'interface ou en rendant le numéro de thème paramétrable.
+- **La réaction de la replanification à un modèle tactique sans solution**, que
+  `replanification_fail` provoque. Le modèle est bien sans solution -- `doPlanning` rend faux --
+  mais ce que la replanification en fait n'est pas observé : `replanner` s'effondre même sur le
+  trio valide, et `replanningtest` comme `testWrapperCorePlanning` figent leurs scénarios.
 - **La chaîne MSYS2** (`CMakeFMTMSYS2rcran45.sh`) : le `CMakeLists.txt` racine inclut
   `FMTWrapperCore` sans condition MSVC, donc GCC compile le Core et ses tests. Aucune
   compilation MSYS2 n'est consignée depuis le début de la migration. La recherche des

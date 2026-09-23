@@ -842,6 +842,13 @@ namespace FMTWrapper::Backend
 
         SESResults results = RunSES(params, selectedModel, SCHEDULES);
 
+        // A refusal raises nothing: the simulation did not run, so it must not be announced
+        // as done. SpatialUseCases turns errorMessage into an ErrorEvent.
+        if (!results.success)
+        {
+            return results;
+        }
+
         logger << "FMT -> Simulation terminée avec succès" << "\n";
 
         if (params.carbonMode)

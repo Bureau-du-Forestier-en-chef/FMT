@@ -80,3 +80,12 @@ testWrapperCoreAreaVariability;;;
 testWrapperCorePlanning;;;
 testWrapperCoreEnvironment;;;
 UnitTestCallbackLogger;;;
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|planification_pass;5;65733
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|cos_pass;3;302
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|transformation_pass;5;65733
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|sse_pass;5;65733
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ose_pass;5;353878
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_global;5;65733
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_local;5;201360
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_feux;5;0
+testWrapperCoreRasterization;../../../../Examples/Models/TWD_land/TWD_land.pri|rasterisation_pass|1420;../../../../Examples/Models/TWD_land/Carte/TWD_land.shp;../../tests/testWrapperCoreRasterizationPass/

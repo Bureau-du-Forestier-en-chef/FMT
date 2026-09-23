@@ -186,7 +186,7 @@ namespace Wrapper
 
             _EnvoyerResultatsInterface(RESULTS, indCarbon);
 
-            return true;
+            return RESULTS.success;
         }
         catch (...)
         {
