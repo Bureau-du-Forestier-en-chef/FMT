@@ -4,7 +4,7 @@
 #include "FMTModel.h"
 #include "FMTLpModel.h"
 #include "FMTModelParser.h"
-#include "Tools.h"
+#include "ModelQuery.h"
 #include "FMTFreeExceptionHandler.h"
 #include <set>
 
@@ -81,10 +81,10 @@ int main(int argc, char* argv[])
 		std::cout << "theme " + std::to_string(theme) << "\n";
 	}
 
-	const std::set<std::string> RESULT = FMTWrapperCore::Tools::getAllMasks(
+	const std::set<std::string> RESULT = FMTWrapper::Backend::ModelQuery::getAllMasks(
 		model, periods, themesNumbers, rastpath);
 
-	// �criture sur le disque en cas de test manuel
+	// Written to disk for a manual test
 	if (writeOnDisk) {
 		std::ofstream outputFile(outputFilePath);
 
@@ -93,10 +93,10 @@ int main(int argc, char* argv[])
 				outputFile << res << std::endl;
 			}
 			outputFile.close();
-			std::cout << "Les r�sultats ont �t� �crits dans " << outputFilePath << std::endl;
+			std::cout << "Results written to " << outputFilePath << std::endl;
 		}
 		else {
-			std::cerr << "Erreur: Impossible d'ouvrir le fichier " << outputFilePath << " pour l'�criture." << std::endl;
+			std::cerr << "Error: cannot open the file " << outputFilePath << " for writing." << std::endl;
 			return 1;
 		}
 
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
 
 	if (RESULT.size() != resultSize) {
 		std::cout << std::to_string(RESULT.size()) + "!=" + std::to_string(resultSize);
-		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de masks non valide",
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Invalid number of masks",
 			"TestWrapperCoreGetAllMasks", __LINE__, __FILE__);
 	}
 

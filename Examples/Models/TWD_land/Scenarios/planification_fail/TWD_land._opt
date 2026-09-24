@@ -1,0 +1,14 @@
+
+*OBJECTIVE
+_MAXMIN oVolRec 1.._LENGTH
+
+*CONSTRAINTS
+
+Burnedarea = 0 1.._LENGTH
+
+;plantation n'est operable qu'entre 1 et 3 ans, et l'inventaire commence a 7 ans : aucun
+;peuplement ne l'est en periode 1. oSuppl n'a donc aucune variable a cette periode, et la
+;contrainte ne peut pas etre satisfaite. FMT s'en apercoit en posant la matrice et leve.
+oSuppl >= 1 1
+
+*FORMAT MOSEK

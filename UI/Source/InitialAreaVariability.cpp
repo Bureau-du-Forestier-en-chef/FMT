@@ -1,130 +1,59 @@
 #include "stdafx.h"
-#include <string>
-#include <sstream>
-#include "FMTLpModel.h"
-#include "FMTModelParser.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTMask.h"
-#include "FMTFormLogger.h"
+
 #include "FMTForm.h"
-#include "FMTFormCache.h"
-#include "FMTDefaultLogger.h"
+#include "Controller.h"
+#include "Conversions.h"
 
-namespace Wrapper{
-
-bool FMTForm::InitialAreaVariability(
-	System::String^ fichierPri,
-	int scenario, 
-	int solver,
-	System::Collections::Generic::List<System::String^>^ contraintes, 
-	int period, 
-	System::Collections::Generic::List<System::String^>^ outputs, 
-	int outputLevel, 
-	int etanduSortiesMin, 
-	int etanduSortiesMax, 
-	System::String^ cheminSorties, 
-	System::String^ providerGdal, 
-	System::Collections::Generic::List<System::Collections::Generic::List<System::String^>^>^ ListeInformations)
+namespace Wrapper
 {
-	try
+	bool FMTForm::InitialAreaVariability(
+		System::String^ fichierPri,
+		int scenario,
+		int solver,
+		System::Collections::Generic::List<System::String^>^ contraintes,
+		int period,
+		System::Collections::Generic::List<System::String^>^ outputs,
+		int outputLevel,
+		int etanduSortiesMin,
+		int etanduSortiesMax,
+		System::String^ cheminSorties,
+		System::String^ providerGdal,
+		System::Collections::Generic::List<System::Collections::Generic::List<System::String^>^>^ ListeInformations)
 	{
-		FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-		*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-		Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTSolverInterface>(solver));
-		*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";
-		*logger << "FMT Event Spatialy Explicit Simulation c++ - > Intégration des contraintes sélectionnées" << "\n";
-		optimizationmodel.setConstraints(_ObtenirArrayContraintesSelectionnees(optimizationmodel.getConstraints(), contraintes));
-
-		//Période
-		for (size_t per = 0; per < period; ++per)
+		// fichierPri has never been used: it stays in the public signature,
+		// which the .NET UI depends on.
+		try
 		{
-			optimizationmodel.buildPeriod();
-		}
-	
-		std::vector<Core::FMTTheme> themes = optimizationmodel.getThemes();
-		//std::vector<Core::FMTMask> masktargets = { Core::FMTMask("? PEUPLEMENT2 ?", themes), Core::FMTMask("? PEUPLEMENT3 ?", themes) };
-		std::vector<Core::FMTMask> masktargets = {};
-		//std::vector<double> proportions{0.01, -0.1};
-		std::vector<double> proportions{};
+			FMTWrapper::Backend::AreaVariabilityParameters params;
+			params.solver = solver;
+			params.constraintNames = Conversions::toStdVector(contraintes);
+			params.numberOfPeriods = period;
+			params.outputNames = Conversions::toStdVector(outputs);
+			params.outputLevel = outputLevel;
+			params.outputMinPeriod = etanduSortiesMin;
+			params.outputMaxPeriod = etanduSortiesMax;
+			params.outputPath = Conversions::toStdString(cheminSorties);
+			params.gdalProvider = Conversions::toStdString(providerGdal);
 
-		if (ListeInformations && ListeInformations->Count > 1) {
-			for (size_t ligne = 1; ligne < ListeInformations->Count; ligne++)
+			// The table is converted as is; the Core interprets it (header, mask,
+			// proportion). A missing table and an empty table give two distinct messages.
+			params.proportionsTableProvided = ListeInformations != nullptr;
+
+			if (params.proportionsTableProvided)
 			{
-				System::String^ mask = "";
-
-				for (int i = 0; i < ListeInformations[ligne]->Count; i++) {
-					if (ListeInformations[ligne]->ToArray()->GetValue(ListeInformations[ligne]->Count - 1)->ToString() != ListeInformations[ligne]->ToArray()->GetValue(i)->ToString()) {
-						System::String^ valeur = ListeInformations[ligne]->ToArray()->GetValue(i)->ToString();
-						mask += valeur + " ";
-					}
-				}
-
-				mask = mask->Trim();
-				proportions.push_back(std::atof(msclr::interop::marshal_as<std::string>(ListeInformations[ligne]->ToArray()->GetValue(ListeInformations[ligne]->Count - 1)->ToString()).c_str()));
-				masktargets.push_back(Core::FMTMask(msclr::interop::marshal_as<std::string>(mask), themes));
-			}
-
-			for (Core::FMTActualDevelopment development : optimizationmodel.getArea()) {
-				int count = 0;
-				for (Core::FMTMask target : masktargets) {
-					if (development.getMask().isSubsetOf(target)) {
-						count += 1;
-					}
-				}
-				if (count > 1) {
-					*logger << "Intersecting globalmask!" << "\n";
-					exit(-1);
-				}
-			}
-
-			if (outputs->Count > 0)
-			{
-				std::vector<Core::FMTOutput> listeOutputs;
-				for (const Core::FMTOutput& fmtOutput : optimizationmodel.getOutputs())
+				for each (System::Collections::Generic::List<System::String^>^ row in ListeInformations)
 				{
-					if (outputs->Contains(gcnew System::String(fmtOutput.getName().c_str())))
-					{
-						listeOutputs.push_back(fmtOutput);
-					}
+					params.proportionsTable.push_back(Conversions::toStdVector(row));
 				}
-				*logger << "FMT - Démarrage de Initial Area Variability" << "\n";
-				Parser::FMTModelParser Modelparser;
-				Modelparser.writeResults(
-					optimizationmodel.getModelFromProportions(masktargets, proportions),
-					listeOutputs,
-					etanduSortiesMin,
-					etanduSortiesMax,
-					msclr::interop::marshal_as<std::string>(cheminSorties),
-					static_cast<Core::FMToutputlevel>(outputLevel),
-					msclr::interop::marshal_as<std::string>(providerGdal)
-				);
-				*logger << "FMT - Initial Area Variability complété." << "\n";
 			}
-			else
-			{
-				*logger << "FMT - Modèle non réalisable" << "\n";
-				return false;
-			}
+
+			return FMTWrapper::Backend::Controller::runAreaVariability(params, scenario).success;
 		}
-		else 
+		catch (...)
 		{
-			if (!ListeInformations) {
-				*logger << "FMT - Arrêt du traitement. Le fichier de paramètres .csv est obligatoire." << "\n";
-				return false;
-			}
-			else {
-				*logger << "FMTErreur - Arrêt du traitement. Le fichier de paramètres .csv est vide." << "\n";
-				return false;
-			}
-		}		
+			_raiseFromCatch("", "FMTForm::InitialAreaVariability", __LINE__, __FILE__);
+			return false;
+		}
 	}
-	catch (...)
-	{
-		_raiseFromCatch("", "FMTForm::InitialAreaVariability", __LINE__, __FILE__);
-		return false;
-	}	
-
-	return true;
-}
-
 }
