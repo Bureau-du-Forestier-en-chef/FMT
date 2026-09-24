@@ -686,8 +686,10 @@ lignes, aucun fichier, aucun message, et le code de retour zéro. Le défaut dat
   `OptimisationSpatialeExplicite`. Sa documentation Doxygen promettait déjà « True if the
   simulation completed successfully » : le code la rejoint.
 - Les sept modules ont été revus : les quatre dont le Core rend un DTO lisent maintenant son
-  drapeau, et les trois dont l'entrée est `void` -- rastérisation, transformations,
-  planification -- gardent leur `return true`, leurs échecs étant des exceptions.
+  drapeau. Des trois dont l'entrée est `void`, la rastérisation et les transformations
+  gardent leur `return true` à bon droit, leurs échecs passant par `raiseFromCatch`. **La
+  planification, non** : un scénario irréalisable n'est ni une exception ni un drapeau, et
+  reste ouvert -- voir « Validations en attente ».
 - Compilé sans édition de liens (`cl`, `/W1`) : 20 sources du Core, 15 tests et 11 sources du
   wrapper en `/clr`, sans erreur ni avertissement. Contrôles d'architecture au vert.
   **La nouvelle publication n'est pas observable sans édition de liens** : `testWrapperCoreSES`
@@ -717,29 +719,49 @@ A (livré), puis B et C, dans cet ordre.
 ### Banc de scénarios pour l'interface (2026-09-21)
 
 `Examples/Models/TWD_land/Scenarios` porte un scénario `_pass` et un `_fail` par module de
-l'interface. Le modèle est minuscule -- huit peuplements, trois thèmes -- donc chaque essai se
+l'interface. **La marche à suivre vit avec le modèle**, dans
+`Examples/Models/TWD_land/BANC_INTERFACE.md` : rôle de chaque scénario, réglages à saisir,
+message attendu, et ce que les essais réécrivent dans le projet. Cette section-ci garde ce qui
+regarde la migration -- l'état des validations et les défauts relevés. Le modèle est minuscule -- huit peuplements, trois thèmes -- donc chaque essai se
 compte en secondes, et les scénarios reprennent ceux qui existaient déjà (`COS`, `LP`,
 `Spatial`, les trois de la replanification) quand ils conviennent.
 
 | Module | `_pass` | `_fail` | Ce que le `_fail` doit produire |
 |---|---|---|---|
 | Calendrier de COS | `cos_pass` | `cos_fail` | « Aucune action dans le modèle n'a de yield youvert » ; la fonction rend faux, sans exception |
-| Planification | `planification_pass` | `planification_fail` | « infeasible scenario planification_fail » (`FMTPlanningTask::work`) |
-| Replanification | `replanification_global` + `replanification_feux` + `replanification_local` | `replanification_fail`, comme modèle tactique | modèle local sans solution |
+| Planification | `planification_pass` | `planification_fail` | `FMTexc(61)` « Une contrainte rend le problème d'optimisation infaisable. OSUPPL >= 1 at period 1 » |
+| Planification, cas muet | -- | `planification_fail_solveur` | « infeasible scenario » au journal, puis un succès : le défaut ouvert, voir « Validations en attente » |
+| Replanification | `replanification_strategique` + `replanification_stochastique` + `replanification_tactique` | `replanification_tactique_fail`, à la place du tactique | `FMTexc(77)` « infeasible model named replanification_tactique_fail on replicate N », un avertissement |
 | Rastérisation | `rasterisation_pass` | `rasterisation_fail` | « A referenced attribute is missing or undefined. UNITE3 at theme 1 at line 5 » |
 | Transformation | `transformation_pass` | `transformation_fail` | pile pointant `transformation_fail/TWD_land._seq` ligne 6, et Notepad++ s'ouvre dessus |
-| Simulation spatialement explicite | `sse_pass` | `sse_fail` | rapport des contraintes : `OVOLREC >= 1000000` brisée |
-| Optimisation spatialement explicite | `ose_pass` | `ose_fail` | même rapport |
+| Simulation spatialement explicite | `sse_pass` | `spatial_fail_rasters` | `FMTexc(19)` « A referenced attribute is missing or undefined. UNITE3 at theme 1 », levée à la lecture des rasters |
+| Optimisation spatialement explicite | `ose_pass` | `spatial_fail_rasters` | la même : le scénario sert aux deux modules |
+| Spatial, cas infaisables | -- | `sse_infaisable`, `ose_infaisable` | **pas d'erreur** : le traitement réussit, seul le rapport des contraintes change -- `OVOLREC >= 1000000` brisée, contre 0 % pour les `_pass` |
 | Chargement du scénario | -- | `chargement_fail` | pile pointant `chargement_fail/TWD_land._opt` ligne 8, et Notepad++ s'ouvre dessus |
 
-Les deux derniers `_fail` sont ceux qui valident le lot C de bout en bout : ils produisent une
-pile d'erreur de la forme `In <fichier> at line <n> FMTsection`, la seule que
-`WarningExceptionHandler::tryfileopener` sait ouvrir.
+Chaque module a un scénario qui fait remonter une **erreur** dans l'interface : c'est ce qui
+prouve que le chemin d'erreur du lot C fonctionne, quel que soit le message. Les scénarios
+`_infaisable`, eux, ne produisent qu'un rapport, le Core n'ayant pas de quoi refuser --
+les garder en tête pour ne pas conclure trop vite que le journal est muet.
+
+`transformation_fail` et `chargement_fail` valident le lot C de bout en bout : ils produisent
+une pile de la forme `In <fichier> at line <n> FMTsection`, la seule que
+`WarningExceptionHandler::tryfileopener` sait ouvrir, donc Notepad++ doit s'ouvrir dessus.
 
 **Ce qu'il faut saisir**
 
 - **Rastérisation et COS** : carte `Carte/TWD_land.shp`, champ d'âge `AGE`, champ de
-  superficie `SUPERFICIE`, pas de champ stanlock, résolution 1420.
+  superficie `SUPERFICIE`.
+  **Vider le champ Stanlock**, que l'interface remplit d'office avec `STANLOCK` : aucune des
+  deux cartes de TWD_land ne porte ce champ, et `FMTParser::_getWSFields` lève
+  `FMTexc(28) A required field is missing from the dataset` dès que le nom est fourni et
+  introuvable. Vide, il est simplement ignoré.
+  La résolution se saisit en **hectares par pixel**, pas en mètres : le journal de l'interface
+  montre `0.04` devenir « Résolution FMT : 20 ». Pour retrouver les 1420 mètres du test
+  automatisé, saisir `201.64`.
+  **Le répertoire des rasters proposé par défaut est `TWD_land/rasters`**, celui-là même où
+  `sse_pass` et `ose_pass` vont lire. Écrire ailleurs, ou remettre le banc en état avec
+  `git checkout -- Examples/Models/TWD_land/rasters`.
 - **COS** : fichier de paramètres `Scenarios/cos_pass/parametres_cos.csv` (une copie est dans
   `cos_fail`), qui découpe les aires d'opération sur le thème 3, celui des UTR. Le Core passe
   le numéro de thème tel quel à `readOaSchedulerParameters`, qui compte à partir de zéro : si
@@ -750,18 +772,59 @@ pile d'erreur de la forme `In <fichier> at line <n> FMTsection`, la seule que
   ce que ce modèle n'a jamais exercé.
 - **Simulation et optimisation spatiales** : dossier de rasters `rasters/`, 5 périodes, sortie
   `OVOLREC`, niveau total, périodes 1 à 5, pilote `CSV`. Pour l'optimisation, les valeurs de
-  `sasolve` : 500 000 mouvements, 3 000 acceptés, 5 000 par cycle. Pour voir le refus de la
+  `sasolve` : 500 000 mouvements, 3 000 acceptés, 5 000 par cycle.
+  `spatial_fail_rasters` sert aux deux modules et se lance avec les mêmes réglages que le
+  `_pass` correspondant : son modèle nomme `UNITE4` un attribut que les rasters, la carte et
+  l'inventaire appellent `UNITE3`, et `readRasters` lève.
+  **Aucun réglage, en revanche, ne fera « échouer » `ose_infaisable`** : `SES::RunOptimization`
+  n'a pas de sortie de refus, elle lève ou elle pose `success = true`. Ce qui le distingue du
+  `_pass` est le rapport des contraintes, à lire dans le journal :
+  « OVOLREC >= 1000000.000000 1.._LENGTH(...) » et « Percentage of infeasible constraints
+  50 % », contre « 0 % » pour `ose_pass`. Vérifié aux deux horizons, 5 et 10 périodes.
+  Pour voir le refus de la
   simulation, demander 20 périodes sur `sse_pass`, dont la cédule s'arrête à la période 10 :
   depuis le correctif du 2026-09-22, le refus doit sortir sur deux lignes et la fonction doit
   rendre faux.
-- **Planification** : 5 périodes, sortie `OVOLREC`. `planification_pass` a une cédule, donc il
-  se planifie et se rejoue ; `planification_fail` n'en a pas.
-- **Replanification** : `replanification_global` en stratégique, `replanification_feux` en
-  stochastique, `replanification_local` en tactique ; 10 périodes, 3 de replanification,
-  variabilité 0,5, 2 réplicats.
-- **Transformation** : cocher les trois agrégats, `ARECOLTE`, `ASYLVICULTURE` et
-  `APERTURBATION`. L'agrégation exige que chaque action appartienne à un agrégat demandé,
-  sinon elle refuse avec « Missing aggregate for actions ».
+- **Planification** : 5 périodes, sortie `OVOLREC` -- c'est le nom que porte ce modèle, et
+  `Selection::selectOutputs` rend une liste vide sans rien dire pour un nom qu'il ne trouve
+  pas. `planification_pass` a une cédule, donc il se planifie et se rejoue. Les deux scénarios
+  d'échec n'en ont pas et **doivent être lancés sans rejouer la cédule** : avec « rejouer »
+  coché, le modèle est construit mais jamais résolu, donc jamais déclaré irréalisable, parce
+  que `FMTPlanningTask::work` ne teste la faisabilité que lorsqu'il résout.
+  Les deux couvrent les deux régimes d'infaisabilité, à tous les horizons de 1 à 10 :
+  `planification_fail` porte une contrainte que FMT voit impossible **en posant la matrice**
+  -- `oSuppl` n'a aucune variable en période 1, la plantation n'étant opérable qu'entre 1 et
+  3 ans alors que l'inventaire commence à 7 ans -- et lève une `FMTError` fatale ;
+  `planification_fail_solveur` porte une contrainte que **seul le solveur** peut rejeter, et
+  que FMT se contente de journaliser.
+- **Replanification** : `replanification_strategique` en stratégique, `replanification_stochastique` en
+  stochastique, `replanification_tactique` en tactique ; 10 périodes, 3 de replanification,
+  variabilité 0,5, 2 réplicats au minimum comme au maximum, sortie `OVOLREC`, niveau TOTALE,
+  CSV, « produire la solution » cochée. Ce sont les valeurs que `testWrapperCorePlanning`
+  passe à `Planning::replan`, et il passe. Les deux solveurs conviennent : MOSEK a été
+  vérifié avec `replanner`, CLP par les deux tests automatisés.
+  **Si la replanification échoue**, chercher « `FMTexc(58)` ... No outputs to write » dans le
+  journal : la liste des sorties retenues est vide, et elle est cherchée dans les sorties du
+  modèle **stratégique**, pas dans celles du tactique.
+- **Transformation** : dans « Agrégats et actions », cocher **les trois agrégats et eux
+  seuls** -- `ARECOLTE` (COUPETOTALE et ARECUP), `ASYLVICULTURE` (PLANTATION) et
+  `APERTURBATION` (AFIRE et ACARIBOU).
+  La liste mêle les agrégats et les actions, et ce qu'on y coche doit **partitionner** les
+  actions du modèle : chacune exactement une fois, nommée directement ou par un agrégat. Trop
+  peu, et l'agrégation refuse avec « Missing aggregate for actions
+  AFIRE,ARECUP,COUPETOTALE,ACARIBOU,PLANTATION » -- le message énumère toutes les actions, pas
+  seulement les manquantes. Trop, et elle refuse avec « Action AFIRE already in aggregate » :
+  `FMTActionComparator::getAllAggregates` reconnaît un nom aussi bien comme action que comme
+  agrégat, donc cocher `AFIRE` et `APERTURBATION` compte AFIRE deux fois.
+  Une partition mixte fonctionne : `ARECOLTE`, `AFIRE`, `ACARIBOU`, `PLANTATION` passe.
+  `_DEATH` est sans effet, l'agrégation l'ajoutant d'elle-même. **Ne pas cocher que des
+  actions, sans aucun agrégat** : les cinq actions seules font mourir le traitement sans
+  message, ce qui n'est pas diagnostiqué.
+  L'ordre des actions, lui, n'a aucun effet : `Transformation::aggregateAllActions` reçoit
+  `p_order` et ne s'en sert pas, l'ordre remis à FMT étant celui que
+  `getSchedulesPriorities` calcule depuis les cédules. Antérieur à la migration --
+  `56c381ff`, gcyr, 2024-10-25 --, à décider plus tard : retirer le paramètre, ou honorer ce
+  que l'utilisateur choisit.
 - **Partout** : garder la liste d'erreurs ignorées par défaut, celle que rend
   `Controller::getErrorsToIgnore`. Sans elle, des avertissements du modèle de base
   (`_DEATH` non défini, yield redéfini) empêchent les scénarios de se lire.
@@ -773,9 +836,9 @@ pile d'erreur de la forme `In <fichier> at line <n> FMTsection`, la seule que
   `rasterisation_fail` échoue sur l'attribut absent de la carte.
 - `transformation_pass` passe `testWrapperCoreAggregateAllActions` et écrit son scénario ;
   `transformation_fail` s'arrête sur la cédule, à la ligne voulue.
-- `sse_pass` : 0 % de contraintes brisées ; `sse_fail` : la contrainte impossible, 20 %.
+- `sse_pass` : 0 % de contraintes brisées ; `sse_infaisable` : la contrainte impossible, 20 %.
 - `ose_pass` : 0 % de contraintes brisées et une récolte réelle (46 000 à 112 000 par période) ;
-  `ose_fail` : la contrainte impossible, 50 %.
+  `ose_infaisable` : la contrainte impossible, 50 %.
 - `chargement_fail` s'arrête à la lecture, sur la bonne ligne.
 - `cos_pass` franchit le test du yield youvert, `cos_fail` s'y arrête ; le fichier de paramètres
   se lit sans erreur.
@@ -802,8 +865,12 @@ Les scénarios `_fail`, eux, ne sont pas inscriptibles : aucun harnais n'exprime
   `Globalfire` et `Localreplanning` : le banc se lit tout seul dans la liste de l'interface,
   au prix d'une dérive possible si les originaux changent. Les remplacer par leurs originaux
   ne coûte qu'une ligne du tableau.
-- **Les transformations écrivent dans le projet** : elles ajoutent un scénario et réécrivent le
-  `.pri`. Travailler sur une copie de `TWD_land`, ou nettoyer avec git après coup.
+- **La planification et les transformations écrivent dans le projet.** La planification
+  réécrit la cédule des scénarios qu'elle optimise, `planification_pass` compris : un essai à
+  l'horizon 1 ramène sa cédule de dix périodes à une seule, et le banc perd son cas de
+  rejeu. Les transformations, elles, ajoutent un scénario et réécrivent le `.pri`. Travailler
+  sur une copie de `TWD_land`, ou remettre le banc en état après coup avec
+  `git checkout -- Examples/Models/TWD_land/Scenarios`.
 - **Un refus du Core n'est pas une exception.** Quatre opérations rendent un DTO qui porte
   `success` et `errorMessage` au lieu de lever : la simulation et l'optimisation spatiales,
   les aires d'opération et la variabilité de l'aire initiale. Arriver au `return true` du
@@ -830,15 +897,20 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
 - **Les lots 3 à 6 par leurs tests** : fait le 2026-09-18. `Rasterization`,
   `AreaVariability`, `Planning`, `OperatingArea`, `Environment` et les deux lignes de
   `GetYield` passent, ces dernières pour la première fois depuis 2024.
-- **Dans l'interface**, avec le banc de scénarios ci-dessous :
-  - planification d'un scénario optimisé, d'un scénario rejoué et d'un scénario sans
-    cédule : l'erreur de ce dernier s'affiche une fois et la planification se poursuit ;
-  - replanification : le niveau du journal est rétabli ensuite, même après une erreur ;
-  - aires d'opération, variabilité de l'aire initiale (des masques qui se recoupent
-    affichent une erreur au lieu de fermer l'interface) et rastérisation ;
-  - une erreur provoquée : message, ouverture du fichier fautif, puis `RecoverFromCrash`.
-    Le lot C fait passer ces messages par les événements : cet aller-retour est ce qui le
-    valide ;
+- **Dans l'interface**, avec le banc de scénarios ci-dessous. Au 2026-09-24, Gabriel a vu
+  remonter une erreur dans la planification, la replanification, la rastérisation, la
+  transformation et l'optimisation spatiale, cette dernière par `spatial_fail_rasters`. Restent :
+  - **la simulation spatiale**, bloquée par la validation de son écran, qui exige
+    `rasters/STANLOCK.tif` même quand l'option de verrou est décochée. Le Core, lui, ne le lit
+    que si elle est cochée (`SES::prepareInitialForest`), `testWrapperCoreSES` fait tourner
+    `sse_pass` sans ce fichier, et l'écran de l'optimisation spatiale démarre sur le même
+    dossier de rasters alors que les deux modules appellent la même fonction. La validation de
+    l'écran est donc en trop : défaut du UI .NET, hors de ce dépôt ;
+  - le calendrier de COS et `chargement_fail`, jamais lancés ;
+  - l'ouverture du fichier fautif dans Notepad++ et `RecoverFromCrash`, que
+    `transformation_fail` et `chargement_fail` doivent déclencher ;
+  - la replanification : vérifier que le niveau du journal est rétabli ensuite, même après
+    une erreur ;
   - les accents des messages de progression (Pièges, « Encodage des messages »).
 - **La génération du calendrier de COS**, qu'aucun test ne couvre sur un modèle public.
   `testOAschedulertask` et `testWrapperCoreOperatingArea` figent le numéro de thème -- 14 et 13,
@@ -847,10 +919,30 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
   Vérifié quand même : `cos_pass` a bien une action qui lit le yield youvert et `cos_fail` non,
   et `parametres_cos.csv` se lit sans erreur. Reste à voir le calendrier lui-même, dans
   l'interface ou en rendant le numéro de thème paramétrable.
-- **La réaction de la replanification à un modèle tactique sans solution**, que
-  `replanification_fail` provoque. Le modèle est bien sans solution -- `doPlanning` rend faux --
-  mais ce que la replanification en fait n'est pas observé : `replanner` s'effondre même sur le
-  trio valide, et `replanningtest` comme `testWrapperCorePlanning` figent leurs scénarios.
+- ~~**La réaction de la replanification à un modèle tactique sans solution.**~~ Vérifiée le
+  2026-09-24 avec `replanner` : elle rapporte « `FMTexc(77)` Replanning completed but some
+  assumptions or constraints generated warnings. Ignoring: infeasible model named
+  replanification_tactique_fail on replicate 2 at replanning period 1 », une fois par réplicat. Le
+  message sort, mais c'est un **avertissement par construction** -- `FMTReplanningWarning`
+  dérive de `FMTWarning` --, donc il n'est jamais levé et la replanification se termine en
+  succès. Décocher la liste d'erreurs ignorées n'y change rien : cette liste rétrograde des
+  erreurs en avertissements, elle ne promeut pas l'inverse. C'est vraisemblablement voulu, un
+  réplicat pouvant échouer pendant que les autres aboutissent. (Mon échec initial de
+  `replanner` venait d'un chemin de sortie que MSYS avait mutilé, pas des scénarios.)
+- **Un scénario irréalisable ne remonte pas de la planification.** Observé dans l'interface
+  le 2026-09-23 sur `planification_fail`, horizon 10, sans rejeu : le journal porte bien
+  « infeasible scenario planification_fail », mais le traitement se termine en succès, parce
+  que `Controller::plan` et `Planning::plan` sont `void` et que `FMTForm::Plannification` rend
+  `true` sans condition. Le Core ne peut pas faire mieux aujourd'hui : seul
+  `FMTPlanningTask::work` connaît le verdict, le gestionnaire clone la tâche
+  (`maintask.clone()`), la scinde par fil d'exécution et ne finalise que la dernière, et rien
+  ne rapporte le résultat à l'appelant. Le correctif tient dans FMTlib : `FMTPlanningTask`
+  partage déjà un état entre ses clones par `m_ResultsWriter`, un `shared_ptr` recopié tel
+  quel dans son constructeur de copie ; un `shared_ptr<vector<string>>` des scénarios
+  irréalisables, rempli dans le `else` de `work()` et lu par un accesseur, reviendrait par
+  l'objet de l'appelant. Décision en attente : correctif ici ou issue pour gcyr, c'est son
+  fichier. La replanification, elle, lève bien -- « Infeasible Global model »,
+  `FMTReplanningTask.cpp:126`.
 - **La chaîne MSYS2** (`CMakeFMTMSYS2rcran45.sh`) : le `CMakeLists.txt` racine inclut
   `FMTWrapperCore` sans condition MSVC, donc GCC compile le Core et ses tests. Aucune
   compilation MSYS2 n'est consignée depuis le début de la migration. La recherche des
