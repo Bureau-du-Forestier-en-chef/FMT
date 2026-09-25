@@ -81,6 +81,49 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
 5. **Voir le test rouge** en faussant la valeur attendue ou l'entrée, puis vert (règle 1).
 6. **Noter au journal** (§ 5) et refaire les mesures (§ 8).
 
+### Ce chantier et l'issue #350
+
+L'issue #350, « Add comprehensive unit tests for the Core namespace » (jalon FMT2.0), demande
+des tests **unitaires** classe par classe : constructeurs, copies, comparaisons, hachage,
+sérialisation, allocations, concurrence, le tout sous un cadre à la GoogleTest dans `Tests/Core/`,
+avec un inventaire dans `Documentation/Testing/CoreTestCoverage.md` et une couverture publiée.
+
+Ce chantier-ci travaille à l'autre échelle : il protège **la chaîne** que tout modèle traverse
+(§ 0), depuis un modèle public, par des lignes CSV. Les deux se complètent plutôt qu'ils ne se
+recoupent :
+
+- un test unitaire sur `FMTOperator::precedence` aurait attrapé le défaut 1 du § 2.7 en trois
+  lignes, alors qu'il nous a fallu un scénario et une enquête ;
+- à l'inverse, le défaut 2 ne se voit d'aucune classe prise isolément : il naît de
+  `FMTYieldParser::_cleanUp`, qui reconstruit tout un bloc à la lecture. Seule une lecture de
+  modèle le révèle.
+
+Ce que ce chantier apporte déjà à #350 : l'inventaire de ce qui est vérifié (§ 2), le classement
+par criticité, qui est la colonne « Priority » de leur tableau (§ 3), l'infrastructure ctest
+(alerte de ligne sans cible, empreinte du modèle, code 77, lignes désactivées, § 2.1), et quatre
+défauts caractérisés avec leur test désactivé (§ 2.7), ce qu'ils appellent des tests de
+caractérisation avant refonte. Les lots 2 à 4 couvrent, au niveau du comportement, la matière de
+leurs jalons 2 à 7 : `FMTMask`, `FMTTheme`, `FMTDevelopment`, `FMTSpec`, `FMTData`,
+`FMTExpression`, `FMTOperator`, les gestionnaires de rendements, `FMTAction`, `FMTTransition`,
+`FMTSchedule`, `FMTOutput`, `FMTConstraint` et `FMTGraphStats`.
+
+Ce que #350 demande et que ce chantier ne fait pas : constructeurs et copies, opérateurs de
+comparaison, hachage, aller-retour de sérialisation, absence d'allocation, concurrence,
+portabilité Linux et Clang, couverture publiée.
+
+Trois points à trancher quand #350 démarrera :
+
+1. **Le cadre de test.** `TestTools.h` est maison et sans dépendance (décision du lot 0) ; #350
+   décrit GoogleTest, avec ses fixtures et ses filtres. Les deux peuvent coexister : GoogleTest
+   pour les tests unitaires de `Tests/Core/`, le CSV pour les tests de chaîne, dont la force est
+   d'ajouter un cas sans recompiler.
+2. **Deux fichiers de suivi.** `CoreTestCoverage.md` serait par classe, ce fichier est par étape
+   de la chaîne. Il faut que chacun dise ce qu'il ne couvre pas et pointe vers l'autre, sinon ils
+   divergeront.
+3. **La couverture.** Elle avait été écartée au lot 0 au profit de la criticité. #350 la demande,
+   mais en disant elle-même qu'elle sert à trouver les trous, pas à mesurer la qualité : les deux
+   positions tiennent ensemble si la criticité reste ce qui donne l'ordre des travaux.
+
 ### Quel effort donner à l'agent
 
 Les niveaux sont `low`, `medium`, `high`, `xhigh` et `max` (de « faible » à « ultra » dans
