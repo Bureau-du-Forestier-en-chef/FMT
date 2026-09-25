@@ -1,0 +1,27 @@
+; Invalid on purpose for testReadingErrors: the source condition uses the action form
+; _AGE >= 10 instead of the transition form @AGE(10.._MAXAGE), so FMT drops it.
+*CASE Coupetotale
+*SOURCE  ? ? ?
+*TARGET  ? ? ?  100.0
+
+*CASE aCaribou
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00 _LOCK 1
+
+*CASE plantation
+*SOURCE  ? ? ?
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE aFire
+*SOURCE ? ? ?
+*TARGET ? feu ? 100.00
+
+*CASE arecup
+*SOURCE ? feu ? _AGE >= 10
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE _DEATH
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
+*SOURCE ? ? ?
+*TARGET  ? ? ?  100.00

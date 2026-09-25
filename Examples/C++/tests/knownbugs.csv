@@ -10,3 +10,7 @@ testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldopera
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|INRANGE;1;
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|GROWTH;17.14285714;
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|CONSTANT;6;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTFULL|1;0.821927106759;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTFULL|2;0.675564168826;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTNONE|2;0.821927106759;
+testReadingErrors;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_sourcecondition;31;

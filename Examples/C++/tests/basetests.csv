@@ -164,3 +164,46 @@ testReadingErrors;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_inva
 testReadingErrors;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_undefinedyield;8;
 testReadingErrors;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_leakingtransition;38;
 testReadingErrors;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_unclosedforloop;81;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8;UNITE1 PEUPLEMENT1 UTR1|8|1|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|PLANTATION|UNITE1 PEUPLEMENT2 UTR1|2;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|7;UNITE1 FEU UTR1|7|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ARECUP|UNITE1 FEU UTR1|10;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|_DEATH|UNITE1 FEU UTR1|0;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|80;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|2;UNITE1 PEUPLEMENT1 UTR1|0|2|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8|3;FMTexc(79);
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|GROW|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|6|0|2;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|GROW|UNITE1 PEUPLEMENT1 UTR1|5|2;UNITE1 PEUPLEMENT1 UTR1|6|1|2;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|0;1;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|1;0;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|PLANTATION|UNITE1 PEUPLEMENT1 UTR1|2|1;1;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|0|0|60|UNITE1 PEUPLEMENT2 UTR1|0|0|40;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|PLANTATION|UNITE1 PEUPLEMENT2 UTR1|2;UNITE1 PEUPLEMENT1 UTR1|3|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8;UNITE1 PEUPLEMENT1 UTR1|8|2|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ARECUP|UNITE1 FEU UTR1|12;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ARECUP|UNITE1 FEU UTR1|5;UNITE1 PEUPLEMENT2 UTR1|0|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|12;UNITE1 FEU UTR1|12|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|3;UNITE1 PEUPLEMENT3 UTR1|3|0|100;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SHIFTED;130;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|BIGGEST;120;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SMALLEST;0;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|TOPEAK;23;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|TOVOLUME;7;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|1;10;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|2;20;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|3;30;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|5;30;
+testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|STATS|5;296|395|166|327;
+testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|division|STATS|5;426|730|299|674;
+testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|equation|STATS|5;426|730|299|675;
+testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|REPLAY|5;;
+testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|Globalfire|REPLAY|5;;
+testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|NOCHOICE|REPLAY|5;;
+testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|equation|REPLAY|2;;
+presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;LP;5
+presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;division;5
+presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;equation;2
+presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;COS;5
+presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;Shift;5
+presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;TSLA;5

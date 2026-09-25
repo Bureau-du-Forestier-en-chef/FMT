@@ -10,14 +10,20 @@
 #include "FMTModelParser.h"
 #include "FMTModel.h"
 #include "FMTDevelopment.h"
+#include "FMTDevelopmentPath.h"
+#include "FMTFuturDevelopment.h"
+#include "FMTTransition.h"
 #include "FMTConstraint.h"
+#include "FMTException.h"
 #include "TestTools.h"
 
 // Checks what FMTModelParser::readproject reads from one scenario: one query per CSV row.
 //
 // argv[1]: <primary file>|<scenario>|<query>[|<query argument>...]
 // argv[2]: expected value. A list is separated by '|'; items that are numbers are compared
-//          with a relative tolerance of 1e-6, the other items as exact strings.
+//          with a relative tolerance of 1e-6, the other items as exact strings. An expected
+//          value written FMTexc(<code>) means the query must raise an FMT exception whose
+//          chain holds this code.
 //
 // Queries:
 //   THEMES                          number of themes
@@ -28,9 +34,18 @@
 //   AREA|<mask>                     initial area within the mask
 //   ACTIONS                         action names, in order
 //   ACTION|<action>                 flags of the action: RESETAGE and LOCKEXEMPT, or NONE
-//   OPERABLE|<action>|<mask>|<age>  1 when the development of this mask and age (lock 0,
-//                                   period 1) is operable, 0 otherwise
-//   YIELD|<mask>|<age>|<yield>      yield value of the development (lock 0, period 1)
+//   OPERABLE|<action>|<mask>|<age>[|<lock>[|<period>]]
+//                                   1 when the development is operable, 0 otherwise
+//   OPERATE|<action>|<mask>|<age>[|<lock>[|<period>]]
+//                                   <mask>|<age>|<lock>|<proportion> of each development path
+//                                   the action and its transition lead to, in order
+//   GROW|<mask>|<age>[|<lock>[|<period>]]
+//                                   <mask>|<age>|<lock>|<period> of the grown development
+//   YIELD|<mask>|<age>|<yield>[|<period>]
+//                                   yield value of the development (lock 0)
+//
+//   A development is written <mask>|<age>[|<lock>[|<period>]]: the lock is 0 and the period
+//   is 1 when they are left out.
 //   OUTPUTS                         output names, in order
 //   CONSTRAINTS                     number of lines of the optimize section, objective included
 //   CONSTRAINT|<index>              <type>|<output>|<lower>|<upper>|<first period>|<last period>
@@ -123,6 +138,29 @@ namespace
 		throw std::invalid_argument("No action " + p_name + " in " + p_model.getName());
 	}
 
+	// Core::FMTTransitionComparator is not exported by FMTlib either: same search by name.
+	Core::FMTTransition getTransition(const Models::FMTModel& p_model, const std::string& p_name)
+	{
+		for (const Core::FMTTransition& transition : p_model.getTransitions())
+		{
+			if (transition.getName() == p_name)
+			{
+				return transition;
+			}
+		}
+		throw std::invalid_argument("No transition " + p_name + " in " + p_model.getName());
+	}
+
+	// Builds the development of a query written <mask>|<age>[|<lock>[|<period>]].
+	Core::FMTDevelopment getDevelopment(const std::vector<Core::FMTTheme>& p_themes,
+		const std::vector<std::string>& p_query, size_t p_first)
+	{
+		const int LOCK = (p_query.size() > p_first + 2) ? std::stoi(p_query.at(p_first + 2)) : 0;
+		const int PERIOD = (p_query.size() > p_first + 3) ? std::stoi(p_query.at(p_first + 3)) : 1;
+		return Core::FMTDevelopment(Core::FMTMask(p_query.at(p_first), p_themes),
+			std::stoi(p_query.at(p_first + 1)), LOCK, PERIOD);
+	}
+
 	std::string getTypeName(Core::FMTconstrainttype p_type)
 	{
 		switch (p_type)
@@ -213,15 +251,37 @@ namespace
 				items.push_back("NONE");
 			}
 		}
-		else if (QUERY == "OPERABLE" && p_query.size() == 4)
+		else if (QUERY == "OPERABLE" && p_query.size() >= 4 && p_query.size() <= 6)
 		{
 			const Core::FMTAction ACTION = getAction(p_model, p_query.at(1));
-			const Core::FMTDevelopment DEVELOPMENT(Core::FMTMask(p_query.at(2), THEMES), std::stoi(p_query.at(3)), 0, 1);
+			const Core::FMTDevelopment DEVELOPMENT = getDevelopment(THEMES, p_query, 2);
 			items.push_back(DEVELOPMENT.operable(ACTION, p_model.getYields()) ? "1" : "0");
 		}
-		else if (QUERY == "YIELD" && p_query.size() == 4)
+		else if (QUERY == "OPERATE" && p_query.size() >= 4 && p_query.size() <= 6)
 		{
-			const Core::FMTDevelopment DEVELOPMENT(Core::FMTMask(p_query.at(1), THEMES), std::stoi(p_query.at(2)), 0, 1);
+			const Core::FMTAction ACTION = getAction(p_model, p_query.at(1));
+			const Core::FMTTransition TRANSITION = getTransition(p_model, p_query.at(1));
+			const Core::FMTDevelopment DEVELOPMENT = getDevelopment(THEMES, p_query, 2);
+			for (const Core::FMTDevelopmentPath& path :
+				DEVELOPMENT.operate(ACTION, TRANSITION, p_model.getYields(), THEMES))
+			{
+				const Core::FMTDevelopment& RESULT = path.getDevelopment();
+				items.push_back(std::string(RESULT.getMask()));
+				items.push_back(std::to_string(RESULT.getAge()));
+				items.push_back(std::to_string(RESULT.getLock()));
+				items.push_back(toString(path.getProportion()));
+			}
+		}
+		else if (QUERY == "GROW" && p_query.size() >= 3 && p_query.size() <= 5)
+		{
+			const Core::FMTFuturDevelopment GROWN = getDevelopment(THEMES, p_query, 1).grow();
+			items = { std::string(GROWN.getMask()), std::to_string(GROWN.getAge()),
+				std::to_string(GROWN.getLock()), std::to_string(GROWN.getPeriod()) };
+		}
+		else if (QUERY == "YIELD" && (p_query.size() == 4 || p_query.size() == 5))
+		{
+			const int PERIOD = (p_query.size() == 5) ? std::stoi(p_query.at(4)) : 1;
+			const Core::FMTDevelopment DEVELOPMENT(Core::FMTMask(p_query.at(1), THEMES), std::stoi(p_query.at(2)), 0, PERIOD);
 			const Core::FMTYields YIELDS = p_model.getYields();
 			items.push_back(toString(YIELDS.get(DEVELOPMENT.getYieldRequest(), p_query.at(3))));
 		}
@@ -257,6 +317,60 @@ namespace
 		}
 		return items;
 	}
+
+	// Reads an expected value written FMTexc(<code>), the form used for a query that must raise.
+	bool getExpectedException(const std::string& p_expected, int& p_code)
+	{
+		const std::string PREFIX = "FMTexc(";
+		if (p_expected.size() <= PREFIX.size() || p_expected.compare(0, PREFIX.size(), PREFIX) != 0
+			|| p_expected.at(p_expected.size() - 1) != ')')
+		{
+			return false;
+		}
+		p_code = std::stoi(p_expected.substr(PREFIX.size(), p_expected.size() - PREFIX.size() - 1));
+		return true;
+	}
+
+	// Codes of the FMT exceptions of a chain, outermost first.
+	std::vector<int> collectCodes(const std::exception& p_exception)
+	{
+		std::vector<int> codes;
+		Testing::visitNested(p_exception, [&codes](const std::exception& p_nested, std::size_t)
+			{
+				const Exception::FMTException* FMT_EXCEPTION = dynamic_cast<const Exception::FMTException*>(&p_nested);
+				if (FMT_EXCEPTION != nullptr)
+				{
+					codes.push_back(static_cast<int>(FMT_EXCEPTION->getType()));
+				}
+			});
+		return codes;
+	}
+
+	// Checks that the query raises the expected FMT exception code.
+	int checkRaised(const Models::FMTModel& p_model, const std::vector<std::string>& p_query,
+		const std::string& p_scenario, int p_code)
+	{
+		std::vector<int> codes;
+		try
+		{
+			answer(p_model, p_query);
+		}
+		catch (const std::exception& error)
+		{
+			Testing::printException(error);
+			codes = collectCodes(error);
+		}
+		std::string chain;
+		for (const int code : codes)
+		{
+			chain += " FMTexc(" + std::to_string(code) + ")";
+		}
+		Testing::Checker checker;
+		checker.check(std::find(codes.begin(), codes.end(), p_code) != codes.end(),
+			p_scenario + " " + boost::join(p_query, "|") + ": expected FMTexc(" + std::to_string(p_code)
+			+ ") in the raised chain, got" + (chain.empty() ? " nothing" : chain));
+		return checker.exitCode();
+	}
 }
 
 int main(int argc, char* argv[])
@@ -280,6 +394,12 @@ int main(int argc, char* argv[])
 		Parser::FMTModelParser parser;
 		parser.setDefaultExceptionHandler();
 		const std::vector<Models::FMTModel> MODELS = parser.readproject(PRIMARY_FILE, std::vector<std::string>(1, SCENARIO));
+
+		int expectedCode = 0;
+		if (EXPECTED.size() == 1 && getExpectedException(EXPECTED.at(0), expectedCode))
+		{
+			return checkRaised(MODELS.at(0), QUERY, SCENARIO, expectedCode);
+		}
 
 		const std::vector<std::string> ACTUAL = answer(MODELS.at(0), QUERY);
 		Testing::Checker checker;
