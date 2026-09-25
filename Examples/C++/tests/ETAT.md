@@ -111,18 +111,44 @@ Ce que #350 demande et que ce chantier ne fait pas : constructeurs et copies, op
 comparaison, hachage, aller-retour de sérialisation, absence d'allocation, concurrence,
 portabilité Linux et Clang, couverture publiée.
 
-Trois points à trancher quand #350 démarrera :
+**Ce chantier prend en charge la fermeture de #350** (décision du 2026-09-25). Il garde sa façon
+de travailler — l'ordre par criticité, les lots, le vu rouge — et absorbe le volet unitaire que
+l'issue demande. La feuille de route complète est au § 6 ; voici ce que #350 exige, où on en est,
+et quel lot s'en charge :
 
-1. **Le cadre de test.** `TestTools.h` est maison et sans dépendance (décision du lot 0) ; #350
-   décrit GoogleTest, avec ses fixtures et ses filtres. Les deux peuvent coexister : GoogleTest
-   pour les tests unitaires de `Tests/Core/`, le CSV pour les tests de chaîne, dont la force est
-   d'ajouter un cas sans recompiler.
-2. **Deux fichiers de suivi.** `CoreTestCoverage.md` serait par classe, ce fichier est par étape
-   de la chaîne. Il faut que chacun dise ce qu'il ne couvre pas et pointe vers l'autre, sinon ils
-   divergeront.
-3. **La couverture.** Elle avait été écartée au lot 0 au profit de la criticité. #350 la demande,
-   mais en disant elle-même qu'elle sert à trouver les trous, pas à mesurer la qualité : les deux
-   positions tiennent ensemble si la criticité reste ce qui donne l'ordre des travaux.
+| Demande de #350 | État | Lot |
+|---|---|---|
+| Inventaire des composants et de leur couverture | partiel : fait par étape de la chaîne (§ 2), reste à faire par classe | 6 |
+| Cible et infrastructure de test dans CMake et ctest | fait pour les tests de chaîne (§ 2.1) ; reste la cible `FMTCoreTests` et l'étiquette `unit;core` | 6 |
+| Cadre de test unitaire choisi et documenté | à trancher | 6 |
+| Tests unitaires des classes déjà suspectes (défauts du § 2.7) | non fait ; leur comportement n'est touché qu'indirectement | 7 |
+| Tests unitaires du reste de Core (jalons 5 à 7 de #350) | non fait, même remarque | 8 |
+| Constructeurs, copies, comparaisons, hachage | non fait | 7 et 8 |
+| Aller-retour de sérialisation | non fait | 9 |
+| Absence d'allocation, concurrence | non fait | 9 |
+| Portabilité Linux et Clang | non fait ; la suite ne tourne que sous Windows, et le dépôt n'a pas d'intégration continue visible | 9 |
+| Couverture publiée | non fait ; informative après un lot, consignée dans la documentation aux versions | 9 |
+| Tests de caractérisation avant refonte | fait pour quatre défauts (§ 2.7), à étendre | continu |
+
+À chaque lot, noter au journal ce qu'il apporte à #350. Les conditions de fermeture sont au § 6 ;
+le jour venu, écrire ici ce qui l'a fermée et ce que ce chantier reprend ou abandonne.
+
+Trois décisions ont été prises le 2026-09-25 :
+
+1. **Le cadre de test.** GoogleTest, **pour la seule cible des tests unitaires**, parce que c'est
+   lui qui donne les filtres et le rapport par cas que #350 demande. `TestTools.h` reste maison
+   et sans dépendance pour les tests de chaîne, dont la force est d'ajouter un cas sans
+   recompiler. Ni la bibliothèque ni les tests de chaîne ne dépendent de GoogleTest.
+2. **Le partage des fichiers de suivi.** La couverture et l'inventaire par classe se consignent
+   dans la documentation (`Documentation/Testing/`). Ce fichier-ci reste le fichier de travail
+   du chantier : règles, ordre des travaux, pièges, journal.
+3. **Le ménage viendra après.** Ce fichier est valide tant que le chantier tourne. Le jour où la
+   couverture sera bonne, on décidera ce qui mérite de devenir permanent — et où : ce qui relève
+   des conventions va dans `Documentation/CodingStandards.md` ou `AGENTS.md`, ce qui relève de
+   l'état d'un chantier disparaît avec lui.
+
+La couverture elle-même reste écartée comme critère d'ordre : elle arrive au lot 9 et sert à
+lister ce qui reste sans test une fois l'essentiel couvert.
 
 ### Quel effort donner à l'agent
 
@@ -165,6 +191,22 @@ sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute envi
 - **Priorité par criticité, pas par couverture** : une couverture de lignes ne dit pas ce qui
   est critique. On protège d'abord les fonctions qui construisent les modèles.
 - **Harnais** : un en-tête commun écrit maison, sans dépendance (lot 1).
+- **Décisions du 2026-09-25** :
+  - **Cadre unitaire** : GoogleTest pour la seule cible des tests unitaires de Core ; les tests
+    de chaîne gardent `TestTools.h` (§ 0).
+  - **Fermeture de #350** : ce chantier s'en charge, sans changer son ordre par criticité
+    (§ 0 et § 6).
+  - **Un test ctest par cas** (`gtest_discover_tests`), pour qu'un échec soit identifiable et
+    un cas désactivable seul.
+  - **Défaut révélé par un test unitaire** : cas préfixé `DISABLED_`, entrée au § 2.7, issue
+    documentée et tâche de correction (règle 3).
+  - **En-tête de licence** dans `Tests/`, comme la bibliothèque ; les exemples restent
+    l'exception historique.
+  - **Emplacement** : `Tests/Core/` pour l'unitaire, `Examples/C++/` inchangé pour la chaîne.
+  - **Couverture** : mesurée à titre informatif à la fin d'un lot, consignée dans la
+    documentation au moment des versions.
+  - **Corrections de FMTlib** : jamais dans un lot de tests. Un défaut donne une issue
+    documentée, corrigée dans une session à part.
 
 ### Rôles
 
@@ -189,11 +231,14 @@ vert de Gabriel.
    ligne `basetests.csv`, qui échoue avant la correction. La ligne BFEC, s'il y en a une,
    reste comme contrôle réaliste. *Pourquoi* : un test qui vit sur `T:\` ne protège personne
    d'autre que nous ; quiconque compile FMT doit pouvoir constater que le bogue est parti.
-3. **Un bug révélé par un nouveau test ne se corrige pas dans le même lot** : le test est
-   inscrit désactivé dans `knownbugs.csv` (lot 1), avec une issue. *Pourquoi* : un lot qui
-   ajoute des tests et corrige FMT en même temps devient impossible à relire, et la correction
-   revient à qui connaît le code. La ligne désactivée garde la trace du bogue et passera dans
-   `basetests.csv` le jour de la correction.
+3. **Un bug révélé par un nouveau test ne se corrige pas dans le même lot.** Le test est
+   inscrit désactivé — ligne de `knownbugs.csv` pour un test de chaîne, cas préfixé
+   `DISABLED_` pour un test unitaire — et il donne lieu à **une issue documentée et à une tâche
+   de correction**, menée dans une session séparée de celle qui écrit les tests (décision du
+   2026-09-25). *Pourquoi* : un lot qui ajoute des tests et corrige FMT en même temps devient
+   impossible à relire, et la correction revient à qui connaît le code. La ligne désactivée
+   garde la trace du bogue et passe dans `basetests.csv` le jour de la correction — un défaut
+   révélé n'est donc jamais un défaut oublié.
 4. **Entrées explicites** : modèle, scénario et valeurs attendues arrivent par les arguments
    du CSV. Les valeurs par défaut d'un source ne pointent que vers TWD_land. *Pourquoi* :
    plusieurs tests ont des défauts codés en dur vers des chemins privés ou disparus (§ 7) ; une
@@ -1001,14 +1046,67 @@ Validation (après le build de Gabriel, 2026-09-18) :
 
 ## 6. Prochain lot
 
-### État au 2026-09-18
+### État au 2026-09-25
 
-- Lots 0 à 4 livrés et validés ; rien ne bloque. Les quatre défauts du § 2.7 ont leur issue
-  (#346, #347, #357, #358), et la suite base est verte.
-- Les lacunes restantes sont listées ci-dessous et au § 3 ; elles ne sont suivies que dans ce
+- Lots 0 à 4 livrés, validés et commités ; rien ne bloque. Les quatre défauts du § 2.7 ont leur
+  issue (#346, #347, #357, #358), et la suite base est verte : 226 tests, 211 verts,
+  15 désactivés.
+- Les lacunes de la chaîne sont listées ci-dessous et au § 3 ; elles ne sont suivies que dans ce
   fichier, pas dans des issues GitHub.
+- **Décision du 2026-09-25 : ce chantier va jusqu'à la fermeture de l'issue #350** (« Add
+  comprehensive unit tests for the Core namespace », jalon FMT2.0). Il absorbe donc le volet des
+  tests unitaires, en gardant son ordre par criticité. Le tableau du § 0 dit quel lot répond à
+  quelle demande de l'issue ; la feuille de route ci-dessous va du lot 5 au lot 9, et les
+  conditions de fermeture sont à la fin.
 
-### Ensuite (par criticité)
+### Décisions encore ouvertes
+
+Prises le 2026-09-25 : GoogleTest pour la seule cible unitaire, couverture et inventaire par
+classe dans la documentation, ménage du permanent remis à plus tard (§ 0). Restent :
+
+Tout ce qui engageait la forme du travail est tranché (§ 1). Restent :
+
+| Décision | Quand | Remarque |
+|---|---|---|
+| Intégration continue | lot 9 | sans CI, la portabilité Linux et Clang de #350 ne peut être que manuelle : soit on en ajoute une, soit on écarte la demande au moment de fermer l'issue |
+| Suivi des lots dans GitHub | quand le lot 6 démarre | un commentaire par lot sous #350, qui demande des changements focalisés |
+| Langue et contenu d'`AGENTS.md` | à la demande | il est en anglais et sa section « Language » ne dit rien des issues ni des demandes de tirage |
+
+### Feuille de route jusqu'à la fermeture de #350
+
+**L'ordre reste celui du risque, pas celui de la couverture.** On finit d'abord la chaîne, parce
+qu'une étape entière sans test de valeur est plus urgente qu'une classe déjà exercée
+indirectement. On attaque ensuite les classes où des défauts ont **déjà** été trouvés, puis
+celles que tout modèle traverse, puis le reste. La mesure de couverture arrive en dernier : elle
+sert à trouver les trous qui restent, pas à décider par quoi commencer. C'est aussi ce que dit
+#350 : « Coverage should be used to identify missing tests, not as the sole quality objective. »
+
+Chaque lot vaut une demande de tirage, comme #350 le souhaite : des changements focalisés plutôt
+qu'un gros lot unique.
+
+
+#### D'abord : corriger les quatre défauts du § 2.7 — session séparée
+
+Décision du 2026-09-25 : les défauts #346, #347, #357 et #358 sont corrigés **avant la suite du
+chantier**, dans une session distincte de celle qui écrit les tests. Ce chantier ne touche pas à
+FMTlib.
+
+Chaque issue porte en commentaire la préparation de sa correction : où corriger, ce qu'il faut
+décider en même temps, le risque sur les modèles existants et les lignes désactivées qui doivent
+passer au vert. Deux points en sont ressortis :
+
+- la correction de #347 répare le chemin des **thèmes indexés**, que seul le scénario `AVERAGEP`
+  utilise dans TWD_land et qu'aucun test ne lit : une ligne de test sur ce scénario devrait
+  précéder la correction, sinon elle se fait à l'aveugle sur ce cas ;
+- la correction de #358 fera **refuser** des modèles qui se lisent aujourd'hui en silence : une
+  lecture à blanc des modèles de production s'impose avant de diffuser.
+
+Quand les corrections seront faites, la session de tests reprend ainsi :
+
+1. relancer la suite : les 15 lignes désactivées doivent passer au vert ;
+2. les déplacer de `knownbugs.csv` vers `basetests.csv`, en le justifiant au journal (règle 9) ;
+3. revérifier les valeurs attendues des tests qui dépendaient des yields touchés (§ 2.7) ;
+4. reprendre la feuille de route au lot 5.
 
 #### Lot 5 : écriture et relecture (lacune 8) — effort `high`
 
@@ -1028,6 +1126,68 @@ Validation (après le build de Gabriel, 2026-09-18) :
 - **Attention.** Les défauts 1 et 2 du § 2.7 font échouer l'aller-retour dès qu'un scénario
   utilise `_SUM` ou un objectif `_PENALTY` : ce sont des lignes désactivées dans
   `knownbugs.csv`, pas un contournement à écrire dans le test.
+
+#### Lot 6 : socle unitaire de Core (jalon 1 de #350) — effort `high`
+
+- **Pourquoi.** Sans cible ni inventaire, les lots suivants n'ont nulle part où aller. C'est
+  aussi ce qui débloque la fermeture de #350 : sa première demande est un socle, pas des tests.
+- **Quoi.**
+  1. **Ajouter GoogleTest** (décision prise, § 0) : dépendance de la seule cible des tests
+     unitaires, déclarée dans `vcpkg.json` — `AGENTS.md` interdit d'y toucher hors d'une tâche
+     de dépendances, celle-ci en est une. Un build sans GoogleTest doit continuer de compiler
+     FMT et de lancer les tests de chaîne.
+  2. **`Tests/Core/CMakeLists.txt` et la cible `FMTCoreTests`**, inscrite avec
+     `LABELS "unit;core"` pour que `ctest -L core` fonctionne, et respectant
+     `-DWITHOUT_TESTING=ON`.
+  3. **`Documentation/Testing/CoreTestCoverage.md`** : l'inventaire par classe que demande #350,
+     avec ses colonnes. La colonne « Priority » se remplit depuis le § 3 de ce fichier plutôt que
+     d'être réinventée. L'inventaire se génère depuis les en-têtes, pour qu'aucune classe ne
+     manque.
+  4. **Trois tests témoins**, ceux qui auraient attrapé nos défauts sans enquête :
+     `FMTOperator::precedence`, `FMTBounds::in` aux bornes, `FMTSpec::allowWithoutYield`.
+  5. **Trancher l'en-tête de licence** de ce nouveau dossier : la bibliothèque en porte un, les
+     62 exemples de `Examples/C++/` et les 15 tests du wrapper n'en portent aucun.
+- **Où ça s'insère.** `Tests/` est un dossier neuf, à côté de `Examples/C++/`. Les deux suites
+  cohabitent dans le même ctest ; l'étiquette `core` permet de ne lancer que l'unitaire.
+
+#### Lot 7 : unitaires des classes déjà suspectes (jalons 2 à 4 de #350) — effort `high`
+
+- **Pourquoi cet ordre plutôt que celui de #350.** #350 ordonne par nature (types de valeur,
+  puis expressions, puis rendements). On ordonne par risque constaté : les classes où le § 2.7 a
+  déjà trouvé un défaut passent devant.
+- **Ordre proposé.**
+  1. `FMTOperator`, `FMTExpression`, `FMTFunctionCall` — défaut #346, et c'est le moteur de toute
+     équation de rendement ;
+  2. `FMTData` et les gestionnaires de rendements (`FMTAgeYieldHandler`,
+     `FMTComplexYieldHandler`, `FMTTimeYieldHandler`) — défauts #347 et #357 ;
+  3. `FMTSpec` et `FMTBounds` — défaut #358, et c'est ce qui décide de toute opérabilité ;
+  4. `FMTMask`, puis `FMTTheme`, puis `FMTDevelopment` — traversés par tout modèle.
+- **Quoi pour chacune.** Construction, copie, comparaison, hachage quand il existe, bornes,
+  entrées invalides et exceptions attendues, comme le détaille #350.
+
+#### Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
+
+`FMTAction`, `FMTTransition`, `FMTSchedule`, `FMTEvent`, `FMTOutput` et ses nœuds,
+`FMTConstraint`, `FMTGraphStats` et les types spatiaux. Ces classes sont déjà exercées par les
+tests de chaîne des lots 3 et 4 : le travail consiste à descendre au niveau de l'objet construit
+dans le test, là où les copies, les comparaisons et les cas limites deviennent atteignables.
+
+#### Lot 9 : exigences transverses de #350 — effort `xhigh`
+
+- **Sérialisation** : aller-retour sur les types sérialisables, et compatibilité avec des
+  archives existantes si on en garde.
+- **Allocations** : vérifier qu'aucune allocation n'a lieu après préparation sur les chemins
+  chauds que nomme #350 (rendements complexes, comparaison de masques, évaluation d'expression,
+  traversée de graphe).
+- **Concurrence** : seulement sur ce qui est documenté comme utilisable en parallèle ; ce qui ne
+  l'est pas se documente au lieu d'être testé.
+- **Portabilité** : le dépôt n'a pas d'intégration continue visible. Il faudra soit en ajouter
+  une, soit documenter une exécution Linux et Clang faite à la main, sans quoi cette demande de
+  #350 reste ouverte.
+- **Couverture** : OpenCppCoverage sous MSVC, gcov et lcov ailleurs. Elle arrive ici, en dernier,
+  et sert à lister les fichiers et les méthodes publiques encore sans test. Mesure informative à
+  la fin d'un lot ; le rapport n'est consigné dans `Documentation/Testing/` qu'au moment des
+  versions (décision du 2026-09-25).
 
 #### Compléments des lacunes 6 et 7 — effort `medium` à `high`
 
@@ -1056,6 +1216,22 @@ Effort `xhigh` : c'est une enquête, pas une tâche balisée. Relever, dans les 
 un autre opérateur, pour mesurer l'effet réel du défaut 2 du § 2.7. Ce relevé se fait en lecture
 seule, avec la sonde du lot 2 ; il dirait si des modèles de production calculent aujourd'hui des
 rendements faux.
+
+#### Fermer #350
+
+L'issue peut être fermée quand, ensemble :
+
+- `CoreTestCoverage.md` ne montre plus de composant prioritaire sans test ;
+- `ctest -L core` tourne, et la suite de chaîne reste verte ;
+- les exigences transverses du lot 9 sont satisfaites ou explicitement écartées dans l'issue, en
+  disant pourquoi ;
+- les quatre défauts du § 2.7 sont corrigés ou portés par un test unitaire en plus de leur ligne
+  désactivée ;
+- ce fichier et `CoreTestCoverage.md` disent chacun ce qu'ils couvrent et pointent l'un vers
+  l'autre.
+
+Le jour de la fermeture, écrire au § 0 ce qui l'a fermée, et ce que ce chantier reprend ou
+abandonne.
 
 ## 7. Pièges connus
 

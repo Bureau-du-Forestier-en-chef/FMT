@@ -84,6 +84,8 @@ break before you have read anything else.
 
 - Code, comments, Doxygen and test output: English.
 - User-facing interface strings, `ETAT.md` files and `CHANGELOG.fr.md`: French.
+- Issues, pull requests and their comments: French. They are written for this team, which reads
+  French faster; a thread opened in English does not change that.
 - `CHANGELOG.md` and `CHANGELOG.fr.md` cover the same releases and are updated together.
 
 ## Commits and changelog
