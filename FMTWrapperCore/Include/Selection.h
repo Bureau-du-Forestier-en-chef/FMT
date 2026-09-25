@@ -8,7 +8,7 @@
 #include "FMTOutput.h"
 #include "FMTWrapperCoreExport.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Selection of a subset of constraints or outputs by name.
@@ -25,7 +25,7 @@ namespace FMTWrapperCore
      * - each element of the model is kept at most once, even if several entries of the
      *   selection match it.
      */
-    class FMTWRAPPERCOREEXPORT Selection
+    class FMT_WRAPPER_CORE_EXPORT Selection
     {
     public:
         /**

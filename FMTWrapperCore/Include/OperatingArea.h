@@ -9,7 +9,7 @@ namespace Models
     class FMTModel;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Operating area scheduling: generates the COS schedule.
@@ -22,7 +22,7 @@ namespace FMTWrapperCore
      * in OperatingAreaResults::errorMessage, and logged. Any other error is raised as an
      * exception.
      */
-    class FMTWRAPPERCOREEXPORT OperatingArea
+    class FMT_WRAPPER_CORE_EXPORT OperatingArea
     {
     public:
         /**

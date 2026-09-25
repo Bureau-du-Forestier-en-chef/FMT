@@ -13,7 +13,7 @@
 #include "FMTTheme.h"
 #include "Rasterization.h"
 
-// Test of FMTWrapperCore::Rasterization, registered in basetests.csv.
+// Test of FMTWrapper::Backend::Rasterization, registered in basetests.csv.
 //
 // Without arguments, it runs on the public TWD_land model, with the same data as the
 // maptoFMTforest base test.
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 	std::string primaryLocation;
 	std::string scenario;
 
-	FMTWrapperCore::RasterizationParameters params;
+	FMTWrapper::Backend::RasterizationParameters params;
 	params.ageField = "AGE";
 	params.areaField = "SUPERFICIE";
 
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		FMTWrapperCore::Rasterization::rasterize(params, MODEL);
+		FMTWrapper::Backend::Rasterization::rasterize(params, MODEL);
 	}
 	catch (const std::exception& e)
 	{

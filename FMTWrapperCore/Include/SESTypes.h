@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Structure for the results of the spatial carbon report

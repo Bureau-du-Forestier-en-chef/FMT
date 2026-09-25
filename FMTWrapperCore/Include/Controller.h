@@ -6,23 +6,28 @@
 #include <vector>
 
 #include "AreaVariabilityTypes.h"
+#include "Events.h"
 #include "FMTWrapperCoreExport.h"
 #include "OperatingAreaTypes.h"
 #include "PlanningTypes.h"
 #include "RasterizationTypes.h"
 #include "SESTypes.h"
+#include "SessionTypes.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Facade controller (GRASP): the wrapper's single entry point into the Core.
      *
      * Each method matches a system operation of FMTForm. It receives std types, DTOs and
-     * scenario indexes, resolves the scenario in ModelCache, then delegates to the pure
-     * entry point of a service: Environment, ModelQuery, Transformation, SES,
-     * Rasterization, OperatingArea, AreaVariability or Planning. The controller
-     * coordinates without computing: the logic stays in the services, which the tests call
-     * directly, without going through the cache.
+     * scenario indexes, and delegates to a use case: SessionUseCases, ScenarioUseCases,
+     * QueryUseCases, TransformationUseCases, SpatialUseCases or PlanningUseCases, and to
+     * Environment for what needs no scenario. A use case resolves the scenario indexes in
+     * ModelCache and calls the services, whose pure entry points the tests call directly,
+     * without going through the cache.
+     *
+     * The controller holds no logic of its own, and no FMT header reaches its
+     * implementation.
      *
      * No FMTlib type appears in this interface: the wrapper includes only this header, and
      * therefore cannot handle any FMT object.
@@ -33,25 +38,39 @@ namespace FMTWrapperCore
      * Every operation that takes a scenario index raises an FMTrangeerror exception if the
      * cache is empty, except getOutputsNames, which then returns an empty list.
      */
-    class FMTWRAPPERCOREEXPORT Controller
+    class FMT_WRAPPER_CORE_EXPORT Controller
     {
     public:
         // Session: log, errors and loaded scenarios.
 
         /**
-         * @brief Installs the interface logger.
-         * @param p_logFilePath Log file.
-         * @param p_callback Native function pointer of the managed delegate that receives
-         *        each message.
+         * @brief Subscribes to the events of the session: log messages and errors.
+         *
+         * The subscriber runs on the thread that publishes, which may be a worker thread of
+         * FMT, and must not outlive what it calls.
+         *
+         * @param p_handler Called for every event until it is removed.
+         * @return The identifier needed to remove it, never zero.
          */
-        static void initializeLogger(const std::string& p_logFilePath, void* p_callback);
+        static SubscriptionId subscribe(EventHandler p_handler);
+
+        /**
+         * @brief Removes a subscriber. An unknown identifier is ignored.
+         * @param p_subscription Identifier returned by subscribe.
+         */
+        static void unsubscribe(SubscriptionId p_subscription);
+
+        /**
+         * @brief Installs the interface logger.
+         * @param p_logFilePath Log file. Its messages reach the subscribers as LogEvent.
+         */
+        static void initializeLogger(const std::string& p_logFilePath);
 
         /**
          * @brief Rebuilds the logger and the exception handler after a crash, with the
-         *        configuration kept by ModelCache.
-         * @param p_callback New function pointer of the managed delegate.
+         *        configuration kept by ModelCache. Subscribers are kept.
          */
-        static void recoverLoggerAndHandler(void* p_callback);
+        static void recoverLoggerAndHandler();
 
         /**
          * @brief Closes the log file.
@@ -61,8 +80,8 @@ namespace FMTWrapperCore
         /**
          * @brief Installs the interface exception handler.
          * @param p_exceptionIds Exceptions to treat as warnings, Exception::FMTexc values.
-         * @param p_maxWarnings Number of warnings before they are silenced; 10 if the value
-         *        is not positive.
+         * @param p_maxWarnings Number of warnings before they are silenced;
+         *        DEFAULT_MAX_WARNINGS if the value is not positive.
          */
         static void setErrorsToWarnings(
             const std::vector<int>& p_exceptionIds,

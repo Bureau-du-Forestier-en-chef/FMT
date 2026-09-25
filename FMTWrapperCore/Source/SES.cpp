@@ -25,7 +25,7 @@
 #include <filesystem>
 #include <algorithm>
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     std::vector<Core::FMTTheme> SES::buildGrowthThemes(
         const std::vector<Core::FMTTheme>& allThemes,
@@ -841,6 +841,13 @@ namespace FMTWrapperCore
         logger << "FMT -> Démarrage de la simulation pour le scénario: " + selectedModel.getName() << "\n";
 
         SESResults results = RunSES(params, selectedModel, SCHEDULES);
+
+        // A refusal raises nothing: the simulation did not run, so it must not be announced
+        // as done. SpatialUseCases turns errorMessage into an ErrorEvent.
+        if (!results.success)
+        {
+            return results;
+        }
 
         logger << "FMT -> Simulation terminée avec succès" << "\n";
 

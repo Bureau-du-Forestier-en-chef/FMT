@@ -11,13 +11,13 @@ namespace Wrapper
 {
 	System::String^ FMTForm::getChangeLog()
 	{
-		return Conversions::fromUtf8(FMTWrapperCore::Controller::getChangeLog());
+		return Conversions::fromUtf8(FMTWrapper::Backend::Controller::getChangeLog());
 	}
 
 	System::String^ FMTForm::getExceptionDescription(int p_exceptionId)
 	{
 		return Conversions::fromUtf8(
-			FMTWrapperCore::Controller::getExceptionDescription(p_exceptionId));
+			FMTWrapper::Backend::Controller::getExceptionDescription(p_exceptionId));
 	}
 
 	void FMTForm::_raiseFromCatch(
@@ -26,25 +26,31 @@ namespace Wrapper
 		const int& line,
 		const std::string& fil)
 	{
+		// The Core publishes the stack as an ErrorEvent, which reaches the interface
+		// through _toErrorFeedback.
 		const std::string errorstack =
-			FMTWrapperCore::Controller::logCurrentException(
+			FMTWrapper::Backend::Controller::logCurrentException(
 				text,
 				method,
 				line,
 				fil);
 
+		FMTWrapper::Backend::Controller::openErrorLocation(errorstack);
+	}
+
+	void FMTForm::_toErrorFeedback(
+		const char* p_errorStack)
+	{
 		FeedBack(
 			"*************************************************************",
 			gcnew System::EventArgs());
 
 		const std::string message =
-			"FMT - ERROR " + errorstack;
+			"FMT - ERROR " + std::string(p_errorStack);
 
 		FeedBack(
 			gcnew System::String(message.c_str()),
 			gcnew System::EventArgs());
-
-		FMTWrapperCore::Controller::openErrorLocation(errorstack);
 	}
 
 	void FMTForm::_toFeedback(
@@ -76,7 +82,7 @@ namespace Wrapper
 		try
 		{
 			retour = Conversions::toManagedList(
-				FMTWrapperCore::Controller::getConstraintsAsText(indexScenario));
+				FMTWrapper::Backend::Controller::getConstraintsAsText(indexScenario));
 		}
 		catch (...)
 		{
@@ -101,7 +107,7 @@ namespace Wrapper
 		try
 		{
 			retour = Conversions::toManagedList(
-				FMTWrapperCore::Controller::getVectorDriverExtensions());
+				FMTWrapper::Backend::Controller::getVectorDriverExtensions());
 		}
 		catch (...)
 		{
@@ -125,7 +131,7 @@ namespace Wrapper
 
 		try
 		{
-			for (const int SOLVER : FMTWrapperCore::Controller::getAvailableSolvers())
+			for (const int SOLVER : FMTWrapper::Backend::Controller::getAvailableSolvers())
 			{
 				retour->Add(SOLVER);
 			}
@@ -151,7 +157,7 @@ namespace Wrapper
 		try
 		{
 			name = gcnew System::String(
-				FMTWrapperCore::Controller::getSolverName(p_solveur).c_str());
+				FMTWrapper::Backend::Controller::getSolverName(p_solveur).c_str());
 		}
 		catch (...)
 		{
@@ -175,7 +181,7 @@ namespace Wrapper
 		try
 		{
 			retour = Conversions::toManagedList(
-				FMTWrapperCore::Controller::getOutputsNames(indexScenario));
+				FMTWrapper::Backend::Controller::getOutputsNames(indexScenario));
 		}
 		catch (...)
 		{
@@ -198,7 +204,7 @@ namespace Wrapper
 
 		try
 		{
-			retour = FMTWrapperCore::Controller::getThemesCount(indexScenario);
+			retour = FMTWrapper::Backend::Controller::getThemesCount(indexScenario);
 		}
 		catch (...)
 		{
@@ -220,7 +226,7 @@ namespace Wrapper
 
 		try
 		{
-			retour = FMTWrapperCore::Controller::getPeriodsCount(
+			retour = FMTWrapper::Backend::Controller::getPeriodsCount(
 				Conversions::toStdString(nomFichierPri),
 				indexScenario);
 		}
@@ -245,7 +251,7 @@ namespace Wrapper
 		try
 		{
 			for (const std::string& NAME :
-				FMTWrapperCore::Controller::getActionsNames(p_index))
+				FMTWrapper::Backend::Controller::getActionsNames(p_index))
 			{
 				actionsNames->Add(
 					msclr::interop::marshal_as<System::String^>(NAME));
@@ -272,7 +278,7 @@ namespace Wrapper
 		try
 		{
 			aggregatesList = Conversions::toManagedList(
-				FMTWrapperCore::Controller::getAggregates(p_modelIndex));
+				FMTWrapper::Backend::Controller::getAggregates(p_modelIndex));
 		}
 		catch (...)
 		{
@@ -296,7 +302,7 @@ namespace Wrapper
 		try
 		{
 			yieldsNamesConverted = Conversions::toManagedList(
-				FMTWrapperCore::Controller::getYieldsNames(p_index));
+				FMTWrapper::Backend::Controller::getYieldsNames(p_index));
 		}
 		catch (...)
 		{
@@ -320,7 +326,7 @@ namespace Wrapper
 
 		try
 		{
-			result = FMTWrapperCore::Controller::getYield(
+			result = FMTWrapper::Backend::Controller::getYield(
 				p_modelIndex,
 				Conversions::toStdString(p_mask),
 				Conversions::toStdString(p_yield),
@@ -345,7 +351,7 @@ namespace Wrapper
 		try
 		{
 			result = static_cast<double>(
-				FMTWrapperCore::Controller::getMaxAge(p_modelIndex));
+				FMTWrapper::Backend::Controller::getMaxAge(p_modelIndex));
 		}
 		catch (...)
 		{
@@ -367,7 +373,7 @@ namespace Wrapper
 
 		try
 		{
-			result = FMTWrapperCore::Controller::validateMask(
+			result = FMTWrapper::Backend::Controller::validateMask(
 				p_modelIndex,
 				Conversions::toStdString(p_mask));
 		}
@@ -403,7 +409,7 @@ namespace Wrapper
 			}
 
 			for (const std::string& MASK :
-				FMTWrapperCore::Controller::getAllMasks(
+				FMTWrapper::Backend::Controller::getAllMasks(
 					p_modelIndex,
 					p_periods,
 					themes,
@@ -431,7 +437,7 @@ namespace Wrapper
 
 		try
 		{
-			FMTWrapperCore::Controller::writeScenariosToProject(
+			FMTWrapper::Backend::Controller::writeScenariosToProject(
 				Conversions::toStdString(p_destinationDirectory));
 		}
 		catch (...)
@@ -452,7 +458,7 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTWrapperCore::Controller::closeLogger();
+			FMTWrapper::Backend::Controller::closeLogger();
 		}
 		catch (...)
 		{

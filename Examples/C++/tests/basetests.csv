@@ -78,6 +78,15 @@ testWrapperCoreAreaVariability;;;
 testWrapperCorePlanning;;;
 testWrapperCoreEnvironment;;;
 UnitTestCallbackLogger;;;
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|planification_pass;5;65733
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|cos_pass;3;302
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|transformation_pass;5;65733
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|sse_pass;5;65733
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ose_pass;5;353878
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_strategique;5;65733
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_tactique;5;201360
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_stochastique;5;0
+testWrapperCoreRasterization;../../../../Examples/Models/TWD_land/TWD_land.pri|rasterisation_pass|1420;../../../../Examples/Models/TWD_land/Carte/TWD_land.shp;../../tests/testWrapperCoreRasterizationPass/
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|THEMES;3;
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ATTRIBUTES|1;UNITE1|UNITE2|UNITE3;
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ATTRIBUTES|2;PEUPLEMENT1|PEUPLEMENT2|PEUPLEMENT3|FEU;

@@ -35,9 +35,9 @@ namespace Core
 			}
 		}
 
-	std::vector<size_t> FMTYieldModelRandom::_getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTYieldRequest& p_request) const
+	std::vector<double> FMTYieldModelRandom::_getNormalizedYields(const std::vector<std::string>& p_yields, const Core::FMTYieldRequest& p_request) const
 	{
-		std::vector<size_t> values(p_yields.size());
+		std::vector<double> values(p_yields.size());
 		try {
 			std::vector<double>baseValues(p_yields.size(),0.0);
 			double totalValue = 0;
@@ -67,7 +67,7 @@ namespace Core
 			size_t i = 0;
 			for (const double& value : baseValues)
 			{
-				values[i] = static_cast<size_t>((value/ totalValue)*100);
+				values[i] = ((value/ totalValue)*100);
 				i++;
 			}
 		}catch (...)
@@ -78,13 +78,12 @@ namespace Core
 	}
 
 
-	double FMTYieldModelRandom::_getRandomIndex(const std::vector<size_t>& p_distribution) const
+	double FMTYieldModelRandom::_getRandomIndex(const std::vector<double>& p_distribution) const
 	{
 		double choice = 0;
 		try {
-			std::discrete_distribution<size_t> distribution(p_distribution.cbegin(), p_distribution.cend());
-			const size_t GENERATED = distribution(*m_modelPtr->getGeneratorPtr());
-			choice = static_cast<double>(GENERATED);
+			std::discrete_distribution<int> distribution(p_distribution.cbegin(), p_distribution.cend());
+			choice = distribution(*m_modelPtr->getGeneratorPtr());
 		}catch (...)
 		{
 			_exhandler->raiseFromCatch("", "FMTYieldModelRandom::_getRandomIndex", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -106,7 +105,7 @@ namespace Core
 			{
 				value = m_cache.at(p_request.getDevelopment().getPeriod());
 			}else {
-				const std::vector<size_t>DISTRIBUTION = _getNormalizedYields(m_modelYields, p_request);
+				const std::vector<double>DISTRIBUTION = _getNormalizedYields(m_modelYields, p_request);
 				value = _getRandomIndex(DISTRIBUTION);		
 				if (m_useCache)
 					{

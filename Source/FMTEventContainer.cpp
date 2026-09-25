@@ -891,7 +891,8 @@ namespace Spatial
 			it != _upperBound(p_MaximalPeriod); ++it)
 			{
 			if (it->getActionId() == p_RuleId &&
-				(p_MinimalPeriod <= it->getPeriod() <= p_MaximalPeriod))
+				(p_MinimalPeriod <= it->getPeriod() && 
+					it->getPeriod() <= p_MaximalPeriod))
 				{
 					RuleEvents.push_back(it);
 				}

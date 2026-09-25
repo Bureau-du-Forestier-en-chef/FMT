@@ -1,4 +1,5 @@
 #include "CallbackLogger.h"
+#include "EventPublisher.h"
 #include "FMTLogger.h"
 #include <memory>
 
@@ -7,45 +8,45 @@
 
 using namespace Logging;
 
-std::unique_ptr <FMTLogger> FMTWrapperCore::CallbackLogger::Clone() const
+std::unique_ptr <FMTLogger> FMTWrapper::Backend::CallbackLogger::Clone() const
 {
-	return std::unique_ptr<FMTLogger>(new FMTWrapperCore::CallbackLogger(*this));
+	return std::unique_ptr<FMTLogger>(new FMTWrapper::Backend::CallbackLogger(*this));
 }
 
-FMTLogger* FMTWrapperCore::CallbackLogger::clone() const
+FMTLogger* FMTWrapper::Backend::CallbackLogger::clone() const
 {
-	return new FMTWrapperCore::CallbackLogger(*this);
+	return new FMTWrapper::Backend::CallbackLogger(*this);
 }
 
-FMTWrapperCore::CallbackLogger::CallbackLogger(
-	const std::string& nomFichierLogger, logfunc feed)
+FMTWrapper::Backend::CallbackLogger::CallbackLogger(
+	const std::string& p_logFilePath, const EventPublisher* p_publisher)
 	: FMTLogger(), keepprint(false), m_isMainInstance(true),
-	lastprint(), sendfeedback(feed)
+	lastprint(), m_publisher(p_publisher)
 {
-	redirectToFile(nomFichierLogger, false);
+	redirectToFile(p_logFilePath, false);
 	_setLoggingLevel(LOGLEVEL);
 	setStreamFlush(true);
 }
 
-FMTWrapperCore::CallbackLogger::CallbackLogger(const CallbackLogger& rhs)
+FMTWrapper::Backend::CallbackLogger::CallbackLogger(const CallbackLogger& rhs)
 	: FMTLogger(rhs), 
 	keepprint(rhs.keepprint),
 	m_isMainInstance(false),
 	lastprint(rhs.lastprint), 
-	sendfeedback(rhs.sendfeedback)
+	m_publisher(rhs.m_publisher)
 {
 	//m_FileStream.reset();
 	//filepath.clear();
 }
 
-void FMTWrapperCore::CallbackLogger::logTime()
+void FMTWrapper::Backend::CallbackLogger::logTime()
 {
-	// Intentional no-op: sendfeedback cannot be called from a native thread.
+	// Intentional no-op: the interface cannot be reached from a native thread.
 	// The log file is opened once in the constructor through redirectToFile().
 	// Timestamps are written explicitly through *logger << logStamp
 }
 
-FMTWrapperCore::CallbackLogger::~CallbackLogger()
+FMTWrapper::Backend::CallbackLogger::~CallbackLogger()
 {
 	// Closes and releases the file stream BEFORE the base destructor
 	// FMTLogger::~FMTLogger() runs. Otherwise, virtual dispatch during destruction
@@ -55,7 +56,7 @@ FMTWrapperCore::CallbackLogger::~CallbackLogger()
 	closeFile();
 }
 
-void FMTWrapperCore::CallbackLogger::closeFile()
+void FMTWrapper::Backend::CallbackLogger::closeFile()
 {
 	if (m_FileStream)
 	{
@@ -67,24 +68,24 @@ void FMTWrapperCore::CallbackLogger::closeFile()
 	}
 }
 
-void FMTWrapperCore::CallbackLogger::dokeepprint()
+void FMTWrapper::Backend::CallbackLogger::dokeepprint()
 {
 	keepprint = true;
 }
 
-void FMTWrapperCore::CallbackLogger::resetkeepprint()
+void FMTWrapper::Backend::CallbackLogger::resetkeepprint()
 {
 	keepprint = false;
 	lastprint.clear();
 }
 
-std::string FMTWrapperCore::CallbackLogger::getlastprint() const
+std::string FMTWrapper::Backend::CallbackLogger::getlastprint() const
 {
 	return lastprint;
 }
 
 
-void FMTWrapperCore::CallbackLogger::_cout(const char * message) const
+void FMTWrapper::Backend::CallbackLogger::_cout(const char * message) const
 {
 	if (m_FileStream && m_FileStream->is_open())
 	{
@@ -95,17 +96,18 @@ void FMTWrapperCore::CallbackLogger::_cout(const char * message) const
 	{
 		lastprint += message;
 	}
-	else {
-		sendfeedback(message);
+	else if (m_publisher)
+	{
+		m_publisher->publish(LogEvent{ message });
 	}
 }
 
-void FMTWrapperCore::CallbackLogger::settasklogginglevel(int taskLogLevel)
+void FMTWrapper::Backend::CallbackLogger::settasklogginglevel(int taskLogLevel)
 {
 	_setLoggingLevel(taskLogLevel);
 }
 
-void FMTWrapperCore::CallbackLogger::setdefaultlogginglevel()
+void FMTWrapper::Backend::CallbackLogger::setdefaultlogginglevel()
 {
 	_setLoggingLevel(LOGLEVEL);
 }

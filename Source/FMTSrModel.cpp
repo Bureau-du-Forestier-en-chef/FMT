@@ -527,7 +527,7 @@ namespace Models
 								}
 								std::vector<double>lockstoadress(devit.second);
 								std::vector<std::pair<Core::FMTDevelopment, double>>locksfound;
-								std::vector<std::pair<int, size_t>>locksorter;
+								std::vector<std::pair<size_t, size_t>>locksorter;
 								Core::FMTDevelopment locked(devit.first);
 								for (int lockid = 0; lockid <= maximallock; ++lockid)
 								{

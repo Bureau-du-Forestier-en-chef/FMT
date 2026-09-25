@@ -18,7 +18,7 @@
 #include "FMTSchedule.h"
 #include "FMTTheme.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     namespace
     {

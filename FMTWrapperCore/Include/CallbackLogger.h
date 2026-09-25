@@ -5,28 +5,24 @@
 #include <iostream>
 #include <memory>
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
-	// DocString: logfunc
-	/**
-	@brief Callback function used to forward log messages to the graphical interface.
-	*/
-	typedef void(__stdcall* logfunc)(const char* sts);
+	class EventPublisher;
 
 	// DocString: CallbackLogger
 	/**
 	@brief Logger implementation used by the graphical interface.
 
-	This logger extends Logging::FMTLogger and redirects output both to
-	a log file and to a user-provided callback function.
+	This logger extends Logging::FMTLogger and writes its output both to
+	a log file and to the events published by the Core.
 	*/
-	class FMTWRAPPERCOREEXPORT CallbackLogger final :
+	class FMT_WRAPPER_CORE_EXPORT CallbackLogger final :
 		public Logging::FMTLogger
 	{
 	private:
 		bool keepprint;
 		mutable std::string lastprint;
-		logfunc sendfeedback;
+		const EventPublisher* m_publisher = nullptr;
 		bool m_isMainInstance;
 
 	protected:
@@ -37,7 +33,7 @@ namespace FMTWrapperCore
 
 		The message is written to the log file when available. If message
 		buffering is enabled, the message is stored internally; otherwise
-		it is forwarded to the graphical callback.
+		it is published as a LogEvent.
 
 		@param[in] message Message to output.
 		*/
@@ -50,8 +46,8 @@ namespace FMTWrapperCore
 		@brief Overrides the base timestamp logging behavior.
 
 		This implementation intentionally performs no action. Timestamps
-		are written explicitly when required and the graphical callback
-		cannot safely be invoked from native worker threads.
+		are written explicitly when required and the interface cannot
+		safely be reached from native worker threads.
 		*/
 		void logTime() override;
 
@@ -82,7 +78,7 @@ namespace FMTWrapperCore
 		@brief Enables message buffering.
 
 		When buffering is enabled, log messages are accumulated internally
-		instead of being forwarded to the graphical callback.
+		instead of being published.
 		*/
 		void dokeepprint();
 
@@ -108,14 +104,15 @@ namespace FMTWrapperCore
 		*/
 		std::string getlastprint() const;
 
-		// DocString: CallbackLogger(const std::string&,logfunc)
+		// DocString: CallbackLogger(const std::string&,const EventPublisher*)
 		/**
-		@brief Constructs a logger using a log file and callback function.
+		@brief Constructs a logger writing to a log file and publishing its messages.
 
-		@param[in] nomFichierLogger Path of the log file.
-		@param[in] feed Callback used to forward log messages.
+		@param[in] p_logFilePath Path of the log file.
+		@param[in] p_publisher Publisher through which every message is reported. It must
+		outlive the logger. A null publisher writes to the file only.
 		*/
-		CallbackLogger(const std::string& nomFichierLogger, logfunc feed);
+		CallbackLogger(const std::string& p_logFilePath, const EventPublisher* p_publisher);
 
 		// DocString: CallbackLogger::settasklogginglevel
 		/**

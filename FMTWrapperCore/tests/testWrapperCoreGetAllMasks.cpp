@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 		std::cout << "theme " + std::to_string(theme) << "\n";
 	}
 
-	const std::set<std::string> RESULT = FMTWrapperCore::ModelQuery::getAllMasks(
+	const std::set<std::string> RESULT = FMTWrapper::Backend::ModelQuery::getAllMasks(
 		model, periods, themesNumbers, rastpath);
 
 	// Written to disk for a manual test

@@ -17,7 +17,7 @@ namespace Models
 	class FMTModel;
 }
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Transformations producing a new scenario from a model.
@@ -26,7 +26,7 @@ namespace FMTWrapperCore
      * returns the transformed model; the C++ tests call them directly. The wrapper reaches
      * them through Controller, which adds that model to the interface cache.
      */
-    class FMTWRAPPERCOREEXPORT Transformation
+    class FMT_WRAPPER_CORE_EXPORT Transformation
     {
     public:
         static Models::FMTModel aggregateAllActions(const Models::FMTModel& p_model, const std::vector<std::string>& p_aggregates, const std::vector<std::string>& p_order,const std::string& p_primary_path, const std::string& p_scenario_name);

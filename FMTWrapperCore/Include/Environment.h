@@ -6,7 +6,7 @@
 
 #include "FMTWrapperCoreExport.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Queries on the FMT environment, independent of any model.
@@ -15,7 +15,7 @@ namespace FMTWrapperCore
      * GDAL drivers, changelog and exception descriptions. Anything that queries a model
      * belongs to ModelQuery.
      */
-    class FMTWRAPPERCOREEXPORT Environment
+    class FMT_WRAPPER_CORE_EXPORT Environment
     {
     public:
         /**

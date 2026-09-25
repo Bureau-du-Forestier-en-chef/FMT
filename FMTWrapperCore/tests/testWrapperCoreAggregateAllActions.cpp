@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 		ModelParser.setErrorsToWarnings(errors);
 
 		const std::vector<Models::FMTModel> MODELS =ModelParser.readproject(primary_path, SCENARIOS);
-		Models::FMTModel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, primary_path, output_scenario_name);
+		Models::FMTModel aggregatedModel = FMTWrapper::Backend::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, primary_path, output_scenario_name);
 
 		// Check whether there are fewer actions than in the new model
 		std::vector<Core::FMTAction> actions = MODELS.at(0).getActions();

@@ -12,7 +12,7 @@
 #include "FMTSchedule.h"
 #include "OperatingArea.h"
 
-// Private test of FMTWrapperCore::OperatingArea, registered in BFECtests.csv: no public
+// Private test of FMTWrapper::Backend::OperatingArea, registered in BFECtests.csv: no public
 // model has a YOUVERT yield. It reuses the scenario and the settings of the
 // testOAschedulertask example.
 //
@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 	const std::filesystem::path PRIMARY_FOLDER =
 		std::filesystem::path(primaryLocation).parent_path();
 
-	FMTWrapperCore::OperatingAreaParameters params;
+	FMTWrapper::Backend::OperatingAreaParameters params;
 	params.vectorFilePath = vectorFile;
 	params.solver = static_cast<int>(Models::FMTSolverInterface::MOSEK);
 	params.numberOfPeriods = 5;
@@ -105,8 +105,8 @@ int main(int argc, char* argv[])
 		const std::vector<Models::FMTModel> MODELS =
 			modelParser.readproject(primaryLocation, std::vector<std::string>(1, scenario));
 
-		const FMTWrapperCore::OperatingAreaResults RESULTS =
-			FMTWrapperCore::OperatingArea::schedule(params, MODELS.at(0));
+		const FMTWrapper::Backend::OperatingAreaResults RESULTS =
+			FMTWrapper::Backend::OperatingArea::schedule(params, MODELS.at(0));
 
 		if (!RESULTS.success)
 		{

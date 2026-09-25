@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace FMTWrapperCore {
+namespace FMTWrapper::Backend {
 	struct SESResults;
 }
 namespace Wrapper
@@ -18,7 +18,7 @@ namespace Wrapper
 	managed client applications.
 
 	This class only translates between .NET and std types: every native
-	operation goes through FMTWrapperCore::Controller.
+	operation goes through FMTWrapper::Backend::Controller.
 	*/
 	public ref class FMTForm
 	{
@@ -661,35 +661,48 @@ namespace Wrapper
 		*/
 		System::String^ getExceptionDescription(int p_exceptionId);
 	private:
-		// DocString: FMTForm::ManagedFeed
+		// DocString: FMTForm::m_eventSubscription
 		/**
-		@brief Delegate type used to forward native log messages to managed code.
+		@brief Identifier of the subscription to the events of the Core, zero when the form
+		is not subscribed yet. It holds a FMTWrapper::Backend::SubscriptionId.
 		*/
-		delegate void ManagedFeed(const char*);
+		int m_eventSubscription;
 
-		// DocString: FMTForm::m_managedFeed
-		/**
-		@brief Managed delegate used by the logger callback system.
-		*/
-		ManagedFeed^ m_managedFeed;
-
-		// DocString: FMTForm::m_unmanagedFeed
-		/**
-		@brief Native function pointer associated with the managed delegate.
-		*/
-		System::IntPtr m_unmanagedFeed;
-
+	internal:
 		// DocString: FMTForm::_toFeedback
 		/**
-		@brief Raises the feedback event using a native message.
-		...
+		@brief Raises the feedback event with the message of a LogEvent.
+
+		Called by the subscriber installed on the Core, on the thread that published the
+		message. The text is decoded in the ANSI code page, as it was when the Core called a
+		managed delegate.
+
+		@param[in] p_message Message carried by the event.
 		*/
 		void _toFeedback(const char* p_message);
 
+		// DocString: FMTForm::_toErrorFeedback
+		/**
+		@brief Raises the feedback event with the stack of an ErrorEvent, on two lines.
+
+		@param[in] p_errorStack Formatted error stack.
+		*/
+		void _toErrorFeedback(const char* p_errorStack);
+
+	private:
+
 		// DocString: FMTForm::_raiseFromCatch
 		/**
-		@brief Converts an unhandled exception into an FMT exception.
-		...
+		@brief Reports the exception being handled and opens the file it names.
+
+		Called from a catch block. The Core rebuilds the error stack and publishes it as an
+		ErrorEvent, which reaches the interface through _toErrorFeedback; the faulty file is
+		then opened in the text editor.
+
+		@param[in] p_text Text placed in front of the stack.
+		@param[in] p_method Method that caught the exception.
+		@param[in] p_line Line of that method.
+		@param[in] p_file File of that method.
 		*/
 		void _raiseFromCatch(
 			std::string p_text,
@@ -707,7 +720,7 @@ namespace Wrapper
 		@param[in] indCarbon Indicates whether carbon outputs are included.
 		*/
 		void _EnvoyerResultatsInterface(
-			const FMTWrapperCore::SESResults& results,
+			const FMTWrapper::Backend::SESResults& results,
 			bool indCarbon);
 	};
 }

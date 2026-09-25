@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Parameters of the rasterization of a vector file.

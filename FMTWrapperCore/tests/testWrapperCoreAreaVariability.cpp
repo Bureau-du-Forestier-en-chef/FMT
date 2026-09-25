@@ -11,7 +11,7 @@
 #include "AreaVariability.h"
 #include "ModelQuery.h"
 
-// Test of FMTWrapperCore::AreaVariability, registered in basetests.csv, on the public
+// Test of FMTWrapper::Backend::AreaVariability, registered in basetests.csv, on the public
 // TWD_land data (LP scenario), with the masks of the testareavariabilities example.
 //
 // Covers the nominal case (the output file is written), the three refusals (missing
@@ -68,7 +68,7 @@ int main()
 	modelParser.setDefaultExceptionHandler();
 	modelParser.setDefaultLogger();
 
-	FMTWrapperCore::AreaVariabilityParameters base;
+	FMTWrapper::Backend::AreaVariabilityParameters base;
 
 	try
 	{
@@ -77,7 +77,7 @@ int main()
 		const Models::FMTModel& MODEL = MODELS.at(0);
 
 		base.solver = static_cast<int>(Models::FMTSolverInterface::CLP);
-		base.constraintNames = FMTWrapperCore::ModelQuery::getConstraintsAsText(MODEL);
+		base.constraintNames = FMTWrapper::Backend::ModelQuery::getConstraintsAsText(MODEL);
 		base.numberOfPeriods = 10;
 		base.outputNames = { "OVOLREC" };
 		base.outputLevel = static_cast<int>(Core::FMToutputlevel::totalonly);
@@ -91,36 +91,36 @@ int main()
 			{ "?", "PEUPLEMENT3", "?", "-0.10" } });
 
 		std::cout << "Nominal case" << std::endl;
-		const FMTWrapperCore::AreaVariabilityResults NOMINAL =
-			FMTWrapperCore::AreaVariability::run(base, MODEL);
+		const FMTWrapper::Backend::AreaVariabilityResults NOMINAL =
+			FMTWrapper::Backend::AreaVariability::run(base, MODEL);
 		check(NOMINAL.success, "the operation succeeds");
 		check(std::filesystem::exists(OUTPUT_FILE), "the output file is written");
 
 		std::cout << "Refusals" << std::endl;
 
-		FMTWrapperCore::AreaVariabilityParameters noTable = base;
+		FMTWrapper::Backend::AreaVariabilityParameters noTable = base;
 		noTable.proportionsTableProvided = false;
 		noTable.proportionsTable.clear();
-		const FMTWrapperCore::AreaVariabilityResults NO_TABLE =
-			FMTWrapperCore::AreaVariability::run(noTable, MODEL);
+		const FMTWrapper::Backend::AreaVariabilityResults NO_TABLE =
+			FMTWrapper::Backend::AreaVariability::run(noTable, MODEL);
 		check(!NO_TABLE.success && !NO_TABLE.errorMessage.empty(), "missing table");
 
-		FMTWrapperCore::AreaVariabilityParameters headerOnly = base;
+		FMTWrapper::Backend::AreaVariabilityParameters headerOnly = base;
 		headerOnly.proportionsTable = makeTable({});
-		const FMTWrapperCore::AreaVariabilityResults HEADER_ONLY =
-			FMTWrapperCore::AreaVariability::run(headerOnly, MODEL);
+		const FMTWrapper::Backend::AreaVariabilityResults HEADER_ONLY =
+			FMTWrapper::Backend::AreaVariability::run(headerOnly, MODEL);
 		check(!HEADER_ONLY.success && !HEADER_ONLY.errorMessage.empty(), "table reduced to its header");
 
-		FMTWrapperCore::AreaVariabilityParameters noOutput = base;
+		FMTWrapper::Backend::AreaVariabilityParameters noOutput = base;
 		noOutput.outputNames.clear();
-		const FMTWrapperCore::AreaVariabilityResults NO_OUTPUT =
-			FMTWrapperCore::AreaVariability::run(noOutput, MODEL);
+		const FMTWrapper::Backend::AreaVariabilityResults NO_OUTPUT =
+			FMTWrapper::Backend::AreaVariability::run(noOutput, MODEL);
 		check(!NO_OUTPUT.success && !NO_OUTPUT.errorMessage.empty(), "no output requested");
 
 		// Two "accept everything" masks necessarily cover every development.
 		std::cout << "Overlapping masks" << std::endl;
 
-		FMTWrapperCore::AreaVariabilityParameters overlapping = base;
+		FMTWrapper::Backend::AreaVariabilityParameters overlapping = base;
 		overlapping.proportionsTable = makeTable({
 			{ "?", "?", "?", "0.01" },
 			{ "?", "?", "?", "0.05" } });
@@ -129,7 +129,7 @@ int main()
 
 		try
 		{
-			FMTWrapperCore::AreaVariability::run(overlapping, MODEL);
+			FMTWrapper::Backend::AreaVariability::run(overlapping, MODEL);
 		}
 		catch (...)
 		{

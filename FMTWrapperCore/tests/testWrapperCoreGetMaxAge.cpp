@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 
 
 	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
-	const double maxAge = FMTWrapperCore::ModelQuery::getMaxAge(MODELS.at(0));
+	const double maxAge = FMTWrapper::Backend::ModelQuery::getMaxAge(MODELS.at(0));
 	std::cout << "MaxAge: " << maxAge << std::endl;
 
 	// Checks on the returned number

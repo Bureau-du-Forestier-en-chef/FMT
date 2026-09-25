@@ -14,7 +14,7 @@
 
 int main(int argc, char* argv[])
 {
-	FMTWrapperCore::SESParameters params;
+	FMTWrapper::Backend::SESParameters params;
 
 	if (argc > 1) 
 	{
@@ -124,10 +124,10 @@ int main(int argc, char* argv[])
 			"testWrapperCoreSES", __LINE__, params.primaryFilePath);
 	}
 
-	FMTWrapperCore::SESResults results;
+	FMTWrapper::Backend::SESResults results;
 	try
 	{
-		results = FMTWrapperCore::SES::RunSES(
+		results = FMTWrapper::Backend::SES::RunSES(
 			params,        
 			selectedModel,    
 			schedules);

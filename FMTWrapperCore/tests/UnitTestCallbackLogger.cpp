@@ -7,14 +7,21 @@
 	#include "FMTModelParser.h"
 	#include "FMTVersion.h"
 	#include "CallbackLogger.h"
+	#include "EventPublisher.h"
+	#include "Events.h"
 	#include "FMTFreeExceptionHandler.h"
 	#include "FMTDefaultLogger.h"
 	#include "FMTLpModel.h"
 	#include "FMTNssModel.h"
 	#include "FMTTaskHandler.h"
 	#include "FMTReplanningTask.h"
-void out(const char* data) {
-	std::cout << data;
+void out(const FMTWrapper::Backend::Event& p_event)
+	{
+	if (const FMTWrapper::Backend::LogEvent* log =
+		std::get_if<FMTWrapper::Backend::LogEvent>(&p_event))
+		{
+		std::cout << log->message;
+		}
 	}
 
 	namespace Testing
@@ -27,10 +34,14 @@ void out(const char* data) {
 					m_OutLocation = "../../tests/UnitTestCallbackLogger";
 					// const std::string outFile = m_OutLocation+"/CallbackLoggerTest.log";
 					const std::string outFile = "CallbackLoggerTest.log";
-					// (FMTWrapperCore::logfunc)(void*)intptrptr=&std::cout;
-					// std::unique_ptr<Logging::FMTLogger> logger(new FMTWrapperCore::CallbackLogger(filename, (logfunc)(void*)intptrptr));
-					m_logger = FMTWrapperCore::CallbackLogger(outFile, (FMTWrapperCore::logfunc)(void*)&out);
+					m_subscription = m_publisher.subscribe(&out);
+					m_logger = FMTWrapper::Backend::CallbackLogger(outFile, &m_publisher);
 					m_logger.settasklogginglevel(1);
+					}
+
+				~UnitTestCallbackLogger()
+					{
+					m_publisher.unsubscribe(m_subscription);
 					}
 				void testReplanning()
 				{
@@ -42,7 +53,7 @@ void out(const char* data) {
 					allscenarios.push_back("Globalfire");
 					allscenarios.push_back("Localreplanning");
 					Parser::FMTModelParser modelparser;
-					std::unique_ptr<Logging::FMTLogger> logger(new FMTWrapperCore::CallbackLogger(m_logger));
+					std::unique_ptr<Logging::FMTLogger> logger(new FMTWrapper::Backend::CallbackLogger(m_logger));
 					Parser::FMTModelParser Modelparser;
 					Modelparser.passInLogger(logger);
 					std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
@@ -70,7 +81,9 @@ void out(const char* data) {
 					Parallel::FMTTaskHandler handler(maintaskptr, 2);
 				}
 			private:
-				FMTWrapperCore::CallbackLogger m_logger;
+				FMTWrapper::Backend::EventPublisher m_publisher;
+				FMTWrapper::Backend::SubscriptionId m_subscription = 0;
+				FMTWrapper::Backend::CallbackLogger m_logger;
 				std::string m_OutLocation;
 
 			};

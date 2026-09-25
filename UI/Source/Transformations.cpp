@@ -18,7 +18,7 @@ namespace Wrapper {
 	{
 		try
 		{
-			FMTWrapperCore::Controller::aggregateAllActions(
+			FMTWrapper::Backend::Controller::aggregateAllActions(
 				p_modelIndex,
 				Conversions::toStdVector(p_aggregates),
 				Conversions::toStdVector(p_order),
@@ -45,7 +45,7 @@ namespace Wrapper {
 	{
 		try
 		{
-			FMTWrapperCore::Controller::splitActions(
+			FMTWrapper::Backend::Controller::splitActions(
 				p_modelIndex,
 				Conversions::toStdString(p_schedulePri),
 				Conversions::toStdVector(p_splitted),
@@ -71,7 +71,7 @@ namespace Wrapper {
 		try
 		{
 			for (const std::string& ATTRIBUTE :
-				FMTWrapperCore::Controller::getThemeAttributes(p_modelIndex, p_themeIndex))
+				FMTWrapper::Backend::Controller::getThemeAttributes(p_modelIndex, p_themeIndex))
 			{
 				results->Add(gcnew System::String(ATTRIBUTE.c_str()));
 			}
@@ -97,7 +97,7 @@ namespace Wrapper {
 
 		try
 		{
-			FMTWrapperCore::Controller::buildAction(
+			FMTWrapper::Backend::Controller::buildAction(
 				p_modelIndex,
 				Conversions::toStdString(p_actionName),
 				Conversions::toStdString(p_targetYield),

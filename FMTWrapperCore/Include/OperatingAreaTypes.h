@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     /**
      * @brief Parameters of the operating area scheduling.

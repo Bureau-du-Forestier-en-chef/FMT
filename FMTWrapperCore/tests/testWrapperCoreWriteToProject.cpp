@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	models.push_back(scenarioModelA);
 	models.push_back(scenarioModelB);
 
-	FMTWrapperCore::ModelQuery::writeToProject(models, output_directory);
+	FMTWrapper::Backend::ModelQuery::writeToProject(models, output_directory);
 
 	const std::string BASENAME = models.front().getName();
 	const boost::filesystem::path OUTPUT_DIR = boost::filesystem::path(output_directory);

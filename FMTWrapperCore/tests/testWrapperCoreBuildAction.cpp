@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 	ModelParser.setErrorsToWarnings(errors);
 
 	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
-	const Models::FMTModel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), actionName, targetYield, primary_path, output_scenario_name);
+	const Models::FMTModel BUILDED_MODEL = FMTWrapper::Backend::Transformation::buildAction(MODELS.at(0), actionName, targetYield, primary_path, output_scenario_name);
 
 	// Checks on the built model
 	if (MODELS.at(0) == BUILDED_MODEL)

@@ -7,7 +7,7 @@
 #include "FMTModel.h"
 #include "FMTTheme.h"
 
-namespace FMTWrapperCore
+namespace FMTWrapper::Backend
 {
     namespace
     {
