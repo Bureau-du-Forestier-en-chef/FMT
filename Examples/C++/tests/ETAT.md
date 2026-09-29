@@ -1248,6 +1248,12 @@ abandonne.
   lot 1, la configuration l'annonce par `no target named` : lire les alertes après chaque
   reconfiguration. Avant, `testWrapperCoreGetYield` n'a pas tourné de 2024 à 2026, et
   `teststdconstraints` jamais.
+- **`BFECtests.csv` est local à chaque worktree, et ses copies divergent.** Au 2026-09-25,
+  celles de `new_test` et de `FMT` dataient du 2026-07-27 et gardaient deux lignes mortes :
+  `UnitTestFMTFormLogger`, devenu `UnitTestCallbackLogger`, et `testWrapperCoreGetYield.cpp`,
+  au nom de cible faux. Le chantier #349 les a corrigées dans `new_test` seulement. La copie de
+  `dev` (2026-09-16) a en plus la ligne `testWrapperCoreOperatingArea` de la migration. Après
+  une copie, lire les alertes `no target named` de la configuration.
 - **Modifier un CSV exige de reconfigurer CMake.**
 - **Un jeu de données de sortie qui existe déjà est supprimé** (`FMTParser::createOGRDataset`,
   CSV, GeoTIFF...) : ne jamais placer la copie d'un projet dans le dossier de sortie d'une
@@ -1369,3 +1375,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (§ 7).
 - Lignes CSV ignorées : alertes `no target named` à la configuration. Sans la sortie de la
   configuration, compter les lignes des CSV absentes de `ctest -N` (lot 2).
 - Désactivés : lignes de `knownbugs.csv`.
+- Depuis le lot 1 du chantier #349 (`Tests/Performance/ETAT.md`, 2026-09-25), la suite base compte
+  aussi les lignes `FMTPerformanceTests.*` (étiquette `performance`, 7 au lot 1), qui lisent le
+  scénario `perfyields` de TWD_land, créé pour elles. Pour comparer avec les lignes ci-dessus,
+  ajouter `-LE performance` aux commandes.

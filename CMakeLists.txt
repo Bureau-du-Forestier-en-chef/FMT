@@ -691,6 +691,7 @@ if (NOT DEFINED WITHOUT_TESTS)
 		include(CTest)
 	endif(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
+	include(${CMAKE_CURRENT_SOURCE_DIR}/Tests/Performance/CMakeLists.txt) #performance and allocation benchmarks
 endif (NOT DEFINED WITHOUT_TESTS)
 
 #add_subdirectory(FMTWrapperCore) # Supposed better than include but directory Header have not .h

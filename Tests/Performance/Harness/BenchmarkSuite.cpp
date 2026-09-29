@@ -1,0 +1,169 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#include "BenchmarkSuite.h"
+
+#include "BenchmarkRunner.h"
+
+#include <cstdint>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+
+namespace
+{
+	std::string gigabytes(std::uint64_t p_bytes)
+	{
+		std::ostringstream text;
+		text << std::fixed << std::setprecision(1) << static_cast<double>(p_bytes) / 1073741824.0 << " GB";
+		return text.str();
+	}
+
+	std::string nanoseconds(double p_duration)
+	{
+		std::ostringstream text;
+		text << std::fixed << std::setprecision(1) << p_duration;
+		return text.str();
+	}
+
+	void printEnvironment(const Performance::BenchmarkEnvironment& p_environment)
+	{
+		std::cout << "FMT " << p_environment.fmtVersion << ", commit " << p_environment.commit
+			<< (p_environment.dirty ? " (modified)" : "") << ", " << p_environment.buildType << ", "
+			<< p_environment.compiler << " " << p_environment.compilerVersion << ", " << p_environment.allocator
+			<< std::endl;
+		std::cout << p_environment.operatingSystem << ", " << p_environment.processor << ", "
+			<< p_environment.logicalCores << " logical cores, " << gigabytes(p_environment.availableMemoryBytes)
+			<< " available, mode " << Performance::toString(p_environment.mode) << std::endl;
+		if (!p_environment.optimized)
+		{
+			std::cout << "WARNING: the benchmarks are not optimized, their times are not a reference" << std::endl;
+		}
+	}
+
+	// One line per measure, then one line per check, prefixed like the lines of Testing::Checker.
+	void printResult(const Performance::BenchmarkResult& p_result)
+	{
+		const Performance::TimingStatistics& TIMING = p_result.timing;
+		std::cout << std::endl << p_result.benchmark << " (" << p_result.dataset << ")" << std::endl;
+		std::cout << "  time    " << nanoseconds(TIMING.medianNs) << " ns per call, median of " << TIMING.samples
+			<< " samples of " << TIMING.callsPerSample << " calls (min " << nanoseconds(TIMING.minimumNs)
+			<< ", max " << nanoseconds(TIMING.maximumNs) << ")" << std::endl;
+		const Performance::AllocationStatistics& ALLOCATIONS = p_result.allocations;
+		if (ALLOCATIONS.measured)
+		{
+			std::cout << "  heap    " << ALLOCATIONS.medianPerCall << " allocations per call (min "
+				<< ALLOCATIONS.minimumPerCall << ", max " << ALLOCATIONS.maximumPerCall << " over " << ALLOCATIONS.calls
+				<< " calls), " << ALLOCATIONS.medianBytesPerCall << " bytes per call" << std::endl;
+		}
+		for (const Performance::BenchmarkCheck& CHECK : p_result.checks)
+		{
+			std::cout << (CHECK.passed ? "  ok      " : "  FAILED  ") << CHECK.description << std::endl;
+		}
+		if (p_result.isSkipped())
+		{
+			std::cout << "  SKIPPED " << p_result.skipReason << std::endl;
+		}
+	}
+
+	int exitCode(const std::vector<Performance::BenchmarkResult>& p_results)
+	{
+		bool everySkipped = true;
+		for (const Performance::BenchmarkResult& RESULT : p_results)
+		{
+			if (!RESULT.isValid())
+			{
+				return 1;
+			}
+			everySkipped = everySkipped && RESULT.isSkipped();
+		}
+		return everySkipped ? Performance::SKIP_RETURN_CODE : 0;
+	}
+}
+
+namespace Performance
+{
+	BenchmarkSuite::BenchmarkSuite(const BenchmarkOptions& p_options) :
+		m_options(p_options)
+	{
+	}
+
+	void BenchmarkSuite::add(std::unique_ptr<Benchmark> p_benchmark)
+	{
+		for (const std::unique_ptr<Benchmark>& BENCHMARK : m_benchmarks)
+		{
+			if (BENCHMARK->getName() == p_benchmark->getName())
+			{
+				throw std::invalid_argument("Two benchmarks are named " + p_benchmark->getName());
+			}
+		}
+		m_benchmarks.push_back(std::move(p_benchmark));
+	}
+
+	int BenchmarkSuite::run()
+	{
+		const std::vector<Benchmark*> SELECTED = _select();
+		if (m_options.isListing())
+		{
+			for (const Benchmark* const BENCHMARK : SELECTED)
+			{
+				std::cout << BENCHMARK->getName() << std::endl;
+			}
+			return 0;
+		}
+		if (SELECTED.empty())
+		{
+			std::cerr << "No benchmark matches \"" << m_options.getSelection() << "\"" << std::endl;
+			return 1;
+		}
+		const BenchmarkEnvironment ENVIRONMENT = BenchmarkEnvironment::collect(m_options.getMode());
+		printEnvironment(ENVIRONMENT);
+		BenchmarkRunner runner(RunSettings::forMode(m_options.getMode()));
+		std::vector<BenchmarkResult> results;
+		for (Benchmark* const BENCHMARK : SELECTED)
+		{
+			results.push_back(runner.run(*BENCHMARK, m_options.getExpectation(BENCHMARK->getName())));
+			printResult(results.back());
+		}
+		_write(ENVIRONMENT, results);
+		return exitCode(results);
+	}
+
+	std::vector<Benchmark*> BenchmarkSuite::_select() const
+	{
+		std::vector<Benchmark*> selected;
+		for (const std::unique_ptr<Benchmark>& BENCHMARK : m_benchmarks)
+		{
+			if (m_options.selects(BENCHMARK->getName()))
+			{
+				selected.push_back(BENCHMARK.get());
+			}
+		}
+		return selected;
+	}
+
+	void BenchmarkSuite::_write(const BenchmarkEnvironment& p_environment, const std::vector<BenchmarkResult>& p_results) const
+	{
+		const std::filesystem::path& OUTPUT_FILE = m_options.getOutputFile();
+		if (OUTPUT_FILE.has_parent_path())
+		{
+			std::filesystem::create_directories(OUTPUT_FILE.parent_path());
+		}
+		std::ofstream stream(OUTPUT_FILE);
+		if (!stream)
+		{
+			throw std::runtime_error("Cannot write the results file " + OUTPUT_FILE.string());
+		}
+		writeResults(stream, p_environment, p_results);
+		std::cout << std::endl << "Results written to " << OUTPUT_FILE.string() << std::endl;
+	}
+}

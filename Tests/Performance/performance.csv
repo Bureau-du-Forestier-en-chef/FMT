@@ -1,0 +1,8 @@
+TEST;BENCHMARK;EXPECTED;MAX_ALLOCATIONS
+FMTPerformanceTests;ComplexYield.Sum;240;4
+FMTPerformanceTests;ComplexYield.Multiply;240;4
+FMTPerformanceTests;ComplexYield.Divide;60;5
+FMTPerformanceTests;ComplexYield.Subtract;100;5
+FMTPerformanceTests;ComplexYield.Shift;130;13
+FMTPerformanceTests;ComplexYield.Equation;240;31
+FMTPerformanceTests;ComplexYield.RecursiveChain;720;20

@@ -11,6 +11,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | Layers, responsibilities, dependency direction, loose coupling, performance and memory | [Documentation/Architecture.md](Documentation/Architecture.md) |
 | Naming, file organization, documentation, type safety, ownership, errors, tests, warnings, compatibility | [Documentation/CodingStandards.md](Documentation/CodingStandards.md) |
 | Repository map, build and test mechanics, repository traps, task workflow | this file |
+| Performance benchmarks: running them, reading their results, adding one | [Documentation/PerformanceTesting.md](Documentation/PerformanceTesting.md) |
 
 ## Repository map
 
@@ -23,6 +24,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | `Examples/C++/` | Example programs. Each `.cpp` also becomes a test executable. |
 | `Examples/Python/tests/`, `Examples/R/tests/` | pytest and testthat suites, run through the install targets. |
 | `Examples/Models/` | Woodstock models used by the tests. |
+| `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
 | `Templates/` | Packaging inputs and generated artifacts: R package, `setup.py.in`, `__init__.py.in`, stub normalization. |
 | `cmake/`, `Modules/` | Install and configuration scripts; `Find*.cmake` for GEOS, MOSEK, OSI, R, Rcpp, ONNX Runtime. |
 | `tools/` | `commitMessage/`, `changelog/`, `HeapCorruption/`, `RToolsSetup/`. |
@@ -66,6 +68,19 @@ Python and R behaviour is covered by `Examples/Python/tests/` and `Examples/R/te
 
 Do not report that tests passed unless they were executed. When you could not run them, state
 explicitly which validation is missing.
+
+### Benchmarks
+
+`Tests/Performance/performance.csv` registers the benchmarks of `FMTPerformanceTests` with CTest,
+labelled `performance`, and also `allocation` when a row bounds the allocations. With the rest of the
+suite they run in a short mode, which only checks their results and allocation bounds. A measurement
+runs them apart, one at a time:
+
+```bash
+FMT_BENCHMARK_MODE=full ctest --test-dir build/release -C Release -L performance
+```
+
+Running them, reading their results and adding one: [Documentation/PerformanceTesting.md](Documentation/PerformanceTesting.md).
 
 ## Conventions that are easy to break
 
