@@ -72,9 +72,9 @@ explicitly which validation is missing.
 ### Benchmarks
 
 `Tests/Performance/performance.csv` registers the benchmarks of `FMTPerformanceTests` with CTest,
-labelled `performance`, and also `allocation` when a row bounds the allocations. With the rest of the
-suite they run in a short mode, which only checks their results and allocation bounds. A measurement
-runs them apart, one at a time:
+labelled `performance`, `allocation` when a row bounds the allocations of a call, and `memory` when it
+bounds the memory a call keeps. With the rest of the suite they run in a short mode, which only checks
+their results and bounds. A measurement runs them apart, one at a time:
 
 ```bash
 FMT_BENCHMARK_MODE=full ctest --test-dir build/release -C Release -L performance
