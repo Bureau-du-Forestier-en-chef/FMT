@@ -44,6 +44,10 @@ namespace Performance
 		std::int64_t medianPerCall = 0;
 		std::int64_t maximumPerCall = 0;
 		std::int64_t medianBytesPerCall = 0;
+		// Bytes a counted call keeps allocated when it returns: what it allocates minus what it
+		// frees. Lower median, and maximum.
+		std::int64_t medianRetainedBytesPerCall = 0;
+		std::int64_t maximumRetainedBytesPerCall = 0;
 		AllocationCounts total;
 	};
 
@@ -76,7 +80,7 @@ namespace Performance
 		bool isSkipped() const;
 	};
 
-	// Writes the results of one run and their environment as JSON: schema version 1, described in
+	// Writes the results of one run and their environment as JSON: schema version 2, described in
 	// Documentation/PerformanceTesting.md.
 	void writeResults(std::ostream& p_stream, const BenchmarkEnvironment& p_environment,
 		const std::vector<BenchmarkResult>& p_results);

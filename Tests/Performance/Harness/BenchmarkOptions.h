@@ -33,6 +33,9 @@ namespace Performance
 		// Most allocations a typical call may make, compared with the median of the counted calls.
 		// A bound of 0 is stricter: no call may allocate.
 		std::optional<std::int64_t> maximumAllocations;
+		// Most bytes a typical call may keep allocated when it returns, compared in the same way. A
+		// bound of 0 is stricter: no call may keep any.
+		std::optional<std::int64_t> maximumRetainedBytes;
 	};
 
 	// Command line of a benchmark executable:
@@ -41,9 +44,10 @@ namespace Performance
 	//   --filter <pattern>       runs the benchmarks whose name matches, * matching any text
 	//   --mode smoke|full        default: the FMT_BENCHMARK_MODE environment variable, else smoke
 	//   --model <primary file>   project read by the benchmarks
-	//   --expectations <csv>     expected results and allocation bounds (performance.csv)
+	//   --expectations <csv>     expected results and bounds (performance.csv)
 	//   --expected <value>       replaces the expected result of the benchmark named by --benchmark
 	//   --max-allocations <n>    replaces its allocation bound
+	//   --max-retained-bytes <n> replaces its bound on the memory a call keeps
 	//   --output <json file>     where the results are written
 	//   --list                   prints the names of the selected benchmarks and runs none
 	//
@@ -78,6 +82,7 @@ namespace Performance
 		std::filesystem::path m_outputFile;
 		std::optional<double> m_expectedOverride;
 		std::optional<std::int64_t> m_boundOverride;
+		std::optional<std::int64_t> m_retainedBoundOverride;
 		std::map<std::string, Expectation> m_expectations;
 
 		BenchmarkOptions();

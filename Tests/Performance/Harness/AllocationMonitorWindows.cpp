@@ -381,6 +381,7 @@ namespace Performance
 		counts.allocations = heapCounters.allocations.load();
 		counts.deallocations = heapCounters.deallocations.load();
 		counts.allocatedBytes = heapCounters.allocatedBytes.load();
+		counts.liveBytes = heapCounters.liveBytes.load();
 		counts.peakLiveBytes = heapCounters.peakLiveBytes.load();
 		return counts;
 	}

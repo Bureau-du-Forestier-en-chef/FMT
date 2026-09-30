@@ -18,6 +18,10 @@ namespace Performance
 		std::int64_t allocations = 0;
 		std::int64_t deallocations = 0;
 		std::int64_t allocatedBytes = 0;
+		// Memory allocated and not yet freed since start, the blocks freed since start deducted: the
+		// difference between two readings is what the calls in between kept. It falls below zero
+		// when blocks allocated before start are freed.
+		std::int64_t liveBytes = 0;
 		// Highest amount of memory allocated and not yet freed since start. Blocks allocated before
 		// start and freed after it lower the live amount, so the peak can stay at zero.
 		std::int64_t peakLiveBytes = 0;

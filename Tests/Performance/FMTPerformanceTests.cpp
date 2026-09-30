@@ -12,7 +12,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "BenchmarkOptions.h"
 #include "BenchmarkSuite.h"
 #include "ComplexYieldBenchmarks.h"
+#include "MaskBenchmarks.h"
+#include "ParserBenchmarks.h"
 #include "TestTools.h"
+#include "YieldBenchmarks.h"
 
 int main(int argc, char* argv[])
 {
@@ -21,6 +24,9 @@ int main(int argc, char* argv[])
 		const Performance::BenchmarkOptions OPTIONS = Performance::BenchmarkOptions::parse(argc, argv, "FMTPerformanceTests");
 		Performance::BenchmarkSuite suite(OPTIONS);
 		Performance::addComplexYieldBenchmarks(suite, OPTIONS.getModelFile());
+		Performance::addYieldBenchmarks(suite, OPTIONS.getModelFile());
+		Performance::addMaskBenchmarks(suite, OPTIONS.getModelFile());
+		Performance::addParserBenchmarks(suite, OPTIONS.getModelFile());
 		return suite.run();
 		});
 }

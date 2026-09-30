@@ -41,6 +41,10 @@ add_library(FMTBenchmarkHarness STATIC
 	"${FMTPERFORMANCEdir}/Harness/JsonWriter.cpp"
 	"${FMTPERFORMANCEdir}/Harness/MemoryMonitor.h"
 	"${FMTPERFORMANCEdir}/Harness/MemoryMonitor.cpp"
+	"${FMTPERFORMANCEdir}/Harness/ProcessorPolicy.h"
+	"${FMTPERFORMANCEdir}/Harness/ProcessorPolicy.cpp"
+	"${FMTPERFORMANCEdir}/Harness/RunSettings.h"
+	"${FMTPERFORMANCEdir}/Harness/RunSettings.cpp"
 	)
 if (WIN32)
 	target_sources(FMTBenchmarkHarness PRIVATE "${FMTPERFORMANCEdir}/Harness/AllocationMonitorWindows.cpp")
@@ -63,15 +67,25 @@ createexecutable("${FMTPERFORMANCEdir}/FMTPerformanceTests.cpp" FMTPERFORMANCEex
 target_sources(FMTPerformanceTests PRIVATE
 	"${FMTPERFORMANCEdir}/ComplexYieldBenchmarks.h"
 	"${FMTPERFORMANCEdir}/ComplexYieldBenchmarks.cpp"
+	"${FMTPERFORMANCEdir}/MaskBenchmarks.h"
+	"${FMTPERFORMANCEdir}/MaskBenchmarks.cpp"
+	"${FMTPERFORMANCEdir}/ParserBenchmarks.h"
+	"${FMTPERFORMANCEdir}/ParserBenchmarks.cpp"
+	"${FMTPERFORMANCEdir}/PerfYields.h"
+	"${FMTPERFORMANCEdir}/PerfYields.cpp"
+	"${FMTPERFORMANCEdir}/YieldBenchmarks.h"
+	"${FMTPERFORMANCEdir}/YieldBenchmarks.cpp"
 	)
 target_include_directories(FMTPerformanceTests PRIVATE "${FMTPERFORMANCEdir}" "${FMTPERFORMANCEroot}/Examples/C++/tests")
 target_link_libraries(FMTPerformanceTests PRIVATE FMTBenchmarkHarness)
 
-# One ctest test per row of performance.csv: <executable>;<benchmark>;<result>;<allocations>.
-# The executable reads its expected result and allocation bound from the same file at run time: a
-# changed value needs no reconfiguration, a new row does. Every test is labelled performance, and
-# allocation when its row bounds the allocations. ctest runs them in their short mode; with
-# FMT_BENCHMARK_MODE=full in the environment, they measure (run them without -j).
+# One ctest test per row of performance.csv:
+# <executable>;<benchmark>;<result>;<allocations>;<retained bytes>.
+# The executable reads its expected result and bounds from the same file at run time: a changed
+# value needs no reconfiguration, a new row does. Every test is labelled performance, allocation
+# when its row bounds the allocations, and memory when it bounds the memory a call keeps. ctest
+# runs them in their short mode; with FMT_BENCHMARK_MODE=full in the environment, they measure
+# (run them without -j).
 if (NOT WITHOUT_TESTING)
 	enable_testing()
 	set(FMTPERFORMANCEcsv "${FMTPERFORMANCEdir}/performance.csv")
@@ -97,6 +111,10 @@ if (NOT WITHOUT_TESTING)
 		if (fieldCount GREATER 3)
 			list(GET fields 3 bound)
 		endif()
+		set(retainedBound "")
+		if (fieldCount GREATER 4)
+			list(GET fields 4 retainedBound)
+		endif()
 		set(testname "${executable}.${benchmark}")
 		add_test(
 				NAME "${testname}"
@@ -109,6 +127,9 @@ if (NOT WITHOUT_TESTING)
 		set(labels "performance")
 		if (NOT bound STREQUAL "")
 			list(APPEND labels "allocation")
+		endif()
+		if (NOT retainedBound STREQUAL "")
+			list(APPEND labels "memory")
 		endif()
 		#77: a check needs what the platform lacks, such as the allocation monitor outside Windows
 		set_tests_properties("${testname}" PROPERTIES

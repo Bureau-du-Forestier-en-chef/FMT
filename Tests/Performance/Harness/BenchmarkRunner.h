@@ -11,31 +11,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "Benchmark.h"
 #include "BenchmarkOptions.h"
 #include "BenchmarkResult.h"
+#include "RunSettings.h"
 
-#include <chrono>
 #include <cstddef>
 #include <optional>
 
 namespace Performance
 {
-	// How many times a benchmark is called.
-	struct RunSettings
-	{
-		// Calls made before any measurement: lazy initializations, caches, first touch of memory.
-		std::size_t warmUpCalls = 0;
-		// Timed samples. Each one times enough calls to last at least minimumSampleDuration, far
-		// above the resolution of the clock.
-		std::size_t samples = 0;
-		std::chrono::nanoseconds minimumSampleDuration{ 0 };
-		// Calls whose allocations are counted one at a time, and whose results are checked.
-		std::size_t countedCalls = 0;
-
-		static RunSettings forMode(BenchmarkMode p_mode);
-	};
-
 	// Measures one benchmark: prepare, warm-up, timed samples without the allocation monitor, then
-	// counted calls. The results of the counted calls and their allocations are then checked
-	// against the expectation of the benchmark.
+	// counted calls. The results of the counted calls, their allocations and the memory they keep
+	// are then checked against the expectation of the benchmark.
 	class BenchmarkRunner
 	{
 	public:

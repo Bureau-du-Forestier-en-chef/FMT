@@ -80,7 +80,8 @@ namespace
 	}
 
 	Performance::AllocationStatistics allocationStatistics(std::vector<std::int64_t> p_allocationsPerCall,
-		std::vector<std::int64_t> p_bytesPerCall, const Performance::AllocationCounts& p_total)
+		std::vector<std::int64_t> p_bytesPerCall, std::vector<std::int64_t> p_retainedBytesPerCall,
+		const Performance::AllocationCounts& p_total)
 	{
 		Performance::AllocationStatistics statistics;
 		statistics.calls = p_allocationsPerCall.size();
@@ -91,11 +92,14 @@ namespace
 		}
 		std::sort(p_allocationsPerCall.begin(), p_allocationsPerCall.end());
 		std::sort(p_bytesPerCall.begin(), p_bytesPerCall.end());
+		std::sort(p_retainedBytesPerCall.begin(), p_retainedBytesPerCall.end());
 		const std::size_t LOWER_MIDDLE = (p_allocationsPerCall.size() - 1) / 2;
 		statistics.minimumPerCall = p_allocationsPerCall.front();
 		statistics.medianPerCall = p_allocationsPerCall.at(LOWER_MIDDLE);
 		statistics.maximumPerCall = p_allocationsPerCall.back();
 		statistics.medianBytesPerCall = p_bytesPerCall.at(LOWER_MIDDLE);
+		statistics.medianRetainedBytesPerCall = p_retainedBytesPerCall.at(LOWER_MIDDLE);
+		statistics.maximumRetainedBytesPerCall = p_retainedBytesPerCall.back();
 		return statistics;
 	}
 
@@ -154,6 +158,32 @@ namespace
 		p_result.checks.push_back({ ALLOCATIONS.medianPerCall <= p_bound, description });
 	}
 
+	// A call retains what it allocates and has not freed when it returns: a value kept in a cache,
+	// or a leak. The bound applies to a typical call, like the allocation bound.
+	void checkRetainedBytes(Performance::BenchmarkResult& p_result, std::int64_t p_bound)
+	{
+		const Performance::AllocationStatistics& ALLOCATIONS = p_result.allocations;
+		if (!ALLOCATIONS.measured)
+		{
+			p_result.skipReason = "retained memory not checked: no allocation monitor on this platform";
+			return;
+		}
+		if (p_bound == 0)
+		{
+			const bool NONE = ALLOCATIONS.maximumRetainedBytesPerCall <= 0;
+			p_result.checks.push_back({ NONE, NONE ? std::string("no counted call retains memory (bound 0)")
+				: "a counted call retains " + std::to_string(ALLOCATIONS.maximumRetainedBytesPerCall) + " bytes, the bound 0 allows none" });
+			return;
+		}
+		std::string description = "a typical call retains " + std::to_string(ALLOCATIONS.medianRetainedBytesPerCall)
+			+ " bytes (bound " + std::to_string(p_bound) + ")";
+		if (ALLOCATIONS.medianRetainedBytesPerCall < p_bound)
+		{
+			description += ": the bound can be lowered to " + std::to_string(std::max<std::int64_t>(ALLOCATIONS.medianRetainedBytesPerCall, 0));
+		}
+		p_result.checks.push_back({ ALLOCATIONS.medianRetainedBytesPerCall <= p_bound, description });
+	}
+
 	void checkResult(Performance::BenchmarkResult& p_result, std::size_t p_mismatches)
 	{
 		if (!p_result.expectation.has_value())
@@ -172,31 +202,15 @@ namespace
 		{
 			checkAllocations(p_result, *EXPECTATION.maximumAllocations);
 		}
+		if (EXPECTATION.maximumRetainedBytes.has_value())
+		{
+			checkRetainedBytes(p_result, *EXPECTATION.maximumRetainedBytes);
+		}
 	}
 }
 
 namespace Performance
 {
-	RunSettings RunSettings::forMode(BenchmarkMode p_mode)
-	{
-		RunSettings settings;
-		if (p_mode == BenchmarkMode::Full)
-		{
-			settings.warmUpCalls = 100;
-			settings.samples = 30;
-			settings.minimumSampleDuration = std::chrono::milliseconds(5);
-			settings.countedCalls = 1000;
-		}
-		else
-		{
-			settings.warmUpCalls = 3;
-			settings.samples = 3;
-			settings.minimumSampleDuration = std::chrono::microseconds(100);
-			settings.countedCalls = 20;
-		}
-		return settings;
-	}
-
 	BenchmarkRunner::BenchmarkRunner(const RunSettings& p_settings) :
 		m_settings(p_settings)
 	{
@@ -272,6 +286,7 @@ namespace Performance
 		// Sized before counting starts, so that the runner itself allocates nothing during the calls.
 		std::vector<std::int64_t> allocationsPerCall(CALLS);
 		std::vector<std::int64_t> bytesPerCall(CALLS);
+		std::vector<std::int64_t> retainedBytesPerCall(CALLS);
 		CountedCalls counted;
 		AllocationCounts total;
 		{
@@ -287,6 +302,7 @@ namespace Performance
 				const AllocationCounts AFTER = AllocationMonitor::getCounts();
 				allocationsPerCall[call] = AFTER.allocations - BEFORE.allocations;
 				bytesPerCall[call] = AFTER.allocatedBytes - BEFORE.allocatedBytes;
+				retainedBytesPerCall[call] = AFTER.liveBytes - BEFORE.liveBytes;
 				if (p_expectation.has_value() && !isExpected(counted.lastResult, p_expectation->result))
 				{
 					++counted.mismatches;
@@ -294,7 +310,7 @@ namespace Performance
 			}
 			total = AllocationMonitor::getCounts();
 		}
-		counted.allocations = allocationStatistics(allocationsPerCall, bytesPerCall, total);
+		counted.allocations = allocationStatistics(allocationsPerCall, bytesPerCall, retainedBytesPerCall, total);
 		counted.allocations.measured = AllocationMonitor::isSupported();
 		return counted;
 	}

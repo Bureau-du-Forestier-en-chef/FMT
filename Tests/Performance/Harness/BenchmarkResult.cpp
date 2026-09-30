@@ -16,7 +16,7 @@ namespace
 {
 	// Version of the JSON layout: change it with the layout, and describe the change in
 	// Documentation/PerformanceTesting.md.
-	constexpr std::int64_t SCHEMA_VERSION = 1;
+	constexpr std::int64_t SCHEMA_VERSION = 2;
 	// Durations are in nanoseconds: three decimals are below the resolution of any clock.
 	constexpr int DURATION_DECIMALS = 3;
 
@@ -55,6 +55,7 @@ namespace
 		writeField(p_writer, "os", p_environment.operatingSystem);
 		writeField(p_writer, "cpu", p_environment.processor);
 		writeField(p_writer, "logicalCores", static_cast<std::uint64_t>(p_environment.logicalCores));
+		writeField(p_writer, "processors", p_environment.processors);
 		writeField(p_writer, "availableMemoryBytes", p_environment.availableMemoryBytes);
 		writeField(p_writer, "timestamp", p_environment.timestamp);
 		writeField(p_writer, "mode", Performance::toString(p_environment.mode));
@@ -76,8 +77,8 @@ namespace
 	{
 		writeField(p_writer, "allocationCalls", static_cast<std::uint64_t>(p_allocations.calls));
 		const std::initializer_list<const char*> COUNT_NAMES = { "allocationsPerCallMin", "allocationsPerCallMedian",
-			"allocationsPerCallMax", "allocatedBytesPerCallMedian", "allocations", "deallocations", "allocatedBytes",
-			"peakLiveHeapBytes" };
+			"allocationsPerCallMax", "allocatedBytesPerCallMedian", "retainedBytesPerCallMedian", "retainedBytesPerCallMax",
+			"allocations", "deallocations", "allocatedBytes", "retainedBytes", "peakLiveHeapBytes" };
 		if (!p_allocations.measured)
 		{
 			for (const char* const NAME : COUNT_NAMES)
@@ -91,10 +92,26 @@ namespace
 		writeField(p_writer, "allocationsPerCallMedian", p_allocations.medianPerCall);
 		writeField(p_writer, "allocationsPerCallMax", p_allocations.maximumPerCall);
 		writeField(p_writer, "allocatedBytesPerCallMedian", p_allocations.medianBytesPerCall);
+		writeField(p_writer, "retainedBytesPerCallMedian", p_allocations.medianRetainedBytesPerCall);
+		writeField(p_writer, "retainedBytesPerCallMax", p_allocations.maximumRetainedBytesPerCall);
 		writeField(p_writer, "allocations", p_allocations.total.allocations);
 		writeField(p_writer, "deallocations", p_allocations.total.deallocations);
 		writeField(p_writer, "allocatedBytes", p_allocations.total.allocatedBytes);
+		writeField(p_writer, "retainedBytes", p_allocations.total.liveBytes);
 		writeField(p_writer, "peakLiveHeapBytes", p_allocations.total.peakLiveBytes);
+	}
+
+	void writeBound(Performance::JsonWriter& p_writer, const char* p_name, const std::optional<std::int64_t>& p_bound)
+	{
+		p_writer.key(p_name);
+		if (p_bound.has_value())
+		{
+			p_writer.value(*p_bound);
+		}
+		else
+		{
+			p_writer.nullValue();
+		}
 	}
 
 	void writeExpectation(Performance::JsonWriter& p_writer, const std::optional<Performance::Expectation>& p_expectation)
@@ -108,15 +125,9 @@ namespace
 		{
 			p_writer.nullValue();
 		}
-		p_writer.key("maxAllocationsPerCall");
-		if (p_expectation.has_value() && p_expectation->maximumAllocations.has_value())
-		{
-			p_writer.value(*p_expectation->maximumAllocations);
-		}
-		else
-		{
-			p_writer.nullValue();
-		}
+		const std::optional<std::int64_t> NO_BOUND;
+		writeBound(p_writer, "maxAllocationsPerCall", p_expectation.has_value() ? p_expectation->maximumAllocations : NO_BOUND);
+		writeBound(p_writer, "maxRetainedBytesPerCall", p_expectation.has_value() ? p_expectation->maximumRetainedBytes : NO_BOUND);
 	}
 
 	void writeResult(Performance::JsonWriter& p_writer, const Performance::BenchmarkResult& p_result)

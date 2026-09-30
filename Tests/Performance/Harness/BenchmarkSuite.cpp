@@ -8,7 +8,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "BenchmarkSuite.h"
 
 #include "BenchmarkRunner.h"
+#include "ProcessorPolicy.h"
 
+#include <chrono>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -17,10 +19,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <utility>
 
 namespace
 {
+	// A process can be paused for about 30 ms some 50 ms after it reads its first file, and run slower
+	// until then: seen on Windows 11, even in a program that only reads one file. A full measurement
+	// lets this pass before its first benchmark.
+	constexpr std::chrono::milliseconds SETTLING_TIME{ 250 };
+
 	std::string gigabytes(std::uint64_t p_bytes)
 	{
 		std::ostringstream text;
@@ -44,6 +52,7 @@ namespace
 		std::cout << p_environment.operatingSystem << ", " << p_environment.processor << ", "
 			<< p_environment.logicalCores << " logical cores, " << gigabytes(p_environment.availableMemoryBytes)
 			<< " available, mode " << Performance::toString(p_environment.mode) << std::endl;
+		std::cout << "Measuring thread on " << p_environment.processors << std::endl;
 		if (!p_environment.optimized)
 		{
 			std::cout << "WARNING: the benchmarks are not optimized, their times are not a reference" << std::endl;
@@ -63,7 +72,8 @@ namespace
 		{
 			std::cout << "  heap    " << ALLOCATIONS.medianPerCall << " allocations per call (min "
 				<< ALLOCATIONS.minimumPerCall << ", max " << ALLOCATIONS.maximumPerCall << " over " << ALLOCATIONS.calls
-				<< " calls), " << ALLOCATIONS.medianBytesPerCall << " bytes per call" << std::endl;
+				<< " calls), " << ALLOCATIONS.medianBytesPerCall << " bytes per call, "
+				<< ALLOCATIONS.medianRetainedBytesPerCall << " retained" << std::endl;
 		}
 		for (const Performance::BenchmarkCheck& CHECK : p_result.checks)
 		{
@@ -125,16 +135,21 @@ namespace Performance
 			std::cerr << "No benchmark matches \"" << m_options.getSelection() << "\"" << std::endl;
 			return 1;
 		}
-		const BenchmarkEnvironment ENVIRONMENT = BenchmarkEnvironment::collect(m_options.getMode());
-		printEnvironment(ENVIRONMENT);
-		BenchmarkRunner runner(RunSettings::forMode(m_options.getMode()));
+		BenchmarkEnvironment environment = BenchmarkEnvironment::collect(m_options.getMode());
+		environment.processors = ProcessorPolicy::applyToMeasuringThread();
+		printEnvironment(environment);
+		if (m_options.getMode() == BenchmarkMode::Full)
+		{
+			std::this_thread::sleep_for(SETTLING_TIME);
+		}
 		std::vector<BenchmarkResult> results;
 		for (Benchmark* const BENCHMARK : SELECTED)
 		{
+			BenchmarkRunner runner(BENCHMARK->getSettings(m_options.getMode()));
 			results.push_back(runner.run(*BENCHMARK, m_options.getExpectation(BENCHMARK->getName())));
 			printResult(results.back());
 		}
-		_write(ENVIRONMENT, results);
+		_write(environment, results);
 		return exitCode(results);
 	}
 

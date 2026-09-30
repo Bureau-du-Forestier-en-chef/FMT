@@ -7,14 +7,19 @@
 > Le dépôt est public : ce fichier ne cite ni chemin `T:\` ni modèle privé. Les tests BFEC
 > y sont désignés par le nom de leur exécutable.
 >
-> **Ordre de lecture pour démarrer à froid** : le § 0 situe la chaîne de FMT et dit comment on
-> ajoute un test ; le § 1 donne les règles et le patron ; le § 6 dit quoi faire ensuite ; le § 7
-> se lit avant de toucher au code, il tient les pièges déjà payés. Les § 2 à 5 sont l'inventaire,
-> les lacunes, les scénarios et le journal, à consulter au besoin.
+> **Ordre de lecture pour démarrer à froid** : la section 0 situe la chaîne de FMT et dit comment
+> on ajoute un test ; la section 1 donne les règles et le patron ; la section 6 dit quoi faire
+> ensuite ; la section 7 se lit avant de toucher au code, elle tient les pièges déjà payés. Les
+> sections 2 à 5 sont l'inventaire, les lacunes, les scénarios et le journal, à consulter au
+> besoin.
+>
+> Les sections et sous-sections sont numérotées : « section 2.7 » renvoie à la sous-section 2.7
+> de ce fichier. Les lots (lot 1, lot 2...) sont les étapes du chantier, sans lien avec ces
+> numéros : le lot 2, par exemple, est raconté en section 5.3.
 
 ## 0. Vue d'ensemble
 
-### Ce que FMT fait d'un modèle, et où les tests se branchent
+### 0.1 Ce que FMT fait d'un modèle, et où les tests se branchent
 
 Un modèle Woodstock est un dossier de sections (`.lan` le paysage, `.are` l'inventaire, `.yld`
 les rendements, `.act` les actions, `.trn` les transitions, `.lif` la durée de vie, `.out` les
@@ -27,7 +32,7 @@ ne redéfinit pas, il l'hérite. FMT traverse toujours ce modèle dans le même 
    `FMTModel` par scénario demandé : thèmes, agrégats, développements initiaux, yields,
    actions, transitions, lifespan, outputs, contraintes. Une erreur ici fausse tout le reste
    en silence. → `testScenarioReading`, `testJointScenarioReading`, `testReadingErrors`
-   (lot 2), lacunes 1 à 3 du § 3.
+   (lot 2), lacunes 1 à 3 de la section 3.1.
 2. **Objets du cœur.** Un développement est un masque (`FMTMask`) avec un âge, un verrou et
    une période. Il vieillit (`grow`), devient opérable (`operable`) et se transforme
    (`operate`, qui applique la transition et rend des chemins avec leurs proportions). Les
@@ -51,7 +56,7 @@ ne redéfinit pas, il l'hérite. FMT traverse toujours ce modèle dans le même 
 Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêter à une de ces
 étapes, et comparer ce qu'il y trouve à une valeur écrite dans le CSV.
 
-### Où vivent les choses
+### 0.2 Où vivent les choses
 
 | Quoi | Où |
 |---|---|
@@ -64,9 +69,9 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
 | Sorties des tests | `build/release/tests/<test>/` |
 | Suivi du chantier | ce fichier |
 
-### Comment on ajoute un test
+### 0.3 Comment on ajoute un test
 
-1. **Choisir la lacune** au § 3 : on descend la liste par criticité, une étape que tout modèle
+1. **Choisir la lacune** en section 3 : on descend la liste par criticité, une étape que tout modèle
    traverse avant une fonction de niche.
 2. **Calculer la valeur attendue à la main**, depuis les fichiers du modèle, jamais depuis ce
    que FMT affiche : sinon le test grave le comportement actuel, bogue compris. Quand le calcul
@@ -75,13 +80,13 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
 3. **Réutiliser un test générique** quand il peut répondre (`testScenarioReading`,
    `testScenarioPlanning`, `testReadingErrors`, `testJointScenarioReading`) : il n'y a alors
    qu'une ligne CSV à écrire, sans compilation. Sinon, écrire un exécutable dans
-   `Examples/C++/`, sur le patron du § 1.
-4. **Ajouter la ligne CSV** (§ 2.1), faire reconfigurer CMake, et compiler si un source a
+   `Examples/C++/`, sur le patron de la section 1.5.
+4. **Ajouter la ligne CSV** (section 2.1), faire reconfigurer CMake, et compiler si un source a
    changé.
 5. **Voir le test rouge** en faussant la valeur attendue ou l'entrée, puis vert (règle 1).
-6. **Noter au journal** (§ 5) et refaire les mesures (§ 8).
+6. **Noter au journal** (section 5) et refaire les mesures (section 8).
 
-### Ce chantier et l'issue #350
+### 0.4 Ce chantier et l'issue #350
 
 L'issue #350, « Add comprehensive unit tests for the Core namespace » (jalon FMT2.0), demande
 des tests **unitaires** classe par classe : constructeurs, copies, comparaisons, hachage,
@@ -89,23 +94,23 @@ sérialisation, allocations, concurrence, le tout sous un cadre à la GoogleTest
 avec un inventaire dans `Documentation/Testing/CoreTestCoverage.md` et une couverture publiée.
 
 Ce chantier-ci travaille à l'autre échelle : il protège **la chaîne** que tout modèle traverse
-(§ 0), depuis un modèle public, par des lignes CSV. Les deux se complètent plutôt qu'ils ne se
-recoupent :
+(section 0.1), depuis un modèle public, par des lignes CSV. Les deux se complètent plutôt qu'ils ne
+se recoupent :
 
-- un test unitaire sur `FMTOperator::precedence` aurait attrapé le défaut 1 du § 2.7 en trois
-  lignes, alors qu'il nous a fallu un scénario et une enquête ;
+- un test unitaire sur `FMTOperator::precedence` aurait attrapé le défaut 1 de la section 2.7 en
+  trois lignes, alors qu'il nous a fallu un scénario et une enquête ;
 - à l'inverse, le défaut 2 ne se voit d'aucune classe prise isolément : il naît de
   `FMTYieldParser::_cleanUp`, qui reconstruit tout un bloc à la lecture. Seule une lecture de
   modèle le révèle.
 
-Ce que ce chantier apporte déjà à #350 : l'inventaire de ce qui est vérifié (§ 2), le classement
-par criticité, qui est la colonne « Priority » de leur tableau (§ 3), l'infrastructure ctest
-(alerte de ligne sans cible, empreinte du modèle, code 77, lignes désactivées, § 2.1), et quatre
-défauts caractérisés avec leur test désactivé (§ 2.7), ce qu'ils appellent des tests de
-caractérisation avant refonte. Les lots 2 à 4 couvrent, au niveau du comportement, la matière de
-leurs jalons 2 à 7 : `FMTMask`, `FMTTheme`, `FMTDevelopment`, `FMTSpec`, `FMTData`,
-`FMTExpression`, `FMTOperator`, les gestionnaires de rendements, `FMTAction`, `FMTTransition`,
-`FMTSchedule`, `FMTOutput`, `FMTConstraint` et `FMTGraphStats`.
+Ce que ce chantier apporte déjà à #350 : l'inventaire de ce qui est vérifié (section 2), le
+classement par criticité, qui est la colonne « Priority » de leur tableau (section 3),
+l'infrastructure ctest (alerte de ligne sans cible, empreinte du modèle, code 77, lignes
+désactivées, section 2.1), et quatre défauts caractérisés avec leur test désactivé (section 2.7), ce
+qu'ils appellent des tests de caractérisation avant refonte. Les lots 2 à 4 couvrent, au niveau du
+comportement, la matière de leurs jalons 2 à 7 : `FMTMask`, `FMTTheme`, `FMTDevelopment`, `FMTSpec`,
+`FMTData`, `FMTExpression`, `FMTOperator`, les gestionnaires de rendements, `FMTAction`,
+`FMTTransition`, `FMTSchedule`, `FMTOutput`, `FMTConstraint` et `FMTGraphStats`.
 
 Ce que #350 demande et que ce chantier ne fait pas : constructeurs et copies, opérateurs de
 comparaison, hachage, aller-retour de sérialisation, absence d'allocation, concurrence,
@@ -113,25 +118,26 @@ portabilité Linux et Clang, couverture publiée.
 
 **Ce chantier prend en charge la fermeture de #350** (décision du 2026-09-25). Il garde sa façon
 de travailler — l'ordre par criticité, les lots, le vu rouge — et absorbe le volet unitaire que
-l'issue demande. La feuille de route complète est au § 6 ; voici ce que #350 exige, où on en est,
-et quel lot s'en charge :
+l'issue demande. La feuille de route complète est en section 6.3 ; voici ce que #350 exige, où on en
+est, et quel lot s'en charge :
 
 | Demande de #350 | État | Lot |
 |---|---|---|
-| Inventaire des composants et de leur couverture | partiel : fait par étape de la chaîne (§ 2), reste à faire par classe | 6 |
-| Cible et infrastructure de test dans CMake et ctest | fait pour les tests de chaîne (§ 2.1) ; reste la cible `FMTCoreTests` et l'étiquette `unit;core` | 6 |
+| Inventaire des composants et de leur couverture | partiel : fait par étape de la chaîne (section 2.2), reste à faire par classe | 6 |
+| Cible et infrastructure de test dans CMake et ctest | fait pour les tests de chaîne (section 2.1) ; reste la cible `FMTCoreTests` et l'étiquette `unit;core` | 6 |
 | Cadre de test unitaire choisi et documenté | à trancher | 6 |
-| Tests unitaires des classes déjà suspectes (défauts du § 2.7) | non fait ; leur comportement n'est touché qu'indirectement | 7 |
+| Tests unitaires des classes déjà suspectes (défauts de la section 2.7) | non fait ; leur comportement n'est touché qu'indirectement | 7 |
 | Tests unitaires du reste de Core (jalons 5 à 7 de #350) | non fait, même remarque | 8 |
 | Constructeurs, copies, comparaisons, hachage | non fait | 7 et 8 |
 | Aller-retour de sérialisation | non fait | 9 |
 | Absence d'allocation, concurrence | non fait | 9 |
 | Portabilité Linux et Clang | non fait ; la suite ne tourne que sous Windows, et le dépôt n'a pas d'intégration continue visible | 9 |
 | Couverture publiée | non fait ; informative après un lot, consignée dans la documentation aux versions | 9 |
-| Tests de caractérisation avant refonte | fait pour quatre défauts (§ 2.7), à étendre | continu |
+| Tests de caractérisation avant refonte | fait pour quatre défauts (section 2.7), à étendre | continu |
 
-À chaque lot, noter au journal ce qu'il apporte à #350. Les conditions de fermeture sont au § 6 ;
-le jour venu, écrire ici ce qui l'a fermée et ce que ce chantier reprend ou abandonne.
+À chaque lot, noter au journal ce qu'il apporte à #350. Les conditions de fermeture sont en
+section 6.3.10 ; le jour venu, écrire ici ce qui l'a fermée et ce que ce chantier reprend ou
+abandonne.
 
 Trois décisions ont été prises le 2026-09-25 :
 
@@ -150,7 +156,7 @@ Trois décisions ont été prises le 2026-09-25 :
 La couverture elle-même reste écartée comme critère d'ordre : elle arrive au lot 9 et sert à
 lister ce qui reste sans test une fois l'essentiel couvert.
 
-### Quel effort donner à l'agent
+### 0.5 Quel effort donner à l'agent
 
 Les niveaux sont `low`, `medium`, `high`, `xhigh` et `max` (de « faible » à « ultra » dans
 l'interface). Ce qui suit est tiré de ce que les lots 1 à 4 ont réellement demandé.
@@ -159,9 +165,9 @@ l'interface). Ce qui suit est tiré de ce que les lots 1 à 4 ont réellement de
 |---|---|---|
 | Lancer la suite après un build, rapporter, mettre à jour les mesures | `low` | Commandes connues, aucune décision. |
 | Ajouter des lignes CSV à un test générique, avec des valeurs calculables à la main | `medium` | Il faut lire les fichiers du modèle et calculer juste, mais le chemin est balisé. |
-| Écrire ou étendre un exécutable de test | `high` | Il faut lire l'API de FMT, choisir ce qui est vérifiable, et se méfier des classes non exportées et des macros de `windows.h` (§ 7). |
+| Écrire ou étendre un exécutable de test | `high` | Il faut lire l'API de FMT, choisir ce qui est vérifiable, et se méfier des classes non exportées et des macros de `windows.h` (section 7). |
 | Un lot entier de la section 6 | `high` | C'est le rythme des lots 2 à 4 : quelques jours de travail condensés, avec ses vérifications. |
-| Enquêter sur un résultat suspect, démontrer un défaut de FMTlib | `xhigh` ou `max` | Les quatre défauts du § 2.7 ont demandé de lire le code jusqu'à la cause, de monter des scénarios A/B et de remonter l'historique git. À `medium`, l'agent aurait écrit « `_SUM` ne garde que la dernière source », ce qui était faux. |
+| Enquêter sur un résultat suspect, démontrer un défaut de FMTlib | `xhigh` ou `max` | Les quatre défauts de la section 2.7 ont demandé de lire le code jusqu'à la cause, de monter des scénarios A/B et de remonter l'historique git. À `medium`, l'agent aurait écrit « `_SUM` ne garde que la dernière source », ce qui était faux. |
 | Mettre à jour ce fichier, rédiger le texte d'une issue | `medium` | Rédaction, sans exploration. |
 
 Deux repères. **Trop bas est dangereux quand une valeur attendue doit être calculée à la main** :
@@ -171,13 +177,13 @@ doute sur une enquête, monter d'un cran.
 
 ## 1. Objectif, règles et patron
 
-### Objectif
+### 1.1 Objectif
 
 Protéger d'abord **la chaîne que tout modèle traverse** (lecture, objets du cœur, graphe,
 optimisation, résultats, écriture) par des tests inscrits dans `basetests.csv`, qui tournent
 sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute environ.
 
-### Décisions de Gabriel (2026-09-16)
+### 1.2 Décisions de Gabriel (2026-09-16)
 
 - **Filets retenus** : alerte quand une ligne CSV ne nomme aucune cible ; isolation des
   exécutions ; code de sortie 77 = « Skipped ».
@@ -193,12 +199,12 @@ sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute envi
 - **Harnais** : un en-tête commun écrit maison, sans dépendance (lot 1).
 - **Décisions du 2026-09-25** :
   - **Cadre unitaire** : GoogleTest pour la seule cible des tests unitaires de Core ; les tests
-    de chaîne gardent `TestTools.h` (§ 0).
+    de chaîne gardent `TestTools.h` (section 0.4).
   - **Fermeture de #350** : ce chantier s'en charge, sans changer son ordre par criticité
-    (§ 0 et § 6).
+    (sections 0.4 et 6.3).
   - **Un test ctest par cas** (`gtest_discover_tests`), pour qu'un échec soit identifiable et
     un cas désactivable seul.
-  - **Défaut révélé par un test unitaire** : cas préfixé `DISABLED_`, entrée au § 2.7, issue
+  - **Défaut révélé par un test unitaire** : cas préfixé `DISABLED_`, entrée en section 2.7, issue
     documentée et tâche de correction (règle 3).
   - **En-tête de licence** dans `Tests/`, comme la bibliothèque ; les exemples restent
     l'exception historique.
@@ -208,7 +214,7 @@ sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute envi
   - **Corrections de FMTlib** : jamais dans un lot de tests. Un défaut donne une issue
     documentée, corrigée dans une session à part.
 
-### Rôles
+### 1.3 Rôles
 
 - **Gabriel** : compile, reconfigure CMake, lance la suite BFEC, commite.
 - **Claude** : écrit les tests et ce fichier, fait les contrôles statiques, puis **lance la
@@ -222,7 +228,7 @@ sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute envi
 nom contient leur chemin. Chaque lot s'arrête sur une livraison ; le suivant attend le feu
 vert de Gabriel.
 
-### Règles
+### 1.4 Règles
 
 1. **Un test doit pouvoir échouer, et on l'a vu échouer.** Vu rouge *sans recompiler* : on
    relance l'exécutable avec une valeur attendue ou un scénario faussé en argument. C'est
@@ -241,12 +247,12 @@ vert de Gabriel.
    révélé n'est donc jamais un défaut oublié.
 4. **Entrées explicites** : modèle, scénario et valeurs attendues arrivent par les arguments
    du CSV. Les valeurs par défaut d'un source ne pointent que vers TWD_land. *Pourquoi* :
-   plusieurs tests ont des défauts codés en dur vers des chemins privés ou disparus (§ 7) ; une
-   ligne sans argument teste alors autre chose que ce qu'on croit, ou rien du tout.
+   plusieurs tests ont des défauts codés en dur vers des chemins privés ou disparus (section 7) ;
+   une ligne sans argument teste alors autre chose que ce qu'on croit, ou rien du tout.
 5. **Aucune écriture sous `Examples/Models`** : le test copie le projet dans
    `build/release/tests/<test>/` (patron de `testWrapperCorePlanning`). *Pourquoi* : deux tests
    qui écrivent au même endroit se marchent dessus, et un modèle modifié en cours de route
-   fausse tous les tests suivants. L'empreinte prise avant et après chaque passage (§ 2.1) le
+   fausse tous les tests suivants. L'empreinte prise avant et après chaque passage (section 2.1) le
    détecte.
 6. **Un nouveau test privilégie MOSEK.**
    - Il prend `Models::FMTSolverInterface::MOSEK` quand FMT est compilé avec MOSEK
@@ -265,11 +271,11 @@ vert de Gabriel.
 9. **Toute valeur de référence modifiée, ligne retirée ou test supprimé se justifie** dans le
    commit et au journal. *Pourquoi* : changer une valeur attendue est la façon la plus simple de
    faire taire une régression sans s'en rendre compte. `UnitTestFMTAreaParser` a disparu sans
-   trace dans un correctif (§ 2.5), et `stdconstraints` n'a jamais tourné pendant trois ans sans
-   que personne ne le voie.
+   trace dans un correctif (section 2.5), et `stdconstraints` n'a jamais tourné pendant trois ans
+   sans que personne ne le voie.
 10. **Criticité d'abord** : l'ordre des lots suit la section 3.
 
-### Patron d'un test
+### 1.5 Patron d'un test
 
 Depuis le lot 1, `Examples/C++/tests/TestTools.h` (namespace `Testing`, inclus par
 `#include "TestTools.h"` dans tout exécutable créé par `createexecutable`) fournit :
@@ -281,7 +287,7 @@ Depuis le lot 1, `Examples/C++/tests/TestTools.h` (namespace `Testing`, inclus p
 - `runTest(corps)` : rend le code du corps, ou 1 si une exception s'échappe, après l'avoir
   affichée avec ses exceptions imbriquées (`printException`) ;
 - `visitNested(exception, visiteur)` : parcourt la chaîne d'exceptions imbriquées sans
-  `std::terminate` (lot 2, voir § 7).
+  `std::terminate` (lot 2, voir section 7).
 
 Depuis le lot 2, trois tests génériques pilotés par le CSV servent de modèles :
 
@@ -304,7 +310,7 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
 - Un nouvel exécutable va dans `Examples/C++/` (ou `FMTWrapperCore/tests/` pour le Core) ;
   sa ligne dans `basetests.csv` l'inscrit dans ctest.
 
-### Techniques privilégiées
+### 1.6 Techniques privilégiées
 
 - **Tests métamorphiques** : deux calculs qui doivent concorder, sans valeur de référence à
   maintenir.
@@ -542,7 +548,7 @@ repérer les valeurs attendues qui changent, et justifier au journal toute valeu
 Critère : une étape que tout modèle traverse passe avant une fonction de niche ; une erreur
 **silencieuse** (résultat faux sans exception) passe avant une erreur qui lève.
 
-### Niveau 1 : la chaîne que tout modèle traverse
+### 3.1 Niveau 1 : la chaîne que tout modèle traverse
 
 | # | Étape et fonctions | Lacune |
 |---|---|---|
@@ -565,7 +571,7 @@ yield, verrou, `_LOCKEXEMPT`), `operate` et les transitions (cibles, proportions
 statistiques de la matrice, rejeu de la cédule optimale. Restent les statistiques période par
 période, `setSolution` ligne à ligne, et toute la lacune 8, objet du lot 5.
 
-### Ce que chaque lacune veut dire
+### 3.2 Ce que chaque lacune veut dire
 
 Le critère de classement demande deux choses. D'abord, une étape que **tout** modèle traverse
 passe avant une fonction de niche : une erreur dans la lecture d'un `.yld` touche tous les
@@ -574,8 +580,8 @@ servent. Ensuite, une erreur **silencieuse** passe avant une erreur qui lève : 
 arrête le calcul et se voit, alors qu'un mauvais nombre se retrouve dans un plan
 d'aménagement sans que personne ne s'en aperçoive.
 
-1. **Lecture d'un scénario** (étape 1 du § 0). Tout part de là : un attribut mal rangé, un
-   yield mal interpolé ou une contrainte mal bornée, et tout le reste est faux sans qu'aucune
+1. **Lecture d'un scénario** (étape 1 de la section 0.1). Tout part de là : un attribut mal rangé,
+   un yield mal interpolé ou une contrainte mal bornée, et tout le reste est faux sans qu'aucune
    exception ne soit levée. Avant le lot 2, rien ne regardait le modèle lu : les tests
    vérifiaient des objectifs, qui ne bougent pas forcément quand la lecture change.
    `testScenarioReading` interroge maintenant le modèle lu, une ligne CSV par question.
@@ -611,11 +617,11 @@ d'aménagement sans que personne ne s'en aperçoive.
    `doPlanning(false, cédules)`.
 8. **Écriture et relecture** (étape 6). FMT écrit des modèles que d'autres relisent : sauvegarde
    depuis l'interface, modèle présolvé, projet transformé par une tâche. Deux défauts
-   d'écriture sont déjà connus (§ 7) et personne ne les avait vus, faute de test. L'aller-retour
-   est métamorphique : écrire, relire, réécrire, et les fichiers doivent être identiques. C'est
-   l'objet du lot 5.
+   d'écriture sont déjà connus (section 7) et personne ne les avait vus, faute de test.
+   L'aller-retour est métamorphique : écrire, relire, réécrire, et les fichiers doivent être
+   identiques. C'est l'objet du lot 5.
 
-### Gains rapides : des lignes CSV sans code
+### 3.3 Gains rapides : des lignes CSV sans code
 
 Chacune demande une reconfiguration de CMake et, sauf pour les tests métamorphiques, une
 valeur mesurée une fois puis vue rouge.
@@ -623,12 +629,12 @@ valeur mesurée une fois puis vue rouge.
 - `presolvetest` sur d'autres scénarios (métamorphique, aucune valeur à fixer ; il reste en
   CLP) : par exemple `LP`, `COS`, `Shift`, `TSLA`, `fullcarbon`, `equation`.
 - `testmodelwriter` sur d'autres scénarios (métamorphique, en MOSEK).
-- `doplanning` sur des scénarios inutilisés (§ 4.4), après avoir vérifié qu'ils sont faits
+- `doplanning` sur des scénarios inutilisés (section 4.4), après avoir vérifié qu'ils sont faits
   pour être optimisés.
 - `FMTNsstest` : les lignes `randomYield` et `randomYieldUnit` n'ont pas de valeur attendue ; à
   fixer si le résultat est déterministe (graine 0).
 
-### Niveau 2 : flux courants
+### 3.4 Niveau 2 : flux courants
 
 - **Tâches** : `planningtest`, `replanningtest`, `replanningmodeladaption`,
   `UnitTestCallbackLogger` ne vérifient rien ; `replanner` n'a que des tests BFEC.
@@ -641,7 +647,7 @@ valeur mesurée une fois puis vue rouge.
 - **Core du wrapper** : couvert en base, sauf `AggregateAllActions`, `SplitActions`,
   `BuildAction`, `OperatingArea` et `SES` (BFEC) et `SA` (hors ctest).
 
-### Niveau 3 : fonctions spécialisées
+### 3.5 Niveau 3 : fonctions spécialisées
 
 - Recuit simulé : `sasolve` (BFEC), `testWrapperCoreSA` (hors ctest).
 - Ordonnanceur d'aires d'opération et adjacence : `testOAschedulertask`,
@@ -698,7 +704,7 @@ commentaire (`;`) ce qui est changé et pourquoi. C'est ce que font les sept sc�
 Le reste de la marche à suivre :
 
 - le nom du dossier est ce que les tests passent en argument ; le garder court, à cause de la
-  limite de 260 caractères de Windows (§ 7) ;
+  limite de 260 caractères de Windows (section 7) ;
 - fichiers en ASCII et en CRLF, comme le reste du dépôt ;
 - ajouter un scénario ne demande pas de reconfigurer CMake ; ajouter la ligne CSV qui s'en sert,
   oui ;
@@ -714,10 +720,10 @@ Le reste de la marche à suivre :
 |---|---|---|
 | Structure lue (lacune 1) | **fait au lot 2** | aucune : racine, `LP3` ; `stdconstraints` a reçu l'output `TEST2` |
 | Lecture groupée (lacune 2) | **fait au lot 2** | aucune : 7 combinaisons de scénarios existants |
-| Tests négatifs (lacune 3) | **fait au lot 2** | `INVALID_undefinedoutput` (34), `INVALID_undefinedattribute` (19), `INVALID_undefinedaggregate` (19), `INVALID_invalidnumber` (12), `INVALID_undefinedyield` (8), `INVALID_leakingtransition` (38), `INVALID_unclosedforloop` (81) : chacun copie une section de la racine et n'en change qu'une ligne, commentée en tête. `INVALID_sourcecondition` (31) s'y ajoute au lot 3, désactivé tant que le défaut 4 du § 2.7 tient |
-| Opérateurs de yields complexes | **fait au lot 2** | deux blocs `*YC` à valeurs calculables à la main : `yieldoperators`, mélangé à des équations numériques (§ 2.7), et `yieldoperatorsalone`, sans équation numérique, où les mêmes opérateurs sont justes |
+| Tests négatifs (lacune 3) | **fait au lot 2** | `INVALID_undefinedoutput` (34), `INVALID_undefinedattribute` (19), `INVALID_undefinedaggregate` (19), `INVALID_invalidnumber` (12), `INVALID_undefinedyield` (8), `INVALID_leakingtransition` (38), `INVALID_unclosedforloop` (81) : chacun copie une section de la racine et n'en change qu'une ligne, commentée en tête. `INVALID_sourcecondition` (31) s'y ajoute au lot 3, désactivé tant que le défaut 4 de la section 2.7 tient |
+| Opérateurs de yields complexes | **fait au lot 2** | deux blocs `*YC` à valeurs calculables à la main : `yieldoperators`, mélangé à des équations numériques (section 2.7), et `yieldoperatorsalone`, sans équation numérique, où les mêmes opérateurs sont justes |
 | Opérabilité, transitions, vieillissement (lacune 4) | **fait au lot 3** | racine pour les 5 actions et le `_DEATH` ; `transitions` pour les proportions 60/40, l'`_AGE` et le `_LOCK` de cible, et deux sources conditionnées par `@AGE` et `@YLD` |
-| Fonctions de yield qu'aucun scénario n'utilise | **fait au lot 3** sauf `_ENDPOINT` et `_DELTA` (sémantique à clarifier) | `yieldoperatorsalone` (`_SHIFT`, `_MAX`, `_MIN`, `_YTP`, `_DISTANCE`, `_MAI`, `_CAI`) ; `timeyields` pour un yield de temps et `_DISCOUNTFACTOR` (§ 2.7) |
+| Fonctions de yield qu'aucun scénario n'utilise | **fait au lot 3** sauf `_ENDPOINT` et `_DELTA` (sémantique à clarifier) | `yieldoperatorsalone` (`_SHIFT`, `_MAX`, `_MIN`, `_YTP`, `_DISTANCE`, `_MAI`, `_CAI`) ; `timeyields` pour un yield de temps et `_DISCOUNTFACTOR` (section 2.7) |
 | `*PARTIAL`, `*STRATA`, `_SEQ`, `_INVLOCK` | texte seul, à confirmer | liste heuristique : vérifier d'abord dans les parseurs que ces mots-clés existent |
 | Rejeu `FMTsetsolution` (lacune 7) | texte seul | `LP` a une cédule, mais le test exige un output `OVOLTOTREC` codé en dur : scénario bidon qui définit `OVOLTOTREC`, ou nom d'output en argument (il optimise déjà en MOSEK) |
 | SES, rastérisation | carte existante | aucune |
@@ -732,15 +738,15 @@ Le reste de la marche à suivre :
 
 ## 5. Journal des lots
 
-### Lot 0 : analyse et ce fichier (2026-09-16)
+### 5.1 Lot 0 : analyse et ce fichier (2026-09-16)
 
 **Statut** : livré le 2026-09-16. Documentation seulement, aucun code modifié.
 
 - Exploration de l'infrastructure (CSV, `CMakeLists.txt`, dernier `LastTest.log`), des sources
   des tests base et de TWD_land ; décisions de Gabriel en section 1.
 - Constats :
-  - deux lignes de `basetests.csv` ignorées (§ 2.5) ;
-  - 17 exécutables base sans vérification (§ 2.3), trois vérifications mortes (§ 2.4) ;
+  - deux lignes de `basetests.csv` ignorées (section 2.5) ;
+  - 17 exécutables base sans vérification (section 2.3), trois vérifications mortes (section 2.4) ;
   - `sumandavgtest` réécrit `Examples/Models/TWD_land/Scenarios/sumavg/TWD_land._seq` à chaque
     ctest (`FMTPlanningTask` reçoit le fichier primaire) ; contenu identique pour l'instant ;
   - ctest tourne avec `-j 8` et les 3 lignes de `testreadwriteproject` écrivent dans le même
@@ -749,7 +755,7 @@ Le reste de la marche à suivre :
   - `cmake/BaseInstall.cmake` lance ctest sans vérifier son résultat (consigné, pas proposé).
 - Tests BFEC désignés par exécutable seulement ; pas de chemin privé dans ce fichier.
 
-### Lot 1 : filets et en-tête commun (2026-09-16)
+### 5.2 Lot 1 : filets et en-tête commun (2026-09-16)
 
 **Statut** : livré le 2026-09-16, compilé par Gabriel le 2026-09-17, **validé** le 2026-09-17 :
 suite base de 83 tests, 82 verts et `teststdconstraints` désactivé, en 9,3 s avec `-j 8` (voir
@@ -761,7 +767,7 @@ suite base de 83 tests, 82 verts et `teststdconstraints` désactivé, en 9,3 s a
   - `RESOURCE_LOCK` pour 4 exécutables ;
   - lignes de `knownbugs.csv` inscrites `DISABLED` ;
   - tests `ExamplesModelsSnapshot` et `ExamplesModelsUnchanged` ;
-  - `enable_testing()` sort de la boucle des CSV (§ 2.1).
+  - `enable_testing()` sort de la boucle des CSV (section 2.1).
 - **Verrous confirmés à la lecture des sources** :
   - `testreadwriteproject` : ses 3 lignes écrivent `tests/testreadwriteproject/test.pri` ;
   - `testOAschedulerBFEC` : ses 2 lignes écrivent `tests/testOAschedulerBFEC/bfecoptsol.yld` ;
@@ -774,14 +780,14 @@ suite base de 83 tests, 82 verts et `teststdconstraints` désactivé, en 9,3 s a
 - **`cmake/TestsDataSnapshot.cmake`** : empreinte SHA256 de `Examples/Models`, sans git.
 - **`cmake/ConfigFunctions.cmake`** : `Examples/C++/tests` dans les inclusions de
   `createexecutable`.
-- **`Examples/C++/tests/TestTools.h`** : § 1, « Patron d'un test ».
+- **`Examples/C++/tests/TestTools.h`** : section 1.5, « Patron d'un test ».
 - **`sumandavgtest.cpp`** :
   - travaille sur `tests/sumandavgtest/TWD_land`, une copie ;
   - écrit ses sorties dans `tests/sumandavgtest/outputs`, hors du dossier de la copie ;
   - rend 77 sans OSI ;
   - édité octet par octet, cp1252 conservé.
 - **CSV** : `coordinatetest` retiré de `basetests.csv` ; `stdconstraints` devient
-  `teststdconstraints` dans `knownbugs.csv` (§ 2.5).
+  `teststdconstraints` dans `knownbugs.csv` (section 2.5).
 - **Écarts au plan** :
   - `teststdconstraints` devait recevoir un objectif attendu, mais son scénario ne se lit pas :
     il est désactivé, et sa réécriture passe au lot 2 ;
@@ -829,14 +835,14 @@ Validation (après le build de Gabriel, 2026-09-17) :
 - **Nettoyage** : `build/release/tests/sumandavgtest/` garde `TWD_land.csv` et `sumavg.csv`, écrits
   par l'ancien emplacement des sorties. Ce sont des restes sans effet.
 
-### Lot 2 : lecture (2026-09-17)
+### 5.3 Lot 2 : lecture (2026-09-17)
 
 **Statut** : livré le 2026-09-17 dans le worktree `new_test`, compilé par Gabriel le 2026-09-17,
 **validé** le 2026-09-17 : suite base de 167 tests, 159 verts et 8 désactivés, en 13,8 s avec
-`-j 8` (voir « Validation » ci-dessous). Reste à inscrire le numéro des issues du § 2.7.
+`-j 8` (voir « Validation » ci-dessous). Reste à inscrire le numéro des issues de la section 2.7.
 
 - **Trois exécutables** dans `Examples/C++/` :
-  - `testScenarioReading` : requêtes sur un scénario lu (§ 1, « Patron d'un test ») ;
+  - `testScenarioReading` : requêtes sur un scénario lu (section 1.5, « Patron d'un test ») ;
   - `testJointScenarioReading` : scénarios lus ensemble ou un par un, comparés par leur
     écriture texte, dans `build/release/tests/testJointScenarioReading/<hachage>` ;
   - `testReadingErrors` : code `FMTexc` attendu, cherché dans toute la chaîne d'exceptions.
@@ -849,10 +855,10 @@ Validation (après le build de Gabriel, 2026-09-17) :
   valeur : interpolation linéaire, âge au-delà du dernier point (dernière valeur,
   `FMTYieldHandler::getLinearValue`), `_LENGTH` (`INT_MAX`), virgule des contraintes.
 - **`knownbugs.csv`** : la ligne `teststdconstraints` est remplacée par les 8 lignes des deux
-  bogues du § 2.7.
-- **`teststdconstraints.cpp` supprimé** (§ 2.5) ; `Scenarios/stdconstraints/TWD_land._out`
+  bogues de la section 2.7.
+- **`teststdconstraints.cpp` supprimé** (section 2.5) ; `Scenarios/stdconstraints/TWD_land._out`
   définit `TEST2`.
-- **Nouveaux scénarios** : `yieldoperators` et les 7 `INVALID_*` (§ 4.4).
+- **Nouveaux scénarios** : `yieldoperators` et les 7 `INVALID_*` (section 4.4).
 - **Correctif de `TestTools.h` (défaut du lot 1)** : `printException` appelait
   `std::rethrow_if_nested` sur une exception FMT dont le pointeur imbriqué est vide, donc
   `std::terminate`. Toute exception FMT qui s'échappait d'un test finissait en arrêt anormal
@@ -860,7 +866,7 @@ Validation (après le build de Gabriel, 2026-09-17) :
   comme `FMTExceptionHandler::throwNested`.
 - **Écarts au plan** :
   - `teststdconstraints` n'est pas réécrit mais remplacé par des lignes du test générique ;
-  - les bogues de yields (§ 2.7) ont été trouvés en posant les valeurs attendues des yields
+  - les bogues de yields (section 2.7) ont été trouvés en posant les valeurs attendues des yields
     complexes de la racine ; ils ont conduit au scénario `yieldoperators`.
 
 Vérifications (hors build, 2026-09-17) :
@@ -878,7 +884,7 @@ Vérifications (hors build, 2026-09-17) :
   - `testReadingErrors` avec le code attendu 0.
 - **`TestTools.h`** : auto-test étendu (exception imbriquée à la manière de FMT, `visitNested`),
   vert avec `cl /W4 /permissive-`.
-- **Bogues du § 2.7** recoupés avec l'exécutable officiel `testWrapperCoreGetYield` et avec
+- **Bogues de la section 2.7** recoupés avec l'exécutable officiel `testWrapperCoreGetYield` et avec
   `FMTNsstest` (planification), sur trois builds.
 - **Encodages** : fichiers nouveaux en ASCII et CRLF ; aucun U+FFFD introduit.
 
@@ -911,23 +917,23 @@ Validation (après le build de Gabriel, 2026-09-17) :
   Les mêmes commandes avec les bonnes valeurs rendent 0. Sur le code faux, le message liste
   la chaîne (`FMTexc(53)` quatre fois, puis `FMTexc(34)`) et le test rend 1 : le correctif de
   `TestTools.h` tient.
-- **Lignes de `knownbugs.csv` lancées à la main** : les 8 échouent encore, avec les valeurs du
-  § 2.7 (36 ; 8,82975442 ; 5 ; 6 ; 120 ; 5 ; 5 ; 5).
+- **Lignes de `knownbugs.csv` lancées à la main** : les 8 échouent encore, avec les valeurs de la
+  section 2.7 (36 ; 8,82975442 ; 5 ; 6 ; 120 ; 5 ; 5 ; 5).
 - **Durées des nouveaux tests** sous `-j 8` :
   - `testScenarioReading` : 5,7 s cumulées pour 63 lignes, 0,17 s au plus ;
   - `testJointScenarioReading` : 13,3 s pour 7 lignes, dont 9,85 s pour la ligne
     `fullcarbon` (4,3 s lancée seule) ;
   - `testReadingErrors` : 23,5 s pour 7 lignes, mais de 0,05 à 0,08 s par ligne lancée
-    seule. Ce sont les tests d'optimisation lancés en même temps qui ralentissent tout (§ 8).
+    seule. Ce sont les tests d'optimisation lancés en même temps qui ralentissent tout (section 8).
 
-### Complément du lot 2 : démonstrations du § 2.7 (2026-09-17)
+### 5.4 Complément du lot 2 : démonstrations de la section 2.7 (2026-09-17)
 
 **Statut** : livré le 2026-09-17 (12 lignes CSV et deux scénarios, aucun code), **validé** le
 2026-09-18 après la reconfiguration de Gabriel : 179 tests inscrits, 168 verts, 11 désactivés,
 13,7 s réelles. Les 9 lignes de `yieldoperatorsalone` coûtent 0,5 s en tout.
 
 - Demandé par Gabriel, qui doutait de la description du deuxième bogue. La cause a été trouvée
-  dans le code et démontrée avec les exécutables du build (§ 2.7) : ce n'est pas « `_SUM` ne
+  dans le code et démontrée avec les exécutables du build (section 2.7) : ce n'est pas « `_SUM` ne
   garde que la dernière source », mais la conversion en `_EQUATION` de tout un bloc `*YC` dès
   qu'une de ses équations contient un nombre ou une constante. Un troisième défaut est apparu
   au passage : sans thème indexé, une constante d'équation vaut 0.
@@ -940,11 +946,11 @@ Validation (après le build de Gabriel, 2026-09-17) :
   `GROWTH` (`_MAI`) et `CONSTANT` (`_EQUATION(#TWO*3)`), inscrits dans `knownbugs.csv`. Ils
   rendent 120, 120 et 0.
 - Vérifications : les 9 lignes base passent et ont été vues rouges avec une valeur fausse ; les
-  3 lignes connues échouent avec les valeurs du § 2.7 ; au rejeu des CSV découpés comme
+  3 lignes connues échouent avec les valeurs de la section 2.7 ; au rejeu des CSV découpés comme
   `Examples/C++/CMakeLists.txt`, 176 noms de tests, aucun doublon. La suite déjà inscrite
   (167 tests) reste verte après la modification du scénario `yieldoperators`.
 
-### Lot 3 : objets du cœur (2026-09-18)
+### 5.5 Lot 3 : objets du cœur (2026-09-18)
 
 **Statut** : livré le 2026-09-18, compilé par Gabriel le même jour, **validé** : 213 tests base
 inscrits, 198 verts, 15 désactivés, 12,9 s. Le worktree a maintenant son `BFECtests.csv` :
@@ -965,11 +971,11 @@ inscrits, 198 verts, 15 désactivés, 12,9 s. Le worktree a maintenant son `BFEC
   - 5 sur `yieldoperatorsalone` (`_SHIFT`, `_MAX`, `_MIN`, `_YTP`, `_DISTANCE`) ;
   - 4 sur le nouveau scénario `timeyields` (yield de temps lu par période, valeur tenue après
     la dernière période).
-- **3 lignes désactivées** : `_DISCOUNTFACTOR` (§ 2.7, défaut 3).
+- **3 lignes désactivées** : `_DISCOUNTFACTOR` (section 2.7, défaut 3).
 - **Valeurs** calculées à la main depuis `TWD_land.trn`, `.act`, `.lif` et la table d'âge de la
   racine.
 - **Écarts au plan** : `_ENDPOINT` et `_DELTA` ne sont pas couverts, leur sémantique restant à
-  clarifier ; `_DISTANCE` est testé avec des bornes qui évitent son ambiguïté d'âge (§ 7).
+  clarifier ; `_DISTANCE` est testé avec des bornes qui évitent son ambiguïté d'âge (section 7).
 
 Vérifications (hors build, 2026-09-18) :
 
@@ -980,7 +986,7 @@ Vérifications (hors build, 2026-09-18) :
 - **Vu rouge** des 30 lignes base : valeur faussée sans recompiler, aucune ne survit.
 - **Syntaxe des sources de transition** : une sonde montre que `@AGE(10.._MAXAGE)` et
   `@YLD(volumetotal,100.._MAXAGE)` sont bien lues, alors que `_AGE >= 10`, `@AGE(12)`,
-  `@AGE(10..)` et `@YLD(y,100..)` sont ignorées sans message (§ 7).
+  `@AGE(10..)` et `@YLD(y,100..)` sont ignorées sans message (section 7).
 - **Encodages** : nouveaux fichiers en ASCII et CRLF ; aucun U+FFFD introduit.
 
 Validation (après le build de Gabriel, 2026-09-18) :
@@ -988,10 +994,10 @@ Validation (après le build de Gabriel, 2026-09-18) :
 - **Suite base** (`-E "T:/" -j 8`) : 212 tests, 198 verts, 14 « Not Run (Disabled) », 11,3 s
   réelles. Les 22 lignes `OPERATE`, `GROW`, `transitions` et `timeyields` coûtent 1,9 s en
   tout. Après l'ajout du complément ci-dessous et une reconfiguration : 213 tests,
-  198 verts, 15 désactivés, 12,9 s réelles et 99,7 s cumulées (§ 8).
+  198 verts, 15 désactivés, 12,9 s réelles et 99,7 s cumulées (section 8).
 - **Vu rouge sur le vrai build** : `OPERATE` avec un âge faux, `GROW` avec un verrou faux,
   `OPERABLE` verrouillé inversé et la forme `FMTexc(41)` au lieu de `FMTexc(79)` rendent 1.
-- **Les lignes désactivées**, lancées à la main, échouent toutes avec les valeurs du § 2.7,
+- **Les lignes désactivées**, lancées à la main, échouent toutes avec les valeurs de la section 2.7,
   dont les trois du `_DISCOUNTFACTOR` (0,000128600823 et 1,65e-08).
 - **Fixture** verte et `git status` inchangé sous `Examples/Models`.
 
@@ -1001,7 +1007,7 @@ est un défaut. Le scénario `INVALID_sourcecondition` et sa ligne désactivée 
 La ligne échoue aujourd'hui, la lecture ne levant rien, et une requête `OPERATE` montre au
 passage qu'un développement de 5 ans passe par une source qui demande 10 ans.
 
-### Lot 4 : construction et optimisation (2026-09-18)
+### 5.6 Lot 4 : construction et optimisation (2026-09-18)
 
 **Statut** : livré le 2026-09-18, compilé par Gabriel le même jour, **validé** : 226 tests base
 inscrits, 211 verts, 15 désactivés, 22,0 s réelles et 169,2 s cumulées.
@@ -1046,25 +1052,24 @@ Validation (après le build de Gabriel, 2026-09-18) :
 
 ## 6. Prochain lot
 
-### État au 2026-09-25
+### 6.1 État au 2026-09-25
 
-- Lots 0 à 4 livrés, validés et commités ; rien ne bloque. Les quatre défauts du § 2.7 ont leur
-  issue (#346, #347, #357, #358), et la suite base est verte : 226 tests, 211 verts,
+- Lots 0 à 4 livrés, validés et commités ; rien ne bloque. Les quatre défauts de la section 2.7 ont
+  leur issue (#346, #347, #357, #358), et la suite base est verte : 226 tests, 211 verts,
   15 désactivés.
-- Les lacunes de la chaîne sont listées ci-dessous et au § 3 ; elles ne sont suivies que dans ce
-  fichier, pas dans des issues GitHub.
+- Les lacunes de la chaîne sont listées ci-dessous et en section 3.1 ; elles ne sont suivies que
+  dans ce fichier, pas dans des issues GitHub.
 - **Décision du 2026-09-25 : ce chantier va jusqu'à la fermeture de l'issue #350** (« Add
   comprehensive unit tests for the Core namespace », jalon FMT2.0). Il absorbe donc le volet des
-  tests unitaires, en gardant son ordre par criticité. Le tableau du § 0 dit quel lot répond à
-  quelle demande de l'issue ; la feuille de route ci-dessous va du lot 5 au lot 9, et les
-  conditions de fermeture sont à la fin.
+  tests unitaires, en gardant son ordre par criticité. Le tableau de la section 0.4 dit quel lot
+  répond à quelle demande de l'issue ; la feuille de route ci-dessous va du lot 5 au lot 9, et les
+  conditions de fermeture sont en section 6.3.10.
 
-### Décisions encore ouvertes
+### 6.2 Décisions encore ouvertes
 
 Prises le 2026-09-25 : GoogleTest pour la seule cible unitaire, couverture et inventaire par
-classe dans la documentation, ménage du permanent remis à plus tard (§ 0). Restent :
-
-Tout ce qui engageait la forme du travail est tranché (§ 1). Restent :
+classe dans la documentation, ménage du permanent remis à plus tard (section 0.4). Tout ce qui
+engageait la forme du travail est tranché (section 1.2). Restent :
 
 | Décision | Quand | Remarque |
 |---|---|---|
@@ -1072,7 +1077,7 @@ Tout ce qui engageait la forme du travail est tranché (§ 1). Restent :
 | Suivi des lots dans GitHub | quand le lot 6 démarre | un commentaire par lot sous #350, qui demande des changements focalisés |
 | Langue et contenu d'`AGENTS.md` | à la demande | il est en anglais et sa section « Language » ne dit rien des issues ni des demandes de tirage |
 
-### Feuille de route jusqu'à la fermeture de #350
+### 6.3 Feuille de route jusqu'à la fermeture de #350
 
 **L'ordre reste celui du risque, pas celui de la couverture.** On finit d'abord la chaîne, parce
 qu'une étape entière sans test de valeur est plus urgente qu'une classe déjà exercée
@@ -1085,7 +1090,7 @@ Chaque lot vaut une demande de tirage, comme #350 le souhaite : des changements 
 qu'un gros lot unique.
 
 
-#### D'abord : corriger les quatre défauts du § 2.7 — session séparée
+#### 6.3.1 D'abord : corriger les quatre défauts de la section 2.7 — session séparée
 
 Décision du 2026-09-25 : les défauts #346, #347, #357 et #358 sont corrigés **avant la suite du
 chantier**, dans une session distincte de celle qui écrit les tests. Ce chantier ne touche pas à
@@ -1105,15 +1110,15 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
 
 1. relancer la suite : les 15 lignes désactivées doivent passer au vert ;
 2. les déplacer de `knownbugs.csv` vers `basetests.csv`, en le justifiant au journal (règle 9) ;
-3. revérifier les valeurs attendues des tests qui dépendaient des yields touchés (§ 2.7) ;
+3. revérifier les valeurs attendues des tests qui dépendaient des yields touchés (section 2.7) ;
 4. reprendre la feuille de route au lot 5.
 
-#### Lot 5 : écriture et relecture (lacune 8) — effort `high`
+#### 6.3.2 Lot 5 : écriture et relecture (lacune 8) — effort `high`
 
-- **Pourquoi.** C'est la dernière étape de la chaîne du § 0 sans aucun test de valeur. FMT écrit
-  des modèles que d'autres relisent : sauvegarde depuis l'interface, modèle présolvé écrit pour
-  inspection, projet transformé par une tâche. Les deux défauts d'écriture du § 7 n'ont été vus
-  qu'en écrivant un modèle à la main au lot 2, par hasard.
+- **Pourquoi.** C'est la dernière étape de la chaîne de la section 0.1 sans aucun test de valeur.
+  FMT écrit des modèles que d'autres relisent : sauvegarde depuis l'interface, modèle présolvé écrit
+  pour inspection, projet transformé par une tâche. Les deux défauts d'écriture de la section 7
+  n'ont été vus qu'en écrivant un modèle à la main au lot 2, par hasard.
 - **Comment.** L'aller-retour est métamorphique, donc sans valeur de référence à maintenir :
   écrire un modèle lu dans `build/release/tests/`, le relire, le réécrire, et comparer les deux
   écritures fichier par fichier. `testJointScenarioReading` fait déjà cette comparaison ligne à
@@ -1121,18 +1126,18 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
   comparer.
 - **Où.** Un exécutable de plus dans `Examples/C++/`, sur le patron des tests génériques, plus
   des vérifications ajoutées à `testreadwriteproject`, `Simpleplanning`, `createmodel` et
-  `nonspatialupdate`, qui tournent aujourd'hui sans rien vérifier (§ 2.3), et la vérification
-  morte de `testaddtomodel` à réparer (§ 2.4).
-- **Attention.** Les défauts 1 et 2 du § 2.7 font échouer l'aller-retour dès qu'un scénario
+  `nonspatialupdate`, qui tournent aujourd'hui sans rien vérifier (section 2.3), et la vérification
+  morte de `testaddtomodel` à réparer (section 2.4).
+- **Attention.** Les défauts 1 et 2 de la section 2.7 font échouer l'aller-retour dès qu'un scénario
   utilise `_SUM` ou un objectif `_PENALTY` : ce sont des lignes désactivées dans
   `knownbugs.csv`, pas un contournement à écrire dans le test.
 
-#### Lot 6 : socle unitaire de Core (jalon 1 de #350) — effort `high`
+#### 6.3.3 Lot 6 : socle unitaire de Core (jalon 1 de #350) — effort `high`
 
 - **Pourquoi.** Sans cible ni inventaire, les lots suivants n'ont nulle part où aller. C'est
   aussi ce qui débloque la fermeture de #350 : sa première demande est un socle, pas des tests.
 - **Quoi.**
-  1. **Ajouter GoogleTest** (décision prise, § 0) : dépendance de la seule cible des tests
+  1. **Ajouter GoogleTest** (décision prise, section 0.4) : dépendance de la seule cible des tests
      unitaires, déclarée dans `vcpkg.json` — `AGENTS.md` interdit d'y toucher hors d'une tâche
      de dépendances, celle-ci en est une. Un build sans GoogleTest doit continuer de compiler
      FMT et de lancer les tests de chaîne.
@@ -1140,8 +1145,8 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
      `LABELS "unit;core"` pour que `ctest -L core` fonctionne, et respectant
      `-DWITHOUT_TESTING=ON`.
   3. **`Documentation/Testing/CoreTestCoverage.md`** : l'inventaire par classe que demande #350,
-     avec ses colonnes. La colonne « Priority » se remplit depuis le § 3 de ce fichier plutôt que
-     d'être réinventée. L'inventaire se génère depuis les en-têtes, pour qu'aucune classe ne
+     avec ses colonnes. La colonne « Priority » se remplit depuis la section 3 de ce fichier plutôt
+     que d'être réinventée. L'inventaire se génère depuis les en-têtes, pour qu'aucune classe ne
      manque.
   4. **Trois tests témoins**, ceux qui auraient attrapé nos défauts sans enquête :
      `FMTOperator::precedence`, `FMTBounds::in` aux bornes, `FMTSpec::allowWithoutYield`.
@@ -1150,11 +1155,11 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
 - **Où ça s'insère.** `Tests/` est un dossier neuf, à côté de `Examples/C++/`. Les deux suites
   cohabitent dans le même ctest ; l'étiquette `core` permet de ne lancer que l'unitaire.
 
-#### Lot 7 : unitaires des classes déjà suspectes (jalons 2 à 4 de #350) — effort `high`
+#### 6.3.4 Lot 7 : unitaires des classes déjà suspectes (jalons 2 à 4 de #350) — effort `high`
 
 - **Pourquoi cet ordre plutôt que celui de #350.** #350 ordonne par nature (types de valeur,
-  puis expressions, puis rendements). On ordonne par risque constaté : les classes où le § 2.7 a
-  déjà trouvé un défaut passent devant.
+  puis expressions, puis rendements). On ordonne par risque constaté : les classes où la section 2.7
+  a déjà trouvé un défaut passent devant.
 - **Ordre proposé.**
   1. `FMTOperator`, `FMTExpression`, `FMTFunctionCall` — défaut #346, et c'est le moteur de toute
      équation de rendement ;
@@ -1165,14 +1170,14 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
 - **Quoi pour chacune.** Construction, copie, comparaison, hachage quand il existe, bornes,
   entrées invalides et exceptions attendues, comme le détaille #350.
 
-#### Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
+#### 6.3.5 Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
 
 `FMTAction`, `FMTTransition`, `FMTSchedule`, `FMTEvent`, `FMTOutput` et ses nœuds,
 `FMTConstraint`, `FMTGraphStats` et les types spatiaux. Ces classes sont déjà exercées par les
 tests de chaîne des lots 3 et 4 : le travail consiste à descendre au niveau de l'objet construit
 dans le test, là où les copies, les comparaisons et les cas limites deviennent atteignables.
 
-#### Lot 9 : exigences transverses de #350 — effort `xhigh`
+#### 6.3.6 Lot 9 : exigences transverses de #350 — effort `xhigh`
 
 - **Sérialisation** : aller-retour sur les types sérialisables, et compatibilité avec des
   archives existantes si on en garde.
@@ -1189,7 +1194,7 @@ dans le test, là où les copies, les comparaisons et les cas limites deviennent
   la fin d'un lot ; le rapport n'est consigné dans `Documentation/Testing/` qu'au moment des
   versions (décision du 2026-09-25).
 
-#### Compléments des lacunes 6 et 7 — effort `medium` à `high`
+#### 6.3.7 Compléments des lacunes 6 et 7 — effort `medium` à `high`
 
 Les statistiques par période tiennent dans une requête de plus, d'où `medium` ; `setSolution` demande de lire l'API du rejeu, d'où `high`.
 
@@ -1202,22 +1207,22 @@ Les statistiques par période tiennent dans une requête de plus, d'où `medium`
   qu'utilisent la replanification et `FMTsetsolution` ; ils méritent leur propre test, avec le
   même patron métamorphique.
 
-#### Lots suivants : niveaux 2 et 3 — effort `high`
+#### 6.3.8 Lots suivants : niveaux 2 et 3 — effort `high`
 
-Le § 3 les détaille. Le niveau 2 (tâches, SES, cartes, NSS, Core du wrapper) demande surtout des
-vérifications dans des tests qui tournent déjà sans rien vérifier. Le niveau 3 (recuit simulé,
-ordonnanceur d'aires d'opération, transformations d'actions, modèles ONNX) demande d'abord des
-données : le § 4 dit lesquelles sont montables à partir de la carte existante et lesquelles
-exigent une carte synthétique.
+Les sections 3.4 et 3.5 les détaillent. Le niveau 2 (tâches, SES, cartes, NSS, Core du wrapper)
+demande surtout des vérifications dans des tests qui tournent déjà sans rien vérifier. Le niveau 3
+(recuit simulé, ordonnanceur d'aires d'opération, transformations d'actions, modèles ONNX) demande
+d'abord des données : la section 4 dit lesquelles sont montables à partir de la carte existante et
+lesquelles exigent une carte synthétique.
 
-#### Proposition sans retour : modèles BFEC — effort `xhigh`
+#### 6.3.9 Proposition sans retour : modèles BFEC — effort `xhigh`
 
 Effort `xhigh` : c'est une enquête, pas une tâche balisée. Relever, dans les modèles du ministère, les blocs `*YC` qui mélangent une équation numérique et
-un autre opérateur, pour mesurer l'effet réel du défaut 2 du § 2.7. Ce relevé se fait en lecture
-seule, avec la sonde du lot 2 ; il dirait si des modèles de production calculent aujourd'hui des
-rendements faux.
+un autre opérateur, pour mesurer l'effet réel du défaut 2 de la section 2.7. Ce relevé se fait en
+lecture seule, avec la sonde du lot 2 ; il dirait si des modèles de production calculent aujourd'hui
+des rendements faux.
 
-#### Fermer #350
+#### 6.3.10 Fermer #350
 
 L'issue peut être fermée quand, ensemble :
 
@@ -1225,12 +1230,12 @@ L'issue peut être fermée quand, ensemble :
 - `ctest -L core` tourne, et la suite de chaîne reste verte ;
 - les exigences transverses du lot 9 sont satisfaites ou explicitement écartées dans l'issue, en
   disant pourquoi ;
-- les quatre défauts du § 2.7 sont corrigés ou portés par un test unitaire en plus de leur ligne
-  désactivée ;
+- les quatre défauts de la section 2.7 sont corrigés ou portés par un test unitaire en plus de leur
+  ligne désactivée ;
 - ce fichier et `CoreTestCoverage.md` disent chacun ce qu'ils couvrent et pointent l'un vers
   l'autre.
 
-Le jour de la fermeture, écrire au § 0 ce qui l'a fermée, et ce que ce chantier reprend ou
+Le jour de la fermeture, écrire en section 0.4 ce qui l'a fermée, et ce que ce chantier reprend ou
 abandonne.
 
 ## 7. Pièges connus
@@ -1353,7 +1358,7 @@ abandonne.
 À refaire à la fin de chaque lot, après le build de Gabriel. Les nombres se lisent dans la
 sortie console du passage de ctest : le total après « tests passed », le temps réel après
 « Total Test time », et la somme des temps par test pour la durée cumulée. Ne pas les chercher
-dans `LastTest.log`, que le moindre appel à ctest réécrit (§ 7).
+dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 
 
 | Date | Tests base inscrits | Durée cumulée | Exécutables base | Sans vérification | Vérifications mortes | Lignes CSV ignorées | Désactivés | Exécutables BFEC seulement |
@@ -1370,12 +1375,12 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (§ 7).
   La somme des « Test time » de `LastTest.log` varie avec la charge : avec `-j 8`, les tests
   base lancés ensemble se ralentissent entre eux. Les 65,7 s du lot 1 ne se comparent donc pas
   aux 51 s du lot 0, mesurées dans le passage complet. Au lot 2, la somme vient de la sortie
-  console : `LastTest.log` avait été réécrit (§ 7).
+  console : `LastTest.log` avait été réécrit (section 7).
 - Exécutables base : premières colonnes distinctes de `basetests.csv` qui nomment une cible.
 - Lignes CSV ignorées : alertes `no target named` à la configuration. Sans la sortie de la
   configuration, compter les lignes des CSV absentes de `ctest -N` (lot 2).
 - Désactivés : lignes de `knownbugs.csv`.
 - Depuis le lot 1 du chantier #349 (`Tests/Performance/ETAT.md`, 2026-09-25), la suite base compte
-  aussi les lignes `FMTPerformanceTests.*` (étiquette `performance`, 7 au lot 1), qui lisent le
-  scénario `perfyields` de TWD_land, créé pour elles. Pour comparer avec les lignes ci-dessus,
-  ajouter `-LE performance` aux commandes.
+  aussi les lignes `FMTPerformanceTests.*` (étiquette `performance` ; 7 au lot 1, 13 au lot 2),
+  qui lisent TWD_land, dont le scénario `perfyields`, créé pour elles. Pour comparer avec les
+  lignes ci-dessus, ajouter `-LE performance` aux commandes.

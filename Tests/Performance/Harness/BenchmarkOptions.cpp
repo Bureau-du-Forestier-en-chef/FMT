@@ -114,7 +114,7 @@ namespace
 		const long long COUNT = std::strtoll(p_text.c_str(), &end, 10);
 		if (p_text.empty() || end != p_text.c_str() + p_text.size() || COUNT < 0)
 		{
-			throw std::invalid_argument(p_context + ": \"" + p_text + "\" is not a count of allocations");
+			throw std::invalid_argument(p_context + ": \"" + p_text + "\" is not a count");
 		}
 		return static_cast<std::int64_t>(COUNT);
 	}
@@ -265,6 +265,10 @@ namespace Performance
 		{
 			m_boundOverride = toCount(p_value, "--max-allocations");
 		}
+		else if (p_option == "--max-retained-bytes")
+		{
+			m_retainedBoundOverride = toCount(p_value, "--max-retained-bytes");
+		}
 		else if (p_option == "--output")
 		{
 			m_outputFile = p_value;
@@ -299,7 +303,7 @@ namespace Performance
 			const std::string CONTEXT = m_expectationsFile.string() + ", row " + std::to_string(rowNumber);
 			if (FIELDS.size() < 3)
 			{
-				throw std::invalid_argument(CONTEXT + ": expected <executable>;<benchmark>;<result>[;<allocations>]");
+				throw std::invalid_argument(CONTEXT + ": expected <executable>;<benchmark>;<result>[;<allocations>[;<retained bytes>]]");
 			}
 			Expectation expectation;
 			expectation.result = toNumber(FIELDS.at(2), CONTEXT);
@@ -307,21 +311,25 @@ namespace Performance
 			{
 				expectation.maximumAllocations = toCount(FIELDS.at(3), CONTEXT);
 			}
+			if (FIELDS.size() > 4 && !FIELDS.at(4).empty())
+			{
+				expectation.maximumRetainedBytes = toCount(FIELDS.at(4), CONTEXT);
+			}
 			m_expectations[FIELDS.at(1)] = expectation;
 		}
 	}
 
-	// --expected and --max-allocations replace the expectation of one benchmark, so that a check
-	// can be seen failing without editing the expectations file.
+	// --expected, --max-allocations and --max-retained-bytes replace the expectation of one
+	// benchmark, so that a check can be seen failing without editing the expectations file.
 	void BenchmarkOptions::_applyOverrides()
 	{
-		if (!m_expectedOverride.has_value() && !m_boundOverride.has_value())
+		if (!m_expectedOverride.has_value() && !m_boundOverride.has_value() && !m_retainedBoundOverride.has_value())
 		{
 			return;
 		}
 		if (!m_exactName)
 		{
-			throw std::invalid_argument("--expected and --max-allocations apply to the benchmark named by --benchmark");
+			throw std::invalid_argument("--expected, --max-allocations and --max-retained-bytes apply to the benchmark named by --benchmark");
 		}
 		Expectation& expectation = m_expectations[m_pattern];
 		if (m_expectedOverride.has_value())
@@ -331,6 +339,10 @@ namespace Performance
 		if (m_boundOverride.has_value())
 		{
 			expectation.maximumAllocations = m_boundOverride;
+		}
+		if (m_retainedBoundOverride.has_value())
+		{
+			expectation.maximumRetainedBytes = m_retainedBoundOverride;
 		}
 	}
 }

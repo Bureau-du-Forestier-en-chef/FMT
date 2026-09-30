@@ -13,6 +13,7 @@ Tests protect behavior; benchmarks show performance effects. Neither replaces th
 | `Tests/Performance/Harness/` | The harness, a static library (`FMTBenchmarkHarness`): timing, allocation monitor, memory, checks, JSON results. It does not depend on the benchmarks. |
 | `Tests/Performance/FMTPerformanceTests.cpp` | The benchmark executable, `FMTPerformanceTests`. |
 | `Tests/Performance/*Benchmarks.cpp` | The benchmarks, one file per group. |
+| `Tests/Performance/PerfYields.h`, `.cpp` | The `perfyields` scenario and its prepared yield requests, shared by the yield benchmarks. |
 | `Tests/Performance/performance.csv` | One row per benchmark: its registration with ctest, its expected result and its allocation bound. |
 | `Tests/Performance/CompareResults.cmake` | Compares the results of two runs. |
 | `Examples/Models/TWD_land/Scenarios/perfyields/` | The data of the complex-yield benchmarks. |
@@ -22,13 +23,14 @@ Tests protect behavior; benchmarks show performance effects. Neither replaces th
 ### Short mode, with the tests
 
 Every row of `performance.csv` is a ctest test labelled `performance`, and also `allocation` when the
-row bounds the allocations. With the rest of the suite, the benchmarks run in a short mode: a few calls,
-enough to check that each one still builds, computes the expected result and respects its allocation
-bound.
+row bounds the allocations of a call, and `memory` when it bounds the memory a call keeps. With the rest
+of the suite, the benchmarks run in a short mode: a few calls, enough to check that each one still
+builds, computes the expected result and respects its bounds.
 
 ```bash
 ctest --test-dir build/release -C Release -L performance
 ctest --test-dir build/release -C Release -L allocation
+ctest --test-dir build/release -C Release -L memory
 ```
 
 The times printed in short mode, and in any run made with `-j`, are not measurements.
@@ -57,6 +59,7 @@ results to `build/release/tests/performance/<benchmark>.json`.
 | `--expectations <csv>` | Expected results and bounds. Default: `Tests/Performance/performance.csv`. |
 | `--expected <value>` | Replaces the expected result of the benchmark named by `--benchmark`. |
 | `--max-allocations <n>` | Replaces its allocation bound. |
+| `--max-retained-bytes <n>` | Replaces its bound on the memory a call keeps. |
 | `--output <json file>` | Results file. Default: `build/release/tests/performance/<selection>.json`. |
 | `--list` | Prints the names of the selected benchmarks and runs none. |
 
@@ -81,24 +84,47 @@ A benchmark is a class derived from `Performance::Benchmark`. The runner calls i
 5. **counted calls**, one at a time, with the allocation monitor installed: the allocations of each
    call, and its result.
 
-| Setting | Short mode | Full mode |
-| --- | --- | --- |
-| Warm-up calls | 3 | 100 |
-| Timed samples | 3 | 30 |
-| Minimum duration of a sample | 0.1 ms | 5 ms |
-| Counted calls | 20 | 1000 |
+| Setting | Short mode | Full mode | Slow operation, short mode | Slow operation, full mode |
+| --- | --- | --- | --- | --- |
+| Warm-up calls | 3 | 100 | 1 | 2 |
+| Timed samples | 3 | 30 | 2 | 10 |
+| Minimum duration of a sample | 0.1 ms | 5 ms | none: one call | none: one call |
+| Counted calls | 20 | 1000 | 3 | 20 |
+
+A slow operation, one that lasts milliseconds or more such as reading a project, says so in
+`Benchmark::getSettings`, which then returns `RunSettings::forSlowCalls`: its measurement lasts seconds,
+not hours.
+
+Before the first benchmark, the suite asks Windows not to throttle the process, and keeps the thread that
+measures on the fastest cores of the processor (`ProcessorPolicy`). A hybrid processor, such as the 13th
+generation of Intel Core, mixes performance cores with efficiency cores that run the same code up to 1.7
+times slower, and Windows moves a process whose window is in the background to the efficiency cores.
+Without this, a benchmark could run on either kind, and its times would jump.
+
+A full measurement then waits 250 ms before its first benchmark. On the Windows 11 machine where the
+suite was written, a process that has just read its first file is paused for about 30 ms some 50 ms
+later, and runs slower until then, even when it does nothing else; the suite reads `performance.csv`
+as it starts. Without the wait, every benchmark had one sample about 30 ms too long, and the median of
+a project read was a third too high. The short mode does not wait: its times are not a measurement.
 
 The counted calls are then checked against the row of the benchmark in `performance.csv`:
 
 - the result of the last call, and of every counted call, must equal the expected result, within a
   relative tolerance of 1e-6;
-- a typical call, the median of the counted calls, must not allocate more than the bound. A bound of
-  `0` is stricter: no counted call may allocate.
+- a typical call, the median of the counted calls, must not allocate more than the allocation bound. A
+  bound of `0` is stricter: no counted call may allocate;
+- a typical call must not keep more memory than the retained-memory bound: the bytes it allocates and
+  has not freed when it returns. A bound of `0` is stricter: no counted call may keep any.
 
-The bound applies to a typical call because some calls legitimately allocate more than others: a value
-put in a cache, a container that grows now and then. A bound of `0` states that a path does not allocate
-after preparation, which is what [Architecture.md](Architecture.md#preallocate-before-calculation) asks
-of calculation paths.
+The bounds apply to a typical call because some calls legitimately allocate more than others: a value
+put in a cache, a container that grows now and then. An allocation bound of `0` states that a path does
+not allocate after preparation, which is what
+[Architecture.md](Architecture.md#preallocate-before-calculation) asks of calculation paths. A
+retained-memory bound of `0` states that an operation leaves nothing behind: repeated, it does not grow
+the memory of the process.
+
+An allocation count that depends on the machine takes no bound: the count of a project read, for
+instance, grows with the length of the path of the project. It is still measured and compared.
 
 No check applies to the times. Timing thresholds may come once enough reference results exist.
 
@@ -120,7 +146,11 @@ Not counted:
 - modules linked to a static C runtime.
 
 Aligned blocks are counted, but left out of the live bytes. Outside Windows the monitor is not
-available: a row with an allocation bound is then reported as skipped.
+available: a row with an allocation or retained-memory bound is then reported as skipped.
+
+The memory a call keeps is the difference of the live bytes before and after it. The size of a freed
+block is read with `_msize`, which on the C runtime heap is the size that was asked for: on that heap,
+the retained bytes of a call are exact.
 
 The counts do not depend on the allocator: when mimalloc redirects `malloc`, the calls still go through
 the redirected imports, and the complex-yield benchmarks count the same allocations. Durations and
@@ -129,7 +159,9 @@ memory do depend on it, which is why every result records the allocator of its r
 ## Results
 
 Each run writes one JSON file: the environment of the run, then one entry per benchmark. The layout is
-version 1 of the schema; any change to it changes `schemaVersion` and this section.
+version 2 of the schema; any change to it changes `schemaVersion` and this section. Version 2 adds
+`processors`, the retained-memory fields and `maxRetainedBytesPerCall`; `CompareResults.cmake` still
+reads version 1 files.
 
 | Environment field | Meaning |
 | --- | --- |
@@ -140,6 +172,7 @@ version 1 of the schema; any change to it changes `schemaVersion` and this secti
 | `buildType`, `optimized` | Configuration of the build, and whether it was compiled with `NDEBUG`. |
 | `compiler`, `compilerVersion` | Compiler of the benchmarks. |
 | `os`, `cpu`, `logicalCores` | Machine. |
+| `processors` | What the measuring thread ran on, and whether Windows could throttle the process: `fastest cores, 16 of 32 logical processors, not throttled` on a hybrid processor. |
 | `availableMemoryBytes` | Physical memory available at the start of the run. |
 | `timestamp` | Start of the run, in UTC. |
 | `mode` | `smoke` or `full`. |
@@ -152,10 +185,11 @@ version 1 of the schema; any change to it changes `schemaVersion` and this secti
 | `allocationCalls` | Counted calls. |
 | `allocationsPerCallMin`, `allocationsPerCallMedian`, `allocationsPerCallMax` | Allocations of one counted call. |
 | `allocatedBytesPerCallMedian` | Bytes allocated by a typical call. |
-| `allocations`, `deallocations`, `allocatedBytes` | Totals over the counted calls. |
+| `retainedBytesPerCallMedian`, `retainedBytesPerCallMax` | Bytes a counted call keeps allocated when it returns: typical call and maximum. |
+| `allocations`, `deallocations`, `allocatedBytes`, `retainedBytes` | Totals over the counted calls; `retainedBytes` is what all of them kept. |
 | `peakLiveHeapBytes` | Highest amount of memory allocated and not yet freed during the counted calls. |
 | `processPeakPrivateBytes` | Peak private memory of the process at the end of the benchmark. |
-| `result`, `expected`, `maxAllocationsPerCall` | Result of the last counted call, and the expectation it was checked against. |
+| `result`, `expected`, `maxAllocationsPerCall`, `maxRetainedBytesPerCall` | Result of the last counted call, and the expectation it was checked against. |
 | `valid`, `skipped`, `skipReason`, `failures` | Outcome of the checks. |
 
 The allocation fields are `null` where the monitor is not available.
@@ -175,12 +209,13 @@ ComplexYield.Sum
   Median duration:  -0.2%  (378.1 ns -> 377.2 ns)
   Allocations:      4 -> 4 per call
   Allocated bytes:  82 -> 82 per call
+  Retained bytes:   0 -> 0 per call
   Peak memory:      +0.4%  (process peak private bytes)
 ```
 
-Durations only compare between two measurements of the same mode, on the same machine, in the same
-build type and with the same allocator: the report warns when they differ. Two measurements of the same commit differ by a few
-percent. The comparison only reports; nothing fails on a change.
+Durations only compare between two measurements of the same mode, on the same machine and kind of cores,
+in the same build type and with the same allocator: the report warns when they differ. Two measurements
+of the same commit differ by a few percent. The comparison only reports; nothing fails on a change.
 
 To show the effect of a change, measure the commit before it, keep the results out of the build folder,
 measure the commit with it, and compare.
@@ -190,16 +225,18 @@ measure the commit with it, and compare.
 1. **Write the benchmark** in the `*Benchmarks.cpp` file of its group, or in a new one added to
    `Tests/Performance/CMakeLists.txt`. Its name is `<group>.<operation>[.<variant>]`. Everything the
    measured operation needs is built in `prepare`; `run` performs the operation once and returns a
-   result that depends on it.
+   result that depends on it. An operation of milliseconds or more overrides `getSettings` to return
+   `RunSettings::forSlowCalls`.
 2. **Add it to the suite** in `FMTPerformanceTests.cpp`.
 3. **Compute the expected result by hand**, from the files of the model, never from what FMT prints:
    a benchmark that measures a wrong computation must fail.
-4. **Add its row** to `performance.csv`: `FMTPerformanceTests;<name>;<expected result>;<bound>`. Leave
-   the bound empty for a first run.
-5. **Measure the bound**: run the benchmark and read the allocations per call, then write that median
-   as the bound. Run it twice: the median must not change.
+4. **Add its row** to `performance.csv`:
+   `FMTPerformanceTests;<name>;<expected result>;<allocation bound>;<retained-memory bound>`. Leave the
+   bounds empty for a first run.
+5. **Measure the bounds**: run the benchmark twice and read the allocations and the retained bytes per
+   call. Write each median as a bound when it changes neither between the runs nor with the machine.
 6. **See each check fail** without recompiling: `--expected` with a wrong value, `--max-allocations`
-   below the measure.
+   and `--max-retained-bytes` below the measure.
 7. **Reconfigure CMake**, which registers the new row with ctest. A value changed in an existing row
    needs no reconfiguration: the executable reads the file at run time.
 
@@ -231,3 +268,30 @@ more than 0.05 ms, which these computations normally do not. A computation slowe
 preemption for instance, puts its key in the cache for the rest of the process. With 255 keys, such an
 event changes one call in 255, and the minimum of the allocations per call shows it; asked under a
 single key, the same yield would switch to the cache for good at the first such event.
+
+### Age yields
+
+`Yield.Age` reads the age yield `VOLUMETOTAL` through `Core::FMTYields::get`, with the requests of the
+complex yields: 120, interpolated between 100 at age 5 and 150 at age 10. It allocates nothing.
+`Yield.Age.NewRequest` asks through a new request at every call, as happens when a development is met
+for the first time: the request first locates the yield data of its development, which costs 7
+allocations.
+
+### Masks
+
+On the themes of the root of TWD_land:
+
+| Benchmark | Operation | Expected result |
+| --- | --- | --- |
+| `Mask.IsSubsetOf` | Tests whether `UNITE1 PEUPLEMENT1 UTR1` belongs to `UC PROD ?` | 1 |
+| `Mask.FromString` | Builds the mask `UC PROD ?` from its text, and counts its bits: 2 + 3 + 3 | 8 |
+
+`Mask.IsSubsetOf` allocates nothing.
+
+### Project reads
+
+`Parser.ReadProject` reads the root of TWD_land with a new parser at every call, and returns its initial
+area, 1814.76 ha. `Parser.ReadProject.TwoScenarios` reads the root and the `perfyields` scenario in the
+same call: 3629.52 ha for the two models. The models are destroyed before the call returns, and a read
+must keep no memory. The allocations of a read are measured, but not bounded: their count grows with the
+length of the path of the project.
