@@ -97,7 +97,9 @@ namespace
 		heapCounters.allocatedBytes.fetch_add(BYTES, std::memory_order_relaxed);
 		if (p_live)
 		{
-			addLiveBytes(BYTES);
+			// The C runtime gives one byte to a request of zero bytes, and _msize reports that byte
+			// when the block is freed: the live bytes count it from the start.
+			addLiveBytes(p_bytes == 0 ? 1 : BYTES);
 		}
 	}
 

@@ -218,7 +218,9 @@ Les choix de conception de chaque lot sont en section 3 ; ceux des lots 1 et 2 s
     qu'aucun appel ne garde rien.
 13. **Une borne ne se pose que sur une mesure qui ne dépend ni du passage ni de la machine.** Le
     nombre d'allocations d'une lecture de projet grandit avec la longueur du chemin du projet
-    (section 2.11) : il est mesuré et comparé, mais pas borné.
+    (section 2.11) : il est mesuré et comparé, mais pas borné. La mémoire retenue d'un calcul de
+    yields complexes dépend du passage (section 2.16) : sa borne est le plus que le cache des
+    yields peut garder en un appel, plus 10 %.
 14. **Le journal de FMT se règle une seule fois par processus, avant tout modèle**
     (`quietFmt`) : le remplacer pendant qu'un modèle existe laisse le solveur de ce modèle avec un
     gestionnaire de messages détruit (section 2.12).
@@ -267,6 +269,8 @@ démontrer » : lu dans le code, sans démonstration.
   appel) ; en mode court, aucun. D'où les benchmarks sur 255 clés (section 3.1).
 - **Sur 255 clés, quelques-unes entrent au cache pendant une mesure complète** : le minimum
   d'allocations par appel tombe à 2, la médiane ne bouge pas.
+- **Il fait varier la mémoire retenue** de tout appel qui calcule des yields complexes
+  (section 2.16).
 
 ### 2.2 Ce qui alloue à chaque appel (lu au lot 0, mesuré au lot 1)
 
@@ -392,8 +396,9 @@ sans verrou. Le lien avec la course connue des caches de yields
   aucun appel direct.
 - **Plusieurs modules allouent.** La lecture de TWD_land alloue dans `FMTlib.dll` (13 766
   allocations), `boost_filesystem` (777) et `MSVCP140` (29) : d'où la redirection dans tous
-  les modules chargés. Un module lié à une bibliothèque C statique échappe au compteur : à
-  vérifier pour MOSEK au lot 3.
+  les modules chargés. Un module lié à une bibliothèque C statique échappe au compteur. MOSEK,
+  lui, est compté (vérifié au lot 3) : les piles du diagnostic de la section 2.16 montrent ses
+  blocs.
 - **Le code en ligne compte pour l'exécutable.** Une fonction définie dans un en-tête de FMT
   (modèle, fonction `inline`, constructeur par défaut) est compilée dans l'exécutable du
   benchmark, pas dans `FMTlib.dll` ; ses allocations sont comptées aussi.
@@ -402,6 +407,12 @@ sans verrou. Le lien avec la course connue des caches de yields
 - **Point d'entrée depuis un exécutable** : `FMTYieldRequest` n'est pas exportée, mais
   `FMTYields::get(développement.getYieldRequest(), nom)` fonctionne, comme dans
   `Examples/C++/testScenarioReading.cpp:285-286`.
+- **Un bloc de taille 0 compte pour un octet** (trouvé à la validation du lot 3) : la bibliothèque
+  C donne un octet à `malloc(0)`, `calloc(0, n)` et `operator new(0)`, et `_msize` le rend à la
+  libération. Le moniteur comptait 0 à l'allocation : la mémoire retenue d'un appel baissait d'un
+  octet par bloc de taille 0 alloué puis libéré, 7 octets sur les flux publics, 189 sur
+  l'optimisation privée. Corrigé le 2026-10-05 : les octets vivants comptent cet octet ; les octets
+  alloués restent les tailles demandées et se comparent toujours à la référence de la section 7.1.
 
 ### 2.9 Données
 
@@ -522,13 +533,16 @@ sans verrou. Le lien avec la course connue des caches de yields
 - Chaque exécution de `FMTReplanningTask` laisse de 4 735 432 à 4 737 022 octets alloués après la
   destruction de la tâche et des modèles. C'est vrai avec 1, 2, 4 ou 8 réplicats, sur 5 ou 10
   périodes, sur TWD_land comme sur le modèle privé : une taille fixe, qui ne grandit pas d'un
-  réplicat à l'autre. Le pic du processus monte d'autant à chaque exécution.
+  réplicat à l'autre. Le pic du processus monte d'autant à chaque exécution. Une fois corrigé le
+  comptage des blocs de taille 0 (section 2.8), la mesure donne 4 737 039 octets, sur TWD_land
+  comme sur le modèle privé.
 - Le moniteur ne comptait que le fil courant, et le travail se fait dans un fil du gestionnaire de
   tâches : il ne le voyait pas. La replanification compte maintenant tous les fils.
 - Cause non trouvée. Sans effet sur une longue replanification unique ; une application qui en
   enchaîne plusieurs garde 4,7 Mo par exécution. La borne de mémoire retenue de
   `Flow.Replanning` est de 5 Mo : elle échouerait si la rétention se mettait à grandir avec les
-  réplicats.
+  réplicats. La replanification privée calcule des yields complexes : sa borne couvre aussi le
+  cache (section 2.16).
 
 ### 2.14 Coûts d'un modèle de production (mesurés au lot 3)
 
@@ -555,6 +569,51 @@ sans verrou. Le lien avec la course connue des caches de yields
   « invalid map<K, T> key ». La somme de `Flow.Outputs` saute ces outputs.
 - **Un yield manquant d'un modèle de production** (FMTexc 42) est une erreur par défaut ;
   `doplanning` en fait un avertissement, et les flux font de même (`quietFmt`).
+
+### 2.16 La mémoire retenue d'un calcul de yields complexes dépend du temps (démontré à la validation du lot 3)
+
+- **Constat** : sur le build de Gabriel, `Flow.Optimize.Bfec` a échoué une fois sous ctest, en
+  mode court : l'appel compté retenait 1 584 octets, pour une borne de 0. Six passages directs
+  ont ensuite rendu -974 octets, la valeur du 2026-10-02.
+- **Cause** : le cache des yields complexes (section 2.1). Une valeur n'y entre que si son calcul
+  a duré plus de 0,05 ms ; la première entrée alloue la table du cache, et chaque entrée garde une
+  copie du masque de sa clé. Quand aucun calcul de l'appel chronométré n'a dépassé le seuil, le
+  cache est encore vide : un calcul ralenti pendant l'appel compté, par une préemption par
+  exemple, y laisse la table et sa valeur, qui survivent à l'appel.
+- **Démonstration**, par un moniteur de diagnostic gardé hors du dépôt, qui note la pile d'appel
+  de chaque bloc encore vivant à la fin de l'appel compté :
+  - les blocs retenus naissent dans la fonction que `FMTComplexYieldHandler::get` appelle après
+    avoir comparé la durée du calcul au seuil. Dans `FMTlib.dll` désassemblée, cette comparaison
+    lit la constante 0,05, et la fonction appelée appelle `FMTObject::getAvailableMemory` : c'est
+    `FMTYieldsCache::set` et son `_clearIfTooBig`. Les blocs sont alloués pendant
+    `FMTLpModel::build` ;
+  - le compte tombe juste : 1 584 = -974 + 2 400 (la table) + 16 + 2 × 71 (deux entrées ; le
+    masque du modèle compte 568 bits, soit 71 octets) ;
+  - ralentir chaque allocation de 50 µs fait retenir 19 987 octets à `Flow.Outputs`, contre 0,
+    et ne change rien aux flux qui ne calculent pas de yields complexes.
+- **Benchmarks exposés** : `Flow.Outputs`, et les quatre flux privés `Flow.Optimize.Bfec`,
+  `Flow.Replay.Bfec`, `Flow.Outputs.Bfec` et `Flow.Replanning.Bfec`. Les autres benchmarks dont
+  la mémoire retenue est bornée n'appellent jamais `FMTComplexYieldHandler::get`, vérifié en
+  ralentissant ses allocations : `Flow.Optimize`, `Flow.Optimize.Long`, `Flow.Replay`, `Flow.Simulate`,
+  `Flow.Replanning`, `Yield.Age.NewRequest`, `Mask.FromString` et les deux lectures de projet ;
+  `Yield.Model.Bfec` n'alloue rien. Leurs bornes tiennent.
+- **Pire cas** : en ralentissant de 60 µs les allocations que fait `FMTComplexYieldHandler::get`
+  pendant l'appel compté, chaque valeur calculée entre au cache, et la mémoire retenue devient le
+  plus que le cache peut garder en un appel. `Flow.Outputs` : 19 987 octets, pour 190 valeurs ;
+  optimisation privée : 6 957 138 octets ; rejeu privé : 49 199 ; outputs privés : 24 744 735 ;
+  replanification privée : 11 833 143, dont les 4,7 Mo de la section 2.13. Les résultats restent
+  justes.
+- **Conséquence** : la borne de mémoire retenue d'un benchmark exposé est ce pire cas plus 10 %
+  (règle 13, section 3.3). Elle ne décèle une fuite qu'au-delà ; le pic du processus reste la
+  garde principale. Le pire cas des outputs privés (24,7 Mo) dépasse la marge de leur pic
+  (22 Mo) : il faudrait que presque tous leurs calculs ralentissent pendant la même mesure.
+- **Ce n'est pas un défaut de FMT** : le cache fait ce qu'il doit. Mais la vitesse de chaque
+  calcul décide de son contenu, donc des allocations et de la mémoire retenue de tout calcul de
+  yields complexes.
+- **En passant** : la présolve de `doPlanning` copie un modèle à solveur, et la copie relance
+  MOSEK (`copySolverInterface`), même pour la simulation. MOSEK y libère 785 octets alloués à
+  l'appel précédent : d'où les -792 octets des flux publics, -785 une fois corrigé le comptage
+  des blocs de taille 0 (section 2.8).
 
 ## 3. Conception du banc
 
@@ -637,6 +696,11 @@ lot par lot, les choix qui ne se lisent pas dans le code. Chacun attend la relec
 - **Borne de pic mémoire** (décision 14) : sixième colonne `MAX_PEAK_MB`, option
   `--max-peak-memory`, étiquette `memory`. Elle n'est vérifiée que pour le premier benchmark d'un
   processus, puisque le pic est celui du processus.
+- **Bornes de mémoire retenue** (corrigées à la validation, section 2.16) : 0 pour les flux qui ne
+  calculent pas de yields complexes ; 5 Mo pour la replanification publique (section 2.13) ; pour
+  `Flow.Outputs` et les flux privés exposés, le plus que le cache des yields peut garder en un
+  appel, plus 10 %, arrondi au millier supérieur. La console ne propose plus d'abaisser une borne
+  de mémoire retenue : un appel typique n'en montre pas le pire cas.
 - **Groupe privé** (décision 8) : `performance-private.csv`, ignoré par git, étiquette `bfec-perf`
   seule. Le modèle doit être sur `T:\` : le nom du test, qui porte son chemin, l'écarte de la
   suite base. Le JSON note l'empreinte SHA-256 des fichiers du modèle (racine et scénarios lus),
@@ -725,6 +789,7 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
 | Modèle synthétique « moyen » | lot 5 | pour la suite publique seulement, si l'horizon de TWD_land ne suffit pas (lot 3) ; la taille réelle passe par le groupe privé (décision 8) |
 | Compteur d'allocations hors Windows | lot 5 | lié à la demande de portabilité de #350 |
 | Mesurer et comparer en un geste | lot 5 | un `.bat` ou une cible du projet Visual Studio qui lance la mesure complète, garde ses JSON et les compare à la référence de la machine |
+| Mesurer le pire cas du cache depuis le banc | lot 5 | une option du harnais qui ralentit les allocations de `FMTComplexYieldHandler::get` pendant les appels comptés ; aujourd'hui, un moniteur de diagnostic hors du dépôt (section 2.16) |
 
 ### 4.4 Fermer #349
 
@@ -945,8 +1010,9 @@ Validation finale (2026-09-30), sur le commit `9a5001df`, compilé par Gabriel a
 
 ### 5.4 Lot 3 : flux de modèle (2026-10-02)
 
-**Statut** : livré le 2026-10-02, à compiler par Gabriel. La configuration est à refaire : fichiers
-nouveaux et lignes nouvelles dans `performance.csv`.
+**Statut** : livré le 2026-10-02, commité par Gabriel le 2026-10-05 (`852e1be0`). Sa validation a
+trouvé des bornes de mémoire retenue qui dépendent du temps : correction livrée le 2026-10-05, à
+compiler (section 6.1).
 
 - **Flux** (`FlowBenchmarks.h/.cpp`), 6 lignes publiques de plus, 19 en tout :
   - `Flow.Optimize` et `Flow.Optimize.Long` : `NOT_MASK` sur 5 et 20 périodes, objectifs 90 738 et
@@ -997,17 +1063,41 @@ Vérifications (hors build, 2026-10-02) :
 - **Constats** : sections 2.12 à 2.15.
 - **Encodages** : sources en cp1252 (un octet `E9`), le reste en UTF-8, tout en CRLF.
 
+Validation sur le build de Gabriel (2026-10-05) :
+
+- **Build** : compilé à 08:55, avant le commit `852e1be0` de 09:16 ; aucun fichier suivi n'a
+  changé entre les deux. L'en-tête du binaire indique donc `9a5001df`, modifié.
+- **Inscriptions** : 351 tests, dont 254 dans la suite base (6 de plus) ; `-L performance` en
+  retient 21 (les 19 lignes et les 2 tests de la fixture), `-L memory` 12, `-L bfec-perf` 5.
+- **Mode court** : `-L performance` 21 sur 21 en 3,2 s, `-L memory` 12 sur 12 ; `-L bfec-perf`
+  4 sur 5 : `Flow.Optimize.Bfec` retient 1 584 octets pour une borne de 0 (section 2.16).
+- **Suite base** (`-E "T:/" -j 8`) : 254 tests, 239 verts et 15 désactivés, aucun échec, en 16 s.
+- **Diagnostic** : la mémoire retenue des calculs de yields complexes (section 2.16), le comptage
+  des blocs de taille 0 (section 2.8).
+
+Correction (2026-10-05), à compiler :
+
+- **Bornes** : `Flow.Outputs` passe de 0 à 22 000 octets ; dans le fichier local, les quatre flux
+  privés exposés prennent le pire cas du cache plus 10 % : 7 653 000 octets pour l'optimisation,
+  55 000 pour le rejeu, 27 220 000 pour les outputs et 13 017 000 pour la replanification.
+- **`AllocationMonitorWindows.cpp`** : un bloc de taille 0 compte pour un octet vivant.
+- **`BenchmarkRunner.cpp`** : la console ne propose plus d'abaisser une borne de mémoire retenue.
+- **Documentation** : la borne d'un calcul de yields complexes, l'exactitude des octets retenus,
+  les résultats des flux qui ne dépendent pas du solveur.
+
 ## 6. Prochain lot
 
-Les lots 1 et 2 sont validés et commités (sections 5.2 et 5.3). Le lot 3 est livré (section 5.4).
+Les lots 1 et 2 sont validés et commités (sections 5.2 et 5.3). Le lot 3 est commité
+(`852e1be0`) ; sa validation a donné une correction (section 5.4).
 
-### 6.1 D'abord : valider le lot 3 sur le build de Gabriel
+### 6.1 D'abord : finir la validation du lot 3
 
-1. Gabriel reconfigure (fichiers et lignes nouveaux) et compile. Aucune alerte
-   `performance.csv: no target named` n'est attendue.
-2. Claude lance `-L performance`, `-L memory`, `-L bfec-perf`, puis la suite base
-   (`-E "T:/" -j 8`), qui compte 6 lignes de plus.
-3. Mesure complète des flux publics et privés, consignée en section 7.5 à la place des valeurs
+1. Fait le 2026-10-05 : Gabriel a reconfiguré et compilé, Claude a lancé les étiquettes et la
+   suite base (section 5.4). `Flow.Optimize.Bfec` a échoué sur sa borne de mémoire retenue
+   (section 2.16).
+2. Gabriel compile la correction : seul `FMTPerformanceTests` change, sans reconfiguration.
+3. Claude relance `-L performance`, `-L memory`, `-L bfec-perf` et la suite base, puis prend la
+   mesure complète des flux publics et privés, consignée en section 7.5 à la place des valeurs
    provisoires.
 4. Gabriel relit les choix de la section 3.3 et publie l'issue du journal de FMT (section 2.12).
 
@@ -1070,6 +1160,7 @@ mesure « après » à chacune avec `CompareResults.cmake`.
 | 2026-09-30 (lot 2 avec l'attente, exécutable du scratchpad) | 13 | 11 | — | 6,9 s, un processus par benchmark |
 | 2026-09-30 (commit `9a5001df`, build de Gabriel) | 13 | 11 | 3,1 s, sans `-j` | 7,0 s, attente comprise |
 | 2026-10-02 (lot 3, projet jetable) | 19 | 11 | 0,70 s | — |
+| 2026-10-05 (commit `852e1be0`, build de Gabriel) | 19 | 11 | 3,2 s, sans `-j` ; suite base de 254 tests en 16 s sous `-j 8` | — |
 
 ### 7.3 Lot 2, avec l'attente
 

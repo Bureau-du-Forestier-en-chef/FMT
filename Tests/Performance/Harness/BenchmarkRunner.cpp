@@ -176,7 +176,9 @@ namespace
 	}
 
 	// A call retains what it allocates and has not freed when it returns: a value kept in a cache,
-	// or a leak. The bound applies to a typical call, like the allocation bound.
+	// or a leak. The bound applies to a typical call, like the allocation bound. Unlike that bound,
+	// it is never offered lower: the bound of a benchmark that computes complex yields covers the
+	// most the yields cache of FMT can keep, which a typical call does not show.
 	void checkRetainedBytes(Performance::BenchmarkResult& p_result, std::int64_t p_bound)
 	{
 		const Performance::AllocationStatistics& ALLOCATIONS = p_result.allocations;
@@ -192,13 +194,9 @@ namespace
 				: "a counted call retains " + std::to_string(ALLOCATIONS.maximumRetainedBytesPerCall) + " bytes, the bound 0 allows none" });
 			return;
 		}
-		std::string description = "a typical call retains " + std::to_string(ALLOCATIONS.medianRetainedBytesPerCall)
+		const std::string DESCRIPTION = "a typical call retains " + std::to_string(ALLOCATIONS.medianRetainedBytesPerCall)
 			+ " bytes (bound " + std::to_string(p_bound) + ")";
-		if (ALLOCATIONS.medianRetainedBytesPerCall < p_bound)
-		{
-			description += ": the bound can be lowered to " + std::to_string(std::max<std::int64_t>(ALLOCATIONS.medianRetainedBytesPerCall, 0));
-		}
-		p_result.checks.push_back({ ALLOCATIONS.medianRetainedBytesPerCall <= p_bound, description });
+		p_result.checks.push_back({ ALLOCATIONS.medianRetainedBytesPerCall <= p_bound, DESCRIPTION });
 	}
 
 	// The peak is the one of the process, from its start: it gives what the benchmark needs only

@@ -15,6 +15,6 @@ FMTPerformanceTests;Parser.ReadProject.TwoScenarios;3629.52;;0
 FMTPerformanceTests;Flow.Optimize;90738;;0;32
 FMTPerformanceTests;Flow.Optimize.Long;362952;;0;69
 FMTPerformanceTests;Flow.Replay;48008.953705;;0;27
-FMTPerformanceTests;Flow.Outputs;3079696.8362052;;0;26
+FMTPerformanceTests;Flow.Outputs;3079696.8362052;;22000;26
 FMTPerformanceTests;Flow.Simulate;60;;0;32
 FMTPerformanceTests;Flow.Replanning;20;;5000000;84

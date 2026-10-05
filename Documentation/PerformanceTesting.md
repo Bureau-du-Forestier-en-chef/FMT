@@ -144,6 +144,15 @@ not allocate after preparation, which is what
 retained-memory bound of `0` states that an operation leaves nothing behind: repeated, it does not grow
 the memory of the process.
 
+A computation of complex yields is the exception. FMT keeps in its yields cache the values whose
+computation lasted more than 0.05 ms, so the memory such a call keeps depends on the speed of each
+computation: a preemption during a counted call can leave a few values in the cache, and the table of
+the cache when it was still empty. The retained-memory bound of a benchmark that computes complex
+yields is therefore the most the cache can keep during one call, with 10 % added. That worst case is
+measured by forcing every computed value into the cache: the allocations that
+`FMTComplexYieldHandler::get` makes during the counted call are slowed down beyond 0.05 ms. The
+harness has no option for it yet.
+
 A peak bound is the highest peak of two measurements in each mode, with 10 % added: it lets a flow
 vary as it does from one run to the next, and fails when a change makes it need much more memory.
 
@@ -175,8 +184,9 @@ Aligned blocks are counted, but left out of the live bytes. Outside Windows the 
 available: a row with an allocation or retained-memory bound is then reported as skipped.
 
 The memory a call keeps is the difference of the live bytes before and after it. The size of a freed
-block is read with `_msize`, which on the C runtime heap is the size that was asked for: on that heap,
-the retained bytes of a call are exact.
+block is read with `_msize`, which on the C runtime heap is the size that was asked for, except that a
+request of zero bytes gets one byte: the live bytes count that byte from the allocation, and on that
+heap the retained bytes of a call are exact. The allocated bytes stay the sizes that were asked for.
 
 The counts do not depend on the allocator: when mimalloc redirects `malloc`, the calls still go through
 the redirected imports, and the complex-yield benchmarks count the same allocations. Durations and
@@ -276,6 +286,8 @@ measure the commit with it, and compare.
 5. **Measure the bounds**: run the benchmark twice and read the allocations and the retained bytes per
    call. Write each median as a bound when it changes neither between the runs nor with the machine. For
    a flow, run it alone in its process twice in each mode, and write the highest peak with 10 % added.
+   A benchmark that computes complex yields bounds its retained memory at the most the yields cache can
+   keep (see [What a benchmark does](#what-a-benchmark-does)).
 6. **See each check fail** without recompiling: `--expected` with a wrong value, `--max-allocations`,
    `--max-retained-bytes` and `--max-peak-memory` below the measure.
 7. **Reconfigure CMake**, which registers the new row with ctest. A value changed in an existing row
@@ -350,12 +362,14 @@ On TWD_land, each flow reads its model at every call:
 | `Flow.Simulate` | `DECISION`, non-spatial simulation | read, simulate | `UNIT_REC` at period 5: 60, as `FMTNsstest` checks it |
 | `Flow.Replanning` | `Globalreplanning`, `Globalfire` and `Localreplanning`: 2 replicates of 5 periods, on one thread | read, setup, replanning, result | 20 rows written: 2 replicates × 5 periods × 2 outputs |
 
-The objectives are the same with MOSEK and CLP; the replay, the outputs and the simulation involve no
-solver. The replanned values, however, depend on which optimal solution the solver returns: for the same
-replicates, the local model harvests 447 126 m³ under MOSEK and 465 421 m³ under CLP. The replanning
-therefore checks the number of rows it writes. Each run of a replanning keeps about 4.7 MB, whatever the
-number of its replicates and periods: its retained-memory bound is 5 MB, so that the bound fails if the
-memory kept starts to grow with the replicates. Every flow bounds the peak memory of its process.
+The objectives are the same with MOSEK and CLP, and the results of the replay, the outputs and the
+simulation do not depend on the solver. The replanned values, however, depend on which optimal solution
+the solver returns: for the same replicates, the local model harvests 447 126 m³ under MOSEK and 465 421
+m³ under CLP. The replanning therefore checks the number of rows it writes. Each run of a replanning
+keeps about 4.7 MB, whatever the number of its replicates and periods: its retained-memory bound is 5 MB,
+so that the bound fails if the memory kept starts to grow with the replicates. `Flow.Outputs` is the only
+flow that computes complex yields: its retained-memory bound, 22 000 bytes, covers the 19 987 bytes that
+the yields cache can keep during one call. Every flow bounds the peak memory of its process.
 
 ### Private benchmarks
 
@@ -381,4 +395,6 @@ two measurements compare only on the same fingerprint. The file, the names of th
 stay on the machine.
 
 On a production model, a flow reads the errors that `doplanning` turns into warnings as warnings, so
-that the model reads and plans as it does in production (`Performance::quietFmt`).
+that the model reads and plans as it does in production (`Performance::quietFmt`). A private flow that
+computes complex yields bounds its retained memory at the most the yields cache can keep during one
+call: on a production model, several megabytes.
