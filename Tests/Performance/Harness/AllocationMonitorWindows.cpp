@@ -90,16 +90,17 @@ namespace
 		}
 	}
 
-	void countAllocation(std::size_t p_bytes, bool p_live)
+	// p_bytes is the size asked for, which the allocated bytes count. The live bytes count the size
+	// of p_block as _msize reports it, the size deducted when the block is freed: on the C runtime
+	// heap, the size asked for, or one byte for zero bytes; under an allocator that redirects malloc,
+	// such as mimalloc, the size of its class, 16 bytes for 10.
+	void countAllocation(std::size_t p_bytes, void* p_block, bool p_live)
 	{
-		const std::int64_t BYTES = static_cast<std::int64_t>(p_bytes);
 		heapCounters.allocations.fetch_add(1, std::memory_order_relaxed);
-		heapCounters.allocatedBytes.fetch_add(BYTES, std::memory_order_relaxed);
+		heapCounters.allocatedBytes.fetch_add(static_cast<std::int64_t>(p_bytes), std::memory_order_relaxed);
 		if (p_live)
 		{
-			// The C runtime gives one byte to a request of zero bytes, and _msize reports that byte
-			// when the block is freed: the live bytes count it from the start.
-			addLiveBytes(p_bytes == 0 ? 1 : BYTES);
+			addLiveBytes(static_cast<std::int64_t>(runtimeHeap.blockSize(p_block)));
 		}
 	}
 
@@ -120,7 +121,7 @@ namespace
 		void* const BLOCK = runtimeHeap.allocate(p_size);
 		if (BLOCK != nullptr && isCounted())
 		{
-			countAllocation(p_size, true);
+			countAllocation(p_size, BLOCK, true);
 		}
 		return BLOCK;
 	}
@@ -130,7 +131,7 @@ namespace
 		void* const BLOCK = runtimeHeap.allocateZeroed(p_count, p_size);
 		if (BLOCK != nullptr && isCounted())
 		{
-			countAllocation(p_count * p_size, true);
+			countAllocation(p_count * p_size, BLOCK, true);
 		}
 		return BLOCK;
 	}
@@ -150,7 +151,7 @@ namespace
 		}
 		if (BLOCK != nullptr)
 		{
-			countAllocation(p_size, true);
+			countAllocation(p_size, BLOCK, true);
 		}
 		return BLOCK;
 	}
@@ -169,7 +170,7 @@ namespace
 		void* const BLOCK = runtimeHeap.allocateAligned(p_size, p_alignment);
 		if (BLOCK != nullptr && isCounted())
 		{
-			countAllocation(p_size, false);
+			countAllocation(p_size, BLOCK, false);
 		}
 		return BLOCK;
 	}
@@ -185,7 +186,7 @@ namespace
 			}
 			if (BLOCK != nullptr)
 			{
-				countAllocation(p_size, false);
+				countAllocation(p_size, BLOCK, false);
 			}
 		}
 		return BLOCK;

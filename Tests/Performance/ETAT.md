@@ -378,6 +378,19 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   - pour #348, ne pas changer d'allocateur entre l'avant et l'après. Sous mimalloc, une
     allocation coûte moins cher : le gain en temps de #348 y serait plus petit que sur le tas
     du CRT.
+- **Le banc sous mimalloc** (vérifié le 2026-10-05, en vue de #361), avec l'exécutable du scratchpad
+  lié à mimalloc comme ci-dessus :
+  - le nombre et les octets des allocations restent identiques sur les flux, les lectures, les
+    masques et les yields ;
+  - la mémoire retenue était fausse : sous mimalloc, `_msize` rend la taille de classe du bloc
+    (16 octets pour 10 demandés, 32 pour 17, 1 024 pour 1 000), que le moniteur déduisait à la
+    libération alors qu'il ajoutait la taille demandée à l'allocation. `Flow.Optimize` retenait
+    -426 524 octets, la lecture d'un projet -127 237. Corrigé (section 2.8) : -992 et 0 ;
+  - les bornes posées sous le tas du CRT ne tiennent plus : le pic d'un processus du banc passe
+    de 22 à 29 Mo à 54 Mo, celui de `Flow.Replanning` de 62 à 87 Mo en mode court, et la
+    replanification retient 5 242 144 octets, ses blocs comptant leur taille de classe, au-delà
+    de sa borne de 5 Mo. Changer d'allocateur demande de mesurer de nouveau les bornes de pic et
+    les bornes de mémoire retenue non nulles.
 - **Issue** : #361, publiée le 2026-09-29.
 
 ### 2.7 Threads (à examiner au lot 4)
@@ -407,12 +420,14 @@ sans verrou. Le lien avec la course connue des caches de yields
 - **Point d'entrée depuis un exécutable** : `FMTYieldRequest` n'est pas exportée, mais
   `FMTYields::get(développement.getYieldRequest(), nom)` fonctionne, comme dans
   `Examples/C++/testScenarioReading.cpp:285-286`.
-- **Un bloc de taille 0 compte pour un octet** (trouvé à la validation du lot 3) : la bibliothèque
-  C donne un octet à `malloc(0)`, `calloc(0, n)` et `operator new(0)`, et `_msize` le rend à la
-  libération. Le moniteur comptait 0 à l'allocation : la mémoire retenue d'un appel baissait d'un
-  octet par bloc de taille 0 alloué puis libéré, 7 octets sur les flux publics, 189 sur
-  l'optimisation privée. Corrigé le 2026-10-05 : les octets vivants comptent cet octet ; les octets
-  alloués restent les tailles demandées et se comparent toujours à la référence de la section 7.1.
+- **Les octets vivants comptent la taille que rend `_msize`**, à l'allocation comme à la
+  libération (corrigé le 2026-10-05). Le moniteur ajoutait la taille demandée et déduisait celle de
+  `_msize`, qui en diffère dans deux cas. La bibliothèque C donne un octet à `malloc(0)`,
+  `calloc(0, n)` et `operator new(0)` : la mémoire retenue baissait d'un octet par bloc de taille 0
+  alloué puis libéré, 7 octets sur les flux publics, 189 sur l'optimisation privée. Et mimalloc rend
+  la taille de classe du bloc (section 2.6). La mémoire retenue est maintenant exacte sous tout
+  allocateur ; sous le tas du CRT, seuls les blocs de taille 0 changent. Les octets alloués restent
+  les tailles demandées, et se comparent toujours à la référence de la section 7.1.
 
 ### 2.9 Données
 
@@ -451,7 +466,18 @@ sans verrou. Le lien avec la course connue des caches de yields
   - Depuis le 2026-09-30, une mesure complète attend 250 ms avant son premier benchmark
     (`BenchmarkSuite.cpp`). Le mode court n'attend pas : ses temps ne sont pas une mesure.
 - **Deux mesures complètes du même commit** diffèrent de quelques pour cent (de -2,0 % à
-  +0,8 % au lot 1) : un écart de cet ordre n'est pas un changement.
+  +0,8 % au lot 1, jusqu'à 8 % pour la référence de la section 7.1) : un écart de cet ordre n'est
+  pas un changement. Une mesure entière peut aussi se décaler : le 2026-10-05, la deuxième de trois
+  mesures publiques était plus lente de 6 à 22 % sur les micro-benchmarks, sans cause trouvée. Une
+  boucle qui lance un processus chaque seconde n'en est pas la cause : elle ne change aucune
+  médiane (A/B). D'un jour à l'autre, avec un harnais qui a changé entre-temps, les benchmarks des
+  lots 1 et 2 s'écartent de -12 à +12 % de la référence, à allocations égales. Pour juger un
+  changement, mesurer l'avant et l'après le même jour, au moins trois fois chacun, et écarter une
+  mesure décalée tout entière.
+- **L'en-tête du binaire note le commit au moment de la compilation.** Gabriel compile et teste
+  avant de commiter, pour ne jamais pousser une erreur de compilation : le binaire porte donc le
+  commit précédent, « modifié ». Pour une mesure de référence, recompiler après le commit : seul
+  `BenchmarkEnvironment.cpp` inclut l'en-tête, et l'exécutable se relie en quelques secondes.
 - **Windows ignore la casse des noms** : `Tests/Performance` et `tests/performance` sont le même
   dossier sous `build/release`. L'en-tête généré du commit va donc dans
   `generated/FMTBenchmarkHarness`, à part des résultats.
@@ -575,6 +601,11 @@ sans verrou. Le lien avec la course connue des caches de yields
 - **Constat** : sur le build de Gabriel, `Flow.Optimize.Bfec` a échoué une fois sous ctest, en
   mode court : l'appel compté retenait 1 584 octets, pour une borne de 0. Six passages directs
   ont ensuite rendu -974 octets, la valeur du 2026-10-02.
+- **Deux autres insertions le même jour**, sous les nouvelles bornes : `Flow.Optimize.Bfec` a
+  retenu 1 773 octets à la première mesure complète (-785 + 2 558, la même insertion), et
+  `Flow.Outputs` 2 418 octets en mode court, avec l'exécutable du scratchpad (2 400 + 16 + 2 : une
+  valeur, dont le masque tient en 2 octets sur TWD_land). Avec une borne de 0, cette ligne publique
+  aurait échoué dans la suite base.
 - **Cause** : le cache des yields complexes (section 2.1). Une valeur n'y entre que si son calcul
   a duré plus de 0,05 ms ; la première entrée alloue la table du cache, et chaque entrée garde une
   copie du masque de sa clé. Quand aucun calcul de l'appel chronométré n'a dépassé le seuil, le
@@ -677,7 +708,7 @@ lot par lot, les choix qui ne se lisent pas dans le code. Chacun attend la relec
   premier benchmark (section 2.10). Validée par Gabriel le 2026-10-02 : bénigne, et sa cause est
   connue.
 
-### 3.3 Choix du lot 3 (à relire)
+### 3.3 Choix du lot 3 (validés par Gabriel le 2026-10-05)
 
 - **Une classe par flux, la même pour le public et le privé** : `Flow.Optimize`, `Flow.Replay`,
   `Flow.Outputs`, `Flow.Simulate` et `Flow.Replanning`. Une ligne privée donne son modèle en
@@ -789,6 +820,7 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
 | Modèle synthétique « moyen » | lot 5 | pour la suite publique seulement, si l'horizon de TWD_land ne suffit pas (lot 3) ; la taille réelle passe par le groupe privé (décision 8) |
 | Compteur d'allocations hors Windows | lot 5 | lié à la demande de portabilité de #350 |
 | Mesurer et comparer en un geste | lot 5 | un `.bat` ou une cible du projet Visual Studio qui lance la mesure complète, garde ses JSON et les compare à la référence de la machine |
+| Ordre de #361 (mimalloc), du lot 4 et de #348 | avant #361 | Gabriel veut se servir de #361 pour éprouver le banc (2026-10-05). La référence de #348 (section 7.1) et les bornes valent pour le tas du CRT (section 2.6) ; le gain et le coût mémoire de mimalloc se jugent surtout sur la replanification à 5 fils (lot 4) |
 | Mesurer le pire cas du cache depuis le banc | lot 5 | une option du harnais qui ralentit les allocations de `FMTComplexYieldHandler::get` pendant les appels comptés ; aujourd'hui, un moniteur de diagnostic hors du dépôt (section 2.16) |
 
 ### 4.4 Fermer #349
@@ -1010,9 +1042,8 @@ Validation finale (2026-09-30), sur le commit `9a5001df`, compilé par Gabriel a
 
 ### 5.4 Lot 3 : flux de modèle (2026-10-02)
 
-**Statut** : livré le 2026-10-02, commité par Gabriel le 2026-10-05 (`852e1be0`). Sa validation a
-trouvé des bornes de mémoire retenue qui dépendent du temps : correction livrée le 2026-10-05, à
-compiler (section 6.1).
+**Statut** : livré le 2026-10-02, commité par Gabriel le 2026-10-05 (`852e1be0`, puis la
+correction `88daf175`) et validé le même jour ; choix validés (section 3.3).
 
 - **Flux** (`FlowBenchmarks.h/.cpp`), 6 lignes publiques de plus, 19 en tout :
   - `Flow.Optimize` et `Flow.Optimize.Long` : `NOT_MASK` sur 5 et 20 périodes, objectifs 90 738 et
@@ -1085,25 +1116,39 @@ Correction (2026-10-05), à compiler :
 - **Documentation** : la borne d'un calcul de yields complexes, l'exactitude des octets retenus,
   les résultats des flux qui ne dépendent pas du solveur.
 
+Validation de la correction (2026-10-05, commit `88daf175`) :
+
+- **Build** : compilé avant le commit, comme le premier : l'en-tête du binaire indique `852e1be0`,
+  modifié, pour les sources de `88daf175`.
+- **Mode court** : `-L performance` 21 sur 21 en 3,1 s, `-L memory` 12 sur 12, `-L bfec-perf`
+  5 sur 5 en 46 s ; suite base : 254 tests, 239 verts et 15 désactivés, en 16 s.
+- **Mesure complète** : section 7.5. La nouvelle borne de `Flow.Optimize.Bfec` y a absorbé une
+  insertion au cache (section 2.16).
+- **Sous mimalloc**, en vue de #361 : la mémoire retenue était fausse. Corrigé dans
+  `AllocationMonitorWindows.cpp` (sections 2.6 et 2.8).
+
+Validation de la correction sous mimalloc (2026-10-05, compilée par Gabriel, pas encore commitée) :
+`-L performance` 21 sur 21, `-L memory` 12 sur 12, `-L bfec-perf` 5 sur 5 ; suite base : 254 tests,
+239 verts et 15 désactivés, en 17 s. Sous le tas du CRT, les flux publics gardent leurs valeurs
+(-785, 0 et 4 737 039 octets retenus) ; seuls les flux privés exposés au cache varient
+(section 2.16).
+
 ## 6. Prochain lot
 
-Les lots 1 et 2 sont validés et commités (sections 5.2 et 5.3). Le lot 3 est commité
-(`852e1be0`) ; sa validation a donné une correction (section 5.4).
+Les lots 1 à 3 sont validés et commités (sections 5.2 à 5.4).
 
-### 6.1 D'abord : finir la validation du lot 3
+### 6.1 Fait : la mémoire retenue sous mimalloc
 
-1. Fait le 2026-10-05 : Gabriel a reconfiguré et compilé, Claude a lancé les étiquettes et la
-   suite base (section 5.4). `Flow.Optimize.Bfec` a échoué sur sa borne de mémoire retenue
-   (section 2.16).
-2. Gabriel compile la correction : seul `FMTPerformanceTests` change, sans reconfiguration.
-3. Claude relance `-L performance`, `-L memory`, `-L bfec-perf` et la suite base, puis prend la
-   mesure complète des flux publics et privés, consignée en section 7.5 à la place des valeurs
-   provisoires.
-4. Gabriel relit les choix de la section 3.3 et publie l'issue du journal de FMT (section 2.12).
+Le 2026-10-05, Gabriel a compilé la correction de `AllocationMonitorWindows.cpp` (section 2.8), et
+Claude a relancé les étiquettes et la suite base : sous le tas du CRT, aucune valeur stable ne
+change (section 5.4). Reste à Gabriel : commiter la correction, et publier l'issue du journal de FMT
+(section 2.12), si ce n'est déjà fait.
 
 ### 6.2 Ensuite : lot 4
 
-Threads : la replanification à 5 fils, comme en production (section 4.2), effort `xhigh`.
+Threads : la replanification à 5 fils, comme en production (section 4.2), effort `xhigh`. Gabriel
+veut aussi entamer #361 (mimalloc) pour éprouver le banc : l'ordre de #361, du lot 4 et de #348
+est à décider (section 4.3).
 
 ## 7. Mesures
 
@@ -1161,6 +1206,7 @@ mesure « après » à chacune avec `CompareResults.cmake`.
 | 2026-09-30 (commit `9a5001df`, build de Gabriel) | 13 | 11 | 3,1 s, sans `-j` | 7,0 s, attente comprise |
 | 2026-10-02 (lot 3, projet jetable) | 19 | 11 | 0,70 s | — |
 | 2026-10-05 (commit `852e1be0`, build de Gabriel) | 19 | 11 | 3,2 s, sans `-j` ; suite base de 254 tests en 16 s sous `-j 8` | — |
+| 2026-10-05 (commit `88daf175`, build de Gabriel) | 19 | 11 | 3,1 s, sans `-j` ; suite base de 254 tests en 16 s sous `-j 8` | 11 à 12 s pour les lignes publiques, 89 s pour les 5 privées |
 
 ### 7.3 Lot 2, avec l'attente
 
@@ -1220,31 +1266,43 @@ Chacun de ces benchmarks a subi la pause au démarrage d'un processus (section 2
 échantillon trop long, sans effet notable sur les médianes. Cette référence est remplacée par
 celle de la section 7.1, avec laquelle elle concorde.
 
-### 7.5 Lot 3 (provisoire)
+### 7.5 Lot 3
 
-Deux mesures complètes du 2026-10-02, chaque benchmark seul dans son processus, avec l'exécutable
-du scratchpad : les sources du lot 3 compilées hors CMake contre le `FMTlib.dll` du build de
-Gabriel. Fil qui mesure sur les cœurs performants, tas du CRT, MOSEK. À remplacer par la mesure sur
-le build de Gabriel (section 6.1).
+Mesures complètes du 2026-10-05, par ctest, sans `-j`, un processus par benchmark, sur le build de
+Gabriel du commit `88daf175`, compilé avant le commit : l'en-tête des JSON indique `852e1be0`,
+modifié, pour les mêmes sources. Tas du CRT, MOSEK, fil qui mesure sur les cœurs performants,
+attente de 250 ms. Machine : Intel Core i9-13900, 32 cœurs logiques, Windows 10.0.22631, 40 Gio
+disponibles. Trois mesures des benchmarks publics, deux des privés ; la deuxième mesure publique
+est décalée (section 2.10) et reste hors du tableau, sauf pour les pics.
 
-| Benchmark | Médiane | Phases (médianes, ms) | Allocations par appel | Mémoire retenue (octets) | Pic (Mo) |
-|---|---|---|---|---|---|
-| `Flow.Optimize` | 30,0 à 30,4 ms | lecture 4,5-4,8 ; construction 2,0 ; résolution 21,6 | 47 167 | -792 | 28,6 |
-| `Flow.Optimize.Long` | 63,3 à 63,8 ms | lecture 4,6-4,8 ; construction 25,7-25,9 ; résolution 29,8-30,3 | 537 987 | -792 | 62,3 |
-| `Flow.Replay` | 32,1 à 32,7 ms | lecture 7,1-7,2 ; construction 23,2-23,3 | 54 147 | -792 | 24,1 |
-| `Flow.Outputs` | 3,6 à 3,7 ms | — | 54 227 | 0 | 23,1 |
-| `Flow.Simulate` | 32,8 à 33,3 ms | lecture 6,4-6,7 ; simulation 24,4-24,6 | 51 191 | -813 | 28,5 |
-| `Flow.Replanning` | 122,6 à 123,3 ms | lecture 22,3-22,5 ; préparation 30,8-31,2 ; replanification 65,4-66,0 ; résultat 0,9 | 799 177 | 4 736 572 | 76,0 |
-
-En mode court, le premier appel d'une optimisation dure de 80 à 95 ms : il crée l'environnement de
-MOSEK (section 2.14).
-
-Groupe privé, sur trois modèles de production, désignés ici sans leur nom :
-
-| Benchmark | Ce qu'il mesure | Médiane | Phases | Allocations par appel | Mémoire retenue (octets) | Pic (Mo) |
+| Benchmark | Médiane, mesure 1 | Mesure 3 | Phases, mesure 1 (ms) | Allocations par appel | Mémoire retenue (octets) | Pic (Mo), trois mesures |
 |---|---|---|---|---|---|---|
-| `Flow.Optimize.Bfec` | optimisation sur 5 périodes ; 381 sections de yields, 1 526 outputs | 3,38 à 3,44 s | lecture 1,75-1,77 s ; construction 1,55-1,58 s ; résolution 0,05 s | 38 825 436 | -974 | 581 |
-| `Flow.Replay.Bfec` | cédule rejouée sur 30 périodes, comme `FMTsetsolution` | 1,56 à 1,57 s | lecture 0,92 s ; construction 0,60 s | 19 390 388 | -792 | 942 |
-| `Flow.Outputs.Bfec` | tous les outputs du même modèle sur 5 périodes | 1,11 s | — | 17 573 678 | 0 à 80 | 221 |
-| `Flow.Replanning.Bfec` | 1 réplicat de 5 périodes, un fil | 6,52 à 6,57 s | lecture 0,46 s ; préparation 1,12 s ; replanification 4,93 s | 42 292 489 | 4 737 022 | 347 |
-| `Yield.Model.Bfec` | `YV_S` pour 1 000 développements du premier modèle | 66,5 à 66,9 µs, soit 66 ns par lecture | — | 0 | 0 | 206 |
+| `Flow.Optimize` | 30,4 ms | 29,3 ms | lecture 5,0 ; construction 2,0 ; résolution 21,5 | 47 167 | -785 | 28,6 à 28,7 |
+| `Flow.Optimize.Long` | 63,1 ms | 63,9 ms | lecture 4,5 ; construction 26,2 ; résolution 29,2 | 537 987 | -785 | 62,0 à 62,5 |
+| `Flow.Replay` | 32,0 ms | 31,6 ms | lecture 7,3 ; construction 22,5 | 54 147 | -785 | 23,7 à 24,2 |
+| `Flow.Outputs` | 3,7 ms | 3,7 ms | — | 54 227 | 0 | 23,1 à 23,2 |
+| `Flow.Simulate` | 32,5 ms | 32,7 ms | lecture 6,2 ; simulation 24,1 | 51 191 | -785 | 28,3 à 28,5 |
+| `Flow.Replanning` | 124,9 ms | 128,7 ms | lecture 21,3 ; préparation 31,5 ; replanification 68,7 ; résultat 1,1 | 799 177 | 4 737 039 | 75,5 à 76,0 |
+
+Les valeurs provisoires du 2026-10-02, prises avec l'exécutable du scratchpad, tombaient à 5 % au
+plus de ces médianes, avec les mêmes allocations. La mémoire retenue passe de -792 à -785 octets
+depuis la correction du comptage des blocs de taille 0 (section 2.8).
+
+Groupe privé, sur trois modèles de production, désignés ici sans leur nom, deux mesures :
+
+| Benchmark | Ce qu'il mesure | Médiane, mesure 1 | Mesure 2 | Phases, mesure 1 | Allocations par appel | Mémoire retenue (octets) | Pic (Mo) |
+|---|---|---|---|---|---|---|---|
+| `Flow.Optimize.Bfec` | optimisation sur 5 périodes ; 381 sections de yields, 1 526 outputs | 3,48 s | 3,56 s | lecture 1,80 s ; construction 1,60 s ; résolution 53 ms | 38 825 307 à 38 825 442 | 1 773 puis -785 (section 2.16) | 581,8 à 582,4 |
+| `Flow.Replay.Bfec` | cédule rejouée sur 30 périodes, comme `FMTsetsolution` | 1,65 s | 1,59 s | lecture 0,96 s ; construction 0,66 s | 19 390 388 | -785 | 942,3 à 942,7 |
+| `Flow.Outputs.Bfec` | tous les outputs du même modèle sur 5 périodes | 1,22 s | 1,18 s | — | 17 573 027 à 17 573 213 | 80 puis 0 | 220,1 à 220,9 |
+| `Flow.Replanning.Bfec` | 1 réplicat de 5 périodes, un fil | 7,07 s | 7,12 s | lecture 0,46 s ; préparation 1,19 s ; replanification 5,41 s | 42 292 463 à 42 292 489 | 4 737 303 | 347,3 à 348,5 |
+| `Yield.Model.Bfec` | `YV_S` pour 1 000 développements du premier modèle | 73,6 µs | 69,9 µs | — | 0 | 0 | 206,2 |
+
+Le nombre d'allocations des flux privés qui calculent des yields complexes varie de quelques
+dizaines d'une mesure à l'autre : les valeurs servies par le cache (section 2.1). Les médianes
+privées sont de 1 à 10 % plus hautes que les valeurs provisoires du 2026-10-02, prises avec un
+autre exécutable, un autre jour : à mesurer de nouveau avant d'y voir un changement (section 2.10).
+
+Les benchmarks des lots 1 et 2, dans les mêmes mesures, gardent les allocations et les octets de la
+référence de la section 7.1 ; leurs médianes s'en écartent de -12 à +12 % (`Yield.Age` : +18 % à la
+troisième mesure). Les JSON restent locaux, hors du dépôt (décision 5).

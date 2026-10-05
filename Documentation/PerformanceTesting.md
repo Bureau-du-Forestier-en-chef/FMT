@@ -183,14 +183,18 @@ Not counted:
 Aligned blocks are counted, but left out of the live bytes. Outside Windows the monitor is not
 available: a row with an allocation or retained-memory bound is then reported as skipped.
 
-The memory a call keeps is the difference of the live bytes before and after it. The size of a freed
-block is read with `_msize`, which on the C runtime heap is the size that was asked for, except that a
-request of zero bytes gets one byte: the live bytes count that byte from the allocation, and on that
-heap the retained bytes of a call are exact. The allocated bytes stay the sizes that were asked for.
+The memory a call keeps is the difference of the live bytes before and after it. A block counts in the
+live bytes for the size `_msize` reports, at its allocation and at its release, so the retained bytes of
+a call are exact whatever the allocator. On the C runtime heap, that size is the size asked for, one byte
+for a request of zero bytes; under mimalloc, it is the size of the class of the block, 16 bytes for 10
+asked for. The allocated bytes stay the sizes asked for, and compare from one allocator to another.
 
 The counts do not depend on the allocator: when mimalloc redirects `malloc`, the calls still go through
-the redirected imports, and the complex-yield benchmarks count the same allocations. Durations and
-memory do depend on it, which is why every result records the allocator of its run.
+the redirected imports, and the benchmarks count the same allocations. Durations, peaks and retained
+bytes do depend on it, which is why every result records the allocator of its run. Under mimalloc, the
+peak of a process of the benchmarks rises from about 22 MB to 54 MB: the peak bounds, and the
+retained-memory bounds that are not 0, hold for the C runtime heap and must be measured again when the
+allocator changes.
 
 ## Results
 

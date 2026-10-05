@@ -20,7 +20,8 @@ namespace Performance
 		std::int64_t allocatedBytes = 0;
 		// Memory allocated and not yet freed since start, the blocks freed since start deducted: the
 		// difference between two readings is what the calls in between kept. It falls below zero
-		// when blocks allocated before start are freed.
+		// when blocks allocated before start are freed. A block counts for the size _msize reports,
+		// which under mimalloc is the size of its class rather than the size asked for.
 		std::int64_t liveBytes = 0;
 		// Highest amount of memory allocated and not yet freed since start. Blocks allocated before
 		// start and freed after it lower the live amount, so the peak can stay at zero.
