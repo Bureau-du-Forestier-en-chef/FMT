@@ -16,7 +16,7 @@ namespace
 {
 	// Version of the JSON layout: change it with the layout, and describe the change in
 	// Documentation/PerformanceTesting.md.
-	constexpr std::int64_t SCHEMA_VERSION = 2;
+	constexpr std::int64_t SCHEMA_VERSION = 3;
 	// Durations are in nanoseconds: three decimals are below the resolution of any clock.
 	constexpr int DURATION_DECIMALS = 3;
 
@@ -71,6 +71,22 @@ namespace
 		writeDuration(p_writer, "medianNs", p_timing.medianNs);
 		writeDuration(p_writer, "meanNs", p_timing.meanNs);
 		writeDuration(p_writer, "stddevNs", p_timing.standardDeviationNs);
+	}
+
+	void writePhases(Performance::JsonWriter& p_writer, const std::vector<Performance::PhaseStatistics>& p_phases)
+	{
+		p_writer.key("phases");
+		p_writer.beginArray();
+		for (const Performance::PhaseStatistics& PHASE : p_phases)
+		{
+			p_writer.beginObject();
+			writeField(p_writer, "name", PHASE.name);
+			writeDuration(p_writer, "minNs", PHASE.minimumNs);
+			writeDuration(p_writer, "medianNs", PHASE.medianNs);
+			writeDuration(p_writer, "maxNs", PHASE.maximumNs);
+			p_writer.endObject();
+		}
+		p_writer.endArray();
 	}
 
 	void writeAllocations(Performance::JsonWriter& p_writer, const Performance::AllocationStatistics& p_allocations)
@@ -128,6 +144,15 @@ namespace
 		const std::optional<std::int64_t> NO_BOUND;
 		writeBound(p_writer, "maxAllocationsPerCall", p_expectation.has_value() ? p_expectation->maximumAllocations : NO_BOUND);
 		writeBound(p_writer, "maxRetainedBytesPerCall", p_expectation.has_value() ? p_expectation->maximumRetainedBytes : NO_BOUND);
+		p_writer.key("maxPeakMemoryMB");
+		if (p_expectation.has_value() && p_expectation->maximumPeakMegabytes.has_value())
+		{
+			p_writer.value(*p_expectation->maximumPeakMegabytes);
+		}
+		else
+		{
+			p_writer.nullValue();
+		}
 	}
 
 	void writeResult(Performance::JsonWriter& p_writer, const Performance::BenchmarkResult& p_result)
@@ -136,8 +161,10 @@ namespace
 		writeField(p_writer, "benchmark", p_result.benchmark);
 		writeField(p_writer, "group", p_result.group);
 		writeField(p_writer, "dataset", p_result.dataset);
+		writeField(p_writer, "datasetFingerprint", p_result.datasetFingerprint);
 		writeField(p_writer, "threads", static_cast<std::uint64_t>(p_result.threads));
 		writeTiming(p_writer, p_result.timing);
+		writePhases(p_writer, p_result.phases);
 		writeAllocations(p_writer, p_result.allocations);
 		writeField(p_writer, "processPeakPrivateBytes", p_result.processPeakPrivateBytes);
 		writeField(p_writer, "result", p_result.result);

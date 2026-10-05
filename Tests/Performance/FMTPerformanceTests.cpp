@@ -6,12 +6,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 // Performance and allocation benchmarks of FMT (issue #349). Each row of
-// Tests/Performance/performance.csv registers one benchmark with ctest. The options, the results
-// and the way to add a benchmark are described in Documentation/PerformanceTesting.md.
+// Tests/Performance/performance.csv registers one benchmark with ctest; each row of the local
+// performance-private.csv also defines its benchmark, on a model outside the source tree. The
+// options, the results and the way to add a benchmark are described in
+// Documentation/PerformanceTesting.md.
 
 #include "BenchmarkOptions.h"
 #include "BenchmarkSuite.h"
 #include "ComplexYieldBenchmarks.h"
+#include "DefinedBenchmarks.h"
+#include "FlowBenchmarks.h"
 #include "MaskBenchmarks.h"
 #include "ParserBenchmarks.h"
 #include "TestTools.h"
@@ -27,6 +31,8 @@ int main(int argc, char* argv[])
 		Performance::addYieldBenchmarks(suite, OPTIONS.getModelFile());
 		Performance::addMaskBenchmarks(suite, OPTIONS.getModelFile());
 		Performance::addParserBenchmarks(suite, OPTIONS.getModelFile());
+		Performance::addFlowBenchmarks(suite, OPTIONS.getModelFile(), OPTIONS.getWorkFolder());
+		Performance::addDefinedBenchmarks(suite, OPTIONS.getDefinedBenchmarks(), OPTIONS.getWorkFolder());
 		return suite.run();
 		});
 }

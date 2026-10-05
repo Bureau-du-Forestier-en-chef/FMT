@@ -32,6 +32,9 @@ namespace Performance
 		// Settings of an operation that lasts milliseconds or more, such as reading a project: one
 		// call per sample, and fewer calls, so that a measurement lasts seconds, not hours.
 		static RunSettings forSlowCalls(BenchmarkMode p_mode);
+		// Settings of a model flow, from milliseconds on TWD_land to minutes on a production model: a
+		// few complete runs, one call per sample, and one counted call.
+		static RunSettings forFlows(BenchmarkMode p_mode);
 	};
 }
 

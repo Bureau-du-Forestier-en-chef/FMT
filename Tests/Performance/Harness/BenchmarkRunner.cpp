@@ -28,6 +28,8 @@ namespace
 	constexpr std::size_t MAXIMUM_CALLS_PER_SAMPLE = std::size_t(1) << 24;
 	// Tolerance on results, relative to the expected value: FMT rounds complex yields to 8 decimals.
 	constexpr double RESULT_TOLERANCE = 1e-6;
+	// Peak memory bounds are written in megabytes.
+	constexpr double BYTES_PER_MEGABYTE = 1e6;
 
 	bool isExpected(double p_value, double p_expected)
 	{
@@ -79,6 +81,21 @@ namespace
 		return statistics;
 	}
 
+	Performance::PhaseStatistics phaseStatistics(const std::string& p_name, std::vector<double> p_nanosecondsPerCall)
+	{
+		Performance::PhaseStatistics statistics;
+		statistics.name = p_name;
+		if (p_nanosecondsPerCall.empty())
+		{
+			return statistics;
+		}
+		std::sort(p_nanosecondsPerCall.begin(), p_nanosecondsPerCall.end());
+		statistics.minimumNs = p_nanosecondsPerCall.front();
+		statistics.medianNs = medianOfSorted(p_nanosecondsPerCall);
+		statistics.maximumNs = p_nanosecondsPerCall.back();
+		return statistics;
+	}
+
 	Performance::AllocationStatistics allocationStatistics(std::vector<std::int64_t> p_allocationsPerCall,
 		std::vector<std::int64_t> p_bytesPerCall, std::vector<std::int64_t> p_retainedBytesPerCall,
 		const Performance::AllocationCounts& p_total)
@@ -108,7 +125,7 @@ namespace
 	class CountingSession
 	{
 	public:
-		CountingSession()
+		explicit CountingSession(Performance::ThreadScope p_scope)
 		{
 			try
 			{
@@ -119,7 +136,7 @@ namespace
 				Performance::AllocationMonitor::uninstall();
 				throw;
 			}
-			Performance::AllocationMonitor::start(Performance::ThreadScope::Current);
+			Performance::AllocationMonitor::start(p_scope);
 		}
 
 		~CountingSession()
@@ -184,7 +201,26 @@ namespace
 		p_result.checks.push_back({ ALLOCATIONS.medianRetainedBytesPerCall <= p_bound, description });
 	}
 
-	void checkResult(Performance::BenchmarkResult& p_result, std::size_t p_mismatches)
+	// The peak is the one of the process, from its start: it gives what the benchmark needs only
+	// when the benchmark runs alone in its process, as under ctest.
+	void checkPeakMemory(Performance::BenchmarkResult& p_result, double p_boundMegabytes, bool p_firstInProcess)
+	{
+		if (!Performance::MemoryMonitor::isSupported())
+		{
+			p_result.skipReason = "peak memory not checked: the memory of the process cannot be read on this platform";
+			return;
+		}
+		if (!p_firstInProcess)
+		{
+			p_result.skipReason = "peak memory not checked: another benchmark ran before in this process";
+			return;
+		}
+		const double PEAK = std::round(static_cast<double>(p_result.processPeakPrivateBytes) / BYTES_PER_MEGABYTE * 10.0) / 10.0;
+		p_result.checks.push_back({ PEAK <= p_boundMegabytes, "peak private memory of the process " + toText(PEAK)
+			+ " MB (bound " + toText(p_boundMegabytes) + " MB)" });
+	}
+
+	void checkResult(Performance::BenchmarkResult& p_result, std::size_t p_mismatches, bool p_firstInProcess)
 	{
 		if (!p_result.expectation.has_value())
 		{
@@ -206,6 +242,10 @@ namespace
 		{
 			checkRetainedBytes(p_result, *EXPECTATION.maximumRetainedBytes);
 		}
+		if (EXPECTATION.maximumPeakMegabytes.has_value())
+		{
+			checkPeakMemory(p_result, *EXPECTATION.maximumPeakMegabytes, p_firstInProcess);
+		}
 	}
 }
 
@@ -216,21 +256,28 @@ namespace Performance
 	{
 	}
 
-	BenchmarkResult BenchmarkRunner::run(Benchmark& p_benchmark, const std::optional<Expectation>& p_expectation)
+	BenchmarkResult BenchmarkRunner::run(Benchmark& p_benchmark, const std::optional<Expectation>& p_expectation, bool p_firstInProcess)
 	{
 		BenchmarkResult result;
 		result.benchmark = p_benchmark.getName();
 		result.group = result.benchmark.substr(0, result.benchmark.find('.'));
 		result.dataset = p_benchmark.getDataset();
 		result.expectation = p_expectation;
+		const std::string UNAVAILABLE = p_benchmark.getUnavailableReason();
+		if (!UNAVAILABLE.empty())
+		{
+			result.skipReason = UNAVAILABLE;
+			return result;
+		}
 		p_benchmark.prepare();
+		result.datasetFingerprint = p_benchmark.getDatasetFingerprint();
 		_warmUp(p_benchmark);
-		result.timing = _time(p_benchmark, _calibrate(p_benchmark));
+		result.timing = _time(p_benchmark, _calibrate(p_benchmark), result.phases);
 		const CountedCalls COUNTED = _count(p_benchmark, p_expectation);
 		result.allocations = COUNTED.allocations;
 		result.result = COUNTED.lastResult;
 		result.processPeakPrivateBytes = MemoryMonitor::read().peakPrivateBytes;
-		checkResult(result, COUNTED.mismatches);
+		checkResult(result, COUNTED.mismatches, p_firstInProcess);
 		return result;
 	}
 
@@ -243,8 +290,13 @@ namespace Performance
 	}
 
 	// Doubles the number of calls until they last at least the minimum duration of a sample.
+	// Without a minimum duration, a sample is one call, and nothing needs to run.
 	std::size_t BenchmarkRunner::_calibrate(Benchmark& p_benchmark)
 	{
+		if (m_settings.minimumSampleDuration.count() == 0)
+		{
+			return 1;
+		}
 		std::size_t calls = 1;
 		while (calls < MAXIMUM_CALLS_PER_SAMPLE)
 		{
@@ -262,18 +314,33 @@ namespace Performance
 		return calls;
 	}
 
-	TimingStatistics BenchmarkRunner::_time(Benchmark& p_benchmark, std::size_t p_callsPerSample)
+	// The phases of a benchmark are timed in the same calls as the whole operation.
+	TimingStatistics BenchmarkRunner::_time(Benchmark& p_benchmark, std::size_t p_callsPerSample, std::vector<PhaseStatistics>& p_phases)
 	{
+		const std::size_t PHASES = p_benchmark.getPhaseNames().size();
 		std::vector<double> nanosecondsPerCall(m_settings.samples);
-		for (double& sampleNanoseconds : nanosecondsPerCall)
+		std::vector<std::vector<double>> phaseNanosecondsPerCall(PHASES, std::vector<double>(m_settings.samples));
+		const double CALLS = static_cast<double>(p_callsPerSample);
+		for (std::size_t sample = 0; sample < m_settings.samples; ++sample)
 		{
+			p_benchmark.clearPhaseDurations();
 			const Clock::time_point START = Clock::now();
 			for (std::size_t call = 0; call < p_callsPerSample; ++call)
 			{
 				m_sink = m_sink + p_benchmark.run();
 			}
 			const std::chrono::duration<double, std::nano> ELAPSED = Clock::now() - START;
-			sampleNanoseconds = ELAPSED.count() / static_cast<double>(p_callsPerSample);
+			nanosecondsPerCall[sample] = ELAPSED.count() / CALLS;
+			const std::vector<double>& DURATIONS = p_benchmark.getPhaseDurations();
+			for (std::size_t phase = 0; phase < PHASES; ++phase)
+			{
+				phaseNanosecondsPerCall[phase][sample] = DURATIONS.at(phase) / CALLS;
+			}
+		}
+		p_phases.clear();
+		for (std::size_t phase = 0; phase < PHASES; ++phase)
+		{
+			p_phases.push_back(phaseStatistics(p_benchmark.getPhaseNames().at(phase), phaseNanosecondsPerCall[phase]));
 		}
 		return timingStatistics(nanosecondsPerCall, p_callsPerSample);
 	}
@@ -293,7 +360,7 @@ namespace Performance
 			std::optional<CountingSession> session;
 			if (AllocationMonitor::isSupported())
 			{
-				session.emplace();
+				session.emplace(p_benchmark.getThreadScope());
 			}
 			for (std::size_t call = 0; call < CALLS; ++call)
 			{

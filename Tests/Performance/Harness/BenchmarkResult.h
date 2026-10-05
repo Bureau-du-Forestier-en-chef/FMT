@@ -33,6 +33,16 @@ namespace Performance
 		double standardDeviationNs = 0.0;
 	};
 
+	// Duration of one phase of a call over the timed samples, in nanoseconds (see
+	// Benchmark::definePhase).
+	struct PhaseStatistics
+	{
+		std::string name;
+		double minimumNs = 0.0;
+		double medianNs = 0.0;
+		double maximumNs = 0.0;
+	};
+
 	// Heap activity of the counted calls, counted one call at a time (see AllocationMonitor).
 	struct AllocationStatistics
 	{
@@ -64,8 +74,12 @@ namespace Performance
 		std::string benchmark;
 		std::string group;
 		std::string dataset;
+		// SHA-256 of the files of the dataset, or an empty text (see DatasetFingerprint).
+		std::string datasetFingerprint;
 		std::size_t threads = 1;
 		TimingStatistics timing;
+		// One entry per phase of the benchmark, in their order: none for an operation timed as a whole.
+		std::vector<PhaseStatistics> phases;
 		AllocationStatistics allocations;
 		std::uint64_t processPeakPrivateBytes = 0;
 		// Result of the last counted call.
@@ -80,7 +94,7 @@ namespace Performance
 		bool isSkipped() const;
 	};
 
-	// Writes the results of one run and their environment as JSON: schema version 2, described in
+	// Writes the results of one run and their environment as JSON: schema version 3, described in
 	// Documentation/PerformanceTesting.md.
 	void writeResults(std::ostream& p_stream, const BenchmarkEnvironment& p_environment,
 		const std::vector<BenchmarkResult>& p_results);

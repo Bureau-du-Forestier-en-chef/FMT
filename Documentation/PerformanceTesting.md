@@ -14,7 +14,11 @@ Tests protect behavior; benchmarks show performance effects. Neither replaces th
 | `Tests/Performance/FMTPerformanceTests.cpp` | The benchmark executable, `FMTPerformanceTests`. |
 | `Tests/Performance/*Benchmarks.cpp` | The benchmarks, one file per group. |
 | `Tests/Performance/PerfYields.h`, `.cpp` | The `perfyields` scenario and its prepared yield requests, shared by the yield benchmarks. |
-| `Tests/Performance/performance.csv` | One row per benchmark: its registration with ctest, its expected result and its allocation bound. |
+| `Tests/Performance/FlowBenchmarks.h`, `.cpp` | The model flows: optimization, replay of a schedule, outputs, simulation, replanning. |
+| `Tests/Performance/DefinedBenchmarks.h`, `.cpp` | The benchmarks defined by a row of an expectations file, such as the private ones. |
+| `Tests/Performance/QuietFmt.h`, `.cpp` | Makes FMT quiet, once per process (see [Adding a benchmark](#adding-a-benchmark)). |
+| `Tests/Performance/performance.csv` | One row per benchmark: its registration with ctest, its expected result and its bounds. |
+| `Tests/Performance/performance-private.csv` | A local file that git ignores: the private benchmarks, on models outside the source tree. |
 | `Tests/Performance/CompareResults.cmake` | Compares the results of two runs. |
 | `Examples/Models/TWD_land/Scenarios/perfyields/` | The data of the complex-yield benchmarks. |
 
@@ -23,14 +27,21 @@ Tests protect behavior; benchmarks show performance effects. Neither replaces th
 ### Short mode, with the tests
 
 Every row of `performance.csv` is a ctest test labelled `performance`, and also `allocation` when the
-row bounds the allocations of a call, and `memory` when it bounds the memory a call keeps. With the rest
-of the suite, the benchmarks run in a short mode: a few calls, enough to check that each one still
-builds, computes the expected result and respects its bounds.
+row bounds the allocations of a call, and `memory` when it bounds the memory a call keeps or the peak
+memory of the process. With the rest of the suite, the benchmarks run in a short mode: a few calls,
+enough to check that each one still builds, computes the expected result and respects its bounds.
 
 ```bash
 ctest --test-dir build/release -C Release -L performance
 ctest --test-dir build/release -C Release -L allocation
 ctest --test-dir build/release -C Release -L memory
+```
+
+The rows of `performance-private.csv` are labelled `bfec-perf` only, and stay out of the base suite
+(see [Private benchmarks](#private-benchmarks)):
+
+```bash
+ctest --test-dir build/release -C Release -L bfec-perf
 ```
 
 The times printed in short mode, and in any run made with `-j`, are not measurements.
@@ -60,6 +71,7 @@ results to `build/release/tests/performance/<benchmark>.json`.
 | `--expected <value>` | Replaces the expected result of the benchmark named by `--benchmark`. |
 | `--max-allocations <n>` | Replaces its allocation bound. |
 | `--max-retained-bytes <n>` | Replaces its bound on the memory a call keeps. |
+| `--max-peak-memory <MB>` | Replaces its bound on the peak private memory of the process, in megabytes. |
 | `--output <json file>` | Results file. Default: `build/release/tests/performance/<selection>.json`. |
 | `--list` | Prints the names of the selected benchmarks and runs none. |
 
@@ -84,16 +96,22 @@ A benchmark is a class derived from `Performance::Benchmark`. The runner calls i
 5. **counted calls**, one at a time, with the allocation monitor installed: the allocations of each
    call, and its result.
 
-| Setting | Short mode | Full mode | Slow operation, short mode | Slow operation, full mode |
-| --- | --- | --- | --- | --- |
-| Warm-up calls | 3 | 100 | 1 | 2 |
-| Timed samples | 3 | 30 | 2 | 10 |
-| Minimum duration of a sample | 0.1 ms | 5 ms | none: one call | none: one call |
-| Counted calls | 20 | 1000 | 3 | 20 |
+| Setting | Short mode | Full mode | Slow operation, short | Slow operation, full | Model flow, short | Model flow, full |
+| --- | --- | --- | --- | --- | --- | --- |
+| Warm-up calls | 3 | 100 | 1 | 2 | 0 | 1 |
+| Timed samples | 3 | 30 | 2 | 10 | 1 | 3 |
+| Minimum duration of a sample | 0.1 ms | 5 ms | none: one call | none: one call | none: one call | none: one call |
+| Counted calls | 20 | 1000 | 3 | 20 | 1 | 1 |
 
 A slow operation, one that lasts milliseconds or more such as reading a project, says so in
 `Benchmark::getSettings`, which then returns `RunSettings::forSlowCalls`: its measurement lasts seconds,
-not hours.
+not hours. A model flow, from milliseconds on TWD_land to minutes on a production model, returns
+`RunSettings::forFlows`. A sample of one call needs no calibration.
+
+A flow times its phases in the same calls as the whole operation: it declares them with `definePhase`
+before its first call, marks the start of a call with `beginPhases`, and the end of each phase with
+`endPhase`. The results give the median, minimum and maximum of each phase, so that a change shows where
+it costs: in FMT, such as reading or building a model, or in the solver.
 
 Before the first benchmark, the suite asks Windows not to throttle the process, and keeps the thread that
 measures on the fastest cores of the processor (`ProcessorPolicy`). A hybrid processor, such as the 13th
@@ -114,7 +132,10 @@ The counted calls are then checked against the row of the benchmark in `performa
 - a typical call, the median of the counted calls, must not allocate more than the allocation bound. A
   bound of `0` is stricter: no counted call may allocate;
 - a typical call must not keep more memory than the retained-memory bound: the bytes it allocates and
-  has not freed when it returns. A bound of `0` is stricter: no counted call may keep any.
+  has not freed when it returns. A bound of `0` is stricter: no counted call may keep any;
+- the peak private memory of the process must not exceed the peak bound, in megabytes. That peak is
+  the one of the process since it started: the bound is checked only for the first benchmark of a
+  process, as ctest runs them, and reported as skipped for the next ones.
 
 The bounds apply to a typical call because some calls legitimately allocate more than others: a value
 put in a cache, a container that grows now and then. An allocation bound of `0` states that a path does
@@ -122,6 +143,9 @@ not allocate after preparation, which is what
 [Architecture.md](Architecture.md#preallocate-before-calculation) asks of calculation paths. A
 retained-memory bound of `0` states that an operation leaves nothing behind: repeated, it does not grow
 the memory of the process.
+
+A peak bound is the highest peak of two measurements in each mode, with 10 % added: it lets a flow
+vary as it does from one run to the next, and fails when a change makes it need much more memory.
 
 An allocation count that depends on the machine takes no bound: the count of a project read, for
 instance, grows with the length of the path of the project. It is still measured and compared.
@@ -137,7 +161,9 @@ runtime through its import table: `Performance::AllocationMonitor::install` redi
 table of every loaded module, including the solvers and Boost, to functions that count and forward the
 call. FMT is not modified, and the measured build is the delivered one.
 
-By default, only the allocations of the thread that runs the benchmark are counted.
+By default, only the allocations of the thread that runs the benchmark are counted. A benchmark that
+hands its work to other threads, such as the replanning, counts those of every thread
+(`Benchmark::getThreadScope`).
 
 Not counted:
 
@@ -159,9 +185,10 @@ memory do depend on it, which is why every result records the allocator of its r
 ## Results
 
 Each run writes one JSON file: the environment of the run, then one entry per benchmark. The layout is
-version 2 of the schema; any change to it changes `schemaVersion` and this section. Version 2 adds
-`processors`, the retained-memory fields and `maxRetainedBytesPerCall`; `CompareResults.cmake` still
-reads version 1 files.
+version 3 of the schema; any change to it changes `schemaVersion` and this section. Version 3 adds
+`datasetFingerprint`, `phases` and `maxPeakMemoryMB`; version 2 added `processors`, the
+retained-memory fields and `maxRetainedBytesPerCall`. `CompareResults.cmake` still reads versions 1
+and 2.
 
 | Environment field | Meaning |
 | --- | --- |
@@ -180,8 +207,10 @@ reads version 1 files.
 | Result field | Meaning |
 | --- | --- |
 | `benchmark`, `group`, `dataset`, `threads` | What was measured, on which data, with how many threads. |
+| `datasetFingerprint` | SHA-256 of the files of the dataset, for a flow or a private benchmark (see [Private benchmarks](#private-benchmarks)); empty otherwise. |
 | `samples`, `callsPerSample` | Timed samples; their product is the number of timed calls. |
 | `minNs`, `maxNs`, `medianNs`, `meanNs`, `stddevNs` | Duration of one call over the samples, in nanoseconds. |
+| `phases` | One entry per phase of a call, in order: `name`, `minNs`, `medianNs`, `maxNs`. Empty for an operation timed as a whole. |
 | `allocationCalls` | Counted calls. |
 | `allocationsPerCallMin`, `allocationsPerCallMedian`, `allocationsPerCallMax` | Allocations of one counted call. |
 | `allocatedBytesPerCallMedian` | Bytes allocated by a typical call. |
@@ -189,7 +218,7 @@ reads version 1 files.
 | `allocations`, `deallocations`, `allocatedBytes`, `retainedBytes` | Totals over the counted calls; `retainedBytes` is what all of them kept. |
 | `peakLiveHeapBytes` | Highest amount of memory allocated and not yet freed during the counted calls. |
 | `processPeakPrivateBytes` | Peak private memory of the process at the end of the benchmark. |
-| `result`, `expected`, `maxAllocationsPerCall`, `maxRetainedBytesPerCall` | Result of the last counted call, and the expectation it was checked against. |
+| `result`, `expected`, `maxAllocationsPerCall`, `maxRetainedBytesPerCall`, `maxPeakMemoryMB` | Result of the last counted call, and the expectation it was checked against. |
 | `valid`, `skipped`, `skipReason`, `failures` | Outcome of the checks. |
 
 The allocation fields are `null` where the monitor is not available.
@@ -201,21 +230,28 @@ cmake -DBASELINE=<file or folder> -DCANDIDATE=<file or folder> -P Tests/Performa
 ```
 
 A folder stands for every `.json` file it holds, such as `build/release/tests/performance` after a
-measurement. For each benchmark, the report gives the change of the median duration, the allocations
-and bytes of a typical call before and after, and the change of the process peak memory:
+measurement. For each benchmark, the report gives the change of the median duration and of each phase,
+the allocations and bytes of a typical call before and after, and the change of the process peak
+memory:
 
 ```text
-ComplexYield.Sum
-  Median duration:  -0.2%  (378.1 ns -> 377.2 ns)
-  Allocations:      4 -> 4 per call
-  Allocated bytes:  82 -> 82 per call
-  Retained bytes:   0 -> 0 per call
-  Peak memory:      +0.4%  (process peak private bytes)
+Flow.Optimize
+  Median duration:  -1.3%  (30.424 ms -> 30.003 ms)
+    read:  -6.6%  (4.848 ms -> 4.526 ms)
+    build:  +0.2%  (1.954 ms -> 1.959 ms)
+    solve:  +0.2%  (21.562 ms -> 21.617 ms)
+  Allocations:      47167 -> 47167 per call
+  Allocated bytes:  5566717 -> 5566717 per call
+  Retained bytes:   -792 -> -792 per call
+  Peak memory:      +0.0%  (process peak private bytes)
 ```
+
+When the fingerprints of a dataset differ, the report warns that the results do not compare.
 
 Durations only compare between two measurements of the same mode, on the same machine and kind of cores,
 in the same build type and with the same allocator: the report warns when they differ. Two measurements
-of the same commit differ by a few percent. The comparison only reports; nothing fails on a change.
+of the same commit differ by up to 8 % on the machine where the suite was written. The comparison only
+reports; nothing fails on a change.
 
 To show the effect of a change, measure the commit before it, keep the results out of the build folder,
 measure the commit with it, and compare.
@@ -226,17 +262,22 @@ measure the commit with it, and compare.
    `Tests/Performance/CMakeLists.txt`. Its name is `<group>.<operation>[.<variant>]`. Everything the
    measured operation needs is built in `prepare`; `run` performs the operation once and returns a
    result that depends on it. An operation of milliseconds or more overrides `getSettings` to return
-   `RunSettings::forSlowCalls`.
+   `RunSettings::forSlowCalls`, a model flow `RunSettings::forFlows`. A benchmark that reads a model
+   calls `Performance::quietFmt()` first in `prepare`. FMT keeps one logger for the whole process, and
+   the solver of a model keeps the message handler of the logger it was built with: replacing the logger
+   while a model exists leaves that model with a destroyed handler, and copying the model then fails or
+   crashes the process. Never replace the FMT logger in a benchmark.
 2. **Add it to the suite** in `FMTPerformanceTests.cpp`.
 3. **Compute the expected result by hand**, from the files of the model, never from what FMT prints:
    a benchmark that measures a wrong computation must fail.
 4. **Add its row** to `performance.csv`:
-   `FMTPerformanceTests;<name>;<expected result>;<allocation bound>;<retained-memory bound>`. Leave the
-   bounds empty for a first run.
+   `FMTPerformanceTests;<name>;<expected result>;<allocation bound>;<retained-memory bound>;<peak MB>`.
+   Leave the bounds empty for a first run.
 5. **Measure the bounds**: run the benchmark twice and read the allocations and the retained bytes per
-   call. Write each median as a bound when it changes neither between the runs nor with the machine.
-6. **See each check fail** without recompiling: `--expected` with a wrong value, `--max-allocations`
-   and `--max-retained-bytes` below the measure.
+   call. Write each median as a bound when it changes neither between the runs nor with the machine. For
+   a flow, run it alone in its process twice in each mode, and write the highest peak with 10 % added.
+6. **See each check fail** without recompiling: `--expected` with a wrong value, `--max-allocations`,
+   `--max-retained-bytes` and `--max-peak-memory` below the measure.
 7. **Reconfigure CMake**, which registers the new row with ctest. A value changed in an existing row
    needs no reconfiguration: the executable reads the file at run time.
 
@@ -295,3 +336,49 @@ area, 1814.76 ha. `Parser.ReadProject.TwoScenarios` reads the root and the `perf
 same call: 3629.52 ha for the two models. The models are destroyed before the call returns, and a read
 must keep no memory. The allocations of a read are measured, but not bounded: their count grows with the
 length of the path of the project.
+
+### Model flows
+
+On TWD_land, each flow reads its model at every call:
+
+| Benchmark | Data | Phases | Expected result |
+| --- | --- | --- | --- |
+| `Flow.Optimize` | `NOT_MASK`, 5 periods | read, build, solve | objective 90738, as `doplanning` checks it |
+| `Flow.Optimize.Long` | `NOT_MASK`, 20 periods: a graph twelve times larger | read, build, solve | objective 362952 |
+| `Flow.Replay` | schedule of `LP`, 10 periods, without a solver | read, build | `OVOLREC` at period 2: 48008.953705 |
+| `Flow.Outputs` | schedule of `LP`, 10 periods, built once by `prepare` | none | sum of the totals of every output of every period: 3079696.8362052 |
+| `Flow.Simulate` | `DECISION`, non-spatial simulation | read, simulate | `UNIT_REC` at period 5: 60, as `FMTNsstest` checks it |
+| `Flow.Replanning` | `Globalreplanning`, `Globalfire` and `Localreplanning`: 2 replicates of 5 periods, on one thread | read, setup, replanning, result | 20 rows written: 2 replicates × 5 periods × 2 outputs |
+
+The objectives are the same with MOSEK and CLP; the replay, the outputs and the simulation involve no
+solver. The replanned values, however, depend on which optimal solution the solver returns: for the same
+replicates, the local model harvests 447 126 m³ under MOSEK and 465 421 m³ under CLP. The replanning
+therefore checks the number of rows it writes. Each run of a replanning keeps about 4.7 MB, whatever the
+number of its replicates and periods: its retained-memory bound is 5 MB, so that the bound fails if the
+memory kept starts to grow with the replicates. Every flow bounds the peak memory of its process.
+
+### Private benchmarks
+
+The rows of `Tests/Performance/performance-private.csv`, a local file that git ignores, measure flows on
+production models. They have the columns of `performance.csv`, followed by `ARGUMENTS`. The name of a
+private benchmark is its kind followed by a variant, `<kind>.<variant>`, and its arguments, separated by
+`|`, give its model:
+
+| Kind | Arguments |
+| --- | --- |
+| `Flow.Optimize` | `<primary file>\|<scenario>\|<length>` |
+| `Flow.Replay` | `<primary file>\|<scenario>\|<length>\|<output>\|<period>` |
+| `Flow.Outputs` | `<primary file>\|<scenario>\|<length>\|<outputs, a count or all>` |
+| `Flow.Simulate` | `<primary file>\|<scenario>\|<length>\|<output>\|<period>` |
+| `Flow.Replanning` | `<primary file>\|<global scenario>\|<stochastic scenario>\|<local scenario>\|<global length>\|<replanned periods>\|<replicates>\|<outputs joined by +>` |
+| `Yield.Model` | `<primary file>\|<scenario>\|<yield>\|<developments>` |
+
+The model must be on `T:\`, like those of the private tests: the name of its ctest test holds the path
+of the model, which keeps the test out of the base suite, `-E "T:/"`. CMake warns and does not register a
+row whose model is elsewhere. Each private benchmark records the SHA-256 of the files of its model, the
+files beside its primary file and those of the scenarios it reads: these models are not versioned, and
+two measurements compare only on the same fingerprint. The file, the names of the models and the results
+stay on the machine.
+
+On a production model, a flow reads the errors that `doplanning` turns into warnings as warnings, so
+that the model reads and plans as it does in production (`Performance::quietFmt`).

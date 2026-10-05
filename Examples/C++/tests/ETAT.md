@@ -1381,6 +1381,6 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
   configuration, compter les lignes des CSV absentes de `ctest -N` (lot 2).
 - Désactivés : lignes de `knownbugs.csv`.
 - Depuis le lot 1 du chantier #349 (`Tests/Performance/ETAT.md`, 2026-09-25), la suite base compte
-  aussi les lignes `FMTPerformanceTests.*` (étiquette `performance` ; 7 au lot 1, 13 au lot 2),
-  qui lisent TWD_land, dont le scénario `perfyields`, créé pour elles. Pour comparer avec les
-  lignes ci-dessus, ajouter `-LE performance` aux commandes.
+  aussi les lignes `FMTPerformanceTests.*` (étiquette `performance` ; 7 au lot 1, 13 au lot 2, 19
+  au lot 3), qui lisent TWD_land, dont le scénario `perfyields`, créé pour elles. Pour comparer
+  avec les lignes ci-dessus, ajouter `-LE performance` aux commandes.

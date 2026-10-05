@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace Performance
 {
@@ -36,6 +37,17 @@ namespace Performance
 		// Most bytes a typical call may keep allocated when it returns, compared in the same way. A
 		// bound of 0 is stricter: no call may keep any.
 		std::optional<std::int64_t> maximumRetainedBytes;
+		// Highest private memory the process may reach, in megabytes. Checked only when the
+		// benchmark runs alone in its process, as under ctest.
+		std::optional<double> maximumPeakMegabytes;
+	};
+
+	// A benchmark defined by its row of the expectations file rather than by the executable: the
+	// row gives its arguments, such as the model of a private benchmark.
+	struct DefinedBenchmark
+	{
+		std::string name;
+		std::string arguments;
 	};
 
 	// Command line of a benchmark executable:
@@ -48,6 +60,7 @@ namespace Performance
 	//   --expected <value>       replaces the expected result of the benchmark named by --benchmark
 	//   --max-allocations <n>    replaces its allocation bound
 	//   --max-retained-bytes <n> replaces its bound on the memory a call keeps
+	//   --max-peak-memory <MB>   replaces its bound on the peak private memory of the process
 	//   --output <json file>     where the results are written
 	//   --list                   prints the names of the selected benchmarks and runs none
 	//
@@ -66,9 +79,13 @@ namespace Performance
 		BenchmarkMode getMode() const;
 		const std::string& getModelFile() const;
 		const std::filesystem::path& getOutputFile() const;
+		// Folder of the results file, where a benchmark writes what it produces.
+		std::filesystem::path getWorkFolder() const;
 		// Returns the expectation of p_benchmark, or nothing when the expectations file has no row
 		// for it.
 		std::optional<Expectation> getExpectation(const std::string& p_benchmark) const;
+		// The rows of the expectations file that give arguments, in their order.
+		const std::vector<DefinedBenchmark>& getDefinedBenchmarks() const;
 
 	private:
 		// Selected benchmark names, * matching any text.
@@ -83,7 +100,9 @@ namespace Performance
 		std::optional<double> m_expectedOverride;
 		std::optional<std::int64_t> m_boundOverride;
 		std::optional<std::int64_t> m_retainedBoundOverride;
+		std::optional<double> m_peakBoundOverride;
 		std::map<std::string, Expectation> m_expectations;
+		std::vector<DefinedBenchmark> m_definedBenchmarks;
 
 		BenchmarkOptions();
 		void _set(const std::string& p_option, const std::string& p_value);

@@ -73,8 +73,10 @@ explicitly which validation is missing.
 
 `Tests/Performance/performance.csv` registers the benchmarks of `FMTPerformanceTests` with CTest,
 labelled `performance`, `allocation` when a row bounds the allocations of a call, and `memory` when it
-bounds the memory a call keeps. With the rest of the suite they run in a short mode, which only checks
-their results and bounds. A measurement runs them apart, one at a time:
+bounds the memory a call keeps or the peak memory of the process. With the rest of the suite they run in
+a short mode, which only checks their results and bounds. The private benchmarks, rows of the local
+`performance-private.csv` on models of `T:\`, are labelled `bfec-perf` and stay out of the base suite. A
+measurement runs them apart, one at a time:
 
 ```bash
 FMT_BENCHMARK_MODE=full ctest --test-dir build/release -C Release -L performance

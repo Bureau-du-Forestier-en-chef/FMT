@@ -15,17 +15,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <cstddef>
 #include <optional>
+#include <vector>
 
 namespace Performance
 {
 	// Measures one benchmark: prepare, warm-up, timed samples without the allocation monitor, then
-	// counted calls. The results of the counted calls, their allocations and the memory they keep
-	// are then checked against the expectation of the benchmark.
+	// counted calls. The results of the counted calls, their allocations, the memory they keep and
+	// the peak memory of the process are then checked against the expectation of the benchmark.
 	class BenchmarkRunner
 	{
 	public:
 		explicit BenchmarkRunner(const RunSettings& p_settings);
-		BenchmarkResult run(Benchmark& p_benchmark, const std::optional<Expectation>& p_expectation);
+		// p_firstInProcess is false when another benchmark ran before in the same process: the peak
+		// memory of the process then says nothing about this one, and its bound is not checked.
+		BenchmarkResult run(Benchmark& p_benchmark, const std::optional<Expectation>& p_expectation, bool p_firstInProcess);
 
 	private:
 		// What the counted calls produced.
@@ -43,7 +46,7 @@ namespace Performance
 
 		void _warmUp(Benchmark& p_benchmark);
 		std::size_t _calibrate(Benchmark& p_benchmark);
-		TimingStatistics _time(Benchmark& p_benchmark, std::size_t p_callsPerSample);
+		TimingStatistics _time(Benchmark& p_benchmark, std::size_t p_callsPerSample, std::vector<PhaseStatistics>& p_phases);
 		CountedCalls _count(Benchmark& p_benchmark, const std::optional<Expectation>& p_expectation);
 	};
 }

@@ -36,10 +36,30 @@ namespace
 		return text.str();
 	}
 
-	std::string nanoseconds(double p_duration)
+	// A duration in a unit that keeps it readable: nanoseconds below a millisecond, then
+	// milliseconds, then seconds.
+	std::string duration(double p_nanoseconds)
 	{
 		std::ostringstream text;
-		text << std::fixed << std::setprecision(1) << p_duration;
+		if (p_nanoseconds < 1e6)
+		{
+			text << std::fixed << std::setprecision(1) << p_nanoseconds << " ns";
+		}
+		else if (p_nanoseconds < 1e9)
+		{
+			text << std::fixed << std::setprecision(3) << p_nanoseconds / 1e6 << " ms";
+		}
+		else
+		{
+			text << std::fixed << std::setprecision(3) << p_nanoseconds / 1e9 << " s";
+		}
+		return text.str();
+	}
+
+	std::string megabytes(std::uint64_t p_bytes)
+	{
+		std::ostringstream text;
+		text << std::fixed << std::setprecision(1) << static_cast<double>(p_bytes) / 1e6 << " MB";
 		return text.str();
 	}
 
@@ -64,9 +84,14 @@ namespace
 	{
 		const Performance::TimingStatistics& TIMING = p_result.timing;
 		std::cout << std::endl << p_result.benchmark << " (" << p_result.dataset << ")" << std::endl;
-		std::cout << "  time    " << nanoseconds(TIMING.medianNs) << " ns per call, median of " << TIMING.samples
-			<< " samples of " << TIMING.callsPerSample << " calls (min " << nanoseconds(TIMING.minimumNs)
-			<< ", max " << nanoseconds(TIMING.maximumNs) << ")" << std::endl;
+		std::cout << "  time    " << duration(TIMING.medianNs) << " per call, median of " << TIMING.samples
+			<< " samples of " << TIMING.callsPerSample << " calls (min " << duration(TIMING.minimumNs)
+			<< ", max " << duration(TIMING.maximumNs) << ")" << std::endl;
+		for (const Performance::PhaseStatistics& PHASE : p_result.phases)
+		{
+			std::cout << "  phase   " << PHASE.name << ": " << duration(PHASE.medianNs) << " (min " << duration(PHASE.minimumNs)
+				<< ", max " << duration(PHASE.maximumNs) << ")" << std::endl;
+		}
 		const Performance::AllocationStatistics& ALLOCATIONS = p_result.allocations;
 		if (ALLOCATIONS.measured)
 		{
@@ -74,6 +99,11 @@ namespace
 				<< ALLOCATIONS.minimumPerCall << ", max " << ALLOCATIONS.maximumPerCall << " over " << ALLOCATIONS.calls
 				<< " calls), " << ALLOCATIONS.medianBytesPerCall << " bytes per call, "
 				<< ALLOCATIONS.medianRetainedBytesPerCall << " retained" << std::endl;
+		}
+		std::cout << "  memory  " << megabytes(p_result.processPeakPrivateBytes) << " peak private memory of the process" << std::endl;
+		if (!p_result.datasetFingerprint.empty())
+		{
+			std::cout << "  data    SHA-256 " << p_result.datasetFingerprint << std::endl;
 		}
 		for (const Performance::BenchmarkCheck& CHECK : p_result.checks)
 		{
@@ -146,7 +176,8 @@ namespace Performance
 		for (Benchmark* const BENCHMARK : SELECTED)
 		{
 			BenchmarkRunner runner(BENCHMARK->getSettings(m_options.getMode()));
-			results.push_back(runner.run(*BENCHMARK, m_options.getExpectation(BENCHMARK->getName())));
+			const bool FIRST_IN_PROCESS = results.empty();
+			results.push_back(runner.run(*BENCHMARK, m_options.getExpectation(BENCHMARK->getName()), FIRST_IN_PROCESS));
 			printResult(results.back());
 		}
 		_write(environment, results);

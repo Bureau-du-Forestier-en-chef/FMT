@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "Benchmark.h"
 #include "BenchmarkSuite.h"
+#include "QuietFmt.h"
 
 #include <filesystem>
 #include <memory>
@@ -76,8 +77,7 @@ namespace
 	// reads write nothing.
 	void ReadProjectBenchmark::prepare()
 	{
-		Parser::FMTModelParser parser;
-		parser.setQuietLogger();
+		Performance::quietFmt();
 	}
 
 	double ReadProjectBenchmark::run()

@@ -119,6 +119,16 @@ namespace
 		return static_cast<std::int64_t>(COUNT);
 	}
 
+	double toMegabytes(const std::string& p_text, const std::string& p_context)
+	{
+		const double MEGABYTES = toNumber(p_text, p_context);
+		if (MEGABYTES <= 0.0)
+		{
+			throw std::invalid_argument(p_context + ": \"" + p_text + "\" is not a size in megabytes");
+		}
+		return MEGABYTES;
+	}
+
 	// Name of the default results file: the selection, with * written "all".
 	std::string fileNameOf(const std::string& p_pattern)
 	{
@@ -216,6 +226,11 @@ namespace Performance
 		return m_outputFile;
 	}
 
+	std::filesystem::path BenchmarkOptions::getWorkFolder() const
+	{
+		return m_outputFile.parent_path();
+	}
+
 	std::optional<Expectation> BenchmarkOptions::getExpectation(const std::string& p_benchmark) const
 	{
 		const auto FOUND = m_expectations.find(p_benchmark);
@@ -224,6 +239,11 @@ namespace Performance
 			return std::nullopt;
 		}
 		return FOUND->second;
+	}
+
+	const std::vector<DefinedBenchmark>& BenchmarkOptions::getDefinedBenchmarks() const
+	{
+		return m_definedBenchmarks;
 	}
 
 	BenchmarkOptions::BenchmarkOptions() :
@@ -269,6 +289,10 @@ namespace Performance
 		{
 			m_retainedBoundOverride = toCount(p_value, "--max-retained-bytes");
 		}
+		else if (p_option == "--max-peak-memory")
+		{
+			m_peakBoundOverride = toMegabytes(p_value, "--max-peak-memory");
+		}
 		else if (p_option == "--output")
 		{
 			m_outputFile = p_value;
@@ -303,7 +327,8 @@ namespace Performance
 			const std::string CONTEXT = m_expectationsFile.string() + ", row " + std::to_string(rowNumber);
 			if (FIELDS.size() < 3)
 			{
-				throw std::invalid_argument(CONTEXT + ": expected <executable>;<benchmark>;<result>[;<allocations>[;<retained bytes>]]");
+				throw std::invalid_argument(CONTEXT
+					+ ": expected <executable>;<benchmark>;<result>[;<allocations>[;<retained bytes>[;<peak MB>[;<arguments>]]]]");
 			}
 			Expectation expectation;
 			expectation.result = toNumber(FIELDS.at(2), CONTEXT);
@@ -315,21 +340,32 @@ namespace Performance
 			{
 				expectation.maximumRetainedBytes = toCount(FIELDS.at(4), CONTEXT);
 			}
+			if (FIELDS.size() > 5 && !FIELDS.at(5).empty())
+			{
+				expectation.maximumPeakMegabytes = toMegabytes(FIELDS.at(5), CONTEXT);
+			}
+			if (FIELDS.size() > 6 && !FIELDS.at(6).empty())
+			{
+				m_definedBenchmarks.push_back({ FIELDS.at(1), FIELDS.at(6) });
+			}
 			m_expectations[FIELDS.at(1)] = expectation;
 		}
 	}
 
-	// --expected, --max-allocations and --max-retained-bytes replace the expectation of one
-	// benchmark, so that a check can be seen failing without editing the expectations file.
+	// --expected, --max-allocations, --max-retained-bytes and --max-peak-memory replace the
+	// expectation of one benchmark, so that a check can be seen failing without editing the
+	// expectations file.
 	void BenchmarkOptions::_applyOverrides()
 	{
-		if (!m_expectedOverride.has_value() && !m_boundOverride.has_value() && !m_retainedBoundOverride.has_value())
+		if (!m_expectedOverride.has_value() && !m_boundOverride.has_value() && !m_retainedBoundOverride.has_value()
+			&& !m_peakBoundOverride.has_value())
 		{
 			return;
 		}
 		if (!m_exactName)
 		{
-			throw std::invalid_argument("--expected, --max-allocations and --max-retained-bytes apply to the benchmark named by --benchmark");
+			throw std::invalid_argument("--expected, --max-allocations, --max-retained-bytes and --max-peak-memory apply to the "
+				"benchmark named by --benchmark");
 		}
 		Expectation& expectation = m_expectations[m_pattern];
 		if (m_expectedOverride.has_value())
@@ -343,6 +379,10 @@ namespace Performance
 		if (m_retainedBoundOverride.has_value())
 		{
 			expectation.maximumRetainedBytes = m_retainedBoundOverride;
+		}
+		if (m_peakBoundOverride.has_value())
+		{
+			expectation.maximumPeakMegabytes = m_peakBoundOverride;
 		}
 	}
 }

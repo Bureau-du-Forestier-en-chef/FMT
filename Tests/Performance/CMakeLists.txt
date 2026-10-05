@@ -27,6 +27,7 @@ add_custom_target(FMTBenchmarkCommit
 add_library(FMTBenchmarkHarness STATIC
 	"${FMTPERFORMANCEdir}/Harness/AllocationMonitor.h"
 	"${FMTPERFORMANCEdir}/Harness/Benchmark.h"
+	"${FMTPERFORMANCEdir}/Harness/Benchmark.cpp"
 	"${FMTPERFORMANCEdir}/Harness/BenchmarkEnvironment.h"
 	"${FMTPERFORMANCEdir}/Harness/BenchmarkEnvironment.cpp"
 	"${FMTPERFORMANCEdir}/Harness/BenchmarkOptions.h"
@@ -37,6 +38,8 @@ add_library(FMTBenchmarkHarness STATIC
 	"${FMTPERFORMANCEdir}/Harness/BenchmarkRunner.cpp"
 	"${FMTPERFORMANCEdir}/Harness/BenchmarkSuite.h"
 	"${FMTPERFORMANCEdir}/Harness/BenchmarkSuite.cpp"
+	"${FMTPERFORMANCEdir}/Harness/DatasetFingerprint.h"
+	"${FMTPERFORMANCEdir}/Harness/DatasetFingerprint.cpp"
 	"${FMTPERFORMANCEdir}/Harness/JsonWriter.h"
 	"${FMTPERFORMANCEdir}/Harness/JsonWriter.cpp"
 	"${FMTPERFORMANCEdir}/Harness/MemoryMonitor.h"
@@ -48,7 +51,8 @@ add_library(FMTBenchmarkHarness STATIC
 	)
 if (WIN32)
 	target_sources(FMTBenchmarkHarness PRIVATE "${FMTPERFORMANCEdir}/Harness/AllocationMonitorWindows.cpp")
-	target_link_libraries(FMTBenchmarkHarness PUBLIC psapi)
+	# psapi reads the memory of the process, bcrypt computes the fingerprints of the datasets.
+	target_link_libraries(FMTBenchmarkHarness PUBLIC psapi bcrypt)
 else()
 	target_sources(FMTBenchmarkHarness PRIVATE "${FMTPERFORMANCEdir}/Harness/AllocationMonitorPortable.cpp")
 endif()
@@ -67,12 +71,18 @@ createexecutable("${FMTPERFORMANCEdir}/FMTPerformanceTests.cpp" FMTPERFORMANCEex
 target_sources(FMTPerformanceTests PRIVATE
 	"${FMTPERFORMANCEdir}/ComplexYieldBenchmarks.h"
 	"${FMTPERFORMANCEdir}/ComplexYieldBenchmarks.cpp"
+	"${FMTPERFORMANCEdir}/DefinedBenchmarks.h"
+	"${FMTPERFORMANCEdir}/DefinedBenchmarks.cpp"
+	"${FMTPERFORMANCEdir}/FlowBenchmarks.h"
+	"${FMTPERFORMANCEdir}/FlowBenchmarks.cpp"
 	"${FMTPERFORMANCEdir}/MaskBenchmarks.h"
 	"${FMTPERFORMANCEdir}/MaskBenchmarks.cpp"
 	"${FMTPERFORMANCEdir}/ParserBenchmarks.h"
 	"${FMTPERFORMANCEdir}/ParserBenchmarks.cpp"
 	"${FMTPERFORMANCEdir}/PerfYields.h"
 	"${FMTPERFORMANCEdir}/PerfYields.cpp"
+	"${FMTPERFORMANCEdir}/QuietFmt.h"
+	"${FMTPERFORMANCEdir}/QuietFmt.cpp"
 	"${FMTPERFORMANCEdir}/YieldBenchmarks.h"
 	"${FMTPERFORMANCEdir}/YieldBenchmarks.cpp"
 	)
@@ -80,12 +90,12 @@ target_include_directories(FMTPerformanceTests PRIVATE "${FMTPERFORMANCEdir}" "$
 target_link_libraries(FMTPerformanceTests PRIVATE FMTBenchmarkHarness)
 
 # One ctest test per row of performance.csv:
-# <executable>;<benchmark>;<result>;<allocations>;<retained bytes>.
+# <executable>;<benchmark>;<result>;<allocations>;<retained bytes>;<peak MB>.
 # The executable reads its expected result and bounds from the same file at run time: a changed
 # value needs no reconfiguration, a new row does. Every test is labelled performance, allocation
-# when its row bounds the allocations, and memory when it bounds the memory a call keeps. ctest
-# runs them in their short mode; with FMT_BENCHMARK_MODE=full in the environment, they measure
-# (run them without -j).
+# when its row bounds the allocations, and memory when it bounds the memory a call keeps or the
+# peak memory of the process. ctest runs them in their short mode; with FMT_BENCHMARK_MODE=full in
+# the environment, they measure (run them without -j).
 if (NOT WITHOUT_TESTING)
 	enable_testing()
 	set(FMTPERFORMANCEcsv "${FMTPERFORMANCEdir}/performance.csv")
@@ -115,6 +125,10 @@ if (NOT WITHOUT_TESTING)
 		if (fieldCount GREATER 4)
 			list(GET fields 4 retainedBound)
 		endif()
+		set(peakBound "")
+		if (fieldCount GREATER 5)
+			list(GET fields 5 peakBound)
+		endif()
 		set(testname "${executable}.${benchmark}")
 		add_test(
 				NAME "${testname}"
@@ -128,7 +142,7 @@ if (NOT WITHOUT_TESTING)
 		if (NOT bound STREQUAL "")
 			list(APPEND labels "allocation")
 		endif()
-		if (NOT retainedBound STREQUAL "")
+		if (NOT retainedBound STREQUAL "" OR NOT peakBound STREQUAL "")
 			list(APPEND labels "memory")
 		endif()
 		#77: a check needs what the platform lacks, such as the allocation monitor outside Windows
@@ -138,4 +152,57 @@ if (NOT WITHOUT_TESTING)
 				LABELS "${labels}"
 				)
 	endforeach()
+	# The private benchmarks: rows of performance-private.csv, a local file that git ignores, on
+	# models outside the source tree. Each row gives the arguments of its benchmark after its
+	# bounds; the first argument is the primary file of the model. That model must be on T:\, like
+	# those of the private tests: the name of the test holds its path, which keeps the test out of
+	# the base suite (-E "T:/"). The tests are labelled bfec-perf, and only that.
+	set(FMTPERFORMANCEprivate "${FMTPERFORMANCEdir}/performance-private.csv")
+	if (EXISTS "${FMTPERFORMANCEprivate}")
+		file(READ "${FMTPERFORMANCEprivate}" FMTPERFORMANCEprivaterows)
+		string(REPLACE "\r" "" FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
+		string(REPLACE ";" "," FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
+		string(REPLACE "\n" ";" FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
+		foreach(row ${FMTPERFORMANCEprivaterows})
+			string(REPLACE "," ";" fields "${row}")
+			list(GET fields 0 executable)
+			if (executable STREQUAL "TEST")#the header of the file
+				continue()
+			endif()
+			if (NOT TARGET "${executable}")
+				message(WARNING "performance-private.csv: no target named \"${executable}\", this row is not registered in ctest")
+				continue()
+			endif()
+			list(GET fields 1 benchmark)
+			list(LENGTH fields fieldCount)
+			set(arguments "")
+			if (fieldCount GREATER 6)
+				list(GET fields 6 arguments)
+			endif()
+			string(REPLACE "|" ";" arguments "${arguments}")
+			list(LENGTH arguments argumentCount)
+			set(model "")
+			if (argumentCount GREATER 0)
+				list(GET arguments 0 model)
+			endif()
+			string(REPLACE "\\" "/" model "${model}")
+			if (NOT model MATCHES "^[Tt]:/")
+				message(WARNING "performance-private.csv: ${benchmark} does not read a model on T:/, this row is not registered in ctest")
+				continue()
+			endif()
+			set(testname "${executable}.${benchmark}|${model}")
+			string(REPLACE " " "_" testname "${testname}")
+			add_test(
+					NAME "${testname}"
+					COMMAND ${executable} --benchmark ${benchmark}
+						--expectations "${FMTPERFORMANCEprivate}"
+						--output "${FMTPERFORMANCEresults}/${benchmark}.json"
+					WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+					)
+			set_tests_properties("${testname}" PROPERTIES
+					SKIP_RETURN_CODE 77
+					LABELS "bfec-perf"
+					)
+		endforeach()
+	endif()
 endif (NOT WITHOUT_TESTING)

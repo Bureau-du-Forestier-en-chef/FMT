@@ -29,7 +29,7 @@ namespace Performance
 		return settings;
 	}
 
-	// Without a minimum duration, the calibration stops at one call per sample.
+	// Without a minimum duration, a sample is one call, and nothing is calibrated.
 	RunSettings RunSettings::forSlowCalls(BenchmarkMode p_mode)
 	{
 		RunSettings settings;
@@ -44,6 +44,25 @@ namespace Performance
 			settings.warmUpCalls = 1;
 			settings.samples = 2;
 			settings.countedCalls = 3;
+		}
+		return settings;
+	}
+
+	// In the short mode, the timed call comes before the counted one: the counted call is never
+	// the first of the process, whose one-time initializations would read as retained memory.
+	RunSettings RunSettings::forFlows(BenchmarkMode p_mode)
+	{
+		RunSettings settings;
+		if (p_mode == BenchmarkMode::Full)
+		{
+			settings.warmUpCalls = 1;
+			settings.samples = 3;
+			settings.countedCalls = 1;
+		}
+		else
+		{
+			settings.samples = 1;
+			settings.countedCalls = 1;
 		}
 		return settings;
 	}

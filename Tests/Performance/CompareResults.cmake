@@ -5,15 +5,15 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
-# Compares the benchmark results of two runs, written by FMTPerformanceTests (JSON schema version 1,
-# described in Documentation/PerformanceTesting.md):
+# Compares the benchmark results of two runs, written by FMTPerformanceTests (JSON schema versions 1
+# to 3, described in Documentation/PerformanceTesting.md):
 #
 #   cmake -DBASELINE=<file or folder> -DCANDIDATE=<file or folder> -P Tests/Performance/CompareResults.cmake
 #
 # A folder stands for every .json file it holds, such as build/release/tests/performance after a run
-# of ctest. For each benchmark, the report gives the change of the median duration and of the process
-# peak memory in percent, and the allocations and bytes of a typical call before and after. It only
-# reports: nothing fails on a change.
+# of ctest. For each benchmark, the report gives the change of the median duration, of each phase and
+# of the process peak memory in percent, and the allocations and bytes of a typical call before and
+# after. It warns when the files of a dataset differ. It only reports: nothing fails on a change.
 
 cmake_minimum_required(VERSION 3.19)
 
@@ -56,17 +56,35 @@ function(_percentChange p_before p_after p_result)
 	set(${p_result} "${sign}${units}.${decimal}%" PARENT_SCOPE)
 endfunction()
 
-# Writes a duration read from the results with one decimal: string(JSON) returns it with every
-# digit of its binary value, such as 378.11599999999999.
+# Writes a duration read from the results, in nanoseconds, with its unit: nanoseconds with one
+# decimal below a millisecond, then milliseconds or seconds with three. string(JSON) returns it with
+# every digit of its binary value, such as 378.11599999999999.
 function(_formatDuration p_value p_result)
 	_toThousandths("${p_value}" thousandths)
 	if (thousandths STREQUAL "" OR thousandths LESS 0)
-		set(${p_result} "${p_value}" PARENT_SCOPE)
+		set(${p_result} "${p_value} ns" PARENT_SCOPE)
 		return()
 	endif()
-	math(EXPR units "${thousandths} / 1000")
-	math(EXPR tenth "(${thousandths} % 1000) / 100")
-	set(${p_result} "${units}.${tenth}" PARENT_SCOPE)
+	if (thousandths LESS 1000000000)
+		math(EXPR units "${thousandths} / 1000")
+		math(EXPR tenth "(${thousandths} % 1000) / 100")
+		set(${p_result} "${units}.${tenth} ns" PARENT_SCOPE)
+		return()
+	endif()
+	set(unit "ms")
+	set(scale 1000000000)
+	if (NOT thousandths LESS 1000000000000)
+		set(unit "s")
+		set(scale 1000000000000)
+	endif()
+	math(EXPR units "${thousandths} / ${scale}")
+	math(EXPR fraction "(${thousandths} % ${scale}) * 1000 / ${scale}")
+	if (fraction LESS 10)
+		set(fraction "00${fraction}")
+	elseif (fraction LESS 100)
+		set(fraction "0${fraction}")
+	endif()
+	set(${p_result} "${units}.${fraction} ${unit}" PARENT_SCOPE)
 endfunction()
 
 # Reads the results of p_path, a file or a folder, into variables named
@@ -124,6 +142,24 @@ function(_readResults p_path p_side)
 					set(value "n/a")
 				endif()
 				set("${p_side}.${name}.retainedBytesPerCallMedian" "${value}" PARENT_SCOPE)
+				# Schema 3 adds the fingerprint of the dataset and the phases of a call.
+				string(JSON value ERROR_VARIABLE missingField GET "${json}" results ${index} datasetFingerprint)
+				if (missingField)
+					set(value "")
+				endif()
+				set("${p_side}.${name}.datasetFingerprint" "${value}" PARENT_SCOPE)
+				set(phaseNames "")
+				string(JSON phaseCount ERROR_VARIABLE missingField LENGTH "${json}" results ${index} phases)
+				if (NOT missingField AND phaseCount GREATER 0)
+					math(EXPR lastPhase "${phaseCount} - 1")
+					foreach(phaseIndex RANGE ${lastPhase})
+						string(JSON phaseName GET "${json}" results ${index} phases ${phaseIndex} name)
+						string(JSON phaseMedian GET "${json}" results ${index} phases ${phaseIndex} medianNs)
+						list(APPEND phaseNames "${phaseName}")
+						set("${p_side}.${name}.phase.${phaseName}" "${phaseMedian}" PARENT_SCOPE)
+					endforeach()
+				endif()
+				set("${p_side}.${name}.phases" "${phaseNames}" PARENT_SCOPE)
 				list(APPEND benchmarks "${name}")
 			endforeach()
 		endif()
@@ -141,7 +177,19 @@ function(_reportBenchmark p_name)
 	_formatDuration("${${before}.medianNs}" durationBefore)
 	_formatDuration("${${after}.medianNs}" durationAfter)
 	message("${p_name}")
-	message("  Median duration:  ${durationChange}  (${durationBefore} ns -> ${durationAfter} ns)")
+	if (NOT "${${before}.datasetFingerprint}" STREQUAL "" AND NOT "${${after}.datasetFingerprint}" STREQUAL ""
+		AND NOT "${${before}.datasetFingerprint}" STREQUAL "${${after}.datasetFingerprint}")
+		message("  WARNING: the files of the dataset differ, the results do not compare")
+	endif()
+	message("  Median duration:  ${durationChange}  (${durationBefore} -> ${durationAfter})")
+	foreach(phase IN LISTS ${after}.phases)
+		if (phase IN_LIST ${before}.phases)
+			_percentChange("${${before}.phase.${phase}}" "${${after}.phase.${phase}}" phaseChange)
+			_formatDuration("${${before}.phase.${phase}}" phaseBefore)
+			_formatDuration("${${after}.phase.${phase}}" phaseAfter)
+			message("    ${phase}:  ${phaseChange}  (${phaseBefore} -> ${phaseAfter})")
+		endif()
+	endforeach()
 	message("  Allocations:      ${${before}.allocationsPerCallMedian} -> ${${after}.allocationsPerCallMedian} per call")
 	message("  Allocated bytes:  ${${before}.allocatedBytesPerCallMedian} -> ${${after}.allocatedBytesPerCallMedian} per call")
 	message("  Retained bytes:   ${${before}.retainedBytesPerCallMedian} -> ${${after}.retainedBytesPerCallMedian} per call")
